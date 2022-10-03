@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 from . import __version__
-from .commands_functions import show_config, run_forecast
+from .commands_functions import run_forecast, show_config, start_suite
 from .config_parser import get_default_config_path
 
 
@@ -80,6 +80,36 @@ def get_parsed_args(program_name="program", argv=None):
         "--an-option", "-opt", help="An option", default="Some default"
     )
     parser_forecast.set_defaults(run_command=run_forecast)
+
+    ##########################################
+    # Configure parser for the "start" command #
+    ##########################################
+    # Configure the main parser to handle the commands
+    parser_start = subparsers.add_parser(
+        "start",
+        help="Start various tasks and exit.",
+    )
+    start_command_subparsers = parser_start.add_subparsers(
+        title="start",
+        dest="start_what",
+        required=True,
+        description=(
+            "Valid commands below (note that commands also accept their "
+            + "own arguments, in particular [-h]):"
+        ),
+        help="command description",
+    )
+
+    # show config
+    parser_start_suite = start_command_subparsers.add_parser(
+        "suite", help="Start the suite"
+    )
+    parser_start_suite.add_argument(
+        "--some-option-for-the-suite-run",
+        help="Some option for teh suite run",
+        default="Some value",
+    )
+    parser_start_suite.set_defaults(run_command=start_suite)
 
     ###########################################
     # Configure parser for the "show" command #

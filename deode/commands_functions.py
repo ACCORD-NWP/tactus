@@ -2,6 +2,7 @@
 """Implement the package's commands."""
 from .logs import get_logger
 
+
 def run_forecast(args, config):
     """Implement the 'forecast' command.
 
@@ -13,6 +14,19 @@ def run_forecast(args, config):
     logger = get_logger(__name__, args.loglevel)
     logger.info("Running forecast...")
     logger.info("Done with forecast.")
+
+
+def start_suite(args, config):
+    """Implement the 'start suite' command.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+        config (.config_parser.ParsedConfig): Parsed config file contents.
+
+    """
+    logger = get_logger(__name__, args.loglevel)
+    logger.info("Starting suite...")
+    logger.info("Done with suite.")
 
 
 #########################################
