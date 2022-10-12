@@ -14,8 +14,7 @@ See also the [project's Wiki](https://source.coderefinery.org/deode/deode-protot
 
 ### System Requirements
 
-* python >=3.9
-
+* python >=3.8
 * **Only for
 [Developer-Mode Installtion](#developer-mode-installation):**
 
@@ -23,6 +22,7 @@ See also the [project's Wiki](https://source.coderefinery.org/deode/deode-protot
 
             curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
 
+        * On Atos (`hpc-login`), please load a python module with the appropriate version **before** installing `poetry`
 
 ### Installation
 
@@ -112,6 +112,9 @@ After completing the setup, you should be able to run
 where `[opts]` and `[subcommand_opts]` denote optional command line arguments
 that apply, respectively, to `deode` in general and to `SUBCOMMAND`
 specifically.
+
+* When installing in development mode using `poetry`, you may need to run
+`poetry shell` to be able to run `deode` as a command.
 
 **Please run `deode -h` for information** about the supported subcommands
 and general `deode` options. For info about specific subcommands and the
