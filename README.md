@@ -128,12 +128,13 @@ that the `-h` goes after the subcommand in this case).
 
 # Load python
 module load python3/3.8.8-01
+module load ecflow
 
 # Clone DEODE prototype in ~/projects
 
 mkdir -p ~/projects
 cd ~/projects
-git clone git@github.com:DEODE-NWP/Deode-Prototype.git
+[ -d Deode-Prototype ] || git clone git@github.com:DEODE-NWP/Deode-Prototype.git
 
 # Add to your ~/.bashrc
 export PATH=$HOME/.local/bin:$PATH
@@ -144,7 +145,7 @@ pip3 install --user -e .
 
 # Put your config in ~/.deode/config.toml
 # Minimum config
-mkdir ~/.deode
+mkdir -p ~/.deode
 cat > ~/.deode/config.toml << EOF
 [general]
 data_rootdir = "SOME_PATH"
