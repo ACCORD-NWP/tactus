@@ -1,6 +1,7 @@
 """Ecflow suites."""
-import os
 import logging
+import os
+
 try:
     import ecflow
 except ImportError:
@@ -10,10 +11,19 @@ except ImportError:
 class SuiteDefinition(object):
     """The definition of the suite."""
 
-    def __init__(self, suite_name, joboutdir, ecf_files,
-                 submission_file, server_logfile, loglevel,
-                 ecf_home=None, ecf_include=None, ecf_out=None,
-                 ecf_jobout=None):
+    def __init__(
+        self,
+        suite_name,
+        joboutdir,
+        ecf_files,
+        submission_file,
+        server_logfile,
+        loglevel,
+        ecf_home=None,
+        ecf_include=None,
+        ecf_out=None,
+        ecf_jobout=None,
+    ):
         """Construct the definition.
 
         Args:
@@ -52,41 +62,47 @@ class SuiteDefinition(object):
 
         self.submission_file = submission_file
 
-        ecf_job_cmd = "deode submit " \
-            "--submit %SUBMISSION_FILE% " \
-            "--joboutdir %ECF_OUT% " \
-            "--log %SERVER_LOGFILE% " \
-            "--ecf_host %ECF_HOST% " \
-            "--ecf_port %ECF_PORT% " \
-            "--ecf_name %ECF_NAME% " \
-            "--ecf_tryno %ECF_TRYNO% " \
-            "--ecf_pass %ECF_PASS% " \
+        ecf_job_cmd = (
+            "deode submit "
+            "--submit %SUBMISSION_FILE% "
+            "--joboutdir %ECF_OUT% "
+            "--log %SERVER_LOGFILE% "
+            "--ecf_host %ECF_HOST% "
+            "--ecf_port %ECF_PORT% "
+            "--ecf_name %ECF_NAME% "
+            "--ecf_tryno %ECF_TRYNO% "
+            "--ecf_pass %ECF_PASS% "
             "--ecf_rid %ECF_RID% "
+        )
         self.ecf_job_cmd = ecf_job_cmd
-        ecf_status_cmd = "deode status " \
-            "--submit %SUBMISSION_FILE% " \
-            "--joboutdir %ECF_OUT% " \
-            "--ecf_host %ECF_HOST% " \
-            "--ecf_port %ECF_PORT% " \
-            "--log %SERVER_LOGFILE% " \
-            "--ecf_name %ECF_NAME% " \
-            "--ecf_tryno %ECF_TRYNO% " \
-            "--ecf_pass %ECF_PASS% " \
-            "--ecf_rid %ECF_RID% " \
+        ecf_status_cmd = (
+            "deode status "
+            "--submit %SUBMISSION_FILE% "
+            "--joboutdir %ECF_OUT% "
+            "--ecf_host %ECF_HOST% "
+            "--ecf_port %ECF_PORT% "
+            "--log %SERVER_LOGFILE% "
+            "--ecf_name %ECF_NAME% "
+            "--ecf_tryno %ECF_TRYNO% "
+            "--ecf_pass %ECF_PASS% "
+            "--ecf_rid %ECF_RID% "
             "--submission_id %SUBMISSION_ID%"
+        )
 
         self.ecf_status_cmd = ecf_status_cmd
-        ecf_kill_cmd = "deode kill " \
-            "--submit %SUBMISSION_FILE% " \
-            "--joboutdir %ECF_OUT% " \
-            "--ecf_host %ECF_HOST% " \
-            "--ecf_port %ECF_PORT% " \
-            "--log %SERVER_LOGFILE% " \
-            "--ecf_name %ECF_NAME% " \
-            "--ecf_tryno %ECF_TRYNO% " \
-            "--ecf_pass %ECF_PASS% " \
-            "--ecf_rid %ECF_RID% " \
+        ecf_kill_cmd = (
+            "deode kill "
+            "--submit %SUBMISSION_FILE% "
+            "--joboutdir %ECF_OUT% "
+            "--ecf_host %ECF_HOST% "
+            "--ecf_port %ECF_PORT% "
+            "--log %SERVER_LOGFILE% "
+            "--ecf_name %ECF_NAME% "
+            "--ecf_tryno %ECF_TRYNO% "
+            "--ecf_pass %ECF_PASS% "
+            "--ecf_rid %ECF_RID% "
             "--submission_id %SUBMISSION_ID%"
+        )
         self.ecf_kill_cmd = ecf_kill_cmd
 
         variables = {
@@ -103,7 +119,7 @@ class SuiteDefinition(object):
             "ECF_JOBOUT": self.ecf_jobout,
             "SUBMISSION_FILE": self.submission_file,
             "SERVER_LOGFILE": server_logfile,
-            "LOGLEVEL": loglevel
+            "LOGLEVEL": loglevel,
         }
 
         self.suite = EcflowSuite(name, variables=variables)
@@ -121,7 +137,7 @@ class SuiteDefinition(object):
         self.suite.save_as_defs(def_file)
 
 
-class EcflowNode():
+class EcflowNode:
     """A Node class is the abstract base class for Suite, Family and Task.
 
     Every Node instance has a name, and a path relative to a suite
@@ -250,7 +266,6 @@ class EcflowSuiteTask(EcflowNode):
             else:
                 default_job = ecf_files + "/default.py"
                 task_job = ecf_files + "/" + name + ".py"
-                if not os.path.exists(task_job) and not \
-                        os.path.islink(task_job):
+                if not os.path.exists(task_job) and not os.path.islink(task_job):
                     print(default_job + " - > " + task_job)
                     os.symlink(default_job, task_job)

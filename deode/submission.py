@@ -1,20 +1,29 @@
 """Job submission setup."""
-from cmath import log
-import shutil
+import logging
 import os
+import shutil
 import subprocess
 from abc import ABC, abstractmethod
-import logging
+from cmath import log
 
 
 class EcflowSubmitTask(object):
     """Submit class for ecflow."""
 
-    def __init__(self, task, env_submit, server, joboutdir,
-                 stream=None, dbfile=None,
-                 interpreter="#!/usr/bin/env python3",
-                 ensmbr=None, submit_exceptions=None, coldstart=False,
-                 env_file=None):
+    def __init__(
+        self,
+        task,
+        env_submit,
+        server,
+        joboutdir,
+        stream=None,
+        dbfile=None,
+        interpreter="#!/usr/bin/env python3",
+        ensmbr=None,
+        submit_exceptions=None,
+        coldstart=False,
+        env_file=None,
+    ):
         """Construct a ecflow submission task.
 
         Args:
@@ -47,10 +56,17 @@ class EcflowSubmitTask(object):
         self.debug = True
 
         # Parse Env_submit
-        self.task_settings = TaskSettings(self.task, env_submit, joboutdir, interpreter=interpreter,
-                                          submit_exceptions=submit_exceptions, coldstart=False)
-        self.sub = get_submission_object(self.task, self.task_settings, self.ecflow_server,
-                                         db_file=self.db_file)
+        self.task_settings = TaskSettings(
+            self.task,
+            env_submit,
+            joboutdir,
+            interpreter=interpreter,
+            submit_exceptions=submit_exceptions,
+            coldstart=False,
+        )
+        self.sub = get_submission_object(
+            self.task, self.task_settings, self.ecflow_server, db_file=self.db_file
+        )
 
     def write_header(self, file_handler):
         """Write header to file handler.
@@ -73,7 +89,9 @@ class EcflowSubmitTask(object):
 
             # Host environment
             if self.env_file is not None:
-                file_handler.write("\n# Host specific environment settings in python syntax:\n")
+                file_handler.write(
+                    "\n# Host specific environment settings in python syntax:\n"
+                )
                 with open(self.env_file, mode="r", encoding="utf-8") as fh_env:
                     for line in fh_env.readlines():
                         file_handler.write(line)
@@ -161,9 +179,16 @@ class EcflowSubmitTask(object):
 class TaskSettings(object):
     """Set the task specific setttings."""
 
-    def __init__(self, task, submission_defs, joboutdirs, submit_exceptions=None,
-                 interpreter="#!/usr/bin/env python3",
-                 complete=False, coldstart=False):
+    def __init__(
+        self,
+        task,
+        submission_defs,
+        joboutdirs,
+        submit_exceptions=None,
+        interpreter="#!/usr/bin/env python3",
+        complete=False,
+        coldstart=False,
+    ):
         """Construct the task specific settings.
 
         Args:
@@ -236,17 +261,27 @@ class TaskSettings(object):
                     if "task" in submit_exceptions[state]:
                         for task in submit_exceptions[state]["task"]:
                             if task == self.task.ecf_task:
-                                if submit_exceptions[state]["task"][task] == "is_coldstart":
+                                if (
+                                    submit_exceptions[state]["task"][task]
+                                    == "is_coldstart"
+                                ):
                                     if self.coldstart:
-                                        self.complete = f"Task {task} complete due to cold start"
+                                        self.complete = (
+                                            f"Task {task} complete due to cold start"
+                                        )
                     if "family" in submit_exceptions[state]:
                         for family in submit_exceptions[state]["family"]:
                             for ecf_family in self.task.ecf_families:
                                 if family == ecf_family:
-                                    if submit_exceptions[state]["family"][family] == "is_coldstart":
+                                    if (
+                                        submit_exceptions[state]["family"][family]
+                                        == "is_coldstart"
+                                    ):
                                         if self.coldstart:
-                                            self.complete = f"Family {family} complete due to " \
-                                                            "cold start"
+                                            self.complete = (
+                                                f"Family {family} complete due to "
+                                                "cold start"
+                                            )
 
     def process_settings(self):
         """Process the settings."""
@@ -271,7 +306,9 @@ class TaskSettings(object):
                 elif key == "HOST":
                     self.host = str(value)
                     if self.host != "0" and self.host != "1":
-                        raise Exception("Expected a single or dual-host system. HOST=", self.host)
+                        raise Exception(
+                            "Expected a single or dual-host system. HOST=", self.host
+                        )
                 else:
                     self.header.update({key: value})
 
@@ -410,9 +447,16 @@ class SubmissionBaseClass(ABC):
         ABC (_type_): _description_
     """
 
-    def __init__(self, task, task_settings, server, db_file=None, remote_submit_cmd=None,
-                 remote_kill_cmd=None,
-                 remote_status_cmd=None):
+    def __init__(
+        self,
+        task,
+        task_settings,
+        server,
+        db_file=None,
+        remote_submit_cmd=None,
+        remote_kill_cmd=None,
+        remote_status_cmd=None,
+    ):
         """Construct the base class.
 
         Args:
@@ -509,16 +553,22 @@ class SubmissionBaseClass(ABC):
                 with open(subfile, mode="w", encoding="utf-8") as subfile:
                     if self.server is not None:
                         self.server.update_log("ECF_JOB_CMD: " + cmd)
-                    process = subprocess.Popen(cmd, stdout=subfile, stderr=subfile, shell=True)
+                    process = subprocess.Popen(
+                        cmd, stdout=subfile, stderr=subfile, shell=True
+                    )
                     process.wait()
                 ret = process.returncode
                 if ret != 0:
-                    raise RuntimeError("Submit command failed with error code " + str(ret))
+                    raise RuntimeError(
+                        "Submit command failed with error code " + str(ret)
+                    )
             else:
                 if self.server is not None:
                     self.server.update_log("ECF_JOB_CMD: " + cmd)
                 with open(logfile, mode="w", encoding="utf-8") as logfile:
-                    self.process = subprocess.Popen(cmd, stdout=logfile, stderr=logfile, shell=True)
+                    self.process = subprocess.Popen(
+                        cmd, stdout=logfile, stderr=logfile, shell=True
+                    )
 
             logging.debug(self.submit_cmd)
             self.job_id = self.set_jobid()
@@ -539,7 +589,9 @@ class SubmissionBaseClass(ABC):
             print(cmd)
             print(killfile)
             with open(killfile, mode="w", encoding="utf-8") as kill_file:
-                kill_file.write(f"Kill job {self.task_settings.ecf_job_at_host} with command:\n")
+                kill_file.write(
+                    f"Kill job {self.task_settings.ecf_job_at_host} with command:\n"
+                )
                 kill_file.write(f"{cmd}\n")
                 kill_file.flush()
 
@@ -561,7 +613,9 @@ class SubmissionBaseClass(ABC):
             log_handler.close()
 
     @abstractmethod
-    def set_job_status(self,):
+    def set_job_status(
+        self,
+    ):
         """Set job status.
 
         Must be implemented.
@@ -585,16 +639,23 @@ class SubmissionBaseClass(ABC):
         try:
             self.set_job_status()
         except Exception as error:
-            raise StatusException("Setting of status command failed " + repr(error), self.task,
-                                  self.task_settings) from error
+            raise StatusException(
+                "Setting of status command failed " + repr(error),
+                self.task,
+                self.task_settings,
+            ) from error
         if self.job_status_cmd is None:
-            raise StatusException("No status command set for " + self.task_settings.submit_type,
-                                  self.task, self.task_settings)
+            raise StatusException(
+                "No status command set for " + self.task_settings.submit_type,
+                self.task,
+                self.task_settings,
+            )
         try:
             self.job_status()
         except Exception as error:
-            raise StatusException("Status command failed " + repr(error), self.task,
-                                  self.task_settings) from error
+            raise StatusException(
+                "Status command failed " + repr(error), self.task, self.task_settings
+            ) from error
 
     def job_status(self):
         """General job status method.
@@ -629,16 +690,23 @@ class SubmissionBaseClass(ABC):
         try:
             self.set_kill_cmd()
         except Exception as error:
-            raise KillException("Setting of kill command failed " + repr(error), self.task,
-                                self.task_settings) from error
+            raise KillException(
+                "Setting of kill command failed " + repr(error),
+                self.task,
+                self.task_settings,
+            ) from error
         if self.kill_job_cmd is None:
-            raise KillException("No kill command set for " + self.task_settings.submit_type,
-                                self.task, self.task_settings)
+            raise KillException(
+                "No kill command set for " + self.task_settings.submit_type,
+                self.task,
+                self.task_settings,
+            )
         try:
             self.kill_job()
         except Exception as error:
-            raise KillException("Kill failed " + repr(error), self.task,
-                                self.task_settings) from error
+            raise KillException(
+                "Kill failed " + repr(error), self.task, self.task_settings
+            ) from error
 
     @abstractmethod
     def set_kill_cmd(self):
@@ -660,7 +728,7 @@ class SubmissionBaseClass(ABC):
 
         """
         if remote_cmd is not None:
-            cmd = remote_cmd + " \"" + str(cmd) + "\""
+            cmd = remote_cmd + ' "' + str(cmd) + '"'
         return cmd
 
     @abstractmethod
@@ -761,8 +829,17 @@ class BatchSubmission(SubmissionBaseClass):
         SubmissionBaseClass (_type_): _description_
     """
 
-    def __init__(self, task, task_settings, server, db_file=None, sub=None, stat=None,
-                 kill=None, prefix="#"):
+    def __init__(
+        self,
+        task,
+        task_settings,
+        server,
+        db_file=None,
+        sub=None,
+        stat=None,
+        kill=None,
+        prefix="#",
+    ):
         """Construct the BatchSubmission object.
 
         Args:
@@ -838,8 +915,17 @@ class PBSSubmission(BatchSubmission):
         BatchSubmission (_type_): _description_
     """
 
-    def __init__(self, task, task_settings, server, sub="qsub", stat="qstat -j", kill="qdel",
-                 prefix="#PBS", db_file=None):
+    def __init__(
+        self,
+        task,
+        task_settings,
+        server,
+        sub="qsub",
+        stat="qstat -j",
+        kill="qdel",
+        prefix="#PBS",
+        db_file=None,
+    ):
         """Construct the PBS job submission object.
 
         Args:
@@ -853,8 +939,17 @@ class PBSSubmission(BatchSubmission):
             db_file (str, optional):  Data base for monitoring. Defaults to None.
 
         """
-        BatchSubmission.__init__(self, task, task_settings, server, db_file=db_file, sub=sub,
-                                 stat=stat, kill=kill, prefix=prefix)
+        BatchSubmission.__init__(
+            self,
+            task,
+            task_settings,
+            server,
+            db_file=db_file,
+            sub=sub,
+            stat=stat,
+            kill=kill,
+            prefix=prefix,
+        )
         self.name = self.name[0:15]
 
     def set_jobid(self):
@@ -876,7 +971,9 @@ class PBSSubmission(BatchSubmission):
             self.job_id = str(words[0])
             # self.job_id = str(words[2])
         else:
-            raise Exception("Expected " + str(expected_len) + " in output. Got " + str(len(words)))
+            raise Exception(
+                "Expected " + str(expected_len) + " in output. Got " + str(len(words))
+            )
 
     def set_job_name(self):
         """Set job name."""
@@ -891,8 +988,17 @@ class SlurmSubmission(BatchSubmission):
         BatchSubmission (_type_): _description_
     """
 
-    def __init__(self, task, task_settings, server, sub="sbatch", stat="squeue -j", kill="scancel",
-                 prefix="#SBATCH", db_file=None):
+    def __init__(
+        self,
+        task,
+        task_settings,
+        server,
+        sub="sbatch",
+        stat="squeue -j",
+        kill="scancel",
+        prefix="#SBATCH",
+        db_file=None,
+    ):
         """Construct SlurmSubmission.
 
         Args:
@@ -906,8 +1012,17 @@ class SlurmSubmission(BatchSubmission):
             db_file (_type_, optional):  Data base for monitoring. Defaults to None.
 
         """
-        BatchSubmission.__init__(self, task, task_settings, server, db_file=db_file, sub=sub,
-                                 stat=stat, kill=kill, prefix=prefix)
+        BatchSubmission.__init__(
+            self,
+            task,
+            task_settings,
+            server,
+            db_file=db_file,
+            sub=sub,
+            stat=stat,
+            kill=kill,
+            prefix=prefix,
+        )
         name = self.task.ecf_name.split("/")
         self.name = name[-1]
 
@@ -938,7 +1053,9 @@ class SlurmSubmission(BatchSubmission):
             # Set job id as the second element in answer
             self.job_id = str(words[-1])
         else:
-            raise Exception("Expected " + str(expected_len) + " in output. Got " + str(len(words)))
+            raise Exception(
+                "Expected " + str(expected_len) + " in output. Got " + str(len(words))
+            )
 
     def set_submit_cmd(self):
         """Set submit command."""
@@ -964,8 +1081,17 @@ class GridEngineSubmission(BatchSubmission):
         BatchSubmission (_type_): _description_
     """
 
-    def __init__(self, task, task_settings, server, db_file=None, sub="qsub", stat="qstat -j",
-                 kill="qdel", prefix="#$"):
+    def __init__(
+        self,
+        task,
+        task_settings,
+        server,
+        db_file=None,
+        sub="qsub",
+        stat="qstat -j",
+        kill="qdel",
+        prefix="#$",
+    ):
         """Construct the GridEngineSubmission object.
 
         Args:
@@ -978,8 +1104,17 @@ class GridEngineSubmission(BatchSubmission):
             kill (str, optional): Kill command. Defaults to "qdel".
             prefix (str, optional): SGE prefix. Defaults to "#$".
         """
-        BatchSubmission.__init__(self, task, task_settings, server, db_file=db_file, sub=sub,
-                                 stat=stat, kill=kill, prefix=prefix)
+        BatchSubmission.__init__(
+            self,
+            task,
+            task_settings,
+            server,
+            db_file=db_file,
+            sub=sub,
+            stat=stat,
+            kill=kill,
+            prefix=prefix,
+        )
         name = self.task.ecf_name.split("/")
         self.name = name[-1]
 
@@ -1010,7 +1145,9 @@ class GridEngineSubmission(BatchSubmission):
             # Set job id as the second element in answer
             self.job_id = str(words[2])
         else:
-            raise Exception("Expected " + str(expected_len) + " in output. Got " + str(len(words)))
+            raise Exception(
+                "Expected " + str(expected_len) + " in output. Got " + str(len(words))
+            )
 
     def set_job_name(self):
         """Set job name."""

@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
 """Implement the package's commands."""
-import os
 import json
+import os
 
-from .suites import SuiteDefinition
 from .logs import get_logger
 from .scheduler import EcflowServer, EcflowTask
-from .submission import EcflowSubmitTask, SubmitException, \
-                        KillException, StatusException, TaskSettings, \
-                        get_submission_object
+from .submission import (
+    EcflowSubmitTask,
+    KillException,
+    StatusException,
+    SubmitException,
+    TaskSettings,
+    get_submission_object,
+)
+from .suites import SuiteDefinition
 
 
 def run_forecast(args, config):
@@ -36,8 +41,14 @@ def start_suite(args, config):
     logger.info("Starting suite...")
 
     server = EcflowServer(args.ecf_host, args.ecf_port, logfile=args.logfile)
-    defs = SuiteDefinition(args.suite_name, args.joboutdir, args.ecf_files,
-                           args.submission_file, server.logfile, args.loglevel)
+    defs = SuiteDefinition(
+        args.suite_name,
+        args.joboutdir,
+        args.ecf_files,
+        args.submission_file,
+        server.logfile,
+        args.loglevel,
+    )
     def_file = f"{args.suite_name}.def"
     defs.save_as_defs(def_file)
 
@@ -101,8 +112,7 @@ def run_submit_ecflow_task(args, config):
         ecf_rid = os.getpid()
 
     try:
-        task = EcflowTask(ecf_name, ecf_tryno, ecf_pass, ecf_rid,
-                          submission_id)
+        task = EcflowTask(ecf_name, ecf_tryno, ecf_pass, ecf_rid, submission_id)
         sub = EcflowSubmitTask(task, submit_defs, server, joboutdir)
         sub.submit()
     except SubmitException as exc:

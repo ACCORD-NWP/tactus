@@ -1,16 +1,17 @@
 """Scheduler module."""
-from abc import ABC, abstractmethod
-import subprocess
-import os
-from datetime import datetime
-import signal
-import time
-import platform
-import traceback
-import sys
-import shutil
 import json
 import logging
+import os
+import platform
+import shutil
+import signal
+import subprocess
+import sys
+import time
+import traceback
+from abc import ABC, abstractmethod
+from datetime import datetime
+
 try:
     import ecflow
 except ModuleNotFoundError:
@@ -103,10 +104,7 @@ class EcflowServer(Server):
         self.ecf_port = ecf_port
         self.logfile = logfile
         self.ecf_client = ecflow.Client(self.ecf_host, self.ecf_port)
-        self.settings = {
-            "ECF_HOST": self.ecf_host,
-            "ECF_PORT": self.ecf_port
-        }
+        self.settings = {"ECF_HOST": self.ecf_host, "ECF_PORT": self.ecf_port}
 
     def start_server(self):
         """Start the server."""
@@ -166,9 +164,17 @@ class EcflowServer(Server):
         """
         self.update_log(task.ecf_name)
         self.update_log(task.submission_id)
-        logging.debug("%s %s %s %s %s", task.ecf_name, "add", "variable", "SUBMISSION_ID",
-                      task.submission_id)
-        self.ecf_client.alter(task.ecf_name, "add", "variable", "SUBMISSION_ID", task.submission_id)
+        logging.debug(
+            "%s %s %s %s %s",
+            task.ecf_name,
+            "add",
+            "variable",
+            "SUBMISSION_ID",
+            task.submission_id,
+        )
+        self.ecf_client.alter(
+            task.ecf_name, "add", "variable", "SUBMISSION_ID", task.submission_id
+        )
 
     def replace(self, suite_name, def_file):
         """Replace the suite name from def_file.
@@ -260,7 +266,7 @@ class EcflowServerFromFile(EcflowServer):
             json.dump(self.settings, server_file)
 
 
-class EcflowLogServer():
+class EcflowLogServer:
     """Ecflow log server."""
 
     def __init__(self, ecf_loghost, ecf_logport):
@@ -274,10 +280,12 @@ class EcflowLogServer():
         self.ecf_logport = ecf_logport
 
 
-class EcflowTask():
+class EcflowTask:
     """Ecflow scheduler task."""
 
-    def __init__(self, ecf_name, ecf_tryno, ecf_pass, ecf_rid, submission_id=None, ecf_timeout=20):
+    def __init__(
+        self, ecf_name, ecf_tryno, ecf_pass, ecf_rid, submission_id=None, ecf_timeout=20
+    ):
         """Construct a task running and communicating with ecflow server.
 
         Args:
@@ -404,8 +412,11 @@ class EcflowClient(object):
             self.client.set_child_path(task.ecf_name)
             self.client.set_child_password(task.ecf_pass)
             self.client.set_child_try_no(task.ecf_tryno)
-            logging.info("   Only wait %s seconds, if the server cannot be contacted "
-                         "(note default is 24 hours) before failing", str(task.ecf_timeout))
+            logging.info(
+                "   Only wait %s seconds, if the server cannot be contacted "
+                "(note default is 24 hours) before failing",
+                str(task.ecf_timeout),
+            )
             self.client.set_child_timeout(task.ecf_timeout)
         self.task = task
 
@@ -429,7 +440,7 @@ class EcflowClient(object):
     @staticmethod
     def at_time():
         """Generate time stamp."""
-        return datetime.fromtimestamp(time.time()).strftime('%H:%M:%S')
+        return datetime.fromtimestamp(time.time()).strftime("%H:%M:%S")
 
     def signal_handler(self, signum, extra=None):
         """Signal handler.
@@ -438,9 +449,11 @@ class EcflowClient(object):
             signum (_type_): _description_
             extra (_type_, optional): _description_. Defaults to None.
         """
-        logging.info('   Aborting: Signal handler called with signal %s', str(signum))
+        logging.info("   Aborting: Signal handler called with signal %s", str(signum))
         # self.ci.child_abort("Signal handler called with signal " + str(signum))
-        self.__exit__(Exception, "Signal handler called with signal " + str(signum), extra)
+        self.__exit__(
+            Exception, "Signal handler called with signal " + str(signum), extra
+        )
 
     def __enter__(self):
         """Enter the object.
@@ -448,7 +461,7 @@ class EcflowClient(object):
         Returns:
             _type_: _description_
         """
-        logging.info('Calling init at: %s', self.at_time())
+        logging.info("Calling init at: %s", self.at_time())
         # self.server.update_log(self.task.ecf_name + " init")
         if self.client is not None:
             self.client.child_init()
@@ -465,10 +478,14 @@ class EcflowClient(object):
         Returns:
             _type_: _description_
         """
-        logging.info("   Client:__exit__: ex_type: %s value: %s", str(ex_type), str(value))
+        logging.info(
+            "   Client:__exit__: ex_type: %s value: %s", str(ex_type), str(value)
+        )
         if ex_type is not None:
-            logging.info('Calling abort %s', self.at_time())
-            self.client.child_abort(f"Aborted with exception type {str(ex_type)}:{str(value)}")
+            logging.info("Calling abort %s", self.at_time())
+            self.client.child_abort(
+                f"Aborted with exception type {str(ex_type)}:{str(value)}"
+            )
             if tback is not None:
                 print(tback)
                 traceback.print_tb(tback, limit=1, file=sys.stdout)
@@ -488,7 +505,7 @@ class EcflowClient(object):
                 print("*** tb_lineno:", tback.tb_lineno)
                 self.server.update_log(self.task.ecf_name + " abort")
             return False
-        print('Calling complete at: ' + self.at_time())
+        print("Calling complete at: " + self.at_time())
         # self.server.update_log(self.task.ecf_name + " complete")
         if self.client is not None:
             self.client.child_complete()

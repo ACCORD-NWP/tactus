@@ -1,7 +1,8 @@
 """Default ecflow container."""
 import time
+
 from deode.logs import get_logger
-from deode.scheduler import EcflowServer, EcflowClient, EcflowTask
+from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
 
 
 def parse_ecflow_vars():
@@ -20,13 +21,13 @@ def parse_ecflow_vars():
         "SUBMISSION_ID": "%SUBMISSION_ID%",
         "SUBMISSION_FILE": "%SUBMISSION_FILE%",
         "SERVER_LOGFILE": "%SERVER_LOGFILE%",
-        "LOGLEVEL": "%LOGLEVEL%"
+        "LOGLEVEL": "%LOGLEVEL%",
     }
 
 
-'''
+"""
 %nopp"
-'''
+"""
 
 
 def default_main(**kwargs):
@@ -57,6 +58,6 @@ if __name__ == "__main__":
     kwargs_main = parse_ecflow_vars()
     default_main(**kwargs_main)
 
-'''
+"""
 %end"
-'''
+"""
