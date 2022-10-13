@@ -126,6 +126,9 @@ that the `-h` goes after the subcommand in this case).
 ```
 #!/usr/bin/bash
 
+# Load python
+module load python3/3.8.8-01
+
 # Clone DEODE prototype in ~/projects
 
 mkdir -p ~/projects
@@ -156,7 +159,10 @@ EOF
 # Find a port for your user id
 USERID=`id -u`
 ECF_PORT=$(( $USERID + 1500 ))
+echo "ECF_PORT=$ECF_PORT"
 
 # Start deode suite
 deode -loglevel debug start suite --name test_deode --ecf_host hpc-login --ecf_port $ECF_PORT --submit $HOME/projects/Deode-Prototype/hpc-login.json --logfile $HOME/projects/Deode-Prototype/log --joboutdir $HOME/test --ecf_files $HOME/projects/Deode-Prototype/ecf
 ```
+
+You can now open ecflow_ui and add hpc-login as the server with your port (value of $ECF_PORT)
