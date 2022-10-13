@@ -18,11 +18,17 @@ See also the [project's Wiki](https://source.coderefinery.org/deode/deode-protot
 * **Only for
 [Developer-Mode Installtion](#developer-mode-installation):**
 
-    * [`poetry`](https://python-poetry.org), which can be installed by running
+    * [`poetry`](https://python-poetry.org), which can be installed as follows:
+        * On Atos (`hpc-login`):
 
-            curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
+              module load python3/3.8.8-01
+              rm -rf ~/.cache/pypoetry/
+              curl -sSL https://install.python-poetry.org | python3 -
 
-        * On Atos (`hpc-login`), please load a python module with the appropriate version **before** installing `poetry`
+        * In other platforms, in general:
+
+              curl -sSL https://install.python-poetry.org | python3 -
+
 
 ### Installation
 
@@ -70,6 +76,10 @@ source code, or use code from a different branch than `master`.
 Installing in "developer mode" means that changes made in any of the package's
 source files become visible as soon as the package is reloaded.
 
+If you have problems installing `poetry`, you can install in development mode using `pip (>= v22.2.2)` as follows:
+
+    pip install -e .
+
 :wrench: **Recommendation to contributors:** Before making your first commit to
 the repo, please also run the following:
 
@@ -91,9 +101,8 @@ option), you will need a configuration file written in the
 [TOML](https://en.wikipedia.org/wiki/TOML) format.
 
 Please take a look at the
-[docs/minimal_config_example.toml](docs/minimal_config_example.toml) and
-[docs/more_complete_config_example.toml](docs/more_complete_config_example.toml)
-files, as well as the [project's Wiki](https://source.coderefinery.org/deode/deode-prototype/-/wikis/home), for more information about the configuration file.
+[docs/minimal_config_example.toml](docs/minimal_config_example.toml) file,
+as well as the [project's Wiki](https://source.coderefinery.org/deode/deode-prototype/-/wikis/home), for more information about the configuration file.
 
 
 `deode` assumes that one of the following (whichever is first encountered)
