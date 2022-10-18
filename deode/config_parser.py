@@ -25,6 +25,7 @@ from pydantic import (
     validator,
 )
 
+from . import PACKAGE_NAME
 from .datetime_utils import TimeWindowContainer, as_datetime
 
 logger = logging.getLogger(__name__)
@@ -36,7 +37,7 @@ def get_default_config_path():
         _fpath = Path(os.getenv("DEODE_CONFIG_PATH", "config.toml"))
         default_conf_path = _fpath.resolve(strict=True)
     except FileNotFoundError:
-        default_conf_path = Path(os.getenv("HOME")) / ".deode" / "config.toml"
+        default_conf_path = Path(os.getenv("HOME")) / f".{PACKAGE_NAME}" / "config.toml"
 
     return default_conf_path
 
@@ -158,7 +159,7 @@ class _GeneralSectionModel(_ConfigsBaseModel):
 
     data_rootdir: ParsedPath = Path(".")
     assimilation_times: _InputDatesModel
-    outdir: ParsedPath = Path(tempfile.gettempdir()).resolve() / "deode_output"
+    outdir: ParsedPath = Path(tempfile.gettempdir()).resolve() / f"{PACKAGE_NAME}_output"
 
 
 # "commands" section

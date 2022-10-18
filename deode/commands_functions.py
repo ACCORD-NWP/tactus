@@ -84,7 +84,7 @@ def run_submit_ecflow_task(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     Raise:
-        exc (deode.SubmitException): If submission was not successful
+        exc (.SubmitException): If submission was not successful
     """
     logger = get_logger(__name__, args.loglevel)
     logger.info("Submit task")
@@ -128,7 +128,7 @@ def run_status_ecflow_task(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     Raise:
-        exc (deode.SubmitException): If submission was not successful
+        exc (.SubmitException): If submission was not successful
     """
     logger = get_logger(__name__, args.loglevel)
     logger.info("Status task")
@@ -165,7 +165,7 @@ def run_kill_ecflow_task(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     Raise:
-        exc (deode.SubmitException): If submission was not successful
+        exc (.SubmitException): If submission was not successful
     """
     logger = get_logger(__name__, args.loglevel)
     logger.info("Status task")

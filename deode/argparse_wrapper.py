@@ -4,7 +4,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import __version__
+from . import __version__, PACKAGE_NAME
 from .commands_functions import (
     run_forecast,
     run_kill_ecflow_task,
@@ -52,7 +52,7 @@ def get_parsed_args(program_name="program", argv=None):
             + "(ii) './config.toml'. If both (i) and (ii) are missing, "
             + "then the default will become "
             + "'"
-            + str(Path("$HOME/.deode/config.toml"))
+            + str(Path(f"$HOME/.{PACKAGE_NAME}/config.toml"))
             + "'"
         ),
     )
