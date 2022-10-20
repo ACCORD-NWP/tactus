@@ -9,20 +9,17 @@ from collections import defaultdict
 from functools import cached_property, reduce
 from operator import getitem
 from pathlib import Path
-from typing import Any, List, Literal, Optional, Tuple, Union
+from typing import Literal, Optional, Tuple, Union
 
 import tomlkit
 from pandas.tseries.frequencies import to_offset
 from pydantic import (
     BaseModel,
     Extra,
-    NonNegativeFloat,
-    NonNegativeInt,
     PositiveFloat,
     PositiveInt,
     confloat,
-    root_validator,
-    validator,
+    root_validator
 )
 
 from . import PACKAGE_NAME
@@ -77,8 +74,11 @@ class _ConfigsBaseModel(BaseModel, extra=Extra.ignore, frozen=True):
     """Base model for all models defined in this file."""
 
     def __getattr__(self, items):
-        """Override so we can use, e.g., getattr(config, "general.time_windows.start.minute")."""
+        """ Get attribute.
 
+        Override so we can use,
+        e.g., getattr(config, "general.time_windows.start.minute").
+        """
         def regular_getattribute(obj, item):
             if type(obj) is type(self):
                 return super().__getattribute__(item)
@@ -125,6 +125,7 @@ class _InputDatesModel(_ConfigsBaseModel):
     cycle_length: PandasOffsetFreqStr = "3H"
     list: Optional[Tuple[InputDateTime, ...]]  # noqa: A003
 
+    # pylint: disable=E0213
     @root_validator()
     def _check_consistency_between_date_input_items(cls, values):  # noqa: N805
         date_list, start, end = values.get("list"), values.get("start"), values.get("end")

@@ -62,47 +62,47 @@ class SuiteDefinition(object):
 
         self.submission_file = submission_file
 
-        ecf_job_cmd = (
-            "deode submit "
-            "--submit %SUBMISSION_FILE% "
-            "--joboutdir %ECF_OUT% "
-            "--log %SERVER_LOGFILE% "
-            "--ecf_host %ECF_HOST% "
-            "--ecf_port %ECF_PORT% "
-            "--ecf_name %ECF_NAME% "
-            "--ecf_tryno %ECF_TRYNO% "
-            "--ecf_pass %ECF_PASS% "
-            "--ecf_rid %ECF_RID% "
-        )
+        # Commands started from the scheduler does not have full environment
+        ecf_job_cmd = "export PATH=$HOME/.local/bin:$PATH; " \
+            "deode-scheduler -loglevel debug submit " \
+            "--submit %SUBMISSION_FILE% " \
+            "--joboutdir %ECF_OUT% " \
+            "--log %SERVER_LOGFILE% " \
+            "--ecf_host %ECF_HOST% " \
+            "--ecf_port %ECF_PORT% " \
+            "--ecf_name %ECF_NAME% " \
+            "--ecf_tryno %ECF_TRYNO% " \
+            "--ecf_pass %ECF_PASS% " \
+            "--ecf_rid %ECF_RID% > " + ecf_jobout + ".submit 2>&1"
         self.ecf_job_cmd = ecf_job_cmd
-        ecf_status_cmd = (
-            "deode status "
-            "--submit %SUBMISSION_FILE% "
-            "--joboutdir %ECF_OUT% "
-            "--ecf_host %ECF_HOST% "
-            "--ecf_port %ECF_PORT% "
-            "--log %SERVER_LOGFILE% "
-            "--ecf_name %ECF_NAME% "
-            "--ecf_tryno %ECF_TRYNO% "
-            "--ecf_pass %ECF_PASS% "
-            "--ecf_rid %ECF_RID% "
-            "--submission_id %SUBMISSION_ID%"
-        )
+        ecf_status_cmd = "export PATH=$HOME/.local/bin:$PATH; " \
+            "deode-scheduler -loglevel debug status " \
+            "--submit %SUBMISSION_FILE% " \
+            "--joboutdir %ECF_OUT% " \
+            "--ecf_host %ECF_HOST% " \
+            "--ecf_port %ECF_PORT% " \
+            "--log %SERVER_LOGFILE% " \
+            "--ecf_name %ECF_NAME% " \
+            "--ecf_tryno %ECF_TRYNO% " \
+            "--ecf_pass %ECF_PASS% " \
+            "--ecf_rid %ECF_RID% " \
+            "--submission_id %SUBMISSION_ID% " \
+            "> " + ecf_jobout + ".status 2>&1"
 
         self.ecf_status_cmd = ecf_status_cmd
-        ecf_kill_cmd = (
-            "deode kill "
-            "--submit %SUBMISSION_FILE% "
-            "--joboutdir %ECF_OUT% "
-            "--ecf_host %ECF_HOST% "
-            "--ecf_port %ECF_PORT% "
-            "--log %SERVER_LOGFILE% "
-            "--ecf_name %ECF_NAME% "
-            "--ecf_tryno %ECF_TRYNO% "
-            "--ecf_pass %ECF_PASS% "
-            "--ecf_rid %ECF_RID% "
-            "--submission_id %SUBMISSION_ID%"
-        )
+        ecf_kill_cmd = "export PATH=$HOME/.local/bin:$PATH; " \
+            "deode-scheduler kill -loglevel debug status " \
+            "--submit %SUBMISSION_FILE% " \
+            "--joboutdir %ECF_OUT% " \
+            "--ecf_host %ECF_HOST% " \
+            "--ecf_port %ECF_PORT% " \
+            "--log %SERVER_LOGFILE% " \
+            "--ecf_name %ECF_NAME% " \
+            "--ecf_tryno %ECF_TRYNO% " \
+            "--ecf_pass %ECF_PASS% " \
+            "--ecf_rid %ECF_RID% " \
+            "--submission_id %SUBMISSION_ID%" \
+            "> " + ecf_jobout + ".kill 2>&1"
         self.ecf_kill_cmd = ecf_kill_cmd
 
         variables = {

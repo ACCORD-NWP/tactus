@@ -11,9 +11,11 @@ import time
 import traceback
 from abc import ABC, abstractmethod
 from datetime import datetime
-
+import sys
+import json
 try:
-    import ecflow
+    import ecflow  # noqa reportMissingImports
+    print(ecflow.__file__)
 except ModuleNotFoundError:
     ecflow = None
 
@@ -106,25 +108,60 @@ class EcflowServer(Server):
         self.ecf_client = ecflow.Client(self.ecf_host, self.ecf_port)
         self.settings = {"ECF_HOST": self.ecf_host, "ECF_PORT": self.ecf_port}
 
-    def start_server(self):
-        """Start the server."""
+    def start_server(self, remote=True):
+        """Start the server.
+
+        Args:
+            remote (bool, Remote access): Remoter access. Defaults to True.
+
+        Raises:
+            RuntimeError: _description_
+            RuntimeError: _description_
+            RuntimeError: _description_
+            Exception: _description_
+            RuntimeError: _description_
+            Exception: _description_
+        """
         logging.debug("Start EcFlow server")
         try:
+            logging.info("%s %s", self.ecf_host, self.ecf_port)
             self.ecf_client.ping()
             logging.info("EcFlow server is already running")
         except RuntimeError:
             logging.info("Re-Start EcFlow server")
             try:
                 # Start server
-                # self.ecf_client.restart_server()
-                cmd = shutil.which("ecflow_start")
-                if cmd is None:
-                    cmd = shutil.which("ecflow_start.sh")
-                if cmd is None:
-                    raise Exception("ecflow_start not found") from RuntimeError
-                cmd = cmd + " -p " + str(self.ecf_port)
+                # self.ecf_client.restart_server() #noqa E800
+
+                ssh = ""
+                if remote:
+                    ssh = "ssh " + self.ecf_host
+                start_script = "ecflow_start"
+                try:
+                    start_script = "ecflow_start"
+                    cmd = "which " + start_script
+                    if ssh != "":
+                        cmd = f'{ssh} "{cmd}"'
+                    logging.info("cmd: %s", cmd)
+                    ret = subprocess.call(cmd, shell=True)
+                    if ret != 0:
+                        raise RuntimeError from RuntimeError
+                except RuntimeError:
+                    try:
+                        start_script = "ecflow_start.sh"
+                        cmd = "which " + start_script
+                        if ssh != "":
+                            cmd = f'{ssh} "{cmd}"'
+                        logging.info("cmd: %s", cmd)
+                        ret = subprocess.call(cmd, shell=True)
+                        if ret != 0:
+                            raise RuntimeError from RuntimeError
+                    except RuntimeError:
+                        raise Exception("No start script found") from RuntimeError
+
+                cmd = f'{ssh} "{start_script} -p {str(self.ecf_port)}"'
                 logging.info(cmd)
-                ret = subprocess.call(cmd.split())
+                ret = subprocess.call(cmd, shell=True)
                 if ret != 0:
                     raise RuntimeError from RuntimeError
             except RuntimeError:
@@ -164,17 +201,10 @@ class EcflowServer(Server):
         """
         self.update_log(task.ecf_name)
         self.update_log(task.submission_id)
-        logging.debug(
-            "%s %s %s %s %s",
-            task.ecf_name,
-            "add",
-            "variable",
-            "SUBMISSION_ID",
-            task.submission_id,
-        )
+        logging.debug("%s %s %s %s %s", task.ecf_name, "add", "variable", "SUBMISSION_ID",
+                      task.submission_id)
         self.ecf_client.alter(
-            task.ecf_name, "add", "variable", "SUBMISSION_ID", task.submission_id
-        )
+            task.ecf_name, "add", "variable", "SUBMISSION_ID", task.submission_id)
 
     def replace(self, suite_name, def_file):
         """Replace the suite name from def_file.
@@ -283,9 +313,8 @@ class EcflowLogServer:
 class EcflowTask:
     """Ecflow scheduler task."""
 
-    def __init__(
-        self, ecf_name, ecf_tryno, ecf_pass, ecf_rid, submission_id=None, ecf_timeout=20
-    ):
+    def __init__(self, ecf_name, ecf_tryno, ecf_pass, ecf_rid, submission_id=None,
+                 ecf_timeout=20):
         """Construct a task running and communicating with ecflow server.
 
         Args:
@@ -407,16 +436,14 @@ class EcflowClient(object):
             self.client = None
         else:
             self.client = server.ecf_client
-            # self.ci.set_host_port("%ECF_HOST%", "%ECF_PORT%")
+            # self.ci.set_host_port("%ECF_HOST%", "%ECF_PORT%") #noqa E800
             self.client.set_child_pid(task.ecf_rid)
             self.client.set_child_path(task.ecf_name)
             self.client.set_child_password(task.ecf_pass)
             self.client.set_child_try_no(task.ecf_tryno)
             logging.info(
                 "   Only wait %s seconds, if the server cannot be contacted "
-                "(note default is 24 hours) before failing",
-                str(task.ecf_timeout),
-            )
+                "(note default is 24 hours) before failing", str(task.ecf_timeout))
             self.client.set_child_timeout(task.ecf_timeout)
         self.task = task
 
@@ -449,8 +476,8 @@ class EcflowClient(object):
             signum (_type_): _description_
             extra (_type_, optional): _description_. Defaults to None.
         """
-        logging.info("   Aborting: Signal handler called with signal %s", str(signum))
-        # self.ci.child_abort("Signal handler called with signal " + str(signum))
+        logging.info('   Aborting: Signal handler called with signal %s', str(signum))
+
         self.__exit__(
             Exception, "Signal handler called with signal " + str(signum), extra
         )
@@ -461,8 +488,8 @@ class EcflowClient(object):
         Returns:
             _type_: _description_
         """
-        logging.info("Calling init at: %s", self.at_time())
-        # self.server.update_log(self.task.ecf_name + " init")
+        logging.info('Calling init at: %s', self.at_time())
+        # self.server.update_log(self.task.ecf_name + " init") #noqa E800
         if self.client is not None:
             self.client.child_init()
         return self.client
@@ -482,10 +509,9 @@ class EcflowClient(object):
             "   Client:__exit__: ex_type: %s value: %s", str(ex_type), str(value)
         )
         if ex_type is not None:
-            logging.info("Calling abort %s", self.at_time())
+            logging.info('Calling abort %s', self.at_time())
             self.client.child_abort(
-                f"Aborted with exception type {str(ex_type)}:{str(value)}"
-            )
+                f"Aborted with exception type {str(ex_type)}:{str(value)}")
             if tback is not None:
                 print(tback)
                 traceback.print_tb(tback, limit=1, file=sys.stdout)
@@ -505,8 +531,8 @@ class EcflowClient(object):
                 print("*** tb_lineno:", tback.tb_lineno)
                 self.server.update_log(self.task.ecf_name + " abort")
             return False
-        print("Calling complete at: " + self.at_time())
-        # self.server.update_log(self.task.ecf_name + " complete")
+        print('Calling complete at: ' + self.at_time())
+        # self.server.update_log(self.task.ecf_name + " complete") #noqa E800
         if self.client is not None:
             self.client.child_complete()
         return False

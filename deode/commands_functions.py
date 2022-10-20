@@ -5,16 +5,10 @@ import os
 
 from .logs import get_logger
 from .scheduler import EcflowServer, EcflowTask
-from .submission import (
-    EcflowSubmitTask,
-    KillException,
-    StatusException,
-    SubmitException,
-    TaskSettings,
-    get_submission_object,
-)
+from .submission import EcflowSubmitTask, SubmitException, \
+                        TaskSettings, \
+                        get_submission_object
 from .suites import SuiteDefinition
-
 
 def run_forecast(args, config):
     """Implement the 'forecast' command.
@@ -126,9 +120,6 @@ def run_status_ecflow_task(args, config):
     Args:
         args (argparse.Namespace): Parsed command line arguments.
         config (.config_parser.ParsedConfig): Parsed config file contents.
-
-    Raise:
-        exc (.SubmitException): If submission was not successful
     """
     logger = get_logger(__name__, args.loglevel)
     logger.info("Status task")
@@ -163,9 +154,6 @@ def run_kill_ecflow_task(args, config):
     Args:
         args (argparse.Namespace): Parsed command line arguments.
         config (.config_parser.ParsedConfig): Parsed config file contents.
-
-    Raise:
-        exc (.SubmitException): If submission was not successful
     """
     logger = get_logger(__name__, args.loglevel)
     logger.info("Status task")

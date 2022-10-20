@@ -1,5 +1,4 @@
 """Job submission setup."""
-import logging
 import os
 import shutil
 import subprocess
@@ -141,6 +140,7 @@ class EcflowSubmitTask(object):
     def submit(self):
         """Sumit task."""
         try:
+            logging.debug("submit start")
             if "OUTPUT" not in self.task_settings.header:
                 self.task_settings.header.update({"OUTPUT": self.sub.set_output()})
             if "NAME" not in self.task_settings.header:
@@ -261,27 +261,16 @@ class TaskSettings(object):
                     if "task" in submit_exceptions[state]:
                         for task in submit_exceptions[state]["task"]:
                             if task == self.task.ecf_task:
-                                if (
-                                    submit_exceptions[state]["task"][task]
-                                    == "is_coldstart"
-                                ):
-                                    if self.coldstart:
-                                        self.complete = (
-                                            f"Task {task} complete due to cold start"
-                                        )
                     if "family" in submit_exceptions[state]:
                         for family in submit_exceptions[state]["family"]:
                             for ecf_family in self.task.ecf_families:
                                 if family == ecf_family:
-                                    if (
-                                        submit_exceptions[state]["family"][family]
-                                        == "is_coldstart"
-                                    ):
+                                    if submit_exceptions[state]["family"][family] == \
+                                            "is_coldstart":
                                         if self.coldstart:
-                                            self.complete = (
-                                                f"Family {family} complete due to "
-                                                "cold start"
-                                            )
+                                            self.complete = \
+                                                f"Family {family} complete due to " \
+                                                            "cold start"
 
     def process_settings(self):
         """Process the settings."""
@@ -306,9 +295,8 @@ class TaskSettings(object):
                 elif key == "HOST":
                     self.host = str(value)
                     if self.host != "0" and self.host != "1":
-                        raise Exception(
-                            "Expected a single or dual-host system. HOST=", self.host
-                        )
+                        raise Exception("Expected a single or dual-host system. HOST=",
+                                        self.host)
                 else:
                     self.header.update({key: value})
 
