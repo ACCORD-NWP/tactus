@@ -258,20 +258,7 @@ class TaskSettings(object):
         if submit_exceptions is not None:
             for state in submit_exceptions:
                 if state == "complete":
-                    if "task" in submit_exceptions[state]:
-                        for task in submit_exceptions[state]["task"]:
-                            if task == self.task.ecf_task:
-                    if "family" in submit_exceptions[state]:
-                        for family in submit_exceptions[state]["family"]:
-                            for ecf_family in self.task.ecf_families:
-                                if family == ecf_family:
-                                    if submit_exceptions[state]["family"][family] == \
-                                            "is_coldstart":
-                                        if self.coldstart:
-                                            self.complete = \
-                                                f"Family {family} complete due to " \
-                                                            "cold start"
-
+                    pass
     def process_settings(self):
         """Process the settings."""
         for key, value in self.task_settings.items():
