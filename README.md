@@ -130,7 +130,7 @@ and general `deode` options. For info about specific subcommands and the
 options that apply to them only, **please run `deode SUBCOMMAND -h`** (note
 that the `-h` goes after the subcommand in this case).
 
-### Example with pip for hpc-login
+### Example with pip for ecflow-gen-${USER}-001
 
 ```
 #!/usr/bin/bash
@@ -166,13 +166,17 @@ end = "2020-08-16 21:00:00+00:00"
 cycle_length = "3H"
 EOF
 
-# Find a port for your user id
-USERID=`id -u`
-ECF_PORT=$(( $USERID + 1500 ))
-echo "ECF_PORT=$ECF_PORT"
+ECF_HOST=`echo ecflow-gen-${USER}-001`
+# Not all arguments here are relly needed with troika. But not removed yet
+deode -loglevel debug start suite \
+--name test_deode \
+--ecf_host $ECF_HOST \
+--ecf_port 3141 \
+--submit $HOME/projects/Deode-Prototype/ecflow-gen.json \
+--logfile $HOME/projects/Deode-Prototype/log \
+--joboutdir $HOME/test \
+--ecf_files $HOME/projects/Deode-Prototype/ecf
 
-# Start deode suite
-deode -loglevel debug start suite --name test_deode --ecf_host hpc-login --ecf_port $ECF_PORT --submit $HOME/projects/Deode-Prototype/hpc-login.json --logfile $HOME/projects/Deode-Prototype/log --joboutdir $HOME/test --ecf_files $HOME/projects/Deode-Prototype/ecf
 ```
 
-You can now open ecflow_ui and add hpc-login as the server with your port (value of $ECF_PORT)
+You can now open ecflow_ui and add ecflow-gen-${USER}-001 as the server with port 3141

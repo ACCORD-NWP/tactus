@@ -1,3 +1,4 @@
+#!/usr/local/apps/python3/3.8.8-01/bin/python3
 """Default ecflow container."""
 import time
 
@@ -57,7 +58,6 @@ if __name__ == "__main__":
     # Get ecflow variables
     kwargs_main = parse_ecflow_vars()
     default_main(**kwargs_main)
-
 """
 %end"
 """

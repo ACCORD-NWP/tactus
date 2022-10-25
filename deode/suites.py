@@ -63,49 +63,17 @@ class SuiteDefinition(object):
         self.submission_file = submission_file
 
         # Commands started from the scheduler does not have full environment
-        ecf_job_cmd = "export PATH=$HOME/.local/bin:$PATH; " \
-            "deode-scheduler -loglevel debug submit " \
-            "--submit %SUBMISSION_FILE% " \
-            "--joboutdir %ECF_OUT% " \
-            "--log %SERVER_LOGFILE% " \
-            "--ecf_host %ECF_HOST% " \
-            "--ecf_port %ECF_PORT% " \
-            "--ecf_name %ECF_NAME% " \
-            "--ecf_tryno %ECF_TRYNO% " \
-            "--ecf_pass %ECF_PASS% " \
-            "--ecf_rid %ECF_RID% > " + ecf_jobout + ".submit 2>&1"
+        ecf_job_cmd = "%TROIKA% -c %TROIKA_CONFIG% submit -o %ECF_JOBOUT% %SCHOST% " \
+            "%ECF_JOB%"
         self.ecf_job_cmd = ecf_job_cmd
-        ecf_status_cmd = "export PATH=$HOME/.local/bin:$PATH; " \
-            "deode-scheduler -loglevel debug status " \
-            "--submit %SUBMISSION_FILE% " \
-            "--joboutdir %ECF_OUT% " \
-            "--ecf_host %ECF_HOST% " \
-            "--ecf_port %ECF_PORT% " \
-            "--log %SERVER_LOGFILE% " \
-            "--ecf_name %ECF_NAME% " \
-            "--ecf_tryno %ECF_TRYNO% " \
-            "--ecf_pass %ECF_PASS% " \
-            "--ecf_rid %ECF_RID% " \
-            "--submission_id %SUBMISSION_ID% " \
-            "> " + ecf_jobout + ".status 2>&1"
-
+        ecf_status_cmd = "%TROIKA% -c %TROIKA_CONFIG% monitor %SCHOST% %ECF_JOB%"
         self.ecf_status_cmd = ecf_status_cmd
-        ecf_kill_cmd = "export PATH=$HOME/.local/bin:$PATH; " \
-            "deode-scheduler kill -loglevel debug status " \
-            "--submit %SUBMISSION_FILE% " \
-            "--joboutdir %ECF_OUT% " \
-            "--ecf_host %ECF_HOST% " \
-            "--ecf_port %ECF_PORT% " \
-            "--log %SERVER_LOGFILE% " \
-            "--ecf_name %ECF_NAME% " \
-            "--ecf_tryno %ECF_TRYNO% " \
-            "--ecf_pass %ECF_PASS% " \
-            "--ecf_rid %ECF_RID% " \
-            "--submission_id %SUBMISSION_ID%" \
-            "> " + ecf_jobout + ".kill 2>&1"
+        ecf_kill_cmd = "%TROIKA% -c %TROIKA_CONFIG% kill %SCHOST% %ECF_JOB%"
         self.ecf_kill_cmd = ecf_kill_cmd
 
         variables = {
+            "QUEUE": "nf",
+            "SCHOST": "hpc",
             "ECF_EXTN": ".py",
             "ECF_FILES": self.ecf_files,
             "ECF_INCLUDE": self.ecf_include,
@@ -125,7 +93,11 @@ class SuiteDefinition(object):
         self.suite = EcflowSuite(name, variables=variables)
 
         family = EcflowSuiteFamily("TestFamily", self.suite)
-        EcflowSuiteTask("Background", family, ecf_files=self.ecf_files, ecf_timeout=5)
+        # Background dos not work. Deode is ot able to run on vm with shared HOME as
+        # hpc-login
+        #EcflowSuiteTask("Background", family, ecf_files=self.ecf_files, ecf_timeout=5,
+        #                variables={"SCHOST": "localhost"})
+
         EcflowSuiteTask("Forecast", family, ecf_files=self.ecf_files, ecf_timeout=5)
 
     def save_as_defs(self, def_file):
