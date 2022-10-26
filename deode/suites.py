@@ -71,6 +71,8 @@ class SuiteDefinition(object):
         ecf_kill_cmd = "%TROIKA% -c %TROIKA_CONFIG% kill %SCHOST% %ECF_JOB%"
         self.ecf_kill_cmd = ecf_kill_cmd
 
+        troika = "/opt/troika/bin/troika"
+        troika_config = "/opt/troika/etc/troika.yml"
         variables = {
             "QUEUE": "nf",
             "SCHOST": "hpc",
@@ -88,6 +90,8 @@ class SuiteDefinition(object):
             "SUBMISSION_FILE": self.submission_file,
             "SERVER_LOGFILE": server_logfile,
             "LOGLEVEL": loglevel,
+            "TROIKA": troika,
+            "TROIKA_CONFIG": troika_config
         }
 
         self.suite = EcflowSuite(name, variables=variables)
