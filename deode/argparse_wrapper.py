@@ -7,9 +7,6 @@ from pathlib import Path
 from . import __version__, PACKAGE_NAME
 from .commands_functions import (
     run_forecast,
-    run_kill_ecflow_task,
-    run_status_ecflow_task,
-    run_submit_ecflow_task,
     show_config,
     start_suite,
 )
@@ -88,196 +85,6 @@ def get_parsed_args(program_name="program", argv=None):
     )
     parser_forecast.set_defaults(run_command=run_forecast)
 
-    ###############################################
-    # Configure parser for the "submit" command #
-    ###############################################
-    # Configure the main parser to handle the commands
-    parser_submit = subparsers.add_parser(
-        "submit",
-        help="Submit a task.",
-    )
-    parser_submit.add_argument(
-        "--submit",
-        "-sub",
-        dest="submission_file",
-        type=str,
-        help="File with submission settings",
-        required=False,
-    )
-    parser_submit.add_argument(
-        "--joboutdir",
-        "-dir",
-        dest="joboutdir",
-        type=str,
-        help="Ecflow JOBOUTDIR",
-        required=False,
-    )
-    parser_submit.add_argument(
-        "--ecf_host",
-        "-host",
-        type=str,
-        dest="ecf_host",
-        help="Ecflow host",
-        required=False,
-        default=None,
-    )
-    parser_submit.add_argument(
-        "--ecf_port",
-        "-port",
-        type=int,
-        dest="ecf_port",
-        help="Ecflow port",
-        required=False,
-        default=None,
-    )
-    parser_submit.add_argument(
-        "--log", dest="logfile", type=str, help="Server logfile", required=True
-    )
-    parser_submit.add_argument(
-        "--ecf_name", type=str, help="Name of ECF Task", required=True
-    )
-    parser_submit.add_argument(
-        "--ecf_tryno", type=str, help="ECF try number", required=True
-    )
-    parser_submit.add_argument("--ecf_pass", type=str, help="ECF task password")
-    parser_submit.add_argument(
-        "--ecf_rid",
-        nargs="?",
-        type=str,
-        default=None,
-        required=False,
-        help="ECF remote id",
-    )
-    parser_submit.set_defaults(run_command=run_submit_ecflow_task)
-
-    # Status
-    parser_status = subparsers.add_parser(
-        "status",
-        help="Status of a task.",
-    )
-    parser_status.add_argument(
-        "--submit",
-        "-sub",
-        dest="submission_file",
-        type=str,
-        help="File with submission settings",
-        required=True,
-    )
-    parser_status.add_argument(
-        "--joboutdir",
-        "-dir",
-        dest="joboutdir",
-        type=str,
-        help="Ecflow JOBOUTDIR",
-        required=False,
-    )
-    parser_status.add_argument(
-        "--log", dest="logfile", type=str, help="Server logfile", required=True
-    )
-    parser_status.add_argument(
-        "--ecf_host",
-        "-host",
-        type=str,
-        dest="ecf_host",
-        help="Ecflow host",
-        required=False,
-        default=None,
-    )
-    parser_status.add_argument(
-        "--ecf_port",
-        "-port",
-        type=int,
-        dest="ecf_port",
-        help="Ecflow port",
-        required=False,
-        default=None,
-    )
-    parser_status.add_argument(
-        "--ecf_name", type=str, help="Name of ECF Task", required=True
-    )
-    parser_status.add_argument(
-        "--ecf_tryno", type=str, help="ECF try number", required=True
-    )
-    parser_status.add_argument(
-        "--ecf_pass", type=str, help="ECF task password", required=False
-    )
-    parser_status.add_argument(
-        "--ecf_rid",
-        nargs="?",
-        type=str,
-        default=None,
-        required=False,
-        help="ECF remote id",
-    )
-    parser_status.add_argument(
-        "--submission_id", type=str, help="SUBMISSION_ID", required=True
-    )
-    parser_status.set_defaults(run_command=run_status_ecflow_task)
-
-    # Kill
-    parser_kill = subparsers.add_parser(
-        "kill",
-        help="Kill a task.",
-    )
-    parser_kill.add_argument(
-        "--submit",
-        "-sub",
-        dest="submission_file",
-        type=str,
-        help="File with submission settings",
-        required=True,
-    )
-    parser_kill.add_argument(
-        "--joboutdir",
-        "-dir",
-        dest="joboutdir",
-        type=str,
-        help="Ecflow JOBOUTDIR",
-        required=True,
-    )
-    parser_kill.add_argument(
-        "--ecf_host",
-        "-host",
-        type=str,
-        dest="ecf_host",
-        help="Ecflow host",
-        required=False,
-        default=None,
-    )
-    parser_kill.add_argument(
-        "--ecf_port",
-        "-port",
-        type=int,
-        dest="ecf_port",
-        help="Ecflow port",
-        required=False,
-        default=None,
-    )
-    parser_kill.add_argument(
-        "--log", dest="logfile", type=str, help="Server logfile", required=True
-    )
-    parser_kill.add_argument(
-        "--ecf_name", type=str, help="Name of ECF Task", required=True
-    )
-    parser_kill.add_argument(
-        "--ecf_tryno", type=str, help="ECF try number", required=True
-    )
-    parser_kill.add_argument(
-        "--ecf_pass", type=str, help="ECF task password", required=False
-    )
-    parser_kill.add_argument(
-        "--ecf_rid",
-        nargs="?",
-        type=str,
-        default=None,
-        required=False,
-        help="ECF remote id",
-    )
-    parser_kill.add_argument(
-        "--submission_id", type=str, help="SUBMISSION_ID", required=True
-    )
-    parser_kill.set_defaults(run_command=run_kill_ecflow_task)
-
     ##########################################
     # Configure parser for the "start" command #
     ##########################################
@@ -316,6 +123,14 @@ def get_parsed_args(program_name="program", argv=None):
         type=int,
         dest="ecf_port",
         help="Ecflow port",
+        required=False,
+        default=None,
+    )
+    parser_start_suite.add_argument(
+        "--start_command",
+        type=str,
+        dest="start_command",
+        help="Start command for server",
         required=False,
         default=None,
     )

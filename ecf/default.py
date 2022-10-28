@@ -1,28 +1,23 @@
-#!/usr/local/apps/python3/3.8.8-01/bin/python3
 """Default ecflow container."""
 import time
 
 from deode.logs import get_logger
 from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
-
+#@ENV_SUB@
 
 def parse_ecflow_vars():
     """Parse the ecflow variables."""
     print("%ECF_KILL_CMD%")
     print("%ECF_STATUS_CMD%")
     return {
-        "HOST": "@HOST_TO_BE_SUBSTITUTED@",
-        "WRAPPER": "@WRAPPER_TO_BE_SUBSTITUTED@",
         "ECF_HOST": "%ECF_HOST%",
         "ECF_PORT": "%ECF_PORT%",
         "ECF_NAME": "%ECF_NAME%",
         "ECF_PASS": "%ECF_PASS%",
         "ECF_TRYNO": "%ECF_TRYNO%",
         "ECF_RID": "%ECF_RID%",
-        "SUBMISSION_ID": "%SUBMISSION_ID%",
-        "SUBMISSION_FILE": "%SUBMISSION_FILE%",
-        "SERVER_LOGFILE": "%SERVER_LOGFILE%",
-        "LOGLEVEL": "%LOGLEVEL%",
+        "ECF_TIMEOUT": "%ECF_TIMEOUT%",
+        "LOGLEVEL": "%LOGLEVEL%"
     }
 
 
@@ -38,15 +33,14 @@ def default_main(**kwargs):
 
     ecf_host = kwargs.get("ECF_HOST")
     ecf_port = kwargs.get("ECF_PORT")
-    server_logfile = kwargs.get("SERVER_LOGFILE")
-    server = EcflowServer(ecf_host, ecf_port, server_logfile)
+    server = EcflowServer(ecf_host, ecf_port)
 
     ecf_name = kwargs.get("ECF_NAME")
     ecf_pass = kwargs.get("ECF_PASS")
     ecf_tryno = kwargs.get("ECF_TRYNO")
     ecf_rid = kwargs.get("ECF_RID")
-    submission_id = kwargs.get("SUBMISSION_ID")
-    task = EcflowTask(ecf_name, ecf_tryno, ecf_pass, ecf_rid, submission_id)
+    ecf_timeout = kwargs.get("ECF_TIMEOUT")
+    task = EcflowTask(ecf_name, ecf_tryno, ecf_pass, ecf_rid, ecf_timeout=ecf_timeout)
 
     # This will also handle call to sys.exit(), i.e. Client.__exit__ will still be called.
     with EcflowClient(server, task):
