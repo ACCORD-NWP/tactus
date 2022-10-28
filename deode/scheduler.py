@@ -200,8 +200,7 @@ class EcflowLogServer:
 class EcflowTask:
     """Ecflow scheduler task."""
 
-    def __init__(self, ecf_name, ecf_tryno, ecf_pass, ecf_rid, submission_id=None,
-                 ecf_timeout=20):
+    def __init__(self, ecf_name, ecf_tryno, ecf_pass, ecf_rid, ecf_timeout=20):
         """Construct a task running and communicating with ecflow server.
 
         Args:

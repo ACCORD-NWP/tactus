@@ -139,7 +139,7 @@ class TaskSettings(object):
                 keys.append(key)
         logger.debug(keys)
         for key, value in self.recursive_items(task_settings):
-            logger.debug("key=%s value=%s",key, value)
+            logger.debug("key=%s value=%s", key, value)
             if key in keys:
                 logger.debug("update %s %s", key, value)
                 settings.update({key: value})
@@ -200,6 +200,43 @@ class TaskSettingsJson(TaskSettings):
         with open(submission_defs_file, mode="r", encoding="utf-8") as file_handler:
             submission_defs = json.load(file_handler)
         TaskSettings.__init__(self, submission_defs)
+
+
+class NoSchedulerSubmission():
+    """Create and submit job without a scheduler"""
+
+    def __init__(self, task_settings):
+        """Construct the task specific settings.
+
+        Args:
+             submission_defs(dict): Submission definitions
+        """
+        self.task_settings = task_settings
+
+    def submit(self, task, template_job, task_job, output, job_type,
+               troika="troika",
+               troika_config="/opt/troika/etc/troika.yml"):
+        """Submit task.
+
+        Args:
+            task (str): Task name
+            template_job (str): Task template job file
+            task_job (str): Task job file
+            output(str): Output file
+            job_type (str): Job type
+            troika (str, optional): troika binary. Defaults to "troika".
+            troika_config (str, optional): Troika config file.
+                                           Defaults to "/opt/troika/etc/troika.yml".
+
+        Raises:
+            Exception: Submission failure
+        """
+        self.task_settings.parse_job(task, template_job, task_job)
+        cmd = f"{troika} -c {troika_config} submit {job_type} {task_job} -o {output}"
+        try:
+            subprocess.check_call(cmd.split())
+        except Exception as exc:
+            raise Exception(f"Submission failed with {repr(exc)}") from exc
 
 
 class SuiteDefinition(object):
@@ -264,20 +301,17 @@ class SuiteDefinition(object):
             f"-o {ecf_micro}ECF_JOBOUT{ecf_micro} " \
             f"{ecf_micro}SCHOST{ecf_micro} " \
             f"{ecf_micro}ECF_JOB{ecf_micro}"
-        # ecf_job_cmd = "%TROIKA% -c %TROIKA_CONFIG% submit -o %ECF_JOBOUT% %SCHOST% "
         # %ECF_JOB%"
         self.ecf_job_cmd = ecf_job_cmd
         ecf_status_cmd = f"{ecf_micro}TROIKA{ecf_micro} " \
             f"-c {ecf_micro}TROIKA_CONFIG{ecf_micro} monitor " \
             f"{ecf_micro}SCHOST{ecf_micro} " \
             f"{ecf_micro}ECF_JOB{ecf_micro}"
-        # ecf_status_cmd = "%TROIKA% -c %TROIKA_CONFIG% monitor %SCHOST% %ECF_JOB%"
         self.ecf_status_cmd = ecf_status_cmd
         ecf_kill_cmd = f"{ecf_micro}TROIKA{ecf_micro} " \
             f"-c {ecf_micro}TROIKA_CONFIG{ecf_micro} kill " \
             f"{ecf_micro}SCHOST{ecf_micro} " \
             f"{ecf_micro}ECF_JOB{ecf_micro}"
-        # ecf_kill_cmd = "%TROIKA% -c %TROIKA_CONFIG% kill %SCHOST% %ECF_JOB%"
         self.ecf_kill_cmd = ecf_kill_cmd
 
         troika = "/opt/troika/bin/troika"

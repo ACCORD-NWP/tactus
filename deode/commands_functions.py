@@ -3,7 +3,7 @@
 
 from .logs import get_logger
 from .scheduler import EcflowServer
-from .suites import SuiteDefinition, TaskSettingsJson
+from .suites import SuiteDefinition, TaskSettingsJson, NoSchedulerSubmission
 
 
 def run_forecast(args, config):
@@ -16,6 +16,10 @@ def run_forecast(args, config):
     """
     logger = get_logger(__name__, args.loglevel)
     logger.info("Running forecast...")
+    submission_defs = TaskSettingsJson(args.submission_file)
+    sub = NoSchedulerSubmission(submission_defs)
+    sub.submit(args.task, args.template_job, args.task_job, args.output, args.job_type,
+               args.troika, args.troika_config)
     logger.info("Done with forecast.")
 
 

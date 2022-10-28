@@ -25,7 +25,7 @@
     pydantic = "^1.9.0"
     pyproj = "^3.3.0"
     tomlkit = "^0.8.0"
-    #ecflow = "^5.9.0"
+    troika = {git = "https://git.ecmwf.int/scm/ecsdk/troika.git"}
 
 [tool.poetry.dev-dependencies]
     black = "^22.1.0"
