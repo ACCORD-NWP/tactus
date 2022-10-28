@@ -14,231 +14,6 @@ except ImportError:
 logger = get_logger(__name__, "DEBUG")
 
 
-class TaskSettings(object):
-    """Set the task specific setttings."""
-
-    def __init__(self, submission_defs):
-        """Construct the task specific settings.
-
-        Args:
-             submission_defs(dict): Submission definitions
-        """
-        self.submission_defs = submission_defs
-
-    def parse_submission_defs(self, task):
-        """"Parse the submssion definitions.
-
-        Returns:
-            dict: parsed setting
-        """
-        task_settings = {
-            "BATCH": {},
-            "ENV": {}
-        }
-        all_defs = self.submission_defs
-        submit_types = all_defs["submit_types"]
-        default_submit_type = all_defs["default_submit_type"]
-        task_submit_type = None
-        for s_t in submit_types:
-            if s_t in all_defs and "tasks" in all_defs[s_t]:
-                for tname in all_defs[s_t]["tasks"]:
-                    if tname == task:
-                        task_submit_type = s_t
-        if task_submit_type is None:
-            task_submit_type = default_submit_type
-
-        if task_submit_type in all_defs:
-            for setting in all_defs[task_submit_type]:
-                if setting != "tasks":
-                    task_settings.update({setting: all_defs[task_submit_type][setting]})
-
-        # TODO do it recursively
-        if "task_exceptions" in all_defs:
-            if task in all_defs["task_exceptions"]:
-                keywords = ["BATCH", "ENV"]
-                for kword in keywords:
-                    if kword in all_defs["task_exceptions"][task]:
-                        kword_settings = all_defs["task_exceptions"][task][kword]
-                        for key, value in kword_settings.items():
-                            if key in task_settings:
-                                logger.warning("key=%s already exists in "
-                                    "task_settings", key)
-                            task_settings[kword].update({key: value})
-
-        logger.debug(task_settings)
-        return task_settings
-
-    def get_task_settings(self, task, key=None, variables=None, ecf_micro="%"):
-        """Get task settings.
-
-        Args:
-            task (_type_): _description_
-            key (_type_, optional): _description_. Defaults to None.
-            variables (_type_, optional): _description_. Defaults to None.
-            ecf_micro (str, optional): _description_. Defaults to "%".
-
-        Returns:
-            _type_: _description_
-        """
-        task_settings = self.parse_submission_defs(task)
-        if key is None:
-            return task_settings
-        else:
-            if key in task_settings:
-                m_task_settings = {}
-                logger.debug(type(task_settings[key]))
-                if isinstance(task_settings[key], dict):
-                    for setting, value in task_settings[key].items():
-                        logger.debug("%s %s variables: %s", setting, value, variables)
-                        if variables is not None:
-                            if setting in variables:
-                                value = f"{ecf_micro}{setting}{ecf_micro}"
-                                logger.debug(value)
-                        m_task_settings.update({setting: value})
-                    logger.debug(m_task_settings)
-                    return m_task_settings
-                else:
-                    value = task_settings[key]
-                    if variables is not None:
-                        if key in variables:
-                            value = f"{ecf_micro}{variables[setting]}{ecf_micro}"
-                    return value
-            return None
-
-    def recursive_items(self, dictionary):
-        """Recursive loop of dict.
-
-        Args:
-            dictionary (_type_): _description_
-
-        Yields:
-            _type_: _description_
-        """
-        for key, value in dictionary.items():
-            if isinstance(value, dict):
-                yield (key, value)
-                yield from self.recursive_items(value)
-            else:
-                yield (key, value)
-
-    def get_settings(self, task):
-        """Get the settings.
-
-        Args:
-            task (_type_): _description_
-
-        Returns:
-            _type_: _description_
-        """
-        settings = {}
-        task_settings = self.parse_submission_defs(task)
-        keys = []
-        for key, value in self.recursive_items(task_settings):
-            if isinstance(value, str):
-                logger.debug(key)
-                keys.append(key)
-        logger.debug(keys)
-        for key, value in self.recursive_items(task_settings):
-            logger.debug("key=%s value=%s", key, value)
-            if key in keys:
-                logger.debug("update %s %s", key, value)
-                settings.update({key: value})
-        return settings
-
-    def parse_job(self, task, input_template_job, task_job, variables=None,
-                  ecf_micro='%'):
-        """Read default job and change interpretor.
-
-        Args:
-            task(str): Task name
-            input_template_job (str): Input container template.
-            task_job (str): Task container
-            variables (_type_, optional): _description_. Defaults to None.
-            ecf_micro (str, optional): _description_. Defaults to '%'.
-
-        """
-        interpreter = self.get_task_settings(task, "INTERPRETER")
-        logger.debug(interpreter)
-        if interpreter is None:
-            cmd = ['type', 'python3']
-            returned_output = \
-                subprocess.check_output(cmd).decode("utf-8").strip().split(' ')[-1]
-            interpreter = f"#!{returned_output}"
-
-        logger.debug(interpreter)
-        with open(input_template_job, mode="r", encoding="utf-8") as file_handler:
-            input_content = file_handler.read()
-        dir_name = os.path.dirname(os.path.realpath(task_job))
-        if not os.path.exists(dir_name):
-            os.makedirs(dir_name, exist_ok=True)
-        with open(task_job, mode="w", encoding="utf-8") as file_handler:
-            file_handler.write(f"{interpreter}\n")
-            batch_settings = self.get_task_settings(task, "BATCH", variables=variables,
-                                                    ecf_micro=ecf_micro)
-            logger.debug("batch settings %s", batch_settings)
-            for __, b_setting in batch_settings.items():
-                file_handler.write(f"{b_setting}\n")
-            env_settings = self.get_task_settings(task, "ENV", variables=variables,
-                                                  ecf_micro=ecf_micro)
-            logger.debug(env_settings)
-            python_task_env = ""
-            for __, e_setting in env_settings.items():
-                python_task_env = python_task_env + f"{e_setting}\n"
-            input_content = input_content.replace("#@ENV_SUB@", python_task_env)
-            file_handler.write(input_content)
-
-
-class TaskSettingsJson(TaskSettings):
-    """Set the task specific setttings."""
-
-    def __init__(self, submission_defs_file):
-        """Construct the task specific settings.
-
-        Args:
-            task (str): Submission definition json file
-        """
-        with open(submission_defs_file, mode="r", encoding="utf-8") as file_handler:
-            submission_defs = json.load(file_handler)
-        TaskSettings.__init__(self, submission_defs)
-
-
-class NoSchedulerSubmission():
-    """Create and submit job without a scheduler"""
-
-    def __init__(self, task_settings):
-        """Construct the task specific settings.
-
-        Args:
-             submission_defs(dict): Submission definitions
-        """
-        self.task_settings = task_settings
-
-    def submit(self, task, template_job, task_job, output, job_type,
-               troika="troika",
-               troika_config="/opt/troika/etc/troika.yml"):
-        """Submit task.
-
-        Args:
-            task (str): Task name
-            template_job (str): Task template job file
-            task_job (str): Task job file
-            output(str): Output file
-            job_type (str): Job type
-            troika (str, optional): troika binary. Defaults to "troika".
-            troika_config (str, optional): Troika config file.
-                                           Defaults to "/opt/troika/etc/troika.yml".
-
-        Raises:
-            Exception: Submission failure
-        """
-        self.task_settings.parse_job(task, template_job, task_job)
-        cmd = f"{troika} -c {troika_config} submit {job_type} {task_job} -o {output}"
-        try:
-            subprocess.check_call(cmd.split())
-        except Exception as exc:
-            raise Exception(f"Submission failed with {repr(exc)}") from exc
-
-
 class SuiteDefinition(object):
     """The definition of the suite."""
 
@@ -247,6 +22,7 @@ class SuiteDefinition(object):
         suite_name,
         joboutdir,
         ecf_files,
+        config,
         task_settings,
         loglevel,
         ecf_home=None,
@@ -329,6 +105,7 @@ class SuiteDefinition(object):
             "ECF_JOBOUT": self.ecf_jobout,
             "ECF_TIMEOUT": 20,
             "LOGLEVEL": loglevel,
+            "CONFIG": str(config),
             "TROIKA": troika,
             "TROIKA_CONFIG": troika_config
         }
@@ -345,13 +122,13 @@ class SuiteDefinition(object):
         logger.debug(self.task_settings.get_task_settings("Forecast"))
 
         variables = {"ECF_TIMEOUT": 5}
-        EcflowSuiteTask("Forecast", family, self.task_settings, ecf_files,
+        EcflowSuiteTask("Forecast", family, config, self.task_settings, ecf_files,
                         input_template=input_template, variables=variables)
         family2 = EcflowSuiteFamily("TestFamily2", family, ecf_files)
         variables = {"ECF_TIMEOUT": 10}
-        EcflowSuiteTask("Forecast", family2, self.task_settings, ecf_files,
+        EcflowSuiteTask("Forecast", family2, config, self.task_settings, ecf_files,
                         input_template=input_template, variables=variables)
-        EcflowSuiteTask("Serial", family2, self.task_settings, ecf_files,
+        EcflowSuiteTask("Serial", family2, config, self.task_settings, ecf_files,
                         input_template=input_template)
 
     def save_as_defs(self, def_file):
@@ -478,8 +255,8 @@ class EcflowSuiteTask(EcflowNode):
         EcflowNode (EcflowNodeContainer): The node container.
     """
 
-    def __init__(self, name, parent, task_settings, ecf_files, input_template=None,
-                 parse=True, variables=None, ecf_micro="%"):
+    def __init__(self, name, parent, config, task_settings, ecf_files,
+                 input_template=None, parse=True, variables=None, ecf_micro="%"):
         """Constuct the EcflowSuiteTask.
 
         Args:
@@ -503,7 +280,7 @@ class EcflowSuiteTask(EcflowNode):
             for var, value in variables.items():
                 logger.debug("var=%s value=%s", var, value)
                 self.ecf_node.add_variable(var, value)
-            task_settings.parse_job(name, input_template, task_container,
+            task_settings.parse_job(name, config, input_template, task_container,
                                     variables=variables, ecf_micro=ecf_micro)
         else:
             if not os.path.exists(task_container):

@@ -311,7 +311,6 @@ class EcflowClient(object):
             _type_: _description_
         """
         logger.info('Calling init at: %s', self.at_time())
-        # self.server.update_log(self.task.ecf_name + " init") #noqa E800
         if self.client is not None:
             self.client.child_init()
         return self.client
@@ -351,7 +350,6 @@ class EcflowClient(object):
                 print("*** format_tb:")
                 print(repr(traceback.format_tb(tback)))
                 print("*** tb_lineno:", tback.tb_lineno)
-                self.server.update_log(self.task.ecf_name + " abort")
             return False
         print('Calling complete at: ' + self.at_time())
         # self.server.update_log(self.task.ecf_name + " complete") #noqa E800

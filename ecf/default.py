@@ -1,9 +1,9 @@
 """Default ecflow container."""
-import time
-
 from deode.logs import get_logger
 from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
+from deode.discover_task import get_task
 #@ENV_SUB@
+
 
 def parse_ecflow_vars():
     """Parse the ecflow variables."""
@@ -17,7 +17,8 @@ def parse_ecflow_vars():
         "ECF_TRYNO": "%ECF_TRYNO%",
         "ECF_RID": "%ECF_RID%",
         "ECF_TIMEOUT": "%ECF_TIMEOUT%",
-        "LOGLEVEL": "%LOGLEVEL%"
+        "LOGLEVEL": "%LOGLEVEL%",
+        "CONFIG": "%CONFIG%",
     }
 
 
@@ -31,6 +32,7 @@ def default_main(**kwargs):
     loglevel = kwargs.get("LOGLEVEL")
     logger = get_logger(__name__, loglevel)
 
+    config = kwargs.get("CONFIG")
     ecf_host = kwargs.get("ECF_HOST")
     ecf_port = kwargs.get("ECF_PORT")
     server = EcflowServer(ecf_host, ecf_port)
@@ -44,14 +46,16 @@ def default_main(**kwargs):
 
     # This will also handle call to sys.exit(), i.e. Client.__exit__ will still be called.
     with EcflowClient(server, task):
-
-        logger.info("Running task %s", ecf_name)
+        logger.info("Running task %s", task.ecf_name)
+        get_task(task.ecf_task, config).run()
+        logger.info("Finished task %s", task.ecf_name)
 
 
 if __name__ == "__main__":
     # Get ecflow variables
     kwargs_main = parse_ecflow_vars()
     default_main(**kwargs_main)
+
 """
 %end"
 """

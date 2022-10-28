@@ -6,7 +6,7 @@ from pathlib import Path
 
 from . import __version__, PACKAGE_NAME
 from .commands_functions import (
-    run_forecast,
+    run_task,
     show_config,
     start_suite,
 )
@@ -108,7 +108,7 @@ def get_parsed_args(program_name="program", argv=None):
         "--troika_config", dest="troika_config", default="/opt/troika/etc/troika.yml",
         required=False
     )
-    parser_run.set_defaults(run_command=run_forecast)
+    parser_run.set_defaults(run_command=run_task)
 
     ##########################################
     # Configure parser for the "start" command #

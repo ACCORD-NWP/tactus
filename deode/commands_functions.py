@@ -3,11 +3,12 @@
 
 from .logs import get_logger
 from .scheduler import EcflowServer
-from .suites import SuiteDefinition, TaskSettingsJson, NoSchedulerSubmission
+from .suites import SuiteDefinition
+from .submission import TaskSettingsJson, NoSchedulerSubmission
 
 
-def run_forecast(args, config):
-    """Implement the 'forecast' command.
+def run_task(args, config):
+    """Implement the 'run' command.
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
@@ -15,12 +16,12 @@ def run_forecast(args, config):
 
     """
     logger = get_logger(__name__, args.loglevel)
-    logger.info("Running forecast...")
+    logger.info("Running %s...", args.task)
     submission_defs = TaskSettingsJson(args.submission_file)
     sub = NoSchedulerSubmission(submission_defs)
-    sub.submit(args.task, args.template_job, args.task_job, args.output, args.job_type,
-               args.troika, args.troika_config)
-    logger.info("Done with forecast.")
+    sub.submit(args.task, args.config_file, args.template_job, args.task_job, args.output,
+               args.job_type, args.troika, args.troika_config)
+    logger.info("Done with task %s", args.task)
 
 
 def start_suite(args, config):
@@ -42,6 +43,7 @@ def start_suite(args, config):
         args.suite_name,
         args.joboutdir,
         args.ecf_files,
+        args.config_file,
         submission_defs,
         args.loglevel,
     )
