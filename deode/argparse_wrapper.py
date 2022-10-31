@@ -6,7 +6,7 @@ from pathlib import Path
 
 from . import __version__, PACKAGE_NAME
 from .commands_functions import (
-    run_forecast,
+    run_task,
     show_config,
     start_suite,
 )
@@ -76,14 +76,39 @@ def get_parsed_args(program_name="program", argv=None):
     # Configure parser for the "forecast" command #
     ###############################################
     # Configure the main parser to handle the commands
-    parser_forecast = subparsers.add_parser(
-        "forecast",
-        help="Runs the forecast task.",
+    parser_run = subparsers.add_parser(
+        "run",
+        help="Runs a task.",
     )
-    parser_forecast.add_argument(
-        "--an-option", "-opt", help="An option", default="Some default"
+    parser_run.add_argument(
+        "--submit",
+        "-sub",
+        dest="submission_file",
+        help="Submission settings", required=True,
     )
-    parser_forecast.set_defaults(run_command=run_forecast)
+    parser_run.add_argument(
+        "--task", "-t", dest="task", help="Task name", required=True
+    )
+    parser_run.add_argument(
+        "--template", dest="template_job", help="Template", required=True
+    )
+    parser_run.add_argument(
+        "--job", dest="task_job", help="Task job file", required=True
+    )
+    parser_run.add_argument(
+        "--type", dest="job_type", help="Job type (in troika config)", required=True
+    )
+    parser_run.add_argument(
+        "--output", "-o", dest="output", help="Task output file", required=True
+    )
+    parser_run.add_argument(
+        "--troika", dest="troika", default="troika", required=False
+    )
+    parser_run.add_argument(
+        "--troika_config", dest="troika_config", default="/opt/troika/etc/troika.yml",
+        required=False
+    )
+    parser_run.set_defaults(run_command=run_task)
 
     ##########################################
     # Configure parser for the "start" command #
