@@ -14,7 +14,7 @@ class Forecast(Task):
         """
         print("Construct forecast task")
         Task.__init__(self, config)
-        
+
     def run(self):
         print("Run forecast")
         print("Config: ", self.config)

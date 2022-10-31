@@ -1,10 +1,11 @@
 """Discover tasks."""
-import inspect
 import importlib
+import inspect
 import pkgutil
-from .tasks.base import Task
+
 from . import tasks
 from .logs import get_logger
+from .tasks.base import Task
 
 logger = get_logger(__name__, "DEBUG")
 
@@ -49,7 +50,7 @@ def _get_name(cname, cls, suffix, attrname="__plugin_name__"):
         return name
     name = cname.lower()
     if name.endswith(suffix):
-        name = name[:-len(suffix)]
+        name = name[: -len(suffix)]
     return name
 
 

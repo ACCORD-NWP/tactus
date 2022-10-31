@@ -1,8 +1,9 @@
 """NoSchedulerTemplate."""
 
-from deode.logs import get_logger
 from deode.discover_task import get_task
-#@ENV_SUB@
+from deode.logs import get_logger
+
+# @ENV_SUB@
 
 
 def default_main(task, config, loglevel):

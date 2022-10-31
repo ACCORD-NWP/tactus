@@ -1,7 +1,7 @@
-
-import os
 import json
+import os
 import subprocess
+
 from .logs import get_logger
 
 logger = get_logger(__name__, "DEBUG")
@@ -19,15 +19,12 @@ class TaskSettings(object):
         self.submission_defs = submission_defs
 
     def parse_submission_defs(self, task):
-        """"Parse the submssion definitions.
+        """ "Parse the submssion definitions.
 
         Returns:
             dict: parsed setting
         """
-        task_settings = {
-            "BATCH": {},
-            "ENV": {}
-        }
+        task_settings = {"BATCH": {}, "ENV": {}}
         all_defs = self.submission_defs
         submit_types = all_defs["submit_types"]
         default_submit_type = all_defs["default_submit_type"]
@@ -54,8 +51,9 @@ class TaskSettings(object):
                         kword_settings = all_defs["task_exceptions"][task][kword]
                         for key, value in kword_settings.items():
                             if key in task_settings:
-                                logger.warning("key=%s already exists in "
-                                               "task_settings", key)
+                                logger.warning(
+                                    "key=%s already exists in " "task_settings", key
+                                )
                             task_settings[kword].update({key: value})
 
         logger.debug(task_settings)
@@ -138,8 +136,9 @@ class TaskSettings(object):
                 settings.update({key: value})
         return settings
 
-    def parse_job(self, task, config, input_template_job, task_job, variables=None,
-                  ecf_micro='%'):
+    def parse_job(
+        self, task, config, input_template_job, task_job, variables=None, ecf_micro="%"
+    ):
         """Read default job and change interpretor.
 
         Args:
@@ -153,9 +152,10 @@ class TaskSettings(object):
         interpreter = self.get_task_settings(task, "INTERPRETER")
         logger.debug(interpreter)
         if interpreter is None:
-            cmd = ['type', 'python3']
-            returned_output = \
-                subprocess.check_output(cmd).decode("utf-8").strip().split(' ')[-1]
+            cmd = ["type", "python3"]
+            returned_output = (
+                subprocess.check_output(cmd).decode("utf-8").strip().split(" ")[-1]
+            )
             interpreter = f"#!{returned_output}"
 
         logger.debug(interpreter)
@@ -166,21 +166,24 @@ class TaskSettings(object):
             os.makedirs(dir_name, exist_ok=True)
         with open(task_job, mode="w", encoding="utf-8") as file_handler:
             file_handler.write(f"{interpreter}\n")
-            batch_settings = self.get_task_settings(task, "BATCH", variables=variables,
-                                                    ecf_micro=ecf_micro)
+            batch_settings = self.get_task_settings(
+                task, "BATCH", variables=variables, ecf_micro=ecf_micro
+            )
             logger.debug("batch settings %s", batch_settings)
             for __, b_setting in batch_settings.items():
                 file_handler.write(f"{b_setting}\n")
-            env_settings = self.get_task_settings(task, "ENV", variables=variables,
-                                                  ecf_micro=ecf_micro)
+            env_settings = self.get_task_settings(
+                task, "ENV", variables=variables, ecf_micro=ecf_micro
+            )
             logger.debug(env_settings)
             python_task_env = ""
             for __, e_setting in env_settings.items():
                 python_task_env = python_task_env + f"{e_setting}\n"
             input_content = input_content.replace("#@ENV_SUB@", python_task_env)
             input_content = input_content.replace("@STAND_ALONE_TASK_NAME@", task)
-            input_content = input_content.replace("@STAND_ALONE_TASK_CONFIG@",
-                                                  str(config))
+            input_content = input_content.replace(
+                "@STAND_ALONE_TASK_CONFIG@", str(config)
+            )
             input_content = input_content.replace("@STAND_ALONE_TASK_LOGLEVEL@", "DEBUG")
             file_handler.write(input_content)
 
@@ -199,7 +202,7 @@ class TaskSettingsJson(TaskSettings):
         TaskSettings.__init__(self, submission_defs)
 
 
-class NoSchedulerSubmission():
+class NoSchedulerSubmission:
     """Create and submit job without a scheduler"""
 
     def __init__(self, task_settings):
@@ -210,9 +213,17 @@ class NoSchedulerSubmission():
         """
         self.task_settings = task_settings
 
-    def submit(self, task, config, template_job, task_job, output, job_type,
-               troika="troika",
-               troika_config="/opt/troika/etc/troika.yml"):
+    def submit(
+        self,
+        task,
+        config,
+        template_job,
+        task_job,
+        output,
+        job_type,
+        troika="troika",
+        troika_config="/opt/troika/etc/troika.yml",
+    ):
         """Submit task.
 
         Args:

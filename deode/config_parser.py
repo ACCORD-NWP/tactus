@@ -19,7 +19,7 @@ from pydantic import (
     PositiveFloat,
     PositiveInt,
     confloat,
-    root_validator
+    root_validator,
 )
 
 from . import PACKAGE_NAME
@@ -74,11 +74,12 @@ class _ConfigsBaseModel(BaseModel, extra=Extra.ignore, frozen=True):
     """Base model for all models defined in this file."""
 
     def __getattr__(self, items):
-        """ Get attribute.
+        """Get attribute.
 
         Override so we can use,
         e.g., getattr(config, "general.time_windows.start.minute").
         """
+
         def regular_getattribute(obj, item):
             if type(obj) is type(self):
                 return super().__getattribute__(item)

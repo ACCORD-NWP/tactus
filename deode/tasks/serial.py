@@ -14,7 +14,7 @@ class Serial(Task):
         """
         print("Construct serial task")
         Task.__init__(self, config)
-        
+
     def run(self):
         print("Run serial")
         print("Config: ", self.config)
