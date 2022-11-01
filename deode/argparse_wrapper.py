@@ -129,7 +129,7 @@ def get_parsed_args(program_name="program", argv=None):
         help="command description",
     )
 
-    # show config
+    # suite
     parser_start_suite = start_command_subparsers.add_parser(
         "suite", help="Start the suite"
     )

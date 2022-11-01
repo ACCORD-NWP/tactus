@@ -1,5 +1,6 @@
 """Default ecflow container."""
 from deode.logs import get_logger
+from deode.config_parser import ParsedConfig
 from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
 from deode.discover_task import get_task
 #@ENV_SUB@
@@ -33,6 +34,7 @@ def default_main(**kwargs):
     logger = get_logger(__name__, loglevel)
 
     config = kwargs.get("CONFIG")
+    #TODO Add wrapper
     ecf_host = kwargs.get("ECF_HOST")
     ecf_port = kwargs.get("ECF_PORT")
     server = EcflowServer(ecf_host, ecf_port)
@@ -46,6 +48,8 @@ def default_main(**kwargs):
 
     # This will also handle call to sys.exit(), i.e. Client.__exit__ will still be called.
     with EcflowClient(server, task):
+        config = ParsedConfig.from_file(config)
+        #TODO Add wrapper to config
         logger.info("Running task %s", task.ecf_name)
         get_task(task.ecf_task, config).run()
         logger.info("Finished task %s", task.ecf_name)

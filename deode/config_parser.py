@@ -215,3 +215,7 @@ class ParsedConfig(_ConfigsBaseModel):
             raw_config = tomlkit.load(config_file)
 
         return cls.parse_obj(raw_config)
+
+    def get_task_config(self, task, setting):
+        # TODO
+        return {}

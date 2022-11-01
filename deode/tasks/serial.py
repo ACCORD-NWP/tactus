@@ -1,20 +1,22 @@
-"""Serial."""
+"""Serial task."""
 
 from .base import Task
 
 
 class Serial(Task):
-    """Site where jobs are run directly"""
+    """Serial task."""
 
     def __init__(self, config):
-        """_summary_
+        """Construct serial task.
 
         Args:
-            config (_type_): _description_
+            config (deode.ParsedConfig): Configuration
+            name (str): Task name
         """
         print("Construct serial task")
-        Task.__init__(self, config)
-        
-    def run(self):
+        Task.__init__(self, config, __name__)
+
+    def execute(self):
+        """Execute task."""
         print("Run serial")
         print("Config: ", self.config)
