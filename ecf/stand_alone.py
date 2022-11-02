@@ -8,6 +8,7 @@ from deode.logs import get_logger
 
 def default_main(task, config, loglevel):
     """High-level routine for running tasks.
+
     Args:
         task (_type_): _description_
         config (_type_): _description_
