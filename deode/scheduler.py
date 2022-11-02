@@ -128,7 +128,7 @@ class EcflowServer(Server):
                     start_command = f"ecflow_start.sh -p {str(self.ecf_port)}"
 
                 logger.info(start_command)
-                ret = os.system(start_command)
+                ret = os.system(start_command) # noqa
                 if ret != 0:
                     raise RuntimeError from RuntimeError
             except RuntimeError as error:
