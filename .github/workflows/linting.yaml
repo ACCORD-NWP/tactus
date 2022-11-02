@@ -21,6 +21,9 @@ jobs:
       matrix:
         step: [
           {env: "main", python: "3.8", extras: "", command: "flakeheaven lint"},
+          {env: "pytest", python: "3.8", extras: "", command: "pytest tests/"},
+          {env: "pytest", python: "3.9", extras: "", command: "pytest tests/"},
+          {env: "pytest", python: "3.10", extras: "", command: "pytest tests/"},
         ]
     container:
       image: python:${{ matrix.step.python }}-bullseye
