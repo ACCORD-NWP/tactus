@@ -8,6 +8,10 @@ on:
     branches:
       - '**' # Every branch
 
+env:
+  POETRY_VIRTUALENVS_CREATE: "true"
+  POETRY_VIRTUALENVS_IN_PROJECT: "true"
+
 jobs:
 
   default:
