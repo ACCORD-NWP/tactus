@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Unittests for the main module."""
 import shutil
 
 import pytest

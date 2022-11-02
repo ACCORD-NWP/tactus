@@ -74,11 +74,18 @@ class _ConfigsBaseModel(BaseModel, extra=Extra.ignore, frozen=True):
     """Base model for all models defined in this file."""
 
     def __getattr__(self, items):
-        """ Get attribute.
+        """Get attribute.
 
         Override so we can use,
         e.g., getattr(config, "general.time_windows.start.minute").
+
+        Args:
+            items (str): Attribute name.
+
+        Returns:
+            Any: Attribute value.
         """
+
         def regular_getattribute(obj, item):
             if type(obj) is type(self):
                 return super().__getattribute__(item)
@@ -207,7 +214,6 @@ class ParsedConfig(_ConfigsBaseModel):
 
         Returns:
             .config_parser.ParsedConfig: Parsed configs from config_path.
-
         """
         config_path = Path(config_path).expanduser().resolve()
         logging.info("Reading config file %s", config_path)

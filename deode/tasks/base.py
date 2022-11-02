@@ -1,4 +1,4 @@
-"""Base site class"""
+"""Base site class."""
 
 
 class Task(object):

@@ -6,7 +6,13 @@ from deode.discover_task import get_task
 
 
 def default_main(task, config, loglevel):
+    """_summary_.
 
+    Args:
+        task (_type_): _description_
+        config (_type_): _description_
+        loglevel (_type_): _description_
+    """
     logger = get_logger(__name__, loglevel)
     logger.info("Running task %s", task)
     get_task(task, config).run()

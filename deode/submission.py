@@ -21,6 +21,9 @@ class TaskSettings(object):
     def parse_submission_defs(self, task):
         """"Parse the submssion definitions.
 
+        Args:
+            task (str): Task name
+
         Returns:
             dict: parsed setting
         """
@@ -144,11 +147,11 @@ class TaskSettings(object):
 
         Args:
             task(str): Task name
+            config (dict): Configuration
             input_template_job (str): Input container template.
             task_job (str): Task container
             variables (_type_, optional): _description_. Defaults to None.
             ecf_micro (str, optional): _description_. Defaults to '%'.
-
         """
         interpreter = self.get_task_settings(task, "INTERPRETER")
         logger.debug(interpreter)
@@ -217,6 +220,7 @@ class NoSchedulerSubmission():
 
         Args:
             task (str): Task name
+            config (dict): Configuration
             template_job (str): Task template job file
             task_job (str): Task job file
             output(str): Output file
