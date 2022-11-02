@@ -1,8 +1,7 @@
 """Ecflow suites."""
 
 import os
-import json
-import subprocess
+
 from .logs import get_logger
 
 try:
@@ -29,8 +28,9 @@ class SuiteDefinition(object):
         ecf_include=None,
         ecf_out=None,
         ecf_jobout=None,
-        ecf_micro="%"
+        ecf_micro="%",
     ):
+        # TODO: Document the variables that right now only are described as "?"
         """Construct the definition.
 
         Args:
@@ -43,6 +43,13 @@ class SuiteDefinition(object):
                                          Defaults to None which uses ecf_files.
             ecf_out (str, optional): ECF_OUT. Defaults to None.
             ecf_jobout (str, optional): ECF_JOBOUT. Defaults to None.
+            config: ?
+            loglevel: ?
+            ecf_home: ?
+            ecf_include: ?
+            ecf_out: ?
+            ecf_jobout: ?
+            ecf_micro: ?
 
         Raises:
             Exception: Unless ecflow is not loaded
@@ -65,29 +72,37 @@ class SuiteDefinition(object):
         self.ecf_out = ecf_out
         self.ecf_micro = ecf_micro
         if ecf_jobout is None:
-            ecf_jobout = joboutdir + \
-                f"/{ecf_micro}ECF_NAME{ecf_micro}.{ecf_micro}ECF_TRYNO{ecf_micro}"
+            ecf_jobout = (
+                joboutdir
+                + f"/{ecf_micro}ECF_NAME{ecf_micro}.{ecf_micro}ECF_TRYNO{ecf_micro}"
+            )
         self.ecf_jobout = ecf_jobout
 
         self.task_settings = task_settings
 
         # Commands started from the scheduler does not have full environment
-        ecf_job_cmd = f"{ecf_micro}TROIKA{ecf_micro} " \
-            f"-c {ecf_micro}TROIKA_CONFIG{ecf_micro} submit " \
-            f"-o {ecf_micro}ECF_JOBOUT{ecf_micro} " \
-            f"{ecf_micro}SCHOST{ecf_micro} " \
+        ecf_job_cmd = (
+            f"{ecf_micro}TROIKA{ecf_micro} "
+            f"-c {ecf_micro}TROIKA_CONFIG{ecf_micro} submit "
+            f"-o {ecf_micro}ECF_JOBOUT{ecf_micro} "
+            f"{ecf_micro}SCHOST{ecf_micro} "
             f"{ecf_micro}ECF_JOB{ecf_micro}"
+        )
         # %ECF_JOB%"
         self.ecf_job_cmd = ecf_job_cmd
-        ecf_status_cmd = f"{ecf_micro}TROIKA{ecf_micro} " \
-            f"-c {ecf_micro}TROIKA_CONFIG{ecf_micro} monitor " \
-            f"{ecf_micro}SCHOST{ecf_micro} " \
+        ecf_status_cmd = (
+            f"{ecf_micro}TROIKA{ecf_micro} "
+            f"-c {ecf_micro}TROIKA_CONFIG{ecf_micro} monitor "
+            f"{ecf_micro}SCHOST{ecf_micro} "
             f"{ecf_micro}ECF_JOB{ecf_micro}"
+        )
         self.ecf_status_cmd = ecf_status_cmd
-        ecf_kill_cmd = f"{ecf_micro}TROIKA{ecf_micro} " \
-            f"-c {ecf_micro}TROIKA_CONFIG{ecf_micro} kill " \
-            f"{ecf_micro}SCHOST{ecf_micro} " \
+        ecf_kill_cmd = (
+            f"{ecf_micro}TROIKA{ecf_micro} "
+            f"-c {ecf_micro}TROIKA_CONFIG{ecf_micro} kill "
+            f"{ecf_micro}SCHOST{ecf_micro} "
             f"{ecf_micro}ECF_JOB{ecf_micro}"
+        )
         self.ecf_kill_cmd = ecf_kill_cmd
 
         troika = "/opt/troika/bin/troika"
@@ -107,7 +122,7 @@ class SuiteDefinition(object):
             "LOGLEVEL": loglevel,
             "CONFIG": str(config),
             "TROIKA": troika,
-            "TROIKA_CONFIG": troika_config
+            "TROIKA_CONFIG": troika_config,
         }
 
         input_template = ecf_files + "/default.py"
@@ -122,14 +137,34 @@ class SuiteDefinition(object):
         logger.debug(self.task_settings.get_task_settings("Forecast"))
 
         variables = {"ECF_TIMEOUT": 5}
-        EcflowSuiteTask("Forecast", family, config, self.task_settings, ecf_files,
-                        input_template=input_template, variables=variables)
+        EcflowSuiteTask(
+            "Forecast",
+            family,
+            config,
+            self.task_settings,
+            ecf_files,
+            input_template=input_template,
+            variables=variables,
+        )
         family2 = EcflowSuiteFamily("TestFamily2", family, ecf_files)
         variables = {"ECF_TIMEOUT": 10}
-        EcflowSuiteTask("Forecast", family2, config, self.task_settings, ecf_files,
-                        input_template=input_template, variables=variables)
-        EcflowSuiteTask("Serial", family2, config, self.task_settings, ecf_files,
-                        input_template=input_template)
+        EcflowSuiteTask(
+            "Forecast",
+            family2,
+            config,
+            self.task_settings,
+            ecf_files,
+            input_template=input_template,
+            variables=variables,
+        )
+        EcflowSuiteTask(
+            "Serial",
+            family2,
+            config,
+            self.task_settings,
+            ecf_files,
+            input_template=input_template,
+        )
 
     def save_as_defs(self, def_file):
         """Save definition file.
@@ -147,12 +182,15 @@ class EcflowNode:
     """
 
     def __init__(self, name, node_type, parent, ecf_files, variables=None):
+        # TODO: Document the variables that right now only are described as "?"
         """Construct the EcflowNode.
 
         Args:
             name (str): Name of node
             node_type (str): Node type
             parent (EcflowNode): Parent node
+            ecf_files: ?
+            variables: ?
 
         Raises:
             NotImplementedError: Node type not implemented
@@ -173,7 +211,7 @@ class EcflowNode:
         self.ecf_container_path = ecf_files + self.path
         if variables is not None:
             for key, value in variables.items():
-                logger.debug("key=%s value=%s",key, value)
+                logger.debug("key=%s value=%s", key, value)
                 self.ecf_node.add_variable(key, value)
 
 
@@ -185,16 +223,20 @@ class EcflowNodeContainer(EcflowNode):
     """
 
     def __init__(self, name, node_type, parent, ecf_files, variables=None):
+        # TODO: Document the variables that right now only are described as "?"
         """Construct EcflowNodeContainer.
 
         Args:
             name (str): Name of the node container.
             node_type (str): What kind of node.
             parent (EcflowNode): Parent to this node.
+            ecf_files: ?
+            variables: ?
 
         """
-        EcflowNode.__init__(self, name, node_type, parent, variables=variables,
-                            ecf_files=ecf_files)
+        EcflowNode.__init__(
+            self, name, node_type, parent, variables=variables, ecf_files=ecf_files
+        )
 
 
 class EcflowSuite(EcflowNodeContainer):
@@ -206,16 +248,20 @@ class EcflowSuite(EcflowNodeContainer):
     """
 
     def __init__(self, name, ecf_files, variables=None):
+        # TODO: Document the variables that right now only are described as "?"
         """Construct the Ecflow suite.
 
         Args:
             name (_type_): _description_
+            ecf_files: ?
+            variables: ?
 
         """
         self.defs = ecflow.Defs({})
 
-        EcflowNodeContainer.__init__(self, name, "suite", self.defs, ecf_files,
-                                     variables=variables)
+        EcflowNodeContainer.__init__(
+            self, name, "suite", self.defs, ecf_files, variables=variables
+        )
 
     def save_as_defs(self, def_file):
         """Save defintion file.
@@ -235,15 +281,19 @@ class EcflowSuiteFamily(EcflowNodeContainer):
     """
 
     def __init__(self, name, parent, ecf_files, variables=None):
+        # TODO: Document the variables that right now only are described as "?"
         """Construct the family.
 
         Args:
             name (str): Name of the family.
             parent (EcflowNodeContainer): Parent node.
+            ecf_files: ?
+            variables: ?
 
         """
-        EcflowNodeContainer.__init__(self, name, "family", parent, ecf_files,
-                                     variables=variables)
+        EcflowNodeContainer.__init__(
+            self, name, "family", parent, ecf_files, variables=variables
+        )
         logger.debug(self.ecf_container_path)
         self.ecf_node.add_variable("ECF_FILES", self.ecf_container_path)
 
@@ -255,16 +305,35 @@ class EcflowSuiteTask(EcflowNode):
         EcflowNode (EcflowNodeContainer): The node container.
     """
 
-    def __init__(self, name, parent, config, task_settings, ecf_files,
-                 input_template=None, parse=True, variables=None, ecf_micro="%"):
+    def __init__(
+        self,
+        name,
+        parent,
+        config,
+        task_settings,
+        ecf_files,
+        input_template=None,
+        parse=True,
+        variables=None,
+        ecf_micro="%",
+    ):
+        # TODO: Document the variables that right now only are described as "?"
         """Constuct the EcflowSuiteTask.
 
         Args:
             name (str): Name of task
             parent (EcflowNode): Parent node.
+            config: ?
+            task_settings: ?
+            ecf_files: ?
+            input_template: ?
+            parse: ?
+            variables: ?
+            ecf_micro: ?
 
         Raises:
             Exception: Safety check
+            FileNotFoundError: If the task container is not found.
         """
         EcflowNode.__init__(self, name, "task", parent, ecf_files, variables=variables)
 
@@ -280,8 +349,14 @@ class EcflowSuiteTask(EcflowNode):
             for var, value in variables.items():
                 logger.debug("var=%s value=%s", var, value)
                 self.ecf_node.add_variable(var, value)
-            task_settings.parse_job(name, config, input_template, task_container,
-                                    variables=variables, ecf_micro=ecf_micro)
+            task_settings.parse_job(
+                name,
+                config,
+                input_template,
+                task_container,
+                variables=variables,
+                ecf_micro=ecf_micro,
+            )
         else:
             if not os.path.exists(task_container):
                 raise FileNotFoundError(f"Container {task_container} is missing!")

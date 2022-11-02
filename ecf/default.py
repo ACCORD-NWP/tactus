@@ -1,8 +1,9 @@
 """Default ecflow container."""
+from deode.discover_task import get_task
 from deode.logs import get_logger
 from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
-from deode.discover_task import get_task
-#@ENV_SUB@
+
+# @ENV_SUB@
 
 
 def parse_ecflow_vars():

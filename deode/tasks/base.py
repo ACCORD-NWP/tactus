@@ -1,4 +1,4 @@
-"""Base site class"""
+"""Base site class."""
 
 
 class Task(object):
@@ -14,5 +14,5 @@ class Task(object):
         print("Base task")
 
     def run(self):
-        """Run."""
+        """Run the task."""
         pass
