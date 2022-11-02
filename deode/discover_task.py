@@ -13,20 +13,13 @@ logger = get_logger(__name__, "DEBUG")
 def discover_modules(package, what="plugin"):
     """Discover plugin modules.
 
-    Parameters
-    ----------
-    package: `types.ModuleType`
-        Namespace package containing the plugins
-    what: str
-        String describing what is supposed to be discovered
+    Args:
+        package (types.ModuleType): Namespace package containing the plugins
+        what (str): Description of what is supposed to be discovered
 
-    Yields
-    ------
-    (fullname, module)
-    fullname: str
-        Fully qualified module name
-    module: `types.ModuleType`
-        Imported module
+    Yields:
+        str: Fully qualified module name
+        types.ModuleType: Imported module
     """
     path = package.__path__
     prefix = package.__name__ + "."
@@ -84,19 +77,13 @@ def discover(package, base, attrname="__plugin_name__"):
     lowercase and stripping the name of the base class, if it appears as a
     suffix.
 
-    Parameters
-    ----------
-    package: `types.ModuleType`
-        Namespace package containing the plugins
-    base: type
-        Base class for the plugins
-    attrname: str
-        Name of the attribute that conains the name for the plugin
+    Args:
+        package (types.ModuleType): Namespace package containing the plugins
+        base (type): Base class for the plugins
+        attrname (str): Name of the attribute that contains the name for the plugin
 
-    Returns
-    -------
-    dict of str: type
-        Discovered plugin classes
+    Returns:
+        (dict of str: type): Discovered plugin classes
     """
     what = base.__name__
 

@@ -1,3 +1,5 @@
+"""Module to handle submissions."""
+
 import json
 import os
 import subprocess
@@ -19,10 +21,13 @@ class TaskSettings(object):
         self.submission_defs = submission_defs
 
     def parse_submission_defs(self, task):
-        """ "Parse the submssion definitions.
+        """Parse the submssion definitions.
+
+        Args:
+            task (str): The name of the task
 
         Returns:
-            dict: parsed setting
+            dict: Parsed settings
         """
         task_settings = {"BATCH": {}, "ENV": {}}
         all_defs = self.submission_defs
@@ -139,14 +144,16 @@ class TaskSettings(object):
     def parse_job(
         self, task, config, input_template_job, task_job, variables=None, ecf_micro="%"
     ):
-        """Read default job and change interpretor.
+        # TODO: Write a proper description for the config parameter
+        """Read default job and change interpreter.
 
         Args:
-            task(str): Task name
+            task (str): Task name
+            config (str): The configuration
             input_template_job (str): Input container template.
             task_job (str): Task container
             variables (_type_, optional): _description_. Defaults to None.
-            ecf_micro (str, optional): _description_. Defaults to '%'.
+            ecf_micro (str, optional): _description_.
 
         """
         interpreter = self.get_task_settings(task, "INTERPRETER")
@@ -195,7 +202,7 @@ class TaskSettingsJson(TaskSettings):
         """Construct the task specific settings.
 
         Args:
-            task (str): Submission definition json file
+            submission_defs_file (str): Submission definition json file
         """
         with open(submission_defs_file, mode="r", encoding="utf-8") as file_handler:
             submission_defs = json.load(file_handler)
@@ -203,13 +210,13 @@ class TaskSettingsJson(TaskSettings):
 
 
 class NoSchedulerSubmission:
-    """Create and submit job without a scheduler"""
+    """Create and submit job without a scheduler."""
 
     def __init__(self, task_settings):
         """Construct the task specific settings.
 
         Args:
-             submission_defs(dict): Submission definitions
+             task_settings (dict): Submission definitions
         """
         self.task_settings = task_settings
 
@@ -224,10 +231,12 @@ class NoSchedulerSubmission:
         troika="troika",
         troika_config="/opt/troika/etc/troika.yml",
     ):
+        # TODO: Document the variables that right now only are described as "?"
         """Submit task.
 
         Args:
             task (str): Task name
+            config: ?
             template_job (str): Task template job file
             task_job (str): Task job file
             output(str): Output file

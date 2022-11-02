@@ -1,8 +1,6 @@
 """Ecflow suites."""
 
-import json
 import os
-import subprocess
 
 from .logs import get_logger
 
@@ -32,6 +30,7 @@ class SuiteDefinition(object):
         ecf_jobout=None,
         ecf_micro="%",
     ):
+        # TODO: Document the variables that right now only are described as "?"
         """Construct the definition.
 
         Args:
@@ -44,6 +43,13 @@ class SuiteDefinition(object):
                                          Defaults to None which uses ecf_files.
             ecf_out (str, optional): ECF_OUT. Defaults to None.
             ecf_jobout (str, optional): ECF_JOBOUT. Defaults to None.
+            config: ?
+            loglevel: ?
+            ecf_home: ?
+            ecf_include: ?
+            ecf_out: ?
+            ecf_jobout: ?
+            ecf_micro: ?
 
         Raises:
             Exception: Unless ecflow is not loaded
@@ -176,12 +182,15 @@ class EcflowNode:
     """
 
     def __init__(self, name, node_type, parent, ecf_files, variables=None):
+        # TODO: Document the variables that right now only are described as "?"
         """Construct the EcflowNode.
 
         Args:
             name (str): Name of node
             node_type (str): Node type
             parent (EcflowNode): Parent node
+            ecf_files: ?
+            variables: ?
 
         Raises:
             NotImplementedError: Node type not implemented
@@ -214,12 +223,15 @@ class EcflowNodeContainer(EcflowNode):
     """
 
     def __init__(self, name, node_type, parent, ecf_files, variables=None):
+        # TODO: Document the variables that right now only are described as "?"
         """Construct EcflowNodeContainer.
 
         Args:
             name (str): Name of the node container.
             node_type (str): What kind of node.
             parent (EcflowNode): Parent to this node.
+            ecf_files: ?
+            variables: ?
 
         """
         EcflowNode.__init__(
@@ -236,10 +248,13 @@ class EcflowSuite(EcflowNodeContainer):
     """
 
     def __init__(self, name, ecf_files, variables=None):
+        # TODO: Document the variables that right now only are described as "?"
         """Construct the Ecflow suite.
 
         Args:
             name (_type_): _description_
+            ecf_files: ?
+            variables: ?
 
         """
         self.defs = ecflow.Defs({})
@@ -266,11 +281,14 @@ class EcflowSuiteFamily(EcflowNodeContainer):
     """
 
     def __init__(self, name, parent, ecf_files, variables=None):
+        # TODO: Document the variables that right now only are described as "?"
         """Construct the family.
 
         Args:
             name (str): Name of the family.
             parent (EcflowNodeContainer): Parent node.
+            ecf_files: ?
+            variables: ?
 
         """
         EcflowNodeContainer.__init__(
@@ -299,14 +317,23 @@ class EcflowSuiteTask(EcflowNode):
         variables=None,
         ecf_micro="%",
     ):
+        # TODO: Document the variables that right now only are described as "?"
         """Constuct the EcflowSuiteTask.
 
         Args:
             name (str): Name of task
             parent (EcflowNode): Parent node.
+            config: ?
+            task_settings: ?
+            ecf_files: ?
+            input_template: ?
+            parse: ?
+            variables: ?
+            ecf_micro: ?
 
         Raises:
             Exception: Safety check
+            FileNotFoundError: If the task container is not found.
         """
         EcflowNode.__init__(self, name, "task", parent, ecf_files, variables=variables)
 

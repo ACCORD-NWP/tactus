@@ -78,6 +78,12 @@ class _ConfigsBaseModel(BaseModel, extra=Extra.ignore, frozen=True):
 
         Override so we can use,
         e.g., getattr(config, "general.time_windows.start.minute").
+
+        Args:
+            items (str): Attributes to be retrieved, as dot-separated strings.
+
+        Returns:
+            Any: Parsed command line arguments.
         """
 
         def regular_getattribute(obj, item):
