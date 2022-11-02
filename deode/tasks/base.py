@@ -14,5 +14,5 @@ class Task(object):
         print("Base task")
 
     def run(self):
-        """Run."""
+        """Run the task."""
         pass

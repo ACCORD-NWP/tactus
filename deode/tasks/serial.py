@@ -4,10 +4,10 @@ from .base import Task
 
 
 class Serial(Task):
-    """Site where jobs are run directly."""
+    """Site where jobs are run directly.."""
 
     def __init__(self, config):
-        """_summary_.
+        """_summary_..
 
         Args:
             config (_type_): _description_
@@ -16,6 +16,6 @@ class Serial(Task):
         Task.__init__(self, config)
 
     def run(self):
-        """_summary_."""
+        """Run in serial mode."""
         print("Run serial")
         print("Config: ", self.config)

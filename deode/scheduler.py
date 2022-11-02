@@ -7,8 +7,10 @@ import time
 import traceback
 from abc import ABC, abstractmethod
 from datetime import datetime
+
 try:
     import ecflow  # noqa reportMissingImports
+
     print(ecflow.__file__)
 except ModuleNotFoundError:
     ecflow = None
@@ -108,12 +110,8 @@ class EcflowServer(Server):
     def start_server(self):
         """Start the server.
 
-        Args:
-           remote (bool, Remote access): Remoter access. Defaults to True.
-
         Raises:
-            RuntimeError: Server is not running
-            Exception: Could not restart server!
+            RuntimeError: Server is not running or Could not restart server.
         """
         logger.debug("Start EcFlow server")
         try:
@@ -133,8 +131,8 @@ class EcflowServer(Server):
                 ret = os.system(start_command)
                 if ret != 0:
                     raise RuntimeError from RuntimeError
-            except RuntimeError:
-                raise Exception("Could not restart server!") from RuntimeError
+            except RuntimeError as error:
+                raise RuntimeError("Could not restart server!") from error
 
     def begin_suite(self, suite_name):
         """Begin the suite.
@@ -208,7 +206,6 @@ class EcflowTask:
             ecf_tryno (int): Ecflow task try number
             ecf_pass (str): Ecflow task password
             ecf_rid (int): Ecflow runtime ID
-            submission_id (str, optional): Submssion ID from submission. Defaults to None.
             ecf_timeout (int, optional): _description_. Defaults to 20.
 
         """
@@ -261,7 +258,9 @@ class EcflowClient(object):
             self.client.set_child_try_no(task.ecf_tryno)
             logger.info(
                 "   Only wait %s seconds, if the server cannot be contacted "
-                "(note default is 24 hours) before failing", str(task.ecf_timeout))
+                "(note default is 24 hours) before failing",
+                str(task.ecf_timeout),
+            )
             self.client.set_child_timeout(task.ecf_timeout)
         self.task = task
 
@@ -298,7 +297,7 @@ class EcflowClient(object):
             signum (_type_): _description_
             extra (_type_, optional): _description_. Defaults to None.
         """
-        logger.info('   Aborting: Signal handler called with signal %s', str(signum))
+        logger.info("   Aborting: Signal handler called with signal %s", str(signum))
 
         self.__exit__(
             Exception, "Signal handler called with signal " + str(signum), extra
@@ -310,7 +309,7 @@ class EcflowClient(object):
         Returns:
             _type_: _description_
         """
-        logger.info('Calling init at: %s', self.at_time())
+        logger.info("Calling init at: %s", self.at_time())
         if self.client is not None:
             self.client.child_init()
         return self.client
@@ -326,13 +325,12 @@ class EcflowClient(object):
         Returns:
             _type_: _description_
         """
-        logger.info(
-            "   Client:__exit__: ex_type: %s value: %s", str(ex_type), str(value)
-        )
+        logger.info("   Client:__exit__: ex_type: %s value: %s", str(ex_type), str(value))
         if ex_type is not None:
-            logger.info('Calling abort %s', self.at_time())
+            logger.info("Calling abort %s", self.at_time())
             self.client.child_abort(
-                f"Aborted with exception type {str(ex_type)}:{str(value)}")
+                f"Aborted with exception type {str(ex_type)}:{str(value)}"
+            )
             if tback is not None:
                 print(tback)
                 traceback.print_tb(tback, limit=1, file=sys.stdout)
@@ -351,7 +349,7 @@ class EcflowClient(object):
                 print(repr(traceback.format_tb(tback)))
                 print("*** tb_lineno:", tback.tb_lineno)
             return False
-        print('Calling complete at: ' + self.at_time())
+        print("Calling complete at: " + self.at_time())
         # self.server.update_log(self.task.ecf_name + " complete") #noqa E800
         if self.client is not None:
             self.client.child_complete()

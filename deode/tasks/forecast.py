@@ -4,7 +4,7 @@ from .base import Task
 
 
 class Forecast(Task):
-    """Site where jobs are run directly."""
+    """Site where jobs are run directly.."""
 
     def __init__(self, config):
         """_summary_.
@@ -16,6 +16,6 @@ class Forecast(Task):
         Task.__init__(self, config)
 
     def run(self):
-        """_summary_."""
+        """Run the forecast task."""
         print("Run forecast")
         print("Config: ", self.config)

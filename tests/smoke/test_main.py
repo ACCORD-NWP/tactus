@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Unittests for the main module."""
+"""Smoke tests."""
 import shutil
 
 import pytest
