@@ -8,7 +8,6 @@ class Forecast(BinaryTask):
 
     def __init__(self, config):
         """Construct forecast object.
-
         Args:
             config (deode.ParsedConfig): Configuration
             name (str): Task name
