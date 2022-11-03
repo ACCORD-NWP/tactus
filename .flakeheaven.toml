@@ -43,3 +43,7 @@
         # Ignore "-D105" and "-D102" (Missing docstring in public class/method) in unit tests.
         # The unit tests class and method names are supposed to be self-explanatory.
         flake8-docstrings = ["+*", "-D105", "-D101", "-D102", "-D103"]
+
+    [tool.flakeheaven.exceptions."ecf/*.py"]
+        # "E265" is for block comments starting with "# ". It may break ecflow envsubst.
+        pycodestyle = ["-E265"]

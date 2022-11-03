@@ -13,7 +13,6 @@ def default_main(task, config, loglevel):
         task (str): Task name
         config (str.): Config file
         loglevel (str): Loglevel
-
     """
     logger = get_logger(__name__, loglevel)
     logger.info("Running task %s", task)

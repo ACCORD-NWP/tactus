@@ -214,7 +214,6 @@ class ParsedConfig(_ConfigsBaseModel):
 
         Returns:
             .config_parser.ParsedConfig: Parsed configs from config_path.
-
         """
         config_path = Path(config_path).expanduser().resolve()
         logging.info("Reading config file %s", config_path)

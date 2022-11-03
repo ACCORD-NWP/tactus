@@ -1,0 +1,42 @@
+#.github/workflows/test.yaml
+name: Tests
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - '**' # Every branch
+
+env:
+  POETRY_VIRTUALENVS_CREATE: "true"
+  POETRY_VIRTUALENVS_IN_PROJECT: "true"
+
+jobs:
+
+  default:
+    name: "${{ matrix.step.env }} '${{ matrix.step.command }}' (@py${{ matrix.step.python }})"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        step: [
+          {env: "pytest", python: "3.8", extras: "", command: "pytest tests/"},
+          {env: "pytest", python: "3.9", extras: "", command: "pytest tests/"},
+          {env: "pytest", python: "3.10", extras: "", command: "pytest tests/"},
+        ]
+    container:
+      image: python:${{ matrix.step.python }}-bullseye
+      env:
+        COVERAGE_FILE: ".coverage.${{ matrix.step.env }}.${{ matrix.step.python }}"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Install poetry
+        run: pip install poetry
+      - name: Install with deps
+        run: |
+          poetry install ${{ matrix.step.extras }}
+      - name: Run command
+        run: |
+          . ./.venv/bin/activate  # use venv created by poetry
+          ${{ matrix.step.command }}
