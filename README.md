@@ -1,3 +1,7 @@
+![Linting](https://github.com/DEODE-NWP/Deode-Prototype/actions/workflows/linting.yaml/badge.svg)
+![Tests](https://github.com/DEODE-NWP/Deode-Prototype/actions/workflows/test.yaml/badge.svg
+)
+
 # DEODE Scripting System
 
 
