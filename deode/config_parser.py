@@ -222,3 +222,15 @@ class ParsedConfig(_ConfigsBaseModel):
             raw_config = tomlkit.load(config_file)
 
         return cls.parse_obj(raw_config)
+
+    def get_task_config(self, task, setting):
+        """Get task config.
+
+        Args:
+            task (str): Task name
+            setting (str): Task setting to get
+
+        Returns:
+            any: Something
+        """
+        return {}

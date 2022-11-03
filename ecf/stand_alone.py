@@ -7,7 +7,14 @@ from deode.logs import get_logger
 
 
 def default_main(task, config, loglevel):
-    """High-level routine for running tasks."""
+    """Execute default main.
+
+    Args:
+        task (str): Task name
+        config (str.): Config file
+        loglevel (str): Loglevel
+
+    """
     logger = get_logger(__name__, loglevel)
     logger.info("Running task %s", task)
     get_task(task, config).run()
