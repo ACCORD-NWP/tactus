@@ -1,21 +1,17 @@
 """Forecast."""
 
-from .base import Task
+from .base import BinaryTask
 
 
-class Forecast(Task):
-    """Site where jobs are run directly.."""
+class Forecast(BinaryTask):
+    """Forecast task."""
 
     def __init__(self, config):
-        """_summary_.
+        """Construct forecast object.
 
         Args:
-            config (_type_): _description_
+            config (deode.ParsedConfig): Configuration
+
         """
         print("Construct forecast task")
-        Task.__init__(self, config)
-
-    def run(self):
-        """Run the forecast task."""
-        print("Run forecast")
-        print("Config: ", self.config)
+        BinaryTask.__init__(self, config, __name__)

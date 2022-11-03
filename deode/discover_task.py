@@ -15,11 +15,12 @@ def discover_modules(package, what="plugin"):
 
     Args:
         package (types.ModuleType): Namespace package containing the plugins
-        what (str): Description of what is supposed to be discovered
+        what (str, optional): String describing what is supposed to be discovered.
+                              Defaults to "plugin".
 
     Yields:
-        str: Fully qualified module name
-        types.ModuleType: Imported module
+        str (types.ModuleType):  Imported module
+
     """
     path = package.__path__
     prefix = package.__name__ + "."
@@ -37,6 +38,18 @@ def discover_modules(package, what="plugin"):
 
 
 def _get_name(cname, cls, suffix, attrname="__plugin_name__"):
+    """Get name.
+
+    Args:
+        cname (_type_): cname
+        cls (_type_): cls
+        suffix (str): suffix
+        attrname (str, optional): _description_. Defaults to "__plugin_name__".
+
+    Returns:
+        _type_: Name
+
+    """
     # __dict__ vs. getattr: do not inherit the attribute from a parent class
     name = getattr(cls, "__dict__", {}).get(attrname, None)
     if name is not None:

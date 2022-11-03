@@ -38,18 +38,15 @@ class SuiteDefinition(object):
             joboutdir (str): Path to jobfiles
             ecf_files (str): Path to ecflow containers
             task_settings (TaskSettings): Submission configuration
+            config (deode.parsedConfig): Configuration
+            task_settings (deode.TaskSettings): Task settings
+            loglevel (str): Loglevel
             ecf_home (str, optional): ECF_HOME. Defaults to None.
             ecf_include (str, optional): ECF_INCLUDE.
                                          Defaults to None which uses ecf_files.
             ecf_out (str, optional): ECF_OUT. Defaults to None.
             ecf_jobout (str, optional): ECF_JOBOUT. Defaults to None.
-            config: ?
-            loglevel: ?
-            ecf_home: ?
-            ecf_include: ?
-            ecf_out: ?
-            ecf_jobout: ?
-            ecf_micro: ?
+            ecf_micro (str, optional): ECF_MICRO. Defaults to %
 
         Raises:
             Exception: Unless ecflow is not loaded
@@ -189,11 +186,12 @@ class EcflowNode:
             name (str): Name of node
             node_type (str): Node type
             parent (EcflowNode): Parent node
-            ecf_files: ?
-            variables: ?
+            ecf_files (str): Location of ecf files
+            variables (dict, optional): Variables to map. Defaults to None
 
         Raises:
             NotImplementedError: Node type not implemented
+
         """
         self.name = name
         self.node_type = node_type
@@ -230,8 +228,8 @@ class EcflowNodeContainer(EcflowNode):
             name (str): Name of the node container.
             node_type (str): What kind of node.
             parent (EcflowNode): Parent to this node.
-            ecf_files: ?
-            variables: ?
+            ecf_files (str): Location of ecf files
+            variables (dict, optional): Variables to map. Defaults to None
 
         """
         EcflowNode.__init__(
@@ -252,9 +250,9 @@ class EcflowSuite(EcflowNodeContainer):
         """Construct the Ecflow suite.
 
         Args:
-            name (_type_): _description_
-            ecf_files: ?
-            variables: ?
+            name (str): Name of suite
+            ecf_files (str): Location of ecf files
+            variables (dict, optional): Variables to map. Defaults to None
 
         """
         self.defs = ecflow.Defs({})
@@ -287,8 +285,8 @@ class EcflowSuiteFamily(EcflowNodeContainer):
         Args:
             name (str): Name of the family.
             parent (EcflowNodeContainer): Parent node.
-            ecf_files: ?
-            variables: ?
+            ecf_files (str): Location of ecf files
+            variables (dict, optional): Variables to map. Defaults to None
 
         """
         EcflowNodeContainer.__init__(
@@ -317,23 +315,24 @@ class EcflowSuiteTask(EcflowNode):
         variables=None,
         ecf_micro="%",
     ):
-        # TODO: Document the variables that right now only are described as "?"
         """Constuct the EcflowSuiteTask.
 
         Args:
             name (str): Name of task
             parent (EcflowNode): Parent node.
-            config: ?
-            task_settings: ?
-            ecf_files: ?
-            input_template: ?
-            parse: ?
-            variables: ?
-            ecf_micro: ?
+            ecf_files (str): Path to ecflow containers
+            task_settings (TaskSettings): Submission configuration
+            config (deode.parsedConfig): Configuration
+            task_settings (deode.TaskSettings): Task settings
+            input_template(str, optional): Input template
+            parse (bool, optional): To parse template file or not
+            variables (dict, optional): Variables to map. Defaults to None
+            ecf_micro (str, optional): ECF_MICRO. Defaults to %
 
         Raises:
             Exception: Safety check
             FileNotFoundError: If the task container is not found.
+
         """
         EcflowNode.__init__(self, name, "task", parent, ecf_files, variables=variables)
 

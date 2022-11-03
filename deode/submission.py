@@ -28,6 +28,7 @@ class TaskSettings(object):
 
         Returns:
             dict: Parsed settings
+
         """
         task_settings = {"BATCH": {}, "ENV": {}}
         all_defs = self.submission_defs
@@ -144,8 +145,7 @@ class TaskSettings(object):
     def parse_job(
         self, task, config, input_template_job, task_job, variables=None, ecf_micro="%"
     ):
-        # TODO: Write a proper description for the config parameter
-        """Read default job and change interpreter.
+        """Read default job and change interpretor.
 
         Args:
             task (str): Task name
@@ -231,12 +231,11 @@ class NoSchedulerSubmission:
         troika="troika",
         troika_config="/opt/troika/etc/troika.yml",
     ):
-        # TODO: Document the variables that right now only are described as "?"
         """Submit task.
 
         Args:
             task (str): Task name
-            config: ?
+            config (str): Config
             template_job (str): Task template job file
             task_job (str): Task job file
             output(str): Output file
