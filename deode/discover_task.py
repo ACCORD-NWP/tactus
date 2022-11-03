@@ -93,12 +93,10 @@ def discover(package, base, attrname="__plugin_name__"):
     Args:
         package (types.ModuleType): Namespace package containing the plugins
         base (type): Base class for the plugins
-        attrname (str, optional): Name of the attribute that conains the name for
-                                  the plugin. Defaults to "__plugin_name__".
+        attrname (str): Name of the attribute that contains the name for the plugin
 
     Returns:
-        (dict of str): Discovered plugin classes
-
+        (dict of str: type): Discovered plugin classes
     """
     what = base.__name__
 

@@ -110,11 +110,8 @@ class EcflowServer(Server):
     def start_server(self):
         """Start the server.
 
-        Args:
-           remote (bool, Remote access): Remoter access. Defaults to True.
-
         Raises:
-            Exception: Could not restart server!
+            RuntimeError: Server is not running or Could not restart server.
         """
         logger.debug("Start EcFlow server")
         try:
@@ -135,8 +132,8 @@ class EcflowServer(Server):
                 ret = os.system(start_command)  # noqa
                 if ret != 0:
                     raise RuntimeError from RuntimeError
-            except RuntimeError:
-                raise Exception("Could not restart server!") from RuntimeError
+            except RuntimeError as error:
+                raise RuntimeError("Could not restart server!") from error
 
     def begin_suite(self, suite_name):
         """Begin the suite.

@@ -30,6 +30,7 @@ class SuiteDefinition(object):
         ecf_jobout=None,
         ecf_micro="%",
     ):
+        # TODO: Document the variables that right now only are described as "?"
         """Construct the definition.
 
         Args:
@@ -178,6 +179,7 @@ class EcflowNode:
     """
 
     def __init__(self, name, node_type, parent, ecf_files, variables=None):
+        # TODO: Document the variables that right now only are described as "?"
         """Construct the EcflowNode.
 
         Args:
@@ -219,6 +221,7 @@ class EcflowNodeContainer(EcflowNode):
     """
 
     def __init__(self, name, node_type, parent, ecf_files, variables=None):
+        # TODO: Document the variables that right now only are described as "?"
         """Construct EcflowNodeContainer.
 
         Args:
@@ -243,12 +246,14 @@ class EcflowSuite(EcflowNodeContainer):
     """
 
     def __init__(self, name, ecf_files, variables=None):
+        # TODO: Document the variables that right now only are described as "?"
         """Construct the Ecflow suite.
 
         Args:
             name (str): Name of suite
             ecf_files (str): Location of ecf files
             variables (dict, optional): Variables to map. Defaults to None
+
         """
         self.defs = ecflow.Defs({})
 
@@ -274,6 +279,7 @@ class EcflowSuiteFamily(EcflowNodeContainer):
     """
 
     def __init__(self, name, parent, ecf_files, variables=None):
+        # TODO: Document the variables that right now only are described as "?"
         """Construct the family.
 
         Args:
@@ -281,6 +287,7 @@ class EcflowSuiteFamily(EcflowNodeContainer):
             parent (EcflowNodeContainer): Parent node.
             ecf_files (str): Location of ecf files
             variables (dict, optional): Variables to map. Defaults to None
+
         """
         EcflowNodeContainer.__init__(
             self, name, "family", parent, ecf_files, variables=variables
@@ -324,7 +331,8 @@ class EcflowSuiteTask(EcflowNode):
 
         Raises:
             Exception: Safety check
-            FileNotFoundError: File not found
+            FileNotFoundError: If the task container is not found.
+
         """
         EcflowNode.__init__(self, name, "task", parent, ecf_files, variables=variables)
 

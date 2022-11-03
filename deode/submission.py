@@ -1,4 +1,5 @@
-"""Submission."""
+"""Module to handle submissions."""
+
 import json
 import os
 import subprocess
@@ -23,10 +24,10 @@ class TaskSettings(object):
         """Parse the submssion definitions.
 
         Args:
-            task (str): Task name
+            task (str): The name of the task
 
         Returns:
-            dict: parsed setting
+            dict: Parsed settings
 
         """
         task_settings = {"BATCH": {}, "ENV": {}}
@@ -147,12 +148,12 @@ class TaskSettings(object):
         """Read default job and change interpretor.
 
         Args:
-            task(str): Task name
-            config (deode.ParsedConfig): Config
+            task (str): Task name
+            config (str): The configuration
             input_template_job (str): Input container template.
             task_job (str): Task container
             variables (_type_, optional): _description_. Defaults to None.
-            ecf_micro (str, optional): _description_. Defaults to '%'.
+            ecf_micro (str, optional): _description_.
 
         """
         interpreter = self.get_task_settings(task, "INTERPRETER")
@@ -215,7 +216,7 @@ class NoSchedulerSubmission:
         """Construct the task specific settings.
 
         Args:
-             task_settings(dict): Submission definitions
+             task_settings (dict): Submission definitions
         """
         self.task_settings = task_settings
 
@@ -234,7 +235,7 @@ class NoSchedulerSubmission:
 
         Args:
             task (str): Task name
-            config (deode.ParsedConfig): Config
+            config (str): Config
             template_job (str): Task template job file
             task_job (str): Task job file
             output(str): Output file
