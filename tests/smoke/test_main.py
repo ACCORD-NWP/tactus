@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Smoke."""
 import shutil
 
 import pytest

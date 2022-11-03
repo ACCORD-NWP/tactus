@@ -1,7 +1,8 @@
 """Base site class."""
 import os
-from deode.tasks.data import InputData, OutputData
+
 from deode.tasks.batch import BatchJob
+from deode.tasks.data import InputData, OutputData
 
 
 class Task(object):

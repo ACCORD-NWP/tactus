@@ -11,7 +11,6 @@ class Forecast(BinaryTask):
 
         Args:
             config (deode.ParsedConfig): Configuration
-            name (str): Task name
         """
         print("Construct forecast task")
         BinaryTask.__init__(self, config, __name__)

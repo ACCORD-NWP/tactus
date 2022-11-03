@@ -11,7 +11,6 @@ class Serial(Task):
 
         Args:
             config (deode.ParsedConfig): Configuration
-            name (str): Task name
         """
         print("Construct serial task")
         Task.__init__(self, config, __name__)

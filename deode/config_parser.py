@@ -19,7 +19,7 @@ from pydantic import (
     PositiveFloat,
     PositiveInt,
     confloat,
-    root_validator
+    root_validator,
 )
 
 from . import PACKAGE_NAME
@@ -74,11 +74,18 @@ class _ConfigsBaseModel(BaseModel, extra=Extra.ignore, frozen=True):
     """Base model for all models defined in this file."""
 
     def __getattr__(self, items):
-        """ Get attribute.
+        """Get attribute.
 
         Override so we can use,
         e.g., getattr(config, "general.time_windows.start.minute").
+
+        Args:
+            items (_type_): item
+
+        Returns:
+            attribute
         """
+
         def regular_getattribute(obj, item):
             if type(obj) is type(self):
                 return super().__getattribute__(item)
@@ -217,5 +224,13 @@ class ParsedConfig(_ConfigsBaseModel):
         return cls.parse_obj(raw_config)
 
     def get_task_config(self, task, setting):
-        # TODO
+        """Get task config.
+
+        Args:
+            task (str): Task name
+            setting (str): Task setting to get
+
+        Returns:
+            any: Something
+        """
         return {}

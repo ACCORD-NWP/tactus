@@ -1,10 +1,11 @@
 """Discover tasks."""
-import inspect
 import importlib
+import inspect
 import pkgutil
-from .tasks.base import Task
+
 from . import tasks
 from .logs import get_logger
+from .tasks.base import Task
 
 logger = get_logger(__name__, "DEBUG")
 
@@ -12,20 +13,14 @@ logger = get_logger(__name__, "DEBUG")
 def discover_modules(package, what="plugin"):
     """Discover plugin modules.
 
-    Parameters
-    ----------
-    package: `types.ModuleType`
-        Namespace package containing the plugins
-    what: str
-        String describing what is supposed to be discovered
+    Args:
+        package (types.ModuleType): Namespace package containing the plugins
+        what (str, optional): String describing what is supposed to be discovered.
+                              Defaults to "plugin".
 
-    Yields
-    ------
-    (fullname, module)
-    fullname: str
-        Fully qualified module name
-    module: `types.ModuleType`
-        Imported module
+    Yields:
+        str (types.ModuleType):  Imported module
+
     """
     path = package.__path__
     prefix = package.__name__ + "."
@@ -43,13 +38,25 @@ def discover_modules(package, what="plugin"):
 
 
 def _get_name(cname, cls, suffix, attrname="__plugin_name__"):
+    """Get name.
+
+    Args:
+        cname (_type_): cname
+        cls (_type_): cls
+        suffix (str): suffix
+        attrname (str, optional): _description_. Defaults to "__plugin_name__".
+
+    Returns:
+        _type_: Name
+
+    """
     # __dict__ vs. getattr: do not inherit the attribute from a parent class
     name = getattr(cls, "__dict__", {}).get(attrname, None)
     if name is not None:
         return name
     name = cname.lower()
     if name.endswith(suffix):
-        name = name[:-len(suffix)]
+        name = name[: -len(suffix)]
     return name
 
 
@@ -83,19 +90,15 @@ def discover(package, base, attrname="__plugin_name__"):
     lowercase and stripping the name of the base class, if it appears as a
     suffix.
 
-    Parameters
-    ----------
-    package: `types.ModuleType`
-        Namespace package containing the plugins
-    base: type
-        Base class for the plugins
-    attrname: str
-        Name of the attribute that conains the name for the plugin
+    Args:
+        package (types.ModuleType): Namespace package containing the plugins
+        base (type): Base class for the plugins
+        attrname (str, optional): Name of the attribute that conains the name for
+                                  the plugin. Defaults to "__plugin_name__".
 
-    Returns
-    -------
-    dict of str: type
-        Discovered plugin classes
+    Returns:
+        (dict of str): Discovered plugin classes
+
     """
     what = base.__name__
 
