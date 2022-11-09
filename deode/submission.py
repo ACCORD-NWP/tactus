@@ -186,7 +186,7 @@ class TaskSettings(object):
             python_task_env = ""
             for __, e_setting in env_settings.items():
                 python_task_env = python_task_env + f"{e_setting}\n"
-            input_content = input_content.replace("#@ENV_SUB@", python_task_env)
+            input_content = input_content.replace("# @ENV_SUB@", python_task_env)
             input_content = input_content.replace("@STAND_ALONE_TASK_NAME@", task)
             input_content = input_content.replace(
                 "@STAND_ALONE_TASK_CONFIG@", str(config)

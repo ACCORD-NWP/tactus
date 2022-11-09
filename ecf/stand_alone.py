@@ -1,5 +1,6 @@
 """NoSchedulerTemplate."""
 
+from deode.config_parser import ParsedConfig
 from deode.discover_task import get_task
 from deode.logs import get_logger
 
@@ -16,6 +17,7 @@ def default_main(task, config, loglevel):
     """
     logger = get_logger(__name__, loglevel)
     logger.info("Running task %s", task)
+    config = ParsedConfig.from_file(config)
     get_task(task, config).run()
     logger.info("Finished task %s", task)
 
