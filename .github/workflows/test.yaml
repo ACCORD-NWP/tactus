@@ -11,6 +11,7 @@ on:
 env:
   POETRY_VIRTUALENVS_CREATE: "true"
   POETRY_VIRTUALENVS_IN_PROJECT: "true"
+  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
 jobs:
 
@@ -22,7 +23,7 @@ jobs:
         step: [
           {env: "pytest", python: "3.8", extras: "", command: "pytest tests/"},
           {env: "pytest", python: "3.9", extras: "", command: "pytest tests/"},
-          {env: "pytest", python: "3.10", extras: "", command: "pytest tests/"},
+          {env: "pytest", python: "3.10", extras: "", command: "pytest --cov=./ --cov-report=xml tests/"},
         ]
     container:
       image: python:${{ matrix.step.python }}-bullseye
@@ -40,3 +41,5 @@ jobs:
         run: |
           . ./.venv/bin/activate  # use venv created by poetry
           ${{ matrix.step.command }}
+      - name: Upload coverage reports to Codecov with GitHub Action
+        uses: codecov/codecov-action@v3

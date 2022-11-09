@@ -41,6 +41,7 @@
     pytest-mock = "^3.7.0"
     pytest-profiling = "^1.7.0"
     pytest-timeout = "^2.1.0"
+    pytest-cov = "^3.0.0"
     # flake8 plugins
     darglint = "^1.8.1"
     flake8-bandit = "^3.0.0"
