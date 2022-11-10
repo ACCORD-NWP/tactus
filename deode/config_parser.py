@@ -70,7 +70,7 @@ class ParsedPath(Path):
         yield lambda path: Path(os.path.expandvars(str(path))).expanduser()
 
 
-class _ConfigsBaseModel(BaseModel, extra=Extra.ignore, frozen=True):
+class _ConfigsBaseModel(BaseModel, extra=Extra.allow, frozen=True):
     """Base model for all models defined in this file."""
 
     def __getattr__(self, items):
