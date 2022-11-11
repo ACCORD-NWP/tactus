@@ -83,7 +83,7 @@ class _ConfigsBaseModel(BaseModel, extra=Extra.allow, frozen=True):
             items (str): Attributes to be retrieved, as dot-separated strings.
 
         Returns:
-            Any: Parsed command line arguments.
+            Any: Value of the parsed config item.
         """
 
         def regular_getattribute(obj, item):
@@ -92,6 +92,30 @@ class _ConfigsBaseModel(BaseModel, extra=Extra.allow, frozen=True):
             return getattr(obj, item)
 
         return reduce(regular_getattribute, items.split("."), self)
+
+    def get_value(self, items):
+        """Recursively get the value of a config component.
+
+        This allows us to use self.get_value("foo.bar.baz") even if "bar" is, for
+        instance, a dictionary or any obj that implements a "getitem" method.
+
+        Args:
+            items (str): Attributes to be retrieved, as dot-separated strings.
+
+        Returns:
+            Any: Value of the parsed config item.
+        """
+
+        def get_attr_or_item(obj, item):
+            try:
+                return getattr(obj, item)
+            except AttributeError as attr_error:
+                try:
+                    return obj[item]
+                except KeyError as key_error:
+                    raise KeyError(key_error) from attr_error
+
+        return reduce(get_attr_or_item, items.split("."), self)
 
     def dumps(
         self, section="", style: Literal["toml", "json"] = "toml", exclude_unset=False
@@ -221,31 +245,3 @@ class ParsedConfig(_ConfigsBaseModel):
             raw_config = tomlkit.load(config_file)
 
         return cls.parse_obj(raw_config)
-
-    def get_task_config(self, task, setting):
-        """Get task config.
-
-        Args:
-            task (str): Task name
-            setting (str): Task setting to get
-
-        Returns:
-            any: Something
-        """
-        return {}
-
-    def getattr(self, attr):
-        """Get attribute from config.
-
-        Args:
-            attr (str): Attribute to be retrieved.
-                Nested attributes can be retrieved using dot-separated syntax.
-
-        Returns:
-            any: The value of the requested attribute.
-        """
-        try:
-            return getattr(self, attr)
-        except AttributeError:
-            # Replace this with code to handle the raised exception
-            return None
