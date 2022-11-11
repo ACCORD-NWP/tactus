@@ -89,9 +89,6 @@ def get_parsed_args(program_name="program", argv=None):
     )
     parser_run.add_argument("--job", dest="task_job", help="Task job file", required=True)
     parser_run.add_argument(
-        "--type", dest="job_type", help="Job type (in troika config)", required=True
-    )
-    parser_run.add_argument(
         "--output", "-o", dest="output", help="Task output file", required=True
     )
     parser_run.add_argument("--troika", dest="troika", default="troika", required=False)

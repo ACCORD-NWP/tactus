@@ -25,7 +25,6 @@ def run_task(args, config):
         args.template_job,
         args.task_job,
         args.output,
-        args.job_type,
         args.troika,
         args.troika_config,
     )

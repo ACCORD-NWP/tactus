@@ -19,6 +19,7 @@ class TaskSettings(object):
              submission_defs(dict): Submission definitions
         """
         self.submission_defs = submission_defs
+        self.job_type = None
 
     def parse_submission_defs(self, task):
         """Parse the submssion definitions.
@@ -62,6 +63,8 @@ class TaskSettings(object):
                                 )
                             task_settings[kword].update({key: value})
 
+        if "SCHOST" in task_settings:
+            self.job_type = task_settings["SCHOST"]
         logger.debug(task_settings)
         return task_settings
 
@@ -227,7 +230,6 @@ class NoSchedulerSubmission:
         template_job,
         task_job,
         output,
-        job_type,
         troika="troika",
         troika_config="/opt/troika/etc/troika.yml",
     ):
@@ -239,7 +241,6 @@ class NoSchedulerSubmission:
             template_job (str): Task template job file
             task_job (str): Task job file
             output(str): Output file
-            job_type (str): Job type
             troika (str, optional): troika binary. Defaults to "troika".
             troika_config (str, optional): Troika config file.
                                            Defaults to "/opt/troika/etc/troika.yml".
@@ -248,7 +249,7 @@ class NoSchedulerSubmission:
             Exception: Submission failure
         """
         self.task_settings.parse_job(task, config, template_job, task_job)
-        cmd = f"{troika} -c {troika_config} submit {job_type} {task_job} -o {output}"
+        cmd = f"{troika} -c {troika_config} submit {self.task_settings.job_type} {task_job} -o {output}"
         try:
             subprocess.check_call(cmd.split())
         except Exception as exc:
