@@ -233,3 +233,19 @@ class ParsedConfig(_ConfigsBaseModel):
             any: Something
         """
         return {}
+
+    def getattr(self, attr):
+        """Get attribute from config.
+
+        Args:
+            attr (str): Attribute to be retrieved.
+                Nested attributes can be retrieved using dot-separated syntax.
+
+        Returns:
+            any: The value of the requested attribute.
+        """
+        try:
+            return getattr(self, attr)
+        except AttributeError:
+            # Replace this with code to handle the raised exception
+            return None

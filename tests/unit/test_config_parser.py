@@ -15,7 +15,23 @@ from deode.datetime_utils import as_datetime
 
 @pytest.fixture()
 def minimal_raw_config():
-    return {"general": {"assimilation_times": {"list": ["20000101T00"]}}}
+    return {
+        "general": {
+            "assimilation_times": {"list": ["20000101T00"]}
+        },
+        "task": {
+            "forecast": {
+                "wrapper": "time",
+                "command": "echo Hello world && touch output",
+                "input_data": {
+                    "input_file": "/dev/null"
+                },
+                "output_data": {
+                    "output": "archived_file"
+                }
+            }
+        }
+    }
 
 
 @pytest.fixture()
@@ -46,6 +62,13 @@ class TestGeneralBehaviour:
             recursively_retrieved_value
             is minimal_parsed_config.general.assimilation_times.list
         )
+
+    def test_config_recursive_attr_access_task(self, minimal_parsed_config):
+        recursively_retrieved_value = getattr(
+            minimal_parsed_config, "task.forecast.wrapper"
+        )
+        assert isinstance(recursively_retrieved_value, tuple)
+        assert recursively_retrieved_value is minimal_parsed_config.task.forecast.wapper
 
     def test_unrecognised_options_are_supported(
         self, raw_config_with_non_recognised_options
