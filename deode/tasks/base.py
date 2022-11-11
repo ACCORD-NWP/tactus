@@ -15,8 +15,11 @@ class Task(object):
         Args:
             config (deode.ParsedConfig): Configuration
             name (str): Task name
+
         """
         self.config = config
+        if "." in name:
+            name = name.split(".")[-1]
         self.name = name
         print("Base task")
 
@@ -50,6 +53,25 @@ class Task(object):
         self.execute()
         self.post()
 
+    def get_task_setting(self, setting):
+        """Get task setting.
+
+        Args:
+            setting (str): Setting to find in task.{self.name}
+
+        Returns:
+            value : Found setting
+
+        """
+        try:
+            value = self.config.get_value(f"task.{self.name}.{setting}")
+        except AttributeError:
+            print(f"Setting {setting} not found!")
+            return None
+
+        print("Setting =", setting, " value =", value)
+        return value
+
 
 class BinaryTask(Task):
     """Base Task class."""
@@ -63,33 +85,25 @@ class BinaryTask(Task):
         """
         print(f"Binary task {name}")
         Task.__init__(self, config, name)
-        wrapper = self.config.get_task_config(self.name, "wrapper")
-        # TODO
-        wrapper = "time"
+        wrapper = self.get_task_setting("wrapper")
         self.batch = BatchJob(os.environ, wrapper)
 
     def prep(self):
         """Prepare run."""
         Task.prep(self)
         print("Prepping binary task")
-        input_data = self.config.get_task_config(self.name, "input_data")
-        # TODO
-        input_data = {"input_file": "/dev/null"}
+        input_data = self.get_task_setting("input_data")
         InputData(input_data).prepare_input()
 
     def execute(self):
         """Execute binary task."""
         print("Executing binary task")
-        cmd = self.config.get_task_config(self.name, "command")
-        # TODO
-        cmd = "echo Hello world && touch output"
+        cmd = self.get_task_setting("command")
         self.batch.run(cmd)
 
     def post(self):
         """Post run."""
         print("Post binary task")
-        output_data = self.config.get_task_config(self.name, "output_data")
-        # TODO
-        output_data = {"output": "archived_file"}
+        output_data = self.get_task_setting("output_data")
         OutputData(output_data).archive_files()
         Task.post(self)
