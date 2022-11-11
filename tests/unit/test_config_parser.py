@@ -15,7 +15,35 @@ from deode.datetime_utils import as_datetime
 
 @pytest.fixture()
 def minimal_raw_config():
-    return {"general": {"assimilation_times": {"list": ["20000101T00"]}}}
+    return {
+        "general": {"assimilation_times": {"list": ["20000101T00"]}},
+        "task": {
+            "forecast": {
+                "wrapper": "time",
+                "command": "echo Hello world && touch output",
+                "input_data": {"input_file": "/dev/null"},
+                "output_data": {"output": "archived_file"},
+            }
+        },
+    }
+
+
+@pytest.fixture()
+def raw_config_with_task(minimal_raw_config):
+    rtn = minimal_raw_config.copy()
+    rtn.update(
+        {
+            "task": {
+                "forecast": {
+                    "wrapper": "time",
+                    "command": "echo Hello world && touch output",
+                    "input_data": {"input_file": "/dev/null"},
+                    "output_data": {"output": "archived_file"},
+                }
+            }
+        }
+    )
+    return rtn
 
 
 @pytest.fixture()
@@ -29,6 +57,11 @@ def raw_config_with_non_recognised_options(minimal_raw_config):
 @pytest.fixture()
 def minimal_parsed_config(minimal_raw_config):
     return ParsedConfig.parse_obj(minimal_raw_config)
+
+
+@pytest.fixture()
+def parsed_config_with_task(raw_config_with_task):
+    return ParsedConfig.parse_obj(raw_config_with_task)
 
 
 class TestGeneralBehaviour:
@@ -46,6 +79,21 @@ class TestGeneralBehaviour:
             recursively_retrieved_value
             is minimal_parsed_config.general.assimilation_times.list
         )
+
+    def test_config_recursive_attr_access_task(self, parsed_config_with_task):
+        with pytest.raises(
+            AttributeError, match="'dict' object has no attribute 'forecast'"
+        ):
+            # Since we still don't have a model for "task" in config_parser.py, it will be
+            # returned as a dictionary. The line below should therefore fail with the
+            # error specified above.
+            # TODO: Remove this part of the test once we define a model for "task" in the
+            #       config_parser.py file.
+            _ = parsed_config_with_task.task.forecast.wapper
+        recursively_retrieved_value = parsed_config_with_task.get_value(
+            "task.forecast.wrapper"
+        )
+        assert recursively_retrieved_value == "time"
 
     def test_unrecognised_options_are_supported(
         self, raw_config_with_non_recognised_options
