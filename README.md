@@ -184,3 +184,21 @@ deode -loglevel debug start suite \
 ```
 
 You can now open ecflow_ui and add ecflow-gen-${USER}-001 as the server with port 3141
+
+### Example using poetry and run the forecast task from hpc-login command line
+
+The example below shows how to run deode/task/forecast.py using the batch system rules defined in ecflow-gen.json.
+
+```
+> module load python3/3.8.8-01
+> module load troika
+> poetry shell
+> deode -loglevel debug run --task Forecast \
+ --template $PWD/ecf/stand_alone.py \
+ --job $PWD/forecast.job \
+ --type hpc \
+ --submit ecflow-gen.json \
+ --troika_config $PWD/config.yml \
+ -o $PWD/forecast.log
+
+```

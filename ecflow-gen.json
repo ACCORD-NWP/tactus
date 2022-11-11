@@ -11,12 +11,14 @@
   "serial": {
     "SCHOST": "hpc",
     "BATCH": {
+       "ACCOUNT": "#SBATCH -A msdeode",
        "WALLTIME": "#SBATCH --time=00:05:00"
     }
   },
   "parallel": {
     "SCHOST": "hpc",
     "BATCH": {
+       "ACCOUNT": "#SBATCH -A msdeode",
        "WALLTIME": "#SBATCH --time=00:10:00"
       },
     "tasks": [
