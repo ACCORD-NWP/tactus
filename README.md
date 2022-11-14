@@ -134,7 +134,9 @@ and general `deode` options. For info about specific subcommands and the
 options that apply to them only, **please run `deode SUBCOMMAND -h`** (note
 that the `-h` goes after the subcommand in this case).
 
-### Example with pip for ecflow-gen-${USER}-001
+### Example running a ecflow suite from server ecflow-gen-${USER}-001
+
+Log into hpc-login.ecmwf.int
 
 ```
 #!/usr/bin/bash
@@ -148,38 +150,27 @@ module load ecflow
 mkdir -p ~/projects
 cd ~/projects
 [ -d Deode-Prototype ] || git clone git@github.com:DEODE-NWP/Deode-Prototype.git
-
-# Add to your ~/.bashrc
-export PATH=$HOME/.local/bin:$PATH
-
 cd ~/projects/Deode-Prototype
-python3 -m pip install --upgrade pip --user
-pip3 install --user -e .
 
-# Put your config in ~/.deode/config.toml
-# Minimum config
-mkdir -p ~/.deode
-cat > ~/.deode/config.toml << EOF
-[general]
-data_rootdir = "SOME_PATH"
-outdir = "/tmp/deode_output"
+# Install deode with poetry if not done
+poetry install
+poetry shell
 
-[general.assimilation_times]
-start = "2020-08-15 00:00:00+00:00"
-end = "2020-08-16 21:00:00+00:00"
-cycle_length = "3H"
-EOF
-
+# Run experiment 
 ECF_HOST=`echo ecflow-gen-${USER}-001`
-# Not all arguments here are relly needed with troika. But not removed yet
-deode -loglevel debug start suite \
+
+deode -loglevel debug \
+-config_file \
+$HOME/projects/Deode-Prototype/docs/minimal_config_example.toml \
+start suite \
 --name test_deode \
 --ecf_host $ECF_HOST \
 --ecf_port 3141 \
 --submit $HOME/projects/Deode-Prototype/ecflow-gen.json \
---logfile $HOME/projects/Deode-Prototype/log \
+--logfile $HOME/test/log \
 --joboutdir $HOME/test \
---ecf_files $HOME/projects/Deode-Prototype/ecf
+--ecf_files $HOME/projects/Deode-Prototype/ecf \
+--start_command "ssh $ECF_HOST ecflow_start.sh -p 3141"
 
 ```
 
