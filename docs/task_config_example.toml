@@ -1,0 +1,20 @@
+[general]
+data_rootdir = "SOME_PATH"
+outdir = "/tmp/deode_output"
+
+[general.assimilation_times]
+start = "2020-08-15 00:00:00+00:00"
+end = "2020-08-16 21:00:00+00:00"
+cycle_length = "3H"
+
+[task]
+[task.forecast]
+wrapper = "time"
+command = "echo Hello world && touch output"
+
+[task.forecast.input_data]
+input_file = "/dev/null"
+
+[task.forecast.output_data]
+output = "archived_file"
+
