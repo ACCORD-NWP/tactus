@@ -196,6 +196,8 @@ class TaskSettings(object):
             )
             input_content = input_content.replace("@STAND_ALONE_TASK_LOGLEVEL@", "DEBUG")
             file_handler.write(input_content)
+        # Make file executable for user
+        os.chmod(task_job, 0o744)
 
 
 class TaskSettingsJson(TaskSettings):
