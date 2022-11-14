@@ -18,3 +18,26 @@ As the project grows, we may add more branches, such as an `integration` branch,
 
 ### Forks
 Forks are used to develop features and bug fixes. They are created from the `develop` branch by forking to a local repo. When a feature is ready, a PR is created to merge it to `develop`. When a bug fix is ready, a PR is created to merge it to `develop` and `master`.
+
+## Run on LUMI
+To run the project on LUMI, you need to have a LUMI account and add your SSH key to it. You can find instructions on how to do that [here](https://docs.lumi-supercomputer.eu/firststeps/SSH-keys/). Once you have your SSH key added, you can login to LUMI by running `ssh -i <your-private-key> <username>@@lumi.csc.fi`. Once logged in create a SSH key and add that to your GitHub account, so you can clone the repo. Then follow these steps (some of which can be put in your `.profile`)
+```sh
+# Clone the repo
+git clone git@github.com:DEODE-NWP/Deode-Prototype.git
+
+# Load modules
+module load LUMI/22.06
+module load cray-python/3.9.12.1
+
+# Install poetry
+curl -sSL https://install.python-poetry.org | python -
+export PATH="/users/$USER/.local/bin:$PATH"
+
+# Install project
+cd Deode-Prototype && poetry install
+# Poetry will create a virtual environment for the project and install all dependencies. Take note of the name of the virtual environment, it will be something like `deode-<hash>`
+export PATH="/users/$USER/.cache/pypoetry/virtualenvs/<poetry_venv>/bin/:$PATH"
+
+# Check that the project runs
+deode -h
+```
