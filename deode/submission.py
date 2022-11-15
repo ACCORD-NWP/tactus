@@ -249,7 +249,10 @@ class NoSchedulerSubmission:
             Exception: Submission failure
         """
         self.task_settings.parse_job(task, config, template_job, task_job)
-        cmd = f"{troika} -c {troika_config} submit {self.task_settings.job_type} {task_job} -o {output}"
+        cmd = (
+            f"{troika} -c {troika_config} submit {self.task_settings.job_type} "
+            f"{task_job} -o {output}"
+        )
         try:
             subprocess.check_call(cmd.split())
         except Exception as exc:

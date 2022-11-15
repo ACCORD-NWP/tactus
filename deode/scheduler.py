@@ -86,25 +86,30 @@ class EcflowServer(Server):
         Server (Server): Is a child of the base server.
     """
 
-    def __init__(self, ecf_host, ecf_port=3141, start_command=None):
+    def __init__(self, ecf_host, ecf_port=3141, start_command=None, dry_run=False):
         """Construct the EcflowServer.
 
         Args:
             ecf_host(str): Ecflow server host.
             ecf_port (int): Ecflow server port.
             start_command: Ecflow start server command.
+            dry_run(bool): Handle not running eflow server.
 
         Raises:
             Exception: If not ecflow is found.
 
         """
         if ecflow is None:
-            raise Exception("Ecflow was not found")
+            if not dry_run:
+                raise Exception("Ecflow was not found")
         Server.__init__(self)
         self.ecf_host = ecf_host
         self.ecf_port = ecf_port
         self.start_command = start_command
-        self.ecf_client = ecflow.Client(self.ecf_host, self.ecf_port)
+        if dry_run:
+            self.ecf_client = None
+        else:
+            self.ecf_client = ecflow.Client(self.ecf_host, self.ecf_port)
         self.settings = {"ECF_HOST": self.ecf_host, "ECF_PORT": self.ecf_port}
 
     def start_server(self):
@@ -116,7 +121,8 @@ class EcflowServer(Server):
         logger.debug("Start EcFlow server")
         try:
             logger.info("%s %s", self.ecf_host, self.ecf_port)
-            self.ecf_client.ping()
+            if self.ecf_client is not None:
+                self.ecf_client.ping()
             logger.info("EcFlow server is already running")
         except RuntimeError:
             logger.info("Re-Start EcFlow server")
@@ -141,7 +147,8 @@ class EcflowServer(Server):
         Args:
             suite_name (str): Nam eof the suite.
         """
-        self.ecf_client.begin_suite(suite_name)
+        if self.ecf_client is not None:
+            self.ecf_client.begin_suite(suite_name)
 
     def force_complete(self, task):
         """Force the task complete.
@@ -150,7 +157,8 @@ class EcflowServer(Server):
             task (scheduler.EcflowTask): Task to force complete.
         """
         ecf_name = task.ecf_name
-        self.ecf_client.force_state(ecf_name, ecflow.State.complete)
+        if self.ecf_client is not None:
+            self.ecf_client.force_state(ecf_name, ecflow.State.complete)
 
     def force_aborted(self, task):
         """Force the task aborted.
@@ -159,7 +167,8 @@ class EcflowServer(Server):
             task (scheduler.EcflowTask): Task to force aborted.
         """
         ecf_name = task.ecf_name
-        self.ecf_client.force_state(ecf_name, ecflow.State.aborted)
+        if self.ecf_client is not None:
+            self.ecf_client.force_state(ecf_name, ecflow.State.aborted)
 
     def replace(self, suite_name, def_file):
         """Replace the suite name from def_file.
@@ -172,14 +181,17 @@ class EcflowServer(Server):
             Exception: _description_
         """
         logger.debug("%s %s", suite_name, def_file)
-        try:
-            self.ecf_client.replace("/" + suite_name, def_file)
-        except RuntimeError:
+        if self.ecf_client is not None:
             try:
-                self.ecf_client.delete("/" + suite_name)
                 self.ecf_client.replace("/" + suite_name, def_file)
             except RuntimeError:
-                raise Exception("Could not replace suite " + suite_name) from RuntimeError
+                try:
+                    self.ecf_client.delete("/" + suite_name)
+                    self.ecf_client.replace("/" + suite_name, def_file)
+                except RuntimeError:
+                    raise Exception(
+                        "Could not replace suite " + suite_name
+                    ) from RuntimeError
 
 
 class EcflowLogServer:
