@@ -96,6 +96,16 @@ This sets up the git hook scripts defined in the
 [pre-commit](https://pre-commit.com) package is installed when you run any of
 the `poetry install` commands listed above.
 
+#### Installation troubleshooting
+
+If you encounter a following problem when performing installation with pip locally:
+
+    error: https://git.ecmwf.int/scm/ecsdk/troika.git did not send all necessary objects
+
+You might need to downgrade your pip version down to v21.2.
+
+    pip install pip==21.2
+
 
 ### After Installation: Configuration File
 
