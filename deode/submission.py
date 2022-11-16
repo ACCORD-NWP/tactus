@@ -2,6 +2,7 @@
 
 import json
 import os
+import sys
 import subprocess
 
 from .logs import get_logger
@@ -162,11 +163,7 @@ class TaskSettings(object):
         interpreter = self.get_task_settings(task, "INTERPRETER")
         logger.debug(interpreter)
         if interpreter is None:
-            cmd = ["type", "python3"]
-            returned_output = (
-                subprocess.check_output(cmd).decode("utf-8").strip().split(" ")[-1]
-            )
-            interpreter = f"#!{returned_output}"
+            interpreter = f"#!{sys.executable}"
 
         logger.debug(interpreter)
         with open(input_template_job, mode="r", encoding="utf-8") as file_handler:
@@ -192,7 +189,7 @@ class TaskSettings(object):
             input_content = input_content.replace("# @ENV_SUB@", python_task_env)
             input_content = input_content.replace("@STAND_ALONE_TASK_NAME@", task)
             input_content = input_content.replace(
-                "@STAND_ALONE_TASK_CONFIG@", str(config)
+                "@STAND_ALONE_TASK_CONFIG@", str(config.filepath)
             )
             input_content = input_content.replace("@STAND_ALONE_TASK_LOGLEVEL@", "DEBUG")
             file_handler.write(input_content)
@@ -239,7 +236,7 @@ class NoSchedulerSubmission:
 
         Args:
             task (str): Task name
-            config (str): Config
+            config_file (str): Config file
             template_job (str): Task template job file
             task_job (str): Task job file
             output(str): Output file
