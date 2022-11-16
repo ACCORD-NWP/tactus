@@ -9,7 +9,7 @@ cycle_length = "3H"
 
 [task]
 [task.forecast]
-wrapper = "time"
+wrapper = ""
 command = "echo Hello world && touch output"
 
 [task.forecast.input_data]
