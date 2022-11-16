@@ -21,7 +21,7 @@ def raw_config_with_task(minimal_raw_config):
         {
             "task": {
                 "forecast": {
-                    "wrapper": "time",
+                    "wrapper": "",
                     "command": "echo Hello world && touch output",
                     "input_data": {"input_file": "/dev/null"},
                     "output_data": {"output": "archived_file"},
