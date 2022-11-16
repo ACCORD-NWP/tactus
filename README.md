@@ -187,7 +187,7 @@ The example below shows how to run deode/task/forecast.py using the batch system
 > deode -loglevel debug run --task Forecast \
  --template $PWD/ecf/stand_alone.py \
  --job $PWD/forecast.job \
- --submit ecflow-gen.json \
+ --submit background.json \
  --troika_config $PWD/config.yml \
  -o $PWD/forecast.log
 
