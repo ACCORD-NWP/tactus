@@ -189,7 +189,7 @@ class TaskSettings(object):
             input_content = input_content.replace("# @ENV_SUB@", python_task_env)
             input_content = input_content.replace("@STAND_ALONE_TASK_NAME@", task)
             input_content = input_content.replace(
-                "@STAND_ALONE_TASK_CONFIG@", str(config.filepath)
+                "@STAND_ALONE_TASK_CONFIG@", str(config)
             )
             input_content = input_content.replace("@STAND_ALONE_TASK_LOGLEVEL@", "DEBUG")
             file_handler.write(input_content)

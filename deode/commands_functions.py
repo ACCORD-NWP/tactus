@@ -21,7 +21,7 @@ def run_task(args, config):
     sub = NoSchedulerSubmission(submission_defs)
     sub.submit(
         args.task,
-        config,
+        args.config_file,
         args.template_job,
         args.task_job,
         args.output,
