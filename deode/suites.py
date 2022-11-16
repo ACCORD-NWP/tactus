@@ -55,7 +55,7 @@ class SuiteDefinition(object):
 
         """
         if ecflow is None:
-            if dry_run is not None:
+            if not dry_run:
                 raise Exception("Ecflow not loaded properly")
 
         name = suite_name
