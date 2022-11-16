@@ -36,7 +36,13 @@ class TestSuite:
         }
         background = TaskSettings(settings)
         defs = SuiteDefinition(
-            suite_name, "/tmp/joboutdir", "ecf", config, background, loglevel  # noqa
+            suite_name,
+            "/tmp/joboutdir",  # noqa
+            "ecf",
+            config,
+            background,
+            loglevel,  # noqa
+            dry_run=True,
         )
         def_file = f"/tmp/{suite_name}.def"  # noqa
         defs.save_as_defs(def_file)

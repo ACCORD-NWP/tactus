@@ -161,7 +161,7 @@ ECF_HOST=`echo ecflow-gen-${USER}-001`
 
 deode -loglevel debug \
 -config_file \
-$HOME/projects/Deode-Prototype/docs/minimal_config_example.toml \
+$HOME/projects/Deode-Prototype/docs/task_config_example.toml \
 start suite \
 --name test_deode \
 --ecf_host $ECF_HOST \

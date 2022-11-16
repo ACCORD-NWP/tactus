@@ -51,7 +51,7 @@ def start_suite(args, config):
         args.suite_name,
         args.joboutdir,
         args.ecf_files,
-        config,
+        args.config_file,
         submission_defs,
         args.loglevel,
     )
