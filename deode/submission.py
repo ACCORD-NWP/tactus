@@ -2,8 +2,8 @@
 
 import json
 import os
-import sys
 import subprocess
+import sys
 
 from .logs import get_logger
 
@@ -225,7 +225,7 @@ class NoSchedulerSubmission:
     def submit(
         self,
         task,
-        config,
+        config_file,
         template_job,
         task_job,
         output,
@@ -247,7 +247,7 @@ class NoSchedulerSubmission:
         Raises:
             Exception: Submission failure
         """
-        self.task_settings.parse_job(task, config, template_job, task_job)
+        self.task_settings.parse_job(task, config_file, template_job, task_job)
         cmd = (
             f"{troika} -c {troika_config} submit {self.task_settings.job_type} "
             f"{task_job} -o {output}"
