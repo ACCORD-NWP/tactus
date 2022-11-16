@@ -21,7 +21,7 @@ class SuiteDefinition(object):
         suite_name,
         joboutdir,
         ecf_files,
-        config,
+        config_file,
         task_settings,
         loglevel,
         ecf_home=None,
@@ -29,6 +29,7 @@ class SuiteDefinition(object):
         ecf_out=None,
         ecf_jobout=None,
         ecf_micro="%",
+        dry_run=False,
     ):
         # TODO: Document the variables that right now only are described as "?"
         """Construct the definition.
@@ -38,7 +39,7 @@ class SuiteDefinition(object):
             joboutdir (str): Path to jobfiles
             ecf_files (str): Path to ecflow containers
             task_settings (TaskSettings): Submission configuration
-            config (deode.parsedConfig): Configuration
+            config_file (str): Configuration file
             task_settings (deode.TaskSettings): Task settings
             loglevel (str): Loglevel
             ecf_home (str, optional): ECF_HOME. Defaults to None.
@@ -47,13 +48,15 @@ class SuiteDefinition(object):
             ecf_out (str, optional): ECF_OUT. Defaults to None.
             ecf_jobout (str, optional): ECF_JOBOUT. Defaults to None.
             ecf_micro (str, optional): ECF_MICRO. Defaults to %
+            dry_run (bool, optional): Dry run not using ecflow. Defaults to False.
 
         Raises:
             Exception: Unless ecflow is not loaded
 
         """
         if ecflow is None:
-            raise Exception("Ecflow not loaded properly")
+            if not dry_run:
+                raise Exception("Ecflow not loaded properly")
 
         name = suite_name
         self.joboutdir = joboutdir
@@ -117,13 +120,13 @@ class SuiteDefinition(object):
             "ECF_JOBOUT": self.ecf_jobout,
             "ECF_TIMEOUT": 20,
             "LOGLEVEL": loglevel,
-            "CONFIG": str(config),
+            "CONFIG": str(config_file),
             "TROIKA": troika,
             "TROIKA_CONFIG": troika_config,
         }
 
         input_template = ecf_files + "/default.py"
-        self.suite = EcflowSuite(name, ecf_files, variables=variables)
+        self.suite = EcflowSuite(name, ecf_files, variables=variables, dry_run=dry_run)
 
         family = EcflowSuiteFamily("TestFamily", self.suite, ecf_files)
         # Background dos not work. Deode is ot able to run on vm with shared HOME as
@@ -137,7 +140,7 @@ class SuiteDefinition(object):
         EcflowSuiteTask(
             "Forecast",
             family,
-            config,
+            config_file,
             self.task_settings,
             ecf_files,
             input_template=input_template,
@@ -148,7 +151,7 @@ class SuiteDefinition(object):
         EcflowSuiteTask(
             "Forecast",
             family2,
-            config,
+            config_file,
             self.task_settings,
             ecf_files,
             input_template=input_template,
@@ -157,7 +160,7 @@ class SuiteDefinition(object):
         EcflowSuiteTask(
             "Serial",
             family2,
-            config,
+            config_file,
             self.task_settings,
             ecf_files,
             input_template=input_template,
@@ -196,21 +199,35 @@ class EcflowNode:
         self.name = name
         self.node_type = node_type
 
-        if self.node_type == "family":
-            self.ecf_node = parent.ecf_node.add_family(self.name)
-        elif self.node_type == "task":
-            self.ecf_node = parent.ecf_node.add_task(self.name)
-        elif self.node_type == "suite":
-            self.ecf_node = parent.add_suite(self.name)
+        has_node = True
+        if parent is None:
+            has_node = False
+        if has_node and node_type != "suite":
+            if hasattr(parent, "ecf_node"):
+                if parent.ecf_node is None:
+                    has_node = False
+        if not has_node:
+            self.ecf_node = None
+            path = ""
         else:
-            raise NotImplementedError
+            if self.node_type == "family":
+                self.ecf_node = parent.ecf_node.add_family(self.name)
+            elif self.node_type == "task":
+                self.ecf_node = parent.ecf_node.add_task(self.name)
+            elif self.node_type == "suite":
+                self.ecf_node = parent.add_suite(self.name)
+            else:
+                raise NotImplementedError
 
-        self.path = self.ecf_node.get_abs_node_path()
+            path = self.ecf_node.get_abs_node_path()
+
+        self.path = path
         self.ecf_container_path = ecf_files + self.path
         if variables is not None:
             for key, value in variables.items():
                 logger.debug("key=%s value=%s", key, value)
-                self.ecf_node.add_variable(key, value)
+                if self.ecf_node is not None:
+                    self.ecf_node.add_variable(key, value)
 
 
 class EcflowNodeContainer(EcflowNode):
@@ -245,7 +262,7 @@ class EcflowSuite(EcflowNodeContainer):
         (EcflowNodeContainer): A child of the EcflowNodeContainer class.
     """
 
-    def __init__(self, name, ecf_files, variables=None):
+    def __init__(self, name, ecf_files, variables=None, dry_run=False):
         # TODO: Document the variables that right now only are described as "?"
         """Construct the Ecflow suite.
 
@@ -253,9 +270,13 @@ class EcflowSuite(EcflowNodeContainer):
             name (str): Name of suite
             ecf_files (str): Location of ecf files
             variables (dict, optional): Variables to map. Defaults to None
+            dry_run (bool, optional): Dry run not using ecflow. Defaults to False.
 
         """
-        self.defs = ecflow.Defs({})
+        if dry_run:
+            self.defs = None
+        else:
+            self.defs = ecflow.Defs({})
 
         EcflowNodeContainer.__init__(
             self, name, "suite", self.defs, ecf_files, variables=variables
@@ -267,7 +288,8 @@ class EcflowSuite(EcflowNodeContainer):
         Args:
             def_file (str): Name of the definition file.
         """
-        self.defs.save_as_defs(def_file)
+        if self.defs is not None:
+            self.defs.save_as_defs(def_file)
         logger.info("def file saved to %s", def_file)
 
 
@@ -293,7 +315,8 @@ class EcflowSuiteFamily(EcflowNodeContainer):
             self, name, "family", parent, ecf_files, variables=variables
         )
         logger.debug(self.ecf_container_path)
-        self.ecf_node.add_variable("ECF_FILES", self.ecf_container_path)
+        if self.ecf_node is not None:
+            self.ecf_node.add_variable("ECF_FILES", self.ecf_container_path)
 
 
 class EcflowSuiteTask(EcflowNode):
@@ -307,7 +330,7 @@ class EcflowSuiteTask(EcflowNode):
         self,
         name,
         parent,
-        config,
+        config_file,
         task_settings,
         ecf_files,
         input_template=None,
@@ -322,7 +345,7 @@ class EcflowSuiteTask(EcflowNode):
             parent (EcflowNode): Parent node.
             ecf_files (str): Path to ecflow containers
             task_settings (TaskSettings): Submission configuration
-            config (deode.parsedConfig): Configuration
+            config_file (str): Configuration file
             task_settings (deode.TaskSettings): Task settings
             input_template(str, optional): Input template
             parse (bool, optional): To parse template file or not
@@ -347,10 +370,11 @@ class EcflowSuiteTask(EcflowNode):
             logger.debug("vars %s", variables)
             for var, value in variables.items():
                 logger.debug("var=%s value=%s", var, value)
-                self.ecf_node.add_variable(var, value)
+                if self.ecf_node is not None:
+                    self.ecf_node.add_variable(var, value)
             task_settings.parse_job(
                 name,
-                config,
+                config_file,
                 input_template,
                 task_container,
                 variables=variables,

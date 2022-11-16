@@ -171,7 +171,7 @@ ECF_HOST=`echo ecflow-gen-${USER}-001`
 
 deode -loglevel debug \
 -config_file \
-$HOME/projects/Deode-Prototype/docs/minimal_config_example.toml \
+$HOME/projects/Deode-Prototype/docs/task_config_example.toml \
 start suite \
 --name test_deode \
 --ecf_host $ECF_HOST \
@@ -197,7 +197,7 @@ The example below shows how to run deode/task/forecast.py using the batch system
 > deode -loglevel debug run --task Forecast \
  --template $PWD/ecf/stand_alone.py \
  --job $PWD/forecast.job \
- --submit ecflow-gen.json \
+ --submit background.json \
  --troika_config $PWD/config.yml \
  -o $PWD/forecast.log
 
