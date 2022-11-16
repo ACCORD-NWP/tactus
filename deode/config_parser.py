@@ -74,7 +74,7 @@ class _ConfigsBaseModel(BaseModel, extra=Extra.allow, frozen=True):
     """Base model for all models defined in this file."""
 
     @root_validator(pre=True)
-    def convert_lists_into_tuples(cls, values):
+    def convert_lists_into_tuples(cls, values):  # noqa: N805
         """Convert 'list' inputs into tuples. Helps serialisation, needed for dumps."""
         for key, value in values.items():
             if isinstance(value, list):
