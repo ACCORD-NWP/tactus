@@ -240,6 +240,7 @@ class ParsedConfig(_ConfigsBaseModel):
             .config_parser.ParsedConfig: Parsed configs from config_path.
         """
         config_path = Path(config_path).expanduser().resolve()
+        cls.filepath = config_path
         logging.info("Reading config file %s", config_path)
         with open(config_path, "rb") as config_file:
             raw_config = tomlkit.load(config_file)
