@@ -15,42 +15,52 @@ from deode.datetime_utils import as_datetime
 
 @pytest.fixture()
 def minimal_raw_config():
-    return {
-        "general": {"assimilation_times": {"list": ["20000101T00"]}},
-        "task": {
-            "forecast": {
-                "wrapper": "time",
-                "command": "echo Hello world && touch output",
-                "input_data": {"input_file": "/dev/null"},
-                "output_data": {"output": "archived_file"},
-            }
-        },
-    }
+    return tomlkit.parse(
+        """
+        [general]
+            assimilation_times.list = ["20000101T00"]
+        """
+    )
 
 
 @pytest.fixture()
 def raw_config_with_task(minimal_raw_config):
     rtn = minimal_raw_config.copy()
-    rtn.update(
-        {
-            "task": {
-                "forecast": {
-                    "wrapper": "time",
-                    "command": "echo Hello world && touch output",
-                    "input_data": {"input_file": "/dev/null"},
-                    "output_data": {"output": "archived_file"},
-                }
-            }
-        }
+    task_configs = tomlkit.parse(
+        """
+        [task.forecast]
+            wrapper = "time"
+            command = "echo Hello world && touch output"
+            input_data.input_file = "/dev/null"
+            output_data.output = "archived_file"
+        """
     )
+    rtn.update(task_configs)
+
     return rtn
 
 
 @pytest.fixture()
 def raw_config_with_non_recognised_options(minimal_raw_config):
     raw_config = minimal_raw_config.copy()
-    new_section = {"unrecognised_section_name": {"foo": "bar"}}
+
+    new_section = tomlkit.parse(
+        """
+        [unrecognised_section_name]
+            foo = "bar"
+        """
+    )
     raw_config.update(new_section)
+
+    raw_config["general"].update(
+        tomlkit.parse(
+            """
+            baz = "qux"
+            unknown_field = ["A", "B"]
+            """
+        )
+    )
+
     return raw_config
 
 
@@ -82,7 +92,7 @@ class TestGeneralBehaviour:
 
     def test_config_recursive_attr_access_task(self, parsed_config_with_task):
         with pytest.raises(
-            AttributeError, match="'dict' object has no attribute 'forecast'"
+            AttributeError, match="'Table' object has no attribute 'forecast'"
         ):
             # Since we still don't have a model for "task" in config_parser.py, it will be
             # returned as a dictionary. The line below should therefore fail with the
@@ -111,8 +121,9 @@ class TestGeneralBehaviour:
         with pytest.raises(TypeError, match="is immutable"):
             minimal_parsed_config.foo = "bar"
 
-    def test_config_can_be_printed(self, minimal_parsed_config):
-        _ = str(minimal_parsed_config)
+    def test_config_can_be_printed(self, raw_config_with_non_recognised_options):
+        config = ParsedConfig.parse_obj(raw_config_with_non_recognised_options)
+        _ = str(config)
 
     def test_parsed_config_passes_toml_readwrite_roundtrip(self, minimal_parsed_config):
         toml_dumps = minimal_parsed_config.dumps(style="toml", exclude_unset=False)
@@ -181,11 +192,28 @@ class TestValidators:
     def test_parsing_complains_about_incompatible_date_specs(
         self, minimal_raw_config, start, end, dates_list
     ):
-        minimal_raw_config["general"]["assimilation_times"]["start"] = start
-        minimal_raw_config["general"]["assimilation_times"]["end"] = end
-        minimal_raw_config["general"]["assimilation_times"]["list"] = dates_list
+        raw_config = minimal_raw_config.copy()
+
+        new_config_info = "[general.assimilation_times]"
+        if start is not None:
+            new_config_info = f"""
+                 {new_config_info}
+                    start = '{start}'
+            """
+        if end is not None:
+            new_config_info = f"""
+                {new_config_info}
+                    end = '{end}'
+            """
+        if dates_list is not None:
+            new_config_info = f"""
+                {new_config_info}
+                    list = {dates_list}
+            """
+        raw_config.update(tomlkit.parse(new_config_info))
+
         with pytest.raises(ValidationError, match="Must specify either only"):
-            _ = ParsedConfig.parse_obj(minimal_raw_config)
+            _ = ParsedConfig.parse_obj(raw_config)
 
 
 if __name__ == "__main__":
