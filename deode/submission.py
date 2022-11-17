@@ -5,6 +5,9 @@ import os
 import subprocess
 import sys
 
+from deode.config_parser import ParsedConfig
+from deode.discover_task import get_task
+
 from .logs import get_logger
 
 logger = get_logger(__name__, "DEBUG")
@@ -247,6 +250,11 @@ class NoSchedulerSubmission:
         Raises:
             Exception: Submission failure
         """
+        config = ParsedConfig.from_file(config_file)
+        try:
+            get_task(task, config)
+        except KeyError:
+            raise Exception(f"Task not found: {task}") from KeyError
         self.task_settings.parse_job(task, config_file, template_job, task_job)
         cmd = (
             f"{troika} -c {troika_config} submit {self.task_settings.job_type} "
