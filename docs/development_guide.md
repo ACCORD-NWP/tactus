@@ -3,10 +3,42 @@ Describes best practices and guidelines for development in the Deode-Prototype r
 
 ## Best practices
 - Authors of PRs should not merge themself - Instead request a reviewer and an assignee. Assignee is responsible for merging.
+- Assignee and reviewer may be the same person.
 - Authors of PRs are responsible for ensuring that the PR is up to date with the base branch before merging.
 - Assignees should not merge PRs that have failing tests.
-- Assignee and reviewer may be the same person.
 - Commits to `master` and `develop` branches should only be via PRs.
+- We rely on the good sense of both author and reviewer.
+
+### Checklist for authors
+- ✔️ If not up-to-date, pull in the target branch.
+- ✔️ Describe what the PR contains.
+- ✔️ Ensure your PR does not contain seperate features.
+
+### Checklist for reviewers
+Each PR comes with its own improvements and flaws. The reviewer should check the following:
+- ✔️ Is the code readable?
+- ✔️ Is the code well tested? (Look at the coverage report)
+- ✔️ Is the code documented?
+- ✔️ Is the code easy to maintain?
+
+### Checklist for assignees
+- ✔️ Is the PR up to date with the base branch?
+- ✔️ Are the tests passing?
+- ✔️ Is the PR ready to be merged?
+- ✔️ Squash commits and merge the PR.
+
+## Local testing
+No-one likes to wait for the CI to run tests. It is therefore recommended to run tests locally before pushing to the remote repository, and before creating a PR, but no one is enforced to this. How you work locally is entirely up to you.
+
+Here is a list of tests being run in the pipeline, that you can run locally from the root of the repo.
+
+**Linting:**
+- `flakeheaven lint`
+
+**Tests:**
+- `pytest --cov=./ tests/` *(In the pipeline we run multiple versions of python)*
+
+
 
 ## Branches
 As of now, the repository has two main branches:
