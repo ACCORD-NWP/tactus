@@ -73,6 +73,14 @@ class ParsedPath(Path):
 class _ConfigsBaseModel(BaseModel, extra=Extra.allow, frozen=True):
     """Base model for all models defined in this file."""
 
+    @root_validator(pre=True)
+    def convert_lists_into_tuples(cls, values):  # noqa: N805
+        """Convert 'list' inputs into tuples. Helps serialisation, needed for dumps."""
+        for key, value in values.items():
+            if isinstance(value, list):
+                values[key] = tuple(value)
+        return values
+
     def __getattr__(self, items):
         """Get attribute.
 
@@ -118,10 +126,21 @@ class _ConfigsBaseModel(BaseModel, extra=Extra.allow, frozen=True):
         return reduce(get_attr_or_item, items.split("."), self)
 
     def dumps(
-        self, section="", style: Literal["toml", "json"] = "toml", exclude_unset=False
+        self,
+        section="",
+        style: Literal["toml", "json"] = "toml",
+        exclude_unset=False,
+        include_metadata=False,
     ):
-        """Get a nicely printed version of the models."""
-        config = self.dict(exclude_unset=exclude_unset, exclude_none=True)
+        """Get a nicely printed version of the models. Excludes the metadata section."""
+        exclude = {"metadata"}
+        if include_metadata:
+            exclude = None
+
+        config = self.dict(
+            exclude_unset=exclude_unset, exclude_none=True, exclude=exclude
+        )
+
         if section:
             section_tree = section.split(".")
             try:
@@ -185,6 +204,13 @@ class _InputDatesModel(_ConfigsBaseModel):
         return len(self._normalized)
 
 
+# "metadata" section
+class _MetadataSectionModel(_ConfigsBaseModel):
+    """Model for the 'metadata' section. This will be hidden when performing dumps."""
+
+    source_file_path: ParsedPath = None
+
+
 # "general" section
 class _GeneralSectionModel(_ConfigsBaseModel):
     """Model for the 'general' section."""
@@ -228,6 +254,7 @@ class ParsedConfig(_ConfigsBaseModel):
     general: _GeneralSectionModel
     commands: _CommandSectionModel = _CommandSectionModel()
     domain: _DomainSectionModel = _DomainSectionModel()
+    metadata: _MetadataSectionModel = _MetadataSectionModel()
 
     @classmethod
     def from_file(cls, config_path):
@@ -244,4 +271,10 @@ class ParsedConfig(_ConfigsBaseModel):
         with open(config_path, "rb") as config_file:
             raw_config = tomlkit.load(config_file)
 
-        return cls.parse_obj(raw_config)
+        new_config_obj = cls.parse_obj(raw_config)
+
+        # Add metadata about where the config was parsed from
+        metadata = new_config_obj.metadata.copy(update={"source_file_path": config_path})
+        new_config_obj = new_config_obj.copy(update={"metadata": metadata})
+
+        return new_config_obj

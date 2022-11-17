@@ -77,6 +77,9 @@ def show_config(args, config):
     logger.info("Printing configs in use...")
     print(
         config.dumps(
-            section=args.section, style=args.format, exclude_unset=args.no_defaults
+            section=args.section,
+            style=args.format,
+            exclude_unset=args.no_defaults,
+            include_metadata=args.show_metadata,
         )
     )
