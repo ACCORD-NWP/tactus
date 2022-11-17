@@ -212,6 +212,12 @@ def get_parsed_args(program_name="program", argv=None):
         action="store_true",
         help="Don't show defaults: Show only what is written in the config file.",
     )
+    parser_show_config.add_argument(
+        "--show-metadata",
+        "--metadata",
+        action="store_true",
+        help="Include the [metadata] section in the output.",
+    )
     parser_show_config.set_defaults(run_command=show_config)
 
     return parser.parse_args(argv)

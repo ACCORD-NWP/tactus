@@ -74,6 +74,28 @@ def parsed_config_with_task(raw_config_with_task):
     return ParsedConfig.parse_obj(raw_config_with_task)
 
 
+@pytest.fixture()
+def tmp_test_data_dir(tmpdir_factory, minimal_raw_config):
+    return Path(tmpdir_factory.mktemp("deode_test_rootdir"))
+
+
+@pytest.fixture()
+def config_path(minimal_raw_config, tmp_test_data_dir):
+    config_path = tmp_test_data_dir / "config.toml"
+
+    raw_config = minimal_raw_config.copy()
+    general_section_update = f"""
+        data_rootdir = "{tmp_test_data_dir.as_posix()}"
+        outdir = "{tmp_test_data_dir.as_posix()}"
+    """
+    raw_config["general"].update(tomlkit.parse(general_section_update))
+
+    with open(config_path, "w") as config_file:
+        tomlkit.dump(raw_config, config_file)
+
+    return config_path
+
+
 class TestGeneralBehaviour:
     # pylint: disable=no-self-use
 
@@ -130,6 +152,18 @@ class TestGeneralBehaviour:
         reloaded_parsed_config = ParsedConfig.parse_obj(tomlkit.loads(toml_dumps))
         new_toml_dumps = reloaded_parsed_config.dumps(style="toml", exclude_unset=False)
         assert new_toml_dumps == toml_dumps
+
+    def test_parsed_config_does_not_have_file_metadata_when_not_read_from_file(
+        self, minimal_parsed_config
+    ):
+        config = minimal_parsed_config.copy()
+        assert config.get_value("metadata.source_file_path") is None
+
+    def test_parsed_config_retains_file_metadata_when_read_from_file(self, config_path):
+        config = ParsedConfig.from_file(config_path)
+        config_source_file_path = config.get_value("metadata.source_file_path")
+        assert isinstance(config_source_file_path, Path)
+        assert config_source_file_path == config_path
 
 
 class TestValidators:
