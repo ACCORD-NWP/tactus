@@ -5,7 +5,6 @@ import os
 import subprocess
 import sys
 
-from deode.config_parser import ParsedConfig
 from deode.discover_task import get_task
 
 from .logs import get_logger
@@ -156,7 +155,7 @@ class TaskSettings(object):
 
         Args:
             task (str): Task name
-            config (str): The configuration
+            config (deode.config): The configuration
             input_template_job (str): Input container template.
             task_job (str): Task container
             variables (_type_, optional): _description_. Defaults to None.
@@ -191,9 +190,11 @@ class TaskSettings(object):
                 python_task_env = python_task_env + f"{e_setting}\n"
             input_content = input_content.replace("# @ENV_SUB@", python_task_env)
             input_content = input_content.replace("@STAND_ALONE_TASK_NAME@", task)
-            input_content = input_content.replace(
-                "@STAND_ALONE_TASK_CONFIG@", str(config)
-            )
+            config_file = config.get_value("metadata.source_file_path")
+            if config_file is not None:
+                input_content = input_content.replace(
+                    "@STAND_ALONE_TASK_CONFIG@", str(config_file)
+                )
             input_content = input_content.replace("@STAND_ALONE_TASK_LOGLEVEL@", "DEBUG")
             file_handler.write(input_content)
         # Make file executable for user
@@ -228,7 +229,7 @@ class NoSchedulerSubmission:
     def submit(
         self,
         task,
-        config_file,
+        config,
         template_job,
         task_job,
         output,
@@ -239,7 +240,7 @@ class NoSchedulerSubmission:
 
         Args:
             task (str): Task name
-            config_file (str): Config file
+            config (deode.ParsedConfig): Config
             template_job (str): Task template job file
             task_job (str): Task job file
             output(str): Output file
@@ -250,12 +251,11 @@ class NoSchedulerSubmission:
         Raises:
             Exception: Submission failure
         """
-        config = ParsedConfig.from_file(config_file)
         try:
             get_task(task, config)
         except KeyError:
             raise Exception(f"Task not found: {task}") from KeyError
-        self.task_settings.parse_job(task, config_file, template_job, task_job)
+        self.task_settings.parse_job(task, config, template_job, task_job)
         cmd = (
             f"{troika} -c {troika_config} submit {self.task_settings.job_type} "
             f"{task_job} -o {output}"

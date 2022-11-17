@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
 import pytest
-import tomlkit
 
 from deode.config_parser import ParsedConfig
 from deode.submission import NoSchedulerSubmission, TaskSettings
@@ -38,11 +37,9 @@ def parsed_config_with_task(raw_config_with_task):
 
 
 @pytest.fixture()
-def config_file_with_task(raw_config_with_task):
-    fname = "/tmp/config_file"  # noqa
-    with open(fname, mode="w", encoding="utf8") as file_handler:
-        tomlkit.dump(raw_config_with_task, file_handler)
-    return fname
+def config_from_task_config_file():
+    fname = "docs/task_config_example.toml"
+    return ParsedConfig.from_file(fname)
 
 
 class TestSubmission:
@@ -51,8 +48,8 @@ class TestSubmission:
     def test_config_can_be_instantiated(self, parsed_config_with_task):
         assert isinstance(parsed_config_with_task, ParsedConfig)
 
-    def test_submit(self, config_file_with_task):
-        config_file = config_file_with_task
+    def test_submit(self, config_from_task_config_file):
+        config = config_from_task_config_file
         task = "forecast"
         template_job = "ecf/stand_alone.py"
         task_job = f"/tmp/{task}.job"  # noqa
@@ -65,11 +62,11 @@ class TestSubmission:
         background = TaskSettings(settings)
         sub = NoSchedulerSubmission(background)
         sub.submit(
-            task, config_file, template_job, task_job, output, troika_config="config.yml"
+            task, config, template_job, task_job, output, troika_config="config.yml"
         )
 
-    def test_submit_non_existing_task(self, config_file_with_task):
-        config_file = config_file_with_task
+    def test_submit_non_existing_task(self, config_from_task_config_file):
+        config = config_from_task_config_file
         task = "not_existing"
         template_job = "ecf/stand_alone.py"
         task_job = f"/tmp/{task}.job"  # noqa
@@ -85,7 +82,7 @@ class TestSubmission:
         with pytest.raises(Exception, match="Task not found:"):
             sub.submit(
                 task,
-                config_file,
+                config,
                 template_job,
                 task_job,
                 output,

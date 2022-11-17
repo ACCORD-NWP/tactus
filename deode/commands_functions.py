@@ -21,7 +21,7 @@ def run_task(args, config):
     sub = NoSchedulerSubmission(submission_defs)
     sub.submit(
         args.task,
-        args.config_file,
+        config,
         args.template_job,
         args.task_job,
         args.output,
@@ -51,7 +51,7 @@ def start_suite(args, config):
         args.suite_name,
         args.joboutdir,
         args.ecf_files,
-        args.config_file,
+        config,
         submission_defs,
         args.loglevel,
     )

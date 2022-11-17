@@ -21,7 +21,7 @@ class SuiteDefinition(object):
         suite_name,
         joboutdir,
         ecf_files,
-        config_file,
+        config,
         task_settings,
         loglevel,
         ecf_home=None,
@@ -39,7 +39,7 @@ class SuiteDefinition(object):
             joboutdir (str): Path to jobfiles
             ecf_files (str): Path to ecflow containers
             task_settings (TaskSettings): Submission configuration
-            config_file (str): Configuration file
+            config (deode.ParsedConfig): Configuration file
             task_settings (deode.TaskSettings): Task settings
             loglevel (str): Loglevel
             ecf_home (str, optional): ECF_HOME. Defaults to None.
@@ -107,6 +107,7 @@ class SuiteDefinition(object):
 
         troika = "/opt/troika/bin/troika"
         troika_config = "/opt/troika/etc/troika.yml"
+        config_file = config.get_value("metadata.source_file_path")
         variables = {
             "ECF_EXTN": ".py",
             "ECF_FILES": self.ecf_files,
@@ -140,7 +141,7 @@ class SuiteDefinition(object):
         EcflowSuiteTask(
             "Forecast",
             family,
-            config_file,
+            config,
             self.task_settings,
             ecf_files,
             input_template=input_template,
@@ -151,7 +152,7 @@ class SuiteDefinition(object):
         EcflowSuiteTask(
             "Forecast",
             family2,
-            config_file,
+            config,
             self.task_settings,
             ecf_files,
             input_template=input_template,
@@ -160,7 +161,7 @@ class SuiteDefinition(object):
         EcflowSuiteTask(
             "Serial",
             family2,
-            config_file,
+            config,
             self.task_settings,
             ecf_files,
             input_template=input_template,
@@ -330,7 +331,7 @@ class EcflowSuiteTask(EcflowNode):
         self,
         name,
         parent,
-        config_file,
+        config,
         task_settings,
         ecf_files,
         input_template=None,
@@ -345,7 +346,7 @@ class EcflowSuiteTask(EcflowNode):
             parent (EcflowNode): Parent node.
             ecf_files (str): Path to ecflow containers
             task_settings (TaskSettings): Submission configuration
-            config_file (str): Configuration file
+            config (deode.ParsedConfig): Configuration file
             task_settings (deode.TaskSettings): Task settings
             input_template(str, optional): Input template
             parse (bool, optional): To parse template file or not
@@ -374,7 +375,7 @@ class EcflowSuiteTask(EcflowNode):
                     self.ecf_node.add_variable(var, value)
             task_settings.parse_job(
                 name,
-                config_file,
+                config,
                 input_template,
                 task_container,
                 variables=variables,
