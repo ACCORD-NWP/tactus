@@ -72,4 +72,7 @@ export PATH="/users/$USER/.cache/pypoetry/virtualenvs/<poetry_venv>/bin/:$PATH"
 
 # Check that the project runs
 deode -h
+
+# Run a stand-alone task
+deode run --task Forecast --template $PWD/ecf/stand_alone.py --job $PWD/test.job --submit background.json --troika_config $PWD/config.yml -o $PWD/test.log
 ```
