@@ -76,6 +76,6 @@ poetry shell
 # Check that the project runs
 deode -h
 
-# Run a stand-alone task
-deode run --task Forecast --template $PWD/ecf/stand_alone.py --job $PWD/test.job --submit background.json --troika_config $PWD/config.yml -o $PWD/test.log
+# Run a stand-alone task with an example config file
+deode -config_file $PWD/docs/task_config_example.toml run --task Forecast --template $PWD/ecf/stand_alone.py --job $PWD/test.job --submit background.json --troika_config $PWD/config.yml -o $PWD/test.log
 ```
