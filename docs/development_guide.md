@@ -67,8 +67,11 @@ export PATH="/users/$USER/.local/bin:$PATH"
 
 # Install project
 cd Deode-Prototype && poetry install
-# Poetry will create a virtual environment for the project and install all dependencies. Take note of the name of the virtual environment, it will be something like `deode-<hash>`
-export PATH="/users/$USER/.cache/pypoetry/virtualenvs/<poetry_venv>/bin/:$PATH"
+# Poetry will create a virtual environment for the project and install all dependencies in this environment. 
+# It will be placed in something like: "/users/$USER/.cache/pypoetry/virtualenvs/<deode-<hash>>/bin/:$PATH"
+
+# To activate the environment run 
+poetry shell
 
 # Check that the project runs
 deode -h
