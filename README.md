@@ -84,17 +84,6 @@ If you have problems installing `poetry`, you can install in development mode us
 
     pip install -e .
 
-:wrench: **Recommendation to contributors:** Before making your first commit to
-the repo, please also run the following:
-
-    pre-commit install
-
-This sets up the git hook scripts defined in the
-[.pre-commit-config.yaml](.pre-commit-config.yaml) file and only needs to be run
-(i) before the first commit, and (ii) after having modified the
-[.pre-commit-config.yaml](.pre-commit-config.yaml) file. The
-[pre-commit](https://pre-commit.com) package is installed when you run any of
-the `poetry install` commands listed above.
 
 #### Installation troubleshooting
 
