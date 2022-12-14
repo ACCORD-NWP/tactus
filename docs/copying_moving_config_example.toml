@@ -1,0 +1,34 @@
+[general]
+data_rootdir = "/home/bgkm/data"
+outdir = "/home/bgkm/output"
+
+[general.assimilation_times]
+start = "2020-08-15 00:00:00+00:00"
+end = "2020-08-16 21:00:00+00:00"
+cycle_length = "3H"
+
+[task]
+[task.forecast]
+wrapper = "time srun"
+command = "MASTERODB"
+#[task.forecast.input_data."/home/sk1/pack/48t3_main.01.OMPIIFC2104.x/bin/MASTERODB"]
+#cp = "MASTERODB"
+
+[task.forecast.input_data."PFBULGBULG+0000"]
+"/home/bgbt/work/ICMSHOPER+0000" = "cp @INPUT@ @TARGET@"
+
+[task.forecast.input_data]
+"Const.Clim" = "/home/bgkm/rundir/Const.Clim"
+"const.clim.BULG" = "/home/bgkm/rundir/const.clim.BULG" 
+"fort.4" = "/home/bgkm/rundir/fort.4"
+"MASTERODB" = "/home/sk1/pack/48t3_main.01.OMPIIFC2104.x/bin/MASTERODB"
+"ICMSHBULGINIT" = "/home/bgkm/rundir/ICMSHBULGINIT"
+
+[task.forecast.output_data]
+"PFBULGBULG+0000" = "/home/bgkm/output/IICMSHOPER+0000"
+
+[arome]
+verbose = true
+
+
+
