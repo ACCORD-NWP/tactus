@@ -1,0 +1,16 @@
+
+# Run experiment 
+ECF_HOST=`echo ecflow-gen-${USER}-001`
+
+deode -loglevel debug \
+-config_file \
+$PWD/docs/task_config_example.toml \
+start suite \
+--name test_deode \
+--ecf_host $ECF_HOST \
+--ecf_port 3141 \
+--submit $PWD/ecflow-gen.json \
+--logfile $PWD/test/log \
+--joboutdir $PWD/test \
+--ecf_files $PWD/ecf \
+--start_command "ssh $ECF_HOST ecflow_start.sh -p 3141"
