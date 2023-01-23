@@ -128,7 +128,7 @@ class _ConfigsBaseModel(BaseModel, extra=Extra.allow, frozen=True):
     def dumps(
         self,
         section="",
-        style: Literal["toml", "json"] = "toml",
+        style: Literal["toml", "json", "yaml"] = "toml",
         exclude_unset=False,
         include_metadata=False,
     ):
@@ -157,6 +157,9 @@ class _ConfigsBaseModel(BaseModel, extra=Extra.allow, frozen=True):
         rtn = json.dumps(config, indent=4, sort_keys=False, default=lambda obj: str(obj))
         if style == "toml":
             return tomlkit.dumps(json.loads(rtn))
+        if style == "yaml":
+            return yaml.dump(json.loads(rtn))
+
         return rtn
 
     def __str__(self):

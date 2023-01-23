@@ -204,7 +204,11 @@ def get_parsed_args(program_name="program", argv=None):
         "section", help="The config section (optional)", default="", nargs="?"
     )
     parser_show_config.add_argument(
-        "--format", "-fmt", help="Output format", choices=["toml", "json"], default="toml"
+        "--format",
+        "-fmt",
+        help="Output format",
+        choices=["toml", "json", "yaml"],
+        default="toml",
     )
     parser_show_config.add_argument(
         "--no-defaults",
