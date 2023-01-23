@@ -18,7 +18,8 @@ def minimal_raw_config():
     return tomlkit.parse(
         """
         [general]
-            assimilation_times.list = ["20000101T00"]
+            data_rootdir = "."
+            assimilation_times.list = ["2000-01-01T00:00"]
         """
     )
 
@@ -113,9 +114,7 @@ class TestGeneralBehaviour:
         )
 
     def test_config_recursive_attr_access_task(self, parsed_config_with_task):
-        with pytest.raises(
-            AttributeError, match="'Table' object has no attribute 'forecast'"
-        ):
+        with pytest.raises(AttributeError, match="object has no attribute 'forecast'"):
             # Since we still don't have a model for "task" in config_parser.py, it will be
             # returned as a dictionary. The line below should therefore fail with the
             # error specified above.
@@ -209,7 +208,7 @@ class TestValidators:
         minimal_raw_config["general"]["assimilation_times"][
             "list"
         ] = datetime.datetime.now()
-        with pytest.raises(ValidationError, match="value is not a valid tuple"):
+        with pytest.raises(ValidationError, match="value is not a valid (tuple|list)"):
             _ = ParsedConfig.parse_obj(minimal_raw_config)
 
     @pytest.mark.parametrize(
@@ -228,23 +227,25 @@ class TestValidators:
     ):
         raw_config = minimal_raw_config.copy()
 
-        new_config_info = "[general.assimilation_times]"
+        new_config_assim_times = "[general.assimilation_times]"
         if start is not None:
-            new_config_info = f"""
-                 {new_config_info}
+            new_config_assim_times = f"""
+                 {new_config_assim_times}
                     start = '{start}'
             """
         if end is not None:
-            new_config_info = f"""
-                {new_config_info}
+            new_config_assim_times = f"""
+                {new_config_assim_times}
                     end = '{end}'
             """
         if dates_list is not None:
-            new_config_info = f"""
-                {new_config_info}
+            new_config_assim_times = f"""
+                {new_config_assim_times}
                     list = {dates_list}
             """
-        raw_config.update(tomlkit.parse(new_config_info))
+        raw_config["general"]["assimilation_times"].update(
+            tomlkit.parse(new_config_assim_times)
+        )
 
         with pytest.raises(ValidationError, match="Must specify either only"):
             _ = ParsedConfig.parse_obj(raw_config)
