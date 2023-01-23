@@ -1,26 +1,24 @@
 #!/usr/bin/env python3
 """Registration and validation of options passed in the config file."""
 import datetime
+import io
 import json
 import logging
 import os
-import tempfile
+import sys
 from collections import defaultdict
-from functools import cached_property, reduce
+from contextlib import redirect_stderr
+from functools import cached_property, reduce, wraps
 from operator import getitem
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Literal, Optional, Tuple, Union
 
 import tomlkit
+import yaml
+from datamodel_code_generator import InputFileType, PythonVersion, generate
 from pandas.tseries.frequencies import to_offset
-from pydantic import (
-    BaseModel,
-    Extra,
-    PositiveFloat,
-    PositiveInt,
-    confloat,
-    root_validator,
-)
+from pydantic import BaseModel, Extra, root_validator
 
 from . import PACKAGE_NAME
 from .datetime_utils import TimeWindowContainer, as_datetime
@@ -61,6 +59,10 @@ class PandasOffsetFreqStr:
     def __get_validators__(cls):
         yield cls._validator
 
+    @classmethod
+    def __modify_schema__(cls, field_schema):
+        field_schema.update(type="string")
+
 
 class ParsedPath(Path):
     """Return pathlib.Path obj from string, with envvars & user expanded."""
@@ -76,10 +78,43 @@ class _ConfigsBaseModel(BaseModel, extra=Extra.allow, frozen=True):
     @root_validator(pre=True)
     def convert_lists_into_tuples(cls, values):  # noqa: N805
         """Convert 'list' inputs into tuples. Helps serialisation, needed for dumps."""
-        for key, value in values.items():
-            if isinstance(value, list):
-                values[key] = tuple(value)
+
+        def iterdict(d):
+            new_d = dict(d)
+            for k, v in d.items():
+                if isinstance(v, dict):
+                    new_d[k] = iterdict(v)
+                elif isinstance(v, list):
+                    new_d[k] = tuple(v)
+            return new_d
+
+        values = iterdict(values)
+
         return values
+
+    @classmethod
+    def from_file(cls, config_path):
+        """Read config file at location "config_path".
+
+        Args:
+            config_path (Union[pathlib.Path, str]): The path to the config file.
+
+        Returns:
+            .config_parser.ParsedConfig: Parsed configs from config_path.
+        """
+        config_path = Path(config_path).expanduser().resolve()
+        logging.info("Reading config file %s", config_path)
+        with open(config_path, "rb") as config_file:
+            raw_config = tomlkit.load(config_file)
+
+        # Add metadata about where the config was parsed from
+        old_metadata = raw_config.get("metadata", {})
+        new_metadata = {"source_file_path": config_path.as_posix()}
+        old_metadata.update(new_metadata)
+        raw_config["metadata"] = new_metadata
+        new_config_obj = cls.parse_obj(raw_config)
+
+        return new_config_obj
 
     def __getattr__(self, items):
         """Get attribute.
@@ -207,77 +242,53 @@ class _InputDatesModel(_ConfigsBaseModel):
         return len(self._normalized)
 
 
-# "metadata" section
-class _MetadataSectionModel(_ConfigsBaseModel):
-    """Model for the 'metadata' section. This will be hidden when performing dumps."""
+def gen_parsed_config_obj_from_json_scheme(json_schema_path):
+    """Return a pydantic model for a given json schema."""
+    with open(json_schema_path, "r") as schema_file:
+        json_schema = json.dumps(json.load(schema_file))
 
-    source_file_path: ParsedPath = None
+    with TemporaryDirectory() as temporary_directory_name:
+        temporary_directory = Path(temporary_directory_name)
+        with open(temporary_directory / "__init__.py", "w"):
+            pass
+
+        generate(
+            json_schema,
+            input_filename=json_schema_path,
+            input_file_type=InputFileType.JsonSchema,
+            output=Path(temporary_directory / "generated_model.py"),
+            # TODO: Change base_class to use a relative import
+            base_class="deode.config_parser._ConfigsBaseModel",
+            class_name="ParsedConfig",
+            target_python_version=PythonVersion.PY_38,
+        )
+
+        # print(Path(temporary_directory / "generated_model.py").read_text())
+        sys.path.append(temporary_directory.as_posix())
+        from generated_model import ParsedConfig as ConfigParsedFromJsonSchmema
+
+        class ParsedConfig(ConfigParsedFromJsonSchmema):
+            # pylint: disable=E0213
+            @root_validator(pre=False)
+            def validate_assimilation_times_input(cls, values):  # noqa: N805
+                try:
+                    assimilation_times = values["general"].get_value("assimilation_times")
+                except KeyError:
+                    return values
+                validated_assimilation_times = _InputDatesModel.parse_obj(
+                    assimilation_times
+                )
+
+                values["general"] = values["general"].copy(
+                    update={"assimilation_times": validated_assimilation_times}
+                )
+
+                return values
+
+    return ParsedConfig
 
 
-# "general" section
-class _GeneralSectionModel(_ConfigsBaseModel):
-    """Model for the 'general' section."""
-
-    data_rootdir: ParsedPath = Path(".")
-    assimilation_times: _InputDatesModel
-    outdir: ParsedPath = Path(tempfile.gettempdir()).resolve() / f"{PACKAGE_NAME}_output"
-
-
-# "commands" section
-class _CommandSectionModel(_ConfigsBaseModel):
-    """Model for the 'commands' section."""
-
-    class _SelectCommandSectionModel(_ConfigsBaseModel):
-        station_rejection_tol: confloat(ge=0, le=1) = 0.3
-        save_obsoul: bool = True
-
-    select: _SelectCommandSectionModel = _SelectCommandSectionModel()
-
-
-# domain and projection
-class _DomainSectionModel(_ConfigsBaseModel):
-    """Model for the 'domain' section."""
-
-    # These defaults are for the METCOOP25C domain. See
-    # <https://hirlam.org/trac/wiki/HarmonieSystemDocumentation/ModelDomain>
-    # <https://hirlam.org/trac/browser/Harmonie/scr/Harmonie_domains.pm>
-    name: str = "Domain"
-    shape: Tuple[PositiveInt, PositiveInt] = (900, 960)  # (n_lon. n_lat)
-    cell_sizes: Tuple[PositiveFloat, PositiveFloat] = (2500.0, 2500.0)  # In meters
-    center_lonlat: Tuple[confloat(ge=-180, lt=180), confloat(ge=-90, le=90)] = (
-        16.763011639,
-        63.489212956,
-    )
-    projparams: Union[dict, str] = "+proj=lcc +lon_0=15 +lat_0=63 +lat_1=63"
-
-
-class ParsedConfig(_ConfigsBaseModel):
-    """Model for validation of the data in the whole config file."""
-
-    general: _GeneralSectionModel
-    commands: _CommandSectionModel = _CommandSectionModel()
-    domain: _DomainSectionModel = _DomainSectionModel()
-    metadata: _MetadataSectionModel = _MetadataSectionModel()
-
-    @classmethod
-    def from_file(cls, config_path):
-        """Read config file at location "config_path".
-
-        Args:
-            config_path (Union[pathlib.Path, str]): The path to the config file.
-
-        Returns:
-            .config_parser.ParsedConfig: Parsed configs from config_path.
-        """
-        config_path = Path(config_path).expanduser().resolve()
-        logging.info("Reading config file %s", config_path)
-        with open(config_path, "rb") as config_file:
-            raw_config = tomlkit.load(config_file)
-
-        new_config_obj = cls.parse_obj(raw_config)
-
-        # Add metadata about where the config was parsed from
-        metadata = new_config_obj.metadata.copy(update={"source_file_path": config_path})
-        new_config_obj = new_config_obj.copy(update={"metadata": metadata})
-
-        return new_config_obj
+json_schema_file_path = (
+    Path(__file__).parent / "config_file_schemas" / "main_config_schema.json"
+)
+ParsedConfig = gen_parsed_config_obj_from_json_scheme(json_schema_file_path)

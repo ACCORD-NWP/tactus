@@ -18,6 +18,7 @@
 [tool.poetry.dependencies]
     python = "^3.8"
     attrs = "^21.4.0"
+    datamodel-code-generator = {git = "https://github.com/koxudaxi/datamodel-code-generator.git"}
     dateutils = "^0.6.12"
     humanize = "^3.14.0"
     numexpr = "^2.8.4"
