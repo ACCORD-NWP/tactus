@@ -1,27 +1,21 @@
 #!/usr/bin/env python3
 """Registration and validation of options passed in the config file."""
-import datetime
-import io
+import contextlib
 import json
 import logging
 import os
-import sys
 from collections import defaultdict
-from contextlib import redirect_stderr
-from functools import cached_property, reduce, wraps
+from functools import reduce
 from operator import getitem
 from pathlib import Path
-from tempfile import TemporaryDirectory
-from typing import Literal, Optional, Tuple, Union
+from typing import Literal, Union
 
+import fastjsonschema
 import tomlkit
 import yaml
-from datamodel_code_generator import InputFileType, PythonVersion, generate
-from pandas.tseries.frequencies import to_offset
 from pydantic import BaseModel, Extra, root_validator
 
 from . import PACKAGE_NAME
-from .datetime_utils import TimeWindowContainer, as_datetime
 
 logger = logging.getLogger(__name__)
 
@@ -37,44 +31,29 @@ def get_default_config_path():
     return default_conf_path
 
 
-# Define custom types for use with pydantic
-# See <https://pydantic-docs.helpmanual.io/usage/types/#custom-data-types>
-class InputDateTime(datetime.datetime):
-    """Return a datetime object constructed from passed config input."""
+def gen_base_model_with_json_validator(json_schema):
+    with contextlib.suppress(TypeError):
+        with open(Path(json_schema), "r") as schema_file:
+            json_schema = json.load(schema_file)
 
-    @classmethod
-    def __get_validators__(cls):
-        yield as_datetime
+    class ParsedConfig(BaseModel, extra=Extra.allow, frozen=True):
+        """Base model for all models defined in this file."""
 
+        json_validator = fastjsonschema.compile(json_schema)
 
-class PandasOffsetFreqStr:
-    """Return a validated date offset string."""
+        @classmethod
+        def parse_obj(cls, obj):
+            return super().parse_obj(cls.json_validator(dict(obj)))
 
-    @classmethod
-    def _validator(cls, string_repr):
-        _ = to_offset(string_repr)
-        return string_repr
-
-    @classmethod
-    def __get_validators__(cls):
-        yield cls._validator
-
-    @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update(type="string")
+    return ParsedConfig
 
 
-class ParsedPath(Path):
-    """Return pathlib.Path obj from string, with envvars & user expanded."""
-
-    @classmethod
-    def __get_validators__(cls):
-        yield lambda path: Path(os.path.expandvars(str(path))).expanduser()
+main_config_json_schema = (
+    Path(__file__).parent / "config_file_schemas" / "main_config_schema.json"
+)
 
 
-class _ConfigsBaseModel(BaseModel, extra=Extra.allow, frozen=True):
-    """Base model for all models defined in this file."""
-
+class ParsedConfig(gen_base_model_with_json_validator(main_config_json_schema)):
     @root_validator(pre=True)
     def convert_lists_into_tuples(cls, values):  # noqa: N805
         """Convert 'list' inputs into tuples. Helps serialisation, needed for dumps."""
@@ -88,9 +67,20 @@ class _ConfigsBaseModel(BaseModel, extra=Extra.allow, frozen=True):
                     new_d[k] = tuple(v)
             return new_d
 
-        values = iterdict(values)
+        return iterdict(values)
 
-        return values
+    @root_validator(pre=True)
+    def convert_subdicts_into_model_instance(cls, values):  # noqa: N805
+        """Convert nested dicts into instances of the model."""
+
+        def iterdict(d):
+            new_d = dict(d)
+            for k, v in d.items():
+                if isinstance(v, dict):
+                    new_d[k] = cls.construct(**iterdict(v))
+            return new_d
+
+        return iterdict(values)
 
     @classmethod
     def from_file(cls, config_path):
@@ -112,9 +102,8 @@ class _ConfigsBaseModel(BaseModel, extra=Extra.allow, frozen=True):
         new_metadata = {"source_file_path": config_path.as_posix()}
         old_metadata.update(new_metadata)
         raw_config["metadata"] = new_metadata
-        new_config_obj = cls.parse_obj(raw_config)
 
-        return new_config_obj
+        return cls.parse_obj(raw_config)
 
     def __getattr__(self, items):
         """Get attribute.
@@ -155,8 +144,8 @@ class _ConfigsBaseModel(BaseModel, extra=Extra.allow, frozen=True):
             except AttributeError as attr_error:
                 try:
                     return obj[item]
-                except KeyError as key_error:
-                    raise KeyError(key_error) from attr_error
+                except (KeyError, TypeError) as error:
+                    raise AttributeError(attr_error) from error
 
         return reduce(get_attr_or_item, items.split("."), self)
 
@@ -199,96 +188,3 @@ class _ConfigsBaseModel(BaseModel, extra=Extra.allow, frozen=True):
 
     def __str__(self):
         return self.dumps(style="json")
-
-
-###########################################################################
-# Registering config options (known opts, defaults, restrictions, etc).   #
-# This is where you should change, e.g., in order to add new config opts. #
-###########################################################################
-class _InputDatesModel(_ConfigsBaseModel):
-    """Model for the input dates."""
-
-    start: Optional[InputDateTime]
-    end: Optional[InputDateTime]
-    cycle_length: PandasOffsetFreqStr = "3H"
-    list: Optional[Tuple[InputDateTime, ...]]  # noqa: A003
-
-    # pylint: disable=E0213
-    @root_validator()
-    def _check_consistency_between_date_input_items(cls, values):  # noqa: N805
-        date_list, start, end = values.get("list"), values.get("start"), values.get("end")
-        fail_cond_1 = date_list and any((start, end))
-        fail_cond_2 = not date_list and not all((start, end))
-        if fail_cond_1 or fail_cond_2:
-            raise ValueError("Must specify either only 'list' or both 'start' and 'end'")
-        return values
-
-    @cached_property
-    def _normalized(self):
-        """Return an iterable with the dates corresponding to the passed configs."""
-        if self.list:
-            return TimeWindowContainer(data=self.list, cycle_length=self.cycle_length)
-        return TimeWindowContainer.from_start_end_and_length(
-            start=self.start, end=self.end, cycle_length=self.cycle_length
-        )
-
-    def __getitem__(self, item):
-        return self._normalized[item]
-
-    def __iter__(self):
-        return iter(self._normalized)
-
-    def __len__(self):
-        return len(self._normalized)
-
-
-def gen_parsed_config_obj_from_json_scheme(json_schema_path):
-    """Return a pydantic model for a given json schema."""
-    with open(json_schema_path, "r") as schema_file:
-        json_schema = json.dumps(json.load(schema_file))
-
-    with TemporaryDirectory() as temporary_directory_name:
-        temporary_directory = Path(temporary_directory_name)
-        with open(temporary_directory / "__init__.py", "w"):
-            pass
-
-        generate(
-            json_schema,
-            input_filename=json_schema_path,
-            input_file_type=InputFileType.JsonSchema,
-            output=Path(temporary_directory / "generated_model.py"),
-            # TODO: Change base_class to use a relative import
-            base_class="deode.config_parser._ConfigsBaseModel",
-            class_name="ParsedConfig",
-            target_python_version=PythonVersion.PY_38,
-        )
-
-        # print(Path(temporary_directory / "generated_model.py").read_text())
-        sys.path.append(temporary_directory.as_posix())
-        from generated_model import ParsedConfig as ConfigParsedFromJsonSchmema
-
-        class ParsedConfig(ConfigParsedFromJsonSchmema):
-            # pylint: disable=E0213
-            @root_validator(pre=False)
-            def validate_assimilation_times_input(cls, values):  # noqa: N805
-                try:
-                    assimilation_times = values["general"].get_value("assimilation_times")
-                except KeyError:
-                    return values
-                validated_assimilation_times = _InputDatesModel.parse_obj(
-                    assimilation_times
-                )
-
-                values["general"] = values["general"].copy(
-                    update={"assimilation_times": validated_assimilation_times}
-                )
-
-                return values
-
-    return ParsedConfig
-
-
-json_schema_file_path = (
-    Path(__file__).parent / "config_file_schemas" / "main_config_schema.json"
-)
-ParsedConfig = gen_parsed_config_obj_from_json_scheme(json_schema_file_path)

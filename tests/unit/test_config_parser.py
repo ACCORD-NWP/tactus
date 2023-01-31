@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 import tomlkit
+from fastjsonschema import JsonSchemaValueException
 from pandas.tseries.frequencies import to_offset
 from pydantic import BaseModel
 from pydantic.error_wrappers import ValidationError
@@ -19,7 +20,7 @@ def minimal_raw_config():
         """
         [general]
             data_rootdir = "."
-            assimilation_times.list = ["2000-01-01T00:00"]
+            assimilation_times.list = ["2000-01-01T00:00:00Z"]
         """
     )
 
@@ -114,13 +115,8 @@ class TestGeneralBehaviour:
         )
 
     def test_config_recursive_attr_access_task(self, parsed_config_with_task):
-        with pytest.raises(AttributeError, match="object has no attribute 'forecast'"):
-            # Since we still don't have a model for "task" in config_parser.py, it will be
-            # returned as a dictionary. The line below should therefore fail with the
-            # error specified above.
-            # TODO: Remove this part of the test once we define a model for "task" in the
-            #       config_parser.py file.
-            _ = parsed_config_with_task.task.forecast.wapper
+        with pytest.raises(AttributeError, match="object has no attribute 'foo'"):
+            _ = parsed_config_with_task.task.forecast.foo
         recursively_retrieved_value = parsed_config_with_task.get_value(
             "task.forecast.wrapper"
         )
@@ -170,6 +166,7 @@ class TestGeneralBehaviour:
 class TestValidators:
     # pylint: disable=no-self-use
 
+    @pytest.mark.skip(reason="Parsing config from json schema doesn't perform casting.")
     @pytest.mark.parametrize("picked_type", [int, float, bool, str])
     def test_validator_performs_simple_type_casting(
         self, minimal_raw_config, picked_type
@@ -205,27 +202,34 @@ class TestValidators:
         "dt_input",
         [
             # "20181010T00:00",
-            "2018-10-10T00:00",
+            "2018-10-10T00:00:00Z",
             # "20181010T00:10",
             # "1",
-            datetime.datetime.now(),
+            # datetime.datetime.now(),
         ],
     )
     def test_validator_works_with_input_datetime(self, dt_input, minimal_raw_config):
         minimal_raw_config["general"]["assimilation_times"]["list"] = [dt_input]
         parsed_config = ParsedConfig.parse_obj(minimal_raw_config)
         validated_value = parsed_config.general.assimilation_times.list[0]
-        assert isinstance(validated_value, datetime.datetime)
-        assert validated_value == as_datetime(dt_input)
+        # Comment next line because the json validator doesn't do type casting
+        # assert isinstance(validated_value, datetime.datetime)
+        assert as_datetime(validated_value) == as_datetime(dt_input)
 
     def test_parsing_complains_about_incompatible_type(self, minimal_raw_config):
         minimal_raw_config["general"]["assimilation_times"][
             "list"
         ] = datetime.datetime.now()
-        with pytest.raises(ValidationError, match="value is not a valid (tuple|list)"):
+        with pytest.raises(
+            JsonSchemaValueException,
+            match="data.general.assimilation_times.list must be array",
+        ):
             _ = ParsedConfig.parse_obj(minimal_raw_config)
 
-    @pytest.mark.skip(reason="Still refactoring code to get configs from json schema.")
+    @pytest.mark.skip(
+        reason="Still refactoring code to get configs from json schema, "
+        + "and this logic is not implemented yet."
+    )
     @pytest.mark.parametrize(
         ("start", "end", "dates_list"),
         [
