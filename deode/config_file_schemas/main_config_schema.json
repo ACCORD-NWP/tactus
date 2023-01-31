@@ -1,6 +1,7 @@
 {
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "ParsedConfig",
-  "description": "Model for validation of the data in the whole config file.",
+  "description": "Model for validation of the data in the main config file.",
   "type": "object",
   "additionalProperties": true,
   "properties": {
@@ -100,7 +101,7 @@
           "title": "Data Rootdir",
           "default": ".",
           "type": "string",
-          "__format": "path"
+          "format": "uri-reference"
         },
         "assimilation_times": {
           "$ref": "#/definitions/_InputDatesModel"
@@ -109,7 +110,7 @@
           "title": "Outdir",
           "default": "/tmp/deode_output",
           "type": "string",
-          "__format": "path"
+          "format": "uri-reference"
         }
       },
       "required": [
@@ -249,7 +250,7 @@
         "source_file_path": {
           "title": "Source File Path",
           "type": "string",
-          "__format": "path"
+          "format": "uri-reference"
         }
       }
     }
