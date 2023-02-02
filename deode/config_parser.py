@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Registration and validation of options passed in the config file."""
-import contextlib
 import json
 import logging
 import os
@@ -13,9 +12,14 @@ from typing import Literal, Union
 import fastjsonschema
 import tomlkit
 import yaml
+from fastjsonschema import JsonSchemaDefinitionException, JsonSchemaValueException
 from pydantic import BaseModel, Extra, root_validator
 
 from . import PACKAGE_NAME
+
+MAIN_CONFIG_JSON_SCHEMA_PATH = (
+    Path(__file__).parent / "config_file_schemas" / "main_config_schema.json"
+)
 
 logger = logging.getLogger(__name__)
 
@@ -31,29 +35,43 @@ def get_default_config_path():
     return default_conf_path
 
 
-def parsed_config_class_factory(json_schema):
-    with contextlib.suppress(TypeError):
-        with open(Path(json_schema), "r") as schema_file:
-            json_schema = json.load(schema_file)
+class InvalidJsonSchemaError(Exception):
+    """Error to be raised when parsing the json schema for the config file fails."""
+
+
+class ConfigFileValidationError(Exception):
+    """Error to be raised when parsing the input config file fails."""
+
+
+def parsed_config_class_factory(json_schema_file_path):
+    with open(Path(json_schema_file_path), "r") as schema_file:
+        json_schema = json.load(schema_file)
 
     class ParsedConfig(BaseModel, extra=Extra.allow, frozen=True):
         """Base model for all models defined in this file."""
 
-        json_validator = fastjsonschema.compile(json_schema)
+        try:
+            json_validator = fastjsonschema.compile(json_schema)
+        except JsonSchemaDefinitionException as err:
+            raise InvalidJsonSchemaError(
+                f'On file "{json_schema_file_path}": {err}'
+            ) from err
 
         @classmethod
         def parse_obj(cls, obj):
-            return super().parse_obj(cls.json_validator(dict(obj)))
+            try:
+                return super().parse_obj(cls.json_validator(dict(obj)))
+            except JsonSchemaValueException as err:
+                error_path = " -> ".join(err.path[1:])
+                human_readable_msg = err.message.replace(err.name, "")
+                raise ConfigFileValidationError(
+                    f'Invalid "{error_path}" value ({err.value}): {human_readable_msg}'
+                ) from err
 
     return ParsedConfig
 
 
-main_config_json_schema = (
-    Path(__file__).parent / "config_file_schemas" / "main_config_schema.json"
-)
-
-
-class ParsedConfig(parsed_config_class_factory(main_config_json_schema)):
+class ParsedConfig(parsed_config_class_factory(MAIN_CONFIG_JSON_SCHEMA_PATH)):
     @root_validator(pre=True)
     def convert_lists_into_tuples(cls, values):  # noqa: N805
         """Convert 'list' inputs into tuples. Helps serialisation, needed for dumps."""

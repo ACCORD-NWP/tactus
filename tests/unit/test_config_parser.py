@@ -10,7 +10,7 @@ from pandas.tseries.frequencies import to_offset
 from pydantic import BaseModel
 from pydantic.error_wrappers import ValidationError
 
-from deode.config_parser import ParsedConfig
+from deode.config_parser import ConfigFileValidationError, ParsedConfig
 from deode.datetime_utils import as_datetime
 
 
@@ -221,8 +221,8 @@ class TestValidators:
             "list"
         ] = datetime.datetime.now()
         with pytest.raises(
-            JsonSchemaValueException,
-            match="data.general.assimilation_times.list must be array",
+            ConfigFileValidationError,
+            match="must be array",
         ):
             _ = ParsedConfig.parse_obj(minimal_raw_config)
 
