@@ -31,7 +31,7 @@ def get_default_config_path():
     return default_conf_path
 
 
-def gen_base_model_with_json_validator(json_schema):
+def parsed_config_class_factory(json_schema):
     with contextlib.suppress(TypeError):
         with open(Path(json_schema), "r") as schema_file:
             json_schema = json.load(schema_file)
@@ -53,7 +53,7 @@ main_config_json_schema = (
 )
 
 
-class ParsedConfig(gen_base_model_with_json_validator(main_config_json_schema)):
+class ParsedConfig(parsed_config_class_factory(main_config_json_schema)):
     @root_validator(pre=True)
     def convert_lists_into_tuples(cls, values):  # noqa: N805
         """Convert 'list' inputs into tuples. Helps serialisation, needed for dumps."""
@@ -104,6 +104,10 @@ class ParsedConfig(gen_base_model_with_json_validator(main_config_json_schema)):
         raw_config["metadata"] = new_metadata
 
         return cls.parse_obj(raw_config)
+
+    def items(self):
+        """Emulate the "items" method from the dictionary type."""
+        return iter(self)
 
     def __getattr__(self, items):
         """Get attribute.
