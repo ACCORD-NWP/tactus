@@ -63,3 +63,29 @@ def get_logger(name, loglevel="INFO"):
         handlers=[logger_handler],
     )
     return logger
+
+
+def get_logger_from_config(config):
+    """Get logger with name "name" and loglevel from config.
+
+    Args:
+        config (deode.ParsedConfig): Config
+
+    Returns:
+        logging: Logger instance
+    """
+    loglevel = config.get_value("general.loglevel")
+    # Do we have a name yet?
+    # name = config.get_value("general.exp")  # noqa
+    name = "DEODE"
+    logger = logging.getLogger(name)
+    logger_handler = logging.StreamHandler()
+    logger_handler.setLevel(logging.getLevelName(loglevel.upper()))
+    logger_handler.setFormatter(CustomFormatter())
+    logging.basicConfig(
+        level=logging.getLevelName(loglevel.upper()),
+        handlers=[logger_handler],
+    )
+    logger.setLevel(logging.getLevelName(loglevel.upper()))
+    logger.info("returning logger with level %s %s", loglevel.upper(), logger.level)
+    return logger

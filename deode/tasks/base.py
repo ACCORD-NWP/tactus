@@ -2,8 +2,11 @@
 
 import os
 
+import socket
 from deode.tasks.batch import BatchJob
 from deode.tasks.data import InputData, OutputData
+from deode.toolbox import FileManager
+from deode.logs import get_logger_from_config
 
 
 class Task(object):
@@ -16,16 +19,43 @@ class Task(object):
             config (deode.ParsedConfig): Configuration
             name (str): Task name
 
+        Raises:
+            Exception: "You must set wrk"
+
         """
+        self.logger = get_logger_from_config(config)
         self.config = config
         if "." in name:
             name = name.split(".")[-1]
         self.name = name
-        print("Base task")
+        self.fmanager = FileManager(self.config)
+        self.platform = self.fmanager.platform
+
+        wrk = self.platform.get_system_value("wrk")
+        if wrk is None:
+            raise Exception("You must set wrk")
+        self.wrk = self.platform.substitute(wrk)
+        wdir = f"{self.wrk}/{socket.gethostname()}{str(os.getpid())}"
+        self.wdir = wdir
+        self.logger.info("Base task info")
+        self.logger.warning("Base task warning")
+        self.logger.debug("Base task debug")
+
+    def create_wrkdir(self):
+        """Create a cycle working directory."""
+        os.makedirs(self.wrk, exist_ok=True)
+
+    def create_wdir(self):
+        """Create task working directory."""
+        os.makedirs(self.wdir, exist_ok=True)
+
+    def change_to_wdir(self):
+        """Change to task working dir."""
+        os.chdir(self.wdir)
 
     def execute(self):
         """Do nothing for base execute task."""
-        print("Using empty base class execute")
+        self.logger.debug("Using empty base class execute")
 
     def prep(self):
         """Do default preparation before execution.
@@ -33,7 +63,9 @@ class Task(object):
         E.g. clean
 
         """
-        print("Base class prep")
+        self.logger.debug("Base class prep")
+        self.create_wdir()
+        self.change_to_wdir()
 
     def post(self):
         """Do default postfix.
@@ -41,7 +73,7 @@ class Task(object):
         E.g. clean
 
         """
-        print("Base class post")
+        self.logger.debug("Base class post")
 
     def run(self):
         """Run task.
@@ -66,10 +98,10 @@ class Task(object):
         try:
             value = self.config.get_value(f"task.{self.name}.{setting}")
         except AttributeError:
-            print(f"Setting {setting} not found!")
+            self.logger.warning("Setting %s not found!", setting)
             return None
 
-        print("Setting =", setting, " value =", value)
+        self.logger.debug("Setting = %s value =%s", setting, value)
         return value
 
 
@@ -83,27 +115,27 @@ class BinaryTask(Task):
             config (deode.ParsedConfig): Configuration
             name (str): Task name
         """
-        print(f"Binary task {name}")
         Task.__init__(self, config, name)
+        self.logger.debug("Binary task %s", name)
         wrapper = self.get_task_setting("wrapper")
         self.batch = BatchJob(os.environ, wrapper)
 
     def prep(self):
         """Prepare run."""
         Task.prep(self)
-        print("Prepping binary task")
+        self.logger.debug("Prepping binary task")
         input_data = self.get_task_setting("input_data")
         InputData(input_data).prepare_input()
 
     def execute(self):
         """Execute binary task."""
-        print("Executing binary task")
+        self.logger.debug("Executing binary task")
         cmd = self.get_task_setting("command")
         self.batch.run(cmd)
 
     def post(self):
         """Post run."""
-        print("Post binary task")
+        self.logger.debug("Post binary task")
         output_data = self.get_task_setting("output_data")
         OutputData(output_data).archive_files()
         Task.post(self)

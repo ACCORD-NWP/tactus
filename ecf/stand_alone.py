@@ -2,28 +2,25 @@
 
 from deode.config_parser import ParsedConfig
 from deode.discover_task import get_task
-from deode.logs import get_logger
-
+from deode.logs import get_logger_from_config
 # @ENV_SUB@
 
 
-def default_main(task, config, loglevel):
+def default_main(task, config):
     """Execute default main.
 
     Args:
         task (str): Task name
-        config (str.): Config file
-        loglevel (str): Loglevel
+        config (str): Config file
     """
-    logger = get_logger(__name__, loglevel)
-    logger.info("Running task %s", task)
     config = ParsedConfig.from_file(config)
+    logger = get_logger_from_config(config)
+    logger.info("Running task %s", task)
     get_task(task, config).run()
     logger.info("Finished task %s", task)
 
 
 if __name__ == "__main__":
-    task_name = "@STAND_ALONE_TASK_NAME@"
-    loglevel = "@STAND_ALONE_TASK_LOGLEVEL@"
-    config = "@STAND_ALONE_TASK_CONFIG@"
-    default_main(task_name, config, loglevel)
+    TASK_NAME = "@STAND_ALONE_TASK_NAME@"
+    CONFIG = "@STAND_ALONE_TASK_CONFIG@"
+    default_main(TASK_NAME, CONFIG)

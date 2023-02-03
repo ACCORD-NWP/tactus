@@ -10,7 +10,20 @@ from deode.tasks.base import Task
 @pytest.fixture()
 def minimal_raw_config():
     return {
-        "general": {"assimilation_times": {"list": ["20000101T00"]}},
+        "general": {
+            "assimilation_times": {"list": ["20000101T00"]},
+            "macros": [],
+            "os_macros": ["USER", "HOME"],
+            "basetime": "2000010100",
+            "validtime": "2000010200",
+            "domain": "MYDOMAIN",
+            "realization": -1,
+            "cnmexp": "DEOD",
+            "tstep": 60,
+            "loglevel": "DEBUG"
+        },
+        "platform": {},
+        "system": {"wrk": "/tmp/@YYYY@@MM@@DD@_@HH@"} # noqa
     }
 
 
@@ -39,6 +52,7 @@ def parsed_config_with_task(raw_config_with_task):
 
 class TestBaseTask:
     # pylint: disable=no-self-use
+    """Test some base tasks."""
 
     def test_config_can_be_instantiated(self, parsed_config_with_task):
         assert isinstance(parsed_config_with_task, ParsedConfig)

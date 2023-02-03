@@ -1,7 +1,7 @@
 """Default ecflow container."""
 from deode.config_parser import ParsedConfig
 from deode.discover_task import get_task
-from deode.logs import get_logger
+from deode.logs import get_logger_from_config
 from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
 
 # @ENV_SUB@
@@ -31,11 +31,14 @@ def parse_ecflow_vars():
 
 def default_main(**kwargs):
     """Ecflow container default method."""
-    loglevel = kwargs.get("LOGLEVEL")
-    logger = get_logger(__name__, loglevel)
-
+    loglevel = kwargs.get("LOGLEVEL")  # noqa W0612
     config = kwargs.get("CONFIG")
-    # TODO Add wrapper
+    # How to update config based on ecflow settings when config is assumed to be immutable
+    # config["general"].update({"loglevel": loglevel})  # noqa
+    config = ParsedConfig.from_file(config)
+    logger = get_logger_from_config(config)
+
+    # TODO Add wrapper  # noqa
     ecf_host = kwargs.get("ECF_HOST")
     ecf_port = kwargs.get("ECF_PORT")
     server = EcflowServer(ecf_host, ecf_port)
@@ -49,7 +52,6 @@ def default_main(**kwargs):
 
     # This will also handle call to sys.exit(), i.e. Client.__exit__ will still be called.
     with EcflowClient(server, task):
-        config = ParsedConfig.from_file(config)
         # TODO Add wrapper to config
         logger.info("Running task %s", task.ecf_name)
         get_task(task.ecf_task, config).run()
@@ -61,6 +63,6 @@ if __name__ == "__main__":
     kwargs_main = parse_ecflow_vars()
     default_main(**kwargs_main)
 
-"""
-%end"
-"""
+"""    # noqa
+%end"  # noqa
+"""    # noqa

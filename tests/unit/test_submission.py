@@ -9,7 +9,11 @@ from deode.submission import NoSchedulerSubmission, TaskSettings
 @pytest.fixture()
 def minimal_raw_config():
     return {
-        "general": {"assimilation_times": {"list": ["20000101T00"]}},
+        "general": {
+            "assimilation_times": {"list": ["20000101T00"]},
+            "loglevel": "DEBUG"
+        },
+        "system": {"wrk": "/tmp/@YYYY@@MM@@DD@_@HH@"} # noqa S108
     }
 
 

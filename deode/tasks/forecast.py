@@ -13,8 +13,8 @@ class Forecast(BinaryTask):
             config (deode.ParsedConfig): Configuration
 
         """
-        print("Construct forecast task")
         BinaryTask.__init__(self, config, __name__)
+        self.logger.debug("Construct forecast task")
 
 
 class PgdInput(Task):
@@ -93,3 +93,4 @@ class FirstGuess(Task):
 
         """
         Task.__init__(self, config, __name__)
+
