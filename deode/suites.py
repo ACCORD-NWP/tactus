@@ -129,42 +129,103 @@ class SuiteDefinition(object):
         input_template = ecf_files + "/default.py"
         self.suite = EcflowSuite(name, ecf_files, variables=variables, dry_run=dry_run)
 
-        family = EcflowSuiteFamily("TestFamily", self.suite, ecf_files)
+        build = EcflowSuiteFamily("Build", self.suite, ecf_files, def_status="complete")
         # Background dos not work. Deode is ot able to run on vm with shared HOME as
         # hpc-login
         # EcflowSuiteTask("Background", family, self.task_settings, ecf_files,
         #                input_template=input_template)
 
+        build_complete = EcflowSuiteTriggers([EcflowSuiteTrigger(build)])
+        static_data = EcflowSuiteFamily("StaticData", self.suite, ecf_files,
+                                        trigger=build_complete)
+
+        pgd_input = EcflowSuiteTask(
+            "PgdInput",
+            static_data,
+            config,
+            self.task_settings,
+            ecf_files,
+            input_template=input_template,
+            variables=None,
+        )
+        pgd_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd_input)])
+        pgd = EcflowSuiteTask(
+            "Pgd",
+            static_data,
+            config,
+            self.task_settings,
+            ecf_files,
+            input_template=input_template,
+            variables=None,
+            trigger=pgd_trigger
+        )
+        e923_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd)])
+        e923 = EcflowSuiteTask(
+            "E923",
+            static_data,
+            config,
+            self.task_settings,
+            ecf_files,
+            input_template=input_template,
+            variables=None,
+            trigger=e923_trigger
+        )
+
+        inputdata_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(e923)])
+        inputdata = EcflowSuiteFamily("InputData", self.suite, ecf_files,
+                                      trigger=inputdata_trigger)
+
+        prepare_cycle = EcflowSuiteTask(
+            "PrepareCycle",
+            inputdata,
+            config,
+            self.task_settings,
+            ecf_files,
+            input_template=input_template,
+            variables=None,
+        )
+
+        prepare_cycle_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prepare_cycle)])
+        EcflowSuiteTask(
+            "E927",
+            inputdata,
+            config,
+            self.task_settings,
+            ecf_files,
+            input_template=input_template,
+            variables=None,
+            trigger=prepare_cycle_done
+        )
+
+        cycle = EcflowSuiteFamily("Cycle", self.suite, ecf_files)
+
+        prepare_input_done = EcflowSuiteTriggers([EcflowSuiteTrigger(inputdata)])
+        initialization = EcflowSuiteFamily("Initialization", cycle, ecf_files,
+                                           trigger=prepare_input_done)
+        firstguess = EcflowSuiteTask(
+            "FirstGuess",
+            initialization,
+            config,
+            self.task_settings,
+            ecf_files,
+            input_template=input_template,
+            variables=None,
+        )
+
+        forecast_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(firstguess)])
+        forecasting = EcflowSuiteFamily("Forecasting", cycle, ecf_files,
+                                        trigger=forecast_trigger)
         logger.debug(self.task_settings.get_task_settings("Forecast"))
 
         variables = {"ECF_TIMEOUT": 5}
         EcflowSuiteTask(
             "Forecast",
-            family,
+            forecasting,
             config,
             self.task_settings,
             ecf_files,
             input_template=input_template,
             variables=variables,
-        )
-        family2 = EcflowSuiteFamily("TestFamily2", family, ecf_files)
-        variables = {"ECF_TIMEOUT": 10}
-        EcflowSuiteTask(
-            "Forecast",
-            family2,
-            config,
-            self.task_settings,
-            ecf_files,
-            input_template=input_template,
-            variables=variables,
-        )
-        EcflowSuiteTask(
-            "Serial",
-            family2,
-            config,
-            self.task_settings,
-            ecf_files,
-            input_template=input_template,
         )
 
     def save_as_defs(self, def_file):
@@ -182,8 +243,8 @@ class EcflowNode:
     Every Node instance has a name, and a path relative to a suite
     """
 
-    def __init__(self, name, node_type, parent, ecf_files, variables=None):
-        # TODO: Document the variables that right now only are described as "?"
+    def __init__(self, name, node_type, parent, ecf_files, variables=None,
+                 trigger=None, def_status=None):
         """Construct the EcflowNode.
 
         Args:
@@ -192,9 +253,13 @@ class EcflowNode:
             parent (EcflowNode): Parent node
             ecf_files (str): Location of ecf files
             variables (dict, optional): Variables to map. Defaults to None
+            trigger (EcflowSuiteTriggers): Trigger. Defaults to None
+            def_status (str, ecflow.Defstatus): Def status. Defaults to None
 
         Raises:
             NotImplementedError: Node type not implemented
+            Exception: "Triggers must be a Triggers object"
+            Exception: "Unknown defstatus"
 
         """
         self.name = name
@@ -230,6 +295,26 @@ class EcflowNode:
                 if self.ecf_node is not None:
                     self.ecf_node.add_variable(key, value)
 
+        if trigger is not None:
+            if isinstance(trigger, EcflowSuiteTriggers):
+                if trigger.trigger_string is not None:
+                    if self.ecf_node is not None:
+                        self.ecf_node.add_trigger(trigger.trigger_string)
+                else:
+                    print("WARNING: Empty trigger")
+            else:
+                raise Exception("Triggers must be a Triggers object")
+        self.trigger = trigger
+
+        if def_status is not None:
+            if self.ecf_node is not None:
+                if isinstance(def_status, str):
+                    self.ecf_node.add_defstatus(ecflow.Defstatus(def_status))
+                elif isinstance(def_status, ecflow.Defstatus):
+                    self.ecf_node.add_defstatus(def_status)
+                else:
+                    raise Exception("Unknown defstatus")
+
 
 class EcflowNodeContainer(EcflowNode):
     """Ecflow node container.
@@ -238,8 +323,8 @@ class EcflowNodeContainer(EcflowNode):
         EcflowNode (EcflowNode): Parent class.
     """
 
-    def __init__(self, name, node_type, parent, ecf_files, variables=None):
-        # TODO: Document the variables that right now only are described as "?"
+    def __init__(self, name, node_type, parent, ecf_files, variables=None,
+                 trigger=None, def_status=None):
         """Construct EcflowNodeContainer.
 
         Args:
@@ -248,10 +333,13 @@ class EcflowNodeContainer(EcflowNode):
             parent (EcflowNode): Parent to this node.
             ecf_files (str): Location of ecf files
             variables (dict, optional): Variables to map. Defaults to None
+            trigger (EcflowSuiteTriggers): Trigger. Defaults to None
+            def_status (str, ecflow.Defstatus): Def status. Defaults to None
 
         """
         EcflowNode.__init__(
-            self, name, node_type, parent, variables=variables, ecf_files=ecf_files
+            self, name, node_type, parent, variables=variables, ecf_files=ecf_files,
+            trigger=trigger, def_status=def_status
         )
 
 
@@ -263,8 +351,7 @@ class EcflowSuite(EcflowNodeContainer):
         (EcflowNodeContainer): A child of the EcflowNodeContainer class.
     """
 
-    def __init__(self, name, ecf_files, variables=None, dry_run=False):
-        # TODO: Document the variables that right now only are described as "?"
+    def __init__(self, name, ecf_files, variables=None, dry_run=False, def_status=None):
         """Construct the Ecflow suite.
 
         Args:
@@ -272,6 +359,7 @@ class EcflowSuite(EcflowNodeContainer):
             ecf_files (str): Location of ecf files
             variables (dict, optional): Variables to map. Defaults to None
             dry_run (bool, optional): Dry run not using ecflow. Defaults to False.
+            def_status (str, ecflow.Defstatus): Def status. Defaults to None
 
         """
         if dry_run:
@@ -280,7 +368,8 @@ class EcflowSuite(EcflowNodeContainer):
             self.defs = ecflow.Defs({})
 
         EcflowNodeContainer.__init__(
-            self, name, "suite", self.defs, ecf_files, variables=variables
+            self, name, "suite", self.defs, ecf_files, variables=variables,
+            def_status=def_status
         )
 
     def save_as_defs(self, def_file):
@@ -301,8 +390,8 @@ class EcflowSuiteFamily(EcflowNodeContainer):
         EcflowNodeContainer (_type_): _description_
     """
 
-    def __init__(self, name, parent, ecf_files, variables=None):
-        # TODO: Document the variables that right now only are described as "?"
+    def __init__(self, name, parent, ecf_files, variables=None, trigger=None,
+                 def_status=None):
         """Construct the family.
 
         Args:
@@ -310,10 +399,13 @@ class EcflowSuiteFamily(EcflowNodeContainer):
             parent (EcflowNodeContainer): Parent node.
             ecf_files (str): Location of ecf files
             variables (dict, optional): Variables to map. Defaults to None
+            trigger (EcflowSuiteTriggers): Trigger. Defaults to None
+            def_status (str, ecflow.Defstatus): Def status. Defaults to None
 
         """
         EcflowNodeContainer.__init__(
-            self, name, "family", parent, ecf_files, variables=variables
+            self, name, "family", parent, ecf_files, variables=variables,
+            trigger=trigger, def_status=def_status
         )
         logger.debug(self.ecf_container_path)
         if self.ecf_node is not None:
@@ -338,6 +430,8 @@ class EcflowSuiteTask(EcflowNode):
         parse=True,
         variables=None,
         ecf_micro="%",
+        trigger=None,
+        def_status=None
     ):
         """Constuct the EcflowSuiteTask.
 
@@ -352,13 +446,16 @@ class EcflowSuiteTask(EcflowNode):
             parse (bool, optional): To parse template file or not
             variables (dict, optional): Variables to map. Defaults to None
             ecf_micro (str, optional): ECF_MICRO. Defaults to %
+            trigger (EcflowSuiteTriggers): Trigger. Defaults to None
+            def_status (str, ecflow.Defstatus): Def status. Defaults to None
 
         Raises:
             Exception: Safety check
             FileNotFoundError: If the task container is not found.
 
         """
-        EcflowNode.__init__(self, name, "task", parent, ecf_files, variables=variables)
+        EcflowNode.__init__(self, name, "task", parent, ecf_files, variables=variables,
+                            trigger=trigger, def_status=def_status)
 
         logger.debug(parent.path)
         logger.debug(parent.ecf_container_path)
@@ -384,3 +481,91 @@ class EcflowSuiteTask(EcflowNode):
         else:
             if not os.path.exists(task_container):
                 raise FileNotFoundError(f"Container {task_container} is missing!")
+
+
+class EcflowSuiteTriggers():
+    """Triggers to an ecflow suite."""
+
+    def __init__(self, triggers, mode="AND"):
+        """Construct EcflowSuiteTriggers.
+
+        Args:
+            triggers (list): List of EcflowSuiteTrigger objects.
+            mode (str, optional): Cat mode. Defaults to "AND".
+
+        """
+        trigger_string = self.create_string(triggers, mode)
+        self.trigger_string = trigger_string
+
+    @staticmethod
+    def create_string(triggers, mode):
+        """Create the trigger string.
+
+        Args:
+            triggers (list): List of trigger objects
+            mode (str): Concatenation type.
+
+        Raises:
+            Exception: _description_
+            Exception: _description_
+
+        Returns:
+            str: The trigger string based on trigger objects.
+
+        """
+        if not isinstance(triggers, list):
+            triggers = [triggers]
+
+        if len(triggers) == 0:
+            raise Exception
+
+        trigger_string = "("
+        first = True
+        for trigger in triggers:
+            if trigger is not None:
+                cat = ""
+                if not first:
+                    cat = " " + mode + " "
+                if isinstance(trigger, EcflowSuiteTriggers):
+                    trigger_string = trigger_string + cat + trigger.trigger_string
+                else:
+                    if isinstance(trigger, EcflowSuiteTrigger):
+                        trigger_string = \
+                            trigger_string + cat + trigger.node.path + " == " +\
+                            trigger.mode
+                    else:
+                        raise Exception("Trigger must be a Trigger object")
+                first = False
+        trigger_string = trigger_string + ")"
+        # If no triggers were found/set
+        if first:
+            trigger_string = None
+        return trigger_string
+
+    def add_triggers(self, triggers, mode="AND"):
+        """Add triggers.
+
+        Args:
+            triggers (EcflowSuiteTriggers): The triggers
+            mode (str, optional): Cat mode. Defaults to "AND".
+
+        """
+        cat_string = " " + mode + " "
+        trigger_string = self.create_string(triggers, mode)
+        if trigger_string is not None:
+            self.trigger_string = self.trigger_string + cat_string + trigger_string
+
+
+class EcflowSuiteTrigger():
+    """EcFlow Trigger in a suite."""
+
+    def __init__(self, node, mode="complete"):
+        """Create a EcFlow trigger object.
+
+        Args:
+            node (scheduler.EcflowNode): The node to trigger on
+            mode (str, optional): Trigger type. Defaults to "complete".
+
+        """
+        self.node = node
+        self.mode = mode

@@ -48,7 +48,7 @@ class TestSuite:
             config,
             background,
             loglevel,  # noqa
-            dry_run=True,
+            dry_run=True
         )
         def_file = f"/tmp/{suite_name}.def"  # noqa
         defs.save_as_defs(def_file)
