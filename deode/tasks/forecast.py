@@ -93,4 +93,3 @@ class FirstGuess(Task):
 
         """
         Task.__init__(self, config, __name__)
-
