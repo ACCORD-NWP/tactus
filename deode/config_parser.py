@@ -45,48 +45,33 @@ def get_default_config_path():
 
 def convert_lists_into_tuples(values):
     """Convert 'list' inputs into tuples. Helps serialisation, needed for dumps."""
-
-    def iterdict(d):
-        new_d = d.copy()
-        for k, v in d.items():
-            if isinstance(v, list):
-                new_d[k] = tuple(v)
-            elif isinstance(v, dict):
-                new_d[k] = iterdict(v)
-        return new_d
-
-    return iterdict(values)
+    new_d = values.copy()
+    for k, v in values.items():
+        if isinstance(v, list):
+            new_d[k] = tuple(v)
+        elif isinstance(v, dict):
+            new_d[k] = convert_lists_into_tuples(v)
+    return new_d
 
 
 def remove_none_values(values):
     """Recursively remove None entries from the input dict."""
-
-    def iterdict(d):
-        new_d = {}
-        for k, v in d.items():
-            if isinstance(v, dict):
-                new_d[k] = iterdict(v)
-            elif v is not None:
-                new_d[k] = v
-        return new_d
-
-    return iterdict(values)
+    new_d = {}
+    for k, v in values.items():
+        if isinstance(v, dict):
+            new_d[k] = remove_none_values(v)
+        elif v is not None:
+            new_d[k] = v
+    return new_d
 
 
 def convert_subdicts_into_model_instance(cls, values):
     """Convert nested dicts into instances of the model."""
-
-    if not isinstance(values, dict):
-        return values
-
-    def iterdict(d):
-        new_d = d.copy()
-        for k, v in d.items():
-            if isinstance(v, dict):
-                new_d[k] = cls(**iterdict(v))
-        return new_d
-
-    return iterdict(values)
+    new_d = values.copy()
+    for k, v in values.items():
+        if isinstance(v, dict):
+            new_d[k] = cls(**convert_subdicts_into_model_instance(cls, v))
+    return new_d
 
 
 class BaseParsedConfig:
@@ -100,64 +85,10 @@ class BaseParsedConfig:
             super().__setattr__(field_name, field_value)
         super().__setattr__("__kwargs__", tuple(kwargs))
 
-    def __setattr__(self, key, value):
-        raise TypeError(f"cannot assign to {self.__class__.__name__} objects.")
-
     @classmethod
     def parse_obj(cls, obj):
         return cls(**obj)
 
-    def dict(self):
-        rtn = {}
-        for k, v in self.__dict__.copy().items():
-            if k not in self.__kwargs__:
-                continue
-            if isinstance(v, BaseParsedConfig):
-                rtn[k] = v.dict()
-            else:
-                rtn[k] = v
-        return rtn
-
-    def items(self):
-        """Emulate the "items" method from the dictionary type."""
-        return self.dict().items()
-
-    def __repr__(self):
-        return str(self.dict())
-
-    def copy(self):
-        return copy.deepcopy(self)
-
-
-def parsed_config_class_factory(json_schema_file_path):
-    with open(Path(json_schema_file_path), "r") as schema_file:
-        json_schema = json.load(schema_file)
-
-    class ParsedConfig(BaseParsedConfig):
-        """Base model for all models defined in this file."""
-
-        try:
-            json_validator = fastjsonschema.compile(json_schema)
-        except JsonSchemaDefinitionException as err:
-            raise InvalidJsonSchemaError(
-                f'On file "{json_schema_file_path}": {err}'
-            ) from err
-
-        def __init__(self, **kwargs):
-            try:
-                super().__init__(**self.__class__.json_validator(kwargs))
-            except JsonSchemaValueException as err:
-                error_path = " -> ".join(err.path[1:])
-                human_readable_msg = err.message.replace(err.name, "")
-                raise ConfigFileValidationError(
-                    f'"{error_path}" {human_readable_msg}. '
-                    + f'Received {type(err.value)} value "{err.value}"'
-                ) from err
-
-    return ParsedConfig
-
-
-class ParsedConfig(parsed_config_class_factory(MAIN_CONFIG_JSON_SCHEMA_PATH)):
     @classmethod
     def from_file(cls, config_path):
         """Read config file at location "config_path".
@@ -181,25 +112,23 @@ class ParsedConfig(parsed_config_class_factory(MAIN_CONFIG_JSON_SCHEMA_PATH)):
 
         return cls.parse_obj(raw_config)
 
-    def __getattr__(self, items):
-        """Get attribute.
+    def dict(self):
+        rtn = {}
+        for k, v in self.__dict__.copy().items():
+            if k not in self.__kwargs__:
+                continue
+            if isinstance(v, BaseParsedConfig):
+                rtn[k] = v.dict()
+            else:
+                rtn[k] = v
+        return rtn
 
-        Override so we can use,
-        e.g., getattr(config, "general.time_windows.start.minute").
+    def items(self):
+        """Emulate the "items" method from the dictionary type."""
+        return self.dict().items()
 
-        Args:
-            items (str): Attributes to be retrieved, as dot-separated strings.
-
-        Returns:
-            Any: Value of the parsed config item.
-        """
-
-        def regular_getattribute(obj, item):
-            if type(obj) is type(self):
-                return super().__getattribute__(item)
-            return getattr(obj, item)
-
-        return reduce(regular_getattribute, items.split("."), self)
+    def copy(self):
+        return copy.deepcopy(self)
 
     def get_value(self, items):
         """Recursively get the value of a config component.
@@ -259,5 +188,63 @@ class ParsedConfig(parsed_config_class_factory(MAIN_CONFIG_JSON_SCHEMA_PATH)):
 
         return rtn
 
+    def __repr__(self):
+        return str(self.dict())
+
+    def __setattr__(self, key, value):
+        raise TypeError(f"cannot assign to {self.__class__.__name__} objects.")
+
+    def __getattr__(self, items):
+        """Get attribute.
+
+        Override so we can use,
+        e.g., getattr(config, "general.time_windows.start.minute").
+
+        Args:
+            items (str): Attributes to be retrieved, as dot-separated strings.
+
+        Returns:
+            Any: Value of the parsed config item.
+        """
+
+        def regular_getattribute(obj, item):
+            if type(obj) is type(self):
+                return super().__getattribute__(item)
+            return getattr(obj, item)
+
+        return reduce(regular_getattribute, items.split("."), self)
+
     def __str__(self):
         return self.dumps(style="json")
+
+
+def parsed_config_class_factory(json_schema_file_path):
+    with open(Path(json_schema_file_path), "r") as schema_file:
+        json_schema = json.load(schema_file)
+
+    class ParsedConfig(BaseParsedConfig):
+        """Base model for all models defined in this file."""
+
+        try:
+            json_validator = fastjsonschema.compile(json_schema)
+        except JsonSchemaDefinitionException as err:
+            raise InvalidJsonSchemaError(
+                f'On file "{json_schema_file_path}": {err}'
+            ) from err
+
+        def __init__(self, **kwargs):
+            try:
+                super().__init__(**self.__class__.json_validator(kwargs))
+            except JsonSchemaValueException as err:
+                error_path = " -> ".join(err.path[1:])
+                human_readable_msg = err.message.replace(err.name, "")
+                raise ConfigFileValidationError(
+                    f'"{error_path}" {human_readable_msg}. '
+                    + f'Received {type(err.value)} value "{err.value}"'
+                ) from err
+
+    return ParsedConfig
+
+
+class ParsedConfig(parsed_config_class_factory(MAIN_CONFIG_JSON_SCHEMA_PATH)):
+    """Object that holds the validated configs"""
