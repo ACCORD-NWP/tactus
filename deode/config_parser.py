@@ -99,15 +99,13 @@ class BasicConfig:
         self,
         section="",
         style: Literal["toml", "json", "yaml"] = "toml",
-        exclude_unset=False,
         include_metadata=False,
     ):
         """Get a nicely printed version of the models. Excludes the metadata section."""
-        exclude = {"metadata"}
-        if include_metadata:
-            exclude = None
-
         config = self.dict()
+        if not include_metadata:
+            config.pop("metadata", None)
+
         if section:
             section_tree = section.split(".")
             try:

@@ -140,9 +140,9 @@ class TestGeneralBehaviour:
         _ = str(config)
 
     def test_parsed_config_passes_toml_readwrite_roundtrip(self, minimal_parsed_config):
-        toml_dumps = minimal_parsed_config.dumps(style="toml", exclude_unset=False)
+        toml_dumps = minimal_parsed_config.dumps(style="toml")
         reloaded_parsed_config = ParsedConfig.parse_obj(tomlkit.loads(toml_dumps))
-        new_toml_dumps = reloaded_parsed_config.dumps(style="toml", exclude_unset=False)
+        new_toml_dumps = reloaded_parsed_config.dumps(style="toml")
         assert new_toml_dumps == toml_dumps
 
     def test_parsed_config_does_not_have_file_metadata_when_not_read_from_file(
