@@ -5,10 +5,7 @@ from pathlib import Path
 
 import pytest
 import tomlkit
-from fastjsonschema import JsonSchemaValueException
 from pandas.tseries.frequencies import to_offset
-from pydantic import BaseModel
-from pydantic.error_wrappers import ValidationError
 
 from deode.config_parser import ConfigFileValidationError, ParsedConfig
 from deode.datetime_utils import as_datetime
@@ -102,7 +99,7 @@ class TestGeneralBehaviour:
     # pylint: disable=no-self-use
 
     def test_config_model_can_be_instantiated(self, minimal_parsed_config):
-        assert isinstance(minimal_parsed_config, BaseModel)
+        assert isinstance(minimal_parsed_config, ParsedConfig)
 
     def test_config_recursive_attr_access(self, minimal_parsed_config):
         recursively_retrieved_value = getattr(
@@ -131,11 +128,11 @@ class TestGeneralBehaviour:
         assert extra_section
 
     def test_config_is_immutable(self, minimal_parsed_config):
-        with pytest.raises(TypeError, match="is immutable"):
+        with pytest.raises(TypeError, match="cannot assign"):
             minimal_parsed_config.general = "foo"
         with pytest.raises(AttributeError, match="has no attribute 'foo'"):
             _ = minimal_parsed_config.foo
-        with pytest.raises(TypeError, match="is immutable"):
+        with pytest.raises(TypeError, match="cannot assign"):
             minimal_parsed_config.foo = "bar"
 
     def test_config_can_be_printed(self, raw_config_with_non_recognised_options):
@@ -152,7 +149,8 @@ class TestGeneralBehaviour:
         self, minimal_parsed_config
     ):
         config = minimal_parsed_config.copy()
-        assert config.get_value("metadata.source_file_path") is None
+        with pytest.raises(AttributeError, match="has no attribute 'source_file_path'"):
+            source_file_path = config.get_value("metadata.source_file_path")
 
     def test_parsed_config_retains_file_metadata_when_read_from_file(self, config_path):
         config = ParsedConfig.from_file(config_path)

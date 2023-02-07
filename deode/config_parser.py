@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Registration and validation of options passed in the config file."""
+import copy
 import json
 import logging
 import os
@@ -13,7 +14,6 @@ import fastjsonschema
 import tomlkit
 import yaml
 from fastjsonschema import JsonSchemaDefinitionException, JsonSchemaValueException
-from pydantic import BaseModel, Extra, root_validator
 
 from . import PACKAGE_NAME
 
@@ -22,6 +22,14 @@ MAIN_CONFIG_JSON_SCHEMA_PATH = (
 )
 
 logger = logging.getLogger(__name__)
+
+
+class InvalidJsonSchemaError(Exception):
+    """Error to be raised when parsing the json schema for the config file fails."""
+
+
+class ConfigFileValidationError(Exception):
+    """Error to be raised when parsing the input config file fails."""
 
 
 def get_default_config_path():
@@ -35,19 +43,97 @@ def get_default_config_path():
     return default_conf_path
 
 
-class InvalidJsonSchemaError(Exception):
-    """Error to be raised when parsing the json schema for the config file fails."""
+def convert_lists_into_tuples(values):
+    """Convert 'list' inputs into tuples. Helps serialisation, needed for dumps."""
+
+    def iterdict(d):
+        new_d = d.copy()
+        for k, v in d.items():
+            if isinstance(v, list):
+                new_d[k] = tuple(v)
+            elif isinstance(v, dict):
+                new_d[k] = iterdict(v)
+        return new_d
+
+    return iterdict(values)
 
 
-class ConfigFileValidationError(Exception):
-    """Error to be raised when parsing the input config file fails."""
+def remove_none_values(values):
+    """Recursively remove None entries from the input dict."""
+
+    def iterdict(d):
+        new_d = {}
+        for k, v in d.items():
+            if isinstance(v, dict):
+                new_d[k] = iterdict(v)
+            elif v is not None:
+                new_d[k] = v
+        return new_d
+
+    return iterdict(values)
+
+
+def convert_subdicts_into_model_instance(cls, values):
+    """Convert nested dicts into instances of the model."""
+
+    if not isinstance(values, dict):
+        return values
+
+    def iterdict(d):
+        new_d = d.copy()
+        for k, v in d.items():
+            if isinstance(v, dict):
+                new_d[k] = cls(**iterdict(v))
+        return new_d
+
+    return iterdict(values)
+
+
+class BaseParsedConfig:
+    """Base model for all models defined in this file."""
+
+    def __init__(self, **kwargs):
+        kwargs = remove_none_values(kwargs)
+        kwargs = convert_lists_into_tuples(kwargs)
+        kwargs = convert_subdicts_into_model_instance(cls=BaseParsedConfig, values=kwargs)
+        for field_name, field_value in kwargs.items():
+            super().__setattr__(field_name, field_value)
+        super().__setattr__("__kwargs__", tuple(kwargs))
+
+    def __setattr__(self, key, value):
+        raise TypeError(f"cannot assign to {self.__class__.__name__} objects.")
+
+    @classmethod
+    def parse_obj(cls, obj):
+        return cls(**obj)
+
+    def dict(self):
+        rtn = {}
+        for k, v in self.__dict__.copy().items():
+            if k not in self.__kwargs__:
+                continue
+            if isinstance(v, BaseParsedConfig):
+                rtn[k] = v.dict()
+            else:
+                rtn[k] = v
+        return rtn
+
+    def items(self):
+        """Emulate the "items" method from the dictionary type."""
+        return self.dict().items()
+
+    def __repr__(self):
+        return str(self.dict())
+
+    def copy(self):
+        return copy.deepcopy(self)
 
 
 def parsed_config_class_factory(json_schema_file_path):
     with open(Path(json_schema_file_path), "r") as schema_file:
         json_schema = json.load(schema_file)
 
-    class ParsedConfig(BaseModel, extra=Extra.allow, frozen=True):
+    class ParsedConfig(BaseParsedConfig):
         """Base model for all models defined in this file."""
 
         try:
@@ -57,49 +143,21 @@ def parsed_config_class_factory(json_schema_file_path):
                 f'On file "{json_schema_file_path}": {err}'
             ) from err
 
-        @classmethod
-        def parse_obj(cls, obj):
+        def __init__(self, **kwargs):
             try:
-                return super().parse_obj(cls.json_validator(dict(obj)))
+                super().__init__(**self.__class__.json_validator(kwargs))
             except JsonSchemaValueException as err:
                 error_path = " -> ".join(err.path[1:])
                 human_readable_msg = err.message.replace(err.name, "")
                 raise ConfigFileValidationError(
-                    f'Invalid "{error_path}" value ({err.value}): {human_readable_msg}'
+                    f'"{error_path}" {human_readable_msg}. '
+                    + f'Received {type(err.value)} value "{err.value}"'
                 ) from err
 
     return ParsedConfig
 
 
 class ParsedConfig(parsed_config_class_factory(MAIN_CONFIG_JSON_SCHEMA_PATH)):
-    @root_validator(pre=True)
-    def convert_lists_into_tuples(cls, values):  # noqa: N805
-        """Convert 'list' inputs into tuples. Helps serialisation, needed for dumps."""
-
-        def iterdict(d):
-            new_d = dict(d)
-            for k, v in d.items():
-                if isinstance(v, dict):
-                    new_d[k] = iterdict(v)
-                elif isinstance(v, list):
-                    new_d[k] = tuple(v)
-            return new_d
-
-        return iterdict(values)
-
-    @root_validator(pre=True)
-    def convert_subdicts_into_model_instance(cls, values):  # noqa: N805
-        """Convert nested dicts into instances of the model."""
-
-        def iterdict(d):
-            new_d = dict(d)
-            for k, v in d.items():
-                if isinstance(v, dict):
-                    new_d[k] = cls.construct(**iterdict(v))
-            return new_d
-
-        return iterdict(values)
-
     @classmethod
     def from_file(cls, config_path):
         """Read config file at location "config_path".
@@ -122,10 +180,6 @@ class ParsedConfig(parsed_config_class_factory(MAIN_CONFIG_JSON_SCHEMA_PATH)):
         raw_config["metadata"] = new_metadata
 
         return cls.parse_obj(raw_config)
-
-    def items(self):
-        """Emulate the "items" method from the dictionary type."""
-        return iter(self)
 
     def __getattr__(self, items):
         """Get attribute.
@@ -183,10 +237,7 @@ class ParsedConfig(parsed_config_class_factory(MAIN_CONFIG_JSON_SCHEMA_PATH)):
         if include_metadata:
             exclude = None
 
-        config = self.dict(
-            exclude_unset=exclude_unset, exclude_none=True, exclude=exclude
-        )
-
+        config = self.dict()
         if section:
             section_tree = section.split(".")
             try:
@@ -200,7 +251,7 @@ class ParsedConfig(parsed_config_class_factory(MAIN_CONFIG_JSON_SCHEMA_PATH)):
             config = _nested_defaultdict()
             reduce(getitem, section_tree[:-1], config)[section_tree[-1]] = value
 
-        rtn = json.dumps(config, indent=4, sort_keys=False, default=lambda obj: str(obj))
+        rtn = json.dumps(config, indent=4, sort_keys=False)
         if style == "toml":
             return tomlkit.dumps(json.loads(rtn))
         if style == "yaml":

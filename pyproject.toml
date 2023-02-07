@@ -18,15 +18,14 @@
 [tool.poetry.dependencies]
     python = "^3.8"
     attrs = "^21.4.0"
-    datamodel-code-generator = {git = "https://github.com/koxudaxi/datamodel-code-generator.git"}
     dateutils = "^0.6.12"
+    fastjsonschema = "2.16.2"
     humanize = "^3.14.0"
     numexpr = "^2.8.4"
     numpy = "^1.22.4"
     pandas = "^1.4.0"
-    pydantic = "^1.9.0"
     pyproj = "^3.3.0"
-    tomlkit = "^0.8.0"
+    tomlkit = "^0.11.6"
     troika = {git = "https://git.ecmwf.int/scm/ecsdk/troika.git"}
 
 [tool.poetry.dev-dependencies]
@@ -34,7 +33,7 @@
     flake8 = "^4.0.1"
     flakeheaven = "^0.11.1"
     isort = "^5.10.1"
-    poetryup = "^0.5.4"
+    poetryup = "^0.12.7"
     pre-commit = "^2.17.0"
     pyment = "0.3.3"
     pylint = "^2.12.2"
