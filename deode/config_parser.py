@@ -13,7 +13,7 @@ from typing import Literal, Union
 import fastjsonschema
 import tomlkit
 import yaml
-from fastjsonschema import JsonSchemaDefinitionException, JsonSchemaValueException
+from fastjsonschema import JsonSchemaValueException
 
 from . import PACKAGE_NAME
 

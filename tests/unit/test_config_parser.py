@@ -152,12 +152,9 @@ class TestGeneralBehaviour:
         with pytest.raises(AttributeError, match="has no attribute 'source_file_path'"):
             source_file_path = config.get_value("metadata.source_file_path")
 
-    def test_parsed_config_retains_file_metadata_when_read_from_file(self, config_path):
+    def test_parsed_config_registers_file_metadata_when_read_from_file(self, config_path):
         config = ParsedConfig.from_file(config_path)
         config_source_file_path = config.get_value("metadata.source_file_path")
-        # TODO: Uncomment the next line & remove the convertion to Path once we are done
-        #       with config purely from json
-        # assert isinstance(config_source_file_path, Path)
         assert Path(config_source_file_path) == Path(config_path)
 
 
@@ -173,35 +170,20 @@ class TestValidators:
         validated_freqstr = parsed_config.general.assimilation_times.cycle_length
         assert to_offset(validated_freqstr) == to_offset(input_freqstr)
 
-    def test_validator_works_with_parsed_path(self, minimal_raw_config):
-        minimal_raw_config["general"]["data_rootdir"] = "~/foo"
-        parsed_config = ParsedConfig.parse_obj(minimal_raw_config)
-
-        # TODO: Remove conversion to Path once we are done with getting config templates
-        #       directly from json schema
-        validated_path = Path(parsed_config.general.data_rootdir).expanduser()
-
-        assert isinstance(validated_path, Path)
-        assert validated_path == Path.home() / "foo"
-
-    # TODO: Remove comments from unusual datetime formats once we are done with getting
-    #       config templates directly from json schema
     @pytest.mark.parametrize(
         "dt_input",
         [
-            # "20181010T00:00",
+            "2018-10-10T00:00:00+00:00",
             "2018-10-10T00:00:00Z",
-            # "20181010T00:10",
-            # "1",
-            # datetime.datetime.now(),
+            "2018-10-10T00:00:00.000000+00:00",
+            datetime.datetime.now(datetime.timezone.utc).isoformat(),
         ],
     )
     def test_validator_works_with_input_datetime(self, dt_input, minimal_raw_config):
         minimal_raw_config["general"]["assimilation_times"]["list"] = [dt_input]
         parsed_config = ParsedConfig.parse_obj(minimal_raw_config)
         validated_value = parsed_config.general.assimilation_times.list[0]
-        # Comment next line because the json validator doesn't do type casting
-        # assert isinstance(validated_value, datetime.datetime)
+        assert isinstance(validated_value, str)
         assert as_datetime(validated_value) == as_datetime(dt_input)
 
     def test_parsing_complains_about_incompatible_type(self, minimal_raw_config):
