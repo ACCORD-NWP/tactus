@@ -8,7 +8,7 @@ from collections import defaultdict
 from functools import cached_property, reduce
 from operator import getitem
 from pathlib import Path
-from typing import Literal, Union
+from typing import Literal
 
 import fastjsonschema
 import tomlkit
@@ -22,10 +22,6 @@ MAIN_CONFIG_JSON_SCHEMA_PATH = (
 )
 
 logger = logging.getLogger(__name__)
-
-
-class InvalidJsonSchemaError(Exception):
-    """Error to be raised when parsing the json schema for the config file fails."""
 
 
 class ConfigFileValidationError(Exception):
@@ -43,54 +39,25 @@ def get_default_config_path():
     return default_conf_path
 
 
-def convert_lists_into_tuples(values):
-    """Convert 'list' inputs into tuples. Helps serialisation, needed for dumps."""
-    new_d = values.copy()
-    for k, v in values.items():
-        if isinstance(v, list):
-            new_d[k] = tuple(v)
-        elif isinstance(v, dict):
-            new_d[k] = convert_lists_into_tuples(v)
-    return new_d
-
-
-def remove_none_values(values):
-    """Recursively remove None entries from the input dict."""
-    new_d = {}
-    for k, v in values.items():
-        if isinstance(v, dict):
-            new_d[k] = remove_none_values(v)
-        elif v is not None:
-            new_d[k] = v
-    return new_d
-
-
-def convert_subdicts_into_model_instance(cls, values):
-    """Convert nested dicts into instances of the model."""
-    new_d = values.copy()
-    for k, v in values.items():
-        if isinstance(v, dict):
-            new_d[k] = cls(**convert_subdicts_into_model_instance(cls, v))
-    return new_d
-
-
-class BaseParsedConfig:
-    """Base model for all models defined in this file."""
+class BasicConfig:
+    """Base class for configs. Arbitrary entries allowed, but no validation performed."""
 
     def __init__(self, **kwargs):
-        kwargs = remove_none_values(kwargs)
-        kwargs = convert_lists_into_tuples(kwargs)
-        kwargs = convert_subdicts_into_model_instance(cls=BaseParsedConfig, values=kwargs)
+        """Initialise an instance with an arbitrary number of entries."""
+        kwargs = _remove_none_values(kwargs)
+        kwargs = _convert_lists_into_tuples(kwargs)
+        kwargs = _convert_subdicts_into_model_instance(cls=BasicConfig, values=kwargs)
         for field_name, field_value in kwargs.items():
             super().__setattr__(field_name, field_value)
         super().__setattr__("__kwargs__", tuple(kwargs))
 
-    def dict(self):
+    def dict(self):  # noqa: A003 (class attribute shadowing builtin)
+        """Return a dict representation of the instance and nested instances."""
         rtn = {}
         for k, v in self.__dict__.copy().items():
             if k not in self.__kwargs__:
                 continue
-            if isinstance(v, BaseParsedConfig):
+            if isinstance(v, BasicConfig):
                 rtn[k] = v.dict()
             else:
                 rtn[k] = v
@@ -101,6 +68,7 @@ class BaseParsedConfig:
         return self.dict().items()
 
     def copy(self):
+        """Return a deepcopy of the instance."""
         return copy.deepcopy(self)
 
     def get_value(self, items):
@@ -191,10 +159,11 @@ class BaseParsedConfig:
         return self.dumps(style="json")
 
 
-class ParsedConfig(BaseParsedConfig):
+class ParsedConfig(BasicConfig):
     """Object that holds the validated configs."""
 
     def __init__(self, json_schema=None, **kwargs):
+        """Initialise an instance with an arbitrary number of entries & validate them."""
         if json_schema is None:
             with open(MAIN_CONFIG_JSON_SCHEMA_PATH, "r") as schema_file:
                 json_schema = json.load(schema_file)
@@ -212,10 +181,12 @@ class ParsedConfig(BaseParsedConfig):
 
     @cached_property
     def validate(self):
+        """Return a validation function compiled with the instance's json schema."""
         return fastjsonschema.compile(self.json_schema)
 
     @classmethod
     def parse_obj(cls, obj, json_schema=None):
+        """Parse a dict object 'obj', optionally validating against a json schema."""
         return cls(json_schema=json_schema, **obj)
 
     @classmethod
@@ -223,7 +194,8 @@ class ParsedConfig(BaseParsedConfig):
         """Read config file at location "config_path".
 
         Args:
-            config_path (Union[pathlib.Path, str]): The path to the config file.
+            config_path (typing.Union[pathlib.Path, str]): The path to the config file.
+            json_schema (dict): JSON schema to be used for validation.
 
         Returns:
             .config_parser.ParsedConfig: Parsed configs from config_path.
@@ -240,3 +212,34 @@ class ParsedConfig(BaseParsedConfig):
         raw_config["metadata"] = new_metadata
 
         return cls.parse_obj(obj=raw_config, json_schema=json_schema)
+
+
+def _convert_lists_into_tuples(values):
+    """Convert 'list' inputs into tuples. Helps serialisation, needed for dumps."""
+    new_d = values.copy()
+    for k, v in values.items():
+        if isinstance(v, list):
+            new_d[k] = tuple(v)
+        elif isinstance(v, dict):
+            new_d[k] = _convert_lists_into_tuples(v)
+    return new_d
+
+
+def _remove_none_values(values):
+    """Recursively remove None entries from the input dict."""
+    new_d = {}
+    for k, v in values.items():
+        if isinstance(v, dict):
+            new_d[k] = _remove_none_values(v)
+        elif v is not None:
+            new_d[k] = v
+    return new_d
+
+
+def _convert_subdicts_into_model_instance(cls, values):
+    """Convert nested dicts into instances of the model."""
+    new_d = values.copy()
+    for k, v in values.items():
+        if isinstance(v, dict):
+            new_d[k] = cls(**_convert_subdicts_into_model_instance(cls, v))
+    return new_d
