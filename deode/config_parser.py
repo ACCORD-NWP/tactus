@@ -5,7 +5,7 @@ import json
 import logging
 import os
 from collections import defaultdict
-from functools import reduce
+from functools import cached_property, reduce
 from operator import getitem
 from pathlib import Path
 from typing import Literal, Union
@@ -84,33 +84,6 @@ class BaseParsedConfig:
         for field_name, field_value in kwargs.items():
             super().__setattr__(field_name, field_value)
         super().__setattr__("__kwargs__", tuple(kwargs))
-
-    @classmethod
-    def parse_obj(cls, obj):
-        return cls(**obj)
-
-    @classmethod
-    def from_file(cls, config_path):
-        """Read config file at location "config_path".
-
-        Args:
-            config_path (Union[pathlib.Path, str]): The path to the config file.
-
-        Returns:
-            .config_parser.ParsedConfig: Parsed configs from config_path.
-        """
-        config_path = Path(config_path).expanduser().resolve()
-        logging.info("Reading config file %s", config_path)
-        with open(config_path, "rb") as config_file:
-            raw_config = tomlkit.load(config_file)
-
-        # Add metadata about where the config was parsed from
-        old_metadata = raw_config.get("metadata", {})
-        new_metadata = {"source_file_path": config_path.as_posix()}
-        old_metadata.update(new_metadata)
-        raw_config["metadata"] = new_metadata
-
-        return cls.parse_obj(raw_config)
 
     def dict(self):
         rtn = {}
@@ -218,33 +191,52 @@ class BaseParsedConfig:
         return self.dumps(style="json")
 
 
-def parsed_config_class_factory(json_schema_file_path):
-    with open(Path(json_schema_file_path), "r") as schema_file:
-        json_schema = json.load(schema_file)
+class ParsedConfig(BaseParsedConfig):
+    """Object that holds the validated configs."""
 
-    class ParsedConfig(BaseParsedConfig):
-        """Base model for all models defined in this file."""
+    def __init__(self, json_schema=None, **kwargs):
+        if json_schema is None:
+            with open(MAIN_CONFIG_JSON_SCHEMA_PATH, "r") as schema_file:
+                json_schema = json.load(schema_file)
+        object.__setattr__(self, "json_schema", json_schema)
 
         try:
-            json_validator = fastjsonschema.compile(json_schema)
-        except JsonSchemaDefinitionException as err:
-            raise InvalidJsonSchemaError(
-                f'On file "{json_schema_file_path}": {err}'
+            super().__init__(**self.validate(kwargs))
+        except JsonSchemaValueException as err:
+            error_path = " -> ".join(err.path[1:])
+            human_readable_msg = err.message.replace(err.name, "")
+            raise ConfigFileValidationError(
+                f'"{error_path}" {human_readable_msg}. '
+                + f'Received {type(err.value)} value "{err.value}"'
             ) from err
 
-        def __init__(self, **kwargs):
-            try:
-                super().__init__(**self.__class__.json_validator(kwargs))
-            except JsonSchemaValueException as err:
-                error_path = " -> ".join(err.path[1:])
-                human_readable_msg = err.message.replace(err.name, "")
-                raise ConfigFileValidationError(
-                    f'"{error_path}" {human_readable_msg}. '
-                    + f'Received {type(err.value)} value "{err.value}"'
-                ) from err
+    @cached_property
+    def validate(self):
+        return fastjsonschema.compile(self.json_schema)
 
-    return ParsedConfig
+    @classmethod
+    def parse_obj(cls, obj, json_schema=None):
+        return cls(json_schema=json_schema, **obj)
 
+    @classmethod
+    def from_file(cls, config_path, json_schema=None):
+        """Read config file at location "config_path".
 
-class ParsedConfig(parsed_config_class_factory(MAIN_CONFIG_JSON_SCHEMA_PATH)):
-    """Object that holds the validated configs"""
+        Args:
+            config_path (Union[pathlib.Path, str]): The path to the config file.
+
+        Returns:
+            .config_parser.ParsedConfig: Parsed configs from config_path.
+        """
+        config_path = Path(config_path).expanduser().resolve()
+        logging.info("Reading config file %s", config_path)
+        with open(config_path, "rb") as config_file:
+            raw_config = tomlkit.load(config_file)
+
+        # Add metadata about where the config was parsed from
+        old_metadata = raw_config.get("metadata", {})
+        new_metadata = {"source_file_path": config_path.as_posix()}
+        old_metadata.update(new_metadata)
+        raw_config["metadata"] = new_metadata
+
+        return cls.parse_obj(obj=raw_config, json_schema=json_schema)
