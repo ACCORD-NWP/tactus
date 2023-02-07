@@ -164,16 +164,6 @@ class TestGeneralBehaviour:
 class TestValidators:
     # pylint: disable=no-self-use
 
-    @pytest.mark.skip(reason="Parsing config from json schema doesn't perform casting.")
-    @pytest.mark.parametrize("picked_type", [int, float, bool, str])
-    def test_validator_performs_simple_type_casting(
-        self, minimal_raw_config, picked_type
-    ):
-        """Pick a config field that should be a string, just to check."""
-        minimal_raw_config["domain"] = {"name": picked_type(1.0)}
-        parsed_config = ParsedConfig.parse_obj(minimal_raw_config)
-        assert isinstance(parsed_config.domain.name, str)
-
     def test_validator_works_with_pandas_offset_freq_string(self, minimal_raw_config):
         input_freqstr = "3H"
         minimal_raw_config["general"]["assimilation_times"][
@@ -264,7 +254,7 @@ class TestValidators:
             tomlkit.parse(new_config_assim_times)
         )
 
-        with pytest.raises(ValidationError, match="Must specify either only"):
+        with pytest.raises(ConfigFileValidationError, match="Must specify either only"):
             _ = ParsedConfig.parse_obj(raw_config)
 
 
