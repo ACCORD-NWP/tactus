@@ -2,11 +2,11 @@
     name = "deode"
     version = "0.1.0"
     description = "Prototype for the DEODE scripting system."
-    authors = ["Paulo V. C. Medeiros <paulo.medeiros@smhi.se>"]
+    authors = ["The WP5.1 development group in the DE_330 project."]
     license = "MIT"
     readme = "README.md"
-    repository = "https://source.coderefinery.org/deode/deode-prototype"
-    documentation = "https://source.coderefinery.org/deode/deode-prototype/-/wikis"
+    repository = "https://github.com/DEODE-NWP/Deode-Prototype"
+    documentation = "https://github.com/DEODE-NWP/Deode-Prototype/tree/develop/docs"
 
 [tool.poetry.scripts]
     deode = "deode.main:main"
