@@ -1,8 +1,8 @@
 """Toolbox handling e.g. input/output."""
 import os
-from datetime import datetime
-from deode.logs import get_logger_from_config
 
+from .datetime_utils import as_datetime
+from .logs import get_logger_from_config
 
 class Provider():
     """Base provider class."""
@@ -193,9 +193,9 @@ class Platform():
                 validtime = str(self.config.get_value("general.validtime"))
             print(type(basetime))
             if isinstance(basetime, str):
-                basetime = datetime.strptime(basetime, "%Y%m%d%H%M")
+                basetime = as_datetime(basetime)
             if isinstance(validtime, str):
-                validtime = datetime.strptime(validtime, "%Y%m%d%H%M")
+                validtime = as_datetime(validtime)
 
             pattern = pattern.replace("@YYYY@", basetime.strftime("%Y"))
             pattern = pattern.replace("@MM@", basetime.strftime("%m"))
