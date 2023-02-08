@@ -62,36 +62,6 @@
     "general"
   ],
   "definitions": {
-    "_InputDatesModel": {
-      "title": "_InputDatesModel",
-      "description": "Model for the input dates.",
-      "type": "object",
-      "properties": {
-        "start": {
-          "title": "Start",
-          "type": "string",
-          "format": "date-time"
-        },
-        "end": {
-          "title": "End",
-          "type": "string",
-          "format": "date-time"
-        },
-        "cycle_length": {
-          "title": "Cycle Length",
-          "default": "3H",
-          "type": "string"
-        },
-        "list": {
-          "title": "List",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      }
-    },
     "_GeneralSectionModel": {
       "title": "_GeneralSectionModel",
       "description": "Model for the 'general' section.",
@@ -104,7 +74,46 @@
           "format": "uri-reference"
         },
         "assimilation_times": {
-          "$ref": "#/definitions/_InputDatesModel"
+          "title": "assimilation_times",
+          "description": "Model for the 'general.assimilation_times' section.",
+          "type": "object",
+          "properties": {
+            "start": {
+              "title": "Start",
+              "type": "string",
+              "format": "date-time"
+            },
+            "end": {
+              "title": "End",
+              "type": "string",
+              "format": "date-time"
+            },
+            "list": {
+              "title": "List",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "cycle_length": {
+              "title": "Cycle Length",
+              "default": "3H",
+              "type": "string"
+            }
+          },
+          "oneOf": [
+            {"required": ["start", "end"], "not": {"required": ["list"]}},
+            {
+              "required": ["list"],
+              "not": {
+                "anyOf":[
+                  {"required": ["start"]},
+                  {"required": ["end"]}
+                ]
+              }
+            }
+          ]
         },
         "outdir": {
           "title": "Outdir",

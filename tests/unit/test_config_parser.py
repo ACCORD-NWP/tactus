@@ -196,10 +196,6 @@ class TestValidators:
         ):
             _ = ParsedConfig.parse_obj(minimal_raw_config)
 
-    @pytest.mark.skip(
-        reason="Still refactoring code to get configs from json schema, "
-        + "and this logic is not implemented yet."
-    )
     @pytest.mark.parametrize(
         ("start", "end", "dates_list"),
         [
@@ -216,7 +212,7 @@ class TestValidators:
     ):
         raw_config = minimal_raw_config.copy()
 
-        new_config_assim_times = "[general.assimilation_times]"
+        new_config_assim_times = ""
         if start is not None:
             new_config_assim_times = f"""
                  {new_config_assim_times}
@@ -232,11 +228,14 @@ class TestValidators:
                 {new_config_assim_times}
                     list = {dates_list}
             """
-        raw_config["general"]["assimilation_times"].update(
-            tomlkit.parse(new_config_assim_times)
+
+        raw_config["general"]["assimilation_times"] = tomlkit.parse(
+            new_config_assim_times
         )
 
-        with pytest.raises(ConfigFileValidationError, match="Must specify either only"):
+        with pytest.raises(
+            ConfigFileValidationError, match="must be valid exactly by one definition"
+        ):
             _ = ParsedConfig.parse_obj(raw_config)
 
 
