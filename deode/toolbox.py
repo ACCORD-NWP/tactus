@@ -4,7 +4,8 @@ import os
 from .datetime_utils import as_datetime
 from .logs import get_logger_from_config
 
-class Provider():
+
+class Provider:
     """Base provider class."""
 
     def __init__(self, config, identifier, fetch=True):
@@ -20,8 +21,9 @@ class Provider():
         self.config = config
         self.identifier = identifier
         self.fetch = fetch
-        self.logger.debug("Constructed Base Provider object. %s %s ",
-                          self.identifier, self.fetch)
+        self.logger.debug(
+            "Constructed Base Provider object. %s %s ", self.identifier, self.fetch
+        )
 
     def create_resource(self, resource):
         """Create the resource.
@@ -35,7 +37,7 @@ class Provider():
         raise NotImplementedError
 
 
-class Platform():
+class Platform:
     """Platform."""
 
     def __init__(self, config):
@@ -157,8 +159,9 @@ class Platform():
                 except KeyError:
                     val = None
                 if val is not None:
-                    self.logger.debug("before replace macro=%s pattern=%s",
-                                      macro, pattern)
+                    self.logger.debug(
+                        "before replace macro=%s pattern=%s", macro, pattern
+                    )
                     pattern = pattern.replace(f"@{macro}@", str(val))
                     self.logger.debug("after replace macro=%s pattern=%s", macro, pattern)
 
@@ -166,8 +169,9 @@ class Platform():
                 self.logger.debug("Checking macro: %s", macro)
                 try:
                     val = os.environ[macro]
-                    self.logger.debug("macro=%s, value=%s pattern=%s",
-                                      macro, val, pattern)
+                    self.logger.debug(
+                        "macro=%s, value=%s pattern=%s", macro, val, pattern
+                    )
                 except KeyError:
                     val = None
                 if val is not None:
@@ -183,8 +187,9 @@ class Platform():
                 pattern = pattern.replace("@MRRR@", f"mbr{realization:03d}")
             else:
                 pattern = pattern.replace("@RRR@", "")
-            self.logger.debug("Substituted realization: %s pattern=%s",
-                              realization, pattern)
+            self.logger.debug(
+                "Substituted realization: %s pattern=%s", realization, pattern
+            )
 
             # Time handling
             if basetime is None:
@@ -203,9 +208,11 @@ class Platform():
             pattern = pattern.replace("@HH@", basetime.strftime("%H"))
             pattern = pattern.replace("@mm@", basetime.strftime("%M"))
             if basetime is not None and validtime is not None:
-                self.logger.debug("Substituted date/time info: basetime=%s validtime=%s",
-                                  basetime.strftime("%Y%m%d%H%M"),
-                                  validtime.strftime("%Y%m%d%H%M"))
+                self.logger.debug(
+                    "Substituted date/time info: basetime=%s validtime=%s",
+                    basetime.strftime("%Y%m%d%H%M"),
+                    validtime.strftime("%Y%m%d%H%M"),
+                )
                 lead_time = validtime - basetime
                 pattern = str(pattern).replace("@YYYY_LL@", validtime.strftime("%Y"))
                 pattern = str(pattern).replace("@MM_LL@", validtime.strftime("%m"))
@@ -213,7 +220,7 @@ class Platform():
                 pattern = str(pattern).replace("@HH_LL@", validtime.strftime("%H"))
                 pattern = str(pattern).replace("@mm_LL@", validtime.strftime("%M"))
                 lead_seconds = int(lead_time.total_seconds())
-                lead_minutes = int(lead_seconds / 3600)                             # noqa
+                lead_minutes = int(lead_seconds / 3600)  # noqa
                 lead_hours = int(lead_seconds / 3600)
                 pattern = str(pattern).replace("@LL@", f"{lead_hours:02d}")
                 pattern = str(pattern).replace("@LLL@", f"{lead_hours:03d}")
@@ -242,7 +249,7 @@ class Platform():
         return pattern
 
 
-class FileManager():
+class FileManager:
     """FileManager class.
 
     Default DEDODE provider.
@@ -263,8 +270,15 @@ class FileManager():
         self.platform = Platform(config)
         self.logger.debug("Constructed FileManager object.")
 
-    def get_input(self, target, destination, basetime=None, validtime=None,
-                  check_archive=False, provider_id="symlink"):
+    def get_input(
+        self,
+        target,
+        destination,
+        basetime=None,
+        validtime=None,
+        check_archive=False,
+        provider_id="symlink",
+    ):
         """Set input data to deode.
 
         Args:
@@ -282,8 +296,9 @@ class FileManager():
             tuple: provider, resource
 
         """
-        destination = LocalFileOnDisk(self.config, destination, basetime=basetime,
-                                      validtime=validtime)
+        destination = LocalFileOnDisk(
+            self.config, destination, basetime=basetime, validtime=validtime
+        )
 
         dest_file = destination.identifier
         self.logger.debug("Set input for target=%s to destination=%s", target, dest_file)
@@ -293,8 +308,9 @@ class FileManager():
             return None, destination
         else:
             self.logger.info("Checking provider_id %s", provider_id)
-            sub_target = self.platform.substitute(target, basetime=basetime,
-                                                  validtime=validtime)
+            sub_target = self.platform.substitute(
+                target, basetime=basetime, validtime=validtime
+            )
             provider = self.platform.get_provider(provider_id, sub_target)
 
             if provider.create_resource(destination):
@@ -309,8 +325,9 @@ class FileManager():
 
             if provider_id is not None:
                 # Substitute based on ecfs
-                sub_target = self.platform.substitute(target, basetime=basetime,
-                                                      validtime=validtime)
+                sub_target = self.platform.substitute(
+                    target, basetime=basetime, validtime=validtime
+                )
 
                 self.logger.info("Checking archiving provider_id %s", provider_id)
                 provider = self.platform.get_provider(provider_id, sub_target)
@@ -323,8 +340,15 @@ class FileManager():
         # Else raise exception
         raise Exception(f"No provider found for {target} and provider_id {provider_id}")
 
-    def input(self, target, destination, basetime=None, validtime=None,             # noqa
-              check_archive=False, provider_id="symlink"):
+    def input(
+        self,
+        target,
+        destination,
+        basetime=None,
+        validtime=None,  # noqa
+        check_archive=False,
+        provider_id="symlink",
+    ):
         """Set input data to deode.
 
         Args:
@@ -336,12 +360,24 @@ class FileManager():
             provider_id (str, optional): Provider ID. Defaults to "symlink".
 
         """
-        __, __ = self.get_input(target, destination, basetime=basetime,
-                                validtime=validtime, check_archive=check_archive,
-                                provider_id=provider_id)
+        __, __ = self.get_input(
+            target,
+            destination,
+            basetime=basetime,
+            validtime=validtime,
+            check_archive=check_archive,
+            provider_id=provider_id,
+        )
 
-    def get_output(self, target, destination, basetime=None, validtime=None,
-                   archive=False, provider_id="move"):
+    def get_output(
+        self,
+        target,
+        destination,
+        basetime=None,
+        validtime=None,
+        archive=False,
+        provider_id="move",
+    ):
         """Set output data from deode.
 
         Args:
@@ -359,16 +395,21 @@ class FileManager():
             Exception: Could not archive data
 
         """
-        sub_target = self.platform.substitute(target, basetime=basetime,
-                                              validtime=validtime)
-        sub_destination = self.platform.substitute(destination, basetime=basetime,
-                                                   validtime=validtime)
-        self.logger.debug("Set output for target=%s to destination=%s", sub_target,
-                          sub_destination)
-        target_resource = LocalFileOnDisk(self.config, sub_target, basetime=basetime,
-                                          validtime=validtime)
-        self.logger.info("Checking provider_id=%s for destination=%s ",
-                         provider_id, sub_destination)
+        sub_target = self.platform.substitute(
+            target, basetime=basetime, validtime=validtime
+        )
+        sub_destination = self.platform.substitute(
+            destination, basetime=basetime, validtime=validtime
+        )
+        self.logger.debug(
+            "Set output for target=%s to destination=%s", sub_target, sub_destination
+        )
+        target_resource = LocalFileOnDisk(
+            self.config, sub_target, basetime=basetime, validtime=validtime
+        )
+        self.logger.info(
+            "Checking provider_id=%s for destination=%s ", provider_id, sub_destination
+        )
         provider = self.platform.get_provider(provider_id, sub_destination, fetch=False)
 
         if provider.create_resource(target_resource):
@@ -381,17 +422,21 @@ class FileManager():
             provider_id = "ecfs"
             destination = destination.replace("@ARCHIVE@", "ectmp:/@YYYY@/@MM@/@DD@/@HH@")
 
-            sub_target = self.platform.substitute(target, basetime=basetime,
-                                                  validtime=validtime)
-            sub_destination = self.platform.substitute(destination, basetime=basetime,
-                                                       validtime=validtime)
+            sub_target = self.platform.substitute(
+                target, basetime=basetime, validtime=validtime
+            )
+            sub_destination = self.platform.substitute(
+                destination, basetime=basetime, validtime=validtime
+            )
 
-            self.logger.debug("Set output for target=%s to destination=%s", sub_target,
-                              sub_destination)
+            self.logger.debug(
+                "Set output for target=%s to destination=%s", sub_target, sub_destination
+            )
 
             self.logger.info("Checking archive provider_id %s", provider_id)
-            aprovider = self.platform.get_provider(provider_id, sub_destination,
-                                                   fetch=False)
+            aprovider = self.platform.get_provider(
+                provider_id, sub_destination, fetch=False
+            )
 
             if aprovider.create_resource(target_resource):
                 self.logger.debug("Using provider_id %s", provider_id)
@@ -400,8 +445,15 @@ class FileManager():
 
         return provider, aprovider, target_resource
 
-    def output(self, target, destination, basetime=None, validtime=None,
-               archive=False, provider_id="move"):
+    def output(
+        self,
+        target,
+        destination,
+        basetime=None,
+        validtime=None,
+        archive=False,
+        provider_id="move",
+    ):
         """Set output data from deode.
 
         Args:
@@ -413,9 +465,14 @@ class FileManager():
             provider_id (str, optional): Provider ID. Defaults to "move".
 
         """
-        __, __, __ = self.get_output(target, destination, basetime=basetime,
-                                     validtime=validtime,
-                                     archive=archive, provider_id=provider_id)
+        __, __, __ = self.get_output(
+            target,
+            destination,
+            basetime=basetime,
+            validtime=validtime,
+            archive=archive,
+            provider_id=provider_id,
+        )
 
     def set_resources_from_dict(self, res_dict):
         """Set resources from dict.
@@ -428,13 +485,10 @@ class FileManager():
         """
         for ftype, fobj in res_dict.items():
             for target, settings in fobj.items():
-                self.logger.debug("ftype=%s target=%s, settings=%s",
-                                  ftype, target, settings)
-                kwargs = {
-                    "basetime": None,
-                    "validtime": None,
-                    "provider_id": None
-                }
+                self.logger.debug(
+                    "ftype=%s target=%s, settings=%s", ftype, target, settings
+                )
+                kwargs = {"basetime": None, "validtime": None, "provider_id": None}
                 keys = []
                 if ftype == "input":
                     keys = ["basetime", "validtime", "check_archive", "provider_id"]
@@ -485,7 +539,7 @@ class LocalFileSystemSymlink(Provider):
         if self.fetch:
             if os.path.exists(self.identifier):
                 self.logger.info("ln -sf %s %s ", self.identifier, resource.identifier)
-                os.system(f"ln -sf {self.identifier} {resource.identifier}")   # noqa S605
+                os.system(f"ln -sf {self.identifier} {resource.identifier}")  # noqa S605
                 return True
             else:
                 self.logger.warning("File is missing %s ", self.identifier)
@@ -493,7 +547,7 @@ class LocalFileSystemSymlink(Provider):
         else:
             if os.path.exists(resource.identifier):
                 self.logger.info("ln -sf %s %s ", resource.identifier, self.identifier)
-                os.system(f"ln -sf {resource.identifier} {self.identifier}")   # noqa S605
+                os.system(f"ln -sf {resource.identifier} {self.identifier}")  # noqa S605
                 return True
             else:
                 self.logger.warning("File is missing %s ", resource.identifier)
@@ -527,7 +581,7 @@ class LocalFileSystemCopy(Provider):
         if self.fetch:
             if os.path.exists(self.identifier):
                 self.logger.info("cp %s %s ", self.identifier, resource.identifier)
-                os.system(f"cp {self.identifier} {resource.identifier}")       # noqa S605
+                os.system(f"cp {self.identifier} {resource.identifier}")  # noqa S605
                 return True
             else:
                 self.logger.warning("File is missing %s ", self.identifier)
@@ -535,7 +589,7 @@ class LocalFileSystemCopy(Provider):
         else:
             if os.path.exists(resource.identifier):
                 self.logger.info("cp %s %s ", resource.identifier, self.identifier)
-                os.system(f"cp {resource.identifier} {self.identifier}")       # noqa S605
+                os.system(f"cp {resource.identifier} {self.identifier}")  # noqa S605
                 return True
             else:
                 self.logger.warning("File is missing %s ", resource.identifier)
@@ -569,7 +623,7 @@ class LocalFileSystemMove(Provider):
         if self.fetch:
             if os.path.exists(self.identifier):
                 self.logger.info("mv %s %s ", self.identifier, resource.identifier)
-                os.system(f"mv {self.identifier} {resource.identifier}")       # noqa S605
+                os.system(f"mv {self.identifier} {resource.identifier}")  # noqa S605
                 return True
             else:
                 self.logger.warning("File is missing %s ", self.identifier)
@@ -577,7 +631,7 @@ class LocalFileSystemMove(Provider):
         else:
             if os.path.exists(resource.identifier):
                 self.logger.info("mv %s %s ", resource.identifier, self.identifier)
-                os.system(f"mv {resource.identifier} {self.identifier}")       # noqa S605
+                os.system(f"mv {resource.identifier} {self.identifier}")  # noqa S605
                 return True
             else:
                 self.logger.warning("File is missing %s ", resource.identifier)
@@ -644,7 +698,7 @@ class ECFS(ArchiveProvider):
         return True
 
 
-class Resource():
+class Resource:
     """Resource container."""
 
     def __init__(self, config, identifier):

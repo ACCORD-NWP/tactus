@@ -3,6 +3,7 @@
 from deode.config_parser import ParsedConfig
 from deode.discover_task import get_task
 from deode.logs import get_logger_from_config
+
 # @ENV_SUB@
 
 
