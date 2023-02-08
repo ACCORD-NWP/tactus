@@ -15,18 +15,19 @@ def config_platform():
     """Set the platform specific configuration."""
     task_configs = tomlkit.parse(
         """
-        [general.assimilation_times]
-            list = ["20000101T00"]
         [general]
+            data_rootdir = "."
             macros = ["BINDIR", "ARCHIVE"]
             os_macros = ["USER", "HOME"]
-            basetime = "2000010100"
-            validtime = "2000010200"
+            basetime = "2000-01-01T00:0:00Z"
+            validtime = "2000-01-02T00:00:00Z"
             domain = "MYDOMAIN"
             realization = -1
             cnmexp = "DEOD"
             tstep = 60
             loglevel = "DEBUG"
+        [general.assimilation_times]
+            list = ["2000-01-01T00:00:00Z"]
         [platform]
             BINDIR = "/tmp/bindir"
             ARCHIVE = "/tmp/archive/@YYYY@/@MM@/@DD@/@HH@"
