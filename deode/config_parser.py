@@ -20,6 +20,8 @@ from . import PACKAGE_NAME
 MAIN_CONFIG_JSON_SCHEMA_PATH = (
     Path(__file__).parent / "config_file_schemas" / "main_config_schema.json"
 )
+with open(MAIN_CONFIG_JSON_SCHEMA_PATH, "r") as schema_file:
+    MAIN_CONFIG_JSON_SCHEMA = json.load(schema_file)
 
 logger = logging.getLogger(__name__)
 
@@ -163,8 +165,7 @@ class ParsedConfig(BasicConfig):
     def __init__(self, json_schema=None, **kwargs):
         """Initialise an instance with an arbitrary number of entries & validate them."""
         if json_schema is None:
-            with open(MAIN_CONFIG_JSON_SCHEMA_PATH, "r") as schema_file:
-                json_schema = json.load(schema_file)
+            json_schema = MAIN_CONFIG_JSON_SCHEMA.copy()
         object.__setattr__(self, "json_schema", json_schema)
 
         try:
