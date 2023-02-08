@@ -60,8 +60,8 @@ class TestFileManager:
         os.makedirs("/tmp/bindir", exist_ok=True)  # noqa S108
         os.system("touch /tmp/bindir/MASTERODB")  # noqa S108, S605, S607
         provider, resource = fmanager.get_input(
-            "@BINDIR@/MASTERODB", "/tmp/MASTERODB"
-        )  # noqa S108, E501
+            "@BINDIR@/MASTERODB", "/tmp/MASTERODB"  # noqa S108, E501
+        )
         assert provider.identifier == "/tmp/bindir/MASTERODB"  # noqa S108
         assert resource.identifier == "/tmp/MASTERODB"  # noqa S108
         assert os.path.exists("/tmp/MASTERODB")  # noqa S108
@@ -72,9 +72,9 @@ class TestFileManager:
         res_dict = {
             "input": {
                 "/dev/null": {
-                    "destination": "/tmp/test",
+                    "destination": "/tmp/test",  # noqa S108, E501
                     "provider_id": "symlink",
-                }  # noqa S108, E501
+                }
             }
         }
         fmanager.set_resources_from_dict(res_dict)
@@ -94,11 +94,12 @@ class TestFileManager:
         print(resource)
         assert resource.identifier == "/tmp/ICMSHDEOD+0024"  # noqa S108
         assert (
-            provider.identifier == "/tmp/archive/2000/01/01/00/OUT_ICMSHDEOD+0024"
-        )  # noqa S108, E501
+            provider.identifier
+            == "/tmp/archive/2000/01/01/00/OUT_ICMSHDEOD+0024"  # noqa S108, E501
+        )
         assert os.path.exists(
-            "/tmp/archive/2000/01/01/00/OUT_ICMSHDEOD+0024"
-        )  # noqa S108, E501
+            "/tmp/archive/2000/01/01/00/OUT_ICMSHDEOD+0024"  # noqa S108, E501
+        )
         assert (
             aprovider.identifier == "ectmp:/2000/01/01/00/OUT_ICMSHDEOD+0024"
         )  # noqa S108, E501

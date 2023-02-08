@@ -340,7 +340,7 @@ class FileManager:
         # Else raise exception
         raise Exception(f"No provider found for {target} and provider_id {provider_id}")
 
-    def input(
+    def input(  # noqa: A003 (class attribute shadowing builtin)
         self,
         target,
         destination,
