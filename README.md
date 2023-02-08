@@ -14,7 +14,7 @@
 
 `deode` is a python package that ...
 
-See also the [project's Wiki](https://source.coderefinery.org/deode/deode-prototype/-/wikis/home) for more information.
+See also the [project's Doc Page](https://github.com/DEODE-NWP/Deode-Prototype/tree/develop/docs) for more information.
 
 ### System Requirements
 

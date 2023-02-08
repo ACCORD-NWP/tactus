@@ -1,31 +1,33 @@
 #!/usr/bin/env python3
 """Registration and validation of options passed in the config file."""
-import datetime
+import copy
 import json
 import logging
 import os
-import tempfile
 from collections import defaultdict
 from functools import cached_property, reduce
 from operator import getitem
 from pathlib import Path
-from typing import Literal, Optional, Tuple, Union
+from typing import Literal
 
+import fastjsonschema
 import tomlkit
-from pandas.tseries.frequencies import to_offset
-from pydantic import (
-    BaseModel,
-    Extra,
-    PositiveFloat,
-    PositiveInt,
-    confloat,
-    root_validator,
-)
+import yaml
+from fastjsonschema import JsonSchemaValueException
 
 from . import PACKAGE_NAME
-from .datetime_utils import TimeWindowContainer, as_datetime
+
+MAIN_CONFIG_JSON_SCHEMA_PATH = (
+    Path(__file__).parent / "config_file_schemas" / "main_config_schema.json"
+)
+with open(MAIN_CONFIG_JSON_SCHEMA_PATH, "r") as schema_file:
+    MAIN_CONFIG_JSON_SCHEMA = json.load(schema_file)
 
 logger = logging.getLogger(__name__)
+
+
+class ConfigFileValidationError(Exception):
+    """Error to be raised when parsing the input config file fails."""
 
 
 def get_default_config_path():
@@ -39,47 +41,99 @@ def get_default_config_path():
     return default_conf_path
 
 
-# Define custom types for use with pydantic
-# See <https://pydantic-docs.helpmanual.io/usage/types/#custom-data-types>
-class InputDateTime(datetime.datetime):
-    """Return a datetime object constructed from passed config input."""
+class BasicConfig:
+    """Base class for configs. Arbitrary entries allowed, but no validation performed."""
 
-    @classmethod
-    def __get_validators__(cls):
-        yield as_datetime
+    def __init__(self, **kwargs):
+        """Initialise an instance with an arbitrary number of entries."""
+        kwargs = _remove_none_values(kwargs)
+        kwargs = _convert_lists_into_tuples(kwargs)
+        kwargs = _convert_subdicts_into_model_instance(cls=BasicConfig, values=kwargs)
+        for field_name, field_value in kwargs.items():
+            super().__setattr__(field_name, field_value)
+        super().__setattr__("__kwargs__", tuple(kwargs))
 
+    def dict(self):  # noqa: A003 (class attribute shadowing builtin)
+        """Return a dict representation of the instance and nested instances."""
+        rtn = {}
+        for k, v in self.__dict__.copy().items():
+            if k not in self.__kwargs__:
+                continue
+            if isinstance(v, BasicConfig):
+                rtn[k] = v.dict()
+            else:
+                rtn[k] = v
+        return rtn
 
-class PandasOffsetFreqStr:
-    """Return a validated date offset string."""
+    def items(self):
+        """Emulate the "items" method from the dictionary type."""
+        return self.dict().items()
 
-    @classmethod
-    def _validator(cls, string_repr):
-        _ = to_offset(string_repr)
-        return string_repr
+    def copy(self):
+        """Return a deepcopy of the instance."""
+        return copy.deepcopy(self)
 
-    @classmethod
-    def __get_validators__(cls):
-        yield cls._validator
+    def get_value(self, items):
+        """Recursively get the value of a config component.
 
+        This allows us to use self.get_value("foo.bar.baz") even if "bar" is, for
+        instance, a dictionary or any obj that implements a "getitem" method.
 
-class ParsedPath(Path):
-    """Return pathlib.Path obj from string, with envvars & user expanded."""
+        Args:
+            items (str): Attributes to be retrieved, as dot-separated strings.
 
-    @classmethod
-    def __get_validators__(cls):
-        yield lambda path: Path(os.path.expandvars(str(path))).expanduser()
+        Returns:
+            Any: Value of the parsed config item.
+        """
 
+        def get_attr_or_item(obj, item):
+            try:
+                return getattr(obj, item)
+            except AttributeError as attr_error:
+                try:
+                    return obj[item]
+                except (KeyError, TypeError) as error:
+                    raise AttributeError(attr_error) from error
 
-class _ConfigsBaseModel(BaseModel, extra=Extra.allow, frozen=True):
-    """Base model for all models defined in this file."""
+        return reduce(get_attr_or_item, items.split("."), self)
 
-    @root_validator(pre=True)
-    def convert_lists_into_tuples(cls, values):  # noqa: N805
-        """Convert 'list' inputs into tuples. Helps serialisation, needed for dumps."""
-        for key, value in values.items():
-            if isinstance(value, list):
-                values[key] = tuple(value)
-        return values
+    def dumps(
+        self,
+        section="",
+        style: Literal["toml", "json", "yaml"] = "toml",
+        include_metadata=False,
+    ):
+        """Get a nicely printed version of the models. Excludes the metadata section."""
+        config = self.dict()
+        if not include_metadata:
+            config.pop("metadata", None)
+
+        if section:
+            section_tree = section.split(".")
+            try:
+                value = reduce(getitem, section_tree, config)
+            except (KeyError, TypeError):
+                return ""
+
+            def _nested_defaultdict():
+                return defaultdict(_nested_defaultdict)
+
+            config = _nested_defaultdict()
+            reduce(getitem, section_tree[:-1], config)[section_tree[-1]] = value
+
+        rtn = json.dumps(config, indent=4, sort_keys=False)
+        if style == "toml":
+            return tomlkit.dumps(json.loads(rtn))
+        if style == "yaml":
+            return yaml.dump(json.loads(rtn))
+
+        return rtn
+
+    def __repr__(self):
+        return str(self.dict())
+
+    def __setattr__(self, key, value):
+        raise TypeError(f"cannot assign to {self.__class__.__name__} objects.")
 
     def __getattr__(self, items):
         """Get attribute.
@@ -101,167 +155,46 @@ class _ConfigsBaseModel(BaseModel, extra=Extra.allow, frozen=True):
 
         return reduce(regular_getattribute, items.split("."), self)
 
-    def get_value(self, items):
-        """Recursively get the value of a config component.
-
-        This allows us to use self.get_value("foo.bar.baz") even if "bar" is, for
-        instance, a dictionary or any obj that implements a "getitem" method.
-
-        Args:
-            items (str): Attributes to be retrieved, as dot-separated strings.
-
-        Returns:
-            Any: Value of the parsed config item.
-        """
-
-        def get_attr_or_item(obj, item):
-            try:
-                return getattr(obj, item)
-            except AttributeError as attr_error:
-                try:
-                    return obj[item]
-                except KeyError as key_error:
-                    raise KeyError(key_error) from attr_error
-
-        return reduce(get_attr_or_item, items.split("."), self)
-
-    def dumps(
-        self,
-        section="",
-        style: Literal["toml", "json"] = "toml",
-        exclude_unset=False,
-        include_metadata=False,
-    ):
-        """Get a nicely printed version of the models. Excludes the metadata section."""
-        exclude = {"metadata"}
-        if include_metadata:
-            exclude = None
-
-        config = self.dict(
-            exclude_unset=exclude_unset, exclude_none=True, exclude=exclude
-        )
-
-        if section:
-            section_tree = section.split(".")
-            try:
-                value = reduce(getitem, section_tree, config)
-            except (KeyError, TypeError):
-                return ""
-
-            def _nested_defaultdict():
-                return defaultdict(_nested_defaultdict)
-
-            config = _nested_defaultdict()
-            reduce(getitem, section_tree[:-1], config)[section_tree[-1]] = value
-
-        rtn = json.dumps(config, indent=4, sort_keys=False, default=lambda obj: str(obj))
-        if style == "toml":
-            return tomlkit.dumps(json.loads(rtn))
-        return rtn
-
     def __str__(self):
         return self.dumps(style="json")
 
 
-###########################################################################
-# Registering config options (known opts, defaults, restrictions, etc).   #
-# This is where you should change, e.g., in order to add new config opts. #
-###########################################################################
-class _InputDatesModel(_ConfigsBaseModel):
-    """Model for the input dates."""
+class ParsedConfig(BasicConfig):
+    """Object that holds the validated configs."""
 
-    start: Optional[InputDateTime]
-    end: Optional[InputDateTime]
-    cycle_length: PandasOffsetFreqStr = "3H"
-    list: Optional[Tuple[InputDateTime, ...]]  # noqa: A003
+    def __init__(self, json_schema=None, **kwargs):
+        """Initialise an instance with an arbitrary number of entries & validate them."""
+        if json_schema is None:
+            json_schema = MAIN_CONFIG_JSON_SCHEMA.copy()
+        object.__setattr__(self, "json_schema", json_schema)
 
-    # pylint: disable=E0213
-    @root_validator()
-    def _check_consistency_between_date_input_items(cls, values):  # noqa: N805
-        date_list, start, end = values.get("list"), values.get("start"), values.get("end")
-        fail_cond_1 = date_list and any((start, end))
-        fail_cond_2 = not date_list and not all((start, end))
-        if fail_cond_1 or fail_cond_2:
-            raise ValueError("Must specify either only 'list' or both 'start' and 'end'")
-        return values
+        try:
+            super().__init__(**self.validate(kwargs))
+        except JsonSchemaValueException as err:
+            error_path = " -> ".join(err.path[1:])
+            human_readable_msg = err.message.replace(err.name, "")
+            raise ConfigFileValidationError(
+                f'"{error_path}" {human_readable_msg}. '
+                + f'Received {type(err.value)} value "{err.value}"'
+            ) from err
 
     @cached_property
-    def _normalized(self):
-        """Return an iterable with the dates corresponding to the passed configs."""
-        if self.list:
-            return TimeWindowContainer(data=self.list, cycle_length=self.cycle_length)
-        return TimeWindowContainer.from_start_end_and_length(
-            start=self.start, end=self.end, cycle_length=self.cycle_length
-        )
-
-    def __getitem__(self, item):
-        return self._normalized[item]
-
-    def __iter__(self):
-        return iter(self._normalized)
-
-    def __len__(self):
-        return len(self._normalized)
-
-
-# "metadata" section
-class _MetadataSectionModel(_ConfigsBaseModel):
-    """Model for the 'metadata' section. This will be hidden when performing dumps."""
-
-    source_file_path: ParsedPath = None
-
-
-# "general" section
-class _GeneralSectionModel(_ConfigsBaseModel):
-    """Model for the 'general' section."""
-
-    data_rootdir: ParsedPath = Path(".")
-    assimilation_times: _InputDatesModel
-    outdir: ParsedPath = Path(tempfile.gettempdir()).resolve() / f"{PACKAGE_NAME}_output"
-
-
-# "commands" section
-class _CommandSectionModel(_ConfigsBaseModel):
-    """Model for the 'commands' section."""
-
-    class _SelectCommandSectionModel(_ConfigsBaseModel):
-        station_rejection_tol: confloat(ge=0, le=1) = 0.3
-        save_obsoul: bool = True
-
-    select: _SelectCommandSectionModel = _SelectCommandSectionModel()
-
-
-# domain and projection
-class _DomainSectionModel(_ConfigsBaseModel):
-    """Model for the 'domain' section."""
-
-    # These defaults are for the METCOOP25C domain. See
-    # <https://hirlam.org/trac/wiki/HarmonieSystemDocumentation/ModelDomain>
-    # <https://hirlam.org/trac/browser/Harmonie/scr/Harmonie_domains.pm>
-    name: str = "Domain"
-    shape: Tuple[PositiveInt, PositiveInt] = (900, 960)  # (n_lon. n_lat)
-    cell_sizes: Tuple[PositiveFloat, PositiveFloat] = (2500.0, 2500.0)  # In meters
-    center_lonlat: Tuple[confloat(ge=-180, lt=180), confloat(ge=-90, le=90)] = (
-        16.763011639,
-        63.489212956,
-    )
-    projparams: Union[dict, str] = "+proj=lcc +lon_0=15 +lat_0=63 +lat_1=63"
-
-
-class ParsedConfig(_ConfigsBaseModel):
-    """Model for validation of the data in the whole config file."""
-
-    general: _GeneralSectionModel
-    commands: _CommandSectionModel = _CommandSectionModel()
-    domain: _DomainSectionModel = _DomainSectionModel()
-    metadata: _MetadataSectionModel = _MetadataSectionModel()
+    def validate(self):
+        """Return a validation function compiled with the instance's json schema."""
+        return fastjsonschema.compile(self.json_schema)
 
     @classmethod
-    def from_file(cls, config_path):
+    def parse_obj(cls, obj, json_schema=None):
+        """Parse a dict object 'obj', optionally validating against a json schema."""
+        return cls(json_schema=json_schema, **obj)
+
+    @classmethod
+    def from_file(cls, config_path, json_schema=None):
         """Read config file at location "config_path".
 
         Args:
-            config_path (Union[pathlib.Path, str]): The path to the config file.
+            config_path (typing.Union[pathlib.Path, str]): The path to the config file.
+            json_schema (dict): JSON schema to be used for validation.
 
         Returns:
             .config_parser.ParsedConfig: Parsed configs from config_path.
@@ -271,10 +204,41 @@ class ParsedConfig(_ConfigsBaseModel):
         with open(config_path, "rb") as config_file:
             raw_config = tomlkit.load(config_file)
 
-        new_config_obj = cls.parse_obj(raw_config)
-
         # Add metadata about where the config was parsed from
-        metadata = new_config_obj.metadata.copy(update={"source_file_path": config_path})
-        new_config_obj = new_config_obj.copy(update={"metadata": metadata})
+        old_metadata = raw_config.get("metadata", {})
+        new_metadata = {"source_file_path": config_path.as_posix()}
+        old_metadata.update(new_metadata)
+        raw_config["metadata"] = new_metadata
 
-        return new_config_obj
+        return cls.parse_obj(obj=raw_config, json_schema=json_schema)
+
+
+def _convert_lists_into_tuples(values):
+    """Convert 'list' inputs into tuples. Helps serialisation, needed for dumps."""
+    new_d = values.copy()
+    for k, v in values.items():
+        if isinstance(v, list):
+            new_d[k] = tuple(v)
+        elif isinstance(v, dict):
+            new_d[k] = _convert_lists_into_tuples(v)
+    return new_d
+
+
+def _remove_none_values(values):
+    """Recursively remove None entries from the input dict."""
+    new_d = {}
+    for k, v in values.items():
+        if isinstance(v, dict):
+            new_d[k] = _remove_none_values(v)
+        elif v is not None:
+            new_d[k] = v
+    return new_d
+
+
+def _convert_subdicts_into_model_instance(cls, values):
+    """Convert nested dicts into instances of the model."""
+    new_d = values.copy()
+    for k, v in values.items():
+        if isinstance(v, dict):
+            new_d[k] = cls(**_convert_subdicts_into_model_instance(cls, v))
+    return new_d

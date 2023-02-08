@@ -6,10 +6,8 @@ from pathlib import Path
 import pytest
 import tomlkit
 from pandas.tseries.frequencies import to_offset
-from pydantic import BaseModel
-from pydantic.error_wrappers import ValidationError
 
-from deode.config_parser import ParsedConfig
+from deode.config_parser import ConfigFileValidationError, ParsedConfig
 from deode.datetime_utils import as_datetime
 
 
@@ -18,7 +16,8 @@ def minimal_raw_config():
     return tomlkit.parse(
         """
         [general]
-            assimilation_times.list = ["20000101T00"]
+            data_rootdir = "."
+            assimilation_times.list = ["2000-01-01T00:00:00Z"]
         """
     )
 
@@ -100,7 +99,7 @@ class TestGeneralBehaviour:
     # pylint: disable=no-self-use
 
     def test_config_model_can_be_instantiated(self, minimal_parsed_config):
-        assert isinstance(minimal_parsed_config, BaseModel)
+        assert isinstance(minimal_parsed_config, ParsedConfig)
 
     def test_config_recursive_attr_access(self, minimal_parsed_config):
         recursively_retrieved_value = getattr(
@@ -113,15 +112,8 @@ class TestGeneralBehaviour:
         )
 
     def test_config_recursive_attr_access_task(self, parsed_config_with_task):
-        with pytest.raises(
-            AttributeError, match="'Table' object has no attribute 'forecast'"
-        ):
-            # Since we still don't have a model for "task" in config_parser.py, it will be
-            # returned as a dictionary. The line below should therefore fail with the
-            # error specified above.
-            # TODO: Remove this part of the test once we define a model for "task" in the
-            #       config_parser.py file.
-            _ = parsed_config_with_task.task.forecast.wapper
+        with pytest.raises(AttributeError, match="object has no attribute 'foo'"):
+            _ = parsed_config_with_task.task.forecast.foo
         recursively_retrieved_value = parsed_config_with_task.get_value(
             "task.forecast.wrapper"
         )
@@ -136,11 +128,11 @@ class TestGeneralBehaviour:
         assert extra_section
 
     def test_config_is_immutable(self, minimal_parsed_config):
-        with pytest.raises(TypeError, match="is immutable"):
+        with pytest.raises(TypeError, match="cannot assign"):
             minimal_parsed_config.general = "foo"
         with pytest.raises(AttributeError, match="has no attribute 'foo'"):
             _ = minimal_parsed_config.foo
-        with pytest.raises(TypeError, match="is immutable"):
+        with pytest.raises(TypeError, match="cannot assign"):
             minimal_parsed_config.foo = "bar"
 
     def test_config_can_be_printed(self, raw_config_with_non_recognised_options):
@@ -148,35 +140,26 @@ class TestGeneralBehaviour:
         _ = str(config)
 
     def test_parsed_config_passes_toml_readwrite_roundtrip(self, minimal_parsed_config):
-        toml_dumps = minimal_parsed_config.dumps(style="toml", exclude_unset=False)
+        toml_dumps = minimal_parsed_config.dumps(style="toml")
         reloaded_parsed_config = ParsedConfig.parse_obj(tomlkit.loads(toml_dumps))
-        new_toml_dumps = reloaded_parsed_config.dumps(style="toml", exclude_unset=False)
+        new_toml_dumps = reloaded_parsed_config.dumps(style="toml")
         assert new_toml_dumps == toml_dumps
 
     def test_parsed_config_does_not_have_file_metadata_when_not_read_from_file(
         self, minimal_parsed_config
     ):
         config = minimal_parsed_config.copy()
-        assert config.get_value("metadata.source_file_path") is None
+        with pytest.raises(AttributeError, match="has no attribute 'source_file_path'"):
+            _ = config.get_value("metadata.source_file_path")
 
-    def test_parsed_config_retains_file_metadata_when_read_from_file(self, config_path):
+    def test_parsed_config_registers_file_metadata_when_read_from_file(self, config_path):
         config = ParsedConfig.from_file(config_path)
         config_source_file_path = config.get_value("metadata.source_file_path")
-        assert isinstance(config_source_file_path, Path)
-        assert config_source_file_path == config_path
+        assert Path(config_source_file_path) == Path(config_path)
 
 
 class TestValidators:
     # pylint: disable=no-self-use
-
-    @pytest.mark.parametrize("picked_type", [int, float, bool, str])
-    def test_validator_performs_simple_type_casting(
-        self, minimal_raw_config, picked_type
-    ):
-        """Pick a config field that should be a string, just to check."""
-        minimal_raw_config["domain"] = {"name": picked_type(1.0)}
-        parsed_config = ParsedConfig.parse_obj(minimal_raw_config)
-        assert isinstance(parsed_config.domain.name, str)
 
     def test_validator_works_with_pandas_offset_freq_string(self, minimal_raw_config):
         input_freqstr = "3H"
@@ -187,39 +170,40 @@ class TestValidators:
         validated_freqstr = parsed_config.general.assimilation_times.cycle_length
         assert to_offset(validated_freqstr) == to_offset(input_freqstr)
 
-    def test_validator_works_with_parsed_path(self, minimal_raw_config):
-        minimal_raw_config["general"]["data_rootdir"] = "~/foo"
-        parsed_config = ParsedConfig.parse_obj(minimal_raw_config)
-        validated_path = parsed_config.general.data_rootdir
-        assert isinstance(validated_path, Path)
-        assert validated_path == Path.home() / "foo"
-
     @pytest.mark.parametrize(
         "dt_input",
-        ["20181010T00", "2018-10-10T00", "20181010T00:10", "1", datetime.datetime.now()],
+        [
+            "2018-10-10T00:00:00+00:00",
+            "2018-10-10T00:00:00Z",
+            "2018-10-10T00:00:00.000000+00:00",
+            datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        ],
     )
     def test_validator_works_with_input_datetime(self, dt_input, minimal_raw_config):
         minimal_raw_config["general"]["assimilation_times"]["list"] = [dt_input]
         parsed_config = ParsedConfig.parse_obj(minimal_raw_config)
         validated_value = parsed_config.general.assimilation_times.list[0]
-        assert isinstance(validated_value, datetime.datetime)
-        assert validated_value == as_datetime(dt_input)
+        assert isinstance(validated_value, str)
+        assert as_datetime(validated_value) == as_datetime(dt_input)
 
     def test_parsing_complains_about_incompatible_type(self, minimal_raw_config):
         minimal_raw_config["general"]["assimilation_times"][
             "list"
         ] = datetime.datetime.now()
-        with pytest.raises(ValidationError, match="value is not a valid tuple"):
+        with pytest.raises(
+            ConfigFileValidationError,
+            match="must be array",
+        ):
             _ = ParsedConfig.parse_obj(minimal_raw_config)
 
     @pytest.mark.parametrize(
         ("start", "end", "dates_list"),
         [
-            ("20000101T00", "20000101T00", ["20000101T00"]),
-            ("20000101T00", None, ["20000101T00"]),
-            (None, "20000101T00", ["20000101T00"]),
-            ("20000101T00", None, None),
-            (None, "20000101T00", None),
+            ("2000-01-01T00:00", "2000-01-01T00:00", ["2000-01-01T00:00"]),
+            ("2000-01-01T00", None, ["2000-01-01T00:00"]),
+            (None, "20000101T00:00", ["20000101T00:00"]),
+            ("2000-01-01T00:00", None, None),
+            (None, "2000-01-01T00:00", None),
             (None, None, None),
         ],
     )
@@ -228,25 +212,30 @@ class TestValidators:
     ):
         raw_config = minimal_raw_config.copy()
 
-        new_config_info = "[general.assimilation_times]"
+        new_config_assim_times = ""
         if start is not None:
-            new_config_info = f"""
-                 {new_config_info}
+            new_config_assim_times = f"""
+                 {new_config_assim_times}
                     start = '{start}'
             """
         if end is not None:
-            new_config_info = f"""
-                {new_config_info}
+            new_config_assim_times = f"""
+                {new_config_assim_times}
                     end = '{end}'
             """
         if dates_list is not None:
-            new_config_info = f"""
-                {new_config_info}
+            new_config_assim_times = f"""
+                {new_config_assim_times}
                     list = {dates_list}
             """
-        raw_config.update(tomlkit.parse(new_config_info))
 
-        with pytest.raises(ValidationError, match="Must specify either only"):
+        raw_config["general"]["assimilation_times"] = tomlkit.parse(
+            new_config_assim_times
+        )
+
+        with pytest.raises(
+            ConfigFileValidationError, match="must be valid exactly by one definition"
+        ):
             _ = ParsedConfig.parse_obj(raw_config)
 
 

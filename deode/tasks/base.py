@@ -1,12 +1,12 @@
 """Base site class."""
 
 import os
-
 import socket
+
+from deode.logs import get_logger_from_config
 from deode.tasks.batch import BatchJob
 from deode.tasks.data import InputData, OutputData
 from deode.toolbox import FileManager
-from deode.logs import get_logger_from_config
 
 
 class Task(object):

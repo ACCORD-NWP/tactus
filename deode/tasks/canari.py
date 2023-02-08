@@ -20,8 +20,9 @@ class Canari(Task):
         """Execute task."""
         # Possibly from input dir
         self.fmanager.input("@CLIMDATA@/m@MM@", "m@MM@", check_archive=True)
-        self.fmanager.input("@ARCHIVE@/ICMSH@CNMEXP@+0000", "ICMSH@CNMEXP@+0000",
-                            provider_id="symlink")
+        self.fmanager.input(
+            "@ARCHIVE@/ICMSH@CNMEXP@+0000", "ICMSH@CNMEXP@+0000", provider_id="symlink"
+        )
 
         res_dict = {
             "input": {

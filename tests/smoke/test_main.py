@@ -18,7 +18,8 @@ def minimal_raw_config():
     return tomlkit.parse(
         """
         [general]
-            assimilation_times.list = ["20000101T00"]
+            data_rootdir = "."
+            assimilation_times.list = ["2000-01-01T00:00:00Z"]
         """
     )
 

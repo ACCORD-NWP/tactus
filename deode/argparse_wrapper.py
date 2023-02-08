@@ -204,13 +204,11 @@ def get_parsed_args(program_name="program", argv=None):
         "section", help="The config section (optional)", default="", nargs="?"
     )
     parser_show_config.add_argument(
-        "--format", "-fmt", help="Output format", choices=["toml", "json"], default="toml"
-    )
-    parser_show_config.add_argument(
-        "--no-defaults",
-        "--nodefs",
-        action="store_true",
-        help="Don't show defaults: Show only what is written in the config file.",
+        "--format",
+        "-fmt",
+        help="Output format",
+        choices=["toml", "json", "yaml"],
+        default="toml",
     )
     parser_show_config.add_argument(
         "--show-metadata",

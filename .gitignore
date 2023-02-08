@@ -17,3 +17,9 @@ tmp/
 poetry.lock
 dist/
 .idea/
+
+# Files/directories generated at runtime
+archived_file
+input_file
+ecf/Forecast.py
+ecf/Serial.py

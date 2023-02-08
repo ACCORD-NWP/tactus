@@ -2,11 +2,11 @@
     name = "deode"
     version = "0.1.0"
     description = "Prototype for the DEODE scripting system."
-    authors = ["Paulo V. C. Medeiros <paulo.medeiros@smhi.se>"]
+    authors = ["The WP5.1 development group in the DE_330 project."]
     license = "MIT"
     readme = "README.md"
-    repository = "https://source.coderefinery.org/deode/deode-prototype"
-    documentation = "https://source.coderefinery.org/deode/deode-prototype/-/wikis"
+    repository = "https://github.com/DEODE-NWP/Deode-Prototype"
+    documentation = "https://github.com/DEODE-NWP/Deode-Prototype/tree/develop/docs"
 
 [tool.poetry.scripts]
     deode = "deode.main:main"
@@ -19,13 +19,13 @@
     python = "^3.8"
     attrs = "^21.4.0"
     dateutils = "^0.6.12"
+    fastjsonschema = "2.16.2"
     humanize = "^3.14.0"
     numexpr = "^2.8.4"
     numpy = "^1.22.4"
     pandas = "^1.4.0"
-    pydantic = "^1.9.0"
     pyproj = "^3.3.0"
-    tomlkit = "^0.8.0"
+    tomlkit = "^0.11.6"
     troika = {git = "https://git.ecmwf.int/scm/ecsdk/troika.git"}
 
 [tool.poetry.dev-dependencies]
@@ -33,7 +33,7 @@
     flake8 = "^4.0.1"
     flakeheaven = "^0.11.1"
     isort = "^5.10.1"
-    poetryup = "^0.5.4"
+    poetryup = "^0.12.7"
     pre-commit = "^2.17.0"
     pyment = "0.3.3"
     pylint = "^2.12.2"

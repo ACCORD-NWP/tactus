@@ -1,0 +1,267 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ParsedConfig",
+  "description": "Model for validation of the data in the main config file.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "general": {
+      "$ref": "#/definitions/_GeneralSectionModel"
+    },
+    "commands": {
+      "title": "Commands",
+      "default": {
+        "select": {
+          "station_rejection_tol": 0.3,
+          "save_obsoul": true
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/_CommandSectionModel"
+        }
+      ]
+    },
+    "domain": {
+      "title": "Domain",
+      "default": {
+        "name": "Domain",
+        "shape": [
+          900,
+          960
+        ],
+        "cell_sizes": [
+          2500.0,
+          2500.0
+        ],
+        "center_lonlat": [
+          16.763011639,
+          63.489212956
+        ],
+        "projparams": "+proj=lcc +lon_0=15 +lat_0=63 +lat_1=63"
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/_DomainSectionModel"
+        }
+      ]
+    },
+    "metadata": {
+      "title": "Metadata",
+      "default": {
+        "source_file_path": null
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/_MetadataSectionModel"
+        }
+      ]
+    }
+  },
+  "required": [
+    "general"
+  ],
+  "definitions": {
+    "_GeneralSectionModel": {
+      "title": "_GeneralSectionModel",
+      "description": "Model for the 'general' section.",
+      "type": "object",
+      "properties": {
+        "data_rootdir": {
+          "title": "Data Rootdir",
+          "default": ".",
+          "type": "string",
+          "format": "uri-reference"
+        },
+        "assimilation_times": {
+          "title": "assimilation_times",
+          "description": "Model for the 'general.assimilation_times' section.",
+          "type": "object",
+          "properties": {
+            "start": {
+              "title": "Start",
+              "type": "string",
+              "format": "date-time"
+            },
+            "end": {
+              "title": "End",
+              "type": "string",
+              "format": "date-time"
+            },
+            "list": {
+              "title": "List",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "cycle_length": {
+              "title": "Cycle Length",
+              "default": "3H",
+              "type": "string"
+            }
+          },
+          "oneOf": [
+            {"required": ["start", "end"], "not": {"required": ["list"]}},
+            {
+              "required": ["list"],
+              "not": {
+                "anyOf":[
+                  {"required": ["start"]},
+                  {"required": ["end"]}
+                ]
+              }
+            }
+          ]
+        },
+        "outdir": {
+          "title": "Outdir",
+          "default": "/tmp/deode_output",
+          "type": "string",
+          "format": "uri-reference"
+        }
+      },
+      "required": [
+	"data_rootdir",
+        "assimilation_times"
+      ]
+    },
+    "_SelectCommandSectionModel": {
+      "title": "_SelectCommandSectionModel",
+      "description": "Base model for all models defined in this file.",
+      "type": "object",
+      "properties": {
+        "station_rejection_tol": {
+          "title": "Station Rejection Tol",
+          "default": 0.3,
+          "minimum": 0,
+          "maximum": 1,
+          "type": "number"
+        },
+        "save_obsoul": {
+          "title": "Save Obsoul",
+          "default": true,
+          "type": "boolean"
+        }
+      }
+    },
+    "_CommandSectionModel": {
+      "title": "_CommandSectionModel",
+      "description": "Model for the 'commands' section.",
+      "type": "object",
+      "properties": {
+        "select": {
+          "title": "Select",
+          "default": {
+            "station_rejection_tol": 0.3,
+            "save_obsoul": true
+          },
+          "allOf": [
+            {
+              "$ref": "#/definitions/_SelectCommandSectionModel"
+            }
+          ]
+        }
+      }
+    },
+    "_DomainSectionModel": {
+      "title": "_DomainSectionModel",
+      "description": "Model for the 'domain' section.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "default": "Domain",
+          "type": "string"
+        },
+        "shape": {
+          "title": "Shape",
+          "default": [
+            900,
+            960
+          ],
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": [
+            {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            },
+            {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          ]
+        },
+        "cell_sizes": {
+          "title": "Cell Sizes",
+          "default": [
+            2500.0,
+            2500.0
+          ],
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": [
+            {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          ]
+        },
+        "center_lonlat": {
+          "title": "Center Lonlat",
+          "default": [
+            16.763011639,
+            63.489212956
+          ],
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": [
+            {
+              "type": "number",
+              "exclusiveMaximum": 180,
+              "minimum": -180
+            },
+            {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            }
+          ]
+        },
+        "projparams": {
+          "title": "Projparams",
+          "default": "+proj=lcc +lon_0=15 +lat_0=63 +lat_1=63",
+          "anyOf": [
+            {
+              "type": "object"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    "_MetadataSectionModel": {
+      "title": "_MetadataSectionModel",
+      "description": "Model for the 'metadata' section. This will be hidden when performing dumps.",
+      "type": "object",
+      "properties": {
+        "source_file_path": {
+          "title": "Source File Path",
+          "type": "string",
+          "format": "uri-reference"
+        }
+      }
+    }
+  }
+}

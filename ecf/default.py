@@ -65,4 +65,4 @@ if __name__ == "__main__":
 
 """    # noqa
 %end"  # noqa
-"""    # noqa
+"""  # noqa

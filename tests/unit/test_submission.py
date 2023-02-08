@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
 import pytest
+import tomlkit
 
 from deode.config_parser import ParsedConfig
 from deode.submission import NoSchedulerSubmission, TaskSettings
@@ -8,13 +9,16 @@ from deode.submission import NoSchedulerSubmission, TaskSettings
 
 @pytest.fixture()
 def minimal_raw_config():
-    return {
-        "general": {
-            "assimilation_times": {"list": ["20000101T00"]},
-            "loglevel": "DEBUG"
-        },
-        "system": {"wrk": "/tmp/@YYYY@@MM@@DD@_@HH@"} # noqa S108
-    }
+    return tomlkit.parse(
+        """
+        [general]
+            data_rootdir = "."
+            assimilation_times.list = ["2000-01-01T00:00:00Z"]
+            loglevel = "DEBUG"
+        [system]
+            wrk = "/tmp/@YYYY@@MM@@DD@_@HH@"
+        """
+    )
 
 
 @pytest.fixture()
