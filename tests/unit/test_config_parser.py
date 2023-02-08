@@ -150,7 +150,7 @@ class TestGeneralBehaviour:
     ):
         config = minimal_parsed_config.copy()
         with pytest.raises(AttributeError, match="has no attribute 'source_file_path'"):
-            source_file_path = config.get_value("metadata.source_file_path")
+            _ = config.get_value("metadata.source_file_path")
 
     def test_parsed_config_registers_file_metadata_when_read_from_file(self, config_path):
         config = ParsedConfig.from_file(config_path)
