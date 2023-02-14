@@ -69,8 +69,18 @@ class BasicConfig:
         """Emulate the "items" method from the dictionary type."""
         return self.dict().items()
 
-    def copy(self):
-        """Return a deepcopy of the instance."""
+    def copy(self, update=None):
+        """Return a copy of the instance.
+
+        Args:
+            update (dict): Mapping containing the fields to be updated upon copying.
+                Default value = None.
+
+        Returns:
+            Any: Copy of the instance, with any values mapped from `update` updated.
+        """
+        if update is not None:
+            return BasicConfig(**_update_nested_dict(self.dict(), update))
         return copy.deepcopy(self)
 
     def get_value(self, items):
@@ -129,9 +139,6 @@ class BasicConfig:
 
         return rtn
 
-    def __repr__(self):
-        return str(self.dict())
-
     def __setattr__(self, key, value):
         raise TypeError(f"cannot assign to {self.__class__.__name__} objects.")
 
@@ -155,6 +162,9 @@ class BasicConfig:
 
         return reduce(regular_getattribute, items.split("."), self)
 
+    def __repr__(self):
+        return str(self.dict())
+
     def __str__(self):
         return self.dumps(style="json")
 
@@ -169,7 +179,7 @@ class ParsedConfig(BasicConfig):
         object.__setattr__(self, "json_schema", json_schema)
 
         try:
-            super().__init__(**self.validate(kwargs))
+            super().__init__(**self._validate(kwargs))
         except JsonSchemaValueException as err:
             error_path = " -> ".join(err.path[1:])
             human_readable_msg = err.message.replace(err.name, "")
@@ -177,11 +187,6 @@ class ParsedConfig(BasicConfig):
                 f'"{error_path}" {human_readable_msg}. '
                 + f'Received {type(err.value)} value "{err.value}"'
             ) from err
-
-    @cached_property
-    def validate(self):
-        """Return a validation function compiled with the instance's json schema."""
-        return fastjsonschema.compile(self.json_schema)
 
     @classmethod
     def parse_obj(cls, obj, json_schema=None):
@@ -201,8 +206,7 @@ class ParsedConfig(BasicConfig):
         """
         config_path = Path(config_path).expanduser().resolve()
         logging.info("Reading config file %s", config_path)
-        with open(config_path, "rb") as config_file:
-            raw_config = tomlkit.load(config_file)
+        raw_config = _read_raw_config_file(config_path)
 
         # Add metadata about where the config was parsed from
         old_metadata = raw_config.get("metadata", {})
@@ -211,6 +215,20 @@ class ParsedConfig(BasicConfig):
         raw_config["metadata"] = new_metadata
 
         return cls.parse_obj(obj=raw_config, json_schema=json_schema)
+
+    def copy(self, **kwargs):
+        """Return a copy of the instance. Same API as `copy` from class BasicConfig."""
+        return self.__class__.parse_obj(
+            super().copy(**kwargs).dict(), json_schema=self.json_schema
+        )
+
+    @cached_property
+    def _validate(self):
+        """Return a validation function compiled with the instance's json schema."""
+        if not self.json_schema:
+            # No json schema: bypassing validation
+            return lambda obj: obj
+        return fastjsonschema.compile(self.json_schema)
 
 
 def _convert_lists_into_tuples(values):
@@ -242,3 +260,31 @@ def _convert_subdicts_into_model_instance(cls, values):
         if isinstance(v, dict):
             new_d[k] = cls(**_convert_subdicts_into_model_instance(cls, v))
     return new_d
+
+
+def _update_nested_dict(my_dictionary, dict_with_updates):
+    """Recursively update nested dict entries according to `dict_with_updates`."""
+    new_dict = my_dictionary.copy()
+    for key, value in dict_with_updates.items():
+        if isinstance(value, dict):
+            new_dict[key] = _update_nested_dict(new_dict.get(key, {}), value)
+        else:
+            new_dict[key] = value
+    return new_dict
+
+
+def _read_raw_config_file(config_path):
+    config_path = Path(config_path)
+    with open(config_path, "rb") as config_file:
+        if config_path.suffix == ".toml":
+            return tomlkit.load(config_file)
+
+        if config_path.suffix == ".yaml":
+            return yaml.load(config_file, Loader=yaml.loader.SafeLoader)
+
+        if config_path.suffix == ".json":
+            return json.load(config_file)
+
+        raise NotImplementedError(
+            f'Unsupported config file format "{config_path.suffix}"'
+        )

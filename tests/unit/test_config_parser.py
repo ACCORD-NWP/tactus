@@ -152,10 +152,40 @@ class TestGeneralBehaviour:
         with pytest.raises(AttributeError, match="has no attribute 'source_file_path'"):
             _ = config.get_value("metadata.source_file_path")
 
+    @pytest.mark.parametrize("fmt", ["toml", "yaml", "json"])
+    def test_can_read_configs_from_supported_file_formats(
+        self, fmt, config_path, minimal_parsed_config
+    ):
+        new_config_path = config_path.parent / f"{config_path.stem}.{fmt}"
+        with open(new_config_path, "w") as f:
+            f.write(minimal_parsed_config.dumps(style=fmt))
+
+        new_config_as_dict = ParsedConfig.from_file(new_config_path).dict()
+        old_config_as_dict = minimal_parsed_config.dict()
+        new_config_as_dict.pop("metadata")
+        old_config_as_dict.pop("metadata")
+        assert new_config_as_dict == old_config_as_dict
+
     def test_parsed_config_registers_file_metadata_when_read_from_file(self, config_path):
         config = ParsedConfig.from_file(config_path)
         config_source_file_path = config.get_value("metadata.source_file_path")
         assert Path(config_source_file_path) == Path(config_path)
+
+    def test_can_modify_model_upon_copy(self, minimal_parsed_config):
+        original_value = minimal_parsed_config.get_value("general.data_rootdir")
+        new_value = "foo/bar"
+        new_parsed_config = minimal_parsed_config.copy(
+            update={"general": {"data_rootdir": new_value}}
+        )
+        assert original_value != new_value
+        assert minimal_parsed_config.get_value("general.assimilation_times")
+        assert new_parsed_config.get_value("general.assimilation_times")
+        assert (
+            new_parsed_config.get_value("general.assimilation_times").dict()
+            == minimal_parsed_config.get_value("general.assimilation_times").dict()
+        )
+        assert minimal_parsed_config.get_value("general.data_rootdir") == original_value
+        assert new_parsed_config.get_value("general.data_rootdir") == new_value
 
 
 class TestValidators:
