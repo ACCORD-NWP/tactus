@@ -29,7 +29,7 @@ def datetime2epoch(dt):
 
 
 class TimeWindow(pd.Interval):
-    """A single data assimilation time window."""
+    """A single time window."""
 
     def __init__(self, mid, length, closed="left"):
         """Initialise a pd.Interval-like obj given 'mid' and 'length'."""

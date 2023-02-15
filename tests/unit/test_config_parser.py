@@ -102,14 +102,9 @@ class TestGeneralBehaviour:
         assert isinstance(minimal_parsed_config, ParsedConfig)
 
     def test_config_recursive_attr_access(self, minimal_parsed_config):
-        recursively_retrieved_value = getattr(
-            minimal_parsed_config, "general.times.list"
-        )
+        recursively_retrieved_value = getattr(minimal_parsed_config, "general.times.list")
         assert isinstance(recursively_retrieved_value, tuple)
-        assert (
-            recursively_retrieved_value
-            is minimal_parsed_config.general.times.list
-        )
+        assert recursively_retrieved_value is minimal_parsed_config.general.times.list
 
     def test_config_recursive_attr_access_task(self, parsed_config_with_task):
         with pytest.raises(AttributeError, match="object has no attribute 'foo'"):
@@ -149,7 +144,7 @@ class TestGeneralBehaviour:
         self, minimal_parsed_config
     ):
         config = minimal_parsed_config.copy()
-        with pytest.raises(AttributeError, match="has no attribute 'source_file_path'"):
+        with pytest.raises(AttributeError, match="has no attribute 'metadata'"):
             _ = config.get_value("metadata.source_file_path")
 
     @pytest.mark.parametrize("fmt", ["toml", "yaml", "json"])
@@ -161,9 +156,8 @@ class TestGeneralBehaviour:
             f.write(minimal_parsed_config.dumps(style=fmt))
 
         new_config_as_dict = ParsedConfig.from_file(new_config_path).dict()
-        old_config_as_dict = minimal_parsed_config.dict()
         new_config_as_dict.pop("metadata")
-        old_config_as_dict.pop("metadata")
+        old_config_as_dict = minimal_parsed_config.dict()
         assert new_config_as_dict == old_config_as_dict
 
     def test_parsed_config_registers_file_metadata_when_read_from_file(self, config_path):
@@ -173,7 +167,7 @@ class TestGeneralBehaviour:
 
     def test_can_modify_model_upon_copy(self, minimal_parsed_config):
         original_value = minimal_parsed_config.get_value("general.loglevel")
-        new_value = "foo/bar"
+        new_value = "DEBUG"
         new_parsed_config = minimal_parsed_config.copy(
             update={"general": {"loglevel": new_value}}
         )
@@ -187,15 +181,32 @@ class TestGeneralBehaviour:
         assert minimal_parsed_config.get_value("general.loglevel") == original_value
         assert new_parsed_config.get_value("general.loglevel") == new_value
 
+    def test_can_modify_with_list_value_upon_model_copy(self, minimal_parsed_config):
+        original_value = minimal_parsed_config.get_value("general.times")
+        new_value = [
+            "2000-01-01T22:00:00Z",
+            datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        ]
+        new_parsed_config = minimal_parsed_config.copy(
+            update={"general": {"times": {"list": new_value}}}
+        )
+
+        assert original_value != new_value
+        assert minimal_parsed_config.get_value("general.loglevel") == "INFO"
+        assert new_parsed_config.get_value("general.loglevel") == "INFO"
+        assert (
+            minimal_parsed_config.get_value("general.times").dict()
+            == original_value.dict()
+        )
+        assert new_parsed_config.get_value("general.times.list") == tuple(new_value)
+
 
 class TestValidators:
     # pylint: disable=no-self-use
 
     def test_validator_works_with_pandas_offset_freq_string(self, minimal_raw_config):
         input_freqstr = "3H"
-        minimal_raw_config["general"]["times"][
-            "cycle_length"
-        ] = input_freqstr
+        minimal_raw_config["general"]["times"]["cycle_length"] = input_freqstr
         parsed_config = ParsedConfig.parse_obj(minimal_raw_config)
         validated_freqstr = parsed_config.general.times.cycle_length
         assert to_offset(validated_freqstr) == to_offset(input_freqstr)
@@ -217,9 +228,7 @@ class TestValidators:
         assert as_datetime(validated_value) == as_datetime(dt_input)
 
     def test_parsing_complains_about_incompatible_type(self, minimal_raw_config):
-        minimal_raw_config["general"]["times"][
-            "list"
-        ] = datetime.datetime.now()
+        minimal_raw_config["general"]["times"]["list"] = datetime.datetime.now()
         with pytest.raises(
             ConfigFileValidationError,
             match="must be array",
@@ -259,9 +268,7 @@ class TestValidators:
                     list = {dates_list}
             """
 
-        raw_config["general"]["times"] = tomlkit.parse(
-            new_config_times
-        )
+        raw_config["general"]["times"] = tomlkit.parse(new_config_times)
 
         with pytest.raises(
             ConfigFileValidationError, match="must be valid exactly by one definition"
