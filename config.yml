@@ -55,7 +55,7 @@ sites:
     pre_submit: ["create_output_dir"]
     preprocess: ["remove_top_blank_lines", "slurm_add_output", "slurm_bubble"]
     at_exit: ["copy_submit_logfile"]
-    sbatch_command: "ecsbatch --export PYTHONPATH=$HOME/.local/lib/python3.8/site-packages/"
+    sbatch_command: "ecsbatch"
     scancel_command: 'scancel -f'
 
   hpc2020:

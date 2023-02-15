@@ -12,8 +12,7 @@ def minimal_raw_config():
     return tomlkit.parse(
         """
         [general]
-            data_rootdir = "."
-            assimilation_times.list = ["2000-01-01T00:00:00Z"]
+            times.list = ["2000-01-01T00:00:00Z"]
             loglevel = "DEBUG"
         [system]
             wrk = "/tmp/@YYYY@@MM@@DD@_@HH@"
@@ -58,16 +57,14 @@ class TestSubmission:
 
     def test_submit(self, config_from_task_config_file):
         config = config_from_task_config_file
-        task = "forecast"
+        config.copy(update={"submission": {"default_submit_type": "background_hpc"}})
+        task = "UnitTest"
         template_job = "ecf/stand_alone.py"
         task_job = f"/tmp/{task}.job"  # noqa
         output = f"/tmp/{task}.log"  # noqa
-        settings = {
-            "submit_types": ["background"],
-            "default_submit_type": "background",
-            "background": {"SCHOST": "localhost"},
-        }
-        background = TaskSettings(settings)
+
+        # assert config.get_value("submission.default_submit_type") == "background_hpc"  # noqa
+        background = TaskSettings(config)
         sub = NoSchedulerSubmission(background)
         sub.submit(
             task, config, template_job, task_job, output, troika_config="config.yml"
@@ -79,14 +76,10 @@ class TestSubmission:
         template_job = "ecf/stand_alone.py"
         task_job = f"/tmp/{task}.job"  # noqa
         output = f"/tmp/{task}.log"  # noqa
-        settings = {
-            "submit_types": ["background"],
-            "default_submit_type": "background",
-            "background": {"SCHOST": "localhost"},
-        }
-        background = TaskSettings(settings)
-        sub = NoSchedulerSubmission(background)
 
+        background = TaskSettings(config)
+        sub = NoSchedulerSubmission(background)
+        troika_config = config.get_value("troika.config_file")
         with pytest.raises(Exception, match="Task not found:"):
             sub.submit(
                 task,
@@ -94,7 +87,7 @@ class TestSubmission:
                 template_job,
                 task_job,
                 output,
-                troika_config="config.yml",
+                troika_config=troika_config,
             )
 
 

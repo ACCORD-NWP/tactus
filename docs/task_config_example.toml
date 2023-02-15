@@ -1,23 +1,54 @@
 [general]
-data_rootdir = "SOME_PATH"
-outdir = "/tmp/deode_output"
+case = "my_beautiful_case"
 macros = []
 os_macros = ["USER", "HOME"]
-basetime = "2000-01-01T00:00:00Z"
-validtime = "2000-01-02T00:00:00Z"
-domain = "MYDOMAIN"
 realization = -1
 cnmexp = "DEOD"
 tstep = 60
-loglevel = "INFO"
+loglevel = "DEBUG"
+surfex = true
+csc = "AROME"
+bdint = "P1H"
+forecast_range = "P24H"
+output_interval_his = "P3H"
+output_interval_fp = "P30M"
+output_interval_sfx = "P3H"
+output_interval_sfx_sel = "P30M"
+
+[vertical_levels]
+nlev = 65
+ahalf = []
+bhalf = []
+
+[domain]
+name = "DOMAIN"
+nimax = 50
+njmax = 60
+xloncen = 10.0
+xlatcen = 60.0
+xdx = 2500.0
+xdy = 2500.0
+ilone = 0
+ilate = 0
+xlon0 = 10.0
+xlat0 = 60.0
+
 
 [system]
-wrk = "/tmp/@YYYY@@MM@@DD@_@HH@"
+wrk = "@SCRATCH@/@CASE@/@YYYY@@MM@@DD@_@HH@@mm@"
+archive = "@ARCHIVE_ROOT@/@CASE@/@YYYY@@MM@@DD@_@HH@@mm"
+bddir = "@SCRATCH@/@CASE@/BD"
 
-[general.assimilation_times]
+[platform]
+ARCHIVE_ROOT = "/tmp/@CASE@/archive"
+SCRATCH = "/tmp/@USER@"
+
+[general.times]
+basetime = "2000-01-01T00:00:00Z"
+validtime = "2000-01-02T00:00:00Z"
 start = "2020-08-15T00:00:00+00:00"
 end = "2020-08-16T21:00:00+00:00"
-cycle_length = "3H"
+cycle_length = "P3H"
 
 [task]
 [task.forecast]
@@ -30,3 +61,35 @@ input_file = "/dev/null"
 [task.forecast.output_data]
 output = "archived_file"
 
+[submission]
+submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
+default_submit_type = "serial"
+[submission.background_vm]
+INTERPRETER = "#!/usr/bin/python3"
+SCHOST = "localhost"
+tasks = ["Background_vm"]
+
+[submission.background_hpc]
+SCHOST = "localhost"
+tasks = ["Background_hpc", "UnitTest"]
+
+[submission.serial]
+SCHOST = "hpc"
+[submission.serial.BATCH]
+ACCOUNT = "#SBATCH -A msdeode"
+WALLTIME = "#SBATCH --time=00:05:00"
+
+[submission.parallel]
+SCHOST = "hpc"
+tasks = ["Forecast"]
+[submission.parallel.BATCH]
+ACCOUNT = "#SBATCH -A msdeode"
+WALLTIME = "#SBATCH --time=00:10:00"
+
+[submission.task_exceptions.Forecast.BATCH]
+WALLTIME = "#SBATCH --time=00:15:00"
+[submission.task_exceptions.Forecast.ENV]
+MODULE = "print('My beautiful module')"
+
+[troika]
+config_file = "config.yml"

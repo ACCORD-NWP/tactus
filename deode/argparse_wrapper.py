@@ -76,13 +76,6 @@ def get_parsed_args(program_name="program", argv=None):
         "run",
         help="Runs a task.",
     )
-    parser_run.add_argument(
-        "--submit",
-        "-sub",
-        dest="submission_file",
-        help="Submission settings",
-        required=True,
-    )
     parser_run.add_argument("--task", "-t", dest="task", help="Task name", required=True)
     parser_run.add_argument(
         "--template", dest="template_job", help="Template", required=True
@@ -148,16 +141,6 @@ def get_parsed_args(program_name="program", argv=None):
         help="Start command for server",
         required=False,
         default=None,
-    )
-    parser_start_suite.add_argument(
-        "--submit",
-        "-sub",
-        dest="submission_file",
-        help="Submission settings",
-        required=True,
-    )
-    parser_start_suite.add_argument(
-        "--logfile", "-log", dest="logfile", help="Scheduler logfile", required=True
     )
     parser_start_suite.add_argument(
         "--name", dest="suite_name", help="Suite name", required=True

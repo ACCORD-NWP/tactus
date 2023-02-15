@@ -22,30 +22,6 @@
         }
       ]
     },
-    "domain": {
-      "title": "Domain",
-      "default": {
-        "name": "Domain",
-        "shape": [
-          900,
-          960
-        ],
-        "cell_sizes": [
-          2500.0,
-          2500.0
-        ],
-        "center_lonlat": [
-          16.763011639,
-          63.489212956
-        ],
-        "projparams": "+proj=lcc +lon_0=15 +lat_0=63 +lat_1=63"
-      },
-      "allOf": [
-        {
-          "$ref": "#/definitions/_DomainSectionModel"
-        }
-      ]
-    },
     "metadata": {
       "title": "Metadata",
       "default": {
@@ -67,15 +43,9 @@
       "description": "Model for the 'general' section.",
       "type": "object",
       "properties": {
-        "data_rootdir": {
-          "title": "Data Rootdir",
-          "default": ".",
-          "type": "string",
-          "format": "uri-reference"
-        },
-        "assimilation_times": {
-          "title": "assimilation_times",
-          "description": "Model for the 'general.assimilation_times' section.",
+        "times": {
+          "title": "times",
+          "description": "Model for the 'general.times' section.",
           "type": "object",
           "properties": {
             "start": {
@@ -114,17 +84,10 @@
               }
             }
           ]
-        },
-        "outdir": {
-          "title": "Outdir",
-          "default": "/tmp/deode_output",
-          "type": "string",
-          "format": "uri-reference"
         }
       },
       "required": [
-	"data_rootdir",
-        "assimilation_times"
+        "times"
       ]
     },
     "_SelectCommandSectionModel": {

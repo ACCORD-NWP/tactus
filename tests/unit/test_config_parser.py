@@ -16,8 +16,8 @@ def minimal_raw_config():
     return tomlkit.parse(
         """
         [general]
-            data_rootdir = "."
-            assimilation_times.list = ["2000-01-01T00:00:00Z"]
+            times.list = ["2000-01-01T00:00:00Z"]
+            loglevel = "INFO"
         """
     )
 
@@ -103,12 +103,12 @@ class TestGeneralBehaviour:
 
     def test_config_recursive_attr_access(self, minimal_parsed_config):
         recursively_retrieved_value = getattr(
-            minimal_parsed_config, "general.assimilation_times.list"
+            minimal_parsed_config, "general.times.list"
         )
         assert isinstance(recursively_retrieved_value, tuple)
         assert (
             recursively_retrieved_value
-            is minimal_parsed_config.general.assimilation_times.list
+            is minimal_parsed_config.general.times.list
         )
 
     def test_config_recursive_attr_access_task(self, parsed_config_with_task):
@@ -172,20 +172,20 @@ class TestGeneralBehaviour:
         assert Path(config_source_file_path) == Path(config_path)
 
     def test_can_modify_model_upon_copy(self, minimal_parsed_config):
-        original_value = minimal_parsed_config.get_value("general.data_rootdir")
+        original_value = minimal_parsed_config.get_value("general.loglevel")
         new_value = "foo/bar"
         new_parsed_config = minimal_parsed_config.copy(
-            update={"general": {"data_rootdir": new_value}}
+            update={"general": {"loglevel": new_value}}
         )
         assert original_value != new_value
-        assert minimal_parsed_config.get_value("general.assimilation_times")
-        assert new_parsed_config.get_value("general.assimilation_times")
+        assert minimal_parsed_config.get_value("general.times")
+        assert new_parsed_config.get_value("general.times")
         assert (
-            new_parsed_config.get_value("general.assimilation_times").dict()
-            == minimal_parsed_config.get_value("general.assimilation_times").dict()
+            new_parsed_config.get_value("general.times").dict()
+            == minimal_parsed_config.get_value("general.times").dict()
         )
-        assert minimal_parsed_config.get_value("general.data_rootdir") == original_value
-        assert new_parsed_config.get_value("general.data_rootdir") == new_value
+        assert minimal_parsed_config.get_value("general.loglevel") == original_value
+        assert new_parsed_config.get_value("general.loglevel") == new_value
 
 
 class TestValidators:
@@ -193,11 +193,11 @@ class TestValidators:
 
     def test_validator_works_with_pandas_offset_freq_string(self, minimal_raw_config):
         input_freqstr = "3H"
-        minimal_raw_config["general"]["assimilation_times"][
+        minimal_raw_config["general"]["times"][
             "cycle_length"
         ] = input_freqstr
         parsed_config = ParsedConfig.parse_obj(minimal_raw_config)
-        validated_freqstr = parsed_config.general.assimilation_times.cycle_length
+        validated_freqstr = parsed_config.general.times.cycle_length
         assert to_offset(validated_freqstr) == to_offset(input_freqstr)
 
     @pytest.mark.parametrize(
@@ -210,14 +210,14 @@ class TestValidators:
         ],
     )
     def test_validator_works_with_input_datetime(self, dt_input, minimal_raw_config):
-        minimal_raw_config["general"]["assimilation_times"]["list"] = [dt_input]
+        minimal_raw_config["general"]["times"]["list"] = [dt_input]
         parsed_config = ParsedConfig.parse_obj(minimal_raw_config)
-        validated_value = parsed_config.general.assimilation_times.list[0]
+        validated_value = parsed_config.general.times.list[0]
         assert isinstance(validated_value, str)
         assert as_datetime(validated_value) == as_datetime(dt_input)
 
     def test_parsing_complains_about_incompatible_type(self, minimal_raw_config):
-        minimal_raw_config["general"]["assimilation_times"][
+        minimal_raw_config["general"]["times"][
             "list"
         ] = datetime.datetime.now()
         with pytest.raises(
@@ -242,25 +242,25 @@ class TestValidators:
     ):
         raw_config = minimal_raw_config.copy()
 
-        new_config_assim_times = ""
+        new_config_times = ""
         if start is not None:
-            new_config_assim_times = f"""
-                 {new_config_assim_times}
+            new_config_times = f"""
+                 {new_config_times}
                     start = '{start}'
             """
         if end is not None:
-            new_config_assim_times = f"""
-                {new_config_assim_times}
+            new_config_times = f"""
+                {new_config_times}
                     end = '{end}'
             """
         if dates_list is not None:
-            new_config_assim_times = f"""
-                {new_config_assim_times}
+            new_config_times = f"""
+                {new_config_times}
                     list = {dates_list}
             """
 
-        raw_config["general"]["assimilation_times"] = tomlkit.parse(
-            new_config_assim_times
+        raw_config["general"]["times"] = tomlkit.parse(
+            new_config_times
         )
 
         with pytest.raises(

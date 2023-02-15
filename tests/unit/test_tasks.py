@@ -13,17 +13,18 @@ def minimal_raw_config():
     return tomlkit.parse(
         """
         [general]
-            data_rootdir = "."
-            assimilation_times.list = ["2000-01-01T00:00:00Z"]
             loglevel = "DEBUG"
             macros = []
             os_macros = ["USER", "HOME"]
-            basetime = "2000-01-01T00:00:00Z"
-            validtime = "2000-01-02T00:00:00Z"
-            domain = "MYDOMAIN"
             realization = -1
             cnmexp = "DEOD"
             tstep = 60
+        [general.times]
+            list = ["2000-01-01T00:00:00Z"]
+            basetime = "2000-01-01T00:00:00Z"
+            validtime = "2000-01-02T00:00:00Z"
+        [domain]
+            name = "MYDOMAIN"
         [system]
             wrk = "/tmp/@YYYY@@MM@@DD@_@HH@"
         [platform]

@@ -13,8 +13,7 @@ def minimal_raw_config():
     return tomlkit.parse(
         """
         [general]
-            data_rootdir = "."
-            assimilation_times.list = ["2000-01-01T00:00:00Z"]
+            times.list = ["2000-01-01T00:00:00Z"]
         """
     )
 
@@ -40,12 +39,7 @@ class TestSuite:
         config = config_from_task_config_file
         suite_name = "test_suite"
         loglevel = "debug"
-        settings = {
-            "submit_types": ["background"],
-            "default_submit_type": "background",
-            "background": {"SCHOST": "localhost"},
-        }
-        background = TaskSettings(settings)
+        background = TaskSettings(config)
         defs = SuiteDefinition(
             suite_name,
             "/tmp/joboutdir",  # noqa

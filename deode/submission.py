@@ -1,26 +1,25 @@
 """Module to handle submissions."""
 
-import json
 import os
 import subprocess
 import sys
 
 from deode.discover_task import get_task
 
-from .logs import get_logger
-
-logger = get_logger(__name__, "DEBUG")
+from .logs import get_logger_from_config
 
 
 class TaskSettings(object):
     """Set the task specific setttings."""
 
-    def __init__(self, submission_defs):
+    def __init__(self, config):
         """Construct the task specific settings.
 
         Args:
-             submission_defs(dict): Submission definitions
+             config(deode.ParserdConfig): Configuration
         """
+        self.logger = get_logger_from_config(config)
+        submission_defs = config.get_value("submission").dict()
         self.submission_defs = submission_defs
         self.job_type = None
 
@@ -38,6 +37,7 @@ class TaskSettings(object):
         all_defs = self.submission_defs
         submit_types = all_defs["submit_types"]
         default_submit_type = all_defs["default_submit_type"]
+        self.logger.debug("default_submit_type=%s", default_submit_type)
         task_submit_type = None
         for s_t in submit_types:
             if s_t in all_defs and "tasks" in all_defs[s_t]:
@@ -61,14 +61,14 @@ class TaskSettings(object):
                         kword_settings = all_defs["task_exceptions"][task][kword]
                         for key, value in kword_settings.items():
                             if key in task_settings:
-                                logger.warning(
+                                self.logger.warning(
                                     "key=%s already exists in " "task_settings", key
                                 )
                             task_settings[kword].update({key: value})
 
         if "SCHOST" in task_settings:
             self.job_type = task_settings["SCHOST"]
-        logger.debug(task_settings)
+        self.logger.debug(task_settings)
         return task_settings
 
     def get_task_settings(self, task, key=None, variables=None, ecf_micro="%"):
@@ -89,16 +89,16 @@ class TaskSettings(object):
         else:
             if key in task_settings:
                 m_task_settings = {}
-                logger.debug(type(task_settings[key]))
+                self.logger.debug(type(task_settings[key]))
                 if isinstance(task_settings[key], dict):
                     for setting, value in task_settings[key].items():
-                        logger.debug("%s %s variables: %s", setting, value, variables)
+                        self.logger.debug("%s %s variables: %s", setting, value, variables)
                         if variables is not None:
                             if setting in variables:
                                 value = f"{ecf_micro}{setting}{ecf_micro}"
-                                logger.debug(value)
+                                self.logger.debug(value)
                         m_task_settings.update({setting: value})
-                    logger.debug(m_task_settings)
+                    self.logger.debug(m_task_settings)
                     return m_task_settings
                 else:
                     value = task_settings[key]
@@ -138,13 +138,13 @@ class TaskSettings(object):
         keys = []
         for key, value in self.recursive_items(task_settings):
             if isinstance(value, str):
-                logger.debug(key)
+                self.logger.debug(key)
                 keys.append(key)
-        logger.debug(keys)
+        self.logger.debug(keys)
         for key, value in self.recursive_items(task_settings):
-            logger.debug("key=%s value=%s", key, value)
+            self.logger.debug("key=%s value=%s", key, value)
             if key in keys:
-                logger.debug("update %s %s", key, value)
+                self.logger.debug("update %s %s", key, value)
                 settings.update({key: value})
         return settings
 
@@ -163,11 +163,11 @@ class TaskSettings(object):
 
         """
         interpreter = self.get_task_settings(task, "INTERPRETER")
-        logger.debug(interpreter)
+        self.logger.debug(interpreter)
         if interpreter is None:
             interpreter = f"#!{sys.executable}"
 
-        logger.debug(interpreter)
+        self.logger.debug(interpreter)
         with open(input_template_job, mode="r", encoding="utf-8") as file_handler:
             input_content = file_handler.read()
         dir_name = os.path.dirname(os.path.realpath(task_job))
@@ -178,13 +178,13 @@ class TaskSettings(object):
             batch_settings = self.get_task_settings(
                 task, "BATCH", variables=variables, ecf_micro=ecf_micro
             )
-            logger.debug("batch settings %s", batch_settings)
+            self.logger.debug("batch settings %s", batch_settings)
             for __, b_setting in batch_settings.items():
                 file_handler.write(f"{b_setting}\n")
             env_settings = self.get_task_settings(
                 task, "ENV", variables=variables, ecf_micro=ecf_micro
             )
-            logger.debug(env_settings)
+            self.logger.debug(env_settings)
             python_task_env = ""
             for __, e_setting in env_settings.items():
                 python_task_env = python_task_env + f"{e_setting}\n"
@@ -201,6 +201,7 @@ class TaskSettings(object):
         os.chmod(task_job, 0o744)
 
 
+'''
 class TaskSettingsJson(TaskSettings):
     """Set the task specific setttings."""
 
@@ -213,6 +214,7 @@ class TaskSettingsJson(TaskSettings):
         with open(submission_defs_file, mode="r", encoding="utf-8") as file_handler:
             submission_defs = json.load(file_handler)
         TaskSettings.__init__(self, submission_defs)
+'''
 
 
 class NoSchedulerSubmission:

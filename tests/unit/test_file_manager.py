@@ -16,17 +16,17 @@ def config_platform():
     task_configs = tomlkit.parse(
         """
         [general]
-            data_rootdir = "."
             macros = ["BINDIR", "ARCHIVE"]
             os_macros = ["USER", "HOME"]
-            basetime = "2000-01-01T00:0:00Z"
-            validtime = "2000-01-02T00:00:00Z"
-            domain = "MYDOMAIN"
             realization = -1
             cnmexp = "DEOD"
             tstep = 60
             loglevel = "DEBUG"
-        [general.assimilation_times]
+        [domain]
+            name = "MYDOMAIN"
+        [general.times]
+            basetime = "2000-01-01T00:0:00Z"
+            validtime = "2000-01-02T00:00:00Z"
             list = ["2000-01-01T00:00:00Z"]
         [platform]
             BINDIR = "/tmp/bindir"

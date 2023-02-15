@@ -178,7 +178,7 @@ class Platform:
                     pattern = pattern.replace(f"@{macro}@", str(val))
                     self.logger.debug("macro=%s pattern=%s", macro, pattern)
 
-            domain = self.config.get_value("general.domain")
+            domain = self.config.get_value("domain.name")
             pattern = pattern.replace("@DOMAIN@", domain)
             self.logger.debug("Substituted domain: %s pattern=%s", domain, pattern)
             realization = self.config.get_value("general.realization")
@@ -193,9 +193,9 @@ class Platform:
 
             # Time handling
             if basetime is None:
-                basetime = str(self.config.get_value("general.basetime"))
+                basetime = str(self.config.get_value("general.times.basetime"))
             if validtime is None:
-                validtime = str(self.config.get_value("general.validtime"))
+                validtime = str(self.config.get_value("general.times.validtime"))
             print(type(basetime))
             if isinstance(basetime, str):
                 basetime = as_datetime(basetime)

@@ -3,7 +3,7 @@
 
 from .logs import get_logger
 from .scheduler import EcflowServer
-from .submission import NoSchedulerSubmission, TaskSettingsJson
+from .submission import NoSchedulerSubmission, TaskSettings
 from .suites import SuiteDefinition
 
 
@@ -17,7 +17,7 @@ def run_task(args, config):
     """
     logger = get_logger(__name__, args.loglevel)
     logger.info("Running %s...", args.task)
-    submission_defs = TaskSettingsJson(args.submission_file)
+    submission_defs = TaskSettings(config)
     sub = NoSchedulerSubmission(submission_defs)
     sub.submit(
         args.task,
@@ -46,7 +46,7 @@ def start_suite(args, config):
         args.ecf_host, ecf_port=args.ecf_port, start_command=args.start_command
     )
 
-    submission_defs = TaskSettingsJson(args.submission_file)
+    submission_defs = TaskSettings(config)
     defs = SuiteDefinition(
         args.suite_name,
         args.joboutdir,

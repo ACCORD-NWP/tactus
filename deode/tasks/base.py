@@ -139,3 +139,15 @@ class BinaryTask(Task):
         output_data = self.get_task_setting("output_data")
         OutputData(output_data).archive_files()
         Task.post(self)
+
+
+class UnitTest(Task):
+    """Base Task class."""
+
+    def __init__(self, config):
+        """Construct test task.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+        """
+        Task.__init__(self, config, __name__)
