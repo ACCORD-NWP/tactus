@@ -25,8 +25,7 @@ def run_task(args, config):
         args.template_job,
         args.task_job,
         args.output,
-        args.troika,
-        args.troika_config,
+        args.troika
     )
     logger.info("Done with task %s", args.task)
 

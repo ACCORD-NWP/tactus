@@ -69,7 +69,7 @@ class TestSubmission:
         background = TaskSettings(config)
         sub = NoSchedulerSubmission(background)
         sub.submit(
-            task, config, template_job, task_job, output, troika_config="config.yml"
+            task, config, template_job, task_job, output
         )
 
     def test_submit_non_existing_task(self, config_from_task_config_file):
@@ -81,15 +81,13 @@ class TestSubmission:
 
         background = TaskSettings(config)
         sub = NoSchedulerSubmission(background)
-        troika_config = config.get_value("troika.config_file")
         with pytest.raises(Exception, match="Task not found:"):
             sub.submit(
                 task,
                 config,
                 template_job,
                 task_job,
-                output,
-                troika_config=troika_config,
+                output
             )
 
 

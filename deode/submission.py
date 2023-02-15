@@ -4,6 +4,7 @@ import os
 import subprocess
 import sys
 
+from deode.toolbox import Platform
 from deode.discover_task import get_task
 
 from .logs import get_logger_from_config
@@ -201,22 +202,6 @@ class TaskSettings(object):
         os.chmod(task_job, 0o744)
 
 
-'''
-class TaskSettingsJson(TaskSettings):
-    """Set the task specific setttings."""
-
-    def __init__(self, submission_defs_file):
-        """Construct the task specific settings.
-
-        Args:
-            submission_defs_file (str): Submission definition json file
-        """
-        with open(submission_defs_file, mode="r", encoding="utf-8") as file_handler:
-            submission_defs = json.load(file_handler)
-        TaskSettings.__init__(self, submission_defs)
-'''
-
-
 class NoSchedulerSubmission:
     """Create and submit job without a scheduler."""
 
@@ -235,8 +220,7 @@ class NoSchedulerSubmission:
         template_job,
         task_job,
         output,
-        troika="troika",
-        troika_config="/opt/troika/etc/troika.yml",
+        troika="troika"
     ):
         """Submit task.
 
@@ -247,8 +231,6 @@ class NoSchedulerSubmission:
             task_job (str): Task job file
             output(str): Output file
             troika (str, optional): troika binary. Defaults to "troika".
-            troika_config (str, optional): Troika config file.
-                                           Defaults to "/opt/troika/etc/troika.yml".
 
         Raises:
             Exception: Submission failure
@@ -257,6 +239,9 @@ class NoSchedulerSubmission:
             get_task(task, config)
         except KeyError:
             raise Exception(f"Task not found: {task}") from KeyError
+
+        platform = Platform(config)
+        troika_config = platform.get_value("troika.config_file")
         self.task_settings.parse_job(task, config, template_job, task_job)
         cmd = (
             f"{troika} -c {troika_config} submit {self.task_settings.job_type} "

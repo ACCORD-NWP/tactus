@@ -2,7 +2,8 @@
 
 import os
 
-from .logs import get_logger
+from deode.toolbox import Platform
+from .logs import get_logger_from_config, get_logger
 
 try:
     import ecflow
@@ -58,6 +59,7 @@ class SuiteDefinition(object):
             if not dry_run:
                 raise Exception("Ecflow not loaded properly")
 
+        self.logger = get_logger_from_config(config)
         name = suite_name
         self.joboutdir = joboutdir
         if ecf_include is None:
@@ -106,7 +108,9 @@ class SuiteDefinition(object):
         self.ecf_kill_cmd = ecf_kill_cmd
 
         troika = "/opt/troika/bin/troika"
-        troika_config = "/opt/troika/etc/troika.yml"
+
+        platform = Platform(config)
+        troika_config = platform.get_value("troika.config_file")
         config_file = config.get_value("metadata.source_file_path")
         variables = {
             "ECF_EXTN": ".py",
@@ -219,7 +223,7 @@ class SuiteDefinition(object):
         forecasting = EcflowSuiteFamily(
             "Forecasting", cycle, ecf_files, trigger=forecast_trigger
         )
-        logger.debug(self.task_settings.get_task_settings("Forecast"))
+        self.logger.debug(self.task_settings.get_task_settings("Forecast"))
 
         variables = {"ECF_TIMEOUT": 5}
         EcflowSuiteTask(

@@ -1,7 +1,7 @@
 [general]
 case = "my_beautiful_case"
-macros = []
-os_macros = ["USER", "HOME"]
+macros = ["DEODE_HOME"]
+os_macros = ["USER", "HOME", "PWD"]
 realization = -1
 cnmexp = "DEOD"
 tstep = 60
@@ -40,6 +40,7 @@ archive = "@ARCHIVE_ROOT@/@CASE@/@YYYY@@MM@@DD@_@HH@@mm"
 bddir = "@SCRATCH@/@CASE@/BD"
 
 [platform]
+DEODE_HOME = "@PWD@"
 ARCHIVE_ROOT = "/tmp/@CASE@/archive"
 SCRATCH = "/tmp/@USER@"
 
@@ -92,4 +93,4 @@ WALLTIME = "#SBATCH --time=00:15:00"
 MODULE = "print('My beautiful module')"
 
 [troika]
-config_file = "config.yml"
+config_file = "@DEODE_HOME@/config.yml"
