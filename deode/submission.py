@@ -3,11 +3,16 @@
 import os
 import subprocess
 import sys
+import collections.abc
 
 from deode.toolbox import Platform
 from deode.discover_task import get_task
 
-from .logs import get_logger_from_config
+from .logs import get_logger_from_config, get_logger
+
+
+# TODO remove the need of this  # noqa
+logger = get_logger(__name__, "DEBUG")
 
 
 class TaskSettings(object):
@@ -23,6 +28,28 @@ class TaskSettings(object):
         submission_defs = config.get_value("submission").dict()
         self.submission_defs = submission_defs
         self.job_type = None
+
+    @staticmethod
+    def update_task_setting(dic, upd):
+        """Update task settings dictionary.
+
+        Args:
+            dic (dict): Dictionary to update
+            upd (dict): Values to update
+
+        Returns:
+            dict: updated dictionary
+        """
+        for key, val in upd.items():
+            if isinstance(val, collections.abc.Mapping):
+                dic[key] = TaskSettings.update_task_setting(dic.get(key, {}), val)
+            else:
+                logger.debug("key=%s value=%s", key, val)
+                if key == "tasks":
+                    logger.debug("Skip tasks")
+                    return dic
+                dic[key] = val
+        return dic
 
     def parse_submission_defs(self, task):
         """Parse the submssion definitions.
@@ -49,27 +76,20 @@ class TaskSettings(object):
             task_submit_type = default_submit_type
 
         if task_submit_type in all_defs:
-            for setting in all_defs[task_submit_type]:
-                if setting != "tasks":
-                    task_settings.update({setting: all_defs[task_submit_type][setting]})
+            self.logger.debug("task_submit_type for task %s: %s", task, task_submit_type)
+            task_settings = self.update_task_setting(task_settings,
+                                                     all_defs[task_submit_type])
 
-        # TODO do it recursively
         if "task_exceptions" in all_defs:
             if task in all_defs["task_exceptions"]:
-                keywords = ["BATCH", "ENV"]
-                for kword in keywords:
-                    if kword in all_defs["task_exceptions"][task]:
-                        kword_settings = all_defs["task_exceptions"][task][kword]
-                        for key, value in kword_settings.items():
-                            if key in task_settings:
-                                self.logger.warning(
-                                    "key=%s already exists in " "task_settings", key
-                                )
-                            task_settings[kword].update({key: value})
+                self.logger.debug("Task task_exceptions for task %s", task)
+                task_settings = self.update_task_setting(
+                    task_settings, all_defs["task_exceptions"][task])
 
         if "SCHOST" in task_settings:
             self.job_type = task_settings["SCHOST"]
-        self.logger.debug(task_settings)
+
+        self.logger.debug("Task settings for task %s: %s", task, task_settings)
         return task_settings
 
     def get_task_settings(self, task, key=None, variables=None, ecf_micro="%"):
@@ -98,6 +118,9 @@ class TaskSettings(object):
                             if setting in variables:
                                 value = f"{ecf_micro}{setting}{ecf_micro}"
                                 self.logger.debug(value)
+                        if isinstance(value, str):
+                            value = value.replace("@NAME@", task)
+
                         m_task_settings.update({setting: value})
                     self.logger.debug(m_task_settings)
                     return m_task_settings
@@ -196,7 +219,10 @@ class TaskSettings(object):
                 input_content = input_content.replace(
                     "@STAND_ALONE_TASK_CONFIG@", str(config_file)
                 )
-            input_content = input_content.replace("@STAND_ALONE_TASK_LOGLEVEL@", "DEBUG")
+            loglevel = self.get_task_settings(task, "LOGLEVEL")
+            if loglevel is None:
+                loglevel = "INFO"
+            input_content = input_content.replace("@STAND_ALONE_TASK_LOGLEVEL@", loglevel)
             file_handler.write(input_content)
         # Make file executable for user
         os.chmod(task_job, 0o744)

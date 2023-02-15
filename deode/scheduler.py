@@ -86,30 +86,26 @@ class EcflowServer(Server):
         Server (Server): Is a child of the base server.
     """
 
-    def __init__(self, ecf_host, ecf_port=3141, start_command=None, dry_run=False):
+    def __init__(self, ecf_host, ecf_port=3141, start_command=None):
         """Construct the EcflowServer.
 
         Args:
             ecf_host(str): Ecflow server host.
             ecf_port (int): Ecflow server port.
             start_command: Ecflow start server command.
-            dry_run(bool): Handle not running eflow server.
 
         Raises:
             Exception: If not ecflow is found.
 
         """
         if ecflow is None:
-            if not dry_run:
-                raise Exception("Ecflow was not found")
+            raise Exception("Ecflow was not found")
         Server.__init__(self)
         self.ecf_host = ecf_host
         self.ecf_port = ecf_port
         self.start_command = start_command
-        if dry_run:
-            self.ecf_client = None
-        else:
-            self.ecf_client = ecflow.Client(self.ecf_host, self.ecf_port)
+        self.ecf_client = ecflow.Client(self.ecf_host, self.ecf_port)
+        logger.debug("self.ecf_client %s", self.ecf_client)
         self.settings = {"ECF_HOST": self.ecf_host, "ECF_PORT": self.ecf_port}
 
     def start_server(self):
@@ -121,8 +117,7 @@ class EcflowServer(Server):
         logger.debug("Start EcFlow server")
         try:
             logger.info("%s %s", self.ecf_host, self.ecf_port)
-            if self.ecf_client is not None:
-                self.ecf_client.ping()
+            self.ecf_client.ping()
             logger.info("EcFlow server is already running")
         except RuntimeError:
             logger.info("Re-Start EcFlow server")
@@ -147,8 +142,7 @@ class EcflowServer(Server):
         Args:
             suite_name (str): Nam eof the suite.
         """
-        if self.ecf_client is not None:
-            self.ecf_client.begin_suite(suite_name)
+        self.ecf_client.begin_suite(suite_name)
 
     def force_complete(self, task):
         """Force the task complete.
@@ -157,8 +151,7 @@ class EcflowServer(Server):
             task (scheduler.EcflowTask): Task to force complete.
         """
         ecf_name = task.ecf_name
-        if self.ecf_client is not None:
-            self.ecf_client.force_state(ecf_name, ecflow.State.complete)
+        self.ecf_client.force_state(ecf_name, ecflow.State.complete)
 
     def force_aborted(self, task):
         """Force the task aborted.
@@ -167,8 +160,7 @@ class EcflowServer(Server):
             task (scheduler.EcflowTask): Task to force aborted.
         """
         ecf_name = task.ecf_name
-        if self.ecf_client is not None:
-            self.ecf_client.force_state(ecf_name, ecflow.State.aborted)
+        self.ecf_client.force_state(ecf_name, ecflow.State.aborted)
 
     def replace(self, suite_name, def_file):
         """Replace the suite name from def_file.
@@ -181,17 +173,16 @@ class EcflowServer(Server):
             Exception: _description_
         """
         logger.debug("%s %s", suite_name, def_file)
-        if self.ecf_client is not None:
+        try:
+            self.ecf_client.replace("/" + suite_name, def_file)
+        except RuntimeError:
             try:
+                self.ecf_client.delete("/" + suite_name)
                 self.ecf_client.replace("/" + suite_name, def_file)
             except RuntimeError:
-                try:
-                    self.ecf_client.delete("/" + suite_name)
-                    self.ecf_client.replace("/" + suite_name, def_file)
-                except RuntimeError:
-                    raise Exception(
-                        "Could not replace suite " + suite_name
-                    ) from RuntimeError
+                raise Exception(
+                    "Could not replace suite " + suite_name
+                ) from RuntimeError
 
 
 class EcflowLogServer:
@@ -249,32 +240,28 @@ class EcflowClient(object):
     *ONLY* one instance of this class, should be used. Otherwise zombies will be created.
     """
 
-    def __init__(self, server, task, dry_run=False):
+    def __init__(self, server, task):
         """Construct the ecflow client.
 
         Args:
             server (EcflowServer): Ecflow server object.
             task (EcflowTask): Ecflow task object.
-            dry_run(bool): Handle not running eflow server.
 
         """
         logger.debug("Creating Client")
         self.server = server
-        if dry_run:
-            self.client = None
-        else:
-            self.client = server.ecf_client
-            # self.ci.set_host_port("%ECF_HOST%", "%ECF_PORT%") #noqa E800
-            self.client.set_child_pid(task.ecf_rid)
-            self.client.set_child_path(task.ecf_name)
-            self.client.set_child_password(task.ecf_pass)
-            self.client.set_child_try_no(task.ecf_tryno)
-            logger.info(
-                "   Only wait %s seconds, if the server cannot be contacted "
-                "(note default is 24 hours) before failing",
-                str(task.ecf_timeout),
-            )
-            self.client.set_child_timeout(task.ecf_timeout)
+        self.client = server.ecf_client
+        # self.ci.set_host_port("%ECF_HOST%", "%ECF_PORT%") #noqa E800
+        self.client.set_child_pid(task.ecf_rid)
+        self.client.set_child_path(task.ecf_name)
+        self.client.set_child_password(task.ecf_pass)
+        self.client.set_child_try_no(task.ecf_tryno)
+        logger.info(
+            "   Only wait %s seconds, if the server cannot be contacted "
+            "(note default is 24 hours) before failing",
+            str(task.ecf_timeout),
+        )
+        self.client.set_child_timeout(task.ecf_timeout)
         self.task = task
 
         # Abort the task for the following signals
@@ -364,6 +351,5 @@ class EcflowClient(object):
             return False
         print("Calling complete at: " + self.at_time())
         # self.server.update_log(self.task.ecf_name + " complete") #noqa E800
-        if self.client is not None:
-            self.client.child_complete()
+        self.client.child_complete()
         return False

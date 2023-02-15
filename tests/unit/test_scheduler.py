@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
+from unittest.mock import patch
+import logging
 import pytest
-
 from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
 
 
@@ -10,7 +11,8 @@ def suite_name():
 
 
 @pytest.fixture()
-def ecflow_task():
+@patch('deode.scheduler.ecflow')
+def ecflow_task(__):
     ecf_name = f"/{suite_name}/family/Task"
     ecf_tryno = "1"
     ecf_pass = "abc123"  # noqa
@@ -20,20 +22,24 @@ def ecflow_task():
 
 
 @pytest.fixture()
-def ecflow_server():
+@patch('deode.scheduler.ecflow')
+def ecflow_server(__):
     ecf_host = "localhost"
-    return EcflowServer(ecf_host, dry_run=True)
+    return EcflowServer(ecf_host)
 
 
 class TestScheduler:
     # pylint: disable=no-self-use
 
     def test_ecflow_client(self, ecflow_server, ecflow_task):
-        EcflowClient(ecflow_server, ecflow_task, dry_run=True)
+        EcflowClient(ecflow_server, ecflow_task)
 
-    def test_start_suite(self, ecflow_server):
-        def_file = f"/tmp/{suite_name}.def"  # noqa
-        ecflow_server.start_suite(suite_name, def_file)
+    @patch('deode.scheduler.ecflow')
+    def test_start_suite(self, mock, ecflow_server):
+        logging.debug("Print mock: %s", mock)
+        def_file = f"/tmp/{suite_name()}.def"  # noqa
+        ecflow_server.start_suite(suite_name(), def_file)
+        logging.debug("Print mock: %s", mock)
 
 
 if __name__ == "__main__":
