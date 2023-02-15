@@ -65,6 +65,22 @@ class Platform:
         except KeyError:
             return None
 
+    def get_value(self, setting):
+        """Get the config value with substition.
+
+        Args:
+            setting (str): Type of variable to substitute
+
+        Returns:
+            str: Value from config with substituted variables
+
+        """
+        try:
+            val = self.config.get_value(setting)
+            return self.substitute(val)
+        except KeyError:
+            return None
+
     def get_path(self, role):
         """Get the path.
 
