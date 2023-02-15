@@ -71,7 +71,7 @@ tasks = ["Background_vm"]
 
 [submission.background_hpc]
 SCHOST = "localhost"
-tasks = ["Background_hpc", "UnitTest"]
+tasks = ["Background_hpc"]
 
 [submission.serial]
 SCHOST = "hpc"

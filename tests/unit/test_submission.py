@@ -57,13 +57,15 @@ class TestSubmission:
 
     def test_submit(self, config_from_task_config_file):
         config = config_from_task_config_file
-        config.copy(update={"submission": {"default_submit_type": "background_hpc"}})
+        config = config.copy(
+            update={"submission": {"default_submit_type": "background_hpc"}}
+        )
         task = "UnitTest"
         template_job = "ecf/stand_alone.py"
         task_job = f"/tmp/{task}.job"  # noqa
         output = f"/tmp/{task}.log"  # noqa
 
-        # assert config.get_value("submission.default_submit_type") == "background_hpc"  # noqa
+        assert config.get_value("submission.default_submit_type") == "background_hpc"
         background = TaskSettings(config)
         sub = NoSchedulerSubmission(background)
         sub.submit(
