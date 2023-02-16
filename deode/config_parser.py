@@ -51,23 +51,22 @@ class BasicConfig:
         kwargs = _convert_subdicts_into_model_instance(cls=BasicConfig, values=kwargs)
         for field_name, field_value in kwargs.items():
             super().__setattr__(field_name, field_value)
-        super().__setattr__("__kwargs__", tuple(kwargs))
+        super().__setattr__("__field_names__", tuple(kwargs))
 
-    def dict(self):  # noqa: A003 (class attribute shadowing builtin)
+    def items(self):
+        """Emulate the "items" method from the dictionary type."""
+        for field_name in self.__field_names__:
+            yield field_name, getattr(self, field_name)
+
+    def dict(self, descend_recursively=True):  # noqa: A003 (class attr shadowing builtin)
         """Return a dict representation of the instance and nested instances."""
         rtn = {}
-        for k, v in self.__dict__.copy().items():
-            if k not in self.__kwargs__:
-                continue
-            if isinstance(v, BasicConfig):
+        for k, v in self.items():
+            if descend_recursively and isinstance(v, BasicConfig):
                 rtn[k] = v.dict()
             else:
                 rtn[k] = v
         return rtn
-
-    def items(self):
-        """Emulate the "items" method from the dictionary type."""
-        return self.dict().items()
 
     def copy(self, update=None):
         """Return a copy of the instance.
@@ -163,10 +162,14 @@ class BasicConfig:
         return reduce(regular_getattribute, items.split("."), self)
 
     def __repr__(self):
-        return str(self.dict())
+        return f"{self.__class__.__name__}{self.dumps(style='json')}"
 
-    def __str__(self):
-        return self.dumps(style="json")
+    __str__ = __repr__
+
+
+class JsonSchema(dict):
+    def __repr__(self):
+        return json.dumps(self, indent=4, sort_keys=False)
 
 
 class ParsedConfig(BasicConfig):
@@ -176,7 +179,7 @@ class ParsedConfig(BasicConfig):
         """Initialise an instance with an arbitrary number of entries & validate them."""
         if json_schema is None:
             json_schema = MAIN_CONFIG_JSON_SCHEMA.copy()
-        object.__setattr__(self, "json_schema", json_schema)
+        object.__setattr__(self, "json_schema", JsonSchema(json_schema))
 
         try:
             super().__init__(**self._validate(kwargs))
@@ -221,6 +224,11 @@ class ParsedConfig(BasicConfig):
         return self.__class__.parse_obj(
             super().copy(**kwargs).dict(), json_schema=self.json_schema
         )
+
+    def __repr__(self):
+        rtn = f"{self.__class__.__name__}(**{self.dumps(style='json')}, "
+        rtn += f"json_schema={json.dumps(self.json_schema, indent=4, sort_keys=False)})"
+        return rtn
 
     @cached_property
     def _validate(self):
