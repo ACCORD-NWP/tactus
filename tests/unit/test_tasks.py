@@ -65,12 +65,12 @@ class TestBaseTask:
 
     def test_task_can_be_instantiated(self, parsed_config_with_task):
         config = parsed_config_with_task
-        task = get_task("forecast", config)
+        task = get_task("UnitTest", config)
         assert isinstance(task, Task)
 
     def test_task_can_be_run(self, parsed_config_with_task):
         config = parsed_config_with_task
-        get_task("forecast", config).run()
+        get_task("UnitTest", config).run()
 
 
 if __name__ == "__main__":
