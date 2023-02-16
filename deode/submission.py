@@ -128,7 +128,7 @@ class TaskSettings(object):
                     value = task_settings[key]
                     if variables is not None:
                         if key in variables:
-                            value = f"{ecf_micro}{variables[setting]}{ecf_micro}"
+                            value = f"{ecf_micro}{variables[key]}{ecf_micro}"
                     return value
             return None
 

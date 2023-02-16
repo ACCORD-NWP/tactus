@@ -16,6 +16,7 @@ def config_platform():
     task_configs = tomlkit.parse(
         """
         [general]
+            case = "mytest"
             macros = ["BINDIR", "ARCHIVE"]
             os_macros = ["USER", "HOME"]
             realization = -1

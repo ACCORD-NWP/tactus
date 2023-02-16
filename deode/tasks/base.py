@@ -1,6 +1,8 @@
 """Base site class."""
 
+import atexit
 import os
+import shutil
 import socket
 
 from deode.logs import get_logger_from_config
@@ -53,6 +55,22 @@ class Task(object):
         """Change to task working dir."""
         os.chdir(self.wdir)
 
+    def remove_wdir(self) :
+        """Remove working directory."""
+        os.chdir('..')
+        shutil.rmtree(self.wdir)
+        self.logger.debug("Remove %s", self.wdir)
+
+    def rename_failed(self) :
+        """Rname failed working directory."""
+        os.system('ls -lrt')  # noqa
+        os.chdir('..')
+        fdir = "Failed_" + self.name
+
+        if os.path.isdir(self.name) :
+            os.rename(self.name, fdir)
+            self.logger.info("Renamed %s to %s/%s", self.name, os.getcwd(), fdir)
+
     def execute(self):
         """Do nothing for base execute task."""
         self.logger.debug("Using empty base class execute")
@@ -66,6 +84,7 @@ class Task(object):
         self.logger.debug("Base class prep")
         self.create_wdir()
         self.change_to_wdir()
+        atexit.register(self.rename_failed)
 
     def post(self):
         """Do default postfix.
@@ -74,6 +93,8 @@ class Task(object):
 
         """
         self.logger.debug("Base class post")
+        # Clean workdir
+        self.remove_wdir()
 
     def run(self):
         """Run task.
@@ -117,7 +138,11 @@ class BinaryTask(Task):
         """
         Task.__init__(self, config, name)
         self.logger.debug("Binary task %s", name)
-        wrapper = self.get_task_setting("wrapper")
+        try :
+            wrapper = self.get_task_setting("wrapper")
+        except AttributeError:
+            wrapper = ""
+
         self.batch = BatchJob(os.environ, wrapper)
 
     def prep(self):

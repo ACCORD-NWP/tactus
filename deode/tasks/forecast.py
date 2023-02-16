@@ -43,19 +43,6 @@ class Pgd(Task):
         Task.__init__(self, config, __name__)
 
 
-class E923(Task):
-    """Task."""
-
-    def __init__(self, config):
-        """Construct object.
-
-        Args:
-            config (deode.ParsedConfig): Configuration
-
-        """
-        Task.__init__(self, config, __name__)
-
-
 class PrepareCycle(Task):
     """Task."""
 

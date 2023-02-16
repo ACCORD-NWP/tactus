@@ -92,7 +92,8 @@ class Platform:
 
         """
         try:
-            return self.config.get_value("platform." + role)
+            val = self.config.get_value("platform." + role)
+            return self.substitute(val)
         except KeyError:
             return None
 
@@ -196,6 +197,8 @@ class Platform:
 
             domain = self.config.get_value("domain.name")
             pattern = pattern.replace("@DOMAIN@", domain)
+            exp_case = self.config.get_value("general.case")
+            pattern = pattern.replace("@CASE@", exp_case)
             self.logger.debug("Substituted domain: %s pattern=%s", domain, pattern)
             realization = self.config.get_value("general.realization")
             if realization is not None and realization >= 0:
@@ -212,7 +215,6 @@ class Platform:
                 basetime = str(self.config.get_value("general.times.basetime"))
             if validtime is None:
                 validtime = str(self.config.get_value("general.times.validtime"))
-            print(type(basetime))
             if isinstance(basetime, str):
                 basetime = as_datetime(basetime)
             if isinstance(validtime, str):
