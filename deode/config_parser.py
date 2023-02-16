@@ -168,6 +168,8 @@ class BasicConfig:
 
 
 class JsonSchema(dict):
+    """A subclass of `dict` that has a slightly better printed representation."""
+
     def __repr__(self):
         return json.dumps(self, indent=4, sort_keys=False)
 
