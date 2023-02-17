@@ -7,7 +7,7 @@ import pytest
 import tomlkit
 from pandas.tseries.frequencies import to_offset
 
-from deode.config_parser import ConfigFileValidationError, ParsedConfig
+from deode.config_parser import ConfigFileValidationError, JsonSchema, ParsedConfig
 from deode.datetime_utils import as_datetime
 
 
@@ -100,6 +100,16 @@ class TestGeneralBehaviour:
 
     def test_config_model_can_be_instantiated(self, minimal_parsed_config):
         assert isinstance(minimal_parsed_config, ParsedConfig)
+
+    def test_config_model_can_be_printed(self):
+        parsed_config = ParsedConfig.parse_obj({}, json_schema={})
+        _ = str(parsed_config)
+        _ = repr(parsed_config)
+
+    def test_json_schema_class_can_be_printed(self):
+        json_schema = JsonSchema({})
+        _ = str(json_schema)
+        _ = repr(json_schema)
 
     def test_config_recursive_attr_access(self, minimal_parsed_config):
         recursively_retrieved_value = getattr(minimal_parsed_config, "general.times.list")
