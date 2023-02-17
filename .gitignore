@@ -23,3 +23,6 @@ archived_file
 input_file
 ecf/Forecast.py
 ecf/Serial.py
+
+# Stuff related to jupyter notebooks
+.ipynb_checkpoints/
