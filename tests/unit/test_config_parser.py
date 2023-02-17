@@ -5,7 +5,6 @@ from pathlib import Path
 
 import pytest
 import tomlkit
-from pandas.tseries.frequencies import to_offset
 
 from deode.config_parser import ConfigFileValidationError, JsonSchema, ParsedConfig
 from deode.datetime_utils import as_datetime

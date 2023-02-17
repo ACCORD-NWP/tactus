@@ -8,7 +8,6 @@ import humanize
 import numpy as np
 import pandas as pd
 from dateutil.utils import default_tzinfo
-from pandas.tseries.frequencies import to_offset
 
 from .logs import get_logger
 
@@ -16,8 +15,18 @@ logger = get_logger(__name__)
 
 
 def as_datetime(obj):
-    """Convert dt to string, parse into datetime and add UTC timezone iff naive."""
+    """Convert obj to string, parse into datetime and add UTC timezone iff naive."""
     return default_tzinfo(dateutil.parser.parse(str(obj)), tzinfo=timezone.utc)
+
+
+def as_timedelta(obj):
+    """Convert obj to string and parse into pd.Timedelta."""
+    return pd.Timedelta(str(obj))
+
+
+def as_time_offset(obj):
+    """Convert obj to a timedelta obj in a format that can be added to datetime objs."""
+    return pd.tseries.frequencies.to_offset(as_timedelta(obj))
 
 
 @np.vectorize
@@ -34,7 +43,7 @@ class TimeWindow(pd.Interval):
     def __init__(self, mid, length, closed="left"):
         """Initialise a pd.Interval-like obj given 'mid' and 'length'."""
         mid = as_datetime(mid)
-        length = to_offset(length)
+        length = as_time_offset(length)
         left = mid - 0.5 * length
         right = left + length
         super().__init__(left, right, closed)
