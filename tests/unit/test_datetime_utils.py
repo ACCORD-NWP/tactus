@@ -4,16 +4,20 @@ import pickle
 
 import pandas as pd
 import pytest
-from pandas.tseries.frequencies import to_offset
 
-from deode.datetime_utils import TimeWindow, TimeWindowContainer, as_datetime
+from deode.datetime_utils import (
+    TimeWindow,
+    TimeWindowContainer,
+    as_datetime,
+    as_timedelta,
+)
 
 
 class TestTimeWindow:
     def test_time_window(self):
         mid = as_datetime("20181010T21")
-        length = "3H"
-        length_as_offset = to_offset(length)
+        length = "PT3H"
+        length_as_offset = as_timedelta(length)
         tw = TimeWindow(mid, length=length)
         assert isinstance(tw, TimeWindow)
         assert tw.mid == mid
@@ -22,7 +26,7 @@ class TestTimeWindow:
         assert tw.length == length_as_offset
 
     def test_can_pickle(self, tmp_path):
-        time_window = TimeWindow("20180110T12", length="3H")
+        time_window = TimeWindow("20180110T12", length="PT3H")
         fname = tmp_path / "time_window.pickle"
         with open(fname, "wb") as f:
             pickle.dump(time_window, f)

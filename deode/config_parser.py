@@ -16,6 +16,7 @@ import yaml
 from fastjsonschema import JsonSchemaValueException
 
 from . import PACKAGE_NAME
+from .datetime_utils import ISO_8601_TIME_DURATION_REGEX
 
 MAIN_CONFIG_JSON_SCHEMA_PATH = (
     Path(__file__).parent / "config_file_schemas" / "main_config_schema.json"
@@ -187,10 +188,21 @@ class ParsedConfig(BasicConfig):
             super().__init__(**self._validate(kwargs))
         except JsonSchemaValueException as err:
             error_path = " -> ".join(err.path[1:])
-            human_readable_msg = err.message.replace(err.name, "")
+            human_readable_msg = err.message.replace(err.name, "").strip()
+
+            # Give a better err msg when times/date-times/durations don't follow ISO 8601
+            human_readable_msg = human_readable_msg.replace(
+                f"must match pattern {ISO_8601_TIME_DURATION_REGEX}",
+                "must be an ISO 8601 duration string",
+            )
+            for spec in ["date-time", "date", "time"]:
+                human_readable_msg = human_readable_msg.replace(
+                    f"must be {spec}", f"must be an ISO 8601 {spec} string"
+                )
+
             raise ConfigFileValidationError(
                 f'"{error_path}" {human_readable_msg}. '
-                + f'Received {type(err.value)} value "{err.value}"'
+                + f'Received type "{type(err.value).__name__}" with value "{err.value}".'
             ) from err
 
     @classmethod
