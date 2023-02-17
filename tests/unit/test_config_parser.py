@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
 import datetime
+from collections import namedtuple
 from pathlib import Path
 
 import pytest
 import tomlkit
 
 from deode.config_parser import ConfigFileValidationError, JsonSchema, ParsedConfig
-from deode.datetime_utils import as_datetime
+from deode.datetime_utils import ISO_8601_TIME_DURATION_REGEX, as_datetime
 
 
 @pytest.fixture()
@@ -69,6 +70,43 @@ def minimal_parsed_config(minimal_raw_config):
 @pytest.fixture()
 def parsed_config_with_task(raw_config_with_task):
     return ParsedConfig.parse_obj(raw_config_with_task)
+
+
+@pytest.fixture()
+def json_schema_for_iso_8601_time_specs_tests():
+    schema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "Test Schema",
+        "type": "object",
+        "properties": {
+            "a_date_field": {
+                "title": "A 'date' Field That Should Follow ISO 8601.",
+                "default": "2000-01-01",
+                "type": "string",
+                "format": "date",
+            },
+            "a_time_field": {
+                "title": "A 'time' Field That Should Follow ISO 8601.",
+                "default": "00:00:00+00:00",
+                "type": "string",
+                "format": "time",
+            },
+            "a_date_time_field": {
+                "title": "A 'date-time' Field That Should Follow ISO 8601.",
+                "default": "2000-01-01T00:00:00Z",
+                "type": "string",
+                "format": "date-time",
+            },
+            "a_duration_field": {
+                "title": "A 'duration' Field That Should Follow ISO 8601.",
+                "default": "PT3H",
+                "type": "string",
+                "pattern": ISO_8601_TIME_DURATION_REGEX,
+            },
+        },
+    }
+
+    return schema
 
 
 @pytest.fixture()
@@ -272,6 +310,41 @@ class TestValidators:
             ConfigFileValidationError, match="must be valid exactly by one definition"
         ):
             _ = ParsedConfig.parse_obj(raw_config)
+
+
+class TestPossibilityOfISO8601ComplianceEnforcement:
+    # pylint: disable=no-self-use
+
+    Input = namedtuple("Input", ["name", "correct_value", "wrong_value"])
+    iso_8601_test_inputs = [
+        Input("date", "2020-01-01", "20200101"),
+        Input("time", "00:00:00+00:00", "00"),
+        Input("date-time", "2000-01-01T00:00:00Z", "20200101 00:00:00"),
+        Input("duration", "PT3H", "3H"),
+    ]
+
+    @pytest.mark.parametrize(
+        "tested_param",
+        iso_8601_test_inputs,
+        ids=(item.name for item in iso_8601_test_inputs),
+    )
+    def test_parsing_complains_about_non_iso_8601_compliant_date_and_time_specs(
+        self, tested_param, json_schema_for_iso_8601_time_specs_tests
+    ):
+        param_name_in_schema = f"a_{tested_param.name}_field".replace("-", "_")
+        raw_config = {param_name_in_schema: tested_param.wrong_value}
+        with pytest.raises(
+            ConfigFileValidationError,
+            match=f"must be an ISO 8601 {tested_param.name} string",
+        ):
+            _ = ParsedConfig.parse_obj(
+                raw_config, json_schema=json_schema_for_iso_8601_time_specs_tests
+            )
+
+        raw_config = {param_name_in_schema: tested_param.correct_value}
+        _ = ParsedConfig.parse_obj(
+            raw_config, json_schema=json_schema_for_iso_8601_time_specs_tests
+        )
 
 
 if __name__ == "__main__":

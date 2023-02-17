@@ -13,6 +13,11 @@ from .logs import get_logger
 
 logger = get_logger(__name__)
 
+# The regex in a json schema's "pattern" must use JavaScript syntax (ECMA 262).
+# <https://json-schema.org/understanding-json-schema/reference/regular_expressions.html>
+ISO_8601_TIME_DURATION_REGEX = "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?"
+ISO_8601_TIME_DURATION_REGEX += "(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+
 
 def as_datetime(obj):
     """Convert obj to string, parse into datetime and add UTC timezone iff naive."""

@@ -44,8 +44,9 @@
             },
             "cycle_length": {
               "title": "Cycle Length",
-              "default": "3H",
-              "type": "string"
+              "default": "PT3H",
+              "type": "string",
+              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
             }
           },
           "oneOf": [
