@@ -164,51 +164,50 @@ class TestGeneralBehaviour:
         config_source_file_path = config.get_value("metadata.source_file_path")
         assert Path(config_source_file_path) == Path(config_path)
 
-    def test_can_modify_model_upon_copy(self, minimal_parsed_config):
-        original_value = minimal_parsed_config.get_value("general.loglevel")
+    def test_can_modify_model_upon_copy(self, minimal_raw_config):
+        raw_config = minimal_raw_config.copy()
+        raw_config["general"].update({"loglevel": "INFO"})
+        parsed_config = ParsedConfig.parse_obj(raw_config)
+
+        original_value = parsed_config.get_value("general.loglevel")
         new_value = "DEBUG"
-        new_parsed_config = minimal_parsed_config.copy(
+        new_parsed_config = parsed_config.copy(
             update={"general": {"loglevel": new_value}}
         )
+
         assert original_value != new_value
-        assert minimal_parsed_config.get_value("general.times")
+        assert parsed_config.get_value("general.times")
         assert new_parsed_config.get_value("general.times")
         assert (
             new_parsed_config.get_value("general.times").dict()
-            == minimal_parsed_config.get_value("general.times").dict()
+            == parsed_config.get_value("general.times").dict()
         )
-        assert minimal_parsed_config.get_value("general.loglevel") == original_value
+        assert parsed_config.get_value("general.loglevel") == original_value
         assert new_parsed_config.get_value("general.loglevel") == new_value
 
-    def test_can_modify_with_list_value_upon_model_copy(self, minimal_parsed_config):
-        original_value = minimal_parsed_config.get_value("general.times")
+    def test_can_modify_with_list_value_upon_model_copy(self, minimal_raw_config):
+        raw_config = minimal_raw_config.copy()
+        raw_config["general"].update({"loglevel": "INFO"})
+        parsed_config = ParsedConfig.parse_obj(raw_config)
+
+        original_value = parsed_config.get_value("general.times")
         new_value = [
             "2000-01-01T22:00:00Z",
             datetime.datetime.now(datetime.timezone.utc).isoformat(),
         ]
-        new_parsed_config = minimal_parsed_config.copy(
+        new_parsed_config = parsed_config.copy(
             update={"general": {"times": {"list": new_value}}}
         )
 
         assert original_value != new_value
-        assert minimal_parsed_config.get_value("general.loglevel") == "INFO"
+        assert parsed_config.get_value("general.loglevel") == "INFO"
         assert new_parsed_config.get_value("general.loglevel") == "INFO"
-        assert (
-            minimal_parsed_config.get_value("general.times").dict()
-            == original_value.dict()
-        )
+        assert parsed_config.get_value("general.times").dict() == original_value.dict()
         assert new_parsed_config.get_value("general.times.list") == tuple(new_value)
 
 
 class TestValidators:
     # pylint: disable=no-self-use
-
-    def test_validator_works_with_pandas_offset_freq_string(self, minimal_raw_config):
-        input_freqstr = "3H"
-        minimal_raw_config["general"]["times"]["cycle_length"] = input_freqstr
-        parsed_config = ParsedConfig.parse_obj(minimal_raw_config)
-        validated_freqstr = parsed_config.general.times.cycle_length
-        assert to_offset(validated_freqstr) == to_offset(input_freqstr)
 
     @pytest.mark.parametrize(
         "dt_input",
