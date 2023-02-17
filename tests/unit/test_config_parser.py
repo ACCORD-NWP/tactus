@@ -16,7 +16,6 @@ def minimal_raw_config():
         """
         [general]
             times.list = ["2000-01-01T00:00:00Z"]
-            loglevel = "INFO"
         """
     )
 
@@ -80,17 +79,8 @@ def tmp_test_data_dir(tmpdir_factory, minimal_raw_config):
 @pytest.fixture()
 def config_path(minimal_raw_config, tmp_test_data_dir):
     config_path = tmp_test_data_dir / "config.toml"
-
-    raw_config = minimal_raw_config.copy()
-    general_section_update = f"""
-        data_rootdir = "{tmp_test_data_dir.as_posix()}"
-        outdir = "{tmp_test_data_dir.as_posix()}"
-    """
-    raw_config["general"].update(tomlkit.parse(general_section_update))
-
     with open(config_path, "w") as config_file:
-        tomlkit.dump(raw_config, config_file)
-
+        tomlkit.dump(minimal_raw_config, config_file)
     return config_path
 
 
