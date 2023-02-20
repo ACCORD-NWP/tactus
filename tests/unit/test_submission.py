@@ -45,7 +45,7 @@ def parsed_config_with_task(raw_config_with_task):
 
 @pytest.fixture()
 def config_from_task_config_file():
-    fname = "docs/task_config_example.toml"
+    fname = "config/config.toml"
     return ParsedConfig.from_file(fname)
 
 
@@ -58,7 +58,8 @@ class TestSubmission:
     def test_submit(self, config_from_task_config_file):
         config = config_from_task_config_file
         config = config.copy(
-            update={"submission": {"default_submit_type": "background_hpc"}}
+            update={"submission": {"default_submit_type": "background_hpc"},
+                    "troika": {"config_file": "config/troika.yml"}}
         )
         task = "UnitTest"
         template_job = "ecf/stand_alone.py"

@@ -25,7 +25,7 @@ def minimal_parsed_config(minimal_raw_config):
 
 @pytest.fixture()
 def config_from_task_config_file():
-    fname = "docs/task_config_example.toml"
+    fname = "config/config.toml"
     return ParsedConfig.from_file(fname)
 
 

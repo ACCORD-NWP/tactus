@@ -11,10 +11,10 @@
  csc = "AROME"
  bdint = "P1H"
  forecast_range = "P24H"
- output_interval_his = "P3H"
- output_interval_fp = "P30M"
- output_interval_sfx = "P3H"
- output_interval_sfx_sel = "P30M"
+ output_interval_his = "PT3H"
+ output_interval_fp = "PT30M"
+ output_interval_sfx = "PT3H"
+ output_interval_sfx_sel = "PT30M"
 
 [vertical_levels]
 nlev = 65
@@ -43,7 +43,7 @@ xlat0 = 60.0
 
 [platform]
  # The start/run scripts should set DEODE_HOME
- DEODE_HOME = "@HOME@/projects/Deode-Prototype"
+ DEODE_HOME = "@HOME@/Deode-Prototype"
  ARCHIVE_ROOT = "@SCRATCH@/deode/@CASE@/archive"
  SCRATCH = "/scratch/@USER@"
  STATIC_DATA = "/hpcperm/hlam/data"
@@ -58,7 +58,7 @@ xlat0 = 60.0
  validtime = "2000-01-02T00:00:00Z"
  start = "2020-08-15T00:00:00+00:00"
  end = "2020-08-16T21:00:00+00:00"
- cycle_length = "P3H"
+ cycle_length = "PT3H"
 
 [task]
 [task.forecast]
@@ -135,4 +135,4 @@ MODULE_GCC = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py')
 PYTHONPATH = "os.environ['PYTHONPATH'] = '@HOME@/.local/lib/python3.8/site-packages/:/perm/rme/python3/site-packages/lib/python3.6/site-packages'"
 
 [troika]
-config_file = "@DEODE_HOME@/config.yml"
+config_file = "@DEODE_HOME@/config/troika.yml"
