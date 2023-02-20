@@ -61,7 +61,8 @@ class Platform:
 
         """
         try:
-            return self.config.get_value("system." + role)
+            val = self.config.get_value("system." + role)
+            return self.substitute(val)
         except KeyError:
             return None
 

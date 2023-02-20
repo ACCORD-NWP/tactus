@@ -39,6 +39,7 @@ class Task(object):
         self.wrk = self.platform.substitute(wrk)
         wdir = f"{self.wrk}/{socket.gethostname()}{str(os.getpid())}"
         self.wdir = wdir
+        self.logger.info("Task running in %s", self.wdir)
         self.logger.info("Base task info")
         self.logger.warning("Base task warning")
         self.logger.debug("Base task debug")
@@ -55,21 +56,21 @@ class Task(object):
         """Change to task working dir."""
         os.chdir(self.wdir)
 
-    def remove_wdir(self) :
+    def remove_wdir(self):
         """Remove working directory."""
-        os.chdir('..')
+        os.chdir(self.wrk)
         shutil.rmtree(self.wdir)
         self.logger.debug("Remove %s", self.wdir)
 
-    def rename_failed(self) :
-        """Rname failed working directory."""
-        os.system('ls -lrt')  # noqa
-        os.chdir('..')
-        fdir = "Failed_" + self.name
-
-        if os.path.isdir(self.name) :
-            os.rename(self.name, fdir)
-            self.logger.info("Renamed %s to %s/%s", self.name, os.getcwd(), fdir)
+    def rename_failed(self):
+        """Rename failed working directory."""
+        fdir = f"{self.wrk}/Failed_{self.name}"
+        if os.path.isdir(self.wdir):
+            if os.path.exists(fdir):
+                self.logger.debug("%s exists. Remove it", fdir)
+                shutil.rmtree(fdir)
+            shutil.move(self.wdir, fdir)
+            self.logger.info("Renamed %s to %s", self.wdir, fdir)
 
     def execute(self):
         """Do nothing for base execute task."""
