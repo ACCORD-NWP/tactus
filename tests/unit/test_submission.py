@@ -73,6 +73,57 @@ class TestSubmission:
             task, config, template_job, task_job, output
         )
 
+    def test_get_batch_info(self, config_from_task_config_file):
+        config = config_from_task_config_file
+        arg = "#SBATCH UNITTEST"
+        config = config.copy(
+            update={
+                "submission": {
+                    "submit_types": ["unittest"],
+                    "default_submit_type": "unittest",
+                    "unittest": {
+                        "BATCH": {
+                            "TEST": arg
+                        }
+                    }
+                }
+            }
+        )
+        task = TaskSettings(config)
+        settings = task.get_task_settings("unittest", key="BATCH")
+        assert settings["TEST"] == arg
+
+    def test_get_batch_info_exception(self, config_from_task_config_file):
+        config = config_from_task_config_file
+        arg = "#SBATCH UNITTEST"
+        config = config.copy(
+            update={
+                "submission": {
+                    "submit_types": ["unittest"],
+                    "default_submit_type": "unittest",
+                    "unittest": {
+                        "tasks": ["unittest"],
+                        "BATCH": {
+                            "TEST_INCLUDED": arg,
+                            "TEST": "NOT USED"
+                        }
+                    },
+                    "task_exceptions": {
+                        "unittest": {
+                            "BATCH": {
+                                "TEST": arg
+                            }
+                        }
+                    }
+                }
+            }
+        )
+        task = TaskSettings(config)
+        settings = task.get_task_settings("unittest", key="BATCH")
+        assert settings["TEST"] == arg
+        assert settings["TEST"] != "NOT USED"
+        assert settings["TEST_INCLUDED"] == arg
+
     def test_submit_non_existing_task(self, config_from_task_config_file):
         config = config_from_task_config_file
         task = "not_existing"

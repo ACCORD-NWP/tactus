@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
+import os
 import pytest
 import tomlkit
 
@@ -37,19 +38,27 @@ class TestSuite:
 
     def test_suite(self, config_from_task_config_file):
         config = config_from_task_config_file
+        config = config.copy(
+            update={
+                "platform": {
+                    "SCRATCH": "/tmp",  # noqa S108
+                    "DEODE_HOME": f"{os.path.dirname(__file__)}/../.."
+                },
+            }
+        )  # noqa S108
         suite_name = "test_suite"
         loglevel = "debug"
         background = TaskSettings(config)
         defs = SuiteDefinition(
             suite_name,
-            "/tmp/joboutdir",  # noqa
-            "ecf",
+            "/tmp/joboutdir",  # noqa S108
+            "/tmp/ecf",  # noqa S108
             config,
             background,
-            loglevel,  # noqa
+            loglevel,
             dry_run=True,
         )
-        def_file = f"/tmp/{suite_name}.def"  # noqa
+        def_file = f"/tmp/{suite_name}.def"  # noqa S108
         defs.save_as_defs(def_file)
 
 

@@ -130,7 +130,7 @@ class SuiteDefinition(object):
             "TROIKA_CONFIG": troika_config,
         }
 
-        input_template = ecf_files + "/default.py"
+        input_template = f"{platform.get_path('DEODE_HOME')}/ecf/default.py"
         self.suite = EcflowSuite(name, ecf_files, variables=variables, dry_run=dry_run)
 
         build = EcflowSuiteFamily("Build", self.suite, ecf_files, def_status="complete")

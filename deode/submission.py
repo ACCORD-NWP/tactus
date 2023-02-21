@@ -45,9 +45,6 @@ class TaskSettings(object):
                 dic[key] = TaskSettings.update_task_setting(dic.get(key, {}), val)
             else:
                 logger.debug("key=%s value=%s", key, val)
-                if key == "tasks":
-                    logger.debug("Skip tasks")
-                    return dic
                 dic[key] = val
         return dic
 
