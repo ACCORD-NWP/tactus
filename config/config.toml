@@ -4,13 +4,13 @@
           "RRTM_DIR", "E923_DATA", "STATIC_DATA"]
  os_macros = ["USER", "HOME", "PWD"]
  realization = -1
- cnmexp = "DEOD"
+ cnmexp = "HARM"
  tstep = 60
  loglevel = "DEBUG"
  surfex = true
  csc = "AROME"
- bdint = "P1H"
- forecast_range = "P24H"
+ bdint = "PT1H"
+ forecast_range = "PT12H"
  output_interval_his = "PT3H"
  output_interval_fp = "PT30M"
  output_interval_sfx = "PT3H"
@@ -22,7 +22,7 @@ ahalf = []
 bhalf = []
 
 [domain]
-name = "DOMAIN"
+name = "DEMO_100_2500m"
 nimax = 50
 njmax = 60
 xloncen = 10.0
@@ -37,8 +37,10 @@ xlat0 = 60.0
 [system]
  wrk = "@SCRATCH@/deode/@CASE@/@YYYY@@MM@@DD@_@HH@@mm@"
  archive = "@ARCHIVE_ROOT@/@CASE@/@YYYY@/@MM@/@DD@/@HH@/@mm@"
- bddir = "@SCRATCH@/deode/@CASE@/BD"
- climdir = "@SCRATCH@/deode/@CASE@/climate/@DOMAIN@"
+ bddir = "/scratch/sism/DEOL/@YYYY@/@MM@/@DD@/@HH@"
+ bdfile_template = "PFIFSDEOL+@LLLL@"
+ climdir = "/home/snh02/work/dev-CY46h1_deode/climate/@DOMAIN@"
+ bdclimdir = "/home/snh02/work/dev-CY46h1_deode/climate/DEODE_LARGE"
  bindir = "@SCRATCH@/deode/@CASE@/bin"
 
 [platform]
@@ -50,19 +52,22 @@ xlat0 = 60.0
  RRTM_DIR = "@STATIC_DATA@/rrtm/46h1"
  E923_DATA = "@STATIC_DATA@/climate/E923_DATA"
  E923_NAMELISTS = "@DEODE_HOME@/nam"
+ E927_NAMELIST = "/home/snh02/work/dev-CY46h1_deode/namelists"
  FORECAST_NAMELIST = "@DEODE_HOME@/nam/fort.4_arome"
  FORECAST_DATA = "/home/snh02/work/cy46t1/arome/data"
 
 [general.times]
- basetime = "2000-01-01T00:00:00Z"
- validtime = "2000-01-02T00:00:00Z"
+ basetime = "2023-02-15T00:00:00Z"
+ validtime = "2023-02-15T00:00:00Z"
  start = "2020-08-15T00:00:00+00:00"
  end = "2020-08-16T21:00:00+00:00"
  cycle_length = "PT3H"
 
 [task]
 [task.forecast]
-wrapper = "time srun"
+ wrapper = "time srun"
+[task.e927]
+ wrapper = "srun"
 
 [submission]
 submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
@@ -77,62 +82,80 @@ SCHOST = "localhost"
 tasks = ["Background_hpc", "UnitTest"]
 
 [submission.serial]
-SCHOST = "hpc"
+ SCHOST = "hpc"
 [submission.serial.BATCH]
-ACCOUNT = "#SBATCH -A msdeode"
-WALLTIME = "#SBATCH --time=00:15:00"
-QOS = "#SBATCH --qos=nf"
-NODES = "#SBATCH --nodes=1"
-NTASKS= "#SBATCH --ntasks=1"
+ ACCOUNT = "#SBATCH -A msdeode"
+ WALLTIME = "#SBATCH --time=00:15:00"
+ QOS = "#SBATCH --qos=nf"
+ NODES = "#SBATCH --nodes=1"
+ NTASKS= "#SBATCH --ntasks=1"
 [submission.serial.ENV]
- MODULE_INTEL= "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read()); module('load', 'prgenv/intel')"
- MODULE_MKL= "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read()); module('load', 'intel-mkl/19.0.5')"
- MODULE_OPENMPI= "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read()); module('load', 'openmpi/4.1.1.1')"
- MODULE_NETCDF4= "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read()); module('load', 'netcdf4/4.7.4')"
- MODULE_HDF5= "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read()); module('load', 'hdf5/1.10.6')"
- MODULE_ECMWF= "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read()); module('load', 'ecmwf-toolbox/2021.08.3.0')"
- MODULE_FFTW= "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read()); module('load', 'fftw/3.3.9')"
- OMP_NUM_THREADS= "import os; os.environ['OMP_NUM_THREADS'] = '1'"
- OMPI_MCA_btl= "import os; os.environ['OMPI_MCA_btl'] = '^vader'"
+ OS = "import os"
+ MODULE_ENV = "module_env='/usr/local/apps/lmod/8.6.8/init/env_modules_python.py'"
+ MODULE_INTEL= "exec(open(module_env).read()); module('load', 'prgenv/intel')"
+ MODULE_MKL= "exec(open(module_env).read()); module('load', 'intel-mkl/19.0.5')"
+ MODULE_OPENMPI= "exec(open(module_env).read()); module('load', 'openmpi/4.1.1.1')"
+ MODULE_NETCDF4= "exec(open(module_env).read()); module('load', 'netcdf4/4.7.4')"
+ MODULE_HDF5= "exec(open(module_env).read()); module('load', 'hdf5/1.10.6')"
+ MODULE_ECMWF= "exec(open(module_env).read()); module('load', 'ecmwf-toolbox/2021.08.3.0')"
+ MODULE_FFTW= "exec(open(module_env).read()); module('load', 'fftw/3.3.9')"
+ OMP_NUM_THREADS= "os.environ['OMP_NUM_THREADS'] = '1'"
+ OMPI_MCA_btl= "os.environ['OMPI_MCA_btl'] = '^vader'"
 
 [submission.parallel]
-SCHOST = "hpc"
-tasks = ["Forecast"]
+ SCHOST = "hpc"
+ tasks = ["Forecast","e927"]
 [submission.parallel.BATCH]
-ACCOUNT = "#SBATCH -A msdeode"
-WALLTIME = "#SBATCH --time=00:10:00"
+ ACCOUNT = "#SBATCH -A msdeode"
+ WALLTIME = "#SBATCH --time=00:10:00"
+ QOS = "#SBATCH --qos=np"
+[submission.parallel.ENV]
+ OS = "import os"
+ MODULE_ENV= "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read())"
+ MODULE_INTEL= "module('load', 'prgenv/intel')"
+ MODULE_MKL= "module('load', 'intel-mkl/19.0.5')"
+ MODULE_OPENMPI= "module('load', 'openmpi/4.1.1.1')"
+ MODULE_NETCDF4= "module('load', 'netcdf4/4.7.4')"
+ MODULE_HDF5= "module('load', 'hdf5/1.10.6')"
+ MODULE_ECMWF= "module('load', 'ecmwf-toolbox/2021.08.3.0')"
+ MODULE_FFTW= "module('load', 'fftw/3.3.9')"
+ OMP_NUM_THREADS= "os.environ['OMP_NUM_THREADS'] = '1'"
+ DR_HOOK = "os.environ['DR_HOOK'] = '1'"
+ OMPI_MCA_btl= "os.environ['OMPI_MCA_btl'] = '^vader'"
+
+[submission.task_exceptions.e927.BATCH]
+ NTASKS = "#SBATCH --ntasks=16"
+ NAME = "#SBATCH --job-name=e927"
 
 [submission.task_exceptions.Forecast.BATCH]
-WALLTIME = "#SBATCH --time=00:31:00"
-QOS = "#SBATCH --qos=np"
-NTASKS = "#SBATCH --ntasks=128"
-CORES = "#SBATCH --cpus-per-task=4"
-MULTITHREAD = "#SBATCH --hint=nomultithread"
-NODES = "#SBATCH -N 4"
-NAME = "#SBATCH --job-name=fcast_task"
-ACCOUNT = "#SBATCH -A msdeode"
+ WALLTIME = "#SBATCH --time=00:31:00"
+ NTASKS = "#SBATCH --ntasks=128"
+ CORES = "#SBATCH --cpus-per-task=4"
+ MULTITHREAD = "#SBATCH --hint=nomultithread"
+ NODES = "#SBATCH -N 4"
+ NAME = "#SBATCH --job-name=fcast_task"
 
 [submission.task_exceptions.Forecast.ENV]
-MODULE = "print('My beautiful module')"
-OS = "import os"
-OMP_PLACES = "os.environ['OMP_PLACES'] = 'threads'"
-OMP_NUM_THREADS = "os.environ['OMP_NUM_THREADS'] = '8'"
-KMP_STACKSIZE = "os.environ['KMP_STACKSIZE'] = '2G'"
-KMP_MONITOR_STACKSIZE = "os.environ['KMP_MONITOR_STACKSIZE'] = '2G'"
-DR_HOOK = "os.environ['DR_HOOK'] = '0'"
-DR_HOOK_IGNORE_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
-DR_HOOK_SILENT = "os.environ['DR_HOOK_SILENT'] = '1'"
-DR_HOOK_OPT = "os.environ['DR_HOOK_OPT'] = 'prof'"
-DR_HOOK_NOT_MPI = "os.environ['DR_HOOK_NOT_MPI'] = '1'"
-MPL_MBX_SIZE = "os.environ['MPL_MBX_SIZE'] = '2048000000'"
-EC_PROFILE_HEAP = "os.environ['EC_PROFILE_HEAP'] = '0'"
-EC_MPI_ATEXIT = "os.environ['EC_MPI_ATEXIT'] = '0'"
-ULIMIT = "os.system('ulimit -s unlimited')"
-MODULE_INTEL = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read()); module('load', 'intel/2021.4.0')"
-MODULE_HPCX = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read()); module('load', 'hpcx-openmpi/2.9.0')"
-MODULE_MKL = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read()); module('load', 'intel-mkl/19.0.5')"
-MODULE_GCC = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read()); module('load', 'gcc/8.5.0')"
-PYTHONPATH = "os.environ['PYTHONPATH'] = '@HOME@/.local/lib/python3.8/site-packages/:/perm/rme/python3/site-packages/lib/python3.6/site-packages'"
+ MODULE = "print('My beautiful module')"
+ OS = "import os"
+ OMP_PLACES = "os.environ['OMP_PLACES'] = 'threads'"
+ OMP_NUM_THREADS = "os.environ['OMP_NUM_THREADS'] = '8'"
+ KMP_STACKSIZE = "os.environ['KMP_STACKSIZE'] = '2G'"
+ KMP_MONITOR_STACKSIZE = "os.environ['KMP_MONITOR_STACKSIZE'] = '2G'"
+ DR_HOOK = "os.environ['DR_HOOK'] = '0'"
+ DR_HOOK_IGNORE_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
+ DR_HOOK_SILENT = "os.environ['DR_HOOK_SILENT'] = '1'"
+ DR_HOOK_OPT = "os.environ['DR_HOOK_OPT'] = 'prof'"
+ DR_HOOK_NOT_MPI = "os.environ['DR_HOOK_NOT_MPI'] = '1'"
+ MPL_MBX_SIZE = "os.environ['MPL_MBX_SIZE'] = '2048000000'"
+ EC_PROFILE_HEAP = "os.environ['EC_PROFILE_HEAP'] = '0'"
+ EC_MPI_ATEXIT = "os.environ['EC_MPI_ATEXIT'] = '0'"
+ ULIMIT = "os.system('ulimit -s unlimited')"
+ MODULE_INTEL = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read()); module('load', 'intel/2021.4.0')"
+ MODULE_HPCX = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read()); module('load', 'hpcx-openmpi/2.9.0')"
+ MODULE_MKL = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read()); module('load', 'intel-mkl/19.0.5')"
+ MODULE_GCC = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read()); module('load', 'gcc/8.5.0')"
+ PYTHONPATH = "os.environ['PYTHONPATH'] = '@HOME@/.local/lib/python3.8/site-packages/:/perm/rme/python3/site-packages/lib/python3.6/site-packages'"
 
 [troika]
 config_file = "@DEODE_HOME@/config/troika.yml"
