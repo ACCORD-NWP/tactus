@@ -3,7 +3,7 @@
 ECF_HOST=`echo ecflow-gen-${USER}-001`
 #
 #
-DEODE_SCRATCH=$PWD
+DEODE_SCRATCH=/scratch/$USER/deode_ecflow
 
 mkdir -p $DEODE_SCRATCH/job
 mkdir -p $DEODE_SCRATCH/ecf
@@ -14,6 +14,6 @@ start suite \
 --name test_deode \
 --ecf_host $ECF_HOST \
 --ecf_port 3141 \
---joboutdir $PWD/job \
---ecf_files $PWD/ecf
+--joboutdir $DEODE_SCRATCH/job \
+--ecf_files $DEODE_SCRATCH/ecf
 

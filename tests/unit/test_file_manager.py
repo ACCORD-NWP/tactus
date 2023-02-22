@@ -17,7 +17,6 @@ def config_platform():
         """
         [general]
             case = "mytest"
-            macros = ["BINDIR", "ARCHIVE"]
             os_macros = ["USER", "HOME"]
             realization = -1
             cnmexp = "DEOD"
@@ -29,9 +28,10 @@ def config_platform():
             basetime = "2000-01-01T00:0:00Z"
             validtime = "2000-01-02T00:00:00Z"
             list = ["2000-01-01T00:00:00Z"]
+        [system]
+            bindir = "/tmp/bindir"
+            archive = "/tmp/archive/@YYYY@/@MM@/@DD@/@HH@"
         [platform]
-            BINDIR = "/tmp/bindir"
-            ARCHIVE = "/tmp/archive/@YYYY@/@MM@/@DD@/@HH@"
         """
     )
     return task_configs
@@ -105,6 +105,45 @@ class TestFileManager:
             aprovider.identifier == "ectmp:/2000/01/01/00/OUT_ICMSHDEOD+0024"
         )  # noqa S108, E501
         os.remove("/tmp/archive/2000/01/01/00/OUT_ICMSHDEOD+0024")  # noqa S108
+
+    def test_case_insensitive(self, parsed_config_with_paths):
+        """Test input files."""
+        fmanager = FileManager(parsed_config_with_paths)
+        test = fmanager.platform.sub_value("t/@ARCHIVE@/a@T@b", "ARCHIVE", "found")
+        assert test == "t/found/a@T@b"
+        test = fmanager.platform.sub_value("t/@ARCHIVE@/a@T@b", "archive", "found")
+        assert test == "t/found/a@T@b"
+        test = fmanager.platform.sub_value("@TA@t/@ARCHIVE@/a@T@", "archive", "found")
+        assert test == "@TA@t/found/a@T@"
+
+    def test_substitution(self, parsed_config_with_paths):
+        """Test input files."""
+        config = parsed_config_with_paths
+        platform_value = "platform_value"
+        test_config = {
+            "general": {
+                "cnmexp": "DEOD",
+                "times": {
+                    "basetime": "2023-02-15T01:30:00Z",
+                    "validtime": "2023-02-15T03:30:00Z"
+                }
+            },
+            "domain": {
+                "name": "DOMAIN"
+            },
+            "system": {
+                "climdir": "my_dir"
+            },
+            "platform": {
+                "test": platform_value
+            }
+        }
+        config = config.copy(update=test_config)
+        fmanager = FileManager(config)
+        istring = "@TeST@:@CLimDiR@:@domain@:@cnmexp@:@YYYY@:@MM@:@DD@:@HH@:@mm@:@LLLL@"
+        ostring = f"{platform_value}:my_dir:DOMAIN:DEOD:2023:02:15:01:30:0002"
+        test = fmanager.platform.substitute(istring)
+        assert test == ostring
 
 
 if __name__ == "__main__":

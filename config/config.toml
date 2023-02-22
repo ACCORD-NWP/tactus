@@ -1,7 +1,5 @@
 [general]
  case = "deode_case"
- macros = ["ARCHIVE_ROOT","SCRATCH", "DEODE_HOME",
-          "RRTM_DIR", "E923_DATA", "STATIC_DATA"]
  os_macros = ["USER", "HOME", "PWD"]
  realization = -1
  cnmexp = "HARM"
@@ -45,15 +43,15 @@ xlat0 = 60.0
 
 [platform]
  # The start/run scripts should set DEODE_HOME
- DEODE_HOME = "@HOME@/Deode-Prototype"
- ARCHIVE_ROOT = "@SCRATCH@/deode/@CASE@/archive"
- SCRATCH = "/scratch/@USER@"
- STATIC_DATA = "/hpcperm/hlam/data"
- RRTM_DIR = "@STATIC_DATA@/rrtm/46h1"
- E923_DATA = "@STATIC_DATA@/climate/E923_DATA"
- NAMELISTS = "@DEODE_HOME@/nam"
- FORECAST_NAMELIST = "@DEODE_HOME@/nam/fort.4_arome"
- FORECAST_DATA = "/home/snh02/work/cy46t1/arome/data"
+ deode_home = "@HOME@/Deode-Prototype"
+ archive_root = "@SCRATCH@/deode/@CASE@/archive"
+ scratch = "/scratch/@USER@"
+ static_data = "/hpcperm/hlam/data"
+ rrtm_dir = "@STATIC_DATA@/rrtm/46h1"
+ e923_data = "@STATIC_DATA@/climate/E923_DATA"
+ namelists = "@DEODE_HOME@/nam"
+ forecast_namelist = "@DEODE_HOME@/nam/fort.4_arome"
+ forecast_data = "/home/snh02/work/cy46t1/arome/data"
 
 [general.times]
  basetime = "2023-02-19T00:00:00Z"

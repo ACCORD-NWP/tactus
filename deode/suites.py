@@ -134,7 +134,7 @@ class SuiteDefinition(object):
             "VALIDTIME": first_cycle.strftime("%Y%m%d%H%M")
         }
 
-        input_template = f"{platform.get_path('DEODE_HOME')}/ecf/default.py"
+        input_template = f"{platform.get_platform_value('DEODE_HOME')}/ecf/default.py"
         self.suite = EcflowSuite(name, ecf_files, variables=variables, dry_run=dry_run)
 
         # Background dos not work. Deode is not able to run on vm with shared HOME as

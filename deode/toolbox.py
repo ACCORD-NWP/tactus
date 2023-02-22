@@ -1,6 +1,6 @@
 """Toolbox handling e.g. input/output."""
 import os
-
+import re
 from .datetime_utils import as_datetime
 from .logs import get_logger_from_config
 
@@ -60,9 +60,9 @@ class Platform:
             str: Value from system.[role]
 
         """
+        role = role.lower()
         try:
-            val = self.config.get_value("system." + role)
-            return self.substitute(val)
+            return self.config.get_value("system." + role)
         except KeyError:
             return None
 
@@ -82,7 +82,7 @@ class Platform:
         except KeyError:
             return None
 
-    def get_path(self, role):
+    def get_platform_value(self, role):
         """Get the path.
 
         Args:
@@ -92,9 +92,9 @@ class Platform:
             str: Value from platform.[role]
 
         """
+        role = role.lower()
         try:
-            val = self.config.get_value("platform." + role)
-            return self.substitute(val)
+            return self.config.get_value("platform." + role)
         except KeyError:
             return None
 
@@ -114,7 +114,26 @@ class Platform:
             dict: Macros to define.
 
         """
-        return self.config.get_value("general.macros")
+        macro_list = []
+        macros = self.config.get_value("platform").dict()
+        for macro in macros:
+            macro_list.append(macro)
+        self.logger.debug("Platform macro list: %s", macro_list)
+        return macro_list
+
+    def get_system_macros(self):
+        """Get the macros.
+
+        Returns:
+            dict: Macros to define.
+
+        """
+        macro_list = []
+        macros = self.config.get_value("system").dict()
+        for macro in macros:
+            macro_list.append(macro)
+        self.logger.debug("System macro list: %s", macro_list)
+        return macro_list
 
     def get_os_macros(self):
         """Get the environment macros.
@@ -152,6 +171,32 @@ class Platform:
         else:
             raise NotImplementedError(f"Provider for {provider_id} not implemented")
 
+    def sub_value(self, pattern, key, value, micro="@", ci=True):
+        """Substitute the value case-insensitively.
+
+        Args:
+            pattern (str): Input string
+            key (str): Key to replace
+            value (str): Value to replace
+            micro (str, optional): Micro character. Defaults to "@".
+            ci (bool, optional): Case insensitive. Defaults to True.
+
+        Returns:
+            str: Replaces string
+        """
+        # create the list.
+        self.logger.debug("Pattern: %s", pattern)
+        self.logger.debug("key=%s value=%s", key, value)
+
+        if ci:
+            compiled = re.compile(re.escape(f"{micro}{key}{micro}"), re.IGNORECASE)
+        else:
+            compiled = re.compile(re.escape(f"{micro}{key}{micro}"))
+        res = compiled.sub(value, pattern)
+
+        self.logger.debug("Substituted string: %s", res)
+        return res
+
     def substitute(self, pattern, basetime=None, validtime=None):
         """Substitute pattern.
 
@@ -165,14 +210,15 @@ class Platform:
 
         """
         if isinstance(pattern, str):
-            macros = self.config.get_value("general.macros")
-            os_macros = self.config.get_value("general.os_macros")
+            macros = self.get_macros()
+            os_macros = self.get_os_macros()
+            system_macros = self.get_system_macros()
 
             self.logger.debug("pattern before: %s", pattern)
             for macro in macros:
-                self.logger.debug("Checking macro: %s", macro)
+                self.logger.debug("Checking platform macro: %s", macro)
                 try:
-                    val = self.config.get_value("platform." + macro)
+                    val = self.get_platform_value(macro)
                     self.logger.debug("macro=%s pattern=%s val=%s", macro, pattern, val)
                 except KeyError:
                     val = None
@@ -180,7 +226,22 @@ class Platform:
                     self.logger.debug(
                         "before replace macro=%s pattern=%s", macro, pattern
                     )
-                    pattern = pattern.replace(f"@{macro}@", str(val))
+                    pattern = self.sub_value(pattern, macro, val)
+                    self.logger.debug("after replace macro=%s pattern=%s", macro, pattern)
+
+            self.logger.debug("pattern before: %s", pattern)
+            for macro in system_macros:
+                self.logger.debug("Checking system macro: %s", macro)
+                try:
+                    val = self.get_system_value(macro)
+                    self.logger.debug("macro=%s pattern=%s val=%s", macro, pattern, val)
+                except KeyError:
+                    val = None
+                if val is not None:
+                    self.logger.debug(
+                        "before replace macro=%s pattern=%s", macro, pattern
+                    )
+                    pattern = self.sub_value(pattern, macro, val)
                     self.logger.debug("after replace macro=%s pattern=%s", macro, pattern)
 
             for macro in os_macros:
@@ -193,20 +254,21 @@ class Platform:
                 except KeyError:
                     val = None
                 if val is not None:
-                    pattern = pattern.replace(f"@{macro}@", str(val))
+                    pattern = self.sub_value(pattern, macro, val)
                     self.logger.debug("macro=%s pattern=%s", macro, pattern)
 
             domain = self.config.get_value("domain.name")
-            pattern = pattern.replace("@DOMAIN@", domain)
+            pattern = self.sub_value(pattern, "domain", domain)
             exp_case = self.config.get_value("general.case")
-            pattern = pattern.replace("@CASE@", exp_case)
+            pattern = self.sub_value(pattern, "case", exp_case)
             self.logger.debug("Substituted domain: %s pattern=%s", domain, pattern)
             realization = self.config.get_value("general.realization")
             if realization is not None and realization >= 0:
-                pattern = pattern.replace("@RRR@", f"{realization:03d}")
-                pattern = pattern.replace("@MRRR@", f"mbr{realization:03d}")
+                pattern = self.sub_value(pattern, "RRR", f"{realization:03d}")
+                pattern = self.sub_value(pattern, "MRRR", f"mbr{realization:03d}")
             else:
-                pattern = pattern.replace("@RRR@", "")
+                pattern = self.sub_value(pattern, "RRR", "")
+
             self.logger.debug(
                 "Substituted realization: %s pattern=%s", realization, pattern
             )
@@ -221,11 +283,11 @@ class Platform:
             if isinstance(validtime, str):
                 validtime = as_datetime(validtime)
 
-            pattern = pattern.replace("@YYYY@", basetime.strftime("%Y"))
-            pattern = pattern.replace("@MM@", basetime.strftime("%m"))
-            pattern = pattern.replace("@DD@", basetime.strftime("%d"))
-            pattern = pattern.replace("@HH@", basetime.strftime("%H"))
-            pattern = pattern.replace("@mm@", basetime.strftime("%M"))
+            pattern = self.sub_value(pattern, "YYYY", basetime.strftime("%Y"))
+            pattern = self.sub_value(pattern, "MM", basetime.strftime("%m"), ci=False)
+            pattern = self.sub_value(pattern, "DD", basetime.strftime("%d"))
+            pattern = self.sub_value(pattern, "HH", basetime.strftime("%H"))
+            pattern = self.sub_value(pattern, "mm", basetime.strftime("%M"), ci=False)
             if basetime is not None and validtime is not None:
                 self.logger.debug(
                     "Substituted date/time info: basetime=%s validtime=%s",
@@ -233,35 +295,38 @@ class Platform:
                     validtime.strftime("%Y%m%d%H%M"),
                 )
                 lead_time = validtime - basetime
-                pattern = str(pattern).replace("@YYYY_LL@", validtime.strftime("%Y"))
-                pattern = str(pattern).replace("@MM_LL@", validtime.strftime("%m"))
-                pattern = str(pattern).replace("@DD_LL@", validtime.strftime("%d"))
-                pattern = str(pattern).replace("@HH_LL@", validtime.strftime("%H"))
-                pattern = str(pattern).replace("@mm_LL@", validtime.strftime("%M"))
+                pattern = self.sub_value(pattern, "YYYY_LL", validtime.strftime("%Y"))
+                pattern = self.sub_value(pattern, "MM_LL", validtime.strftime("%m"),
+                                         ci=False)
+                pattern = self.sub_value(pattern, "DD_LL", validtime.strftime("%d"))
+                pattern = self.sub_value(pattern, "HH_LL", validtime.strftime("%H"))
+                pattern = self.sub_value(pattern, "mm_LL", validtime.strftime("%M"),
+                                         ci=False)
+
                 lead_seconds = int(lead_time.total_seconds())
                 lead_minutes = int(lead_seconds / 3600)  # noqa
                 lead_hours = int(lead_seconds / 3600)
-                pattern = str(pattern).replace("@LL@", f"{lead_hours:02d}")
-                pattern = str(pattern).replace("@LLL@", f"{lead_hours:03d}")
-                pattern = str(pattern).replace("@LLLL@", f"{lead_hours:04d}")
+                pattern = self.sub_value(pattern, "LL", f"{lead_hours:02d}")
+                pattern = self.sub_value(pattern, "LLL", f"{lead_hours:03d}")
+                pattern = self.sub_value(pattern, "LLLL", f"{lead_hours:04d}")
                 tstep = self.config.get_value("general.tstep")
                 if tstep is not None:
                     lead_step = int(lead_seconds / tstep)
-                    pattern = str(pattern).replace("@TTT@", f"{lead_step:03d}")
-                    pattern = str(pattern).replace("@TTTT@", f"{lead_step:04d}")
+                    pattern = self.sub_value(pattern, "TTT", f"{lead_step:03d}")
+                    pattern = self.sub_value(pattern, "TTTT", f"{lead_step:04d}")
 
             if basetime is not None:
-                pattern = str(pattern).replace("@YMD@", basetime.strftime("%Y%m%d"))
-                pattern = str(pattern).replace("@YYYY@", basetime.strftime("%Y"))
-                pattern = str(pattern).replace("@YY@", basetime.strftime("%y"))
-                pattern = str(pattern).replace("@MM@", basetime.strftime("%m"))
-                pattern = str(pattern).replace("@DD@", basetime.strftime("%d"))
-                pattern = str(pattern).replace("@HH@", basetime.strftime("%H"))
-                pattern = str(pattern).replace("@mm@", basetime.strftime("%M"))
+                pattern = self.sub_value(pattern, "YMD", basetime.strftime("%Y%m%d"))
+                pattern = self.sub_value(pattern, "YYYY", basetime.strftime("%Y"))
+                pattern = self.sub_value(pattern, "YY", basetime.strftime("%y"))
+                pattern = self.sub_value(pattern, "MM", basetime.strftime("%m"), ci=False)
+                pattern = self.sub_value(pattern, "DD", basetime.strftime("%d"))
+                pattern = self.sub_value(pattern, "HH", basetime.strftime("%H"))
+                pattern = self.sub_value(pattern, "mm", basetime.strftime("%M"), ci=False)
 
             cnmexp = self.config.get_value("general.cnmexp")
             if cnmexp is not None:
-                pattern = pattern.replace("@CNMEXP@", cnmexp)
+                pattern = self.sub_value(pattern, "CNMEXP", cnmexp)
                 self.logger.debug("Substituted CNMEXP: %s pattern=%s", cnmexp, pattern)
 
         self.logger.debug("Return pattern=%s", pattern)

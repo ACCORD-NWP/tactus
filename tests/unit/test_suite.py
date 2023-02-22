@@ -41,8 +41,7 @@ class TestSuite:
         config = config.copy(
             update={
                 "platform": {
-                    "SCRATCH": "/tmp",  # noqa S108
-                    "DEODE_HOME": f"{os.path.dirname(__file__)}/../.."
+                    "deode_home": f"{os.path.dirname(__file__)}/../.."
                 },
             }
         )  # noqa S108

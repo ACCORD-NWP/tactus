@@ -104,7 +104,6 @@ class BasicConfig:
                     return obj[item]
                 except (KeyError, TypeError) as error:
                     raise AttributeError(attr_error) from error
-
         return reduce(get_attr_or_item, items.split("."), self)
 
     def dumps(
@@ -154,7 +153,6 @@ class BasicConfig:
         Returns:
             Any: Value of the parsed config item.
         """
-
         def regular_getattribute(obj, item):
             if type(obj) is type(self):
                 return super().__getattribute__(item)
