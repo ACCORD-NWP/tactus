@@ -1,6 +1,6 @@
 [general]
 case = "my_beautiful_case"
-macros = ["DEODE_HOME"]
+macros = ["SCRATCH", "ARCHIVE_ROOT", "CLIMDATA", "PGD_DATA_PATH", "ECOSG_DATA_PATH", "NAMELIST_DIR", "DEODE_HOME"]
 os_macros = ["USER", "HOME", "PWD"]
 realization = -1
 cnmexp = "DEOD"
@@ -33,34 +33,171 @@ ilate = 0
 xlon0 = 10.0
 xlat0 = 60.0
 
-
 [system]
-wrk = "@SCRATCH@/@CASE@/@YYYY@@MM@@DD@_@HH@@mm@"
+wrk = "@SCRATCH@/deode/@CASE@/@YYYY@@MM@@DD@_@HH@@mm@"
 archive = "@ARCHIVE_ROOT@/@CASE@/@YYYY@@MM@@DD@_@HH@@mm"
-bddir = "@SCRATCH@/@CASE@/BD"
+bddir = "@SCRATCH@/deode/@CASE@/BD"
+climdir = "@SCRATCH@/deode/@CASE@/climate"
+bindir = "@SCRATCH@/deode/@CASE@/bindir"
 
 [platform]
+ARCHIVE_ROOT = "/@SCRATCH@/deode/@CASE@/archive"
+SCRATCH = "/scratch/@USER@/"
+CLIMDATA = "/ec/res4/hpcperm/hlam/data/climate"
+ECOSG_DATA_PATH = "@CLIMDATA@/ECOCLIMAP-SG"
+GMTED2010_DATA_PATH = "@CLIMDATA@/GMTED2010"
+SOILGRID_DATA_PATH = "@CLIMDATA@/SOILGRID"
+PGD_DATA_PATH = "@CLIMDATA@/PGD"
+NAMELIST_DIR = "@HOME@/projects/Deode-Prototype/nam"
 DEODE_HOME = "@PWD@"
-ARCHIVE_ROOT = "/tmp/@CASE@/archive"
-SCRATCH = "/tmp/@USER@"
 
 [general.times]
-basetime = "2000-01-01T00:00:00Z"
-validtime = "2000-01-02T00:00:00Z"
+basetime = "2020-08-15T03:00:00+00:00"
+validtime = "2020-08-15T04:00:00+00:00"
 start = "2020-08-15T00:00:00+00:00"
 end = "2020-08-16T21:00:00+00:00"
 cycle_length = "PT3H"
 
-[task]
 [task.forecast]
 wrapper = "time"
 command = "echo Hello world && touch output"
+
+[SURFEX.IO]
+CSURF_FILETYPE = "FA"
+CTIMESERIES_FILETYPE = "FA"
+CFORCING_FILETYPE = "NETCDF"
+XTSTEP = 600
+XTSTEP_OUTPUT = 21600.0
+LSPLIT_PATCH = true
+LSELECT = true
+
+[SURFEX.COVER]
+YCOVER = "ecosg_final_map.dir"
+SG = true
+H_TREE = "new_ht_c.dir"
+ALBNIR_SOIL = "ALB_SAT_NI_@MM@@CDD@_c.dir"
+ALBNIR_VEG = "ALB_SAT_NI_@MM@@CDD@_c.dir"
+ALBVIS_SOIL = "ALB_SAT_VI_@MM@@CDD@_c.dir"
+ALBVIS_VEG = "ALB_SAT_VI_@MM@@CDD@_c.dir"
+LAI = "LAI_SAT_@MM@@CDD@_c.dir"
+
+[SURFEX.ZS]
+YZS = "gmted2010.dir"
+
+[SURFEX.PARAMETERS]
+XRIMAX = 0.2
+
+[SURFEX.TILES]
+SEA = "SEAFLX"
+INLAND_WATER = "FLAKE"
+NATURE = "ISBA"
+TOWN = "TEB"
+
+[SURFEX.SEA]
+ICE = "NONE"
+PERTFLUX = false
+LVOLATILE_SIC = false
+
+[SURFEX.INLAND_WATER]
+
+[SURFEX.FLAKE]
+LCLIM = true
+LDB_VERSION = "3.0"
+
+[SURFEX.ISBA]
+SCHEME = "DIF"
+NPATCH = 2
+MEB = true
+CANOPY = false
+SNOW = "3-L"
+YSOC_TOP = "soc_top.dir"
+YSOC_SUB = "soc_sub.dir"
+YSAND = "sand_fao.dir"
+YCLAY = "clay_fao.dir"
+PERTSURF = false
+XCGMAX = 2e-5
+XCSMAX = 0.0002
+
+[SURFEX.SSO]
+SCHEME = "NONE"
+
+[SURFEX.TREEDRAG]
+TREEDATA_FILE = ""
+XSCALE_H_TREE = 1.0
+XALLEN_TERM = 2.5
+XGRASS_H_DNM = 3.0
+FAKETREES = false
+
+[SURFEX.TOWN]
+LTOWN_TO_ROCK = false
+
+[SURFEX.TEB]
+
+[SURFEX.ASSIM]
+CFILE_FORMAT_LSM = "ASCII"
 
 [task.forecast.input_data]
 input_file = "/dev/null"
 
 [task.forecast.output_data]
 output = "archived_file"
+
+[SURFEX.ASSIM.SCHEMES]
+SEA = "NONE"
+INLAND_WATER = "INPUT"
+ISBA = "EKF"
+TEB = "NONE"
+
+[SURFEX.ASSIM.OBS]
+LOBSHEADER = false
+CFILE_FORMAT_OBS = "ASCII"
+LOBSNAT = false
+COBS_M = [ "T2M", "HU2M", "WG2 ", "LAI", "SWE",]
+NNCO = [ 1, 1, 0, 0, 1,]
+XERROBS_M = [ 1.0, 0.1, 0.1, 0.1, 20.0,]
+LSWE = false
+NOBSTYPE_M = 2
+
+[SURFEX.ASSIM.SEA]
+CFILE_FORMAT_SST = "ASCII"
+LREAD_SST_FROM_FILE = true
+LEXTRAP_SEA = false
+LECSST = true
+
+[SURFEX.ASSIM.INLAND_WATER]
+LWATERTG2 = false
+LEXTRAP_WATER = false
+
+[SURFEX.ASSIM.ISBA]
+UPDATE_SNOW_CYCLES = [ "06",]
+LSWEPSINI = false
+XSWEPSINI = 1000.0
+LSWEPSMIN = false
+XSWEPSMIN = 500.0
+LPATCH1 = false
+
+[SURFEX.ASSIM.ISBA.OI]
+CFILE_FORMAT_CLIM = "ASCII"
+CFILE_FORMAT_FG = "ASCII"
+COEFFS = "POLYNOMES_ISBA"
+XSIGT2MO = 1.0
+XSIGH2MO = 0.1
+
+[SURFEX.ASSIM.ISBA.EKF]
+NNCV = [ 0, 1, 0, 1,]
+XSIGMA_M = [ 2.0, 2.0, 0.1, 0.15,]
+CVAR_M = [ "TG1", "TG2", "WG1", "WG2",]
+XTPRT_M = [ 0.0001, 0.0001, 1e-5, 1e-5,]
+XSCALE_Q = 0.125
+EVOLVE_B = false
+LLINCHECK = true
+XALPHA = 0.2
+
+[SURFEX.ASSIM.ISBA.ENKF]
+NNCV = [ 1, 1, 1, 1, 1, 1,]
+CVAR_M = [ "TG1", "TG2", "TG3", "WG2", "WG3", "WG4",]
+NENS_M = 16
+LPASSIVE_MODE = false
 
 [submission]
 submit_types = ["background_vm", "background_hpc", "serial", "parallel"]

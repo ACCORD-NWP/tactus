@@ -134,7 +134,7 @@ class SuiteDefinition(object):
             "VALIDTIME": first_cycle.strftime("%Y%m%d%H%M")
         }
 
-        input_template = f"{platform.get_platform_value('DEODE_HOME')}/ecf/default.py"
+        input_template = f"{platform.get_value('platform.deode_home')}/ecf/default.py"
         self.suite = EcflowSuite(name, ecf_files, variables=variables, dry_run=dry_run)
 
         # Background dos not work. Deode is not able to run on vm with shared HOME as
@@ -197,6 +197,7 @@ class SuiteDefinition(object):
             i = i + 1
             cycle_time = cycle_time + cycle_length
 
+        do_prep = True
         days = []
         prev_cycle_trigger = None
         for __, cycle in cycles.items():
@@ -253,6 +254,18 @@ class SuiteDefinition(object):
             initialization = EcflowSuiteFamily(
                 "Initialization", cycle, ecf_files, trigger=ready_for_cycle
             )
+            if do_prep:
+                EcflowSuiteTask(
+                    "Prep",
+                    initialization,
+                    config,
+                    self.task_settings,
+                    ecf_files,
+                    input_template=input_template,
+                    variables=None,
+                )
+                do_prep = False
+
             firstguess = EcflowSuiteTask(
                 "FirstGuess",
                 initialization,

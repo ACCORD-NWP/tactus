@@ -13,7 +13,7 @@ def minimal_raw_config():
     return tomlkit.parse(
         """
         [general]
-            case = "mycase"
+            case = "my_case"
             loglevel = "DEBUG"
             macros = []
             os_macros = ["USER", "HOME"]

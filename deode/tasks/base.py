@@ -33,10 +33,10 @@ class Task(object):
         self.fmanager = FileManager(self.config)
         self.platform = self.fmanager.platform
 
-        wrk = self.platform.get_system_value("wrk")
+        wrk = self.platform.get_value("system.wrk")
         if wrk is None:
             raise Exception("You must set wrk")
-        self.wrk = self.platform.substitute(wrk)
+        self.wrk = wrk
         wdir = f"{self.wrk}/{socket.gethostname()}{str(os.getpid())}"
         self.wdir = wdir
         self.logger.info("Task running in %s", self.wdir)

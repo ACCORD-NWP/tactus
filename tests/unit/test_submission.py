@@ -61,6 +61,7 @@ class TestSubmission:
             update={"submission": {"default_submit_type": "background_hpc"},
                     "troika": {"config_file": "config/troika.yml"}}
         )
+        config = config.copy(update={"platform": {"SCRATCH": "/tmp"}})  # noqa
         task = "UnitTest"
         template_job = "ecf/stand_alone.py"
         task_job = f"/tmp/{task}.job"  # noqa
