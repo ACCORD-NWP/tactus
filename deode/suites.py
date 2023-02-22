@@ -3,6 +3,7 @@
 import os
 
 from deode.toolbox import Platform
+from deode.datetime_utils import as_datetime, as_timedelta
 from .logs import get_logger_from_config, get_logger
 
 try:
@@ -112,6 +113,7 @@ class SuiteDefinition(object):
         platform = Platform(config)
         troika_config = platform.get_value("troika.config_file")
         config_file = config.get_value("metadata.source_file_path")
+        first_cycle = as_datetime(config.get_value("general.times.start"))
         variables = {
             "ECF_EXTN": ".py",
             "ECF_FILES": self.ecf_files,
@@ -128,6 +130,8 @@ class SuiteDefinition(object):
             "CONFIG": str(config_file),
             "TROIKA": troika,
             "TROIKA_CONFIG": troika_config,
+            "BASETIME": first_cycle.strftime("%Y%m%d%H%M"),
+            "VALIDTIME": first_cycle.strftime("%Y%m%d%H%M")
         }
 
         input_template = f"{platform.get_path('DEODE_HOME')}/ecf/default.py"
@@ -176,65 +180,107 @@ class SuiteDefinition(object):
             trigger=e923_trigger,
         )
 
-        inputdata_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(e923)])
-        inputdata = EcflowSuiteFamily(
-            "InputData", self.suite, ecf_files, trigger=inputdata_trigger
-        )
+        first_cycle = as_datetime(config.get_value("general.times.start"))
+        last_cycle = as_datetime(config.get_value("general.times.end"))
+        cycle_length = as_timedelta(config.get_value("general.times.cycle_length"))
+        cycles = {}
+        cycle_time = first_cycle
+        i = 0
+        while cycle_time <= last_cycle:
+            logger.debug("cycle_time %s", cycle_time)
+            cycles.update({
+                str(i): {
+                    "day": cycle_time.strftime("%Y%m%d"),
+                    "time": cycle_time.strftime("%H%M"),
+                    "validtime": cycle_time.strftime("%Y%m%d%H%M"),
+                    "basetime": cycle_time.strftime("%Y%m%d%H%M")
+                }
+            })
+            i = i + 1
+            cycle_time = cycle_time + cycle_length
 
-        prepare_cycle = EcflowSuiteTask(
-            "PrepareCycle",
-            inputdata,
-            config,
-            self.task_settings,
-            ecf_files,
-            input_template=input_template,
-            variables=None,
-        )
+        days = []
+        prev_cycle_trigger = None
+        for __, cycle in cycles.items():
+            cycle_day = cycle["day"]
+            inputdata_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(e923)])
 
-        prepare_cycle_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prepare_cycle)])
-        EcflowSuiteTask(
-            "E927",
-            inputdata,
-            config,
-            self.task_settings,
-            ecf_files,
-            input_template=input_template,
-            variables=None,
-            trigger=prepare_cycle_done,
-        )
+            if cycle_day not in days:
+                day_family = EcflowSuiteFamily(
+                    cycle["day"], self.suite, ecf_files, trigger=inputdata_trigger
+                )
+                days.append(cycle_day)
 
-        cycle = EcflowSuiteFamily("Cycle", self.suite, ecf_files)
+            time_variables = {
+                "BASETIME": cycle["basetime"],
+                "VALIDTIME": cycle["validtime"]
+            }
+            time_family = EcflowSuiteFamily(
+                cycle["time"], day_family, ecf_files, trigger=inputdata_trigger,
+                variables=time_variables
+            )
 
-        prepare_input_done = EcflowSuiteTriggers([EcflowSuiteTrigger(inputdata)])
-        initialization = EcflowSuiteFamily(
-            "Initialization", cycle, ecf_files, trigger=prepare_input_done
-        )
-        firstguess = EcflowSuiteTask(
-            "FirstGuess",
-            initialization,
-            config,
-            self.task_settings,
-            ecf_files,
-            input_template=input_template,
-            variables=None,
-        )
+            inputdata = EcflowSuiteFamily(
+                "InputData", time_family, ecf_files, trigger=inputdata_trigger
+            )
 
-        forecast_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(firstguess)])
-        forecasting = EcflowSuiteFamily(
-            "Forecasting", cycle, ecf_files, trigger=forecast_trigger
-        )
-        self.logger.debug(self.task_settings.get_task_settings("Forecast"))
+            prepare_cycle = EcflowSuiteTask(
+                "PrepareCycle",
+                inputdata,
+                config,
+                self.task_settings,
+                ecf_files,
+                input_template=input_template,
+                variables=None,
+            )
 
-        variables = {"ECF_TIMEOUT": 5}
-        EcflowSuiteTask(
-            "Forecast",
-            forecasting,
-            config,
-            self.task_settings,
-            ecf_files,
-            input_template=input_template,
-            variables=variables,
-        )
+            prepare_cycle_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prepare_cycle)])
+            EcflowSuiteTask(
+                "E927",
+                inputdata,
+                config,
+                self.task_settings,
+                ecf_files,
+                input_template=input_template,
+                variables=None,
+                trigger=prepare_cycle_done,
+            )
+
+            cycle = EcflowSuiteFamily("Cycle", time_family, ecf_files)
+            triggers = [EcflowSuiteTrigger(inputdata)]
+            if prev_cycle_trigger is not None:
+                triggers = triggers + prev_cycle_trigger
+            ready_for_cycle = EcflowSuiteTriggers(triggers)
+            prev_cycle_trigger = [EcflowSuiteTrigger(cycle)]
+            initialization = EcflowSuiteFamily(
+                "Initialization", cycle, ecf_files, trigger=ready_for_cycle
+            )
+            firstguess = EcflowSuiteTask(
+                "FirstGuess",
+                initialization,
+                config,
+                self.task_settings,
+                ecf_files,
+                input_template=input_template,
+                variables=None,
+            )
+
+            forecast_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(firstguess)])
+            forecasting = EcflowSuiteFamily(
+                "Forecasting", cycle, ecf_files, trigger=forecast_trigger
+            )
+            self.logger.debug(self.task_settings.get_task_settings("Forecast"))
+
+            variables = {"ECF_TIMEOUT": 5}
+            EcflowSuiteTask(
+                "Forecast",
+                forecasting,
+                config,
+                self.task_settings,
+                ecf_files,
+                input_template=input_template,
+                variables=variables,
+            )
 
     def save_as_defs(self, def_file):
         """Save definition file.

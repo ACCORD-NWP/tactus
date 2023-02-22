@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Implement the package's commands."""
 
+import os
 from .logs import get_logger
 from .scheduler import EcflowServer
 from .submission import NoSchedulerSubmission, TaskSettings
@@ -40,6 +41,9 @@ def start_suite(args, config):
     """
     logger = get_logger(__name__, args.loglevel)
     logger.info("Starting suite...")
+
+    deode_home = f"{os.path.dirname(__file__)}/.."
+    config = config.copy(update={"platform": {"DEODE_HOME": deode_home}})
 
     server = EcflowServer(
         args.ecf_host, ecf_port=args.ecf_port, start_command=args.start_command

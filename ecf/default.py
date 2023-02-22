@@ -19,6 +19,8 @@ def parse_ecflow_vars():
         "ECF_TRYNO": "%ECF_TRYNO%",
         "ECF_RID": "%ECF_RID%",
         "ECF_TIMEOUT": "%ECF_TIMEOUT%",
+        "BASETIME": "%BASETIME%",
+        "VALIDTIME": "%VALIDTIME%",
         "LOGLEVEL": "%LOGLEVEL%",
         "CONFIG": "%CONFIG%",
     }
@@ -31,11 +33,19 @@ def parse_ecflow_vars():
 
 def default_main(**kwargs):
     """Ecflow container default method."""
-    loglevel = kwargs.get("LOGLEVEL")  # noqa W0612
     config = kwargs.get("CONFIG")
     # How to update config based on ecflow settings when config is assumed to be immutable
     # config["general"].update({"loglevel": loglevel})  # noqa
     config = ParsedConfig.from_file(config)
+    config = config.copy(update={
+        "general": {
+            "loglevel": kwargs.get("LOGLEVEL"),
+            "times": {
+                "validtime": kwargs.get("VALIDTIME"),
+                "basetime": kwargs.get("BASETIME")
+            }
+        }
+    })
     logger = get_logger_from_config(config)
 
     # TODO Add wrapper  # noqa

@@ -57,10 +57,10 @@ xlat0 = 60.0
  FORECAST_DATA = "/home/snh02/work/cy46t1/arome/data"
 
 [general.times]
- basetime = "2023-02-15T00:00:00Z"
- validtime = "2023-02-15T00:00:00Z"
- start = "2020-08-15T00:00:00+00:00"
- end = "2020-08-16T21:00:00+00:00"
+ basetime = "2023-02-19T00:00:00Z"
+ validtime = "2023-02-19T00:00:00Z"
+ start = "2023-02-19T00:00:00Z"
+ end = "2023-02-19T03:00:00Z"
  cycle_length = "PT3H"
 
 [task]
