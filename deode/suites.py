@@ -137,15 +137,13 @@ class SuiteDefinition(object):
         input_template = f"{platform.get_path('DEODE_HOME')}/ecf/default.py"
         self.suite = EcflowSuite(name, ecf_files, variables=variables, dry_run=dry_run)
 
-        build = EcflowSuiteFamily("Build", self.suite, ecf_files, def_status="complete")
-        # Background dos not work. Deode is ot able to run on vm with shared HOME as
+        # Background dos not work. Deode is not able to run on vm with shared HOME as
         # hpc-login
         # EcflowSuiteTask("Background", family, self.task_settings, ecf_files,
         #                input_template=input_template)
 
-        build_complete = EcflowSuiteTriggers([EcflowSuiteTrigger(build)])
         static_data = EcflowSuiteFamily(
-            "StaticData", self.suite, ecf_files, trigger=build_complete
+            "StaticData", self.suite, ecf_files
         )
 
         pgd_input = EcflowSuiteTask(
@@ -170,7 +168,7 @@ class SuiteDefinition(object):
         )
         e923_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd)])
         e923 = EcflowSuiteTask(
-            "E923",
+            "e923",
             static_data,
             config,
             self.task_settings,
@@ -236,7 +234,7 @@ class SuiteDefinition(object):
 
             prepare_cycle_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prepare_cycle)])
             EcflowSuiteTask(
-                "E927",
+                "e927",
                 inputdata,
                 config,
                 self.task_settings,

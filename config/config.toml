@@ -41,7 +41,7 @@ xlat0 = 60.0
  bdfile_template = "PFIFSDEOL+@LLLL@"
  climdir = "/home/snh02/work/dev-CY46h1_deode/climate/@DOMAIN@"
  bdclimdir = "/home/snh02/work/dev-CY46h1_deode/climate/DEODE_LARGE"
- bindir = "@SCRATCH@/deode/@CASE@/bin"
+ bindir = "/home/snh02/work/dev-CY46h1_deode/bin"
 
 [platform]
  # The start/run scripts should set DEODE_HOME
@@ -51,8 +51,7 @@ xlat0 = 60.0
  STATIC_DATA = "/hpcperm/hlam/data"
  RRTM_DIR = "@STATIC_DATA@/rrtm/46h1"
  E923_DATA = "@STATIC_DATA@/climate/E923_DATA"
- E923_NAMELISTS = "@DEODE_HOME@/nam"
- E927_NAMELIST = "/home/snh02/work/dev-CY46h1_deode/namelists"
+ NAMELISTS = "@DEODE_HOME@/nam"
  FORECAST_NAMELIST = "@DEODE_HOME@/nam/fort.4_arome"
  FORECAST_DATA = "/home/snh02/work/cy46t1/arome/data"
 
@@ -64,8 +63,11 @@ xlat0 = 60.0
  cycle_length = "PT3H"
 
 [task]
+ wrapper = "srun"
 [task.forecast]
  wrapper = "time srun"
+[task.e923]
+ wrapper = "srun"
 [task.e927]
  wrapper = "srun"
 

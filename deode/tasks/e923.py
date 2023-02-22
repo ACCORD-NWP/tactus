@@ -19,7 +19,9 @@ class E923(Task):
         Task.__init__(self, config, __name__)
 
         # Temporary namelists
-        self.namelist_path = self.platform.get_path('E923_NAMELISTS')
+        self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
+
+        self.namelist_path = self.platform.get_path('NAMELISTS')
         self.climdir = self.platform.get_system_value('climdir')
         self.months = [f'{mm:02d}'for mm in range(1, 13)]
 
@@ -28,8 +30,7 @@ class E923(Task):
                           "nam923_4", "nam923_5", "nam923_6",
                           "nam923_7", "nam923_8", "nam923_9"]
 
-        # self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
-        self.master = "/ec/res4/scratch/snh/hm_home/cmp_intel/install/bin/MASTERODB"
+        self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
 
     def load_namelist(self, i):
         """Read and adjust namelist.
@@ -49,7 +50,7 @@ class E923(Task):
 
     def myexec(self, cmd):
         """Execute binary task."""
-        batch = BatchJob(os.environ, "")
+        batch = BatchJob(os.environ, wrapper=self.wrapper)
         batch.run(cmd)
 
         if os.path.exists("NODE.001_01"):

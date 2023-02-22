@@ -19,6 +19,7 @@ class E927(Task):
         """
         Task.__init__(self, config, __name__)
 
+        self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
         self.climdir = self.platform.get_system_value('climdir')
         self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
         self.bdint = self.config.get_value("general.bdint")
@@ -28,8 +29,8 @@ class E927(Task):
         self.bdfile_template = self.platform.get_system_value('bdfile_template')
         self.bddir = self.platform.get_system_value('bddir')
 
-        self.namelist_path = self.platform.get_path('E927_NAMELIST')
-        self.master = "/home/snh02/work/dev-CY46h1_deode/bin/MASTERODB"
+        self.namelist_path = self.platform.get_path('NAMELISTS')
+        self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
 
     def load_namelist(self, namelist):
         """Read and adjust namelist.
@@ -48,10 +49,8 @@ class E927(Task):
 
     def myexec(self, cmd):
         """Execute binary task."""
-        batch = BatchJob(os.environ, "")
-        cc = 'srun {}'.format(cmd)
-        print(cc)
-        batch.run(cc)
+        batch = BatchJob(os.environ, wrapper=self.wrapper)
+        batch.run(cmd)
 
         if os.path.exists("NODE.001_01"):
             os.system("ls -lrt ; cat NODE.001_01")  # noqa
