@@ -8,7 +8,7 @@ from .base import Task
 
 
 class E923(Task):
-    """Forecast task."""
+    """E93 task."""
 
     def __init__(self, config):
         """Construct forecast object.
@@ -278,3 +278,40 @@ class E923(Task):
             source = f'Const.Clim.{mm}'
             target = f'{self.climdir}/Const.Clim.{mm}'
             self.fmanager.output(source, target)
+
+
+class PgdUpdate(Task):
+    """PgdUpdate.
+
+    Ensure consistency in orography between the atmosphere and surfex
+    Read gridpoint orography from the atmospheric file
+    and insert it in the PGD file Const.Clim.sfx.
+    """
+
+    def __init__(self, config):
+        """Construct object.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+
+        """
+        Task.__init__(self, config, __name__)
+
+        self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
+        self.climdir = self.platform.get_system_value('climdir')
+        self.namelists = self.platform.get_platform_value("NAMELISTS")
+        self.gl = f"{self.platform.get_system_value('bindir')}/gl"  # noqa
+
+    def execute(self):
+        """Run task."""
+        outfile = 'Const.Clim.sfx'
+        for ifile in ['Const.Clim.const', 'PGD_prel.fa']:
+            self.fmanager.input(f"{self.climdir}/{ifile}", ifile, provider_id='copy')
+            self.fmanager.input(f"{self.namelists}/namgl_pgd_update", 'namgl')
+
+        self.fmanager.input(f"{self.climdir}/{ifile}", outfile, provider_id='copy')
+        # Run MASTERODB
+        batch = BatchJob(os.environ, wrapper=self.wrapper)
+        batch.run(f"{self.gl} -n namgl")
+
+        self.fmanager.output(outfile, f"{self.climdir}/{outfile}")

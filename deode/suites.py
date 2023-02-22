@@ -177,6 +177,17 @@ class SuiteDefinition(object):
             variables=None,
             trigger=e923_trigger,
         )
+        pgd_update_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(e923)])
+        pgdupdate = EcflowSuiteTask(
+            "PgdUpdate",
+            static_data,
+            config,
+            self.task_settings,
+            ecf_files,
+            input_template=input_template,
+            variables=None,
+            trigger=pgd_update_trigger,
+        )
 
         first_cycle = as_datetime(config.get_value("general.times.start"))
         last_cycle = as_datetime(config.get_value("general.times.end"))
@@ -202,7 +213,7 @@ class SuiteDefinition(object):
         prev_cycle_trigger = None
         for __, cycle in cycles.items():
             cycle_day = cycle["day"]
-            inputdata_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(e923)])
+            inputdata_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgdupdate)])
 
             if cycle_day not in days:
                 day_family = EcflowSuiteFamily(

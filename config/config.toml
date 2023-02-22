@@ -78,6 +78,9 @@ xlat0 = 52.5
  wrapper = "srun"
 [task.e927]
  wrapper = "srun"
+[task.PGD_update]
+[task.PgdUpdate]
+ wrapper = "srun"
 
 [submission]
 submit_types = ["background_vm", "background_hpc", "serial", "parallel"]

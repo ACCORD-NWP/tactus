@@ -1,0 +1,15 @@
+&naminterp
+ INPUT_FORMAT='FA',
+ OUTPUT_FORMAT='memory',
+ INFILE='Const.Clim.const',
+ READKEY(1:1)%FANAME='SURFGEOPOTENTIEL',
+/
+&naminterp
+ OUTPUT_FORMAT='FIXZS',
+ OUTPUT_TYPE='APPEND'
+ INPUT_FORMAT='fa',
+ INFILE='PGD_prel.fa',
+ OUTFILE='Const.Clim.sfx',
+ USE_SAVED_CADRE=T,
+ READKEY%FANAME='SFX.ZS',
+/
