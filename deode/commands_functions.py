@@ -43,7 +43,7 @@ def start_suite(args, config):
     logger.info("Starting suite...")
 
     deode_home = f"{os.path.dirname(__file__)}/.."
-    config = config.copy(update={"platform": {"DEODE_HOME": deode_home}})
+    config = config.copy(update={"platform": {"deode_home": deode_home}})
 
     server = EcflowServer(
         args.ecf_host, ecf_port=args.ecf_port, start_command=args.start_command

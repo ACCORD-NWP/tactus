@@ -26,7 +26,7 @@ class Forecast(Task):
         # validtime = as_datetime(self.config.get_value("general.times.validtime")) # noqa
         # basetime = as_datetime(self.config.get_value("general.times.basetime"))  # noqa
         # basetime = validtime - timedelta(hours=3)  # noqa
-        directory_path = self.platform.get_path("FORECAST_DATA")
+        directory_path = self.platform.get_platform_value("FORECAST_DATA")
         input_files = ["C11CLIM", "C12CLIM", "C22CLIM", "CCL4CLIM", "CH4CLIM", "CO2CLIM",
                        "Const.Clim", "Const.Clim.sfx", "ECOZC", "ELSCFARPEALBC000",
                        "ELSCFARPEALBC001", "ELSCFARPEALBC002", "ELSCFARPEALBC003",
@@ -77,7 +77,7 @@ class Forecast(Task):
             file_name = f"{directory_path}/{ifile}"
             self.fmanager.input(file_name, ifile, provider_id="copy")
         # Prepared namelist
-        namelist = self.platform.get_path("FORECAST_NAMELIST")
+        namelist = self.platform.get_platform_value("FORECAST_NAMELIST")
         # Binary assumed to be in bindir
         # binary = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
         binary = "/home/snh02/pack/48t3_fix.01.OMPIIFC2104.x/bin/MASTERODB"

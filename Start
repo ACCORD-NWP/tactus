@@ -3,7 +3,7 @@
 ECF_HOST=`echo ecflow-gen-${USER}-001`
 #
 #
-DEODE_SCRATCH=/scratch/$USER/deode_ecflow
+DEODE_SCRATCH=$HOME/deode_ecflow
 
 mkdir -p $DEODE_SCRATCH/job
 mkdir -p $DEODE_SCRATCH/ecf

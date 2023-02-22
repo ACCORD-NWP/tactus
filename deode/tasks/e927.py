@@ -29,7 +29,7 @@ class E927(Task):
         self.bdfile_template = self.platform.get_system_value('bdfile_template')
         self.bddir = self.platform.get_system_value('bddir')
 
-        self.namelist_path = self.platform.get_path('NAMELISTS')
+        self.namelist_path = self.platform.get_platform_value('NAMELISTS')
         self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
 
     def load_namelist(self, namelist):

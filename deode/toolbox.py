@@ -62,7 +62,8 @@ class Platform:
         """
         role = role.lower()
         try:
-            return self.config.get_value("system." + role)
+            val = self.config.get_value("system." + role)
+            return self.substitute(val)
         except KeyError:
             return None
 
@@ -94,7 +95,8 @@ class Platform:
         """
         role = role.lower()
         try:
-            return self.config.get_value("platform." + role)
+            val = self.config.get_value("platform." + role)
+            return self.substitute(val)
         except KeyError:
             return None
 
@@ -218,7 +220,7 @@ class Platform:
             for macro in macros:
                 self.logger.debug("Checking platform macro: %s", macro)
                 try:
-                    val = self.get_platform_value(macro)
+                    val = self.config.get_value(f"platform.{macro}")
                     self.logger.debug("macro=%s pattern=%s val=%s", macro, pattern, val)
                 except KeyError:
                     val = None
@@ -233,7 +235,7 @@ class Platform:
             for macro in system_macros:
                 self.logger.debug("Checking system macro: %s", macro)
                 try:
-                    val = self.get_system_value(macro)
+                    val = self.config.get_value(f"system.{macro}")
                     self.logger.debug("macro=%s pattern=%s val=%s", macro, pattern, val)
                 except KeyError:
                     val = None

@@ -21,7 +21,7 @@ class E923(Task):
         # Temporary namelists
         self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
 
-        self.namelist_path = self.platform.get_path('NAMELISTS')
+        self.namelist_path = self.platform.get_platform_value('namelists')
         self.climdir = self.platform.get_system_value('climdir')
         self.months = [f'{mm:02d}'for mm in range(1, 13)]
 

@@ -46,10 +46,10 @@ xlat0 = 60.0
  deode_home = "@HOME@/Deode-Prototype"
  archive_root = "@SCRATCH@/deode/@CASE@/archive"
  scratch = "/scratch/@USER@"
- static_data = "/hpcperm/hlam/data"
  rrtm_dir = "@STATIC_DATA@/rrtm/46h1"
  e923_data = "@STATIC_DATA@/climate/E923_DATA"
  namelists = "@DEODE_HOME@/nam"
+ static_data = "/hpcperm/hlam/data"
  forecast_namelist = "@DEODE_HOME@/nam/fort.4_arome"
  forecast_data = "/home/snh02/work/cy46t1/arome/data"
 
