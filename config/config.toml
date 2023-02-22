@@ -8,11 +8,12 @@
  surfex = true
  csc = "AROME"
  bdint = "PT1H"
+ bdcycle = "PT12H"
  forecast_range = "PT12H"
- output_interval_his = "PT3H"
- output_interval_fp = "PT30M"
- output_interval_sfx = "PT3H"
- output_interval_sfx_sel = "PT30M"
+ output_interval_his = "PT1H"
+ output_interval_fp = "PT1H"
+ output_interval_sfx = "PT1H"
+ output_interval_sfx_sel = "PT1H"
 
 [vertical_levels]
 nlev = 65
@@ -34,7 +35,7 @@ xlat0 = 52.5
 
 [system]
  wrk = "@SCRATCH@/deode/@CASE@/@YYYY@@MM@@DD@_@HH@@mm@"
- archive = "@ARCHIVE_ROOT@/@CASE@/@YYYY@/@MM@/@DD@/@HH@/@mm@"
+ archive = "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
  bddir = "/scratch/sism/DEOL/@YYYY@/@MM@/@DD@/@HH@"
  bdfile_template = "PFIFSDEOL+@LLLL@"
  climdir = "@SCRATCH@/deode/@CASE@/climate/@DOMAIN@"
@@ -52,7 +53,7 @@ xlat0 = 52.5
  namelists = "@DEODE_HOME@/nam"
  static_data = "/hpcperm/hlam/data"
  forecast_namelist = "@DEODE_HOME@/nam/fort.4_arome"
- forecast_data = "/home/snh02/work/cy46t1/arome/data"
+ forecast_data = "/home/snh02/work/dev-CY46h1_deode/initial/@YYYY@@MM@@DD@_@HH@"
  climdata = "/hpcperm/hlam/data/climate"
  ecosg_data_path = "@CLIMDATA@/ECOCLIMAP-SG"
  gmted2010_data_path = "@CLIMDATA@/GMTED2010"
@@ -133,38 +134,15 @@ tasks = ["Background_hpc", "UnitTest"]
  OMPI_MCA_btl= "os.environ['OMPI_MCA_btl'] = '^vader'"
 
 [submission.task_exceptions.e927.BATCH]
- NTASKS = "#SBATCH --ntasks=16"
  NAME = "#SBATCH --job-name=e927"
+ NODES = "#SBATCH --nodes=1"
+ NTASKS = "#SBATCH --ntasks=16"
 
 [submission.task_exceptions.Forecast.BATCH]
- WALLTIME = "#SBATCH --time=00:31:00"
- NTASKS = "#SBATCH --ntasks=128"
- CORES = "#SBATCH --cpus-per-task=4"
- MULTITHREAD = "#SBATCH --hint=nomultithread"
- NODES = "#SBATCH -N 4"
- NAME = "#SBATCH --job-name=fcast_task"
-
-[submission.task_exceptions.Forecast.ENV]
- MODULE = "print('My beautiful module')"
- OS = "import os"
- OMP_PLACES = "os.environ['OMP_PLACES'] = 'threads'"
- OMP_NUM_THREADS = "os.environ['OMP_NUM_THREADS'] = '8'"
- KMP_STACKSIZE = "os.environ['KMP_STACKSIZE'] = '2G'"
- KMP_MONITOR_STACKSIZE = "os.environ['KMP_MONITOR_STACKSIZE'] = '2G'"
- DR_HOOK = "os.environ['DR_HOOK'] = '0'"
- DR_HOOK_IGNORE_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
- DR_HOOK_SILENT = "os.environ['DR_HOOK_SILENT'] = '1'"
- DR_HOOK_OPT = "os.environ['DR_HOOK_OPT'] = 'prof'"
- DR_HOOK_NOT_MPI = "os.environ['DR_HOOK_NOT_MPI'] = '1'"
- MPL_MBX_SIZE = "os.environ['MPL_MBX_SIZE'] = '2048000000'"
- EC_PROFILE_HEAP = "os.environ['EC_PROFILE_HEAP'] = '0'"
- EC_MPI_ATEXIT = "os.environ['EC_MPI_ATEXIT'] = '0'"
- ULIMIT = "os.system('ulimit -s unlimited')"
- MODULE_INTEL = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read()); module('load', 'intel/2021.4.0')"
- MODULE_HPCX = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read()); module('load', 'hpcx-openmpi/2.9.0')"
- MODULE_MKL = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read()); module('load', 'intel-mkl/19.0.5')"
- MODULE_GCC = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read()); module('load', 'gcc/8.5.0')"
- PYTHONPATH = "os.environ['PYTHONPATH'] = '@HOME@/.local/lib/python3.8/site-packages/:/perm/rme/python3/site-packages/lib/python3.6/site-packages'"
+ NAME = "#SBATCH --job-name=Forecast"
+ NODES = "#SBATCH --nodes=2"
+ NTASKS = "#SBATCH --ntasks=256"
+ WALLTIME = "#SBATCH --time=00:30:00"
 
 [troika]
 config_file = "@DEODE_HOME@/config/troika.yml"

@@ -35,6 +35,7 @@
     f90nml = "^1.4.3"
     flake8 = "^4.0.1"
     flakeheaven = "^0.11.1"
+    isoduration = "^20.11.0"
     isort = "^5.10.1"
     jupyterlab = "^3.6.1"
     nb-clean = "^2.4.0"

@@ -1,10 +1,11 @@
 """Forecast."""
 
-import os
-# from datetime import timedelta  # noqa
-from deode.tasks.batch import BatchJob
-# from deode.datetime_utils import as_datetime  # noqa
+
 from .base import Task
+from deode.tasks.batch import BatchJob
+from deode.datetime_utils import as_datetime
+from isoduration import parse_duration
+import os
 
 
 class Forecast(Task):
@@ -15,40 +16,55 @@ class Forecast(Task):
 
         Args:
             config (deode.ParsedConfig): Configuration
-
         """
         Task.__init__(self, config, __name__)
-        self.logger.debug("Construct forecast task")
+
+        self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
+        self.climdir = self.platform.get_system_value('climdir')
+        self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
+        self.cnmexp = self.config.get_value("general.cnmexp")
+        self.domain = self.config.get_value("domain.name")
+        self.forecast_range = self.config.get_value("general.forecast_range")
+        self.bdint = self.config.get_value("general.bdint")
+        self.rrtm_dir = self.platform.get_platform_value("RRTM_DIR")
+
+        self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
+        self.namelists = self.platform.get_platform_value("NAMELISTS")
+        self.initdata = self.platform.get_platform_value("FORECAST_DATA")
+        self.archive = self.platform.get_system_value('archive')
+
+    def archive_output(self, fname, period, suffix=""):
+        """Archive forecast model output.
+
+        Args:
+            fname (str): Filename
+            period (str): Output frequency
+            suffix (str): Suffix
+        """
+        # Store the output
+        cdtg = self.basetime
+        dtgend = self.basetime + parse_duration(self.forecast_range)
+        while cdtg <= dtgend:
+            dt = cdtg - self.basetime
+            h = int(dt.seconds / 3600)
+            m = int((dt.seconds % 3600 - dt.seconds % 60) / 60)
+            s = int(dt.seconds % 60)
+            source = '{}+{:04d}:{:02d}:{:02d}{}'.format(fname, h, m, s, suffix)
+            self.fmanager.output(f"{source}", f"{self.archive}/{source}")
+            cdtg += parse_duration(period)
 
     def execute(self):
-        """Execute forecast."""
+        """Execute forecast.
+
         # Boundaries assumed to be in archive
-        # validtime = as_datetime(self.config.get_value("general.times.validtime")) # noqa
-        # basetime = as_datetime(self.config.get_value("general.times.basetime"))  # noqa
-        # basetime = validtime - timedelta(hours=3)  # noqa
-        directory_path = self.platform.get_platform_value("FORECAST_DATA")
-        input_files = ["C11CLIM", "C12CLIM", "C22CLIM", "CCL4CLIM", "CH4CLIM", "CO2CLIM",
-                       "Const.Clim", "Const.Clim.sfx", "ECOZC", "ELSCFARPEALBC000",
-                       "ELSCFARPEALBC001", "ELSCFARPEALBC002", "ELSCFARPEALBC003",
-                       "ELSCFARPEALBC004", "ELSCFARPEALBC005", "ELSCFARPEALBC006",
-                       "EXSEG1.nam", "GCH4CLIM", "GCO2CLIM", "GOZOCLIM",
-                       "ICMSHARPEINIT", "ICMSHARPEINIT.sfx",
-                       "MCH4CLIM", "MCICA", "MCO2CLIM", "MOZOCLIM", "N2OCLIM", "NO2CLIM",
-                       "OZOCLIM", "RADRRTM", "RADSRTM", "SO4_A1B2000", "SO4_A1B2010",
-                       "SO4_A1B2020", "SO4_A1B2030", "SO4_A1B2040", "SO4_A1B2050",
-                       "SO4_A1B2060", "SO4_A1B2070", "SO4_A1B2080", "SO4_A1B2090",
-                       "SO4_A1B2100", "SO4_OBS1920", "SO4_OBS1930", "SO4_OBS1940",
-                       "SO4_OBS1950", "SO4_OBS1960", "SO4_OBS1970", "SO4_OBS1980",
-                       "SO4_OBS1990", "aerosol_cams_climatology_43R3.nc",
+        CY48T3 input files not used in CY46
+        input_files = ["SO4_OBS1990", "aerosol_cams_climatology_43R3.nc",
                        "aerosol_cams_climatology_43R3a.nc", "aerosol_ifs_rrtm.nc",
                        "aerosol_ifs_rrtm_42R1.nc", "aerosol_ifs_rrtm_43R1.nc",
                        "aerosol_ifs_rrtm_43R1a.nc", "aerosol_ifs_rrtm_43R3.nc",
                        "aerosol_ifs_rrtm_45R2.nc", "aerosol_ifs_rrtm_46R1.nc",
                        "aerosol_ifs_rrtm_46R1_with_NI_AM.nc", "aerosol_ifs_rrtm_AB.nc",
                        "aerosol_ifs_rrtm_tegen.nc", "baran_ice_scattering_rrtm.nc",
-                       "const.clim.FRANXL0013",
-                       "ecoclimapII_eu_covers_param.bin",
-                       "ecoclimapI_covers_param.bin",
                        "es_droplet_scattering_rrtm.nc", "fu_ice_scattering_rrtm.nc",
                        "greenhouse_gas_climatology_46r1.nc",
                        "greenhouse_gas_climatology_48r1.nc",
@@ -65,30 +81,62 @@ class Forecast(Task):
                        "greenhouse_gas_timeseries_CMIP6_SSP585_CFC11equiv_47r1.nc",
                        "mcica_gamma.nc",
                        "mcica_lognormal.nc",
-                       "selectfp0", "selectfp3", "selectfp6", "selectfp9", "selectfp12",
                        "slingo_droplet_scattering_rrtm.nc",
                        "socrates_droplet_scattering_rrtm.nc",
                        "total_solar_irradiance_CMIP6_47r1.nc",
-                       "xxt00000000", "xxt00000300", "xxt00000600", "xxt00000900",
-                       "xxt00001200"
                        ]
-        # for now copy all input files from directory_path
-        for ifile in input_files:
-            file_name = f"{directory_path}/{ifile}"
-            self.fmanager.input(file_name, ifile, provider_id="copy")
-        # Prepared namelist
-        namelist = self.platform.get_platform_value("FORECAST_NAMELIST")
-        # Binary assumed to be in bindir
-        # binary = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
-        binary = "/home/snh02/pack/48t3_fix.01.OMPIIFC2104.x/bin/MASTERODB"
-        wrapper = self.config.get_value("task.forecast.wrapper")
-        self.fmanager.input(namelist, "fort.4", provider_id="copy")
-        batch = BatchJob(os.environ, wrapper=wrapper)
-        batch.run(binary)
-        for i in range(7):
-            self.fmanager.output(f"ICMSH@CNMEXP@+000{i}",
-                                 f"@ARCHIVE@/ICMSH@CNMEXP@+000{i}")
-        self.fmanager.output("NODE.001_01", "@ARCHIVE@/NODE.001_01")
+        """
+        # RRTM files
+        for ifile in ["C11CLIM", "C12CLIM", "C22CLIM", "CCL4CLIM", "CH4CLIM", "CO2CLIM",
+                      "ECOZC", "GCH4CLIM", "GCO2CLIM", "GOZOCLIM",
+                      "MCH4CLIM", "MCICA", "MCO2CLIM", "MOZOCLIM",
+                      "N2OCLIM", "NO2CLIM", "OZOCLIM", "RADAIOP", "RADRRTM", "RADSRTM",
+                      "SO4_A1B2000", "SO4_A1B2010", "SO4_A1B2020", "SO4_A1B2030",
+                      "SO4_A1B2040", "SO4_A1B2050", "SO4_A1B2060", "SO4_A1B2070",
+                      "SO4_A1B2080", "SO4_A1B2090", "SO4_A1B2100", "SO4_OBS1920",
+                      "SO4_OBS1930", "SO4_OBS1940", "SO4_OBS1950", "SO4_OBS1960",
+                      "SO4_OBS1970", "SO4_OBS1980", "SO4_OBS1990"]:
+            self.fmanager.input(f"{self.rrtm_dir}/{ifile}", ifile)
+
+        # Climate files
+        mm = self.basetime.strftime("%m")
+        self.fmanager.input(f"{self.climdir}/Const.Clim.{mm}", "Const.Clim")
+        self.fmanager.input(f"{self.climdir}/Const.Clim.{mm}", f"const.clim.{self.domain}")
+        self.fmanager.input(f"{self.climdir}/Const.Clim.sfx", "Const.Clim.sfx")
+
+        # Namelists
+        # The fullpos output should be configured elsewhere
+        for ifile in ['xxt00000000', 'xxtddddhhmm', 'dirlst', 'EXSEG1.nam']:
+            namelist = f"{self.namelists}/{ifile}"
+            self.fmanager.input(namelist, ifile, provider_id="copy")
+        self.fmanager.input(f"{self.namelists}/fort.4_arome", "fort.4", provider_id="copy")
+
+        # Link the boundary files
+        cdtg = self.basetime
+        dtgend = self.basetime + parse_duration(self.forecast_range)
+        i = 0
+        while cdtg <= dtgend:
+            source = 'ELSCF{}ALBC{:03d}'.format(self.cnmexp, i)
+            self.fmanager.input(f"{self.wrk}/{source}", source)
+            cdtg += parse_duration(self.bdint)
+            i += 1
+
+        # Initial files
+        initfile = f'ICMSH{self.cnmexp}INIT'
+        self.fmanager.input(f"{self.initdata}/{initfile}", initfile)
+        self.fmanager.input(f"{self.initdata}/{initfile}.sfx", f"{initfile}.sfx")
+
+        # Run MASTERODB
+        batch = BatchJob(os.environ, wrapper=self.wrapper)
+        batch.run(self.master)
+
+        # Store the output
+        os.makedirs(self.archive, exist_ok=True)
+        self.archive_output(f"ICMSH{self.cnmexp}", self.config.get_value("general.output_interval_his"))
+        self.archive_output(f"ICMSH{self.cnmexp}", self.config.get_value("general.output_interval_sfx"), suffix=".sfx")
+        self.archive_output("ICMSHSELE", self.config.get_value("general.output_interval_sfx_sel"), suffix=".sfx")
+        self.archive_output(f"PF{self.domain}", self.config.get_value("general.output_interval_fp"))
+        self.fmanager.output("NODE.001_01", f"{self.archive}/NODE.001_01")
 
 
 class PgdInput(Task):
@@ -105,19 +153,6 @@ class PgdInput(Task):
 
 
 class PrepareCycle(Task):
-    """Task."""
-
-    def __init__(self, config):
-        """Construct object.
-
-        Args:
-            config (deode.ParsedConfig): Configuration
-
-        """
-        Task.__init__(self, config, __name__)
-
-
-class E927(Task):
     """Task."""
 
     def __init__(self, config):

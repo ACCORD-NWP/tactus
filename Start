@@ -8,10 +8,23 @@ DEODE_SCRATCH=$HOME/deode_ecflow
 mkdir -p $DEODE_SCRATCH/job
 mkdir -p $DEODE_SCRATCH/ecf
 
+# Prepare the demonstration
+EXP=deode_case
+if [ 1 -eq 0 ] ; then
+  # Clean the working directory
+  rm -vf $SCRATCH/deode/$EXP/
+  mkdir -vp $SCRATCH/deode/$EXP/archive/climate/DEMO_100_2500m/
+
+  # Copy required data not yet produced in the demonstration
+  for F in PGD_prel.fa Const.Clim.sfx ; do
+    rsync -vaux /home/snh02/work/dev-CY46h1_deode/climate/DEMO_100_2500m/$F $SCRATCH/deode/$EXP/archive/climate/DEMO_100_2500m/
+  done
+fi
+
 deode -loglevel debug \
 -config_file $PWD/config/config.toml \
 start suite \
---name test_deode \
+--name $EXP \
 --ecf_host $ECF_HOST \
 --ecf_port 3141 \
 --joboutdir $DEODE_SCRATCH/job \
