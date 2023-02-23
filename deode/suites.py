@@ -265,8 +265,9 @@ class SuiteDefinition(object):
             initialization = EcflowSuiteFamily(
                 "Initialization", cycle, ecf_files, trigger=ready_for_cycle
             )
+            prep_trigger = None
             if do_prep:
-                EcflowSuiteTask(
+                prep = EcflowSuiteTask(
                     "Prep",
                     initialization,
                     config,
@@ -275,19 +276,24 @@ class SuiteDefinition(object):
                     input_template=input_template,
                     variables=None,
                 )
+                prep_trigger = EcflowSuiteTrigger(prep)
                 do_prep = False
 
-            firstguess = EcflowSuiteTask(
+            fg_trigger = None
+            if prep_trigger is not None:
+                fg_trigger = EcflowSuiteTriggers([prep_trigger])
+            EcflowSuiteTask(
                 "FirstGuess",
                 initialization,
                 config,
                 self.task_settings,
                 ecf_files,
                 input_template=input_template,
+                trigger=fg_trigger,
                 variables=None,
             )
 
-            forecast_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(firstguess)])
+            forecast_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(initialization)])
             forecasting = EcflowSuiteFamily(
                 "Forecasting", cycle, ecf_files, trigger=forecast_trigger
             )

@@ -3,6 +3,7 @@
 import os
 import logging
 import surfex
+import f90nml
 from deode.tasks.batch import BatchJob
 from deode.datetime_utils import as_datetime
 from .base import Task
@@ -172,11 +173,20 @@ class SurfexBinaryTask(Task):
 
         settings = self.namelist.get_namelist()
         self.geo.update_namelist(settings)
+        # Dump it for comparison
+        with open("OPTIONS.nam_pysurfex", mode="w", encoding="utf8") as nml_file:
+            f90nml.write(settings, nml_file)
 
         filetype = settings["nam_io_offline"]["csurf_filetype"]
         pgdfile = settings["nam_io_offline"]["cpgdfile"]
         prepfile = settings["nam_io_offline"]["cprepfile"]
         surffile = settings["nam_io_offline"]["csurffile"]
+
+        # Overide settings with static namelists
+        settings = f90nml.read(f"{self.input_path}/OPTIONS.nam_{self.mode.upper()}")
+        if prep_file is not None:
+            settings["nam_prep_surf_atm"]["cfile"] = os.path.basename(prep_file)
+
         lfagmap = False
         if "LFAGMAP" in settings["NAM_IO_OFFLINE"]:
             lfagmap = settings["NAM_IO_OFFLINE"]["LFAGMAP"]
@@ -248,7 +258,7 @@ class Pgd(SurfexBinaryTask):
 
     def execute(self):
         """Execute."""
-        output = self.platform.get_system_value("climdir") + "/PGD_prep.fa"
+        output = self.platform.get_system_value("climdir") + "/PGD_prel.fa"
         binary = self.platform.get_system_value("bindir") + "/PGD"
 
         if not os.path.exists(output) or self.force:

@@ -29,13 +29,13 @@
     tomlkit = "^0.11.6"
     troika = {git = "https://git.ecmwf.int/scm/ecsdk/troika.git"}
     pysurfex = {git = "https://github.com/metno/pysurfex.git", develop = true}
+    isoduration = "^20.11.0"
 
 [tool.poetry.dev-dependencies]
     black = "^22.1.0"
     f90nml = "^1.4.3"
     flake8 = "^4.0.1"
     flakeheaven = "^0.11.1"
-    isoduration = "^20.11.0"
     isort = "^5.10.1"
     jupyterlab = "^3.6.1"
     nb-clean = "^2.4.0"
