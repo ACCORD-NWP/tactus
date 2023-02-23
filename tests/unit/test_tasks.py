@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
+import pkgutil
+
 import pytest
 import tomlkit
 
@@ -9,7 +11,8 @@ from deode.tasks.base import Task
 
 
 @pytest.fixture()
-def minimal_raw_config():
+def base_raw_config():
+    """Return a raw config common to all tasks."""
     return tomlkit.parse(
         """
         [general]
@@ -34,13 +37,14 @@ def minimal_raw_config():
     )
 
 
-@pytest.fixture()
-def raw_config_with_task(minimal_raw_config):
-    rtn = minimal_raw_config.copy()
-    rtn.update(
+@pytest.fixture(params=[_.name for _ in pkgutil.iter_modules(["deode/tasks"])])
+def parsed_config_with_task(request, base_raw_config):
+    """Return a ParsedConfig with a task-specific section according to `params`."""
+    raw_config = base_raw_config.copy()
+    raw_config.update(
         {
             "task": {
-                "forecast": {
+                request.param: {
                     "wrapper": "",
                     "command": "echo Hello world && touch output",
                     "input_data": {"input_file": "/dev/null"},
@@ -49,29 +53,19 @@ def raw_config_with_task(minimal_raw_config):
             }
         }
     )
-    return rtn
+    return ParsedConfig.parse_obj(raw_config)
 
 
-@pytest.fixture()
-def parsed_config_with_task(raw_config_with_task):
-    return ParsedConfig.parse_obj(raw_config_with_task)
-
-
-class TestBaseTask:
+class TestTasks:
     # pylint: disable=no-self-use
-    """Test some base tasks."""
-
-    def test_config_can_be_instantiated(self, parsed_config_with_task):
-        assert isinstance(parsed_config_with_task, ParsedConfig)
+    """Test all tasks."""
 
     def test_task_can_be_instantiated(self, parsed_config_with_task):
-        config = parsed_config_with_task
-        task = get_task("UnitTest", config)
+        task = get_task("UnitTest", parsed_config_with_task)
         assert isinstance(task, Task)
 
     def test_task_can_be_run(self, parsed_config_with_task):
-        config = parsed_config_with_task
-        get_task("UnitTest", config).run()
+        get_task("UnitTest", parsed_config_with_task).run()
 
 
 if __name__ == "__main__":

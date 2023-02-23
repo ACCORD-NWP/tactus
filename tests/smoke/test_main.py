@@ -14,7 +14,7 @@ from deode.main import main
 
 
 @pytest.fixture(scope="module")
-def minimal_raw_config():
+def base_raw_config():
     return tomlkit.parse(
         """
         [general]
