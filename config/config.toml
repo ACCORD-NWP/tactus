@@ -14,6 +14,7 @@
  output_interval_fp = "PT1H"
  output_interval_sfx = "PT1H"
  output_interval_sfx_sel = "PT1H"
+ keep_workdirs = false
 
 [vertical_levels]
 nlev = 65
@@ -43,8 +44,7 @@ xlat0 = 52.5
  bindir = "/home/snh02/work/dev-CY46h1_deode/bin"
 
 [platform]
- # The start/run scripts should set DEODE_HOME
- deode_home = "@HOME@/Deode-Prototype"
+ deode_home = "set-by-the-system"
  archive_root = "@SCRATCH@/deode/@CASE@/archive"
  scratch = "/scratch/@USER@"
  rrtm_dir = "@STATIC_DATA@/rrtm/46h1"

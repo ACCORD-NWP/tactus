@@ -62,9 +62,9 @@ class Task(object):
         shutil.rmtree(self.wdir)
         self.logger.debug("Remove %s", self.wdir)
 
-    def rename_failed(self):
+    def rename_wdir(self, prefix="Failed_"):
         """Rename failed working directory."""
-        fdir = f"{self.wrk}/Failed_{self.name}"
+        fdir = f"{self.wrk}/{prefix}{self.name}"
         if os.path.isdir(self.wdir):
             if os.path.exists(fdir):
                 self.logger.debug("%s exists. Remove it", fdir)
@@ -85,7 +85,7 @@ class Task(object):
         self.logger.debug("Base class prep")
         self.create_wdir()
         self.change_to_wdir()
-        atexit.register(self.rename_failed)
+        atexit.register(self.rename_wdir)
 
     def post(self):
         """Do default postfix.
@@ -95,7 +95,10 @@ class Task(object):
         """
         self.logger.debug("Base class post")
         # Clean workdir
-        self.remove_wdir()
+        if self.config.get_value("general.keep_workdirs"):
+            self.rename_wdir(prefix="Finished_task_")
+        else:
+            self.remove_wdir()
 
     def run(self):
         """Run task.

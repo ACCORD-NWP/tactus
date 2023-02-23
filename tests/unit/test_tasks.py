@@ -20,6 +20,7 @@ def minimal_raw_config():
             realization = -1
             cnmexp = "DEOD"
             tstep = 60
+            keep_workdirs = false
         [general.times]
             list = ["2000-01-01T00:00:00Z"]
             basetime = "2000-01-01T00:00:00Z"

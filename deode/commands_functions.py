@@ -18,6 +18,10 @@ def run_task(args, config):
     """
     logger = get_logger(__name__, args.loglevel)
     logger.info("Running %s...", args.task)
+
+    deode_home = f"{os.path.dirname(__file__)}/.."
+    config = config.copy(update={"platform": {"deode_home": deode_home}})
+
     submission_defs = TaskSettings(config)
     sub = NoSchedulerSubmission(submission_defs)
     sub.submit(

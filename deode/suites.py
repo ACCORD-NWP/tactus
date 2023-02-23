@@ -114,6 +114,8 @@ class SuiteDefinition(object):
         troika_config = platform.get_value("troika.config_file")
         config_file = config.get_value("metadata.source_file_path")
         first_cycle = as_datetime(config.get_value("general.times.start"))
+        deode_home = platform.get_platform_value("DEODE_HOME")
+        keep_workdirs = '1' if config.get_value("general.keep_workdirs") else '0'
         variables = {
             "ECF_EXTN": ".py",
             "ECF_FILES": self.ecf_files,
@@ -131,7 +133,9 @@ class SuiteDefinition(object):
             "TROIKA": troika,
             "TROIKA_CONFIG": troika_config,
             "BASETIME": first_cycle.strftime("%Y%m%d%H%M"),
-            "VALIDTIME": first_cycle.strftime("%Y%m%d%H%M")
+            "VALIDTIME": first_cycle.strftime("%Y%m%d%H%M"),
+            "DEODE_HOME": deode_home,
+            "KEEP_WORKDIRS": keep_workdirs
         }
 
         input_template = f"{platform.get_value('platform.deode_home')}/ecf/default.py"

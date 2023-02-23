@@ -23,6 +23,8 @@ def parse_ecflow_vars():
         "VALIDTIME": "%VALIDTIME%",
         "LOGLEVEL": "%LOGLEVEL%",
         "CONFIG": "%CONFIG%",
+        "DEODE_HOME": "%DEODE_HOME%",
+        "KEEP_WORKDIRS": "%KEEP_WORKDIRS%"
     }
 
 
@@ -43,7 +45,11 @@ def default_main(**kwargs):
             "times": {
                 "validtime": kwargs.get("VALIDTIME"),
                 "basetime": kwargs.get("BASETIME")
-            }
+            },
+            "keep_workdirs": bool(int(kwargs.get("KEEP_WORKDIRS")))
+        },
+        "platform": {
+            "deode_home": kwargs.get("DEODE_HOME")
         }
     })
     logger = get_logger_from_config(config)

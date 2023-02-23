@@ -211,6 +211,9 @@ class TaskSettings(object):
                 python_task_env = python_task_env + f"{e_setting}\n"
             input_content = input_content.replace("# @ENV_SUB@", python_task_env)
             input_content = input_content.replace("@STAND_ALONE_TASK_NAME@", task)
+            platform = Platform(config)
+            deode_home = platform.get_platform_value("DEODE_HOME")
+            input_content = input_content.replace("@STAND_ALONE_DEODE_HOME@", deode_home)
             config_file = config.get_value("metadata.source_file_path")
             if config_file is not None:
                 input_content = input_content.replace(
