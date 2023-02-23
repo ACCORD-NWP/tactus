@@ -143,9 +143,6 @@ def get_parsed_args(program_name="program", argv=None):
         default=None,
     )
     parser_start_suite.add_argument(
-        "--name", dest="suite_name", help="Suite name", required=True
-    )
-    parser_start_suite.add_argument(
         "--joboutdir", "-j", dest="joboutdir", help="Job out directory", required=True
     )
     parser_start_suite.add_argument(

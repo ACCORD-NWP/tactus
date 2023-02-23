@@ -9,8 +9,8 @@ mkdir -p $DEODE_SCRATCH/job
 mkdir -p $DEODE_SCRATCH/ecf
 
 # Prepare the demonstration
-EXP=deode_case
 if [ 1 -eq 0 ] ; then
+  EXP=deode_case
   # Clean the working directory
   rm -vf $SCRATCH/deode/$EXP/
   mkdir -vp $SCRATCH/deode/$EXP/archive/climate/DEMO_100_2500m/
@@ -24,7 +24,6 @@ fi
 deode -loglevel debug \
 -config_file $PWD/config/config.toml \
 start suite \
---name $EXP \
 --ecf_host $ECF_HOST \
 --ecf_port 3141 \
 --joboutdir $DEODE_SCRATCH/job \

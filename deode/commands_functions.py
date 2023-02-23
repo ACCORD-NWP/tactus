@@ -49,19 +49,20 @@ def start_suite(args, config):
         args.ecf_host, ecf_port=args.ecf_port, start_command=args.start_command
     )
 
+    suite_name = config.get_value("general.case")
     submission_defs = TaskSettings(config)
     defs = SuiteDefinition(
-        args.suite_name,
+        suite_name,
         args.joboutdir,
         args.ecf_files,
         config,
         submission_defs,
         args.loglevel,
     )
-    def_file = f"{args.suite_name}.def"
+    def_file = f"{suite_name}.def"
     defs.save_as_defs(def_file)
 
-    server.start_suite(args.suite_name, def_file, begin=args.begin)
+    server.start_suite(suite_name, def_file, begin=args.begin)
     logger.info("Done with suite.")
 
 
