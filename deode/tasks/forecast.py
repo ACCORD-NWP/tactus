@@ -123,8 +123,8 @@ class Forecast(Task):
 
         # Initial files
         initfile = f'ICMSH{self.cnmexp}INIT'
-        self.fmanager.input(f"{self.initdata}/{initfile}", initfile)
-        self.fmanager.input(f"{self.initdata}/{initfile}.sfx", f"{initfile}.sfx")
+        self.fmanager.input(f"{self.wrk}/ELSCF{self.cnmexp}ALBC000", initfile)
+        self.fmanager.input(f"{self.archive}/{initfile}.sfx", f"{initfile}.sfx")
 
         # Run MASTERODB
         batch = BatchJob(os.environ, wrapper=self.wrapper)

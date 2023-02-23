@@ -285,7 +285,10 @@ class Prep(SurfexBinaryTask):
         # TODO get from config?
         prep_file = self.platform.get_platform_value("prep_input_file")
         prep_filetype = "GRIB2"
-        output = "ICMSHDEODINIT.sfx"
+        cnmexp = self.config.get_value("general.cnmexp")
+        archive = self.platform.get_system_value('archive')
+
+        output = f"{archive}/ICMSH{cnmexp}INIT.sfx"
         binary = self.platform.get_system_value("bindir") + "/PREP"
 
         if not os.path.exists(output) or self.force:

@@ -295,7 +295,7 @@ class PgdUpdate(Task):
             config (deode.ParsedConfig): Configuration
 
         """
-        Task.__init__(self, config, __name__)
+        Task.__init__(self, config, 'PgdUpdate')
 
         self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
         self.climdir = self.platform.get_system_value('climdir')
