@@ -22,6 +22,7 @@ class Forecast(Task):
         self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
         self.climdir = self.platform.get_system_value('climdir')
         self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
+        self.cycle_length = self.config.get_value("general.times.cycle_length")
         self.cnmexp = self.config.get_value("general.cnmexp")
         self.domain = self.config.get_value("domain.name")
         self.forecast_range = self.config.get_value("general.forecast_range")
@@ -49,9 +50,41 @@ class Forecast(Task):
             h = int(dt.seconds / 3600)
             m = int((dt.seconds % 3600 - dt.seconds % 60) / 60)
             s = int(dt.seconds % 60)
-            source = '{}+{:04d}:{:02d}:{:02d}{}'.format(fname, h, m, s, suffix)
-            self.fmanager.output(f"{source}", f"{self.archive}/{source}")
+            source = f"{fname}+{h:04d}:{m:02d}:{s:02d}{suffix}"
+            self.fmanager.output(source, f"{self.archive}/{source}")
             cdtg += parse_duration(period)
+
+    def firstguess(self):
+        """Find initial file."""
+        # Find data from previous forecast
+        pdtg = self.basetime - parse_duration(self.cycle_length)
+        dt = self.basetime - pdtg
+
+        h = int(dt.seconds / 3600)
+        m = int((dt.seconds % 3600 - dt.seconds % 60) / 60)
+        s = int(dt.seconds % 60)
+
+        archive = self.platform.substitute(self.config.get_value("system.archive"),
+                                           basetime=pdtg)
+        source = f"{archive}/ICMSH{self.cnmexp}+{h:04d}:{m:02d}:{s:02d}"
+        source_sfx = f"{archive}/ICMSH{self.cnmexp}+{h:04d}:{m:02d}:{s:02d}.sfx"
+
+        if os.path.exists(source) and os.path.exists(source_sfx):
+            self.logger.info("Found initial files:\n  %s\n  %s", source, source_sfx)
+            return source, source_sfx
+
+        self.logger.info("Could not find:\n  %s\n  %s", source, source_sfx)
+
+        # Find data prepared by Prep and the boundary interpolation
+        source = f"{self.wrk}/ELSCF{self.cnmexp}ALBC000"
+        source_sfx = f"{self.archive}/ICMSH{self.cnmexp}INIT.sfx"
+        if os.path.exists(source) and os.path.exists(source_sfx):
+            self.logger.info("Found initial files\n  %s\n  %s", source, source_sfx)
+            return source, source_sfx
+
+        self.logger.info("Could not find:\n  %s\n  %s", source, source_sfx)
+
+        raise Exception("Could not find any initial files")
 
     def execute(self):
         """Execute forecast.
@@ -116,15 +149,15 @@ class Forecast(Task):
         dtgend = self.basetime + parse_duration(self.forecast_range)
         i = 0
         while cdtg <= dtgend:
-            source = 'ELSCF{}ALBC{:03d}'.format(self.cnmexp, i)
+            source = f"ELSCF{self.cnmexp}ALBC{i:03d}"
             self.fmanager.input(f"{self.wrk}/{source}", source)
             cdtg += parse_duration(self.bdint)
             i += 1
 
         # Initial files
-        initfile = f'ICMSH{self.cnmexp}INIT'
-        self.fmanager.input(f"{self.wrk}/ELSCF{self.cnmexp}ALBC000", initfile)
-        self.fmanager.input(f"{self.archive}/{initfile}.sfx", f"{initfile}.sfx")
+        initfile, initfile_sfx = self.firstguess()
+        self.fmanager.input(initfile, f"ICMSH{self.cnmexp}INIT")
+        self.fmanager.input(initfile_sfx, f"ICMSH{self.cnmexp}INIT.sfx")
 
         # Run MASTERODB
         batch = BatchJob(os.environ, wrapper=self.wrapper)
@@ -166,13 +199,49 @@ class PrepareCycle(Task):
 
 
 class FirstGuess(Task):
-    """Task."""
+    """FirstGuess."""
 
     def __init__(self, config):
-        """Construct object.
+        """Construct FirstGuess object.
 
         Args:
             config (deode.ParsedConfig): Configuration
 
         """
-        Task.__init__(self, config, __name__)
+        Task.__init__(self, config, "FirstGuess")
+        self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
+        self.cycle_length = self.config.get_value("general.times.cycle_length")
+        self.archive = self.config.get_value('system.archive')
+        self.cnmexp = self.config.get_value("general.cnmexp")
+
+    def execute(self):
+        """Find initial file."""
+        # Find data from previous forecast
+        pdtg = self.basetime - parse_duration(self.cycle_length)
+        dt = self.basetime - pdtg
+        h = int(dt.seconds / 3600)
+        m = int((dt.seconds % 3600 - dt.seconds % 60) / 60)
+        s = int(dt.seconds % 60)
+
+        archive = self.platform.substitute(self.archive, basetime=pdtg)
+        source = f"{archive}/ICMSH{self.cnmexp}+{h:04d}:{m:02d}:{s:02d}"
+        source_sfx = f"{archive}/ICMSH{self.cnmexp}+{h:04d}:{m:02d}:{s:02d}.sfx"
+
+        if os.path.exists(source) and os.path.exists(source_sfx):
+            self.logger.info("Found initial files\n  %s\n  %s", source, source_sfx)
+            return source, source_sfx
+
+        self.logger.info("Could not find:\n  %s\n  %s", source, source_sfx)
+
+        # Find data prepared by Prep and the boundary interpolation
+        archive = self.platform.substitute(self.archive)
+        source = f"{self.wrk}/ELSCF{self.cnmexp}ALBC000"
+        source_sfx = f"{archive}/ICMSH{self.cnmexp}INIT.sfx"
+
+        if os.path.exists(source) and os.path.exists(source_sfx):
+            self.logger.info("Found initial files\n  %s\n  %s", source, source_sfx)
+            return source, source_sfx
+
+        self.logger.info("Could not find:\n  %s\n  %s", source, source_sfx)
+
+        raise Exception("Could not find any initial files")
