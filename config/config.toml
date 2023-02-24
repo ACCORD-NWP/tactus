@@ -12,7 +12,7 @@
  forecast_range = "PT12H"
  output_interval_his = "PT1H"
  output_interval_fp = "PT1H"
- output_interval_sfx = "PT1H"
+ output_interval_sfx = "PT3H"
  output_interval_sfx_sel = "PT1H"
  keep_workdirs = false
 

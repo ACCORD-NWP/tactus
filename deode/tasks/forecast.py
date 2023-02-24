@@ -170,7 +170,7 @@ class Forecast(Task):
         self.archive_output(f"ICMSH{self.cnmexp}", self.config.get_value("general.output_interval_his"))
         self.archive_output(f"ICMSH{self.cnmexp}", self.config.get_value("general.output_interval_sfx"), suffix=".sfx")
         self.archive_output("ICMSHSELE", self.config.get_value("general.output_interval_sfx_sel"), suffix=".sfx")
-        self.archive_output(f"PF{self.domain}", self.config.get_value("general.output_interval_fp"))
+        self.archive_output(f"PF{self.cnmexp}{self.domain}", self.config.get_value("general.output_interval_fp"))
         self.fmanager.output("NODE.001_01", f"{self.archive}/NODE.001_01")
 
 
