@@ -3,8 +3,7 @@
 
 from .base import Task
 from deode.tasks.batch import BatchJob
-from deode.datetime_utils import as_datetime
-from isoduration import parse_duration
+from deode.datetime_utils import as_datetime, as_timedelta
 import os
 
 
@@ -19,20 +18,23 @@ class Forecast(Task):
         """
         Task.__init__(self, config, __name__)
 
-        self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
-        self.climdir = self.platform.get_system_value('climdir')
-        self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
-        self.cycle_length = self.config.get_value("general.times.cycle_length")
         self.cnmexp = self.config.get_value("general.cnmexp")
         self.domain = self.config.get_value("domain.name")
-        self.forecast_range = self.config.get_value("general.forecast_range")
-        self.bdint = self.config.get_value("general.bdint")
-        self.rrtm_dir = self.platform.get_platform_value("RRTM_DIR")
 
-        self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
-        self.namelists = self.platform.get_platform_value("NAMELISTS")
+        self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
+        self.cycle_length = as_timedelta(self.config.get_value("general.times.cycle_length"))
+        self.bdint = as_timedelta(self.config.get_value("general.bdint"))
+        self.forecast_range = as_timedelta(self.config.get_value("general.forecast_range"))
+
+        self.climdir = self.platform.get_system_value('climdir')
+        self.rrtm_dir = self.platform.get_platform_value("RRTM_DIR")
         self.initdata = self.platform.get_platform_value("FORECAST_DATA")
         self.archive = self.platform.get_system_value('archive')
+
+        self.namelists = self.platform.get_platform_value("NAMELISTS")
+
+        self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
+        self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
 
     def archive_output(self, fname, period, suffix=""):
         """Archive forecast model output.
@@ -44,7 +46,7 @@ class Forecast(Task):
         """
         # Store the output
         cdtg = self.basetime
-        dtgend = self.basetime + parse_duration(self.forecast_range)
+        dtgend = self.basetime + self.forecast_range
         while cdtg <= dtgend:
             dt = cdtg - self.basetime
             h = int(dt.seconds / 3600)
@@ -52,12 +54,12 @@ class Forecast(Task):
             s = int(dt.seconds % 60)
             source = f"{fname}+{h:04d}:{m:02d}:{s:02d}{suffix}"
             self.fmanager.output(source, f"{self.archive}/{source}")
-            cdtg += parse_duration(period)
+            cdtg += as_timedelta(period)
 
     def firstguess(self):
         """Find initial file."""
         # Find data from previous forecast
-        pdtg = self.basetime - parse_duration(self.cycle_length)
+        pdtg = self.basetime - self.cycle_length
         dt = self.basetime - pdtg
 
         h = int(dt.seconds / 3600)
@@ -91,7 +93,7 @@ class Forecast(Task):
 
         # Boundaries assumed to be in archive
         CY48T3 input files not used in CY46
-        input_files = ["SO4_OBS1990", "aerosol_cams_climatology_43R3.nc",
+        input_files = ["aerosol_cams_climatology_43R3.nc",
                        "aerosol_cams_climatology_43R3a.nc", "aerosol_ifs_rrtm.nc",
                        "aerosol_ifs_rrtm_42R1.nc", "aerosol_ifs_rrtm_43R1.nc",
                        "aerosol_ifs_rrtm_43R1a.nc", "aerosol_ifs_rrtm_43R3.nc",
@@ -146,12 +148,12 @@ class Forecast(Task):
 
         # Link the boundary files
         cdtg = self.basetime
-        dtgend = self.basetime + parse_duration(self.forecast_range)
+        dtgend = self.basetime + self.forecast_range
         i = 0
         while cdtg <= dtgend:
             source = f"ELSCF{self.cnmexp}ALBC{i:03d}"
             self.fmanager.input(f"{self.wrk}/{source}", source)
-            cdtg += parse_duration(self.bdint)
+            cdtg += self.bdint
             i += 1
 
         # Initial files
@@ -210,14 +212,14 @@ class FirstGuess(Task):
         """
         Task.__init__(self, config, "FirstGuess")
         self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
-        self.cycle_length = self.config.get_value("general.times.cycle_length")
+        self.cycle_length = as_timedelta(self.config.get_value("general.times.cycle_length"))
         self.archive = self.config.get_value('system.archive')
         self.cnmexp = self.config.get_value("general.cnmexp")
 
     def execute(self):
         """Find initial file."""
         # Find data from previous forecast
-        pdtg = self.basetime - parse_duration(self.cycle_length)
+        pdtg = self.basetime - self.cycle_length
         dt = self.basetime - pdtg
         h = int(dt.seconds / 3600)
         m = int((dt.seconds % 3600 - dt.seconds % 60) / 60)
