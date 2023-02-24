@@ -150,15 +150,28 @@ class SuiteDefinition(object):
             "StaticData", self.suite, ecf_files
         )
 
-        pgd_input = EcflowSuiteTask(
-            "PgdInput",
-            static_data,
+        static_data = EcflowSuiteFamily("StaticData", self.suite, ecf_files)
+
+        pgd_input = EcflowSuiteFamily("PgdInput", static_data, ecf_files)
+
+        gmted = EcflowSuiteTask(  # noqa: F841 pylint: disable=unused-variable
+            "Gmted",
+            pgd_input,
             config,
             self.task_settings,
             ecf_files,
             input_template=input_template,
-            variables=None,
-        )
+            variables=None)
+
+        soil = EcflowSuiteTask(  # noqa: F841 pylint: disable=unused-variable
+            "Soil",
+            pgd_input,
+            config,
+            self.task_settings,
+            ecf_files,
+            input_template=input_template,
+            variables=None)
+
         pgd_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd_input)])
         pgd = EcflowSuiteTask(
             "Pgd",

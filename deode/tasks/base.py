@@ -127,6 +127,7 @@ class Task(object):
             return None
 
         self.logger.debug("Setting = %s value =%s", setting, value)
+
         return value
 
 

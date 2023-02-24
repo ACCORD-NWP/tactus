@@ -607,7 +607,7 @@ class LocalFileSystemSymlink(Provider):
         Args:
             config (deode.ParsedConfig): Configuration
             pattern (str): Identifier string
-            fetch (bool, optional): Fetch data. Defaults to False.
+            fetch (bool, optional): Fetch data. Defaults to True.
 
         """
         Provider.__init__(self, config, pattern, fetch=fetch)

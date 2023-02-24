@@ -30,12 +30,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
-      - name: Install poetry
-        run: pip install poetry
-      - name: Install with deps
-        run: |
-          poetry install ${{ matrix.step.extras }}
+      - name: Install flakeheaven
+        run: pip install flakeheaven
       - name: Run command
         run: |
-          . ./.venv/bin/activate  # use venv created by poetry
           ${{ matrix.step.command }}

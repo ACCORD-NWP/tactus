@@ -31,8 +31,14 @@ jobs:
       env:
         COVERAGE_FILE: ".coverage.${{ matrix.step.env }}.${{ matrix.step.python }}"
     steps:
+      - name: Install gdal libs
+        run: |
+          apt-get update
+          apt-get install -y gdal-bin libgdal-dev
       - name: Check out repository
         uses: actions/checkout@v3
+      - name: Install pygdal
+        run: pip install pygdal=="`gdal-config --version`.*"
       - name: Install poetry
         run: pip install poetry
       - name: Install with deps
