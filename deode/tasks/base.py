@@ -134,14 +134,18 @@ class Task(object):
 class BinaryTask(Task):
     """Base Task class."""
 
-    def __init__(self, config, name):
+    def __init__(self, config, name=None):
         """Construct base task.
 
         Args:
             config (deode.ParsedConfig): Configuration
             name (str): Task name
         """
+        if name is None:
+            name = self.__class__.__name__
+
         Task.__init__(self, config, name)
+
         self.logger.debug("Binary task %s", name)
         try :
             wrapper = self.get_task_setting("wrapper")
