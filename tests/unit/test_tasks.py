@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
+from pathlib import Path
+
 import pytest
 import tomlkit
 
@@ -7,6 +9,8 @@ import deode
 from deode.config_parser import ParsedConfig, read_raw_config_file
 from deode.discover_task import discover, get_task
 from deode.tasks.base import Task
+
+WORKING_DIR = Path.cwd()
 
 
 def classes_to_be_tested():
@@ -28,7 +32,7 @@ def task_name_and_configs(request, base_raw_config, tmp_path):
     task_config = ParsedConfig.parse_obj(base_raw_config, json_schema={})
 
     config_patch = tomlkit.parse(
-        """
+        f"""
         [general]
             case = "my_case"
             loglevel = "INFO"
@@ -45,8 +49,13 @@ def task_name_and_configs(request, base_raw_config, tmp_path):
         [domain]
             name = "MYDOMAIN"
         [system]
-            wrk = "/tmp/@YYYY@@MM@@DD@_@HH@"
+            wrk = "{tmp_path.as_posix()}"
+            bindir = "{tmp_path.as_posix()}/bin"
         [platform]
+            deode_home = "{WORKING_DIR}"
+            scratch = "{tmp_path.as_posix()}"
+            static_data = "{tmp_path.as_posix()}"
+            prep_input_file = "{tmp_path.as_posix()}/demo/ECMWF/archive/2023/02/18/18/fc20230218_18+006"
         """
     )
 
