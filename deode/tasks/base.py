@@ -11,6 +11,28 @@ from deode.tasks.data import InputData, OutputData
 from deode.toolbox import FileManager
 
 
+def _get_name(cname, cls, suffix, attrname="__plugin_name__"):
+    """Get name.
+
+    Args:
+        cname (_type_): cname
+        cls (_type_): cls
+        suffix (str): suffix
+        attrname (str, optional): _description_. Defaults to "__plugin_name__".
+
+    Returns:
+        _type_: Name
+
+    """
+    # __dict__ vs. getattr: do not inherit the attribute from a parent class
+    name = getattr(cls, "__dict__", {}).get(attrname, None)
+    if name is not None:
+        return name
+    name = cname.lower()
+    if name.endswith(suffix):
+        name = name[: -len(suffix)]
+    return name
+
 class Task(object):
     """Base Task class."""
 
@@ -120,13 +142,25 @@ class Task(object):
             value : Found setting
 
         """
+
+        task_subsection_name_in_config = _get_name(
+            self.__class__.__name__,
+            self.__class__, Task.__name__.lower(),
+            attrname="__type_name__",
+        )
+        setting_to_be_retrieved = f"task.{task_subsection_name_in_config}.{setting}"
+
         try:
-            value = self.config.get_value(f"task.{self.name}.{setting}")
-        except AttributeError:
-            self.logger.warning("Setting %s not found!", setting)
+            value = self.config.get_value(setting_to_be_retrieved)
+        except AttributeError as err:
+            self.logger.error(
+                "Task setting '%s' not found in config! Got the following error: %s",
+                setting_to_be_retrieved,
+                err
+            )
             return None
 
-        self.logger.debug("Setting = %s value =%s", setting, value)
+        self.logger.debug("Setting = %s value =%s", setting_to_be_retrieved, value)
 
         return value
 
