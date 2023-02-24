@@ -221,7 +221,7 @@ class ParsedConfig(BasicConfig):
         """
         config_path = Path(config_path).expanduser().resolve()
         logging.info("Reading config file %s", config_path)
-        raw_config = _read_raw_config_file(config_path)
+        raw_config = read_raw_config_file(config_path)
 
         # Add metadata about where the config was parsed from
         old_metadata = raw_config.get("metadata", {})
@@ -293,7 +293,7 @@ def _update_nested_dict(my_dictionary, dict_with_updates):
     return new_dict
 
 
-def _read_raw_config_file(config_path):
+def read_raw_config_file(config_path):
     config_path = Path(config_path)
     with open(config_path, "rb") as config_file:
         if config_path.suffix == ".toml":

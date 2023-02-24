@@ -4,7 +4,7 @@ import pytest
 import tomlkit
 
 import deode
-from deode.config_parser import ParsedConfig, _read_raw_config_file
+from deode.config_parser import ParsedConfig, read_raw_config_file
 from deode.discover_task import discover, get_task
 from deode.tasks.base import Task
 
@@ -18,7 +18,7 @@ def classes_to_be_tested():
 @pytest.fixture(scope="module")
 def base_raw_config():
     """Return a raw config common to all tasks."""
-    return _read_raw_config_file("config/config.toml")
+    return read_raw_config_file("config/config.toml")
 
 
 @pytest.fixture(params=classes_to_be_tested())
