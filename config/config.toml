@@ -7,7 +7,7 @@
  loglevel = "DEBUG"
  surfex = true
  csc = "AROME"
- bdint = "PT1H"
+ bdint = "PT3H"
  bdcycle = "PT12H"
  forecast_range = "PT12H"
  output_interval_his = "PT1H"

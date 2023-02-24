@@ -2,9 +2,8 @@
 
 from .base import Task
 from deode.tasks.batch import BatchJob
-from deode.datetime_utils import as_datetime
+from deode.datetime_utils import as_datetime, as_timedelta
 import f90nml
-from isoduration import parse_duration
 import os
 
 
@@ -21,13 +20,16 @@ class E927(Task):
 
         self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
         self.climdir = self.platform.get_system_value('climdir')
+
         self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
+        self.bddir = self.config.get_value('system.bddir')
+
         self.bdint = self.config.get_value("general.bdint")
         self.cnmexp = self.config.get_value("general.cnmexp")
         self.forecast_range = self.config.get_value("general.forecast_range")
         self.bdclimdir = self.platform.get_system_value('bdclimdir')
         self.bdfile_template = self.platform.get_system_value('bdfile_template')
-        self.bddir = self.platform.get_system_value('bddir')
+        self.bddir = self.config.get_value('system.bddir')
 
         self.namelist_path = self.platform.get_platform_value('NAMELISTS')
         self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
@@ -63,7 +65,6 @@ class E927(Task):
         """
         nam.uppercase = True
         nam.end_comma = True
-        print(nam)
         with open('fort.4', 'w', encoding="utf-8") as nml_file:
             f90nml.write(nam, nml_file)
 
@@ -112,16 +113,24 @@ class E927(Task):
 
         # Forecast range
         cdtg = self.basetime
-        dtgend = self.basetime + parse_duration(self.forecast_range)
+        dtgend = self.basetime + as_timedelta(self.forecast_range)
         i = 0
+
+        # Fix basetime for PT00H,PT12H only
+        basetime = self.basetime
+        offset = int(basetime.strftime("%H")) % 12
+        time_period = f"PT{offset}H"
+        basetime = basetime - as_timedelta(time_period)
+        self.bddir = self.config.get_value('system.bddir')
+
         while cdtg <= dtgend:
 
             # Input file
             initfile = f'ICMSH{self.cnmexp}INIT'
-            self.fmanager.input("{}/{}".format(self.bddir, 'PFIFSDEOL+@LLLL@'), initfile, basetime=self.basetime, validtime=cdtg)
+            self.fmanager.input("{}/{}".format(self.bddir, 'PFIFSDEOL+@LLLL@'), initfile, basetime=basetime, validtime=cdtg)
             self.myexec(self.master)
             target = '{}/ELSCF{}ALBC{:03d}'.format(self.wrk, self.cnmexp, i)
             self.fmanager.output(f'PF{self.cnmexp}000+0000', target)
             self.remove_links([initfile, 'ncf927'])
-            cdtg += parse_duration(self.bdint)
+            cdtg += as_timedelta(self.bdint)
             i += 1
