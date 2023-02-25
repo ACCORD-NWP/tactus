@@ -48,13 +48,16 @@ class E923(Task):
         nam.end_comma = True
         return nam
 
-    def myexec(self, cmd):
+    def myexec(self, cmd, i):
         """Execute binary task."""
         batch = BatchJob(os.environ, wrapper=self.wrapper)
         batch.run(cmd)
 
-        if os.path.exists("NODE.001_01"):
-            os.system("ls -lrt ; cat NODE.001_01")  # noqa
+        log = "NODE.001_01"
+        try:
+            shutil.copy(log, f"{log}_part_{i}")
+        except FileNotFoundError:
+            self.logger.info("No logfile %s produced", log)
 
     def write_namelist(self, nam):
         """Write namelist with uppercase and commas.
@@ -118,7 +121,7 @@ class E923(Task):
         nam = self.load_namelist(i)
         self.write_namelist(nam)
         self.print_part(0)
-        self.myexec(self.master)
+        self.myexec(self.master, 0)
 
         # Cleanup
         self.remove_links(['Neworog'])
@@ -129,7 +132,7 @@ class E923(Task):
         nam = self.load_namelist(i)
         self.write_namelist(nam)
         self.print_part(1)
-        self.myexec(self.master)
+        self.myexec(self.master, 1)
         self.remove_links(topo_files)
 
         # Part 2
@@ -142,7 +145,7 @@ class E923(Task):
             self.fmanager.input(f"@E923_DATA@/SURFACE_G/{fname}", fname)
 
         self.print_part(2)
-        self.myexec(self.master)
+        self.myexec(self.master, 2)
         self.remove_links(ifiles)
 
         self.fmanager.output("Const.Clim", constant_file, provider_id="copy")
@@ -171,7 +174,7 @@ class E923(Task):
         nam = self.load_namelist(i)
         self.write_namelist(nam)
         self.print_part(i)
-        self.myexec(self.master)
+        self.myexec(self.master, i)
 
         for ifile in ["z0v_GL", "alv_GL", "rsm_GL"]:
             self.fmanager.input(f"@E923_DATA@/SURFACE_G/{ifile}", ifile)
@@ -200,7 +203,7 @@ class E923(Task):
             nam = self.load_namelist(4)
             self.write_namelist(nam)
             self.print_part(4, mm)
-            self.myexec(self.master)
+            self.myexec(self.master, 4)
             self.remove_links(files)
 
             # PART 5
@@ -214,7 +217,7 @@ class E923(Task):
             nam = self.load_namelist(5)
             self.write_namelist(nam)
             self.print_part(5, mm)
-            self.myexec(self.master)
+            self.myexec(self.master, 5)
             self.remove_links(files)
 
             # PART 6
@@ -233,14 +236,14 @@ class E923(Task):
             nam = self.load_namelist(6)
             self.write_namelist(nam)
             self.print_part(6, mm)
-            self.myexec(self.master)
+            self.myexec(self.master, 6)
 
             # PART 8
             self.fmanager.input(f"@E923_DATA@/abc_O3/abc_quadra_{mm}", 'abc_coef')
             nam = self.load_namelist(8)
             self.write_namelist(nam)
             self.print_part(8, mm)
-            self.myexec(self.master)
+            self.myexec(self.master, 8)
 
             # PART 9
             self.fmanager.input(f"@E923_DATA@/aero_tegen/aero.tegen.m{mm}_GL",
@@ -249,7 +252,7 @@ class E923(Task):
             nam = self.load_namelist(9)
             self.write_namelist(nam)
             self.print_part(9, mm)
-            self.myexec(self.master)
+            self.myexec(self.master, 9)
 
             # Finished. Archive output
             self.fmanager.output("Const.Clim", f"Const.Clim.{mm}")

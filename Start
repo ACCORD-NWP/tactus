@@ -10,9 +10,10 @@ mkdir -p $DEODE_SCRATCH/ecf
 
 # Prepare the demonstration
 if [ 1 -eq 0 ] ; then
-  EXP=deode_case
-  # Clean the working directory for a very clean start
-  rm -vrf $SCRATCH/deode/$EXP/
+  # Clean the working/ecflow directories for a very clean start
+  rm -vrf $SCRATCH/deode/deode_case/
+  rm -vrf $DEODE_SCRATCH/job/*
+  rm -vrf $DEODE_SCRATCH/ecf/*
 fi
 
 deode -loglevel debug \

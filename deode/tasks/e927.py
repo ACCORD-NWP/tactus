@@ -22,14 +22,11 @@ class E927(Task):
         self.climdir = self.platform.get_system_value('climdir')
 
         self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
-        self.bddir = self.config.get_value('system.bddir')
-
         self.bdint = self.config.get_value("general.bdint")
-        self.cnmexp = self.config.get_value("general.cnmexp")
         self.forecast_range = self.config.get_value("general.forecast_range")
+
+        self.cnmexp = self.config.get_value("general.cnmexp")
         self.bdclimdir = self.platform.get_system_value('bdclimdir')
-        self.bdfile_template = self.platform.get_system_value('bdfile_template')
-        self.bddir = self.config.get_value('system.bddir')
 
         self.namelist_path = self.platform.get_platform_value('NAMELISTS')
         self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
@@ -48,14 +45,6 @@ class E927(Task):
         nam.uppercase = True
         nam.end_comma = True
         return nam
-
-    def myexec(self, cmd):
-        """Execute binary task."""
-        batch = BatchJob(os.environ, wrapper=self.wrapper)
-        batch.run(cmd)
-
-        if os.path.exists("NODE.001_01"):
-            os.system("ls -lrt ; cat NODE.001_01")  # noqa
 
     def write_namelist(self, nam):
         """Write namelist with uppercase and commas.
@@ -77,19 +66,6 @@ class E927(Task):
         self.logger.info("clean %s", link)
         for x in link:
             os.unlink(x)
-
-    def expand(self, struct):
-        """Expand path, file structure.
-
-        Args:
-            struct (dict) : containing path and files
-
-        Returns:
-            res (dict) : expanded paths
-        """
-        p = struct["path"]
-        res = {"link": ['{}/{}'.format(p, v) for v in struct["files"]]}
-        return res
 
     def execute(self):
         """Run task.
@@ -121,15 +97,20 @@ class E927(Task):
         offset = int(basetime.strftime("%H")) % 12
         time_period = f"PT{offset}H"
         basetime = basetime - as_timedelta(time_period)
-        self.bddir = self.config.get_value('system.bddir')
+        bddir = self.config.get_value('system.bddir')
+        bdfile_template = self.config.get_value('system.bdfile_template')
 
         while cdtg <= dtgend:
 
             # Input file
             initfile = f'ICMSH{self.cnmexp}INIT'
-            self.fmanager.input("{}/{}".format(self.bddir, 'PFIFSDEOL+@LLLL@'), initfile, basetime=basetime, validtime=cdtg)
-            self.myexec(self.master)
-            target = '{}/ELSCF{}ALBC{:03d}'.format(self.wrk, self.cnmexp, i)
+            self.fmanager.input(f"{bddir}/{bdfile_template}", initfile, basetime=basetime, validtime=cdtg)
+
+            # Run masterodb
+            batch = BatchJob(os.environ, wrapper=self.wrapper)
+            batch.run(self.master)
+
+            target = f"{self.wrk}/ELSCF{self.cnmexp}ALBC{i:03d}"
             self.fmanager.output(f'PF{self.cnmexp}000+0000', target)
             self.remove_links([initfile, 'ncf927'])
             cdtg += as_timedelta(self.bdint)
