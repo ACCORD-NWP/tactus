@@ -146,11 +146,12 @@ class SuiteDefinition(object):
         # EcflowSuiteTask("Background", family, self.task_settings, ecf_files,
         #                input_template=input_template)
 
-        static_data = EcflowSuiteFamily("StaticData", self.suite, ecf_files)
+        static_data = EcflowSuiteFamily(
+            "StaticData", self.suite, ecf_files
+        )
 
         pgd_input = EcflowSuiteFamily("PgdInput", static_data, ecf_files)
-
-        gmted = EcflowSuiteTask(  # noqa: F841 pylint: disable=unused-variable
+        EcflowSuiteTask(
             "Gmted",
             pgd_input,
             config,
@@ -159,7 +160,7 @@ class SuiteDefinition(object):
             input_template=input_template,
             variables=None)
 
-        soil = EcflowSuiteTask(  # noqa: F841 pylint: disable=unused-variable
+        EcflowSuiteTask(
             "Soil",
             pgd_input,
             config,

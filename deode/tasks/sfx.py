@@ -40,25 +40,23 @@ class SurfexBinaryTask(Task):
         # Get paths from file manager (example)
         ecosg_dir = self.fmanager.platform.get_platform_value("ECOSG_DATA_PATH")
         pgd_dir = self.fmanager.platform.get_platform_value("PGD_DATA_PATH")
-        # climdir = self.fmanager.platform.get_system_value("climdir")  # noqa
-        soilgrid_dir = self.fmanager.platform.get_platform_value("SOILGRID_DATA")
-        gmted_dir = self.fmanager.platform.get_platform_value("GMTED2010_DATA")
+        climdir = self.fmanager.platform.get_system_value("climdir")
 
         # TODO get all needed paths
         exp_file_paths = {
             "tree_height_dir": f"{ecosg_dir}/HT/",
             "flake_dir": f"{pgd_dir}",
-            "sand_dir": f"{soilgrid_dir}",
-            "clay_dir": f"{soilgrid_dir}",
-            "soc_top_dir": f"{soilgrid_dir}",
-            "soc_sub_dir": f"{soilgrid_dir}",
+            "sand_dir": f"{climdir}",
+            "clay_dir": f"{climdir}",
+            "soc_top_dir": f"{climdir}",
+            "soc_sub_dir": f"{climdir}",
             "ecoclimap_sg_cover_dir": f"{ecosg_dir}/COVER/",
             "albnir_soil_dir": f"{ecosg_dir}/ALB_SAT/",
             "albvis_soil_dir": f"{ecosg_dir}/ALB_SAT/",
             "albnir_veg_dir": f"{ecosg_dir}/ALB_SAT/",
             "albvis_veg_dir": f"{ecosg_dir}/ALB_SAT/",
             "lai_dir": f"{ecosg_dir}/LAI_SAT/",
-            "oro_dir": f"{gmted_dir}"
+            "oro_dir": f"{climdir}"
         }
         self.exp_file_paths = surfex.SystemFilePaths(exp_file_paths)
 
