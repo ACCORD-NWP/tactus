@@ -84,7 +84,10 @@ class E923(Task):
         """
         self.logger.info("clean %s", link)
         for x in link:
-            os.unlink(x)
+            try:
+                os.unlink(x)
+            except FileNotFoundError as error:
+                self.logger.warning(error)
 
     def print_part(self, part, month=None):
         """Run the constant part of e923.
