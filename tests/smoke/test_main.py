@@ -24,15 +24,15 @@ def base_raw_config():
 
 
 @pytest.fixture(scope="module")
-def tmp_test_data_dir(tmpdir_factory, minimal_raw_config):
+def tmp_test_data_dir(tmpdir_factory, base_raw_config):
     return Path(tmpdir_factory.mktemp("deode_test_rootdir"))
 
 
 @pytest.fixture(scope="module")
-def config_path(minimal_raw_config, tmp_test_data_dir):
+def config_path(base_raw_config, tmp_test_data_dir):
     config_path = tmp_test_data_dir / "config.toml"
     with open(config_path, "w") as config_file:
-        tomlkit.dump(minimal_raw_config, config_file)
+        tomlkit.dump(base_raw_config, config_file)
     return config_path
 
 
