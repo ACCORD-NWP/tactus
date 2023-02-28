@@ -281,7 +281,7 @@ class Prep(SurfexBinaryTask):
         """Execute."""
         pgd_file_path = self.platform.get_system_value("climdir") + "/Const.Clim.sfx"
         # TODO get from config?
-        prep_file = self.platform.get_platform_value("prep_input_file")
+        prep_file = self.platform.get_system_value("bddir_sfx") + "/" + self.platform.get_system_value("bdfile_sfx_template")
         prep_filetype = "GRIB2"
         cnmexp = self.config.get_value("general.cnmexp")
         archive = self.platform.get_system_value('archive')

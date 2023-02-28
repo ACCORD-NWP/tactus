@@ -28,7 +28,6 @@ class Forecast(Task):
 
         self.climdir = self.platform.get_system_value('climdir')
         self.rrtm_dir = self.platform.get_platform_value("RRTM_DIR")
-        self.initdata = self.platform.get_platform_value("FORECAST_DATA")
         self.archive = self.platform.get_system_value('archive')
 
         self.namelists = self.platform.get_platform_value("NAMELISTS")
@@ -170,7 +169,7 @@ class Forecast(Task):
         self.archive_output(f"ICMSH{self.cnmexp}", self.config.get_value("general.output_interval_his"))
         self.archive_output(f"ICMSH{self.cnmexp}", self.config.get_value("general.output_interval_sfx"), suffix=".sfx")
         self.archive_output("ICMSHSELE", self.config.get_value("general.output_interval_sfx_sel"), suffix=".sfx")
-        self.archive_output(f"PF{self.cnmexp}{self.domain}", self.config.get_value("general.output_interval_fp"))
+        self.archive_output(f"GRIBPF{self.cnmexp}{self.domain}", self.config.get_value("general.output_interval_fp"))
         self.fmanager.output("NODE.001_01", f"{self.archive}/NODE.001_01")
 
 

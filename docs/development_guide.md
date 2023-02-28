@@ -35,10 +35,11 @@ Here is a list of tests being run in the pipeline, that you can run locally from
 **Linting:**
 - `flakeheaven lint`
 
-**Tests:**
+**Unit Tests:**
 - `pytest --cov=./ tests/` *(In the pipeline we run multiple versions of python)*
 
-
+**Full Ecflow test:**
+- We have a working, although simplified, setup on Atos that should be maintained. Run with `bash ./Start`. The test produces output under `$SCRATCH/deode/deode_case`.
 
 ## Branches
 As of now, the repository has two main branches:
@@ -77,5 +78,5 @@ poetry shell
 deode -h
 
 # Run a stand-alone task with an example config file
-deode -config_file $PWD/docs/task_config_example.toml run --task Forecast --template $PWD/ecf/stand_alone.py --job $PWD/test.job --submit background.json --troika_config $PWD/config.yml -o $PWD/test.log
+deode -config_file $PWD/config/config.toml run --task Forecast --template $PWD/ecf/stand_alone.py --job $PWD/test.job --troika_config $PWD/config/troika.yml -o $PWD/test.log
 ```

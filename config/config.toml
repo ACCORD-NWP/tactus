@@ -14,7 +14,7 @@
  output_interval_fp = "PT1H"
  output_interval_sfx = "PT3H"
  output_interval_sfx_sel = "PT1H"
- keep_workdirs = false
+ keep_workdirs = true
 
 [vertical_levels]
 nlev = 65
@@ -39,6 +39,8 @@ xlat0 = 52.5
  archive = "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
  bddir = "/scratch/sism/DEOL/@YYYY@/@MM@/@DD@/@HH@"
  bdfile_template = "PFIFSDEOL+@LLLL@"
+ bddir_sfx = "/home/snh02/work/dev-CY46h1_deode/boundaries/HRES/@YYYY@/@MM@/@DD@/@HH@"
+ bdfile_sfx_template = "fc@YYYY@@MM@@DD@_@HH@+@LLL@"
  climdir = "@SCRATCH@/deode/@CASE@/climate/@DOMAIN@"
  bdclimdir = "/home/snh02/work/dev-CY46h1_deode/climate/DEODE_LARGE"
  bindir = "/home/snh02/work/dev-CY46h1_deode/bin"
@@ -49,19 +51,13 @@ xlat0 = 52.5
  scratch = "/scratch/@USER@"
  rrtm_dir = "@STATIC_DATA@/rrtm/46h1"
  e923_data = "@STATIC_DATA@/climate/E923_DATA"
- e927_climdir = "/home/snh02/work/dev-CY46h1_deode/climate/@DOMAIN@"
  namelists = "@DEODE_HOME@/nam"
  static_data = "/hpcperm/hlam/data"
- forecast_namelist = "@DEODE_HOME@/nam/fort.4_arome"
- forecast_data = "/home/snh02/work/dev-CY46h1_deode/initial/@YYYY@@MM@@DD@_@HH@"
  climdata = "/hpcperm/hlam/data/climate"
  ecosg_data_path = "@CLIMDATA@/ECOCLIMAP-SG"
  gmted2010_data_path = "@CLIMDATA@/GMTED2010"
- gmted2010_data = "/home/snh02/work/dev-CY46h1_deode/climate/input"
  soilgrid_data_path = "@CLIMDATA@/SOILGRID"
- soilgrid_data = "/home/snh02/work/dev-CY46h1_deode/climate/input"
  pgd_data_path = "@CLIMDATA@/PGD"
- prep_input_file = "/scratch/snh/hm_home/demo/ECMWF/archive/2023/02/18/18/fc20230218_18+006"
 
 [general.times]
  basetime = "2023-02-19T00:00:00Z"
@@ -134,6 +130,8 @@ tasks = ["Background_hpc", "UnitTest"]
  OMP_NUM_THREADS= "os.environ['OMP_NUM_THREADS'] = '1'"
  DR_HOOK = "os.environ['DR_HOOK'] = '1'"
  OMPI_MCA_btl= "os.environ['OMPI_MCA_btl'] = '^vader'"
+ GRIBDEFS= "gribdefs = '/home/snh02/gl/definitions/'"
+ ECCODES_DEFINITION_PATH= "os.environ['ECCODES_DEFINITION_PATH'] = ':'.join([gribdefs,os.environ['ECCODES_DIR']+'share/eccodes/definitions/'])"
 
 [submission.task_exceptions.e927.BATCH]
  NAME = "#SBATCH --job-name=e927"
