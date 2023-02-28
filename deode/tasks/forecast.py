@@ -6,7 +6,6 @@ from deode.tasks.batch import BatchJob
 from deode.datetime_utils import as_datetime, as_timedelta
 import os
 
-
 class Forecast(Task):
     """Forecast task."""
 
@@ -85,7 +84,7 @@ class Forecast(Task):
 
         self.logger.info("Could not find:\n  %s\n  %s", source, source_sfx)
 
-        raise Exception("Could not find any initial files")
+        raise FileNotFoundError("Could not find any initial files")
 
     def execute(self):
         """Execute forecast.
@@ -245,4 +244,4 @@ class FirstGuess(Task):
 
         self.logger.info("Could not find:\n  %s\n  %s", source, source_sfx)
 
-        raise Exception("Could not find any initial files")
+        raise FileNotFoundError("Could not find any initial files")
