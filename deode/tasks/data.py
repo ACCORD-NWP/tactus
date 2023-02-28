@@ -3,6 +3,7 @@ import logging
 import os
 import subprocess  # noqa
 from abc import ABC, abstractmethod
+from ..toolbox import ArchiveError
 
 
 class InputDataToBinaries(ABC):
@@ -75,7 +76,7 @@ class OutputData(OutputDataFromBinaries):
                 subprocess.check_call(cmd, shell=True)  # noqa
             except IOError:
                 logging.error("%s failed", cmd)
-                raise Exception(cmd + " failed") from IOError
+                raise ArchiveError(cmd + " failed") from error
 
 
 class InputData(InputDataToBinaries):

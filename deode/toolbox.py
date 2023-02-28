@@ -4,6 +4,9 @@ import re
 from .datetime_utils import as_datetime
 from .logs import get_logger_from_config
 
+class ArchiveError(Exception):
+    pass
+
 
 class Provider:
     """Base provider class."""
@@ -527,7 +530,7 @@ class FileManager:
             if aprovider.create_resource(target_resource):
                 self.logger.debug("Using provider_id %s", provider_id)
             else:
-                raise Exception("Could not archive data")
+                raise ArchiveError("Could not archive data")
 
         return provider, aprovider, target_resource
 
