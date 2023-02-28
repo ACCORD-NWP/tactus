@@ -7,6 +7,8 @@ from .logs import get_logger_from_config
 class ArchiveError(Exception):
     pass
 
+class ProviderError(Exception):
+    pass
 
 class Provider:
     """Base provider class."""
@@ -427,7 +429,7 @@ class FileManager:
                 else:
                     self.logger.info("Could not archive %s", destination.identifier)
         # Else raise exception
-        raise Exception(f"No provider found for {target} and provider_id {provider_id}")
+        raise ProviderError(f"No provider found for {target} and provider_id {provider_id}")
 
     def input(  # noqa: A003 (class attribute shadowing builtin)
         self,
