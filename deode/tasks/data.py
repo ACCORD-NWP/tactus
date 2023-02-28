@@ -74,7 +74,7 @@ class OutputData(OutputDataFromBinaries):
             try:
                 logging.info(cmd)
                 subprocess.check_call(cmd, shell=True)  # noqa
-            except IOError:
+            except (IOError, subprocess.CalledProcessError) as error:
                 logging.error("%s failed", cmd)
                 raise ArchiveError(cmd + " failed") from error
 
