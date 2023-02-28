@@ -49,7 +49,12 @@ class E923(Task):
         return nam
 
     def myexec(self, cmd, i):
-        """Execute binary task."""
+        """Execute binary task.
+
+        Args:
+            cmd (str) : Command to run
+            i (int) : sequence number
+        """
         batch = BatchJob(os.environ, wrapper=self.wrapper)
         batch.run(cmd)
 
