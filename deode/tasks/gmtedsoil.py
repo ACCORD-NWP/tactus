@@ -332,8 +332,7 @@ class Soil(Task):
         soilgrid_tifs = Search.find_files(soilgrid_path, postfix='.tif', fullpath=True)
 
         if len(soilgrid_tifs) == 0:
-            self.logger.error('No soilgrid tifs found in %s', self.soilgrid_path)
-            raise Exception(f'No soilgrid tifs found in {self.soilgrid_path}')
+            raise FileNotFoundError(f'No soilgrid tifs found under {soilgrid_path}')
 
         # symlink with filemanager from toolbox
         for soilgrid_tif in soilgrid_tifs:
