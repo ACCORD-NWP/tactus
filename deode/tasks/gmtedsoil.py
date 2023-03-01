@@ -7,8 +7,13 @@ from .base import Task
 
 try:
     from osgeo import gdal
-except ImportError:
-    raise ImportError('gdal python module not found. Suggestion: pip install pygdal=="`gdal-config --version`.*"') from ImportError
+except ImportError as error:
+    msg = "Cannot use the installed gdal library, or there is no gdal library installed. "
+    msg += "If you have not installed it, you may want to try running"
+    msg += ' \'pip install pygdal=="`gdal-config --version`.*"\' '
+    msg += "or, if you use conda,"
+    msg += " 'conda install -c conda-forge gdal'."
+    raise ImportError(msg) from error
 
 from ..os_utils import Search
 from ..geo_utils import Projection, Projstring
