@@ -83,6 +83,7 @@ def task_name_and_configs(request, base_raw_config, tmp_path):
 
 @pytest.fixture(scope="module")
 def _module_mockers(session_mocker):
+    original_batchjob_init_method = BatchJob.__init__
     original_batchjob_run_method = BatchJob.run
     original_toolbox_filemanager_input_method = FileManager.input
     original_task_forecast_forecast_execute_method = Forecast.execute
@@ -90,11 +91,18 @@ def _module_mockers(session_mocker):
     original_task_e923_constant_part_method = E923.constant_part
     original_task_e923_monthly_part_method = E923.monthly_part
 
-    def new_batchjob_run_method(*args, **kwargs):
+    def new_batchjob_init_method(self, *args, **kwargs):
+        original_batchjob_init_method(self, *args, **kwargs)
+        # Not using, e.g., srun for tests
+        self.wrapper = ""
+
+    def new_batchjob_run_method(self, cmd):
         try:
-            original_batchjob_run_method(*args, **kwargs)
+            original_batchjob_run_method(self, cmd=cmd)
         except subprocess.CalledProcessError:
-            pass
+            original_batchjob_run_method(
+                self, cmd="echo 'Running a dummy command' >| output"
+            )
 
     def new_toolbox_filemanager_input_method(*args, **kwargs):
         try:
@@ -123,9 +131,12 @@ def _module_mockers(session_mocker):
             original_task_e923_monthly_part_method(self, constant_file)
 
     session_mocker.patch(
-        "deode.toolbox.FileManager.input", new=new_toolbox_filemanager_input_method
+        "deode.tasks.batch.BatchJob.__init__", new=new_batchjob_init_method
     )
     session_mocker.patch("deode.tasks.batch.BatchJob.run", new=new_batchjob_run_method)
+    session_mocker.patch(
+        "deode.toolbox.FileManager.input", new=new_toolbox_filemanager_input_method
+    )
     session_mocker.patch(
         "deode.tasks.forecast.Forecast.execute",
         new=new_task_forecast_forecast_execute_method,
