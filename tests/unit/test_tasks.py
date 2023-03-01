@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
+import contextlib
 import subprocess
 from pathlib import Path
 
@@ -82,7 +83,10 @@ def task_name_and_configs(request, base_raw_config, tmp_path):
 
 
 @pytest.fixture(scope="module")
-def _module_mockers(session_mocker):
+def mockers_for_task_run_tests(session_mocker):
+    """Define mockers used in the tests for the tasks' `run` methods."""
+
+    # Keep reference to the original methods that will be replaced with wrappers
     original_batchjob_init_method = BatchJob.__init__
     original_batchjob_run_method = BatchJob.run
     original_toolbox_filemanager_input_method = FileManager.input
@@ -91,12 +95,14 @@ def _module_mockers(session_mocker):
     original_task_e923_constant_part_method = E923.constant_part
     original_task_e923_monthly_part_method = E923.monthly_part
 
+    # Define the wrappers that will replace some key methods
     def new_batchjob_init_method(self, *args, **kwargs):
+        """Remove eventual `wrapper` settings, which are not used for tests."""
         original_batchjob_init_method(self, *args, **kwargs)
-        # Not using, e.g., srun for tests
         self.wrapper = ""
 
     def new_batchjob_run_method(self, cmd):
+        """Run the original method with a dummy cmd if the original cmd fails."""
         try:
             original_batchjob_run_method(self, cmd=cmd)
         except subprocess.CalledProcessError:
@@ -105,31 +111,31 @@ def _module_mockers(session_mocker):
             )
 
     def new_toolbox_filemanager_input_method(*args, **kwargs):
-        try:
+        """Suppress some errors so that test continues if they happen."""
+        with contextlib.suppress(ArchiveError, ProviderError, NotImplementedError):
             original_toolbox_filemanager_input_method(*args, **kwargs)
-        except (ArchiveError, ProviderError, NotImplementedError):
-            pass
 
     def new_task_forecast_forecast_execute_method(*args, **kwargs):
-        try:
+        """Suppress some errors so that test continues if they happen."""
+        with contextlib.suppress(FileNotFoundError):
             original_task_forecast_forecast_execute_method(*args, **kwargs)
-        except FileNotFoundError:
-            pass
 
     def new_task_forecast_firstguess_execute_method(*args, **kwargs):
-        try:
+        """Suppress some errors so that test continues if they happen."""
+        with contextlib.suppress(FileNotFoundError):
             original_task_forecast_firstguess_execute_method(*args, **kwargs)
-        except FileNotFoundError:
-            pass
 
     def new_task_e923_constant_part_method(*args, **kwargs):
+        """Create needed file "Const.Clim" before running the original method."""
         with open("Const.Clim", "w"):
             original_task_e923_constant_part_method(*args, **kwargs)
 
-    def new_task_e923_montly_part_method(self, constant_file):
+    def new_task_e923_monthly_part_method(self, constant_file):
+        """Create needed file `constant_file` before running the original method."""
         with open(constant_file, "w"):
             original_task_e923_monthly_part_method(self, constant_file)
 
+    # Do the actual mocking
     session_mocker.patch(
         "deode.tasks.batch.BatchJob.__init__", new=new_batchjob_init_method
     )
@@ -145,13 +151,14 @@ def _module_mockers(session_mocker):
         "deode.tasks.forecast.FirstGuess.execute",
         new=new_task_forecast_firstguess_execute_method,
     )
-
     session_mocker.patch(
         "deode.tasks.e923.E923.constant_part", new=new_task_e923_constant_part_method
     )
     session_mocker.patch(
-        "deode.tasks.e923.E923.monthly_part", new=new_task_e923_montly_part_method
+        "deode.tasks.e923.E923.monthly_part", new=new_task_e923_monthly_part_method
     )
+
+    # Mock things that we don't want to test here (e.g., external binaries)
     session_mocker.patch("surfex.SURFEXBinary")
 
 
@@ -163,7 +170,7 @@ class TestTasks:
         class_name, task_config = task_name_and_configs
         assert isinstance(get_task(class_name, task_config), Task)
 
-    @pytest.mark.usefixtures("_module_mockers")
+    @pytest.mark.usefixtures("mockers_for_task_run_tests")
     def test_task_can_be_run(self, task_name_and_configs):
         class_name, task_config = task_name_and_configs
         my_task_class = get_task(class_name, task_config)
