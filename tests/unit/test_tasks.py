@@ -146,8 +146,6 @@ def _module_mockers(session_mocker):
         new=new_task_forecast_firstguess_execute_method,
     )
 
-    # TODO: Mock deode.tasks.data.OutputData.data instead
-    session_mocker.patch("deode.tasks.data.OutputData.archive_files", return_value=None)
     session_mocker.patch(
         "deode.tasks.e923.E923.constant_part", new=new_task_e923_constant_part_method
     )
