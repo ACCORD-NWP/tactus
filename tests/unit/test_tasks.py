@@ -83,9 +83,8 @@ def task_name_and_configs(request, base_raw_config, tmp_path):
 
 
 @pytest.fixture(scope="module")
-def mockers_for_task_run_tests(session_mocker):
+def _mockers_for_task_run_tests(session_mocker):
     """Define mockers used in the tests for the tasks' `run` methods."""
-
     # Keep reference to the original methods that will be replaced with wrappers
     original_batchjob_init_method = BatchJob.__init__
     original_batchjob_run_method = BatchJob.run
@@ -170,7 +169,7 @@ class TestTasks:
         class_name, task_config = task_name_and_configs
         assert isinstance(get_task(class_name, task_config), Task)
 
-    @pytest.mark.usefixtures("mockers_for_task_run_tests")
+    @pytest.mark.usefixtures("_mockers_for_task_run_tests")
     def test_task_can_be_run(self, task_name_and_configs):
         class_name, task_config = task_name_and_configs
         my_task_class = get_task(class_name, task_config)

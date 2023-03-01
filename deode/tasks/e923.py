@@ -86,8 +86,8 @@ class E923(Task):
         for x in link:
             try:
                 os.unlink(x)
-            except FileNotFoundError as error:
-                self.logger.warning(error)
+            except FileNotFoundError:
+                self.logger.warning("Could not remove file '%s'.", x, exc_info=True)
 
     def print_part(self, part, month=None):
         """Run the constant part of e923.

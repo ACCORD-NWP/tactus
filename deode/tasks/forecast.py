@@ -6,6 +6,7 @@ from deode.tasks.batch import BatchJob
 from deode.datetime_utils import as_datetime, as_timedelta
 import os
 
+
 class Forecast(Task):
     """Forecast task."""
 

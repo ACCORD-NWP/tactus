@@ -58,7 +58,7 @@ class OutputData(OutputDataFromBinaries):
         """Archive files.
 
         Raises:
-            Exception: Error archiving files.
+            ArchiveError: Error archiving files.
         """
         for output_file, target in self.data.items():
 

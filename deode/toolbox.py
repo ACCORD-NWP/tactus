@@ -4,11 +4,14 @@ import re
 from .datetime_utils import as_datetime
 from .logs import get_logger_from_config
 
+
 class ArchiveError(Exception):
-    pass
+    """Error raised when there are problems archiving data."""
+
 
 class ProviderError(Exception):
-    pass
+    """Error raised when there are provider-related problems."""
+
 
 class Provider:
     """Base provider class."""
@@ -381,7 +384,7 @@ class FileManager:
             provider_id (str, optional): Provider ID. Defaults to "symlink".
 
         Raises:
-            Exception: "No provider found for {target}"
+            ProviderError: "No provider found for {target}"
 
         Returns:
             tuple: provider, resource
@@ -483,7 +486,7 @@ class FileManager:
             tuple: provider, aprovider, resource
 
         Raises:
-            Exception: Could not archive data
+            ArchiveError: Could not archive data
 
         """
         sub_target = self.platform.substitute(

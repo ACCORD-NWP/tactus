@@ -294,6 +294,7 @@ def _update_nested_dict(my_dictionary, dict_with_updates):
 
 
 def read_raw_config_file(config_path):
+    """Read raw configs from files in miscellaneous formats."""
     config_path = Path(config_path)
     with open(config_path, "rb") as config_file:
         if config_path.suffix == ".toml":

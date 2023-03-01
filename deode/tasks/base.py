@@ -33,6 +33,7 @@ def _get_name(cname, cls, suffix, attrname="__plugin_name__"):
         name = name[: -len(suffix)]
     return name
 
+
 class Task(object):
     """Base Task class."""
 
@@ -142,7 +143,6 @@ class Task(object):
             value : Found setting
 
         """
-
         task_subsection_name_in_config = _get_name(
             self.__class__.__name__,
             self.__class__, Task.__name__.lower(),
@@ -152,11 +152,9 @@ class Task(object):
 
         try:
             value = self.config.get_value(setting_to_be_retrieved)
-        except AttributeError as err:
-            self.logger.error(
-                "Task setting '%s' not found in config! Got the following error: %s",
-                setting_to_be_retrieved,
-                err
+        except AttributeError:
+            self.logger.exception(
+                "Task setting '%s' not found in config.", setting_to_be_retrieved
             )
             return None
 
