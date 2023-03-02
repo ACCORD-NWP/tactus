@@ -5,6 +5,14 @@ from .datetime_utils import as_datetime
 from .logs import get_logger_from_config
 
 
+class ArchiveError(Exception):
+    """Error raised when there are problems archiving data."""
+
+
+class ProviderError(Exception):
+    """Error raised when there are provider-related problems."""
+
+
 class Provider:
     """Base provider class."""
 
@@ -376,7 +384,7 @@ class FileManager:
             provider_id (str, optional): Provider ID. Defaults to "symlink".
 
         Raises:
-            Exception: "No provider found for {target}"
+            ProviderError: "No provider found for {target}"
 
         Returns:
             tuple: provider, resource
@@ -424,7 +432,7 @@ class FileManager:
                 else:
                     self.logger.info("Could not archive %s", destination.identifier)
         # Else raise exception
-        raise Exception(f"No provider found for {target} and provider_id {provider_id}")
+        raise ProviderError(f"No provider found for {target} and provider_id {provider_id}")
 
     def input(  # noqa: A003 (class attribute shadowing builtin)
         self,
@@ -478,7 +486,7 @@ class FileManager:
             tuple: provider, aprovider, resource
 
         Raises:
-            Exception: Could not archive data
+            ArchiveError: Could not archive data
 
         """
         sub_target = self.platform.substitute(
@@ -527,7 +535,7 @@ class FileManager:
             if aprovider.create_resource(target_resource):
                 self.logger.debug("Using provider_id %s", provider_id)
             else:
-                raise Exception("Could not archive data")
+                raise ArchiveError("Could not archive data")
 
         return provider, aprovider, target_resource
 

@@ -65,7 +65,10 @@ class E927(Task):
         """
         self.logger.info("clean %s", link)
         for x in link:
-            os.unlink(x)
+            try:
+                os.unlink(x)
+            except FileNotFoundError:
+                self.logger.warning("Could not remove file '%s'.", x, exc_info=True)
 
     def execute(self):
         """Run task.

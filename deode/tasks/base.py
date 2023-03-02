@@ -11,6 +11,29 @@ from deode.tasks.data import InputData, OutputData
 from deode.toolbox import FileManager
 
 
+def _get_name(cname, cls, suffix, attrname="__plugin_name__"):
+    """Get name.
+
+    Args:
+        cname (_type_): cname
+        cls (_type_): cls
+        suffix (str): suffix
+        attrname (str, optional): _description_. Defaults to "__plugin_name__".
+
+    Returns:
+        _type_: Name
+
+    """
+    # __dict__ vs. getattr: do not inherit the attribute from a parent class
+    name = getattr(cls, "__dict__", {}).get(attrname, None)
+    if name is not None:
+        return name
+    name = cname.lower()
+    if name.endswith(suffix):
+        name = name[: -len(suffix)]
+    return name
+
+
 class Task(object):
     """Base Task class."""
 
@@ -120,13 +143,22 @@ class Task(object):
             value : Found setting
 
         """
+        task_subsection_name_in_config = _get_name(
+            self.__class__.__name__,
+            self.__class__, Task.__name__.lower(),
+            attrname="__type_name__",
+        )
+        setting_to_be_retrieved = f"task.{task_subsection_name_in_config}.{setting}"
+
         try:
-            value = self.config.get_value(f"task.{self.name}.{setting}")
+            value = self.config.get_value(setting_to_be_retrieved)
         except AttributeError:
-            self.logger.warning("Setting %s not found!", setting)
+            self.logger.exception(
+                "Task setting '%s' not found in config.", setting_to_be_retrieved
+            )
             return None
 
-        self.logger.debug("Setting = %s value =%s", setting, value)
+        self.logger.debug("Setting = %s value =%s", setting_to_be_retrieved, value)
 
         return value
 
@@ -134,14 +166,18 @@ class Task(object):
 class BinaryTask(Task):
     """Base Task class."""
 
-    def __init__(self, config, name):
+    def __init__(self, config, name=None):
         """Construct base task.
 
         Args:
             config (deode.ParsedConfig): Configuration
             name (str): Task name
         """
+        if name is None:
+            name = self.__class__.__name__
+
         Task.__init__(self, config, name)
+
         self.logger.debug("Binary task %s", name)
         try :
             wrapper = self.get_task_setting("wrapper")

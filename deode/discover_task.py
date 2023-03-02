@@ -5,7 +5,7 @@ import pkgutil
 
 from . import tasks
 from .logs import get_logger
-from .tasks.base import Task
+from .tasks.base import Task, _get_name
 
 logger = get_logger(__name__, "DEBUG")
 
@@ -35,29 +35,6 @@ def discover_modules(package, what="plugin"):
             logger.warning("Could not load %r %s", fullname, repr(exc))
             continue
         yield fullname, mod
-
-
-def _get_name(cname, cls, suffix, attrname="__plugin_name__"):
-    """Get name.
-
-    Args:
-        cname (_type_): cname
-        cls (_type_): cls
-        suffix (str): suffix
-        attrname (str, optional): _description_. Defaults to "__plugin_name__".
-
-    Returns:
-        _type_: Name
-
-    """
-    # __dict__ vs. getattr: do not inherit the attribute from a parent class
-    name = getattr(cls, "__dict__", {}).get(attrname, None)
-    if name is not None:
-        return name
-    name = cname.lower()
-    if name.endswith(suffix):
-        name = name[: -len(suffix)]
-    return name
 
 
 def get_task(name, config):

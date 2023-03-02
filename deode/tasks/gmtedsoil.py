@@ -1,17 +1,25 @@
 """GMTED and SOILGRID."""
 
-
 import os
 import sys
+
+from ..geo_utils import Projection, Projstring
+from ..os_utils import Search
 from .base import Task
 
-try:
-    from osgeo import gdal
-except ImportError:
-    raise ImportError('gdal python module not found. Suggestion: pip install pygdal=="`gdal-config --version`.*"') from ImportError
 
-from ..os_utils import Search
-from ..geo_utils import Projection, Projstring
+def _import_gdal():
+    """Return imported gdal from osgeo. Utility func useful for debugging and testing."""
+    try:
+        from osgeo import gdal
+        return gdal
+    except ImportError as error:
+        msg = "Cannot use the installed gdal library, or there is no gdal library installed. "
+        msg += "If you have not installed it, you may want to try running"
+        msg += ' \'pip install pygdal=="`gdal-config --version`.*"\' '
+        msg += "or, if you use conda,"
+        msg += " 'conda install -c conda-forge gdal'."
+        raise ImportError(msg) from error
 
 
 class Gmted(Task):
@@ -163,11 +171,9 @@ class Gmted(Task):
             f.write(f'south: {hdr_south:.2f}\n')
             f.write(f'west: {hdr_west:.2f}\n')
             f.write(f'east: {hdr_east:.2f}\n')
-            f.write(f'rows: {hdr_rows:d}\n')
-            f.write(f'cols: {hdr_cols:d}\n')
+            f.write(f'rows: {int(hdr_rows):d}\n')
+            f.write(f'cols: {int(hdr_cols):d}\n')
             f.write('recordtype: integer 16 bytes\n')
-
-        return
 
     def execute(self):
         """Run task.
@@ -185,6 +191,7 @@ class Gmted(Task):
             self.define_gmted_input(domain_properties)
 
         # Output merged GMTED file to working directory as file gmted_mea075.tif
+        gdal = _import_gdal()
         gd = gdal.Warp("gmted_mea075.tif", tif_files, format="GTiff",
                        options=["COMPRESS=LZW", "TILED=YES"])
 
@@ -304,18 +311,14 @@ class Soil(Task):
         with open(header_file, mode='w', encoding="utf8") as f:
             f.write(f'{soiltype} cut from global soilgrids of 250m resolution\n')
             f.write(f'nodata: {nodata:d}\n')
-            f.write(f'north: {hdr_north:.6f}\n')
-            f.write(f'south: {hdr_south:.6f}\n')
-            f.write(f'west: {hdr_west:.6f}\n')
-            f.write(f'east: {hdr_east:.6f}\n')
-            f.write(f'rows: {hdr_rows:d}\n')
-            f.write(f'cols: {hdr_cols:d}\n')
+            for param in [hdr_north, hdr_south, hdr_west, hdr_east]:
+                f.write(f'north: {float(param):.6f}\n')
+            f.write(f'rows: {int(hdr_rows):d}\n')
+            f.write(f'cols: {int(hdr_cols):d}\n')
             # TODO Check if factor can be float
             if write_fact:
                 f.write(f'fact: {fact:d}\n')
             f.write(f'recordtype: integer {bits:d} bits\n')
-
-        return
 
     def execute(self):
         """Run task.
@@ -323,7 +326,7 @@ class Soil(Task):
         Define run sequence.
 
         Raises:
-            Exception: Exception if no tifs found
+            FileNotFoundError: Exception if no tifs found
         """
         self.logger.debug('Running soil task')
 
@@ -332,8 +335,7 @@ class Soil(Task):
         soilgrid_tifs = Search.find_files(soilgrid_path, postfix='.tif', fullpath=True)
 
         if len(soilgrid_tifs) == 0:
-            self.logger.error('No soilgrid tifs found in %s', self.soilgrid_path)
-            raise Exception(f'No soilgrid tifs found in {self.soilgrid_path}')
+            raise FileNotFoundError(f'No soilgrid tifs found under {soilgrid_path}')
 
         # symlink with filemanager from toolbox
         for soilgrid_tif in soilgrid_tifs:
@@ -351,6 +353,7 @@ class Soil(Task):
         # Cut soilgrid tifs
         soilgrid_tif_subarea_files = []
         find_size_and_corners = True
+        gdal = _import_gdal()
         for soilgrid_tif in soilgrid_tifs:
             soilgrid_tif_basename = os.path.basename(soilgrid_tif)
             soilgrid_tif_subarea = soilgrid_tif_basename.replace('.tif', '_subarea.tif')

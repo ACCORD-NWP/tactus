@@ -12,7 +12,7 @@ from .base import Task
 class SurfexBinaryTask(Task):
     """Task."""
 
-    def __init__(self, config, name, mode):
+    def __init__(self, config, name=None, mode=None):
         """Construct object.
 
         Args:
@@ -21,7 +21,11 @@ class SurfexBinaryTask(Task):
             mode (str): Type of surfex binary
 
         """
+        if name is None:
+            name = self.__class__.__name__
+
         Task.__init__(self, config, name)
+
         self.mode = mode
         self.need_pgd = True
         self.need_prep = True
