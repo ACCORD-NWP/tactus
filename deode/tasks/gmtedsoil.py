@@ -9,7 +9,7 @@ from .base import Task
 
 
 def _import_gdal():
-    """Utility function to import gdal. Useful for debugging and testing."""
+    """Return imported gdal from osgeo. Utility func useful for debugging and testing."""
     try:
         from osgeo import gdal
         return gdal
@@ -175,8 +175,6 @@ class Gmted(Task):
             f.write(f'cols: {int(hdr_cols):d}\n')
             f.write('recordtype: integer 16 bytes\n')
 
-        return
-
     def execute(self):
         """Run task.
 
@@ -322,15 +320,13 @@ class Soil(Task):
                 f.write(f'fact: {fact:d}\n')
             f.write(f'recordtype: integer {bits:d} bits\n')
 
-        return
-
     def execute(self):
         """Run task.
 
         Define run sequence.
 
         Raises:
-            Exception: Exception if no tifs found
+            FileNotFoundError: Exception if no tifs found
         """
         self.logger.debug('Running soil task')
 
