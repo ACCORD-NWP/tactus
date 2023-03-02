@@ -1,22 +1,25 @@
 """GMTED and SOILGRID."""
 
-
 import os
 import sys
+
+from ..geo_utils import Projection, Projstring
+from ..os_utils import Search
 from .base import Task
 
-try:
-    from osgeo import gdal
-except ImportError as error:
-    msg = "Cannot use the installed gdal library, or there is no gdal library installed. "
-    msg += "If you have not installed it, you may want to try running"
-    msg += ' \'pip install pygdal=="`gdal-config --version`.*"\' '
-    msg += "or, if you use conda,"
-    msg += " 'conda install -c conda-forge gdal'."
-    raise ImportError(msg) from error
 
-from ..os_utils import Search
-from ..geo_utils import Projection, Projstring
+def _import_gdal():
+    """Utility function to import gdal. Useful for debugging and testing."""
+    try:
+        from osgeo import gdal
+        return gdal
+    except ImportError as error:
+        msg = "Cannot use the installed gdal library, or there is no gdal library installed. "
+        msg += "If you have not installed it, you may want to try running"
+        msg += ' \'pip install pygdal=="`gdal-config --version`.*"\' '
+        msg += "or, if you use conda,"
+        msg += " 'conda install -c conda-forge gdal'."
+        raise ImportError(msg) from error
 
 
 class Gmted(Task):
@@ -190,6 +193,7 @@ class Gmted(Task):
             self.define_gmted_input(domain_properties)
 
         # Output merged GMTED file to working directory as file gmted_mea075.tif
+        gdal = _import_gdal()
         gd = gdal.Warp("gmted_mea075.tif", tif_files, format="GTiff",
                        options=["COMPRESS=LZW", "TILED=YES"])
 
@@ -355,6 +359,7 @@ class Soil(Task):
         # Cut soilgrid tifs
         soilgrid_tif_subarea_files = []
         find_size_and_corners = True
+        gdal = _import_gdal()
         for soilgrid_tif in soilgrid_tifs:
             soilgrid_tif_basename = os.path.basename(soilgrid_tif)
             soilgrid_tif_subarea = soilgrid_tif_basename.replace('.tif', '_subarea.tif')
