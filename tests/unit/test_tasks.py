@@ -32,7 +32,7 @@ def base_raw_config():
 
 
 @pytest.fixture(params=classes_to_be_tested())
-def task_name_and_configs(request, base_raw_config, tmp_path):
+def task_name_and_configs(request, base_raw_config, tmp_path_factory):
     """Return a ParsedConfig with a task-specific section according to `params`."""
     task_name = request.param
     task_config = ParsedConfig.parse_obj(base_raw_config, json_schema={})
@@ -55,13 +55,15 @@ def task_name_and_configs(request, base_raw_config, tmp_path):
         [domain]
             name = "MYDOMAIN"
         [system]
-            wrk = "{tmp_path.as_posix()}"
-            bindir = "{tmp_path.as_posix()}/bin"
+            wrk = "{tmp_path_factory.getbasetemp().as_posix()}"
+            bindir = "{tmp_path_factory.getbasetemp().as_posix()}/bin"
         [platform]
             deode_home = "{WORKING_DIR}"
-            scratch = "{tmp_path.as_posix()}"
-            static_data = "{tmp_path.as_posix()}"
-            prep_input_file = "{tmp_path.as_posix()}/demo/ECMWF/archive/2023/02/18/18/fc20230218_18+006"
+            scratch = "{tmp_path_factory.getbasetemp().as_posix()}"
+            static_data = "{tmp_path_factory.getbasetemp().as_posix()}"
+            climdata = "{tmp_path_factory.getbasetemp().as_posix()}"
+            prep_input_file = "{tmp_path_factory.getbasetemp().as_posix()}/demo/ECMWF/archive/2023/02/18/18/fc20230218_18+006"
+            soilgrid_data_path = "{tmp_path_factory.getbasetemp().as_posix()}"
         """
     )
 
@@ -83,7 +85,7 @@ def task_name_and_configs(request, base_raw_config, tmp_path):
 
 
 @pytest.fixture(scope="module")
-def _mockers_for_task_run_tests(session_mocker):
+def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     """Define mockers used in the tests for the tasks' `run` methods."""
     # Keep reference to the original methods that will be replaced with wrappers
     original_batchjob_init_method = BatchJob.__init__
@@ -157,7 +159,15 @@ def _mockers_for_task_run_tests(session_mocker):
         "deode.tasks.e923.E923.monthly_part", new=new_task_e923_monthly_part_method
     )
 
+    # Create files needed by gmtedsoil tasks
+    tif_files_dir = tmp_path_factory.getbasetemp() / "GMTED2010"
+    tif_files_dir.mkdir()
+    for fname in ["50N000E_20101117_gmted_mea075", "30N000E_20101117_gmted_mea075"]:
+        fpath = tif_files_dir / f"{fname}.tif"
+        fpath.touch()
+
     # Mock things that we don't want to test here (e.g., external binaries)
+    session_mocker.patch("deode.tasks.gmtedsoil._import_gdal")
     session_mocker.patch("surfex.SURFEXBinary")
 
 
