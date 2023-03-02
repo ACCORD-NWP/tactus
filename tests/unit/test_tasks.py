@@ -41,7 +41,7 @@ def task_name_and_configs(request, base_raw_config, tmp_path_factory):
         f"""
         [general]
             case = "my_case"
-            loglevel = "INFO"
+            loglevel = "DEBUG"
             macros = []
             os_macros = ["USER", "HOME"]
             realization = -1
