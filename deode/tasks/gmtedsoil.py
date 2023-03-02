@@ -171,8 +171,8 @@ class Gmted(Task):
             f.write(f'south: {hdr_south:.2f}\n')
             f.write(f'west: {hdr_west:.2f}\n')
             f.write(f'east: {hdr_east:.2f}\n')
-            f.write(f'rows: {hdr_rows:d}\n')
-            f.write(f'cols: {hdr_cols:d}\n')
+            f.write(f'rows: {int(hdr_rows):d}\n')
+            f.write(f'cols: {int(hdr_cols):d}\n')
             f.write('recordtype: integer 16 bytes\n')
 
         return
@@ -313,12 +313,10 @@ class Soil(Task):
         with open(header_file, mode='w', encoding="utf8") as f:
             f.write(f'{soiltype} cut from global soilgrids of 250m resolution\n')
             f.write(f'nodata: {nodata:d}\n')
-            f.write(f'north: {hdr_north:.6f}\n')
-            f.write(f'south: {hdr_south:.6f}\n')
-            f.write(f'west: {hdr_west:.6f}\n')
-            f.write(f'east: {hdr_east:.6f}\n')
-            f.write(f'rows: {hdr_rows:d}\n')
-            f.write(f'cols: {hdr_cols:d}\n')
+            for param in [hdr_north, hdr_south, hdr_west, hdr_east]:
+                f.write(f'north: {float(param):.6f}\n')
+            f.write(f'rows: {int(hdr_rows):d}\n')
+            f.write(f'cols: {int(hdr_cols):d}\n')
             # TODO Check if factor can be float
             if write_fact:
                 f.write(f'fact: {fact:d}\n')
