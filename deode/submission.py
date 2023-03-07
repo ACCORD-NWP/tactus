@@ -275,5 +275,5 @@ class NoSchedulerSubmission:
         )
         try:
             subprocess.check_call(cmd.split())
-        except Exception as exc:
-            raise Exception(f"Submission failed with {repr(exc)}") from exc
+        except subprocess.CalledProcessError as exc:
+            raise RuntimeError(f"Submission failed with {repr(exc)}") from exc

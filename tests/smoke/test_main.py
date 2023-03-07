@@ -3,7 +3,7 @@
 import datetime
 import itertools
 import shutil
-from contextlib import redirect_stderr, redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout, suppress
 from io import StringIO
 from pathlib import Path
 from unittest import mock
@@ -14,6 +14,7 @@ import tomlkit
 from deode import PACKAGE_NAME
 from deode.argparse_wrapper import get_parsed_args
 from deode.main import main
+from deode.submission import NoSchedulerSubmission
 
 WORKING_DIR = Path.cwd()
 
@@ -30,6 +31,18 @@ def _module_mockers(session_mocker, config_path):
     # Monkeypatching DEODE_CONFIG_PATH so tests use the generated config.toml.
     # Otherwise, the program defaults to reading from ~/.deode/config.toml
     session_mocker.patch.dict("os.environ", {"DEODE_CONFIG_PATH": str(config_path)})
+
+    original_no_scheduler_submission_submit_method = NoSchedulerSubmission.submit
+
+    def new_no_scheduler_submission_submit_method(*args, **kwargs):
+        """Wrap the original method to catch ."""
+        with suppress(RuntimeError):
+            original_no_scheduler_submission_submit_method(*args, **kwargs)
+
+    session_mocker.patch(
+        "deode.submission.NoSchedulerSubmission.submit",
+        new=new_no_scheduler_submission_submit_method,
+    )
 
 
 def test_package_executable_is_in_path():
