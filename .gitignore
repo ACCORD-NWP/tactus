@@ -17,6 +17,10 @@ tmp/
 poetry.lock
 dist/
 .idea/
+.vscode/
+coverage.xml
+.coverage.xml
+.coverage
 
 # Files/directories generated at runtime
 archived_file
