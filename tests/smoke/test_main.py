@@ -94,7 +94,7 @@ class TestMainShowCommands:
 
 
 @pytest.mark.usefixtures("_module_mockers")
-def test_run_task_command():
+def test_run_task_command(tmp_path):
     main(
         [
             "run",
@@ -103,9 +103,9 @@ def test_run_task_command():
             "--template",
             f"{WORKING_DIR.as_posix()}/ecf/stand_alone.py",
             "--job",
-            "./forecast.jo",
+            f"{tmp_path.as_posix()}/forecast.jo",
             "-o",
-            "./forecast.log",
+            f"{tmp_path.as_posix()}/forecast.log",
         ]
     )
 
