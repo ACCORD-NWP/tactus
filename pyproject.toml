@@ -64,7 +64,7 @@
 
 [tool.pytest.ini_options]
     testpaths = ["tests/unit", "tests/smoke"]
-    addopts = "-n auto -v"
+    addopts = "-n auto -v --cov-report=term-missing --cov-report=term:skip-covered --cov-report=xml --cov=./"
     log_cli_level = "INFO"
 
 [tool.black]
