@@ -15,27 +15,13 @@ from deode import PACKAGE_NAME
 from deode.argparse_wrapper import get_parsed_args
 from deode.main import main
 
-
-@pytest.fixture(scope="module")
-def base_raw_config():
-    return tomlkit.parse(
-        """
-        [general]
-            times.list = ["2000-01-01T00:00:00Z"]
-        """
-    )
+WORKING_DIR = Path.cwd()
 
 
 @pytest.fixture(scope="module")
-def tmp_test_data_dir(tmpdir_factory, base_raw_config):
-    return Path(tmpdir_factory.mktemp("deode_test_rootdir"))
-
-
-@pytest.fixture(scope="module")
-def config_path(base_raw_config, tmp_test_data_dir):
-    config_path = tmp_test_data_dir / "config.toml"
-    with open(config_path, "w") as config_file:
-        tomlkit.dump(base_raw_config, config_file)
+def config_path(tmp_path_factory):
+    config_path = tmp_path_factory.getbasetemp() / "config.toml"
+    shutil.copy(WORKING_DIR / "config/config.toml", config_path)
     return config_path
 
 
