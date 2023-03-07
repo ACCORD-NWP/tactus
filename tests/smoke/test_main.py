@@ -99,5 +99,15 @@ def test_run_task_command():
     )
 
 
-if __name__ == "__main__":
-    pytest.main()
+@pytest.mark.usefixtures("_module_mockers")
+def test_start_suite_command(tmp_path):
+    main(
+        [
+            "start",
+            "suite",
+            "--joboutdir",
+            tmp_path.as_posix(),
+            "--ecf_files",
+            f"{WORKING_DIR.as_posix()}/ecf",
+        ]
+    )
