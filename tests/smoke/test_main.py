@@ -54,14 +54,12 @@ def test_cannot_run_without_arguments():
 
 
 @pytest.mark.usefixtures("_module_mockers")
-@pytest.mark.dependency(name="configs_are_read_from_test_config")
 def test_correct_config_is_in_use(config_path, mocker):
     mocker.patch("sys.exit")
     args = get_parsed_args(argv=[])
     assert args.config_file == config_path
 
 
-@pytest.mark.dependency(depends=["configs_are_read_from_test_config"])
 @pytest.mark.usefixtures("_module_mockers")
 class TestMainShowCommands:
     # pylint: disable=no-self-use
