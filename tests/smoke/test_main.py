@@ -83,5 +83,22 @@ class TestMainShowCommands:
                 main(["show", "config"])
 
 
+@pytest.mark.usefixtures("_module_mockers")
+def test_run_task_command():
+    main(
+        [
+            "run",
+            "--task",
+            "Forecast",
+            "--template",
+            f"{WORKING_DIR.as_posix()}/ecf/stand_alone.py",
+            "--job",
+            "./forecast.jo",
+            "-o",
+            "./forecast.log",
+        ]
+    )
+
+
 if __name__ == "__main__":
     pytest.main()
