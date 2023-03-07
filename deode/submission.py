@@ -268,7 +268,12 @@ class NoSchedulerSubmission:
 
         platform = Platform(config)
         troika_config = platform.get_value("troika.config_file")
-        self.task_settings.parse_job(task, config, template_job, task_job)
+        self.task_settings.parse_job(
+            task=task,
+            config=config,
+            input_template_job=template_job,
+            task_job=task_job,
+        )
         cmd = (
             f"{troika} -c {troika_config} submit {self.task_settings.job_type} "
             f"{task_job} -o {output}"

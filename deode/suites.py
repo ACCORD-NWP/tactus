@@ -609,10 +609,10 @@ class EcflowSuiteTask(EcflowNode):
                 if self.ecf_node is not None:
                     self.ecf_node.add_variable(var, value)
             task_settings.parse_job(
-                name,
-                config,
-                input_template,
-                task_container,
+                task=name,
+                config=config,
+                input_template_job=input_template,
+                task_job=task_container,
                 variables=variables,
                 ecf_micro=ecf_micro,
             )
