@@ -258,12 +258,13 @@ class NoSchedulerSubmission:
             troika (str, optional): troika binary. Defaults to "troika".
 
         Raises:
-            Exception: Submission failure
+            KeyError: If the task settings cannot be found in the config.
+            RuntimeError: Submission failure.
         """
         try:
             get_task(task, config)
         except KeyError:
-            raise Exception(f"Task not found: {task}") from KeyError
+            raise KeyError(f"Task not found: {task}") from KeyError
 
         platform = Platform(config)
         troika_config = platform.get_value("troika.config_file")

@@ -1,5 +1,4 @@
 """Unit tests for os_utils."""
-import pytest
 from deode.os_utils import Search
 
 

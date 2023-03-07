@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Smoke tests."""
-import datetime
 import itertools
 import shutil
 from contextlib import redirect_stderr, redirect_stdout, suppress
@@ -9,7 +8,6 @@ from pathlib import Path
 from unittest import mock
 
 import pytest
-import tomlkit
 
 from deode import PACKAGE_NAME
 from deode.argparse_wrapper import get_parsed_args
@@ -33,16 +31,16 @@ def _module_mockers(session_mocker, config_path, tmp_path_factory):
     session_mocker.patch.dict("os.environ", {"DEODE_CONFIG_PATH": str(config_path)})
 
     original_no_scheduler_submission_submit_method = NoSchedulerSubmission.submit
-    original_submission_TaskSettings_parse_job = TaskSettings.parse_job
+    original_submission_task_settings_parse_job = TaskSettings.parse_job
 
     def new_no_scheduler_submission_submit_method(*args, **kwargs):
         """Wrap the original method to catch ."""
         with suppress(RuntimeError):
             original_no_scheduler_submission_submit_method(*args, **kwargs)
 
-    def new_submission_TaskSettings_parse_job(self, **kwargs):
+    def new_submission_task_settings_parse_job(self, **kwargs):
         kwargs["task_job"] = (tmp_path_factory.getbasetemp() / "task_job.txt").as_posix()
-        original_submission_TaskSettings_parse_job(self, **kwargs)
+        original_submission_task_settings_parse_job(self, **kwargs)
 
     session_mocker.patch(
         "deode.submission.NoSchedulerSubmission.submit",
@@ -52,7 +50,7 @@ def _module_mockers(session_mocker, config_path, tmp_path_factory):
     session_mocker.patch("deode.suites.ecflow")
     session_mocker.patch(
         "deode.submission.TaskSettings.parse_job",
-        new=new_submission_TaskSettings_parse_job,
+        new=new_submission_task_settings_parse_job,
     )
 
 

@@ -93,9 +93,13 @@ class BasicConfig:
 
         Args:
             items (str): Attributes to be retrieved, as dot-separated strings.
+            default (Any): Default to be returned if the attribute does not exist.
 
         Returns:
             Any: Value of the parsed config item.
+
+        Raises:
+            AttributeError: If the attribute does not exist and no default is provided.
         """
 
         def get_attr_or_item(obj, item):

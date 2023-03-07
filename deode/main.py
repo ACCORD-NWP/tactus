@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Program's entry point."""
-import sys
 import time
 
 import humanize
