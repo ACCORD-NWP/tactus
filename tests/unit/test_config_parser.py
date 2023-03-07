@@ -347,7 +347,3 @@ class TestPossibilityOfISO8601ComplianceEnforcement:
         _ = ParsedConfig.parse_obj(
             raw_config, json_schema=json_schema_for_iso_8601_time_specs_tests
         )
-
-
-if __name__ == "__main__":
-    pytest.main()

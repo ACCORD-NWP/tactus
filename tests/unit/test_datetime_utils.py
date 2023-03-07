@@ -51,7 +51,3 @@ class TestTimeWindowContainer:
             start=start, end=end, cycle_length=cycle_legth
         )
         assert isinstance(container[len(container) // 2], TimeWindow)
-
-
-if __name__ == "__main__":
-    pytest.main()

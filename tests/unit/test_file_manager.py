@@ -144,7 +144,3 @@ class TestFileManager:
         ostring = f"{platform_value}:my_dir:DOMAIN:DEOD:2023:02:15:01:30:0002"
         test = fmanager.platform.substitute(istring)
         assert test == ostring
-
-
-if __name__ == "__main__":
-    pytest.main()
