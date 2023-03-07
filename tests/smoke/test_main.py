@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """Smoke tests."""
+import datetime
+import itertools
 import shutil
 from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
 from pathlib import Path
+from unittest import mock
 
 import pytest
 import tomlkit
@@ -66,6 +69,17 @@ class TestMainShowCommands:
     def test_show_config_command(self):
         with redirect_stdout(StringIO()):
             main(["show", "config"])
+
+    def test_show_config_command_stretched_time(self):
+        """Test again, mocking time.time so the total elapsed time is greater than 60s."""
+
+        def fake_time():
+            for new in itertools.count():
+                yield 100 * new
+
+        with mock.patch("time.time", mock.MagicMock(side_effect=fake_time())):
+            with redirect_stdout(StringIO()):
+                main(["show", "config"])
 
 
 if __name__ == "__main__":
