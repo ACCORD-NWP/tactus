@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
 import datetime
+import itertools
 from collections import namedtuple
 from pathlib import Path
 
@@ -255,6 +256,7 @@ class TestValidators:
             "2018-10-10T00:00:00.000000+00:00",
             datetime.datetime.now(datetime.timezone.utc).isoformat(),
         ],
+        ids=itertools.count(),
     )
     def test_validator_works_with_input_datetime(self, dt_input, minimal_raw_config):
         minimal_raw_config["general"]["times"]["list"] = [dt_input]
