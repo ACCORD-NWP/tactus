@@ -192,8 +192,7 @@ class TaskSettings(object):
         with open(input_template_job, mode="r", encoding="utf-8") as file_handler:
             input_content = file_handler.read()
         dir_name = os.path.dirname(os.path.realpath(task_job))
-        if not os.path.exists(dir_name):
-            os.makedirs(dir_name, exist_ok=True)
+        os.makedirs(dir_name, exist_ok=True)
         with open(task_job, mode="w", encoding="utf-8") as file_handler:
             file_handler.write(f"{interpreter}\n")
             batch_settings = self.get_task_settings(

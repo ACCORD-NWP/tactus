@@ -53,12 +53,11 @@ class SuiteDefinition(object):
             dry_run (bool, optional): Dry run not using ecflow. Defaults to False.
 
         Raises:
-            Exception: Unless ecflow is not loaded
+            ModuleNotFoundError: If ecflow is not loaded and not dry_run
 
         """
-        if ecflow is None:
-            if not dry_run:
-                raise Exception("Ecflow not loaded properly")
+        if ecflow is None and not dry_run:
+            raise ModuleNotFoundError("Ecflow not found")
 
         self.logger = get_logger_from_config(config)
         name = suite_name
