@@ -50,10 +50,11 @@ def test_package_executable_is_in_path():
     assert shutil.which(PACKAGE_NAME)
 
 
-def test_cannot_run_without_arguments():
+@pytest.mark.parametrize("argv", [[], None])
+def test_cannot_run_without_arguments(argv):
     with redirect_stderr(StringIO()):
         with pytest.raises(SystemExit, match="2"):
-            main([])
+            main(argv)
 
 
 @pytest.mark.usefixtures("_module_mockers")
