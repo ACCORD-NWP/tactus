@@ -34,14 +34,6 @@ def as_time_offset(obj):
     return pd.tseries.frequencies.to_offset(as_timedelta(obj))
 
 
-@np.vectorize
-def datetime2epoch(dt):
-    """Convert datetime object into unix epoch."""
-    reference = datetime(1970, 1, 1, tzinfo=timezone.utc)
-    epoch = int((dt - reference).total_seconds())
-    return epoch
-
-
 class TimeWindow(pd.Interval):
     """A single time window."""
 
