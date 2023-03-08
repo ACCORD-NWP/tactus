@@ -17,7 +17,6 @@
 
 [tool.poetry.dependencies]
     python = "^3.8"
-    attrs = "^21.4.0"
     dateutils = "^0.6.12"
     fastjsonschema = "2.16.2"
     humanize = "^3.14.0"
