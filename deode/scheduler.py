@@ -10,8 +10,6 @@ from datetime import datetime
 
 try:
     import ecflow  # noqa reportMissingImports
-
-    print(ecflow.__file__)
 except ModuleNotFoundError:
     ecflow = None
 from .logs import get_logger
@@ -95,11 +93,11 @@ class EcflowServer(Server):
             start_command: Ecflow start server command.
 
         Raises:
-            Exception: If not ecflow is found.
+            ModuleNotFoundError: If ecflow is not found.
 
         """
         if ecflow is None:
-            raise Exception("Ecflow was not found")
+            raise ModuleNotFoundError("Ecflow not found")
         Server.__init__(self)
         self.ecf_host = ecf_host
         self.ecf_port = ecf_port

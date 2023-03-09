@@ -40,7 +40,3 @@ class TestScheduler:
         def_file = f"/tmp/{suite_name()}.def"  # noqa
         ecflow_server.start_suite(suite_name(), def_file)
         logging.debug("Print mock: %s", mock)
-
-
-if __name__ == "__main__":
-    pytest.main()

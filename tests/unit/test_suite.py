@@ -59,7 +59,3 @@ class TestSuite:
         )
         def_file = f"/tmp/{suite_name}.def"  # noqa S108
         defs.save_as_defs(def_file)
-
-
-if __name__ == "__main__":
-    pytest.main()

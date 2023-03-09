@@ -22,7 +22,7 @@ jobs:
     strategy:
       matrix:
         step: [
-          {env: "pytest", python: "3.8", extras: "", command: "pytest --cov=./ --cov-report=xml tests/"},
+          {env: "pytest", python: "3.8", extras: "", command: "pytest"},
         ]
     container:
       image: python:${{ matrix.step.python }}-bullseye

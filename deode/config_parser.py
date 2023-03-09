@@ -18,6 +18,8 @@ from fastjsonschema import JsonSchemaValueException
 from . import PACKAGE_NAME
 from .datetime_utils import ISO_8601_TIME_DURATION_REGEX
 
+NO_DEFAULT_PROVIDED = object()
+
 MAIN_CONFIG_JSON_SCHEMA_PATH = (
     Path(__file__).parent / "config_file_schemas" / "main_config_schema.json"
 )
@@ -83,7 +85,7 @@ class BasicConfig:
             return BasicConfig(**_update_nested_dict(self.dict(), update))
         return copy.deepcopy(self)
 
-    def get_value(self, items):
+    def get_value(self, items, default=NO_DEFAULT_PROVIDED):
         """Recursively get the value of a config component.
 
         This allows us to use self.get_value("foo.bar.baz") even if "bar" is, for
@@ -91,9 +93,13 @@ class BasicConfig:
 
         Args:
             items (str): Attributes to be retrieved, as dot-separated strings.
+            default (Any): Default to be returned if the attribute does not exist.
 
         Returns:
             Any: Value of the parsed config item.
+
+        Raises:
+            AttributeError: If the attribute does not exist and no default is provided.
         """
 
         def get_attr_or_item(obj, item):
@@ -104,7 +110,13 @@ class BasicConfig:
                     return obj[item]
                 except (KeyError, TypeError) as error:
                     raise AttributeError(attr_error) from error
-        return reduce(get_attr_or_item, items.split("."), self)
+
+        try:
+            return reduce(get_attr_or_item, items.split("."), self)
+        except AttributeError as error:
+            if default is NO_DEFAULT_PROVIDED:
+                raise error
+            return default
 
     def dumps(
         self,
@@ -153,6 +165,7 @@ class BasicConfig:
         Returns:
             Any: Value of the parsed config item.
         """
+
         def regular_getattribute(obj, item):
             if type(obj) is type(self):
                 return super().__getattribute__(item)

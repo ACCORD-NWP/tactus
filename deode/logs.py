@@ -74,7 +74,7 @@ def get_logger_from_config(config):
     Returns:
         logging: Logger instance
     """
-    loglevel = config.get_value("general.loglevel")
+    loglevel = config.get_value("general.loglevel", "INFO")
     # Do we have a name yet?
     # name = config.get_value("general.exp")  # noqa
     name = "DEODE"

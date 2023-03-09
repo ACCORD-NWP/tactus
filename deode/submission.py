@@ -192,8 +192,7 @@ class TaskSettings(object):
         with open(input_template_job, mode="r", encoding="utf-8") as file_handler:
             input_content = file_handler.read()
         dir_name = os.path.dirname(os.path.realpath(task_job))
-        if not os.path.exists(dir_name):
-            os.makedirs(dir_name, exist_ok=True)
+        os.makedirs(dir_name, exist_ok=True)
         with open(task_job, mode="w", encoding="utf-8") as file_handler:
             file_handler.write(f"{interpreter}\n")
             batch_settings = self.get_task_settings(
@@ -259,21 +258,27 @@ class NoSchedulerSubmission:
             troika (str, optional): troika binary. Defaults to "troika".
 
         Raises:
-            Exception: Submission failure
+            KeyError: If the task settings cannot be found in the config.
+            RuntimeError: Submission failure.
         """
         try:
             get_task(task, config)
         except KeyError:
-            raise Exception(f"Task not found: {task}") from KeyError
+            raise KeyError(f"Task not found: {task}") from KeyError
 
         platform = Platform(config)
         troika_config = platform.get_value("troika.config_file")
-        self.task_settings.parse_job(task, config, template_job, task_job)
+        self.task_settings.parse_job(
+            task=task,
+            config=config,
+            input_template_job=template_job,
+            task_job=task_job,
+        )
         cmd = (
             f"{troika} -c {troika_config} submit {self.task_settings.job_type} "
             f"{task_job} -o {output}"
         )
         try:
             subprocess.check_call(cmd.split())
-        except Exception as exc:
-            raise Exception(f"Submission failed with {repr(exc)}") from exc
+        except subprocess.CalledProcessError as exc:
+            raise RuntimeError(f"Submission failed with {repr(exc)}") from exc

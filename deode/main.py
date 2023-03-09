@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Program's entry point."""
-import sys
 import time
 
 import humanize
@@ -14,8 +13,6 @@ from .logs import get_logger
 def main(argv=None):
     """Program's main routine."""
     t_start = time.time()
-    if argv is None:
-        argv = sys.argv[1:]
     args = get_parsed_args(program_name=PACKAGE_NAME, argv=argv)
     logger = get_logger(PACKAGE_NAME, args.loglevel)
     logger.info("Initialising %s v%s", PACKAGE_NAME, __version__)

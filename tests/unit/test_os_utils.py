@@ -1,5 +1,4 @@
 """Unit tests for os_utils."""
-import pytest
 from deode.os_utils import Search
 
 
@@ -52,7 +51,3 @@ class TestSearch:
         """Test that the return type of the Search constructor is a Search object."""
         search = Search()
         assert isinstance(search, Search)
-
-
-if __name__ == "__main__":
-    pytest.main()

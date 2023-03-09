@@ -184,7 +184,3 @@ class TestTasks:
         class_name, task_config = task_name_and_configs
         my_task_class = get_task(class_name, task_config)
         my_task_class.run()
-
-
-if __name__ == "__main__":
-    pytest.main()
