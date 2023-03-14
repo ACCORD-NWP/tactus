@@ -258,10 +258,15 @@ class SuiteDefinition(object):
                 variables=None,
             )
 
-            prepare_cycle_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prepare_cycle)])
+            prepare_cycle_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prepare_cycle)]) 
+
+            interpolation = EcflowSuiteFamily(
+                "Interpolation", time_family, ecf_files, trigger=inputdata_trigger
+            )
+
             EcflowSuiteTask(
                 "e927",
-                inputdata,
+                interpolation,
                 config,
                 self.task_settings,
                 ecf_files,
