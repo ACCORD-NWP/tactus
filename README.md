@@ -1,5 +1,5 @@
 ![Linting](https://github.com/DEODE-NWP/Deode-Prototype/actions/workflows/linting.yaml/badge.svg)
-![Tests](https://github.com/DEODE-NWP/Deode-Prototype/actions/workflows/test.yaml/badge.svg
+![Tests](https://github.com/DEODE-NWP/Deode-Prototype/actions/workflows/tests.yaml/badge.svg
 ) [![codecov](https://codecov.io/github/DEODE-NWP/Deode-Prototype/branch/develop/graph/badge.svg?token=HMWJ69EY51)](https://codecov.io/github/DEODE-NWP/Deode-Prototype)
 
 # DEODE Scripting System
