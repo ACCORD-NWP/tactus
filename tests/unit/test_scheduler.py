@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
-from unittest.mock import patch
 import logging
+from unittest.mock import patch
+
 import pytest
+
 from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
 
 
@@ -11,7 +13,7 @@ def suite_name():
 
 
 @pytest.fixture()
-@patch('deode.scheduler.ecflow')
+@patch("deode.scheduler.ecflow")
 def ecflow_task(__):
     ecf_name = f"/{suite_name}/family/Task"
     ecf_tryno = "1"
@@ -22,7 +24,7 @@ def ecflow_task(__):
 
 
 @pytest.fixture()
-@patch('deode.scheduler.ecflow')
+@patch("deode.scheduler.ecflow")
 def ecflow_server(__):
     ecf_host = "localhost"
     return EcflowServer(ecf_host)
@@ -34,7 +36,7 @@ class TestScheduler:
     def test_ecflow_client(self, ecflow_server, ecflow_task):
         EcflowClient(ecflow_server, ecflow_task)
 
-    @patch('deode.scheduler.ecflow')
+    @patch("deode.scheduler.ecflow")
     def test_start_suite(self, mock, ecflow_server):
         logging.debug("Print mock: %s", mock)
         def_file = f"/tmp/{suite_name()}.def"  # noqa

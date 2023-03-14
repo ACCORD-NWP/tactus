@@ -51,7 +51,7 @@ xlat0 = 52.5
  scratch = "/scratch/@USER@"
  rrtm_dir = "@STATIC_DATA@/rrtm/46h1"
  e923_data = "@STATIC_DATA@/climate/E923_DATA"
- namelists = "@DEODE_HOME@/nam"
+ namelists = "@DEODE_HOME@/deode/data/namelists"
  static_data = "/hpcperm/hlam/data"
  climdata = "/hpcperm/hlam/data/climate"
  ecosg_data_path = "@CLIMDATA@/ECOCLIMAP-SG"
@@ -145,7 +145,7 @@ tasks = ["Background_hpc", "UnitTest"]
  WALLTIME = "#SBATCH --time=00:30:00"
 
 [troika]
-config_file = "@DEODE_HOME@/config/troika.yml"
+config_file = "@DEODE_HOME@/deode/data/config_files/troika.yml"
 
 ################ Pysurfex ##############################################################
 [SURFEX]

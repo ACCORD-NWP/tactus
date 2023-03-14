@@ -5,10 +5,10 @@ import os
 import shutil
 import socket
 
-from deode.logs import get_logger_from_config
-from deode.tasks.batch import BatchJob
-from deode.tasks.data import InputData, OutputData
-from deode.toolbox import FileManager
+from ..logs import get_logger_from_config
+from ..toolbox import FileManager
+from .batch import BatchJob
+from .data import InputData, OutputData
 
 
 def _get_name(cname, cls, suffix, attrname="__plugin_name__"):
@@ -45,7 +45,7 @@ class Task(object):
             name (str): Task name
 
         Raises:
-            Exception: "You must set wrk"
+            ValueError: "You must set wrk"
 
         """
         self.logger = get_logger_from_config(config)
@@ -58,7 +58,7 @@ class Task(object):
 
         wrk = self.platform.get_value("system.wrk")
         if wrk is None:
-            raise Exception("You must set wrk")
+            raise ValueError("You must set wrk")
         self.wrk = wrk
         wdir = f"{self.wrk}/{socket.gethostname()}{str(os.getpid())}"
         self.wdir = wdir
@@ -145,7 +145,8 @@ class Task(object):
         """
         task_subsection_name_in_config = _get_name(
             self.__class__.__name__,
-            self.__class__, Task.__name__.lower(),
+            self.__class__,
+            Task.__name__.lower(),
             attrname="__type_name__",
         )
         setting_to_be_retrieved = f"task.{task_subsection_name_in_config}.{setting}"
@@ -179,7 +180,7 @@ class BinaryTask(Task):
         Task.__init__(self, config, name)
 
         self.logger.debug("Binary task %s", name)
-        try :
+        try:
             wrapper = self.get_task_setting("wrapper")
         except AttributeError:
             wrapper = ""

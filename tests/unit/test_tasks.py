@@ -9,9 +9,9 @@ import tomlkit
 
 import deode
 from deode.config_parser import ParsedConfig, read_raw_config_file
-from deode.discover_task import discover, get_task
 from deode.tasks.base import Task
 from deode.tasks.batch import BatchJob
+from deode.tasks.discover_task import discover, get_task
 from deode.tasks.e923 import E923
 from deode.tasks.forecast import FirstGuess, Forecast
 from deode.toolbox import ArchiveError, FileManager, ProviderError
@@ -28,7 +28,7 @@ def classes_to_be_tested():
 @pytest.fixture(scope="module")
 def base_raw_config():
     """Return a raw config common to all tasks."""
-    return read_raw_config_file("config/config.toml")
+    return read_raw_config_file("deode/data/config_files/config.toml")
 
 
 @pytest.fixture(params=classes_to_be_tested())
@@ -64,6 +64,7 @@ def task_name_and_configs(request, base_raw_config, tmp_path_factory):
             climdata = "{tmp_path_factory.getbasetemp().as_posix()}"
             prep_input_file = "{tmp_path_factory.getbasetemp().as_posix()}/demo/ECMWF/archive/2023/02/18/18/fc20230218_18+006"
             soilgrid_data_path = "{tmp_path_factory.getbasetemp().as_posix()}"
+            namelists = "{WORKING_DIR}/deode/data/namelists"
         """
     )
 

@@ -1,15 +1,13 @@
 """Module to handle submissions."""
 
+import collections.abc
 import os
 import subprocess
 import sys
-import collections.abc
 
-from deode.toolbox import Platform
-from deode.discover_task import get_task
-
-from .logs import get_logger_from_config, get_logger
-
+from .logs import get_logger, get_logger_from_config
+from .tasks.discover_task import get_task
+from .toolbox import Platform
 
 # TODO remove the need of this  # noqa
 logger = get_logger(__name__, "DEBUG")
@@ -74,14 +72,16 @@ class TaskSettings(object):
 
         if task_submit_type in all_defs:
             self.logger.debug("task_submit_type for task %s: %s", task, task_submit_type)
-            task_settings = self.update_task_setting(task_settings,
-                                                     all_defs[task_submit_type])
+            task_settings = self.update_task_setting(
+                task_settings, all_defs[task_submit_type]
+            )
 
         if "task_exceptions" in all_defs:
             if task in all_defs["task_exceptions"]:
                 self.logger.debug("Task task_exceptions for task %s", task)
                 task_settings = self.update_task_setting(
-                    task_settings, all_defs["task_exceptions"][task])
+                    task_settings, all_defs["task_exceptions"][task]
+                )
 
         if "SCHOST" in task_settings:
             self.job_type = task_settings["SCHOST"]
@@ -110,7 +110,9 @@ class TaskSettings(object):
                 self.logger.debug(type(task_settings[key]))
                 if isinstance(task_settings[key], dict):
                     for setting, value in task_settings[key].items():
-                        self.logger.debug("%s %s variables: %s", setting, value, variables)
+                        self.logger.debug(
+                            "%s %s variables: %s", setting, value, variables
+                        )
                         if variables is not None:
                             if setting in variables:
                                 value = f"{ecf_micro}{setting}{ecf_micro}"
@@ -238,15 +240,7 @@ class NoSchedulerSubmission:
         """
         self.task_settings = task_settings
 
-    def submit(
-        self,
-        task,
-        config,
-        template_job,
-        task_job,
-        output,
-        troika="troika"
-    ):
+    def submit(self, task, config, template_job, task_job, output, troika="troika"):
         """Submit task.
 
         Args:

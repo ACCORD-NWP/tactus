@@ -168,7 +168,7 @@ class EcflowServer(Server):
             def_file (str): Definition file.
 
         Raises:
-            Exception: _description_
+            RuntimeError: If suite cannot be replaced.
         """
         logger.debug("%s %s", suite_name, def_file)
         try:
@@ -177,10 +177,8 @@ class EcflowServer(Server):
             try:
                 self.ecf_client.delete("/" + suite_name)
                 self.ecf_client.replace("/" + suite_name, def_file)
-            except RuntimeError:
-                raise Exception(
-                    "Could not replace suite " + suite_name
-                ) from RuntimeError
+            except RuntimeError as err:
+                raise RuntimeError("Could not replace suite " + suite_name) from err
 
 
 class EcflowLogServer:
@@ -298,7 +296,7 @@ class EcflowClient(object):
         logger.info("   Aborting: Signal handler called with signal %s", str(signum))
 
         self.__exit__(
-            Exception, "Signal handler called with signal " + str(signum), extra
+            InterruptedError, "Signal handler called with signal " + str(signum), extra
         )
 
     def __enter__(self):

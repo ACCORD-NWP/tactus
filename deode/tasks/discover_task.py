@@ -3,9 +3,9 @@ import importlib
 import inspect
 import pkgutil
 
-from . import tasks
-from .logs import get_logger
-from .tasks.base import Task, _get_name
+from .. import tasks
+from ..logs import get_logger
+from .base import Task, _get_name
 
 logger = get_logger(__name__, "DEBUG")
 
@@ -31,8 +31,8 @@ def discover_modules(package, what="plugin"):
         logger.debug("Loading module %r", fullname)
         try:
             mod = importlib.import_module(fullname)
-        except Exception as exc:
-            logger.warning("Could not load %r %s", fullname, repr(exc))
+        except ImportError as exc:
+            logger.warning("Could not load %r: %s", fullname, repr(exc))
             continue
         yield fullname, mod
 

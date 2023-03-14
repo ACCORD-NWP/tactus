@@ -2,9 +2,11 @@
 
 import os
 import shutil
+
 import f90nml
-from deode.tasks.batch import BatchJob
+
 from .base import Task
+from .batch import BatchJob
 
 
 class E923(Task):
@@ -21,14 +23,22 @@ class E923(Task):
         # Temporary namelists
         self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
 
-        self.namelist_path = self.platform.get_platform_value('namelists')
-        self.climdir = self.platform.get_system_value('climdir')
-        self.months = [f'{mm:02d}'for mm in range(1, 13)]
+        self.namelist_path = self.platform.get_platform_value("namelists")
+        self.climdir = self.platform.get_system_value("climdir")
+        self.months = [f"{mm:02d}" for mm in range(1, 13)]
 
-        self.namelists = ["nam923_1_smoothing",
-                          "nam923_1", "nam923_2", "nam923_3",
-                          "nam923_4", "nam923_5", "nam923_6",
-                          "nam923_7", "nam923_8", "nam923_9"]
+        self.namelists = [
+            "nam923_1_smoothing",
+            "nam923_1",
+            "nam923_2",
+            "nam923_3",
+            "nam923_4",
+            "nam923_5",
+            "nam923_6",
+            "nam923_7",
+            "nam923_8",
+            "nam923_9",
+        ]
 
         self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
 
@@ -73,7 +83,7 @@ class E923(Task):
         nam.uppercase = True
         nam.end_comma = True
         print(nam)
-        with open('fort.4', 'w', encoding="utf-8") as nml_file:
+        with open("fort.4", "w", encoding="utf-8") as nml_file:
             f90nml.write(nam, nml_file)
 
     def remove_links(self, link):
@@ -97,9 +107,9 @@ class E923(Task):
             month : month
         """
         if month is None:
-            self.logger.info('Executing PART %s', part)
+            self.logger.info("Executing PART %s", part)
         else:
-            self.logger.info('Executing PART %s, month %s', part, month)
+            self.logger.info("Executing PART %s, month %s", part, month)
 
     def constant_part(self, constant_file):
         """Run the constant part of e923.
@@ -119,10 +129,17 @@ class E923(Task):
 
         # Part 0
         i = 0
-        topo_files = ["Water_Percentage", "Oro_Mean", "Sigma", "Nb_Peaks",
-                      "Urbanisation", "Dh_over_Dx_Dh_over_Dy",
-                      "Dh_over_Dx_square", "Dh_over_Dy_square",
-                      "Hmax-HxH-Hmin_ov4"]
+        topo_files = [
+            "Water_Percentage",
+            "Oro_Mean",
+            "Sigma",
+            "Nb_Peaks",
+            "Urbanisation",
+            "Dh_over_Dx_Dh_over_Dy",
+            "Dh_over_Dx_square",
+            "Dh_over_Dy_square",
+            "Hmax-HxH-Hmin_ov4",
+        ]
         for fname in topo_files:
             self.fmanager.input(f"@E923_DATA@/GTOPT030/{fname}", fname)
 
@@ -132,7 +149,7 @@ class E923(Task):
         self.myexec(self.master, 0)
 
         # Cleanup
-        self.remove_links(['Neworog'])
+        self.remove_links(["Neworog"])
         os.rename("Const.Clim", "Neworog")
 
         # Part 1
@@ -147,8 +164,16 @@ class E923(Task):
         i = 2
         nam = self.load_namelist(i)
         self.write_namelist(nam)
-        ifiles = ["itp_GL", "alb_GL", "emi_GL", "dps_GL",
-                  "arg_GL", "sab_GL", "vgx_GL", "dpr_GL"]
+        ifiles = [
+            "itp_GL",
+            "alb_GL",
+            "emi_GL",
+            "dps_GL",
+            "arg_GL",
+            "sab_GL",
+            "vgx_GL",
+            "dpr_GL",
+        ]
         for fname in ifiles:
             self.fmanager.input(f"@E923_DATA@/SURFACE_G/{fname}", fname)
 
@@ -187,13 +212,21 @@ class E923(Task):
         for ifile in ["z0v_GL", "alv_GL", "rsm_GL"]:
             self.fmanager.input(f"@E923_DATA@/SURFACE_G/{ifile}", ifile)
 
-        for ifile in ["msk_HR", "itp_HR", "dpr_HR", "rsm_HR", "vgx_HR", "alv_HR",
-                      "z0v_HR"]:
+        for ifile in [
+            "msk_HR",
+            "itp_HR",
+            "dpr_HR",
+            "rsm_HR",
+            "vgx_HR",
+            "alv_HR",
+            "z0v_HR",
+        ]:
             self.fmanager.input(f"@E923_DATA@/SURFACE_L/{ifile}", ifile)
 
         for ifile in ["rel_GL.Z"]:
-            self.fmanager.input(f"@E923_DATA@/CLIM_G/v2/{ifile}", ifile,
-                                provider_id="copy")
+            self.fmanager.input(
+                f"@E923_DATA@/CLIM_G/v2/{ifile}", ifile, provider_id="copy"
+            )
         os.system("gunzip rel_GL.Z")  # noqa
 
         for mm in self.months:
@@ -238,8 +271,8 @@ class E923(Task):
             for x in indata:
                 os.system(f"gunzip -f {x}_GL.Z")  # noqa
 
-            self.fmanager.input('tpl_GL', 'tsl_GL', provider_id="copy")
-            self.fmanager.input('wpl_GL', 'wsl_GL', provider_id="copy")
+            self.fmanager.input("tpl_GL", "tsl_GL", provider_id="copy")
+            self.fmanager.input("wpl_GL", "wsl_GL", provider_id="copy")
 
             nam = self.load_namelist(6)
             self.write_namelist(nam)
@@ -247,15 +280,14 @@ class E923(Task):
             self.myexec(self.master, 6)
 
             # PART 8
-            self.fmanager.input(f"@E923_DATA@/abc_O3/abc_quadra_{mm}", 'abc_coef')
+            self.fmanager.input(f"@E923_DATA@/abc_O3/abc_quadra_{mm}", "abc_coef")
             nam = self.load_namelist(8)
             self.write_namelist(nam)
             self.print_part(8, mm)
             self.myexec(self.master, 8)
 
             # PART 9
-            self.fmanager.input(f"@E923_DATA@/aero_tegen/aero.tegen.m{mm}_GL",
-                                'aero_GL')
+            self.fmanager.input(f"@E923_DATA@/aero_tegen/aero.tegen.m{mm}_GL", "aero_GL")
 
             nam = self.load_namelist(9)
             self.write_namelist(nam)
@@ -275,7 +307,7 @@ class E923(Task):
 
         constant_file = f"{self.climdir}/Const.Clim.const"
 
-        self.logger.debug('Constant file:%s', constant_file)
+        self.logger.debug("Constant file:%s", constant_file)
 
         if not os.path.isfile(constant_file):
             # Run the constant part
@@ -286,8 +318,8 @@ class E923(Task):
 
         # Store the data
         for mm in self.months:
-            source = f'Const.Clim.{mm}'
-            target = f'{self.climdir}/Const.Clim.{mm}'
+            source = f"Const.Clim.{mm}"
+            target = f"{self.climdir}/Const.Clim.{mm}"
             self.fmanager.output(source, target)
 
 
@@ -306,21 +338,21 @@ class PgdUpdate(Task):
             config (deode.ParsedConfig): Configuration
 
         """
-        Task.__init__(self, config, 'PgdUpdate')
+        Task.__init__(self, config, "PgdUpdate")
 
         self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
-        self.climdir = self.platform.get_system_value('climdir')
+        self.climdir = self.platform.get_system_value("climdir")
         self.namelists = self.platform.get_platform_value("NAMELISTS")
         self.gl = f"{self.platform.get_system_value('bindir')}/gl"  # noqa
 
     def execute(self):
         """Run task."""
-        outfile = 'Const.Clim.sfx'
-        for ifile in ['Const.Clim.const', 'PGD_prel.fa']:
-            self.fmanager.input(f"{self.climdir}/{ifile}", ifile, provider_id='copy')
-            self.fmanager.input(f"{self.namelists}/namgl_pgd_update", 'namgl')
+        outfile = "Const.Clim.sfx"
+        for ifile in ["Const.Clim.const", "PGD_prel.fa"]:
+            self.fmanager.input(f"{self.climdir}/{ifile}", ifile, provider_id="copy")
+            self.fmanager.input(f"{self.namelists}/namgl_pgd_update", "namgl")
 
-        self.fmanager.input(f"{self.climdir}/{ifile}", outfile, provider_id='copy')
+        self.fmanager.input(f"{self.climdir}/{ifile}", outfile, provider_id="copy")
         # Run MASTERODB
         batch = BatchJob(os.environ, wrapper=self.wrapper)
         batch.run(f"{self.gl} -n namgl")

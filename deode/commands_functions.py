@@ -2,6 +2,7 @@
 """Implement the package's commands."""
 
 import os
+
 from .logs import get_logger
 from .scheduler import EcflowServer
 from .submission import NoSchedulerSubmission, TaskSettings
@@ -25,12 +26,7 @@ def run_task(args, config):
     submission_defs = TaskSettings(config)
     sub = NoSchedulerSubmission(submission_defs)
     sub.submit(
-        args.task,
-        config,
-        args.template_job,
-        args.task_job,
-        args.output,
-        args.troika
+        args.task, config, args.template_job, args.task_job, args.output, args.troika
     )
     logger.info("Done with task %s", args.task)
 

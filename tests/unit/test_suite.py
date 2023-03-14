@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
 import os
+
 import pytest
 import tomlkit
 
@@ -26,8 +27,7 @@ def minimal_parsed_config(minimal_raw_config):
 
 @pytest.fixture()
 def config_from_task_config_file():
-    fname = "config/config.toml"
-    return ParsedConfig.from_file(fname)
+    return ParsedConfig.from_file("deode/data/config_files/config.toml")
 
 
 class TestSuite:
@@ -40,9 +40,7 @@ class TestSuite:
         config = config_from_task_config_file
         config = config.copy(
             update={
-                "platform": {
-                    "deode_home": f"{os.path.dirname(__file__)}/../.."
-                },
+                "platform": {"deode_home": f"{os.path.dirname(__file__)}/../.."},
             }
         )  # noqa S108
         suite_name = "test_suite"

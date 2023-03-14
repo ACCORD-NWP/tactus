@@ -1,6 +1,7 @@
 """Unit tests for geo_utils."""
 import pytest
-from deode.geo_utils import Projstring, Projection
+
+from deode.geo_utils import Projection, Projstring
 
 
 class TestProjstring:
@@ -14,8 +15,14 @@ class TestProjstring:
     def test_get_projstring_return_value(self):
         """Test that the return value of get_projstring is a valid proj4 string."""
         projstring = Projstring()
-        assert projstring.get_projstring() == "+proj=stere +lat_0=-90.0 +lon_0=0.0 +lat_ts=-90.0"
-        assert projstring.get_projstring(lon0=10.0, lat0=90.0) == "+proj=lcc +lat_0=90.0 +lon_0=10.0 +lat_1=90.0 +lat_2=90.0 +units=m +no_defs +R=6371000.0"
+        assert (
+            projstring.get_projstring()
+            == "+proj=stere +lat_0=-90.0 +lon_0=0.0 +lat_ts=-90.0"
+        )
+        assert (
+            projstring.get_projstring(lon0=10.0, lat0=90.0)
+            == "+proj=lcc +lat_0=90.0 +lon_0=10.0 +lat_1=90.0 +lat_2=90.0 +units=m +no_defs +R=6371000.0"
+        )
 
     def test_projstring_init(self):
         """Test that the Projstring class can be initialized."""
@@ -44,17 +51,25 @@ class TestProjection:
         projstring = Projstring()
         projection = Projection(projstring.get_projstring())
         config = {"key": "value"}
-        with pytest.raises(ValueError, match="not_key not in dictionary. Check config file"):
+        with pytest.raises(
+            ValueError, match="not_key not in dictionary. Check config file"
+        ):
             projection.check_key("not_key", config)
 
     def test_domain_properties(self):
         """Test that domain properties are returned correctly."""
-        domain_spec = {'lonc': 0.0, 'latc': 50.0, 'nlon': 200, 'nlat': 200, 'gsize': 1000.0}
+        domain_spec = {
+            "lonc": 0.0,
+            "latc": 50.0,
+            "nlon": 200,
+            "nlat": 200,
+            "gsize": 1000.0,
+        }
         projstring = Projstring()
         projection = Projection(projstring.get_projstring())
         domain_properties = projection.get_domain_properties(domain_spec)
 
-        assert domain_properties['minlon'] == -2.0
-        assert domain_properties['maxlon'] == 2.0
-        assert domain_properties['minlat'] == 48.0
-        assert domain_properties['maxlat'] == 52.0
+        assert domain_properties["minlon"] == -2.0
+        assert domain_properties["maxlon"] == 2.0
+        assert domain_properties["minlat"] == 48.0
+        assert domain_properties["maxlat"] == 52.0

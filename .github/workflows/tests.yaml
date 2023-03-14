@@ -1,35 +1,51 @@
-#.github/workflows/linting.yaml
-name: Linting Checks
+#.github/workflows/tests.yaml
+name: Unit Tests
 
 on:
   pull_request:
     branches:
       - master
       - develop
-    paths:
-      - '**.py'
   push:
     branches:
       - '**' # Every branch
-    paths:
-      - '**.py'
 
 jobs:
-  linting:
+  tests:
     if: github.repository_owner == 'DEODE-NWP'
-    name: Run Linters
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ "ubuntu-latest" ]
+        env: [ "pytest" ]
+        python-version: [ "3.8" ]
+
+    name: "${{ matrix.os }}, python=${{ matrix.python-version }}"
+    runs-on: ${{ matrix.os }}
+
+    container:
+      image: python:${{ matrix.python-version }}-bullseye
+      env:
+        COVERAGE_FILE: ".coverage.${{ matrix.env }}.${{ matrix.python-version }}"
+
     steps:
       #----------------------------------------------
-      #       check-out repo and set-up python
+      #           check-out repo
       #----------------------------------------------
       - name: Check out repository
         uses: actions/checkout@v3
-      - name: Set up python
-        id: setup-python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.8'
+
+      #----------------------------------------------
+      #           add matrix specifics
+      #----------------------------------------------
+      - name: Install system gdal libs
+        run: |
+          apt-get update
+          apt-get install -y gdal-bin libgdal-dev
+
+      - name: Install pygdal
+        run: |
+          pip install pygdal=="`gdal-config --version`.*"
 
       #----------------------------------------------
       #  --- configure poetry & install project  ----
@@ -49,21 +65,20 @@ jobs:
 
       - name: Install dependencies (if venv cache is not found)
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root --only linting
+        run: poetry install --no-interaction --no-root --only main,test
 
       - name: Install the project itself
         run: poetry install --no-interaction --only-root
 
       #----------------------------------------------
-      #         Run the linting checks
+      #      run test suite and report coverage
       #----------------------------------------------
-      - name: isort
+      - name: Run tests
         run: |
-          poetry run isort --check-only .
-      - name: black
-        run: |
-          poetry run black --check .
-      - name: flakeheaven
-        run: |
-          export FLAKEHEAVEN_CACHE="${TMPDIR:-${TEMP:-${TMP:-/tmp}}}/flakeheaven_cache.$(openssl rand -hex 12)"
-          poetry run flakeheaven lint .
+          poetry run pytest -n auto
+
+      - name: Upload test coverage report to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./.coverage.xml

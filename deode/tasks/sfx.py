@@ -1,12 +1,14 @@
 """Forecast."""
 
-import os
 import logging
-import surfex
+import os
+
 import f90nml
-from deode.tasks.batch import BatchJob
-from deode.datetime_utils import as_datetime
+import surfex
+
+from ..datetime_utils import as_datetime
 from .base import Task
+from .batch import BatchJob
 
 
 class SurfexBinaryTask(Task):
@@ -60,7 +62,7 @@ class SurfexBinaryTask(Task):
             "albnir_veg_dir": f"{ecosg_dir}/ALB_SAT/",
             "albvis_veg_dir": f"{ecosg_dir}/ALB_SAT/",
             "lai_dir": f"{ecosg_dir}/LAI_SAT/",
-            "oro_dir": f"{climdir}"
+            "oro_dir": f"{climdir}",
         }
         self.exp_file_paths = surfex.SystemFilePaths(exp_file_paths)
 
@@ -78,12 +80,12 @@ class SurfexBinaryTask(Task):
                 "xdx": self.config.get_value("domain.xdx"),
                 "xdy": self.config.get_value("domain.xdy"),
                 "ilone": self.config.get_value("domain.ilone"),
-                "ilate": self.config.get_value("domain.ilate")
+                "ilate": self.config.get_value("domain.ilate"),
             },
             "nam_conf_proj": {
                 "xlon0": self.config.get_value("domain.xlon0"),
-                "xlat0": self.config.get_value("domain.xlat0")
-            }
+                "xlat0": self.config.get_value("domain.xlat0"),
+            },
         }
         self.geo = surfex.ConfProj(conf_proj)
 
@@ -93,10 +95,21 @@ class SurfexBinaryTask(Task):
         self.print_namelist = True
 
     def execute_binary(
-            self, binary, output, pgd_file_path=None, prep_file_path=None,
-            archive_data=None, forc_zs=False, masterodb=True, perturbed_file_pattern=None,
-            fcint=3, prep_file=None, prep_filetype=None, prep_pgdfile=None,
-            prep_pgdfiletype=None):
+        self,
+        binary,
+        output,
+        pgd_file_path=None,
+        prep_file_path=None,
+        archive_data=None,
+        forc_zs=False,
+        masterodb=True,
+        perturbed_file_pattern=None,
+        fcint=3,
+        prep_file=None,
+        prep_filetype=None,
+        prep_pgdfile=None,
+        prep_pgdfiletype=None,
+    ):
         """Execute the surfex binary.
 
         Args:
@@ -129,45 +142,51 @@ class SurfexBinaryTask(Task):
             self.need_pgd = False
             self.need_prep = False
             input_data = surfex.PgdInputData(
-                self.sfx_config, self.exp_file_paths,
-                check_existence=self.check_existence
+                self.sfx_config, self.exp_file_paths, check_existence=self.check_existence
             )
         elif self.mode == "prep":
             self.do_prep = True
             self.need_prep = False
             input_data = surfex.PrepInputData(
-                self.sfx_config, self.exp_file_paths,
+                self.sfx_config,
+                self.exp_file_paths,
                 check_existence=self.check_existence,
-                prep_file=prep_file, prep_pgdfile=prep_pgdfile
+                prep_file=prep_file,
+                prep_pgdfile=prep_pgdfile,
             )
         elif self.mode == "offline":
             input_data = surfex.OfflineInputData(
-                self.sfx_config, self.exp_file_paths,
-                check_existence=self.check_existence
+                self.sfx_config, self.exp_file_paths, check_existence=self.check_existence
             )
         elif self.mode == "soda":
             self.soda = True
             input_data = surfex.SodaInputData(
-                self.sfx_config, self.exp_file_paths,
+                self.sfx_config,
+                self.exp_file_paths,
                 check_existence=self.check_existence,
-                dtg=self.dtg, masterodb=masterodb,
-                perturbed_file_pattern=perturbed_file_pattern
+                dtg=self.dtg,
+                masterodb=masterodb,
+                perturbed_file_pattern=perturbed_file_pattern,
             )
         elif self.mode == "perturbed":
             self.perturbed = True
             input_data = surfex.OfflineInputData(
-                self.sfx_config, self.exp_file_paths,
-                check_existence=self.check_existence
+                self.sfx_config, self.exp_file_paths, check_existence=self.check_existence
             )
         else:
             raise NotImplementedError(self.mode + " is not implemented!")
 
         self.namelist = surfex.BaseNamelist(
-            self.mode, self.sfx_config, self.input_path,
+            self.mode,
+            self.sfx_config,
+            self.input_path,
             forc_zs=forc_zs,
-            prep_file=prep_file, prep_filetype=prep_filetype,
-            prep_pgdfile=prep_pgdfile, prep_pgdfiletype=prep_pgdfiletype,
-            dtg=self.dtg, fcint=fcint
+            prep_file=prep_file,
+            prep_filetype=prep_filetype,
+            prep_pgdfile=prep_pgdfile,
+            prep_pgdfiletype=prep_pgdfiletype,
+            dtg=self.dtg,
+            fcint=fcint,
         )
 
         rte = os.environ
@@ -195,54 +214,89 @@ class SurfexBinaryTask(Task):
 
         if self.need_pgd:
             pgdfile = surfex.file.PGDFile(
-                filetype, pgdfile, input_file=pgd_file_path, lfagmap=lfagmap)
+                filetype, pgdfile, input_file=pgd_file_path, lfagmap=lfagmap
+            )
 
         if self.need_prep:
             prepfile = surfex.PREPFile(
-                filetype, prepfile, input_file=prep_file_path, lfagmap=lfagmap)
+                filetype, prepfile, input_file=prep_file_path, lfagmap=lfagmap
+            )
 
         if self.need_prep and self.need_pgd:
             surffile = surfex.SURFFile(
-                filetype, surffile, archive_file=output, lfagmap=lfagmap)
+                filetype, surffile, archive_file=output, lfagmap=lfagmap
+            )
         else:
             surffile = None
 
         if self.perturbed:
             if self.pert > 0:
                 surfex.PerturbedOffline(
-                    binary, batch, prepfile, self.ivar, settings,
-                    input_data, pgdfile=pgdfile, surfout=surffile,
+                    binary,
+                    batch,
+                    prepfile,
+                    self.ivar,
+                    settings,
+                    input_data,
+                    pgdfile=pgdfile,
+                    surfout=surffile,
                     archive_data=archive_data,
-                    print_namelist=self.print_namelist
+                    print_namelist=self.print_namelist,
                 )
             else:
                 surfex.SURFEXBinary(
-                    binary, batch, prepfile, settings, input_data,
-                    pgdfile=pgdfile, surfout=surffile,
+                    binary,
+                    batch,
+                    prepfile,
+                    settings,
+                    input_data,
+                    pgdfile=pgdfile,
+                    surfout=surffile,
                     archive_data=archive_data,
-                    print_namelist=self.print_namelist
+                    print_namelist=self.print_namelist,
                 )
         elif self.pgd:
             pgdfile = surfex.file.PGDFile(
-                filetype, pgdfile, input_file=pgd_file_path,
-                archive_file=output, lfagmap=lfagmap
+                filetype,
+                pgdfile,
+                input_file=pgd_file_path,
+                archive_file=output,
+                lfagmap=lfagmap,
             )
             surfex.SURFEXBinary(
-                binary, batch, pgdfile, settings, input_data,
-                archive_data=archive_data, print_namelist=self.print_namelist
+                binary,
+                batch,
+                pgdfile,
+                settings,
+                input_data,
+                archive_data=archive_data,
+                print_namelist=self.print_namelist,
             )
         elif self.do_prep:
             prepfile = surfex.PREPFile(
-                filetype, prepfile, archive_file=output, lfagmap=lfagmap)
+                filetype, prepfile, archive_file=output, lfagmap=lfagmap
+            )
             surfex.SURFEXBinary(
-                binary, batch, prepfile, settings, input_data, pgdfile=pgdfile,
-                archive_data=archive_data, print_namelist=self.print_namelist
+                binary,
+                batch,
+                prepfile,
+                settings,
+                input_data,
+                pgdfile=pgdfile,
+                archive_data=archive_data,
+                print_namelist=self.print_namelist,
             )
         else:
             surfex.SURFEXBinary(
-                binary, batch, prepfile, settings, input_data, pgdfile=pgdfile,
-                surfout=surffile, archive_data=archive_data,
-                print_namelist=self.print_namelist
+                binary,
+                batch,
+                prepfile,
+                settings,
+                input_data,
+                pgdfile=pgdfile,
+                surfout=surffile,
+                archive_data=archive_data,
+                print_namelist=self.print_namelist,
             )
 
 
@@ -285,10 +339,14 @@ class Prep(SurfexBinaryTask):
         """Execute."""
         pgd_file_path = self.platform.get_system_value("climdir") + "/Const.Clim.sfx"
         # TODO get from config?
-        prep_file = self.platform.get_system_value("bddir_sfx") + "/" + self.platform.get_system_value("bdfile_sfx_template")
+        prep_file = (
+            self.platform.get_system_value("bddir_sfx")
+            + "/"
+            + self.platform.get_system_value("bdfile_sfx_template")
+        )
         prep_filetype = "GRIB2"
         cnmexp = self.config.get_value("general.cnmexp")
-        archive = self.platform.get_system_value('archive')
+        archive = self.platform.get_system_value("archive")
 
         output = f"{archive}/ICMSH{cnmexp}INIT.sfx"
         binary = self.platform.get_system_value("bindir") + "/PREP"
@@ -297,9 +355,13 @@ class Prep(SurfexBinaryTask):
 
             # TODO temporary  # noqa
             os.system(f"touch {pgd_file_path}")  # noqa
-            SurfexBinaryTask.execute_binary(self, binary, output,
-                                            pgd_file_path=pgd_file_path,
-                                            prep_file=prep_file,
-                                            prep_filetype=prep_filetype)
+            SurfexBinaryTask.execute_binary(
+                self,
+                binary,
+                output,
+                pgd_file_path=pgd_file_path,
+                prep_file=prep_file,
+                prep_filetype=prep_filetype,
+            )
         else:
             logging.info("Output already exists: %s", output)

@@ -21,7 +21,7 @@ from .datetime_utils import ISO_8601_TIME_DURATION_REGEX
 NO_DEFAULT_PROVIDED = object()
 
 MAIN_CONFIG_JSON_SCHEMA_PATH = (
-    Path(__file__).parent / "config_file_schemas" / "main_config_schema.json"
+    Path(__file__).parent / "data" / "config_file_schemas" / "main_config_schema.json"
 )
 with open(MAIN_CONFIG_JSON_SCHEMA_PATH, "r") as schema_file:
     MAIN_CONFIG_JSON_SCHEMA = json.load(schema_file)

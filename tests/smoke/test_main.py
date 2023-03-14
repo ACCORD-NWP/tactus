@@ -20,7 +20,7 @@ WORKING_DIR = Path.cwd()
 @pytest.fixture(scope="module")
 def config_path(tmp_path_factory):
     config_path = tmp_path_factory.getbasetemp() / "config.toml"
-    shutil.copy(WORKING_DIR / "config/config.toml", config_path)
+    shutil.copy(WORKING_DIR / "deode/data/config_files/config.toml", config_path)
     return config_path
 
 
@@ -99,7 +99,7 @@ def test_run_task_command(tmp_path):
             "--task",
             "Forecast",
             "--template",
-            f"{WORKING_DIR.as_posix()}/ecf/stand_alone.py",
+            f"{WORKING_DIR.as_posix()}/deode/templates/stand_alone.py",
             "--job",
             f"{tmp_path.as_posix()}/forecast.jo",
             "-o",

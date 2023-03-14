@@ -1,10 +1,12 @@
 """E927."""
 
-from .base import Task
-from deode.tasks.batch import BatchJob
-from deode.datetime_utils import as_datetime, as_timedelta
-import f90nml
 import os
+
+import f90nml
+
+from ..datetime_utils import as_datetime, as_timedelta
+from .base import Task
+from .batch import BatchJob
 
 
 class E927(Task):
@@ -19,16 +21,16 @@ class E927(Task):
         Task.__init__(self, config, __name__)
 
         self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
-        self.climdir = self.platform.get_system_value('climdir')
+        self.climdir = self.platform.get_system_value("climdir")
 
         self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
         self.bdint = self.config.get_value("general.bdint")
         self.forecast_range = self.config.get_value("general.forecast_range")
 
         self.cnmexp = self.config.get_value("general.cnmexp")
-        self.bdclimdir = self.platform.get_system_value('bdclimdir')
+        self.bdclimdir = self.platform.get_system_value("bdclimdir")
 
-        self.namelist_path = self.platform.get_platform_value('NAMELISTS')
+        self.namelist_path = self.platform.get_platform_value("NAMELISTS")
         self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
 
     def load_namelist(self, namelist):
@@ -54,7 +56,7 @@ class E927(Task):
         """
         nam.uppercase = True
         nam.end_comma = True
-        with open('fort.4', 'w', encoding="utf-8") as nml_file:
+        with open("fort.4", "w", encoding="utf-8") as nml_file:
             f90nml.write(nam, nml_file)
 
     def remove_links(self, link):
@@ -82,8 +84,8 @@ class E927(Task):
 
         # Climate files
         mm = self.basetime.strftime("%m")
-        self.fmanager.input("{}/Const.Clim.{}".format(self.climdir, mm), 'const.clim.000')
-        self.fmanager.input("{}/Const.Clim.{}".format(self.bdclimdir, mm), 'Const.Clim')
+        self.fmanager.input("{}/Const.Clim.{}".format(self.climdir, mm), "const.clim.000")
+        self.fmanager.input("{}/Const.Clim.{}".format(self.bdclimdir, mm), "Const.Clim")
 
         # Namelist
         namelist = f"{self.namelist_path}/fort.4_e927"
@@ -100,21 +102,23 @@ class E927(Task):
         offset = int(basetime.strftime("%H")) % 12
         time_period = f"PT{offset}H"
         basetime = basetime - as_timedelta(time_period)
-        bddir = self.config.get_value('system.bddir')
-        bdfile_template = self.config.get_value('system.bdfile_template')
+        bddir = self.config.get_value("system.bddir")
+        bdfile_template = self.config.get_value("system.bdfile_template")
 
         while cdtg <= dtgend:
 
             # Input file
-            initfile = f'ICMSH{self.cnmexp}INIT'
-            self.fmanager.input(f"{bddir}/{bdfile_template}", initfile, basetime=basetime, validtime=cdtg)
+            initfile = f"ICMSH{self.cnmexp}INIT"
+            self.fmanager.input(
+                f"{bddir}/{bdfile_template}", initfile, basetime=basetime, validtime=cdtg
+            )
 
             # Run masterodb
             batch = BatchJob(os.environ, wrapper=self.wrapper)
             batch.run(self.master)
 
             target = f"{self.wrk}/ELSCF{self.cnmexp}ALBC{i:03d}"
-            self.fmanager.output(f'PF{self.cnmexp}000+0000', target)
-            self.remove_links([initfile, 'ncf927'])
+            self.fmanager.output(f"PF{self.cnmexp}000+0000", target)
+            self.remove_links([initfile, "ncf927"])
             cdtg += as_timedelta(self.bdint)
             i += 1

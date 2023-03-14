@@ -1,6 +1,6 @@
 """Utilities for simple geographic tasks."""
-import pyproj
 import numpy as np
+import pyproj
 
 
 class Projstring:
@@ -21,12 +21,16 @@ class Projstring:
             str: Proj4 string
         """
         if lat0 == -90.0:
-            proj_string = f"+proj=stere +lat_0={str(lat0)} +lon_0={str(lon0)} "\
-                          f"+lat_ts={str(lat0)}"
+            proj_string = (
+                f"+proj=stere +lat_0={str(lat0)} +lon_0={str(lon0)} "
+                f"+lat_ts={str(lat0)}"
+            )
         else:
-            proj_string = f"+proj=lcc +lat_0={str(lat0)} +lon_0={str(lon0)} " \
-                          f"+lat_1={str(lat0)} +lat_2={str(lat0)} " \
-                          f"+units=m +no_defs +R={str(self.earth_radius)}"
+            proj_string = (
+                f"+proj=lcc +lat_0={str(lat0)} +lon_0={str(lon0)} "
+                f"+lat_1={str(lat0)} +lat_2={str(lat0)} "
+                f"+units=m +no_defs +R={str(self.earth_radius)}"
+            )
 
         return proj_string
 
@@ -60,7 +64,7 @@ class Projection:
         if key in config:
             return True
         else:
-            raise ValueError('{} not in dictionary. Check config file'.format(key))
+            raise ValueError("{} not in dictionary. Check config file".format(key))
 
     def get_domain_properties(self, domain_spec: dict) -> dict:
         """Get domain properties.
@@ -71,21 +75,21 @@ class Projection:
         Returns:
             dict: Domain properties
         """
-        self.check_key('lonc', domain_spec)
-        self.check_key('latc', domain_spec)
-        self.check_key('nlon', domain_spec)
-        self.check_key('nlat', domain_spec)
-        self.check_key('gsize', domain_spec)
+        self.check_key("lonc", domain_spec)
+        self.check_key("latc", domain_spec)
+        self.check_key("nlon", domain_spec)
+        self.check_key("nlat", domain_spec)
+        self.check_key("gsize", domain_spec)
 
-        lonc = domain_spec['lonc']
-        latc = domain_spec['latc']
-        nlon = domain_spec['nlon']
-        nlat = domain_spec['nlat']
-        gsize = domain_spec['gsize']
+        lonc = domain_spec["lonc"]
+        latc = domain_spec["latc"]
+        nlon = domain_spec["nlon"]
+        nlat = domain_spec["nlat"]
+        gsize = domain_spec["gsize"]
 
-        xloncen, xlatcen = \
-            pyproj.Transformer.from_crs(self.wgs84, self.proj,
-                                        always_xy=True).transform(lonc, latc)
+        xloncen, xlatcen = pyproj.Transformer.from_crs(
+            self.wgs84, self.proj, always_xy=True
+        ).transform(lonc, latc)
 
         x_0 = float(xloncen) - (0.5 * ((float(nlon) - 1.0) * gsize))
         y_0 = float(xlatcen) - (0.5 * ((float(nlat) - 1.0) * gsize))
@@ -98,7 +102,9 @@ class Projection:
             yyy[j] = y_0 + (float(j) * gsize)
 
         x_v, y_v = np.meshgrid(xxx, yyy)
-        lons, lats = pyproj.Transformer.from_crs(self.proj, self.wgs84, always_xy=True).transform(x_v, y_v)
+        lons, lats = pyproj.Transformer.from_crs(
+            self.proj, self.wgs84, always_xy=True
+        ).transform(x_v, y_v)
 
         minlat = np.floor(np.min(lats)) - 1
         minlon = np.floor(np.min(lons)) - 1
@@ -110,6 +116,11 @@ class Projection:
         maxlat = np.min([maxlat, 90])
         maxlon = np.min([maxlon, 180])
 
-        domain_properties = {'minlat': minlat, 'minlon': minlon, 'maxlat': maxlat, 'maxlon': maxlon}
+        domain_properties = {
+            "minlat": minlat,
+            "minlon": minlon,
+            "maxlat": maxlat,
+            "maxlon": maxlon,
+        }
 
         return domain_properties
