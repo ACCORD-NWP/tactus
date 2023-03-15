@@ -1,10 +1,11 @@
 """Ecflow suites."""
 
 import os
+from pathlib import Path
 
-from deode.toolbox import Platform
-from deode.datetime_utils import as_datetime, as_timedelta
-from .logs import get_logger_from_config, get_logger
+from .datetime_utils import as_datetime, as_timedelta
+from .logs import get_logger, get_logger_from_config
+from .toolbox import Platform
 
 try:
     import ecflow
@@ -53,12 +54,11 @@ class SuiteDefinition(object):
             dry_run (bool, optional): Dry run not using ecflow. Defaults to False.
 
         Raises:
-            Exception: Unless ecflow is not loaded
+            ModuleNotFoundError: If ecflow is not loaded and not dry_run
 
         """
-        if ecflow is None:
-            if not dry_run:
-                raise Exception("Ecflow not loaded properly")
+        if ecflow is None and not dry_run:
+            raise ModuleNotFoundError("Ecflow not found")
 
         self.logger = get_logger_from_config(config)
         name = suite_name
@@ -115,7 +115,7 @@ class SuiteDefinition(object):
         config_file = config.get_value("metadata.source_file_path")
         first_cycle = as_datetime(config.get_value("general.times.start"))
         deode_home = platform.get_platform_value("DEODE_HOME")
-        keep_workdirs = '1' if config.get_value("general.keep_workdirs") else '0'
+        keep_workdirs = "1" if config.get_value("general.keep_workdirs") else "0"
         variables = {
             "ECF_EXTN": ".py",
             "ECF_FILES": self.ecf_files,
@@ -135,10 +135,11 @@ class SuiteDefinition(object):
             "BASETIME": first_cycle.strftime("%Y%m%d%H%M"),
             "VALIDTIME": first_cycle.strftime("%Y%m%d%H%M"),
             "DEODE_HOME": deode_home,
-            "KEEP_WORKDIRS": keep_workdirs
+            "KEEP_WORKDIRS": keep_workdirs,
         }
 
-        input_template = f"{platform.get_value('platform.deode_home')}/ecf/default.py"
+        input_template = Path(__file__).parent.resolve() / "templates/ecflow/default.py"
+        input_template = input_template.as_posix()
         self.suite = EcflowSuite(name, ecf_files, variables=variables, dry_run=dry_run)
 
         # Background dos not work. Deode is not able to run on vm with shared HOME as
@@ -148,9 +149,7 @@ class SuiteDefinition(object):
 
 # 1st level Family
 # StaticData
-        static_data = EcflowSuiteFamily(
-            "StaticData", self.suite, ecf_files
-        )
+        static_data = EcflowSuiteFamily("StaticData", self.suite, ecf_files)
 
 # 2nd level Family
 # StaticData >> Pgdinput
@@ -168,7 +167,6 @@ class SuiteDefinition(object):
             variables=None)
 # Task
 # StaticData >> Pgdinput >> Soil
-
         EcflowSuiteTask(
             "Soil",
             pgd_input,
@@ -176,7 +174,8 @@ class SuiteDefinition(object):
             self.task_settings,
             ecf_files,
             input_template=input_template,
-            variables=None)
+            variables=None,
+        )
 
 # 2nd level Family
 # StaticData >> Pgd
@@ -223,14 +222,16 @@ class SuiteDefinition(object):
         i = 0
         while cycle_time <= last_cycle:
             logger.debug("cycle_time %s", cycle_time)
-            cycles.update({
-                str(i): {
-                    "day": cycle_time.strftime("%Y%m%d"),
-                    "time": cycle_time.strftime("%H%M"),
-                    "validtime": cycle_time.strftime("%Y%m%d%H%M"),
-                    "basetime": cycle_time.strftime("%Y%m%d%H%M")
+            cycles.update(
+                {
+                    str(i): {
+                        "day": cycle_time.strftime("%Y%m%d"),
+                        "time": cycle_time.strftime("%H%M"),
+                        "validtime": cycle_time.strftime("%Y%m%d%H%M"),
+                        "basetime": cycle_time.strftime("%Y%m%d%H%M"),
+                    }
                 }
-            })
+            )
             i = i + 1
             cycle_time = cycle_time + cycle_length
 
@@ -253,11 +254,14 @@ class SuiteDefinition(object):
 # YYYYMMDD >> HHHH
             time_variables = {
                 "BASETIME": cycle["basetime"],
-                "VALIDTIME": cycle["validtime"]
+                "VALIDTIME": cycle["validtime"],
             }
             time_family = EcflowSuiteFamily(
-                cycle["time"], day_family, ecf_files, trigger=inputdata_trigger,
-                variables=time_variables
+                cycle["time"],
+                day_family,
+                ecf_files,
+                trigger=inputdata_trigger,
+                variables=time_variables,
             )
 
 # 3rd level Family
@@ -398,8 +402,8 @@ class EcflowNode:
 
         Raises:
             NotImplementedError: Node type not implemented
-            Exception: "Triggers must be a Triggers object"
-            Exception: "Unknown defstatus"
+            TypeError: "Triggers must be an EcflowSuiteTriggers object"
+            TypeError: "defstatus must be either str or an ecflow.Defstatus object"
 
         """
         self.name = name
@@ -441,9 +445,9 @@ class EcflowNode:
                     if self.ecf_node is not None:
                         self.ecf_node.add_trigger(trigger.trigger_string)
                 else:
-                    print("WARNING: Empty trigger")
+                    logger.warning("Empty trigger")
             else:
-                raise Exception("Triggers must be a Triggers object")
+                raise TypeError("Triggers must be an EcflowSuiteTriggers object")
         self.trigger = trigger
 
         if def_status is not None:
@@ -453,7 +457,9 @@ class EcflowNode:
                 elif isinstance(def_status, ecflow.Defstatus):
                     self.ecf_node.add_defstatus(def_status)
                 else:
-                    raise Exception("Unknown defstatus")
+                    raise TypeError(
+                        "defstatus must be either str or an ecflow.Defstatus object"
+                    )
 
 
 class EcflowNodeContainer(EcflowNode):
@@ -616,7 +622,7 @@ class EcflowSuiteTask(EcflowNode):
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
 
         Raises:
-            Exception: Safety check
+            ValueError: If input template is to be parsed but it is not passed.
             FileNotFoundError: If the task container is not found.
 
         """
@@ -636,7 +642,7 @@ class EcflowSuiteTask(EcflowNode):
         task_container = parent.ecf_container_path + "/" + name + ".py"
         if parse:
             if input_template is None:
-                raise Exception("Input template is missing")
+                raise ValueError("Must pass input template if it is to be parsed")
 
             variables = task_settings.get_settings(name)
             logger.debug("vars %s", variables)
@@ -645,10 +651,10 @@ class EcflowSuiteTask(EcflowNode):
                 if self.ecf_node is not None:
                     self.ecf_node.add_variable(var, value)
             task_settings.parse_job(
-                name,
-                config,
-                input_template,
-                task_container,
+                task=name,
+                config=config,
+                input_template_job=input_template,
+                task_job=task_container,
                 variables=variables,
                 ecf_micro=ecf_micro,
             )
@@ -680,8 +686,8 @@ class EcflowSuiteTriggers:
             mode (str): Concatenation type.
 
         Raises:
-            Exception: _description_
-            Exception: _description_
+            ValueError: If there are no triggers to be processed
+            TypeError: If trigger is not an EcflowSuiteTrigger object
 
         Returns:
             str: The trigger string based on trigger objects.
@@ -691,7 +697,7 @@ class EcflowSuiteTriggers:
             triggers = [triggers]
 
         if len(triggers) == 0:
-            raise Exception
+            raise ValueError("No triggers to be processed")
 
         trigger_string = "("
         first = True
@@ -712,7 +718,7 @@ class EcflowSuiteTriggers:
                             + trigger.mode
                         )
                     else:
-                        raise Exception("Trigger must be a Trigger object")
+                        raise TypeError("Trigger must be an EcflowSuiteTrigger object")
                 first = False
         trigger_string = trigger_string + ")"
         # If no triggers were found/set

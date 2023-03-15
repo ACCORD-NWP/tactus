@@ -24,9 +24,9 @@ bhalf = []
 name = "FRANXL0013"
 nimax = 441
 njmax = 421
-xloncen = 7.0 
-xlatcen = 45.0 
-xdx = 1000.0 
+xloncen = 7.0
+xlatcen = 45.0
+xdx = 1000.0
 xdy = 1000.0
 ilone = 0
 ilate = 0
@@ -124,4 +124,4 @@ MODULE_GCC = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py')
 PYTHONPATH = "os.environ['PYTHONPATH'] = '@HOME@/.local/lib/python3.8/site-packages/:/perm/rme/python3/site-packages/lib/python3.6/site-packages'"
 
 [troika]
-config_file = "@DEODE_HOME@/config.yml"
+config_file = "@DEODE_HOME@/deode/data/config_files/troika.yml"

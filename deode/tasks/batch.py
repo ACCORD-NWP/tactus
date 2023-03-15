@@ -26,11 +26,11 @@ class BatchJob(object):
             cmd (str): Command to run.
 
         Raises:
-            Exception: No command
+            TypeError: If the provided command is not a string
             CalledProcessError: Execution error
         """
-        if cmd is None:
-            raise Exception("No command provided!")
+        if not isinstance(cmd, str):
+            raise TypeError(f"Command must be a string. Got {type(cmd)} instead.")
         cmd = self.wrapper + " " + cmd
 
         if "OMP_NUM_THREADS" in self.rte:

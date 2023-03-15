@@ -1,10 +1,11 @@
 """Forecast."""
 
 
-from .base import Task
-from deode.tasks.batch import BatchJob
-from deode.datetime_utils import as_datetime, as_timedelta
 import os
+
+from ..datetime_utils import as_datetime, as_timedelta
+from .base import Task
+from .batch import BatchJob
 
 
 class Forecast(Task):
@@ -22,13 +23,17 @@ class Forecast(Task):
         self.domain = self.config.get_value("domain.name")
 
         self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
-        self.cycle_length = as_timedelta(self.config.get_value("general.times.cycle_length"))
+        self.cycle_length = as_timedelta(
+            self.config.get_value("general.times.cycle_length")
+        )
         self.bdint = as_timedelta(self.config.get_value("general.bdint"))
-        self.forecast_range = as_timedelta(self.config.get_value("general.forecast_range"))
+        self.forecast_range = as_timedelta(
+            self.config.get_value("general.forecast_range")
+        )
 
-        self.climdir = self.platform.get_system_value('climdir')
+        self.climdir = self.platform.get_system_value("climdir")
         self.rrtm_dir = self.platform.get_platform_value("RRTM_DIR")
-        self.archive = self.platform.get_system_value('archive')
+        self.archive = self.platform.get_system_value("archive")
 
         self.namelists = self.platform.get_platform_value("NAMELISTS")
 
@@ -65,8 +70,9 @@ class Forecast(Task):
         m = int((dt.seconds % 3600 - dt.seconds % 60) / 60)
         s = int(dt.seconds % 60)
 
-        archive = self.platform.substitute(self.config.get_value("system.archive"),
-                                           basetime=pdtg)
+        archive = self.platform.substitute(
+            self.config.get_value("system.archive"), basetime=pdtg
+        )
         source = f"{archive}/ICMSH{self.cnmexp}+{h:04d}:{m:02d}:{s:02d}"
         source_sfx = f"{archive}/ICMSH{self.cnmexp}+{h:04d}:{m:02d}:{s:02d}.sfx"
 
@@ -85,7 +91,7 @@ class Forecast(Task):
 
         self.logger.info("Could not find:\n  %s\n  %s", source, source_sfx)
 
-        raise Exception("Could not find any initial files")
+        raise FileNotFoundError("Could not find any initial files")
 
     def execute(self):
         """Execute forecast.
@@ -121,29 +127,65 @@ class Forecast(Task):
                        ]
         """
         # RRTM files
-        for ifile in ["C11CLIM", "C12CLIM", "C22CLIM", "CCL4CLIM", "CH4CLIM", "CO2CLIM",
-                      "ECOZC", "GCH4CLIM", "GCO2CLIM", "GOZOCLIM",
-                      "MCH4CLIM", "MCICA", "MCO2CLIM", "MOZOCLIM",
-                      "N2OCLIM", "NO2CLIM", "OZOCLIM", "RADAIOP", "RADRRTM", "RADSRTM",
-                      "SO4_A1B2000", "SO4_A1B2010", "SO4_A1B2020", "SO4_A1B2030",
-                      "SO4_A1B2040", "SO4_A1B2050", "SO4_A1B2060", "SO4_A1B2070",
-                      "SO4_A1B2080", "SO4_A1B2090", "SO4_A1B2100", "SO4_OBS1920",
-                      "SO4_OBS1930", "SO4_OBS1940", "SO4_OBS1950", "SO4_OBS1960",
-                      "SO4_OBS1970", "SO4_OBS1980", "SO4_OBS1990"]:
+        for ifile in [
+            "C11CLIM",
+            "C12CLIM",
+            "C22CLIM",
+            "CCL4CLIM",
+            "CH4CLIM",
+            "CO2CLIM",
+            "ECOZC",
+            "GCH4CLIM",
+            "GCO2CLIM",
+            "GOZOCLIM",
+            "MCH4CLIM",
+            "MCICA",
+            "MCO2CLIM",
+            "MOZOCLIM",
+            "N2OCLIM",
+            "NO2CLIM",
+            "OZOCLIM",
+            "RADAIOP",
+            "RADRRTM",
+            "RADSRTM",
+            "SO4_A1B2000",
+            "SO4_A1B2010",
+            "SO4_A1B2020",
+            "SO4_A1B2030",
+            "SO4_A1B2040",
+            "SO4_A1B2050",
+            "SO4_A1B2060",
+            "SO4_A1B2070",
+            "SO4_A1B2080",
+            "SO4_A1B2090",
+            "SO4_A1B2100",
+            "SO4_OBS1920",
+            "SO4_OBS1930",
+            "SO4_OBS1940",
+            "SO4_OBS1950",
+            "SO4_OBS1960",
+            "SO4_OBS1970",
+            "SO4_OBS1980",
+            "SO4_OBS1990",
+        ]:
             self.fmanager.input(f"{self.rrtm_dir}/{ifile}", ifile)
 
         # Climate files
         mm = self.basetime.strftime("%m")
         self.fmanager.input(f"{self.climdir}/Const.Clim.{mm}", "Const.Clim")
-        self.fmanager.input(f"{self.climdir}/Const.Clim.{mm}", f"const.clim.{self.domain}")
+        self.fmanager.input(
+            f"{self.climdir}/Const.Clim.{mm}", f"const.clim.{self.domain}"
+        )
         self.fmanager.input(f"{self.climdir}/Const.Clim.sfx", "Const.Clim.sfx")
 
         # Namelists
         # The fullpos output should be configured elsewhere
-        for ifile in ['xxt00000000', 'xxtddddhhmm', 'dirlst', 'EXSEG1.nam']:
+        for ifile in ["xxt00000000", "xxtddddhhmm", "dirlst", "EXSEG1.nam"]:
             namelist = f"{self.namelists}/{ifile}"
             self.fmanager.input(namelist, ifile, provider_id="copy")
-        self.fmanager.input(f"{self.namelists}/fort.4_arome", "fort.4", provider_id="copy")
+        self.fmanager.input(
+            f"{self.namelists}/fort.4_arome", "fort.4", provider_id="copy"
+        )
 
         # Link the boundary files
         cdtg = self.basetime
@@ -166,10 +208,23 @@ class Forecast(Task):
 
         # Store the output
         os.makedirs(self.archive, exist_ok=True)
-        self.archive_output(f"ICMSH{self.cnmexp}", self.config.get_value("general.output_interval_his"))
-        self.archive_output(f"ICMSH{self.cnmexp}", self.config.get_value("general.output_interval_sfx"), suffix=".sfx")
-        self.archive_output("ICMSHSELE", self.config.get_value("general.output_interval_sfx_sel"), suffix=".sfx")
-        self.archive_output(f"GRIBPF{self.cnmexp}{self.domain}", self.config.get_value("general.output_interval_fp"))
+        self.archive_output(
+            f"ICMSH{self.cnmexp}", self.config.get_value("general.output_interval_his")
+        )
+        self.archive_output(
+            f"ICMSH{self.cnmexp}",
+            self.config.get_value("general.output_interval_sfx"),
+            suffix=".sfx",
+        )
+        self.archive_output(
+            "ICMSHSELE",
+            self.config.get_value("general.output_interval_sfx_sel"),
+            suffix=".sfx",
+        )
+        self.archive_output(
+            f"GRIBPF{self.cnmexp}{self.domain}",
+            self.config.get_value("general.output_interval_fp"),
+        )
         self.fmanager.output("NODE.001_01", f"{self.archive}/NODE.001_01")
 
 
@@ -211,8 +266,10 @@ class FirstGuess(Task):
         """
         Task.__init__(self, config, "FirstGuess")
         self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
-        self.cycle_length = as_timedelta(self.config.get_value("general.times.cycle_length"))
-        self.archive = self.config.get_value('system.archive')
+        self.cycle_length = as_timedelta(
+            self.config.get_value("general.times.cycle_length")
+        )
+        self.archive = self.config.get_value("system.archive")
         self.cnmexp = self.config.get_value("general.cnmexp")
 
     def execute(self):
@@ -245,4 +302,4 @@ class FirstGuess(Task):
 
         self.logger.info("Could not find:\n  %s\n  %s", source, source_sfx)
 
-        raise Exception("Could not find any initial files")
+        raise FileNotFoundError("Could not find any initial files")

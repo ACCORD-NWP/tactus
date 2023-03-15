@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
 import datetime
+import itertools
+import uuid
 from collections import namedtuple
 from pathlib import Path
 
 import pytest
 import tomlkit
 
-from deode.config_parser import ConfigFileValidationError, JsonSchema, ParsedConfig
+from deode.config_parser import (
+    BasicConfig,
+    ConfigFileValidationError,
+    JsonSchema,
+    ParsedConfig,
+)
 from deode.datetime_utils import ISO_8601_TIME_DURATION_REGEX, as_datetime
 
 
@@ -167,9 +174,28 @@ class TestGeneralBehaviour:
         with pytest.raises(TypeError, match="cannot assign"):
             minimal_parsed_config.foo = "bar"
 
+    def test_config_get_value(self, raw_config_with_non_recognised_options):
+        config = ParsedConfig.parse_obj(raw_config_with_non_recognised_options)
+        assert config.get_value("general.times.cycle_length") == "PT3H"
+
+        non_existing_attr = str(uuid.uuid4())
+        with pytest.raises(AttributeError, match=f"no attribute '{non_existing_attr}'"):
+            config.get_value(non_existing_attr)
+
+        random_value = str(uuid.uuid4())
+        assert config.get_value(non_existing_attr, default=random_value) == random_value
+
     def test_config_can_be_printed(self, raw_config_with_non_recognised_options):
         config = ParsedConfig.parse_obj(raw_config_with_non_recognised_options)
         _ = str(config)
+
+    def test_config_section_can_be_printed(self, raw_config_with_non_recognised_options):
+        config = ParsedConfig.parse_obj(raw_config_with_non_recognised_options)
+        section_dumps = config.dumps(section="general")
+        expected_section_dumps = BasicConfig(general=config.general).dumps()
+        assert section_dumps == expected_section_dumps
+        # Check that it won't break with an inexistent section
+        assert config.dumps(str(uuid.uuid4())) == ""
 
     def test_parsed_config_passes_toml_readwrite_roundtrip(self, minimal_parsed_config):
         toml_dumps = minimal_parsed_config.dumps(style="toml")
@@ -196,6 +222,17 @@ class TestGeneralBehaviour:
         new_config_as_dict.pop("metadata")
         old_config_as_dict = minimal_parsed_config.dict()
         assert new_config_as_dict == old_config_as_dict
+
+    def test_catch_attempting_to_read_configs_from_unsupported_file_formats(
+        self, config_path, minimal_parsed_config
+    ):
+        fmt = "__UNKNOWN_FORMAT__"
+        new_config_path = config_path.parent / f"{config_path.stem}.{fmt}"
+        with open(new_config_path, "w") as f:
+            f.write(minimal_parsed_config.dumps(style=fmt))
+
+        with pytest.raises(NotImplementedError, match="Unsupported config file format"):
+            _ = ParsedConfig.from_file(new_config_path)
 
     def test_parsed_config_registers_file_metadata_when_read_from_file(self, config_path):
         config = ParsedConfig.from_file(config_path)
@@ -255,6 +292,7 @@ class TestValidators:
             "2018-10-10T00:00:00.000000+00:00",
             datetime.datetime.now(datetime.timezone.utc).isoformat(),
         ],
+        ids=itertools.count(),
     )
     def test_validator_works_with_input_datetime(self, dt_input, minimal_raw_config):
         minimal_raw_config["general"]["times"]["list"] = [dt_input]
@@ -345,7 +383,3 @@ class TestPossibilityOfISO8601ComplianceEnforcement:
         _ = ParsedConfig.parse_obj(
             raw_config, json_schema=json_schema_for_iso_8601_time_specs_tests
         )
-
-
-if __name__ == "__main__":
-    pytest.main()

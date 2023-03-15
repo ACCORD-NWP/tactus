@@ -48,7 +48,7 @@ ECOSG_DATA_PATH = "@CLIMDATA@/ECOCLIMAP-SG"
 GMTED2010_DATA_PATH = "@CLIMDATA@/GMTED2010"
 SOILGRID_DATA_PATH = "@CLIMDATA@/SOILGRID"
 PGD_DATA_PATH = "@CLIMDATA@/PGD"
-NAMELIST_DIR = "@HOME@/projects/Deode-Prototype/nam"
+NAMELIST_DIR = "@HOME@/projects/Deode-Prototype/deode/data/namelists"
 DEODE_HOME = "@PWD@"
 
 [general.times]
@@ -230,4 +230,4 @@ WALLTIME = "#SBATCH --time=00:15:00"
 MODULE = "print('My beautiful module')"
 
 [troika]
-config_file = "@DEODE_HOME@/config.yml"
+config_file = "@DEODE_HOME@/deode/data/config_files/troika.yml"

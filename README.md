@@ -1,14 +1,8 @@
 ![Linting](https://github.com/DEODE-NWP/Deode-Prototype/actions/workflows/linting.yaml/badge.svg)
-![Tests](https://github.com/DEODE-NWP/Deode-Prototype/actions/workflows/test.yaml/badge.svg
+![Tests](https://github.com/DEODE-NWP/Deode-Prototype/actions/workflows/tests.yaml/badge.svg
 ) [![codecov](https://codecov.io/github/DEODE-NWP/Deode-Prototype/branch/develop/graph/badge.svg?token=HMWJ69EY51)](https://codecov.io/github/DEODE-NWP/Deode-Prototype)
 
 # DEODE Scripting System
-
-
-**Table of Contents**
-
-[[_TOC_]]
-
 
 ### About
 
@@ -59,7 +53,7 @@ look at the source code at all.
 but retrieves the code from the git repo instead (which is usually updated more
 often).
 
-    pip install "git+https://source.coderefinery.org/deode/deode-prototype"
+    pip install "git+https://github.com/DEODE-NWP/Deode-Prototype"
 
 
 ##### Regular Installation From Downloaded Source
@@ -105,7 +99,7 @@ option), you will need a configuration file written in the
 
 Please take a look at the
 [docs/minimal_config_example.toml](docs/minimal_config_example.toml) file,
-as well as the [project's Wiki](https://source.coderefinery.org/deode/deode-prototype/-/wikis/home), for more information about the configuration file.
+as well as the [project's Doc Page](https://github.com/DEODE-NWP/Deode-Prototype/tree/develop/docs), for more information about the configuration file.
 
 
 `deode` assumes that one of the following (whichever is first encountered)
@@ -155,7 +149,7 @@ cd ~/projects/Deode-Prototype
 poetry install
 poetry shell
 
-# Run experiment 
+# Run experiment
 ECF_HOST=`echo ecflow-gen-${USER}-001`
 
 deode -loglevel debug \
@@ -184,10 +178,10 @@ The example below shows how to run deode/task/forecast.py using the batch system
 > module load troika
 > poetry shell
 > deode -loglevel debug run --task Forecast \
- --template $PWD/ecf/stand_alone.py \
+ --template $PWD/deode/templates/stand_alone.py \
  --job $PWD/forecast.job \
  --submit background.json \
- --troika_config $PWD/config.yml \
+ --troika_config $PWD/deode/data/config_files/troika.yml \
  -o $PWD/forecast.log
 
 ```

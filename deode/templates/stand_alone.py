@@ -1,9 +1,11 @@
 """NoSchedulerTemplate."""
 
-from deode.config_parser import ParsedConfig
-from deode.discover_task import get_task
-from deode.logs import get_logger_from_config
 from os import environ  # noqa
+
+from deode.config_parser import ParsedConfig
+from deode.logs import get_logger_from_config
+from deode.tasks.discover_task import get_task
+
 # @ENV_SUB@
 
 
@@ -16,13 +18,7 @@ def default_main(task, config, deode_home):
         deode_home(str): Deode home path
     """
     config = ParsedConfig.from_file(config)
-    config = config.copy(
-        update={
-            "platform": {
-                "deode_home": deode_home
-            }
-        }
-    )
+    config = config.copy(update={"platform": {"deode_home": deode_home}})
     logger = get_logger_from_config(config)
     logger.info("Running task %s", task)
     get_task(task, config).run()
