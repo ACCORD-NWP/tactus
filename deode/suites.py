@@ -222,7 +222,8 @@ class SuiteDefinition(object):
             i = i + 1
             cycle_time = cycle_time + cycle_length
 
-# YYYYMMDD Family
+# 1st level Family
+# YYYYMMDD
         do_prep = True
         days = []
         prev_cycle_trigger = None
@@ -236,6 +237,8 @@ class SuiteDefinition(object):
                 )
                 days.append(cycle_day)
 
+# 2nd level Family
+# YYYYMMDD >> HHHH
             time_variables = {
                 "BASETIME": cycle["basetime"],
                 "VALIDTIME": cycle["validtime"]
@@ -245,7 +248,8 @@ class SuiteDefinition(object):
                 variables=time_variables
             )
 
-# YYYYMMDD >> InputData Family
+# 3rd level Family
+# YYYYMMDD >> HHHH >> InputData
             inputdata = EcflowSuiteFamily(
                 "InputData", time_family, ecf_files, trigger=inputdata_trigger
             )
@@ -262,25 +266,30 @@ class SuiteDefinition(object):
 
             prepare_cycle_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prepare_cycle)]) 
 
-# YYYYMMDD >> Interpolation Family
+# 3rd level Family
+# YYYYMMDD >> HHHH >> Interpolation
             
-            ipar = list(range(1,13))
-            interpolation = EcflowSuiteFamily(
+            bdpar= list(range(0,12)) 
+            if cycle["time"]=="0000" or cycle["time"]=="1200":
+             interpolation = EcflowSuiteFamily(
                 "Interpolation", time_family, ecf_files, trigger=inputdata_trigger
-            )
-            for pp in ipar:
-            
-             EcflowSuiteTask(
-                "e927_"+str(pp),
-                interpolation,
-                config,
-                self.task_settings,
-                ecf_files,
-                input_template=input_template,
-                variables=None,
-                trigger=prepare_cycle_done,
              )
 
+             for pp in bdpar: 
+              e927 = ["e927_"+str(i) for i in bdpar]
+              e927[pp] = EcflowSuiteTask(
+                        e927[pp],
+                        interpolation,
+                        config,
+                        self.task_settings,
+                        ecf_files,
+                        input_template=input_template,
+                        variables=None,
+                        trigger=prepare_cycle_done,
+                        )
+
+# 3rd level Family             
+# YYYYMMDD >> HHHH >> Cycle
             cycle = EcflowSuiteFamily("Cycle", time_family, ecf_files)
             triggers = [EcflowSuiteTrigger(inputdata)]
             if prev_cycle_trigger is not None:
