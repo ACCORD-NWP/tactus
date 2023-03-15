@@ -222,6 +222,7 @@ class SuiteDefinition(object):
             i = i + 1
             cycle_time = cycle_time + cycle_length
 
+# YYYYMMDD Family
         do_prep = True
         days = []
         prev_cycle_trigger = None
@@ -244,6 +245,7 @@ class SuiteDefinition(object):
                 variables=time_variables
             )
 
+# YYYYMMDD >> InputData Family
             inputdata = EcflowSuiteFamily(
                 "InputData", time_family, ecf_files, trigger=inputdata_trigger
             )
@@ -260,12 +262,16 @@ class SuiteDefinition(object):
 
             prepare_cycle_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prepare_cycle)]) 
 
+# YYYYMMDD >> Interpolation Family
+            
+            ipar = list(range(1,13))
             interpolation = EcflowSuiteFamily(
                 "Interpolation", time_family, ecf_files, trigger=inputdata_trigger
             )
-
-            EcflowSuiteTask(
-                "e927",
+            for pp in ipar:
+            
+             EcflowSuiteTask(
+                "e927_"+str(pp),
                 interpolation,
                 config,
                 self.task_settings,
@@ -273,7 +279,7 @@ class SuiteDefinition(object):
                 input_template=input_template,
                 variables=None,
                 trigger=prepare_cycle_done,
-            )
+             )
 
             cycle = EcflowSuiteFamily("Cycle", time_family, ecf_files)
             triggers = [EcflowSuiteTrigger(inputdata)]
