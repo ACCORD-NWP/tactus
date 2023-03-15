@@ -44,6 +44,6 @@
         # The unit tests class and method names are supposed to be self-explanatory.
         flake8-docstrings = ["+*", "-D105", "-D101", "-D102", "-D103"]
 
-    [tool.flakeheaven.exceptions."ecf/*.py"]
+    [tool.flakeheaven.exceptions."deode/templates/*.py"]
         # "E265" is for block comments starting with "# ". It may break ecflow envsubst.
         pycodestyle = ["-E265"]

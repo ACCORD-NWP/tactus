@@ -1,8 +1,8 @@
 """Default ecflow container."""
 from deode.config_parser import ParsedConfig
-from deode.discover_task import get_task
 from deode.logs import get_logger_from_config
 from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
+from deode.tasks.discover_task import get_task
 
 # @ENV_SUB@
 
@@ -24,7 +24,7 @@ def parse_ecflow_vars():
         "LOGLEVEL": "%LOGLEVEL%",
         "CONFIG": "%CONFIG%",
         "DEODE_HOME": "%DEODE_HOME%",
-        "KEEP_WORKDIRS": "%KEEP_WORKDIRS%"
+        "KEEP_WORKDIRS": "%KEEP_WORKDIRS%",
     }
 
 
@@ -39,19 +39,19 @@ def default_main(**kwargs):
     # How to update config based on ecflow settings when config is assumed to be immutable
     # config["general"].update({"loglevel": loglevel})  # noqa
     config = ParsedConfig.from_file(config)
-    config = config.copy(update={
-        "general": {
-            "loglevel": kwargs.get("LOGLEVEL"),
-            "times": {
-                "validtime": kwargs.get("VALIDTIME"),
-                "basetime": kwargs.get("BASETIME")
+    config = config.copy(
+        update={
+            "general": {
+                "loglevel": kwargs.get("LOGLEVEL"),
+                "times": {
+                    "validtime": kwargs.get("VALIDTIME"),
+                    "basetime": kwargs.get("BASETIME"),
+                },
+                "keep_workdirs": bool(int(kwargs.get("KEEP_WORKDIRS"))),
             },
-            "keep_workdirs": bool(int(kwargs.get("KEEP_WORKDIRS")))
-        },
-        "platform": {
-            "deode_home": kwargs.get("DEODE_HOME")
+            "platform": {"deode_home": kwargs.get("DEODE_HOME")},
         }
-    })
+    )
     logger = get_logger_from_config(config)
 
     # TODO Add wrapper  # noqa

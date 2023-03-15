@@ -11,8 +11,16 @@ class Search:
         return
 
     @staticmethod
-    def find_files(directory, prefix="", postfix="", recursive=True, onlyfiles=True,
-                   fullpath=False, olderthan=None, inorder=False) -> list:
+    def find_files(
+        directory,
+        prefix="",
+        postfix="",
+        recursive=True,
+        onlyfiles=True,
+        fullpath=False,
+        olderthan=None,
+        inorder=False,
+    ) -> list:
         """Find files in a directory.
 
         Args:
@@ -42,13 +50,20 @@ class Search:
         elif not recursive:
 
             if onlyfiles:
-                files = [f for f in os.listdir(directory) if
-                         f.endswith(postfix) and f.startswith(prefix)
-                         and os.path.isfile(directory + f)]
+                files = [
+                    f
+                    for f in os.listdir(directory)
+                    if f.endswith(postfix)
+                    and f.startswith(prefix)
+                    and os.path.isfile(directory + f)
+                ]
 
             elif not onlyfiles:
-                files = [f for f in os.listdir(directory) if
-                         f.endswith(postfix) and f.startswith(prefix)]
+                files = [
+                    f
+                    for f in os.listdir(directory)
+                    if f.endswith(postfix) and f.startswith(prefix)
+                ]
 
         if fullpath:
             files = [directory + f for f in files]
@@ -59,7 +74,9 @@ class Search:
             for f in files:
                 try:
                     if not fullpath:
-                        if os.path.getmtime(os.path.join(directory, f)) < (now - olderthan):
+                        if os.path.getmtime(os.path.join(directory, f)) < (
+                            now - olderthan
+                        ):
                             tfiles.append(f)
                     else:
                         if os.path.getmtime(f) < (now - olderthan):

@@ -68,4 +68,4 @@ ACCOUNT = "#SBATCH -A msdeode"
 WALLTIME = "#SBATCH --time=00:10:00"
 
 [troika]
-config_file = "@DEODE_HOME@/config/troika.yml"
+config_file = "@DEODE_HOME@/deode/data/config_files/troika.yml"

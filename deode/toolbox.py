@@ -1,8 +1,17 @@
 """Toolbox handling e.g. input/output."""
 import os
 import re
+
 from .datetime_utils import as_datetime
 from .logs import get_logger_from_config
+
+
+class ArchiveError(Exception):
+    """Error raised when there are problems archiving data."""
+
+
+class ProviderError(Exception):
+    """Error raised when there are provider-related problems."""
 
 
 class Provider:
@@ -298,12 +307,14 @@ class Platform:
                 )
                 lead_time = validtime - basetime
                 pattern = self.sub_value(pattern, "YYYY_LL", validtime.strftime("%Y"))
-                pattern = self.sub_value(pattern, "MM_LL", validtime.strftime("%m"),
-                                         ci=False)
+                pattern = self.sub_value(
+                    pattern, "MM_LL", validtime.strftime("%m"), ci=False
+                )
                 pattern = self.sub_value(pattern, "DD_LL", validtime.strftime("%d"))
                 pattern = self.sub_value(pattern, "HH_LL", validtime.strftime("%H"))
-                pattern = self.sub_value(pattern, "mm_LL", validtime.strftime("%M"),
-                                         ci=False)
+                pattern = self.sub_value(
+                    pattern, "mm_LL", validtime.strftime("%M"), ci=False
+                )
 
                 lead_seconds = int(lead_time.total_seconds())
                 lead_minutes = int(lead_seconds / 3600)  # noqa
@@ -376,7 +387,7 @@ class FileManager:
             provider_id (str, optional): Provider ID. Defaults to "symlink".
 
         Raises:
-            Exception: "No provider found for {target}"
+            ProviderError: "No provider found for {target}"
 
         Returns:
             tuple: provider, resource
@@ -424,7 +435,9 @@ class FileManager:
                 else:
                     self.logger.info("Could not archive %s", destination.identifier)
         # Else raise exception
-        raise Exception(f"No provider found for {target} and provider_id {provider_id}")
+        raise ProviderError(
+            f"No provider found for {target} and provider_id {provider_id}"
+        )
 
     def input(  # noqa: A003 (class attribute shadowing builtin)
         self,
@@ -478,7 +491,7 @@ class FileManager:
             tuple: provider, aprovider, resource
 
         Raises:
-            Exception: Could not archive data
+            ArchiveError: Could not archive data
 
         """
         sub_target = self.platform.substitute(
@@ -527,7 +540,7 @@ class FileManager:
             if aprovider.create_resource(target_resource):
                 self.logger.debug("Using provider_id %s", provider_id)
             else:
-                raise Exception("Could not archive data")
+                raise ArchiveError("Could not archive data")
 
         return provider, aprovider, target_resource
 
@@ -567,7 +580,7 @@ class FileManager:
             res_dict (_type_): _description_
 
         Raises:
-            Exception: _description_
+            ValueError: If the passed file type is neither 'input' nor 'output'.
         """
         for ftype, fobj in res_dict.items():
             for target, settings in fobj.items():
@@ -582,10 +595,8 @@ class FileManager:
                 elif ftype == "output":
                     keys = ["basetime", "validtime", "archive", "provider_id"]
                     kwargs.update({"archive": False})
-                if "destination" in settings:
-                    destination = settings["destination"]
-                else:
-                    raise Exception
+
+                destination = settings["destination"]
                 for key in keys:
                     if key in settings:
                         kwargs.update({key: settings[key]})
@@ -595,7 +606,9 @@ class FileManager:
                 elif ftype == "output":
                     self.input(target, destination, **kwargs)
                 else:
-                    raise Exception
+                    raise ValueError(
+                        f"Unknown file type '{ftype}'. Must be either 'input' or 'output'"
+                    )
 
 
 class LocalFileSystemSymlink(Provider):

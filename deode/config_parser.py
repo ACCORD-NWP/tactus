@@ -18,8 +18,10 @@ from fastjsonschema import JsonSchemaValueException
 from . import PACKAGE_NAME
 from .datetime_utils import ISO_8601_TIME_DURATION_REGEX
 
+NO_DEFAULT_PROVIDED = object()
+
 MAIN_CONFIG_JSON_SCHEMA_PATH = (
-    Path(__file__).parent / "config_file_schemas" / "main_config_schema.json"
+    Path(__file__).parent / "data" / "config_file_schemas" / "main_config_schema.json"
 )
 with open(MAIN_CONFIG_JSON_SCHEMA_PATH, "r") as schema_file:
     MAIN_CONFIG_JSON_SCHEMA = json.load(schema_file)
@@ -83,7 +85,7 @@ class BasicConfig:
             return BasicConfig(**_update_nested_dict(self.dict(), update))
         return copy.deepcopy(self)
 
-    def get_value(self, items):
+    def get_value(self, items, default=NO_DEFAULT_PROVIDED):
         """Recursively get the value of a config component.
 
         This allows us to use self.get_value("foo.bar.baz") even if "bar" is, for
@@ -91,9 +93,13 @@ class BasicConfig:
 
         Args:
             items (str): Attributes to be retrieved, as dot-separated strings.
+            default (Any): Default to be returned if the attribute does not exist.
 
         Returns:
             Any: Value of the parsed config item.
+
+        Raises:
+            AttributeError: If the attribute does not exist and no default is provided.
         """
 
         def get_attr_or_item(obj, item):
@@ -104,7 +110,13 @@ class BasicConfig:
                     return obj[item]
                 except (KeyError, TypeError) as error:
                     raise AttributeError(attr_error) from error
-        return reduce(get_attr_or_item, items.split("."), self)
+
+        try:
+            return reduce(get_attr_or_item, items.split("."), self)
+        except AttributeError as error:
+            if default is NO_DEFAULT_PROVIDED:
+                raise error
+            return default
 
     def dumps(
         self,
@@ -153,6 +165,7 @@ class BasicConfig:
         Returns:
             Any: Value of the parsed config item.
         """
+
         def regular_getattribute(obj, item):
             if type(obj) is type(self):
                 return super().__getattribute__(item)
@@ -221,7 +234,7 @@ class ParsedConfig(BasicConfig):
         """
         config_path = Path(config_path).expanduser().resolve()
         logging.info("Reading config file %s", config_path)
-        raw_config = _read_raw_config_file(config_path)
+        raw_config = read_raw_config_file(config_path)
 
         # Add metadata about where the config was parsed from
         old_metadata = raw_config.get("metadata", {})
@@ -293,7 +306,8 @@ def _update_nested_dict(my_dictionary, dict_with_updates):
     return new_dict
 
 
-def _read_raw_config_file(config_path):
+def read_raw_config_file(config_path):
+    """Read raw configs from files in miscellaneous formats."""
     config_path = Path(config_path)
     with open(config_path, "rb") as config_file:
         if config_path.suffix == ".toml":

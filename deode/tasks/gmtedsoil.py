@@ -1,17 +1,26 @@
 """GMTED and SOILGRID."""
 
-
 import os
 import sys
+
+from ..geo_utils import Projection, Projstring
+from ..os_utils import Search
 from .base import Task
 
-try:
-    from osgeo import gdal
-except ImportError:
-    raise ImportError('gdal python module not found. Suggestion: pip install pygdal=="`gdal-config --version`.*"') from ImportError
 
-from ..os_utils import Search
-from ..geo_utils import Projection, Projstring
+def _import_gdal():
+    """Return imported gdal from osgeo. Utility func useful for debugging and testing."""
+    try:
+        from osgeo import gdal
+
+        return gdal
+    except ImportError as error:
+        msg = "Cannot use the installed gdal library, or there is no gdal library installed. "
+        msg += "If you have not installed it, you may want to try running"
+        msg += " 'pip install pygdal==\"`gdal-config --version`.*\"' "
+        msg += "or, if you use conda,"
+        msg += " 'conda install -c conda-forge gdal'."
+        raise ImportError(msg) from error
 
 
 class Gmted(Task):
@@ -27,7 +36,9 @@ class Gmted(Task):
 
         Task.__init__(self, config, "Gmted")
 
-        self.gmted2010_path = self.fmanager.platform.get_platform_value("gmted2010_data_path")
+        self.gmted2010_path = self.fmanager.platform.get_platform_value(
+            "gmted2010_data_path"
+        )
 
     def get_domain_properties(self, config) -> dict:
         """Get domain properties.
@@ -38,17 +49,21 @@ class Gmted(Task):
         Returns:
             dict: Domain properties
         """
-        domain = {"nlon": config.get_value('domain.njmax'),
-                  "nlat": config.get_value('domain.nimax'),
-                  "latc": config.get_value('domain.xlatcen'),
-                  "lonc": config.get_value('domain.xloncen'),
-                  "lat0": config.get_value('domain.xlat0'),
-                  "lon0": config.get_value('domain.xlon0'),
-                  "gsize": config.get_value('domain.xdx')}
+        domain = {
+            "nlon": config.get_value("domain.njmax"),
+            "nlat": config.get_value("domain.nimax"),
+            "latc": config.get_value("domain.xlatcen"),
+            "lonc": config.get_value("domain.xloncen"),
+            "lat0": config.get_value("domain.xlat0"),
+            "lon0": config.get_value("domain.xlon0"),
+            "gsize": config.get_value("domain.xdx"),
+        }
 
         return domain
 
-    def gmted_header_coordinates(self, east: float, west: float, south: float, north: float) -> tuple:
+    def gmted_header_coordinates(
+        self, east: float, west: float, south: float, north: float
+    ) -> tuple:
         """Get GMTED header coordinates.
 
         Args:
@@ -67,7 +82,9 @@ class Gmted(Task):
         i = 0
         for lat in range(70, -90, -20):
             if north > lat:
-                gmtedlat = '{:02d}N'.format(lat) if lat >= 0 else '{:02d}S'.format(-1 * lat)
+                gmtedlat = (
+                    "{:02d}N".format(lat) if lat >= 0 else "{:02d}S".format(-1 * lat)
+                )
                 gmted2010_input_lats.append(gmtedlat)
                 i += 1
             if south >= lat:
@@ -82,7 +99,11 @@ class Gmted(Task):
         for lon in range(-180, 150, longitude_bin_size):
             if west < lon:
                 rel_lon = lon - longitude_bin_size
-                gmtedlon = '{:03d}E'.format(rel_lon) if rel_lon >= 0 else '{:03d}W'.format(-1 * lon)
+                gmtedlon = (
+                    "{:03d}E".format(rel_lon)
+                    if rel_lon >= 0
+                    else "{:03d}W".format(-1 * lon)
+                )
                 gmted2010_input_lons.append(gmtedlon)
                 i += 1
             if east <= lon:
@@ -91,7 +112,14 @@ class Gmted(Task):
         hdr_east = lon
         hdr_west = lon - i * longitude_bin_size
 
-        return hdr_east, hdr_west, hdr_south, hdr_north, gmted2010_input_lats, gmted2010_input_lons
+        return (
+            hdr_east,
+            hdr_west,
+            hdr_south,
+            hdr_north,
+            gmted2010_input_lats,
+            gmted2010_input_lons,
+        )
 
     def define_gmted_input(self, domain_properties: dict) -> tuple:
         """Define GMTED input files.
@@ -102,13 +130,19 @@ class Gmted(Task):
         Returns:
             tuple: GMTED input files
         """
-        east = domain_properties['minlon']
-        west = domain_properties['maxlon']
-        south = domain_properties['minlat']
-        north = domain_properties['maxlat']
+        east = domain_properties["minlon"]
+        west = domain_properties["maxlon"]
+        south = domain_properties["minlat"]
+        north = domain_properties["maxlat"]
 
-        hdr_east, hdr_west, hdr_south, hdr_north, gmted2010_input_lats, gmted2010_input_lons = \
-            self.gmted_header_coordinates(east, west, south, north)
+        (
+            hdr_east,
+            hdr_west,
+            hdr_south,
+            hdr_north,
+            gmted2010_input_lats,
+            gmted2010_input_lons,
+        ) = self.gmted_header_coordinates(east, west, south, north)
 
         tif_files = []
 
@@ -119,7 +153,7 @@ class Gmted(Task):
 
         for tif_file in tif_files:
             if not os.path.isfile(tif_file):
-                self.logger.error('GMTED file %s not found', tif_file)
+                self.logger.error("GMTED file %s not found", tif_file)
                 sys.exit(1)
 
         return tif_files, hdr_east, hdr_west, hdr_south, hdr_north
@@ -134,17 +168,18 @@ class Gmted(Task):
         """
         band = gd.GetRasterBand(1)
 
-        f = open(bin_file, 'wb')
+        f = open(bin_file, "wb")
         for iy in range(gd.RasterYSize):
             data = band.ReadAsArray(0, iy, gd.RasterXSize, 1)
-            sel = (data == -32768)
+            sel = data == -32768
             data[sel] = 0
-            data.byteswap().astype('int16').tofile(f)
+            data.byteswap().astype("int16").tofile(f)
         f.close()
 
     @staticmethod
-    def write_gmted_header_file(header_file, hdr_north, hdr_south,
-                                hdr_west, hdr_east, hdr_rows, hdr_cols) -> None:
+    def write_gmted_header_file(
+        header_file, hdr_north, hdr_south, hdr_west, hdr_east, hdr_rows, hdr_cols
+    ) -> None:
         """Write header file.
 
         Args:
@@ -156,18 +191,16 @@ class Gmted(Task):
             hdr_rows (int): Number of rows
             hdr_cols (int): Number of columns
         """
-        with open(header_file, mode='w', encoding="utf8") as f:
-            f.write('PROCESSED GMTED2010, orography model, resolution 250m\n')
-            f.write('nodata: -9999\n')
-            f.write(f'north: {hdr_north:.2f}\n')
-            f.write(f'south: {hdr_south:.2f}\n')
-            f.write(f'west: {hdr_west:.2f}\n')
-            f.write(f'east: {hdr_east:.2f}\n')
-            f.write(f'rows: {hdr_rows:d}\n')
-            f.write(f'cols: {hdr_cols:d}\n')
-            f.write('recordtype: integer 16 bytes\n')
-
-        return
+        with open(header_file, mode="w", encoding="utf8") as f:
+            f.write("PROCESSED GMTED2010, orography model, resolution 250m\n")
+            f.write("nodata: -9999\n")
+            f.write(f"north: {hdr_north:.2f}\n")
+            f.write(f"south: {hdr_south:.2f}\n")
+            f.write(f"west: {hdr_west:.2f}\n")
+            f.write(f"east: {hdr_east:.2f}\n")
+            f.write(f"rows: {int(hdr_rows):d}\n")
+            f.write(f"cols: {int(hdr_cols):d}\n")
+            f.write("recordtype: integer 16 bytes\n")
 
     def execute(self):
         """Run task.
@@ -177,16 +210,24 @@ class Gmted(Task):
         climdir = self.platform.get_system_value("climdir")
         os.makedirs(climdir, exist_ok=True)
 
-        projstr = Projstring().get_projstring(lon0=self.domain['lon0'], lat0=self.domain['lat0'])
+        projstr = Projstring().get_projstring(
+            lon0=self.domain["lon0"], lat0=self.domain["lat0"]
+        )
         proj = Projection(projstr)
         domain_properties = proj.get_domain_properties(self.domain)
 
-        tif_files, hdr_east, hdr_west, hdr_south, hdr_north = \
-            self.define_gmted_input(domain_properties)
+        tif_files, hdr_east, hdr_west, hdr_south, hdr_north = self.define_gmted_input(
+            domain_properties
+        )
 
         # Output merged GMTED file to working directory as file gmted_mea075.tif
-        gd = gdal.Warp("gmted_mea075.tif", tif_files, format="GTiff",
-                       options=["COMPRESS=LZW", "TILED=YES"])
+        gdal = _import_gdal()
+        gd = gdal.Warp(
+            "gmted_mea075.tif",
+            tif_files,
+            format="GTiff",
+            options=["COMPRESS=LZW", "TILED=YES"],
+        )
 
         Gmted.tif2bin(gd, "gmted_mea075.bin")
         os.rename("gmted_mea075.bin", f"{climdir}/gmted2010.dir")
@@ -200,8 +241,9 @@ class Gmted(Task):
         # Create the header file
         header_file = f"{climdir}/gmted2010.hdr"
         self.logger.debug("Write header file %s", header_file)
-        Gmted.write_gmted_header_file(header_file, hdr_north, hdr_south,
-                                      hdr_west, hdr_east, hdr_rows, hdr_cols)
+        Gmted.write_gmted_header_file(
+            header_file, hdr_north, hdr_south, hdr_west, hdr_east, hdr_rows, hdr_cols
+        )
 
 
 class Soil(Task):
@@ -228,18 +270,20 @@ class Soil(Task):
         Returns:
             dict: Domain properties
         """
-        domain = {"nlon": config.get_value('domain.njmax'),
-                  "nlat": config.get_value('domain.nimax'),
-                  "latc": config.get_value('domain.xlatcen'),
-                  "lonc": config.get_value('domain.xloncen'),
-                  "lat0": config.get_value('domain.xlat0'),
-                  "lon0": config.get_value('domain.xlon0'),
-                  "gsize": config.get_value('domain.xdx')}
+        domain = {
+            "nlon": config.get_value("domain.njmax"),
+            "nlat": config.get_value("domain.nimax"),
+            "latc": config.get_value("domain.xlatcen"),
+            "lonc": config.get_value("domain.xloncen"),
+            "lat0": config.get_value("domain.xlat0"),
+            "lon0": config.get_value("domain.xlon0"),
+            "gsize": config.get_value("domain.xdx"),
+        }
 
         return domain
 
     @staticmethod
-    def check_domain_validity(domain_properties : dict) -> None:
+    def check_domain_validity(domain_properties: dict) -> None:
         """Check if domain is valid.
 
         Args:
@@ -254,17 +298,28 @@ class Soil(Task):
         glo_east = 180.0
         glo_west = -180.0
 
-        is_outside = True if (
-            domain_properties['minlon'] < glo_west or domain_properties['minlon'] > glo_east
-            or domain_properties['maxlon'] < glo_west or domain_properties['maxlon'] > glo_east
-            or domain_properties['minlat'] < glo_south or domain_properties['minlat'] > glo_north
-            or domain_properties['maxlat'] < glo_south or domain_properties['maxlat'] > glo_north) else False
+        is_outside = (
+            True
+            if (
+                domain_properties["minlon"] < glo_west
+                or domain_properties["minlon"] > glo_east
+                or domain_properties["maxlon"] < glo_west
+                or domain_properties["maxlon"] > glo_east
+                or domain_properties["minlat"] < glo_south
+                or domain_properties["minlat"] > glo_north
+                or domain_properties["maxlat"] < glo_south
+                or domain_properties["maxlat"] > glo_north
+            )
+            else False
+        )
 
         if is_outside:
-            raise ValueError('Domain outside soilgrid data area')
+            raise ValueError("Domain outside soilgrid data area")
 
     @staticmethod
-    def coordinates_for_cutting_dataset(domain_properties: dict, halo: float = 5.0) -> tuple:
+    def coordinates_for_cutting_dataset(
+        domain_properties: dict, halo: float = 5.0
+    ) -> tuple:
         """Get coordinates for cutting dataset.
 
         Args:
@@ -274,17 +329,28 @@ class Soil(Task):
         Returns:
             tuple: Coordinates for cutting dataset
         """
-        cut_west = domain_properties['minlon'] - halo
-        cut_east = domain_properties['maxlon'] + halo
-        cut_south = domain_properties['minlat'] - halo
-        cut_north = domain_properties['maxlat'] + halo
+        cut_west = domain_properties["minlon"] - halo
+        cut_east = domain_properties["maxlon"] + halo
+        cut_south = domain_properties["minlat"] - halo
+        cut_north = domain_properties["maxlat"] + halo
 
         return cut_west, cut_east, cut_south, cut_north
 
     @staticmethod
-    def write_soil_header_file(header_file, soiltype, hdr_north, hdr_south,
-                               hdr_west, hdr_east, hdr_rows, hdr_cols,
-                               nodata=0, bits=8, write_fact=False, fact=10) -> None:
+    def write_soil_header_file(
+        header_file,
+        soiltype,
+        hdr_north,
+        hdr_south,
+        hdr_west,
+        hdr_east,
+        hdr_rows,
+        hdr_cols,
+        nodata=0,
+        bits=8,
+        write_fact=False,
+        fact=10,
+    ) -> None:
         """Write header file.
 
         Args:
@@ -301,21 +367,17 @@ class Soil(Task):
             write_fact (bool): Write factor. Defaults to False.
             fact (int): Factor. Defaults to 10
         """
-        with open(header_file, mode='w', encoding="utf8") as f:
-            f.write(f'{soiltype} cut from global soilgrids of 250m resolution\n')
-            f.write(f'nodata: {nodata:d}\n')
-            f.write(f'north: {hdr_north:.6f}\n')
-            f.write(f'south: {hdr_south:.6f}\n')
-            f.write(f'west: {hdr_west:.6f}\n')
-            f.write(f'east: {hdr_east:.6f}\n')
-            f.write(f'rows: {hdr_rows:d}\n')
-            f.write(f'cols: {hdr_cols:d}\n')
+        with open(header_file, mode="w", encoding="utf8") as f:
+            f.write(f"{soiltype} cut from global soilgrids of 250m resolution\n")
+            f.write(f"nodata: {nodata:d}\n")
+            for param in [hdr_north, hdr_south, hdr_west, hdr_east]:
+                f.write(f"north: {float(param):.6f}\n")
+            f.write(f"rows: {int(hdr_rows):d}\n")
+            f.write(f"cols: {int(hdr_cols):d}\n")
             # TODO Check if factor can be float
             if write_fact:
-                f.write(f'fact: {fact:d}\n')
-            f.write(f'recordtype: integer {bits:d} bits\n')
-
-        return
+                f.write(f"fact: {fact:d}\n")
+            f.write(f"recordtype: integer {bits:d} bits\n")
 
     def execute(self):
         """Run task.
@@ -323,40 +385,53 @@ class Soil(Task):
         Define run sequence.
 
         Raises:
-            Exception: Exception if no tifs found
+            FileNotFoundError: If no tif files are found.
         """
-        self.logger.debug('Running soil task')
+        self.logger.debug("Running soil task")
 
         soilgrid_path = self.fmanager.platform.get_platform_value("SOILGRID_DATA_PATH")
 
-        soilgrid_tifs = Search.find_files(soilgrid_path, postfix='.tif', fullpath=True)
+        soilgrid_tifs = Search.find_files(soilgrid_path, postfix=".tif", fullpath=True)
 
         if len(soilgrid_tifs) == 0:
-            self.logger.error('No soilgrid tifs found in %s', self.soilgrid_path)
-            raise Exception(f'No soilgrid tifs found in {self.soilgrid_path}')
+            raise FileNotFoundError(f"No soilgrid tifs found under {soilgrid_path}")
 
         # symlink with filemanager from toolbox
         for soilgrid_tif in soilgrid_tifs:
             soilgrid_tif_basename = os.path.basename(soilgrid_tif)
-            self.fmanager.input(soilgrid_tif, soilgrid_tif_basename, check_archive=False, provider_id="symlink")
+            self.fmanager.input(
+                soilgrid_tif,
+                soilgrid_tif_basename,
+                check_archive=False,
+                provider_id="symlink",
+            )
 
-        projstr = Projstring().get_projstring(lon0=self.domain['lon0'], lat0=self.domain['lat0'])
+        projstr = Projstring().get_projstring(
+            lon0=self.domain["lon0"], lat0=self.domain["lat0"]
+        )
         proj = Projection(projstr)
         domain_properties = proj.get_domain_properties(self.domain)
         self.check_domain_validity(domain_properties)
 
         # Get coordinates for cutting dataset
-        cut_lon, cut_east, cut_south, cut_north = self.coordinates_for_cutting_dataset(domain_properties)
+        cut_lon, cut_east, cut_south, cut_north = self.coordinates_for_cutting_dataset(
+            domain_properties
+        )
 
         # Cut soilgrid tifs
         soilgrid_tif_subarea_files = []
         find_size_and_corners = True
+        gdal = _import_gdal()
         for soilgrid_tif in soilgrid_tifs:
             soilgrid_tif_basename = os.path.basename(soilgrid_tif)
-            soilgrid_tif_subarea = soilgrid_tif_basename.replace('.tif', '_subarea.tif')
+            soilgrid_tif_subarea = soilgrid_tif_basename.replace(".tif", "_subarea.tif")
             soilgrid_tif_subarea_files.append(soilgrid_tif_subarea)
             ds = gdal.Open(soilgrid_tif_basename)
-            ds = gdal.Translate(soilgrid_tif_subarea, ds, projWin=[cut_lon, cut_north, cut_east, cut_south])
+            ds = gdal.Translate(
+                soilgrid_tif_subarea,
+                ds,
+                projWin=[cut_lon, cut_north, cut_east, cut_south],
+            )
             if find_size_and_corners:
                 # Get number of rows and columns
                 hdr_rows = ds.RasterYSize
@@ -373,39 +448,91 @@ class Soil(Task):
         climdir = self.platform.get_system_value("climdir")
         os.makedirs(climdir, exist_ok=True)
         for subarea_file in soilgrid_tif_subarea_files:
-            if subarea_file.startswith('SNDPPT'):
+            if subarea_file.startswith("SNDPPT"):
                 ds = gdal.Open(subarea_file)
-                ds = gdal.Translate(climdir + "/SAND_SOILGRID.dir", ds, format='EHdr', outputType=gdal.GDT_Byte)
+                ds = gdal.Translate(
+                    climdir + "/SAND_SOILGRID.dir",
+                    ds,
+                    format="EHdr",
+                    outputType=gdal.GDT_Byte,
+                )
                 ds = None
-            elif subarea_file.startswith('CLYPPT'):
+            elif subarea_file.startswith("CLYPPT"):
                 ds = gdal.Open(subarea_file)
-                ds = gdal.Translate(climdir + "/CLAY_SOILGRID.dir", ds, format='EHdr', outputType=gdal.GDT_Byte)
+                ds = gdal.Translate(
+                    climdir + "/CLAY_SOILGRID.dir",
+                    ds,
+                    format="EHdr",
+                    outputType=gdal.GDT_Byte,
+                )
                 ds = None
-            elif subarea_file.startswith('SOC_TOP'):
+            elif subarea_file.startswith("SOC_TOP"):
                 ds = gdal.Open(subarea_file)
-                ds = gdal.Translate(climdir + "/soc_top.dir", ds, format='EHdr', outputType=gdal.GDT_Int16)
+                ds = gdal.Translate(
+                    climdir + "/soc_top.dir", ds, format="EHdr", outputType=gdal.GDT_Int16
+                )
                 ds = None
-            elif subarea_file.startswith('SOC_SUB'):
+            elif subarea_file.startswith("SOC_SUB"):
                 ds = gdal.Open(subarea_file)
-                ds = gdal.Translate(climdir + "/soc_sub.dir", ds, format='EHdr', outputType=gdal.GDT_Int16)
+                ds = gdal.Translate(
+                    climdir + "/soc_sub.dir", ds, format="EHdr", outputType=gdal.GDT_Int16
+                )
                 ds = None
             else:
-                self.logger.warning('Unknown soilgrid tif file: %s', subarea_file)
+                self.logger.warning("Unknown soilgrid tif file: %s", subarea_file)
 
         # Compose headers in surfex/pgd format
-        self.write_soil_header_file(climdir + "/CLAY_SOILGRID.hdr", 'Clay',
-                                    hdr_north, hdr_south, hdr_west, hdr_east,
-                                    hdr_rows, hdr_cols, nodata=0, bits=8,
-                                    write_fact=False)
-        self.write_soil_header_file(climdir + "/SAND_SOILGRID.hdr", 'Sand',
-                                    hdr_north, hdr_south, hdr_west, hdr_east,
-                                    hdr_rows, hdr_cols, nodata=0, bits=8,
-                                    write_fact=False)
-        self.write_soil_header_file(climdir + "/soc_top.hdr", 'soc_top', hdr_north, hdr_south,
-                                    hdr_west, hdr_east, hdr_rows, hdr_cols,
-                                    nodata=-9999, bits=16, write_fact=True)
-        self.write_soil_header_file(climdir + "/soc_sub.hdr", 'soc_sub', hdr_north, hdr_south,
-                                    hdr_west, hdr_east, hdr_rows, hdr_cols,
-                                    nodata=-9999, bits=16, write_fact=True)
+        self.write_soil_header_file(
+            climdir + "/CLAY_SOILGRID.hdr",
+            "Clay",
+            hdr_north,
+            hdr_south,
+            hdr_west,
+            hdr_east,
+            hdr_rows,
+            hdr_cols,
+            nodata=0,
+            bits=8,
+            write_fact=False,
+        )
+        self.write_soil_header_file(
+            climdir + "/SAND_SOILGRID.hdr",
+            "Sand",
+            hdr_north,
+            hdr_south,
+            hdr_west,
+            hdr_east,
+            hdr_rows,
+            hdr_cols,
+            nodata=0,
+            bits=8,
+            write_fact=False,
+        )
+        self.write_soil_header_file(
+            climdir + "/soc_top.hdr",
+            "soc_top",
+            hdr_north,
+            hdr_south,
+            hdr_west,
+            hdr_east,
+            hdr_rows,
+            hdr_cols,
+            nodata=-9999,
+            bits=16,
+            write_fact=True,
+        )
+        self.write_soil_header_file(
+            climdir + "/soc_sub.hdr",
+            "soc_sub",
+            hdr_north,
+            hdr_south,
+            hdr_west,
+            hdr_east,
+            hdr_rows,
+            hdr_cols,
+            nodata=-9999,
+            bits=16,
+            write_fact=True,
+        )
 
-        self.logger.debug('Finished soil task')
+        self.logger.debug("Finished soil task")

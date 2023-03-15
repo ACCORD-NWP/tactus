@@ -4,6 +4,8 @@ import os
 import subprocess  # noqa
 from abc import ABC, abstractmethod
 
+from ..toolbox import ArchiveError
+
 
 class InputDataToBinaries(ABC):
     """Abstract input data."""
@@ -57,7 +59,7 @@ class OutputData(OutputDataFromBinaries):
         """Archive files.
 
         Raises:
-            Exception: Error archiving files.
+            ArchiveError: Error archiving files.
         """
         for output_file, target in self.data.items():
 
@@ -73,9 +75,9 @@ class OutputData(OutputDataFromBinaries):
             try:
                 logging.info(cmd)
                 subprocess.check_call(cmd, shell=True)  # noqa
-            except IOError:
+            except (IOError, subprocess.CalledProcessError) as error:
                 logging.error("%s failed", cmd)
-                raise Exception(cmd + " failed") from IOError
+                raise ArchiveError(cmd + " failed") from error
 
 
 class InputData(InputDataToBinaries):
