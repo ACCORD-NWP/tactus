@@ -289,10 +289,9 @@ class SuiteDefinition(object):
              variables=None
              )
              for pp in e927_p:
-              par_vars = { "ECF_EXTN": pp }
               e927_fam = EcflowSuiteFamily(
                 pp, Int_family, ecf_files, trigger=prepare_cycle_done,
-                variables=par_vars
+                variables=None
              )
               EcflowSuiteTask(
                         "e927",

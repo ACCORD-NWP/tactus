@@ -153,7 +153,6 @@ suite deode_case
         edit ECF_FILES '/home/nkac/deode_ecflow/ecf/deode_case/20230219/0000/Interpolation'
         family LBC1
           trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
-          edit ECF_EXTN 'LBC1'
           edit ECF_FILES '/home/nkac/deode_ecflow/ecf/deode_case/20230219/0000/Interpolation/LBC1'
           task e927
             trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
@@ -181,7 +180,6 @@ suite deode_case
         endfamily
         family LBC2
           trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
-          edit ECF_EXTN 'LBC2'
           edit ECF_FILES '/home/nkac/deode_ecflow/ecf/deode_case/20230219/0000/Interpolation/LBC2'
           task e927
             trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
@@ -209,7 +207,6 @@ suite deode_case
         endfamily
         family LBC3
           trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
-          edit ECF_EXTN 'LBC3'
           edit ECF_FILES '/home/nkac/deode_ecflow/ecf/deode_case/20230219/0000/Interpolation/LBC3'
           task e927
             trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
@@ -237,7 +234,6 @@ suite deode_case
         endfamily
         family LBC4
           trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
-          edit ECF_EXTN 'LBC4'
           edit ECF_FILES '/home/nkac/deode_ecflow/ecf/deode_case/20230219/0000/Interpolation/LBC4'
           task e927
             trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
@@ -265,7 +261,6 @@ suite deode_case
         endfamily
         family LBC5
           trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
-          edit ECF_EXTN 'LBC5'
           edit ECF_FILES '/home/nkac/deode_ecflow/ecf/deode_case/20230219/0000/Interpolation/LBC5'
           task e927
             trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
@@ -293,7 +288,6 @@ suite deode_case
         endfamily
         family LBC6
           trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
-          edit ECF_EXTN 'LBC6'
           edit ECF_FILES '/home/nkac/deode_ecflow/ecf/deode_case/20230219/0000/Interpolation/LBC6'
           task e927
             trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
@@ -321,7 +315,6 @@ suite deode_case
         endfamily
         family LBC7
           trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
-          edit ECF_EXTN 'LBC7'
           edit ECF_FILES '/home/nkac/deode_ecflow/ecf/deode_case/20230219/0000/Interpolation/LBC7'
           task e927
             trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
@@ -349,7 +342,6 @@ suite deode_case
         endfamily
         family LBC8
           trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
-          edit ECF_EXTN 'LBC8'
           edit ECF_FILES '/home/nkac/deode_ecflow/ecf/deode_case/20230219/0000/Interpolation/LBC8'
           task e927
             trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
@@ -377,7 +369,6 @@ suite deode_case
         endfamily
         family LBC9
           trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
-          edit ECF_EXTN 'LBC9'
           edit ECF_FILES '/home/nkac/deode_ecflow/ecf/deode_case/20230219/0000/Interpolation/LBC9'
           task e927
             trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
@@ -405,7 +396,6 @@ suite deode_case
         endfamily
         family LBC10
           trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
-          edit ECF_EXTN 'LBC10'
           edit ECF_FILES '/home/nkac/deode_ecflow/ecf/deode_case/20230219/0000/Interpolation/LBC10'
           task e927
             trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
@@ -433,7 +423,6 @@ suite deode_case
         endfamily
         family LBC11
           trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
-          edit ECF_EXTN 'LBC11'
           edit ECF_FILES '/home/nkac/deode_ecflow/ecf/deode_case/20230219/0000/Interpolation/LBC11'
           task e927
             trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
@@ -461,7 +450,6 @@ suite deode_case
         endfamily
         family LBC12
           trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
-          edit ECF_EXTN 'LBC12'
           edit ECF_FILES '/home/nkac/deode_ecflow/ecf/deode_case/20230219/0000/Interpolation/LBC12'
           task e927
             trigger (/deode_case/20230219/0000/InputData/PrepareCycle == complete)
