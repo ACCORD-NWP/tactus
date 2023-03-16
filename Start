@@ -1,0 +1,26 @@
+
+# Run experiment 
+ECF_HOST=`echo ecflow-gen-${USER}-001`
+#
+#
+DEODE_SCRATCH=$HOME/deode_ecflow
+
+mkdir -p $DEODE_SCRATCH/job
+mkdir -p $DEODE_SCRATCH/ecf
+
+# Prepare the demonstration
+if [ 1 -eq 0 ] ; then
+  # Clean the working/ecflow directories for a very clean start
+  rm -vrf $SCRATCH/deode/deode_case/
+  rm -vrf $DEODE_SCRATCH/job/*
+  rm -vrf $DEODE_SCRATCH/ecf/*
+fi
+
+deode -loglevel debug \
+-config_file $PWD/config/config.toml \
+start suite \
+--ecf_host $ECF_HOST \
+--ecf_port 3141 \
+--joboutdir $DEODE_SCRATCH/job \
+--ecf_files $DEODE_SCRATCH/ecf
+
