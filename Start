@@ -17,7 +17,7 @@ if [ 1 -eq 0 ] ; then
 fi
 
 deode -loglevel debug \
--config_file $PWD/config/config.toml \
+-config_file $PWD/deode/data/config_files/config.toml \
 start suite \
 --ecf_host $ECF_HOST \
 --ecf_port 3141 \
