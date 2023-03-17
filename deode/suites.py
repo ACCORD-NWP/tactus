@@ -1,6 +1,8 @@
 """Ecflow suites."""
 
 import os
+import re
+import math
 from pathlib import Path
 
 from .datetime_utils import as_datetime, as_timedelta
@@ -48,8 +50,8 @@ class SuiteDefinition(object):
             ecf_home (str, optional): ECF_HOME. Defaults to None.
             ecf_include (str, optional): ECF_INCLUDE.
                                          Defaults to None which uses ecf_files.
-            ecf_out (str, optional): ECF_OUT. Defaults to None.
-            ecf_jobout (str, optional): ECF_JOBOUT. Defaults to None.
+            
+            ecf_joboustr, optional): ECF_JOBOUT. Defaults to None.
             ecf_micro (str, optional): ECF_MICRO. Defaults to %
             dry_run (bool, optional): Dry run not using ecflow. Defaults to False.
 
@@ -179,7 +181,6 @@ class SuiteDefinition(object):
 
 # 2nd level Family
 # StaticData >> Pgd
-
         pgd_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd_input)])
         pgd = EcflowSuiteTask(
             "Pgd",
@@ -234,6 +235,7 @@ class SuiteDefinition(object):
             )
             i = i + 1
             cycle_time = cycle_time + cycle_length
+        
 
 # 1st level Family
 # YYYYMMDD
@@ -249,7 +251,6 @@ class SuiteDefinition(object):
                     cycle["day"], self.suite, ecf_files, trigger=inputdata_trigger
                 )
                 days.append(cycle_day)
-
 # 2nd level Family
 # YYYYMMDD >> HHHH
             time_variables = {
@@ -263,7 +264,6 @@ class SuiteDefinition(object):
                 trigger=inputdata_trigger,
                 variables=time_variables,
             )
-
 # 3rd level Family
 # YYYYMMDD >> HHHH >> InputData
             inputdata = EcflowSuiteFamily(
@@ -284,17 +284,24 @@ class SuiteDefinition(object):
 
 # 3rd level Family
 # YYYYMMDD >> HHHH >> Interpolation
+            frng_s=re.findall(r'\d+', config.get_value("general.forecast_range"))
+            frng_i=int(frng_s[0])
+            bdint_s=re.findall(r'\d+', config.get_value("general.bdint"))
+            bdint_i=int(bdint_s[0])
+            par_tsks=min(
+                    math.ceil(frng_i/bdint_i), 
+                    config.get_value("general.bdmax")
+                    )
             
-            par_tsks=12 
-            e927_p = ["LBC"+str(i) for i in list(range(1,par_tsks+1))]
             if cycle["time"]=="0000" or cycle["time"]=="1200":
              Int_family = EcflowSuiteFamily(
              "Interpolation", time_family, ecf_files, trigger=prepare_cycle_done,
              variables=None
              )
-             for pp in e927_p:
+             for pp in range(par_tsks):
+              epp={"VALIDTIME": cycle["validtime"]}
               e927_fam = EcflowSuiteFamily(
-                pp, Int_family, ecf_files, trigger=prepare_cycle_done,
+                      "LBC" + str(pp+1), Int_family, ecf_files, trigger=prepare_cycle_done,
                 variables=None
              )
               EcflowSuiteTask(
@@ -304,7 +311,7 @@ class SuiteDefinition(object):
                         self.task_settings,
                         ecf_files,
                         input_template=input_template,
-                        variables=None,
+                        variables=epp,
                         trigger=prepare_cycle_done,
                         )
 
