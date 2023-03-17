@@ -19,6 +19,7 @@ class Forecast(Task):
         """
         Task.__init__(self, config, __name__)
 
+        self.cycle = self.config.get_value("general.cycle")
         self.cnmexp = self.config.get_value("general.cnmexp")
         self.domain = self.config.get_value("domain.name")
 
@@ -33,6 +34,7 @@ class Forecast(Task):
 
         self.climdir = self.platform.get_system_value("climdir")
         self.rrtm_dir = self.platform.get_platform_value("RRTM_DIR")
+        self.ncdir = self.config.get_value("platform.ncdir")
         self.archive = self.platform.get_system_value("archive")
 
         self.namelists = self.platform.get_platform_value("NAMELISTS")
@@ -62,6 +64,24 @@ class Forecast(Task):
 
     def firstguess(self):
         """Find initial file."""
+        # Find data explicitly defined
+        init_defined = False
+        try:
+            source = self.config.get_value("system.initfile")
+            source_sfx = self.config.get_value("system.initfile_sfx")
+            self.logger.debug("Defined source %s", source)
+            self.logger.debug("Defined source_sfx %s", source_sfx)
+            init_defined = True
+        except:  # noqa
+            pass
+
+        if init_defined:
+            if os.path.exists(source) and os.path.exists(source_sfx):
+                return source, source_sfx
+            else:
+                self.logger.warning("Could not find:\n  %s\n  %s", source, source_sfx)
+                raise FileNotFoundError("Could not find any initial files")
+
         # Find data from previous forecast
         pdtg = self.basetime - self.cycle_length
         dt = self.basetime - pdtg
@@ -94,38 +114,50 @@ class Forecast(Task):
         raise FileNotFoundError("Could not find any initial files")
 
     def execute(self):
-        """Execute forecast.
+        """Execute forecast."""
+        # CY48t3/CY46t1 input files not used in CY46h1
+        # *.nc files and ecoclimap.bin files
+        input_files = [
+            "aerosol_cams_climatology_43R3.nc",
+            "aerosol_cams_climatology_43R3a.nc",
+            "aerosol_ifs_rrtm.nc",
+            "aerosol_ifs_rrtm_42R1.nc",
+            "aerosol_ifs_rrtm_43R1.nc",
+            "aerosol_ifs_rrtm_43R1a.nc",
+            "aerosol_ifs_rrtm_43R3.nc",
+            "aerosol_ifs_rrtm_45R2.nc",
+            "aerosol_ifs_rrtm_46R1.nc",
+            "aerosol_ifs_rrtm_46R1_with_NI_AM.nc",
+            "aerosol_ifs_rrtm_AB.nc",
+            "aerosol_ifs_rrtm_tegen.nc",
+            "baran_ice_scattering_rrtm.nc",
+            "es_droplet_scattering_rrtm.nc",
+            "fu_ice_scattering_rrtm.nc",
+            "greenhouse_gas_climatology_46r1.nc",
+            "greenhouse_gas_climatology_48r1.nc",
+            "greenhouse_gas_timeseries_CMIP3_A1B_46r1.nc",
+            "greenhouse_gas_timeseries_CMIP3_A2_46r1.nc",
+            "greenhouse_gas_timeseries_CMIP3_B1_46r1.nc",
+            "greenhouse_gas_timeseries_CMIP5_RCP3PD_46r1.nc",
+            "greenhouse_gas_timeseries_CMIP5_RCP45_46r1.nc",
+            "greenhouse_gas_timeseries_CMIP5_RCP6_46r1.nc",
+            "greenhouse_gas_timeseries_CMIP5_RCP85_46r1.nc",
+            "greenhouse_gas_timeseries_CMIP6_SSP126_CFC11equiv_47r1.nc",
+            "greenhouse_gas_timeseries_CMIP6_SSP245_CFC11equiv_47r1.nc",
+            "greenhouse_gas_timeseries_CMIP6_SSP370_CFC11equiv_47r1.nc",
+            "greenhouse_gas_timeseries_CMIP6_SSP585_CFC11equiv_47r1.nc",
+            "mcica_gamma.nc",
+            "mcica_lognormal.nc",
+            "slingo_droplet_scattering_rrtm.nc",
+            "socrates_droplet_scattering_rrtm.nc",
+            "total_solar_irradiance_CMIP6_47r1.nc",
+            "ecoclimapI_covers_param.bin",
+            "ecoclimapII_eu_covers_param.bin",
+        ]
+        if self.cycle in ["CY46t1", "CY48t3"]:
+            for ifile in input_files:
+                self.fmanager.input(f"{self.ncdir}/{ifile}", ifile)
 
-        # Boundaries assumed to be in archive
-        CY48T3 input files not used in CY46
-        input_files = ["aerosol_cams_climatology_43R3.nc",
-                       "aerosol_cams_climatology_43R3a.nc", "aerosol_ifs_rrtm.nc",
-                       "aerosol_ifs_rrtm_42R1.nc", "aerosol_ifs_rrtm_43R1.nc",
-                       "aerosol_ifs_rrtm_43R1a.nc", "aerosol_ifs_rrtm_43R3.nc",
-                       "aerosol_ifs_rrtm_45R2.nc", "aerosol_ifs_rrtm_46R1.nc",
-                       "aerosol_ifs_rrtm_46R1_with_NI_AM.nc", "aerosol_ifs_rrtm_AB.nc",
-                       "aerosol_ifs_rrtm_tegen.nc", "baran_ice_scattering_rrtm.nc",
-                       "es_droplet_scattering_rrtm.nc", "fu_ice_scattering_rrtm.nc",
-                       "greenhouse_gas_climatology_46r1.nc",
-                       "greenhouse_gas_climatology_48r1.nc",
-                       "greenhouse_gas_timeseries_CMIP3_A1B_46r1.nc",
-                       "greenhouse_gas_timeseries_CMIP3_A2_46r1.nc",
-                       "greenhouse_gas_timeseries_CMIP3_B1_46r1.nc",
-                       "greenhouse_gas_timeseries_CMIP5_RCP3PD_46r1.nc",
-                       "greenhouse_gas_timeseries_CMIP5_RCP45_46r1.nc",
-                       "greenhouse_gas_timeseries_CMIP5_RCP6_46r1.nc",
-                       "greenhouse_gas_timeseries_CMIP5_RCP85_46r1.nc",
-                       "greenhouse_gas_timeseries_CMIP6_SSP126_CFC11equiv_47r1.nc",
-                       "greenhouse_gas_timeseries_CMIP6_SSP245_CFC11equiv_47r1.nc",
-                       "greenhouse_gas_timeseries_CMIP6_SSP370_CFC11equiv_47r1.nc",
-                       "greenhouse_gas_timeseries_CMIP6_SSP585_CFC11equiv_47r1.nc",
-                       "mcica_gamma.nc",
-                       "mcica_lognormal.nc",
-                       "slingo_droplet_scattering_rrtm.nc",
-                       "socrates_droplet_scattering_rrtm.nc",
-                       "total_solar_irradiance_CMIP6_47r1.nc",
-                       ]
-        """
         # RRTM files
         for ifile in [
             "C11CLIM",
@@ -191,9 +223,17 @@ class Forecast(Task):
         cdtg = self.basetime
         dtgend = self.basetime + self.forecast_range
         i = 0
+
+        # Use explicitly defined boundary dir if defined
+        try:
+            intp_bddir = self.config.get_value("system.intp_bddir")
+        except:  # noqa
+            intp_bddir = self.wrk
+
+        # Link the boundary files
         while cdtg <= dtgend:
             source = f"ELSCF{self.cnmexp}ALBC{i:03d}"
-            self.fmanager.input(f"{self.wrk}/{source}", source)
+            self.fmanager.input(f"{intp_bddir}/{source}", source)
             cdtg += self.bdint
             i += 1
 
@@ -274,6 +314,24 @@ class FirstGuess(Task):
 
     def execute(self):
         """Find initial file."""
+        # Find data explicitly defined
+        init_defined = False
+        try:
+            source = self.config.get_value("general.initfile")
+            source_sfx = self.config.get_value("general.initfile_sfx")
+            self.logger.debug("Defined source %s", source)
+            self.logger.debug("Defined source_sfx %s", source_sfx)
+            init_defined = True
+        except:  # noqa
+            pass
+
+        if init_defined:
+            if os.path.exists(source) and os.path.exists(source_sfx):
+                return source, source_sfx
+            else:
+                self.logger.warning("Could not find:\n  %s\n  %s", source, source_sfx)
+                raise FileNotFoundError("Could not find any initial files")
+
         # Find data from previous forecast
         pdtg = self.basetime - self.cycle_length
         dt = self.basetime - pdtg
