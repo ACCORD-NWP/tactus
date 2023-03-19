@@ -153,35 +153,31 @@ poetry shell
 ECF_HOST=`echo ecflow-gen-${USER}-001`
 
 deode -loglevel debug \
--config_file \
-$HOME/projects/Deode-Prototype/docs/task_config_example.toml \
-start suite \
---name test_deode \
---ecf_host $ECF_HOST \
---ecf_port 3141 \
---submit $HOME/projects/Deode-Prototype/ecflow-gen.json \
---logfile $HOME/test/log \
---joboutdir $HOME/test \
---ecf_files $HOME/projects/Deode-Prototype/ecf \
---start_command "ssh $ECF_HOST ecflow_start.sh -p 3141"
-
+      -config_file $HOME/projects/Deode-Prototype/deode/data/config_files/config.toml \
+      start suite \
+      --ecf_host $ECF_HOST \
+      --ecf_port 3141 \
+      --joboutdir $HOME/jobout \
+      --ecf_files $HOME/projects/Deode-Prototype/deode/templates/ecflow
 ```
 
 You can now open ecflow_ui and add ecflow-gen-${USER}-001 as the server with port 3141
 
 ### Example using poetry and run the forecast task from hpc-login command line
 
-The example below shows how to run deode/task/forecast.py using the batch system rules defined in ecflow-gen.json.
+The example below shows how to run deode/task/forecast.py using the batch system rules defined in your config.toml. The example assumes you're running the command from the Deode-Prototype root directory. 
 
 ```
 > module load python3/3.8.8-01
 > module load troika
 > poetry shell
-> deode -loglevel debug run --task Forecast \
- --template $PWD/deode/templates/stand_alone.py \
- --job $PWD/forecast.job \
- --submit background.json \
- --troika_config $PWD/deode/data/config_files/troika.yml \
- -o $PWD/forecast.log
+> deode -run --task Forecast \
+      -config_file $PWD/deode/data/config_files/config.toml \
+      --template $PWD/deode/templates/stand_alone.py \
+      --job $PWD/forecast.job \
+      --troika_config $PWD/deode/data/config_files/troika.yml \
+      -o $PWD/forecast.log
+
 
 ```
+There's no need to specify the `-troika_config` option if you've already specified the troika config file variable in your config.toml file. 
