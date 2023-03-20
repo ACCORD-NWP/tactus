@@ -136,6 +136,7 @@ class SuiteDefinition(object):
             "TROIKA_CONFIG": troika_config,
             "BASETIME": first_cycle.strftime("%Y%m%d%H%M"),
             "VALIDTIME": first_cycle.strftime("%Y%m%d%H%M"),
+            "ITERATOR": 0,
             "DEODE_HOME": deode_home,
             "KEEP_WORKDIRS": keep_workdirs,
         }
@@ -234,8 +235,7 @@ class SuiteDefinition(object):
                 }
             )
             i = i + 1
-            cycle_time = cycle_time + cycle_length
-        
+            cycle_time = cycle_time + cycle_length 
 
 # 1st level Family
 # YYYYMMDD
@@ -288,22 +288,18 @@ class SuiteDefinition(object):
             frng_i=int(frng_s[0])
             bdint_s=re.findall(r'\d+', config.get_value("general.bdint"))
             bdint_i=int(bdint_s[0])
-            par_tsks=min(
-                    math.ceil(frng_i/bdint_i), 
-                    config.get_value("general.bdmax")
-                    )
+           
+            par_tsks=min( math.ceil(frng_i/bdint_i), config.get_value("general.bdmax") )
             
             if cycle["time"]=="0000" or cycle["time"]=="1200":
              Int_family = EcflowSuiteFamily(
              "Interpolation", time_family, ecf_files, trigger=prepare_cycle_done,
              variables=None
              )
+ 
              for pp in range(par_tsks):
-              epp={"VALIDTIME": cycle["validtime"]}
-              e927_fam = EcflowSuiteFamily(
-                      "LBC" + str(pp+1), Int_family, ecf_files, trigger=prepare_cycle_done,
-                variables=None
-             )
+             # epp={"VALIDTIME": cycle["validtime"]}
+              e927_fam = EcflowSuiteFamily("LBC" + str(pp+1), Int_family, ecf_files, trigger=prepare_cycle_done,variables=None)
               EcflowSuiteTask(
                         "e927",
                         e927_fam,
@@ -311,10 +307,9 @@ class SuiteDefinition(object):
                         self.task_settings,
                         ecf_files,
                         input_template=input_template,
-                        variables=epp,
-                        trigger=prepare_cycle_done,
+                        variables={'ITERATOR': pp},
+                        trigger=prepare_cycle_done
                         )
-
 # 3rd level Family             
 # YYYYMMDD >> HHHH >> Cycle
             cycle = EcflowSuiteFamily("Cycle", time_family, ecf_files)

@@ -15,7 +15,8 @@
  output_interval_sfx = "PT3H"
  output_interval_sfx_sel = "PT1H"
  keep_workdirs = true
- bdmax=12
+ bdmax = 12
+ iterator = 0
 
 [vertical_levels]
 nlev = 65
@@ -66,7 +67,7 @@ xlat0 = 52.5
  start = "2023-02-19T00:00:00Z"
  end = "2023-02-19T03:00:00Z"
  cycle_length = "PT3H"
-
+ 
 [task]
  wrapper = "srun"
 [task.forecast]
