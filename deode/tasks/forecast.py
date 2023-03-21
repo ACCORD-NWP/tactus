@@ -4,6 +4,7 @@
 import os
 
 from ..datetime_utils import as_datetime, as_timedelta
+from ..namelist import NamelistGenerator
 from .base import Task
 from .batch import BatchJob
 
@@ -38,6 +39,8 @@ class Forecast(Task):
         self.archive = self.platform.get_system_value("archive")
 
         self.namelists = self.platform.get_platform_value("NAMELISTS")
+        self.nlgen_master = NamelistGenerator(config, "master")
+        self.nlgen_surfex = NamelistGenerator(config, "surfex")
 
         self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
         self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
@@ -212,12 +215,11 @@ class Forecast(Task):
 
         # Namelists
         # The fullpos output should be configured elsewhere
-        for ifile in ["xxt00000000", "xxtddddhhmm", "dirlst", "EXSEG1.nam"]:
+        for ifile in ["xxt00000000", "xxtddddhhmm", "dirlst"]:
             namelist = f"{self.namelists}/{ifile}"
             self.fmanager.input(namelist, ifile, provider_id="copy")
-        self.fmanager.input(
-            f"{self.namelists}/fort.4_arome", "fort.4", provider_id="copy"
-        )
+        self.nlgen_master.generate_namelist("forecast", "fort.4")
+        self.nlgen_surfex.generate_namelist("forecast", "EXSEG1.nam")
 
         # Link the boundary files
         cdtg = self.basetime

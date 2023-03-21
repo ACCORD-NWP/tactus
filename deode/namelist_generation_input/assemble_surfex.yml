@@ -1,0 +1,9 @@
+forecast:
+  - sfx_common
+  - sfx_forecast
+pgd:
+  - sfx_common
+  - sfx_pgd
+prep:
+  - sfx_common
+  - sfx_prep
