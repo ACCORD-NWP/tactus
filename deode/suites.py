@@ -14,11 +14,19 @@ try:
 except ImportError:
     ecflow = None
 
-
 logger = get_logger(__name__, "DEBUG")
 
-
 class SuiteDefinition(object):
+    """div_chunk: List segmentation"""        
+    def div_chnk(ln, n_chnk):
+            for i in range(0, len(ln), n_chnk):
+                yield ln[i:i + n_chnk]
+    """
+        Args:
+            ln (int): Length of list
+            n_chnk: Number of chunks of new list
+    """
+
     """The definition of the suite."""
 
     def __init__(
@@ -55,8 +63,8 @@ class SuiteDefinition(object):
             dry_run (bool, optional): Dry run not using ecflow. Defaults to False. 
         Raises:
             ModuleNotFoundError: If ecflow is not loaded and not dry_run
-
         """
+
         if ecflow is None and not dry_run:
             raise ModuleNotFoundError("Ecflow not found")
 
@@ -80,7 +88,6 @@ class SuiteDefinition(object):
                 + f"/{ecf_micro}ECF_NAME{ecf_micro}.{ecf_micro}ECF_TRYNO{ecf_micro}"
             )
         self.ecf_jobout = ecf_jobout
-
         self.task_settings = task_settings
 
         # Commands started from the scheduler does not have full environment
@@ -279,17 +286,20 @@ class SuiteDefinition(object):
 
 # 3rd level Family
 # YYYYMMDD >> HHHH >> Interpolation
-            frng_s = re.findall(r'\d+', config.get_value("general.forecast_range"))
-            frng_i = int(frng_s[0])
-            bdint_s = re.findall(r'\d+', config.get_value("general.bdint"))
-            bdint_i = int(bdint_s[0])
-
-            par_tsks = min(math.ceil(frng_i / bdint_i), config.get_value("general.bdmax"))
-            par_list = list(range(0, par_tsks + 1))
+            frng = int(re.findall(r'\d+', config.get_value("general.forecast_range"))[0])
+            #frng_i = int(frng_s[0])
+            bdint = int(re.findall(r'\d+', config.get_value("general.bdint"))[0])
+           # bdint_i = int(bdint_s[0])
+            bdmax = config.get_value("general.bdmax")
+#            par_tsks = min(math.ceil(frng_i / bdint_i), config.get_value("general.bdmax"))
+            p_l = list(range(0, frng + 1, bdint))
+            bb = math.ceil(len(p_l) / bdmax)
+            par_l = list(div_chnk(p_l,bb))
+            print("PAR_L:", par_l)
 
             if cycle["time"] == "0000" or cycle["time"] == "1200":
                 int_fam = EcflowSuiteFamily("Interpolation", time_family, ecf_files, trigger=prepare_cycle_done, variables=None)
-                for pp in par_list:
+                for pp in par_l:
                     e927_fam = EcflowSuiteFamily(f"LBC{pp:03}", int_fam, ecf_files, trigger=prepare_cycle_done, variables=None)
                     EcflowSuiteTask(
                         "e927",
@@ -354,6 +364,16 @@ class SuiteDefinition(object):
                 input_template=input_template,
                 variables=variables,
             )
+
+    """div_chunk: List segmentation"""        
+    def div_chnk(ln, n_chnk):
+            for i in range(0, len(ln), n_chnk):
+                yield ln[i:i + n_chnk]
+    """
+        Args:
+            ln (int): Length of list
+            n_chnk: Number of chunks of new list
+    """
 
     def save_as_defs(self, def_file):
         """Save definition file.
@@ -730,7 +750,6 @@ class EcflowSuiteTriggers:
         if trigger_string is not None:
             self.trigger_string = self.trigger_string + cat_string + trigger_string
 
-
 class EcflowSuiteTrigger:
     """EcFlow Trigger in a suite."""
 
@@ -744,3 +763,4 @@ class EcflowSuiteTrigger:
         """
         self.node = node
         self.mode = mode
+

@@ -16,7 +16,7 @@
  output_interval_sfx_sel = "PT1H"
  keep_workdirs = true
  bdmax = 12
- iterator = 0
+ iterator = []
 
 [vertical_levels]
 nlev = 65

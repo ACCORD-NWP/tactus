@@ -33,6 +33,15 @@ def parse_ecflow_vars():
 %nopp"
 """
 
+"""div_chunk: List segmentation"""        
+def div_chnk(ln, n_chnk):
+    for i in range(0, len(ln), n_chnk):
+        yield ln[i:i + n_chnk]
+"""
+        Args:
+            ln (int): Length of list
+            n_chnk: Number of chunks of new list
+"""
 
 def default_main(**kwargs):
     """Ecflow container default method."""

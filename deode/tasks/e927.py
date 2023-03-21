@@ -107,15 +107,17 @@ class E927(Task):
         bdfile_template = self.config.get_value("system.bdfile_template")
 
         # Iterates (controlled from suites.py)
-        iterator = int(self.iterator)
-        # Input file
-        initfile = f"ICMSH{self.cnmexp}INIT"
-        self.fmanager.input(f"{bddir}/{bdfile_template}", initfile, basetime=basetime, validtime=cdtg)
+        iterator = self.iterator
+        for it in iterator:
+            it = int(it)
+            # Input file
+            initfile = f"ICMSH{self.cnmexp}INIT"
+            self.fmanager.input(f"{bddir}/{bdfile_template}", initfile, basetime=basetime, validtime=cdtg)
 
-        # Run masterodb
-        batch = BatchJob(os.environ, wrapper=self.wrapper)
-        batch.run(self.master)
+            # Run masterodb
+            batch = BatchJob(os.environ, wrapper=self.wrapper)
+            batch.run(self.master)
 
-        target = f"{self.wrk}/ELSCF{self.cnmexp}ALBC{iterator:03d}"
-        self.fmanager.output(f"PF{self.cnmexp}000+0000", target)
-        self.remove_links([initfile, "ncf927"])
+            target = f"{self.wrk}/ELSCF{self.cnmexp}ALBC{it:03d}"
+            self.fmanager.output(f"PF{self.cnmexp}000+0000", target)
+            self.remove_links([initfile, "ncf927"])
