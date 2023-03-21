@@ -266,9 +266,7 @@ class SuiteDefinition(object):
             )
 # 3rd level Family
 # YYYYMMDD >> HHHH >> InputData
-            inputdata = EcflowSuiteFamily(
-                "InputData", time_family, ecf_files, trigger=inputdata_trigger
-            )
+            inputdata = EcflowSuiteFamily("InputData", time_family, ecf_files, trigger=inputdata_trigger)
 
             prepare_cycle = EcflowSuiteTask(
                 "PrepareCycle",
@@ -279,7 +277,6 @@ class SuiteDefinition(object):
                 input_template=input_template,
                 variables=None,
             )
-
             prepare_cycle_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prepare_cycle)]) 
 
 # 3rd level Family
@@ -288,18 +285,15 @@ class SuiteDefinition(object):
             frng_i=int(frng_s[0])
             bdint_s=re.findall(r'\d+', config.get_value("general.bdint"))
             bdint_i=int(bdint_s[0])
-           
-            par_tsks=min( math.ceil(frng_i/bdint_i), config.get_value("general.bdmax") )
+
+            par_tsks=min(math.ceil(frng_i/bdint_i), config.get_value("general.bdmax"))
             
+            par_list=list(range(0,par_tsks+1))
+
             if cycle["time"]=="0000" or cycle["time"]=="1200":
-             Int_family = EcflowSuiteFamily(
-             "Interpolation", time_family, ecf_files, trigger=prepare_cycle_done,
-             variables=None
-             )
- 
-             for pp in range(par_tsks):
-             # epp={"VALIDTIME": cycle["validtime"]}
-              e927_fam = EcflowSuiteFamily("LBC" + str(pp+1), Int_family, ecf_files, trigger=prepare_cycle_done,variables=None)
+             Int_family = EcflowSuiteFamily("Interpolation", time_family, ecf_files, trigger=prepare_cycle_done,variables=None)
+             for pp in par_list:
+              e927_fam = EcflowSuiteFamily(f"LBC{pp:03}", Int_family, ecf_files, trigger=prepare_cycle_done,variables=None)
               EcflowSuiteTask(
                         "e927",
                         e927_fam,

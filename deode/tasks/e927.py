@@ -98,7 +98,6 @@ class E927(Task):
         # Forecast range
         cdtg = self.basetime
         dtgend = self.basetime + as_timedelta(self.forecast_range)
-        i = 0
 
         # Fix basetime for PT00H,PT12H only
         basetime = self.basetime
@@ -108,9 +107,7 @@ class E927(Task):
         bddir = self.config.get_value("system.bddir")
         bdfile_template = self.config.get_value("system.bdfile_template")
 
-
-        # want: pp coming from suites.py
-#        while cdtg <= dtgend:
+        # Iterates (controlled from suites.py)
         iterator=int(self.iterator)
         # Input file
         initfile = f"ICMSH{self.cnmexp}INIT"
@@ -124,5 +121,3 @@ class E927(Task):
         self.fmanager.output(f"PF{self.cnmexp}000+0000", target)
         self.remove_links([initfile, "ncf927"])
         
-        #i += 1
-        #cdtg += as_timedelta(self.bdint)
