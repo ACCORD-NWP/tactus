@@ -29,7 +29,7 @@ class E927(Task):
 
         self.iterator = self.config.get_value("general.iterator")
         print(f"ITERATOR:{self.iterator}")
-        
+
         self.cnmexp = self.config.get_value("general.cnmexp")
         self.bdclimdir = self.platform.get_system_value("bdclimdir")
 
@@ -97,7 +97,6 @@ class E927(Task):
 
         # Forecast range
         cdtg = self.basetime
-        dtgend = self.basetime + as_timedelta(self.forecast_range)
 
         # Fix basetime for PT00H,PT12H only
         basetime = self.basetime
@@ -108,7 +107,7 @@ class E927(Task):
         bdfile_template = self.config.get_value("system.bdfile_template")
 
         # Iterates (controlled from suites.py)
-        iterator=int(self.iterator)
+        iterator = int(self.iterator)
         # Input file
         initfile = f"ICMSH{self.cnmexp}INIT"
         self.fmanager.input(f"{bddir}/{bdfile_template}", initfile, basetime=basetime, validtime=cdtg)
@@ -120,4 +119,3 @@ class E927(Task):
         target = f"{self.wrk}/ELSCF{self.cnmexp}ALBC{iterator:03d}"
         self.fmanager.output(f"PF{self.cnmexp}000+0000", target)
         self.remove_links([initfile, "ncf927"])
-        

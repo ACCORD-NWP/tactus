@@ -35,9 +35,10 @@ class SuiteDefinition(object):
         ecf_jobout=None,
         ecf_micro="%",
         dry_run=False,
-    ):
+                ):
         # TODO: Document the variables that right now only are described as "?"
-        """Construct the definition.
+        """
+        Construct the definition.
 
         Args:
             suite_name (str): Name of suite
@@ -48,13 +49,13 @@ class SuiteDefinition(object):
             task_settings (deode.TaskSettings): Task settings
             loglevel (str): Loglevel
             ecf_home (str, optional): ECF_HOME. Defaults to None.
-            ecf_include (str, optional): ECF_INCLUDE.
-                                         Defaults to None which uses ecf_files.
+            ecf_include (str, optional): ECF_INCLUDE. Defaults to None which uses ecf_files.
             
+            ecf_out (str): Path to output
             ecf_joboustr, optional): ECF_JOBOUT. Defaults to None.
             ecf_micro (str, optional): ECF_MICRO. Defaults to %
             dry_run (bool, optional): Dry run not using ecflow. Defaults to False.
-
+    
         Raises:
             ModuleNotFoundError: If ecflow is not loaded and not dry_run
 
@@ -235,7 +236,7 @@ class SuiteDefinition(object):
                 }
             )
             i = i + 1
-            cycle_time = cycle_time + cycle_length 
+            cycle_time = cycle_time + cycle_length
 
 # 1st level Family
 # YYYYMMDD
@@ -277,24 +278,23 @@ class SuiteDefinition(object):
                 input_template=input_template,
                 variables=None,
             )
-            prepare_cycle_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prepare_cycle)]) 
+            prepare_cycle_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prepare_cycle)])
 
 # 3rd level Family
 # YYYYMMDD >> HHHH >> Interpolation
-            frng_s=re.findall(r'\d+', config.get_value("general.forecast_range"))
-            frng_i=int(frng_s[0])
-            bdint_s=re.findall(r'\d+', config.get_value("general.bdint"))
-            bdint_i=int(bdint_s[0])
+            frng_s = re.findall(r'\d+', config.get_value("general.forecast_range"))
+            frng_i = int(frng_s[0])
+            bdint_s = re.findall(r'\d+', config.get_value("general.bdint"))
+            bdint_i = int(bdint_s[0])
 
-            par_tsks=min(math.ceil(frng_i/bdint_i), config.get_value("general.bdmax"))
-            
-            par_list=list(range(0,par_tsks+1))
+            par_tsks = min(math.ceil(frng_i / bdint_i), config.get_value("general.bdmax"))
+            par_list = list(range(0, par_tsks + 1))
 
-            if cycle["time"]=="0000" or cycle["time"]=="1200":
-             Int_family = EcflowSuiteFamily("Interpolation", time_family, ecf_files, trigger=prepare_cycle_done,variables=None)
-             for pp in par_list:
-              e927_fam = EcflowSuiteFamily(f"LBC{pp:03}", Int_family, ecf_files, trigger=prepare_cycle_done,variables=None)
-              EcflowSuiteTask(
+            if cycle["time"] == "0000" or cycle["time"] == "1200":
+                int_fam = EcflowSuiteFamily("Interpolation", time_family, ecf_files, trigger=prepare_cycle_done, variables=None)
+                for pp in par_list:
+                    e927_fam = EcflowSuiteFamily(f"LBC{pp:03}", int_fam, ecf_files, trigger=prepare_cycle_done, variables=None)
+                    EcflowSuiteTask(
                         "e927",
                         e927_fam,
                         config,
@@ -303,8 +303,8 @@ class SuiteDefinition(object):
                         input_template=input_template,
                         variables={'ITERATOR': pp},
                         trigger=prepare_cycle_done
-                        )
-# 3rd level Family             
+                    )
+# 3rd level Family
 # YYYYMMDD >> HHHH >> Cycle
             cycle = EcflowSuiteFamily("Cycle", time_family, ecf_files)
             triggers = [EcflowSuiteTrigger(inputdata)]
@@ -312,9 +312,7 @@ class SuiteDefinition(object):
                 triggers = triggers + prev_cycle_trigger
             ready_for_cycle = EcflowSuiteTriggers(triggers)
             prev_cycle_trigger = [EcflowSuiteTrigger(cycle)]
-            initialization = EcflowSuiteFamily(
-                "Initialization", cycle, ecf_files, trigger=ready_for_cycle
-            )
+            initialization = EcflowSuiteFamily("Initialization", cycle, ecf_files, trigger=ready_for_cycle)
             prep_trigger = None
             if do_prep:
                 prep = EcflowSuiteTask(
