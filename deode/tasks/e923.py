@@ -25,9 +25,19 @@ class E923(Task):
         self.climdir = self.platform.get_system_value("climdir")
         self.months = [f"{mm:02d}" for mm in range(1, 13)]
 
-        self.nlgen = NamelistGenerator(config, "master")
-
         self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
+
+        # Update namelist settings
+        update = {
+            "domain": {
+                "ndguxg": int(self.config.get_value("domain.njmax"))
+                + int(self.config.get_value("domain.ilate")),
+                "ndglg": int(self.config.get_value("domain.nimax"))
+                + int(self.config.get_value("domain.ilone")),
+            }
+        }
+
+        self.nlgen = NamelistGenerator(config.copy(update=update), "master")
 
     def myexec(self, cmd, i):
         """Execute binary task.

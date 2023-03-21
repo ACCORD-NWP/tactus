@@ -96,14 +96,14 @@ e923_base:
   NAMDDH: {}
   NAMDFI: {}
   NAMDIM:
-    NDGLG: 100
-    NDGUXG: 89
-    NDLON: 100
-    NDLUXG: 89
     NFLEVG: 1
-    NMSMAX: 49
+    NDGLG: ${domain.ndglg}
+    NDGUXG: ${domain.njmax}
+    NDLON: ${domain.ndguxg}
+    NDLUXG: ${domain.nimax}
+    NMSMAX: ${domain.nmsmax}
     NPROMA: -32
-    NSMAX: 49
+    NSMAX: ${domain.nsmax}
   NAMDIMO: {}
   NAMDIM_TRAJ: {}
   NAMDPHY: {}

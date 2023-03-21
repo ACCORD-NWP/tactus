@@ -23,17 +23,19 @@ ahalf = []
 bhalf = []
 
 [domain]
-name = "DEMO_100_2500m"
-nimax = 89
-njmax = 89
-xloncen = 4.9
-xlatcen = 51.967
-xdx = 2500.0
-xdy = 2500.0
-ilone = 11
-ilate = 11
-xlon0 = 0.0
-xlat0 = 52.5
+ name = "DEMO_100_2500m"
+ nimax = 89
+ njmax = 89
+ xloncen = 4.9
+ xlatcen = 51.967
+ xdx = 2500.0
+ xdy = 2500.0
+ ilone = 11
+ ilate = 11
+ xlon0 = 0.0
+ xlat0 = 52.5
+ nsmax = 49
+ nmsmax = 49
 
 [system]
  wrk = "@SCRATCH@/deode/@CASE@/@YYYY@@MM@@DD@_@HH@@mm@"
