@@ -35,11 +35,10 @@ class SuiteDefinition(object):
         ecf_jobout=None,
         ecf_micro="%",
         dry_run=False,
-                ):
+        ):
         # TODO: Document the variables that right now only are described as "?"
         """
         Construct the definition.
-
         Args:
             suite_name (str): Name of suite
             joboutdir (str): Path to jobfiles
@@ -50,12 +49,10 @@ class SuiteDefinition(object):
             loglevel (str): Loglevel
             ecf_home (str, optional): ECF_HOME. Defaults to None.
             ecf_include (str, optional): ECF_INCLUDE. Defaults to None which uses ecf_files.
-            
-            ecf_out (str): Path to output
-            ecf_joboustr, optional): ECF_JOBOUT. Defaults to None.
-            ecf_micro (str, optional): ECF_MICRO. Defaults to %
-            dry_run (bool, optional): Dry run not using ecflow. Defaults to False.
-    
+            ecf_out (str) : ECF_OUT. Job out.
+            ecf_jobout (str, optional): ECF_JOBOUT. Defaults to None.
+            ecf_micro (str, optional): ECF_MICRO. Defaults to %.
+            dry_run (bool, optional): Dry run not using ecflow. Defaults to False. 
         Raises:
             ModuleNotFoundError: If ecflow is not loaded and not dry_run
 
