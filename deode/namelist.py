@@ -141,7 +141,7 @@ class NamelistGenerator:
                                         repval = platform.get_value(nam)
                                     except Exception:
                                         repval = None
-                                    if not repval:
+                                    if repval is None:
                                         if defval != "":
                                             self.logger.debug(
                                                 "Using default value %s for '%s'",

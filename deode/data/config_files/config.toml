@@ -3,7 +3,7 @@
  os_macros = ["USER", "HOME", "PWD"]
  realization = -1
  cnmexp = "HARM"
- tstep = 60
+ tstep = 75
  loglevel = "DEBUG"
  surfex = true
  csc = "AROME"

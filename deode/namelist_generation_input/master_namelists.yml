@@ -954,7 +954,7 @@ f4_arome:
     NBICPD: 2
     NBICVD: 2
   NEMELBC0B:
-    TEFRCL: 3600
+    TEFRCL: ${namelist.bdint_seconds-3600}
 f4_common:
   CLOUD_DETECT_COEFFS: {}
   NACIETEO: {}

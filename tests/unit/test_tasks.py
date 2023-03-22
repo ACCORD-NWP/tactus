@@ -9,11 +9,12 @@ import tomlkit
 
 import deode
 from deode.config_parser import ParsedConfig, read_raw_config_file
+from deode.initial_conditions import InitialConditions
 from deode.tasks.base import Task
 from deode.tasks.batch import BatchJob
 from deode.tasks.discover_task import discover, get_task
 from deode.tasks.e923 import E923
-from deode.tasks.forecast import FirstGuess, Forecast
+from deode.tasks.forecast import Forecast
 from deode.toolbox import ArchiveError, FileManager, ProviderError
 
 WORKING_DIR = Path.cwd()
@@ -41,7 +42,7 @@ def task_name_and_configs(request, base_raw_config, tmp_path_factory):
         f"""
         [general]
             case = "my_case"
-            loglevel = "DEBUG"
+            loglevel = "WARNING"
             macros = []
             os_macros = ["USER", "HOME"]
             realization = -1
@@ -93,7 +94,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_batchjob_run_method = BatchJob.run
     original_toolbox_filemanager_input_method = FileManager.input
     original_task_forecast_forecast_execute_method = Forecast.execute
-    original_task_forecast_firstguess_execute_method = FirstGuess.execute
+    original_task_initial_conditions_nosuccess_method = InitialConditions.nosuccess
     original_task_e923_constant_part_method = E923.constant_part
     original_task_e923_monthly_part_method = E923.monthly_part
 
@@ -122,10 +123,10 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         with contextlib.suppress(FileNotFoundError):
             original_task_forecast_forecast_execute_method(*args, **kwargs)
 
-    def new_task_forecast_firstguess_execute_method(*args, **kwargs):
+    def new_task_initial_conditions_nosuccess_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
         with contextlib.suppress(FileNotFoundError):
-            original_task_forecast_firstguess_execute_method(*args, **kwargs)
+            original_task_initial_conditions_nosuccess_method(*args, **kwargs)
 
     def new_task_e923_constant_part_method(*args, **kwargs):
         """Create needed file "Const.Clim" before running the original method."""
@@ -150,8 +151,8 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         new=new_task_forecast_forecast_execute_method,
     )
     session_mocker.patch(
-        "deode.tasks.forecast.FirstGuess.execute",
-        new=new_task_forecast_firstguess_execute_method,
+        "deode.initial_conditions.InitialConditions.nosuccess",
+        new=new_task_initial_conditions_nosuccess_method,
     )
     session_mocker.patch(
         "deode.tasks.e923.E923.constant_part", new=new_task_e923_constant_part_method

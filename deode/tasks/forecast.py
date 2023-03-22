@@ -4,6 +4,7 @@
 import os
 
 from ..datetime_utils import as_datetime, as_timedelta
+from ..initial_conditions import InitialConditions
 from ..namelist import NamelistGenerator
 from .base import Task
 from .batch import BatchJob
@@ -38,9 +39,11 @@ class Forecast(Task):
         self.ncdir = self.config.get_value("platform.ncdir")
         self.archive = self.platform.get_system_value("archive")
 
+        # Update namelist settings
+        update = {"namelist": {"bdint_seconds": self.bdint.seconds}}
         self.namelists = self.platform.get_platform_value("NAMELISTS")
-        self.nlgen_master = NamelistGenerator(config, "master")
-        self.nlgen_surfex = NamelistGenerator(config, "surfex")
+        self.nlgen_master = NamelistGenerator(config.copy(update=update), "master")
+        self.nlgen_surfex = NamelistGenerator(config.copy(update=update), "surfex")
 
         self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
         self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
@@ -64,57 +67,6 @@ class Forecast(Task):
             source = f"{fname}+{h:04d}:{m:02d}:{s:02d}{suffix}"
             self.fmanager.output(source, f"{self.archive}/{source}")
             cdtg += as_timedelta(period)
-
-    def firstguess(self):
-        """Find initial file."""
-        # Find data explicitly defined
-        init_defined = False
-        try:
-            source = self.config.get_value("system.initfile")
-            source_sfx = self.config.get_value("system.initfile_sfx")
-            self.logger.debug("Defined source %s", source)
-            self.logger.debug("Defined source_sfx %s", source_sfx)
-            init_defined = True
-        except:  # noqa
-            pass
-
-        if init_defined:
-            if os.path.exists(source) and os.path.exists(source_sfx):
-                return source, source_sfx
-            else:
-                self.logger.warning("Could not find:\n  %s\n  %s", source, source_sfx)
-                raise FileNotFoundError("Could not find any initial files")
-
-        # Find data from previous forecast
-        pdtg = self.basetime - self.cycle_length
-        dt = self.basetime - pdtg
-
-        h = int(dt.seconds / 3600)
-        m = int((dt.seconds % 3600 - dt.seconds % 60) / 60)
-        s = int(dt.seconds % 60)
-
-        archive = self.platform.substitute(
-            self.config.get_value("system.archive"), basetime=pdtg
-        )
-        source = f"{archive}/ICMSH{self.cnmexp}+{h:04d}:{m:02d}:{s:02d}"
-        source_sfx = f"{archive}/ICMSH{self.cnmexp}+{h:04d}:{m:02d}:{s:02d}.sfx"
-
-        if os.path.exists(source) and os.path.exists(source_sfx):
-            self.logger.info("Found initial files:\n  %s\n  %s", source, source_sfx)
-            return source, source_sfx
-
-        self.logger.info("Could not find:\n  %s\n  %s", source, source_sfx)
-
-        # Find data prepared by Prep and the boundary interpolation
-        source = f"{self.wrk}/ELSCF{self.cnmexp}ALBC000"
-        source_sfx = f"{self.archive}/ICMSH{self.cnmexp}INIT.sfx"
-        if os.path.exists(source) and os.path.exists(source_sfx):
-            self.logger.info("Found initial files\n  %s\n  %s", source, source_sfx)
-            return source, source_sfx
-
-        self.logger.info("Could not find:\n  %s\n  %s", source, source_sfx)
-
-        raise FileNotFoundError("Could not find any initial files")
 
     def execute(self):
         """Execute forecast."""
@@ -229,7 +181,7 @@ class Forecast(Task):
         # Use explicitly defined boundary dir if defined
         try:
             intp_bddir = self.config.get_value("system.intp_bddir")
-        except:  # noqa
+        except AttributeError:  # noqa
             intp_bddir = self.wrk
 
         # Link the boundary files
@@ -240,7 +192,7 @@ class Forecast(Task):
             i += 1
 
         # Initial files
-        initfile, initfile_sfx = self.firstguess()
+        initfile, initfile_sfx = InitialConditions(self.config).find_initial_files()
         self.fmanager.input(initfile, f"ICMSH{self.cnmexp}INIT")
         self.fmanager.input(initfile_sfx, f"ICMSH{self.cnmexp}INIT.sfx")
 
@@ -270,19 +222,6 @@ class Forecast(Task):
         self.fmanager.output("NODE.001_01", f"{self.archive}/NODE.001_01")
 
 
-class PgdInput(Task):
-    """Task."""
-
-    def __init__(self, config):
-        """Construct object.
-
-        Args:
-            config (deode.ParsedConfig): Configuration
-
-        """
-        Task.__init__(self, config, __name__)
-
-
 class PrepareCycle(Task):
     """Task."""
 
@@ -307,59 +246,7 @@ class FirstGuess(Task):
 
         """
         Task.__init__(self, config, "FirstGuess")
-        self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
-        self.cycle_length = as_timedelta(
-            self.config.get_value("general.times.cycle_length")
-        )
-        self.archive = self.config.get_value("system.archive")
-        self.cnmexp = self.config.get_value("general.cnmexp")
 
     def execute(self):
         """Find initial file."""
-        # Find data explicitly defined
-        init_defined = False
-        try:
-            source = self.config.get_value("general.initfile")
-            source_sfx = self.config.get_value("general.initfile_sfx")
-            self.logger.debug("Defined source %s", source)
-            self.logger.debug("Defined source_sfx %s", source_sfx)
-            init_defined = True
-        except:  # noqa
-            pass
-
-        if init_defined:
-            if os.path.exists(source) and os.path.exists(source_sfx):
-                return source, source_sfx
-            else:
-                self.logger.warning("Could not find:\n  %s\n  %s", source, source_sfx)
-                raise FileNotFoundError("Could not find any initial files")
-
-        # Find data from previous forecast
-        pdtg = self.basetime - self.cycle_length
-        dt = self.basetime - pdtg
-        h = int(dt.seconds / 3600)
-        m = int((dt.seconds % 3600 - dt.seconds % 60) / 60)
-        s = int(dt.seconds % 60)
-
-        archive = self.platform.substitute(self.archive, basetime=pdtg)
-        source = f"{archive}/ICMSH{self.cnmexp}+{h:04d}:{m:02d}:{s:02d}"
-        source_sfx = f"{archive}/ICMSH{self.cnmexp}+{h:04d}:{m:02d}:{s:02d}.sfx"
-
-        if os.path.exists(source) and os.path.exists(source_sfx):
-            self.logger.info("Found initial files\n  %s\n  %s", source, source_sfx)
-            return source, source_sfx
-
-        self.logger.info("Could not find:\n  %s\n  %s", source, source_sfx)
-
-        # Find data prepared by Prep and the boundary interpolation
-        archive = self.platform.substitute(self.archive)
-        source = f"{self.wrk}/ELSCF{self.cnmexp}ALBC000"
-        source_sfx = f"{archive}/ICMSH{self.cnmexp}INIT.sfx"
-
-        if os.path.exists(source) and os.path.exists(source_sfx):
-            self.logger.info("Found initial files\n  %s\n  %s", source, source_sfx)
-            return source, source_sfx
-
-        self.logger.info("Could not find:\n  %s\n  %s", source, source_sfx)
-
-        raise FileNotFoundError("Could not find any initial files")
+        initfile, initfile_sfx = InitialConditions(self.config).find_initial_files()
