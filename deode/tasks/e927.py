@@ -2,9 +2,8 @@
 
 import os
 
-import f90nml
-
 from ..datetime_utils import as_datetime, as_timedelta
+from ..namelist import NamelistGenerator
 from .base import Task
 from .batch import BatchJob
 
@@ -33,34 +32,8 @@ class E927(Task):
         self.cnmexp = self.config.get_value("general.cnmexp")
         self.bdclimdir = self.platform.get_system_value("bdclimdir")
 
-        self.namelist_path = self.platform.get_platform_value("NAMELISTS")
+        self.nlgen = NamelistGenerator(config, "master")
         self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
-
-    def load_namelist(self, namelist):
-        """Read and adjust namelist.
-
-        Args:
-            namelist (str) : namelist file
-
-        Returns :
-            nam (f90nml object): loaded namelist
-        """
-        self.logger.info("Read namelist: %s", namelist)
-        nam = f90nml.read(namelist)
-        nam.uppercase = True
-        nam.end_comma = True
-        return nam
-
-    def write_namelist(self, nam):
-        """Write namelist with uppercase and commas.
-
-        Args:
-            nam (f90nml object) : namelist object to write
-        """
-        nam.uppercase = True
-        nam.end_comma = True
-        with open("fort.4", "w", encoding="utf-8") as nml_file:
-            f90nml.write(nam, nml_file)
 
     def remove_links(self, link):
         """Remove link.
@@ -91,9 +64,7 @@ class E927(Task):
         self.fmanager.input("{}/Const.Clim.{}".format(self.bdclimdir, mm), "Const.Clim")
 
         # Namelist
-        namelist = f"{self.namelist_path}/fort.4_e927"
-        nam = self.load_namelist(namelist)
-        self.write_namelist(nam)
+        self.nlgen.generate_namelist("e927", "fort.4")
 
         # Forecast range
         cdtg = self.basetime

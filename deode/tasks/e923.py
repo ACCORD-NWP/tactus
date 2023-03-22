@@ -3,8 +3,7 @@
 import os
 import shutil
 
-import f90nml
-
+from ..namelist import NamelistGenerator
 from .base import Task
 from .batch import BatchJob
 
@@ -23,40 +22,22 @@ class E923(Task):
         # Temporary namelists
         self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
 
-        self.namelist_path = self.platform.get_platform_value("namelists")
         self.climdir = self.platform.get_system_value("climdir")
         self.months = [f"{mm:02d}" for mm in range(1, 13)]
 
-        self.namelists = [
-            "nam923_1_smoothing",
-            "nam923_1",
-            "nam923_2",
-            "nam923_3",
-            "nam923_4",
-            "nam923_5",
-            "nam923_6",
-            "nam923_7",
-            "nam923_8",
-            "nam923_9",
-        ]
-
         self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
 
-    def load_namelist(self, i):
-        """Read and adjust namelist.
+        # Update namelist settings
+        update = {
+            "domain": {
+                "ndguxg": int(self.config.get_value("domain.njmax"))
+                + int(self.config.get_value("domain.ilate")),
+                "ndglg": int(self.config.get_value("domain.nimax"))
+                + int(self.config.get_value("domain.ilone")),
+            }
+        }
 
-        Args:
-            i (int) : sequence number
-
-        Returns :
-            nam (f90nml object): loaded namelist
-        """
-        namelist = f"{self.namelist_path}/{self.namelists[i]}"
-        self.logger.info("Read namelist: %s", namelist)
-        nam = f90nml.read(namelist)
-        nam.uppercase = True
-        nam.end_comma = True
-        return nam
+        self.nlgen = NamelistGenerator(config.copy(update=update), "master")
 
     def myexec(self, cmd, i):
         """Execute binary task.
@@ -73,18 +54,6 @@ class E923(Task):
             shutil.copy(log, f"{log}_part_{i}")
         except FileNotFoundError:
             self.logger.info("No logfile %s produced", log)
-
-    def write_namelist(self, nam):
-        """Write namelist with uppercase and commas.
-
-        Args:
-            nam (f90nml object) : namelist object to write
-        """
-        nam.uppercase = True
-        nam.end_comma = True
-        print(nam)
-        with open("fort.4", "w", encoding="utf-8") as nml_file:
-            f90nml.write(nam, nml_file)
 
     def remove_links(self, link):
         """Remove link.
@@ -143,8 +112,7 @@ class E923(Task):
         for fname in topo_files:
             self.fmanager.input(f"@E923_DATA@/GTOPT030/{fname}", fname)
 
-        nam = self.load_namelist(i)
-        self.write_namelist(nam)
+        self.nlgen.generate_namelist(f"e923_{i}", "fort.4")
         self.print_part(0)
         self.myexec(self.master, 0)
 
@@ -154,16 +122,14 @@ class E923(Task):
 
         # Part 1
         i = 1
-        nam = self.load_namelist(i)
-        self.write_namelist(nam)
+        self.nlgen.generate_namelist(f"e923_{i}", "fort.4")
         self.print_part(1)
         self.myexec(self.master, 1)
         self.remove_links(topo_files)
 
         # Part 2
         i = 2
-        nam = self.load_namelist(i)
-        self.write_namelist(nam)
+        self.nlgen.generate_namelist(f"e923_{i}", "fort.4")
         ifiles = [
             "itp_GL",
             "alb_GL",
@@ -204,8 +170,7 @@ class E923(Task):
         for ifile in ["N108_GL"]:
             self.fmanager.input(f"@E923_DATA@/N108/{ifile}", ifile)
 
-        nam = self.load_namelist(i)
-        self.write_namelist(nam)
+        self.nlgen.generate_namelist(f"e923_{i}", "fort.4")
         self.print_part(i)
         self.myexec(self.master, i)
 
@@ -241,8 +206,7 @@ class E923(Task):
                 files.append(target)
                 self.fmanager.input(source, target)
 
-            nam = self.load_namelist(4)
-            self.write_namelist(nam)
+            self.nlgen.generate_namelist("e923_4", "fort.4")
             self.print_part(4, mm)
             self.myexec(self.master, 4)
             self.remove_links(files)
@@ -255,8 +219,7 @@ class E923(Task):
                 files.append(target)
                 self.fmanager.input(source, target)
 
-            nam = self.load_namelist(5)
-            self.write_namelist(nam)
+            self.nlgen.generate_namelist("e923_5", "fort.4")
             self.print_part(5, mm)
             self.myexec(self.master, 5)
             self.remove_links(files)
@@ -274,23 +237,20 @@ class E923(Task):
             self.fmanager.input("tpl_GL", "tsl_GL", provider_id="copy")
             self.fmanager.input("wpl_GL", "wsl_GL", provider_id="copy")
 
-            nam = self.load_namelist(6)
-            self.write_namelist(nam)
+            self.nlgen.generate_namelist("e923_6", "fort.4")
             self.print_part(6, mm)
             self.myexec(self.master, 6)
 
             # PART 8
             self.fmanager.input(f"@E923_DATA@/abc_O3/abc_quadra_{mm}", "abc_coef")
-            nam = self.load_namelist(8)
-            self.write_namelist(nam)
+            self.nlgen.generate_namelist("e923_8", "fort.4")
             self.print_part(8, mm)
             self.myexec(self.master, 8)
 
             # PART 9
             self.fmanager.input(f"@E923_DATA@/aero_tegen/aero.tegen.m{mm}_GL", "aero_GL")
 
-            nam = self.load_namelist(9)
-            self.write_namelist(nam)
+            self.nlgen.generate_namelist("e923_9", "fort.4")
             self.print_part(9, mm)
             self.myexec(self.master, 9)
 

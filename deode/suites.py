@@ -155,16 +155,9 @@ class SuiteDefinition(object):
         # EcflowSuiteTask("Background", family, self.task_settings, ecf_files,
         #                input_template=input_template)
 
-# 1st level Family
-# StaticData
         static_data = EcflowSuiteFamily("StaticData", self.suite, ecf_files)
 
-# 2nd level Family
-# StaticData >> Pgdinput
         pgd_input = EcflowSuiteFamily("PgdInput", static_data, ecf_files)
-
-# Task
-# StaticData >> Pgdinput >> Gmted
         EcflowSuiteTask(
             "Gmted",
             pgd_input,
@@ -172,9 +165,9 @@ class SuiteDefinition(object):
             self.task_settings,
             ecf_files,
             input_template=input_template,
-            variables=None)
-# Task
-# StaticData >> Pgdinput >> Soil
+            variables=None,
+        )
+
         EcflowSuiteTask(
             "Soil",
             pgd_input,
@@ -184,9 +177,6 @@ class SuiteDefinition(object):
             input_template=input_template,
             variables=None,
         )
-
-# 2nd level Family
-# StaticData >> Pgd
         pgd_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd_input)])
         pgd = EcflowSuiteTask(
             "Pgd",
@@ -242,8 +232,6 @@ class SuiteDefinition(object):
             i = i + 1
             cycle_time = cycle_time + cycle_length
 
-# 1st level Family
-# YYYYMMDD
         do_prep = True
         days = []
         prev_cycle_trigger = None
@@ -256,8 +244,6 @@ class SuiteDefinition(object):
                     cycle["day"], self.suite, ecf_files, trigger=inputdata_trigger
                 )
                 days.append(cycle_day)
-# 2nd level Family
-# YYYYMMDD >> HHHH
             time_variables = {
                 "BASETIME": cycle["basetime"],
                 "VALIDTIME": cycle["validtime"],
@@ -269,10 +255,7 @@ class SuiteDefinition(object):
                 trigger=inputdata_trigger,
                 variables=time_variables,
             )
-# 3rd level Family
-# YYYYMMDD >> HHHH >> InputData
             inputdata = EcflowSuiteFamily("InputData", time_family, ecf_files, trigger=inputdata_trigger)
-
             prepare_cycle = EcflowSuiteTask(
                 "PrepareCycle",
                 inputdata,
@@ -284,8 +267,6 @@ class SuiteDefinition(object):
             )
             prepare_cycle_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prepare_cycle)])
 
-# 3rd level Family
-# YYYYMMDD >> HHHH >> Interpolation
             frng = int(re.findall(r'\d+', config.get_value("general.forecast_range"))[0])
             #frng_i = int(frng_s[0])
             bdint = int(re.findall(r'\d+', config.get_value("general.bdint"))[0])
@@ -311,8 +292,6 @@ class SuiteDefinition(object):
                         variables={'ITERATOR': pp},
                         trigger=prepare_cycle_done
                     )
-# 3rd level Family
-# YYYYMMDD >> HHHH >> Cycle
             cycle = EcflowSuiteFamily("Cycle", time_family, ecf_files)
             triggers = [EcflowSuiteTrigger(inputdata)]
             if prev_cycle_trigger is not None:
