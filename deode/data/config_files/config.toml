@@ -28,12 +28,14 @@ bhalf = []
  njmax = 89
  xloncen = 4.9
  xlatcen = 51.967
+ xlon0 = 0.0
+ xlat0 = 52.5
  xdx = 2500.0
  xdy = 2500.0
  ilone = 11
  ilate = 11
- xlon0 = 0.0
- xlat0 = 52.5
+ nbzong = 8
+ nbzonl = 8
  nsmax = 49
  nmsmax = 49
 

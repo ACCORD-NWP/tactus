@@ -274,19 +274,19 @@ e923_base:
   NEMBICU: {}
   NEMCT0: {}
   NEMDIM:
-    NBZONG: 8
-    NBZONL: 8
+    NBZONG: ${domain.nbzong}
+    NBZONL: ${domain.nbzonl}
   NEMDYN: {}
   NEMELBC0A: {}
   NEMELBC0B: {}
   NEMFPEZO: {}
   NEMGEO:
-    EDELX: 2500.0
-    EDELY: 2500.0
-    ELAT0: 52.5
-    ELATC: 51.967
-    ELON0: 0.0
-    ELONC: 4.9
+    EDELX: ${domain.xdx}
+    EDELY: ${domain.xdy}
+    ELAT0: ${domain.xlat0}
+    ELATC: ${domain.xlatcen}
+    ELON0: ${domain.xlon0}
+    ELONC: ${domain.xloncen}
     LMRT: .FALSE.
   NEMJK: {}
   NEMSPCPL: {}
