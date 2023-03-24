@@ -26,6 +26,9 @@ class E927(Task):
         self.bdint = self.config.get_value("general.bdint")
         self.forecast_range = self.config.get_value("general.forecast_range")
 
+        self.iterator = self.config.get_value("general.iterator")
+        print(f"ITERATOR:{self.iterator}")
+
         self.cnmexp = self.config.get_value("general.cnmexp")
         self.bdclimdir = self.platform.get_system_value("bdclimdir")
 
@@ -65,8 +68,6 @@ class E927(Task):
 
         # Forecast range
         cdtg = self.basetime
-        dtgend = self.basetime + as_timedelta(self.forecast_range)
-        i = 0
 
         # Fix basetime for PT00H,PT12H only
         basetime = self.basetime
@@ -76,20 +77,18 @@ class E927(Task):
         bddir = self.config.get_value("system.bddir")
         bdfile_template = self.config.get_value("system.bdfile_template")
 
-        while cdtg <= dtgend:
-
+        # Iterates (controlled from suites.py)
+        iterator = self.iterator
+        for it in iterator:
+            it = int(it)
             # Input file
             initfile = f"ICMSH{self.cnmexp}INIT"
-            self.fmanager.input(
-                f"{bddir}/{bdfile_template}", initfile, basetime=basetime, validtime=cdtg
-            )
+            self.fmanager.input(f"{bddir}/{bdfile_template}", initfile, basetime=basetime, validtime=cdtg)
 
             # Run masterodb
             batch = BatchJob(os.environ, wrapper=self.wrapper)
             batch.run(self.master)
 
-            target = f"{self.wrk}/ELSCF{self.cnmexp}ALBC{i:03d}"
+            target = f"{self.wrk}/ELSCF{self.cnmexp}ALBC{it:03d}"
             self.fmanager.output(f"PF{self.cnmexp}000+0000", target)
             self.remove_links([initfile, "ncf927"])
-            cdtg += as_timedelta(self.bdint)
-            i += 1

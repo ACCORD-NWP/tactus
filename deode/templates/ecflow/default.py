@@ -23,6 +23,7 @@ def parse_ecflow_vars():
         "VALIDTIME": "%VALIDTIME%",
         "LOGLEVEL": "%LOGLEVEL%",
         "CONFIG": "%CONFIG%",
+        "ITERATOR": "%ITERATOR%",
         "DEODE_HOME": "%DEODE_HOME%",
         "KEEP_WORKDIRS": "%KEEP_WORKDIRS%",
     }
@@ -32,6 +33,15 @@ def parse_ecflow_vars():
 %nopp"
 """
 
+"""div_chunk: List segmentation"""        
+def div_chnk(ln, n_chnk):
+    for i in range(0, len(ln), n_chnk):
+        yield ln[i:i + n_chnk]
+"""
+        Args:
+            ln (int): Length of list
+            n_chnk: Number of chunks of new list
+"""
 
 def default_main(**kwargs):
     """Ecflow container default method."""
@@ -43,6 +53,7 @@ def default_main(**kwargs):
         update={
             "general": {
                 "loglevel": kwargs.get("LOGLEVEL"),
+                "iterator": kwargs.get("ITERATOR"),
                 "times": {
                     "validtime": kwargs.get("VALIDTIME"),
                     "basetime": kwargs.get("BASETIME"),

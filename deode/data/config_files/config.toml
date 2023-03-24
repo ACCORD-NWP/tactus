@@ -7,15 +7,17 @@
  loglevel = "DEBUG"
  surfex = true
  csc = "AROME"
- bdint = "PT3H"
+ bdint = "PT1H"
  bdcycle = "PT12H"
  cycle = "CY48t3"
- forecast_range = "PT12H"
+ forecast_range = "PT48H"
  output_interval_his = "PT1H"
  output_interval_fp = "PT1H"
  output_interval_sfx = "PT3H"
  output_interval_sfx_sel = "PT1H"
  keep_workdirs = true
+ bdmax = 12
+ iterator = []
 
 [vertical_levels]
 nlev = 65
@@ -72,7 +74,7 @@ bhalf = []
  start = "2023-02-19T00:00:00Z"
  end = "2023-02-19T03:00:00Z"
  cycle_length = "PT3H"
-
+ 
 [task]
  wrapper = "srun"
 [task.forecast]
