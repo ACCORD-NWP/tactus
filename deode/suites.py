@@ -177,7 +177,6 @@ class SuiteDefinition(object):
             input_template=input_template,
             variables=None,
         )
-
 # 2nd level Family
 # StaticData >> Pgd
         pgd_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd_input)])
@@ -261,7 +260,6 @@ class SuiteDefinition(object):
 # 3rd level Family
 # YYYYMMDD >> HHHH >> InputData
             inputdata = EcflowSuiteFamily("InputData", time_family, ecf_files, trigger=inputdata_trigger)
-
             prepare_cycle = EcflowSuiteTask(
                 "PrepareCycle",
                 inputdata,
@@ -273,8 +271,6 @@ class SuiteDefinition(object):
             )
             prepare_cycle_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prepare_cycle)])
 
-# 3rd level Family
-# YYYYMMDD >> HHHH >> Interpolation
             frng = int(re.findall(r'\d+', config.get_value("general.forecast_range"))[0])
 #            frng_i = int(frng_s[0])
             bdint = int(re.findall(r'\d+', config.get_value("general.bdint"))[0])
