@@ -9,6 +9,16 @@ from .datetime_utils import as_datetime, as_timedelta
 from .logs import get_logger, get_logger_from_config
 from .toolbox import Platform
 
+
+"""div_chunk: List segmentation"""        
+def div_chnk(ln, n_chnk):
+    for i in range(0, len(ln), n_chnk):
+        yield ln[i:i + n_chnk]
+        """
+        Args:
+            ln (int): Length of list
+            n_chnk: Number of chunks of new list
+        """
 try:
     import ecflow
 except ImportError:
@@ -17,16 +27,6 @@ except ImportError:
 logger = get_logger(__name__, "DEBUG")
 
 class SuiteDefinition(object):
-    """div_chunk: List segmentation"""        
-    def div_chnk(ln, n_chnk):
-            for i in range(0, len(ln), n_chnk):
-                yield ln[i:i + n_chnk]
-    """
-        Args:
-            ln (int): Length of list
-            n_chnk: Number of chunks of new list
-    """
-
     """The definition of the suite."""
 
     def __init__(
@@ -349,16 +349,6 @@ class SuiteDefinition(object):
                 input_template=input_template,
                 variables=variables,
             )
-
-    """div_chunk: List segmentation"""        
-    def div_chnk(ln, n_chnk):
-            for i in range(0, len(ln), n_chnk):
-                yield ln[i:i + n_chnk]
-    """
-        Args:
-            ln (int): Length of list
-            n_chnk: Number of chunks of new list
-    """
 
     def save_as_defs(self, def_file):
         """Save definition file.
