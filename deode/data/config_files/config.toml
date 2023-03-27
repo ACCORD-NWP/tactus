@@ -36,8 +36,7 @@ bhalf = []
  ilate = 11
  nbzong = 8
  nbzonl = 8
- nsmax = 49
- nmsmax = 49
+ gridtype = "linear"
 
 [system]
  wrk = "@SCRATCH@/deode/@CASE@/@YYYY@@MM@@DD@_@HH@@mm@"

@@ -29,7 +29,7 @@ class E927(Task):
         self.cnmexp = self.config.get_value("general.cnmexp")
         self.bdclimdir = self.platform.get_system_value("bdclimdir")
 
-        self.nlgen = NamelistGenerator(config, "master")
+        self.nlgen = NamelistGenerator(self.config, "master")
         self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
 
     def remove_links(self, link):

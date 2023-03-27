@@ -4,7 +4,9 @@ import atexit
 import os
 import shutil
 import socket
+from math import floor
 
+from ..datetime_utils import as_timedelta
 from ..logs import get_logger_from_config
 from ..toolbox import FileManager
 from .batch import BatchJob
@@ -49,7 +51,8 @@ class Task(object):
 
         """
         self.logger = get_logger_from_config(config)
-        self.config = config
+        update = self.derived_variables(config)
+        self.config = config.copy(update=update)
         if "." in name:
             name = name.split(".")[-1]
         self.name = name
@@ -66,6 +69,47 @@ class Task(object):
         self.logger.info("Base task info")
         self.logger.warning("Base task warning")
         self.logger.debug("Base task debug")
+
+    def derived_variables(self, config):
+        """Derive some variables required in the namelists.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+
+        Returns:
+            update (dict) : Derived config update
+        """
+        truncation = {"linear": 2, "quadratic": 3, "cubic": 4, "custom": None}
+
+        ndguxg = int(config.get_value("domain.njmax")) + int(
+            config.get_value("domain.ilate")
+        )
+        ndglg = int(config.get_value("domain.nimax")) + int(
+            config.get_value("domain.ilone")
+        )
+
+        gridtype = config.get_value("domain.gridtype")
+
+        if gridtype == "custom":
+            truncation[gridtype] = config.get_value("domain.custom_truncation")
+
+        nsmax = floor((ndguxg - 2) / truncation[gridtype])
+        nmsmax = floor((ndglg - 2) / truncation[gridtype])
+
+        bdint = as_timedelta(config.get_value("general.bdint"))
+
+        # Update namelist settings
+        update = {
+            "domain": {
+                "ndguxg": ndguxg,
+                "ndglg": ndglg,
+                "nsmax": nsmax,
+                "nmsmax": nmsmax,
+            },
+            "namelist": {"bdint_seconds": bdint.seconds},
+        }
+
+        return update
 
     def create_wrkdir(self):
         """Create a cycle working directory."""
