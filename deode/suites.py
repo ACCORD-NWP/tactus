@@ -9,8 +9,7 @@ from .datetime_utils import as_datetime, as_timedelta
 from .logs import get_logger, get_logger_from_config
 from .toolbox import Platform
 
-
-"""div_chunk: List segmentation"""        
+"""div_chunk: List segmentation"""
 def div_chnk(ln, n_chnk):
     for i in range(0, len(ln), n_chnk):
         yield ln[i:i + n_chnk]
@@ -272,20 +271,36 @@ class SuiteDefinition(object):
             prepare_cycle_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prepare_cycle)])
 
             frng = int(re.findall(r'\d+', config.get_value("general.forecast_range"))[0])
-#            frng_i = int(frng_s[0])
             bdint = int(re.findall(r'\d+', config.get_value("general.bdint"))[0])
-#            bdint_i = int(bdint_s[0])
             bdmax = config.get_value("general.bdmax")
-#            par_tsks = min(math.ceil(frng_i / bdint_i), config.get_value("general.bdmax"))
+           
             p_l = list(range(0, frng + 1, bdint))
             bb = math.ceil(len(p_l) / bdmax)
-            par_l = list(div_chnk(p_l,bb))
-            print("PAR_L:", par_l)
+            pt = range(frng+1)
+            pd = {}
+            
+            parl=[list(pt[x:x+bb]) for x in range(0,len(pt),bb)]
+            parln=range(len(parl))
+            parlnt=list(parln)
+            print("parl: ", parl)
+            print("parln: ", parln)
+
+            i=0
+            for l2 in parl:
+                pd[i] = l2
+                i+=1
+
+            #print("PAR_L:", par_l)
+            print("FRNG:", frng)
+            print("BDINT:", bdint)
+            print("pd:", pd)
 
             if cycle["time"] == "0000" or cycle["time"] == "1200":
                 int_fam = EcflowSuiteFamily("Interpolation", time_family, ecf_files, trigger=prepare_cycle_done, variables=None)
-                for pp in par_l:
-                    e927_fam = EcflowSuiteFamily(f"LBC{pp:03}", int_fam, ecf_files, trigger=prepare_cycle_done, variables=None)
+                for pp in pd:
+                    print("pp: ", pp)
+                    LBCnam=f"LBC{pp:03}"
+                    e927_fam = EcflowSuiteFamily(LBCnam, int_fam, ecf_files, trigger=prepare_cycle_done, variables=None)
                     EcflowSuiteTask(
                         "e927",
                         e927_fam,
