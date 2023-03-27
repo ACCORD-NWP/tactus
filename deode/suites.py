@@ -277,29 +277,36 @@ class SuiteDefinition(object):
             p_l = list(range(0, frng + 1, bdint))
             bb = math.ceil(len(p_l) / bdmax)
             pt = range(frng+1)
-            pd = {}
+            #pd = {}
             
-            parl=[list(pt[x:x+bb]) for x in range(0,len(pt),bb)]
-            parln=range(len(parl))
-            parlnt=list(parln)
-            print("parl: ", parl)
-            print("parln: ", parln)
+            pd=[list(pt[x:x+bb+2]) for x in range(0,len(pt),bb+2)]
+            pdn=range(len(pd))
+            pd2=[zip(range(len(pd)),pd[x:x+bb+2]) for x in range(0,len(pd),bb+2)]
+            pd3=list(*pd2)
 
-            i=0
-            for l2 in parl:
-                pd[i] = l2
-                i+=1
+            #pd2=list(*pd2)
+            #parlnt=list(parln)
+            print("pd: ", pd)
+            print("pd2: ", pd2)
+            print("pd3: ", pd3)
+            print("bb: ", bb)
+            print("pt: ", pt) 
+            #i=0
+            #for l2 in parl:
+            #    pd[i] = l2
+            #    i+=1
 
             #print("PAR_L:", par_l)
             print("FRNG:", frng)
             print("BDINT:", bdint)
-            print("pd:", pd)
+            #print("pd:", pd)
 
             if cycle["time"] == "0000" or cycle["time"] == "1200":
                 int_fam = EcflowSuiteFamily("Interpolation", time_family, ecf_files, trigger=prepare_cycle_done, variables=None)
-                for pp in pd:
+                for pp in pd3:
+                    print("pp[0]: ", pp[0])
                     print("pp: ", pp)
-                    LBCnam=f"LBC{pp:03}"
+                    LBCnam=f"LBC{pp[0]:03}"
                     e927_fam = EcflowSuiteFamily(LBCnam, int_fam, ecf_files, trigger=prepare_cycle_done, variables=None)
                     EcflowSuiteTask(
                         "e927",
@@ -308,7 +315,7 @@ class SuiteDefinition(object):
                         self.task_settings,
                         ecf_files,
                         input_template=input_template,
-                        variables={'ITERATOR': pp},
+                        variables={'ITERATOR': pp[0]},
                         trigger=prepare_cycle_done
                     )
 # 3rd level Family

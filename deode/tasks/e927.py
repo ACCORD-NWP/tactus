@@ -77,9 +77,10 @@ class E927(Task):
         bddir = self.config.get_value("system.bddir")
         bdfile_template = self.config.get_value("system.bdfile_template")
 
-        # Iterates (controlled from suites.py)
+        # Iterates through dict passed to it from suites.py
         iterator = self.iterator
         for it in iterator:
+            print("ITERATORZ: ", it)
             it = int(it)
             # Input file
             initfile = f"ICMSH{self.cnmexp}INIT"
