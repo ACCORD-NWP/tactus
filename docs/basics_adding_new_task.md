@@ -2,16 +2,14 @@ In order to start adding a new task to the deode prototype, a *file* containing 
 
 In the `tasks` folder, the `discover_task.py` file looks for the task specified in the ```deode run``` command. The task name should be the name of the **class** of your task, as it's in the class names that discover_task.py gets the tasks available. For ease of use, the *file* name containing your class can also be named the same as the class.
 
-A created task **class** usually inherits one of the two classes, **Task** or **BinaryTask** from the `base.py` file inside the `tasks` folder, the difference being the **BinaryTask** class inherits from the **Task** class and defines its own versions of the base functions of the **Task** class - `execute` , `prep` `post` and `run`. In the case the new tasks inherit the **BinaryTask** class, the task will need to have the settings defined in the **BinaryTask** version of the functions defined in the config.toml file used to run it. In the case the new tasks inherit the **Task** class, one can define their own `execute` , `prep` , `post`  and `run` functions and in both cases define new ones, and the config.toml file might not need all of the options it otherwise would.
+A created task **class** usually inherits the **Task** class from the `base.py` file inside the `tasks` folder The new tasks inherit the **Task** class, one can define their own `execute` , `prep` , `post`  and `run` functions and possibly define new ones.
 
-In the case the newly created task inherits from **BinaryTask**, the config.toml file used to run the task needs to have a [task] directive.
-The [task] directive then needs to contain a [task.taskname] directive, where `taskname` is the name of our task. Inside that [task.taskname] directive, the *wrapper* and *command* settings need to be set to their appropriate values. The *wrapper* setting sets a wrapper for the command needed to be run, most commonly commands `time` or `srun`. The *wrapper* setting comes from the **BatchJob** class included from `batch.py` inside `base.py`. The **BinaryTask** class reads the wrapper from the config.toml file and creates an object of the **BatchJob** type using that wrapper.
+Inside that [task.taskname] directive, the *wrapper* and *command* settings could be set to their appropriate values if they are used by the task. The *wrapper* setting sets a wrapper for the command needed to be run, most commonly commands `time` or `srun`. The *wrapper* setting comes from the **BatchJob** class included from `batch.py` inside `base.py`.
+
 ```
 wrapper = self.get_task_setting("wrapper")
 self.batch = BatchJob(os.environ, wrapper)
-```
-In the `execute` function of the **BinaryTask** the *command* setting is read from our config.toml file, and the `self.batch.run(cmd)` function is called.
-```
+
 cmd = self.get_task_setting("command")
 self.batch.run(cmd)
 ```
