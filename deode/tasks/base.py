@@ -9,8 +9,6 @@ from math import floor
 from ..datetime_utils import as_timedelta
 from ..logs import get_logger_from_config
 from ..toolbox import FileManager
-from .batch import BatchJob
-from .data import InputData, OutputData
 
 
 def _get_name(cname, cls, suffix, attrname="__plugin_name__"):
@@ -206,50 +204,6 @@ class Task(object):
         self.logger.debug("Setting = %s value =%s", setting_to_be_retrieved, value)
 
         return value
-
-
-class BinaryTask(Task):
-    """Base Task class."""
-
-    def __init__(self, config, name=None):
-        """Construct base task.
-
-        Args:
-            config (deode.ParsedConfig): Configuration
-            name (str): Task name
-        """
-        if name is None:
-            name = self.__class__.__name__
-
-        Task.__init__(self, config, name)
-
-        self.logger.debug("Binary task %s", name)
-        try:
-            wrapper = self.get_task_setting("wrapper")
-        except AttributeError:
-            wrapper = ""
-
-        self.batch = BatchJob(os.environ, wrapper)
-
-    def prep(self):
-        """Prepare run."""
-        Task.prep(self)
-        self.logger.debug("Prepping binary task")
-        input_data = self.get_task_setting("input_data")
-        InputData(input_data).prepare_input()
-
-    def execute(self):
-        """Execute binary task."""
-        self.logger.debug("Executing binary task")
-        cmd = self.get_task_setting("command")
-        self.batch.run(cmd)
-
-    def post(self):
-        """Post run."""
-        self.logger.debug("Post binary task")
-        output_data = self.get_task_setting("output_data")
-        OutputData(output_data).archive_files()
-        Task.post(self)
 
 
 class UnitTest(Task):
