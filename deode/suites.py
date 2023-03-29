@@ -319,7 +319,7 @@ class SuiteDefinition(object):
                         self.task_settings,
                         ecf_files,
                         input_template=input_template,
-                        variables={'ARGS': pp},
+                        variables={'ITERATOR': str(pp2)},
                         trigger=prepare_cycle_done
                     )
 # 3rd level Family
