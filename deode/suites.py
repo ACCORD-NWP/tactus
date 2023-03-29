@@ -141,6 +141,7 @@ class SuiteDefinition(object):
             "BASETIME": first_cycle.strftime("%Y%m%d%H%M"),
             "VALIDTIME": first_cycle.strftime("%Y%m%d%H%M"),
             "ITERATOR": 0,
+            "ARGS": 0,
             "DEODE_HOME": deode_home,
             "KEEP_WORKDIRS": keep_workdirs,
         }
@@ -305,7 +306,10 @@ class SuiteDefinition(object):
                 int_fam = EcflowSuiteFamily("Interpolation", time_family, ecf_files, trigger=prepare_cycle_done, variables=None)
                 for pp in pd3:
                     print("pp[0]: ", pp[0])
-                    print("pp: ", pp)
+                    print("pp[1]: ", pp[1])
+                    pp2={}
+                    pp2[pp[0]]=pp[1]
+                    print("pp2: ", pp2)
                     LBCnam=f"LBC{pp[0]:03}"
                     e927_fam = EcflowSuiteFamily(LBCnam, int_fam, ecf_files, trigger=prepare_cycle_done, variables=None)
                     EcflowSuiteTask(
@@ -315,7 +319,7 @@ class SuiteDefinition(object):
                         self.task_settings,
                         ecf_files,
                         input_template=input_template,
-                        variables={'ITERATOR': pp[0]},
+                        variables={'ARGS': pp},
                         trigger=prepare_cycle_done
                     )
 # 3rd level Family
