@@ -40,10 +40,9 @@ class Forecast(Task):
         self.archive = self.platform.get_system_value("archive")
 
         # Update namelist settings
-        update = {"namelist": {"bdint_seconds": self.bdint.seconds}}
         self.namelists = self.platform.get_platform_value("NAMELISTS")
-        self.nlgen_master = NamelistGenerator(config.copy(update=update), "master")
-        self.nlgen_surfex = NamelistGenerator(config.copy(update=update), "surfex")
+        self.nlgen_master = NamelistGenerator(self.config, "master")
+        self.nlgen_surfex = NamelistGenerator(self.config, "surfex")
 
         self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
         self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa

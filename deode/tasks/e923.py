@@ -27,17 +27,7 @@ class E923(Task):
 
         self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
 
-        # Update namelist settings
-        update = {
-            "domain": {
-                "ndguxg": int(self.config.get_value("domain.njmax"))
-                + int(self.config.get_value("domain.ilate")),
-                "ndglg": int(self.config.get_value("domain.nimax"))
-                + int(self.config.get_value("domain.ilone")),
-            }
-        }
-
-        self.nlgen = NamelistGenerator(config.copy(update=update), "master")
+        self.nlgen = NamelistGenerator(self.config, "master")
 
     def myexec(self, cmd, i):
         """Execute binary task.

@@ -62,6 +62,7 @@ class NamelistGenerator:
         """
         if kind not in ("master", "surfex"):
             raise InvalidNamelistKindError(kind)
+
         self.config = config
         self.kind = kind  # not used elsewhere, though
         self.logger = get_logger_from_config(config)
@@ -148,7 +149,7 @@ class NamelistGenerator:
                                                 defval,
                                                 nam,
                                             )
-                                            repval = defval
+                                            repval = find_num(defval)
                                         else:
                                             self.logger.debug(
                                                 "No value found for: '%s'", nam
@@ -157,7 +158,7 @@ class NamelistGenerator:
                                         self.logger.debug(
                                             "Replaced %s with: %s", nam, str(repval)
                                         )
-                                    finval = str(pre) + str(find_num(repval)) + str(post)
+                                    finval = str(pre) + str(repval) + str(post)
                                 else:
                                     raise KeyError(val)
                             nlres[nl][key] = finval

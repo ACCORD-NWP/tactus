@@ -26,6 +26,7 @@ def config_platform():
             realization = -1
             cnmexp = "HARM"
             tstep = 72
+            bdint = "PT3H"
         [general.times]
             basetime = "2000-01-01T00:0:00Z"
             validtime = "2000-01-02T00:00:00Z"
@@ -36,6 +37,11 @@ def config_platform():
             hei = "hopp"
         [domain]
             name = "DEMO_100_2500m"
+            nimax = 89
+            njmax = 109
+            ilone = 11
+            ilate = 11
+            gridtype = "linear"
         """
     )
     return task_configs
