@@ -127,13 +127,15 @@ class Task(object):
         shutil.rmtree(self.wdir)
         self.logger.debug("Remove %s", self.wdir)
 
-    def rename_wdir(self, prefix="Failed_"):
+    def rename_wdir(self, prefix="Failed_task_"):
         """Rename failed working directory."""
-        fdir = f"{self.wrk}/{prefix}{self.name}"
         if os.path.isdir(self.wdir):
+            fdir = f"{self.wrk}/{prefix}{self.name}"
             if os.path.exists(fdir):
                 self.logger.debug("%s exists. Remove it", fdir)
                 shutil.rmtree(fdir)
+            pid = os.path.basename(self.wdir)
+            fdir = f"{fdir}_{pid}"
             shutil.move(self.wdir, fdir)
             self.logger.info("Renamed %s to %s", self.wdir, fdir)
 

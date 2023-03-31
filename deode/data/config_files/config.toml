@@ -47,7 +47,7 @@ bhalf = []
  bdfile_sfx_template = "fc@YYYY@@MM@@DD@_@HH@+@LLL@"
  climdir = "@SCRATCH@/deode/@CASE@/climate/@DOMAIN@"
  bdclimdir = "/home/snh02/work/dev-CY46h1_deode/climate/DEODE_LARGE"
- bindir = "/home/snh02/work/dev-CY46h1_deode/bin"
+ bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2023-03-29"
 
 
 [platform]
@@ -118,7 +118,7 @@ tasks = ["Background_hpc", "UnitTest"]
 
 [submission.parallel]
  SCHOST = "hpc"
- tasks = ["Forecast","e927"]
+ tasks = ["Forecast","e927","Pgd","Prep"]
 [submission.parallel.BATCH]
  ACCOUNT = "#SBATCH -A msdeode"
  WALLTIME = "#SBATCH --time=00:10:00"
@@ -149,6 +149,18 @@ tasks = ["Background_hpc", "UnitTest"]
  NODES = "#SBATCH --nodes=2"
  NTASKS = "#SBATCH --ntasks=256"
  WALLTIME = "#SBATCH --time=00:30:00"
+
+[submission.task_exceptions.Pgd.BATCH]
+ NAME = "#SBATCH --job-name=Pgd"
+ NODES = "#SBATCH --nodes=2"
+ NTASKS = "#SBATCH --ntasks=32"
+ WALLTIME = "#SBATCH --time=00:10:00"
+
+[submission.task_exceptions.Prep.BATCH]
+ NAME = "#SBATCH --job-name=Prep"
+ NODES = "#SBATCH --nodes=2"
+ NTASKS = "#SBATCH --ntasks=32"
+ WALLTIME = "#SBATCH --time=00:10:00"
 
 [troika]
 config_file = "@DEODE_HOME@/deode/data/config_files/troika.yml"
