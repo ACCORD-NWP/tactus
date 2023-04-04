@@ -136,8 +136,6 @@ tasks = ["Background_hpc", "UnitTest"]
  OMP_NUM_THREADS= "os.environ['OMP_NUM_THREADS'] = '1'"
  DR_HOOK = "os.environ['DR_HOOK'] = '1'"
  OMPI_MCA_btl= "os.environ['OMPI_MCA_btl'] = '^vader'"
- GRIBDEFS= "gribdefs = '/home/snh02/gl/definitions/'"
- ECCODES_DEFINITION_PATH= "os.environ['ECCODES_DEFINITION_PATH'] = ':'.join([gribdefs,os.environ['ECCODES_DIR']+'share/eccodes/definitions/'])"
 
 [submission.task_exceptions.e927.BATCH]
  NAME = "#SBATCH --job-name=e927"
