@@ -5,6 +5,36 @@
     parameterNumber = 32 ;
     tablesVersion = 15 ;
 }
+# Lifting condensation level
+"SURFLIFTCONDLEV" = {
+    discipline = 0 ;
+    parameterCategory = 3 ;
+    parameterNumber = 6 ;
+    tablesVersion = 15 ;
+    scaleFactorOfFirstFixedSurface = 0 ;
+    scaledValueOfFirstFixedSurface = 0 ;
+    typeOfFirstFixedSurface = 5 ;
+}
+# Level of neutral buoyancy
+"SURFEQUILIBRLEV" = {
+    discipline = 0 ;
+    parameterCategory = 3 ;
+    parameterNumber = 6 ;
+    tablesVersion = 15 ;
+    scaleFactorOfFirstFixedSurface = 0 ;
+    scaledValueOfFirstFixedSurface = 0 ;
+    typeOfFirstFixedSurface = 16 ;
+}
+# Level of free convection
+"SURFFREECONVLEV" = {
+    discipline = 0 ;
+    parameterCategory = 3 ;
+    parameterNumber = 6 ;
+    tablesVersion = 15 ;
+    scaleFactorOfFirstFixedSurface = 0 ;
+    scaledValueOfFirstFixedSurface = 0 ;
+    typeOfFirstFixedSurface = 14 ;
+}
 
 # Liquid water cloud specific content
 "CLOUD_WATER" = {
@@ -1061,8 +1091,20 @@
     parameterNumber = 84 ;
     tablesVersion = 15 ;
 }
+"SOLID_WATE" = {
+    discipline = 0 ;
+    parameterCategory = 1 ;
+    parameterNumber = 84 ;
+    tablesVersion = 15 ;
+}
 
 "LIQUID_WATER" = {
+    discipline = 0 ;
+    parameterCategory = 1 ;
+    parameterNumber = 83 ;
+    tablesVersion = 15 ;
+}
+"LIQUID_WAT" = {
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 83 ;
@@ -1083,7 +1125,7 @@
 "GRAUPEL" = {
     discipline = 0 ;
     parameterCategory = 1 ;
-    parameterNumber = 201 ;
+    parameterNumber = 32 ;
     tablesVersion = 15 ;
 }
 
@@ -1521,6 +1563,12 @@
     parameterNumber = 0 ;
     tablesVersion = 15 ;
 }
+"HUMI.SPECI" = {
+    discipline = 0 ;
+    parameterCategory = 1 ;
+    parameterNumber = 0 ;
+    tablesVersion = 15 ;
+}
 
 # Surface ice content in soil
 "SURFRESERV.GLACE" = {
@@ -1662,6 +1710,14 @@
     tablesVersion = 15 ;
 }
 
+# U component of wind
+"WIND.U.PHY" = {
+    discipline = 0 ;
+    parameterCategory = 2 ;
+    parameterNumber = 2 ;
+    tablesVersion = 15 ;
+}
+
 # "zonal component of the horizontal wind At 10 m"
 "CLSVENT.ZONAL" = {
     discipline = 0 ;
@@ -1690,6 +1746,14 @@
 
 # V component of wind
 "WIND.V.PHYS" = {
+    discipline = 0 ;
+    parameterCategory = 2 ;
+    parameterNumber = 3 ;
+    tablesVersion = 15 ;
+}
+
+# V component of wind
+"WIND.V.PHY" = {
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 3 ;

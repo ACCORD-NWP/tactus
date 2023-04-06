@@ -68,6 +68,34 @@ class Task(object):
         self.logger.warning("Base task warning")
         self.logger.debug("Base task debug")
 
+        self._set_eccodes_environment()
+
+    def _set_eccodes_environment(self):
+        """Set correct path for ECCODES tables.
+
+        Respect ECCODES_DEINITION_PATH if set and
+        assume ECCODES_DIR is defined.
+
+        """
+        if os.getenv("ECCODES_DEFINITION_PATH") is not None:
+            return
+
+        deode_home = self.platform.get_platform_value("DEODE_HOME")
+        eccodes_definition_search_paths = [f"{deode_home}/deode/data/eccodes/definitions"]
+        try:
+            eccodes_dir = os.environ["ECCODES_DIR"]
+            eccodes_definition_search_paths.append(
+                f"{eccodes_dir}/share/eccodes/definitions"
+            )
+            os.environ["ECCODES_DEFINITION_PATH"] = ":".join(
+                eccodes_definition_search_paths
+            )
+            self.logger.debug(
+                "Set ECCODES_DEFINITION_PATH to %s", os.environ["ECCODES_DEFINITION_PATH"]
+            )
+        except KeyError:
+            self.logger.warning("Could not update ECCODES_DEFINITION_PATH")
+
     def derived_variables(self, config):
         """Derive some variables required in the namelists.
 
@@ -127,13 +155,15 @@ class Task(object):
         shutil.rmtree(self.wdir)
         self.logger.debug("Remove %s", self.wdir)
 
-    def rename_wdir(self, prefix="Failed_"):
+    def rename_wdir(self, prefix="Failed_task_"):
         """Rename failed working directory."""
-        fdir = f"{self.wrk}/{prefix}{self.name}"
         if os.path.isdir(self.wdir):
+            fdir = f"{self.wrk}/{prefix}{self.name}"
             if os.path.exists(fdir):
                 self.logger.debug("%s exists. Remove it", fdir)
                 shutil.rmtree(fdir)
+            pid = os.path.basename(self.wdir)
+            fdir = f"{fdir}_{pid}"
             shutil.move(self.wdir, fdir)
             self.logger.info("Renamed %s to %s", self.wdir, fdir)
 

@@ -49,7 +49,7 @@ bhalf = []
  bdfile_sfx_template = "fc@YYYY@@MM@@DD@_@HH@+@LLL@"
  climdir = "@SCRATCH@/deode/@CASE@/climate/@DOMAIN@"
  bdclimdir = "/home/snh02/work/dev-CY46h1_deode/climate/DEODE_LARGE"
- bindir = "/home/snh02/work/dev-CY46h1_deode/bin"
+ bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2023-03-29"
 
 
 [platform]
@@ -120,7 +120,7 @@ tasks = ["Background_hpc", "UnitTest"]
 
 [submission.parallel]
  SCHOST = "hpc"
- tasks = ["Forecast","e927"]
+ tasks = ["Forecast","e927","Pgd","Prep"]
 [submission.parallel.BATCH]
  ACCOUNT = "#SBATCH -A msdeode"
  WALLTIME = "#SBATCH --time=00:10:00"
@@ -138,8 +138,6 @@ tasks = ["Background_hpc", "UnitTest"]
  OMP_NUM_THREADS= "os.environ['OMP_NUM_THREADS'] = '1'"
  DR_HOOK = "os.environ['DR_HOOK'] = '1'"
  OMPI_MCA_btl= "os.environ['OMPI_MCA_btl'] = '^vader'"
- GRIBDEFS= "gribdefs = '/home/snh02/gl/definitions/'"
- ECCODES_DEFINITION_PATH= "os.environ['ECCODES_DEFINITION_PATH'] = ':'.join([gribdefs,os.environ['ECCODES_DIR']+'share/eccodes/definitions/'])"
 
 [submission.task_exceptions.e927.BATCH]
  NAME = "#SBATCH --job-name=e927"
@@ -151,6 +149,18 @@ tasks = ["Background_hpc", "UnitTest"]
  NODES = "#SBATCH --nodes=2"
  NTASKS = "#SBATCH --ntasks=256"
  WALLTIME = "#SBATCH --time=00:30:00"
+
+[submission.task_exceptions.Pgd.BATCH]
+ NAME = "#SBATCH --job-name=Pgd"
+ NODES = "#SBATCH --nodes=2"
+ NTASKS = "#SBATCH --ntasks=32"
+ WALLTIME = "#SBATCH --time=00:10:00"
+
+[submission.task_exceptions.Prep.BATCH]
+ NAME = "#SBATCH --job-name=Prep"
+ NODES = "#SBATCH --nodes=2"
+ NTASKS = "#SBATCH --ntasks=32"
+ WALLTIME = "#SBATCH --time=00:10:00"
 
 [troika]
 config_file = "@DEODE_HOME@/deode/data/config_files/troika.yml"
