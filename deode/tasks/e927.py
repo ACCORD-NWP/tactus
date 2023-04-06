@@ -1,6 +1,7 @@
 """E927."""
 
 import os
+import json
 
 from ..datetime_utils import as_datetime, as_timedelta
 from ..namelist import NamelistGenerator
@@ -78,9 +79,11 @@ class E927(Task):
         bdfile_template = self.config.get_value("system.bdfile_template")
 
         # Iterates through dict passed to it from suites.py
-        iterator = self.iterator
-        for it in iterator:
-            print("ITERATORZ: ", it)
+        iterator = eval(self.iterator)
+        k=list(iterator.keys())[0]
+        for it in iterator[k]:
+            print("iterator[k]: ", iterator[k])
+            print("it: ", it)
             it = int(it)
             # Input file
             initfile = f"ICMSH{self.cnmexp}INIT"
@@ -91,5 +94,5 @@ class E927(Task):
             batch.run(self.master)
 
             target = f"{self.wrk}/ELSCF{self.cnmexp}ALBC{it:03d}"
-            self.fmanager.output(f"PF{self.cnmexp}000+0000", target)
+            self.fmanager.output(f"PF{self.cnmexp}000+{it:04d}", target)
             self.remove_links([initfile, "ncf927"])

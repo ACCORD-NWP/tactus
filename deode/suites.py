@@ -3,6 +3,7 @@
 import os
 import re
 import math
+import json
 from pathlib import Path
 
 from .datetime_utils import as_datetime, as_timedelta
@@ -278,26 +279,17 @@ class SuiteDefinition(object):
             p_l = list(range(0, frng + 1, bdint))
             bb = math.ceil(len(p_l) / bdmax)
             pt = range(frng+1)
-            #pd = {}
             
             pd=[list(pt[x:x+bb+2]) for x in range(0,len(pt),bb+2)]
             pdn=range(len(pd))
             pd2=[zip(range(len(pd)),pd[x:x+bb+2]) for x in range(0,len(pd),bb+2)]
             pd3=list(*pd2)
-
-            #pd2=list(*pd2)
-            #parlnt=list(parln)
+ 
             print("pd: ", pd)
             print("pd2: ", pd2)
             print("pd3: ", pd3)
             print("bb: ", bb)
             print("pt: ", pt) 
-            #i=0
-            #for l2 in parl:
-            #    pd[i] = l2
-            #    i+=1
-
-            #print("PAR_L:", par_l)
             print("FRNG:", frng)
             print("BDINT:", bdint)
             #print("pd:", pd)
