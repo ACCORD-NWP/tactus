@@ -18,7 +18,23 @@ logger = get_logger(__name__, "DEBUG")
 class SuiteDefinition(object):
 
     """Definition of suite."""
-       """
+
+    def __init__(
+        self,
+        suite_name,
+        joboutdir,
+        ecf_files,
+        config,
+        task_settings,
+        loglevel,
+        ecf_home=None,
+        ecf_include=None,
+        ecf_out=None,
+        ecf_jobout=None,
+        ecf_micro="%",
+        dry_run=False,
+        ):
+     """
         Construct the definition.
         Args:
             suite_name (str): Name of suite
@@ -36,22 +52,7 @@ class SuiteDefinition(object):
             dry_run (bool, optional): Dry run not using ecflow. Defaults to False.
         Raises:
             ModuleNotFoundError: If ecflow is not loaded and not dry_run
-       """
-    def __init__(
-        self,
-        suite_name,
-        joboutdir,
-        ecf_files,
-        config,
-        task_settings,
-        loglevel,
-        ecf_home=None,
-        ecf_include=None,
-        ecf_out=None,
-        ecf_jobout=None,
-        ecf_micro="%",
-        dry_run=False,
-        ):
+     """
         # TODO: Document the variables that right now only are described as "?"
 
         if ecflow is None and not dry_run:
