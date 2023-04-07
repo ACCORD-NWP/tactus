@@ -3,22 +3,11 @@
 import os
 import re
 import math
-import json
 from pathlib import Path
-
 from .datetime_utils import as_datetime, as_timedelta
 from .logs import get_logger, get_logger_from_config
 from .toolbox import Platform
 
-"""div_chunk: List segmentation"""
-def div_chnk(ln, n_chnk):
-    for i in range(0, len(ln), n_chnk):
-        yield ln[i:i + n_chnk]
-        """
-        Args:
-            ln (int): Length of list
-            n_chnk: Number of chunks of new list
-        """
 try:
     import ecflow
 except ImportError:
@@ -27,8 +16,27 @@ except ImportError:
 logger = get_logger(__name__, "DEBUG")
 
 class SuiteDefinition(object):
-    """The definition of the suite."""
 
+    """Definition of suite."""
+       """
+        Construct the definition.
+        Args:
+            suite_name (str): Name of suite
+            joboutdir (str): Path to jobfiles
+            ecf_files (str): Path to ecflow containers
+            task_settings (TaskSettings): Submission configuration
+            config (deode.ParsedConfig): Configuration file
+            task_settings (deode.TaskSettings): Task settings
+            loglevel (str): Loglevel
+            ecf_home (str, optional): ECF_HOME. Defaults to None.
+            ecf_include (str, optional): ECF_INCLUDE. Defaults to None which uses ecf_files.
+            ecf_out (str) : ECF_OUT. Job out.
+            ecf_jobout (str, optional): ECF_JOBOUT. Defaults to None.
+            ecf_micro (str, optional): ECF_MICRO. Defaults to %.
+            dry_run (bool, optional): Dry run not using ecflow. Defaults to False.
+        Raises:
+            ModuleNotFoundError: If ecflow is not loaded and not dry_run
+       """
     def __init__(
         self,
         suite_name,
@@ -45,25 +53,6 @@ class SuiteDefinition(object):
         dry_run=False,
         ):
         # TODO: Document the variables that right now only are described as "?"
-        """
-        Construct the definition.
-        Args:
-            suite_name (str): Name of suite
-            joboutdir (str): Path to jobfiles
-            ecf_files (str): Path to ecflow containers
-            task_settings (TaskSettings): Submission configuration
-            config (deode.ParsedConfig): Configuration file
-            task_settings (deode.TaskSettings): Task settings
-            loglevel (str): Loglevel
-            ecf_home (str, optional): ECF_HOME. Defaults to None.
-            ecf_include (str, optional): ECF_INCLUDE. Defaults to None which uses ecf_files.
-            ecf_out (str) : ECF_OUT. Job out.
-            ecf_jobout (str, optional): ECF_JOBOUT. Defaults to None.
-            ecf_micro (str, optional): ECF_MICRO. Defaults to %.
-            dry_run (bool, optional): Dry run not using ecflow. Defaults to False. 
-        Raises:
-            ModuleNotFoundError: If ecflow is not loaded and not dry_run
-        """
 
         if ecflow is None and not dry_run:
             raise ModuleNotFoundError("Ecflow not found")
@@ -275,24 +264,22 @@ class SuiteDefinition(object):
             frng = int(re.findall(r'\d+', config.get_value("general.forecast_range"))[0])
             bdint = int(re.findall(r'\d+', config.get_value("general.bdint"))[0])
             bdmax = config.get_value("general.bdmax")
-           
+
             p_l = list(range(0, frng + 1, bdint))
             bb = math.ceil(len(p_l) / bdmax)
-            pt = range(frng+1)
-            
-            pd=[list(pt[x:x+bb+2]) for x in range(0,len(pt),bb+2)]
-            pdn=range(len(pd))
-            pd2=[zip(range(len(pd)),pd[x:x+bb+2]) for x in range(0,len(pd),bb+2)]
-            pd3=list(*pd2)
- 
+            pt = range(frng + 1)
+
+            pd = [list(pt[x : x + bb + 2]) for x in range(0, len(pt), bb + 2)]
+            pd2 = [zip(range(len(pd)), pd[x: x + bb + 2]) for x in range(0, len(pd), bb + 2)]
+            pd3 = list(*pd2)
+
             print("pd: ", pd)
             print("pd2: ", pd2)
             print("pd3: ", pd3)
             print("bb: ", bb)
-            print("pt: ", pt) 
+            print("pt: ", pt)
             print("FRNG:", frng)
             print("BDINT:", bdint)
-            #print("pd:", pd)
 
             if cycle["time"] == "0000" or cycle["time"] == "1200":
                 int_fam = EcflowSuiteFamily("Interpolation", time_family, ecf_files, trigger=prepare_cycle_done, variables=None)
@@ -302,8 +289,7 @@ class SuiteDefinition(object):
                     pp2={}
                     pp2[pp[0]]=pp[1]
                     print("pp2: ", pp2)
-                    LBCnam=f"LBC{pp[0]:03}"
-                    e927_fam = EcflowSuiteFamily(LBCnam, int_fam, ecf_files, trigger=prepare_cycle_done, variables=None)
+                    e927_fam = EcflowSuiteFamily(f"LBC{pp[0]:03}", int_fam, ecf_files, trigger=prepare_cycle_done, variables=None)
                     EcflowSuiteTask(
                         "e927",
                         e927_fam,
@@ -756,4 +742,3 @@ class EcflowSuiteTrigger:
         """
         self.node = node
         self.mode = mode
-

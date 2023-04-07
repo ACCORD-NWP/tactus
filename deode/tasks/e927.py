@@ -1,7 +1,6 @@
 """E927."""
 
 import os
-import json
 
 from ..datetime_utils import as_datetime, as_timedelta
 from ..namelist import NamelistGenerator
@@ -80,7 +79,7 @@ class E927(Task):
 
         # Iterates through dict passed to it from suites.py
         iterator = eval(self.iterator)
-        k=list(iterator.keys())[0]
+        k = list(iterator.keys())[0]
         for it in iterator[k]:
             print("iterator[k]: ", iterator[k])
             print("it: ", it)
