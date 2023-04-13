@@ -1,6 +1,7 @@
 """E927."""
 
 import os
+import json
 
 from ..datetime_utils import as_datetime, as_timedelta
 from ..namelist import NamelistGenerator
@@ -25,6 +26,9 @@ class E927(Task):
         self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
         self.bdint = self.config.get_value("general.bdint")
         self.forecast_range = self.config.get_value("general.forecast_range")
+
+	bdnr = config.get_value("task.args.bd_nr")
+	bd_time = config.get_value("task.args.bd_time")
 
         self.iterator = self.config.get_value("general.iterator")
         print(f"ITERATOR:{self.iterator}")
@@ -77,11 +81,12 @@ class E927(Task):
         bddir = self.config.get_value("system.bddir")
         bdfile_template = self.config.get_value("system.bdfile_template")
 
-        # Iterates through dict passed to it from suites.py
-        iterator = eval(self.iterator)
-        k = list(iterator.keys())[0]
-        for it in iterator[k]:
-            print("iterator[k]: ", iterator[k])
+        # Iterates through string passed from suites.py
+        #ite = eval(self.iterator)
+        ite = json.loads(self.iterator)
+        k = list(ite.keys())[0]
+        for it in ite[k]:
+            print("ite[k]: ", ite[k])
             print("it: ", it)
             it = int(it)
             # Input file

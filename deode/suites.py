@@ -3,6 +3,8 @@
 import os
 import re
 import math
+import json
+
 from pathlib import Path
 from .datetime_utils import as_datetime, as_timedelta
 from .logs import get_logger, get_logger_from_config
@@ -16,7 +18,6 @@ except ImportError:
 logger = get_logger(__name__, "DEBUG")
 
 class SuiteDefinition(object):
-
     """Definition of suite."""
 
     def __init__(
@@ -33,9 +34,10 @@ class SuiteDefinition(object):
         ecf_jobout=None,
         ecf_micro="%",
         dry_run=False,
-        ):
-     """
-        Construct the definition.
+    ):
+        # TODO: Document the variables that right now only are described as "?"
+        """Construct the definition.
+
         Args:
             suite_name (str): Name of suite
             joboutdir (str): Path to jobfiles
@@ -45,16 +47,17 @@ class SuiteDefinition(object):
             task_settings (deode.TaskSettings): Task settings
             loglevel (str): Loglevel
             ecf_home (str, optional): ECF_HOME. Defaults to None.
-            ecf_include (str, optional): ECF_INCLUDE. Defaults to None which uses ecf_files.
-            ecf_out (str) : ECF_OUT. Job out.
+            ecf_include (str, optional): ECF_INCLUDE.
+                                         Defaults to None which uses ecf_files.
+            ecf_out (str, optional): ECF_OUT. Defaults to None.
             ecf_jobout (str, optional): ECF_JOBOUT. Defaults to None.
-            ecf_micro (str, optional): ECF_MICRO. Defaults to %.
+            ecf_micro (str, optional): ECF_MICRO. Defaults to %
             dry_run (bool, optional): Dry run not using ecflow. Defaults to False.
+
         Raises:
             ModuleNotFoundError: If ecflow is not loaded and not dry_run
-     """
-        # TODO: Document the variables that right now only are described as "?"
 
+        """
         if ecflow is None and not dry_run:
             raise ModuleNotFoundError("Ecflow not found")
 
@@ -78,6 +81,7 @@ class SuiteDefinition(object):
                 + f"/{ecf_micro}ECF_NAME{ecf_micro}.{ecf_micro}ECF_TRYNO{ecf_micro}"
             )
         self.ecf_jobout = ecf_jobout
+
         self.task_settings = task_settings
 
         # Commands started from the scheduler does not have full environment
@@ -140,11 +144,6 @@ class SuiteDefinition(object):
         input_template = Path(__file__).parent.resolve() / "templates/ecflow/default.py"
         input_template = input_template.as_posix()
         self.suite = EcflowSuite(name, ecf_files, variables=variables, dry_run=dry_run)
-
-        # Background dos not work. Deode is not able to run on vm with shared HOME as
-        # hpc-login
-        # EcflowSuiteTask("Background", family, self.task_settings, ecf_files,
-        #                input_template=input_template)
 
         static_data = EcflowSuiteFamily("StaticData", self.suite, ecf_files)
 
@@ -237,17 +236,18 @@ class SuiteDefinition(object):
                     cycle["day"], self.suite, ecf_files, trigger=inputdata_trigger
                 )
                 days.append(cycle_day)
+
             time_variables = {
                 "BASETIME": cycle["basetime"],
                 "VALIDTIME": cycle["validtime"],
             }
             time_family = EcflowSuiteFamily(
-                cycle["time"],
-                day_family,
-                ecf_files,
-                trigger=inputdata_trigger,
-                variables=time_variables,
-            )
+                	  cycle["time"],
+                	  day_family,
+                	  ecf_files,
+                	  trigger=inputdata_trigger,
+                          variables=time_variables,
+            		  )
 # 3rd level Family
 # YYYYMMDD >> HHHH >> InputData
             inputdata = EcflowSuiteFamily("InputData", time_family, ecf_files, trigger=inputdata_trigger)
@@ -260,47 +260,50 @@ class SuiteDefinition(object):
                 input_template=input_template,
                 variables=None,
             )
+
             prepare_cycle_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prepare_cycle)])
-
-            frng = int(re.findall(r'\d+', config.get_value("general.forecast_range"))[0])
-            bdint = int(re.findall(r'\d+', config.get_value("general.bdint"))[0])
-            bdmax = config.get_value("general.bdmax")
-
-            p_l = list(range(0, frng + 1, bdint))
-            bb = math.ceil(len(p_l) / bdmax)
-            pt = range(frng + 1)
-
-            pd = [list(pt[x : x + bb + 2]) for x in range(0, len(pt), bb + 2)]
-            pd2 = [zip(range(len(pd)), pd[x: x + bb + 2]) for x in range(0, len(pd), bb + 2)]
-            pd3 = list(*pd2)
-
-            print("pd: ", pd)
-            print("pd2: ", pd2)
-            print("pd3: ", pd3)
-            print("bb: ", bb)
-            print("pt: ", pt)
-            print("FRNG:", frng)
-            print("BDINT:", bdint)
+#---
+            basetime = as_datetime(config.get_value("general.times.basetime"))
+            forecast_range = as_timedelta(config.get_value("general.forecast_range"))
+            endtime = basetime + forecast_range
+            bdint = as_timedelta(config.get_value("general.bdint"))
 
             if cycle["time"] == "0000" or cycle["time"] == "1200":
-                int_fam = EcflowSuiteFamily("Interpolation", time_family, ecf_files, trigger=prepare_cycle_done, variables=None)
-                for pp in pd3:
-                    print("pp[0]: ", pp[0])
-                    print("pp[1]: ", pp[1])
-                    pp2={}
-                    pp2[pp[0]]=pp[1]
-                    print("pp2: ", pp2)
-                    e927_fam = EcflowSuiteFamily(f"LBC{pp[0]:03}", int_fam, ecf_files, trigger=prepare_cycle_done, variables=None)
+                int_fam = EcflowSuiteFamily(
+                          "Interpolation", 
+                          time_family, 
+                          ecf_files, 
+                          trigger=prepare_cycle_done, 
+                          variables=None
+                          )
+
+                bdnr = 0
+                args = ""
+                bdtime = basetime
+                while bdtime <= endtime:
+                    date_string = bdtime.isoformat(sep="T").replace("+00:00", "Z")
+                    args = f"bd_time={date_string};bd_nr={bdnr}"
+                    variables = {"ARGS": args}
+                    print("args: ", args); print("args: ", args); print("bdnr: ", bdnr);
+                    e927_fam = EcflowSuiteFamily(
+                        f"E927_{bdnr:03}",
+                               int_fam, ecf_files, 
+                               trigger=prepare_cycle_done, 
+                               variables=variables
+                               )
                     EcflowSuiteTask(
-                        "e927",
+                        f"LBC_{bdnr:03}",
                         e927_fam,
                         config,
                         self.task_settings,
                         ecf_files,
                         input_template=input_template,
-                        variables={'ITERATOR': str(pp2)},
+                        variables=None,
                         trigger=prepare_cycle_done
-                    )
+                        )
+    # Increase counters
+                    bdnr += 1
+                    bdtime += bdint
 # 3rd level Family
 # YYYYMMDD >> HHHH >> Cycle
             cycle = EcflowSuiteFamily("Cycle", time_family, ecf_files)
@@ -309,7 +312,12 @@ class SuiteDefinition(object):
                 triggers = triggers + prev_cycle_trigger
             ready_for_cycle = EcflowSuiteTriggers(triggers)
             prev_cycle_trigger = [EcflowSuiteTrigger(cycle)]
-            initialization = EcflowSuiteFamily("Initialization", cycle, ecf_files, trigger=ready_for_cycle)
+            initialization = EcflowSuiteFamily(
+                             "Initialization", 
+                             cycle, 
+                             ecf_files, 
+                             trigger=ready_for_cycle
+                             )
             prep_trigger = None
             if do_prep:
                 prep = EcflowSuiteTask(
@@ -730,6 +738,7 @@ class EcflowSuiteTriggers:
         if trigger_string is not None:
             self.trigger_string = self.trigger_string + cat_string + trigger_string
 
+
 class EcflowSuiteTrigger:
     """EcFlow Trigger in a suite."""
 
@@ -743,3 +752,4 @@ class EcflowSuiteTrigger:
         """
         self.node = node
         self.mode = mode
+

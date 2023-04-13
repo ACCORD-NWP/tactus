@@ -25,22 +25,13 @@ def parse_ecflow_vars():
         "CONFIG": "%CONFIG%",
         "ITERATOR": "%ITERATOR%",
         "DEODE_HOME": "%DEODE_HOME%",
+	"ARGS": "%ARGS%"
         "KEEP_WORKDIRS": "%KEEP_WORKDIRS%",
     }
 
 
 """
 %nopp"
-"""
-
-"""div_chunk: List segmentation"""        
-def div_chnk(ln, n_chnk):
-    for i in range(0, len(ln), n_chnk):
-        yield ln[i:i + n_chnk]
-"""
-        Args:
-            ln (int): Length of list
-            n_chnk: Number of chunks of new list
 """
 
 def default_main(**kwargs):
@@ -84,6 +75,25 @@ def default_main(**kwargs):
         get_task(task.ecf_task, config).run()
         logger.info("Finished task %s", task.ecf_name)
 
+# As a demonstration:
+kwargs = {"ARGS": "bd_nr=0;bd_time='2023-02-19T00:00:00Z'"}
+
+# Split ARGS on semi-colon
+args = kwargs.get("ARGS")
+args_dict = {}
+if args != "":
+    for arg in args.split(";"):
+        parts = arg.split("=")
+        if len(parts) == 2:
+            args_dict.update({parts[0]: parts[1]})
+
+# Update config with args
+update = {
+    "task": {
+        "args": args_dict
+    }
+}
+config = config.copy(update=update)
 
 if __name__ == "__main__":
     # Get ecflow variables
