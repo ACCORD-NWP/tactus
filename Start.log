@@ -1,1 +1,0 @@
-deode -loglevel debug -config_file $DEODE/deode/data/config_files/config.toml start suite --ecf_host $ECF_HOST --ecf_port 3141 --joboutdir $HOME/jobout --ecf_files $DEODE/deode/templates/ecflow >> log
