@@ -25,8 +25,8 @@ def parse_ecflow_vars():
         "CONFIG": "%CONFIG%",
         "ITERATOR": "%ITERATOR%",
         "DEODE_HOME": "%DEODE_HOME%",
-	"ARGS": "%ARGS%"
-        "KEEP_WORKDIRS": "%KEEP_WORKDIRS%",
+	"ARGS": "%ARGS%",
+        "KEEP_WORKDIRS": "%KEEP_WORKDIRS%"
     }
 
 
@@ -93,7 +93,7 @@ update = {
         "args": args_dict
     }
 }
-config = config.copy(update=update)
+#config = config.copy(update=update)
 
 if __name__ == "__main__":
     # Get ecflow variables

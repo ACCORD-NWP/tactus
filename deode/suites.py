@@ -1,8 +1,8 @@
 """Ecflow suites."""
 
+import math
 import os
 import re
-import math
 
 from pathlib import Path
 from .datetime_utils import as_datetime, as_timedelta
@@ -137,7 +137,7 @@ class SuiteDefinition(object):
             "ITERATOR": 0,
             "ARGS": 0,
             "DEODE_HOME": deode_home,
-            "KEEP_WORKDIRS": keep_workdirs,
+            "KEEP_WORKDIRS": keep_workdirs
         }
 
         input_template = Path(__file__).parent.resolve() / "templates/ecflow/default.py"
@@ -261,11 +261,12 @@ class SuiteDefinition(object):
             )
 
             prepare_cycle_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prepare_cycle)])
-#---
+
             basetime = as_datetime(config.get_value("general.times.basetime"))
             forecast_range = as_timedelta(config.get_value("general.forecast_range"))
             endtime = basetime + forecast_range
             bdint = as_timedelta(config.get_value("general.bdint"))
+            bdmax = config.get_value("general.bdmax")
 
             if cycle["time"] == "0000" or cycle["time"] == "1200":
                 int_fam = EcflowSuiteFamily(
@@ -283,15 +284,15 @@ class SuiteDefinition(object):
                     date_string = bdtime.isoformat(sep="T").replace("+00:00", "Z")
                     args = f"bd_time={date_string};bd_nr={bdnr}"
                     variables = {"ARGS": args}
-                    print("args: ", args); print("args: ", args); print("bdnr: ", bdnr);
+                    print("args: ", args); print("date_string: ", date_string); print("bdnr: ", bdnr);
                     e927_fam = EcflowSuiteFamily(
-                        f"E927_{bdnr:03}",
+                        f"LBC{bdnr:02}",
                                int_fam, ecf_files, 
                                trigger=prepare_cycle_done, 
                                variables=variables
                                )
                     EcflowSuiteTask(
-                        f"LBC_{bdnr:03}",
+                        f"e927",
                         e927_fam,
                         config,
                         self.task_settings,

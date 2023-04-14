@@ -1,0 +1,4 @@
+isort --check-only .
+black --check .
+flakeheaven lint .
+

@@ -27,8 +27,8 @@ class E927(Task):
         self.bdint = self.config.get_value("general.bdint")
         self.forecast_range = self.config.get_value("general.forecast_range")
 
-	bdnr = config.get_value("task.args.bd_nr")
-	bd_time = config.get_value("task.args.bd_time")
+        bdnr = config.get_value("task.args.bd_nr")
+        bd_time = config.get_value("task.args.bd_time")
 
         self.iterator = self.config.get_value("general.iterator")
         print(f"ITERATOR:{self.iterator}")
@@ -82,11 +82,9 @@ class E927(Task):
         bdfile_template = self.config.get_value("system.bdfile_template")
 
         # Iterates through string passed from suites.py
-        #ite = eval(self.iterator)
         ite = json.loads(self.iterator)
         k = list(ite.keys())[0]
         for it in ite[k]:
-            print("ite[k]: ", ite[k])
             print("it: ", it)
             it = int(it)
             # Input file
