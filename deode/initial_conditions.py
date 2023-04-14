@@ -3,7 +3,7 @@
 
 import os
 
-from .datetime_utils import as_datetime, as_timedelta
+from .datetime_utils import as_datetime, as_timedelta, dt2str
 from .logs import get_logger_from_config
 from .toolbox import Platform
 
@@ -68,13 +68,11 @@ class InitialConditions(object):
         # Find data from previous forecast
         pdtg = self.basetime - self.cycle_length
         dt = self.basetime - pdtg
-        h = int(dt.seconds / 3600)
-        m = int((dt.seconds % 3600 - dt.seconds % 60) / 60)
-        s = int(dt.seconds % 60)
+        duration = dt2str(dt)
 
         archive = self.platform.substitute(self.archive, basetime=pdtg)
-        source = f"{archive}/ICMSH{self.cnmexp}+{h:04d}:{m:02d}:{s:02d}"
-        source_sfx = f"{archive}/ICMSH{self.cnmexp}+{h:04d}:{m:02d}:{s:02d}.sfx"
+        source = f"{archive}/ICMSH{self.cnmexp}+{duration}"
+        source_sfx = f"{archive}/ICMSH{self.cnmexp}+{duration}.sfx"
 
         if os.path.exists(source) and os.path.exists(source_sfx):
             self.logger.info("Found initial files\n  %s\n  %s", source, source_sfx)

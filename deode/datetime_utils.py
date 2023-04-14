@@ -20,3 +20,22 @@ def as_datetime(obj):
 def as_timedelta(obj):
     """Convert obj to string and parse into pd.Timedelta."""
     return pd.Timedelta(str(obj))
+
+
+def dt2str(dt):
+    """Convert timdelta object to file name suitable string.
+
+    Args:
+        dt (timedelta object): duration
+
+    Returns:
+        duration (str): string representation of duration
+                        suitable for FA files
+
+    """
+    h = int(dt.seconds / 3600) + int(dt.days * 24)
+    m = int((dt.seconds % 3600 - dt.seconds % 60) / 60)
+    s = int(dt.seconds % 60)
+
+    duration = f"{h:04d}:{m:02d}:{s:02d}"
+    return duration

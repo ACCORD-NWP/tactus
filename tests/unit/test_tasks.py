@@ -12,6 +12,7 @@ from deode.config_parser import ParsedConfig, read_raw_config_file
 from deode.initial_conditions import InitialConditions
 from deode.tasks.base import Task
 from deode.tasks.batch import BatchJob
+from deode.tasks.creategrib import CreateGrib
 from deode.tasks.discover_task import discover, get_task
 from deode.tasks.e923 import E923
 from deode.tasks.forecast import Forecast
@@ -94,6 +95,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_batchjob_run_method = BatchJob.run
     original_toolbox_filemanager_input_method = FileManager.input
     original_task_forecast_forecast_execute_method = Forecast.execute
+    original_task_creategrib_creategrib_execute_method = CreateGrib.execute
     original_task_initial_conditions_nosuccess_method = InitialConditions.nosuccess
     original_task_e923_constant_part_method = E923.constant_part
     original_task_e923_monthly_part_method = E923.monthly_part
@@ -123,6 +125,11 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         with contextlib.suppress(FileNotFoundError):
             original_task_forecast_forecast_execute_method(*args, **kwargs)
 
+    def new_task_creategrib_creategrib_execute_method(*args, **kwargs):
+        """Suppress some errors so that test continues if they happen."""
+        with contextlib.suppress(FileNotFoundError):
+            original_task_creategrib_creategrib_execute_method(*args, **kwargs)
+
     def new_task_initial_conditions_nosuccess_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
         with contextlib.suppress(FileNotFoundError):
@@ -149,6 +156,10 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     session_mocker.patch(
         "deode.tasks.forecast.Forecast.execute",
         new=new_task_forecast_forecast_execute_method,
+    )
+    session_mocker.patch(
+        "deode.tasks.creategrib.CreateGrib.execute",
+        new=new_task_creategrib_creategrib_execute_method,
     )
     session_mocker.patch(
         "deode.initial_conditions.InitialConditions.nosuccess",
