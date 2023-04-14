@@ -26,7 +26,7 @@ def parse_ecflow_vars():
         "ITERATOR": "%ITERATOR%",
         "DEODE_HOME": "%DEODE_HOME%",
 	"ARGS": "%ARGS%",
-        "KEEP_WORKDIRS": "%KEEP_WORKDIRS%"
+        "KEEP_WORKDIRS": "%KEEP_WORKDIRS%",
     }
 
 
@@ -74,26 +74,6 @@ def default_main(**kwargs):
         logger.info("Running task %s", task.ecf_name)
         get_task(task.ecf_task, config).run()
         logger.info("Finished task %s", task.ecf_name)
-
-# As a demonstration:
-kwargs = {"ARGS": "bd_nr=0;bd_time='2023-02-19T00:00:00Z'"}
-
-# Split ARGS on semi-colon
-args = kwargs.get("ARGS")
-args_dict = {}
-if args != "":
-    for arg in args.split(";"):
-        parts = arg.split("=")
-        if len(parts) == 2:
-            args_dict.update({parts[0]: parts[1]})
-
-# Update config with args
-update = {
-    "task": {
-        "args": args_dict
-    }
-}
-#config = config.copy(update=update)
 
 if __name__ == "__main__":
     # Get ecflow variables

@@ -50,7 +50,7 @@ class Task(object):
         """
         self.logger = get_logger_from_config(config)
         update = self.derived_variables(config)
-        #self.config = config.copy(update=update)
+        self.config = config.copy(update=update)
         if "." in name:
             name = name.split(".")[-1]
         self.name = name
