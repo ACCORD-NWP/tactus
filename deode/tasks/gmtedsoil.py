@@ -370,8 +370,10 @@ class Soil(Task):
         with open(header_file, mode="w", encoding="utf8") as f:
             f.write(f"{soiltype} cut from global soilgrids of 250m resolution\n")
             f.write(f"nodata: {nodata:d}\n")
-            for param in [hdr_north, hdr_south, hdr_west, hdr_east]:
-                f.write(f"north: {float(param):.6f}\n")
+            f.write(f"north: {float(hdr_north):.6f}\n")
+            f.write(f"south: {float(hdr_south):.6f}\n")
+            f.write(f"west: {float(hdr_west):.6f}\n")
+            f.write(f"east: {float(hdr_east):.6f}\n")
             f.write(f"rows: {int(hdr_rows):d}\n")
             f.write(f"cols: {int(hdr_cols):d}\n")
             # TODO Check if factor can be float
