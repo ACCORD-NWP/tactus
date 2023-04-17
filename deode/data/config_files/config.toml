@@ -84,6 +84,13 @@ bhalf = []
  wrapper = "srun"
 [task.PgdUpdate]
  wrapper = "srun"
+[task.creategrib]
+ wrapper = "srun"
+
+[task.creategrib.conversions]
+  #his = { output_template = "his_basetime+duration.grib2" }
+  sfx = { output_template = "sfx_basetime+duration.grib2" }
+  sfx_sel = { output_template = "sfx_basetime+duration.grib2" }
 
 [submission]
 submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
@@ -95,7 +102,7 @@ tasks = ["Background_vm"]
 
 [submission.background_hpc]
 SCHOST = "localhost"
-tasks = ["Background_hpc", "UnitTest"]
+tasks = ["creategrib","Background_hpc", "UnitTest"]
 
 [submission.serial]
  SCHOST = "hpc"

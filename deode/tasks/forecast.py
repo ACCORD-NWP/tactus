@@ -3,7 +3,7 @@
 
 import os
 
-from ..datetime_utils import as_datetime, as_timedelta
+from ..datetime_utils import as_datetime, as_timedelta, dt2str
 from ..initial_conditions import InitialConditions
 from ..namelist import NamelistGenerator
 from .base import Task
@@ -60,10 +60,8 @@ class Forecast(Task):
         dtgend = self.basetime + self.forecast_range
         while cdtg <= dtgend:
             dt = cdtg - self.basetime
-            h = int(dt.seconds / 3600)
-            m = int((dt.seconds % 3600 - dt.seconds % 60) / 60)
-            s = int(dt.seconds % 60)
-            source = f"{fname}+{h:04d}:{m:02d}:{s:02d}{suffix}"
+            duration = dt2str(dt)
+            source = f"{fname}+{duration}{suffix}"
             self.fmanager.output(source, f"{self.archive}/{source}")
             cdtg += as_timedelta(period)
 

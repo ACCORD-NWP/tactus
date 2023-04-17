@@ -7,6 +7,9 @@
   "properties": {
     "general": {
       "$ref": "#/definitions/GeneralSectionModel"
+    },
+    "domain": {
+      "$ref": "#/definitions/Domain"
     }
   },
   "required": [
@@ -14,6 +17,75 @@
   ],
 
   "definitions": {
+
+    "Domain": {
+      "title": "DomainSection",
+      "description": "Model for the 'domain' section.",
+      "type": "object",
+      "properties": {
+        "gridtype": {
+          "type": "string",
+	  "description": "Select truncation type",
+	  "enum": ["linear", "quadratic", "cubic", "custom" ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "nimax": {
+          "type": "number",
+	  "minimum": 0
+        },
+        "njmax": {
+          "type": "number",
+	  "minimum": 0
+        },
+        "xdx": {
+          "type": "number",
+	  "minimum": 0
+        },
+        "xdy": {
+          "type": "number",
+	  "minimum": 0
+        },
+        "ilone": {
+          "type": "number",
+	  "minimum": 0
+        },
+        "ilate": {
+          "type": "number",
+	  "minimum": 0
+        },
+        "nbzong": {
+          "type": "number",
+	  "minimum": 0
+        },
+        "nbzonl": {
+          "type": "number",
+	  "minimum": 0
+        },
+        "xloncen": {
+          "type": "number",
+	  "minimum": -180,
+	  "maximum": 180
+        },
+        "xlatcen": {
+          "type": "number",
+	  "minimum": -90,
+	  "maximum": 90
+        },
+        "xlon0": {
+          "type": "number",
+	  "minimum": -180,
+	  "maximum": 180
+        },
+        "xlat0": {
+          "type": "number",
+	  "minimum": -90,
+	  "maximum": 90
+        }
+      }
+    },
+
     "GeneralSectionModel": {
       "title": "GeneralSectionModel",
       "description": "Model for the 'general' section.",
@@ -61,6 +133,64 @@
               }
             }
           ]
+        },
+        "case": {
+              "title": "Experiment name",
+              "default": "deode_case",
+              "type": "string"
+        },
+        "os_macros": {
+              "title": "Os macros",
+              "type": "array"
+        },
+        "cnmexp": {
+              "title": "Experiment short name",
+              "default": "DEODE",
+              "type": "string"
+        },
+        "tstep": {
+              "title": "Model time step",
+              "type": "number"
+        },
+        "loglevel": {
+              "title": "Logger info level",
+              "default": "INFO",
+              "type": "string",
+              "enum": [ "critical", "error", "debug", "info", "warning",
+                        "CRITICAL", "ERROR", "DEBUG", "INFO", "WARNING" ]
+        },
+        "surfex": {
+              "title": "SURFEX switch",
+              "type": "boolean"
+        },
+        "keep_workdirs": {
+              "title": "Do not remove working directories",
+              "type": "boolean"
+        },
+        "CSC": {
+              "title": "CSC",
+              "default": "AROME",
+              "type": "string",
+              "enum": [ "AROME", "ALARO", "HARMONIE-AROME" ]
+        },
+        "cycle": {
+              "title": "IAL cycle",
+              "type": "string"
+        },
+        "bdint": {
+              "title": "Boundary interval",
+              "type": "string",
+              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        },
+        "bdcycle": {
+              "title": "Boundary model cycle interval",
+              "type": "string",
+              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        },
+        "forecast_range": {
+              "title": "Forecast range",
+              "type": "string",
+              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
         }
       },
       "required": [

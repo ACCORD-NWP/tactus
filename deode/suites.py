@@ -360,7 +360,7 @@ class SuiteDefinition(object):
             self.logger.debug(self.task_settings.get_task_settings("Forecast"))
 
             variables = {"ECF_TIMEOUT": 5}
-            EcflowSuiteTask(
+            forecast = EcflowSuiteTask(
                 "Forecast",
                 forecasting,
                 config,
@@ -368,6 +368,18 @@ class SuiteDefinition(object):
                 ecf_files,
                 input_template=input_template,
                 variables=variables,
+            )
+
+            creategrib_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(forecast)])
+
+            EcflowSuiteTask(
+                "CreateGrib",
+                forecasting,
+                config,
+                self.task_settings,
+                ecf_files,
+                input_template=input_template,
+                trigger=creategrib_trigger,
             )
 
     def save_as_defs(self, def_file):
