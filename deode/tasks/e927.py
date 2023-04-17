@@ -1,7 +1,7 @@
 """E927."""
 
-import os
 import json
+import os
 
 from ..datetime_utils import as_datetime, as_timedelta
 from ..namelist import NamelistGenerator
@@ -30,8 +30,8 @@ class E927(Task):
         bdnr = config.get_value("task.args.bd_nr")
         bd_time = config.get_value("task.args.bd_time")
 
-        self.iterator = self.config.get_value("general.iterator")
-        print(f"ITERATOR:{self.iterator}")
+        #self.iterator = self.config.get_value("general.iterator")
+        #print(f"ITERATOR:{self.iterator}")
 
         self.cnmexp = self.config.get_value("general.cnmexp")
         self.bdclimdir = self.platform.get_system_value("bdclimdir")
@@ -82,14 +82,16 @@ class E927(Task):
         bdfile_template = self.config.get_value("system.bdfile_template")
 
         # Iterates through string passed from suites.py
-        ite = json.loads(self.iterator)
-        k = list(ite.keys())[0]
+        #ite = json.loads(self.iterator)
+        #k = list(ite.keys())[0]
         for it in ite[k]:
             print("it: ", it)
             it = int(it)
             # Input file
             initfile = f"ICMSH{self.cnmexp}INIT"
-            self.fmanager.input(f"{bddir}/{bdfile_template}", initfile, basetime=basetime, validtime=cdtg)
+            self.fmanager.input(
+                f"{bddir}/{bdfile_template}", initfile, basetime=basetime, validtime=cdtg
+            )
 
             # Run masterodb
             batch = BatchJob(os.environ, wrapper=self.wrapper)

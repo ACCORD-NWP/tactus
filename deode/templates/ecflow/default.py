@@ -25,14 +25,15 @@ def parse_ecflow_vars():
         "CONFIG": "%CONFIG%",
         "ITERATOR": "%ITERATOR%",
         "DEODE_HOME": "%DEODE_HOME%",
-	"ARGS": "%ARGS%",
         "KEEP_WORKDIRS": "%KEEP_WORKDIRS%",
+        "ARGS": "%ARGS%",
     }
 
 
 """
 %nopp"
 """
+
 
 def default_main(**kwargs):
     """Ecflow container default method."""
@@ -74,6 +75,7 @@ def default_main(**kwargs):
         logger.info("Running task %s", task.ecf_name)
         get_task(task.ecf_task, config).run()
         logger.info("Finished task %s", task.ecf_name)
+
 
 if __name__ == "__main__":
     # Get ecflow variables

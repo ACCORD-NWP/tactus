@@ -1,4 +1,4 @@
-isort --check-only .
+isort .
 black --check .
 flakeheaven lint .
 

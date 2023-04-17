@@ -3,8 +3,8 @@
 import math
 import os
 import re
-
 from pathlib import Path
+
 from .datetime_utils import as_datetime, as_timedelta
 from .logs import get_logger, get_logger_from_config
 from .toolbox import Platform
@@ -15,6 +15,7 @@ except ImportError:
     ecflow = None
 
 logger = get_logger(__name__, "DEBUG")
+
 
 class SuiteDefinition(object):
     """Definition of suite."""
@@ -137,7 +138,7 @@ class SuiteDefinition(object):
             "ITERATOR": 0,
             "ARGS": 0,
             "DEODE_HOME": deode_home,
-            "KEEP_WORKDIRS": keep_workdirs
+            "KEEP_WORKDIRS": keep_workdirs,
         }
 
         input_template = Path(__file__).parent.resolve() / "templates/ecflow/default.py"
@@ -166,8 +167,8 @@ class SuiteDefinition(object):
             input_template=input_template,
             variables=None,
         )
-# 2nd level Family
-# StaticData >> Pgd
+        # 2nd level Family
+        # StaticData >> Pgd
         pgd_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd_input)])
         pgd = EcflowSuiteTask(
             "Pgd",
@@ -241,15 +242,17 @@ class SuiteDefinition(object):
                 "VALIDTIME": cycle["validtime"],
             }
             time_family = EcflowSuiteFamily(
-                	  cycle["time"],
-                	  day_family,
-                	  ecf_files,
-                	  trigger=inputdata_trigger,
-                          variables=time_variables,
-            		  )
-# 3rd level Family
-# YYYYMMDD >> HHHH >> InputData
-            inputdata = EcflowSuiteFamily("InputData", time_family, ecf_files, trigger=inputdata_trigger)
+                cycle["time"],
+                day_family,
+                ecf_files,
+                trigger=inputdata_trigger,
+                variables=time_variables,
+            )
+            # 3rd level Family
+            # YYYYMMDD >> HHHH >> InputData
+            inputdata = EcflowSuiteFamily(
+                "InputData", time_family, ecf_files, trigger=inputdata_trigger
+            )
             prepare_cycle = EcflowSuiteTask(
                 "PrepareCycle",
                 inputdata,
@@ -267,45 +270,52 @@ class SuiteDefinition(object):
             endtime = basetime + forecast_range
             bdint = as_timedelta(config.get_value("general.bdint"))
             bdmax = config.get_value("general.bdmax")
-
-            if cycle["time"] == "0000" or cycle["time"] == "1200":
-                int_fam = EcflowSuiteFamily(
-                          "Interpolation", 
-                          time_family, 
-                          ecf_files, 
-                          trigger=prepare_cycle_done, 
-                          variables=None
-                          )
-
-                bdnr = 0
-                args = ""
-                bdtime = basetime
+            int_fam = EcflowSuiteFamily(
+                f"Interpolation",
+                time_family,
+                ecf_files,
+                trigger=prepare_cycle_done,
+                variables=None,
+            )
+            bdnr = 0; intnr = 1; args = ""; int_trig = prepare_cycle_done; bdtime = basetime
+            while bdtime <= endtime:
+                bch_fam = EcflowSuiteFamily(
+                    f"Batch{intnr}",
+                    int_fam,
+                    ecf_files,
+                    trigger=int_trig,
+                    variables=None,
+                    )
                 while bdtime <= endtime:
                     date_string = bdtime.isoformat(sep="T").replace("+00:00", "Z")
                     args = f"bd_time={date_string};bd_nr={bdnr}"
                     variables = {"ARGS": args}
-                    print("args: ", args); print("date_string: ", date_string); print("bdnr: ", bdnr);
+                    print("args: ", args)
+                    print("date_string: ", date_string)
+                    print("bdnr: ", bdnr)
                     e927_fam = EcflowSuiteFamily(
-                        f"LBC{bdnr:02}",
-                               int_fam, ecf_files, 
-                               trigger=prepare_cycle_done, 
-                               variables=variables
-                               )
+	                f"LBC{bdnr:02}",
+	                bch_fam,
+	                ecf_files,
+	                trigger=prepare_cycle_done,
+	                variables=variables,
+	                )
                     EcflowSuiteTask(
-                        f"e927",
-                        e927_fam,
-                        config,
-                        self.task_settings,
-                        ecf_files,
-                        input_template=input_template,
-                        variables=None,
-                        trigger=prepare_cycle_done
-                        )
-    # Increase counters
+	                f"e927",
+	                e927_fam,
+	                config,
+	                self.task_settings,
+	                ecf_files,
+	                input_template=input_template,
+	                variables=None,
+	                trigger=prepare_cycle_done,
+	                )
                     bdnr += 1
                     bdtime += bdint
-# 3rd level Family
-# YYYYMMDD >> HHHH >> Cycle
+                    if bdnr%bdmax==0: intnr += 1; int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(bch_fam)]); break
+
+            # 3rd level Family
+            # YYYYMMDD >> HHHH >> Cycle
             cycle = EcflowSuiteFamily("Cycle", time_family, ecf_files)
             triggers = [EcflowSuiteTrigger(inputdata)]
             if prev_cycle_trigger is not None:
@@ -313,11 +323,8 @@ class SuiteDefinition(object):
             ready_for_cycle = EcflowSuiteTriggers(triggers)
             prev_cycle_trigger = [EcflowSuiteTrigger(cycle)]
             initialization = EcflowSuiteFamily(
-                             "Initialization", 
-                             cycle, 
-                             ecf_files, 
-                             trigger=ready_for_cycle
-                             )
+                "Initialization", cycle, ecf_files, trigger=ready_for_cycle
+            )
             prep_trigger = None
             if do_prep:
                 prep = EcflowSuiteTask(
@@ -752,4 +759,3 @@ class EcflowSuiteTrigger:
         """
         self.node = node
         self.mode = mode
-

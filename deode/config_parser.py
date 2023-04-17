@@ -4,15 +4,15 @@ import copy
 import json
 import logging
 import os
-import fastjsonschema
-import tomlkit
-import yaml
-
 from collections import defaultdict
 from functools import cached_property, reduce
 from operator import getitem
 from pathlib import Path
 from typing import Literal
+
+import fastjsonschema
+import tomlkit
+import yaml
 from fastjsonschema import JsonSchemaValueException
 
 from . import PACKAGE_NAME
