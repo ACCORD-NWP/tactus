@@ -1,8 +1,6 @@
 """Ecflow suites."""
 
-import math
 import os
-import re
 from pathlib import Path
 
 from .datetime_utils import as_datetime, as_timedelta
@@ -271,13 +269,17 @@ class SuiteDefinition(object):
             bdint = as_timedelta(config.get_value("general.bdint"))
             bdmax = config.get_value("general.bdmax")
             int_fam = EcflowSuiteFamily(
-                f"Interpolation",
+                f'{"Interpolation"}',
                 time_family,
                 ecf_files,
                 trigger=prepare_cycle_done,
                 variables=None,
             )
-            bdnr = 0; intnr = 1; args = ""; int_trig = prepare_cycle_done; bdtime = basetime
+            bdnr = 0
+            intnr = 1
+            args = ""
+            int_trig = prepare_cycle_done
+            bdtime = basetime
             while bdtime <= endtime:
                 bch_fam = EcflowSuiteFamily(
                     f"Batch{intnr:02}",
@@ -285,34 +287,35 @@ class SuiteDefinition(object):
                     ecf_files,
                     trigger=int_trig,
                     variables=None,
-                    )
+                )
                 while bdtime <= endtime:
                     date_string = bdtime.isoformat(sep="T").replace("+00:00", "Z")
                     args = f"bd_time={date_string};bd_nr={bdnr}"
                     variables = {"ARGS": args}
-                    print("args: ", args)
-                    print("date_string: ", date_string)
-                    print("bdnr: ", bdnr)
-                    LBCs = EcflowSuiteFamily(
-	                f"LBC{bdnr:02}",
-	                bch_fam,
-	                ecf_files,
-	                trigger=None,
-	                variables=None,
-	                )
+
+                    lbc_fam = EcflowSuiteFamily(
+                        f"LBC{bdnr:02}",
+                        bch_fam,
+                        ecf_files,
+                        trigger=None,
+                        variables=None,
+                    )
                     EcflowSuiteTask(
-	                f"e927",
-	                LBCs,
-	                config,
-	                self.task_settings,
-	                ecf_files,
-	                input_template=input_template,
-	                variables=variables,
-	                trigger=None,
-	                )
+                        f'{"e927"}',
+                        lbc_fam,
+                        config,
+                        self.task_settings,
+                        ecf_files,
+                        input_template=input_template,
+                        variables=variables,
+                        trigger=None,
+                    )
                     bdnr += 1
                     bdtime += bdint
-                    if bdnr%bdmax==0: intnr += 1; int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(bch_fam)]); break
+                    if bdnr % bdmax == 0:
+                        intnr += 1
+                        int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(bch_fam)])
+                        break
 
             # 3rd level Family
             # YYYYMMDD >> HHHH >> Cycle

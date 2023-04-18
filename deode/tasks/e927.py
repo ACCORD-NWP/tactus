@@ -1,6 +1,5 @@
 """E927."""
 
-import json
 import os
 
 from ..datetime_utils import as_datetime, as_timedelta
@@ -26,11 +25,9 @@ class E927(Task):
         self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
         self.bdint = self.config.get_value("general.bdint")
         self.forecast_range = self.config.get_value("general.forecast_range")
-        
+
         self.bdnr = int(config.get_value("task.args.bd_nr"))
         self.bd_time = config.get_value("task.args.bd_time")
-        print(f"BDNR:{self.bdnr}")
-        print(f"BD_TIME:{self.bd_time}")
 
         self.cnmexp = self.config.get_value("general.cnmexp")
         self.bdclimdir = self.platform.get_system_value("bdclimdir")
@@ -69,20 +66,23 @@ class E927(Task):
         # Namelist
         self.nlgen.generate_namelist("e927", "fort.4")
 
-        # Forecast range
-        cdtg = self.basetime
-
         # Fix basetime for PT00H,PT12H only
-        basetime = self.basetime; offset = int(basetime.strftime("%H")) % 12; time_period = f"PT{offset}H"
+        basetime = self.basetime
+        offset = int(basetime.strftime("%H")) % 12
+        time_period = f"PT{offset}H"
         bd_basetime = basetime - as_timedelta(time_period)
         bddir = self.config.get_value("system.bddir")
         bdfile_template = self.config.get_value("system.bdfile_template")
 
-        # Iterates through string passed from suites.py
-        
+        # Iterate through ARGS passed from suites.py
         # Input file
         initfile = f"ICMSH{self.cnmexp}INIT"
-        self.fmanager.input(f"{bddir}/{bdfile_template}", initfile, basetime=bd_basetime, validtime=as_datetime(self.bd_time))
+        self.fmanager.input(
+            f"{bddir}/{bdfile_template}",
+            initfile,
+            basetime=bd_basetime,
+            validtime=as_datetime(self.bd_time),
+        )
         # Run masterodb
         batch = BatchJob(os.environ, wrapper=self.wrapper)
         batch.run(self.master)

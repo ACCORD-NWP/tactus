@@ -40,11 +40,13 @@ kwargs = parse_ecflow_vars()
 # Split ARGS on semi-colon
 args = kwargs.get("ARGS")
 args_dict = {}
+
 if args != "":
     for arg in args.split(";"):
         parts = arg.split("=")
         if len(parts) == 2:
             args_dict.update({parts[0]: parts[1]})
+
 
 def default_main(**kwargs):
     """Ecflow container default method."""
@@ -56,7 +58,7 @@ def default_main(**kwargs):
         update={
             "task": {
                 "args": args_dict,
-                },
+            },
             "general": {
                 "loglevel": kwargs.get("LOGLEVEL"),
                 "iterator": kwargs.get("ITERATOR"),
