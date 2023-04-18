@@ -133,7 +133,6 @@ class SuiteDefinition(object):
             "TROIKA_CONFIG": troika_config,
             "BASETIME": first_cycle.strftime("%Y%m%d%H%M"),
             "VALIDTIME": first_cycle.strftime("%Y%m%d%H%M"),
-            "ITERATOR": 0,
             "ARGS": 0,
             "DEODE_HOME": deode_home,
             "KEEP_WORKDIRS": keep_workdirs,
@@ -316,10 +315,12 @@ class SuiteDefinition(object):
                         intnr += 1
                         int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(bch_fam)])
                         break
+            int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(bch_fam)])
 
             # 3rd level Family
             # YYYYMMDD >> HHHH >> Cycle
-            cycle = EcflowSuiteFamily("Cycle", time_family, ecf_files)
+            print(intnr)
+            cycle = EcflowSuiteFamily("Cycle", time_family, ecf_files, trigger=int_trig)
             triggers = [EcflowSuiteTrigger(inputdata)]
             if prev_cycle_trigger is not None:
                 triggers = triggers + prev_cycle_trigger

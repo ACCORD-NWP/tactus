@@ -28,6 +28,8 @@ class E927(Task):
 
         self.bdnr = int(config.get_value("task.args.bd_nr"))
         self.bd_time = config.get_value("task.args.bd_time")
+        print("e927_bdnr: {self.bdnr}")
+        print("e927_bd_time: {self.bd_time}")
 
         self.cnmexp = self.config.get_value("general.cnmexp")
         self.bdclimdir = self.platform.get_system_value("bdclimdir")
@@ -74,7 +76,6 @@ class E927(Task):
         bddir = self.config.get_value("system.bddir")
         bdfile_template = self.config.get_value("system.bdfile_template")
 
-        # Iterate through ARGS passed from suites.py
         # Input file
         initfile = f"ICMSH{self.cnmexp}INIT"
         self.fmanager.input(

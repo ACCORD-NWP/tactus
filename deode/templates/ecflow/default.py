@@ -23,7 +23,6 @@ def parse_ecflow_vars():
         "VALIDTIME": "%VALIDTIME%",
         "LOGLEVEL": "%LOGLEVEL%",
         "CONFIG": "%CONFIG%",
-        "ITERATOR": "%ITERATOR%",
         "DEODE_HOME": "%DEODE_HOME%",
         "KEEP_WORKDIRS": "%KEEP_WORKDIRS%",
         "ARGS": "%ARGS%",
@@ -61,7 +60,6 @@ def default_main(**kwargs):
             },
             "general": {
                 "loglevel": kwargs.get("LOGLEVEL"),
-                "iterator": kwargs.get("ITERATOR"),
                 "times": {
                     "validtime": kwargs.get("VALIDTIME"),
                     "basetime": kwargs.get("BASETIME"),
