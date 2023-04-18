@@ -26,12 +26,11 @@ class E927(Task):
         self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
         self.bdint = self.config.get_value("general.bdint")
         self.forecast_range = self.config.get_value("general.forecast_range")
-
-        bdnr = config.get_value("task.args.bd_nr")
-        bd_time = config.get_value("task.args.bd_time")
-
-        #self.iterator = self.config.get_value("general.iterator")
-        #print(f"ITERATOR:{self.iterator}")
+        
+        self.bdnr = int(config.get_value("task.args.bd_nr"))
+        self.bd_time = config.get_value("task.args.bd_time")
+        print(f"BDNR:{self.bdnr}")
+        print(f"BD_TIME:{self.bd_time}")
 
         self.cnmexp = self.config.get_value("general.cnmexp")
         self.bdclimdir = self.platform.get_system_value("bdclimdir")
@@ -74,29 +73,20 @@ class E927(Task):
         cdtg = self.basetime
 
         # Fix basetime for PT00H,PT12H only
-        basetime = self.basetime
-        offset = int(basetime.strftime("%H")) % 12
-        time_period = f"PT{offset}H"
-        basetime = basetime - as_timedelta(time_period)
+        basetime = self.basetime; offset = int(basetime.strftime("%H")) % 12; time_period = f"PT{offset}H"
+        bd_basetime = basetime - as_timedelta(time_period)
         bddir = self.config.get_value("system.bddir")
         bdfile_template = self.config.get_value("system.bdfile_template")
 
         # Iterates through string passed from suites.py
-        #ite = json.loads(self.iterator)
-        #k = list(ite.keys())[0]
-        for it in ite[k]:
-            print("it: ", it)
-            it = int(it)
-            # Input file
-            initfile = f"ICMSH{self.cnmexp}INIT"
-            self.fmanager.input(
-                f"{bddir}/{bdfile_template}", initfile, basetime=basetime, validtime=cdtg
-            )
+        
+        # Input file
+        initfile = f"ICMSH{self.cnmexp}INIT"
+        self.fmanager.input(f"{bddir}/{bdfile_template}", initfile, basetime=bd_basetime, validtime=as_datetime(self.bd_time))
+        # Run masterodb
+        batch = BatchJob(os.environ, wrapper=self.wrapper)
+        batch.run(self.master)
 
-            # Run masterodb
-            batch = BatchJob(os.environ, wrapper=self.wrapper)
-            batch.run(self.master)
-
-            target = f"{self.wrk}/ELSCF{self.cnmexp}ALBC{it:03d}"
-            self.fmanager.output(f"PF{self.cnmexp}000+{it:04d}", target)
-            self.remove_links([initfile, "ncf927"])
+        target = f"{self.wrk}/ELSCF{self.cnmexp}ALBC{self.bdnr:03d}"
+        self.fmanager.output(f"PF{self.cnmexp}000+{self.bdnr:04d}", target)
+        self.remove_links([initfile, "ncf927"])

@@ -280,7 +280,7 @@ class SuiteDefinition(object):
             bdnr = 0; intnr = 1; args = ""; int_trig = prepare_cycle_done; bdtime = basetime
             while bdtime <= endtime:
                 bch_fam = EcflowSuiteFamily(
-                    f"Batch{intnr}",
+                    f"Batch{intnr:02}",
                     int_fam,
                     ecf_files,
                     trigger=int_trig,
@@ -293,22 +293,22 @@ class SuiteDefinition(object):
                     print("args: ", args)
                     print("date_string: ", date_string)
                     print("bdnr: ", bdnr)
-                    e927_fam = EcflowSuiteFamily(
+                    LBCs = EcflowSuiteFamily(
 	                f"LBC{bdnr:02}",
 	                bch_fam,
 	                ecf_files,
-	                trigger=prepare_cycle_done,
-	                variables=variables,
+	                trigger=None,
+	                variables=None,
 	                )
                     EcflowSuiteTask(
 	                f"e927",
-	                e927_fam,
+	                LBCs,
 	                config,
 	                self.task_settings,
 	                ecf_files,
 	                input_template=input_template,
-	                variables=None,
-	                trigger=prepare_cycle_done,
+	                variables=variables,
+	                trigger=None,
 	                )
                     bdnr += 1
                     bdtime += bdint
