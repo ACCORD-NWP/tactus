@@ -267,6 +267,7 @@ class SuiteDefinition(object):
             endtime = basetime + forecast_range
             bdint = as_timedelta(config.get_value("general.bdint"))
             bdmax = config.get_value("general.bdmax")
+
             int_fam = EcflowSuiteFamily(
                 f'{"Interpolation"}',
                 time_family,
@@ -274,6 +275,7 @@ class SuiteDefinition(object):
                 trigger=prepare_cycle_done,
                 variables=None,
             )
+
             bdnr = 0
             intnr = 1
             args = ""
@@ -315,11 +317,10 @@ class SuiteDefinition(object):
                         intnr += 1
                         int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(bch_fam)])
                         break
-            int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(bch_fam)])
+            int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(int_fam)])
 
             # 3rd level Family
             # YYYYMMDD >> HHHH >> Cycle
-            print(intnr)
             cycle = EcflowSuiteFamily("Cycle", time_family, ecf_files, trigger=int_trig)
             triggers = [EcflowSuiteTrigger(inputdata)]
             if prev_cycle_trigger is not None:
