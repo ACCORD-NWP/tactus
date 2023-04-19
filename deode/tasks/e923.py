@@ -9,10 +9,10 @@ from .batch import BatchJob
 
 
 class E923(Task):
-    """E93 task."""
+    """Methods for the e923 work."""
 
     def __init__(self, config):
-        """Construct forecast object.
+        """Construct object.
 
         Args:
             config (deode.ParsedConfig): Configuration
@@ -20,9 +20,10 @@ class E923(Task):
         Task.__init__(self, config, __name__)
 
         # Temporary namelists
-        self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
+        self.wrapper = self.config.get_value("task.e923.wrapper")
 
         self.climdir = self.platform.get_system_value("climdir")
+        self.constant_file = f"{self.climdir}/Const.Clim.const"
         self.months = [f"{mm:02d}" for mm in range(1, 13)]
 
         self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
@@ -103,6 +104,7 @@ class E923(Task):
             self.fmanager.input(f"@E923_DATA@/GTOPT030/{fname}", fname)
 
         self.nlgen.generate_namelist(f"e923_{i}", "fort.4")
+        shutil.copy("fort.4", "fort.4_0")
         self.print_part(0)
         self.myexec(self.master, 0)
 
@@ -113,6 +115,7 @@ class E923(Task):
         # Part 1
         i = 1
         self.nlgen.generate_namelist(f"e923_{i}", "fort.4")
+        shutil.copy("fort.4", "fort.4_1")
         self.print_part(1)
         self.myexec(self.master, 1)
         self.remove_links(topo_files)
@@ -120,6 +123,7 @@ class E923(Task):
         # Part 2
         i = 2
         self.nlgen.generate_namelist(f"e923_{i}", "fort.4")
+        shutil.copy("fort.4", f"fort.4_{i}")
         ifiles = [
             "itp_GL",
             "alb_GL",
@@ -154,13 +158,14 @@ class E923(Task):
 
         # Part 3 expects 12 input files, silly...
         i = 3
-        for mm in self.months:
-            shutil.copy(constant_file, f"Const.Clim.{mm}")
+        for mm in range(1, 13):
+            shutil.copy(constant_file, f"Const.Clim.{mm:02d}")
 
         for ifile in ["N108_GL"]:
             self.fmanager.input(f"@E923_DATA@/N108/{ifile}", ifile)
 
         self.nlgen.generate_namelist(f"e923_{i}", "fort.4")
+        shutil.copy("fort.4", f"fort.4_{i}")
         self.print_part(i)
         self.myexec(self.master, i)
 
@@ -197,6 +202,7 @@ class E923(Task):
                 self.fmanager.input(source, target)
 
             self.nlgen.generate_namelist("e923_4", "fort.4")
+            shutil.copy("fort.4", "fort.4_4")
             self.print_part(4, mm)
             self.myexec(self.master, 4)
             self.remove_links(files)
@@ -210,6 +216,7 @@ class E923(Task):
                 self.fmanager.input(source, target)
 
             self.nlgen.generate_namelist("e923_5", "fort.4")
+            shutil.copy("fort.4", "fort.4_5")
             self.print_part(5, mm)
             self.myexec(self.master, 5)
             self.remove_links(files)
@@ -228,12 +235,14 @@ class E923(Task):
             self.fmanager.input("wpl_GL", "wsl_GL", provider_id="copy")
 
             self.nlgen.generate_namelist("e923_6", "fort.4")
+            shutil.copy("fort.4", "fort.4_6")
             self.print_part(6, mm)
             self.myexec(self.master, 6)
 
             # PART 8
             self.fmanager.input(f"@E923_DATA@/abc_O3/abc_quadra_{mm}", "abc_coef")
             self.nlgen.generate_namelist("e923_8", "fort.4")
+            shutil.copy("fort.4", "fort.4_8")
             self.print_part(8, mm)
             self.myexec(self.master, 8)
 
@@ -241,36 +250,12 @@ class E923(Task):
             self.fmanager.input(f"@E923_DATA@/aero_tegen/aero.tegen.m{mm}_GL", "aero_GL")
 
             self.nlgen.generate_namelist("e923_9", "fort.4")
+            shutil.copy("fort.4", "fort.4_9")
             self.print_part(9, mm)
             self.myexec(self.master, 9)
 
             # Finished. Archive output
             self.fmanager.output("Const.Clim", f"Const.Clim.{mm}")
-
-    def execute(self):
-        """Run task.
-
-        Define run sequence.
-
-        """
-        os.makedirs(self.climdir, exist_ok=True)
-
-        constant_file = f"{self.climdir}/Const.Clim.const"
-
-        self.logger.debug("Constant file:%s", constant_file)
-
-        if not os.path.isfile(constant_file):
-            # Run the constant part
-            self.constant_part(constant_file)
-
-        # Run the monthly part
-        self.monthly_part(constant_file)
-
-        # Store the data
-        for mm in self.months:
-            source = f"Const.Clim.{mm}"
-            target = f"{self.climdir}/Const.Clim.{mm}"
-            self.fmanager.output(source, target)
 
 
 class PgdUpdate(Task):
@@ -308,3 +293,66 @@ class PgdUpdate(Task):
         batch.run(f"{self.gl} -n namgl")
 
         self.fmanager.output(outfile, f"{self.climdir}/{outfile}")
+
+
+class E923Constant(E923):
+    """E923Constant task."""
+
+    def __init__(self, config):
+        """Construct object.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+        """
+        E923.__init__(self, config)
+        self.name = "E923Constant"
+
+    def execute(self):
+        """Run task.
+
+        Define run sequence.
+
+        """
+        os.makedirs(self.climdir, exist_ok=True)
+
+        self.logger.debug("Constant file:%s", self.constant_file)
+
+        # Run the constant part
+        self.constant_part(self.constant_file)
+
+
+class E923Monthly(E923):
+    """E923Monthly task."""
+
+    def __init__(self, config):
+        """Construct object.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+        """
+        try:
+            months = config.get_value("task.args.months").split(",")
+            tag = "_" + "_".join(months)
+        except AttributeError:
+            months = [f"{mm:02d}" for mm in range(1, 13)]
+            tag = ""
+
+        E923.__init__(self, config)
+        self.name = f"E923Monthly{tag}"
+        self.months = months
+        self.logger.debug("Create files for month:%s", self.months)
+
+    def execute(self):
+        """Run task.
+
+        Define run sequence.
+
+        """
+        # Run the monthly part
+        self.monthly_part(self.constant_file)
+
+        # Store the data
+        for mm in self.months:
+            source = f"Const.Clim.{mm}"
+            target = f"{self.climdir}/Const.Clim.{mm}"
+            self.fmanager.output(source, target)

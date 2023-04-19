@@ -16,6 +16,7 @@
  output_interval_sfx = "PT3H"
  output_interval_sfx_sel = "PT1H"
  keep_workdirs = true
+ create_static_data = true
 
 [vertical_levels]
 nlev = 65

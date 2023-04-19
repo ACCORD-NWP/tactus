@@ -142,7 +142,9 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
 
     def new_task_e923_monthly_part_method(self, constant_file):
         """Create needed file `constant_file` before running the original method."""
-        with open(constant_file, "w", encoding="utf8"):
+        with open(constant_file, "w", encoding="utf8"), open(
+            "Const.Clim.01", "w", encoding="utf8"
+        ):
             original_task_e923_monthly_part_method(self, constant_file)
 
     # Do the actual mocking

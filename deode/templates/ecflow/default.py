@@ -22,6 +22,7 @@ def parse_ecflow_vars():
         "BASETIME": "%BASETIME%",
         "VALIDTIME": "%VALIDTIME%",
         "LOGLEVEL": "%LOGLEVEL%",
+        "ARGS": "%ARGS%",
         "CONFIG": "%CONFIG%",
         "DEODE_HOME": "%DEODE_HOME%",
         "KEEP_WORKDIRS": "%KEEP_WORKDIRS%",
@@ -36,11 +37,22 @@ def parse_ecflow_vars():
 def default_main(**kwargs):
     """Ecflow container default method."""
     config = kwargs.get("CONFIG")
+
+    args = kwargs.get("ARGS")
+    args_dict = {}
+    if args != "":
+        for arg in args.split(";"):
+            parts = arg.split("=")
+            args_dict.update({parts[0]: parts[1]})
+
     # How to update config based on ecflow settings when config is assumed to be immutable
     # config["general"].update({"loglevel": loglevel})  # noqa
     config = ParsedConfig.from_file(config)
     config = config.copy(
         update={
+            "task": {
+                "args": args_dict,
+            },
             "general": {
                 "loglevel": kwargs.get("LOGLEVEL"),
                 "times": {
