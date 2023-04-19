@@ -9,13 +9,14 @@
  csc = "AROME"
  bdint = "PT3H"
  bdcycle = "PT12H"
- cycle = "CY48t3"
  forecast_range = "PT12H"
+ cycle = "CY48t3"
  output_interval_his = "PT1H"
  output_interval_fp = "PT1H"
  output_interval_sfx = "PT3H"
  output_interval_sfx_sel = "PT1H"
  keep_workdirs = true
+ bdmax = 12
  create_static_data = true
 
 [vertical_levels]
@@ -50,7 +51,6 @@ bhalf = []
  bdclimdir = "/home/snh02/work/dev-CY46h1_deode/climate/DEODE_LARGE"
  bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2023-03-29"
 
-
 [platform]
  deode_home = "set-by-the-system"
  archive_root = "@SCRATCH@/deode/@CASE@/archive"
@@ -72,7 +72,7 @@ bhalf = []
  start = "2023-02-19T00:00:00Z"
  end = "2023-02-19T03:00:00Z"
  cycle_length = "PT3H"
-
+ 
 [task]
  wrapper = "srun"
 [task.forecast]
@@ -85,6 +85,9 @@ bhalf = []
  wrapper = "srun"
 [task.creategrib]
  wrapper = "srun"
+[task.args]
+ bdnr = "1"
+ bd_time = "2023-02-19T09:00:00Z"
 
 [task.creategrib.conversions]
   #his = { output_template = "his_basetime+duration.grib2" }

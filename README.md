@@ -138,6 +138,33 @@ Log into hpc-login.ecmwf.int
 module load python3/3.8.8-01
 module load ecflow
 
+# Taken from 'Start' (this runs the whole suite)
+
+# Run experiment 
+ECF_HOST=`echo ecflow-gen-${USER}-001`
+#
+#
+DEODE_SCRATCH=$HOME/deode_ecflow
+
+mkdir -p $DEODE_SCRATCH/job
+mkdir -p $DEODE_SCRATCH/ecf
+
+# Prepare the demonstration
+if [ 1 -eq 0 ] ; then
+  # Clean the working/ecflow directories for a very clean start
+  rm -vrf $SCRATCH/deode/deode_case/
+  rm -vrf $DEODE_SCRATCH/job/*
+  rm -vrf $DEODE_SCRATCH/ecf/*
+fi
+
+deode -loglevel debug \
+-config_file $PWD/deode/data/config_files/config.toml \
+start suite \
+--ecf_host $ECF_HOST \
+--ecf_port 3141 \
+--joboutdir $DEODE_SCRATCH/job \
+--ecf_files $DEODE_SCRATCH/ecf
+
 # Clone DEODE prototype in ~/projects
 
 mkdir -p ~/projects
@@ -148,6 +175,8 @@ cd ~/projects/Deode-Prototype
 # Install deode with poetry if not done
 poetry install
 poetry shell
+
+
 
 # Run experiment
 ECF_HOST=`echo ecflow-gen-${USER}-001`

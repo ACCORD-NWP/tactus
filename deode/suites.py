@@ -12,12 +12,11 @@ try:
 except ImportError:
     ecflow = None
 
-
 logger = get_logger(__name__, "DEBUG")
 
 
 class SuiteDefinition(object):
-    """The definition of the suite."""
+    """Definition of suite."""
 
     def __init__(
         self,
@@ -136,6 +135,7 @@ class SuiteDefinition(object):
             "TROIKA_CONFIG": troika_config,
             "BASETIME": first_cycle.strftime("%Y%m%d%H%M"),
             "VALIDTIME": first_cycle.strftime("%Y%m%d%H%M"),
+            "ARGS": 0,
             "DEODE_HOME": deode_home,
             "KEEP_WORKDIRS": keep_workdirs,
         }
@@ -144,17 +144,10 @@ class SuiteDefinition(object):
         input_template = input_template.as_posix()
         self.suite = EcflowSuite(name, ecf_files, variables=variables, dry_run=dry_run)
 
-        # Background dos not work. Deode is not able to run on vm with shared HOME as
-        # hpc-login
-        # EcflowSuiteTask("Background", family, self.task_settings, ecf_files,
-        #                input_template=input_template)
+        static_data = EcflowSuiteFamily("StaticData", self.suite, ecf_files)
 
-        if self.create_static_data:
-
-            static_data = EcflowSuiteFamily("StaticData", self.suite, ecf_files)
-
-            pgd_input = EcflowSuiteFamily("PgdInput", static_data, ecf_files)
-            EcflowSuiteTask(
+        pgd_input = EcflowSuiteFamily("PgdInput", static_data, ecf_files)
+        EcflowSuiteTask(
                 "Gmted",
                 pgd_input,
                 config,
@@ -162,9 +155,9 @@ class SuiteDefinition(object):
                 ecf_files,
                 input_template=input_template,
                 variables=None,
-            )
+        )
 
-            EcflowSuiteTask(
+        EcflowSuiteTask(
                 "Soil",
                 pgd_input,
                 config,
@@ -172,10 +165,10 @@ class SuiteDefinition(object):
                 ecf_files,
                 input_template=input_template,
                 variables=None,
-            )
+        )
 
-            pgd_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd_input)])
-            pgd = EcflowSuiteTask(
+        pgd_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd_input)])
+        pgd = EcflowSuiteTask(
                 "Pgd",
                 static_data,
                 config,
@@ -184,10 +177,10 @@ class SuiteDefinition(object):
                 input_template=input_template,
                 variables=None,
                 trigger=pgd_trigger,
-            )
+        )
 
-            e923_constant_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd)])
-            e923constant = EcflowSuiteTask(
+        e923_constant_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd)])
+        e923constant = EcflowSuiteTask(
                 "E923Constant",
                 static_data,
                 config,
@@ -196,25 +189,25 @@ class SuiteDefinition(object):
                 input_template=input_template,
                 variables=None,
                 trigger=e923_constant_trigger,
-            )
+        )
 
-            e923_monthly_family_trigger = EcflowSuiteTriggers(
+        e923_monthly_family_trigger = EcflowSuiteTriggers(
                 [EcflowSuiteTrigger(e923constant)]
-            )
-            e923_monthly_family = EcflowSuiteFamily(
+        )
+        e923_monthly_family = EcflowSuiteFamily(
                 "E923Monthly", static_data, ecf_files, trigger=e923_monthly_family_trigger
-            )
+        )
 
-            seasons = {
+        seasons = {
                 "Q1": "01,02,03",
                 "Q2": "04,05,06",
                 "Q3": "07,08,09",
                 "Q4": "10,11,12",
-            }
-            for season, months in seasons.items():
-                month_family = EcflowSuiteFamily(season, e923_monthly_family, ecf_files)
+        }
+        for season, months in seasons.items():
+            month_family = EcflowSuiteFamily(season, e923_monthly_family, ecf_files)
 
-                EcflowSuiteTask(
+            EcflowSuiteTask(
                     "E923Monthly",
                     month_family,
                     config,
@@ -222,10 +215,10 @@ class SuiteDefinition(object):
                     ecf_files,
                     input_template=input_template,
                     variables={"ARGS": f"months={months}"},
-                )
+            )
 
-            pgd_update_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(e923constant)])
-            EcflowSuiteTask(
+        pgd_update_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(e923constant)])
+        EcflowSuiteTask(
                 "PgdUpdate",
                 static_data,
                 config,
@@ -234,7 +227,8 @@ class SuiteDefinition(object):
                 input_template=input_template,
                 variables=None,
                 trigger=pgd_update_trigger,
-            )
+        )
+
 
         first_cycle = as_datetime(config.get_value("general.times.start"))
         last_cycle = as_datetime(config.get_value("general.times.end"))
@@ -284,11 +278,11 @@ class SuiteDefinition(object):
                 trigger=inputdata_trigger,
                 variables=time_variables,
             )
-
+            # 3rd level Family
+            # YYYYMMDD >> HHHH >> InputData
             inputdata = EcflowSuiteFamily(
                 "InputData", time_family, ecf_files, trigger=inputdata_trigger
             )
-
             prepare_cycle = EcflowSuiteTask(
                 "PrepareCycle",
                 inputdata,
@@ -300,18 +294,67 @@ class SuiteDefinition(object):
             )
 
             prepare_cycle_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prepare_cycle)])
-            EcflowSuiteTask(
-                "e927",
-                inputdata,
-                config,
-                self.task_settings,
+
+            basetime = as_datetime(config.get_value("general.times.basetime"))
+            forecast_range = as_timedelta(config.get_value("general.forecast_range"))
+            endtime = basetime + forecast_range
+            bdint = as_timedelta(config.get_value("general.bdint"))
+            bdmax = config.get_value("general.bdmax")
+
+            int_fam = EcflowSuiteFamily(
+                f'{"Interpolation"}',
+                time_family,
                 ecf_files,
-                input_template=input_template,
-                variables=None,
                 trigger=prepare_cycle_done,
+                variables=None,
             )
 
-            cycle = EcflowSuiteFamily("Cycle", time_family, ecf_files)
+            bdnr = 0
+            intnr = 1
+            args = ""
+            int_trig = prepare_cycle_done
+            bdtime = basetime
+            while bdtime <= endtime:
+                bch_fam = EcflowSuiteFamily(
+                    f"Batch{intnr:02}",
+                    int_fam,
+                    ecf_files,
+                    trigger=int_trig,
+                    variables=None,
+                )
+                while bdtime <= endtime:
+                    date_string = bdtime.isoformat(sep="T").replace("+00:00", "Z")
+                    args = f"bd_time={date_string};bd_nr={bdnr}"
+                    variables = {"ARGS": args}
+
+                    lbc_fam = EcflowSuiteFamily(
+                        f"LBC{bdnr:02}",
+                        bch_fam,
+                        ecf_files,
+                        trigger=None,
+                        variables=None,
+                    )
+                    EcflowSuiteTask(
+                        f'{"e927"}',
+                        lbc_fam,
+                        config,
+                        self.task_settings,
+                        ecf_files,
+                        input_template=input_template,
+                        variables=variables,
+                        trigger=None,
+                    )
+                    bdnr += 1
+                    bdtime += bdint
+                    if bdnr % bdmax == 0:
+                        intnr += 1
+                        int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(bch_fam)])
+                        break
+            int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(int_fam)])
+
+            # 3rd level Family
+            # YYYYMMDD >> HHHH >> Cycle
+            cycle = EcflowSuiteFamily("Cycle", time_family, ecf_files, trigger=int_trig)
             triggers = [EcflowSuiteTrigger(inputdata)]
             if prev_cycle_trigger is not None:
                 triggers = triggers + prev_cycle_trigger

@@ -26,12 +26,26 @@ def parse_ecflow_vars():
         "CONFIG": "%CONFIG%",
         "DEODE_HOME": "%DEODE_HOME%",
         "KEEP_WORKDIRS": "%KEEP_WORKDIRS%",
+        "ARGS": "%ARGS%",
     }
 
 
 """
 %nopp"
 """
+
+# Get args from ecflow
+kwargs = parse_ecflow_vars()
+
+# Split ARGS on semi-colon
+args = kwargs.get("ARGS")
+args_dict = {}
+
+if args != "":
+    for arg in args.split(";"):
+        parts = arg.split("=")
+        if len(parts) == 2:
+            args_dict.update({parts[0]: parts[1]})
 
 
 def default_main(**kwargs):

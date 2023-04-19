@@ -25,6 +25,15 @@ class E927(Task):
         self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
         self.bdint = self.config.get_value("general.bdint")
         self.forecast_range = self.config.get_value("general.forecast_range")
+        try:
+            self.bdnr = config.get_value("task.args.bd_nr")
+            self.bd_time = config.get_value("task.args.bd_time")
+        except AttributeError:
+            self.bdnr = "1"
+            self.bd_time = "2023-02-19T09:00:00Z"
+
+        self.bdnr = config.get_value("task.args.bd_nr")
+        self.bd_time = config.get_value("task.args.bd_time")
 
         self.cnmexp = self.config.get_value("general.cnmexp")
         self.bdclimdir = self.platform.get_system_value("bdclimdir")
@@ -63,33 +72,30 @@ class E927(Task):
         # Namelist
         self.nlgen.generate_namelist("e927", "fort.4")
 
-        # Forecast range
-        cdtg = self.basetime
-        dtgend = self.basetime + as_timedelta(self.forecast_range)
-        i = 0
-
         # Fix basetime for PT00H,PT12H only
         basetime = self.basetime
         offset = int(basetime.strftime("%H")) % 12
         time_period = f"PT{offset}H"
-        basetime = basetime - as_timedelta(time_period)
+        bd_basetime = basetime - as_timedelta(time_period)
         bddir = self.config.get_value("system.bddir")
         bdfile_template = self.config.get_value("system.bdfile_template")
 
-        while cdtg <= dtgend:
+        # Input file
+        bdnr = int(self.bdnr)
+        print("e927_bdnr: ", bdnr)
+        print("e927_bd_time: ", self.bd_time)
+        print("e927_bd_basetime: ", bd_basetime)
+        initfile = f"ICMSH{self.cnmexp}INIT"
+        self.fmanager.input(
+            f"{bddir}/{bdfile_template}",
+            initfile,
+            basetime=bd_basetime,
+            validtime=as_datetime(self.bd_time),
+        )
+        # Run masterodb
+        batch = BatchJob(os.environ, wrapper=self.wrapper)
+        batch.run(self.master)
 
-            # Input file
-            initfile = f"ICMSH{self.cnmexp}INIT"
-            self.fmanager.input(
-                f"{bddir}/{bdfile_template}", initfile, basetime=basetime, validtime=cdtg
-            )
-
-            # Run masterodb
-            batch = BatchJob(os.environ, wrapper=self.wrapper)
-            batch.run(self.master)
-
-            target = f"{self.wrk}/ELSCF{self.cnmexp}ALBC{i:03d}"
-            self.fmanager.output(f"PF{self.cnmexp}000+0000", target)
-            self.remove_links([initfile, "ncf927"])
-            cdtg += as_timedelta(self.bdint)
-            i += 1
+        target = f"{self.wrk}/ELSCF{self.cnmexp}ALBC{bdnr:03d}"
+        self.fmanager.output(f"PF{self.cnmexp}000+0000", target)
+        self.remove_links([initfile, "ncf927"])
