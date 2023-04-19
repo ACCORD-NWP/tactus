@@ -84,6 +84,9 @@ bhalf = []
  wrapper = "srun"
 [task.creategrib]
  wrapper = "srun"
+[task.args]
+ bdnr = "1"
+ bd_time = "2023-02-19T09:00:00Z"
 
 [task.creategrib.conversions]
   #his = { output_template = "his_basetime+duration.grib2" }
