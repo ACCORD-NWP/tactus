@@ -1,5 +1,6 @@
 """Utilities for simple tasks on OS level."""
 import os
+import re
 import time
 
 
@@ -15,6 +16,7 @@ class Search:
         directory,
         prefix="",
         postfix="",
+        pattern="",
         recursive=True,
         onlyfiles=True,
         fullpath=False,
@@ -25,8 +27,9 @@ class Search:
 
         Args:
             directory (str): Directory to search in.
-            prefix (str, optional): Only remove files with this prefix. Defaults to "".
-            postfix (str, optional): Only remove files with the postfix. Defaults to "".
+            prefix (str, optional): Only find files with this prefix. Defaults to "".
+            postfix (str, optional): Only find files with the postfix. Defaults to "".
+            pattern (str, optional): Only find files with matching pattern. Defaults to "".
             recursive (bool, optional): Go into directories recursively. Defaults to True.
             onlyfiles (bool, optional): Show only files. Defaults to True.
             fullpath (bool, optional): Give full path. Defaults to False. If recursive=True, fullpath is given automatically.
@@ -55,7 +58,7 @@ class Search:
                     for f in os.listdir(directory)
                     if f.endswith(postfix)
                     and f.startswith(prefix)
-                    and os.path.isfile(directory + f)
+                    and os.path.isfile(os.path.join(directory, f))
                 ]
 
             elif not onlyfiles:
@@ -65,8 +68,11 @@ class Search:
                     if f.endswith(postfix) and f.startswith(prefix)
                 ]
 
+        if pattern != "":
+            files = [f for f in files if re.search(pattern, f)]
+
         if fullpath:
-            files = [directory + f for f in files]
+            files = [os.path.join(directory, f) for f in files]
 
         if olderthan is not None:
             now = time.time()

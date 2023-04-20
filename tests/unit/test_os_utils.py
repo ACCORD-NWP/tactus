@@ -23,6 +23,19 @@ class TestSearch:
             directory="/",
             prefix="",
             postfix="",
+            pattern="(.*)",
+            recursive=False,
+            onlyfiles=True,
+            fullpath=True,
+            olderthan=None,
+            inorder=False,
+        )
+        assert isinstance(files, list)
+
+        files = Search.find_files(
+            directory="/",
+            prefix="",
+            postfix="",
             recursive=False,
             onlyfiles=True,
             fullpath=False,
