@@ -26,7 +26,6 @@ def parse_ecflow_vars():
         "CONFIG": "%CONFIG%",
         "DEODE_HOME": "%DEODE_HOME%",
         "KEEP_WORKDIRS": "%KEEP_WORKDIRS%",
-        "ARGS": "%ARGS%",
     }
 
 
@@ -34,34 +33,25 @@ def parse_ecflow_vars():
 %nopp"
 """
 
-# Get args from ecflow
-kwargs = parse_ecflow_vars()
-
-# Split ARGS on semi-colon
-args = kwargs.get("ARGS")
-args_dict = {}
-
-if args != "":
-    for arg in args.split(";"):
-        parts = arg.split("=")
-        if len(parts) == 2:
-            args_dict.update({parts[0]: parts[1]})
-
 
 def default_main(**kwargs):
     """Ecflow container default method."""
     config = kwargs.get("CONFIG")
+    config = ParsedConfig.from_file(config)
+    logger = get_logger_from_config(config)
 
     args = kwargs.get("ARGS")
     args_dict = {}
     if args != "":
         for arg in args.split(";"):
             parts = arg.split("=")
-            args_dict.update({parts[0]: parts[1]})
+            if len(parts) == 2:
+                args_dict.update({parts[0]: parts[1]})
+            else:
+                logger.warning("Could not convert ARGS:%s to dict, skip it", arg)
 
     # How to update config based on ecflow settings when config is assumed to be immutable
     # config["general"].update({"loglevel": loglevel})  # noqa
-    config = ParsedConfig.from_file(config)
     config = config.copy(
         update={
             "task": {

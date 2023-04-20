@@ -86,7 +86,7 @@ bhalf = []
 [task.creategrib]
  wrapper = "srun"
 [task.args]
- bdnr = "1"
+ bd_nr = "1"
  bd_time = "2023-02-19T09:00:00Z"
 
 [task.creategrib.conversions]
