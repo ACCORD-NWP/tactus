@@ -143,90 +143,92 @@ class SuiteDefinition(object):
         input_template = input_template.as_posix()
         self.suite = EcflowSuite(name, ecf_files, variables=variables, dry_run=dry_run)
 
-        static_data = EcflowSuiteFamily("StaticData", self.suite, ecf_files)
+        if self.create_static_data:
 
-        pgd_input = EcflowSuiteFamily("PgdInput", static_data, ecf_files)
-        EcflowSuiteTask(
-            "Gmted",
-            pgd_input,
-            config,
-            self.task_settings,
-            ecf_files,
-            input_template=input_template,
-            variables=None,
-        )
+            static_data = EcflowSuiteFamily("StaticData", self.suite, ecf_files)
 
-        EcflowSuiteTask(
-            "Soil",
-            pgd_input,
-            config,
-            self.task_settings,
-            ecf_files,
-            input_template=input_template,
-            variables=None,
-        )
-
-        pgd_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd_input)])
-        pgd = EcflowSuiteTask(
-            "Pgd",
-            static_data,
-            config,
-            self.task_settings,
-            ecf_files,
-            input_template=input_template,
-            variables=None,
-            trigger=pgd_trigger,
-        )
-
-        e923_constant_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd)])
-        e923constant = EcflowSuiteTask(
-            "E923Constant",
-            static_data,
-            config,
-            self.task_settings,
-            ecf_files,
-            input_template=input_template,
-            variables=None,
-            trigger=e923_constant_trigger,
-        )
-
-        e923_monthly_family_trigger = EcflowSuiteTriggers(
-            [EcflowSuiteTrigger(e923constant)]
-        )
-        e923_monthly_family = EcflowSuiteFamily(
-            "E923Monthly", static_data, ecf_files, trigger=e923_monthly_family_trigger
-        )
-
-        seasons = {
-            "Q1": "01,02,03",
-            "Q2": "04,05,06",
-            "Q3": "07,08,09",
-            "Q4": "10,11,12",
-        }
-        for season, months in seasons.items():
-            month_family = EcflowSuiteFamily(season, e923_monthly_family, ecf_files)
-
+            pgd_input = EcflowSuiteFamily("PgdInput", static_data, ecf_files)
             EcflowSuiteTask(
-                "E923Monthly",
-                month_family,
+                "Gmted",
+                pgd_input,
                 config,
                 self.task_settings,
                 ecf_files,
                 input_template=input_template,
-                variables={"ARGS": f"months={months}"},
+                variables=None,
             )
 
-        pgd_update_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(e923constant)])
-        EcflowSuiteTask(
-            "PgdUpdate",
-            static_data,
-            config,
-            self.task_settings,
-            ecf_files,
-            input_template=input_template,
-            variables=None,
-            trigger=pgd_update_trigger,
-        )
+            EcflowSuiteTask(
+                "Soil",
+                pgd_input,
+                config,
+                self.task_settings,
+                ecf_files,
+                input_template=input_template,
+                variables=None,
+            )
+
+            pgd_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd_input)])
+            pgd = EcflowSuiteTask(
+                "Pgd",
+                static_data,
+                config,
+                self.task_settings,
+                ecf_files,
+                input_template=input_template,
+                variables=None,
+                trigger=pgd_trigger,
+            )
+
+            e923_constant_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd)])
+            e923constant = EcflowSuiteTask(
+                "E923Constant",
+                static_data,
+                config,
+                self.task_settings,
+                ecf_files,
+                input_template=input_template,
+                variables=None,
+                trigger=e923_constant_trigger,
+            )
+
+            e923_monthly_family_trigger = EcflowSuiteTriggers(
+                [EcflowSuiteTrigger(e923constant)]
+            )
+            e923_monthly_family = EcflowSuiteFamily(
+                "E923Monthly", static_data, ecf_files, trigger=e923_monthly_family_trigger
+            )
+
+            seasons = {
+                "Q1": "01,02,03",
+                "Q2": "04,05,06",
+                "Q3": "07,08,09",
+                "Q4": "10,11,12",
+            }
+            for season, months in seasons.items():
+                month_family = EcflowSuiteFamily(season, e923_monthly_family, ecf_files)
+
+                EcflowSuiteTask(
+                    "E923Monthly",
+                    month_family,
+                    config,
+                    self.task_settings,
+                    ecf_files,
+                    input_template=input_template,
+                    variables={"ARGS": f"months={months}"},
+                )
+
+            pgd_update_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(e923constant)])
+            EcflowSuiteTask(
+                "PgdUpdate",
+                static_data,
+                config,
+                self.task_settings,
+                ecf_files,
+                input_template=input_template,
+                variables=None,
+                trigger=pgd_update_trigger,
+            )
 
         first_cycle = as_datetime(config.get_value("general.times.start"))
         last_cycle = as_datetime(config.get_value("general.times.end"))
