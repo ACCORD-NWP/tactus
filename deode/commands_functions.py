@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Implement the package's commands."""
-
 import os
 
 from .logs import get_logger

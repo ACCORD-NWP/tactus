@@ -62,7 +62,7 @@ jobs:
           poetry run isort --check-only .
       - name: black
         run: |
-          poetry run black --check .
+          poetry run black --check --diff .
       - name: flakeheaven
         run: |
           export FLAKEHEAVEN_CACHE="${TMPDIR:-${TEMP:-${TMP:-/tmp}}}/flakeheaven_cache.$(openssl rand -hex 12)"
