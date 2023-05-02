@@ -28,7 +28,7 @@
     pyyaml = "^6.0"
     tomlkit = "^0.11.6"
     troika = {git = "https://git.ecmwf.int/scm/ecsdk/troika.git"}
-    pysurfex = {git = "https://github.com/metno/pysurfex.git", develop = true}
+    pysurfex = {git = "https://github.com/metno/pysurfex.git", tag = "0.0.3.bf2"}
 
 [tool.poetry.group.dev.dependencies]
     jupyterlab = "^3.6.1"
