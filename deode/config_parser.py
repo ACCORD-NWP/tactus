@@ -15,7 +15,6 @@ import tomlkit
 import yaml
 from fastjsonschema import JsonSchemaValueException
 
-from . import PACKAGE_NAME
 from .datetime_utils import ISO_8601_TIME_DURATION_REGEX
 
 NO_DEFAULT_PROVIDED = object()
@@ -39,7 +38,9 @@ def get_default_config_path():
         _fpath = Path(os.getenv("DEODE_CONFIG_PATH", "config.toml"))
         default_conf_path = _fpath.resolve(strict=True)
     except FileNotFoundError:
-        default_conf_path = Path(os.getenv("HOME")) / f".{PACKAGE_NAME}" / "config.toml"
+        default_conf_path = (
+            Path(__file__).parent / "data" / "config_files" / "config.toml"
+        )
 
     return default_conf_path
 
