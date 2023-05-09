@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Namelist handling for MASTERODB w/SURFEX."""
+import os
 import re
-
-# TODO: import f90nml
 from pathlib import Path
 
+import f90nml
 import yaml
 
 from .logs import get_logger_from_config
@@ -49,12 +49,13 @@ class InvalidNamelistTargetError(ValueError):
 class NamelistGenerator:
     """Fortran namelist generator based on hierarchical merging of (yaml) dicts."""
 
-    def __init__(self, config, kind):
+    def __init__(self, config, kind, substitute=True):
         """Construct the generator.
 
         Args:
             config (deode.ParsedConfig): Configuration
             kind (str): one of 'master' or 'surfex'
+            substitute (boolean): flag for substitution
 
         Raises:
             InvalidNamelistKindError   # noqa: DAR401
@@ -65,32 +66,80 @@ class NamelistGenerator:
 
         self.config = config
         self.kind = kind  # not used elsewhere, though
+        self.substitute = substitute
         self.logger = get_logger_from_config(config)
+        self.cycle = self.config.get_value("general.cycle")
         self.cnfile = (
-            Path(__file__).parent / "namelist_generation_input" / f"assemble_{kind}.yml"
+            Path(__file__).parent
+            / "namelist_generation_input"
+            / f"{self.cycle}"
+            / f"assemble_{kind}.yml"
         )
         self.nlfile = (
-            Path(__file__).parent / "namelist_generation_input" / f"{kind}_namelists.yml"
+            Path(__file__).parent
+            / "namelist_generation_input"
+            / f"{self.cycle}"
+            / f"{kind}_namelists.yml"
+        )
+        self.domain_name = self.config.get_value("domain.name")
+        self.accept_static_namelist = self.config.get_value(
+            "general.accept_static_namelists"
         )
 
-    def generate_namelist(self, target, output_file):
+    def load_user_namelist(self):
+        """Read user provided namelist.
+
+        Returns:
+            found (boolean) : Logics if namelist is found or not
+            nldict : Namelist as dictionary
+            cndict : Rules for dictionary
+
+        """
+        ref_namelist = f"{Path(__file__).parent}/data/namelists/{self.kind}_{self.target}"
+        self.logger.debug("Check if reference namelist %s exists", ref_namelist)
+        if os.path.isfile(ref_namelist):
+            self.logger.debug("Use reference namelist %s", ref_namelist)
+            nl = f90nml.read(ref_namelist)
+            nldict = {self.target: nl.todict()}
+            cndict = {self.target: [self.target]}
+            found = False
+        else:
+            self.logger.warning("No reference namelist exists")
+            found = True
+
+        return found, nldict, cndict
+
+    def load(self, target):
         """Generate the namelists for 'target'.
 
         Args:
             target (str): task to generate namelists for
-            output_file : where to write the result (fort.4 or EXSEG1.nam typically)
 
         Raises:
             InvalidNamelistTargetError   # noqa: DAR401
 
-        """
-        # Read namelist file with all the categories
-        with open(self.nlfile, mode="rt", encoding="utf-8") as file:
-            nldict = yaml.safe_load(file)
+        Returns:
+            nlres (dict): Assembled namelist
 
-        # Read file that describes assembly category order for the various targets (tasks)
-        with open(self.cnfile, mode="rt", encoding="utf-8") as file:
-            cndict = yaml.safe_load(file)
+        """
+        self.target = target
+
+        # Use static namelist if given
+        use_yaml = True
+        if self.accept_static_namelist:
+            use_yaml, nldict, cndict = self.load_user_namelist()
+
+        if use_yaml:
+            self.logger.debug(
+                "Use %s and %s to generate namelist", self.nlfile, self.cnfile
+            )
+            # Read namelist file with all the categories
+            with open(self.nlfile, mode="rt", encoding="utf-8") as file:
+                nldict = yaml.safe_load(file)
+
+            # Read file that describes assembly category order for the various targets (tasks)
+            with open(self.cnfile, mode="rt", encoding="utf-8") as file:
+                cndict = yaml.safe_load(file)
 
         # Check target is valid
         if target not in cndict:
@@ -104,14 +153,33 @@ class NamelistGenerator:
             self.logger.debug(msg[:-1])
             raise InvalidNamelistTargetError(target)
 
+        self.nldict = nldict
+        self.cndict = cndict
+
+        return nldict, cndict
+
+    def assemble_namelist(self, target):
+        """Generate the namelists for 'target'.
+
+        Args:
+            target (str): task to generate namelists for
+
+        Raises:
+            InvalidNamelistTargetError   # noqa: DAR401
+
+        Returns:
+            nlres (dict): Assembled namelist
+
+        """
         # For access to the config object
         platform = Platform(self.config)
 
         # Start with empty result dictionary
         nlres = {}
 
+        nldict = self.nldict
         # Assemble the target namelists based on the given category order
-        for item in flatten_list(cndict[target]):
+        for item in flatten_list(self.cndict[target]):
             catg = item
             # variable substitution removed at this level (may be resurrected)
             # assemble namelists for this category
@@ -129,7 +197,7 @@ class NamelistGenerator:
                             finval = val
                             # Replace ${var-def} with value from config, possibly macro-expanded
                             # For now assumes only one subst. per line, could be generalized if needed
-                            if str(finval).find("$") >= 0:
+                            if str(finval).find("$") >= 0 and self.substitute:
                                 m = re.search(
                                     r"^([^\$]*)\$\{([\w\.]+)\-?([^}]*)\}(.*)", str(val)
                                 )
@@ -154,25 +222,65 @@ class NamelistGenerator:
                                             self.logger.debug(
                                                 "No value found for: '%s'", nam
                                             )
+                                            repval = finval
                                     else:
                                         self.logger.debug(
                                             "Replaced %s with: %s", nam, str(repval)
                                         )
-                                    finval = str(pre) + str(repval) + str(post)
+                                    if isinstance(repval, str):
+                                        finval = str(pre) + str(repval) + str(post)
+                                    else:
+                                        finval = repval
                                 else:
                                     raise KeyError(val)
+                            if isinstance(finval, tuple):
+                                finval = list(finval)
                             nlres[nl][key] = finval
+        return nlres
 
-        # Write result. TODO: use f90nml(?)
-        # Or would it be useful to just return the nlres dict instead(?)
-        with open(output_file, mode="w") as file:
-            for nl in sorted(nlres.keys()):
-                file.write("&" + nl + "\n")
-                for key in sorted(nlres[nl].keys()):
-                    val = nlres[nl][key]
-                    sval = str(val).strip()
-                    if sval[-1] != ",":
-                        sval += ","
-                    file.write("  " + key + " = " + sval + "\n")
-                file.write("/\n")
+    def update(self, nldict, cndict_tag):
+        """Update with additional namelist dict.
+
+        Args:
+            nldict (dict): additional namelist dict
+            cndict_tag : name to be used for recognition
+
+        """
+        self.cndict[self.target].append(cndict_tag)
+        self.nldict[cndict_tag] = nldict
+
+    def write_namelist(self, nlres, output_file):
+        """Write namelist using f90nml.
+
+        Args:
+            nlres (dict): namelist to write
+            output_file (str) : namelist file name
+
+        """
+        # Write result.
+        nml = f90nml.Namelist(nlres)
+        nml.uppercase = True
+        nml.true_repr = ".TRUE."
+        nml.false_repr = ".FALSE."
+        nml.write(output_file, force=True)
+
         self.logger.debug("Wrote: %s", output_file)
+
+    def generate_namelist(self, target, output_file):
+        """Generate the namelists for 'target'.
+
+        Args:
+            target (str): task to generate namelists for
+            output_file : where to write the result (fort.4 or EXSEG1.nam typically)
+
+        """
+        self.load(target)
+        try:
+            update = self.config.namelist_update.dict()
+            if self.kind in update:
+                self.update(update, self.kind)
+        except AttributeError:
+            pass
+
+        nlres = self.assemble_namelist(target)
+        self.write_namelist(nlres, output_file)

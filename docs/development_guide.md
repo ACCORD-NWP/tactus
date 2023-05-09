@@ -32,6 +32,12 @@ No-one likes to wait for the CI to run tests. It is therefore recommended to run
 
 Here is a list of tests being run in the pipeline, that you can run locally from the root of the repo.
 
+**Black:**
+- `black .`
+
+**Isort:**
+- `isort .`
+
 **Linting:**
 - `flakeheaven lint`
 

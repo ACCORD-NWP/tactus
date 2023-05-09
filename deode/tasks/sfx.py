@@ -12,12 +12,11 @@ from pysurfex.binary_input import (
 )
 from pysurfex.configuration import Configuration
 from pysurfex.file import PGDFile, PREPFile, SURFFile
-from pysurfex.geo import ConfProj
-from pysurfex.namelist import BaseNamelist
 from pysurfex.platform import SystemFilePaths
 from pysurfex.run import PerturbedOffline, SURFEXBinary
 
 from ..datetime_utils import as_datetime
+from ..namelist import NamelistGenerator
 from .base import Task
 from .batch import BatchJob
 
@@ -46,8 +45,9 @@ class SurfexBinaryTask(Task):
         self.do_prep = False
         self.perturbed = False
         self.soda = False
-        self.namelist = None
         self.force = True
+
+        self.nlgen = NamelistGenerator(self.config, "surfex")
 
         # SURFEX config added to general config
         cfg = self.config.get_value("SURFEX").dict()
@@ -76,29 +76,6 @@ class SurfexBinaryTask(Task):
             "oro_dir": f"{climdir}",
         }
         self.exp_file_paths = SystemFilePaths(exp_file_paths)
-
-        # Set namelist directory
-        # TODO use deode way when ready  # noqa
-        nam_input_path = self.fmanager.platform.get_platform_value("NAMELISTS")
-        self.input_path = self.fmanager.platform.substitute(nam_input_path)
-
-        conf_proj = {
-            "nam_conf_proj_grid": {
-                "nimax": self.config.get_value("domain.nimax"),
-                "njmax": self.config.get_value("domain.njmax"),
-                "xloncen": self.config.get_value("domain.xloncen"),
-                "xlatcen": self.config.get_value("domain.xlatcen"),
-                "xdx": self.config.get_value("domain.xdx"),
-                "xdy": self.config.get_value("domain.xdy"),
-                "ilone": self.config.get_value("domain.ilone"),
-                "ilate": self.config.get_value("domain.ilate"),
-            },
-            "nam_conf_proj": {
-                "xlon0": self.config.get_value("domain.xlon0"),
-                "xlat0": self.config.get_value("domain.xlat0"),
-            },
-        }
-        self.geo = ConfProj(conf_proj)
 
         self.dtg = as_datetime(self.config.get_value("general.times.validtime"))
         self.wrapper = ""
@@ -186,35 +163,18 @@ class SurfexBinaryTask(Task):
         else:
             raise NotImplementedError(self.mode + " is not implemented!")
 
-        self.namelist = BaseNamelist(
-            self.mode,
-            self.sfx_config,
-            self.input_path,
-            forc_zs=forc_zs,
-            prep_file=prep_file,
-            prep_filetype=prep_filetype,
-            prep_pgdfile=prep_pgdfile,
-            prep_pgdfiletype=prep_pgdfiletype,
-            dtg=self.dtg,
-            fcint=fcint,
-        )
-
         rte = os.environ
         batch = BatchJob(rte, wrapper=self.wrapper)
 
-        settings = self.namelist.get_namelist()
-        self.geo.update_namelist(settings)
-        # Dump it for comparison
-        with open("OPTIONS.nam_pysurfex", mode="w", encoding="utf8") as nml_file:
-            f90nml.write(settings, nml_file)
+        # Overide settings with static namelists
+        self.nlgen.generate_namelist(self.mode, "OPTIONS.nam")
+        settings = f90nml.read("OPTIONS.nam")
 
         filetype = settings["nam_io_offline"]["csurf_filetype"]
         pgdfile = settings["nam_io_offline"]["cpgdfile"]
         prepfile = settings["nam_io_offline"]["cprepfile"]
         surffile = settings["nam_io_offline"]["csurffile"]
 
-        # Overide settings with static namelists
-        settings = f90nml.read(f"{self.input_path}/OPTIONS.nam_{self.mode.upper()}")
         if prep_file is not None:
             settings["nam_prep_surf_atm"]["cfile"] = os.path.basename(prep_file)
 

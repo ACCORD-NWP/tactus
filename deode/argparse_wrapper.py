@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 from . import PACKAGE_NAME, __version__
-from .commands_functions import run_task, show_config, start_suite
+from .commands_functions import run_task, show_config, show_namelist, start_suite
 from .config_parser import get_default_config_path
 
 
@@ -197,5 +197,39 @@ def get_parsed_args(program_name="program", argv=None):
         help="Include the [metadata] section in the output.",
     )
     parser_show_config.set_defaults(run_command=show_config)
+
+    # show namelist
+    parser_show_namelist = show_command_subparsers.add_parser(
+        "namelist", help="Print namelist in use and exit"
+    )
+
+    parser_show_namelist.add_argument(
+        "-t",
+        type=str,
+        dest="namelist_type",
+        help="Namelist target, master or surfex",
+        choices=["master", "surfex"],
+        required=True,
+        default=None,
+    )
+
+    parser_show_namelist.add_argument(
+        "-n",
+        type=str,
+        dest="namelist",
+        help="Namelist to show, type anything to print available options",
+        required=True,
+        default=None,
+    )
+
+    parser_show_namelist.add_argument(
+        "--no-substitute",
+        "-b",
+        action="store_false",
+        default=True,
+        help="Do not substitute config values in the written namelist",
+    )
+
+    parser_show_namelist.set_defaults(run_command=show_namelist)
 
     return parser.parse_args(argv)

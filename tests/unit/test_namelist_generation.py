@@ -27,6 +27,8 @@ def config_platform():
             cnmexp = "HARM"
             tstep = 72
             bdint = "PT3H"
+            cycle = "CY46h1"
+            accept_static_namelists = false
         [general.times]
             basetime = "2000-01-01T00:0:00Z"
             validtime = "2000-01-02T00:00:00Z"
@@ -52,6 +54,21 @@ def parsed_config(config_platform):
     return ParsedConfig.parse_obj(config_platform)
 
 
+@pytest.fixture(params=["pgd", "prep", "forecast"])
+def _nlgen_surfex(parsed_config, tmp_path_factory, request):
+    """Test namelist generation for surfex."""
+    nam_type = request.param
+    nlgen = NamelistGenerator(parsed_config, "surfex")
+    output_file = f"{tmp_path_factory.getbasetemp().as_posix()}/EXSEG1.nam"
+    if os.path.exists(output_file):
+        os.remove(output_file)
+    nlgen.load(nam_type)
+    nlres = nlgen.assemble_namelist(nam_type)
+    assert int(nlres["NAM_IO_OFFLINE"]["NHALO"]) == 0
+    if nam_type == "pgd":
+        assert int(nlres["NAM_CONF_PROJ_GRID"]["NIMAX"]) == 89
+
+
 class TestNamelistGenerator:
     # pylint: disable=no-self-use
     """Test NamelistGenerator."""
@@ -65,14 +82,9 @@ class TestNamelistGenerator:
         nlgen.generate_namelist("forecast", output_file)
         assert os.path.exists(output_file)
 
-    def test_nlgen_surfex(self, parsed_config, tmp_path_factory):
+    @pytest.mark.usefixtures("_nlgen_surfex")
+    def test_nlgen_surfex(self):
         """Test namelist generation for surfex."""
-        nlgen = NamelistGenerator(parsed_config, "surfex")
-        output_file = f"{tmp_path_factory.getbasetemp().as_posix()}/EXSEG1.nam"
-        if os.path.exists(output_file):
-            os.remove(output_file)
-        nlgen.generate_namelist("forecast", output_file)
-        assert os.path.exists(output_file)
 
     def test_nlgen_invalid_type(self, parsed_config):
         """Test namelist generation for non-existing kind."""

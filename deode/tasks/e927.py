@@ -32,8 +32,7 @@ class E927(Task):
             self.bdnr = "1"
             self.bd_time = "2023-02-19T09:00:00Z"
 
-        self.bdnr = config.get_value("task.args.bd_nr")
-        self.bd_time = config.get_value("task.args.bd_time")
+        self.name = f"{self.name}_{self.bdnr}"
 
         self.cnmexp = self.config.get_value("general.cnmexp")
         self.bdclimdir = self.platform.get_system_value("bdclimdir")

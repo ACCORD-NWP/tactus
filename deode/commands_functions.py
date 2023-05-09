@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """Implement the package's commands."""
 import os
+from pathlib import Path
 
+from .derived_variables import derived_variables
+from .fullpos import Fullpos
 from .logs import get_logger
+from .namelist import NamelistGenerator
 from .scheduler import EcflowServer
 from .submission import NoSchedulerSubmission, TaskSettings
 from .suites import SuiteDefinition
@@ -83,3 +87,38 @@ def show_config(args, config):
             section=args.section, style=args.format, include_metadata=args.show_metadata
         )
     )
+
+
+def show_namelist(args, config):
+    """Implement the 'show_namelist' command.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+        config (.config_parser.ParsedConfig): Parsed config file contents.
+
+    """
+    logger = get_logger(__name__, args.loglevel)
+    logger.info("Printing namelist in use...")
+    config = config.copy(update=derived_variables(config))
+
+    nlgen = NamelistGenerator(config, args.namelist_type, substitute=args.no_substitute)
+    nlgen.load(args.namelist)
+    update = config.namelist_update.dict()
+    if args.namelist_type in update:
+        nlgen.update(update[args.namelist_type], args.namelist_type)
+    if args.namelist == "forecast" and args.namelist_type == "master":
+        cycle = config.get_value("general.cycle")
+        domain = config.get_value("domain.name")
+
+        nlfile = (
+            Path(__file__).parent
+            / "namelist_generation_input"
+            / f"{cycle}"
+            / "fullpos_namelist.yml"
+        )
+        namfpc, selections = Fullpos(nlfile, domain).construct()
+        nlgen.update(namfpc, "fullpos")
+        for head, body in selections.items():
+            nlgen.write_namelist(body, head)
+    nlres = nlgen.assemble_namelist(args.namelist)
+    nlgen.write_namelist(nlres, f"namelist_{args.namelist_type}_{args.namelist}")

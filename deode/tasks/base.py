@@ -4,9 +4,8 @@ import atexit
 import os
 import shutil
 import socket
-from math import floor
 
-from ..datetime_utils import as_timedelta
+from ..derived_variables import derived_variables
 from ..logs import get_logger_from_config
 from ..toolbox import FileManager
 
@@ -49,7 +48,7 @@ class Task(object):
 
         """
         self.logger = get_logger_from_config(config)
-        update = self.derived_variables(config)
+        update = derived_variables(config)
         self.config = config.copy(update=update)
         if "." in name:
             name = name.split(".")[-1]
@@ -95,47 +94,6 @@ class Task(object):
             )
         except KeyError:
             self.logger.warning("Could not update ECCODES_DEFINITION_PATH")
-
-    def derived_variables(self, config):
-        """Derive some variables required in the namelists.
-
-        Args:
-            config (deode.ParsedConfig): Configuration
-
-        Returns:
-            update (dict) : Derived config update
-        """
-        truncation = {"linear": 2, "quadratic": 3, "cubic": 4, "custom": None}
-
-        ndguxg = int(config.get_value("domain.njmax")) + int(
-            config.get_value("domain.ilate")
-        )
-        ndglg = int(config.get_value("domain.nimax")) + int(
-            config.get_value("domain.ilone")
-        )
-
-        gridtype = config.get_value("domain.gridtype")
-
-        if gridtype == "custom":
-            truncation[gridtype] = config.get_value("domain.custom_truncation")
-
-        nsmax = floor((ndguxg - 2) / truncation[gridtype])
-        nmsmax = floor((ndglg - 2) / truncation[gridtype])
-
-        bdint = as_timedelta(config.get_value("general.bdint"))
-
-        # Update namelist settings
-        update = {
-            "domain": {
-                "ndguxg": ndguxg,
-                "ndglg": ndglg,
-                "nsmax": nsmax,
-                "nmsmax": nmsmax,
-            },
-            "namelist": {"bdint_seconds": bdint.seconds},
-        }
-
-        return update
 
     def create_wrkdir(self):
         """Create a cycle working directory."""

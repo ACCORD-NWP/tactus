@@ -1,9 +1,9 @@
 """Forecast."""
-
-
 import os
+from pathlib import Path
 
-from ..datetime_utils import as_datetime, as_timedelta, dt2str
+from ..datetime_utils import as_datetime, as_timedelta, dt2str, oi2dt_list
+from ..fullpos import Fullpos
 from ..initial_conditions import InitialConditions
 from ..namelist import NamelistGenerator
 from .base import Task
@@ -30,40 +30,44 @@ class Forecast(Task):
             self.config.get_value("general.times.cycle_length")
         )
         self.bdint = as_timedelta(self.config.get_value("general.bdint"))
-        self.forecast_range = as_timedelta(
-            self.config.get_value("general.forecast_range")
-        )
+        self.forecast_range = self.config.get_value("general.forecast_range")
 
         self.climdir = self.platform.get_system_value("climdir")
         self.rrtm_dir = self.platform.get_platform_value("RRTM_DIR")
         self.ncdir = self.config.get_value("platform.ncdir")
         self.archive = self.platform.get_system_value("archive")
+        self.deode_home = self.config.get_value("platform.deode_home")
 
         # Update namelist settings
         self.namelists = self.platform.get_platform_value("NAMELISTS")
         self.nlgen_master = NamelistGenerator(self.config, "master")
         self.nlgen_surfex = NamelistGenerator(self.config, "surfex")
+        self.fullpos_config = (
+            Path(__file__).parent
+            / "../namelist_generation_input"
+            / f"{self.cycle}"
+            / "fullpos_namelist.yml"
+        )
 
         self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
         self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
 
-    def archive_output(self, fname, period, suffix=""):
+    def archive_output(self, fname, periods, suffix=""):
         """Archive forecast model output.
 
         Args:
             fname (str): Filename
-            period (str): Output frequency
+            periods (str): Output list
             suffix (str): Suffix
         """
-        # Store the output
-        cdtg = self.basetime
-        dtgend = self.basetime + self.forecast_range
-        while cdtg <= dtgend:
-            dt = cdtg - self.basetime
+        dt_list = oi2dt_list(periods, self.forecast_range)
+        for dt in dt_list:
             duration = dt2str(dt)
-            source = f"{fname}+{duration}{suffix}"
-            self.fmanager.output(source, f"{self.archive}/{source}")
-            cdtg += as_timedelta(period)
+
+            self.fmanager.output(
+                f"{fname}+{duration}{suffix}",
+                f"{self.archive}/{fname}+{duration}{suffix}",
+            )
 
     def execute(self):
         """Execute forecast."""
@@ -163,16 +167,21 @@ class Forecast(Task):
         self.fmanager.input(f"{self.climdir}/Const.Clim.sfx", "Const.Clim.sfx")
 
         # Namelists
-        # The fullpos output should be configured elsewhere
-        for ifile in ["xxt00000000", "xxtddddhhmm", "dirlst"]:
-            namelist = f"{self.namelists}/{ifile}"
-            self.fmanager.input(namelist, ifile, provider_id="copy")
-        self.nlgen_master.generate_namelist("forecast", "fort.4")
         self.nlgen_surfex.generate_namelist("forecast", "EXSEG1.nam")
+
+        # Contstruct master namelist and include fullpos config
+        self.nlgen_master.load("forecast")
+        namfpc, selections = Fullpos(self.fullpos_config, self.domain).construct()
+        self.nlgen_master.update(namfpc, "fullpos")
+        nlres = self.nlgen_master.assemble_namelist("forecast")
+        self.nlgen_master.write_namelist(nlres, "fort.4")
+
+        for head, body in selections.items():
+            self.nlgen_master.write_namelist(body, head)
 
         # Link the boundary files
         cdtg = self.basetime
-        dtgend = self.basetime + self.forecast_range
+        dtgend = self.basetime + as_timedelta(self.forecast_range)
         i = 0
 
         # Use explicitly defined boundary dir if defined

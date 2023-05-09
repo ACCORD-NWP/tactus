@@ -39,3 +39,66 @@ def dt2str(dt):
 
     duration = f"{h:04d}:{m:02d}:{s:02d}"
     return duration
+
+
+def expand_output_interval(output_interval, forecast_range):
+    """Expand the output_interval coming from config.
+
+    Args:
+        output_interval (tuple, list, str): Specifies the output steps
+        forecast_range (str): Forecast range in duration syntax
+
+    Returns:
+        sections (list) : List of output subsections
+    """
+    if isinstance(output_interval, str):
+        if output_interval.count(":") == 0:
+            oi = ["PT0H:" + forecast_range + ":" + output_interval]
+        elif output_interval.count(":") == 1:
+            oi = ["PT0H:" + output_interval]
+        else:
+            oi = [output_interval]
+    else:
+        oi = output_interval
+
+    z = []
+    for i, x in enumerate(oi):
+        if x.count(":") == 1:
+            if i == 0:
+                z.append("PT0H:" + x)
+            else:
+                z.append(z[-1].split(":")[1] + ":" + x)
+        else:
+            z.append(x)
+
+    sections = []
+    for x in z:
+        sections.append([as_timedelta(y) for y in x.split(":")])
+
+    return sections
+
+
+def oi2dt_list(output_interval, forecast_range):
+    """Build list of output occurences.
+
+    Args:
+        output_interval (tuple,list,str): Specifies the output steps
+        forecast_range (str): Forecast range in duration syntax
+
+    Returns:
+        dt (list) : List of output occurences
+    """
+    sections = expand_output_interval(output_interval, forecast_range)
+
+    dt = []
+    cdt = as_timedelta("PT0H")
+    fdt = as_timedelta(forecast_range)
+    for s in sections:
+        cdt = s[0]
+        edt = s[1]
+        while cdt <= edt and cdt <= fdt:
+            if cdt not in dt:
+                dt.append(cdt)
+            cdt += s[2]
+
+    return dt

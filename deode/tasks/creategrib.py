@@ -4,7 +4,7 @@
 import os
 import re
 
-from ..datetime_utils import as_datetime, as_timedelta, dt2str
+from ..datetime_utils import as_datetime, as_timedelta, dt2str, oi2dt_list
 from .base import Task
 from .batch import BatchJob
 
@@ -48,9 +48,9 @@ class Fileconv(BatchJob):
         self.input_template = input_template
         self.output_template = output_template
         if forecast_range is not None:
-            self.forecast_range = as_timedelta(forecast_range)
-        if output_interval is not None:
-            self.output_interval = as_timedelta(output_interval)
+            self.forecast_range = forecast_range
+        if output_interval is not None and forecast_range is not None:
+            self.output_interval = output_interval
         self.binary = binary
 
         # Create the list of files to work with
@@ -97,16 +97,14 @@ class Fileconv(BatchJob):
 
     def create_list(self):
         """Create list of files to process."""
-        cdtg = self.basetime
-        dtgend = self.basetime + self.forecast_range
         files = {}
-        while cdtg <= dtgend:
-            dt = cdtg - self.basetime
+        # Store the output
+        dt_list = oi2dt_list(self.output_interval, self.forecast_range)
+        for dt in dt_list:
             duration = dt2str(dt)
             files[
                 dt
             ] = f"{self.src_dir}/{self.input_template.replace('duration',duration)}"
-            cdtg += self.output_interval
 
         return files
 
@@ -219,5 +217,7 @@ class CreateGrib(Task):
                 binary=self.gl,
                 wrapper=self.wrapper,
             )
+
+            self.logger.info("Files to handle: %s", handle.files)
 
             handle.convert2grib()

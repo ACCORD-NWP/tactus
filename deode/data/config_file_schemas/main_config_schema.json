@@ -145,8 +145,10 @@
         },
         "cnmexp": {
               "title": "Experiment short name",
-              "default": "DEODE",
-              "type": "string"
+              "default": "DEOD",
+              "type": "string",
+	      "minLength" : 4,
+	      "maxLength" : 4
         },
         "tstep": {
               "title": "Model time step",
@@ -167,7 +169,7 @@
               "title": "Do not remove working directories",
               "type": "boolean"
         },
-        "CSC": {
+        "csc": {
               "title": "CSC",
               "default": "AROME",
               "type": "string",
@@ -175,7 +177,8 @@
         },
         "cycle": {
               "title": "IAL cycle",
-              "type": "string"
+              "type": "string",
+              "enum": [ "CY48t3", "CY46t1", "CY46h1" ]
         },
         "bdint": {
               "title": "Boundary interval",
