@@ -12,6 +12,33 @@ from .submission import NoSchedulerSubmission, TaskSettings
 from .suites import SuiteDefinition
 
 
+def set_deode_home(args, config):
+    """Set deode_home in various ways.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+        config (.config_parser.ParsedConfig): Parsed config file contents.
+
+    Returns:
+        deode_home
+
+    """
+    try:
+        deode_home_from_config = config.get_value("plaform.deode_home")
+    except AttributeError:
+        deode_home_from_config = "set-by-the-system"
+    if args.deode_home is not None:
+        deode_home = args.deode_home
+    elif deode_home_from_config != "set-by-the-system":
+        deode_home = deode_home_from_config
+    else:
+        deode_home = os.environ.get("PWD")
+        if deode_home is None:
+            deode_home = f"{os.path.dirname(__file__)}/.."
+
+    return deode_home
+
+
 def run_task(args, config):
     """Implement the 'run' command.
 
@@ -23,7 +50,7 @@ def run_task(args, config):
     logger = get_logger(__name__, args.loglevel)
     logger.info("Running %s...", args.task)
 
-    deode_home = f"{os.path.dirname(__file__)}/.."
+    deode_home = set_deode_home(args, config)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
 
     submission_defs = TaskSettings(config)
@@ -45,7 +72,7 @@ def start_suite(args, config):
     logger = get_logger(__name__, args.loglevel)
     logger.info("Starting suite...")
 
-    deode_home = f"{os.path.dirname(__file__)}/.."
+    deode_home = set_deode_home(args, config)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
 
     server = EcflowServer(

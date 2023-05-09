@@ -56,6 +56,12 @@ def get_parsed_args(program_name="program", argv=None):
         help="What type of info should be printed to the log",
     )
 
+    parser.add_argument(
+        "-deode_home",
+        default=None,
+        help="Specify deode_home to override automatic detection",
+    )
+
     # Configure the main parser to handle the commands
     subparsers = parser.add_subparsers(
         title="commands",
