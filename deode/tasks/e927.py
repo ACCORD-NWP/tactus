@@ -25,12 +25,8 @@ class E927(Task):
         self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
         self.bdint = self.config.get_value("general.bdint")
         self.forecast_range = self.config.get_value("general.forecast_range")
-        try:
-            self.bdnr = config.get_value("task.args.bd_nr")
-            self.bd_time = config.get_value("task.args.bd_time")
-        except AttributeError:
-            self.bdnr = "1"
-            self.bd_time = "2023-02-19T09:00:00Z"
+        self.bdnr = config.get_value("task.args.bd_nr")
+        self.bd_time = config.get_value("task.args.bd_time")
 
         self.name = f"{self.name}_{self.bdnr}"
 
@@ -81,9 +77,6 @@ class E927(Task):
 
         # Input file
         bdnr = int(self.bdnr)
-        print("e927_bdnr: ", bdnr)
-        print("e927_bd_time: ", self.bd_time)
-        print("e927_bd_basetime: ", bd_basetime)
         initfile = f"ICMSH{self.cnmexp}INIT"
         self.fmanager.input(
             f"{bddir}/{bdfile_template}",

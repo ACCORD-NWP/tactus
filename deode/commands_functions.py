@@ -21,7 +21,6 @@ def set_deode_home(args, config):
 
     Returns:
         deode_home
-
     """
     try:
         deode_home_from_config = config.get_value("plaform.deode_home")

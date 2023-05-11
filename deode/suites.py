@@ -278,8 +278,6 @@ class SuiteDefinition(object):
                 trigger=inputdata_trigger,
                 variables=time_variables,
             )
-            # 3rd level Family
-            # YYYYMMDD >> HHHH >> InputData
             inputdata = EcflowSuiteFamily(
                 "InputData", time_family, ecf_files, trigger=inputdata_trigger
             )
@@ -295,7 +293,7 @@ class SuiteDefinition(object):
 
             prepare_cycle_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prepare_cycle)])
 
-            basetime = as_datetime(config.get_value("general.times.basetime"))
+            basetime = as_datetime(cycle["basetime"])
             forecast_range = as_timedelta(config.get_value("general.forecast_range"))
             endtime = basetime + forecast_range
             bdint = as_timedelta(config.get_value("general.bdint"))
@@ -326,7 +324,6 @@ class SuiteDefinition(object):
                     date_string = bdtime.isoformat(sep="T").replace("+00:00", "Z")
                     args = f"bd_time={date_string};bd_nr={bdnr}"
                     variables = {"ARGS": args}
-
                     lbc_fam = EcflowSuiteFamily(
                         f"LBC{bdnr:02}",
                         bch_fam,
@@ -352,8 +349,6 @@ class SuiteDefinition(object):
                         break
             int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(int_fam)])
 
-            # 3rd level Family
-            # YYYYMMDD >> HHHH >> Cycle
             cycle = EcflowSuiteFamily("Cycle", time_family, ecf_files, trigger=int_trig)
             triggers = [EcflowSuiteTrigger(inputdata)]
             if prev_cycle_trigger is not None:
@@ -397,7 +392,6 @@ class SuiteDefinition(object):
             )
             self.logger.debug(self.task_settings.get_task_settings("Forecast"))
 
-            variables = {"ECF_TIMEOUT": 5}
             forecast = EcflowSuiteTask(
                 "Forecast",
                 forecasting,
@@ -405,7 +399,7 @@ class SuiteDefinition(object):
                 self.task_settings,
                 ecf_files,
                 input_template=input_template,
-                variables=variables,
+                variables=None,
             )
 
             creategrib_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(forecast)])
