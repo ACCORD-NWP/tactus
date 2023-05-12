@@ -2,7 +2,7 @@
 
 import os
 
-from ..datetime_utils import as_datetime, as_timedelta
+from ..datetime_utils import as_datetime, as_timedelta, cycle_offset
 from ..namelist import NamelistGenerator
 from .base import Task
 from .batch import BatchJob
@@ -22,32 +22,22 @@ class E927(Task):
         self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
         self.climdir = self.platform.get_system_value("climdir")
 
+        self.cnmexp = self.config.get_value("general.cnmexp")
         self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
-        self.bdint = self.config.get_value("general.bdint")
         self.forecast_range = self.config.get_value("general.forecast_range")
+
+        self.bdint = self.config.get_value("general.bdint")
+        self.bdcycle = as_timedelta(config.get_value("general.bdcycle"))
         self.bdnr = config.get_value("task.args.bd_nr")
         self.bd_time = config.get_value("task.args.bd_time")
+        self.bddir = self.config.get_value("system.bddir")
+        self.bdfile_template = self.config.get_value("system.bdfile_template")
+        self.bdclimdir = self.platform.get_system_value("bdclimdir")
 
         self.name = f"{self.name}_{self.bdnr}"
 
-        self.cnmexp = self.config.get_value("general.cnmexp")
-        self.bdclimdir = self.platform.get_system_value("bdclimdir")
-
         self.nlgen = NamelistGenerator(self.config, "master")
         self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
-
-    def remove_links(self, link):
-        """Remove link.
-
-        Args:
-            link (list) : List of links to remove
-        """
-        self.logger.info("clean %s", link)
-        for x in link:
-            try:
-                os.unlink(x)
-            except FileNotFoundError:
-                self.logger.warning("Could not remove file '%s'.", x, exc_info=True)
 
     def execute(self):
         """Run task.
@@ -67,19 +57,13 @@ class E927(Task):
         # Namelist
         self.nlgen.generate_namelist("e927", "fort.4")
 
-        # Fix basetime for PT00H,PT12H only
-        basetime = self.basetime
-        offset = int(basetime.strftime("%H")) % 12
-        time_period = f"PT{offset}H"
-        bd_basetime = basetime - as_timedelta(time_period)
-        bddir = self.config.get_value("system.bddir")
-        bdfile_template = self.config.get_value("system.bdfile_template")
+        bd_basetime = self.basetime - cycle_offset(self.basetime, self.bdcycle)
 
         # Input file
         bdnr = int(self.bdnr)
         initfile = f"ICMSH{self.cnmexp}INIT"
         self.fmanager.input(
-            f"{bddir}/{bdfile_template}",
+            f"{self.bddir}/{self.bdfile_template}",
             initfile,
             basetime=bd_basetime,
             validtime=as_datetime(self.bd_time),
@@ -90,4 +74,3 @@ class E927(Task):
 
         target = f"{self.wrk}/ELSCF{self.cnmexp}ALBC{bdnr:03d}"
         self.fmanager.output(f"PF{self.cnmexp}000+0000", target)
-        self.remove_links([initfile, "ncf927"])

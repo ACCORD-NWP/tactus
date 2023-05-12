@@ -4,7 +4,13 @@ import datetime
 
 import pytest
 
-from deode.datetime_utils import as_datetime, as_timedelta, dt2str, oi2dt_list
+from deode.datetime_utils import (
+    as_datetime,
+    as_timedelta,
+    cycle_offset,
+    dt2str,
+    oi2dt_list,
+)
 
 
 def test_as_datetime():
@@ -18,6 +24,27 @@ def test_as_timedelta():
 
 def test_as_dt2str():
     assert dt2str(as_timedelta("PT3H30M10S")) == "0003:30:10"
+
+
+def test_offset():
+    basetime = as_datetime("20181010T21")
+    bdcycle = as_timedelta("PT12H")
+    shift = as_timedelta("PT0H")
+    assert datetime.timedelta(hours=9) == cycle_offset(basetime, bdcycle, shift=shift)
+
+
+def test_shift1_offset():
+    basetime = as_datetime("20181010T21")
+    bdcycle = as_timedelta("PT12H")
+    shift = as_timedelta("PT3H")
+    assert datetime.timedelta(hours=6) == cycle_offset(basetime, bdcycle, shift=shift)
+
+
+def test_shift2_offset():
+    basetime = as_datetime("20181010T21")
+    bdcycle = as_timedelta("PT12H")
+    shift = as_timedelta("-PT3H")
+    assert datetime.timedelta(hours=12) == cycle_offset(basetime, bdcycle, shift=shift)
 
 
 @pytest.fixture(params=["PT3H", "PT6H:PT3H", "PT0H:PT6H:PT3H"])

@@ -10,6 +10,7 @@ from dateutil.utils import default_tzinfo
 # <https://json-schema.org/understanding-json-schema/reference/regular_expressions.html>
 ISO_8601_TIME_DURATION_REGEX = "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?"
 ISO_8601_TIME_DURATION_REGEX += "(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+DEFAULT_SHIFT = pd.Timedelta(0)
 
 
 def as_datetime(obj):
@@ -102,3 +103,22 @@ def oi2dt_list(output_interval, forecast_range):
             cdt += s[2]
 
     return dt
+
+
+def cycle_offset(basetime, dt, shift=DEFAULT_SHIFT):
+    """Calculcate offset from a reference time.
+
+    Args:
+        basetime (datetime): Reference time
+        dt (timedelta): duration
+        shift (timedelta): shift
+
+    Returns:
+        timedelta : a timdelta object of the offset
+
+    """
+    reftime = basetime.hour * 3600 + basetime.minute * 60 + basetime.second
+    t = dt.days * 3600 * 24 + dt.seconds
+    shift_seconds = shift.days * 3600 * 24 + shift.seconds
+    k = reftime % t - shift_seconds
+    return pd.Timedelta(seconds=k)
