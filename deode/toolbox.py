@@ -221,52 +221,37 @@ class Platform:
 
         """
         if isinstance(pattern, str):
-            macros = self.get_macros()
-            os_macros = self.get_os_macros()
-            system_macros = self.get_system_macros()
 
-            self.logger.debug("pattern before: %s", pattern)
-            for macro in macros:
-                self.logger.debug("Checking platform macro: %s", macro)
+            # Marcos from platform, system and os_macros
+            all_macros = {}
+            for source in ("platform", "system"):
+                for macro, val in self.config.get_value(source).dict().items():
+                    all_macros[macro.upper()] = val
+            for macro in list(self.get_os_macros()):
                 try:
-                    val = self.config.get_value(f"platform.{macro}")
-                    self.logger.debug("macro=%s pattern=%s val=%s", macro, pattern, val)
+                    all_macros[macro] = os.environ[macro]
                 except KeyError:
-                    val = None
-                if val is not None:
-                    self.logger.debug(
-                        "before replace macro=%s pattern=%s", macro, pattern
-                    )
-                    pattern = self.sub_value(pattern, macro, val)
-                    self.logger.debug("after replace macro=%s pattern=%s", macro, pattern)
+                    pass
 
-            self.logger.debug("pattern before: %s", pattern)
-            for macro in system_macros:
-                self.logger.debug("Checking system macro: %s", macro)
-                try:
-                    val = self.config.get_value(f"system.{macro}")
-                    self.logger.debug("macro=%s pattern=%s val=%s", macro, pattern, val)
-                except KeyError:
-                    val = None
-                if val is not None:
-                    self.logger.debug(
-                        "before replace macro=%s pattern=%s", macro, pattern
-                    )
-                    pattern = self.sub_value(pattern, macro, val)
-                    self.logger.debug("after replace macro=%s pattern=%s", macro, pattern)
+            i = [m.start() for m in re.finditer(r"@", pattern)]
+            last_pattern = "#"
+            while len(i) > 0 and last_pattern != pattern:
+                sub_patterns = [pattern[i[j] + 1 : i[j + 1]] for j in range(0, len(i), 2)]
+                last_pattern = pattern
+                for sub_pattern in sub_patterns:
+                    try:
+                        val = all_macros[sub_pattern.upper()]
+                        self.logger.debug(
+                            "before replace macro=%s pattern=%s", macro, pattern
+                        )
+                        pattern = self.sub_value(pattern, sub_pattern, val)
+                        self.logger.debug(
+                            "after replace macro=%s pattern=%s", macro, pattern
+                        )
+                    except KeyError:
+                        pass
 
-            for macro in os_macros:
-                self.logger.debug("Checking macro: %s", macro)
-                try:
-                    val = os.environ[macro]
-                    self.logger.debug(
-                        "macro=%s, value=%s pattern=%s", macro, val, pattern
-                    )
-                except KeyError:
-                    val = None
-                if val is not None:
-                    pattern = self.sub_value(pattern, macro, val)
-                    self.logger.debug("macro=%s pattern=%s", macro, pattern)
+                i = [m.start() for m in re.finditer(r"@", pattern)]
 
             domain = self.config.get_value("domain.name")
             pattern = self.sub_value(pattern, "domain", domain)

@@ -120,8 +120,10 @@ class TestFileManager:
         """Test input files."""
         config = parsed_config_with_paths
         platform_value = "platform_value"
+        os.environ["FILE_TEST"] = "test"
         test_config = {
             "general": {
+                "os_macros": ["FILE_TEST"],
                 "cnmexp": "DEOD",
                 "times": {
                     "basetime": "2023-02-15T01:30:00Z",
@@ -134,7 +136,9 @@ class TestFileManager:
         }
         config = config.copy(update=test_config)
         fmanager = FileManager(config)
-        istring = "@TeST@:@CLimDiR@:@domain@:@cnmexp@:@YYYY@:@MM@:@DD@:@HH@:@mm@:@LLLL@"
-        ostring = f"{platform_value}:my_dir:DOMAIN:DEOD:2023:02:15:01:30:0002"
+        istring = "@FILE_TEST@:@NOT_FOUND@:@TeST@:@CLimDiR@:@domain@:@cnmexp@:@YYYY@:@MM@:@DD@:@HH@:@mm@:@LLLL@"
+        ostring = (
+            f"test:@NOT_FOUND@:{platform_value}:my_dir:DOMAIN:DEOD:2023:02:15:01:30:0002"
+        )
         test = fmanager.platform.substitute(istring)
         assert test == ostring
