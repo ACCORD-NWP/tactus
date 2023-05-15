@@ -136,6 +136,10 @@ class SuiteDefinition(object):
             "BASETIME": first_cycle.strftime("%Y%m%d%H%M"),
             "VALIDTIME": first_cycle.strftime("%Y%m%d%H%M"),
             "DEODE_HOME": deode_home,
+            "NPROC": "",
+            "NPROC_IO": "",
+            "NPROCX": "",
+            "NPROCY": "",
             "KEEP_WORKDIRS": keep_workdirs,
         }
 
@@ -697,6 +701,8 @@ class EcflowSuiteTask(EcflowNode):
             variables = task_settings.get_settings(name)
             logger.debug("vars %s", variables)
             for var, value in variables.items():
+                if isinstance(value, int):
+                    value = str(value)
                 logger.debug("var=%s value=%s", var, value)
                 if self.ecf_node is not None:
                     self.ecf_node.add_variable(var, value)

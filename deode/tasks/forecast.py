@@ -49,7 +49,6 @@ class Forecast(Task):
             / "fullpos_namelist.yml"
         )
 
-        self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
         self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
 
     def archive_output(self, fname, periods, suffix=""):

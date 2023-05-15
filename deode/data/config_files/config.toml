@@ -214,18 +214,9 @@ bhalf = [0.00000000,
  end = "2023-02-19T03:00:00Z"
  cycle_length = "PT3H"
  
-[task]
- wrapper = "srun"
-[task.forecast]
- wrapper = "time srun"
-[task.e923]
- wrapper = "srun"
-[task.e927]
- wrapper = "srun"
-[task.PgdUpdate]
- wrapper = "srun"
-[task.creategrib]
- wrapper = "srun"
+ [task]
+  wrapper = ""
+
 [task.args]
  bd_nr = "1"
  bd_time = "2023-02-19T09:00:00Z"
@@ -249,6 +240,10 @@ tasks = ["creategrib","Background_hpc", "UnitTest"]
 
 [submission.serial]
  SCHOST = "hpc"
+ NPROC = 1
+ NPROCX = 1
+ NPROCY = 1
+ WRAPPER = "srun"
 [submission.serial.BATCH]
  ACCOUNT = "#SBATCH -A msdeode"
  WALLTIME = "#SBATCH --time=00:15:00"
@@ -271,6 +266,8 @@ tasks = ["creategrib","Background_hpc", "UnitTest"]
 [submission.parallel]
  SCHOST = "hpc"
  tasks = ["Forecast","e927","Pgd","Prep"]
+ NPROC = 32
+ WRAPPER = "srun"
 [submission.parallel.BATCH]
  ACCOUNT = "#SBATCH -A msdeode"
  WALLTIME = "#SBATCH --time=00:10:00"
@@ -289,11 +286,16 @@ tasks = ["creategrib","Background_hpc", "UnitTest"]
  DR_HOOK = "os.environ['DR_HOOK'] = '1'"
  OMPI_MCA_btl= "os.environ['OMPI_MCA_btl'] = '^vader'"
 
+[submission.task_exceptions.e927]
+ NPROC = 16
 [submission.task_exceptions.e927.BATCH]
  NAME = "#SBATCH --job-name=e927"
  NODES = "#SBATCH --nodes=1"
  NTASKS = "#SBATCH --ntasks=16"
 
+[submission.task_exceptions.Forecast]
+ NPROC = 256
+ 
 [submission.task_exceptions.Forecast.BATCH]
  NAME = "#SBATCH --job-name=Forecast"
  NODES = "#SBATCH --nodes=2"
@@ -306,10 +308,12 @@ tasks = ["creategrib","Background_hpc", "UnitTest"]
  NTASKS = "#SBATCH --ntasks=32"
  WALLTIME = "#SBATCH --time=00:10:00"
 
+[submission.task_exceptions.Prep]
+ NPROC = 1
 [submission.task_exceptions.Prep.BATCH]
  NAME = "#SBATCH --job-name=Prep"
- NODES = "#SBATCH --nodes=2"
- NTASKS = "#SBATCH --ntasks=32"
+ NODES = "#SBATCH --nodes=1"
+ NTASKS = "#SBATCH --ntasks=1"
  WALLTIME = "#SBATCH --time=00:10:00"
 
 [troika]

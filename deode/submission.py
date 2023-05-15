@@ -5,12 +5,71 @@ import os
 import subprocess
 import sys
 
+from .derived_variables import derived_variables
 from .logs import get_logger, get_logger_from_config
 from .tasks.discover_task import get_task
 from .toolbox import Platform
 
 # TODO remove the need of this  # noqa
 logger = get_logger(__name__, "DEBUG")
+
+
+class ProcessorLayout:
+    """Set processor information."""
+
+    def __init__(self, kwargs):
+        """Construct object.
+
+           Use integers internally.
+
+        Args:
+            kwargs(dict): Processor information
+
+        """
+        self.wrapper = kwargs.get("WRAPPER")
+        self.nproc = kwargs.get("NPROC")
+        if self.nproc == "":
+            self.nproc = None
+        if isinstance(self.nproc, str):
+            self.nproc = int(self.nproc)
+        self.nproc_io = kwargs.get("NPROC_IO")
+        if self.nproc_io == "":
+            self.nproc_io = None
+        if isinstance(self.nproc_io, str):
+            self.nproc_io = int(self.nproc_io)
+        self.nprocx = kwargs.get("NPROCX")
+        if self.nprocx == "":
+            self.nprocx = None
+        if isinstance(self.nprocx, str):
+            self.nprocx = int(self.nprocx)
+        self.nprocy = kwargs.get("NPROCY")
+        if self.nprocy == "":
+            self.nprocy = None
+        if isinstance(self.nprocy, str):
+            self.nprocy = int(self.nprocy)
+
+    def get_proc_dict(self):
+        """Generate a processor dict."""
+        procs = {}
+        nproc = self.nproc
+        nproc_io = self.nproc_io
+        nprocx = self.nprocx
+        nprocy = self.nprocy
+        procs.update(
+            {"nproc": nproc, "nproc_io": nproc_io, "nprocx": nprocx, "nprocy": nprocy}
+        )
+        return procs
+
+    def get_wrapper(self):
+        """Get and potentially parse the wrapper."""
+        wrapper = self.wrapper
+        if wrapper is not None:
+            if self.nproc is not None:
+                nproc = self.nproc
+                if not isinstance(nproc, str):
+                    nproc = str(nproc)
+                wrapper = wrapper.replace("@NPROC@", nproc)
+        return wrapper
 
 
 class TaskSettings(object):
@@ -26,6 +85,7 @@ class TaskSettings(object):
         submission_defs = config.get_value("submission").dict()
         self.submission_defs = submission_defs
         self.job_type = None
+        self.processor_layout = None
 
     @staticmethod
     def update_task_setting(dic, upd):
@@ -85,6 +145,9 @@ class TaskSettings(object):
 
         if "SCHOST" in task_settings:
             self.job_type = task_settings["SCHOST"]
+
+        # Set task specific processor layout
+        self.processor_layout = ProcessorLayout(task_settings)
 
         self.logger.debug("Task settings for task %s: %s", task, task_settings)
         return task_settings
@@ -160,7 +223,7 @@ class TaskSettings(object):
         task_settings = self.parse_submission_defs(task)
         keys = []
         for key, value in self.recursive_items(task_settings):
-            if isinstance(value, str):
+            if isinstance(value, str) or isinstance(value, int):
                 self.logger.debug(key)
                 keys.append(key)
         self.logger.debug(keys)
@@ -261,6 +324,13 @@ class NoSchedulerSubmission:
             raise KeyError(f"Task not found: {task}") from KeyError
 
         platform = Platform(config)
+
+        # Update dervived variables (nproc etc)
+        settings = self.task_settings.get_settings(task)
+        processor_layout = ProcessorLayout(settings)
+        update = derived_variables(config, processor_layout=processor_layout)
+        config = config.copy(update=update)
+
         troika_config = platform.get_value("troika.config_file")
         self.task_settings.parse_job(
             task=task,

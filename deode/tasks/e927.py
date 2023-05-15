@@ -19,7 +19,6 @@ class E927(Task):
         """
         Task.__init__(self, config, __name__)
 
-        self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
         self.climdir = self.platform.get_system_value("climdir")
 
         self.cnmexp = self.config.get_value("general.cnmexp")

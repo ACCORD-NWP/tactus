@@ -101,7 +101,7 @@ def test_run_task_command(tmp_path):
             "--template",
             f"{WORKING_DIR.as_posix()}/deode/templates/stand_alone.py",
             "--job",
-            f"{tmp_path.as_posix()}/forecast.jo",
+            f"{tmp_path.as_posix()}/forecast.job",
             "-o",
             f"{tmp_path.as_posix()}/forecast.log",
         ]

@@ -157,7 +157,7 @@ e923_base:
     NMSG_LEVEL_CLIENT: 0
     NMSG_LEVEL_SERVER: 0
     NPROCESS_LEVEL: 5
-    NPROC_IO: 0
+    NPROC_IO: "${namelist.nproc_io-0}"
   NAMJBCODES: {}
   NAMJFH:
     N_VMASS: 0
@@ -192,9 +192,7 @@ e923_base:
     NPRGPEW: 1
     NPRGPNS: 1
     NPRINTLEV: 1
-    NPROC: 1
-    NPRTRV: 1
-    NPRTRW: 1
+    NPROC: "${namelist.nproc}"
   NAMPAR1:
     LSPLIT: True
     L_GATHERV_WRGP: True
@@ -934,7 +932,7 @@ f4_common:
     NMSG_LEVEL_CLIENT: 0
     NMSG_LEVEL_SERVER: 0
     NPROCESS_LEVEL: 5
-    NPROC_IO: 0
+    NPROC_IO: "${namelist.nproc_io-0}"
   NAMJBCODES: {}
   NAMJFH:
     N_VMASS: 0
@@ -1131,14 +1129,10 @@ f4_e927:
     YR_NL%NREQIN: 0
     YS_NL%NREQIN: 0
   NAMPAR0:
-    NPRGPEW: 4
-    NPRGPNS: 4
-    NPROC: 16
-    NPRTRV: 4
-    NPRTRW: 4
+    NPROC: "${namelist.nproc}"
   NAMPAR1:
-    NSTRIN: 16
-    NSTROUT: 16
+    NSTRIN: "${namelist.nproc}"
+    NSTROUT: "${namelist.nproc}"
   NAMPHY:
     LFGEL: False
     LNEBN: False

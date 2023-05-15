@@ -199,7 +199,6 @@ class CreateGrib(Task):
                 if opt not in v:
                     self.conversions[k][opt] = conversions_default[k][opt]
 
-        self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
         self.gl = f"{self.platform.get_system_value('bindir')}/gl"  # noqa
 
     def execute(self):

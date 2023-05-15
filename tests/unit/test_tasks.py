@@ -72,18 +72,7 @@ def task_name_and_configs(request, base_raw_config, tmp_path_factory):
     )
 
     task_config = task_config.copy(update=config_patch)
-    task_config = task_config.copy(
-        update={
-            "task": {
-                task_name: {
-                    "wrapper": "",
-                    "command": "echo Hello world && touch output",
-                    "input_data": {"input_file": "/dev/null"},
-                    "output_data": {"output": "archived_file"},
-                }
-            }
-        }
-    )
+    task_config = task_config.copy(update={"task": {"wrapper": "echo NPROC=@NPROC@;"}})
 
     return task_name, task_config
 

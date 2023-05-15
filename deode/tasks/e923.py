@@ -19,9 +19,6 @@ class E923(Task):
         """
         Task.__init__(self, config, __name__)
 
-        # Temporary namelists
-        self.wrapper = self.config.get_value("task.e923.wrapper")
-
         self.climdir = self.platform.get_system_value("climdir")
         self.constant_file = f"{self.climdir}/Const.Clim.const"
         self.months = [f"{mm:02d}" for mm in range(1, 13)]
@@ -275,7 +272,6 @@ class PgdUpdate(Task):
         """
         Task.__init__(self, config, "PgdUpdate")
 
-        self.wrapper = self.config.get_value(f"task.{self.name}.wrapper")
         self.climdir = self.platform.get_system_value("climdir")
         self.namelists = self.platform.get_platform_value("NAMELISTS")
         self.gl = f"{self.platform.get_system_value('bindir')}/gl"  # noqa

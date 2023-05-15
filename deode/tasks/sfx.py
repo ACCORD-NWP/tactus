@@ -78,7 +78,6 @@ class SurfexBinaryTask(Task):
         self.exp_file_paths = SystemFilePaths(exp_file_paths)
 
         self.dtg = as_datetime(self.config.get_value("general.times.validtime"))
-        self.wrapper = ""
         self.check_existence = False
         self.print_namelist = True
 

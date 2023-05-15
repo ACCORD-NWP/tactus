@@ -1,7 +1,9 @@
 """Default ecflow container."""
 from deode.config_parser import ParsedConfig
+from deode.derived_variables import derived_variables
 from deode.logs import get_logger_from_config
 from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
+from deode.submission import ProcessorLayout
 from deode.tasks.discover_task import get_task
 
 # @ENV_SUB@
@@ -23,6 +25,11 @@ def parse_ecflow_vars():
         "VALIDTIME": "%VALIDTIME%",
         "LOGLEVEL": "%LOGLEVEL%",
         "ARGS": "%ARGS%",
+        "WRAPPER": "%WRAPPER%",
+        "NPROC": "%NPROC%",
+        "NPROC_IO": "%NPROC_IO%",
+        "NPROCX": "%NPROCX%",
+        "NPROCY": "%NPROCY%",
         "CONFIG": "%CONFIG%",
         "DEODE_HOME": "%DEODE_HOME%",
         "KEEP_WORKDIRS": "%KEEP_WORKDIRS%",
@@ -54,9 +61,7 @@ def default_main(**kwargs):
     # config["general"].update({"loglevel": loglevel})  # noqa
     config = config.copy(
         update={
-            "task": {
-                "args": args_dict,
-            },
+            "task": {"args": args_dict, "wrapper": kwargs.get("WRAPPER")},
             "general": {
                 "loglevel": kwargs.get("LOGLEVEL"),
                 "times": {
@@ -84,6 +89,11 @@ def default_main(**kwargs):
 
     # This will also handle call to sys.exit(), i.e. Client.__exit__ will still be called.
     with EcflowClient(server, task):
+
+        processor_layout = ProcessorLayout(kwargs)
+        update = derived_variables(config, processor_layout=processor_layout)
+        config = config.copy(update=update)
+
         # TODO Add wrapper to config
         logger.info("Running task %s", task.ecf_name)
         get_task(task.ecf_task, config).run()

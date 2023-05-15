@@ -6,14 +6,16 @@ from math import atan, floor, sin
 from .datetime_utils import as_datetime, as_timedelta, oi2dt_list
 
 
-def derived_variables(config):
+def derived_variables(config, processor_layout=None):
     """Derive some variables required in the namelists.
 
     Args:
         config (deode.ParsedConfig): Configuration
+        processor_layout (ProcessorLayout, optional): Processor layout object
 
     Returns:
         update (dict) : Derived config update
+
     """
     # CSC/cycle info
     cycle = config.get_value("general.cycle")
@@ -105,5 +107,11 @@ def derived_variables(config):
         },
         "namelist_update": {"master": {}},
     }
+    if processor_layout is not None:
+        procs = processor_layout.get_proc_dict()
+        # Update namelist dicts
+        if procs:
+            update["namelist"].update(procs)
+        update.update({"task": {"wrapper": processor_layout.get_wrapper()}})
 
     return update

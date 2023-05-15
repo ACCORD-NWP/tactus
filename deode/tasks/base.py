@@ -5,7 +5,6 @@ import os
 import shutil
 import socket
 
-from ..derived_variables import derived_variables
 from ..logs import get_logger_from_config
 from ..toolbox import FileManager
 
@@ -48,13 +47,13 @@ class Task(object):
 
         """
         self.logger = get_logger_from_config(config)
-        update = derived_variables(config)
-        self.config = config.copy(update=update)
+        self.config = config
         if "." in name:
             name = name.split(".")[-1]
         self.name = name
         self.fmanager = FileManager(self.config)
         self.platform = self.fmanager.platform
+        self.wrapper = self.config.get_value("task.wrapper")
 
         wrk = self.platform.get_value("system.wrk")
         if wrk is None:

@@ -4,7 +4,8 @@ import pytest
 import tomlkit
 
 from deode.config_parser import ParsedConfig
-from deode.submission import NoSchedulerSubmission, TaskSettings
+from deode.derived_variables import derived_variables
+from deode.submission import NoSchedulerSubmission, ProcessorLayout, TaskSettings
 
 
 @pytest.fixture()
@@ -23,18 +24,7 @@ def minimal_raw_config():
 @pytest.fixture()
 def raw_config_with_task(minimal_raw_config):
     rtn = minimal_raw_config.copy()
-    rtn.update(
-        {
-            "task": {
-                "forecast": {
-                    "wrapper": "",
-                    "command": "echo Hello world && touch output",
-                    "input_data": {"input_file": "/dev/null"},
-                    "output_data": {"output": "archived_file"},
-                }
-            }
-        }
-    )
+    rtn.update({"task": {}})
     return rtn
 
 
@@ -122,3 +112,51 @@ class TestSubmission:
         sub = NoSchedulerSubmission(background)
         with pytest.raises(KeyError, match="Task not found:"):
             sub.submit(task, config, template_job, task_job, output)
+
+    def test_wrapper_and_nproc(self, config_from_task_config_file):
+        config = config_from_task_config_file
+        config = config.copy(
+            update={
+                "submission": {
+                    "submit_types": ["unittest"],
+                    "default_submit_type": "unittest",
+                    "unittest": {"WRAPPER": "@NPROC@", "NPROC": 2, "NPROCX": 1},
+                }
+            }
+        )
+        task = TaskSettings(config)
+        settings = task.get_task_settings("unittest")
+        processor_layout = ProcessorLayout(settings)
+        update = derived_variables(config, processor_layout=processor_layout)
+        assert update["task"]["wrapper"] == "2"
+        assert update["namelist"]["nproc"] == 2
+        assert update["namelist"]["nprocx"] == 1
+        assert update["namelist"]["nprocy"] is None
+        config = config.copy(update=update)
+        assert config.get_value("task.wrapper") == "2"
+        assert config.get_value("namelist.nproc") == 2
+        assert config.get_value("namelist.nprocx") == 1
+        with pytest.raises(AttributeError, match="object has no attribute"):
+            config.get_value("namelist.nprocy")
+
+    def test_empty_wrapper_and_nproc(self, config_from_task_config_file):
+        config = config_from_task_config_file
+        config = config.copy(
+            update={
+                "submission": {
+                    "submit_types": ["unittest"],
+                    "default_submit_type": "unittest",
+                    "unittest": {"NPROC": 2, "NPROCX": 1},
+                }
+            }
+        )
+        task = TaskSettings(config)
+        settings = task.get_task_settings("unittest")
+        processor_layout = ProcessorLayout(settings)
+        update = derived_variables(config, processor_layout=processor_layout)
+        config = config.copy(update=update)
+        with pytest.raises(AttributeError, match="object has no attribute"):
+            config.get_value("task.wrapper")
+        assert config.get_value("namelist.nproc") == 2
+        with pytest.raises(AttributeError, match="object has no attribute"):
+            config.get_value("namelist.nprocy")
