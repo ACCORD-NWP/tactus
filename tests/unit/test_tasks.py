@@ -44,12 +44,13 @@ def task_name_and_configs(request, base_raw_config, tmp_path_factory):
         [general]
             case = "my_case"
             loglevel = "WARNING"
-            macros = []
-            os_macros = ["USER", "HOME"]
             realization = -1
             cnmexp = "DEOD"
             tstep = 60
             keep_workdirs = false
+        [macros]
+            os_macros = ["USER", "HOME"]
+            gen_macros = ["general.case", "general.cnmexp", {{ domain = "domain.name" }}]
         [general.times]
             list = ["2000-01-01T00:00:00Z"]
             basetime = "2000-01-01T00:00:00Z"

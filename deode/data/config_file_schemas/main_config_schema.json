@@ -18,6 +18,26 @@
 
   "definitions": {
 
+    "Macros": {
+      "title": "MacroSection",
+      "description": "Model for the 'domain' section.",
+      "type": "object",
+      "properties": {
+        "gen_macros": {
+          "type": "array",
+	  "description": "Turns any string config to a macro, use a dict to rename an attribute."
+        },
+        "os_macros": {
+          "type": "array",
+	  "description": "Environment variables used as macros"
+        },
+        "group_macros": {
+          "type": "array",
+	  "description": "Turns a full config section to a macro"
+        }
+      }
+    },
+
     "Domain": {
       "title": "DomainSection",
       "description": "Model for the 'domain' section.",
@@ -138,10 +158,6 @@
               "title": "Experiment name",
               "default": "deode_case",
               "type": "string"
-        },
-        "os_macros": {
-              "title": "Os macros",
-              "type": "array"
         },
         "cnmexp": {
               "title": "Experiment short name",

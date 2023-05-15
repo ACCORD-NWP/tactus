@@ -1,7 +1,6 @@
 [general]
  case = "deode_case"
  cnmexp = "DEOD"
- os_macros = ["USER", "HOME", "PWD"]
  realization = -1
  tstep = 75
  loglevel = "info"
@@ -20,6 +19,15 @@
  create_static_data = true
  accept_static_namelists = false
  nproma = -32
+
+[macros]
+ os_macros = ["USER", "HOME", "PWD"]
+ group_macros = ["platform","system"]
+ gen_macros = ["general.cnmexp",
+               "general.cycle",
+               { exp_case = "general.case" },
+               { domain = "domain.name" },
+               { rrr = "general.realization" } ]
 
 [vertical_levels]
 nlev = 65

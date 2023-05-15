@@ -153,7 +153,16 @@ class Platform:
             dict: Environment macros to be used.
 
         """
-        return self.config.get_value("general.os_macros")
+        return self.config.get_value("macros.os_macros")
+
+    def get_gen_macros(self):
+        """Get the environment macros.
+
+        Returns:
+            dict: Environment macros to be used.
+
+        """
+        return self.config.get_value("macros.gen_macros")
 
     def get_provider(self, provider_id, target, fetch=True):
         """Get the needed provider.
@@ -222,16 +231,28 @@ class Platform:
         """
         if isinstance(pattern, str):
 
-            # Marcos from platform, system and os_macros
+            # Collect what is defined in config.macros, the group, os and general macros
             all_macros = {}
-            for source in ("platform", "system"):
+
+            for source in self.config.get_value("macros.group_macros"):
                 for macro, val in self.config.get_value(source).dict().items():
                     all_macros[macro.upper()] = val
+
             for macro in list(self.get_os_macros()):
                 try:
                     all_macros[macro] = os.environ[macro]
                 except KeyError:
                     pass
+
+            for macro in self.config.get_value("macros.gen_macros"):
+                if isinstance(macro, dict):
+                    key = list(macro)[0]
+                    val = self.config.get_value(macro[key].lower())
+                    key = key.upper()
+                else:
+                    val = self.config.get_value(macro.lower())
+                    key = macro.split(".")[-1].upper()
+                all_macros[key] = val
 
             i = [m.start() for m in re.finditer(r"@", pattern)]
             last_pattern = "#"
@@ -252,22 +273,6 @@ class Platform:
                         pass
 
                 i = [m.start() for m in re.finditer(r"@", pattern)]
-
-            domain = self.config.get_value("domain.name")
-            pattern = self.sub_value(pattern, "domain", domain)
-            exp_case = self.config.get_value("general.case")
-            pattern = self.sub_value(pattern, "case", exp_case)
-            self.logger.debug("Substituted domain: %s pattern=%s", domain, pattern)
-            realization = self.config.get_value("general.realization")
-            if realization is not None and realization >= 0:
-                pattern = self.sub_value(pattern, "RRR", f"{realization:03d}")
-                pattern = self.sub_value(pattern, "MRRR", f"mbr{realization:03d}")
-            else:
-                pattern = self.sub_value(pattern, "RRR", "")
-
-            self.logger.debug(
-                "Substituted realization: %s pattern=%s", realization, pattern
-            )
 
             # Time handling
             if basetime is None:
@@ -321,11 +326,6 @@ class Platform:
                 pattern = self.sub_value(pattern, "DD", basetime.strftime("%d"))
                 pattern = self.sub_value(pattern, "HH", basetime.strftime("%H"))
                 pattern = self.sub_value(pattern, "mm", basetime.strftime("%M"), ci=False)
-
-            cnmexp = self.config.get_value("general.cnmexp")
-            if cnmexp is not None:
-                pattern = self.sub_value(pattern, "CNMEXP", cnmexp)
-                self.logger.debug("Substituted CNMEXP: %s pattern=%s", cnmexp, pattern)
 
         self.logger.debug("Return pattern=%s", pattern)
         return pattern

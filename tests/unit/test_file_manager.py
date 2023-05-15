@@ -17,11 +17,15 @@ def config_platform():
         """
         [general]
             case = "mytest"
-            os_macros = ["USER", "HOME"]
             realization = -1
             cnmexp = "DEOD"
             tstep = 60
             loglevel = "DEBUG"
+        [macros]
+            os_macros = ["USER", "HOME"]
+            group_macros = ["platform","system"]
+            gen_macros = ["general.cnmexp",
+                          { domain = "domain.name" }]
         [domain]
             name = "MYDOMAIN"
         [general.times]
@@ -123,12 +127,16 @@ class TestFileManager:
         os.environ["FILE_TEST"] = "test"
         test_config = {
             "general": {
-                "os_macros": ["FILE_TEST"],
                 "cnmexp": "DEOD",
                 "times": {
                     "basetime": "2023-02-15T01:30:00Z",
                     "validtime": "2023-02-15T03:30:00Z",
                 },
+            },
+            "macros": {
+                "os_macros": ["FILE_TEST"],
+                "groups_macros": ["platform"],
+                "gen_macros": ["general.cnmexp", {"domain": "domain.name"}],
             },
             "domain": {"name": "DOMAIN"},
             "system": {"climdir": "my_dir"},
