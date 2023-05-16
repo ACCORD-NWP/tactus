@@ -25,7 +25,7 @@
  group_macros = ["platform","system"]
  gen_macros = ["general.cnmexp",
                "general.cycle",
-               { exp_case = "general.case" },
+               { case = "general.case" },
                { domain = "domain.name" },
                { rrr = "general.realization" } ]
 
