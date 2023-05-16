@@ -11,7 +11,7 @@ from .tasks.discover_task import get_task
 from .toolbox import Platform
 
 # TODO remove the need of this  # noqa
-logger = get_logger(__name__, "DEBUG")
+logger = get_logger(__name__, "INFO")
 
 
 class ProcessorLayout:

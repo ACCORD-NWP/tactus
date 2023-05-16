@@ -87,5 +87,5 @@ def get_logger_from_config(config):
         handlers=[logger_handler],
     )
     logger.setLevel(logging.getLevelName(loglevel.upper()))
-    logger.info("returning logger with level %s %s", loglevel.upper(), logger.level)
+    logger.debug("returning logger with level %s %s", loglevel.upper(), logger.level)
     return logger

@@ -14,7 +14,7 @@ except ModuleNotFoundError:
     ecflow = None
 from .logs import get_logger
 
-logger = get_logger(__name__, "DEBUG")
+logger = get_logger(__name__, "INFO")
 
 
 # Base Scheduler server class

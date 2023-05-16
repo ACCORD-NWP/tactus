@@ -389,7 +389,7 @@ class FileManager:
             self.logger.debug("Destination file already exists.")
             return None, destination
         else:
-            self.logger.info("Checking provider_id %s", provider_id)
+            self.logger.debug("Checking provider_id %s", provider_id)
             sub_target = self.platform.substitute(
                 target, basetime=basetime, validtime=validtime
             )
@@ -411,7 +411,7 @@ class FileManager:
                     target, basetime=basetime, validtime=validtime
                 )
 
-                self.logger.info("Checking archiving provider_id %s", provider_id)
+                self.logger.debug("Checking archiving provider_id %s", provider_id)
                 provider = self.platform.get_provider(provider_id, sub_target)
 
                 if provider.create_resource(destination):
@@ -491,7 +491,7 @@ class FileManager:
         target_resource = LocalFileOnDisk(
             self.config, sub_target, basetime=basetime, validtime=validtime
         )
-        self.logger.info(
+        self.logger.debug(
             "Checking provider_id=%s for destination=%s ", provider_id, sub_destination
         )
         provider = self.platform.get_provider(provider_id, sub_destination, fetch=False)

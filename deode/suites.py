@@ -12,7 +12,7 @@ try:
 except ImportError:
     ecflow = None
 
-logger = get_logger(__name__, "DEBUG")
+logger = get_logger(__name__, "INFO")
 
 
 class SuiteDefinition(object):

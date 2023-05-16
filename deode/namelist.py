@@ -98,7 +98,7 @@ class NamelistGenerator:
         ref_namelist = f"{Path(__file__).parent}/data/namelists/{self.kind}_{self.target}"
         self.logger.debug("Check if reference namelist %s exists", ref_namelist)
         if os.path.isfile(ref_namelist):
-            self.logger.debug("Use reference namelist %s", ref_namelist)
+            self.logger.info("Use reference namelist %s", ref_namelist)
             nl = f90nml.read(ref_namelist)
             nldict = {self.target: nl.todict()}
             cndict = {self.target: [self.target]}
@@ -143,14 +143,14 @@ class NamelistGenerator:
 
         # Check target is valid
         if target not in cndict:
-            self.logger.debug(
+            self.logger.warning(
                 "Could not find target '%s' in %s", target, str(self.cnfile)
             )
             msg = "Available targets:"
             for key in cndict:
                 if not re.match(r"_.+", key):
                     msg += " " + key + ","
-            self.logger.debug(msg[:-1])
+            self.logger.warning(msg[:-1])
             raise InvalidNamelistTargetError(target)
 
         self.nldict = nldict
