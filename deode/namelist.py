@@ -65,6 +65,7 @@ class NamelistGenerator:
             raise InvalidNamelistKindError(kind)
 
         self.config = config
+        self.platform = Platform(config)
         self.kind = kind  # not used elsewhere, though
         self.substitute = substitute
         self.logger = get_logger_from_config(config)
@@ -95,7 +96,9 @@ class NamelistGenerator:
             cndict : Rules for dictionary
 
         """
-        ref_namelist = f"{Path(__file__).parent}/data/namelists/{self.kind}_{self.target}"
+        namelists = self.platform.get_platform_value("NAMELISTS")
+        ref_namelist = f"{namelists}/namelist_{self.kind}_{self.target}"
+
         self.logger.debug("Check if reference namelist %s exists", ref_namelist)
         if os.path.isfile(ref_namelist):
             self.logger.info("Use reference namelist %s", ref_namelist)
@@ -171,9 +174,6 @@ class NamelistGenerator:
             nlres (dict): Assembled namelist
 
         """
-        # For access to the config object
-        platform = Platform(self.config)
-
         # Start with empty result dictionary
         nlres = {}
 
@@ -207,7 +207,7 @@ class NamelistGenerator:
                                     defval = m.group(3)
                                     post = m.group(4)
                                     try:
-                                        repval = platform.get_value(nam)
+                                        repval = self.platform.get_value(nam)
                                     except Exception:
                                         repval = None
                                     if repval is None:

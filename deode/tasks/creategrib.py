@@ -120,6 +120,7 @@ class Fileconv(BatchJob):
 
         def find_cmd(infile, outfile):
             glcmd = f"{self.binary} -p {infile} -o {outfile} -"
+
             if "sfx" in self.input_template:
                 # Convert surfex files
                 namelist_file = "namsfx"

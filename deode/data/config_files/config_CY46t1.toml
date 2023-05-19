@@ -1,86 +1,281 @@
 [general]
  case = "deode_case_CY46t1"
- os_macros = ["USER", "HOME", "PWD"]
  realization = -1
- cnmexp = "ARPE"
- tstep = 60
- loglevel = "INFO"
+ cnmexp = "AROM"
+ tstep = 50
+ loglevel = "DEBUG"
  surfex = true
  csc = "AROME"
- cycle = "CY46t1"
  bdint = "PT1H"
  bdcycle = "PT12H"
+ cycle = "CY46t1"
  forecast_range = "PT6H"
  output_interval_his = "PT1H"
  output_interval_fp = "PT1H"
- output_interval_sfx = "PT3H"
+ output_interval_sfx = "PT1H"
  output_interval_sfx_sel = "PT1H"
  keep_workdirs = true
+ bdmax = 12
+ create_static_data = true
+ accept_static_namelists = true
+ nproma = -32
+
+[macros]
+ os_macros = ["USER", "HOME", "PWD"]
+ group_macros = ["platform","system"]
+ gen_macros = ["general.cnmexp",
+               "general.cycle",
+               { case = "general.case" },
+               { domain = "domain.name" },
+               { rrr = "general.realization" } ]
 
 [vertical_levels]
-nlev = 65
-ahalf = []
-bhalf = []
+ nlev = 90 
+ ahalf=[0.0,
+    2718.281829,
+    3747.089291,
+    5034.628437,
+    6544.912331,
+    8198.254772,
+    9884.037509,
+    11495.975326,
+    13027.505452,
+    14563.582313,
+    16027.001094,
+    17350.572570,
+    18488.484485,
+    19421.729531,
+    20150.678519,
+    20703.501353,
+    21120.067860,
+    21422.374439,
+    21617.205213,
+    21700.607608,
+    21664.253163,
+    21503.836344,
+    21228.956759,
+    20852.005941,
+    20386.366609,
+    19845.368084,
+    19241.349855,
+    18584.887324,
+    17884.206486,
+    17144.791188,
+    16369.171264,
+    15556.874071,
+    14719.777823,
+    13869.911343,
+    13018.864414,
+    12177.273612,
+    11354.413453,
+    10557.908483,
+    9793.568381,
+    9065.336892,
+    8375.337452,
+    7723.994524,
+    7110.208402,
+    6531.565033,
+    5988.625732,
+    5481.396429,
+    5009.397153,
+    4571.733424,
+    4167.166971,
+    3794.183751,
+    3451.057718,
+    3135.909257,
+    2846.757685,
+    2581.567536,
+    2338.288920,
+    2114.891972,
+    1909.396606,
+    1719.898028,
+    1545.164089,
+    1384.095523,
+    1235.715886,
+    1099.160647,
+    973.665696,
+    858.555496,
+    753.231040,
+    657.157769,
+    569.853600,
+    490.877204,
+    419.816710,
+    356.279006,
+    299.879869,
+    250.235155,
+    206.953392,
+    169.629978,
+    137.661377,
+    110.481694,
+    87.562438,
+    68.412047,
+    52.575220,
+    39.632072,
+    29.197140,
+    20.918270,
+    14.475386,
+    9.579184,
+    5.969747,
+    3.415109,
+    1.709778,
+    0.673225,
+    0.148360,
+    0.000000,
+    0.000000]
+ bhalf=[0.0,
+    0.0000000000,
+    0.0000000000,
+    0.0000000000,
+    0.0000000000,
+    0.0000000000,
+    0.0002553339,
+    0.0012582626,
+    0.0032186754,
+    0.0065542091,
+    0.0115260859,
+    0.0182233571,
+    0.0265306802,
+    0.0361650379,
+    0.0466837499,
+    0.0578169615,
+    0.0697514905,
+    0.0827965908,
+    0.0972973540,
+    0.1135392122,
+    0.1316354653,
+    0.1513917778,
+    0.1721529871,
+    0.1937287238,
+    0.2159368732,
+    0.2386170760,
+    0.2616429112,
+    0.2849322192,
+    0.3084553280,
+    0.3322412065,
+    0.3563817662,
+    0.3810346250,
+    0.4059735997,
+    0.4309763608,
+    0.4558322276,
+    0.4803492980,
+    0.5043605563,
+    0.5277287467,
+    0.5503499447,
+    0.5721558758,
+    0.5931151226,
+    0.6132334074,
+    0.6325531814,
+    0.6511527023,
+    0.6690096121,
+    0.6861106095,
+    0.7024509531,
+    0.7180339228,
+    0.7328702640,
+    0.7469776359,
+    0.7603800785,
+    0.7731075119,
+    0.7851952736,
+    0.7966837018,
+    0.8076177578,
+    0.8180467044,
+    0.8280238137,
+    0.8376061181,
+    0.8468231941,
+    0.8557014234,
+    0.8642639577,
+    0.8725307031,
+    0.8805183181,
+    0.8882402246,
+    0.8957066275,
+    0.9029245414,
+    0.9098978232,
+    0.9166272078,
+    0.9231103463,
+    0.9293418440,
+    0.9353132984,
+    0.9410133344,
+    0.9464276294,
+    0.9515389442,
+    0.9563559969,
+    0.9608873801,
+    0.9651415535,
+    0.9691268385,
+    0.9728514153,
+    0.9763233211,
+    0.9795504499,
+    0.9825405544,
+    0.9853012477,
+    0.9878400070,
+    0.9901641777,
+    0.9922809780,
+    0.9941975046,
+    0.9959207382,
+    0.9974575502,
+    0.9988147073,
+    1.0000000000]
 
 [domain]
-name = "DEMO_100_2500m"
-nimax = 89
-njmax = 89
-xloncen = 4.9
-xlatcen = 51.967
-xdx = 2500.0
-xdy = 2500.0
-ilone = 11
-ilate = 11
-xlon0 = 0.0
-xlat0 = 52.5
+ name = "DEMO_60x80_2500m"
+ nimax = 49
+ njmax = 69
+ xloncen = 4.9
+ xlatcen = 51.967
+ xlon0 = 0.0
+ xlat0 = 52.5
+ xbeta  = 0.0
+ xdx = 2500.0
+ xdy = 2500.0
+ ilone = 11
+ ilate = 11
+ nbzong = 8
+ nbzonl = 8
+ gridtype = "linear"
 
 [system]
  wrk = "@SCRATCH@/deode/@CASE@/@YYYY@@MM@@DD@_@HH@@mm@"
  archive = "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
  bddir = "/scratch/sism/DEOL/@YYYY@/@MM@/@DD@/@HH@"
- intp_bddir = "/home/snh02/work/cy46t1/arome/data"
  bdfile_template = "PFIFSDEOL+@LLLL@"
- bddir_sfx = "/home/snh02/work/dev-CY46h1_deode/boundaries/HRES/@YYYY@/@MM@/@DD@/@HH@"
+ bddir_sfx = "/ec/res4/scratch/kmw/DEODE/ECMWF/2023021900"
  bdfile_sfx_template = "fc@YYYY@@MM@@DD@_@HH@+@LLL@"
- climdir = "/home/snh02/work/cy46t1/arome/data"
+ climdir = "@SCRATCH@/deode/@CASE@/climate/@DOMAIN@"
  bdclimdir = "/home/snh02/work/dev-CY46h1_deode/climate/DEODE_LARGE"
- bindir = "/home/snh02/pack/46t1_fix.01.OMPIIFC2104.x/bin"
- initfile = "/home/snh02/work/cy46t1/arome/data/ICMSHARPEINIT"
- initfile_sfx = "/home/snh02/work/cy46t1/arome/data/ICMSHARPEINIT.sfx"
+ bindir = "/home/kmw/packs/46t1_pgdprep.01.OMPIIFC2104.x/bin"
 
 [platform]
  deode_home = "set-by-the-system"
  archive_root = "@SCRATCH@/deode/@CASE@/archive"
  scratch = "/scratch/@USER@"
  rrtm_dir = "@STATIC_DATA@/rrtm/46h1"
- e923_data = "@STATIC_DATA@/climate/E923_DATA"
  ncdir = "/home/snh02/work/cy46t1/arome/data"
+ e923_data = "@STATIC_DATA@/climate/E923_DATA"
  namelists = "@DEODE_HOME@/deode/data/namelists/CY46t1"
  static_data = "/hpcperm/hlam/data"
  climdata = "/hpcperm/hlam/data/climate"
  ecosg_data_path = "@CLIMDATA@/ECOCLIMAP-SG"
+ ecoclim_data_path = "/home/snh02/work/cy46t1/ecoclimap"
  gmted2010_data_path = "@CLIMDATA@/GMTED2010"
  soilgrid_data_path = "@CLIMDATA@/SOILGRID"
  pgd_data_path = "@CLIMDATA@/PGD"
 
 [general.times]
- basetime = "2016-06-04T12:00:00Z"
+ basetime = "2023-02-19T00:00:00Z"
  validtime = "2023-02-19T00:00:00Z"
  start = "2023-02-19T00:00:00Z"
  end = "2023-02-19T03:00:00Z"
  cycle_length = "PT3H"
 
 [task]
- wrapper = "srun"
-[task.forecast]
- wrapper = "time srun"
-[task.e923]
- wrapper = "srun"
-[task.e927]
- wrapper = "srun"
-[task.PgdUpdate]
- wrapper = "srun"
+ wrapper = ""
+
+[task.args]
+ bd_nr = "1"
+ bd_time = "2023-02-19T09:00:00Z"
+
+[task.creategrib.conversions]
+  #his = { output_template = "his_basetime+duration.grib2" }
+  sfx = { output_template = "sfx_basetime+duration.grib" }
+#  sfx_sel = { output_template = "sfx_sel_basetime+duration.grib" }
 
 [submission]
 submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
@@ -92,10 +287,14 @@ tasks = ["Background_vm"]
 
 [submission.background_hpc]
 SCHOST = "localhost"
-tasks = ["Background_hpc", "UnitTest"]
+tasks = ["creategrib","Background_hpc", "UnitTest"]
 
 [submission.serial]
  SCHOST = "hpc"
+ NPROC = 1
+ NPROCX = 1
+ NPROCY = 1
+ WRAPPER = "srun"
 [submission.serial.BATCH]
  ACCOUNT = "#SBATCH -A msdeode"
  WALLTIME = "#SBATCH --time=00:15:00"
@@ -107,55 +306,54 @@ tasks = ["Background_hpc", "UnitTest"]
  MODULE_ENV = "module_env='/usr/local/apps/lmod/8.6.8/init/env_modules_python.py'"
  MODULE_INTEL= "exec(open(module_env).read()); module('load', 'prgenv/intel')"
  MODULE_MKL= "exec(open(module_env).read()); module('load', 'intel-mkl/19.0.5')"
- MODULE_OPENMPI= "exec(open(module_env).read()); module('load', 'openmpi/4.1.1.1')"
+ MODULE_OPENMPI= "exec(open(module_env).read()); module('load', 'hpcx-openmpi/2.9.0')"
  MODULE_NETCDF4= "exec(open(module_env).read()); module('load', 'netcdf4/4.7.4')"
  MODULE_HDF5= "exec(open(module_env).read()); module('load', 'hdf5/1.10.6')"
  MODULE_ECMWF= "exec(open(module_env).read()); module('load', 'ecmwf-toolbox/2021.08.3.0')"
  MODULE_FFTW= "exec(open(module_env).read()); module('load', 'fftw/3.3.9')"
  OMP_NUM_THREADS= "os.environ['OMP_NUM_THREADS'] = '1'"
  OMPI_MCA_btl= "os.environ['OMPI_MCA_btl'] = '^vader'"
+ DR_HOOK_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
 
 [submission.parallel]
  SCHOST = "hpc"
  tasks = ["Forecast","e927"]
+ NPROC = 32
+ WRAPPER = "srun"
 [submission.parallel.BATCH]
  ACCOUNT = "#SBATCH -A msdeode"
  WALLTIME = "#SBATCH --time=00:10:00"
  QOS = "#SBATCH --qos=np"
 [submission.parallel.ENV]
  OS = "import os"
- MODULE_ENV = "module_env='/usr/local/apps/lmod/8.6.8/init/env_modules_python.py'"
- MODULE_INTEL = "exec(open(module_env).read()); module('load', 'intel/2021.4.0')"
- MODULE_HPCX = "exec(open(module_env).read()); module('load', 'hpcx-openmpi/2.9.0')"
- MODULE_MKL = "exec(open(module_env).read()); module('load', 'intel-mkl/19.0.5')"
- MODULE_GCC = "exec(open(module_env).read()); module('load', 'gcc/8.5.0')"
- MODULE_ECMWF = "exec(open(module_env).read()); module('load', 'ecmwf-toolbox/2021.08.3.0')"
+ MODULE_ENV= "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read())"
+ MODULE_INTEL= "module('load', 'prgenv/intel')"
+ MODULE_MKL= "module('load', 'intel-mkl/19.0.5')"
+ MODULE_OPENMPI= "module('load', 'hpcx-openmpi/2.9.0')"
+ MODULE_NETCDF4= "module('load', 'netcdf4/4.7.4')"
+ MODULE_HDF5= "module('load', 'hdf5/1.10.6')"
+ MODULE_ECMWF= "module('load', 'ecmwf-toolbox/2021.08.3.0')"
+ MODULE_FFTW= "module('load', 'fftw/3.3.9')"
+ OMP_NUM_THREADS= "os.environ['OMP_NUM_THREADS'] = '1'"
  DR_HOOK = "os.environ['DR_HOOK'] = '1'"
- DR_HOOK_SILENT = "os.environ['DR_HOOK_SILENT'] = '1'"
+ DR_HOOK_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
  OMPI_MCA_btl= "os.environ['OMPI_MCA_btl'] = '^vader'"
- OMP_PLACES = "os.environ['OMP_PLACES'] = 'threads'"
- OMP_NUM_THREADS = "os.environ['OMP_NUM_THREADS'] = '1'"
- KMP_STACKSIZE = "os.environ['KMP_STACKSIZE'] = '2G'"
- KMP_MONITOR_STACKSIZE = "os.environ['KMP_MONITOR_STACKSIZE'] = '2G'"
- EC_PROFILE_HEAP = "os.environ['EC_PROFILE_HEAP'] = '0'"
- EC_MPI_ATEXIT = "os.environ['EC_MPI_ATEXIT'] = '0'"
- ECCODES_SAMPLES_PATH = "os.environ['ECCODES_SAMPLES_PATH'] = '/perm/rme/packages/eccodes-2.21.0/INTEL/2021.4/share/eccodes/ifs_samples/grib1_mlgrib2'"
- ECCODES_DEFINITION_PATH= "os.environ['ECCODES_DEFINITION_PATH'] = '/home/snh02/opt/share/eccodes/definitions:/perm/rme/packages/eccodes-2.21.0/INTEL/2021.4/share/eccodes/definitions'"
 
-
+[submission.task_exceptions.e927]
+ NPROC = 16
 [submission.task_exceptions.e927.BATCH]
  NAME = "#SBATCH --job-name=e927"
  NODES = "#SBATCH --nodes=1"
  NTASKS = "#SBATCH --ntasks=16"
 
+[submission.task_exceptions.Forecast]
+ NPROC = 256
+ 
 [submission.task_exceptions.Forecast.BATCH]
- MULTITHREAD = "#SBATCH --hint=nomultithread"
- NAME = "#SBATCH --job-name=fcast_task"
- NODES = "#SBATCH -N 2"
+ NAME = "#SBATCH --job-name=Forecast"
+ NODES = "#SBATCH --nodes=2"
  NTASKS = "#SBATCH --ntasks=256"
  WALLTIME = "#SBATCH --time=00:30:00"
-[submission.task_exceptions.Forecast.ENV]
- DR_HOOK_IGNORE_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '9'"
 
 [troika]
 config_file = "@DEODE_HOME@/deode/data/config_files/troika.yml"
@@ -172,8 +370,9 @@ LSPLIT_PATCH = true
 LSELECT = true
 
 [SURFEX.COVER]
-YCOVER = "ecosg_final_map.dir"
-SG = true
+YCOVER = "ecoclimap.dir"
+SG = false
+YCOVERFILETYPE = "DIRECT"
 H_TREE = "new_ht_c.dir"
 ALBNIR_SOIL = "ALB_SAT_NI_@MM@@CDD@_c.dir"
 ALBNIR_VEG = "ALB_SAT_NI_@MM@@CDD@_c.dir"
@@ -189,7 +388,7 @@ XRIMAX = 0.2
 
 [SURFEX.TILES]
 SEA = "SEAFLX"
-INLAND_WATER = "FLAKE"
+INLAND_WATER = "NONE"
 NATURE = "ISBA"
 TOWN = "TEB"
 
@@ -206,14 +405,14 @@ LDB_VERSION = "3.0"
 
 [SURFEX.ISBA]
 SCHEME = "3-L"
-NPATCH = 2
+NPATCH = 1
 MEB = false
 CANOPY = false
 SNOW = "D95"
 YSOC_TOP = "soc_top.dir"
 YSOC_SUB = "soc_sub.dir"
-YSAND = "SAND_SOILGRID.dir"
-YCLAY = "CLAY_SOILGRID.dir"
+YSAND = "SAND_HWSD_MOY_v2.dir"
+YCLAY = "CLAY_HWSD_MOY_v2.dir"
 PERTSURF = false
 XCGMAX = 2e-5
 XCSMAX = 0.0002

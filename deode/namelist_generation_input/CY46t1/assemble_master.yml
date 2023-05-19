@@ -1,0 +1,43 @@
+e923_0:
+  - e923_base
+  - e923_0
+
+e923_1:
+  - e923_base
+  - e923_1
+
+e923_2:
+  - e923_base
+  - e923_2
+
+e923_3:
+  - e923_base
+  - e923_3
+
+e923_4:
+  - e923_base
+  - e923_4
+
+e923_5:
+  - e923_base
+  - e923_5
+
+e923_6:
+  - e923_base
+  - e923_6
+
+e923_8:
+  - e923_base
+  - e923_8
+
+e923_9:
+  - e923_base
+  - e923_9
+
+e927:
+  - f4_common
+  - f4_e927
+
+forecast:
+  - f4_common
+  - f4_harmonie-arome

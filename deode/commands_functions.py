@@ -125,6 +125,10 @@ def show_namelist(args, config):
     """
     logger = get_logger(__name__, args.loglevel)
     logger.info("Printing namelist in use...")
+
+    deode_home = set_deode_home(args, config)
+    config = config.copy(update={"platform": {"deode_home": deode_home}})
+
     config = config.copy(update=derived_variables(config))
 
     nlgen = NamelistGenerator(config, args.namelist_type, substitute=args.no_substitute)

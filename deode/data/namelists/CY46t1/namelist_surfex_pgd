@@ -1,0 +1,55 @@
+&NAM_CONF_PROJ
+    XBETA = '${domain.xbeta}'
+    XLAT0 = '${domain.xlat0}'
+    XLON0 = '${domain.xlon0}'
+    XRPK = '${domain.xrpk}'
+/
+
+&NAM_CONF_PROJ_GRID
+    ILATE = '${domain.ilate}'
+    ILONE = '${domain.ilone}'
+    NIMAX = '${domain.nimax}'
+    NJMAX = '${domain.njmax}'
+    XDX = '${domain.xdx}'
+    XDY = '${domain.xdy}'
+    XLATCEN = '${domain.xlatcen}'
+    XLONCEN = '${domain.xloncen}'
+/
+&NAM_COVER
+   YCOVER="ecoclimap",
+   YCOVERFILETYPE="DIRECT",
+/
+&NAM_IO_OFFLINE
+   CPREPFILE = 'PREP',
+   CPGDFILE="PGD",
+   CSURFFILE = 'SURFOUT'
+   CSURF_FILETYPE='FA',
+   LFAGMAP=.TRUE.,
+   NHALO=0,
+/
+&NAM_ISBA
+   YCLAY="CLAY_HWSD_MOY_v2",
+   YCLAYFILETYPE="DIRECT",
+   YSAND="SAND_HWSD_MOY_v2",
+   YSANDFILETYPE="DIRECT",
+/
+&NAM_PGD_GRID
+   CGRID="CONF PROJ",
+/
+&NAM_ZS
+   CSVF='MANNERS',
+   LFSSOSVF=.FALSE.,
+   LORORAD=.TRUE.,
+   YZS="gmted2010",
+   YZSFILETYPE="DIRECT",
+/
+&NAM_ZS_FILTER
+   NZSFILTER=0,
+/
+&NAM_PGD_SCHEMES
+   CNATURE="ISBA",
+   CSEA="SEAFLX",
+   CTOWN="TEB",
+   CWATER="WATFLX",
+   LGARDEN=F,
+/

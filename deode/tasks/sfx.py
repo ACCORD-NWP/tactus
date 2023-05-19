@@ -55,26 +55,39 @@ class SurfexBinaryTask(Task):
         self.sfx_config = Configuration(sfx_config)
 
         # Get paths from file manager (example)
-        ecosg_dir = self.fmanager.platform.get_platform_value("ECOSG_DATA_PATH")
         pgd_dir = self.fmanager.platform.get_platform_value("PGD_DATA_PATH")
         climdir = self.fmanager.platform.get_system_value("climdir")
+        if self.sfx_config.settings["SURFEX"]["COVER"]["SG"]:
+            ecosg_dir = self.fmanager.platform.get_platform_value("ECOSG_DATA_PATH")
 
-        # TODO get all needed paths
-        exp_file_paths = {
-            "tree_height_dir": f"{ecosg_dir}/HT/",
-            "flake_dir": f"{pgd_dir}",
-            "sand_dir": f"{climdir}",
-            "clay_dir": f"{climdir}",
-            "soc_top_dir": f"{climdir}",
-            "soc_sub_dir": f"{climdir}",
-            "ecoclimap_sg_cover_dir": f"{ecosg_dir}/COVER/",
-            "albnir_soil_dir": f"{ecosg_dir}/ALB_SAT/",
-            "albvis_soil_dir": f"{ecosg_dir}/ALB_SAT/",
-            "albnir_veg_dir": f"{ecosg_dir}/ALB_SAT/",
-            "albvis_veg_dir": f"{ecosg_dir}/ALB_SAT/",
-            "lai_dir": f"{ecosg_dir}/LAI_SAT/",
-            "oro_dir": f"{climdir}",
-        }
+            # TODO get all needed paths
+            exp_file_paths = {
+                "tree_height_dir": f"{ecosg_dir}/HT/",
+                "flake_dir": f"{pgd_dir}",
+                "sand_dir": f"{climdir}",
+                "clay_dir": f"{climdir}",
+                "soc_top_dir": f"{climdir}",
+                "soc_sub_dir": f"{climdir}",
+                "ecoclimap_sg_cover_dir": f"{ecosg_dir}/COVER/",
+                "albnir_soil_dir": f"{ecosg_dir}/ALB_SAT/",
+                "albvis_soil_dir": f"{ecosg_dir}/ALB_SAT/",
+                "albnir_veg_dir": f"{ecosg_dir}/ALB_SAT/",
+                "albvis_veg_dir": f"{ecosg_dir}/ALB_SAT/",
+                "lai_dir": f"{ecosg_dir}/LAI_SAT/",
+                "oro_dir": f"{climdir}",
+            }
+        else:
+            eco_dir = self.fmanager.platform.get_platform_value("ECOCLIM_DATA_PATH")
+            exp_file_paths = {
+                "sand_dir": f"{pgd_dir}",
+                "clay_dir": f"{pgd_dir}",
+                "ecoclimap_bin_dir": f"{eco_dir}",
+                "ecoclimap_cover_dir": f"{eco_dir}",
+                "oro_dir": f"{climdir}",
+                "soc_top_dir": f"{climdir}",
+                "soc_sub_dir": f"{climdir}",
+            }
+
         self.exp_file_paths = SystemFilePaths(exp_file_paths)
 
         self.dtg = as_datetime(self.config.get_value("general.times.validtime"))
