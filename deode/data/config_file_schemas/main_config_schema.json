@@ -49,30 +49,37 @@
 	  "enum": ["linear", "quadratic", "cubic", "custom" ]
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "description": "Name of your domain"
         },
         "nimax": {
           "type": "number",
+          "description": "Number of grid points longitudinally",
 	  "minimum": 0
         },
         "njmax": {
           "type": "number",
+          "description": "Number of grid points latitudinally",
 	  "minimum": 0
         },
         "xdx": {
           "type": "number",
+          "description": "Domain longitudinal length in meters",
 	  "minimum": 0
         },
         "xdy": {
           "type": "number",
+          "description": "Domain latiudinal length in meters",
 	  "minimum": 0
         },
         "ilone": {
           "type": "number",
+          "description": "Longitudinal extension zone",
 	  "minimum": 0
         },
         "ilate": {
           "type": "number",
+          "description": "Latitudinal extension zone",
 	  "minimum": 0
         },
         "nbzong": {
@@ -210,6 +217,15 @@
               "title": "Forecast range",
               "type": "string",
               "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        },
+        "output_interval_his": {
+              "description": "Output list for history files. Specified as duration for any of interval, endtime:interval, starttime:endtime:interval or a list of these options"
+        },
+        "output_interval_sfx": {
+              "description": "Output list for history files. Specified as duration for any of interval, endtime:interval, starttime:endtime:interval or a list of these options"
+        },
+        "output_interval_fp": {
+              "description": "Output list for history files. Specified as duration for any of interval, endtime:interval, starttime:endtime:interval or a list of these options"
         }
       },
       "required": [

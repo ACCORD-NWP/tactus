@@ -10,6 +10,7 @@ from dateutil.utils import default_tzinfo
 # <https://json-schema.org/understanding-json-schema/reference/regular_expressions.html>
 ISO_8601_TIME_DURATION_REGEX = "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?"
 ISO_8601_TIME_DURATION_REGEX += "(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+IRX = ISO_8601_TIME_DURATION_REGEX
 DEFAULT_SHIFT = pd.Timedelta(0)
 
 

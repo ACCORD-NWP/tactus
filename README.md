@@ -6,11 +6,11 @@
 
 ### About
 
-`deode` is a python package that ...
+`deode` is a python package that runs the Destination Earth on Demand Extremes system.
 
 See also the [project's Doc Page](https://github.com/DEODE-NWP/Deode-Prototype/tree/develop/docs) for more information.
 
-### System Requirements
+## System Requirements
 
 * python >=3.8
 * **Only for
@@ -28,7 +28,7 @@ See also the [project's Doc Page](https://github.com/DEODE-NWP/Deode-Prototype/t
               curl -sSL https://install.python-poetry.org | python3 -
 
 
-### Installation
+## Installation
 
 Before proceeding, please make sure that your system fulfils the appropriate
 [system requirements](#system-requirements). If you plan to just use the code
@@ -38,8 +38,8 @@ need/wish to modify the code in any way, then please proceed as indicated in the
 [Developer-Mode Installtion section](#developer-mode-installation).
 
 
-#### Regular Installation
-##### Regular Installation from PyPi
+### Regular Installation
+#### Regular Installation from PyPi
 :point_right: Easiest method if you just want to use the code and don't want to
 look at the source code at all.
 
@@ -47,7 +47,7 @@ look at the source code at all.
 
 
 
-##### Regular Installation Directly From The Git Repo
+#### Regular Installation Directly From The Git Repo
 
 :point_right: Similar to a [regular installation from PyPi](#regular-installation-from-pypi),
 but retrieves the code from the git repo instead (which is usually updated more
@@ -56,7 +56,7 @@ often).
     pip install "git+https://github.com/DEODE-NWP/Deode-Prototype"
 
 
-##### Regular Installation From Downloaded Source
+#### Regular Installation From Downloaded Source
 
 :point_right: For those who have `deode`'s source code in a local directory,
 wish to install it from there, but also don't want to modify any code.
@@ -79,7 +79,7 @@ If you have problems installing `poetry`, you can install in development mode us
     pip install -e .
 
 
-#### Installation troubleshooting
+### Installation troubleshooting
 
 If you encounter a following problem when performing installation with pip locally:
 
@@ -105,12 +105,12 @@ as well as the [project's Doc Page](https://github.com/DEODE-NWP/Deode-Prototype
 `deode` assumes that one of the following (whichever is first encountered)
 is your configuration file :
 
-1. A *full file path* specified via the `DEODE_CONFIG_PATH` envvar
+1. A *full file path* specified via the `DEODE_CONFIG_PATH` envvar or on command line using `--config_file DEODE_CONFIG_PATH`
 2. A `config.toml` file located in the directory where `deode` is called
 3. `$HOME/.deode/config.toml`
 
 
-### Usage
+## Usage
 After completing the setup, you should be able to run
 
     deode [opts] SUBCOMMAND [subcommand_opts]
@@ -127,70 +127,32 @@ and general `deode` options. For info about specific subcommands and the
 options that apply to them only, **please run `deode SUBCOMMAND -h`** (note
 that the `-h` goes after the subcommand in this case).
 
+
+## Examples
 ### Example running a ecflow suite from server ecflow-gen-${USER}-001
 
 Log into hpc-login.ecmwf.int
 
 ```
-#!/usr/bin/bash
-
-# Load python
+# Load python and ecflow and start the poetry shell
 module load python3/3.8.8-01
-module load ecflow
-
-# Taken from 'Start' (this runs the whole suite)
-
-# Run experiment 
-ECF_HOST=`echo ecflow-gen-${USER}-001`
-#
-#
-DEODE_SCRATCH=$HOME/deode_ecflow
-
-mkdir -p $DEODE_SCRATCH/job
-mkdir -p $DEODE_SCRATCH/ecf
-
-# Prepare the demonstration
-if [ 1 -eq 0 ] ; then
-  # Clean the working/ecflow directories for a very clean start
-  rm -vrf $SCRATCH/deode/deode_case/
-  rm -vrf $DEODE_SCRATCH/job/*
-  rm -vrf $DEODE_SCRATCH/ecf/*
-fi
-
-deode -loglevel debug \
--config_file $PWD/deode/data/config_files/config.toml \
-start suite \
---ecf_host $ECF_HOST \
---ecf_port 3141 \
---joboutdir $DEODE_SCRATCH/job \
---ecf_files $DEODE_SCRATCH/ecf
-
-# Clone DEODE prototype in ~/projects
-
-mkdir -p ~/projects
-cd ~/projects
-[ -d Deode-Prototype ] || git clone git@github.com:DEODE-NWP/Deode-Prototype.git
-cd ~/projects/Deode-Prototype
-
-# Install deode with poetry if not done
-poetry install
 poetry shell
-
 
 
 # Run experiment
 ECF_HOST=`echo ecflow-gen-${USER}-001`
 
-deode -loglevel debug \
-      -config_file $HOME/projects/Deode-Prototype/deode/data/config_files/config.toml \
+deode -config_file $PWD/deode/data/config_files/config.toml \
       start suite \
       --ecf_host $ECF_HOST \
       --ecf_port 3141 \
-      --joboutdir $HOME/jobout \
-      --ecf_files $HOME/projects/Deode-Prototype/deode/templates/ecflow
+      --joboutdir $HOME/deode_ecflow/job \
+      --ecf_files $HOME/deode_ecflow/ecf
 ```
 
-You can now open ecflow_ui and add ecflow-gen-${USER}-001 as the server with port 3141
+
+You can now open ecflow_ui and add ecflow-gen-${USER}-001 as the server with port 3141. The default config file will locate the working directory under `$SCRATCH/deode`
+
 
 ### Example using poetry and run the forecast task from hpc-login command line
 
@@ -198,15 +160,12 @@ The example below shows how to run deode/task/forecast.py using the batch system
 
 ```
 > module load python3/3.8.8-01
-> module load troika
 > poetry shell
-> deode -run --task Forecast \
+> deode run --task Forecast \
       -config_file $PWD/deode/data/config_files/config.toml \
       --template $PWD/deode/templates/stand_alone.py \
       --job $PWD/forecast.job \
-      --troika_config $PWD/deode/data/config_files/troika.yml \
-      -o $PWD/forecast.log
+      --ooutput $PWD/forecast.log
 
 
 ```
-There's no need to specify the `-troika_config` option if you've already specified the troika config file variable in your config.toml file. 

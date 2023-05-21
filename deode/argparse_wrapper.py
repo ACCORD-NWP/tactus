@@ -5,7 +5,13 @@ import sys
 from pathlib import Path
 
 from . import PACKAGE_NAME, __version__
-from .commands_functions import run_task, show_config, show_namelist, start_suite
+from .commands_functions import (
+    doc_config,
+    run_task,
+    show_config,
+    show_namelist,
+    start_suite,
+)
 from .config_parser import get_default_config_path
 
 
@@ -237,5 +243,27 @@ def get_parsed_args(program_name="program", argv=None):
     )
 
     parser_show_namelist.set_defaults(run_command=show_namelist)
+
+    parser_doc = subparsers.add_parser(
+        "doc",
+        help="Print documentation style output",
+    )
+    doc_command_subparsers = parser_doc.add_subparsers(
+        title="doc",
+        dest="doc",
+        required=True,
+        description=(
+            "Valid commands below (note that commands also accept their "
+            + "own arguments, in particular [-h]):"
+        ),
+        help="command description",
+    )
+
+    # doc config
+    parser_doc_config = doc_command_subparsers.add_parser(
+        "config", help="Print a merge of config and json schema in .md style"
+    )
+
+    parser_doc_config.set_defaults(run_command=doc_config)
 
     return parser.parse_args(argv)

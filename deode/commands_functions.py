@@ -3,6 +3,7 @@
 import os
 from pathlib import Path
 
+from .config_doc import DocConfig
 from .derived_variables import derived_variables
 from .fullpos import Fullpos
 from .logs import get_logger
@@ -98,6 +99,21 @@ def start_suite(args, config):
 #########################################
 # Code related to the "show *" commands #
 #########################################
+def doc_config(args, config):
+    """Implement the 'doc_config' command.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+        config (.config_parser.ParsedConfig): Parsed config file contents.
+
+    """
+    schema_file = (
+        Path(__file__).parent / "data" / "config_file_schemas" / "main_config_schema.json"
+    )
+
+    DocConfig(config.dict(), schema_file).print_doc()
+
+
 def show_config(args, config):
     """Implement the 'show_config' command.
 
