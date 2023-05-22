@@ -1,30 +1,40 @@
 [general]
- case = "deode_case_CY46t1"
+ case = arome_case_CY46t1"
+ cnmexp = "DEOD"
  realization = -1
- cnmexp = "AROM"
  tstep = 50
- loglevel = "DEBUG"
- surfex = true
+ loglevel = "info"
  csc = "AROME"
- bdint = "PT1H"
- bdcycle = "PT12H"
  cycle = "CY46t1"
- forecast_range = "PT6H"
- output_interval_his = "PT1H"
- output_interval_fp = "PT1H"
- output_interval_sfx = "PT1H"
- output_interval_sfx_sel = "PT1H"
- keep_workdirs = true
+ surfex = true
+ bdint = "PT3H"
+ bdcycle = "PT12H"
  bdmax = 12
+ forecast_range = "PT12H"
+ keep_workdirs = true
  create_static_data = true
- accept_static_namelists = true
+ accept_static_namelists = false
  nproma = -32
+ [general.output_settings]
+   history = ["PT1H:PT3H:PT1H", "PT3H:PT6H:PT3H", "PT6H"]
+   fullpos = "PT24H:PT15M"
+   surfex = ["PT3H:PT1H", "PT9H:PT24H:PT3H"]
+
+[file_templates]
+ duration_grib = "@LLLH@h@LM@m@LS@s"
+ duration_fa = "@LLLH@:@LM@:@LS@"
+ history = "ICMSH@CNMEXP@+@DURATION_FA@"
+ surfex = "ICMSH@CNMEXP@+@DURATION_FA@.sfx"
+ fullpos = "GRIBPF@CNMEXP@@DOMAIN@+@DURATION_FA@"
 
 [macros]
  os_macros = ["USER", "HOME", "PWD"]
  group_macros = ["platform","system"]
  gen_macros = ["general.cnmexp",
                "general.cycle",
+               "file_templates.duration_grib",
+               "file_templates.duration_fa",
+               { surfex_template = "file_templates.surfex" },
                { case = "general.case" },
                { domain = "domain.name" },
                { rrr = "general.realization" } ]
@@ -264,18 +274,17 @@
  start = "2023-02-19T00:00:00Z"
  end = "2023-02-19T03:00:00Z"
  cycle_length = "PT3H"
-
-[task]
- wrapper = ""
+ 
+ [task]
+  wrapper = ""
 
 [task.args]
  bd_nr = "1"
  bd_time = "2023-02-19T09:00:00Z"
 
-[task.creategrib.conversions]
-  #his = { output_template = "his_basetime+duration.grib2" }
-  sfx = { output_template = "sfx_basetime+duration.grib" }
-#  sfx_sel = { output_template = "sfx_sel_basetime+duration.grib" }
+[task.creategrib.conversions.surfex]
+ input_template = "@SURFEX_TEMPLATE@"
+ output_template = "sfx_@YYYY@-@MM@-@DD@T@HH@:@mm@:@ss@+@DURATION_GRIB@.grib" 
 
 [submission]
 submit_types = ["background_vm", "background_hpc", "serial", "parallel"]

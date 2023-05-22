@@ -2,7 +2,7 @@
 import os
 from pathlib import Path
 
-from ..datetime_utils import as_datetime, as_timedelta, dt2str, oi2dt_list
+from ..datetime_utils import as_datetime, as_timedelta, oi2dt_list
 from ..fullpos import Fullpos
 from ..initial_conditions import InitialConditions
 from ..namelist import NamelistGenerator
@@ -37,6 +37,7 @@ class Forecast(Task):
         self.ncdir = self.config.get_value("platform.ncdir")
         self.archive = self.platform.get_system_value("archive")
         self.deode_home = self.config.get_value("platform.deode_home")
+        self.output_settings = self.config.get_value("general.output_settings").dict()
 
         # Update namelist settings
         self.namelists = self.platform.get_platform_value("NAMELISTS")
@@ -51,22 +52,19 @@ class Forecast(Task):
 
         self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
 
-    def archive_output(self, fname, periods, suffix=""):
+        self.file_templates = self.config.get_value("file_templates").dict()
+
+    def archive_output(self, fname, periods):
         """Archive forecast model output.
 
         Args:
-            fname (str): Filename
+            fname (str): Filename template
             periods (str): Output list
-            suffix (str): Suffix
         """
         dt_list = oi2dt_list(periods, self.forecast_range)
         for dt in dt_list:
-            duration = dt2str(dt)
-
-            self.fmanager.output(
-                f"{fname}+{duration}{suffix}",
-                f"{self.archive}/{fname}+{duration}{suffix}",
-            )
+            filename = self.platform.substitute(fname, validtime=self.basetime + dt)
+            self.fmanager.output(filename, f"{self.archive}/{filename}")
 
     def execute(self):
         """Execute forecast."""
@@ -174,23 +172,10 @@ class Forecast(Task):
 
         # Store the output
         os.makedirs(self.archive, exist_ok=True)
-        self.archive_output(
-            f"ICMSH{self.cnmexp}", self.config.get_value("general.output_interval_his")
-        )
-        self.archive_output(
-            f"ICMSH{self.cnmexp}",
-            self.config.get_value("general.output_interval_sfx"),
-            suffix=".sfx",
-        )
-        self.archive_output(
-            "ICMSHSELE",
-            self.config.get_value("general.output_interval_sfx_sel"),
-            suffix=".sfx",
-        )
-        self.archive_output(
-            f"GRIBPF{self.cnmexp}{self.domain}",
-            self.config.get_value("general.output_interval_fp"),
-        )
+
+        for filetype, oi in self.output_settings.items():
+            self.archive_output(self.file_templates[filetype], oi)
+
         self.fmanager.output("NODE.001_01", f"{self.archive}/NODE.001_01")
 
 

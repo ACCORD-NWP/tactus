@@ -307,11 +307,18 @@ class Platform:
                 )
 
                 lead_seconds = int(lead_time.total_seconds())
-                lead_minutes = int(lead_seconds / 3600)  # noqa
-                lead_hours = int(lead_seconds / 3600)
-                pattern = self.sub_value(pattern, "LL", f"{lead_hours:02d}")
-                pattern = self.sub_value(pattern, "LLL", f"{lead_hours:03d}")
-                pattern = self.sub_value(pattern, "LLLL", f"{lead_hours:04d}")
+                lh = int(lead_seconds / 3600)
+                lm = int((lead_seconds % 3600 - lead_seconds % 60) / 60)
+                ls = int(lead_seconds % 60)
+
+                pattern = self.sub_value(pattern, "LH", f"{lh:02d}")
+                pattern = self.sub_value(pattern, "LL", f"{lh:02d}")
+                pattern = self.sub_value(pattern, "LLH", f"{lh:03d}")
+                pattern = self.sub_value(pattern, "LLL", f"{lh:03d}")
+                pattern = self.sub_value(pattern, "LLLH", f"{lh:04d}")
+                pattern = self.sub_value(pattern, "LLLL", f"{lh:04d}")
+                pattern = self.sub_value(pattern, "LM", f"{lm:02d}")
+                pattern = self.sub_value(pattern, "LS", f"{ls:02d}")
                 tstep = self.config.get_value("general.tstep")
                 if tstep is not None:
                     lead_step = int(lead_seconds / tstep)
@@ -326,6 +333,7 @@ class Platform:
                 pattern = self.sub_value(pattern, "DD", basetime.strftime("%d"))
                 pattern = self.sub_value(pattern, "HH", basetime.strftime("%H"))
                 pattern = self.sub_value(pattern, "mm", basetime.strftime("%M"), ci=False)
+                pattern = self.sub_value(pattern, "ss", basetime.strftime("%S"), ci=False)
 
         self.logger.debug("Return pattern=%s", pattern)
         return pattern

@@ -3,7 +3,7 @@
 
 import os
 
-from .datetime_utils import as_datetime, as_timedelta, dt2str
+from .datetime_utils import as_datetime, as_timedelta
 from .logs import get_logger_from_config
 from .toolbox import Platform
 
@@ -28,7 +28,7 @@ class InitialConditions(object):
             self.config.get_value("general.times.cycle_length")
         )
         self.archive = self.config.get_value("system.archive")
-        self.cnmexp = self.config.get_value("general.cnmexp")
+        self.file_templates = self.config.get_value("file_templates").dict()
 
     def nosuccess(self, f1, f2, fail=True):
         """Report of not success.
@@ -67,12 +67,17 @@ class InitialConditions(object):
 
         # Find data from previous forecast
         pdtg = self.basetime - self.cycle_length
-        dt = self.basetime - pdtg
-        duration = dt2str(dt)
 
-        archive = self.platform.substitute(self.archive, basetime=pdtg)
-        source = f"{archive}/ICMSH{self.cnmexp}+{duration}"
-        source_sfx = f"{archive}/ICMSH{self.cnmexp}+{duration}.sfx"
+        source = self.platform.substitute(
+            f"{self.archive}/{self.file_templates['history']}",
+            basetime=pdtg,
+            validtime=self.basetime,
+        )
+        source_sfx = self.platform.substitute(
+            f"{self.archive}/{self.file_templates['surfex']}",
+            basetime=pdtg,
+            validtime=self.basetime,
+        )
 
         if os.path.exists(source) and os.path.exists(source_sfx):
             self.logger.info("Found initial files\n  %s\n  %s", source, source_sfx)
@@ -81,9 +86,8 @@ class InitialConditions(object):
         self.nosuccess(source, source_sfx, False)
 
         # Find data prepared by Prep and the boundary interpolation
-        archive = self.platform.substitute(self.archive)
-        source = f"{self.wrk}/ELSCF{self.cnmexp}ALBC000"
-        source_sfx = f"{archive}/ICMSH{self.cnmexp}INIT.sfx"
+        source = self.platform.substitute(f"{self.wrk}/ELSCF@CNMEXP@ALBC000")
+        source_sfx = self.platform.substitute(f"{self.archive}/ICMSH@CNMEXP@INIT.sfx")
 
         if os.path.exists(source) and os.path.exists(source_sfx):
             self.logger.info("Found initial files\n  %s\n  %s", source, source_sfx)

@@ -233,7 +233,7 @@ sfx_selected_output:
       - "CD"
       - "CH"
       - "CE"
-    LSELECT: True
+    LSELECT: False
 
 sfx_pgd_domain:
   NAM_PGD_GRID:

@@ -7,7 +7,7 @@ from .. import tasks
 from ..logs import get_logger
 from .base import Task, _get_name
 
-logger = get_logger(__name__, "DEBUG")
+logger = get_logger(__name__, "INFO")
 
 
 def discover_modules(package, what="plugin"):

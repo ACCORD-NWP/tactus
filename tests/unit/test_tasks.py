@@ -48,9 +48,14 @@ def task_name_and_configs(request, base_raw_config, tmp_path_factory):
             cnmexp = "DEOD"
             tstep = 60
             keep_workdirs = false
+        [general.output_settings]
+            surfex = ["PT0H:PT12H:PT1H"]
         [macros]
             os_macros = ["USER", "HOME"]
             gen_macros = ["general.case", "general.cnmexp", {{ domain = "domain.name" }}]
+        [task.creategrib.conversions.surfex]
+            input_template = "ICMSH@CNMEXP@+@LLLH@:@LM@:@LS@.sfx"
+            output_template = "sfx_@YYYY@-@MM@-@DD@T@HH@:@mm@:@ss@+@LLLH@:@LM@:@LS@.grib"
         [general.times]
             list = ["2000-01-01T00:00:00Z"]
             basetime = "2000-01-01T00:00:00Z"

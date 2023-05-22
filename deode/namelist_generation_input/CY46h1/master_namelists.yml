@@ -521,7 +521,6 @@ f4_harmonie-arome:
   NAMPHMSE:
     LHISFWR: True
     LPGDFWR: False
-    NSTEP_DUMP_STATE: "${namelist.nstep_dump_state}"
   NAMPHY:
     LCLSATUR: True
     LHLRADUPD: True

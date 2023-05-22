@@ -17,9 +17,6 @@ def derived_variables(config, processor_layout=None):
         update (dict) : Derived config update
 
     """
-    # CSC/cycle info
-    cycle = config.get_value("general.cycle")
-
     # Geometry
     truncation = {"linear": 2, "quadratic": 3, "cubic": 4, "custom": None}
 
@@ -59,28 +56,19 @@ def derived_variables(config, processor_layout=None):
         cstop = f"m{cstop}"
 
     # Output settings
-    namhists = {}
+    namoutput = {"history": 0, "fullpos": 0, "surfex": 0}
+    oi = config.get_value("general.output_settings")
 
     forecast_range_org = config.get_value("general.forecast_range")
-    for x in ["his", "fp", "sfx", "sfx_sel"]:
+    for x, y in oi.items():
 
-        dtlist = oi2dt_list(
-            config.get_value(f"general.output_interval_{x}"), forecast_range_org
-        )
+        dtlist = oi2dt_list(y, forecast_range_org)
         output_timesteps = [
             int((dt.days * 24 * 3600 + dt.seconds) / tstep) for dt in dtlist
         ]
 
-        if x == "sfx":
-            namdump = output_timesteps
-
         output_timesteps.insert(0, len(output_timesteps))
-        namhists[x] = output_timesteps
-
-    if cycle == "CY46h1":
-        namsfx = namhists["sfx_sel"]
-    else:
-        namsfx = namhists["sfx"]
+        namoutput[x] = output_timesteps
 
     # Update namelist settings
     update = {
@@ -93,10 +81,9 @@ def derived_variables(config, processor_layout=None):
             "nmsmax": nmsmax,
         },
         "namelist": {
-            "nhists": namhists["his"],
-            "nposts": namhists["fp"],
-            "nsfxhists": namsfx,
-            "nstep_dump_state": namdump,
+            "nhists": namoutput["history"],
+            "nposts": namoutput["fullpos"],
+            "nsfxhists": namoutput["surfex"],
             "cstop": cstop,
             "tefrcl": bdint.seconds,
             "nrfp3s": nrfp3s,
