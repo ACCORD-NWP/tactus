@@ -143,10 +143,10 @@ class Forecast(Task):
         for head, body in selections.items():
             self.nlgen_master.write_namelist(body, head)
 
-        # Link the boundary files
-        cdtg = self.basetime
-        dtgend = self.basetime + as_timedelta(self.forecast_range)
-        i = 0
+        # Initial files
+        initfile, initfile_sfx = InitialConditions(self.config).find_initial_files()
+        self.fmanager.input(initfile, f"ICMSH{self.cnmexp}INIT")
+        self.fmanager.input(initfile_sfx, f"ICMSH{self.cnmexp}INIT.sfx")
 
         # Use explicitly defined boundary dir if defined
         try:
@@ -154,17 +154,17 @@ class Forecast(Task):
         except AttributeError:  # noqa
             intp_bddir = self.wrk
 
-        # Link the boundary files
+        # Link the boundary files, use initial file as first boundary file
+        self.fmanager.input(initfile, f"ELSCF{self.cnmexp}ALBC000")
+
+        cdtg = self.basetime + self.bdint
+        dtgend = self.basetime + as_timedelta(self.forecast_range)
+        i = 1
         while cdtg <= dtgend:
             source = f"ELSCF{self.cnmexp}ALBC{i:03d}"
             self.fmanager.input(f"{intp_bddir}/{source}", source)
             cdtg += self.bdint
             i += 1
-
-        # Initial files
-        initfile, initfile_sfx = InitialConditions(self.config).find_initial_files()
-        self.fmanager.input(initfile, f"ICMSH{self.cnmexp}INIT")
-        self.fmanager.input(initfile_sfx, f"ICMSH{self.cnmexp}INIT.sfx")
 
         # Run MASTERODB
         batch = BatchJob(os.environ, wrapper=self.wrapper)
