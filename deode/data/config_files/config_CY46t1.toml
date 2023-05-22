@@ -1,5 +1,5 @@
 [general]
- case = arome_case_CY46t1"
+ case = "arome_case_CY46t1"
  cnmexp = "DEOD"
  realization = -1
  tstep = 50
