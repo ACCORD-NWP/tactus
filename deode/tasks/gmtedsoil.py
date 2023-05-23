@@ -102,7 +102,7 @@ class Gmted(Task):
                 gmtedlon = (
                     "{:03d}E".format(rel_lon)
                     if rel_lon >= 0
-                    else "{:03d}W".format(-1 * lon)
+                    else "{:03d}W".format(-1 * rel_lon)
                 )
                 gmted2010_input_lons.append(gmtedlon)
                 i += 1
@@ -130,8 +130,8 @@ class Gmted(Task):
         Returns:
             tuple: GMTED input files
         """
-        east = domain_properties["minlon"]
-        west = domain_properties["maxlon"]
+        west = domain_properties["minlon"]
+        east = domain_properties["maxlon"]
         south = domain_properties["minlat"]
         north = domain_properties["maxlat"]
 
