@@ -27,6 +27,13 @@ See also the [project's Doc Page](https://github.com/DEODE-NWP/Deode-Prototype/t
 
               curl -sSL https://install.python-poetry.org | python3 -
 
+#### Optional System Requirements
+* pygdal
+
+To use certain parts of the system, especially for climate generation, the python package [pygdal](https://pypi.org/project/pygdal/) is needed, which again depends on [gdal](https://gdal.org/) which is notoriously troublesome as dependency when targeting many systems. pygdal should match the gdal version on the system:
+```shell
+pip install pygdal=="`gdal-config --version`.*"
+```
 
 ## Installation
 
