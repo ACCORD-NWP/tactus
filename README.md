@@ -46,6 +46,12 @@ need/wish to modify the code in any way, then please proceed as indicated in the
 
 
 ### Regular Installation
+
+#### Cloning
+You may need to clone the repository first before following the steps below:
+
+git clone git@github.com:DEODE-NWP/Deode-Prototype.git
+
 #### Regular Installation from PyPi
 :point_right: Easiest method if you just want to use the code and don't want to
 look at the source code at all.
