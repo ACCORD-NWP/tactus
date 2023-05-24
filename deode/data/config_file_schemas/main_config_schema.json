@@ -6,10 +6,28 @@
   "additionalProperties": true,
   "properties": {
     "general": {
-      "$ref": "#/definitions/GeneralSectionModel"
+      "$ref": "#/definitions/general"
     },
     "domain": {
-      "$ref": "#/definitions/Domain"
+      "$ref": "#/definitions/domain"
+    },
+    "platform": {
+      "$ref": "#/definitions/platform"
+    },
+    "vertical_levels": {
+      "$ref": "#/definitions/vertical_levels"
+    },
+    "file_templates": {
+      "$ref": "#/definitions/file_templates"
+    },
+    "macros": {
+      "$ref": "#/definitions/macros"
+    },
+    "system": {
+      "$ref": "#/definitions/system"
+    },
+    "troika": {
+      "$ref": "#/definitions/system"
     }
   },
   "required": [
@@ -18,7 +36,133 @@
 
   "definitions": {
 
-    "Macros": {
+    "troika": {
+      "title": "Troika",
+      "description": "DEODE system specific path settings",
+      "type": "object",
+      "properties": {
+        "config_file": {
+          "type": "string",
+	  "description": "Troika config file"
+        }
+      }
+    },
+
+    "system": {
+      "title": "System",
+      "description": "DEODE system specific path settings",
+      "type": "object",
+      "properties": {
+        "bdfile_sfx_template": {
+          "type": "string",
+	  "description": "Name template for input initial surfex file for prep"
+        },
+        "bdfile_template": {
+          "type": "string",
+	  "description": "Name template for input boundary files"
+        },
+        "bddir_sfx": {
+          "type": "string",
+	  "description": "Location of input intial file for surfex"
+        },
+        "bddir": {
+          "type": "string",
+	  "description": "Location of input boundaries"
+        },
+        "climdir": {
+          "type": "string",
+	  "description": "Location of generated/used climate files (PGD/monthly files)"
+        },
+        "bindir": {
+          "type": "string",
+	  "description": "Location of binaries"
+        },
+        "bdclimdir": {
+          "type": "string",
+	  "description": "Location of host model climate files used for e927/c903"
+        },
+        "wrk": {
+          "type": "string",
+	  "description": "Location of date specific working directory"
+        },
+        "fullpos_config_file": {
+          "type": "string",
+	  "description": "Path to the fullpos yml config file"
+        },
+        "archive": {
+          "type": "string",
+	  "description": "Location of date specific archive"
+        }
+      }
+    },
+
+
+    "platform": {
+      "title": "Platform",
+      "description": "DEODE platform specific path settings",
+      "type": "object",
+      "properties": {
+        "ecoclim_data_path": {
+          "type": "string",
+	  "description": "Path to the ECOCLIMAP-II data"
+        },
+        "deode_home": {
+          "type": "string",
+	  "description": "Path to the deode code, normally no need to change"
+        },
+        "pgd_data_path": {
+          "type": "string",
+	  "description": "Path to PGD input data"
+        },
+        "soilgrid_data_path": {
+          "type": "string",
+	  "description": "Path to solgrid input data"
+        },
+        "gmted2010_data_path": {
+          "type": "string",
+	  "description": "Path to gmted2010 input"
+        },
+        "ecosg_data_path": {
+          "type": "string",
+	  "description": "Path to ECOCLIMAP SG data"
+        },
+        "climdata": {
+          "type": "string",
+	  "description": "Macro used in other platform paths"
+        },
+        "static_data": {
+          "type": "string",
+	  "description": "Macro used in other platform paths"
+        },
+        "namelists": {
+          "type": "string",
+	  "description": "Path to static namelists"
+        },
+        "e923_data": {
+          "type": "string",
+	  "description": "Path to e923 input data"
+        },
+        "ncdir": {
+          "type": "string",
+	  "description": "Path to ECrad NetCDF data"
+        },
+        "rrtm_dir": {
+          "type": "string",
+	  "description": "Path to RRTM input data"
+        },
+        "scratch": {
+          "type": "string",
+	  "description": "Path used as macro for e.g. wrk and other directories."
+        },
+        "archive_root": {
+          "type": "string",
+	  "description": "Path to the main archive directory"
+        }
+      }
+    },
+
+
+    "macros": {
       "title": "MacroSection",
       "description": "Model for the 'domain' section.",
       "type": "object",
@@ -38,7 +182,61 @@
       }
     },
 
-    "Domain": {
+    "vertical_levels": {
+      "title": "VerticalLevels",
+      "description": "Options for vertical levels",
+      "type": "object",
+      "properties": {
+        "nlev": {
+          "type": "number",
+	  "description": "Number of vertical full levels"
+        },
+        "ahalf": {
+          "type": "array",
+	  "contains": {
+		  "type": "number"
+	  },
+	  "description": "Level definition for the a coefficient of half levels"
+        },
+        "bhalf": {
+          "type": "array",
+	  "contains": {
+		  "type": "number"
+	  },
+	  "description": "Level definition for the b coefficient of half levels"
+        }
+      }
+    },
+
+    "file_templates": {
+      "title": "FileTemplates",
+      "description": "Templates for file names",
+      "type": "object",
+      "properties": {
+        "duration_grb": {
+          "type": "string",
+	  "description": "Macros for duration representation in GRIB output files"
+        },
+        "duration_fa": {
+          "type": "string",
+	  "description": "Macros for duration representation of FA files, note that this is given by the IAL code."
+        },
+        "history": {
+          "type": "string",
+	  "description": "Name template for history files"
+        },
+        "surfex": {
+          "type": "string",
+	  "description": "Name template for surfex history files"
+        },
+        "fullpos": {
+          "type": "string",
+	  "description": "Name template for fullpos files. Note that these are in GRIB2 by default."
+        }
+      }
+    },
+
+    "domain": {
       "title": "DomainSection",
       "description": "Model for the 'domain' section.",
       "type": "object",
@@ -84,57 +282,63 @@
         },
         "nbzong": {
           "type": "number",
+          "description": "Latitudinal coupling zone width",
 	  "minimum": 0
         },
         "nbzonl": {
           "type": "number",
+          "description": "Longitudinal coupling zone width",
 	  "minimum": 0
         },
         "xloncen": {
           "type": "number",
+          "description": "Domain center longitude",
 	  "minimum": -180,
 	  "maximum": 180
         },
         "xlatcen": {
           "type": "number",
+          "description": "Domain center latitude",
 	  "minimum": -90,
 	  "maximum": 90
         },
         "xlon0": {
           "type": "number",
+          "description": "Reference longitude",
 	  "minimum": -180,
 	  "maximum": 180
         },
         "xlat0": {
           "type": "number",
+          "description": "Reference latitude",
 	  "minimum": -90,
 	  "maximum": 90
         }
       }
     },
 
-    "GeneralSectionModel": {
+    "general": {
       "title": "GeneralSectionModel",
       "description": "Model for the 'general' section.",
       "type": "object",
       "properties": {
         "times": {
-          "title": "times",
+          "title": "Times",
           "description": "Model for the 'general.times' section.",
           "type": "object",
           "properties": {
             "start": {
-              "title": "Start",
+              "description": "Start",
               "type": "string",
               "format": "date-time"
             },
             "end": {
-              "title": "End",
+              "description": "End",
               "type": "string",
               "format": "date-time"
             },
             "list": {
-              "title": "List",
+              "description": "List",
               "type": "array",
               "items": {
                 "type": "string",
@@ -142,7 +346,7 @@
               }
             },
             "cycle_length": {
-              "title": "Cycle Length",
+              "description": "Cycle length defined as duration",
               "default": "PT3H",
               "type": "string",
               "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
@@ -161,71 +365,94 @@
             }
           ]
         },
+        "create_static_data": {
+              "description": "Activate the generation of PGD and monthly climate files in the suite",
+              "type": "boolean"
+        },
+        "accept_static_namelists": {
+              "description": "Allow usage of static namelists as input for the tasks. The namelist should be located in the directory specified by platform.namelists and named with the convention namelist_{kind}_{task} where kind could be surfex or master and task forecast/pgd or similar. For the extraction of namelist see [namelists.md](../docs/namelists.md).",
+              "type": "boolean"
+        },
         "case": {
-              "title": "Experiment name",
+              "description": "Experiment name",
               "default": "deode_case",
               "type": "string"
         },
+        "realization": {
+              "description": "Placeholder for future ensemble or similar need",
+              "type": "number"
+        },
         "cnmexp": {
-              "title": "Experiment short name",
+              "description": "Experiment short name",
               "default": "DEOD",
               "type": "string",
 	      "minLength" : 4,
 	      "maxLength" : 4
         },
         "tstep": {
-              "title": "Model time step",
+              "description": "Model time step",
               "type": "number"
         },
         "loglevel": {
-              "title": "Logger info level",
+              "description": "Logger output level",
               "default": "INFO",
               "type": "string",
               "enum": [ "critical", "error", "debug", "info", "warning",
                         "CRITICAL", "ERROR", "DEBUG", "INFO", "WARNING" ]
         },
         "surfex": {
-              "title": "SURFEX switch",
+              "description": "SURFEX switch",
               "type": "boolean"
         },
         "keep_workdirs": {
-              "title": "Do not remove working directories",
+              "description": "Do not remove working directories",
               "type": "boolean"
         },
         "csc": {
-              "title": "CSC",
+              "description": "CSC",
               "default": "AROME",
               "type": "string",
               "enum": [ "AROME", "ALARO", "HARMONIE-AROME" ]
         },
         "cycle": {
-              "title": "IAL cycle",
+              "description": "IAL cycle",
               "type": "string",
               "enum": [ "CY48t3", "CY46t1", "CY46h1" ]
         },
         "bdint": {
-              "title": "Boundary interval",
+              "description": "Boundary interval",
               "type": "string",
               "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
         },
         "bdcycle": {
-              "title": "Boundary model cycle interval",
+              "description": "Boundary model cycle interval",
               "type": "string",
               "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        },
+        "bdmax": {
+              "description": "Max number of parallel boundary interpolation tasks",
+              "type": "number"
         },
         "forecast_range": {
-              "title": "Forecast range",
+              "description": "Forecast range",
               "type": "string",
               "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
         },
-        "output_interval_his": {
-              "description": "Output list for history files. Specified as duration for any of interval, endtime:interval, starttime:endtime:interval or a list of these options"
-        },
-        "output_interval_sfx": {
-              "description": "Output list for history files. Specified as duration for any of interval, endtime:interval, starttime:endtime:interval or a list of these options"
-        },
-        "output_interval_fp": {
-              "description": "Output list for history files. Specified as duration for any of interval, endtime:interval, starttime:endtime:interval or a list of these options"
+        "output_settings": {
+          "title": "OutputSettings",
+          "description": "Output settings. Specified as duration for any of interval, endtime:interval, starttime:endtime:interval or a list of these options",
+          "type": "object",
+          "properties": {
+            "history": {
+              "description": "Output list for history files"
+            },
+            "surfex": {
+              "description": "Output list for surfex files"
+            },
+            "fullpos": {
+              "description": "Output list for fullpos files"
+            }
+          }
         }
       },
       "required": [

@@ -259,7 +259,7 @@ def get_parsed_args(program_name="program", argv=None):
     )
     doc_command_subparsers = parser_doc.add_subparsers(
         title="doc",
-        dest="doc",
+        dest="doc_what",
         required=True,
         description=(
             "Valid commands below (note that commands also accept their "

@@ -5,9 +5,8 @@ import json
 
 from .namelist import flatten_list
 
-SKIP = ("SURFEX", "task", "submission")
-CONFIG_MAP = {"general": "GeneralSectionModel", "domain": "Domain", "macros": "Macros"}
-TABLE_HEADER = ["", "Key", "Description", "Default", "Options", ""]
+SKIP = ("SURFEX", "task", "submission", "metadata")
+TABLE_HEADER = ["", "Key", "Description", "Default", "Options", "Type", ""]
 
 
 class DocConfig:
@@ -23,6 +22,7 @@ class DocConfig:
         """
         self.config = config
         self.schema_file = schema_file
+        self.config_map = {}
 
     def schema_props(self, header, body):
         """Extract info from a schema json sections.
@@ -35,23 +35,23 @@ class DocConfig:
             info (list): Extracted info
 
         """
-        info = [""] * 6
+        info = [""] * len(TABLE_HEADER)
         info[1] = header
-        for k in ["description", "title"]:
+        header_map = {"description": 2, "default": 3, "type": 5}
+
+        for k, v in header_map.items():
             if k in body:
-                info[2] = body[k]
-                break
-        if "default" in body:
-            info[3] = body["default"]
+                info[v] = body[k]
         if "enum" in body:
             info[4] = ", ".join(body["enum"])
 
         return info
 
-    def expand_schema(self, header, desc, sections, indent):
+    def expand_schema(self, parent, header, desc, sections, indent):
         """Gather section an subsections from a json schema file.
 
         Args:
+            parent (str): Parent of this section
             header (str): Name of the sections
             desc (str): Description
             sections (dict): The dict to digest
@@ -64,6 +64,8 @@ class DocConfig:
         tag = "".join(ind)
         section = []
         subsection = []
+        config_map = []
+        config_sub_map = []
         for k, v in sections.items():
             try:
                 isobject = v["type"] == "object"
@@ -71,21 +73,27 @@ class DocConfig:
                 isobject = False
 
             if isobject:
-                subsection.append(
-                    self.expand_schema(k, v["description"], v["properties"], indent + 1)
+                hdr = f"{header} > {v['title']}"
+                sch, map_item = self.expand_schema(
+                    k, hdr, v["description"], v["properties"], indent + 1
                 )
+                subsection.append(sch)
+                config_sub_map.append({f"{parent}.{k}": hdr})
             else:
                 section.append(self.schema_props(k, v))
         result = [{f"{tag} {header}": {"description": desc, "items": section}}]
+        config_map = [{parent: header}]
         if len(subsection) > 0:
             result.append(subsection)
+            config_map.append(config_sub_map)
 
-        return result
+        return result, config_map
 
-    def expand_config(self, header, sections, indent):
+    def expand_config(self, parent, header, sections, indent):
         """Gather section an subsections from the config.
 
         Arguments:
+            parent (str): Parent of the sections
             header (str): Name of the sections
             sections (dict): The dict to digest
             indent (int): Subsection counter
@@ -99,15 +107,15 @@ class DocConfig:
         subsection = []
         for k, v in sections.items():
             if isinstance(v, dict):
-                subsection.append(self.expand_config(k, v, indent + 1))
+                subsection.append(self.expand_config(header, k, v, indent + 1))
             else:
-                section.append(["", k, "", str(v), "", ""])
+                section.append(["", k, "", str(v), "", "", ""])
 
-        if header in CONFIG_MAP:
-            hdr = CONFIG_MAP[header]
-        else:
-            hdr = header
-        result = [{f"{tag} {hdr}": {"description": "", "items": section}}]
+        prefix = "" if parent is None else f"{parent}."
+        prefix = f"{prefix}{header}"
+        if prefix in self.config_map:
+            prefix = self.config_map[prefix]
+        result = [{f"{tag} {prefix}": {"description": "", "items": section}}]
         if len(subsection) > 0:
             result.append(subsection)
 
@@ -131,11 +139,21 @@ class DocConfig:
         """
         sections = []
         indent = 1
+        config_map = []
         for k, v in schema["definitions"].items():
             if v["type"] == "object":
-                sections.append(
-                    self.expand_schema(k, v["description"], v["properties"], indent)
+                sch, map_item = self.expand_schema(
+                    k, v["title"], v["description"], v["properties"], indent
                 )
+                sections.append(sch)
+                config_map.append(map_item)
+
+        final_map = {}
+        for i in flatten_list(config_map):
+            for k, v in i.items():
+                final_map[k] = v
+
+        self.config_map = final_map
         return flatten_list(sections)
 
     def get_config(self, config):
@@ -151,7 +169,7 @@ class DocConfig:
         indent = 1
         for k, v in config.items():
             if k not in SKIP:
-                sections.append(self.expand_config(k, v, indent))
+                sections.append(self.expand_config(None, k, v, indent))
         return flatten_list(sections)
 
     def merge(self, sch, cfg):
@@ -184,6 +202,7 @@ class DocConfig:
                         if x[1] == y[1]:
                             res[j][kk]["items"][i][2] = y[2]
                             res[j][kk]["items"][i][4] = y[4]
+                            res[j][kk]["items"][i][5] = y[5]
         return res
 
     def print_doc(self):
@@ -192,8 +211,8 @@ class DocConfig:
             schema = json.load(infile)
             infile.close()
 
-        cfg = self.get_config(self.config)
         sch = self.get_schema(schema)
+        cfg = self.get_config(self.config)
 
         summary = self.merge(sch, cfg)
 
@@ -204,7 +223,7 @@ class DocConfig:
             print(f"{section[hdr]['description']}")
             txt = "|".join(TABLE_HEADER)
             print(" ", txt)
-            txt = "|".join(["", "---", "---", "---", "---", ""])
+            txt = "|".join(["", "---", "---", "---", "---", "---", ""])
             print(" ", txt)
             for w in section[hdr]["items"]:
                 txt = "|".join(w)
