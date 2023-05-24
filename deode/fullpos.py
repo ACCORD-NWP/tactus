@@ -8,17 +8,20 @@ from .namelist import flatten_list
 class Fullpos:
     """Fullpos namelist generator based on (yaml) dicts."""
 
-    def __init__(self, nlfile, domain):
+    def __init__(self, domain, nlfile=None, fullpos_config=None):
         """Construct the fullpos generator.
 
         Args:
-            nlfile (str): Fullpos yaml config file
             domain (str): Domain name
+            nlfile (str): Fullpos yaml config file
+            fullpos_config (dict): Fullpos config as dict
 
         """
-        self.nlfile = nlfile
         self.domain = domain
-        self.nldict = self.load()
+        if nlfile is not None:
+            self.nldict = self.load(nlfile)
+        elif fullpos_config is not None:
+            self.nldict = fullpos_config
 
     def expand(self, v, levtype, levels, domain):
         """Expand fullpos namelists to levels and domains.
@@ -49,14 +52,17 @@ class Fullpos:
 
         return d
 
-    def load(self):
+    def load(self, nlfile):
         """Load fullpos yaml file.
+
+        Arguments:
+            nlfile (str): fullpos config _file (yml)
 
         Returns:
             nldict (dict): fullpos settings
 
         """
-        with open(self.nlfile, mode="rt", encoding="utf-8") as file:
+        with open(nlfile, mode="rt", encoding="utf-8") as file:
             nldict = yaml.safe_load(file)
 
         return nldict
@@ -132,16 +138,3 @@ class Fullpos:
                 selection[kk][k] = v
 
         return namfpc_out, selection
-
-
-if __name__ == "__main__":
-
-    fp = Fullpos("test")
-
-    namfpc, nldict = fp.construct()
-    for k, v in namfpc["NAMFPC"].items():
-        print(k, v)
-    for k, v in nldict.items():
-        print(k)
-        for kk, vv in v.items():
-            print(kk, vv)

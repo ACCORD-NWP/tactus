@@ -14,6 +14,7 @@ pgd:
   - sfx_pgd_isba_3l
   - sfx_pgd_soilgrid_sand
   - sfx_pgd_soilgrid_clay
+  - sfx_pgd
 
 prep:
   - sfx_io
@@ -25,6 +26,7 @@ prep:
   - sfx_prep_isba
   - sfx_prep_isba_from_grib
   - sfx_split_patch
+  - sfx_prep
 
 forecast:
   - sfx_io

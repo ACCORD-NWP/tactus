@@ -109,6 +109,8 @@ class NamelistGenerator:
         else:
             self.logger.warning("No reference namelist exists")
             found = True
+            nldict = {}
+            cndict = {}
 
         return found, nldict, cndict
 

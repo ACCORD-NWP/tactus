@@ -1,6 +1,5 @@
 """Forecast."""
 import os
-from pathlib import Path
 
 from ..datetime_utils import as_datetime, as_timedelta, oi2dt_list
 from ..fullpos import Fullpos
@@ -32,6 +31,9 @@ class Forecast(Task):
         self.bdint = as_timedelta(self.config.get_value("general.bdint"))
         self.forecast_range = self.config.get_value("general.forecast_range")
 
+        sfx_config = self.config.get_value("SURFEX").dict()
+        self.second_generation = sfx_config["COVER"]["SG"]
+
         self.climdir = self.platform.get_system_value("climdir")
         self.rrtm_dir = self.platform.get_platform_value("RRTM_DIR")
         self.ncdir = self.config.get_value("platform.ncdir")
@@ -43,12 +45,7 @@ class Forecast(Task):
         self.namelists = self.platform.get_platform_value("NAMELISTS")
         self.nlgen_master = NamelistGenerator(self.config, "master")
         self.nlgen_surfex = NamelistGenerator(self.config, "surfex")
-        self.fullpos_config = (
-            Path(__file__).parent
-            / "../namelist_generation_input"
-            / f"{self.cycle}"
-            / "fullpos_namelist.yml"
-        )
+        self.fullpos_config_file = self.platform.get_system_value("fullpos_config_file")
 
         self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
 
@@ -68,16 +65,6 @@ class Forecast(Task):
 
     def execute(self):
         """Execute forecast."""
-        # CY48t3/CY46t1 input files not used in CY46h1
-        # *.nc files and ecoclimap.bin files
-        input_files = [
-            "ecoclimapI_covers_param.bin",
-            "ecoclimapII_eu_covers_param.bin",
-        ]
-        if self.cycle in ["CY46t1", "CY48t3"]:
-            for ifile in input_files:
-                self.fmanager.input(f"{self.ncdir}/{ifile}", ifile)
-
         # RRTM files
         for ifile in [
             "C11CLIM",
@@ -122,6 +109,15 @@ class Forecast(Task):
         ]:
             self.fmanager.input(f"{self.rrtm_dir}/{ifile}", ifile)
 
+        # Surfex files
+        if not self.second_generation:
+            eco_dir = self.fmanager.platform.get_platform_value("ECOCLIM_DATA_PATH")
+            for ifile in [
+                "ecoclimapI_covers_param.bin",
+                "ecoclimapII_eu_covers_param.bin",
+            ]:
+                self.fmanager.input(f"{eco_dir}/{ifile}", ifile)
+
         # Climate files
         mm = self.basetime.strftime("%m")
         self.fmanager.input(f"{self.climdir}/Const.Clim.{mm}", "Const.Clim")
@@ -135,7 +131,9 @@ class Forecast(Task):
 
         # Contstruct master namelist and include fullpos config
         self.nlgen_master.load("forecast")
-        namfpc, selections = Fullpos(self.fullpos_config, self.domain).construct()
+        namfpc, selections = Fullpos(
+            self.domain, nlfile=self.fullpos_config_file
+        ).construct()
         self.nlgen_master.update(namfpc, "fullpos")
         nlres = self.nlgen_master.assemble_namelist("forecast")
         self.nlgen_master.write_namelist(nlres, "fort.4")
@@ -189,7 +187,7 @@ class PrepareCycle(Task):
             config (deode.ParsedConfig): Configuration
 
         """
-        Task.__init__(self, config, __name__)
+        Task.__init__(self, config, self.__class__.__name__)
 
 
 class FirstGuess(Task):

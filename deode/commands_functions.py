@@ -11,6 +11,7 @@ from .namelist import NamelistGenerator
 from .scheduler import EcflowServer
 from .submission import NoSchedulerSubmission, TaskSettings
 from .suites import SuiteDefinition
+from .toolbox import Platform
 
 
 def set_deode_home(args, config):
@@ -153,18 +154,15 @@ def show_namelist(args, config):
     if args.namelist_type in update:
         nlgen.update(update[args.namelist_type], args.namelist_type)
     if args.namelist == "forecast" and args.namelist_type == "master":
-        cycle = config.get_value("general.cycle")
+        fullpos_config = Platform(config).get_system_value("fullpos_config_file")
         domain = config.get_value("domain.name")
-
-        nlfile = (
-            Path(__file__).parent
-            / "namelist_generation_input"
-            / f"{cycle}"
-            / "fullpos_namelist.yml"
-        )
-        namfpc, selections = Fullpos(nlfile, domain).construct()
+        namfpc, selections = Fullpos(domain, nlfile=fullpos_config).construct()
         nlgen.update(namfpc, "fullpos")
         for head, body in selections.items():
             nlgen.write_namelist(body, head)
     nlres = nlgen.assemble_namelist(args.namelist)
-    nlgen.write_namelist(nlres, f"namelist_{args.namelist_type}_{args.namelist}")
+    if args.namelist_name is not None:
+        namelist_name = args.namelist_name
+    else:
+        namelist_name = f"namelist_{args.namelist_type}_{args.namelist}"
+    nlgen.write_namelist(nlres, namelist_name)

@@ -1,19 +1,6 @@
 &NAM_DIAG_ISBAN
   LPGD=.T.,
   LSURF_MISC_BUDGET=.T.,
-!  N2MTG=1,
-!  XTRIMF_TSURF_NIGHT=1.0,0.7,0.0,          !weight of surface temperature in each IFAC class
-!  XLEVEL_DAY_START=1.33,2.0,5.0,           !start canopy level during day in each IFAC class
-!  XLEVEL_DAY_END=2.0,2.0,5.0,              !end canopy level during day in each IFAC class
-!  XLEVEL_NIGHT_START=1.0,1.0,5.0,          !start canopy level during night in each IFAC class
-!  XLEVEL_NIGHT_END=1.0,1.0,5.0,            !end canopy level during night in each IFAC class
-!  XLEVEL_K_DAY=1.0,                        !slope of linear function during day (1=till end of forecast)
-!  XLEVEL_K_NIGHT=1.0,                      !slope of linear function during day (1=till end of forecast)
-!  XMODIF_TLEV_START=0.0,0.0,0.0,           !heat wave joker in °C at init
-!  XMODIF_TLEV_END=-2.0,-2.0,0.0,           !heat wave joker in °C at end of forecast
-!  XMODIF_TLEV_K=7.,                        !at XMODIF_TLEV_THRES+XMODIV_TLEV_K the full heat wave joker will be applied
-!  XMODIF_TLEV_THRES=308.,                  !threshold for heat wave joker in K
-!  XSMOOTH_DAY_NIGHT=10800.,                !temporal smoothing for transition day/night in sec
 /
 &NAM_DIAG_SURFN
   LSURF_BUDGET=.T.,
@@ -47,27 +34,6 @@
 &NAM_SURF_ATMN
 /
 &NAM_WRITE_DIAG_SURFN
-!  CSELECT(1)='T2M','HU2M','XX','YY','DX','DY','SST','Z0SEA',
-!             'TS_WATER','Z0WATER','TG1','TG2','TG3','WG1','WG2',  'WG3',
-!             'WGI1','WGI2','WGI3','WR','WSN_VEG1','RSN_VEG1',
-!             'ASN_VEG','TSRAD_NAT','RESA','TROOF1','TROOF2','TROOF3', 
-!             'TROOF4','TROOF5','WS_ROOF','TROAD1','TROAD2','TROAD3',
-!             'TROAD4','TROAD5','WS_ROAD','TWALL1','TWALL2','TWALL3',
-!             'TWALL4','TWALL5','TI_BLD','T_WIN1','TI_ROAD','WSN_RF1',
-!             'RSN_RF1','TSN_RF1','ASN_RF','WSN_RD1','RSN_RD1',        
-!             'TSN_RD1','ASN_RD','TCANYON','QCANYON','STORAGE_TYPE',
-!             'MASDEV','VERSION','BUG','DIM_FULL','DTCUR','LAT0','LON0',
-!             'RPK','BETA','LATORI','LONORI','IMAX','JMAX','RW_PRECIP','BUDC',
-!             'SEA_OCEAN','SEA_SBL','WAT_SBL','SN_VEG_N', 
-!             'SN_VEG','LSNOW_FRAC_T','GLACIER','TEMPARP','NLITTER',
-!             'NLITTLEVS','NSOILCARB','ISBA_CANOPY','SN_RF_N','SN_RF',   
-!             'SN_RD_N','SN_RD','SN_RD_TYP','SN_RF_TYP','TEB_CANOPY',
-!             'STORAGETYPE','CARTESIAN','GRID_TYPE','SN_VEG_TYP',   
-!             'RESPSL','ROAD_DIR','WALL_OPT','LAI','VEG','RSMIN','DG2',
-!             '_FBUF_SIZE','_FBUF_DIM1','_FBUF_DIM2','_FBUF_NAME',    
-!             '_FBUF_TYPE','_FBUF_MASK','LCPL_GCM','HANDLE_SIC','SSS',
-!  LPROVAR_TO_DIAG=.F.,
-!  LSELECT=.T.,
 /
 &NAM_WRITE_SURF_ATM
   LNOWRITE_TEXFILE=.T.,

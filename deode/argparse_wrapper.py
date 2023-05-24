@@ -235,6 +235,15 @@ def get_parsed_args(program_name="program", argv=None):
     )
 
     parser_show_namelist.add_argument(
+        "-o",
+        type=str,
+        dest="namelist_name",
+        help="Optional namelist name",
+        required=False,
+        default=None,
+    )
+
+    parser_show_namelist.add_argument(
         "--no-substitute",
         "-b",
         action="store_false",

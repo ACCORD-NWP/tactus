@@ -79,6 +79,11 @@ class TestMainShowCommands:
         with redirect_stdout(StringIO()):
             main(["show", "config"])
 
+    def test_show_namelist_command(self, tmp_path_factory):
+
+        output_file = f"{tmp_path_factory.getbasetemp().as_posix()}/fort.4"
+        main(["show", "namelist", "-t", "surfex", "-n", "forecast", "-o", output_file])
+
     def test_show_config_command_stretched_time(self):
         """Test again, mocking time.time so the total elapsed time is greater than 60s."""
 

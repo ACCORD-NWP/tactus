@@ -82,7 +82,7 @@ class SurfexBinaryTask(Task):
                 "sand_dir": f"{pgd_dir}",
                 "clay_dir": f"{pgd_dir}",
                 "ecoclimap_bin_dir": f"{eco_dir}",
-                "ecoclimap_cover_dir": f"{eco_dir}",
+                "ecoclimap_cover_dir": f"{pgd_dir}",
                 "oro_dir": f"{climdir}",
                 "soc_top_dir": f"{climdir}",
                 "soc_sub_dir": f"{climdir}",
