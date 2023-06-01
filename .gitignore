@@ -29,3 +29,8 @@ ecf/[A-Z]*.py
 
 # Stuff related to jupyter notebooks
 .ipynb_checkpoints/
+
+# Stuff related to Sphynx documentation
+docs/_build/
+docs/deode.rst
+docs/modules.rst

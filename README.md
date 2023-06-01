@@ -8,7 +8,7 @@
 
 `deode` is a python package that runs the Destination Earth on Demand Extremes system.
 
-See also the [project's Doc Page](https://github.com/DEODE-NWP/Deode-Prototype/tree/develop/docs) for more information.
+See also the [project's Doc Page](https://deode-nwp.github.io/deode-prototype-docs) for more information.
 
 ## System Requirements
 
@@ -111,8 +111,8 @@ option), you will need a configuration file written in the
 [TOML](https://en.wikipedia.org/wiki/TOML) format.
 
 Please take a look at the
-[docs/minimal_config_example.toml](docs/minimal_config_example.toml) file,
-as well as the [project's Doc Page](https://github.com/DEODE-NWP/Deode-Prototype/tree/develop/docs), for more information about the configuration file.
+[docs/minimal_config_example.toml](https://github.com/DEODE-NWP/Deode-Prototype/blob/develop/docs/minimal_config_example.toml) file,
+as well as the [project's Doc Page](https://deode-nwp.github.io/deode-prototype-docs), for more information about the configuration file.
 
 
 `deode` assumes that one of the following (whichever is first encountered)

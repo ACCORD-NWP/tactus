@@ -125,3 +125,9 @@ def test_start_suite_command(tmp_path):
             f"{WORKING_DIR.as_posix()}/ecf",
         ]
     )
+
+
+@pytest.mark.usefixtures("_module_mockers")
+def test_doc_config_command():
+    with redirect_stdout(StringIO()):
+        main(["doc", "config"])

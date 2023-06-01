@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Config document generation tool using config.toml and main_config_scheme.json."""
 
+import datetime
 import json
 
 from .namelist import flatten_list
@@ -123,10 +124,9 @@ class DocConfig:
 
     def print_header(self):
         """Print header info in the doc file."""
+        now = datetime.datetime.now().isoformat(timespec="seconds")
         print("# The DEODE config file")
-        print(
-            "This is a file generated from the default config and the main schema file using `dedoe doc config > docs/config.md`, do not edit!"
-        )
+        print(f"This was automatically generated running `deode doc config` on {now}.")
 
     def get_schema(self, schema):
         """Organize the schema dict.
@@ -138,7 +138,7 @@ class DocConfig:
             sections (dict): Organized dict
         """
         sections = []
-        indent = 1
+        indent = 2
         config_map = []
         for k, v in schema["definitions"].items():
             if v["type"] == "object":
@@ -166,7 +166,7 @@ class DocConfig:
             sections (dict): Organized dict
         """
         sections = []
-        indent = 1
+        indent = 2
         for k, v in config.items():
             if k not in SKIP:
                 sections.append(self.expand_config(None, k, v, indent))

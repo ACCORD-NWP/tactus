@@ -53,7 +53,7 @@ As of now, the repository has two main branches:
 - `develop` - This is the branch that is deployed to staging.
 As the project grows, we may add more branches, such as an `integration` branch, where we can test the integration of multiple features before merging them to `develop`, and run a simpler pipeline (see image below).
 
-<img src="development_guide.png" alt="drawing" width="400"/>
+<img src="../figs/development_guide.png" alt="drawing" width="400"/>
 
 ### Forks
 Forks are used to develop features and bug fixes. They are created from the `develop` branch by forking to a local repo. When a feature is ready, a PR is created to merge it to `develop`. When a bug fix is ready, a PR is created to merge it to `develop` and `master`.
@@ -74,10 +74,10 @@ export PATH="/users/$USER/.local/bin:$PATH"
 
 # Install project
 cd Deode-Prototype && poetry install
-# Poetry will create a virtual environment for the project and install all dependencies in this environment. 
+# Poetry will create a virtual environment for the project and install all dependencies in this environment.
 # It will be placed in something like: "/users/$USER/.cache/pypoetry/virtualenvs/<deode-<hash>>/bin/:$PATH"
 
-# To activate the environment run 
+# To activate the environment run
 poetry shell
 
 # Check that the project runs
