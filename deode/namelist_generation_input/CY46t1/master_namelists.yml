@@ -294,8 +294,6 @@ f4_arome:
     TFP_V%IBITS: 12
     TFP_VOR%ZFK: 32.0
     TFP_VV%ZFK: 32.0
-  NAMARG:
-    CNMEXP: ${general.cnmexp}
   NAMARPHY:
     LKFBCONV: False
     LKFBD: False
@@ -338,8 +336,6 @@ f4_arome:
     N1RES: 0
     N1SDI: 1
     N1SFXHIS: 1
-  NAMDIM:
-    NPROMA: ${general.nproma}
   NAMDYN:
     LADVF: True
     LQMPD: False
@@ -461,19 +457,6 @@ f4_arome:
     CFNHWF: ECHIS
     LINC: True
     NTIMEFMT: 2
-  NAMPAR0:
-    LOPT_SCALAR: True
-    MBX_SIZE: 1024000000
-    NPRINTLEV: 1
-    NPROC: 256
-  NAMPAR1:
-    LSLONDEM: True
-    LSYNC_SLCOM: False
-    LSYNC_TRANS: False
-    L_GATHERV_WRGP: False
-    NCOMBFLEN: 1800000
-    NSTRIN: 256
-    NSTROUT: 256
   NAMPARAR:
     CFRAC_ICE_ADJUST: S
     CFRAC_ICE_SHALLOW_MF: S
@@ -648,6 +631,7 @@ f4_common:
   NAMAERDET: {}
   NAMAFN: {}
   NAMARG:
+    CNMEXP: "${general.cnmexp}"
     LECMWF: False
     LELAM: True
     LSLAG: True
@@ -678,7 +662,8 @@ f4_common:
   NAMCVMNH: {}
   NAMDDH: {}
   NAMDFI: {}
-  NAMDIM: {}
+  NAMDIM:
+    NPROMA: ${general.nproma}
   NAMDIMO: {}
   NAMDIM_TRAJ: {}
   NAMDPHY: {}
@@ -753,11 +738,22 @@ f4_common:
   NAMOPH: {}
   NAMOPTCMEM: {}
   NAMPAR0:
+    LOPT_SCALAR: True
+    MBX_SIZE: 1024000000
     MP_TYPE: 2
     NOUTPUT: 1
+    NPRINTLEV: 1
+    NPROC: "${namelist.nproc}"
   NAMPAR1:
+    LSLONDEM: True
+    LSYNC_SLCOM: False
+    LSYNC_TRANS: False
+    L_GATHERV_WRGP: False
     LEQ_REGIONS: False
     LSPLIT: True
+    NCOMBFLEN: 1800000
+    NSTRIN: "${namelist.nproc}"
+    NSTROUT: "${namelist.nproc}"
   NAMPARAR: {}
   NAMPHMSE: {}
   NAMPHY:
@@ -852,8 +848,6 @@ f4_e927:
     TFP_TKE%LLGP: True
     TFP_U%CLNAME: WIND.U.PHYS
     TFP_V%CLNAME: WIND.V.PHYS
-  NAMARG:
-    CNMEXP: ${general.cnmexp}
   NAMCT0:
     NFPOS: 2
     NSDITS(0): 1
@@ -861,8 +855,6 @@ f4_e927:
     NSPPR: 0
   NAMCT1:
     N1HIS: 0
-  NAMDIM:
-    NPROMA: -8
   NAMFPC:
     CFP3DF:
       - "TEMPERATURE"
@@ -910,24 +902,10 @@ f4_e927:
     NMFPMAX: ${domain.nmsmax}
   NAMFPIOS:
     NFPXFLD: 46
-  NAMFPSC2:
-    NFPROMA: -8
-  NAMFPSC2_DEP:
-    NFPROMA_DEP: -8
   NAMGFL:
     YQ_NL%LGP: False
     YQ_NL%LSP: True
     YTKE_NL%NREQIN: 0
-  NAMPAR0:
-    MBX_SIZE: 2048000000
-    NPRGPEW: 4
-    NPRGPNS: 4
-    NPROC: 16
-    NPRTRV: 4
-    NPRTRW: 4
-  NAMPAR1:
-    NSTRIN: 16
-    NSTROUT: 16
   NAMPHY:
     LFGEL: False
     LSOLV: False
@@ -943,8 +921,5 @@ f4_e927:
     LPPVIVX: True
   NAMRIP:
     CSTOP: t0
-    TSTEP: 60.0
-  NAMTRANS: {}
-  NAMTRANS0: {}
   NEMFPEZO:
     NSTREFP: 16

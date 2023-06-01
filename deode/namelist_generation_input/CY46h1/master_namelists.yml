@@ -34,6 +34,7 @@ e923_9:
     NDATY: 45
   NAMMCC:
     N923: 9
+
 e923_base:
   CLOUD_DETECT_COEFFS: {}
   NACIETEO: {}
@@ -54,7 +55,7 @@ e923_base:
   NAMACV: {}
   NAMAFN: {}
   NAMARG:
-    CNMEXP: "CLIM"
+    CNMEXP: "${general.cnmexp}"
     LECMWF: False
     LELAM: True
     LSLAG: True
@@ -223,7 +224,6 @@ e923_base:
   NAMRINC: {}
   NAMRIP:
     CSTOP: "t0"
-    TSTEP: 600.0
   NAMRIP0: {}
   NAMRLX: {}
   NAMSATS: {}
@@ -479,11 +479,6 @@ f4_harmonie-arome:
   NAMOPH:
     LINC: True
     NTIMEFMT: 2
-  NAMPAR0:
-    NPROC: 256
-  NAMPAR1:
-    NSTRIN: 256
-    NSTROUT: 256
   NAMPARAR:
     CMF_CLOUD: "STAT"
     CMF_UPDRAFT: "DUAL"
@@ -604,7 +599,9 @@ f4_harmonie-arome:
     FCM_NU_DI: 0.0
     FCM_NU_DL: 0.0
     RLAMB_SOLID: 0.6
-  NAMRIP: {}
+  NAMRIP:
+    TSTEP: "${general.tstep}"
+    CSTOP: "${namelist.cstop}"
   NAMSPBD:
     LSPBDC: False
   NAMSPP:
@@ -963,10 +960,13 @@ f4_common:
     MP_TYPE: 2
     NOUTPUT: 1
     NPRINTLEV: 1
+    NPROC: "${namelist.nproc}"
   NAMPAR1:
     LSPLIT: True
     L_GATHERV_WRGP: True
     NCOMBFLEN: 8000000
+    NSTRIN: "${namelist.nproc}"
+    NSTROUT: "${namelist.nproc}"
   NAMPARAR: {}
   NAMPHMSE: {}
   NAMPHY:
@@ -992,9 +992,7 @@ f4_common:
   NAMRES: {}
   NAMRGRI: {}
   NAMRINC: {}
-  NAMRIP:
-    TSTEP: "${general.tstep}"
-    CSTOP: "${namelist.cstop}"
+  NAMRIP: {}
   NAMRIP0: {}
   NAMRLX: {}
   NAMSATS: {}
@@ -1127,11 +1125,6 @@ f4_e927:
     YQ_NL%LSP: True
     YR_NL%NREQIN: 0
     YS_NL%NREQIN: 0
-  NAMPAR0:
-    NPROC: "${namelist.nproc}"
-  NAMPAR1:
-    NSTRIN: "${namelist.nproc}"
-    NSTROUT: "${namelist.nproc}"
   NAMPHY:
     LFGEL: False
     LNEBN: False
@@ -1139,6 +1132,5 @@ f4_e927:
     LVGSN: False
   NAMRIP:
     CSTOP: "t0"
-    TSTEP: 1.0
   NEMFPEZO:
     RCO_EZO: 5.0
