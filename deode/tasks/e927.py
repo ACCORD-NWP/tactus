@@ -27,6 +27,8 @@ class E927(Task):
 
         self.bdint = self.config.get_value("general.bdint")
         self.bdcycle = as_timedelta(config.get_value("general.bdcycle"))
+        self.intp_bddir = self.config.get_value("system.intp_bddir")
+
         self.bdnr = config.get_value("task.args.bd_nr")
         self.bd_time = config.get_value("task.args.bd_time")
         self.bddir = self.config.get_value("system.bddir")
@@ -71,5 +73,5 @@ class E927(Task):
         batch = BatchJob(os.environ, wrapper=self.wrapper)
         batch.run(self.master)
 
-        target = f"{self.wrk}/ELSCF{self.cnmexp}ALBC{bdnr:03d}"
+        target = f"{self.intp_bddir}/ELSCF{self.cnmexp}ALBC{bdnr:03d}"
         self.fmanager.output(f"PF{self.cnmexp}000+0000", target)

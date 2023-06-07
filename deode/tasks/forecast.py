@@ -29,6 +29,7 @@ class Forecast(Task):
             self.config.get_value("general.times.cycle_length")
         )
         self.bdint = as_timedelta(self.config.get_value("general.bdint"))
+        self.intp_bddir = self.config.get_value("system.intp_bddir")
         self.forecast_range = self.config.get_value("general.forecast_range")
 
         sfx_config = self.config.get_value("SURFEX").dict()

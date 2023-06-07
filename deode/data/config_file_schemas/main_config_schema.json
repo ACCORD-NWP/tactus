@@ -69,6 +69,10 @@
           "type": "string",
 	  "description": "Location of input boundaries"
         },
+        "intp_bddir": {
+          "type": "string",
+	  "description": "Location of boundaries on the current domain, i.e. the output directory of e927"
+        },
         "climdir": {
           "type": "string",
 	  "description": "Location of generated/used climate files (PGD/monthly files)"

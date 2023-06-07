@@ -245,6 +245,7 @@
  wrk = "@SCRATCH@/deode/@CASE@/@YYYY@@MM@@DD@_@HH@@mm@"
  archive = "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
  bddir = "/scratch/sism/DEOL/@YYYY@/@MM@/@DD@/@HH@"
+ intp_bddir = "@WRK@"
  bdfile_template = "PFIFSDEOL+@LLLL@"
  bddir_sfx = "/home/snh02/work/dev-CY46h1_deode/boundaries/HRES/@YYYY@/@MM@/@DD@/@HH@"
  bdfile_sfx_template = "fc@YYYY@@MM@@DD@_@HH@+@LLL@"

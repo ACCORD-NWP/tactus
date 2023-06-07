@@ -22,7 +22,7 @@ class InitialConditions(object):
         self.logger = get_logger_from_config(config)
         self.platform = Platform(self.config)
         self.wrk = self.platform.get_value("system.wrk")
-
+        self.intp_bddir = self.config.get_value("system.intp_bddir")
         self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
         self.cycle_length = as_timedelta(
             self.config.get_value("general.times.cycle_length")
@@ -86,7 +86,7 @@ class InitialConditions(object):
         self.nosuccess(source, source_sfx, False)
 
         # Find data prepared by Prep and the boundary interpolation
-        source = self.platform.substitute(f"{self.wrk}/ELSCF@CNMEXP@ALBC000")
+        source = self.platform.substitute(f"{self.intp_bddir}/ELSCF@CNMEXP@ALBC000")
         source_sfx = self.platform.substitute(f"{self.archive}/ICMSH@CNMEXP@INIT.sfx")
 
         if os.path.exists(source) and os.path.exists(source_sfx):
