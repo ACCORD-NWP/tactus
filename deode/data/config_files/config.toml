@@ -8,6 +8,7 @@
  cycle = "CY46h1"
  surfex = true
  bdint = "PT3H"
+ bdshift = "PT0H"
  bdcycle = "PT12H"
  bdmax = 12
  forecast_range = "PT12H"

@@ -428,6 +428,11 @@
               "type": "string",
               "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
         },
+        "bdshift": {
+              "description": "Shift of boundary initial time. E.g. '-PT3H' would mean use 3H old boundaries",
+              "type": "string",
+              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        },
         "bdcycle": {
               "description": "Boundary model cycle interval",
               "type": "string",

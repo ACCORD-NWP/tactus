@@ -27,8 +27,8 @@ class E927(Task):
 
         self.bdint = self.config.get_value("general.bdint")
         self.bdcycle = as_timedelta(config.get_value("general.bdcycle"))
+        self.bdshift = as_timedelta(config.get_value("general.bdshift"))
         self.intp_bddir = self.config.get_value("system.intp_bddir")
-
         self.bdnr = config.get_value("task.args.bd_nr")
         self.bd_time = config.get_value("task.args.bd_time")
         self.bddir = self.config.get_value("system.bddir")
@@ -58,7 +58,9 @@ class E927(Task):
         # Namelist
         self.nlgen.generate_namelist("e927", "fort.4")
 
-        bd_basetime = self.basetime - cycle_offset(self.basetime, self.bdcycle)
+        bd_basetime = self.basetime - cycle_offset(
+            self.basetime, self.bdcycle, shift=self.bdshift
+        )
 
         # Input file
         bdnr = int(self.bdnr)
