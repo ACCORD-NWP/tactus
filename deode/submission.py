@@ -181,7 +181,7 @@ class TaskSettings(object):
                                 value = f"{ecf_micro}{setting}{ecf_micro}"
                                 self.logger.debug(value)
                         if isinstance(value, str):
-                            value = value.replace("@NAME@", task)
+                            value = value.replace("@TASK_NAME@", task)
 
                         m_task_settings.update({setting: value})
                     self.logger.debug(m_task_settings)

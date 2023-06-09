@@ -259,6 +259,7 @@ tasks = ["creategrib", "Background_hpc", "UnitTest"]
  WRAPPER = "srun"
  tasks = ["Gmted", "Soil"]
 [submission.serial.BATCH]
+ NAME = "#SBATCH --job-name=@TASK_NAME@"
  ACCOUNT = "#SBATCH -A msdeode"
  WALLTIME = "#SBATCH --time=00:15:00"
  QOS = "#SBATCH --qos=nf"
@@ -289,6 +290,7 @@ tasks = ["creategrib", "Background_hpc", "UnitTest"]
  NPROC = 32
  WRAPPER = "srun"
 [submission.parallel.BATCH]
+ NAME = "#SBATCH --job-name=@TASK_NAME@"
  ACCOUNT = "#SBATCH -A msdeode"
  WALLTIME = "#SBATCH --time=00:10:00"
  QOS = "#SBATCH --qos=np"
@@ -309,7 +311,6 @@ tasks = ["creategrib", "Background_hpc", "UnitTest"]
 [submission.task_exceptions.e927]
  NPROC = 16
 [submission.task_exceptions.e927.BATCH]
- NAME = "#SBATCH --job-name=e927"
  NODES = "#SBATCH --nodes=1"
  NTASKS = "#SBATCH --ntasks=16"
 
@@ -317,19 +318,16 @@ tasks = ["creategrib", "Background_hpc", "UnitTest"]
  NPROC = 256
  
 [submission.task_exceptions.Forecast.BATCH]
- NAME = "#SBATCH --job-name=Forecast"
  NODES = "#SBATCH --nodes=2"
  NTASKS = "#SBATCH --ntasks=256"
  WALLTIME = "#SBATCH --time=00:30:00"
 
 [submission.task_exceptions.Pgd.BATCH]
- NAME = "#SBATCH --job-name=Pgd"
  NODES = "#SBATCH --nodes=2"
  NTASKS = "#SBATCH --ntasks=32"
  WALLTIME = "#SBATCH --time=00:10:00"
 
 [submission.task_exceptions.Prep.BATCH]
- NAME = "#SBATCH --job-name=Prep"
  NODES = "#SBATCH --nodes=1"
  NTASKS = "#SBATCH --ntasks=1"
  WALLTIME = "#SBATCH --time=00:10:00"
