@@ -3,7 +3,9 @@
 from os import environ  # noqa
 
 from deode.config_parser import ParsedConfig
+from deode.derived_variables import derived_variables
 from deode.logs import get_logger_from_config
+from deode.submission import ProcessorLayout, TaskSettings
 from deode.tasks.discover_task import get_task
 
 # @ENV_SUB@
@@ -19,6 +21,12 @@ def default_main(task, config, deode_home):
     """
     config = ParsedConfig.from_file(config)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
+
+    task_settings = TaskSettings(config).get_task_settings(task)
+    processor_layout = ProcessorLayout(task_settings)
+    update = derived_variables(config, processor_layout=processor_layout)
+    config = config.copy(update=update)
+
     logger = get_logger_from_config(config)
     logger.info("Running task %s", task)
     get_task(task, config).run()
