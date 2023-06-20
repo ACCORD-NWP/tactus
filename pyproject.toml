@@ -95,7 +95,7 @@
     # <https://docs.pylint.org/en/1.6.0/faq.html>
     # Also, run "pylint --generate-rcfile" to see all applied pylint opts.
     fail-under = "8.0"
-    good-names = ["i", "j", "n", "x", "y", "df", "db", "dt", "g0"]
+    good-names = ["i", "j", "n", "x", "y", "df", "db", "dt"]
     # Default value for the rgx below: "[a-z_][a-z0-9_]{2,30}$"
     attr-rgx = "[a-z_][a-z0-9_]{1,30}$"
 
