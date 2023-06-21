@@ -1,5 +1,5 @@
 [general]
- case = arome_case_CY46t1"
+ case = "arome_CY48t3"
  cnmexp = "DEOD"
  realization = -1
  tstep = 50
@@ -8,12 +8,13 @@
  cycle = "CY48t3"
  surfex = true
  bdint = "PT3H"
+ bdshift = "PT0H"
  bdcycle = "PT12H"
  bdmax = 12
  forecast_range = "PT12H"
  keep_workdirs = true
  create_static_data = true
- accept_static_namelists = false
+ accept_static_namelists = true
  nproma = -32
  [general.output_settings]
    history = ["PT1H:PT3H:PT1H", "PT3H:PT6H:PT3H", "PT6H"]
@@ -245,25 +246,27 @@
  wrk = "@SCRATCH@/deode/@CASE@/@YYYY@@MM@@DD@_@HH@@mm@"
  archive = "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
  bddir = "/scratch/sism/DEOL/@YYYY@/@MM@/@DD@/@HH@"
+ intp_bddir = "@WRK@"
  bdfile_template = "PFIFSDEOL+@LLLL@"
  bddir_sfx = "/ec/res4/scratch/kmw/DEODE/ECMWF/2023021900"
  bdfile_sfx_template = "fc@YYYY@@MM@@DD@_@HH@+@LLL@"
  climdir = "@SCRATCH@/deode/@CASE@/climate/@DOMAIN@"
  bdclimdir = "/home/snh02/work/dev-CY46h1_deode/climate/DEODE_LARGE"
- bindir = "/home/kmw/packs/46t1_pgdprep.01.OMPIIFC2104.x/bin"
+ bindir = "/home/kmw/packs/48.03_pgdprep/bin"
+ fullpos_config_file = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos_namelist.yml"
 
 [platform]
  deode_home = "set-by-the-system"
- archive_root = "@SCRATCH@/deode/@CASE@/archive"
  scratch = "/scratch/@USER@"
- rrtm_dir = "@STATIC_DATA@/rrtm/46h1"
- ncdir = "/home/snh02/work/cy46t1/arome/data"
+ archive_root = "@SCRATCH@/deode/@CASE@/archive"
+ static_data = "/hpcperm/snh02/DEODE"
+ climdata = "@STATIC_DATA@/climate"
+ rrtm_dir = "@STATIC_DATA@/rrtm/@CYCLE@"
+ ncdir = "@STATIC_DATA@/ncdir"
  e923_data = "@STATIC_DATA@/climate/E923_DATA"
- namelists = "@DEODE_HOME@/deode/data/namelists/CY46t1"
- static_data = "/hpcperm/hlam/data"
- climdata = "/hpcperm/hlam/data/climate"
+ namelists = "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
  ecosg_data_path = "@CLIMDATA@/ECOCLIMAP-SG"
- ecoclim_data_path = "/home/snh02/work/cy46t1/ecoclimap"
+ ecoclim_data_path = "@CLIMDATA@/ecoclimap"
  gmted2010_data_path = "@CLIMDATA@/GMTED2010"
  soilgrid_data_path = "@CLIMDATA@/SOILGRID"
  pgd_data_path = "@CLIMDATA@/PGD"
@@ -296,7 +299,7 @@ tasks = ["Background_vm"]
 
 [submission.background_hpc]
 SCHOST = "localhost"
-tasks = ["creategrib","Background_hpc", "UnitTest"]
+tasks = ["creategrib", "Background_hpc", "UnitTest"]
 
 [submission.serial]
  SCHOST = "hpc"
@@ -304,6 +307,7 @@ tasks = ["creategrib","Background_hpc", "UnitTest"]
  NPROCX = 1
  NPROCY = 1
  WRAPPER = "srun"
+ tasks = ["Gmted", "Soil"]
 [submission.serial.BATCH]
  NAME = "#SBATCH --job-name=@TASK_NAME@"
  ACCOUNT = "#SBATCH -A msdeode"
@@ -325,9 +329,15 @@ tasks = ["creategrib","Background_hpc", "UnitTest"]
  OMPI_MCA_btl= "os.environ['OMPI_MCA_btl'] = '^vader'"
  DR_HOOK_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
 
+[submission.task_exceptions.Gmted.ENV]
+ MODULE_GDAL= "module('load', 'gdal/3.2.1')"
+
+[submission.task_exceptions.Soil.ENV]
+ MODULE_GDAL= "module('load', 'gdal/3.2.1')"
+
 [submission.parallel]
  SCHOST = "hpc"
- tasks = ["Forecast","e927"]
+ tasks = ["Forecast","e927","Pgd","Prep"]
  NPROC = 32
  WRAPPER = "srun"
 [submission.parallel.BATCH]
@@ -364,6 +374,18 @@ tasks = ["creategrib","Background_hpc", "UnitTest"]
  NTASKS = "#SBATCH --ntasks=256"
  WALLTIME = "#SBATCH --time=00:30:00"
 
+[submission.task_exceptions.Pgd.BATCH]
+ NAME = "#SBATCH --job-name=Pgd"
+ NODES = "#SBATCH --nodes=2"
+ NTASKS = "#SBATCH --ntasks=32"
+ WALLTIME = "#SBATCH --time=00:10:00"
+
+[submission.task_exceptions.Prep.BATCH]
+ NAME = "#SBATCH --job-name=Prep"
+ NODES = "#SBATCH --nodes=1"
+ NTASKS = "#SBATCH --ntasks=1"
+ WALLTIME = "#SBATCH --time=00:10:00"
+
 [troika]
 config_file = "@DEODE_HOME@/deode/data/config_files/troika.yml"
 
@@ -381,7 +403,6 @@ LSELECT = true
 [SURFEX.COVER]
 YCOVER = "ecoclimap.dir"
 SG = false
-YCOVERFILETYPE = "DIRECT"
 H_TREE = "new_ht_c.dir"
 ALBNIR_SOIL = "ALB_SAT_NI_@MM@@CDD@_c.dir"
 ALBNIR_VEG = "ALB_SAT_NI_@MM@@CDD@_c.dir"

@@ -266,7 +266,7 @@
  e923_data = "@STATIC_DATA@/climate/E923_DATA"
  namelists = "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
  ecosg_data_path = "@CLIMDATA@/ECOCLIMAP-SG"
- ecoclim_data_path = "@CLIMDATA@/ecoclimap/@CYCLE@"
+ ecoclim_data_path = "@CLIMDATA@/ecoclimap"
  gmted2010_data_path = "@CLIMDATA@/GMTED2010"
  soilgrid_data_path = "@CLIMDATA@/SOILGRID"
  pgd_data_path = "@CLIMDATA@/PGD"

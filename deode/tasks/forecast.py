@@ -66,6 +66,27 @@ class Forecast(Task):
 
     def execute(self):
         """Execute forecast."""
+        # CY48t3 input files not used in CY46
+        # *.nc files and ecoclimap.bin files
+        input_files = [
+            "greenhouse_gas_climatology_46r1.nc",
+            "greenhouse_gas_climatology_48r1.nc",
+            "greenhouse_gas_timeseries_CMIP3_A1B_46r1.nc",
+            "greenhouse_gas_timeseries_CMIP3_A2_46r1.nc",
+            "greenhouse_gas_timeseries_CMIP3_B1_46r1.nc",
+            "greenhouse_gas_timeseries_CMIP5_RCP3PD_46r1.nc",
+            "greenhouse_gas_timeseries_CMIP5_RCP45_46r1.nc",
+            "greenhouse_gas_timeseries_CMIP5_RCP6_46r1.nc",
+            "greenhouse_gas_timeseries_CMIP5_RCP85_46r1.nc",
+            "greenhouse_gas_timeseries_CMIP6_SSP126_CFC11equiv_47r1.nc",
+            "greenhouse_gas_timeseries_CMIP6_SSP245_CFC11equiv_47r1.nc",
+            "greenhouse_gas_timeseries_CMIP6_SSP370_CFC11equiv_47r1.nc",
+            "greenhouse_gas_timeseries_CMIP6_SSP585_CFC11equiv_47r1.nc",
+        ]
+        if self.cycle in ["CY46t1", "CY48t3"]:
+            for ifile in input_files:
+                self.fmanager.input(f"{self.ncdir}/{ifile}", ifile)
+
         # RRTM files
         for ifile in [
             "C11CLIM",

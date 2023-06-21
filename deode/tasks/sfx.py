@@ -82,7 +82,7 @@ class SurfexBinaryTask(Task):
                 "sand_dir": f"{pgd_dir}",
                 "clay_dir": f"{pgd_dir}",
                 "ecoclimap_bin_dir": f"{eco_dir}",
-                "ecoclimap_cover_dir": f"{pgd_dir}",
+                "ecoclimap_cover_dir": f"{eco_dir}",
                 "oro_dir": f"{climdir}",
                 "soc_top_dir": f"{climdir}",
                 "soc_sub_dir": f"{climdir}",
@@ -254,6 +254,7 @@ class SurfexBinaryTask(Task):
             )
         elif self.do_prep:
             prepfile = PREPFile(filetype, prepfile, archive_file=output, lfagmap=lfagmap)
+
             SURFEXBinary(
                 binary,
                 batch,
