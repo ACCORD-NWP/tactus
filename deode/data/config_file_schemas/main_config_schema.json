@@ -8,6 +8,9 @@
     "general": {
       "$ref": "#/definitions/general"
     },
+    "suite_control": {
+      "$ref": "#/definitions/suite_control"
+    },
     "domain": {
       "$ref": "#/definitions/domain"
     },
@@ -44,6 +47,38 @@
         "config_file": {
           "type": "string",
 	  "description": "Troika config file"
+        }
+      }
+    },
+
+    "suite_control": {
+      "title": "Suite control",
+      "description": "Suite control options",
+      "type": "object",
+      "properties": {
+        "do_soil": {
+              "description": "Activate preparation of SOILGRID data as input for PGD",
+              "type": "boolean"
+        },
+        "do_pgd": {
+              "description": "Activate generation of a PGD file",
+              "type": "boolean"
+        },
+        "do_prep": {
+              "description": "Run prep if cold start",
+              "type": "boolean"
+        },
+        "interpolate_boundaries": {
+              "description": "Activates the boundary interpolation",
+              "type": "boolean"
+        },
+        "create_static_data": {
+              "description": "Activate the generation of PGD and monthly climate files in the suite",
+              "type": "boolean"
+        },
+        "create_time_dependent_suite": {
+              "description": "Activate the time dependent part of the suite",
+              "type": "boolean"
         }
       }
     },
@@ -368,10 +403,6 @@
               }
             }
           ]
-        },
-        "create_static_data": {
-              "description": "Activate the generation of PGD and monthly climate files in the suite",
-              "type": "boolean"
         },
         "accept_static_namelists": {
               "description": "Allow usage of static namelists as input for the tasks. The namelist should be located in the directory specified by platform.namelists and named with the convention namelist_{kind}_{task} where kind could be surfex or master and task forecast/pgd or similar. For the extraction of namelist see [namelists.md](../docs/namelists.md).",

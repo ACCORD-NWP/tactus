@@ -36,13 +36,29 @@ class TestSuite:
     def test_config_can_be_instantiated(self, minimal_parsed_config):
         assert isinstance(minimal_parsed_config, ParsedConfig)
 
-    def test_suite(self, config_from_task_config_file):
+    @pytest.mark.parametrize(
+        "param",
+        [
+            {"general": {"bdmax": 1}},
+            {
+                "suite_control": {
+                    "do_pgd": False,
+                    "do_prep": False,
+                    "interpolate_boundaries": False,
+                }
+            },
+            {"suite_control": {"create_static_data": False}},
+            {"suite_control": {"create_time_dependent_suite": False, "do_soil": False}},
+        ],
+    )
+    def test_suite(self, config_from_task_config_file, param):
         config = config_from_task_config_file
         config = config.copy(
             update={
                 "platform": {"deode_home": f"{os.path.dirname(__file__)}/../.."},
             }
         )  # noqa S108
+        config = config.copy(update=param)
         suite_name = "test_suite"
         loglevel = "debug"
         background = TaskSettings(config)

@@ -13,13 +13,20 @@
  bdmax = 12
  forecast_range = "PT12H"
  keep_workdirs = true
- create_static_data = true
  accept_static_namelists = false
  nproma = -32
  [general.output_settings]
    history = ["PT1H:PT3H:PT1H", "PT3H:PT6H:PT3H", "PT6H"]
    fullpos = "PT24H:PT15M"
    surfex = ["PT3H:PT1H", "PT9H:PT24H:PT3H"]
+
+[suite_control]
+ create_static_data = true
+ create_time_dependent_suite = true
+ do_soil = true
+ do_pgd = true
+ do_prep = true
+ interpolate_boundaries = true
 
 [file_templates]
  duration_grib = "@LLLH@h@LM@m@LS@s"
