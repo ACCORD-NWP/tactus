@@ -13,7 +13,7 @@
  bdmax = 12
  forecast_range = "PT12H"
  keep_workdirs = true
- accept_static_namelists = true
+ accept_static_namelists = false
  nproma = -32
  [general.output_settings]
    history = ["PT1H:PT3H:PT1H", "PT3H:PT6H:PT3H", "PT6H"]
