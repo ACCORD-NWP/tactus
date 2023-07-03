@@ -15,10 +15,11 @@
  keep_workdirs = true
  accept_static_namelists = false
  nproma = -32
- [general.output_settings]
-   history = ["PT1H:PT3H:PT1H", "PT3H:PT6H:PT3H", "PT6H"]
-   fullpos = "PT24H:PT15M"
-   surfex = ["PT3H:PT1H", "PT9H:PT24H:PT3H"]
+
+[general.output_settings]
+ history = ["PT1H:PT3H:PT1H", "PT3H:PT6H:PT3H", "PT6H"]
+ fullpos = "PT24H:PT15M"
+ surfex = ["PT3H:PT1H", "PT9H:PT24H:PT3H"]
 
 [suite_control]
  create_static_data = true
@@ -261,6 +262,7 @@
  bdclimdir = "/home/snh02/work/dev-CY46h1_deode/climate/DEODE_LARGE"
  bindir = "/home/kmw/packs/48.03_pgdprep/bin"
  fullpos_config_file = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos_namelist.yml"
+ sfx_input_defs = "@DEODE_HOME@/deode/data/input/sfx_input_CY48t3.json"
 
 [platform]
  deode_home = "set-by-the-system"
@@ -277,6 +279,7 @@
  gmted2010_data_path = "@CLIMDATA@/GMTED2010"
  soilgrid_data_path = "@CLIMDATA@/SOILGRID"
  pgd_data_path = "@CLIMDATA@/PGD"
+ ecoclimap_bin_dir = "@ecoclim_data_path@"
 
 [general.times]
  basetime = "2023-02-19T00:00:00Z"
@@ -396,135 +399,3 @@ tasks = ["creategrib", "Background_hpc", "UnitTest"]
 [troika]
 config_file = "@DEODE_HOME@/deode/data/config_files/troika.yml"
 
-################ Pysurfex ##############################################################
-[SURFEX]
-[SURFEX.IO]
-CSURF_FILETYPE = "FA"
-CTIMESERIES_FILETYPE = "FA"
-CFORCING_FILETYPE = "NETCDF"
-XTSTEP = 600
-XTSTEP_OUTPUT = 21600.0
-LSPLIT_PATCH = true
-LSELECT = true
-
-[SURFEX.COVER]
-YCOVER = "ecoclimap.dir"
-SG = false
-H_TREE = "new_ht_c.dir"
-ALBNIR_SOIL = "ALB_SAT_NI_@MM@@CDD@_c.dir"
-ALBNIR_VEG = "ALB_SAT_NI_@MM@@CDD@_c.dir"
-ALBVIS_SOIL = "ALB_SAT_VI_@MM@@CDD@_c.dir"
-ALBVIS_VEG = "ALB_SAT_VI_@MM@@CDD@_c.dir"
-LAI = "LAI_SAT_@MM@@CDD@_c.dir"
-
-[SURFEX.ZS]
-YZS = "gmted2010.dir"
-
-[SURFEX.PARAMETERS]
-XRIMAX = 0.2
-
-[SURFEX.TILES]
-SEA = "SEAFLX"
-INLAND_WATER = "NONE"
-NATURE = "ISBA"
-TOWN = "TEB"
-
-[SURFEX.SEA]
-ICE = "NONE"
-PERTFLUX = false
-LVOLATILE_SIC = false
-
-[SURFEX.INLAND_WATER]
-
-[SURFEX.FLAKE]
-LCLIM = true
-LDB_VERSION = "3.0"
-
-[SURFEX.ISBA]
-SCHEME = "3-L"
-NPATCH = 1
-MEB = false
-CANOPY = false
-SNOW = "D95"
-YSOC_TOP = "soc_top.dir"
-YSOC_SUB = "soc_sub.dir"
-YSAND = "SAND_HWSD_MOY_v2.dir"
-YCLAY = "CLAY_HWSD_MOY_v2.dir"
-PERTSURF = false
-XCGMAX = 2e-5
-XCSMAX = 0.0002
-
-[SURFEX.SSO]
-SCHEME = "NONE"
-
-[SURFEX.TREEDRAG]
-TREEDATA_FILE = ""
-XSCALE_H_TREE = 1.0
-XALLEN_TERM = 2.5
-XGRASS_H_DNM = 3.0
-FAKETREES = false
-
-[SURFEX.TOWN]
-LTOWN_TO_ROCK = false
-
-[SURFEX.TEB]
-
-[SURFEX.ASSIM]
-CFILE_FORMAT_LSM = "ASCII"
-
-[SURFEX.ASSIM.SCHEMES]
-SEA = "NONE"
-INLAND_WATER = "NONE"
-ISBA = "NONE"
-TEB = "NONE"
-
-[SURFEX.ASSIM.OBS]
-LOBSHEADER = false
-CFILE_FORMAT_OBS = "ASCII"
-LOBSNAT = false
-COBS_M = [ "T2M", "HU2M", "WG2 ", "LAI", "SWE",]
-NNCO = [ 1, 1, 0, 0, 1,]
-XERROBS_M = [ 1.0, 0.1, 0.1, 0.1, 20.0,]
-LSWE = false
-NOBSTYPE_M = 2
-
-[SURFEX.ASSIM.SEA]
-CFILE_FORMAT_SST = "ASCII"
-LREAD_SST_FROM_FILE = true
-LEXTRAP_SEA = false
-LECSST = true
-
-[SURFEX.ASSIM.INLAND_WATER]
-LWATERTG2 = false
-LEXTRAP_WATER = false
-
-[SURFEX.ASSIM.ISBA]
-UPDATE_SNOW_CYCLES = []
-LSWEPSINI = false
-XSWEPSINI = 1000.0
-LSWEPSMIN = false
-XSWEPSMIN = 500.0
-LPATCH1 = false
-
-[SURFEX.ASSIM.ISBA.OI]
-CFILE_FORMAT_CLIM = "ASCII"
-CFILE_FORMAT_FG = "ASCII"
-COEFFS = "POLYNOMES_ISBA"
-XSIGT2MO = 1.0
-XSIGH2MO = 0.1
-
-[SURFEX.ASSIM.ISBA.EKF]
-NNCV = [ 0, 1, 0, 1,]
-XSIGMA_M = [ 2.0, 2.0, 0.1, 0.15,]
-CVAR_M = [ "TG1", "TG2", "WG1", "WG2",]
-XTPRT_M = [ 0.0001, 0.0001, 1e-5, 1e-5,]
-XSCALE_Q = 0.125
-EVOLVE_B = false
-LLINCHECK = true
-XALPHA = 0.2
-
-[SURFEX.ASSIM.ISBA.ENKF]
-NNCV = [ 1, 1, 1, 1, 1, 1,]
-CVAR_M = [ "TG1", "TG2", "TG3", "WG2", "WG3", "WG4",]
-NENS_M = 16
-LPASSIVE_MODE = false

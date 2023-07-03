@@ -52,6 +52,8 @@ sfx_pgd:
     YZSFILETYPE: "DIRECT"
   NAM_ZS_FILTER:
     NZSFILTER: 0
+  NAM_FRAC:
+    LECOSG: False
 
 sfx_surf_constants:
   NAM_SURF_CSTS: {}
@@ -96,6 +98,8 @@ sfx_forecast:
   NAM_WRITE_SURF_ATM:
     LNOWRITE_TEXFILE: True
     LSPLIT_PATCH: true
+  NAM_FRAC:
+    LECOSG: False
 
 sfx_selected_output:
   NAM_WRITE_DIAG_SURFN: {}
@@ -176,24 +180,20 @@ sfx_prep_flake:
   NAM_PREP_FLAKE: {}
 
 sfx_prep_isba:
+  NAM_FRAC:
+    LECOSG: False
   NAM_PREP_ISBA_SNOW: {}
   NAM_DIAG_ISBAN: {}
   NAM_PREP_ISBA: {}
-  NAM_PREP_SURF_ATM:
-    CFILE: "INFILE"
-    CFILEPGD: "PGD"
-    CFILEPGDTYPE: "FA"
-    CFILETYPE: "GRIB"
 
 sfx_prep_isba_from_grib:
   NAM_PREP_SURF_ATM:
     CFILE: "INFILE"
-    CFILEPGD: "PGD"
-    CFILEPGDTYPE: "FA"
     CFILETYPE: "GRIB"
 
 sfx_prep_isba_pgd_file_format_fa:
   NAM_PREP_SURF_ATM:
+    CFILEPGD: "PGD_HOST"
     CFILEPGDTYPE: "FA"
 
 sfx_prep_isba_snow_d95:
@@ -232,10 +232,6 @@ sfx_prep:
   NAM_PREP_SEAFLUX:
     LSEA_SBL: False
   NAM_PREP_SURF_ATM:
-    CFILE: INFILE
-    CFILEPGD: PGD
-    CFILEPGDTYPE: FA
-    CFILETYPE: GRIB
     NHALO_PREP: 100
   NAM_PREP_WATFLUX:
     LWAT_SBL: False

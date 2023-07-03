@@ -184,21 +184,15 @@ sfx_prep_isba:
   NAM_PREP_ISBA_SNOW: {}
   NAM_DIAG_ISBAN: {}
   NAM_PREP_ISBA: {}
-  NAM_PREP_SURF_ATM:
-    CFILE: "INFILE"
-    CFILEPGD: "PGD"
-    CFILEPGDTYPE: "FA"
-    CFILETYPE: "GRIB"
 
 sfx_prep_isba_from_grib:
   NAM_PREP_SURF_ATM:
     CFILE: "INFILE"
-    CFILEPGD: "PGD"
-    CFILEPGDTYPE: "FA"
     CFILETYPE: "GRIB"
 
 sfx_prep_isba_pgd_file_format_fa:
   NAM_PREP_SURF_ATM:
+    CFILEPGD: "PGD_HOST"
     CFILEPGDTYPE: "FA"
 
 sfx_prep_isba_snow_d95:
@@ -238,8 +232,6 @@ sfx_prep:
     LSEA_SBL: False
   NAM_PREP_SURF_ATM:
     CFILE: INFILE
-    CFILEPGD: PGD
-    CFILEPGDTYPE: FA
     CFILETYPE: GRIB
     NHALO_PREP: 100
   NAM_PREP_WATFLUX:

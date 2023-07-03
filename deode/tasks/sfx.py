@@ -1,285 +1,563 @@
-"""Forecast."""
+"""Surfex tasks."""
 
+import json
 import logging
 import os
 
-import f90nml
-from pysurfex.binary_input import (
-    OfflineInputData,
-    PgdInputData,
-    PrepInputData,
-    SodaInputData,
-)
-from pysurfex.configuration import Configuration
-from pysurfex.file import PGDFile, PREPFile, SURFFile
-from pysurfex.platform import SystemFilePaths
-from pysurfex.run import PerturbedOffline, SURFEXBinary
-
-from ..datetime_utils import as_datetime
 from ..namelist import NamelistGenerator
 from .base import Task
 from .batch import BatchJob
 
 
-class SurfexBinaryTask(Task):
-    """Task."""
+class InputDataFromNamelist:
+    """Binary input data for offline executables."""
 
-    def __init__(self, config, name=None, mode=None):
-        """Construct object.
-
-        Args:
-            config (deode.ParsedConfig): Configuration
-            name (str): Name og task
-            mode (str): Type of surfex binary
-
-        """
-        if name is None:
-            name = self.__class__.__name__
-
-        Task.__init__(self, config, name)
-
-        self.mode = mode
-        self.need_pgd = True
-        self.need_prep = True
-        self.pgd = False
-        self.do_prep = False
-        self.perturbed = False
-        self.soda = False
-        self.force = True
-
-        self.nlgen = NamelistGenerator(self.config, "surfex")
-
-        # SURFEX config added to general config
-        cfg = self.config.get_value("SURFEX").dict()
-        sfx_config = {"SURFEX": cfg}
-        self.sfx_config = Configuration(sfx_config)
-
-        # Get paths from file manager (example)
-        pgd_dir = self.fmanager.platform.get_platform_value("PGD_DATA_PATH")
-        climdir = self.fmanager.platform.get_system_value("climdir")
-        if self.sfx_config.settings["SURFEX"]["COVER"]["SG"]:
-            ecosg_dir = self.fmanager.platform.get_platform_value("ECOSG_DATA_PATH")
-
-            # TODO get all needed paths
-            exp_file_paths = {
-                "tree_height_dir": f"{ecosg_dir}/HT/",
-                "flake_dir": f"{pgd_dir}",
-                "sand_dir": f"{climdir}",
-                "clay_dir": f"{climdir}",
-                "soc_top_dir": f"{climdir}",
-                "soc_sub_dir": f"{climdir}",
-                "ecoclimap_sg_cover_dir": f"{ecosg_dir}/COVER/",
-                "albnir_soil_dir": f"{ecosg_dir}/ALB_SAT/",
-                "albvis_soil_dir": f"{ecosg_dir}/ALB_SAT/",
-                "albnir_veg_dir": f"{ecosg_dir}/ALB_SAT/",
-                "albvis_veg_dir": f"{ecosg_dir}/ALB_SAT/",
-                "lai_dir": f"{ecosg_dir}/LAI_SAT/",
-                "oro_dir": f"{climdir}",
-            }
-        else:
-            eco_dir = self.fmanager.platform.get_platform_value("ECOCLIM_DATA_PATH")
-            exp_file_paths = {
-                "sand_dir": f"{pgd_dir}",
-                "clay_dir": f"{pgd_dir}",
-                "ecoclimap_bin_dir": f"{eco_dir}",
-                "ecoclimap_cover_dir": f"{eco_dir}",
-                "oro_dir": f"{climdir}",
-                "soc_top_dir": f"{climdir}",
-                "soc_sub_dir": f"{climdir}",
-            }
-
-        self.exp_file_paths = SystemFilePaths(exp_file_paths)
-
-        self.dtg = as_datetime(self.config.get_value("general.times.validtime"))
-        self.check_existence = False
-        self.print_namelist = True
-
-    def execute_binary(
-        self,
-        binary,
-        output,
-        pgd_file_path=None,
-        prep_file_path=None,
-        archive_data=None,
-        forc_zs=False,
-        masterodb=True,
-        perturbed_file_pattern=None,
-        fcint=3,
-        prep_file=None,
-        prep_filetype=None,
-        prep_pgdfile=None,
-        prep_pgdfiletype=None,
-    ):
-        """Execute the surfex binary.
+    def __init__(self, nml, input_data, program, platform, basetime=None, validtime=None):
+        """Construct the binary input set up from namelist.
 
         Args:
-            binary (str): Full path to binary
-            output (str): Full path to output file
-            pgd_file_path (str, optional): _description_. Defaults to None.
-            prep_file_path (str, optional): _description_. Defaults to None.
-            archive_data (surfex.OutputDataFromSurfexBinaries, optional): A mapping of produced files and where to archive them. Defaults to None.
-            forc_zs (bool, optional): _description_. Defaults to False.
-            masterodb (bool, optional): _description_. Defaults to True.
-            perturbed_file_pattern (str, optional):
-            File pattern for perturbations. Defaults to None.
-            fcint (int, optional): Interval between analyses. Defaults to 3.
-            prep_file (str, optional):
-            Path to input prepfile. Defaults to None.
-            prep_filetype (str, optional):
-            Filetype of prep input file. Defaults to None.
-            prep_pgdfile (str, optional):
-            PGD file path for prep input file. Defaults to None.
-            prep_pgdfiletype (str, optional):
-            PGD filetype for prep input file. Defaults to None.
+            nml (f90nml): Namelist
+            input_data (dict): Input data definitions
+            program (str): Program mode to set up for (pgd/prep etc)
+            platform (Platform): Platform dependent settings
+            basetime (as_datetime, optional): basetime. Defaults to None.
+            validtime (as:datetime, optional): Validtime. Defaults to None.
 
         Raises:
-            NotImplementedError: Unknown implementation.
+            RuntimeError: Could not find program
+
         """
-        rte = os.environ
-        if self.mode == "pgd":
-            self.pgd = True
-            self.need_pgd = False
-            self.need_prep = False
-            input_data = PgdInputData(
-                self.sfx_config, self.exp_file_paths, check_existence=self.check_existence
-            )
-        elif self.mode == "prep":
-            self.do_prep = True
-            self.need_prep = False
-            input_data = PrepInputData(
-                self.sfx_config,
-                self.exp_file_paths,
-                check_existence=self.check_existence,
-                prep_file=prep_file,
-                prep_pgdfile=prep_pgdfile,
-            )
-        elif self.mode == "offline":
-            input_data = OfflineInputData(
-                self.sfx_config, self.exp_file_paths, check_existence=self.check_existence
-            )
-        elif self.mode == "soda":
-            self.soda = True
-            input_data = SodaInputData(
-                self.sfx_config,
-                self.exp_file_paths,
-                check_existence=self.check_existence,
-                dtg=self.dtg,
-                masterodb=masterodb,
-                perturbed_file_pattern=perturbed_file_pattern,
-            )
-        elif self.mode == "perturbed":
-            self.perturbed = True
-            input_data = OfflineInputData(
-                self.sfx_config, self.exp_file_paths, check_existence=self.check_existence
-            )
-        else:
-            raise NotImplementedError(self.mode + " is not implemented!")
+        self.nml = nml
+        self.platform = platform
+        self.basetime = basetime
+        self.validtime = validtime
+        try:
+            self.data = input_data[program]
+        except KeyError:
+            raise RuntimeError(f"Could not find program {program}") from KeyError
+        self.data = self.process_data()
 
-        rte = os.environ
-        batch = BatchJob(rte, wrapper=self.wrapper)
+    def get(self):
+        """Return data."""
+        return self.data
 
-        # Overide settings with static namelists
-        self.nlgen.generate_namelist(self.mode, "OPTIONS.nam")
-        settings = f90nml.read("OPTIONS.nam")
+    @staticmethod
+    def get_nml_value(nml, block, key, indices=None):
+        """Get namelist value.
 
-        filetype = settings["nam_io_offline"]["csurf_filetype"]
-        pgdfile = settings["nam_io_offline"]["cpgdfile"]
-        prepfile = settings["nam_io_offline"]["cprepfile"]
-        surffile = settings["nam_io_offline"]["csurffile"]
+        Args:
+            nml (nmlf90.Namelist): Namelist
+            block (str): Namelist block
+            key (str): Namelist key
+            indices (list, optional): Indices to read. Defaults to None.
 
-        if prep_file is not None:
-            settings["nam_prep_surf_atm"]["cfile"] = os.path.basename(prep_file)
+        Returns:
+            setting (any): Namelist setting
 
-        lfagmap = False
-        if "LFAGMAP" in settings["NAM_IO_OFFLINE"]:
-            lfagmap = settings["NAM_IO_OFFLINE"]["LFAGMAP"]
+        """
+        logging.debug("Checking block=%s key=%s", block, key)
+        if block in nml:
+            if key in nml[block]:
+                vals = []
+                val_dict = {}
+                val = nml[block][key]
+                logging.debug("namelist type=%s", type(val))
+                if indices is not None:
+                    logging.debug("indices=%s", indices)
+                    if len(indices) == 2:
+                        val = nml[block][key][indices[1]][indices[0]]
+                    else:
+                        val = nml[block][key][indices[0]]
+                        logging.debug("Found 1D value %s", val)
+                        if isinstance(val, list):
+                            return None
+                    val_dict.update({"value": val, "indices": None})
+                    vals.append(val_dict)
 
-        if self.need_pgd:
-            pgdfile = PGDFile(
-                filetype, pgdfile, input_file=pgd_file_path, lfagmap=lfagmap
-            )
+                else:
+                    if isinstance(val, list):
+                        dim_size = len(val)
+                        dims = []
+                        tval = val
+                        while dim_size != 1:
+                            logging.debug("tval=%s", tval)
+                            if isinstance(tval, int):
+                                dim_size = 1
+                            else:
+                                dim_size = len(tval)
+                                if dim_size != 1:
+                                    dims.append(dim_size)
+                                tval = tval[0]
 
-        if self.need_prep:
-            prepfile = PREPFile(
-                filetype, prepfile, input_file=prep_file_path, lfagmap=lfagmap
-            )
+                        logging.debug("dims=%s", dims)
+                        logging.debug("type(val)=%s", type(val))
+                        if len(dims) - 1 == 2:
+                            for i in range(0, dims[0]):
+                                for j in range(0, dims[1]):
+                                    val_dict = {}
+                                    indices = [j, i]
+                                    lval = val[i][j]
+                                    val_dict.update({"value": lval, "indices": indices})
+                                    logging.debug("value=%s indices=%s", lval, indices)
+                                    vals.append(val_dict)
+                        elif len(dims) - 1 == 1:
+                            for i in range(0, dims[0]):
+                                val_dict = {}
+                                indices = [i]
+                                val_dict.update({"value": val[i], "indices": indices})
+                                logging.debug("value=%s indices=%s", val[i], indices)
+                                vals.append(val_dict)
+                        elif len(dims) - 1 == 0:
+                            val_dict = {}
+                            val_dict.update({"value": val, "indices": None})
+                            vals.append(val_dict)
+                    else:
+                        val_dict = {}
+                        if isinstance(val, bool):
+                            val = str(val)
+                        val_dict.update({"value": val, "indices": None})
+                        vals.append(val_dict)
 
-        if self.need_prep and self.need_pgd:
-            surffile = SURFFile(filetype, surffile, archive_file=output, lfagmap=lfagmap)
-        else:
-            surffile = None
+                logging.debug("Found: value=%s", val_dict["value"])
+                return vals
+        return None
 
-        if self.perturbed:
-            if self.pert > 0:
-                PerturbedOffline(
-                    binary,
-                    batch,
-                    prepfile,
-                    self.ivar,
-                    settings,
-                    input_data,
-                    pgdfile=pgdfile,
-                    surfout=surffile,
-                    archive_data=archive_data,
-                    print_namelist=self.print_namelist,
-                )
+    @staticmethod
+    def get_nml_value_from_string(nml, string, sep="#", indices=None):
+        """Get namelist value from a string.
+
+        Args:
+            nml (nmlf90.Namelist): Namelist
+            string (str): Namelist identifier
+            sep (str, optional): _description_. Defaults to "#".
+            indices (list, optional): Indices to read. Defaults to None.
+
+        Returns:
+            setting (any): Namelist setting
+
+        """
+        nam_section = string.split(sep)[0]
+        nam_key = string.split(sep)[1]
+        return InputDataFromNamelist.get_nml_value(
+            nml, nam_section, nam_key, indices=indices
+        )
+
+    def substitute(self, key, val, macros=None, micro="@"):
+        """Substitute patterns.
+
+        Args:
+            key (str): _description_
+            val (str): _description_
+            macros (dict, optional): Macros. Defaults to None.
+            micro (str, optional): Micro character. Defaults to "@".
+
+        Returns:
+            dict: Substituted key=value
+
+        """
+        logging.debug(
+            "Substitute key=%s and val=%s %s %s", key, val, self.basetime, self.validtime
+        )
+        pkey = key
+        pval = val
+        if macros is not None:
+            for macro_key, macro_val in macros.items():
+                logging.debug("macro_key=%s macro_val=%s", macro_key, macro_val)
+                pkey = pkey.replace(f"{micro}{macro_key}{micro}", macro_val)
+                pval = pval.replace(f"{micro}{macro_key}{micro}", macro_val)
+
+        pkey = self.platform.substitute(
+            pkey, basetime=self.basetime, validtime=self.validtime
+        )
+        pval = self.platform.substitute(
+            pval, basetime=self.basetime, validtime=self.validtime
+        )
+        logging.debug("SUBSTITUTED: pkey=%s pval=%s", pkey, pval)
+        return pkey, pval
+
+    def read_macro_setting(self, macro_defs, key, default=None, sep="#"):
+        """Read a macro setting.
+
+        Args:
+            macro_defs (dict): Macro definition
+            key (str): Macro setting to get.
+            default (str, optional): Default value. Defaults to None.
+            sep (str, optional): Namelist key separator. Defaults to "#".
+
+        Returns:
+            setting (any)
+        """
+        try:
+            setting = macro_defs[key]
+            if isinstance(setting, str):
+                if setting.find(sep) > 0:
+                    logging.debug("Read macro setting from namelist %s", setting)
+                    setting = self.get_nml_value_from_string(self.nml, setting)
+                    if isinstance(setting, list):
+                        setting = setting[0]["value"]
+            return setting
+        except KeyError:
+            return default
+
+    def extend_macro(self, key, val, macros, sep="#"):
+        """Extend entries from macro.
+
+        Args:
+            key (_type_): _description_
+            val (_type_): _description_
+            macros (dict): Macros
+            sep (str, optional): Namelist key separator. Defaults to "#".
+
+        Raises:
+            NotImplementedError: _description_
+            NotImplementedError: _description_
+
+        Returns:
+            dict: Key, value dictionary
+        """
+        logging.debug("extenders=%s", macros)
+        if macros is None:
+            return {key: val}
+
+        processed_data = {}
+        for macro, macro_types in macros.items():
+            loop = {}
+            for macro_type, macro_defs in macro_types.items():
+                logging.debug("macro_defs=%s", macro_defs)
+
+                if macro_type == "ekfpert":
+                    nncvs = self.read_macro_setting(macro_defs, "list", sep=sep)
+                    nncvs = nncvs.copy()
+                    duplicate = self.read_macro_setting(macro_defs, "duplicate", sep=sep)
+                    if duplicate:
+                        nncvs += nncvs
+                    loop.update({"0": "0"})
+                    icounter1 = 1
+                    icounter2 = 1
+                    for nncv in nncvs:
+                        if nncv == 1:
+                            loop.update({str(icounter1): str(icounter2)})
+                            icounter1 += 1
+                        icounter2 += 1
+                elif macro_type == "dict":
+                    values = self.get_nml_value_from_string(self.nml, macro_defs)
+                    counter = 0
+                    for key, val in values[0].items():
+                        loop.update({str(key): str(val)})
+                        counter += 1
+
+                elif macro_type == "iterator":
+                    start = self.read_macro_setting(macro_defs, "start", sep=sep)
+                    end = self.read_macro_setting(macro_defs, "end", sep=sep)
+                    fmt = self.read_macro_setting(
+                        macro_defs, "fmt", sep=sep, default=None
+                    )
+                    if fmt is None:
+                        fmt = "{:d}"
+                    for lval in range(start, end):
+                        lval = fmt.format(lval)
+                        loop.update({str(lval): str(lval)})
+                else:
+                    raise NotImplementedError
+
+            # Loop normal macros not being nml arrays
+            unprocessed_data = processed_data.copy()
+            if processed_data:
+                unprocessed_data = processed_data
             else:
-                SURFEXBinary(
-                    binary,
-                    batch,
-                    prepfile,
-                    settings,
-                    input_data,
-                    pgdfile=pgdfile,
-                    surfout=surffile,
-                    archive_data=archive_data,
-                    print_namelist=self.print_namelist,
-                )
-        elif self.pgd:
-            pgdfile = PGDFile(
-                filetype,
-                pgdfile,
-                input_file=pgd_file_path,
-                archive_file=output,
-                lfagmap=lfagmap,
-            )
-            SURFEXBinary(
-                binary,
-                batch,
-                pgdfile,
-                settings,
-                input_data,
-                archive_data=archive_data,
-                print_namelist=self.print_namelist,
-            )
-        elif self.do_prep:
-            prepfile = PREPFile(filetype, prepfile, archive_file=output, lfagmap=lfagmap)
+                unprocessed_data = {key: val}
 
-            SURFEXBinary(
-                binary,
-                batch,
-                prepfile,
-                settings,
-                input_data,
-                pgdfile=pgdfile,
-                archive_data=archive_data,
-                print_namelist=self.print_namelist,
-            )
+            for key, val in unprocessed_data.items():
+                for vmacro1, vmacro2 in loop.items():
+                    logging.debug(
+                        "key=%s val=%s macro=%s vmacro1=%s vmacro2=%s",
+                        key,
+                        val,
+                        macro,
+                        vmacro1,
+                        vmacro2,
+                    )
+                    if key.find("#") > 0:
+                        key = self.get_nml_value_from_string(self.nml, key, sep=sep)
+                    pkey = key.replace(f"@{macro}@", vmacro1)
+                    pval = val.replace(f"@{macro}@", vmacro2)
+                    processed_data.update({pkey: pval})
+
+        logging.debug("Processed data=%s", processed_data)
+        return processed_data
+
+    def process_macro(self, key, val, macros, sep="#", indices=None):
+        """Process macro.
+
+        Args:
+            key (str): Key
+            val (str): Value
+            macros (dict): Macros
+            sep (str, optional): Namelist key separator. Defaults to "#".
+            indices (list, optional): Process macro from namelist indices.
+
+        Raises:
+            NotImplementedError: Only 2 dimensions are implemented
+
+        Returns:
+            dict: Key, value dictionary
+        """
+        logging.debug("macros=%s", macros)
+        if macros is None:
+            return key, val
+
+        logging.debug("indices=%s", indices)
+        if indices is None:
+            return key, val
+
+        pkey = key
+        pval = val
+        for macro in macros:
+            lindex = None
+            if len(indices) == 2:
+                if macro == "DECADE":
+                    lindex = indices[1]
+                else:
+                    lindex = indices[0]
+            elif len(indices) == 1:
+                lindex = indices[0]
+            elif len(indices) > 2:
+                raise NotImplementedError("Only 2 dimensions are implemented")
+
+            vmacro = None
+            if lindex is not None:
+                try:
+                    macro_defs = macros[macro]
+                    logging.debug("macro_defs=%s", macro_defs)
+                except KeyError:
+                    logging.warning(
+                        "Macro %s not defined. Use index value %s", macro, lindex
+                    )
+                    vmacro = str(lindex + 1)
+
+                if macro == "VTYPE":
+                    vmacro = str(lindex + 1)
+                elif "DECADE" in macros:
+                    ntime = self.read_macro_setting(macro_defs, "ntime", sep=sep)
+                    dec_days = int(360 / float(ntime))
+                    dec_start = int(dec_days / 2)
+                    dec_end = 360 + dec_start
+                    dec = 0
+                    for day in range(dec_start, dec_end, dec_days):
+                        logging.debug("day=%s, dec=%s lindex=%s", day, dec, lindex)
+                        month = int(day / 30) + 1
+                        mday = int(day % 30)
+                        if dec == lindex:
+                            vmacro = f"{month:02d}{mday:02d}"
+                        dec += 1
+
+                logging.debug("Substitute @%s@ with %s", macro, vmacro)
+                if isinstance(pkey, str):
+                    pkey = pkey.replace(f"@{macro}@", vmacro)
+                if isinstance(pval, str):
+                    pval = pval.replace(f"@{macro}@", vmacro)
+        return pkey, pval
+
+    def matching_value(self, data, val, sep="#", indices=None):
+        """Match the value. Possibly also read namelist value.
+
+        Args:
+            data (dict): Data to check keys for
+            val (str): Key to find
+            sep (str, optional): Namelist separator. Defaults to "#".
+            indices(list, optional): Indices in namelist
+
+        Raises:
+            RuntimeError: "Malformed input data"
+
+        Returns:
+            dict: Matching entry in data.
+
+        """
+        if val == "macro" or val == "extenders":
+            return None
+        if isinstance(data, dict):
+            mdata = data.keys()
         else:
-            SURFEXBinary(
-                binary,
-                batch,
-                prepfile,
-                settings,
-                input_data,
-                pgdfile=pgdfile,
-                surfout=surffile,
-                archive_data=archive_data,
-                print_namelist=self.print_namelist,
-            )
+            mdata = [data]
+        val = str(val)
+        logging.debug("Check if val=%s matches mdata=%s", val, mdata)
+        sval = None
+        for mval in mdata:
+            if val.find(sep) > 0:
+                logging.debug("val=%s is a namelist variable", val)
+                sval = self.get_nml_value_from_string(self.nml, val, indices=indices)
+                logging.debug("Got sval=%s", sval)
+                if sval is None:
+                    return None
+                indices = sval[0]["indices"]
+                sval = sval[0]["value"]
+            if mval == val:
+                logging.debug("Found matching data. val=%s data=%s", val, data)
+                try:
+                    rval = data[val]
+                except TypeError:
+                    raise RuntimeError("Malformed input data") from TypeError
+                if sval is not None:
+                    rval = {sval: rval}
+                logging.debug("Return data rval=%s", rval)
+                return rval
+        logging.warning("Value=%s not found in data", val)
+        return None
+
+    def process_data(self, sep="#"):
+        """Process input definitions on files to map.
+
+        Args:
+            sep (str, optional): Namelist separator. Defaults to "#".
+
+        Returns:
+            mapped_data (dict): A dict with mapped local names and target files.
+
+        """
+        logging.debug("Process data: %s", self.data)
+
+        def _process_data(mapped_data, data, indices=None, macros=None, extenders=None):
+            for key, value in data.items():
+                logging.debug(".................. key=%s", key)
+                # Required namelist variable
+                if key.find(sep) > 0:
+                    vals = self.get_nml_value_from_string(self.nml, key, indices=indices)
+                else:
+                    vals = [{"value": value, "indices": None}]
+
+                if isinstance(vals, list):
+                    for val_dict in vals:
+                        logging.debug("=========== val_dict=%s", val_dict)
+                        val = val_dict["value"]
+                        indices = val_dict["indices"]
+
+                        setting = self.matching_value(
+                            value, val, sep=sep, indices=indices
+                        )
+                        logging.debug("Setting=%s", setting)
+                        if setting is not None:
+                            if "macros" in setting:
+                                macros = setting.copy()
+                                macros = macros["macros"]
+                            if "extenders" in setting:
+                                extenders = setting.copy()
+                                extenders = extenders["extenders"]
+
+                            last_dict = True
+                            if isinstance(setting, dict):
+                                for __, tval in setting.items():
+                                    if isinstance(tval, dict):
+                                        last_dict = False
+                            else:
+                                print(setting)
+                            if not last_dict:
+                                logging.debug(
+                                    "------ Call next loop. setting=%s", setting
+                                )
+                                _process_data(
+                                    mapped_data,
+                                    setting,
+                                    indices=indices,
+                                    macros=macros,
+                                    extenders=extenders,
+                                )
+                            else:
+                                for key2, value2 in setting.items():
+                                    logging.debug(
+                                        "Setting1 key=%s value=%s indices=%s",
+                                        key2,
+                                        value2,
+                                        indices,
+                                    )
+                                    if key2.find(sep) > 0:
+                                        keys = self.get_nml_value_from_string(
+                                            self.nml, key2, indices=indices
+                                        )
+                                        if keys is not None:
+                                            key2 = keys[0]["value"]
+
+                                    processed = False
+                                    logging.debug(
+                                        "Setting2 key=%s value=%s indices=%s",
+                                        key2,
+                                        value2,
+                                        indices,
+                                    )
+                                    if macros is not None:
+                                        processed = True
+                                        key3, value3 = self.process_macro(
+                                            key2, value2, macros, indices=indices
+                                        )
+                                        if value3.endswith(".dir"):
+                                            dir_key = key3 + ".dir"
+                                            dir_val = value3
+                                            hdr_key = key3 + ".hdr"
+                                            hdr_val = value3.replace(".dir", ".hdr")
+                                            hdr_key, hdr_val = self.substitute(
+                                                hdr_key, hdr_val
+                                            )
+                                            dir_key, dir_val = self.substitute(
+                                                dir_key, dir_val
+                                            )
+                                            mapped_data.update({hdr_key: hdr_val})
+                                            mapped_data.update({dir_key: dir_val})
+                                        else:
+                                            mapped_data.update({key3: setting})
+
+                                    if extenders is not None:
+                                        processed = True
+                                        processed_values = self.extend_macro(
+                                            key2, value2, extenders
+                                        )
+                                        for pkey3, pval3 in processed_values.items():
+                                            logging.debug(
+                                                "pkey3=%s pval3=%s", pkey3, pval3
+                                            )
+                                            pkey3, pval3 = self.substitute(pkey3, pval3)
+                                            logging.debug(
+                                                "pkey3=%s pval3=%s", pkey3, pval3
+                                            )
+                                            mapped_data.update({pkey3: pval3})
+
+                                    if not processed:
+                                        pkey3 = key2
+                                        pval3 = value2
+                                        logging.debug("pkey3=%s pval3=%s", pkey3, pval3)
+                                        pkey3, pval3 = self.substitute(pkey3, pval3)
+                                        if pval3.endswith(".dir"):
+                                            dir_key = pkey3 + ".dir"
+                                            dir_val = pval3
+                                            hdr_key = pkey3 + ".hdr"
+                                            hdr_val = pval3.replace(".dir", ".hdr")
+                                            hdr_key, hdr_val = self.substitute(
+                                                hdr_key, hdr_val
+                                            )
+                                            dir_key, dir_val = self.substitute(
+                                                dir_key, dir_val
+                                            )
+                                            mapped_data.update({hdr_key: hdr_val})
+                                            mapped_data.update({dir_key: dir_val})
+                                        else:
+                                            mapped_data.update({pkey3: pval3})
+
+                                indices = None
+                        else:
+                            if key not in ["macros", "extenders"]:
+                                logging.warning(
+                                    "Could not match key=%s value=%s", key, val
+                                )
+                else:
+                    logging.warning("Could not find namelist key=%s", key)
+                    indices = None
+
+        mapped_data = {}
+        _process_data(mapped_data, self.data)
+        logging.debug("Mapped data=%s", mapped_data)
+        return mapped_data
 
 
-class Pgd(SurfexBinaryTask):
+class Pgd(Task):
     """Task."""
 
     def __init__(self, config):
@@ -289,7 +567,12 @@ class Pgd(SurfexBinaryTask):
             config (deode.ParsedConfig): Configuration
 
         """
-        SurfexBinaryTask.__init__(self, config, "Pgd", "pgd")
+        Task.__init__(self, config, "Pgd")
+        self.nlgen = NamelistGenerator(self.config, "surfex")
+        # TODO get from args
+        self.force = True
+        # TODO get from TaskSettings
+        self.wrapper = ""
 
     def execute(self):
         """Execute."""
@@ -297,13 +580,39 @@ class Pgd(SurfexBinaryTask):
         binary = self.platform.get_system_value("bindir") + "/PGD"
 
         if not os.path.exists(output) or self.force:
-            SurfexBinaryTask.execute_binary(self, binary=binary, output=output)
+
+            batch = BatchJob(os.environ, wrapper=self.wrapper)
+
+            self.nlgen.load("pgd")
+            settings = self.nlgen.assemble_namelist("pgd")
+            self.nlgen.write_namelist(settings, "OPTIONS.nam")
+
+            filetype = settings["nam_io_offline"]["csurf_filetype"].lower()
+            pgdfile = settings["nam_io_offline"]["cpgdfile"]
+            pgdfile = f"{pgdfile}.{filetype}"
+
+            # Input data
+            sfx_input_defs = self.platform.get_system_value("sfx_input_defs")
+            input_data = json.load(open(sfx_input_defs, "r", encoding="utf-8"))
+
+            # Could potentially manipulate input_data depending on settings
+            # or send input_data as input from an external file
+            binput_data = InputDataFromNamelist(
+                settings, input_data, "pgd", self.platform
+            ).get()
+            for dest, target in binput_data.items():
+                logging.debug("target=%s, dest=%s", target, dest)
+                self.fmanager.input(target, dest)
+
+            # Run PGD
+            batch.run(binary)
+            self.fmanager.output(pgdfile, output)
         else:
             print("Output already exists: ", output)
 
 
-class Prep(SurfexBinaryTask):
-    """Task."""
+class Prep(Task):
+    """Prep."""
 
     def __init__(self, config):
         """Construct object.
@@ -312,35 +621,75 @@ class Prep(SurfexBinaryTask):
             config (deode.ParsedConfig): Configuration
 
         """
-        SurfexBinaryTask.__init__(self, config, "Prep", "prep")
+        Task.__init__(self, config, "Prep")
+        self.nlgen = NamelistGenerator(self.config, "surfex")
+        # TODO get from args
+        self.force = True
+        # TODO get from TaskSettings
+        self.wrapper = ""
 
     def execute(self):
         """Execute."""
-        pgd_file_path = self.platform.get_system_value("climdir") + "/Const.Clim.sfx"
         # TODO get from config?
-        prep_file = (
-            self.platform.get_system_value("bddir_sfx")
-            + "/"
-            + self.platform.get_system_value("bdfile_sfx_template")
-        )
-        prep_filetype = "GRIB2"
+        bddir_sfx = self.platform.get_system_value("bddir_sfx")
+        bdfile_sfx_template = self.platform.get_system_value("bdfile_sfx_template")
+
+        prep_file = f"{bddir_sfx}/{bdfile_sfx_template}"
+
         cnmexp = self.config.get_value("general.cnmexp")
         archive = self.platform.get_system_value("archive")
 
         output = f"{archive}/ICMSH{cnmexp}INIT.sfx"
-        binary = self.platform.get_system_value("bindir") + "/PREP"
 
+        os.makedirs(archive, exist_ok=True)
+        binary = self.platform.get_system_value("bindir") + "/PREP"
         if not os.path.exists(output) or self.force:
 
-            # TODO temporary  # noqa
-            os.system(f"touch {pgd_file_path}")  # noqa
-            SurfexBinaryTask.execute_binary(
-                self,
-                binary,
-                output,
-                pgd_file_path=pgd_file_path,
-                prep_file=prep_file,
-                prep_filetype=prep_filetype,
-            )
+            batch = BatchJob(os.environ, wrapper=self.wrapper)
+
+            self.nlgen.load("prep")
+            settings = self.nlgen.assemble_namelist("prep")
+            # Could override local filename (Not needed, but is more intuitive)
+            if prep_file is not None:
+                settings["nam_prep_surf_atm"]["cfile"] = os.path.basename(prep_file)
+            # TODO: PGDFILE
+
+            self.nlgen.write_namelist(settings, "OPTIONS.nam")
+
+            filetype = settings["nam_io_offline"]["csurf_filetype"].lower()
+            pgdfile = settings["nam_io_offline"]["cpgdfile"]
+            pgdfile = f"{pgdfile}.{filetype}"
+
+            prepfile = settings["nam_io_offline"]["cprepfile"]
+            prepfile = f"{prepfile}.{filetype}"
+
+            # Input data
+            sfx_input_defs = self.platform.get_system_value("sfx_input_defs")
+            input_data = json.load(open(sfx_input_defs, "r", encoding="utf-8"))
+
+            # Could potentially manipulate input_data depending on settings
+            # or send input_data as input from an external file
+            # For now we modify it here. Should be input as namelist keys could change
+            if prep_file is not None:
+                input_data["prep"]["NAM_PREP_SURF_ATM#CFILETYPE"]["GRIB"][
+                    "NAM_PREP_SURF_ATM#CFILE"
+                ] = prep_file
+            # TODO: PGDFILE
+
+            binput_data = InputDataFromNamelist(
+                settings, input_data, "prep", self.platform
+            ).get()
+            for dest, target in binput_data.items():
+                logging.debug("target=%s, dest=%s", target, dest)
+                self.fmanager.input(target, dest)
+
+            # Link PGD file
+            climdir = self.platform.get_system_value("climdir")
+            self.fmanager.input(f"{climdir}/Const.Clim.sfx", pgdfile)
+
+            # Run PREP
+            batch.run(binary)
+            self.fmanager.output(prepfile, output)
+
         else:
             logging.info("Output already exists: %s", output)

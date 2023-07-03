@@ -173,7 +173,6 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     session_mocker.patch(
         "deode.tasks.e923.E923.monthly_part", new=new_task_e923_monthly_part_method
     )
-    session_mocker.patch("deode.tasks.sfx.SURFEXBinary", new=new_surfex_binary)
 
     # Create files needed by gmtedsoil tasks
     tif_files_dir = tmp_path_factory.getbasetemp() / "GMTED2010"

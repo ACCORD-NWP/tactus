@@ -173,7 +173,7 @@ class NamelistGenerator:
             InvalidNamelistTargetError   # noqa: DAR401
 
         Returns:
-            nlres (dict): Assembled namelist
+            nlres (f90nml.Namelist): Assembled namelist
 
         """
         # Start with empty result dictionary
@@ -238,7 +238,7 @@ class NamelistGenerator:
                             if isinstance(finval, tuple):
                                 finval = list(finval)
                             nlres[nl][key] = finval
-        return nlres
+        return f90nml.Namelist(nlres)
 
     def update(self, nldict, cndict_tag):
         """Update with additional namelist dict.
@@ -251,16 +251,17 @@ class NamelistGenerator:
         self.cndict[self.target].append(cndict_tag)
         self.nldict[cndict_tag] = nldict
 
-    def write_namelist(self, nlres, output_file):
+    def write_namelist(self, nml, output_file):
         """Write namelist using f90nml.
 
         Args:
-            nlres (dict): namelist to write
+            nml (f90nml.Namelist): namelist to write
             output_file (str) : namelist file name
 
         """
+        if isinstance(nml, dict):
+            nml = f90nml.Namelist(nml)
         # Write result.
-        nml = f90nml.Namelist(nlres)
         nml.uppercase = True
         nml.true_repr = ".TRUE."
         nml.false_repr = ".FALSE."
@@ -284,5 +285,5 @@ class NamelistGenerator:
         except AttributeError:
             pass
 
-        nlres = self.assemble_namelist(target)
-        self.write_namelist(nlres, output_file)
+        nml = self.assemble_namelist(target)
+        self.write_namelist(nml, output_file)

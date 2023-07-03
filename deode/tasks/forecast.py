@@ -1,4 +1,6 @@
 """Forecast."""
+import json
+import logging
 import os
 
 from ..datetime_utils import as_datetime, as_timedelta, oi2dt_list
@@ -7,6 +9,7 @@ from ..initial_conditions import InitialConditions
 from ..namelist import NamelistGenerator
 from .base import Task
 from .batch import BatchJob
+from .sfx import InputDataFromNamelist
 
 
 class Forecast(Task):
@@ -31,9 +34,6 @@ class Forecast(Task):
         self.bdint = as_timedelta(self.config.get_value("general.bdint"))
         self.intp_bddir = self.config.get_value("system.intp_bddir")
         self.forecast_range = self.config.get_value("general.forecast_range")
-
-        sfx_config = self.config.get_value("SURFEX").dict()
-        self.second_generation = sfx_config["COVER"]["SG"]
 
         self.climdir = self.platform.get_system_value("climdir")
         self.rrtm_dir = self.platform.get_platform_value("RRTM_DIR")
@@ -131,15 +131,6 @@ class Forecast(Task):
         ]:
             self.fmanager.input(f"{self.rrtm_dir}/{ifile}", ifile)
 
-        # Surfex files
-        if not self.second_generation:
-            eco_dir = self.fmanager.platform.get_platform_value("ECOCLIM_DATA_PATH")
-            for ifile in [
-                "ecoclimapI_covers_param.bin",
-                "ecoclimapII_eu_covers_param.bin",
-            ]:
-                self.fmanager.input(f"{eco_dir}/{ifile}", ifile)
-
         # Climate files
         mm = self.basetime.strftime("%m")
         self.fmanager.input(f"{self.climdir}/Const.Clim.{mm}", "Const.Clim")
@@ -148,10 +139,7 @@ class Forecast(Task):
         )
         self.fmanager.input(f"{self.climdir}/Const.Clim.sfx", "Const.Clim.sfx")
 
-        # Namelists
-        self.nlgen_surfex.generate_namelist("forecast", "EXSEG1.nam")
-
-        # Contstruct master namelist and include fullpos config
+        # Construct master namelist and include fullpos config
         self.nlgen_master.load("forecast")
         namfpc, selections = Fullpos(
             self.domain, nlfile=self.fullpos_config_file
@@ -162,6 +150,21 @@ class Forecast(Task):
 
         for head, body in selections.items():
             self.nlgen_master.write_namelist(body, head)
+
+        # SURFEX: Namelists and input data
+        self.nlgen_surfex.load("forecast")
+        settings = self.nlgen_surfex.assemble_namelist("forecast")
+        self.nlgen_surfex.write_namelist(settings, "EXSEG1.nam")
+
+        sfx_input_defs = self.platform.get_system_value("sfx_input_defs")
+        input_data = json.load(open(sfx_input_defs, "r", encoding="utf-8"))
+        binput_data = InputDataFromNamelist(
+            settings, input_data, "forecast", self.platform
+        ).get()
+
+        for dest, target in binput_data.items():
+            logging.debug("target=%s, dest=%s", target, dest)
+            self.fmanager.input(target, dest)
 
         # Initial files
         initfile, initfile_sfx = InitialConditions(self.config).find_initial_files()
