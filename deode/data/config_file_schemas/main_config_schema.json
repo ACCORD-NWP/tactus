@@ -131,6 +131,10 @@
         "archive": {
           "type": "string",
 	  "description": "Location of date specific archive"
+        },
+        "namelists": {
+          "type": "string",
+	  "description": "Path to static namelists"
         }
       }
     },
@@ -172,10 +176,6 @@
         "static_data": {
           "type": "string",
 	  "description": "Macro used in other platform paths"
-        },
-        "namelists": {
-          "type": "string",
-	  "description": "Path to static namelists"
         },
         "e923_data": {
           "type": "string",

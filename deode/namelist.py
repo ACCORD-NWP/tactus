@@ -96,7 +96,7 @@ class NamelistGenerator:
             cndict : Rules for dictionary
 
         """
-        namelists = self.platform.get_platform_value("NAMELISTS")
+        namelists = self.platform.get_system_value("namelists")
         ref_namelist = f"{namelists}/namelist_{self.kind}_{self.target}"
 
         self.logger.debug("Check if reference namelist %s exists", ref_namelist)

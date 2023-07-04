@@ -213,6 +213,7 @@ bhalf = [0.00000000,
  bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2023-03-29"
  fullpos_config_file = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos_namelist.yml"
  sfx_input_defs = "@DEODE_HOME@/deode/data/input/sfx_input_CY46h1.json"
+ namelists = "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
 
 [platform]
  deode_home = "set-by-the-system"
@@ -223,7 +224,6 @@ bhalf = [0.00000000,
  rrtm_dir = "@STATIC_DATA@/rrtm/@CYCLE@"
  ncdir = "@STATIC_DATA@/ncdir"
  e923_data = "@STATIC_DATA@/climate/E923_DATA"
- namelists = "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
  ecosg_data_path = "@CLIMDATA@/ECOCLIMAP-SG"
  ecoclim_data_path = "@CLIMDATA@/ecoclimap"
  gmted2010_data_path = "@CLIMDATA@/GMTED2010"

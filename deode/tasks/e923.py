@@ -273,22 +273,44 @@ class PgdUpdate(Task):
         Task.__init__(self, config, "PgdUpdate")
 
         self.climdir = self.platform.get_system_value("climdir")
-        self.namelists = self.platform.get_platform_value("NAMELISTS")
         self.gl = f"{self.platform.get_system_value('bindir')}/gl"  # noqa
+        self.outfile = "Const.Clim.sfx"
 
     def execute(self):
         """Run task."""
-        outfile = "Const.Clim.sfx"
         for ifile in ["Const.Clim.const", "PGD_prel.fa"]:
             self.fmanager.input(f"{self.climdir}/{ifile}", ifile, provider_id="copy")
-            self.fmanager.input(f"{self.namelists}/namgl_pgd_update", "namgl")
 
-        self.fmanager.input(f"{self.climdir}/{ifile}", outfile, provider_id="copy")
-        # Run MASTERODB
+        self.fmanager.input(
+            f"{self.climdir}/PGD_prel.fa", self.outfile, provider_id="copy"
+        )
+
+        with open("namgl", "w") as namelist:
+            namelist.write(
+                """&naminterp
+ INPUT_FORMAT='FA',
+ OUTPUT_FORMAT='memory',
+ INFILE='Const.Clim.const',
+ READKEY(1:1)%FANAME='SURFGEOPOTENTIEL',
+/
+&naminterp
+ OUTPUT_FORMAT='FIXZS',
+ OUTPUT_TYPE='APPEND'
+ INPUT_FORMAT='fa',
+ INFILE='PGD_prel.fa',
+ OUTFILE='Const.Clim.sfx',
+ USE_SAVED_CADRE=T,
+ READKEY%FANAME='SFX.ZS',
+/
+                  """
+            )
+            namelist.close()
+
+        # Run gl
         batch = BatchJob(os.environ, wrapper=self.wrapper)
         batch.run(f"{self.gl} -n namgl")
 
-        self.fmanager.output(outfile, f"{self.climdir}/{outfile}")
+        self.fmanager.output(self.outfile, f"{self.climdir}/{self.outfile}")
 
 
 class E923Constant(E923):

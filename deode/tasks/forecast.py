@@ -43,7 +43,6 @@ class Forecast(Task):
         self.output_settings = self.config.get_value("general.output_settings").dict()
 
         # Update namelist settings
-        self.namelists = self.platform.get_platform_value("NAMELISTS")
         self.nlgen_master = NamelistGenerator(self.config, "master")
         self.nlgen_surfex = NamelistGenerator(self.config, "surfex")
         self.fullpos_config_file = self.platform.get_system_value("fullpos_config_file")
