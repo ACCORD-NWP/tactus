@@ -136,6 +136,13 @@ class TaskSettings(object):
                 task_settings, all_defs[task_submit_type]
             )
 
+            if "BATCH" in task_settings:
+                if "NAME" in task_settings["BATCH"]:
+                    if "@TASK_NAME@" in task_settings["BATCH"]["NAME"]:
+                        task_settings["BATCH"]["NAME"] = task_settings["BATCH"][
+                            "NAME"
+                        ].replace("@TASK_NAME@", task)
+
         if "task_exceptions" in all_defs:
             if task in all_defs["task_exceptions"]:
                 self.logger.debug("Task task_exceptions for task %s", task)

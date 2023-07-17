@@ -229,6 +229,7 @@ bhalf = [0.00000000,
  gmted2010_data_path = "@CLIMDATA@/GMTED2010"
  soilgrid_data_path = "@CLIMDATA@/SOILGRID"
  pgd_data_path = "@CLIMDATA@/PGD"
+ task_name = "@STAND_ALONE_TASK_NAME@"
  flake_dir = "@STATIC_DATA@/climate/PGD"
  albnir_soil_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
  albnir_veg_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"

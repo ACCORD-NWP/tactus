@@ -66,18 +66,22 @@ class TestSubmission:
     def test_get_batch_info(self, config_from_task_config_file):
         config = config_from_task_config_file
         arg = "#SBATCH UNITTEST"
+        argname = "job-name=@TASK_NAME@"
         config = config.copy(
             update={
                 "submission": {
                     "submit_types": ["unittest"],
                     "default_submit_type": "unittest",
-                    "unittest": {"BATCH": {"TEST": arg}},
+                    "unittest": {"BATCH": {"TEST": arg, "NAME": argname}},
                 }
             }
         )
         task = TaskSettings(config)
-        settings = task.get_task_settings("unittest", key="BATCH")
-        assert settings["TEST"] == arg
+
+        settings = task.get_task_settings("unittest")
+
+        assert settings["BATCH"]["TEST"] == arg
+        assert settings["BATCH"]["NAME"] == "job-name=unittest"
 
     def test_get_batch_info_exception(self, config_from_task_config_file):
         config = config_from_task_config_file

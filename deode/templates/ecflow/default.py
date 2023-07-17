@@ -70,7 +70,6 @@ def default_main(**kwargs):
                 },
                 "keep_workdirs": bool(int(kwargs.get("KEEP_WORKDIRS"))),
             },
-            "platform": {"deode_home": kwargs.get("DEODE_HOME")},
         }
     )
     logger = get_logger_from_config(config)
