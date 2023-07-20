@@ -29,7 +29,7 @@ def config_platform():
         [domain]
             name = "MYDOMAIN"
         [general.times]
-            basetime = "2000-01-01T00:0:00Z"
+            basetime = "2000-01-01T00:00:00Z"
             validtime = "2000-01-02T00:00:00Z"
             list = ["2000-01-01T00:00:00Z"]
         [system]

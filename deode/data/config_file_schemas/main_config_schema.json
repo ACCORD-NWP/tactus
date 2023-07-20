@@ -135,6 +135,10 @@
         "namelists": {
           "type": "string",
 	  "description": "Path to static namelists"
+        },
+        "sfx_input_defs": {
+          "type": "string",
+	  "description": "Path to the surfex json config file"
         }
       }
     },
@@ -192,6 +196,38 @@
         "scratch": {
           "type": "string",
 	  "description": "Path used as macro for e.g. wrk and other directories."
+        },
+        "task_name": {
+          "type": "string",
+	  "description": "Placeholder macro."
+        },
+        "flake_dir": {
+          "type": "string",
+	  "description": "Path to climate PGD dir."
+        },
+        "albnir_soil_dir": {
+          "type": "string",
+	  "description": "Path to near-infrared spectrum soil data."
+        },
+        "albnir_veg_dir": {
+          "type": "string",
+	  "description": "Path to near-infrared spectrum vegetation data."
+        },
+        "albvis_soil_dir": {
+          "type": "string",
+	  "description": "Path to visible soil spectrum data."
+        },
+        "albvis_veg_dir": {
+          "type": "string",
+	  "description": "Path to visible spectrum vegetation data."
+        },
+        "lai_dir": {
+          "type": "string",
+	  "description": "TBA"
+        },
+        "tree_height_dir": {
+          "type": "string",
+	  "description": "Path to tree_height data."
         },
         "archive_root": {
           "type": "string",
@@ -252,7 +288,7 @@
       "description": "Templates for file names",
       "type": "object",
       "properties": {
-        "duration_grb": {
+        "duration_grib": {
           "type": "string",
 	  "description": "Macros for duration representation in GRIB output files"
         },
@@ -389,6 +425,16 @@
               "default": "PT3H",
               "type": "string",
               "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+            },
+            "basetime": {
+              "description": "Base TB specified",
+              "type": "string",
+              "format": "date-time"
+            },
+            "validtime": {
+              "description": "Valid TB specified",
+              "type": "string",
+              "format": "date-time"
             }
           },
           "oneOf": [
@@ -472,6 +518,18 @@
         "bdmax": {
               "description": "Max number of parallel boundary interpolation tasks",
               "type": "number"
+        },
+        "nproma": {
+              "description": "NPROMA size in the forecast model. See the namelists for where it is used",
+              "type": "number"
+        },
+        "initfile": {
+              "description": "Initial file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",
+              "type": "string"
+        },
+        "initfile_sfx": {
+              "description": "Initial surfex file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",
+              "type": "string"
         },
         "forecast_range": {
               "description": "Forecast range",

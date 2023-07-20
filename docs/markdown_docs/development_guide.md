@@ -30,7 +30,7 @@ Each PR comes with its own improvements and flaws. The reviewer should check the
 ## Local testing
 No-one likes to wait for the CI to run tests. It is therefore recommended to run tests locally before pushing to the remote repository, and before creating a PR, but no one is enforced to this. How you work locally is entirely up to you.
 
-Here is a list of tests being run in the pipeline, that you can run locally from the root of the repo.
+Here is a list of tests being run in the pipeline, that you can run locally from within a `poetry shell` at the root of the repo. If working outside a poetry shell, commands below should be typed as `poetry run [command]`.
 
 **Black:**
 - `black .`
@@ -43,6 +43,7 @@ Here is a list of tests being run in the pipeline, that you can run locally from
 
 **Unit Tests:**
 - `pytest --cov=./ tests/` *(In the pipeline we run multiple versions of python)*
+- `pytest -n auto` *(runs exactly as in the post-commit only checks.)* 
 
 **Full Ecflow test:**
 - We have a working, although simplified, setup on Atos that should be maintained. Run with `bash ./Start`. The test produces output under `$SCRATCH/deode/deode_case`.

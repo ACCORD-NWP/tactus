@@ -197,12 +197,19 @@ class DocConfig:
                 j = pos[kk]
                 res[j][kk]["description"] = k[kk]["description"]
 
+                found = []
                 for i, x in enumerate(res[j][kk]["items"]):
                     for y in k[kk]["items"]:
                         if x[1] == y[1]:
                             res[j][kk]["items"][i][2] = y[2]
                             res[j][kk]["items"][i][4] = y[4]
                             res[j][kk]["items"][i][5] = y[5]
+                            found.append(x[1])
+
+                for y in k[kk]["items"]:
+                    if y[1] not in found:
+                        res[j][kk]["items"].append(["", y[1], y[2], "", y[4], y[5], ""])
+
         return res
 
     def print_doc(self):
