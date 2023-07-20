@@ -2,6 +2,7 @@
 """Unit tests for the config file parsing module."""
 import contextlib
 import subprocess
+from os import chdir
 from pathlib import Path
 
 import pytest
@@ -27,10 +28,12 @@ def classes_to_be_tested():
     return encountered_classes.keys()
 
 
-@pytest.fixture(scope="module")
-def base_raw_config():
+@pytest.fixture(scope="module", params=["CY46h1", "CY48t3"])
+def base_raw_config(request):
     """Return a raw config common to all tasks."""
-    return read_raw_config_file("deode/data/config_files/config.toml")
+    tag_map = {"CY46h1": "", "CY48t3": "_CY48t3"}
+    tag = tag_map[request.param]
+    return read_raw_config_file(f"deode/data/config_files/config{tag}.toml")
 
 
 @pytest.fixture(params=classes_to_be_tested())
@@ -42,26 +45,7 @@ def task_name_and_configs(request, base_raw_config, tmp_path_factory):
     config_patch = tomlkit.parse(
         f"""
         [general]
-            case = "my_case"
-            loglevel = "WARNING"
-            realization = -1
-            cnmexp = "DEOD"
-            tstep = 60
             keep_workdirs = false
-        [general.output_settings]
-            surfex = ["PT0H:PT12H:PT1H"]
-        [macros]
-            os_macros = ["USER", "HOME"]
-            gen_macros = ["general.case", "general.cnmexp", {{ domain = "domain.name" }}]
-        [task.creategrib.conversions.surfex]
-            input_template = "ICMSH@CNMEXP@+@LLLH@:@LM@:@LS@.sfx"
-            output_template = "sfx_@YYYY@-@MM@-@DD@T@HH@:@mm@:@ss@+@LLLH@:@LM@:@LS@.grib"
-        [general.times]
-            list = ["2000-01-01T00:00:00Z"]
-            basetime = "2000-01-01T00:00:00Z"
-            validtime = "2000-01-02T00:00:00Z"
-        [domain]
-            name = "MYDOMAIN"
         [system]
             wrk = "{tmp_path_factory.getbasetemp().as_posix()}"
             bindir = "{tmp_path_factory.getbasetemp().as_posix()}/bin"
@@ -70,9 +54,7 @@ def task_name_and_configs(request, base_raw_config, tmp_path_factory):
             scratch = "{tmp_path_factory.getbasetemp().as_posix()}"
             static_data = "{tmp_path_factory.getbasetemp().as_posix()}"
             climdata = "{tmp_path_factory.getbasetemp().as_posix()}"
-            prep_input_file = "{tmp_path_factory.getbasetemp().as_posix()}/demo/ECMWF/archive/2023/02/18/18/fc20230218_18+006"
             soilgrid_data_path = "{tmp_path_factory.getbasetemp().as_posix()}"
-            namelists = "{WORKING_DIR}/deode/data/namelists"
         """
     )
 
@@ -197,4 +179,6 @@ class TestTasks:
     def test_task_can_be_run(self, task_name_and_configs):
         class_name, task_config = task_name_and_configs
         my_task_class = get_task(class_name, task_config)
+        org_cwd = Path.cwd()
         my_task_class.run()
+        chdir(org_cwd)

@@ -1,10 +1,10 @@
 [general]
- case = "harmonie_arome_CY46h1"
+ case = "@CYCLE@_@CSC@"
  cnmexp = "DEOD"
  realization = -1
  tstep = 75
  loglevel = "info"
- csc = "HARMONIE-AROME"
+ csc = "HARMONIE_AROME"
  cycle = "CY46h1"
  surfex = true
  bdint = "PT3H"
@@ -41,6 +41,7 @@
  group_macros = ["platform","system"]
  gen_macros = ["general.cnmexp",
                "general.cycle",
+               "general.csc",
                "file_templates.duration_grib",
                "file_templates.duration_fa",
                { surfex_template = "file_templates.surfex" },
@@ -212,7 +213,7 @@ bhalf = [0.00000000,
  bdclimdir = "/home/snh02/work/dev-CY46h1_deode/climate/DEODE_LARGE"
  bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2023-03-29"
  fullpos_config_file = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos_namelist.yml"
- sfx_input_defs = "@DEODE_HOME@/deode/data/input/sfx_input_CY46h1.json"
+ sfx_input_defs = "@DEODE_HOME@/deode/data/input/sfx_input_@CYCLE@.json"
  namelists = "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
 
 [platform]

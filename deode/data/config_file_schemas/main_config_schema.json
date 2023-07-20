@@ -447,7 +447,7 @@
               "description": "CSC",
               "default": "AROME",
               "type": "string",
-              "enum": [ "AROME", "ALARO", "HARMONIE-AROME" ]
+              "enum": [ "AROME", "ALARO", "HARMONIE_AROME" ]
         },
         "cycle": {
               "description": "IAL cycle",

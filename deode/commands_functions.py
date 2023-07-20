@@ -81,6 +81,7 @@ def start_suite(args, config):
     )
 
     suite_name = config.get_value("general.case")
+    suite_name = Platform(config).substitute(suite_name)
     submission_defs = TaskSettings(config)
     defs = SuiteDefinition(
         suite_name,
