@@ -1,9 +1,54 @@
 #!/usr/bin/env python3
 """Derive runtime variables."""
 
+import shutil
 from math import atan, floor, sin
 
 from .datetime_utils import as_datetime, as_timedelta, oi2dt_list
+from .fullpos import Fullpos
+from .os_utils import Search
+from .toolbox import Platform
+
+
+def check_fullpos_namelist(config, nlgen, logger=None):
+    """Find existing fullpos select files or generate them.
+
+    Args:
+        config (deode.ParsedConfig): Configuration
+        nlgen (dict): master forecast namelist
+        logger (object): Logger object
+
+    Returns:
+        nlgen (dict) : Possibly updated forecast namelist
+
+    """
+    platform = Platform(config)
+    accept_static_namelists = config.get_value("general.accept_static_namelists")
+
+    generate_namelist = True
+    if accept_static_namelists:
+        namelists = platform.get_system_value("namelists")
+        fullpos_select_files = Search.find_files(
+            namelists, prefix="xxt", recursive=False, fullpath=True
+        )
+        if len(fullpos_select_files) > 0:
+            for filename in fullpos_select_files:
+                shutil.copy(filename, ".")
+                if logger is not None:
+                    logger.info("Copy fullpos select file %s", filename)
+
+            generate_namelist = False
+
+    if generate_namelist:
+        fullpos_config = platform.get_system_value("fullpos_config_file")
+        domain = config.get_value("domain.name")
+        namfpc, selections = Fullpos(domain, nlfile=fullpos_config).construct()
+        for head, body in selections.items():
+            nlgen.write_namelist(body, head)
+
+        nlgen.update(namfpc, "fullpos")
+
+    return nlgen
 
 
 def derived_variables(config, processor_layout=None):

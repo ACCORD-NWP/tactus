@@ -223,6 +223,7 @@ f4_arome:
     LRAYS: True
     NMTFLASH: 1
   NAMCT0:
+    CNPPATH: "."
     CFPNCF: ECHFP
     LNHEE: True
     LSCREEN_OPENMP: False

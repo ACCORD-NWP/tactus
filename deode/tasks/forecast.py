@@ -4,7 +4,7 @@ import logging
 import os
 
 from ..datetime_utils import as_datetime, as_timedelta, oi2dt_list
-from ..fullpos import Fullpos
+from ..derived_variables import check_fullpos_namelist
 from ..initial_conditions import InitialConditions
 from ..namelist import NamelistGenerator
 from .base import Task
@@ -140,15 +140,12 @@ class Forecast(Task):
 
         # Construct master namelist and include fullpos config
         self.nlgen_master.load("forecast")
-        namfpc, selections = Fullpos(
-            self.domain, nlfile=self.fullpos_config_file
-        ).construct()
-        self.nlgen_master.update(namfpc, "fullpos")
+        self.nlgen_master = check_fullpos_namelist(
+            self.config, self.nlgen_master, logging
+        )
+
         nlres = self.nlgen_master.assemble_namelist("forecast")
         self.nlgen_master.write_namelist(nlres, "fort.4")
-
-        for head, body in selections.items():
-            self.nlgen_master.write_namelist(body, head)
 
         # SURFEX: Namelists and input data
         self.nlgen_surfex.load("forecast")
