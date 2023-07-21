@@ -5,6 +5,10 @@ Miscellaneous Documentation
    :parser: myst_parser.sphinx_
 
 .. include::
+    markdown_docs/comput_params.md
+   :parser: myst_parser.sphinx_
+
+.. include::
     markdown_docs/basics_adding_new_task.md
    :parser: myst_parser.sphinx_
 
