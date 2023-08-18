@@ -35,7 +35,7 @@ class CreateGrib(Task):
 
         self.output_settings = self.config.get_value("general.output_settings").dict()
 
-        self.gl = f"{self.platform.get_system_value('bindir')}/gl"  # noqa
+        self.gl = self.get_binary("gl")
 
     def create_list(self, input_template, output_settings):
         """Create list of files to process."""

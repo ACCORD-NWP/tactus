@@ -38,7 +38,7 @@ class E927(Task):
         self.name = f"{self.name}_{self.bdnr}"
 
         self.nlgen = NamelistGenerator(self.config, "master")
-        self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
+        self.master = self.get_binary("MASTERODB")
 
     def execute(self):
         """Run task.

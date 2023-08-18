@@ -47,7 +47,7 @@ class Forecast(Task):
         self.nlgen_surfex = NamelistGenerator(self.config, "surfex")
         self.fullpos_config_file = self.platform.get_system_value("fullpos_config_file")
 
-        self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
+        self.master = self.get_binary("MASTERODB")
 
         self.file_templates = self.config.get_value("file_templates").dict()
 

@@ -577,7 +577,7 @@ class Pgd(Task):
     def execute(self):
         """Execute."""
         output = self.platform.get_system_value("climdir") + "/PGD_prel.fa"
-        binary = self.platform.get_system_value("bindir") + "/PGD"
+        binary = self.get_binary("PGD")
 
         if not os.path.exists(output) or self.force:
 
@@ -642,7 +642,7 @@ class Prep(Task):
         output = f"{archive}/ICMSH{cnmexp}INIT.sfx"
 
         os.makedirs(archive, exist_ok=True)
-        binary = self.platform.get_system_value("bindir") + "/PREP"
+        binary = self.get_binary("PREP")
         if not os.path.exists(output) or self.force:
 
             batch = BatchJob(os.environ, wrapper=self.wrapper)

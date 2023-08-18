@@ -23,7 +23,7 @@ class E923(Task):
         self.constant_file = f"{self.climdir}/Const.Clim.const"
         self.months = [f"{mm:02d}" for mm in range(1, 13)]
 
-        self.master = f"{self.platform.get_system_value('bindir')}/MASTERODB"  # noqa
+        self.master = self.get_binary("MASTERODB")
 
         self.nlgen = NamelistGenerator(self.config, "master")
 
@@ -273,7 +273,7 @@ class PgdUpdate(Task):
         Task.__init__(self, config, "PgdUpdate")
 
         self.climdir = self.platform.get_system_value("climdir")
-        self.gl = f"{self.platform.get_system_value('bindir')}/gl"  # noqa
+        self.gl = self.get_binary("gl")
         self.outfile = "Const.Clim.sfx"
 
     def execute(self):

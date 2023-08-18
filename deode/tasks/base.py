@@ -124,6 +124,28 @@ class Task(object):
             shutil.move(self.wdir, fdir)
             self.logger.info("Renamed %s to %s", self.wdir, fdir)
 
+    def get_binary(self, binary):
+        """Determine binary path from task or system config section.
+
+        Args:
+            binary (str): Name of binary
+
+        Returns:
+            bindir (str): full path to binary
+
+        """
+        try:
+            binary = self.config.get_value(f"task.{self.name}.binary")
+        except AttributeError:
+            pass
+
+        try:
+            bindir = self.config.get_value(f"task.{self.name}.bindir")
+        except AttributeError:
+            bindir = self.platform.get_system_value("bindir")
+
+        return f"{bindir}/{binary}"
+
     def execute(self):
         """Do nothing for base execute task."""
         self.logger.debug("Using empty base class execute")
