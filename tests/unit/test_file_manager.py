@@ -6,7 +6,7 @@ import os
 import pytest
 import tomlkit
 
-from deode.config_parser import ParsedConfig
+from deode.config_parser import MAIN_CONFIG_JSON_SCHEMA, ParsedConfig
 from deode.toolbox import FileManager
 
 
@@ -43,7 +43,7 @@ def config_platform():
 
 @pytest.fixture()
 def parsed_config_with_paths(config_platform):
-    return ParsedConfig.parse_obj(config_platform)
+    return ParsedConfig(config_platform, json_schema=MAIN_CONFIG_JSON_SCHEMA)
 
 
 class TestFileManager:

@@ -23,7 +23,7 @@ def check_fullpos_namelist(config, nlgen, logger=None):
 
     """
     platform = Platform(config)
-    accept_static_namelists = config.get_value("general.accept_static_namelists")
+    accept_static_namelists = config["general.accept_static_namelists"]
 
     generate_namelist = True
     if accept_static_namelists:
@@ -41,7 +41,7 @@ def check_fullpos_namelist(config, nlgen, logger=None):
 
     if generate_namelist:
         fullpos_config = platform.get_system_value("fullpos_config_file")
-        domain = config.get_value("domain.name")
+        domain = config["domain.name"]
         namfpc, selections = Fullpos(domain, nlfile=fullpos_config).construct()
         for head, body in selections.items():
             nlgen.write_namelist(body, head)
@@ -65,34 +65,34 @@ def derived_variables(config, processor_layout=None):
     # Geometry
     truncation = {"linear": 2, "quadratic": 3, "cubic": 4, "custom": None}
 
-    ndguxg = int(config.get_value("domain.nimax")) + int(config.get_value("domain.ilone"))
-    ndglg = int(config.get_value("domain.njmax")) + int(config.get_value("domain.ilate"))
+    ndguxg = int(config["domain.nimax"]) + int(config["domain.ilone"])
+    ndglg = int(config["domain.njmax"]) + int(config["domain.ilate"])
 
-    gridtype = config.get_value("domain.gridtype")
+    gridtype = config["domain.gridtype"]
 
     if gridtype == "custom":
-        truncation[gridtype] = config.get_value("domain.custom_truncation")
+        truncation[gridtype] = config["domain.custom_truncation"]
 
     nsmax = floor((ndglg - 2) / truncation[gridtype])
     nmsmax = floor((ndguxg - 2) / truncation[gridtype])
 
     pi = 4.0 * atan(1.0)
-    xrpk = sin(float(config.get_value("domain.xlat0")) * pi / 180.0)
+    xrpk = sin(float(config["domain.xlat0"]) * pi / 180.0)
 
     # Vertical levels
-    nrfp3s = list(range(1, int(config.get_value("vertical_levels.nlev")) + 1))
+    nrfp3s = list(range(1, int(config["vertical_levels.nlev"]) + 1))
 
     # Current time
-    basetime = as_datetime(config.get_value("general.times.basetime"))
+    basetime = as_datetime(config["general.times.basetime"])
     year = basetime.year
     month = basetime.month
     day = basetime.day
     time = basetime.strftime("%H%M")
 
     # Time ranges
-    tstep = int(config.get_value("general.tstep"))
-    bdint = as_timedelta(config.get_value("general.bdint"))
-    forecast_range = as_timedelta(config.get_value("general.forecast_range"))
+    tstep = int(config["general.tstep"])
+    bdint = as_timedelta(config["general.bdint"])
+    forecast_range = as_timedelta(config["general.forecast_range"])
     cstop = int((forecast_range.days * 24 * 3600 + forecast_range.seconds) / 60)
     if cstop % 60 == 0:
         cstop = int(cstop / 60)
@@ -102,9 +102,9 @@ def derived_variables(config, processor_layout=None):
 
     # Output settings
     namoutput = {"history": 0, "fullpos": 0, "surfex": 0}
-    oi = config.get_value("general.output_settings")
+    oi = config["general.output_settings"]
 
-    forecast_range_org = config.get_value("general.forecast_range")
+    forecast_range_org = config["general.forecast_range"]
     for x, y in oi.items():
 
         dtlist = oi2dt_list(y, forecast_range_org)

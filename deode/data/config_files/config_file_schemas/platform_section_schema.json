@@ -1,0 +1,93 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "DomainSection",
+    "description": "DEODE platform specific path settings",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+        "ecoclim_data_path": {
+            "type": "string",
+            "description": "Path to the ECOCLIMAP-II data"
+        },
+        "deode_home": {
+            "type": "string",
+            "description": "Path to the deode code, normally no need to change"
+        },
+        "pgd_data_path": {
+            "type": "string",
+            "description": "Path to PGD input data"
+        },
+        "soilgrid_data_path": {
+            "type": "string",
+            "description": "Path to solgrid input data"
+        },
+        "gmted2010_data_path": {
+            "type": "string",
+            "description": "Path to gmted2010 input"
+        },
+        "ecosg_data_path": {
+            "type": "string",
+            "description": "Path to ECOCLIMAP SG data"
+        },
+        "climdata": {
+            "type": "string",
+            "description": "Macro used in other platform paths"
+        },
+        "static_data": {
+            "type": "string",
+            "description": "Macro used in other platform paths"
+        },
+        "e923_data": {
+            "type": "string",
+            "description": "Path to e923 input data"
+        },
+        "ncdir": {
+            "type": "string",
+            "description": "Path to ECrad NetCDF data"
+        },
+        "rrtm_dir": {
+            "type": "string",
+            "description": "Path to RRTM input data"
+        },
+        "scratch": {
+            "type": "string",
+            "description": "Path used as macro for e.g. wrk and other directories."
+        },
+        "task_name": {
+            "type": "string",
+            "description": "Placeholder macro."
+        },
+        "flake_dir": {
+            "type": "string",
+            "description": "Path to climate PGD dir."
+        },
+        "albnir_soil_dir": {
+            "type": "string",
+            "description": "Path to near-infrared spectrum soil data."
+        },
+        "albnir_veg_dir": {
+            "type": "string",
+            "description": "Path to near-infrared spectrum vegetation data."
+        },
+        "albvis_soil_dir": {
+            "type": "string",
+            "description": "Path to visible soil spectrum data."
+        },
+        "albvis_veg_dir": {
+            "type": "string",
+            "description": "Path to visible spectrum vegetation data."
+        },
+        "lai_dir": {
+            "type": "string",
+            "description": "TBA"
+        },
+        "tree_height_dir": {
+            "type": "string",
+            "description": "Path to tree_height data."
+        },
+        "archive_root": {
+            "type": "string",
+            "description": "Path to the main archive directory"
+        }
+    }
+}

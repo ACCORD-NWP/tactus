@@ -1,29 +1,38 @@
 #!/usr/bin/env python3
 """Registration and validation of options passed in the config file."""
+import contextlib
 import copy
 import json
 import logging
 import os
-from collections import defaultdict
-from functools import cached_property, reduce
+from collections.abc import Mapping
+from functools import reduce
 from operator import getitem
 from pathlib import Path
-from typing import Literal
+from types import MappingProxyType
+from typing import Any, Callable, Iterator, Literal, Union
 
 import fastjsonschema
 import tomlkit
 import yaml
 from fastjsonschema import JsonSchemaValueException
 
+from . import PACKAGE_DIRECTORY
 from .datetime_utils import ISO_8601_TIME_DURATION_REGEX
+from .general_utils import get_empty_nested_defaultdict, modify_mappings
 
-NO_DEFAULT_PROVIDED = object()
 
-MAIN_CONFIG_JSON_SCHEMA_PATH = (
-    Path(__file__).parent / "data" / "config_file_schemas" / "main_config_schema.json"
-)
-with open(MAIN_CONFIG_JSON_SCHEMA_PATH, "r") as schema_file:
-    MAIN_CONFIG_JSON_SCHEMA = json.load(schema_file)
+def _get_main_config_schema():
+    with open(MAIN_CONFIG_JSON_SCHEMA_PATH, "r") as schema_file:
+        return modify_mappings(obj=json.load(schema_file), operator=MappingProxyType)
+
+
+PACKAGE_CONFIG_DIR = PACKAGE_DIRECTORY / "data" / "config_files"
+PACKAGE_CONFIG_PATH = PACKAGE_CONFIG_DIR / "config.toml"
+PACKAGE_CONFIG_INCLUDE_DIR = PACKAGE_CONFIG_DIR / "include"
+CONFIG_SCHEMAS_DIR = PACKAGE_CONFIG_DIR / "config_file_schemas"
+MAIN_CONFIG_JSON_SCHEMA_PATH = CONFIG_SCHEMAS_DIR / "main_config_schema.json"
+MAIN_CONFIG_JSON_SCHEMA = _get_main_config_schema()
 
 logger = logging.getLogger(__name__)
 
@@ -32,172 +41,306 @@ class ConfigFileValidationError(Exception):
     """Error to be raised when parsing the input config file fails."""
 
 
-def get_default_config_path():
-    """Return the default path for the config file."""
+class ConflictingValidationSchemasError(Exception):
+    """Error to be raised when more than one schema is defined for a config section."""
+
+
+def get_default_config_paths():
+    """Return the default path to the adopted config file."""
     try:
-        _fpath = Path(os.getenv("DEODE_CONFIG_PATH", "config.toml"))
-        default_conf_path = _fpath.resolve(strict=True)
+        return Path(os.getenv("DEODE_CONFIG_PATH", "config.toml")).resolve(strict=True)
     except FileNotFoundError:
-        default_conf_path = (
-            Path(__file__).parent / "data" / "config_files" / "config.toml"
+        return Path(PACKAGE_CONFIG_PATH).resolve(strict=True)
+
+
+class BaseMapping(Mapping):
+    """Immutable mapping that will serve as basis for all config-related classes."""
+
+    def __init__(self, *args, **kwargs) -> None:
+        """Initialise an instance the same way a `dict` is initialised."""
+        self.data = dict(*args, **kwargs)
+
+    @property
+    def data(self):
+        """Return the underlying data stored by the instance."""
+        return self._data
+
+    @data.setter
+    def data(self, new, nested_maps_type=dict):
+        """Set the value of the `data` property."""
+        self._data = modify_mappings(
+            obj=new,
+            operator=lambda x: {
+                k: nested_maps_type(v) if isinstance(v, Mapping) else v
+                for k, v in x.items()
+            },
         )
 
-    return default_conf_path
+    def dict(self):  # noqa: A003 (class attr shadowing builtin)
+        """Return a `dict` representation, converting also nested `Mapping`-type items."""
+        return modify_mappings(obj=self, operator=dict)
 
+    def copy(self, update: Union[Mapping, Callable[[Mapping], Any]] = None):
+        """Return a copy of the instance, optionally updated according to `update`."""
+        new = copy.deepcopy(self)
+        if update:
+            new.data = modify_mappings(obj=self.dict(), operator=update)
+        return new
 
-class BasicConfig:
-    """Base class for configs. Arbitrary entries allowed, but no validation performed."""
-
-    def __init__(self, **kwargs):
-        """Initialise an instance with an arbitrary number of entries."""
-        kwargs = _remove_none_values(kwargs)
-        kwargs = _convert_lists_into_tuples(kwargs)
-        kwargs = _convert_subdicts_into_model_instance(cls=BasicConfig, values=kwargs)
-        for field_name, field_value in kwargs.items():
-            super().__setattr__(field_name, field_value)
-        super().__setattr__("__field_names__", tuple(kwargs))
-
-    def items(self):
-        """Emulate the "items" method from the dictionary type."""
-        for field_name in self.__field_names__:
-            yield field_name, getattr(self, field_name)
-
-    def dict(self, descend_recursively=True):  # noqa: A003 (class attr shadowing builtin)
-        """Return a dict representation of the instance and nested instances."""
-        rtn = {}
-        for k, v in self.items():
-            if descend_recursively and isinstance(v, BasicConfig):
-                rtn[k] = v.dict()
-            else:
-                rtn[k] = v
-        return rtn
-
-    def copy(self, update=None):
-        """Return a copy of the instance.
-
-        Args:
-            update (dict): Mapping containing the fields to be updated upon copying.
-                Default value = None.
-
-        Returns:
-            Any: Copy of the instance, with any values mapped from `update` updated.
-        """
-        if update is not None:
-            return BasicConfig(**_update_nested_dict(self.dict(), update))
-        return copy.deepcopy(self)
-
-    def get_value(self, items, default=NO_DEFAULT_PROVIDED):
-        """Recursively get the value of a config component.
-
-        This allows us to use self.get_value("foo.bar.baz") even if "bar" is, for
-        instance, a dictionary or any obj that implements a "getitem" method.
-
-        Args:
-            items (str): Attributes to be retrieved, as dot-separated strings.
-            default (Any): Default to be returned if the attribute does not exist.
-
-        Returns:
-            Any: Value of the parsed config item.
-
-        Raises:
-            AttributeError: If the attribute does not exist and no default is provided.
-        """
-
-        def get_attr_or_item(obj, item):
-            try:
-                return getattr(obj, item)
-            except AttributeError as attr_error:
-                try:
-                    return obj[item]
-                except (KeyError, TypeError) as error:
-                    raise AttributeError(attr_error) from error
-
-        try:
-            return reduce(get_attr_or_item, items.split("."), self)
-        except AttributeError as error:
-            if default is NO_DEFAULT_PROVIDED:
-                raise error
-            return default
-
-    def dumps(
-        self,
-        section="",
-        style: Literal["toml", "json", "yaml"] = "toml",
-        include_metadata=False,
-    ):
-        """Get a nicely printed version of the models. Excludes the metadata section."""
-        config = self.dict()
-        if not include_metadata:
-            config.pop("metadata", None)
-
+    def dumps(self, section="", style: Literal["toml", "json", "yaml"] = "toml"):
+        """Get a nicely printed version of the container's contents."""
         if section:
             section_tree = section.split(".")
-            try:
-                value = reduce(getitem, section_tree, config)
-            except (KeyError, TypeError):
-                return ""
+            config = get_empty_nested_defaultdict()
+            reduce(getitem, section_tree[:-1], config)[section_tree[-1]] = self[section]
+        else:
+            config = self
 
-            def _nested_defaultdict():
-                return defaultdict(_nested_defaultdict)
-
-            config = _nested_defaultdict()
-            reduce(getitem, section_tree[:-1], config)[section_tree[-1]] = value
-
-        rtn = json.dumps(config, indent=4, sort_keys=False)
+        rtn = json.dumps(config, indent=2, sort_keys=False, default=dict)
         if style == "toml":
-            return tomlkit.dumps(json.loads(rtn))
-        if style == "yaml":
-            return yaml.dump(json.loads(rtn))
+            rtn = tomlkit.dumps(json.loads(rtn))
+        elif style == "yaml":
+            rtn = yaml.dump(json.loads(rtn))
 
         return rtn
 
-    def __setattr__(self, key, value):
-        raise TypeError(f"cannot assign to {self.__class__.__name__} objects.")
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.dumps(style='json')})"
 
-    def __getattr__(self, items):
-        """Get attribute.
+    # Implement the abstract methods __getitem__, __iter__ and __len__ from from Mapping
+    def __getitem__(self, items):
+        """Get items from container.
 
-        Override so we can use,
-        e.g., getattr(config, "general.time_windows.start.minute").
+        The behaviour is similar to a `dict`, except for the fact that
+        `self["A.B.C.D. ..."]` will behave like `self["A"]["B"]["C"]["D"][...]`.
 
         Args:
             items (str): Attributes to be retrieved, as dot-separated strings.
 
         Returns:
-            Any: Value of the parsed config item.
+            Any: Value of the item.
         """
+        return reduce(getitem, items.split("."), self.data)
 
-        def regular_getattribute(obj, item):
-            if type(obj) is type(self):
-                return super().__getattribute__(item)
-            return getattr(obj, item)
+    def __iter__(self) -> Iterator:
+        return iter(self.data)
 
-        return reduce(regular_getattribute, items.split("."), self)
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}{self.dumps(style='json')}"
-
-    __str__ = __repr__
+    def __len__(self) -> int:
+        return len(self.data)
 
 
-class JsonSchema(dict):
-    """A subclass of `dict` that has a slightly better printed representation."""
+class BasicConfig(BaseMapping):
+    """Base class for configs. Arbitrary entries allowed: no validation is performed."""
 
-    def __repr__(self):
-        return json.dumps(self, indent=4, sort_keys=False)
+    def __init__(self, *args, _metadata=None, **kwargs):
+        """Initialise an instance in a `dict`-like fashion."""
+        super().__init__(*args, **kwargs)
+        self.metadata = _metadata
+
+    @classmethod
+    def from_file(cls, path, **kwargs):
+        """Retrieve configs from a file in miscellaneous formats.
+
+        Args:
+            path (typing.Union[pathlib.Path, str]): Path to the config file.
+            kwargs: Arguments passed to the class constructor.
+
+        Returns:
+            cls: Configs retrieved from the specified path.
+        """
+        path = Path(path).resolve().as_posix()
+        configs = _read_raw_config_file(path)
+        return cls(configs, _metadata={"source_file_path": path}, **kwargs)
+
+    @BaseMapping.data.setter
+    def data(self, new):
+        """Set the underlying data stored by the instance."""
+        input_sanitation_ops = [
+            lambda x: {k: v for k, v in x.items() if v is not None},
+            lambda x: {k: tuple(v) if isinstance(v, list) else v for k, v in x.items()},
+        ]
+        new = reduce(modify_mappings, input_sanitation_ops, new)
+        BaseMapping.data.fset(self, new, nested_maps_type=BasicConfig)
+
+    @property
+    def metadata(self):
+        """Get the metadata associated with the instance."""
+        return getattr(self, "_metadata", {})
+
+    @metadata.setter
+    def metadata(self, new):
+        """Set the metadata associated with the instance."""
+        if new is None:
+            new = {}
+        self._metadata = modify_mappings(obj=new, operator=dict)
+
+
+class JsonSchema(BaseMapping):
+    """Class to use for JSON schemas. Provides a `validate` method to validate data."""
+
+    @property
+    def _validation_function(self):
+        return _get_json_validation_function(self)
+
+    def validate(self, data):
+        """Return a copy of `data` validated against the stored JSON schema."""
+        return self._validation_function(data)
 
 
 class ParsedConfig(BasicConfig):
-    """Object that holds the validated configs."""
+    """Object that holds parsed configs validated against a `json_schema`."""
 
-    def __init__(self, json_schema=None, **kwargs):
+    def __init__(self, *args, json_schema, include_dir=PACKAGE_CONFIG_DIR, **kwargs):
         """Initialise an instance with an arbitrary number of entries & validate them."""
-        if json_schema is None:
-            json_schema = MAIN_CONFIG_JSON_SCHEMA.copy()
-        object.__setattr__(self, "json_schema", JsonSchema(json_schema))
+        self.include_dir = include_dir
+        self.json_schema = json_schema
+        super().__init__(*args, **kwargs)
 
+    @BasicConfig.data.setter
+    def data(self, new):
+        """Set the underlying data stored by the instance."""
+        new, json_schema = _expand_config_include_section(
+            raw_config=new,
+            json_schema=self.json_schema,
+            config_include_search_dir=self.include_dir,
+        )
+        ParsedConfig.json_schema.fset(self, json_schema, _validate_data=False)
+        BasicConfig.data.fset(self, self.json_schema.validate(new))
+
+    @property
+    def include_dir(self):
+        """Return the search dir used sections in the raw config's `include` section."""
+        return self._include_dir
+
+    @include_dir.setter
+    def include_dir(self, new):
+        """Set the search dir for `include` config sections."""
+        self._include_dir = Path(new)
+
+    @property
+    def json_schema(self):
+        """Return instance's JSON schema."""
+        return self._json_schema
+
+    @json_schema.setter
+    def json_schema(self, new, _validate_data=True):
+        self._json_schema = JsonSchema(new)
+        if _validate_data:
+            with contextlib.suppress(AttributeError):
+                # Trigger data validation, if data is available
+                self.data = self.data
+
+    @classmethod
+    def from_file(cls, path, include_dir=None, **kwargs):
+        """Do as in `BasicConfig`. If `None`, `include_dir` will become `path.parent`."""
+        if include_dir is None:
+            include_dir = Path(path).parent
+        return super().from_file(path=path, include_dir=include_dir, **kwargs)
+
+    def __repr__(self):
+        rtn = super().__repr__().strip(")")
+        rtn += f", json_schema={self.json_schema.dumps(style='json')})"
+        return rtn
+
+
+def _read_raw_config_file(config_path):
+    """Read raw configs from files in miscellaneous formats."""
+    config_path = Path(config_path)
+    logger.info("Reading configs from file <%s>", config_path)
+    with open(config_path, "rb") as config_file:
+        if config_path.suffix == ".toml":
+            return tomlkit.load(config_file)
+
+        if config_path.suffix in [".yaml", ".yml"]:
+            return yaml.load(config_file, Loader=yaml.loader.SafeLoader)
+
+        if config_path.suffix == ".json":
+            return json.load(config_file)
+
+        raise NotImplementedError(
+            f'Unsupported config file format "{config_path.suffix}"'
+        )
+
+
+def _get_config_include_definitions(raw_config):
+    config_includes = raw_config.get("include", {}).copy()
+    overlapping_sections = [key for key in config_includes if key in raw_config]
+    if overlapping_sections:
+        msg = f"`[include]` section(s) [{', '.join(overlapping_sections)}] "
+        msg += "already present in parent config."
+        raise ValueError(msg)
+    return config_includes
+
+
+def _expand_config_include_section(
+    raw_config,
+    json_schema,
+    config_include_search_dir=PACKAGE_CONFIG_DIR,
+    schemas_path=CONFIG_SCHEMAS_DIR,
+    _parent_sections=(),
+):
+    """Merge config includes and return new config & corresponding validation schema."""
+    raw_config = modify_mappings(obj=raw_config, operator=dict)
+    json_schema = modify_mappings(obj=json_schema, operator=dict)
+
+    config_include_defs = _get_config_include_definitions(raw_config)
+    if not config_include_defs:
+        return raw_config, json_schema
+
+    if "properties" not in json_schema:
+        json_schema["properties"] = {}
+    config_include_search_dir = Path(config_include_search_dir).resolve()
+    config_include_sections = {}
+    for section_name, include_path in config_include_defs.items():
+        include_path = Path(include_path)
+        if not include_path.is_absolute():
+            include_path = config_include_search_dir / include_path
+        included_config_section = _read_raw_config_file(include_path)
+
+        _sections_traversed = _parent_sections + (section_name,)
+        sections_traversed_str = " -> ".join(_sections_traversed)
+        if section_name in json_schema["properties"]:
+            msg = f'Validation schema for `[include]` section "{sections_traversed_str}" '
+            msg += "also detected in its parent section's schehma. "
+            msg += "`[include]` schemas must NOT be added to their parent's schemas, but "
+            msg += "rather in their own separate files."
+            raise ConflictingValidationSchemasError(msg)
+
+        schema_file = schemas_path / f"{section_name}_section_schema.json"
+        if not schema_file.is_file():
+            logger.warning(
+                'No validation schema for config section "%s". Using default.',
+                sections_traversed_str,
+            )
+            schema_file = schemas_path / "default_section_schema.json"
+
+        updated_config, updated_schema = _expand_config_include_section(
+            raw_config=included_config_section,
+            json_schema={"allOf": [{"$ref": f"file:{schema_file}"}]},
+            config_include_search_dir=config_include_search_dir,
+            schemas_path=schemas_path,
+            _parent_sections=_sections_traversed,
+        )
+        config_include_sections[section_name] = updated_config
+        json_schema["properties"][section_name] = updated_schema
+
+    raw_config.update(config_include_sections)
+    raw_config.pop("include")
+
+    return raw_config, json_schema
+
+
+def _get_json_validation_function(json_schema):
+    """Return a validation function compiled with schema `json_schema`."""
+    if not json_schema:
+        # Validation will just convert everything to dict in this case
+        return lambda obj: modify_mappings(obj=obj, operator=dict)
+    json_schema = modify_mappings(obj=json_schema, operator=dict)
+    validation_func = fastjsonschema.compile(json_schema)
+
+    def validate(obj):
         try:
-            super().__init__(**self._validate(kwargs))
+            return validation_func(modify_mappings(obj=obj, operator=dict))
         except JsonSchemaValueException as err:
             error_path = " -> ".join(err.path[1:])
             human_readable_msg = err.message.replace(err.name, "").strip()
@@ -217,109 +360,4 @@ class ParsedConfig(BasicConfig):
                 + f'Received type "{type(err.value).__name__}" with value "{err.value}".'
             ) from err
 
-    @classmethod
-    def parse_obj(cls, obj, json_schema=None):
-        """Parse a dict object 'obj', optionally validating against a json schema."""
-        return cls(json_schema=json_schema, **obj)
-
-    @classmethod
-    def from_file(cls, config_path, json_schema=None):
-        """Read config file at location "config_path".
-
-        Args:
-            config_path (typing.Union[pathlib.Path, str]): The path to the config file.
-            json_schema (dict): JSON schema to be used for validation.
-
-        Returns:
-            .config_parser.ParsedConfig: Parsed configs from config_path.
-        """
-        config_path = Path(config_path).expanduser().resolve()
-        logging.info("Reading config file %s", config_path)
-        raw_config = read_raw_config_file(config_path)
-
-        # Add metadata about where the config was parsed from
-        old_metadata = raw_config.get("metadata", {})
-        new_metadata = {"source_file_path": config_path.as_posix()}
-        old_metadata.update(new_metadata)
-        raw_config["metadata"] = new_metadata
-
-        return cls.parse_obj(obj=raw_config, json_schema=json_schema)
-
-    def copy(self, **kwargs):
-        """Return a copy of the instance. Same API as `copy` from class BasicConfig."""
-        return self.__class__.parse_obj(
-            super().copy(**kwargs).dict(), json_schema=self.json_schema
-        )
-
-    def __repr__(self):
-        rtn = f"{self.__class__.__name__}(**{self.dumps(style='json')}, "
-        rtn += f"json_schema={json.dumps(self.json_schema, indent=4, sort_keys=False)})"
-        return rtn
-
-    @cached_property
-    def _validate(self):
-        """Return a validation function compiled with the instance's json schema."""
-        if not self.json_schema:
-            # No json schema: bypassing validation
-            return lambda obj: obj
-        return fastjsonschema.compile(self.json_schema)
-
-
-def _convert_lists_into_tuples(values):
-    """Convert 'list' inputs into tuples. Helps serialisation, needed for dumps."""
-    new_d = values.copy()
-    for k, v in values.items():
-        if isinstance(v, list):
-            new_d[k] = tuple(v)
-        elif isinstance(v, dict):
-            new_d[k] = _convert_lists_into_tuples(v)
-    return new_d
-
-
-def _remove_none_values(values):
-    """Recursively remove None entries from the input dict."""
-    new_d = {}
-    for k, v in values.items():
-        if isinstance(v, dict):
-            new_d[k] = _remove_none_values(v)
-        elif v is not None:
-            new_d[k] = v
-    return new_d
-
-
-def _convert_subdicts_into_model_instance(cls, values):
-    """Convert nested dicts into instances of the model."""
-    new_d = values.copy()
-    for k, v in values.items():
-        if isinstance(v, dict):
-            new_d[k] = cls(**_convert_subdicts_into_model_instance(cls, v))
-    return new_d
-
-
-def _update_nested_dict(my_dictionary, dict_with_updates):
-    """Recursively update nested dict entries according to `dict_with_updates`."""
-    new_dict = my_dictionary.copy()
-    for key, value in dict_with_updates.items():
-        if isinstance(value, dict):
-            new_dict[key] = _update_nested_dict(new_dict.get(key, {}), value)
-        else:
-            new_dict[key] = value
-    return new_dict
-
-
-def read_raw_config_file(config_path):
-    """Read raw configs from files in miscellaneous formats."""
-    config_path = Path(config_path)
-    with open(config_path, "rb") as config_file:
-        if config_path.suffix == ".toml":
-            return tomlkit.load(config_file)
-
-        if config_path.suffix == ".yaml":
-            return yaml.load(config_file, Loader=yaml.loader.SafeLoader)
-
-        if config_path.suffix == ".json":
-            return json.load(config_file)
-
-        raise NotImplementedError(
-            f'Unsupported config file format "{config_path.suffix}"'
-        )
+    return validate

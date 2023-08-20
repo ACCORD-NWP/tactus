@@ -4,15 +4,16 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import PACKAGE_NAME, __version__
+from . import __version__
 from .commands_functions import (
     doc_config,
     run_task,
     show_config,
+    show_config_schema,
     show_namelist,
     start_suite,
 )
-from .config_parser import get_default_config_path
+from .config_parser import PACKAGE_CONFIG_PATH, get_default_config_paths
 
 
 def get_parsed_args(program_name="program", argv=None):
@@ -29,21 +30,25 @@ def get_parsed_args(program_name="program", argv=None):
     if argv is None:
         argv = sys.argv[1:]
 
-    ##########################################
-    # Define main parser and general options #
-    ##########################################
-    parser = argparse.ArgumentParser(
-        prog=program_name, formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
+    ######################################################################################
+    # Command line args that will be common to main_parser and possibly other subparsers.#
+    #                                                                                    #
+    # You should add `parents=[common_parser]` to your subparser definition if you want  #
+    # these options to apply there too.                                                  #
+    ######################################################################################
+    common_parser = argparse.ArgumentParser(add_help=False)
 
-    parser.add_argument(
-        "--version", "-v", action="version", version="%(prog)s v" + __version__
+    common_parser.add_argument(
+        "-deode_home",
+        default=None,
+        help="Specify deode_home to override automatic detection",
     )
-    parser.add_argument(
+    common_parser.add_argument(
         "-config_file",
         metavar="CONFIG_FILE_PATH",
-        default=get_default_config_path(),
+        default=get_default_config_paths(),
         type=Path,
+        nargs="*",
         help=(
             "Path to the config file. The default is whichever of the "
             + "following is first encountered: "
@@ -51,42 +56,45 @@ def get_parsed_args(program_name="program", argv=None):
             + "(ii) './config.toml'. If both (i) and (ii) are missing, "
             + "then the default will become "
             + "'"
-            + str(Path(f"$HOME/.{PACKAGE_NAME}/config.toml"))
+            + f"{PACKAGE_CONFIG_PATH}"
             + "'"
         ),
     )
-    parser.add_argument(
+    common_parser.add_argument(
         "-loglevel",
         default="info",
         choices=["critical", "error", "warning", "info", "debug", "notset"],
         help="What type of info should be printed to the log",
     )
 
-    parser.add_argument(
-        "-deode_home",
-        default=None,
-        help="Specify deode_home to override automatic detection",
+    ##########################################
+    # Define main parser and general options #
+    ##########################################
+    main_parser = argparse.ArgumentParser(
+        prog=program_name, formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+
+    main_parser.add_argument(
+        "--version", "-v", action="version", version="%(prog)s v" + __version__
     )
 
     # Configure the main parser to handle the commands
-    subparsers = parser.add_subparsers(
+    subparsers = main_parser.add_subparsers(
         title="commands",
         required=True,
         dest="command",
         description=(
-            "Valid commands for {0} (note that commands also accept their "
+            f"Valid commands for {program_name} (note that commands also accept their "
             + "own arguments, in particular [-h]):"
-        ).format(program_name),
+        ),
         help="command description",
     )
 
-    ###############################################
-    # Configure parser for the "forecast" command #
-    ###############################################
-    # Configure the main parser to handle the commands
+    ##########################################
+    # Configure parser for the "run" command #
+    ##########################################
     parser_run = subparsers.add_parser(
-        "run",
-        help="Runs a task.",
+        "run", help="Runs a task.", parents=[common_parser]
     )
     parser_run.add_argument("--task", "-t", dest="task", help="Task name", required=True)
     parser_run.add_argument(
@@ -105,14 +113,10 @@ def get_parsed_args(program_name="program", argv=None):
     )
     parser_run.set_defaults(run_command=run_task)
 
-    ##########################################
+    ############################################
     # Configure parser for the "start" command #
-    ##########################################
-    # Configure the main parser to handle the commands
-    parser_start = subparsers.add_parser(
-        "start",
-        help="Start various tasks and exit.",
-    )
+    ############################################
+    parser_start = subparsers.add_parser("start", help="Start various tasks and exit.")
     start_command_subparsers = parser_start.add_subparsers(
         title="start",
         dest="start_what",
@@ -126,7 +130,7 @@ def get_parsed_args(program_name="program", argv=None):
 
     # suite
     parser_start_suite = start_command_subparsers.add_parser(
-        "suite", help="Start the suite"
+        "suite", help="Start the suite", parents=[common_parser]
     )
     parser_start_suite.add_argument(
         "--ecf_host",
@@ -172,10 +176,8 @@ def get_parsed_args(program_name="program", argv=None):
     ###########################################
     # Configure parser for the "show" command #
     ###########################################
-    # Configure the main parser to handle the commands
     parser_show = subparsers.add_parser(
-        "show",
-        help="Display results from output files, as well as configs",
+        "show", help="Display results from output files, as well as configs"
     )
     show_command_subparsers = parser_show.add_subparsers(
         title="show",
@@ -190,7 +192,7 @@ def get_parsed_args(program_name="program", argv=None):
 
     # show config
     parser_show_config = show_command_subparsers.add_parser(
-        "config", help="Print configs in use and exit"
+        "config", help="Print configs in use and exit", parents=[common_parser]
     )
     parser_show_config.add_argument(
         "section", help="The config section (optional)", default="", nargs="?"
@@ -202,17 +204,22 @@ def get_parsed_args(program_name="program", argv=None):
         choices=["toml", "json", "yaml"],
         default="toml",
     )
-    parser_show_config.add_argument(
-        "--show-metadata",
-        "--metadata",
-        action="store_true",
-        help="Include the [metadata] section in the output.",
-    )
     parser_show_config.set_defaults(run_command=show_config)
+
+    # show config-schema
+    parser_show_config_schema = show_command_subparsers.add_parser(
+        "config-schema",
+        help="Print JSON schema used for validation of configs and exit",
+        parents=[common_parser],
+    )
+    parser_show_config_schema.add_argument(
+        "section", help="The config section (optional)", default="", nargs="?"
+    )
+    parser_show_config_schema.set_defaults(run_command=show_config_schema)
 
     # show namelist
     parser_show_namelist = show_command_subparsers.add_parser(
-        "namelist", help="Print namelist in use and exit"
+        "namelist", help="Print namelist in use and exit", parents=[common_parser]
     )
 
     parser_show_namelist.add_argument(
@@ -270,9 +277,11 @@ def get_parsed_args(program_name="program", argv=None):
 
     # doc config
     parser_doc_config = doc_command_subparsers.add_parser(
-        "config", help="Print a merge of config and json schema in .md style"
+        "config",
+        help="Print a merge of config and json schema in .md style",
+        parents=[common_parser],
     )
 
     parser_doc_config.set_defaults(run_command=doc_config)
 
-    return parser.parse_args(argv)
+    return main_parser.parse_args(argv)

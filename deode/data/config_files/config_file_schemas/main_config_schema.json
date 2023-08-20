@@ -1,0 +1,391 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MainConfigSchema",
+  "description": "Model for validation of the data in the main config file.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "general": {
+      "$ref": "#/definitions/general"
+    },
+    "suite_control": {
+      "$ref": "#/definitions/suite_control"
+    },
+    "file_templates": {
+      "$ref": "#/definitions/file_templates"
+    },
+    "macros": {
+      "$ref": "#/definitions/macros"
+    },
+    "system": {
+      "$ref": "#/definitions/system"
+    },
+    "troika": {
+      "$ref": "#/definitions/troika"
+    },
+    "include": {
+      "$ref": "#/definitions/include"
+    }
+  },
+  "required": [
+    "general"
+  ],
+  "definitions": {
+    "include": {
+      "title": "Include Section",
+      "description": "Sections to be included from other config files. Specified as 'key = val' pairs, where the keys are the section names and the vals are the paths to the files containeing them.",
+      "type": "object",
+      "properties": {}
+    },
+    "troika": {
+      "title": "Troika",
+      "description": "DEODE system specific path settings",
+      "type": "object",
+      "properties": {
+        "config_file": {
+          "type": "string",
+          "description": "Troika config file"
+        }
+      }
+    },
+    "suite_control": {
+      "title": "Suite control",
+      "description": "Suite control options",
+      "type": "object",
+      "properties": {
+        "do_soil": {
+          "description": "Activate preparation of SOILGRID data as input for PGD",
+          "type": "boolean"
+        },
+        "do_pgd": {
+          "description": "Activate generation of a PGD file",
+          "type": "boolean"
+        },
+        "do_prep": {
+          "description": "Run prep if cold start",
+          "type": "boolean"
+        },
+        "interpolate_boundaries": {
+          "description": "Activates the boundary interpolation",
+          "type": "boolean"
+        },
+        "create_static_data": {
+          "description": "Activate the generation of PGD and monthly climate files in the suite",
+          "type": "boolean"
+        },
+        "create_time_dependent_suite": {
+          "description": "Activate the time dependent part of the suite",
+          "type": "boolean"
+        }
+      }
+    },
+    "system": {
+      "title": "System",
+      "description": "DEODE system specific path settings",
+      "type": "object",
+      "properties": {
+        "bdfile_sfx_template": {
+          "type": "string",
+          "description": "Name template for input initial surfex file for prep"
+        },
+        "bdfile_template": {
+          "type": "string",
+          "description": "Name template for input boundary files"
+        },
+        "bddir_sfx": {
+          "type": "string",
+          "description": "Location of input intial file for surfex"
+        },
+        "bddir": {
+          "type": "string",
+          "description": "Location of input boundaries"
+        },
+        "intp_bddir": {
+          "type": "string",
+          "description": "Location of boundaries on the current domain, i.e. the output directory of e927"
+        },
+        "climdir": {
+          "type": "string",
+          "description": "Location of generated/used climate files (PGD/monthly files)"
+        },
+        "bindir": {
+          "type": "string",
+          "description": "Location of binaries"
+        },
+        "bdclimdir": {
+          "type": "string",
+          "description": "Location of host model climate files used for e927/c903"
+        },
+        "wrk": {
+          "type": "string",
+          "description": "Location of date specific working directory"
+        },
+        "fullpos_config_file": {
+          "type": "string",
+          "description": "Path to the fullpos yml config file"
+        },
+        "archive": {
+          "type": "string",
+          "description": "Location of date specific archive"
+        },
+        "namelists": {
+          "type": "string",
+          "description": "Path to static namelists"
+        },
+        "sfx_input_defs": {
+          "type": "string",
+          "description": "Path to the surfex json config file"
+        }
+      }
+    },
+    "macros": {
+      "title": "MacroSection",
+      "description": "Model for the 'macros' section.",
+      "type": "object",
+      "properties": {
+        "gen_macros": {
+          "type": "array",
+          "description": "Turns any string config to a macro, use a dict to rename an attribute."
+        },
+        "os_macros": {
+          "type": "array",
+          "description": "Environment variables used as macros"
+        },
+        "group_macros": {
+          "type": "array",
+          "description": "Turns a full config section to a macro"
+        }
+      }
+    },
+    "file_templates": {
+      "title": "FileTemplates",
+      "description": "Templates for file names",
+      "type": "object",
+      "properties": {
+        "duration_grib": {
+          "type": "string",
+          "description": "Macros for duration representation in GRIB output files"
+        },
+        "duration_fa": {
+          "type": "string",
+          "description": "Macros for duration representation of FA files, note that this is given by the IAL code."
+        },
+        "history": {
+          "type": "string",
+          "description": "Name template for history files"
+        },
+        "surfex": {
+          "type": "string",
+          "description": "Name template for surfex history files"
+        },
+        "fullpos": {
+          "type": "string",
+          "description": "Name template for fullpos files. Note that these are in GRIB2 by default."
+        }
+      }
+    },
+    "general": {
+      "title": "GeneralSectionModel",
+      "description": "Model for the 'general' section.",
+      "type": "object",
+      "properties": {
+        "times": {
+          "title": "Times",
+          "description": "Model for the 'general.times' section.",
+          "type": "object",
+          "properties": {
+            "start": {
+              "description": "Start",
+              "type": "string",
+              "format": "date-time"
+            },
+            "end": {
+              "description": "End",
+              "type": "string",
+              "format": "date-time"
+            },
+            "list": {
+              "description": "List",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "cycle_length": {
+              "description": "Cycle length defined as duration",
+              "default": "PT3H",
+              "type": "string",
+              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+            },
+            "basetime": {
+              "description": "Base TB specified",
+              "type": "string",
+              "format": "date-time"
+            },
+            "validtime": {
+              "description": "Valid TB specified",
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "start",
+                "end"
+              ],
+              "not": {
+                "required": [
+                  "list"
+                ]
+              }
+            },
+            {
+              "required": [
+                "list"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "start"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "end"
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "accept_static_namelists": {
+          "description": "Allow usage of static namelists as input for the tasks. The namelist should be located in the directory specified by platform.namelists and named with the convention namelist_{kind}_{task} where kind could be surfex or master and task forecast/pgd or similar. For the extraction of namelist see [namelists.md](../docs/namelists.md).",
+          "type": "boolean"
+        },
+        "case": {
+          "description": "Experiment name",
+          "default": "deode_case",
+          "type": "string"
+        },
+        "realization": {
+          "description": "Placeholder for future ensemble or similar need",
+          "type": "number"
+        },
+        "cnmexp": {
+          "description": "Experiment short name",
+          "default": "DEOD",
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 4
+        },
+        "tstep": {
+          "description": "Model time step",
+          "type": "number"
+        },
+        "loglevel": {
+          "description": "Logger output level",
+          "default": "INFO",
+          "type": "string",
+          "enum": [
+            "critical",
+            "error",
+            "debug",
+            "info",
+            "warning",
+            "CRITICAL",
+            "ERROR",
+            "DEBUG",
+            "INFO",
+            "WARNING"
+          ]
+        },
+        "surfex": {
+          "description": "SURFEX switch",
+          "type": "boolean"
+        },
+        "keep_workdirs": {
+          "description": "Do not remove working directories",
+          "type": "boolean"
+        },
+        "csc": {
+          "description": "CSC",
+          "default": "AROME",
+          "type": "string",
+          "enum": [
+            "AROME",
+            "ALARO",
+            "HARMONIE_AROME"
+          ]
+        },
+        "cycle": {
+          "description": "IAL cycle",
+          "type": "string",
+          "enum": [
+            "CY48t3",
+            "CY46t1",
+            "CY46h1"
+          ]
+        },
+        "bdint": {
+          "description": "Boundary interval",
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        },
+        "bdshift": {
+          "description": "Shift of boundary initial time. E.g. '-PT3H' would mean use 3H old boundaries",
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        },
+        "bdcycle": {
+          "description": "Boundary model cycle interval",
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        },
+        "bdmax": {
+          "description": "Max number of parallel boundary interpolation tasks",
+          "type": "number"
+        },
+        "nproma": {
+          "description": "NPROMA size in the forecast model. See the namelists for where it is used",
+          "type": "number"
+        },
+        "initfile": {
+          "description": "Initial file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",
+          "type": "string"
+        },
+        "initfile_sfx": {
+          "description": "Initial surfex file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",
+          "type": "string"
+        },
+        "forecast_range": {
+          "description": "Forecast range",
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        },
+        "output_settings": {
+          "title": "OutputSettings",
+          "description": "Output settings. Specified as duration for any of interval, endtime:interval, starttime:endtime:interval or a list of these options",
+          "type": "object",
+          "properties": {
+            "history": {
+              "description": "Output list for history files"
+            },
+            "surfex": {
+              "description": "Output list for surfex files"
+            },
+            "fullpos": {
+              "description": "Output list for fullpos files"
+            }
+          }
+        }
+      },
+      "required": [
+        "times"
+      ]
+    }
+  }
+}

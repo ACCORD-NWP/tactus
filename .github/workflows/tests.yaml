@@ -12,7 +12,7 @@ on:
 
 jobs:
   tests:
-    if: github.repository_owner == 'DEODE-NWP'
+    if: github.repository_owner == 'destination-earth-digital-twins'
     strategy:
       fail-fast: true
       matrix:

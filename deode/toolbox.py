@@ -71,7 +71,7 @@ class Platform:
         """
         role = role.lower()
         try:
-            val = self.config.get_value("system." + role)
+            val = self.config[f"system.{role}"]
             return self.substitute(val)
         except KeyError:
             return None
@@ -87,7 +87,7 @@ class Platform:
 
         """
         try:
-            val = self.config.get_value(setting)
+            val = self.config[setting]
             return self.substitute(val)
         except KeyError:
             return None
@@ -104,7 +104,7 @@ class Platform:
         """
         role = role.lower()
         try:
-            val = self.config.get_value("platform." + role)
+            val = self.config[f"platform.{role}"]
             return self.substitute(val)
         except KeyError:
             return None
@@ -116,7 +116,7 @@ class Platform:
             dict: Platform specifc values.
 
         """
-        return self.config.get_value("general.platform")
+        return self.config["general.platform"]
 
     def get_macros(self):
         """Get the macros.
@@ -126,7 +126,7 @@ class Platform:
 
         """
         macro_list = []
-        macros = self.config.get_value("platform").dict()
+        macros = self.config["platform"].dict()
         for macro in macros:
             macro_list.append(macro)
         self.logger.debug("Platform macro list: %s", macro_list)
@@ -140,7 +140,7 @@ class Platform:
 
         """
         macro_list = []
-        macros = self.config.get_value("system").dict()
+        macros = self.config["system"].dict()
         for macro in macros:
             macro_list.append(macro)
         self.logger.debug("System macro list: %s", macro_list)
@@ -153,7 +153,7 @@ class Platform:
             dict: Environment macros to be used.
 
         """
-        return self.config.get_value("macros.os_macros")
+        return self.config["macros.os_macros"]
 
     def get_gen_macros(self):
         """Get the environment macros.
@@ -162,7 +162,7 @@ class Platform:
             dict: Environment macros to be used.
 
         """
-        return self.config.get_value("macros.gen_macros")
+        return self.config["macros.gen_macros"]
 
     def get_provider(self, provider_id, target, fetch=True):
         """Get the needed provider.
@@ -234,8 +234,8 @@ class Platform:
             # Collect what is defined in config.macros, the group, os and general macros
             all_macros = {}
 
-            for source in self.config.get_value("macros.group_macros"):
-                for macro, val in self.config.get_value(source).dict().items():
+            for source in self.config["macros.group_macros"]:
+                for macro, val in self.config[source].dict().items():
                     all_macros[macro.upper()] = val
 
             for macro in list(self.get_os_macros()):
@@ -244,13 +244,13 @@ class Platform:
                 except KeyError:
                     pass
 
-            for macro in self.config.get_value("macros.gen_macros"):
+            for macro in self.config["macros.gen_macros"]:
                 if isinstance(macro, dict):
                     key = list(macro)[0]
-                    val = self.config.get_value(macro[key].lower())
+                    val = self.config[macro[key].lower()]
                     key = key.upper()
                 else:
-                    val = self.config.get_value(macro.lower())
+                    val = self.config[macro.lower()]
                     key = macro.split(".")[-1].upper()
                 all_macros[key] = val
 
@@ -276,9 +276,9 @@ class Platform:
 
             # Time handling
             if basetime is None:
-                basetime = str(self.config.get_value("general.times.basetime"))
+                basetime = str(self.config["general.times.basetime"])
             if validtime is None:
-                validtime = str(self.config.get_value("general.times.validtime"))
+                validtime = str(self.config["general.times.validtime"])
             if isinstance(basetime, str):
                 basetime = as_datetime(basetime)
             if isinstance(validtime, str):
@@ -319,7 +319,7 @@ class Platform:
                 pattern = self.sub_value(pattern, "LLLL", f"{lh:04d}")
                 pattern = self.sub_value(pattern, "LM", f"{lm:02d}")
                 pattern = self.sub_value(pattern, "LS", f"{ls:02d}")
-                tstep = self.config.get_value("general.tstep")
+                tstep = self.config["general.tstep"]
                 if tstep is not None:
                     lead_step = int(lead_seconds / tstep)
                     pattern = self.sub_value(pattern, "TTT", f"{lead_step:03d}")

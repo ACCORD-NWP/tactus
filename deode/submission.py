@@ -82,7 +82,7 @@ class TaskSettings(object):
              config(deode.ParserdConfig): Configuration
         """
         self.logger = get_logger_from_config(config)
-        submission_defs = config.get_value("submission").dict()
+        submission_defs = config["submission"].dict()
         self.submission_defs = submission_defs
         self.job_type = None
         self.processor_layout = None
@@ -285,7 +285,7 @@ class TaskSettings(object):
             platform = Platform(config)
             deode_home = platform.get_platform_value("DEODE_HOME")
             input_content = input_content.replace("@STAND_ALONE_DEODE_HOME@", deode_home)
-            config_file = config.get_value("metadata.source_file_path")
+            config_file = config.metadata["source_file_path"]
             if config_file is not None:
                 input_content = input_content.replace(
                     "@STAND_ALONE_TASK_CONFIG@", str(config_file)

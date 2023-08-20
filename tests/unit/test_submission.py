@@ -3,7 +3,7 @@
 import pytest
 import tomlkit
 
-from deode.config_parser import ParsedConfig
+from deode.config_parser import MAIN_CONFIG_JSON_SCHEMA, PACKAGE_CONFIG_PATH, ParsedConfig
 from deode.derived_variables import derived_variables
 from deode.submission import NoSchedulerSubmission, ProcessorLayout, TaskSettings
 
@@ -30,12 +30,15 @@ def raw_config_with_task(minimal_raw_config):
 
 @pytest.fixture()
 def parsed_config_with_task(raw_config_with_task):
-    return ParsedConfig.parse_obj(raw_config_with_task)
+    return ParsedConfig(raw_config_with_task, json_schema=MAIN_CONFIG_JSON_SCHEMA)
 
 
 @pytest.fixture()
 def config_from_task_config_file():
-    return ParsedConfig.from_file("deode/data/config_files/config.toml")
+    """Return a raw config common to all tasks."""
+    return ParsedConfig.from_file(
+        PACKAGE_CONFIG_PATH, json_schema=MAIN_CONFIG_JSON_SCHEMA
+    )
 
 
 class TestSubmission:
@@ -58,7 +61,7 @@ class TestSubmission:
         task_job = f"/tmp/{task}.job"  # noqa
         output = f"/tmp/{task}.log"  # noqa
 
-        assert config.get_value("submission.default_submit_type") == "background_hpc"
+        assert config["submission.default_submit_type"] == "background_hpc"
         background = TaskSettings(config)
         sub = NoSchedulerSubmission(background)
         sub.submit(task, config, template_job, task_job, output)
@@ -137,11 +140,11 @@ class TestSubmission:
         assert update["namelist"]["nprocx"] == 1
         assert update["namelist"]["nprocy"] is None
         config = config.copy(update=update)
-        assert config.get_value("task.wrapper") == "2"
-        assert config.get_value("namelist.nproc") == 2
-        assert config.get_value("namelist.nprocx") == 1
-        with pytest.raises(AttributeError, match="object has no attribute"):
-            config.get_value("namelist.nprocy")
+        assert config["task.wrapper"] == "2"
+        assert config["namelist.nproc"] == 2
+        assert config["namelist.nprocx"] == 1
+        with pytest.raises(KeyError, match="'nprocy'"):
+            config["namelist.nprocy"]
 
     def test_empty_wrapper_and_nproc(self, config_from_task_config_file):
         config = config_from_task_config_file
@@ -159,8 +162,8 @@ class TestSubmission:
         processor_layout = ProcessorLayout(settings)
         update = derived_variables(config, processor_layout=processor_layout)
         config = config.copy(update=update)
-        with pytest.raises(AttributeError, match="object has no attribute"):
-            config.get_value("task.wrapper")
-        assert config.get_value("namelist.nproc") == 2
-        with pytest.raises(AttributeError, match="object has no attribute"):
-            config.get_value("namelist.nprocy")
+        with pytest.raises(KeyError, match="'wrapper'"):
+            config["task.wrapper"]
+        assert config["namelist.nproc"] == 2
+        with pytest.raises(KeyError, match="'nprocy'"):
+            config["namelist.nprocy"]

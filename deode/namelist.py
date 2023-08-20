@@ -69,7 +69,7 @@ class NamelistGenerator:
         self.kind = kind  # not used elsewhere, though
         self.substitute = substitute
         self.logger = get_logger_from_config(config)
-        self.cycle = self.config.get_value("general.cycle")
+        self.cycle = self.config["general.cycle"]
         self.cnfile = (
             Path(__file__).parent
             / "namelist_generation_input"
@@ -82,10 +82,8 @@ class NamelistGenerator:
             / f"{self.cycle}"
             / f"{kind}_namelists.yml"
         )
-        self.domain_name = self.config.get_value("domain.name")
-        self.accept_static_namelist = self.config.get_value(
-            "general.accept_static_namelists"
-        )
+        self.domain_name = self.config["domain.name"]
+        self.accept_static_namelist = self.config["general.accept_static_namelists"]
 
     def load_user_namelist(self):
         """Read user provided namelist.
@@ -279,10 +277,10 @@ class NamelistGenerator:
         """
         self.load(target)
         try:
-            update = self.config.namelist_update.dict()
+            update = self.config["namelist_update"]
             if self.kind in update:
                 self.update(update, self.kind)
-        except AttributeError:
+        except KeyError:
             pass
 
         nml = self.assemble_namelist(target)

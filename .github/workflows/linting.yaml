@@ -16,7 +16,7 @@ on:
 
 jobs:
   linting:
-    if: github.repository_owner == 'DEODE-NWP'
+    if: github.repository_owner == 'destination-earth-digital-twins'
     name: Run Linters
     runs-on: ubuntu-latest
     steps:

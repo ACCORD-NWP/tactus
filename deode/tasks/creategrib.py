@@ -21,19 +21,15 @@ class CreateGrib(Task):
 
         self.archive = self.platform.get_system_value("archive")
 
-        self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
-        self.forecast_range = as_timedelta(
-            self.config.get_value("general.forecast_range")
-        )
+        self.basetime = as_datetime(self.config["general.times.basetime"])
+        self.forecast_range = as_timedelta(self.config["general.forecast_range"])
 
         try:
-            self.conversions = self.config.get_value(
-                f"task.{self.name}.conversions"
-            ).dict()
-        except AttributeError:
+            self.conversions = self.config[f"task.{self.name}.conversions"]
+        except KeyError:
             self.conversions = {}
 
-        self.output_settings = self.config.get_value("general.output_settings").dict()
+        self.output_settings = self.config["general.output_settings"]
 
         self.gl = self.get_binary("gl")
 

@@ -11,6 +11,7 @@ import pytest
 
 from deode import PACKAGE_NAME
 from deode.argparse_wrapper import get_parsed_args
+from deode.config_parser import PACKAGE_CONFIG_INCLUDE_DIR, PACKAGE_CONFIG_PATH
 from deode.main import main
 from deode.submission import NoSchedulerSubmission, TaskSettings
 
@@ -19,9 +20,14 @@ WORKING_DIR = Path.cwd()
 
 @pytest.fixture(scope="module")
 def config_path(tmp_path_factory):
-    config_path = tmp_path_factory.getbasetemp() / "config.toml"
-    shutil.copy(WORKING_DIR / "deode/data/config_files/config.toml", config_path)
-    return config_path
+    main_configs_test_dir = tmp_path_factory.getbasetemp() / "config_files"
+    main_configs_test_dir.mkdir()
+    shutil.copy(PACKAGE_CONFIG_PATH, main_configs_test_dir)
+
+    config_includes_test_dir = main_configs_test_dir / PACKAGE_CONFIG_INCLUDE_DIR.name
+    shutil.copytree(PACKAGE_CONFIG_INCLUDE_DIR, config_includes_test_dir)
+
+    return main_configs_test_dir / "config.toml"
 
 
 @pytest.fixture(scope="module")
@@ -68,7 +74,7 @@ def test_cannot_run_without_arguments(argv):
 @pytest.mark.usefixtures("_module_mockers")
 def test_correct_config_is_in_use(config_path, mocker):
     mocker.patch("sys.exit")
-    args = get_parsed_args(argv=[])
+    args = get_parsed_args(argv=["run"])
     assert args.config_file == config_path
 
 
@@ -79,10 +85,9 @@ class TestMainShowCommands:
         with redirect_stdout(StringIO()):
             main(["show", "config"])
 
-    def test_show_namelist_command(self, tmp_path_factory):
-
-        output_file = f"{tmp_path_factory.getbasetemp().as_posix()}/fort.4"
-        main(["show", "namelist", "-t", "surfex", "-n", "forecast", "-o", output_file])
+    def test_show_config_schema_command(self):
+        with redirect_stdout(StringIO()):
+            main(["show", "config-schema"])
 
     def test_show_config_command_stretched_time(self):
         """Test again, mocking time.time so the total elapsed time is greater than 60s."""
@@ -94,6 +99,11 @@ class TestMainShowCommands:
         with mock.patch("time.time", mock.MagicMock(side_effect=fake_time())):
             with redirect_stdout(StringIO()):
                 main(["show", "config"])
+
+    def test_show_namelist_command(self, tmp_path_factory):
+
+        output_file = f"{tmp_path_factory.getbasetemp().as_posix()}/fort.4"
+        main(["show", "namelist", "-t", "surfex", "-n", "forecast", "-o", output_file])
 
 
 @pytest.mark.usefixtures("_module_mockers")

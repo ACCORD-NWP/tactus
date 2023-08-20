@@ -43,7 +43,7 @@ Here is a list of tests being run in the pipeline, that you can run locally from
 
 **Unit Tests:**
 - `pytest --cov=./ tests/` *(In the pipeline we run multiple versions of python)*
-- `pytest -n auto` *(runs exactly as in the post-commit only checks.)* 
+- `pytest -n auto` *(runs exactly as in the post-commit only checks.)*
 
 **Full Ecflow test:**
 - We have a working, although simplified, setup on Atos that should be maintained. Run with `bash ./Start`. The test produces output under `$SCRATCH/deode/deode_case`.
@@ -63,7 +63,7 @@ Forks are used to develop features and bug fixes. They are created from the `dev
 To run the project on LUMI, you need to have a LUMI account and add your SSH key to it. You can find instructions on how to do that [here](https://docs.lumi-supercomputer.eu/firststeps/SSH-keys/). Once you have your SSH key added, you can login to LUMI by running `ssh -i <your-private-key> <username>@@lumi.csc.fi`. Once logged in create a SSH key and add that to your GitHub account, so you can clone the repo. Then follow these steps (some of which can be put in your `.profile`)
 ```sh
 # Clone the repo
-git clone git@github.com:DEODE-NWP/Deode-Prototype.git
+git clone git@github.com:destination-earth-digital-twins/Deode-Prototype.git
 
 # Load modules
 module load LUMI/22.06

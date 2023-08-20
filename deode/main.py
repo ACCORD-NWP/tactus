@@ -6,7 +6,7 @@ import humanize
 
 from . import PACKAGE_NAME, __version__
 from .argparse_wrapper import get_parsed_args
-from .config_parser import ParsedConfig
+from .config_parser import MAIN_CONFIG_JSON_SCHEMA, ParsedConfig
 from .logs import get_logger
 
 
@@ -17,7 +17,7 @@ def main(argv=None):
     logger = get_logger(PACKAGE_NAME, args.loglevel)
     logger.info("Initialising %s v%s", PACKAGE_NAME, __version__)
 
-    config = ParsedConfig.from_file(args.config_file)
+    config = ParsedConfig.from_file(args.config_file, json_schema=MAIN_CONFIG_JSON_SCHEMA)
     args.run_command(args=args, config=config)
 
     elapsed = time.time() - t_start

@@ -6,7 +6,7 @@ import json
 
 from .namelist import flatten_list
 
-SKIP = ("SURFEX", "task", "submission", "metadata")
+SKIP = ("SURFEX", "task", "submission")
 TABLE_HEADER = ["", "Key", "Description", "Default", "Options", "Type", ""]
 
 

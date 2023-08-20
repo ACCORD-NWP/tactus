@@ -9,7 +9,13 @@ import pytest
 import tomlkit
 
 import deode
-from deode.config_parser import ParsedConfig, read_raw_config_file
+from deode.config_parser import (
+    MAIN_CONFIG_JSON_SCHEMA,
+    PACKAGE_CONFIG_DIR,
+    PACKAGE_CONFIG_PATH,
+    BasicConfig,
+    ParsedConfig,
+)
 from deode.initial_conditions import InitialConditions
 from deode.tasks.base import Task
 from deode.tasks.batch import BatchJob
@@ -33,14 +39,16 @@ def base_raw_config(request):
     """Return a raw config common to all tasks."""
     tag_map = {"CY46h1": "", "CY48t3": "_CY48t3"}
     tag = tag_map[request.param]
-    return read_raw_config_file(f"deode/data/config_files/config{tag}.toml")
+    if tag:
+        return BasicConfig.from_file(PACKAGE_CONFIG_DIR / f"config{tag}.toml")
+    return BasicConfig.from_file(PACKAGE_CONFIG_PATH)
 
 
 @pytest.fixture(params=classes_to_be_tested())
 def task_name_and_configs(request, base_raw_config, tmp_path_factory):
     """Return a ParsedConfig with a task-specific section according to `params`."""
     task_name = request.param
-    task_config = ParsedConfig.parse_obj(base_raw_config, json_schema={})
+    task_config = ParsedConfig(base_raw_config, json_schema=MAIN_CONFIG_JSON_SCHEMA)
 
     config_patch = tomlkit.parse(
         f"""

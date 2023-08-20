@@ -50,13 +50,13 @@ class Gmted(Task):
             dict: Domain properties
         """
         domain = {
-            "nlon": config.get_value("domain.njmax"),
-            "nlat": config.get_value("domain.nimax"),
-            "latc": config.get_value("domain.xlatcen"),
-            "lonc": config.get_value("domain.xloncen"),
-            "lat0": config.get_value("domain.xlat0"),
-            "lon0": config.get_value("domain.xlon0"),
-            "gsize": config.get_value("domain.xdx"),
+            "nlon": config["domain.njmax"],
+            "nlat": config["domain.nimax"],
+            "latc": config["domain.xlatcen"],
+            "lonc": config["domain.xloncen"],
+            "lat0": config["domain.xlat0"],
+            "lon0": config["domain.xlon0"],
+            "gsize": config["domain.xdx"],
         }
 
         return domain
@@ -271,13 +271,13 @@ class Soil(Task):
             dict: Domain properties
         """
         domain = {
-            "nlon": config.get_value("domain.njmax"),
-            "nlat": config.get_value("domain.nimax"),
-            "latc": config.get_value("domain.xlatcen"),
-            "lonc": config.get_value("domain.xloncen"),
-            "lat0": config.get_value("domain.xlat0"),
-            "lon0": config.get_value("domain.xlon0"),
-            "gsize": config.get_value("domain.xdx"),
+            "nlon": config["domain.njmax"],
+            "nlat": config["domain.nimax"],
+            "latc": config["domain.xlatcen"],
+            "lonc": config["domain.xloncen"],
+            "lat0": config["domain.xlat0"],
+            "lon0": config["domain.xlon0"],
+            "gsize": config["domain.xdx"],
         }
 
         return domain

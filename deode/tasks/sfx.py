@@ -636,7 +636,7 @@ class Prep(Task):
 
         prep_file = f"{bddir_sfx}/{bdfile_sfx_template}"
 
-        cnmexp = self.config.get_value("general.cnmexp")
+        cnmexp = self.config["general.cnmexp"]
         archive = self.platform.get_system_value("archive")
 
         output = f"{archive}/ICMSH{cnmexp}INIT.sfx"

@@ -2,6 +2,7 @@
 import os
 import re
 import time
+from pathlib import Path
 
 
 class Search:
@@ -96,3 +97,33 @@ class Search:
             files = sorted(files)
 
         return files
+
+
+def filepath_iterator(paths, filename_pattern="*"):
+    """Return iterator of paths to files given a list of file or directory paths.
+
+    Given a path or list of paths, yield Path objects corresponding to them.
+    If a path points to a directory, then the directory is searched recursively
+    and the paths to the files found in this process will be yielded.
+
+    Args:
+        paths (typing.Union[pathlib.Path, List[pathlib.Path], str, List[str]]):
+            A single path or a collection of paths.
+        filename_pattern (str, optional): Pattern used in the recursive glob in
+            order to select the names of the files to be yielded.
+            Defaults to "*".
+
+    Yields:
+        pathlib.Path: Path to located files.
+    """
+    if isinstance(paths, (str, Path)):
+        paths = [paths]
+
+    for path in paths:
+        path = Path(path).expanduser().resolve()
+        if path.is_dir():
+            for subpath in path.rglob(filename_pattern):
+                if subpath.is_file():
+                    yield subpath
+        else:
+            yield path

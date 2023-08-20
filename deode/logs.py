@@ -74,9 +74,9 @@ def get_logger_from_config(config):
     Returns:
         logging: Logger instance
     """
-    loglevel = config.get_value("general.loglevel", "INFO")
+    loglevel = config.get("general.loglevel", "INFO")
     # Do we have a name yet?
-    # name = config.get_value("general.exp")  # noqa
+    # name = config.get("general.exp")  # noqa
     name = "DEODE"
     logger = logging.getLogger(name)
     logger_handler = logging.StreamHandler()

@@ -59,16 +59,14 @@ class SuiteDefinition(object):
         if ecflow is None and not dry_run:
             raise ModuleNotFoundError("Ecflow not found")
 
-        self.create_static_data = config.get_value("suite_control.create_static_data")
-        self.do_soil = config.get_value("suite_control.do_soil")
-        self.do_pgd = config.get_value("suite_control.do_pgd")
-        self.create_time_dependent_suite = config.get_value(
+        self.create_static_data = config["suite_control.create_static_data"]
+        self.do_soil = config["suite_control.do_soil"]
+        self.do_pgd = config["suite_control.do_pgd"]
+        self.create_time_dependent_suite = config[
             "suite_control.create_time_dependent_suite"
-        )
-        self.interpolate_boundaries = config.get_value(
-            "suite_control.interpolate_boundaries"
-        )
-        self.do_prep = config.get_value("suite_control.do_prep")
+        ]
+        self.interpolate_boundaries = config["suite_control.interpolate_boundaries"]
+        self.do_prep = config["suite_control.do_prep"]
 
         self.logger = get_logger_from_config(config)
         name = suite_name
@@ -122,10 +120,10 @@ class SuiteDefinition(object):
 
         platform = Platform(config)
         troika_config = platform.get_value("troika.config_file")
-        config_file = config.get_value("metadata.source_file_path")
-        first_cycle = as_datetime(config.get_value("general.times.start"))
+        config_file = config.metadata["source_file_path"]
+        first_cycle = as_datetime(config["general.times.start"])
         deode_home = platform.get_platform_value("DEODE_HOME")
-        keep_workdirs = "1" if config.get_value("general.keep_workdirs") else "0"
+        keep_workdirs = "1" if config["general.keep_workdirs"] else "0"
         variables = {
             "ECF_EXTN": ".py",
             "ECF_FILES": self.ecf_files,
@@ -174,9 +172,9 @@ class SuiteDefinition(object):
             static_data(EcflowFamily): EcflowFamily object used for triggering
 
         """
-        first_cycle = as_datetime(config.get_value("general.times.start"))
-        last_cycle = as_datetime(config.get_value("general.times.end"))
-        cycle_length = as_timedelta(config.get_value("general.times.cycle_length"))
+        first_cycle = as_datetime(config["general.times.start"])
+        last_cycle = as_datetime(config["general.times.end"])
+        cycle_length = as_timedelta(config["general.times.cycle_length"])
         cycles = {}
         cycle_time = first_cycle
         i = 0
@@ -239,10 +237,10 @@ class SuiteDefinition(object):
             if self.interpolate_boundaries:
 
                 basetime = as_datetime(cycle["basetime"])
-                forecast_range = as_timedelta(config.get_value("general.forecast_range"))
+                forecast_range = as_timedelta(config["general.forecast_range"])
                 endtime = basetime + forecast_range
-                bdint = as_timedelta(config.get_value("general.bdint"))
-                bdmax = config.get_value("general.bdmax")
+                bdint = as_timedelta(config["general.bdint"])
+                bdmax = config["general.bdmax"]
 
                 int_fam = EcflowSuiteFamily(
                     f'{"Interpolation"}',

@@ -21,18 +21,18 @@ class E927(Task):
 
         self.climdir = self.platform.get_system_value("climdir")
 
-        self.cnmexp = self.config.get_value("general.cnmexp")
-        self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
-        self.forecast_range = self.config.get_value("general.forecast_range")
+        self.cnmexp = self.config["general.cnmexp"]
+        self.basetime = as_datetime(self.config["general.times.basetime"])
+        self.forecast_range = self.config["general.forecast_range"]
 
-        self.bdint = self.config.get_value("general.bdint")
-        self.bdcycle = as_timedelta(config.get_value("general.bdcycle"))
-        self.bdshift = as_timedelta(config.get_value("general.bdshift"))
-        self.intp_bddir = self.config.get_value("system.intp_bddir")
-        self.bdnr = config.get_value("task.args.bd_nr")
-        self.bd_time = config.get_value("task.args.bd_time")
-        self.bddir = self.config.get_value("system.bddir")
-        self.bdfile_template = self.config.get_value("system.bdfile_template")
+        self.bdint = self.config["general.bdint"]
+        self.bdcycle = as_timedelta(config["general.bdcycle"])
+        self.bdshift = as_timedelta(config["general.bdshift"])
+        self.intp_bddir = self.config["system.intp_bddir"]
+        self.bdnr = config["task.args.bd_nr"]
+        self.bd_time = config["task.args.bd_time"]
+        self.bddir = self.config["system.bddir"]
+        self.bdfile_template = self.config["system.bdfile_template"]
         self.bdclimdir = self.platform.get_system_value("bdclimdir")
 
         self.name = f"{self.name}_{self.bdnr}"

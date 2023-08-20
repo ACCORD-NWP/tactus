@@ -349,9 +349,9 @@ class E923Monthly(E923):
             config (deode.ParsedConfig): Configuration
         """
         try:
-            months = config.get_value("task.args.months").split(",")
+            months = config["task.args.months"].split(",")
             tag = "_" + "_".join(months)
-        except AttributeError:
+        except KeyError:
             months = [f"{mm:02d}" for mm in range(1, 13)]
             tag = ""
 

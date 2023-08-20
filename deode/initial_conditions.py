@@ -1,6 +1,5 @@
 """Initial_conditions."""
-
-
+import contextlib
 import os
 
 from .datetime_utils import as_datetime, as_timedelta
@@ -22,13 +21,11 @@ class InitialConditions(object):
         self.logger = get_logger_from_config(config)
         self.platform = Platform(self.config)
         self.wrk = self.platform.get_value("system.wrk")
-        self.intp_bddir = self.config.get_value("system.intp_bddir")
-        self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
-        self.cycle_length = as_timedelta(
-            self.config.get_value("general.times.cycle_length")
-        )
-        self.archive = self.config.get_value("system.archive")
-        self.file_templates = self.config.get_value("file_templates").dict()
+        self.intp_bddir = self.config["system.intp_bddir"]
+        self.basetime = as_datetime(self.config["general.times.basetime"])
+        self.cycle_length = as_timedelta(self.config["general.times.cycle_length"])
+        self.archive = self.config["system.archive"]
+        self.file_templates = self.config["file_templates"].dict()
 
     def nosuccess(self, f1, f2, fail=True):
         """Report of not success.
@@ -50,14 +47,12 @@ class InitialConditions(object):
         """Find initial file."""
         # Find data explicitly defined
         init_defined = False
-        try:
-            source = self.config.get_value("general.initfile")
-            source_sfx = self.config.get_value("general.initfile_sfx")
+        with contextlib.suppress(KeyError):
+            source = self.config["general.initfile"]
+            source_sfx = self.config["general.initfile_sfx"]
             self.logger.debug("Defined source %s", source)
             self.logger.debug("Defined source_sfx %s", source_sfx)
             init_defined = True
-        except AttributeError:  # noqa
-            pass
 
         if init_defined:
             if os.path.exists(source) and os.path.exists(source_sfx):

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Implement the package's commands."""
 import os
-from pathlib import Path
 
 from .config_doc import DocConfig
+from .config_parser import MAIN_CONFIG_JSON_SCHEMA_PATH
 from .derived_variables import check_fullpos_namelist, derived_variables
 from .logs import get_logger
 from .namelist import NamelistGenerator
@@ -24,8 +24,8 @@ def set_deode_home(args, config):
         deode_home
     """
     try:
-        deode_home_from_config = config.get_value("plaform.deode_home")
-    except AttributeError:
+        deode_home_from_config = config["platform.deode_home"]
+    except KeyError:
         deode_home_from_config = "set-by-the-system"
     if args.deode_home is not None:
         deode_home = args.deode_home
@@ -79,7 +79,7 @@ def start_suite(args, config):
         args.ecf_host, ecf_port=args.ecf_port, start_command=args.start_command
     )
 
-    suite_name = config.get_value("general.case")
+    suite_name = config["general.case"]
     suite_name = Platform(config).substitute(suite_name)
     submission_defs = TaskSettings(config)
     defs = SuiteDefinition(
@@ -108,11 +108,7 @@ def doc_config(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
-    schema_file = (
-        Path(__file__).parent / "data" / "config_file_schemas" / "main_config_schema.json"
-    )
-
-    DocConfig(config.dict(), schema_file).print_doc()
+    DocConfig(config.dict(), MAIN_CONFIG_JSON_SCHEMA_PATH).print_doc()
 
 
 def show_config(args, config):
@@ -124,12 +120,24 @@ def show_config(args, config):
 
     """
     logger = get_logger(__name__, args.loglevel)
-    logger.info("Printing configs in use...")
-    print(
-        config.dumps(
-            section=args.section, style=args.format, include_metadata=args.show_metadata
-        )
-    )
+    logger.info("Printing requested configs...")
+    try:
+        print(config.dumps(section=args.section, style=args.format))
+    except KeyError:
+        logger.error('Error retrieving config data for config section "%s"', args.section)
+
+
+def show_config_schema(args, config):
+    """Implement the `show config-schema` command.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+        config (.config_parser.ParsedConfig): Parsed config file contents.
+
+    """
+    logger = get_logger(__name__, args.loglevel)
+    logger.info("Printing JSON schema used in the validation of the configs...")
+    print(config.json_schema)
 
 
 def show_namelist(args, config):
@@ -149,7 +157,7 @@ def show_namelist(args, config):
 
     nlgen = NamelistGenerator(config, args.namelist_type, substitute=args.no_substitute)
     nlgen.load(args.namelist)
-    update = config.namelist_update.dict()
+    update = config["namelist_update"]
     if args.namelist_type in update:
         nlgen.update(update[args.namelist_type], args.namelist_type)
     if args.namelist == "forecast" and args.namelist_type == "master":

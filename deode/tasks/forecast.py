@@ -23,24 +23,22 @@ class Forecast(Task):
         """
         Task.__init__(self, config, __name__)
 
-        self.cycle = self.config.get_value("general.cycle")
-        self.cnmexp = self.config.get_value("general.cnmexp")
-        self.domain = self.config.get_value("domain.name")
+        self.cycle = self.config["general.cycle"]
+        self.cnmexp = self.config["general.cnmexp"]
+        self.domain = self.config["domain.name"]
 
-        self.basetime = as_datetime(self.config.get_value("general.times.basetime"))
-        self.cycle_length = as_timedelta(
-            self.config.get_value("general.times.cycle_length")
-        )
-        self.bdint = as_timedelta(self.config.get_value("general.bdint"))
-        self.intp_bddir = self.config.get_value("system.intp_bddir")
-        self.forecast_range = self.config.get_value("general.forecast_range")
+        self.basetime = as_datetime(self.config["general.times.basetime"])
+        self.cycle_length = as_timedelta(self.config["general.times.cycle_length"])
+        self.bdint = as_timedelta(self.config["general.bdint"])
+        self.intp_bddir = self.config["system.intp_bddir"]
+        self.forecast_range = self.config["general.forecast_range"]
 
         self.climdir = self.platform.get_system_value("climdir")
         self.rrtm_dir = self.platform.get_platform_value("RRTM_DIR")
-        self.ncdir = self.config.get_value("platform.ncdir")
+        self.ncdir = self.config["platform.ncdir"]
         self.archive = self.platform.get_system_value("archive")
-        self.deode_home = self.config.get_value("platform.deode_home")
-        self.output_settings = self.config.get_value("general.output_settings").dict()
+        self.deode_home = self.config["platform.deode_home"]
+        self.output_settings = self.config["general.output_settings"]
 
         # Update namelist settings
         self.nlgen_master = NamelistGenerator(self.config, "master")
@@ -49,7 +47,7 @@ class Forecast(Task):
 
         self.master = self.get_binary("MASTERODB")
 
-        self.file_templates = self.config.get_value("file_templates").dict()
+        self.file_templates = self.config["file_templates"]
 
     def archive_output(self, fname, periods):
         """Archive forecast model output.
@@ -169,8 +167,8 @@ class Forecast(Task):
 
         # Use explicitly defined boundary dir if defined
         try:
-            intp_bddir = self.config.get_value("system.intp_bddir")
-        except AttributeError:  # noqa
+            intp_bddir = self.config["system.intp_bddir"]
+        except KeyError:  # noqa
             intp_bddir = self.wrk
 
         # Link the boundary files, use initial file as first boundary file

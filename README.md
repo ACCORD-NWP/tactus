@@ -1,6 +1,6 @@
-![Linting](https://github.com/DEODE-NWP/Deode-Prototype/actions/workflows/linting.yaml/badge.svg)
-![Tests](https://github.com/DEODE-NWP/Deode-Prototype/actions/workflows/tests.yaml/badge.svg
-) [![codecov](https://codecov.io/github/DEODE-NWP/Deode-Prototype/branch/develop/graph/badge.svg?token=HMWJ69EY51)](https://codecov.io/github/DEODE-NWP/Deode-Prototype)
+![Linting](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/linting.yaml/badge.svg)
+![Tests](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/tests.yaml/badge.svg
+) [![codecov](https://codecov.io/github/destination-earth-digital-twins/Deode-Prototype/branch/develop/graph/badge.svg?token=HMWJ69EY51)](https://codecov.io/github/destination-earth-digital-twins/Deode-Prototype)
 
 # DEODE Scripting System
 
@@ -8,7 +8,7 @@
 
 `deode` is a python package that runs the Destination Earth on Demand Extremes system.
 
-See also the [project's Doc Page](https://deode-nwp.github.io/deode-prototype-docs) for more information.
+See also the [project's Doc Page](https://destination-earth-digital-twins.github.io/deode-prototype-docs) for more information.
 
 ## System Requirements
 
@@ -40,14 +40,14 @@ On Atos (`hpc-login`) no special treatment of gdal is required.
 ## Installation
 
 Before proceeding, please make sure that your system fulfils the appropriate
-[system requirements](#system-requirements). For the time being the recommended installation method is the [Developer-Mode Installation](#developer-mode-installation) using poetry. 
+[system requirements](#system-requirements). For the time being the recommended installation method is the [Developer-Mode Installation](#developer-mode-installation) using poetry.
 
 #### Developer Mode Installation
 
 :point_right: For those who need/wish to make changes to `deode`'s
 source code, or use code from a different branch than `master`.
 
-    git clone git@github.com:DEODE-NWP/Deode-Prototype.git
+    git clone git@github.com:destination-earth-digital-twins/Deode-Prototype.git
     cd Deode-Prototype
     export PATH=~/.local/bin:$PATH
     poetry install
@@ -67,8 +67,8 @@ to make the `deode`command available. However, before you can use `deode` (apart
 [TOML](https://en.wikipedia.org/wiki/TOML) format.
 
 Please take a look at the default
-[config.toml](https://github.com/DEODE-NWP/Deode-Prototype/blob/develop/deode/data/config_files/config.toml) file,
-as well as the [project's Doc Page](https://deode-nwp.github.io/deode-prototype-docs), for more information about the configuration file.
+[config.toml](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/deode/data/config_files/config.toml) file,
+as well as the [project's Doc Page](https://destination-earth-digital-twins.github.io/deode-prototype-docs), for more information about the configuration file.
 
 ### Command line options
 
@@ -90,7 +90,7 @@ that the `-h` goes after the subcommand in this case).
 
 ### Example running a ecflow suite from server ecflow-gen-${USER}-001 on atos
 
-Assuming you have successfully installed deode the following will launch a run under ecflow. 
+Assuming you have successfully installed deode the following will launch a run under ecflow.
 Log into hpc-login.ecmwf.int, load python and ecflow and start the poetry shell
 
 ```
@@ -119,7 +119,7 @@ You can now open ecflow_ui and add ecflow-gen-${USER}-001 as the server with por
 
 ### Example using poetry and run the forecast task from hpc-login command line
 
-The example below shows how to run deode/task/forecast.py using the batch system rules defined in your config.toml. The example assumes you're running the command from the Deode-Prototype root directory and have the appropriate input data in place. 
+The example below shows how to run deode/task/forecast.py using the batch system rules defined in your config.toml. The example assumes you're running the command from the Deode-Prototype root directory and have the appropriate input data in place.
 
 ```
 module load python3/3.8.8-01

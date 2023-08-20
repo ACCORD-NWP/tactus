@@ -53,7 +53,7 @@ class Task(object):
         self.name = name
         self.fmanager = FileManager(self.config)
         self.platform = self.fmanager.platform
-        self.wrapper = self.config.get_value("task.wrapper")
+        self.wrapper = self.config["task.wrapper"]
 
         wrk = self.platform.get_value("system.wrk")
         if wrk is None:
@@ -169,7 +169,7 @@ class Task(object):
         """
         self.logger.debug("Base class post")
         # Clean workdir
-        if self.config.get_value("general.keep_workdirs"):
+        if self.config["general.keep_workdirs"]:
             self.rename_wdir(prefix="Finished_task_")
         else:
             self.remove_wdir()
@@ -203,8 +203,8 @@ class Task(object):
         setting_to_be_retrieved = f"task.{task_subsection_name_in_config}.{setting}"
 
         try:
-            value = self.config.get_value(setting_to_be_retrieved)
-        except AttributeError:
+            value = self.config[setting_to_be_retrieved]
+        except KeyError:
             self.logger.exception(
                 "Task setting '%s' not found in config.", setting_to_be_retrieved
             )
