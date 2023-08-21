@@ -1,5 +1,5 @@
 """Default ecflow container."""
-from deode.config_parser import ParsedConfig
+from deode.config_parser import MAIN_CONFIG_JSON_SCHEMA, ParsedConfig
 from deode.derived_variables import derived_variables
 from deode.logs import get_logger_from_config
 from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
@@ -44,7 +44,7 @@ def parse_ecflow_vars():
 def default_main(**kwargs):
     """Ecflow container default method."""
     config = kwargs.get("CONFIG")
-    config = ParsedConfig.from_file(config)
+    config = ParsedConfig.from_file(config, json_schema=MAIN_CONFIG_JSON_SCHEMA)
     logger = get_logger_from_config(config)
 
     args = kwargs.get("ARGS")

@@ -195,6 +195,14 @@ class TestGeneralBehaviour:
         config = ParsedConfig(input_data, json_schema={})
         assert no_none_values_stored(config), config
 
+    def test_data_validation_is_triggered_when_json_schema_is_modified(self):
+        input_data = {"a": {}, "b": None, "c": 1}
+        config = ParsedConfig(input_data, json_schema={})
+        with pytest.raises(
+            ConfigFileValidationError, match=re.escape("must contain ['general']")
+        ):
+            config.json_schema = MAIN_CONFIG_JSON_SCHEMA
+
     def test_config_model_can_be_printed(self):
         parsed_config = ParsedConfig({}, json_schema={})
         _ = str(parsed_config)

@@ -2,7 +2,7 @@
 
 from os import environ  # noqa
 
-from deode.config_parser import ParsedConfig
+from deode.config_parser import MAIN_CONFIG_JSON_SCHEMA, ParsedConfig
 from deode.derived_variables import derived_variables
 from deode.logs import get_logger_from_config
 from deode.submission import ProcessorLayout, TaskSettings
@@ -19,7 +19,7 @@ def default_main(task, config, deode_home):
         config (str): Config file
         deode_home(str): Deode home path
     """
-    config = ParsedConfig.from_file(config)
+    config = ParsedConfig.from_file(config, json_schema=MAIN_CONFIG_JSON_SCHEMA)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
 
     task_settings = TaskSettings(config).get_task_settings(task)

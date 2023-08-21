@@ -13,7 +13,7 @@ from .commands_functions import (
     show_namelist,
     start_suite,
 )
-from .config_parser import PACKAGE_CONFIG_PATH, get_default_config_paths
+from .config_parser import PACKAGE_CONFIG_PATH, get_default_config_path
 
 
 def get_parsed_args(program_name="program", argv=None):
@@ -46,9 +46,8 @@ def get_parsed_args(program_name="program", argv=None):
     common_parser.add_argument(
         "-config_file",
         metavar="CONFIG_FILE_PATH",
-        default=get_default_config_paths(),
+        default=get_default_config_path(),
         type=Path,
-        nargs="*",
         help=(
             "Path to the config file. The default is whichever of the "
             + "following is first encountered: "

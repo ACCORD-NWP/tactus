@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Registration and validation of options passed in the config file."""
-import contextlib
 import copy
 import json
 import logging
@@ -45,7 +44,7 @@ class ConflictingValidationSchemasError(Exception):
     """Error to be raised when more than one schema is defined for a config section."""
 
 
-def get_default_config_paths():
+def get_default_config_path():
     """Return the default path to the adopted config file."""
     try:
         return Path(os.getenv("DEODE_CONFIG_PATH", "config.toml")).resolve(strict=True)
@@ -63,7 +62,7 @@ class BaseMapping(Mapping):
     @property
     def data(self):
         """Return the underlying data stored by the instance."""
-        return self._data
+        return getattr(self, "_data", None)
 
     @data.setter
     def data(self, new, nested_maps_type=dict):
@@ -108,19 +107,20 @@ class BaseMapping(Mapping):
         return f"{self.__class__.__name__}({self.dumps(style='json')})"
 
     # Implement the abstract methods __getitem__, __iter__ and __len__ from from Mapping
-    def __getitem__(self, items):
+    def __getitem__(self, item):
         """Get items from container.
 
         The behaviour is similar to a `dict`, except for the fact that
         `self["A.B.C.D. ..."]` will behave like `self["A"]["B"]["C"]["D"][...]`.
 
         Args:
-            items (str): Attributes to be retrieved, as dot-separated strings.
+            item (str): Item to be retrieved. Use dot-separated keys to retrieve a nested
+                item in one go.
 
         Returns:
             Any: Value of the item.
         """
-        return reduce(getitem, items.split("."), self.data)
+        return reduce(getitem, item.split("."), self.data)
 
     def __iter__(self) -> Iterator:
         return iter(self.data)
@@ -170,9 +170,8 @@ class BasicConfig(BaseMapping):
     @metadata.setter
     def metadata(self, new):
         """Set the metadata associated with the instance."""
-        if new is None:
-            new = {}
-        self._metadata = modify_mappings(obj=new, operator=dict)
+        if new is not None:
+            self._metadata = modify_mappings(obj=new, operator=dict)
 
 
 class JsonSchema(BaseMapping):
@@ -219,16 +218,14 @@ class ParsedConfig(BasicConfig):
 
     @property
     def json_schema(self):
-        """Return instance's JSON schema."""
+        """Return the instance's JSON schema."""
         return self._json_schema
 
     @json_schema.setter
     def json_schema(self, new, _validate_data=True):
         self._json_schema = JsonSchema(new)
-        if _validate_data:
-            with contextlib.suppress(AttributeError):
-                # Trigger data validation, if data is available
-                self.data = self.data
+        if _validate_data and self.data is not None:
+            self.data = self.data
 
     @classmethod
     def from_file(cls, path, include_dir=None, **kwargs):

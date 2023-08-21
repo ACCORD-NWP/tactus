@@ -84,6 +84,7 @@ class TestMainShowCommands:
     def test_show_config_command(self):
         with redirect_stdout(StringIO()):
             main(["show", "config"])
+            main(["show", "config", "-config_file", PACKAGE_CONFIG_PATH.as_posix()])
 
     def test_show_config_schema_command(self):
         with redirect_stdout(StringIO()):
