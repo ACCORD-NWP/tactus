@@ -2,7 +2,7 @@ e923_0:
   NAMCLA:
     LIPGD: True
     LNEWORO: False
-    LSPSMORO: True
+    LSPSMORO: "${domain.lspsmoro}"
     NLISSP: 0
 e923_1: {}
 e923_2:
@@ -36,38 +36,13 @@ e923_9:
     N923: 9
 
 e923_base:
-  CLOUD_DETECT_COEFFS: {}
-  NACIETEO: {}
-  NACOBS: {}
-  NACTAN: {}
-  NACTEX: {}
-  NACVEG: {}
-  NADOCK: {}
-  NAEAER: {}
-  NAECOAPHY: {}
-  NAEPHLI: {}
-  NAEPHY: {}
-  NAERAD: {}
-  NAETLDIAG: {}
-  NAEVOL: {}
-  NAIMPO: {}
-  NALORI: {}
-  NAMACV: {}
-  NAMAFN: {}
   NAMARG:
-    CNMEXP: "${general.cnmexp}"
+    CNMEXP: ${general.cnmexp}
     LECMWF: False
     LELAM: True
     LSLAG: True
     NCONF: 923
     NSUPERSEDE: 0
-  NAMARPHY: {}
-  NAMCA: {}
-  NAMCAPE: {}
-  NAMCFU: {}
-  NAMCHEM: {}
-  NAMCHET: {}
-  NAMCHK: {}
   NAMCLA:
     FACZ0: 0.53
     FENVN: 0.0
@@ -77,59 +52,20 @@ e923_base:
     LNLSM: True
     LNORO: True
     NLISSP: 1
-  NAMCLDP: {}
-  NAMCLI: {}
-  NAMCLOP15: {}
-  NAMCLTC: {}
-  NAMCOK: {}
-  NAMCOM: {}
-  NAMCOMPO: {}
-  NAMCOSJO: {}
-  NAMCOUPLO4: {}
   NAMCT0:
     LALLOPR: False
     LRPLANE: True
-  NAMCT1: {}
-  NAMCUMF: {}
-  NAMCUMFS: {}
-  NAMCVER: {}
-  NAMCVMNH: {}
-  NAMDDH: {}
-  NAMDFI: {}
   NAMDIM:
+    NDGLG: ${domain.ndglg}
+    NDGUXG: ${domain.njmax}
+    NDLON: ${domain.ndguxg}
+    NDLUXG: ${domain.nimax}
     NFLEVG: 1
-    NDGLG: "${domain.ndglg}"
-    NDGUXG: "${domain.njmax}"
-    NDLON: "${domain.ndguxg}"
-    NDLUXG: "${domain.nimax}"
-    NPROMA: "${general.nproma}"
-    NMSMAX: "${domain.nmsmax}"
-    NSMAX: "${domain.nsmax}"
-  NAMDIMO: {}
-  NAMDIM_TRAJ: {}
-  NAMDPHY: {}
-  NAMDVISI: {}
-  NAMDYN: {}
-  NAMDYNA: {}
-  NAMDYNCORE: {}
-  NAMEMIS_CONF: {}
-  NAMENKF: {}
-  NAMFA: {}
-  NAMFPC: {}
-  NAMFPD: {}
-  NAMFPDY2: {}
-  NAMFPDYF: {}
-  NAMFPDYH: {}
-  NAMFPDYP: {}
-  NAMFPDYS: {}
-  NAMFPDYT: {}
-  NAMFPDYV: {}
-  NAMFPF: {}
-  NAMFPG: {}
-  NAMFPIOS: {}
-  NAMFPPHY: {}
+    NPROMA: ${general.nproma}
+    NMSMAX: ${domain.nmsmax}
+    NSMAX: ${domain.nsmax}
   NAMFPSC2:
-    NFPROMA: "${general.nproma}"
+    NFPROMA: ${general.nproma}
   NAMFPSC2_DEP:
     NFPROMA_DEP: "${general.nproma}"
   NAMGEM:
@@ -138,18 +74,8 @@ e923_base:
     RLOCEN: 0.0
     RMUCEN: 1.0
     RSTRET: 1.0
-  NAMGFL: {}
   NAMGRIB:
     NENSFNB: -1
-  NAMGWD: {}
-  NAMGWDIAG: {}
-  NAMGWWMS: {}
-  NAMHLOPT: {}
-  NAMIAU: {}
-  NAMINI: {}
-  NAMINTFLEX: {}
-  NAMIOMI: {}
-  NAMIOS: {}
   NAMIO_SERV:
     LMSG_FLUSH_CLIENT: False
     LMSG_FLUSH_SERVER: False
@@ -159,30 +85,10 @@ e923_base:
     NMSG_LEVEL_SERVER: 0
     NPROCESS_LEVEL: 5
     NPROC_IO: "${namelist.nproc_io-0}"
-  NAMJBCODES: {}
   NAMJFH:
     N_VMASS: 0
-  NAMJG: {}
-  NAMLCZ: {}
-  NAMLSFORC: {}
-  NAMMARS: {}
   NAMMCC:
     N923: 1
-  NAMMCUF: {}
-  NAMMETHOX: {}
-  NAMMKODB: {}
-  NAMMODERR: {}
-  NAMMTS: {}
-  NAMMWAVE: {}
-  NAMNN: {}
-  NAMNORGWD: {}
-  NAMNPROF: {}
-  NAMNRTAER: {}
-  NAMNUD: {}
-  NAMOBS: {}
-  NAMONEDVAR: {}
-  NAMOOPS: {}
-  NAMOPH: {}
   NAMPAR0:
     LMPDIAG: False
     LMPOFF: False
@@ -200,95 +106,39 @@ e923_base:
     NCOMBFLEN: 8000000
     NSTRIN: 1
     NSTROUT: 1
-  NAMPARAR: {}
-  NAMPHMSE: {}
   NAMPHY:
     LMPHYS: True
     LSOLV: True
     LVGSN: True
   NAMPHY0:
     GCVPSI: 0.0
-  NAMPHY1: {}
-  NAMPHY2: {}
-  NAMPHY3: {}
-  NAMPHYDS: {}
-  NAMPONG: {}
-  NAMPPC: {}
-  NAMPPVI: {}
-  NAMPRE: {}
-  NAMRAD15: {}
-  NAMRCF: {}
-  NAMRCOEF: {}
-  NAMRES: {}
-  NAMRGRI: {}
-  NAMRINC: {}
   NAMRIP:
     CSTOP: "t0"
-  NAMRIP0: {}
-  NAMRLX: {}
-  NAMSATS: {}
-  NAMSCC: {}
-  NAMSCEN: {}
-  NAMSCM: {}
-  NAMSEKF: {}
-  NAMSENS: {}
-  NAMSIMPHL: {}
-  NAMSPNG: {}
-  NAMSPP: {}
-  NAMSPSDT: {}
-  NAMSSMI: {}
-  NAMSTA: {}
-  NAMSTOPH: {}
-  NAMSWE: {}
-  NAMTESTVAR: {}
-  NAMTHLIM: {}
-  NAMTOPH: {}
-  NAMTRAJP: {}
-  NAMTRANS: {}
-  NAMTRANS0: {}
-  NAMTS: {}
-  NAMVAR: {}
-  NAMVARBC: {}
-  NAMVARBC_AIREP: {}
-  NAMVARBC_ALLSKY: {}
-  NAMVARBC_GBRAD: {}
-  NAMVARBC_RAD: {}
-  NAMVARBC_RSONDE: {}
-  NAMVARBC_SFCOBS: {}
-  NAMVARBC_TCWV: {}
-  NAMVARBC_TO3: {}
-  NAMVAREPS: {}
-  NAMVDF: {}
-  NAMVDOZ: {}
-  NAMVRTL: {}
-  NAMVV0: {}
-  NAMVV1: {}
-  NAMVWRK: {}
-  NAMWAVELETJB: {}
-  NAMXFU: {}
-  NAM_CANAPE: {}
-  NAM_DISTRIBUTED_VECTORS: {}
-  NAPHLC: {}
-  NEMBICU: {}
-  NEMCT0: {}
   NEMDIM:
-    NBZONG: "${domain.nbzong}"
-    NBZONL: "${domain.nbzonl}"
-  NEMDYN: {}
-  NEMELBC0A: {}
-  NEMELBC0B: {}
-  NEMFPEZO: {}
+    NBZONG: ${domain.nbzong}
+    NBZONL: ${domain.nbzonl}
   NEMGEO:
-    EDELX: "${domain.xdx}"
-    EDELY: "${domain.xdy}"
-    ELAT0: "${domain.xlat0}"
-    ELATC: "${domain.xlatcen}"
-    ELON0: "${domain.xlon0}"
-    ELONC: "${domain.xloncen}"
+    EDELX: ${domain.xdx}
+    EDELY: ${domain.xdy}
+    ELAT0: ${domain.xlat0}
+    ELATC: ${domain.xlatcen}
+    ELON0: ${domain.xlon0}
+    ELONC: ${domain.xloncen}
     LMRT: False
-  NEMJK: {}
-  NEMSPCPL: {}
-  NEMVAR: {}
+
+namgfl_bdmodel_arome:
+  NAMGFL:
+    YG_NL%NREQIN: 1
+    YI_NL%NREQIN: 1
+    YL_NL%NREQIN: 1
+    YR_NL%NREQIN: 1
+    YS_NL%NREQIN: 1
+    YTKE_NL%NREQIN: 1
+    YG_NL%NCOUPLING: 1
+    YI_NL%NCOUPLING: 1
+    YL_NL%NCOUPLING: 1
+    YR_NL%NCOUPLING: 1
+    YS_NL%NCOUPLING: 1
 
 f4_harmonie-arome:
   NAERAD:
@@ -346,9 +196,9 @@ f4_harmonie-arome:
     NFRGDI: 15
     NFRHIS: 1
     NFRSDI: 15
-    NHISTS: "${namelist.nhists}"
-    NPOSTS: "${namelist.nposts}"
-    NSFXHISTS: "${namelist.nsfxhists}"
+    NHISTS: ${namelist.nhists}
+    NPOSTS: ${namelist.nposts}
+    NSFXHISTS: ${namelist.nsfxhists}
   NAMCT1:
     N1POS: 1
     N1RES: 0
@@ -409,7 +259,6 @@ f4_harmonie-arome:
     LSLHD_W: False
     NPDVAR: 2
     SLHDEPSH: 0.0025
-  NAMFPC: {}
   NAMGFL:
     NGFL_EZDIAG: 3
     YA_NL%LPT: False
@@ -565,7 +414,7 @@ f4_harmonie-arome:
     SCO: -20.0
     TDDGP: 0.8
     TENTR: 2.5e-06
-    TENTRX: 8.e-05
+    TENTRX: 8.0e-05
     TUDGP: 0.8
     UHDIFV: 0.0008
     USURIC: 0.175
@@ -579,12 +428,12 @@ f4_harmonie-arome:
   NAMPHY1:
     ALBMIN: 0.65
     ALCRIN: 0.75
-    GCGEL: 3.e-05
-    GCGELS: 5.e-05
+    GCGEL: 3.0e-05
+    GCGELS: 5.0e-05
     GNEIMX: 1.8
     GNEIMXS: 1.8
     RCTVEG(3): 1.2e-05
-    RCTVEG(4): 1.e-05
+    RCTVEG(4): 1.0e-05
   NAMPHY2:
     FACRAF: 3.5
     HTKERAF: 20.0
@@ -600,8 +449,8 @@ f4_harmonie-arome:
     FCM_NU_DL: 0.0
     RLAMB_SOLID: 0.6
   NAMRIP:
-    TSTEP: "${general.tstep}"
-    CSTOP: "${namelist.cstop}"
+    CSTOP: ${namelist.cstop}
+    TSTEP: ${general.tstep}
   NAMSPBD:
     LSPBDC: False
   NAMSPP:
@@ -743,10 +592,10 @@ f4_harmonie-arome:
     ETCVIM: 5000.0
     ETNEBU: 5000.0
     ETPLUI: 5000.0
-    XDRMTK: 6.e-07
+    XDRMTK: 6.0e-7
     XDRMTP: 800.0
-    XDRMTX: 4.e-07
-    XDRMUK: 3.e-07
+    XDRMTX: 4.0e-7
+    XDRMUK: 3.0e-7
     XDRMUP: 800.0
     XDRMUX: 2.e-06
   NAMTRANS0:
@@ -783,26 +632,8 @@ f4_harmonie-arome:
     LUNBC: True
     NBICPD: 2
     NBICVD: 2
-  NEMELBC0B: {}
 
 f4_common:
-  CLOUD_DETECT_COEFFS: {}
-  NACIETEO: {}
-  NACOBS: {}
-  NACTAN: {}
-  NACTEX: {}
-  NACVEG: {}
-  NADOCK: {}
-  NAEAER: {}
-  NAECOAPHY: {}
-  NAEPHLI: {}
-  NAEPHY: {}
-  NAERAD: {}
-  NAETLDIAG: {}
-  NAEVOL: {}
-  NAIMPO: {}
-  NALORI: {}
-  NAMACV: {}
   NAMAFN:
     GFP_ST%IANO: 0
     GFP_X10U%IANO: 0
@@ -816,51 +647,20 @@ f4_common:
     TFP_U%CLNAME: "WIND.U.PHYS"
     TFP_V%CLNAME: "WIND.V.PHYS"
   NAMARG:
-    CNMEXP: "${general.cnmexp}"
+    CNMEXP: ${general.cnmexp}
     LECMWF: False
     LELAM: True
     LSLAG: True
     NCONF: 1
-  NAMARPHY: {}
-  NAMCA: {}
-  NAMCAPE: {}
-  NAMCFU: {}
-  NAMCHEM: {}
-  NAMCHET: {}
-  NAMCHK: {}
-  NAMCLA: {}
-  NAMCLDP: {}
-  NAMCLI: {}
-  NAMCLOP15: {}
-  NAMCLTC: {}
-  NAMCOK: {}
-  NAMCOM: {}
-  NAMCOMPO: {}
-  NAMCOSJO: {}
-  NAMCOUPLO4: {}
   NAMCT0:
     LAROME: True
   NAMCT1:
     LRFILAF: False
-  NAMCUMF: {}
-  NAMCUMFS: {}
-  NAMCVER: {}
-  NAMCVMNH: {}
-  NAMDDH: {}
-  NAMDFI: {}
   NAMDIM:
     NPROMA: ${general.nproma}
-  NAMDIMO: {}
-  NAMDIM_TRAJ: {}
-  NAMDPHY: {}
-  NAMDVISI: {}
-  NAMDYN: {}
   NAMDYNA:
     NDLNPR: 1
     NVDVAR: 4
-  NAMDYNCORE: {}
-  NAMEMIS_CONF: {}
-  NAMENKF: {}
   NAMFA:
     NBITCS: -1
     NBITPG: -1
@@ -882,25 +682,12 @@ f4_common:
   NAMFPC:
     CFPFMT: "LELAM"
     NFPCLI: 1
-  NAMFPD: {}
-  NAMFPDY2: {}
-  NAMFPDYF: {}
-  NAMFPDYH: {}
-  NAMFPDYP: {}
-  NAMFPDYS: {}
-  NAMFPDYT: {}
-  NAMFPDYV: {}
-  NAMFPF: {}
-  NAMFPG: {}
-  NAMFPIOS: {}
-  NAMFPPHY: {}
   NAMFPSC2:
     NFPROMA: ${general.nproma}
   NAMFPSC2_DEP:
     NFPROMA_DEP: ${general.nproma}
-  NAMGEM: {}
   NAMGFL:
-    YA_NL%NREQIN: -1
+    YA_NL%NREQIN: 1
     YG_NL%CNAME: "GRAUPEL"
     YI_NL%CNAME: "SOLID_WATER"
     YI_NL%NREQIN: 1
@@ -911,15 +698,6 @@ f4_common:
     YS_NL%CNAME: "SNOW"
   NAMGRIB:
     NENSFNB: -1
-  NAMGWD: {}
-  NAMGWDIAG: {}
-  NAMGWWMS: {}
-  NAMHLOPT: {}
-  NAMIAU: {}
-  NAMINI: {}
-  NAMINTFLEX: {}
-  NAMIOMI: {}
-  NAMIOS: {}
   NAMIO_SERV:
     LMSG_FLUSH_CLIENT: False
     LMSG_FLUSH_SERVER: False
@@ -928,30 +706,9 @@ f4_common:
     NMSG_LEVEL_CLIENT: 0
     NMSG_LEVEL_SERVER: 0
     NPROCESS_LEVEL: 5
-    NPROC_IO: "${namelist.nproc_io-0}"
-  NAMJBCODES: {}
+    NPROC_IO: ${namelist.nproc_io-0}
   NAMJFH:
     N_VMASS: 0
-  NAMJG: {}
-  NAMLCZ: {}
-  NAMLSFORC: {}
-  NAMMARS: {}
-  NAMMCC: {}
-  NAMMCUF: {}
-  NAMMETHOX: {}
-  NAMMKODB: {}
-  NAMMODERR: {}
-  NAMMTS: {}
-  NAMMWAVE: {}
-  NAMNN: {}
-  NAMNORGWD: {}
-  NAMNPROF: {}
-  NAMNRTAER: {}
-  NAMNUD: {}
-  NAMOBS: {}
-  NAMONEDVAR: {}
-  NAMOOPS: {}
-  NAMOPH: {}
   NAMPAR0:
     LMPDIAG: False
     LMPOFF: False
@@ -965,10 +722,8 @@ f4_common:
     LSPLIT: True
     L_GATHERV_WRGP: True
     NCOMBFLEN: 8000000
-    NSTRIN: "${namelist.nproc}"
-    NSTROUT: "${namelist.nproc}"
-  NAMPARAR: {}
-  NAMPHMSE: {}
+    NSTRIN: ${namelist.nproc}
+    NSTROUT: ${namelist.nproc}
   NAMPHY:
     LAERODES: True
     LAEROLAN: True
@@ -977,81 +732,48 @@ f4_common:
     LAEROSOO: True
     LMPHYS: True
     LO3ABC: True
-  NAMPHY0: {}
-  NAMPHY1: {}
-  NAMPHY2: {}
-  NAMPHY3: {}
-  NAMPHYDS: {}
-  NAMPONG: {}
-  NAMPPC: {}
-  NAMPPVI: {}
-  NAMPRE: {}
-  NAMRAD15: {}
-  NAMRCF: {}
-  NAMRCOEF: {}
-  NAMRES: {}
-  NAMRGRI: {}
-  NAMRINC: {}
-  NAMRIP: {}
-  NAMRIP0: {}
-  NAMRLX: {}
-  NAMSATS: {}
-  NAMSCC: {}
-  NAMSCEN: {}
-  NAMSCM: {}
-  NAMSEKF: {}
-  NAMSENS: {}
   NAMSFXCMP:
     NVGRIBSFX: 0
-  NAMSIMPHL: {}
-  NAMSPNG: {}
-  NAMSPP: {}
-  NAMSPSDT: {}
-  NAMSSMI: {}
-  NAMSTA: {}
-  NAMSTOPH: {}
-  NAMSWE: {}
-  NAMTESTVAR: {}
-  NAMTHLIM: {}
-  NAMTOPH: {}
-  NAMTRAJP: {}
-  NAMTRANS: {}
-  NAMTRANS0: {}
-  NAMTS: {}
-  NAMVAR: {}
-  NAMVARBC: {}
-  NAMVARBC_AIREP: {}
-  NAMVARBC_ALLSKY: {}
-  NAMVARBC_GBRAD: {}
-  NAMVARBC_RAD: {}
-  NAMVARBC_RSONDE: {}
-  NAMVARBC_SFCOBS: {}
-  NAMVARBC_TCWV: {}
-  NAMVARBC_TO3: {}
-  NAMVAREPS: {}
-  NAMVDF: {}
-  NAMVDOZ: {}
-  NAMVRTL: {}
-  NAMVV0: {}
-  NAMVV1: {}
-  NAMVWRK: {}
-  NAMWAVELETJB: {}
-  NAMXFU: {}
-  NAM_CANAPE: {}
-  NAM_DISTRIBUTED_VECTORS: {}
-  NAPHLC: {}
-  NEMBICU: {}
-  NEMCT0: {}
-  NEMDIM: {}
-  NEMDYN: {}
-  NEMELBC0A: {}
   NEMELBC0B:
-    TEFRCL: "${namelist.tefrcl}"
-  NEMFPEZO: {}
-  NEMGEO: {}
-  NEMJK: {}
-  NEMSPCPL: {}
-  NEMVAR: {}
+    TEFRCL: ${namelist.tefrcl}
+
+f4_e927_arome:
+  NAMCT0:
+    LNHEE: True
+    LSPRT: True
+  NAMGFL:
+    YG_NL%NREQIN: 1
+    YQ_NL%LGP: True
+    YQ_NL%LSP: False
+    YR_NL%NREQIN: 1
+    YS_NL%NREQIN: 1
+    YTKE_NL%NREQIN: 1
+  NAMFPC:
+    CFP3DF:
+      - "TEMPERATURE"
+      - "HUMI.SPECIFIQUE"
+      - "WIND.U.PHYS"
+      - "WIND.V.PHYS"
+      - "LIQUID_WATER"
+      - "SOLID_WATER"
+      - "CLOUD_FRACTI"
+      - "PRESS.DEPART"
+      - "VERTIC.DIVER"
+      - "TKE"
+      - "RAIN"
+      - "SNOW"
+      - "GRAUPEL"
+
+f4_e927_ifs:
+  NAMCT0:
+    LNHEE: False
+    LSPRT: False
+  NAMGFL:
+    YG_NL%NREQIN: 0
+    YQ_NL%LGP: False
+    YQ_NL%LSP: True
+    YR_NL%NREQIN: 0
+    YS_NL%NREQIN: 0
 
 f4_e927:
   NAMAFN:
@@ -1063,8 +785,6 @@ f4_e927:
     TFP_SN%LLGP: True
     TFP_TKE%LLGP: True
   NAMCT0:
-    LNHEE: False
-    LSPRT: False
     NFPOS: 2
     NSPPR: 0
   NAMCT1:
@@ -1100,37 +820,224 @@ f4_e927:
     LTRACEFP: True
     NFPBOYD: 1
     NFPSURFEX: 0
-    NRFP3S: "${namelist.nrfp3s}"
+    NRFP3S: ${namelist.nrfp3s}
   NAMFPD:
-    NFPGUX: "${domain.njmax}"
-    NFPLUX: "${domain.nimax}"
-    NLAT: "${domain.ndglg}"
-    NLON: "${domain.ndguxg}"
-    RDELX: "${domain.xdx}"
-    RDELY: "${domain.xdy}"
-    RLATC: "${domain.xlatcen}"
-    RLONC: "${domain.xloncen}"
+    NFPGUX: ${domain.njmax}
+    NFPLUX: ${domain.nimax}
+    NLAT: ${domain.ndglg}
+    NLON: ${domain.ndguxg}
+    RDELX: ${domain.xdx}
+    RDELY: ${domain.xdy}
+    RLATC: ${domain.xlatcen}
+    RLONC: ${domain.xloncen}
   NAMFPG:
-    FPLAT0: "${domain.xlat0}"
-    FPLON0: "${domain.xlon0}"
-    FPVALH: "${vertical_levels.ahalf}"
-    FPVBH: "${vertical_levels.bhalf}"
+    FPLAT0: ${domain.xlat0}
+    FPLON0: ${domain.xlon0}
+    FPVALH: ${vertical_levels.ahalf}
+    FPVBH: ${vertical_levels.bhalf}
     NFPDISTRIB: 1
-    NFPLEV: "${vertical_levels.nlev}"
-    NFPMAX: "${domain.nsmax}"
-    NMFPMAX: "${domain.nmsmax}"
-  NAMGFL:
-    YG_NL%NREQIN: 0
-    YQ_NL%LGP: False
-    YQ_NL%LSP: True
-    YR_NL%NREQIN: 0
-    YS_NL%NREQIN: 0
+    NFPLEV: ${vertical_levels.nlev}
+    NFPMAX: ${domain.nsmax}
+    NMFPMAX: ${domain.nmsmax}
   NAMPHY:
     LFGEL: False
     LNEBN: False
     LSOLV: False
     LVGSN: False
   NAMRIP:
-    CSTOP: "t0"
-  NEMFPEZO:
-    RCO_EZO: 5.0
+    CSTOP: t0
+    TSTEP: 1.0
+
+empty:
+  NAMNRTAER: {}
+  NAMSFXCMP: {}
+  NAMONEDVAR: {}
+  NAMCMEM_MW: {}
+  NACIETEO: {}
+  NACOBS: {}
+  NACTAN: {}
+  NACTEX: {}
+  NACVEG: {}
+  NADOCK: {}
+  NAEAEM7: {}
+  NAEAER: {}
+  NAECOAPHY: {}
+  NAEPHLI: {}
+  NAEPHY: {}
+  NAERAD: {}
+  NAERCLI: {}
+  NAETLDIAG: {}
+  NAEVOL: {}
+  NAIMPO: {}
+  NALORI: {}
+  NAMACV: {}
+  NAMAFN: {}
+  NAMARG: {}
+  NAMARPHY: {}
+  NAMCA: {}
+  NAMCAPE: {}
+  NAMCFU: {}
+  NAMCHEM: {}
+  NAMCHET: {}
+  NAMCHK: {}
+  NAMCLA: {}
+  NAMCLDP: {}
+  NAMCLI: {}
+  NAMCLOP15: {}
+  NAMCLTC: {}
+  NAMCOK: {}
+  NAMCOM: {}
+  NAMCOSJO: {}
+  NAMCOUPLO4: {}
+  NAMCT0: {}
+  NAMCT1: {}
+  NAMCUMF: {}
+  NAMCUMFS: {}
+  NAMCVER: {}
+  NAMCVMNH: {}
+  NAMDDH: {}
+  NAMDFI: {}
+  NAMDIM: {}
+  NAMDIMO: {}
+  NAMDIM_TRAJ: {}
+  NAMDPHY: {}
+  NAMDPRECIPS: {}
+  NAMDVISI: {}
+  NAMDYN: {}
+  NAMDYNA: {}
+  NAMDYNCORE: {}
+  NAMEMIS_CONF: {}
+  NAMENKF: {}
+  NAMENSCOV: {}
+  NAMFA: {}
+  NAMFPC: {}
+  NAMFPD: {}
+  NAMFPDY2: {}
+  NAMFPDYF: {}
+  NAMFPDYH: {}
+  NAMFPDYI: {}
+  NAMFPDYP: {}
+  NAMFPDYS: {}
+  NAMFPDYT: {}
+  NAMFPDYV: {}
+  NAMFPF: {}
+  NAMFPG: {}
+  NAMFPIOS: {}
+  NAMFPMOVE: {}
+  NAMFPOBJ: {}
+  NAMFPPHY: {}
+  NAMFPSC2: {}
+  NAMFPSC2_DEP: {}
+  NAMGEM: {}
+  NAMGFL: {}
+  NAMGRIB: {}
+  NAMGWD: {}
+  NAMGWDIAG: {}
+  NAMGWWMS: {}
+  NAMIAU: {}
+  NAMICE: {}
+  NAMINI: {}
+  NAMINTFLEX: {}
+  NAMIOMI: {}
+  NAMIOS: {}
+  NAMIO_SERV: {}
+  NAMJBCODES: {}
+  NAMJG: {}
+  NAMLCZ: {}
+  NAMLIMA: {}
+  NAMLSFORC: {}
+  NAMMARS: {}
+  NAMMCC: {}
+  NAMMCUF: {}
+  NAMMETHOX: {}
+  NAMMKODB: {}
+  NAMMODERR: {}
+  NAMMTS: {}
+  NAMMWAVE: {}
+  NAMNORGWD: {}
+  NAMNPROF: {}
+  NAMNUD: {}
+  NAMNUDGLH: {}
+  NAMOBS: {}
+  NAMOOPS: {}
+  NAMOPH: {}
+  NAMOPTCMEM: {}
+  NAMPAR0: {}
+  NAMPAR1: {}
+  NAMPARAR: {}
+  NAMPERTPAR: {}
+  NAMPHMSE: {}
+  NAMPHY: {}
+  NAMPHY0: {}
+  NAMPHY1: {}
+  NAMPHY2: {}
+  NAMPHY3: {}
+  NAMPHYDS: {}
+  NAMPONG: {}
+  NAMPPC: {}
+  NAMPPVI: {}
+  NAMPRE: {}
+  NAMRAD15: {}
+  NAMRADCMEM: {}
+  NAMRCF: {}
+  NAMRCOEF: {}
+  NAMRES: {}
+  NAMRGRI: {}
+  NAMRINC: {}
+  NAMRIP: {}
+  NAMRIP0: {}
+  NAMRLX: {}
+  NAMSATS: {}
+  NAMSATSIM: {}
+  NAMSCC: {}
+  NAMSCEN: {}
+  NAMSCM: {}
+  NAMSEKF: {}
+  NAMSENS: {}
+  NAMSIMPHL: {}
+  NAMSPNG: {}
+  NAMSPP: {}
+  NAMSPSDT: {}
+  NAMSTA: {}
+  NAMSTOPH: {}
+  NAMSWE: {}
+  NAMTESTVAR: {}
+  NAMTHLIM: {}
+  NAMTOPH: {}
+  NAMTRAJ: {}
+  NAMTRAJP: {}
+  NAMTRANS: {}
+  NAMTRANS0: {}
+  NAMVAR: {}
+  NAMVARBC: {}
+  NAMVARBC_AIREP: {}
+  NAMVARBC_ALLSKY: {}
+  NAMVARBC_GBRAD: {}
+  NAMVARBC_RAD: {}
+  NAMVARBC_SFCOBS: {}
+  NAMVARBC_TCWV: {}
+  NAMVARBC_TO3: {}
+  NAMVAREPS: {}
+  NAMVDF: {}
+  NAMVDOZ: {}
+  NAMVOLCANO: {}
+  NAMVRTL: {}
+  NAMVV0: {}
+  NAMVV1: {}
+  NAMVWRK: {}
+  NAMWAVELETJB: {}
+  NAMXFU: {}
+  NAM_CANAPE: {}
+  NAM_DISTRIBUTED_VECTORS: {}
+  NAPHLC: {}
+  NEMCT0: {}
+  NEMDIM: {}
+  NEMDYN: {}
+  NEMELBC0A: {}
+  NEMELBC0B: {}
+  NEMFPEZO: {}
+  NEMGEO: {}
+  NEMJK: {}
+  NEMVAR: {}
+  NEMWAVELET: {}
+

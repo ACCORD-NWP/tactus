@@ -4,6 +4,7 @@ import json
 import logging
 import os
 
+from ..datetime_utils import as_datetime, as_timedelta, cycle_offset
 from ..namelist import NamelistGenerator
 from .base import Task
 from .batch import BatchJob
@@ -630,52 +631,73 @@ class Prep(Task):
 
     def execute(self):
         """Execute."""
-        # TODO get from config?
-        bddir_sfx = self.platform.get_system_value("bddir_sfx")
-        bdfile_sfx_template = self.platform.get_system_value("bdfile_sfx_template")
-
-        prep_file = f"{bddir_sfx}/{bdfile_sfx_template}"
-
         cnmexp = self.config["general.cnmexp"]
         archive = self.platform.get_system_value("archive")
-
         output = f"{archive}/ICMSH{cnmexp}INIT.sfx"
 
-        os.makedirs(archive, exist_ok=True)
-        binary = self.get_binary("PREP")
         if not os.path.exists(output) or self.force:
-
+            binary = self.get_binary("PREP")
+            os.makedirs(archive, exist_ok=True)
             batch = BatchJob(os.environ, wrapper=self.wrapper)
 
-            self.nlgen.load("prep")
-            settings = self.nlgen.assemble_namelist("prep")
-            # Could override local filename (Not needed, but is more intuitive)
-            if prep_file is not None:
-                settings["nam_prep_surf_atm"]["cfile"] = os.path.basename(prep_file)
-            # TODO: PGDFILE
+            bdmodel = self.config["boundaries.bdmodel"]
+            bd_has_surfex = self.config["boundaries.bd_has_surfex"]
 
+            namelist_task = f"prep_{bdmodel}"
+            self.nlgen.load(namelist_task)
+            settings = self.nlgen.assemble_namelist(namelist_task)
             self.nlgen.write_namelist(settings, "OPTIONS.nam")
-
-            filetype = settings["nam_io_offline"]["csurf_filetype"].lower()
-            pgdfile = settings["nam_io_offline"]["cpgdfile"]
-            pgdfile = f"{pgdfile}.{filetype}"
-
-            prepfile = settings["nam_io_offline"]["cprepfile"]
-            prepfile = f"{prepfile}.{filetype}"
 
             # Input data
             sfx_input_defs = self.platform.get_system_value("sfx_input_defs")
             input_data = json.load(open(sfx_input_defs, "r", encoding="utf-8"))
 
-            # Could potentially manipulate input_data depending on settings
-            # or send input_data as input from an external file
-            # For now we modify it here. Should be input as namelist keys could change
-            if prep_file is not None:
-                input_data["prep"]["NAM_PREP_SURF_ATM#CFILETYPE"]["GRIB"][
-                    "NAM_PREP_SURF_ATM#CFILE"
-                ] = prep_file
-            # TODO: PGDFILE
+            # Determine PGD type and name
+            filetype = settings["nam_io_offline"]["csurf_filetype"].lower()
+            pgd = settings["nam_io_offline"]["cpgdfile"]
+            pgdfile = f"{pgd}.{filetype}"
 
+            # PGD file input update
+            input_data["prep"]["NAM_IO_OFFLINE#CPGDFILE"] = {
+                pgd: {pgdfile: "@CLIMDIR@/Const.Clim.sfx"}
+            }
+
+            if bd_has_surfex:
+                # Host model PGD type and name
+                filetype = settings["nam_prep_surf_atm"]["cfilepgdtype"].lower()
+                pgd_host = settings["nam_prep_surf_atm"]["cfilepgd"]
+                input_data["prep"]["NAM_PREP_SURF_ATM#CFILEPGD"] = {
+                    pgd_host: {f"{pgd_host}.{filetype}": "@BDCLIMDIR@/Const.Clim.sfx"}
+                }
+
+            # Determine prep output name
+            prep_output_file = settings["nam_io_offline"]["cprepfile"]
+            prep_output_file = f"{prep_output_file}.{filetype}"
+
+            # Select the correct input file
+            basetime = as_datetime(self.config["general.times.basetime"])
+            bddir_sfx = self.config["system.bddir_sfx"]
+            bdfile_sfx_template = self.config["system.bdfile_sfx_template"]
+            bdcycle = as_timedelta(self.config["boundaries.bdcycle"])
+            bdshift = as_timedelta(self.config["boundaries.bdshift"])
+
+            bd_basetime = basetime - cycle_offset(basetime, bdcycle, shift=bdshift)
+            prep_input_file = self.platform.substitute(
+                f"{bddir_sfx}/{bdfile_sfx_template}",
+                basetime=bd_basetime,
+                validtime=basetime,
+            )
+
+            # Update input file linking
+            filetype_ext = {"FA": ".fa", "GRIB": ""}
+            cfiletype = settings["nam_prep_surf_atm"]["cfiletype"].upper()
+            cfile = settings["nam_prep_surf_atm"]["cfile"]
+            cfileext = filetype_ext[cfiletype]
+            input_data["prep"]["NAM_PREP_SURF_ATM#CFILETYPE"] = {
+                cfiletype: {f"{cfile}{cfileext}": prep_input_file}
+            }
+
+            # Fetch the input
             binput_data = InputDataFromNamelist(
                 settings, input_data, "prep", self.platform
             ).get()
@@ -683,13 +705,9 @@ class Prep(Task):
                 logging.debug("target=%s, dest=%s", target, dest)
                 self.fmanager.input(target, dest)
 
-            # Link PGD file
-            climdir = self.platform.get_system_value("climdir")
-            self.fmanager.input(f"{climdir}/Const.Clim.sfx", pgdfile)
-
-            # Run PREP
+            # Run PREP and archive output
             batch.run(binary)
-            self.fmanager.output(prepfile, output)
+            self.fmanager.output(prep_output_file, output)
 
         else:
             logging.info("Output already exists: %s", output)

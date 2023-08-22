@@ -12,7 +12,6 @@ import deode
 from deode.config_parser import (
     MAIN_CONFIG_JSON_SCHEMA,
     PACKAGE_CONFIG_DIR,
-    PACKAGE_CONFIG_PATH,
     BasicConfig,
     ParsedConfig,
 )
@@ -34,14 +33,12 @@ def classes_to_be_tested():
     return encountered_classes.keys()
 
 
-@pytest.fixture(scope="module", params=["CY46h1", "CY48t3"])
+@pytest.fixture(scope="module", params=["CY46h1", "CY48t3", "CY48t3_target"])
 def base_raw_config(request):
     """Return a raw config common to all tasks."""
-    tag_map = {"CY46h1": "", "CY48t3": "_CY48t3"}
-    tag = tag_map[request.param]
-    if tag:
-        return BasicConfig.from_file(PACKAGE_CONFIG_DIR / f"config{tag}.toml")
-    return BasicConfig.from_file(PACKAGE_CONFIG_PATH)
+    tag_map = {"CY46h1": ""}
+    tag = tag_map[request.param] if request.param in tag_map else f"_{request.param}"
+    return BasicConfig.from_file(PACKAGE_CONFIG_DIR / f"config{tag}.toml")
 
 
 @pytest.fixture(params=classes_to_be_tested())

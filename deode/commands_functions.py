@@ -160,7 +160,7 @@ def show_namelist(args, config):
     update = config["namelist_update"]
     if args.namelist_type in update:
         nlgen.update(update[args.namelist_type], args.namelist_type)
-    if args.namelist == "forecast" and args.namelist_type == "master":
+    if "forecast" in args.namelist and args.namelist_type == "master":
         nlgen = check_fullpos_namelist(config, nlgen, logger)
     nlres = nlgen.assemble_namelist(args.namelist)
     if args.namelist_name is not None:

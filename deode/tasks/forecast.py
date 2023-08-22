@@ -29,7 +29,8 @@ class Forecast(Task):
 
         self.basetime = as_datetime(self.config["general.times.basetime"])
         self.cycle_length = as_timedelta(self.config["general.times.cycle_length"])
-        self.bdint = as_timedelta(self.config["general.bdint"])
+        self.bdmodel = self.config["boundaries.bdmodel"]
+        self.bdint = as_timedelta(self.config["boundaries.bdint"])
         self.intp_bddir = self.config["system.intp_bddir"]
         self.forecast_range = self.config["general.forecast_range"]
 
@@ -137,12 +138,13 @@ class Forecast(Task):
         self.fmanager.input(f"{self.climdir}/Const.Clim.sfx", "Const.Clim.sfx")
 
         # Construct master namelist and include fullpos config
-        self.nlgen_master.load("forecast")
+        forecast_namelist = f"forecast_bdmodel_{self.bdmodel}"
+        self.nlgen_master.load(forecast_namelist)
         self.nlgen_master = check_fullpos_namelist(
             self.config, self.nlgen_master, logging
         )
 
-        nlres = self.nlgen_master.assemble_namelist("forecast")
+        nlres = self.nlgen_master.assemble_namelist(forecast_namelist)
         self.nlgen_master.write_namelist(nlres, "fort.4")
 
         # SURFEX: Namelists and input data
@@ -207,6 +209,9 @@ class PrepareCycle(Task):
 
         """
         Task.__init__(self, config, self.__class__.__name__)
+
+        self.archive = self.platform.get_system_value("archive")
+        os.makedirs(self.archive, exist_ok=True)
 
 
 class FirstGuess(Task):

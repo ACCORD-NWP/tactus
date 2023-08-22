@@ -156,9 +156,9 @@ def test_new_binary_input(deode_config, f90ml_namelist, binary_input_data):
 
     # Prep
     input_data_copy = input_data.copy()
-    input_data_copy["prep"]["NAM_PREP_SURF_ATM#CFILETYPE"]["FA"][
-        "NAM_PREP_SURF_ATM#CFILE"
-    ] = "@first_guess_dir@/MYFILE"
+    input_data_copy["prep"]["NAM_PREP_SURF_ATM#CFILETYPE"] = {
+        "FA": {"NAM_PREP_SURF_ATM#CFILE": "@first_guess_dir@/MYFILE"}
+    }
     binary_data = InputDataFromNamelist(
         nml, input_data_copy, "prep", platform, basetime=basetime, validtime=validtime
     )

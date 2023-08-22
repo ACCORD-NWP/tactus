@@ -43,12 +43,25 @@ e923_9:
   - e923_base
   - e923_9
 
-e927:
+e927_ifs:
   - empty
   - f4_common
   - f4_e927
+  - f4_e927_ifs
 
-forecast:
+e927_arome:
+  - empty
+  - f4_common
+  - f4_e927
+  - f4_e927_arome
+
+forecast_bdmodel_ifs:
   - empty
   - f4_common
   - f4_arome
+
+forecast_bdmodel_arome:
+  - empty
+  - f4_common
+  - f4_arome
+  - namgfl_bdmodel_arome

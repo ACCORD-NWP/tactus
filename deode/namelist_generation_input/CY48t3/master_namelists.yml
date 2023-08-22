@@ -133,6 +133,20 @@ e923_base:
     ELON0: ${domain.xlon0}
     ELONC: ${domain.xloncen}
 
+namgfl_bdmodel_arome:
+  NAMGFL:
+    YG_NL%NREQIN: 1
+    YI_NL%NREQIN: 1
+    YL_NL%NREQIN: 1
+    YR_NL%NREQIN: 1
+    YS_NL%NREQIN: 1
+    YTKE_NL%NREQIN: 1
+    YG_NL%NCOUPLING: 1
+    YI_NL%NCOUPLING: 1
+    YL_NL%NCOUPLING: 1
+    YR_NL%NCOUPLING: 1
+    YS_NL%NCOUPLING: 1
+
 f4_arome:
   NAERAD:
     LRRTM: True
@@ -334,6 +348,7 @@ f4_arome:
     YEZDIAG_NL(3)%LREQOUT: False
     YEZDIAG_NL(4)%CNAME: INPRRTOT3D
     YEZDIAG_NL(4)%LREQOUT: True
+    YA_NL%NREQIN: 1
     YG_NL%LCOMAD: True
     YG_NL%LINTLIN: True
     YG_NL%LQM: True
@@ -487,9 +502,9 @@ f4_arome:
     ETCVIM: 5000.0
     ETNEBU: 5000.0
     ETPLUI: 5000.0
-    XDRMTK: 6.0E-7
+    XDRMTK: 6.0e-7
     XDRMTP: 800.0
-    XDRMUK: 3.0E-7
+    XDRMUK: 3.0e-7
     XDRMUP: 800.0
   NAMTRANS:
     LFFTW: True
@@ -536,7 +551,7 @@ f4_common:
   NAERAD:
     LSRTM: False
   NAMARG:
-    CNMEXP: "${general.cnmexp}"
+    CNMEXP: ${general.cnmexp}
     LECMWF: False
     LELAM: True
     LSLAG: True
@@ -554,6 +569,9 @@ f4_common:
     NBITCS: -1
     NBITPG: -1
     NSTRON: -1
+    YFAI%CLNAME: SOLID_WATER
+    YFAL%CLNAME: LIQUID_WATER
+
   NAMGFL:
     YG_NL%NREQIN: 0
     YI_NL%NREQIN: 0
@@ -572,8 +590,8 @@ f4_common:
   NAMPAR1:
     LEQ_REGIONS: False
     LSPLIT: True
-    NSTRIN: "${namelist.nproc}"
-    NSTROUT: "${namelist.nproc}"
+    NSTRIN: ${namelist.nproc}
+    NSTROUT: ${namelist.nproc}
     L_GATHERV_WRGP: False
     LSLONDEM: True
     LSPLIT: True
@@ -588,6 +606,51 @@ f4_common:
     LAEROSOO: True
     LO3ABC: True
 
+f4_e927_arome:
+  NAMCT0:
+    LNHEE: True
+    LSPRT: True
+  NAMGFL:
+    YA_NL%NREQIN: 1
+    YG_NL%NREQIN: 1
+    YI_NL%NREQIN: 1
+    YL_NL%NREQIN: 1
+    YR_NL%NREQIN: 1
+    YS_NL%NREQIN: 1
+    YTKE_NL%NREQIN: 1
+    YQ_NL%LGP: True
+    YQ_NL%LSP: False
+  NAMFPC:
+    CFP3DF:
+      - "TEMPERATURE"
+      - "HUMI.SPECIFIQUE"
+      - "WIND.U.PHYS"
+      - "WIND.V.PHYS"
+      - "LIQUID_WATER"
+      - "SOLID_WATER"
+      - "RAIN"
+      - "SNOW"
+      - "GRAUPEL"
+      - "CLOUD_FRACTI"
+      - "PRESS.DEPART"
+      - "VERTIC.DIVER"
+      - "TKE"
+
+f4_e927_ifs:
+  NAMCT0:
+    LNHEE: False
+    LSPRT: False
+  NAMGFL:
+    YA_NL%NREQIN: 1
+    YI_NL%NREQIN: 1
+    YG_NL%NREQIN: 0
+    YL_NL%NREQIN: 1
+    YQ_NL%LGP: False
+    YQ_NL%LSP: True
+    YR_NL%NREQIN: 0
+    YS_NL%NREQIN: 0
+    YTKE_NL%NREQIN: 0
+
 f4_e927:
   NAERAD:
     LRRTM: False
@@ -595,9 +658,9 @@ f4_e927:
     JPXTRO: 2000
   NAMAFN:
     TFP_GR%LLGP: True
-    TFP_I%CLNAME: ICE_CRYSTAL
+    TFP_I%CLNAME: SOLID_WATER
     TFP_I%LLGP: True
-    TFP_L%CLNAME: CLOUD_WATER
+    TFP_L%CLNAME: LIQUID_WATER
     TFP_L%LLGP: True
     TFP_Q%LLGP: True
     TFP_RR%LLGP: True
@@ -620,6 +683,9 @@ f4_e927:
       - "WIND.V.PHYS"
       - "PRESS.DEPART"
       - "VERTIC.DIVER"
+      - "LIQUID_WATER"
+      - "SOLID_WATER"
+      - "CLOUD_FRACTI"
     CFP2DF:
       - "SURFPRESSION"
       - "SPECSURFGEOPOTENTIEL"
@@ -662,7 +728,6 @@ f4_e927:
   NAMGFL:
     YQ_NL%LGP: False
     YQ_NL%LSP: True
-    YTKE_NL%NREQIN: 0
   NAMPHY:
     LFGEL: False
     LSOLV: False
@@ -678,6 +743,7 @@ f4_e927:
     LPPVIVX: True
   NAMRIP:
     CSTOP: t0
+    TSTEP: 1.0
 
 empty:
   NAMSFXCMP: {}

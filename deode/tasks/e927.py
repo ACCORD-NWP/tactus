@@ -25,9 +25,10 @@ class E927(Task):
         self.basetime = as_datetime(self.config["general.times.basetime"])
         self.forecast_range = self.config["general.forecast_range"]
 
-        self.bdint = self.config["general.bdint"]
-        self.bdcycle = as_timedelta(config["general.bdcycle"])
-        self.bdshift = as_timedelta(config["general.bdshift"])
+        self.bdmodel = self.config["boundaries.bdmodel"]
+        self.bdint = self.config["boundaries.bdint"]
+        self.bdcycle = as_timedelta(config["boundaries.bdcycle"])
+        self.bdshift = as_timedelta(config["boundaries.bdshift"])
         self.intp_bddir = self.config["system.intp_bddir"]
         self.bdnr = config["task.args.bd_nr"]
         self.bd_time = config["task.args.bd_time"]
@@ -35,10 +36,10 @@ class E927(Task):
         self.bdfile_template = self.config["system.bdfile_template"]
         self.bdclimdir = self.platform.get_system_value("bdclimdir")
 
-        self.name = f"{self.name}_{self.bdnr}"
-
         self.nlgen = NamelistGenerator(self.config, "master")
         self.master = self.get_binary("MASTERODB")
+
+        self.name = f"{self.name}_{self.bdnr}"
 
     def execute(self):
         """Run task.
@@ -56,7 +57,7 @@ class E927(Task):
         self.fmanager.input("{}/Const.Clim.{}".format(self.bdclimdir, mm), "Const.Clim")
 
         # Namelist
-        self.nlgen.generate_namelist("e927", "fort.4")
+        self.nlgen.generate_namelist(f"e927_{self.bdmodel}", "fort.4")
 
         bd_basetime = self.basetime - cycle_offset(
             self.basetime, self.bdcycle, shift=self.bdshift

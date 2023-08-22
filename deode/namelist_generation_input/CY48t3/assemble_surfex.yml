@@ -16,7 +16,7 @@ pgd:
   - sfx_pgd_soilgrid_clay
   - sfx_pgd
 
-prep:
+prep: &default_prep
   - sfx_io
   - sfx_surf_constants
   - sfx_treedrag
@@ -27,6 +27,21 @@ prep:
   - sfx_prep_isba_from_grib
   - sfx_split_patch
   - sfx_prep
+
+prep_arome:
+  - sfx_io
+  - sfx_surf_constants
+  - sfx_treedrag
+  - sfx_prep_sea
+  - sfx_prep_sea_sice
+  - sfx_prep_flake
+  - sfx_prep_isba
+  - sfx_prep_isba_from_fa
+  - sfx_split_patch
+  - sfx_prep
+
+prep_ifs:
+  *default_prep
 
 forecast:
   - sfx_io

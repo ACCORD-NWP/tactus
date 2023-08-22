@@ -114,7 +114,7 @@ class EcflowServer(Server):
         """
         logger.debug("Start EcFlow server")
         try:
-            logger.info("%s %s", self.ecf_host, self.ecf_port)
+            logger.info("ECF_HOST:%s, ECF_PORT:%s", self.ecf_host, self.ecf_port)
             self.ecf_client.ping()
             logger.info("EcFlow server is already running")
         except RuntimeError:

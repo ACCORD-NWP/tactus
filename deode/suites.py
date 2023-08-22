@@ -239,8 +239,10 @@ class SuiteDefinition(object):
                 basetime = as_datetime(cycle["basetime"])
                 forecast_range = as_timedelta(config["general.forecast_range"])
                 endtime = basetime + forecast_range
-                bdint = as_timedelta(config["general.bdint"])
-                bdmax = config["general.bdmax"]
+                bdint = as_timedelta(config["boundaries.bdint"])
+                bdmax = config["boundaries.bdmax"]
+                bdint = as_timedelta(config["boundaries.bdint"])
+                bdmax = config["boundaries.bdmax"]
 
                 int_fam = EcflowSuiteFamily(
                     f'{"Interpolation"}',

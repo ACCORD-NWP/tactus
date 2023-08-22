@@ -1,11 +1,16 @@
 
 sfx_io:
-  NAM_IO_OFFLINE: {}
+  NAM_IO_OFFLINE:
+    CPGDFILE: "PGD"
+    LFAGMAP: True
+    CPREPFILE: "PREP"
+    LRESTART: True
+    CSURFFILE: "SURFOUT"
+    CSURF_FILETYPE: "FA"
 
 sfx_pgd_isba_3l:
   NAM_ISBA: {}
   NAM_TREEDRAG: {}
-
 
 sfx_pgd:
   NAMFA:
@@ -191,8 +196,10 @@ sfx_prep_isba_from_grib:
     CFILE: "INFILE"
     CFILETYPE: "GRIB"
 
-sfx_prep_isba_pgd_file_format_fa:
+sfx_prep_isba_from_fa:
   NAM_PREP_SURF_ATM:
+    CFILE: "INFILE"
+    CFILETYPE: "FA"
     CFILEPGD: "PGD_HOST"
     CFILEPGDTYPE: "FA"
 
@@ -208,12 +215,6 @@ sfx_prep:
   NAM_DIAG_ISBAN:
     LPGD: True
     LSURF_DIAG_ALBEDO: True
-  NAM_IO_OFFLINE:
-    CPGDFILE: PGD
-    CPREPFILE: PREP
-    CSURFFILE: SURFOUT
-    CSURF_FILETYPE: FA
-    LFAGMAP: True
   NAM_ISBA:
     CISBA: 3-L
     CPHOTO: NON
@@ -229,8 +230,6 @@ sfx_prep:
     CWATER: WATFLX
   NAM_PREP_ISBA:
     LISBA_CANOPY: True
-  NAM_PREP_SEAFLUX:
-    LSEA_SBL: False
   NAM_PREP_SURF_ATM:
     NHALO_PREP: 100
   NAM_PREP_WATFLUX:

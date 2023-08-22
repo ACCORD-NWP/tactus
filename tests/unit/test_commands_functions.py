@@ -28,7 +28,7 @@ def set_arg():
     arg = ArgumentParser()
     arg.deode_home = None
     arg.namelist_type = "master"
-    arg.namelist = "forecast"
+    arg.namelist = "forecast_bdmodel_ifs"
     arg.namelist_name = None
     arg.loglevel = "DEBUG"
     arg.domain = "test"
@@ -72,7 +72,7 @@ def test_show_namelist(set_arg, parsed_config, param):
     os.chdir(outpath)
     show_namelist(set_arg, config)
     os.chdir(prev_cwd)
-    assert os.path.isfile(f"{outpath}/namelist_master_forecast")
+    assert os.path.isfile(f"{outpath}/namelist_master_forecast_bdmodel_ifs")
     assert os.path.isfile(f"{outpath}/xxt00000000")
     assert os.path.isfile(f"{outpath}/xxtddddhhmm")
     if param["clean"]:

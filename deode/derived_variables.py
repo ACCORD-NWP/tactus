@@ -64,6 +64,7 @@ def derived_variables(config, processor_layout=None):
     """
     # Geometry
     truncation = {"linear": 2, "quadratic": 3, "cubic": 4, "custom": None}
+    lspsmoro = {"linear": True, "quadratic": False, "cubic": False, "custom": True}
 
     ndguxg = int(config["domain.nimax"]) + int(config["domain.ilone"])
     ndglg = int(config["domain.njmax"]) + int(config["domain.ilate"])
@@ -91,7 +92,7 @@ def derived_variables(config, processor_layout=None):
 
     # Time ranges
     tstep = int(config["general.tstep"])
-    bdint = as_timedelta(config["general.bdint"])
+    bdint = as_timedelta(config["boundaries.bdint"])
     forecast_range = as_timedelta(config["general.forecast_range"])
     cstop = int((forecast_range.days * 24 * 3600 + forecast_range.seconds) / 60)
     if cstop % 60 == 0:
@@ -101,7 +102,7 @@ def derived_variables(config, processor_layout=None):
         cstop = f"m{cstop}"
 
     # Output settings
-    namoutput = {"history": 0, "fullpos": 0, "surfex": 0}
+    namoutput = {"history": [1, -1], "fullpos": [1, -1], "surfex": [1, -1]}
     oi = config["general.output_settings"]
 
     forecast_range_org = config["general.forecast_range"]
@@ -124,6 +125,7 @@ def derived_variables(config, processor_layout=None):
             "xtrunc": truncation[gridtype],
             "nsmax": nsmax,
             "nmsmax": nmsmax,
+            "lspsmoro": lspsmoro[gridtype],
         },
         "namelist": {
             "nhists": namoutput["history"],

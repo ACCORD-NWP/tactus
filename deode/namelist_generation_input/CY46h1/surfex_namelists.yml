@@ -7648,19 +7648,17 @@ sfx_prep_isba:
     LEXTRAP_WG: True
     LEXTRAP_WGI: True
     LISBA_CANOPY: False
-  NAM_PREP_SURF_ATM:
-    NDAY: "${namelist.day}"
-    NMONTH: "${namelist.month}"
-    NYEAR: "${namelist.year}"
-    XTIME: "${namelist.time}"
 
 sfx_prep_isba_from_grib:
   NAM_PREP_SURF_ATM:
     CFILE: "INFILE"
     CFILETYPE: "GRIB"
 
-sfx_prep_isba_pgd_file_format_fa:
+sfx_prep_isba_from_fa:
   NAM_PREP_SURF_ATM:
+    CFILE: "INFILE"
+    CFILETYPE: "FA"
+    CFILEPGD: "PGD_HOST"
     CFILEPGDTYPE: "FA"
 
 sfx_prep_isba_snow_d95:

@@ -135,13 +135,13 @@ class Task(object):
 
         """
         try:
-            binary = self.config.get_value(f"task.{self.name}.binary")
-        except AttributeError:
+            binary = self.config[f"task.{self.name}.binary"]
+        except KeyError:
             pass
 
         try:
-            bindir = self.config.get_value(f"task.{self.name}.bindir")
-        except AttributeError:
+            bindir = self.config[f"task.{self.name}.bindir"]
+        except KeyError:
             bindir = self.platform.get_system_value("bindir")
 
         return f"{bindir}/{binary}"

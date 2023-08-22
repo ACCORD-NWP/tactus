@@ -87,11 +87,6 @@
                 "ecoclimapII_af_covers_param.bin": "@ecoclimap_bin_dir@/ecoclimapII_af_covers_param.bin"
             }
         },
-        "NAM_PREP_SURF_ATM#CFILETYPE": {
-                "GRIB": {"NAM_PREP_SURF_ATM#CFILE": "@SHOULD_BE_REPLACED@"},
-                "FA": {"NAM_PREP_SURF_ATM#CFILE": "@SHOULD_BE_REPLACED@"}
-        },
-        "NAM_PREP_SURF_ATM#CFILEPGDTYPE": {"FA": {"NAM_PREP_SURF_ATM#CPGDFILE": ""}},
         "NAM_PGD_SCHEMES#CWATER": {
                 "FLAKE": {"LAKE_LTA_NEW.nc": "@flake_dir@/LAKE_LTA_NEW.nc"}
         }

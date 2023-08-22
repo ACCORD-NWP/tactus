@@ -3,7 +3,7 @@
 
 import os
 
-from ..datetime_utils import as_datetime, as_timedelta, oi2dt_list
+from ..datetime_utils import as_datetime, oi2dt_list
 from .base import Task
 from .batch import BatchJob
 
@@ -22,7 +22,7 @@ class CreateGrib(Task):
         self.archive = self.platform.get_system_value("archive")
 
         self.basetime = as_datetime(self.config["general.times.basetime"])
-        self.forecast_range = as_timedelta(self.config["general.forecast_range"])
+        self.forecast_range = self.config["general.forecast_range"]
 
         try:
             self.conversions = self.config[f"task.{self.name}.conversions"]

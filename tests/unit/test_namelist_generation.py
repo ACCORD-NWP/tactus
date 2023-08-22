@@ -79,7 +79,7 @@ class TestNamelistGenerator:
         output_file = f"{tmp_path_factory.getbasetemp().as_posix()}/fort.4"
         if os.path.exists(output_file):
             os.remove(output_file)
-        nlgen.generate_namelist("forecast", output_file)
+        nlgen.generate_namelist("forecast_bdmodel_ifs", output_file)
         assert os.path.exists(output_file)
 
     @pytest.mark.usefixtures("_nlgen_surfex")

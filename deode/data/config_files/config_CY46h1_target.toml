@@ -1,34 +1,34 @@
 [general]
- case = "@CYCLE@_@CSC@"
+ case = "@CYCLE@_@CSC@_@DOMAIN@"
  cnmexp = "DEOD"
  realization = -1
- tstep = 50
+ tstep = 30
  loglevel = "info"
- csc = "AROME"
- cycle = "CY48t3"
+ csc = "HARMONIE_AROME"
+ cycle = "CY46h1"
  surfex = true
- forecast_range = "PT12H"
+ forecast_range = "PT6H"
  keep_workdirs = true
  accept_static_namelists = false
  nproma = -32
 
 [boundaries]
- bdint = "PT3H"
+ bdint = "PT1H"
  bdshift = "PT0H"
- bdcycle = "PT12H"
- bdmodel = "ifs"
- bd_has_surfex = false
+ bdcycle = "PT3H"
+ bdmodel = "arome"
+ bd_has_surfex = true
  bdmax = 12
 
 [general.output_settings]
- history = ["PT1H:PT12H:PT1H"]
- fullpos = ["PT6H:PT15M", "PT9H:PT30M", "PT1H"]
- surfex = ["PT3H:PT1H", "PT9H:PT24H:PT3H"]
+ history = ["PT1H"]
+ fullpos = "PT15M"
+ surfex = ["PT1H"]
 
 [suite_control]
  create_static_data = true
  create_time_dependent_suite = true
- do_soil = false
+ do_soil = true
  do_pgd = true
  do_prep = true
  interpolate_boundaries = true
@@ -54,218 +54,170 @@
                { rrr = "general.realization" } ]
 
 [vertical_levels]
- nlev = 90 
- ahalf=[0.0,
-    2718.281829,
-    3747.089291,
-    5034.628437,
-    6544.912331,
-    8198.254772,
-    9884.037509,
-    11495.975326,
-    13027.505452,
-    14563.582313,
-    16027.001094,
-    17350.572570,
-    18488.484485,
-    19421.729531,
-    20150.678519,
-    20703.501353,
-    21120.067860,
-    21422.374439,
-    21617.205213,
-    21700.607608,
-    21664.253163,
-    21503.836344,
-    21228.956759,
-    20852.005941,
-    20386.366609,
-    19845.368084,
-    19241.349855,
-    18584.887324,
-    17884.206486,
-    17144.791188,
-    16369.171264,
-    15556.874071,
-    14719.777823,
-    13869.911343,
-    13018.864414,
-    12177.273612,
-    11354.413453,
-    10557.908483,
-    9793.568381,
-    9065.336892,
-    8375.337452,
-    7723.994524,
-    7110.208402,
-    6531.565033,
-    5988.625732,
-    5481.396429,
-    5009.397153,
-    4571.733424,
-    4167.166971,
-    3794.183751,
-    3451.057718,
-    3135.909257,
-    2846.757685,
-    2581.567536,
-    2338.288920,
-    2114.891972,
-    1909.396606,
-    1719.898028,
-    1545.164089,
-    1384.095523,
-    1235.715886,
-    1099.160647,
-    973.665696,
-    858.555496,
-    753.231040,
-    657.157769,
-    569.853600,
-    490.877204,
-    419.816710,
-    356.279006,
-    299.879869,
-    250.235155,
-    206.953392,
-    169.629978,
-    137.661377,
-    110.481694,
-    87.562438,
-    68.412047,
-    52.575220,
-    39.632072,
-    29.197140,
-    20.918270,
-    14.475386,
-    9.579184,
-    5.969747,
-    3.415109,
-    1.709778,
-    0.673225,
-    0.148360,
-    0.000000,
-    0.000000]
- bhalf=[0.0,
-    0.0000000000,
-    0.0000000000,
-    0.0000000000,
-    0.0000000000,
-    0.0000000000,
-    0.0002553339,
-    0.0012582626,
-    0.0032186754,
-    0.0065542091,
-    0.0115260859,
-    0.0182233571,
-    0.0265306802,
-    0.0361650379,
-    0.0466837499,
-    0.0578169615,
-    0.0697514905,
-    0.0827965908,
-    0.0972973540,
-    0.1135392122,
-    0.1316354653,
-    0.1513917778,
-    0.1721529871,
-    0.1937287238,
-    0.2159368732,
-    0.2386170760,
-    0.2616429112,
-    0.2849322192,
-    0.3084553280,
-    0.3322412065,
-    0.3563817662,
-    0.3810346250,
-    0.4059735997,
-    0.4309763608,
-    0.4558322276,
-    0.4803492980,
-    0.5043605563,
-    0.5277287467,
-    0.5503499447,
-    0.5721558758,
-    0.5931151226,
-    0.6132334074,
-    0.6325531814,
-    0.6511527023,
-    0.6690096121,
-    0.6861106095,
-    0.7024509531,
-    0.7180339228,
-    0.7328702640,
-    0.7469776359,
-    0.7603800785,
-    0.7731075119,
-    0.7851952736,
-    0.7966837018,
-    0.8076177578,
-    0.8180467044,
-    0.8280238137,
-    0.8376061181,
-    0.8468231941,
-    0.8557014234,
-    0.8642639577,
-    0.8725307031,
-    0.8805183181,
-    0.8882402246,
-    0.8957066275,
-    0.9029245414,
-    0.9098978232,
-    0.9166272078,
-    0.9231103463,
-    0.9293418440,
-    0.9353132984,
-    0.9410133344,
-    0.9464276294,
-    0.9515389442,
-    0.9563559969,
-    0.9608873801,
-    0.9651415535,
-    0.9691268385,
-    0.9728514153,
-    0.9763233211,
-    0.9795504499,
-    0.9825405544,
-    0.9853012477,
-    0.9878400070,
-    0.9901641777,
-    0.9922809780,
-    0.9941975046,
-    0.9959207382,
-    0.9974575502,
-    0.9988147073,
-    1.0000000000]
+nlev = 65
+ahalf = [0.00000000,
+2000.00000000,
+4000.21287319,
+6002.09662113,
+7911.25838577,
+9633.01049417,
+11169.37146237,
+12522.57753978,
+13695.00149653,
+14689.11546998,
+15507.49052823,
+16154.69697732,
+16632.12471208,
+16940.14949960,
+17082.34869816,
+17065.28164099,
+16898.18367797,
+16592.58939571,
+16161.90395878,
+15620.94340550,
+14985.46502362,
+14271.70773051,
+13495.95994372,
+12674.16909910,
+11821.60314859,
+10952.57042620,
+10080.20053763,
+9216.28565403,
+8371.17893039,
+7553.74479607,
+6771.35457397,
+6029.92021691,
+5333.95880836,
+4686.68074804,
+4090.09511346,
+3545.12645110,
+3051.73811264,
+2609.05813936,
+2215.50455766,
+1868.90774223,
+1566.62821060,
+1305.66882073,
+1081.85503306,
+890.47596795,
+727.74548529,
+590.17748096,
+474.58767980,
+378.08857614,
+298.07947335,
+232.23312781,
+178.48015386,
+134.99207440,
+100.16369201,
+72.59529482,
+51.07508967,
+34.56216490,
+22.17022046,
+13.15225964,
+6.88641310,
+2.86306141,
+0.67344356,
+0.00000000,
+0.00000000,
+0.00000000,
+0.00000000,
+0.00000000]
+bhalf = [0.00000000,
+0.00000000,
+0.00000000,
+0.00000000,
+0.00095468,
+0.00382570,
+0.00862327,
+0.01535782,
+0.02404046,
+0.03468314,
+0.04729839,
+0.06195102,
+0.07868187,
+0.09744325,
+0.11815586,
+0.14071098,
+0.16497348,
+0.19078554,
+0.21797086,
+0.24633925,
+0.27569119,
+0.30582244,
+0.33652825,
+0.36760726,
+0.39886479,
+0.43011564,
+0.46118624,
+0.49191624,
+0.52215946,
+0.55178443,
+0.58067442,
+0.60872709,
+0.63585388,
+0.66197911,
+0.68703898,
+0.71098036,
+0.73375964,
+0.75534143,
+0.77569737,
+0.79480486,
+0.81264598,
+0.82920633,
+0.84454000,
+0.85875505,
+0.87191802,
+0.88409276,
+0.89534045,
+0.90571965,
+0.91528643,
+0.92409452,
+0.93219549,
+0.93963895,
+0.94647277,
+0.95274328,
+0.95849551,
+0.96377340,
+0.96862008,
+0.97307803,
+0.97718944,
+0.98099640,
+0.98454132,
+0.98786727,
+0.99102462,
+0.99406510,
+0.99703923,
+1.00000000]
 
 [domain]
- name = "DEMO_60x80_2500m"
- nimax = 49
- njmax = 69
+ name = "DEMO_80x90_1000m"
+ nimax = 69
+ njmax = 79
  xloncen = 4.9
- xlatcen = 51.967
- xlon0 = 0.0
- xlat0 = 52.5
+ xlatcen = 52.0
+ xlon0 = 4.9
+ xlat0 = 52.0
  xbeta  = 0.0
- xdx = 2500.0
- xdy = 2500.0
+ xdx = 1000.0
+ xdy = 1000.0
  ilone = 11
  ilate = 11
  nbzong = 8
  nbzonl = 8
- gridtype = "linear"
+ gridtype = "cubic"
 
 [system]
+ host_case = "@CYCLE@_@CSC@"
+ host_domain = "DEMO_60x80_2500m"
  wrk = "@SCRATCH@/deode/@CASE@/@YYYY@@MM@@DD@_@HH@@mm@"
  archive = "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
- bddir = "/scratch/sism/DEOL/@YYYY@/@MM@/@DD@/@HH@"
+ bddir = "@SCRATCH@/deode/@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@"
  intp_bddir = "@WRK@"
- bdfile_template = "PFIFSDEOL+@LLLL@"
- bddir_sfx = "/ec/res4/scratch/kmw/DEODE/ECMWF/2023021900"
- bdfile_sfx_template = "fc@YYYY@@MM@@DD@_@HH@+@LLL@"
+ bdfile_template = "ICMSH@CNMEXP@+@DURATION_FA@"
+ bddir_sfx = "@SCRATCH@/deode/@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@"
+ bdfile_sfx_template = "@BDFILE_TEMPLATE@.sfx"
  climdir = "@SCRATCH@/deode/@CASE@/climate/@DOMAIN@"
- bdclimdir = "/home/snh02/work/dev-CY46h1_deode/climate/DEODE_LARGE"
- bindir = "/home/kmw/packs/48.03_pgdprep/bin"
+ bdclimdir = "@SCRATCH@/deode/@HOST_CASE@/climate/@HOST_DOMAIN@"
+ bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2023-03-29"
  fullpos_config_file = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos_namelist.yml"
  sfx_input_defs = "@DEODE_HOME@/deode/data/input/sfx_input_@CYCLE@.json"
  namelists = "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
@@ -284,14 +236,21 @@
  gmted2010_data_path = "@CLIMDATA@/GMTED2010"
  soilgrid_data_path = "@CLIMDATA@/SOILGRID"
  pgd_data_path = "@CLIMDATA@/PGD"
- ecoclimap_bin_dir = "@ecoclim_data_path@"
+ task_name = "@STAND_ALONE_TASK_NAME@"
+ flake_dir = "@STATIC_DATA@/climate/PGD"
+ albnir_soil_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
+ albnir_veg_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
+ albvis_soil_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
+ albvis_veg_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
+ lai_dir = "@CLIMDATA@/ECOCLIMAP-SG/LAI_SAT"
+ tree_height_dir = "@CLIMDATA@/ECOCLIMAP-SG/HT"
 
 [general.times]
  basetime = "2023-02-19T00:00:00Z"
  validtime = "2023-02-19T00:00:00Z"
- start = "2023-02-19T00:00:00Z"
- end = "2023-02-19T03:00:00Z"
- cycle_length = "PT3H"
+ start = "2023-02-19T01:00:00Z"
+ end = "2023-02-19T02:00:00Z"
+ cycle_length = "PT1H"
  
 [task]
  wrapper = ""
@@ -338,14 +297,13 @@ tasks = ["creategrib", "Background_hpc", "UnitTest"]
  MODULE_ENV= "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read())"
  MODULE_INTEL= "module('load', 'prgenv/intel')"
  MODULE_MKL= "module('load', 'intel-mkl/19.0.5')"
- MODULE_OPENMPI= "module('load', 'hpcx-openmpi/2.9.0')"
+ MODULE_OPENMPI= "module('load', 'openmpi/4.1.1.1')"
  MODULE_NETCDF4= "module('load', 'netcdf4/4.7.4')"
  MODULE_HDF5= "module('load', 'hdf5/1.10.6')"
- MODULE_ECMWF= "module('load', 'ecmwf-toolbox/2021.08.3.0')"
+ MODULE_ECMWF= "module('load', 'ecmwf-toolbox/2023.04.1.0')"
  MODULE_FFTW= "module('load', 'fftw/3.3.9')"
  OMP_NUM_THREADS= "os.environ['OMP_NUM_THREADS'] = '1'"
  OMPI_MCA_btl= "os.environ['OMPI_MCA_btl'] = '^vader'"
- DR_HOOK_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
 
 [submission.task_exceptions.Gmted.ENV]
  MODULE_GDAL= "module('load', 'gdal/3.2.1')"
@@ -369,14 +327,13 @@ tasks = ["creategrib", "Background_hpc", "UnitTest"]
  MODULE_ENV= "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read())"
  MODULE_INTEL= "module('load', 'prgenv/intel')"
  MODULE_MKL= "module('load', 'intel-mkl/19.0.5')"
- MODULE_OPENMPI= "module('load', 'hpcx-openmpi/2.9.0')"
+ MODULE_OPENMPI= "module('load', 'openmpi/4.1.1.1')"
  MODULE_NETCDF4= "module('load', 'netcdf4/4.7.4')"
  MODULE_HDF5= "module('load', 'hdf5/1.10.6')"
- MODULE_ECMWF= "module('load', 'ecmwf-toolbox/2021.08.3.0')"
+ MODULE_ECMWF= "module('load', 'ecmwf-toolbox/2023.04.1.0')"
  MODULE_FFTW= "module('load', 'fftw/3.3.9')"
  OMP_NUM_THREADS= "os.environ['OMP_NUM_THREADS'] = '1'"
  DR_HOOK = "os.environ['DR_HOOK'] = '1'"
- DR_HOOK_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
  OMPI_MCA_btl= "os.environ['OMPI_MCA_btl'] = '^vader'"
 
 [submission.task_exceptions.e927]

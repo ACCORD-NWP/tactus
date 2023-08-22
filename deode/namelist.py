@@ -66,7 +66,7 @@ class NamelistGenerator:
 
         self.config = config
         self.platform = Platform(config)
-        self.kind = kind  # not used elsewhere, though
+        self.kind = kind
         self.substitute = substitute
         self.logger = get_logger_from_config(config)
         self.cycle = self.config["general.cycle"]
@@ -105,7 +105,9 @@ class NamelistGenerator:
             cndict = {self.target: [self.target]}
             found = False
         else:
-            self.logger.warning("No reference namelist exists")
+            self.logger.warning(
+                "No reference namelist %s exists, fallback to yaml files", ref_namelist
+            )
             found = True
             nldict = {}
             cndict = {}
@@ -147,9 +149,9 @@ class NamelistGenerator:
         # Check target is valid
         if target not in cndict:
             self.logger.warning(
-                "Could not find target '%s' in %s", target, str(self.cnfile)
+                "Could not find target namelist '%s' in %s", target, str(self.cnfile)
             )
-            msg = "Available targets:"
+            msg = "Available namelist targets:"
             for key in cndict:
                 if not re.match(r"_.+", key):
                     msg += " " + key + ","
@@ -275,6 +277,7 @@ class NamelistGenerator:
             output_file : where to write the result (fort.4 or EXSEG1.nam typically)
 
         """
+        self.logger.info("Generate namelist for: %s", target)
         self.load(target)
         try:
             update = self.config["namelist_update"]

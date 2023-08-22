@@ -429,7 +429,7 @@ class FileManager:
                     self.logger.info("Could not archive %s", destination.identifier)
         # Else raise exception
         raise ProviderError(
-            f"No provider found for {target} and provider_id {provider_id}"
+            f"No provider found for {sub_target} and provider_id {provider_id}"
         )
 
     def input(  # noqa: A003 (class attribute shadowing builtin)
