@@ -21,6 +21,7 @@ dist/
 coverage.xml
 .coverage.xml
 .coverage
+.venv
 
 # Files/directories generated at runtime
 archived_file
