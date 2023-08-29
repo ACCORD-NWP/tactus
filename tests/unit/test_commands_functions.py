@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from deode.commands_functions import set_deode_home, show_namelist
+from deode.commands_functions import namelist_integrate, set_deode_home, show_namelist
 from deode.config_parser import PACKAGE_CONFIG_PATH, ParsedConfig
 
 
@@ -33,6 +33,19 @@ def set_arg():
     arg.loglevel = "DEBUG"
     arg.domain = "test"
     arg.no_substitute = True
+    return arg
+
+
+@pytest.fixture()
+def nlint_arg():
+    arg = ArgumentParser()
+    arg.deode_home = None
+    arg.namelist = ["deode/data/namelists/unit_testing/nl_master_integrate"]
+    arg.yaml = "deode/data/namelists/unit_testing/nl_master_base.yml"
+    arg.tag = "nl_master_base"
+    arg.output = "/tmp/nl_master_integrated.yml"  # noqa S108
+    arg.loglevel = "DEBUG"
+    arg.domain = "test"
     return arg
 
 
@@ -78,6 +91,13 @@ def test_show_namelist(set_arg, parsed_config, param):
     if param["clean"]:
         os.remove(f"{outpath}/xxt00000000")
         os.remove(f"{outpath}/xxtddddhhmm")
+
+
+def test_namelist_integrate(nlint_arg, parsed_config):
+    if os.path.exists(nlint_arg.output):
+        os.remove(nlint_arg.output)
+    namelist_integrate(nlint_arg, parsed_config)
+    assert os.path.isfile(nlint_arg.output)
 
 
 if __name__ == "__main__":

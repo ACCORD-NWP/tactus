@@ -7,6 +7,7 @@ from pathlib import Path
 from . import __version__
 from .commands_functions import (
     doc_config,
+    namelist_integrate,
     run_task,
     show_config,
     show_config_schema,
@@ -259,6 +260,7 @@ def get_parsed_args(program_name="program", argv=None):
 
     parser_show_namelist.set_defaults(run_command=show_namelist)
 
+    # doc subparser
     parser_doc = subparsers.add_parser(
         "doc",
         help="Print documentation style output",
@@ -282,5 +284,61 @@ def get_parsed_args(program_name="program", argv=None):
     )
 
     parser_doc_config.set_defaults(run_command=doc_config)
+
+    # namelist subparser
+    parser_namelist = subparsers.add_parser(
+        "namelist", help="Namelist show (output) or integrate (input)"
+    )
+    namelist_command_subparsers = parser_namelist.add_subparsers(
+        title="integrate",
+        dest="namelist_what",
+        required=True,
+        description=(
+            "Valid commands below (note that commands also accept their "
+            + "own arguments, in particular [-h]):"
+        ),
+        help="command description",
+    )
+
+    # namelist integrate
+    parser_namelist_integrate = namelist_command_subparsers.add_parser(
+        "integrate",
+        help="Read fortran [+yaml] namelist(s) and output as yaml dict(s)",
+        parents=[common_parser],
+    )
+    parser_namelist_integrate.add_argument(
+        "-n",
+        "--namelist",
+        nargs="+",
+        type=str,
+        help="Fortran namelist input file(s)",
+        required=True,
+        default=None,
+    )
+    parser_namelist_integrate.add_argument(
+        "-o",
+        "--output",
+        type=str,
+        help="Output file (yaml format)",
+        required=True,
+        default=None,
+    )
+    parser_namelist_integrate.add_argument(
+        "-t",
+        "--tag",
+        type=str,
+        help="Tag used as base for comparisons",
+        required=False,
+        default=None,
+    )
+    parser_namelist_integrate.add_argument(
+        "-y",
+        "--yaml",
+        type=str,
+        help="Input yaml file (from earlier run)",
+        required=False,
+        default=None,
+    )
+    parser_namelist_integrate.set_defaults(run_command=namelist_integrate)
 
     return main_parser.parse_args(argv)

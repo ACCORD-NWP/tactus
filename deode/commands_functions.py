@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Implement the package's commands."""
 import os
+from pathlib import Path
 
 from .config_doc import DocConfig
 from .config_parser import MAIN_CONFIG_JSON_SCHEMA_PATH
 from .derived_variables import check_fullpos_namelist, derived_variables
 from .logs import get_logger
-from .namelist import NamelistGenerator
+from .namelist import NamelistComparator, NamelistGenerator, NamelistIntegrator
 from .scheduler import EcflowServer
 from .submission import NoSchedulerSubmission, TaskSettings
 from .suites import SuiteDefinition
@@ -169,3 +170,68 @@ def show_namelist(args, config):
         namelist_name = f"namelist_{args.namelist_type}_{args.namelist}"
     nlgen.write_namelist(nlres, namelist_name)
     logger.info("Printing namelist in use to file %s", namelist_name)
+
+
+def namelist_integrate(args, config):
+    """Implement the 'namelist integrate' command.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+        config (.config_parser.ParsedConfig): Parsed config file contents.
+
+    Raises:
+        SystemExit   # noqa: DAR401
+
+    """
+    logger = get_logger(__name__, args.loglevel)
+    logger.info("Integrating namelist(s) ...")
+
+    nlcomp = NamelistComparator(config)
+    nlint = NamelistIntegrator(config)
+    # Read all input namelist files and convert to yaml dicts
+    nml_in = {}
+    nltags = []
+    for nlfile in args.namelist:
+        nlpath = Path(nlfile)
+        ltag = nlpath.name.replace(".", "_")
+        nltags.append(ltag)
+        msg = f"Reading {nlfile}"
+        logger.info(msg)
+        nml_in[ltag] = nlint.ftn2dict(nlpath)
+
+    # Start with empty output namelist set
+    nml = {}
+    if args.tag:
+        tag = args.tag
+        if tag in nltags:
+            # Use given tag as base for comparisons, then
+            nml[tag] = nml_in[tag]
+    else:
+        tag = "00_common"
+    if args.yaml:
+        if not args.tag:
+            raise SystemExit(
+                "With -y given, you must also specify with -t which tag to use as basis!"
+            )
+        # Read yaml to use as basis for comparisons
+        nml = nlint.yml2dict(Path(args.yaml))
+        if tag not in nml:
+            raise SystemExit(f"Tag {tag} was not found in input yaml file {args.yaml}!")
+        elif tag in nltags:
+            raise SystemExit(f"Tag {tag} found in both yaml and namelist input, abort!")
+    elif not nml:
+        # Construct basis as intersection of all input files
+        for ltag in nltags:
+            if not nml:
+                nml[tag] = nml_in[ltag]
+            elif ltag != tag:
+                nml[tag] = nlcomp.compare_dicts(nml[tag], nml_in[ltag], "intersection")
+
+    # Now, whether yaml input or not, nml[tag] should contain the common settings
+    # Loop over input namelists to produce diffs
+    for ltag in nltags:
+        if ltag != tag:
+            nml[ltag] = nlcomp.compare_dicts(nml[tag], nml_in[ltag], "diff")
+
+    # Write output yaml
+    nlint.dict2yml(nml, Path(args.output))
