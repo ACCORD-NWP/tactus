@@ -48,6 +48,7 @@ class TestSuite:
                     "do_pgd": False,
                     "do_prep": False,
                     "interpolate_boundaries": False,
+                    "do_marsprep": True,
                 }
             },
             {"suite_control": {"create_static_data": False}},

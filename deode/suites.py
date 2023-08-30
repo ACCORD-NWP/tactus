@@ -67,6 +67,7 @@ class SuiteDefinition(object):
         ]
         self.interpolate_boundaries = config["suite_control.interpolate_boundaries"]
         self.do_prep = config["suite_control.do_prep"]
+        self.do_marsprep = config["suite_control.do_marsprep"]
 
         self.logger = get_logger_from_config(config)
         name = suite_name
@@ -195,6 +196,7 @@ class SuiteDefinition(object):
 
         days = []
         prev_cycle_trigger = None
+        prev_interpolation_trigger = None
         for __, cycle in cycles.items():
             cycle_day = cycle["day"]
             if self.create_static_data:
@@ -222,6 +224,7 @@ class SuiteDefinition(object):
             inputdata = EcflowSuiteFamily(
                 "InputData", time_family, self.ecf_files, trigger=inputdata_trigger
             )
+            inputdata_done = EcflowSuiteTriggers([EcflowSuiteTrigger(inputdata)])
             prepare_cycle = EcflowSuiteTask(
                 "PrepareCycle",
                 inputdata,
@@ -231,72 +234,107 @@ class SuiteDefinition(object):
                 input_template=input_template,
                 variables=None,
             )
+            triggers = [EcflowSuiteTrigger(prepare_cycle)]
 
-            prepare_cycle_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prepare_cycle)])
+            if prev_interpolation_trigger is not None:
+                triggers = triggers + prev_interpolation_trigger
+            ready_for_marsprep = EcflowSuiteTriggers(triggers)
+            if self.do_marsprep:
+                EcflowSuiteTask(
+                    "marsprep",
+                    inputdata,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    variables=None,
+                    trigger=ready_for_marsprep,
+                )
 
-            if self.interpolate_boundaries:
-
-                basetime = as_datetime(cycle["basetime"])
-                forecast_range = as_timedelta(config["general.forecast_range"])
-                endtime = basetime + forecast_range
-                bdint = as_timedelta(config["boundaries.bdint"])
-                bdmax = config["boundaries.bdmax"]
-                bdint = as_timedelta(config["boundaries.bdint"])
-                bdmax = config["boundaries.bdmax"]
+            if self.interpolate_boundaries or self.do_prep:
 
                 int_fam = EcflowSuiteFamily(
                     f'{"Interpolation"}',
                     time_family,
                     self.ecf_files,
-                    trigger=prepare_cycle_done,
+                    trigger=inputdata_done,
                     variables=None,
                 )
+                prev_interpolation_trigger = [EcflowSuiteTrigger(int_fam)]
 
-                bdnr = 0
-                intnr = 1
-                args = ""
-                int_trig = prepare_cycle_done
-                bdtime = basetime
-                while bdtime <= endtime:
-                    bch_fam = EcflowSuiteFamily(
-                        f"Batch{intnr:02}",
+                if self.do_prep:
+                    EcflowSuiteTask(
+                        "Prep",
                         int_fam,
+                        config,
+                        self.task_settings,
                         self.ecf_files,
-                        trigger=int_trig,
-                        variables=None,
+                        input_template=input_template,
                     )
+                    self.do_prep = False
+
+                if self.interpolate_boundaries:
+
+                    basetime = as_datetime(cycle["basetime"])
+                    forecast_range = as_timedelta(config["general.forecast_range"])
+                    endtime = basetime + forecast_range
+                    bdint = as_timedelta(config["boundaries.bdint"])
+                    bdmax = config["boundaries.bdmax"]
+
+                    bdnr = 0
+                    intnr = 1
+                    args = ""
+                    int_trig = inputdata_done
+                    bdtime = basetime
+                    intbdint = int(bdint.total_seconds() // 3600)
                     while bdtime <= endtime:
-                        date_string = bdtime.isoformat(sep="T").replace("+00:00", "Z")
-                        args = f"bd_time={date_string};bd_nr={bdnr}"
-                        variables = {"ARGS": args}
-                        lbc_fam = EcflowSuiteFamily(
-                            f"LBC{bdnr:02}",
-                            bch_fam,
+                        bch_fam = EcflowSuiteFamily(
+                            f"Batch{intnr:02}",
+                            int_fam,
                             self.ecf_files,
-                            trigger=None,
+                            trigger=int_trig,
                             variables=None,
                         )
+                        while bdtime <= endtime:
+                            date_string = bdtime.isoformat(sep="T").replace("+00:00", "Z")
+                            args = f"bd_time={date_string};bd_nr={bdnr}"
+                            variables = {"ARGS": args}
+                            lbc_fam = EcflowSuiteFamily(
+                                f"LBC{bdnr*intbdint:02}",
+                                bch_fam,
+                                self.ecf_files,
+                                trigger=None,
+                                variables=None,
+                            )
 
-                        EcflowSuiteTask(
-                            "e927",
-                            lbc_fam,
-                            config,
-                            self.task_settings,
-                            self.ecf_files,
-                            input_template=input_template,
-                            variables=variables,
-                            trigger=None,
-                        )
+                            if self.do_marsprep:
+                                interpolation_task = "c903"
+                            else:
+                                interpolation_task = "e927"
 
-                        bdnr += 1
-                        bdtime += bdint
-                        if bdnr % bdmax == 0:
-                            intnr += 1
-                            int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(bch_fam)])
-                            break
-                int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(int_fam)])
+                            EcflowSuiteTask(
+                                interpolation_task,
+                                lbc_fam,
+                                config,
+                                self.task_settings,
+                                self.ecf_files,
+                                input_template=input_template,
+                                variables=variables,
+                                trigger=None,
+                            )
+
+                            bdnr += 1
+                            bdtime += bdint
+                            if bdnr % bdmax == 0:
+                                intnr += 1
+                                int_trig = EcflowSuiteTriggers(
+                                    [EcflowSuiteTrigger(bch_fam)]
+                                )
+                                break
+
+                    int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(int_fam)])
             else:
-                int_trig = prepare_cycle_done
+                int_trig = inputdata_done
 
             cycle = EcflowSuiteFamily(
                 "Cycle", time_family, self.ecf_files, trigger=int_trig
@@ -309,23 +347,6 @@ class SuiteDefinition(object):
             initialization = EcflowSuiteFamily(
                 "Initialization", cycle, self.ecf_files, trigger=ready_for_cycle
             )
-            prep_trigger = None
-            if self.do_prep:
-                prep = EcflowSuiteTask(
-                    "Prep",
-                    initialization,
-                    config,
-                    self.task_settings,
-                    self.ecf_files,
-                    input_template=input_template,
-                    variables=None,
-                )
-                prep_trigger = EcflowSuiteTrigger(prep)
-                self.do_prep = False
-
-            fg_trigger = None
-            if prep_trigger is not None:
-                fg_trigger = EcflowSuiteTriggers([prep_trigger])
             EcflowSuiteTask(
                 "FirstGuess",
                 initialization,
@@ -333,7 +354,7 @@ class SuiteDefinition(object):
                 self.task_settings,
                 self.ecf_files,
                 input_template=input_template,
-                trigger=fg_trigger,
+                trigger=None,
                 variables=None,
             )
 

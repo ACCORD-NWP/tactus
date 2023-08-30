@@ -52,10 +52,16 @@
       }
     },
     "boundaries": {
-      "title": "DomainSection",
-      "description": "Model for the 'domain' section.",
+      "title": "BoundarySection",
+      "description": "Settings for control of boundary treatment.",
       "type": "object",
       "properties": {
+        "bdstrategy": {
+              "title": "Boundary strategy",
+              "default": "same_forecast",
+              "type": "string",
+              "enum": [ "simulate_operational", "analysis_only", "same_forecast" ]
+        },
         "bdint": {
               "description": "Boundary interval",
               "type": "string",
@@ -107,6 +113,10 @@
         "interpolate_boundaries": {
           "description": "Activates the boundary interpolation",
           "type": "boolean"
+        },
+	"do_marsprep": {
+              "description": "Run marsprep or skip extraction",
+              "type": "boolean"
         },
         "create_static_data": {
           "description": "Activate the generation of PGD and monthly climate files in the suite",
@@ -171,6 +181,14 @@
           "type": "string",
           "description": "Path to static namelists"
         },
+	"marsdir": {
+          "type": "string",
+          "description": "Location input files extracted from MARS by Marsprep"
+        },
+	"global_sfcdir":{
+	  "type": "string",
+	  "description":"Path to SFC files needed for c903, which are not in MARS"
+	},
         "sfx_input_defs": {
           "type": "string",
           "description": "Path to the surfex json config file"
@@ -403,6 +421,11 @@
           "type": "string",
           "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
         },
+	"mars_expver": {
+	      "description": "Name of the experiment to get data from MARS in case of global DT. Empty string for operational.",
+	      "type":"string",
+	      "default":""
+	}, 
         "output_settings": {
           "title": "OutputSettings",
           "description": "Output settings. Specified as duration for any of interval, endtime:interval, starttime:endtime:interval or a list of these options",

@@ -65,3 +65,10 @@ forecast_bdmodel_arome:
   - f4_common
   - f4_arome
   - namgfl_bdmodel_arome
+
+c903_main:
+  - empty
+  - f4_c903_main
+
+c903_domain:
+  - f4_c903_domain

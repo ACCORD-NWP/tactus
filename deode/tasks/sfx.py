@@ -642,10 +642,18 @@ class Prep(Task):
 
             bdmodel = self.config["boundaries.bdmodel"]
             bd_has_surfex = self.config["boundaries.bd_has_surfex"]
+            basetime = as_datetime(self.config["general.times.basetime"])
 
             namelist_task = f"prep_{bdmodel}"
             self.nlgen.load(namelist_task)
             settings = self.nlgen.assemble_namelist(namelist_task)
+            settings["nam_prep_surf_atm"]["nyear"] = int(basetime.strftime("%Y"))
+            settings["nam_prep_surf_atm"]["nmonth"] = int(basetime.strftime("%m"))
+            settings["nam_prep_surf_atm"]["nday"] = int(basetime.strftime("%d"))
+            settings["nam_prep_surf_atm"]["xtime"] = (
+                basetime.hour * 3600 + basetime.minute * 60 + basetime.second
+            )
+
             self.nlgen.write_namelist(settings, "OPTIONS.nam")
 
             # Input data

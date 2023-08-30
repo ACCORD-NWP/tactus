@@ -16,7 +16,7 @@ tasks = ["creategrib", "Background_hpc", "UnitTest"]
  NPROCX = 1
  NPROCY = 1
  WRAPPER = "srun"
- tasks = ["Gmted", "Soil"]
+ tasks = ["Gmted", "Soil", "Marsprep"]
 
 [serial.BATCH]
  NAME = "#SBATCH --job-name=@TASK_NAME@"
@@ -47,7 +47,7 @@ tasks = ["creategrib", "Background_hpc", "UnitTest"]
 
 [parallel]
  SCHOST = "hpc"
- tasks = ["Forecast","e927","Pgd","Prep"]
+ tasks = ["Forecast", "e927", "Pgd", "Prep", "c903"]
  NPROC = 32
  WRAPPER = "srun"
 [parallel.BATCH]
@@ -77,6 +77,17 @@ tasks = ["creategrib", "Background_hpc", "UnitTest"]
  NODES = "#SBATCH --nodes=1"
  NTASKS = "#SBATCH --ntasks=16"
 
+[task_exceptions.c903]
+ NPROC = 36
+[task_exceptions.c903.BATCH]
+ NODE = "#SBATCH --nodes=12"
+ NTASKS = "#SBATCH --ntasks=36"
+ MEM = "#SBATCH --mem=200GB" 
+ WALLTIME = "#SBATCH --time=00:30:00" 
+[task_exceptions.c903.ENV]
+DR_HOOK_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
+
+
 [task_exceptions.Forecast]
  NPROC = 256
  
@@ -94,4 +105,9 @@ tasks = ["creategrib", "Background_hpc", "UnitTest"]
  NODES = "#SBATCH --nodes=1"
  NTASKS = "#SBATCH --ntasks=1"
  WALLTIME = "#SBATCH --time=00:10:00"
+
+[task_exceptions.marsprep.BATCH]
+ NODES = "#SBATCH --nodes=1"
+ NTASKS = "#SBATCH --ntasks=1"
+ WALLTIME = "#SBATCH --time=01:00:00"
 

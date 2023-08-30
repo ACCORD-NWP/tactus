@@ -1041,3 +1041,186 @@ empty:
   NEMVAR: {}
   NEMWAVELET: {}
 
+f4_c903_main:
+  NAMFPOBJ:
+    NFPOBJ: 1
+    NFPCONF: 2
+    CNAMELIST: "./namelist_c903_domain"
+  NAMFPC:
+    NFPCLI: 2
+  NAMPAR0:
+    NPROC: "${namelist.nproc}"
+    NPRTRW: "${namelist.nproc}"
+    NPRTRV: 1
+    LOPT_SCALAR: True
+    MBX_SIZE: 2048000000
+    MP_TYPE: 2
+    NOUTPUT: 1
+    NPRINTLEV: 0
+  NAMARG:
+    NCONF: 903
+    NFPSERVER: 1
+    CNMEXP: MARS
+    LECMWF: True 
+    NSUPERSEDE: 1
+  NAMDIM:
+    NPROMA: "${general.nproma}"
+  NAMPAR1:
+    NSTROUT: "${namelist.nproc}"
+    NDISTIO: 0
+    NFLDIN: 0
+    LSPLIT: True
+    NOUTTYPE: 1
+    NCOMBFLEN: 128000000
+    LEQ_REGIONS: False
+  NAMCT0:
+    NFPOS: 2
+    NFRPOS: 1
+    NPOSTS: 0
+    LSPRT: True
+    LARPEGEF: True
+    LREFOUT: False
+    NSPPR: 0
+    CFPNCF: "ECHFP"
+    CSCRIPT_PPSERVER: " "
+    LGRIB_API: False
+  NAMTRANS:
+    LFFTW: True
+  NAMOPH:
+    CCLIMINC: "_"
+  NAMGFL:
+    YQ_NL%LGP: True
+    YQ_NL%LSP: False
+    YO3_NL%LGP: False
+    YQ_NL%LGPINGP: True
+    YR_NL%NREQIN: -1
+    YS_NL%NREQIN: -1
+  NAMFAINIT:
+    JPXTRO: 10240
+    JPXLAT: 10240
+  NAMFA:
+    NBITCS: -1
+    NBITPG: -1
+    NSTRON: -1
+    YFAR%CLNAME: 'RAIN'
+    YFAS%CLNAME: 'SNOW'
+    YFAL%NBITS: 16
+    YFAI%NBITS: 16
+    YFAR%NBITS: 16
+    YFAS%NBITS: 16
+  NAEPHY:
+    LEPHYS: True
+    LERADI: False
+    LELAIV: False
+    LEFLAKE: False
+    LEGWWMS: False
+  NAERAD:
+    LRRTM: False
+    NRPROMA: ${general.nproma}
+    LSRTM: False
+    NMCICA: 0
+  NAMCT1:
+    LRFILAF: False
+  NAMPHMSE:
+    LPGDFWR: False
+  NAMPPVI:
+    LESCALE_U: False
+
+f4_c903_domain:
+  NAM_DISTRIBUTED_VECTORS: {}
+  NAMFPF: {}
+  NAMFPSC2:
+    NFPROMA: ${general.nproma}
+  NAMFPSC2_DEP:
+    NFPROMA_DEP: ${general.nproma}
+  NEMFPEZO:
+    RCO_EZO: 180.0
+  NAMFPIOS:
+    CFPCLIFNAME: ${domain.name}
+  NAMAFN:
+    GFP_ST%IANO: 0
+    TFP_U%CLNAME: WIND.U.PHYS
+    TFP_V%CLNAME: WIND.V.PHYS
+    TFP_Q%LLGP: True
+  NAMCT0:
+    NFPOS: 2
+    NSDITS(0): 1
+    NSDITS(1): 1
+    NSPPR: 0
+  NAMCT1:
+    N1HIS: 0
+  NAMFPC:
+    CFPDOM: ${domain.name}
+    CFP3DF:
+      - "TEMPERATURE"
+      - "HUMI.SPECIFIQUE"
+      - "WIND.U.PHYS"
+      - "WIND.V.PHYS"
+      - "LIQUID_WATER"
+      - "SOLID_WATER"
+      - "CLOUD_FRACTI"
+      - "PRESS.DEPART"
+      - "VERTIC.DIVER"
+    CFP2DF:
+      - "SURFPRESSION"
+      - "SPECSURFGEOPOTENTIEL"
+    CFPPHY:
+      - "SURFTEMPERATURE"
+      - "SURFA.OF.OZONE  "
+      - "SURFB.OF.OZONE  "
+      - "SURFC.OF.OZONE  "
+      - "SURFAEROS.SEA   "
+      - "SURFAEROS.LAND  "
+      - "SURFAEROS.SOOT  "
+      - "SURFAEROS.DESERT"
+      - "SURFIND.TERREMER"
+      - "SURFRESERV.NEIGE"
+      - "PROFTEMPERATURE"
+      - "PROFRESERV.EAU"
+      - "SURFRESERV.EAU"
+      - "SURFZ0.FOIS.G"
+      - "SURFALBEDO"
+      - "SURFEMISSIVITE"
+      - "SURFET.GEOPOTENT"
+      - "SURFIND.TERREMER"
+      - "SURFPROP.VEGETAT"
+      - "SURFVAR.GEOP.ANI"
+      - "SURFVAR.GEOP.DIR"
+      - "SURFIND.VEG.DOMI"
+      - "SURFRESI.STO.MIN"
+      - "SURFPROP.ARGILE"
+      - "SURFPROP.SABLE"
+      - "SURFEPAIS.SOL"
+      - "SURFIND.FOLIAIRE"
+      - "SURFRES.EVAPOTRA"
+      - "SURFGZ0.THERM"
+      - "SURFRESERV.INTER"
+      - "PROFRESERV.GLACE"
+      - "SURFRESERV.GLACE"
+      - "SURFDENSIT.NEIGE"
+      - "SURFALBEDO NEIGE"
+      - "SURFALBEDO.SOLNU"
+      - "SURFALBEDO.VEG"
+    NFPCLI: 2
+    CFPDIR: ELSCF
+    CFPFMT: LELAM
+    NRFP3S: ${namelist.nrfp3s}
+  NAMFPD:
+    NFPBZONG: ${domain.nbzong}
+    NFPBZONL: ${domain.nbzonl}
+    NFPGUX: ${domain.njmax}
+    NFPLUX: ${domain.nimax}
+    NLAT: ${domain.ndglg}
+    NLON: ${domain.ndguxg}
+    RDELX: ${domain.xdx}
+    RDELY: ${domain.xdy}
+    RLATC: ${domain.xlatcen}
+    RLONC: ${domain.xloncen}
+  NAMFPG:
+    FPLAT0: ${domain.xlat0}
+    FPLON0: ${domain.xlon0}
+    FPVALH: ${vertical_levels.ahalf}
+    FPVBH: ${vertical_levels.bhalf}
+    NFPLEV: ${vertical_levels.nlev}
+    NFPMAX: ${domain.nsmax}
+    NMFPMAX: ${domain.nmsmax}

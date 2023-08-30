@@ -7,10 +7,11 @@
  csc = "AROME"
  cycle = "CY48t3"
  surfex = true
- forecast_range = "PT6H"
+ forecast_range = "PT3H"
  keep_workdirs = true
  accept_static_namelists = false
  nproma = -32
+ mars_expver = "0001"
 
 [boundaries]
  bdint = "PT1H"
@@ -26,12 +27,13 @@
  surfex = ["PT1H"]
 
 [suite_control]
- create_static_data = true
- create_time_dependent_suite = true
- do_soil = false
- do_pgd = true
- do_prep = true
- interpolate_boundaries = true
+create_static_data = true
+create_time_dependent_suite = true
+do_soil = false
+do_pgd = true
+do_prep = true
+interpolate_boundaries = true
+do_marsprep = false
 
 [file_templates]
  duration_grib = "@LLLH@h@LM@m@LS@s"
@@ -41,17 +43,18 @@
  fullpos = "GRIBPF@CNMEXP@@DOMAIN@+@DURATION_FA@"
 
 [macros]
- os_macros = ["USER", "HOME", "PWD"]
- group_macros = ["platform","system"]
- gen_macros = ["general.cnmexp",
-               "general.cycle",
-               "general.csc",
-               "file_templates.duration_grib",
-               "file_templates.duration_fa",
-               { surfex_template = "file_templates.surfex" },
-               { case = "general.case" },
-               { domain = "domain.name" },
-               { rrr = "general.realization" } ]
+os_macros = ["USER", "HOME", "PWD"]
+group_macros = ["platform","system"]
+gen_macros = ["general.cnmexp",
+              "general.mars_expver",
+              "general.cycle",
+              "general.csc",
+              "file_templates.duration_grib",
+              "file_templates.duration_fa",
+              { surfex_template = "file_templates.surfex" },
+              { case = "general.case" },
+              { domain = "domain.name" },
+              { rrr = "general.realization" } ]
 
 [vertical_levels]
  nlev = 90 
@@ -263,6 +266,7 @@
  bddir = "@SCRATCH@/deode/@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@"
  intp_bddir = "@WRK@"
  bdfile_template = "ICMSH@CNMEXP@+@DURATION_FA@"
+ marsfile_template = "mars_prefetch_[levtype]_[date]_[time]+[step]"
  bddir_sfx = "@SCRATCH@/deode/@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@"
  bdfile_sfx_template = "@BDFILE_TEMPLATE@.sfx"
  climdir = "@SCRATCH@/deode/@CASE@/climate/@DOMAIN@"
@@ -271,6 +275,7 @@
  fullpos_config_file = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos_namelist.yml"
  sfx_input_defs = "@DEODE_HOME@/deode/data/input/sfx_input_@CYCLE@.json"
  namelists = "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
+ marsdir = "/scratch/@USER@/deode/@CASE@/ECMWF_DATA/@YYYY@/@MM@/@DD@/@HH@/@MARS_EXPVER@"
 
 [platform]
  deode_home = "set-by-the-system"
@@ -289,18 +294,24 @@
  ecoclimap_bin_dir = "@ecoclim_data_path@"
 
 [general.times]
- basetime = "2023-02-19T00:00:00Z"
- validtime = "2023-02-19T00:00:00Z"
- start = "2023-02-19T01:00:00Z"
- end = "2023-02-19T02:00:00Z"
+ basetime = "2023-08-16T00:00:00Z"
+ validtime = "2023-08-16T00:00:00Z"
+ start = "2023-08-23T16:00:00Z"
+ end = "2023-08-23T16:00:00Z"
  cycle_length = "PT1H"
  
 [task]
  wrapper = ""
 
 [task.args]
- bd_nr = "1"
- bd_time = "2023-02-19T09:00:00Z"
+ bd_nr = "0"
+ bd_time = "2023-08-03T12:00:00Z"
+
+[task.creategrib]
+ bindir = "/home/snh02/gl/ECMWF.atos.gnu/bin"
+
+[task.PgdUpdate]
+ bindir = "/home/snh02/gl/ECMWF.atos.gnu/bin"
 
 [task.creategrib.conversions.surfex]
  input_template = "@SURFEX_TEMPLATE@"
@@ -325,7 +336,7 @@ tasks = ["creategrib", "Background_hpc", "UnitTest"]
  NPROCX = 1
  NPROCY = 1
  WRAPPER = "srun"
- tasks = ["Gmted", "Soil"]
+ tasks = ["Gmted", "Soil", "Marsprep"]
 
 [submission.serial.BATCH]
  NAME = "#SBATCH --job-name=@TASK_NAME@"
@@ -337,14 +348,14 @@ tasks = ["creategrib", "Background_hpc", "UnitTest"]
 
 [submission.serial.ENV]
  OS = "import os"
- MODULE_ENV = "module_env='/usr/local/apps/lmod/8.6.8/init/env_modules_python.py'"
- MODULE_INTEL= "exec(open(module_env).read()); module('load', 'prgenv/intel')"
- MODULE_MKL= "exec(open(module_env).read()); module('load', 'intel-mkl/19.0.5')"
- MODULE_OPENMPI= "exec(open(module_env).read()); module('load', 'hpcx-openmpi/2.9.0')"
- MODULE_NETCDF4= "exec(open(module_env).read()); module('load', 'netcdf4/4.7.4')"
- MODULE_HDF5= "exec(open(module_env).read()); module('load', 'hdf5/1.10.6')"
- MODULE_ECMWF= "exec(open(module_env).read()); module('load', 'ecmwf-toolbox/2021.08.3.0')"
- MODULE_FFTW= "exec(open(module_env).read()); module('load', 'fftw/3.3.9')"
+ MODULE_ENV= "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read())"
+ MODULE_INTEL= "module('load', 'prgenv/intel')"
+ MODULE_MKL= "module('load', 'intel-mkl/19.0.5')"
+ MODULE_OPENMPI= "module('load', 'hpcx-openmpi/2.9.0')"
+ MODULE_NETCDF4= "module('load', 'netcdf4/4.7.4')"
+ MODULE_HDF5= "module('load', 'hdf5/1.10.6')"
+ MODULE_ECMWF= "module('load', 'ecmwf-toolbox/2021.08.3.0')"
+ MODULE_FFTW= "module('load', 'fftw/3.3.9')"
  OMP_NUM_THREADS= "os.environ['OMP_NUM_THREADS'] = '1'"
  OMPI_MCA_btl= "os.environ['OMPI_MCA_btl'] = '^vader'"
  DR_HOOK_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
@@ -357,7 +368,7 @@ tasks = ["creategrib", "Background_hpc", "UnitTest"]
 
 [submission.parallel]
  SCHOST = "hpc"
- tasks = ["Forecast","e927","Pgd","Prep"]
+ tasks = ["Forecast", "e927", "Pgd", "Prep", "c903"]
  NPROC = 32
  WRAPPER = "srun"
 [submission.parallel.BATCH]
@@ -388,6 +399,14 @@ tasks = ["creategrib", "Background_hpc", "UnitTest"]
  NODES = "#SBATCH --nodes=1"
  NTASKS = "#SBATCH --ntasks=16"
 
+[submission.task_exceptions.c903]
+ NPROC = 36
+[submission.task_exceptions.c903.BATCH]
+ NODE = "#SBATCH --nodes=12"
+ NTASKS = "#SBATCH --ntasks=36"
+ MEM = "#SBATCH --mem=200GB" 
+ WALLTIME = "#SBATCH --time=00:30:00" 
+
 [submission.task_exceptions.Forecast]
  NPROC = 256
  
@@ -405,6 +424,11 @@ tasks = ["creategrib", "Background_hpc", "UnitTest"]
  NODES = "#SBATCH --nodes=1"
  NTASKS = "#SBATCH --ntasks=1"
  WALLTIME = "#SBATCH --time=00:10:00"
+
+[submission.task_exceptions.marsprep.BATCH]
+ NODES = "#SBATCH --nodes=1"
+ NTASKS = "#SBATCH --ntasks=1"
+ WALLTIME = "#SBATCH --time=01:00:00"
 
 [troika]
 config_file = "@DEODE_HOME@/deode/data/config_files/troika.yml"
