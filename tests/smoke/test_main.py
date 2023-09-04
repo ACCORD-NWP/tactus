@@ -84,7 +84,7 @@ class TestMainShowCommands:
     def test_show_config_command(self):
         with redirect_stdout(StringIO()):
             main(["show", "config"])
-            main(["show", "config", "-config_file", PACKAGE_CONFIG_PATH.as_posix()])
+            main(["show", "config", "--config-file", PACKAGE_CONFIG_PATH.as_posix()])
 
     def test_show_config_schema_command(self):
         with redirect_stdout(StringIO()):
@@ -132,7 +132,7 @@ def test_start_suite_command(tmp_path):
             "suite",
             "--joboutdir",
             tmp_path.as_posix(),
-            "--ecf_files",
+            "--ecf-files",
             f"{WORKING_DIR.as_posix()}/ecf",
         ]
     )

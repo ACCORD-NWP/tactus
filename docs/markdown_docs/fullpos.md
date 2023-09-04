@@ -45,14 +45,14 @@ The logics follows the namelists used by fullpos. For 2D fields we specify the f
      - 50.0
 ```
 
-If there is a wish for different levels for different fields we can specify this as 
+If there is a wish for different levels for different fields we can specify this as
 
 ```
   NAMFPDYP:
    VOR:
     CL3DF:
      - 'ABS_VORTICITY'
-    RFP3P: 
+    RFP3P:
      - 5000.0
      - 10000.0
    DIV:
@@ -68,7 +68,7 @@ Where `VOR` and `DIV` in the example above are just arbitrary names used to sepa
 
 ## Example
 
-A simple example on how the namelists are generated can be found at the end of `deode/fullpos.py` 
+A simple example on how the namelists are generated can be found at the end of `deode/fullpos.py`
 
 ```
 import fullpos
@@ -87,7 +87,7 @@ for k, v in selections.items():
 The fullpos namelists can be generated from command line using
 
 ```
-deode -config_file deode/data/config_files/config.toml show namelist -t master -n forecast
+deode --config-file deode/data/config_files/config.toml show namelist -t master -n forecast
 ```
 
 This will produce the namelist for the forecast and as many xxt* files as has been defined in the fullpos yaml file.

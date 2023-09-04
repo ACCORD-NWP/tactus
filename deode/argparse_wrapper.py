@@ -40,12 +40,12 @@ def get_parsed_args(program_name="program", argv=None):
     common_parser = argparse.ArgumentParser(add_help=False)
 
     common_parser.add_argument(
-        "-deode_home",
+        "--deode-home",
         default=None,
         help="Specify deode_home to override automatic detection",
     )
     common_parser.add_argument(
-        "-config_file",
+        "--config-file",
         metavar="CONFIG_FILE_PATH",
         default=get_default_config_path(),
         type=Path,
@@ -61,7 +61,7 @@ def get_parsed_args(program_name="program", argv=None):
         ),
     )
     common_parser.add_argument(
-        "-loglevel",
+        "--loglevel",
         default="info",
         choices=["critical", "error", "warning", "info", "debug", "notset"],
         help="What type of info should be printed to the log",
@@ -96,21 +96,12 @@ def get_parsed_args(program_name="program", argv=None):
     parser_run = subparsers.add_parser(
         "run", help="Runs a task.", parents=[common_parser]
     )
-    parser_run.add_argument("--task", "-t", dest="task", help="Task name", required=True)
-    parser_run.add_argument(
-        "--template", dest="template_job", help="Template", required=True
-    )
+    parser_run.add_argument("--task", "-t", help="Task name", required=True)
+    parser_run.add_argument("--template-job", help="Template", required=True)
     parser_run.add_argument("--job", dest="task_job", help="Task job file", required=True)
-    parser_run.add_argument(
-        "--output", "-o", dest="output", help="Task output file", required=True
-    )
-    parser_run.add_argument("--troika", dest="troika", default="troika", required=False)
-    parser_run.add_argument(
-        "--troika_config",
-        dest="troika_config",
-        default="/opt/troika/etc/troika.yml",
-        required=False,
-    )
+    parser_run.add_argument("--output", "-o", help="Task output file", required=True)
+    parser_run.add_argument("--troika", default="troika")
+    parser_run.add_argument("--troika-config", default="/opt/troika/etc/troika.yml")
     parser_run.set_defaults(run_command=run_task)
 
     ############################################
@@ -133,44 +124,21 @@ def get_parsed_args(program_name="program", argv=None):
         "suite", help="Start the suite", parents=[common_parser]
     )
     parser_start_suite.add_argument(
-        "--ecf_host",
-        "-host",
-        type=str,
-        dest="ecf_host",
-        help="Ecflow host",
-        required=False,
-        default=None,
+        "--ecf-host", "-host", type=str, help="Ecflow host", default=None
     )
     parser_start_suite.add_argument(
-        "--ecf_port",
-        "-port",
-        type=int,
-        dest="ecf_port",
-        help="Ecflow port",
-        required=False,
-        default=None,
+        "--ecf-port", "-port", type=int, help="Ecflow port", default=None
     )
     parser_start_suite.add_argument(
-        "--start_command",
-        type=str,
-        dest="start_command",
-        help="Start command for server",
-        required=False,
-        default=None,
+        "--start-command", type=str, help="Start command for server", default=None
     )
     parser_start_suite.add_argument(
-        "--joboutdir", "-j", dest="joboutdir", help="Job out directory", required=True
+        "--joboutdir", "-j", help="Job out directory", required=True
     )
     parser_start_suite.add_argument(
-        "--ecf_files",
-        "-f",
-        dest="ecf_files",
-        help="Ecflow container directory",
-        required=True,
+        "--ecf-files", "-f", help="Ecflow container directory", required=True
     )
-    parser_start_suite.add_argument(
-        "--begin", "-b", dest="begin", help="Begin suite", default=True, required=False
-    )
+    parser_start_suite.add_argument("--begin", "-b", help="Begin suite", default=True)
     parser_start_suite.set_defaults(run_command=start_suite)
 
     ###########################################
@@ -221,35 +189,31 @@ def get_parsed_args(program_name="program", argv=None):
     parser_show_namelist = show_command_subparsers.add_parser(
         "namelist", help="Print namelist in use and exit", parents=[common_parser]
     )
-
     parser_show_namelist.add_argument(
+        "--namelist-type",
         "-t",
         type=str,
-        dest="namelist_type",
         help="Namelist target, master or surfex",
         choices=["master", "surfex"],
         required=True,
         default=None,
     )
-
     parser_show_namelist.add_argument(
+        "--namelist",
         "-n",
         type=str,
-        dest="namelist",
         help="Namelist to show, type anything to print available options",
         required=True,
         default=None,
     )
-
     parser_show_namelist.add_argument(
+        "--optional-namelist-name",
         "-o",
         type=str,
         dest="namelist_name",
         help="Optional namelist name",
-        required=False,
         default=None,
     )
-
     parser_show_namelist.add_argument(
         "--no-substitute",
         "-b",
@@ -257,14 +221,12 @@ def get_parsed_args(program_name="program", argv=None):
         default=True,
         help="Do not substitute config values in the written namelist",
     )
-
     parser_show_namelist.set_defaults(run_command=show_namelist)
 
-    # doc subparser
-    parser_doc = subparsers.add_parser(
-        "doc",
-        help="Print documentation style output",
-    )
+    ###########################################
+    # Configure parser for the "doc" command #
+    ###########################################
+    parser_doc = subparsers.add_parser("doc", help="Print documentation style output")
     doc_command_subparsers = parser_doc.add_subparsers(
         title="doc",
         dest="doc_what",

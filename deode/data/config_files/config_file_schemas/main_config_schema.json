@@ -30,7 +30,7 @@
   "definitions": {
     "include": {
       "title": "Include Section",
-      "description": "Sections to be included from other config files. Specified as 'key = val' pairs, where the keys are the section names and the vals are the paths to the files containeing them.",
+      "description": "Sections to be included from other config files. Specified as 'key = val' pairs, where the keys are the section names and the vals are the paths to the files containing them.",
       "type": "object",
       "properties": {}
     },

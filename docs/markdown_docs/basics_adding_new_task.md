@@ -81,7 +81,7 @@ OS = "import os"
 
 After that is all done, the new task can be ran with:
 ```
-deode -config_file=/your/config.toml -loglevel debug run --task yourtask  --template $PWD/deode/templates/stand_alone.py  --job $PWD/yourtask.job  --troika_config $PWD/config.yml  -o $PWD/yourtask.log
+deode --config-file=/your/config.toml -loglevel debug run --task yourtask  --template $PWD/deode/templates/stand_alone.py  --job $PWD/yourtask.job  --troika-config $PWD/config.yml  -o $PWD/yourtask.log
 ```
 
-If `config_file` is specified under `[troika]` in config.yml, one can skip the --troika_config argument.
+If `config_file` is specified under `[troika]` in config.yml, one can skip the `--troika-config` argument.
