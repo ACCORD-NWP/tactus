@@ -1,13 +1,13 @@
 [general]
-case = "@CYCLE@_@CSC@_@DOMAIN@"
+case = "@CYCLE@_@CSC@"
 cnmexp = "DEOD"
 realization = -1
-tstep = 30
+tstep = 75
 loglevel = "info"
-csc = "AROME"
-cycle = "CY48t3"
+csc = "HARMONIE_AROME"
+cycle = "CY46h1"
 surfex = true
-forecast_range = "PT6H"
+forecast_range = "PT12H"
 keep_workdirs = true
 accept_static_namelists = false
 nproma = -32
@@ -17,38 +17,36 @@ mars_expver = "0001"
 bdstrategy = "same_forecast"
 bdint = "PT1H"
 bdshift = "PT0H"
-bdcycle = "PT1H"
-bdmodel = "arome"
-bd_has_surfex = true
-bdtasks_per_batch = 24
+bdcycle = "PT06H"
+bdmodel = "ifs"
+bd_has_surfex = false
+bdtasks_per_batch = 12
 
 [general.output_settings]
-history = ["PT1H"]
-fullpos = "PT15M"
-surfex = ["PT1H"]
+history = ["PT0H:PT12H:PT1H"]
+fullpos = ["PT6H:PT15M", "PT9H:PT30M", "PT1H"]
+surfex = ["PT3H:PT1H", "PT9H:PT24H:PT3H"]
 
 [suite_control]
 create_static_data = true
 create_time_dependent_suite = true
-do_soil = false
+do_soil = true
 do_pgd = true
 do_prep = true
 interpolate_boundaries = true
-do_marsprep = false
+do_marsprep = true
 
 [system]
 casedir = "@SCRATCH@/deode/@CASE@"
-host_case = "@CASEDIR@/../@CYCLE@_@CSC@"
-host_domain = "DEMO_60x80_2500m"
 wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@"
 archive = "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
-bddir = "@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@"
+bddir = "@INTP_BDDIR@"
 intp_bddir = "@WRK@"
-bdfile_template = "ICMSH@CNMEXP@+@DURATION_FA@"
-bddir_sfx = "@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@"
-bdfile_sfx_template = "@BDFILE_TEMPLATE@.sfx"
+bdfile_template = "ELSCF@CNMEXP@ALBC@NNN@"
+bddir_sfx = "@MARSDIR@"
+bdfile_sfx_template = "ECSFCSFX+@LLL@"
 climdir = "@CASEDIR@/climate/@DOMAIN@"
-bdclimdir = "@HOST_CASE@/climate/@HOST_DOMAIN@"
+bdclimdir = "@FIXED_BDCLIMDIR@"
 fullpos_config_file = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos_namelist.yml"
 sfx_input_defs = "@DEODE_HOME@/deode/data/input/sfx_input_@CYCLE@.json"
 namelists = "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
@@ -75,9 +73,9 @@ output_template = "sfx_@YYYY@-@MM@-@DD@T@HH@:@mm@:@ss@+@DURATION_GRIB@.grib"
 config_file = "@DEODE_HOME@/deode/data/config_files/troika.yml"
 
 [include]
-domain = "include/domains/DEMO_80x90_1000m.toml"
-vertical_levels = "include/vertical_levels/MF_90.toml"
+domain = "include/domains/DEMO_60x80_2500m.toml"
+vertical_levels = "include/vertical_levels/harmonie-arome_65.toml"
 platform = "include/platform_paths/atos_bologna.toml"
-submission = "include/submission/atos_bologna_CY48t3.toml"
+submission = "include/submission/atos_bologna_CY46h1.toml"
 macros = "include/macros.toml"
 file_templates = "include/file_templates.toml"

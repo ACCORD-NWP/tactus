@@ -53,7 +53,7 @@ class Task(object):
         self.name = name
         self.fmanager = FileManager(self.config)
         self.platform = self.fmanager.platform
-        self.wrapper = self.config["task.wrapper"]
+        self.wrapper = self.config["submission.task.wrapper"]
 
         wrk = self.platform.get_value("system.wrk")
         if wrk is None:
@@ -135,14 +135,14 @@ class Task(object):
 
         """
         try:
-            binary = self.config[f"task.{self.name}.binary"]
+            binary = self.config[f"submission.task_exceptions.{self.name}.binary"]
         except KeyError:
             pass
 
         try:
-            bindir = self.config[f"task.{self.name}.bindir"]
+            bindir = self.config[f"submission.task_exceptions.{self.name}.bindir"]
         except KeyError:
-            bindir = self.platform.get_system_value("bindir")
+            bindir = self.config["submission.bindir"]
 
         return f"{bindir}/{binary}"
 

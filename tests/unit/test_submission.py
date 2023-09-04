@@ -135,12 +135,12 @@ class TestSubmission:
         settings = task.get_task_settings("unittest")
         processor_layout = ProcessorLayout(settings)
         update = derived_variables(config, processor_layout=processor_layout)
-        assert update["task"]["wrapper"] == "2"
+        assert update["submission"]["task"]["wrapper"] == "2"
         assert update["namelist"]["nproc"] == 2
         assert update["namelist"]["nprocx"] == 1
         assert update["namelist"]["nprocy"] is None
         config = config.copy(update=update)
-        assert config["task.wrapper"] == "2"
+        assert config["submission.task.wrapper"] == "2"
         assert config["namelist.nproc"] == 2
         assert config["namelist.nprocx"] == 1
         with pytest.raises(KeyError, match="'nprocy'"):
@@ -163,7 +163,7 @@ class TestSubmission:
         update = derived_variables(config, processor_layout=processor_layout)
         config = config.copy(update=update)
         with pytest.raises(KeyError, match="'wrapper'"):
-            config["task.wrapper"]
+            config["submission.task.wrapper"]
         assert config["namelist.nproc"] == 2
         with pytest.raises(KeyError, match="'nprocy'"):
             config["namelist.nprocy"]

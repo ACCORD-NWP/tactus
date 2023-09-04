@@ -1,232 +1,83 @@
 [general]
- case = "@CYCLE@_@CSC@_@DOMAIN@"
- cnmexp = "DEOD"
- realization = -1
- tstep = 30
- loglevel = "info"
- csc = "HARMONIE_AROME"
- cycle = "CY46h1"
- surfex = true
- forecast_range = "PT3H"
- keep_workdirs = true
- accept_static_namelists = false
- nproma = -32
- mars_expver = "0001"
+case = "@CYCLE@_@CSC@_@DOMAIN@"
+cnmexp = "DEOD"
+realization = -1
+tstep = 30
+loglevel = "info"
+csc = "HARMONIE_AROME"
+cycle = "CY46h1"
+surfex = true
+forecast_range = "PT6H"
+keep_workdirs = true
+accept_static_namelists = false
+nproma = -32
+mars_expver = "0001"
 
 [boundaries]
- bdstrategy = "same_forecast"
- bdint = "PT1H"
- bdshift = "PT0H"
- bdcycle = "PT3H"
- bdmodel = "arome"
- bd_has_surfex = true
- bdmax = 12
+bdstrategy = "same_forecast"
+bdint = "PT1H"
+bdshift = "PT0H"
+bdcycle = "PT1H"
+bdmodel = "arome"
+bd_has_surfex = true
+bdtasks_per_batch = 24
 
 [general.output_settings]
- history = ["PT1H"]
- fullpos = "PT15M"
- surfex = ["PT1H"]
+history = ["PT1H"]
+fullpos = "PT15M"
+surfex = ["PT1H"]
 
 [suite_control]
- create_static_data = true
- create_time_dependent_suite = true
- do_soil = true
- do_pgd = true
- do_prep = true
- interpolate_boundaries = true
- do_marsprep = false
-
-[file_templates]
- duration_grib = "@LLLH@h@LM@m@LS@s"
- duration_fa = "@LLLH@:@LM@:@LS@"
- history = "ICMSH@CNMEXP@+@DURATION_FA@"
- surfex = "ICMSH@CNMEXP@+@DURATION_FA@.sfx"
- fullpos = "GRIBPF@CNMEXP@@DOMAIN@+@DURATION_FA@"
-
-[macros]
- os_macros = ["USER", "HOME", "PWD"]
- group_macros = ["platform","system"]
- gen_macros = ["general.cnmexp",
-               "general.mars_expver",
-               "general.cycle",
-               "general.csc",
-               "file_templates.duration_grib",
-               "file_templates.duration_fa",
-               { surfex_template = "file_templates.surfex" },
-               { case = "general.case" },
-               { domain = "domain.name" },
-               { rrr = "general.realization" } ]
-
-[domain]
- name = "DEMO_80x90_1000m"
- nimax = 69
- njmax = 79
- xloncen = 4.9
- xlatcen = 52.0
- xlon0 = 4.9
- xlat0 = 52.0
- xbeta  = 0.0
- xdx = 1000.0
- xdy = 1000.0
- ilone = 11
- ilate = 11
- nbzong = 8
- nbzonl = 8
- gridtype = "cubic"
+create_static_data = true
+create_time_dependent_suite = true
+do_soil = true
+do_pgd = true
+do_prep = true
+interpolate_boundaries = true
+do_marsprep = false
 
 [system]
- host_case = "@CYCLE@_@CSC@"
- host_domain = "DEMO_60x80_2500m"
- wrk = "@SCRATCH@/deode/@CASE@/@YYYY@@MM@@DD@_@HH@@mm@"
- archive = "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
- bddir = "@SCRATCH@/deode/@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@"
- intp_bddir = "@WRK@"
- bdfile_template = "ICMSH@CNMEXP@+@DURATION_FA@"
- marsfile_template = "mars_prefetch_[levtype]_[date]_[time]+[step]"
- bddir_sfx = "@SCRATCH@/deode/@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@"
- bdfile_sfx_template = "@BDFILE_TEMPLATE@.sfx"
- climdir = "@SCRATCH@/deode/@CASE@/climate/@DOMAIN@"
- bdclimdir = "@SCRATCH@/deode/@HOST_CASE@/climate/@HOST_DOMAIN@"
- bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2023-03-29"
- fullpos_config_file = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos_namelist.yml"
- sfx_input_defs = "@DEODE_HOME@/deode/data/input/sfx_input_@CYCLE@.json"
- namelists = "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
-
-[platform]
- deode_home = "set-by-the-system"
- scratch = "/scratch/@USER@"
- archive_root = "@SCRATCH@/deode/@CASE@/archive"
- static_data = "/hpcperm/snh02/DEODE"
- climdata = "@STATIC_DATA@/climate"
- rrtm_dir = "@STATIC_DATA@/rrtm/@CYCLE@"
- ncdir = "@STATIC_DATA@/ncdir"
- e923_data = "@STATIC_DATA@/climate/E923_DATA"
- ecosg_data_path = "@CLIMDATA@/ECOCLIMAP-SG"
- ecoclim_data_path = "@CLIMDATA@/ecoclimap"
- gmted2010_data_path = "@CLIMDATA@/GMTED2010"
- soilgrid_data_path = "@CLIMDATA@/SOILGRID"
- pgd_data_path = "@CLIMDATA@/PGD"
- task_name = "@STAND_ALONE_TASK_NAME@"
- flake_dir = "@STATIC_DATA@/climate/PGD"
- albnir_soil_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
- albnir_veg_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
- albvis_soil_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
- albvis_veg_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
- lai_dir = "@CLIMDATA@/ECOCLIMAP-SG/LAI_SAT"
- tree_height_dir = "@CLIMDATA@/ECOCLIMAP-SG/HT"
+casedir = "@SCRATCH@/deode/@CASE@"
+host_case = "@CASEDIR@/../@CYCLE@_@CSC@"
+host_domain = "DEMO_60x80_2500m"
+wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@"
+archive = "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
+bddir = "@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@"
+intp_bddir = "@WRK@"
+bdfile_template = "ICMSH@CNMEXP@+@DURATION_FA@"
+bddir_sfx = "@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@"
+bdfile_sfx_template = "@BDFILE_TEMPLATE@.sfx"
+climdir = "@CASEDIR@/climate/@DOMAIN@"
+bdclimdir = "@HOST_CASE@/climate/@HOST_DOMAIN@"
+fullpos_config_file = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos_namelist.yml"
+sfx_input_defs = "@DEODE_HOME@/deode/data/input/sfx_input_@CYCLE@.json"
+namelists = "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
+marsdir = "@CASEDIR@/IFS/@YYYY@/@MM@/@DD@/@HH@/@MARS_EXPVER@"
+marsfile_template = "mars_prefetch_[levtype]_[date]_[time]+[step]"
+global_sfcdir = "/hpcperm/snh02/climate_fields_mir/climate.v020_MIR_orog/"
 
 [general.times]
- basetime = "2023-02-19T00:00:00Z"
- validtime = "2023-02-19T00:00:00Z"
- 
-[task]
- wrapper = ""
+basetime = "2023-02-19T00:00:00Z"
+validtime = "2023-02-19T00:00:00Z"
+start = "2023-08-30T05:00:00Z"
+end = "2023-08-30T06:00:00Z"
+cycle_length = "PT1H"
 
 [task.args]
- bd_nr = "1"
- bd_time = "2023-02-19T09:00:00Z"
+bd_nr = "1"
+bd_time = "2023-02-19T09:00:00Z"
 
 [task.creategrib.conversions.surfex]
- input_template = "@SURFEX_TEMPLATE@"
- output_template = "sfx_@YYYY@-@MM@-@DD@T@HH@:@mm@:@ss@+@DURATION_GRIB@.grib" 
-
-[submission]
-submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
-default_submit_type = "serial"
-
-[submission.background_vm]
-INTERPRETER = "#!/usr/bin/python3"
-SCHOST = "localhost"
-tasks = ["Background_vm"]
-
-[submission.background_hpc]
-SCHOST = "localhost"
-tasks = ["creategrib", "Background_hpc", "UnitTest"]
-
-[submission.serial]
- SCHOST = "hpc"
- NPROC = 1
- NPROCX = 1
- NPROCY = 1
- WRAPPER = "srun"
- tasks = ["Gmted", "Soil"]
-
-[submission.serial.BATCH]
- NAME = "#SBATCH --job-name=@TASK_NAME@"
- ACCOUNT = "#SBATCH -A msdeode"
- WALLTIME = "#SBATCH --time=00:15:00"
- QOS = "#SBATCH --qos=nf"
- NODES = "#SBATCH --nodes=1"
- NTASKS= "#SBATCH --ntasks=1"
-
-[submission.serial.ENV]
- OS = "import os"
- MODULE_ENV= "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read())"
- MODULE_INTEL= "module('load', 'prgenv/intel')"
- MODULE_MKL= "module('load', 'intel-mkl/19.0.5')"
- MODULE_OPENMPI= "module('load', 'openmpi/4.1.1.1')"
- MODULE_NETCDF4= "module('load', 'netcdf4/4.7.4')"
- MODULE_HDF5= "module('load', 'hdf5/1.10.6')"
- MODULE_ECMWF= "module('load', 'ecmwf-toolbox/2023.04.1.0')"
- MODULE_FFTW= "module('load', 'fftw/3.3.9')"
- OMP_NUM_THREADS= "os.environ['OMP_NUM_THREADS'] = '1'"
- OMPI_MCA_btl= "os.environ['OMPI_MCA_btl'] = '^vader'"
-
-[submission.task_exceptions.Gmted.ENV]
- MODULE_GDAL= "module('load', 'gdal/3.2.1')"
-
-[submission.task_exceptions.Soil.ENV]
- MODULE_GDAL= "module('load', 'gdal/3.2.1')"
-
-[submission.parallel]
- SCHOST = "hpc"
- tasks = ["Forecast","e927","Pgd","Prep"]
- NPROC = 32
- WRAPPER = "srun"
-[submission.parallel.BATCH]
- NAME = "#SBATCH --job-name=@TASK_NAME@"
- ACCOUNT = "#SBATCH -A msdeode"
- WALLTIME = "#SBATCH --time=00:10:00"
- QOS = "#SBATCH --qos=np"
-
-[submission.parallel.ENV]
- OS = "import os"
- MODULE_ENV= "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read())"
- MODULE_INTEL= "module('load', 'prgenv/intel')"
- MODULE_MKL= "module('load', 'intel-mkl/19.0.5')"
- MODULE_OPENMPI= "module('load', 'openmpi/4.1.1.1')"
- MODULE_NETCDF4= "module('load', 'netcdf4/4.7.4')"
- MODULE_HDF5= "module('load', 'hdf5/1.10.6')"
- MODULE_ECMWF= "module('load', 'ecmwf-toolbox/2023.04.1.0')"
- MODULE_FFTW= "module('load', 'fftw/3.3.9')"
- OMP_NUM_THREADS= "os.environ['OMP_NUM_THREADS'] = '1'"
- DR_HOOK = "os.environ['DR_HOOK'] = '1'"
- OMPI_MCA_btl= "os.environ['OMPI_MCA_btl'] = '^vader'"
-
-[submission.task_exceptions.e927]
- NPROC = 16
-
-[submission.task_exceptions.e927.BATCH]
- NODES = "#SBATCH --nodes=1"
- NTASKS = "#SBATCH --ntasks=16"
-
-[submission.task_exceptions.Forecast]
- NPROC = 256
- 
-[submission.task_exceptions.Forecast.BATCH]
- NODES = "#SBATCH --nodes=2"
- NTASKS = "#SBATCH --ntasks=256"
- WALLTIME = "#SBATCH --time=00:30:00"
-
-[submission.task_exceptions.Pgd.BATCH]
- NODES = "#SBATCH --nodes=2"
- NTASKS = "#SBATCH --ntasks=32"
- WALLTIME = "#SBATCH --time=00:10:00"
-
-[submission.task_exceptions.Prep.BATCH]
- NODES = "#SBATCH --nodes=1"
- NTASKS = "#SBATCH --ntasks=1"
- WALLTIME = "#SBATCH --time=00:10:00"
+input_template = "@SURFEX_TEMPLATE@"
+output_template = "sfx_@YYYY@-@MM@-@DD@T@HH@:@mm@:@ss@+@DURATION_GRIB@.grib" 
 
 [troika]
 config_file = "@DEODE_HOME@/deode/data/config_files/troika.yml"
+
+[include]
+domain = "include/domains/DEMO_80x90_1000m.toml"
+vertical_levels = "include/vertical_levels/harmonie-arome_65.toml"
+platform = "include/platform_paths/atos_bologna.toml"
+submission = "include/submission/atos_bologna_CY46h1.toml"
+macros = "include/macros.toml"
+file_templates = "include/file_templates.toml"

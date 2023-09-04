@@ -1,0 +1,15 @@
+name = "DEMO_80x90_1000m"
+nimax = 69
+njmax = 79
+xloncen = 4.9
+xlatcen = 52.0
+xlon0 = 4.9
+xlat0 = 52.0
+xbeta  = 0.0
+xdx = 1000.0
+xdy = 1000.0
+ilone = 11
+ilate = 11
+nbzong = 8
+nbzonl = 8
+gridtype = "cubic"

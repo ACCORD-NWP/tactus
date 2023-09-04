@@ -11,12 +11,6 @@
     "suite_control": {
       "$ref": "#/definitions/suite_control"
     },
-    "file_templates": {
-      "$ref": "#/definitions/file_templates"
-    },
-    "macros": {
-      "$ref": "#/definitions/macros"
-    },
     "system": {
       "$ref": "#/definitions/system"
     },
@@ -77,7 +71,7 @@
               "type": "string",
               "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
         },
-        "bdmax": {
+        "bdtasks_per_batch": {
               "description": "Max number of parallel boundary interpolation tasks",
               "type": "number"
         },
@@ -192,52 +186,6 @@
         "sfx_input_defs": {
           "type": "string",
           "description": "Path to the surfex json config file"
-        }
-      }
-    },
-    "macros": {
-      "title": "MacroSection",
-      "description": "Model for the 'macros' section.",
-      "type": "object",
-      "properties": {
-        "gen_macros": {
-          "type": "array",
-          "description": "Turns any string config to a macro, use a dict to rename an attribute."
-        },
-        "os_macros": {
-          "type": "array",
-          "description": "Environment variables used as macros"
-        },
-        "group_macros": {
-          "type": "array",
-          "description": "Turns a full config section to a macro"
-        }
-      }
-    },
-    "file_templates": {
-      "title": "FileTemplates",
-      "description": "Templates for file names",
-      "type": "object",
-      "properties": {
-        "duration_grib": {
-          "type": "string",
-          "description": "Macros for duration representation in GRIB output files"
-        },
-        "duration_fa": {
-          "type": "string",
-          "description": "Macros for duration representation of FA files, note that this is given by the IAL code."
-        },
-        "history": {
-          "type": "string",
-          "description": "Name template for history files"
-        },
-        "surfex": {
-          "type": "string",
-          "description": "Name template for surfex history files"
-        },
-        "fullpos": {
-          "type": "string",
-          "description": "Name template for fullpos files. Note that these are in GRIB2 by default."
         }
       }
     },
@@ -384,25 +332,6 @@
             "CY46t1",
             "CY46h1"
           ]
-        },
-        "bdint": {
-          "description": "Boundary interval",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-        },
-        "bdshift": {
-          "description": "Shift of boundary initial time. E.g. '-PT3H' would mean use 3H old boundaries",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-        },
-        "bdcycle": {
-          "description": "Boundary model cycle interval",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-        },
-        "bdmax": {
-          "description": "Max number of parallel boundary interpolation tasks",
-          "type": "number"
         },
         "nproma": {
           "description": "NPROMA size in the forecast model. See the namelists for where it is used",

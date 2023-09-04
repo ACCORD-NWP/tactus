@@ -274,6 +274,13 @@ class Platform:
 
                 i = [m.start() for m in re.finditer(r"@", pattern)]
 
+            # LBC number handling
+            try:
+                bd_nr = int(self.config["task.args.bd_nr"])
+                pattern = self.sub_value(pattern, "NNN", f"{bd_nr:03d}")
+            except KeyError:
+                pass
+
             # Time handling
             if basetime is None:
                 basetime = str(self.config["general.times.basetime"])

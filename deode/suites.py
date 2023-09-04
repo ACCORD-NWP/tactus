@@ -279,7 +279,7 @@ class SuiteDefinition(object):
                     forecast_range = as_timedelta(config["general.forecast_range"])
                     endtime = basetime + forecast_range
                     bdint = as_timedelta(config["boundaries.bdint"])
-                    bdmax = config["boundaries.bdmax"]
+                    bdmax = config["boundaries.bdtasks_per_batch"]
 
                     bdnr = 0
                     intnr = 1

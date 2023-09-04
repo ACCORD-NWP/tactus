@@ -146,6 +146,8 @@ def derived_variables(config, processor_layout=None):
         # Update namelist dicts
         if procs:
             update["namelist"].update(procs)
-        update.update({"task": {"wrapper": processor_layout.get_wrapper()}})
+        update.update(
+            {"submission": {"task": {"wrapper": processor_layout.get_wrapper()}}}
+        )
 
     return update

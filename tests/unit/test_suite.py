@@ -42,7 +42,7 @@ class TestSuite:
     @pytest.mark.parametrize(
         "param",
         [
-            {"general": {"bdmax": 1}},
+            {"boundaries": {"bdmax": 1}},
             {
                 "suite_control": {
                     "do_pgd": False,

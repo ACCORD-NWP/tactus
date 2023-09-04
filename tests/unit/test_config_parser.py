@@ -472,8 +472,12 @@ class TestPossibilityOfISO8601ComplianceEnforcement:
 
 @pytest.fixture()
 def valid_config_include_section():
-    valid_include_files = list(PACKAGE_CONFIG_INCLUDE_DIR.glob("*"))
-    include_section = {fpath.stem: fpath.as_posix() for fpath in valid_include_files}
+    files_under_include_dir = list(PACKAGE_CONFIG_INCLUDE_DIR.glob("*"))
+    include_section = {
+        fpath.stem: fpath.as_posix()
+        for fpath in files_under_include_dir
+        if fpath.is_file()
+    }
     return include_section
 
 
@@ -515,7 +519,7 @@ class TestConfigIncludeSection:
 
     def test_includes_do_not_duplicate_schemas(self, raw_config_with_include_section):
         raw_config = raw_config_with_include_section.copy()
-        raw_config["include"].update({"foo_section": "include/domain.toml"})
+        raw_config["include"].update({"foo_section": "include/macros.toml"})
 
         with open(CONFIG_SCHEMAS_DIR / "default_section_schema.json", "r") as schema_file:
             schema = json.load(schema_file)

@@ -61,7 +61,8 @@ def default_main(**kwargs):
     # config["general"].update({"loglevel": loglevel})  # noqa
     config = config.copy(
         update={
-            "task": {"args": args_dict, "wrapper": kwargs.get("WRAPPER")},
+            "submission": {"task": {"wrapper": kwargs.get("WRAPPER")}},
+            "task": {"args": args_dict},
             "general": {
                 "loglevel": kwargs.get("LOGLEVEL"),
                 "times": {
