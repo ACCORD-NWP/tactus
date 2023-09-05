@@ -572,8 +572,6 @@ class Pgd(Task):
         self.nlgen = NamelistGenerator(self.config, "surfex")
         # TODO get from args
         self.force = True
-        # TODO get from TaskSettings
-        self.wrapper = ""
 
     def execute(self):
         """Execute."""
@@ -626,8 +624,6 @@ class Prep(Task):
         self.nlgen = NamelistGenerator(self.config, "surfex")
         # TODO get from args
         self.force = True
-        # TODO get from TaskSettings
-        self.wrapper = ""
 
     def execute(self):
         """Execute."""
