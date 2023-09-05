@@ -4,6 +4,7 @@ gen_macros = [
     "general.cnmexp",
     "general.cycle",
     "general.csc",
+    "general.mars_expver",
     "file_templates.duration_grib",
     "file_templates.duration_fa",
     { surfex_template = "file_templates.surfex" },
