@@ -99,11 +99,15 @@ NODES = "#SBATCH --nodes=2"
 NTASKS = "#SBATCH --ntasks=256"
 WALLTIME = "#SBATCH --time=00:30:00"
 
+[task_exceptions.Pgd]
+WRAPPER="srun -n @NPROC@"
 [task_exceptions.Pgd.BATCH]
 NODES = "#SBATCH --nodes=2"
 NTASKS = "#SBATCH --ntasks=32"
 WALLTIME = "#SBATCH --time=00:10:00"
 
+[task_exceptions.Prep]
+WRAPPER="srun -n @NPROC@"
 [task_exceptions.Prep.BATCH]
 NODES = "#SBATCH --nodes=1"
 NTASKS = "#SBATCH --ntasks=1"

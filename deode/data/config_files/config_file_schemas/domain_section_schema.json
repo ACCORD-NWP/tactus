@@ -17,7 +17,9 @@
         },
         "name": {
             "type": "string",
-            "description": "Name of your domain"
+            "description": "Name of your domain",
+	    "maxLength": 20
+
         },
         "nimax": {
             "type": "number",

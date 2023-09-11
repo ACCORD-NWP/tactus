@@ -1137,6 +1137,7 @@ f4_c903_domain:
     RCO_EZO: 180.0
   NAMFPIOS:
     CFPCLIFNAME: ${domain.name}
+    NFPXFLD: 10
   NAMAFN:
     GFP_ST%IANO: 0
     TFP_U%CLNAME: WIND.U.PHYS

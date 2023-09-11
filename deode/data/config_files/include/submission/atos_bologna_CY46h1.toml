@@ -44,6 +44,14 @@ MODULE_FFTW= "module('load', 'fftw/3.3.9')"
 OMP_NUM_THREADS= "os.environ['OMP_NUM_THREADS'] = '1'"
 OMPI_MCA_btl= "os.environ['OMPI_MCA_btl'] = '^vader'"
 
+[task_exceptions.PgdUpdate]
+bindir = "/home/snh02/work/gl_binaries"
+binary = "gl_20230823"
+
+[task_exceptions.creategrib]
+bindir = "/home/snh02/work/gl_binaries"
+binary = "gl_20230823"
+
 [task_exceptions.Gmted.ENV]
 MODULE_GDAL= "module('load', 'gdal/3.2.1')"
 
@@ -75,14 +83,6 @@ OMP_NUM_THREADS= "os.environ['OMP_NUM_THREADS'] = '1'"
 DR_HOOK = "os.environ['DR_HOOK'] = '1'"
 OMPI_MCA_btl= "os.environ['OMPI_MCA_btl'] = '^vader'"
 
-[task_exceptions.PgdUpdate]
-bindir = "/home/snh02/work/gl_binaries"
-binary = "gl_20230823"
-
-[task_exceptions.creategrib]
-bindir = "/home/snh02/work/gl_binaries"
-binary = "gl_20230823"
-
 [task_exceptions.e927]
 NPROC = 16
 
@@ -98,11 +98,15 @@ NODES = "#SBATCH --nodes=2"
 NTASKS = "#SBATCH --ntasks=256"
 WALLTIME = "#SBATCH --time=00:30:00"
 
+[task_exceptions.Pgd]
+WRAPPER="srun -n @NPROC@"
 [task_exceptions.Pgd.BATCH]
 NODES = "#SBATCH --nodes=2"
 NTASKS = "#SBATCH --ntasks=32"
 WALLTIME = "#SBATCH --time=00:10:00"
 
+[task_exceptions.Prep]
+WRAPPER="srun -n @NPROC@"
 [task_exceptions.Prep.BATCH]
 NODES = "#SBATCH --nodes=1"
 NTASKS = "#SBATCH --ntasks=1"
@@ -111,16 +115,13 @@ WALLTIME = "#SBATCH --time=00:10:00"
 [task_exceptions.c903]
 bindir = "/perm/snh02/pack/48t3_fix.04.OMPIIFC2104.x/bin"
 NPROC = 36
-
 [task_exceptions.c903.BATCH]
 NODE = "#SBATCH --nodes=12"
 NTASKS = "#SBATCH --ntasks=36"
 MEM = "#SBATCH --mem=200GB" 
 WALLTIME = "#SBATCH --time=00:30:00" 
-
 [task_exceptions.c903.ENV]
 DR_HOOK_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
-
 
 [task_exceptions.marsprep.BATCH]
 NODES = "#SBATCH --nodes=1"
