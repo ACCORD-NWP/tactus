@@ -60,12 +60,6 @@ def get_parsed_args(program_name="program", argv=None):
             + "'"
         ),
     )
-    common_parser.add_argument(
-        "--loglevel",
-        default="info",
-        choices=["critical", "error", "warning", "info", "debug", "notset"],
-        help="What type of info should be printed to the log",
-    )
 
     ##########################################
     # Define main parser and general options #

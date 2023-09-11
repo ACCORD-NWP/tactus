@@ -8,7 +8,7 @@ from pathlib import Path
 import f90nml
 import yaml
 
-from .logs import get_logger_from_config
+from .logs import logger
 from .toolbox import Platform
 
 
@@ -84,7 +84,6 @@ class NamelistComparator:
         """
         self.config = config
         self.platform = Platform(config)
-        self.logger = get_logger_from_config(config)
 
     def compare_dicts(self, dbase, dcomp, action):
         """Compare two dictionaries, recursively if needed.
@@ -115,7 +114,7 @@ class NamelistComparator:
                     if not key.startswith("_"):
                         # Invoke ourselves recursively
                         msg = f"recursive dict comp for {key}"
-                        self.logger.debug(msg)
+                        logger.debug(msg)
                         dout[key] = self.compare_dicts(dbase[key], dcomp[key], action)
                 elif type(valb) is list and type(valc) is list:
                     kl = key.lower()
@@ -132,7 +131,7 @@ class NamelistComparator:
                     for _ in range(len(sib)):
                         sio.append(-999)
                     msg = f"Compare lists {key}, start indices {sib}, {sic}"
-                    self.logger.debug(msg)
+                    logger.debug(msg)
                     dout[key] = self.compare_lists(
                         dbase[key], dcomp[key], sib, sic, sio, action
                     )
@@ -140,13 +139,13 @@ class NamelistComparator:
                 elif valc == valb:
                     # This should be a scalar, with same value
                     msg = f"{key} : {valb} == {valc}"
-                    self.logger.debug(msg)
+                    logger.debug(msg)
                     if action != "diff":
                         dout[key] = valc
                 else:
                     # also scalar, but values differ
                     msg = f"{key} : {valb} /= {valc}"
-                    self.logger.debug(msg)
+                    logger.debug(msg)
                     if action != "intersection" and valc is not None:
                         dout[key] = valc
             else:
@@ -268,7 +267,6 @@ class NamelistGenerator:
         self.platform = Platform(config)
         self.kind = kind
         self.substitute = substitute
-        self.logger = get_logger_from_config(config)
         self.nlcomp = NamelistComparator(config)
         self.cycle = self.config["general.cycle"]
         self.cnfile = (
@@ -298,16 +296,16 @@ class NamelistGenerator:
         namelists = self.platform.get_system_value("namelists")
         ref_namelist = f"{namelists}/namelist_{self.kind}_{self.target}"
 
-        self.logger.debug("Check if reference namelist %s exists", ref_namelist)
+        logger.debug("Check if reference namelist {} exists", ref_namelist)
         if os.path.isfile(ref_namelist):
-            self.logger.info("Use reference namelist %s", ref_namelist)
+            logger.info("Use reference namelist {}", ref_namelist)
             nl = f90nml.read(ref_namelist)
             nldict = {self.target: nl.todict()}
             cndict = {self.target: [self.target]}
             found = False
         else:
-            self.logger.warning(
-                "No reference namelist %s exists, fallback to yaml files", ref_namelist
+            logger.warning(
+                "No reference namelist {} exists, fallback to yaml files", ref_namelist
             )
             found = True
             nldict = {}
@@ -336,9 +334,7 @@ class NamelistGenerator:
             use_yaml, nldict, cndict = self.load_user_namelist()
 
         if use_yaml:
-            self.logger.debug(
-                "Use %s and %s to generate namelist", self.nlfile, self.cnfile
-            )
+            logger.debug("Use {} and {} to generate namelist", self.nlfile, self.cnfile)
             # Read namelist file with all the categories
             with open(self.nlfile, mode="rt", encoding="utf-8") as file:
                 nldict = yaml.safe_load(file)
@@ -349,14 +345,14 @@ class NamelistGenerator:
 
         # Check target is valid
         if target not in cndict:
-            self.logger.warning(
-                "Could not find target namelist '%s' in %s", target, str(self.cnfile)
+            logger.warning(
+                "Could not find target namelist '{}' in {}", target, str(self.cnfile)
             )
             msg = "Available namelist targets:"
             for key in cndict:
                 if not re.match(r"_.+", key):
                     msg += " " + key + ","
-            self.logger.warning(msg[:-1])
+            logger.warning(msg[:-1])
             raise InvalidNamelistTargetError(target)
 
         self.nldict = nldict
@@ -393,17 +389,17 @@ class NamelistGenerator:
                     repval = None
                 if repval is None:
                     if defval != "":
-                        self.logger.debug(
-                            "Using default value %s for '%s'",
+                        logger.debug(
+                            "Using default value {} for '{}'",
                             defval,
                             nam,
                         )
                         repval = find_num(defval)
                     else:
-                        self.logger.debug("No value found for: '%s'", nam)
+                        logger.debug("No value found for: '{}'", nam)
                         repval = finval
                 else:
-                    self.logger.debug("Replaced %s with: %s", nam, str(repval))
+                    logger.debug("Replaced {} with: {}", nam, str(repval))
                 if isinstance(repval, str):
                     finval = str(pre) + str(repval) + str(post)
                 else:
@@ -494,7 +490,7 @@ class NamelistGenerator:
         nml.false_repr = ".FALSE."
         nml.write(output_file, force=True)
 
-        self.logger.debug("Wrote: %s", output_file)
+        logger.debug("Wrote: {}", output_file)
 
     def generate_namelist(self, target, output_file):
         """Generate the namelists for 'target'.
@@ -504,7 +500,7 @@ class NamelistGenerator:
             output_file : where to write the result (fort.4 or EXSEG1.nam typically)
 
         """
-        self.logger.info("Generate namelist for: %s", target)
+        logger.info("Generate namelist for: {}", target)
         self.load(target)
         try:
             update = self.config["namelist_update"]
@@ -536,7 +532,6 @@ class NamelistIntegrator:
         """
         self.config = config
         self.platform = Platform(config)
-        self.logger = get_logger_from_config(config)
         yaml.add_representer(OrderedDict, represent_ordereddict)
 
     def ftn2dict(self, ftnfile):
@@ -560,11 +555,11 @@ class NamelistIntegrator:
                     lk = len(ynml[key])
                     if lk == 0:
                         msg = f"Ignoring empty duplicate namelist {namu}"
-                        self.logger.warning(msg)
+                        logger.warning(msg)
                     else:
                         dupl[namu] = lk
                         msg = f"Found duplicate namelist {namu} with {lk} extra line(s)!"
-                        self.logger.warning(msg)
+                        logger.warning(msg)
             else:
                 onml[key] = ynml[key]
         if len(dupl) > 0:
@@ -572,7 +567,7 @@ class NamelistIntegrator:
             msg = (
                 f"The following namelists in {ftnfile} have non-empty duplicates: {which}"
             )
-            self.logger.warning(msg)
+            logger.warning(msg)
         return onml
 
     def yml2dict(self, ymlfile):

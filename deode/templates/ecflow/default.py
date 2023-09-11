@@ -1,12 +1,14 @@
 """Default ecflow container."""
 from deode.config_parser import MAIN_CONFIG_JSON_SCHEMA, ParsedConfig
 from deode.derived_variables import derived_variables
-from deode.logs import get_logger_from_config
+from deode.logs import GLOBAL_LOGLEVEL, LoggerHandlers, logger
 from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
 from deode.submission import ProcessorLayout
 from deode.tasks.discover_task import get_task
 
 # @ENV_SUB@
+
+logger.enable("deode")
 
 
 def parse_ecflow_vars():
@@ -45,7 +47,15 @@ def default_main(**kwargs):
     """Ecflow container default method."""
     config = kwargs.get("CONFIG")
     config = ParsedConfig.from_file(config, json_schema=MAIN_CONFIG_JSON_SCHEMA)
-    logger = get_logger_from_config(config)
+
+    # Reset loglevel according to (in order of priority):
+    #     (a) Configs in ECFLOW UI
+    #     (b) What was originally set in the config file
+    #     (c) The default `GLOBAL_LOGLEVEL` if none of the above is found.
+    loglevel = kwargs.get(
+        "LOGLEVEL", config.get("general.loglevel", GLOBAL_LOGLEVEL)
+    ).upper()
+    logger.configure(handlers=LoggerHandlers(default_level=loglevel))
 
     args = kwargs.get("ARGS")
     args_dict = {}
@@ -55,26 +65,24 @@ def default_main(**kwargs):
             if len(parts) == 2:
                 args_dict.update({parts[0]: parts[1]})
             else:
-                logger.warning("Could not convert ARGS:%s to dict, skip it", arg)
+                logger.warning("Could not convert ARGS:{} to dict, skip it", arg)
 
-    # How to update config based on ecflow settings when config is assumed to be immutable
-    # config["general"].update({"loglevel": loglevel})  # noqa
+    # Update config based on ecflow settings
     config = config.copy(
         update={
             "submission": {"task": {"wrapper": kwargs.get("WRAPPER")}},
             "task": {"args": args_dict},
             "general": {
-                "loglevel": kwargs.get("LOGLEVEL"),
                 "times": {
                     "validtime": kwargs.get("VALIDTIME"),
                     "basetime": kwargs.get("BASETIME"),
                 },
                 "keep_workdirs": bool(int(kwargs.get("KEEP_WORKDIRS"))),
+                "loglevel": loglevel,
             },
             "platform": {"deode_home": kwargs.get("DEODE_HOME")},
         }
     )
-    logger = get_logger_from_config(config)
 
     # TODO Add wrapper  # noqa
     ecf_host = kwargs.get("ECF_HOST")
@@ -96,9 +104,9 @@ def default_main(**kwargs):
         config = config.copy(update=update)
 
         # TODO Add wrapper to config
-        logger.info("Running task %s", task.ecf_name)
+        logger.info("Running task {}", task.ecf_name)
         get_task(task.ecf_task, config).run()
-        logger.info("Finished task %s", task.ecf_name)
+        logger.info("Finished task {}", task.ecf_name)
 
 
 if __name__ == "__main__":

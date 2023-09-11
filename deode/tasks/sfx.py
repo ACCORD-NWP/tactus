@@ -1,10 +1,10 @@
 """Surfex tasks."""
 
 import json
-import logging
 import os
 
 from ..datetime_utils import as_datetime, as_timedelta, cycle_offset
+from ..logs import logger
 from ..namelist import NamelistGenerator
 from .base import Task
 from .batch import BatchJob
@@ -56,20 +56,20 @@ class InputDataFromNamelist:
             setting (any): Namelist setting
 
         """
-        logging.debug("Checking block=%s key=%s", block, key)
+        logger.debug("Checking block={} key={}", block, key)
         if block in nml:
             if key in nml[block]:
                 vals = []
                 val_dict = {}
                 val = nml[block][key]
-                logging.debug("namelist type=%s", type(val))
+                logger.debug("namelist type={}", type(val))
                 if indices is not None:
-                    logging.debug("indices=%s", indices)
+                    logger.debug("indices={}", indices)
                     if len(indices) == 2:
                         val = nml[block][key][indices[1]][indices[0]]
                     else:
                         val = nml[block][key][indices[0]]
-                        logging.debug("Found 1D value %s", val)
+                        logger.debug("Found 1D value {}", val)
                         if isinstance(val, list):
                             return None
                     val_dict.update({"value": val, "indices": None})
@@ -81,7 +81,7 @@ class InputDataFromNamelist:
                         dims = []
                         tval = val
                         while dim_size != 1:
-                            logging.debug("tval=%s", tval)
+                            logger.debug("tval={}", tval)
                             if isinstance(tval, int):
                                 dim_size = 1
                             else:
@@ -90,8 +90,8 @@ class InputDataFromNamelist:
                                     dims.append(dim_size)
                                 tval = tval[0]
 
-                        logging.debug("dims=%s", dims)
-                        logging.debug("type(val)=%s", type(val))
+                        logger.debug("dims={}", dims)
+                        logger.debug("type(val)={}", type(val))
                         if len(dims) - 1 == 2:
                             for i in range(0, dims[0]):
                                 for j in range(0, dims[1]):
@@ -99,14 +99,14 @@ class InputDataFromNamelist:
                                     indices = [j, i]
                                     lval = val[i][j]
                                     val_dict.update({"value": lval, "indices": indices})
-                                    logging.debug("value=%s indices=%s", lval, indices)
+                                    logger.debug("value={} indices={}", lval, indices)
                                     vals.append(val_dict)
                         elif len(dims) - 1 == 1:
                             for i in range(0, dims[0]):
                                 val_dict = {}
                                 indices = [i]
                                 val_dict.update({"value": val[i], "indices": indices})
-                                logging.debug("value=%s indices=%s", val[i], indices)
+                                logger.debug("value={} indices={}", val[i], indices)
                                 vals.append(val_dict)
                         elif len(dims) - 1 == 0:
                             val_dict = {}
@@ -119,7 +119,7 @@ class InputDataFromNamelist:
                         val_dict.update({"value": val, "indices": None})
                         vals.append(val_dict)
 
-                logging.debug("Found: value=%s", val_dict["value"])
+                logger.debug("Found: value={}", val_dict["value"])
                 return vals
         return None
 
@@ -156,14 +156,14 @@ class InputDataFromNamelist:
             dict: Substituted key=value
 
         """
-        logging.debug(
-            "Substitute key=%s and val=%s %s %s", key, val, self.basetime, self.validtime
+        logger.debug(
+            "Substitute key={} and val={} {} {}", key, val, self.basetime, self.validtime
         )
         pkey = key
         pval = val
         if macros is not None:
             for macro_key, macro_val in macros.items():
-                logging.debug("macro_key=%s macro_val=%s", macro_key, macro_val)
+                logger.debug("macro_key={} macro_val={}", macro_key, macro_val)
                 pkey = pkey.replace(f"{micro}{macro_key}{micro}", macro_val)
                 pval = pval.replace(f"{micro}{macro_key}{micro}", macro_val)
 
@@ -173,7 +173,7 @@ class InputDataFromNamelist:
         pval = self.platform.substitute(
             pval, basetime=self.basetime, validtime=self.validtime
         )
-        logging.debug("SUBSTITUTED: pkey=%s pval=%s", pkey, pval)
+        logger.debug("SUBSTITUTED: pkey={} pval={}", pkey, pval)
         return pkey, pval
 
     def read_macro_setting(self, macro_defs, key, default=None, sep="#"):
@@ -192,7 +192,7 @@ class InputDataFromNamelist:
             setting = macro_defs[key]
             if isinstance(setting, str):
                 if setting.find(sep) > 0:
-                    logging.debug("Read macro setting from namelist %s", setting)
+                    logger.debug("Read macro setting from namelist {}", setting)
                     setting = self.get_nml_value_from_string(self.nml, setting)
                     if isinstance(setting, list):
                         setting = setting[0]["value"]
@@ -216,7 +216,7 @@ class InputDataFromNamelist:
         Returns:
             dict: Key, value dictionary
         """
-        logging.debug("extenders=%s", macros)
+        logger.debug("extenders={}", macros)
         if macros is None:
             return {key: val}
 
@@ -224,7 +224,7 @@ class InputDataFromNamelist:
         for macro, macro_types in macros.items():
             loop = {}
             for macro_type, macro_defs in macro_types.items():
-                logging.debug("macro_defs=%s", macro_defs)
+                logger.debug("macro_defs={}", macro_defs)
 
                 if macro_type == "ekfpert":
                     nncvs = self.read_macro_setting(macro_defs, "list", sep=sep)
@@ -270,8 +270,8 @@ class InputDataFromNamelist:
 
             for key, val in unprocessed_data.items():
                 for vmacro1, vmacro2 in loop.items():
-                    logging.debug(
-                        "key=%s val=%s macro=%s vmacro1=%s vmacro2=%s",
+                    logger.debug(
+                        "key={} val={} macro={} vmacro1={} vmacro2={}",
                         key,
                         val,
                         macro,
@@ -284,7 +284,7 @@ class InputDataFromNamelist:
                     pval = val.replace(f"@{macro}@", vmacro2)
                     processed_data.update({pkey: pval})
 
-        logging.debug("Processed data=%s", processed_data)
+        logger.debug("Processed data={}", processed_data)
         return processed_data
 
     def process_macro(self, key, val, macros, sep="#", indices=None):
@@ -303,11 +303,11 @@ class InputDataFromNamelist:
         Returns:
             dict: Key, value dictionary
         """
-        logging.debug("macros=%s", macros)
+        logger.debug("macros={}", macros)
         if macros is None:
             return key, val
 
-        logging.debug("indices=%s", indices)
+        logger.debug("indices={}", indices)
         if indices is None:
             return key, val
 
@@ -329,10 +329,10 @@ class InputDataFromNamelist:
             if lindex is not None:
                 try:
                     macro_defs = macros[macro]
-                    logging.debug("macro_defs=%s", macro_defs)
+                    logger.debug("macro_defs={}", macro_defs)
                 except KeyError:
-                    logging.warning(
-                        "Macro %s not defined. Use index value %s", macro, lindex
+                    logger.warning(
+                        "Macro {} not defined. Use index value {}", macro, lindex
                     )
                     vmacro = str(lindex + 1)
 
@@ -345,14 +345,14 @@ class InputDataFromNamelist:
                     dec_end = 360 + dec_start
                     dec = 0
                     for day in range(dec_start, dec_end, dec_days):
-                        logging.debug("day=%s, dec=%s lindex=%s", day, dec, lindex)
+                        logger.debug("day={}, dec={} lindex={}", day, dec, lindex)
                         month = int(day / 30) + 1
                         mday = int(day % 30)
                         if dec == lindex:
                             vmacro = f"{month:02d}{mday:02d}"
                         dec += 1
 
-                logging.debug("Substitute @%s@ with %s", macro, vmacro)
+                logger.debug("Substitute @{}@ with {}", macro, vmacro)
                 if isinstance(pkey, str):
                     pkey = pkey.replace(f"@{macro}@", vmacro)
                 if isinstance(pval, str):
@@ -382,28 +382,28 @@ class InputDataFromNamelist:
         else:
             mdata = [data]
         val = str(val)
-        logging.debug("Check if val=%s matches mdata=%s", val, mdata)
+        logger.debug("Check if val={} matches mdata={}", val, mdata)
         sval = None
         for mval in mdata:
             if val.find(sep) > 0:
-                logging.debug("val=%s is a namelist variable", val)
+                logger.debug("val={} is a namelist variable", val)
                 sval = self.get_nml_value_from_string(self.nml, val, indices=indices)
-                logging.debug("Got sval=%s", sval)
+                logger.debug("Got sval={}", sval)
                 if sval is None:
                     return None
                 indices = sval[0]["indices"]
                 sval = sval[0]["value"]
             if mval == val:
-                logging.debug("Found matching data. val=%s data=%s", val, data)
+                logger.debug("Found matching data. val={} data={}", val, data)
                 try:
                     rval = data[val]
                 except TypeError:
                     raise RuntimeError("Malformed input data") from TypeError
                 if sval is not None:
                     rval = {sval: rval}
-                logging.debug("Return data rval=%s", rval)
+                logger.debug("Return data rval={}", rval)
                 return rval
-        logging.warning("Value=%s not found in data", val)
+        logger.warning("Value={} not found in data", val)
         return None
 
     def process_data(self, sep="#"):
@@ -416,11 +416,11 @@ class InputDataFromNamelist:
             mapped_data (dict): A dict with mapped local names and target files.
 
         """
-        logging.debug("Process data: %s", self.data)
+        logger.debug("Process data: {}", self.data)
 
         def _process_data(mapped_data, data, indices=None, macros=None, extenders=None):
             for key, value in data.items():
-                logging.debug(".................. key=%s", key)
+                logger.debug(".................. key={}", key)
                 # Required namelist variable
                 if key.find(sep) > 0:
                     vals = self.get_nml_value_from_string(self.nml, key, indices=indices)
@@ -429,14 +429,14 @@ class InputDataFromNamelist:
 
                 if isinstance(vals, list):
                     for val_dict in vals:
-                        logging.debug("=========== val_dict=%s", val_dict)
+                        logger.debug("=========== val_dict={}", val_dict)
                         val = val_dict["value"]
                         indices = val_dict["indices"]
 
                         setting = self.matching_value(
                             value, val, sep=sep, indices=indices
                         )
-                        logging.debug("Setting=%s", setting)
+                        logger.debug("Setting={}", setting)
                         if setting is not None:
                             if "macros" in setting:
                                 macros = setting.copy()
@@ -453,9 +453,7 @@ class InputDataFromNamelist:
                             else:
                                 print(setting)
                             if not last_dict:
-                                logging.debug(
-                                    "------ Call next loop. setting=%s", setting
-                                )
+                                logger.debug("------ Call next loop. setting={}", setting)
                                 _process_data(
                                     mapped_data,
                                     setting,
@@ -465,8 +463,8 @@ class InputDataFromNamelist:
                                 )
                             else:
                                 for key2, value2 in setting.items():
-                                    logging.debug(
-                                        "Setting1 key=%s value=%s indices=%s",
+                                    logger.debug(
+                                        "Setting1 key={} value={} indices={}",
                                         key2,
                                         value2,
                                         indices,
@@ -479,8 +477,8 @@ class InputDataFromNamelist:
                                             key2 = keys[0]["value"]
 
                                     processed = False
-                                    logging.debug(
-                                        "Setting2 key=%s value=%s indices=%s",
+                                    logger.debug(
+                                        "Setting2 key={} value={} indices={}",
                                         key2,
                                         value2,
                                         indices,
@@ -512,19 +510,19 @@ class InputDataFromNamelist:
                                             key2, value2, extenders
                                         )
                                         for pkey3, pval3 in processed_values.items():
-                                            logging.debug(
-                                                "pkey3=%s pval3=%s", pkey3, pval3
+                                            logger.debug(
+                                                "pkey3={} pval3={}", pkey3, pval3
                                             )
                                             pkey3, pval3 = self.substitute(pkey3, pval3)
-                                            logging.debug(
-                                                "pkey3=%s pval3=%s", pkey3, pval3
+                                            logger.debug(
+                                                "pkey3={} pval3={}", pkey3, pval3
                                             )
                                             mapped_data.update({pkey3: pval3})
 
                                     if not processed:
                                         pkey3 = key2
                                         pval3 = value2
-                                        logging.debug("pkey3=%s pval3=%s", pkey3, pval3)
+                                        logger.debug("pkey3={} pval3={}", pkey3, pval3)
                                         pkey3, pval3 = self.substitute(pkey3, pval3)
                                         if pval3.endswith(".dir"):
                                             dir_key = pkey3 + ".dir"
@@ -545,16 +543,16 @@ class InputDataFromNamelist:
                                 indices = None
                         else:
                             if key not in ["macros", "extenders"]:
-                                logging.warning(
-                                    "Could not match key=%s value=%s", key, val
+                                logger.warning(
+                                    "Could not match key={} value={}", key, val
                                 )
                 else:
-                    logging.warning("Could not find namelist key=%s", key)
+                    logger.warning("Could not find namelist key={}", key)
                     indices = None
 
         mapped_data = {}
         _process_data(mapped_data, self.data)
-        logging.debug("Mapped data=%s", mapped_data)
+        logger.debug("Mapped data={}", mapped_data)
         return mapped_data
 
 
@@ -600,7 +598,7 @@ class Pgd(Task):
                 settings, input_data, "pgd", self.platform
             ).get()
             for dest, target in binput_data.items():
-                logging.debug("target=%s, dest=%s", target, dest)
+                logger.debug("target={}, dest={}", target, dest)
                 self.fmanager.input(target, dest)
 
             # Run PGD
@@ -706,7 +704,7 @@ class Prep(Task):
                 settings, input_data, "prep", self.platform
             ).get()
             for dest, target in binput_data.items():
-                logging.debug("target=%s, dest=%s", target, dest)
+                logger.debug("target={}, dest={}", target, dest)
                 self.fmanager.input(target, dest)
 
             # Run PREP and archive output
@@ -714,4 +712,4 @@ class Prep(Task):
             self.fmanager.output(prep_output_file, output)
 
         else:
-            logging.info("Output already exists: %s", output)
+            logger.info("Output already exists: {}", output)

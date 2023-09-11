@@ -2,7 +2,6 @@
 """Registration and validation of options passed in the config file."""
 import copy
 import json
-import logging
 import os
 from collections.abc import Mapping
 from functools import reduce
@@ -19,6 +18,7 @@ from fastjsonschema import JsonSchemaValueException
 from . import PACKAGE_DIRECTORY
 from .datetime_utils import ISO_8601_TIME_DURATION_REGEX
 from .general_utils import get_empty_nested_defaultdict, modify_mappings
+from .logs import logger
 
 
 def _get_main_config_schema():
@@ -32,8 +32,6 @@ PACKAGE_CONFIG_INCLUDE_DIR = PACKAGE_CONFIG_DIR / "include"
 CONFIG_SCHEMAS_DIR = PACKAGE_CONFIG_DIR / "config_file_schemas"
 MAIN_CONFIG_JSON_SCHEMA_PATH = CONFIG_SCHEMAS_DIR / "main_config_schema.json"
 MAIN_CONFIG_JSON_SCHEMA = _get_main_config_schema()
-
-logger = logging.getLogger(__name__)
 
 
 class ConfigFileValidationError(Exception):
@@ -243,7 +241,7 @@ class ParsedConfig(BasicConfig):
 def _read_raw_config_file(config_path):
     """Read raw configs from files in miscellaneous formats."""
     config_path = Path(config_path)
-    logger.info("Reading configs from file <%s>", config_path)
+    logger.info("Reading configs from file <{}>", config_path)
     with open(config_path, "rb") as config_file:
         if config_path.suffix == ".toml":
             return tomlkit.load(config_file)
@@ -306,7 +304,7 @@ def _expand_config_include_section(
         schema_file = schemas_path / f"{section_name}_section_schema.json"
         if not schema_file.is_file():
             logger.warning(
-                'No validation schema for config section "%s". Using default.',
+                'No validation schema for config section "{}". Using default.',
                 sections_traversed_str,
             )
             schema_file = schemas_path / "default_section_schema.json"

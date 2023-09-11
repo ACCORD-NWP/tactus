@@ -3,6 +3,7 @@
 import os
 import shutil
 
+from ..logs import logger
 from ..namelist import NamelistGenerator
 from .base import Task
 from .batch import BatchJob
@@ -41,7 +42,7 @@ class E923(Task):
         try:
             shutil.copy(log, f"{log}_part_{i}")
         except FileNotFoundError:
-            self.logger.info("No logfile %s produced", log)
+            logger.info("No logfile {} produced", log)
 
     def remove_links(self, link):
         """Remove link.
@@ -49,12 +50,12 @@ class E923(Task):
         Args:
             link (list) : List of links to remove
         """
-        self.logger.info("clean %s", link)
+        logger.info("clean {}", link)
         for x in link:
             try:
                 os.unlink(x)
             except FileNotFoundError:
-                self.logger.warning("Could not remove file '%s'.", x, exc_info=True)
+                logger.warning("Could not remove file '{}'.", x, exc_info=True)
 
     def print_part(self, part, month=None):
         """Run the constant part of e923.
@@ -64,9 +65,9 @@ class E923(Task):
             month : month
         """
         if month is None:
-            self.logger.info("Executing PART %s", part)
+            logger.info("Executing PART {}", part)
         else:
-            self.logger.info("Executing PART %s, month %s", part, month)
+            logger.info("Executing PART {}, month {}", part, month)
 
     def constant_part(self, constant_file):
         """Run the constant part of e923.
@@ -74,7 +75,7 @@ class E923(Task):
         Args:
             constant_file : filename of the resulting file
         """
-        self.logger.info("Create: %s", constant_file)
+        logger.info("Create: {}", constant_file)
 
         # RTTM input
         for ifile in ["MCICA", "RADSRTM"]:
@@ -333,7 +334,7 @@ class E923Constant(E923):
         """
         os.makedirs(self.climdir, exist_ok=True)
 
-        self.logger.debug("Constant file:%s", self.constant_file)
+        logger.debug("Constant file:{}", self.constant_file)
 
         # Run the constant part
         self.constant_part(self.constant_file)
@@ -358,7 +359,7 @@ class E923Monthly(E923):
         E923.__init__(self, config)
         self.name = f"E923Monthly{tag}"
         self.months = months
-        self.logger.debug("Create files for month:%s", self.months)
+        logger.debug("Create files for month:{}", self.months)
 
     def execute(self):
         """Run task.

@@ -1,91 +1,88 @@
 #!/usr/bin/env python3
 """Logging-related classes, functions and definitions."""
-import logging
-from collections import namedtuple
+import os
+import pprint
+import sys
+from collections.abc import Sequence
+from dataclasses import dataclass
+from pathlib import Path
 
-# Define aliases to ANSI escape sequences to set text color in log
-LogColor = namedtuple(
-    typename="LogColor",
-    field_names=("reset", "yellow", "red", "green", "cyan"),
-)
+from loguru import logger
 
-logcolor = LogColor(
-    reset="\u001b[0m",
-    yellow="\u001b[33m",
-    red="\u001b[31m",
-    green="\u001b[32m",
-    cyan="\u001b[36m",
-)
+from . import PACKAGE_NAME
 
-
-class CustomFormatter(logging.Formatter):
-    """Logging Formatter to add colors and count warning / errors."""
-
-    # Adapted from: <https://stackoverflow.com/q/14844970/3644857>
-
-    FORMATS = {
-        "DEFAULT": "%(asctime)s: %(message)s",
-        logging.CRITICAL: (
-            logcolor.red
-            + "%(asctime)s %(levelname)s(%(module)s: %(lineno)d): %(message)s"
-            + logcolor.reset
-        ),
-        logging.ERROR: logcolor.red
-        + "%(asctime)s %(levelname)s: "
-        + logcolor.reset
-        + "%(message)s",
-        logging.WARNING: logcolor.yellow
-        + "%(asctime)s %(levelname)s: "
-        + logcolor.reset
-        + "%(message)s",
-        logging.DEBUG: (
-            logcolor.green
-            + "%(asctime)s %(levelname)s(%(module)s: %(lineno)d): "
-            + logcolor.reset
-            + "%(message)s"
-        ),
-    }
-
-    def format(self, record):  # noqa: A003 (class attribute shadowing builtin)
-        """Return a formatter.format for "record"."""
-        log_fmt = self.FORMATS.get(record.levelno, self.FORMATS["DEFAULT"])
-        formatter = logging.Formatter(log_fmt, datefmt="%Y-%m-%d %H:%M:%S")
-        return formatter.format(record)
+GLOBAL_LOGLEVEL = os.environ.get("DEODE_LOGLEVEL", os.environ.get("LOGURU_LEVEL", "INFO"))
+DEFAULT_LOGDIR = Path().home() / ".logs" / PACKAGE_NAME
+DEFAULT_LOGFILE_RETENTION_TIME = "1 week"
+DEFAULT_LOG_SINKS = {
+    "console": sys.stderr,
+    "logfile": DEFAULT_LOGDIR / f"{PACKAGE_NAME}_{{time}}.log",
+}
 
 
-def get_logger(name, loglevel="INFO"):
-    """Get logger with name "name" and loglevel "loglevel"."""
-    logger = logging.getLogger(name)
-    logger_handler = logging.StreamHandler()
-    logger_handler.setFormatter(CustomFormatter())
-    logging.basicConfig(
-        level=logging.getLevelName(loglevel.upper()),
-        handlers=[logger_handler],
+@dataclass
+class LogFormatter:
+    """Helper class to setup logging without poluting the module's main scope."""
+
+    datetime: str = "<green>{time:YYYY-MM-DD HH:mm:ss}</green>"
+    level: str = "<level>{level: <8}</level>"
+    code_location: str = (
+        "<cyan>@{name}</cyan>:<cyan>{function}</cyan> "
+        + "<cyan><{file.path}</cyan>:<cyan>{line}>:</cyan>"
     )
-    return logger
+    message: str = "<level>{message}</level>"
+
+    def format_string(self, loglevel: str):
+        """Return the appropriate fmt string according to log level and fmt opts."""
+        rtn = f"{self.datetime} | {self.level} | "
+
+        loglevel = logger.level(loglevel.upper())
+        if loglevel.no < 20:  # More detail than just "INFO"
+            rtn = f"{self.code_location}\n{rtn}"
+
+        rtn += f"{self.message}"
+        return rtn
 
 
-def get_logger_from_config(config):
-    """Get logger with name "name" and loglevel from config.
+class LoggerHandlers(Sequence):
+    """Helper class to configure logger handlers when using `loguru.logger.configure`."""
 
-    Args:
-        config (deode.ParsedConfig): Config
+    def __init__(self, default_level: str = GLOBAL_LOGLEVEL, **sinks):
+        """Initialise instance with default loglevel and sinks."""
+        self.default_level = default_level.upper()
+        self.handlers = {}
+        for name, sink in {**DEFAULT_LOG_SINKS.copy(), **sinks}.items():
+            self.add(name=name, sink=sink)
 
-    Returns:
-        logging: Logger instance
-    """
-    loglevel = config.get("general.loglevel", "INFO")
-    # Do we have a name yet?
-    # name = config.get("general.exp")  # noqa
-    name = "DEODE"
-    logger = logging.getLogger(name)
-    logger_handler = logging.StreamHandler()
-    logger_handler.setLevel(logging.getLevelName(loglevel.upper()))
-    logger_handler.setFormatter(CustomFormatter())
-    logging.basicConfig(
-        level=logging.getLevelName(loglevel.upper()),
-        handlers=[logger_handler],
-    )
-    logger.setLevel(logging.getLevelName(loglevel.upper()))
-    logger.debug("returning logger with level %s %s", loglevel.upper(), logger.level)
-    return logger
+    def add(self, name, sink, **configs):
+        """Add handler to instance."""
+        configs["level"] = configs.pop("level", self.default_level).upper()
+        configs["format"] = configs.pop(
+            "format", LogFormatter().format_string(configs["level"])
+        )
+
+        try:
+            configs["sink"] = Path(sink)
+            configs["retention"] = configs.get(
+                "retention", DEFAULT_LOGFILE_RETENTION_TIME
+            )
+        except TypeError:
+            configs["sink"] = sink
+
+        self.handlers[name] = configs
+
+    def __repr__(self):
+        return pprint.pformat(self.handlers)
+
+    # Implement abstract methods
+    def __getitem__(self, item):
+        return tuple(self.handlers.values())[item]
+
+    def __len__(self):
+        return len(self.handlers)
+
+
+logger.configure(handlers=LoggerHandlers())
+# Disable logger by defalt in case the project is used as a library. Leave it for the user
+# to enable it if they so wish.
+logger.disable(PACKAGE_NAME)

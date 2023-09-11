@@ -3,7 +3,6 @@ case = "@CYCLE@_@CSC@_@DOMAIN@"
 cnmexp = "DEOD"
 realization = -1
 tstep = 30
-loglevel = "info"
 csc = "AROME"
 cycle = "CY48t3"
 surfex = true
@@ -69,7 +68,7 @@ bd_time = "2023-02-19T09:00:00Z"
 
 [task.creategrib.conversions.surfex]
 input_template = "@SURFEX_TEMPLATE@"
-output_template = "sfx_@YYYY@-@MM@-@DD@T@HH@:@mm@:@ss@+@DURATION_GRIB@.grib" 
+output_template = "sfx_@YYYY@-@MM@-@DD@T@HH@:@mm@:@ss@+@DURATION_GRIB@.grib"
 
 [troika]
 config_file = "@DEODE_HOME@/deode/data/config_files/troika.yml"

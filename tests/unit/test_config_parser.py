@@ -327,25 +327,23 @@ class TestGeneralBehaviour:
 
     def test_can_modify_model_upon_copy(self, minimal_raw_config):
         raw_config = minimal_raw_config.copy()
-        raw_config["general"].update({"loglevel": "INFO"})
+        raw_config["general"].update({"case": "foo"})
         parsed_config = ParsedConfig(raw_config, json_schema={})
 
-        original_value = parsed_config["general.loglevel"]
-        new_value = "DEBUG"
-        new_parsed_config = parsed_config.copy(
-            update={"general": {"loglevel": new_value}}
-        )
+        original_value = parsed_config["general.case"]
+        new_value = "bar"
+        new_parsed_config = parsed_config.copy(update={"general": {"case": new_value}})
 
         assert original_value != new_value
         assert parsed_config["general.times"]
         assert new_parsed_config["general.times"]
         assert new_parsed_config["general.times"] == parsed_config["general.times"]
-        assert parsed_config["general.loglevel"] == original_value
-        assert new_parsed_config["general.loglevel"] == new_value
+        assert parsed_config["general.case"] == original_value
+        assert new_parsed_config["general.case"] == new_value
 
     def test_can_modify_with_list_value_upon_model_copy(self, minimal_raw_config):
         raw_config = minimal_raw_config.copy()
-        raw_config["general"].update({"loglevel": "INFO"})
+        raw_config["general"].update({"case": "foo"})
         parsed_config = ParsedConfig(raw_config, json_schema=MAIN_CONFIG_JSON_SCHEMA)
 
         original_value = parsed_config["general.times"]
@@ -358,8 +356,8 @@ class TestGeneralBehaviour:
         )
 
         assert original_value != new_value
-        assert parsed_config["general.loglevel"] == "INFO"
-        assert new_parsed_config["general.loglevel"] == "INFO"
+        assert parsed_config["general.case"] == "foo"
+        assert new_parsed_config["general.case"] == "foo"
         assert parsed_config["general.times"] == original_value
         assert new_parsed_config["general.times.list"] == tuple(new_value)
 

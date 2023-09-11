@@ -6,17 +6,17 @@ from math import atan, floor, sin
 
 from .datetime_utils import as_datetime, as_timedelta, oi2dt_list
 from .fullpos import Fullpos
+from .logs import logger
 from .os_utils import Search
 from .toolbox import Platform
 
 
-def check_fullpos_namelist(config, nlgen, logger=None):
+def check_fullpos_namelist(config, nlgen):
     """Find existing fullpos select files or generate them.
 
     Args:
         config (deode.ParsedConfig): Configuration
         nlgen (dict): master forecast namelist
-        logger (object): Logger object
 
     Returns:
         nlgen (dict) : Possibly updated forecast namelist
@@ -34,8 +34,7 @@ def check_fullpos_namelist(config, nlgen, logger=None):
         if len(fullpos_select_files) > 0:
             for filename in fullpos_select_files:
                 shutil.copy(filename, ".")
-                if logger is not None:
-                    logger.info("Copy fullpos select file %s", filename)
+                logger.info("Copy fullpos select file {}", filename)
 
             generate_namelist = False
 

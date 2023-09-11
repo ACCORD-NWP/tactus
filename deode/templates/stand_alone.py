@@ -4,11 +4,13 @@ from os import environ  # noqa
 
 from deode.config_parser import MAIN_CONFIG_JSON_SCHEMA, ParsedConfig
 from deode.derived_variables import derived_variables
-from deode.logs import get_logger_from_config
+from deode.logs import logger  # Use deode's own configs for logger
 from deode.submission import ProcessorLayout, TaskSettings
 from deode.tasks.discover_task import get_task
 
 # @ENV_SUB@
+
+logger.enable("deode")
 
 
 def default_main(task, config, deode_home):
@@ -27,10 +29,9 @@ def default_main(task, config, deode_home):
     update = derived_variables(config, processor_layout=processor_layout)
     config = config.copy(update=update)
 
-    logger = get_logger_from_config(config)
-    logger.info("Running task %s", task)
+    logger.info("Running task {}", task)
     get_task(task, config).run()
-    logger.info("Finished task %s", task)
+    logger.info("Finished task {}", task)
 
 
 if __name__ == "__main__":

@@ -64,7 +64,6 @@ class TestSuite:
         )  # noqa S108
         config = config.copy(update=param)
         suite_name = "test_suite"
-        loglevel = "debug"
         background = TaskSettings(config)
         defs = SuiteDefinition(
             suite_name,
@@ -72,7 +71,6 @@ class TestSuite:
             "/tmp/ecf",  # noqa S108
             config,
             background,
-            loglevel,
             dry_run=True,
         )
         def_file = f"/tmp/{suite_name}.def"  # noqa S108

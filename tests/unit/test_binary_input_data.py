@@ -1,7 +1,6 @@
 """Test binary input data to surfex commands."""
 import contextlib
 import json
-import logging
 import os
 from pathlib import Path
 
@@ -10,8 +9,11 @@ import pytest
 
 from deode.config_parser import PACKAGE_CONFIG_PATH, ParsedConfig
 from deode.datetime_utils import as_datetime
+from deode.logs import logger
 from deode.tasks.sfx import InputDataFromNamelist
 from deode.toolbox import Platform
+
+logger.enable("deode")
 
 
 @pytest.fixture(scope="module")
@@ -137,7 +139,7 @@ def test_new_binary_input(deode_config, f90ml_namelist, binary_input_data):
     binary_data = InputDataFromNamelist(
         nml, input_data.copy(), "pgd", platform, basetime=basetime, validtime=validtime
     )
-    logging.debug("binary_data=%s", binary_data.data)
+    logger.debug("binary_data={}", binary_data.data)
     assert (
         binary_data.data["filename_albnir_soil_2_0115.dir"]
         == "/albnir_soil_dir/ALB_SAT_NI_0115_c.dir"
@@ -162,7 +164,7 @@ def test_new_binary_input(deode_config, f90ml_namelist, binary_input_data):
     binary_data = InputDataFromNamelist(
         nml, input_data_copy, "prep", platform, basetime=basetime, validtime=validtime
     )
-    logging.debug("binary_data=%s", binary_data.data)
+    logger.debug("binary_data={}", binary_data.data)
     assert binary_data.data["my_prep_file"] == "/fg/MYFILE"
 
     # Offline "ecoclimapI_covers_param.bin": "@ecoclimap_bin_dir@/ecoclimapI_covers_param.bin",
@@ -175,7 +177,7 @@ def test_new_binary_input(deode_config, f90ml_namelist, binary_input_data):
         basetime=basetime,
         validtime=validtime,
     )
-    logging.debug("binary_data=%s", binary_data.data)
+    logger.debug("binary_data={}", binary_data.data)
     assert (
         binary_data.data["ecoclimapI_covers_param.bin"]
         == "/eco_bin/ecoclimapI_covers_param.bin"

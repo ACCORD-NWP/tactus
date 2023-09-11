@@ -6,7 +6,7 @@ from pathlib import Path
 from .config_doc import DocConfig
 from .config_parser import MAIN_CONFIG_JSON_SCHEMA_PATH
 from .derived_variables import check_fullpos_namelist, derived_variables
-from .logs import get_logger
+from .logs import logger
 from .namelist import NamelistComparator, NamelistGenerator, NamelistIntegrator
 from .scheduler import EcflowServer
 from .submission import NoSchedulerSubmission, TaskSettings
@@ -48,8 +48,7 @@ def run_task(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
-    logger = get_logger(__name__, args.loglevel)
-    logger.info("Running %s...", args.task)
+    logger.info("Running {}...", args.task)
 
     deode_home = set_deode_home(args, config)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
@@ -59,7 +58,7 @@ def run_task(args, config):
     sub.submit(
         args.task, config, args.template_job, args.task_job, args.output, args.troika
     )
-    logger.info("Done with task %s", args.task)
+    logger.info("Done with task {}", args.task)
 
 
 def start_suite(args, config):
@@ -70,7 +69,6 @@ def start_suite(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
-    logger = get_logger(__name__, args.loglevel)
     logger.info("Starting suite...")
 
     deode_home = set_deode_home(args, config)
@@ -84,12 +82,7 @@ def start_suite(args, config):
     suite_name = Platform(config).substitute(suite_name)
     submission_defs = TaskSettings(config)
     defs = SuiteDefinition(
-        suite_name,
-        args.joboutdir,
-        args.ecf_files,
-        config,
-        submission_defs,
-        args.loglevel,
+        suite_name, args.joboutdir, args.ecf_files, config, submission_defs
     )
     def_file = f"{suite_name}.def"
     defs.save_as_defs(def_file)
@@ -120,12 +113,11 @@ def show_config(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
-    logger = get_logger(__name__, args.loglevel)
     logger.info("Printing requested configs...")
     try:
         print(config.dumps(section=args.section, style=args.format))
     except KeyError:
-        logger.error('Error retrieving config data for config section "%s"', args.section)
+        logger.error('Error retrieving config data for config section "{}"', args.section)
 
 
 def show_config_schema(args, config):
@@ -136,7 +128,6 @@ def show_config_schema(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
-    logger = get_logger(__name__, args.loglevel)
     logger.info("Printing JSON schema used in the validation of the configs...")
     print(config.json_schema)
 
@@ -149,8 +140,6 @@ def show_namelist(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
-    logger = get_logger(__name__, args.loglevel)
-
     deode_home = set_deode_home(args, config)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
 
@@ -162,14 +151,14 @@ def show_namelist(args, config):
     if args.namelist_type in update:
         nlgen.update(update[args.namelist_type], args.namelist_type)
     if "forecast" in args.namelist and args.namelist_type == "master":
-        nlgen = check_fullpos_namelist(config, nlgen, logger)
+        nlgen = check_fullpos_namelist(config, nlgen)
     nlres = nlgen.assemble_namelist(args.namelist)
     if args.namelist_name is not None:
         namelist_name = args.namelist_name
     else:
         namelist_name = f"namelist_{args.namelist_type}_{args.namelist}"
     nlgen.write_namelist(nlres, namelist_name)
-    logger.info("Printing namelist in use to file %s", namelist_name)
+    logger.info("Printing namelist in use to file {}", namelist_name)
 
 
 def namelist_integrate(args, config):
@@ -183,7 +172,6 @@ def namelist_integrate(args, config):
         SystemExit   # noqa: DAR401
 
     """
-    logger = get_logger(__name__, args.loglevel)
     logger.info("Integrating namelist(s) ...")
 
     nlcomp = NamelistComparator(config)

@@ -5,7 +5,7 @@ import os
 import shutil
 import socket
 
-from ..logs import get_logger_from_config
+from ..logs import logger
 from ..toolbox import FileManager
 
 
@@ -46,7 +46,6 @@ class Task(object):
             ValueError: "You must set wrk"
 
         """
-        self.logger = get_logger_from_config(config)
         self.config = config
         if "." in name:
             name = name.split(".")[-1]
@@ -61,10 +60,10 @@ class Task(object):
         self.wrk = wrk
         wdir = f"{self.wrk}/{socket.gethostname()}{str(os.getpid())}"
         self.wdir = wdir
-        self.logger.info("Task running in %s", self.wdir)
-        self.logger.info("Base task info")
-        self.logger.warning("Base task warning")
-        self.logger.debug("Base task debug")
+        logger.info("Task running in {}", self.wdir)
+        logger.info("Base task info")
+        logger.warning("Base task warning")
+        logger.debug("Base task debug")
 
         self._set_eccodes_environment()
 
@@ -88,11 +87,11 @@ class Task(object):
             os.environ["ECCODES_DEFINITION_PATH"] = ":".join(
                 eccodes_definition_search_paths
             )
-            self.logger.debug(
-                "Set ECCODES_DEFINITION_PATH to %s", os.environ["ECCODES_DEFINITION_PATH"]
+            logger.debug(
+                "Set ECCODES_DEFINITION_PATH to {}", os.environ["ECCODES_DEFINITION_PATH"]
             )
         except KeyError:
-            self.logger.warning("Could not update ECCODES_DEFINITION_PATH")
+            logger.warning("Could not update ECCODES_DEFINITION_PATH")
 
     def create_wrkdir(self):
         """Create a cycle working directory."""
@@ -110,19 +109,19 @@ class Task(object):
         """Remove working directory."""
         os.chdir(self.wrk)
         shutil.rmtree(self.wdir)
-        self.logger.debug("Remove %s", self.wdir)
+        logger.debug("Remove {}", self.wdir)
 
     def rename_wdir(self, prefix="Failed_task_"):
         """Rename failed working directory."""
         if os.path.isdir(self.wdir):
             fdir = f"{self.wrk}/{prefix}{self.name}"
             if os.path.exists(fdir):
-                self.logger.debug("%s exists. Remove it", fdir)
+                logger.debug("{} exists. Remove it", fdir)
                 shutil.rmtree(fdir)
             pid = os.path.basename(self.wdir)
             fdir = f"{fdir}_{pid}"
             shutil.move(self.wdir, fdir)
-            self.logger.info("Renamed %s to %s", self.wdir, fdir)
+            logger.info("Renamed {} to {}", self.wdir, fdir)
 
     def get_binary(self, binary):
         """Determine binary path from task or system config section.
@@ -148,7 +147,7 @@ class Task(object):
 
     def execute(self):
         """Do nothing for base execute task."""
-        self.logger.debug("Using empty base class execute")
+        logger.debug("Using empty base class execute")
 
     def prep(self):
         """Do default preparation before execution.
@@ -156,7 +155,7 @@ class Task(object):
         E.g. clean
 
         """
-        self.logger.debug("Base class prep")
+        logger.debug("Base class prep")
         self.create_wdir()
         self.change_to_wdir()
         atexit.register(self.rename_wdir)
@@ -167,7 +166,7 @@ class Task(object):
         E.g. clean
 
         """
-        self.logger.debug("Base class post")
+        logger.debug("Base class post")
         # Clean workdir
         if self.config["general.keep_workdirs"]:
             self.rename_wdir(prefix="Finished_task_")
@@ -205,12 +204,12 @@ class Task(object):
         try:
             value = self.config[setting_to_be_retrieved]
         except KeyError:
-            self.logger.exception(
-                "Task setting '%s' not found in config.", setting_to_be_retrieved
+            logger.exception(
+                "Task setting '{}' not found in config.", setting_to_be_retrieved
             )
             return None
 
-        self.logger.debug("Setting = %s value =%s", setting_to_be_retrieved, value)
+        logger.debug("Setting = {} value ={}", setting_to_be_retrieved, value)
 
         return value
 

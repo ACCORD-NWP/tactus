@@ -4,6 +4,7 @@
 import os
 
 from ..datetime_utils import as_datetime, oi2dt_list
+from ..logs import logger
 from .base import Task
 from .batch import BatchJob
 
@@ -92,6 +93,6 @@ class CreateGrib(Task):
                 output = self.platform.substitute(
                     rules["output_template"], validtime=validtime
                 )
-                self.logger.info("Convert: %s to %s", fname, output)
+                logger.info("Convert: {} to {}", fname, output)
                 self.convert2grib(fname, output)
                 self.fmanager.output(output, f"{self.archive}/{output}")

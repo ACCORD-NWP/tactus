@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Unit tests for the namelist generation module."""
-# TODO: import logging
 import os
 
 import pytest
@@ -20,7 +19,6 @@ def config_platform():
     task_configs = tomlkit.parse(
         """
         [general]
-            loglevel = "DEBUG"
             case = "test_case"
             os_macros = ["USER", "HOME", "PWD"]
             realization = -1

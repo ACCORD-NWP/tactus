@@ -3,6 +3,7 @@
 import os
 
 from ..datetime_utils import as_datetime, as_timedelta, cycle_offset
+from ..logs import logger
 from ..namelist import NamelistGenerator
 from .base import Task
 from .batch import BatchJob
@@ -34,7 +35,7 @@ class C903(Task):
         self.expver = self.config["general.mars_expver"]
         self.bdfile_template = self.config["system.bdfile_template"]
         self.intp_bddir = self.platform.get_system_value("intp_bddir")
-        self.logger.info("Domain: %s", self.dom)
+        logger.info("Domain: {}", self.dom)
 
         self.nlgen = NamelistGenerator(self.config, "master")
         self.master = self.get_binary("MASTERODB")
@@ -47,12 +48,12 @@ class C903(Task):
         Args:
             link (list) : List of links to remove
         """
-        self.logger.info("clean %s", link)
+        logger.info("clean {}", link)
         for x in link:
             try:
                 os.unlink(x)
             except FileNotFoundError:
-                self.logger.warning("Could not remove file '%s'.", x, exc_info=True)
+                logger.warning("Could not remove file '{}'.", x, exc_info=True)
 
     def execute(self):
         """Run task.
@@ -146,6 +147,6 @@ class C903(Task):
 
         target = f"{self.intp_bddir}/{self.bdfile_template}"
 
-        self.logger.debug("WRKDIR: %s", self.wrk)
-        self.logger.debug("OUTPUT %s", f"ELSCFMARS{self.dom}+0000")
+        logger.debug("WRKDIR: {}", self.wrk)
+        logger.debug("OUTPUT {}", f"ELSCFMARS{self.dom}+0000")
         self.fmanager.output(f"ELSCFMARS{self.dom}+0000", target)

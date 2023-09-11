@@ -14,7 +14,6 @@ def minimal_raw_config():
         """
         [general]
             times.list = ["2000-01-01T00:00:00Z"]
-            loglevel = "DEBUG"
         [system]
             wrk = "/tmp/@YYYY@@MM@@DD@_@HH@"
         """
@@ -48,8 +47,7 @@ class TestSubmission:
         assert isinstance(parsed_config_with_task, ParsedConfig)
 
     def test_submit(self, config_from_task_config_file):
-        config = config_from_task_config_file
-        config = config.copy(
+        config = config_from_task_config_file.copy(
             update={
                 "submission": {"default_submit_type": "background_hpc"},
                 "troika": {"config_file": "deode/data/config_files/troika.yml"},
@@ -67,10 +65,9 @@ class TestSubmission:
         sub.submit(task, config, template_job, task_job, output)
 
     def test_get_batch_info(self, config_from_task_config_file):
-        config = config_from_task_config_file
         arg = "#SBATCH UNITTEST"
         argname = "job-name=@TASK_NAME@"
-        config = config.copy(
+        config = config_from_task_config_file.copy(
             update={
                 "submission": {
                     "submit_types": ["unittest"],
@@ -87,9 +84,8 @@ class TestSubmission:
         assert settings["BATCH"]["NAME"] == "job-name=unittest"
 
     def test_get_batch_info_exception(self, config_from_task_config_file):
-        config = config_from_task_config_file
         arg = "#SBATCH UNITTEST"
-        config = config.copy(
+        config = config_from_task_config_file.copy(
             update={
                 "submission": {
                     "submit_types": ["unittest"],
@@ -108,8 +104,8 @@ class TestSubmission:
         assert settings["TEST"] != "NOT USED"
         assert settings["TEST_INCLUDED"] == arg
 
-    def test_submit_non_existing_task(self, config_from_task_config_file):
-        config = config_from_task_config_file
+    def test_cannot_submit_non_existing_task(self, config_from_task_config_file):
+        config = config_from_task_config_file.copy()
         task = "not_existing"
         template_job = "deode/templates/stand_alone.py"
         task_job = f"/tmp/{task}.job"  # noqa
@@ -117,12 +113,11 @@ class TestSubmission:
 
         background = TaskSettings(config)
         sub = NoSchedulerSubmission(background)
-        with pytest.raises(KeyError, match="Task not found:"):
+        with pytest.raises(NotImplementedError, match=f'Task "{task}" not implemented.'):
             sub.submit(task, config, template_job, task_job, output)
 
     def test_wrapper_and_nproc(self, config_from_task_config_file):
-        config = config_from_task_config_file
-        config = config.copy(
+        config = config_from_task_config_file.copy(
             update={
                 "submission": {
                     "submit_types": ["unittest"],
@@ -147,8 +142,7 @@ class TestSubmission:
             config["namelist.nprocy"]
 
     def test_empty_wrapper_and_nproc(self, config_from_task_config_file):
-        config = config_from_task_config_file
-        config = config.copy(
+        config = config_from_task_config_file.copy(
             update={
                 "submission": {
                     "submit_types": ["unittest"],

@@ -30,7 +30,6 @@ def set_arg():
     arg.namelist_type = "master"
     arg.namelist = "forecast_bdmodel_ifs"
     arg.namelist_name = None
-    arg.loglevel = "DEBUG"
     arg.domain = "test"
     arg.no_substitute = True
     return arg
@@ -44,7 +43,6 @@ def nlint_arg():
     arg.yaml = "deode/data/namelists/unit_testing/nl_master_base.yml"
     arg.tag = "nl_master_base"
     arg.output = "/tmp/nl_master_integrated.yml"  # noqa S108
-    arg.loglevel = "DEBUG"
     arg.domain = "test"
     return arg
 

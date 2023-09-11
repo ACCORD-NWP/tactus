@@ -10,9 +10,9 @@ from unittest import mock
 import pytest
 
 from deode import PACKAGE_NAME
+from deode.__main__ import main
 from deode.argparse_wrapper import get_parsed_args
 from deode.config_parser import PACKAGE_CONFIG_INCLUDE_DIR, PACKAGE_CONFIG_PATH
-from deode.main import main
 from deode.submission import NoSchedulerSubmission, TaskSettings
 
 WORKING_DIR = Path.cwd()
@@ -31,10 +31,10 @@ def config_path(tmp_path_factory):
 
 
 @pytest.fixture(scope="module")
-def _module_mockers(session_mocker, config_path, tmp_path_factory):
+def _module_mockers(module_mocker, config_path, tmp_path_factory):
     # Monkeypatching DEODE_CONFIG_PATH so tests use the generated config.toml.
     # Otherwise, the program defaults to reading from ~/.deode/config.toml
-    session_mocker.patch.dict("os.environ", {"DEODE_CONFIG_PATH": str(config_path)})
+    module_mocker.patch.dict("os.environ", {"DEODE_CONFIG_PATH": str(config_path)})
 
     original_no_scheduler_submission_submit_method = NoSchedulerSubmission.submit
     original_submission_task_settings_parse_job = TaskSettings.parse_job
@@ -48,13 +48,13 @@ def _module_mockers(session_mocker, config_path, tmp_path_factory):
         kwargs["task_job"] = (tmp_path_factory.getbasetemp() / "task_job.txt").as_posix()
         original_submission_task_settings_parse_job(self, **kwargs)
 
-    session_mocker.patch(
+    module_mocker.patch(
         "deode.submission.NoSchedulerSubmission.submit",
         new=new_no_scheduler_submission_submit_method,
     )
-    session_mocker.patch("deode.scheduler.ecflow")
-    session_mocker.patch("deode.suites.ecflow")
-    session_mocker.patch(
+    module_mocker.patch("deode.scheduler.ecflow")
+    module_mocker.patch("deode.suites.ecflow")
+    module_mocker.patch(
         "deode.submission.TaskSettings.parse_job",
         new=new_submission_task_settings_parse_job,
     )

@@ -1,5 +1,6 @@
 """Canari."""
 
+from ..logs import logger
 from .base import Task
 
 
@@ -14,7 +15,7 @@ class Canari(Task):
 
         """
         Task.__init__(self, config, __name__)
-        self.logger.debug("Constructed canari task")
+        logger.debug("Constructed canari task")
 
     def execute(self):
         """Execute task."""

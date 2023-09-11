@@ -3,7 +3,7 @@ import contextlib
 import os
 
 from .datetime_utils import as_datetime, as_timedelta
-from .logs import get_logger_from_config
+from .logs import logger
 from .toolbox import Platform
 
 
@@ -18,7 +18,6 @@ class InitialConditions(object):
 
         """
         self.config = config
-        self.logger = get_logger_from_config(config)
         self.platform = Platform(self.config)
         self.wrk = self.platform.get_value("system.wrk")
         self.intp_bddir = self.config["system.intp_bddir"]
@@ -39,7 +38,7 @@ class InitialConditions(object):
             FileNotFoundError : if fail is True
 
         """
-        self.logger.warning("Could not find:\n  %s\n  %s", f1, f2)
+        logger.warning("Could not find:\n  {}\n  {}", f1, f2)
         if fail:
             raise FileNotFoundError("Could not find any initial files")
 
@@ -50,8 +49,8 @@ class InitialConditions(object):
         with contextlib.suppress(KeyError):
             source = self.config["general.initfile"]
             source_sfx = self.config["general.initfile_sfx"]
-            self.logger.debug("Defined source %s", source)
-            self.logger.debug("Defined source_sfx %s", source_sfx)
+            logger.debug("Defined source {}", source)
+            logger.debug("Defined source_sfx {}", source_sfx)
             init_defined = True
 
         if init_defined:
@@ -75,7 +74,7 @@ class InitialConditions(object):
         )
 
         if os.path.exists(source) and os.path.exists(source_sfx):
-            self.logger.info("Found initial files\n  %s\n  %s", source, source_sfx)
+            logger.info("Found initial files\n  {}\n  {}", source, source_sfx)
             return source, source_sfx
 
         self.nosuccess(source, source_sfx, False)
@@ -85,7 +84,7 @@ class InitialConditions(object):
         source_sfx = self.platform.substitute(f"{self.archive}/ICMSH@CNMEXP@INIT.sfx")
 
         if os.path.exists(source) and os.path.exists(source_sfx):
-            self.logger.info("Found initial files\n  %s\n  %s", source, source_sfx)
+            logger.info("Found initial files\n  {}\n  {}", source, source_sfx)
             return source, source_sfx
 
         self.nosuccess(source, source_sfx)

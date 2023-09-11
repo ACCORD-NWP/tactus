@@ -112,8 +112,8 @@ Now you can start the default experiment by
 ```
 ECF_HOST=`echo ecflow-gen-${USER}-001`
 
-deode --config-file $PWD/deode/data/config_files/config.toml \
-      start suite \
+deode start suite \
+      --config-file $PWD/deode/data/config_files/config.toml \
       --ecf-host $ECF_HOST \
       --ecf-port 3141 \
       --joboutdir $HOME/deode_ecflow/job \
@@ -131,8 +131,9 @@ The example below shows how to run deode/task/forecast.py using the batch system
 ```
 module load python3/3.8.8-01
 poetry shell
-deode --config-file $PWD/deode/data/config_files/config.toml \
-      run --task Forecast \
+deode run \
+      --config-file $PWD/deode/data/config_files/config.toml \
+      --task Forecast \
       --template $PWD/deode/templates/stand_alone.py \
       --job $PWD/forecast.job \
       --output $PWD/forecast.log

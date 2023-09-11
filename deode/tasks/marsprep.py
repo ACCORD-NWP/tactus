@@ -6,10 +6,10 @@ from datetime import datetime
 
 import pandas as pd
 
-from deode.datetime_utils import as_datetime, as_timedelta, cycle_offset
-from deode.geo_utils import Projection, Projstring
-from deode.tasks.batch import BatchJob
-
+from ..datetime_utils import as_datetime, as_timedelta, cycle_offset
+from ..geo_utils import Projection, Projstring
+from ..logs import logger
+from ..tasks.batch import BatchJob
 from .base import Task
 
 
@@ -66,7 +66,7 @@ class Marsprep(Task):
         os.environ["MARS_MULTITARGET_STRICT_FORMAT"] = "1"
 
         # Debug start
-        self.logger.info("Construct PREP/Mars task")
+        logger.info("Construct PREP/Mars task")
 
     @staticmethod
     def get_domain_data(config):
@@ -594,7 +594,7 @@ class Marsprep(Task):
         #
         mars_file_check = os.path.join(self.prepdir, self.prep_filename)
         if os.path.exists(mars_file_check):
-            self.logger.debug("Warning: Prep file allready exists")
+            logger.debug("Warning: Prep file allready exists")
         else:
 
             int_bdcycle = int(self.bdcycle.total_seconds()) // 3600

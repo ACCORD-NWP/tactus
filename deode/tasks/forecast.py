@@ -1,11 +1,11 @@
 """Forecast."""
 import json
-import logging
 import os
 
 from ..datetime_utils import as_datetime, as_timedelta, oi2dt_list
 from ..derived_variables import check_fullpos_namelist
 from ..initial_conditions import InitialConditions
+from ..logs import logger
 from ..namelist import NamelistGenerator
 from .base import Task
 from .batch import BatchJob
@@ -140,9 +140,7 @@ class Forecast(Task):
         # Construct master namelist and include fullpos config
         forecast_namelist = f"forecast_bdmodel_{self.bdmodel}"
         self.nlgen_master.load(forecast_namelist)
-        self.nlgen_master = check_fullpos_namelist(
-            self.config, self.nlgen_master, logging
-        )
+        self.nlgen_master = check_fullpos_namelist(self.config, self.nlgen_master)
 
         nlres = self.nlgen_master.assemble_namelist(forecast_namelist)
         self.nlgen_master.write_namelist(nlres, "fort.4")
@@ -159,7 +157,7 @@ class Forecast(Task):
         ).get()
 
         for dest, target in binput_data.items():
-            logging.debug("target=%s, dest=%s", target, dest)
+            logger.debug("target={}, dest={}", target, dest)
             self.fmanager.input(target, dest)
 
         # Initial files

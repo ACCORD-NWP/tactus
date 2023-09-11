@@ -4,6 +4,7 @@ import os
 import sys
 
 from ..geo_utils import Projection, Projstring
+from ..logs import logger
 from ..os_utils import Search
 from .base import Task
 
@@ -153,7 +154,7 @@ class Gmted(Task):
 
         for tif_file in tif_files:
             if not os.path.isfile(tif_file):
-                self.logger.error("GMTED file %s not found", tif_file)
+                logger.error("GMTED file {} not found", tif_file)
                 sys.exit(1)
 
         return tif_files, hdr_east, hdr_west, hdr_south, hdr_north
@@ -240,7 +241,7 @@ class Gmted(Task):
 
         # Create the header file
         header_file = f"{climdir}/gmted2010.hdr"
-        self.logger.debug("Write header file %s", header_file)
+        logger.debug("Write header file {}", header_file)
         Gmted.write_gmted_header_file(
             header_file, hdr_north, hdr_south, hdr_west, hdr_east, hdr_rows, hdr_cols
         )
@@ -259,7 +260,7 @@ class Soil(Task):
         self.domain = self.get_domain_properties(config)
 
         Task.__init__(self, config, "Soil")
-        self.logger.debug("Constructed Soil task")
+        logger.debug("Constructed Soil task")
 
     def get_domain_properties(self, config) -> dict:
         """Get domain properties.
@@ -389,7 +390,7 @@ class Soil(Task):
         Raises:
             FileNotFoundError: If no tif files are found.
         """
-        self.logger.debug("Running soil task")
+        logger.debug("Running soil task")
 
         soilgrid_path = self.fmanager.platform.get_platform_value("SOILGRID_DATA_PATH")
 
@@ -481,7 +482,7 @@ class Soil(Task):
                 )
                 ds = None
             else:
-                self.logger.warning("Unknown soilgrid tif file: %s", subarea_file)
+                logger.warning("Unknown soilgrid tif file: {}", subarea_file)
 
         # Compose headers in surfex/pgd format
         self.write_soil_header_file(
@@ -537,4 +538,4 @@ class Soil(Task):
             write_fact=True,
         )
 
-        self.logger.debug("Finished soil task")
+        logger.debug("Finished soil task")

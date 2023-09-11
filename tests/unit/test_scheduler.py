@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
-import logging
 from unittest.mock import patch
 
 import pytest
 
+from deode.logs import logger
 from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
+
+logger.enable("deode")
 
 
 def suite_name():
@@ -38,7 +40,7 @@ class TestScheduler:
 
     @patch("deode.scheduler.ecflow")
     def test_start_suite(self, mock, ecflow_server):
-        logging.debug("Print mock: %s", mock)
+        logger.debug("Print mock: {}", mock)
         def_file = f"/tmp/{suite_name()}.def"  # noqa
         ecflow_server.start_suite(suite_name(), def_file)
-        logging.debug("Print mock: %s", mock)
+        logger.debug("Print mock: {}", mock)

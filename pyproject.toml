@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "deode"
-version = "0.1.1"
+version = "0.1.2"
 description = "Prototype for the DEODE scripting system."
 authors = ["The WP5.1 development group in the DE_330 project."]
 license = "MIT"
@@ -9,7 +9,7 @@ repository = "https://github.com/destination-earth-digital-twins/Deode-Prototype
 documentation = "https://destination-earth-digital-twins.github.io/deode-prototype-docs"
 
 [tool.poetry.scripts]
-deode = "deode.main:main"
+deode = "deode.__main__:main"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
@@ -21,6 +21,7 @@ dateutils = "^0.6.12"
 fastjsonschema = "2.16.2"
 f90nml = "^1.4.3"
 humanize = "^3.14.0"
+loguru = "^0.7.1"
 numexpr = "^2.8.4"
 numpy = "^1.22.4"
 pandas = "^1.4.0"
@@ -42,7 +43,7 @@ sphinx-rtd-theme = "^1.2.1"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.2.2"
-pytest-cov = "^3.0.0"
+pytest-cov = "^4.1.0"
 pytest-mock = "^3.7.0"
 pytest-profiling = "^1.7.0"
 pytest-timeout = "^2.1.0"

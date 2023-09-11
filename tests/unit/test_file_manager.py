@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
-import logging
 import os
 
 import pytest
 import tomlkit
 
 from deode.config_parser import MAIN_CONFIG_JSON_SCHEMA, ParsedConfig
+from deode.logs import logger
 from deode.toolbox import FileManager
+
+logger.enable("deode")
 
 
 @pytest.fixture()
@@ -20,7 +22,6 @@ def config_platform():
             realization = -1
             cnmexp = "DEOD"
             tstep = 60
-            loglevel = "DEBUG"
         [macros]
             os_macros = ["USER", "HOME"]
             group_macros = ["platform","system"]
@@ -58,7 +59,7 @@ class TestFileManager:
             "/tmp/ICMSH@CNMEXP@INIT",  # noqa S108
             check_archive=True,
         )
-        logging.debug("identifier=%s", provider.identifier)
+        logger.debug("identifier={}", provider.identifier)
         assert provider.identifier == "ectmp:/2000/01/01/00/ICMSHDEOD+0024"  # noqa S108
         assert resource.identifier == "/tmp/ICMSHDEODINIT"  # noqa S108
 

@@ -1,7 +1,8 @@
 """Batch process."""
-import logging
 import subprocess
 import sys
+
+from ..logs import logger
 
 
 class BatchJob(object):
@@ -17,7 +18,7 @@ class BatchJob(object):
         """
         self.rte = rte
         self.wrapper = wrapper
-        logging.debug("Constructed BatchJob")
+        logger.debug("Constructed BatchJob")
 
     def run(self, cmd):
         """Run command.
@@ -34,8 +35,8 @@ class BatchJob(object):
         cmd = self.wrapper + " " + cmd
 
         if "OMP_NUM_THREADS" in self.rte:
-            logging.info("BATCH: %s", self.rte["OMP_NUM_THREADS"])
-        logging.info("Batch running %s", cmd)
+            logger.info("BATCH: {}", self.rte["OMP_NUM_THREADS"])
+        logger.info("Batch running {}", cmd)
 
         process = subprocess.Popen(
             cmd,

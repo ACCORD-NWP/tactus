@@ -51,42 +51,48 @@
       "type": "object",
       "properties": {
         "bdstrategy": {
-              "title": "Boundary strategy",
-              "default": "same_forecast",
-              "type": "string",
-              "enum": [ "simulate_operational", "analysis_only", "same_forecast" ]
+          "title": "Boundary strategy",
+          "default": "same_forecast",
+          "type": "string",
+          "enum": [
+            "simulate_operational",
+            "analysis_only",
+            "same_forecast"
+          ]
         },
         "bdint": {
-              "description": "Boundary interval",
-              "type": "string",
-              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+          "description": "Boundary interval",
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
         },
         "bdshift": {
-              "description": "Shift of boundary initial time. E.g. '-PT3H' would mean use 3H old boundaries",
-              "type": "string",
-              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+          "description": "Shift of boundary initial time. E.g. '-PT3H' would mean use 3H old boundaries",
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
         },
         "bdcycle": {
-              "description": "Boundary model cycle interval",
-              "type": "string",
-              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+          "description": "Boundary model cycle interval",
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
         },
         "bdtasks_per_batch": {
-              "description": "Max number of parallel boundary interpolation tasks",
-              "type": "number"
+          "description": "Max number of parallel boundary interpolation tasks",
+          "type": "number"
         },
         "bdmodel": {
-              "description": "Coupling model",
-              "enum": ["arome", "ifs"],
-              "type": "string"
+          "description": "Coupling model",
+          "enum": [
+            "arome",
+            "ifs"
+          ],
+          "type": "string"
         },
         "bd_has_surfex": {
-              "description": "Set to true if the host model runs with surfex",
-              "type": "boolean"
+          "description": "Set to true if the host model runs with surfex",
+          "type": "boolean"
         }
       }
     },
-
     "suite_control": {
       "title": "Suite control",
       "description": "Suite control options",
@@ -108,9 +114,9 @@
           "description": "Activates the boundary interpolation",
           "type": "boolean"
         },
-	"do_marsprep": {
-              "description": "Run marsprep or skip extraction",
-              "type": "boolean"
+        "do_marsprep": {
+          "description": "Run marsprep or skip extraction",
+          "type": "boolean"
         },
         "create_static_data": {
           "description": "Activate the generation of PGD and monthly climate files in the suite",
@@ -175,14 +181,14 @@
           "type": "string",
           "description": "Path to static namelists"
         },
-	"marsdir": {
+        "marsdir": {
           "type": "string",
           "description": "Location input files extracted from MARS by Marsprep"
         },
-	"global_sfcdir":{
-	  "type": "string",
-	  "description":"Path to SFC files needed for c903, which are not in MARS"
-	},
+        "global_sfcdir": {
+          "type": "string",
+          "description": "Path to SFC files needed for c903, which are not in MARS"
+        },
         "sfx_input_defs": {
           "type": "string",
           "description": "Path to the surfex json config file"
@@ -291,14 +297,8 @@
         },
         "loglevel": {
           "description": "Logger output level",
-          "default": "INFO",
           "type": "string",
           "enum": [
-            "critical",
-            "error",
-            "debug",
-            "info",
-            "warning",
             "CRITICAL",
             "ERROR",
             "DEBUG",
@@ -350,11 +350,11 @@
           "type": "string",
           "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
         },
-	"mars_expver": {
-	      "description": "Name of the experiment to get data from MARS in case of global DT. Empty string for operational.",
-	      "type":"string",
-	      "default":""
-	}, 
+        "mars_expver": {
+          "description": "Name of the experiment to get data from MARS in case of global DT. Empty string for operational.",
+          "type": "string",
+          "default": ""
+        },
         "output_settings": {
           "title": "OutputSettings",
           "description": "Output settings. Specified as duration for any of interval, endtime:interval, starttime:endtime:interval or a list of these options",

@@ -1,13 +1,12 @@
 """Discover tasks."""
+import contextlib
 import importlib
 import inspect
 import pkgutil
 
 from .. import tasks
-from ..logs import get_logger
+from ..logs import LoggerHandlers, logger
 from .base import Task, _get_name
-
-logger = get_logger(__name__, "INFO")
 
 
 def discover_modules(package, what="plugin"):
@@ -25,14 +24,14 @@ def discover_modules(package, what="plugin"):
     path = package.__path__
     prefix = package.__name__ + "."
 
-    logger.debug("%s search path: %r", what.capitalize(), path)
+    logger.debug("{} search path: {}", what.capitalize(), path)
     for _finder, mname, _ispkg in pkgutil.iter_modules(path):
         fullname = prefix + mname
-        logger.debug("Loading module %r", fullname)
+        logger.debug("Loading module {}", fullname)
         try:
             mod = importlib.import_module(fullname)
         except ImportError as exc:
-            logger.warning("Could not load %r: %s", fullname, repr(exc))
+            logger.warning("Could not load {}: {}", fullname, repr(exc))
             continue
         yield fullname, mod
 
@@ -44,16 +43,26 @@ def get_task(name, config):
         name (_type_): _description_
         config (_type_): _description_
 
+    Raises:
+        NotImplementedError: If task `name` is not amongst the known task names.
+
     Returns:
         _type_: _description_
     """
-    known_types = discover(tasks, Task, attrname="__type_name__")
-    logger.debug("Available task types: %s", ", ".join(known_types.keys()))
+    with contextlib.suppress(KeyError):
+        # loglevel may have been overridden, e.g., via ECFLOW UI
+        logger.configure(
+            handlers=LoggerHandlers(default_level=config["general.loglevel"])
+        )
+        logger.debug("Logger reset to level {}", config["general.loglevel"])
 
-    cls = known_types[name.lower()]
-    task = cls(config)
-    logger.debug("Created %r for %s", task, name)
-    return task
+    known_types = discover(tasks, Task, attrname="__type_name__")
+    try:
+        cls = known_types[name.lower()]
+    except KeyError as error:
+        raise NotImplementedError(f'Task "{name}" not implemented.') from error
+
+    return cls(config)
 
 
 def discover(package, base, attrname="__plugin_name__"):
@@ -86,12 +95,12 @@ def discover(package, base, attrname="__plugin_name__"):
             tname = _get_name(cname, cls, what.lower(), attrname=attrname)
             if cls.__module__ != fullname:
                 logger.debug(
-                    "Skipping %s %r imported by %r", what.lower(), tname, fullname
+                    "Skipping {} %r imported by %r", what.lower(), tname, fullname
                 )
                 continue
             if tname in discovered:
                 logger.warning(
-                    "%s type %r is defined more than once", what.capitalize(), tname
+                    "{} type %r is defined more than once", what.capitalize(), tname
                 )
                 continue
             discovered[tname] = cls

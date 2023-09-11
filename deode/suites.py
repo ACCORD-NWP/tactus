@@ -4,15 +4,13 @@ import os
 from pathlib import Path
 
 from .datetime_utils import as_datetime, as_timedelta
-from .logs import get_logger, get_logger_from_config
+from .logs import GLOBAL_LOGLEVEL, logger
 from .toolbox import Platform
 
 try:
     import ecflow
 except ImportError:
     ecflow = None
-
-logger = get_logger(__name__, "INFO")
 
 
 class SuiteDefinition(object):
@@ -25,7 +23,6 @@ class SuiteDefinition(object):
         ecf_files,
         config,
         task_settings,
-        loglevel,
         ecf_home=None,
         ecf_include=None,
         ecf_out=None,
@@ -43,7 +40,6 @@ class SuiteDefinition(object):
             task_settings (TaskSettings): Submission configuration
             config (deode.ParsedConfig): Configuration file
             task_settings (deode.TaskSettings): Task settings
-            loglevel (str): Loglevel
             ecf_home (str, optional): ECF_HOME. Defaults to None.
             ecf_include (str, optional): ECF_INCLUDE.
                                          Defaults to None which uses ecf_files.
@@ -69,7 +65,6 @@ class SuiteDefinition(object):
         self.do_prep = config["suite_control.do_prep"]
         self.do_marsprep = config["suite_control.do_marsprep"]
 
-        self.logger = get_logger_from_config(config)
         name = suite_name
         self.joboutdir = joboutdir
         if ecf_include is None:
@@ -125,6 +120,7 @@ class SuiteDefinition(object):
         first_cycle = as_datetime(config["general.times.start"])
         deode_home = platform.get_platform_value("DEODE_HOME")
         keep_workdirs = "1" if config["general.keep_workdirs"] else "0"
+        loglevel = config.get("general.loglevel", GLOBAL_LOGLEVEL).upper()
         variables = {
             "ECF_EXTN": ".py",
             "ECF_FILES": self.ecf_files,
@@ -180,7 +176,7 @@ class SuiteDefinition(object):
         cycle_time = first_cycle
         i = 0
         while cycle_time <= last_cycle:
-            logger.debug("cycle_time %s", cycle_time)
+            logger.debug("cycle_time {}", cycle_time)
             cycles.update(
                 {
                     str(i): {
@@ -362,7 +358,7 @@ class SuiteDefinition(object):
             forecasting = EcflowSuiteFamily(
                 "Forecasting", cycle, self.ecf_files, trigger=forecast_trigger
             )
-            self.logger.debug(self.task_settings.get_task_settings("Forecast"))
+            logger.debug(self.task_settings.get_task_settings("Forecast"))
 
             forecast = EcflowSuiteTask(
                 "Forecast",
@@ -564,7 +560,7 @@ class EcflowNode:
         self.ecf_container_path = ecf_files + self.path
         if variables is not None:
             for key, value in variables.items():
-                logger.debug("key=%s value=%s", key, value)
+                logger.debug("key={} value={}", key, value)
                 if self.ecf_node is not None:
                     self.ecf_node.add_variable(key, value)
 
@@ -674,7 +670,7 @@ class EcflowSuite(EcflowNodeContainer):
         """
         if self.defs is not None:
             self.defs.save_as_defs(def_file)
-        logger.info("def file saved to %s", def_file)
+        logger.info("def file saved to {}", def_file)
 
 
 class EcflowSuiteFamily(EcflowNodeContainer):
@@ -774,11 +770,11 @@ class EcflowSuiteTask(EcflowNode):
                 raise ValueError("Must pass input template if it is to be parsed")
 
             variables = task_settings.get_settings(name)
-            logger.debug("vars %s", variables)
+            logger.debug("vars {}", variables)
             for var, value in variables.items():
                 if isinstance(value, int):
                     value = str(value)
-                logger.debug("var=%s value=%s", var, value)
+                logger.debug("var={} value={}", var, value)
                 if self.ecf_node is not None:
                     self.ecf_node.add_variable(var, value)
             task_settings.parse_job(
