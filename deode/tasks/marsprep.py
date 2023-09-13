@@ -91,7 +91,9 @@ class Marsprep(Task):
 
         # Get domain properties
         projstring = Projstring()
-        projection = Projection(projstring.get_projstring())
+        projection = Projection(
+            projstring.get_projstring(lon0=domain_spec["lon0"], lat0=domain_spec["lat0"])
+        )
         domain_properties = projection.get_domain_properties(domain_spec)
         fdomainstr = "/".join(
             [
