@@ -59,6 +59,16 @@ class InitialConditions(object):
             else:
                 self.nosuccess(source, source_sfx)
 
+        # Find data prepared by Prep and the boundary interpolation
+        source = self.platform.substitute(f"{self.intp_bddir}/ELSCF@CNMEXP@ALBC000")
+        source_sfx = self.platform.substitute(f"{self.archive}/ICMSH@CNMEXP@INIT.sfx")
+
+        if os.path.exists(source) and os.path.exists(source_sfx):
+            logger.info("Found initial files\n  {}\n  {}", source, source_sfx)
+            return source, source_sfx
+
+        self.nosuccess(source, source_sfx, False)
+
         # Find data from previous forecast
         pdtg = self.basetime - self.cycle_length
 
@@ -72,16 +82,6 @@ class InitialConditions(object):
             basetime=pdtg,
             validtime=self.basetime,
         )
-
-        if os.path.exists(source) and os.path.exists(source_sfx):
-            logger.info("Found initial files\n  {}\n  {}", source, source_sfx)
-            return source, source_sfx
-
-        self.nosuccess(source, source_sfx, False)
-
-        # Find data prepared by Prep and the boundary interpolation
-        source = self.platform.substitute(f"{self.intp_bddir}/ELSCF@CNMEXP@ALBC000")
-        source_sfx = self.platform.substitute(f"{self.archive}/ICMSH@CNMEXP@INIT.sfx")
 
         if os.path.exists(source) and os.path.exists(source_sfx):
             logger.info("Found initial files\n  {}\n  {}", source, source_sfx)

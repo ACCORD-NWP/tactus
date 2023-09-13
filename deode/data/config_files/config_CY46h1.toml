@@ -3,7 +3,6 @@ case = "@CYCLE@_@CSC@"
 cnmexp = "DEOD"
 realization = -1
 tstep = 75
-loglevel = "info"
 csc = "HARMONIE_AROME"
 cycle = "CY46h1"
 surfex = true
@@ -28,13 +27,14 @@ fullpos = ["PT6H:PT15M", "PT9H:PT30M", "PT1H"]
 surfex = ["PT3H:PT1H", "PT9H:PT24H:PT3H"]
 
 [suite_control]
-create_static_data = true
+create_static_data = true 
 create_time_dependent_suite = true
 do_soil = true
 do_pgd = true
 do_prep = true
 interpolate_boundaries = true
 do_marsprep = true
+do_prep_just_first_run = false
 
 [system]
 casedir = "@SCRATCH@/deode/@CASE@"

@@ -110,6 +110,11 @@
           "description": "Run prep if cold start",
           "type": "boolean"
         },
+	"do_prep_just_first_run":{
+          "description": "Run prep just first run",
+          "type": "boolean"
+        },
+
         "interpolate_boundaries": {
           "description": "Activates the boundary interpolation",
           "type": "boolean"
