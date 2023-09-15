@@ -85,5 +85,5 @@ poetry shell
 deode -h
 
 # Run a stand-alone task with an example config file
-deode --config-file $PWD/deode/data/config_files/config.toml run --task Forecast --template $PWD/deode/templates/stand_alone.py --job $PWD/test.job --troika-config $PWD/deode/data/config_files/troika.yml -o $PWD/test.log
+deode run --config-file $PWD/deode/data/config_files/config.toml --task Forecast --template $PWD/deode/templates/stand_alone.py --job $PWD/test.job --troika-config $PWD/deode/data/config_files/troika.yml -o $PWD/test.log
 ```
