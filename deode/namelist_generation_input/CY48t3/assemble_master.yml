@@ -55,10 +55,16 @@ e927_arome:
   - f4_e927
   - f4_e927_arome
 
+e927_alaro:
+  - empty
+  - f4_common
+  - f4_e927
+  - f4_e927_alaro
+
 forecast_bdmodel_ifs:
   - empty
   - f4_common
-  - f4_arome
+  - f4_${general.csc}
 
 forecast_bdmodel_arome:
   - empty

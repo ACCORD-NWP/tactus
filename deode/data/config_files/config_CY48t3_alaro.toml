@@ -1,0 +1,81 @@
+[general]
+case = "@CYCLE@_@CSC@"
+cnmexp = "DEOD"
+realization = -1
+tstep = 75
+csc = "ALARO"
+cycle = "CY48t3"
+surfex = false
+forecast_range = "PT12H"
+keep_workdirs = true
+accept_static_namelists = false
+nproma = -32
+mars_expver = "0001"
+
+[boundaries]
+bdstrategy = "same_forecast"
+bdint = "PT1H"
+bdshift = "PT0H"
+bdcycle = "PT06H"
+bdmodel = "ifs"
+bd_has_surfex = false
+bdtasks_per_batch = 24
+
+[general.output_settings]
+history = ["PT0H:PT12H:PT1H"]
+fullpos = ["PT6H:PT15M", "PT9H:PT30M", "PT1H"]
+surfex = ["PT3H:PT1H", "PT9H:PT24H:PT3H"]
+
+[suite_control]
+create_static_data = true 
+create_time_dependent_suite = true
+do_soil = false
+do_pgd = true
+do_prep = false
+interpolate_boundaries = true
+do_marsprep = true
+do_prep_just_first_run = false
+
+[system]
+casedir = "@SCRATCH@/deode/@CASE@"
+wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@"
+archive = "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
+bddir = "@INTP_BDDIR@"
+intp_bddir = "@WRK@"
+bdfile_template = "ELSCF@CNMEXP@ALBC@NNN@"
+bddir_sfx = "@MARSDIR@"
+bdfile_sfx_template = "ECSFCSFX+@LLL@"
+climdir = "@CASEDIR@/climate/@DOMAIN@"
+bdclimdir = "@FIXED_BDCLIMDIR@"
+fullpos_config_file = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos_namelist_ALARO.yml"
+sfx_input_defs = "@DEODE_HOME@/deode/data/input/sfx_input_@CYCLE@.json"
+namelists = "@DEODE_HOME@/deode/data/namelists/@CYCLE@/@CSC@"
+marsdir = "@CASEDIR@/IFS/@YYYY@/@MM@/@DD@/@HH@/@MARS_EXPVER@"
+marsfile_template = "mars_prefetch_[levtype]_[date]_[time]+[step]"
+global_sfcdir = "/hpcperm/snh02/climate_fields_mir/climate.v020_MIR_orog/"
+
+[general.times]
+basetime = "2023-02-19T00:00:00Z"
+validtime = "2023-02-19T00:00:00Z"
+start = "2023-08-30T05:00:00Z"
+end = "2023-08-30T06:00:00Z"
+cycle_length = "PT1H"
+
+[task.args]
+bd_nr = "1"
+bd_time = "2023-02-19T09:00:00Z"
+
+[task.creategrib.conversions.surfex]
+input_template = "@SURFEX_TEMPLATE@"
+output_template = "sfx_@YYYY@-@MM@-@DD@T@HH@:@mm@:@ss@+@DURATION_GRIB@.grib"
+
+[troika]
+config_file = "@DEODE_HOME@/deode/data/config_files/troika.yml"
+
+[include]
+domain = "include/domains/DEMO_60x80_2500m.toml"
+vertical_levels = "include/vertical_levels/MF_90.toml"
+platform = "include/platform_paths/atos_bologna.toml"
+submission = "include/submission/atos_bologna_CY48t3.toml"
+macros = "include/macros.toml"
+file_templates = "include/file_templates.toml"
