@@ -23,6 +23,7 @@ from deode.tasks.discover_task import discover, get_task
 from deode.tasks.e923 import E923
 from deode.tasks.forecast import Forecast
 from deode.tasks.marsprep import Marsprep
+from deode.tasks.marsprepGlobalDT import MarsprepGlobalDT
 from deode.toolbox import ArchiveError, FileManager, ProviderError
 
 WORKING_DIR = Path.cwd()
@@ -83,6 +84,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_task_e923_constant_part_method = E923.constant_part
     original_task_e923_monthly_part_method = E923.monthly_part
     original_task_marsprep_run_method = Marsprep.run
+    original_task_marsprepglobaldt_run_method = MarsprepGlobalDT.run
 
     # Define the wrappers that will replace some key methods
     def new_batchjob_init_method(self, *args, **kwargs):
@@ -118,6 +120,11 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         """Suppress some errors so that test continues if they happen."""
         with contextlib.suppress(FileNotFoundError):
             original_task_marsprep_run_method(*args, **kwargs)
+
+    def new_task_marsprepglobaldt_run_method(*args, **kwargs):
+        """Suppress some errors so that test continues if they happen."""
+        with contextlib.suppress(FileNotFoundError):
+            original_task_marsprepglobaldt_run_method(*args, **kwargs)
 
     def new_task_initial_conditions_nosuccess_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
@@ -170,6 +177,11 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     session_mocker.patch(
         "deode.tasks.marsprep.Marsprep.run",
         new=new_task_marsprep_run_method,
+    )
+
+    session_mocker.patch(
+        "deode.tasks.marsprepGlobalDT.MarsprepGlobalDT.run",
+        new=new_task_marsprepglobaldt_run_method,
     )
 
     # Create files needed by gmtedsoil tasks

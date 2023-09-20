@@ -16,7 +16,7 @@ mars_expver = "0001"
 bdstrategy = "same_forecast"
 bdint = "PT1H"
 bdshift = "PT0H"
-bdcycle = "PT1H"
+bdcycle = "PT24H"
 bdmodel = "arome"
 bd_has_surfex = true
 bdtasks_per_batch = 24
@@ -52,16 +52,16 @@ bdclimdir = "@HOST_CASE@/climate/@HOST_DOMAIN@"
 fullpos_config_file = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos_namelist.yml"
 sfx_input_defs = "@DEODE_HOME@/deode/data/input/sfx_input_@CYCLE@.json"
 namelists = "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
-marsdir = "@CASEDIR@/IFS/@YYYY@/@MM@/@DD@/@HH@/@MARS_EXPVER@"
+marsdir = "@SCRATCH@/deode/IFS/@YYYY@/@MM@/@DD@/@HH@/@MARS_EXPVER@"
 marsfile_template = "mars_prefetch_[levtype]_[date]_[time]+[step]"
 global_sfcdir = "/hpcperm/snh02/climate_fields_mir/climate.v020_MIR_orog/"
 
 [general.times]
 basetime = "2023-02-19T00:00:00Z"
 validtime = "2023-02-19T00:00:00Z"
-start = "2023-08-30T05:00:00Z"
-end = "2023-08-30T06:00:00Z"
-cycle_length = "PT1H"
+start = "2023-09-13T00:00:00Z"
+end = "2023-09-13T03:00:00Z"
+cycle_length = "PT3H"
 
 [task.args]
 bd_nr = "1"

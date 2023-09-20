@@ -20,7 +20,7 @@ NPROC = 1
 NPROCX = 1
 NPROCY = 1
 WRAPPER = "srun"
-tasks = ["Gmted", "Soil"]
+tasks = ["Gmted", "Soil", "Marsprep", "MarsprepGlobalDT"]
 
 [serial.BATCH]
 NAME = "#SBATCH --job-name=@TASK_NAME@"
@@ -43,6 +43,7 @@ MODULE_FFTW= "module('load', 'fftw/3.3.9')"
 OMP_NUM_THREADS= "os.environ['OMP_NUM_THREADS'] = '1'"
 OMPI_MCA_btl= "os.environ['OMPI_MCA_btl'] = '^vader'"
 DR_HOOK_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
+MARS_READANY_BUFFER_SIZE= "os.environ['MARS_READANY_BUFFER_SIZE'] = '78930200'"
 
 [task_exceptions.PgdUpdate]
 bindir = "/home/snh02/work/gl_binaries"
@@ -92,19 +93,20 @@ NODES = "#SBATCH --nodes=1"
 NTASKS = "#SBATCH --ntasks=16"
 
 [task_exceptions.Forecast]
-NPROC = 256
+NPROC = 256 
 
 [task_exceptions.Forecast.BATCH]
 NODES = "#SBATCH --nodes=2"
 NTASKS = "#SBATCH --ntasks=256"
-WALLTIME = "#SBATCH --time=00:30:00"
+WALLTIME = "#SBATCH --time=01:00:00"
+MEM = "#SBATCH --mem=200GB"
 
 [task_exceptions.Pgd]
 WRAPPER="srun -n @NPROC@"
 [task_exceptions.Pgd.BATCH]
 NODES = "#SBATCH --nodes=2"
 NTASKS = "#SBATCH --ntasks=32"
-WALLTIME = "#SBATCH --time=00:10:00"
+WALLTIME = "#SBATCH --time=00:30:00"
 
 [task_exceptions.Prep]
 WRAPPER="srun -n @NPROC@"
@@ -122,6 +124,11 @@ MEM = "#SBATCH --mem=200GB"
 WALLTIME = "#SBATCH --time=00:30:00" 
 
 [task_exceptions.marsprep.BATCH]
+NODES = "#SBATCH --nodes=1"
+NTASKS = "#SBATCH --ntasks=1"
+WALLTIME = "#SBATCH --time=01:00:00"
+
+[task_exceptions.MarsprepGlobalDT.BATCH]
 NODES = "#SBATCH --nodes=1"
 NTASKS = "#SBATCH --ntasks=1"
 WALLTIME = "#SBATCH --time=01:00:00"

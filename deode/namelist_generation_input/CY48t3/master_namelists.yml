@@ -162,6 +162,7 @@ f4_arome:
     RLWINHF: 1
     RRE2DE: 0.64952
     RSWINHF: 1
+
   NAMAFN:
     GFP_SFIS%IBITS: 16
     GFP_ST%IANO: 0

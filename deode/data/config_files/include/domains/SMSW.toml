@@ -1,0 +1,15 @@
+name = "SMSW"
+nimax = 1141
+njmax = 1429
+xloncen = 26.75
+xlatcen = 41.25
+xlon0 = 26.0
+xlat0 = 42.5
+xbeta = 0.0
+xdx = 2500.0
+xdy = 2500.0
+ilone = 11
+ilate = 11
+nbzong = 16 
+nbzonl = 16
+gridtype = "cubic"
