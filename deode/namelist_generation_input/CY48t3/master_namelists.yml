@@ -546,14 +546,14 @@ f4_arome:
     NECRIPL: 1
   NEMELBC0B:
     NEFRSPCPL: 1
-    NEK0: 20
-    NEK1: 30
+    NEK0: 220
+    NEK1: 255
     NEN1: 4
     NEN2: 8
-    SPNUDDIV: 0.01
-    SPNUDQ: 0.0
-    SPNUDT: 0.01
-    SPNUDVOR: 0.01
+    SPNUDDIV: 0.3
+    SPNUDQ: 0.
+    SPNUDT: 0.3
+    SPNUDVOR: 0.3
     TEFRCL: ${namelist.tefrcl}
 
 f4_common:
