@@ -214,6 +214,14 @@ f4_arome:
     TFP_V%IBITS: 12
     TFP_VOR%ZFK: 32.0
     TFP_VV%ZFK: 32.0
+  NAMARPAR:
+    CMF_CLOUD: STAT
+    LBL89ARPEGE: True
+    LBL89EXP: True
+    LDEPOSC: True
+    LGZ: True
+    LPROJQITURB: True
+    XGZ: 1.83 
   NAMARPHY:
     LKFBCONV: False
     LKFBD: False
@@ -265,8 +273,9 @@ f4_arome:
     LQMPD: False
     LQMT: False
     LQMVD: False
+    LRHDI_LASTITERPC: True
     NITMP: 4
-    NSITER: 1
+    NSITER: 2
     NSPDLAG: 3
     NSVDLAG: 3
     NTLAG: 3
@@ -284,9 +293,9 @@ f4_arome:
     REPSM2: 0.0
     REPSP1: 0.0
     SDRED: 1.0
-    SIPR: 90000.0
+    SIPR: 60000.0
     SITR: 350.0
-    SITRA: 100.0
+    SITRA: 50.0
     SLHDA0: 0.25
     SLHDD00: 6.5e-05
     VESL: 0.05
@@ -309,7 +318,6 @@ f4_arome:
     LRDBBC: False
     LSETTLS: False
     LSETTLST: True
-    LSETTLSV: True
     LSLHD_GFL: False
     LSLHD_OLD: False
     LSLHD_SPD: False
