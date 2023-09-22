@@ -215,12 +215,12 @@ f4_harmonie-arome:
     NTLAG: 3
     NVLAG: 3
     NWLAG: 3
-    RDAMPDIV: 20.0
-    RDAMPPD: 200000.0
-    RDAMPQ: 20.0
-    RDAMPT: 20.0
-    RDAMPVD: 20.0
-    RDAMPVOR: 20.0
+    RDAMPDIV: 10.0
+    RDAMPPD: 100000.0
+    RDAMPQ: 10.0
+    RDAMPT: 10.0
+    RDAMPVD: 10.0
+    RDAMPVOR: 10.0
     REPS1: 0.0
     REPS2: 0.0
     REPSM1: 0.0
@@ -232,7 +232,7 @@ f4_harmonie-arome:
     SLHDA0: 0.25
     SLHDD00: 6.5e-05
     VESL: 0.0
-    XIDT: 0.0
+    XIDT: 0.15
     ZSLHDP1: 1.7
     ZSLHDP3: 0.6
   NAMDYNA:
@@ -331,6 +331,7 @@ f4_harmonie-arome:
   NAMPARAR:
     CMF_CLOUD: "STAT"
     CMF_UPDRAFT: "DUAL"
+    LSCAWAREMF: True
     LHARATU: True
     LHGT_QS: True
     LICERAD: True
@@ -355,7 +356,7 @@ f4_harmonie-arome:
     RFRMIN(12): 0.05
     RFRMIN(2): 1.e-08
     RFRMIN(22): 0.25
-    RFRMIN(24): 2.5
+    RFRMIN(24): 1.0
     RFRMIN(26): 250000000.0
     RFRMIN(29): 1000.0
     RFRMIN(3): 3.e-09

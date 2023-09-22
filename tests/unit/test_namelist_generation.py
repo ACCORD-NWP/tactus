@@ -52,7 +52,7 @@ def parsed_config(config_platform):
     return ParsedConfig(config_platform, json_schema=MAIN_CONFIG_JSON_SCHEMA)
 
 
-@pytest.fixture(params=["pgd", "prep", "forecast"])
+@pytest.fixture(params=["pgd", "prep_ifs", "prep_arome", "forecast"])
 def _nlgen_surfex(parsed_config, tmp_path_factory, request):
     """Test namelist generation for surfex."""
     nam_type = request.param
