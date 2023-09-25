@@ -16,7 +16,6 @@ DEFAULT_LOGDIR = Path().home() / ".logs" / PACKAGE_NAME
 DEFAULT_LOGFILE_RETENTION_TIME = "1 week"
 DEFAULT_LOG_SINKS = {
     "console": sys.stderr,
-    "logfile": DEFAULT_LOGDIR / f"{PACKAGE_NAME}_{{time}}.log",
 }
 
 
