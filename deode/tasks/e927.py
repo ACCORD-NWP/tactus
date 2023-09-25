@@ -20,6 +20,7 @@ class E927(Task):
         Task.__init__(self, config, __name__)
 
         self.climdir = self.platform.get_system_value("climdir")
+        self.archive = self.platform.get_system_value("archive")
 
         self.cnmexp = self.config["general.cnmexp"]
         self.basetime = as_datetime(self.config["general.times.basetime"])
@@ -78,3 +79,4 @@ class E927(Task):
 
         target = f"{self.intp_bddir}/ELSCF{self.cnmexp}ALBC{bdnr:03d}"
         self.fmanager.output(f"PF{self.cnmexp}000+0000", target)
+        self.archive_logs("NODE.001_01")

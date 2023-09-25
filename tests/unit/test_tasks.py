@@ -18,6 +18,7 @@ from deode.config_parser import (
 from deode.initial_conditions import InitialConditions
 from deode.tasks.base import Task
 from deode.tasks.batch import BatchJob
+from deode.tasks.collectlogs import CollectLogs
 from deode.tasks.creategrib import CreateGrib
 from deode.tasks.discover_task import discover, get_task
 from deode.tasks.e923 import E923
@@ -62,6 +63,10 @@ def task_name_and_configs(request, base_raw_config, tmp_path_factory):
             static_data = "{tmp_path_factory.getbasetemp().as_posix()}"
             climdata = "{tmp_path_factory.getbasetemp().as_posix()}"
             soilgrid_data_path = "{tmp_path_factory.getbasetemp().as_posix()}"
+        [task.args]
+            joboutdir = "foo"
+            tarname= "foo"
+            task_logs = "foo"
         """
     )
 
@@ -85,6 +90,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_task_e923_monthly_part_method = E923.monthly_part
     original_task_marsprep_run_method = Marsprep.run
     original_task_marsprepglobaldt_run_method = MarsprepGlobalDT.run
+    original_task_collectlogs_collectlogs_execute_method = CollectLogs.execute
 
     # Define the wrappers that will replace some key methods
     def new_batchjob_init_method(self, *args, **kwargs):
@@ -143,6 +149,11 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         ):
             original_task_e923_monthly_part_method(self, constant_file)
 
+    def new_task_collectlogs_collectlogs_execute_method(*args, **kwargs):
+        """Suppress some errors so that test continues if they happen."""
+        with contextlib.suppress(FileNotFoundError):
+            original_task_collectlogs_collectlogs_execute_method(*args, **kwargs)
+
     def new_surfex_binary(self, *args, **kwargs):
         """Create output."""
         Path("PGD.fa").touch()
@@ -177,6 +188,10 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     session_mocker.patch(
         "deode.tasks.marsprep.Marsprep.run",
         new=new_task_marsprep_run_method,
+    )
+    session_mocker.patch(
+        "deode.tasks.collectlogs.CollectLogs.execute",
+        new=new_task_collectlogs_collectlogs_execute_method,
     )
 
     session_mocker.patch(

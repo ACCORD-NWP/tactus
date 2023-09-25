@@ -65,6 +65,7 @@ class SuiteDefinition(object):
         self.do_prep = config["suite_control.do_prep"]
         self.do_marsprep = config["suite_control.do_marsprep"]
         self.do_prep_just_first_run = config["suite_control.do_prep_just_first_run"]
+        self.suite_name = suite_name
         name = suite_name
         self.joboutdir = joboutdir
         if ecf_include is None:
@@ -154,6 +155,26 @@ class SuiteDefinition(object):
 
         if self.create_static_data:
             static_data = self.static_suite_part(config, input_template)
+            task_logs = config["system.climdir"]
+            args = ";".join(
+                [
+                    f"joboutdir={self.joboutdir}/{self.suite_name}/StaticData",
+                    "tarname=StaticData",
+                    f"task_logs={task_logs}",
+                ]
+            )
+            variables = {"ARGS": args}
+
+            EcflowSuiteTask(
+                "CollectLogs",
+                self.suite,
+                config,
+                self.task_settings,
+                self.ecf_files,
+                input_template=input_template,
+                trigger=EcflowSuiteTriggers([EcflowSuiteTrigger(static_data)]),
+                variables=variables,
+            )
         else:
             static_data = None
 
@@ -342,17 +363,40 @@ class SuiteDefinition(object):
             else:
                 int_trig = inputdata_done
 
-            cycle = EcflowSuiteFamily(
+            cycle_fam = EcflowSuiteFamily(
                 "Cycle", time_family, self.ecf_files, trigger=int_trig
             )
             triggers = [EcflowSuiteTrigger(inputdata)]
             if prev_cycle_trigger is not None:
                 triggers = triggers + prev_cycle_trigger
             ready_for_cycle = EcflowSuiteTriggers(triggers)
-            prev_cycle_trigger = [EcflowSuiteTrigger(cycle)]
+            prev_cycle_trigger = [EcflowSuiteTrigger(cycle_fam)]
             initialization = EcflowSuiteFamily(
-                "Initialization", cycle, self.ecf_files, trigger=ready_for_cycle
+                "Initialization", cycle_fam, self.ecf_files, trigger=ready_for_cycle
             )
+
+            cday = cycle["day"]
+            ctime = cycle["time"]
+            task_logs = config["system.wrk"]
+            args = ";".join(
+                [
+                    f"joboutdir={self.joboutdir}/{self.suite_name}/{cday}/{ctime}",
+                    f"tarname={cday}_{ctime}",
+                    f"task_logs={task_logs}",
+                ]
+            )
+            variables = {"ARGS": args}
+            EcflowSuiteTask(
+                "CollectLogs",
+                time_family,
+                config,
+                self.task_settings,
+                self.ecf_files,
+                input_template=input_template,
+                trigger=EcflowSuiteTriggers([EcflowSuiteTrigger(cycle_fam)]),
+                variables=variables,
+            )
+
             EcflowSuiteTask(
                 "FirstGuess",
                 initialization,
@@ -366,7 +410,7 @@ class SuiteDefinition(object):
 
             forecast_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(initialization)])
             forecasting = EcflowSuiteFamily(
-                "Forecasting", cycle, self.ecf_files, trigger=forecast_trigger
+                "Forecasting", cycle_fam, self.ecf_files, trigger=forecast_trigger
             )
             logger.debug(self.task_settings.get_task_settings("Forecast"))
 

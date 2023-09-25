@@ -568,12 +568,13 @@ class Pgd(Task):
         """
         Task.__init__(self, config, "Pgd")
         self.nlgen = NamelistGenerator(self.config, "surfex")
+        self.climdir = self.platform.get_system_value("climdir")
         # TODO get from args
         self.force = True
 
     def execute(self):
         """Execute."""
-        output = self.platform.get_system_value("climdir") + "/PGD_prel.fa"
+        output = f"{self.climdir}/PGD_prel.fa"
         binary = self.get_binary("PGD")
 
         if not os.path.exists(output) or self.force:
@@ -604,6 +605,7 @@ class Pgd(Task):
             # Run PGD
             batch.run(binary)
             self.fmanager.output(pgdfile, output)
+            self.archive_logs(["OPTIONS.nam", "LISTING_PGD.txt"], target=self.climdir)
         else:
             print("Output already exists: ", output)
 
@@ -620,18 +622,18 @@ class Prep(Task):
         """
         Task.__init__(self, config, "Prep")
         self.nlgen = NamelistGenerator(self.config, "surfex")
+        self.archive = self.platform.get_system_value("archive")
         # TODO get from args
         self.force = True
 
     def execute(self):
         """Execute."""
         cnmexp = self.config["general.cnmexp"]
-        archive = self.platform.get_system_value("archive")
-        output = f"{archive}/ICMSH{cnmexp}INIT.sfx"
+        output = f"{self.archive}/ICMSH{cnmexp}INIT.sfx"
 
         if not os.path.exists(output) or self.force:
             binary = self.get_binary("PREP")
-            os.makedirs(archive, exist_ok=True)
+            os.makedirs(self.archive, exist_ok=True)
             batch = BatchJob(os.environ, wrapper=self.wrapper)
 
             bdmodel = self.config["boundaries.bdmodel"]
@@ -710,6 +712,7 @@ class Prep(Task):
             # Run PREP and archive output
             batch.run(binary)
             self.fmanager.output(prep_output_file, output)
+            self.archive_logs(["OPTIONS.nam", "LISTING_PREP0.txt"])
 
         else:
             logger.info("Output already exists: {}", output)

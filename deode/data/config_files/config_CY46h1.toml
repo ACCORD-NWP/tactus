@@ -40,6 +40,7 @@ do_prep_just_first_run = false
 casedir = "@SCRATCH@/deode/@CASE@"
 wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@"
 archive = "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
+logs = "@ARCHIVE_ROOT@/logs"
 bddir = "@INTP_BDDIR@"
 intp_bddir = "@WRK@"
 bdfile_template = "ELSCF@CNMEXP@ALBC@NNN@"

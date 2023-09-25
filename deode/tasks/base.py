@@ -93,6 +93,25 @@ class Task(object):
         except KeyError:
             logger.warning("Could not update ECCODES_DEFINITION_PATH")
 
+    def archive_logs(self, files, target=None):
+        """Archive files in a log directory.
+
+        Args:
+            files (str,list): File(s) to be archived
+            target (str): Target directory for archiving
+
+        """
+        if target is None:
+            target = self.wrk
+        logdir = os.path.join(target, "logs", self.name)
+        os.makedirs(logdir, exist_ok=True)
+
+        if isinstance(files, str):
+            self.fmanager.output(files, logdir)
+        else:
+            for f in files:
+                self.fmanager.output(f, logdir)
+
     def create_wrkdir(self):
         """Create a cycle working directory."""
         os.makedirs(self.wrk, exist_ok=True)

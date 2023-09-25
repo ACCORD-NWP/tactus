@@ -150,3 +150,4 @@ class C903(Task):
         logger.debug("WRKDIR: {}", self.wrk)
         logger.debug("OUTPUT {}", f"ELSCFMARS{self.dom}+0000")
         self.fmanager.output(f"ELSCFMARS{self.dom}+0000", target)
+        self.archive_logs("NODE.001_01")

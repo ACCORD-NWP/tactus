@@ -182,6 +182,10 @@
           "type": "string",
           "description": "Location of date specific archive"
         },
+        "logs": {
+          "type": "string",
+          "description": "Location of collected logfiles"
+        },
         "namelists": {
           "type": "string",
           "description": "Path to static namelists"

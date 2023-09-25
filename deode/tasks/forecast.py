@@ -193,7 +193,7 @@ class Forecast(Task):
         for filetype, oi in self.output_settings.items():
             self.archive_output(self.file_templates[filetype], oi)
 
-        self.fmanager.output("NODE.001_01", f"{self.archive}/NODE.001_01")
+        self.archive_logs(["fort.4", "EXSEG1.nam", "NODE.001_01"])
 
 
 class PrepareCycle(Task):
