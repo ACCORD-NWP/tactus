@@ -22,9 +22,12 @@ class InitialConditions(object):
         self.wrk = self.platform.get_value("system.wrk")
         self.intp_bddir = self.config["system.intp_bddir"]
         self.basetime = as_datetime(self.config["general.times.basetime"])
+        self.starttime = as_datetime(self.config["general.times.start"])
         self.cycle_length = as_timedelta(self.config["general.times.cycle_length"])
         self.archive = self.config["system.archive"]
         self.file_templates = self.config["file_templates"].dict()
+        self.surfex = self.config["general.surfex"]
+        self.cold_start = self.config["suite_control.cold_start"]
 
     def nosuccess(self, f1, f2, fail=True):
         """Report of not success.
@@ -38,7 +41,10 @@ class InitialConditions(object):
             FileNotFoundError : if fail is True
 
         """
-        logger.warning("Could not find:\n  {}\n  {}", f1, f2)
+        if self.surfex:
+            logger.warning("Could not find:\n  {}\n  {}", f1, f2)
+        else:
+            logger.warning("Could not find:\n  {}", f1)
         if fail:
             raise FileNotFoundError("Could not find any initial files")
 
@@ -60,18 +66,28 @@ class InitialConditions(object):
                 self.nosuccess(source, source_sfx)
 
         # Find data prepared by Prep and the boundary interpolation
-        source = self.platform.substitute(f"{self.intp_bddir}/ELSCF@CNMEXP@ALBC000")
-        source_sfx = self.platform.substitute(f"{self.archive}/ICMSH@CNMEXP@INIT.sfx")
+        if self.cold_start or self.starttime == self.basetime:
+            source = self.platform.substitute(f"{self.intp_bddir}/ELSCF@CNMEXP@ALBC000")
+            if not self.surfex:
+                if os.path.exists(source):
+                    return source, None
+                self.nosuccess(source, None)
+            else:
+                source_sfx = self.platform.substitute(
+                    f"{self.archive}/ICMSH@CNMEXP@INIT.sfx"
+                )
 
-        if os.path.exists(source) and os.path.exists(source_sfx):
-            logger.info("Found initial files\n  {}\n  {}", source, source_sfx)
-            return source, source_sfx
+            if os.path.exists(source) and os.path.exists(source_sfx):
+                logger.info("Found initial files\n  {}\n  {}", source, source_sfx)
+                return source, source_sfx
 
-        self.nosuccess(source, source_sfx, False)
+            self.nosuccess(source, source_sfx)
+            return "", ""
 
         # Find data from previous forecast
         pdtg = self.basetime - self.cycle_length
-
+        logger.info(self.cycle_length)
+        logger.info(self.basetime)
         source = self.platform.substitute(
             f"{self.archive}/{self.file_templates['history']}",
             basetime=pdtg,
@@ -82,6 +98,11 @@ class InitialConditions(object):
             basetime=pdtg,
             validtime=self.basetime,
         )
+
+        if not self.surfex:
+            if os.path.exists(source):
+                return source, None
+            self.nosuccess(source, None)
 
         if os.path.exists(source) and os.path.exists(source_sfx):
             logger.info("Found initial files\n  {}\n  {}", source, source_sfx)

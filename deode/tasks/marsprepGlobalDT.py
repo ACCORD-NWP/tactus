@@ -44,7 +44,7 @@ class MarsprepGlobalDT(Task):
         self.bdint = as_timedelta(self.config["boundaries.bdint"])
         self.bdshift = as_timedelta(self.config["boundaries.bdshift"])
         self.bdcycle = as_timedelta(self.config["boundaries.bdcycle"])
-
+        self.int_bdcycle = int(self.bdcycle.total_seconds()) // 3600
         self.cy_offset = cycle_offset(self.basetime, self.bdcycle)
 
         bd_basetime = self.basetime - self.cy_offset
@@ -168,17 +168,16 @@ class MarsprepGlobalDT(Task):
         ]:
             # Check options for manipulating dates for MARS extraction
             # Still needs some more relations with the fclen here
-            int_bdcycle = int(self.bdcycle.total_seconds()) // 3600
+
             strategy_options = {strategy: {}}
 
-            for i in range(int_bdcycle):
+            for i in range(self.int_bdcycle):
                 strategy_options[strategy].update(
                     {i: {"shifthours": i + bdshift, "shiftrange": i, "pickrange": 0}}
                 )
 
             # Check if we're dealing with 00 or 03 ... etc.
-            init_hour = int(date.strftime("%H")) % int_bdcycle
-
+            init_hour = int(date.strftime("%H")) % self.int_bdcycle
             boundary_options = strategy_options[strategy][init_hour]
 
         else:
@@ -188,7 +187,7 @@ class MarsprepGlobalDT(Task):
         request_date_frame = pd.Series(
             pd.date_range(
                 date - pd.Timedelta(hours=boundary_options["shifthours"]),
-                periods=(length + boundary_options["shiftrange"]) // interval_int + 1,
+                periods=length // interval_int + 1,
                 freq=interval,
             )
         )
@@ -371,8 +370,6 @@ class MarsprepGlobalDT(Task):
                 base_list.append(step)
 
         base = "/".join(base_list)
-        logger.debug(base)
-
         return base
 
     def run(self):
@@ -438,7 +435,9 @@ class MarsprepGlobalDT(Task):
         step = int(self.bdint.total_seconds() / 3600)
         str_steps = [
             "{0:02d}".format(
-                dateframe.index.tolist()[0] + (i * step) + self.basetime.hour
+                dateframe.index.tolist()[0]
+                + (i * step)
+                + self.basetime.hour % self.int_bdcycle
             )
             for i in range(len(dateframe.index.tolist()))
         ]
@@ -448,8 +447,7 @@ class MarsprepGlobalDT(Task):
         # Decided to split for easyer maintanance, still to be discussed
         #
 
-        # Prefetch.GG
-
+        # Prefetch GG
         base = self.check_file_exists(str_steps, "ICMGG")
         if base != "":
             self.update_data_request(
@@ -469,21 +467,20 @@ class MarsprepGlobalDT(Task):
 
             # Prefetch.Sea
 
-            if not os.path.exists(os.path.join(self.prepdir, "ICMGG.sea")):
-                self.update_data_request(
-                    data_type="forecast",
-                    date=date_str,
-                    time=hour_str,
-                    steps="00",
-                    prefetch=True,
-                    levtype="SFC",
-                    param="31/34",
-                    expver=self.expver,
-                    target="ICMGG.sea",
-                )
-                self.write_mars_req(self.datarequest, "ICMGGsea.req", "retrieve")
-                self.create_executable("ICMGGsea.req")
-                self.execute(self.executable)
+            self.update_data_request(
+                data_type="forecast",
+                date=date_str,
+                time=hour_str,
+                steps="00",
+                prefetch=True,
+                levtype="SFC",
+                param="31/34",
+                expver=self.expver,
+                target="ICMGG.sea",
+            )
+            self.write_mars_req(self.datarequest, "ICMGGsea.req", "retrieve")
+            self.create_executable("ICMGGsea.req")
+            self.execute(self.executable)
 
             # Read the single-step MARS files first
             with open("sdfor", "rb") as fp:
@@ -538,7 +535,7 @@ class MarsprepGlobalDT(Task):
                         f"ICMGG+{i}", os.path.join(self.prepdir, f"ICMGG+{i_fstring}")
                     )
 
-        # Preftch.SH
+        # Prefetch SH
         base = self.check_file_exists(str_steps, "ICMSH")
         if base != "":
             self.update_data_request(
@@ -621,25 +618,14 @@ class MarsprepGlobalDT(Task):
             logger.debug("PREP file already exists!")
         else:
 
-            int_bdcycle = int(self.bdcycle.total_seconds()) // 3600
-            if self.strategy == "same_forecast":
-                mod_hour = (
-                    self.basetime.hour
-                    % int_bdcycle
-                    // (int(self.bdint.total_seconds()) // 3600)
-                )
-                get_boundary = mod_hour
-            else:
-                raise ValueError(
-                    "Boundary strategy not implemented yet{}".format(self.strategy)
-                )
+            str_step = "{}".format(str_steps[0])
 
             # Stage for lat/lon
             self.update_data_request(
                 data_type="forecast",
                 date=date_str,
                 time=hour_str,
-                steps="00",
+                steps=str_step,
                 prefetch=False,
                 levtype="SFC",
                 param="32.128/33.128/39.128/40.128/41.128/42.128/139.128/141.128/170.128/172.128/183.128/198.128/235.128/236.128/35.128/36.128/37.128/38.128/238.128/243.128/245.128",
@@ -692,13 +678,12 @@ class MarsprepGlobalDT(Task):
             self.create_executable("latlonZ.req")
             self.execute(self.executable)
 
-            step_str = "{:0>2}".format(dateframe.index.tolist()[get_boundary])
             # Retrieve for lat/lon surface data
             self.update_data_request(
                 data_type="forecast",
                 date=date_str,
                 time=hour_str,
-                steps=step_str,
+                steps=str_step,
                 prefetch=True,
                 levtype="SFC",
                 param="32.128/33.128/39.128/40.128/41.128/42.128/141.128/139.128/170.128/172.128/183.128/198.128/235.128/236.128/35.128/36.128/37.128/38.128/238.128/243.128/245.128",

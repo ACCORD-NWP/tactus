@@ -6,7 +6,7 @@ tstep = 75
 csc = "AROME"
 cycle = "CY48t3"
 surfex = true
-forecast_range = "PT12H"
+forecast_range = "PT6H"
 keep_workdirs = true
 accept_static_namelists = false
 nproma = -32
@@ -16,25 +16,25 @@ mars_expver = "0001"
 bdstrategy = "same_forecast"
 bdint = "PT3H"
 bdshift = "PT0H"
-bdcycle = "PT12H"
+bdcycle = "PT24H"
 bdmodel = "ifs"
 bd_has_surfex = false
 bdtasks_per_batch = 24
 
 [general.output_settings]
-history = ["PT0H:PT12H:PT1H"]
+history = ["PT0H:PT6H:PT3H"]
 fullpos = ["PT6H:PT15M", "PT9H:PT30M", "PT1H"]
-surfex = ["PT3H:PT1H", "PT9H:PT24H:PT3H"]
+surfex = ["PT6H:PT1H", "PT9H:PT24H:PT3H"]
 
 [suite_control]
-create_static_data = true 
+create_static_data = false 
 create_time_dependent_suite = true
 do_soil = false
 do_pgd = true
 do_prep = true
 interpolate_boundaries = true
 do_marsprep = true
-do_prep_just_first_run = false
+cold_start = false
 
 [system]
 casedir = "@SCRATCH@/deode/@CASE@"
@@ -58,9 +58,9 @@ global_sfcdir = "/hpcperm/snh02/climate_fields_mir/climate.v020_MIR_orog/"
 [general.times]
 basetime = "2023-08-21T00:00:00Z"
 validtime = "2023-08-21T00:00:00Z"
-start = "2023-09-16T00:00:00Z"
-end = "2023-09-17T12:00:00Z"
-cycle_length = "PT24H"
+start = "2023-09-16T05:00:00Z"
+end = "2023-09-16T17:00:00Z"
+cycle_length = "PT6H"
 
 [task.args]
 bd_nr = "1"

@@ -34,7 +34,7 @@ do_pgd = true
 do_prep = true
 interpolate_boundaries = true
 do_marsprep = false
-do_prep_just_first_run = false
+cold_start = false
 
 [system]
 casedir = "@SCRATCH@/deode/@CASE@"

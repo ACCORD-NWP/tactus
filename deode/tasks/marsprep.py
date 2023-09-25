@@ -42,7 +42,7 @@ class Marsprep(Task):
         self.bdint = as_timedelta(self.config["boundaries.bdint"])
         self.bdshift = as_timedelta(self.config["boundaries.bdshift"])
         self.bdcycle = as_timedelta(self.config["boundaries.bdcycle"])
-
+        self.int_bdcycle = int(self.bdcycle.total_seconds()) // 3600
         self.cy_offset = cycle_offset(self.basetime, self.bdcycle)
 
         bd_basetime = self.basetime - self.cy_offset
@@ -166,16 +166,15 @@ class Marsprep(Task):
         ]:
             # Check options for manipulating dates for MARS extraction
             # Still needs some more relations with the fclen here
-            int_bdcycle = int(self.bdcycle.total_seconds()) // 3600
             strategy_options = {strategy: {}}
 
-            for i in range(int_bdcycle):
+            for i in range(self.int_bdcycle):
                 strategy_options[strategy].update(
                     {i: {"shifthours": i + bdshift, "shiftrange": i, "pickrange": 0}}
                 )
 
             # Check if we're dealing with 00 or 03 ... etc.
-            init_hour = int(date.strftime("%H")) % int_bdcycle
+            init_hour = int(date.strftime("%H")) % self.int_bdcycle
             boundary_options = strategy_options[strategy][init_hour]
 
         else:
@@ -185,14 +184,13 @@ class Marsprep(Task):
         request_date_frame = pd.Series(
             pd.date_range(
                 date - pd.Timedelta(hours=boundary_options["shifthours"]),
-                periods=(length + boundary_options["shiftrange"]) // interval_int + 1,
+                periods=length // interval_int + 1,
                 freq=interval,
             )
         )
         # Strip the series object according to the selected boundary strategy
         request_date_frame = pd.concat(
             [
-                request_date_frame.iloc[[0]],
                 request_date_frame.iloc[boundary_options["pickrange"] :],
             ]
         )
@@ -403,7 +401,9 @@ class Marsprep(Task):
         step = int(self.bdint.total_seconds() / 3600)
         str_steps = [
             "{0:02d}".format(
-                dateframe.index.tolist()[0] + (i * step) + self.basetime.hour
+                dateframe.index.tolist()[0]
+                + (i * step)
+                + self.basetime.hour % self.int_bdcycle
             )
             for i in range(len(dateframe.index.tolist()))
         ]
@@ -598,21 +598,14 @@ class Marsprep(Task):
             logger.debug("Warning: Prep file allready exists")
         else:
 
-            int_bdcycle = int(self.bdcycle.total_seconds()) // 3600
-            if self.strategy == "same_forecast":
-                mod_hour = self.basetime.hour % int_bdcycle
-                get_boundary = mod_hour
-            else:
-                raise ValueError(
-                    "Boundary strategy not implemented yet{}".format(self.strategy)
-                )
+            str_step = "{}".format(str_steps[0])
 
             # Stage for lat/lon
             self.update_data_request(
                 data_type="forecast",
                 date=date_str,
                 time=hour_str,
-                steps=base,
+                steps=str_step,
                 prefetch=False,
                 levtype="SFC",
                 param="32/33/39/40/41/42/139/141/170/172/183/198/235/236/35/36/37/38/238/29/243.128/244.128/245.128",
@@ -687,7 +680,7 @@ class Marsprep(Task):
                 data_type="forecast",
                 date=date_str,
                 time=hour_str,
-                steps="{:0>2}".format(dateframe.index.tolist()[get_boundary]),
+                steps=str_step,
                 prefetch=True,
                 levtype="SFC",
                 param="32/33/39/40/41/42/139/141/170/172/183/198/235/236/35/36/37/38/238/29/243.128/244.128/245.128",

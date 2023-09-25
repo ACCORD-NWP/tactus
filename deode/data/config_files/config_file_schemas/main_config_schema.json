@@ -110,8 +110,8 @@
           "description": "Run prep if cold start",
           "type": "boolean"
         },
-	"do_prep_just_first_run":{
-          "description": "Run prep just first run",
+	"cold_start":{
+          "description": "Run prep every run",
           "type": "boolean"
         },
 

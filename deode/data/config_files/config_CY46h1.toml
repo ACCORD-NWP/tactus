@@ -6,15 +6,15 @@ tstep = 75
 csc = "HARMONIE_AROME"
 cycle = "CY46h1"
 surfex = true
-forecast_range = "PT24H"
+forecast_range = "PT12H"
 keep_workdirs = true
 accept_static_namelists = false
 nproma = -32
-mars_expver = "i4ql"
+mars_expver = "0001"
 
 [boundaries]
 bdstrategy = "same_forecast"
-bdint = "PT12H"
+bdint = "PT3H"
 bdshift = "PT0H"
 bdcycle = "PT12H"
 bdmodel = "ifs"
@@ -29,12 +29,12 @@ surfex = ["PT3H:PT1H", "PT9H:PT24H:PT3H"]
 [suite_control]
 create_static_data = true 
 create_time_dependent_suite = true
-do_soil = true
+do_soil = false
 do_pgd = true
 do_prep = true
 interpolate_boundaries = true
 do_marsprep = true
-do_prep_just_first_run = false
+cold_start = false
 
 [system]
 casedir = "@SCRATCH@/deode/@CASE@"

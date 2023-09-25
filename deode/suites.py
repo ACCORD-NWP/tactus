@@ -64,8 +64,10 @@ class SuiteDefinition(object):
         self.interpolate_boundaries = config["suite_control.interpolate_boundaries"]
         self.do_prep = config["suite_control.do_prep"]
         self.do_marsprep = config["suite_control.do_marsprep"]
-        self.do_prep_just_first_run = config["suite_control.do_prep_just_first_run"]
+        self.cold_start = config["suite_control.cold_start"]
+        self.surfex = config["general.surfex"]
         self.suite_name = suite_name
+
         name = suite_name
         self.joboutdir = joboutdir
         if ecf_include is None:
@@ -276,6 +278,9 @@ class SuiteDefinition(object):
                     trigger=ready_for_marsprep,
                 )
 
+            if not self.surfex:
+                self.do_prep = False
+
             if self.interpolate_boundaries or self.do_prep:
 
                 int_fam = EcflowSuiteFamily(
@@ -297,7 +302,7 @@ class SuiteDefinition(object):
                         input_template=input_template,
                     )
 
-                if self.do_prep_just_first_run:
+                if not self.cold_start:
                     self.do_prep = False
 
                 if self.interpolate_boundaries:

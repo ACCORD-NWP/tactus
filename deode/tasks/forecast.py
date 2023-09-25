@@ -163,7 +163,8 @@ class Forecast(Task):
         # Initial files
         initfile, initfile_sfx = InitialConditions(self.config).find_initial_files()
         self.fmanager.input(initfile, f"ICMSH{self.cnmexp}INIT")
-        self.fmanager.input(initfile_sfx, f"ICMSH{self.cnmexp}INIT.sfx")
+        if initfile_sfx is not None:
+            self.fmanager.input(initfile_sfx, f"ICMSH{self.cnmexp}INIT.sfx")
 
         # Use explicitly defined boundary dir if defined
         try:

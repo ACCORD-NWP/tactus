@@ -34,7 +34,7 @@ do_pgd = true
 do_prep = true
 interpolate_boundaries = true
 do_marsprep = false
-do_prep_just_first_run = false
+cold_start = false
 
 [system]
 casedir = "@SCRATCH@/deode/@CASE@"
@@ -53,7 +53,7 @@ bdclimdir = "@HOST_CASE@/climate/@HOST_DOMAIN@"
 fullpos_config_file = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos_namelist.yml"
 sfx_input_defs = "@DEODE_HOME@/deode/data/input/sfx_input_@CYCLE@.json"
 namelists = "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
-marsdir = "@CASEDIR@/IFS/@YYYY@/@MM@/@DD@/@HH@/@MARS_EXPVER@"
+marsdir = "@SCRATCH@/deode/IFS/@YYYY@/@MM@/@DD@/@HH@/@MARS_EXPVER@"
 marsfile_template = "mars_prefetch_[levtype]_[date]_[time]+[step]"
 global_sfcdir = "/hpcperm/snh02/climate_fields_mir/climate.v020_MIR_orog/"
 
