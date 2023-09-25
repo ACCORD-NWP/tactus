@@ -334,7 +334,7 @@ class Platform:
                 pattern = self.sub_value(pattern, "DD", basetime.strftime("%d"))
                 pattern = self.sub_value(pattern, "HH", basetime.strftime("%H"))
                 pattern = self.sub_value(pattern, "mm", basetime.strftime("%M"), ci=False)
-                pattern = self.sub_value(pattern, "ss", basetime.strftime("{}"), ci=False)
+                pattern = self.sub_value(pattern, "ss", basetime.strftime("%S"), ci=False)
 
         logger.debug("Return pattern={}", pattern)
         return pattern
