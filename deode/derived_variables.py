@@ -39,9 +39,13 @@ def check_fullpos_namelist(config, nlgen):
             generate_namelist = False
 
     if generate_namelist:
-        fullpos_config = platform.get_system_value("fullpos_config_file")
+        fpdir = config["fullpos.config_path"]
+        fpdir = platform.substitute(fpdir)
+        fpfiles = config["fullpos.selection"]
         domain = config["domain.name"]
-        namfpc, selections = Fullpos(domain, nlfile=fullpos_config).construct()
+        fullpos = Fullpos(domain, fpdir=fpdir, fpfiles=fpfiles)
+        namfpc, selections = fullpos.construct()
+        logger.info("Create fullpos selection for {}", list(selections.keys()))
         for head, body in selections.items():
             nlgen.write_namelist(body, head)
 

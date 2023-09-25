@@ -44,7 +44,6 @@ class Forecast(Task):
         # Update namelist settings
         self.nlgen_master = NamelistGenerator(self.config, "master")
         self.nlgen_surfex = NamelistGenerator(self.config, "surfex")
-        self.fullpos_config_file = self.platform.get_system_value("fullpos_config_file")
 
         self.master = self.get_binary("MASTERODB")
 

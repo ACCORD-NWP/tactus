@@ -1,46 +1,5 @@
-# Normally no need to change the MAP sections
-LEVEL_MAP: 
-    NAMFPDYI: "RFP3I"
-    NAMFPDYV: "RFP3PV"
-    NAMFPDYH: "RFP3H"
-    NAMFPDYP: "RFP3P"
-    NAMFPDYS: "NRFP3S"
-    NAMFPDYT: "RFP3TH"
-    NAMFPDYF: "RFP3F"
-
-PARAM_MAP:
-    NAMFPDY2:
-      CL2DF: "CFP2DF"
-    NAMFPDYV:
-      CL3DF: "CFP3DF"
-    NAMFPDYI:
-      CL3DF: "CFP3DF"
-    NAMFPDYP:
-      CL3DF: "CFP3DF"
-    NAMFPDYS:
-      CL3DF: "CFP3DF"
-    NAMFPDYF:
-      CL3DF: "CFP3DF"
-    NAMFPDYT:
-      CL3DF: "CFP3DF"
-    NAMFPDYH:
-      CL3DF: "CFP3DF"
-    NAMFPPHY:
-      CLCFU: "CFPCFU"
-      CLXFU: "CFPXFU"
-      CLPHY: "CFPPHY"
-
-# Change only global settings in NAMFPC, no selection of fields
-NAMFPC:
-    NFPGRIB: 141
-    CFPDOM: "${domain.name}"
-    LFPCAPEX: True
-    LFPMOIS: False
-    LISOT_ABOVEG: True
-    L_READ_MODEL_DATE: True
-    NFPCAPE: 5
-
-# Change only global settings in NAMFPC, no selection of fields
+# Do the selection of fields below. Note 
+# that xxt00000000 inherits from xxtddddhhmm
 selection:
  xxtddddhhmm: &default
   NAMFPPHY:

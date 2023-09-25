@@ -17,6 +17,9 @@
     "boundaries": {
       "$ref": "#/definitions/boundaries"
     },
+    "fullpos": {
+      "$ref": "#/definitions/fullpos"
+    },
     "troika": {
       "$ref": "#/definitions/troika"
     },
@@ -90,6 +93,24 @@
         "bd_has_surfex": {
           "description": "Set to true if the host model runs with surfex",
           "type": "boolean"
+        }
+      }
+    },
+    "fullpos": {
+      "title": "FullposSection",
+      "description": "Settings for control of fullpos selection.",
+      "type": "object",
+      "properties": {
+        "config_path": {
+          "title": "Path to fullpos config files",
+          "type": "string"
+        },
+        "selection": {
+          "description": "List of rules and selections to include",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

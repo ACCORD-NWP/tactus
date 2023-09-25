@@ -26,6 +26,10 @@ history = ["PT1H"]
 fullpos = "PT15M"
 surfex = ["PT1H"]
 
+[fullpos]
+ config_path = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos"
+ selection = ["rules", "namfpc_header", "master_selection"]
+
 [suite_control]
 create_static_data = true
 create_time_dependent_suite = true
@@ -50,7 +54,6 @@ bddir_sfx = "@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@"
 bdfile_sfx_template = "@BDFILE_TEMPLATE@.sfx"
 climdir = "@CASEDIR@/climate/@DOMAIN@"
 bdclimdir = "@HOST_CASE@/climate/@HOST_DOMAIN@"
-fullpos_config_file = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos_namelist.yml"
 sfx_input_defs = "@DEODE_HOME@/deode/data/input/sfx_input_@CYCLE@.json"
 namelists = "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
 marsdir = "@SCRATCH@/deode/IFS/@YYYY@/@MM@/@DD@/@HH@/@MARS_EXPVER@"
