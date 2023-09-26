@@ -4,10 +4,15 @@
 import datetime
 import json
 
+from .aux_types import QuasiConstant
 from .namelist import flatten_list
 
-SKIP = ("SURFEX", "task", "submission")
-TABLE_HEADER = ["", "Key", "Description", "Default", "Options", "Type", ""]
+
+class ConfigDocConstants(QuasiConstant):
+    """Useful constants for the config_doc module."""
+
+    SKIP = ("SURFEX", "task", "submission")
+    TABLE_HEADER = ("", "Key", "Description", "Default", "Options", "Type", "")
 
 
 class DocConfig:
@@ -36,7 +41,7 @@ class DocConfig:
             info (list): Extracted info
 
         """
-        info = [""] * len(TABLE_HEADER)
+        info = [""] * len(ConfigDocConstants.TABLE_HEADER)
         info[1] = header
         header_map = {"description": 2, "default": 3, "type": 5}
 
@@ -168,7 +173,7 @@ class DocConfig:
         sections = []
         indent = 2
         for k, v in config.items():
-            if k not in SKIP:
+            if k not in ConfigDocConstants.SKIP:
                 sections.append(self.expand_config(None, k, v, indent))
         return flatten_list(sections)
 
@@ -228,7 +233,7 @@ class DocConfig:
             hdr = list(section)[0]
             print(f"\n{hdr}")
             print(f"{section[hdr]['description']}")
-            txt = "|".join(TABLE_HEADER)
+            txt = "|".join(ConfigDocConstants.TABLE_HEADER)
             print(" ", txt)
             txt = "|".join(["", "---", "---", "---", "---", "---", ""])
             print(" ", txt)

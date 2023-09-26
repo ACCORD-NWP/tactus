@@ -5,7 +5,7 @@ import os
 import pytest
 import tomlkit
 
-from deode.config_parser import MAIN_CONFIG_JSON_SCHEMA, PACKAGE_CONFIG_PATH, ParsedConfig
+from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.submission import TaskSettings
 from deode.suites import SuiteDefinition
 
@@ -22,14 +22,17 @@ def minimal_raw_config():
 
 @pytest.fixture()
 def minimal_parsed_config(minimal_raw_config):
-    return ParsedConfig(minimal_raw_config, json_schema=MAIN_CONFIG_JSON_SCHEMA)
+    return ParsedConfig(
+        minimal_raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+    )
 
 
 @pytest.fixture()
 def config_from_task_config_file():
     """Return a raw config common to all tasks."""
     return ParsedConfig.from_file(
-        PACKAGE_CONFIG_PATH, json_schema=MAIN_CONFIG_JSON_SCHEMA
+        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
+        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
     )
 
 

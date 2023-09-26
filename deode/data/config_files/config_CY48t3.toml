@@ -1,85 +1,85 @@
 [general]
-case = "@CYCLE@_@CSC@"
-cnmexp = "DEOD"
-realization = -1
-tstep = 75
-csc = "AROME"
-cycle = "CY48t3"
-surfex = true
-forecast_range = "PT6H"
-keep_workdirs = true
-accept_static_namelists = false
-nproma = -32
-mars_expver = "0001"
-
-[boundaries]
-bdstrategy = "same_forecast"
-bdint = "PT3H"
-bdshift = "PT0H"
-bdcycle = "PT24H"
-bdmodel = "ifs"
-bd_has_surfex = false
-bdtasks_per_batch = 24
+  accept_static_namelists = false
+  case = "@CYCLE@_@CSC@"
+  cnmexp = "DEOD"
+  csc = "AROME"
+  cycle = "CY48t3"
+  forecast_range = "PT6H"
+  keep_workdirs = true
+  mars_expver = "0001"
+  nproma = -32
+  realization = -1
+  surfex = true
+  tstep = 75
 
 [general.output_settings]
-history = ["PT0H:PT6H:PT3H"]
-fullpos = ["PT6H:PT15M", "PT9H:PT30M", "PT1H"]
-surfex = ["PT6H:PT1H", "PT9H:PT24H:PT3H"]
-
-[fullpos]
- config_path = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos"
- selection = ["rules", "namfpc_header", "master_selection"]
-
-[suite_control]
-create_static_data = false 
-create_time_dependent_suite = true
-do_soil = false
-do_pgd = true
-do_prep = true
-interpolate_boundaries = true
-do_marsprep = true
-cold_start = false
-
-[system]
-casedir = "@SCRATCH@/deode/@CASE@"
-wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@"
-archive = "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
-logs = "@ARCHIVE_ROOT@/logs"
-bddir = "@INTP_BDDIR@"
-intp_bddir = "@WRK@"
-bdfile_template = "ELSCF@CNMEXP@ALBC@NNN@"
-bddir_sfx = "@MARSDIR@"
-bdfile_sfx_template = "ECSFCSFX@DOMAIN@+@LLL@"
-climdir = "@CASEDIR@/climate/@DOMAIN@"
-bdclimdir = "@FIXED_BDCLIMDIR@"
-sfx_input_defs = "@DEODE_HOME@/deode/data/input/sfx_input_@CYCLE@.json"
-namelists = "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
-marsdir = "@SCRATCH@/deode/IFS/@YYYY@/@MM@/@DD@/@HH@/@MARS_EXPVER@"
-marsfile_template = "mars_prefetch_[levtype]_[date]_[time]+[step]"
-global_sfcdir = "/hpcperm/snh02/climate_fields_mir/climate.v020_MIR_orog/"
+  fullpos = ["PT6H:PT15M", "PT9H:PT30M", "PT1H"]
+  history = ["PT0H:PT6H:PT3H"]
+  surfex = ["PT6H:PT1H", "PT9H:PT24H:PT3H"]
 
 [general.times]
-basetime = "2023-08-21T00:00:00Z"
-validtime = "2023-08-21T00:00:00Z"
-start = "2023-09-16T05:00:00Z"
-end = "2023-09-16T17:00:00Z"
-cycle_length = "PT6H"
+  basetime = "2023-08-21T00:00:00Z"
+  cycle_length = "PT6H"
+  end = "2023-09-16T17:00:00Z"
+  start = "2023-09-16T05:00:00Z"
+  validtime = "2023-08-21T00:00:00Z"
 
-[task.args]
-bd_nr = "1"
-bd_time = "2023-02-19T09:00:00Z"
+[boundaries]
+  bd_has_surfex = false
+  bdcycle = "PT24H"
+  bdint = "PT3H"
+  bdmodel = "ifs"
+  bdshift = "PT0H"
+  bdstrategy = "same_forecast"
+  bdtasks_per_batch = 24
 
-[task.creategrib.conversions.surfex]
-input_template = "@SURFEX_TEMPLATE@"
-output_template = "sfx_@YYYY@-@MM@-@DD@T@HH@:@mm@:@ss@+@DURATION_GRIB@.grib"
-
-[troika]
-config_file = "@DEODE_HOME@/deode/data/config_files/troika.yml"
+[fullpos]
+  config_path = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos"
+  selection = ["rules", "namfpc_header", "master_selection"]
 
 [include]
-domain = "include/domains/DEMO_60x80_2500m.toml"
-vertical_levels = "include/vertical_levels/MF_90.toml"
-platform = "include/platform_paths/atos_bologna.toml"
-submission = "include/submission/atos_bologna_CY48t3.toml"
-macros = "include/macros.toml"
-file_templates = "include/file_templates.toml"
+  domain = "include/domains/DEMO_60x80_2500m.toml"
+  file_templates = "include/file_templates.toml"
+  macros = "include/macros.toml"
+  platform = "include/platform_paths/atos_bologna.toml"
+  submission = "include/submission/atos_bologna_CY48t3.toml"
+  vertical_levels = "include/vertical_levels/MF_90.toml"
+
+[suite_control]
+  cold_start = false
+  create_static_data = false
+  create_time_dependent_suite = true
+  do_marsprep = true
+  do_pgd = true
+  do_prep = true
+  do_soil = false
+  interpolate_boundaries = true
+
+[system]
+  archive = "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
+  bdclimdir = "@FIXED_BDCLIMDIR@"
+  bddir = "@INTP_BDDIR@"
+  bddir_sfx = "@MARSDIR@"
+  bdfile_sfx_template = "ECSFCSFX@DOMAIN@+@LLL@"
+  bdfile_template = "ELSCF@CNMEXP@ALBC@NNN@"
+  casedir = "@SCRATCH@/deode/@CASE@"
+  climdir = "@CASEDIR@/climate/@DOMAIN@"
+  global_sfcdir = "/hpcperm/snh02/climate_fields_mir/climate.v020_MIR_orog/"
+  intp_bddir = "@WRK@"
+  logs = "@ARCHIVE_ROOT@/logs"
+  marsdir = "@SCRATCH@/deode/IFS/@YYYY@/@MM@/@DD@/@HH@/@MARS_EXPVER@"
+  marsfile_template = "mars_prefetch_[levtype]_[date]_[time]+[step]"
+  namelists = "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
+  sfx_input_defs = "@DEODE_HOME@/deode/data/input/sfx_input_@CYCLE@.json"
+  wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@"
+
+[task.args]
+  bd_nr = "1"
+  bd_time = "2023-02-19T09:00:00Z"
+
+[task.creategrib.conversions.surfex]
+  input_template = "@SURFEX_TEMPLATE@"
+  output_template = "sfx_@YYYY@-@MM@-@DD@T@HH@:@mm@:@ss@+@DURATION_GRIB@.grib"
+
+[troika]
+  config_file = "@DEODE_HOME@/deode/data/config_files/troika.yml"

@@ -1,37 +1,39 @@
 #!/usr/bin/env python3
 """Registration and validation of options passed in the config file."""
-import copy
 import json
 import os
-from collections.abc import Mapping
 from functools import reduce
-from operator import getitem
 from pathlib import Path
-from types import MappingProxyType
-from typing import Any, Callable, Iterator, Literal, Union
 
 import fastjsonschema
-import tomlkit
+import tomli
 import yaml
 from fastjsonschema import JsonSchemaValueException
 
-from . import PACKAGE_DIRECTORY
-from .datetime_utils import ISO_8601_TIME_DURATION_REGEX
-from .general_utils import get_empty_nested_defaultdict, modify_mappings
+from . import GeneralConstants
+from .aux_types import BaseMapping, QuasiConstant
+from .datetime_utils import DatetimeConstants
+from .general_utils import modify_mappings
 from .logs import logger
 
 
-def _get_main_config_schema():
-    with open(MAIN_CONFIG_JSON_SCHEMA_PATH, "r") as schema_file:
-        return modify_mappings(obj=json.load(schema_file), operator=MappingProxyType)
+class ConfigParserDefaults(QuasiConstant):
+    """Defaults related to the parsing of config files."""
 
+    DIRECTORY = GeneralConstants.PACKAGE_DIRECTORY / "data" / "config_files"
+    PACKAGE_INCLUDE_DIR = DIRECTORY / "include"
 
-PACKAGE_CONFIG_DIR = PACKAGE_DIRECTORY / "data" / "config_files"
-PACKAGE_CONFIG_PATH = PACKAGE_CONFIG_DIR / "config.toml"
-PACKAGE_CONFIG_INCLUDE_DIR = PACKAGE_CONFIG_DIR / "include"
-CONFIG_SCHEMAS_DIR = PACKAGE_CONFIG_DIR / "config_file_schemas"
-MAIN_CONFIG_JSON_SCHEMA_PATH = CONFIG_SCHEMAS_DIR / "main_config_schema.json"
-MAIN_CONFIG_JSON_SCHEMA = _get_main_config_schema()
+    PACKAGE_CONFIG_PATH = (DIRECTORY / "config.toml").resolve(strict=True)
+    # Define the default path to the config file
+    try:
+        CONFIG_PATH = Path(os.getenv("DEODE_CONFIG_PATH", "config.toml"))
+        CONFIG_PATH = CONFIG_PATH.resolve(strict=True)
+    except FileNotFoundError:
+        CONFIG_PATH = PACKAGE_CONFIG_PATH
+
+    SCHEMAS_DIRECTORY = DIRECTORY / "config_file_schemas"
+    MAIN_CONFIG_JSON_SCHEMA_PATH = SCHEMAS_DIRECTORY / "main_config_schema.json"
+    MAIN_CONFIG_JSON_SCHEMA = json.loads(MAIN_CONFIG_JSON_SCHEMA_PATH.read_text())
 
 
 class ConfigFileValidationError(Exception):
@@ -40,91 +42,6 @@ class ConfigFileValidationError(Exception):
 
 class ConflictingValidationSchemasError(Exception):
     """Error to be raised when more than one schema is defined for a config section."""
-
-
-def get_default_config_path():
-    """Return the default path to the adopted config file."""
-    try:
-        return Path(os.getenv("DEODE_CONFIG_PATH", "config.toml")).resolve(strict=True)
-    except FileNotFoundError:
-        return Path(PACKAGE_CONFIG_PATH).resolve(strict=True)
-
-
-class BaseMapping(Mapping):
-    """Immutable mapping that will serve as basis for all config-related classes."""
-
-    def __init__(self, *args, **kwargs) -> None:
-        """Initialise an instance the same way a `dict` is initialised."""
-        self.data = dict(*args, **kwargs)
-
-    @property
-    def data(self):
-        """Return the underlying data stored by the instance."""
-        return getattr(self, "_data", None)
-
-    @data.setter
-    def data(self, new, nested_maps_type=dict):
-        """Set the value of the `data` property."""
-        self._data = modify_mappings(
-            obj=new,
-            operator=lambda x: {
-                k: nested_maps_type(v) if isinstance(v, Mapping) else v
-                for k, v in x.items()
-            },
-        )
-
-    def dict(self):  # noqa: A003 (class attr shadowing builtin)
-        """Return a `dict` representation, converting also nested `Mapping`-type items."""
-        return modify_mappings(obj=self, operator=dict)
-
-    def copy(self, update: Union[Mapping, Callable[[Mapping], Any]] = None):
-        """Return a copy of the instance, optionally updated according to `update`."""
-        new = copy.deepcopy(self)
-        if update:
-            new.data = modify_mappings(obj=self.dict(), operator=update)
-        return new
-
-    def dumps(self, section="", style: Literal["toml", "json", "yaml"] = "toml"):
-        """Get a nicely printed version of the container's contents."""
-        if section:
-            section_tree = section.split(".")
-            config = get_empty_nested_defaultdict()
-            reduce(getitem, section_tree[:-1], config)[section_tree[-1]] = self[section]
-        else:
-            config = self
-
-        rtn = json.dumps(config, indent=2, sort_keys=False, default=dict)
-        if style == "toml":
-            rtn = tomlkit.dumps(json.loads(rtn))
-        elif style == "yaml":
-            rtn = yaml.dump(json.loads(rtn))
-
-        return rtn
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}({self.dumps(style='json')})"
-
-    # Implement the abstract methods __getitem__, __iter__ and __len__ from from Mapping
-    def __getitem__(self, item):
-        """Get items from container.
-
-        The behaviour is similar to a `dict`, except for the fact that
-        `self["A.B.C.D. ..."]` will behave like `self["A"]["B"]["C"]["D"][...]`.
-
-        Args:
-            item (str): Item to be retrieved. Use dot-separated keys to retrieve a nested
-                item in one go.
-
-        Returns:
-            Any: Value of the item.
-        """
-        return reduce(getitem, item.split("."), self.data)
-
-    def __iter__(self) -> Iterator:
-        return iter(self.data)
-
-    def __len__(self) -> int:
-        return len(self.data)
 
 
 class BasicConfig(BaseMapping):
@@ -187,7 +104,13 @@ class JsonSchema(BaseMapping):
 class ParsedConfig(BasicConfig):
     """Object that holds parsed configs validated against a `json_schema`."""
 
-    def __init__(self, *args, json_schema, include_dir=PACKAGE_CONFIG_DIR, **kwargs):
+    def __init__(
+        self,
+        *args,
+        json_schema,
+        include_dir=ConfigParserDefaults.DIRECTORY,
+        **kwargs,
+    ):
         """Initialise an instance with an arbitrary number of entries & validate them."""
         self.include_dir = include_dir
         self.json_schema = json_schema
@@ -242,9 +165,10 @@ def _read_raw_config_file(config_path):
     """Read raw configs from files in miscellaneous formats."""
     config_path = Path(config_path)
     logger.info("Reading configs from file <{}>", config_path)
+
     with open(config_path, "rb") as config_file:
         if config_path.suffix == ".toml":
-            return tomlkit.load(config_file)
+            return tomli.load(config_file)
 
         if config_path.suffix in [".yaml", ".yml"]:
             return yaml.load(config_file, Loader=yaml.loader.SafeLoader)
@@ -252,9 +176,7 @@ def _read_raw_config_file(config_path):
         if config_path.suffix == ".json":
             return json.load(config_file)
 
-        raise NotImplementedError(
-            f'Unsupported config file format "{config_path.suffix}"'
-        )
+    raise NotImplementedError(f'Unsupported config file format "{config_path.suffix}"')
 
 
 def _get_config_include_definitions(raw_config):
@@ -270,8 +192,8 @@ def _get_config_include_definitions(raw_config):
 def _expand_config_include_section(
     raw_config,
     json_schema,
-    config_include_search_dir=PACKAGE_CONFIG_DIR,
-    schemas_path=CONFIG_SCHEMAS_DIR,
+    config_include_search_dir=ConfigParserDefaults.DIRECTORY,
+    schemas_path=ConfigParserDefaults.SCHEMAS_DIRECTORY,
     _parent_sections=(),
 ):
     """Merge config includes and return new config & corresponding validation schema."""
@@ -330,8 +252,7 @@ def _get_json_validation_function(json_schema):
     if not json_schema:
         # Validation will just convert everything to dict in this case
         return lambda obj: modify_mappings(obj=obj, operator=dict)
-    json_schema = modify_mappings(obj=json_schema, operator=dict)
-    validation_func = fastjsonschema.compile(json_schema)
+    validation_func = fastjsonschema.compile(json_schema.dict())
 
     def validate(obj):
         try:
@@ -342,7 +263,7 @@ def _get_json_validation_function(json_schema):
 
             # Give a better err msg when times/date-times/durations don't follow ISO 8601
             human_readable_msg = human_readable_msg.replace(
-                f"must match pattern {ISO_8601_TIME_DURATION_REGEX}",
+                f"must match pattern {DatetimeConstants.ISO_8601_TIME_DURATION_REGEX}",
                 "must be an ISO 8601 duration string",
             )
             for spec in ["date-time", "date", "time"]:

@@ -7,13 +7,15 @@ from pathlib import Path
 import pytest
 
 from deode.commands_functions import namelist_integrate, set_deode_home, show_namelist
-from deode.config_parser import PACKAGE_CONFIG_PATH, ParsedConfig
+from deode.config_parser import ConfigParserDefaults, ParsedConfig
 
 
 @pytest.fixture()
 def parsed_config():
     """Return a raw config common to all tasks."""
-    return ParsedConfig.from_file(PACKAGE_CONFIG_PATH, json_schema={})
+    return ParsedConfig.from_file(
+        ConfigParserDefaults.PACKAGE_CONFIG_PATH, json_schema={}
+    )
 
 
 def test_set_deode_home(parsed_config):

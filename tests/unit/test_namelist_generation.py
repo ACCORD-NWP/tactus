@@ -5,7 +5,7 @@ import os
 import pytest
 import tomlkit
 
-from deode.config_parser import MAIN_CONFIG_JSON_SCHEMA, ParsedConfig
+from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.namelist import (
     InvalidNamelistKindError,
     InvalidNamelistTargetError,
@@ -49,7 +49,9 @@ def config_platform():
 
 @pytest.fixture()
 def parsed_config(config_platform):
-    return ParsedConfig(config_platform, json_schema=MAIN_CONFIG_JSON_SCHEMA)
+    return ParsedConfig(
+        config_platform, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+    )
 
 
 @pytest.fixture(params=["pgd", "prep_ifs", "prep_arome", "forecast"])

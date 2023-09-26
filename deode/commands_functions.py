@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
 """Implement the package's commands."""
+import difflib
+import itertools
 import os
+import sys
+from functools import partial
 from pathlib import Path
 
+from . import GeneralConstants
 from .config_doc import DocConfig
-from .config_parser import MAIN_CONFIG_JSON_SCHEMA_PATH
+from .config_parser import BasicConfig, ConfigParserDefaults
 from .derived_variables import check_fullpos_namelist, derived_variables
 from .logs import logger
 from .namelist import NamelistComparator, NamelistGenerator, NamelistIntegrator
 from .scheduler import EcflowServer
 from .submission import NoSchedulerSubmission, TaskSettings
 from .suites import SuiteDefinition
+from .toml_formatter import FormattedToml, FormattingOptions
 from .toolbox import Platform
 
 
@@ -102,7 +108,9 @@ def doc_config(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
-    DocConfig(config.dict(), MAIN_CONFIG_JSON_SCHEMA_PATH).print_doc()
+    DocConfig(
+        config.dict(), ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA_PATH
+    ).print_doc()
 
 
 def show_config(args, config):
@@ -114,10 +122,29 @@ def show_config(args, config):
 
     """
     logger.info("Printing requested configs...")
+
+    pkg_configs = BasicConfig.from_file(
+        GeneralConstants.PACKAGE_DIRECTORY.parent / "pyproject.toml"
+    )
     try:
-        print(config.dumps(section=args.section, style=args.format))
+        formatting_options = FormattingOptions(**pkg_configs["tool.deode.toml_formatter"])
+    except KeyError:
+        formatting_options = None
+
+    toml_formatting_function = partial(
+        FormattedToml.from_string, formatting_options=formatting_options
+    )
+
+    try:
+        dumps = config.dumps(
+            section=args.section,
+            style=args.format,
+            toml_formatting_function=toml_formatting_function,
+        )
     except KeyError:
         logger.error('Error retrieving config data for config section "{}"', args.section)
+    else:
+        sys.stdout.write(str(dumps) + "\n")
 
 
 def show_config_schema(args, config):
@@ -129,7 +156,7 @@ def show_config_schema(args, config):
 
     """
     logger.info("Printing JSON schema used in the validation of the configs...")
-    print(config.json_schema)
+    sys.stdout.write(str(config.json_schema) + "\n")
 
 
 def show_namelist(args, config):
@@ -223,3 +250,87 @@ def namelist_integrate(args, config):
 
     # Write output yaml
     nlint.dict2yml(nml, Path(args.output))
+
+
+#########################################
+
+
+def toml_formatter(args, config):
+    """Implement the `deode toml-formatter` command."""
+    pkg_configs = BasicConfig.from_file(
+        GeneralConstants.PACKAGE_DIRECTORY.parent / "pyproject.toml"
+    )
+    try:
+        formatting_options = FormattingOptions(**pkg_configs["tool.deode.toml_formatter"])
+    except KeyError:
+        formatting_options = None
+
+    def _exclude_if_hidden(fpath):
+        if args.include_hidden:
+            return False
+        return any(part.startswith(".") for part in fpath.parts)
+
+    file_iterators = []
+    for path in args.file_paths:
+        if path.is_dir():
+            file_iterators.append(
+                fpath
+                for fpath in path.rglob("*")
+                if fpath.suffix.lower() == ".toml" and not _exclude_if_hidden(fpath)
+            )
+        else:
+            file_iterators.append([path])
+
+    n_files = 0
+    files_in_need_of_formatting = []
+    for fpath in itertools.chain.from_iterable(file_iterators):
+        logger.info("Checking file <{}>", fpath)
+        n_files += 1
+
+        formatted_toml = FormattedToml.from_file(
+            path=fpath, formatting_options=formatting_options
+        )
+        actual_toml = fpath.read_text()
+
+        file_needs_formatting = False
+        for diff_line in difflib.unified_diff(
+            actual_toml.split("\n"),
+            str(formatted_toml).split("\n"),
+            fromfile="Original",
+            tofile="Formatted",
+            lineterm="",
+        ):
+            file_needs_formatting = True
+            logger.warning(diff_line)
+
+        if file_needs_formatting:
+            if not args.fix_inplace:
+                logger.error("File <{}> needs formatting.", fpath)
+            files_in_need_of_formatting.append(fpath)
+
+            if args.show_formatted:
+                logger.info("The formatted version will now be printed to the stdout.")
+                sys.stdout.write(str(formatted_toml) + "\n")
+
+            if args.fix_inplace:
+                logger.info("Fixing format of file <{}> in-place.", fpath)
+                with open(fpath, "w") as f:
+                    f.write(str(formatted_toml))
+
+        else:
+            logger.info("File <{}> seems to be well-formatted.", fpath)
+
+    if files_in_need_of_formatting:
+        if args.fix_inplace:
+            logger.info("TOML formatter: {} (out of {}) file(s) formatted:")
+            for fpath in files_in_need_of_formatting:
+                logger.info("    {}", fpath)
+        else:
+            logger.error(
+                "TOML formatter: {} (out of {}) file(s) seem to need formatting:",
+                len(files_in_need_of_formatting),
+                n_files,
+            )
+            for fpath in files_in_need_of_formatting:
+                logger.error("    {}", fpath)
+            raise SystemExit(1)

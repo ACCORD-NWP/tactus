@@ -1,5 +1,3 @@
-os_macros = ["USER", "HOME", "PWD"]
-group_macros = ["platform", "system"]
 gen_macros = [
     "general.cnmexp",
     "general.cycle",
@@ -7,8 +5,10 @@ gen_macros = [
     "general.mars_expver",
     "file_templates.duration_grib",
     "file_templates.duration_fa",
-    { surfex_template = "file_templates.surfex" },
-    { case = "general.case" },
-    { domain = "domain.name" },
-    { rrr = "general.realization" },
- ]
+    {surfex_template = "file_templates.surfex"},
+    {case = "general.case"},
+    {domain = "domain.name"},
+    {rrr = "general.realization"},
+]
+group_macros = ["platform", "system"]
+os_macros = ["USER", "HOME", "PWD"]

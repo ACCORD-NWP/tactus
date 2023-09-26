@@ -7,7 +7,7 @@ from pathlib import Path
 import f90nml
 import pytest
 
-from deode.config_parser import PACKAGE_CONFIG_PATH, ParsedConfig
+from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.datetime_utils import as_datetime
 from deode.logs import logger
 from deode.tasks.sfx import InputDataFromNamelist
@@ -19,7 +19,9 @@ logger.enable("deode")
 @pytest.fixture(scope="module")
 def deode_config():
     """Return a raw config common to all tasks."""
-    return ParsedConfig.from_file(PACKAGE_CONFIG_PATH, json_schema={})
+    return ParsedConfig.from_file(
+        ConfigParserDefaults.PACKAGE_CONFIG_PATH, json_schema={}
+    )
 
 
 @pytest.fixture()

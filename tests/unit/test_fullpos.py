@@ -6,12 +6,7 @@ from pathlib import Path
 import pytest
 import tomlkit
 
-from deode.config_parser import (
-    MAIN_CONFIG_JSON_SCHEMA,
-    PACKAGE_CONFIG_DIR,
-    BasicConfig,
-    ParsedConfig,
-)
+from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from deode.fullpos import Fullpos
 from deode.toolbox import Platform
 
@@ -128,8 +123,10 @@ class TestFullpos:
 
     def test_load(self):
         """Test load of the yml files."""
-        raw_config = BasicConfig.from_file(PACKAGE_CONFIG_DIR / "config.toml")
-        config = ParsedConfig(raw_config, json_schema=MAIN_CONFIG_JSON_SCHEMA)
+        raw_config = BasicConfig.from_file(ConfigParserDefaults.PACKAGE_CONFIG_PATH)
+        config = ParsedConfig(
+            raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+        )
         config_patch = tomlkit.parse(
             f"""
         [platform]

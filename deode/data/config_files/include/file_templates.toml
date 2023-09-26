@@ -1,6 +1,5 @@
-duration_grib = "@LLLH@h@LM@m@LS@s"
 duration_fa = "@LLLH@:@LM@:@LS@"
+duration_grib = "@LLLH@h@LM@m@LS@s"
+fullpos = "GRIBPF@CNMEXP@@DOMAIN@+@DURATION_FA@"
 history = "ICMSH@CNMEXP@+@DURATION_FA@"
 surfex = "ICMSH@CNMEXP@+@DURATION_FA@.sfx"
-fullpos = "GRIBPF@CNMEXP@@DOMAIN@+@DURATION_FA@"
-

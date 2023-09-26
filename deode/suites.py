@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 from .datetime_utils import as_datetime, as_timedelta
-from .logs import GLOBAL_LOGLEVEL, logger
+from .logs import LogDefaults, logger
 from .toolbox import Platform
 
 try:
@@ -123,7 +123,7 @@ class SuiteDefinition(object):
         first_cycle = as_datetime(config["general.times.start"])
         deode_home = platform.get_platform_value("DEODE_HOME")
         keep_workdirs = "1" if config["general.keep_workdirs"] else "0"
-        loglevel = config.get("general.loglevel", GLOBAL_LOGLEVEL).upper()
+        loglevel = config.get("general.loglevel", LogDefaults.LEVEL).upper()
         variables = {
             "ECF_EXTN": ".py",
             "ECF_FILES": self.ecf_files,

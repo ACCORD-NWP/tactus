@@ -6,12 +6,19 @@ import dateutil.parser
 import pandas as pd
 from dateutil.utils import default_tzinfo
 
-# The regex in a json schema's "pattern" must use JavaScript syntax (ECMA 262).
-# <https://json-schema.org/understanding-json-schema/reference/regular_expressions.html>
-ISO_8601_TIME_DURATION_REGEX = "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?"
-ISO_8601_TIME_DURATION_REGEX += "(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-IRX = ISO_8601_TIME_DURATION_REGEX
-DEFAULT_SHIFT = pd.Timedelta(0)
+from .aux_types import QuasiConstant
+
+
+class DatetimeConstants(QuasiConstant):
+    """Datetime-related constants."""
+
+    # The regex in a json schema's "pattern" must use JavaScript syntax (ECMA 262). See
+    # https://json-schema.org/understanding-json-schema/reference/regular_expressions.html
+    ISO_8601_TIME_DURATION_REGEX = (
+        "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?"
+        + "(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+    )
+    DEFAULT_SHIFT = pd.Timedelta(0)
 
 
 def as_datetime(obj):
@@ -105,7 +112,7 @@ def oi2dt_list(output_settings, forecast_range):
     return dt
 
 
-def cycle_offset(basetime, dt, shift=DEFAULT_SHIFT):
+def cycle_offset(basetime, dt, shift=DatetimeConstants.DEFAULT_SHIFT):
     """Calculcate offset from a reference time.
 
     Args:
