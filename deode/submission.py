@@ -272,7 +272,7 @@ class TaskSettings(object):
             )
             logger.debug(env_settings)
             python_task_env = ""
-            for __, e_setting in env_settings.items():
+            for __, e_setting in sorted(env_settings.items()):
                 python_task_env = python_task_env + f"{e_setting}\n"
             input_content = input_content.replace("# @ENV_SUB@", python_task_env)
             input_content = input_content.replace("@STAND_ALONE_TASK_NAME@", task)

@@ -14,14 +14,14 @@
 
 [general.output_settings]
   fullpos = ["PT6H:PT15M", "PT9H:PT30M", "PT1H"]
-  history = ["PT0H:PT6H:PT3H"]
+  history = ["PT1H"]
   surfex = ["PT6H:PT1H", "PT9H:PT24H:PT3H"]
 
 [general.times]
   basetime = "2023-08-21T00:00:00Z"
   cycle_length = "PT6H"
-  end = "2023-09-16T17:00:00Z"
-  start = "2023-09-16T05:00:00Z"
+  end = "2023-09-16T06:00:00Z"
+  start = "2023-09-16T00:00:00Z"
   validtime = "2023-08-21T00:00:00Z"
 
 [boundaries]
@@ -47,7 +47,7 @@
 
 [suite_control]
   cold_start = false
-  create_static_data = false
+  create_static_data = true
   create_time_dependent_suite = true
   do_marsprep = true
   do_pgd = true

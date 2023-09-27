@@ -25,19 +25,19 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   WALLTIME = "#SBATCH --time=00:10:00"
 
 [parallel.ENV]
+  AAAOS = "import os"
+  AAMODULE_ENV = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read())"
+  AMODULE_ECMWF = "module('load', 'ecmwf-toolbox/2023.04.1.0')"
+  AMODULE_FFTW = "module('load', 'fftw/3.3.9')"
+  AMODULE_HDF5 = "module('load', 'hdf5/1.10.6')"
+  AMODULE_INTEL = "module('load', 'prgenv/intel')"
+  AMODULE_MKL = "module('load', 'intel-mkl/19.0.5')"
+  AMODULE_NETCDF4 = "module('load', 'netcdf4/4.7.4')"
+  AMODULE_OPENMPI = "module('load', 'openmpi/4.1.1.1')"
   DR_HOOK = "os.environ['DR_HOOK'] = '1'"
   DR_HOOK_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
-  MODULE_ECMWF = "module('load', 'ecmwf-toolbox/2023.04.1.0')"
-  MODULE_ENV = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read())"
-  MODULE_FFTW = "module('load', 'fftw/3.3.9')"
-  MODULE_HDF5 = "module('load', 'hdf5/1.10.6')"
-  MODULE_INTEL = "module('load', 'prgenv/intel')"
-  MODULE_MKL = "module('load', 'intel-mkl/19.0.5')"
-  MODULE_NETCDF4 = "module('load', 'netcdf4/4.7.4')"
-  MODULE_OPENMPI = "module('load', 'openmpi/4.1.1.1')"
   OMP_NUM_THREADS = "os.environ['OMP_NUM_THREADS'] = '1'"
   OMPI_MCA_btl = "os.environ['OMPI_MCA_btl'] = '^vader'"
-  OS = "import os"
 
 [serial]
   NPROC = 1
@@ -56,19 +56,19 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   WALLTIME = "#SBATCH --time=00:15:00"
 
 [serial.ENV]
+  AAAOS = "import os"
+  AAMODULE_ENV = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read())"
+  AMODULE_ECMWF = "module('load', 'ecmwf-toolbox/2023.04.1.0')"
+  AMODULE_FFTW = "module('load', 'fftw/3.3.9')"
+  AMODULE_HDF5 = "module('load', 'hdf5/1.10.6')"
+  AMODULE_INTEL = "module('load', 'prgenv/intel')"
+  AMODULE_MKL = "module('load', 'intel-mkl/19.0.5')"
+  AMODULE_NETCDF4 = "module('load', 'netcdf4/4.7.4')"
+  AMODULE_OPENMPI = "module('load', 'openmpi/4.1.1.1')"
   DR_HOOK_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
   MARS_READANY_BUFFER_SIZE = "os.environ['MARS_READANY_BUFFER_SIZE'] = '78930200'"
-  MODULE_ECMWF = "module('load', 'ecmwf-toolbox/2023.04.1.0')"
-  MODULE_ENV = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read())"
-  MODULE_FFTW = "module('load', 'fftw/3.3.9')"
-  MODULE_HDF5 = "module('load', 'hdf5/1.10.6')"
-  MODULE_INTEL = "module('load', 'prgenv/intel')"
-  MODULE_MKL = "module('load', 'intel-mkl/19.0.5')"
-  MODULE_NETCDF4 = "module('load', 'netcdf4/4.7.4')"
-  MODULE_OPENMPI = "module('load', 'openmpi/4.1.1.1')"
   OMP_NUM_THREADS = "os.environ['OMP_NUM_THREADS'] = '1'"
   OMPI_MCA_btl = "os.environ['OMPI_MCA_btl'] = '^vader'"
-  OS = "import os"
 
 [task]
   wrapper = ""
