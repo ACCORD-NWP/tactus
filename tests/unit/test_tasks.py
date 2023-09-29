@@ -11,6 +11,7 @@ import tomlkit
 import deode
 from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from deode.initial_conditions import InitialConditions
+from deode.tasks.archive import ArchiveHour, ArchiveStatic
 from deode.tasks.base import Task
 from deode.tasks.batch import BatchJob
 from deode.tasks.collectlogs import CollectLogs
@@ -81,6 +82,8 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_batchjob_run_method = BatchJob.run
     original_toolbox_filemanager_input_method = FileManager.input
     original_task_forecast_forecast_execute_method = Forecast.execute
+    original_task_archive_archivehour_execute_method = ArchiveHour.execute
+    original_task_archive_archivestatic_execute_method = ArchiveStatic.execute
     original_task_creategrib_creategrib_execute_method = CreateGrib.execute
     original_task_initial_conditions_nosuccess_method = InitialConditions.nosuccess
     original_task_e923_constant_part_method = E923.constant_part
@@ -113,6 +116,16 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         """Suppress some errors so that test continues if they happen."""
         with contextlib.suppress(FileNotFoundError):
             original_task_forecast_forecast_execute_method(*args, **kwargs)
+
+    def new_task_archive_archivehour_execute_method(*args, **kwargs):
+        """Suppress some errors so that test continues if they happen."""
+        with contextlib.suppress(FileNotFoundError):
+            original_task_archive_archivehour_execute_method(*args, **kwargs)
+
+    def new_task_archive_archivestatic_execute_method(*args, **kwargs):
+        """Suppress some errors so that test continues if they happen."""
+        with contextlib.suppress(FileNotFoundError):
+            original_task_archive_archivestatic_execute_method(*args, **kwargs)
 
     def new_task_creategrib_creategrib_execute_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
@@ -167,6 +180,14 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     session_mocker.patch(
         "deode.tasks.forecast.Forecast.execute",
         new=new_task_forecast_forecast_execute_method,
+    )
+    session_mocker.patch(
+        "deode.tasks.archive.ArchiveHour.execute",
+        new=new_task_archive_archivehour_execute_method,
+    )
+    session_mocker.patch(
+        "deode.tasks.archive.ArchiveStatic.execute",
+        new=new_task_archive_archivestatic_execute_method,
     )
     session_mocker.patch(
         "deode.tasks.creategrib.CreateGrib.execute",

@@ -1,6 +1,7 @@
 """GMTED and SOILGRID."""
 
 import os
+import shutil
 import sys
 
 from ..geo_utils import Projection, Projstring
@@ -231,7 +232,7 @@ class Gmted(Task):
         )
 
         Gmted.tif2bin(gd, "gmted_mea075.bin")
-        os.rename("gmted_mea075.bin", f"{climdir}/gmted2010.dir")
+        shutil.move("gmted_mea075.bin", f"{climdir}/gmted2010.dir")
 
         # Get number of rows and columns
         hdr_rows = gd.RasterYSize

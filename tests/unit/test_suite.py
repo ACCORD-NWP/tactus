@@ -50,6 +50,9 @@ class TestSuite:
                 "suite_control": {
                     "do_pgd": False,
                     "do_prep": False,
+                    "do_archiving": True,
+                    "do_soil": False,
+                    "cold_start": False,
                     "interpolate_boundaries": False,
                     "do_marsprep": True,
                 }

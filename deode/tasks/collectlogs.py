@@ -22,6 +22,7 @@ class CollectLogs(Task):
 
         self.archive = self.platform.get_system_value("archive")
         self.logs = self.platform.get_system_value("logs")
+        self.wrk = self.platform.get_system_value("wrk")
         self.joboutdir = self.config["task.args.joboutdir"]
         self.tarname = self.config["task.args.tarname"]
         self.task_logs = self.platform.substitute(self.config["task.args.task_logs"])

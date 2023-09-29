@@ -39,7 +39,6 @@ class SuiteDefinition(object):
             ecf_files (str): Path to ecflow containers
             task_settings (TaskSettings): Submission configuration
             config (deode.ParsedConfig): Configuration file
-            task_settings (deode.TaskSettings): Task settings
             ecf_home (str, optional): ECF_HOME. Defaults to None.
             ecf_include (str, optional): ECF_INCLUDE.
                                          Defaults to None which uses ecf_files.
@@ -64,6 +63,7 @@ class SuiteDefinition(object):
         self.interpolate_boundaries = config["suite_control.interpolate_boundaries"]
         self.do_prep = config["suite_control.do_prep"]
         self.do_marsprep = config["suite_control.do_marsprep"]
+        self.do_archiving = config["suite_control.do_archiving"]
         self.cold_start = config["suite_control.cold_start"]
         self.surfex = config["general.surfex"]
         self.suite_name = suite_name
@@ -419,7 +419,7 @@ class SuiteDefinition(object):
             )
             logger.debug(self.task_settings.get_task_settings("Forecast"))
 
-            forecast = EcflowSuiteTask(
+            forecast_task = EcflowSuiteTask(
                 "Forecast",
                 forecasting,
                 config,
@@ -429,7 +429,7 @@ class SuiteDefinition(object):
                 variables=None,
             )
 
-            creategrib_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(forecast)])
+            creategrib_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(forecast_task)])
 
             EcflowSuiteTask(
                 "CreateGrib",
@@ -440,6 +440,19 @@ class SuiteDefinition(object):
                 input_template=input_template,
                 trigger=creategrib_trigger,
             )
+
+            if self.do_archiving:
+                archiving_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(cycle_fam)])
+
+                EcflowSuiteTask(
+                    "ArchiveHour",
+                    time_family,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    trigger=archiving_trigger,
+                )
 
     def static_suite_part(self, config, input_template):
         """Create the time dependent part of the suite.
@@ -535,7 +548,7 @@ class SuiteDefinition(object):
 
         if self.do_pgd:
             pgd_update_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(e923constant)])
-            EcflowSuiteTask(
+            pgd_update = EcflowSuiteTask(
                 "PgdUpdate",
                 static_data,
                 config,
@@ -546,6 +559,32 @@ class SuiteDefinition(object):
                 trigger=pgd_update_trigger,
             )
 
+        if self.do_archiving and self.do_pgd:
+            archive_static_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd_update)])
+            EcflowSuiteTask(
+                "ArchiveStatic",
+                static_data,
+                config,
+                self.task_settings,
+                self.ecf_files,
+                input_template=input_template,
+                variables=None,
+                trigger=archive_static_trigger,
+            )
+        elif self.do_archiving and not (self.do_pgd):
+            archive_static_trigger = EcflowSuiteTriggers(
+                [EcflowSuiteTrigger(month_family)]
+            )
+            EcflowSuiteTask(
+                "ArchiveStatic",
+                static_data,
+                config,
+                self.task_settings,
+                self.ecf_files,
+                input_template=input_template,
+                variables=None,
+                trigger=archive_static_trigger,
+            )
         return static_data
 
     def save_as_defs(self, def_file):

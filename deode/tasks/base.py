@@ -54,10 +54,10 @@ class Task(object):
         self.platform = self.fmanager.platform
         self.wrapper = self.config["submission.task.wrapper"]
 
-        wrk = self.platform.get_value("system.wrk")
-        if wrk is None:
-            raise ValueError("You must set wrk")
-        self.wrk = wrk
+        self.wrk = self.platform.get_system_value("wrk")
+        if self.wrk is None:
+            raise ValueError("You must set wrk", self.wrk)
+
         wdir = f"{self.wrk}/{socket.gethostname()}{str(os.getpid())}"
         self.wdir = wdir
         logger.info("Task running in {}", self.wdir)

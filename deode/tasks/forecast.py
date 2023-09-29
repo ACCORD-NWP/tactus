@@ -49,17 +49,24 @@ class Forecast(Task):
 
         self.file_templates = self.config["file_templates"]
 
-    def archive_output(self, fname, periods):
+    def archive_output(self, filetype, periods):
         """Archive forecast model output.
 
         Args:
-            fname (str): Filename template
+            filetype (str): Filename template
             periods (str): Output list
         """
         dt_list = oi2dt_list(periods, self.forecast_range)
+        logger.info("Input template: {}", filetype["model"])
+        logger.info("Output template: {}", filetype["archive"])
         for dt in dt_list:
-            filename = self.platform.substitute(fname, validtime=self.basetime + dt)
-            self.fmanager.output(filename, f"{self.archive}/{filename}")
+            filename_in = self.platform.substitute(
+                filetype["model"], validtime=self.basetime + dt
+            )
+            filename_out = self.platform.substitute(
+                filetype["archive"], validtime=self.basetime + dt
+            )
+            self.fmanager.output(filename_in, f"{self.archive}/{filename_out}")
 
     def execute(self):
         """Execute forecast."""

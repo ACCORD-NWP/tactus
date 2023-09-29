@@ -12,18 +12,6 @@
         "duration_fa": {
           "type": "string",
           "description": "Macros for duration representation of FA files, note that this is given by the IAL code."
-        },
-        "history": {
-          "type": "string",
-          "description": "Name template for history files"
-        },
-        "surfex": {
-          "type": "string",
-          "description": "Name template for surfex history files"
-        },
-        "fullpos": {
-          "type": "string",
-          "description": "Name template for fullpos files. Note that these are in GRIB2 by default."
         }
     }
 }

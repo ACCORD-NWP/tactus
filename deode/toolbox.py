@@ -411,7 +411,7 @@ class FileManager:
         # TODO check for archive
         if check_archive:
             provider_id = "ecfs"
-            target = target.replace("@ARCHIVE@", "ectmp:/@YYYY@/@MM@/@DD@/@HH@")
+            target = target.replace("@ARCHIVE@", "ec:@YYYY@/@MM@/@DD@/@HH@")
 
             if provider_id is not None:
                 # Substitute based on ecfs
@@ -780,11 +780,15 @@ class ECFS(ArchiveProvider):
 
         """
         if self.fetch:
-            logger.info("ecp ecfs:{} {}", self.identifier, resource.identifier)
-            # os.system(f"ecp ecfs:{self.identifier} {resource.identifier}")  # noqa S605, E800
+            logger.info("ecp -u {} {}", self.identifier, resource.identifier)
+            os.system(  # noqa S605, E800
+                f"ecp -u {self.identifier} {resource.identifier}"
+            )
         else:
-            logger.info("ecp {} ecfs:{}", resource.identifier, self.identifier)
-            # os.system(f"ecp {resource.identifier} ecfs:{self.identifier}")  # noqa S605, E800
+            logger.info("ecp -u {} {}", resource.identifier, self.identifier)
+            os.system(  # noqa S605, E800
+                f"ecp -u {resource.identifier} ec:{self.identifier}"
+            )
         return True
 
 

@@ -62,7 +62,7 @@ class TestFileManager:
             check_archive=True,
         )
         logger.debug("identifier={}", provider.identifier)
-        assert provider.identifier == "ectmp:/2000/01/01/00/ICMSHDEOD+0024"  # noqa S108
+        assert provider.identifier == "ec:2000/01/01/00/ICMSHDEOD+0024"  # noqa S108
         assert resource.identifier == "/tmp/ICMSHDEODINIT"  # noqa S108
 
         os.makedirs("/tmp/bindir", exist_ok=True)  # noqa S108

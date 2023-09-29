@@ -89,12 +89,12 @@ class InitialConditions(object):
         logger.info(self.cycle_length)
         logger.info(self.basetime)
         source = self.platform.substitute(
-            f"{self.archive}/{self.file_templates['history']}",
+            f"{self.archive}/{self.file_templates['history']['archive']}",
             basetime=pdtg,
             validtime=self.basetime,
         )
         source_sfx = self.platform.substitute(
-            f"{self.archive}/{self.file_templates['surfex']}",
+            f"{self.archive}/{self.file_templates['surfex']['archive']}",
             basetime=pdtg,
             validtime=self.basetime,
         )
