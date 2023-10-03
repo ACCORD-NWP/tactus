@@ -36,8 +36,14 @@ def classes_to_be_tested():
 def base_raw_config(request):
     """Return a raw config common to all tasks."""
     tag_map = {"CY46h1": ""}
+    test_map = {"CY46h1": {"general": {"windfarm": True}}}
     tag = tag_map[request.param] if request.param in tag_map else f"_{request.param}"
-    return BasicConfig.from_file(ConfigParserDefaults.DIRECTORY / f"config{tag}.toml")
+    config = BasicConfig.from_file(ConfigParserDefaults.DIRECTORY / f"config{tag}.toml")
+    try:
+        config = config.copy(update=test_map[request.param])
+    except KeyError:
+        pass
+    return config
 
 
 @pytest.fixture(params=classes_to_be_tested())

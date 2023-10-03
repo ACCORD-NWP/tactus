@@ -1,4 +1,5 @@
 """Forecast."""
+import glob
 import json
 import os
 
@@ -26,6 +27,7 @@ class Forecast(Task):
         self.cycle = self.config["general.cycle"]
         self.cnmexp = self.config["general.cnmexp"]
         self.domain = self.config["domain.name"]
+        self.windfarm = self.config.get("general.windfarm", False)
 
         self.basetime = as_datetime(self.config["general.times.basetime"])
         self.cycle_length = as_timedelta(self.config["general.times.cycle_length"])
@@ -67,6 +69,23 @@ class Forecast(Task):
                 filetype["archive"], validtime=self.basetime + dt
             )
             self.fmanager.output(filename_in, f"{self.archive}/{filename_out}")
+
+    def wfp_input(self):
+        """Add wind turbine files to forecast directory."""
+        self.wfp_dir = self.platform.get_platform_value("windfarm_path")
+
+        yy = self.basetime.strftime("%Y")
+        self.fmanager.input(
+            f"{self.wfp_dir}/wind_turbine_coordinates_{self.domain}_{yy}.tab",
+            "wind_turbine_coordinates.tab",
+        )
+
+        turbine_list = glob.glob(f"{self.wfp_dir}/wind_turbine_[0-9][0-9][0-9].tab")
+        for ifile in turbine_list:
+            infile = os.path.basename(ifile)
+            self.fmanager.input(ifile, infile)
+
+        self.config["fullpos"]["selection"] + ("windfarm",)
 
     def execute(self):
         """Execute forecast."""
@@ -142,6 +161,10 @@ class Forecast(Task):
             f"{self.climdir}/Const.Clim.{mm}", f"const.clim.{self.domain}"
         )
         self.fmanager.input(f"{self.climdir}/Const.Clim.sfx", "Const.Clim.sfx")
+
+        # wind farm input data
+        if self.windfarm:
+            self.wfp_input()
 
         # Construct master namelist and include fullpos config
         forecast_namelist = f"forecast_bdmodel_{self.bdmodel}"

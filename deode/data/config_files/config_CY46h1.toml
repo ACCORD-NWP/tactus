@@ -11,6 +11,7 @@
   realization = -1
   surfex = true
   tstep = 75
+  windfarm = false
 
 [general.output_settings]
   fullpos = ["PT6H:PT15M", "PT9H:PT30M", "PT1H"]

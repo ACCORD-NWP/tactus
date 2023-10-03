@@ -400,6 +400,10 @@
               "description": "Output list for fullpos files"
             }
           }
+        },
+	"windfarm": {
+          "description": "Switch on wind farm parameterisation",
+          "type": "boolean"
         }
       },
       "required": [

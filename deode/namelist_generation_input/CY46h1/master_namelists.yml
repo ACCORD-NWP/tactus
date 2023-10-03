@@ -180,7 +180,7 @@ f4_harmonie-arome:
     LNEBTT: True
     LRAYD: True
     LRAYS: True
-    LWFPAC: False
+    LWFPAC: ${general.windfarm}
   NAMCHK:
     LECHKEVO: False
     LECHKPS: False
@@ -377,7 +377,7 @@ f4_harmonie-arome:
     LRTPP: True
     LVFULL: False
     LVOIGT: True
-    LWINDFARM: False
+    LWINDFARM: ${general.windfarm}
     NRAUTOEV: 3
     NRAY: 2
     NSORAYFR: -1
@@ -616,7 +616,7 @@ f4_harmonie-arome:
     LXTHW: True
     LXTRT: True
     LXTTCLS: True
-    LXWFPIN: False
+    LXWFPIN: ${general.windfarm}
     LXXDIAGH: True
     LXXGST: True
     NFRRAZ: 1

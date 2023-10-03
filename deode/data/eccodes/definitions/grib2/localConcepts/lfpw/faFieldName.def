@@ -3270,3 +3270,24 @@
     typeOfFirstFixedSurface = 101 ;
     scaledValueOfFirstFixedSurface = 0 ;
 }
+
+# Instantaneous wind power production
+"WFPOWERINS"= {
+    discipline = 20 ;
+    parameterCategory = 3 ;
+    parameterNumber = 3 ;
+    tablesVersion = 15 ;
+    typeOfFirstFixedSurface = 1 ;
+    scaledValueOfFirstFixedSurface = 0 ;
+}
+# Accumulated wind power production
+"WFPOWERACC"= {
+    discipline = 20 ;
+    parameterCategory = 3 ;
+    parameterNumber = 3 ;
+    tablesVersion = 15 ;
+    productDefinitionTemplateNumber = 8 ;
+    typeOfFirstFixedSurface = 1 ;
+    typeOfStatisticalProcessing = 1 ;
+    scaledValueOfFirstFixedSurface = 0 ;
+}

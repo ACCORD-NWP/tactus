@@ -85,6 +85,10 @@
             "type": "string",
             "description": "Path to tree_height data."
         },
+	"windfarm_path": {
+            "type": "string",
+            "description": "Path to wind farm parameterisation input data."
+        },
         "archive_root": {
             "type": "string",
             "description": "Path to the main archive directory"
