@@ -103,6 +103,9 @@ class Fullpos:
         Returns:
             d (dict): Merged dict
 
+        Raises:
+            InvalidSelectionCombination    # noqa: DAR401
+
         """
         d = d1.copy()
         for k, v in d2.items():
@@ -114,7 +117,7 @@ class Fullpos:
                         if x not in d[k]:
                             d[k].append(x)
                 else:
-                    d[k] = v
+                    raise InvalidSelectionCombination(v)
             else:
                 d[k] = v
 
@@ -155,7 +158,6 @@ class Fullpos:
 
         Raises:
             InvalidSelectionCombination    # noqa: DAR401
-
 
         """
         namfpc_out = {"NAMFPC": self.nldict["NAMFPC"].copy()}

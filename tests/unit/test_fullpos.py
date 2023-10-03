@@ -7,10 +7,32 @@ import pytest
 import tomlkit
 
 from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
-from deode.fullpos import Fullpos
+from deode.fullpos import Fullpos, InvalidSelectionCombination
 from deode.toolbox import Platform
 
 WORKING_DIR = Path.cwd()
+
+
+def load():
+    """Test load of the yml files."""
+    raw_config = BasicConfig.from_file(ConfigParserDefaults.PACKAGE_CONFIG_PATH)
+    config = ParsedConfig(
+        raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+    )
+    config_patch = tomlkit.parse(
+        f"""
+        [platform]
+            deode_home = "{WORKING_DIR}"
+        """
+    )
+    config = config.copy(update=config_patch)
+    platform = Platform(config)
+
+    fpdir = platform.substitute(config["fullpos.config_path"])
+
+    return Fullpos(
+        "test", fpdir=fpdir, fpfiles=["rules", "master_selection", "master_selection"]
+    )
 
 
 class TestFullpos:
@@ -121,30 +143,31 @@ class TestFullpos:
         assert selection["xxtddddhhmm"] == ref_xxtddddhhmm
         assert namfpc == ref_namfpc
 
+    def test_exception(self):
+        """Test fullpos namelist generation for master."""
+        fullpos_config = {
+            "selection": {
+                "xxtddddhhmm": {
+                    "NAMFPDYS": {"CL3DF": ["TEMPERATURE"], "NRFP3S": [65], "TEST": 0},
+                },
+            },
+            "NAMFPC": {},
+            "LEVEL_MAP": {},
+            "PARAM_MAP": {},
+        }
+
+        with pytest.raises(InvalidSelectionCombination):
+            namfpc, selection = Fullpos("test", fpdict=fullpos_config).construct()
+
     def test_load(self):
         """Test load of the yml files."""
-        raw_config = BasicConfig.from_file(ConfigParserDefaults.PACKAGE_CONFIG_PATH)
-        config = ParsedConfig(
-            raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
-        )
-        config_patch = tomlkit.parse(
-            f"""
-        [platform]
-            deode_home = "{WORKING_DIR}"
-        """
-        )
-        config = config.copy(update=config_patch)
-        platform = Platform(config)
-
-        fpdir = platform.substitute(config["fullpos.config_path"])
-        nldict = Fullpos("test", fpdir=fpdir, fpfiles=["rules"])
-
-        return nldict
+        fp = load()
+        assert isinstance(fp.nldict, dict)
 
     def test_update(self):
         """Test update of the settings."""
-        nldict = self.test_load()
-        nldict.update_selection(["master_selection"])
+        fp = load()
+        fp.update_selection(additions_list=["master_selection"], additions_dict={})
 
 
 if __name__ == "__main__":
