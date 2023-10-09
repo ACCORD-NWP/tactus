@@ -488,6 +488,7 @@ class NamelistGenerator:
         nml.uppercase = True
         nml.true_repr = ".TRUE."
         nml.false_repr = ".FALSE."
+        nml.end_comma = True  # AD: temp fix for IO_SERVER bug
         nml.write(output_file, force=True)
 
         logger.debug("Wrote: {}", output_file)

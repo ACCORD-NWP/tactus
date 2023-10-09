@@ -87,6 +87,43 @@ class Forecast(Task):
 
         self.config["fullpos"]["selection"] + ("windfarm",)
 
+    def merge_output(self, filetype, periods):
+        """Merge distributed forecast model output.
+
+        Args:
+            filetype (str): File type (history, surfex, fullpos)
+            periods (str): Output list
+
+            Final result is the expected output file name in the working directory
+                (as if there was no IO server)
+        """
+        dt_list = oi2dt_list(periods, self.forecast_range)
+
+        for dt in dt_list:
+            ftemplate = self.file_templates[filetype]["model"]
+            filename = self.platform.substitute(ftemplate, validtime=self.basetime + dt)
+            logger.debug("Merging file {}", filename)
+            if filetype == "history":
+                lfitools = self.get_binary("lfitools")
+                cmd = f"{lfitools} facat all io_serv*.d/{filename}.gridall io_serv*.d/{filename}.speca* {filename}"
+                logger.debug(cmd)
+                BatchJob(os.environ, wrapper="").run(cmd)
+
+            elif filetype == "surfex":
+                # NOTE: .sfx also has a part in the working directory,
+                #        so you *must* change the name
+                lfitools = self.get_binary("lfitools")
+                os.rename(filename, filename + ".part")
+                cmd = f"{lfitools} facat all {filename}.part io_serv*.d/{filename} {filename}"
+                logger.debug(cmd)
+                BatchJob(os.environ, wrapper="").run(cmd)
+
+            else:
+                # Fullpos (grib2) output has .hpf as extra file extension
+                cmd = f"cat io_serv*.d/{filename}*.hfp > {filename}"
+                logger.debug(cmd)
+                BatchJob(os.environ, wrapper="").run(cmd)
+
     def execute(self):
         """Execute forecast."""
         # CY48t3 input files not used in CY46
@@ -220,8 +257,15 @@ class Forecast(Task):
         # Store the output
         os.makedirs(self.archive, exist_ok=True)
 
+        io_server = os.path.exists("io_serv.000001.d")
+        if io_server:
+            logger.debug("IO_SERVER detected!")
+
         for filetype, oi in self.output_settings.items():
             if filetype in self.file_templates:
+                if io_server:
+                    self.merge_output(filetype, oi)
+
                 self.archive_output(self.file_templates[filetype], oi)
 
         self.archive_logs(["fort.4", "EXSEG1.nam", "NODE.001_01"])
