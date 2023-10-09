@@ -143,7 +143,7 @@ class Forecast(Task):
             "greenhouse_gas_timeseries_CMIP6_SSP370_CFC11equiv_47r1.nc",
             "greenhouse_gas_timeseries_CMIP6_SSP585_CFC11equiv_47r1.nc",
         ]
-        if self.cycle in ["CY46t1", "CY48t3"]:
+        if self.cycle in ["CY48t3"]:
             for ifile in input_files:
                 self.fmanager.input(f"{self.ncdir}/{ifile}", ifile)
 

@@ -364,7 +364,6 @@
           "type": "string",
           "enum": [
             "CY48t3",
-            "CY46t1",
             "CY46h1"
           ]
         },
