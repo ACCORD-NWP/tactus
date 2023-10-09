@@ -81,8 +81,8 @@ class Marsprep(Task):
         """
         # Get domain specs
         domain_spec = {
-            "nlon": config["domain.njmax"],
-            "nlat": config["domain.nimax"],
+            "nlon": config["domain.nimax"],
+            "nlat": config["domain.njmax"],
             "latc": config["domain.xlatcen"],
             "lonc": config["domain.xloncen"],
             "lat0": config["domain.xlat0"],
