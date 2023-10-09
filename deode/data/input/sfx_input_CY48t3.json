@@ -65,7 +65,13 @@
         "NAM_ISBA#YCLAYFILETYPE": {
             "DIRECT": {"NAM_ISBA#YCLAY": "@pgd_data_path@/CLAY_HWSD_MOY_v2.dir"}
         },
-        "NAM_DATA_FLAKE#YWATER_DEPTHFILETYPE": {
+        "NAM_ISBA#YSOCFILETYPE": {
+            "DIRECT": {
+                        "NAM_ISBA#YSOC_TOP": "@pgd_data_path@/soc_top.dir",
+                        "NAM_ISBA#YSOC_SUB": "@pgd_data_path@/soc_sub.dir"
+                    }
+        },
+	"NAM_DATA_FLAKE#YWATER_DEPTHFILETYPE": {
             "DIRECT": {
                 "NAM_DATA_FLAKE#YWATER_DEPTH": "@flake_dir@/GlobalLakeDepth_V3.0.dir",
                 "NAM_DATA_FLAKE#YWATER_DEPTH_STATUS": "@flake_dir@/GlobalLakeStatus_V3.0.dir"

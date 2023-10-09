@@ -2,19 +2,17 @@ pgd:
   - sfx_io
   - sfx_treedrag
   - sfx_pgd_domain
-  - sfx_pgd_schemes
   - sfx_pgd_schemes_water_flake
-  - sfx_pgd_sea
-  - sfx_pgd_flake
   - sfx_split_patch
   - sfx_pgd_ecoclimap_sg
-  - sfx_pgd_cv
-  - sfx_pgd_rsmin
-  - sfx_pgd_zs_gmted
-  - sfx_pgd_isba_3l
+  - sfx_pgd_dice
+  - sfx_pgd_rootdepth
+  - sfx_pgd_grounddepth
+  - sfx_pgd_zs_gtopo
+  - sfx_pgd_zs_filter
+  - sfx_pgd_isba_dif
   - sfx_pgd_soilgrid_sand
   - sfx_pgd_soilgrid_clay
-  - sfx_pgd
 
 prep: &default_prep
   - sfx_io
