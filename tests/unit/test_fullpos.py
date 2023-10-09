@@ -7,6 +7,7 @@ import pytest
 import tomlkit
 
 from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
+from deode.derived_variables import set_times
 from deode.fullpos import Fullpos, InvalidSelectionCombination
 from deode.toolbox import Platform
 
@@ -26,6 +27,7 @@ def load():
         """
     )
     config = config.copy(update=config_patch)
+    config = config.copy(update=set_times(config))
     platform = Platform(config)
 
     fpdir = platform.substitute(config["fullpos.config_path"])

@@ -6,6 +6,7 @@ import pytest
 import tomlkit
 
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
+from deode.derived_variables import set_times
 from deode.submission import TaskSettings
 from deode.suites import SuiteDefinition
 
@@ -68,6 +69,7 @@ class TestSuite:
                 "platform": {"deode_home": f"{os.path.dirname(__file__)}/../.."},
             }
         )  # noqa S108
+        config = config.copy(update=set_times(config))
         config = config.copy(update=param)
         suite_name = "test_suite"
         background = TaskSettings(config)

@@ -4,7 +4,7 @@ import pytest
 import tomlkit
 
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
-from deode.derived_variables import derived_variables
+from deode.derived_variables import derived_variables, set_times
 from deode.submission import NoSchedulerSubmission, ProcessorLayout, TaskSettings
 
 
@@ -57,6 +57,7 @@ class TestSubmission:
             }
         )
         config = config.copy(update={"platform": {"SCRATCH": "/tmp"}})  # noqa
+        config = config.copy(update=set_times(config))
         task = "UnitTest"
         template_job = "deode/templates/stand_alone.py"
         task_job = f"/tmp/{task}.job"  # noqa
@@ -129,6 +130,7 @@ class TestSubmission:
                 }
             }
         )
+        config = config.copy(update=set_times(config))
         task = TaskSettings(config)
         settings = task.get_task_settings("unittest")
         processor_layout = ProcessorLayout(settings)
@@ -154,6 +156,7 @@ class TestSubmission:
                 }
             }
         )
+        config = config.copy(update=set_times(config))
         task = TaskSettings(config)
         settings = task.get_task_settings("unittest")
         processor_layout = ProcessorLayout(settings)

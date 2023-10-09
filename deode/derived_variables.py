@@ -11,6 +11,27 @@ from .os_utils import Search
 from .toolbox import Platform
 
 
+def set_times(config):
+    """Set basetime/validtime if not present.
+
+    Args:
+        config (.config_parser.ParsedConfig): Parsed config file contents.
+
+    Returns:
+        update (dict): Dict of corrected basetime/validtime
+    """
+    times = {}
+    if "basetime" not in config["general"]["times"]:
+        times.update({"basetime": config["general"]["times"]["start"]})
+        logger.info("Set basetime to {}", times["basetime"])
+    if "validtime" not in config["general"]["times"]:
+        times.update({"validtime": config["general"]["times"]["start"]})
+        logger.info("Set validtime to {}", times["basetime"])
+
+    update = {"general": {"times": times}}
+    return update
+
+
 def check_fullpos_namelist(config, nlgen):
     """Find existing fullpos select files or generate them.
 

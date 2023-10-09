@@ -61,9 +61,6 @@ class Task(object):
         wdir = f"{self.wrk}/{socket.gethostname()}{str(os.getpid())}"
         self.wdir = wdir
         logger.info("Task running in {}", self.wdir)
-        logger.info("Base task info")
-        logger.warning("Base task warning")
-        logger.debug("Base task debug")
 
         self._set_eccodes_environment()
 

@@ -18,13 +18,11 @@
   surfex = ["PT6H:PT1H", "PT9H:PT24H:PT3H"]
 
 [general.times]
-  basetime = "2023-08-21T00:00:00Z"
   cycle_length = "PT6H"
   end = "2023-09-16T06:00:00Z"
   forecast_range = "PT6H"
   radiation_frequency = "PT5M"
   start = "2023-09-16T00:00:00Z"
-  validtime = "2023-08-21T00:00:00Z"
 
 [archiving]
   apath = "deode/@CASE@/"
@@ -82,10 +80,6 @@
   namelists = "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
   sfx_input_defs = "@DEODE_HOME@/deode/data/input/sfx_input_@CYCLE@.json"
   wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/"
-
-[task.args]
-  bd_nr = "1"
-  bd_time = "2023-02-19T09:00:00Z"
 
 [task.creategrib.conversions.surfex]
   input_template = "@SURFEX_TEMPLATE@"

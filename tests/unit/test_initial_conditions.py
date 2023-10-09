@@ -32,20 +32,32 @@ def parsed_config(request, tmpdir):
         ]:
             Path(f"{tmpdir}/{f}").touch()
 
+    config = ParsedConfig.from_file(
+        ConfigParserDefaults.PACKAGE_CONFIG_PATH, json_schema={}
+    )
+
+    try:
+        basetime = config["general.times.basetime"]
+    except KeyError:
+        basetime = config["general.times.start"]
+    try:
+        validtime = config["general.times.validtime"]
+    except KeyError:
+        validtime = basetime
+
     config_patch = tomlkit.parse(
         f"""
         [general]
             cnmexp = "TEST"
+        [general.times]
+            basetime = "{basetime}"
+            validtime = "{validtime}"
         [system]
             intp_bddir = "{tmpdir}"
             archive = "{tmpdir}"
         [platform]
             deode_home = "{WORKING_DIR}"
         """
-    )
-
-    config = ParsedConfig.from_file(
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH, json_schema={}
     )
 
     config = config.copy(update=config_patch)

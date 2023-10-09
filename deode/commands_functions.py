@@ -10,7 +10,7 @@ from pathlib import Path
 from . import GeneralConstants
 from .config_doc import DocConfig
 from .config_parser import BasicConfig, ConfigParserDefaults
-from .derived_variables import check_fullpos_namelist, derived_variables
+from .derived_variables import check_fullpos_namelist, derived_variables, set_times
 from .logs import logger
 from .namelist import NamelistComparator, NamelistGenerator, NamelistIntegrator
 from .scheduler import EcflowServer
@@ -58,6 +58,7 @@ def run_task(args, config):
 
     deode_home = set_deode_home(args, config)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
+    config = config.copy(update=set_times(config))
 
     submission_defs = TaskSettings(config)
     sub = NoSchedulerSubmission(submission_defs)
@@ -79,6 +80,7 @@ def start_suite(args, config):
 
     deode_home = set_deode_home(args, config)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
+    config = config.copy(update=set_times(config))
 
     server = EcflowServer(
         args.ecf_host, ecf_port=args.ecf_port, start_command=args.start_command
@@ -169,7 +171,7 @@ def show_namelist(args, config):
     """
     deode_home = set_deode_home(args, config)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
-
+    config = config.copy(update=set_times(config))
     config = config.copy(update=derived_variables(config))
 
     nlgen = NamelistGenerator(config, args.namelist_type, substitute=args.no_substitute)
