@@ -46,7 +46,7 @@
   vertical_levels = "include/vertical_levels/MF_90.toml"
 
 [suite_control]
-  cold_start = false
+  cold_start = true
   create_static_data = true
   create_time_dependent_suite = true
   do_marsprep = false
