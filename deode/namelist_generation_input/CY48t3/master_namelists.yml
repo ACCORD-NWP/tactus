@@ -155,7 +155,7 @@ f4_arome:
     NLIQOPT: 3
     NOVLP: 6
     NOZOCL: 2
-    NRADFR: 18
+    NRADFR: ${namelist.nradfr}
     NRADIP: 3
     NRADLP: 2
     NSW: 6
@@ -528,6 +528,8 @@ f4_arome:
     LXVISI: True
     LXXDIAGH: True
     LXXGST: True
+    NRAZTS: ${namelist.nrazts}
+    NXGSTPERIOD: 3600
   NEMELBC0A:
     LESPCPL: True
     NBICNHX: 2

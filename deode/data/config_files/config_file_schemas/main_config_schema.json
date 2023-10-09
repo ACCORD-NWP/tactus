@@ -235,6 +235,11 @@
           "description": "Model for the 'general.times' section.",
           "type": "object",
           "properties": {
+            "forecast_range": {
+              "description": "Forecast range",
+              "type": "string",
+              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+            },
             "start": {
               "description": "Start",
               "type": "string",
@@ -375,11 +380,6 @@
           "description": "Initial surfex file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",
           "type": "string"
         },
-        "forecast_range": {
-          "description": "Forecast range",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-        },
         "mars_expver": {
           "description": "Name of the experiment to get data from MARS in case of global DT. Empty string for operational.",
           "type": "string",
@@ -398,6 +398,9 @@
             },
             "fullpos": {
               "description": "Output list for fullpos files"
+            },
+            "nrazts": {
+              "description": "Reset times for instantaneous fluxes ( e.g. min/max temperature )"
             }
           }
         },

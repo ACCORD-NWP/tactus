@@ -23,7 +23,7 @@ class CreateGrib(Task):
         self.archive = self.platform.get_system_value("archive")
 
         self.basetime = as_datetime(self.config["general.times.basetime"])
-        self.forecast_range = self.config["general.forecast_range"]
+        self.forecast_range = self.config["general.times.forecast_range"]
 
         try:
             self.conversions = self.config[f"task.{self.name}.conversions"]

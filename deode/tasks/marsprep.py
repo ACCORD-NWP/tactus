@@ -37,7 +37,7 @@ class Marsprep(Task):
         self.basetime = as_datetime(self.config["general.times.basetime"])
         self.cycle_length = as_timedelta(self.config["general.times.cycle_length"])
         # Get forecast range
-        self.forecast_range = as_timedelta(self.config["general.forecast_range"])
+        self.forecast_range = as_timedelta(self.config["general.times.forecast_range"])
         # Get boundary shift
         self.bdint = as_timedelta(self.config["boundaries.bdint"])
         self.bdshift = as_timedelta(self.config["boundaries.bdshift"])

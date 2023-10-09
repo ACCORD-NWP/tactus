@@ -148,7 +148,7 @@ f4_harmonie-arome:
     NAER: 1
     NOVLP: 6
     NOZOCL: 2
-    NRADFR: 12
+    NRADFR: ${namelist.nradfr}
     NRADLP: 2
     NSW: 6
   NAMFA:
@@ -620,13 +620,7 @@ f4_harmonie-arome:
     LXXDIAGH: True
     LXXGST: True
     NFRRAZ: 1
-    NRAZTS:
-      - -5
-      -  0
-      - -3
-      - -6
-      - -9
-      - -12
+    NRAZTS: ${namelist.nrazts}
     NXGSTPERIOD: 3600
   NEMELBC0A:
     LESPCPL: False

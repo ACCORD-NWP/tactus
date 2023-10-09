@@ -4,7 +4,6 @@
   cnmexp = "DEOD"
   csc = "HARMONIE_AROME"
   cycle = "CY46h1"
-  forecast_range = "PT12H"
   keep_workdirs = true
   mars_expver = "0001"
   nproma = -32
@@ -16,12 +15,15 @@
 [general.output_settings]
   fullpos = ["PT6H:PT15M", "PT9H:PT30M", "PT1H"]
   history = ["PT0H:PT12H:PT1H"]
+  nrazts = "PT1H"
   surfex = ["PT1H", "PT9H:PT24H:PT3H"]
 
 [general.times]
   basetime = "2023-08-21T00:00:00Z"
   cycle_length = "PT6H"
   end = "2023-09-13T06:00:00Z"
+  forecast_range = "PT12H"
+  radiation_frequency = "PT5M"
   start = "2023-09-13T00:00:00Z"
   validtime = "2023-08-21T00:00:00Z"
 

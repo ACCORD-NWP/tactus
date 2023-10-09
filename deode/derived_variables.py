@@ -96,8 +96,11 @@ def derived_variables(config, processor_layout=None):
     # Time ranges
     tstep = int(config["general.tstep"])
     bdint = as_timedelta(config["boundaries.bdint"])
-    forecast_range = as_timedelta(config["general.forecast_range"])
+    forecast_range = as_timedelta(config["general.times.forecast_range"])
     cstop = int((forecast_range.days * 24 * 3600 + forecast_range.seconds) / 60)
+    radiation_frequency = as_timedelta(config["general.times.radiation_frequency"])
+    nradfr = int(radiation_frequency.seconds / tstep)
+    logger.info("nradfr:{}", nradfr)
     if cstop % 60 == 0:
         cstop = int(cstop / 60)
         cstop = f"h{cstop}"
@@ -105,10 +108,15 @@ def derived_variables(config, processor_layout=None):
         cstop = f"m{cstop}"
 
     # Output settings
-    namoutput = {"history": [1, -1], "fullpos": [1, -1], "surfex": [1, -1]}
+    namoutput = {
+        "history": [1, -1],
+        "fullpos": [1, -1],
+        "surfex": [1, -1],
+        "nrazts": [1, -1],
+    }
     oi = config["general.output_settings"]
 
-    forecast_range_org = config["general.forecast_range"]
+    forecast_range_org = config["general.times.forecast_range"]
     for x, y in oi.items():
 
         dtlist = oi2dt_list(y, forecast_range_org)
@@ -131,6 +139,8 @@ def derived_variables(config, processor_layout=None):
             "lspsmoro": lspsmoro[gridtype],
         },
         "namelist": {
+            "nradfr": nradfr,
+            "nrazts": namoutput["nrazts"],
             "nhists": namoutput["history"],
             "nposts": namoutput["fullpos"],
             "nsfxhists": namoutput["surfex"],

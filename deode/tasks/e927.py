@@ -24,7 +24,7 @@ class E927(Task):
 
         self.cnmexp = self.config["general.cnmexp"]
         self.basetime = as_datetime(self.config["general.times.basetime"])
-        self.forecast_range = self.config["general.forecast_range"]
+        self.forecast_range = self.config["general.times.forecast_range"]
 
         self.bdmodel = self.config["boundaries.bdmodel"]
         self.bdint = self.config["boundaries.bdint"]

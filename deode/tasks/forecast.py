@@ -34,7 +34,7 @@ class Forecast(Task):
         self.bdmodel = self.config["boundaries.bdmodel"]
         self.bdint = as_timedelta(self.config["boundaries.bdint"])
         self.intp_bddir = self.config["system.intp_bddir"]
-        self.forecast_range = self.config["general.forecast_range"]
+        self.forecast_range = self.config["general.times.forecast_range"]
 
         self.climdir = self.platform.get_system_value("climdir")
         self.rrtm_dir = self.platform.get_platform_value("RRTM_DIR")
@@ -221,7 +221,8 @@ class Forecast(Task):
         os.makedirs(self.archive, exist_ok=True)
 
         for filetype, oi in self.output_settings.items():
-            self.archive_output(self.file_templates[filetype], oi)
+            if filetype in self.file_templates:
+                self.archive_output(self.file_templates[filetype], oi)
 
         self.archive_logs(["fort.4", "EXSEG1.nam", "NODE.001_01"])
 

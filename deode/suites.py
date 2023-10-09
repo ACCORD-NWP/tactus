@@ -308,7 +308,7 @@ class SuiteDefinition(object):
                 if self.interpolate_boundaries:
 
                     basetime = as_datetime(cycle["basetime"])
-                    forecast_range = as_timedelta(config["general.forecast_range"])
+                    forecast_range = as_timedelta(config["general.times.forecast_range"])
                     endtime = basetime + forecast_range
                     bdint = as_timedelta(config["boundaries.bdint"])
                     bdmax = config["boundaries.bdtasks_per_batch"]

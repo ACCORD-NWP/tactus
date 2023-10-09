@@ -28,7 +28,7 @@ class C903(Task):
         self.bdcycle = as_timedelta(self.config["boundaries.bdcycle"])
         self.bdnr = self.config["task.args.bd_nr"]
         self.bd_time = self.config["task.args.bd_time"]
-        self.forecast_range = self.config["general.forecast_range"]
+        self.forecast_range = self.config["general.times.forecast_range"]
 
         self.dom = self.config["domain.name"]
 
