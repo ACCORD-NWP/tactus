@@ -4,7 +4,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 
 [background_hpc]
   SCHOST = "localhost"
-  tasks = ["creategrib", "Background_hpc", "UnitTest"]
+  tasks = ["Background_hpc", "UnitTest"]
 
 [background_vm]
   INTERPRETER = "#!/usr/bin/python3"
@@ -43,7 +43,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   NPROCX = 1
   NPROCY = 1
   SCHOST = "hpc"
-  tasks = ["Gmted", "Soil", "Marsprep", "MarsprepGlobalDT"]
+  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep", "MarsprepGlobalDT"]
   WRAPPER = "srun"
 
 [serial.BATCH]
@@ -72,6 +72,12 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 [task]
   wrapper = ""
 
+[task_exceptions.ArchiveHour.BATCH]
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[task_exceptions.ArchiveStatic.BATCH]
+  WALLTIME = "#SBATCH --time=03:00:00"
+
 [task_exceptions.c903]
   NPROC = 36
 
@@ -85,6 +91,9 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   binary = "gl_20230823"
   bindir = "/home/snh02/work/gl_binaries"
 
+[task_exceptions.CreateGrib.BATCH]
+  WALLTIME = "#SBATCH --time=01:00:00"
+
 [task_exceptions.e927]
   NPROC = 16
 
@@ -93,21 +102,21 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   NTASKS = "#SBATCH --ntasks=16"
 
 [task_exceptions.Forecast]
-  NPROC = 64
+  NPROC = 1024
 
 [task_exceptions.Forecast.BATCH]
   MEM = "#SBATCH --mem=200GB"
-  NODES = "#SBATCH --nodes=8"
-  NTASKS = "#SBATCH --ntasks=64"
-  WALLTIME = "#SBATCH --time=01:00:00"
+  NODES = "#SBATCH --nodes=16"
+  NTASKS = "#SBATCH --ntasks=1024"
+  WALLTIME = "#SBATCH --time=05:00:00"
 
 [task_exceptions.Gmted.ENV]
   MODULE_GDAL = "module('load', 'gdal/3.2.1')"
 
-[task_exceptions.marsprep.BATCH]
+[task_exceptions.Marsprep.BATCH]
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
-  WALLTIME = "#SBATCH --time=01:00:00"
+  WALLTIME = "#SBATCH --time=02:00:00"
 
 [task_exceptions.MarsprepGlobalDT.BATCH]
   NODES = "#SBATCH --nodes=1"
@@ -120,7 +129,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 [task_exceptions.Pgd.BATCH]
   NODES = "#SBATCH --nodes=2"
   NTASKS = "#SBATCH --ntasks=32"
-  WALLTIME = "#SBATCH --time=00:30:00"
+  WALLTIME = "#SBATCH --time=03:00:00"
 
 [task_exceptions.PgdUpdate]
   binary = "gl_20230823"
@@ -130,9 +139,9 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   WRAPPER = "srun -n @NPROC@"
 
 [task_exceptions.Prep.BATCH]
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=1"
-  WALLTIME = "#SBATCH --time=00:10:00"
+  NODES = "#SBATCH --nodes=2"
+  NTASKS = "#SBATCH --ntasks=32"
+  WALLTIME = "#SBATCH --time=00:50:00"
 
 [task_exceptions.Soil.ENV]
   MODULE_GDAL = "module('load', 'gdal/3.2.1')"

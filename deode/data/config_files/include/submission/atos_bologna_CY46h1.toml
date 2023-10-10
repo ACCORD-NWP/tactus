@@ -5,7 +5,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 
 [background_hpc]
   SCHOST = "localhost"
-  tasks = ["creategrib", "Background_hpc", "UnitTest"]
+  tasks = ["Background_hpc", "UnitTest"]
 
 [background_vm]
   INTERPRETER = "#!/usr/bin/python3"
@@ -109,7 +109,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 [task_exceptions.Gmted.ENV]
   MODULE_GDAL = "module('load', 'gdal/3.2.1')"
 
-[task_exceptions.marsprep.BATCH]
+[task_exceptions.Marsprep.BATCH]
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   WALLTIME = "#SBATCH --time=01:00:00"

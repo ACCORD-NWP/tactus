@@ -1,4 +1,5 @@
-bindir = "/home/snh02/pack/48t3_fix.04.OMPIIFC2104.x/bin"
+bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2023-09-19/R64"
+
 default_submit_type = "serial"
 submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 
@@ -26,13 +27,13 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 [parallel.ENV]
   AAAOS = "import os"
   AAMODULE_ENV = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read())"
-  AMODULE_ECMWF = "module('load', 'ecmwf-toolbox/2021.08.3.0')"
+  AMODULE_ECMWF = "module('load', 'ecmwf-toolbox/2023.04.1.0')"
   AMODULE_FFTW = "module('load', 'fftw/3.3.9')"
   AMODULE_HDF5 = "module('load', 'hdf5/1.10.6')"
   AMODULE_INTEL = "module('load', 'prgenv/intel')"
   AMODULE_MKL = "module('load', 'intel-mkl/19.0.5')"
   AMODULE_NETCDF4 = "module('load', 'netcdf4/4.7.4')"
-  AMODULE_OPENMPI = "module('load', 'hpcx-openmpi/2.9.0')"
+  AMODULE_OPENMPI = "module('load', 'openmpi/4.1.1.1')"
   DR_HOOK = "os.environ['DR_HOOK'] = '1'"
   DR_HOOK_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
   OMP_NUM_THREADS = "os.environ['OMP_NUM_THREADS'] = '1'"
@@ -43,7 +44,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   NPROCX = 1
   NPROCY = 1
   SCHOST = "hpc"
-  tasks = ["Gmted", "Soil", "Marsprep", "MarsprepGlobalDT"]
+  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep", "MarsprepGlobalDT"]
   WRAPPER = "srun"
 
 [serial.BATCH]
@@ -57,13 +58,13 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 [serial.ENV]
   AAAOS = "import os"
   AAMODULE_ENV = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read())"
-  AMODULE_ECMWF = "module('load', 'ecmwf-toolbox/2021.08.3.0')"
+  AMODULE_ECMWF = "module('load', 'ecmwf-toolbox/2023.04.1.0')"
   AMODULE_FFTW = "module('load', 'fftw/3.3.9')"
   AMODULE_HDF5 = "module('load', 'hdf5/1.10.6')"
   AMODULE_INTEL = "module('load', 'prgenv/intel')"
   AMODULE_MKL = "module('load', 'intel-mkl/19.0.5')"
   AMODULE_NETCDF4 = "module('load', 'netcdf4/4.7.4')"
-  AMODULE_OPENMPI = "module('load', 'hpcx-openmpi/2.9.0')"
+  AMODULE_OPENMPI = "module('load', 'openmpi/4.1.1.1')"
   DR_HOOK_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
   MARS_READANY_BUFFER_SIZE = "os.environ['MARS_READANY_BUFFER_SIZE'] = '78930200'"
   OMP_NUM_THREADS = "os.environ['OMP_NUM_THREADS'] = '1'"
@@ -72,7 +73,14 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 [task]
   wrapper = ""
 
+[task_exceptions.ArchiveHour.BATCH]
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[task_exceptions.ArchiveStatic.BATCH]
+  WALLTIME = "#SBATCH --time=03:00:00"
+
 [task_exceptions.c903]
+  bindir = "/perm/snh02/pack/48t3_fix.04.OMPIIFC2104.x/bin"
   NPROC = 36
 
 [task_exceptions.c903.BATCH]
@@ -81,9 +89,15 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   NTASKS = "#SBATCH --ntasks=36"
   WALLTIME = "#SBATCH --time=00:30:00"
 
+[task_exceptions.c903.ENV]
+  DR_HOOK_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
+
 [task_exceptions.creategrib]
   binary = "gl_20230823"
   bindir = "/home/snh02/work/gl_binaries"
+
+[task_exceptions.CreateGrib.BATCH]
+  WALLTIME = "#SBATCH --time=01:00:00"
 
 [task_exceptions.e927]
   NPROC = 16
@@ -93,13 +107,13 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   NTASKS = "#SBATCH --ntasks=16"
 
 [task_exceptions.Forecast]
-  NPROC = 256
+  NPROC = 1536
 
 [task_exceptions.Forecast.BATCH]
   MEM = "#SBATCH --mem=200GB"
-  NODES = "#SBATCH --nodes=2"
-  NTASKS = "#SBATCH --ntasks=256"
-  WALLTIME = "#SBATCH --time=01:00:00"
+  NODES = "#SBATCH --nodes=12"
+  NTASKS = "#SBATCH --ntasks=1536"
+  WALLTIME = "#SBATCH --time=05:00:00"
 
 [task_exceptions.Gmted.ENV]
   MODULE_GDAL = "module('load', 'gdal/3.2.1')"
@@ -107,7 +121,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 [task_exceptions.Marsprep.BATCH]
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
-  WALLTIME = "#SBATCH --time=01:00:00"
+  WALLTIME = "#SBATCH --time=02:00:00"
 
 [task_exceptions.MarsprepGlobalDT.BATCH]
   NODES = "#SBATCH --nodes=1"
@@ -120,7 +134,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 [task_exceptions.Pgd.BATCH]
   NODES = "#SBATCH --nodes=2"
   NTASKS = "#SBATCH --ntasks=32"
-  WALLTIME = "#SBATCH --time=00:30:00"
+  WALLTIME = "#SBATCH --time=03:00:00"
 
 [task_exceptions.PgdUpdate]
   binary = "gl_20230823"
@@ -130,9 +144,9 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   WRAPPER = "srun -n @NPROC@"
 
 [task_exceptions.Prep.BATCH]
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=1"
-  WALLTIME = "#SBATCH --time=00:10:00"
+  NODES = "#SBATCH --nodes=2"
+  NTASKS = "#SBATCH --ntasks=32"
+  WALLTIME = "#SBATCH --time=00:50:00"
 
 [task_exceptions.Soil.ENV]
   MODULE_GDAL = "module('load', 'gdal/3.2.1')"
