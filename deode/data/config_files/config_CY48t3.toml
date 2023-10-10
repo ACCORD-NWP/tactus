@@ -25,7 +25,7 @@
   start = "2023-09-16T00:00:00Z"
 
 [archiving]
-  apath = "deode/@CASE@/"
+  apath = "@USER@/deode/@CASE@/"
   arch_cdate = "archive/@YYYY@/@MM@/@DD@/@HH@/"
   comp = "atos"
   grp = "msdeode"
