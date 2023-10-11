@@ -2,7 +2,7 @@
   # Package ID info
   description = "Prototype for the DEODE scripting system."
   name = "deode"
-  version = "0.1.2"
+  version = "0.1.0"
   # Other package info
   authors = ["The WP5.1 development group in the DE_330 project."]
   documentation = "https://destination-earth-digital-twins.github.io/deode-prototype-docs"
