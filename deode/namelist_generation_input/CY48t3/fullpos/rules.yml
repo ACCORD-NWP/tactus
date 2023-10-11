@@ -1,0 +1,31 @@
+# Normally no need to change the MAP sections
+LEVEL_MAP: 
+    NAMFPDYI: "RFP3I"
+    NAMFPDYV: "RFP3PV"
+    NAMFPDYH: "RFP3H"
+    NAMFPDYP: "RFP3P"
+    NAMFPDYS: "NRFP3S"
+    NAMFPDYT: "RFP3TH"
+    NAMFPDYF: "RFP3F"
+
+PARAM_MAP:
+    NAMFPDY2:
+      CL2DF: "CFP2DF"
+    NAMFPDYV:
+      CL3DF: "CFP3DF"
+    NAMFPDYI:
+      CL3DF: "CFP3DF"
+    NAMFPDYP:
+      CL3DF: "CFP3DF"
+    NAMFPDYS:
+      CL3DF: "CFP3DF"
+    NAMFPDYF:
+      CL3DF: "CFP3DF"
+    NAMFPDYT:
+      CL3DF: "CFP3DF"
+    NAMFPDYH:
+      CL3DF: "CFP3DF"
+    NAMFPPHY:
+      CLCFU: "CFPCFU"
+      CLXFU: "CFPXFU"
+      CLPHY: "CFPPHY"

@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "VerticalLevels",
+    "description": "Options for vertical levels",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+        "nlev": {
+            "type": "number",
+            "description": "Number of vertical full levels"
+        },
+        "ahalf": {
+            "type": "array",
+            "contains": {
+                "type": "number"
+            },
+            "description": "Level definition for the a coefficient of half levels"
+        },
+        "bhalf": {
+            "type": "array",
+            "contains": {
+                "type": "number"
+            },
+            "description": "Level definition for the b coefficient of half levels"
+        }
+    }
+}

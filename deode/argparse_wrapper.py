@@ -4,12 +4,21 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import PACKAGE_NAME, __version__
-from .commands_functions import run_task, show_config, start_suite
-from .config_parser import get_default_config_path
+from . import GeneralConstants
+from .commands_functions import (
+    doc_config,
+    namelist_integrate,
+    run_task,
+    show_config,
+    show_config_schema,
+    show_namelist,
+    start_suite,
+    toml_formatter,
+)
+from .config_parser import ConfigParserDefaults
 
 
-def get_parsed_args(program_name="program", argv=None):
+def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     """Get parsed command line arguments.
 
     Args:
@@ -23,20 +32,23 @@ def get_parsed_args(program_name="program", argv=None):
     if argv is None:
         argv = sys.argv[1:]
 
-    ##########################################
-    # Define main parser and general options #
-    ##########################################
-    parser = argparse.ArgumentParser(
-        prog=program_name, formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
+    ######################################################################################
+    # Command line args that will be common to main_parser and possibly other subparsers.#
+    #                                                                                    #
+    # You should add `parents=[common_parser]` to your subparser definition if you want  #
+    # these options to apply there too.                                                  #
+    ######################################################################################
+    common_parser = argparse.ArgumentParser(add_help=False)
 
-    parser.add_argument(
-        "--version", "-v", action="version", version="%(prog)s v" + __version__
+    common_parser.add_argument(
+        "--deode-home",
+        default=None,
+        help="Specify deode_home to override automatic detection",
     )
-    parser.add_argument(
-        "-config_file",
+    common_parser.add_argument(
+        "--config-file",
         metavar="CONFIG_FILE_PATH",
-        default=get_default_config_path(),
+        default=ConfigParserDefaults.CONFIG_PATH,
         type=Path,
         help=(
             "Path to the config file. The default is whichever of the "
@@ -45,72 +57,55 @@ def get_parsed_args(program_name="program", argv=None):
             + "(ii) './config.toml'. If both (i) and (ii) are missing, "
             + "then the default will become "
             + "'"
-            + str(Path(f"$HOME/.{PACKAGE_NAME}/config.toml"))
+            + f"{ConfigParserDefaults.PACKAGE_CONFIG_PATH}"
             + "'"
         ),
     )
-    parser.add_argument(
-        "-loglevel",
-        default="info",
-        choices=["critical", "error", "warning", "info", "debug", "notset"],
-        help="What type of info should be printed to the log",
+
+    ##########################################
+    # Define main parser and general options #
+    ##########################################
+    main_parser = argparse.ArgumentParser(
+        prog=program_name, formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+
+    main_parser.add_argument(
+        "--version",
+        "-v",
+        action="version",
+        version="%(prog)s v" + GeneralConstants.VERSION,
     )
 
     # Configure the main parser to handle the commands
-    subparsers = parser.add_subparsers(
+    subparsers = main_parser.add_subparsers(
         title="commands",
         required=True,
         dest="command",
         description=(
-            "Valid commands for {0} (note that commands also accept their "
+            f"Valid commands for {program_name} (note that commands also accept their "
             + "own arguments, in particular [-h]):"
-        ).format(program_name),
+        ),
         help="command description",
     )
 
-    ###############################################
-    # Configure parser for the "forecast" command #
-    ###############################################
-    # Configure the main parser to handle the commands
+    ##########################################
+    # Configure parser for the "run" command #
+    ##########################################
     parser_run = subparsers.add_parser(
-        "run",
-        help="Runs a task.",
+        "run", help="Runs a task.", parents=[common_parser]
     )
-    parser_run.add_argument(
-        "--submit",
-        "-sub",
-        dest="submission_file",
-        help="Submission settings",
-        required=True,
-    )
-    parser_run.add_argument("--task", "-t", dest="task", help="Task name", required=True)
-    parser_run.add_argument(
-        "--template", dest="template_job", help="Template", required=True
-    )
+    parser_run.add_argument("--task", "-t", help="Task name", required=True)
+    parser_run.add_argument("--template-job", help="Template", required=True)
     parser_run.add_argument("--job", dest="task_job", help="Task job file", required=True)
-    parser_run.add_argument(
-        "--type", dest="job_type", help="Job type (in troika config)", required=True
-    )
-    parser_run.add_argument(
-        "--output", "-o", dest="output", help="Task output file", required=True
-    )
-    parser_run.add_argument("--troika", dest="troika", default="troika", required=False)
-    parser_run.add_argument(
-        "--troika_config",
-        dest="troika_config",
-        default="/opt/troika/etc/troika.yml",
-        required=False,
-    )
+    parser_run.add_argument("--output", "-o", help="Task output file", required=True)
+    parser_run.add_argument("--troika", default="troika")
+    parser_run.add_argument("--troika-config", default="/opt/troika/etc/troika.yml")
     parser_run.set_defaults(run_command=run_task)
 
-    ##########################################
+    ############################################
     # Configure parser for the "start" command #
-    ##########################################
-    # Configure the main parser to handle the commands
-    parser_start = subparsers.add_parser(
-        "start",
-        help="Start various tasks and exit.",
-    )
+    ############################################
+    parser_start = subparsers.add_parser("start", help="Start various tasks and exit.")
     start_command_subparsers = parser_start.add_subparsers(
         title="start",
         dest="start_what",
@@ -124,69 +119,31 @@ def get_parsed_args(program_name="program", argv=None):
 
     # suite
     parser_start_suite = start_command_subparsers.add_parser(
-        "suite", help="Start the suite"
+        "suite", help="Start the suite", parents=[common_parser]
     )
     parser_start_suite.add_argument(
-        "--ecf_host",
-        "-host",
-        type=str,
-        dest="ecf_host",
-        help="Ecflow host",
-        required=False,
-        default=None,
+        "--ecf-host", "-host", type=str, help="Ecflow host", default=None
     )
     parser_start_suite.add_argument(
-        "--ecf_port",
-        "-port",
-        type=int,
-        dest="ecf_port",
-        help="Ecflow port",
-        required=False,
-        default=None,
+        "--ecf-port", "-port", type=int, help="Ecflow port", default=None
     )
     parser_start_suite.add_argument(
-        "--start_command",
-        type=str,
-        dest="start_command",
-        help="Start command for server",
-        required=False,
-        default=None,
+        "--start-command", type=str, help="Start command for server", default=None
     )
     parser_start_suite.add_argument(
-        "--submit",
-        "-sub",
-        dest="submission_file",
-        help="Submission settings",
-        required=True,
+        "--joboutdir", "-j", help="Job out directory", required=True
     )
     parser_start_suite.add_argument(
-        "--logfile", "-log", dest="logfile", help="Scheduler logfile", required=True
+        "--ecf-files", "-f", help="Ecflow container directory", required=True
     )
-    parser_start_suite.add_argument(
-        "--name", dest="suite_name", help="Suite name", required=True
-    )
-    parser_start_suite.add_argument(
-        "--joboutdir", "-j", dest="joboutdir", help="Job out directory", required=True
-    )
-    parser_start_suite.add_argument(
-        "--ecf_files",
-        "-f",
-        dest="ecf_files",
-        help="Ecflow container directory",
-        required=True,
-    )
-    parser_start_suite.add_argument(
-        "--begin", "-b", dest="begin", help="Begin suite", default=True, required=False
-    )
+    parser_start_suite.add_argument("--begin", "-b", help="Begin suite", default=True)
     parser_start_suite.set_defaults(run_command=start_suite)
 
     ###########################################
     # Configure parser for the "show" command #
     ###########################################
-    # Configure the main parser to handle the commands
     parser_show = subparsers.add_parser(
-        "show",
-        help="Display results from output files, as well as configs",
+        "show", help="Display results from output files, as well as configs"
     )
     show_command_subparsers = parser_show.add_subparsers(
         title="show",
@@ -201,20 +158,182 @@ def get_parsed_args(program_name="program", argv=None):
 
     # show config
     parser_show_config = show_command_subparsers.add_parser(
-        "config", help="Print configs in use and exit"
+        "config", help="Print configs in use and exit", parents=[common_parser]
     )
     parser_show_config.add_argument(
         "section", help="The config section (optional)", default="", nargs="?"
     )
     parser_show_config.add_argument(
-        "--format", "-fmt", help="Output format", choices=["toml", "json"], default="toml"
-    )
-    parser_show_config.add_argument(
-        "--no-defaults",
-        "--nodefs",
-        action="store_true",
-        help="Don't show defaults: Show only what is written in the config file.",
+        "--format",
+        "-fmt",
+        help="Output format",
+        choices=["toml", "json", "yaml"],
+        default="toml",
     )
     parser_show_config.set_defaults(run_command=show_config)
 
-    return parser.parse_args(argv)
+    # show config-schema
+    parser_show_config_schema = show_command_subparsers.add_parser(
+        "config-schema",
+        help="Print JSON schema used for validation of configs and exit",
+        parents=[common_parser],
+    )
+    parser_show_config_schema.add_argument(
+        "section", help="The config section (optional)", default="", nargs="?"
+    )
+    parser_show_config_schema.set_defaults(run_command=show_config_schema)
+
+    # show namelist
+    parser_show_namelist = show_command_subparsers.add_parser(
+        "namelist", help="Print namelist in use and exit", parents=[common_parser]
+    )
+    parser_show_namelist.add_argument(
+        "--namelist-type",
+        "-t",
+        type=str,
+        help="Namelist target, master or surfex",
+        choices=["master", "surfex"],
+        required=True,
+        default=None,
+    )
+    parser_show_namelist.add_argument(
+        "--namelist",
+        "-n",
+        type=str,
+        help="Namelist to show, type anything to print available options",
+        required=True,
+        default=None,
+    )
+    parser_show_namelist.add_argument(
+        "--optional-namelist-name",
+        "-o",
+        type=str,
+        dest="namelist_name",
+        help="Optional namelist name",
+        default=None,
+    )
+    parser_show_namelist.add_argument(
+        "--no-substitute",
+        "-b",
+        action="store_false",
+        default=True,
+        help="Do not substitute config values in the written namelist",
+    )
+    parser_show_namelist.set_defaults(run_command=show_namelist)
+
+    ###########################################
+    # Configure parser for the "doc" command #
+    ###########################################
+    parser_doc = subparsers.add_parser("doc", help="Print documentation style output")
+    doc_command_subparsers = parser_doc.add_subparsers(
+        title="doc",
+        dest="doc_what",
+        required=True,
+        description=(
+            "Valid commands below (note that commands also accept their "
+            + "own arguments, in particular [-h]):"
+        ),
+        help="command description",
+    )
+
+    # doc config
+    parser_doc_config = doc_command_subparsers.add_parser(
+        "config",
+        help="Print a merge of config and json schema in .md style",
+        parents=[common_parser],
+    )
+
+    parser_doc_config.set_defaults(run_command=doc_config)
+
+    # namelist subparser
+    parser_namelist = subparsers.add_parser(
+        "namelist", help="Namelist show (output) or integrate (input)"
+    )
+    namelist_command_subparsers = parser_namelist.add_subparsers(
+        title="integrate",
+        dest="namelist_what",
+        required=True,
+        description=(
+            "Valid commands below (note that commands also accept their "
+            + "own arguments, in particular [-h]):"
+        ),
+        help="command description",
+    )
+
+    # namelist integrate
+    parser_namelist_integrate = namelist_command_subparsers.add_parser(
+        "integrate",
+        help="Read fortran [+yaml] namelist(s) and output as yaml dict(s)",
+        parents=[common_parser],
+    )
+    parser_namelist_integrate.add_argument(
+        "-n",
+        "--namelist",
+        nargs="+",
+        type=str,
+        help="Fortran namelist input file(s)",
+        required=True,
+        default=None,
+    )
+    parser_namelist_integrate.add_argument(
+        "-o",
+        "--output",
+        type=str,
+        help="Output file (yaml format)",
+        required=True,
+        default=None,
+    )
+    parser_namelist_integrate.add_argument(
+        "-t",
+        "--tag",
+        type=str,
+        help="Tag used as base for comparisons",
+        required=False,
+        default=None,
+    )
+    parser_namelist_integrate.add_argument(
+        "-y",
+        "--yaml",
+        type=str,
+        help="Input yaml file (from earlier run)",
+        required=False,
+        default=None,
+    )
+    parser_namelist_integrate.set_defaults(run_command=namelist_integrate)
+
+    #####################################################
+    # Configure parser for the "toml-formatter" command #
+    #####################################################
+    parser_toml_formatter = subparsers.add_parser(
+        "toml-formatter",
+        parents=[common_parser],
+        help="Helper to format/standardise TOML files. "
+        + "Return error code 1 if any file needs to be formatted.",
+    )
+
+    parser_toml_formatter.add_argument(
+        "file_paths",
+        help="Path(s) to the TOML files to be formatted. If a directory is passed, "
+        + "then the code will descent recursively into it looking for TOML files.",
+        type=lambda x: Path(x).expanduser().resolve(),
+        nargs="+",
+    )
+    parser_toml_formatter.add_argument(
+        "--show-formatted",
+        help="Whether to show the formatted file contents for ill-formated files."
+        + "If omitted, oly the diff will be shown.",
+        action="store_true",
+    )
+    parser_toml_formatter.add_argument(
+        "--fix-inplace",
+        help="Modify the file(s) in-place to apply the suggested formatting.",
+        action="store_true",
+    )
+    parser_toml_formatter.add_argument(
+        "--include-hidden",
+        help="Include hidden files in the recursive search.",
+        action="store_true",
+    )
+    parser_toml_formatter.set_defaults(run_command=toml_formatter)
+
+    return main_parser.parse_args(argv)

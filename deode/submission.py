@@ -1,24 +1,106 @@
 """Module to handle submissions."""
 
-import json
+import collections.abc
 import os
 import subprocess
+import sys
 
-from .logs import get_logger
+from .derived_variables import derived_variables
+from .logs import logger
+from .tasks.discover_task import get_task
+from .toolbox import Platform
 
-logger = get_logger(__name__, "DEBUG")
+
+class ProcessorLayout:
+    """Set processor information."""
+
+    def __init__(self, kwargs):
+        """Construct object.
+
+           Use integers internally.
+
+        Args:
+            kwargs(dict): Processor information
+
+        """
+        self.wrapper = kwargs.get("WRAPPER")
+        self.nproc = kwargs.get("NPROC")
+        if self.nproc == "":
+            self.nproc = None
+        if isinstance(self.nproc, str):
+            self.nproc = int(self.nproc)
+        self.nproc_io = kwargs.get("NPROC_IO")
+        if self.nproc_io == "":
+            self.nproc_io = None
+        if isinstance(self.nproc_io, str):
+            self.nproc_io = int(self.nproc_io)
+        self.nprocx = kwargs.get("NPROCX")
+        if self.nprocx == "":
+            self.nprocx = None
+        if isinstance(self.nprocx, str):
+            self.nprocx = int(self.nprocx)
+        self.nprocy = kwargs.get("NPROCY")
+        if self.nprocy == "":
+            self.nprocy = None
+        if isinstance(self.nprocy, str):
+            self.nprocy = int(self.nprocy)
+
+    def get_proc_dict(self):
+        """Generate a processor dict."""
+        procs = {}
+        nproc = self.nproc
+        nproc_io = self.nproc_io
+        nprocx = self.nprocx
+        nprocy = self.nprocy
+        procs.update(
+            {"nproc": nproc, "nproc_io": nproc_io, "nprocx": nprocx, "nprocy": nprocy}
+        )
+        return procs
+
+    def get_wrapper(self):
+        """Get and potentially parse the wrapper."""
+        wrapper = self.wrapper
+        if wrapper is not None:
+            if self.nproc is not None:
+                nproc = self.nproc
+                if not isinstance(nproc, str):
+                    nproc = str(nproc)
+                wrapper = wrapper.replace("@NPROC@", nproc)
+        return wrapper
 
 
 class TaskSettings(object):
     """Set the task specific setttings."""
 
-    def __init__(self, submission_defs):
+    def __init__(self, config):
         """Construct the task specific settings.
 
         Args:
-             submission_defs(dict): Submission definitions
+             config(deode.ParserdConfig): Configuration
         """
+        submission_defs = config["submission"].dict()
         self.submission_defs = submission_defs
+        self.job_type = None
+        self.processor_layout = None
+
+    @staticmethod
+    def update_task_setting(dic, upd):
+        """Update task settings dictionary.
+
+        Args:
+            dic (dict): Dictionary to update
+            upd (dict): Values to update
+
+        Returns:
+            dict: updated dictionary
+        """
+        for key, val in upd.items():
+            if isinstance(val, collections.abc.Mapping):
+                dic[key] = TaskSettings.update_task_setting(dic.get(key, {}), val)
+            else:
+                logger.debug("key={} value={}", key, val)
+                dic[key] = val
+        return dic
 
     def parse_submission_defs(self, task):
         """Parse the submssion definitions.
@@ -34,6 +116,7 @@ class TaskSettings(object):
         all_defs = self.submission_defs
         submit_types = all_defs["submit_types"]
         default_submit_type = all_defs["default_submit_type"]
+        logger.debug("default_submit_type={}", default_submit_type)
         task_submit_type = None
         for s_t in submit_types:
             if s_t in all_defs and "tasks" in all_defs[s_t]:
@@ -44,25 +127,32 @@ class TaskSettings(object):
             task_submit_type = default_submit_type
 
         if task_submit_type in all_defs:
-            for setting in all_defs[task_submit_type]:
-                if setting != "tasks":
-                    task_settings.update({setting: all_defs[task_submit_type][setting]})
+            logger.debug("task_submit_type for task {}: {}", task, task_submit_type)
+            task_settings = self.update_task_setting(
+                task_settings, all_defs[task_submit_type]
+            )
 
-        # TODO do it recursively
+            if "BATCH" in task_settings:
+                if "NAME" in task_settings["BATCH"]:
+                    if "@TASK_NAME@" in task_settings["BATCH"]["NAME"]:
+                        task_settings["BATCH"]["NAME"] = task_settings["BATCH"][
+                            "NAME"
+                        ].replace("@TASK_NAME@", task)
+
         if "task_exceptions" in all_defs:
             if task in all_defs["task_exceptions"]:
-                keywords = ["BATCH", "ENV"]
-                for kword in keywords:
-                    if kword in all_defs["task_exceptions"][task]:
-                        kword_settings = all_defs["task_exceptions"][task][kword]
-                        for key, value in kword_settings.items():
-                            if key in task_settings:
-                                logger.warning(
-                                    "key=%s already exists in " "task_settings", key
-                                )
-                            task_settings[kword].update({key: value})
+                logger.debug("Task task_exceptions for task {}", task)
+                task_settings = self.update_task_setting(
+                    task_settings, all_defs["task_exceptions"][task]
+                )
 
-        logger.debug(task_settings)
+        if "SCHOST" in task_settings:
+            self.job_type = task_settings["SCHOST"]
+
+        # Set task specific processor layout
+        self.processor_layout = ProcessorLayout(task_settings)
+
+        logger.debug("Task settings for task {}: {}", task, task_settings)
         return task_settings
 
     def get_task_settings(self, task, key=None, variables=None, ecf_micro="%"):
@@ -86,11 +176,14 @@ class TaskSettings(object):
                 logger.debug(type(task_settings[key]))
                 if isinstance(task_settings[key], dict):
                     for setting, value in task_settings[key].items():
-                        logger.debug("%s %s variables: %s", setting, value, variables)
+                        logger.debug("{} {} variables: {}", setting, value, variables)
                         if variables is not None:
                             if setting in variables:
                                 value = f"{ecf_micro}{setting}{ecf_micro}"
                                 logger.debug(value)
+                        if isinstance(value, str):
+                            value = value.replace("@TASK_NAME@", task)
+
                         m_task_settings.update({setting: value})
                     logger.debug(m_task_settings)
                     return m_task_settings
@@ -98,7 +191,7 @@ class TaskSettings(object):
                     value = task_settings[key]
                     if variables is not None:
                         if key in variables:
-                            value = f"{ecf_micro}{variables[setting]}{ecf_micro}"
+                            value = f"{ecf_micro}{variables[key]}{ecf_micro}"
                     return value
             return None
 
@@ -131,14 +224,14 @@ class TaskSettings(object):
         task_settings = self.parse_submission_defs(task)
         keys = []
         for key, value in self.recursive_items(task_settings):
-            if isinstance(value, str):
+            if isinstance(value, str) or isinstance(value, int):
                 logger.debug(key)
                 keys.append(key)
         logger.debug(keys)
         for key, value in self.recursive_items(task_settings):
-            logger.debug("key=%s value=%s", key, value)
+            logger.debug("key={} value={}", key, value)
             if key in keys:
-                logger.debug("update %s %s", key, value)
+                logger.debug("update {} {}", key, value)
                 settings.update({key: value})
         return settings
 
@@ -149,7 +242,7 @@ class TaskSettings(object):
 
         Args:
             task (str): Task name
-            config (str): The configuration
+            config (deode.config): The configuration
             input_template_job (str): Input container template.
             task_job (str): Task container
             variables (_type_, optional): _description_. Defaults to None.
@@ -159,24 +252,19 @@ class TaskSettings(object):
         interpreter = self.get_task_settings(task, "INTERPRETER")
         logger.debug(interpreter)
         if interpreter is None:
-            cmd = ["type", "python3"]
-            returned_output = (
-                subprocess.check_output(cmd).decode("utf-8").strip().split(" ")[-1]
-            )
-            interpreter = f"#!{returned_output}"
+            interpreter = f"#!{sys.executable}"
 
         logger.debug(interpreter)
         with open(input_template_job, mode="r", encoding="utf-8") as file_handler:
             input_content = file_handler.read()
         dir_name = os.path.dirname(os.path.realpath(task_job))
-        if not os.path.exists(dir_name):
-            os.makedirs(dir_name, exist_ok=True)
+        os.makedirs(dir_name, exist_ok=True)
         with open(task_job, mode="w", encoding="utf-8") as file_handler:
             file_handler.write(f"{interpreter}\n")
             batch_settings = self.get_task_settings(
                 task, "BATCH", variables=variables, ecf_micro=ecf_micro
             )
-            logger.debug("batch settings %s", batch_settings)
+            logger.debug("batch settings {}", batch_settings)
             for __, b_setting in batch_settings.items():
                 file_handler.write(f"{b_setting}\n")
             env_settings = self.get_task_settings(
@@ -184,29 +272,21 @@ class TaskSettings(object):
             )
             logger.debug(env_settings)
             python_task_env = ""
-            for __, e_setting in env_settings.items():
+            for __, e_setting in sorted(env_settings.items()):
                 python_task_env = python_task_env + f"{e_setting}\n"
-            input_content = input_content.replace("#@ENV_SUB@", python_task_env)
+            input_content = input_content.replace("# @ENV_SUB@", python_task_env)
             input_content = input_content.replace("@STAND_ALONE_TASK_NAME@", task)
-            input_content = input_content.replace(
-                "@STAND_ALONE_TASK_CONFIG@", str(config)
-            )
-            input_content = input_content.replace("@STAND_ALONE_TASK_LOGLEVEL@", "DEBUG")
+            platform = Platform(config)
+            deode_home = platform.get_platform_value("DEODE_HOME")
+            input_content = input_content.replace("@STAND_ALONE_DEODE_HOME@", deode_home)
+            config_file = config.metadata["source_file_path"]
+            if config_file is not None:
+                input_content = input_content.replace(
+                    "@STAND_ALONE_TASK_CONFIG@", str(config_file)
+                )
             file_handler.write(input_content)
-
-
-class TaskSettingsJson(TaskSettings):
-    """Set the task specific setttings."""
-
-    def __init__(self, submission_defs_file):
-        """Construct the task specific settings.
-
-        Args:
-            submission_defs_file (str): Submission definition json file
-        """
-        with open(submission_defs_file, mode="r", encoding="utf-8") as file_handler:
-            submission_defs = json.load(file_handler)
-        TaskSettings.__init__(self, submission_defs)
+        # Make file executable for user
+        os.chmod(task_job, 0o744)
 
 
 class NoSchedulerSubmission:
@@ -220,36 +300,41 @@ class NoSchedulerSubmission:
         """
         self.task_settings = task_settings
 
-    def submit(
-        self,
-        task,
-        config,
-        template_job,
-        task_job,
-        output,
-        job_type,
-        troika="troika",
-        troika_config="/opt/troika/etc/troika.yml",
-    ):
+    def submit(self, task, config, template_job, task_job, output, troika="troika"):
         """Submit task.
 
         Args:
             task (str): Task name
-            config (str): Config
+            config (deode.ParsedConfig): Config
             template_job (str): Task template job file
             task_job (str): Task job file
             output(str): Output file
-            job_type (str): Job type
             troika (str, optional): troika binary. Defaults to "troika".
-            troika_config (str, optional): Troika config file.
-                                           Defaults to "/opt/troika/etc/troika.yml".
 
         Raises:
-            Exception: Submission failure
+            RuntimeError: Submission failure.
         """
-        self.task_settings.parse_job(task, config, template_job, task_job)
-        cmd = f"{troika} -c {troika_config} submit {job_type} {task_job} -o {output}"
+        _ = get_task(task, config)
+        platform = Platform(config)
+
+        # Update dervived variables (nproc etc)
+        settings = self.task_settings.get_settings(task)
+        processor_layout = ProcessorLayout(settings)
+        update = derived_variables(config, processor_layout=processor_layout)
+        config = config.copy(update=update)
+
+        troika_config = platform.get_value("troika.config_file")
+        self.task_settings.parse_job(
+            task=task,
+            config=config,
+            input_template_job=template_job,
+            task_job=task_job,
+        )
+        cmd = (
+            f"{troika} -c {troika_config} submit {self.task_settings.job_type} "
+            f"{task_job} -o {output}"
+        )
         try:
             subprocess.check_call(cmd.split())
-        except Exception as exc:
-            raise Exception(f"Submission failed with {repr(exc)}") from exc
+        except subprocess.CalledProcessError as exc:
+            raise RuntimeError(f"Submission failed with {repr(exc)}") from exc

@@ -1,0 +1,12 @@
+# Do the selection of fields below. Note 
+# that xxt00000000 inherits from xxtddddhhmm
+selection:
+ xxtddddhhmm: &default
+  NAMFPPHY:
+   CLCFU:
+    - 'WFPOWERACC'
+   CLXFU:
+    - 'WFPOWERINS'
+
+ xxt00000000:
+   <<: *default

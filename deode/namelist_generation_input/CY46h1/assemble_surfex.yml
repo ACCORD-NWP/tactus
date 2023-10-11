@@ -1,0 +1,49 @@
+pgd:
+  - sfx_io
+  - sfx_treedrag
+  - sfx_pgd_domain
+  - sfx_pgd_schemes
+  - sfx_pgd_schemes_water_flake
+  - sfx_pgd_sea
+  - sfx_pgd_flake
+  - sfx_split_patch
+  - sfx_pgd_ecoclimap_sg
+  - sfx_pgd_cv
+  - sfx_pgd_rsmin
+  - sfx_pgd_zs_gmted
+  - sfx_pgd_isba_dif
+  - sfx_pgd_soilgrid_sand
+  - sfx_pgd_soilgrid_clay
+
+prep_ifs:
+  - sfx_io
+  - sfx_surf_constants
+  - sfx_treedrag
+  - sfx_prep_sea
+  - sfx_prep_sea_sice
+  - sfx_prep_flake
+  - sfx_prep_isba
+  - sfx_prep_isba_from_grib
+  - sfx_split_patch
+  - sfx_prep_isba_snow_3l
+
+prep_arome:
+  - sfx_io
+  - sfx_surf_constants
+  - sfx_treedrag
+  - sfx_prep_sea
+  - sfx_prep_sea_sice
+  - sfx_prep_flake
+  - sfx_prep_isba
+  - sfx_prep_isba_from_fa
+  - sfx_split_patch
+  - sfx_prep_isba_snow_3l
+
+forecast:
+  - sfx_io
+  - sfx_split_patch
+  - sfx_treedrag
+  - sfx_common
+  - sfx_forecast
+  - sfx_output_times
+  - sfx_selected_output

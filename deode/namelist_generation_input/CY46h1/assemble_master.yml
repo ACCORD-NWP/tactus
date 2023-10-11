@@ -1,0 +1,80 @@
+e923_0:
+  - empty
+  - e923_base
+  - e923_0
+
+e923_1:
+  - empty
+  - e923_base
+  - e923_1
+
+e923_2:
+  - empty
+  - e923_base
+  - e923_2
+
+e923_3:
+  - empty
+  - e923_base
+  - e923_3
+
+e923_4:
+  - empty
+  - e923_base
+  - e923_4
+
+e923_5:
+  - empty
+  - e923_base
+  - e923_5
+
+e923_6:
+  - empty
+  - e923_base
+  - e923_6
+
+e923_8:
+  - empty
+  - e923_base
+  - e923_8
+
+e923_9:
+  - empty
+  - e923_base
+  - e923_9
+
+e927_ifs:
+  - empty
+  - fa_names
+  - f4_common
+  - f4_e927
+  - f4_e927_ifs
+
+e927_arome:
+  - empty
+  - fa_names
+  - f4_common
+  - f4_e927
+  - f4_e927_arome
+
+forecast_bdmodel_ifs:
+  - empty
+  - fa_names
+  - f4_common
+  - f4_harmonie-arome
+
+forecast_bdmodel_arome:
+  - empty
+  - fa_names
+  - f4_common
+  - f4_harmonie-arome
+  - namgfl_bdmodel_arome
+
+c903_main:
+  - empty
+  - fa_names
+  - f4_c903_main
+
+c903_domain:
+  - fa_names
+  - f4_c903_domain

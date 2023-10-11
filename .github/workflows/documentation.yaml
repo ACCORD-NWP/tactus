@@ -1,0 +1,94 @@
+name: Build and Deploy Documentation
+on:
+  push:
+    branches:
+      - master
+      - develop
+    paths:
+      - '**.py'
+      - '*.rst'
+      - '*.md'
+  pull_request:
+    branches:
+      - master
+      - develop
+    paths:
+      - '**.py'
+      - '*.rst'
+      - '*.md'
+  workflow_dispatch:
+    branches:
+      - master
+      - develop
+permissions:
+    contents: write
+
+jobs:
+  docs:
+    if: github.repository_owner == 'destination-earth-digital-twins'
+    name: Generate API Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up python
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      #----------------------------------------------
+      #  --- configure poetry & install project  ----
+      #----------------------------------------------
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Load cached venv (if cache exists)
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: ${{ github.job }}-venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
+
+      - name: Install dependencies (if venv cache is not found)
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root --only main,doc
+
+      - name: Install the project itself
+        run: poetry install --no-interaction --only-root
+
+      #----------------------------------------------
+      #  ---      create and publish docs        ----
+      #----------------------------------------------
+      - name: Generate config docs from default config & main schema
+        run: |
+          poetry run deode doc config >| docs/markdown_docs/config.md
+
+      - name: Sphinx apidoc
+        run: |
+          poetry run sphinx-apidoc deode -o docs/ --force --no-toc --module-first
+
+      - name: Sphinx build
+        run: |
+          poetry run sphinx-build docs docs/_build/
+
+      - name: Allow publishing the `_static` directory
+        run: |
+          touch docs/_build/.nojekyll
+
+      - name: Deploy to https://github.com/destination-earth-digital-twins/deode-prototype-docs
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+        with:
+          source-directory: 'docs/_build/'
+          destination-repository-name: 'destination-earth-digital-twins/Deode-Prototype-docs'
+          target-branch: gh-pages
+          target-directory: docs/
+          user-name: Deode Prototype API Doc Builder
+          user-email: Deode-Prototype@noreply.github.com

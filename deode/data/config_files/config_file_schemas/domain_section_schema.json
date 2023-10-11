@@ -1,0 +1,89 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "DomainSection",
+    "description": "Model for validation of the data in the 'domain' section of the config file.",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+        "gridtype": {
+            "type": "string",
+            "description": "Select truncation type",
+            "enum": [
+                "linear",
+                "quadratic",
+                "cubic",
+                "custom"
+            ]
+        },
+        "name": {
+            "type": "string",
+            "description": "Name of your domain",
+	    "maxLength": 20
+
+        },
+        "nimax": {
+            "type": "number",
+            "description": "Number of grid points longitudinally",
+            "minimum": 0
+        },
+        "njmax": {
+            "type": "number",
+            "description": "Number of grid points latitudinally",
+            "minimum": 0
+        },
+        "xdx": {
+            "type": "number",
+            "description": "Domain longitudinal length in meters",
+            "minimum": 0
+        },
+        "xdy": {
+            "type": "number",
+            "description": "Domain latiudinal length in meters",
+            "minimum": 0
+        },
+        "ilone": {
+            "type": "number",
+            "description": "Longitudinal extension zone",
+            "minimum": 0
+        },
+        "ilate": {
+            "type": "number",
+            "description": "Latitudinal extension zone",
+            "minimum": 0
+        },
+        "nbzong": {
+            "type": "number",
+            "description": "Latitudinal coupling zone width",
+            "minimum": 0
+        },
+        "nbzonl": {
+            "type": "number",
+            "description": "Longitudinal coupling zone width",
+            "minimum": 0
+        },
+        "xloncen": {
+            "type": "number",
+            "description": "Domain center longitude",
+            "minimum": -180,
+            "maximum": 180
+        },
+        "xlatcen": {
+            "type": "number",
+            "description": "Domain center latitude",
+            "minimum": -90,
+            "maximum": 90
+        },
+        "xlon0": {
+            "type": "number",
+            "description": "Reference longitude",
+            "minimum": -180,
+            "maximum": 180
+        },
+        "xlat0": {
+            "type": "number",
+            "description": "Reference latitude",
+            "minimum": -90,
+            "maximum": 90
+        }
+    }
+}

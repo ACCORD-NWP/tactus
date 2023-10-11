@@ -1,0 +1,1232 @@
+e923_0:
+  NAMCLA:
+    LIPGD: True
+    LNEWORO: False
+    LSPSMORO: "${domain.lspsmoro}"
+    NLISSP: 0
+e923_1: {}
+e923_2:
+  NAMMCC:
+    N923: 2
+e923_3:
+  NAMMCC:
+    N923: 3
+e923_4:
+  NAMMCC:
+    N923: 4
+e923_5:
+  NAMMCC:
+    N923: 5
+e923_6:
+  NAMCLI:
+    NDATX: 360
+    NDATY: 180
+    RSTR: 0.0
+  NAMMCC:
+    N923: 6
+e923_8:
+  NAMMCC:
+    N923: 8
+e923_9:
+  NAMCLI:
+    NAEROF: 0
+    NDATX: 72
+    NDATY: 45
+  NAMMCC:
+    N923: 9
+
+e923_base:
+  NAMARG:
+    CNMEXP: ${general.cnmexp}
+    LECMWF: False
+    LELAM: True
+    LSLAG: True
+    NCONF: 923
+    NSUPERSEDE: 0
+  NAMCLA:
+    FACZ0: 0.53
+    FENVN: 0.0
+    LKEYF: True
+    LNEWORO: True
+    LNEWORO2: False
+    LNLSM: True
+    LNORO: True
+    NLISSP: 1
+  NAMCT0:
+    LALLOPR: False
+    LRPLANE: True
+  NAMDIM:
+    NDGLG: ${domain.ndglg}
+    NDGUXG: ${domain.njmax}
+    NDLON: ${domain.ndguxg}
+    NDLUXG: ${domain.nimax}
+    NFLEVG: 1
+    NPROMA: ${general.nproma}
+    NMSMAX: ${domain.nmsmax}
+    NSMAX: ${domain.nsmax}
+  NAMFPSC2:
+    NFPROMA: ${general.nproma}
+  NAMFPSC2_DEP:
+    NFPROMA_DEP: "${general.nproma}"
+  NAMGEM:
+    NHTYP: 0
+    NSTTYP: 1
+    RLOCEN: 0.0
+    RMUCEN: 1.0
+    RSTRET: 1.0
+  NAMGRIB:
+    NENSFNB: -1
+  NAMIO_SERV:
+    LMSG_FLUSH_CLIENT: False
+    LMSG_FLUSH_SERVER: False
+    NIO_SERV_BUF_MAXSIZE: 20
+    NIO_SERV_METHOD: 2
+    NMSG_LEVEL_CLIENT: 0
+    NMSG_LEVEL_SERVER: 0
+    NPROCESS_LEVEL: 5
+    NPROC_IO: "${namelist.nproc_io-0}"
+  NAMJFH:
+    N_VMASS: 0
+  NAMMCC:
+    N923: 1
+  NAMPAR0:
+    LMPDIAG: False
+    LMPOFF: False
+    LOPT_SCALAR: True
+    MBX_SIZE: 1000000000
+    MP_TYPE: 2
+    NOUTPUT: 1
+    NPRGPEW: 1
+    NPRGPNS: 1
+    NPRINTLEV: 1
+    NPROC: "${namelist.nproc}"
+  NAMPAR1:
+    LSPLIT: True
+    L_GATHERV_WRGP: True
+    NCOMBFLEN: 8000000
+    NSTRIN: 1
+    NSTROUT: 1
+  NAMPHY:
+    LMPHYS: True
+    LSOLV: True
+    LVGSN: True
+  NAMPHY0:
+    GCVPSI: 0.0
+  NAMRIP:
+    CSTOP: "t0"
+  NEMDIM:
+    NBZONG: ${domain.nbzong}
+    NBZONL: ${domain.nbzonl}
+  NEMGEO:
+    EDELX: ${domain.xdx}
+    EDELY: ${domain.xdy}
+    ELAT0: ${domain.xlat0}
+    ELATC: ${domain.xlatcen}
+    ELON0: ${domain.xlon0}
+    ELONC: ${domain.xloncen}
+    LMRT: False
+
+namgfl_bdmodel_arome:
+  NAMGFL:
+    YG_NL%NREQIN: 1
+    YI_NL%NREQIN: 1
+    YL_NL%NREQIN: 1
+    YR_NL%NREQIN: 1
+    YS_NL%NREQIN: 1
+    YTKE_NL%NREQIN: 1
+    YG_NL%NCOUPLING: 1
+    YI_NL%NCOUPLING: 1
+    YL_NL%NCOUPLING: 1
+    YR_NL%NCOUPLING: 1
+    YS_NL%NCOUPLING: 1
+
+f4_harmonie-arome:
+  NAERAD:
+    LNEWAER: True
+    LRRTM: True
+    LSRTM: False
+    NAER: 1
+    NOVLP: 6
+    NOZOCL: 2
+    NRADFR: ${namelist.nradfr}
+    NRADLP: 2
+    NSW: 6
+  NAMFA:
+    LEXTERN: True
+  NAMAFN:
+    GFP_CLSG%CLNAME: "SURFACCGRAUPEL"
+    GFP_CLSP%CLNAME: "SURFACCPLUIE"
+    GFP_CLSS%CLNAME: "SURFACCNEIGE"
+    GFP_XLSG%CLNAME: "SURFINSGRAUPEL"
+    GFP_XLSP%CLNAME: "SURFINSPLUIE"
+    GFP_XLSS%CLNAME: "SURFINSNEIGE"
+  NAMARPHY:
+    LKFBCONV: False
+    LKFBD: False
+    LKFBS: False
+    LMFSHAL: True
+    LMICRO: True
+    LMPA: True
+    LMSE: True
+    LTURB: True
+  NAMCFU:
+    LCUMFU: True
+    LFPLS: True
+    LFPLSG: True
+    LFR: True
+    LFRRC: True
+    LFSF: True
+    LNEBPAR: True
+    LNEBTT: True
+    LRAYD: True
+    LRAYS: True
+    LWFPAC: ${general.windfarm}
+  NAMCHK:
+    LECHKEVO: False
+    LECHKPS: False
+    LECHKTND: False
+  NAMCT0:
+    CNPPATH: "."
+    LMSGINIT: False
+    LNHEE: True
+    LSPRT: True
+    LTWOTL: True
+    NFPOS: 1
+    NFRDHFD: 1
+    NFRGDI: 15
+    NFRHIS: 1
+    NFRSDI: 15
+    NHISTS: ${namelist.nhists}
+    NPOSTS: ${namelist.nposts}
+    NSFXHISTS: ${namelist.nsfxhists}
+  NAMCT1:
+    N1POS: 1
+    N1RES: 0
+    N1SFXHIS: 1
+  NAMDYN:
+    LADVF: True
+    LBOUND_D3: False
+    LQMPD: False
+    LQMT: False
+    LQMVD: False
+    NSITER: 0
+    NSPDLAG: 3
+    NSVDLAG: 3
+    NTLAG: 3
+    NVLAG: 3
+    NWLAG: 3
+    RDAMPDIV: 10.0
+    RDAMPPD: 100000.0
+    RDAMPQ: 10.0
+    RDAMPT: 10.0
+    RDAMPVD: 10.0
+    RDAMPVOR: 10.0
+    REPS1: 0.0
+    REPS2: 0.0
+    REPSM1: 0.0
+    REPSM2: 0.0
+    REPSP1: 0.0
+    SIPR: 90000.0
+    SITR: 350.0
+    SITRA: 70.0
+    SLHDA0: 0.25
+    SLHDD00: 6.5e-05
+    VESL: 0.0
+    XIDT: 0.15
+    ZSLHDP1: 1.7
+    ZSLHDP3: 0.6
+  NAMDYNA:
+    LCOMADH: True
+    LCOMADV: False
+    LCOMAD_GFL: True
+    LCOMAD_SP: True
+    LCOMAD_SPD: True
+    LCOMAD_SVD: True
+    LCOMAD_T: True
+    LCOMAD_W: True
+    LGRADSP: True
+    LGWADV: True
+    LNESC: False
+    LPC_FULL: False
+    LRDBBC: False
+    LSETTLS: True
+    LSETTLST: True
+    LSLHD_GFL: True
+    LSLHD_OLD: True
+    LSLHD_SPD: False
+    LSLHD_SVD: False
+    LSLHD_T: False
+    LSLHD_W: False
+    NPDVAR: 2
+    SLHDEPSH: 0.0025
+  NAMGFL:
+    NGFL_EZDIAG: 3
+    YA_NL%LPT: False
+    YA_NL%LREQOUT: True
+    YEZDIAG_NL(1)%CNAME: "EZDIAG01"
+    YEZDIAG_NL(1)%LREQOUT: False
+    YEZDIAG_NL(2)%CNAME: "EZDIAG02"
+    YEZDIAG_NL(2)%LREQOUT: False
+    YEZDIAG_NL(3)%CNAME: "EZDIAG03"
+    YEZDIAG_NL(3)%LREQOUT: False
+    YG_NL%LPT: False
+    YG_NL%LQM: True
+    YG_NL%LSLHD: True
+    YG_NL%NCOUPLING: -1
+    YG_NL%NREQIN: -1
+    YG_NL%REFVALC: 0.0
+    YG_NL%REFVALI: 0.0
+    YI_NL%LPT: False
+    YI_NL%LQM: True
+    YI_NL%LSLHD: True
+    YI_NL%NCOUPLING: -1
+    YI_NL%REFVALC: 0.0
+    YL_NL%LPT: False
+    YL_NL%LQM: True
+    YL_NL%LSLHD: True
+    YL_NL%NCOUPLING: -1
+    YL_NL%REFVALC: 0.0
+    YQ_NL%LCOMAD: True
+    YQ_NL%LPT: False
+    YQ_NL%LQM: True
+    YQ_NL%LSLHD: False
+    YQ_NL%NCOUPLING: 1
+    YQ_NL%NREQIN: 1
+    YR_NL%LPT: False
+    YR_NL%LQM: True
+    YR_NL%LSLHD: True
+    YR_NL%NCOUPLING: -1
+    YR_NL%NREQIN: -1
+    YR_NL%REFVALC: 0.0
+    YR_NL%REFVALI: 0.0
+    YSRC_NL%LPT: False
+    YS_NL%LPT: False
+    YS_NL%LQM: True
+    YS_NL%LSLHD: True
+    YS_NL%NCOUPLING: -1
+    YS_NL%NREQIN: -1
+    YS_NL%REFVALC: 0.0
+    YS_NL%REFVALI: 0.0
+    YTKE_NL%LPT: False
+    YTKE_NL%NCOUPLING: 0
+    YTKE_NL%NREQIN: -1
+  NAMINI:
+    LDFI: False
+  NAMINTFLEX:
+    LINTFLEX: False
+    LRADFLEX: False
+  NAMIO_SERV:
+    NIO_SERV_BUF_MAXSIZE: 20
+    NIO_SERV_METHOD: 2
+    NMSG_LEVEL_CLIENT: 0
+    NMSG_LEVEL_SERVER: 0
+    NPROCESS_LEVEL: 5
+    NPROC_IO: ${namelist.nproc_io-0}
+  NAMNRTAER:
+    CCNMIN: 10000000.0
+    CLDROPMIN: 10000000.0
+    LAECCN2CLDR: False
+    LAEIFN: False
+    LAERDRDEP: False
+    LCAMS_NRT: False
+    LMOCA_NRT: False
+    SSMAX: 0.0008
+    SSMIN: 0.0005
+  NAMOPH:
+    LINC: True
+    NTIMEFMT: 2
+  NAMPARAR:
+    CMF_CLOUD: "STAT"
+    CMF_UPDRAFT: "DUAL"
+    LSCAWAREMF: True
+    LHARATU: True
+    LHGT_QS: True
+    LICERAD: True
+    LKOGAN: True
+    LLCRIT: True
+    LMIXUV: False
+    LOCND2: True
+    LOLSMC: True
+    LOSEDIC: True
+    LOSIGMAS: True
+    LOSUBG_COND: True
+    LOTOWNC: True
+    LSHALLOWMF: True
+    LSTATNW: True
+    LTOTPREC: False
+    NPRINTFR: 10000
+    NPTP: 1
+    NSWB_MNH: 6
+    RADGR: 0.5
+    RADSN: 1.0
+    RFRMIN(1): 1.e-05
+    RFRMIN(12): 0.05
+    RFRMIN(2): 1.e-08
+    RFRMIN(22): 0.25
+    RFRMIN(24): 1.0
+    RFRMIN(26): 250000000.0
+    RFRMIN(29): 1000.0
+    RFRMIN(3): 3.e-09
+    RFRMIN(4): 3.e-09
+    RFRMIN(7): 0.0
+    VSIGQSAT: 0.02
+  NAMPHMSE:
+    LHISFWR: True
+    LPGDFWR: False
+  NAMPHY:
+    LCLSATUR: True
+    LHLRADUPD: True
+    LRAY: False
+    LRAYFM: True
+    LRNUMX: False
+    LRPROX: False
+    LRSTAER: False
+    LRTPP: True
+    LVFULL: False
+    LVOIGT: True
+    LWINDFARM: ${general.windfarm}
+    NRAUTOEV: 3
+    NRAY: 2
+    NSORAYFR: -1
+    NTHRAYFR: -1
+  NAMPHY0:
+    ALMAV: 300.0
+    BEDIFV: 0.05
+    ECMNP: 3000.0
+    GCCSV: 0.0
+    GCVADS: 0.8
+    GCVALFA: 4.5e-05
+    GCVBETA: 0.2
+    GCVMLT: 0.00016
+    GCVNU: 2.5e-05
+    GCVPSI: 1.0
+    GCVPSIE: 1.0
+    GDDEVA: 0.25
+    GDDSDE: 0.5
+    GWDCD: 6.0
+    HUCOE: 0.5
+    HUTIL: 1.8
+    QSSC: 400.0
+    QSSUSC: 0.75
+    QSSUSS: 0.4
+    QSSUSV: 250.0
+    QSUSXC: 0.0002
+    QSUSXS: 0.0003
+    QXRAL: 130.0
+    QXRDEL: 0.49
+    QXRHX: 0.99
+    QXRR: 0.25
+    RCVEVAP: 0.25
+    REFLKUO: 5000.0
+    REVGSL: 15.0
+    SCO: -20.0
+    TDDGP: 0.8
+    TENTR: 2.5e-06
+    TENTRX: 8.0e-05
+    TUDGP: 0.8
+    UHDIFV: 0.0008
+    USURIC: 0.175
+    USURICE: 0.5
+    USURICL: 1.0
+    USURID: 0.1
+    USURIDE: 0.25
+    VZ0CM: 0.00015
+    XMAXLM: 5000.0
+    XMINLM: 10.0
+  NAMPHY1:
+    ALBMIN: 0.65
+    ALCRIN: 0.75
+    GCGEL: 3.0e-05
+    GCGELS: 5.0e-05
+    GNEIMX: 1.8
+    GNEIMXS: 1.8
+    RCTVEG(3): 1.2e-05
+    RCTVEG(4): 1.0e-05
+  NAMPHY2:
+    FACRAF: 3.5
+    HTKERAF: 20.0
+    HWMOLOW: 2000.0
+    LMULAF: True
+    LRAFTKE: True
+    LRAFTUR: True
+    LWMOCLOUD: True
+    XDAMP: 1.0
+    XMULAF: -1.85
+  NAMPHY3:
+    FCM_NU_DI: 0.0
+    FCM_NU_DL: 0.0
+    RLAMB_SOLID: 0.6
+  NAMRIP:
+    CSTOP: ${namelist.cstop}
+    TSTEP: ${general.tstep}
+  NAMSPBD:
+    LSPBDC: False
+  NAMSPP:
+    CLIP_KGN_SBGR:
+      - 0.
+      - 1.
+    CLIP_RADGR:
+      - 0.
+      - 2.
+    CLIP_RADSN:
+      - 0.
+      - 2.
+    CMPERT_ALPHA: 0.1
+    CMPERT_CLDDPTH: 0.1
+    CMPERT_CLDDPTHDP: 0.1
+    CMPERT_ICENU: 0.35
+    CMPERT_ICE_CLD_WGT: 0.1
+    CMPERT_KGN_ACON: 0.25
+    CMPERT_KGN_SBGR: 0.1
+    CMPERT_PSIGQSAT: 0.1
+    CMPERT_RADGR: 0.15
+    CMPERT_RADSN: 0.15
+    CMPERT_RFAC_TWOC: 0.1
+    CMPERT_RLWINHF: 0.1
+    CMPERT_RSWINHF: 0.1
+    CMPERT_RZC_H: 0.1
+    CMPERT_RZL_INF: 0.1
+    CMPERT_RZMBCLOSURE: 0.1
+    CMPERT_RZMFDRY: 0.1
+    CMPERT_RZNUC: 0.1
+    IEZDIAG_POS: 1
+    LLNN_MEAN1: False
+    LLNN_MEAN1_ALPHA: True
+    LLNN_MEAN1_CLDDPTH: True
+    LLNN_MEAN1_CLDDPTHDP: True
+    LLNN_MEAN1_ICENU: True
+    LLNN_MEAN1_ICE_CLD_WGT: True
+    LLNN_MEAN1_KGN_ACON: True
+    LLNN_MEAN1_KGN_SBGR: True
+    LLNN_MEAN1_PSIGQSAT: True
+    LLNN_MEAN1_RADGR: True
+    LLNN_MEAN1_RADSN: True
+    LLNN_MEAN1_RFAC_TWOC: True
+    LLNN_MEAN1_RLWINHF: True
+    LLNN_MEAN1_RSWINHF: True
+    LLNN_MEAN1_RZC_H: True
+    LLNN_MEAN1_RZL_INF: True
+    LLNN_MEAN1_RZMBCLOSURE: True
+    LLNN_MEAN1_RZMFDRY: True
+    LLNN_MEAN1_RZNUC: True
+    LPERT_ALPHA: False
+    LPERT_CLDDPTH: False
+    LPERT_CLDDPTHDP: True
+    LPERT_ICENU: True
+    LPERT_ICE_CLD_WGT: True
+    LPERT_KGN_ACON: True
+    LPERT_KGN_SBGR: True
+    LPERT_PSIGQSAT: True
+    LPERT_RADGR: True
+    LPERT_RADSN: True
+    LPERT_RFAC_TWOC: True
+    LPERT_RLWINHF: False
+    LPERT_RSWINHF: False
+    LPERT_RZC_H: True
+    LPERT_RZL_INF: True
+    LPERT_RZMBCLOSURE: False
+    LPERT_RZMFDRY: False
+    LPERT_RZNUC: False
+    LSPG_SPP: True
+    LSPP: False
+    LUNIFORM_ALPHA: False
+    LUNIFORM_CLDDPTH: False
+    LUNIFORM_CLDDPTHDP: False
+    LUNIFORM_ICENU: False
+    LUNIFORM_ICE_CLD_WGT: False
+    LUNIFORM_KGN_ACON: False
+    LUNIFORM_KGN_SBGR: False
+    LUNIFORM_PSIGQSAT: False
+    LUNIFORM_RADGR: False
+    LUNIFORM_RADSN: False
+    LUNIFORM_RFAC_TWOC: False
+    LUNIFORM_RLWINHF: False
+    LUNIFORM_RSWINHF: False
+    LUNIFORM_RZC_H: False
+    LUNIFORM_RZL_INF: False
+    LUNIFORM_RZMBCLOSURE: True
+    LUNIFORM_RZMFDRY: True
+    LUNIFORM_RZNUC: False
+    NPATFR: -1
+    SDEV: 1.0
+    SPGADTMAX: 3.0
+    SPGADTMIN: 0.15
+    SPGLAMBDA: -999.0
+    SPGMAXSUBSTEPS: 50
+    SPGMU: -999.0
+    SPGQ: 0.5
+    SPGSIGMA: -999.0
+    TAU: 43200.0
+    UNIFORM_OFFSET_ALPHA: 0.5
+    UNIFORM_OFFSET_CLDDPTH: 0.5
+    UNIFORM_OFFSET_CLDDPTHDP: 0.5
+    UNIFORM_OFFSET_ICENU: 0.5
+    UNIFORM_OFFSET_ICE_CLD_WGT: 0.5
+    UNIFORM_OFFSET_KGN_ACON: 0.5
+    UNIFORM_OFFSET_KGN_SBGR: 0.5
+    UNIFORM_OFFSET_PSIGQSAT: 0.5
+    UNIFORM_OFFSET_RADGR: 0.5
+    UNIFORM_OFFSET_RADSN: 0.5
+    UNIFORM_OFFSET_RFAC_TWOC: 0.5
+    UNIFORM_OFFSET_RLWINHF: 0.5
+    UNIFORM_OFFSET_RSWINHF: 0.5
+    UNIFORM_OFFSET_RZC_H: 0.5
+    UNIFORM_OFFSET_RZL_INF: 0.5
+    UNIFORM_OFFSET_RZMBCLOSURE: 0.5
+    UNIFORM_OFFSET_RZMFDRY: 0.5
+    UNIFORM_OFFSET_RZNUC: 0.5
+    XLCOR: 200000.0
+  NAMSPSDT:
+    CSPEC_SHAPE_SDT: "WeaverCourtier1"
+    LSPG_SDT: False
+    LSPSDT: False
+    LWRITE_ARP: False
+    NSCALES_SDT: 1
+    SDEV_SDT(1): 0.2
+    SPGADTMAX_SDT: 3.0
+    SPGADTMIN_SDT: 0.15
+    SPGLAMBDA_SDT: -999.0
+    SPGMU_SDT: -999.0
+    SPGQ_SDT: 0.5
+    SPGSIGMA_SDT: -999.0
+    TAU_SDT(1): 28800
+    XCLIP_RATIO_SDT: 5.0
+    XLCOR_SDT(1): 2000000
+  NAMSTOPH:
+    LFORCENL: False
+    NFORCEEND: 1
+    NFORCESTART: 0
+  NAMTOPH:
+    ETCVIM: 5000.0
+    ETNEBU: 5000.0
+    ETPLUI: 5000.0
+    XDRMTK: 6.0e-7
+    XDRMTP: 800.0
+    XDRMTX: 4.0e-7
+    XDRMUK: 3.0e-7
+    XDRMUP: 800.0
+    XDRMUX: 2.e-06
+  NAMTRANS0:
+    RDISTR_E: 1.0
+  NAMXFU:
+    LXCLP: True
+    LXCLS: True
+    LXFU: True
+    LXNEBPA: True
+    LXNEBTT: True
+    LXNUVCLS: True
+    LXPLS: True
+    LXPLSG: True
+    LXQCLS: True
+    LXR: True
+    LXSOIL: False
+    LXTHW: True
+    LXTRT: True
+    LXTTCLS: True
+    LXWFPIN: ${general.windfarm}
+    LXXDIAGH: True
+    LXXGST: True
+    NFRRAZ: 1
+    NRAZTS: ${namelist.nrazts}
+    NXGSTPERIOD: 3600
+  NEMELBC0A:
+    LESPCPL: False
+    LUNBC: True
+    NBICPD: 2
+    NBICVD: 2
+
+fa_names:
+  NAMAFN:
+    TFP_I%CLNAME: "ICE_CRYSTAL"
+    TFP_L%CLNAME: "CLOUD_WATER"
+    TFP_U%CLNAME: "WIND.U.PHYS"
+    TFP_V%CLNAME: "WIND.V.PHYS"
+  NAMFA:
+    YFACLF%CLNAME: "CLOUD_FRACTI"
+    YFAI%CLNAME: "ICE_CRYSTAL"
+    YFAG%CLNAME: "GRAUPEL"
+    YFAL%CLNAME: "CLOUD_WATER"
+    YFAR%CLNAME: "RAIN"
+    YFAS%CLNAME: "SNOW"
+    YFATKE%CLNAME: "TKE"
+  NAMGFL:
+    YG_NL%CNAME: "GRAUPEL"
+    YI_NL%CNAME: "ICE_CRYSTAL"
+    YL_NL%CNAME: "CLOUD_WATER"
+    YQ_NL%CNAME: "HUMI.SPECIFI"
+    YR_NL%CNAME: "RAIN"
+    YS_NL%CNAME: "SNOW"
+
+f4_common:
+  NAMAFN:
+    GFP_ST%IANO: 0
+    GFP_X10U%IANO: 0
+    GFP_X10V%IANO: 0
+    GFP_X2RH%IANO: 0
+    GFP_X2T%IANO: 0
+    GFP_XUGST%IANO: 0
+    GFP_XVGST%IANO: 0
+  NAMARG:
+    CNMEXP: ${general.cnmexp}
+    LECMWF: False
+    LELAM: True
+    LSLAG: True
+    NCONF: 1
+  NAMCT0:
+    LAROME: True
+  NAMCT1:
+    LRFILAF: False
+  NAMDIM:
+    NPROMA: ${general.nproma}
+  NAMDYNA:
+    NDLNPR: 1
+    NVDVAR: 4
+  NAMFA:
+    NBITCS: -1
+    NBITPG: -1
+    NSTRON: -1
+    YFACLF%NBITS: 16
+    YFAG%NBITS: 16
+    YFAI%NBITS: 16
+    YFAL%NBITS: 16
+    YFAR%NBITS: 16
+    YFAS%NBITS: 16
+    YFATKE%NBITS: 16
+  NAMFPC:
+    CFPFMT: "LELAM"
+    NFPCLI: 1
+  NAMFPSC2:
+    NFPROMA: ${general.nproma}
+  NAMFPSC2_DEP:
+    NFPROMA_DEP: ${general.nproma}
+  NAMGFL:
+    YI_NL%NREQIN: 1
+    YA_NL%NREQIN: 1
+    YL_NL%NREQIN: 1
+  NAMGRIB:
+    NENSFNB: -1
+  NAMIO_SERV:
+    LMSG_FLUSH_CLIENT: False
+    LMSG_FLUSH_SERVER: False
+    NIO_SERV_BUF_MAXSIZE: 20
+    NIO_SERV_METHOD: 2
+    NMSG_LEVEL_CLIENT: 0
+    NMSG_LEVEL_SERVER: 0
+    NPROCESS_LEVEL: 5
+    NPROC_IO: ${namelist.nproc_io-0}
+  NAMJFH:
+    N_VMASS: 0
+  NAMPAR0:
+    LMPDIAG: False
+    LMPOFF: False
+    LOPT_SCALAR: True
+    MBX_SIZE: 1000000000
+    MP_TYPE: 2
+    NOUTPUT: 1
+    NPRINTLEV: 1
+    NPROC: "${namelist.nproc}"
+  NAMPAR1:
+    LSPLIT: True
+    L_GATHERV_WRGP: True
+    NCOMBFLEN: 8000000
+    NSTRIN: ${namelist.nproc}
+    NSTROUT: ${namelist.nproc}
+  NAMPHY:
+    LAERODES: True
+    LAEROLAN: True
+    LAEROMMR: False
+    LAEROSEA: True
+    LAEROSOO: True
+    LMPHYS: True
+    LO3ABC: True
+  NAMSFXCMP:
+    NVGRIBSFX: 0
+  NEMELBC0B:
+    TEFRCL: ${namelist.tefrcl}
+
+f4_e927_arome:
+  NAMCT0:
+    LNHEE: True
+    LSPRT: True
+  NAMGFL:
+    YG_NL%NREQIN: 1
+    YQ_NL%LGP: True
+    YQ_NL%LSP: False
+    YR_NL%NREQIN: 1
+    YS_NL%NREQIN: 1
+    YTKE_NL%NREQIN: 1
+  NAMFPC:
+    CFP3DF:
+      - "TEMPERATURE"
+      - "HUMI.SPECIFIQUE"
+      - "WIND.U.PHYS"
+      - "WIND.V.PHYS"
+      - "CLOUD_WATER"
+      - "ICE_CRYSTAL"
+      - "CLOUD_FRACTI"
+      - "PRESS.DEPART"
+      - "VERTIC.DIVER"
+      - "TKE"
+      - "RAIN"
+      - "SNOW"
+      - "GRAUPEL"
+
+f4_e927_ifs:
+  NAMCT0:
+    LNHEE: False
+    LSPRT: False
+  NAMGFL:
+    YG_NL%NREQIN: 0
+    YQ_NL%LGP: False
+    YQ_NL%LSP: True
+    YR_NL%NREQIN: 0
+    YS_NL%NREQIN: 0
+
+f4_e927:
+  NAMAFN:
+    TFP_GR%LLGP: True
+    TFP_I%LLGP: True
+    TFP_L%LLGP: True
+    TFP_Q%LLGP: True
+    TFP_RR%LLGP: True
+    TFP_SN%LLGP: True
+    TFP_TKE%LLGP: True
+  NAMCT0:
+    NFPOS: 2
+    NSPPR: 0
+  NAMCT1:
+    N1HIS: 0
+  NAMFPC:
+    LCRITSNOWTEMP: False
+    CFP3DF:
+      - "TEMPERATURE"
+      - "HUMI.SPECIFIQUE"
+      - "WIND.U.PHYS"
+      - "WIND.V.PHYS"
+      - "CLOUD_WATER"
+      - "ICE_CRYSTAL"
+      - "CLOUD_FRACTI"
+      - "PRESS.DEPART"
+      - "VERTIC.DIVER"
+    CFP2DF:
+      - "SURFPRESSION"
+      - "SPECSURFGEOPOTENTIEL"
+    CFPPHY:
+      - "SURFTEMPERATURE"
+      - "SURFA.OF.OZONE  "
+      - "SURFB.OF.OZONE  "
+      - "SURFC.OF.OZONE  "
+      - "SURFAEROS.SEA   "
+      - "SURFAEROS.LAND  "
+      - "SURFAEROS.SOOT  "
+      - "SURFAEROS.DESERT"
+      - "SURFIND.TERREMER"
+      - "SURFRESERV.NEIGE"
+    FPRHMAX: 1.0
+    LFPQ: False
+    LTRACEFP: True
+    NFPBOYD: 1
+    NFPSURFEX: 0
+    NRFP3S: ${namelist.nrfp3s}
+  NAMFPD:
+    NFPGUX: ${domain.njmax}
+    NFPLUX: ${domain.nimax}
+    NLAT: ${domain.ndglg}
+    NLON: ${domain.ndguxg}
+    RDELX: ${domain.xdx}
+    RDELY: ${domain.xdy}
+    RLATC: ${domain.xlatcen}
+    RLONC: ${domain.xloncen}
+  NAMFPG:
+    FPLAT0: ${domain.xlat0}
+    FPLON0: ${domain.xlon0}
+    FPVALH: ${vertical_levels.ahalf}
+    FPVBH: ${vertical_levels.bhalf}
+    NFPDISTRIB: 1
+    NFPLEV: ${vertical_levels.nlev}
+    NFPMAX: ${domain.nsmax}
+    NMFPMAX: ${domain.nmsmax}
+  NAMPHY:
+    LFGEL: False
+    LNEBN: False
+    LSOLV: False
+    LVGSN: False
+  NAMRIP:
+    CSTOP: t0
+    TSTEP: 1.0
+
+empty:
+  NAMNRTAER: {}
+  NAMSFXCMP: {}
+  NAMONEDVAR: {}
+  NAMCMEM_MW: {}
+  NACIETEO: {}
+  NACOBS: {}
+  NACTAN: {}
+  NACTEX: {}
+  NACVEG: {}
+  NADOCK: {}
+  NAEAEM7: {}
+  NAEAER: {}
+  NAECOAPHY: {}
+  NAEPHLI: {}
+  NAEPHY: {}
+  NAERAD: {}
+  NAERCLI: {}
+  NAETLDIAG: {}
+  NAEVOL: {}
+  NAIMPO: {}
+  NALORI: {}
+  NAMACV: {}
+  NAMAFN: {}
+  NAMARG: {}
+  NAMARPHY: {}
+  NAMCA: {}
+  NAMCAPE: {}
+  NAMCFU: {}
+  NAMCHEM: {}
+  NAMCHET: {}
+  NAMCHK: {}
+  NAMCLA: {}
+  NAMCLDP: {}
+  NAMCLI: {}
+  NAMCLOP15: {}
+  NAMCLTC: {}
+  NAMCOK: {}
+  NAMCOM: {}
+  NAMCOSJO: {}
+  NAMCOUPLO4: {}
+  NAMCT0: {}
+  NAMCT1: {}
+  NAMCUMF: {}
+  NAMCUMFS: {}
+  NAMCVER: {}
+  NAMCVMNH: {}
+  NAMDDH: {}
+  NAMDFI: {}
+  NAMDIM: {}
+  NAMDIMO: {}
+  NAMDIM_TRAJ: {}
+  NAMDPHY: {}
+  NAMDPRECIPS: {}
+  NAMDVISI: {}
+  NAMDYN: {}
+  NAMDYNA: {}
+  NAMDYNCORE: {}
+  NAMEMIS_CONF: {}
+  NAMENKF: {}
+  NAMENSCOV: {}
+  NAMFA: {}
+  NAMFPC: {}
+  NAMFPD: {}
+  NAMFPDY2: {}
+  NAMFPDYF: {}
+  NAMFPDYH: {}
+  NAMFPDYI: {}
+  NAMFPDYP: {}
+  NAMFPDYS: {}
+  NAMFPDYT: {}
+  NAMFPDYV: {}
+  NAMFPF: {}
+  NAMFPG: {}
+  NAMFPIOS: {}
+  NAMFPMOVE: {}
+  NAMFPOBJ: {}
+  NAMFPPHY: {}
+  NAMFPSC2: {}
+  NAMFPSC2_DEP: {}
+  NAMGEM: {}
+  NAMGFL: {}
+  NAMGRIB: {}
+  NAMGWD: {}
+  NAMGWDIAG: {}
+  NAMGWWMS: {}
+  NAMIAU: {}
+  NAMICE: {}
+  NAMINI: {}
+  NAMINTFLEX: {}
+  NAMIOMI: {}
+  NAMIOS: {}
+  NAMIO_SERV: {}
+  NAMJBCODES: {}
+  NAMJG: {}
+  NAMLCZ: {}
+  NAMLIMA: {}
+  NAMLSFORC: {}
+  NAMMARS: {}
+  NAMMCC: {}
+  NAMMCUF: {}
+  NAMMETHOX: {}
+  NAMMKODB: {}
+  NAMMODERR: {}
+  NAMMTS: {}
+  NAMMWAVE: {}
+  NAMNORGWD: {}
+  NAMNPROF: {}
+  NAMNUD: {}
+  NAMNUDGLH: {}
+  NAMOBS: {}
+  NAMOOPS: {}
+  NAMOPH: {}
+  NAMOPTCMEM: {}
+  NAMPAR0: {}
+  NAMPAR1: {}
+  NAMPARAR: {}
+  NAMPERTPAR: {}
+  NAMPHMSE: {}
+  NAMPHY: {}
+  NAMPHY0: {}
+  NAMPHY1: {}
+  NAMPHY2: {}
+  NAMPHY3: {}
+  NAMPHYDS: {}
+  NAMPONG: {}
+  NAMPPC: {}
+  NAMPPVI: {}
+  NAMPRE: {}
+  NAMRAD15: {}
+  NAMRADCMEM: {}
+  NAMRCF: {}
+  NAMRCOEF: {}
+  NAMRES: {}
+  NAMRGRI: {}
+  NAMRINC: {}
+  NAMRIP: {}
+  NAMRIP0: {}
+  NAMRLX: {}
+  NAMSATS: {}
+  NAMSATSIM: {}
+  NAMSCC: {}
+  NAMSCEN: {}
+  NAMSCM: {}
+  NAMSEKF: {}
+  NAMSENS: {}
+  NAMSIMPHL: {}
+  NAMSPNG: {}
+  NAMSPP: {}
+  NAMSPSDT: {}
+  NAMSTA: {}
+  NAMSTOPH: {}
+  NAMSWE: {}
+  NAMTESTVAR: {}
+  NAMTHLIM: {}
+  NAMTOPH: {}
+  NAMTRAJ: {}
+  NAMTRAJP: {}
+  NAMTRANS: {}
+  NAMTRANS0: {}
+  NAMVAR: {}
+  NAMVARBC: {}
+  NAMVARBC_AIREP: {}
+  NAMVARBC_ALLSKY: {}
+  NAMVARBC_GBRAD: {}
+  NAMVARBC_RAD: {}
+  NAMVARBC_SFCOBS: {}
+  NAMVARBC_TCWV: {}
+  NAMVARBC_TO3: {}
+  NAMVAREPS: {}
+  NAMVDF: {}
+  NAMVDOZ: {}
+  NAMVOLCANO: {}
+  NAMVRTL: {}
+  NAMVV0: {}
+  NAMVV1: {}
+  NAMVWRK: {}
+  NAMWAVELETJB: {}
+  NAMXFU: {}
+  NAM_CANAPE: {}
+  NAM_DISTRIBUTED_VECTORS: {}
+  NAPHLC: {}
+  NEMCT0: {}
+  NEMDIM: {}
+  NEMDYN: {}
+  NEMELBC0A: {}
+  NEMELBC0B: {}
+  NEMFPEZO: {}
+  NEMGEO: {}
+  NEMJK: {}
+  NEMVAR: {}
+  NEMWAVELET: {}
+
+f4_c903_main:
+  NAMFPOBJ:
+    NFPOBJ: 1
+    NFPCONF: 2
+    CNAMELIST: "./namelist_c903_domain"
+  NAMFPC:
+    NFPCLI: 2
+  NAMPAR0:
+    NPROC: "${namelist.nproc}"
+    NPRTRW: "${namelist.nproc}"
+    NPRTRV: 1
+    LOPT_SCALAR: True
+    MBX_SIZE: 2048000000
+    MP_TYPE: 2
+    NOUTPUT: 1
+    NPRINTLEV: 0
+  NAMARG:
+    NCONF: 903
+    NFPSERVER: 1
+    CNMEXP: MARS
+    LECMWF: True 
+    NSUPERSEDE: 1
+  NAMDIM:
+    NPROMA: "${general.nproma}"
+  NAMPAR1:
+    NSTROUT: "${namelist.nproc}"
+    NDISTIO: 0
+    NFLDIN: 0
+    LSPLIT: True
+    NOUTTYPE: 1
+    NCOMBFLEN: 128000000
+    LEQ_REGIONS: False
+  NAMCT0:
+    NFPOS: 2
+    NFRPOS: 1
+    NPOSTS: 0
+    LSPRT: True
+    LARPEGEF: True
+    LREFOUT: False
+    NSPPR: 0
+    CFPNCF: "ECHFP"
+    CSCRIPT_PPSERVER: " "
+    LGRIB_API: False
+  NAMTRANS:
+    LFFTW: True
+  NAMOPH:
+    CCLIMINC: "_"
+  NAMGFL:
+    YQ_NL%LGP: True
+    YQ_NL%LSP: False
+    YO3_NL%LGP: False
+    YQ_NL%LGPINGP: True
+    YR_NL%NREQIN: -1
+    YS_NL%NREQIN: -1
+  NAMFAINIT:
+    JPXTRO: 10240
+    JPXLAT: 10240
+  NAMFA:
+    NBITCS: -1
+    NBITPG: -1
+    NSTRON: -1
+    YFAR%CLNAME: 'RAIN'
+    YFAS%CLNAME: 'SNOW'
+    YFAL%NBITS: 16
+    YFAI%NBITS: 16
+    YFAR%NBITS: 16
+    YFAS%NBITS: 16
+  NAEPHY:
+    LEPHYS: True
+    LERADI: False
+    LELAIV: False
+    LEFLAKE: False
+    LEGWWMS: False
+  NAERAD:
+    LRRTM: False
+    NRPROMA: ${general.nproma}
+    LSRTM: False
+    NMCICA: 0
+  NAMCT1:
+    LRFILAF: False
+  NAMPHMSE:
+    LPGDFWR: False
+  NAMPPVI:
+    LESCALE_U: False
+
+f4_c903_domain:
+  NAM_DISTRIBUTED_VECTORS: {}
+  NAMFPF: {}
+  NAMFPSC2:
+    NFPROMA: ${general.nproma}
+  NAMFPSC2_DEP:
+    NFPROMA_DEP: ${general.nproma}
+  NEMFPEZO:
+    RCO_EZO: 180.0
+  NAMFPIOS:
+    CFPCLIFNAME: ${domain.name}
+    NFPXFLD: 10
+  NAMAFN:
+    GFP_ST%IANO: 0
+    TFP_Q%LLGP: True
+  NAMCT0:
+    NFPOS: 2
+    NSDITS(0): 1
+    NSDITS(1): 1
+    NSPPR: 0
+  NAMCT1:
+    N1HIS: 0
+  NAMFPC:
+    CFPDOM: ${domain.name}
+    CFP3DF:
+      - "TEMPERATURE"
+      - "HUMI.SPECIFIQUE"
+      - "WIND.U.PHYS"
+      - "WIND.V.PHYS"
+      - "CLOUD_WATER"
+      - "ICE_CRYSTAL"
+      - "CLOUD_FRACTI"
+      - "PRESS.DEPART"
+      - "VERTIC.DIVER"
+    CFP2DF:
+      - "SURFPRESSION"
+      - "SPECSURFGEOPOTENTIEL"
+    CFPPHY:
+      - "SURFTEMPERATURE"
+      - "SURFA.OF.OZONE  "
+      - "SURFB.OF.OZONE  "
+      - "SURFC.OF.OZONE  "
+      - "SURFAEROS.SEA   "
+      - "SURFAEROS.LAND  "
+      - "SURFAEROS.SOOT  "
+      - "SURFAEROS.DESERT"
+      - "SURFIND.TERREMER"
+      - "SURFRESERV.NEIGE"
+      - "PROFTEMPERATURE"
+      - "PROFRESERV.EAU"
+      - "SURFRESERV.EAU"
+      - "SURFZ0.FOIS.G"
+      - "SURFALBEDO"
+      - "SURFEMISSIVITE"
+      - "SURFET.GEOPOTENT"
+      - "SURFIND.TERREMER"
+      - "SURFPROP.VEGETAT"
+      - "SURFVAR.GEOP.ANI"
+      - "SURFVAR.GEOP.DIR"
+      - "SURFIND.VEG.DOMI"
+      - "SURFRESI.STO.MIN"
+      - "SURFPROP.ARGILE"
+      - "SURFPROP.SABLE"
+      - "SURFEPAIS.SOL"
+      - "SURFIND.FOLIAIRE"
+      - "SURFRES.EVAPOTRA"
+      - "SURFGZ0.THERM"
+      - "SURFRESERV.INTER"
+      - "PROFRESERV.GLACE"
+      - "SURFRESERV.GLACE"
+      - "SURFDENSIT.NEIGE"
+      - "SURFALBEDO NEIGE"
+      - "SURFALBEDO.SOLNU"
+      - "SURFALBEDO.VEG"
+    NFPCLI: 2
+    CFPDIR: ELSCF
+    CFPFMT: LELAM
+    NRFP3S: ${namelist.nrfp3s}
+  NAMFPD:
+    NFPBZONG: ${domain.nbzong}
+    NFPBZONL: ${domain.nbzonl}
+    NFPGUX: ${domain.njmax}
+    NFPLUX: ${domain.nimax}
+    NLAT: ${domain.ndglg}
+    NLON: ${domain.ndguxg}
+    RDELX: ${domain.xdx}
+    RDELY: ${domain.xdy}
+    RLATC: ${domain.xlatcen}
+    RLONC: ${domain.xloncen}
+  NAMFPG:
+    FPLAT0: ${domain.xlat0}
+    FPLON0: ${domain.xlon0}
+    FPVALH: ${vertical_levels.ahalf}
+    FPVBH: ${vertical_levels.bhalf}
+    NFPLEV: ${vertical_levels.nlev}
+    NFPMAX: ${domain.nsmax}
+    NMFPMAX: ${domain.nmsmax}
