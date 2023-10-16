@@ -6,7 +6,7 @@ import sys
 
 from ..geo_utils import Projection, Projstring
 from ..logs import logger
-from ..os_utils import Search
+from ..os_utils import Search, deodemakedirs
 from .base import Task
 
 
@@ -210,7 +210,8 @@ class Gmted(Task):
         Define run sequence.
         """
         climdir = self.platform.get_system_value("climdir")
-        os.makedirs(climdir, exist_ok=True)
+        unix_group = self.platform.get_platform_value("unix_group")
+        deodemakedirs(climdir, unixgroup=unix_group)
 
         projstr = Projstring().get_projstring(
             lon0=self.domain["lon0"], lat0=self.domain["lat0"]
@@ -450,7 +451,8 @@ class Soil(Task):
             ds = None
 
         climdir = self.platform.get_system_value("climdir")
-        os.makedirs(climdir, exist_ok=True)
+        unix_group = self.platform.get_platform_value("unix_group")
+        deodemakedirs(climdir, unixgroup=unix_group)
         for subarea_file in soilgrid_tif_subarea_files:
             if subarea_file.startswith("SNDPPT"):
                 ds = gdal.Open(subarea_file)

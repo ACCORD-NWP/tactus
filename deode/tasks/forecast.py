@@ -8,6 +8,7 @@ from ..derived_variables import check_fullpos_namelist
 from ..initial_conditions import InitialConditions
 from ..logs import logger
 from ..namelist import NamelistGenerator
+from ..os_utils import deodemakedirs
 from .base import Task
 from .batch import BatchJob
 from .sfx import InputDataFromNamelist
@@ -50,6 +51,8 @@ class Forecast(Task):
         self.master = self.get_binary("MASTERODB")
 
         self.file_templates = self.config["file_templates"]
+
+        self.unix_group = self.platform.get_platform_value("unix_group")
 
     def archive_output(self, filetype, periods):
         """Archive forecast model output.
@@ -255,7 +258,7 @@ class Forecast(Task):
         batch.run(self.master)
 
         # Store the output
-        os.makedirs(self.archive, exist_ok=True)
+        deodemakedirs(self.archive, unixgroup=self.unix_group)
 
         io_server = os.path.exists("io_serv.000001.d")
         if io_server:
@@ -284,7 +287,9 @@ class PrepareCycle(Task):
         Task.__init__(self, config, self.__class__.__name__)
 
         self.archive = self.platform.get_system_value("archive")
-        os.makedirs(self.archive, exist_ok=True)
+        deodemakedirs(
+            self.archive, unixgroup=self.platform.get_platform_value("unix_group")
+        )
 
 
 class FirstGuess(Task):

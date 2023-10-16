@@ -6,6 +6,7 @@ import os
 from ..datetime_utils import as_datetime, as_timedelta, cycle_offset
 from ..logs import logger
 from ..namelist import NamelistGenerator
+from ..os_utils import deodemakedirs
 from .base import Task
 from .batch import BatchJob
 
@@ -633,7 +634,7 @@ class Prep(Task):
 
         if not os.path.exists(output) or self.force:
             binary = self.get_binary("PREP")
-            os.makedirs(self.archive, exist_ok=True)
+            deodemakedirs(self.archive)
             batch = BatchJob(os.environ, wrapper=self.wrapper)
 
             bdmodel = self.config["boundaries.bdmodel"]

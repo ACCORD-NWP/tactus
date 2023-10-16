@@ -6,6 +6,7 @@ import shutil
 
 from ..logs import logger
 from ..namelist import NamelistGenerator
+from ..os_utils import deodemakedirs
 from .base import Task
 from .batch import BatchJob
 
@@ -336,7 +337,7 @@ class E923Constant(E923):
         Define run sequence.
 
         """
-        os.makedirs(self.climdir, exist_ok=True)
+        deodemakedirs(self.climdir, unixgroup=self.unix_group)
 
         logger.debug("Constant file:{}", self.constant_file)
 

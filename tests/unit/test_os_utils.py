@@ -1,5 +1,9 @@
 """Unit tests for os_utils."""
-from deode.os_utils import Search
+import os
+import shutil
+import tempfile
+
+from deode.os_utils import Search, deodemakedirs
 
 
 class TestSearch:
@@ -120,3 +124,21 @@ class TestSearch:
         """Test that the return type of the Search constructor is a Search object."""
         search = Search()
         assert isinstance(search, Search)
+
+
+def test_deodemakedirs():
+    """Test that creation of directories and change of unix_group works."""
+    path = tempfile.mkdtemp()
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    grpids = os.getgroups()
+    if len(grpids) > 1:
+        newgrp = grpids[1]
+        deodemakedirs(f"{path}/wrkdir", unixgroup=newgrp)
+        assert os.stat(path).st_gid == newgrp
+
+    path = tempfile.mkdtemp()
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    deodemakedirs(f"{path}/wrkdir")
+    assert os.stat(path).st_gid == grpids[0]

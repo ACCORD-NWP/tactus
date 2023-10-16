@@ -7,8 +7,9 @@ import sys
 
 from .derived_variables import derived_variables
 from .logs import logger
+from .os_utils import deodemakedirs
 from .tasks.discover_task import get_task
-from .toolbox import Platform
+from .toolbox import FileManager, Platform
 
 
 class ProcessorLayout:
@@ -82,6 +83,11 @@ class TaskSettings(object):
         self.submission_defs = submission_defs
         self.job_type = None
         self.processor_layout = None
+
+        self.config = config
+        self.fmanager = FileManager(self.config)
+        self.platform = self.fmanager.platform
+        self.unix_group = self.platform.get_value("platform.unix_group")
 
     @staticmethod
     def update_task_setting(dic, upd):
@@ -258,7 +264,9 @@ class TaskSettings(object):
         with open(input_template_job, mode="r", encoding="utf-8") as file_handler:
             input_content = file_handler.read()
         dir_name = os.path.dirname(os.path.realpath(task_job))
-        os.makedirs(dir_name, exist_ok=True)
+
+        deodemakedirs(dir_name, unixgroup=self.unix_group)
+
         with open(task_job, mode="w", encoding="utf-8") as file_handler:
             file_handler.write(f"{interpreter}\n")
             batch_settings = self.get_task_settings(
@@ -276,10 +284,13 @@ class TaskSettings(object):
                 python_task_env = python_task_env + f"{e_setting}\n"
             input_content = input_content.replace("# @ENV_SUB@", python_task_env)
             input_content = input_content.replace("@STAND_ALONE_TASK_NAME@", task)
+
             platform = Platform(config)
             deode_home = platform.get_platform_value("DEODE_HOME")
+
             input_content = input_content.replace("@STAND_ALONE_DEODE_HOME@", deode_home)
             config_file = config.metadata["source_file_path"]
+
             if config_file is not None:
                 input_content = input_content.replace(
                     "@STAND_ALONE_TASK_CONFIG@", str(config_file)

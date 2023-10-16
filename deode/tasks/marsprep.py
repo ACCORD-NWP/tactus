@@ -10,6 +10,7 @@ import pandas as pd
 from ..datetime_utils import as_datetime, as_timedelta, cycle_offset
 from ..geo_utils import Projection, Projstring
 from ..logs import logger
+from ..os_utils import deodemakedirs
 from ..tasks.batch import BatchJob
 from .base import Task
 
@@ -44,6 +45,8 @@ class Marsprep(Task):
         self.bdcycle = as_timedelta(self.config["boundaries.bdcycle"])
         self.int_bdcycle = int(self.bdcycle.total_seconds()) // 3600
         self.cy_offset = cycle_offset(self.basetime, self.bdcycle)
+
+        self.unix_group = self.platform.get_platform_value("unix_group")
 
         bd_basetime = self.basetime - self.cy_offset
 
@@ -371,11 +374,11 @@ class Marsprep(Task):
         try:
             # Part1
             if not os.path.exists(self.prepdir):
-                os.makedirs(self.prepdir, exist_ok=True)
+                deodemakedirs(self.prepdir, unixgroup=self.unix_group)
         except Exception as e:
             raise ValueError("Error while preparing the mars folder: {}".format(e))
 
-        os.makedirs(self.wdir, exist_ok=True)
+        deodemakedirs(self.wdir, unixgroup=self.unix_group)
         os.chdir(self.wdir)
         # Get the time information based on boundary strategy and forecast length
         # Need to check the forecast range

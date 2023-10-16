@@ -10,6 +10,7 @@ import pandas as pd
 from ..datetime_utils import as_datetime, as_timedelta, cycle_offset
 from ..geo_utils import Projection, Projstring
 from ..logs import logger
+from ..os_utils import deodemakedirs
 from ..tasks.batch import BatchJob
 from .base import Task
 
@@ -383,11 +384,11 @@ class MarsprepGlobalDT(Task):
         try:
             # Part1
             if not os.path.exists(self.prepdir):
-                os.makedirs(self.prepdir, exist_ok=True)
+                deodemakedirs(self.prepdir)
         except Exception as e:
             raise ValueError("Error while preparing the mars folder: {}".format(e))
 
-        os.makedirs(self.wdir, exist_ok=True)
+        deodemakedirs(self.wdir)
         os.chdir(self.wdir)
         # Get the time information based on boundary strategy and forecast length
         # Need to check the forecast range

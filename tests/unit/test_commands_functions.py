@@ -81,7 +81,7 @@ def test_show_namelist(set_arg, parsed_config, param):
     config = parsed_config.copy(update=param["config"])
     prev_cwd = Path.cwd()
     outpath = param["path"]
-    os.makedirs(outpath, exist_ok=True)
+    os.makedirs(outpath, mode=0o1777, exist_ok=True)
     os.chdir(outpath)
     show_namelist(set_arg, config)
     os.chdir(prev_cwd)

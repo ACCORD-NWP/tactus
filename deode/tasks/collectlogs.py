@@ -5,7 +5,7 @@ import os
 import tarfile
 
 from ..logs import logger
-from ..os_utils import Search
+from ..os_utils import Search, deodemakedirs
 from .base import Task
 
 
@@ -53,7 +53,7 @@ class CollectLogs(Task):
 
     def execute(self):
         """Execute collect logs ."""
-        os.makedirs(self.logs, exist_ok=True)
+        deodemakedirs(self.logs, unixgroup=self.unix_group)
 
         # Create the tarfile
         logger.info("Create {}", self.tarfile)

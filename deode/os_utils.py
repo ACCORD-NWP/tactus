@@ -1,6 +1,7 @@
 """Utilities for simple tasks on OS level."""
 import os
 import re
+import shutil
 import time
 from pathlib import Path
 
@@ -127,3 +128,48 @@ def filepath_iterator(paths, filename_pattern="*"):
                     yield subpath
         else:
             yield path
+
+
+def deodemakedirs(path, unixgroup="", exist_ok=True):
+    """Create directories and change unix group as required.
+
+    For a given path the top directory that does not yet exist is searched for, created
+    and unix group is set, if required. Permissions are set such that all subdirectories
+    and new files inherit the unix group.
+
+    Args:
+        path (str): directory path that should be created if it doesn't already exist.
+        unixgroup (str, optional): unix group the newly created directories should belong to.
+        exist_ok (boolean, optional): Define whether directories may already exist or whether
+            an error should be raised.
+
+    Raises:
+        OSError  # noqa DAR401
+
+    Returns: Nothing
+    """
+    p = Path(path).resolve()
+
+    if p.parents[0].is_dir():
+        try:
+            os.makedirs(path, mode=0o2750, exist_ok=exist_ok)
+            if unixgroup and (str(Path(path).group()) != str(unixgroup)):
+                shutil.chown(path, group=unixgroup)
+                os.chmod(path, mode=0o2750)
+        except OSError:
+            raise OSError(f"Cannot create {path} properly")
+    else:
+        # check directory tree for top dir that has to be created
+        try:
+            idx = 0
+
+            while not p.parents[idx + 1].is_dir():
+                idx += 1
+
+            os.makedirs(p.parents[idx], mode=0o2750, exist_ok=exist_ok)
+            if unixgroup and str(p.parents[idx].group()) != str(unixgroup):
+                shutil.chown(p.parents[idx], group=unixgroup)
+                os.chmod(p.parents[idx], mode=0o2750)
+            os.makedirs(path)
+        except OSError:
+            raise OSError(f"Cannot create {path} properly")

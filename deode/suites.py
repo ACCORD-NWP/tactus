@@ -5,6 +5,7 @@ from pathlib import Path
 
 from .datetime_utils import as_datetime, as_timedelta
 from .logs import LogDefaults, logger
+from .os_utils import deodemakedirs
 from .toolbox import Platform
 
 try:
@@ -122,6 +123,10 @@ class SuiteDefinition(object):
         config_file = config.metadata["source_file_path"]
         first_cycle = as_datetime(config["general.times.start"])
         deode_home = platform.get_platform_value("DEODE_HOME")
+
+        unix_group = platform.get_platform_value("unix_group")
+        deodemakedirs(self.joboutdir, unixgroup=unix_group)
+
         keep_workdirs = "1" if config["general.keep_workdirs"] else "0"
         loglevel = config.get("general.loglevel", LogDefaults.LEVEL).upper()
         variables = {
