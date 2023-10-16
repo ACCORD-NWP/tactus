@@ -23,42 +23,42 @@
         },
         "nimax": {
             "type": "number",
-            "description": "Number of grid points longitudinally",
+            "description": "Number of grid points zonally",
             "minimum": 0
         },
         "njmax": {
             "type": "number",
-            "description": "Number of grid points latitudinally",
+            "description": "Number of grid points meridionally",
             "minimum": 0
         },
         "xdx": {
             "type": "number",
-            "description": "Domain longitudinal length in meters",
+            "description": "Zonal grid size in meters",
             "minimum": 0
         },
         "xdy": {
             "type": "number",
-            "description": "Domain latiudinal length in meters",
+            "description": "Meridional grid size in meters",
             "minimum": 0
         },
         "ilone": {
             "type": "number",
-            "description": "Longitudinal extension zone",
+            "description": "Zonal extension zone",
             "minimum": 0
         },
         "ilate": {
             "type": "number",
-            "description": "Latitudinal extension zone",
+            "description": "Meridional extension zone",
             "minimum": 0
         },
         "nbzong": {
             "type": "number",
-            "description": "Latitudinal coupling zone width",
+            "description": "Zonal coupling zone width",
             "minimum": 0
         },
         "nbzonl": {
             "type": "number",
-            "description": "Longitudinal coupling zone width",
+            "description": "Meridional coupling zone width",
             "minimum": 0
         },
         "xloncen": {
@@ -75,13 +75,13 @@
         },
         "xlon0": {
             "type": "number",
-            "description": "Reference longitude",
+            "description": "Longitude of center of projection",
             "minimum": -180,
             "maximum": 180
         },
         "xlat0": {
             "type": "number",
-            "description": "Reference latitude",
+            "description": "Latitude of center of projection",
             "minimum": -90,
             "maximum": 90
         }
