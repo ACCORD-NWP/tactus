@@ -1,14 +1,21 @@
 #!/usr/bin/env python3
 """Registration and validation of options passed in the config file."""
+import contextlib
 import json
 import os
+import tempfile
 from functools import reduce
 from pathlib import Path
 
 import fastjsonschema
+import jsonref
 import tomli
 import yaml
 from fastjsonschema import JsonSchemaValueException
+from json_schema_for_humans.generate import (
+    GenerationConfiguration,
+    generate_from_file_object,
+)
 
 from . import GeneralConstants
 from .aux_types import BaseMapping, QuasiConstant
@@ -99,6 +106,30 @@ class JsonSchema(BaseMapping):
     def validate(self, data):
         """Return a copy of `data` validated against the stored JSON schema."""
         return self._validation_function(data)
+
+    def get_markdown_doc(self):
+        """Return human-readable doc for the schema in markdown format."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with open(Path(tmpdir) / "schema.json", "w") as schema_file:
+                schema_file.write(json.dumps(jsonref.replace_refs(self, proxies=False)))
+
+            with open(Path(tmpdir) / "schema_doc.md", "w") as doc_file:
+                with contextlib.redirect_stdout(None):
+                    generate_from_file_object(
+                        schema_file=schema_file,
+                        result_file=doc_file,
+                        config=GenerationConfiguration(
+                            template_name="md",
+                            show_toc=False,
+                            template_md_options={"show_heading_numbers": False},
+                            with_footer=False,
+                        ),
+                    )
+
+            with open(Path(tmpdir) / "schema_doc.md", "r") as doc_file:
+                schema_doc = doc_file.read()
+
+        return schema_doc
 
 
 class ParsedConfig(BasicConfig):
@@ -233,7 +264,7 @@ def _expand_config_include_section(
 
         updated_config, updated_schema = _expand_config_include_section(
             raw_config=included_config_section,
-            json_schema={"allOf": [{"$ref": f"file:{schema_file}"}]},
+            json_schema={"$ref": f"file:{schema_file}"},
             config_include_search_dir=config_include_search_dir,
             schemas_path=schemas_path,
             _parent_sections=_sections_traversed,

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Implement the package's commands."""
+import datetime
 import difflib
 import itertools
 import os
@@ -8,8 +9,7 @@ from functools import partial
 from pathlib import Path
 
 from . import GeneralConstants
-from .config_doc import DocConfig
-from .config_parser import BasicConfig, ConfigParserDefaults
+from .config_parser import BasicConfig, ParsedConfig
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
 from .logs import logger
 from .namelist import NamelistComparator, NamelistGenerator, NamelistIntegrator
@@ -102,17 +102,19 @@ def start_suite(args, config):
 #########################################
 # Code related to the "show *" commands #
 #########################################
-def doc_config(args, config):
+def doc_config(args, config: ParsedConfig):
     """Implement the 'doc_config' command.
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     """
-    DocConfig(
-        config.dict(), ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA_PATH
-    ).print_doc()
+    now = datetime.datetime.now().isoformat(timespec="seconds")
+    sys.stdout.write(
+        f"This was automatically generated running `deode doc config` on {now}.\n\n"
+    )
+    sys.stdout.write(config.json_schema.get_markdown_doc() + "\n")
 
 
 def show_config(args, config):

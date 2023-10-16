@@ -25,6 +25,8 @@
   f90nml = "^1.4.3"
   fastjsonschema = "2.16.2"
   humanize = "^3.14.0"
+  json-schema-for-humans = "^0.46"
+  jsonref = "^1.1.0"
   loguru = "^0.7.1"
   numexpr = "^2.8.4"
   numpy = "^1.22.4"
@@ -36,6 +38,7 @@
   troika = {git = "https://git.ecmwf.int/scm/ecsdk/troika.git"}
 
 [tool.poetry.group.dev.dependencies]
+  ipython = "^8.12.3"
   jupyterlab = "^3.6.1"
   nb-clean = "^2.4.0"
   pre-commit = "^3.0.4"

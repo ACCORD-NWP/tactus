@@ -239,7 +239,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     # doc config
     parser_doc_config = doc_command_subparsers.add_parser(
         "config",
-        help="Print a merge of config and json schema in .md style",
+        help="Print documentation for the config's json schema in markdown style",
         parents=[common_parser],
     )
 
