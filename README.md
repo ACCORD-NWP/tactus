@@ -32,7 +32,7 @@ To use certain parts of the system, especially for climate generation, the pytho
 ```shell
 pip install pygdal=="`gdal-config --version`.*"
 ```
-**N.B.**: No special treatment of gdal is required on Atos (`hpc-login`).
+**Notice!**: Do not run this installation command on Atos (`hpc-login`)!
 
 ## Installation
 
