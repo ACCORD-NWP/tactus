@@ -498,6 +498,9 @@ class Marsprep(Task):
             fp.close()
             self.data += datagg + datagg_sea + datagg_soil
 
+            os.remove("ICMGG")
+            os.remove("ICMGG.sea")
+            os.remove("ICMGG.soil")
             for i in base.split("/"):
                 i = int(i)
                 i_fstring = f"{i:02d}"
@@ -550,6 +553,7 @@ class Marsprep(Task):
             with open("ICMSH.Z", "rb") as fp:
                 data_z = fp.read()
             fp.close()
+            os.remove("ICMSH.Z")
 
             for i in base.split("/"):
                 i = int(i)
@@ -705,7 +709,7 @@ class Marsprep(Task):
                 for filename in self.filenames:
                     with open(filename, "rb") as input_file:
                         output_file.write(input_file.read())
-
+                    os.remove(filename)
             shutil.move(
                 self.prep_filename,
                 os.path.join(self.prepdir, self.prep_filename),

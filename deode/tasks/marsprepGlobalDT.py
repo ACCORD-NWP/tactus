@@ -535,6 +535,7 @@ class MarsprepGlobalDT(Task):
                     shutil.move(
                         f"ICMGG+{i}", os.path.join(self.prepdir, f"ICMGG+{i_fstring}")
                     )
+            os.remove("ICMGG.sea")
 
         # Prefetch SH
         base = self.check_file_exists(str_steps, "ICMSH")
@@ -572,6 +573,7 @@ class MarsprepGlobalDT(Task):
             with open("ICMSH.Z", "rb") as fp:
                 data_z = fp.read()
             fp.close()
+            os.remove("ICMSH.Z")
 
             for i in base.split("/"):
                 i = int(i)
@@ -707,7 +709,7 @@ class MarsprepGlobalDT(Task):
                 for filename in self.filenames:
                     with open(filename, "rb") as input_file:
                         output_file.write(input_file.read())
-
+                    os.remove(filename)
             shutil.move(
                 os.path.join(self.wdir, self.prep_filename),
                 os.path.join(self.prepdir, self.prep_filename),
