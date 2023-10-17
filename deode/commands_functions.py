@@ -7,8 +7,8 @@ import os
 import sys
 from functools import partial
 from pathlib import Path
-from troika.connections.ssh import SSHConnection
 
+from troika.connections.ssh import SSHConnection
 
 from . import GeneralConstants
 from .config_parser import BasicConfig, ParsedConfig
@@ -80,13 +80,7 @@ def start_suite(args, config):
     """
     logger.info("Starting suite...")
     deode_home = set_deode_home(args, config)
-    config = config.copy(
-        update={
-            "platform": {
-                "deode_home": deode_home
-            }
-        }
-    )
+    config = config.copy(update={"platform": {"deode_home": deode_home}})
     config = config.copy(update=set_times(config))
 
     suite_name = config["general.case"]
@@ -104,28 +98,33 @@ def start_suite(args, config):
     local_troika_config_file = troika_config_file
     if ecf_home != args.joboutdir:
         local_troika_config_file = f"{ecf_home}/troika.yml"
-    logger.debug("troika config used: {} local file={}", troika_config_file, local_troika_config_file)
-    config = config.copy(
-        update={
-            "troika": {
-                "config_file": local_troika_config_file
-            }
-        }
+    logger.debug(
+        "troika config used: {} local file={}",
+        troika_config_file,
+        local_troika_config_file,
     )
+    config = config.copy(update={"troika": {"config_file": local_troika_config_file}})
 
     server = EcflowServer(
         args.ecf_host, ecf_port=args.ecf_port, start_command=args.start_command
     )
     submission_defs = TaskSettings(config)
     defs = SuiteDefinition(
-        suite_name, args.joboutdir, args.ecf_files, config, submission_defs, ecf_home=ecf_home
+        suite_name,
+        args.joboutdir,
+        args.ecf_files,
+        config,
+        submission_defs,
+        ecf_home=ecf_home,
     )
     def_file = f"{suite_name}.def"
     defs.save_as_defs(def_file)
 
     # Copy troika and containers
     if ecf_home != args.joboutdir:
-        logger.info("Copy ecflow files to host={} and directory={}", args.ecf_host, ecf_home)
+        logger.info(
+            "Copy ecflow files to host={} and directory={}", args.ecf_host, ecf_home
+        )
         cfg = {"host": args.ecf_host}
         ssh = SSHConnection(cfg, None)
         for root, __, files in os.walk(f"{args.ecf_files}/{suite_name}"):
