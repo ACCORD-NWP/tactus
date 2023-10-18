@@ -39,3 +39,7 @@ html_show_sourcelink = False
 
 # See <https://sphinx-rtd-theme.readthedocs.io/en/stable/configuring.html>
 html_theme_options = {"collapse_navigation": False}
+
+# Further customisation
+html_static_path = ["_static"]
+html_css_files = ["css/custom.css"]

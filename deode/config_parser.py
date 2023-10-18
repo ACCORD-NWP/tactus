@@ -123,6 +123,13 @@ class JsonSchema(BaseMapping):
                             show_toc=False,
                             template_md_options={"show_heading_numbers": False},
                             with_footer=False,
+                            properties_table_columns=[
+                                "property",
+                                "type",
+                                "required",
+                                "default",
+                                "title/description",
+                            ],
                         ),
                     )
 
