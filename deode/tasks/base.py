@@ -107,10 +107,10 @@ class Task(object):
         deodemakedirs(logdir, unixgroup=self.unix_group)
 
         if isinstance(files, str):
-            self.fmanager.output(files, logdir)
+            self.fmanager.output(files, logdir, provider_id="copy")
         else:
             for f in files:
-                self.fmanager.output(f, logdir)
+                self.fmanager.output(f, logdir, provider_id="copy")
 
     def create_wrkdir(self):
         """Create a cycle working directory."""
