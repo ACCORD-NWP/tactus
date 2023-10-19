@@ -116,7 +116,7 @@ class SuiteDefinition(object):
         )
         self.ecf_kill_cmd = ecf_kill_cmd
 
-        troika = "/opt/troika/bin/troika"
+        troika = "troika"
 
         platform = Platform(config)
         troika_config = platform.get_value("troika.config_file")
@@ -661,6 +661,7 @@ class EcflowNode:
 
         self.path = path
         self.ecf_container_path = ecf_files + self.path
+        logger.info("Trygve", self.path, self.ecf_container_path)
         if variables is not None:
             for key, value in variables.items():
                 logger.debug("key={} value={}", key, value)

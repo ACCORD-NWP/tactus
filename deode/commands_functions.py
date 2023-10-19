@@ -127,14 +127,14 @@ def start_suite(args, config):
     if ecf_home != args.joboutdir:
         logger.info("Copy ecflow files to host={} and directory={}", args.ecf_host, ecf_home)
         cfg = {"host": args.ecf_host}
-        ssh = SSHConnection(cfg, None)
+        ssh = SSHConnection(cfg, "ecflow-user")
         for root, __, files in os.walk(f"{args.ecf_files}/{suite_name}"):
             for file in files:
                 src = f"{root}/{file}"
                 rpath = root.replace(f"{args.ecf_files}", "")
                 ssh.execute(["mkdir", "-p", f"{ecf_home}/{rpath}"])
                 dst = f"{ecf_home}/{rpath}/{file}"
-                logger.debug("Copy src={} to dst={}", src, dst)
+                logger.info("Copy src={} to dst={}", src, dst)
                 ssh.sendfile(src, dst)
             ssh.sendfile(troika_config_file, local_troika_config_file)
 

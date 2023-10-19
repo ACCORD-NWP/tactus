@@ -101,6 +101,7 @@ class EcflowServer(Server):
         self.ecf_host = ecf_host
         self.ecf_port = ecf_port
         self.start_command = start_command
+        logger.debug("self.ecf_host={} self.ecf_port={}", self.ecf_host, self.ecf_port)
         self.ecf_client = ecflow.Client(self.ecf_host, self.ecf_port)
         logger.debug("self.ecf_client {}", self.ecf_client)
         self.settings = {"ECF_HOST": self.ecf_host, "ECF_PORT": self.ecf_port}
