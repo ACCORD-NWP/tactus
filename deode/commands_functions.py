@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Implement the package's commands."""
+import contextlib
 import datetime
 import difflib
 import itertools
@@ -144,7 +145,7 @@ def start_suite(args, config):
 #########################################
 # Code related to the "show *" commands #
 #########################################
-def doc_config(args, config: ParsedConfig):
+def doc_config(args, config: ParsedConfig):  # noqa ARG001
     """Implement the 'doc_config' command.
 
     Args:
@@ -193,7 +194,7 @@ def show_config(args, config):
         sys.stdout.write(str(dumps) + "\n")
 
 
-def show_config_schema(args, config):
+def show_config_schema(args, config):  # noqa ARG001
     """Implement the `show config-schema` command.
 
     Args:
@@ -301,15 +302,15 @@ def namelist_integrate(args, config):
 #########################################
 
 
-def toml_formatter(args, config):
+def toml_formatter(args, config):  # noqa ARG001
     """Implement the `deode toml-formatter` command."""
     pkg_configs = BasicConfig.from_file(
         GeneralConstants.PACKAGE_DIRECTORY.parent / "pyproject.toml"
     )
-    try:
+
+    formatting_options = None
+    with contextlib.suppress(KeyError):
         formatting_options = FormattingOptions(**pkg_configs["tool.deode.toml_formatter"])
-    except KeyError:
-        formatting_options = None
 
     def _exclude_if_hidden(fpath):
         if args.include_hidden:
@@ -379,4 +380,8 @@ def toml_formatter(args, config):
             )
             for fpath in files_in_need_of_formatting:
                 logger.error("    {}", fpath)
+            logger.info(
+                "You may run `deode toml-formatter --fix-inplace .` to have"
+                + "all TOML files under the current dir formatted."
+            )
             raise SystemExit(1)

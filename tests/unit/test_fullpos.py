@@ -8,7 +8,7 @@ import tomlkit
 
 from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import set_times
-from deode.fullpos import Fullpos, InvalidSelectionCombination
+from deode.fullpos import Fullpos, InvalidSelectionCombinationError
 from deode.toolbox import Platform
 
 WORKING_DIR = Path.cwd()
@@ -38,7 +38,6 @@ def load():
 
 
 class TestFullpos:
-    # pylint: disable=no-self-use
     """Test Fullpos."""
 
     def test_merge_dict(self):
@@ -158,7 +157,7 @@ class TestFullpos:
             "PARAM_MAP": {},
         }
 
-        with pytest.raises(InvalidSelectionCombination):
+        with pytest.raises(InvalidSelectionCombinationError):
             namfpc, selection = Fullpos("test", fpdict=fullpos_config).construct()
 
     def test_load(self):

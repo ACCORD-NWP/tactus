@@ -11,7 +11,7 @@ from datetime import datetime
 from .logs import logger
 
 try:
-    import ecflow  # noqa reportMissingImports
+    import ecflow
 except ModuleNotFoundError:
     ecflow = None
 
@@ -77,19 +77,15 @@ class Server(ABC):
 
 
 class EcflowServer(Server):
-    """Ecflow server.
-
-    Args:
-        Server (Server): Is a child of the base server.
-    """
+    """Ecflow server."""
 
     def __init__(self, ecf_host, ecf_port=3141, start_command=None):
         """Construct the EcflowServer.
 
         Args:
-            ecf_host(str): Ecflow server host.
+            ecf_host (str): Ecflow server host.
             ecf_port (int): Ecflow server port.
-            start_command: Ecflow start server command.
+            start_command (str): Ecflow start server command.
 
         Raises:
             ModuleNotFoundError: If ecflow is not found.
@@ -124,7 +120,7 @@ class EcflowServer(Server):
 
                 start_command = self.start_command
                 if self.start_command is None:
-                    start_command = f"ecflow_start.sh -p {str(self.ecf_port)}"
+                    start_command = f"ecflow_start.sh -p {self.ecf_port!s}"
 
                 logger.info(start_command)
                 # TODO
@@ -324,9 +320,7 @@ class EcflowClient(object):
         logger.info("   Client:__exit__: ex_type: {} value: {}", str(ex_type), str(value))
         if ex_type is not None:
             logger.info("Calling abort {}", self.at_time())
-            self.client.child_abort(
-                f"Aborted with exception type {str(ex_type)}:{str(value)}"
-            )
+            self.client.child_abort(f"Aborted with exception type {ex_type!s}:{value!s}")
             if tback is not None:
                 print(tback)
                 traceback.print_tb(tback, limit=1, file=sys.stdout)

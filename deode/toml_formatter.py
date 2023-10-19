@@ -156,7 +156,7 @@ class TomlFileEntriesContainer(BaseTomlContentsSequence):
         atomic_entries = []
         previous_lines_failed_to_parse = []
         for line in new:
-            str_to_parse = "".join(previous_lines_failed_to_parse + [line])
+            str_to_parse = "".join([*previous_lines_failed_to_parse, line])
             try:
                 new_entry = ParsedTomlFileEntry(str_to_parse)
             except (UnexpectedEofError, UnexpectedCharError):
@@ -331,7 +331,7 @@ def _adjust_empty_lines(
     except StopIteration:
         return (toml_newline,)
 
-    return tuple(section[first_non_blank : last_non_blank + 1]) + (toml_newline,)
+    return (*tuple(section[first_non_blank : last_non_blank + 1]), toml_newline)
 
 
 def _remove_consecutive_blanks(
@@ -394,7 +394,7 @@ def _split_data_in_sections(
 
             if new_section:
                 sections.append(new_section)
-            new_section = comments_that_belong_to_next_section + [entry]
+            new_section = [*comments_that_belong_to_next_section, entry]
         else:
             new_section.append(entry)
     if not new_section_start:

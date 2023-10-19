@@ -24,8 +24,8 @@
   dateutils = "^0.6.12"
   f90nml = "^1.4.3"
   fastjsonschema = "2.16.2"
-  humanize = "^3.14.0"
-  json-schema-for-humans = "^0.46"
+  humanize = "^4.8.0"
+  json-schema-for-humans = {git = "https://github.com/paulovcmedeiros/json-schema-for-humans.git", branch = "feature/choose-properties-table-columns"}
   jsonref = "^1.1.0"
   loguru = "^0.7.1"
   numexpr = "^2.8.4"
@@ -49,25 +49,14 @@
   sphinx-rtd-theme = "^1.2.1"
 
 [tool.poetry.group.linting.dependencies]
-  black = {extras = ["jupyter"], version = "^22.1.0"}
-  flake8 = "^4.0.1"
-  flakeheaven = "^0.11.1"
-  isort = "^5.10.1"
-  pylint = "^2.12.2"
-  pyment = "0.3.3"
-  # flake8 plugins
-  darglint = "^1.8.1"
-  flake8-bandit = "^3.0.0"
-  flake8-bugbear = "^22.1.11"
-  flake8-builtins = "^1.5.3"
-  flake8-comprehensions = "^3.8.0"
-  flake8-docstrings = "^1.6.0"
-  flake8-eradicate = "^1.2.0"
-  flake8-logging-format = "^0.9.0"
-  flake8-mutable = "^1.2.0"
-  flake8-pytest-style = "^1.6.0"
-  mccabe = "^0.6.1"
-  pep8-naming = "^0.12.1"
+  black = {extras = ["jupyter"], version = "^23.10.0"}
+  flake8 = ">=4.0.1, <5.0.0"
+  flakeheaven = "^3.3.0"
+  isort = "^5.12.0"
+  ruff = "^0.1.0"
+  # flake8 plugins for stuff not yet on ruff.
+  # See <https://github.com/astral-sh/ruff/issues/458>.
+  pydoclint = "^0.3.4" # Replaces darglint, but is maintained & faster
 
 [tool.poetry.group.test.dependencies]
   pytest = "^7.2.2"
@@ -98,39 +87,17 @@
   line_length = 90
   profile = "black"
 
-[tool.pylint.BASIC]
-  # We'll use pylint separate from flakheaven. Some pylint options don't seem to be
-  # respected when using it via flakeheaven (e.g., fail-under).
-  # For a description of the config opts used here, see:
-  # <https://docs.pylint.org/en/1.6.0/options.html>
-  # <https://docs.pylint.org/en/1.6.0/features.html>
-  # <https://docs.pylint.org/en/1.6.0/faq.html>
-  # Also, run "pylint --generate-rcfile" to see all applied pylint opts.
-  fail-under = "8.0"
-  good-names = ["db", "df", "dt", "i", "j", "n", "x", "y"]
-  # Default value for the rgx below: "[a-z_][a-z0-9_]{2,30}$"
-  attr-rgx = "[a-z_][a-z0-9_]{1,30}$"
-
-[tool.pylint.format]
-  # Set max-line-length compatible with black
-  max-line-length = "90"
-
-[tool.pylint.MASTER]
-  # See <https://github.com/PyCQA/pylint/blob/master/pylint/extensions/docparams.py>
-  load-plugins = "pylint.extensions.docparams"
-
-[tool.pylint.messages_control]
-  # Disable C0116 (Missing function or method docstring). Leave it to flake8-docstrings
-  # Disable C0326 and C0330 to avoid clashing with black
-  # Disable C0301 (Line too long). Leave it for black to control.
-  # See <https://black.readthedocs.io/en/stable/compatible_configs.html#pylint>
-  # Disable E0402 due to false positives <https://github.com/flycheck/flycheck/issues/1758>
-  disable = "C0116, C0301, C0326, C0330, E0402"
-  # Fix "no-name-in-module" error when linting pydantic-based code.
-  # See <https://github.com/samuelcolvin/pydantic/issues/1961>
-  extension-pkg-whitelist = "pydantic"
-
 [tool.pytest.ini_options]
   addopts = "-v --cov-report=term-missing --cov-report=term:skip-covered --cov-report=xml:.coverage.xml --cov=./"
   log_cli_level = "INFO"
   testpaths = ["tests/smoke", "tests/unit"]
+
+[tool.ruff]
+  # C901: Function is too complex. Ignoring this for now but will be removed later.
+  ignore = ["C901", "RUF012"]
+  line-length = 90
+  select = ["S", "B", "A", "C4", "ERA", "G", "PT", "C90", "N", "RUF", "ARG", "BLE001"]
+
+[tool.ruff.per-file-ignores]
+  # S101: Use of `assert` detected
+  "tests/**/*.py" = ["S101"]

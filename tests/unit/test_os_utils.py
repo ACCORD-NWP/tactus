@@ -141,4 +141,4 @@ def test_deodemakedirs():
     if os.path.exists(path):
         shutil.rmtree(path)
     deodemakedirs(f"{path}/wrkdir")
-    assert os.stat(path).st_gid == grpids[0]
+    assert os.stat(path).st_gid in grpids

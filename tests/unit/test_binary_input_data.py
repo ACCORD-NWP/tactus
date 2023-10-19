@@ -107,7 +107,6 @@ def f90ml_namelist(tmp_path_factory):
 
 
 def test_new_binary_input(deode_config, f90ml_namelist, binary_input_data):
-
     update = {
         "system": {"climdir": "/climdir"},
         "platform": {

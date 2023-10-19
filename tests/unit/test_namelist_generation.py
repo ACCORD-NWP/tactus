@@ -70,7 +70,6 @@ def _nlgen_surfex(parsed_config, tmp_path_factory, request):
 
 
 class TestNamelistGenerator:
-    # pylint: disable=no-self-use
     """Test NamelistGenerator."""
 
     def test_nlgen_master(self, parsed_config, tmp_path_factory):

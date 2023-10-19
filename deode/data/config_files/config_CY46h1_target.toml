@@ -10,6 +10,7 @@
   realization = -1
   surfex = true
   tstep = 30
+  windfarm = false
 
 [general.output_settings]
   fullpos = "PT15M"
@@ -43,12 +44,13 @@
   macros = "include/macros.toml"
   platform = "include/platform_paths/atos_bologna.toml"
   submission = "include/submission/atos_bologna_CY46h1.toml"
-  vertical_levels = "include/vertical_levels/harmonie-arome_65.toml"
+  vertical_levels = "include/vertical_levels/MF_90.toml"
 
 [suite_control]
   cold_start = true
   create_static_data = true
   create_time_dependent_suite = true
+  do_archiving = false
   do_marsprep = false
   do_pgd = true
   do_prep = true
@@ -61,7 +63,7 @@
   bddir = "@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@"
   bddir_sfx = "@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@"
   bdfile_sfx_template = "@BDFILE_TEMPLATE@.sfx"
-  bdfile_template = "ICMSH@CNMEXP@+@DURATION_FA@"
+  bdfile_template = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@"
   casedir = "@SCRATCH@/deode/@CASE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@"
   global_sfcdir = "/hpcperm/snh02/climate_fields_mir/climate.v020_MIR_orog/"

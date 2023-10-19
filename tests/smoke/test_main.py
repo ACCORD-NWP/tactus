@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Smoke tests."""
 import itertools
+import os
 import shutil
 from contextlib import redirect_stderr, redirect_stdout, suppress
 from io import StringIO
@@ -8,6 +9,7 @@ from pathlib import Path
 from unittest import mock
 
 import pytest
+import tomlkit
 
 from deode import GeneralConstants
 from deode.__main__ import main
@@ -88,7 +90,6 @@ def test_correct_config_is_in_use(config_path, mocker):
 
 @pytest.mark.usefixtures("_module_mockers")
 class TestMainShowCommands:
-    # pylint: disable=no-self-use
     def test_show_config_command(self):
         with redirect_stdout(StringIO()):
             main(["show", "config"])
@@ -117,7 +118,6 @@ class TestMainShowCommands:
                 main(["show", "config"])
 
     def test_show_namelist_command(self, tmp_path_factory):
-
         output_file = f"{tmp_path_factory.getbasetemp().as_posix()}/fort.4"
         main(["show", "namelist", "-t", "surfex", "-n", "forecast", "-o", output_file])
 
@@ -159,7 +159,34 @@ def test_doc_config_command():
         main(["doc", "config"])
 
 
+def test_integrate_namelists():
+    args = [
+        "namelist",
+        "integrate",
+        "--namelist",
+        "deode/data/namelists/unit_testing/nl_master_base",
+        "--output",
+        os.devnull,
+    ]
+    main(args)
+
+
 @pytest.mark.usefixtures("_module_mockers")
-def test_toml_formatter_command():
+def test_toml_formatter_command(tmp_path_factory):
+    dummy_toml = tomlkit.parse(
+        """
+        [foo]
+        bar = "baz"
+        """
+    )
+    toml_file = tmp_path_factory.mktemp("toml_fmt_tests") / "tmp.toml"
+    with open(toml_file, "w") as f:
+        f.write(tomlkit.dumps(dummy_toml))
+
+    with pytest.raises(SystemExit):
+        main(["toml-formatter", "--include-hidden", toml_file.parent.as_posix()])
+
+    main(["toml-formatter", toml_file.as_posix(), "--fix-inplace", "--show-formatted"])
+
     with redirect_stdout(StringIO()):
         main(["toml-formatter", GeneralConstants.PACKAGE_DIRECTORY.parent.as_posix()])

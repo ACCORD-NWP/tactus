@@ -83,13 +83,11 @@ class CreateGrib(Task):
     def execute(self):
         """Execute creategrib."""
         for filetype, rules in self.conversions.items():
-
             file_handle = self.create_list(
                 rules["input_template"], self.output_settings[filetype]
             )
 
             for validtime, fname in file_handle.items():
-
                 output = self.platform.substitute(
                     rules["output_template"], validtime=validtime
                 )

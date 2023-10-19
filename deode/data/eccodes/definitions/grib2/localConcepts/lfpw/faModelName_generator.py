@@ -9,12 +9,11 @@ from jinja2 import Template
 re_comment = re.compile(r"^\s*([#%!]|$)")
 
 if __name__ == "__main__":
-
-    defs = dict(
-        n_asscom_slots=20,
-        n_members_pearp=100,
-        n_members_pearo=100,
-    )
+    defs = {
+        "n_asscom_slots": 20,
+        "n_members_pearp": 100,
+        "n_members_pearo": 100,
+    }
 
     # tuning
     align_equal_signs = True
@@ -42,7 +41,7 @@ if __name__ == "__main__":
 
     if align_equal_signs:
         pairs = [line.split("=", 1) for line in contents]
-        maxlen = max([len(lhs) for lhs in list(zip(*pairs))[0]])
+        maxlen = max([len(lhs) for lhs in next(zip(*pairs))])
         fmt = "{" + ":{}s".format(maxlen) + "}={}"
         contents = [fmt.format(u, v) for (u, v) in pairs]
 

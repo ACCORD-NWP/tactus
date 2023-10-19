@@ -18,7 +18,9 @@ def discover_modules(package, what="plugin"):
                               Defaults to "plugin".
 
     Yields:
-        str (types.ModuleType):  Imported module
+        tuple:
+            str: Name of the imported module
+            types.ModuleType: The imported module
 
     """
     path = package.__path__

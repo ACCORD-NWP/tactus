@@ -44,8 +44,6 @@ def config_from_task_config_file():
 
 
 class TestSubmission:
-    # pylint: disable=no-self-use
-
     def test_config_can_be_instantiated(self, parsed_config_with_task):
         assert isinstance(parsed_config_with_task, ParsedConfig)
 

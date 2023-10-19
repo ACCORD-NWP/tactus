@@ -139,7 +139,6 @@ def derived_variables(config, processor_layout=None):
 
     forecast_range_org = config["general.times.forecast_range"]
     for x, y in oi.items():
-
         dtlist = oi2dt_list(y, forecast_range_org)
         output_timesteps = [
             int((dt.days * 24 * 3600 + dt.seconds) / tstep) for dt in dtlist

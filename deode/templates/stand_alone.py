@@ -1,6 +1,6 @@
 """NoSchedulerTemplate."""
 
-from os import environ  # noqa
+from os import environ
 
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import derived_variables

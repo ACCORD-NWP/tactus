@@ -97,8 +97,8 @@ class Forecast(Task):
             filetype (str): File type (history, surfex, fullpos)
             periods (str): Output list
 
-            Final result is the expected output file name in the working directory
-                (as if there was no IO server)
+        Final result is the expected output file name in the working directory
+        (as if there was no IO server).
         """
         dt_list = oi2dt_list(periods, self.forecast_range)
 
@@ -238,7 +238,7 @@ class Forecast(Task):
         # Use explicitly defined boundary dir if defined
         try:
             intp_bddir = self.config["system.intp_bddir"]
-        except KeyError:  # noqa
+        except KeyError:
             intp_bddir = self.wrk
 
         # Link the boundary files, use initial file as first boundary file

@@ -287,7 +287,6 @@ class SuiteDefinition(object):
                 self.do_prep = False
 
             if self.interpolate_boundaries or self.do_prep:
-
                 int_fam = EcflowSuiteFamily(
                     f'{"Interpolation"}',
                     time_family,
@@ -311,7 +310,6 @@ class SuiteDefinition(object):
                     self.do_prep = False
 
                 if self.interpolate_boundaries:
-
                     basetime = as_datetime(cycle["basetime"])
                     forecast_range = as_timedelta(config["general.times.forecast_range"])
                     endtime = basetime + forecast_range
@@ -692,11 +690,7 @@ class EcflowNode:
 
 
 class EcflowNodeContainer(EcflowNode):
-    """Ecflow node container.
-
-    Args:
-        EcflowNode (EcflowNode): Parent class.
-    """
+    """Ecflow node container."""
 
     def __init__(
         self,
@@ -733,12 +727,7 @@ class EcflowNodeContainer(EcflowNode):
 
 
 class EcflowSuite(EcflowNodeContainer):
-    """EcflowSuite.
-
-    Args:
-        EcflowNodeContainer
-        (EcflowNodeContainer): A child of the EcflowNodeContainer class.
-    """
+    """EcflowSuite."""
 
     def __init__(self, name, ecf_files, variables=None, dry_run=False, def_status=None):
         """Construct the Ecflow suite.
@@ -778,11 +767,7 @@ class EcflowSuite(EcflowNodeContainer):
 
 
 class EcflowSuiteFamily(EcflowNodeContainer):
-    """A family in ecflow.
-
-    Args:
-        EcflowNodeContainer (_type_): _description_
-    """
+    """A family in ecflow."""
 
     def __init__(
         self, name, parent, ecf_files, variables=None, trigger=None, def_status=None
@@ -814,11 +799,7 @@ class EcflowSuiteFamily(EcflowNodeContainer):
 
 
 class EcflowSuiteTask(EcflowNode):
-    """A task in an ecflow suite/family.
-
-    Args:
-        EcflowNode (EcflowNodeContainer): The node container.
-    """
+    """A task in an ecflow suite/family."""
 
     def __init__(
         self,

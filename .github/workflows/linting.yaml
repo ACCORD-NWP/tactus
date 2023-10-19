@@ -63,6 +63,9 @@ jobs:
       - name: black
         run: |
           poetry run black --check --diff .
+      - name: ruff
+        run: |
+          poetry run ruff check .
       - name: flakeheaven
         run: |
           export FLAKEHEAVEN_CACHE="${TMPDIR:-${TEMP:-${TMP:-/tmp}}}/flakeheaven_cache.$(openssl rand -hex 12)"

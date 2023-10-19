@@ -53,7 +53,6 @@ class Search:
                         files.append(os.path.join(r, file))
 
         elif not recursive:
-
             if onlyfiles:
                 files = [
                     f
@@ -144,9 +143,8 @@ def deodemakedirs(path, unixgroup="", exist_ok=True):
             an error should be raised.
 
     Raises:
-        OSError  # noqa DAR401
+        OSError: If cannot create the directory.
 
-    Returns: Nothing
     """
     p = Path(path).resolve()
 
@@ -155,9 +153,10 @@ def deodemakedirs(path, unixgroup="", exist_ok=True):
             os.makedirs(path, mode=0o2750, exist_ok=exist_ok)
             if unixgroup and (str(Path(path).group()) != str(unixgroup)):
                 shutil.chown(path, group=unixgroup)
-                os.chmod(path, mode=0o2750)
-        except OSError:
-            raise OSError(f"Cannot create {path} properly")
+                # TODO: Check if we really need this permissive mask
+                os.chmod(path, mode=0o2750)  # noqa S103
+        except OSError as err:
+            raise OSError(f"Cannot create {path} properly") from err
     else:
         # check directory tree for top dir that has to be created
         try:
@@ -169,7 +168,8 @@ def deodemakedirs(path, unixgroup="", exist_ok=True):
             os.makedirs(p.parents[idx], mode=0o2750, exist_ok=exist_ok)
             if unixgroup and str(p.parents[idx].group()) != str(unixgroup):
                 shutil.chown(p.parents[idx], group=unixgroup)
-                os.chmod(p.parents[idx], mode=0o2750)
+                # TODO: Check if we really need this permissive mask
+                os.chmod(p.parents[idx], mode=0o2750)  # noqa S103
             os.makedirs(path)
-        except OSError:
-            raise OSError(f"Cannot create {path} properly")
+        except OSError as err:
+            raise OSError(f"Cannot create {path} properly") from err

@@ -85,7 +85,7 @@ def default_main(**kwargs):
         }
     )
 
-    # TODO Add wrapper  # noqa
+    # TODO Add wrapper
     ecf_host = kwargs.get("ECF_HOST")
     ecf_port = kwargs.get("ECF_PORT")
     server = EcflowServer(ecf_host, ecf_port)
@@ -99,7 +99,6 @@ def default_main(**kwargs):
 
     # This will also handle call to sys.exit(), i.e. Client.__exit__ will still be called.
     with EcflowClient(server, task):
-
         processor_layout = ProcessorLayout(kwargs)
         update = derived_variables(config, processor_layout=processor_layout)
         config = config.copy(update=update)
@@ -117,4 +116,4 @@ if __name__ == "__main__":
 
 """    # noqa
 %end"  # noqa
-"""  # noqa
+"""
