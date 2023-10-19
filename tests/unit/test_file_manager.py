@@ -50,7 +50,6 @@ def parsed_config_with_paths(config_platform):
 
 
 class TestFileManager:
-    # pylint: disable=no-self-use
     """Test FileManager."""
 
     def test_input_files(self, parsed_config_with_paths):
@@ -62,7 +61,7 @@ class TestFileManager:
             check_archive=True,
         )
         logger.debug("identifier={}", provider.identifier)
-        assert provider.identifier == "ec:2000/01/01/00/ICMSHDEOD+0024"  # noqa S108
+        assert provider.identifier == "ec:2000/01/01/00/ICMSHDEOD+0024"
         assert resource.identifier == "/tmp/ICMSHDEODINIT"  # noqa S108
 
         os.makedirs("/tmp/bindir", exist_ok=True)  # noqa S108
@@ -108,9 +107,7 @@ class TestFileManager:
         assert os.path.exists(
             "/tmp/archive/2000/01/01/00/OUT_ICMSHDEOD+0024"  # noqa S108, E501
         )
-        assert (
-            aprovider.identifier == "ectmp:/2000/01/01/00/OUT_ICMSHDEOD+0024"
-        )  # noqa S108, E501
+        assert aprovider.identifier == "ectmp:/2000/01/01/00/OUT_ICMSHDEOD+0024"
         os.remove("/tmp/archive/2000/01/01/00/OUT_ICMSHDEOD+0024")  # noqa S108
 
     def test_case_insensitive(self, parsed_config_with_paths):

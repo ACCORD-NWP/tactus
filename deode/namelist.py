@@ -110,21 +110,21 @@ class NamelistComparator:
             valb = dbase[key]
             if key in dcomp:
                 valc = dcomp[key]
-                if type(valb) is dict and type(valc) is dict:
+                if isinstance(valb, dict) and isinstance(valc, dict):
                     if not key.startswith("_"):
                         # Invoke ourselves recursively
                         msg = f"recursive dict comp for {key}"
                         logger.debug(msg)
                         dout[key] = self.compare_dicts(dbase[key], dcomp[key], action)
-                elif type(valb) is list and type(valc) is list:
+                elif isinstance(valb, list) and isinstance(valc, list):
                     kl = key.lower()
                     try:
                         sib = dbase["_start_index"][kl]
-                    except Exception:
+                    except KeyError:
                         sib = [1]
                     try:
                         sic = dcomp["_start_index"][kl]
-                    except Exception:
+                    except KeyError:
                         sic = [1]
                     # Start index in output depends on the action, thus:
                     sio = []
@@ -164,7 +164,7 @@ class NamelistComparator:
             if action == "diff":
                 todel = []
                 for key in dout:
-                    if type(dout[key]) is dict and len(dout[key]) == 0:
+                    if isinstance(dout[key], dict) and len(dout[key]) == 0:
                         todel.append(key)
                 # Delayed deletion to avoid "dictionary changed size during iteration"
                 for key in todel:
@@ -207,11 +207,11 @@ class NamelistComparator:
             valb = libase[ib]
             if ic in range(len(licomp)):
                 valc = licomp[ic]
-                if type(valb) is dict and type(valc) is dict:
+                if isinstance(valb, dict) and isinstance(valc, dict):
                     list_set_at_index(
                         liout, io, self.compare_dicts(libase[ib], licomp[ic], action)
                     )
-                elif type(valb) is list and type(valc) is list:
+                elif isinstance(valb, list) and isinstance(valc, list):
                     # Invoke ourselves recursively
                     list_set_at_index(
                         liout,
@@ -385,7 +385,7 @@ class NamelistGenerator:
                 post = m.group(4)
                 try:
                     repval = self.platform.get_value(nam)
-                except Exception:
+                except KeyError:
                     repval = None
                 if repval is None:
                     if defval != "":
@@ -419,9 +419,9 @@ class NamelistGenerator:
         Returns:
             node, with values replaced
         """
-        if type(node) is dict:
+        if isinstance(node, dict):
             return {k: self.traverse(v) for k, v in node.items()}
-        elif type(node) is list:
+        elif isinstance(node, list):
             return [self.traverse(v) for v in node]
         else:
             return self.check_replace_scalar(node)
@@ -431,9 +431,6 @@ class NamelistGenerator:
 
         Args:
             target (str): task to generate namelists for
-
-        Raises:
-            InvalidNamelistTargetError   # noqa: DAR401
 
         Returns:
             nlres (f90nml.Namelist): Assembled namelist
@@ -468,7 +465,7 @@ class NamelistGenerator:
 
         Args:
             nldict (dict): additional namelist dict
-            cndict_tag : name to be used for recognition
+            cndict_tag: name to be used for recognition
 
         """
         self.cndict[self.target].append(cndict_tag)
@@ -498,7 +495,7 @@ class NamelistGenerator:
 
         Args:
             target (str): task to generate namelists for
-            output_file : where to write the result (fort.4 or EXSEG1.nam typically)
+            output_file: where to write the result (fort.4 or EXSEG1.nam typically)
 
         """
         logger.info("Generate namelist for: {}", target)

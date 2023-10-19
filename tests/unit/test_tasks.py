@@ -175,7 +175,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         with contextlib.suppress(FileNotFoundError):
             original_task_collectlogs_collectlogs_execute_method(*args, **kwargs)
 
-    def new_surfex_binary(self, *args, **kwargs):
+    def new_surfex_binary(_self, *_args, **_kwargs):
         """Create output."""
         Path("PGD.fa").touch()
         Path("PREP.fa").touch()
@@ -240,7 +240,6 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
 
 
 class TestTasks:
-    # pylint: disable=no-self-use
     """Test all tasks."""
 
     def test_task_can_be_instantiated(self, task_name_and_configs):

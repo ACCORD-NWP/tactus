@@ -579,7 +579,6 @@ class Pgd(Task):
         binary = self.get_binary("PGD")
 
         if not os.path.exists(output) or self.force:
-
             batch = BatchJob(os.environ, wrapper=self.wrapper)
 
             self.nlgen.load("pgd")

@@ -228,7 +228,6 @@ class Platform:
 
         """
         if isinstance(pattern, str):
-
             # Collect what is defined in config.macros, the group, os and general macros
             all_macros = {}
 
@@ -244,7 +243,7 @@ class Platform:
 
             for macro in self.config["macros.gen_macros"]:
                 if isinstance(macro, dict):
-                    key = list(macro)[0]
+                    key = next(iter(macro))
                     val = self.config[macro[key].lower()]
                     key = key.upper()
                 else:
@@ -437,7 +436,7 @@ class FileManager:
         target,
         destination,
         basetime=None,
-        validtime=None,  # noqa
+        validtime=None,
         check_archive=False,
         provider_id="symlink",
     ):
@@ -779,15 +778,16 @@ class ECFS(ArchiveProvider):
             bool: True if success
 
         """
+        # TODO: Address the noqa check disablers
         if self.fetch:
             logger.info("ecp -u {} {}", self.identifier, resource.identifier)
-            os.system(  # noqa S605, E800
-                f"ecp -u {self.identifier} {resource.identifier}"
+            os.system(
+                f"ecp -u {self.identifier} {resource.identifier}"  # noqa S605, E800
             )
         else:
             logger.info("ecp -u {} {}", resource.identifier, self.identifier)
-            os.system(  # noqa S605, E800
-                f"ecp -u {resource.identifier} ec:{self.identifier}"
+            os.system(
+                f"ecp -u {resource.identifier} ec:{self.identifier}"  # noqa S605, E800
             )
         return True
 
@@ -795,7 +795,7 @@ class ECFS(ArchiveProvider):
 class Resource:
     """Resource container."""
 
-    def __init__(self, config, identifier):
+    def __init__(self, _config, identifier):
         """Construct resource.
 
         Args:

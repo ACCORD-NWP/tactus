@@ -77,10 +77,10 @@ class MarsprepGlobalDT(Task):
         """Read and return domain data.
 
         Args:
-             config: config method
+            config: config method
 
         Returns:
-             String containing the domain info for MARS
+            str: Domain info for MARS.
         """
         # Get domain specs
         domain_spec = {
@@ -117,13 +117,9 @@ class MarsprepGlobalDT(Task):
              marsfolder: path with MARS file location
              f_pattern: glob pattern
 
-        Returns:
-             list of files that should be joined
         """
         pattern_list = os.path.join(marsfolder, f_pattern)
         self.filenames = glob.glob(pattern_list)
-
-        return self.filenames
 
     def check_resolution(self, date):
         """Check grid resolution according to the date.
@@ -131,8 +127,6 @@ class MarsprepGlobalDT(Task):
         Args:
             date:      date for resolution checking
 
-        Returns:
-            String containing the grid/resolution value
         """
         date = datetime.strptime(date, "%Y%m%d%H")
 
@@ -145,8 +139,6 @@ class MarsprepGlobalDT(Task):
         else:
             self.grid = "0.50/0.50"
 
-        return self.grid
-
     def split_date(self, date, strategy, length, interval, bdshift):
         """Manipulate the dates for Mars request.
 
@@ -158,7 +150,7 @@ class MarsprepGlobalDT(Task):
             bdshift:    boundary shift in hours
 
         Returns:
-            Pandas dataframe object
+            pd.Series: Request.
 
         Raises:
             ValueError: Boundary strategy is not implemented
@@ -206,7 +198,7 @@ class MarsprepGlobalDT(Task):
     def update_data_request(
         self,
         param,
-        expver,
+        expver,  # noqa ARG001
         data_type="analysis",
         date=None,
         time=None,
@@ -217,7 +209,7 @@ class MarsprepGlobalDT(Task):
         domain_dimensions=None,
         grid_dimensions=None,
         target=None,
-        levlist=None,
+        levlist=None,  # noqa ARG001
     ):
         """Create ECMWF MARS system request.
 
@@ -235,9 +227,6 @@ class MarsprepGlobalDT(Task):
             grid_dimensions:    Grid resolution (if applicable)
             target:             Filename to write
             levlist:            List of levels
-
-        Returns:
-            Pandas dataframe object
         """
         # General request parameters
         d = {
@@ -312,8 +301,6 @@ class MarsprepGlobalDT(Task):
 
         self.datarequest = pd.DataFrame(data=d)
 
-        return self.datarequest
-
     # Write a MARS request into a file
     @staticmethod
     def write_mars_req(nam, name, method):
@@ -345,16 +332,8 @@ class MarsprepGlobalDT(Task):
             f.close()
 
     def create_executable(self, marsfile):
-        """Create task for binary.
-
-        Args:
-            marsfile: intermediate request file
-
-        Returns:
-            None
-        """
+        """Create task for binary given `marsfile`."""
         self.executable = "{} {}".format("mars", marsfile)
-        return self.executable
 
     def execute(self, cmd):
         """Execute binary task."""
@@ -379,14 +358,14 @@ class MarsprepGlobalDT(Task):
         Define run sequence.
 
         Raises:
-            ValueError: If there is an issue with the work folder.
+            RuntimeError: If there is an issue with the work folder.
         """
         try:
             # Part1
             if not os.path.exists(self.prepdir):
                 deodemakedirs(self.prepdir)
-        except Exception as e:
-            raise ValueError("Error while preparing the mars folder: {}".format(e))
+        except OSError as e:
+            raise RuntimeError(f"Error while preparing the mars folder: {e}") from e
 
         deodemakedirs(self.wdir)
         os.chdir(self.wdir)
@@ -620,7 +599,6 @@ class MarsprepGlobalDT(Task):
         if os.path.exists(mars_file_check):
             logger.debug("PREP file already exists!")
         else:
-
             str_step = "{}".format(str_steps[0])
 
             # Stage for lat/lon

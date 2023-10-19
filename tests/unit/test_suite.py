@@ -38,8 +38,6 @@ def config_from_task_config_file():
 
 
 class TestSuite:
-    # pylint: disable=no-self-use
-
     def test_config_can_be_instantiated(self, minimal_parsed_config):
         assert isinstance(minimal_parsed_config, ParsedConfig)
 
@@ -68,7 +66,7 @@ class TestSuite:
             update={
                 "platform": {"deode_home": f"{os.path.dirname(__file__)}/../.."},
             }
-        )  # noqa S108
+        )
         config = config.copy(update=set_times(config))
         config = config.copy(update=param)
         suite_name = "test_suite"

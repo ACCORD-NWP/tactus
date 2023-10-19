@@ -146,8 +146,6 @@ def package_main_config_without_validation():
 
 
 class TestGeneralBehaviour:
-    # pylint: disable=no-self-use
-
     def test_config_model_can_be_instantiated(self, minimal_parsed_config):
         assert isinstance(minimal_parsed_config, ParsedConfig)
 
@@ -377,8 +375,6 @@ class TestGeneralBehaviour:
 
 
 class TestValidators:
-    # pylint: disable=no-self-use
-
     @pytest.mark.parametrize(
         "dt_input",
         [
@@ -453,8 +449,6 @@ class TestValidators:
 
 
 class TestPossibilityOfISO8601ComplianceEnforcement:
-    # pylint: disable=no-self-use
-
     Input = namedtuple("Input", ["name", "correct_value", "wrong_value"])
     iso_8601_test_inputs = [
         Input("date", "2020-01-01", "20200101"),
@@ -515,8 +509,6 @@ def parsed_config_with_included_sections(raw_config_with_include_section):
 
 
 class TestConfigIncludeSection:
-    # pylint: disable=no-self-use
-
     def test_package_config_include_sections(
         self, parsed_config_with_included_sections, valid_config_include_section
     ):

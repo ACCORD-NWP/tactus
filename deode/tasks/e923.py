@@ -63,8 +63,8 @@ class E923(Task):
         """Run the constant part of e923.
 
         Args:
-            part : which step
-            month : month
+            part: which step
+            month: month
         """
         if month is None:
             logger.info("Executing PART {}", part)
@@ -75,7 +75,7 @@ class E923(Task):
         """Run the constant part of e923.
 
         Args:
-            constant_file : filename of the resulting file
+            constant_file: filename of the resulting file
         """
         logger.info("Create: {}", constant_file)
 
@@ -150,7 +150,7 @@ class E923(Task):
         """Run the monthly part of e923.
 
         Args:
-            constant_file : filename of the input constant file
+            constant_file: filename of the input constant file
         """
         # Make sure constant file is in wdir
         if not os.path.exists("Const.Clim"):
@@ -193,7 +193,6 @@ class E923(Task):
         os.system("gunzip rel_GL.Z")  # noqa
 
         for mm in self.months:
-
             os.rename(f"Const.Clim.{mm}", "Const.Clim")
 
             # PART 4

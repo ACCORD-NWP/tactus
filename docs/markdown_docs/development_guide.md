@@ -39,7 +39,8 @@ Here is a list of tests being run in the pipeline, that you can run locally from
 - `isort .`
 
 **Linting:**
-- `flakeheaven lint`
+- `flakeheaven lint .`
+- `ruff check .`
 
 **Unit Tests:**
 - `pytest --cov=./ tests/` *(In the pipeline we run multiple versions of python)*

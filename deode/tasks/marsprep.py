@@ -369,14 +369,14 @@ class Marsprep(Task):
         Define run sequence.
 
         Raises:
-            ValueError: If there is an issue with the work folder.
+            RuntimeError: If there is an issue with the work folder.
         """
         try:
             # Part1
             if not os.path.exists(self.prepdir):
                 deodemakedirs(self.prepdir, unixgroup=self.unix_group)
-        except Exception as e:
-            raise ValueError("Error while preparing the mars folder: {}".format(e))
+        except OSError as e:
+            raise RuntimeError(f"Error while preparing the mars folder: {e}") from e
 
         deodemakedirs(self.wdir, unixgroup=self.unix_group)
         os.chdir(self.wdir)
@@ -604,7 +604,6 @@ class Marsprep(Task):
         if os.path.exists(mars_file_check):
             logger.debug("Warning: Prep file allready exists")
         else:
-
             str_step = "{}".format(str_steps[0])
 
             # Stage for lat/lon

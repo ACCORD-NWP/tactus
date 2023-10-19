@@ -59,7 +59,7 @@ class Task(object):
         if self.wrk is None:
             raise ValueError("You must set wrk", self.wrk)
 
-        wdir = f"{self.wrk}/{socket.gethostname()}{str(os.getpid())}"
+        wdir = f"{self.wrk}/{socket.gethostname()}{os.getpid()!s}"
         self.wdir = wdir
         self.unix_group = self.platform.get_value("platform.unix_group")
 

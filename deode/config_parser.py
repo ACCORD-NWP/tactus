@@ -65,7 +65,7 @@ class BasicConfig(BaseMapping):
 
         Args:
             path (typing.Union[pathlib.Path, str]): Path to the config file.
-            kwargs: Arguments passed to the class constructor.
+            **kwargs: Arguments passed to the class constructor.
 
         Returns:
             cls: Configs retrieved from the specified path.
@@ -209,7 +209,7 @@ def _read_raw_config_file(config_path):
             return tomli.load(config_file)
 
         if config_path.suffix in [".yaml", ".yml"]:
-            return yaml.load(config_file, Loader=yaml.loader.SafeLoader)
+            return yaml.safe_load(config_file)
 
         if config_path.suffix == ".json":
             return json.load(config_file)
@@ -252,7 +252,7 @@ def _expand_config_include_section(
             include_path = config_include_search_dir / include_path
         included_config_section = _read_raw_config_file(include_path)
 
-        _sections_traversed = _parent_sections + (section_name,)
+        _sections_traversed = (*_parent_sections, section_name)
         sections_traversed_str = " -> ".join(_sections_traversed)
         if section_name in json_schema["properties"]:
             msg = f'Validation schema for `[include]` section "{sections_traversed_str}" '

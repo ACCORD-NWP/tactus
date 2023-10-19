@@ -9,7 +9,7 @@ from .logs import logger
 from .namelist import flatten_list
 
 
-class InvalidSelectionCombination(ValueError):
+class InvalidSelectionCombinationError(ValueError):
     """Custom exception."""
 
     pass
@@ -117,7 +117,7 @@ class Fullpos:
                         if x not in d[k]:
                             d[k].append(x)
                 else:
-                    raise InvalidSelectionCombination(v)
+                    raise InvalidSelectionCombinationError(v)
             else:
                 d[k] = v
 
@@ -132,7 +132,6 @@ class Fullpos:
 
         """
         if additions_list is not None:
-
             # Read the update
             for addition in additions_list:
                 fpfile = os.path.join(self.fpdir, f"{addition}.yml")
@@ -181,7 +180,7 @@ class Fullpos:
 
                 elif "CL3DF" in v:
                     if len(v.keys()) > 2:
-                        raise InvalidSelectionCombination(v.keys())
+                        raise InvalidSelectionCombinationError(v.keys())
                     x = level_map[k]
                     namfpc[x].append(v[x])
                     x = param_map[k]["CL3DF"]

@@ -1,4 +1,4 @@
- Changelog
+# Changelog
 
 All notable changes to this project will be documented in this file.
 
@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `deode doc config` command now shows info defined in the schema only.
   Users can run `deode show config` when they wish to know what is used
   in the config.
+- Migrate most linting checks from `flake8` to [`ruff`](https://docs.astral.sh/ruff/). It is faster.
 ### Fixed
 - Format of online config doc in github pages.
 

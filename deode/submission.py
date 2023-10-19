@@ -346,6 +346,6 @@ class NoSchedulerSubmission:
             f"{task_job} -o {output}"
         )
         try:
-            subprocess.check_call(cmd.split())
+            subprocess.check_call(cmd.split())  # noqa S603
         except subprocess.CalledProcessError as exc:
-            raise RuntimeError(f"Submission failed with {repr(exc)}") from exc
+            raise RuntimeError(f"Submission failed with {exc!r}") from exc

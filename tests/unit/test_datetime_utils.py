@@ -49,7 +49,7 @@ def test_shift2_offset():
 
 @pytest.fixture(params=["PT3H", "PT6H:PT3H", "PT0H:PT6H:PT3H"])
 def _test_as_oi2dt_list():
-    assert oi2dt_list(param, "PT6H") == [  # noqa
+    assert oi2dt_list(param, "PT6H") == [
         datetime.timedelta(0),
         datetime.timedelta(seconds=10800),
         datetime.timedelta(seconds=21600),

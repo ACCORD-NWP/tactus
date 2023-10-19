@@ -6,7 +6,7 @@ from collections.abc import Mapping, MutableMapping, MutableSequence, MutableSet
 from functools import reduce
 from operator import getitem
 from types import MappingProxyType
-from typing import Any, Callable, Iterator, Literal, TypeVar, Union
+from typing import Any, Callable, Iterator, Literal, Optional, TypeVar, Union
 
 import tomlkit
 import yaml
@@ -94,7 +94,7 @@ class BaseMapping(Mapping):
         """Return a `dict` representation, converting also nested `Mapping`-type items."""
         return modify_mappings(obj=self, operator=dict)
 
-    def copy(self, update: Union[Mapping, Callable[[Mapping], Any]] = None):
+    def copy(self, update: Optional[Union[Mapping, Callable[[Mapping], Any]]] = None):
         """Return a copy of the instance, optionally updated according to `update`."""
         new = copy.deepcopy(self)
         if update:
@@ -105,7 +105,7 @@ class BaseMapping(Mapping):
         self,
         section="",
         style: Literal["toml", "json", "yaml"] = "toml",
-        toml_formatting_function: Callable = None,
+        toml_formatting_function: Optional[Callable] = None,
     ):
         """Get a nicely printed version of the container's contents."""
         if section:
