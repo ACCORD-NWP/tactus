@@ -1,0 +1,48 @@
+# Do the selection of fields below. Note 
+# that xxt00000000 inherits from xxtddddhh00
+selection:
+ xxtddddhh00: &default
+  NAMFPPHY:
+   CLCFU:
+    - 'SURFACCPLUIE'
+    - 'SURFACCNEIGE'
+    - 'SURFACCGRAUPEL'
+   CLXFU:
+    - 'CLSTEMPERATURE'
+   CLPHY:
+    - 'SURFRESERV.NEIGE'
+    - 'SURFIND.TERREMER'
+  NAMFPDY2: {}
+  NAMFPDYI: {}
+  NAMFPDYV: {}
+  NAMFPDYH: {}
+  NAMFPDYP: {}
+  NAMFPDYS: {}
+  NAMFPDYT: {}
+  NAMFPDYF : {}
+  NAMPPC : {}
+
+ xxtddddhhmm:
+  NAMFPPHY:
+   CLCFU:
+    - 'SURFACCPLUIE'
+    - 'SURFACCNEIGE'
+    - 'SURFACCGRAUPEL'
+   CLXFU:
+    - 'CLSTEMPERATURE'
+   CLPHY:
+    - 'SURFRESERV.NEIGE'
+    - 'SURFIND.TERREMER'
+  NAMFPDY2: {}
+  NAMFPDYI: {}
+  NAMFPDYV: {}
+  NAMFPDYH: {}
+  NAMFPDYP: {}
+  NAMFPDYS: {}
+  NAMFPDYT: {}
+  NAMFPDYF : {}
+  NAMPPC : {}
+
+
+ xxt00000000:
+   <<: *default
