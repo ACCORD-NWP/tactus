@@ -21,5 +21,9 @@ Miscellaneous Documentation
    :parser: myst_parser.sphinx_
 
 .. include::
+    markdown_docs/output_settings.md
+   :parser: myst_parser.sphinx_
+
+.. include::
     markdown_docs/fullpos.md
    :parser: myst_parser.sphinx_

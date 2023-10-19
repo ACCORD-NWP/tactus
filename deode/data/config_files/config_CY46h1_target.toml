@@ -46,6 +46,9 @@
   submission = "include/submission/atos_bologna_CY46h1.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"
 
+[pgd]
+  one_decade = true
+
 [suite_control]
   cold_start = true
   create_static_data = true

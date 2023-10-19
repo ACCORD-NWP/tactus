@@ -129,3 +129,30 @@ def cycle_offset(basetime, dt, shift=DatetimeConstants.DEFAULT_SHIFT):
     shift_seconds = shift.days * 3600 * 24 + shift.seconds
     k = reftime % t - shift_seconds
     return pd.Timedelta(seconds=k)
+
+
+def get_decade(dt) -> str:
+    # Extract month and day from datetime object
+    dtg_mm = int(dt.month)
+    dtg_dd = int(dt.day)
+
+    # Determine decades_mm and decades_dd based on dtg_dd
+    if dtg_dd < 9:
+        decades_mm = dtg_mm
+        decades_dd = 5
+    elif 8 < dtg_dd < 19:
+        decades_mm = dtg_mm
+        decades_dd = 15
+    elif 18 < dtg_dd < 29:
+        decades_mm = dtg_mm
+        decades_dd = 25
+    else:
+        decades_mm = dtg_mm + 1
+        if decades_mm == 13:
+            decades_mm = 1
+        decades_dd = 5
+
+    decades_mm = f"{decades_mm:02d}"
+    decades_dd = f"{decades_dd:02d}"
+
+    return f"{decades_mm}{decades_dd}"

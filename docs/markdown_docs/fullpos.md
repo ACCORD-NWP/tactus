@@ -3,7 +3,8 @@ Describes how to select fields and output settings for fullpos. The scripting al
 
 ## Overview
 The fullpos output is controlled by the following settings
-- Output interval is set by `output_settings.fullpos` in the general section of the main config file. The interval is specified using the duration syntax and can be give down to a resolution of minutes.
+- Output interval, see [output settings](https://destination-earth-digital-twins.github.io/deode-prototype-docs/misc_section_in_doc_page.html#configure-selection-of-timings-in-output-settings)
+
 - Field selection and settings for different output times is done in the fullpos main selection, `deode/namelist_generation/CYCLE/master_selection.yml`
 
 Currently it's only implemented support for a single domain using the native geometry of the domain used for the model run.
