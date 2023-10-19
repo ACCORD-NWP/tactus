@@ -145,6 +145,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
 
     def new_task_mars_batchjob_run_method(*args, **kwargs):
         """Skip any work."""
+        print(*args, **kwargs)
 
     def new_task_marsprep_run_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""

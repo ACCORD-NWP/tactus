@@ -3,7 +3,7 @@
 import os
 from pathlib import Path
 
-from .datetime_utils import as_datetime, as_timedelta
+from .datetime_utils import as_datetime, as_timedelta, get_decade
 from .logs import LogDefaults, logger
 from .os_utils import deodemakedirs
 from .toolbox import Platform
@@ -58,6 +58,7 @@ class SuiteDefinition(object):
         self.create_static_data = config["suite_control.create_static_data"]
         self.do_soil = config["suite_control.do_soil"]
         self.do_pgd = config["suite_control.do_pgd"]
+        self.one_decade = config["pgd.one_decade"]
         self.create_time_dependent_suite = config[
             "suite_control.create_time_dependent_suite"
         ]
@@ -536,6 +537,22 @@ class SuiteDefinition(object):
             "Q3": "07,08,09",
             "Q4": "10,11,12",
         }
+
+        if self.one_decade:
+            basetime = as_datetime(config["general.times.start"])
+            basetime_month = int(basetime.month)
+            last_month = basetime_month - 1
+            if last_month == 0:
+                last_month = 12
+            next_month = basetime_month + 1
+            if next_month == 13:
+                next_month = 1
+            seasons = {
+                f"m{last_month:02d}": f"{last_month:02d}",
+                f"m{basetime_month:02d}": f"{basetime_month:02d}",
+                f"m{next_month:02d}": f"{next_month:02d}",
+            }
+
         for season, months in seasons.items():
             month_family = EcflowSuiteFamily(season, e923_monthly_family, self.ecf_files)
 

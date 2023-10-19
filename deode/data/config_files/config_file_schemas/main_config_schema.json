@@ -17,6 +17,9 @@
     "boundaries": {
       "$ref": "#/definitions/boundaries"
     },
+    "pgd": {
+      "$ref": "#/definitions/pgd"
+    },
     "fullpos": {
       "$ref": "#/definitions/fullpos"
     },
@@ -93,6 +96,18 @@
         "bd_has_surfex": {
           "description": "Set to true if the host model runs with surfex",
           "type": "boolean"
+        }
+      }
+    },
+    "pgd": {
+      "title": "Pgd Section",
+      "description": "Settings for control of Pgd selection.",
+      "type": "object",
+      "properties": {
+        "one_decade": {
+          "title": "Option for using one decade",
+          "type": "boolean",
+	  "default": true
         }
       }
     },

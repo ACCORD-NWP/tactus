@@ -115,11 +115,12 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   WALLTIME = "#SBATCH --time=01:00:00"
 
 [task_exceptions.Pgd]
+  NPROC = 2
   WRAPPER = "srun -n @NPROC@"
 
 [task_exceptions.Pgd.BATCH]
-  NODES = "#SBATCH --nodes=2"
-  NTASKS = "#SBATCH --ntasks=32"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=2"
   WALLTIME = "#SBATCH --time=00:30:00"
 
 [task_exceptions.PgdUpdate]
