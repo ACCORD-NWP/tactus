@@ -279,12 +279,14 @@
               "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
             },
             "basetime": {
-              "description": "Base TB specified",
-              "type": "string"
+              "description": "Initial date and time for the current task.",
+              "type": "string",
+              "format": "date-time"
             },
             "validtime": {
-              "description": "Valid TB specified",
-              "type": "string"
+              "description": "Final date and time for the current task.",
+              "type": "string",
+              "format": "date-time"
             }
           },
           "oneOf": [
