@@ -137,7 +137,11 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         "--ecf-files", "-f", help="Ecflow container directory", required=True
     )
     parser_start_suite.add_argument(
-        "--ecf_home", "-eh", help="Ecflow home directory locally on server", required=False, default=None
+        "--ecf_home",
+        "-eh",
+        help="Ecflow home directory locally on server",
+        required=False,
+        default=None,
     )
     parser_start_suite.add_argument("--begin", "-b", help="Begin suite", default=True)
     parser_start_suite.set_defaults(run_command=start_suite)
