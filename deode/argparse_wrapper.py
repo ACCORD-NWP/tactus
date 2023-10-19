@@ -137,9 +137,26 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         "--ecf-files", "-f", help="Ecflow container directory", required=True
     )
     parser_start_suite.add_argument(
-        "--ecf_home",
+        "--ecf-home",
         "-eh",
         help="Ecflow home directory locally on server",
+        dest="ecf_home",
+        required=False,
+        default=None,
+    )
+    parser_start_suite.add_argument(
+        "--ecf-files-remotely",
+        "-er",
+        help="Ecflow file root directory locally on server",
+        dest="ecf_files_remotely",
+        required=False,
+        default=None,
+    )
+    parser_start_suite.add_argument(
+        "--remote-user",
+        "-u",
+        help="Ecflow file root directory locally on server",
+        dest="remote_user",
         required=False,
         default=None,
     )

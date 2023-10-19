@@ -92,13 +92,19 @@ def start_suite(args, config):
         ecf_home = args.joboutdir
     else:
         ecf_home = args.ecf_home
+    ecf_files_local = args.ecf_files
+    if args.ecf_files_remotely is None:
+        ecf_files_remotely = args.ecf_files
+    else:
+        ecf_files_remotely = args.ecf_files_remotely
 
+    remote_user = args.remote_user
     logger.debug("ECF_HOME={}", ecf_home)
     troika_config_file = config["troika.config_file"]
     troika_config_file = Platform(config).substitute(troika_config_file)
     local_troika_config_file = troika_config_file
     if ecf_home != args.joboutdir:
-        local_troika_config_file = f"{ecf_home}/troika.yml"
+        local_troika_config_file = f"{ecf_files_remotely}/troika.yml"
     logger.debug(
         "troika config used: {} local file={}",
         troika_config_file,
@@ -113,10 +119,11 @@ def start_suite(args, config):
     defs = SuiteDefinition(
         suite_name,
         args.joboutdir,
-        args.ecf_files,
+        ecf_files_local,
         config,
         submission_defs,
         ecf_home=ecf_home,
+        ecf_files_remotely=ecf_files_remotely,
     )
     def_file = f"{suite_name}.def"
     defs.save_as_defs(def_file)
@@ -124,16 +131,19 @@ def start_suite(args, config):
     # Copy troika and containers
     if ecf_home != args.joboutdir:
         logger.info(
-            "Copy ecflow files to host={} and directory={}", args.ecf_host, ecf_home
+            "Copy ecflow files to host={} and directory={} remote_user={}",
+            args.ecf_host,
+            ecf_files_remotely,
+            remote_user,
         )
         cfg = {"host": args.ecf_host}
-        ssh = SSHConnection(cfg, "ecflow-user")
-        for root, __, files in os.walk(f"{args.ecf_files}/{suite_name}"):
+        ssh = SSHConnection(cfg, remote_user)
+        for root, __, files in os.walk(f"{ecf_files_local}/{suite_name}"):
             for file in files:
                 src = f"{root}/{file}"
-                rpath = root.replace(f"{args.ecf_files}", "")
-                ssh.execute(["mkdir", "-p", f"{ecf_home}/{rpath}"])
-                dst = f"{ecf_home}/{rpath}/{file}"
+                rpath = root.replace(f"{ecf_files_local}", "")
+                ssh.execute(["mkdir", "-p", f"{ecf_files_remotely}/{rpath}"])
+                dst = f"{ecf_files_remotely}/{rpath}/{file}"
                 logger.info("Copy src={} to dst={}", src, dst)
                 ssh.sendfile(src, dst)
             ssh.sendfile(troika_config_file, local_troika_config_file)
