@@ -143,6 +143,9 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         with contextlib.suppress(FileNotFoundError):
             original_task_creategrib_creategrib_execute_method(*args, **kwargs)
 
+    def new_task_mars_batchjob_run_method(*args, **kwargs):
+        """Skip any work."""
+
     def new_task_marsprep_run_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
         with contextlib.suppress(FileNotFoundError):
@@ -215,6 +218,10 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         "deode.tasks.e923.E923.monthly_part", new=new_task_e923_monthly_part_method
     )
     session_mocker.patch(
+        "deode.tasks.marsprep.BatchJob.run",
+        new=new_task_mars_batchjob_run_method,
+    )
+    session_mocker.patch(
         "deode.tasks.marsprep.Marsprep.run",
         new=new_task_marsprep_run_method,
     )
@@ -222,7 +229,10 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         "deode.tasks.collectlogs.CollectLogs.execute",
         new=new_task_collectlogs_collectlogs_execute_method,
     )
-
+    session_mocker.patch(
+        "deode.tasks.marsprepGlobalDT.BatchJob.run",
+        new=new_task_mars_batchjob_run_method,
+    )
     session_mocker.patch(
         "deode.tasks.marsprepGlobalDT.MarsprepGlobalDT.run",
         new=new_task_marsprepglobaldt_run_method,
