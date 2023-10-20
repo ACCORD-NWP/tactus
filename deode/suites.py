@@ -211,8 +211,8 @@ class SuiteDefinition(object):
                     str(i): {
                         "day": cycle_time.strftime("%Y%m%d"),
                         "time": cycle_time.strftime("%H%M"),
-                        "validtime": cycle_time.strftime("%Y%m%d%H%M"),
-                        "basetime": cycle_time.strftime("%Y%m%d%H%M"),
+                        "validtime": cycle_time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "basetime": cycle_time.strftime("%Y-%m-%dT%H:%M:%SZ"),
                     }
                 }
             )
