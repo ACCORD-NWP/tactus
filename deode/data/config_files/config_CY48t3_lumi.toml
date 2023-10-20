@@ -52,6 +52,9 @@
   submission = "include/submission/lumi_CY48t3.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"
 
+[pgd]
+  one_decade = true
+
 [suite_control]
   cold_start = true
   create_static_data = true
