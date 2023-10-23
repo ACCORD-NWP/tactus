@@ -22,6 +22,7 @@ coverage.xml
 .coverage.xml
 .coverage
 .venv
+.flakeheaven_cache/
 
 # Files/directories generated at runtime
 archived_file
@@ -35,3 +36,4 @@ ecf/[A-Z]*.py
 docs/_build/
 docs/deode.rst
 docs/modules.rst
+docs/markdown_docs/config.md

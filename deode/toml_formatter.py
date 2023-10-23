@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Code for a rudimentary TOML formatter, hopefully covering the most common use cases."""
 import collections.abc
+import contextlib
 import csv
 import itertools
 import re
@@ -78,9 +79,11 @@ class ParsedTomlFileEntry:
         try:
             key, value = tomlkit.key_value(str(self))
         except tomlkit.exceptions.EmptyKeyError:
+            self._defined_as_key_value = False
             if isinstance(self.item, (Table, AoT)):
                 self._toml_doc_obj = tomlkit.loads(tomlkit.dumps(self.toml_doc_obj.value))
         else:
+            self._defined_as_key_value = True
             self.toml_doc_obj.clear()
             if isinstance(value, tomlkit.items.InlineTable):
                 new_table = tomlkit.inline_table()
@@ -95,7 +98,9 @@ class ParsedTomlFileEntry:
                     csv.reader([key.as_string()], delimiter=".", skipinitialspace=True)
                 )
             ]
-            self.toml_doc_obj.append(tomlkit.key(stripped_key_components), value)
+
+            new_key = tomlkit.key(stripped_key_components)
+            self.toml_doc_obj.append(new_key, value)
 
         if trivia is not None:
             self.item.trivia.__dict__ = trivia.__dict__
@@ -108,12 +113,20 @@ class ParsedTomlFileEntry:
         return self._tomlkit_doc_obj_body[-1][0]
 
     @property
+    def defined_as_key_value(self):
+        try:
+            return self._defined_as_key_value
+        except:
+            return False
+
+    @property
     def item(self) -> Item:
         """Return the `Item` associated with the atomic entry."""
         return self._tomlkit_doc_obj_body[-1][1]
 
     def indent(self, indent: int = 0):
         """Set the number of spaces for the indentation of the atomic entry."""
+        self._indent_level = indent
         _indent_atomic_toml_entry(entry=self, indent=indent)
 
     @property
@@ -125,11 +138,12 @@ class ParsedTomlFileEntry:
         ]
 
     def _fix_spaces_around_comments(self):
-        if not isinstance(self.item, Whitespace):
+        if not isinstance(self.item, (Whitespace, Comment)):
             if self.item.trivia.comment:
                 comment_text = self.item.trivia.comment.split("#", 1)[1].strip()
-                self.item.trivia.comment = f"# {comment_text}"
-                self.item.trivia.comment_ws = " "
+                if not comment_text.startswith("#"):
+                    self.item.trivia.comment = f"# {comment_text}"
+                    self.item.trivia.comment_ws = " "
 
     def __eq__(self, other):
         if isinstance(other, ParsedTomlFileEntry):
@@ -137,7 +151,15 @@ class ParsedTomlFileEntry:
         return False
 
     def __repr__(self):
-        return self.toml_doc_obj.as_string().rstrip()
+        str_repr = self.toml_doc_obj.as_string().rstrip()
+        if isinstance(self.item, AoT) and self.defined_as_key_value:
+            str_repr = _get_aot_repr(self.item, self.key)
+            if len(str_repr) > 90:
+                str_repr = _get_aot_repr(self.item, self.key, multiline=True)
+        with contextlib.suppress(AttributeError):
+            if str_repr.startswith((self._indent_level + 1) * " "):
+                str_repr = self._indent_level * " " + str_repr.lstrip()
+        return str_repr
 
     def __hash__(self):
         return hash(self.toml_doc_obj.as_string())
@@ -186,7 +208,8 @@ class FormattedTomlFileSection(BaseTomlContentsSequence):
             new = _adjust_empty_lines(new)
             new = _sort_keys(new)
         self._data = tuple(new)
-        self._normalise_indentation()
+        if not self.is_comment:
+            self._normalise_indentation()
 
     @cached_property
     def name(self) -> str:
@@ -210,7 +233,7 @@ class FormattedTomlFileSection(BaseTomlContentsSequence):
         for entry in self:
             indent_int = level_number * self.formatting_options.indentation
             entry.indent(indent_int)
-            if isinstance(entry.item, (Table, AoT)) and not entry.key.is_dotted():
+            if isinstance(entry.item, (Table, AoT)) and not entry.defined_as_key_value:
                 level_number += 1
 
 
@@ -274,9 +297,8 @@ class FormattedToml(BaseMapping):
 def _indent_atomic_toml_entry(entry: ParsedTomlFileEntry, indent: int = 0):
     if isinstance(entry.item, Whitespace):
         return
-
     indent_str = indent * " "
-    if isinstance(entry.item, (Table, AoT)) and entry.key.is_dotted():
+    if isinstance(entry.item, (Table, AoT)) and entry.defined_as_key_value:
         # For whatever reason, tomlkit treats this as a special case
         entry.key._original = indent_str + entry.key._original.strip()
     else:
@@ -354,7 +376,7 @@ def _sort_keys(
     sorted_section_entries = []
     current_sorting_block = []
     for ientry, entry in enumerate(section_entries):
-        if isinstance(entry.item, (Table, AoT)) and not entry.key.is_dotted():
+        if isinstance(entry.item, (Table, AoT)) and not entry.defined_as_key_value:
             sorted_section_entries.append(entry)
         elif (
             isinstance(entry.item, (Comment, Whitespace))
@@ -380,7 +402,7 @@ def _split_data_in_sections(
     new_section_start = True
     for entry in entries:
         new_section_start = (
-            isinstance(entry.item, (Table, AoT)) and not entry.key.is_dotted()
+            isinstance(entry.item, (Table, AoT)) and not entry.defined_as_key_value
         )
         if new_section_start:
             # Find comments that should be attached to next section
@@ -470,3 +492,30 @@ def _get_sorted_sequence_of_sections(
     return tuple(
         manual_order_sections + [section for block in sorting_blocks for section in block]
     )
+
+
+def _get_aot_repr(aot: AoT, key: tomlkit.items.Key, multiline: bool = False):
+    """Return a formatted representation of an AoT."""
+    indent = len(aot.trivia.indent)
+    new_array = tomlkit.array().multiline(multiline).indent(indent)
+    for table in aot:
+        new_table = tomlkit.inline_table()
+        new_table.update(table.unwrap())
+        new_array.append(new_table)
+
+    toml_doc_obj = tomlkit.toml_document.TOMLDocument()
+    toml_doc_obj.append(key.as_string().strip(), new_array)
+    str_repr = toml_doc_obj.as_string()
+    if multiline:
+        # Fix indentation of AoT items
+        import io
+
+        buf = io.StringIO(str_repr)
+        lines = buf.read().splitlines()
+        for iline in range(1, len(lines) - 1):
+            lines[iline] = 2 * aot.trivia.indent + lines[iline].strip()
+        str_repr = "\n".join(lines)
+
+    str_repr += f"{aot.trivia.comment_ws}{aot.trivia.comment}"
+
+    return str_repr.rstrip()

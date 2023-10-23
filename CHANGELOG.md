@@ -8,13 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Full Changelog](https://github.com/destination-earth-digital-twins/Deode-Prototype/compare/...HEAD)
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
+### Added
+- `poetry devtools` command
+
+  To help developers with tasks such as linting and pre-push checks
 ### Changed
+- Minimum required python version is now `v3.9`
+  - Requires reinstaling the environment. See instructions in the [README](README.md) file.
 - `deode doc config` command now shows info defined in the schema only.
-  Users can run `deode show config` when they wish to know what is used
-  in the config.
+
+  Users can run `deode show config` when they wish to know what is used in the config.
+
 - Migrate most linting checks from `flake8` to [`ruff`](https://docs.astral.sh/ruff/). It is faster.
 ### Fixed
 - Format of online config doc in github pages.
+- Fixes throughout doc files and online docs.
 
 
 ## [0.1.0] - 2023-10-11

@@ -202,7 +202,7 @@ class ParsedConfig(BasicConfig):
 def _read_raw_config_file(config_path):
     """Read raw configs from files in miscellaneous formats."""
     config_path = Path(config_path)
-    logger.info("Reading configs from file <{}>", config_path)
+    logger.debug("Reading configs from file <{}>", config_path)
 
     with open(config_path, "rb") as config_file:
         if config_path.suffix == ".toml":

@@ -102,7 +102,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   WALLTIME = "#SBATCH --time=01:00:00"
 
 [task_exceptions.Gmted.ENV]
-  MODULE_GDAL = "module('load', 'gdal/3.2.1')"
+  MODULE_GDAL = "module('load', 'gdal/3.6.2')"
 
 [task_exceptions.Marsprep.BATCH]
   NODES = "#SBATCH --nodes=1"
@@ -136,4 +136,4 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   WALLTIME = "#SBATCH --time=00:10:00"
 
 [task_exceptions.Soil.ENV]
-  MODULE_GDAL = "module('load', 'gdal/3.2.1')"
+  MODULE_GDAL = "module('load', 'gdal/3.6.2')"

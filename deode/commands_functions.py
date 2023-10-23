@@ -289,7 +289,6 @@ def toml_formatter(args, config):  # noqa ARG001
     n_files = 0
     files_in_need_of_formatting = []
     for fpath in itertools.chain.from_iterable(file_iterators):
-        logger.info("Checking file <{}>", fpath)
         n_files += 1
 
         formatted_toml = FormattedToml.from_file(
@@ -310,7 +309,7 @@ def toml_formatter(args, config):  # noqa ARG001
 
         if file_needs_formatting:
             if not args.fix_inplace:
-                logger.error("File <{}> needs formatting.", fpath)
+                logger.error("File <{}> needs formatting, see diff above.", fpath)
             files_in_need_of_formatting.append(fpath)
 
             if args.show_formatted:
@@ -318,12 +317,12 @@ def toml_formatter(args, config):  # noqa ARG001
                 sys.stdout.write(str(formatted_toml) + "\n")
 
             if args.fix_inplace:
-                logger.info("Fixing format of file <{}> in-place.", fpath)
+                logger.debug("Fixing format of file <{}> in-place.", fpath)
                 with open(fpath, "w") as f:
                     f.write(str(formatted_toml))
 
         else:
-            logger.info("File <{}> seems to be well-formatted.", fpath)
+            logger.debug("File <{}> seems to be well-formatted.", fpath)
 
     if files_in_need_of_formatting:
         if args.fix_inplace:

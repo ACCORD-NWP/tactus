@@ -52,9 +52,9 @@ a_long_multiline_array_remains_multiline = [
  times. another_list =     ["2020-01-01T12:00:00Z"   ] # It seems tomlkit loses this comment
  times.  list."*.py"   =     ["2020-01-01T12:00:00Z"   ] # It seems tomlkit loses this comment
 
-    # Now, this comment block should serve as a separator between different
-    # section-sorting groups, i.e., sorting of table names should not mix
-    # tables above and below this separator.
+   # Now, this comment block should serve as a separator between different
+   # section-sorting groups, i.e., sorting of table names should not mix
+   # tables above and below this separator. Indentation of comment blocks is not altered.
 
 
 
@@ -128,9 +128,9 @@ waldo = "bar" # This name should stay at the top, otherwise it will endup in a t
   times.another_list = ["2020-01-01T12:00:00Z"]
   times.list."*.py" = ["2020-01-01T12:00:00Z"]
 
-# Now, this comment block should serve as a separator between different
-# section-sorting groups, i.e., sorting of table names should not mix
-# tables above and below this separator.
+   # Now, this comment block should serve as a separator between different
+   # section-sorting groups, i.e., sorting of table names should not mix
+   # tables above and below this separator. Indentation of comment blocks is not altered.
 
 [[AOT1]]
   b = 2

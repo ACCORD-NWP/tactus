@@ -94,20 +94,26 @@ def log_elapsed_time(**kwargs):
     def log_elapsed_time_decorator(function):
         """Wrap `function` and log beginning, exit and elapsed time."""
         name = kwargs.get("name", function.__name__)
+        if function.__name__ == "main":
+            name = f"{GeneralConstants.PACKAGE_NAME} v{GeneralConstants.VERSION}"
+            cmd = f"{' '.join([GeneralConstants.PACKAGE_NAME, *sys.argv[1:]])}"
+            name = f'{name} --> "{cmd}"'
 
         @wraps(function)
         def wrapper(*args, **kwargs):
-            logger.info("Start {}", name)
+            logger.opt(colors=True).info("<blue>Start {}</blue>", name)
 
             t_start = time.time()
             function_rtn = function(*args, **kwargs)
             elapsed = time.time() - t_start
 
             if elapsed < 60:
-                logger.info("Leaving {}. Total runtime: {:.2f}s.", name, elapsed)
+                logger.opt(colors=True).info(
+                    "<blue>Leaving {}. Total runtime: {:.2f}s.</blue>", name, elapsed
+                )
             else:
-                logger.info(
-                    "Leaving {}. Total runtime: {}s (~{}).",
+                logger.opt(colors=True).info(
+                    "<blue>Leaving {}. Total runtime: {}s (~{}).</blue>",
                     name,
                     elapsed,
                     humanize.precisedelta(elapsed),
