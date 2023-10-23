@@ -14,9 +14,9 @@
 
 [general.output_settings]
   fullpos = "PT15M"
-  history = ["PT1H"]
+  history = "PT1H"
   nrazts = "PT1H"
-  surfex = ["PT1H"]
+  surfex = "PT1H"
 
 [general.times]
   cycle_length = "PT3H"

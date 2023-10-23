@@ -13,10 +13,10 @@
   windfarm = false
 
 [general.output_settings]
-  fullpos = ["PT6H:PT15M", "PT9H:PT30M", "PT1H"]
-  history = ["PT0H:PT12H:PT1H"]
+  fullpos = ["PT0H:PT6H:PT15M", "PT6H:PT9H:PT30M", "PT9H:PT12H:PT1H"]
+  history = "PT1H"
   nrazts = "PT1H"
-  surfex = ["PT1H", "PT9H:PT24H:PT3H"]
+  surfex = "PT1H"
 
 [general.times]
   cycle_length = "PT6H"

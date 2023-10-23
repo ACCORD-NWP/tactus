@@ -50,6 +50,24 @@ def dt2str(dt):
     return duration
 
 
+def check_syntax(output_settings, length):
+    """Check syntax of output_settings.
+
+    Args:
+        output_settings (tuple, list, str): Specifies the output steps
+        length (integer): length to check on
+
+    Raises:
+        SystemExit: General system handler
+
+    """
+    for x in output_settings:
+        if x.count(":") != length:
+            raise SystemExit(
+                f"Invalid argument {output_settings} for output_settings.\nPlease provide single time increment as a string or a list of 'starttime:endtime:interval' choices"
+            )
+
+
 def expand_output_settings(output_settings, forecast_range):
     """Expand the output_settings coming from config.
 
@@ -59,28 +77,19 @@ def expand_output_settings(output_settings, forecast_range):
 
     Returns:
         sections (list) : List of output subsections
+
     """
+    oi = []
     if isinstance(output_settings, str):
-        if output_settings.count(":") == 0:
-            oi = ["PT0H:" + forecast_range + ":" + output_settings]
-        elif output_settings.count(":") == 1:
-            oi = ["PT0H:" + output_settings]
-        else:
-            oi = [output_settings]
-    else:
+        check_syntax([output_settings], 0)
+        oi = ["PT0H:" + forecast_range + ":" + output_settings]
+
+    elif isinstance(output_settings, (tuple, list)):
+        check_syntax(output_settings, 2)
         oi = output_settings
 
-    z = ["PT0H:PT0H:PT0H"]
-    for x in oi:
-        if x.count(":") == 0:
-            z.append(":".join([z[-1].split(":")[1], forecast_range, x]))
-        elif x.count(":") == 1:
-            z.append(z[-1].split(":")[1] + ":" + x)
-        else:
-            z.append(x)
-
     sections = []
-    for x in z[1:]:
+    for x in oi:
         sections.append([as_timedelta(y) for y in x.split(":")])
 
     return sections
@@ -96,6 +105,7 @@ def oi2dt_list(output_settings, forecast_range):
     Returns:
         dt (list) : List of output occurences
     """
+
     sections = expand_output_settings(output_settings, forecast_range)
 
     dt = []
@@ -109,6 +119,7 @@ def oi2dt_list(output_settings, forecast_range):
                 dt.append(cdt)
             cdt += s[2]
 
+    dt.sort()
     return dt
 
 

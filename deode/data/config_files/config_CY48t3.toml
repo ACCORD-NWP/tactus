@@ -12,10 +12,10 @@
   tstep = 75
 
 [general.output_settings]
-  fullpos = ["PT6H:PT15M", "PT9H:PT30M", "PT1H"]
-  history = ["PT1H"]
+  fullpos = ["PT0H:PT3H:PT15M", "PT3H:PT6H:PT30M"]
+  history = "PT1H"
   nrazts = "PT1H"
-  surfex = ["PT6H:PT1H", "PT9H:PT24H:PT3H"]
+  surfex = ["PT0H:PT3H:PT1H", "PT3H:PT6:PT3H"]
 
 [general.times]
   cycle_length = "PT6H"
