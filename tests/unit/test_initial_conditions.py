@@ -2,7 +2,6 @@
 """Unit tests for the initial_conditions."""
 
 import contextlib
-import os
 from pathlib import Path
 
 import pytest
@@ -14,20 +13,20 @@ from deode.initial_conditions import InitialConditions
 WORKING_DIR = Path.cwd()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def tmpdir(tmp_path_factory):
     return tmp_path_factory.getbasetemp().as_posix()
 
 
-@pytest.fixture(scope="module", params=[False, True])
+@pytest.fixture(params=[False, True])
 def parsed_config(request, tmpdir):
     """Return a raw config common to all tasks."""
     if request.param:
         for f in [
             "foo",
             "ELSCFTESTALBC000",
-            "ICMSHTEST+0006:00:00",
-            "ICMSHTEST+0006:00:00.sfx",
+            "ICMSHTEST+0006h00m00s",
+            "ICMSHTEST+0006h00m00s.sfx",
             "ICMSHTESTINIT.sfx",
         ]:
             Path(f"{tmpdir}/{f}").touch()
@@ -49,6 +48,9 @@ def parsed_config(request, tmpdir):
         f"""
         [general]
             cnmexp = "TEST"
+            bogus = "{request.param}"
+            initfile = "{tmpdir}/@HISTORY_TEMPLATE@"
+            initfile_sfx = "{tmpdir}/@SURFEX_TEMPLATE@"
         [general.times]
             basetime = "{basetime}"
             validtime = "{validtime}"
@@ -64,26 +66,60 @@ def parsed_config(request, tmpdir):
     return config
 
 
+@pytest.fixture(params=[True, False])
+def set_surfex(request):
+    return {"general": {"surfex": request.param}}
+
+
+@pytest.fixture(params=["start", "cold_start", "restart"])
+def set_mode(request):
+    return {"suite_control": {"mode": request.param}}
+
+
 @pytest.mark.parametrize(
     "param",
     [
         {"general": {"deode_home": "{WORKING_DIR}"}},
-        {"general": {"surfex": False}},
-        {"suite_control": {"cold_start": True}},
-        {"general": {"surfex": True}},
-        {"general": {"surfex": False}, "suite_control": {"cold_start": True}},
         {"general": {"initfile": "foo", "initfile_sfx": "foo"}},
+        {"general": {"times": {"start": "2023-10-15T15:32:24Z"}}},
     ],
 )
-def test_find_initial_files(parsed_config, tmpdir, param):
+def test_find_initial_files(tmpdir, parsed_config, set_surfex, set_mode, param):
     """Test load of the yml files."""
+    if parsed_config["general"]["bogus"] == "True":
+        if set_mode["suite_control"]["mode"] == "start":
+            truth = f"{tmpdir}/ELSCFTESTALBC000"
+            truth_sfx = f"{tmpdir}/ICMSHTESTINIT.sfx"
+            if "times" in param["general"]:
+                truth = f"{tmpdir}/ICMSHTEST+0006h00m00s"
+                truth_sfx = f"{tmpdir}/ICMSHTEST+0006h00m00s.sfx"
+        elif set_mode["suite_control"]["mode"] == "cold_start":
+            truth = f"{tmpdir}/ELSCFTESTALBC000"
+            truth_sfx = f"{tmpdir}/ICMSHTESTINIT.sfx"
+        elif set_mode["suite_control"]["mode"] == "restart":
+            truth = f"{tmpdir}/ICMSHTEST+0006h00m00s"
+            truth_sfx = f"{tmpdir}/ICMSHTEST+0006h00m00s.sfx"
+            if "initfile" in param["general"]:
+                truth = f"{tmpdir}/foo"
+                truth_sfx = f"{tmpdir}/foo"
+
+    for key in ["initfile", "initfile_sfx"]:
+        if key in param["general"]:
+            param["general"][key] = f"{tmpdir}/foo"
+
     config = parsed_config
+    config = config.copy(update=set_surfex)
+    config = config.copy(update=set_mode)
     config = config.copy(update=param)
-    prev_cwd = Path.cwd()
-    with contextlib.suppress(FileNotFoundError):
-        os.chdir(tmpdir)
-        InitialConditions(config).find_initial_files()
-    os.chdir(prev_cwd)
+    if parsed_config["general"]["bogus"] == "True":
+        initfile, initfile_sfx = InitialConditions(config).find_initial_files()
+        assert initfile == truth
+        assert initfile_sfx == truth_sfx
+    else:
+        with contextlib.suppress(FileNotFoundError):
+            initfile, initfile_sfx = InitialConditions(config).find_initial_files()
+            assert initfile == truth
+            assert initfile_sfx == truth_sfx
 
 
 if __name__ == "__main__":

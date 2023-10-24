@@ -146,10 +146,15 @@
           "description": "Run prep if cold start",
           "type": "boolean"
         },
-        "cold_start": {
-          "description": "Run prep every run",
-          "type": "boolean"
-        },
+	"mode": {
+	  "description": "Choose a strategy to achieve initial/initial_sfx files (start:  start from interpolated files and then propagate the FG between cycles, restart: start from a previous run and then propagate the FG between cycles, cold_start: always start from interpolated files).",
+	  "type": "string",
+	  "ebum": [
+	    "start",
+	    "restart",
+	    "cold_start"
+	   ]
+	},
         "interpolate_boundaries": {
           "description": "Activates the boundary interpolation",
           "type": "boolean"
@@ -236,6 +241,11 @@
         "sfx_input_defs": {
           "type": "string",
           "description": "Path to the surfex json config file"
+        },
+	"prev_case":{
+          "description": "Name of the previous experiment",
+          "type": "string",
+          "default": "@CASE@"
         }
       }
     },

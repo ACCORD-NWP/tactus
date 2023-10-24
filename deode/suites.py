@@ -66,9 +66,9 @@ class SuiteDefinition(object):
         self.do_prep = config["suite_control.do_prep"]
         self.do_marsprep = config["suite_control.do_marsprep"]
         self.do_archiving = config["suite_control.do_archiving"]
-        self.cold_start = config["suite_control.cold_start"]
         self.surfex = config["general.surfex"]
         self.suite_name = suite_name
+        self.mode = config["suite_control.mode"]
 
         name = suite_name
         self.joboutdir = joboutdir
@@ -161,6 +161,10 @@ class SuiteDefinition(object):
         input_template = input_template.as_posix()
         self.suite = EcflowSuite(name, ecf_files, variables=variables, dry_run=dry_run)
 
+        if self.mode == "restart":
+            self.do_prep = False
+            self.create_static_data = False
+
         if self.create_static_data:
             static_data = self.static_suite_part(config, input_template)
             task_logs = config["system.climdir"]
@@ -204,6 +208,9 @@ class SuiteDefinition(object):
         cycles = {}
         cycle_time = first_cycle
         i = 0
+        if self.mode == "restart":
+            self.do_prep = False
+
         while cycle_time <= last_cycle:
             logger.debug("cycle_time {}", cycle_time)
             cycles.update(
@@ -307,8 +314,8 @@ class SuiteDefinition(object):
                         input_template=input_template,
                     )
 
-                if not self.cold_start:
-                    self.do_prep = False
+                    if self.mode != "cold_start":
+                        self.do_prep = False
 
                 if self.interpolate_boundaries:
                     basetime = as_datetime(cycle["basetime"])

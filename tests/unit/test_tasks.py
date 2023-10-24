@@ -19,7 +19,7 @@ from deode.tasks.collectlogs import CollectLogs
 from deode.tasks.creategrib import CreateGrib
 from deode.tasks.discover_task import discover, get_task
 from deode.tasks.e923 import E923
-from deode.tasks.forecast import Forecast
+from deode.tasks.forecast import FirstGuess, Forecast
 from deode.tasks.marsprep import Marsprep
 from deode.tasks.marsprepGlobalDT import MarsprepGlobalDT
 from deode.toolbox import ArchiveError, FileManager, ProviderError
@@ -47,7 +47,7 @@ def base_raw_config(request):
     return config
 
 
-@pytest.fixture(params=classes_to_be_tested())
+@pytest.fixture(params=classes_to_be_tested(), scope="module")
 def task_name_and_configs(request, base_raw_config, tmp_path_factory):
     """Return a ParsedConfig with a task-specific section according to `params`."""
     task_name = request.param
@@ -93,6 +93,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_batchjob_run_method = BatchJob.run
     original_toolbox_filemanager_input_method = FileManager.input
     original_task_forecast_forecast_execute_method = Forecast.execute
+    original_task_forecast_firstguess_execute_method = FirstGuess.execute
     original_task_archive_archivehour_execute_method = ArchiveHour.execute
     original_task_archive_archivestatic_execute_method = ArchiveStatic.execute
     original_task_creategrib_creategrib_execute_method = CreateGrib.execute
@@ -127,6 +128,11 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         """Suppress some errors so that test continues if they happen."""
         with contextlib.suppress(FileNotFoundError):
             original_task_forecast_forecast_execute_method(*args, **kwargs)
+
+    def new_task_forecast_firstguess_execute_method(*args, **kwargs):
+        """Suppress some errors so that test continues if they happen."""
+        with contextlib.suppress(FileNotFoundError):
+            original_task_forecast_firstguess_execute_method(*args, **kwargs)
 
     def new_task_archive_archivehour_execute_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
@@ -195,6 +201,10 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     session_mocker.patch(
         "deode.tasks.forecast.Forecast.execute",
         new=new_task_forecast_forecast_execute_method,
+    )
+    session_mocker.patch(
+        "deode.tasks.forecast.FirstGuess.execute",
+        new=new_task_forecast_firstguess_execute_method,
     )
     session_mocker.patch(
         "deode.tasks.archive.ArchiveHour.execute",

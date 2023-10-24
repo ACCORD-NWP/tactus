@@ -4,6 +4,8 @@
   cnmexp = "DEOD"
   csc = "HARMONIE_AROME"
   cycle = "CY46h1"
+  initfile = "@SCRATCH@/deode/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@HISTORY_TEMPLATE@"
+  initfile_sfx = "@SCRATCH@/deode/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
   keep_workdirs = true
   mars_expver = "0001"
   nproma = -32
@@ -50,7 +52,6 @@
   one_decade = true
 
 [suite_control]
-  cold_start = true
   create_static_data = true
   create_time_dependent_suite = true
   do_archiving = false
@@ -59,6 +60,7 @@
   do_prep = true
   do_soil = true
   interpolate_boundaries = true
+  mode = "cold_start"
 
 [system]
   archive = "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
@@ -77,6 +79,7 @@
   marsdir = "@SCRATCH@/deode/IFS/@YYYY@/@MM@/@DD@/@HH@/@MARS_EXPVER@"
   marsfile_template = "mars_prefetch_[levtype]_[date]_[time]+[step]"
   namelists = "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
+  prev_case = "@CASE@"
   sfx_input_defs = "@DEODE_HOME@/deode/data/input/sfx_input_@CYCLE@.json"
   wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@"
 
