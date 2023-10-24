@@ -33,7 +33,15 @@ def load():
     fpdir = platform.substitute(config["fullpos.config_path"])
 
     return Fullpos(
-        "test", fpdir=fpdir, fpfiles=["rules", "master_selection", "master_selection"]
+        "test",
+        fpdir=fpdir,
+        fpfiles=[
+            "rules",
+            "namfpc_header",
+            "aq_selection",
+            "master_selection",
+            "master_selection",
+        ],
     )
 
 
