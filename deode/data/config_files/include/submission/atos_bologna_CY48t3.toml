@@ -44,7 +44,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   NPROCX = 1
   NPROCY = 1
   SCHOST = "hpc"
-  tasks = ["Gmted", "Soil", "Marsprep", "MarsprepGlobalDT"]
+  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep", "MarsprepGlobalDT"]
   WRAPPER = "srun"
 
 [serial.BATCH]
@@ -73,6 +73,12 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 [task]
   wrapper = ""
 
+[task_exceptions.ArchiveHour.BATCH]
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[task_exceptions.ArchiveStatic.BATCH]
+  WALLTIME = "#SBATCH --time=03:00:00"
+
 [task_exceptions.c903]
   NPROC = 36
 
@@ -85,6 +91,9 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 [task_exceptions.creategrib]
   binary = "gl_20230823"
   bindir = "/home/snh02/work/gl_binaries"
+
+[task_exceptions.CreateGrib.BATCH]
+  WALLTIME = "#SBATCH --time=01:00:00"
 
 [task_exceptions.e927]
   NPROC = 16
@@ -102,6 +111,9 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   NTASKS = "#SBATCH --ntasks=256"
   WALLTIME = "#SBATCH --time=01:00:00"
 
+[task_exceptions.Forecast.ENV]
+  UCX_LOG_LEVEL = "os.environ['UCX_LOG_LEVEL'] = 'error'"
+
 [task_exceptions.Gmted.ENV]
   MODULE_GDAL = "module('load', 'gdal/3.6.2')"
 
@@ -111,12 +123,12 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   WALLTIME = "#SBATCH --time=01:00:00"
 
 [task_exceptions.MarsprepGlobalDT.BATCH]
+  MEM = "#SBATCH --mem=32GB"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   WALLTIME = "#SBATCH --time=01:00:00"
 
 [task_exceptions.Pgd]
-  NPROC = 2
   WRAPPER = "srun -n @NPROC@"
 
 [task_exceptions.Pgd.BATCH]

@@ -103,15 +103,19 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   NTASKS = "#SBATCH --ntasks=16"
 
 [task_exceptions.Forecast]
-  NPROC = 1024
+  NPROC = 3072
 
 [task_exceptions.Forecast.BATCH]
   MEM = "#SBATCH --mem=200GB"
-  NODES = "#SBATCH --nodes=16"
-  NTASKS = "#SBATCH --ntasks=1024"
-  WALLTIME = "#SBATCH --time=05:00:00"
+  NODES = "#SBATCH --nodes=24"
+  NTASKS = "#SBATCH --ntasks=3072"
+  WALLTIME = "#SBATCH --time=08:00:00"
+
+[task_exceptions.Forecast.ENV]
+  UCX_LOG_LEVEL = "os.environ['UCX_LOG_LEVEL'] = 'error'"
 
 [task_exceptions.Gmted.ENV]
+  MEM = "#SBATCH --mem=32GB"
   MODULE_GDAL = "module('load', 'gdal/3.6.2')"
 
 [task_exceptions.Marsprep.BATCH]
@@ -120,6 +124,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   WALLTIME = "#SBATCH --time=02:00:00"
 
 [task_exceptions.MarsprepGlobalDT.BATCH]
+  MEM = "#SBATCH --mem=32GB"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   WALLTIME = "#SBATCH --time=01:00:00"
