@@ -29,6 +29,8 @@ def config_platform():
                           { domain = "domain.name" }]
         [domain]
             name = "MYDOMAIN"
+        [pgd]
+            ond_decade = true
         [general.times]
             basetime = "2000-01-01T00:00:00Z"
             validtime = "2000-01-02T00:00:00Z"

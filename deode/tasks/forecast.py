@@ -200,7 +200,10 @@ class Forecast(Task):
         self.fmanager.input(
             f"{self.climdir}/Const.Clim.{mm}", f"const.clim.{self.domain}"
         )
-        self.fmanager.input(f"{self.climdir}/Const.Clim.sfx", "Const.Clim.sfx")
+        self.fmanager.input(
+            f"{self.climdir}/{self.file_templates['pgd']['archive']}",
+            f"{self.file_templates['pgd']['model']}",
+        )
 
         # wind farm input data
         if self.windfarm:

@@ -2,7 +2,7 @@
 import os
 import re
 
-from .datetime_utils import as_datetime
+from .datetime_utils import as_datetime, get_decade
 from .logs import logger
 
 
@@ -334,6 +334,11 @@ class Platform:
                 pattern = self.sub_value(pattern, "HH", basetime.strftime("%H"))
                 pattern = self.sub_value(pattern, "mm", basetime.strftime("%M"), ci=False)
                 pattern = self.sub_value(pattern, "ss", basetime.strftime("%S"), ci=False)
+
+                one_decade_pattern = (
+                    get_decade(basetime) if self.config["pgd.one_decade"] else ""
+                )
+                pattern = self.sub_value(pattern, "ONE_DECADE", one_decade_pattern)
 
         logger.debug("Return pattern={}", pattern)
         return pattern
