@@ -67,6 +67,7 @@ def _module_mockers(module_mocker, config_path, tmp_path_factory):
         "deode.submission.TaskSettings.parse_job",
         new=new_submission_task_settings_parse_job,
     )
+    module_mocker.patch("shutil.chown")
 
 
 def test_package_executable_is_in_path():

@@ -191,6 +191,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         Path("PREP.fa").touch()
 
     # Do the actual mocking
+    session_mocker.patch("shutil.chown")
     session_mocker.patch(
         "deode.tasks.batch.BatchJob.__init__", new=new_batchjob_init_method
     )
@@ -263,6 +264,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
 class TestTasks:
     """Test all tasks."""
 
+    @pytest.mark.usefixtures("_mockers_for_task_run_tests")
     def test_task_can_be_instantiated(self, task_name_and_configs):
         class_name, task_config = task_name_and_configs
         assert isinstance(get_task(class_name, task_config), Task)
