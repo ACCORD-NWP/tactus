@@ -337,9 +337,9 @@ f4_arome:
   NAMFPG:
     NFPDISTRIB: 1
   NAMFPSC2:
-    NFPROMA: ${general.nproma}
+    NFPROMA: ${settings.nproma}
   NAMFPSC2_DEP:
-    NFPROMA_DEP: ${general.nproma}
+    NFPROMA_DEP: ${settings.nproma}
   NAMGFL:
     NGFL_EZDIAG: 4
     YEZDIAG_NL(1)%CNAME: EZDIAG01
@@ -592,7 +592,7 @@ f4_common:
   NAMCT1:
     LRFILAF: False
   NAMDIM:
-    NPROMA: ${general.nproma}
+    NPROMA: ${settings.nproma}
   NAMDYNA:
     NDLNPR: 1
   NAMFA:
@@ -657,7 +657,7 @@ f4_c903_main:
     LECMWF: True 
     NSUPERSEDE: 1
   NAMDIM:
-    NPROMA: "${general.nproma}"
+    NPROMA: "${settings.nproma}"
   NAMPAR1:
     NSTROUT: "${namelist.nproc}"
     NDISTIO: 0
@@ -707,7 +707,7 @@ f4_c903_main:
     LEGWWMS: False
   NAERAD:
     LRRTM: False
-    NRPROMA: ${general.nproma}
+    NRPROMA: ${settings.nproma}
     LSRTM: False
     NMCICA: 0
   NAMCT1:
@@ -720,9 +720,9 @@ f4_c903_main:
 f4_c903_domain:
   NAMFPF: {}
   NAMFPSC2:
-    NFPROMA: ${general.nproma}
+    NFPROMA: ${settings.nproma}
   NAMFPSC2_DEP:
-    NFPROMA_DEP: ${general.nproma}
+    NFPROMA_DEP: ${settings.nproma}
   NEMFPEZO:
     RCO_EZO: 180.0
   NAMFPIOS:

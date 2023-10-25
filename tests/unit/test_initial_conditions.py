@@ -32,7 +32,8 @@ def parsed_config(request, tmpdir):
             Path(f"{tmpdir}/{f}").touch()
 
     config = ParsedConfig.from_file(
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH, json_schema={}
+        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
+        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
     )
 
     try:

@@ -43,22 +43,26 @@
         "ilone": {
             "type": "number",
             "description": "Zonal extension zone",
-            "minimum": 0
+            "minimum": 0,
+            "default": 11
         },
         "ilate": {
             "type": "number",
             "description": "Meridional extension zone",
-            "minimum": 0
+            "minimum": 0,
+            "default": 11
         },
         "nbzong": {
             "type": "number",
             "description": "Zonal coupling zone width",
-            "minimum": 0
+            "minimum": 0,
+            "default": 8
         },
         "nbzonl": {
             "type": "number",
             "description": "Meridional coupling zone width",
-            "minimum": 0
+            "minimum": 0,
+            "default": 8
         },
         "xloncen": {
             "type": "number",
@@ -83,6 +87,11 @@
             "description": "Latitude of center of projection",
             "minimum": -90,
             "maximum": 90
+        },
+        "xbeta": {
+            "type": "number",
+            "description": "Rotation parameter for the conformal projection",
+            "default": 0.0
         }
     }
 }

@@ -175,10 +175,10 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
 
     def new_task_e923_monthly_part_method(self, constant_file):
         """Create needed file `constant_file` before running the original method."""
-        with open(constant_file, "w", encoding="utf8"), open(
-            "Const.Clim.01", "w", encoding="utf8"
-        ):
-            original_task_e923_monthly_part_method(self, constant_file)
+        Path(constant_file).parent.mkdir(parents=True, exist_ok=True)
+        Path(constant_file).touch()
+        Path("Const.Clim.01").touch()
+        original_task_e923_monthly_part_method(self, constant_file)
 
     def new_task_collectlogs_collectlogs_execute_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""

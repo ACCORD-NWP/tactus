@@ -61,13 +61,13 @@ e923_base:
     NDLON: ${domain.ndguxg}
     NDLUXG: ${domain.nimax}
     NFLEVG: 1
-    NPROMA: ${general.nproma}
+    NPROMA: ${submission.nproma}
     NMSMAX: ${domain.nmsmax}
     NSMAX: ${domain.nsmax}
   NAMFPSC2:
-    NFPROMA: ${general.nproma}
+    NFPROMA: ${submission.nproma}
   NAMFPSC2_DEP:
-    NFPROMA_DEP: "${general.nproma}"
+    NFPROMA_DEP: "${submission.nproma}"
   NAMGEM:
     NHTYP: 0
     NSTTYP: 1
@@ -677,7 +677,7 @@ f4_common:
   NAMCT1:
     LRFILAF: False
   NAMDIM:
-    NPROMA: ${general.nproma}
+    NPROMA: ${submission.nproma}
   NAMDYNA:
     NDLNPR: 1
     NVDVAR: 4
@@ -696,9 +696,9 @@ f4_common:
     CFPFMT: "LELAM"
     NFPCLI: 1
   NAMFPSC2:
-    NFPROMA: ${general.nproma}
+    NFPROMA: ${submission.nproma}
   NAMFPSC2_DEP:
-    NFPROMA_DEP: ${general.nproma}
+    NFPROMA_DEP: ${submission.nproma}
   NAMGFL:
     YI_NL%NREQIN: 1
     YA_NL%NREQIN: 1
@@ -1071,7 +1071,7 @@ f4_c903_main:
     LECMWF: True 
     NSUPERSEDE: 1
   NAMDIM:
-    NPROMA: "${general.nproma}"
+    NPROMA: "${submission.nproma}"
   NAMPAR1:
     NSTROUT: "${namelist.nproc}"
     NDISTIO: 0
@@ -1123,7 +1123,7 @@ f4_c903_main:
     LEGWWMS: False
   NAERAD:
     LRRTM: False
-    NRPROMA: ${general.nproma}
+    NRPROMA: ${submission.nproma}
     LSRTM: False
     NMCICA: 0
   NAMCT1:
@@ -1137,9 +1137,9 @@ f4_c903_domain:
   NAM_DISTRIBUTED_VECTORS: {}
   NAMFPF: {}
   NAMFPSC2:
-    NFPROMA: ${general.nproma}
+    NFPROMA: ${submission.nproma}
   NAMFPSC2_DEP:
-    NFPROMA_DEP: ${general.nproma}
+    NFPROMA_DEP: ${submission.nproma}
   NEMFPEZO:
     RCO_EZO: 180.0
   NAMFPIOS:

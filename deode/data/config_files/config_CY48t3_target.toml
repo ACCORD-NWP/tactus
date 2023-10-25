@@ -8,8 +8,6 @@
   initfile_sfx = "@SCRATCH@/deode/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
   keep_workdirs = true
   mars_expver = "0001"
-  nproma = -32
-  realization = -1
   surfex = true
   tstep = 30
 
@@ -62,7 +60,6 @@
   mode = "cold_start"
 
 [system]
-  archive = "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
   bdclimdir = "@HOST_CASE@/climate/@HOST_DOMAIN@"
   bddir = "@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@"
   bddir_sfx = "@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@"
@@ -73,18 +70,11 @@
   global_sfcdir = "/hpcperm/snh02/climate_fields_mir/climate.v020_MIR_orog/"
   host_case = "@CASEDIR@/../@CYCLE@_@CSC@"
   host_domain = "DEMO_60x80_2500m"
-  intp_bddir = "@WRK@"
   logs = "@ARCHIVE_ROOT@/logs"
   marsdir = "@SCRATCH@/deode/IFS/@YYYY@/@MM@/@DD@/@HH@/@MARS_EXPVER@"
   marsfile_template = "mars_prefetch_[levtype]_[date]_[time]+[step]"
-  namelists = "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
   prev_case = "@CASE@"
-  sfx_input_defs = "@DEODE_HOME@/deode/data/input/sfx_input_@CYCLE@.json"
-  wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@"
 
 [task.creategrib.conversions.surfex]
   input_template = "@SURFEX_TEMPLATE@"
   output_template = "sfx_@YYYY@-@MM@-@DD@T@HH@@mm@@ss@+@DURATION_ARCHIVE@.grib"
-
-[troika]
-  config_file = "@DEODE_HOME@/deode/data/config_files/troika.yml"

@@ -47,8 +47,9 @@
       "properties": {
         "config_file": {
           "type": "string",
-          "description": "Troika config file"
-        }
+          "description": "Troika config file",
+          "default": "@DEODE_HOME@/deode/data/config_files/troika.yml"
+	}
       }
     },
     "boundaries": {
@@ -196,8 +197,9 @@
         },
         "intp_bddir": {
           "type": "string",
-          "description": "Location of boundaries on the current domain, i.e. the output directory of e927"
-        },
+          "description": "Location of boundaries on the current domain, i.e. the output directory of e927",
+          "default": "@WRK@"
+	},
         "climdir": {
           "type": "string",
           "description": "Location of generated/used climate files (PGD/monthly files)"
@@ -212,7 +214,8 @@
         },
         "wrk": {
           "type": "string",
-          "description": "Location of date specific working directory"
+          "description": "Location of date specific working directory",
+          "default": "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/"
         },
         "fullpos_config_file": {
           "type": "string",
@@ -220,15 +223,17 @@
         },
         "archive": {
           "type": "string",
-          "description": "Location of date specific archive"
-        },
+          "description": "Location of date specific archive",
+          "default": "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
+	},
         "logs": {
           "type": "string",
           "description": "Location of collected logfiles"
         },
         "namelists": {
           "type": "string",
-          "description": "Path to static namelists"
+          "description": "Path to static namelists",
+          "default": "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
         },
         "marsdir": {
           "type": "string",
@@ -240,7 +245,8 @@
         },
         "sfx_input_defs": {
           "type": "string",
-          "description": "Path to the surfex json config file"
+          "description": "Path to the surfex json config file",
+          "default": "@DEODE_HOME@/deode/data/input/sfx_input_@CYCLE@.json"
         },
 	"prev_case":{
           "description": "Name of the previous experiment",
@@ -289,12 +295,12 @@
               "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
             },
             "basetime": {
-              "description": "Initial date and time for the current task.",
+              "description": "Basetime TB specified",
               "type": "string",
               "format": "date-time"
             },
             "validtime": {
-              "description": "Final date and time for the current task.",
+              "description": "Validtime TB specified",
               "type": "string",
               "format": "date-time"
             }
@@ -343,7 +349,8 @@
         },
         "realization": {
           "description": "Placeholder for future ensemble or similar need",
-          "type": "number"
+          "type": "number",
+	  "default": -1
         },
         "cnmexp": {
           "description": "Experiment short name",
@@ -392,10 +399,6 @@
             "CY48t3",
             "CY46h1"
           ]
-        },
-        "nproma": {
-          "description": "NPROMA size in the forecast model. See the namelists for where it is used",
-          "type": "number"
         },
         "initfile": {
           "description": "Initial file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",
