@@ -149,7 +149,7 @@
 	"mode": {
 	  "description": "Choose a strategy to achieve initial/initial_sfx files (start:  start from interpolated files and then propagate the FG between cycles, restart: start from a previous run and then propagate the FG between cycles, cold_start: always start from interpolated files).",
 	  "type": "string",
-	  "ebum": [
+	  "enum": [
 	    "start",
 	    "restart",
 	    "cold_start"
