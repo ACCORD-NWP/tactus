@@ -72,11 +72,11 @@
   bddir_sfx = "@MARSDIR@"
   bdfile_sfx_template = "ECSFCSFX@DOMAIN@+@LLL@"
   bdfile_template = "ELSCF@CNMEXP@ALBC@NNN@"
-  casedir = "@SCRATCH@/deode/@CASE@"
+  casedir = "@SCRATCH@/@CASE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@/"
   global_sfcdir = "/hpcperm/snh02/climate_fields_mir/climate.v020_MIR_orog/"
   logs = "@ARCHIVE_ROOT@/logs"
-  marsdir = "@SCRATCH@/deode/IFS/@YYYY@/@MM@/@DD@/@HH@/@MARS_EXPVER@"
+  marsdir = "@SCRATCH@/IFS/@YYYY@/@MM@/@DD@/@HH@/@MARS_EXPVER@"
   marsfile_template = "mars_prefetch_[levtype]_[date]_[time]+[step]"
   prev_case = "@CASE@"
 
