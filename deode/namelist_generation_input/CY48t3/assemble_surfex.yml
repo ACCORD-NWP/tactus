@@ -5,9 +5,6 @@ pgd:
   - sfx_pgd_schemes_water_flake
   - sfx_split_patch
   - sfx_pgd_ecoclimap_sg
-  - sfx_pgd_dice
-  - sfx_pgd_rootdepth
-  - sfx_pgd_grounddepth
   - sfx_pgd_zs_gtopo
   - sfx_pgd_zs_filter
   - sfx_pgd_isba_dif
@@ -21,9 +18,6 @@ pgd_one_decade:
   - sfx_pgd_schemes_water_flake
   - sfx_split_patch
   - sfx_pgd_ecoclimap_sg_single
-  - sfx_pgd_dice
-  - sfx_pgd_rootdepth
-  - sfx_pgd_grounddepth
   - sfx_pgd_zs_gtopo
   - sfx_pgd_zs_filter
   - sfx_pgd_isba_dif

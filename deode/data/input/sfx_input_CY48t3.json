@@ -60,16 +60,16 @@
         },
         "NAM_ZS#YZSFILETYPE": {"DIRECT": {"NAM_ZS#YZS": "@climdir@/gmted2010.dir"}},
         "NAM_ISBA#YSANDFILETYPE": {
-            "DIRECT": {"NAM_ISBA#YSAND": "@pgd_data_path@/SAND_HWSD_MOY_v2.dir"}
+            "DIRECT": {"NAM_ISBA#YSAND": "@climdir@/SAND_SOILGRID.dir"}
         },
         "NAM_ISBA#YCLAYFILETYPE": {
-            "DIRECT": {"NAM_ISBA#YCLAY": "@pgd_data_path@/CLAY_HWSD_MOY_v2.dir"}
+            "DIRECT": {"NAM_ISBA#YCLAY": "@climdir@/CLAY_SOILGRID.dir"}
         },
         "NAM_ISBA#YSOCFILETYPE": {
             "DIRECT": {
-                        "NAM_ISBA#YSOC_TOP": "@pgd_data_path@/soc_top.dir",
-                        "NAM_ISBA#YSOC_SUB": "@pgd_data_path@/soc_sub.dir"
-                    }
+                "NAM_ISBA#YSOC_SUB": "@climdir@/soc_sub.dir",
+                "NAM_ISBA#YSOC_TOP": "@climdir@/soc_top.dir"
+            }
         },
 	"NAM_DATA_FLAKE#YWATER_DEPTHFILETYPE": {
             "DIRECT": {
@@ -162,16 +162,16 @@
         },
         "NAM_ZS#YZSFILETYPE": {"DIRECT": {"NAM_ZS#YZS": "@climdir@/gmted2010.dir"}},
         "NAM_ISBA#YSANDFILETYPE": {
-            "DIRECT": {"NAM_ISBA#YSAND": "@pgd_data_path@/SAND_HWSD_MOY_v2.dir"}
+            "DIRECT": {"NAM_ISBA#YSAND": "@climdir@/SAND_SOILGRID.dir"}
         },
         "NAM_ISBA#YCLAYFILETYPE": {
-            "DIRECT": {"NAM_ISBA#YCLAY": "@pgd_data_path@/CLAY_HWSD_MOY_v2.dir"}
+            "DIRECT": {"NAM_ISBA#YCLAY": "@climdir@/CLAY_SOILGRID.dir"}
         },
         "NAM_ISBA#YSOCFILETYPE": {
             "DIRECT": {
-                        "NAM_ISBA#YSOC_TOP": "@pgd_data_path@/soc_top.dir",
-                        "NAM_ISBA#YSOC_SUB": "@pgd_data_path@/soc_sub.dir"
-                    }
+                "NAM_ISBA#YSOC_SUB": "@climdir@/soc_sub.dir",
+                "NAM_ISBA#YSOC_TOP": "@climdir@/soc_top.dir"
+            }
         },
 	"NAM_DATA_FLAKE#YWATER_DEPTHFILETYPE": {
             "DIRECT": {

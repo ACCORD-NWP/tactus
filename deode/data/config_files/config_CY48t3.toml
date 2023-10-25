@@ -62,7 +62,7 @@
   do_marsprep = true
   do_pgd = true
   do_prep = true
-  do_soil = false
+  do_soil = true
   interpolate_boundaries = true
   mode = "cold_start"
 
