@@ -170,24 +170,3 @@ def test_integrate_namelists():
         os.devnull,
     ]
     main(args)
-
-
-@pytest.mark.usefixtures("_module_mockers")
-def test_toml_formatter_command(tmp_path_factory):
-    dummy_toml = tomlkit.parse(
-        """
-        [foo]
-        bar = "baz"
-        """
-    )
-    toml_file = tmp_path_factory.mktemp("toml_fmt_tests") / "tmp.toml"
-    with open(toml_file, "w") as f:
-        f.write(tomlkit.dumps(dummy_toml))
-
-    with pytest.raises(SystemExit):
-        main(["toml-formatter", "--include-hidden", toml_file.parent.as_posix()])
-
-    main(["toml-formatter", toml_file.as_posix(), "--fix-inplace", "--show-formatted"])
-
-    with redirect_stdout(StringIO()):
-        main(["toml-formatter", GeneralConstants.PACKAGE_DIRECTORY.parent.as_posix()])

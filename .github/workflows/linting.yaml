@@ -8,11 +8,15 @@ on:
       - develop
     paths:
       - '**.py'
+      - '**.toml'
+      - '.github/workflows/linting.yaml'
   push:
     branches:
       - '**' # Every branch
     paths:
       - '**.py'
+      - '**.toml'
+      - '.github/workflows/linting.yaml'
 
 jobs:
   linting:
@@ -40,6 +44,9 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
 
+      - name: Install poethepoet
+        run: poetry self add 'poethepoet[poetry_plugin]'
+
       - name: Load cached venv (if cache exists)
         id: cached-poetry-dependencies
         uses: actions/cache@v3
@@ -57,16 +64,6 @@ jobs:
       #----------------------------------------------
       #         Run the linting checks
       #----------------------------------------------
-      - name: isort
+      - name: Run linters
         run: |
-          poetry run isort --check-only .
-      - name: black
-        run: |
-          poetry run black --check --diff .
-      - name: ruff
-        run: |
-          poetry run ruff check .
-      - name: flakeheaven
-        run: |
-          export FLAKEHEAVEN_CACHE="${TMPDIR:-${TEMP:-${TMP:-/tmp}}}/flakeheaven_cache.$(openssl rand -hex 12)"
-          poetry run flakeheaven lint .
+          poetry devtools lint
