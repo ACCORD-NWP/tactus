@@ -656,6 +656,18 @@ class Pgd(Task):
             sfx_input_defs = self.platform.get_system_value("sfx_input_defs")
             input_data = json.load(open(sfx_input_defs, "r", encoding="utf-8"))
 
+            if self.one_decade:
+
+                def replace(data, match, repl):
+                    if isinstance(data, dict):
+                        for k, v in data.items():
+                            if isinstance(data[k], str):
+                                data[k] = data[k].replace(match, repl)
+                            replace(v, match, repl)
+                    return data
+
+                input_data = replace(input_data, "@DECADE@", get_decade(basetime))
+
             # Could potentially manipulate input_data depending on settings
             # or send input_data as input from an external file
             binput_data = InputDataFromNamelist(
