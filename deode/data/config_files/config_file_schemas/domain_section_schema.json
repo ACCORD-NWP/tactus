@@ -54,15 +54,15 @@
         },
         "nbzong": {
             "type": "number",
-            "description": "Zonal coupling zone width",
-            "minimum": 0,
-            "default": 8
+            "description": "Meridional coupling zone width",
+            "minimum": -1,
+            "default": -1
         },
         "nbzonl": {
             "type": "number",
-            "description": "Meridional coupling zone width",
-            "minimum": 0,
-            "default": 8
+            "description": "Zonal coupling zone width",
+            "minimum": -1,
+            "default": -1
         },
         "xloncen": {
             "type": "number",

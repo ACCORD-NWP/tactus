@@ -10,4 +10,6 @@ When running at higher resolution on real-sized domains, it is suggested to take
 - NODES: number of compute nodes.
 - NTASKS: number of MPI tasks. The total number of tasks defined for the forecast should be equal to NPROC + NPROC\_IO.
 
+Submission files for large domains can be found under include/submission folder and can be used directly or give guidance.
+
 The parameter values encoding instructions in the `BATCH` groups are specific to the SLURM scheduler.
