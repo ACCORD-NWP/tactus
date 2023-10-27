@@ -1,56 +1,53 @@
 #!/usr/bin/env python3
-"""Unit tests for datetime_utils.py."""
-import datetime
+"""Unit tests for the TimeWindow/TimeWindowContainer objects."""
+import pickle
 
+import pandas as pd
 import pytest
+from pandas.tseries.frequencies import to_offset
 
-from deode.datetime_utils import (
-    as_datetime,
-    as_timedelta,
-    cycle_offset,
-    dt2str,
-    oi2dt_list,
-)
+from deode.datetime_utils import TimeWindow, TimeWindowContainer, as_datetime
 
 
-def test_as_datetime():
-    dt = as_datetime("20181010T21")
-    assert dt == datetime.datetime(2018, 10, 10, 21, tzinfo=datetime.timezone.utc)
+class TestTimeWindow:
+    def test_time_window(self):
+        mid = as_datetime("20181010T21")
+        length = "3H"
+        length_as_offset = to_offset(length)
+        tw = TimeWindow(mid, length=length)
+        assert isinstance(tw, TimeWindow)
+        assert tw.mid == mid
+        assert tw.left == mid - 0.5 * length_as_offset
+        assert tw.right == mid + 0.5 * length_as_offset
+        assert tw.length == length_as_offset
+
+    def test_can_pickle(self, tmp_path):
+        time_window = TimeWindow("20180110T12", length="3H")
+        fname = tmp_path / "time_window.pickle"
+        with open(fname, "wb") as f:
+            pickle.dump(time_window, f)
+        with open(fname, "rb") as f:
+            time_window2 = pickle.load(f)
+        assert isinstance(time_window2, TimeWindow)
+        assert time_window2 == time_window
 
 
-def test_as_timedelta():
-    assert as_timedelta("PT3H") == datetime.timedelta(hours=3)
+class TestTimeWindowContainer:
+    @pytest.mark.timeout(1)
+    def test_time_window_container_from_iterable(self):
+        data = pd.date_range("18950101T00", "20000101T00", freq="1T")
+        container = TimeWindowContainer(data=data, cycle_length="1H")
+        assert isinstance(container[len(container) // 2], TimeWindow)
+
+    def test_time_window_container_from_start_end_and_length(self):
+        start = "18950101T00"
+        end = "20000101T00"
+        cycle_legth = "1H"
+        container = TimeWindowContainer.from_start_end_and_length(
+            start=start, end=end, cycle_length=cycle_legth
+        )
+        assert isinstance(container[len(container) // 2], TimeWindow)
 
 
-def test_as_dt2str():
-    assert dt2str(as_timedelta("PT3H30M10S")) == "0003:30:10"
-
-
-def test_offset():
-    basetime = as_datetime("20181010T21")
-    bdcycle = as_timedelta("PT12H")
-    shift = as_timedelta("PT0H")
-    assert datetime.timedelta(hours=9) == cycle_offset(basetime, bdcycle, shift=shift)
-
-
-def test_shift1_offset():
-    basetime = as_datetime("20181010T21")
-    bdcycle = as_timedelta("PT12H")
-    shift = as_timedelta("PT3H")
-    assert datetime.timedelta(hours=6) == cycle_offset(basetime, bdcycle, shift=shift)
-
-
-def test_shift2_offset():
-    basetime = as_datetime("20181010T21")
-    bdcycle = as_timedelta("PT12H")
-    shift = as_timedelta("-PT3H")
-    assert datetime.timedelta(hours=12) == cycle_offset(basetime, bdcycle, shift=shift)
-
-
-@pytest.fixture(params=["PT3H", "PT6H:PT3H", "PT0H:PT6H:PT3H"])
-def _test_as_oi2dt_list():
-    assert oi2dt_list(param, "PT6H") == [  # noqa
-        datetime.timedelta(0),
-        datetime.timedelta(seconds=10800),
-        datetime.timedelta(seconds=21600),
-    ]
+if __name__ == "__main__":
+    pytest.main()

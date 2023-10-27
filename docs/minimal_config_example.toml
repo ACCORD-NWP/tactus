@@ -1,4 +1,9 @@
-# This config is just a template.
-# Please change the data provided here to your own.
+# This config is just a template. Please change the data provided here to your own.
 [general]
-  times.list = ["2020-01-01T12:00:00Z"]
+data_rootdir = "SOME_PATH"
+outdir = "/tmp/deode_output"
+
+[general.assimilation_times]
+start = "2020-08-15 00:00:00+00:00"
+end = "2020-08-16 21:00:00+00:00"
+cycle_length = "3H"

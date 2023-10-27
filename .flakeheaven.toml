@@ -1,5 +1,5 @@
 [tool.flakeheaven]
-    exclude = [".*/", "tmp/", "*/tmp/", "*.ipynb"]
+    exclude = [".*/", "tmp/", "*/tmp/"]
     # Group output by file. Colored.
     format = "grouped"
     # Show line of source code in output, with syntax highlighting
@@ -44,6 +44,6 @@
         # The unit tests class and method names are supposed to be self-explanatory.
         flake8-docstrings = ["+*", "-D105", "-D101", "-D102", "-D103"]
 
-    [tool.flakeheaven.exceptions."deode/templates/*.py"]
+    [tool.flakeheaven.exceptions."ecf/*.py"]
         # "E265" is for block comments starting with "# ". It may break ecflow envsubst.
         pycodestyle = ["-E265"]

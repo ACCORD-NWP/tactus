@@ -1,11 +1,8 @@
 """Ecflow suites."""
 
 import os
-from pathlib import Path
 
-from .datetime_utils import as_datetime, as_timedelta
-from .logs import LogDefaults, logger
-from .toolbox import Platform
+from .logs import get_logger
 
 try:
     import ecflow
@@ -13,8 +10,11 @@ except ImportError:
     ecflow = None
 
 
+logger = get_logger(__name__, "DEBUG")
+
+
 class SuiteDefinition(object):
-    """Definition of suite."""
+    """The definition of the suite."""
 
     def __init__(
         self,
@@ -23,12 +23,12 @@ class SuiteDefinition(object):
         ecf_files,
         config,
         task_settings,
+        loglevel,
         ecf_home=None,
         ecf_include=None,
         ecf_out=None,
         ecf_jobout=None,
         ecf_micro="%",
-        dry_run=False,
     ):
         # TODO: Document the variables that right now only are described as "?"
         """Construct the definition.
@@ -38,35 +38,22 @@ class SuiteDefinition(object):
             joboutdir (str): Path to jobfiles
             ecf_files (str): Path to ecflow containers
             task_settings (TaskSettings): Submission configuration
-            config (deode.ParsedConfig): Configuration file
+            config (deode.parsedConfig): Configuration
+            task_settings (deode.TaskSettings): Task settings
+            loglevel (str): Loglevel
             ecf_home (str, optional): ECF_HOME. Defaults to None.
             ecf_include (str, optional): ECF_INCLUDE.
                                          Defaults to None which uses ecf_files.
             ecf_out (str, optional): ECF_OUT. Defaults to None.
             ecf_jobout (str, optional): ECF_JOBOUT. Defaults to None.
             ecf_micro (str, optional): ECF_MICRO. Defaults to %
-            dry_run (bool, optional): Dry run not using ecflow. Defaults to False.
 
         Raises:
-            ModuleNotFoundError: If ecflow is not loaded and not dry_run
+            Exception: Unless ecflow is not loaded
 
         """
-        if ecflow is None and not dry_run:
-            raise ModuleNotFoundError("Ecflow not found")
-
-        self.create_static_data = config["suite_control.create_static_data"]
-        self.do_soil = config["suite_control.do_soil"]
-        self.do_pgd = config["suite_control.do_pgd"]
-        self.create_time_dependent_suite = config[
-            "suite_control.create_time_dependent_suite"
-        ]
-        self.interpolate_boundaries = config["suite_control.interpolate_boundaries"]
-        self.do_prep = config["suite_control.do_prep"]
-        self.do_marsprep = config["suite_control.do_marsprep"]
-        self.do_archiving = config["suite_control.do_archiving"]
-        self.cold_start = config["suite_control.cold_start"]
-        self.surfex = config["general.surfex"]
-        self.suite_name = suite_name
+        if ecflow is None:
+            raise Exception("Ecflow not loaded properly")
 
         name = suite_name
         self.joboutdir = joboutdir
@@ -116,14 +103,7 @@ class SuiteDefinition(object):
         self.ecf_kill_cmd = ecf_kill_cmd
 
         troika = "/opt/troika/bin/troika"
-
-        platform = Platform(config)
-        troika_config = platform.get_value("troika.config_file")
-        config_file = config.metadata["source_file_path"]
-        first_cycle = as_datetime(config["general.times.start"])
-        deode_home = platform.get_platform_value("DEODE_HOME")
-        keep_workdirs = "1" if config["general.keep_workdirs"] else "0"
-        loglevel = config.get("general.loglevel", LogDefaults.LEVEL).upper()
+        troika_config = "/opt/troika/etc/troika.yml"
         variables = {
             "ECF_EXTN": ".py",
             "ECF_FILES": self.ecf_files,
@@ -136,456 +116,52 @@ class SuiteDefinition(object):
             "ECF_OUT": self.ecf_out,
             "ECF_JOBOUT": self.ecf_jobout,
             "ECF_TIMEOUT": 20,
-            "ARGS": "",
             "LOGLEVEL": loglevel,
-            "CONFIG": str(config_file),
+            "CONFIG": str(config),
             "TROIKA": troika,
             "TROIKA_CONFIG": troika_config,
-            "BASETIME": first_cycle.strftime("%Y%m%d%H%M"),
-            "VALIDTIME": first_cycle.strftime("%Y%m%d%H%M"),
-            "DEODE_HOME": deode_home,
-            "NPROC": "",
-            "NPROC_IO": "",
-            "NPROCX": "",
-            "NPROCY": "",
-            "KEEP_WORKDIRS": keep_workdirs,
         }
 
-        input_template = Path(__file__).parent.resolve() / "templates/ecflow/default.py"
-        input_template = input_template.as_posix()
-        self.suite = EcflowSuite(name, ecf_files, variables=variables, dry_run=dry_run)
+        input_template = ecf_files + "/default.py"
+        self.suite = EcflowSuite(name, ecf_files, variables=variables)
 
-        if self.create_static_data:
-            static_data = self.static_suite_part(config, input_template)
-            task_logs = config["system.climdir"]
-            args = ";".join(
-                [
-                    f"joboutdir={self.joboutdir}/{self.suite_name}/StaticData",
-                    "tarname=StaticData",
-                    f"task_logs={task_logs}",
-                ]
-            )
-            variables = {"ARGS": args}
+        family = EcflowSuiteFamily("TestFamily", self.suite, ecf_files)
+        # Background dos not work. Deode is ot able to run on vm with shared HOME as
+        # hpc-login
+        # EcflowSuiteTask("Background", family, self.task_settings, ecf_files,
+        #                input_template=input_template)
 
-            EcflowSuiteTask(
-                "CollectLogs",
-                self.suite,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                trigger=EcflowSuiteTriggers([EcflowSuiteTrigger(static_data)]),
-                variables=variables,
-            )
-        else:
-            static_data = None
+        logger.debug(self.task_settings.get_task_settings("Forecast"))
 
-        if self.create_time_dependent_suite:
-            self.time_dependent_suite_part(config, input_template, static_data)
-
-    def time_dependent_suite_part(self, config, input_template, static_data):
-        """Create the time dependent part of the suite.
-
-        Args:
-            config (deode.ParsedConfig): Configuration settings
-            input_template (str): Default task template
-            static_data(EcflowFamily): EcflowFamily object used for triggering
-
-        """
-        first_cycle = as_datetime(config["general.times.start"])
-        last_cycle = as_datetime(config["general.times.end"])
-        cycle_length = as_timedelta(config["general.times.cycle_length"])
-        cycles = {}
-        cycle_time = first_cycle
-        i = 0
-        while cycle_time <= last_cycle:
-            logger.debug("cycle_time {}", cycle_time)
-            cycles.update(
-                {
-                    str(i): {
-                        "day": cycle_time.strftime("%Y%m%d"),
-                        "time": cycle_time.strftime("%H%M"),
-                        "validtime": cycle_time.strftime("%Y%m%d%H%M"),
-                        "basetime": cycle_time.strftime("%Y%m%d%H%M"),
-                    }
-                }
-            )
-            i = i + 1
-            cycle_time = cycle_time + cycle_length
-
-        days = []
-        prev_cycle_trigger = None
-        prev_interpolation_trigger = None
-
-        if self.do_marsprep:
-            marsprep_task = (
-                "Marsprep"
-                if config["general.mars_expver"] == "0001"
-                else "MarsprepGlobalDT"
-            )
-
-        for __, cycle in cycles.items():
-            cycle_day = cycle["day"]
-            if self.create_static_data:
-                inputdata_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(static_data)])
-            else:
-                inputdata_trigger = None
-
-            if cycle_day not in days:
-                day_family = EcflowSuiteFamily(
-                    cycle["day"], self.suite, self.ecf_files, trigger=inputdata_trigger
-                )
-                days.append(cycle_day)
-
-            time_variables = {
-                "BASETIME": cycle["basetime"],
-                "VALIDTIME": cycle["validtime"],
-            }
-            time_family = EcflowSuiteFamily(
-                cycle["time"],
-                day_family,
-                self.ecf_files,
-                trigger=inputdata_trigger,
-                variables=time_variables,
-            )
-            inputdata = EcflowSuiteFamily(
-                "InputData", time_family, self.ecf_files, trigger=inputdata_trigger
-            )
-            inputdata_done = EcflowSuiteTriggers([EcflowSuiteTrigger(inputdata)])
-            prepare_cycle = EcflowSuiteTask(
-                "PrepareCycle",
-                inputdata,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                variables=None,
-            )
-            triggers = [EcflowSuiteTrigger(prepare_cycle)]
-
-            if prev_interpolation_trigger is not None:
-                triggers = triggers + prev_interpolation_trigger
-            ready_for_marsprep = EcflowSuiteTriggers(triggers)
-            if self.do_marsprep:
-                EcflowSuiteTask(
-                    marsprep_task,
-                    inputdata,
-                    config,
-                    self.task_settings,
-                    self.ecf_files,
-                    input_template=input_template,
-                    variables=None,
-                    trigger=ready_for_marsprep,
-                )
-
-            if not self.surfex:
-                self.do_prep = False
-
-            if self.interpolate_boundaries or self.do_prep:
-
-                int_fam = EcflowSuiteFamily(
-                    f'{"Interpolation"}',
-                    time_family,
-                    self.ecf_files,
-                    trigger=inputdata_done,
-                    variables=None,
-                )
-                prev_interpolation_trigger = [EcflowSuiteTrigger(int_fam)]
-
-                if self.do_prep:
-                    EcflowSuiteTask(
-                        "Prep",
-                        int_fam,
-                        config,
-                        self.task_settings,
-                        self.ecf_files,
-                        input_template=input_template,
-                    )
-
-                if not self.cold_start:
-                    self.do_prep = False
-
-                if self.interpolate_boundaries:
-
-                    basetime = as_datetime(cycle["basetime"])
-                    forecast_range = as_timedelta(config["general.times.forecast_range"])
-                    endtime = basetime + forecast_range
-                    bdint = as_timedelta(config["boundaries.bdint"])
-                    bdmax = config["boundaries.bdtasks_per_batch"]
-
-                    bdnr = 0
-                    intnr = 1
-                    args = ""
-                    int_trig = inputdata_done
-                    bdtime = basetime
-                    intbdint = int(bdint.total_seconds() // 3600)
-                    while bdtime <= endtime:
-                        bch_fam = EcflowSuiteFamily(
-                            f"Batch{intnr:02}",
-                            int_fam,
-                            self.ecf_files,
-                            trigger=int_trig,
-                            variables=None,
-                        )
-                        while bdtime <= endtime:
-                            date_string = bdtime.isoformat(sep="T").replace("+00:00", "Z")
-                            args = f"bd_time={date_string};bd_nr={bdnr}"
-                            variables = {"ARGS": args}
-                            lbc_fam = EcflowSuiteFamily(
-                                f"LBC{bdnr*intbdint:02}",
-                                bch_fam,
-                                self.ecf_files,
-                                trigger=None,
-                                variables=None,
-                            )
-
-                            if self.do_marsprep:
-                                interpolation_task = "c903"
-                            else:
-                                interpolation_task = "e927"
-
-                            EcflowSuiteTask(
-                                interpolation_task,
-                                lbc_fam,
-                                config,
-                                self.task_settings,
-                                self.ecf_files,
-                                input_template=input_template,
-                                variables=variables,
-                                trigger=None,
-                            )
-
-                            bdnr += 1
-                            bdtime += bdint
-                            if bdnr % bdmax == 0:
-                                intnr += 1
-                                int_trig = EcflowSuiteTriggers(
-                                    [EcflowSuiteTrigger(bch_fam)]
-                                )
-                                break
-
-                    int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(int_fam)])
-            else:
-                int_trig = inputdata_done
-
-            cycle_fam = EcflowSuiteFamily(
-                "Cycle", time_family, self.ecf_files, trigger=int_trig
-            )
-            triggers = [EcflowSuiteTrigger(inputdata)]
-            if prev_cycle_trigger is not None:
-                triggers = triggers + prev_cycle_trigger
-            ready_for_cycle = EcflowSuiteTriggers(triggers)
-            prev_cycle_trigger = [EcflowSuiteTrigger(cycle_fam)]
-            initialization = EcflowSuiteFamily(
-                "Initialization", cycle_fam, self.ecf_files, trigger=ready_for_cycle
-            )
-
-            cday = cycle["day"]
-            ctime = cycle["time"]
-            task_logs = config["system.wrk"]
-            args = ";".join(
-                [
-                    f"joboutdir={self.joboutdir}/{self.suite_name}/{cday}/{ctime}",
-                    f"tarname={cday}_{ctime}",
-                    f"task_logs={task_logs}",
-                ]
-            )
-            variables = {"ARGS": args}
-            EcflowSuiteTask(
-                "CollectLogs",
-                time_family,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                trigger=EcflowSuiteTriggers([EcflowSuiteTrigger(cycle_fam)]),
-                variables=variables,
-            )
-
-            EcflowSuiteTask(
-                "FirstGuess",
-                initialization,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                trigger=None,
-                variables=None,
-            )
-
-            forecast_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(initialization)])
-            forecasting = EcflowSuiteFamily(
-                "Forecasting", cycle_fam, self.ecf_files, trigger=forecast_trigger
-            )
-            logger.debug(self.task_settings.get_task_settings("Forecast"))
-
-            forecast_task = EcflowSuiteTask(
-                "Forecast",
-                forecasting,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                variables=None,
-            )
-
-            creategrib_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(forecast_task)])
-
-            EcflowSuiteTask(
-                "CreateGrib",
-                forecasting,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                trigger=creategrib_trigger,
-            )
-
-            if self.do_archiving:
-                archiving_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(cycle_fam)])
-
-                EcflowSuiteTask(
-                    "ArchiveHour",
-                    time_family,
-                    config,
-                    self.task_settings,
-                    self.ecf_files,
-                    input_template=input_template,
-                    trigger=archiving_trigger,
-                )
-
-    def static_suite_part(self, config, input_template):
-        """Create the time dependent part of the suite.
-
-        Args:
-            config (deode.ParsedConfig): Configuration settings
-            input_template (str): Default task template
-
-        Returns:
-            static_data: EcflowFamily object used for triggering
-
-        """
-        static_data = EcflowSuiteFamily("StaticData", self.suite, self.ecf_files)
-
-        if self.do_pgd:
-            pgd_input = EcflowSuiteFamily("PgdInput", static_data, self.ecf_files)
-            EcflowSuiteTask(
-                "Gmted",
-                pgd_input,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                variables=None,
-            )
-
-            if self.do_soil:
-                EcflowSuiteTask(
-                    "Soil",
-                    pgd_input,
-                    config,
-                    self.task_settings,
-                    self.ecf_files,
-                    input_template=input_template,
-                    variables=None,
-                )
-
-            pgd_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd_input)])
-
-            pgd = EcflowSuiteTask(
-                "Pgd",
-                static_data,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                variables=None,
-                trigger=pgd_trigger,
-            )
-            e923_constant_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd)])
-        else:
-            e923_constant_trigger = None
-
-        e923constant = EcflowSuiteTask(
-            "E923Constant",
-            static_data,
+        variables = {"ECF_TIMEOUT": 5}
+        EcflowSuiteTask(
+            "Forecast",
+            family,
             config,
             self.task_settings,
-            self.ecf_files,
+            ecf_files,
             input_template=input_template,
-            variables=None,
-            trigger=e923_constant_trigger,
+            variables=variables,
         )
-
-        e923_monthly_family_trigger = EcflowSuiteTriggers(
-            [EcflowSuiteTrigger(e923constant)]
+        family2 = EcflowSuiteFamily("TestFamily2", family, ecf_files)
+        variables = {"ECF_TIMEOUT": 10}
+        EcflowSuiteTask(
+            "Forecast",
+            family2,
+            config,
+            self.task_settings,
+            ecf_files,
+            input_template=input_template,
+            variables=variables,
         )
-        e923_monthly_family = EcflowSuiteFamily(
-            "E923Monthly",
-            static_data,
-            self.ecf_files,
-            trigger=e923_monthly_family_trigger,
+        EcflowSuiteTask(
+            "Serial",
+            family2,
+            config,
+            self.task_settings,
+            ecf_files,
+            input_template=input_template,
         )
-
-        seasons = {
-            "Q1": "01,02,03",
-            "Q2": "04,05,06",
-            "Q3": "07,08,09",
-            "Q4": "10,11,12",
-        }
-        for season, months in seasons.items():
-            month_family = EcflowSuiteFamily(season, e923_monthly_family, self.ecf_files)
-
-            EcflowSuiteTask(
-                "E923Monthly",
-                month_family,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                variables={"ARGS": f"months={months}"},
-            )
-
-        if self.do_pgd:
-            pgd_update_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(e923constant)])
-            pgd_update = EcflowSuiteTask(
-                "PgdUpdate",
-                static_data,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                variables=None,
-                trigger=pgd_update_trigger,
-            )
-
-        if self.do_archiving and self.do_pgd:
-            archive_static_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd_update)])
-            EcflowSuiteTask(
-                "ArchiveStatic",
-                static_data,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                variables=None,
-                trigger=archive_static_trigger,
-            )
-        elif self.do_archiving and not (self.do_pgd):
-            archive_static_trigger = EcflowSuiteTriggers(
-                [EcflowSuiteTrigger(month_family)]
-            )
-            EcflowSuiteTask(
-                "ArchiveStatic",
-                static_data,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                variables=None,
-                trigger=archive_static_trigger,
-            )
-        return static_data
 
     def save_as_defs(self, def_file):
         """Save definition file.
@@ -602,16 +178,8 @@ class EcflowNode:
     Every Node instance has a name, and a path relative to a suite
     """
 
-    def __init__(
-        self,
-        name,
-        node_type,
-        parent,
-        ecf_files,
-        variables=None,
-        trigger=None,
-        def_status=None,
-    ):
+    def __init__(self, name, node_type, parent, ecf_files, variables=None):
+        # TODO: Document the variables that right now only are described as "?"
         """Construct the EcflowNode.
 
         Args:
@@ -620,69 +188,29 @@ class EcflowNode:
             parent (EcflowNode): Parent node
             ecf_files (str): Location of ecf files
             variables (dict, optional): Variables to map. Defaults to None
-            trigger (EcflowSuiteTriggers): Trigger. Defaults to None
-            def_status (str, ecflow.Defstatus): Def status. Defaults to None
 
         Raises:
             NotImplementedError: Node type not implemented
-            TypeError: "Triggers must be an EcflowSuiteTriggers object"
-            TypeError: "defstatus must be either str or an ecflow.Defstatus object"
 
         """
         self.name = name
         self.node_type = node_type
 
-        has_node = True
-        if parent is None:
-            has_node = False
-        if has_node and node_type != "suite":
-            if hasattr(parent, "ecf_node"):
-                if parent.ecf_node is None:
-                    has_node = False
-        if not has_node:
-            self.ecf_node = None
-            path = ""
+        if self.node_type == "family":
+            self.ecf_node = parent.ecf_node.add_family(self.name)
+        elif self.node_type == "task":
+            self.ecf_node = parent.ecf_node.add_task(self.name)
+        elif self.node_type == "suite":
+            self.ecf_node = parent.add_suite(self.name)
         else:
-            if self.node_type == "family":
-                self.ecf_node = parent.ecf_node.add_family(self.name)
-            elif self.node_type == "task":
-                self.ecf_node = parent.ecf_node.add_task(self.name)
-            elif self.node_type == "suite":
-                self.ecf_node = parent.add_suite(self.name)
-            else:
-                raise NotImplementedError
+            raise NotImplementedError
 
-            path = self.ecf_node.get_abs_node_path()
-
-        self.path = path
+        self.path = self.ecf_node.get_abs_node_path()
         self.ecf_container_path = ecf_files + self.path
         if variables is not None:
             for key, value in variables.items():
-                logger.debug("key={} value={}", key, value)
-                if self.ecf_node is not None:
-                    self.ecf_node.add_variable(key, value)
-
-        if trigger is not None:
-            if isinstance(trigger, EcflowSuiteTriggers):
-                if trigger.trigger_string is not None:
-                    if self.ecf_node is not None:
-                        self.ecf_node.add_trigger(trigger.trigger_string)
-                else:
-                    logger.warning("Empty trigger")
-            else:
-                raise TypeError("Triggers must be an EcflowSuiteTriggers object")
-        self.trigger = trigger
-
-        if def_status is not None:
-            if self.ecf_node is not None:
-                if isinstance(def_status, str):
-                    self.ecf_node.add_defstatus(ecflow.Defstatus(def_status))
-                elif isinstance(def_status, ecflow.Defstatus):
-                    self.ecf_node.add_defstatus(def_status)
-                else:
-                    raise TypeError(
-                        "defstatus must be either str or an ecflow.Defstatus object"
-                    )
+                logger.debug("key=%s value=%s", key, value)
+                self.ecf_node.add_variable(key, value)
 
 
 class EcflowNodeContainer(EcflowNode):
@@ -692,16 +220,8 @@ class EcflowNodeContainer(EcflowNode):
         EcflowNode (EcflowNode): Parent class.
     """
 
-    def __init__(
-        self,
-        name,
-        node_type,
-        parent,
-        ecf_files,
-        variables=None,
-        trigger=None,
-        def_status=None,
-    ):
+    def __init__(self, name, node_type, parent, ecf_files, variables=None):
+        # TODO: Document the variables that right now only are described as "?"
         """Construct EcflowNodeContainer.
 
         Args:
@@ -710,19 +230,10 @@ class EcflowNodeContainer(EcflowNode):
             parent (EcflowNode): Parent to this node.
             ecf_files (str): Location of ecf files
             variables (dict, optional): Variables to map. Defaults to None
-            trigger (EcflowSuiteTriggers): Trigger. Defaults to None
-            def_status (str, ecflow.Defstatus): Def status. Defaults to None
 
         """
         EcflowNode.__init__(
-            self,
-            name,
-            node_type,
-            parent,
-            variables=variables,
-            ecf_files=ecf_files,
-            trigger=trigger,
-            def_status=def_status,
+            self, name, node_type, parent, variables=variables, ecf_files=ecf_files
         )
 
 
@@ -734,30 +245,20 @@ class EcflowSuite(EcflowNodeContainer):
         (EcflowNodeContainer): A child of the EcflowNodeContainer class.
     """
 
-    def __init__(self, name, ecf_files, variables=None, dry_run=False, def_status=None):
+    def __init__(self, name, ecf_files, variables=None):
+        # TODO: Document the variables that right now only are described as "?"
         """Construct the Ecflow suite.
 
         Args:
             name (str): Name of suite
             ecf_files (str): Location of ecf files
             variables (dict, optional): Variables to map. Defaults to None
-            dry_run (bool, optional): Dry run not using ecflow. Defaults to False.
-            def_status (str, ecflow.Defstatus): Def status. Defaults to None
 
         """
-        if dry_run:
-            self.defs = None
-        else:
-            self.defs = ecflow.Defs({})
+        self.defs = ecflow.Defs({})
 
         EcflowNodeContainer.__init__(
-            self,
-            name,
-            "suite",
-            self.defs,
-            ecf_files,
-            variables=variables,
-            def_status=def_status,
+            self, name, "suite", self.defs, ecf_files, variables=variables
         )
 
     def save_as_defs(self, def_file):
@@ -766,9 +267,8 @@ class EcflowSuite(EcflowNodeContainer):
         Args:
             def_file (str): Name of the definition file.
         """
-        if self.defs is not None:
-            self.defs.save_as_defs(def_file)
-        logger.info("def file saved to {}", def_file)
+        self.defs.save_as_defs(def_file)
+        logger.info("def file saved to %s", def_file)
 
 
 class EcflowSuiteFamily(EcflowNodeContainer):
@@ -778,9 +278,8 @@ class EcflowSuiteFamily(EcflowNodeContainer):
         EcflowNodeContainer (_type_): _description_
     """
 
-    def __init__(
-        self, name, parent, ecf_files, variables=None, trigger=None, def_status=None
-    ):
+    def __init__(self, name, parent, ecf_files, variables=None):
+        # TODO: Document the variables that right now only are described as "?"
         """Construct the family.
 
         Args:
@@ -788,23 +287,13 @@ class EcflowSuiteFamily(EcflowNodeContainer):
             parent (EcflowNodeContainer): Parent node.
             ecf_files (str): Location of ecf files
             variables (dict, optional): Variables to map. Defaults to None
-            trigger (EcflowSuiteTriggers): Trigger. Defaults to None
-            def_status (str, ecflow.Defstatus): Def status. Defaults to None
 
         """
         EcflowNodeContainer.__init__(
-            self,
-            name,
-            "family",
-            parent,
-            ecf_files,
-            variables=variables,
-            trigger=trigger,
-            def_status=def_status,
+            self, name, "family", parent, ecf_files, variables=variables
         )
         logger.debug(self.ecf_container_path)
-        if self.ecf_node is not None:
-            self.ecf_node.add_variable("ECF_FILES", self.ecf_container_path)
+        self.ecf_node.add_variable("ECF_FILES", self.ecf_container_path)
 
 
 class EcflowSuiteTask(EcflowNode):
@@ -825,8 +314,6 @@ class EcflowSuiteTask(EcflowNode):
         parse=True,
         variables=None,
         ecf_micro="%",
-        trigger=None,
-        def_status=None,
     ):
         """Constuct the EcflowSuiteTask.
 
@@ -835,146 +322,40 @@ class EcflowSuiteTask(EcflowNode):
             parent (EcflowNode): Parent node.
             ecf_files (str): Path to ecflow containers
             task_settings (TaskSettings): Submission configuration
-            config (deode.ParsedConfig): Configuration file
+            config (deode.parsedConfig): Configuration
             task_settings (deode.TaskSettings): Task settings
             input_template(str, optional): Input template
             parse (bool, optional): To parse template file or not
             variables (dict, optional): Variables to map. Defaults to None
             ecf_micro (str, optional): ECF_MICRO. Defaults to %
-            trigger (EcflowSuiteTriggers): Trigger. Defaults to None
-            def_status (str, ecflow.Defstatus): Def status. Defaults to None
 
         Raises:
-            ValueError: If input template is to be parsed but it is not passed.
+            Exception: Safety check
             FileNotFoundError: If the task container is not found.
 
         """
-        EcflowNode.__init__(
-            self,
-            name,
-            "task",
-            parent,
-            ecf_files,
-            variables=variables,
-            trigger=trigger,
-            def_status=def_status,
-        )
+        EcflowNode.__init__(self, name, "task", parent, ecf_files, variables=variables)
 
         logger.debug(parent.path)
         logger.debug(parent.ecf_container_path)
         task_container = parent.ecf_container_path + "/" + name + ".py"
         if parse:
             if input_template is None:
-                raise ValueError("Must pass input template if it is to be parsed")
+                raise Exception("Input template is missing")
 
             variables = task_settings.get_settings(name)
-            logger.debug("vars {}", variables)
+            logger.debug("vars %s", variables)
             for var, value in variables.items():
-                if isinstance(value, int):
-                    value = str(value)
-                logger.debug("var={} value={}", var, value)
-                if self.ecf_node is not None:
-                    self.ecf_node.add_variable(var, value)
+                logger.debug("var=%s value=%s", var, value)
+                self.ecf_node.add_variable(var, value)
             task_settings.parse_job(
-                task=name,
-                config=config,
-                input_template_job=input_template,
-                task_job=task_container,
+                name,
+                config,
+                input_template,
+                task_container,
                 variables=variables,
                 ecf_micro=ecf_micro,
             )
         else:
             if not os.path.exists(task_container):
                 raise FileNotFoundError(f"Container {task_container} is missing!")
-
-
-class EcflowSuiteTriggers:
-    """Triggers to an ecflow suite."""
-
-    def __init__(self, triggers, mode="AND"):
-        """Construct EcflowSuiteTriggers.
-
-        Args:
-            triggers (list): List of EcflowSuiteTrigger objects.
-            mode (str, optional): Cat mode. Defaults to "AND".
-
-        """
-        trigger_string = self.create_string(triggers, mode)
-        self.trigger_string = trigger_string
-
-    @staticmethod
-    def create_string(triggers, mode):
-        """Create the trigger string.
-
-        Args:
-            triggers (list): List of trigger objects
-            mode (str): Concatenation type.
-
-        Raises:
-            ValueError: If there are no triggers to be processed
-            TypeError: If trigger is not an EcflowSuiteTrigger object
-
-        Returns:
-            str: The trigger string based on trigger objects.
-
-        """
-        if not isinstance(triggers, list):
-            triggers = [triggers]
-
-        if len(triggers) == 0:
-            raise ValueError("No triggers to be processed")
-
-        trigger_string = "("
-        first = True
-        for trigger in triggers:
-            if trigger is not None:
-                cat = ""
-                if not first:
-                    cat = " " + mode + " "
-                if isinstance(trigger, EcflowSuiteTriggers):
-                    trigger_string = trigger_string + cat + trigger.trigger_string
-                else:
-                    if isinstance(trigger, EcflowSuiteTrigger):
-                        trigger_string = (
-                            trigger_string
-                            + cat
-                            + trigger.node.path
-                            + " == "
-                            + trigger.mode
-                        )
-                    else:
-                        raise TypeError("Trigger must be an EcflowSuiteTrigger object")
-                first = False
-        trigger_string = trigger_string + ")"
-        # If no triggers were found/set
-        if first:
-            trigger_string = None
-        return trigger_string
-
-    def add_triggers(self, triggers, mode="AND"):
-        """Add triggers.
-
-        Args:
-            triggers (EcflowSuiteTriggers): The triggers
-            mode (str, optional): Cat mode. Defaults to "AND".
-
-        """
-        cat_string = " " + mode + " "
-        trigger_string = self.create_string(triggers, mode)
-        if trigger_string is not None:
-            self.trigger_string = self.trigger_string + cat_string + trigger_string
-
-
-class EcflowSuiteTrigger:
-    """EcFlow Trigger in a suite."""
-
-    def __init__(self, node, mode="complete"):
-        """Create a EcFlow trigger object.
-
-        Args:
-            node (scheduler.EcflowNode): The node to trigger on
-            mode (str, optional): Trigger type. Defaults to "complete".
-
-        """
-        self.node = node
-        self.mode = mode
