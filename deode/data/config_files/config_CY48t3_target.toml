@@ -9,7 +9,6 @@
   keep_workdirs = true
   mars_expver = "0001"
   surfex = true
-  tstep = 30
 
 [general.output_settings]
   fullpos = "PT15M"

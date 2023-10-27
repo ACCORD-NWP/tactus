@@ -64,6 +64,10 @@
             "minimum": -1,
             "default": -1
         },
+        "tstep": {
+          "description": "Model time step in seconds",
+          "type": "number"
+        },
         "xloncen": {
             "type": "number",
             "description": "Domain center longitude",

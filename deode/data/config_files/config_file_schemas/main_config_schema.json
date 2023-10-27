@@ -295,12 +295,12 @@
               "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
             },
             "basetime": {
-              "description": "Basetime TB specified",
+              "description": "Initial date and time for the current task.",
               "type": "string",
               "format": "date-time"
             },
             "validtime": {
-              "description": "Validtime TB specified",
+              "description": "Final date and time for the current task.",
               "type": "string",
               "format": "date-time"
             }
@@ -358,10 +358,6 @@
           "type": "string",
           "minLength": 4,
           "maxLength": 4
-        },
-        "tstep": {
-          "description": "Model time step",
-          "type": "number"
         },
         "loglevel": {
           "description": "Logger output level",

@@ -319,7 +319,7 @@ class Platform:
                 pattern = self.sub_value(pattern, "LLLL", f"{lh:04d}")
                 pattern = self.sub_value(pattern, "LM", f"{lm:02d}")
                 pattern = self.sub_value(pattern, "LS", f"{ls:02d}")
-                tstep = self.config["general.tstep"]
+                tstep = self.config["domain.tstep"]
                 if tstep is not None:
                     lead_step = lead_seconds // tstep
                     pattern = self.sub_value(pattern, "TTT", f"{lead_step:03d}")

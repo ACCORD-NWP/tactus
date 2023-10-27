@@ -6,6 +6,7 @@ nbzong = 16
 nbzonl = 16
 nimax = 1141
 njmax = 1429
+tstep = 75
 xbeta = 0.0
 xdx = 2500.0
 xdy = 2500.0

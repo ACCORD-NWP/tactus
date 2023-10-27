@@ -131,7 +131,7 @@ def derived_variables(config, processor_layout=None):
     time = basetime.strftime("%H%M")
 
     # Time ranges
-    tstep = int(config["general.tstep"])
+    tstep = int(config["domain.tstep"])
     bdint = as_timedelta(config["boundaries.bdint"])
     forecast_range = as_timedelta(config["general.times.forecast_range"])
     cstop = int((forecast_range.days * 24 * 3600 + forecast_range.seconds) / 60)
