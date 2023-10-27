@@ -1,53 +1,54 @@
 #!/usr/bin/env python3
-"""Unit tests for the TimeWindow/TimeWindowContainer objects."""
-import pickle
+"""Unit tests for datetime_utils.py."""
+import datetime
 
-import pandas as pd
 import pytest
-from pandas.tseries.frequencies import to_offset
 
-from deode.datetime_utils import TimeWindow, TimeWindowContainer, as_datetime
-
-
-class TestTimeWindow:
-    def test_time_window(self):
-        mid = as_datetime("20181010T21")
-        length = "3H"
-        length_as_offset = to_offset(length)
-        tw = TimeWindow(mid, length=length)
-        assert isinstance(tw, TimeWindow)
-        assert tw.mid == mid
-        assert tw.left == mid - 0.5 * length_as_offset
-        assert tw.right == mid + 0.5 * length_as_offset
-        assert tw.length == length_as_offset
-
-    def test_can_pickle(self, tmp_path):
-        time_window = TimeWindow("20180110T12", length="3H")
-        fname = tmp_path / "time_window.pickle"
-        with open(fname, "wb") as f:
-            pickle.dump(time_window, f)
-        with open(fname, "rb") as f:
-            time_window2 = pickle.load(f)
-        assert isinstance(time_window2, TimeWindow)
-        assert time_window2 == time_window
+from deode.datetime_utils import (
+    as_datetime,
+    as_timedelta,
+    cycle_offset,
+    dt2str,
+    get_decade,
+    oi2dt_list,
+)
 
 
-class TestTimeWindowContainer:
-    @pytest.mark.timeout(1)
-    def test_time_window_container_from_iterable(self):
-        data = pd.date_range("18950101T00", "20000101T00", freq="1T")
-        container = TimeWindowContainer(data=data, cycle_length="1H")
-        assert isinstance(container[len(container) // 2], TimeWindow)
-
-    def test_time_window_container_from_start_end_and_length(self):
-        start = "18950101T00"
-        end = "20000101T00"
-        cycle_legth = "1H"
-        container = TimeWindowContainer.from_start_end_and_length(
-            start=start, end=end, cycle_length=cycle_legth
-        )
-        assert isinstance(container[len(container) // 2], TimeWindow)
+def test_as_datetime():
+    dt = as_datetime("20181010T21")
+    assert dt == datetime.datetime(2018, 10, 10, 21, tzinfo=datetime.timezone.utc)
 
 
-if __name__ == "__main__":
-    pytest.main()
+def test_as_timedelta():
+    assert as_timedelta("PT3H") == datetime.timedelta(hours=3)
+
+
+def test_as_dt2str():
+    assert dt2str(as_timedelta("PT3H30M10S")) == "0003:30:10"
+
+
+@pytest.mark.parametrize("param", ["05", "15", "25", "29", "31"])
+def test_get_decade(param):
+    truth = {"05": "1205", "15": "1215", "25": "1225", "29": "0105", "31": "0105"}
+    dt = as_datetime(f"202312{param}T00")
+    assert get_decade(dt) == truth[param]
+
+
+@pytest.mark.parametrize("param", ["PT3H", "PT0H", "-PT3H"])
+def test_offsetparam(param):
+    truth = {"PT3H": -3, "PT0H": 0, "-PT3H": 3}
+    basetime = as_datetime("20181010T21")
+    bdcycle = as_timedelta("PT3H")
+    shift = as_timedelta(param)
+    assert datetime.timedelta(hours=truth[param]) == cycle_offset(
+        basetime, bdcycle, shift=shift
+    )
+
+
+@pytest.mark.parametrize("param", ["PT3H", ["PT0H:PT6H:PT3H"]])
+def test_oi2dt_list(param):
+    assert oi2dt_list(param, "PT6H") == [
+        datetime.timedelta(seconds=0),
+        datetime.timedelta(seconds=10800),
+        datetime.timedelta(seconds=21600),
+    ]

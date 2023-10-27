@@ -1,7 +1,8 @@
 """Batch process."""
-import logging
 import subprocess
 import sys
+
+from ..logs import logger
 
 
 class BatchJob(object):
@@ -17,7 +18,7 @@ class BatchJob(object):
         """
         self.rte = rte
         self.wrapper = wrapper
-        logging.debug("Constructed BatchJob")
+        logger.debug("Constructed BatchJob")
 
     def run(self, cmd):
         """Run command.
@@ -26,16 +27,16 @@ class BatchJob(object):
             cmd (str): Command to run.
 
         Raises:
-            Exception: No command
+            TypeError: If the provided command is not a string
             CalledProcessError: Execution error
         """
-        if cmd is None:
-            raise Exception("No command provided!")
+        if not isinstance(cmd, str):
+            raise TypeError(f"Command must be a string. Got {type(cmd)} instead.")
         cmd = self.wrapper + " " + cmd
 
         if "OMP_NUM_THREADS" in self.rte:
-            logging.info("BATCH: %s", self.rte["OMP_NUM_THREADS"])
-        logging.info("Batch running %s", cmd)
+            logger.info("BATCH: {}", self.rte["OMP_NUM_THREADS"])
+        logger.info("Batch running {}", cmd)
 
         process = subprocess.Popen(
             cmd,

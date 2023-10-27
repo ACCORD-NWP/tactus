@@ -17,3 +17,23 @@ tmp/
 poetry.lock
 dist/
 .idea/
+.vscode/
+coverage.xml
+.coverage.xml
+.coverage
+.venv
+.flakeheaven_cache/
+
+# Files/directories generated at runtime
+archived_file
+input_file
+ecf/[A-Z]*.py
+
+# Stuff related to jupyter notebooks
+.ipynb_checkpoints/
+
+# Stuff related to Sphynx documentation
+docs/_build/
+docs/deode.rst
+docs/modules.rst
+docs/markdown_docs/config.md

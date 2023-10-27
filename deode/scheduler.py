@@ -8,15 +8,12 @@ import traceback
 from abc import ABC, abstractmethod
 from datetime import datetime
 
-try:
-    import ecflow  # noqa reportMissingImports
+from .logs import logger
 
-    print(ecflow.__file__)
+try:
+    import ecflow
 except ModuleNotFoundError:
     ecflow = None
-from .logs import get_logger
-
-logger = get_logger(__name__, "DEBUG")
 
 
 # Base Scheduler server class
@@ -80,31 +77,28 @@ class Server(ABC):
 
 
 class EcflowServer(Server):
-    """Ecflow server.
-
-    Args:
-        Server (Server): Is a child of the base server.
-    """
+    """Ecflow server."""
 
     def __init__(self, ecf_host, ecf_port=3141, start_command=None):
         """Construct the EcflowServer.
 
         Args:
-            ecf_host(str): Ecflow server host.
+            ecf_host (str): Ecflow server host.
             ecf_port (int): Ecflow server port.
-            start_command: Ecflow start server command.
+            start_command (str): Ecflow start server command.
 
         Raises:
-            Exception: If not ecflow is found.
+            ModuleNotFoundError: If ecflow is not found.
 
         """
         if ecflow is None:
-            raise Exception("Ecflow was not found")
+            raise ModuleNotFoundError("Ecflow not found")
         Server.__init__(self)
         self.ecf_host = ecf_host
         self.ecf_port = ecf_port
         self.start_command = start_command
         self.ecf_client = ecflow.Client(self.ecf_host, self.ecf_port)
+        logger.debug("self.ecf_client {}", self.ecf_client)
         self.settings = {"ECF_HOST": self.ecf_host, "ECF_PORT": self.ecf_port}
 
     def start_server(self):
@@ -115,7 +109,7 @@ class EcflowServer(Server):
         """
         logger.debug("Start EcFlow server")
         try:
-            logger.info("%s %s", self.ecf_host, self.ecf_port)
+            logger.info("ECF_HOST:{}, ECF_PORT:{}", self.ecf_host, self.ecf_port)
             self.ecf_client.ping()
             logger.info("EcFlow server is already running")
         except RuntimeError:
@@ -125,7 +119,7 @@ class EcflowServer(Server):
 
                 start_command = self.start_command
                 if self.start_command is None:
-                    start_command = f"ecflow_start.sh -p {str(self.ecf_port)}"
+                    start_command = f"ecflow_start.sh -p {self.ecf_port!s}"
 
                 logger.info(start_command)
                 # TODO
@@ -169,17 +163,17 @@ class EcflowServer(Server):
             def_file (str): Definition file.
 
         Raises:
-            Exception: _description_
+            RuntimeError: If suite cannot be replaced.
         """
-        logger.debug("%s %s", suite_name, def_file)
+        logger.debug("{} {}", suite_name, def_file)
         try:
             self.ecf_client.replace("/" + suite_name, def_file)
         except RuntimeError:
             try:
                 self.ecf_client.delete("/" + suite_name)
                 self.ecf_client.replace("/" + suite_name, def_file)
-            except RuntimeError:
-                raise Exception("Could not replace suite " + suite_name) from RuntimeError
+            except RuntimeError as err:
+                raise RuntimeError("Could not replace suite " + suite_name) from err
 
 
 class EcflowLogServer:
@@ -237,32 +231,28 @@ class EcflowClient(object):
     *ONLY* one instance of this class, should be used. Otherwise zombies will be created.
     """
 
-    def __init__(self, server, task, dry_run=False):
+    def __init__(self, server, task):
         """Construct the ecflow client.
 
         Args:
             server (EcflowServer): Ecflow server object.
             task (EcflowTask): Ecflow task object.
-            dry_run(bool): Handle not running eflow server.
 
         """
         logger.debug("Creating Client")
         self.server = server
-        if dry_run:
-            self.client = None
-        else:
-            self.client = server.ecf_client
-            # self.ci.set_host_port("%ECF_HOST%", "%ECF_PORT%") #noqa E800
-            self.client.set_child_pid(task.ecf_rid)
-            self.client.set_child_path(task.ecf_name)
-            self.client.set_child_password(task.ecf_pass)
-            self.client.set_child_try_no(task.ecf_tryno)
-            logger.info(
-                "   Only wait %s seconds, if the server cannot be contacted "
-                "(note default is 24 hours) before failing",
-                str(task.ecf_timeout),
-            )
-            self.client.set_child_timeout(task.ecf_timeout)
+        self.client = server.ecf_client
+        # self.ci.set_host_port("%ECF_HOST%", "%ECF_PORT%") #noqa E800
+        self.client.set_child_pid(task.ecf_rid)
+        self.client.set_child_path(task.ecf_name)
+        self.client.set_child_password(task.ecf_pass)
+        self.client.set_child_try_no(task.ecf_tryno)
+        logger.info(
+            "   Only wait {} seconds, if the server cannot be contacted "
+            "(note default is 24 hours) before failing",
+            str(task.ecf_timeout),
+        )
+        self.client.set_child_timeout(task.ecf_timeout)
         self.task = task
 
         # Abort the task for the following signals
@@ -298,10 +288,10 @@ class EcflowClient(object):
             signum (_type_): _description_
             extra (_type_, optional): _description_. Defaults to None.
         """
-        logger.info("   Aborting: Signal handler called with signal %s", str(signum))
+        logger.info("   Aborting: Signal handler called with signal {}", str(signum))
 
         self.__exit__(
-            Exception, "Signal handler called with signal " + str(signum), extra
+            InterruptedError, "Signal handler called with signal " + str(signum), extra
         )
 
     def __enter__(self):
@@ -310,7 +300,7 @@ class EcflowClient(object):
         Returns:
             _type_: _description_
         """
-        logger.info("Calling init at: %s", self.at_time())
+        logger.info("Calling init at: {}", self.at_time())
         if self.client is not None:
             self.client.child_init()
         return self.client
@@ -326,12 +316,10 @@ class EcflowClient(object):
         Returns:
             _type_: _description_
         """
-        logger.info("   Client:__exit__: ex_type: %s value: %s", str(ex_type), str(value))
+        logger.info("   Client:__exit__: ex_type: {} value: {}", str(ex_type), str(value))
         if ex_type is not None:
-            logger.info("Calling abort %s", self.at_time())
-            self.client.child_abort(
-                f"Aborted with exception type {str(ex_type)}:{str(value)}"
-            )
+            logger.info("Calling abort {}", self.at_time())
+            self.client.child_abort(f"Aborted with exception type {ex_type!s}:{value!s}")
             if tback is not None:
                 print(tback)
                 traceback.print_tb(tback, limit=1, file=sys.stdout)
@@ -352,6 +340,5 @@ class EcflowClient(object):
             return False
         print("Calling complete at: " + self.at_time())
         # self.server.update_log(self.task.ecf_name + " complete") #noqa E800
-        if self.client is not None:
-            self.client.child_complete()
+        self.client.child_complete()
         return False

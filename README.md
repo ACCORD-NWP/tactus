@@ -1,186 +1,183 @@
-![Linting](https://github.com/DEODE-NWP/Deode-Prototype/actions/workflows/linting.yaml/badge.svg)
-![Tests](https://github.com/DEODE-NWP/Deode-Prototype/actions/workflows/test.yaml/badge.svg
-)
+[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/destination-earth-digital-twins/Deode-Prototype)
+[![Github Pages](https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white)](https://destination-earth-digital-twins.github.io/deode-prototype-docs/)
+
+
+[![Linting](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/linting.yaml/badge.svg)](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/linting.yaml)
+[![Tests](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/tests.yaml/badge.svg
+)](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/tests.yaml)
+[![codecov](https://codecov.io/github/destination-earth-digital-twins/Deode-Prototype/branch/develop/graph/badge.svg?token=4PRUK8DMZF)](https://codecov.io/github/destination-earth-digital-twins/Deode-Prototype)
 
 # DEODE Scripting System
 
+## About
 
-**Table of Contents**
+The [DEODE Scripting System](https://github.com/destination-earth-digital-twins/Deode-Prototype/) provides a `deode` python package that runs the [Destination Earth on Demand Extremes system](https://github.com/destination-earth-digital-twins).
 
-[[_TOC_]]
-
-
-### About
-
-`deode` is a python package that ...
-
-See also the [project's Wiki](https://source.coderefinery.org/deode/deode-prototype/-/wikis/home) for more information.
-
-### System Requirements
-
-* python >=3.8
-* **Only for
-[Developer-Mode Installtion](#developer-mode-installation):**
-
-    * [`poetry`](https://python-poetry.org), which can be installed as follows:
-        * On Atos (`hpc-login`):
-
-              module load python3/3.8.8-01
-              rm -rf ~/.cache/pypoetry/
-              curl -sSL https://install.python-poetry.org | python3 -
-
-        * In other platforms, in general:
-
-              curl -sSL https://install.python-poetry.org | python3 -
+See the [project's documentation page](https://destination-earth-digital-twins.github.io/deode-prototype-docs) for more information.
 
 
-### Installation
+## System Requirements
 
-Before proceeding, please make sure that your system fulfils the appropriate
-[system requirements](#system-requirements). If you plan to just use the code
-without modifying it, please follow one of the installation methods presented
-in the [Regular Installation section](#regular-installation). However, if you
-need/wish to modify the code in any way, then please proceed as indicated in the
-[Developer-Mode Installtion section](#developer-mode-installation).
+### Prepare your environment on the HPC machines
+<a name="#put-poetry-in-path"></a> Start by putting the `$HOME/.local/bin`
+directory in your `PATH`:
+```shell
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+We **highly recommend** you to also put the statement listed above in your shell configuration file, so you don't need to do this the next time you log in. Then, run:
+
+* On Atos (`hpc-login`)
+  ```shell
+  module load python3/3.10.10-01
+  module load ecflow
+  ```
+
+* On LUMI
+  ```shell
+  module load LUMI
+  ```
+
+### Install Dependencies
+
+* python >=3.9
+* **Only for [Developers](#developer-mode-installation):**
+
+    * [`poetry`](https://python-poetry.org). To install/reinstall and configure it, run the following commands in youe shell:
+      ```shell
+      # Clean eventual previous install
+      curl -sSL https://install.python-poetry.org | python3 - --uninstall
+      rm -rf ${HOME}/.cache/pypoetry/ ${HOME}/.local/bin/poetry ${HOME}/.local/share/pypoetry
+      # Download and install poetry
+      curl -sSL https://install.python-poetry.org | python3 -
+      # Install needed poetry plugin(s)
+      poetry self add 'poethepoet[poetry_plugin]'
+      ```
+
+### Optional System Requirements
+* [`pygdal`](https://pypi.org/project/pygdal/)
+
+  The python library [`pygdal`](https://pypi.org/project/pygdal/) is needed to use certain parts of the system, especially for climate generation. This library depends on [`gdal`](https://gdal.org/), which is notoriously troublesome as dependency when targeting many systems. The versions of `pygdal` and the system's `gdal`should match. You may try installing it using the following command:
+  ```shell
+  pip install pygdal=="`gdal-config --version`.*"
+  ```
+  **N.B.**: Do **not** run this installation command on Atos (`hpc-login`)!
+
+  If installation is not succesful, please contact the IT support in your organisation or HPC facility.
 
 
-#### Regular Installation
-##### Regular Installation from PyPi
-:point_right: Easiest method if you just want to use the code and don't want to
-look at the source code at all.
+## Installation
 
-    pip install deode
+For the time being the recommended installation method is the [developer-mode installation](#developer-mode-installation). Before proceeding, please make sure to have followed the instructions under [system requirements](#system-requirements) and that everything correctly set up.
 
-
-
-##### Regular Installation Directly From The Git Repo
-
-:point_right: Similar to a [regular installation from PyPi](#regular-installation-from-pypi),
-but retrieves the code from the git repo instead (which is usually updated more
-often).
-
-    pip install "git+https://source.coderefinery.org/deode/deode-prototype"
-
-
-##### Regular Installation From Downloaded Source
-
-:point_right: For those who have `deode`'s source code in a local directory,
-wish to install it from there, but also don't want to modify any code.
-
-    pip install .
-
-
-#### Developer Mode Installation
+### Developer Mode Installation
 
 :point_right: For those who need/wish to make changes to `deode`'s
 source code, or use code from a different branch than `master`.
+```shell
+git clone git@github.com:destination-earth-digital-twins/Deode-Prototype.git
+cd Deode-Prototype
+poetry install
+```
 
-    poetry install
+This will will install `deode` and its dependencies in an isolated virtual environment located inside the package's source directory.
 
-Installing in "developer mode" means that changes made in any of the package's
-source files become visible as soon as the package is reloaded.
-
-If you have problems installing `poetry`, you can install in development mode using `pip (>= v22.2.2)` as follows:
-
-    pip install -e .
-
-:wrench: **Recommendation to contributors:** Before making your first commit to
-the repo, please also run the following:
-
-    pre-commit install
-
-This sets up the git hook scripts defined in the
-[.pre-commit-config.yaml](.pre-commit-config.yaml) file and only needs to be run
-(i) before the first commit, and (ii) after having modified the
-[.pre-commit-config.yaml](.pre-commit-config.yaml) file. The
-[pre-commit](https://pre-commit.com) package is installed when you run any of
-the `poetry install` commands listed above.
+Installing in developer mode means that changes made in any of the package's source files become visible as soon as the package is reloaded.
 
 
-### After Installation: Configuration File
+## Usage
 
-After successful installation, a `deode` command will become available in
-your environment. However, before you can use `deode` (apart from the `-h`
-option), you will need a configuration file written in the
-[TOML](https://en.wikipedia.org/wiki/TOML) format.
+### Running `deode` after [Developer-Mode Install](#developer-mode-installation)
+  1. Activate the created virtual environment
 
-Please take a look at the
-[docs/minimal_config_example.toml](docs/minimal_config_example.toml) file,
-as well as the [project's Wiki](https://source.coderefinery.org/deode/deode-prototype/-/wikis/home), for more information about the configuration file.
+      After having [prepared your environment](#prepare-your-environment-on-the-hpc-machines) as described in the [system requirements](#system-requirements) section, navigate to the root level of the package's install directory and run:
 
+      ```shell
+      poetry shell
+      ```
 
-`deode` assumes that one of the following (whichever is first encountered)
-is your configuration file :
+      Alternatively, to activate a `deode` install located in an arbitrary
+      directory `MY_DEODE_SOURCE_DIRECTORY`, please run:
 
-1. A *full file path* specified via the `DEODE_CONFIG_PATH` envvar
-2. A `config.toml` file located in the directory where `deode` is called
-3. `$HOME/.deode/config.toml`
+      ```shell
+      poetry shell --directory=MY_DEODE_SOURCE_DIRECTORY
+      ```
+  2. Test that `deode` works by running:
+      ```shell
+      deode -h
+      ```
+  3. Create a [config file](#the-configuration-file).
 
+### The Configuration File
+Before you can use `deode` (apart from the `-h` option), you will need a configuration file written in the
+[TOML](https://en.wikipedia.org/wiki/TOML) format. Please take a look at
+ the default
+ [config.toml](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/deode/data/config_files/config.toml) file, as well as the
+ [project's Doc Page](https://destination-earth-digital-twins.github.io/deode-prototype-docs),
+ for more information about this.
 
-### Usage
+ To see all configs currently in place in your `deode` setup, please run
+ ```shell
+ deode show config
+ ```
+
+### Command line options
+
 After completing the setup, you should be able to run
-
-    deode [opts] SUBCOMMAND [subcommand_opts]
-
+```shell
+deode [opts] SUBCOMMAND [subcommand_opts]
+```
 where `[opts]` and `[subcommand_opts]` denote optional command line arguments
 that apply, respectively, to `deode` in general and to `SUBCOMMAND`
 specifically.
-
-* When installing in development mode using `poetry`, you may need to run
-`poetry shell` to be able to run `deode` as a command.
 
 **Please run `deode -h` for information** about the supported subcommands
 and general `deode` options. For info about specific subcommands and the
 options that apply to them only, **please run `deode SUBCOMMAND -h`** (note
 that the `-h` goes after the subcommand in this case).
 
-### Example with pip for ecflow-gen-${USER}-001
 
-```
-#!/usr/bin/bash
+## Examples
 
-# Load python
-module load python3/3.8.8-01
-module load ecflow
+These examples assume that you have successfully [initialised your environment](#prepare-your-environment-on-the-hpc-machines) and [installed `deode`](#installation). They should be run from the root level of your `deode` install directory. The examples also assume that the necessary
+input data is in place.
 
-# Clone DEODE prototype in ~/projects
+### Running an `ecflow` suite from server `ecflow-gen-${USER}-001` on atos
 
-mkdir -p ~/projects
-cd ~/projects
-[ -d Deode-Prototype ] || git clone git@github.com:DEODE-NWP/Deode-Prototype.git
-
-# Add to your ~/.bashrc
-export PATH=$HOME/.local/bin:$PATH
-
-cd ~/projects/Deode-Prototype
-python3 -m pip install --upgrade pip --user
-pip3 install --user -e .
-
-# Put your config in ~/.deode/config.toml
-# Minimum config
-mkdir -p ~/.deode
-cat > ~/.deode/config.toml << EOF
-[general]
-data_rootdir = "SOME_PATH"
-outdir = "/tmp/deode_output"
-
-[general.assimilation_times]
-start = "2020-08-15 00:00:00+00:00"
-end = "2020-08-16 21:00:00+00:00"
-cycle_length = "3H"
-EOF
-
+The following commands will launch a run under ecflow on atos (`hpc-login.ecmwf.int`) using the default experiment:
+```shell
 ECF_HOST=`echo ecflow-gen-${USER}-001`
-# Not all arguments here are relly needed with troika. But not removed yet
-deode -loglevel debug start suite \
---name test_deode \
---ecf_host $ECF_HOST \
---ecf_port 3141 \
---submit $HOME/projects/Deode-Prototype/ecflow-gen.json \
---logfile $HOME/projects/Deode-Prototype/log \
---joboutdir $HOME/test \
---ecf_files $HOME/projects/Deode-Prototype/ecf
-
+deode start suite \
+      --config-file $PWD/deode/data/config_files/config.toml \
+      --ecf-host $ECF_HOST \
+      --ecf-port 3141 \
+      --joboutdir $HOME/deode_ecflow/job \
+      --ecf-files $HOME/deode_ecflow/ecf
 ```
 
-You can now open ecflow_ui and add ecflow-gen-${USER}-001 as the server with port 3141
+After this, open `ecflow_ui` and add `ecflow-gen-${USER}-001` as the server with port `3141`. The default config will place the working directory under `$SCRATCH/deode`.
+
+
+### Running the `"forecast"` task from the `hpc-login`'s command line
+
+The command below runs `deode`'s task `"forecast"` using the batch system rules defined in your `config.toml`:
+```shell
+deode run \
+      --config-file $PWD/deode/data/config_files/config.toml \
+      --task Forecast \
+      --template $PWD/deode/templates/stand_alone.py \
+      --job $PWD/forecast.job \
+      --output $PWD/forecast.log
+```
+
+### Running a stand-alone task with an example config file on LUMI
+
+```shell
+deode run \
+      --config-file $PWD/deode/data/config_files/config.toml \
+      --task Forecast \
+      --template $PWD/deode/templates/stand_alone.py \
+      --job $PWD/test.job \
+      --troika-config $PWD/deode/data/config_files/troika.yml \
+      --output $PWD/test.log
+```

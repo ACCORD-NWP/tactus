@@ -1,235 +1,334 @@
 #!/usr/bin/env python3
 """Registration and validation of options passed in the config file."""
-import datetime
+import contextlib
 import json
-import logging
 import os
 import tempfile
-from collections import defaultdict
-from functools import cached_property, reduce
-from operator import getitem
+from functools import reduce
 from pathlib import Path
-from typing import Literal, Optional, Tuple, Union
 
-import tomlkit
-from pandas.tseries.frequencies import to_offset
-from pydantic import (
-    BaseModel,
-    Extra,
-    PositiveFloat,
-    PositiveInt,
-    confloat,
-    root_validator,
+import fastjsonschema
+import jsonref
+import tomli
+import yaml
+from fastjsonschema import JsonSchemaValueException
+from json_schema_for_humans.generate import (
+    GenerationConfiguration,
+    generate_from_file_object,
 )
 
-from . import PACKAGE_NAME
-from .datetime_utils import TimeWindowContainer, as_datetime
+from . import GeneralConstants
+from .aux_types import BaseMapping, QuasiConstant
+from .datetime_utils import DatetimeConstants
+from .general_utils import modify_mappings
+from .logs import logger
 
-logger = logging.getLogger(__name__)
 
+class ConfigParserDefaults(QuasiConstant):
+    """Defaults related to the parsing of config files."""
 
-def get_default_config_path():
-    """Return the default path for the config file."""
+    DIRECTORY = GeneralConstants.PACKAGE_DIRECTORY / "data" / "config_files"
+    PACKAGE_INCLUDE_DIR = DIRECTORY / "include"
+
+    PACKAGE_CONFIG_PATH = (DIRECTORY / "config.toml").resolve(strict=True)
+    # Define the default path to the config file
     try:
-        _fpath = Path(os.getenv("DEODE_CONFIG_PATH", "config.toml"))
-        default_conf_path = _fpath.resolve(strict=True)
+        CONFIG_PATH = Path(os.getenv("DEODE_CONFIG_PATH", "config.toml"))
+        CONFIG_PATH = CONFIG_PATH.resolve(strict=True)
     except FileNotFoundError:
-        default_conf_path = Path(os.getenv("HOME")) / f".{PACKAGE_NAME}" / "config.toml"
+        CONFIG_PATH = PACKAGE_CONFIG_PATH
 
-    return default_conf_path
-
-
-# Define custom types for use with pydantic
-# See <https://pydantic-docs.helpmanual.io/usage/types/#custom-data-types>
-class InputDateTime(datetime.datetime):
-    """Return a datetime object constructed from passed config input."""
-
-    @classmethod
-    def __get_validators__(cls):
-        yield as_datetime
+    SCHEMAS_DIRECTORY = DIRECTORY / "config_file_schemas"
+    MAIN_CONFIG_JSON_SCHEMA_PATH = SCHEMAS_DIRECTORY / "main_config_schema.json"
+    MAIN_CONFIG_JSON_SCHEMA = json.loads(MAIN_CONFIG_JSON_SCHEMA_PATH.read_text())
 
 
-class PandasOffsetFreqStr:
-    """Return a validated date offset string."""
-
-    @classmethod
-    def _validator(cls, string_repr):
-        _ = to_offset(string_repr)
-        return string_repr
-
-    @classmethod
-    def __get_validators__(cls):
-        yield cls._validator
+class ConfigFileValidationError(Exception):
+    """Error to be raised when parsing the input config file fails."""
 
 
-class ParsedPath(Path):
-    """Return pathlib.Path obj from string, with envvars & user expanded."""
+class ConflictingValidationSchemasError(Exception):
+    """Error to be raised when more than one schema is defined for a config section."""
+
+
+class BasicConfig(BaseMapping):
+    """Base class for configs. Arbitrary entries allowed: no validation is performed."""
+
+    def __init__(self, *args, _metadata=None, **kwargs):
+        """Initialise an instance in a `dict`-like fashion."""
+        super().__init__(*args, **kwargs)
+        self.metadata = _metadata
 
     @classmethod
-    def __get_validators__(cls):
-        yield lambda path: Path(os.path.expandvars(str(path))).expanduser()
-
-
-class _ConfigsBaseModel(BaseModel, extra=Extra.ignore, frozen=True):
-    """Base model for all models defined in this file."""
-
-    def __getattr__(self, items):
-        """Get attribute.
-
-        Override so we can use,
-        e.g., getattr(config, "general.time_windows.start.minute").
+    def from_file(cls, path, **kwargs):
+        """Retrieve configs from a file in miscellaneous formats.
 
         Args:
-            items (str): Attributes to be retrieved, as dot-separated strings.
+            path (typing.Union[pathlib.Path, str]): Path to the config file.
+            **kwargs: Arguments passed to the class constructor.
 
         Returns:
-            Any: Parsed command line arguments.
+            cls: Configs retrieved from the specified path.
         """
+        path = Path(path).resolve().as_posix()
+        configs = _read_raw_config_file(path)
+        return cls(configs, _metadata={"source_file_path": path}, **kwargs)
 
-        def regular_getattribute(obj, item):
-            if type(obj) is type(self):
-                return super().__getattribute__(item)
-            return getattr(obj, item)
+    @BaseMapping.data.setter
+    def data(self, new):
+        """Set the underlying data stored by the instance."""
+        input_sanitation_ops = [
+            lambda x: {k: v for k, v in x.items() if v is not None},
+            lambda x: {k: tuple(v) if isinstance(v, list) else v for k, v in x.items()},
+        ]
+        new = reduce(modify_mappings, input_sanitation_ops, new)
+        BaseMapping.data.fset(self, new, nested_maps_type=BasicConfig)
 
-        return reduce(regular_getattribute, items.split("."), self)
+    @property
+    def metadata(self):
+        """Get the metadata associated with the instance."""
+        return getattr(self, "_metadata", {})
 
-    def dumps(
-        self, section="", style: Literal["toml", "json"] = "toml", exclude_unset=False
+    @metadata.setter
+    def metadata(self, new):
+        """Set the metadata associated with the instance."""
+        if new is not None:
+            self._metadata = modify_mappings(obj=new, operator=dict)
+
+
+class JsonSchema(BaseMapping):
+    """Class to use for JSON schemas. Provides a `validate` method to validate data."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.data = jsonref.replace_refs(self.data)
+
+    @property
+    def _validation_function(self):
+        return _get_json_validation_function(self)
+
+    def validate(self, data):
+        """Return a copy of `data` validated against the stored JSON schema."""
+        return self._validation_function(data)
+
+    def get_markdown_doc(self):
+        """Return human-readable doc for the schema in markdown format."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with open(Path(tmpdir) / "schema.json", "w") as schema_file:
+                schema_file.write(json.dumps(self.dict()))
+
+            with open(Path(tmpdir) / "schema_doc.md", "w") as doc_file:
+                with contextlib.redirect_stdout(None):
+                    generate_from_file_object(
+                        schema_file=schema_file,
+                        result_file=doc_file,
+                        config=GenerationConfiguration(
+                            template_name="md",
+                            show_toc=False,
+                            template_md_options={"show_heading_numbers": False},
+                            with_footer=False,
+                            properties_table_columns=[
+                                "property",
+                                "type",
+                                "required",
+                                "default",
+                                "title/description",
+                            ],
+                        ),
+                    )
+
+            with open(Path(tmpdir) / "schema_doc.md", "r") as doc_file:
+                schema_doc = doc_file.read()
+
+        return schema_doc
+
+
+class ParsedConfig(BasicConfig):
+    """Object that holds parsed configs validated against a `json_schema`."""
+
+    def __init__(
+        self,
+        *args,
+        json_schema,
+        include_dir=ConfigParserDefaults.DIRECTORY,
+        **kwargs,
     ):
-        """Get a nicely printed version of the models."""
-        config = self.dict(exclude_unset=exclude_unset, exclude_none=True)
-        if section:
-            section_tree = section.split(".")
-            try:
-                value = reduce(getitem, section_tree, config)
-            except (KeyError, TypeError):
-                return ""
+        """Initialise an instance with an arbitrary number of entries & validate them."""
+        self.include_dir = include_dir
+        self.json_schema = json_schema
+        super().__init__(*args, **kwargs)
 
-            def _nested_defaultdict():
-                return defaultdict(_nested_defaultdict)
+    @BasicConfig.data.setter
+    def data(self, new):
+        """Set the underlying data stored by the instance."""
+        new, json_schema = _expand_config_include_section(
+            raw_config=new,
+            json_schema=self.json_schema,
+            config_include_search_dir=self.include_dir,
+        )
+        ParsedConfig.json_schema.fset(self, json_schema, _validate_data=False)
 
-            config = _nested_defaultdict()
-            reduce(getitem, section_tree[:-1], config)[section_tree[-1]] = value
+        # Make sure all sections defined in the schema are also present in the new config
+        sections_that_should_not_be_defaulted = [
+            "include",
+            *new,
+            *json_schema.get("required", []),
+        ]
+        for property_name, property_schema in json_schema.get("properties", {}).items():
+            if property_name in sections_that_should_not_be_defaulted:
+                continue
+            if property_schema.get("type", "") == "object":
+                new[property_name] = {}
 
-        rtn = json.dumps(config, indent=4, sort_keys=False, default=lambda obj: str(obj))
-        if style == "toml":
-            return tomlkit.dumps(json.loads(rtn))
+        BasicConfig.data.fset(self, self.json_schema.validate(new))
+
+    @property
+    def include_dir(self):
+        """Return the search dir used sections in the raw config's `include` section."""
+        return self._include_dir
+
+    @include_dir.setter
+    def include_dir(self, new):
+        """Set the search dir for `include` config sections."""
+        self._include_dir = Path(new)
+
+    @property
+    def json_schema(self):
+        """Return the instance's JSON schema."""
+        return self._json_schema
+
+    @json_schema.setter
+    def json_schema(self, new, _validate_data=True):
+        self._json_schema = JsonSchema(new)
+        if _validate_data and self.data is not None:
+            self.data = self.data
+
+    @classmethod
+    def from_file(cls, path, include_dir=None, **kwargs):
+        """Do as in `BasicConfig`. If `None`, `include_dir` will become `path.parent`."""
+        if include_dir is None:
+            include_dir = Path(path).parent
+        return super().from_file(path=path, include_dir=include_dir, **kwargs)
+
+    def __repr__(self):
+        rtn = super().__repr__().strip(")")
+        rtn += f", json_schema={self.json_schema.dumps(style='json')})"
         return rtn
 
-    def __str__(self):
-        return self.dumps(style="json")
+
+def _read_raw_config_file(config_path):
+    """Read raw configs from files in miscellaneous formats."""
+    config_path = Path(config_path)
+    logger.debug("Reading configs from file <{}>", config_path)
+
+    with open(config_path, "rb") as config_file:
+        if config_path.suffix == ".toml":
+            return tomli.load(config_file)
+
+        if config_path.suffix in [".yaml", ".yml"]:
+            return yaml.safe_load(config_file)
+
+        if config_path.suffix == ".json":
+            return json.load(config_file)
+
+    raise NotImplementedError(f'Unsupported config file format "{config_path.suffix}"')
 
 
-###########################################################################
-# Registering config options (known opts, defaults, restrictions, etc).   #
-# This is where you should change, e.g., in order to add new config opts. #
-###########################################################################
-class _InputDatesModel(_ConfigsBaseModel):
-    """Model for the input dates."""
+def _get_config_include_definitions(raw_config):
+    config_includes = raw_config.get("include", {}).copy()
+    overlapping_sections = [key for key in config_includes if key in raw_config]
+    if overlapping_sections:
+        msg = f"`[include]` section(s) [{', '.join(overlapping_sections)}] "
+        msg += "already present in parent config."
+        raise ValueError(msg)
+    return config_includes
 
-    start: Optional[InputDateTime]
-    end: Optional[InputDateTime]
-    cycle_length: PandasOffsetFreqStr = "3H"
-    list: Optional[Tuple[InputDateTime, ...]]  # noqa: A003
 
-    # pylint: disable=E0213
-    @root_validator()
-    def _check_consistency_between_date_input_items(cls, values):  # noqa: N805
-        date_list, start, end = values.get("list"), values.get("start"), values.get("end")
-        fail_cond_1 = date_list and any((start, end))
-        fail_cond_2 = not date_list and not all((start, end))
-        if fail_cond_1 or fail_cond_2:
-            raise ValueError("Must specify either only 'list' or both 'start' and 'end'")
-        return values
+def _expand_config_include_section(
+    raw_config,
+    json_schema,
+    config_include_search_dir=ConfigParserDefaults.DIRECTORY,
+    schemas_path=ConfigParserDefaults.SCHEMAS_DIRECTORY,
+    _parent_sections=(),
+):
+    """Merge config includes and return new config & corresponding validation schema."""
+    raw_config = modify_mappings(obj=raw_config, operator=dict)
+    json_schema = modify_mappings(obj=json_schema, operator=dict)
 
-    @cached_property
-    def _normalized(self):
-        """Return an iterable with the dates corresponding to the passed configs."""
-        if self.list:
-            return TimeWindowContainer(data=self.list, cycle_length=self.cycle_length)
-        return TimeWindowContainer.from_start_end_and_length(
-            start=self.start, end=self.end, cycle_length=self.cycle_length
+    config_include_defs = _get_config_include_definitions(raw_config)
+    if not config_include_defs:
+        return raw_config, json_schema
+
+    if "properties" not in json_schema:
+        json_schema["properties"] = {}
+    config_include_search_dir = Path(config_include_search_dir).resolve()
+    config_include_sections = {}
+    for section_name, include_path in config_include_defs.items():
+        include_path = Path(include_path)
+        if not include_path.is_absolute():
+            include_path = config_include_search_dir / include_path
+        included_config_section = _read_raw_config_file(include_path)
+
+        _sections_traversed = (*_parent_sections, section_name)
+        sections_traversed_str = " -> ".join(_sections_traversed)
+        if section_name in json_schema["properties"]:
+            msg = f'Validation schema for `[include]` section "{sections_traversed_str}" '
+            msg += "also detected in its parent section's schehma. "
+            msg += "`[include]` schemas must NOT be added to their parent's schemas, but "
+            msg += "rather in their own separate files."
+            raise ConflictingValidationSchemasError(msg)
+
+        schema_file = schemas_path / f"{section_name}_section_schema.json"
+        if not schema_file.is_file():
+            logger.warning(
+                'No validation schema for config section "{}". Using default.',
+                sections_traversed_str,
+            )
+            schema_file = schemas_path / "default_section_schema.json"
+
+        updated_config, updated_schema = _expand_config_include_section(
+            raw_config=included_config_section,
+            json_schema={"$ref": f"file:{schema_file}"},
+            config_include_search_dir=config_include_search_dir,
+            schemas_path=schemas_path,
+            _parent_sections=_sections_traversed,
         )
+        config_include_sections[section_name] = updated_config
+        json_schema["properties"][section_name] = updated_schema
 
-    def __getitem__(self, item):
-        return self._normalized[item]
+    raw_config.update(config_include_sections)
+    raw_config.pop("include")
 
-    def __iter__(self):
-        return iter(self._normalized)
-
-    def __len__(self):
-        return len(self._normalized)
+    return raw_config, json_schema
 
 
-# "general" section
-class _GeneralSectionModel(_ConfigsBaseModel):
-    """Model for the 'general' section."""
+def _get_json_validation_function(json_schema):
+    """Return a validation function compiled with schema `json_schema`."""
+    if not json_schema:
+        # Validation will just convert everything to dict in this case
+        return lambda obj: modify_mappings(obj=obj, operator=dict)
+    validation_func = fastjsonschema.compile(json_schema.dict())
 
-    data_rootdir: ParsedPath = Path(".")
-    assimilation_times: _InputDatesModel
-    outdir: ParsedPath = Path(tempfile.gettempdir()).resolve() / f"{PACKAGE_NAME}_output"
+    def validate(obj):
+        try:
+            return validation_func(modify_mappings(obj=obj, operator=dict))
+        except JsonSchemaValueException as err:
+            error_path = " -> ".join(err.path[1:])
+            human_readable_msg = err.message.replace(err.name, "").strip()
 
+            # Give a better err msg when times/date-times/durations don't follow ISO 8601
+            human_readable_msg = human_readable_msg.replace(
+                f"must match pattern {DatetimeConstants.ISO_8601_TIME_DURATION_REGEX}",
+                "must be an ISO 8601 duration string",
+            )
+            for spec in ["date-time", "date", "time"]:
+                human_readable_msg = human_readable_msg.replace(
+                    f"must be {spec}", f"must be an ISO 8601 {spec} string"
+                )
 
-# "commands" section
-class _CommandSectionModel(_ConfigsBaseModel):
-    """Model for the 'commands' section."""
+            raise ConfigFileValidationError(
+                f'"{error_path}" {human_readable_msg}. '
+                + f'Received type "{type(err.value).__name__}" with value "{err.value}".'
+            ) from err
 
-    class _SelectCommandSectionModel(_ConfigsBaseModel):
-        station_rejection_tol: confloat(ge=0, le=1) = 0.3
-        save_obsoul: bool = True
-
-    select: _SelectCommandSectionModel = _SelectCommandSectionModel()
-
-
-# domain and projection
-class _DomainSectionModel(_ConfigsBaseModel):
-    """Model for the 'domain' section."""
-
-    # These defaults are for the METCOOP25C domain. See
-    # <https://hirlam.org/trac/wiki/HarmonieSystemDocumentation/ModelDomain>
-    # <https://hirlam.org/trac/browser/Harmonie/scr/Harmonie_domains.pm>
-    name: str = "Domain"
-    shape: Tuple[PositiveInt, PositiveInt] = (900, 960)  # (n_lon. n_lat)
-    cell_sizes: Tuple[PositiveFloat, PositiveFloat] = (2500.0, 2500.0)  # In meters
-    center_lonlat: Tuple[confloat(ge=-180, lt=180), confloat(ge=-90, le=90)] = (
-        16.763011639,
-        63.489212956,
-    )
-    projparams: Union[dict, str] = "+proj=lcc +lon_0=15 +lat_0=63 +lat_1=63"
-
-
-class ParsedConfig(_ConfigsBaseModel):
-    """Model for validation of the data in the whole config file."""
-
-    general: _GeneralSectionModel
-    commands: _CommandSectionModel = _CommandSectionModel()
-    domain: _DomainSectionModel = _DomainSectionModel()
-
-    @classmethod
-    def from_file(cls, config_path):
-        """Read config file at location "config_path".
-
-        Args:
-            config_path (Union[pathlib.Path, str]): The path to the config file.
-
-        Returns:
-            .config_parser.ParsedConfig: Parsed configs from config_path.
-        """
-        config_path = Path(config_path).expanduser().resolve()
-        logging.info("Reading config file %s", config_path)
-        with open(config_path, "rb") as config_file:
-            raw_config = tomlkit.load(config_file)
-
-        return cls.parse_obj(raw_config)
-
-    def get_task_config(self, task, setting):
-        """Get task config.
-
-        Args:
-            task (str): Task name
-            setting (str): Task setting to get
-
-        Returns:
-            any: Something
-        """
-        return {}
+    return validate

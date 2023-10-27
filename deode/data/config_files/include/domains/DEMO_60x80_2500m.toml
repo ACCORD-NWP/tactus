@@ -1,0 +1,10 @@
+gridtype = "linear"
+name = "DEMO_60x80_2500m"
+nimax = 49
+njmax = 69
+xdx = 2500.0
+xdy = 2500.0
+xlat0 = 52.5
+xlatcen = 51.967
+xlon0 = 0.0
+xloncen = 4.9

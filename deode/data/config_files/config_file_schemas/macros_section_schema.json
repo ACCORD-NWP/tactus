@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Macros Section",
+  "description": "Model for the 'macros' section.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "gen_macros": {
+      "type": "array",
+      "description": "Turns any string config to a macro, use a dict to rename an attribute."
+    },
+    "os_macros": {
+      "type": "array",
+      "description": "Environment variables used as macros"
+    },
+    "group_macros": {
+      "type": "array",
+      "description": "Turns a full config section to a macro"
+    }
+  }
+}

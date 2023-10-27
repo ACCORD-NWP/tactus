@@ -1,0 +1,9 @@
+# Change only global settings in NAMFPC, no selection of fields
+NAMFPC:
+    NFPGRIB: 141
+    CFPDOM: "${domain.name}"
+    LFPCAPEX: True
+    LFPMOIS: False
+    LISOT_ABOVEG: True
+    L_READ_MODEL_DATE: True
+    NFPCAPE: 5
