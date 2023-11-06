@@ -94,6 +94,16 @@
           ],
           "type": "string"
         },
+	"ifs.selection": {
+            "type": "string",
+            "description": "Selection",
+            "enum": [
+            "HRES",
+            "ATOS_DT",
+            "IFSENS",
+            "PARIS_RDP"
+          ]
+        },
         "bd_has_surfex": {
           "description": "Set to true if the host model runs with surfex",
           "type": "boolean"

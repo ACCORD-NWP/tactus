@@ -7,7 +7,6 @@
   initfile = "@SCRATCH@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@HISTORY_TEMPLATE@"
   initfile_sfx = "@SCRATCH@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
   keep_workdirs = true
-  mars_expver = "0001"
   surfex = true
 
 [general.output_settings]
@@ -31,6 +30,7 @@
   bdshift = "PT0H"
   bdstrategy = "same_forecast"
   bdtasks_per_batch = 24
+  ifs.selection = "HRES"
 
 [fullpos]
   config_path = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos"
@@ -40,6 +40,7 @@
   domain = "include/domains/DEMO_80x90_1000m.toml"
   file_templates = "include/file_templates.toml"
   macros = "include/macros.toml"
+  mars = "include/mars_settings.toml"
   platform = "include/platform_paths/atos_bologna.toml"
   submission = "include/submission/atos_bologna_CY48t3.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"
@@ -71,7 +72,6 @@
   host_domain = "DEMO_60x80_2500m"
   logs = "@ARCHIVE_ROOT@/logs"
   marsdir = "@SCRATCH@/IFS/@YYYY@/@MM@/@DD@/@HH@/@MARS_EXPVER@"
-  marsfile_template = "mars_prefetch_[levtype]_[date]_[time]+[step]"
   prev_case = "@CASE@"
 
 [task.creategrib.conversions.surfex]

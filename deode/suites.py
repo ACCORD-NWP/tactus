@@ -230,13 +230,6 @@ class SuiteDefinition(object):
         prev_cycle_trigger = None
         prev_interpolation_trigger = None
 
-        if self.do_marsprep:
-            marsprep_task = (
-                "Marsprep"
-                if config["general.mars_expver"] == "0001"
-                else "MarsprepGlobalDT"
-            )
-
         for __, cycle in cycles.items():
             cycle_day = cycle["day"]
             if self.create_static_data:
@@ -281,7 +274,7 @@ class SuiteDefinition(object):
             ready_for_marsprep = EcflowSuiteTriggers(triggers)
             if self.do_marsprep:
                 EcflowSuiteTask(
-                    marsprep_task,
+                    "Marsprep",
                     inputdata,
                     config,
                     self.task_settings,

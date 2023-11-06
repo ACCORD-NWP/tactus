@@ -21,7 +21,6 @@ from deode.tasks.discover_task import discover, get_task
 from deode.tasks.e923 import E923
 from deode.tasks.forecast import FirstGuess, Forecast
 from deode.tasks.marsprep import Marsprep
-from deode.tasks.marsprepGlobalDT import MarsprepGlobalDT
 from deode.toolbox import ArchiveError, FileManager, ProviderError
 
 WORKING_DIR = Path.cwd()
@@ -101,7 +100,6 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_task_e923_constant_part_method = E923.constant_part
     original_task_e923_monthly_part_method = E923.monthly_part
     original_task_marsprep_run_method = Marsprep.run
-    original_task_marsprepglobaldt_run_method = MarsprepGlobalDT.run
     original_task_collectlogs_collectlogs_execute_method = CollectLogs.execute
 
     # Define the wrappers that will replace some key methods
@@ -240,14 +238,6 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     session_mocker.patch(
         "deode.tasks.collectlogs.CollectLogs.execute",
         new=new_task_collectlogs_collectlogs_execute_method,
-    )
-    session_mocker.patch(
-        "deode.tasks.marsprepGlobalDT.BatchJob.run",
-        new=new_task_mars_batchjob_run_method,
-    )
-    session_mocker.patch(
-        "deode.tasks.marsprepGlobalDT.MarsprepGlobalDT.run",
-        new=new_task_marsprepglobaldt_run_method,
     )
 
     # Create files needed by gmtedsoil tasks

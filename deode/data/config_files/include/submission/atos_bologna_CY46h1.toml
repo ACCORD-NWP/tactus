@@ -44,7 +44,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   NPROCX = 1
   NPROCY = 1
   SCHOST = "hpc"
-  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep", "MarsprepGlobalDT"]
+  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep"]
   WRAPPER = "srun"
 
 [serial.BATCH]
@@ -122,11 +122,6 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   MODULE_GDAL = "module('load', 'gdal/3.6.2')"
 
 [task_exceptions.Marsprep.BATCH]
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=1"
-  WALLTIME = "#SBATCH --time=01:00:00"
-
-[task_exceptions.MarsprepGlobalDT.BATCH]
   MEM = "#SBATCH --mem=32GB"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
