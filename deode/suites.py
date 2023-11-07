@@ -65,6 +65,7 @@ class SuiteDefinition(object):
         self.interpolate_boundaries = config["suite_control.interpolate_boundaries"]
         self.do_prep = config["suite_control.do_prep"]
         self.do_marsprep = config["suite_control.do_marsprep"]
+        self.do_extractsqlite = config["suite_control.do_extractsqlite"]
         self.do_archiving = config["suite_control.do_archiving"]
         self.surfex = config["general.surfex"]
         self.suite_name = suite_name
@@ -444,6 +445,20 @@ class SuiteDefinition(object):
                 input_template=input_template,
                 trigger=creategrib_trigger,
             )
+
+            if self.do_extractsqlite:
+                extractsqlite_trigger = EcflowSuiteTriggers(
+                    [EcflowSuiteTrigger(forecast_task)]
+                )
+                EcflowSuiteTask(
+                    "ExtractSQLite",
+                    forecasting,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    trigger=extractsqlite_trigger,
+                )
 
             if self.do_archiving:
                 archiving_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(cycle_fam)])

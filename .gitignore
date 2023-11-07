@@ -9,7 +9,7 @@ tmp\.*
 temp\.*
 *.egg-info
 build/
-*.csv
+#*.csv
 *outfile*
 list/
 .tox/

@@ -1,7 +1,7 @@
 bindir = "/home/snh02/pack/48t3_fix.04.OMPIIFC2104.x/bin"
 default_submit_type = "serial"
 nproma = -32
-submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
+submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 
 [background_hpc]
   SCHOST = "localhost"
@@ -11,6 +11,27 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   INTERPRETER = "#!/usr/bin/python3"
   SCHOST = "localhost"
   tasks = ["Background_vm"]
+
+[gnu]
+  NPROC = 1
+  NPROCX = 1
+  NPROCY = 1
+  SCHOST = "hpc"
+  tasks = ["ExtractSQLite"]
+  WRAPPER = "srun"
+
+[gnu.BATCH]
+  ACCOUNT = "#SBATCH -A msdeode"
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  QOS = "#SBATCH --qos=nf"
+  WALLTIME = "#SBATCH --time=00:15:00"
+
+[gnu.ENV]
+  AAAOS = "import os"
+  AAMODULE_ENV = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read())"
+  AMODULE_ECMWF = "module('load', 'ecmwf-toolbox/2021.08.3.0')"
 
 [parallel]
   NPROC = 32

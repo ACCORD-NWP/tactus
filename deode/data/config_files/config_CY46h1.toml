@@ -60,6 +60,7 @@
   create_static_data = true
   create_time_dependent_suite = true
   do_archiving = false
+  do_extractsqlite = false
   do_marsprep = true
   do_pgd = true
   do_prep = true
@@ -83,3 +84,10 @@
 [task.creategrib.conversions.surfex]
   input_template = "@SURFEX_TEMPLATE@"
   output_template = "sfx_@YYYY@-@MM@-@DD@T@HH@@mm@@ss@+@DURATION_ARCHIVE@.grib"
+
+[task.extractsqlite]
+  parameter_list = "@DEODE_HOME@/deode/data/sqlite/param_list.json"
+  sqlite_model_name = "@CNMEXP@"
+  sqlite_path = "@ARCHIVE_ROOT@/sqlite/"
+  sqlite_template = "FCTABLE_@PP@_@YYYY@@MM@_@HH@.sqlite"
+  station_list = "@DEODE_HOME@/deode/data/sqlite/station_list_default.csv"
