@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Full Changelog](https://github.com/destination-earth-digital-twins/Deode-Prototype/compare/...HEAD)
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
+### Fixed
+- Stop writing log files to the user's home directory. This was reintroduced by mistake.
+
 ## [0.2.0] - 2023-10-27
 ### Added
 - Adjustment of coupling zone with depending on resolution
@@ -30,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Migrate most linting checks from `flake8` to [`ruff`](https://docs.astral.sh/ruff/). It is faster.
 ### Removed
-- `deode toml-formatter` command 
+- `deode toml-formatter` command
   Use a separate library for this
 ### Fixed
 - Correct the unit testing of MARS tasks.
