@@ -19,9 +19,9 @@ from deode.tasks.collectlogs import CollectLogs
 from deode.tasks.creategrib import CreateGrib
 from deode.tasks.discover_task import discover, get_task
 from deode.tasks.e923 import E923
-from deode.tasks.forecast import Forecast
+from deode.tasks.extractsqlite import ExtractSQLite
+from deode.tasks.forecast import FirstGuess, Forecast
 from deode.tasks.marsprep import Marsprep
-from deode.tasks.marsprepGlobalDT import MarsprepGlobalDT
 from deode.toolbox import ArchiveError, FileManager, ProviderError
 
 WORKING_DIR = Path.cwd()
@@ -47,7 +47,7 @@ def base_raw_config(request):
     return config
 
 
-@pytest.fixture(params=classes_to_be_tested())
+@pytest.fixture(params=classes_to_be_tested(), scope="module")
 def task_name_and_configs(request, base_raw_config, tmp_path_factory):
     """Return a ParsedConfig with a task-specific section according to `params`."""
     task_name = request.param
@@ -93,14 +93,15 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_batchjob_run_method = BatchJob.run
     original_toolbox_filemanager_input_method = FileManager.input
     original_task_forecast_forecast_execute_method = Forecast.execute
+    original_task_forecast_firstguess_execute_method = FirstGuess.execute
     original_task_archive_archivehour_execute_method = ArchiveHour.execute
     original_task_archive_archivestatic_execute_method = ArchiveStatic.execute
     original_task_creategrib_creategrib_execute_method = CreateGrib.execute
+    original_task_extractsqlite_extractsqlite_execute_method = ExtractSQLite.execute
     original_task_initial_conditions_nosuccess_method = InitialConditions.nosuccess
     original_task_e923_constant_part_method = E923.constant_part
     original_task_e923_monthly_part_method = E923.monthly_part
     original_task_marsprep_run_method = Marsprep.run
-    original_task_marsprepglobaldt_run_method = MarsprepGlobalDT.run
     original_task_collectlogs_collectlogs_execute_method = CollectLogs.execute
 
     # Define the wrappers that will replace some key methods
@@ -128,6 +129,11 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         with contextlib.suppress(FileNotFoundError):
             original_task_forecast_forecast_execute_method(*args, **kwargs)
 
+    def new_task_forecast_firstguess_execute_method(*args, **kwargs):
+        """Suppress some errors so that test continues if they happen."""
+        with contextlib.suppress(FileNotFoundError):
+            original_task_forecast_firstguess_execute_method(*args, **kwargs)
+
     def new_task_archive_archivehour_execute_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
         with contextlib.suppress(FileNotFoundError):
@@ -142,6 +148,11 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         """Suppress some errors so that test continues if they happen."""
         with contextlib.suppress(FileNotFoundError):
             original_task_creategrib_creategrib_execute_method(*args, **kwargs)
+
+    def new_task_extractsqlite_extractsqlite_execute_method(*args, **kwargs):
+        """Suppress some errors so that test continues if they happen."""
+        with contextlib.suppress(FileNotFoundError):
+            original_task_extractsqlite_extractsqlite_execute_method(*args, **kwargs)
 
     def new_task_mars_batchjob_run_method(*args, **kwargs):
         """Skip any work."""
@@ -169,10 +180,10 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
 
     def new_task_e923_monthly_part_method(self, constant_file):
         """Create needed file `constant_file` before running the original method."""
-        with open(constant_file, "w", encoding="utf8"), open(
-            "Const.Clim.01", "w", encoding="utf8"
-        ):
-            original_task_e923_monthly_part_method(self, constant_file)
+        Path(constant_file).parent.mkdir(parents=True, exist_ok=True)
+        Path(constant_file).touch()
+        Path("Const.Clim.01").touch()
+        original_task_e923_monthly_part_method(self, constant_file)
 
     def new_task_collectlogs_collectlogs_execute_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
@@ -185,6 +196,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         Path("PREP.fa").touch()
 
     # Do the actual mocking
+    session_mocker.patch("shutil.chown")
     session_mocker.patch(
         "deode.tasks.batch.BatchJob.__init__", new=new_batchjob_init_method
     )
@@ -197,6 +209,10 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         new=new_task_forecast_forecast_execute_method,
     )
     session_mocker.patch(
+        "deode.tasks.forecast.FirstGuess.execute",
+        new=new_task_forecast_firstguess_execute_method,
+    )
+    session_mocker.patch(
         "deode.tasks.archive.ArchiveHour.execute",
         new=new_task_archive_archivehour_execute_method,
     )
@@ -207,6 +223,10 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     session_mocker.patch(
         "deode.tasks.creategrib.CreateGrib.execute",
         new=new_task_creategrib_creategrib_execute_method,
+    )
+    session_mocker.patch(
+        "deode.tasks.extractsqlite.ExtractSQLite.execute",
+        new=new_task_extractsqlite_extractsqlite_execute_method,
     )
     session_mocker.patch(
         "deode.initial_conditions.InitialConditions.nosuccess",
@@ -230,14 +250,6 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         "deode.tasks.collectlogs.CollectLogs.execute",
         new=new_task_collectlogs_collectlogs_execute_method,
     )
-    session_mocker.patch(
-        "deode.tasks.marsprepGlobalDT.BatchJob.run",
-        new=new_task_mars_batchjob_run_method,
-    )
-    session_mocker.patch(
-        "deode.tasks.marsprepGlobalDT.MarsprepGlobalDT.run",
-        new=new_task_marsprepglobaldt_run_method,
-    )
 
     # Create files needed by gmtedsoil tasks
     tif_files_dir = tmp_path_factory.getbasetemp() / "GMTED2010"
@@ -253,6 +265,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
 class TestTasks:
     """Test all tasks."""
 
+    @pytest.mark.usefixtures("_mockers_for_task_run_tests")
     def test_task_can_be_instantiated(self, task_name_and_configs):
         class_name, task_config = task_name_and_configs
         assert isinstance(get_task(class_name, task_config), Task)

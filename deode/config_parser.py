@@ -99,6 +99,10 @@ class BasicConfig(BaseMapping):
 class JsonSchema(BaseMapping):
     """Class to use for JSON schemas. Provides a `validate` method to validate data."""
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.data = jsonref.replace_refs(self.data)
+
     @property
     def _validation_function(self):
         return _get_json_validation_function(self)
@@ -111,7 +115,7 @@ class JsonSchema(BaseMapping):
         """Return human-readable doc for the schema in markdown format."""
         with tempfile.TemporaryDirectory() as tmpdir:
             with open(Path(tmpdir) / "schema.json", "w") as schema_file:
-                schema_file.write(json.dumps(jsonref.replace_refs(self, proxies=False)))
+                schema_file.write(json.dumps(self.dict()))
 
             with open(Path(tmpdir) / "schema_doc.md", "w") as doc_file:
                 with contextlib.redirect_stdout(None):
@@ -163,6 +167,19 @@ class ParsedConfig(BasicConfig):
             config_include_search_dir=self.include_dir,
         )
         ParsedConfig.json_schema.fset(self, json_schema, _validate_data=False)
+
+        # Make sure all sections defined in the schema are also present in the new config
+        sections_that_should_not_be_defaulted = [
+            "include",
+            *new,
+            *json_schema.get("required", []),
+        ]
+        for property_name, property_schema in json_schema.get("properties", {}).items():
+            if property_name in sections_that_should_not_be_defaulted:
+                continue
+            if property_schema.get("type", "") == "object":
+                new[property_name] = {}
+
         BasicConfig.data.fset(self, self.json_schema.validate(new))
 
     @property
@@ -202,7 +219,7 @@ class ParsedConfig(BasicConfig):
 def _read_raw_config_file(config_path):
     """Read raw configs from files in miscellaneous formats."""
     config_path = Path(config_path)
-    logger.info("Reading configs from file <{}>", config_path)
+    logger.debug("Reading configs from file <{}>", config_path)
 
     with open(config_path, "rb") as config_file:
         if config_path.suffix == ".toml":

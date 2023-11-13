@@ -1,7 +1,7 @@
-bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2023-09-19/R64"
-
+bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2023-10-18/R64"
 default_submit_type = "serial"
-submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
+nproma = -32
+submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 
 [background_hpc]
   SCHOST = "localhost"
@@ -11,6 +11,27 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   INTERPRETER = "#!/usr/bin/python3"
   SCHOST = "localhost"
   tasks = ["Background_vm"]
+
+[gnu]
+  NPROC = 1
+  NPROCX = 1
+  NPROCY = 1
+  SCHOST = "hpc"
+  tasks = ["ExtractSQLite"]
+  WRAPPER = "srun"
+
+[gnu.BATCH]
+  ACCOUNT = "#SBATCH -A msdeode"
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  QOS = "#SBATCH --qos=nf"
+  WALLTIME = "#SBATCH --time=00:15:00"
+
+[gnu.ENV]
+  AAAOS = "import os"
+  AAMODULE_ENV = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read())"
+  AMODULE_ECMWF = "module('load', 'ecmwf-toolbox/2021.08.3.0')"
 
 [parallel]
   NPROC = 32
@@ -44,7 +65,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   NPROCX = 1
   NPROCY = 1
   SCHOST = "hpc"
-  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep", "MarsprepGlobalDT"]
+  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep"]
   WRAPPER = "srun"
 
 [serial.BATCH]
@@ -107,26 +128,25 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   NTASKS = "#SBATCH --ntasks=16"
 
 [task_exceptions.Forecast]
-  NPROC = 1536
+  NPROC = 3072
 
 [task_exceptions.Forecast.BATCH]
   MEM = "#SBATCH --mem=200GB"
-  NODES = "#SBATCH --nodes=12"
-  NTASKS = "#SBATCH --ntasks=1536"
-  WALLTIME = "#SBATCH --time=05:00:00"
+  NODES = "#SBATCH --nodes=24"
+  NTASKS = "#SBATCH --ntasks=3072"
+  WALLTIME = "#SBATCH --time=08:00:00"
+
+[task_exceptions.Forecast.ENV]
+  UCX_LOG_LEVEL = "os.environ['UCX_LOG_LEVEL'] = 'error'"
 
 [task_exceptions.Gmted.ENV]
-  MODULE_GDAL = "module('load', 'gdal/3.2.1')"
+  MEM = "#SBATCH --mem=32GB"
+  MODULE_GDAL = "module('load', 'gdal/3.6.2')"
 
 [task_exceptions.Marsprep.BATCH]
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   WALLTIME = "#SBATCH --time=02:00:00"
-
-[task_exceptions.MarsprepGlobalDT.BATCH]
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=1"
-  WALLTIME = "#SBATCH --time=01:00:00"
 
 [task_exceptions.Pgd]
   WRAPPER = "srun -n @NPROC@"
@@ -149,4 +169,4 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   WALLTIME = "#SBATCH --time=00:50:00"
 
 [task_exceptions.Soil.ENV]
-  MODULE_GDAL = "module('load', 'gdal/3.2.1')"
+  MODULE_GDAL = "module('load', 'gdal/3.6.2')"

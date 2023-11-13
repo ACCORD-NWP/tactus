@@ -47,8 +47,9 @@
       "properties": {
         "config_file": {
           "type": "string",
-          "description": "Troika config file"
-        }
+          "description": "Troika config file",
+          "default": "@DEODE_HOME@/deode/data/config_files/troika.yml"
+	}
       }
     },
     "boundaries": {
@@ -92,6 +93,16 @@
             "ifs"
           ],
           "type": "string"
+        },
+	"ifs.selection": {
+            "type": "string",
+            "description": "Selection",
+            "enum": [
+            "HRES",
+            "ATOS_DT",
+            "IFSENS",
+            "PARIS_RDP"
+          ]
         },
         "bd_has_surfex": {
           "description": "Set to true if the host model runs with surfex",
@@ -146,16 +157,25 @@
           "description": "Run prep if cold start",
           "type": "boolean"
         },
-        "cold_start": {
-          "description": "Run prep every run",
-          "type": "boolean"
-        },
+	"mode": {
+	  "description": "Choose a strategy to achieve initial/initial_sfx files (start:  start from interpolated files and then propagate the FG between cycles, restart: start from a previous run and then propagate the FG between cycles, cold_start: always start from interpolated files).",
+	  "type": "string",
+	  "enum": [
+	    "start",
+	    "restart",
+	    "cold_start"
+	   ]
+	},
         "interpolate_boundaries": {
           "description": "Activates the boundary interpolation",
           "type": "boolean"
         },
         "do_marsprep": {
           "description": "Run marsprep or skip extraction",
+          "type": "boolean"
+        },
+        "do_extractsqlite": {
+          "description": "Activates extraction of selected points to SQLite files for verification.",
           "type": "boolean"
         },
         "create_static_data": {
@@ -191,8 +211,9 @@
         },
         "intp_bddir": {
           "type": "string",
-          "description": "Location of boundaries on the current domain, i.e. the output directory of e927"
-        },
+          "description": "Location of boundaries on the current domain, i.e. the output directory of e927",
+          "default": "@WRK@"
+	},
         "climdir": {
           "type": "string",
           "description": "Location of generated/used climate files (PGD/monthly files)"
@@ -207,7 +228,8 @@
         },
         "wrk": {
           "type": "string",
-          "description": "Location of date specific working directory"
+          "description": "Location of date specific working directory",
+          "default": "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/"
         },
         "fullpos_config_file": {
           "type": "string",
@@ -215,15 +237,17 @@
         },
         "archive": {
           "type": "string",
-          "description": "Location of date specific archive"
-        },
+          "description": "Location of date specific archive",
+          "default": "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
+	},
         "logs": {
           "type": "string",
           "description": "Location of collected logfiles"
         },
         "namelists": {
           "type": "string",
-          "description": "Path to static namelists"
+          "description": "Path to static namelists",
+          "default": "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
         },
         "marsdir": {
           "type": "string",
@@ -235,7 +259,13 @@
         },
         "sfx_input_defs": {
           "type": "string",
-          "description": "Path to the surfex json config file"
+          "description": "Path to the surfex json config file",
+          "default": "@DEODE_HOME@/deode/data/input/sfx_input_@CYCLE@.json"
+        },
+	"prev_case":{
+          "description": "Name of the previous experiment",
+          "type": "string",
+          "default": "@CASE@"
         }
       }
     },
@@ -333,7 +363,8 @@
         },
         "realization": {
           "description": "Placeholder for future ensemble or similar need",
-          "type": "number"
+          "type": "number",
+	  "default": -1
         },
         "cnmexp": {
           "description": "Experiment short name",
@@ -341,10 +372,6 @@
           "type": "string",
           "minLength": 4,
           "maxLength": 4
-        },
-        "tstep": {
-          "description": "Model time step",
-          "type": "number"
         },
         "loglevel": {
           "description": "Logger output level",
@@ -382,10 +409,6 @@
             "CY48t3",
             "CY46h1"
           ]
-        },
-        "nproma": {
-          "description": "NPROMA size in the forecast model. See the namelists for where it is used",
-          "type": "number"
         },
         "initfile": {
           "description": "Initial file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",

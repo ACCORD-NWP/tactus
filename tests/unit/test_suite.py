@@ -64,7 +64,10 @@ class TestSuite:
         config = config_from_task_config_file
         config = config.copy(
             update={
-                "platform": {"deode_home": f"{os.path.dirname(__file__)}/../.."},
+                "platform": {
+                    "deode_home": f"{os.path.dirname(__file__)}/../..",
+                    "unix_group": "",
+                },
             }
         )
         config = config.copy(update=set_times(config))

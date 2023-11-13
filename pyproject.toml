@@ -2,7 +2,7 @@
   # Package ID info
   description = "Prototype for the DEODE scripting system."
   name = "deode"
-  version = "0.1.0"
+  version = "0.2.0"
   # Other package info
   authors = ["The WP5.1 development group in the DE_330 project."]
   documentation = "https://destination-earth-digital-twins.github.io/deode-prototype-docs"
@@ -19,11 +19,11 @@
 
 [tool.poetry.dependencies]
   # Python version
-  python = "^3.8"
+  python = ">=3.9,<3.13"
   # General dependencies
   dateutils = "^0.6.12"
   f90nml = "^1.4.3"
-  fastjsonschema = "2.16.2"
+  fastjsonschema = "2.18.1"
   humanize = "^4.8.0"
   json-schema-for-humans = {git = "https://github.com/paulovcmedeiros/json-schema-for-humans.git", branch = "feature/choose-properties-table-columns"}
   jsonref = "^1.1.0"
@@ -33,6 +33,7 @@
   pandas = "^1.4.0"
   pyproj = "^3.3.0, !=3.5.0"
   pyyaml = "^6.0"
+  toml-formatter = {git = "https://github.com/paulovcmedeiros/toml-formatter"}
   tomli = "^2.0.1"
   tomlkit = "^0.12.1"
   troika = {git = "https://git.ecmwf.int/scm/ecsdk/troika.git"}
@@ -44,9 +45,9 @@
   pre-commit = "^3.0.4"
 
 [tool.poetry.group.doc.dependencies]
-  myst-parser = "^1.0.0"
-  sphinx = "^6.2.1"
-  sphinx-rtd-theme = "^1.2.1"
+  myst-parser = "^2.0.0"
+  sphinx = "^7.2.6"
+  sphinx-rtd-theme = "^1.3.0"
 
 [tool.poetry.group.linting.dependencies]
   black = {extras = ["jupyter"], version = "^23.10.0"}
@@ -54,6 +55,7 @@
   flakeheaven = "^3.3.0"
   isort = "^5.12.0"
   ruff = "^0.1.0"
+  toml-formatter = {git = "https://github.com/paulovcmedeiros/toml-formatter"}
   # flake8 plugins for stuff not yet on ruff.
   # See <https://github.com/astral-sh/ruff/issues/458>.
   pydoclint = "^0.3.4" # Replaces darglint, but is maintained & faster
@@ -66,19 +68,12 @@
   pytest-timeout = "^2.1.0"
   pytest-xdist = "^3.2.0"
 
+  ##################
+  # Linter configs #
+  ##################
+
 [tool.black]
   line-length = 90
-
-[tool.deode.toml_formatter]
-  indentation = 2
-  section_order_overrides = [
-    "^general$",
-    "general.*",
-    "^tool.poetry$",
-    "^tool.poetry.scripts$",
-    "build-system",
-    "tool.poetry.*",
-  ]
 
 [tool.flakeheaven]
   base = ".flakeheaven.toml"
@@ -86,11 +81,6 @@
 [tool.isort]
   line_length = 90
   profile = "black"
-
-[tool.pytest.ini_options]
-  addopts = "-v --cov-report=term-missing --cov-report=term:skip-covered --cov-report=xml:.coverage.xml --cov=./"
-  log_cli_level = "INFO"
-  testpaths = ["tests/smoke", "tests/unit"]
 
 [tool.ruff]
   # C901: Function is too complex. Ignoring this for now but will be removed later.
@@ -101,3 +91,98 @@
 [tool.ruff.per-file-ignores]
   # S101: Use of `assert` detected
   "tests/**/*.py" = ["S101"]
+
+[tool.ruff.pydocstyle]
+  convention = "google"
+
+[tool.toml-formatter]
+  indentation = 2
+  section_order_overrides = [
+    "^general$",
+    "general.*",
+    "^tool.poetry$",
+    "^tool.poetry.scripts$",
+    "build-system",
+    "tool.poetry.*",
+  ]
+
+  ##################
+  # pytest configs #
+  ##################
+
+[tool.pytest.ini_options]
+  addopts = "-v --failed-first --cov-report=term-missing --cov-report=term:skip-covered --cov-report=xml:.coverage.xml --cov=./"
+  log_cli_level = "INFO"
+  testpaths = ["tests/smoke", "tests/unit"]
+
+  ####################################
+  # Leave configs for `poe` separate #
+  ####################################
+
+[tool.poe]
+  poetry_command = "devtools"
+
+[tool.poe.tasks]
+  # Doc-related stuff
+  _doc_build.shell = """
+    deode doc config >| docs/markdown_docs/config.md
+    sphinx-apidoc deode -o docs/ --force --no-toc --module-first
+    sphinx-build docs docs/_build/
+    touch docs/_build/.nojekyll
+  """
+  # Linting tasks
+  _black = "black ."
+  _isort = "isort ."
+  _ruff = "ruff check ."
+  _toml_formatter = "toml-formatter check ."
+  # Test-related tasks
+  pytest = "pytest"
+  # Tasks to be run as pre-push checks
+  pre-push-checks = ["lint", "doc clean", "doc build", "pytest"]
+
+[tool.poe.tasks._flake8]
+  cmd = "flakeheaven lint ."
+  env = {FLAKEHEAVEN_CACHE_TIMEOUT = "0"}
+
+[tool.poe.tasks.doc]
+  args = [
+    {name = "doc_action", positional = true, help = "{all,clean,build,view}", default = "all"},
+  ]
+  control = {expr = "doc_action"}
+
+[[tool.poe.tasks.doc.switch]]
+  case = "all"
+  sequence = ["doc build", "doc view"]
+
+[[tool.poe.tasks.doc.switch]]
+  case = "clean"
+  cmd = "rm -rf docs/_build/ docs/deode.rst docs/markdown_docs/config.md"
+
+[[tool.poe.tasks.doc.switch]]
+  case = "build"
+  sequence = ["doc clean", "_doc_build"]
+
+[[tool.poe.tasks.doc.switch]]
+  case = "view"
+  sequence = [
+    {shell = "[ ! -f docs/_build/index.html ] && poetry devtools doc build || exit 0"},
+    {script = "webbrowser:open('docs/_build/index.html')"},
+  ]
+
+[tool.poe.tasks.lint]
+  args = [{name = "fix", type = "boolean", default = false}]
+  control = {expr = "fix"}
+
+[[tool.poe.tasks.lint.switch]]
+  case = "True"
+  sequence = ["_isort", "_black", "_ruff --fix", "_flake8", "_toml_formatter --fix"]
+
+[[tool.poe.tasks.lint.switch]]
+  case = "False"
+  sequence = [
+    "_isort --check-only",
+    "_black --check --diff",
+    "_ruff",
+    "_flake8",
+    "_toml_formatter",
+  ]

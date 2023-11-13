@@ -11,7 +11,7 @@ from .logs import LoggerHandlers, log_elapsed_time, logger
 logger.enable(GeneralConstants.PACKAGE_NAME)
 
 
-@log_elapsed_time(name=f"{GeneralConstants.PACKAGE_NAME} v{GeneralConstants.VERSION}")
+@log_elapsed_time()
 def main(argv=None):
     """Program's main routine."""
     args = get_parsed_args(argv=argv)

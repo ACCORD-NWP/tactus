@@ -43,23 +43,30 @@ def config_from_task_config_file():
     )
 
 
+@pytest.fixture(scope="module")
+def tmp_directory(tmp_path_factory):
+    """Return a temp directory valid for this module."""
+    return tmp_path_factory.getbasetemp().as_posix()
+
+
 class TestSubmission:
     def test_config_can_be_instantiated(self, parsed_config_with_task):
         assert isinstance(parsed_config_with_task, ParsedConfig)
 
-    def test_submit(self, config_from_task_config_file):
+    def test_submit(self, config_from_task_config_file, tmp_directory):
         config = config_from_task_config_file.copy(
             update={
                 "submission": {"default_submit_type": "background_hpc"},
                 "troika": {"config_file": "deode/data/config_files/troika.yml"},
             }
         )
-        config = config.copy(update={"platform": {"SCRATCH": "/tmp"}})  # noqa
+        tmp = tmp_directory
+        config = config.copy(update={"platform": {"SCRATCH": tmp, "unix_group": ""}})
         config = config.copy(update=set_times(config))
         task = "UnitTest"
         template_job = "deode/templates/stand_alone.py"
-        task_job = f"/tmp/{task}.job"  # noqa
-        output = f"/tmp/{task}.log"  # noqa
+        task_job = f"{tmp}/{task}.job"
+        output = f"{tmp}/{task}.log"
 
         assert config["submission.default_submit_type"] == "background_hpc"
         background = TaskSettings(config)
@@ -106,12 +113,15 @@ class TestSubmission:
         assert settings["TEST"] != "NOT USED"
         assert settings["TEST_INCLUDED"] == arg
 
-    def test_cannot_submit_non_existing_task(self, config_from_task_config_file):
+    def test_cannot_submit_non_existing_task(
+        self, config_from_task_config_file, tmp_directory
+    ):
         config = config_from_task_config_file.copy()
         task = "not_existing"
+        tmp = tmp_directory
         template_job = "deode/templates/stand_alone.py"
-        task_job = f"/tmp/{task}.job"  # noqa
-        output = f"/tmp/{task}.log"  # noqa
+        task_job = f"{tmp}/{task}.job"
+        output = f"{tmp}/{task}.log"
 
         background = TaskSettings(config)
         sub = NoSchedulerSubmission(background)

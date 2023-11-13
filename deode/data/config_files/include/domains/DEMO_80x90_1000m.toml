@@ -1,12 +1,8 @@
 gridtype = "cubic"
-ilate = 11
-ilone = 11
 name = "DEMO_80x90_1000m"
-nbzong = 8
-nbzonl = 8
 nimax = 69
 njmax = 79
-xbeta = 0.0
+tstep = 30
 xdx = 1000.0
 xdy = 1000.0
 xlat0 = 52.0

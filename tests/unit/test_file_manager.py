@@ -21,7 +21,6 @@ def config_platform():
             case = "mytest"
             realization = -1
             cnmexp = "DEOD"
-            tstep = 60
         [macros]
             os_macros = ["USER", "HOME"]
             group_macros = ["platform","system"]
@@ -29,6 +28,9 @@ def config_platform():
                           { domain = "domain.name" }]
         [domain]
             name = "MYDOMAIN"
+            tstep = 60
+        [pgd]
+            ond_decade = true
         [general.times]
             basetime = "2000-01-01T00:00:00Z"
             validtime = "2000-01-02T00:00:00Z"

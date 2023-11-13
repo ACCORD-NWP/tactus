@@ -67,10 +67,11 @@ class SuiteDefinition(object):
         self.interpolate_boundaries = config["suite_control.interpolate_boundaries"]
         self.do_prep = config["suite_control.do_prep"]
         self.do_marsprep = config["suite_control.do_marsprep"]
+        self.do_extractsqlite = config["suite_control.do_extractsqlite"]
         self.do_archiving = config["suite_control.do_archiving"]
-        self.cold_start = config["suite_control.cold_start"]
         self.surfex = config["general.surfex"]
         self.suite_name = suite_name
+        self.mode = config["suite_control.mode"]
 
         name = suite_name
         self.joboutdir = joboutdir
@@ -171,6 +172,10 @@ class SuiteDefinition(object):
             ecf_files_remotely=self.ecf_files_remotely,
         )
 
+        if self.mode == "restart":
+            self.do_prep = False
+            self.create_static_data = False
+
         if self.create_static_data:
             static_data = self.static_suite_part(config, input_template)
             task_logs = config["system.climdir"]
@@ -215,6 +220,9 @@ class SuiteDefinition(object):
         cycles = {}
         cycle_time = first_cycle
         i = 0
+        if self.mode == "restart":
+            self.do_prep = False
+
         while cycle_time <= last_cycle:
             logger.debug("cycle_time {}", cycle_time)
             cycles.update(
@@ -222,8 +230,8 @@ class SuiteDefinition(object):
                     str(i): {
                         "day": cycle_time.strftime("%Y%m%d"),
                         "time": cycle_time.strftime("%H%M"),
-                        "validtime": cycle_time.strftime("%Y%m%d%H%M"),
-                        "basetime": cycle_time.strftime("%Y%m%d%H%M"),
+                        "validtime": cycle_time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "basetime": cycle_time.strftime("%Y-%m-%dT%H:%M:%SZ"),
                     }
                 }
             )
@@ -233,13 +241,6 @@ class SuiteDefinition(object):
         days = []
         prev_cycle_trigger = None
         prev_interpolation_trigger = None
-
-        if self.do_marsprep:
-            marsprep_task = (
-                "Marsprep"
-                if config["general.mars_expver"] == "0001"
-                else "MarsprepGlobalDT"
-            )
 
         for __, cycle in cycles.items():
             cycle_day = cycle["day"]
@@ -294,7 +295,7 @@ class SuiteDefinition(object):
             ready_for_marsprep = EcflowSuiteTriggers(triggers)
             if self.do_marsprep:
                 EcflowSuiteTask(
-                    marsprep_task,
+                    "Marsprep",
                     inputdata,
                     config,
                     self.task_settings,
@@ -330,8 +331,8 @@ class SuiteDefinition(object):
                         ecf_files_remotely=self.ecf_files_remotely,
                     )
 
-                if not self.cold_start:
-                    self.do_prep = False
+                    if self.mode != "cold_start":
+                        self.do_prep = False
 
                 if self.interpolate_boundaries:
                     basetime = as_datetime(cycle["basetime"])
@@ -486,6 +487,20 @@ class SuiteDefinition(object):
                 trigger=creategrib_trigger,
                 ecf_files_remotely=self.ecf_files_remotely,
             )
+
+            if self.do_extractsqlite:
+                extractsqlite_trigger = EcflowSuiteTriggers(
+                    [EcflowSuiteTrigger(forecast_task)]
+                )
+                EcflowSuiteTask(
+                    "ExtractSQLite",
+                    forecasting,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    trigger=extractsqlite_trigger,
+                )
 
             if self.do_archiving:
                 archiving_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(cycle_fam)])

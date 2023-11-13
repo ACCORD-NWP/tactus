@@ -6,6 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+import datetime
 import sys
 from pathlib import Path
 
@@ -27,13 +28,17 @@ extensions = [
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
-
+suppress_warnings = ["myst.xref_missing"]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "sphinx_rtd_theme"
-html_last_updated_fmt = ""
+html_last_updated_fmt = (
+    datetime.datetime.now(datetime.timezone.utc)
+    .isoformat(timespec="seconds")
+    .replace("+00:00", "Z")
+)
 add_module_names = False
 html_show_sourcelink = False
 

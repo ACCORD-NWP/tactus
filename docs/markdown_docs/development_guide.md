@@ -3,14 +3,16 @@ Describes best practices and guidelines for development in the Deode-Prototype r
 
 ## Best practices
 - Authors of PRs should not merge themself - Instead request a reviewer and an assignee. Assignee is responsible for merging.
-- Assignee and reviewer may be the same person.
+- Assignee and reviewer may not be the same person.
 - Authors of PRs are responsible for ensuring that the PR is up to date with the base branch before merging.
 - Assignees should not merge PRs that have failing tests.
 - Commits to `master` and `develop` branches should only be via PRs.
 - We rely on the good sense of both author and reviewer.
 
 ### Checklist for authors
-- ✔️ If not up-to-date, pull in the target branch.
+- ✔️  Make sure your local environment is correctly initialised as described in the [README](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md) file.
+- ✔️  Use forks for your changes
+- ✔️ If not up-to-date, update your fork with the changes from the target branch (use `pull` with `--rebase` option if possible).
 - ✔️ Describe what the PR contains.
 - ✔️ Ensure your PR does not contain seperate features.
 
@@ -28,26 +30,58 @@ Each PR comes with its own improvements and flaws. The reviewer should check the
 - ✔️ Squash commits and merge the PR.
 
 ## Local testing
-No-one likes to wait for the CI to run tests. It is therefore recommended to run tests locally before pushing to the remote repository, and before creating a PR, but no one is enforced to this. How you work locally is entirely up to you.
+No-one likes to wait for the CI to run tests. It is therefore recommended to run tests locally before pushing to the remote repository, and before creating a PR, but no one will force you to do this: how you work locally is entirely up to you.
 
-Here is a list of tests being run in the pipeline, that you can run locally from within a `poetry shell` at the root of the repo. If working outside a poetry shell, commands below should be typed as `poetry run [command]`.
+For convenience, however, we have added a few commands you can use to check that the code is linted, the tests pass, etc. Some of these are exemplified in the next subsections. Please run
+```shell
+poetry devtools -h
+```
+for more information.
 
-**Black:**
-- `black .`
+### Run linters and exit with an error if non-linted code is detected
+```shell
+poetry devtools lint
+```
 
-**Isort:**
-- `isort .`
+### Run linters and **attempt** to fix eventually encountered errors
+```shell
+poetry devtools lint --fix
+```
+This will stop with an error if the encountered issues cannot be fixed.
 
-**Linting:**
-- `flakeheaven lint .`
-- `ruff check .`
+### Runthe typical checks for things you need to fix prior to a push
+```shell
+poetry devtools pre-push-checks
+```
 
-**Unit Tests:**
-- `pytest --cov=./ tests/` *(In the pipeline we run multiple versions of python)*
-- `pytest -n auto` *(runs exactly as in the post-commit only checks.)*
+### Run tests
+```shell
+pytest
+```
+or
+```shell
+poetry devtools pytest
+```
 
-**Full Ecflow test:**
-- We have a working, although simplified, setup on Atos that should be maintained. Run with `bash ./Start`. The test produces output under `$SCRATCH/deode/deode_case`.
+### Generate and view the documentation to be published to our [docpages](https://destination-earth-digital-twins.github.io/deode-prototype-docs/)
+  ```shell
+poetry devtools doc clean
+poetry devtools doc build
+poetry devtools doc view
+  ```
+or, combining them all:
+```shell
+poetry devtools doc
+```
+
+## Testing on Atos
+
+The testing procedure above does not test the full functionality together with the IAL code. While waiting for a automated CI/CD system to be in place a few manual steps are required on atos to check the functionality.
+
+- ✔️ Run the default config file, using CY48t3, under ecflow following the instructions in the [README](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md) file.
+- ✔️ Repeat the same using the config file for CY46h1, i.e. `deode/data/config_files/config_CY46h1.toml`.
+- ✔️ Test the nesting procedure for both CY46h1 and CY48t3 using the config files `deode/data/config_files/config_[CY46h1|CY48t3]_target.toml`. Both of the runs will use data from the first two tests.
+- ✔️ Test the stand alone task for the forecast following the instructions in the [README](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md) file. ( This does not work at the moment )
 
 ## Branches
 As of now, the repository has two main branches:
@@ -61,30 +95,4 @@ As the project grows, we may add more branches, such as an `integration` branch,
 Forks are used to develop features and bug fixes. They are created from the `develop` branch by forking to a local repo. When a feature is ready, a PR is created to merge it to `develop`. When a bug fix is ready, a PR is created to merge it to `develop` and `master`.
 
 ## Run on LUMI
-To run the project on LUMI, you need to have a LUMI account and add your SSH key to it. You can find instructions on how to do that [here](https://docs.lumi-supercomputer.eu/firststeps/SSH-keys/). Once you have your SSH key added, you can login to LUMI by running `ssh -i <your-private-key> <username>@@lumi.csc.fi`. Once logged in create a SSH key and add that to your GitHub account, so you can clone the repo. Then follow these steps (some of which can be put in your `.profile`)
-```sh
-# Clone the repo
-git clone git@github.com:destination-earth-digital-twins/Deode-Prototype.git
-
-# Load modules
-module load LUMI/22.06
-module load cray-python/3.9.12.1
-
-# Install poetry
-curl -sSL https://install.python-poetry.org | python -
-export PATH="/users/$USER/.local/bin:$PATH"
-
-# Install project
-cd Deode-Prototype && poetry install
-# Poetry will create a virtual environment for the project and install all dependencies in this environment.
-# It will be placed in something like: "/users/$USER/.cache/pypoetry/virtualenvs/<deode-<hash>>/bin/:$PATH"
-
-# To activate the environment run
-poetry shell
-
-# Check that the project runs
-deode -h
-
-# Run a stand-alone task with an example config file
-deode run --config-file $PWD/deode/data/config_files/config.toml --task Forecast --template $PWD/deode/templates/stand_alone.py --job $PWD/test.job --troika-config $PWD/deode/data/config_files/troika.yml -o $PWD/test.log
-```
+To run the project on LUMI, you need to have a LUMI account and add your SSH key to it. Please check the [online instructions on how to do that](https://docs.lumi-supercomputer.eu/firststeps/SSH-keys/). Once you have your SSH key added, you can login to LUMI by running `ssh -i <your-private-key> <username>@@lumi.csc.fi`. Once logged in, create a SSH key and add that to your GitHub account so you can clone the repo. Then, please follow the download, install and usage instructions provided in the [README](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md) file.

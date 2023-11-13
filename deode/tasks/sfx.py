@@ -624,6 +624,10 @@ class Pgd(Task):
         self.nlgen = NamelistGenerator(self.config, "surfex")
         self.climdir = self.platform.get_system_value("climdir")
         self.one_decade = self.config["pgd.one_decade"]
+        self.pgd_prel = self.platform.substitute(
+            self.config["file_templates.pgd_prel.archive"]
+        )
+
         if self.one_decade:
             self.program = "pgd_one_decade"
         else:
@@ -634,16 +638,10 @@ class Pgd(Task):
     def execute(self):
         """Execute."""
         basetime = as_datetime(self.config["general.times.basetime"])
-        pgdfn = None
-        if self.one_decade:
-            one_dec = get_decade(basetime)
-            output = f"{self.climdir}/PGD_prel_{one_dec}.fa"
-            pgdfn = f"{self.climdir}/PGD_prel.fa"
-        else:
-            output = f"{self.climdir}/PGD_prel.fa"
-        binary = self.get_binary("PGD")
+        output = f"{self.climdir}/{self.pgd_prel}"
 
         if not os.path.exists(output) or self.force:
+            binary = self.get_binary("PGD")
             batch = BatchJob(os.environ, wrapper=self.wrapper)
 
             self.nlgen.load(self.program)
@@ -657,6 +655,18 @@ class Pgd(Task):
             # Input data
             sfx_input_defs = self.platform.get_system_value("sfx_input_defs")
             input_data = json.load(open(sfx_input_defs, "r", encoding="utf-8"))
+
+            if self.one_decade:
+
+                def replace(data, match, repl):
+                    if isinstance(data, dict):
+                        for k, v in data.items():
+                            if isinstance(data[k], str):
+                                data[k] = data[k].replace(match, repl)
+                            replace(v, match, repl)
+                    return data
+
+                input_data = replace(input_data, "@DECADE@", get_decade(basetime))
 
             # Could potentially manipulate input_data depending on settings
             # or send input_data as input from an external file
@@ -675,8 +685,6 @@ class Pgd(Task):
             # Run PGD
             batch.run(binary)
             self.fmanager.output(pgdfile, output)
-            if pgdfn is not None:
-                self.fmanager.input(output, pgdfn)
             self.archive_logs(["OPTIONS.nam", "LISTING_PGD.txt"], target=self.climdir)
         else:
             print("Output already exists: ", output)
@@ -734,16 +742,22 @@ class Prep(Task):
             pgdfile = f"{pgd}.{filetype}"
 
             # PGD file input update
+            const_clim = self.config["file_templates.pgd.archive"]
+            pgdfile_source = self.platform.substitute(f"@CLIMDIR@/{const_clim}")
             input_data["prep"]["NAM_IO_OFFLINE#CPGDFILE"] = {
-                pgd: {pgdfile: "@CLIMDIR@/Const.Clim.sfx"}
+                pgd: {pgdfile: pgdfile_source}
             }
 
             if bd_has_surfex:
                 # Host model PGD type and name
                 filetype = settings["nam_prep_surf_atm"]["cfilepgdtype"].lower()
                 pgd_host = settings["nam_prep_surf_atm"]["cfilepgd"]
+                const_clim_host = self.config["file_templates.pgd_host.archive"]
+                pgd_host_source = self.platform.substitute(
+                    f"@BDCLIMDIR@/{const_clim_host}"
+                )
                 input_data["prep"]["NAM_PREP_SURF_ATM#CFILEPGD"] = {
-                    pgd_host: {f"{pgd_host}.{filetype}": "@BDCLIMDIR@/Const.Clim.sfx"}
+                    pgd_host: {f"{pgd_host}.{filetype}": pgd_host_source}
                 }
 
             # Determine prep output name

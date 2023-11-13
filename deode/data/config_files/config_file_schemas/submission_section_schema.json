@@ -8,6 +8,12 @@
         "bindir": {
             "type": "string",
             "description": "Location of binaries"
+        },
+        "nproma": {
+            "type": "number",
+            "description": "NPROMA size in the forecast model. See the namelists for where it is used",
+            "default": -32
         }
+
     }
 }

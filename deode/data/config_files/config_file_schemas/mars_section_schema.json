@@ -1,0 +1,264 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "MarsSettings",
+    "description": "Options for marse extraction",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+        "HRES": {
+	  "title": "SectionForOperData",
+	  "description": "Parameters for oper data",
+	  "type": "object",
+	  "properties": {
+	    "class": {
+	      "type": "string",
+	      "description": "Class of expver"
+	    },
+	    "levelist": {
+	      "type": "object",
+	      "description": "Dictionary (date:levels), with dates of change in the number of levels.",
+	      "properties" : {
+		"2006-02-01T00:00:00Z": {
+		  "type" : "string"
+		},
+		"2013-06-26T00:00:00Z": {
+		  "type" : "string"
+                }
+	      }
+	    },
+	    "grid": {
+	      "type": "object",
+	      "description": "Dictionary (date:res0oution), with dates of change in the resolution."
+	    },
+	    "start_date": {
+	      "type" : "string",
+	      "description" : "Date from when are data available in Mars"
+	    },
+	    "GG": {
+	      "type": "string",
+	      "description": "Parameters for grid point data"
+	    },
+	    "GG_sea": {
+              "type": "string",
+              "description": "Parameters for grid point sea data"
+            },
+	    "GG_soil": {
+              "type": "string",
+              "description": "Parameters for grid point soil data"
+            },
+	    "GG1": {
+              "type": "string",
+              "description": "Additional parameters for grid point data"
+            },
+	    "grid_GG1": {
+              "type": "object",
+              "description": "Grid parametr for mars request"
+            },
+            "grid_ML": {
+              "type": "string",
+              "description": "Grid parametr for mars request"
+            },
+	    "SH": {
+              "type": "string",
+              "description": "Parameters for spectral harmonic data"
+            },
+	    "SHZ": {
+              "type": "string",
+              "description": "Geopotential on ground"
+            },
+	    "UA": {
+              "type": "string",
+              "description": "Upper air parameters"
+            },
+	    "SHZ_type": {
+              "type": "string",
+              "description": "Type for geopotential"
+            },
+	    "stream": {
+	      "type": "object",
+	      "description": "Dictionary (run:stream) to use the right stream for a given run."
+	    }
+	  }
+	},
+	"ATOS_DT":{
+          "title": "SectionForDTData",
+          "description": "Parameters for DT data",
+          "type": "object",
+          "properties": {
+            "class": {
+              "type": "string",
+              "description": "Class of expver"
+            },
+	    "levelist":{
+              "type": "string",
+              "description": "Dictionary (date:levels), with dates of change in the number of levels."
+            },
+            "grid": {
+              "type": "string",
+              "description": "Dictionary (date:res0oution), with dates of change in the resolution."
+            },
+            "start_date": {
+              "type" : "string",
+              "description" : "Date from when are data available in Mars"
+            },
+            "GG": {
+              "type": "string",
+              "description": "Parameters for grid point data"
+            },
+            "GG_sea": {
+              "type": "string",
+              "description": "Parameters for grid point sea data"
+            },
+	    "grid_GG1": {
+              "type": "string",
+              "description": "Grid parametr for mars request"
+            },
+            "grid_ML": {
+              "type": "string",
+              "description": "Grid parametr for mars request"
+            },
+            "SH": {
+              "type": "string",
+              "description": "Parameters for spectral harmonic data"
+            },
+            "SHZ": {
+              "type": "string",
+              "description": "Geopotential on ground"
+            },
+	    "SHZ_type": {
+              "type": "string",
+              "description": "Type for geopotential"
+            },
+            "UA": {
+              "type": "string",
+              "description": "Upper air parameters"
+            },
+	    "stream": {
+              "type": "object",
+              "description": "Dictionary (run:stream) to use the right stream for a given run."
+            }
+
+          }
+        },
+	"IFSENS": {
+          "title": "SectionForDTData",
+          "description": "Parameters for DT data",
+          "type": "object",
+          "properties": {
+            "class": {
+              "type": "string",
+              "description": "Class of expver"
+            },
+            "levelist":{
+              "type": "object",
+              "description": "Dictionary (date:levels), with dates of change in the number of levels."
+            },
+            "grid": {
+              "type": "object",
+              "description": "Dictionary (date:res0oution), with dates of change in the resolution."
+            },
+            "start_date": {
+              "type" : "string",
+              "description" : "Date from when are data available in Mars"
+            },
+            "GG": {
+              "type": "string",
+              "description": "Parameters for grid point data"
+            },
+            "GG_sea": {
+              "type": "string",
+              "description": "Parameters for grid point sea data"
+            },
+	    "grid_GG1": {
+              "type": "string",
+              "description": "Grid parametr for mars request"
+            },
+            "grid_ML": {
+              "type": "string",
+              "description": "Grid parametr for mars request"
+            },
+            "SH": {
+              "type": "string",
+              "description": "Parameters for spectral harmonic data"
+            },
+            "SHZ": {
+              "type": "string",
+              "description": "Geopotential on ground"
+            },
+            "SHZ_type": {
+              "type": "string",
+              "description": "Type for geopotential"
+            },
+            "UA": {
+              "type": "string",
+              "description": "Upper air parameters"
+            },
+            "stream": {
+              "type": "string",
+              "description": "Dictionary (run:stream) to use the right stream for a given run."
+            }
+
+          }
+        },
+	"RD_DEFAULT":{
+          "title": "SectionForDTData",
+          "description": "Parameters for DT data",
+          "type": "object",
+          "properties": {
+            "class": {
+              "type": "string",
+              "description": "Class of expver"
+            },
+            "levelist":{
+              "type": "string",
+              "description": "Dictionary (date:levels), with dates of change in the number of levels."
+            },
+            "grid": {
+              "type": "string",
+              "description": "Dictionary (date:res0oution), with dates of change in the resolution."
+            },
+            "start_date": {
+              "type" : "string",
+              "description" : "Date from when are data available in Mars"
+            },
+            "GG": {
+              "type": "string",
+              "description": "Parameters for grid point data"
+            },
+            "GG_sea": {
+              "type": "string",
+              "description": "Parameters for grid point sea data"
+            },
+	    "grid_GG1": {
+	      "type": "string",
+	      "description": "Grid parametr for mars request"
+	    },
+	    "grid_ML": {
+              "type": "string",
+              "description": "Grid parametr for mars request"
+            },
+            "SH": {
+              "type": "string",
+              "description": "Parameters for spectral harmonic data"
+            },
+            "SHZ": {
+              "type": "string",
+              "description": "Geopotential on ground"
+            },
+            "SHZ_type": {
+              "type": "string",
+              "description": "Type for geopotential"
+            },
+            "UA": {
+              "type": "string",
+              "description": "Upper air parameters"
+            },
+            "stream": {
+              "type": "string",
+              "description": "Dictionary (run:stream) to use the right stream for a given run."
+            }
+
+          }
+        }
+    }  
+}

@@ -13,7 +13,6 @@ from .commands_functions import (
     show_config_schema,
     show_namelist,
     start_suite,
-    toml_formatter,
 )
 from .config_parser import ConfigParserDefaults
 
@@ -324,40 +323,5 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         default=None,
     )
     parser_namelist_integrate.set_defaults(run_command=namelist_integrate)
-
-    #####################################################
-    # Configure parser for the "toml-formatter" command #
-    #####################################################
-    parser_toml_formatter = subparsers.add_parser(
-        "toml-formatter",
-        parents=[common_parser],
-        help="Helper to format/standardise TOML files. "
-        + "Return error code 1 if any file needs to be formatted.",
-    )
-
-    parser_toml_formatter.add_argument(
-        "file_paths",
-        help="Path(s) to the TOML files to be formatted. If a directory is passed, "
-        + "then the code will descent recursively into it looking for TOML files.",
-        type=lambda x: Path(x).expanduser().resolve(),
-        nargs="+",
-    )
-    parser_toml_formatter.add_argument(
-        "--show-formatted",
-        help="Whether to show the formatted file contents for ill-formated files."
-        + "If omitted, oly the diff will be shown.",
-        action="store_true",
-    )
-    parser_toml_formatter.add_argument(
-        "--fix-inplace",
-        help="Modify the file(s) in-place to apply the suggested formatting.",
-        action="store_true",
-    )
-    parser_toml_formatter.add_argument(
-        "--include-hidden",
-        help="Include hidden files in the recursive search.",
-        action="store_true",
-    )
-    parser_toml_formatter.set_defaults(run_command=toml_formatter)
 
     return main_parser.parse_args(argv)

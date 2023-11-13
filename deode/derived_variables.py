@@ -87,6 +87,22 @@ def derived_variables(config, processor_layout=None):
 
     """
     # Geometry
+    nbzonl = int(config["domain.nbzonl"])
+    if nbzonl == -1:
+        xdx = int(config["domain.xdx"])
+        nbzonl = next(x for x in range(2000) if x * xdx >= 20000)
+        nbzonl = int(nbzonl) if ((int(nbzonl) % 2) == 0) else int(nbzonl) + 1
+        if int(config["domain.nimax"]) < 250:
+            nbzonl = 8
+
+    nbzong = int(config["domain.nbzong"])
+    if nbzong == -1:
+        xdy = int(config["domain.xdy"])
+        nbzong = next(y for y in range(2000) if y * xdy >= 20000)
+        nbzong = int(nbzong) if ((int(nbzong) % 2) == 0) else int(nbzong) + 1
+        if int(config["domain.njmax"]) < 250:
+            nbzong = 8
+
     truncation = {"linear": 2, "quadratic": 3, "cubic": 4, "custom": None}
     lspsmoro = {"linear": True, "quadratic": False, "cubic": False, "custom": True}
 
@@ -115,7 +131,7 @@ def derived_variables(config, processor_layout=None):
     time = basetime.strftime("%H%M")
 
     # Time ranges
-    tstep = int(config["general.tstep"])
+    tstep = int(config["domain.tstep"])
     bdint = as_timedelta(config["boundaries.bdint"])
     forecast_range = as_timedelta(config["general.times.forecast_range"])
     cstop = int((forecast_range.days * 24 * 3600 + forecast_range.seconds) / 60)
@@ -150,6 +166,8 @@ def derived_variables(config, processor_layout=None):
     # Update namelist settings
     update = {
         "domain": {
+            "nbzong": nbzong,
+            "nbzonl": nbzonl,
             "ndguxg": ndguxg,
             "ndglg": ndglg,
             "xrpk": xrpk,

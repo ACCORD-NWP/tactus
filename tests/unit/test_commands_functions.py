@@ -14,7 +14,8 @@ from deode.config_parser import ConfigParserDefaults, ParsedConfig
 def parsed_config():
     """Return a raw config common to all tasks."""
     return ParsedConfig.from_file(
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH, json_schema={}
+        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
+        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
     )
 
 
