@@ -72,7 +72,7 @@
   host_case = "@CASEDIR@/../@CYCLE@_@CSC@"
   host_domain = "DEMO_60x80_2500m"
   logs = "@ARCHIVE_ROOT@/logs"
-  marsdir = "@SCRATCH@/IFS/@YYYY@/@MM@/@DD@/@HH@/@MARS_EXPVER@"
+  marsdir = "@SCRATCH@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"
 
 [task.creategrib.conversions.surfex]
