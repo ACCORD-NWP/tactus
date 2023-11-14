@@ -1,0 +1,54 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Archiving Section",
+    "description": "Archiving settings for ATOS to ECFS. Locations, and time intervals to archive for each file type",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+          "paths": {
+           "title": "Paths",
+           "description": "Archives to use on atos, and locations where things will be stored.",
+           "properties": {
+            "aloc": {
+              "description": "Actual archiving system. ATOS options > ectmp and ec. LUMI will differ.",
+              "type": "string",
+              "default": "ectmp:"
+            },
+            "apath": {
+              "description": "Archiving path to store files on archiving system",
+              "type": "string",
+              "default": "deode/@CASE@/"
+            },
+            "arch_cdate": {
+              "description": "Exact archiving location of forecast output files by YYYYMMDDHH",
+              "type": "string",
+              "default": "archive/@YYYY@/@MM@/@DD@/@HH@/"
+            },
+            "arch_static": {
+              "description": "Exact archiving location of static data",
+              "type": "string",
+              "default": "archive/static/"
+            }
+           }
+          },
+          "aoutput_settings": {
+           "title": "Archive Output Settings",
+           "description": "Archiving settings for each file type, specified as time interval. This will tell DEODE how often you want to archive output files under said file type. IF this field is completely empty, output_settings will be taken from main config file eg. config_CYCLE.toml",
+           "type": "object",
+           "properties": {
+            "history": {
+              "description": "Time interval to store history files"
+            },
+            "surfex": {
+              "description": "Time interval to store surfex files"
+            },
+            "fullpos": {
+              "description": "Time interval to store fullpos files"
+            },
+            "grib": {
+              "description": "Time interval to store grib files from CreateGrib output"
+            }
+           }
+          }
+    }
+}
