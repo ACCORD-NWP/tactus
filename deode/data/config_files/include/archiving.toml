@@ -1,0 +1,10 @@
+[aoutput_settings]
+  fullpos = "PT1H"
+  grib = "PT2H"
+  history = "PT2H"
+  surfex = "PT2H"
+
+[paths]
+  aloc = "ectmp:"
+  apath = "deode/@CASE@/"
+  arch_cdate = "archive/@YYYY@/@MM@/@DD@/@HH@/"

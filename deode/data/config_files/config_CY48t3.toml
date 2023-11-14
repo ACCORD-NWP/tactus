@@ -10,10 +10,10 @@
   surfex = true
 
 [general.output_settings]
-  fullpos = ["PT0H:PT3H:PT15M", "PT3H:PT6H:PT30M"]
+  fullpos = "PT15M"
   history = "PT1H"
   nrazts = "PT1H"
-  surfex = ["PT0H:PT3H:PT1H", "PT3H:PT6:PT3H"]
+  surfex = "PT1H"
 
 [general.times]
   cycle_length = "PT6H"
@@ -21,13 +21,6 @@
   forecast_range = "PT6H"
   radiation_frequency = "PT5M"
   start = "2023-09-16T00:00:00Z"
-
-[archiving]
-  apath = "@USER@/deode/@CASE@/"
-  arch_cdate = "archive/@YYYY@/@MM@/@DD@/@HH@/"
-  comp = "atos"
-  grp = "msdeode"
-  loc = "ectmp:"
 
 [boundaries]
   bd_has_surfex = false
@@ -46,6 +39,7 @@
   selection = ["rules", "namfpc_header", "master_selection"]
 
 [include]
+  archiving = "include/archiving.toml"
   domain = "include/domains/DEMO_60x80_2500m.toml"
   file_templates = "include/file_templates.toml"
   macros = "include/macros.toml"

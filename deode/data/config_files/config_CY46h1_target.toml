@@ -38,6 +38,7 @@
   selection = ["rules", "namfpc_header", "master_selection"]
 
 [include]
+  archiving = "include/archiving.toml"
   domain = "include/domains/DEMO_80x90_1000m.toml"
   file_templates = "include/file_templates.toml"
   macros = "include/macros.toml"

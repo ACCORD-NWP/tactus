@@ -390,6 +390,8 @@ class FileManager:
             tuple: provider, resource
 
         """
+        self.aloc = self.platform.get_value("archiving.paths.aloc")
+
         destination = LocalFileOnDisk(
             self.config, destination, basetime=basetime, validtime=validtime
         )
@@ -415,7 +417,7 @@ class FileManager:
         # TODO check for archive
         if check_archive:
             provider_id = "ecfs"
-            target = target.replace("@ARCHIVE@", "ec:@YYYY@/@MM@/@DD@/@HH@")
+            target = target.replace("@ARCHIVE@", "{self.aloc}/@YYYY@/@MM@/@DD@/@HH@")
 
             if provider_id is not None:
                 # Substitute based on ecfs
@@ -516,7 +518,9 @@ class FileManager:
         if archive:
             # TODO check for archive and modify macros
             provider_id = "ecfs"
-            destination = destination.replace("@ARCHIVE@", "ectmp:/@YYYY@/@MM@/@DD@/@HH@")
+            destination = destination.replace(
+                "@ARCHIVE@", "{self.aloc}/@YYYY@/@MM@/@DD@/@HH@"
+            )
 
             sub_target = self.platform.substitute(
                 target, basetime=basetime, validtime=validtime
@@ -785,14 +789,14 @@ class ECFS(ArchiveProvider):
         """
         # TODO: Address the noqa check disablers
         if self.fetch:
-            logger.info("ecp -u {} {}", self.identifier, resource.identifier)
+            logger.info("ecp -pu {} {}", self.identifier, resource.identifier)
             os.system(
-                f"ecp -u {self.identifier} {resource.identifier}"  # noqa S605, E800
+                f"ecp -pu {self.identifier} {resource.identifier}"  # noqa S605, E800
             )
         else:
-            logger.info("ecp -u {} {}", resource.identifier, self.identifier)
+            logger.info("ecp -pu {} {}", resource.identifier, self.identifier)
             os.system(
-                f"ecp -u {resource.identifier} ec:{self.identifier}"  # noqa S605, E800
+                f"ecp -pu {resource.identifier} {self.identifier}"  # noqa S605, E800
             )
         return True
 
