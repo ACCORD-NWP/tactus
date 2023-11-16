@@ -32,6 +32,7 @@
   bdstrategy = "same_forecast"
   bdtasks_per_batch = 24
   ifs.selection = "HRES"
+  ifs.bdmember = ""
 
 [fullpos]
   config_path = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos"
@@ -74,7 +75,7 @@
   host_case = "@CASEDIR@/../@CYCLE@_@CSC@"
   host_domain = "DEMO_60x80_2500m"
   logs = "@ARCHIVE_ROOT@/logs"
-  marsdir = "@SCRATCH@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
+  marsdir = "@SCRATCH@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"
 
 [task.creategrib.conversions.surfex]

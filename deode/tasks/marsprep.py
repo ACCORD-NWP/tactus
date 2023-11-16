@@ -258,12 +258,10 @@ class Marsprep(Task):
             "CLASS": [self.mars["class"]],
             "EXPVER": [self.mars["expver"]],
             "LEVTYPE": [levtype],
-            "STREAM": ["OPER"],
             "DATE": [date],
             "TIME": [time],
             "STEP": [steps],
             "PARAM": [param],
-            "TYPE": ["AN"],
             "TARGET": [target],
         }
         if grid is not None:
@@ -276,9 +274,25 @@ class Marsprep(Task):
         if data_type == "forecast":
             d.update(
                 {
-                    "TYPE": ["FC"],
+                    "TYPE": [self.mars["type_FC"]],
                 }
             )
+        elif data_type == "analysis":
+            d.update(
+                {
+                    "TYPE": [self.mars["type_AN"]],
+                }
+            )
+        try:
+            bdmember = int(self.config["boundaries.ifs.bdmember"])
+            d.update(
+                {
+                    "NUMBER": [self.config["boundaries.ifs.bdmember"]],
+                }
+            )
+        except ValueError:
+            pass
+
         if prefetch:
             d.update(
                 {
