@@ -104,6 +104,10 @@
             "PARIS_RDP"
           ]
         },
+	"ifs.bdmember": {
+	    "type": "string",
+	    "description": "The number of member in ensamble if selection is IFSENS, else empty string."
+	},
         "bd_has_surfex": {
           "description": "Set to true if the host model runs with surfex",
           "type": "boolean"

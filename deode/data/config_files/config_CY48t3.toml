@@ -30,9 +30,8 @@
   bdshift = "PT0H"
   bdstrategy = "same_forecast"
   bdtasks_per_batch = 24
-
-[boundaries.ifs]
-  selection = "HRES"
+  ifs.selection = "HRES"
+  ifs.bdmember = ""
 
 [fullpos]
   config_path = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos"
@@ -73,7 +72,7 @@
   climdir = "@CASEDIR@/climate/@DOMAIN@/"
   global_sfcdir = "/hpcperm/snh02/climate_fields_mir/climate.v020_MIR_orog/"
   logs = "@ARCHIVE_ROOT@/logs"
-  marsdir = "@SCRATCH@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
+  marsdir = "@SCRATCH@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"
 
 [task.creategrib.conversions.surfex]
