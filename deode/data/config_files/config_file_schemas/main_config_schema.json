@@ -239,10 +239,15 @@
           "type": "string",
           "description": "Path to the fullpos yml config file"
         },
+        "archive_timestamp": {
+          "type": "string",
+          "description": "Relative path of date specific archive",
+          "default": "@YYYY@/@MM@/@DD@/@HH@/"
+	},
         "archive": {
           "type": "string",
-          "description": "Location of date specific archive",
-          "default": "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
+          "description": "Absolute path of date specific archive",
+          "default": "@ARCHIVE_ROOT@/@ARCHIVE_TIMESTAMP@"
 	},
         "logs": {
           "type": "string",

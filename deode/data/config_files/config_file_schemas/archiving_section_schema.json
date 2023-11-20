@@ -17,22 +17,81 @@
             "apath": {
               "description": "Archiving path to store files on archiving system",
               "type": "string",
-              "default": "deode/@CASE@/"
-            },
-            "arch_cdate": {
-              "description": "Exact archiving location of forecast output files by YYYYMMDDHH",
-              "type": "string",
-              "default": "archive/@YYYY@/@MM@/@DD@/@HH@/"
-            },
-            "arch_static": {
-              "description": "Exact archiving location of static data",
-              "type": "string",
-              "default": "archive/static/"
+              "default": "/@USER@/deode/@CASE@/"
             }
            }
           },
-          "aoutput_settings": {
-           "title": "Archive Output Settings",
+          "default": {
+           "title": "Rules for the default archiving group of model output",
+           "description": "",
+           "type": "object",
+           "properties": {
+            "active": {
+              "type": "boolean",
+              "description": "Activate the default archiving"
+            },
+            "inpath": {
+              "description": "Location of input files for archiving"
+            },
+            "outpath": {
+              "description": "Relative location of the archived files"
+            }
+           }
+          },
+          "hour": {
+           "title": "Settings for time dependent archiving",
+           "description": "",
+           "type": "object",
+           "properties": {
+            "example": {
+             "title": "Example settings for the archiving rules. Any number of rules can be defined to accomodate the needs",
+             "description": "",
+             "type": "object",
+             "properties": {
+              "active": {
+                "description": "Activates the default archiving. Could be boolean or string refering to a boolean in the config file. See the sqlite archiving for an example "
+              },
+              "inpath": {
+                "description": "Location of input files for archiving"
+              },
+              "outpath": {
+                "description": "Relative location of the archived files"
+              },
+              "pattern": {
+                "description": "Search pattern for files to be included. Could be a single pattern or list of patterns."
+              }
+             }
+            }
+           }
+          },
+          "static": {
+           "title": "Settings for time dependent archiving",
+           "description": "",
+           "type": "object",
+           "properties": {
+            "example": {
+             "title": "Example settings for the archiving rules. Any number of rules can be defined to accomodate the needs",
+             "description": "",
+             "type": "object",
+             "properties": {
+              "active": {
+                "description": "Activates the default archiving. Could be boolean or string refering to a boolean in the config file. See the sqlite archiving for an example "
+              },
+              "inpath": {
+                "description": "Location of input files for archiving"
+              },
+              "outpath": {
+                "description": "Relative location of the archived files"
+              },
+              "pattern": {
+                "description": "Search pattern for files to be included. Could be a single pattern or list of patterns."
+              }
+             }
+            }
+           }
+          },
+          "settings": {
+           "title": "Archive timestep settings",
            "description": "Archiving settings for each file type, specified as time interval. This will tell DEODE how often you want to archive output files under said file type. IF this field is completely empty, output_settings will be taken from main config file eg. config_CYCLE.toml",
            "type": "object",
            "properties": {
@@ -44,9 +103,6 @@
             },
             "fullpos": {
               "description": "Time interval to store fullpos files"
-            },
-            "grib": {
-              "description": "Time interval to store grib files from CreateGrib output"
             }
            }
           }
