@@ -144,6 +144,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   MODULE_GDAL = "module('load', 'gdal/3.6.2')"
 
 [task_exceptions.Marsprep.BATCH]
+  MEM = "#SBATCH --mem=128GB"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   WALLTIME = "#SBATCH --time=02:00:00"
