@@ -2,7 +2,7 @@
 """Unit tests for the config file parsing module."""
 import contextlib
 import subprocess
-from os import chdir
+from os import chdir, makedirs
 from pathlib import Path
 
 import pytest
@@ -253,7 +253,8 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
 
     # Create files needed by gmtedsoil tasks
     tif_files_dir = tmp_path_factory.getbasetemp() / "GMTED2010"
-    tif_files_dir.mkdir()
+    makedirs(tif_files_dir, exist_ok=True)
+
     for fname in ["50N000E_20101117_gmted_mea075", "30N000E_20101117_gmted_mea075"]:
         fpath = tif_files_dir / f"{fname}.tif"
         fpath.touch()

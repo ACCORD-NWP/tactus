@@ -23,13 +23,6 @@
   radiation_frequency = "PT5M"
   start = "2023-09-13T00:00:00Z"
 
-[archiving]
-  apath = "@USER@/deode/@CASE@/"
-  arch_cdate = "archive/@YYYY@/@MM@/@DD@/@HH@/"
-  comp = "atos"
-  grp = "msdeode"
-  loc = "ectmp:"
-
 [boundaries]
   bd_has_surfex = false
   bdcycle = "PT12H"
@@ -39,12 +32,14 @@
   bdstrategy = "same_forecast"
   bdtasks_per_batch = 24
   ifs.selection = "HRES"
+  ifs.bdmember = ""
 
 [fullpos]
   config_path = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos"
   selection = ["rules", "namfpc_header", "master_selection"]
 
 [include]
+  archiving = "include/archiving.toml"
   domain = "include/domains/DEMO_60x80_2500m.toml"
   file_templates = "include/file_templates.toml"
   macros = "include/macros.toml"
@@ -59,7 +54,7 @@
 [suite_control]
   create_static_data = true
   create_time_dependent_suite = true
-  do_archiving = false
+  do_archiving = true
   do_extractsqlite = false
   do_marsprep = true
   do_pgd = true
@@ -78,12 +73,11 @@
   climdir = "@CASEDIR@/climate/@DOMAIN@/"
   global_sfcdir = "/hpcperm/snh02/climate_fields_mir/climate.v020_MIR_orog/"
   logs = "@ARCHIVE_ROOT@/logs"
-  marsdir = "@SCRATCH@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
+  marsdir = "@SCRATCH@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"
 
-[task.creategrib.conversions.surfex]
-  input_template = "@SURFEX_TEMPLATE@"
-  output_template = "sfx_@YYYY@-@MM@-@DD@T@HH@@mm@@ss@+@DURATION_ARCHIVE@.grib"
+[task.creategrib]
+  conversions = ["surfex"]
 
 [task.extractsqlite]
   parameter_list = "@DEODE_HOME@/deode/data/sqlite/param_list.json"

@@ -4,10 +4,12 @@
 
 [fullpos]
   archive = "GRIBPF@CNMEXP@@DOMAIN@+@DURATION_ARCHIVE@"
+  grib = "GRIBPF@CNMEXP@@DOMAIN@+@DURATION_ARCHIVE@"
   model = "GRIBPF@CNMEXP@@DOMAIN@+@DURATION_MODEL@"
 
 [history]
   archive = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@"
+  grib = "GRIB@CNMEXP@+@DURATION_ARCHIVE@"
   model = "ICMSH@CNMEXP@+@DURATION_MODEL@"
 
 [pgd]
@@ -24,4 +26,5 @@
 
 [surfex]
   archive = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@.sfx"
+  grib = "GRIB@CNMEXP@+@DURATION_ARCHIVE@.sfx"
   model = "ICMSH@CNMEXP@+@DURATION_MODEL@.sfx"

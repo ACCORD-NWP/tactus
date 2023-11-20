@@ -104,6 +104,10 @@
             "PARIS_RDP"
           ]
         },
+	"ifs.bdmember": {
+	    "type": "string",
+	    "description": "The number of member in ensamble if selection is IFSENS, else empty string."
+	},
         "bd_has_surfex": {
           "description": "Set to true if the host model runs with surfex",
           "type": "boolean"
@@ -235,10 +239,15 @@
           "type": "string",
           "description": "Path to the fullpos yml config file"
         },
+        "archive_timestamp": {
+          "type": "string",
+          "description": "Relative path of date specific archive",
+          "default": "@YYYY@/@MM@/@DD@/@HH@/"
+	},
         "archive": {
           "type": "string",
-          "description": "Location of date specific archive",
-          "default": "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
+          "description": "Absolute path of date specific archive",
+          "default": "@ARCHIVE_ROOT@/@ARCHIVE_TIMESTAMP@"
 	},
         "logs": {
           "type": "string",

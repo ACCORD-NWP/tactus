@@ -150,7 +150,7 @@
               "description": "Class of expver"
             },
             "levelist":{
-              "type": "object",
+              "type": "string",
               "description": "Dictionary (date:levels), with dates of change in the number of levels."
             },
             "grid": {
@@ -170,7 +170,7 @@
               "description": "Parameters for grid point sea data"
             },
 	    "grid_GG1": {
-              "type": "string",
+              "type": "object",
               "description": "Grid parametr for mars request"
             },
             "grid_ML": {
@@ -196,6 +196,10 @@
             "stream": {
               "type": "string",
               "description": "Dictionary (run:stream) to use the right stream for a given run."
+            },
+	    "start_date": {
+              "type" : "string",
+              "description" : "Date from when are data available in Mars, ***should be 3 days ago***"
             }
 
           }

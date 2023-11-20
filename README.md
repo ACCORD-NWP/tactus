@@ -63,6 +63,10 @@ We **highly recommend** you to also put the statement listed above in your shell
   ```
   **N.B.**: Do **not** run this installation command on Atos (`hpc-login`)!
 
+  On Atos, simply run:
+  ```shell
+  ml gdal
+  ```
   If installation is not succesful, please contact the IT support in your organisation or HPC facility.
 
 

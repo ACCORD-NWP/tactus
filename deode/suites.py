@@ -188,7 +188,7 @@ class SuiteDefinition(object):
             )
             variables = {"ARGS": args}
 
-            EcflowSuiteTask(
+            collect_logs = EcflowSuiteTask(
                 "CollectLogs",
                 self.suite,
                 config,
@@ -199,6 +199,21 @@ class SuiteDefinition(object):
                 variables=variables,
                 ecf_files_remotely=self.ecf_files_remotely,
             )
+
+            if self.do_archiving:
+                archiving_static_trigger = EcflowSuiteTriggers(
+                    [EcflowSuiteTrigger(collect_logs)]
+                )
+                EcflowSuiteTask(
+                    "ArchiveStatic",
+                    self.suite,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    variables=None,
+                    trigger=archiving_static_trigger,
+                )
         else:
             static_data = None
 
@@ -430,7 +445,7 @@ class SuiteDefinition(object):
                 ]
             )
             variables = {"ARGS": args}
-            EcflowSuiteTask(
+            collect_logs_hour = EcflowSuiteTask(
                 "CollectLogs",
                 time_family,
                 config,
@@ -503,7 +518,9 @@ class SuiteDefinition(object):
                 )
 
             if self.do_archiving:
-                archiving_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(cycle_fam)])
+                archiving_hour_trigger = EcflowSuiteTriggers(
+                    [EcflowSuiteTrigger(collect_logs_hour)]
+                )
 
                 EcflowSuiteTask(
                     "ArchiveHour",
@@ -512,8 +529,9 @@ class SuiteDefinition(object):
                     self.task_settings,
                     self.ecf_files,
                     input_template=input_template,
-                    trigger=archiving_trigger,
+                    #trigger=archiving_trigger,
                     ecf_files_remotely=self.ecf_files_remotely,
+                    trigger=archiving_hour_trigger,
                 )
 
     def static_suite_part(self, config, input_template):
@@ -646,7 +664,7 @@ class SuiteDefinition(object):
 
         if self.do_pgd:
             pgd_update_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(e923constant)])
-            pgd_update = EcflowSuiteTask(
+            EcflowSuiteTask(
                 "PgdUpdate",
                 static_data,
                 config,
