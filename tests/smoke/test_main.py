@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Smoke tests."""
 import itertools
+import os
 import shutil
 from contextlib import redirect_stderr, redirect_stdout, suppress
 from io import StringIO
@@ -8,11 +9,12 @@ from pathlib import Path
 from unittest import mock
 
 import pytest
+import tomlkit
 
-from deode import PACKAGE_NAME
+from deode import GeneralConstants
 from deode.__main__ import main
 from deode.argparse_wrapper import get_parsed_args
-from deode.config_parser import PACKAGE_CONFIG_INCLUDE_DIR, PACKAGE_CONFIG_PATH
+from deode.config_parser import ConfigParserDefaults
 from deode.submission import NoSchedulerSubmission, TaskSettings
 
 WORKING_DIR = Path.cwd()
@@ -22,19 +24,26 @@ WORKING_DIR = Path.cwd()
 def config_path(tmp_path_factory):
     main_configs_test_dir = tmp_path_factory.getbasetemp() / "config_files"
     main_configs_test_dir.mkdir()
-    shutil.copy(PACKAGE_CONFIG_PATH, main_configs_test_dir)
+    shutil.copy(ConfigParserDefaults.PACKAGE_CONFIG_PATH, main_configs_test_dir)
 
-    config_includes_test_dir = main_configs_test_dir / PACKAGE_CONFIG_INCLUDE_DIR.name
-    shutil.copytree(PACKAGE_CONFIG_INCLUDE_DIR, config_includes_test_dir)
+    config_includes_test_dir = (
+        main_configs_test_dir / ConfigParserDefaults.PACKAGE_INCLUDE_DIR.name
+    )
+    shutil.copytree(ConfigParserDefaults.PACKAGE_INCLUDE_DIR, config_includes_test_dir)
 
-    return main_configs_test_dir / "config.toml"
+    return main_configs_test_dir / ConfigParserDefaults.PACKAGE_CONFIG_PATH.name
 
 
 @pytest.fixture(scope="module")
 def _module_mockers(module_mocker, config_path, tmp_path_factory):
-    # Monkeypatching DEODE_CONFIG_PATH so tests use the generated config.toml.
-    # Otherwise, the program defaults to reading from ~/.deode/config.toml
-    module_mocker.patch.dict("os.environ", {"DEODE_CONFIG_PATH": str(config_path)})
+    # Patching ConfigParserDefaults.CONFIG_PATH so tests use the generated config
+    module_mocker.patch(
+        "deode.config_parser.ConfigParserDefaults.__class__.__setattr__",
+        new=type.__setattr__,
+    )
+    module_mocker.patch(
+        "deode.config_parser.ConfigParserDefaults.CONFIG_PATH", new=config_path
+    )
 
     original_no_scheduler_submission_submit_method = NoSchedulerSubmission.submit
     original_submission_task_settings_parse_job = TaskSettings.parse_job
@@ -58,10 +67,11 @@ def _module_mockers(module_mocker, config_path, tmp_path_factory):
         "deode.submission.TaskSettings.parse_job",
         new=new_submission_task_settings_parse_job,
     )
+    module_mocker.patch("shutil.chown")
 
 
 def test_package_executable_is_in_path():
-    assert shutil.which(PACKAGE_NAME)
+    assert shutil.which(GeneralConstants.PACKAGE_NAME)
 
 
 @pytest.mark.parametrize("argv", [[], None])
@@ -75,16 +85,23 @@ def test_cannot_run_without_arguments(argv):
 def test_correct_config_is_in_use(config_path, mocker):
     mocker.patch("sys.exit")
     args = get_parsed_args(argv=["run"])
+    assert config_path.is_file()
     assert args.config_file == config_path
 
 
 @pytest.mark.usefixtures("_module_mockers")
 class TestMainShowCommands:
-    # pylint: disable=no-self-use
     def test_show_config_command(self):
         with redirect_stdout(StringIO()):
             main(["show", "config"])
-            main(["show", "config", "--config-file", PACKAGE_CONFIG_PATH.as_posix()])
+            main(
+                [
+                    "show",
+                    "config",
+                    "--config-file",
+                    ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix(),
+                ]
+            )
 
     def test_show_config_schema_command(self):
         with redirect_stdout(StringIO()):
@@ -102,7 +119,6 @@ class TestMainShowCommands:
                 main(["show", "config"])
 
     def test_show_namelist_command(self, tmp_path_factory):
-
         output_file = f"{tmp_path_factory.getbasetemp().as_posix()}/fort.4"
         main(["show", "namelist", "-t", "surfex", "-n", "forecast", "-o", output_file])
 
@@ -142,3 +158,15 @@ def test_start_suite_command(tmp_path):
 def test_doc_config_command():
     with redirect_stdout(StringIO()):
         main(["doc", "config"])
+
+
+def test_integrate_namelists():
+    args = [
+        "namelist",
+        "integrate",
+        "--namelist",
+        "deode/data/namelists/unit_testing/nl_master_base",
+        "--output",
+        os.devnull,
+    ]
+    main(args)

@@ -3,21 +3,28 @@
 import os
 import pprint
 import sys
+import time
 from collections.abc import Sequence
 from dataclasses import dataclass
+from functools import wraps
 from pathlib import Path
 
+import humanize
 from loguru import logger
 
-from . import PACKAGE_NAME
+from . import GeneralConstants
+from .aux_types import QuasiConstant
 
-GLOBAL_LOGLEVEL = os.environ.get("DEODE_LOGLEVEL", os.environ.get("LOGURU_LEVEL", "INFO"))
-DEFAULT_LOGDIR = Path().home() / ".logs" / PACKAGE_NAME
-DEFAULT_LOGFILE_RETENTION_TIME = "1 week"
-DEFAULT_LOG_SINKS = {
-    "console": sys.stderr,
-    "logfile": DEFAULT_LOGDIR / f"{PACKAGE_NAME}_{{time}}.log",
-}
+
+class LogDefaults(QuasiConstant):
+    """Defaults used for the logging system."""
+
+    LEVEL = os.environ.get("DEODE_LOGLEVEL", os.environ.get("LOGURU_LEVEL", "INFO"))
+    DIRECTORY = Path().home() / ".logs" / GeneralConstants.PACKAGE_NAME
+    RETENTION_TIME = "1 week"
+    SINKS = {
+        "console": sys.stderr,
+    }
 
 
 @dataclass
@@ -47,11 +54,11 @@ class LogFormatter:
 class LoggerHandlers(Sequence):
     """Helper class to configure logger handlers when using `loguru.logger.configure`."""
 
-    def __init__(self, default_level: str = GLOBAL_LOGLEVEL, **sinks):
+    def __init__(self, default_level: str = LogDefaults.LEVEL, **sinks):
         """Initialise instance with default loglevel and sinks."""
         self.default_level = default_level.upper()
         self.handlers = {}
-        for name, sink in {**DEFAULT_LOG_SINKS.copy(), **sinks}.items():
+        for name, sink in {**LogDefaults.SINKS, **sinks}.items():
             self.add(name=name, sink=sink)
 
     def add(self, name, sink, **configs):
@@ -63,9 +70,7 @@ class LoggerHandlers(Sequence):
 
         try:
             configs["sink"] = Path(sink)
-            configs["retention"] = configs.get(
-                "retention", DEFAULT_LOGFILE_RETENTION_TIME
-            )
+            configs["retention"] = configs.get("retention", LogDefaults.RETENTION_TIME)
         except TypeError:
             configs["sink"] = sink
 
@@ -82,7 +87,45 @@ class LoggerHandlers(Sequence):
         return len(self.handlers)
 
 
+def log_elapsed_time(**kwargs):
+    """Return a decorator that logs beginning, exit and elapsed time of function."""
+
+    def log_elapsed_time_decorator(function):
+        """Wrap `function` and log beginning, exit and elapsed time."""
+        name = kwargs.get("name", function.__name__)
+        if function.__name__ == "main":
+            name = f"{GeneralConstants.PACKAGE_NAME} v{GeneralConstants.VERSION}"
+            cmd = f"{' '.join([GeneralConstants.PACKAGE_NAME, *sys.argv[1:]])}"
+            name = f'{name} --> "{cmd}"'
+
+        @wraps(function)
+        def wrapper(*args, **kwargs):
+            logger.opt(colors=True).info("<blue>Start {}</blue>", name)
+
+            t_start = time.time()
+            function_rtn = function(*args, **kwargs)
+            elapsed = time.time() - t_start
+
+            if elapsed < 60:
+                logger.opt(colors=True).info(
+                    "<blue>Leaving {}. Total runtime: {:.2f}s.</blue>", name, elapsed
+                )
+            else:
+                logger.opt(colors=True).info(
+                    "<blue>Leaving {}. Total runtime: {}s (~{}).</blue>",
+                    name,
+                    elapsed,
+                    humanize.precisedelta(elapsed),
+                )
+
+            return function_rtn
+
+        return wrapper
+
+    return log_elapsed_time_decorator
+
+
 logger.configure(handlers=LoggerHandlers())
 # Disable logger by defalt in case the project is used as a library. Leave it for the user
 # to enable it if they so wish.
-logger.disable(PACKAGE_NAME)
+logger.disable(GeneralConstants.PACKAGE_NAME)

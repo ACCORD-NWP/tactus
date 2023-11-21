@@ -12,17 +12,14 @@ import pytest
 import tomlkit
 
 from deode.config_parser import (
-    CONFIG_SCHEMAS_DIR,
-    MAIN_CONFIG_JSON_SCHEMA,
-    PACKAGE_CONFIG_INCLUDE_DIR,
-    PACKAGE_CONFIG_PATH,
     BasicConfig,
     ConfigFileValidationError,
+    ConfigParserDefaults,
     ConflictingValidationSchemasError,
     JsonSchema,
     ParsedConfig,
 )
-from deode.datetime_utils import ISO_8601_TIME_DURATION_REGEX, as_datetime
+from deode.datetime_utils import DatetimeConstants, as_datetime
 
 
 @pytest.fixture()
@@ -78,12 +75,17 @@ def raw_config_with_non_recognised_options(minimal_raw_config):
 
 @pytest.fixture()
 def minimal_parsed_config(minimal_raw_config):
-    return ParsedConfig(minimal_raw_config, json_schema=MAIN_CONFIG_JSON_SCHEMA)
+    return ParsedConfig(
+        minimal_raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+    )
 
 
 @pytest.fixture()
 def parsed_config_with_task(raw_config_with_task):
-    return ParsedConfig(raw_config_with_task, json_schema=MAIN_CONFIG_JSON_SCHEMA)
+    return ParsedConfig(
+        raw_config_with_task,
+        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
+    )
 
 
 @pytest.fixture()
@@ -115,7 +117,7 @@ def json_schema_for_iso_8601_time_specs_tests():
                 "title": "A 'duration' Field That Should Follow ISO 8601.",
                 "default": "PT3H",
                 "type": "string",
-                "pattern": ISO_8601_TIME_DURATION_REGEX,
+                "pattern": DatetimeConstants.ISO_8601_TIME_DURATION_REGEX,
             },
         },
     }
@@ -138,12 +140,12 @@ def config_path(minimal_raw_config, tmp_test_data_dir):
 
 @pytest.fixture()
 def package_main_config_without_validation():
-    return ParsedConfig.from_file(PACKAGE_CONFIG_PATH, json_schema={})
+    return ParsedConfig.from_file(
+        ConfigParserDefaults.PACKAGE_CONFIG_PATH, json_schema={}
+    )
 
 
 class TestGeneralBehaviour:
-    # pylint: disable=no-self-use
-
     def test_config_model_can_be_instantiated(self, minimal_parsed_config):
         assert isinstance(minimal_parsed_config, ParsedConfig)
 
@@ -201,7 +203,7 @@ class TestGeneralBehaviour:
         with pytest.raises(
             ConfigFileValidationError, match=re.escape("must contain ['general']")
         ):
-            config.json_schema = MAIN_CONFIG_JSON_SCHEMA
+            config.json_schema = ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
 
     def test_config_model_can_be_printed(self):
         parsed_config = ParsedConfig({}, json_schema={})
@@ -232,7 +234,9 @@ class TestGeneralBehaviour:
         self, raw_config_with_non_recognised_options
     ):
         raw_config = raw_config_with_non_recognised_options.copy()
-        parsed_config = ParsedConfig(raw_config, json_schema=MAIN_CONFIG_JSON_SCHEMA)
+        parsed_config = ParsedConfig(
+            raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+        )
         extra_section = parsed_config["unrecognised_section_name"]
         assert extra_section
 
@@ -246,7 +250,8 @@ class TestGeneralBehaviour:
 
     def test_config_get_value(self, raw_config_with_non_recognised_options):
         config = ParsedConfig(
-            raw_config_with_non_recognised_options, json_schema=MAIN_CONFIG_JSON_SCHEMA
+            raw_config_with_non_recognised_options,
+            json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
         )
         assert config["general.times.cycle_length"] == "PT3H"
 
@@ -259,13 +264,15 @@ class TestGeneralBehaviour:
 
     def test_config_can_be_printed(self, raw_config_with_non_recognised_options):
         config = ParsedConfig(
-            raw_config_with_non_recognised_options, json_schema=MAIN_CONFIG_JSON_SCHEMA
+            raw_config_with_non_recognised_options,
+            json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
         )
         _ = str(config)
 
     def test_config_section_can_be_printed(self, raw_config_with_non_recognised_options):
         config = ParsedConfig(
-            raw_config_with_non_recognised_options, json_schema=MAIN_CONFIG_JSON_SCHEMA
+            raw_config_with_non_recognised_options,
+            json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
         )
         section_dumps = config.dumps(section="general")
         expected_section_dumps = BasicConfig(general=config["general"]).dumps()
@@ -279,7 +286,8 @@ class TestGeneralBehaviour:
     def test_parsed_config_passes_toml_readwrite_roundtrip(self, minimal_parsed_config):
         toml_dumps = minimal_parsed_config.dumps(style="toml")
         reloaded_parsed_config = ParsedConfig(
-            tomlkit.loads(toml_dumps), json_schema=MAIN_CONFIG_JSON_SCHEMA
+            tomlkit.loads(toml_dumps),
+            json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
         )
         new_toml_dumps = reloaded_parsed_config.dumps(style="toml")
         assert new_toml_dumps == toml_dumps
@@ -320,7 +328,9 @@ class TestGeneralBehaviour:
             _ = ParsedConfig.from_file(new_config_path, json_schema={})
 
     def test_parsed_config_registers_file_metadata_when_read_from_file(self, config_path):
-        config = ParsedConfig.from_file(config_path, json_schema=MAIN_CONFIG_JSON_SCHEMA)
+        config = ParsedConfig.from_file(
+            config_path, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+        )
         config_source_file_path = config.metadata["source_file_path"]
         assert isinstance(config_source_file_path, str)
         assert Path(config_source_file_path) == Path(config_path)
@@ -344,7 +354,9 @@ class TestGeneralBehaviour:
     def test_can_modify_with_list_value_upon_model_copy(self, minimal_raw_config):
         raw_config = minimal_raw_config.copy()
         raw_config["general"].update({"case": "foo"})
-        parsed_config = ParsedConfig(raw_config, json_schema=MAIN_CONFIG_JSON_SCHEMA)
+        parsed_config = ParsedConfig(
+            raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+        )
 
         original_value = parsed_config["general.times"]
         new_value = [
@@ -363,8 +375,6 @@ class TestGeneralBehaviour:
 
 
 class TestValidators:
-    # pylint: disable=no-self-use
-
     @pytest.mark.parametrize(
         "dt_input",
         [
@@ -378,7 +388,7 @@ class TestValidators:
     def test_validator_works_with_input_datetime(self, dt_input, minimal_raw_config):
         minimal_raw_config["general"]["times"]["list"] = [dt_input]
         parsed_config = ParsedConfig(
-            minimal_raw_config, json_schema=MAIN_CONFIG_JSON_SCHEMA
+            minimal_raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
         )
         validated_value = parsed_config["general.times.list"][0]
         assert isinstance(validated_value, str)
@@ -390,7 +400,10 @@ class TestValidators:
             ConfigFileValidationError,
             match="must be array",
         ):
-            _ = ParsedConfig(minimal_raw_config, json_schema=MAIN_CONFIG_JSON_SCHEMA)
+            _ = ParsedConfig(
+                minimal_raw_config,
+                json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
+            )
 
     @pytest.mark.parametrize(
         ("start", "end", "dates_list"),
@@ -430,12 +443,12 @@ class TestValidators:
         with pytest.raises(
             ConfigFileValidationError, match="must be valid exactly by one definition"
         ):
-            _ = ParsedConfig(raw_config, json_schema=MAIN_CONFIG_JSON_SCHEMA)
+            _ = ParsedConfig(
+                raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+            )
 
 
 class TestPossibilityOfISO8601ComplianceEnforcement:
-    # pylint: disable=no-self-use
-
     Input = namedtuple("Input", ["name", "correct_value", "wrong_value"])
     iso_8601_test_inputs = [
         Input("date", "2020-01-01", "20200101"),
@@ -470,7 +483,7 @@ class TestPossibilityOfISO8601ComplianceEnforcement:
 
 @pytest.fixture()
 def valid_config_include_section():
-    files_under_include_dir = list(PACKAGE_CONFIG_INCLUDE_DIR.glob("*"))
+    files_under_include_dir = list(ConfigParserDefaults.PACKAGE_INCLUDE_DIR.glob("*"))
     include_section = {
         fpath.stem: fpath.as_posix()
         for fpath in files_under_include_dir
@@ -490,13 +503,12 @@ def raw_config_with_include_section(minimal_raw_config, valid_config_include_sec
 @pytest.fixture()
 def parsed_config_with_included_sections(raw_config_with_include_section):
     return ParsedConfig(
-        raw_config_with_include_section, json_schema=MAIN_CONFIG_JSON_SCHEMA
+        raw_config_with_include_section,
+        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
     )
 
 
 class TestConfigIncludeSection:
-    # pylint: disable=no-self-use
-
     def test_package_config_include_sections(
         self, parsed_config_with_included_sections, valid_config_include_section
     ):
@@ -519,7 +531,9 @@ class TestConfigIncludeSection:
         raw_config = raw_config_with_include_section.copy()
         raw_config["include"].update({"foo_section": "include/macros.toml"})
 
-        with open(CONFIG_SCHEMAS_DIR / "default_section_schema.json", "r") as schema_file:
+        with open(
+            ConfigParserDefaults.SCHEMAS_DIRECTORY / "default_section_schema.json", "r"
+        ) as schema_file:
             schema = json.load(schema_file)
 
         schema["properties"].update({"foo_section": {}})

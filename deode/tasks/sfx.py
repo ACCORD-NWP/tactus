@@ -3,9 +3,10 @@
 import json
 import os
 
-from ..datetime_utils import as_datetime, as_timedelta, cycle_offset
+from ..datetime_utils import as_datetime, as_timedelta, cycle_offset, get_decade
 from ..logs import logger
 from ..namelist import NamelistGenerator
+from ..os_utils import deodemakedirs
 from .base import Task
 from .batch import BatchJob
 
@@ -13,7 +14,16 @@ from .batch import BatchJob
 class InputDataFromNamelist:
     """Binary input data for offline executables."""
 
-    def __init__(self, nml, input_data, program, platform, basetime=None, validtime=None):
+    def __init__(
+        self,
+        nml,
+        input_data,
+        program,
+        platform,
+        basetime=None,
+        validtime=None,
+        one_decade=False,
+    ):
         """Construct the binary input set up from namelist.
 
         Args:
@@ -23,6 +33,7 @@ class InputDataFromNamelist:
             platform (Platform): Platform dependent settings
             basetime (as_datetime, optional): basetime. Defaults to None.
             validtime (as:datetime, optional): Validtime. Defaults to None.
+            one_decade (bool, optional): one decade or not. Defaults to False.
 
         Raises:
             RuntimeError: Could not find program
@@ -32,6 +43,8 @@ class InputDataFromNamelist:
         self.platform = platform
         self.basetime = basetime
         self.validtime = validtime
+        self.one_decade = one_decade
+
         try:
             self.data = input_data[program]
         except KeyError:
@@ -78,21 +91,36 @@ class InputDataFromNamelist:
                 else:
                     if isinstance(val, list):
                         dim_size = len(val)
+                        logger.debug("dim_size={}", dim_size)
                         dims = []
                         tval = val
-                        while dim_size != 1:
-                            logger.debug("tval={}", tval)
+                        more_dimensions = True
+                        while more_dimensions:
+                            logger.debug("tval={} type(tval)={}", tval, type(tval))
                             if isinstance(tval, int):
-                                dim_size = 1
+                                more_dimensions = False
                             else:
-                                dim_size = len(tval)
-                                if dim_size != 1:
-                                    dims.append(dim_size)
-                                tval = tval[0]
+                                logger.debug("type(tval)={}", type(tval))
+                                if not isinstance(tval, list):
+                                    more_dimensions = False
+                                else:
+                                    if isinstance(tval[0], int):
+                                        more_dimensions = False
+                                    else:
+                                        logger.debug(
+                                            "len(tval)={} type(tval)={}", len(tval), type
+                                        )
+                                        dim_size = len(tval)
+                                        dims.append(dim_size)
+
+                                        tval = tval[0]
+                                        logger.debug(
+                                            "New tval={} dim_size={}", tval, dim_size
+                                        )
 
                         logger.debug("dims={}", dims)
                         logger.debug("type(val)={}", type(val))
-                        if len(dims) - 1 == 2:
+                        if len(dims) == 2:
                             for i in range(0, dims[0]):
                                 for j in range(0, dims[1]):
                                     val_dict = {}
@@ -101,15 +129,18 @@ class InputDataFromNamelist:
                                     val_dict.update({"value": lval, "indices": indices})
                                     logger.debug("value={} indices={}", lval, indices)
                                     vals.append(val_dict)
-                        elif len(dims) - 1 == 1:
+                        elif len(dims) == 1:
                             for i in range(0, dims[0]):
                                 val_dict = {}
                                 indices = [i]
-                                val_dict.update({"value": val[i], "indices": indices})
-                                logger.debug("value={} indices={}", val[i], indices)
+                                logger.debug("i={}, val[i]={}", i, val[i])
+                                lval = val[i]
+                                val_dict.update({"value": lval, "indices": indices})
+                                logger.debug("value={} indices={}", lval, indices)
                                 vals.append(val_dict)
-                        elif len(dims) - 1 == 0:
+                        elif len(dims) == 0:
                             val_dict = {}
+                            logger.debug("val={}", val)
                             val_dict.update({"value": val, "indices": None})
                             vals.append(val_dict)
                     else:
@@ -228,6 +259,7 @@ class InputDataFromNamelist:
 
                 if macro_type == "ekfpert":
                     nncvs = self.read_macro_setting(macro_defs, "list", sep=sep)
+                    logger.debug("nncvs={}", nncvs)
                     nncvs = nncvs.copy()
                     duplicate = self.read_macro_setting(macro_defs, "duplicate", sep=sep)
                     if duplicate:
@@ -351,12 +383,20 @@ class InputDataFromNamelist:
                         if dec == lindex:
                             vmacro = f"{month:02d}{mday:02d}"
                         dec += 1
+                    if self.one_decade:
+                        basetime = as_datetime(self.basetime)
+                        vmacro = get_decade(basetime)
 
-                logger.debug("Substitute @{}@ with {}", macro, vmacro)
+                logger.debug(
+                    "Substitute @{}@ with {} pkey={} pval={}", macro, vmacro, pkey, pval
+                )
                 if isinstance(pkey, str):
                     pkey = pkey.replace(f"@{macro}@", vmacro)
                 if isinstance(pval, str):
                     pval = pval.replace(f"@{macro}@", vmacro)
+                logger.debug(
+                    "Substitute @{}@ with {} pkey={} pval={}", macro, vmacro, pkey, pval
+                )
         return pkey, pval
 
     def matching_value(self, data, val, sep="#", indices=None):
@@ -377,6 +417,9 @@ class InputDataFromNamelist:
         """
         if val == "macro" or val == "extenders":
             return None
+        logger.debug("type(data)={}", type(data))
+        logger.debug("type(val)={}", type(val))
+        logger.debug("indices={}", indices)
         if isinstance(data, dict):
             mdata = data.keys()
         else:
@@ -473,8 +516,7 @@ class InputDataFromNamelist:
                                         keys = self.get_nml_value_from_string(
                                             self.nml, key2, indices=indices
                                         )
-                                        if keys is not None:
-                                            key2 = keys[0]["value"]
+                                        key2 = keys[0]["value"]
 
                                     processed = False
                                     logger.debug(
@@ -501,8 +543,17 @@ class InputDataFromNamelist:
                                             )
                                             mapped_data.update({hdr_key: hdr_val})
                                             mapped_data.update({dir_key: dir_val})
+                                        elif value3.endswith(".nc"):
+                                            my_key, my_val = self.substitute(key3, value3)
+                                            logger.debug(
+                                                "my_key={}, my_val={}", my_key, my_val
+                                            )
+                                            if not my_key.endswith(".nc"):
+                                                my_key = my_key + ".nc"
+                                            mapped_data.update({my_key: my_val})
                                         else:
-                                            mapped_data.update({key3: setting})
+                                            my_key, my_val = self.substitute(key3, value3)
+                                            mapped_data.update({my_key: my_val})
 
                                     if extenders is not None:
                                         processed = True
@@ -523,6 +574,9 @@ class InputDataFromNamelist:
                                         pkey3 = key2
                                         pval3 = value2
                                         logger.debug("pkey3={} pval3={}", pkey3, pval3)
+                                        if pval3.endswith(".nc"):
+                                            if not pkey3.endswith(".nc"):
+                                                pkey3 = pkey3 + ".nc"
                                         pkey3, pval3 = self.substitute(pkey3, pval3)
                                         if pval3.endswith(".dir"):
                                             dir_key = pkey3 + ".dir"
@@ -568,20 +622,30 @@ class Pgd(Task):
         """
         Task.__init__(self, config, "Pgd")
         self.nlgen = NamelistGenerator(self.config, "surfex")
+        self.climdir = self.platform.get_system_value("climdir")
+        self.one_decade = self.config["pgd.one_decade"]
+        self.pgd_prel = self.platform.substitute(
+            self.config["file_templates.pgd_prel.archive"]
+        )
+
+        if self.one_decade:
+            self.program = "pgd_one_decade"
+        else:
+            self.program = "pgd"
         # TODO get from args
         self.force = True
 
     def execute(self):
         """Execute."""
-        output = self.platform.get_system_value("climdir") + "/PGD_prel.fa"
-        binary = self.get_binary("PGD")
+        basetime = as_datetime(self.config["general.times.basetime"])
+        output = f"{self.climdir}/{self.pgd_prel}"
 
         if not os.path.exists(output) or self.force:
-
+            binary = self.get_binary("PGD")
             batch = BatchJob(os.environ, wrapper=self.wrapper)
 
-            self.nlgen.load("pgd")
-            settings = self.nlgen.assemble_namelist("pgd")
+            self.nlgen.load(self.program)
+            settings = self.nlgen.assemble_namelist(self.program)
             self.nlgen.write_namelist(settings, "OPTIONS.nam")
 
             filetype = settings["nam_io_offline"]["csurf_filetype"].lower()
@@ -592,10 +656,27 @@ class Pgd(Task):
             sfx_input_defs = self.platform.get_system_value("sfx_input_defs")
             input_data = json.load(open(sfx_input_defs, "r", encoding="utf-8"))
 
+            if self.one_decade:
+
+                def replace(data, match, repl):
+                    if isinstance(data, dict):
+                        for k, v in data.items():
+                            if isinstance(data[k], str):
+                                data[k] = data[k].replace(match, repl)
+                            replace(v, match, repl)
+                    return data
+
+                input_data = replace(input_data, "@DECADE@", get_decade(basetime))
+
             # Could potentially manipulate input_data depending on settings
             # or send input_data as input from an external file
             binput_data = InputDataFromNamelist(
-                settings, input_data, "pgd", self.platform
+                settings,
+                input_data,
+                self.program,
+                self.platform,
+                basetime=basetime,
+                one_decade=self.one_decade,
             ).get()
             for dest, target in binput_data.items():
                 logger.debug("target={}, dest={}", target, dest)
@@ -604,6 +685,7 @@ class Pgd(Task):
             # Run PGD
             batch.run(binary)
             self.fmanager.output(pgdfile, output)
+            self.archive_logs(["OPTIONS.nam", "LISTING_PGD.txt"], target=self.climdir)
         else:
             print("Output already exists: ", output)
 
@@ -620,18 +702,18 @@ class Prep(Task):
         """
         Task.__init__(self, config, "Prep")
         self.nlgen = NamelistGenerator(self.config, "surfex")
+        self.archive = self.platform.get_system_value("archive")
         # TODO get from args
         self.force = True
 
     def execute(self):
         """Execute."""
         cnmexp = self.config["general.cnmexp"]
-        archive = self.platform.get_system_value("archive")
-        output = f"{archive}/ICMSH{cnmexp}INIT.sfx"
+        output = f"{self.archive}/ICMSH{cnmexp}INIT.sfx"
 
         if not os.path.exists(output) or self.force:
             binary = self.get_binary("PREP")
-            os.makedirs(archive, exist_ok=True)
+            deodemakedirs(self.archive)
             batch = BatchJob(os.environ, wrapper=self.wrapper)
 
             bdmodel = self.config["boundaries.bdmodel"]
@@ -660,16 +742,22 @@ class Prep(Task):
             pgdfile = f"{pgd}.{filetype}"
 
             # PGD file input update
+            const_clim = self.config["file_templates.pgd.archive"]
+            pgdfile_source = self.platform.substitute(f"@CLIMDIR@/{const_clim}")
             input_data["prep"]["NAM_IO_OFFLINE#CPGDFILE"] = {
-                pgd: {pgdfile: "@CLIMDIR@/Const.Clim.sfx"}
+                pgd: {pgdfile: pgdfile_source}
             }
 
             if bd_has_surfex:
                 # Host model PGD type and name
                 filetype = settings["nam_prep_surf_atm"]["cfilepgdtype"].lower()
                 pgd_host = settings["nam_prep_surf_atm"]["cfilepgd"]
+                const_clim_host = self.config["file_templates.pgd_host.archive"]
+                pgd_host_source = self.platform.substitute(
+                    f"@BDCLIMDIR@/{const_clim_host}"
+                )
                 input_data["prep"]["NAM_PREP_SURF_ATM#CFILEPGD"] = {
-                    pgd_host: {f"{pgd_host}.{filetype}": "@BDCLIMDIR@/Const.Clim.sfx"}
+                    pgd_host: {f"{pgd_host}.{filetype}": pgd_host_source}
                 }
 
             # Determine prep output name
@@ -710,6 +798,7 @@ class Prep(Task):
             # Run PREP and archive output
             batch.run(binary)
             self.fmanager.output(prep_output_file, output)
+            self.archive_logs(["OPTIONS.nam", "LISTING_PREP0.txt"])
 
         else:
             logger.info("Output already exists: {}", output)

@@ -1,29 +1,43 @@
 #!/usr/bin/env python3
 """Fullpos namelist generation."""
+
+import os
+
 import yaml
 
+from .logs import logger
 from .namelist import flatten_list
+
+
+class InvalidSelectionCombinationError(ValueError):
+    """Custom exception."""
+
+    pass
 
 
 class Fullpos:
     """Fullpos namelist generator based on (yaml) dicts."""
 
-    def __init__(self, domain, nlfile=None, fullpos_config=None):
+    def __init__(self, domain, fpdir=".", fpfiles=None, fpdict=None):
         """Construct the fullpos generator.
 
         Args:
             domain (str): Domain name
-            nlfile (str): Fullpos yaml config file
-            fullpos_config (dict): Fullpos config as dict
+            fpdir (str): Path to fullpos config files
+            fpfiles (list): List of fullpos config files to read (wihtout the yml suffix)
+            fpdict (dict): A dictionary of fullpos settings
 
         """
         self.domain = domain
-        if nlfile is not None:
-            self.nldict = self.load(nlfile)
-        elif fullpos_config is not None:
-            self.nldict = fullpos_config
+        self.fpdir = fpdir
+        self.nldict = {}
+        if fpfiles is not None:
+            self.nldict.update(self.load(fpdir, fpfiles))
 
-    def expand(self, v, levtype, levels, domain):
+        if fpdict is not None:
+            self.nldict.update(fpdict)
+
+    def expand(self, v, levtype, levels, domain, i):
         """Expand fullpos namelists to levels and domains.
 
         Args:
@@ -31,12 +45,13 @@ class Fullpos:
             levtype (str): type of vertical level in fullpos syntax
             levels (list): list of levels
             domain (str): domain name
+            i (int): parameter conuter
 
         Returns:
-            d (dict): Expaned names
+            d (dict): expaned names
+            i (int): parameter counter
 
         """
-        i = 0
         d = {}
         for p in v["CL3DF"]:
             i += 1
@@ -50,22 +65,88 @@ class Fullpos:
                 d[lev] = levels.index(level) + 1
                 d[dom] = domain
 
-        return d
+        return d, i
 
-    def load(self, nlfile):
+    def load(self, fpdir, fpfiles):
         """Load fullpos yaml file.
 
         Arguments:
-            nlfile (str): fullpos config _file (yml)
+            fpdir (str): Path do fullpos settings
+            fpfiles (list): List of yml files to read
 
         Returns:
             nldict (dict): fullpos settings
 
         """
-        with open(nlfile, mode="rt", encoding="utf-8") as file:
-            nldict = yaml.safe_load(file)
+        s = "selection"
+        nldict = {s: {}}
+        for fpfile in fpfiles:
+            f = os.path.join(fpdir, f"{fpfile}.yml")
+            logger.info("Read {}", f)
+            with open(f, mode="rt", encoding="utf-8") as file:
+                n = yaml.safe_load(file)
+                file.close()
+                if s in n:
+                    nldict[s] = self.merge_dict(nldict[s], n[s])
+                else:
+                    nldict.update(n)
 
         return nldict
+
+    def merge_dict(self, d1, d2):
+        """Merge two dictionaries, tailored for the fullpos yml structure.
+
+        Args:
+            d1 (dict): Reference dict
+            d2 (dict): Update dict
+
+        Returns:
+            d (dict): Merged dict
+
+        Raises:
+            InvalidSelectionCombination    # noqa: DAR401
+
+        """
+        d = d1.copy()
+        for k, v in d2.items():
+            if k in d:
+                if isinstance(v, dict):
+                    d[k] = self.merge_dict(d[k], v)
+                elif isinstance(v, list):
+                    for x in v:
+                        if x not in d[k]:
+                            d[k].append(x)
+                else:
+                    raise InvalidSelectionCombinationError(v)
+            else:
+                d[k] = v
+
+        return d
+
+    def update_selection(self, additions_list=None, additions_dict=None):
+        """Add choices to the selection section.
+
+        Args:
+            additions_list (list): Additional selection to be read from files
+            additions_dict (dict): Additional selection as a dictionary
+
+        """
+        if additions_list is not None:
+            # Read the update
+            for addition in additions_list:
+                fpfile = os.path.join(self.fpdir, f"{addition}.yml")
+                with open(fpfile, mode="rt", encoding="utf-8") as file:
+                    nldict = yaml.safe_load(file)
+                    file.close()
+
+                self.nldict["selection"] = self.merge_dict(
+                    self.nldict["selection"], nldict
+                )
+
+        if additions_dict is not None:
+            self.nldict["selection"] = self.merge_dict(
+                self.nldict["selection"], additions_dict
+            )
 
     def construct(self):
         """Construct the fullpos namelists.
@@ -73,6 +154,9 @@ class Fullpos:
         Returns:
             namfpc_out (dict): namfpc part
             selection (dict): xxtddddhhmm part
+
+        Raises:
+            InvalidSelectionCombination    # noqa: DAR401
 
         """
         namfpc_out = {"NAMFPC": self.nldict["NAMFPC"].copy()}
@@ -95,6 +179,8 @@ class Fullpos:
                         namfpc[x].append(t)
 
                 elif "CL3DF" in v:
+                    if len(v.keys()) > 2:
+                        raise InvalidSelectionCombinationError(v.keys())
                     x = level_map[k]
                     namfpc[x].append(v[x])
                     x = param_map[k]["CL3DF"]
@@ -128,11 +214,13 @@ class Fullpos:
                     tmp[k] = d
                 elif "CL3DF" in v:
                     x = level_map[k]
-                    tmp[k] = self.expand(v, x, namfpc[x], self.domain)
+                    tmp[k], i = self.expand(v, x, namfpc[x], self.domain, 0)
                 else:
                     x = level_map[k]
+                    i = 0
                     for y in v.values():
-                        tmp[k].update(self.expand(y, x, namfpc[x], self.domain))
+                        d, i = self.expand(y, x, namfpc[x], self.domain, i)
+                        tmp[k].update(d)
 
             for k, v in tmp.items():
                 selection[kk][k] = v

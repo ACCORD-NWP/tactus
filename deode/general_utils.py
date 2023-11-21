@@ -27,7 +27,10 @@ def modify_mappings(obj: Mapping, operator: Union[Mapping, Callable[[Mapping], A
 def _modify_mappings_via_callable(obj, operator: Callable[[Mapping], Any]):
     """Descend recursively into `obj` and modify encountered mappings using `operator`."""
     if not isinstance(obj, Mapping):
-        return copy.deepcopy(obj)
+        try:
+            return copy.deepcopy(obj)
+        except TypeError:
+            return obj
     return operator(
         {k: _modify_mappings_via_callable(v, operator=operator) for k, v in obj.items()}
     )

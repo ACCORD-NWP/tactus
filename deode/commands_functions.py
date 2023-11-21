@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 """Implement the package's commands."""
+import datetime
 import os
+import sys
+from functools import partial
 from pathlib import Path
 
-from .config_doc import DocConfig
-from .config_parser import MAIN_CONFIG_JSON_SCHEMA_PATH
-from .derived_variables import check_fullpos_namelist, derived_variables
+from toml_formatter.formatter import FormattedToml
+
+from . import GeneralConstants
+from .config_parser import BasicConfig, ParsedConfig
+from .derived_variables import check_fullpos_namelist, derived_variables, set_times
 from .logs import logger
 from .namelist import NamelistComparator, NamelistGenerator, NamelistIntegrator
 from .scheduler import EcflowServer
@@ -52,6 +57,7 @@ def run_task(args, config):
 
     deode_home = set_deode_home(args, config)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
+    config = config.copy(update=set_times(config))
 
     submission_defs = TaskSettings(config)
     sub = NoSchedulerSubmission(submission_defs)
@@ -73,6 +79,7 @@ def start_suite(args, config):
 
     deode_home = set_deode_home(args, config)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
+    config = config.copy(update=set_times(config))
 
     server = EcflowServer(
         args.ecf_host, ecf_port=args.ecf_port, start_command=args.start_command
@@ -94,15 +101,19 @@ def start_suite(args, config):
 #########################################
 # Code related to the "show *" commands #
 #########################################
-def doc_config(args, config):
+def doc_config(args, config: ParsedConfig):  # noqa ARG001
     """Implement the 'doc_config' command.
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     """
-    DocConfig(config.dict(), MAIN_CONFIG_JSON_SCHEMA_PATH).print_doc()
+    now = datetime.datetime.now().isoformat(timespec="seconds")
+    sys.stdout.write(
+        f"This was automatically generated running `deode doc config` on {now}.\n\n"
+    )
+    sys.stdout.write(config.json_schema.get_markdown_doc() + "\n")
 
 
 def show_config(args, config):
@@ -114,13 +125,29 @@ def show_config(args, config):
 
     """
     logger.info("Printing requested configs...")
+
+    pkg_configs = BasicConfig.from_file(
+        GeneralConstants.PACKAGE_DIRECTORY.parent / "pyproject.toml"
+    )
+
+    toml_formatting_function = partial(
+        FormattedToml.from_string,
+        formatter_options=pkg_configs.get("tool.toml-formatter", {}),
+    )
+
     try:
-        print(config.dumps(section=args.section, style=args.format))
+        dumps = config.dumps(
+            section=args.section,
+            style=args.format,
+            toml_formatting_function=toml_formatting_function,
+        )
     except KeyError:
         logger.error('Error retrieving config data for config section "{}"', args.section)
+    else:
+        sys.stdout.write(str(dumps) + "\n")
 
 
-def show_config_schema(args, config):
+def show_config_schema(args, config):  # noqa ARG001
     """Implement the `show config-schema` command.
 
     Args:
@@ -129,7 +156,7 @@ def show_config_schema(args, config):
 
     """
     logger.info("Printing JSON schema used in the validation of the configs...")
-    print(config.json_schema)
+    sys.stdout.write(str(config.json_schema) + "\n")
 
 
 def show_namelist(args, config):
@@ -142,7 +169,7 @@ def show_namelist(args, config):
     """
     deode_home = set_deode_home(args, config)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
-
+    config = config.copy(update=set_times(config))
     config = config.copy(update=derived_variables(config))
 
     nlgen = NamelistGenerator(config, args.namelist_type, substitute=args.no_substitute)

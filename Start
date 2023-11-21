@@ -1,8 +1,0 @@
-# Simple start file, with log error messages in run_log
-
-rm -rf run_log
-
-# Set $DEODE=/perm/username/git/githubt/gitusername/Deode-Prototype
-
-export DEODE_LOGLEVEL='DEBUG'
-deode start suite -config_file $DEODE/deode/data/config_files/config_CY48t3.toml --ecf_host $ECF_HOST --ecf_port 3141 --joboutdir $HOME/jobout --ecf_files $DEODE/deode/templates/ecflow >> run_log

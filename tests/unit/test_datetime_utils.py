@@ -9,6 +9,7 @@ from deode.datetime_utils import (
     as_timedelta,
     cycle_offset,
     dt2str,
+    get_decade,
     oi2dt_list,
 )
 
@@ -26,31 +27,28 @@ def test_as_dt2str():
     assert dt2str(as_timedelta("PT3H30M10S")) == "0003:30:10"
 
 
-def test_offset():
+@pytest.mark.parametrize("param", ["05", "15", "25", "29", "31"])
+def test_get_decade(param):
+    truth = {"05": "1205", "15": "1215", "25": "1225", "29": "0105", "31": "0105"}
+    dt = as_datetime(f"202312{param}T00")
+    assert get_decade(dt) == truth[param]
+
+
+@pytest.mark.parametrize("param", ["PT3H", "PT0H", "-PT3H"])
+def test_offsetparam(param):
+    truth = {"PT3H": -3, "PT0H": 0, "-PT3H": 3}
     basetime = as_datetime("20181010T21")
-    bdcycle = as_timedelta("PT12H")
-    shift = as_timedelta("PT0H")
-    assert datetime.timedelta(hours=9) == cycle_offset(basetime, bdcycle, shift=shift)
+    bdcycle = as_timedelta("PT3H")
+    shift = as_timedelta(param)
+    assert datetime.timedelta(hours=truth[param]) == cycle_offset(
+        basetime, bdcycle, shift=shift
+    )
 
 
-def test_shift1_offset():
-    basetime = as_datetime("20181010T21")
-    bdcycle = as_timedelta("PT12H")
-    shift = as_timedelta("PT3H")
-    assert datetime.timedelta(hours=6) == cycle_offset(basetime, bdcycle, shift=shift)
-
-
-def test_shift2_offset():
-    basetime = as_datetime("20181010T21")
-    bdcycle = as_timedelta("PT12H")
-    shift = as_timedelta("-PT3H")
-    assert datetime.timedelta(hours=12) == cycle_offset(basetime, bdcycle, shift=shift)
-
-
-@pytest.fixture(params=["PT3H", "PT6H:PT3H", "PT0H:PT6H:PT3H"])
-def _test_as_oi2dt_list():
-    assert oi2dt_list(param, "PT6H") == [  # noqa
-        datetime.timedelta(0),
+@pytest.mark.parametrize("param", ["PT3H", ["PT0H:PT6H:PT3H"]])
+def test_oi2dt_list(param):
+    assert oi2dt_list(param, "PT6H") == [
+        datetime.timedelta(seconds=0),
         datetime.timedelta(seconds=10800),
         datetime.timedelta(seconds=21600),
     ]

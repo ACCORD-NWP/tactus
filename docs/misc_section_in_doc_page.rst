@@ -5,11 +5,15 @@ Miscellaneous Documentation
    :parser: myst_parser.sphinx_
 
 .. include::
+    markdown_docs/domains.md
+   :parser: myst_parser.sphinx_
+
+.. include::
     markdown_docs/binaries.md
    :parser: myst_parser.sphinx_
 
 .. include::
-    markdown_docs/comput_params.md
+    markdown_docs/comput_param.md
    :parser: myst_parser.sphinx_
 
 .. include::
@@ -21,5 +25,13 @@ Miscellaneous Documentation
    :parser: myst_parser.sphinx_
 
 .. include::
+    markdown_docs/output_settings.md
+   :parser: myst_parser.sphinx_
+
+.. include::
     markdown_docs/fullpos.md
+   :parser: myst_parser.sphinx_
+
+.. include::
+    markdown_docs/troubleshooting.md
    :parser: myst_parser.sphinx_

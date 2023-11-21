@@ -61,13 +61,13 @@ e923_base:
     NDLON: ${domain.ndguxg}
     NDLUXG: ${domain.nimax}
     NFLEVG: 1
-    NPROMA: ${general.nproma}
+    NPROMA: ${submission.nproma}
     NMSMAX: ${domain.nmsmax}
     NSMAX: ${domain.nsmax}
   NAMFPSC2:
-    NFPROMA: ${general.nproma}
+    NFPROMA: ${submission.nproma}
   NAMFPSC2_DEP:
-    NFPROMA_DEP: "${general.nproma}"
+    NFPROMA_DEP: "${submission.nproma}"
   NAMGEM:
     NHTYP: 0
     NSTTYP: 1
@@ -148,7 +148,7 @@ f4_harmonie-arome:
     NAER: 1
     NOVLP: 6
     NOZOCL: 2
-    NRADFR: 12
+    NRADFR: ${namelist.nradfr}
     NRADLP: 2
     NSW: 6
   NAMFA:
@@ -180,7 +180,7 @@ f4_harmonie-arome:
     LNEBTT: True
     LRAYD: True
     LRAYS: True
-    LWFPAC: False
+    LWFPAC: ${general.windfarm}
   NAMCHK:
     LECHKEVO: False
     LECHKPS: False
@@ -215,12 +215,12 @@ f4_harmonie-arome:
     NTLAG: 3
     NVLAG: 3
     NWLAG: 3
-    RDAMPDIV: 20.0
-    RDAMPPD: 200000.0
-    RDAMPQ: 20.0
-    RDAMPT: 20.0
-    RDAMPVD: 20.0
-    RDAMPVOR: 20.0
+    RDAMPDIV: 10.0
+    RDAMPPD: 100000.0
+    RDAMPQ: 10.0
+    RDAMPT: 10.0
+    RDAMPVD: 10.0
+    RDAMPVOR: 10.0
     REPS1: 0.0
     REPS2: 0.0
     REPSM1: 0.0
@@ -232,7 +232,7 @@ f4_harmonie-arome:
     SLHDA0: 0.25
     SLHDD00: 6.5e-05
     VESL: 0.0
-    XIDT: 0.0
+    XIDT: 0.15
     ZSLHDP1: 1.7
     ZSLHDP3: 0.6
   NAMDYNA:
@@ -315,6 +315,13 @@ f4_harmonie-arome:
   NAMINTFLEX:
     LINTFLEX: False
     LRADFLEX: False
+  NAMIO_SERV:
+    NIO_SERV_BUF_MAXSIZE: 20
+    NIO_SERV_METHOD: 2
+    NMSG_LEVEL_CLIENT: 0
+    NMSG_LEVEL_SERVER: 0
+    NPROCESS_LEVEL: 5
+    NPROC_IO: ${namelist.nproc_io-0}
   NAMNRTAER:
     CCNMIN: 10000000.0
     CLDROPMIN: 10000000.0
@@ -331,6 +338,7 @@ f4_harmonie-arome:
   NAMPARAR:
     CMF_CLOUD: "STAT"
     CMF_UPDRAFT: "DUAL"
+    LSCAWAREMF: True
     LHARATU: True
     LHGT_QS: True
     LICERAD: True
@@ -355,7 +363,7 @@ f4_harmonie-arome:
     RFRMIN(12): 0.05
     RFRMIN(2): 1.e-08
     RFRMIN(22): 0.25
-    RFRMIN(24): 2.5
+    RFRMIN(24): 1.0
     RFRMIN(26): 250000000.0
     RFRMIN(29): 1000.0
     RFRMIN(3): 3.e-09
@@ -376,7 +384,7 @@ f4_harmonie-arome:
     LRTPP: True
     LVFULL: False
     LVOIGT: True
-    LWINDFARM: False
+    LWINDFARM: ${general.windfarm}
     NRAUTOEV: 3
     NRAY: 2
     NSORAYFR: -1
@@ -450,7 +458,7 @@ f4_harmonie-arome:
     RLAMB_SOLID: 0.6
   NAMRIP:
     CSTOP: ${namelist.cstop}
-    TSTEP: ${general.tstep}
+    TSTEP: ${domain.tstep}
   NAMSPBD:
     LSPBDC: False
   NAMSPP:
@@ -615,23 +623,39 @@ f4_harmonie-arome:
     LXTHW: True
     LXTRT: True
     LXTTCLS: True
-    LXWFPIN: False
+    LXWFPIN: ${general.windfarm}
     LXXDIAGH: True
     LXXGST: True
     NFRRAZ: 1
-    NRAZTS:
-      - -5
-      -  0
-      - -3
-      - -6
-      - -9
-      - -12
+    NRAZTS: ${namelist.nrazts}
     NXGSTPERIOD: 3600
   NEMELBC0A:
     LESPCPL: False
     LUNBC: True
     NBICPD: 2
     NBICVD: 2
+
+fa_names:
+  NAMAFN:
+    TFP_I%CLNAME: "ICE_CRYSTAL"
+    TFP_L%CLNAME: "CLOUD_WATER"
+    TFP_U%CLNAME: "WIND.U.PHYS"
+    TFP_V%CLNAME: "WIND.V.PHYS"
+  NAMFA:
+    YFACLF%CLNAME: "CLOUD_FRACTI"
+    YFAI%CLNAME: "ICE_CRYSTAL"
+    YFAG%CLNAME: "GRAUPEL"
+    YFAL%CLNAME: "CLOUD_WATER"
+    YFAR%CLNAME: "RAIN"
+    YFAS%CLNAME: "SNOW"
+    YFATKE%CLNAME: "TKE"
+  NAMGFL:
+    YG_NL%CNAME: "GRAUPEL"
+    YI_NL%CNAME: "ICE_CRYSTAL"
+    YL_NL%CNAME: "CLOUD_WATER"
+    YQ_NL%CNAME: "HUMI.SPECIFI"
+    YR_NL%CNAME: "RAIN"
+    YS_NL%CNAME: "SNOW"
 
 f4_common:
   NAMAFN:
@@ -642,10 +666,6 @@ f4_common:
     GFP_X2T%IANO: 0
     GFP_XUGST%IANO: 0
     GFP_XVGST%IANO: 0
-    TFP_I%CLNAME: "SOLID_WATER"
-    TFP_L%CLNAME: "LIQUID_WATER"
-    TFP_U%CLNAME: "WIND.U.PHYS"
-    TFP_V%CLNAME: "WIND.V.PHYS"
   NAMARG:
     CNMEXP: ${general.cnmexp}
     LECMWF: False
@@ -657,7 +677,7 @@ f4_common:
   NAMCT1:
     LRFILAF: False
   NAMDIM:
-    NPROMA: ${general.nproma}
+    NPROMA: ${submission.nproma}
   NAMDYNA:
     NDLNPR: 1
     NVDVAR: 4
@@ -665,37 +685,24 @@ f4_common:
     NBITCS: -1
     NBITPG: -1
     NSTRON: -1
-    YFACLF%CLNAME: "CLOUD_FRACTI"
     YFACLF%NBITS: 16
-    YFAG%CLNAME: "GRAUPEL"
     YFAG%NBITS: 16
-    YFAI%CLNAME: "SOLID_WATER"
     YFAI%NBITS: 16
-    YFAL%CLNAME: "LIQUID_WATER"
     YFAL%NBITS: 16
-    YFAR%CLNAME: "RAIN"
     YFAR%NBITS: 16
-    YFAS%CLNAME: "SNOW"
     YFAS%NBITS: 16
-    YFATKE%CLNAME: "TKE"
     YFATKE%NBITS: 16
   NAMFPC:
     CFPFMT: "LELAM"
     NFPCLI: 1
   NAMFPSC2:
-    NFPROMA: ${general.nproma}
+    NFPROMA: ${submission.nproma}
   NAMFPSC2_DEP:
-    NFPROMA_DEP: ${general.nproma}
+    NFPROMA_DEP: ${submission.nproma}
   NAMGFL:
-    YA_NL%NREQIN: 1
-    YG_NL%CNAME: "GRAUPEL"
-    YI_NL%CNAME: "SOLID_WATER"
     YI_NL%NREQIN: 1
-    YL_NL%CNAME: "LIQUID_WATER"
+    YA_NL%NREQIN: 1
     YL_NL%NREQIN: 1
-    YQ_NL%CNAME: "HUMI.SPECIFI"
-    YR_NL%CNAME: "RAIN"
-    YS_NL%CNAME: "SNOW"
   NAMGRIB:
     NENSFNB: -1
   NAMIO_SERV:
@@ -754,8 +761,8 @@ f4_e927_arome:
       - "HUMI.SPECIFIQUE"
       - "WIND.U.PHYS"
       - "WIND.V.PHYS"
-      - "LIQUID_WATER"
-      - "SOLID_WATER"
+      - "CLOUD_WATER"
+      - "ICE_CRYSTAL"
       - "CLOUD_FRACTI"
       - "PRESS.DEPART"
       - "VERTIC.DIVER"
@@ -796,8 +803,8 @@ f4_e927:
       - "HUMI.SPECIFIQUE"
       - "WIND.U.PHYS"
       - "WIND.V.PHYS"
-      - "LIQUID_WATER"
-      - "SOLID_WATER"
+      - "CLOUD_WATER"
+      - "ICE_CRYSTAL"
       - "CLOUD_FRACTI"
       - "PRESS.DEPART"
       - "VERTIC.DIVER"
@@ -1064,7 +1071,7 @@ f4_c903_main:
     LECMWF: True 
     NSUPERSEDE: 1
   NAMDIM:
-    NPROMA: "${general.nproma}"
+    NPROMA: "${submission.nproma}"
   NAMPAR1:
     NSTROUT: "${namelist.nproc}"
     NDISTIO: 0
@@ -1116,7 +1123,7 @@ f4_c903_main:
     LEGWWMS: False
   NAERAD:
     LRRTM: False
-    NRPROMA: ${general.nproma}
+    NRPROMA: ${submission.nproma}
     LSRTM: False
     NMCICA: 0
   NAMCT1:
@@ -1130,9 +1137,9 @@ f4_c903_domain:
   NAM_DISTRIBUTED_VECTORS: {}
   NAMFPF: {}
   NAMFPSC2:
-    NFPROMA: ${general.nproma}
+    NFPROMA: ${submission.nproma}
   NAMFPSC2_DEP:
-    NFPROMA_DEP: ${general.nproma}
+    NFPROMA_DEP: ${submission.nproma}
   NEMFPEZO:
     RCO_EZO: 180.0
   NAMFPIOS:
@@ -1140,8 +1147,6 @@ f4_c903_domain:
     NFPXFLD: 10
   NAMAFN:
     GFP_ST%IANO: 0
-    TFP_U%CLNAME: WIND.U.PHYS
-    TFP_V%CLNAME: WIND.V.PHYS
     TFP_Q%LLGP: True
   NAMCT0:
     NFPOS: 2
@@ -1157,8 +1162,8 @@ f4_c903_domain:
       - "HUMI.SPECIFIQUE"
       - "WIND.U.PHYS"
       - "WIND.V.PHYS"
-      - "LIQUID_WATER"
-      - "SOLID_WATER"
+      - "CLOUD_WATER"
+      - "ICE_CRYSTAL"
       - "CLOUD_FRACTI"
       - "PRESS.DEPART"
       - "VERTIC.DIVER"

@@ -1,118 +1,188 @@
 [tool.poetry]
-name = "deode"
-version = "0.1.2"
-description = "Prototype for the DEODE scripting system."
-authors = ["The WP5.1 development group in the DE_330 project."]
-license = "MIT"
-readme = "README.md"
-repository = "https://github.com/destination-earth-digital-twins/Deode-Prototype"
-documentation = "https://destination-earth-digital-twins.github.io/deode-prototype-docs"
+  # Package ID info
+  description = "Prototype for the DEODE scripting system."
+  name = "deode"
+  version = "0.2.0"
+  # Other package info
+  authors = ["The WP5.1 development group in the DE_330 project."]
+  documentation = "https://destination-earth-digital-twins.github.io/deode-prototype-docs"
+  license = "MIT"
+  readme = "README.md"
+  repository = "https://github.com/destination-earth-digital-twins/Deode-Prototype"
 
 [tool.poetry.scripts]
-deode = "deode.__main__:main"
+  deode = "deode.__main__:main"
 
 [build-system]
-build-backend = "poetry.core.masonry.api"
-requires = ["poetry-core >= 1.0.0"]
+  build-backend = "poetry.core.masonry.api"
+  requires = ["poetry-core >= 1.0.0"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
-dateutils = "^0.6.12"
-fastjsonschema = "2.16.2"
-f90nml = "^1.4.3"
-humanize = "^3.14.0"
-loguru = "^0.7.1"
-numexpr = "^2.8.4"
-numpy = "^1.22.4"
-pandas = "^1.4.0"
-pyproj = "^3.3.0, !=3.5.0"
-pyyaml = "^6.0"
-tomlkit = "^0.11.6"
-troika = { git = "https://git.ecmwf.int/scm/ecsdk/troika.git" }
+  # Python version
+  python = ">=3.9,<3.13"
+  # General dependencies
+  dateutils = "^0.6.12"
+  f90nml = "^1.4.3"
+  fastjsonschema = "2.18.1"
+  humanize = "^4.8.0"
+  json-schema-for-humans = {git = "https://github.com/paulovcmedeiros/json-schema-for-humans.git", branch = "feature/choose-properties-table-columns"}
+  jsonref = "^1.1.0"
+  loguru = "^0.7.1"
+  numexpr = "^2.8.4"
+  numpy = "^1.22.4"
+  pandas = "^1.4.0"
+  pyproj = "^3.3.0, !=3.5.0"
+  pyyaml = "^6.0"
+  toml-formatter = {git = "https://github.com/paulovcmedeiros/toml-formatter"}
+  tomli = "^2.0.1"
+  tomlkit = "^0.12.1"
+  troika = {git = "https://git.ecmwf.int/scm/ecsdk/troika.git"}
 
 [tool.poetry.group.dev.dependencies]
-jupyterlab = "^3.6.1"
-nb-clean = "^2.4.0"
-poetryup = "^0.12.7"
-pre-commit = "^3.0.4"
+  ipython = "^8.12.3"
+  jupyterlab = "^3.6.1"
+  nb-clean = "^2.4.0"
+  pre-commit = "^3.0.4"
 
 [tool.poetry.group.doc.dependencies]
-myst-parser = "^1.0.0"
-sphinx = "^6.2.1"
-sphinx-rtd-theme = "^1.2.1"
-
-[tool.poetry.group.test.dependencies]
-pytest = "^7.2.2"
-pytest-cov = "^4.1.0"
-pytest-mock = "^3.7.0"
-pytest-profiling = "^1.7.0"
-pytest-timeout = "^2.1.0"
-pytest-xdist = "^3.2.0"
+  myst-parser = "^2.0.0"
+  sphinx = "^7.2.6"
+  sphinx-rtd-theme = "^1.3.0"
 
 [tool.poetry.group.linting.dependencies]
-black = { extras = ["jupyter"], version = "^22.1.0" }
-flake8 = "^4.0.1"
-flakeheaven = "^0.11.1"
-isort = "^5.10.1"
-pyment = "0.3.3"
-pylint = "^2.12.2"
-# flake8 plugins
-darglint = "^1.8.1"
-flake8-bandit = "^3.0.0"
-flake8-bugbear = "^22.1.11"
-flake8-builtins = "^1.5.3"
-flake8-comprehensions = "^3.8.0"
-flake8-docstrings = "^1.6.0"
-flake8-eradicate = "^1.2.0"
-flake8-logging-format = "^0.9.0"
-flake8-mutable = "^1.2.0"
-flake8-pytest-style = "^1.6.0"
-mccabe = "^0.6.1"
-pep8-naming = "^0.12.1"
+  black = {extras = ["jupyter"], version = "^23.10.0"}
+  flake8 = ">=4.0.1, <5.0.0"
+  flakeheaven = "^3.3.0"
+  isort = "^5.12.0"
+  ruff = "^0.1.0"
+  toml-formatter = {git = "https://github.com/paulovcmedeiros/toml-formatter"}
+  # flake8 plugins for stuff not yet on ruff.
+  # See <https://github.com/astral-sh/ruff/issues/458>.
+  pydoclint = "^0.3.4" # Replaces darglint, but is maintained & faster
 
-[tool.pytest.ini_options]
-testpaths = ["tests/unit", "tests/smoke"]
-addopts = "-v --cov-report=term-missing --cov-report=term:skip-covered --cov-report=xml:.coverage.xml --cov=./"
-log_cli_level = "INFO"
+[tool.poetry.group.test.dependencies]
+  pytest = "^7.2.2"
+  pytest-cov = "^4.1.0"
+  pytest-mock = "^3.7.0"
+  pytest-profiling = "^1.7.0"
+  pytest-timeout = "^2.1.0"
+  pytest-xdist = "^3.2.0"
+
+  ##################
+  # Linter configs #
+  ##################
 
 [tool.black]
-line-length = 90
-
-[tool.isort]
-profile = "black"
-line_length = 90
-
-[tool.pylint.MASTER]
-# See <https://github.com/PyCQA/pylint/blob/master/pylint/extensions/docparams.py>
-load-plugins = "pylint.extensions.docparams"
-
-[tool.pylint.BASIC]
-# We'll use pylint separate from flakheaven. Some pylint options don't seem to be
-# respected when using it via flakeheaven (e.g., fail-under).
-# For a description of the config opts used here, see:
-# <https://docs.pylint.org/en/1.6.0/options.html>
-# <https://docs.pylint.org/en/1.6.0/features.html>
-# <https://docs.pylint.org/en/1.6.0/faq.html>
-# Also, run "pylint --generate-rcfile" to see all applied pylint opts.
-fail-under = "8.0"
-good-names = ["i", "j", "n", "x", "y", "df", "db", "dt"]
-# Default value for the rgx below: "[a-z_][a-z0-9_]{2,30}$"
-attr-rgx = "[a-z_][a-z0-9_]{1,30}$"
-
-[tool.pylint.messages_control]
-# Disable C0116 (Missing function or method docstring). Leave it to flake8-docstrings
-# Disable C0326 and C0330 to avoid clashing with black
-# Disable C0301 (Line too long). Leave it for black to control.
-# See <https://black.readthedocs.io/en/stable/compatible_configs.html#pylint>
-# Disable E0402 due to false positives <https://github.com/flycheck/flycheck/issues/1758>
-disable = "C0116, C0301, C0326, C0330, E0402"
-# Fix "no-name-in-module" error when linting pydantic-based code.
-# See <https://github.com/samuelcolvin/pydantic/issues/1961>
-extension-pkg-whitelist = "pydantic"
-
-[tool.pylint.format]
-# Set max-line-length compatible with black
-max-line-length = "90"
+  line-length = 90
 
 [tool.flakeheaven]
-base = ".flakeheaven.toml"
+  base = ".flakeheaven.toml"
+
+[tool.isort]
+  line_length = 90
+  profile = "black"
+
+[tool.ruff]
+  # C901: Function is too complex. Ignoring this for now but will be removed later.
+  ignore = ["C901", "RUF012"]
+  line-length = 90
+  select = ["S", "B", "A", "C4", "ERA", "G", "PT", "C90", "N", "RUF", "ARG", "BLE001"]
+
+[tool.ruff.per-file-ignores]
+  # S101: Use of `assert` detected
+  "tests/**/*.py" = ["S101"]
+
+[tool.ruff.pydocstyle]
+  convention = "google"
+
+[tool.toml-formatter]
+  indentation = 2
+  section_order_overrides = [
+    "^general$",
+    "general.*",
+    "^tool.poetry$",
+    "^tool.poetry.scripts$",
+    "build-system",
+    "tool.poetry.*",
+  ]
+
+  ##################
+  # pytest configs #
+  ##################
+
+[tool.pytest.ini_options]
+  addopts = "-v --failed-first --cov-report=term-missing --cov-report=term:skip-covered --cov-report=xml:.coverage.xml --cov=./"
+  log_cli_level = "INFO"
+  testpaths = ["tests/smoke", "tests/unit"]
+
+  ####################################
+  # Leave configs for `poe` separate #
+  ####################################
+
+[tool.poe]
+  poetry_command = "devtools"
+
+[tool.poe.tasks]
+  # Doc-related stuff
+  _doc_build.shell = """
+    deode doc config >| docs/markdown_docs/config.md
+    sphinx-apidoc deode -o docs/ --force --no-toc --module-first
+    sphinx-build docs docs/_build/
+    touch docs/_build/.nojekyll
+  """
+  # Linting tasks
+  _black = "black ."
+  _isort = "isort ."
+  _ruff = "ruff check ."
+  _toml_formatter = "toml-formatter check ."
+  # Test-related tasks
+  pytest = "pytest"
+  # Tasks to be run as pre-push checks
+  pre-push-checks = ["lint", "doc clean", "doc build", "pytest"]
+
+[tool.poe.tasks._flake8]
+  cmd = "flakeheaven lint ."
+  env = {FLAKEHEAVEN_CACHE_TIMEOUT = "0"}
+
+[tool.poe.tasks.doc]
+  args = [
+    {name = "doc_action", positional = true, help = "{all,clean,build,view}", default = "all"},
+  ]
+  control = {expr = "doc_action"}
+
+[[tool.poe.tasks.doc.switch]]
+  case = "all"
+  sequence = ["doc build", "doc view"]
+
+[[tool.poe.tasks.doc.switch]]
+  case = "clean"
+  cmd = "rm -rf docs/_build/ docs/deode.rst docs/markdown_docs/config.md"
+
+[[tool.poe.tasks.doc.switch]]
+  case = "build"
+  sequence = ["doc clean", "_doc_build"]
+
+[[tool.poe.tasks.doc.switch]]
+  case = "view"
+  sequence = [
+    {shell = "[ ! -f docs/_build/index.html ] && poetry devtools doc build || exit 0"},
+    {script = "webbrowser:open('docs/_build/index.html')"},
+  ]
+
+[tool.poe.tasks.lint]
+  args = [{name = "fix", type = "boolean", default = false}]
+  control = {expr = "fix"}
+
+[[tool.poe.tasks.lint.switch]]
+  case = "True"
+  sequence = ["_isort", "_black", "_ruff --fix", "_flake8", "_toml_formatter --fix"]
+
+[[tool.poe.tasks.lint.switch]]
+  case = "False"
+  sequence = [
+    "_isort --check-only",
+    "_black --check --diff",
+    "_ruff",
+    "_flake8",
+    "_toml_formatter",
+  ]

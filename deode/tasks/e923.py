@@ -1,10 +1,12 @@
 """E923."""
 
+import glob
 import os
 import shutil
 
 from ..logs import logger
 from ..namelist import NamelistGenerator
+from ..os_utils import deodemakedirs
 from .base import Task
 from .batch import BatchJob
 
@@ -22,6 +24,7 @@ class E923(Task):
 
         self.climdir = self.platform.get_system_value("climdir")
         self.constant_file = f"{self.climdir}/Const.Clim.const"
+        self.pgd_prel = self.config["file_templates.pgd_prel.archive"]
         self.months = [f"{mm:02d}" for mm in range(1, 13)]
 
         self.master = self.get_binary("MASTERODB")
@@ -61,8 +64,8 @@ class E923(Task):
         """Run the constant part of e923.
 
         Args:
-            part : which step
-            month : month
+            part: which step
+            month: month
         """
         if month is None:
             logger.info("Executing PART {}", part)
@@ -73,7 +76,7 @@ class E923(Task):
         """Run the constant part of e923.
 
         Args:
-            constant_file : filename of the resulting file
+            constant_file: filename of the resulting file
         """
         logger.info("Create: {}", constant_file)
 
@@ -83,7 +86,7 @@ class E923(Task):
 
         # PGD input
 
-        self.fmanager.input(f"{self.climdir}/PGD_prel.fa", "Neworog")
+        self.fmanager.input(f"{self.climdir}/{self.pgd_prel}", "Neworog")
 
         # Part 0
         i = 0
@@ -139,13 +142,16 @@ class E923(Task):
         self.myexec(self.master, 2)
         self.remove_links(ifiles)
 
+        files = glob.glob("NODE.*")
+        logger.info(files)
+        self.archive_logs(files, target=self.climdir)
         self.fmanager.output("Const.Clim", constant_file, provider_id="copy")
 
     def monthly_part(self, constant_file):
         """Run the monthly part of e923.
 
         Args:
-            constant_file : filename of the input constant file
+            constant_file: filename of the input constant file
         """
         # Make sure constant file is in wdir
         if not os.path.exists("Const.Clim"):
@@ -188,7 +194,6 @@ class E923(Task):
         os.system("gunzip rel_GL.Z")  # noqa
 
         for mm in self.months:
-
             os.rename(f"Const.Clim.{mm}", "Const.Clim")
 
             # PART 4
@@ -274,21 +279,25 @@ class PgdUpdate(Task):
         Task.__init__(self, config, "PgdUpdate")
 
         self.climdir = self.platform.get_system_value("climdir")
+
         self.gl = self.get_binary("gl")
-        self.outfile = "Const.Clim.sfx"
+        self.outfile = self.platform.substitute(self.config["file_templates.pgd.archive"])
+        self.pgd_prel = self.platform.substitute(
+            self.config["file_templates.pgd_prel.archive"]
+        )
 
     def execute(self):
         """Run task."""
-        for ifile in ["Const.Clim.const", "PGD_prel.fa"]:
+        for ifile in ["Const.Clim.const", self.pgd_prel]:
             self.fmanager.input(f"{self.climdir}/{ifile}", ifile, provider_id="copy")
 
         self.fmanager.input(
-            f"{self.climdir}/PGD_prel.fa", self.outfile, provider_id="copy"
+            f"{self.climdir}/{self.pgd_prel}", self.outfile, provider_id="copy"
         )
 
         with open("namgl", "w") as namelist:
             namelist.write(
-                """&naminterp
+                f"""&naminterp
  INPUT_FORMAT='FA',
  OUTPUT_FORMAT='memory',
  INFILE='Const.Clim.const',
@@ -298,8 +307,8 @@ class PgdUpdate(Task):
  OUTPUT_FORMAT='FIXZS',
  OUTPUT_TYPE='APPEND'
  INPUT_FORMAT='fa',
- INFILE='PGD_prel.fa',
- OUTFILE='Const.Clim.sfx',
+ INFILE='{self.pgd_prel}',
+ OUTFILE='{self.outfile}',
  USE_SAVED_CADRE=T,
  READKEY%FANAME='SFX.ZS',
 /
@@ -332,7 +341,7 @@ class E923Constant(E923):
         Define run sequence.
 
         """
-        os.makedirs(self.climdir, exist_ok=True)
+        deodemakedirs(self.climdir, unixgroup=self.unix_group)
 
         logger.debug("Constant file:{}", self.constant_file)
 
@@ -375,3 +384,5 @@ class E923Monthly(E923):
             source = f"Const.Clim.{mm}"
             target = f"{self.climdir}/Const.Clim.{mm}"
             self.fmanager.output(source, target)
+
+            self.archive_logs(glob.glob("NODE.*"), target=self.climdir)

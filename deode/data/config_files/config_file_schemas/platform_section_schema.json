@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "DomainSection",
+    "title": "Platform Section",
     "description": "DEODE platform specific path settings",
     "type": "object",
     "additionalProperties": true,
@@ -11,8 +11,9 @@
         },
         "deode_home": {
             "type": "string",
-            "description": "Path to the deode code, normally no need to change"
-        },
+            "description": "Path to the deode code, normally no need to change",
+            "default": "set-by-the-system"
+	},
         "pgd_data_path": {
             "type": "string",
             "description": "Path to PGD input data"
@@ -85,9 +86,18 @@
             "type": "string",
             "description": "Path to tree_height data."
         },
+        "windfarm_path": {
+            "type": "string",
+            "description": "Path to wind farm parameterisation input data."
+        },
         "archive_root": {
             "type": "string",
             "description": "Path to the main archive directory"
+        },
+        "unix_group": {
+            "type": "string",
+            "description": "Default unix group for directories created by deode, leave empty to use default group of user.",
+            "default": ""
         }
     }
 }

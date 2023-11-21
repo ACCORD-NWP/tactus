@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "MainConfigSchema",
-  "description": "Model for validation of the data in the main config file.",
+  "title": "Config",
+  "description": "Model for validation of `deode`'s main config file.",
   "type": "object",
   "additionalProperties": true,
   "properties": {
@@ -16,6 +16,12 @@
     },
     "boundaries": {
       "$ref": "#/definitions/boundaries"
+    },
+    "pgd": {
+      "$ref": "#/definitions/pgd"
+    },
+    "fullpos": {
+      "$ref": "#/definitions/fullpos"
     },
     "troika": {
       "$ref": "#/definitions/troika"
@@ -41,12 +47,13 @@
       "properties": {
         "config_file": {
           "type": "string",
-          "description": "Troika config file"
-        }
+          "description": "Troika config file",
+          "default": "@DEODE_HOME@/deode/data/config_files/troika.yml"
+	}
       }
     },
     "boundaries": {
-      "title": "BoundarySection",
+      "title": "Boundary Section",
       "description": "Settings for control of boundary treatment.",
       "type": "object",
       "properties": {
@@ -66,7 +73,7 @@
           "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
         },
         "bdshift": {
-          "description": "Shift of boundary initial time. E.g. '-PT3H' would mean use 3H old boundaries",
+          "description": "Shift of boundary initial time. E.g. 'PT3H' would mean use 3H old boundaries",
           "type": "string",
           "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
         },
@@ -87,9 +94,53 @@
           ],
           "type": "string"
         },
+	"ifs.selection": {
+            "type": "string",
+            "description": "Selection",
+            "enum": [
+            "HRES",
+            "ATOS_DT",
+            "IFSENS",
+            "PARIS_RDP"
+          ]
+        },
+	"ifs.bdmember": {
+	    "type": "string",
+	    "description": "The number of member in ensamble if selection is IFSENS, else empty string."
+	},
         "bd_has_surfex": {
           "description": "Set to true if the host model runs with surfex",
           "type": "boolean"
+        }
+      }
+    },
+    "pgd": {
+      "title": "Pgd Section",
+      "description": "Settings for control of Pgd selection.",
+      "type": "object",
+      "properties": {
+        "one_decade": {
+          "title": "Option for using one decade",
+          "type": "boolean",
+	  "default": true
+        }
+      }
+    },
+    "fullpos": {
+      "title": "Fullpos Section",
+      "description": "Settings for control of fullpos selection.",
+      "type": "object",
+      "properties": {
+        "config_path": {
+          "title": "Path to fullpos config files",
+          "type": "string"
+        },
+        "selection": {
+          "description": "List of rules and selections to include",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -110,17 +161,25 @@
           "description": "Run prep if cold start",
           "type": "boolean"
         },
-	"do_prep_just_first_run":{
-          "description": "Run prep just first run",
-          "type": "boolean"
-        },
-
+	"mode": {
+	  "description": "Choose a strategy to achieve initial/initial_sfx files (start:  start from interpolated files and then propagate the FG between cycles, restart: start from a previous run and then propagate the FG between cycles, cold_start: always start from interpolated files).",
+	  "type": "string",
+	  "enum": [
+	    "start",
+	    "restart",
+	    "cold_start"
+	   ]
+	},
         "interpolate_boundaries": {
           "description": "Activates the boundary interpolation",
           "type": "boolean"
         },
         "do_marsprep": {
           "description": "Run marsprep or skip extraction",
+          "type": "boolean"
+        },
+        "do_extractsqlite": {
+          "description": "Activates extraction of selected points to SQLite files for verification.",
           "type": "boolean"
         },
         "create_static_data": {
@@ -156,8 +215,9 @@
         },
         "intp_bddir": {
           "type": "string",
-          "description": "Location of boundaries on the current domain, i.e. the output directory of e927"
-        },
+          "description": "Location of boundaries on the current domain, i.e. the output directory of e927",
+          "default": "@WRK@"
+	},
         "climdir": {
           "type": "string",
           "description": "Location of generated/used climate files (PGD/monthly files)"
@@ -172,19 +232,31 @@
         },
         "wrk": {
           "type": "string",
-          "description": "Location of date specific working directory"
+          "description": "Location of date specific working directory",
+          "default": "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/"
         },
         "fullpos_config_file": {
           "type": "string",
           "description": "Path to the fullpos yml config file"
         },
+        "archive_timestamp": {
+          "type": "string",
+          "description": "Relative path of date specific archive",
+          "default": "@YYYY@/@MM@/@DD@/@HH@/"
+	},
         "archive": {
           "type": "string",
-          "description": "Location of date specific archive"
+          "description": "Absolute path of date specific archive",
+          "default": "@ARCHIVE_ROOT@/@ARCHIVE_TIMESTAMP@"
+	},
+        "logs": {
+          "type": "string",
+          "description": "Location of collected logfiles"
         },
         "namelists": {
           "type": "string",
-          "description": "Path to static namelists"
+          "description": "Path to static namelists",
+          "default": "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
         },
         "marsdir": {
           "type": "string",
@@ -196,20 +268,31 @@
         },
         "sfx_input_defs": {
           "type": "string",
-          "description": "Path to the surfex json config file"
+          "description": "Path to the surfex json config file",
+          "default": "@DEODE_HOME@/deode/data/input/sfx_input_@CYCLE@.json"
+        },
+	"prev_case":{
+          "description": "Name of the previous experiment",
+          "type": "string",
+          "default": "@CASE@"
         }
       }
     },
     "general": {
-      "title": "GeneralSectionModel",
+      "title": "General Section",
       "description": "Model for the 'general' section.",
       "type": "object",
       "properties": {
         "times": {
-          "title": "Times",
+          "title": "Time-Related Entries",
           "description": "Model for the 'general.times' section.",
           "type": "object",
           "properties": {
+            "forecast_range": {
+              "description": "Forecast range",
+              "type": "string",
+              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+            },
             "start": {
               "description": "Start",
               "type": "string",
@@ -235,12 +318,14 @@
               "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
             },
             "basetime": {
-              "description": "Base TB specified",
-              "type": "string"
+              "description": "Initial date and time for the current task.",
+              "type": "string",
+              "format": "date-time"
             },
             "validtime": {
-              "description": "Valid TB specified",
-              "type": "string"
+              "description": "Final date and time for the current task.",
+              "type": "string",
+              "format": "date-time"
             }
           },
           "oneOf": [
@@ -287,7 +372,8 @@
         },
         "realization": {
           "description": "Placeholder for future ensemble or similar need",
-          "type": "number"
+          "type": "number",
+	  "default": -1
         },
         "cnmexp": {
           "description": "Experiment short name",
@@ -295,10 +381,6 @@
           "type": "string",
           "minLength": 4,
           "maxLength": 4
-        },
-        "tstep": {
-          "description": "Model time step",
-          "type": "number"
         },
         "loglevel": {
           "description": "Logger output level",
@@ -334,13 +416,8 @@
           "type": "string",
           "enum": [
             "CY48t3",
-            "CY46t1",
             "CY46h1"
           ]
-        },
-        "nproma": {
-          "description": "NPROMA size in the forecast model. See the namelists for where it is used",
-          "type": "number"
         },
         "initfile": {
           "description": "Initial file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",
@@ -350,18 +427,13 @@
           "description": "Initial surfex file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",
           "type": "string"
         },
-        "forecast_range": {
-          "description": "Forecast range",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-        },
         "mars_expver": {
           "description": "Name of the experiment to get data from MARS in case of global DT. Empty string for operational.",
           "type": "string",
           "default": ""
         },
         "output_settings": {
-          "title": "OutputSettings",
+          "title": "Output Settings",
           "description": "Output settings. Specified as duration for any of interval, endtime:interval, starttime:endtime:interval or a list of these options",
           "type": "object",
           "properties": {
@@ -373,8 +445,16 @@
             },
             "fullpos": {
               "description": "Output list for fullpos files"
+            },
+            "nrazts": {
+              "description": "Reset times for instantaneous fluxes ( e.g. min/max temperature )"
             }
           }
+        },
+        "windfarm": {
+          "description": "Switch on wind farm parameterisation",
+          "type": "boolean",
+          "default": false
         }
       },
       "required": [

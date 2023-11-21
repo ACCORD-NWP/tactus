@@ -1,5 +1,7 @@
 coverage:
   status:
-    patch:
+    patch: off
+    project:
       default:
-        target: 80%
+        target: 85%
+        threshold: 0

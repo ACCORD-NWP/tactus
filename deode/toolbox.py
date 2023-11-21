@@ -2,7 +2,7 @@
 import os
 import re
 
-from .datetime_utils import as_datetime
+from .datetime_utils import as_datetime, get_decade
 from .logs import logger
 
 
@@ -228,7 +228,6 @@ class Platform:
 
         """
         if isinstance(pattern, str):
-
             # Collect what is defined in config.macros, the group, os and general macros
             all_macros = {}
 
@@ -244,7 +243,7 @@ class Platform:
 
             for macro in self.config["macros.gen_macros"]:
                 if isinstance(macro, dict):
-                    key = list(macro)[0]
+                    key = next(iter(macro))
                     val = self.config[macro[key].lower()]
                     key = key.upper()
                 else:
@@ -320,9 +319,9 @@ class Platform:
                 pattern = self.sub_value(pattern, "LLLL", f"{lh:04d}")
                 pattern = self.sub_value(pattern, "LM", f"{lm:02d}")
                 pattern = self.sub_value(pattern, "LS", f"{ls:02d}")
-                tstep = self.config["general.tstep"]
+                tstep = self.config["domain.tstep"]
                 if tstep is not None:
-                    lead_step = int(lead_seconds / tstep)
+                    lead_step = lead_seconds // tstep
                     pattern = self.sub_value(pattern, "TTT", f"{lead_step:03d}")
                     pattern = self.sub_value(pattern, "TTTT", f"{lead_step:04d}")
 
@@ -334,7 +333,12 @@ class Platform:
                 pattern = self.sub_value(pattern, "DD", basetime.strftime("%d"))
                 pattern = self.sub_value(pattern, "HH", basetime.strftime("%H"))
                 pattern = self.sub_value(pattern, "mm", basetime.strftime("%M"), ci=False)
-                pattern = self.sub_value(pattern, "ss", basetime.strftime("{}"), ci=False)
+                pattern = self.sub_value(pattern, "ss", basetime.strftime("%S"), ci=False)
+
+                one_decade_pattern = (
+                    get_decade(basetime) if self.config["pgd.one_decade"] else ""
+                )
+                pattern = self.sub_value(pattern, "ONE_DECADE", one_decade_pattern)
 
         logger.debug("Return pattern={}", pattern)
         return pattern
@@ -386,6 +390,8 @@ class FileManager:
             tuple: provider, resource
 
         """
+        self.aloc = self.platform.get_value("archiving.paths.aloc")
+
         destination = LocalFileOnDisk(
             self.config, destination, basetime=basetime, validtime=validtime
         )
@@ -411,7 +417,7 @@ class FileManager:
         # TODO check for archive
         if check_archive:
             provider_id = "ecfs"
-            target = target.replace("@ARCHIVE@", "ectmp:/@YYYY@/@MM@/@DD@/@HH@")
+            target = target.replace("@ARCHIVE@", "{self.aloc}/@YYYY@/@MM@/@DD@/@HH@")
 
             if provider_id is not None:
                 # Substitute based on ecfs
@@ -437,7 +443,7 @@ class FileManager:
         target,
         destination,
         basetime=None,
-        validtime=None,  # noqa
+        validtime=None,
         check_archive=False,
         provider_id="symlink",
     ):
@@ -512,7 +518,9 @@ class FileManager:
         if archive:
             # TODO check for archive and modify macros
             provider_id = "ecfs"
-            destination = destination.replace("@ARCHIVE@", "ectmp:/@YYYY@/@MM@/@DD@/@HH@")
+            destination = destination.replace(
+                "@ARCHIVE@", "{self.aloc}/@YYYY@/@MM@/@DD@/@HH@"
+            )
 
             sub_target = self.platform.substitute(
                 target, basetime=basetime, validtime=validtime
@@ -779,19 +787,24 @@ class ECFS(ArchiveProvider):
             bool: True if success
 
         """
+        # TODO: Address the noqa check disablers
         if self.fetch:
-            logger.info("ecp ecfs:{} {}", self.identifier, resource.identifier)
-            # os.system(f"ecp ecfs:{self.identifier} {resource.identifier}")  # noqa S605, E800
+            logger.info("ecp -pu {} {}", self.identifier, resource.identifier)
+            os.system(
+                f"ecp -pu {self.identifier} {resource.identifier}"  # noqa S605, E800
+            )
         else:
-            logger.info("ecp {} ecfs:{}", resource.identifier, self.identifier)
-            # os.system(f"ecp {resource.identifier} ecfs:{self.identifier}")  # noqa S605, E800
+            logger.info("ecp -pu {} {}", resource.identifier, self.identifier)
+            os.system(
+                f"ecp -pu {resource.identifier} {self.identifier}"  # noqa S605, E800
+            )
         return True
 
 
 class Resource:
     """Resource container."""
 
-    def __init__(self, config, identifier):
+    def __init__(self, _config, identifier):
         """Construct resource.
 
         Args:

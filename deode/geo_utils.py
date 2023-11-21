@@ -22,14 +22,13 @@ class Projstring:
         """
         if lat0 == -90.0:
             proj_string = (
-                f"+proj=stere +lat_0={str(lat0)} +lon_0={str(lon0)} "
-                f"+lat_ts={str(lat0)}"
+                f"+proj=stere +lat_0={lat0!s} +lon_0={lon0!s} " f"+lat_ts={lat0!s}"
             )
         else:
             proj_string = (
-                f"+proj=lcc +lat_0={str(lat0)} +lon_0={str(lon0)} "
-                f"+lat_1={str(lat0)} +lat_2={str(lat0)} "
-                f"+units=m +no_defs +R={str(self.earth_radius)}"
+                f"+proj=lcc +lat_0={lat0!s} +lon_0={lon0!s} "
+                f"+lat_1={lat0!s} +lat_2={lat0!s} "
+                f"+units=m +no_defs +R={self.earth_radius!s}"
             )
 
         return proj_string

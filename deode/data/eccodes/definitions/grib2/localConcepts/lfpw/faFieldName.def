@@ -89,7 +89,6 @@
     typeOfStatisticalProcessing = 2 ;
     indicatorOfUnitForTimeRange = 1 ;
     lengthOfTimeRange = 1 ;
-    LSTCUM=2;
 }
 
 # "Meridional component of 60 min gust wind (maximum between two outputs)"
@@ -105,7 +104,6 @@
     typeOfStatisticalProcessing = 2 ;
     indicatorOfUnitForTimeRange = 1 ;
     lengthOfTimeRange = 1 ;
-    LSTCUM=2;
 }
 
 # Stream function
@@ -316,8 +314,8 @@
 # surface geopotentiel (spectral field)
 "SPECSURFGEOPOTEN" = {
     discipline = 0 ;
-    parameterCategory = 193 ;
-    parameterNumber = 5 ;
+    parameterCategory = 3 ;
+    parameterNumber = 4 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaledValueOfFirstFixedSurface = 0 ;
@@ -998,8 +996,8 @@
 # cumulated latent heat flux at surface over water
 "SURFFLU.LAT.MEVA" = {
     discipline = 0 ;
-    parameterCategory = 193 ;
-    parameterNumber = 29 ;
+    parameterCategory = 0 ;
+    parameterNumber = 30 ;
     productDefinitionTemplateNumber = 8 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
@@ -1011,8 +1009,8 @@
 # cumulated latent heat flux at surface level over snow
 "SURFFLU.LAT.MSUB" = {
     discipline = 0 ;
-    parameterCategory = 193 ;
-    parameterNumber = 30 ;
+    parameterCategory = 0 ;
+    parameterNumber = 31 ;
     productDefinitionTemplateNumber = 8 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
@@ -1166,10 +1164,13 @@
 "SURFDIAGHAIL" = {
     discipline = 0 ;
     parameterCategory = 1 ;
-    parameterNumber = 199 ;
+    parameterNumber = 74 ;
     tablesVersion = 15 ;
+    productDefinitionTemplateNumber = 8 ;
+    typeOfStatisticalProcessing = 2 ;
     typeOfFirstFixedSurface = 1 ;
     scaledValueOfFirstFixedSurface = 0 ;
+    LSTCUM = 0 ;
 }
 
 # "“Total rain” surface precipitation (subgrid + convective values) (integrated since the start of the run)"
@@ -1196,11 +1197,14 @@
 # Flux d’évaporation en surface sur eau liquide
 "SURFFLU.MEVAP.EA" = {
     discipline = 0 ;
-    parameterCategory = 193 ;
-    parameterNumber = 31 ;
+    parameterCategory = 1 ;
+    parameterNumber = 79 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaledValueOfFirstFixedSurface = 0 ;
+    typeOfStatisticalProcessing = 1 ;
+    productDefinitionTemplateNumber = 8 ;
+    LSTCUM = 1 ;
 }
 
 # Flux d’évaporation en surface sur glace
@@ -1506,7 +1510,7 @@
     parameterNumber = 1 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
-    typeOfSecondFixedSurface = 255 ;
+    typeOfSecondFixedSurface = 8 ;
     FMULTE = 2 ;
     scaledValueOfFirstFixedSurface = 0 ;
     scaleFactorOfFirstFixedSurface = 0 ;
@@ -1741,7 +1745,6 @@
     typeOfStatisticalProcessing = 2 ;
     indicatorOfUnitForTimeRange = 1 ;
     lengthOfTimeRange = 1 ;
-    LSTCUM=2;
 }
 
 # V component of wind
@@ -1784,7 +1787,6 @@
     typeOfStatisticalProcessing = 2 ;
     indicatorOfUnitForTimeRange = 1 ;
     lengthOfTimeRange = 1 ;
-    LSTCUM=2;
 }
 
 # Instantateous surface graupel flux
@@ -1857,7 +1859,7 @@
     parameterNumber = 6 ;
     scaleFactorOfFirstFixedSurface = 2 ;
     tablesVersion = 15 ;
-    typeOfFirstFixedSurface = 197 ;
+    typeOfFirstFixedSurface = 20 ;
 }
 
 # "Altitude of the surface of equal Theta’w = 273,15 K (0 C)"
@@ -1868,7 +1870,7 @@
     scaleFactorOfFirstFixedSurface = 2 ;
     scaledValueOfFirstFixedSurface = 27315 ;
     tablesVersion = 15 ;
-    typeOfFirstFixedSurface = 198 ;
+    typeOfFirstFixedSurface = 107 ;
 }
 
 # "Altitude of the surface of equal Theta’w = 274,15 K (+1 C)"
@@ -1879,7 +1881,7 @@
     scaleFactorOfFirstFixedSurface = 2 ;
     scaledValueOfFirstFixedSurface = 27415 ;
     tablesVersion = 15 ;
-    typeOfFirstFixedSurface = 198 ;
+    typeOfFirstFixedSurface = 107 ;
 }
 
 # "Altitude of the surface of equal Theta’w = 274,65 K (+1.5 C)"
@@ -1890,7 +1892,7 @@
     scaleFactorOfFirstFixedSurface = 2 ;
     scaledValueOfFirstFixedSurface = 27465 ;
     tablesVersion = 15 ;
-    typeOfFirstFixedSurface = 198 ;
+    typeOfFirstFixedSurface = 107 ;
 }
 
 # Température de brillance Meteosat7 Canal 1
@@ -2065,12 +2067,9 @@
     parameterCategory = 7 ;
     parameterNumber = 6 ;
     tablesVersion = 15 ;
-    typeOfFirstFixedSurface = 1 ;
-    typeOfSecondFixedSurface = 103 ;
-    scaledValueOfFirstFixedSurface = 0 ;
-    scaleFactorOfFirstFixedSurface = 0 ;
-    scaledValueOfSecondFixedSurface = 3000 ;
-    scaleFactorOfSecondFixedSurface = 0 ;
+    typeOfFirstFixedSurface = 17 ;
+    scaleFactorOfFirstFixedSurface = missing() ;
+    scaledValueOfFirstFixedSurface = missing() ;
 }
 "ATMOMLCAPE.POS" = {
     discipline = 0 ;
@@ -2089,12 +2088,9 @@
     parameterCategory = 7 ;
     parameterNumber = 7 ;
     tablesVersion = 15 ;
-    typeOfFirstFixedSurface = 1 ;
-    typeOfSecondFixedSurface = 103 ;
-    scaledValueOfFirstFixedSurface = 0 ;
-    scaleFactorOfFirstFixedSurface = 0 ;
-    scaledValueOfSecondFixedSurface = 5500 ;
-    scaleFactorOfSecondFixedSurface = 0 ;
+    typeOfFirstFixedSurface = 17 ;
+    scaleFactorOfFirstFixedSurface = missing() ;
+    scaledValueOfFirstFixedSurface = missing() ;
 }
 "SURFDIAG.FLASH" = {
     discipline = 0 ;
@@ -2249,7 +2245,7 @@
 "MSLPRESSURE" = {
     discipline = 0 ;
     parameterCategory = 3 ;
-    parameterNumber = 1 ;
+    parameterNumber = 0 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 101 ;
     scaledValueOfFirstFixedSurface = 0 ;
@@ -2722,7 +2718,7 @@
     parameterCategory = 6 ;
     parameterNumber = 11 ;
     tablesVersion = 15 ;
-    typeOfFirstFixedSurface = 1 ;
+    typeOfFirstFixedSurface = 2 ;
     scaledValueOfFirstFixedSurface = 0;
 }
 # Radar reflectivity in dbZ
@@ -2824,7 +2820,6 @@
     typeOfStatisticalProcessing = 3 ;
     indicatorOfUnitForTimeRange = 1 ;
     lengthOfTimeRange = 1 ;
-    LSTCUM=2;
 }
 
 # "minimum visibility because of precipitations for a period"
@@ -2839,7 +2834,6 @@
     typeOfStatisticalProcessing = 3 ;
     indicatorOfUnitForTimeRange = 1 ;
     lengthOfTimeRange = 1 ;
-    LSTCUM=2;
 }
 
 # "maximum cloud water content for a period"
@@ -2937,10 +2931,9 @@
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaledValueOfFirstFixedSurface = 0 ;
-    typeOfStatisticalProcessing = 0 ;
+    typeOfStatisticalProcessing = 101 ;
     indicatorOfUnitForTimeRange = 1 ;
     lengthOfTimeRange = 1 ;
-    LSTCUM=2;
 }
 # more severe precipitation type
 "CLSPTYPESEV_60M" = {
@@ -2951,10 +2944,9 @@
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaledValueOfFirstFixedSurface = 0 ;
-    typeOfStatisticalProcessing = 2 ;
+    typeOfStatisticalProcessing = 100 ;
     indicatorOfUnitForTimeRange = 1 ;
     lengthOfTimeRange = 1 ;
-    LSTCUM=2;
 }
 # precipitation type
 "CLSPTYPE_180M" = {
@@ -3268,5 +3260,26 @@
     parameterCategory = 2 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 101 ;
+    scaledValueOfFirstFixedSurface = 0 ;
+}
+
+# Instantaneous wind power production
+"WFPOWERINS"= {
+    discipline = 20 ;
+    parameterCategory = 3 ;
+    parameterNumber = 3 ;
+    tablesVersion = 15 ;
+    typeOfFirstFixedSurface = 1 ;
+    scaledValueOfFirstFixedSurface = 0 ;
+}
+# Accumulated wind power production
+"WFPOWERACC"= {
+    discipline = 20 ;
+    parameterCategory = 3 ;
+    parameterNumber = 3 ;
+    tablesVersion = 15 ;
+    productDefinitionTemplateNumber = 8 ;
+    typeOfFirstFixedSurface = 1 ;
+    typeOfStatisticalProcessing = 1 ;
     scaledValueOfFirstFixedSurface = 0 ;
 }

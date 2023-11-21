@@ -4,7 +4,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import __version__
+from . import GeneralConstants
 from .commands_functions import (
     doc_config,
     namelist_integrate,
@@ -14,10 +14,10 @@ from .commands_functions import (
     show_namelist,
     start_suite,
 )
-from .config_parser import PACKAGE_CONFIG_PATH, get_default_config_path
+from .config_parser import ConfigParserDefaults
 
 
-def get_parsed_args(program_name="program", argv=None):
+def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     """Get parsed command line arguments.
 
     Args:
@@ -47,7 +47,7 @@ def get_parsed_args(program_name="program", argv=None):
     common_parser.add_argument(
         "--config-file",
         metavar="CONFIG_FILE_PATH",
-        default=get_default_config_path(),
+        default=ConfigParserDefaults.CONFIG_PATH,
         type=Path,
         help=(
             "Path to the config file. The default is whichever of the "
@@ -56,7 +56,7 @@ def get_parsed_args(program_name="program", argv=None):
             + "(ii) './config.toml'. If both (i) and (ii) are missing, "
             + "then the default will become "
             + "'"
-            + f"{PACKAGE_CONFIG_PATH}"
+            + f"{ConfigParserDefaults.PACKAGE_CONFIG_PATH}"
             + "'"
         ),
     )
@@ -69,7 +69,10 @@ def get_parsed_args(program_name="program", argv=None):
     )
 
     main_parser.add_argument(
-        "--version", "-v", action="version", version="%(prog)s v" + __version__
+        "--version",
+        "-v",
+        action="version",
+        version="%(prog)s v" + GeneralConstants.VERSION,
     )
 
     # Configure the main parser to handle the commands
@@ -235,7 +238,7 @@ def get_parsed_args(program_name="program", argv=None):
     # doc config
     parser_doc_config = doc_command_subparsers.add_parser(
         "config",
-        help="Print a merge of config and json schema in .md style",
+        help="Print documentation for the config's json schema in markdown style",
         parents=[common_parser],
     )
 

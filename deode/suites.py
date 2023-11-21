@@ -3,8 +3,9 @@
 import os
 from pathlib import Path
 
-from .datetime_utils import as_datetime, as_timedelta
-from .logs import GLOBAL_LOGLEVEL, logger
+from .datetime_utils import as_datetime, as_timedelta, get_decade
+from .logs import LogDefaults, logger
+from .os_utils import deodemakedirs
 from .toolbox import Platform
 
 try:
@@ -39,7 +40,6 @@ class SuiteDefinition(object):
             ecf_files (str): Path to ecflow containers
             task_settings (TaskSettings): Submission configuration
             config (deode.ParsedConfig): Configuration file
-            task_settings (deode.TaskSettings): Task settings
             ecf_home (str, optional): ECF_HOME. Defaults to None.
             ecf_include (str, optional): ECF_INCLUDE.
                                          Defaults to None which uses ecf_files.
@@ -58,13 +58,19 @@ class SuiteDefinition(object):
         self.create_static_data = config["suite_control.create_static_data"]
         self.do_soil = config["suite_control.do_soil"]
         self.do_pgd = config["suite_control.do_pgd"]
+        self.one_decade = config["pgd.one_decade"]
         self.create_time_dependent_suite = config[
             "suite_control.create_time_dependent_suite"
         ]
         self.interpolate_boundaries = config["suite_control.interpolate_boundaries"]
         self.do_prep = config["suite_control.do_prep"]
         self.do_marsprep = config["suite_control.do_marsprep"]
-        self.do_prep_just_first_run = config["suite_control.do_prep_just_first_run"]
+        self.do_extractsqlite = config["suite_control.do_extractsqlite"]
+        self.do_archiving = config["suite_control.do_archiving"]
+        self.surfex = config["general.surfex"]
+        self.suite_name = suite_name
+        self.mode = config["suite_control.mode"]
+
         name = suite_name
         self.joboutdir = joboutdir
         if ecf_include is None:
@@ -119,8 +125,12 @@ class SuiteDefinition(object):
         config_file = config.metadata["source_file_path"]
         first_cycle = as_datetime(config["general.times.start"])
         deode_home = platform.get_platform_value("DEODE_HOME")
+
+        unix_group = platform.get_platform_value("unix_group")
+        deodemakedirs(self.joboutdir, unixgroup=unix_group)
+
         keep_workdirs = "1" if config["general.keep_workdirs"] else "0"
-        loglevel = config.get("general.loglevel", GLOBAL_LOGLEVEL).upper()
+        loglevel = config.get("general.loglevel", LogDefaults.LEVEL).upper()
         variables = {
             "ECF_EXTN": ".py",
             "ECF_FILES": self.ecf_files,
@@ -138,8 +148,8 @@ class SuiteDefinition(object):
             "CONFIG": str(config_file),
             "TROIKA": troika,
             "TROIKA_CONFIG": troika_config,
-            "BASETIME": first_cycle.strftime("%Y%m%d%H%M"),
-            "VALIDTIME": first_cycle.strftime("%Y%m%d%H%M"),
+            "BASETIME": first_cycle.isoformat(timespec="seconds"),
+            "VALIDTIME": first_cycle.isoformat(timespec="seconds"),
             "DEODE_HOME": deode_home,
             "NPROC": "",
             "NPROC_IO": "",
@@ -152,8 +162,47 @@ class SuiteDefinition(object):
         input_template = input_template.as_posix()
         self.suite = EcflowSuite(name, ecf_files, variables=variables, dry_run=dry_run)
 
+        if self.mode == "restart":
+            self.do_prep = False
+            self.create_static_data = False
+
         if self.create_static_data:
             static_data = self.static_suite_part(config, input_template)
+            task_logs = config["system.climdir"]
+            args = ";".join(
+                [
+                    f"joboutdir={self.joboutdir}/{self.suite_name}/StaticData",
+                    "tarname=StaticData",
+                    f"task_logs={task_logs}",
+                ]
+            )
+            variables = {"ARGS": args}
+
+            collect_logs = EcflowSuiteTask(
+                "CollectLogs",
+                self.suite,
+                config,
+                self.task_settings,
+                self.ecf_files,
+                input_template=input_template,
+                trigger=EcflowSuiteTriggers([EcflowSuiteTrigger(static_data)]),
+                variables=variables,
+            )
+
+            if self.do_archiving:
+                archiving_static_trigger = EcflowSuiteTriggers(
+                    [EcflowSuiteTrigger(collect_logs)]
+                )
+                EcflowSuiteTask(
+                    "ArchiveStatic",
+                    self.suite,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    variables=None,
+                    trigger=archiving_static_trigger,
+                )
         else:
             static_data = None
 
@@ -175,6 +224,9 @@ class SuiteDefinition(object):
         cycles = {}
         cycle_time = first_cycle
         i = 0
+        if self.mode == "restart":
+            self.do_prep = False
+
         while cycle_time <= last_cycle:
             logger.debug("cycle_time {}", cycle_time)
             cycles.update(
@@ -182,8 +234,8 @@ class SuiteDefinition(object):
                     str(i): {
                         "day": cycle_time.strftime("%Y%m%d"),
                         "time": cycle_time.strftime("%H%M"),
-                        "validtime": cycle_time.strftime("%Y%m%d%H%M"),
-                        "basetime": cycle_time.strftime("%Y%m%d%H%M"),
+                        "validtime": cycle_time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "basetime": cycle_time.strftime("%Y-%m-%dT%H:%M:%SZ"),
                     }
                 }
             )
@@ -193,6 +245,7 @@ class SuiteDefinition(object):
         days = []
         prev_cycle_trigger = None
         prev_interpolation_trigger = None
+
         for __, cycle in cycles.items():
             cycle_day = cycle["day"]
             if self.create_static_data:
@@ -237,7 +290,7 @@ class SuiteDefinition(object):
             ready_for_marsprep = EcflowSuiteTriggers(triggers)
             if self.do_marsprep:
                 EcflowSuiteTask(
-                    "marsprep",
+                    "Marsprep",
                     inputdata,
                     config,
                     self.task_settings,
@@ -247,8 +300,10 @@ class SuiteDefinition(object):
                     trigger=ready_for_marsprep,
                 )
 
-            if self.interpolate_boundaries or self.do_prep:
+            if not self.surfex:
+                self.do_prep = False
 
+            if self.interpolate_boundaries or self.do_prep:
                 int_fam = EcflowSuiteFamily(
                     f'{"Interpolation"}',
                     time_family,
@@ -268,13 +323,12 @@ class SuiteDefinition(object):
                         input_template=input_template,
                     )
 
-                if self.do_prep_just_first_run:
-                    self.do_prep = False
+                    if self.mode != "cold_start":
+                        self.do_prep = False
 
                 if self.interpolate_boundaries:
-
                     basetime = as_datetime(cycle["basetime"])
-                    forecast_range = as_timedelta(config["general.forecast_range"])
+                    forecast_range = as_timedelta(config["general.times.forecast_range"])
                     endtime = basetime + forecast_range
                     bdint = as_timedelta(config["boundaries.bdint"])
                     bdmax = config["boundaries.bdtasks_per_batch"]
@@ -334,17 +388,40 @@ class SuiteDefinition(object):
             else:
                 int_trig = inputdata_done
 
-            cycle = EcflowSuiteFamily(
+            cycle_fam = EcflowSuiteFamily(
                 "Cycle", time_family, self.ecf_files, trigger=int_trig
             )
             triggers = [EcflowSuiteTrigger(inputdata)]
             if prev_cycle_trigger is not None:
                 triggers = triggers + prev_cycle_trigger
             ready_for_cycle = EcflowSuiteTriggers(triggers)
-            prev_cycle_trigger = [EcflowSuiteTrigger(cycle)]
+            prev_cycle_trigger = [EcflowSuiteTrigger(cycle_fam)]
             initialization = EcflowSuiteFamily(
-                "Initialization", cycle, self.ecf_files, trigger=ready_for_cycle
+                "Initialization", cycle_fam, self.ecf_files, trigger=ready_for_cycle
             )
+
+            cday = cycle["day"]
+            ctime = cycle["time"]
+            task_logs = config["system.wrk"]
+            args = ";".join(
+                [
+                    f"joboutdir={self.joboutdir}/{self.suite_name}/{cday}/{ctime}",
+                    f"tarname={cday}_{ctime}",
+                    f"task_logs={task_logs}",
+                ]
+            )
+            variables = {"ARGS": args}
+            collect_logs_hour = EcflowSuiteTask(
+                "CollectLogs",
+                time_family,
+                config,
+                self.task_settings,
+                self.ecf_files,
+                input_template=input_template,
+                trigger=EcflowSuiteTriggers([EcflowSuiteTrigger(cycle_fam)]),
+                variables=variables,
+            )
+
             EcflowSuiteTask(
                 "FirstGuess",
                 initialization,
@@ -358,11 +435,11 @@ class SuiteDefinition(object):
 
             forecast_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(initialization)])
             forecasting = EcflowSuiteFamily(
-                "Forecasting", cycle, self.ecf_files, trigger=forecast_trigger
+                "Forecasting", cycle_fam, self.ecf_files, trigger=forecast_trigger
             )
             logger.debug(self.task_settings.get_task_settings("Forecast"))
 
-            forecast = EcflowSuiteTask(
+            forecast_task = EcflowSuiteTask(
                 "Forecast",
                 forecasting,
                 config,
@@ -372,7 +449,7 @@ class SuiteDefinition(object):
                 variables=None,
             )
 
-            creategrib_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(forecast)])
+            creategrib_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(forecast_task)])
 
             EcflowSuiteTask(
                 "CreateGrib",
@@ -383,6 +460,35 @@ class SuiteDefinition(object):
                 input_template=input_template,
                 trigger=creategrib_trigger,
             )
+
+            if self.do_extractsqlite:
+                extractsqlite_trigger = EcflowSuiteTriggers(
+                    [EcflowSuiteTrigger(forecast_task)]
+                )
+                EcflowSuiteTask(
+                    "ExtractSQLite",
+                    forecasting,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    trigger=extractsqlite_trigger,
+                )
+
+            if self.do_archiving:
+                archiving_hour_trigger = EcflowSuiteTriggers(
+                    [EcflowSuiteTrigger(collect_logs_hour)]
+                )
+
+                EcflowSuiteTask(
+                    "ArchiveHour",
+                    time_family,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    trigger=archiving_hour_trigger,
+                )
 
     def static_suite_part(self, config, input_template):
         """Create the time dependent part of the suite.
@@ -463,6 +569,22 @@ class SuiteDefinition(object):
             "Q3": "07,08,09",
             "Q4": "10,11,12",
         }
+
+        if self.one_decade:
+            basetime = as_datetime(config["general.times.start"])
+            basetime_month = int(basetime.month)
+            last_month = basetime_month - 1
+            if last_month == 0:
+                last_month = 12
+            next_month = basetime_month + 1
+            if next_month == 13:
+                next_month = 1
+            seasons = {
+                f"m{last_month:02d}": f"{last_month:02d}",
+                f"m{basetime_month:02d}": f"{basetime_month:02d}",
+                f"m{next_month:02d}": f"{next_month:02d}",
+            }
+
         for season, months in seasons.items():
             month_family = EcflowSuiteFamily(season, e923_monthly_family, self.ecf_files)
 
@@ -590,11 +712,7 @@ class EcflowNode:
 
 
 class EcflowNodeContainer(EcflowNode):
-    """Ecflow node container.
-
-    Args:
-        EcflowNode (EcflowNode): Parent class.
-    """
+    """Ecflow node container."""
 
     def __init__(
         self,
@@ -631,12 +749,7 @@ class EcflowNodeContainer(EcflowNode):
 
 
 class EcflowSuite(EcflowNodeContainer):
-    """EcflowSuite.
-
-    Args:
-        EcflowNodeContainer
-        (EcflowNodeContainer): A child of the EcflowNodeContainer class.
-    """
+    """EcflowSuite."""
 
     def __init__(self, name, ecf_files, variables=None, dry_run=False, def_status=None):
         """Construct the Ecflow suite.
@@ -676,11 +789,7 @@ class EcflowSuite(EcflowNodeContainer):
 
 
 class EcflowSuiteFamily(EcflowNodeContainer):
-    """A family in ecflow.
-
-    Args:
-        EcflowNodeContainer (_type_): _description_
-    """
+    """A family in ecflow."""
 
     def __init__(
         self, name, parent, ecf_files, variables=None, trigger=None, def_status=None
@@ -712,11 +821,7 @@ class EcflowSuiteFamily(EcflowNodeContainer):
 
 
 class EcflowSuiteTask(EcflowNode):
-    """A task in an ecflow suite/family.
-
-    Args:
-        EcflowNode (EcflowNodeContainer): The node container.
-    """
+    """A task in an ecflow suite/family."""
 
     def __init__(
         self,

@@ -1,8 +1,8 @@
 """NoSchedulerTemplate."""
 
-from os import environ  # noqa
+from os import environ
 
-from deode.config_parser import MAIN_CONFIG_JSON_SCHEMA, ParsedConfig
+from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import derived_variables
 from deode.logs import logger  # Use deode's own configs for logger
 from deode.submission import ProcessorLayout, TaskSettings
@@ -21,7 +21,9 @@ def default_main(task, config, deode_home):
         config (str): Config file
         deode_home(str): Deode home path
     """
-    config = ParsedConfig.from_file(config, json_schema=MAIN_CONFIG_JSON_SCHEMA)
+    config = ParsedConfig.from_file(
+        config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+    )
     config = config.copy(update={"platform": {"deode_home": deode_home}})
 
     task_settings = TaskSettings(config).get_task_settings(task)

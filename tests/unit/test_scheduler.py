@@ -33,8 +33,6 @@ def ecflow_server(__):
 
 
 class TestScheduler:
-    # pylint: disable=no-self-use
-
     def test_ecflow_client(self, ecflow_server, ecflow_task):
         EcflowClient(ecflow_server, ecflow_task)
 

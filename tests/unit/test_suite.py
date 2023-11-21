@@ -5,7 +5,8 @@ import os
 import pytest
 import tomlkit
 
-from deode.config_parser import MAIN_CONFIG_JSON_SCHEMA, PACKAGE_CONFIG_PATH, ParsedConfig
+from deode.config_parser import ConfigParserDefaults, ParsedConfig
+from deode.derived_variables import set_times
 from deode.submission import TaskSettings
 from deode.suites import SuiteDefinition
 
@@ -22,20 +23,21 @@ def minimal_raw_config():
 
 @pytest.fixture()
 def minimal_parsed_config(minimal_raw_config):
-    return ParsedConfig(minimal_raw_config, json_schema=MAIN_CONFIG_JSON_SCHEMA)
+    return ParsedConfig(
+        minimal_raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+    )
 
 
 @pytest.fixture()
 def config_from_task_config_file():
     """Return a raw config common to all tasks."""
     return ParsedConfig.from_file(
-        PACKAGE_CONFIG_PATH, json_schema=MAIN_CONFIG_JSON_SCHEMA
+        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
+        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
     )
 
 
 class TestSuite:
-    # pylint: disable=no-self-use
-
     def test_config_can_be_instantiated(self, minimal_parsed_config):
         assert isinstance(minimal_parsed_config, ParsedConfig)
 
@@ -47,6 +49,9 @@ class TestSuite:
                 "suite_control": {
                     "do_pgd": False,
                     "do_prep": False,
+                    "do_archiving": True,
+                    "do_soil": False,
+                    "cold_start": False,
                     "interpolate_boundaries": False,
                     "do_marsprep": True,
                 }
@@ -59,9 +64,13 @@ class TestSuite:
         config = config_from_task_config_file
         config = config.copy(
             update={
-                "platform": {"deode_home": f"{os.path.dirname(__file__)}/../.."},
+                "platform": {
+                    "deode_home": f"{os.path.dirname(__file__)}/../..",
+                    "unix_group": "",
+                },
             }
-        )  # noqa S108
+        )
+        config = config.copy(update=set_times(config))
         config = config.copy(update=param)
         suite_name = "test_suite"
         background = TaskSettings(config)

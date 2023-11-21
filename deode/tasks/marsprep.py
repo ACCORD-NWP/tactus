@@ -1,7 +1,9 @@
 """Marsprep."""
-
+import ast
+import contextlib
 import glob
 import os
+import shutil
 from datetime import datetime
 
 import pandas as pd
@@ -9,6 +11,7 @@ import pandas as pd
 from ..datetime_utils import as_datetime, as_timedelta, cycle_offset
 from ..geo_utils import Projection, Projstring
 from ..logs import logger
+from ..os_utils import deodemakedirs
 from ..tasks.batch import BatchJob
 from .base import Task
 
@@ -21,28 +24,43 @@ class Marsprep(Task):
 
         Args:
             config (deode.ParsedConfig): Configuration
-
+        Raises:
+            ValueError: No data for this date.
         """
         Task.__init__(self, config, __name__)
 
         # Get paths
-        self.expver = self.config["general.mars_expver"]
+        self.selection = self.config["boundaries.ifs.selection"]
+        try:
+            self.mars = self.config[f"mars.{self.selection}"]
+        except KeyError:
+            # This experiment is note defined fallback to RD_DEFAULT
+            self.mars = self.config[f"mars.RD_DEFAULT"]
+            self.mars["expver"] = self.selection
+            logger.warning("SELECTION={} not defined, using RD_DEFAULT", self.selection)
+
+        self.sfcdir = self.config["system.global_sfcdir"]
         # Get boundary strategy
         self.strategy = self.config["boundaries.bdstrategy"]
         # Get output file template
-        self.template = self.config["system.marsfile_template"]
+        self.template = "mars_prefetch_[levtype]_[date]_[time]+[step]"
 
         # Get the times from config.toml
         self.basetime = as_datetime(self.config["general.times.basetime"])
+        start_date = as_datetime(self.mars["start_date"])
+        if self.basetime < start_date:
+            raise ValueError(f"No data for {self.basetime}!")
         self.cycle_length = as_timedelta(self.config["general.times.cycle_length"])
         # Get forecast range
-        self.forecast_range = as_timedelta(self.config["general.forecast_range"])
+        self.forecast_range = as_timedelta(self.config["general.times.forecast_range"])
         # Get boundary shift
         self.bdint = as_timedelta(self.config["boundaries.bdint"])
         self.bdshift = as_timedelta(self.config["boundaries.bdshift"])
         self.bdcycle = as_timedelta(self.config["boundaries.bdcycle"])
-
+        self.int_bdcycle = int(self.bdcycle.total_seconds()) // 3600
         self.cy_offset = cycle_offset(self.basetime, self.bdcycle)
+
+        self.unix_group = self.platform.get_platform_value("unix_group")
 
         bd_basetime = self.basetime - self.cy_offset
 
@@ -58,7 +76,6 @@ class Marsprep(Task):
         )
 
         # Make linting happy
-        self.grid = None
         self.data = b""
         self.executable = None
 
@@ -80,8 +97,8 @@ class Marsprep(Task):
         """
         # Get domain specs
         domain_spec = {
-            "nlon": config["domain.njmax"],
-            "nlat": config["domain.nimax"],
+            "nlon": config["domain.nimax"],
+            "nlat": config["domain.njmax"],
             "latc": config["domain.xlatcen"],
             "lonc": config["domain.xloncen"],
             "lat0": config["domain.xlat0"],
@@ -121,27 +138,36 @@ class Marsprep(Task):
 
         return self.filenames
 
-    def check_resolution(self, date):
-        """Check grid resolution according to the date.
+    def check_value(self, value, key):
+        """Check value according to key.
+        - If a string returnts the value itself
+        - If key is a date search for the most suitable match in value
+        - Else return the value matching the key
 
         Args:
-            date:      date for resolution checking
+            value (str, BaseConfig object): Values to select
+            key (str): key for value checking
 
         Returns:
-            String containing the grid/resolution value
+            value (str): Found value
+
+        Raises:
+            ValueError: Exception
         """
-        date = datetime.strptime(date, "%Y%m%d%H")
-
-        if date >= datetime(2016, 3, 8):
-            self.grid = "0.09/0.09"
-        elif date >= datetime(2010, 1, 26, 6):
-            self.grid = "0.15/0.15"
-        elif date >= datetime(2006, 2, 1, 6):
-            self.grid = "0.25/0.25"
+        if isinstance(value, str):
+            return value
         else:
-            self.grid = "0.50/0.50"
+            try:
+                ref_date = as_datetime(f"{key}T00:00:00Z")
+                for k, v in sorted(value.items(), reverse=True):
+                    if ref_date >= as_datetime(k):
+                        return v
+            except ValueError:
+                k = str(key)
+                if k in value:
+                    return value[k]
 
-        return self.grid
+        raise ValueError(f"Value not found for {key} within {value}")
 
     def split_date(self, date, strategy, length, interval, bdshift):
         """Manipulate the dates for Mars request.
@@ -165,16 +191,15 @@ class Marsprep(Task):
         ]:
             # Check options for manipulating dates for MARS extraction
             # Still needs some more relations with the fclen here
-            int_bdcycle = int(self.bdcycle.total_seconds()) // 3600
             strategy_options = {strategy: {}}
 
-            for i in range(int_bdcycle):
+            for i in range(self.int_bdcycle):
                 strategy_options[strategy].update(
                     {i: {"shifthours": i + bdshift, "shiftrange": i, "pickrange": 0}}
                 )
 
             # Check if we're dealing with 00 or 03 ... etc.
-            init_hour = int(date.strftime("%H")) % int_bdcycle
+            init_hour = int(date.strftime("%H")) % self.int_bdcycle
             boundary_options = strategy_options[strategy][init_hour]
 
         else:
@@ -184,15 +209,13 @@ class Marsprep(Task):
         request_date_frame = pd.Series(
             pd.date_range(
                 date - pd.Timedelta(hours=boundary_options["shifthours"]),
-                periods=length // interval_int + boundary_options["shiftrange"] + 1,
+                periods=length // interval_int + 1,
                 freq=interval,
             )
         )
-
         # Strip the series object according to the selected boundary strategy
         request_date_frame = pd.concat(
             [
-                request_date_frame.iloc[[0]],
                 request_date_frame.iloc[boundary_options["pickrange"] :],
             ]
         )
@@ -203,59 +226,73 @@ class Marsprep(Task):
     def update_data_request(
         self,
         param,
-        data_type="analysis",
-        date=None,
-        time=None,
-        steps=None,
-        prefetch=False,
-        levtype=None,
-        specify_domain=False,
-        domain_dimensions=None,
-        grid_dimensions=None,
-        target=None,
+        data_type,
+        date,
+        time,
+        steps,
+        prefetch,
+        levtype,
+        specify_domain,
+        target,
+        grid=None,
     ):
         """Create ECMWF MARS system request.
 
         Args:
-            param:              List of parameters to extract
+            param:              String of parameters to extract sep=/
             data_type:          Type of data to extract, 'analysis' or 'forecast'
             date:               Date to extract
             time:               Time to extract
             steps:              Forecast steps to be extracted
-            prefetch:           Default is stage
-            levtype:            SFC or ML (to be updated)
+            prefetch:           Retrieve or stage
+            levtype:            SFC or ML
             specify_domain:     Use lat/lon and rotation or use global (default)
-            domain_dimensions:  Domain dimensions S/W/N/E and rotation (if applicable)
-            grid_dimensions:    Grid resolution (if applicable)
             target:             Filename to write
+            grid:               Specific grid for some request. Default None.
 
         Returns:
             Pandas dataframe object
         """
         # General request parameters
         d = {
-            "CLASS": ["OD"],
-            "EXPVER": [self.expver],
+            "CLASS": [self.mars["class"]],
+            "EXPVER": [self.mars["expver"]],
             "LEVTYPE": [levtype],
-            "STREAM": ["OPER"],
             "DATE": [date],
             "TIME": [time],
             "STEP": [steps],
             "PARAM": [param],
-            "TYPE": ["AN"],
             "TARGET": [target],
         }
+        if grid is not None:
+            d.update(
+                {
+                    "GRID": [grid],
+                }
+            )
         # Additional request parameters
         if data_type == "forecast":
-            if len(steps.split("/")) > 1:
-                d.update(
-                    {
-                        "STEP": [steps],
-                        "TYPE": ["FC"],
-                    }
-                )
-            else:
-                d["TYPE"] = ["FC"]
+            d.update(
+                {
+                    "TYPE": [self.mars["type_FC"]],
+                }
+            )
+        elif data_type == "analysis":
+            d.update(
+                {
+                    "TYPE": [self.mars["type_AN"]],
+                }
+            )
+        try:
+            bdmember = int(self.config["boundaries.ifs.bdmember"])
+            d.update(
+                {
+                    "NUMBER": [self.config["boundaries.ifs.bdmember"]],
+                }
+            )
+        except ValueError:
+            pass
+
         if prefetch:
             d.update(
                 {
@@ -265,39 +302,27 @@ class Marsprep(Task):
 
         # Try multilevel
         if levtype == "ML" and steps == "00" and prefetch:
-            if data_type == "analysis":
-                d.update(
-                    {
-                        "LEVELIST": ["1"],
-                        "GRID": ["AV"],
-                    }
-                )
-            elif data_type == "forecast":
-                d.update(
-                    {
-                        "TYPE": ["FC"],
-                        "GRID": ["AV"],
-                    }
-                )
-            d["LEVTYPE"] = [levtype]
-            d["STEP"] = [steps]
-
-        elif levtype == "ML":
             d.update(
                 {
-                    "LEVELIST": ["1/to/137"],
-                    "GRID": ["AV"],
+                    "LEVELIST": [1],
                 }
             )
-            d["LEVTYPE"] = [levtype]
-        if param == "74/163/160/161/162/15/16/17/18/66/67":
-            d.update({"GRID": "O640"})
-        # Taken from functions.ksh, not yet clear. Override stream to OPER if hour are 06 or 18.
-        if time == "06" or time == "18":
-            d["STREAM"] = ["SCDA"]
+
+        elif levtype == "ML":
+            levelist = self.check_value(self.mars["levelist"], date)
+            logger.info("levelist:{}", levelist)
+            d.update(
+                {
+                    "LEVELIST": [levelist],
+                }
+            )
+
+        stream = self.check_value(self.mars["stream"], time)
+        d["STREAM"] = [stream]
+
         if specify_domain:
-            d.update({"GRID": [grid_dimensions]})
-            d["AREA"] = [domain_dimensions]
+            d.update({"GRID": [self.check_value(self.mars["grid"], date)]})
+            d["AREA"] = [self.get_domain_data(self.config)]
 
         self.datarequest = pd.DataFrame(data=d)
 
@@ -345,11 +370,6 @@ class Marsprep(Task):
         self.executable = "{} {}".format("mars", marsfile)
         return self.executable
 
-    def execute(self, cmd):
-        """Execute binary task."""
-        batch = BatchJob(os.environ, wrapper=self.wrapper)
-        batch.run(cmd)
-
     def check_file_exists(self, steps, file_name):
         """Check if which mars file already exist."""
         base_list = []
@@ -362,21 +382,20 @@ class Marsprep(Task):
         base = "/".join(base_list)
         return base
 
-    def run(self):
+    def execute(self):
         """Run task.
 
         Define run sequence.
 
         Raises:
-            ValueError: If there is an issue with the work folder.
+            RuntimeError: If there is an issue with the work folder.
         """
         try:
             # Part1
             if not os.path.exists(self.prepdir):
-                os.makedirs(self.prepdir, exist_ok=True)
-            os.chdir(self.prepdir)
-        except Exception as e:
-            raise ValueError("Error while preparing the work folder: {}".format(e))
+                deodemakedirs(self.prepdir, unixgroup=self.unix_group)
+        except OSError as e:
+            raise RuntimeError(f"Error while preparing the mars folder: {e}") from e
 
         # Get the time information based on boundary strategy and forecast length
         # Need to check the forecast range
@@ -388,21 +407,18 @@ class Marsprep(Task):
             int(self.bdshift.seconds / 3600),
         )
         # Get initial date information in detail
-        date_time_str = dateframe.iloc[0].strftime("%Y%m%d%H")
         date_str = dateframe.iloc[0].strftime("%Y%m%d")
         hour_str = dateframe.iloc[0].strftime("%H")
-
-        # Get domain resolution based on the date
-        self.check_resolution(date_time_str)
-
-        # Get domain specs
-        fdomainstr = self.get_domain_data(self.config)
 
         # Format MARS steps
         step = int(self.bdint.total_seconds() / 3600)
         str_steps = [
-            "{0:02d}".format(dateframe.index.tolist()[1] + (i * step))
-            for i in range(len(dateframe.index.tolist()[1:]))
+            "{0:02d}".format(
+                dateframe.index.tolist()[0]
+                + (i * step)
+                + self.basetime.hour % self.int_bdcycle
+            )
+            for i in range(len(dateframe.index.tolist()))
         ]
 
         #
@@ -410,29 +426,10 @@ class Marsprep(Task):
         # Decided to split for easyer maintanance, still to be discussed
         #
 
-        # Prefetch 1
-        if not os.path.exists(os.path.join(self.prepdir, "ICMGG.soil")):
-            self.update_data_request(
-                data_type="analysis",
-                date=date_str,
-                time=hour_str,
-                steps="00",
-                prefetch=True,
-                levtype="SFC",
-                param="234/173/174/43/30/29/28/27",
-                specify_domain=False,
-                domain_dimensions=fdomainstr,
-                grid_dimensions=self.grid,
-                target='"{}"'.format(os.path.join(self.prepdir, "ICMGG.soil")),
-            )
-
-            self.write_mars_req(self.datarequest, "mars_script.req", "retrieve")
-            self.create_executable("mars_script.req")
-            self.execute(self.executable)
-            os.rename("mars_script.req", "PREFETCH.1")
-        # Prefetch 2
+        # Prefetch GG
         base = self.check_file_exists(str_steps, "ICMGG")
         if base != "":
+            param = self.check_value(self.mars["GG"], date_str)
             self.update_data_request(
                 data_type="forecast",
                 date=date_str,
@@ -440,40 +437,160 @@ class Marsprep(Task):
                 steps=base,
                 prefetch=True,
                 levtype="SFC",
-                param="32/33/39/40/41/42/139/141/170/172/183/198/235/236/35/36/37/38/238/29/243.128/244.128/245.128",
+                param=param,
                 specify_domain=False,
-                domain_dimensions=fdomainstr,
-                grid_dimensions=self.grid,
-                target='"{}"'.format(os.path.join(self.prepdir, "ICMGG+[STEP]")),
+                target='"ICMGG+[STEP]"',
             )
-            self.write_mars_req(self.datarequest, "mars_script.req", "retrieve")
-            self.create_executable("mars_script.req")
-            self.execute(self.executable)
-            os.rename("mars_script.req", "PREFETCH.2")
+            self.write_mars_req(self.datarequest, "ICMGG.req", "retrieve")
+            self.create_executable("ICMGG.req")
+            batch = BatchJob(os.environ, wrapper=self.wrapper)
+            batch.run(self.executable)
 
-        # Prefetch 3
-        if not os.path.exists(os.path.join(self.prepdir, "ICMSH.Z")):
+            param = self.check_value(self.mars["GG_sea"], date_str)
             self.update_data_request(
-                data_type="analysis",
+                data_type="forecast",
                 date=date_str,
                 time=hour_str,
                 steps="00",
                 prefetch=True,
-                levtype="ML",
-                param="129.128",
+                levtype="SFC",
+                param=param,
                 specify_domain=False,
-                domain_dimensions=fdomainstr,
-                grid_dimensions=self.grid,
-                target='"{}"'.format(os.path.join(self.prepdir, "ICMSH.Z")),
+                target="ICMGG.sea",
             )
-            self.write_mars_req(self.datarequest, "mars_script.req", "retrieve")
-            self.create_executable("mars_script.req")
-            self.execute(self.executable)
-            os.rename("mars_script.req", "PREFETCH.3")
+            self.write_mars_req(self.datarequest, "ICMGG.sea.req", "retrieve")
+            self.create_executable("ICMGG.sea.req")
+            batch = BatchJob(os.environ, wrapper=self.wrapper)
+            batch.run(self.executable)
 
-        # Prefetch 4
+            with open("ICMGG.sea", "rb") as fp:
+                datagg_sea = fp.read()
+            fp.close()
+
+            exist_soil = False
+            with contextlib.suppress(KeyError):
+                param1 = self.check_value(self.mars["GG_soil"], date_str)
+                param2 = self.check_value(self.mars["GG1"], date_str)
+                exist_soil = True
+
+            if exist_soil:
+                self.update_data_request(
+                    data_type="analysis",
+                    date=date_str,
+                    time=hour_str,
+                    steps="00",
+                    prefetch=True,
+                    levtype="SFC",
+                    param=param1,
+                    specify_domain=False,
+                    target="ICMGG.soil",
+                )
+
+                self.write_mars_req(self.datarequest, "ICMGG.soil.req", "retrieve")
+                self.create_executable("ICMGG.soil.req")
+                batch = BatchJob(os.environ, wrapper=self.wrapper)
+                batch.run(self.executable)
+
+                self.update_data_request(
+                    data_type="analysis",
+                    date=date_str,
+                    time=hour_str,
+                    steps="00",
+                    prefetch=True,
+                    levtype="SFC",
+                    param=param2,
+                    grid=self.check_value(self.mars["grid_GG1"], date_str),
+                    specify_domain=False,
+                    target="ICMGG",
+                )
+                self.write_mars_req(self.datarequest, "ICMGG1.req", "retrieve")
+                self.create_executable("ICMGG1.req")
+                batch = BatchJob(os.environ, wrapper=self.wrapper)
+                batch.run(self.executable)
+
+                # Read the single-step MARS files first
+                with open("ICMGG", "rb") as fp:
+                    datagg = fp.read()
+                with open("ICMGG.soil", "rb") as fp:
+                    datagg_soil = fp.read()
+                fp.close()
+
+                os.remove("ICMGG")
+                os.remove("ICMGG.soil")
+                self.data += datagg + datagg_sea + datagg_soil
+
+            else:
+                tco = self.check_value(self.mars["tco"], date_str)
+                self.fmanager.input(f"{self.sfcdir}{tco}9_4/sdfor", "sdfor")
+                self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_aluvp", "aluvp")
+                self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_aluvd", "aluvd")
+                self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_alnip", "alnip")
+                self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_alnid", "alnid")
+                self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_lail", "lail")
+                self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_laih", "laih")
+
+                self.fmanager.input(f"{self.sfcdir}{tco}l_2/sfc", "sfc")
+                self.fmanager.input(f"{self.sfcdir}{tco}l_2/ISSOIL", "issoil")
+                self.fmanager.input(f"{self.sfcdir}{tco}9_4/cvh", "cvh")
+                self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_alb", "alb")
+
+                with open("sdfor", "rb") as fp:
+                    sdfor = fp.read()
+                with open("aluvp", "rb") as fp:
+                    aluvp = fp.read()
+                with open("aluvd", "rb") as fp:
+                    aluvd = fp.read()
+                with open("alnip", "rb") as fp:
+                    alnip = fp.read()
+                with open("alnid", "rb") as fp:
+                    alnid = fp.read()
+                with open("lail", "rb") as fp:
+                    lail = fp.read()
+                with open("laih", "rb") as fp:
+                    laih = fp.read()
+                with open("ICMGG.sea", "rb") as fp:
+                    datagg_sea = fp.read()
+                with open("sfc", "rb") as fp:
+                    sfc = fp.read()
+                with open("issoil", "rb") as fp:
+                    issoil = fp.read()
+                with open("cvh", "rb") as fp:
+                    cvh = fp.read()
+                with open("alb", "rb") as fp:
+                    alb = fp.read()
+                fp.close()
+                # Join the data from the single-step MARS files
+                self.data += (
+                    sdfor
+                    + aluvp
+                    + aluvd
+                    + alnip
+                    + alnid
+                    + lail
+                    + laih
+                    + datagg_sea
+                    + sfc
+                    + issoil
+                    + cvh
+                    + alb
+                )
+            os.remove("ICMGG.sea")
+            for i in base.split("/"):
+                i = int(i)
+                i_fstring = f"{i:02d}"
+                if os.path.exists(f"ICMGG+{i}"):
+                    with open(f"ICMGG+{i}", "ab") as fp:
+                        fp.write(self.data)
+                    fp.close()
+                    shutil.move(
+                        f"ICMGG+{i}",
+                        os.path.join(self.prepdir, f"ICMGG+{i_fstring}"),
+                    )
+
+        # Prefetch SH
         base = self.check_file_exists(str_steps, "ICMSH")
         if base != "":
+            param = self.check_value(self.mars["SH"], date_str)
             self.update_data_request(
                 data_type="forecast",
                 date=date_str,
@@ -481,60 +598,56 @@ class Marsprep(Task):
                 steps=base,
                 prefetch=True,
                 levtype="ML",
-                param="152/138/155/130",
+                param=param,
+                grid=self.mars["grid_ML"],
                 specify_domain=False,
-                domain_dimensions=fdomainstr,
-                grid_dimensions=self.grid,
-                target='"{}"'.format(os.path.join(self.prepdir, "ICMSH+[STEP]")),
+                target='"ICMSH+[STEP]"',
             )
-            self.write_mars_req(self.datarequest, "mars_script.req", "retrieve")
-            self.create_executable("mars_script.req")
-            self.execute(self.executable)
-            os.rename("mars_script.req", "PREFETCH.4")
+            self.write_mars_req(self.datarequest, "ICMSH.req", "retrieve")
+            self.create_executable("ICMSH.req")
+            batch = BatchJob(os.environ, wrapper=self.wrapper)
+            batch.run(self.executable)
 
-        # Prefetch 5
-        if not os.path.exists(os.path.join(self.prepdir, "ICMGG.sea")):
+            param = self.check_value(self.mars["SHZ"], date_str)
+            d_type = self.check_value(self.mars["SHZ_type"], date_str)
             self.update_data_request(
-                data_type="forecast",
+                data_type=d_type,
                 date=date_str,
                 time=hour_str,
                 steps="00",
                 prefetch=True,
-                levtype="SFC",
-                param="31/34",
+                levtype="ML",
+                param=param,
+                grid=self.mars["grid_ML"],
                 specify_domain=False,
-                domain_dimensions=fdomainstr,
-                grid_dimensions=self.grid,
-                target='"{}"'.format(os.path.join(self.prepdir, "ICMGG.sea")),
+                target="ICMSH.Z",
             )
-            self.write_mars_req(self.datarequest, "mars_script.req", "retrieve")
-            self.create_executable("mars_script.req")
-            self.execute(self.executable)
-            os.rename("mars_script.req", "PREFETCH.5")
+            self.write_mars_req(self.datarequest, "ICMSHZ.req", "retrieve")
+            self.create_executable("ICMSHZ.req")
+            batch = BatchJob(os.environ, wrapper=self.wrapper)
+            batch.run(self.executable)
 
-        # Prefetch 6
-        if not os.path.exists(os.path.join(self.prepdir, "ICMGG")):
-            self.update_data_request(
-                data_type="analysis",
-                date=date_str,
-                time=hour_str,
-                steps="00",
-                prefetch=True,
-                levtype="SFC",
-                param="74/163/160/161/162/15/16/17/18/66/67",
-                specify_domain=False,
-                domain_dimensions=fdomainstr,
-                grid_dimensions=self.grid,
-                target='"{}"'.format(os.path.join(self.prepdir, "ICMGG")),
-            )
-            self.write_mars_req(self.datarequest, "mars_script.req", "retrieve")
-            self.create_executable("mars_script.req")
-            self.execute(self.executable)
-            os.rename("mars_script.req", "PREFETCH.6")
+            with open("ICMSH.Z", "rb") as fp:
+                data_z = fp.read()
+            fp.close()
+            os.remove("ICMSH.Z")
 
-        # Prefetch 7
+            for i in base.split("/"):
+                i = int(i)
+                i_fstring = f"{i:02d}"
+                if os.path.exists(f"ICMSH+{i}"):
+                    with open(f"ICMSH+{i}", "ab") as fp:
+                        fp.write(data_z)
+                    fp.close()
+                    shutil.move(
+                        f"ICMSH+{i}",
+                        os.path.join(self.prepdir, f"ICMSH+{i_fstring}"),
+                    )
+
+        # Prefetch UA
         base = self.check_file_exists(str_steps, "ICMUA")
         if base != "":
+            param = self.check_value(self.mars["UA"], date_str)
             self.update_data_request(
                 data_type="forecast",
                 date=date_str,
@@ -542,54 +655,25 @@ class Marsprep(Task):
                 steps=base,
                 prefetch=True,
                 levtype="ML",
-                param="133/75/76/246/247/248",
+                param=param,
+                grid=self.mars["grid_ML"],
                 specify_domain=False,
-                domain_dimensions=fdomainstr,
-                grid_dimensions=self.grid,
-                target='"{}"'.format(os.path.join(self.prepdir, "ICMUA+[step]")),
+                target='"ICMUA+[step]"',
             )
-            self.write_mars_req(self.datarequest, "mars_script.req", "retrieve")
-            self.create_executable("mars_script.req")
-            self.execute(self.executable)
-            os.rename("mars_script.req", "PREFETCH.7")
+            self.write_mars_req(self.datarequest, "ICMUA.req", "retrieve")
+            self.create_executable("ICMUA.req")
+            batch = BatchJob(os.environ, wrapper=self.wrapper)
+            batch.run(self.executable)
 
-        # Read the single-step MARS files first
-        with open(os.path.join(self.prepdir, "ICMGG"), "rb") as fp:
-            datagg = fp.read()
-        with open(os.path.join(self.prepdir, "ICMGG.sea"), "rb") as fp:
-            datagg_sea = fp.read()
-        with open(os.path.join(self.prepdir, "ICMGG.soil"), "rb") as fp:
-            datagg_soil = fp.read()
-        with open(os.path.join(self.prepdir, "ICMSH.Z"), "rb") as fp:
-            datagg_z = fp.read()
-
-        # Join the data from the single-step MARS files
-        self.data += datagg + datagg_sea + datagg_soil
-
-        base = "/".join(str_steps)
-        # Concat files
-        for i in base.split("/"):
-            i = int(i)
-            i_fstring = f"{i:02d}"
-            if os.path.exists(os.path.join(self.prepdir, f"ICMGG+{i}")):
-                os.rename(
-                    os.path.join(self.prepdir, f"ICMGG+{i}"),
-                    os.path.join(self.prepdir, f"ICMGG+{i_fstring}"),
-                )
-            with open(os.path.join(self.prepdir, f"ICMGG+{i_fstring}"), "ab") as fp:
-                fp.write(self.data)
-            if os.path.exists(os.path.join(self.prepdir, f"ICMUA+{i}")):
-                os.rename(
-                    os.path.join(self.prepdir, f"ICMUA+{i}"),
-                    os.path.join(self.prepdir, f"ICMUA+{i_fstring}"),
-                )
-            if os.path.exists(os.path.join(self.prepdir, f"ICMSH+{i}")):
-                os.rename(
-                    os.path.join(self.prepdir, f"ICMSH+{i}"),
-                    os.path.join(self.prepdir, f"ICMSH+{i_fstring}"),
-                )
-            with open(os.path.join(self.prepdir, f"ICMSH+{i_fstring}"), "ab") as fp:
-                fp.write(datagg_z)
+            # Concat files
+            for i in base.split("/"):
+                i = int(i)
+                i_fstring = f"{i:02d}"
+                if os.path.exists(f"ICMUA+{i}"):
+                    shutil.move(
+                        f"ICMUA+{i}",
+                        os.path.join(self.prepdir, f"ICMUA+{i_fstring}"),
+                    )
 
         #
         # Split the lat/lon part and perform it here
@@ -598,77 +682,47 @@ class Marsprep(Task):
         if os.path.exists(mars_file_check):
             logger.debug("Warning: Prep file allready exists")
         else:
-
-            int_bdcycle = int(self.bdcycle.total_seconds()) // 3600
-            if self.strategy == "same_forecast":
-                mod_hour = self.basetime.hour % int_bdcycle
-                get_boundary = mod_hour
-            else:
-                raise ValueError(
-                    "Boundary strategy not implemented yet{}".format(self.strategy)
-                )
-
-            # Stage for lat/lon
+            str_step = "{}".format(str_steps[0])
+            param = self.check_value(self.mars["GG"], date_str)
             self.update_data_request(
                 data_type="forecast",
                 date=date_str,
                 time=hour_str,
-                steps=base,
-                prefetch=False,
+                steps=str_step,
+                prefetch=True,
                 levtype="SFC",
-                param="32/33/39/40/41/42/139/141/170/172/183/198/235/236/35/36/37/38/238/29/243.128/244.128/245.128",
+                param=param,
                 specify_domain=True,
-                domain_dimensions=fdomainstr,
-                grid_dimensions=self.grid,
-                target='"{}"'.format(os.path.join(self.prepdir, self.template)),
+                target='"{}"'.format(self.template),
             )
 
-            self.write_mars_req(self.datarequest, "mars_script.req", "stage")
-            self.create_executable("mars_script.req")
-            self.execute(self.executable)
-            os.rename("mars_script.req", "STAGE.0")
+            self.write_mars_req(self.datarequest, "latlonGG.req", "retrieve")
+            self.create_executable("latlonGG.req")
+            batch = BatchJob(os.environ, wrapper=self.wrapper)
+            batch.run(self.executable)
 
             # Retrieve surface geopotential for lat lon
+            param = self.check_value(self.mars["SHZ"], date_str)
+            d_type = self.check_value(self.mars["SHZ_type"], date_str)
             self.update_data_request(
-                data_type="analysis",
+                data_type=d_type,
                 date=date_str,
                 time=hour_str,
                 steps="00",
                 prefetch=True,
                 levtype="ML",
-                param="129.128",
+                param=param,
                 specify_domain=True,
-                domain_dimensions=fdomainstr,
-                grid_dimensions=self.grid,
-                target='"{}"'.format(os.path.join(self.prepdir, self.template + ".Z")),
+                target='"{}"'.format(self.template + ".Z"),
             )
 
-            self.write_mars_req(self.datarequest, "mars_script.req", "retrieve")
-            self.create_executable("mars_script.req")
-            self.execute(self.executable)
-            os.rename("mars_script.req", "RETRIEVE.0")
-
-            # Retrieve for lat/lon soil data
-            self.update_data_request(
-                data_type="analysis",
-                date=date_str,
-                time=hour_str,
-                steps="00",
-                prefetch=True,
-                levtype="SFC",
-                param="234/173/174/43/30/29/28/27",
-                specify_domain=True,
-                domain_dimensions=fdomainstr,
-                grid_dimensions=self.grid,
-                target='"{}"'.format(os.path.join(self.prepdir, self.template + ".soil")),
-            )
-
-            self.write_mars_req(self.datarequest, "mars_script.req", "retrieve")
-            self.create_executable("mars_script.req")
-            self.execute(self.executable)
-            os.rename("mars_script.req", "RETRIEVE.1")
+            self.write_mars_req(self.datarequest, "latlonz.req", "retrieve")
+            self.create_executable("latlonz.req")
+            batch = BatchJob(os.environ, wrapper=self.wrapper)
+            batch.run(self.executable)
 
             # Retrieve for lat/lon sea data
+            param = self.check_value(self.mars["GG_sea"], date_str)
             self.update_data_request(
                 data_type="forecast",
                 date=date_str,
@@ -676,44 +730,49 @@ class Marsprep(Task):
                 steps="00",
                 prefetch=True,
                 levtype="SFC",
-                param="31/34",
+                param=param,
                 specify_domain=True,
-                domain_dimensions=fdomainstr,
-                grid_dimensions=self.grid,
-                target='"{}"'.format(os.path.join(self.prepdir, self.template + ".sea")),
+                target='"{}"'.format(self.template + ".sea"),
             )
-            self.write_mars_req(self.datarequest, "mars_script.req", "retrieve")
-            self.create_executable("mars_script.req")
-            self.execute(self.executable)
-            os.rename("mars_script.req", "RETRIEVE.2")
+            self.write_mars_req(self.datarequest, "latlonsea.req", "retrieve")
+            self.create_executable("latlonsea.req")
+            batch = BatchJob(os.environ, wrapper=self.wrapper)
+            batch.run(self.executable)
 
-            # Retrieve for lat/lon surface data
-            self.update_data_request(
-                data_type="forecast",
-                date=date_str,
-                time=hour_str,
-                steps="{:0>2}".format(dateframe.index.tolist()[get_boundary]),
-                prefetch=True,
-                levtype="SFC",
-                param="32/33/39/40/41/42/139/141/170/172/183/198/235/236/35/36/37/38/238/29/243.128/244.128/245.128",
-                specify_domain=True,
-                domain_dimensions=fdomainstr,
-                grid_dimensions=self.grid,
-                target='"{}"'.format(os.path.join(self.prepdir, self.template)),
-            )
+            # Retrieve for lat/lon soil data
+            exist_soil = False
+            with contextlib.suppress(KeyError):
+                param1 = self.check_value(self.mars["GG_soil"], date_str)
+                exist_soil = True
 
-            self.write_mars_req(self.datarequest, "mars_script.req", "retrieve")
-            self.create_executable("mars_script.req")
-            self.execute(self.executable)
-            os.rename("mars_script.req", "RETRIEVE.3")
+            if exist_soil:
+                self.update_data_request(
+                    data_type="analysis",
+                    date=date_str,
+                    time=hour_str,
+                    steps="00",
+                    prefetch=True,
+                    levtype="SFC",
+                    param=param1,
+                    specify_domain=True,
+                    target='"{}"'.format(self.template + ".soil"),
+                )
+
+                self.write_mars_req(self.datarequest, "latlonsoil.req", "retrieve")
+                self.create_executable("latlonsoil.req")
+                batch = BatchJob(os.environ, wrapper=self.wrapper)
+                batch.run(self.executable)
 
             # Get the file list to join
             prep_pattern = "mars_prefetch_*_{}_{}*".format(date_str, hour_str)
-            self.list_files_join(self.prepdir, prep_pattern)
-
-            with open(
-                os.path.join(self.prepdir, self.prep_filename), "ab"
-            ) as output_file:
+            self.list_files_join(self.wdir, prep_pattern)
+            logger.info(self.filenames)
+            with open(self.prep_filename, "ab") as output_file:
                 for filename in self.filenames:
                     with open(filename, "rb") as input_file:
                         output_file.write(input_file.read())
+                    os.remove(filename)
+            shutil.move(
+                self.prep_filename,
+                os.path.join(self.prepdir, self.prep_filename),
+            )

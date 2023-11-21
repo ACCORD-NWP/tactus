@@ -7,13 +7,16 @@ from pathlib import Path
 import pytest
 
 from deode.commands_functions import namelist_integrate, set_deode_home, show_namelist
-from deode.config_parser import PACKAGE_CONFIG_PATH, ParsedConfig
+from deode.config_parser import ConfigParserDefaults, ParsedConfig
 
 
 @pytest.fixture()
 def parsed_config():
     """Return a raw config common to all tasks."""
-    return ParsedConfig.from_file(PACKAGE_CONFIG_PATH, json_schema={})
+    return ParsedConfig.from_file(
+        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
+        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
+    )
 
 
 def test_set_deode_home(parsed_config):
@@ -79,15 +82,17 @@ def test_show_namelist(set_arg, parsed_config, param):
     config = parsed_config.copy(update=param["config"])
     prev_cwd = Path.cwd()
     outpath = param["path"]
-    os.makedirs(outpath, exist_ok=True)
+    os.makedirs(outpath, mode=0o1777, exist_ok=True)
     os.chdir(outpath)
     show_namelist(set_arg, config)
     os.chdir(prev_cwd)
     assert os.path.isfile(f"{outpath}/namelist_master_forecast_bdmodel_ifs")
     assert os.path.isfile(f"{outpath}/xxt00000000")
+    assert os.path.isfile(f"{outpath}/xxtddddhh00")
     assert os.path.isfile(f"{outpath}/xxtddddhhmm")
     if param["clean"]:
         os.remove(f"{outpath}/xxt00000000")
+        os.remove(f"{outpath}/xxtddddhh00")
         os.remove(f"{outpath}/xxtddddhhmm")
 
 

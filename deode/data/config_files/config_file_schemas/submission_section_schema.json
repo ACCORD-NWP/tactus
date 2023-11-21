@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Submission Section",
+    "description": "Model for validation of the data in the 'submission' section of the config file.",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+        "bindir": {
+            "type": "string",
+            "description": "Location of binaries"
+        },
+        "nproma": {
+            "type": "number",
+            "description": "NPROMA size in the forecast model. See the namelists for where it is used",
+            "default": -32
+        }
+
+    }
+}

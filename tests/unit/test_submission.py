@@ -3,8 +3,8 @@
 import pytest
 import tomlkit
 
-from deode.config_parser import MAIN_CONFIG_JSON_SCHEMA, PACKAGE_CONFIG_PATH, ParsedConfig
-from deode.derived_variables import derived_variables
+from deode.config_parser import ConfigParserDefaults, ParsedConfig
+from deode.derived_variables import derived_variables, set_times
 from deode.submission import NoSchedulerSubmission, ProcessorLayout, TaskSettings
 
 
@@ -29,35 +29,44 @@ def raw_config_with_task(minimal_raw_config):
 
 @pytest.fixture()
 def parsed_config_with_task(raw_config_with_task):
-    return ParsedConfig(raw_config_with_task, json_schema=MAIN_CONFIG_JSON_SCHEMA)
+    return ParsedConfig(
+        raw_config_with_task, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+    )
 
 
 @pytest.fixture()
 def config_from_task_config_file():
     """Return a raw config common to all tasks."""
     return ParsedConfig.from_file(
-        PACKAGE_CONFIG_PATH, json_schema=MAIN_CONFIG_JSON_SCHEMA
+        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
+        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
     )
 
 
-class TestSubmission:
-    # pylint: disable=no-self-use
+@pytest.fixture(scope="module")
+def tmp_directory(tmp_path_factory):
+    """Return a temp directory valid for this module."""
+    return tmp_path_factory.getbasetemp().as_posix()
 
+
+class TestSubmission:
     def test_config_can_be_instantiated(self, parsed_config_with_task):
         assert isinstance(parsed_config_with_task, ParsedConfig)
 
-    def test_submit(self, config_from_task_config_file):
+    def test_submit(self, config_from_task_config_file, tmp_directory):
         config = config_from_task_config_file.copy(
             update={
                 "submission": {"default_submit_type": "background_hpc"},
                 "troika": {"config_file": "deode/data/config_files/troika.yml"},
             }
         )
-        config = config.copy(update={"platform": {"SCRATCH": "/tmp"}})  # noqa
+        tmp = tmp_directory
+        config = config.copy(update={"platform": {"SCRATCH": tmp, "unix_group": ""}})
+        config = config.copy(update=set_times(config))
         task = "UnitTest"
         template_job = "deode/templates/stand_alone.py"
-        task_job = f"/tmp/{task}.job"  # noqa
-        output = f"/tmp/{task}.log"  # noqa
+        task_job = f"{tmp}/{task}.job"
+        output = f"{tmp}/{task}.log"
 
         assert config["submission.default_submit_type"] == "background_hpc"
         background = TaskSettings(config)
@@ -104,12 +113,15 @@ class TestSubmission:
         assert settings["TEST"] != "NOT USED"
         assert settings["TEST_INCLUDED"] == arg
 
-    def test_cannot_submit_non_existing_task(self, config_from_task_config_file):
+    def test_cannot_submit_non_existing_task(
+        self, config_from_task_config_file, tmp_directory
+    ):
         config = config_from_task_config_file.copy()
         task = "not_existing"
+        tmp = tmp_directory
         template_job = "deode/templates/stand_alone.py"
-        task_job = f"/tmp/{task}.job"  # noqa
-        output = f"/tmp/{task}.log"  # noqa
+        task_job = f"{tmp}/{task}.job"
+        output = f"{tmp}/{task}.log"
 
         background = TaskSettings(config)
         sub = NoSchedulerSubmission(background)
@@ -126,6 +138,7 @@ class TestSubmission:
                 }
             }
         )
+        config = config.copy(update=set_times(config))
         task = TaskSettings(config)
         settings = task.get_task_settings("unittest")
         processor_layout = ProcessorLayout(settings)
@@ -151,6 +164,7 @@ class TestSubmission:
                 }
             }
         )
+        config = config.copy(update=set_times(config))
         task = TaskSettings(config)
         settings = task.get_task_settings("unittest")
         processor_layout = ProcessorLayout(settings)

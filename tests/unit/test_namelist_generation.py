@@ -5,7 +5,7 @@ import os
 import pytest
 import tomlkit
 
-from deode.config_parser import MAIN_CONFIG_JSON_SCHEMA, ParsedConfig
+from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.namelist import (
     InvalidNamelistKindError,
     InvalidNamelistTargetError,
@@ -23,7 +23,6 @@ def config_platform():
             os_macros = ["USER", "HOME", "PWD"]
             realization = -1
             cnmexp = "HARM"
-            tstep = 72
             bdint = "PT3H"
             cycle = "CY46h1"
             accept_static_namelists = false
@@ -42,6 +41,7 @@ def config_platform():
             ilone = 11
             ilate = 11
             gridtype = "linear"
+            tstep = 72
         """
     )
     return task_configs
@@ -49,10 +49,12 @@ def config_platform():
 
 @pytest.fixture()
 def parsed_config(config_platform):
-    return ParsedConfig(config_platform, json_schema=MAIN_CONFIG_JSON_SCHEMA)
+    return ParsedConfig(
+        config_platform, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+    )
 
 
-@pytest.fixture(params=["pgd", "prep", "forecast"])
+@pytest.fixture(params=["pgd", "prep_ifs", "prep_arome", "forecast"])
 def _nlgen_surfex(parsed_config, tmp_path_factory, request):
     """Test namelist generation for surfex."""
     nam_type = request.param
@@ -68,7 +70,6 @@ def _nlgen_surfex(parsed_config, tmp_path_factory, request):
 
 
 class TestNamelistGenerator:
-    # pylint: disable=no-self-use
     """Test NamelistGenerator."""
 
     def test_nlgen_master(self, parsed_config, tmp_path_factory):

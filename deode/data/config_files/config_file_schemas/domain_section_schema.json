@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "DomainSection",
+    "title": "Domain Section",
     "description": "Model for validation of the data in the 'domain' section of the config file.",
     "type": "object",
     "additionalProperties": true,
@@ -18,48 +18,55 @@
         "name": {
             "type": "string",
             "description": "Name of your domain",
-	    "maxLength": 20
-
+            "maxLength": 20
         },
         "nimax": {
             "type": "number",
-            "description": "Number of grid points longitudinally",
+            "description": "Number of grid points zonally",
             "minimum": 0
         },
         "njmax": {
             "type": "number",
-            "description": "Number of grid points latitudinally",
+            "description": "Number of grid points meridionally",
             "minimum": 0
         },
         "xdx": {
             "type": "number",
-            "description": "Domain longitudinal length in meters",
+            "description": "Zonal grid size in meters",
             "minimum": 0
         },
         "xdy": {
             "type": "number",
-            "description": "Domain latiudinal length in meters",
+            "description": "Meridional grid size in meters",
             "minimum": 0
         },
         "ilone": {
             "type": "number",
-            "description": "Longitudinal extension zone",
-            "minimum": 0
+            "description": "Zonal extension zone",
+            "minimum": 0,
+            "default": 11
         },
         "ilate": {
             "type": "number",
-            "description": "Latitudinal extension zone",
-            "minimum": 0
+            "description": "Meridional extension zone",
+            "minimum": 0,
+            "default": 11
         },
         "nbzong": {
             "type": "number",
-            "description": "Latitudinal coupling zone width",
-            "minimum": 0
+            "description": "Meridional coupling zone width",
+            "minimum": -1,
+            "default": -1
         },
         "nbzonl": {
             "type": "number",
-            "description": "Longitudinal coupling zone width",
-            "minimum": 0
+            "description": "Zonal coupling zone width",
+            "minimum": -1,
+            "default": -1
+        },
+        "tstep": {
+          "description": "Model time step in seconds",
+          "type": "number"
         },
         "xloncen": {
             "type": "number",
@@ -75,15 +82,20 @@
         },
         "xlon0": {
             "type": "number",
-            "description": "Reference longitude",
+            "description": "Longitude of center of projection",
             "minimum": -180,
             "maximum": 180
         },
         "xlat0": {
             "type": "number",
-            "description": "Reference latitude",
+            "description": "Latitude of center of projection",
             "minimum": -90,
             "maximum": 90
+        },
+        "xbeta": {
+            "type": "number",
+            "description": "Rotation parameter for the conformal projection",
+            "default": 0.0
         }
     }
 }

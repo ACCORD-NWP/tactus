@@ -1,0 +1,16 @@
+gridtype = "cubic"
+ilate = 11
+ilone = 11
+name = "SMSW"
+nbzong = 16
+nbzonl = 16
+nimax = 1141
+njmax = 1429
+tstep = 75
+xbeta = 0.0
+xdx = 2500.0
+xdy = 2500.0
+xlat0 = 42.5
+xlatcen = 41.25
+xlon0 = 26.0
+xloncen = 26.75
