@@ -453,7 +453,8 @@
         },
         "windfarm": {
           "description": "Switch on wind farm parameterisation",
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         }
       },
       "required": [

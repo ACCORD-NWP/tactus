@@ -88,8 +88,6 @@ class Forecast(Task):
             infile = os.path.basename(ifile)
             self.fmanager.input(ifile, infile)
 
-        self.config["fullpos"]["selection"] + ("windfarm",)
-
     def merge_output(self, filetype, periods):
         """Merge distributed forecast model output.
 
