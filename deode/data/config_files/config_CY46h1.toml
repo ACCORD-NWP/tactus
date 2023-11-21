@@ -54,8 +54,8 @@
 [suite_control]
   create_static_data = true
   create_time_dependent_suite = true
-  do_archiving = false
-  do_extractsqlite = false
+  do_archiving = true
+  do_extractsqlite = true
   do_marsprep = true
   do_pgd = true
   do_prep = true
@@ -76,9 +76,8 @@
   marsdir = "@SCRATCH@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"
 
-[task.creategrib.conversions.surfex]
-  input_template = "@SURFEX_TEMPLATE@"
-  output_template = "sfx_@YYYY@-@MM@-@DD@T@HH@@mm@@ss@+@DURATION_ARCHIVE@.grib"
+[task.creategrib]
+  conversions = ["surfex"]
 
 [task.extractsqlite]
   parameter_list = "@DEODE_HOME@/deode/data/sqlite/param_list.json"

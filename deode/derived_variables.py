@@ -163,7 +163,12 @@ def derived_variables(config, processor_layout=None):
         output_timesteps.insert(0, len(output_timesteps))
         namoutput[x] = output_timesteps
 
-    # Update namelist settings
+    # Wind farm parameterization
+    if config["general.windfarm"]:
+        selection = list(config["fullpos.selection"])
+        selection.append("windfarm")
+
+    # Update config and namelist settings
     update = {
         "domain": {
             "nbzong": nbzong,
@@ -192,6 +197,13 @@ def derived_variables(config, processor_layout=None):
         },
         "namelist_update": {"master": {}},
     }
+
+    # Wind farm parameterization
+    if config["general.windfarm"]:
+        selection = list(config["fullpos.selection"])
+        selection.append("windfarm")
+        update["fullpos"] = {"selection": selection}
+
     if processor_layout is not None:
         procs = processor_layout.get_proc_dict()
         # Update namelist dicts
