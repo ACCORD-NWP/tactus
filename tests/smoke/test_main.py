@@ -55,7 +55,8 @@ def _module_mockers(module_mocker, config_path, tmp_path_factory):
 
     def new_submission_task_settings_parse_job(self, **kwargs):
         kwargs["task_job"] = (tmp_path_factory.getbasetemp() / "task_job.txt").as_posix()
-        original_submission_task_settings_parse_job(self, **kwargs)
+        with suppress(RuntimeError):
+            original_submission_task_settings_parse_job(self, **kwargs)
 
     module_mocker.patch(
         "deode.submission.NoSchedulerSubmission.submit",

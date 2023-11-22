@@ -1,6 +1,8 @@
 bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2023-10-18/R64"
 default_submit_type = "serial"
+module_initpath = "/usr/local/apps/lmod/8.6.8/init"
 nproma = -32
+
 submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 
 [background_hpc]
@@ -28,10 +30,8 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   QOS = "#SBATCH --qos=nf"
   WALLTIME = "#SBATCH --time=00:15:00"
 
-[gnu.ENV]
-  AAAOS = "import os"
-  AAMODULE_ENV = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read())"
-  AMODULE_ECMWF = "module('load', 'ecmwf-toolbox/2021.08.3.0')"
+[gnu.MODULES]
+  ECMWFTOOLBOX = "ecmwf-toolbox/2021.08.3.0"
 
 [parallel]
   NPROC = 32
@@ -46,19 +46,21 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=00:10:00"
 
 [parallel.ENV]
-  AAAOS = "import os"
-  AAMODULE_ENV = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read())"
-  AMODULE_ECMWF = "module('load', 'ecmwf-toolbox/2023.04.1.0')"
-  AMODULE_FFTW = "module('load', 'fftw/3.3.9')"
-  AMODULE_HDF5 = "module('load', 'hdf5/1.10.6')"
-  AMODULE_INTEL = "module('load', 'prgenv/intel')"
-  AMODULE_MKL = "module('load', 'intel-mkl/19.0.5')"
-  AMODULE_NETCDF4 = "module('load', 'netcdf4/4.7.4')"
-  AMODULE_OPENMPI = "module('load', 'openmpi/4.1.1.1')"
-  DR_HOOK = "os.environ['DR_HOOK'] = '1'"
-  DR_HOOK_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
-  OMP_NUM_THREADS = "os.environ['OMP_NUM_THREADS'] = '1'"
-  OMPI_MCA_btl = "os.environ['OMPI_MCA_btl'] = '^vader'"
+  DR_HOOK = 1
+  DR_HOOK_IGNORE_SIGNALS = -1
+  OMP_NUM_THREADS = 1
+  OMPI_MCA_btl = "^vader"
+
+[parallel.MODULES]
+  # First load the prgenv
+  PRGENV = "prgenv/intel"
+  # The rest
+  ECMWFTOOLBOX = "ecmwf-toolbox/2021.08.3.0"
+  FFTW = "fftw/3.3.9"
+  HDF5 = "hdf5/1.10.6"
+  MKL = "intel-mkl/19.0.5"
+  NETCDF = "netcdf4/4.7.4"
+  OPENMPI = "openmpi/4.1.1.1"
 
 [serial]
   NPROC = 1
@@ -77,19 +79,21 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=00:15:00"
 
 [serial.ENV]
-  AAAOS = "import os"
-  AAMODULE_ENV = "exec(open('/usr/local/apps/lmod/8.6.8/init/env_modules_python.py').read())"
-  AMODULE_ECMWF = "module('load', 'ecmwf-toolbox/2023.04.1.0')"
-  AMODULE_FFTW = "module('load', 'fftw/3.3.9')"
-  AMODULE_HDF5 = "module('load', 'hdf5/1.10.6')"
-  AMODULE_INTEL = "module('load', 'prgenv/intel')"
-  AMODULE_MKL = "module('load', 'intel-mkl/19.0.5')"
-  AMODULE_NETCDF4 = "module('load', 'netcdf4/4.7.4')"
-  AMODULE_OPENMPI = "module('load', 'openmpi/4.1.1.1')"
-  DR_HOOK_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
-  MARS_READANY_BUFFER_SIZE = "os.environ['MARS_READANY_BUFFER_SIZE'] = '78930200'"
-  OMP_NUM_THREADS = "os.environ['OMP_NUM_THREADS'] = '1'"
-  OMPI_MCA_btl = "os.environ['OMPI_MCA_btl'] = '^vader'"
+  DR_HOOK_IGNORE_SIGNALS = -1
+  MARS_READANY_BUFFER_SIZE = 78930200
+  OMP_NUM_THREADS = 1
+  OMPI_MCA_btl = "^vader"
+
+[serial.MODULES]
+  # First load the prgenv
+  PRGENV = "prgenv/intel"
+  # The rest
+  ECMWFTOOLBOX = "ecmwf-toolbox/2021.08.3.0"
+  FFTW = "fftw/3.3.9"
+  HDF5 = "hdf5/1.10.6"
+  MKL = "intel-mkl/19.0.5"
+  NETCDF = "netcdf4/4.7.4"
+  OPENMPI = "openmpi/4.1.1.1"
 
 [task]
   wrapper = ""
@@ -111,7 +115,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=00:30:00"
 
 [task_exceptions.c903.ENV]
-  DR_HOOK_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
+  DR_HOOK_SIGNALS = -1
 
 [task_exceptions.creategrib]
   binary = "gl_20230823"
@@ -137,11 +141,13 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=08:00:00"
 
 [task_exceptions.Forecast.ENV]
-  UCX_LOG_LEVEL = "os.environ['UCX_LOG_LEVEL'] = 'error'"
+  UCX_LOG_LEVEL = "error"
 
-[task_exceptions.Gmted.ENV]
+[task_exceptions.Gmted.BATCH]
   MEM = "#SBATCH --mem=32GB"
-  MODULE_GDAL = "module('load', 'gdal/3.6.2')"
+
+[task_exceptions.Gmted.MODULES]
+  GDAL = "gdal/3.6.2"
 
 [task_exceptions.Marsprep.BATCH]
   MEM = "#SBATCH --mem=128GB"
@@ -169,5 +175,5 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   NTASKS = "#SBATCH --ntasks=32"
   WALLTIME = "#SBATCH --time=00:50:00"
 
-[task_exceptions.Soil.ENV]
-  MODULE_GDAL = "module('load', 'gdal/3.6.2')"
+[task_exceptions.Soil.MODULES]
+  GDAL = "gdal/3.6.2"

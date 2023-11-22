@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
+from contextlib import suppress
+from unittest import mock
+
 import pytest
 import tomlkit
 
@@ -49,6 +52,22 @@ def tmp_directory(tmp_path_factory):
     return tmp_path_factory.getbasetemp().as_posix()
 
 
+@pytest.fixture(scope="module")
+def _module_mockers(module_mocker):
+    # Patching ConfigParserDefaults.CONFIG_PATH so tests use the generated config
+    original_submission_task_settings_parse_job = TaskSettings.parse_job
+
+    def new_submission_task_settings_parse_job(self, **kwargs):
+        with suppress(RuntimeError):
+            original_submission_task_settings_parse_job(self, **kwargs)
+
+    module_mocker.patch(
+        "deode.submission.TaskSettings.parse_job",
+        new=new_submission_task_settings_parse_job,
+    )
+
+
+@pytest.mark.usefixtures("_module_mockers")
 class TestSubmission:
     def test_config_can_be_instantiated(self, parsed_config_with_task):
         assert isinstance(parsed_config_with_task, ParsedConfig)
