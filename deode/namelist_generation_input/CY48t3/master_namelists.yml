@@ -1134,6 +1134,7 @@ f4_ALARO:
     NECRIPL: 1
   NEMELBC0B:
     TEFRCL: ${namelist.tefrcl}
+  NAMFPC: {}
 
 f4_common:
   NAERAD:
