@@ -118,7 +118,7 @@ class TaskSettings(object):
             dict: Parsed settings
 
         """
-        task_settings = {"BATCH": {}, "ENV": {}}
+        task_settings = {"BATCH": {}, "ENV": {}, "MODULES": {}}
         all_defs = self.submission_defs
         submit_types = all_defs["submit_types"]
         default_submit_type = all_defs["default_submit_type"]
@@ -254,6 +254,9 @@ class TaskSettings(object):
             variables (_type_, optional): _description_. Defaults to None.
             ecf_micro (str, optional): _description_.
 
+        Raises:
+            RuntimeError: In case of missing module env file
+
         """
         interpreter = self.get_task_settings(task, "INTERPRETER")
         logger.debug(interpreter)
@@ -269,19 +272,50 @@ class TaskSettings(object):
 
         with open(task_job, mode="w", encoding="utf-8") as file_handler:
             file_handler.write(f"{interpreter}\n")
+
+            # Batch settings
             batch_settings = self.get_task_settings(
                 task, "BATCH", variables=variables, ecf_micro=ecf_micro
             )
             logger.debug("batch settings {}", batch_settings)
             for __, b_setting in batch_settings.items():
                 file_handler.write(f"{b_setting}\n")
+
+            python_task_env = ""
+
+            # Module settings
+            module_settings = self.get_task_settings(
+                task, "MODULES", variables=variables, ecf_micro=ecf_micro
+            )
+            logger.debug("module_settings:{}", module_settings)
+
+            m_settings = ["import os"]
+            if len(module_settings) > 0:
+                env_file = (
+                    f"{self.submission_defs['module_initpath']}/env_modules_python.py"
+                )
+                if not os.path.isfile(env_file):
+                    raise RuntimeError(
+                        f"Environment file {env_file} is not a file or does not exists"
+                    )
+
+                m_settings.append(
+                    f"exec(open('{env_file}').read())",
+                )
+                for __, val in module_settings.items():
+                    m_settings.append(f"module('load', '{val}')")
+
+            python_task_env += "\n".join(m_settings)
+
+            # Environment settings
             env_settings = self.get_task_settings(
                 task, "ENV", variables=variables, ecf_micro=ecf_micro
             )
             logger.debug(env_settings)
-            python_task_env = ""
-            for __, e_setting in sorted(env_settings.items()):
-                python_task_env = python_task_env + f"{e_setting}\n"
+
+            python_task_env += "\n"
+            for key, val in env_settings.items():
+                python_task_env += f"os.environ['{key}'] = '{val}'\n"
             input_content = input_content.replace("# @ENV_SUB@", python_task_env)
             input_content = input_content.replace("@STAND_ALONE_TASK_NAME@", task)
 
