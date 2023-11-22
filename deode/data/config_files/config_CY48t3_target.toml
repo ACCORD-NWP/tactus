@@ -40,6 +40,7 @@
 [include]
   archiving = "include/archiving.toml"
   domain = "include/domains/DEMO_80x90_1000m.toml"
+  extractsqlite = "include/sqlite.toml"
   file_templates = "include/file_templates.toml"
   macros = "include/macros.toml"
   mars = "include/mars_settings.toml"
@@ -79,10 +80,3 @@
 
 [task.creategrib]
   conversions = ["surfex"]
-
-[task.extractsqlite]
-  parameter_list = "@DEODE_HOME@/deode/data/sqlite/param_list.json"
-  sqlite_model_name = "@CNMEXP@"
-  sqlite_path = "@ARCHIVE_ROOT@/sqlite/"
-  sqlite_template = "FCTABLE_@PP@_@YYYY@@MM@_@HH@.sqlite"
-  station_list = "@DEODE_HOME@/deode/data/sqlite/station_list_default.csv"

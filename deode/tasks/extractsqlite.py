@@ -40,28 +40,27 @@ class ExtractSQLite(Task):
 
         self.basetime = as_datetime(self.config["general.times.basetime"])
         self.forecast_range = self.config["general.times.forecast_range"]
-        self.infile_dt = self.config["general.output_settings.fullpos"]
+        try:
+            self.infile_dt = self.config["extractsqlite.selection"]
+        except KeyError:
+            self.infile_dt = self.config["general.output_settings.fullpos"]
         self.infile_template = self.config["file_templates.fullpos.archive"]
 
         self.sqlite_path = self.platform.substitute(
-            self.config["task.extractsqlite.sqlite_path"]
+            self.config["extractsqlite.sqlite_path"]
         )
         self.sqlite_template = self.platform.substitute(
-            self.config["task.extractsqlite.sqlite_template"]
+            self.config["extractsqlite.sqlite_template"]
         )
         self.model_name = self.platform.substitute(
-            self.config["task.extractsqlite.sqlite_model_name"]
+            self.config["extractsqlite.sqlite_model_name"]
         )
-        stationfile = self.platform.substitute(
-            self.config["task.extractsqlite.station_list"]
-        )
+        stationfile = self.platform.substitute(self.config["extractsqlite.station_list"])
         if not os.path.isfile(stationfile):
             raise FileNotFoundError(f" missing {stationfile}")
         logger.info("Station list: {}", stationfile)
         self.station_list = pandas.read_csv(stationfile, skipinitialspace=True)
-        paramfile = self.platform.substitute(
-            self.config["task.extractsqlite.parameter_list"]
-        )
+        paramfile = self.platform.substitute(self.config["extractsqlite.parameter_list"])
         if not os.path.isfile(paramfile):
             raise FileNotFoundError(f" missing {paramfile}")
         logger.info("Parameter list: {}", paramfile)
