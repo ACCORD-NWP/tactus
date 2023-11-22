@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Submission Section",
-    "description": "Model for validation of the data in the 'submission' section of the config file.",
+    "description": "Defines host dependent runtime settings such as binaries, batch job rules, modules and similar",
     "type": "object",
     "additionalProperties": true,
     "properties": {
@@ -13,7 +13,60 @@
             "type": "number",
             "description": "NPROMA size in the forecast model. See the namelists for where it is used",
             "default": -32
+        },
+        "module_initpath": {
+            "type": "string",
+            "description": "Path to the version of env_modules_python.py to be used in the module initialization"
+        },
+        "submit_types": {
+            "type": "array",
+            "description": "List of submit groups to be defined",
+	    "items": {
+              "type": "string"
+            }
+        },
+        "default_submit_type": {
+            "type": "string",
+            "description": "Defines the default submit type for tasks not listed in any defined type"
+        },
+        "submission_group": {
+            "title": "Submission example group",
+            "description": "Defines the properties avilable for a submit group. See the existing submission files for examples",
+            "type": "object",
+            "properties": {
+              "tasks": {
+                "description": "List of tasks belonging to this group",
+                "type": "string"
+              },
+              "SCHOST": {
+                "description": "Name of the host where the job runs",
+                "type": "string"
+              },
+              "NPROC": {
+                "description": "Number of processors for this task",
+                "type": "string"
+              },
+              "WRAPPER": {
+                "description": "Prefix for binaries to be executed, e.g. srun",
+                "type": "string"
+              },
+              "BATCH": {
+                "description": "Sets batch job arguments like walltime",
+                "type": "object"
+              },
+              "ENV": {
+                "description": "Sets environment variables",
+                "type": "object"
+              },
+              "MODULES": {
+                "description": "Sets modules to load. To maintain the order decorate with comments to ovverride the automatic sorting",
+                "type": "object"
+              }
+            }
+        },
+        "task_exceptions": {
+            "type": "object",
+            "description": "Allows to define task specific settings like BATCH, MODULES, NPROC. Use as task_exceptions.taskname.property"
         }
-
     }
 }
