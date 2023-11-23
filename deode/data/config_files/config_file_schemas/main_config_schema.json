@@ -329,7 +329,9 @@
             }
           },
           "oneOf": [
-            {
+	    {
+            "anyOf": [
+             {
               "required": [
                 "start",
                 "end"
@@ -339,6 +341,32 @@
                   "list"
                 ]
               }
+             },
+	     {
+              "required": [
+                "basetime"
+              ],
+              "not": {
+               "anyOf": [
+		      {       
+                "required": [
+                  "end"
+                ]
+		      },
+		      {       
+                "required": [
+                  "list"
+                ]
+		      },
+		      {       
+                "required": [
+                  "start"
+                ]
+		      }
+	       ]
+              }
+	     }
+	    ]
             },
             {
               "required": [
@@ -438,16 +466,57 @@
           "type": "object",
           "properties": {
             "history": {
-              "description": "Output list for history files"
+              "description": "Output list for history files",
+              "anyOf": [
+	     {
+                "type": "string",
+                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+	     },
+	     {
+                "type": "array",
+                "items": {
+                   "type": "string",
+                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+                }
+	     }
+	      ]
             },
             "surfex": {
-              "description": "Output list for surfex files"
+              "description": "Output list for surfex files",
+              "anyOf": [
+	     {
+                "type": "string",
+                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+	     },
+	     {
+                "type": "array",
+                "items": {
+                   "type": "string",
+                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+                }
+	     }
+	      ]
             },
             "fullpos": {
-              "description": "Output list for fullpos files"
+              "description": "Output list for fullpos files",
+              "anyOf": [
+	     {
+                "type": "string",
+                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+	     },
+	     {
+                "type": "array",
+                "items": {
+                   "type": "string",
+                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+                }
+	     }
+	      ]
             },
             "nrazts": {
-              "description": "Reset times for instantaneous fluxes ( e.g. min/max temperature )"
+              "description": "Reset times for instantaneous fluxes ( e.g. min/max temperature )",
+              "type": "string",
+              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
             }
           }
         },

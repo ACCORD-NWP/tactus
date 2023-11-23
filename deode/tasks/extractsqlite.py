@@ -9,7 +9,7 @@ from .base import Task
 # For now (on ATOS), only tasks with prgenv/gnu can import eccodes in python
 try:
     import eccodes
-except (ImportError, OSError):
+except (RuntimeError, ImportError, OSError):
     logger.warning("eccodes python API could not be imported. Usually OK.")
 
 import datetime
