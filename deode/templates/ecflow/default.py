@@ -13,8 +13,6 @@ logger.enable("deode")
 
 def parse_ecflow_vars():
     """Parse the ecflow variables."""
-    print("%ECF_KILL_CMD%")
-    print("%ECF_STATUS_CMD%")
     return {
         "ECF_HOST": "%ECF_HOST%",
         "ECF_PORT": "%ECF_PORT%",

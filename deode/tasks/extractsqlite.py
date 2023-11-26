@@ -108,10 +108,10 @@ class ExtractSQLite(Task):
         elif info["indicatorOfUnitOfTimeRange"] == 13:
             leadtime = info["forecastTime"]
         else:
-            logger.debug("Leadtime must be in 'h', 'm' or 's'")
-            exit(1)
+            raise ValueError("Leadtime must be in 'h', 'm' or 's'")
 
-        # At this point, leadtime may be just the START of accumulation (or min/max/mean) time
+        # At this point, leadtime may be just the START of accumulation
+        # (or min/max/mean) time
         if info["productDefinitionTemplateNumber"] == 8:
             if info["indicatorOfUnitForTimeRange"] == 1:
                 lt2 = info["lengthOfTimeRange"] * 3600.0
@@ -120,15 +120,14 @@ class ExtractSQLite(Task):
             elif info["indicatorOfUnitForTimeRange"] == 13:
                 lt2 = info["lengthOfTimeRange"]
             else:
-                logger.debug("Leadtime must be in 'h', 'm' or 's'")
-                exit(1)
+                raise ValueError("Leadtime must be in 'h', 'm' or 's'")
+
             leadtime = leadtime + lt2
 
         return (fcdate, leadtime)
 
     def fctable_definition(self, param, model):
-        """
-        Create the SQL command for FCtable definition.
+        """Create the SQL command for FCtable definition.
 
         Args:
             param: the parameter descriptor
@@ -140,7 +139,7 @@ class ExtractSQLite(Task):
         logger.info("SQLITE TABLE DEFINITION")
         primary_keys = {"fcst_dttm": "DOUBLE", "lead_time": "DOUBLE", "SID": "INT"}
         # if there is a vertical level column, that is also a primary key
-        if "level" in param["grib_id"].keys():
+        if "level" in param["grib_id"]:
             primary_keys[param["level_name"]] = "INT"
 
         other_keys = {
@@ -182,8 +181,7 @@ class ExtractSQLite(Task):
         return ginfo
 
     def param_match(self, gid):
-        """
-        Check whether a grib record is in the list of required parameters.
+        """Check whether a grib record is in the list of required parameters.
 
         TODO: can we re-organise the code to avoid getting the same key multiple times?
           But I suspect the impact is minimal
@@ -192,7 +190,8 @@ class ExtractSQLite(Task):
             gid: grib handle
 
         Returns:
-            Parameter descriptor (from the list) that matches the current grib handle, or None.
+            Parameter descriptor (from the list) that matches the current grib handle,
+            or None.
         """
         for param in self.parameter_list:
             # param['grib_id'] is a dictionary of keys|values that describe the parameter
@@ -202,12 +201,12 @@ class ExtractSQLite(Task):
             ginfo = self.get_keylist(gid, keylist, "string")
             # we make a deepcopy, because we may have to modify some key values...
             pmatch = deepcopy(param)
-            for pl in param["grib_id"].keys():
-                if type(param["grib_id"][pl]) is str:
+            for pl in param["grib_id"]:
+                if isinstance(param["grib_id"][pl], str):
                     if ginfo[pl] != param["grib_id"][pl]:
                         ok = False
                         break
-                elif type(param["grib_id"][pl]) is list:
+                elif isinstance(param["grib_id"][pl], list):
                     # This should only happen for the "level" key
                     # check a list of level values
                     if int(ginfo[pl]) not in param["grib_id"][pl]:
@@ -235,8 +234,7 @@ class ExtractSQLite(Task):
         return None
 
     def sqlite_name(self, param, fcdate):
-        """
-        Create the full name of the SQLite file from template and date.
+        """Create the full name of the SQLite file from template and date.
 
         Args:
             param: parameter descriptor
@@ -254,8 +252,7 @@ class ExtractSQLite(Task):
         return result
 
     def points_restrict(self, gid, plist):
-        """
-        Restrict the station list to points inside the current domain.
+        """Restrict the station list to points inside the current domain.
 
         NOTE: * eccodes returns distances in kilometer
               * store the list for use in next run? run this function seperately?
@@ -298,13 +295,12 @@ class ExtractSQLite(Task):
             & (plist["lon"] <= maxlon)
         ].copy()
 
-        # 2. Now use distance to closest grid point to eliminate the last few exterior points
-        #    NOTE: ideally, we would look at the 4 points and decide if a point is really inside
-        #          but just checking that the closest point is within 1 grid distance is OK
+        # 2. Now use distance to closest grid pt to eliminate the last few exterior points
+        #    NOTE: ideally, we would look at the 4 pts and decide if a pt is really inside
+        #          but just checking that the closest pt is within 1 grid distance is OK
         #    NOTE: we assume that dx == dy !
         dxy = self.get_keylist(gid, ["DxInMetres", "DyInMetres"], "double")
         dx = dxy["DxInMetres"] / 1000.0
-        dy = dxy["DyInMetres"] / 1000.0
 
         # NOT USED dmax = math.sqrt(dx * dx + dy * dy)
         lon = plist["lon"].tolist()
@@ -318,7 +314,7 @@ class ExtractSQLite(Task):
             drop[pp] = any(x.distance > dx for x in n1)  # maybe use dmax in stead?
 
         plist["drop"] = drop
-        plist[plist["drop"] == False].copy()
+        plist[plist["drop"] == False].copy()  # noqa: E712
         return plist
 
     def train_weights(self, gid, lsm=False):
@@ -337,7 +333,6 @@ class ExtractSQLite(Task):
         logger.info("SQLITE: Training interpolation weights")
         dxy = self.get_keylist(gid, ["DxInMetres", "DyInMetres"], "double")
         dx = dxy["DxInMetres"] / 1000.0
-        dy = dxy["DyInMetres"] / 1000.0
 
         lat = self.station_list["lat"].tolist()
         lon = self.station_list["lon"].tolist()
@@ -352,8 +347,8 @@ class ExtractSQLite(Task):
         for pp in range(nstations):
             # assuming the 4 closest points are exactly what we need (OK if dx=dy)
             # NOTE: this assumes dx == dy !!!
-            # otherwise, you have to check whether 2nd point is along X or Y axis from first
-            # probably easy, just look at the index
+            # otherwise, you have to check whether 2nd point is along X or Y axis from
+            # first probably easy, just look at the index
             n4 = eccodes.codes_grib_find_nearest(
                 gid, inlat=lat[pp], inlon=lon[pp], is_lsm=lsm, npoints=4
             )
@@ -399,14 +394,15 @@ class ExtractSQLite(Task):
             param: full parameter descriptor
 
         Returns:
-            a new data matrix that combines the input fields according to parameter descriptor
+            New data matrix that combines the input fields according to param descriptor
         """
         if param["function"] == "norm":
             return math.sqrt(data[0] * data[0] + data[1] * data[1])
-        elif param["function"] == "sum":
+
+        if param["function"] == "sum":
             return data[0] + data[1]
-        else:
-            return None
+
+        return None
 
     def db_cleanup(self, param, fcd, leadtime, con):
         """Delete any prior version of the date (it's a primary key).
@@ -420,7 +416,7 @@ class ExtractSQLite(Task):
         cleanup = "DELETE from FC WHERE fcst_dttm=? AND lead_time=?"
 
         cur = con.cursor()
-        if "level" in param["grib_id"].keys():
+        if "level" in param["grib_id"]:
             lname = param["level_name"]
             parlev = int(param["grib_id"]["level"])
             cleanup = cleanup + f" AND {lname} = ?"
@@ -464,12 +460,10 @@ class ExtractSQLite(Task):
         logger.info("SQLITE: {}", fc_def)
         logger.info("SQLITE: {}", pk_def)
 
-        index_name = "index_" + "_".join(primary_keys.keys())
         con = sqlite3.connect(sqlite_file)
-        with con:
-            with closing(con.cursor()) as cur:
-                cur.execute(fc_def)
-                cur.execute(pk_def)
+        with con, closing(con.cursor()) as cur:
+            cur.execute(fc_def)
+            cur.execute(pk_def)
         return con
 
     def parse_file(self, gfile):
@@ -499,7 +493,8 @@ class ExtractSQLite(Task):
             fcdate, leadtime = self.get_date_info(gid)
             sqlite_file = self.sqlite_path + self.sqlite_name(param, fcdate)
 
-            # TODO: what if the parameter requires multiple fields? e.g. wind speed from u,v
+            # TODO: what if the parameter requires multiple fields?
+            # e.g. wind speed from u,v
 
             # if the SQLite file doesn't exist yet: create the SQLite table
             if os.path.isfile(sqlite_file):
@@ -521,10 +516,7 @@ class ExtractSQLite(Task):
             data = self.station_list[["SID", "lat", "lon"]].copy()
 
             # by default, we do bilinear interpolation
-            if "method" in param.keys():
-                method = param["method"]
-            else:
-                method = "bilin"
+            method = param["method"] if "method" in param else "bilin"
 
             data[self.model_name] = self.interp_from_weights(gid, method)
             fcd = int(fcdate.timestamp())
@@ -536,7 +528,7 @@ class ExtractSQLite(Task):
             data["parameter"] = param["harp_param"]
             data["units"] = param["units"]
             # data['model_elevation'] =
-            if "level" in param["grib_id"].keys():
+            if "level" in param["grib_id"]:
                 lname = param["level_name"]
                 parlev = int(param["grib_id"]["level"])
                 data[lname] = parlev
@@ -562,8 +554,7 @@ class ExtractSQLite(Task):
             )
             if not os.path.isfile(infile):
                 raise FileNotFoundError(f" missing {infile}")
-            logger.info("SQLITE EXTRACTION: {}", infile)
-            gfile = open(infile, "rb")
 
-            self.parse_file(gfile)
-            gfile.close()
+            logger.info("SQLITE EXTRACTION: {}", infile)
+            with open(infile, "rb") as gfile:
+                self.parse_file(gfile)

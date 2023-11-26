@@ -1,10 +1,8 @@
 """Marsprep."""
-import ast
 import contextlib
 import glob
 import os
 import shutil
-from datetime import datetime
 
 import pandas as pd
 
@@ -35,7 +33,7 @@ class Marsprep(Task):
             self.mars = self.config[f"mars.{self.selection}"]
         except KeyError:
             # This experiment is note defined fallback to RD_DEFAULT
-            self.mars = self.config[f"mars.RD_DEFAULT"]
+            self.mars = self.config["mars.RD_DEFAULT"]
             self.mars["expver"] = self.selection
             logger.warning("SELECTION={} not defined, using RD_DEFAULT", self.selection)
 
@@ -140,9 +138,10 @@ class Marsprep(Task):
 
     def check_value(self, value, key):
         """Check value according to key.
+
         - If a string returnts the value itself
         - If key is a date search for the most suitable match in value
-        - Else return the value matching the key
+        - Else return the value matching the key.
 
         Args:
             value (str, BaseConfig object): Values to select
@@ -156,16 +155,16 @@ class Marsprep(Task):
         """
         if isinstance(value, str):
             return value
-        else:
-            try:
-                ref_date = as_datetime(f"{key}T00:00:00Z")
-                for k, v in sorted(value.items(), reverse=True):
-                    if ref_date >= as_datetime(k):
-                        return v
-            except ValueError:
-                k = str(key)
-                if k in value:
-                    return value[k]
+
+        try:
+            ref_date = as_datetime(f"{key}T00:00:00Z")
+            for k, v in sorted(value.items(), reverse=True):
+                if ref_date >= as_datetime(k):
+                    return v
+        except ValueError:
+            k = str(key)
+            if k in value:
+                return value[k]
 
         raise ValueError(f"Value not found for {key} within {value}")
 
@@ -283,15 +282,13 @@ class Marsprep(Task):
                     "TYPE": [self.mars["type_AN"]],
                 }
             )
-        try:
-            bdmember = int(self.config["boundaries.ifs.bdmember"])
+        with contextlib.suppress(ValueError):
+            _bdmember = int(self.config["boundaries.ifs.bdmember"])
             d.update(
                 {
                     "NUMBER": [self.config["boundaries.ifs.bdmember"]],
                 }
             )
-        except ValueError:
-            pass
 
         if prefetch:
             d.update(
@@ -575,8 +572,8 @@ class Marsprep(Task):
                     + alb
                 )
             os.remove("ICMGG.sea")
-            for i in base.split("/"):
-                i = int(i)
+            for j in base.split("/"):
+                i = int(j)
                 i_fstring = f"{i:02d}"
                 if os.path.exists(f"ICMGG+{i}"):
                     with open(f"ICMGG+{i}", "ab") as fp:
@@ -632,8 +629,8 @@ class Marsprep(Task):
             fp.close()
             os.remove("ICMSH.Z")
 
-            for i in base.split("/"):
-                i = int(i)
+            for j in base.split("/"):
+                i = int(j)
                 i_fstring = f"{i:02d}"
                 if os.path.exists(f"ICMSH+{i}"):
                     with open(f"ICMSH+{i}", "ab") as fp:
@@ -666,8 +663,8 @@ class Marsprep(Task):
             batch.run(self.executable)
 
             # Concat files
-            for i in base.split("/"):
-                i = int(i)
+            for j in base.split("/"):
+                i = int(j)
                 i_fstring = f"{i:02d}"
                 if os.path.exists(f"ICMUA+{i}"):
                     shutil.move(

@@ -27,9 +27,8 @@ def deode_config():
 
 @pytest.fixture()
 def binary_input_data():
-    return json.load(
-        open("deode/data/input/sfx_input_CY46h1.json", "r", encoding="utf-8")
-    )
+    with open("deode/data/input/sfx_input_CY46h1.json", "r", encoding="utf-8") as f:
+        return json.load(f)
 
 
 @contextlib.contextmanager
