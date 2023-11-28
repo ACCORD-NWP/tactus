@@ -28,7 +28,6 @@
   bdint = "PT1H"
   bdmodel = "arome"
   bdshift = "PT0H"
-  bdstrategy = "same_forecast"
   bdtasks_per_batch = 24
   ifs.selection = "HRES"
   ifs.bdmember = ""

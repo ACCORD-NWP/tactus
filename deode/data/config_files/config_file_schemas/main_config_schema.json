@@ -62,8 +62,6 @@
           "default": "same_forecast",
           "type": "string",
           "enum": [
-            "simulate_operational",
-            "analysis_only",
             "same_forecast"
           ]
         },
