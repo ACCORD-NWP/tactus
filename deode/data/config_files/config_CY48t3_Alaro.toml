@@ -2,36 +2,35 @@
   accept_static_namelists = false
   case = "@CYCLE@_@CSC@"
   cnmexp = "DEOD"
-  csc = "AROME"
+  csc = "ALARO"
   cycle = "CY48t3"
   initfile = "@SCRATCH@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@HISTORY_TEMPLATE@"
   initfile_sfx = "@SCRATCH@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
   keep_workdirs = true
-  surfex = true
+  surfex = false
 
 [general.output_settings]
   fullpos = "PT15M"
   history = "PT1H"
   nrazts = "PT1H"
-  surfex = "PT1H"
 
 [general.times]
   cycle_length = "PT6H"
-  end = "2023-09-16T06:00:00Z"
+  end = "2023-11-19T00:00:00Z"
   forecast_range = "PT6H"
   radiation_frequency = "PT5M"
-  start = "2023-09-16T00:00:00Z"
+  start = "2023-11-16T00:00:00Z"
 
 [boundaries]
   bd_has_surfex = false
   bdcycle = "PT24H"
-  bdint = "PT3H"
+  bdint = "PT1H"
   bdmodel = "ifs"
   bdshift = "PT0H"
   bdstrategy = "same_forecast"
   bdtasks_per_batch = 24
-  humi_gp = true
-  ifs.selection = "HRES"
+  humi_gp = false 
+  ifs.selection = "ATOS_DT"
   ifs.bdmember = ""
 
 [fullpos]
@@ -40,28 +39,28 @@
 
 [include]
   archiving = "include/archiving.toml"
-  domain = "include/domains/DEMO_60x80_2500m.toml"
+  domain = "include/domains/DEOL.toml"
   file_templates = "include/file_templates.toml"
   macros = "include/macros.toml"
   mars = "include/mars_settings.toml"
   platform = "include/platform_paths/atos_bologna.toml"
-  submission = "include/submission/atos_bologna_CY48t3.toml"
+  submission = "include/submission/atos_bologna_CY48t3_large_domain.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"
 
 [pgd]
   one_decade = true
 
 [suite_control]
-  create_static_data = false 
+  create_static_data = false
   create_time_dependent_suite = true
   do_archiving = true
-  do_extractsqlite = true
+  do_extractsqlite = false
   do_marsprep = true
   do_pgd = true
-  do_prep = true
-  do_soil = true
-  interpolate_boundaries = true
-  mode = "cold_start"
+  do_prep = false
+  do_soil = true 
+  interpolate_boundaries = true 
+  mode = "start"
 
 [system]
   bdclimdir = "@FIXED_BDCLIMDIR@"
@@ -75,9 +74,6 @@
   logs = "@ARCHIVE_ROOT@/logs"
   marsdir = "@SCRATCH@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"
-
-[task.creategrib]
-  conversions = ["surfex"]
 
 [task.extractsqlite]
   parameter_list = "@DEODE_HOME@/deode/data/sqlite/param_list.json"

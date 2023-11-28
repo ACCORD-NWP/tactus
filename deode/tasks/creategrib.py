@@ -84,6 +84,7 @@ class CreateGrib(Task):
     def execute(self):
         """Execute creategrib."""
         for filetype in self.conversions:
+            logger.info("***", self.conversions)
             file_handle = self.create_list(
                 self.file_templates[filetype]["archive"], self.output_settings[filetype]
             )

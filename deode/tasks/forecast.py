@@ -43,6 +43,7 @@ class Forecast(Task):
         self.archive = self.platform.get_system_value("archive")
         self.deode_home = self.config["platform.deode_home"]
         self.output_settings = self.config["general.output_settings"]
+        self.surfex = self.config["general.surfex"]
 
         # Update namelist settings
         self.nlgen_master = NamelistGenerator(self.config, "master")
@@ -233,7 +234,9 @@ class Forecast(Task):
         # Initial files
         initfile, initfile_sfx = InitialConditions(self.config).find_initial_files()
         self.fmanager.input(initfile, f"ICMSH{self.cnmexp}INIT")
-        initfile_sfx = None #TODO
+        if not self.surfex:
+            initfile_sfx = None
+
         if initfile_sfx is not None:
             self.fmanager.input(initfile_sfx, f"ICMSH{self.cnmexp}INIT.sfx")
 

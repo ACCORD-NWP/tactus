@@ -632,9 +632,7 @@ f4_ALARO:
     TFP_HCLP%CLNAME: CLPMHAUT.MOD.XFU
     TFP_HU%CLNAME: HUMI_RELATIVE
     TFP_HU%IBITS: 12
-    TFP_I%CLNAME: SOLID_WATER
     TFP_I%IBITS: 16
-    TFP_L%CLNAME: LIQUID_WATER
     TFP_L%IBITS: 16
     TFP_MSL%CLNAME: MSLPRESSURE
     TFP_MSL%IBITS: 12
@@ -649,9 +647,7 @@ f4_ALARO:
     TFP_THPW%IBITS: 12
     TFP_TKE%CLNAME: TKE
     TFP_TKE%IBITS: 16
-    TFP_U%CLNAME: WIND_U_COMPONENT
     TFP_U%IBITS: 12
-    TFP_V%CLNAME: WIND_V_COMPONENT
     TFP_V%IBITS: 12
     TFP_VV%CLNAME: VITESSE_VERTICALE
     TFP_VV%IBITS: 16
@@ -841,15 +837,15 @@ f4_ALARO:
     YL_NL%NCOUPLING: 0
     YL_NL%NREQIN: 0
     YQ_NL%LADV: True
-    YQ_NL%LGP: False
-    YQ_NL%LGPINGP: False
+    YQ_NL%LGP: True
+    YQ_NL%LGPINGP: True 
     YQ_NL%LHV: False
     YQ_NL%LPC: True
     YQ_NL%LQM: False
     YQ_NL%LQMH: False
     YQ_NL%LREQOUT: True
     YQ_NL%LSLHD: True
-    YQ_NL%LSP: True
+    YQ_NL%LSP: False 
     YQ_NL%LVSPLIP: False
     YR_NL%LADV: True
     YR_NL%LGP: True
@@ -924,6 +920,8 @@ f4_ALARO:
     YUOM_NL%LREQOUT: False
     YUOM_NL%LSLHD: False
     YUOM_NL%NREQIN: 0
+  NAMGRIB:
+    NCYCLE: 48
   NAMJFH:
     N_VMASS: 0
   NAMOPH:
@@ -1241,10 +1239,10 @@ f4_c903_main:
   NAMOPH:
     CCLIMINC: "_"
   NAMGFL:
-    YQ_NL%LGP: True
+    YQ_NL%LGP: True 
     YQ_NL%LSP: False
     YO3_NL%LGP: False
-    YQ_NL%LGPINGP: True
+    YQ_NL%LGPINGP: True 
     YR_NL%NREQIN: -1
     YS_NL%NREQIN: -1
   NAMFAINIT:
@@ -1289,7 +1287,7 @@ f4_c903_domain:
     NFPXFLD: 10
   NAMAFN:
     GFP_ST%IANO: 0
-    TFP_Q%LLGP: True
+    TFP_Q%LLGP: ${boundaries.humi_gp} 
   NAMCT0:
     NFPOS: 2
     NSDITS(0): 1
