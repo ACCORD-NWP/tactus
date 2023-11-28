@@ -20,13 +20,22 @@ def set_times(config):
     Returns:
         update (dict): Dict of corrected basetime/validtime
     """
-    times = {}
-    if "basetime" not in config["general"]["times"]:
+    times = config["general.times"].dict()
+    if "basetime" not in times:
         times.update({"basetime": config["general"]["times"]["start"]})
         logger.info("Set basetime to {}", times["basetime"])
-    if "validtime" not in config["general"]["times"]:
-        times.update({"validtime": config["general"]["times"]["start"]})
-        logger.info("Set validtime to {}", times["basetime"])
+    if "validtime" not in times:
+        try:
+            times.update({"validtime": config["general"]["times"]["basetime"]})
+        except KeyError:
+            times.update({"validtime": config["general"]["times"]["start"]})
+        logger.info("Set validtime to {}", times["validtime"])
+    if "start" not in times:
+        times.update({"start": config["general"]["times"]["basetime"]})
+        logger.info("Set start to {}", times["start"])
+    if "end" not in times:
+        times.update({"end": config["general"]["times"]["basetime"]})
+        logger.info("Set end to {}", times["end"])
 
     update = {"general": {"times": times}}
     return update
@@ -131,13 +140,12 @@ def derived_variables(config, processor_layout=None):
     time = basetime.strftime("%H%M")
 
     # Time ranges
-    tstep = int(config["general.tstep"])
+    tstep = int(config["domain.tstep"])
     bdint = as_timedelta(config["boundaries.bdint"])
     forecast_range = as_timedelta(config["general.times.forecast_range"])
     cstop = int((forecast_range.days * 24 * 3600 + forecast_range.seconds) / 60)
     radiation_frequency = as_timedelta(config["general.times.radiation_frequency"])
     nradfr = int(radiation_frequency.seconds / tstep)
-    logger.info("nradfr:{}", nradfr)
     if cstop % 60 == 0:
         cstop = int(cstop / 60)
         cstop = f"h{cstop}"
@@ -163,7 +171,12 @@ def derived_variables(config, processor_layout=None):
         output_timesteps.insert(0, len(output_timesteps))
         namoutput[x] = output_timesteps
 
-    # Update namelist settings
+    # Wind farm parameterization
+    if config["general.windfarm"]:
+        selection = list(config["fullpos.selection"])
+        selection.append("windfarm")
+
+    # Update config and namelist settings
     update = {
         "domain": {
             "nbzong": nbzong,
@@ -192,6 +205,13 @@ def derived_variables(config, processor_layout=None):
         },
         "namelist_update": {"master": {}},
     }
+
+    # Wind farm parameterization
+    if config["general.windfarm"]:
+        selection = list(config["fullpos.selection"])
+        selection.append("windfarm")
+        update["fullpos"] = {"selection": selection}
+
     if processor_layout is not None:
         procs = processor_layout.get_proc_dict()
         # Update namelist dicts

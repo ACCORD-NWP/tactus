@@ -63,6 +63,10 @@ We **highly recommend** you to also put the statement listed above in your shell
   ```
   **N.B.**: Do **not** run this installation command on Atos (`hpc-login`)!
 
+  On Atos, simply run:
+  ```shell
+  ml gdal
+  ```
   If installation is not succesful, please contact the IT support in your organisation or HPC facility.
 
 
@@ -169,6 +173,8 @@ deode run \
       --job $PWD/forecast.job \
       --output $PWD/forecast.log
 ```
+
+If you have done the above mentioned default ecflow test the stand alone forecast will pick the input data from the existing run and output the result in the same directories (as defined by the config file).
 
 ### Running a stand-alone task with an example config file on LUMI
 

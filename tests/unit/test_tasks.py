@@ -2,7 +2,7 @@
 """Unit tests for the config file parsing module."""
 import contextlib
 import subprocess
-from os import chdir
+from os import chdir, makedirs
 from pathlib import Path
 
 import pytest
@@ -19,9 +19,9 @@ from deode.tasks.collectlogs import CollectLogs
 from deode.tasks.creategrib import CreateGrib
 from deode.tasks.discover_task import discover, get_task
 from deode.tasks.e923 import E923
+from deode.tasks.extractsqlite import ExtractSQLite
 from deode.tasks.forecast import FirstGuess, Forecast
 from deode.tasks.marsprep import Marsprep
-from deode.tasks.marsprepGlobalDT import MarsprepGlobalDT
 from deode.toolbox import ArchiveError, FileManager, ProviderError
 
 WORKING_DIR = Path.cwd()
@@ -40,10 +40,8 @@ def base_raw_config(request):
     test_map = {"CY46h1": {"general": {"windfarm": True}}}
     tag = tag_map[request.param] if request.param in tag_map else f"_{request.param}"
     config = BasicConfig.from_file(ConfigParserDefaults.DIRECTORY / f"config{tag}.toml")
-    try:
+    with contextlib.suppress(KeyError):
         config = config.copy(update=test_map[request.param])
-    except KeyError:
-        pass
     return config
 
 
@@ -97,11 +95,11 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_task_archive_archivehour_execute_method = ArchiveHour.execute
     original_task_archive_archivestatic_execute_method = ArchiveStatic.execute
     original_task_creategrib_creategrib_execute_method = CreateGrib.execute
+    original_task_extractsqlite_extractsqlite_execute_method = ExtractSQLite.execute
     original_task_initial_conditions_nosuccess_method = InitialConditions.nosuccess
     original_task_e923_constant_part_method = E923.constant_part
     original_task_e923_monthly_part_method = E923.monthly_part
     original_task_marsprep_run_method = Marsprep.run
-    original_task_marsprepglobaldt_run_method = MarsprepGlobalDT.run
     original_task_collectlogs_collectlogs_execute_method = CollectLogs.execute
 
     # Define the wrappers that will replace some key methods
@@ -149,19 +147,18 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         with contextlib.suppress(FileNotFoundError):
             original_task_creategrib_creategrib_execute_method(*args, **kwargs)
 
-    def new_task_mars_batchjob_run_method(*args, **kwargs):
+    def new_task_extractsqlite_extractsqlite_execute_method(*args, **kwargs):
+        """Suppress some errors so that test continues if they happen."""
+        with contextlib.suppress(FileNotFoundError):
+            original_task_extractsqlite_extractsqlite_execute_method(*args, **kwargs)
+
+    def new_task_mars_batchjob_run_method(*args, **kwargs):  # noqa: ARG001
         """Skip any work."""
-        print(*args, **kwargs)
 
     def new_task_marsprep_run_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
         with contextlib.suppress(FileNotFoundError):
             original_task_marsprep_run_method(*args, **kwargs)
-
-    def new_task_marsprepglobaldt_run_method(*args, **kwargs):
-        """Suppress some errors so that test continues if they happen."""
-        with contextlib.suppress(FileNotFoundError):
-            original_task_marsprepglobaldt_run_method(*args, **kwargs)
 
     def new_task_initial_conditions_nosuccess_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
@@ -220,6 +217,10 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         new=new_task_creategrib_creategrib_execute_method,
     )
     session_mocker.patch(
+        "deode.tasks.extractsqlite.ExtractSQLite.execute",
+        new=new_task_extractsqlite_extractsqlite_execute_method,
+    )
+    session_mocker.patch(
         "deode.initial_conditions.InitialConditions.nosuccess",
         new=new_task_initial_conditions_nosuccess_method,
     )
@@ -241,18 +242,11 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         "deode.tasks.collectlogs.CollectLogs.execute",
         new=new_task_collectlogs_collectlogs_execute_method,
     )
-    session_mocker.patch(
-        "deode.tasks.marsprepGlobalDT.BatchJob.run",
-        new=new_task_mars_batchjob_run_method,
-    )
-    session_mocker.patch(
-        "deode.tasks.marsprepGlobalDT.MarsprepGlobalDT.run",
-        new=new_task_marsprepglobaldt_run_method,
-    )
 
     # Create files needed by gmtedsoil tasks
     tif_files_dir = tmp_path_factory.getbasetemp() / "GMTED2010"
-    tif_files_dir.mkdir()
+    makedirs(tif_files_dir, exist_ok=True)
+
     for fname in ["50N000E_20101117_gmted_mea075", "30N000E_20101117_gmted_mea075"]:
         fpath = tif_files_dir / f"{fname}.tif"
         fpath.touch()

@@ -3,7 +3,7 @@
 import os
 from pathlib import Path
 
-from .datetime_utils import as_datetime, as_timedelta, get_decade
+from .datetime_utils import as_datetime, as_timedelta
 from .logs import LogDefaults, logger
 from .os_utils import deodemakedirs
 from .toolbox import Platform
@@ -65,6 +65,7 @@ class SuiteDefinition(object):
         self.interpolate_boundaries = config["suite_control.interpolate_boundaries"]
         self.do_prep = config["suite_control.do_prep"]
         self.do_marsprep = config["suite_control.do_marsprep"]
+        self.do_extractsqlite = config["suite_control.do_extractsqlite"]
         self.do_archiving = config["suite_control.do_archiving"]
         self.surfex = config["general.surfex"]
         self.suite_name = suite_name
@@ -177,7 +178,7 @@ class SuiteDefinition(object):
             )
             variables = {"ARGS": args}
 
-            EcflowSuiteTask(
+            collect_logs = EcflowSuiteTask(
                 "CollectLogs",
                 self.suite,
                 config,
@@ -187,6 +188,21 @@ class SuiteDefinition(object):
                 trigger=EcflowSuiteTriggers([EcflowSuiteTrigger(static_data)]),
                 variables=variables,
             )
+
+            if self.do_archiving:
+                archiving_static_trigger = EcflowSuiteTriggers(
+                    [EcflowSuiteTrigger(collect_logs)]
+                )
+                EcflowSuiteTask(
+                    "ArchiveStatic",
+                    self.suite,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    variables=None,
+                    trigger=archiving_static_trigger,
+                )
         else:
             static_data = None
 
@@ -230,14 +246,7 @@ class SuiteDefinition(object):
         prev_cycle_trigger = None
         prev_interpolation_trigger = None
 
-        if self.do_marsprep:
-            marsprep_task = (
-                "Marsprep"
-                if config["general.mars_expver"] == "0001"
-                else "MarsprepGlobalDT"
-            )
-
-        for __, cycle in cycles.items():
+        for cycle in cycles.values():
             cycle_day = cycle["day"]
             if self.create_static_data:
                 inputdata_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(static_data)])
@@ -281,7 +290,7 @@ class SuiteDefinition(object):
             ready_for_marsprep = EcflowSuiteTriggers(triggers)
             if self.do_marsprep:
                 EcflowSuiteTask(
-                    marsprep_task,
+                    "Marsprep",
                     inputdata,
                     config,
                     self.task_settings,
@@ -350,10 +359,7 @@ class SuiteDefinition(object):
                                 variables=None,
                             )
 
-                            if self.do_marsprep:
-                                interpolation_task = "c903"
-                            else:
-                                interpolation_task = "e927"
+                            interpolation_task = "c903" if self.do_marsprep else "e927"
 
                             EcflowSuiteTask(
                                 interpolation_task,
@@ -402,7 +408,7 @@ class SuiteDefinition(object):
                 ]
             )
             variables = {"ARGS": args}
-            EcflowSuiteTask(
+            collect_logs_hour = EcflowSuiteTask(
                 "CollectLogs",
                 time_family,
                 config,
@@ -452,8 +458,24 @@ class SuiteDefinition(object):
                 trigger=creategrib_trigger,
             )
 
+            if self.do_extractsqlite:
+                extractsqlite_trigger = EcflowSuiteTriggers(
+                    [EcflowSuiteTrigger(forecast_task)]
+                )
+                EcflowSuiteTask(
+                    "ExtractSQLite",
+                    forecasting,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    trigger=extractsqlite_trigger,
+                )
+
             if self.do_archiving:
-                archiving_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(cycle_fam)])
+                archiving_hour_trigger = EcflowSuiteTriggers(
+                    [EcflowSuiteTrigger(collect_logs_hour)]
+                )
 
                 EcflowSuiteTask(
                     "ArchiveHour",
@@ -462,7 +484,7 @@ class SuiteDefinition(object):
                     self.task_settings,
                     self.ecf_files,
                     input_template=input_template,
-                    trigger=archiving_trigger,
+                    trigger=archiving_hour_trigger,
                 )
 
     def static_suite_part(self, config, input_template):
@@ -575,7 +597,7 @@ class SuiteDefinition(object):
 
         if self.do_pgd:
             pgd_update_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(e923constant)])
-            pgd_update = EcflowSuiteTask(
+            EcflowSuiteTask(
                 "PgdUpdate",
                 static_data,
                 config,
@@ -586,32 +608,6 @@ class SuiteDefinition(object):
                 trigger=pgd_update_trigger,
             )
 
-        if self.do_archiving and self.do_pgd:
-            archive_static_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd_update)])
-            EcflowSuiteTask(
-                "ArchiveStatic",
-                static_data,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                variables=None,
-                trigger=archive_static_trigger,
-            )
-        elif self.do_archiving and not (self.do_pgd):
-            archive_static_trigger = EcflowSuiteTriggers(
-                [EcflowSuiteTrigger(month_family)]
-            )
-            EcflowSuiteTask(
-                "ArchiveStatic",
-                static_data,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                variables=None,
-                trigger=archive_static_trigger,
-            )
         return static_data
 
     def save_as_defs(self, def_file):
@@ -662,10 +658,13 @@ class EcflowNode:
         has_node = True
         if parent is None:
             has_node = False
-        if has_node and node_type != "suite":
-            if hasattr(parent, "ecf_node"):
-                if parent.ecf_node is None:
-                    has_node = False
+        if (
+            has_node
+            and node_type != "suite"
+            and hasattr(parent, "ecf_node")
+            and parent.ecf_node is None
+        ):
+            has_node = False
         if not has_node:
             self.ecf_node = None
             path = ""
@@ -700,16 +699,15 @@ class EcflowNode:
                 raise TypeError("Triggers must be an EcflowSuiteTriggers object")
         self.trigger = trigger
 
-        if def_status is not None:
-            if self.ecf_node is not None:
-                if isinstance(def_status, str):
-                    self.ecf_node.add_defstatus(ecflow.Defstatus(def_status))
-                elif isinstance(def_status, ecflow.Defstatus):
-                    self.ecf_node.add_defstatus(def_status)
-                else:
-                    raise TypeError(
-                        "defstatus must be either str or an ecflow.Defstatus object"
-                    )
+        if def_status is not None and self.ecf_node is not None:
+            if isinstance(def_status, str):
+                self.ecf_node.add_defstatus(ecflow.Defstatus(def_status))
+            elif isinstance(def_status, ecflow.Defstatus):
+                self.ecf_node.add_defstatus(def_status)
+            else:
+                raise TypeError(
+                    "defstatus must be either str or an ecflow.Defstatus object"
+                )
 
 
 class EcflowNodeContainer(EcflowNode):
@@ -879,7 +877,8 @@ class EcflowSuiteTask(EcflowNode):
 
             variables = task_settings.get_settings(name)
             logger.debug("vars {}", variables)
-            for var, value in variables.items():
+            for var, value_ in variables.items():
+                value = value_
                 if isinstance(value, int):
                     value = str(value)
                 logger.debug("var={} value={}", var, value)
@@ -893,9 +892,8 @@ class EcflowSuiteTask(EcflowNode):
                 variables=variables,
                 ecf_micro=ecf_micro,
             )
-        else:
-            if not os.path.exists(task_container):
-                raise FileNotFoundError(f"Container {task_container} is missing!")
+        elif not os.path.exists(task_container):
+            raise FileNotFoundError(f"Container {task_container} is missing!")
 
 
 class EcflowSuiteTriggers:
@@ -943,17 +941,12 @@ class EcflowSuiteTriggers:
                     cat = " " + mode + " "
                 if isinstance(trigger, EcflowSuiteTriggers):
                     trigger_string = trigger_string + cat + trigger.trigger_string
+                elif isinstance(trigger, EcflowSuiteTrigger):
+                    trigger_string = (
+                        trigger_string + cat + trigger.node.path + " == " + trigger.mode
+                    )
                 else:
-                    if isinstance(trigger, EcflowSuiteTrigger):
-                        trigger_string = (
-                            trigger_string
-                            + cat
-                            + trigger.node.path
-                            + " == "
-                            + trigger.mode
-                        )
-                    else:
-                        raise TypeError("Trigger must be an EcflowSuiteTrigger object")
+                    raise TypeError("Trigger must be an EcflowSuiteTrigger object")
                 first = False
         trigger_string = trigger_string + ")"
         # If no triggers were found/set

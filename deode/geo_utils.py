@@ -62,8 +62,7 @@ class Projection:
         """
         if key in config:
             return True
-        else:
-            raise ValueError("{} not in dictionary. Check config file".format(key))
+        raise ValueError("{} not in dictionary. Check config file".format(key))
 
     def get_domain_properties(self, domain_spec: dict) -> dict:
         """Get domain properties.
@@ -95,9 +94,9 @@ class Projection:
 
         xxx = np.empty([nlon])
         yyy = np.empty([nlat])
-        for i in range(0, nlon):
+        for i in range(nlon):
             xxx[i] = x_0 + (float(i) * gsize)
-        for j in range(0, nlat):
+        for j in range(nlat):
             yyy[j] = y_0 + (float(j) * gsize)
 
         x_v, y_v = np.meshgrid(xxx, yyy)

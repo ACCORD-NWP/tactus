@@ -17,7 +17,8 @@ def _import_gdal():
 
         return gdal
     except ImportError as error:
-        msg = "Cannot use the installed gdal library, or there is no gdal library installed. "
+        msg = "Cannot use the installed gdal library, "
+        msg += "or there is no gdal library installed. "
         msg += "If you have not installed it, you may want to try running"
         msg += " 'pip install pygdal==\"`gdal-config --version`.*\"' "
         msg += "or, if you use conda,"
@@ -170,13 +171,12 @@ class Gmted(Task):
         """
         band = gd.GetRasterBand(1)
 
-        f = open(bin_file, "wb")
-        for iy in range(gd.RasterYSize):
-            data = band.ReadAsArray(0, iy, gd.RasterXSize, 1)
-            sel = data == -32768
-            data[sel] = 0
-            data.byteswap().astype("int16").tofile(f)
-        f.close()
+        with open(bin_file, "wb") as f:
+            for iy in range(gd.RasterYSize):
+                data = band.ReadAsArray(0, iy, gd.RasterXSize, 1)
+                sel = data == -32768
+                data[sel] = 0
+                data.byteswap().astype("int16").tofile(f)
 
     @staticmethod
     def write_gmted_header_file(
@@ -301,19 +301,15 @@ class Soil(Task):
         glo_east = 180.0
         glo_west = -180.0
 
-        is_outside = (
-            True
-            if (
-                domain_properties["minlon"] < glo_west
-                or domain_properties["minlon"] > glo_east
-                or domain_properties["maxlon"] < glo_west
-                or domain_properties["maxlon"] > glo_east
-                or domain_properties["minlat"] < glo_south
-                or domain_properties["minlat"] > glo_north
-                or domain_properties["maxlat"] < glo_south
-                or domain_properties["maxlat"] > glo_north
-            )
-            else False
+        is_outside = bool(
+            domain_properties["minlon"] < glo_west
+            or domain_properties["minlon"] > glo_east
+            or domain_properties["maxlon"] < glo_west
+            or domain_properties["maxlon"] > glo_east
+            or domain_properties["minlat"] < glo_south
+            or domain_properties["minlat"] > glo_north
+            or domain_properties["maxlat"] < glo_south
+            or domain_properties["maxlat"] > glo_north
         )
 
         if is_outside:

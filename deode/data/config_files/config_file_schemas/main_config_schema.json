@@ -62,8 +62,6 @@
           "default": "same_forecast",
           "type": "string",
           "enum": [
-            "simulate_operational",
-            "analysis_only",
             "same_forecast"
           ]
         },
@@ -94,6 +92,20 @@
           ],
           "type": "string"
         },
+	"ifs.selection": {
+            "type": "string",
+            "description": "Selection",
+            "enum": [
+            "HRES",
+            "ATOS_DT",
+            "IFSENS",
+            "PARIS_RDP"
+          ]
+        },
+	"ifs.bdmember": {
+	    "type": "string",
+	    "description": "The number of member in ensamble if selection is IFSENS, else empty string."
+	},
         "bd_has_surfex": {
           "description": "Set to true if the host model runs with surfex",
           "type": "boolean"
@@ -164,6 +176,10 @@
           "description": "Run marsprep or skip extraction",
           "type": "boolean"
         },
+        "do_extractsqlite": {
+          "description": "Activates extraction of selected points to SQLite files for verification.",
+          "type": "boolean"
+        },
         "create_static_data": {
           "description": "Activate the generation of PGD and monthly climate files in the suite",
           "type": "boolean"
@@ -221,10 +237,15 @@
           "type": "string",
           "description": "Path to the fullpos yml config file"
         },
+        "archive_timestamp": {
+          "type": "string",
+          "description": "Relative path of date specific archive",
+          "default": "@YYYY@/@MM@/@DD@/@HH@/"
+	},
         "archive": {
           "type": "string",
-          "description": "Location of date specific archive",
-          "default": "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
+          "description": "Absolute path of date specific archive",
+          "default": "@ARCHIVE_ROOT@/@ARCHIVE_TIMESTAMP@"
 	},
         "logs": {
           "type": "string",
@@ -295,18 +316,20 @@
               "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
             },
             "basetime": {
-              "description": "Basetime TB specified",
+              "description": "Initial date and time for the current task.",
               "type": "string",
               "format": "date-time"
             },
             "validtime": {
-              "description": "Validtime TB specified",
+              "description": "Final date and time for the current task.",
               "type": "string",
               "format": "date-time"
             }
           },
           "oneOf": [
-            {
+	    {
+            "anyOf": [
+             {
               "required": [
                 "start",
                 "end"
@@ -316,6 +339,32 @@
                   "list"
                 ]
               }
+             },
+	     {
+              "required": [
+                "basetime"
+              ],
+              "not": {
+               "anyOf": [
+		      {       
+                "required": [
+                  "end"
+                ]
+		      },
+		      {       
+                "required": [
+                  "list"
+                ]
+		      },
+		      {       
+                "required": [
+                  "start"
+                ]
+		      }
+	       ]
+              }
+	     }
+	    ]
             },
             {
               "required": [
@@ -358,10 +407,6 @@
           "type": "string",
           "minLength": 4,
           "maxLength": 4
-        },
-        "tstep": {
-          "description": "Model time step",
-          "type": "number"
         },
         "loglevel": {
           "description": "Logger output level",
@@ -419,22 +464,64 @@
           "type": "object",
           "properties": {
             "history": {
-              "description": "Output list for history files"
+              "description": "Output list for history files",
+              "anyOf": [
+	     {
+                "type": "string",
+                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+	     },
+	     {
+                "type": "array",
+                "items": {
+                   "type": "string",
+                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+                }
+	     }
+	      ]
             },
             "surfex": {
-              "description": "Output list for surfex files"
+              "description": "Output list for surfex files",
+              "anyOf": [
+	     {
+                "type": "string",
+                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+	     },
+	     {
+                "type": "array",
+                "items": {
+                   "type": "string",
+                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+                }
+	     }
+	      ]
             },
             "fullpos": {
-              "description": "Output list for fullpos files"
+              "description": "Output list for fullpos files",
+              "anyOf": [
+	     {
+                "type": "string",
+                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+	     },
+	     {
+                "type": "array",
+                "items": {
+                   "type": "string",
+                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+                }
+	     }
+	      ]
             },
             "nrazts": {
-              "description": "Reset times for instantaneous fluxes ( e.g. min/max temperature )"
+              "description": "Reset times for instantaneous fluxes ( e.g. min/max temperature )",
+              "type": "string",
+              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
             }
           }
         },
         "windfarm": {
           "description": "Switch on wind farm parameterisation",
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         }
       },
       "required": [

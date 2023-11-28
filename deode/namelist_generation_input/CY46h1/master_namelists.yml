@@ -458,7 +458,7 @@ f4_harmonie-arome:
     RLAMB_SOLID: 0.6
   NAMRIP:
     CSTOP: ${namelist.cstop}
-    TSTEP: ${general.tstep}
+    TSTEP: ${domain.tstep}
   NAMSPBD:
     LSPBDC: False
   NAMSPP:
