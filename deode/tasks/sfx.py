@@ -70,88 +70,82 @@ class InputDataFromNamelist:
 
         """
         logger.debug("Checking block={} key={}", block, key)
-        if block in nml:
-            if key in nml[block]:
-                vals = []
-                val_dict = {}
-                val = nml[block][key]
-                logger.debug("namelist type={}", type(val))
-                if indices is not None:
-                    logger.debug("indices={}", indices)
-                    if len(indices) == 2:
-                        val = nml[block][key][indices[1]][indices[0]]
+        if block not in nml:
+            return None
+
+        if key in nml[block]:
+            vals = []
+            val_dict = {}
+            val = nml[block][key]
+            logger.debug("namelist type={}", type(val))
+            if indices is not None:
+                logger.debug("indices={}", indices)
+                if len(indices) == 2:
+                    val = nml[block][key][indices[1]][indices[0]]
+                else:
+                    val = nml[block][key][indices[0]]
+                    logger.debug("Found 1D value {}", val)
+                    if isinstance(val, list):
+                        return None
+                val_dict.update({"value": val, "indices": None})
+                vals.append(val_dict)
+
+            elif isinstance(val, list):
+                dim_size = len(val)
+                logger.debug("dim_size={}", dim_size)
+                dims = []
+                tval = val
+                more_dimensions = True
+                while more_dimensions:
+                    logger.debug("tval={} type(tval)={}", tval, type(tval))
+                    if isinstance(tval, int):
+                        more_dimensions = False
                     else:
-                        val = nml[block][key][indices[0]]
-                        logger.debug("Found 1D value {}", val)
-                        if isinstance(val, list):
-                            return None
+                        logger.debug("type(tval)={}", type(tval))
+                        if not isinstance(tval, list) or isinstance(tval[0], int):
+                            more_dimensions = False
+                        else:
+                            logger.debug("len(tval)={} type(tval)={}", len(tval), type)
+                            dim_size = len(tval)
+                            dims.append(dim_size)
+
+                            tval = tval[0]
+                            logger.debug("New tval={} dim_size={}", tval, dim_size)
+
+                logger.debug("dims={}", dims)
+                logger.debug("type(val)={}", type(val))
+                if len(dims) == 2:
+                    for i in range(dims[0]):
+                        for j in range(dims[1]):
+                            val_dict = {}
+                            indices = [j, i]
+                            lval = val[i][j]
+                            val_dict.update({"value": lval, "indices": indices})
+                            logger.debug("value={} indices={}", lval, indices)
+                            vals.append(val_dict)
+                elif len(dims) == 1:
+                    for i in range(dims[0]):
+                        val_dict = {}
+                        indices = [i]
+                        logger.debug("i={}, val[i]={}", i, val[i])
+                        lval = val[i]
+                        val_dict.update({"value": lval, "indices": indices})
+                        logger.debug("value={} indices={}", lval, indices)
+                        vals.append(val_dict)
+                elif len(dims) == 0:
+                    val_dict = {}
+                    logger.debug("val={}", val)
                     val_dict.update({"value": val, "indices": None})
                     vals.append(val_dict)
+            else:
+                val_dict = {}
+                if isinstance(val, bool):
+                    val = str(val)
+                val_dict.update({"value": val, "indices": None})
+                vals.append(val_dict)
 
-                else:
-                    if isinstance(val, list):
-                        dim_size = len(val)
-                        logger.debug("dim_size={}", dim_size)
-                        dims = []
-                        tval = val
-                        more_dimensions = True
-                        while more_dimensions:
-                            logger.debug("tval={} type(tval)={}", tval, type(tval))
-                            if isinstance(tval, int):
-                                more_dimensions = False
-                            else:
-                                logger.debug("type(tval)={}", type(tval))
-                                if not isinstance(tval, list):
-                                    more_dimensions = False
-                                else:
-                                    if isinstance(tval[0], int):
-                                        more_dimensions = False
-                                    else:
-                                        logger.debug(
-                                            "len(tval)={} type(tval)={}", len(tval), type
-                                        )
-                                        dim_size = len(tval)
-                                        dims.append(dim_size)
-
-                                        tval = tval[0]
-                                        logger.debug(
-                                            "New tval={} dim_size={}", tval, dim_size
-                                        )
-
-                        logger.debug("dims={}", dims)
-                        logger.debug("type(val)={}", type(val))
-                        if len(dims) == 2:
-                            for i in range(0, dims[0]):
-                                for j in range(0, dims[1]):
-                                    val_dict = {}
-                                    indices = [j, i]
-                                    lval = val[i][j]
-                                    val_dict.update({"value": lval, "indices": indices})
-                                    logger.debug("value={} indices={}", lval, indices)
-                                    vals.append(val_dict)
-                        elif len(dims) == 1:
-                            for i in range(0, dims[0]):
-                                val_dict = {}
-                                indices = [i]
-                                logger.debug("i={}, val[i]={}", i, val[i])
-                                lval = val[i]
-                                val_dict.update({"value": lval, "indices": indices})
-                                logger.debug("value={} indices={}", lval, indices)
-                                vals.append(val_dict)
-                        elif len(dims) == 0:
-                            val_dict = {}
-                            logger.debug("val={}", val)
-                            val_dict.update({"value": val, "indices": None})
-                            vals.append(val_dict)
-                    else:
-                        val_dict = {}
-                        if isinstance(val, bool):
-                            val = str(val)
-                        val_dict.update({"value": val, "indices": None})
-                        vals.append(val_dict)
-
-                logger.debug("Found: value={}", val_dict["value"])
-                return vals
+            logger.debug("Found: value={}", val_dict["value"])
+            return vals
         return None
 
     @staticmethod
@@ -221,12 +215,11 @@ class InputDataFromNamelist:
         """
         try:
             setting = macro_defs[key]
-            if isinstance(setting, str):
-                if setting.find(sep) > 0:
-                    logger.debug("Read macro setting from namelist {}", setting)
-                    setting = self.get_nml_value_from_string(self.nml, setting)
-                    if isinstance(setting, list):
-                        setting = setting[0]["value"]
+            if isinstance(setting, str) and setting.find(sep) > 0:
+                logger.debug("Read macro setting from namelist {}", setting)
+                setting = self.get_nml_value_from_string(self.nml, setting)
+                if isinstance(setting, list):
+                    setting = setting[0]["value"]
             return setting
         except KeyError:
             return default
@@ -287,20 +280,18 @@ class InputDataFromNamelist:
                     )
                     if fmt is None:
                         fmt = "{:d}"
-                    for lval in range(start, end):
-                        lval = fmt.format(lval)
+                    for lval_ in range(start, end):
+                        lval = fmt.format(lval_)
                         loop.update({str(lval): str(lval)})
                 else:
                     raise NotImplementedError
 
             # Loop normal macros not being nml arrays
             unprocessed_data = processed_data.copy()
-            if processed_data:
-                unprocessed_data = processed_data
-            else:
-                unprocessed_data = {key: val}
+            unprocessed_data = processed_data if processed_data else {key: val}
 
-            for key, val in unprocessed_data.items():
+            for key_, val in unprocessed_data.items():
+                key = key_
                 for vmacro1, vmacro2 in loop.items():
                     logger.debug(
                         "key={} val={} macro={} vmacro1={} vmacro2={}",
@@ -348,10 +339,7 @@ class InputDataFromNamelist:
         for macro in macros:
             lindex = None
             if len(indices) == 2:
-                if macro == "DECADE":
-                    lindex = indices[1]
-                else:
-                    lindex = indices[0]
+                lindex = indices[1] if macro == "DECADE" else indices[0]
             elif len(indices) == 1:
                 lindex = indices[0]
             elif len(indices) > 2:
@@ -415,15 +403,12 @@ class InputDataFromNamelist:
             dict: Matching entry in data.
 
         """
-        if val == "macro" or val == "extenders":
+        if val in ["macro", "extenders"]:
             return None
         logger.debug("type(data)={}", type(data))
         logger.debug("type(val)={}", type(val))
         logger.debug("indices={}", indices)
-        if isinstance(data, dict):
-            mdata = data.keys()
-        else:
-            mdata = [data]
+        mdata = data.keys() if isinstance(data, dict) else [data]
         val = str(val)
         logger.debug("Check if val={} matches mdata={}", val, mdata)
         sval = None
@@ -490,11 +475,10 @@ class InputDataFromNamelist:
 
                             last_dict = True
                             if isinstance(setting, dict):
-                                for __, tval in setting.items():
+                                for tval in setting.values():
                                     if isinstance(tval, dict):
                                         last_dict = False
-                            else:
-                                print(setting)
+
                             if not last_dict:
                                 logger.debug("------ Call next loop. setting={}", setting)
                                 _process_data(
@@ -505,7 +489,8 @@ class InputDataFromNamelist:
                                     extenders=extenders,
                                 )
                             else:
-                                for key2, value2 in setting.items():
+                                for key2_, value2 in setting.items():
+                                    key2 = key2_
                                     logger.debug(
                                         "Setting1 key={} value={} indices={}",
                                         key2,
@@ -564,19 +549,22 @@ class InputDataFromNamelist:
                                             logger.debug(
                                                 "pkey3={} pval3={}", pkey3, pval3
                                             )
-                                            pkey3, pval3 = self.substitute(pkey3, pval3)
+                                            new_pkey3, new_pval3 = self.substitute(
+                                                pkey3, pval3
+                                            )
                                             logger.debug(
                                                 "pkey3={} pval3={}", pkey3, pval3
                                             )
-                                            mapped_data.update({pkey3: pval3})
+                                            mapped_data.update({new_pkey3: new_pval3})
 
                                     if not processed:
                                         pkey3 = key2
                                         pval3 = value2
                                         logger.debug("pkey3={} pval3={}", pkey3, pval3)
-                                        if pval3.endswith(".nc"):
-                                            if not pkey3.endswith(".nc"):
-                                                pkey3 = pkey3 + ".nc"
+                                        if pval3.endswith(".nc") and not pkey3.endswith(
+                                            ".nc"
+                                        ):
+                                            pkey3 = pkey3 + ".nc"
                                         pkey3, pval3 = self.substitute(pkey3, pval3)
                                         if pval3.endswith(".dir"):
                                             dir_key = pkey3 + ".dir"
@@ -595,11 +583,8 @@ class InputDataFromNamelist:
                                             mapped_data.update({pkey3: pval3})
 
                                 indices = None
-                        else:
-                            if key not in ["macros", "extenders"]:
-                                logger.warning(
-                                    "Could not match key={} value={}", key, val
-                                )
+                        elif key not in ["macros", "extenders"]:
+                            logger.warning("Could not match key={} value={}", key, val)
                 else:
                     logger.warning("Could not find namelist key={}", key)
                     indices = None
@@ -654,7 +639,8 @@ class Pgd(Task):
 
             # Input data
             sfx_input_defs = self.platform.get_system_value("sfx_input_defs")
-            input_data = json.load(open(sfx_input_defs, "r", encoding="utf-8"))
+            with open(sfx_input_defs, "r", encoding="utf-8") as f:
+                input_data = json.load(f)
 
             if self.one_decade:
 
@@ -687,7 +673,7 @@ class Pgd(Task):
             self.fmanager.output(pgdfile, output)
             self.archive_logs(["OPTIONS.nam", "LISTING_PGD.txt"], target=self.climdir)
         else:
-            print("Output already exists: ", output)
+            logger.warning("Output already exists: ", output)
 
 
 class Prep(Task):
@@ -734,7 +720,8 @@ class Prep(Task):
 
             # Input data
             sfx_input_defs = self.platform.get_system_value("sfx_input_defs")
-            input_data = json.load(open(sfx_input_defs, "r", encoding="utf-8"))
+            with open(sfx_input_defs, "r", encoding="utf-8") as f:
+                input_data = json.load(f)
 
             # Determine PGD type and name
             filetype = settings["nam_io_offline"]["csurf_filetype"].lower()

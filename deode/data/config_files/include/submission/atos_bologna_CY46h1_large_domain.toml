@@ -24,11 +24,12 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 
 [gnu.BATCH]
   ACCOUNT = "#SBATCH -A msdeode"
+  MEM = "#SBATCH --mem=64GB"
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   QOS = "#SBATCH --qos=nf"
-  WALLTIME = "#SBATCH --time=00:15:00"
+  WALLTIME = "#SBATCH --time=03:00:00"
 
 [gnu.MODULES]
   ECMWFTOOLBOX = "ecmwf-toolbox/2021.08.3.0"

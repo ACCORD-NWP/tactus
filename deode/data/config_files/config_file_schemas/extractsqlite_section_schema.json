@@ -1,0 +1,39 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Extract sqlite Section",
+    "description": "Model for validation of the data in the 'domain' section of the config file.",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+        "parameter_list": {
+            "type": "string",
+            "description": "List of parameters to extract",
+            "default": "@DEODE_HOME@/deode/data/sqlite/param_list.json"
+        },
+        "sqlite_model_name": {
+            "type": "string",
+            "description": "Model name used in the sqlite tables",
+            "default": "@CNMEXP@"
+        },
+        "sqlite_path": {
+            "type": "string",
+            "description": "Path to generated sqlite files",
+            "default": "@ARCHIVE_ROOT@/sqlite/"
+        },
+        "sqlite_template": {
+            "type": "string",
+            "description": "File name template for generated sqlite files",
+            "default": "FCTABLE_@PP@_@YYYY@@MM@_@HH@.sqlite"
+        },
+        "station_list": {
+            "type": "string",
+            "description": "Station list used for extraction",
+            "default": "@DEODE_HOME@/deode/data/sqlite/station_list_default.csv"
+        },
+        "selection": {
+            "type": "string",
+            "description": "Temporal selection. Same syntax as for output_settings. Leave empty to inherit the fullpos settings.",
+            "default": "PT1H"
+        }
+    }
+}

@@ -11,25 +11,24 @@
   windfarm = false
 
 [general.output_settings]
-  fullpos = ["PT0H:PT6H:PT15M", "PT6H:PT9H:PT30M", "PT9H:PT12H:PT1H"]
+  fullpos = "PT15M"
   history = "PT1H"
   nrazts = "PT1H"
   surfex = "PT1H"
 
 [general.times]
   cycle_length = "PT6H"
-  end = "2023-09-13T06:00:00Z"
-  forecast_range = "PT12H"
+  end = "2023-09-16T06:00:00Z"
+  forecast_range = "PT6H"
   radiation_frequency = "PT5M"
-  start = "2023-09-13T00:00:00Z"
+  start = "2023-09-16T00:00:00Z"
 
 [boundaries]
   bd_has_surfex = false
-  bdcycle = "PT12H"
-  bdint = "PT3H"
+  bdcycle = "PT6H"
+  bdint = "PT1H"
   bdmodel = "ifs"
   bdshift = "PT0H"
-  bdstrategy = "same_forecast"
   bdtasks_per_batch = 24
   ifs.selection = "HRES"
   ifs.bdmember = ""
@@ -41,6 +40,7 @@
 [include]
   archiving = "include/archiving.toml"
   domain = "include/domains/DEMO_60x80_2500m.toml"
+  extractsqlite = "include/sqlite.toml"
   file_templates = "include/file_templates.toml"
   macros = "include/macros.toml"
   mars = "include/mars_settings.toml"
@@ -78,10 +78,3 @@
 
 [task.creategrib]
   conversions = ["surfex"]
-
-[task.extractsqlite]
-  parameter_list = "@DEODE_HOME@/deode/data/sqlite/param_list.json"
-  sqlite_model_name = "@CNMEXP@"
-  sqlite_path = "@ARCHIVE_ROOT@/sqlite/"
-  sqlite_template = "FCTABLE_@PP@_@YYYY@@MM@_@HH@.sqlite"
-  station_list = "@DEODE_HOME@/deode/data/sqlite/station_list_default.csv"

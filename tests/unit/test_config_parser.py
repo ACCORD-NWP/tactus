@@ -154,7 +154,7 @@ class TestGeneralBehaviour:
     ):
         def nested_mappings_are_basic_config(obj):
             rtn = isinstance(obj, BasicConfig)
-            for _, v in obj.items():
+            for v in obj.values():
                 if not rtn:
                     break
                 if not hasattr(v, "items"):
@@ -169,7 +169,7 @@ class TestGeneralBehaviour:
             rtn = isinstance(obj, list)
             if not hasattr(obj, "items"):
                 return rtn
-            for _, v in obj.items():
+            for v in obj.values():
                 rtn = rtn or mapping_contains_lists(v)
                 if rtn:
                     break
@@ -187,11 +187,7 @@ class TestGeneralBehaviour:
             if not hasattr(obj, "items"):
                 return True
 
-            for _, v in obj.items():
-                if not no_none_values_stored(v):
-                    return False
-
-            return True
+            return all(no_none_values_stored(v) for v in obj.values())
 
         input_data = {"a": {}, "b": None, "c": 1}
         config = ParsedConfig(input_data, json_schema={})

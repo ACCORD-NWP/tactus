@@ -106,7 +106,8 @@ class Forecast(Task):
             logger.debug("Merging file {}", filename)
             if filetype == "history":
                 lfitools = self.get_binary("lfitools")
-                cmd = f"{lfitools} facat all io_serv*.d/{filename}.gridall io_serv*.d/{filename}.speca* {filename}"
+                cmd = f"{lfitools} facat all io_serv*.d/{filename}.gridall "
+                cmd += f"io_serv*.d/{filename}.speca* {filename}"
                 logger.debug(cmd)
                 BatchJob(os.environ, wrapper="").run(cmd)
 
@@ -115,7 +116,8 @@ class Forecast(Task):
                 #        so you *must* change the name
                 lfitools = self.get_binary("lfitools")
                 os.rename(filename, filename + ".part")
-                cmd = f"{lfitools} facat all {filename}.part io_serv*.d/{filename} {filename}"
+                cmd = f"{lfitools} facat all {filename}.part "
+                cmd += f"io_serv*.d/{filename} {filename}"
                 logger.debug(cmd)
                 BatchJob(os.environ, wrapper="").run(cmd)
 
@@ -221,7 +223,8 @@ class Forecast(Task):
         self.nlgen_surfex.write_namelist(settings, "EXSEG1.nam")
 
         sfx_input_defs = self.platform.get_system_value("sfx_input_defs")
-        input_data = json.load(open(sfx_input_defs, "r", encoding="utf-8"))
+        with open(sfx_input_defs, "r", encoding="utf-8") as f:
+            input_data = json.load(f)
         binput_data = InputDataFromNamelist(
             settings, input_data, "forecast", self.platform
         ).get()
