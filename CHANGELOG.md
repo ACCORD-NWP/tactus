@@ -8,8 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Full Changelog](https://github.com/destination-earth-digital-twins/Deode-Prototype/compare/...HEAD)
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
+## [0.3.0] - 2023-11-28
+### Added
+- Configurable archiving on ecfs, default switched on
+- First sqlite extraction for verification. Default switched on but with a limited set of parameters
+- Support for reading IFSENS data 
+### Changed
+- Extraction from MARS configurable from config. More data streams added and corrected resolution for global DT data.
+- Changed config structure. E.g. model timestep is now found in the `domain` part.
+- Updated config settings. E.g. settings for large domains running on atos. Boundary settings reflecting availability of HRES.
+- Json schema validation and documentation updates.
+- Change reflecting stricter linting.
+
 ### Fixed
 - Stop writing log files to the user's home directory. This was reintroduced by mistake.
+- Correct windfarm fullpos activation
+- Remove explicit python code from the submission files
+- Fixes to allow to run the forecast as a stand alone task for the default config
 
 ## [0.2.0] - 2023-10-27
 ### Added
