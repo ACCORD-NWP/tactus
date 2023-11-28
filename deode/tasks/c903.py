@@ -52,7 +52,7 @@ class C903(Task):
         for x in link:
             try:
                 os.unlink(x)
-            except FileNotFoundError:
+            except FileNotFoundError:  # noqa: PERF203
                 logger.warning("Could not remove file '{}'.", x, exc_info=True)
 
     def execute(self):

@@ -12,8 +12,6 @@ from .namelist import flatten_list
 class InvalidSelectionCombinationError(ValueError):
     """Custom exception."""
 
-    pass
-
 
 class Fullpos:
     """Fullpos namelist generator based on (yaml) dicts."""
@@ -210,7 +208,7 @@ class Fullpos:
                     for p, q in v.items():
                         x = "".join([p[0:2], "D", p[2:]])
                         d[p] = q
-                        d[x] = [self.domain for j in range(0, len(q))]
+                        d[x] = [self.domain for j in range(len(q))]
                     tmp[k] = d
                 elif "CL3DF" in v:
                     x = level_map[k]

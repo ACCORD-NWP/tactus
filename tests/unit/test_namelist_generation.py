@@ -23,7 +23,6 @@ def config_platform():
             os_macros = ["USER", "HOME", "PWD"]
             realization = -1
             cnmexp = "HARM"
-            tstep = 72
             bdint = "PT3H"
             cycle = "CY46h1"
             accept_static_namelists = false
@@ -42,6 +41,7 @@ def config_platform():
             ilone = 11
             ilate = 11
             gridtype = "linear"
+            tstep = 72
         """
     )
     return task_configs

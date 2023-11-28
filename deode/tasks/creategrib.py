@@ -31,6 +31,7 @@ class CreateGrib(Task):
             self.conversions = {}
 
         self.output_settings = self.config["general.output_settings"]
+        self.file_templates = self.config["file_templates"]
 
         self.gl = self.get_binary("gl")
 
@@ -82,14 +83,14 @@ class CreateGrib(Task):
 
     def execute(self):
         """Execute creategrib."""
-        for filetype, rules in self.conversions.items():
+        for filetype in self.conversions:
             file_handle = self.create_list(
-                rules["input_template"], self.output_settings[filetype]
+                self.file_templates[filetype]["archive"], self.output_settings[filetype]
             )
 
             for validtime, fname in file_handle.items():
                 output = self.platform.substitute(
-                    rules["output_template"], validtime=validtime
+                    self.file_templates[filetype]["grib"], validtime=validtime
                 )
                 logger.info("Convert: {} to {}", fname, output)
                 self.convert2grib(fname, output)

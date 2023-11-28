@@ -1,4 +1,5 @@
 """Toolbox handling e.g. input/output."""
+import contextlib
 import os
 import re
 
@@ -123,12 +124,7 @@ class Platform:
             dict: Macros to define.
 
         """
-        macro_list = []
-        macros = self.config["platform"].dict()
-        for macro in macros:
-            macro_list.append(macro)
-        logger.debug("Platform macro list: {}", macro_list)
-        return macro_list
+        return list(self.config["platform"].keys())
 
     def get_system_macros(self):
         """Get the macros.
@@ -137,12 +133,7 @@ class Platform:
             dict: Macros to define.
 
         """
-        macro_list = []
-        macros = self.config["system"].dict()
-        for macro in macros:
-            macro_list.append(macro)
-        logger.debug("System macro list: {}", macro_list)
-        return macro_list
+        return list(self.config["system"].dict().keys())
 
     def get_os_macros(self):
         """Get the environment macros.
@@ -180,14 +171,17 @@ class Platform:
         # TODO handle platform differently archive etc
         if provider_id == "symlink":
             return LocalFileSystemSymlink(self.config, target, fetch=fetch)
-        elif provider_id == "copy":
+
+        if provider_id == "copy":
             return LocalFileSystemCopy(self.config, target, fetch=fetch)
-        elif provider_id == "move":
+
+        if provider_id == "move":
             return LocalFileSystemMove(self.config, target, fetch=fetch)
-        elif provider_id == "ecfs":
+
+        if provider_id == "ecfs":
             return ECFS(self.config, target, fetch=fetch)
-        else:
-            raise NotImplementedError(f"Provider for {provider_id} not implemented")
+
+        raise NotImplementedError(f"Provider for {provider_id} not implemented")
 
     def sub_value(self, pattern, key, value, micro="@", ci=True):
         """Substitute the value case-insensitively.
@@ -236,10 +230,8 @@ class Platform:
                     all_macros[macro.upper()] = val
 
             for macro in list(self.get_os_macros()):
-                try:
+                with contextlib.suppress(KeyError):
                     all_macros[macro] = os.environ[macro]
-                except KeyError:
-                    pass
 
             for macro in self.config["macros.gen_macros"]:
                 if isinstance(macro, dict):
@@ -257,13 +249,11 @@ class Platform:
                 sub_patterns = [pattern[i[j] + 1 : i[j + 1]] for j in range(0, len(i), 2)]
                 last_pattern = pattern
                 for sub_pattern in sub_patterns:
-                    try:
+                    with contextlib.suppress(KeyError):
                         val = all_macros[sub_pattern.upper()]
                         logger.debug("before replace macro={} pattern={}", macro, pattern)
                         pattern = self.sub_value(pattern, sub_pattern, val)
                         logger.debug("after replace macro={} pattern={}", macro, pattern)
-                    except KeyError:
-                        pass
 
                 i = [m.start() for m in re.finditer(r"@", pattern)]
 
@@ -319,7 +309,7 @@ class Platform:
                 pattern = self.sub_value(pattern, "LLLL", f"{lh:04d}")
                 pattern = self.sub_value(pattern, "LM", f"{lm:02d}")
                 pattern = self.sub_value(pattern, "LS", f"{ls:02d}")
-                tstep = self.config["general.tstep"]
+                tstep = self.config["domain.tstep"]
                 if tstep is not None:
                     lead_step = lead_seconds // tstep
                     pattern = self.sub_value(pattern, "TTT", f"{lead_step:03d}")
@@ -390,6 +380,8 @@ class FileManager:
             tuple: provider, resource
 
         """
+        self.aloc = self.platform.get_value("archiving.paths.aloc")
+
         destination = LocalFileOnDisk(
             self.config, destination, basetime=basetime, validtime=validtime
         )
@@ -400,22 +392,22 @@ class FileManager:
         if os.path.exists(dest_file):
             logger.debug("Destination file already exists.")
             return None, destination
-        else:
-            logger.debug("Checking provider_id {}", provider_id)
-            sub_target = self.platform.substitute(
-                target, basetime=basetime, validtime=validtime
-            )
-            provider = self.platform.get_provider(provider_id, sub_target)
 
-            if provider.create_resource(destination):
-                logger.debug("Using provider_id {}", provider_id)
-                return provider, destination
+        logger.debug("Checking provider_id {}", provider_id)
+        sub_target = self.platform.substitute(
+            target, basetime=basetime, validtime=validtime
+        )
+        provider = self.platform.get_provider(provider_id, sub_target)
+
+        if provider.create_resource(destination):
+            logger.debug("Using provider_id {}", provider_id)
+            return provider, destination
 
         # Try archive
         # TODO check for archive
         if check_archive:
             provider_id = "ecfs"
-            target = target.replace("@ARCHIVE@", "ec:@YYYY@/@MM@/@DD@/@HH@")
+            target = target.replace("@ARCHIVE@", "{self.aloc}/@YYYY@/@MM@/@DD@/@HH@")
 
             if provider_id is not None:
                 # Substitute based on ecfs
@@ -429,8 +421,8 @@ class FileManager:
                 if provider.create_resource(destination):
                     logger.debug("Using provider_id {}", provider_id)
                     return provider, destination
-                else:
-                    logger.info("Could not archive {}", destination.identifier)
+
+                logger.info("Could not archive {}", destination.identifier)
         # Else raise exception
         raise ProviderError(
             f"No provider found for {sub_target} and provider_id {provider_id}"
@@ -516,7 +508,9 @@ class FileManager:
         if archive:
             # TODO check for archive and modify macros
             provider_id = "ecfs"
-            destination = destination.replace("@ARCHIVE@", "ectmp:/@YYYY@/@MM@/@DD@/@HH@")
+            destination = destination.replace(
+                "@ARCHIVE@", "{self.aloc}/@YYYY@/@MM@/@DD@/@HH@"
+            )
 
             sub_target = self.platform.substitute(
                 target, basetime=basetime, validtime=validtime
@@ -596,9 +590,8 @@ class FileManager:
                     if key in settings:
                         kwargs.update({key: settings[key]})
                 logger.debug("kwargs={}", kwargs)
-                if ftype == "input":
-                    self.input(target, destination, **kwargs)
-                elif ftype == "output":
+
+                if ftype in ["input", "output"]:
                     self.input(target, destination, **kwargs)
                 else:
                     raise ValueError(
@@ -635,17 +628,17 @@ class LocalFileSystemSymlink(Provider):
                 logger.info("ln -sf {} {} ", self.identifier, resource.identifier)
                 os.system(f"ln -sf {self.identifier} {resource.identifier}")  # noqa S605
                 return True
-            else:
-                logger.warning("File is missing {} ", self.identifier)
-                return False
-        else:
-            if os.path.exists(resource.identifier):
-                logger.info("ln -sf {} {} ", resource.identifier, self.identifier)
-                os.system(f"ln -sf {resource.identifier} {self.identifier}")  # noqa S605
-                return True
-            else:
-                logger.warning("File is missing {} ", resource.identifier)
-                return False
+
+            logger.warning("File is missing {} ", self.identifier)
+            return False
+
+        if os.path.exists(resource.identifier):
+            logger.info("ln -sf {} {} ", resource.identifier, self.identifier)
+            os.system(f"ln -sf {resource.identifier} {self.identifier}")  # noqa S605
+            return True
+
+        logger.warning("File is missing {} ", resource.identifier)
+        return False
 
 
 class LocalFileSystemCopy(Provider):
@@ -677,17 +670,17 @@ class LocalFileSystemCopy(Provider):
                 logger.info("cp {} {} ", self.identifier, resource.identifier)
                 os.system(f"cp {self.identifier} {resource.identifier}")  # noqa S605
                 return True
-            else:
-                logger.warning("File is missing {} ", self.identifier)
-                return False
-        else:
-            if os.path.exists(resource.identifier):
-                logger.info("cp {} {} ", resource.identifier, self.identifier)
-                os.system(f"cp {resource.identifier} {self.identifier}")  # noqa S605
-                return True
-            else:
-                logger.warning("File is missing {} ", resource.identifier)
-                return False
+
+            logger.warning("File is missing {} ", self.identifier)
+            return False
+
+        if os.path.exists(resource.identifier):
+            logger.info("cp {} {} ", resource.identifier, self.identifier)
+            os.system(f"cp {resource.identifier} {self.identifier}")  # noqa S605
+            return True
+
+        logger.warning("File is missing {} ", resource.identifier)
+        return False
 
 
 class LocalFileSystemMove(Provider):
@@ -719,17 +712,17 @@ class LocalFileSystemMove(Provider):
                 logger.info("mv {} {} ", self.identifier, resource.identifier)
                 os.system(f"mv {self.identifier} {resource.identifier}")  # noqa S605
                 return True
-            else:
-                logger.warning("File is missing {} ", self.identifier)
-                return False
-        else:
-            if os.path.exists(resource.identifier):
-                logger.info("mv {} {} ", resource.identifier, self.identifier)
-                os.system(f"mv {resource.identifier} {self.identifier}")  # noqa S605
-                return True
-            else:
-                logger.warning("File is missing {} ", resource.identifier)
-                return False
+
+            logger.warning("File is missing {} ", self.identifier)
+            return False
+
+        if os.path.exists(resource.identifier):
+            logger.info("mv {} {} ", resource.identifier, self.identifier)
+            os.system(f"mv {resource.identifier} {self.identifier}")  # noqa S605
+            return True
+
+        logger.warning("File is missing {} ", resource.identifier)
+        return False
 
 
 class ArchiveProvider(Provider):
@@ -785,14 +778,14 @@ class ECFS(ArchiveProvider):
         """
         # TODO: Address the noqa check disablers
         if self.fetch:
-            logger.info("ecp -u {} {}", self.identifier, resource.identifier)
+            logger.info("ecp -pu {} {}", self.identifier, resource.identifier)
             os.system(
-                f"ecp -u {self.identifier} {resource.identifier}"  # noqa S605, E800
+                f"ecp -pu {self.identifier} {resource.identifier}"  # noqa S605, E800
             )
         else:
-            logger.info("ecp -u {} {}", resource.identifier, self.identifier)
+            logger.info("ecp -pu {} {}", resource.identifier, self.identifier)
             os.system(
-                f"ecp -u {resource.identifier} ec:{self.identifier}"  # noqa S605, E800
+                f"ecp -pu {resource.identifier} {self.identifier}"  # noqa S605, E800
             )
         return True
 

@@ -504,7 +504,7 @@ f4_arome:
     XMULAF: -1.85
   NAMRIP:
     CSTOP: ${namelist.cstop}
-    TSTEP: ${general.tstep}
+    TSTEP: ${domain.tstep}
   NAMSATS:
     LPARTIAL_COEF_FILES: True
   NAMTOPH:

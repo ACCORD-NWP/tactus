@@ -106,7 +106,8 @@ class InitialConditions(object):
 
         if not self.check_if_found():
             raise FileNotFoundError(
-                f"Could not find initial files for mode={self.mode}, {self.source}, {self.source_sfx}"
+                "Could not find initial files for "
+                f"mode={self.mode}, {self.source}, {self.source_sfx}"
             )
 
         return self.source, self.source_sfx
