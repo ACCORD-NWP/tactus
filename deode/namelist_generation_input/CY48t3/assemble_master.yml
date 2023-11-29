@@ -57,17 +57,11 @@ e927_arome:
   - f4_e927
   - f4_e927_arome
 
-e927_alaro:
-  - empty
-  - f4_common
-  - f4_e927
-  - f4_e927_alaro
-
 forecast_bdmodel_ifs:
   - empty
   - fa_names
   - f4_common
-  - f4_${general.csc}
+  - f4_AROME
 
 forecast_bdmodel_arome:
   - empty
@@ -75,6 +69,12 @@ forecast_bdmodel_arome:
   - f4_common
   - f4_arome
   - namgfl_bdmodel_arome
+
+forecast_bdmodel_alaro:
+  - empty
+  - fa_names
+  - f4_common
+  - f4_ALARO
 
 c903_main:
   - empty

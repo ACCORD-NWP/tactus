@@ -1,16 +1,13 @@
 #!/usr/bin/env python3
 """Unit tests for the Marsprep(config)."""
 
-import ast
 import contextlib
 from pathlib import Path
 
-import pandas as pd
 import pytest
 import tomlkit
 
 from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
-from deode.datetime_utils import as_datetime
 from deode.geo_utils import Projection, Projstring
 from deode.tasks.marsprep import Marsprep
 
@@ -24,10 +21,9 @@ def base_raw_config(request):
     test_map = {"CY46h1": {"general": {"windfarm": True}}}
     tag = tag_map[request.param] if request.param in tag_map else f"_{request.param}"
     config = BasicConfig.from_file(ConfigParserDefaults.DIRECTORY / f"config{tag}.toml")
-    try:
+    with contextlib.suppress(KeyError):
         config = config.copy(update=test_map[request.param])
-    except KeyError:
-        pass
+
     return config
 
 
@@ -102,17 +98,15 @@ def parsed_config(request, base_raw_config, tmp_path_factory):
 
 
 def test_update_data_request(parsed_config):
-    "Test update data request"
-
+    """Test update data request."""
     config = parsed_config
     truth_selection = config["boundaries.ifs.selection"]
     try:
         mars = config[f"mars.{truth_selection}"]
     except KeyError:
         # This experiment is note defined fallback to RD_DEFAULT
-        mars = config[f"mars.RD_DEFAULT"]
+        mars = config["mars.RD_DEFAULT"]
         mars["expver"] = truth_selection
-        logger.warning("SELECTION={} not defined, using RD_DEFAULT", truth_selection)
 
     dateframe = Marsprep(config).split_date(
         Marsprep(config).basetime,

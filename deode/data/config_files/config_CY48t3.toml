@@ -24,11 +24,10 @@
 
 [boundaries]
   bd_has_surfex = false
-  bdcycle = "PT24H"
-  bdint = "PT3H"
+  bdcycle = "PT6H"
+  bdint = "PT1H"
   bdmodel = "ifs"
   bdshift = "PT0H"
-  bdstrategy = "same_forecast"
   bdtasks_per_batch = 24
   humi_gp = true
   ifs.selection = "HRES"
@@ -41,6 +40,7 @@
 [include]
   archiving = "include/archiving.toml"
   domain = "include/domains/DEMO_60x80_2500m.toml"
+  extractsqlite = "include/sqlite.toml"
   file_templates = "include/file_templates.toml"
   macros = "include/macros.toml"
   mars = "include/mars_settings.toml"
@@ -52,7 +52,7 @@
   one_decade = true
 
 [suite_control]
-  create_static_data = false 
+  create_static_data = true
   create_time_dependent_suite = true
   do_archiving = true
   do_extractsqlite = true
@@ -78,10 +78,3 @@
 
 [task.creategrib]
   conversions = ["surfex"]
-
-[task.extractsqlite]
-  parameter_list = "@DEODE_HOME@/deode/data/sqlite/param_list.json"
-  sqlite_model_name = "@CNMEXP@"
-  sqlite_path = "@ARCHIVE_ROOT@/sqlite/"
-  sqlite_template = "FCTABLE_@PP@_@YYYY@@MM@_@HH@.sqlite"
-  station_list = "@DEODE_HOME@/deode/data/sqlite/station_list_default.csv"

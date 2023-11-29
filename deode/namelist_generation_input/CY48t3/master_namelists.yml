@@ -837,15 +837,15 @@ f4_ALARO:
     YL_NL%NCOUPLING: 0
     YL_NL%NREQIN: 0
     YQ_NL%LADV: True
-    YQ_NL%LGP: True
-    YQ_NL%LGPINGP: True 
+    YQ_NL%LGP: False 
+    YQ_NL%LGPINGP: False 
     YQ_NL%LHV: False
     YQ_NL%LPC: True
     YQ_NL%LQM: False
     YQ_NL%LQMH: False
     YQ_NL%LREQOUT: True
     YQ_NL%LSLHD: True
-    YQ_NL%LSP: False 
+    YQ_NL%LSP: True 
     YQ_NL%LVSPLIP: False
     YR_NL%LADV: True
     YR_NL%LGP: True
@@ -1239,10 +1239,10 @@ f4_c903_main:
   NAMOPH:
     CCLIMINC: "_"
   NAMGFL:
-    YQ_NL%LGP: True 
+    YQ_NL%LGP: True
     YQ_NL%LSP: False
     YO3_NL%LGP: False
-    YQ_NL%LGPINGP: True 
+    YQ_NL%LGPINGP: True
     YR_NL%NREQIN: -1
     YS_NL%NREQIN: -1
   NAMFAINIT:

@@ -12,8 +12,7 @@ class MockObject(object):
 def mock_getstring(_msgid, key):
     if key == "level":
         return "0"
-    else:
-        return "ok"
+    return "ok"
 
 
 def mock_getlong(_msgid, key):
@@ -23,8 +22,7 @@ def mock_getlong(_msgid, key):
         return 13
     if key == "indicatorOfUnitForTimeRange":
         return 13
-    else:
-        return 0
+    return 0
 
 
 def mock_getdouble(_msgid, _key):
@@ -36,8 +34,7 @@ def mock_gethandle(fileobj):
     x = fileobj.__next__()
     if x < 3:
         return x
-    else:
-        return None
+    return None
 
 
 def mock_iterator(*_args, **_kwargs):
@@ -49,8 +46,7 @@ def mock_iterator_next(gribid):
     x = gribid.__next__()
     if x < 3:
         return [0.0, 0.0]
-    else:
-        return None
+    return None
 
 
 def mock_nearest(*_args, **kwargs):

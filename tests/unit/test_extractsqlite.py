@@ -1,7 +1,6 @@
-"""unit tests for extractsqlite"""
+"""unit tests for extractsqlite."""
 import datetime
 import itertools
-import sys
 
 import pandas
 import pytest
@@ -19,7 +18,7 @@ def tmp_sqlite_path(tmp_path_factory):
 
 
 class TestExtractSQLite:
-    """Test extractsqlite in parts"""
+    """Test extractsqlite in parts."""
 
     sqlite_template = "FC_@PP@_@YYYY@@MM@_@HH@.sqlite"
     fcdate = datetime.datetime.strptime("20230915T00", "%Y%m%dT%H")

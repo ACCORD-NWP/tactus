@@ -100,6 +100,7 @@ class JsonSchema(BaseMapping):
     """Class to use for JSON schemas. Provides a `validate` method to validate data."""
 
     def __init__(self, *args, **kwargs):
+        """Initialise instance."""
         super().__init__(*args, **kwargs)
         self.data = jsonref.replace_refs(self.data)
 
@@ -117,25 +118,26 @@ class JsonSchema(BaseMapping):
             with open(Path(tmpdir) / "schema.json", "w") as schema_file:
                 schema_file.write(json.dumps(self.dict()))
 
-            with open(Path(tmpdir) / "schema_doc.md", "w") as doc_file:
-                with contextlib.redirect_stdout(None):
-                    generate_from_file_object(
-                        schema_file=schema_file,
-                        result_file=doc_file,
-                        config=GenerationConfiguration(
-                            template_name="md",
-                            show_toc=False,
-                            template_md_options={"show_heading_numbers": False},
-                            with_footer=False,
-                            properties_table_columns=[
-                                "property",
-                                "type",
-                                "required",
-                                "default",
-                                "title/description",
-                            ],
-                        ),
-                    )
+            with open(
+                Path(tmpdir) / "schema_doc.md", "w"
+            ) as doc_file, contextlib.redirect_stdout(None):
+                generate_from_file_object(
+                    schema_file=schema_file,
+                    result_file=doc_file,
+                    config=GenerationConfiguration(
+                        template_name="md",
+                        show_toc=False,
+                        template_md_options={"show_heading_numbers": False},
+                        with_footer=False,
+                        properties_table_columns=[
+                            "property",
+                            "type",
+                            "required",
+                            "default",
+                            "title/description",
+                        ],
+                    ),
+                )
 
             with open(Path(tmpdir) / "schema_doc.md", "r") as doc_file:
                 schema_doc = doc_file.read()
@@ -263,8 +265,8 @@ def _expand_config_include_section(
         json_schema["properties"] = {}
     config_include_search_dir = Path(config_include_search_dir).resolve()
     config_include_sections = {}
-    for section_name, include_path in config_include_defs.items():
-        include_path = Path(include_path)
+    for section_name, include_path_ in config_include_defs.items():
+        include_path = Path(include_path_)
         if not include_path.is_absolute():
             include_path = config_include_search_dir / include_path
         included_config_section = _read_raw_config_file(include_path)

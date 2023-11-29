@@ -1,4 +1,5 @@
 """Utilities for simple tasks on OS level."""
+import contextlib
 import os
 import re
 import shutil
@@ -31,18 +32,25 @@ class Search:
             directory (str): Directory to search in.
             prefix (str, optional): Only find files with this prefix. Defaults to "".
             postfix (str, optional): Only find files with the postfix. Defaults to "".
-            pattern (str, optional): Only find files with matching pattern. Defaults to "".
-            recursive (bool, optional): Go into directories recursively. Defaults to True.
+            pattern (str, optional): Only find files with matching pattern.
+                Defaults to "".
+            recursive (bool, optional): Go into directories recursively.
+                Defaults to True.
             onlyfiles (bool, optional): Show only files. Defaults to True.
-            fullpath (bool, optional): Give full path. Defaults to False. If recursive=True, fullpath is given automatically.
-            olderthan (int, optional): Match only files older than X seconds from now. Defaults to None.
+            fullpath (bool, optional): Give full path. Defaults to False. If
+                recursive=True, fullpath is given automatically.
+            olderthan (int, optional): Match only files older than X seconds from now.
+                Defaults to None.
             inorder (bool, optional): Return sorted list of filenames. Defaults to False.
 
         Returns:
             list: List containing file names that matches criterias
 
         Examples:
-            >>> files = find_files('/foo/', prefix="", postfix="", recursive=False, onlyfiles=True, fullpath=True, olderthan=86400*100)
+            >>> files = find_files(
+                            '/foo/', prefix="", postfix="", recursive=False,
+                            onlyfiles=True, fullpath=True, olderthan=86400*100
+                        )
         """
         if recursive:
             fullpath = False
@@ -50,7 +58,7 @@ class Search:
             for r, _d, f in os.walk(directory):  # r=root, d=directories, f=files
                 for file in f:
                     if file.startswith(prefix) and file.endswith(postfix):
-                        files.append(os.path.join(r, file))
+                        files.append(os.path.join(r, file))  # noqa: PERF401
 
         elif not recursive:
             if onlyfiles:
@@ -79,17 +87,14 @@ class Search:
             now = time.time()
             tfiles = []
             for f in files:
-                try:
+                with contextlib.suppress(FileNotFoundError):
                     if not fullpath:
                         if os.path.getmtime(os.path.join(directory, f)) < (
                             now - olderthan
                         ):
                             tfiles.append(f)
-                    else:
-                        if os.path.getmtime(f) < (now - olderthan):
-                            tfiles.append(f)
-                except FileNotFoundError:
-                    continue
+                    elif os.path.getmtime(f) < (now - olderthan):
+                        tfiles.append(f)
 
             files = tfiles
 
@@ -119,8 +124,8 @@ def filepath_iterator(paths, filename_pattern="*"):
     if isinstance(paths, (str, Path)):
         paths = [paths]
 
-    for path in paths:
-        path = Path(path).expanduser().resolve()
+    for path_ in paths:
+        path = Path(path_).expanduser().resolve()
         if path.is_dir():
             for subpath in path.rglob(filename_pattern):
                 if subpath.is_file():
@@ -138,9 +143,9 @@ def deodemakedirs(path, unixgroup="", exist_ok=True):
 
     Args:
         path (str): directory path that should be created if it doesn't already exist.
-        unixgroup (str, optional): unix group the newly created directories should belong to.
-        exist_ok (boolean, optional): Define whether directories may already exist or whether
-            an error should be raised.
+        unixgroup (str, optional): unix group the newly created dirs should belong to.
+        exist_ok (boolean, optional): Define whether directories may already exist
+            or whether an error should be raised.
 
     Raises:
         OSError: If cannot create the directory.

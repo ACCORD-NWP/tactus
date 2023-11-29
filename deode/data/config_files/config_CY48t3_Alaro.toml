@@ -27,39 +27,39 @@
   bdint = "PT1H"
   bdmodel = "ifs"
   bdshift = "PT0H"
-  bdstrategy = "same_forecast"
   bdtasks_per_batch = 24
-  humi_gp = false 
+  humi_gp = false
   ifs.selection = "ATOS_DT"
   ifs.bdmember = ""
 
 [fullpos]
   config_path = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos"
-  selection = ["rules", "namfpc_header", "master_selection"]
+  selection = ["rules", "namfpc_header", "master_selection_ALARO"]
 
 [include]
   archiving = "include/archiving.toml"
-  domain = "include/domains/DEOL.toml"
+  domain = "include/domains/DEMO_60x80_2500m.toml"
+  extractsqlite = "include/sqlite.toml"
   file_templates = "include/file_templates.toml"
   macros = "include/macros.toml"
   mars = "include/mars_settings.toml"
   platform = "include/platform_paths/atos_bologna.toml"
-  submission = "include/submission/atos_bologna_CY48t3_large_domain.toml"
+  submission = "include/submission/atos_bologna_CY48t3.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"
 
 [pgd]
   one_decade = true
 
 [suite_control]
-  create_static_data = false
+  create_static_data = false 
   create_time_dependent_suite = true
   do_archiving = true
   do_extractsqlite = false
   do_marsprep = true
   do_pgd = true
   do_prep = false
-  do_soil = true 
-  interpolate_boundaries = true 
+  do_soil = true
+  interpolate_boundaries = true
   mode = "start"
 
 [system]
@@ -75,9 +75,4 @@
   marsdir = "@SCRATCH@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"
 
-[task.extractsqlite]
-  parameter_list = "@DEODE_HOME@/deode/data/sqlite/param_list.json"
-  sqlite_model_name = "@CNMEXP@"
-  sqlite_path = "@ARCHIVE_ROOT@/sqlite/"
-  sqlite_template = "FCTABLE_@PP@_@YYYY@@MM@_@HH@.sqlite"
-  station_list = "@DEODE_HOME@/deode/data/sqlite/station_list_default.csv"
+
