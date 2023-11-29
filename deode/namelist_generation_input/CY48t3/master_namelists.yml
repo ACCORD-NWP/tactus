@@ -133,7 +133,10 @@ e923_base:
     ELON0: ${domain.xlon0}
     ELONC: ${domain.xloncen}
 
-namgfl_bdmodel_arome:
+namgfl_ifs:
+  NAMGFL: {}
+
+namgfl_AROME:
   NAMGFL:
     YG_NL%NREQIN: 1
     YI_NL%NREQIN: 1
@@ -580,6 +583,7 @@ fa_names:
 f4_ALARO:
   NAERAD:
     LRRTM: False
+    NRADFR: ${namelist.nradfr}
   NAMAFN:
     GFP_10U%IBITS: 12
     GFP_10V%IBITS: 12
@@ -693,20 +697,6 @@ f4_ALARO:
     N1SFXHIS: 0
   NAMCVER:
     LVERTFE: False
-  NAMDDH:
-    BDEDDH(1,1): 3.
-    BDEDDH(2,1): 1.
-    BDEDDH(3,1): 5.0
-    BDEDDH(4,1): 55.0
-    BDEDDH(5,1): 27.5
-    BDEDDH(6,1): 42.5
-    LHDCDPI: False
-    LHDDOP: True
-    LHDEFD: True
-    LHDHKS: True
-    LHDLIST: False
-    LHDORIGP: False
-    LONLYVAR: False
   NAMDPRECIPS:
     RDHAIL1: 0.5
     RDHAIL2: 1.
@@ -776,6 +766,12 @@ f4_ALARO:
     SLHDEPSV: 0.0
     SLHDKMAX: 6.
     SLHDKMIN: -0.6
+  NAMFPG:
+    NFPDISTRIB: 1
+  NAMFPSC2:
+    NFPROMA: ${submission.nproma}
+  NAMFPSC2_DEP:
+    NFPROMA_DEP: ${submission.nproma}
   NAMGFL:
     YA_NL%LADV: False
     YA_NL%LGP: True
@@ -922,6 +918,13 @@ f4_ALARO:
     YUOM_NL%NREQIN: 0
   NAMGRIB:
     NCYCLE: 48
+  NAMIO_SERV:
+    NIO_SERV_BUF_MAXSIZE: 20
+    NIO_SERV_METHOD: 2
+    NMSG_LEVEL_CLIENT: 0
+    NMSG_LEVEL_SERVER: 0
+    NPROCESS_LEVEL: 5
+    NPROC_IO: ${namelist.nproc_io-0}
   NAMJFH:
     N_VMASS: 0
   NAMOPH:
@@ -1132,7 +1135,6 @@ f4_ALARO:
     NECRIPL: 1
   NEMELBC0B:
     TEFRCL: ${namelist.tefrcl}
-  NAMFPC: {}
 
 f4_common:
   NAERAD:
@@ -1153,6 +1155,7 @@ f4_common:
   NAMDYNA:
     NDLNPR: 1
   NAMFA:
+    LEXTERN: True
     NBITCS: -1
     NBITPG: -1
     NSTRON: -1
@@ -1275,7 +1278,6 @@ f4_c903_main:
     LESCALE_U: False
 
 f4_c903_domain:
-  NAMFPF: {}
   NAMFPSC2:
     NFPROMA: ${submission.nproma}
   NAMFPSC2_DEP:
