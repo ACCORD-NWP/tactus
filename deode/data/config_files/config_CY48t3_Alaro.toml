@@ -25,7 +25,7 @@
   bd_has_surfex = false
   bdcycle = "PT24H"
   bdint = "PT1H"
-  bdmodel = "ifs"
+  bdmodel = "IFS"
   bdshift = "PT0H"
   bdtasks_per_batch = 24
   humi_gp = false

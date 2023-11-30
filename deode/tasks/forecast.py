@@ -26,6 +26,7 @@ class Forecast(Task):
         Task.__init__(self, config, __name__)
 
         self.cycle = self.config["general.cycle"]
+        self.csc = self.config["general.csc"]
         self.cnmexp = self.config["general.cnmexp"]
         self.domain = self.config["domain.name"]
         self.windfarm = self.config.get("general.windfarm", False)
@@ -211,7 +212,7 @@ class Forecast(Task):
             self.wfp_input()
 
         # Construct master namelist and include fullpos config
-        forecast_namelist = f"forecast_bdmodel_{self.bdmodel}"
+        forecast_namelist = "forecast"
         self.nlgen_master.load(forecast_namelist)
         logger.info(self.nlgen_master)
         self.nlgen_master = check_fullpos_namelist(self.config, self.nlgen_master)

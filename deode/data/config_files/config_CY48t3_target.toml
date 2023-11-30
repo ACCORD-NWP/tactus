@@ -26,7 +26,7 @@
   bd_has_surfex = true
   bdcycle = "PT6H"
   bdint = "PT1H"
-  bdmodel = "arome"
+  bdmodel = "AROME"
   bdshift = "PT0H"
   bdtasks_per_batch = 24
   ifs.selection = "HRES"

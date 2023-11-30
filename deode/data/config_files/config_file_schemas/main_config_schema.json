@@ -87,8 +87,9 @@
         "bdmodel": {
           "description": "Coupling model",
           "enum": [
-            "arome",
-            "ifs"
+            "ALARO",
+            "AROME",
+            "IFS"
           ],
           "type": "string"
         },
