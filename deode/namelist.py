@@ -324,7 +324,7 @@ class NamelistGenerator:
             use_yaml, nldict, cndict = self.load_user_namelist()
 
         if use_yaml:
-            logger.info("Use {} and {} to generate namelist", self.nlfile, self.cnfile)
+            logger.debug("Use {} and {} to generate namelist", self.nlfile, self.cnfile)
             # Read namelist file with all the categories
             with open(self.nlfile, mode="rt", encoding="utf-8") as file:
                 nldict = yaml.safe_load(file)

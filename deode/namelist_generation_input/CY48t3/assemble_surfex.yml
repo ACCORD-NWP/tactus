@@ -36,7 +36,7 @@ prep: &default_prep
   - sfx_split_patch
   - sfx_prep
 
-prep_arome:
+prep_AROME:
   - sfx_io
   - sfx_surf_constants
   - sfx_treedrag

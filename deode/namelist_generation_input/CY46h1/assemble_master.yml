@@ -57,7 +57,7 @@ e927_arome:
   - f4_e927
   - f4_e927_arome
 
-forecast_bdmodel_ifs:
+forecast:
   - empty
   - fa_names
   - f4_common
