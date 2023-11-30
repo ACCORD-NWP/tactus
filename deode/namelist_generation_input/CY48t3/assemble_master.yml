@@ -70,5 +70,6 @@ c903_main:
   - f4_c903_main
 
 c903_domain:
+  - empty
   - fa_names
   - f4_c903_domain

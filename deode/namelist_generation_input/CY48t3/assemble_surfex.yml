@@ -48,7 +48,7 @@ prep_arome:
   - sfx_split_patch
   - sfx_prep
 
-prep_ifs:
+prep_IFS:
   *default_prep
 
 forecast:
