@@ -90,6 +90,11 @@ def expand_output_settings(output_settings, forecast_range):
         check_syntax(output_settings, 2)
         oi = output_settings
 
+    dt0 = as_timedelta("PT0H")
+    for x in oi:
+      if as_timedelta(x.split(":")[2]) == dt0:
+          raise RuntimeError(f"Zero size time increments not allowed:{x}")
+
     sections = [[as_timedelta(y) for y in x.split(":")] for x in oi]
 
     return sections
