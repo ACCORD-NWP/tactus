@@ -43,14 +43,14 @@ e923_9:
   - e923_base
   - e923_9
 
-e927_ifs:
+e927_IFS:
   - empty
   - fa_names
   - f4_common
   - f4_e927
   - f4_e927_ifs
 
-e927_arome:
+e927_AROME:
   - empty
   - fa_names
   - f4_common
@@ -63,7 +63,7 @@ forecast:
   - f4_common
   - f4_harmonie-arome
 
-forecast_bdmodel_arome:
+forecast_bdmodel_AROME:
   - empty
   - fa_names
   - f4_common

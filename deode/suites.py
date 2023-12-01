@@ -71,6 +71,8 @@ class SuiteDefinition(object):
         self.suite_name = suite_name
         self.mode = config["suite_control.mode"]
 
+        self.creategrib = bool("task.creategrib" in config)
+
         name = suite_name
         self.joboutdir = joboutdir
         if ecf_include is None:
@@ -446,17 +448,19 @@ class SuiteDefinition(object):
                 variables=None,
             )
 
-            creategrib_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(forecast_task)])
-
-            EcflowSuiteTask(
-                "CreateGrib",
-                forecasting,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                trigger=creategrib_trigger,
-            )
+            if self.creategrib:
+                creategrib_trigger = EcflowSuiteTriggers(
+                    [EcflowSuiteTrigger(forecast_task)]
+                )
+                EcflowSuiteTask(
+                    "CreateGrib",
+                    forecasting,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    trigger=creategrib_trigger,
+                )
 
             if self.do_extractsqlite:
                 extractsqlite_trigger = EcflowSuiteTriggers(
