@@ -702,7 +702,6 @@ class Prep(Task):
             deodemakedirs(self.archive)
             batch = BatchJob(os.environ, wrapper=self.wrapper)
 
-            bdmodel = self.config["boundaries.bdmodel"]
             bd_has_surfex = self.config["boundaries.bd_has_surfex"]
             basetime = as_datetime(self.config["general.times.basetime"])
 

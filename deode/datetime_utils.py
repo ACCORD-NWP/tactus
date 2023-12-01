@@ -77,6 +77,9 @@ def expand_output_settings(output_settings, forecast_range):
         output_settings (tuple, list, str): Specifies the output steps
         forecast_range (str): Forecast range in duration syntax
 
+    Raises:
+        RuntimeError: Handle erroneous time increment
+
     Returns:
         sections (list) : List of output subsections
 
@@ -92,8 +95,8 @@ def expand_output_settings(output_settings, forecast_range):
 
     dt0 = as_timedelta("PT0H")
     for x in oi:
-      if as_timedelta(x.split(":")[2]) == dt0:
-          raise RuntimeError(f"Zero size time increments not allowed:{x}")
+        if as_timedelta(x.split(":")[2]) == dt0:
+            raise RuntimeError(f"Zero size time increments not allowed:{x}")
 
     sections = [[as_timedelta(y) for y in x.split(":")] for x in oi]
 
