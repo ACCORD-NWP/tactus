@@ -62,7 +62,7 @@ forecast:
   - fa_names
   - f4_common
   - f4_@CSC@
-  - namgfl_@bdmodel@
+  - namgfl_@BDMODEL@
 
 c903_main:
   - empty

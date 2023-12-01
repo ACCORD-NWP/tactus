@@ -18,6 +18,8 @@ def config_platform():
     """Set the platform specific configuration."""
     task_configs = tomlkit.parse(
         """
+        [boundaries]
+            bdmodel = "IFS"
         [general]
             case = "test_case"
             os_macros = ["USER", "HOME", "PWD"]
@@ -42,6 +44,10 @@ def config_platform():
             ilate = 11
             gridtype = "linear"
             tstep = 72
+        [macros]
+            gen_macros = ["boundaries.bdmodel"]
+            group_macros = ["platform", "system"]
+            os_macros = ["USER", "HOME", "PWD"]
         """
     )
     return task_configs
