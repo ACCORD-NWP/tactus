@@ -32,7 +32,7 @@ pgd_one_decade:
   - sfx_pgd_soilgrid_sand
   - sfx_pgd_soilgrid_clay
 
-prep_IFS:
+prep:
   - sfx_io
   - sfx_surf_constants
   - sfx_treedrag
@@ -40,21 +40,15 @@ prep_IFS:
   - sfx_prep_sea_sice
   - sfx_prep_flake
   - sfx_prep_isba
-  - sfx_prep_isba_from_grib
+  - prep_@BDMODEL@
   - sfx_split_patch
   - sfx_prep_isba_snow_3l
 
 prep_AROME:
-  - sfx_io
-  - sfx_surf_constants
-  - sfx_treedrag
-  - sfx_prep_sea
-  - sfx_prep_sea_sice
-  - sfx_prep_flake
-  - sfx_prep_isba
   - sfx_prep_isba_from_fa
-  - sfx_split_patch
-  - sfx_prep_isba_snow_3l
+
+prep_IFS:
+  - sfx_prep_isba_from_grib
 
 forecast:
   - sfx_io

@@ -706,7 +706,7 @@ class Prep(Task):
             bd_has_surfex = self.config["boundaries.bd_has_surfex"]
             basetime = as_datetime(self.config["general.times.basetime"])
 
-            namelist_task = f"prep_{bdmodel}"
+            namelist_task = "prep"
             self.nlgen.load(namelist_task)
             settings = self.nlgen.assemble_namelist(namelist_task)
             settings["nam_prep_surf_atm"]["nyear"] = int(basetime.strftime("%Y"))

@@ -452,6 +452,7 @@ class SuiteDefinition(object):
                 creategrib_trigger = EcflowSuiteTriggers(
                     [EcflowSuiteTrigger(forecast_task)]
                 )
+
                 EcflowSuiteTask(
                     "CreateGrib",
                     forecasting,

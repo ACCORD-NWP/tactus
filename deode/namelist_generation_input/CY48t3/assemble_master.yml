@@ -1,68 +1,57 @@
-e923_0:
+common_e923:
   - empty
   - e923_base
+
+e923_part_0:
+  - common_e923
   - e923_0
 
-e923_1:
-  - empty
-  - e923_base
+e923_part__1:
+  - common_e923
   - e923_1
 
-e923_2:
-  - empty
-  - e923_base
+e923_part__2:
+  - common_e923
   - e923_2
 
-e923_3:
-  - empty
-  - e923_base
+e923_part__3:
+  - common_e923
   - e923_3
 
-e923_4:
-  - empty
-  - e923_base
+e923_part__4:
+  - common_e923
   - e923_4
 
-e923_5:
-  - empty
-  - e923_base
+e923_part__5:
+  - common_e923
   - e923_5
 
-e923_6:
-  - empty
-  - e923_base
+e923_part__6:
+  - common_e923
   - e923_6
 
-e923_8:
-  - empty
-  - e923_base
+e923_part__8:
+  - common_e923
   - e923_8
 
-e923_9:
-  - empty
-  - e923_base
+e923_part__9:
+  - common_e923
   - e923_9
 
-e927_IFS:
+master_common:
   - empty
   - fa_names
   - f4_common
-  - f4_e927
-  - f4_e927_ifs
 
-e927_AROME:
-  - empty
-  - fa_names
-  - f4_common
+e927:
+  - master_common
   - f4_e927
-  - f4_e927_arome
+  - f4_e927_@BDMODEL@
 
 forecast:
-  - empty
-  - fa_names
-  - f4_common
+  - master_common
   - f4_@CSC@
-  - namgfl_@bdmodel@
+  - namgfl_@BDMODEL@
 
 c903_main:
   - empty

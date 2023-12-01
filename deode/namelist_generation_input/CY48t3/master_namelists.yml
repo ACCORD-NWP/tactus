@@ -1174,7 +1174,7 @@ f4_common:
     MP_TYPE: 2
     NOUTPUT: 1
     NPRINTLEV: 1
-    NPROC: "${namelist.nproc}"
+    NPROC: ${namelist.nproc}
   NAMPAR1:
     LEQ_REGIONS: False
     LSPLIT: True

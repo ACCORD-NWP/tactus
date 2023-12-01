@@ -418,6 +418,27 @@ class NamelistGenerator:
 
         return self.check_replace_scalar(node)
 
+    def expand_cndict(self, target):
+        """Recursively generates list of namelist groups to assemble.
+
+        Args:
+            target (str): task to generate namelists for
+
+        Returns:
+            cnlist (list): list of namelist groups
+
+        """
+        cnlist = [self.platform.substitute(x) for x in flatten_list(self.cndict[target])]
+        cnlist_ = cnlist.copy()
+        for x in cnlist_:
+            if x in self.cndict:
+                i = cnlist.index(x)
+                cnlist[i] = self.expand_cndict(x)
+
+        cnlist = flatten_list(cnlist)
+        logger.info("expand:{}, cnlist:{}", target, cnlist)
+        return cnlist
+
     def assemble_namelist(self, target):
         """Generate the namelists for 'target'.
 
@@ -430,12 +451,10 @@ class NamelistGenerator:
         """
         # Start with empty result dictionary
         nlres = {}
-
         nldict = self.nldict
+
         # Assemble the target namelists based on the given category order
-        cnlist = [self.platform.substitute(x) for x in flatten_list(self.cndict[target])]
-        logger.info("cnlist:{}", cnlist)
-        for catg in cnlist:
+        for catg in self.expand_cndict(target):
             # variable substitution removed at this level (may be resurrected)
             # assemble namelists for this category
             if catg in nldict:
