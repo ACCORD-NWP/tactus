@@ -23,7 +23,7 @@
 
 [boundaries]
   bd_has_surfex = false
-  bdcycle = "PT6H"
+  bdcycle = "PT24H"
   bdint = "PT1H"
   bdmodel = "IFS"
   bdshift = "PT0H"
