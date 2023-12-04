@@ -51,7 +51,7 @@
   one_decade = true
 
 [suite_control]
-  create_static_data = false
+  create_static_data = true
   create_time_dependent_suite = true
   do_archiving = true
   do_extractsqlite = false
