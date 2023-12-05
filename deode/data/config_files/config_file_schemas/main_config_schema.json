@@ -87,11 +87,16 @@
         "bdmodel": {
           "description": "Coupling model",
           "enum": [
-            "arome",
-            "ifs"
+            "ALARO",
+            "AROME",
+            "IFS"
           ],
           "type": "string"
         },
+	"humi_gp": {
+	  "type": "boolean",
+	  "description" : "Value of TFP_Q%LLGP in domain namelist for c903. True for gridpoint humidity."
+	}, 
 	"ifs.selection": {
             "type": "string",
             "description": "Selection",

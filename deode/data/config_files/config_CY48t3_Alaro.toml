@@ -1,52 +1,50 @@
 [general]
   accept_static_namelists = false
-  case = "@CYCLE@_@CSC@_@DOMAIN@"
+  case = "@CYCLE@_@CSC@"
   cnmexp = "DEOD"
-  csc = "HARMONIE_AROME"
-  cycle = "CY46h1"
+  csc = "ALARO"
+  cycle = "CY48t3"
   initfile = "@SCRATCH@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@HISTORY_TEMPLATE@"
   initfile_sfx = "@SCRATCH@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
   keep_workdirs = true
-  surfex = true
-  windfarm = false
+  surfex = false
 
 [general.output_settings]
   fullpos = "PT15M"
   history = "PT1H"
   nrazts = "PT1H"
-  surfex = "PT1H"
 
 [general.times]
-  cycle_length = "PT1H"
-  end = "2023-09-16T02:00:00Z"
-  forecast_range = "PT3H"
+  cycle_length = "PT6H"
+  end = "2023-11-16T06:00:00Z"
+  forecast_range = "PT6H"
   radiation_frequency = "PT5M"
-  start = "2023-09-16T01:00:00Z"
+  start = "2023-11-16T00:00:00Z"
 
 [boundaries]
-  bd_has_surfex = true
-  bdcycle = "PT6H"
+  bd_has_surfex = false
+  bdcycle = "PT24H"
   bdint = "PT1H"
-  bdmodel = "AROME"
+  bdmodel = "IFS"
   bdshift = "PT0H"
   bdtasks_per_batch = 24
-  humi_gp = true
-  ifs.selection = "HRES"
+  humi_gp = false
+  ifs.selection = "ATOS_DT"
   ifs.bdmember = ""
 
 [fullpos]
   config_path = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos"
-  selection = ["rules", "namfpc_header", "master_selection"]
+  selection = ["rules", "namfpc_header", "master_selection_ALARO"]
 
 [include]
   archiving = "include/archiving.toml"
-  domain = "include/domains/DEMO_80x90_1000m.toml"
+  domain = "include/domains/DEMO_60x80_2500m.toml"
   extractsqlite = "include/sqlite.toml"
   file_templates = "include/file_templates.toml"
   macros = "include/macros.toml"
   mars = "include/mars_settings.toml"
   platform = "include/platform_paths/atos_bologna.toml"
-  submission = "include/submission/atos_bologna_CY46h1.toml"
+  submission = "include/submission/atos_bologna_CY48t3.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"
 
 [pgd]
@@ -56,28 +54,23 @@
   create_static_data = true
   create_time_dependent_suite = true
   do_archiving = true
-  do_extractsqlite = true
-  do_marsprep = false
+  do_extractsqlite = false
+  do_marsprep = true
   do_pgd = true
-  do_prep = true
+  do_prep = false
   do_soil = true
   interpolate_boundaries = true
-  mode = "cold_start"
+  mode = "start"
 
 [system]
-  bdclimdir = "@HOST_CASE@/climate/@HOST_DOMAIN@"
-  bddir = "@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@"
-  bddir_sfx = "@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@"
-  bdfile_sfx_template = "@BDFILE_TEMPLATE@.sfx"
-  bdfile_template = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@"
+  bdclimdir = "@FIXED_BDCLIMDIR@"
+  bddir = "@INTP_BDDIR@"
+  bddir_sfx = "@MARSDIR@"
+  bdfile_sfx_template = "ECSFCSFX@DOMAIN@+@LLL@"
+  bdfile_template = "ELSCF@CNMEXP@ALBC@NNN@"
   casedir = "@SCRATCH@/@CASE@"
-  climdir = "@CASEDIR@/climate/@DOMAIN@"
+  climdir = "@CASEDIR@/climate/@DOMAIN@/"
   global_sfcdir = "/hpcperm/snh02/climate_fields_mir/climate.v020_MIR_orog/"
-  host_case = "@CASEDIR@/../@CYCLE@_@CSC@"
-  host_domain = "DEMO_60x80_2500m"
   logs = "@ARCHIVE_ROOT@/logs"
   marsdir = "@SCRATCH@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"
-
-[task.creategrib]
-  conversions = ["surfex"]

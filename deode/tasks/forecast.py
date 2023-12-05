@@ -26,6 +26,7 @@ class Forecast(Task):
         Task.__init__(self, config, __name__)
 
         self.cycle = self.config["general.cycle"]
+        self.csc = self.config["general.csc"]
         self.cnmexp = self.config["general.cnmexp"]
         self.domain = self.config["domain.name"]
         self.windfarm = self.config.get("general.windfarm", False)
@@ -43,6 +44,7 @@ class Forecast(Task):
         self.archive = self.platform.get_system_value("archive")
         self.deode_home = self.config["platform.deode_home"]
         self.output_settings = self.config["general.output_settings"]
+        self.surfex = self.config["general.surfex"]
 
         # Update namelist settings
         self.nlgen_master = NamelistGenerator(self.config, "master")
@@ -210,8 +212,9 @@ class Forecast(Task):
             self.wfp_input()
 
         # Construct master namelist and include fullpos config
-        forecast_namelist = f"forecast_bdmodel_{self.bdmodel}"
+        forecast_namelist = "forecast"
         self.nlgen_master.load(forecast_namelist)
+        logger.info(self.nlgen_master)
         self.nlgen_master = check_fullpos_namelist(self.config, self.nlgen_master)
 
         nlres = self.nlgen_master.assemble_namelist(forecast_namelist)
@@ -236,6 +239,9 @@ class Forecast(Task):
         # Initial files
         initfile, initfile_sfx = InitialConditions(self.config).find_initial_files()
         self.fmanager.input(initfile, f"ICMSH{self.cnmexp}INIT")
+        if not self.surfex:
+            initfile_sfx = None
+
         if initfile_sfx is not None:
             self.fmanager.input(initfile_sfx, f"ICMSH{self.cnmexp}INIT.sfx")
 

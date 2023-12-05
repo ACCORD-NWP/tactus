@@ -32,7 +32,7 @@ pgd_one_decade:
   - sfx_pgd_soilgrid_sand
   - sfx_pgd_soilgrid_clay
 
-prep_ifs:
+prep_IFS:
   - sfx_io
   - sfx_surf_constants
   - sfx_treedrag
@@ -44,7 +44,7 @@ prep_ifs:
   - sfx_split_patch
   - sfx_prep_isba_snow_3l
 
-prep_arome:
+prep_AROME:
   - sfx_io
   - sfx_surf_constants
   - sfx_treedrag

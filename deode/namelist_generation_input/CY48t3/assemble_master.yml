@@ -43,32 +43,26 @@ e923_9:
   - e923_base
   - e923_9
 
-e927_ifs:
+e927_IFS:
   - empty
   - fa_names
   - f4_common
   - f4_e927
   - f4_e927_ifs
 
-e927_arome:
+e927_AROME:
   - empty
   - fa_names
   - f4_common
   - f4_e927
   - f4_e927_arome
 
-forecast_bdmodel_ifs:
+forecast:
   - empty
   - fa_names
   - f4_common
-  - f4_arome
-
-forecast_bdmodel_arome:
-  - empty
-  - fa_names
-  - f4_common
-  - f4_arome
-  - namgfl_bdmodel_arome
+  - f4_@CSC@
+  - namgfl_@BDMODEL@
 
 c903_main:
   - empty
@@ -76,5 +70,6 @@ c903_main:
   - f4_c903_main
 
 c903_domain:
+  - empty
   - fa_names
   - f4_c903_domain
