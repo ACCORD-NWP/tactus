@@ -1,4 +1,5 @@
 gen_macros = [
+    "boundaries.bdmodel",
     "general.cnmexp",
     "general.cycle",
     "general.csc",

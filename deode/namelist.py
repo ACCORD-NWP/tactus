@@ -433,7 +433,9 @@ class NamelistGenerator:
 
         nldict = self.nldict
         # Assemble the target namelists based on the given category order
-        for catg in flatten_list(self.cndict[target]):
+        cnlist = [self.platform.substitute(x) for x in flatten_list(self.cndict[target])]
+        logger.info("cnlist:{}", cnlist)
+        for catg in cnlist:
             # variable substitution removed at this level (may be resurrected)
             # assemble namelists for this category
             if catg in nldict:

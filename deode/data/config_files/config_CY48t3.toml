@@ -26,9 +26,10 @@
   bd_has_surfex = false
   bdcycle = "PT6H"
   bdint = "PT1H"
-  bdmodel = "ifs"
+  bdmodel = "IFS"
   bdshift = "PT0H"
   bdtasks_per_batch = 24
+  humi_gp = true
   ifs.selection = "HRES"
   ifs.bdmember = ""
 

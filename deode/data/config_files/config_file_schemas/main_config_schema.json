@@ -87,11 +87,16 @@
         "bdmodel": {
           "description": "Coupling model",
           "enum": [
-            "arome",
-            "ifs"
+            "ALARO",
+            "AROME",
+            "IFS"
           ],
           "type": "string"
         },
+	"humi_gp": {
+	  "type": "boolean",
+	  "description" : "Value of TFP_Q%LLGP in domain namelist for c903. True for gridpoint humidity."
+	}, 
 	"ifs.selection": {
             "type": "string",
             "description": "Selection",
@@ -452,11 +457,6 @@
         "initfile_sfx": {
           "description": "Initial surfex file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",
           "type": "string"
-        },
-        "mars_expver": {
-          "description": "Name of the experiment to get data from MARS in case of global DT. Empty string for operational.",
-          "type": "string",
-          "default": ""
         },
         "output_settings": {
           "title": "Output Settings",
