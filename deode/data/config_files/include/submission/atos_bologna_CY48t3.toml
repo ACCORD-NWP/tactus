@@ -1,4 +1,4 @@
-bindir = "/home/snh02/pack/48t3_fix.04.OMPIIFC2104.x/bin"
+bindir = "/home/snh02/pack/48t3_fix.05.OMPIIFC2104.x/bin"
 default_submit_type = "serial"
 module_initpath = "/usr/local/apps/lmod/8.6.8/init"
 nproma = -32
@@ -31,7 +31,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=00:15:00"
 
 [gnu.MODULES]
-  ECMWFTOOLBOX = "ecmwf-toolbox/2021.08.3.0"
+  ECMWFTOOLBOX = "ecmwf-toolbox/2023.10.1.0"
 
 [parallel]
   NPROC = 32
@@ -55,7 +55,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   # First load the prgenv
   PRGENV = "prgenv/intel"
   # The rest
-  ECMWFTOOLBOX = "ecmwf-toolbox/2021.08.3.0"
+  ECMWFTOOLBOX = "ecmwf-toolbox/2023.10.1.0"
   FFTW = "fftw/3.3.9"
   HDF5 = "hdf5/1.10.6"
   MKL = "intel-mkl/19.0.5"
@@ -88,7 +88,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   # First load the prgenv
   PRGENV = "prgenv/intel"
   # The rest
-  ECMWFTOOLBOX = "ecmwf-toolbox/2021.08.3.0"
+  ECMWFTOOLBOX = "ecmwf-toolbox/2023.10.1.0"
   FFTW = "fftw/3.3.9"
   HDF5 = "hdf5/1.10.6"
   MKL = "intel-mkl/19.0.5"
@@ -114,7 +114,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=00:30:00"
 
 [task_exceptions.creategrib]
-  binary = "gl_20230823"
+  binary = "gl_20231128"
   bindir = "/home/snh02/work/gl_binaries"
 
 [task_exceptions.CreateGrib.BATCH]
@@ -157,7 +157,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=00:30:00"
 
 [task_exceptions.PgdUpdate]
-  binary = "gl_20230823"
+  binary = "gl_20231128"
   bindir = "/home/snh02/work/gl_binaries"
 
 [task_exceptions.Prep]

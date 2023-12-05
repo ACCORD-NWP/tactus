@@ -82,17 +82,19 @@ class Task(object):
         eccodes_definition_search_paths = [f"{deode_home}/deode/data/eccodes/definitions"]
         try:
             eccodes_dir = os.environ["ECCODES_DIR"]
-            eccodes_definition_search_paths.append(
-                f"{eccodes_dir}/share/eccodes/definitions"
-            )
-            os.environ["ECCODES_DEFINITION_PATH"] = ":".join(
-                eccodes_definition_search_paths
-            )
-            logger.debug(
-                "Set ECCODES_DEFINITION_PATH to {}", os.environ["ECCODES_DEFINITION_PATH"]
-            )
         except KeyError:
-            logger.warning("Could not update ECCODES_DEFINITION_PATH")
+            logger.warning("Could not update ECCODES_DEFINITION_PATH since ECCODES_DIR is not defined")
+            return
+
+        eccodes_definition_search_paths.append(
+                f"{eccodes_dir}/share/eccodes/definitions"
+        )
+        os.environ["ECCODES_DEFINITION_PATH"] = ":".join(
+                eccodes_definition_search_paths
+        )
+        logger.info(
+                "Set ECCODES_DEFINITION_PATH to {}", os.environ["ECCODES_DEFINITION_PATH"]
+        )
 
     def archive_logs(self, files, target=None):
         """Archive files in a log directory.
