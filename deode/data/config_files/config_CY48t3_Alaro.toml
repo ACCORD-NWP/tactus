@@ -16,7 +16,7 @@
 
 [general.times]
   cycle_length = "PT6H"
-  end = "2023-09-16T06:00:00Z"
+  end = "2023-11-16T06:00:00Z"
   forecast_range = "PT6H"
   radiation_frequency = "PT5M"
   start = "2023-09-16T00:00:00Z"
@@ -51,7 +51,7 @@
   one_decade = true
 
 [suite_control]
-  create_static_data = false
+  create_static_data = true
   create_time_dependent_suite = true
   do_archiving = true
   do_extractsqlite = false

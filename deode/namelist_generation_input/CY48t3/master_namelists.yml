@@ -1120,7 +1120,7 @@ f4_ALARO:
     LXXDIAGH: True
     LXXGST: True
     NFRRAZ: 1
-    NRAZTS: ${namelist.nhists}
+    NRAZTS: ${namelist.nrazts}
   NEMELBC0A:
     LQCPL: True
     NBICNHX: 2
