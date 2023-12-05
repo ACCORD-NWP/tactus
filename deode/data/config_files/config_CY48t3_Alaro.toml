@@ -16,7 +16,7 @@
 
 [general.times]
   cycle_length = "PT6H"
-  end = "2023-11-19T00:00:00Z"
+  end = "2023-11-16T06:00:00Z"
   forecast_range = "PT6H"
   radiation_frequency = "PT5M"
   start = "2023-11-16T00:00:00Z"
