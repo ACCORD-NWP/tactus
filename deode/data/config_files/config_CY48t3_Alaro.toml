@@ -69,7 +69,7 @@
   bdfile_sfx_template = "ECSFCSFX@DOMAIN@+@LLL@"
   bdfile_template = "ELSCF@CNMEXP@ALBC@NNN@"
   casedir = "@SCRATCH@/@CASE@"
-  climdir = "/scratch/snh/deode/CY48t3_AROME/climate/@DOMAIN@/"
+  climdir = "@CASEDIR@/climate/@DOMAIN@/"
   global_sfcdir = "/hpcperm/snh02/climate_fields_mir/climate.v020_MIR_orog/"
   logs = "@ARCHIVE_ROOT@/logs"
   marsdir = "@SCRATCH@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
