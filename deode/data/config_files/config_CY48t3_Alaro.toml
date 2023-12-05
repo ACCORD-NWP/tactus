@@ -19,7 +19,7 @@
   end = "2023-11-16T06:00:00Z"
   forecast_range = "PT6H"
   radiation_frequency = "PT5M"
-  start = "2023-09-16T00:00:00Z"
+  start = "2023-11-16T00:00:00Z"
 
 [boundaries]
   bd_has_surfex = false
@@ -60,7 +60,7 @@
   do_prep = false
   do_soil = true
   interpolate_boundaries = true
-  mode = "cold_start"
+  mode = "start"
 
 [system]
   bdclimdir = "@FIXED_BDCLIMDIR@"
