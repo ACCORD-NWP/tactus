@@ -54,6 +54,7 @@ class SuiteDefinition(object):
             raise ModuleNotFoundError("Ecflow not found")
 
         self.platform = Platform(config)
+        self.config = config
 
         self.create_static_data = config["suite_control.create_static_data"]
         self.do_soil = config["suite_control.do_soil"]
@@ -71,8 +72,8 @@ class SuiteDefinition(object):
         self.suite_name = suite_name
         self.mode = config["suite_control.mode"]
 
-        ecf_files = self.platform.get_platform_value("ECF_FILES")
-        joboutdir = self.platform.get_platform_value("JOBOUTDIR")
+        ecf_files = self.config["scheduler.ecfvars.ecf_files"]
+        joboutdir = self.config["scheduler.ecfvars.ecf_jobout"]
 
         self.creategrib = bool("task.creategrib" in config)
 

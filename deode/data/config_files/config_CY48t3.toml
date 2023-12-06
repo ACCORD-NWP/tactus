@@ -3,7 +3,7 @@
   case = "@CYCLE@_@CSC@"
   cnmexp = "DEOD"
   csc = "AROME"
-  cycle = "CY48t3"
+  cycle = "CY46h1"
   initfile = "@SCRATCH@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@HISTORY_TEMPLATE@"
   initfile_sfx = "@SCRATCH@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
   keep_workdirs = true
@@ -76,6 +76,7 @@
   logs = "@ARCHIVE_ROOT@/logs"
   marsdir = "@SCRATCH@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"
+  config_file = "@DEODE_HOME@/deode/data/config_files/config_@CYCLE@.toml"
 
 [task.creategrib]
   conversions = ["surfex"]

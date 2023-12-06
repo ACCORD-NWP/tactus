@@ -142,16 +142,7 @@ def test_run_task_command(tmp_path):
 
 @pytest.mark.usefixtures("_module_mockers")
 def test_start_suite_command(tmp_path):
-    main(
-        [
-            "start",
-            "suite",
-            "--joboutdir",
-            tmp_path.as_posix(),
-            "--ecf-files",
-            f"{WORKING_DIR.as_posix()}/ecf",
-        ]
-    )
+    main(["start", "suite"])
 
 
 @pytest.mark.usefixtures("_module_mockers")

@@ -100,20 +100,20 @@ class EcflowServer(Server):
             self.ecf_host = os.environ["ECF_HOST"]
         except:  # noqa
             try:
-                self.ecf_host = self.config["ecflow_atos.ecfvars.ECF_HOST"]
+                self.ecf_host = self.config["scheduler.ecfvars.ECF_HOST"]
             except RuntimeError as error:
                 raise RuntimeError(
-                    "Please set $ECF_HOST or in file: ecf_host in ecflow_HPC.toml"
+                    "Please set env var $ECF_HOST or ecf_host in ecflow_HPC.toml"
                 ) from error
 
         try:
             self.ecf_port = os.environ["ECF_PORT"]
         except:  # noqa
             try:
-                self.ecf_port = self.config["ecflow_atos.ecfvars.ECF_PORT"]
+                self.ecf_port = self.config["scheduler.ecfvars.ECF_PORT"]
             except RuntimeError as error:
                 raise RuntimeError(
-                    "Please set $ECF_PORT or in file: ecf_port in ecflow_HPC.toml"
+                    "Please set env var $ECF_PORT or ecf_port in ecflow_HPC.toml"
                 ) from error
 
         self.start_command = start_command

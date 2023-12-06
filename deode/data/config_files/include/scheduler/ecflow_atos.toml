@@ -1,3 +1,6 @@
 [ecfvars]
-  ECF_HOST = "ecflow-gen-nkac-001"
-  ECF_PORT = "3141"
+ ECF_HOST = "ecflow-gen-nkac-001"
+ ECF_PORT = "3141"
+ ecf_jobout = "/perm/nkac/git/github/draelsaid/Deode-Prototype/../jobout"
+ ecf_files =  "/perm/nkac/deode_ecflow/ecf_files"
+ ecf_home =  "/perm/nkac/deode_ecflow/ecf_home"
