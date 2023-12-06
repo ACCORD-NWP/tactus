@@ -9,7 +9,6 @@ from pathlib import Path
 from unittest import mock
 
 import pytest
-import tomlkit
 
 from deode import GeneralConstants
 from deode.__main__ import main
@@ -77,9 +76,8 @@ def test_package_executable_is_in_path():
 
 @pytest.mark.parametrize("argv", [[], None])
 def test_cannot_run_without_arguments(argv):
-    with redirect_stderr(StringIO()):
-        with pytest.raises(SystemExit, match="2"):
-            main(argv)
+    with redirect_stderr(StringIO()), pytest.raises(SystemExit, match="2"):
+        main(argv)
 
 
 @pytest.mark.usefixtures("_module_mockers")
@@ -115,9 +113,10 @@ class TestMainShowCommands:
             for new in itertools.count():
                 yield 100 * new
 
-        with mock.patch("time.time", mock.MagicMock(side_effect=fake_time())):
-            with redirect_stdout(StringIO()):
-                main(["show", "config"])
+        with mock.patch(
+            "time.time", mock.MagicMock(side_effect=fake_time())
+        ), redirect_stdout(StringIO()):
+            main(["show", "config"])
 
     def test_show_namelist_command(self, tmp_path_factory):
         output_file = f"{tmp_path_factory.getbasetemp().as_posix()}/fort.4"

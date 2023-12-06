@@ -13,19 +13,16 @@ selection:
     - 'SURFFLU.CHA.SENS'
     - 'SURFRAYT SOLA DE'
     - 'SURFRAYT THER DE'
-    - 'SURFACCPLUIE'
-    - 'SURFACCNEIGE'
-    - 'SURFACCGRAUPEL'
+    - 'SURFDIAG.FLASH'
    CLXFU:
     - 'SURFDIAGHAIL'
-    - 'SURFINSPLUIE'   
     - 'CLSTEMPERATURE'
     - 'CLSHUMI.RELATIVE'
     - 'CLSHUMI.SPECIFIQ'
     - 'CLSVENT.ZONAL'
     - 'CLSVENT.MERIDIEN'
-    - 'CLSU.RAF.MOD.XFU'
-    - 'CLSV.RAF.MOD.XFU'
+    - 'CLSU.RAF60M.XFU'
+    - 'CLSV.RAF60M.XFU'
     - 'CLSMAXI.TEMPERAT'
     - 'CLSMINI.TEMPERAT'
     - 'SURFNEBUL.HAUTE'
@@ -33,12 +30,17 @@ selection:
     - 'SURFNEBUL.BASSE'
     - 'SURFNEBUL.TOTALE'
     - 'CLPMHAUT.MOD.XFU'
+    - 'CLSVISIN_60'
+    - 'CLSVISIHYDN60'
+    - 'CLSPTYPE_60M'
+    - 'CLSPTYPESEV_60M'   
    CLPHY:
     - 'SURFTEMPERATURE'
     - 'SURFRESERV.NEIGE'
   NAMFPDY2:
    CL2DF:
     - 'SURFPRESSION'
+    - 'SPECSURFGEOPOTEN'
     - 'MSLPRESSURE'
     - 'SURFISOTPW1.MALT'
     - 'SURFCAPE.POS.F00'
@@ -48,6 +50,10 @@ selection:
     - 'SURFEQUILIBRLEV'
     - 'SURFREFLECT.MAX'
     - 'REFLECT_DBZ.MAX'
+    - 'ATMOCLD.CEIL.P'
+    - 'ATMOCLD.CEIL.H'
+    - 'ATMOCLD.BASE.P'
+    - 'ATMOCLD.BASE.H'
   NAMFPDYI:
    CL3DF:
     - 'ISOT_ALTIT'
@@ -137,7 +143,7 @@ selection:
      - 'CLOUD_WATER'
      - 'TKE'
     NRFP3S:
-     - ${verical_levels.nlev} 
+     - ${vertical_levels.nlev} 
   NAMFPDYT: {}
   NAMFPDYF : {}
   NAMPPC : {}
@@ -154,9 +160,7 @@ selection:
     - 'SURFFLU.CHA.SENS'
     - 'SURFRAYT SOLA DE'
     - 'SURFRAYT THER DE'
-    - 'SURFACCPLUIE'
-    - 'SURFACCNEIGE'
-    - 'SURFACCGRAUPEL'
+    - 'SURFDIAG.FLASH'
    CLXFU:
     - 'SURFDIAGHAIL'
     - 'CLSTEMPERATURE'

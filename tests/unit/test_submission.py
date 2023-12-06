@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
 from contextlib import suppress
-from unittest import mock
 
 import pytest
 import tomlkit

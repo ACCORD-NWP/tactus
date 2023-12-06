@@ -1,6 +1,5 @@
 # create a mock "eccodes" module
 # this must be in conftest.py to make sure it is read first
-import itertools
 import sys
 
 import numpy as np
@@ -14,24 +13,23 @@ class MockObject(object):
 def mock_codes_get_string(msgid, key):
     # in reality msgid should be a grib handle
     # in the mocker, it will be a dict
-    if key in msgid.keys():
+    if key in msgid:
         return str(msgid[key])
-    else:
-        return "ok"
+    return "ok"
 
 
 def mock_codes_get_long(msgid, key):
-    if key in msgid.keys():
+    if key in msgid:
         return int(msgid[key])
-    else:
-        return 0
+
+    return 0
 
 
 def mock_codes_get_double(msgid, key):
-    if key in msgid.keys():
+    if key in msgid:
         return float(msgid[key])
-    else:
-        return 0.0
+
+    return 0.0
 
 
 def mock_codes_grib_new_from_file(fileobj):
@@ -60,8 +58,7 @@ def mock_codes_grib_new_from_file(fileobj):
     }
     if fileobj.read(1):
         return testgid
-    else:
-        return None
+    return None
 
 
 def mock_codes_get_values(gribid):

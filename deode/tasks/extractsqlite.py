@@ -60,7 +60,6 @@ class ExtractSQLite(Task):
 
     def execute(self):
         """Execute ExtractSQLite on all output files."""
-
         # split into "combined" and "direct" parameters
 
         # loop over lead times

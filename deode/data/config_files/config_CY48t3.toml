@@ -24,12 +24,12 @@
 
 [boundaries]
   bd_has_surfex = false
-  bdcycle = "PT24H"
-  bdint = "PT3H"
-  bdmodel = "ifs"
+  bdcycle = "PT6H"
+  bdint = "PT1H"
+  bdmodel = "IFS"
   bdshift = "PT0H"
-  bdstrategy = "same_forecast"
   bdtasks_per_batch = 24
+  humi_gp = true
   ifs.selection = "HRES"
   ifs.bdmember = ""
 

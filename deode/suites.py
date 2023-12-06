@@ -3,7 +3,7 @@
 import os
 from pathlib import Path
 
-from .datetime_utils import as_datetime, as_timedelta, get_decade
+from .datetime_utils import as_datetime, as_timedelta
 from .logs import LogDefaults, logger
 from .os_utils import deodemakedirs
 from .toolbox import Platform
@@ -70,6 +70,8 @@ class SuiteDefinition(object):
         self.surfex = config["general.surfex"]
         self.suite_name = suite_name
         self.mode = config["suite_control.mode"]
+
+        self.creategrib = bool("task.creategrib" in config)
 
         name = suite_name
         self.joboutdir = joboutdir
@@ -246,7 +248,7 @@ class SuiteDefinition(object):
         prev_cycle_trigger = None
         prev_interpolation_trigger = None
 
-        for __, cycle in cycles.items():
+        for cycle in cycles.values():
             cycle_day = cycle["day"]
             if self.create_static_data:
                 inputdata_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(static_data)])
@@ -359,10 +361,7 @@ class SuiteDefinition(object):
                                 variables=None,
                             )
 
-                            if self.do_marsprep:
-                                interpolation_task = "c903"
-                            else:
-                                interpolation_task = "e927"
+                            interpolation_task = "c903" if self.do_marsprep else "e927"
 
                             EcflowSuiteTask(
                                 interpolation_task,
@@ -449,17 +448,19 @@ class SuiteDefinition(object):
                 variables=None,
             )
 
-            creategrib_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(forecast_task)])
-
-            EcflowSuiteTask(
-                "CreateGrib",
-                forecasting,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                trigger=creategrib_trigger,
-            )
+            if self.creategrib:
+                creategrib_trigger = EcflowSuiteTriggers(
+                    [EcflowSuiteTrigger(forecast_task)]
+                )
+                EcflowSuiteTask(
+                    "CreateGrib",
+                    forecasting,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    trigger=creategrib_trigger,
+                )
 
             if self.do_extractsqlite:
                 extractsqlite_trigger = EcflowSuiteTriggers(
@@ -661,10 +662,13 @@ class EcflowNode:
         has_node = True
         if parent is None:
             has_node = False
-        if has_node and node_type != "suite":
-            if hasattr(parent, "ecf_node"):
-                if parent.ecf_node is None:
-                    has_node = False
+        if (
+            has_node
+            and node_type != "suite"
+            and hasattr(parent, "ecf_node")
+            and parent.ecf_node is None
+        ):
+            has_node = False
         if not has_node:
             self.ecf_node = None
             path = ""
@@ -699,16 +703,15 @@ class EcflowNode:
                 raise TypeError("Triggers must be an EcflowSuiteTriggers object")
         self.trigger = trigger
 
-        if def_status is not None:
-            if self.ecf_node is not None:
-                if isinstance(def_status, str):
-                    self.ecf_node.add_defstatus(ecflow.Defstatus(def_status))
-                elif isinstance(def_status, ecflow.Defstatus):
-                    self.ecf_node.add_defstatus(def_status)
-                else:
-                    raise TypeError(
-                        "defstatus must be either str or an ecflow.Defstatus object"
-                    )
+        if def_status is not None and self.ecf_node is not None:
+            if isinstance(def_status, str):
+                self.ecf_node.add_defstatus(ecflow.Defstatus(def_status))
+            elif isinstance(def_status, ecflow.Defstatus):
+                self.ecf_node.add_defstatus(def_status)
+            else:
+                raise TypeError(
+                    "defstatus must be either str or an ecflow.Defstatus object"
+                )
 
 
 class EcflowNodeContainer(EcflowNode):
@@ -878,7 +881,8 @@ class EcflowSuiteTask(EcflowNode):
 
             variables = task_settings.get_settings(name)
             logger.debug("vars {}", variables)
-            for var, value in variables.items():
+            for var, value_ in variables.items():
+                value = value_
                 if isinstance(value, int):
                     value = str(value)
                 logger.debug("var={} value={}", var, value)
@@ -892,9 +896,8 @@ class EcflowSuiteTask(EcflowNode):
                 variables=variables,
                 ecf_micro=ecf_micro,
             )
-        else:
-            if not os.path.exists(task_container):
-                raise FileNotFoundError(f"Container {task_container} is missing!")
+        elif not os.path.exists(task_container):
+            raise FileNotFoundError(f"Container {task_container} is missing!")
 
 
 class EcflowSuiteTriggers:
@@ -942,17 +945,12 @@ class EcflowSuiteTriggers:
                     cat = " " + mode + " "
                 if isinstance(trigger, EcflowSuiteTriggers):
                     trigger_string = trigger_string + cat + trigger.trigger_string
+                elif isinstance(trigger, EcflowSuiteTrigger):
+                    trigger_string = (
+                        trigger_string + cat + trigger.node.path + " == " + trigger.mode
+                    )
                 else:
-                    if isinstance(trigger, EcflowSuiteTrigger):
-                        trigger_string = (
-                            trigger_string
-                            + cat
-                            + trigger.node.path
-                            + " == "
-                            + trigger.mode
-                        )
-                    else:
-                        raise TypeError("Trigger must be an EcflowSuiteTrigger object")
+                    raise TypeError("Trigger must be an EcflowSuiteTrigger object")
                 first = False
         trigger_string = trigger_string + ")"
         # If no triggers were found/set

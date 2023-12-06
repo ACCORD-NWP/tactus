@@ -1,6 +1,7 @@
 """Base site class."""
 
 import atexit
+import contextlib
 import os
 import shutil
 import socket
@@ -152,10 +153,8 @@ class Task(object):
             bindir (str): full path to binary
 
         """
-        try:
+        with contextlib.suppress(KeyError):
             binary = self.config[f"submission.task_exceptions.{self.name}.binary"]
-        except KeyError:
-            pass
 
         try:
             bindir = self.config[f"submission.task_exceptions.{self.name}.bindir"]

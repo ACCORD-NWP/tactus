@@ -62,8 +62,6 @@
           "default": "same_forecast",
           "type": "string",
           "enum": [
-            "simulate_operational",
-            "analysis_only",
             "same_forecast"
           ]
         },
@@ -89,11 +87,16 @@
         "bdmodel": {
           "description": "Coupling model",
           "enum": [
-            "arome",
-            "ifs"
+            "ALARO",
+            "AROME",
+            "IFS"
           ],
           "type": "string"
         },
+	"humi_gp": {
+	  "type": "boolean",
+	  "description" : "Value of TFP_Q%LLGP in domain namelist for c903. True for gridpoint humidity."
+	}, 
 	"ifs.selection": {
             "type": "string",
             "description": "Selection",
@@ -329,7 +332,9 @@
             }
           },
           "oneOf": [
-            {
+	    {
+            "anyOf": [
+             {
               "required": [
                 "start",
                 "end"
@@ -339,6 +344,32 @@
                   "list"
                 ]
               }
+             },
+	     {
+              "required": [
+                "basetime"
+              ],
+              "not": {
+               "anyOf": [
+		      {       
+                "required": [
+                  "end"
+                ]
+		      },
+		      {       
+                "required": [
+                  "list"
+                ]
+		      },
+		      {       
+                "required": [
+                  "start"
+                ]
+		      }
+	       ]
+              }
+	     }
+	    ]
             },
             {
               "required": [
@@ -427,27 +458,63 @@
           "description": "Initial surfex file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",
           "type": "string"
         },
-        "mars_expver": {
-          "description": "Name of the experiment to get data from MARS in case of global DT. Empty string for operational.",
-          "type": "string",
-          "default": ""
-        },
         "output_settings": {
           "title": "Output Settings",
           "description": "Output settings. Specified as duration for any of interval, endtime:interval, starttime:endtime:interval or a list of these options",
           "type": "object",
           "properties": {
             "history": {
-              "description": "Output list for history files"
+              "description": "Output list for history files",
+              "anyOf": [
+	     {
+                "type": "string",
+                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+	     },
+	     {
+                "type": "array",
+                "items": {
+                   "type": "string",
+                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+                }
+	     }
+	      ]
             },
             "surfex": {
-              "description": "Output list for surfex files"
+              "description": "Output list for surfex files",
+              "anyOf": [
+	     {
+                "type": "string",
+                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+	     },
+	     {
+                "type": "array",
+                "items": {
+                   "type": "string",
+                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+                }
+	     }
+	      ]
             },
             "fullpos": {
-              "description": "Output list for fullpos files"
+              "description": "Output list for fullpos files",
+              "anyOf": [
+	     {
+                "type": "string",
+                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+	     },
+	     {
+                "type": "array",
+                "items": {
+                   "type": "string",
+                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+                }
+	     }
+	      ]
             },
             "nrazts": {
-              "description": "Reset times for instantaneous fluxes ( e.g. min/max temperature )"
+              "description": "Reset times for instantaneous fluxes ( e.g. min/max temperature )",
+              "type": "string",
+              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
             }
           }
         },

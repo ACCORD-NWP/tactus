@@ -11,14 +11,11 @@ except (ImportError, OSError):
     logger.warning("eccodes python API could not be imported. Usually OK.")
 
 import datetime
-import json
-import math
 import sqlite3
 from contextlib import closing
 from copy import deepcopy
 
 import numpy as np
-import pandas
 import pyproj
 
 
@@ -84,8 +81,7 @@ def date_from_gribinfo(info):
 
 
 def get_proj4(gid):
-    """
-    Read all projection details and return proj4 string.
+    """Read all projection details and return proj4 string.
 
     Args:
         gid: GRIB handle
@@ -121,8 +117,7 @@ def get_proj4(gid):
 
 
 def get_gridinfo(gid):
-    """
-    Read all grid details and return all necessary data
+    """Read all grid details and return all necessary data.
 
     Args:
         gid: GRIB handle
@@ -177,8 +172,7 @@ def get_grid_limits(gid):
 
 
 def proj4_to_string(proj4):
-    """
-    Transfrom a proj4 from dictionary to string.
+    """Transfrom a proj4 from dictionary to string.
 
     Args:
         proj4: a dictionary
@@ -186,7 +180,7 @@ def proj4_to_string(proj4):
     Returns:
         a single string
     """
-    result = " ".join([f"+{p}={proj4[p]}" for p in proj4.keys()])
+    result = " ".join([f"+{p}={proj4[p]}" for p in proj4])
     return result
 
 
@@ -223,8 +217,7 @@ def get_keylist(gid, keylist, ktype="string"):
 
 
 def param_match(gid, parameter_list):
-    """
-    Check whether a grib record is in the list of required parameters.
+    """Check whether a grib record is in the list of required parameters.
 
     TODO: can we re-organise the code to avoid getting the same key multiple times?
       But I suspect the impact is minimal
@@ -234,16 +227,15 @@ def param_match(gid, parameter_list):
         parameter_list: list of parameter descriptors
 
     Returns:
-        Parameter descriptor (from the list) that matches the current grib handle, or None.
+        Parameter descriptor (from the list) that matches the current grib handle,
+        or None.
     """
     for param in parameter_list:
         # param['grib_id'] is a dictionary of keys|values that describe the parameter
         # so you need to check all of these to know if the grib record matches
-        if type(param["grib_id"]) is dict:
-            # a "direct" parameter
-            plist = [param["grib_id"]]
-        else:
-            plist = param["grib_id"]
+        plist = param["grib_id"]
+        if isinstance(plist, dict):
+            plist = [plist]
 
         for par in plist:
             keylist = list(par.keys())
@@ -280,8 +272,7 @@ def param_match(gid, parameter_list):
 
 
 def sqlite_name(param, fcdate, sqlite_template):
-    """
-    Create the full name of the SQLite file from template and date.
+    """Create the full name of the SQLite file from template and date.
 
     Args:
         param: parameter descriptor
@@ -301,8 +292,7 @@ def sqlite_name(param, fcdate, sqlite_template):
 
 
 def points_restrict(gid, plist):
-    """
-    Restrict the station list to points inside the current domain.
+    """Restrict the station list to points inside the current domain.
 
     NOTE: * eccodes returns distances in kilometer
           * store the list for use in next run? run this function seperately?
@@ -319,7 +309,6 @@ def points_restrict(gid, plist):
 
     minlon, maxlon, minlat, maxlat = get_grid_limits(gid)
 
-    npoints = plist.shape[0]
     # reduce the table to the bounding box
     # Make a copy! The original retains old row numbers and becomes hard to manage.
     p1 = plist[
@@ -364,9 +353,9 @@ def get_gridpoints(gid):
 
     xxx = np.empty(nlon)
     yyy = np.empty(nlat)
-    for i in range(0, nlon):
+    for i in range(nlon):
         xxx[i] = x0 + (float(i) * dx)
-    for j in range(0, nlat):
+    for j in range(nlat):
         yyy[j] = y0 + (float(j) * dy)
 
     x_v, y_v = np.meshgrid(xxx, yyy)
@@ -388,7 +377,6 @@ def get_gridindex(lon, lat, gid):
     Returns:
         two vectors with (non-integer) index values.
     """
-
     gridinfo = get_gridinfo(gid)
     p4 = get_proj4(gid)
     proj = pyproj.Proj(p4)
@@ -416,14 +404,9 @@ def train_weights(station_list, gid, lsm=False):
     Returns:
         interpolation weights (nearest neighbour & bilinear)
     """
-
     # TODO: land/sea mask for T2m...
     if lsm:
         logger.warning("SQLITE: ignoring land/sea mask!")
-
-    gridinfo = get_gridinfo(gid)
-    p4 = get_proj4(gid)
-    proj = pyproj.Proj(p4)
 
     lat = np.array(station_list["lat"].tolist())
     lon = np.array(station_list["lon"].tolist())
@@ -479,7 +462,6 @@ def interp_from_weights(gid, weights, method):
     # NOTE: this assumes all records in a file use the same grid representation
 
     data = get_grid_values(gid)
-    zz = weights[method][0]
     interp = [sum([data[x[0][0], x[0][1]] * x[1] for x in w]) for w in weights[method]]
     return interp
 
@@ -493,7 +475,6 @@ def get_grid_values(gid):
     Returns:
       Numpy array of decoded field.
     """
-
     gkeys = [
         "Nx",
         "Ny",
@@ -506,10 +487,8 @@ def get_grid_values(gid):
     nx = ginfo["Nx"]
     ny = ginfo["Ny"]
 
-    if ginfo["jPointsAreConsecutive"]:
-        order = "C"  # by column
-    else:
-        order = "F"  # by row
+    # data given by column (C) or by row (Fortran)?
+    order = "C" if ginfo["jPointsAreConsecutive"] else "F"
     data = eccodes.codes_get_values(gid).reshape(nx, ny, order=order)
     if ginfo["iScansNegatively"]:
         data[range(nx), :] = data[range(nx)[::-1], :]
@@ -548,24 +527,23 @@ def combine_fields(param):
             result += param["data"][ff] * param["data"][ff]
         return np.sqrt(result)
 
-    elif param["function"] == "sum":
+    if param["function"] == "sum":
         logger.debug("SUM")
         for ff in range(nfields):
             result += param["data"][ff]
         return result
 
-    elif param["function"] == "vector_angle":
+    if param["function"] == "vector_angle":
         # FIXME
         param["units"] = "deg"
         return None
 
-    else:
-        return None
+    return None
 
 
 def parse_parameter_list(param_list):
-    """
-    Parse a (json) structure of required parameters.
+    """Parse a (json) structure of required parameters.
+
     Handle single vs combined fields, model levels etc.
 
     Args:
@@ -579,16 +557,15 @@ def parse_parameter_list(param_list):
     param_cmb_list = []
 
     for param in param_list:
-        if type(param["grib_id"]) is dict:
+        if isinstance(param["grib_id"], dict):
             # a single field is decoded for this parameter
-            if (
-                "level" in param["grib_id"].keys()
-                and type(param["grib_id"]["level"]) is list
+            if "level" in param["grib_id"] and isinstance(
+                param["grib_id"]["level"], list
             ):
                 # expand to multiple fields
-                for l in param["grib_id"]["level"]:
+                for lev in param["grib_id"]["level"]:
                     pid = deepcopy(param)
-                    pid["grib_id"]["level"] = str(l)
+                    pid["grib_id"]["level"] = str(lev)
                     param_sgl_list.append(pid)
             else:
                 pid = deepcopy(param)
@@ -598,20 +575,19 @@ def parse_parameter_list(param_list):
 
         else:
             nfields = len(param["grib_id"])
-            if "common" not in param.keys():
+            if "common" not in param:
                 # the most simple combine case: no common keys
                 pid = deepcopy(param)
                 pid["data"] = [None] * nfields
                 param_cmb_list.append(pid)
 
-            elif (
-                "level" in param["common"].keys()
-                and type(param["common"]["level"]) is list
+            elif "level" in param["common"] and isinstance(
+                param["common"]["level"], list
             ):
                 # there is a common level key, so multiple entries
-                for l in param["common"]["level"]:
+                for lev in param["common"]["level"]:
                     pid = deepcopy(param)
-                    pid["common"]["level"] = str(l)
+                    pid["common"]["level"] = str(lev)
                     for f in range(len(pid["grib_id"])):
                         pid["grib_id"][f].update(pid["common"])
                     pid.pop("common")
@@ -630,8 +606,8 @@ def parse_parameter_list(param_list):
 
 
 def match_keys(p1, p2):
-    """
-    Match two sets of grib key values.
+    """Match two sets of grib key values.
+
     Note that a key missing in p1 may be None in p2.
 
     Args:
@@ -642,10 +618,10 @@ def match_keys(p1, p2):
       True if all (not None) values are equal. False otherwise.
     """
     for k in list(set(list(p1.keys()) + list(p2.keys()))):
-        if k not in p1.keys():
+        if k not in p1:
             if p2[k] is not None:
                 return False
-        elif k not in p2.keys():
+        elif k not in p2:
             if p1[k] is not None:
                 return False
         elif p1[k] != p2[k]:
@@ -654,8 +630,7 @@ def match_keys(p1, p2):
 
 
 def cache_field(param, data, param_cmb_list):
-    """
-    Check if a decoded field needs to be cached for later parameters
+    """Check if a decoded field needs to be cached for later parameters.
 
     Args:
       param: parameter description of the current data
@@ -717,81 +692,76 @@ def parse_grib_file(
         len(param_cmb_list),
     )
 
-    gfile = open(infile, "rb")
     fcdate = None
     leadtime = None
     gi = 0
     gt = 0
-    while True:
-        # loop over all grib records in the file
-        gid = eccodes.codes_grib_new_from_file(gfile)
-        if gid is None:
-            # We've reached the last grib record in the file
-            break
-        gt += 1
-        param = param_match(gid, param_sgl_list)
-        if param is not None:
-            direct = True
-        else:
-            # the record is not in our "direct" parameter list
-            direct = False
-            param = param_match(gid, param_cmb_list)
-            if param is None:
-                continue
-            logger.debug("SQLITE: COMBI FOUND", param["harp_param"])
+    with open(infile, "rb") as gfile:
+        while True:
+            # loop over all grib records in the file
+            gid = eccodes.codes_grib_new_from_file(gfile)
+            if gid is None:
+                # We've reached the last grib record in the file
+                break
+            gt += 1
+            param = param_match(gid, param_sgl_list)
+            if param is not None:
+                direct = True
+            else:
+                # the record is not in our "direct" parameter list
+                direct = False
+                param = param_match(gid, param_cmb_list)
+                if param is None:
+                    continue
+                logger.debug("SQLITE: COMBI FOUND", param["harp_param"])
 
-        # we have a matching parameter
-        gi += 1
-        logger.info("SQLITE: found parameter {}", param["harp_param"])
-        # NOTE: actually, we only need to get fcdate & lead time once
-        #       and we could even consider those to be known
-        fcdate, leadtime = get_date_info(gid)
-        logger.debug(
-            "SQLITE: gt={} gi={} fcdate={}, leadtime={}, direct={}",
-            gt,
-            gi,
-            fcdate,
-            leadtime,
-            direct,
-        )
-
-        if weights is None:
-            # We assume that station list and weights are the same for all files
-            # so we only "train" once
-            # First reduce the station list to points inside the domain
-            station_list = points_restrict(gid, station_list)
-            logger.info(
-                "SQLITE: selected {} stations inside domain.", station_list.shape[0]
+            # we have a matching parameter
+            gi += 1
+            logger.info("SQLITE: found parameter {}", param["harp_param"])
+            # NOTE: actually, we only need to get fcdate & lead time once
+            #       and we could even consider those to be known
+            fcdate, leadtime = get_date_info(gid)
+            logger.debug(
+                "SQLITE: gt={} gi={} fcdate={}, leadtime={}, direct={}",
+                gt,
+                gi,
+                fcdate,
+                leadtime,
+                direct,
             )
-            # create a list of interpolation weights
-            logger.info("SQLITE: training interpolation weights.")
-            weights = train_weights(station_list, gid, lsm=False)
 
-        # by default, we do bilinear interpolation
-        if "method" in param.keys():
-            method = param["method"]
-        else:
-            method = "bilin"
-        # add columns to data table
-        data_vector = interp_from_weights(gid, weights, method)
+            if weights is None:
+                # We assume that station list and weights are the same for all files
+                # so we only "train" once
+                # First reduce the station list to points inside the domain
+                station_list = points_restrict(gid, station_list)
+                logger.info(
+                    "SQLITE: selected {} stations inside domain.", station_list.shape[0]
+                )
+                # create a list of interpolation weights
+                logger.info("SQLITE: training interpolation weights.")
+                weights = train_weights(station_list, gid, lsm=False)
 
-        # cache this data vector if necessary
-        c = cache_field(param, data_vector, param_cmb_list)
+            # by default, we do bilinear interpolation
+            method = param["method"] if "method" in param else "bilin"
+            # add columns to data table
+            data_vector = interp_from_weights(gid, weights, method)
 
-        # if this is a "direct" field, create a table and write to SQLite
-        if direct:
-            data = create_table(
-                data_vector, station_list, param, fcdate, leadtime, model_name
-            )
-            sqlite_file = sqlite_name(param, fcdate, sqlite_template)
-            write_to_sqlite(data, sqlite_file, param, model_name)
+            # cache this data vector if necessary
+            cache_field(param, data_vector, param_cmb_list)
 
-    # at this point, all grib records have been parsed
-    # make sure to release the grib handle
-    if gid is not None:
-        gid.release()
+            # if this is a "direct" field, create a table and write to SQLite
+            if direct:
+                data = create_table(
+                    data_vector, station_list, param, fcdate, leadtime, model_name
+                )
+                sqlite_file = sqlite_name(param, fcdate, sqlite_template)
+                write_to_sqlite(data, sqlite_file, param, model_name)
 
-    gfile.close()
+        # at this point, all grib records have been parsed
+        # make sure to release the grib handle
+        if gid is not None:
+            gid.release()
 
     # OK, we have parsed the whole file and written all "direct" parameters
     # So now we still need to check all the "combined" ones
@@ -813,8 +783,7 @@ def parse_grib_file(
 
 
 def create_table(data_vector, station_list, param, fcdate, leadtime, model_name):
-    """
-    Put a data vector (interpolated field) to pandas table.
+    """Put a data vector (interpolated field) to pandas table.
 
     Args:
       data_vector: numpy vector with interpolated values
@@ -830,7 +799,10 @@ def create_table(data_vector, station_list, param, fcdate, leadtime, model_name)
     prim_keys = ["SID", "lon", "lat"]
 
     # For T2m (and MAXT2m etc.) we want station elevation for height correction
-    if "T2m" in param["harp_param"] and "elev" in station_list.columns.values.tolist():
+    if (
+        "T2m" in param["harp_param"]
+        and "elev" in station_list.columns.to_numpy().tolist()
+    ):
         prim_keys.append("elev")
     data = station_list[prim_keys].copy()
     data[model_name] = data_vector
@@ -850,15 +822,15 @@ def create_table(data_vector, station_list, param, fcdate, leadtime, model_name)
     # NOTE: we can not yet read model elevation from clim file!
     # otherwise remove column
     if "T2m" in param["harp_param"]:
-        if "model_elevation" not in data.columns.values.tolist():
+        if "model_elevation" not in data.columns.to_numpy().tolist():
             data["model_elevation"] = 0
-        if "elev" not in data.columns.values.tolist():
+        if "elev" not in data.columns.to_numpy().tolist():
             data["elev"] = 0
     else:
-        if "model_elevation" in data.columns.values.tolist():
-            data.drop("model_elevation", axis=1, inplace=True)
-        if "elev" in data.columns.values.tolist():
-            data.drop("elev", axis=1, inplace=True)
+        if "model_elevation" in data.columns.to_numpy().tolist():
+            data = data.drop("model_elevation", axis=1)
+        if "elev" in data.columns.to_numpy().tolist():
+            data = data.drop("elev", axis=1)
 
     if param["level"] is not None and param["level_name"] is not None:  #  "level"]):
         data[param["level_name"]] = int(param["level"])
@@ -866,6 +838,15 @@ def create_table(data_vector, station_list, param, fcdate, leadtime, model_name)
 
 
 def write_to_sqlite(data, sqlite_file, param, model_name):
+    """Write a data table to SQLite.
+
+    Args:
+        data: a data table
+        sqlite_file: file name
+        param: parameter descriptor
+        model_name: model name used in
+
+    """
     logger.info("Writing to {}", sqlite_file)
     if os.path.isfile(sqlite_file):
         con = sqlite3.connect(sqlite_file)
@@ -962,18 +943,15 @@ def db_create(sqlite_file, param, model_name):
         + ")"
     )
 
-    index_name = "index_" + "_".join(primary_keys.keys())
     con = sqlite3.connect(sqlite_file)
-    with con:
-        with closing(con.cursor()) as cur:
-            cur.execute(fc_def)
-            cur.execute(pk_def)
+    with con, closing(con.cursor()) as cur:
+        cur.execute(fc_def)
+        cur.execute(pk_def)
     return con
 
 
 def fctable_definition(param, model):
-    """
-    Create the SQL command for FCtable definition.
+    """Create the SQL command for FCtable definition.
 
     Args:
         param: the parameter descriptor

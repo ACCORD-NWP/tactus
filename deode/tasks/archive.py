@@ -4,9 +4,8 @@ import glob
 import os
 import pathlib
 
-from ..datetime_utils import as_datetime, as_timedelta, oi2dt_list
+from ..datetime_utils import as_datetime, oi2dt_list
 from ..logs import logger
-from ..toolbox import Platform
 from .base import Task
 
 
@@ -26,10 +25,10 @@ class Archive(Task):
         self.arch_loc = f"{aloc}{apath}"
 
     def trigger(self, trigger):
+        """Return trigger."""
         if isinstance(trigger, bool):
             return trigger
-        else:
-            return self.config[trigger]
+        return self.config[trigger]
 
     def archive(self, pattern, outpath, inpath):
         """Send files to the file manager.
@@ -110,7 +109,7 @@ class ArchiveHour(Archive):
             self.archiving_settings = None
 
         try:
-            self.conversions = self.config[f"task.creategrib.conversions"]
+            self.conversions = self.config["task.creategrib.conversions"]
         except KeyError:
             self.conversions = {}
 
@@ -147,7 +146,6 @@ class ArchiveHour(Archive):
         Define run sequence.
 
         """
-
         # Loop to find files based on template then rename for ECFS to accept
         if self.trigger(self.default["active"]):
             outpath = self.platform.substitute(self.default["outpath"])

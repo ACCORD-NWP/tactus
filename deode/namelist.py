@@ -60,13 +60,9 @@ def represent_ordereddict(dumper, data):
 class InvalidNamelistKindError(ValueError):
     """Custom exception."""
 
-    pass
-
 
 class InvalidNamelistTargetError(ValueError):
     """Custom exception."""
-
-    pass
 
 
 class NamelistComparator:
@@ -127,9 +123,7 @@ class NamelistComparator:
                     except KeyError:
                         sic = [1]
                     # Start index in output depends on the action, thus:
-                    sio = []
-                    for _ in range(len(sib)):
-                        sio.append(-999)
+                    sio = [-999 for _ in range(len(sib))]
                     msg = f"Compare lists {key}, start indices {sib}, {sic}"
                     logger.debug(msg)
                     dout[key] = self.compare_lists(
@@ -148,13 +142,12 @@ class NamelistComparator:
                     logger.debug(msg)
                     if action != "intersection" and valc is not None:
                         dout[key] = valc
-            else:
+            elif action == "union":
                 # Key only found in base
-                if action == "union":
-                    dout[key] = valb
-                elif action == "diff":
-                    # Mark for deletion in case of 'union'
-                    dout[key] = None
+                dout[key] = valb
+            elif action == "diff":
+                # Mark for deletion in case of 'union'
+                dout[key] = None
         if action != "intersection":
             # Add keys not in base
             for key in dcomp:
@@ -165,7 +158,7 @@ class NamelistComparator:
                 todel = []
                 for key in dout:
                     if isinstance(dout[key], dict) and len(dout[key]) == 0:
-                        todel.append(key)
+                        todel.append(key)  # noqa: PERF401
                 # Delayed deletion to avoid "dictionary changed size during iteration"
                 for key in todel:
                     del dout[key]
@@ -224,17 +217,14 @@ class NamelistComparator:
                     # Scalar, same value
                     if action != "diff":
                         list_set_at_index(liout, io, valc)
-                else:
+                elif action != "intersection":
                     # Scalar, different value
-                    if action != "intersection":
-                        list_set_at_index(liout, io, valc)
-            else:
-                # Element only found in base
-                if action == "union":
-                    list_set_at_index(liout, io, valb)
-                elif action == "diff":
-                    # Mark for deletion in case of 'union'
-                    list_set_at_index(liout, io, None)
+                    list_set_at_index(liout, io, valc)
+            elif action == "union":
+                list_set_at_index(liout, io, valb)
+            elif action == "diff":
+                # Mark for deletion in case of 'union'
+                list_set_at_index(liout, io, None)
         if action != "intersection":
             # Add elements not in base
             for ic in range(len(licomp)):
@@ -339,7 +329,8 @@ class NamelistGenerator:
             with open(self.nlfile, mode="rt", encoding="utf-8") as file:
                 nldict = yaml.safe_load(file)
 
-            # Read file that describes assembly category order for the various targets (tasks)
+            # Read file that describes assembly category order
+            # for the various targets (tasks)
             with open(self.cnfile, mode="rt", encoding="utf-8") as file:
                 cndict = yaml.safe_load(file)
 
@@ -421,10 +412,11 @@ class NamelistGenerator:
         """
         if isinstance(node, dict):
             return {k: self.traverse(v) for k, v in node.items()}
-        elif isinstance(node, list):
+
+        if isinstance(node, list):
             return [self.traverse(v) for v in node]
-        else:
-            return self.check_replace_scalar(node)
+
+        return self.check_replace_scalar(node)
 
     def assemble_namelist(self, target):
         """Generate the namelists for 'target'.
@@ -441,7 +433,9 @@ class NamelistGenerator:
 
         nldict = self.nldict
         # Assemble the target namelists based on the given category order
-        for catg in flatten_list(self.cndict[target]):
+        cnlist = [self.platform.substitute(x) for x in flatten_list(self.cndict[target])]
+        logger.info("cnlist:{}", cnlist)
+        for catg in cnlist:
             # variable substitution removed at this level (may be resurrected)
             # assemble namelists for this category
             if catg in nldict:

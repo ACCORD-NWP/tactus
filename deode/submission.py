@@ -61,12 +61,11 @@ class ProcessorLayout:
     def get_wrapper(self):
         """Get and potentially parse the wrapper."""
         wrapper = self.wrapper
-        if wrapper is not None:
-            if self.nproc is not None:
-                nproc = self.nproc
-                if not isinstance(nproc, str):
-                    nproc = str(nproc)
-                wrapper = wrapper.replace("@NPROC@", nproc)
+        if wrapper is not None and self.nproc is not None:
+            nproc = self.nproc
+            if not isinstance(nproc, str):
+                nproc = str(nproc)
+            wrapper = wrapper.replace("@NPROC@", nproc)
         return wrapper
 
 
@@ -138,19 +137,20 @@ class TaskSettings(object):
                 task_settings, all_defs[task_submit_type]
             )
 
-            if "BATCH" in task_settings:
-                if "NAME" in task_settings["BATCH"]:
-                    if "@TASK_NAME@" in task_settings["BATCH"]["NAME"]:
-                        task_settings["BATCH"]["NAME"] = task_settings["BATCH"][
-                            "NAME"
-                        ].replace("@TASK_NAME@", task)
-
-        if "task_exceptions" in all_defs:
-            if task in all_defs["task_exceptions"]:
-                logger.debug("Task task_exceptions for task {}", task)
-                task_settings = self.update_task_setting(
-                    task_settings, all_defs["task_exceptions"][task]
+            if (
+                "BATCH" in task_settings
+                and "NAME" in task_settings["BATCH"]
+                and "@TASK_NAME@" in task_settings["BATCH"]["NAME"]
+            ):
+                task_settings["BATCH"]["NAME"] = task_settings["BATCH"]["NAME"].replace(
+                    "@TASK_NAME@", task
                 )
+
+        if "task_exceptions" in all_defs and task in all_defs["task_exceptions"]:
+            logger.debug("Task task_exceptions for task {}", task)
+            task_settings = self.update_task_setting(
+                task_settings, all_defs["task_exceptions"][task]
+            )
 
         if "SCHOST" in task_settings:
             self.job_type = task_settings["SCHOST"]
@@ -176,30 +176,30 @@ class TaskSettings(object):
         task_settings = self.parse_submission_defs(task)
         if key is None:
             return task_settings
-        else:
-            if key in task_settings:
-                m_task_settings = {}
-                logger.debug(type(task_settings[key]))
-                if isinstance(task_settings[key], dict):
-                    for setting, value in task_settings[key].items():
-                        logger.debug("{} {} variables: {}", setting, value, variables)
-                        if variables is not None:
-                            if setting in variables:
-                                value = f"{ecf_micro}{setting}{ecf_micro}"
-                                logger.debug(value)
-                        if isinstance(value, str):
-                            value = value.replace("@TASK_NAME@", task)
 
-                        m_task_settings.update({setting: value})
-                    logger.debug(m_task_settings)
-                    return m_task_settings
-                else:
-                    value = task_settings[key]
-                    if variables is not None:
-                        if key in variables:
-                            value = f"{ecf_micro}{variables[key]}{ecf_micro}"
-                    return value
-            return None
+        if key in task_settings:
+            m_task_settings = {}
+            logger.debug(type(task_settings[key]))
+            if isinstance(task_settings[key], dict):
+                for setting, value_ in task_settings[key].items():
+                    value = value_
+                    logger.debug("{} {} variables: {}", setting, value, variables)
+                    if variables is not None and setting in variables:
+                        value = f"{ecf_micro}{setting}{ecf_micro}"
+                        logger.debug(value)
+                    if isinstance(value, str):
+                        value = value.replace("@TASK_NAME@", task)
+
+                    m_task_settings.update({setting: value})
+                logger.debug(m_task_settings)
+                return m_task_settings
+
+            value = task_settings[key]
+            if variables is not None and key in variables:
+                value = f"{ecf_micro}{variables[key]}{ecf_micro}"
+            return value
+
+        return None
 
     def recursive_items(self, dictionary):
         """Recursive loop of dict.
@@ -230,7 +230,7 @@ class TaskSettings(object):
         task_settings = self.parse_submission_defs(task)
         keys = []
         for key, value in self.recursive_items(task_settings):
-            if isinstance(value, str) or isinstance(value, int):
+            if isinstance(value, (int, str)):
                 logger.debug(key)
                 keys.append(key)
         logger.debug(keys)
@@ -278,7 +278,7 @@ class TaskSettings(object):
                 task, "BATCH", variables=variables, ecf_micro=ecf_micro
             )
             logger.debug("batch settings {}", batch_settings)
-            for __, b_setting in batch_settings.items():
+            for b_setting in batch_settings.values():
                 file_handler.write(f"{b_setting}\n")
 
             python_task_env = ""
@@ -302,8 +302,9 @@ class TaskSettings(object):
                 m_settings.append(
                     f"exec(open('{env_file}').read())",
                 )
-                for __, val in module_settings.items():
-                    m_settings.append(f"module('load', '{val}')")
+                m_settings += [
+                    f"module('load', '{val}')" for val in module_settings.values()
+                ]
 
             python_task_env += "\n".join(m_settings)
 

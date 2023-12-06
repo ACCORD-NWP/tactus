@@ -2,7 +2,6 @@
 """Unit tests for the config file parsing module."""
 import os
 from contextlib import suppress
-from unittest import mock
 
 import pytest
 import tomlkit

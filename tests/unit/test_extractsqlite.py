@@ -1,14 +1,11 @@
-"""unit tests for extractsqlite"""
+"""unit tests for extractsqlite."""
 import datetime
-import itertools
 import os
-import sys
 
 import pandas
 import pytest
 
 import deode.sqlite_utils as sqlite
-from deode.tasks.extractsqlite import ExtractSQLite
 
 
 class MockObject(object):
@@ -21,7 +18,7 @@ def tmp_sqlite_path(tmp_path_factory):
 
 
 class TestExtractSQLite:
-    """Test extractsqlite in parts"""
+    """Test extractsqlite in parts."""
 
     sqlite_template = "FC_@PP@_@YYYY@@MM@_@HH@.sqlite"
     fcdate = datetime.datetime.strptime("20230915T00", "%Y%m%dT%H")
@@ -68,7 +65,6 @@ class TestExtractSQLite:
         },
     ]
     station_list = pandas.DataFrame({"lat": [0], "lon": [0], "SID": ["OK"]})
-    weights = {"nearest": [[[[0, 0], 0.0] * 4]], "bilin": [[[[0, 0], 0.0] * 4]]}
 
     mockgrib = {
         "shortName": "t",
@@ -101,7 +97,8 @@ class TestExtractSQLite:
         assert x is not None
 
     def test_interp(self):
-        x = sqlite.interp_from_weights(self.mockgrib, self.weights, "bilin")
+        test_weights = {"nearest": [[[[0, 0], 0.0] * 4]], "bilin": [[[[0, 0], 0.0] * 4]]}
+        x = sqlite.interp_from_weights(self.mockgrib, test_weights, "bilin")
         assert x[0] == 0
 
     def test_train(self):
@@ -109,11 +106,12 @@ class TestExtractSQLite:
         assert x["bilin"][0][0][0][0] == 0.0
 
     def test_parse(self, tmp_sqlite_path):
+        # we pass "pre-trained" weights to avoid errors
+        test_weights = {"nearest": [[[[0, 0], 0.0] * 4]], "bilin": [[[[0, 0], 0.0] * 4]]}
         # create a mockgrib file with 2 bytes
         infile = tmp_sqlite_path + "/mock_gribfile"
-        inf = open(infile, "w")
-        inf.write("12")
-        inf.close()
+        with open(infile, "w") as inf:
+            inf.write("12")
 
         nt, ni = sqlite.parse_grib_file(
             infile=infile,
@@ -121,7 +119,7 @@ class TestExtractSQLite:
             station_list=self.station_list,
             sqlite_template=tmp_sqlite_path + "/" + self.sqlite_template,
             model_name="TEST",
-            weights=self.weights,
+            weights=test_weights,
         )
         assert nt == 2
         assert ni == 2

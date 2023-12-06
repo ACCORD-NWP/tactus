@@ -40,10 +40,8 @@ def base_raw_config(request):
     test_map = {"CY46h1": {"general": {"windfarm": True}}}
     tag = tag_map[request.param] if request.param in tag_map else f"_{request.param}"
     config = BasicConfig.from_file(ConfigParserDefaults.DIRECTORY / f"config{tag}.toml")
-    try:
+    with contextlib.suppress(KeyError):
         config = config.copy(update=test_map[request.param])
-    except KeyError:
-        pass
     return config
 
 
@@ -154,19 +152,13 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         with contextlib.suppress(FileNotFoundError):
             original_task_extractsqlite_extractsqlite_execute_method(*args, **kwargs)
 
-    def new_task_mars_batchjob_run_method(*args, **kwargs):
+    def new_task_mars_batchjob_run_method(*args, **kwargs):  # noqa: ARG001
         """Skip any work."""
-        print(*args, **kwargs)
 
     def new_task_marsprep_run_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
         with contextlib.suppress(FileNotFoundError):
             original_task_marsprep_run_method(*args, **kwargs)
-
-    def new_task_marsprepglobaldt_run_method(*args, **kwargs):
-        """Suppress some errors so that test continues if they happen."""
-        with contextlib.suppress(FileNotFoundError):
-            original_task_marsprepglobaldt_run_method(*args, **kwargs)
 
     def new_task_initial_conditions_nosuccess_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
