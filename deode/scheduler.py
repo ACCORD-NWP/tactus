@@ -98,24 +98,24 @@ class EcflowServer(Server):
 
         try:
             self.ecf_host = os.environ["ECF_HOST"]
-        except:
+        except:  # noqa
             try:
                 self.ecf_host = self.config["ecflow_atos.ecfvars.ECF_HOST"]
             except RuntimeError as error:
                 raise RuntimeError(
-            'Please set environment variable $ECF_HOST in bash, or in file: ecflow_HPC.toml, where HPC is the HPC you are using.') from error
+                    "Please set $ECF_HOST or in file: ecf_host in ecflow_HPC.toml"
+                ) from error
 
         try:
             self.ecf_port = os.environ["ECF_PORT"]
-        except:
+        except:  # noqa
             try:
                 self.ecf_port = self.config["ecflow_atos.ecfvars.ECF_PORT"]
             except RuntimeError as error:
                 raise RuntimeError(
-            'Please set environment variable $ECF_PORT in bash, or in file: ecflow_HPC.toml, where HPC is the HPC you are using.') from error
+                    "Please set $ECF_PORT or in file: ecf_port in ecflow_HPC.toml"
+                ) from error
 
-        #self.ecf_host = os.environ["ECF_HOST"]
-        #self.ecf_port = os.environ["ECF_PORT"]
         self.start_command = start_command
         self.ecf_client = ecflow.Client(self.ecf_host, self.ecf_port)
         logger.debug("self.ecf_client {}", self.ecf_client)

@@ -86,9 +86,7 @@ def start_suite(args, config):
     suite_name = config["general.case"]
     suite_name = Platform(config).substitute(suite_name)
     submission_defs = TaskSettings(config)
-    defs = SuiteDefinition(
-        suite_name, config, submission_defs
-    )
+    defs = SuiteDefinition(suite_name, config, submission_defs)
     def_file = f"{suite_name}.def"
     defs.save_as_defs(def_file)
 
