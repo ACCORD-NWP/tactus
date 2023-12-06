@@ -52,6 +52,7 @@
               {"parameterNumber":"77"}
   ],
   "common":{ "productDefinitionTemplateNumber":"8",
+             "typeOfStatisticalProcessing":"accum",
              "parameterCategory":"1"
   },
   "function":"sum"
