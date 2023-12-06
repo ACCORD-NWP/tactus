@@ -44,6 +44,18 @@
   "grib_id":{ "shortName":"2t", "productDefinitionTemplateNumber":"0"}
 },
 
+{ "harp_param":"Pcp",
+  "method":"nearest",
+  "grib_id":[ {"parameterNumber":"65"},
+              {"parameterNumber":"66"},
+              {"parameterNumber":"75"}
+  ],
+  "common":{ "productDefinitionTemplateNumber":"8",
+             "parameterCategory":"1"
+  },
+  "function":"sum"
+},
+
 { "harp_param":"Q2m",
   "method":"bilin",
   "grib_id":{ "shortName":"2sh", "productDefinitionTemplateNumber":"0"}
