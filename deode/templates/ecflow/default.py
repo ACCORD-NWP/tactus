@@ -85,7 +85,7 @@ def default_main(**kwargs):
     # TODO Add wrapper
     ecf_host = kwargs.get("ECF_HOST")
     ecf_port = kwargs.get("ECF_PORT")
-    server = EcflowServer(ecf_host, ecf_port)
+    server = EcflowServer(config)
 
     ecf_name = kwargs.get("ECF_NAME")
     ecf_pass = kwargs.get("ECF_PASS")

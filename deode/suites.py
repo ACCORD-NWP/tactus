@@ -20,8 +20,6 @@ class SuiteDefinition(object):
     def __init__(
         self,
         suite_name,
-        joboutdir,
-        ecf_files,
         config,
         task_settings,
         ecf_home=None,
@@ -55,6 +53,8 @@ class SuiteDefinition(object):
         if ecflow is None and not dry_run:
             raise ModuleNotFoundError("Ecflow not found")
 
+        self.platform = Platform(config)
+
         self.create_static_data = config["suite_control.create_static_data"]
         self.do_soil = config["suite_control.do_soil"]
         self.do_pgd = config["suite_control.do_pgd"]
@@ -70,6 +70,9 @@ class SuiteDefinition(object):
         self.surfex = config["general.surfex"]
         self.suite_name = suite_name
         self.mode = config["suite_control.mode"]
+
+        ecf_files = self.platform.get_platform_value("ECF_FILES")
+        joboutdir = self.platform.get_platform_value("JOBOUTDIR")
 
         self.creategrib = bool("task.creategrib" in config)
 

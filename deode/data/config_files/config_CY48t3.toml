@@ -47,6 +47,7 @@
   platform = "include/platform_paths/atos_bologna.toml"
   submission = "include/submission/atos_bologna_CY48t3.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"
+  scheduler = "include/scheduler/ecflow_atos.toml"
 
 [pgd]
   one_decade = true

@@ -20,9 +20,10 @@ except ModuleNotFoundError:
 class Server(ABC):
     """Base server/scheduler class."""
 
-    def __init__(self):
+    def __init__(self, config):
         """Construct the server."""
         self.settings = None
+        self.config = config
 
     @abstractmethod
     def start_server(self):
@@ -79,12 +80,11 @@ class Server(ABC):
 class EcflowServer(Server):
     """Ecflow server."""
 
-    def __init__(self, ecf_host, ecf_port=3141, start_command=None):
+    def __init__(self, config, start_command=None):
         """Construct the EcflowServer.
 
         Args:
-            ecf_host (str): Ecflow server host.
-            ecf_port (int): Ecflow server port.
+            config (str): configuration settings.
             start_command (str): Ecflow start server command.
 
         Raises:
@@ -93,9 +93,29 @@ class EcflowServer(Server):
         """
         if ecflow is None:
             raise ModuleNotFoundError("Ecflow not found")
-        Server.__init__(self)
-        self.ecf_host = ecf_host
-        self.ecf_port = ecf_port
+
+        Server.__init__(self, config)
+
+        try:
+            self.ecf_host = os.environ["ECF_HOST"]
+        except:
+            try:
+                self.ecf_host = self.config["ecflow_atos.ecfvars.ECF_HOST"]
+            except RuntimeError as error:
+                raise RuntimeError(
+            'Please set environment variable $ECF_HOST in bash, or in file: ecflow_HPC.toml, where HPC is the HPC you are using.') from error
+
+        try:
+            self.ecf_port = os.environ["ECF_PORT"]
+        except:
+            try:
+                self.ecf_port = self.config["ecflow_atos.ecfvars.ECF_PORT"]
+            except RuntimeError as error:
+                raise RuntimeError(
+            'Please set environment variable $ECF_PORT in bash, or in file: ecflow_HPC.toml, where HPC is the HPC you are using.') from error
+
+        #self.ecf_host = os.environ["ECF_HOST"]
+        #self.ecf_port = os.environ["ECF_PORT"]
         self.start_command = start_command
         self.ecf_client = ecflow.Client(self.ecf_host, self.ecf_port)
         logger.debug("self.ecf_client {}", self.ecf_client)

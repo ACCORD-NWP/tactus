@@ -81,15 +81,13 @@ def start_suite(args, config):
     config = config.copy(update={"platform": {"deode_home": deode_home}})
     config = config.copy(update=set_times(config))
 
-    server = EcflowServer(
-        args.ecf_host, ecf_port=args.ecf_port, start_command=args.start_command
-    )
+    server = EcflowServer(config, start_command=args.start_command)
 
     suite_name = config["general.case"]
     suite_name = Platform(config).substitute(suite_name)
     submission_defs = TaskSettings(config)
     defs = SuiteDefinition(
-        suite_name, args.joboutdir, args.ecf_files, config, submission_defs
+        suite_name, config, submission_defs
     )
     def_file = f"{suite_name}.def"
     defs.save_as_defs(def_file)
