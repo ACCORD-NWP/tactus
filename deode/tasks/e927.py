@@ -58,7 +58,7 @@ class E927(Task):
         self.fmanager.input("{}/Const.Clim.{}".format(self.bdclimdir, mm), "Const.Clim")
 
         # Namelist
-        self.nlgen.generate_namelist(f"e927_{self.bdmodel}", "fort.4")
+        self.nlgen.generate_namelist("e927", "fort.4")
 
         bd_basetime = self.basetime - cycle_offset(
             self.basetime, self.bdcycle, shift=self.bdshift

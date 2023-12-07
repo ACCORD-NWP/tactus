@@ -26,14 +26,12 @@ class Forecast(Task):
         Task.__init__(self, config, __name__)
 
         self.cycle = self.config["general.cycle"]
-        self.csc = self.config["general.csc"]
         self.cnmexp = self.config["general.cnmexp"]
         self.domain = self.config["domain.name"]
         self.windfarm = self.config.get("general.windfarm", False)
 
         self.basetime = as_datetime(self.config["general.times.basetime"])
         self.cycle_length = as_timedelta(self.config["general.times.cycle_length"])
-        self.bdmodel = self.config["boundaries.bdmodel"]
         self.bdint = as_timedelta(self.config["boundaries.bdint"])
         self.intp_bddir = self.config["system.intp_bddir"]
         self.forecast_range = self.config["general.times.forecast_range"]
