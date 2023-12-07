@@ -72,11 +72,11 @@
   bdfile_template = "ELSCF@CNMEXP@ALBC@NNN@"
   casedir = "@SCRATCH@/@CASE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@/"
+  config_file = "@DEODE_HOME@/deode/data/config_files/config_@CYCLE@.toml"
   global_sfcdir = "/hpcperm/snh02/climate_fields_mir/climate.v020_MIR_orog/"
   logs = "@ARCHIVE_ROOT@/logs"
   marsdir = "@SCRATCH@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"
-  config_file = "@DEODE_HOME@/deode/data/config_files/config_@CYCLE@.toml"
 
 [task.creategrib]
   conversions = ["surfex"]

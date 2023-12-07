@@ -141,7 +141,7 @@ def test_run_task_command(tmp_path):
 
 
 @pytest.mark.usefixtures("_module_mockers")
-def test_start_suite_command(tmp_path):
+def test_start_suite_command():
     main(["start", "suite"])
 
 
