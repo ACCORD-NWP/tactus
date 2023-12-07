@@ -3,7 +3,7 @@
   case = "@CYCLE@_@CSC@"
   cnmexp = "DEOD"
   csc = "AROME"
-  cycle = "CY46h1"
+  cycle = "CY48t3"
   initfile = "@SCRATCH@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@HISTORY_TEMPLATE@"
   initfile_sfx = "@SCRATCH@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
   keep_workdirs = true

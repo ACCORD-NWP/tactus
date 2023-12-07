@@ -48,6 +48,7 @@
   platform = "include/platform_paths/atos_bologna.toml"
   submission = "include/submission/atos_bologna_CY46h1.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"
+  scheduler = "include/scheduler/ecflow_atos.toml"
 
 [pgd]
   one_decade = true
@@ -78,6 +79,7 @@
   logs = "@ARCHIVE_ROOT@/logs"
   marsdir = "@SCRATCH@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"
+  config_file = "@DEODE_HOME@/deode/data/config_files/config_@CYCLE@.toml"
 
 [task.creategrib]
   conversions = ["surfex"]
