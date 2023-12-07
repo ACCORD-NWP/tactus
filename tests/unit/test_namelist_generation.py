@@ -60,7 +60,7 @@ def parsed_config(config_platform):
     )
 
 
-@pytest.fixture(params=["pgd", "prep_AROME", "forecast", "prep_IFS"])
+@pytest.fixture(params=["pgd", "prep", "forecast"])
 def _nlgen_surfex(parsed_config, tmp_path_factory, request):
     """Test namelist generation for surfex."""
     nam_type = request.param
