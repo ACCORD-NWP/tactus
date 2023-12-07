@@ -124,10 +124,16 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         "--start-command", type=str, help="Start command for server", default=None
     )
     parser_start_suite.add_argument(
-        "--host", type=str, help="Current HPC or Platform ('atos'/'lumi').", required=True
+        "--host",
+        type=str,
+        help="Current HPC or Platform ('atos'/'lumi').",
+        required=False,
     )
     parser_start_suite.add_argument(
-        "--cycle", type=str, help="Current Forecast model cycle (CY##t#, CY##h#).", required=True
+        "--cycle",
+        type=str,
+        help="Current Forecast model cycle (CY##t#, CY##h#).",
+        required=False,
     )
     parser_start_suite.add_argument("--begin", "-b", help="Begin suite", default=True)
     parser_start_suite.set_defaults(run_command=start_suite)
