@@ -133,10 +133,10 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         "--start-command", type=str, help="Start command for server", default=None
     )
     parser_start_suite.add_argument(
-        "--joboutdir", "-j", help="Job out directory", required=True
+        "--joboutdir", "-j", help="Job out directory", required=False
     )
     parser_start_suite.add_argument(
-        "--ecf-files", "-f", help="Ecflow container directory", required=True
+        "--ecf-files", "-f", help="Ecflow container directory", required=False
     )
     parser_start_suite.add_argument(
         "--hpc",

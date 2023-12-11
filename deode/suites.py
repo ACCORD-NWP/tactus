@@ -532,9 +532,8 @@ class SuiteDefinition(object):
                     self.task_settings,
                     self.ecf_files,
                     input_template=input_template,
-                    #trigger=archiving_trigger,
-                    ecf_files_remotely=self.ecf_files_remotely,
                     trigger=archiving_hour_trigger,
+                    ecf_files_remotely=self.ecf_files_remotely,
                 )
 
     def static_suite_part(self, config, input_template):
@@ -667,7 +666,7 @@ class SuiteDefinition(object):
 
         if self.do_pgd:
             pgd_update_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(e923constant)])
-            EcflowSuiteTask(
+            pgd_update = EcflowSuiteTask(
                 "PgdUpdate",
                 static_data,
                 config,

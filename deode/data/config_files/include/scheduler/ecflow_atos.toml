@@ -4,3 +4,4 @@
   ecf_host = "ecflow-gen-nkac-001"
   ecf_jobout = "/perm/nkac/deode_ecflow/jobout"
   ecf_port = "3141"
+  ecf_files_remotely = "/perm/nkac/deode_ecflow/ecf_files"

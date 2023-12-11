@@ -112,9 +112,7 @@ def start_suite(args, config):
     )
     config = config.copy(update={"troika": {"config_file": local_troika_config_file}})
 
-    server = EcflowServer(
-        args.ecf_host, ecf_port=args.ecf_port, start_command=args.start_command
-    )
+    server = EcflowServer(config, start_command=args.start_command)
     submission_defs = TaskSettings(config)
     defs = SuiteDefinition(suite_name, config, submission_defs)
     def_file = f"{suite_name}.def"
