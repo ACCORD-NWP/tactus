@@ -135,6 +135,30 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         help="Current Forecast model cycle (CY##t#, CY##h#).",
         required=False,
     )
+    parser_start_suite.add_argument(
+        "--ecf-home",
+        "-eh",
+        help="Ecflow home directory locally on server",
+        dest="ecf_home",
+        required=False,
+        default=None,
+    )
+    parser_start_suite.add_argument(
+        "--ecf-files-remotely",
+        "-er",
+        help="Ecflow file root directory locally on server",
+        dest="ecf_files_remotely",
+        required=False,
+        default=None,
+    )
+    parser_start_suite.add_argument(
+        "--remote-user",
+        "-u",
+        help="Ecflow file root directory locally on server",
+        dest="remote_user",
+        required=False,
+        default=None,
+    )
     parser_start_suite.add_argument("--begin", "-b", help="Begin suite", default=True)
     parser_start_suite.set_defaults(run_command=start_suite)
 

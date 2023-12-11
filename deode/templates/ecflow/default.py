@@ -2,11 +2,11 @@
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import derived_variables
 from deode.logs import LogDefaults, LoggerHandlers, logger
+
+# @ENV_SUB@
 from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
 from deode.submission import ProcessorLayout
 from deode.tasks.discover_task import get_task
-
-# @ENV_SUB@
 
 logger.enable("deode")
 
@@ -14,7 +14,7 @@ logger.enable("deode")
 def parse_ecflow_vars():
     """Parse the ecflow variables."""
     return {
-        "ECF_HOST": "%ECF_HOST%",
+        "ECF_HOST": "217.71.195.251",
         "ECF_PORT": "%ECF_PORT%",
         "ECF_NAME": "%ECF_NAME%",
         "ECF_PASS": "%ECF_PASS%",
