@@ -120,11 +120,26 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     parser_start_suite = start_command_subparsers.add_parser(
         "suite", help="Start the suite", parents=[common_parser]
     )
+    #parser_start_suite.add_argument(
+    #    "--start-command", type=str, help="Start command for server", default=None
+    #)
+    parser_start_suite.add_argument(
+        "--ecf-host", "-host", type=str, help="Ecflow host", default=None
+    )
+    parser_start_suite.add_argument(
+        "--ecf-port", "-port", type=int, help="Ecflow port", default=None
+    )
     parser_start_suite.add_argument(
         "--start-command", type=str, help="Start command for server", default=None
     )
     parser_start_suite.add_argument(
-        "--host",
+        "--joboutdir", "-j", help="Job out directory", required=True
+    )
+    parser_start_suite.add_argument(
+        "--ecf-files", "-f", help="Ecflow container directory", required=True
+    )
+    parser_start_suite.add_argument(
+        "--hpc",
         type=str,
         help="Current HPC or Platform ('atos'/'lumi').",
         required=False,

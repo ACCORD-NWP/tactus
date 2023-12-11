@@ -77,16 +77,13 @@ def start_suite(args, config):
 
     """
     logger.info("Starting suite...")
+
     deode_home = set_deode_home(args, config)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
     config = config.copy(update=set_times(config))
 
-    #server = EcflowServer(config, start_command=args.start_command)
+    server = EcflowServer(config, start_command=args.start_command)
 
-    #suite_name = config["general.case"]
-    #suite_name = Platform(config).substitute(suite_name)
-    #submission_defs = TaskSettings(config)
-    #defs = SuiteDefinition(suite_name, config, submission_defs)
     suite_name = config["general.case"]
     suite_name = Platform(config).substitute(suite_name)
 
@@ -119,15 +116,7 @@ def start_suite(args, config):
         args.ecf_host, ecf_port=args.ecf_port, start_command=args.start_command
     )
     submission_defs = TaskSettings(config)
-    defs = SuiteDefinition(
-        suite_name,
-        args.joboutdir,
-        ecf_files_local,
-        config,
-        submission_defs,
-        ecf_home=ecf_home,
-        ecf_files_remotely=ecf_files_remotely,
-    )
+    defs = SuiteDefinition(suite_name, config, submission_defs)
     def_file = f"{suite_name}.def"
     defs.save_as_defs(def_file)
 
