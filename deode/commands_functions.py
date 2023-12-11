@@ -6,8 +6,8 @@ import sys
 from functools import partial
 from pathlib import Path
 
-from troika.connections.ssh import SSHConnection
 from toml_formatter.formatter import FormattedToml
+from troika.connections.ssh import SSHConnection
 
 from . import GeneralConstants
 from .config_parser import BasicConfig, ParsedConfig
@@ -87,16 +87,12 @@ def start_suite(args, config):
     suite_name = config["general.case"]
     suite_name = Platform(config).substitute(suite_name)
 
-    # Set ecf_home. If set and different than joboutdir it implies that we will copy it to server
-    if args.ecf_home is None:
-        ecf_home = args.joboutdir
-    else:
-        ecf_home = args.ecf_home
+    # Set ecf_home. If diff than joboutdir => we will copy it to server
+    ecf_home = args.joboutdir if args.ecf_home is None else args.ecf_home
     ecf_files_local = args.ecf_files
-    if args.ecf_files_remotely is None:
-        ecf_files_remotely = args.ecf_files
-    else:
-        ecf_files_remotely = args.ecf_files_remotely
+    ecf_files_remotely = (
+        args.ecf_files if args.ecf_files_remotely is None else args.ecf_files_remotely
+    )
 
     remote_user = args.remote_user
     logger.debug("ECF_HOME={}", ecf_home)

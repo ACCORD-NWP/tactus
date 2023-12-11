@@ -844,6 +844,7 @@ class EcflowNodeContainer(EcflowNode):
             variables (dict, optional): Variables to map. Defaults to None
             trigger (EcflowSuiteTriggers): Trigger. Defaults to None
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
+            ecf_files_remotely(str, optional): ECF_FILES on ecflow server
 
         """
         EcflowNode.__init__(
@@ -879,6 +880,7 @@ class EcflowSuite(EcflowNodeContainer):
             variables (dict, optional): Variables to map. Defaults to None
             dry_run (bool, optional): Dry run not using ecflow. Defaults to False.
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
+            ecf_files_remotely(str, optional): ECF_FILES on ecflow server
 
         """
         if dry_run:
@@ -924,13 +926,14 @@ class EcflowSuiteFamily(EcflowNodeContainer):
         """Construct the family.
 
         Args:
-            name (str): Name of the family.
-            parent (EcflowNodeContainer): Parent node.
-            ecf_files (str): Location of ecf files
-            variables (dict, optional): Variables to map. Defaults to None
-            trigger (EcflowSuiteTriggers): Trigger. Defaults to None
-            def_status (str, ecflow.Defstatus): Def status. Defaults to None
-
+                    name (str): Name of the family.
+                    parent (EcflowNodeContainer): Parent node.
+                    ecf_files (str): Location of ecf files
+                    variables (dict, optional): Variables to map. Defaults to None
+                    trigger (EcflowSuiteTriggers): Trigger. Defaults to None
+                    def_status (str, ecflow.Defstatus): Def status. Defaults to None
+                    ecf_files_remotely(str, optional): ECF_FILES on ecflow server
+        f
         """
         EcflowNodeContainer.__init__(
             self,
@@ -981,6 +984,7 @@ class EcflowSuiteTask(EcflowNode):
             ecf_micro (str, optional): ECF_MICRO. Defaults to %
             trigger (EcflowSuiteTriggers): Trigger. Defaults to None
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
+            ecf_files_remotely(str, optional): ECF_FILES on ecflow server
 
         Raises:
             ValueError: If input template is to be parsed but it is not passed.
