@@ -32,7 +32,6 @@ class C903(Task):
 
         self.dom = self.config["domain.name"]
 
-        self.expver = self.config["general.mars_expver"]
         self.bdfile_template = self.config["system.bdfile_template"]
         self.intp_bddir = self.platform.get_system_value("intp_bddir")
         logger.info("Domain: {}", self.dom)
@@ -52,7 +51,7 @@ class C903(Task):
         for x in link:
             try:
                 os.unlink(x)
-            except FileNotFoundError:
+            except FileNotFoundError:  # noqa: PERF203
                 logger.warning("Could not remove file '{}'.", x, exc_info=True)
 
     def execute(self):

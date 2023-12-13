@@ -21,7 +21,6 @@ def config_platform():
             case = "mytest"
             realization = -1
             cnmexp = "DEOD"
-            tstep = 60
         [macros]
             os_macros = ["USER", "HOME"]
             group_macros = ["platform","system"]
@@ -29,6 +28,7 @@ def config_platform():
                           { domain = "domain.name" }]
         [domain]
             name = "MYDOMAIN"
+            tstep = 60
         [pgd]
             ond_decade = true
         [general.times]
@@ -63,7 +63,8 @@ class TestFileManager:
             check_archive=True,
         )
         logger.debug("identifier={}", provider.identifier)
-        assert provider.identifier == "ec:2000/01/01/00/ICMSHDEOD+0024"
+        logger.info(provider.identifier)
+        assert provider.identifier == "{self.aloc}/2000/01/01/00/ICMSHDEOD+0024"
         assert resource.identifier == "/tmp/ICMSHDEODINIT"  # noqa S108
 
         os.makedirs("/tmp/bindir", exist_ok=True)  # noqa S108
@@ -98,9 +99,6 @@ class TestFileManager:
             "@ARCHIVE@/OUT_ICMSH@CNMEXP@+@LLLL@",
             archive=True,
         )
-        print(provider)
-        print(aprovider)
-        print(resource)
         assert resource.identifier == "/tmp/ICMSHDEOD+0024"  # noqa S108
         assert (
             provider.identifier
@@ -109,7 +107,7 @@ class TestFileManager:
         assert os.path.exists(
             "/tmp/archive/2000/01/01/00/OUT_ICMSHDEOD+0024"  # noqa S108, E501
         )
-        assert aprovider.identifier == "ectmp:/2000/01/01/00/OUT_ICMSHDEOD+0024"
+        assert aprovider.identifier == "{self.aloc}/2000/01/01/00/OUT_ICMSHDEOD+0024"
         os.remove("/tmp/archive/2000/01/01/00/OUT_ICMSHDEOD+0024")  # noqa S108
 
     def test_case_insensitive(self, parsed_config_with_paths):

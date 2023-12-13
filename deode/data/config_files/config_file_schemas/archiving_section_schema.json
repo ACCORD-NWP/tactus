@@ -1,0 +1,149 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Archiving Section",
+    "description": "Archiving settings for ATOS to ECFS. Locations, and time intervals to archive for each file type",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+          "paths": {
+           "title": "Paths",
+           "description": "Archives to use on atos, and locations where things will be stored.",
+           "properties": {
+            "aloc": {
+              "description": "Actual archiving system. ATOS options > ectmp and ec. LUMI will differ.",
+              "type": "string",
+              "default": "ectmp:"
+            },
+            "apath": {
+              "description": "Archiving path to store files on archiving system",
+              "type": "string",
+              "default": "/@USER@/deode/@CASE@/"
+            }
+           }
+          },
+          "default": {
+           "title": "Rules for the default archiving group of model output",
+           "description": "",
+           "type": "object",
+           "properties": {
+            "active": {
+              "type": "boolean",
+              "description": "Activate the default archiving"
+            },
+            "inpath": {
+              "description": "Location of input files for archiving"
+            },
+            "outpath": {
+              "description": "Relative location of the archived files"
+            }
+           }
+          },
+          "hour": {
+           "title": "Settings for time dependent archiving",
+           "description": "",
+           "type": "object",
+           "properties": {
+            "example": {
+             "title": "Example settings for the archiving rules. Any number of rules can be defined to accomodate the needs",
+             "description": "",
+             "type": "object",
+             "properties": {
+              "active": {
+                "description": "Activates the default archiving. Could be boolean or string refering to a boolean in the config file. See the sqlite archiving for an example "
+              },
+              "inpath": {
+                "description": "Location of input files for archiving"
+              },
+              "outpath": {
+                "description": "Relative location of the archived files"
+              },
+              "pattern": {
+                "description": "Search pattern for files to be included. Could be a single pattern or list of patterns."
+              }
+             }
+            }
+           }
+          },
+          "static": {
+           "title": "Settings for time dependent archiving",
+           "description": "",
+           "type": "object",
+           "properties": {
+            "example": {
+             "title": "Example settings for the archiving rules. Any number of rules can be defined to accomodate the needs",
+             "description": "",
+             "type": "object",
+             "properties": {
+              "active": {
+                "description": "Activates the default archiving. Could be boolean or string refering to a boolean in the config file. See the sqlite archiving for an example "
+              },
+              "inpath": {
+                "description": "Location of input files for archiving"
+              },
+              "outpath": {
+                "description": "Relative location of the archived files"
+              },
+              "pattern": {
+                "description": "Search pattern for files to be included. Could be a single pattern or list of patterns."
+              }
+             }
+            }
+           }
+          },
+          "settings": {
+           "title": "Archive timestep settings",
+           "description": "Archiving settings for each file type, specified as time interval. This will tell DEODE how often you want to archive output files under said file type. IF this field is completely empty, output_settings will be taken from main config file eg. config_CYCLE.toml",
+           "type": "object",
+           "properties": {
+            "history": {
+              "description": "Time interval to store history files",
+              "anyOf": [
+	     {
+                "type": "string",
+                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+	     },
+	     {
+                "type": "array",
+                "items": {
+                   "type": "string",
+                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+                }
+	     }
+	      ]
+            },
+            "surfex": {
+              "description": "Time interval to store surfex files",
+              "anyOf": [
+	     {
+                "type": "string",
+                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+	     },
+	     {
+                "type": "array",
+                "items": {
+                   "type": "string",
+                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+                }
+	     }
+	      ]
+            },
+            "fullpos": {
+              "description": "Time interval to store fullpos files",
+              "anyOf": [
+	     {
+                "type": "string",
+                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+	     },
+	     {
+                "type": "array",
+                "items": {
+                   "type": "string",
+                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+                }
+	     }
+	      ]
+            }
+           }
+          }
+    }
+}

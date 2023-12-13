@@ -232,7 +232,8 @@ def namelist_integrate(args, config):
         nml = nlint.yml2dict(Path(args.yaml))
         if tag not in nml:
             raise SystemExit(f"Tag {tag} was not found in input yaml file {args.yaml}!")
-        elif tag in nltags:
+
+        if tag in nltags:
             raise SystemExit(f"Tag {tag} found in both yaml and namelist input, abort!")
     elif not nml:
         # Construct basis as intersection of all input files

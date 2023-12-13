@@ -64,7 +64,9 @@ def check_syntax(output_settings, length):
     for x in output_settings:
         if x.count(":") != length:
             raise SystemExit(
-                f"Invalid argument {output_settings} for output_settings.\nPlease provide single time increment as a string or a list of 'starttime:endtime:interval' choices"
+                f"Invalid argument {output_settings} for output_settings.\n"
+                "Please provide single time increment as a string "
+                "or a list of 'starttime:endtime:interval' choices"
             )
 
 
@@ -74,6 +76,9 @@ def expand_output_settings(output_settings, forecast_range):
     Args:
         output_settings (tuple, list, str): Specifies the output steps
         forecast_range (str): Forecast range in duration syntax
+
+    Raises:
+        RuntimeError: Handle erroneous time increment
 
     Returns:
         sections (list) : List of output subsections
@@ -88,9 +93,12 @@ def expand_output_settings(output_settings, forecast_range):
         check_syntax(output_settings, 2)
         oi = output_settings
 
-    sections = []
+    dt0 = as_timedelta("PT0H")
     for x in oi:
-        sections.append([as_timedelta(y) for y in x.split(":")])
+        if as_timedelta(x.split(":")[2]) == dt0:
+            raise RuntimeError(f"Zero size time increments not allowed:{x}")
+
+    sections = [[as_timedelta(y) for y in x.split(":")] for x in oi]
 
     return sections
 
@@ -105,7 +113,6 @@ def oi2dt_list(output_settings, forecast_range):
     Returns:
         dt (list) : List of output occurences
     """
-
     sections = expand_output_settings(output_settings, forecast_range)
 
     dt = []
@@ -143,6 +150,7 @@ def cycle_offset(basetime, dt, shift=DatetimeConstants.DEFAULT_SHIFT):
 
 
 def get_decade(dt) -> str:
+    """Return the decade given a datetime object."""
     # Extract month and day from datetime object
     dtg_mm = int(dt.month)
     dtg_dd = int(dt.day)

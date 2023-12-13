@@ -7,48 +7,44 @@
   initfile = "@SCRATCH@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@HISTORY_TEMPLATE@"
   initfile_sfx = "@SCRATCH@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
   keep_workdirs = true
-  mars_expver = "0001"
   surfex = true
-  tstep = 75
   windfarm = false
 
 [general.output_settings]
-  fullpos = ["PT0H:PT6H:PT15M", "PT6H:PT9H:PT30M", "PT9H:PT12H:PT1H"]
+  fullpos = "PT15M"
   history = "PT1H"
   nrazts = "PT1H"
   surfex = "PT1H"
 
 [general.times]
   cycle_length = "PT6H"
-  end = "2023-09-13T06:00:00Z"
-  forecast_range = "PT12H"
+  end = "2023-09-16T06:00:00Z"
+  forecast_range = "PT6H"
   radiation_frequency = "PT5M"
-  start = "2023-09-13T00:00:00Z"
-
-[archiving]
-  apath = "@USER@/deode/@CASE@/"
-  arch_cdate = "archive/@YYYY@/@MM@/@DD@/@HH@/"
-  comp = "atos"
-  grp = "msdeode"
-  loc = "ectmp:"
+  start = "2023-09-16T00:00:00Z"
 
 [boundaries]
   bd_has_surfex = false
-  bdcycle = "PT12H"
-  bdint = "PT3H"
-  bdmodel = "ifs"
+  bdcycle = "PT6H"
+  bdint = "PT1H"
+  bdmodel = "IFS"
   bdshift = "PT0H"
-  bdstrategy = "same_forecast"
   bdtasks_per_batch = 24
+  humi_gp = true
+  ifs.selection = "HRES"
+  ifs.bdmember = ""
 
 [fullpos]
   config_path = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos"
   selection = ["rules", "namfpc_header", "master_selection"]
 
 [include]
+  archiving = "include/archiving.toml"
   domain = "include/domains/DEMO_60x80_2500m.toml"
+  extractsqlite = "include/sqlite.toml"
   file_templates = "include/file_templates.toml"
   macros = "include/macros.toml"
+  mars = "include/mars_settings.toml"
   platform = "include/platform_paths/atos_bologna.toml"
   submission = "include/submission/atos_bologna_CY46h1.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"
@@ -59,7 +55,8 @@
 [suite_control]
   create_static_data = true
   create_time_dependent_suite = true
-  do_archiving = false
+  do_archiving = true
+  do_extractsqlite = true
   do_marsprep = true
   do_pgd = true
   do_prep = true
@@ -77,10 +74,8 @@
   climdir = "@CASEDIR@/climate/@DOMAIN@/"
   global_sfcdir = "/hpcperm/snh02/climate_fields_mir/climate.v020_MIR_orog/"
   logs = "@ARCHIVE_ROOT@/logs"
-  marsdir = "@SCRATCH@/IFS/@YYYY@/@MM@/@DD@/@HH@/@MARS_EXPVER@"
-  marsfile_template = "mars_prefetch_[levtype]_[date]_[time]+[step]"
+  marsdir = "@SCRATCH@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"
 
-[task.creategrib.conversions.surfex]
-  input_template = "@SURFEX_TEMPLATE@"
-  output_template = "sfx_@YYYY@-@MM@-@DD@T@HH@@mm@@ss@+@DURATION_ARCHIVE@.grib"
+[task.creategrib]
+  conversions = ["surfex"]

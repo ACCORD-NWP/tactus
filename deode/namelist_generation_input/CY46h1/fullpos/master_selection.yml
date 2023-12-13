@@ -137,7 +137,7 @@ selection:
      - 'CLOUD_WATER'
      - 'TKE'
     NRFP3S:
-     - 90 
+     - ${vertical_levels.nlev} 
   NAMFPDYT: {}
   NAMFPDYF : {}
   NAMPPC : {}

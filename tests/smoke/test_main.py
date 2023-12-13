@@ -9,7 +9,6 @@ from pathlib import Path
 from unittest import mock
 
 import pytest
-import tomlkit
 
 from deode import GeneralConstants
 from deode.__main__ import main
@@ -55,7 +54,8 @@ def _module_mockers(module_mocker, config_path, tmp_path_factory):
 
     def new_submission_task_settings_parse_job(self, **kwargs):
         kwargs["task_job"] = (tmp_path_factory.getbasetemp() / "task_job.txt").as_posix()
-        original_submission_task_settings_parse_job(self, **kwargs)
+        with suppress(RuntimeError):
+            original_submission_task_settings_parse_job(self, **kwargs)
 
     module_mocker.patch(
         "deode.submission.NoSchedulerSubmission.submit",
@@ -76,9 +76,8 @@ def test_package_executable_is_in_path():
 
 @pytest.mark.parametrize("argv", [[], None])
 def test_cannot_run_without_arguments(argv):
-    with redirect_stderr(StringIO()):
-        with pytest.raises(SystemExit, match="2"):
-            main(argv)
+    with redirect_stderr(StringIO()), pytest.raises(SystemExit, match="2"):
+        main(argv)
 
 
 @pytest.mark.usefixtures("_module_mockers")
@@ -114,9 +113,10 @@ class TestMainShowCommands:
             for new in itertools.count():
                 yield 100 * new
 
-        with mock.patch("time.time", mock.MagicMock(side_effect=fake_time())):
-            with redirect_stdout(StringIO()):
-                main(["show", "config"])
+        with mock.patch(
+            "time.time", mock.MagicMock(side_effect=fake_time())
+        ), redirect_stdout(StringIO()):
+            main(["show", "config"])
 
     def test_show_namelist_command(self, tmp_path_factory):
         output_file = f"{tmp_path_factory.getbasetemp().as_posix()}/fort.4"

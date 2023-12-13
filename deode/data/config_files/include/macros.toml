@@ -1,8 +1,11 @@
 gen_macros = [
+    "boundaries.bdmodel",
     "general.cnmexp",
     "general.cycle",
     "general.csc",
-    "general.mars_expver",
+    {sqlite_path = "extractsqlite.sqlite_path"},
+    {mars_selection = "boundaries.ifs.selection"},
+    {bdmember = "boundaries.ifs.bdmember"},
     {duration_model = "file_templates.duration.model"},
     {duration_archive = "file_templates.duration.archive"},
     {surfex_template = "file_templates.surfex.archive"},

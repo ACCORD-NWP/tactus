@@ -2,6 +2,7 @@ gridtype = "linear"
 name = "DEMO_60x80_2500m"
 nimax = 49
 njmax = 69
+tstep = 75
 xdx = 2500.0
 xdy = 2500.0
 xlat0 = 52.5

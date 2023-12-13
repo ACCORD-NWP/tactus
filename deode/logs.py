@@ -24,7 +24,6 @@ class LogDefaults(QuasiConstant):
     RETENTION_TIME = "1 week"
     SINKS = {
         "console": sys.stderr,
-        "logfile": DIRECTORY / f"{GeneralConstants.PACKAGE_NAME}_{{time}}.log",
     }
 
 
