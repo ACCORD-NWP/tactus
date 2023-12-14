@@ -133,15 +133,15 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   OMP_NUM_THREADS = "4"
 
 [task_exceptions.Forecast.BATCH]
+  CPUSPERTASK = "#SBATCH --cpus-per-task=4"
   NODES = "#SBATCH --nodes=20"
   NTASKS = "#SBATCH --ntasks=640"
   WALLTIME = "#SBATCH --time=08:00:00"
-  CPUSPERTASK = "#SBATCH --cpus-per-task=4"
 
 [task_exceptions.Forecast.ENV]
-  UCX_LOG_LEVEL = "error"
-  KMP_STACKSIZE = "4G"
   KMP_BLOCKTIME = "12"
+  KMP_STACKSIZE = "4G"
+  UCX_LOG_LEVEL = "error"
 
 [task_exceptions.Gmted.BATCH]
   MEM = "#SBATCH --mem=32GB"
