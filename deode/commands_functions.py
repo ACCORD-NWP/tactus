@@ -80,10 +80,22 @@ def start_suite(args, config):
     logger.info("Settings and paths loaded: ")
     logger.info("Config file: {}", args.config_file)
     logger.info("Ecflow settings: ")
-    logger.info("ecf_jobout: {}", config["scheduler.ecfvars.ecf_jobout"])
-    logger.info("ecf_files: {}", config["scheduler.ecfvars.ecf_files"])
-    logger.info("ecf_files_remotely: {}", config["scheduler.ecfvars.ecf_files_remotely"])
-    logger.info("ecf_home: {}", config["scheduler.ecfvars.ecf_home"])
+
+    # Check if user passed flags, and reiterate ecf vars to them
+    logger.info(
+        "ecf_jobout: {}", config["scheduler.ecfvars.ecf_jobout"]
+    ) if args.joboutdir is None else logger.info("ecf_jobout: {}", args.joboutdir)
+    logger.info(
+        "ecf_files: {}", config["scheduler.ecfvars.ecf_files"]
+    ) if args.ecf_files is None else logger.info("ecf_files: {}", args.ecf_files)
+    logger.info(
+        "ecf_files_remotely: {}", config["scheduler.ecfvars.ecf_files_remotely"]
+    ) if args.ecf_files_remotely is None else logger.info(
+        "ecf_files_remotely: {}", args.ecf_files_remotely
+    )
+    logger.info(
+        "ecf_home: {}", config["scheduler.ecfvars.ecf_home"]
+    ) if args.ecf_home is not None else logger.info("ecf_home: {}", args.ecf_home)
 
     deode_home = set_deode_home(args, config)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
