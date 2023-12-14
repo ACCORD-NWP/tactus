@@ -12,10 +12,10 @@
   tstep = 75
 
 [general.output_settings]
-  fullpos = ["PT6H:PT15M", "PT9H:PT30M", "PT1H"]
-  history = ["PT1H"]
+  fullpos = "PT15M"
+  history = "PT1H"
   nrazts = "PT1H"
-  surfex = ["PT6H:PT1H", "PT9H:PT24H:PT3H"]
+  surfex = "PT1H"
 
 [general.times]
   cycle_length = "PT6H"
@@ -24,31 +24,31 @@
   radiation_frequency = "PT5M"
   start = "2023-09-16T00:00:00Z"
 
-[archiving]
-  apath = "@USER@/deode/@CASE@/"
-  arch_cdate = "archive/@YYYY@/@MM@/@DD@/@HH@/"
-  comp = "atos"
-  grp = "msdeode"
-  loc = "ectmp:"
-
 [boundaries]
   bd_has_surfex = false
-  bdcycle = "PT24H"
-  bdint = "PT3H"
-  bdmodel = "ifs"
+  bdcycle = "PT6H"
+  bdint = "PT1H"
+  bdmodel = "IFS"
   bdshift = "PT0H"
   bdstrategy = "same_forecast"
   bdtasks_per_batch = 24
+  humi_gp = true
+  ifs.selection = "HRES"
+  ifs.bdmember = ""
 
 [fullpos]
   config_path = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos"
   selection = ["rules", "namfpc_header", "master_selection"]
 
 [include]
+  archiving = "include/archiving.toml"
   domain = "include/domains/DEMO_60x80_2500m.toml"
+  extractsqlite = "include/sqlite.toml"
   file_templates = "include/file_templates.toml"
   macros = "include/macros.toml"
+  mars = "include/mars_settings.toml"
   platform = "include/platform_paths/lumi.toml"
+  scheduler = "include/scheduler/ecflow_lumi.toml"
   submission = "include/submission/lumi_CY48t3.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"
 
@@ -56,7 +56,6 @@
   one_decade = true
 
 [suite_control]
-  cold_start = true
   create_static_data = true
   create_time_dependent_suite = true
   do_archiving = false
@@ -65,6 +64,7 @@
   do_prep = true
   do_soil = false
   interpolate_boundaries = true
+  mode = "cold_start"
 
 [system]
   archive = "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
