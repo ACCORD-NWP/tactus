@@ -136,18 +136,6 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         "--ecf-files", "-f", help="Ecflow container directory", required=False
     )
     parser_start_suite.add_argument(
-        "--hpc",
-        type=str,
-        help="Current HPC or Platform ('atos'/'lumi').",
-        required=False,
-    )
-    parser_start_suite.add_argument(
-        "--cycle",
-        type=str,
-        help="Current Forecast model cycle (CY##t#, CY##h#).",
-        required=False,
-    )
-    parser_start_suite.add_argument(
         "--ecf-home",
         "-eh",
         help="Ecflow home directory locally on server",

@@ -77,6 +77,13 @@ def start_suite(args, config):
 
     """
     logger.info("Starting suite...")
+    logger.info("Settings and paths loaded: ")
+    logger.info("Config file: {}", args.config_file)
+    logger.info("Ecflow settings: ")
+    logger.info("ecf_jobout: {}", config["scheduler.ecfvars.ecf_jobout"])
+    logger.info("ecf_files: {}", config["scheduler.ecfvars.ecf_files"])
+    logger.info("ecf_files_remotely: {}", config["scheduler.ecfvars.ecf_files_remotely"])
+    logger.info("ecf_home: {}", config["scheduler.ecfvars.ecf_home"])
 
     deode_home = set_deode_home(args, config)
     config = config.copy(update={"platform": {"deode_home": deode_home}})

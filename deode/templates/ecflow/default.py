@@ -14,7 +14,7 @@ logger.enable("deode")
 def parse_ecflow_vars():
     """Parse the ecflow variables."""
     return {
-        "ECF_HOST": "217.71.195.251",
+        "ECF_HOST": "%ECF_HOST%",
         "ECF_PORT": "%ECF_PORT%",
         "ECF_NAME": "%ECF_NAME%",
         "ECF_PASS": "%ECF_PASS%",
