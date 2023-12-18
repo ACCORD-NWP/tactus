@@ -1,0 +1,40 @@
+# Do the selection of fields below. Note 
+# that xxt00000000 inherits from xxtddddhh00
+selection:
+ xxtddddhh00: &default
+  NAMFPPHY:
+   CLCFU:
+    - 'SURFRAYT SOL CL'
+    - 'SURFRAYT THER CL'
+    - 'SURFDIR NORM IRR'
+    - 'SURFRAYT DIR SUR'
+  NAMFPDY2: {}
+  NAMFPDYI: {}
+  NAMFPDYV: {}
+  NAMFPDYH: {}
+  NAMFPDYP: {}
+  NAMFPDYS: {}
+  NAMFPDYT: {}
+  NAMFPDYF : {}
+  NAMPPC : {}
+
+ xxtddddhhmm:
+  NAMFPPHY:
+   CLCFU:
+    - 'SURFRAYT SOL CL'
+    - 'SURFRAYT THER CL'
+    - 'SURFDIR NORM IRR'
+    - 'SURFRAYT DIR SUR'
+  NAMFPDY2: {}
+  NAMFPDYI: {}
+  NAMFPDYV: {}
+  NAMFPDYH: {}
+  NAMFPDYP: {}
+  NAMFPDYS: {}
+  NAMFPDYT: {}
+  NAMFPDYF : {}
+  NAMPPC : {}
+
+
+ xxt00000000:
+   <<: *default

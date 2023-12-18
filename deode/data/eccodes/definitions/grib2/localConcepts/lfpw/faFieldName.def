@@ -507,10 +507,12 @@
 "SURFDIR_NORM_IRR" = {
     discipline = 0 ;
     parameterCategory = 4 ;
-    parameterNumber = 13 ;
+    parameterNumber = 54 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaledValueOfFirstFixedSurface = 0 ;
+    productDefinitionTemplateNumber = 8 ;
+    typeOfStatisticalProcessing = 1 ;
 }
 
 # Cumulated deep soil water flux
@@ -1276,13 +1278,12 @@
 "SURFRAYT_DIR_SUR" = {
     discipline = 0 ;
     parameterCategory = 4 ;
-    parameterNumber = 198 ;
+    parameterNumber = 13 ;
     productDefinitionTemplateNumber = 8 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     typeOfStatisticalProcessing = 1 ;
     scaledValueOfFirstFixedSurface = 0 ;
-    LSTCUM = 1 ;
 }
 
 # "Long-wave radiation flux (integrated since the start of the run)"
@@ -2182,7 +2183,6 @@
     typeOfFirstFixedSurface = 1 ;
     typeOfStatisticalProcessing = 1 ;
     scaledValueOfFirstFixedSurface = 0 ;
-    LSTCUM = 1 ;
 }
 
 # "Clear-sky long-wave radiation flux at The surface (integrated since the start of the run)"
@@ -2195,7 +2195,6 @@
     typeOfFirstFixedSurface = 1 ;
     typeOfStatisticalProcessing = 1 ;
     scaledValueOfFirstFixedSurface = 0 ;
-    LSTCUM = 1 ;
 }
 
 # "Hail surface precipitation (integrated since the start of the run)"
