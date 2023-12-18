@@ -76,6 +76,24 @@ def start_suite(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
+    deode_home = set_deode_home(args, config)
+    config = config.copy(update={"platform": {"deode_home": deode_home}})
+    config = config.copy(update=set_times(config))
+    platform = Platform(config)
+    update = {
+        "scheduler": {
+            "ecfvars": {
+                "ecf_jobout": platform.substitute(config["scheduler.ecfvars.ecf_jobout"]),
+                "ecf_files": platform.substitute(config["scheduler.ecfvars.ecf_files"]),
+                "ecf_files_remotely": platform.substitute(
+                    config["scheduler.ecfvars.ecf_files_remotely"]
+                ),
+                "ecf_host": platform.substitute(config["scheduler.ecfvars.ecf_host"]),
+            },
+        },
+    }
+    config = config.copy(update=update)
+
     logger.info("Starting suite...")
     logger.info("Settings and paths loaded: ")
     logger.info("Config file: {}", args.config_file)
@@ -96,10 +114,6 @@ def start_suite(args, config):
     logger.info(
         "ecf_home: {}", config["scheduler.ecfvars.ecf_home"]
     ) if args.ecf_home is not None else logger.info("ecf_home: {}", args.ecf_home)
-
-    deode_home = set_deode_home(args, config)
-    config = config.copy(update={"platform": {"deode_home": deode_home}})
-    config = config.copy(update=set_times(config))
 
     server = EcflowServer(config, start_command=args.start_command)
 
