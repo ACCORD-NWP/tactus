@@ -9,6 +9,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 
 from .logs import logger
+from .toolbox import Platform
 
 try:
     import ecflow
@@ -97,7 +98,8 @@ class EcflowServer(Server):
         Server.__init__(self, config)
 
         try:
-            self.ecf_host = self.config["scheduler.ecfvars.ecf_host"]
+            ecf_host = self.config["scheduler.ecfvars.ecf_host"]
+            self.ecf_host = Platform(config).substitute(ecf_host)
         except RuntimeError as error:
             raise RuntimeError("Please set ecf_host in ecflow_HPC.toml") from error
 
