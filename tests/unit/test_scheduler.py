@@ -16,7 +16,7 @@ def suite_name():
 
 
 @pytest.fixture()
-def config_from_task_config_file():
+def parsed_config():
     """Return a raw config common to all tasks."""
     return ParsedConfig.from_file(
         ConfigParserDefaults.PACKAGE_CONFIG_PATH,
@@ -38,7 +38,7 @@ def ecflow_task(__):
 @pytest.fixture()
 @patch("deode.scheduler.ecflow")
 def ecflow_server(__):
-    config = config_from_task_config_file.copy()
+    config = parsed_config
     start_command = "start"
     return EcflowServer(config, start_command)
 
