@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
+from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.logs import logger
 from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
 
@@ -12,6 +13,15 @@ logger.enable("deode")
 
 def suite_name():
     return "test_suite"
+
+
+@pytest.fixture()
+def config_from_task_config_file():
+    """Return a raw config common to all tasks."""
+    return ParsedConfig.from_file(
+        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
+        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
+    )
 
 
 @pytest.fixture()
@@ -28,8 +38,9 @@ def ecflow_task(__):
 @pytest.fixture()
 @patch("deode.scheduler.ecflow")
 def ecflow_server(__):
-    ecf_host = "localhost"
-    return EcflowServer(ecf_host)
+    config = config_from_task_config_file.copy()
+    start_command = "start"
+    return EcflowServer(config, start_command)
 
 
 class TestScheduler:

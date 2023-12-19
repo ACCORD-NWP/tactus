@@ -88,6 +88,7 @@ def start_suite(args, config):
                 "ecf_files_remotely": platform.substitute(
                     config["scheduler.ecfvars.ecf_files_remotely"]
                 ),
+                "ecf_home": platform.substitute(config["scheduler.ecfvars.ecf_home"]),
                 "ecf_host": platform.substitute(config["scheduler.ecfvars.ecf_host"]),
             },
         },
@@ -102,14 +103,10 @@ def start_suite(args, config):
     # Check if user passed flags, and reiterate ecf vars to them
     logger.info(
         "ecf_jobout: {}", config["scheduler.ecfvars.ecf_jobout"]
-    ) if args.joboutdir is None else logger.info(
-        "ecf_jobout: {}", args.joboutdir
-    )
+    ) if args.joboutdir is None else logger.info("ecf_jobout: {}", args.joboutdir)
     logger.info(
         "ecf_files: {}", config["scheduler.ecfvars.ecf_files"]
-    ) if args.ecf_files is None else logger.info(
-        "ecf_files: {}", args.ecf_files
-    )
+    ) if args.ecf_files is None else logger.info("ecf_files: {}", args.ecf_files)
     logger.info(
         "ecf_files_remotely: {}", config["scheduler.ecfvars.ecf_files_remotely"]
     ) if args.ecf_files_remotely is None else logger.info(
@@ -117,9 +114,7 @@ def start_suite(args, config):
     )
     logger.info(
         "ecf_home: {}", config["scheduler.ecfvars.ecf_home"]
-    ) if args.ecf_home is not None else logger.info(
-        "ecf_home: {}", args.ecf_home
-    )
+    ) if args.ecf_home is None else logger.info("ecf_home: {}", args.ecf_home)
 
     server = EcflowServer(config, start_command=args.start_command)
 
