@@ -46,6 +46,7 @@ class BatchJob(object):
             stderr=subprocess.STDOUT,
             universal_newlines=True,
             bufsize=1,
+            errors="replace",
         )
         # Poll process for new output until finished
         while True:
