@@ -1,6 +1,6 @@
 parameter_list = "@DEODE_HOME@/deode/data/sqlite/param_list_@CSC@.json"
 selection = "PT1H"
-sqlite_model_name = "@CNMEXP@"
+sqlite_model_name = "@CNMEXP@_det"
 sqlite_path = "@ARCHIVE_ROOT@/sqlite/"
 sqlite_template = "FCTABLE_@PP@_@YYYY@@MM@_@HH@.sqlite"
 station_list = "@DEODE_HOME@/deode/data/sqlite/station_list_default.csv"
