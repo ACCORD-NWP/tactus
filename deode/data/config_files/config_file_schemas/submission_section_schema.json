@@ -58,6 +58,14 @@
                 "description": "Sets environment variables",
                 "type": "object"
               },
+              "MODINS": {
+                "description": "Imports extra paths to current python instance",
+                "type": "object"
+              },
+              "MODUSE": {
+                "description": "Imports extra paths to module() API",
+                "type": "object"
+              },
               "MODULES": {
                 "description": "Sets modules to load. To maintain the order decorate with comments to ovverride the automatic sorting",
                 "type": "object"

@@ -1,3 +1,5 @@
+# @ENV_SUB@
+
 """Default ecflow container."""
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import derived_variables
@@ -5,8 +7,6 @@ from deode.logs import LogDefaults, LoggerHandlers, logger
 from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
 from deode.submission import ProcessorLayout
 from deode.tasks.discover_task import get_task
-
-# @ENV_SUB@
 
 logger.enable("deode")
 
