@@ -1,7 +1,7 @@
 [ecfvars]
-  ecf_files = "@HOME@/deode_ecflow/ecf_files"
-  ecf_files_remotely = "@HOME@/deode_ecflow/ecf_files"
-  ecf_home = "@HOME@/deode_ecflow/ecf_home"
+  ecf_files = "/@HOME@/deode_ecflow/ecf_files"
+  ecf_files_remotely = "/@HOME@/deode_ecflow/ecf_files"
+  ecf_home = "/@HOME@/deode_ecflow/ecf_home"
   ecf_host = "217.71.195.251"
-  ecf_jobout = "@SCRATCH@/@USER@/jobout"
+  ecf_jobout = "/@SCRATCH@/@USER@/jobout"
   ecf_port = "8443"
