@@ -1,13 +1,12 @@
 """NoSchedulerTemplate."""
 
+# @ENV_SUB@
 
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import derived_variables, set_times
 from deode.logs import logger  # Use deode's own configs for logger
 from deode.submission import ProcessorLayout, TaskSettings
 from deode.tasks.discover_task import get_task
-
-# @ENV_SUB@
 
 logger.enable("deode")
 

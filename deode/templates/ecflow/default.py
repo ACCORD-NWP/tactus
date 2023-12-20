@@ -1,6 +1,7 @@
+"""Default ecflow container."""
+
 # @ENV_SUB@
 
-"""Default ecflow container."""
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import derived_variables
 from deode.logs import LogDefaults, LoggerHandlers, logger

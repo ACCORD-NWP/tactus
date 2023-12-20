@@ -283,19 +283,18 @@ class TaskSettings(object):
 
             python_task_env = ""
 
-            # Module insert
-            module_ins = self.get_task_settings(
-                task, "MODINS", variables=variables, ecf_micro=ecf_micro
-            )
-            # Module use
-            module_use = self.get_task_settings(
-                task, "MODUSE", variables=variables, ecf_micro=ecf_micro
-            )
             # Module settings
             module_settings = self.get_task_settings(
                 task, "MODULES", variables=variables, ecf_micro=ecf_micro
             )
-            logger.debug("module_settings:{}", module_settings)
+            logger.debug("module settings {}", module_settings)
+            if "load" not in module_settings:
+                module_settings["load"] = {}
+
+            for key, val in module_settings.items():
+                if key in ["use", "load"]:
+                    continue
+                module_settings["load"][key] = val
 
             m_settings = ["import os"]
             if module_settings is not None and len(module_settings) > 0:
@@ -310,19 +309,12 @@ class TaskSettings(object):
                 m_settings.append(
                     f"exec(open('{env_file}').read())",
                 )
-                if module_use is not None and len(module_use) > 0:
+                for cmd in ["use", "load"]:
+                    if cmd not in module_settings:
+                        continue
                     m_settings += [
-                        f"module('use', '{val}')" for val in module_use.values()
-                    ]
-                m_settings += [
-                    f"module('load', '{val}')" for val in module_settings.values()
-                ]
-                if module_ins is not None and len(module_ins) > 0:
-                    m_settings.append(
-                        f"import sys",
-                    )
-                    m_settings += [
-                        f"sys.path.insert(0, '{val}')" for val in module_ins.values()
+                        f"module('{cmd}', '{val}')"
+                        for val in module_settings[cmd].values()
                     ]
 
             python_task_env += "\n".join(m_settings)

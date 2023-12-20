@@ -30,7 +30,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   QOS = "#SBATCH --qos=nf"
   WALLTIME = "#SBATCH --time=00:15:00"
 
-[gnu.MODULES]
+[gnu.MODULES.load]
   ECMWFTOOLBOX = "ecmwf-toolbox/2021.08.3.0"
 
 [parallel]
@@ -51,7 +51,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   OMP_NUM_THREADS = 1
   OMPI_MCA_btl = "^vader"
 
-[parallel.MODULES]
+[parallel.MODULES.load]
   # First load the prgenv
   PRGENV = "prgenv/intel"
   # The rest
@@ -84,7 +84,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   OMP_NUM_THREADS = 1
   OMPI_MCA_btl = "^vader"
 
-[serial.MODULES]
+[serial.MODULES.load]
   # First load the prgenv
   PRGENV = "prgenv/intel"
   # The rest
@@ -143,7 +143,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 [task_exceptions.Forecast.ENV]
   UCX_LOG_LEVEL = "error"
 
-[task_exceptions.Gmted.MODULES]
+[task_exceptions.Gmted.MODULES.load]
   GDAL = "gdal/3.6.2"
 
 [task_exceptions.Marsprep.BATCH]
@@ -172,5 +172,5 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   NTASKS = "#SBATCH --ntasks=1"
   WALLTIME = "#SBATCH --time=00:10:00"
 
-[task_exceptions.Soil.MODULES]
+[task_exceptions.Soil.MODULES.load]
   GDAL = "gdal/3.6.2"
