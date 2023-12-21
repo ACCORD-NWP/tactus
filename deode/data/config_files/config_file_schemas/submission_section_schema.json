@@ -72,7 +72,7 @@
                 "type": "object"
               },
               "MODULES": {
-                "description": "Sets modules to use/unload/load or switch. To maintain the order decorate with comments to override the automatic sorting",
+                "description": "Sets modules to purge/use/unload/load or switch. To maintain the order decorate with comments to override the automatic sorting",
                 "type": "object",
                 "patternProperties": {
 	            "^(.*)$": {
@@ -80,7 +80,7 @@
 	              "items": {
                        "type": "string"
 		      },
-		      "minItems": 2,
+		      "minItems": 1,
 		      "maxItems": 3
 		    }
 		}
