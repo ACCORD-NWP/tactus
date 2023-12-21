@@ -146,21 +146,73 @@ that the `-h` goes after the subcommand in this case).
 These examples assume that you have successfully [initialised your environment](#prepare-your-environment-on-the-hpc-machines) and [installed `deode`](#installation). They should be run from the root level of your `deode` install directory. The examples also assume that the necessary
 input data is in place.
 
-### Running an `ecflow` suite from server `ecflow-gen-${USER}-001` on atos
+### Running ecflow suite on ATOS
 
 The following commands will launch a run under ecflow on atos (`hpc-login.ecmwf.int`) using the default experiment:
 ```shell
-ECF_HOST=`echo ecflow-gen-${USER}-001`
+ECF_HOST="ecflow-gen-${USER}-001"
+ECF_PORT="3141"
 deode start suite \
-      --config-file $PWD/deode/data/config_files/config.toml \
+      --config-file $PWD/deode/data/config_files/config.toml
+```
+
+Then you can either use the; 
+1) scheduler file, depending on whether you're using atos or lumi: deode/data/config_files/include/scheduler/ecflow_atos_bologna.toml. Scheduler file:
+[ecfvars]
+  ecf_files = "/home/@USER@/deode_ecflow/ecf_files"
+  ecf_files_remotely = "/home/@USER@/deode_ecflow/ecf_files"
+  ecf_home = "/home/@USER@/deode_ecflow/ecf_home"
+  ecf_host = "ecflow-gen-@USER@-001"
+  ecf_jobout = "/home/@USER@/deode_ecflow/jobout"
+  ecf_port = "3141"
+
+2) Flags. These flags are optional with filled in dummy variables. These can be changed to whatever you like:
+```
       --ecf-host $ECF_HOST \
-      --ecf-port 3141 \
+      --ecf-port $ECF_PORT \
       --joboutdir $HOME/deode_ecflow/job \
       --ecf-files $HOME/deode_ecflow/ecf
 ```
 
 After this, open `ecflow_ui` and add `ecflow-gen-${USER}-001` as the server with port `3141`. The default config will place the working directory under `$SCRATCH/deode`.
 
+### Running ecflow suite on LUMI
+
+The following command launches ecflow on lumi (`user@lumi.csc.fi`) using the default experiment:
+```shell
+ECF_HOST="217.71.195.251"
+ECF_PORT="8443"
+deode start suite \
+      --config-file $PWD/deode/data/config_files/config_CY48t3_lumi.toml \
+      --ecf-host $ECF_HOST \
+      --ecf-port $ECF_PORT \
+      --joboutdir $HOME/deode_ecflow/job \
+      --ecf-files $HOME/deode_ecflow/ecf
+```
+
+To get access to Ecflow server one must email ECMWF (samet.demir@ecmwf.int; christina.duma@ecmwf.int), ccing in ulf.andrae@smhi.se directly. All users are concatenated under one superuser: 'de330-prod'.
+
+Only after contacting ECMWF and obtaining a file with a custom password:
+
+export ECF_CUSTOM_PASSWD="/users/adelsaid/deode_ecflow/ecf_pwd"
+
+adelsaid@uan01:/users/adelsaid> cat /users/adelsaid/deode_ecflow/ecf_pwd
+5.11.3
+de_330 217.71.195.251 8443 {PASSWORD_OBTAINED_FROM_ECMWF}
+
+Then follow these steps to add this to your ecflow:
+
+module load ecflow
+ecflow_ui &
+
+"Servers > Manage Servers > Add Server"
+
+Name: de330-prod
+Host: 217.71.195.251
+Port: 8443
+Custom user: de_330
+Favourite (Not checked)
+Use SSL: (Make sure this is checked!)
 
 ### Running the `"forecast"` task from the `hpc-login`'s command line
 
@@ -179,11 +231,11 @@ If you have done the above mentioned default ecflow test the stand alone forecas
 ### Running a stand-alone task with an example config file on LUMI
 
 ```shell
+try=$((try+1)) ; \
 deode run \
-      --config-file $PWD/deode/data/config_files/config.toml \
+      --config-file $PWD/deode/data/config_files/config_CY48t3_lumi.toml \
       --task Forecast \
       --template $PWD/deode/templates/stand_alone.py \
-      --job $PWD/test.job \
-      --troika-config $PWD/deode/data/config_files/troika.yml \
-      --output $PWD/test.log
+      --job $PWD/forecast_try$try.job \
+      --output $PWD/forecast_try$try.log
 ```

@@ -21,6 +21,10 @@
             "type": "string",
             "description": "Path to Ecflow operating files."
         },
+        "ecf_files_remotely": {
+            "type": "string",
+            "description": "Path to Ecflow operating files if in remote location, different to ecf_files."
+        },
         "ecf_home": {
             "type": "string",
             "description": "Path to Ecflow home."
