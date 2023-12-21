@@ -288,13 +288,6 @@ class TaskSettings(object):
                 task, "MODULES", variables=variables, ecf_micro=ecf_micro
             )
             logger.debug("module settings {}", module_settings)
-            if "load" not in module_settings:
-                module_settings["load"] = {}
-
-            for key, val in module_settings.items():
-                if key in ["use", "load"]:
-                    continue
-                module_settings["load"][key] = val
 
             m_settings = ["import os"]
             if module_settings is not None and len(module_settings) > 0:
@@ -309,13 +302,12 @@ class TaskSettings(object):
                 m_settings.append(
                     f"exec(open('{env_file}').read())",
                 )
-                for cmd in ["use", "load"]:
-                    if cmd not in module_settings:
-                        continue
-                    m_settings += [
-                        f"module('{cmd}', '{val}')"
-                        for val in module_settings[cmd].values()
-                    ]
+                for key in module_settings.values():
+                    if len(key) < 2 or len(key) > 3:
+                        raise RuntimeError(f"Module command has the wrong lenght:{key}")
+                    cmd = "module("+','.join([f"'{x}'" for x in key])+")"
+
+                    m_settings += [cmd]
 
             python_task_env += "\n".join(m_settings)
 

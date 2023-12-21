@@ -31,8 +31,8 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   QOS = "#SBATCH --qos=nf"
   WALLTIME = "#SBATCH --time=03:00:00"
 
-[gnu.MODULES.load]
-  ECMWFTOOLBOX = "ecmwf-toolbox/2021.08.3.0"
+[gnu.MODULES]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
 
 [parallel]
   NPROC = 32
@@ -52,16 +52,16 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   OMP_NUM_THREADS = 1
   OMPI_MCA_btl = "^vader"
 
-[parallel.MODULES.load]
+[parallel.MODULES]
   # First load the prgenv
-  PRGENV = "prgenv/intel"
+  PRGENV = ["load", "prgenv/intel"]
   # The rest
-  ECMWFTOOLBOX = "ecmwf-toolbox/2021.08.3.0"
-  FFTW = "fftw/3.3.9"
-  HDF5 = "hdf5/1.10.6"
-  MKL = "intel-mkl/19.0.5"
-  NETCDF = "netcdf4/4.7.4"
-  OPENMPI = "hpcx-openmpi/2.9.0"
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+  FFTW = ["load", "fftw/3.3.9"]
+  HDF5 = ["load", "hdf5/1.10.6"]
+  MKL = ["load", "intel-mkl/19.0.5"]
+  NETCDF = ["load", "netcdf4/4.7.4"]
+  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
 
 [serial]
   NPROC = 1
@@ -85,16 +85,16 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   OMP_NUM_THREADS = 1
   OMPI_MCA_btl = "^vader"
 
-[serial.MODULES.load]
+[serial.MODULES]
   # First load the prgenv
-  PRGENV = "prgenv/intel"
+  PRGENV = ["load", "prgenv/intel"]
   # The rest
-  ECMWFTOOLBOX = "ecmwf-toolbox/2021.08.3.0"
-  FFTW = "fftw/3.3.9"
-  HDF5 = "hdf5/1.10.6"
-  MKL = "intel-mkl/19.0.5"
-  NETCDF = "netcdf4/4.7.4"
-  OPENMPI = "hpcx-openmpi/2.9.0"
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+  FFTW = ["load", "fftw/3.3.9"]
+  HDF5 = ["load", "hdf5/1.10.6"]
+  MKL = ["load", "intel-mkl/19.0.5"]
+  NETCDF = ["load", "netcdf4/4.7.4"]
+  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
 
 [task]
   wrapper = ""
@@ -146,8 +146,8 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 [task_exceptions.Gmted.BATCH]
   MEM = "#SBATCH --mem=32GB"
 
-[task_exceptions.Gmted.MODULES.load]
-  GDAL = "gdal/3.6.2"
+[task_exceptions.Gmted.MODULES]
+  GDAL = ["load", "gdal/3.6.2"]
 
 [task_exceptions.Marsprep.BATCH]
   MEM = "#SBATCH --mem=128GB"
@@ -175,5 +175,5 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   NTASKS = "#SBATCH --ntasks=32"
   WALLTIME = "#SBATCH --time=00:50:00"
 
-[task_exceptions.Soil.MODULES.load]
-  GDAL = "gdal/3.6.2"
+[task_exceptions.Soil.MODULES]
+  GDAL = ["load", "gdal/3.6.2"]

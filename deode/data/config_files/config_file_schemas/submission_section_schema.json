@@ -72,16 +72,18 @@
                 "type": "object"
               },
               "MODULES": {
-                "description": "Sets modules to use or load. To maintain the order decorate with comments to override the automatic sorting",
+                "description": "Sets modules to use/unload/load or switch. To maintain the order decorate with comments to override the automatic sorting",
                 "type": "object",
-		"patternProperties": {
-                    "^(use|load)$": {
-                      "type": "object",
-                      "description": "Module settings"
-                    }
-                },
-		"required" : ["load"],
-		"additionalProperties": false
+                "patternProperties": {
+	            "^(.*)$": {
+                      "type": "array",
+	              "items": {
+                       "type": "string"
+		      },
+		      "minItems": 2,
+		      "maxItems": 3
+		    }
+		}
               }
             }
         }
