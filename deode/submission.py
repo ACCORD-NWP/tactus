@@ -305,7 +305,7 @@ class TaskSettings(object):
                 for key in module_settings.values():
                     if len(key) < 2 or len(key) > 3:
                         raise RuntimeError(f"Module command has the wrong lenght:{key}")
-                    cmd = "module("+','.join([f"'{x}'" for x in key])+")"
+                    cmd = "module(" + ",".join([f"'{x}'" for x in key]) + ")"
 
                     m_settings += [cmd]
 
