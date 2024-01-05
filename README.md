@@ -190,7 +190,7 @@ deode start suite \
       --ecf-files $HOME/deode_ecflow/ecf
 ```
 
-To get access to Ecflow server one must email ECMWF (samet.demir@ecmwf.int; christina.duma@ecmwf.int), ccing in ulf.andrae@smhi.se directly. All users are concatenated under one superuser: 'de330-prod'.
+To get access to Ecflow server from LUMI, email ECMWF (samet.demir@ecmwf.int; bojan.kasic@ecmwf.int, christina.duma@ecmwf.int), ccing in ulf.andrae@smhi.se and/or xiaohua@dmi.dk. All users are concatenated under one superuser: 'de330-prod'.
 
 Only after contacting ECMWF and obtaining a file with a custom password:
 
