@@ -31,7 +31,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=00:15:00"
 
 [gnu.MODULES]
-  ECMWFTOOLBOX = "ecmwf-toolbox/2021.08.3.0"
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
 
 [parallel]
   NPROC = 32
@@ -53,14 +53,14 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 
 [parallel.MODULES]
   # First load the prgenv
-  PRGENV = "prgenv/intel"
+  PRGENV = ["load", "prgenv/intel"]
   # The rest
-  ECMWFTOOLBOX = "ecmwf-toolbox/2021.08.3.0"
-  FFTW = "fftw/3.3.9"
-  HDF5 = "hdf5/1.10.6"
-  MKL = "intel-mkl/19.0.5"
-  NETCDF = "netcdf4/4.7.4"
-  OPENMPI = "openmpi/4.1.1.1"
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+  FFTW = ["load", "fftw/3.3.9"]
+  HDF5 = ["load", "hdf5/1.10.6"]
+  MKL = ["load", "intel-mkl/19.0.5"]
+  NETCDF = ["load", "netcdf4/4.7.4"]
+  OPENMPI = ["load", "openmpi/4.1.1.1"]
 
 [serial]
   NPROC = 1
@@ -86,14 +86,14 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 
 [serial.MODULES]
   # First load the prgenv
-  PRGENV = "prgenv/intel"
+  PRGENV = ["load", "prgenv/intel"]
   # The rest
-  ECMWFTOOLBOX = "ecmwf-toolbox/2021.08.3.0"
-  FFTW = "fftw/3.3.9"
-  HDF5 = "hdf5/1.10.6"
-  MKL = "intel-mkl/19.0.5"
-  NETCDF = "netcdf4/4.7.4"
-  OPENMPI = "openmpi/4.1.1.1"
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+  FFTW = ["load", "fftw/3.3.9"]
+  HDF5 = ["load", "hdf5/1.10.6"]
+  MKL = ["load", "intel-mkl/19.0.5"]
+  NETCDF = ["load", "netcdf4/4.7.4"]
+  OPENMPI = ["load", "openmpi/4.1.1.1"]
 
 [task]
   wrapper = ""
@@ -144,7 +144,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   UCX_LOG_LEVEL = "error"
 
 [task_exceptions.Gmted.MODULES]
-  GDAL = "gdal/3.6.2"
+  GDAL = ["load", "gdal/3.6.2"]
 
 [task_exceptions.Marsprep.BATCH]
   MEM = "#SBATCH --mem=32GB"
@@ -173,4 +173,4 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=00:10:00"
 
 [task_exceptions.Soil.MODULES]
-  GDAL = "gdal/3.6.2"
+  GDAL = ["load", "gdal/3.6.2"]

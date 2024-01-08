@@ -287,10 +287,10 @@ class TaskSettings(object):
             module_settings = self.get_task_settings(
                 task, "MODULES", variables=variables, ecf_micro=ecf_micro
             )
-            logger.debug("module_settings:{}", module_settings)
+            logger.debug("module settings {}", module_settings)
 
             m_settings = ["import os"]
-            if len(module_settings) > 0:
+            if module_settings is not None and len(module_settings) > 0:
                 env_file = (
                     f"{self.submission_defs['module_initpath']}/env_modules_python.py"
                 )
@@ -302,9 +302,12 @@ class TaskSettings(object):
                 m_settings.append(
                     f"exec(open('{env_file}').read())",
                 )
-                m_settings += [
-                    f"module('load', '{val}')" for val in module_settings.values()
-                ]
+                for key in module_settings.values():
+                    if len(key) < 2 or len(key) > 3:
+                        raise RuntimeError(f"Module command has the wrong lenght:{key}")
+                    cmd = "module(" + ",".join([f"'{x}'" for x in key]) + ")"
+
+                    m_settings += [cmd]
 
             python_task_env += "\n".join(m_settings)
 

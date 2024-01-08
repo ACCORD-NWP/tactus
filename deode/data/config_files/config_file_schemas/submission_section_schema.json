@@ -29,14 +29,27 @@
             "type": "string",
             "description": "Defines the default submit type for tasks not listed in any defined type"
         },
-        "submission_group": {
-            "title": "Submission example group",
+        "task_exceptions": {
+            "type": "object",
+            "description": "Allows to define task specific settings like BATCH, MODULES, NPROC. Use as task_exceptions.taskname.property"
+        },
+        "serial": {"$ref": "#/$submission_group" },
+        "parallel": {"$ref": "#/$submission_group" },
+        "background_vm": {"$ref": "#/$submission_group" },
+        "background_hpc": {"$ref": "#/$submission_group" },
+        "gnu": {"$ref": "#/$submission_group" }
+    },
+    "$submission_group": {
+            "title": "Submission group",
             "description": "Defines the properties avilable for a submit group. See the existing submission files for examples",
             "type": "object",
             "properties": {
               "tasks": {
                 "description": "List of tasks belonging to this group",
-                "type": "string"
+                "type": "array",
+	        "items": {
+                  "type": "string"
+		}
               },
               "SCHOST": {
                 "description": "Name of the host where the job runs",
@@ -44,7 +57,7 @@
               },
               "NPROC": {
                 "description": "Number of processors for this task",
-                "type": "string"
+                "type": "number"
               },
               "WRAPPER": {
                 "description": "Prefix for binaries to be executed, e.g. srun",
@@ -59,14 +72,19 @@
                 "type": "object"
               },
               "MODULES": {
-                "description": "Sets modules to load. To maintain the order decorate with comments to ovverride the automatic sorting",
-                "type": "object"
+                "description": "Sets modules to purge/use/unload/load or switch. To maintain the order decorate with comments to override the automatic sorting",
+                "type": "object",
+                "patternProperties": {
+	            "^(.*)$": {
+                      "type": "array",
+	              "items": {
+                       "type": "string"
+		      },
+		      "minItems": 1,
+		      "maxItems": 3
+		    }
+		}
               }
             }
-        },
-        "task_exceptions": {
-            "type": "object",
-            "description": "Allows to define task specific settings like BATCH, MODULES, NPROC. Use as task_exceptions.taskname.property"
         }
-    }
 }
