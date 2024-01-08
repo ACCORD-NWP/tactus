@@ -493,18 +493,20 @@ class SuiteDefinition(object):
                 ecf_files_remotely=self.ecf_files_remotely,
             )
 
-            creategrib_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(forecast_task)])
-
-            EcflowSuiteTask(
-                "CreateGrib",
-                forecasting,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                trigger=creategrib_trigger,
-                ecf_files_remotely=self.ecf_files_remotely,
-            )
+            if self.creategrib:
+                creategrib_trigger = EcflowSuiteTriggers(
+                    [EcflowSuiteTrigger(forecast_task)]
+                )
+                EcflowSuiteTask(
+                    "CreateGrib",
+                    forecasting,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    trigger=creategrib_trigger,
+                    ecf_files_remotely=self.ecf_files_remotely,
+                )
 
             if self.do_extractsqlite:
                 extractsqlite_trigger = EcflowSuiteTriggers(
