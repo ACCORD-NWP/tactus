@@ -5,8 +5,6 @@
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import derived_variables
 from deode.logs import LogDefaults, LoggerHandlers, logger
-
-# @ENV_SUB@
 from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
 from deode.submission import ProcessorLayout
 from deode.tasks.discover_task import get_task
