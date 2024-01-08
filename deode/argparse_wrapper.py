@@ -121,19 +121,43 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         "suite", help="Start the suite", parents=[common_parser]
     )
     parser_start_suite.add_argument(
+        "--start-command", type=str, help="Start command for server", default=None
+    )
+    parser_start_suite.add_argument(
         "--ecf-host", "-host", type=str, help="Ecflow host", default=None
     )
     parser_start_suite.add_argument(
         "--ecf-port", "-port", type=int, help="Ecflow port", default=None
     )
     parser_start_suite.add_argument(
-        "--start-command", type=str, help="Start command for server", default=None
+        "--joboutdir", "-j", help="Job out directory", required=False
     )
     parser_start_suite.add_argument(
-        "--joboutdir", "-j", help="Job out directory", required=True
+        "--ecf-files", "-f", help="Ecflow container directory", required=False
     )
     parser_start_suite.add_argument(
-        "--ecf-files", "-f", help="Ecflow container directory", required=True
+        "--ecf-home",
+        "-eh",
+        help="Ecflow home directory locally on server",
+        dest="ecf_home",
+        required=False,
+        default=None,
+    )
+    parser_start_suite.add_argument(
+        "--ecf-files-remotely",
+        "-er",
+        help="Ecflow file root directory locally on server",
+        dest="ecf_files_remotely",
+        required=False,
+        default=None,
+    )
+    parser_start_suite.add_argument(
+        "--remote-user",
+        "-u",
+        help="Ecflow file root directory locally on server",
+        dest="remote_user",
+        required=False,
+        default=None,
     )
     parser_start_suite.add_argument("--begin", "-b", help="Begin suite", default=True)
     parser_start_suite.set_defaults(run_command=start_suite)

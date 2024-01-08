@@ -1,0 +1,120 @@
+bindir = "/home/snh02/pack/48t3_fix.04.OMPIIFC2104.x/bin"
+default_submit_type = "background_hpc"
+submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
+
+[background_hpc]
+  SCHOST = "localhost"
+  tasks = ["creategrib", "Background_hpc", "UnitTest"]
+  wrapper = "time"
+
+[background_vm]
+  INTERPRETER = "#!/usr/bin/python3"
+  SCHOST = "localhost"
+  tasks = ["Background_vm"]
+
+[parallel]
+  NPROC = 32
+  SCHOST = "lumi-batch"
+  tasks = ["Forecast", "e927", "Pgd", "Prep", "c903"]
+  WRAPPER = "sbatch"
+
+[parallel.BATCH]
+  ACCOUNT = "#SBATCH -A project_465000527"
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  PARTITION = "#SBATCH -p standard"
+  WALLTIME = "#SBATCH --time=00:10:00"
+
+[parallel.ENV]
+  AAAAOS = "import os"
+  AAAASYS = "import sys"
+  AAAMODULE_ENV = "exec(open('/usr/share/lmod/8.3.1/init/env_modules_python.py').read())"
+  AAMODULE_USE = "module('use', '/scratch/project_465000527/SW/modules/')"
+  AMODULE_ECFLOW = "module('load', 'ecflow/5.9.2-gcc-3ztnr')"
+  BSYS_PATH = "sys.path.insert(0, '/scratch/project_465000527/SW/spack/23.03/0.19.2/ecflow-5.9.2-3ztnrae/lib/python3.9/site-packages')"
+  DR_HOOK = "os.environ['DR_HOOK'] = '1'"
+  DR_HOOK_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
+  ECF_SSL = "os.environ['ECF_SSL'] = '-1'"
+  OMP_NUM_THREADS = "os.environ['OMP_NUM_THREADS'] = '1'"
+
+[serial]
+  NPROC = 1
+  NPROCX = 1
+  NPROCY = 1
+  SCHOST = "lumi-batch"
+  tasks = ["Gmted", "Soil"]
+  WRAPPER = "srun"
+
+[serial.BATCH]
+  ACCOUNT = "#SBATCH -A project_465000527"
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  PARTITION = "#SBATCH --partition=small"
+  WALLTIME = "#SBATCH --time=00:15:00"
+
+[serial.ENV]
+  AAAAOS = "import os"
+  AAAASYS = "import sys"
+  AAAMODULE_ENV = "exec(open('/usr/share/lmod/8.3.1/init/env_modules_python.py').read())"
+  AAMODULE_USE = "module('use', '/scratch/project_465000527/SW/modules/')"
+  AMODULE_ECFLOW = "module('load', 'ecflow/5.9.2-gcc-3ztnr')"
+  BSYS_PATH = "sys.path.insert(0, '/scratch/project_465000527/SW/spack/23.03/0.19.2/ecflow-5.9.2-3ztnrae/lib/python3.9/site-packages')"
+  DR_HOOK_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '-1'"
+  ECF_SSL = "os.environ['ECF_SSL'] = '1'"
+
+[task]
+  wrapper = "time"
+
+[task_exceptions.c903]
+  NPROC = 36
+
+[task_exceptions.c903.BATCH]
+  MEM = "#SBATCH --mem=200GB"
+  NODE = "#SBATCH --nodes=12"
+  NTASKS = "#SBATCH --ntasks=36"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[task_exceptions.creategrib]
+  binary = "gl_20230823"
+  bindir = "/home/snh02/work/gl_binaries"
+
+[task_exceptions.e927]
+  NPROC = 16
+
+[task_exceptions.e927.BATCH]
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=16"
+
+[task_exceptions.Forecast]
+  NPROC = 1
+  WRAPPER = "time"
+
+[task_exceptions.Forecast.BATCH]
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[task_exceptions.marsprep.BATCH]
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  WALLTIME = "#SBATCH --time=01:00:00"
+
+[task_exceptions.Pgd]
+  WRAPPER = "srun -n @NPROC@"
+
+[task_exceptions.Pgd.BATCH]
+  NODES = "#SBATCH --nodes=2"
+  NTASKS = "#SBATCH --ntasks=32"
+  WALLTIME = "#SBATCH --time=00:10:00"
+
+[task_exceptions.PgdUpdate]
+  binary = "gl_20230823"
+  bindir = "/home/snh02/work/gl_binaries"
+
+[task_exceptions.Prep]
+  WRAPPER = "srun -n @NPROC@"
+
+[task_exceptions.Prep.BATCH]
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  WALLTIME = "#SBATCH --time=00:10:00"

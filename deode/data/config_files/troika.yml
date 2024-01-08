@@ -47,6 +47,18 @@ sites:
     sbatch_command: "ecsbatch"
     scancel_command: 'scancel -f'
 
+  lumi-batch:
+    type: slurm
+    connection: ssh
+    host: lumi.csc.fi
+    kill_sequence: [[5, 2], [10, 9]]
+    pre_submit: ["create_output_dir"]
+    preprocess: ["remove_top_blank_lines", "slurm_add_output", "slurm_bubble"]
+    at_exit: ["copy_submit_logfile"]
+    sbatch_command: "sbatch"
+    copy_script: true
+    scancel_command: 'scancel -f'
+
   hpc:
     type: slurm
     connection: ssh

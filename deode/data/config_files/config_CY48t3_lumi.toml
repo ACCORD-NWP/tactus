@@ -1,14 +1,15 @@
 [general]
   accept_static_namelists = false
-  case = "@CYCLE@_@CSC@"
+  case = "@USER@_@CYCLE@_@CSC@"
   cnmexp = "DEOD"
-  csc = "HARMONIE_AROME"
-  cycle = "CY46h1"
-  initfile = "@SCRATCH@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@HISTORY_TEMPLATE@"
-  initfile_sfx = "@SCRATCH@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
+  csc = "AROME"
+  cycle = "CY48t3"
   keep_workdirs = true
+  mars_expver = "0001"
+  nproma = -32
+  realization = -1
   surfex = true
-  windfarm = false
+  tstep = 75
 
 [general.output_settings]
   fullpos = "PT15M"
@@ -29,6 +30,7 @@
   bdint = "PT1H"
   bdmodel = "IFS"
   bdshift = "PT0H"
+  bdstrategy = "same_forecast"
   bdtasks_per_batch = 24
   humi_gp = true
   ifs.selection = "HRES"
@@ -45,9 +47,9 @@
   file_templates = "include/file_templates.toml"
   macros = "include/macros.toml"
   mars = "include/mars_settings.toml"
-  platform = "include/platform_paths/atos_bologna.toml"
-  scheduler = "include/scheduler/ecflow_atos_bologna.toml"
-  submission = "include/submission/atos_bologna_CY46h1.toml"
+  platform = "include/platform_paths/lumi.toml"
+  scheduler = "include/scheduler/ecflow_lumi.toml"
+  submission = "include/submission/lumi_CY48t3.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"
 
 [pgd]
@@ -56,27 +58,36 @@
 [suite_control]
   create_static_data = true
   create_time_dependent_suite = true
-  do_archiving = true
-  do_extractsqlite = true
+  do_archiving = false
   do_marsprep = true
   do_pgd = true
   do_prep = true
-  do_soil = true
+  do_soil = false
   interpolate_boundaries = true
   mode = "cold_start"
 
 [system]
+  archive = "@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
   bdclimdir = "@FIXED_BDCLIMDIR@"
   bddir = "@INTP_BDDIR@"
   bddir_sfx = "@MARSDIR@"
   bdfile_sfx_template = "ECSFCSFX@DOMAIN@+@LLL@"
   bdfile_template = "ELSCF@CNMEXP@ALBC@NNN@"
-  casedir = "@SCRATCH@/@CASE@"
+  casedir = "@SCRATCH@/deode/@CASE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@/"
   global_sfcdir = "/hpcperm/snh02/climate_fields_mir/climate.v020_MIR_orog/"
+  intp_bddir = "@WRK@"
   logs = "@ARCHIVE_ROOT@/logs"
-  marsdir = "@SCRATCH@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
-  prev_case = "@CASE@"
+  marsdir = "@SCRATCH@/deode/IFS/@YYYY@/@MM@/@DD@/@HH@/@MARS_EXPVER@"
+  marsfile_template = "mars_prefetch_[levtype]_[date]_[time]+[step]"
+  namelists = "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
+  sfx_input_defs = "@DEODE_HOME@/deode/data/input/sfx_input_@CYCLE@.json"
+  wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/"
 
-[task.creategrib]
-  conversions = ["surfex"]
+[task.creategrib.conversions.surfex]
+  input_template = "@SURFEX_TEMPLATE@"
+  output_template = "GRIB@CNMEXP@@DOMAIN@+@DURATION_ARCHIVE@.sfx"
+
+[troika]
+  config_file = "@DEODE_HOME@/deode/data/config_files/troika.yml"
+  troika = "troika"

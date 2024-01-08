@@ -93,8 +93,6 @@ class TestSuite:
         background = TaskSettings(config)
         defs = SuiteDefinition(
             suite_name,
-            "/tmp/joboutdir",  # noqa S108
-            "/tmp/ecf",  # noqa S108
             config,
             background,
             dry_run=True,
