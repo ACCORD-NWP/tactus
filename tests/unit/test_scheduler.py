@@ -27,9 +27,10 @@ def ecflow_task(__):
 
 @pytest.fixture()
 @patch("deode.scheduler.ecflow")
-def ecflow_server(__):
-    ecf_host = "localhost"
-    return EcflowServer(ecf_host)
+def ecflow_server(parsed_config):
+    config = parsed_config
+    start_command = "start"
+    return EcflowServer(config, start_command)
 
 
 class TestScheduler:

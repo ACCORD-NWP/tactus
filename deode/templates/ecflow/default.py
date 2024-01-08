@@ -5,6 +5,8 @@
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import derived_variables
 from deode.logs import LogDefaults, LoggerHandlers, logger
+
+# @ENV_SUB@
 from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
 from deode.submission import ProcessorLayout
 from deode.tasks.discover_task import get_task
@@ -84,9 +86,7 @@ def default_main(**kwargs):
     )
 
     # TODO Add wrapper
-    ecf_host = kwargs.get("ECF_HOST")
-    ecf_port = kwargs.get("ECF_PORT")
-    server = EcflowServer(ecf_host, ecf_port)
+    server = EcflowServer(config)
 
     ecf_name = kwargs.get("ECF_NAME")
     ecf_pass = kwargs.get("ECF_PASS")
