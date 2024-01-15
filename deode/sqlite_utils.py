@@ -707,17 +707,21 @@ def parse_grib_file(
             param = param_match(gid, param_sgl_list)
             if param is not None:
                 direct = True
+                logger.info("SQLITE: found parameter {}", param["harp_param"])
             else:
                 # the record is not in our "direct" parameter list
                 direct = False
                 param = param_match(gid, param_cmb_list)
                 if param is None:
                     continue
-                logger.debug("SQLITE: COMBI FOUND", param["harp_param"])
+                logger.info(
+                    "SQLITE: found combinded parameter {}:{}",
+                    param["harp_param"],
+                    param["grib_id"],
+                )
 
             # we have a matching parameter
             gi += 1
-            logger.info("SQLITE: found parameter {}", param["harp_param"])
             # NOTE: actually, we only need to get fcdate & lead time once
             #       and we could even consider those to be known
             fcdate, leadtime = get_date_info(gid)

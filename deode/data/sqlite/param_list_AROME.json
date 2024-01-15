@@ -1,4 +1,14 @@
 [ 
+{ "harp_param":"Pmsl",
+  "method":"bilin",
+  "grib_id":{ "shortName":"msl", "productDefinitionTemplateNumber":"0"}
+},
+
+{ "harp_param":"vis",
+  "method":"bilin",
+  "grib_id":{ "shortName":"vis", "productDefinitionTemplateNumber":"8", "typeOfStatisticalProcessing":"min"}
+},
+
 { "harp_param":"MAXT2m",
   "method":"bilin",
   "grib_id":{ "shortName":"2t", "productDefinitionTemplateNumber":"8", "typeOfStatisticalProcessing":"max"}
@@ -31,6 +41,22 @@
              "typeOfLevel":"isobaricInhPa",
              "level":[ 50, 100, 250, 300, 600, 700, 800, 925, 950]
   },
+  "function":"vector_norm"
+},
+
+{ "harp_param" : "S10m",
+  "method" : "bilin",
+  "grib_id" : [ {"shortName":"10u"}, {"shortName":"10v"} ],
+  "common":{ "productDefinitionTemplateNumber":"0" },
+  "function":"vector_norm"
+},
+
+{ "harp_param" : "Gmax",
+  "method" : "bilin",
+  "grib_id" : [ {"shortName":"10efg"}, {"shortName":"10nfg"} ],
+  "common":{ "productDefinitionTemplateNumber":"8", "typeOfStatisticalProcessing":"max",
+             "typeOfLevel":"heightAboveGround",
+             "level":"10" },
   "function":"vector_norm"
 },
 

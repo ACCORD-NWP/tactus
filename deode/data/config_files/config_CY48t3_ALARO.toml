@@ -55,13 +55,13 @@
   create_static_data = true
   create_time_dependent_suite = true
   do_archiving = true
-  do_extractsqlite = false
+  do_extractsqlite = true
   do_marsprep = true
   do_pgd = true
   do_prep = false
   do_soil = true
   interpolate_boundaries = true
-  mode = "start"
+  mode = "cold_start"
 
 [system]
   bdclimdir = "@FIXED_BDCLIMDIR@"

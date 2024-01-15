@@ -137,6 +137,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=01:00:00"
 
 [task_exceptions.Forecast.ENV]
+  RTTOV_COEFDIR = "/hpcperm/snh02/DEODE/satellite/rtcoef_rttov12/harm_coef/"
   UCX_LOG_LEVEL = "error"
 
 [task_exceptions.Gmted.MODULES]
