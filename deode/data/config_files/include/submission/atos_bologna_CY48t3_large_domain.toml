@@ -81,7 +81,6 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 
 [serial.ENV]
   DR_HOOK_IGNORE_SIGNALS = -1
-  MARS_READANY_BUFFER_SIZE = 78930200
   OMP_NUM_THREADS = 1
   OMPI_MCA_btl = "^vader"
 
@@ -154,6 +153,9 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   WALLTIME = "#SBATCH --time=02:00:00"
+
+[task_exceptions.Marsprep.ENV]
+  MARS_READANY_BUFFER_SIZE = 17893020000
 
 [task_exceptions.Pgd]
   WRAPPER = "srun -n @NPROC@"
