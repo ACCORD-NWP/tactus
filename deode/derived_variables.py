@@ -176,6 +176,15 @@ def derived_variables(config, processor_layout=None):
         selection = list(config["fullpos.selection"])
         selection.append("windfarm")
 
+    # Turn boolean to strings and macros
+    gen_macros = list(config["macros.gen_macros"])
+
+    decades = "one_decade" if config["pgd.one_decade"] else "all_decade"
+    gen_macros.append("namelist.decades")
+
+    sg_input = "osm" if config["pgd.use_osm"] else ""
+    gen_macros.append("namelist.sg_input")
+
     # Update config and namelist settings
     update = {
         "domain": {
@@ -188,6 +197,9 @@ def derived_variables(config, processor_layout=None):
             "nsmax": nsmax,
             "nmsmax": nmsmax,
             "lspsmoro": lspsmoro[gridtype],
+        },
+        "macros": {
+            "gen_macros": gen_macros,
         },
         "namelist": {
             "nradfr": nradfr,
@@ -202,6 +214,8 @@ def derived_variables(config, processor_layout=None):
             "month": month,
             "day": day,
             "time": int(time),
+            "sg_input": sg_input,
+            "decades": decades,
         },
         "namelist_update": {"master": {}},
     }

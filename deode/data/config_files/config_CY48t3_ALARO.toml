@@ -50,6 +50,7 @@
 
 [pgd]
   one_decade = true
+  use_osm = false
 
 [suite_control]
   create_static_data = true

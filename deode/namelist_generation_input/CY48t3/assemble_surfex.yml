@@ -9,14 +9,12 @@ pgd_common:
   - sfx_pgd_isba_dif
   - sfx_pgd_soilgrid_sand
   - sfx_pgd_soilgrid_clay
+  - sfx_pgd_ecoclimap_sg_base
 
 pgd:
   - pgd_common
-  - sfx_pgd_ecoclimap_sg
-
-pgd_one_decade:
-  - pgd_common
-  - sfx_pgd_ecoclimap_sg_single
+  - sfx_pgd_ecoclimap_sg_@DECADES@
+  - sfx_pgd_teb_@SG_INPUT@
 
 prep:
   - sfx_io
@@ -29,6 +27,7 @@ prep:
   - prep_@BDMODEL@
   - sfx_split_patch
   - sfx_prep
+  - sfx_teb_@SG_INPUT@
 
 prep_AROME:
   - sfx_prep_isba_from_fa
@@ -42,3 +41,4 @@ forecast:
   - sfx_treedrag
   - sfx_forecast
   - sfx_selected_output
+  - sfx_teb_@SG_INPUT@

@@ -126,6 +126,11 @@
           "title": "Option for using one decade",
           "type": "boolean",
 	  "default": true
+        },
+        "use_osm": {
+          "title": "Option to use Open Street map input data",
+          "type": "boolean",
+	  "default": false
         }
       }
     },

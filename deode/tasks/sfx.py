@@ -536,6 +536,16 @@ class InputDataFromNamelist:
                                             if not my_key.endswith(".nc"):
                                                 my_key = my_key + ".nc"
                                             mapped_data.update({my_key: my_val})
+                                        elif value3.endswith(
+                                            ".txt"
+                                        ):  # need to remove the ".txt"
+                                            my_key, my_val = self.substitute(key3, value3)
+                                            logger.debug(
+                                                "my_key={}, my_val={}", my_key, my_val
+                                            )
+                                            if not my_key.endswith(".txt"):
+                                                my_key = my_key + ""
+                                            mapped_data.update({my_key: my_val})
                                         else:
                                             my_key, my_val = self.substitute(key3, value3)
                                             mapped_data.update({my_key: my_val})
@@ -606,17 +616,13 @@ class Pgd(Task):
 
         """
         Task.__init__(self, config, "Pgd")
+        self.program = "pgd"
         self.nlgen = NamelistGenerator(self.config, "surfex")
         self.climdir = self.platform.get_system_value("climdir")
         self.one_decade = self.config["pgd.one_decade"]
         self.pgd_prel = self.platform.substitute(
             self.config["file_templates.pgd_prel.archive"]
         )
-
-        if self.one_decade:
-            self.program = "pgd_one_decade"
-        else:
-            self.program = "pgd"
         # TODO get from args
         self.force = True
 
