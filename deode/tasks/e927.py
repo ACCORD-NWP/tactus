@@ -61,7 +61,7 @@ class E927(Task):
         self.nlgen.generate_namelist("e927", "fort.4")
 
         bd_basetime = self.basetime - cycle_offset(
-            self.basetime, self.bdcycle, shift=self.bdshift
+            self.basetime, self.bdcycle, shift=-self.bdshift
         )
 
         # Input file

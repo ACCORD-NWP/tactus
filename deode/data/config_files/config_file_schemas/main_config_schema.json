@@ -103,6 +103,10 @@
             "enum": [
             "HRES",
             "ATOS_DT",
+            "DT12",
+	    "i5qp",
+	    "i7u4",
+	    "i7ye",
             "IFSENS",
             "PARIS_RDP"
           ]

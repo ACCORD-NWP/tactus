@@ -25,6 +25,7 @@ class C903(Task):
         self.expdir = self.config["system.marsdir"]
         self.basetime = as_datetime(self.config["general.times.basetime"])
         self.bdint = as_timedelta(self.config["boundaries.bdint"])
+        self.bdshift = as_timedelta(self.config["boundaries.bdshift"])
         self.bdcycle = as_timedelta(self.config["boundaries.bdcycle"])
         self.bdnr = self.config["task.args.bd_nr"]
         self.bd_time = self.config["task.args.bd_time"]
@@ -60,80 +61,72 @@ class C903(Task):
         Define run sequence.
 
         """
-        # Climate files
-        mm = self.basetime.strftime("%m")
-        self.fmanager.input(
-            f"{self.climdir}/Const.Clim.{mm}", "{}_{}".format(self.dom, mm)
+        # Boundary basetime
+        bd_basetime = self.basetime - cycle_offset(
+            self.basetime, self.bdcycle, shift=-self.bdshift
         )
+
+        # Climate files
+        mm = bd_basetime.strftime("%m")
+        self.fmanager.input(f"{self.climdir}/Const.Clim.{mm}", f"{self.dom}_{mm}")
 
         # Namelist
         self.nlgen.generate_namelist("c903_main", "fort.4")
         self.nlgen.generate_namelist("c903_domain", "namelist_c903_domain")
 
-        # Forecast range
-        intbdint = int(self.bdint.total_seconds() // 3600)
-        i = int(self.bdnr) * intbdint
-
-        # Fix basetime for PT00H,PT12H only
-        basetime = self.basetime
-        bd_basetime = self.basetime - cycle_offset(self.basetime, self.bdcycle)
-        basetime_hour = int(basetime.strftime("%H"))
-        int_bdcycle = int(self.bdcycle.total_seconds()) // 3600
-
-        intlbc = i + basetime_hour % int_bdcycle
         # Input files
         self.fmanager.input(
-            f"{self.expdir}/ICMSH+{intlbc:02d}",
+            f"{self.expdir}/ICMSH+@LL@",
             "ICMSHMARSINIT",
             basetime=bd_basetime,
             validtime=as_datetime(self.bd_time),
         )
         self.fmanager.input(
-            f"{self.expdir}/ICMGG+{intlbc:02d}",
+            f"{self.expdir}/ICMGG+@LL@",
             "ICMGGMARSINIT",
             basetime=bd_basetime,
             validtime=as_datetime(self.bd_time),
         )
         self.fmanager.input(
-            f"{self.expdir}/ICMUA+{intlbc:02d}",
+            f"{self.expdir}/ICMUA+@LL@",
             "ICMUAMARSINIT",
             basetime=bd_basetime,
             validtime=as_datetime(self.bd_time),
         )
 
         self.fmanager.input(
-            f"{self.expdir}/ICMSH+{intlbc:02d}",
+            f"{self.expdir}/ICMSH+@LL@",
             "ICMSHMARS",
             basetime=bd_basetime,
             validtime=as_datetime(self.bd_time),
         )
         self.fmanager.input(
-            f"{self.expdir}/ICMGG+{intlbc:02d}",
+            f"{self.expdir}/ICMGG+@LL@",
             "ICMGGMARS",
             basetime=bd_basetime,
             validtime=as_datetime(self.bd_time),
         )
         self.fmanager.input(
-            f"{self.expdir}/ICMUA+{intlbc:02d}",
+            f"{self.expdir}/ICMUA+@LL@",
             "ICMUAMARS",
             basetime=bd_basetime,
             validtime=as_datetime(self.bd_time),
         )
 
         self.fmanager.input(
-            f"{self.expdir}/ICMSH+{intlbc:02d}",
+            f"{self.expdir}/ICMSH+@LL@",
             "ICMSHMARS+000000",
             basetime=bd_basetime,
             validtime=as_datetime(self.bd_time),
         )
         self.fmanager.input(
-            f"{self.expdir}/ICMGG+{intlbc:02d}",
+            f"{self.expdir}/ICMGG+@LL@",
             "ICMGGMARS+000000",
             basetime=bd_basetime,
             validtime=as_datetime(self.bd_time),
         )
         self.fmanager.input(
-            f"{self.expdir}/ICMUA+{intlbc:02d}",
+            f"{self.expdir}/ICMUA+@LL@",
             "ICMUAMARS+000000",
             basetime=bd_basetime,
             validtime=as_datetime(self.bd_time),

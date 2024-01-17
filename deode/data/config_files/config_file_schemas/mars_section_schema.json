@@ -80,6 +80,66 @@
 	    }
 	  }
 	},
+	"DT12":{
+          "title": "SectionForDTData",
+          "description": "Parameters for DT data",
+          "type": "object",
+          "properties": {
+            "class": {
+              "type": "string",
+              "description": "Class of expver"
+            },
+	    "levelist":{
+              "type": "string",
+              "description": "Dictionary (date:levels), with dates of change in the number of levels."
+            },
+            "grid": {
+              "type": "string",
+              "description": "Dictionary (date:res0oution), with dates of change in the resolution."
+            },
+            "start_date": {
+              "type" : "string",
+              "description" : "Date from when are data available in Mars"
+            },
+            "GG": {
+              "type": "string",
+              "description": "Parameters for grid point data"
+            },
+            "GG_sea": {
+              "type": "string",
+              "description": "Parameters for grid point sea data"
+            },
+	    "grid_GG1": {
+              "type": "string",
+              "description": "Grid parametr for mars request"
+            },
+            "grid_ML": {
+              "type": "string",
+              "description": "Grid parametr for mars request"
+            },
+            "SH": {
+              "type": "string",
+              "description": "Parameters for spectral harmonic data"
+            },
+            "SHZ": {
+              "type": "string",
+              "description": "Geopotential on ground"
+            },
+	    "SHZ_type": {
+              "type": "string",
+              "description": "Type for geopotential"
+            },
+            "UA": {
+              "type": "string",
+              "description": "Upper air parameters"
+            },
+	    "stream": {
+              "type": "object",
+              "description": "Dictionary (run:stream) to use the right stream for a given run."
+            }
+
+          }
+        },
 	"ATOS_DT":{
           "title": "SectionForDTData",
           "description": "Parameters for DT data",

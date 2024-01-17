@@ -18,6 +18,15 @@
 [ATOS_DT.stream]
   00 = "OPER"
 
+[DT12]
+  default = "RD_DEFAULT"
+  expver = "i8a8"
+  start_date = "2023-10-29T00:00:00Z"
+  UA = "133/75/76/246/247/248"
+
+[DT12.stream]
+  12 = "OPER"
+
 [HRES]
   class = "OD"
   expver = "0001"
@@ -53,22 +62,6 @@
   12 = "OPER"
   18 = "SCDA"
 
-[i5qp]
-  default = "RD_DEFAULT"
-  stream.00 = "OPER"
-
-[i7u4]
-  default = "RD_DEFAULT"
-  grid = "0.028/0.028"
-  stream.00 = "LWDA"
-  tco = "399"
-
-[i7ye]
-  default = "RD_DEFAULT"
-  grid = "0.028/0.028"
-  stream.00 = "LWDA"
-  tco = "399"
-
 [IFSENS]
   are_we_done_here = false
   class = "OD"
@@ -95,6 +88,10 @@
   "2006-02-01T06:00:00Z" = "AV"
   "2016-03-08T00:00:00Z" = "O640"
 
+[PARIS_RDP]
+  expver = "i5qp"
+  more_to_come = true
+
 [RD_DEFAULT]
   class = "RD"
   GG = "32/33/39/40/41/42/139/141/170/172/183/198/235/236/35/36/37/38/238/243/244/245"
@@ -110,4 +107,3 @@
   tco = "255"
   type_AN = "AN"
   type_FC = "FC"
-  UA = "133/75/76/246/247/248"

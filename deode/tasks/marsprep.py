@@ -27,18 +27,15 @@ class Marsprep(Task):
         """
         Task.__init__(self, config, __name__)
 
-        # Get MARS selection
+        # Get paths
         self.selection = self.config["boundaries.ifs.selection"]
-        self.mars = self.config[f"mars.{self.selection}"].dict()
-        if "expver" not in self.mars:
+        try:
+            self.mars = self.config[f"mars.{self.selection}"]
+        except KeyError:
+            # This experiment is note defined fallback to RD_DEFAULT
+            self.mars = self.config["mars.RD_DEFAULT"]
             self.mars["expver"] = self.selection
-
-        # Copy default settings if requested
-        if "default" in self.mars:
-            default = self.config[f"mars.{self.mars['default']}"]
-            for k in default:
-                if k not in self.mars:
-                    self.mars[k] = default[k]
+            logger.warning("SELECTION={} not defined, using RD_DEFAULT", self.selection)
 
         self.sfcdir = self.config["system.global_sfcdir"]
         # Get boundary strategy
@@ -59,11 +56,11 @@ class Marsprep(Task):
         self.bdshift = as_timedelta(self.config["boundaries.bdshift"])
         self.bdcycle = as_timedelta(self.config["boundaries.bdcycle"])
         self.int_bdcycle = int(self.bdcycle.total_seconds()) // 3600
-        self.cy_offset = cycle_offset(self.basetime, self.bdcycle)
+        bd_basetime = self.basetime - cycle_offset(
+            self.basetime, self.bdcycle, shift=-self.bdshift
+        )
 
         self.unix_group = self.platform.get_platform_value("unix_group")
-
-        bd_basetime = self.basetime - self.cy_offset
 
         self.prepdir = self.platform.substitute(
             self.config["system.marsdir"],
@@ -414,7 +411,7 @@ class Marsprep(Task):
         step = int(self.bdint.total_seconds() / 3600)
         str_steps = [
             "{0:02d}".format(
-                dateframe.index.tolist()[0]
+                int(self.bdshift.seconds / 3600)
                 + (i * step)
                 + self.basetime.hour % self.int_bdcycle
             )
