@@ -620,15 +620,15 @@ class Pgd(Task):
         self.nlgen = NamelistGenerator(self.config, "surfex")
         self.climdir = self.platform.get_system_value("climdir")
         self.one_decade = self.config["pgd.one_decade"]
+        self.basetime = config["task.args.basetime"]
         self.pgd_prel = self.platform.substitute(
-            self.config["file_templates.pgd_prel.archive"]
+            self.config["file_templates.pgd_prel.archive"], basetime=self.basetime
         )
         # TODO get from args
         self.force = True
 
     def execute(self):
         """Execute."""
-        basetime = as_datetime(self.config["general.times.basetime"])
         output = f"{self.climdir}/{self.pgd_prel}"
 
         if not os.path.exists(output) or self.force:
@@ -658,7 +658,9 @@ class Pgd(Task):
                             replace(v, match, repl)
                     return data
 
-                input_data = replace(input_data, "@DECADE@", get_decade(basetime))
+                input_data = replace(
+                    input_data, "@DECADE@", get_decade(as_datetime(self.basetime))
+                )
 
             # Could potentially manipulate input_data depending on settings
             # or send input_data as input from an external file
@@ -667,7 +669,7 @@ class Pgd(Task):
                 input_data,
                 self.program,
                 self.platform,
-                basetime=basetime,
+                basetime=self.basetime,
                 one_decade=self.one_decade,
             ).get()
             for dest, target in binput_data.items():

@@ -281,9 +281,12 @@ class PgdUpdate(Task):
         self.climdir = self.platform.get_system_value("climdir")
 
         self.gl = self.get_binary("gl")
-        self.outfile = self.platform.substitute(self.config["file_templates.pgd.archive"])
+        self.basetime = config["task.args.basetime"]
+        self.outfile = self.platform.substitute(
+            self.config["file_templates.pgd.archive"], basetime=self.basetime
+        )
         self.pgd_prel = self.platform.substitute(
-            self.config["file_templates.pgd_prel.archive"]
+            self.config["file_templates.pgd_prel.archive"], basetime=self.basetime
         )
 
     def execute(self):
