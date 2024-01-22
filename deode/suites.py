@@ -737,7 +737,7 @@ class SuiteDefinition(object):
                         ecf_files_remotely=self.ecf_files_remotely,
                     )
 
-                    pgd_update = EcflowSuiteTask(
+                    EcflowSuiteTask(
                         "PgdUpdate",
                         decade_pgdupdate_family,
                         config,
@@ -751,7 +751,7 @@ class SuiteDefinition(object):
 
             else:
                 basetime = as_datetime(self.config["general.times.basetime"])
-                pgd_update = EcflowSuiteTask(
+                EcflowSuiteTask(
                     "PgdUpdate",
                     static_data,
                     config,
@@ -763,34 +763,6 @@ class SuiteDefinition(object):
                     ecf_files_remotely=self.ecf_files_remotely,
                 )
 
-        if self.do_archiving and self.do_pgd:
-            archive_static_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd_update)])
-            EcflowSuiteTask(
-                "ArchiveStatic",
-                static_data,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                variables=None,
-                trigger=archive_static_trigger,
-                ecf_files_remotely=self.ecf_files_remotely,
-            )
-        elif self.do_archiving and not (self.do_pgd):
-            archive_static_trigger = EcflowSuiteTriggers(
-                [EcflowSuiteTrigger(month_family)]
-            )
-            EcflowSuiteTask(
-                "ArchiveStatic",
-                static_data,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                variables=None,
-                trigger=archive_static_trigger,
-                ecf_files_remotely=self.ecf_files_remotely,
-            )
         return static_data
 
     def save_as_defs(self, def_file):
