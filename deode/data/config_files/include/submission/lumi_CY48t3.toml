@@ -1,4 +1,5 @@
 bindir = "/users/ospaniel/pack/48t3_main.06.CRAYFTN1501.x/bin"
+module_initpath = "/usr/share/lmod/8.3.1/init"
 
 submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 default_submit_type = "parallel"
@@ -34,16 +35,16 @@ NTASKS = "#SBATCH --ntasks=1"
 AAAAOS = "import os"
 AAAASYS = "import sys"
 AAAMODULE_ENV = "exec(open('/usr/share/lmod/8.3.1/init/env_modules_python.py').read())"
-AAMODULE_USE = "module('use', '/scratch/project_462000140/SW/modules')"
-AMODULE_ECFLOW = "module('load', 'ecflow/5.9.2')"
-BSYS_PATH = "sys.path.insert(0, '/scratch/project_462000140/SW/spack-setup/spack/22.08/0.18.1/ecflow-5.9.2-4eg6sen/lib/python3.9/site-packages/')"
-ECF_SSL =  "os.environ['ECF_SSL'] = '1'"
+AAMODULE_USE = ["use", "/scratch/project_462000140/SW/modules"]
+AMODULE_ECFLOW = ["load", "ecflow/5.9.2"]
+
+ECF_SSL = 1
 NPROC = 32
 MPITASKS_PER_NODE = 8
 MPI_TASKS = 32
-OMP_NUM_THREADS= "os.environ['OMP_NUM_THREADS'] = '4'"
-OMPI_MCA_btl= "os.environ['OMPI_MCA_btl'] = '^vader'"
-DR_HOOK_IGNORE_SIGNALS = "os.environ['DR_HOOK_IGNORE_SIGNALS'] = '8'"
+OMP_NUM_THREADS = 4
+OMPI_MCA_btl = '^vader'
+DR_HOOK_IGNORE_SIGNALS = 8
 
 [task_exceptions.PgdUpdate]
 bindir = "/home/snh02/work/gl_binaries"
@@ -54,10 +55,10 @@ bindir = "/home/snh02/work/gl_binaries"
 binary = "gl_20230823"
 
 [task_exceptions.Gmted.ENV]
-MODULE_GDAL= "module('load', 'gdal/3.2.1')"
+MODULE_GDAL = ["load", "gdal/3.2.1"]
 
 [task_exceptions.Soil.ENV]
-MODULE_GDAL= "module('load', 'gdal/3.2.1')"
+MODULE_GDAL = ["load', 'gdal/3.2.1"]
 
 [parallel]
 SCHOST = "lumi"
@@ -74,63 +75,52 @@ PARTITION = "#SBATCH -p debug"
 WALLTIME = "#SBATCH --time=00:10:00"
 
 [parallel.ENV]
-AAAAOS = "import os"
-AAAASYS = "import sys"
-AAAMODULE_ENV = "exec(open('/usr/share/lmod/8.3.1/init/env_modules_python.py').read())"
-#AAMODULE_USE = "module('use', '/scratch/project_462000140/SW/modules')"
-#AMODULE_ECFLOW = "module('load', 'ecflow/5.9.2')"
-BSYS_PATH = "sys.path.insert(0, '/scratch/project_462000140/SW/spack-setup/spack/22.08/0.18.1/ecflow-5.9.2-4eg6sen/lib/python3.9/site-packages/')"
-ECCODES_SAMPLES_PATH="sys.path.insert(0, '/users/ospaniel/opt/share/eccodes/ifs_samples/grib1_mlgrib2')"
-ECCODES_DEFINITION_PATH="sys.path.insert(0, '/users/ospaniel/opt/share/eccodes/definitions/grib2/localConcepts/lfpw:/users/ospaniel/opt/eccodes-2.27.0/share/eccodes/definitions')"
-
-ECF_SSL =  "os.environ['ECF_SSL'] = '-1'"
-
+ECF_SSL = -1
 # Nodes, MPI tasks etc
-NNODES="os.environ['NNODES'] = '4'" # $SLURM_JOB_NUM_NODES
-MPI_TASKS="os.environ['MPI_TASKS'] = '32'"  # $SLURM_NTASKS
-MPITASKS_PER_NODE="os.environ['MPITASKS_PER_NODE'] ='32'" # MPI_TASKS/NNODES
-OMP_NUM_THREADS="os.environ['OMP_NUM_THREADS'] = '4'" # CPUS_PER_TASK
+NNODES = 4 # $SLURM_JOB_NUM_NODES
+MPI_TASKS = 32 # $SLURM_NTASKS
+MPITASKS_PER_NODE = 32 # MPI_TASKS/NNODES
+OMP_NUM_THREADS = 4 # CPUS_PER_TASK
 
 # Open-MP business :
 # OMP_PLACES looks important for the binding by srun :
-OMP_PLACES = "os.environ['OMP_PLACES'] = 'threads'"
-OMP_STACKSIZE = "os.environ['OMP_STACKSIZE'] = '4G'"
-KMP_STACKSIZE = "os.environ['KMP_STACKSIZE'] = '4G'"
-KMP_MONITOR_STACKSIZE = "os.environ['KMP_MONITOR_STACKSIZE'] = '4G'"
-
-# Bitwise reproductibility with MKL :
-#MKL_CBWR = "os.environ['MKL_CBWR'] = 'AUTO,STRICT'"
-#MKL_NUM_THREADS = "os.environ['MKL_NUM_THREADS'] = '1'"
-#MKL_DEBUG_CPU_TYPE = "os.environ['MKL_DEBUG_CPU_TYPE'] = '5'"
-
-# ECMWF prefers "release" than "release_mt" with Intel MPI library :
-#I_MPI_LIBRARY_KIND = "os.environ['I_MPI_LIBRARY_KIND'] = 'release'"
+OMP_PLACES = "threads"
+OMP_STACKSIZE = "4G"
+KMP_STACKSIZE = "4G"
+KMP_MONITOR_STACKSIZE = "4G"
 
 # DR_HOOK
-DR_HOOK="os.environ['DR_HOOK'] = '1'"
-DR_HOOK_IGNORE_SIGNALS="os.environ['DR_HOOK_IGNORE_SIGNALS'] = '8'"
-DR_HOOK_SILENT="os.environ['DR_HOOK_SILENT'] = '1'"
-DR_HOOK_SHOW_PROCESS_OPTIONS="os.environ['DR_HOOK_SHOW_PROCESS_OPTIONS'] = '0'"
+DR_HOOK = 1
+DR_HOOK_IGNORE_SIGNALS = 8
+DR_HOOK_SILENT = 1
+DR_HOOK_SHOW_PROCESS_OPTIONS = 0
 
-#MPL
-#MPL_MBX_SIZE="os.environ['MPL_MBX_SIZE'] = '4096000000'"
 
 # EC PROFILE
-EC_PROFILE_HEAP = "os.environ['EC_PROFILE_HEAP'] = '0'"
-EC_PROFILE_MEM = "os.environ['EC_PROFILE_MEM'] = '0'"
-EC_MPI_ATEXIT = "os.environ['EC_MPI_ATEXIT'] = '0'"
-EC_MEMINFO = "os.environ['EC_MEMINFO'] = '0'"
+EC_PROFILE_HEAP = 0
+EC_PROFILE_MEM = 0
+EC_MPI_ATEXIT = 0
+    EC_MEMINFO = 0
 
-FI_CXI_RX_MATCH_MODE="os.environ['FI_CXI_RX_MATCH_MODE'] = 'hybrid'"
+    FI_CXI_RX_MATCH_MODE = 'hybrid'
 
-AMODULES = "module('--force', 'purge')"
-#AMODULES_LUMI = "module('load', 'LUMI partition/C cpe/23.03 craype-x86-trento PrgEnv-cray cray-mpich cray-libsci partition/G cray-hdf5-parallel cray-netcdf-hdf5parallel rocm')"
-
-AMODULES_LUMI = "module('load', 'LUMI/23.03  partition/C PrgEnv-cray cpe/23.03 craype-x86-trento cray-mpich cray-libsci cray-fftw cray-python cray-hdf5-parallel cray-netcdf-hdf5parallel buildtools ncurses/6.4-cpeCray-23.03')"
-
-#MPIAUTO_OPTIONS="os.environ['MPIAUTO_OPTIONS'] = '--use-slurm-mpi --use-slurm-bind --wrap --wrap-stdeo --wrap-stdeo-pack --init-timeout-restart 1'"
-#MPIAUTO="os.environ['MPIAUTO'] = '/home/sor/install/mpiauto/mpiauto'"
-
+[parallel.MODULES]
+   # PURGE = ["purge"]
+    LUMI = ["load", "LUMI/23.03"]
+    PARTITION_C = ["load", "partition/C"]
+    PRG_ENV = ["load", "PrgEnv-cray"]
+    CPE = ["load", "cpe/23.03"]
+    TRENTO = ["load", "craype-x86-trento"]
+    MPICH = ["load", "cray-mpich"]
+    LIBSCI = ["load", "cray-libsci"]
+    FFTW = ["load", "cray-fftw"]
+    PYTHON = ["load", "cray-python"]
+    HDF5 = ["load", " cray-hdf5-parallel"]
+    NETCDF = ["load", "cray-netcdf-hdf5parallel"]
+    BUILDTOOLS = ["load", "buildtools"]
+    NCURSES = ["load", "ncurses/6.4-cpeCray-23.03"]
+    #The others
+    ROCM = ["load", "rocm/5.3.3"]
 [task_exceptions.e927]
 NPROC = 16
 
@@ -139,28 +129,17 @@ NODES = "#SBATCH --nodes=1"
 NTASKS = "#SBATCH --ntasks=16"
 
 [task_exceptions.Forecast]
-DR_HOOK="os.environ['DR_HOOK'] = '1'"
-#DR_HOOK_SILENT="os.environ['DR_HOOK_SILENT'] = '1'"
-#DR_HOOK_SHOW_PROCESS_OPTIONS="os.environ['DR_HOOK_SHOW_PROCESS_OPTIONS'] = '0'"
-
-
-
-#Configuration for GPU
-APL_ALARO = "os.environ['APL_ALARO'] = '1'"
-INPART = "os.environ['INPART'] = '1'"
-PARALLEL = "os.environ['PARALLEL'] = '1'"
-
 WRAPPER = "ulimit -s unlimited ;  env > env_denis.txt; srun -n @NPROC@"
 
-[task_exceptions.Forecast.BATCH]
-#Denis Settings
-AAAAOS = "import os"
-DR_HOOK="os.environ['DR_HOOK'] = '1'"
+[task_exceptions.Forecast.ENV]
 
-#Environment variables for ALARO PARALLEL
-APL_ALARO="os.environ['APL_ALARO'] = '1'"
-INPART="os.environ['INPART'] = '1'"
-PARALLEL="os.environ['PARALLEL'] = '1'"
+    DR_HOOK = 1
+
+ #Environment variables for ALARO PARALLEL
+    APL_ALARO = 1
+    INPART = 1
+    PARALLEL = 1
+[task_exceptions.Forecast.BATCH]
   
 #Slurm settings for GPU
 NODES = "#SBATCH --nodes=4"

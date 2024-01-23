@@ -1,11 +1,13 @@
 """Base site class."""
 
 import atexit
+import contextlib
 import os
 import shutil
 import socket
 
 from ..logs import logger
+from ..os_utils import deodemakedirs
 from ..toolbox import FileManager
 
 
@@ -58,8 +60,10 @@ class Task(object):
         if self.wrk is None:
             raise ValueError("You must set wrk", self.wrk)
 
-        wdir = f"{self.wrk}/{socket.gethostname()}{str(os.getpid())}"
+        wdir = f"{self.wrk}/{socket.gethostname()}{os.getpid()!s}"
         self.wdir = wdir
+        self.unix_group = self.platform.get_value("platform.unix_group")
+
         logger.info("Task running in {}", self.wdir)
 
         self._set_eccodes_environment()
@@ -101,21 +105,21 @@ class Task(object):
         if target is None:
             target = self.wrk
         logdir = os.path.join(target, "logs", self.name)
-        os.makedirs(logdir, exist_ok=True)
+        deodemakedirs(logdir, unixgroup=self.unix_group)
 
         if isinstance(files, str):
-            self.fmanager.output(files, logdir)
+            self.fmanager.output(files, logdir, provider_id="copy")
         else:
             for f in files:
-                self.fmanager.output(f, logdir)
+                self.fmanager.output(f, logdir, provider_id="copy")
 
     def create_wrkdir(self):
         """Create a cycle working directory."""
-        os.makedirs(self.wrk, exist_ok=True)
+        deodemakedirs(self.wrk, unixgroup=self.unix_group)
 
     def create_wdir(self):
-        """Create task working directory."""
-        os.makedirs(self.wdir, exist_ok=True)
+        """Create task working directory and check for unix group and set permissions."""
+        deodemakedirs(self.wdir, unixgroup=self.unix_group)
 
     def change_to_wdir(self):
         """Change to task working dir."""
@@ -149,10 +153,8 @@ class Task(object):
             bindir (str): full path to binary
 
         """
-        try:
+        with contextlib.suppress(KeyError):
             binary = self.config[f"submission.task_exceptions.{self.name}.binary"]
-        except KeyError:
-            pass
 
         try:
             bindir = self.config[f"submission.task_exceptions.{self.name}.bindir"]
@@ -174,6 +176,7 @@ class Task(object):
         logger.debug("Base class prep")
         self.create_wdir()
         self.change_to_wdir()
+
         atexit.register(self.rename_wdir)
 
     def post(self):
@@ -186,6 +189,7 @@ class Task(object):
         # Clean workdir
         if self.config["general.keep_workdirs"]:
             self.rename_wdir(prefix="Finished_task_")
+
         else:
             self.remove_wdir()
 
