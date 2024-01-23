@@ -401,7 +401,7 @@ f4_AROME:
   NAMOPH:
     CFNHWF: ECHIS
     LINC: True
-    NTIMEFMT: 2
+    NTIMEFMT: 1
   NAMPARAR:
     CFRAC_ICE_ADJUST: S
     CFRAC_ICE_SHALLOW_MF: S
@@ -516,7 +516,7 @@ f4_AROME:
     XDRMUK: 3.0e-7
     XDRMUP: 800.0
   NAMTRANS:
-    LFFTW: True
+    LFFTW: False
   NAMXFU:
     LXCLP: True
     LXCLS: True
@@ -927,7 +927,7 @@ f4_ALARO:
   NAMOPH:
     CFNHWF: ECHIS
     LINC: True
-    NTIMEFMT: 2
+    NTIMEFMT: 1
   NAMPHY:
     CGMIXLEN: 'EL0'
     CGTURS: 'MD2'
@@ -1102,7 +1102,7 @@ f4_ALARO:
     XDRMUK: 3.0e-7
     XDRMUP: 800.0
   NAMTRANS:
-    LFFTW: True
+    LFFTW: False
   NAMXFU:
     LXCLP: True
     LXCLS: True
@@ -1182,8 +1182,7 @@ f4_common:
     LSPLIT: True
     LSYNC_SLCOM: False
     LSYNC_TRANS: False
-    NCOMBFLEN: 1800000
-    NDISTIO(12): 1
+    NCOMBFLEN: 1800000     
   NAMPHY:
     LAERODES: True
     LAEROLAN: True
@@ -1235,7 +1234,7 @@ f4_c903_main:
     CSCRIPT_PPSERVER: " "
     LGRIB_API: False
   NAMTRANS:
-    LFFTW: True
+    LFFTW: False
   NAMOPH:
     CCLIMINC: "_"
   NAMGFL:

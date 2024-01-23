@@ -1,4 +1,16 @@
-bindir = "/users/ospaniel/pack/48t3_main.06.CRAYFTN1501.x/bin"
+#CPU
+#bindir = "/users/ospaniel/pack/48t3_main.06.CRAYFTN1501.x/bin"
+
+#DAAN OLD ROOTPACK
+#bindir = "/pfs/lustrep4/projappl/project_465000527/dadegrau/accord/rootpack/48t3_main.01.CRAYFTN1501.x/bin"
+
+#DAAN NEW ROOTPACK (require to set LFFTW = .FALSE.)
+#bindir = "/project/project_465000527/dadegrau/accord/rootpack/48t3_main.01.CRAYFTN1501_ECTRANS.y/bin"
+
+#DAAN GPU
+bindir = "/pfs/lustrep4/projappl/project_465000527/dadegrau/accord/pack/alaro_gpu/bin"
+
+
 
 submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 default_submit_type = "parallel"
@@ -126,6 +138,7 @@ FI_CXI_RX_MATCH_MODE="os.environ['FI_CXI_RX_MATCH_MODE'] = 'hybrid'"
 AMODULES = "module('--force', 'purge')"
 #AMODULES_LUMI = "module('load', 'LUMI partition/C cpe/23.03 craype-x86-trento PrgEnv-cray cray-mpich cray-libsci partition/G cray-hdf5-parallel cray-netcdf-hdf5parallel rocm')"
 
+#AMODULES_LUMI = "module('load', 'LUMI/23.03  partition/G PrgEnv-cray cpe/23.03 craype-x86-trento cray-mpich cray-libsci cray-fftw cray-python cray-hdf5-parallel cray-netcdf-hdf5parallel buildtools ncurses/6.4-cpeCray-23.03 rocm/5.3.3')"
 AMODULES_LUMI = "module('load', 'LUMI/23.03  partition/C PrgEnv-cray cpe/23.03 craype-x86-trento cray-mpich cray-libsci cray-fftw cray-python cray-hdf5-parallel cray-netcdf-hdf5parallel buildtools ncurses/6.4-cpeCray-23.03')"
 
 #MPIAUTO_OPTIONS="os.environ['MPIAUTO_OPTIONS'] = '--use-slurm-mpi --use-slurm-bind --wrap --wrap-stdeo --wrap-stdeo-pack --init-timeout-restart 1'"
@@ -144,14 +157,13 @@ DR_HOOK="os.environ['DR_HOOK'] = '1'"
 #DR_HOOK_SHOW_PROCESS_OPTIONS="os.environ['DR_HOOK_SHOW_PROCESS_OPTIONS'] = '0'"
 
 
-
 #Configuration for GPU
 APL_ALARO = "os.environ['APL_ALARO'] = '1'"
 INPART = "os.environ['INPART'] = '1'"
 PARALLEL = "os.environ['PARALLEL'] = '1'"
 
-WRAPPER = "ulimit -s unlimited ;  env > env_denis.txt; srun -n @NPROC@"
-
+WRAPPER = "ulimit -s unlimited ;  env > env_denis.txt; srun -n @NPROC@ ./select_gpu"
+#WRAPPER = "ulimit -s unlimited ;  env > env_denis.txt; srun -n @NPROC@"
 [task_exceptions.Forecast.BATCH]
 #Denis Settings
 AAAAOS = "import os"
@@ -161,16 +173,27 @@ DR_HOOK="os.environ['DR_HOOK'] = '1'"
 APL_ALARO="os.environ['APL_ALARO'] = '1'"
 INPART="os.environ['INPART'] = '1'"
 PARALLEL="os.environ['PARALLEL'] = '1'"
-  
+
+#Environment for LUMI GPU
+#Allocate 8Gb of heap size on the GPU
+CRAY_ACC_MALLOC_HEAPSIZE="os.environ['CRAY_ACC_MALLOC_HEAPSIZE'] = '8000000000'"
+
+#Allow direct GPU to GPU MPI connection s
+MPICH_GPU_SUPPORT_ENABLED="os.environ['MPICH_GPU_SUPPORT_ENABLED'] = '1'"
+
+# GPU: bind 8 MPI tasks to certain CPU cores (so that GPUs 0-7 are connected to tasks 0-7)
+CPU_BIND="os.environ['CPU_BIND'] = 'mask_cpu:7e000000000000,7e00000000000000,7e0000,7e000000,7e,7e00,7e00000000,7e0000000000'"
+
 #Slurm settings for GPU
 NODES = "#SBATCH --nodes=4"
 TASKS_PER_NODE = "#SBATCH --ntasks-per-node=8"
 CPU = "#SBATCH --cpus-per-task=6"
 WALLTIME = "#SBATCH --time=00:30:00"
-PARTITION = "#SBATCH --partition=debug"
+PARTITION = "#SBATCH --partition=dev-g"
 JOBNAME = "#SBATCH --job-name=Alaro_gpu"
 ACCOUNT = "#SBATCH --account=project_465000527"
 #EXCLUSIVE= "#SBATCH --exclusive"
+GPUS_PER_NODE= "#SBATCH --gpus-per-node=8"
 
 #[task_exceptions.Forecast.ENV]
 #RTTOV_COEFDIR="/scratch/project_465000527/de_33050_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
