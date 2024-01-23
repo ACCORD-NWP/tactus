@@ -43,6 +43,7 @@ class Forecast(Task):
         self.deode_home = self.config["platform.deode_home"]
         self.output_settings = self.config["general.output_settings"]
         self.surfex = self.config["general.surfex"]
+        self.accelerator_device=self.config["accelerator_device"]
 
         # Update namelist settings
         self.nlgen_master = NamelistGenerator(self.config, "master")
@@ -88,6 +89,26 @@ class Forecast(Task):
             infile = os.path.basename(ifile)
             self.fmanager.input(ifile, infile)
 
+    def accelerator_device_input(self):       
+        """Copy the input files for gpu execution
+                    - parallel_method file specifies for each routine the parallelisation used (OPENMP for CPU or OPENACCSINGLECOLUMN for GPU)
+                    - synchost file specifies a list of routines for which a device-to-host memory transferts is required
+                    - select_gpu file is a wrapper for sbatch, to specify the GPU to be used in function of the MPI rank
+        """ 
+               
+        for key in ["parallel_method","sync_host","select_gpu"]:
+            try:
+               file_definition = self.config[f"accelerator_device.{key}"]
+               input_file = file_definition[0]
+               output_file = file_definition[1]
+               logger.debug(f"   Key {key} found")
+            except KeyError:
+                input_file = None
+                output_file = None
+            
+            if input_file and output_file:
+                self.fmanager.input(input_file, output_file)
+            
     def merge_output(self, filetype, periods):
         """Merge distributed forecast model output.
 
@@ -260,6 +281,12 @@ class Forecast(Task):
             self.fmanager.input(f"{intp_bddir}/{source}", source)
             cdtg += self.bdint
             i += 1
+
+        if self.accelerator_device:
+            logger.debug("Processing accelerator_device section")
+            self.accelerator_device_input()
+        else:
+            logger.debug("No accelerator_device section found")
 
         # Run MASTERODB
         batch = BatchJob(os.environ, wrapper=self.wrapper)
