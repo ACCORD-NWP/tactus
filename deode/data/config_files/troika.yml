@@ -9,7 +9,7 @@ sites:
     host: aa-batch
     kill_sequence: [[5, 2], [10, 9]]
     pre_submit: ["create_output_dir"]
-    preprocess: ["remove_top_blank_lines", "slurm_add_output", "slurm_bubble"]
+    preprocess: ["remove_top_blank_lines", "slurm_add_output", "slurm_bubble"]  
     at_exit: ["copy_submit_logfile"]
     sbatch_command: "ecsbatch"
     scancel_command: 'scancel -f'
@@ -47,10 +47,20 @@ sites:
     sbatch_command: "ecsbatch"
     scancel_command: 'scancel -f'
 
+  lumi:
+    type: slurm
+    connection: local
+    host: localhost
+    kill_sequence: [[5, 2], [10, 9]]
+    pre_submit: ["create_output_dir"]
+    preprocess: ["remove_top_blank_lines", "slurm_add_output", "slurm_bubble"]
+    sbatch_command: "sbatch"
+    scancel_command: 'scancel -f'
+
   lumi-batch:
     type: slurm
     connection: ssh
-    host: lumi.csc.fi
+    host: lumi.csc.fi2
     kill_sequence: [[5, 2], [10, 9]]
     pre_submit: ["create_output_dir"]
     preprocess: ["remove_top_blank_lines", "slurm_add_output", "slurm_bubble"]
