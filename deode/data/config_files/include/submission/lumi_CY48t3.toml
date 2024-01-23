@@ -121,8 +121,7 @@ EC_MPI_ATEXIT = 0
     NETCDF = ["load", "cray-netcdf-hdf5parallel"]
     BUILDTOOLS = ["load", "buildtools"]
     NCURSES = ["load", "ncurses/6.4-cpeCray-23.03"]
-    #The others
-    ROCM = ["load", "rocm/5.3.3"]
+    
 [task_exceptions.e927]
 NPROC = 16
 

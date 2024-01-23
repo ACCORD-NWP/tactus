@@ -117,9 +117,13 @@ WALLTIME = "#SBATCH --time=00:10:00"
 [parallel.MODULES]
    # PURGE = ["purge"]
     LUMI = ["load", "LUMI/23.03"]
+    #
     PARTITION_G = ["load", "partition/G"]
+    #
     PRG_ENV = ["load", "PrgEnv-cray"]
+    #
     CPE = ["load", "cpe/23.03"]
+    #
     TRENTO = ["load", "craype-x86-trento"]
     MPICH = ["load", "cray-mpich"]
     LIBSCI = ["load", "cray-libsci"]
