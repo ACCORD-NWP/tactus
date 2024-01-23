@@ -3,7 +3,13 @@
 import os
 from pathlib import Path
 
-from .datetime_utils import as_datetime, as_timedelta
+from .datetime_utils import (
+    as_datetime,
+    as_timedelta,
+    get_decadal_list,
+    get_decade,
+    get_month_list,
+)
 from .logs import LogDefaults, logger
 from .os_utils import deodemakedirs
 from .toolbox import Platform
@@ -587,18 +593,55 @@ class SuiteDefinition(object):
 
             pgd_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd_input)])
 
-            pgd = EcflowSuiteTask(
-                "Pgd",
-                static_data,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                variables=None,
-                trigger=pgd_trigger,
-                ecf_files_remotely=self.ecf_files_remotely,
-            )
-            e923_constant_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd)])
+            if self.one_decade:
+                pgd_family = EcflowSuiteFamily(
+                    "Pgd",
+                    static_data,
+                    self.ecf_files,
+                    trigger=pgd_trigger,
+                    ecf_files_remotely=self.ecf_files_remotely,
+                )
+                decade_dates = get_decadal_list(
+                    as_datetime(config["general.times.start"]),
+                    as_datetime(config["general.times.end"]),
+                )
+
+                for dec_date in decade_dates:
+                    decade_pgd_family = EcflowSuiteFamily(
+                        f"decade_{get_decade(dec_date)}",
+                        pgd_family,
+                        self.ecf_files,
+                        ecf_files_remotely=self.ecf_files_remotely,
+                    )
+
+                    pgd = EcflowSuiteTask(
+                        "Pgd",
+                        decade_pgd_family,
+                        config,
+                        self.task_settings,
+                        self.ecf_files,
+                        input_template=input_template,
+                        variables={"ARGS": f"basetime={dec_date}"},
+                        ecf_files_remotely=self.ecf_files_remotely,
+                    )
+
+                e923_constant_trigger = EcflowSuiteTriggers(
+                    [EcflowSuiteTrigger(pgd_family)]
+                )
+            else:
+                basetime = as_datetime(self.config["general.times.basetime"])
+                pgd = EcflowSuiteTask(
+                    "Pgd",
+                    static_data,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    variables={"ARGS": f"basetime={basetime}"},
+                    trigger=pgd_trigger,
+                    ecf_files_remotely=self.ecf_files_remotely,
+                )
+                e923_constant_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd)])
         else:
             e923_constant_trigger = None
 
@@ -633,19 +676,22 @@ class SuiteDefinition(object):
         }
 
         if self.one_decade:
-            basetime = as_datetime(config["general.times.start"])
-            basetime_month = int(basetime.month)
-            last_month = basetime_month - 1
+            month_list = get_month_list(
+                config["general.times.start"], config["general.times.end"]
+            )
+            last_month = month_list[0] - 1
             if last_month == 0:
                 last_month = 12
-            next_month = basetime_month + 1
+            next_month = month_list[-1] + 1
             if next_month == 13:
                 next_month = 1
-            seasons = {
-                f"m{last_month:02d}": f"{last_month:02d}",
-                f"m{basetime_month:02d}": f"{basetime_month:02d}",
-                f"m{next_month:02d}": f"{next_month:02d}",
-            }
+
+            month_list.insert(0, last_month)
+            month_list.append(next_month)
+
+            seasons = {}
+            for mm in sorted(month_list):
+                seasons[f"m{mm:02d}"] = f"{mm:02d}"
 
         for season, months in seasons.items():
             month_family = EcflowSuiteFamily(
@@ -668,46 +714,55 @@ class SuiteDefinition(object):
 
         if self.do_pgd:
             pgd_update_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(e923constant)])
-            pgd_update = EcflowSuiteTask(
-                "PgdUpdate",
-                static_data,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                variables=None,
-                trigger=pgd_update_trigger,
-                ecf_files_remotely=self.ecf_files_remotely,
-            )
 
-        if self.do_archiving and self.do_pgd:
-            archive_static_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd_update)])
-            EcflowSuiteTask(
-                "ArchiveStatic",
-                static_data,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                variables=None,
-                trigger=archive_static_trigger,
-                ecf_files_remotely=self.ecf_files_remotely,
-            )
-        elif self.do_archiving and not (self.do_pgd):
-            archive_static_trigger = EcflowSuiteTriggers(
-                [EcflowSuiteTrigger(month_family)]
-            )
-            EcflowSuiteTask(
-                "ArchiveStatic",
-                static_data,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                variables=None,
-                trigger=archive_static_trigger,
-                ecf_files_remotely=self.ecf_files_remotely,
-            )
+            if self.one_decade:
+                pgd_update_family = EcflowSuiteFamily(
+                    "PgdUpdate",
+                    static_data,
+                    self.ecf_files,
+                    trigger=pgd_update_trigger,
+                    ecf_files_remotely=self.ecf_files_remotely,
+                )
+
+                decade_dates = get_decadal_list(
+                    as_datetime(config["general.times.start"]),
+                    as_datetime(config["general.times.end"]),
+                )
+
+                for dec_date in decade_dates:
+                    decade_pgdupdate_family = EcflowSuiteFamily(
+                        f"decade_{get_decade(dec_date)}",
+                        pgd_update_family,
+                        self.ecf_files,
+                        ecf_files_remotely=self.ecf_files_remotely,
+                    )
+
+                    EcflowSuiteTask(
+                        "PgdUpdate",
+                        decade_pgdupdate_family,
+                        config,
+                        self.task_settings,
+                        self.ecf_files,
+                        input_template=input_template,
+                        variables={"ARGS": f"basetime={dec_date}"},
+                        trigger=pgd_update_trigger,
+                        ecf_files_remotely=self.ecf_files_remotely,
+                    )
+
+            else:
+                basetime = as_datetime(self.config["general.times.basetime"])
+                EcflowSuiteTask(
+                    "PgdUpdate",
+                    static_data,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    variables={"ARGS": f"basetime={basetime}"},
+                    trigger=pgd_update_trigger,
+                    ecf_files_remotely=self.ecf_files_remotely,
+                )
+
         return static_data
 
     def save_as_defs(self, def_file):

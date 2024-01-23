@@ -107,13 +107,12 @@
 	    "i5qp",
 	    "i7u4",
 	    "i7ye",
-            "IFSENS",
-            "PARIS_RDP"
+            "IFSENS"
           ]
         },
 	"ifs.bdmember": {
 	    "type": "string",
-	    "description": "The number of member in ensamble if selection is IFSENS, else empty string."
+	    "description": "The number of members in ensemble if selection is IFSENS, else empty string."
 	},
         "bd_has_surfex": {
           "description": "Set to true if the host model runs with surfex",

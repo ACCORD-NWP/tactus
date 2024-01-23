@@ -175,3 +175,36 @@ def get_decade(dt) -> str:
     decades_dd = f"{decades_dd:02d}"
 
     return f"{decades_mm}{decades_dd}"
+
+
+def get_decadal_list(dt_start, dt_end) -> list:
+    """Return a list of dates for which decadal pgd files have to be created."""
+    # check decade of start and end of period
+    start_decade = get_decade(dt_start)
+    end_decade = get_decade(dt_end)
+
+    if start_decade != end_decade:
+        # More than one decade is covered by period.
+        if (dt_end - dt_start).days > 10:
+            for x in range(0, (dt_end - dt_start).days, 10):
+                if x == 0:
+                    list_of_decades = [dt_start]
+                else:
+                    list_of_decades.append(dt_start + as_timedelta(f"P{x}D"))
+        else:
+            list_of_decades = [dt_start, dt_end]
+    else:
+        list_of_decades = [dt_start]
+    return list_of_decades
+
+
+def get_month_list(start, end) -> list:
+    """Get list of months between to given dates (input as string)."""
+    str_month_list = pd.date_range(start, end, freq="MS").strftime("%m").tolist()
+    month_list = [int(i) for i in str_month_list]
+    if len(month_list) == 0:
+        month_list = [int(as_datetime(start).month)]
+    else:
+        month_list.insert(0, int(as_datetime(start).month))
+
+    return month_list

@@ -74,6 +74,7 @@ def task_name_and_configs(request, base_raw_config, tmp_path_factory):
             task_logs = "foo"
             bd_nr = 1
             bd_time = "{basetime}"
+            basetime = "{basetime}"
         """
     )
 

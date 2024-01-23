@@ -44,11 +44,29 @@
   "function":"vector_norm"
 },
 
+{ "harp_param" : "D",
+  "method" : "bilin",
+  "grib_id" : [ {"shortName":"u"}, {"shortName":"v"} ],
+  "common":{
+             "productDefinitionTemplateNumber":"0",
+             "typeOfLevel":"isobaricInhPa",
+             "level":[ 50, 100, 250, 300, 600, 700, 800, 925, 950]
+  },
+  "function":"vector_angle"
+},
+
 { "harp_param" : "S10m",
   "method" : "bilin",
   "grib_id" : [ {"shortName":"10u"}, {"shortName":"10v"} ],
   "common":{ "productDefinitionTemplateNumber":"0" },
   "function":"vector_norm"
+},
+
+{ "harp_param" : "D10m",
+  "method" : "bilin",
+  "grib_id" : [ {"shortName":"10u"}, {"shortName":"10v"} ],
+  "common":{ "productDefinitionTemplateNumber":"0" },
+  "function":"vector_angle"
 },
 
 { "harp_param" : "Gmax",

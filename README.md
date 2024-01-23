@@ -150,14 +150,13 @@ input data is in place.
 
 The following commands will launch a run under ecflow on atos (`hpc-login.ecmwf.int`) using the default experiment:
 ```shell
-ECF_HOST="ecflow-gen-${USER}-001"
-ECF_PORT="3141"
 deode start suite \
       --config-file $PWD/deode/data/config_files/config.toml
 ```
 
-Then you can either use the; 
-1) scheduler file, depending on whether you're using atos or lumi: deode/data/config_files/include/scheduler/ecflow_atos_bologna.toml. Scheduler file:
+This will pick up the default settings for ecflow from `deode/data/config_files/include/scheduler/ecflow_atos_bologna.toml` where we find the following:
+
+```toml
 [ecfvars]
   ecf_files = "/home/@USER@/deode_ecflow/ecf_files"
   ecf_files_remotely = "/home/@USER@/deode_ecflow/ecf_files"
@@ -165,9 +164,12 @@ Then you can either use the;
   ecf_host = "ecflow-gen-@USER@-001"
   ecf_jobout = "/home/@USER@/deode_ecflow/jobout"
   ecf_port = "3141"
-
-2) Flags. These flags are optional with filled in dummy variables. These can be changed to whatever you like:
 ```
+
+These settings can be overrided by the corresponding command line arguments, e.g.
+```shell
+deode start suite \
+      --config-file $PWD/deode/data/config_files/config.toml \
       --ecf-host $ECF_HOST \
       --ecf-port $ECF_PORT \
       --joboutdir $HOME/deode_ecflow/job \
@@ -194,26 +196,32 @@ To get access to Ecflow server from LUMI, email ECMWF (samet.demir@ecmwf.int; bo
 
 Only after contacting ECMWF and obtaining a file with a custom password:
 
+```shell
 export ECF_CUSTOM_PASSWD="/users/adelsaid/deode_ecflow/ecf_pwd"
 
 adelsaid@uan01:/users/adelsaid> cat /users/adelsaid/deode_ecflow/ecf_pwd
 
 5.11.3
 de_330 217.71.195.251 8443 {PASSWORD_OBTAINED_FROM_ECMWF}
+```
 
 Then follow these steps to add this to your ecflow:
 
+```shell
 module load ecflow
 ecflow_ui &
+```
 
 "Servers > Manage Servers > Add Server"
 
+```
 Name: de330-prod
 Host: 217.71.195.251
 Port: 8443
 Custom user: de_330
 Favourite (Not checked)
 Use SSL: (Make sure this is checked!)
+```
 
 ### Running the `"forecast"` task from the `hpc-login`'s command line
 
@@ -232,11 +240,10 @@ If you have done the above mentioned default ecflow test the stand alone forecas
 ### Running a stand-alone task with an example config file on LUMI
 
 ```shell
-try=$((try+1)) ; \
 deode run \
       --config-file $PWD/deode/data/config_files/config_CY48t3_lumi.toml \
       --task Forecast \
       --template $PWD/deode/templates/stand_alone.py \
-      --job $PWD/forecast_try$try.job \
-      --output $PWD/forecast_try$try.log
+      --job $PWD/forecast.job \
+      --output $PWD/forecast.log
 ```

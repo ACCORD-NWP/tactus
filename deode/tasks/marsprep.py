@@ -27,15 +27,20 @@ class Marsprep(Task):
         """
         Task.__init__(self, config, __name__)
 
-        # Get paths
+        # Get MARS selection
         self.selection = self.config["boundaries.ifs.selection"]
-        try:
-            self.mars = self.config[f"mars.{self.selection}"]
-        except KeyError:
-            # This experiment is note defined fallback to RD_DEFAULT
-            self.mars = self.config["mars.RD_DEFAULT"]
+        self.mars = self.config[f"mars.{self.selection}"].dict()
+        if "expver" not in self.mars:
             self.mars["expver"] = self.selection
-            logger.warning("SELECTION={} not defined, using RD_DEFAULT", self.selection)
+
+        # Copy default settings if requested
+        if "default" in self.mars:
+            default = self.config[f"mars.{self.mars['default']}"]
+            for k in default:
+                if k not in self.mars:
+                    self.mars[k] = default[k]
+
+        logger.debug("MARS selection config:{}", self.mars)
 
         self.sfcdir = self.config["system.global_sfcdir"]
         # Get boundary strategy
@@ -79,9 +84,6 @@ class Marsprep(Task):
 
         # Make MARS requests follow the template as requested
         os.environ["MARS_MULTITARGET_STRICT_FORMAT"] = "1"
-
-        # Debug start
-        logger.info("Construct PREP/Mars task")
 
     @staticmethod
     def get_domain_data(config):

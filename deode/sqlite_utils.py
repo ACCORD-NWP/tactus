@@ -100,19 +100,37 @@ def get_proj4(gid):
         proj4["lon_0"] = p4["LoVInDegrees"]
         proj4["lat_1"] = p4["Latin1InDegrees"]
         proj4["lat_2"] = p4["Latin2InDegrees"]
+        # TODO: Northern of Southern hemisphere? projectionCentreFlag (?)
 
     elif gridtype == "polar_steoreographic":
         pkeys = ["LoVInDegrees"]
         p4 = get_keylist(gid, pkeys, "double")
         proj4["proj"] = "stere"
         proj4["lon_0"] = p4["LoVInDegrees"]
-        proj4["lat_0"] = 90.0  # NOTE: assuming Northern hemisphere!
+        proj4["lat_0"] = 90.0  # FIXME: assuming Northern hemisphere!
     elif gridtype == "regular_ll":
-        proj4["proj"] = "latlong"  # FIXME
+        # CHECK
+        proj4["proj"] = "latlong"
+    elif gridtype == "rotated_ll":
+        pkeys = [
+            "angleOfRotationInDegrees",
+            "latitudeOfSouthernPoleInDegrees",
+            "longitudeOfSouthernPoleInDegrees",
+        ]
+        sp_lat = pkeys["latitudeOfSouthernPoleInDegrees"]
+        sp_lon = pkeys["longitudeOfSouthernPoleInDegrees"]
+        sp_angle = pkeys["angleOfRotationInDegrees"]
+        if sp_angle != 0:
+            # TODO: I don't know how to handle this. Need examples!
+            logger.error("Rotated LatLon with SPangle not supported yet.")
+        proj4["proj"] = "ob_tran"
+        proj4["o_proj"] = "latlong"
+        proj4["o_lat_p"] = -sp_lat
+        proj4["o_lon_p"] = 0.0
+        proj4["lon_0"] = sp_lon
     #  [rotated] mercator?
     else:
         return None
-    # FIXME: calling this seems to triger a deprecation warning in Numpy!
     return proj4
 
 
@@ -127,19 +145,20 @@ def get_gridinfo(gid):
     """
     # NOTE: is it OK to assume SW is the first point?
     gridtype = get_keylist(gid, ["gridType"], "string")["gridType"]
+    gkeys = [
+        "Nx",
+        "Ny",
+        "iScansPositively",
+        "jScansPositively",
+        "latitudeOfFirstGridPointInDegrees",
+        "longitudeOfFirstGridPointInDegrees",
+        "latitudeOfLastGridPointInDegrees",
+        "longitudeOfLastGridPointInDegrees",
+    ]
     if gridtype in ["lambert", "lambert_lam"]:
-        gkeys = [
-            "Nx",
-            "Ny",
-            "DxInMetres",
-            "DyInMetres",
-            "iScansPositively",
-            "jScansPositively",
-            "latitudeOfFirstGridPointInDegrees",
-            "longitudeOfFirstGridPointInDegrees",
-            "latitudeOfLastGridPointInDegrees",
-            "longitudeOfLastGridPointInDegrees",
-        ]
+        gkeys.extend(["DxInMetres", "DyInMetres"])
+    elif gridtype in ["regular_ll", "rotated_ll"]:
+        gkeys.extend(["iDirectionIncrementInDegrees", "jDirectionIncrementInDegrees"])
     else:
         return None
     gg = get_keylist(gid, gkeys, "double")
@@ -498,11 +517,16 @@ def get_grid_values(gid):
     return data
 
 
-def combine_fields(param):
+def combine_fields(param, station_list, proj4):
     """Combine multiple decoded fields into one parameter.
+
+    We need lat/lon and proj4 values when calculating wind speed & direction.
+    Because we should correct for the local rotation of the axes.
 
     Args:
         param: full parameter descriptor
+        station_list: a pandas table with at least lon & lat columns
+        proj4: a list with proj4 definition (not a single string)
 
     Returns:
         a new data matrix that combines the input fields according to parameter descriptor
@@ -525,7 +549,12 @@ def combine_fields(param):
         logger.debug("WIND SPEED")
         for ff in range(nfields):
             result += param["data"][ff] * param["data"][ff]
-        return np.sqrt(result)
+
+        lat = np.array(station_list["lat"].tolist())
+        lon = np.array(station_list["lon"].tolist())
+        angle, mapfactor = rotate_wind(lon, lat, proj4)
+
+        return np.sqrt(result)  # * mapfactor ???
 
     if param["function"] == "sum":
         logger.debug("SUM")
@@ -534,11 +563,62 @@ def combine_fields(param):
         return result
 
     if param["function"] == "vector_angle":
-        # FIXME
-        param["units"] = "deg"
-        return None
+        logger.debug("WIND DIRECTION")
+        # NOTE:  make sure we get the wind components in the right order?
+        #        They appear in the same order as in config.
+        #        So we assume the first entry is "u" (or equivalent).
+        # FIXME: do we need to rotate the wind first? DEPENDS ON GRIB!
+        # FIXME: param["units"] should be set to "deg"?
+
+        # 1. check there are exactly 2 components
+        if len(param["data"]) != 2:
+            logger.error("ERROR: angle always needs exactly two components.")
+
+        u = param["data"][0]
+        v = param["data"][1]
+        # 2. Angle is not well defined if both components are too small (no wind).
+        # NOTE: numpy knows how to handle u==0. ( np.arctan2(+/-1, 0) == +/- np.pi / 2. )
+        # BUT if both u, v -> 0, result depends significantly on sign of u (0 vs 180).
+        # FIXME: what should happen when wind speed is (close to) zero?
+        #        NaN ? Something else?
+        wdir = np.mod(180 + np.arctan2(u, v) * 180.0 / np.pi, 360)
+        lat = np.array(station_list["lat"].tolist())
+        lon = np.array(station_list["lon"].tolist())
+
+        angle, mapfactor = rotate_wind(lon, lat, proj4)
+        return wdir + angle
 
     return None
+
+
+def rotate_wind(lon, lat, p4):
+    """Rotate wind from projection grid to geographical axes for correct wind direction.
+
+    Args:
+        lon: longitude (numpy vectors or single value)
+        lat: latitude (numpy vectors or single value)
+        p4: proj4 definition as a list (not single string)
+
+    Returns:
+        angle: correction angle in deg (vector) corresponding to every lat/lon location.
+    """
+    if p4["proj"] == "lcc":
+        rad = np.pi / 180.0
+        refcos = np.cos(p4["lat_1"] * rad)
+        refsin = np.sin(p4["lat_1"] * rad)
+        angle = refsin * (lon - p4["lon_0"])  # * rad
+        mapfactor = np.power(refcos / np.cos(lat * rad), 1 - refcos) * np.power(
+            (1 + refsin) / (1 + np.sin(lat * rad)), refsin
+        )
+    elif p4["proj"] == "lonlat":
+        angle = np.zeros(len(lat))
+        mapfactor = np.ones(len(lat))
+    else:
+        logger.error("Unimplemented wind rotation.")
+        angle = np.zeros(len(lat))
+        mapfactor = np.ones(len(lat))
+
+    return angle, mapfactor
 
 
 def parse_parameter_list(param_list):
@@ -694,6 +774,7 @@ def parse_grib_file(
 
     fcdate = None
     leadtime = None
+    proj4 = None
     gi = 0
     gt = 0
     with open(infile, "rb") as gfile:
@@ -745,6 +826,9 @@ def parse_grib_file(
                 # create a list of interpolation weights
                 logger.info("SQLITE: training interpolation weights.")
                 weights = train_weights(station_list, gid, lsm=False)
+                # we will need the projection definition
+                # if we have to correct wind direction etc.
+                proj4 = get_proj4(gid)
 
             # by default, we do bilinear interpolation
             method = param["method"] if "method" in param else "bilin"
@@ -773,7 +857,7 @@ def parse_grib_file(
     #       but checking whether the combined field is None is enough
     logger.debug("SQLITE: checking cached combined fields")
     for param in param_cmb_list:
-        data_vector = combine_fields(param)
+        data_vector = combine_fields(param, station_list, proj4)
         # only write to SQLite if ALL components were found!
         if data_vector is not None:
             logger.debug("SQLITE: writing combined field")

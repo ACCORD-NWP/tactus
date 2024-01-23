@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Macros Section",
+  "title": "Macros Section, defined in include/macros.toml",
   "description": "Model for the 'macros' section.",
   "type": "object",
   "additionalProperties": true,
