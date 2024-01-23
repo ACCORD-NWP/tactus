@@ -135,10 +135,12 @@ WRAPPER = "ulimit -s unlimited ;  env > env_denis.txt; srun -n @NPROC@"
 
     DR_HOOK = 1
 
- #Environment variables for ALARO PARALLEL
+    #Environment variables for ALARO PARALLEL
     APL_ALARO = 1
     INPART = 1
     PARALLEL = 1
+
+    RTTOV_COEFDIR="/scratch/project_465000527/de_33050_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
 [task_exceptions.Forecast.BATCH]
   
 #Slurm settings for GPU
@@ -151,8 +153,6 @@ JOBNAME = "#SBATCH --job-name=Alaro_gpu"
 ACCOUNT = "#SBATCH --account=project_465000527"
 #EXCLUSIVE= "#SBATCH --exclusive"
 
-#[task_exceptions.Forecast.ENV]
-#RTTOV_COEFDIR="/scratch/project_465000527/de_33050_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
 
 [task_exceptions.Pgd]
 WRAPPER="srun -n @NPROC@"

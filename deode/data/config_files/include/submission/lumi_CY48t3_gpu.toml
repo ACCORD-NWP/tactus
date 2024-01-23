@@ -160,6 +160,7 @@ WALLTIME = "#SBATCH --time=00:10:00"
     # GPU: bind 8 MPI tasks to certain CPU cores (so that GPUs 0-7 are connected to tasks 0-7)
     CPU_BIND = 'mask_cpu:7e000000000000,7e00000000000000,7e0000,7e000000,7e,7e00,7e00000000,7e0000000000'
 
+    RTTOV_COEFDIR = "/scratch/project_465000527/de_33050_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"    
 [task_exceptions.Forecast.BATCH]
     #Slurm settings for GPU
     NODES = "#SBATCH --nodes=4"
@@ -171,9 +172,6 @@ WALLTIME = "#SBATCH --time=00:10:00"
     ACCOUNT = "#SBATCH --account=project_465000527"
     #EXCLUSIVE = "#SBATCH --exclusive"
     GPUS_PER_NODE = "#SBATCH --gpus-per-node=8"
-
-#[task_exceptions.Forecast.ENV]
-#RTTOV_COEFDIR = "/scratch/project_465000527/de_33050_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
 
 [task_exceptions.Pgd]
 WRAPPER = "srun -n @NPROC@"
