@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Extract sqlite Section",
-    "description": "Model for validation of the data in the 'domain' section of the config file.",
+    "title": "Extract sqlite Section, defined in include/sqlite.toml",
+    "description": "Model for validation of the data in the 'sqlite' section of the config file.",
     "type": "object",
     "additionalProperties": true,
     "properties": {

@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Ecflow HPC scheduler Section",
+    "title": "Ecflow HPC scheduler Section, defined in files under include/scheduler",
     "description": "DEODE HPC specific ecflow settings",
     "type": "object",
     "additionalProperties": true,
