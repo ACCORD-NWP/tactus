@@ -2,6 +2,7 @@ bindir = "/home/snh02/pack/48t3_fix.04.OMPIIFC2104.x/bin"
 default_submit_type = "serial"
 module_initpath = "/usr/local/apps/lmod/8.6.8/init"
 nproma = -32
+lfftw = true
 
 submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 

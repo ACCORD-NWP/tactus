@@ -1,19 +1,18 @@
-#CPU
-#bindir = "/users/ospaniel/pack/48t3_main.06.CRAYFTN1501.x/bin"
-
-#DAAN OLD ROOTPACK
-#bindir = "/pfs/lustrep4/projappl/project_465000527/dadegrau/accord/rootpack/48t3_main.01.CRAYFTN1501.x/bin"
-
-#DAAN NEW ROOTPACK (require to set LFFTW = .FALSE.)
-#bindir = "/project/project_465000527/dadegrau/accord/rootpack/48t3_main.01.CRAYFTN1501_ECTRANS.y/bin"
-
-#DAAN GPU
+#This pack requires NTIMEFMT=1
 bindir = "/pfs/lustrep4/projappl/project_465000527/dadegrau/accord/pack/alaro_gpu/bin"
+lfftw = true
+
+#This pack require NTIMEFMT=1 AND LFFTW=.FALSE.
+#bindir = "/project/project_465000527/dadegrau/accord/rootpack/48t3_main.01.CRAYFTN1501_ECTRANS.y/bin"
+#lfftw = false
 
 module_initpath = "/usr/share/lmod/8.3.1/init"
 
 submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 default_submit_type = "parallel"
+
+nproma = -128
+
 
 [task]
 wrapper = "time"

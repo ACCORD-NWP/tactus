@@ -3,6 +3,8 @@ module_initpath = "/usr/share/lmod/8.3.1/init"
 
 submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 default_submit_type = "parallel"
+nproma = -64
+lfftw = true
 
 [task]
 wrapper = "time"

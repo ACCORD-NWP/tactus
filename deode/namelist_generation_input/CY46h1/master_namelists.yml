@@ -1095,7 +1095,7 @@ f4_c903_main:
     CSCRIPT_PPSERVER: " "
     LGRIB_API: False
   NAMTRANS:
-    LFFTW: True
+    LFFTW: ${submission.lfftw}
   NAMOPH:
     CCLIMINC: "_"
   NAMGFL:
