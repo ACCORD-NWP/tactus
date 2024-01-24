@@ -143,11 +143,11 @@ def get_gridinfo(gid):
     Returns:
         a dictionary with the main grid characteristics
     """
-    # NOTE: is it OK to assume SW is the first point?
     gridtype = get_keylist(gid, ["gridType"], "string")["gridType"]
     gkeys = [
         "Nx",
         "Ny",
+        "uvRelativeToGrid",
         "iScansPositively",
         "jScansPositively",
         "latitudeOfFirstGridPointInDegrees",
@@ -510,14 +510,16 @@ def get_grid_values(gid):
     order = "C" if ginfo["jPointsAreConsecutive"] else "F"
     data = eccodes.codes_get_values(gid).reshape(nx, ny, order=order)
     if ginfo["iScansNegatively"]:
+        logger.warning("Untested data ordering iScansNegatively=1")
         data[range(nx), :] = data[range(nx)[::-1], :]
     if not ginfo["jScansPositively"]:
+        logger.warning("Untested data ordering jScansPositively=0")
         data[:, range(ny)] = data[:, range(ny)[::-1]]
 
     return data
 
 
-def combine_fields(param, station_list, proj4):
+def combine_fields(param, station_list):
     """Combine multiple decoded fields into one parameter.
 
     We need lat/lon and proj4 values when calculating wind speed & direction.
@@ -526,7 +528,6 @@ def combine_fields(param, station_list, proj4):
     Args:
         param: full parameter descriptor
         station_list: a pandas table with at least lon & lat columns
-        proj4: a list with proj4 definition (not a single string)
 
     Returns:
         a new data matrix that combines the input fields according to parameter descriptor
@@ -552,7 +553,7 @@ def combine_fields(param, station_list, proj4):
 
         lat = np.array(station_list["lat"].tolist())
         lon = np.array(station_list["lon"].tolist())
-        angle, mapfactor = rotate_wind(lon, lat, proj4)
+        angle, mapfactor = rotate_wind(lon, lat, param["proj4"])
 
         return np.sqrt(result)  # * mapfactor ???
 
@@ -564,11 +565,10 @@ def combine_fields(param, station_list, proj4):
 
     if param["function"] == "vector_angle":
         logger.debug("WIND DIRECTION")
-        # NOTE:  make sure we get the wind components in the right order?
+        # NOTE:  make sure we get the wind components in the right order!
         #        They appear in the same order as in config.
         #        So we assume the first entry is "u" (or equivalent).
-        # FIXME: do we need to rotate the wind first? DEPENDS ON GRIB!
-        # FIXME: param["units"] should be set to "deg"?
+        param["units"] = "deg"
 
         # 1. check there are exactly 2 components
         if len(param["data"]) != 2:
@@ -582,11 +582,14 @@ def combine_fields(param, station_list, proj4):
         # FIXME: what should happen when wind speed is (close to) zero?
         #        NaN ? Something else?
         wdir = np.mod(180 + np.arctan2(u, v) * 180.0 / np.pi, 360)
-        lat = np.array(station_list["lat"].tolist())
-        lon = np.array(station_list["lon"].tolist())
+        if param["gridinfo"]["uvRelativeToGrid"] == 1:
+            lat = np.array(station_list["lat"].tolist())
+            lon = np.array(station_list["lon"].tolist())
+            logger.info("Correcting wind angle.")
+            angle, mapfactor = rotate_wind(lon, lat, param["proj4"])
+            wdir = wdir + angle
 
-        angle, mapfactor = rotate_wind(lon, lat, proj4)
-        return wdir + angle
+        return wdir
 
     return None
 
@@ -606,7 +609,7 @@ def rotate_wind(lon, lat, p4):
         rad = np.pi / 180.0
         refcos = np.cos(p4["lat_1"] * rad)
         refsin = np.sin(p4["lat_1"] * rad)
-        angle = refsin * (lon - p4["lon_0"])  # * rad
+        angle = refsin * (lon - p4["lon_0"])
         mapfactor = np.power(refcos / np.cos(lat * rad), 1 - refcos) * np.power(
             (1 + refsin) / (1 + np.sin(lat * rad)), refsin
         )
@@ -654,11 +657,16 @@ def parse_parameter_list(param_list):
                 param_sgl_list.append(pid)
 
         else:
+            # the parameter requires multiple fields
+            # so we will have to cache the data and calculate later
+            # for e.g. wind fields we must also cache grid and projection settings
             nfields = len(param["grib_id"])
             if "common" not in param:
                 # the most simple combine case: no common keys
                 pid = deepcopy(param)
                 pid["data"] = [None] * nfields
+                pid["gridinfo"] = None
+                pid["proj4"] = None
                 param_cmb_list.append(pid)
 
             elif "level" in param["common"] and isinstance(
@@ -672,6 +680,8 @@ def parse_parameter_list(param_list):
                         pid["grib_id"][f].update(pid["common"])
                     pid.pop("common")
                     pid["data"] = [None] * nfields
+                    pid["gridinfo"] = None
+                    pid["proj4"] = None
                     param_cmb_list.append(pid)
 
             else:
@@ -681,6 +691,8 @@ def parse_parameter_list(param_list):
                     pid["grib_id"][f].update(pid["common"])
                 pid.pop("common")
                 pid["data"] = [None] * nfields
+                pid["gridinfo"] = None
+                pid["proj4"] = None
                 param_cmb_list.append(pid)
     return param_sgl_list, param_cmb_list
 
@@ -709,18 +721,20 @@ def match_keys(p1, p2):
     return True
 
 
-def cache_field(param, data, param_cmb_list):
+def cache_field(param, data, param_cmb_list, gid):
     """Check if a decoded field needs to be cached for later parameters.
 
     Args:
       param: parameter description of the current data
       data: decode (and interpolated) data
       param_cmb_list: a list (may be MODIFIED!)
+      gid: GRIB handle (needed to cache the projection and grid details for every field)
 
     Returns:
       a count of the number of matching parameters (usually 0 or 1)
     """
     count = 0
+    gridinfo_list = ["uvRelativeToGrid"]
     for cmb in param_cmb_list:
         nfields = len(cmb["grib_id"])
         for ff in range(nfields):
@@ -733,6 +747,9 @@ def cache_field(param, data, param_cmb_list):
                 cmb["units"] = param["units"]
                 cmb["level"] = param["level"]
                 cmb["level_name"] = param["level_name"]
+                if cmb["gridinfo"] is None:
+                    cmb["gridinfo"] = get_keylist(gid, gridinfo_list, "long")
+                    cmb["proj4"] = get_proj4(gid)
                 count += 1
                 continue
     return count
@@ -774,7 +791,6 @@ def parse_grib_file(
 
     fcdate = None
     leadtime = None
-    proj4 = None
     gi = 0
     gt = 0
     with open(infile, "rb") as gfile:
@@ -826,9 +842,6 @@ def parse_grib_file(
                 # create a list of interpolation weights
                 logger.info("SQLITE: training interpolation weights.")
                 weights = train_weights(station_list, gid, lsm=False)
-                # we will need the projection definition
-                # if we have to correct wind direction etc.
-                proj4 = get_proj4(gid)
 
             # by default, we do bilinear interpolation
             method = param["method"] if "method" in param else "bilin"
@@ -836,7 +849,10 @@ def parse_grib_file(
             data_vector = interp_from_weights(gid, weights, method)
 
             # cache this data vector if necessary
-            cache_field(param, data_vector, param_cmb_list)
+            # we may need to add some encoding information
+            # like projection & uvRelativeToGrid for wind
+            # so we pass gid along as well
+            cache_field(param, data_vector, param_cmb_list, gid)
 
             # if this is a "direct" field, create a table and write to SQLite
             if direct:
@@ -857,7 +873,7 @@ def parse_grib_file(
     #       but checking whether the combined field is None is enough
     logger.debug("SQLITE: checking cached combined fields")
     for param in param_cmb_list:
-        data_vector = combine_fields(param, station_list, proj4)
+        data_vector = combine_fields(param, station_list)
         # only write to SQLite if ALL components were found!
         if data_vector is not None:
             logger.debug("SQLITE: writing combined field")
