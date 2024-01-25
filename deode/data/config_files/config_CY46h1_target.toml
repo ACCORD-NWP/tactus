@@ -74,7 +74,6 @@
   bdfile_template = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@"
   casedir = "@SCRATCH@/@CASE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@"
-  global_sfcdir = "/hpcperm/snh02/climate_fields_mir/climate.v020_MIR_orog/"
   host_case = "@CASEDIR@/../@CYCLE@_@CSC@"
   host_domain = "DEMO_60x80_2500m"
   logs = "@ARCHIVE_ROOT@/logs"
