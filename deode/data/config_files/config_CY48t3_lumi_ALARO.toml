@@ -47,6 +47,7 @@
   scheduler = "include/scheduler/ecflow_lumi.toml"
   submission = "include/submission/lumi_CY48t3.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"
+  accelerator_device = "include/accelerator_device/lumi_cpu.toml"
 
 [pgd]
   one_decade = true
@@ -76,6 +77,3 @@
   logs = "@ARCHIVE_ROOT@/logs"
   marsdir = "@SCRATCH@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"
-
-[accelerator_device]
-  parallel_method = ["@DEODE_HOME@/deode/data/config_files/accelerator_device/lumi/lparallelmethod.txt.cpu", "lparallelmethod.txt"]

@@ -28,10 +28,6 @@
     },
     "include": {
       "$ref": "#/definitions/include"
-    },
-    "accelerator_device": 
-    {
-      "$ref": "#/definitions/accelerator_device"
     }
   },
   "required": [
@@ -550,43 +546,6 @@
       "required": [
         "times"
       ]
-    },
-    "accelerator_device": {
-      "title": "Accelerator Device Section",
-      "description": "Settings for control accelerator device, including GPUs",
-      "type": "object",
-      "properties": {
-        "parallel_method": {
-          "type": "array",
-          "minItems": 2,
-          "maxItems": 2,
-          "description": "Path to lparallelmethod.txt, defining the parallelisation technique for each algorithm",
-          "items": {
-            "type": "string",          
-            "description": "[0] Input file path, [1] output filename"
-          }
-        },
-        "sync_host": {
-          "type": "array",
-          "minItems": 2,
-          "maxItems": 2,          
-          "description": "Path to lsynchost.txt, defining optional additional device-to-host memory transfers",
-	        "items": {
-            "type": "string",
-            "description": "[0] input file path, [1] output filename"
-          }
-        },
-        "select_gpu": {
-          "type": "array",
-          "minItems": 2,
-          "maxItems": 2,          
-          "description": "Path to select_gpu, used to perform the binding between GPUs and CPUs",
-	        "items": {
-            "type": "string",
-            "description": "[0] input file path, [1] output filename"
-          }
-        }
-      }
     }
   }
 }
