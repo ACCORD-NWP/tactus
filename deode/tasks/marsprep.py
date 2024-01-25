@@ -42,7 +42,7 @@ class Marsprep(Task):
 
         logger.debug("MARS selection config:{}", self.mars)
 
-        self.sfcdir = self.config["system.global_sfcdir"]
+        self.sfcdir = self.config["platform.global_sfcdir"]
         # Get boundary strategy
         self.strategy = self.config["boundaries.bdstrategy"]
         # Get output file template

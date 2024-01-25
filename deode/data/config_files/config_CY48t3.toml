@@ -1,6 +1,6 @@
 [general]
   accept_static_namelists = false
-  case = "@CYCLE@_@CSC@"
+  case = "@CYCLE@_@CSC@_json"
   cnmexp = "DEOD"
   csc = "AROME"
   cycle = "CY48t3"
@@ -73,7 +73,6 @@
   bdfile_template = "ELSCF@CNMEXP@ALBC@NNN@"
   casedir = "@SCRATCH@/@CASE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@/"
-  global_sfcdir = "/hpcperm/snh02/climate_fields_mir/climate.v020_MIR_orog/"
   logs = "@ARCHIVE_ROOT@/logs"
   marsdir = "@SCRATCH@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"
