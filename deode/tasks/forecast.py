@@ -43,8 +43,8 @@ class Forecast(Task):
         self.deode_home = self.config["platform.deode_home"]
         self.output_settings = self.config["general.output_settings"]
         self.surfex = self.config["general.surfex"]
-        self.accelerator_device=self.config["accelerator_device"]
-
+        self.accelerator_device = self.config["accelerator_device"]
+        
         # Update namelist settings
         self.nlgen_master = NamelistGenerator(self.config, "master")
         self.nlgen_surfex = NamelistGenerator(self.config, "surfex")
@@ -282,11 +282,11 @@ class Forecast(Task):
             cdtg += self.bdint
             i += 1
 
-        if self.accelerator_device:
-            logger.debug("Processing accelerator_device section")
+        if self.accelerator_device:            
+            logger.info("Processing accelerator_device section")
             self.accelerator_device_input()
-        else:
-            logger.debug("No accelerator_device section found")
+        else:            
+            logger.info("No accelerator_device section found")
 
         # Run MASTERODB
         batch = BatchJob(os.environ, wrapper=self.wrapper)
