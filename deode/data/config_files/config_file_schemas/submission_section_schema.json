@@ -14,6 +14,11 @@
             "description": "NPROMA size in the forecast model. See the namelists for where it is used",
             "default": -32
         },
+        "lfftw": {
+          "type": "boolean",
+          "description": "Use of the FFTW library. See the namelists for where it is used",
+          "default": -32
+      },
         "module_initpath": {
             "type": "string",
             "description": "Path to the version of env_modules_python.py to be used in the module initialization"

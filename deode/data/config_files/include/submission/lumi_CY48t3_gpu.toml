@@ -1,8 +1,13 @@
-bindir = "/users/ospaniel/pack/48t3_main.06.CRAYFTN1501.x/bin"
-default_submit_type = "parallel"
+bindir = "/pfs/lustrep4/projappl/project_465000527/dadegrau/accord/pack/alaro_gpu/bin"
 lfftw = true
+
+#bindir = "/project/project_465000527/dadegrau/accord/rootpack/48t3_main.01.CRAYFTN1501_ECTRANS.y/bin"
+#lfftw = false
+
+default_submit_type = "parallel"
 module_initpath = "/usr/share/lmod/8.3.1/init"
-nproma = -64
+nproma = -128
+
 submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 
 [background_hpc]
@@ -67,10 +72,12 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   MPICH = ["load", "cray-mpich"]
   NCURSES = ["load", "ncurses/6.4-cpeCray-23.03"]
   NETCDF = ["load", "cray-netcdf-hdf5parallel"]
-  PARTITION_C = ["load", "partition/C"]
+  PARTITION_G = ["load", "partition/G"]
   PRG_ENV = ["load", "PrgEnv-cray"]
   PYTHON = ["load", "cray-python"]
   TRENTO = ["load", "craype-x86-trento"]
+  #The others
+  ROCM = ["load", "rocm/5.3.3"]
 
 [serial]
   NPROC = 1
@@ -132,18 +139,18 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   NTASKS = "#SBATCH --ntasks=16"
 
 [task_exceptions.Forecast]
-  WRAPPER = "ulimit -s unlimited ;  env > env_denis.txt; srun -n @NPROC@"
+  WRAPPER = "ulimit -s unlimited; srun -n @NPROC@ ./select_gpu"
 
 [task_exceptions.Forecast.BATCH]
   ACCOUNT = "#SBATCH --account=project_465000527"
   CPU = "#SBATCH --cpus-per-task=6"
   JOBNAME = "#SBATCH --job-name=Alaro_gpu"
   NODES = "#SBATCH --nodes=4"
-  PARTITION = "#SBATCH --partition=debug"
+  PARTITION = "#SBATCH --partition=dev-g"
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=8"
   WALLTIME = "#SBATCH --time=00:30:00"
-
   #EXCLUSIVE= "#SBATCH --exclusive"
+  GPUS_PER_NODE = "#SBATCH --gpus-per-node=8"
 
 [task_exceptions.Forecast.ENV]
   DR_HOOK = 1
@@ -152,6 +159,16 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   APL_ALARO = 1
   INPART = 1
   PARALLEL = 1
+
+  #Environment for LUMI GPU
+  #Allocate 8Gb of heap size on the GPU
+  CRAY_ACC_MALLOC_HEAPSIZE = 8000000000
+
+  #Allow direct GPU to GPU MPI connection
+  MPICH_GPU_SUPPORT_ENABLED = 1
+
+  # GPU: bind 8 MPI tasks to certain CPU cores (so that GPUs 0-7 are connected to tasks 0-7)
+  CPU_BIND = 'mask_cpu:7e000000000000,7e00000000000000,7e0000,7e000000,7e,7e00,7e00000000,7e0000000000'
 
 [task_exceptions.Gmted.MODULES]
   GDAL = ["load", "gdal/3.2.1"]
