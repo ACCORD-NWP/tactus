@@ -56,22 +56,22 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 
   FI_CXI_RX_MATCH_MODE = 'hybrid'
 
-[parallel.MODULES]  
-  00_PURGE = ["purge","--force"]
+[parallel.MODULES]
+  00_PURGE = ["purge", "--force"]
   01_LUMI = ["load", "LUMI/23.03"]
   02_PARTITION_G = ["load", "partition/C"]
   03_PRG_ENV = ["load", "PrgEnv-cray"]
   04_CPE = ["load", "cpe/23.03"]
-  05_TRENTO = ["load", "craype-x86-trento"]  
+  05_TRENTO = ["load", "craype-x86-trento"]
   06_MPICH = ["load", "cray-mpich"]
   07_LIBSCI = ["load", "cray-libsci"]
   08_FFTW = ["load", "cray-fftw"]
   09_PYTHON = ["load", "cray-python"]
   10_HDF5 = ["load", " cray-hdf5-parallel"]
-  11_NETCDF = ["load", "cray-netcdf-hdf5parallel"]  
-  12_BUILDTOOLS = ["load", "buildtools"]  
+  11_NETCDF = ["load", "cray-netcdf-hdf5parallel"]
+  12_BUILDTOOLS = ["load", "buildtools"]
   13_NCURSES = ["load", "ncurses/6.4-cpeCray-23.03"]
-  
+
 [serial]
   NPROC = 1
   SCHOST = "lumi-batch"
