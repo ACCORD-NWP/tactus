@@ -20,7 +20,7 @@
   forecast_range = "PT6H"
   radiation_frequency = "PT5M"
   start = "2023-11-16T00:00:00Z"
-  
+
 [boundaries]
   bd_has_surfex = false
   bdcycle = "PT24H"
@@ -37,6 +37,7 @@
   selection = ["rules", "namfpc_header", "master_selection_ALARO"]
 
 [include]
+  accelerator_device = "include/accelerator_device/lumi_gpu.toml"
   archiving = "include/archiving.toml"
   domain = "include/domains/DEMO_60x80_2500m.toml"
   extractsqlite = "include/sqlite.toml"
@@ -47,8 +48,7 @@
   scheduler = "include/scheduler/ecflow_lumi.toml"
   submission = "include/submission/lumi_CY48t3_gpu.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"
-  accelerator_device = "include/accelerator_device/lumi_gpu.toml"
-  
+
 [pgd]
   one_decade = true
   use_osm = false
@@ -58,13 +58,13 @@
   create_time_dependent_suite = true
   do_archiving = true
   do_extractsqlite = true
-    do_marsprep = true
+  do_marsprep = true
   do_pgd = true
   do_prep = false
   do_soil = true
   interpolate_boundaries = true
   mode = "cold_start"
-  
+
 [system]
   bdclimdir = "@FIXED_BDCLIMDIR@"
   bddir = "@INTP_BDDIR@"
@@ -72,7 +72,7 @@
   bdfile_sfx_template = "ECSFCSFX@DOMAIN@+@LLL@"
   bdfile_template = "ELSCF@CNMEXP@ALBC@NNN@"
   casedir = "@SCRATCH@/@CASE@"
-  climdir = "@CASEDIR@/climate/@DOMAIN@/"  
+  climdir = "@CASEDIR@/climate/@DOMAIN@/"
   logs = "@ARCHIVE_ROOT@/logs"
   marsdir = "@SCRATCH@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"

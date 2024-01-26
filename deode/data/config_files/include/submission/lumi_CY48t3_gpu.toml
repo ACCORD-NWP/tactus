@@ -35,74 +35,73 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 [parallel.ENV]
   ECF_SSL = -1
   # Nodes, MPI tasks etc
-  NNODES = 4 # $SLURM_JOB_NUM_NODES
   MPI_TASKS = 32 # $SLURM_NTASKS
   MPITASKS_PER_NODE = 32 # MPI_TASKS/NNODES
+  NNODES = 4 # $SLURM_JOB_NUM_NODES
   OMP_NUM_THREADS = 4 # CPUS_PER_TASK
 
   # Open-MP business :
   # OMP_PLACES looks important for the binding by srun :
+  KMP_MONITOR_STACKSIZE = "4G"
+  KMP_STACKSIZE = "4G"
   OMP_PLACES = "threads"
   OMP_STACKSIZE = "4G"
-  KMP_STACKSIZE = "4G"
-  KMP_MONITOR_STACKSIZE = "4G"
 
   # DR_HOOK
   DR_HOOK = 1
   DR_HOOK_IGNORE_SIGNALS = 8
-  DR_HOOK_SILENT = 1
   DR_HOOK_SHOW_PROCESS_OPTIONS = 0
+  DR_HOOK_SILENT = 1
 
   # EC PROFILE
+  EC_MEMINFO = 0
+  EC_MPI_ATEXIT = 0
   EC_PROFILE_HEAP = 0
   EC_PROFILE_MEM = 0
-  EC_MPI_ATEXIT = 0
-  EC_MEMINFO = 0
 
   FI_CXI_RX_MATCH_MODE = 'hybrid'
 
 [parallel.MODULES]
   # PURGE = ["purge"]
+  BUILDTOOLS = ["load", "buildtools"]
+  CPE = ["load", "cpe/23.03"]
+  FFTW = ["load", "cray-fftw"]
+  HDF5 = ["load", " cray-hdf5-parallel"]
+  LIBSCI = ["load", "cray-libsci"]
   LUMI = ["load", "LUMI/23.03"]
+  MPICH = ["load", "cray-mpich"]
+  NCURSES = ["load", "ncurses/6.4-cpeCray-23.03"]
+  NETCDF = ["load", "cray-netcdf-hdf5parallel"]
   PARTITION_G = ["load", "partition/G"]
   PRG_ENV = ["load", "PrgEnv-cray"]
-  CPE = ["load", "cpe/23.03"]
-  TRENTO = ["load", "craype-x86-trento"]
-  MPICH = ["load", "cray-mpich"]
-  LIBSCI = ["load", "cray-libsci"]
-  FFTW = ["load", "cray-fftw"]
   PYTHON = ["load", "cray-python"]
-  HDF5 = ["load", " cray-hdf5-parallel"]
-  NETCDF = ["load", "cray-netcdf-hdf5parallel"]
-  BUILDTOOLS = ["load", "buildtools"]
-  NCURSES = ["load", "ncurses/6.4-cpeCray-23.03"]
+  TRENTO = ["load", "craype-x86-trento"]
   #The others
-    ROCM = ["load", "rocm/5.3.3"]
-
+  ROCM = ["load", "rocm/5.3.3"]
 
 [serial]
   NPROC = 1
   SCHOST = "lumi-batch"
   tasks = ["Gmted", "Soil"]
   WRAPPER = "srun"
-  
+
 [serial.BATCH]
   ACCOUNT = "#SBATCH -A project_465000527"
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
-  WALLTIME = "#SBATCH --time=00:15:00"
   PARTITION = "#SBATCH --partition=standard"
+  WALLTIME = "#SBATCH --time=00:15:00"
 
 [serial.ENV]
   DR_HOOK_IGNORE_SIGNALS = 8
+  ECF_SSL = 1
+  MPI_TASKS = 32
+  MPITASKS_PER_NODE = 8
+  NPROC = 32
   OMP_NUM_THREADS = 4
   OMPI_MCA_btl = '^vader'
-  ECF_SSL = 1
-  NPROC = 32
-  MPITASKS_PER_NODE = 8
-  MPI_TASKS = 32
-  
+
 [serial.MODULES]
   AAMODULE_USE = ["use", "/scratch/project_462000140/SW/modules"]
   ECFLOW = ["load", "ecflow/5.9.2"]
@@ -120,17 +119,17 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   NPROC = 36
 
 [task_exceptions.c903.BATCH]
-  MEM = "#SBATCH --mem=200GB" 
+  MEM = "#SBATCH --mem=200GB"
   NODE = "#SBATCH --nodes=12"
   NTASKS = "#SBATCH --ntasks=36"
-  WALLTIME = "#SBATCH --time=00:30:00" 
+  WALLTIME = "#SBATCH --time=00:30:00"
 
 [task_exceptions.creategrib]
   binary = "gl_20230823"
   bindir = "/home/snh02/work/gl_binaries"
 
 [task_exceptions.CreateGrib.BATCH]
-   WALLTIME = "#SBATCH --time=01:00:00"
+  WALLTIME = "#SBATCH --time=01:00:00"
 
 [task_exceptions.e927]
   NPROC = 16
@@ -142,30 +141,30 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 [task_exceptions.Forecast]
   WRAPPER = "ulimit -s unlimited; srun -n @NPROC@ ./select_gpu"
 
-[task_exceptions.Forecast.BATCH]    
-  NODES = "#SBATCH --nodes=4"
-  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=8"
-  CPU = "#SBATCH --cpus-per-task=6"
-  WALLTIME = "#SBATCH --time=00:30:00"
-  PARTITION = "#SBATCH --partition=dev-g"
-  JOBNAME = "#SBATCH --job-name=Alaro_gpu"
+[task_exceptions.Forecast.BATCH]
   ACCOUNT = "#SBATCH --account=project_465000527"
+  CPU = "#SBATCH --cpus-per-task=6"
+  JOBNAME = "#SBATCH --job-name=Alaro_gpu"
+  NODES = "#SBATCH --nodes=4"
+  PARTITION = "#SBATCH --partition=dev-g"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=8"
+  WALLTIME = "#SBATCH --time=00:30:00"
   #EXCLUSIVE= "#SBATCH --exclusive"
   GPUS_PER_NODE = "#SBATCH --gpus-per-node=8"
 
 [task_exceptions.Forecast.ENV]
-  RTTOV_COEFDIR="/scratch/project_465000527/de_33050_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
   DR_HOOK = 1
+  RTTOV_COEFDIR = "/scratch/project_465000527/de_33050_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
   #Environment variables for ALARO PARALLEL
   APL_ALARO = 1
   INPART = 1
   PARALLEL = 1
-  
+
   #Environment for LUMI GPU
   #Allocate 8Gb of heap size on the GPU
   CRAY_ACC_MALLOC_HEAPSIZE = 8000000000
 
-  #Allow direct GPU to GPU MPI connection 
+  #Allow direct GPU to GPU MPI connection
   MPICH_GPU_SUPPORT_ENABLED = 1
 
   # GPU: bind 8 MPI tasks to certain CPU cores (so that GPUs 0-7 are connected to tasks 0-7)

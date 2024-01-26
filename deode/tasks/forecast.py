@@ -43,8 +43,12 @@ class Forecast(Task):
         self.deode_home = self.config["platform.deode_home"]
         self.output_settings = self.config["general.output_settings"]
         self.surfex = self.config["general.surfex"]
-        self.accelerator_device = self.config["accelerator_device"]
-        
+
+        try:
+            self.accelerator_device = self.config["accelerator_device"]
+        except KeyError:
+            self.accelerator_device = None
+
         # Update namelist settings
         self.nlgen_master = NamelistGenerator(self.config, "master")
         self.nlgen_surfex = NamelistGenerator(self.config, "surfex")
@@ -89,26 +93,20 @@ class Forecast(Task):
             infile = os.path.basename(ifile)
             self.fmanager.input(ifile, infile)
 
-    def accelerator_device_input(self):       
-        """Copy the input files for gpu execution
-                    - parallel_method file specifies for each routine the parallelisation used (OPENMP for CPU or OPENACCSINGLECOLUMN for GPU)
-                    - synchost file specifies a list of routines for which a device-to-host memory transferts is required
-                    - select_gpu file is a wrapper for sbatch, to specify the GPU to be used in function of the MPI rank
-        """ 
-               
-        for key in ["parallel_method","sync_host","select_gpu"]:
-            try:
-               file_definition = self.config[f"accelerator_device.{key}"]
-               input_file = file_definition[0]
-               output_file = file_definition[1]
-               logger.debug(f"   Key {key} found")
-            except KeyError:
-                input_file = None
-                output_file = None
-            
-            if input_file and output_file:
-                self.fmanager.input(input_file, output_file)
-            
+    def accelerator_device_input(self):
+        """Copy the input files for GPU execution.
+
+        - parallel_method: input file with parallelisation technique for each algorithm
+        - synchost: input file defining optional device-to-host memory transfers
+        - select_gpu: wrapper file for sbatch, binding GPU to MPI rank
+        """
+        for key, file_definition in self.accelerator_device.items():
+            if key in ["parallel_method", "sync_host", "select_gpu"]:
+                input_file = file_definition[0]
+                output_file = file_definition[1]
+                if input_file and output_file:
+                    self.fmanager.input(input_file, output_file)
+
     def merge_output(self, filetype, periods):
         """Merge distributed forecast model output.
 
@@ -282,10 +280,10 @@ class Forecast(Task):
             cdtg += self.bdint
             i += 1
 
-        if self.accelerator_device:            
+        if self.accelerator_device:
             logger.info("Processing accelerator_device section")
             self.accelerator_device_input()
-        else:            
+        else:
             logger.info("No accelerator_device section found")
 
         # Run MASTERODB
