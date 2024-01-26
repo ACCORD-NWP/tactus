@@ -21,7 +21,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   tasks = ["Background_vm"]
 
 [parallel]
-  NPROC = 32
+  NPROC = 16
   SCHOST = "lumi"
   tasks = ["Forecast", "e927", "Pgd", "Prep", "c903"]
   WRAPPER = "srun"
@@ -145,7 +145,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   ACCOUNT = "#SBATCH --account=project_465000527"
   CPU = "#SBATCH --cpus-per-task=6"
   JOBNAME = "#SBATCH --job-name=Alaro_gpu"
-  NODES = "#SBATCH --nodes=4"
+  NODES = "#SBATCH --nodes=2"
   PARTITION = "#SBATCH --partition=dev-g"
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=8"
   WALLTIME = "#SBATCH --time=00:30:00"
