@@ -3,7 +3,6 @@ default_submit_type = "serial"
 lfftw = true
 module_initpath = "/usr/local/apps/lmod/8.6.8/init"
 nproma = -32
-lfftw = true
 
 submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 
