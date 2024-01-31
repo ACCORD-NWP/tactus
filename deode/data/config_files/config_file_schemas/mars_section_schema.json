@@ -171,6 +171,12 @@
           "description": "Parameters for global DT data",
           "type": "object",
           "properties": { "$ref": "#/$RD_DEFAULT" }
+        },
+	"i8hy": {
+          "title": "AQ winter case over central Europe",
+          "description": "Parameters for global DT data",
+          "type": "object",
+          "properties": { "$ref": "#/$RD_DEFAULT" }
         }
     },
     "$RD_DEFAULT":{

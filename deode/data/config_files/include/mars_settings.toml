@@ -65,6 +65,14 @@
   stream.00 = "LWDA"
   tco = "399"
 
+[i8hy]
+  default = "RD_DEFAULT"
+  expver = "i8hy"
+  start_date = "2017-01-20T00:00:00Z"
+
+[i8hy.stream]
+  00 = "OPER"
+
 [IFSENS]
   class = "OD"
   expver = "0001"
