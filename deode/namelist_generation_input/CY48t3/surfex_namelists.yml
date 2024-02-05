@@ -136,6 +136,8 @@ sfx_pgd_domain:
   NAM_CONF_PROJ_GRID:
     ILATE: "${domain.ilate}"
     ILONE: "${domain.ilone}"
+    IWIDTH_I_X: "${domain.nbzong}"
+    IWIDTH_I_Y: "${domain.nbzonl}"
     NIMAX: "${domain.nimax}"
     NJMAX: "${domain.njmax}"
     XDX: "${domain.xdx}"
