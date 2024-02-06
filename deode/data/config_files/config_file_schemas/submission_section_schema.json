@@ -17,7 +17,7 @@
         "lfftw": {
           "type": "boolean",
           "description": "Use of the FFTW library. See the namelists for where it is used",
-          "default": -32
+          "default": true
       },
         "module_initpath": {
             "type": "string",
