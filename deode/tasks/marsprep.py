@@ -528,7 +528,7 @@ class Marsprep(Task):
                 self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_lail", "lail")
                 self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_laih", "laih")
 
-                self.fmanager.input(f"{self.sfcdir}{tco}l_2/sfc", "sfc")
+                self.fmanager.input(f"{self.sfcdir}{tco}9_4/sfc", "sfc")
                 self.fmanager.input(f"{self.sfcdir}{tco}l_2/ISSOIL", "issoil")
                 self.fmanager.input(f"{self.sfcdir}{tco}9_4/cvh", "cvh")
                 self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_alb", "alb")
