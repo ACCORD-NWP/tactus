@@ -1715,6 +1715,14 @@
     tablesVersion = 15 ;
 }
 
+# U component of wind
+"WIND.U.PHY" = {
+    discipline = 0 ;
+    parameterCategory = 2 ;
+    parameterNumber = 2 ;
+    tablesVersion = 15 ;
+}
+
 # "zonal component of the horizontal wind At 10 m"
 "CLSVENT.ZONAL" = {
     discipline = 0 ;
@@ -1742,6 +1750,14 @@
 
 # V component of wind
 "WIND.V.PHYS" = {
+    discipline = 0 ;
+    parameterCategory = 2 ;
+    parameterNumber = 3 ;
+    tablesVersion = 15 ;
+}
+
+# V component of wind
+"WIND.V.PHY" = {
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 3 ;
