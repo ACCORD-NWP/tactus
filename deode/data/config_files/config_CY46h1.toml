@@ -1,6 +1,6 @@
 [general]
   accept_static_namelists = false
-  case = "@CYCLE@_@CSC@_json"
+  case = "@CYCLE@_@CSC@"
   cnmexp = "DEOD"
   csc = "HARMONIE_AROME"
   cycle = "CY46h1"
