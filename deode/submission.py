@@ -277,6 +277,10 @@ class TaskSettings(object):
             batch_settings = self.get_task_settings(
                 task, "BATCH", variables=variables, ecf_micro=ecf_micro
             )
+            # Add account if not set
+            if "account" not in batch_settings and "account" in config["submission"]:
+                batch_settings["ACCOUNT"] = config["submission.account"]
+
             logger.debug("batch settings {}", batch_settings)
             for b_setting in batch_settings.values():
                 file_handler.write(f"{b_setting}\n")

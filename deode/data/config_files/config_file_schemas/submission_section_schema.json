@@ -5,6 +5,10 @@
     "type": "object",
     "additionalProperties": true,
     "properties": {
+        "account": {
+            "type": "string",
+            "description": "Global setting of account to be used. E.g. `#SBATCH -A some_account` for slurm. Setting of account on group or task level overrides the global setting"
+        },
         "bindir": {
             "type": "string",
             "description": "Location of binaries"
