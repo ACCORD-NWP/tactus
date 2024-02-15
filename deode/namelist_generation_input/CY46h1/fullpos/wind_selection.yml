@@ -2,11 +2,12 @@
 # that xxt00000000 inherits from xxtddddhhmm
 selection:
  xxtddddhhmm: &default
-  NAMFPPHY:
-   CLCFU:
-    - 'WFPOWERACC'
-   CLXFU:
-    - 'WFPOWERINS'
+  NAMFPDYH:
+   CL3DF:
+    - 'WIND.U.PHYS'
+    - 'WIND.V.PHYS'
+   RFP3H:
+    - 100.
 
  xxtddddhh00:
    <<: *default
