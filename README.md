@@ -178,50 +178,6 @@ deode start suite \
 
 After this, open `ecflow_ui` and add `ecflow-gen-${USER}-001` as the server with port `3141`. The default config will place the working directory under `$SCRATCH/deode`.
 
-### Running ecflow suite on LUMI
-
-The following command launches ecflow on lumi (`user@lumi.csc.fi`) using the default experiment:
-```shell
-ECF_HOST="217.71.195.251"
-ECF_PORT="8443"
-deode start suite \
-      --config-file $PWD/deode/data/config_files/config_CY48t3_lumi.toml \
-      --ecf-host $ECF_HOST \
-      --ecf-port $ECF_PORT \
-      --joboutdir $HOME/deode_ecflow/job \
-      --ecf-files $HOME/deode_ecflow/ecf
-```
-
-To get access to Ecflow server from LUMI, email ECMWF (samet.demir@ecmwf.int; bojan.kasic@ecmwf.int, cristina.duma@ecmwf.int), providing them your **LUMI username** and your **LUMI public key**, ccing in ulf.andrae@smhi.se and/or xiaohua@dmi.dk. All users are concatenated under one superuser: 'de330-prod'.
-
-Only after contacting ECMWF and obtaining a file with a custom password:
-
-```shell
-export ECF_CUSTOM_PASSWD="/users/adelsaid/deode_ecflow/ecf_pwd"
-
-adelsaid@uan01:/users/adelsaid> cat /users/adelsaid/deode_ecflow/ecf_pwd
-
-5.11.3
-de_330 217.71.195.251 8443 {PASSWORD_OBTAINED_FROM_ECMWF}
-```
-
-Then follow these steps to add this to your ecflow:
-
-```shell
-module load ecflow
-ecflow_ui &
-```
-
-"Servers > Manage Servers > Add Server"
-
-```
-Name: de330-prod
-Host: 217.71.195.251
-Port: 8443
-Custom user: de_330
-Favourite (Not checked)
-Use SSL: (Make sure this is checked!)
-```
 
 ### Running the `"forecast"` task from the `hpc-login`'s command line
 
@@ -237,13 +193,3 @@ deode run \
 
 If you have done the above mentioned default ecflow test the stand alone forecast will pick the input data from the existing run and output the result in the same directories (as defined by the config file).
 
-### Running a stand-alone task with an example config file on LUMI
-
-```shell
-deode run \
-      --config-file $PWD/deode/data/config_files/config_CY48t3_lumi.toml \
-      --task Forecast \
-      --template $PWD/deode/templates/stand_alone.py \
-      --job $PWD/forecast.job \
-      --output $PWD/forecast.log
-```

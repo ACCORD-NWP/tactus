@@ -124,6 +124,15 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         "--start-command", type=str, help="Start command for server", default=None
     )
     parser_start_suite.add_argument(
+        "--ecf-user", type=str, help="Ecflow user", default=None
+    )
+    parser_start_suite.add_argument(
+        "--ecf-remoteuser",
+        type=str,
+        help="Ecflow user on remote server (for LUMI)",
+        default=None,
+    )
+    parser_start_suite.add_argument(
         "--ecf-host", "-host", type=str, help="Ecflow host", default=None
     )
     parser_start_suite.add_argument(

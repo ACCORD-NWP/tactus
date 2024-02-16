@@ -83,6 +83,8 @@ def start_suite(args, config):
     update = {
         "scheduler": {
             "ecfvars": {
+                "hpc": platform.substitute(config["scheduler.ecfvars.hpc"]),
+                "ecf_out": platform.substitute(config["scheduler.ecfvars.ecf_out"]),
                 "ecf_jobout": platform.substitute(config["scheduler.ecfvars.ecf_jobout"]),
                 "ecf_files": platform.substitute(config["scheduler.ecfvars.ecf_files"]),
                 "ecf_files_remotely": platform.substitute(
@@ -90,6 +92,11 @@ def start_suite(args, config):
                 ),
                 "ecf_home": platform.substitute(config["scheduler.ecfvars.ecf_home"]),
                 "ecf_host": platform.substitute(config["scheduler.ecfvars.ecf_host"]),
+                "ecf_port": platform.substitute(config["scheduler.ecfvars.ecf_port"]),
+                "ecf_user": platform.substitute(config["scheduler.ecfvars.ecf_user"]),
+                "ecf_remoteuser": platform.substitute(
+                    config["scheduler.ecfvars.ecf_remoteuser"]
+                ),
             },
         },
     }
@@ -101,35 +108,61 @@ def start_suite(args, config):
     logger.info("Ecflow settings: ")
 
     # Check if user passed flags, and reiterate ecf vars to them
-    logger.info(
-        "ecf_jobout: {}", config["scheduler.ecfvars.ecf_jobout"]
-    ) if args.joboutdir is None else logger.info("ecf_jobout: {}", args.joboutdir)
-    logger.info(
-        "ecf_files: {}", config["scheduler.ecfvars.ecf_files"]
-    ) if args.ecf_files is None else logger.info("ecf_files: {}", args.ecf_files)
-    logger.info(
-        "ecf_files_remotely: {}", config["scheduler.ecfvars.ecf_files_remotely"]
-    ) if args.ecf_files_remotely is None else logger.info(
-        "ecf_files_remotely: {}", args.ecf_files_remotely
-    )
-    logger.info(
-        "ecf_home: {}", config["scheduler.ecfvars.ecf_home"]
-    ) if args.ecf_home is None else logger.info("ecf_home: {}", args.ecf_home)
+    if args.joboutdir is None:
+        args.joboutdir = config["scheduler.ecfvars.ecf_jobout"]
+        logger.info("ecf_jobout: {}", args.joboutdir)
+    else:
+        logger.info("ecf_jobout: {}", args.joboutdir)
+    if args.ecf_files is None:
+        args.ecf_files = config["scheduler.ecfvars.ecf_files"]
+        logger.info("ecf_files: {}", args.ecf_files)
+    else:
+        logger.info("ecf_files: {}", args.ecf_files)
+    if args.ecf_files_remotely is None:
+        args.ecf_files_remotely = config["scheduler.ecfvars.ecf_files_remotely"]
+        logger.info("ecf_files_remotely: {}", args.ecf_files_remotely)
+    else:
+        logger.info("ecf_files_remotely: {}", args.ecf_files_remotely)
+    if args.ecf_home is None:
+        args.ecf_home = config["scheduler.ecfvars.ecf_home"]
+        logger.info(
+            "ecf_home flag not set in command line. Using toml file: {}", args.ecf_home
+        )
+    else:
+        logger.info("ecf_home flag set by user: {}", args.ecf_home)
+    if args.ecf_host is None:
+        args.ecf_host = config["scheduler.ecfvars.ecf_host"]
+        logger.info("ecf_host: {}", args.ecf_host)
+    else:
+        logger.info("ecf_host: {}", args.ecf_host)
+    if args.ecf_port is None:
+        args.ecf_port = config["scheduler.ecfvars.ecf_port"]
+        logger.info("ecf_port: {}", args.ecf_port)
+    else:
+        logger.info("ecf_port: {}", args.ecf_port)
+    if args.ecf_user is None:
+        args.ecf_user = config["scheduler.ecfvars.ecf_user"]
+        logger.info("ecf_user: {}", args.ecf_user)
+    else:
+        logger.info("ecf_user: {}", args.ecf_user)
+    if args.ecf_remoteuser is None:
+        args.ecf_remoteuser = config["scheduler.ecfvars.ecf_remoteuser"]
+        logger.info("Set ecf_remoteuser to ecf_user: {}", args.ecf_remoteuser)
+    else:
+        logger.info("ecf_remoteuser (ATOS): {}", args.ecf_remoteuser)
 
     server = EcflowServer(config, start_command=args.start_command)
 
     suite_name = config["general.case"]
     suite_name = Platform(config).substitute(suite_name)
-
-    # Set ecf_home. If diff than joboutdir => we will copy it to server
     ecf_home = args.joboutdir if args.ecf_home is None else args.ecf_home
+    logger.info("ecf_home set to ecf_joboutdir: {}", ecf_home)
     ecf_files_local = args.ecf_files
     ecf_files_remotely = (
         args.ecf_files if args.ecf_files_remotely is None else args.ecf_files_remotely
     )
 
-    remote_user = args.remote_user
-    logger.debug("ECF_HOME={}", ecf_home)
+    logger.info("ECF_HOME={}", ecf_home)
     troika_config_file = config["troika.config_file"]
     troika_config_file = Platform(config).substitute(troika_config_file)
     local_troika_config_file = troika_config_file
@@ -145,19 +178,23 @@ def start_suite(args, config):
     server = EcflowServer(config, start_command=args.start_command)
     submission_defs = TaskSettings(config)
     defs = SuiteDefinition(suite_name, config, submission_defs)
+    logger.info("defs.ecf_home:{}", defs.ecf_home)
     def_file = f"{suite_name}.def"
     defs.save_as_defs(def_file)
 
     # Copy troika and containers
-    if ecf_home != args.joboutdir:
+    hpc = config["scheduler.ecfvars.hpc"]
+    if hpc == "lumi":
+        logger.info("**HPC detected: LUMI**")
+        logger.info("--- LUMI -> Ecflow server copy BEGIN ---")
         logger.info(
-            "Copy ecflow files to host={} and directory={} remote_user={}",
+            "Copy ecflow files to: {}@{}:{}",
+            args.ecf_remoteuser,
             args.ecf_host,
             ecf_files_remotely,
-            remote_user,
         )
         cfg = {"host": args.ecf_host}
-        ssh = SSHConnection(cfg, remote_user)
+        ssh = SSHConnection(cfg, args.ecf_remoteuser)
         for root, __, files in os.walk(f"{ecf_files_local}/{suite_name}"):
             for file in files:
                 src = f"{root}/{file}"
@@ -167,7 +204,7 @@ def start_suite(args, config):
                 logger.info("Copy src={} to dst={}", src, dst)
                 ssh.sendfile(src, dst)
             ssh.sendfile(troika_config_file, local_troika_config_file)
-
+        logger.info("--- LUMI -> Ecflow server copy DONE ---")
     server.start_suite(suite_name, def_file, begin=args.begin)
     logger.info("Done with suite.")
 

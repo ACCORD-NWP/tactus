@@ -29,11 +29,13 @@ class SuiteDefinition(object):
         config,
         task_settings,
         ecf_home=None,
+        ecf_host=None,
         ecf_files_remotely=None,
         ecf_include=None,
         ecf_out=None,
         ecf_jobout=None,
         ecf_micro="%",
+        ecf_ssl=None,
         dry_run=False,
     ):
         # TODO: Document the variables that right now only are described as "?"
@@ -47,6 +49,9 @@ class SuiteDefinition(object):
             config (deode.ParsedConfig): Configuration file
             ecf_home (str, optional): ECF_HOME. Defaults to None.
             ecf_files_remotely(str, optional): ECF_FILES on ecflow server
+            #ecf_script (str): ECF_SCRIPT Script to be run
+            ecf_host (str): ECF_HOST hostname of ecflow server
+            ecf_ssl (int): ssl authentication on (1 - LUMI) or off (None or 0 - ATOS)
             ecf_include (str, optional): ECF_INCLUDE.
                                          Defaults to None which uses ecf_files.
             ecf_out (str, optional): ECF_OUT. Defaults to None.
@@ -80,13 +85,25 @@ class SuiteDefinition(object):
         self.suite_name = suite_name
         self.mode = config["suite_control.mode"]
 
+        ecf_out = self.config["scheduler.ecfvars.ecf_out"]
         ecf_files = self.config["scheduler.ecfvars.ecf_files"]
+        ecf_user = self.config["scheduler.ecfvars.ecf_user"]
         joboutdir = self.config["scheduler.ecfvars.ecf_jobout"]
+        ecf_files_remotely = self.config["scheduler.ecfvars.ecf_files_remotely"]
+        ecf_home = self.config["scheduler.ecfvars.ecf_home"]
+        logger.info("suite ecf_home:{}", ecf_home)
+        ecf_ssl = self.config["scheduler.ecfvars.ecf_ssl"]
+        ecf_host = self.config["scheduler.ecfvars.ecf_host"]
+
+        self.ecf_user = ecf_user
+        self.ecf_host = ecf_host
+        self.ecf_ssl = ecf_ssl
+        self.joboutdir = joboutdir
 
         self.creategrib = bool("task.creategrib" in config)
 
         name = suite_name
-        self.joboutdir = joboutdir
+
         if ecf_include is None:
             ecf_include = ecf_files
         self.ecf_include = ecf_include
@@ -94,6 +111,7 @@ class SuiteDefinition(object):
         if ecf_home is None:
             ecf_home = joboutdir
         self.ecf_home = ecf_home
+        logger.info("suite self.ecf_home:{}", self.ecf_home)
         if ecf_out is None:
             ecf_out = joboutdir
         self.ecf_out = ecf_out
@@ -128,7 +146,7 @@ class SuiteDefinition(object):
         self.ecf_status_cmd = ecf_status_cmd
         ecf_kill_cmd = (
             f"{ecf_micro}TROIKA{ecf_micro} "
-            f"-c {ecf_micro}TROIKA_CONFIG{ecf_micro} kill "
+            f"-vv -c {ecf_micro}TROIKA_CONFIG{ecf_micro} kill "
             f"{ecf_micro}SCHOST{ecf_micro} "
             f"{ecf_micro}ECF_JOB{ecf_micro}"
         )
@@ -148,10 +166,13 @@ class SuiteDefinition(object):
         keep_workdirs = "1" if config["general.keep_workdirs"] else "0"
         loglevel = config.get("general.loglevel", LogDefaults.LEVEL).upper()
         variables = {
+            "ECF_USER": self.ecf_user,
+            "ECFTYPES": "fc",
             "ECF_EXTN": ".py",
+            "ECF_TRIES": 1,
             "ECF_FILES": self.ecf_files_remotely,
             "ECF_INCLUDE": self.ecf_include,
-            "ECF_TRIES": 1,
+            "ECF_SSL": self.ecf_ssl,
             "ECF_HOME": self.ecf_home,
             "ECF_KILL_CMD": self.ecf_kill_cmd,
             "ECF_JOB_CMD": self.ecf_job_cmd,
@@ -159,6 +180,7 @@ class SuiteDefinition(object):
             "ECF_OUT": self.ecf_out,
             "ECF_JOBOUT": self.ecf_jobout,
             "ECF_TIMEOUT": 20,
+            "ECF_LOGHOST": self.ecf_host,
             "ARGS": "",
             "LOGLEVEL": loglevel,
             "CONFIG": str(config_file),
@@ -771,6 +793,7 @@ class SuiteDefinition(object):
         Args:
             def_file (str): Name of definition file
         """
+        logger.info("save_as_defs.self.ecf_home:{}", self.ecf_home)
         self.suite.save_as_defs(def_file)
 
 

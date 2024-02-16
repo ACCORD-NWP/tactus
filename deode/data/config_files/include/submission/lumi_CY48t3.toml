@@ -17,7 +17,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 
 [parallel]
   NPROC = 16
-  SCHOST = "lumi"
+  SCHOST = "lumi-andraeul"
   tasks = ["Forecast", "e927", "Pgd", "Prep", "c903"]
   WRAPPER = "srun"
 
@@ -74,7 +74,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 
 [serial]
   NPROC = 1
-  SCHOST = "lumi-batch"
+  SCHOST = "lumi-andraeul"
   tasks = ["Gmted", "Soil"]
   WRAPPER = "srun"
 
@@ -83,7 +83,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
-  PARTITION = "#SBATCH --partition=standard"
+  PARTITION = "#SBATCH --partition=debug"
   WALLTIME = "#SBATCH --time=00:15:00"
 
 [serial.ENV]
@@ -96,8 +96,8 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   OMPI_MCA_btl = '^vader'
 
 [serial.MODULES]
-  AAMODULE_USE = ["use", "/scratch/project_462000140/SW/modules"]
-  ECFLOW = ["load", "ecflow/5.9.2"]
+  AAMODULE_USE = ["use", "/scratch/project_465000527/SW/modules/"]
+  ECFLOW = ["load", "5.9.2-gcc-fuxre"]
 
 [task]
   wrapper = "time"
