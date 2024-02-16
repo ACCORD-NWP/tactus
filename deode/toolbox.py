@@ -209,6 +209,29 @@ class Platform:
         logger.debug("Substituted string: {}", res)
         return res
 
+    def sub_str_dict(self, input_dict, basetime=None, validtime=None):
+        """Substitute strings in dictionary.
+
+        Args:
+            input_dict (dict): Dict to be parsed
+            basetime (datetime.datetime, optional): Base time. Defaults to None.
+            validtime (datetime.datetime, optional): Valid time. Defaults to None.
+
+        Returns:
+            d (dict): Updated dict
+
+        """
+        d = input_dict.copy()
+        for k, v in input_dict.items():
+            if isinstance(v, dict):
+                d[k] = self.sub_str_dict(v, basetime, validtime)
+            elif isinstance(v, str):
+                d[k] = self.substitute(v, basetime, validtime)
+            else:
+                d[k] = v
+
+        return d
+
     def substitute(self, pattern, basetime=None, validtime=None):
         """Substitute pattern.
 

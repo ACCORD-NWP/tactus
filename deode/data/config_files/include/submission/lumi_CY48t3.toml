@@ -1,5 +1,5 @@
 bindir = "/users/ospaniel/pack/48t3_main.06.CRAYFTN1501.x/bin"
-default_submit_type = "parallel"
+default_submit_type = "serial"
 lfftw = true
 module_initpath = "/usr/share/lmod/8.3.1/init"
 nproma = -64
@@ -17,7 +17,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 
 [parallel]
   NPROC = 16
-  SCHOST = "lumi-andraeul"
+  SCHOST = "lumi-batch"
   tasks = ["Forecast", "e927", "Pgd", "Prep", "c903"]
   WRAPPER = "srun"
 
@@ -74,7 +74,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 
 [serial]
   NPROC = 1
-  SCHOST = "lumi-andraeul"
+  SCHOST = "lumi-batch"
   tasks = ["Gmted", "Soil"]
   WRAPPER = "srun"
 

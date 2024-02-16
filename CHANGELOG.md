@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Full Changelog](https://github.com/destination-earth-digital-twins/Deode-Prototype/compare/...HEAD)
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
+### Added
+- Introduce troika config for lumi prod/dev users and support for macro parsing of the troika file (#491)
 ### Fixed
 - Correct erroneous usage of bdshift and fixed marsprep unit testing (#489)
 ## [0.3.0] - 2023-11-28

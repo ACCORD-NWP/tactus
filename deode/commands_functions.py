@@ -6,6 +6,7 @@ import sys
 from functools import partial
 from pathlib import Path
 
+import yaml
 from toml_formatter.formatter import FormattedToml
 from troika.connections.ssh import SSHConnection
 
@@ -163,17 +164,21 @@ def start_suite(args, config):
     )
 
     logger.info("ECF_HOME={}", ecf_home)
-    troika_config_file = config["troika.config_file"]
-    troika_config_file = Platform(config).substitute(troika_config_file)
-    local_troika_config_file = troika_config_file
+    troika_config_file = Platform(config).substitute(config["troika.config_file"])
     if ecf_home != args.joboutdir:
-        local_troika_config_file = f"{ecf_files_remotely}/troika.yml"
-    logger.debug(
-        "troika config used: {} local file={}",
+        remote_troika_config_file = os.path.join(
+            ecf_files_remotely, suite_name, os.path.basename(troika_config_file)
+        )
+    else:
+        remote_troika_config_file = troika_config_file
+
+    config = config.copy(update={"troika": {"config_file": remote_troika_config_file}})
+
+    logger.info(
+        "troika config used: {} troika file={}",
         troika_config_file,
-        local_troika_config_file,
+        remote_troika_config_file,
     )
-    config = config.copy(update={"troika": {"config_file": local_troika_config_file}})
 
     server = EcflowServer(config, start_command=args.start_command)
     submission_defs = TaskSettings(config)
@@ -203,8 +208,18 @@ def start_suite(args, config):
                 dst = f"{ecf_files_remotely}/{rpath}/{file}"
                 logger.info("Copy src={} to dst={}", src, dst)
                 ssh.sendfile(src, dst)
-            ssh.sendfile(troika_config_file, local_troika_config_file)
+
+        # Read and parse the troika config file
+        temp_troika_config_file = f"parsed_{os.path.basename(troika_config_file)}"
+        with open(troika_config_file, "rb") as infile:
+            troika_input = yaml.safe_load(infile)
+        troika_output = platform.sub_str_dict(troika_input)
+        with open(temp_troika_config_file, "w") as outfile:
+            yaml.dump(troika_output, outfile, encoding="utf-8")
+
+        ssh.sendfile(temp_troika_config_file, remote_troika_config_file)
         logger.info("--- LUMI -> Ecflow server copy DONE ---")
+
     server.start_suite(suite_name, def_file, begin=args.begin)
     logger.info("Done with suite.")
 

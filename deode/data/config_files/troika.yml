@@ -60,6 +60,19 @@ sites:
   lumi-batch:
     type: slurm
     connection: ssh
+    user: "@USER@"
+    host: lumi.csc.fi
+    kill_sequence: [[5, 2], [10, 9]]
+    pre_submit: ["create_output_dir"]
+    preprocess: ["remove_top_blank_lines", "slurm_add_output", "slurm_bubble"]
+    at_exit: ["copy_submit_logfile"]
+    sbatch_command: "sbatch"
+    copy_script: true
+    scancel_command: 'scancel -f'
+
+  lumi-prod:
+    type: slurm
+    connection: ssh
     user: lrb_465000527_efprd
     host: lumi.csc.fi
     kill_sequence: [[5, 2], [10, 9]]
@@ -70,36 +83,10 @@ sites:
     copy_script: true
     scancel_command: 'scancel -f'
 
-  lumi-andraeul:
+  lumi-dev:
     type: slurm
     connection: ssh
-    user: andraeul
-    host: lumi.csc.fi
-    kill_sequence: [[5, 2], [10, 9]]
-    pre_submit: ["create_output_dir"]
-    preprocess: ["remove_top_blank_lines", "slurm_add_output", "slurm_bubble"]
-    at_exit: ["copy_submit_logfile"]
-    sbatch_command: "sbatch"
-    copy_script: true
-    scancel_command: 'scancel -f'
-
-  lumi-trygveasp:
-    type: slurm
-    connection: ssh
-    user: trygveasp
-    host: lumi.csc.fi
-    kill_sequence: [[5, 2], [10, 9]]
-    pre_submit: ["create_output_dir"]
-    preprocess: ["remove_top_blank_lines", "slurm_add_output", "slurm_bubble"]
-    at_exit: ["copy_submit_logfile"]
-    sbatch_command: "sbatch"
-    copy_script: true
-    scancel_command: 'scancel -f'
-
-  lumi-adelsaid:
-    type: slurm
-    connection: ssh
-    user: adelsaid
+    user: lrb_465000527_efdev
     host: lumi.csc.fi
     kill_sequence: [[5, 2], [10, 9]]
     pre_submit: ["create_output_dir"]
