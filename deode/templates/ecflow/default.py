@@ -1,6 +1,6 @@
 """Default ecflow container."""
 
-# @ENV_SUB@
+import os
 
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import derived_variables
@@ -15,31 +15,26 @@ logger.enable("deode")
 def parse_ecflow_vars():
     """Parse the ecflow variables."""
     return {
-        "ECF_HOST": "%ECF_HOST%",
-        "ECF_PORT": "%ECF_PORT%",
-        "ECF_NAME": "%ECF_NAME%",
-        "ECF_PASS": "%ECF_PASS%",
-        "ECF_TRYNO": "%ECF_TRYNO%",
-        "ECF_RID": "%ECF_RID%",
-        "ECF_TIMEOUT": "%ECF_TIMEOUT%",
-        "BASETIME": "%BASETIME%",
-        "VALIDTIME": "%VALIDTIME%",
-        "LOGLEVEL": "%LOGLEVEL%",
-        "ARGS": "%ARGS%",
-        "WRAPPER": "%WRAPPER%",
-        "NPROC": "%NPROC%",
-        "NPROC_IO": "%NPROC_IO%",
-        "NPROCX": "%NPROCX%",
-        "NPROCY": "%NPROCY%",
-        "CONFIG": "%CONFIG%",
-        "DEODE_HOME": "%DEODE_HOME%",
-        "KEEP_WORKDIRS": "%KEEP_WORKDIRS%",
+        "ECF_HOST": os.environ["ECF_HOST"],
+        "ECF_PORT": os.environ["ECF_PORT"],
+        "ECF_NAME": os.environ["ECF_NAME"],
+        "ECF_PASS": os.environ["ECF_PASS"],
+        "ECF_TRYNO": os.environ["ECF_TRYNO"],
+        "ECF_RID": os.environ["ECF_RID"],
+        "ECF_TIMEOUT": os.environ["ECF_TIMEOUT"],
+        "BASETIME": os.environ["BASETIME"],
+        "VALIDTIME": os.environ["VALIDTIME"],
+        "LOGLEVEL": os.environ["LOGLEVEL"],
+        "ARGS": os.environ["ARGS"],
+        "WRAPPER": os.environ["WRAPPER"],
+        "NPROC": os.environ["NPROC"],
+        "NPROC_IO": os.environ["NPROC_IO"],
+        "NPROCX": os.environ["NPROCX"],
+        "NPROCY": os.environ["NPROCY"],
+        "CONFIG": os.environ["CONFIG"],
+        "DEODE_HOME": os.environ["DEODE_HOME"],
+        "KEEP_WORKDIRS": os.environ["KEEP_WORKDIRS"],
     }
-
-
-"""
-%nopp"
-"""
 
 
 def default_main(**kwargs):
@@ -109,7 +104,3 @@ if __name__ == "__main__":
     # Get ecflow variables
     kwargs_main = parse_ecflow_vars()
     default_main(**kwargs_main)
-
-"""    # noqa
-%end"  # noqa
-"""

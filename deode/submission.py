@@ -261,17 +261,15 @@ class TaskSettings(object):
         interpreter = self.get_task_settings(task, "INTERPRETER")
         logger.debug(interpreter)
         if interpreter is None:
-            interpreter = f"#!{sys.executable}"
+            interpreter = f"{sys.executable}"
 
         logger.debug(interpreter)
-        with open(input_template_job, mode="r", encoding="utf-8") as file_handler:
-            input_content = file_handler.read()
         dir_name = os.path.dirname(os.path.realpath(task_job))
 
         deodemakedirs(dir_name, unixgroup=self.unix_group)
 
         with open(task_job, mode="w", encoding="utf-8") as file_handler:
-            file_handler.write(f"{interpreter}\n")
+            file_handler.write("#!/bin/bash\n")
 
             # Batch settings
             batch_settings = self.get_task_settings(
@@ -285,7 +283,29 @@ class TaskSettings(object):
             for b_setting in batch_settings.values():
                 file_handler.write(f"{b_setting}\n")
 
-            python_task_env = ""
+            ecf_vars = [
+                "ECF_HOST",
+                "ECF_PORT",
+                "ECF_NAME",
+                "ECF_PASS",
+                "ECF_TRYNO",
+                "ECF_RID",
+                "ECF_TIMEOUT",
+                "BASETIME",
+                "VALIDTIME",
+                "LOGLEVEL",
+                "ARGS",
+                "WRAPPER",
+                "NPROC",
+                "NPROC_IO",
+                "NPROCX",
+                "NPROCY",
+                "CONFIG",
+                "DEODE_HOME",
+                "KEEP_WORKDIRS",
+            ]
+            for ecf_var in ecf_vars:
+                file_handler.write(f'export {ecf_var}="%{ecf_var}%"\n')
 
             # Module settings
             module_settings = self.get_task_settings(
@@ -293,27 +313,19 @@ class TaskSettings(object):
             )
             logger.debug("module settings {}", module_settings)
 
-            m_settings = ["import os"]
             if module_settings is not None and len(module_settings) > 0:
-                env_file = (
-                    f"{self.submission_defs['module_initpath']}/env_modules_python.py"
-                )
+                env_file = f"{self.submission_defs['module_initpath']}/bash"
                 if not os.path.isfile(env_file):
                     raise RuntimeError(
                         f"Environment file {env_file} is not a file or does not exists"
                     )
 
-                m_settings.append(
-                    f"exec(open('{env_file}').read())",
-                )
+                file_handler.write(f". {env_file}\n")
                 for key in module_settings.values():
                     if len(key) < 2 or len(key) > 3:
-                        raise RuntimeError(f"Module command has the wrong lenght:{key}")
-                    cmd = "module(" + ",".join([f"'{x}'" for x in key]) + ")"
-
-                    m_settings += [cmd]
-
-            python_task_env += "\n".join(m_settings)
+                        raise RuntimeError(f"Module command has the wrong length:{key}")
+                    cmd = "module " + " ".join([f"{x}" for x in key])
+                    file_handler.write(f"{cmd}\n")
 
             # Environment settings
             env_settings = self.get_task_settings(
@@ -321,23 +333,23 @@ class TaskSettings(object):
             )
             logger.debug(env_settings)
 
-            python_task_env += "\n"
             for key, val in env_settings.items():
-                python_task_env += f"os.environ['{key}'] = '{val}'\n"
-            input_content = input_content.replace("# @ENV_SUB@", python_task_env)
-            input_content = input_content.replace("@STAND_ALONE_TASK_NAME@", task)
+                file_handler.write(f'export {key}="{val}"\n')
+
+            file_handler.write(f'export STAND_ALONE_TASK_NAME="{task}"\n')
 
             platform = Platform(config)
             deode_home = platform.get_platform_value("DEODE_HOME")
 
-            input_content = input_content.replace("@STAND_ALONE_DEODE_HOME@", deode_home)
+            file_handler.write(f'export STAND_ALONE_DEODE_HOME="{deode_home}"\n')
             config_file = config.metadata["source_file_path"]
 
             if config_file is not None:
-                input_content = input_content.replace(
-                    "@STAND_ALONE_TASK_CONFIG@", str(config_file)
-                )
-            file_handler.write(input_content)
+                file_handler.write(f'export STAND_ALONE_TASK_CONFIG="{config_file!s}"\n')
+            else:
+                file_handler.write('export STAND_ALONE_TASK_CONFIG=""\n')
+
+            file_handler.write(f"{interpreter} {input_template_job} || exit 1\n")
         # Make file executable for user
         os.chmod(task_job, 0o744)
 

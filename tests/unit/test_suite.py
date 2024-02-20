@@ -75,9 +75,10 @@ class TestSuite:
             },
             {"suite_control": {"create_static_data": False}},
             {"suite_control": {"create_time_dependent_suite": False, "do_soil": False}},
+            {"submission": {"max_ecf_tasks": 2}},
         ],
     )
-    def test_suite(self, config_from_task_config_file, param):
+    def test_suite(self, config_from_task_config_file, param, tmp_directory):
         config = config_from_task_config_file
         config = config.copy(
             update={
@@ -97,5 +98,5 @@ class TestSuite:
             background,
             dry_run=True,
         )
-        def_file = f"/tmp/{suite_name}.def"  # noqa S108
+        def_file = f"{tmp_directory}/{suite_name}.def"
         defs.save_as_defs(def_file)

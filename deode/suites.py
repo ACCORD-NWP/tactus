@@ -168,7 +168,7 @@ class SuiteDefinition(object):
         variables = {
             "ECF_USER": self.ecf_user,
             "ECFTYPES": "fc",
-            "ECF_EXTN": ".py",
+            "ECF_EXTN": ".bash",
             "ECF_TRIES": 1,
             "ECF_FILES": self.ecf_files_remotely,
             "ECF_INCLUDE": self.ecf_include,
@@ -206,6 +206,16 @@ class SuiteDefinition(object):
             ecf_files_remotely=self.ecf_files_remotely,
         )
 
+        # set max_ecf_tasks from config
+        max_ecf_tasks = -1
+        try:
+            max_ecf_tasks = self.config["submission.max_ecf_tasks"]
+        except KeyError:
+            max_ecf_tasks = -1
+
+        if max_ecf_tasks > 0 and self.suite.ecf_node is not None:
+            self.suite.ecf_node.add_limit("max_ecf_tasks", max_ecf_tasks)
+            self.suite.ecf_node.add_inlimit("max_ecf_tasks", f"/{name}", max_ecf_tasks)
         if self.mode == "restart":
             self.do_prep = False
             self.create_static_data = False
@@ -215,7 +225,7 @@ class SuiteDefinition(object):
             task_logs = config["system.climdir"]
             args = ";".join(
                 [
-                    f"joboutdir={self.joboutdir}/{self.suite_name}/StaticData",
+                    f"joboutdir={self.ecf_out}/{self.suite_name}/StaticData",
                     "tarname=StaticData",
                     f"task_logs={task_logs}",
                 ]
@@ -470,7 +480,7 @@ class SuiteDefinition(object):
             task_logs = config["system.wrk"]
             args = ";".join(
                 [
-                    f"joboutdir={self.joboutdir}/{self.suite_name}/{cday}/{ctime}",
+                    f"joboutdir={self.ecf_out}/{self.suite_name}/{cday}/{ctime}",
                     f"tarname={cday}_{ctime}",
                     f"task_logs={task_logs}",
                 ]
@@ -1085,7 +1095,7 @@ class EcflowSuiteTask(EcflowNode):
 
         logger.debug(parent.path)
         logger.debug(parent.ecf_local_container_path)
-        task_container = parent.ecf_local_container_path + "/" + name + ".py"
+        task_container = parent.ecf_local_container_path + "/" + name + ".bash"
         if parse:
             if input_template is None:
                 raise ValueError("Must pass input template if it is to be parsed")

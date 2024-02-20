@@ -3,6 +3,7 @@
 import sys
 
 import numpy as np
+import pytest
 
 
 class MockObject(object):
@@ -80,3 +81,9 @@ mock_eccodes.codes_get_values = mock_codes_get_values
 mock_eccodes.KeyValueNotFoundError = MockKeyValueNotFoundError
 
 sys.modules["eccodes"] = mock_eccodes
+
+
+@pytest.fixture(scope="module")
+def tmp_directory(tmp_path_factory):
+    """Return a temp directory valid for this module."""
+    return tmp_path_factory.getbasetemp().as_posix()
