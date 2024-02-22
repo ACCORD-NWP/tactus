@@ -50,8 +50,6 @@ We **highly recommend** you to also put the statement listed above in your shell
       rm -rf ${HOME}/.cache/pypoetry/ ${HOME}/.local/bin/poetry ${HOME}/.local/share/pypoetry
       # Download and install poetry
       curl -sSL https://install.python-poetry.org | python3 -
-      # Install needed poetry plugin(s)
-      poetry self add 'poethepoet[poetry_plugin]'
       ```
 
 ### Optional System Requirements

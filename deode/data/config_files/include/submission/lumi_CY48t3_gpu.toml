@@ -109,12 +109,6 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 [task]
   wrapper = "time"
 
-[task_exceptions.ArchiveHour.BATCH]
-  WALLTIME = "#SBATCH --time=03:00:00"
-
-[task_exceptions.ArchiveStatic.BATCH]
-  WALLTIME = "#SBATCH --time=03:00:00"
-
 [task_exceptions.c903]
   NPROC = 36
 

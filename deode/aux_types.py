@@ -37,7 +37,7 @@ class QuasiConstantMetaclass(type):
             MutableSet: frozenset,
         }
 
-    def dict(cls):  # noqa: A003 (class attr shadowing builtin)
+    def dict(cls):
         """Return a `dict` form of the instance, with nested instances also converted."""
         return {
             attr: value.dict() if isinstance(value, type(cls)) else value
@@ -90,7 +90,7 @@ class BaseMapping(Mapping):
             },
         )
 
-    def dict(self):  # noqa: A003 (class attr shadowing builtin)
+    def dict(self):
         """Return a `dict` representation, converting also nested `Mapping`-type items."""
         return modify_mappings(obj=self, operator=dict)
 

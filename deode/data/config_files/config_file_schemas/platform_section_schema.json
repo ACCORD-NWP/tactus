@@ -5,6 +5,14 @@
     "type": "object",
     "additionalProperties": true,
     "properties": {
+        "archive_type": {
+            "type": "string",
+            "description": "Method for archiving. The method working depends on the platform",
+	    "enum": [
+            "ecfs",
+            "fdb"
+	    ]
+        },
         "ecoclim_data_path": {
             "type": "string",
             "description": "Path to the ECOCLIMAP-II data"

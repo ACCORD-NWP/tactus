@@ -181,6 +181,9 @@ class Platform:
         if provider_id == "ecfs":
             return ECFS(self.config, target, fetch=fetch)
 
+        if provider_id == "fdb":
+            return FDB(self.config, target, fetch=fetch)
+
         raise NotImplementedError(f"Provider for {provider_id} not implemented")
 
     def sub_value(self, pattern, key, value, micro="@", ci=True):
@@ -451,7 +454,7 @@ class FileManager:
             f"No provider found for {sub_target} and provider_id {provider_id}"
         )
 
-    def input(  # noqa: A003 (class attribute shadowing builtin)
+    def input(
         self,
         target,
         destination,
@@ -810,6 +813,38 @@ class ECFS(ArchiveProvider):
             os.system(
                 f"ecp -pu {resource.identifier} {self.identifier}"  # noqa S605, E800
             )
+        return True
+
+
+class FDB(ArchiveProvider):
+    """Dummy FDB class."""
+
+    def __init__(self, config, pattern, fetch=True):
+        """Construct FDB provider.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+            pattern (str): Filepattern
+            fetch (bool, optional): Fetch the data. Defaults to True.
+        """
+        ArchiveProvider.__init__(self, config, pattern, fetch=fetch)
+
+    def create_resource(self, resource):
+        """Create the resource.
+
+        Args:
+            resource (Resource): Resource.
+
+        Returns:
+            bool: True if success
+
+        """
+        # TODO: Address the noqa check disablers
+        if self.fetch:
+            logger.warning("FDB not yet implemented for {}", resource)
+        else:
+            logger.warning("FDB not yet implemented for {}", resource)
+
         return True
 
 

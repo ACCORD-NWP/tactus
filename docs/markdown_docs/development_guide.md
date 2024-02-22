@@ -32,7 +32,7 @@ Each PR comes with its own improvements and flaws. The reviewer should check the
 ## Local testing
 No-one likes to wait for the CI to run tests. It is therefore recommended to run tests locally before pushing to the remote repository, and before creating a PR, but no one will force you to do this: how you work locally is entirely up to you.
 
-For convenience, however, we have added a few commands you can use to check that the code is linted, the tests pass, etc. Some of these are exemplified in the next subsections. Please run
+For convenience, however, we have added a few commands you can use to check that the code is linted, the tests pass, etc. Some of these are exemplified in the next subsections. Please run **inside of your poetry shell**:
 ```shell
 poetry devtools -h
 ```
