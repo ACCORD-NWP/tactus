@@ -62,7 +62,7 @@
   do_pgd = true
   do_prep = true
   do_soil = true
-  interpolate_boundaries = true
+  interpolate_boundaries = false 
   mode = "cold_start"
 
 [system]
