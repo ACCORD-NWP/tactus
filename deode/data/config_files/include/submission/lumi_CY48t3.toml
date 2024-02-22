@@ -117,7 +117,6 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
 
 [task_exceptions.c903]
   NPROC = 12
-  SCHOST = "lumi"
 
 [task_exceptions.c903.BATCH]
   MEM = "#SBATCH --mem=0"
@@ -131,7 +130,6 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   DR_HOOK_TRAPFPE_DIVBYZERO = 1
   DR_HOOK_TRAPFPE_OVERFLOW = 1
   ECCODES_DEFINITION_PATH = "/scratch/project_465000527/jasinskas/scl/ftn16_23/share/eccodes/definitions/:/users/ospaniel/opt/eccodes-2.27.0/share/eccodes/definitions"
-  ECCODES_SAMPLES_PATH = "/scratch/project_465000527/jasinskas/scl/ftn16_23/share/eccodes/ifs_samples/grib1_mlgrib2_ccsds"
   OMP_NUM_THREADS = 1
 
 [task_exceptions.creategrib]
