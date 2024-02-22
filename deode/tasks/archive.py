@@ -20,8 +20,9 @@ class Archive(Task):
         """
         Task.__init__(self, config, __name__)
 
-        apath = self.platform.get_value("archiving.paths.apath")
-        aloc = self.platform.get_value("archiving.paths.aloc")
+        self.archive_type = self.platform.get_value("platform.archive_type")
+        apath = self.platform.get_value(f"archiving.{self.archive_type}.paths.apath")
+        aloc = self.platform.get_value(f"archiving.{self.archive_type}.paths.aloc")
         self.arch_loc = f"{aloc}{apath}"
 
     def trigger(self, trigger):
@@ -54,7 +55,7 @@ class Archive(Task):
                     filename,
                     pathlib.PurePath(self.arch_loc, out, os.path.basename(filename)),
                     check_archive=True,
-                    provider_id="ecfs",
+                    provider_id=self.archive_type,
                 )
 
 
@@ -69,7 +70,7 @@ class ArchiveStatic(Archive):
         """
         Archive.__init__(self, config)
 
-        self.choices = self.config["archiving.static"]
+        self.choices = self.config.get(f"archiving.{self.archive_type}.static", {})
 
     def execute(self):
         """Run task.
@@ -94,15 +95,19 @@ class ArchiveHour(Archive):
         """
         Archive.__init__(self, config)
 
-        self.default = self.config["archiving.default"]
-        self.choices = self.config["archiving.hour"]
+        archiving = self.config[f"archiving.{self.archive_type}"].dict()
+        self.default = archiving["default"]
+        try:
+            self.choices = archiving["hour"]
+        except KeyError:
+            self.choices = {}
 
         self.basetime = as_datetime(self.config["general.times.basetime"])
         self.forecast_range = self.config["general.times.forecast_range"]
         self.file_templates = self.config["file_templates"]
 
         try:
-            self.archiving_settings = self.config["archiving.settings"]
+            self.archiving_settings = archiving["settings"]
             if len(self.archiving_settings) == 0:
                 self.archiving_settings = None
         except KeyError:
