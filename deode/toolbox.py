@@ -454,7 +454,7 @@ class FileManager:
             f"No provider found for {sub_target} and provider_id {provider_id}"
         )
 
-    def input(  # noqa: A003 (class attribute shadowing builtin)
+    def input(
         self,
         target,
         destination,

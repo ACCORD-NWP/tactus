@@ -58,6 +58,7 @@
   toml-formatter = {git = "https://github.com/paulovcmedeiros/toml-formatter"}
   # flake8 plugins for stuff not yet on ruff.
   # See <https://github.com/astral-sh/ruff/issues/458>.
+  poethepoet = {extras = ["poetry-plugin"], version = "0.24.4"}
   pydoclint = "^0.3.8" # Replaces darglint, but is maintained & faster
 
 [tool.poetry.group.test.dependencies]
