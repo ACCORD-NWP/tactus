@@ -64,7 +64,8 @@ poetry devtools pytest
 ```
 
 ### Generate and view the documentation to be published to our [docpages](https://destination-earth-digital-twins.github.io/deode-prototype-docs/)
-  ```shell
+
+```shell
 poetry devtools doc clean
 poetry devtools doc build
 poetry devtools doc view
@@ -93,6 +94,3 @@ As the project grows, we may add more branches, such as an `integration` branch,
 
 ### Forks
 Forks are used to develop features and bug fixes. They are created from the `develop` branch by forking to a local repo. When a feature is ready, a PR is created to merge it to `develop`. When a bug fix is ready, a PR is created to merge it to `develop` and `master`.
-
-## Run on LUMI
-To run the project on LUMI, you need to have a LUMI account and add your SSH key to it. Please check the [online instructions on how to do that](https://docs.lumi-supercomputer.eu/firststeps/SSH-keys/). Once you have your SSH key added, you can login to LUMI by running `ssh -i <your-private-key> <username>@@lumi.csc.fi`. Once logged in, create a SSH key and add that to your GitHub account so you can clone the repo. Then, please follow the download, install and usage instructions provided in the [README](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md) file.
