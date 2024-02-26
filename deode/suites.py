@@ -68,7 +68,7 @@ class SuiteDefinition(object):
 
         self.platform = Platform(config)
         self.config = config
-        
+
         self.csc = config["general.csc"]
 
         self.create_static_data = config["suite_control.create_static_data"]

@@ -61,8 +61,8 @@
   do_marsprep = true
   do_pgd = true
   do_soil = true
-  interpolate_boundaries = false
-  mode = "start"
+  interpolate_boundaries = true
+  mode = "cold_start"
 
 [system]
   bdclimdir = "@FIXED_BDCLIMDIR@"
