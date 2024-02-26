@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 ### Added
+- Config updates that brings the default setup for AROME@CY48t3 running under ECFLOW on LUMI (#502)
 - Added poethepoet as part of the pyproject.toml, such that we can specify the version for local and github (#496)
 - Dummy FDB archiving methods (#495)
 - Submission of bash wrapper scripts (#492)
