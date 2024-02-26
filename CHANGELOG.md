@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Submission of bash wrapper scripts (#492)
 - Introduce troika config for lumi prod/dev users and support for macro parsing of the troika file (#491)
 ### Fixed
+- Separate scheduler and stand alone arguments in bash script used in submission (#501)
 - Correct erroneous usage of bdshift and fixed marsprep unit testing (#489)
 ## [0.3.0] - 2023-11-28
 ### Added

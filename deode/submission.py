@@ -242,7 +242,14 @@ class TaskSettings(object):
         return settings
 
     def parse_job(
-        self, task, config, input_template_job, task_job, variables=None, ecf_micro="%"
+        self,
+        task,
+        config,
+        input_template_job,
+        task_job,
+        variables=None,
+        ecf_micro="%",
+        scheduler="ecflow",
     ):
         """Read default job and change interpretor.
 
@@ -253,6 +260,7 @@ class TaskSettings(object):
             task_job (str): Task container
             variables (_type_, optional): _description_. Defaults to None.
             ecf_micro (str, optional): _description_.
+            scheduler (str, optional): Scheduler. Defaults to ecflow.
 
         Raises:
             RuntimeError: In case of missing module env file
@@ -283,29 +291,30 @@ class TaskSettings(object):
             for b_setting in batch_settings.values():
                 file_handler.write(f"{b_setting}\n")
 
-            ecf_vars = [
-                "ECF_HOST",
-                "ECF_PORT",
-                "ECF_NAME",
-                "ECF_PASS",
-                "ECF_TRYNO",
-                "ECF_RID",
-                "ECF_TIMEOUT",
-                "BASETIME",
-                "VALIDTIME",
-                "LOGLEVEL",
-                "ARGS",
-                "WRAPPER",
-                "NPROC",
-                "NPROC_IO",
-                "NPROCX",
-                "NPROCY",
-                "CONFIG",
-                "DEODE_HOME",
-                "KEEP_WORKDIRS",
-            ]
-            for ecf_var in ecf_vars:
-                file_handler.write(f'export {ecf_var}="%{ecf_var}%"\n')
+            if scheduler is not None and scheduler == "ecflow":
+                ecf_vars = [
+                    "ECF_HOST",
+                    "ECF_PORT",
+                    "ECF_NAME",
+                    "ECF_PASS",
+                    "ECF_TRYNO",
+                    "ECF_RID",
+                    "ECF_TIMEOUT",
+                    "BASETIME",
+                    "VALIDTIME",
+                    "LOGLEVEL",
+                    "ARGS",
+                    "WRAPPER",
+                    "NPROC",
+                    "NPROC_IO",
+                    "NPROCX",
+                    "NPROCY",
+                    "CONFIG",
+                    "DEODE_HOME",
+                    "KEEP_WORKDIRS",
+                ]
+                for ecf_var in ecf_vars:
+                    file_handler.write(f'export {ecf_var}="%{ecf_var}%"\n')
 
             # Module settings
             module_settings = self.get_task_settings(
@@ -336,18 +345,16 @@ class TaskSettings(object):
             for key, val in env_settings.items():
                 file_handler.write(f'export {key}="{val}"\n')
 
-            file_handler.write(f'export STAND_ALONE_TASK_NAME="{task}"\n')
+            if scheduler is None:
+                file_handler.write(f'export STAND_ALONE_TASK_NAME="{task}"\n')
 
-            platform = Platform(config)
-            deode_home = platform.get_platform_value("DEODE_HOME")
+                platform = Platform(config)
+                deode_home = platform.get_platform_value("DEODE_HOME")
 
-            file_handler.write(f'export STAND_ALONE_DEODE_HOME="{deode_home}"\n')
-            config_file = config.metadata["source_file_path"]
+                file_handler.write(f'export STAND_ALONE_DEODE_HOME="{deode_home}"\n')
+                config_file = config.metadata["source_file_path"]
 
-            if config_file is not None:
                 file_handler.write(f'export STAND_ALONE_TASK_CONFIG="{config_file!s}"\n')
-            else:
-                file_handler.write('export STAND_ALONE_TASK_CONFIG=""\n')
 
             file_handler.write(f"{interpreter} {input_template_job} || exit 1\n")
         # Make file executable for user
@@ -394,6 +401,7 @@ class NoSchedulerSubmission:
             config=config,
             input_template_job=template_job,
             task_job=task_job,
+            scheduler=None,
         )
         cmd = (
             f"{troika} -c {troika_config} submit {self.task_settings.job_type} "

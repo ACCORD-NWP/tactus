@@ -116,13 +116,21 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel"]
   wrapper = "time"
 
 [task_exceptions.c903]
-  NPROC = 16
+  NPROC = 12
 
 [task_exceptions.c903.BATCH]
-  MEM = "#SBATCH --mem=200GB"
-  NODE = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=16"
+  MEM = "#SBATCH --mem=0"
+  NODE = "#SBATCH --nodes=4"
+  NTASKS = "#SBATCH --ntasks=12"
+  PARTITION = "#SBATCH -p debug"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=3"
   WALLTIME = "#SBATCH --time=00:30:00"
+
+[task_exceptions.c903.ENV]
+  DR_HOOK_TRAPFPE_DIVBYZERO = 1
+  DR_HOOK_TRAPFPE_OVERFLOW = 1
+  ECCODES_DEFINITION_PATH = "/scratch/project_465000527/jasinskas/scl/ftn16_23/share/eccodes/definitions/:/users/ospaniel/opt/eccodes-2.27.0/share/eccodes/definitions"
+  OMP_NUM_THREADS = 1
 
 [task_exceptions.creategrib]
   binary = "gl"
