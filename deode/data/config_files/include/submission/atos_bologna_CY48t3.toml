@@ -24,6 +24,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WRAPPER = "srun"
 
 [gnu.BATCH]
+  ACCOUNT = "#SBATCH -A sialadin"
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
@@ -40,10 +41,10 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WRAPPER = "srun"
 
 [parallel.BATCH]
+  ACCOUNT = "#SBATCH -A sialadin"
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   QOS = "#SBATCH --qos=np"
   WALLTIME = "#SBATCH --time=00:10:00"
-  ACCOUNT = "#SBATCH -A sialadin"
 
 [parallel.ENV]
   DR_HOOK = 1
@@ -71,12 +72,12 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WRAPPER = "srun"
 
 [serial.BATCH]
+  ACCOUNT = "#SBATCH -A sialadin"
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   QOS = "#SBATCH --qos=nf"
   WALLTIME = "#SBATCH --time=00:15:00"
-  ACCOUNT = "#SBATCH -A sialadin"
 
 [serial.ENV]
   DR_HOOK_IGNORE_SIGNALS = -1

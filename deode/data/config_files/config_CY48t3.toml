@@ -60,10 +60,9 @@
   do_extractsqlite = true
   do_marsprep = true
   do_pgd = true
-  do_prep = true
   do_soil = true
-  interpolate_boundaries = false 
-  mode = "cold_start"
+  interpolate_boundaries = false
+  mode = "start"
 
 [system]
   bdclimdir = "@FIXED_BDCLIMDIR@"

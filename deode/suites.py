@@ -68,6 +68,8 @@ class SuiteDefinition(object):
 
         self.platform = Platform(config)
         self.config = config
+        
+        self.csc = config["general.csc"]
 
         self.create_static_data = config["suite_control.create_static_data"]
         self.do_soil = config["suite_control.do_soil"]
@@ -77,7 +79,6 @@ class SuiteDefinition(object):
             "suite_control.create_time_dependent_suite"
         ]
         self.interpolate_boundaries = config["suite_control.interpolate_boundaries"]
-        self.do_prep = config["suite_control.do_prep"]
         self.do_marsprep = config["suite_control.do_marsprep"]
         self.do_extractsqlite = config["suite_control.do_extractsqlite"]
         self.do_archiving = config["suite_control.do_archiving"]
@@ -216,6 +217,8 @@ class SuiteDefinition(object):
         if max_ecf_tasks > 0 and self.suite.ecf_node is not None:
             self.suite.ecf_node.add_limit("max_ecf_tasks", max_ecf_tasks)
             self.suite.ecf_node.add_inlimit("max_ecf_tasks", f"/{name}", max_ecf_tasks)
+
+        self.do_prep = True
         if self.mode == "restart":
             self.do_prep = False
             self.create_static_data = False
@@ -279,8 +282,6 @@ class SuiteDefinition(object):
         cycles = {}
         cycle_time = first_cycle
         i = 0
-        if self.mode == "restart":
-            self.do_prep = False
 
         while cycle_time <= last_cycle:
             logger.debug("cycle_time {}", cycle_time)
@@ -365,7 +366,6 @@ class SuiteDefinition(object):
                     ecf_files_remotely=self.ecf_files_remotely,
                 )
 
-
             if self.interpolate_boundaries:
                 int_fam = EcflowSuiteFamily(
                     f'{"Interpolation"}',
@@ -376,6 +376,26 @@ class SuiteDefinition(object):
                     ecf_files_remotely=self.ecf_files_remotely,
                 )
                 prev_interpolation_trigger = [EcflowSuiteTrigger(int_fam)]
+
+                basetime = as_datetime(cycle["basetime"])
+                forecast_range = as_timedelta(config["general.times.forecast_range"])
+                endtime = basetime + forecast_range
+                bdint = as_timedelta(config["boundaries.bdint"])
+                bdmax = config["boundaries.bdtasks_per_batch"]
+
+                intnr = 1
+                args = ""
+                int_trig = inputdata_done
+
+                # we don't need LBC000 if this is not first cycle or mode = cold_start
+                if self.mode == "restart" or (self.mode == "start" and not self.do_prep):
+                    bdtime = basetime + bdint
+                    bdnr = 1
+                else:
+                    bdtime = basetime
+                    bdnr = 0
+
+                intbdint = int(bdint.total_seconds() // 3600)
 
                 if self.do_prep:
                     EcflowSuiteTask(
@@ -388,67 +408,53 @@ class SuiteDefinition(object):
                         ecf_files_remotely=self.ecf_files_remotely,
                     )
 
-                    if self.mode != "cold_start":
+                    if self.mode != "cold_start" or self.csc == "ALARO":
                         self.do_prep = False
 
-                basetime = as_datetime(cycle["basetime"])
-                forecast_range = as_timedelta(config["general.times.forecast_range"])
-                endtime = basetime + forecast_range
-                bdint = as_timedelta(config["boundaries.bdint"])
-                bdmax = config["boundaries.bdtasks_per_batch"]
-
-                bdnr = 0
-                intnr = 1
-                args = ""
-                int_trig = inputdata_done
-                bdtime = basetime
-                intbdint = int(bdint.total_seconds() // 3600)
                 while bdtime <= endtime:
-                   bch_fam = EcflowSuiteFamily(
-                       f"Batch{intnr:02}",
-                       int_fam,
-                       self.ecf_files,
-                       trigger=int_trig,
-                       variables=None,
-                       ecf_files_remotely=self.ecf_files_remotely,
-                   )
-                   while bdtime <= endtime:
-                       date_string = bdtime.isoformat(sep="T").replace("+00:00", "Z")
-                       args = f"bd_time={date_string};bd_nr={bdnr}"
-                       variables = {"ARGS": args}
-                       lbc_fam = EcflowSuiteFamily(
-                           f"LBC{bdnr*intbdint:02}",
-                           bch_fam,
-                           self.ecf_files,
-                           trigger=None,
-                           variables=None,
-                           ecf_files_remotely=self.ecf_files_remotely,
-                       )
+                    bch_fam = EcflowSuiteFamily(
+                        f"Batch{intnr:02}",
+                        int_fam,
+                        self.ecf_files,
+                        trigger=int_trig,
+                        variables=None,
+                        ecf_files_remotely=self.ecf_files_remotely,
+                    )
+                    while bdtime <= endtime:
+                        date_string = bdtime.isoformat(sep="T").replace("+00:00", "Z")
+                        args = f"bd_time={date_string};bd_nr={bdnr}"
+                        variables = {"ARGS": args}
+                        lbc_fam = EcflowSuiteFamily(
+                            f"LBC{bdnr*intbdint:02}",
+                            bch_fam,
+                            self.ecf_files,
+                            trigger=None,
+                            variables=None,
+                            ecf_files_remotely=self.ecf_files_remotely,
+                        )
 
-                       interpolation_task = "c903" if self.do_marsprep else "e927"
+                        interpolation_task = "c903" if self.do_marsprep else "e927"
 
-                       EcflowSuiteTask(
-                           interpolation_task,
-                           lbc_fam,
-                           config,
-                           self.task_settings,
-                           self.ecf_files,
-                           input_template=input_template,
-                           variables=variables,
-                           trigger=None,
-                           ecf_files_remotely=self.ecf_files_remotely,
-                       )
+                        EcflowSuiteTask(
+                            interpolation_task,
+                            lbc_fam,
+                            config,
+                            self.task_settings,
+                            self.ecf_files,
+                            input_template=input_template,
+                            variables=variables,
+                            trigger=None,
+                            ecf_files_remotely=self.ecf_files_remotely,
+                        )
 
-                       bdnr += 1
-                       bdtime += bdint
-                       if bdnr % bdmax == 0:
-                           intnr += 1
-                           int_trig = EcflowSuiteTriggers(
-                               [EcflowSuiteTrigger(bch_fam)]
-                           )
-                           break
+                        bdnr += 1
+                        bdtime += bdint
+                        if bdnr % bdmax == 0:
+                            intnr += 1
+                            int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(bch_fam)])
+                            break
 
-                   int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(int_fam)])
+                    int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(int_fam)])
             else:
                 int_trig = inputdata_done
 
