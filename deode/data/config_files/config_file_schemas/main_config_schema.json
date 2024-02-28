@@ -169,10 +169,6 @@
           "description": "Activate generation of a PGD file",
           "type": "boolean"
         },
-        "do_prep": {
-          "description": "Run prep if cold start",
-          "type": "boolean"
-        },
 	"mode": {
 	  "description": "Choose a strategy to achieve initial/initial_sfx files (start:  start from interpolated files and then propagate the FG between cycles, restart: start from a previous run and then propagate the FG between cycles, cold_start: always start from interpolated files).",
 	  "type": "string",
