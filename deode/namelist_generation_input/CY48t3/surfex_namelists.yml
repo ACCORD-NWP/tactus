@@ -18,7 +18,7 @@ sfx_pgd_isba_dif:
   NAM_ISBA:
     CISBA: "DIF"
     NGROUND_LAYER: 14
-    NPATCH: 3
+    NPATCH: ${pgd.npatch} 
     CPEDO_FUNCTION: "CO84"
     XUNIF_RUNOFFB: 0.2
     YSOC_TOP: "soc_top"
@@ -62,7 +62,7 @@ sfx_pgd:
     YSANDFILETYPE: "DIRECT"
     CISBA: "DIF"
     NGROUND_LAYER: 14
-    NPATCH: 3
+    NPATCH: ${pgd.npatch} 
   NAM_PGD_GRID:
     CGRID: "CONF PROJ "
   NAM_ZS:
@@ -118,7 +118,7 @@ sfx_forecast:
     XZ0SN: 0.01
   NAM_WRITE_SURF_ATM:
     LNOWRITE_TEXFILE: True
-    LSPLIT_PATCH: true
+    LSPLIT_PATCH: True
   NAM_FRAC:
     LECOSG: True
 

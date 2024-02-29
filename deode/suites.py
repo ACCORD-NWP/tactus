@@ -387,7 +387,7 @@ class SuiteDefinition(object):
                 args = ""
                 int_trig = inputdata_done
 
-                # we don't need LBC000 if this is not first cycle or mode = cold_start
+                # we don't need LBC000 if this is not first cycle or mode != cold_start
                 if self.mode == "restart" or (self.mode == "start" and not self.do_prep):
                     bdtime = basetime + bdint
                     bdnr = 1
@@ -397,8 +397,10 @@ class SuiteDefinition(object):
 
                 intbdint = int(bdint.total_seconds() // 3600)
 
+                e923_update_done = None
+
                 if self.do_prep:
-                    EcflowSuiteTask(
+                    prep_task = EcflowSuiteTask(
                         "Prep",
                         int_fam,
                         config,
@@ -407,6 +409,22 @@ class SuiteDefinition(object):
                         input_template=input_template,
                         ecf_files_remotely=self.ecf_files_remotely,
                     )
+                    prep_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prep_task)])
+
+                    if self.csc == "ALARO":
+                        e923_update_task = EcflowSuiteTask(
+                            "E923Update",
+                            int_fam,
+                            config,
+                            self.task_settings,
+                            self.ecf_files,
+                            trigger=prep_done,
+                            input_template=input_template,
+                            ecf_files_remotely=self.ecf_files_remotely,
+                        )
+                        e923_update_done = EcflowSuiteTriggers(
+                            [EcflowSuiteTrigger(e923_update_task)]
+                        )
 
                     if self.mode != "cold_start" or self.csc == "ALARO":
                         self.do_prep = False
@@ -428,7 +446,7 @@ class SuiteDefinition(object):
                             f"LBC{bdnr*intbdint:02}",
                             bch_fam,
                             self.ecf_files,
-                            trigger=None,
+                            trigger=e923_update_done,
                             variables=None,
                             ecf_files_remotely=self.ecf_files_remotely,
                         )

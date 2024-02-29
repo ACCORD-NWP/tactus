@@ -27,7 +27,7 @@ class E923(Task):
         self.pgd_prel = self.config["file_templates.pgd_prel.archive"]
         self.months = [f"{mm:02d}" for mm in range(1, 13)]
 
-        self.master = self.get_binary("MASTERODB")
+        self.master = "/perm/sink/pack/e923_update/bin/MASTERODB"
 
         self.nlgen = NamelistGenerator(self.config, "master")
 
@@ -87,6 +87,7 @@ class E923(Task):
         # PGD input
 
         self.fmanager.input(f"{self.climdir}/{self.pgd_prel}", "Neworog")
+        self.fmanager.input(f"{self.climdir}/{self.pgd_prel}", "Newsuborog")
 
         # Part 0
         i = 0

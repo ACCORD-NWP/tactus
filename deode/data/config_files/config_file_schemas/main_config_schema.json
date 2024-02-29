@@ -126,6 +126,11 @@
       "description": "Settings for control of Pgd selection.",
       "type": "object",
       "properties": {
+	"npatch": {
+	  "title": "Number of patches for surfex variables",
+	  "type": "integer",
+	  "default": 3
+	},
         "one_decade": {
           "title": "Option for using one decade",
           "type": "boolean",
