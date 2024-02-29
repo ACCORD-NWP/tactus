@@ -67,7 +67,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   NPROCX = 1
   NPROCY = 1
   SCHOST = "hpc"
-  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep"]
+  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep", "E923Update"]
   WRAPPER = "srun"
 
 [serial.BATCH]
@@ -117,6 +117,12 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 
 [task_exceptions.CreateGrib.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
+
+[task_exceptions.E923Update.ENV]
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/usr/local/apps/ecmwf-toolbox/2021.08.3.0/INTEL/2021.4/lib/"
+
+[task_exceptions.E923Update.MODULES]
+  OPENMPI = ["load", "openmpi/4.1.1"]
 
 [task_exceptions.e927]
   NPROC = 16

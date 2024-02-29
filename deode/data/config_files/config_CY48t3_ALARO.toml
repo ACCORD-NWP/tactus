@@ -38,7 +38,7 @@
 
 [include]
   archiving = "include/archiving.toml"
-  domain = "include/domains/DEMO_60x80_2500m.toml"
+  domain = "include/domains/SI13.toml"
   extractsqlite = "include/sqlite.toml"
   file_templates = "include/file_templates.toml"
   macros = "include/macros.toml"
@@ -57,6 +57,7 @@
   create_static_data = true
   create_time_dependent_suite = true
   do_archiving = true
+  do_e923_update = true
   do_extractsqlite = true
   do_marsprep = true
   do_pgd = true

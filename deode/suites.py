@@ -72,6 +72,7 @@ class SuiteDefinition(object):
         self.csc = config["general.csc"]
 
         self.create_static_data = config["suite_control.create_static_data"]
+        self.do_e923_update = config["suite_control.do_e923_update"]
         self.do_soil = config["suite_control.do_soil"]
         self.do_pgd = config["suite_control.do_pgd"]
         self.one_decade = config["pgd.one_decade"]
@@ -302,7 +303,7 @@ class SuiteDefinition(object):
         prev_cycle_trigger = None
         prev_interpolation_trigger = None
 
-        for cycle in cycles.values():
+        for i, cycle in cycles.items():
             cycle_day = cycle["day"]
             if self.create_static_data:
                 inputdata_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(static_data)])
@@ -411,7 +412,7 @@ class SuiteDefinition(object):
                     )
                     prep_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prep_task)])
 
-                    if self.csc == "ALARO":
+                    if self.csc == "ALARO" and self.do_e923_update:
                         e923_update_task = EcflowSuiteTask(
                             "E923Update",
                             int_fam,
@@ -428,6 +429,16 @@ class SuiteDefinition(object):
 
                     if self.mode != "cold_start" or self.csc == "ALARO":
                         self.do_prep = False
+
+                if self.csc == "ALARO" and self.do_e923_update:
+                    try:
+                        next_cycle = cycles[str(int(i) + 1)]
+                        if as_datetime(cycle["day"]).strftime("%m") != as_datetime(
+                            next_cycle["day"]
+                        ).strftime("%m"):
+                            self.do_prep = True
+                    except KeyError:
+                        logger.debug("It is last cycle")
 
                 while bdtime <= endtime:
                     bch_fam = EcflowSuiteFamily(

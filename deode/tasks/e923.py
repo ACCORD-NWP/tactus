@@ -27,7 +27,7 @@ class E923(Task):
         self.pgd_prel = self.config["file_templates.pgd_prel.archive"]
         self.months = [f"{mm:02d}" for mm in range(1, 13)]
 
-        self.master = "/perm/sink/pack/e923_update/bin/MASTERODB"
+        self.master = self.get_binary("MASTERODB")
 
         self.nlgen = NamelistGenerator(self.config, "master")
 
