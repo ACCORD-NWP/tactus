@@ -39,7 +39,7 @@ class E923Update(Task):
         pgd_file = self.platform.substitute(
             self.config["file_templates.pgd.archive"], basetime=self.basetime
         )
-        self.fmanager.input(f"{self.climdir}/{pgd_file}", pgd_file)
+        self.fmanager.input(f"{self.climdir}/{pgd_file}", "pgd_file")
         # sfx init
         sfx_init = self.platform.substitute(f"{self.archive}/ICMSH@CNMEXP@INIT.sfx")
         self.fmanager.input(sfx_init, "input_sfx")
@@ -65,6 +65,6 @@ class E923Update(Task):
         fa_sfx2clim = "/perm/sink/e923_update/e923_update/fa_sfx2clim"
         self.fmanager.input(fa_sfx2clim, "fa_sfx2clim")
         batch = BatchJob(os.environ, wrapper=self.wrapper)
-        batch.run(f"fa_sfx2clim nam {pgd_file} input_sfx {climfile}")
+        batch.run(f"fa_sfx2clim nam pgd_file input_sfx {climfile}")
 
         self.archive_logs(glob.glob("NODE.*"), target=self.climdir)
