@@ -24,7 +24,6 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WRAPPER = "srun"
 
 [gnu.BATCH]
-  ACCOUNT = "#SBATCH --account=sialadin"
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
@@ -41,7 +40,6 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WRAPPER = "srun"
 
 [parallel.BATCH]
-  ACCOUNT = "#SBATCH --account=sialadin"
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   QOS = "#SBATCH --qos=np"
   WALLTIME = "#SBATCH --time=00:10:00"
@@ -72,7 +70,6 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WRAPPER = "srun"
 
 [serial.BATCH]
-  ACCOUNT = "#SBATCH --account=sialadin"
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"

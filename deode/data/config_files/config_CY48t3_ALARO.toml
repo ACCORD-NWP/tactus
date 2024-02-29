@@ -38,7 +38,7 @@
 
 [include]
   archiving = "include/archiving.toml"
-  domain = "include/domains/SI13.toml"
+  domain = "include/domains/DEMO_60x80_2500m.toml"
   extractsqlite = "include/sqlite.toml"
   file_templates = "include/file_templates.toml"
   macros = "include/macros.toml"
