@@ -32,7 +32,7 @@ Each PR comes with its own improvements and flaws. The reviewer should check the
 ## Local testing
 No-one likes to wait for the CI to run tests. It is therefore recommended to run tests locally before pushing to the remote repository, and before creating a PR, but no one will force you to do this: how you work locally is entirely up to you.
 
-For convenience, however, we have added a few commands you can use to check that the code is linted, the tests pass, etc. Some of these are exemplified in the next subsections. Please run
+For convenience, however, we have added a few commands you can use to check that the code is linted, the tests pass, etc. Some of these are exemplified in the next subsections. Please run **inside of your poetry shell**:
 ```shell
 poetry devtools -h
 ```
@@ -64,7 +64,8 @@ poetry devtools pytest
 ```
 
 ### Generate and view the documentation to be published to our [docpages](https://destination-earth-digital-twins.github.io/deode-prototype-docs/)
-  ```shell
+
+```shell
 poetry devtools doc clean
 poetry devtools doc build
 poetry devtools doc view
@@ -79,7 +80,7 @@ poetry devtools doc
 The testing procedure above does not test the full functionality together with the IAL code. While waiting for a automated CI/CD system to be in place a few manual steps are required on atos to check the functionality.
 
 - ✔️ Run the default config file, using CY48t3, under ecflow following the instructions in the [README](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md) file.
-- ✔️ Repeat the same using the config file for CY46h1, i.e. `deode/data/config_files/config_CY46h1.toml`.
+- ✔️ Repeat the same using the config file for CY46h1 and CY48t3\_Alaro, i.e. `deode/data/config_files/config_[CY46h1|CY48t3_Alaro].toml`.
 - ✔️ Test the nesting procedure for both CY46h1 and CY48t3 using the config files `deode/data/config_files/config_[CY46h1|CY48t3]_target.toml`. Both of the runs will use data from the first two tests.
 - ✔️ Finally test the stand alone task for the forecast following the instructions in the [README](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md) file.
 
@@ -93,6 +94,3 @@ As the project grows, we may add more branches, such as an `integration` branch,
 
 ### Forks
 Forks are used to develop features and bug fixes. They are created from the `develop` branch by forking to a local repo. When a feature is ready, a PR is created to merge it to `develop`. When a bug fix is ready, a PR is created to merge it to `develop` and `master`.
-
-## Run on LUMI
-To run the project on LUMI, you need to have a LUMI account and add your SSH key to it. Please check the [online instructions on how to do that](https://docs.lumi-supercomputer.eu/firststeps/SSH-keys/). Once you have your SSH key added, you can login to LUMI by running `ssh -i <your-private-key> <username>@@lumi.csc.fi`. Once logged in, create a SSH key and add that to your GitHub account so you can clone the repo. Then, please follow the download, install and usage instructions provided in the [README](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md) file.

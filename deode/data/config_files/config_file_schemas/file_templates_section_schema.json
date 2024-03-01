@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "File Templates",
+  "title": "File Templates, defined in include/file_templates.toml",
   "description": "Templates for file names. Each item contains of an archive and a model key where archive is the name template for files in the archive and model the name expected as input/output of the IAL code.",
   "type": "object",
   "additionalProperties": true,

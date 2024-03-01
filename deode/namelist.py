@@ -290,8 +290,9 @@ class NamelistGenerator:
         if os.path.isfile(ref_namelist):
             logger.info("Use reference namelist {}", ref_namelist)
             nl = f90nml.read(ref_namelist)
-            nldict = {self.target: nl.todict()}
-            cndict = {self.target: [self.target]}
+            target = "user_namelist"
+            nldict = {target: nl.todict()}
+            cndict = {self.target: [target]}
             found = False
         else:
             logger.warning(
@@ -418,6 +419,36 @@ class NamelistGenerator:
 
         return self.check_replace_scalar(node)
 
+    def expand_cndict(self, target):
+        """Recursively generates list of namelist groups to assemble.
+
+        Args:
+            target (str): task to generate namelists for
+
+        Raises:
+            RuntimeError:
+
+        Returns:
+            cnlist (list): list of namelist groups
+
+        """
+        cndt = self.cndict_targets
+        if target in self.cndict_targets:
+            raise RuntimeError(
+                f"Target {target} already in cnlist causing endless loop:{cndt}"
+            )
+        self.cndict_targets.append(target)
+
+        cnlist = [self.platform.substitute(x) for x in flatten_list(self.cndict[target])]
+        cnlist_ = cnlist.copy()
+        for x in cnlist_:
+            if x in self.cndict:
+                i = cnlist.index(x)
+                cnlist[i] = self.expand_cndict(x)
+
+        cnlist = flatten_list(cnlist)
+        return cnlist
+
     def assemble_namelist(self, target):
         """Generate the namelists for 'target'.
 
@@ -430,10 +461,11 @@ class NamelistGenerator:
         """
         # Start with empty result dictionary
         nlres = {}
-
         nldict = self.nldict
+
         # Assemble the target namelists based on the given category order
-        for catg in flatten_list(self.cndict[target]):
+        self.cndict_targets = []
+        for catg in self.expand_cndict(target):
             # variable substitution removed at this level (may be resurrected)
             # assemble namelists for this category
             if catg in nldict:

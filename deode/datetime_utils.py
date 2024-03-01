@@ -77,6 +77,9 @@ def expand_output_settings(output_settings, forecast_range):
         output_settings (tuple, list, str): Specifies the output steps
         forecast_range (str): Forecast range in duration syntax
 
+    Raises:
+        RuntimeError: Handle erroneous time increment
+
     Returns:
         sections (list) : List of output subsections
 
@@ -89,6 +92,11 @@ def expand_output_settings(output_settings, forecast_range):
     elif isinstance(output_settings, (tuple, list)):
         check_syntax(output_settings, 2)
         oi = output_settings
+
+    dt0 = as_timedelta("PT0H")
+    for x in oi:
+        if as_timedelta(x.split(":")[2]) == dt0:
+            raise RuntimeError(f"Zero size time increments not allowed:{x}")
 
     sections = [[as_timedelta(y) for y in x.split(":")] for x in oi]
 
@@ -135,9 +143,7 @@ def cycle_offset(basetime, dt, shift=DatetimeConstants.DEFAULT_SHIFT):
 
     """
     reftime = basetime.hour * 3600 + basetime.minute * 60 + basetime.second
-    t = dt.days * 3600 * 24 + dt.seconds
-    shift_seconds = shift.days * 3600 * 24 + shift.seconds
-    k = reftime % t - shift_seconds
+    k = reftime % int(dt.total_seconds()) - int(shift.total_seconds())
     return pd.Timedelta(seconds=k)
 
 
@@ -167,3 +173,36 @@ def get_decade(dt) -> str:
     decades_dd = f"{decades_dd:02d}"
 
     return f"{decades_mm}{decades_dd}"
+
+
+def get_decadal_list(dt_start, dt_end) -> list:
+    """Return a list of dates for which decadal pgd files have to be created."""
+    # check decade of start and end of period
+    start_decade = get_decade(dt_start)
+    end_decade = get_decade(dt_end)
+
+    if start_decade != end_decade:
+        # More than one decade is covered by period.
+        if (dt_end - dt_start).days > 10:
+            for x in range(0, (dt_end - dt_start).days, 10):
+                if x == 0:
+                    list_of_decades = [dt_start]
+                else:
+                    list_of_decades.append(dt_start + as_timedelta(f"P{x}D"))
+        else:
+            list_of_decades = [dt_start, dt_end]
+    else:
+        list_of_decades = [dt_start]
+    return list_of_decades
+
+
+def get_month_list(start, end) -> list:
+    """Get list of months between to given dates (input as string)."""
+    str_month_list = pd.date_range(start, end, freq="MS").strftime("%m").tolist()
+    month_list = [int(i) for i in str_month_list]
+    if len(month_list) == 0:
+        month_list = [int(as_datetime(start).month)]
+    else:
+        month_list.insert(0, int(as_datetime(start).month))
+
+    return month_list

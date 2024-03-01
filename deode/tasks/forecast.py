@@ -32,7 +32,6 @@ class Forecast(Task):
 
         self.basetime = as_datetime(self.config["general.times.basetime"])
         self.cycle_length = as_timedelta(self.config["general.times.cycle_length"])
-        self.bdmodel = self.config["boundaries.bdmodel"]
         self.bdint = as_timedelta(self.config["boundaries.bdint"])
         self.intp_bddir = self.config["system.intp_bddir"]
         self.forecast_range = self.config["general.times.forecast_range"]
@@ -43,6 +42,12 @@ class Forecast(Task):
         self.archive = self.platform.get_system_value("archive")
         self.deode_home = self.config["platform.deode_home"]
         self.output_settings = self.config["general.output_settings"]
+        self.surfex = self.config["general.surfex"]
+
+        try:
+            self.accelerator_device = self.config["accelerator_device"]
+        except KeyError:
+            self.accelerator_device = None
 
         # Update namelist settings
         self.nlgen_master = NamelistGenerator(self.config, "master")
@@ -87,6 +92,20 @@ class Forecast(Task):
         for ifile in turbine_list:
             infile = os.path.basename(ifile)
             self.fmanager.input(ifile, infile)
+
+    def accelerator_device_input(self):
+        """Copy the input files for GPU execution.
+
+        - parallel_method: input file with parallelisation technique for each algorithm
+        - synchost: input file defining optional device-to-host memory transfers
+        - select_gpu: wrapper file for sbatch, binding GPU to MPI rank
+        """
+        for key, file_definition in self.accelerator_device.items():
+            if key in ["parallel_method", "sync_host", "select_gpu"]:
+                input_file = file_definition[0]
+                output_file = file_definition[1]
+                if input_file and output_file:
+                    self.fmanager.input(input_file, output_file)
 
     def merge_output(self, filetype, periods):
         """Merge distributed forecast model output.
@@ -210,8 +229,9 @@ class Forecast(Task):
             self.wfp_input()
 
         # Construct master namelist and include fullpos config
-        forecast_namelist = f"forecast_bdmodel_{self.bdmodel}"
+        forecast_namelist = "forecast"
         self.nlgen_master.load(forecast_namelist)
+        logger.info(self.nlgen_master)
         self.nlgen_master = check_fullpos_namelist(self.config, self.nlgen_master)
 
         nlres = self.nlgen_master.assemble_namelist(forecast_namelist)
@@ -236,6 +256,9 @@ class Forecast(Task):
         # Initial files
         initfile, initfile_sfx = InitialConditions(self.config).find_initial_files()
         self.fmanager.input(initfile, f"ICMSH{self.cnmexp}INIT")
+        if not self.surfex:
+            initfile_sfx = None
+
         if initfile_sfx is not None:
             self.fmanager.input(initfile_sfx, f"ICMSH{self.cnmexp}INIT.sfx")
 
@@ -256,6 +279,12 @@ class Forecast(Task):
             self.fmanager.input(f"{intp_bddir}/{source}", source)
             cdtg += self.bdint
             i += 1
+
+        if self.accelerator_device:
+            logger.info("Processing accelerator_device section")
+            self.accelerator_device_input()
+        else:
+            logger.info("No accelerator_device section found")
 
         # Run MASTERODB
         batch = BatchJob(os.environ, wrapper=self.wrapper)

@@ -2,7 +2,7 @@
   # Package ID info
   description = "Prototype for the DEODE scripting system."
   name = "deode"
-  version = "0.3.0"
+  version = "0.4.0"
   # Other package info
   authors = ["The WP5.1 development group in the DE_330 project."]
   documentation = "https://destination-earth-digital-twins.github.io/deode-prototype-docs"
@@ -58,6 +58,7 @@
   toml-formatter = {git = "https://github.com/paulovcmedeiros/toml-formatter"}
   # flake8 plugins for stuff not yet on ruff.
   # See <https://github.com/astral-sh/ruff/issues/458>.
+  poethepoet = {extras = ["poetry-plugin"], version = "0.24.4"}
   pydoclint = "^0.3.8" # Replaces darglint, but is maintained & faster
 
 [tool.poetry.group.test.dependencies]

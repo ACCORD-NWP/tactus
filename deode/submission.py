@@ -242,7 +242,14 @@ class TaskSettings(object):
         return settings
 
     def parse_job(
-        self, task, config, input_template_job, task_job, variables=None, ecf_micro="%"
+        self,
+        task,
+        config,
+        input_template_job,
+        task_job,
+        variables=None,
+        ecf_micro="%",
+        scheduler="ecflow",
     ):
         """Read default job and change interpretor.
 
@@ -253,6 +260,7 @@ class TaskSettings(object):
             task_job (str): Task container
             variables (_type_, optional): _description_. Defaults to None.
             ecf_micro (str, optional): _description_.
+            scheduler (str, optional): Scheduler. Defaults to ecflow.
 
         Raises:
             RuntimeError: In case of missing module env file
@@ -261,52 +269,72 @@ class TaskSettings(object):
         interpreter = self.get_task_settings(task, "INTERPRETER")
         logger.debug(interpreter)
         if interpreter is None:
-            interpreter = f"#!{sys.executable}"
+            interpreter = f"{sys.executable}"
 
         logger.debug(interpreter)
-        with open(input_template_job, mode="r", encoding="utf-8") as file_handler:
-            input_content = file_handler.read()
         dir_name = os.path.dirname(os.path.realpath(task_job))
 
         deodemakedirs(dir_name, unixgroup=self.unix_group)
 
         with open(task_job, mode="w", encoding="utf-8") as file_handler:
-            file_handler.write(f"{interpreter}\n")
+            file_handler.write("#!/bin/bash\n")
 
             # Batch settings
             batch_settings = self.get_task_settings(
                 task, "BATCH", variables=variables, ecf_micro=ecf_micro
             )
+            # Add account if not set
+            if "account" not in batch_settings and "account" in config["submission"]:
+                batch_settings["ACCOUNT"] = config["submission.account"]
+
             logger.debug("batch settings {}", batch_settings)
             for b_setting in batch_settings.values():
                 file_handler.write(f"{b_setting}\n")
 
-            python_task_env = ""
+            if scheduler is not None and scheduler == "ecflow":
+                ecf_vars = [
+                    "ECF_HOST",
+                    "ECF_PORT",
+                    "ECF_NAME",
+                    "ECF_PASS",
+                    "ECF_TRYNO",
+                    "ECF_RID",
+                    "ECF_TIMEOUT",
+                    "BASETIME",
+                    "VALIDTIME",
+                    "LOGLEVEL",
+                    "ARGS",
+                    "WRAPPER",
+                    "NPROC",
+                    "NPROC_IO",
+                    "NPROCX",
+                    "NPROCY",
+                    "CONFIG",
+                    "DEODE_HOME",
+                    "KEEP_WORKDIRS",
+                ]
+                for ecf_var in ecf_vars:
+                    file_handler.write(f'export {ecf_var}="%{ecf_var}%"\n')
 
             # Module settings
             module_settings = self.get_task_settings(
                 task, "MODULES", variables=variables, ecf_micro=ecf_micro
             )
-            logger.debug("module_settings:{}", module_settings)
+            logger.debug("module settings {}", module_settings)
 
-            m_settings = ["import os"]
-            if len(module_settings) > 0:
-                env_file = (
-                    f"{self.submission_defs['module_initpath']}/env_modules_python.py"
-                )
+            if module_settings is not None and len(module_settings) > 0:
+                env_file = f"{self.submission_defs['module_initpath']}/bash"
                 if not os.path.isfile(env_file):
                     raise RuntimeError(
                         f"Environment file {env_file} is not a file or does not exists"
                     )
 
-                m_settings.append(
-                    f"exec(open('{env_file}').read())",
-                )
-                m_settings += [
-                    f"module('load', '{val}')" for val in module_settings.values()
-                ]
-
-            python_task_env += "\n".join(m_settings)
+                file_handler.write(f". {env_file}\n")
+                for key in module_settings.values():
+                    if len(key) < 2 or len(key) > 3:
+                        raise RuntimeError(f"Module command has the wrong length:{key}")
+                    cmd = "module " + " ".join([f"{x}" for x in key])
+                    file_handler.write(f"{cmd}\n")
 
             # Environment settings
             env_settings = self.get_task_settings(
@@ -314,23 +342,21 @@ class TaskSettings(object):
             )
             logger.debug(env_settings)
 
-            python_task_env += "\n"
             for key, val in env_settings.items():
-                python_task_env += f"os.environ['{key}'] = '{val}'\n"
-            input_content = input_content.replace("# @ENV_SUB@", python_task_env)
-            input_content = input_content.replace("@STAND_ALONE_TASK_NAME@", task)
+                file_handler.write(f'export {key}="{val}"\n')
 
-            platform = Platform(config)
-            deode_home = platform.get_platform_value("DEODE_HOME")
+            if scheduler is None:
+                file_handler.write(f'export STAND_ALONE_TASK_NAME="{task}"\n')
 
-            input_content = input_content.replace("@STAND_ALONE_DEODE_HOME@", deode_home)
-            config_file = config.metadata["source_file_path"]
+                platform = Platform(config)
+                deode_home = platform.get_platform_value("DEODE_HOME")
 
-            if config_file is not None:
-                input_content = input_content.replace(
-                    "@STAND_ALONE_TASK_CONFIG@", str(config_file)
-                )
-            file_handler.write(input_content)
+                file_handler.write(f'export STAND_ALONE_DEODE_HOME="{deode_home}"\n')
+                config_file = config.metadata["source_file_path"]
+
+                file_handler.write(f'export STAND_ALONE_TASK_CONFIG="{config_file!s}"\n')
+
+            file_handler.write(f"{interpreter} {input_template_job} || exit 1\n")
         # Make file executable for user
         os.chmod(task_job, 0o744)
 
@@ -375,6 +401,7 @@ class NoSchedulerSubmission:
             config=config,
             input_template_job=template_job,
             task_job=task_job,
+            scheduler=None,
         )
         cmd = (
             f"{troika} -c {troika_config} submit {self.task_settings.job_type} "

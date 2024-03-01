@@ -5,6 +5,10 @@ Miscellaneous Documentation
    :parser: myst_parser.sphinx_
 
 .. include::
+    markdown_docs/lumi.md
+   :parser: myst_parser.sphinx_
+
+.. include::
     markdown_docs/domains.md
    :parser: myst_parser.sphinx_
 

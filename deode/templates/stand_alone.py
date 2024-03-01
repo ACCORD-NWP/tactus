@@ -1,13 +1,12 @@
 """NoSchedulerTemplate."""
 
+import os
 
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import derived_variables, set_times
 from deode.logs import logger  # Use deode's own configs for logger
 from deode.submission import ProcessorLayout, TaskSettings
 from deode.tasks.discover_task import get_task
-
-# @ENV_SUB@
 
 logger.enable("deode")
 
@@ -37,7 +36,7 @@ def default_main(task, config, deode_home):
 
 
 if __name__ == "__main__":
-    TASK_NAME = "@STAND_ALONE_TASK_NAME@"
-    CONFIG = "@STAND_ALONE_TASK_CONFIG@"
-    DEODE_HOME = "@STAND_ALONE_DEODE_HOME@"
+    TASK_NAME = os.environ["STAND_ALONE_TASK_NAME"]
+    CONFIG = os.environ["STAND_ALONE_TASK_CONFIG"]
+    DEODE_HOME = os.environ["STAND_ALONE_DEODE_HOME"]
     default_main(TASK_NAME, CONFIG, DEODE_HOME)

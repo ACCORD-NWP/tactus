@@ -31,7 +31,7 @@ def set_arg():
     arg = ArgumentParser()
     arg.deode_home = None
     arg.namelist_type = "master"
-    arg.namelist = "forecast_bdmodel_ifs"
+    arg.namelist = "forecast"
     arg.namelist_name = None
     arg.domain = "test"
     arg.no_substitute = True
@@ -39,13 +39,13 @@ def set_arg():
 
 
 @pytest.fixture()
-def nlint_arg():
+def nlint_arg(tmp_directory):
     arg = ArgumentParser()
     arg.deode_home = None
     arg.namelist = ["deode/data/namelists/unit_testing/nl_master_integrate"]
     arg.yaml = "deode/data/namelists/unit_testing/nl_master_base.yml"
     arg.tag = "nl_master_base"
-    arg.output = "/tmp/nl_master_integrated.yml"  # noqa S108
+    arg.output = f"{tmp_directory}/nl_master_integrated.yml"
     arg.domain = "test"
     return arg
 
@@ -57,36 +57,40 @@ def nlint_arg():
             "config": {
                 "general": {"accept_static_namelists": False},
             },
-            "path": "/tmp/test1",  # noqa S108
+            "path": "test1",
             "clean": False,
         },
         {
             "config": {
                 "general": {"accept_static_namelists": True},
-                "system": {"namelists": "/tmp/test1"},  # noqa S108
+                "system": {"namelists": "to-be-replaced"},
             },
-            "path": "/tmp/test2",  # noqa S108
+            "path": "test2",
             "clean": True,
         },
         {
             "config": {
                 "general": {"accept_static_namelists": True},
-                "system": {"namelists": "/tmp/test2"},  # noqa S108
+                "system": {"namelists": "to-be-replaced"},
             },
-            "path": "/tmp/test3",  # noqa S108
+            "path": "test3",
             "clean": False,
         },
     ],
 )
-def test_show_namelist(set_arg, parsed_config, param):
-    config = parsed_config.copy(update=param["config"])
+def test_show_namelist(set_arg, parsed_config, param, tmp_directory):
+    update = param["config"]
+    pth = param["path"]
+    outpath = f"{tmp_directory}/{pth}"
+    if "system" in update and "namelists" in update["system"]:
+        update["system"]["namelists"] = outpath
+    config = parsed_config.copy(update=update)
     prev_cwd = Path.cwd()
-    outpath = param["path"]
     os.makedirs(outpath, mode=0o1777, exist_ok=True)
     os.chdir(outpath)
     show_namelist(set_arg, config)
     os.chdir(prev_cwd)
-    assert os.path.isfile(f"{outpath}/namelist_master_forecast_bdmodel_ifs")
+    assert os.path.isfile(f"{outpath}/namelist_master_forecast")
     assert os.path.isfile(f"{outpath}/xxt00000000")
     assert os.path.isfile(f"{outpath}/xxtddddhh00")
     assert os.path.isfile(f"{outpath}/xxtddddhhmm")

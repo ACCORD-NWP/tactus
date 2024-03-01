@@ -1,11 +1,11 @@
 """unit tests for extractsqlite."""
 import datetime
-import itertools
+import os
 
 import pandas
 import pytest
 
-from deode.tasks.extractsqlite import ExtractSQLite
+import deode.sqlite_utils as sqlite
 
 
 class MockObject(object):
@@ -14,7 +14,7 @@ class MockObject(object):
 
 @pytest.fixture(scope="session")
 def tmp_sqlite_path(tmp_path_factory):
-    return tmp_path_factory.getbasetemp() / "sqlite"
+    return tmp_path_factory.getbasetemp().as_posix()
 
 
 class TestExtractSQLite:
@@ -23,27 +23,12 @@ class TestExtractSQLite:
     sqlite_template = "FC_@PP@_@YYYY@@MM@_@HH@.sqlite"
     fcdate = datetime.datetime.strptime("20230915T00", "%Y%m%dT%H")
 
-    get_keylist = ExtractSQLite.get_keylist
-
-    def get_nearest(self, gid, inlat, inlon, is_lsm, npoints):  # noqa ARG002
-        x = MockObject()
-        x.distance = 0
-        x.index = 0
-        return [x] * npoints
-
-    param_match = ExtractSQLite.param_match
-    get_date_info = ExtractSQLite.get_date_info
-    sqlite_name = ExtractSQLite.sqlite_name
-    db_create = ExtractSQLite.db_create
-    db_cleanup = ExtractSQLite.db_cleanup
-    fctable_definition = ExtractSQLite.fctable_definition
-    interp_from_weights = ExtractSQLite.interp_from_weights
     model_name = "DEODE"
-
-    def date_from_gribinfo(*args, **kwargs):  # noqa ARG002
-        fcdate = datetime.datetime.strptime("20230915T00", "%Y%m%dT%H")
-        leadtime = 1
-        return fcdate, leadtime
+    weights = None
+    basetime = datetime.datetime.strptime("20230915T00", "%Y%m%dT%H")
+    infile_template = "mock_gribfile"
+    forecast_range = "PT1H"
+    infile_dt = "PT1H"
 
     param1 = {
         "harp_param": "T",
@@ -61,56 +46,82 @@ class TestExtractSQLite:
             "harp_param": "T",
             "method": "bilin",
             "grib_id": {
-                "shortName": "ok",
-                "productDefinitionTemplateNumber": "ok",
-                "typeOfLevel": "ok",
-                "level": [0, 20],
+                "shortName": "t",
+                "productDefinitionTemplateNumber": "8",
+                "typeOfLevel": "isobaricInhPa",
+                "level": [0, 50],
             },
             "level_name": "p",
-        }
+        },
+        {
+            "harp_param": "S",
+            "method": "bilin",
+            "grib_id": [{"shortName": "u"}, {"shortName": "v"}],
+            "common": {
+                "productDefinitionTemplateNumber": "8",
+                "typeOfLevel": "isobaricInhPa",
+                "level": 0,
+            },
+        },
     ]
     station_list = pandas.DataFrame({"lat": [0], "lon": [0], "SID": ["OK"]})
-    weights = {"nearest": [[[0, 0.0] * 4]], "bilin": [[[0, 0.0] * 4]]}
+
+    mockgrib = {
+        "shortName": "t",
+        "productDefinitionTemplateNumber": 8,
+        "indicatorOfUnitOfTimeRange": 13,
+        "indicatorOfUnitForTimeRange": 13,
+        "Nx": 2,
+        "Ny": 2,
+        "level": 0,
+        "typeOfLevel": "isobaricInhPa",
+        "dataDate": "20230915",
+        "dataTime": "000000",
+        "forecastTime": 7200,
+        "lengthOfTimeRange": 0,
+        "gridType": "lambert",
+        "Latin1InDegrees": 50.0,
+        "Latin2InDegrees": 50.0,
+        "LoVInDegrees": 0.0,
+        "DxInMetres": 1,
+        "DyInMetres": 1,
+    }
+    p4 = {"R": 6371229, "proj": "lcc", "lon_0": 0, "lat_1": 50, "lat_2": 50}
 
     def test_date(self):
-        ginfo = {
-            "productDefinitionTemplateNumber": 8,
-            "indicatorOfUnitOfTimeRange": 13,
-            "dataDate": 20230915,
-            "dataTime": 0,
-            "forecastTime": 7200,
-            "indicatorOfUnitForTimeRange": 13,
-            "lengthOfTimeRange": 3600,
-        }
-
-        fcdate, leadtime = ExtractSQLite.date_from_gribinfo(None, ginfo)
-        assert leadtime == 10800.0
-
-    def test_fctable(self):
-        primary_keys, all_keys = ExtractSQLite.fctable_definition(
-            self, self.param1, model="DEOD"
-        )
-        sqlite_name = ExtractSQLite.sqlite_name(self, self.param1, self.fcdate)
-        assert primary_keys["SID"] == "INT"
-        assert all_keys["DEOD"] == "DOUBLE"
-        assert sqlite_name == "FC_T_202309_00.sqlite"
-
-    def test_param(self):
-        assert ExtractSQLite.param_match(self, "mock_handle")["grib_id"]["level"] == "0"
+        fcdate, leadtime = sqlite.get_date_info(self.mockgrib)
+        assert leadtime == 7200
 
     def test_restrict(self):
-        x = ExtractSQLite.points_restrict(self, "mock_handle", self.station_list)
+        x = sqlite.points_restrict(self.mockgrib, self.station_list)
         assert x is not None
 
     def test_interp(self):
-        x = ExtractSQLite.interp_from_weights(self, "mock_handle", "nearest")
+        test_weights = {"nearest": [[[[0, 0], 0.0] * 4]], "bilin": [[[[0, 0], 0.0] * 4]]}
+        x = sqlite.interp_from_weights(self.mockgrib, test_weights, "bilin")
         assert x[0] == 0
 
     def test_train(self):
-        x = ExtractSQLite.train_weights(self, "mock_handle", lsm=False)
-        assert x["bilin"][0][0][0] == 0
+        x = sqlite.train_weights(self.station_list, self.mockgrib, lsm=False)
+        assert x["bilin"][0][0][0][0] == 0.0
 
     def test_parse(self, tmp_sqlite_path):
-        self.sqlite_path = str(tmp_sqlite_path)
-        x = ExtractSQLite.parse_file(self, itertools.count(1))
-        assert x == 2
+        # we pass "pre-trained" weights to avoid errors
+        test_weights = {"nearest": [[[[0, 0], 0.0] * 4]], "bilin": [[[[0, 0], 0.0] * 4]]}
+        # create a mockgrib file with 2 bytes
+        infile = tmp_sqlite_path + "/mock_gribfile"
+        with open(infile, "w") as inf:
+            inf.write("12")
+
+        nt, ni = sqlite.parse_grib_file(
+            infile=infile,
+            param_list=self.parameter_list,
+            station_list=self.station_list,
+            sqlite_template=tmp_sqlite_path + "/" + self.sqlite_template,
+            model_name="TEST",
+            weights=test_weights,
+        )
+        assert nt == 2
+        assert ni == 2
+        # check that sqlite file was created
+        assert os.path.isfile(tmp_sqlite_path + "/FC_T_202309_00.sqlite")

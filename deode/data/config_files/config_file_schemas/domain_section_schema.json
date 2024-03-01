@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Domain Section",
+    "title": "Domain Section, defined in files under include/domains",
     "description": "Model for validation of the data in the 'domain' section of the config file.",
     "type": "object",
     "additionalProperties": true,

@@ -104,7 +104,7 @@ class E923(Task):
         for fname in topo_files:
             self.fmanager.input(f"@E923_DATA@/GTOPT030/{fname}", fname)
 
-        self.nlgen.generate_namelist(f"e923_{i}", "fort.4")
+        self.nlgen.generate_namelist(f"e923_part_{i}", "fort.4")
         shutil.copy("fort.4", "fort.4_0")
         self.print_part(0)
         self.myexec(self.master, 0)
@@ -115,7 +115,7 @@ class E923(Task):
 
         # Part 1
         i = 1
-        self.nlgen.generate_namelist(f"e923_{i}", "fort.4")
+        self.nlgen.generate_namelist(f"e923_part_{i}", "fort.4")
         shutil.copy("fort.4", "fort.4_1")
         self.print_part(1)
         self.myexec(self.master, 1)
@@ -123,7 +123,7 @@ class E923(Task):
 
         # Part 2
         i = 2
-        self.nlgen.generate_namelist(f"e923_{i}", "fort.4")
+        self.nlgen.generate_namelist(f"e923_part_{i}", "fort.4")
         shutil.copy("fort.4", f"fort.4_{i}")
         ifiles = [
             "itp_GL",
@@ -168,7 +168,7 @@ class E923(Task):
         for ifile in ["N108_GL"]:
             self.fmanager.input(f"@E923_DATA@/N108/{ifile}", ifile)
 
-        self.nlgen.generate_namelist(f"e923_{i}", "fort.4")
+        self.nlgen.generate_namelist(f"e923_part_{i}", "fort.4")
         shutil.copy("fort.4", f"fort.4_{i}")
         self.print_part(i)
         self.myexec(self.master, i)
@@ -204,7 +204,7 @@ class E923(Task):
                 files.append(target)
                 self.fmanager.input(source, target)
 
-            self.nlgen.generate_namelist("e923_4", "fort.4")
+            self.nlgen.generate_namelist("e923_part_4", "fort.4")
             shutil.copy("fort.4", "fort.4_4")
             self.print_part(4, mm)
             self.myexec(self.master, 4)
@@ -218,7 +218,7 @@ class E923(Task):
                 files.append(target)
                 self.fmanager.input(source, target)
 
-            self.nlgen.generate_namelist("e923_5", "fort.4")
+            self.nlgen.generate_namelist("e923_part_5", "fort.4")
             shutil.copy("fort.4", "fort.4_5")
             self.print_part(5, mm)
             self.myexec(self.master, 5)
@@ -237,14 +237,14 @@ class E923(Task):
             self.fmanager.input("tpl_GL", "tsl_GL", provider_id="copy")
             self.fmanager.input("wpl_GL", "wsl_GL", provider_id="copy")
 
-            self.nlgen.generate_namelist("e923_6", "fort.4")
+            self.nlgen.generate_namelist("e923_part_6", "fort.4")
             shutil.copy("fort.4", "fort.4_6")
             self.print_part(6, mm)
             self.myexec(self.master, 6)
 
             # PART 8
             self.fmanager.input(f"@E923_DATA@/abc_O3/abc_quadra_{mm}", "abc_coef")
-            self.nlgen.generate_namelist("e923_8", "fort.4")
+            self.nlgen.generate_namelist("e923_part_8", "fort.4")
             shutil.copy("fort.4", "fort.4_8")
             self.print_part(8, mm)
             self.myexec(self.master, 8)
@@ -252,7 +252,7 @@ class E923(Task):
             # PART 9
             self.fmanager.input(f"@E923_DATA@/aero_tegen/aero.tegen.m{mm}_GL", "aero_GL")
 
-            self.nlgen.generate_namelist("e923_9", "fort.4")
+            self.nlgen.generate_namelist("e923_part_9", "fort.4")
             shutil.copy("fort.4", "fort.4_9")
             self.print_part(9, mm)
             self.myexec(self.master, 9)
@@ -281,9 +281,12 @@ class PgdUpdate(Task):
         self.climdir = self.platform.get_system_value("climdir")
 
         self.gl = self.get_binary("gl")
-        self.outfile = self.platform.substitute(self.config["file_templates.pgd.archive"])
+        self.basetime = config["task.args.basetime"]
+        self.outfile = self.platform.substitute(
+            self.config["file_templates.pgd.archive"], basetime=self.basetime
+        )
         self.pgd_prel = self.platform.substitute(
-            self.config["file_templates.pgd_prel.archive"]
+            self.config["file_templates.pgd_prel.archive"], basetime=self.basetime
         )
 
     def execute(self):

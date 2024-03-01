@@ -44,9 +44,6 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
 
-      - name: Install poethepoet
-        run: poetry self add 'poethepoet[poetry_plugin]'
-
       - name: Load cached venv (if cache exists)
         id: cached-poetry-dependencies
         uses: actions/cache@v3
@@ -66,4 +63,4 @@ jobs:
       #----------------------------------------------
       - name: Run linters
         run: |
-          poetry devtools lint
+          poetry run poetry devtools lint

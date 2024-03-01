@@ -45,13 +45,7 @@ def config_from_task_config_file():
     )
 
 
-@pytest.fixture(scope="module")
-def tmp_directory(tmp_path_factory):
-    """Return a temp directory valid for this module."""
-    return tmp_path_factory.getbasetemp().as_posix()
-
-
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def _module_mockers(module_mocker):
     # Patching ConfigParserDefaults.CONFIG_PATH so tests use the generated config
     original_submission_task_settings_parse_job = TaskSettings.parse_job

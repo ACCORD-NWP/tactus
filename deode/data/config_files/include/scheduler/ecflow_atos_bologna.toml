@@ -1,0 +1,12 @@
+[ecfvars]
+  ecf_files = "@HOME@/deode_ecflow/ecf_files"
+  ecf_files_remotely = "@HOME@/deode_ecflow/ecf_files"
+  ecf_home = "@HOME@/deode_ecflow/jobout"
+  ecf_host = "ecflow-gen-@USER@-001"
+  ecf_jobout = "@HOME@/deode_ecflow/jobout"
+  ecf_out = "@HOME@/deode_ecflow/jobout"
+  ecf_port = "3141"
+  ecf_remoteuser = "@USER@"
+  ecf_ssl = "0"
+  ecf_user = "@USER@"
+  hpc = "atos"

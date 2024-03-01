@@ -1,0 +1,11 @@
+gridtype = "linear"
+name = "DEOL"
+nimax = 709
+njmax = 709
+tstep = 75
+xdx = 9000.0
+xdy = 9000.0
+xlat0 = 50.0
+xlatcen = 50.0
+xlon0 = 8.0
+xloncen = 8.0

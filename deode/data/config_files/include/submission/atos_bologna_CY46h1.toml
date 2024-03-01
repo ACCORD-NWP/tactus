@@ -1,5 +1,6 @@
 bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2023-10-18/R64"
 default_submit_type = "serial"
+lfftw = true
 module_initpath = "/usr/local/apps/lmod/8.6.8/init"
 nproma = -32
 
@@ -23,7 +24,6 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WRAPPER = "srun"
 
 [gnu.BATCH]
-  ACCOUNT = "#SBATCH -A msdeode"
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
@@ -31,7 +31,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=00:15:00"
 
 [gnu.MODULES]
-  ECMWFTOOLBOX = "ecmwf-toolbox/2021.08.3.0"
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
 
 [parallel]
   NPROC = 32
@@ -40,7 +40,6 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WRAPPER = "srun"
 
 [parallel.BATCH]
-  ACCOUNT = "#SBATCH -A msdeode"
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   QOS = "#SBATCH --qos=np"
   WALLTIME = "#SBATCH --time=00:10:00"
@@ -53,14 +52,14 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 
 [parallel.MODULES]
   # First load the prgenv
-  PRGENV = "prgenv/intel"
+  PRGENV = ["load", "prgenv/intel"]
   # The rest
-  ECMWFTOOLBOX = "ecmwf-toolbox/2021.08.3.0"
-  FFTW = "fftw/3.3.9"
-  HDF5 = "hdf5/1.10.6"
-  MKL = "intel-mkl/19.0.5"
-  NETCDF = "netcdf4/4.7.4"
-  OPENMPI = "openmpi/4.1.1.1"
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+  FFTW = ["load", "fftw/3.3.9"]
+  HDF5 = ["load", "hdf5/1.10.6"]
+  MKL = ["load", "intel-mkl/19.0.5"]
+  NETCDF = ["load", "netcdf4/4.7.4"]
+  OPENMPI = ["load", "openmpi/4.1.1.1"]
 
 [serial]
   NPROC = 1
@@ -71,7 +70,6 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WRAPPER = "srun"
 
 [serial.BATCH]
-  ACCOUNT = "#SBATCH -A msdeode"
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
@@ -80,20 +78,19 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 
 [serial.ENV]
   DR_HOOK_IGNORE_SIGNALS = -1
-  MARS_READANY_BUFFER_SIZE = 78930200
   OMP_NUM_THREADS = 1
   OMPI_MCA_btl = "^vader"
 
 [serial.MODULES]
   # First load the prgenv
-  PRGENV = "prgenv/intel"
+  PRGENV = ["load", "prgenv/intel"]
   # The rest
-  ECMWFTOOLBOX = "ecmwf-toolbox/2021.08.3.0"
-  FFTW = "fftw/3.3.9"
-  HDF5 = "hdf5/1.10.6"
-  MKL = "intel-mkl/19.0.5"
-  NETCDF = "netcdf4/4.7.4"
-  OPENMPI = "openmpi/4.1.1.1"
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+  FFTW = ["load", "fftw/3.3.9"]
+  HDF5 = ["load", "hdf5/1.10.6"]
+  MKL = ["load", "intel-mkl/19.0.5"]
+  NETCDF = ["load", "netcdf4/4.7.4"]
+  OPENMPI = ["load", "openmpi/4.1.1.1"]
 
 [task]
   wrapper = ""
@@ -141,16 +138,20 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=00:30:00"
 
 [task_exceptions.Forecast.ENV]
+  RTTOV_COEFDIR = "/hpcperm/snh02/DEODE/satellite/rtcoef_rttov12/harm_coef/"
   UCX_LOG_LEVEL = "error"
 
 [task_exceptions.Gmted.MODULES]
-  GDAL = "gdal/3.6.2"
+  GDAL = ["load", "gdal/3.6.2"]
 
 [task_exceptions.Marsprep.BATCH]
   MEM = "#SBATCH --mem=32GB"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   WALLTIME = "#SBATCH --time=01:00:00"
+
+[task_exceptions.Marsprep.ENV]
+  MARS_READANY_BUFFER_SIZE = 17893020000
 
 [task_exceptions.Pgd]
   WRAPPER = "srun -n @NPROC@"
@@ -173,4 +174,4 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=00:10:00"
 
 [task_exceptions.Soil.MODULES]
-  GDAL = "gdal/3.6.2"
+  GDAL = ["load", "gdal/3.6.2"]

@@ -1,0 +1,16 @@
+gridtype = "linear"
+ilate = 11
+ilone = 11
+name = "BG1_3000x3000_500m"
+nbzong = 8
+nbzonl = 8
+nimax = 978
+njmax = 978
+tstep = 30
+xbeta = 0.0
+xdx = 500.0
+xdy = 500.0
+xlat0 = 50.5
+xlatcen = 42.63
+xlon0 = 20.0
+xloncen = 24.64

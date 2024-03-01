@@ -1,10 +1,14 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Submission Section",
+    "title": "Submission Section, defined in files under include/submission",
     "description": "Defines host dependent runtime settings such as binaries, batch job rules, modules and similar",
     "type": "object",
     "additionalProperties": true,
     "properties": {
+        "account": {
+            "type": "string",
+            "description": "Global setting of account to be used. E.g. `#SBATCH -A some_account` for slurm. Setting of account on group or task level overrides the global setting"
+        },
         "bindir": {
             "type": "string",
             "description": "Location of binaries"
@@ -14,6 +18,11 @@
             "description": "NPROMA size in the forecast model. See the namelists for where it is used",
             "default": -32
         },
+        "lfftw": {
+          "type": "boolean",
+          "description": "Use of the FFTW library. See the namelists for where it is used",
+          "default": true
+      },
         "module_initpath": {
             "type": "string",
             "description": "Path to the version of env_modules_python.py to be used in the module initialization"
@@ -29,14 +38,27 @@
             "type": "string",
             "description": "Defines the default submit type for tasks not listed in any defined type"
         },
-        "submission_group": {
-            "title": "Submission example group",
+        "task_exceptions": {
+            "type": "object",
+            "description": "Allows to define task specific settings like BATCH, MODULES, NPROC. Use as task_exceptions.taskname.property"
+        },
+        "serial": {"$ref": "#/$submission_group" },
+        "parallel": {"$ref": "#/$submission_group" },
+        "background_vm": {"$ref": "#/$submission_group" },
+        "background_hpc": {"$ref": "#/$submission_group" },
+        "gnu": {"$ref": "#/$submission_group" }
+    },
+    "$submission_group": {
+            "title": "Submission group",
             "description": "Defines the properties avilable for a submit group. See the existing submission files for examples",
             "type": "object",
             "properties": {
               "tasks": {
                 "description": "List of tasks belonging to this group",
-                "type": "string"
+                "type": "array",
+	        "items": {
+                  "type": "string"
+		}
               },
               "SCHOST": {
                 "description": "Name of the host where the job runs",
@@ -44,7 +66,7 @@
               },
               "NPROC": {
                 "description": "Number of processors for this task",
-                "type": "string"
+                "type": "number"
               },
               "WRAPPER": {
                 "description": "Prefix for binaries to be executed, e.g. srun",
@@ -59,14 +81,19 @@
                 "type": "object"
               },
               "MODULES": {
-                "description": "Sets modules to load. To maintain the order decorate with comments to ovverride the automatic sorting",
-                "type": "object"
+                "description": "Sets modules to purge/use/unload/load or switch. To maintain the order decorate with comments to override the automatic sorting",
+                "type": "object",
+                "patternProperties": {
+	            "^(.*)$": {
+                      "type": "array",
+	              "items": {
+                       "type": "string"
+		      },
+		      "minItems": 1,
+		      "maxItems": 3
+		    }
+		}
               }
             }
-        },
-        "task_exceptions": {
-            "type": "object",
-            "description": "Allows to define task specific settings like BATCH, MODULES, NPROC. Use as task_exceptions.taskname.property"
         }
-    }
 }
