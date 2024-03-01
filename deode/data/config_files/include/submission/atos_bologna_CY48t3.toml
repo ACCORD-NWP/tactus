@@ -118,7 +118,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=01:00:00"
 
 [task_exceptions.E923Update.ENV]
-  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/usr/local/apps/ecmwf-toolbox/2021.08.3.0/INTEL/2021.4/lib/"
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/home/snh02/opt/install/eccodes-2.32.1/lib64:/perm/rme/packages/auxlibs/3.7/INTEL/2021.4/lib"
 
 [task_exceptions.E923Update.MODULES]
   OPENMPI = ["load", "openmpi/4.1.1"]

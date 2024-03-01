@@ -62,7 +62,7 @@ class E923Update(Task):
             )
             namelist.close()
 
-        fa_sfx2clim = "/perm/sink/e923_update/e923_update/fa_sfx2clim"
+        fa_sfx2clim = "/home/snh02/work/fa_sfx2clim/fa_sfx2clim"
         self.fmanager.input(fa_sfx2clim, "fa_sfx2clim")
         batch = BatchJob(os.environ, wrapper=self.wrapper)
         batch.run(f"fa_sfx2clim nam pgd_file input_sfx {climfile}")
