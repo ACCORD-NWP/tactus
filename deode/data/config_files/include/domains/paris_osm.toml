@@ -1,0 +1,11 @@
+gridtype = "linear"
+name = "paris_osm"
+nimax = 189
+njmax = 189
+tstep = 15
+xdx = 500.0
+xdy = 500.0
+xlat0 = 48.85
+xlatcen = 48.85
+xlon0 = 2.35
+xloncen = 2.35

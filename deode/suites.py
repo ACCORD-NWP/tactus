@@ -3,7 +3,13 @@
 import os
 from pathlib import Path
 
-from .datetime_utils import as_datetime, as_timedelta
+from .datetime_utils import (
+    as_datetime,
+    as_timedelta,
+    get_decadal_list,
+    get_decade,
+    get_month_list,
+)
 from .logs import LogDefaults, logger
 from .os_utils import deodemakedirs
 from .toolbox import Platform
@@ -20,15 +26,16 @@ class SuiteDefinition(object):
     def __init__(
         self,
         suite_name,
-        joboutdir,
-        ecf_files,
         config,
         task_settings,
         ecf_home=None,
+        ecf_host=None,
+        ecf_files_remotely=None,
         ecf_include=None,
         ecf_out=None,
         ecf_jobout=None,
         ecf_micro="%",
+        ecf_ssl=None,
         dry_run=False,
     ):
         # TODO: Document the variables that right now only are described as "?"
@@ -41,6 +48,10 @@ class SuiteDefinition(object):
             task_settings (TaskSettings): Submission configuration
             config (deode.ParsedConfig): Configuration file
             ecf_home (str, optional): ECF_HOME. Defaults to None.
+            ecf_files_remotely(str, optional): ECF_FILES on ecflow server
+            #ecf_script (str): ECF_SCRIPT Script to be run
+            ecf_host (str): ECF_HOST hostname of ecflow server
+            ecf_ssl (int): ssl authentication on (1 - LUMI) or off (None or 0 - ATOS)
             ecf_include (str, optional): ECF_INCLUDE.
                                          Defaults to None which uses ecf_files.
             ecf_out (str, optional): ECF_OUT. Defaults to None.
@@ -55,6 +66,11 @@ class SuiteDefinition(object):
         if ecflow is None and not dry_run:
             raise ModuleNotFoundError("Ecflow not found")
 
+        self.platform = Platform(config)
+        self.config = config
+
+        self.csc = config["general.csc"]
+
         self.create_static_data = config["suite_control.create_static_data"]
         self.do_soil = config["suite_control.do_soil"]
         self.do_pgd = config["suite_control.do_pgd"]
@@ -63,7 +79,6 @@ class SuiteDefinition(object):
             "suite_control.create_time_dependent_suite"
         ]
         self.interpolate_boundaries = config["suite_control.interpolate_boundaries"]
-        self.do_prep = config["suite_control.do_prep"]
         self.do_marsprep = config["suite_control.do_marsprep"]
         self.do_extractsqlite = config["suite_control.do_extractsqlite"]
         self.do_archiving = config["suite_control.do_archiving"]
@@ -71,8 +86,25 @@ class SuiteDefinition(object):
         self.suite_name = suite_name
         self.mode = config["suite_control.mode"]
 
-        name = suite_name
+        ecf_out = self.config["scheduler.ecfvars.ecf_out"]
+        ecf_files = self.config["scheduler.ecfvars.ecf_files"]
+        ecf_user = self.config["scheduler.ecfvars.ecf_user"]
+        joboutdir = self.config["scheduler.ecfvars.ecf_jobout"]
+        ecf_files_remotely = self.config["scheduler.ecfvars.ecf_files_remotely"]
+        ecf_home = self.config["scheduler.ecfvars.ecf_home"]
+        logger.info("suite ecf_home:{}", ecf_home)
+        ecf_ssl = self.config["scheduler.ecfvars.ecf_ssl"]
+        ecf_host = self.config["scheduler.ecfvars.ecf_host"]
+
+        self.ecf_user = ecf_user
+        self.ecf_host = ecf_host
+        self.ecf_ssl = ecf_ssl
         self.joboutdir = joboutdir
+
+        self.creategrib = bool("task.creategrib" in config)
+
+        name = suite_name
+
         if ecf_include is None:
             ecf_include = ecf_files
         self.ecf_include = ecf_include
@@ -80,6 +112,7 @@ class SuiteDefinition(object):
         if ecf_home is None:
             ecf_home = joboutdir
         self.ecf_home = ecf_home
+        logger.info("suite self.ecf_home:{}", self.ecf_home)
         if ecf_out is None:
             ecf_out = joboutdir
         self.ecf_out = ecf_out
@@ -90,7 +123,9 @@ class SuiteDefinition(object):
                 + f"/{ecf_micro}ECF_NAME{ecf_micro}.{ecf_micro}ECF_TRYNO{ecf_micro}"
             )
         self.ecf_jobout = ecf_jobout
-
+        self.ecf_files_remotely = ecf_files_remotely
+        if ecf_files_remotely is None:
+            self.ecf_files_remotely = self.ecf_files
         self.task_settings = task_settings
 
         # Commands started from the scheduler does not have full environment
@@ -112,13 +147,13 @@ class SuiteDefinition(object):
         self.ecf_status_cmd = ecf_status_cmd
         ecf_kill_cmd = (
             f"{ecf_micro}TROIKA{ecf_micro} "
-            f"-c {ecf_micro}TROIKA_CONFIG{ecf_micro} kill "
+            f"-vv -c {ecf_micro}TROIKA_CONFIG{ecf_micro} kill "
             f"{ecf_micro}SCHOST{ecf_micro} "
             f"{ecf_micro}ECF_JOB{ecf_micro}"
         )
         self.ecf_kill_cmd = ecf_kill_cmd
 
-        troika = "/opt/troika/bin/troika"
+        troika = "troika"
 
         platform = Platform(config)
         troika_config = platform.get_value("troika.config_file")
@@ -132,10 +167,13 @@ class SuiteDefinition(object):
         keep_workdirs = "1" if config["general.keep_workdirs"] else "0"
         loglevel = config.get("general.loglevel", LogDefaults.LEVEL).upper()
         variables = {
-            "ECF_EXTN": ".py",
-            "ECF_FILES": self.ecf_files,
-            "ECF_INCLUDE": self.ecf_include,
+            "ECF_USER": self.ecf_user,
+            "ECFTYPES": "fc",
+            "ECF_EXTN": ".bash",
             "ECF_TRIES": 1,
+            "ECF_FILES": self.ecf_files_remotely,
+            "ECF_INCLUDE": self.ecf_include,
+            "ECF_SSL": self.ecf_ssl,
             "ECF_HOME": self.ecf_home,
             "ECF_KILL_CMD": self.ecf_kill_cmd,
             "ECF_JOB_CMD": self.ecf_job_cmd,
@@ -143,6 +181,7 @@ class SuiteDefinition(object):
             "ECF_OUT": self.ecf_out,
             "ECF_JOBOUT": self.ecf_jobout,
             "ECF_TIMEOUT": 20,
+            "ECF_LOGHOST": self.ecf_host,
             "ARGS": "",
             "LOGLEVEL": loglevel,
             "CONFIG": str(config_file),
@@ -160,8 +199,26 @@ class SuiteDefinition(object):
 
         input_template = Path(__file__).parent.resolve() / "templates/ecflow/default.py"
         input_template = input_template.as_posix()
-        self.suite = EcflowSuite(name, ecf_files, variables=variables, dry_run=dry_run)
+        self.suite = EcflowSuite(
+            name,
+            ecf_files,
+            variables=variables,
+            dry_run=dry_run,
+            ecf_files_remotely=self.ecf_files_remotely,
+        )
 
+        # set max_ecf_tasks from config
+        max_ecf_tasks = -1
+        try:
+            max_ecf_tasks = self.config["submission.max_ecf_tasks"]
+        except KeyError:
+            max_ecf_tasks = -1
+
+        if max_ecf_tasks > 0 and self.suite.ecf_node is not None:
+            self.suite.ecf_node.add_limit("max_ecf_tasks", max_ecf_tasks)
+            self.suite.ecf_node.add_inlimit("max_ecf_tasks", f"/{name}", max_ecf_tasks)
+
+        self.do_prep = True
         if self.mode == "restart":
             self.do_prep = False
             self.create_static_data = False
@@ -171,7 +228,7 @@ class SuiteDefinition(object):
             task_logs = config["system.climdir"]
             args = ";".join(
                 [
-                    f"joboutdir={self.joboutdir}/{self.suite_name}/StaticData",
+                    f"joboutdir={self.ecf_out}/{self.suite_name}/StaticData",
                     "tarname=StaticData",
                     f"task_logs={task_logs}",
                 ]
@@ -187,6 +244,7 @@ class SuiteDefinition(object):
                 input_template=input_template,
                 trigger=EcflowSuiteTriggers([EcflowSuiteTrigger(static_data)]),
                 variables=variables,
+                ecf_files_remotely=self.ecf_files_remotely,
             )
 
             if self.do_archiving:
@@ -224,8 +282,6 @@ class SuiteDefinition(object):
         cycles = {}
         cycle_time = first_cycle
         i = 0
-        if self.mode == "restart":
-            self.do_prep = False
 
         while cycle_time <= last_cycle:
             logger.debug("cycle_time {}", cycle_time)
@@ -255,7 +311,11 @@ class SuiteDefinition(object):
 
             if cycle_day not in days:
                 day_family = EcflowSuiteFamily(
-                    cycle["day"], self.suite, self.ecf_files, trigger=inputdata_trigger
+                    cycle["day"],
+                    self.suite,
+                    self.ecf_files,
+                    trigger=inputdata_trigger,
+                    ecf_files_remotely=self.ecf_files_remotely,
                 )
                 days.append(cycle_day)
 
@@ -269,9 +329,14 @@ class SuiteDefinition(object):
                 self.ecf_files,
                 trigger=inputdata_trigger,
                 variables=time_variables,
+                ecf_files_remotely=self.ecf_files_remotely,
             )
             inputdata = EcflowSuiteFamily(
-                "InputData", time_family, self.ecf_files, trigger=inputdata_trigger
+                "InputData",
+                time_family,
+                self.ecf_files,
+                trigger=inputdata_trigger,
+                ecf_files_remotely=self.ecf_files_remotely,
             )
             inputdata_done = EcflowSuiteTriggers([EcflowSuiteTrigger(inputdata)])
             prepare_cycle = EcflowSuiteTask(
@@ -288,7 +353,7 @@ class SuiteDefinition(object):
             if prev_interpolation_trigger is not None:
                 triggers = triggers + prev_interpolation_trigger
             ready_for_marsprep = EcflowSuiteTriggers(triggers)
-            if self.do_marsprep:
+            if self.do_marsprep and self.interpolate_boundaries:
                 EcflowSuiteTask(
                     "Marsprep",
                     inputdata,
@@ -298,20 +363,39 @@ class SuiteDefinition(object):
                     input_template=input_template,
                     variables=None,
                     trigger=ready_for_marsprep,
+                    ecf_files_remotely=self.ecf_files_remotely,
                 )
 
-            if not self.surfex:
-                self.do_prep = False
-
-            if self.interpolate_boundaries or self.do_prep:
+            if self.interpolate_boundaries:
                 int_fam = EcflowSuiteFamily(
                     f'{"Interpolation"}',
                     time_family,
                     self.ecf_files,
                     trigger=inputdata_done,
                     variables=None,
+                    ecf_files_remotely=self.ecf_files_remotely,
                 )
                 prev_interpolation_trigger = [EcflowSuiteTrigger(int_fam)]
+
+                basetime = as_datetime(cycle["basetime"])
+                forecast_range = as_timedelta(config["general.times.forecast_range"])
+                endtime = basetime + forecast_range
+                bdint = as_timedelta(config["boundaries.bdint"])
+                bdmax = config["boundaries.bdtasks_per_batch"]
+
+                intnr = 1
+                args = ""
+                int_trig = inputdata_done
+
+                # we don't need LBC000 if this is not first cycle or mode = cold_start
+                if self.mode == "restart" or (self.mode == "start" and not self.do_prep):
+                    bdtime = basetime + bdint
+                    bdnr = 1
+                else:
+                    bdtime = basetime
+                    bdnr = 0
+
+                intbdint = int(bdint.total_seconds() // 3600)
 
                 if self.do_prep:
                     EcflowSuiteTask(
@@ -321,72 +405,65 @@ class SuiteDefinition(object):
                         self.task_settings,
                         self.ecf_files,
                         input_template=input_template,
+                        ecf_files_remotely=self.ecf_files_remotely,
                     )
 
-                    if self.mode != "cold_start":
+                    if self.mode != "cold_start" or self.csc == "ALARO":
                         self.do_prep = False
 
-                if self.interpolate_boundaries:
-                    basetime = as_datetime(cycle["basetime"])
-                    forecast_range = as_timedelta(config["general.times.forecast_range"])
-                    endtime = basetime + forecast_range
-                    bdint = as_timedelta(config["boundaries.bdint"])
-                    bdmax = config["boundaries.bdtasks_per_batch"]
-
-                    bdnr = 0
-                    intnr = 1
-                    args = ""
-                    int_trig = inputdata_done
-                    bdtime = basetime
-                    intbdint = int(bdint.total_seconds() // 3600)
+                while bdtime <= endtime:
+                    bch_fam = EcflowSuiteFamily(
+                        f"Batch{intnr:02}",
+                        int_fam,
+                        self.ecf_files,
+                        trigger=int_trig,
+                        variables=None,
+                        ecf_files_remotely=self.ecf_files_remotely,
+                    )
                     while bdtime <= endtime:
-                        bch_fam = EcflowSuiteFamily(
-                            f"Batch{intnr:02}",
-                            int_fam,
+                        date_string = bdtime.isoformat(sep="T").replace("+00:00", "Z")
+                        args = f"bd_time={date_string};bd_nr={bdnr}"
+                        variables = {"ARGS": args}
+                        lbc_fam = EcflowSuiteFamily(
+                            f"LBC{bdnr*intbdint:02}",
+                            bch_fam,
                             self.ecf_files,
-                            trigger=int_trig,
+                            trigger=None,
                             variables=None,
+                            ecf_files_remotely=self.ecf_files_remotely,
                         )
-                        while bdtime <= endtime:
-                            date_string = bdtime.isoformat(sep="T").replace("+00:00", "Z")
-                            args = f"bd_time={date_string};bd_nr={bdnr}"
-                            variables = {"ARGS": args}
-                            lbc_fam = EcflowSuiteFamily(
-                                f"LBC{bdnr*intbdint:02}",
-                                bch_fam,
-                                self.ecf_files,
-                                trigger=None,
-                                variables=None,
-                            )
 
-                            interpolation_task = "c903" if self.do_marsprep else "e927"
+                        interpolation_task = "c903" if self.do_marsprep else "e927"
 
-                            EcflowSuiteTask(
-                                interpolation_task,
-                                lbc_fam,
-                                config,
-                                self.task_settings,
-                                self.ecf_files,
-                                input_template=input_template,
-                                variables=variables,
-                                trigger=None,
-                            )
+                        EcflowSuiteTask(
+                            interpolation_task,
+                            lbc_fam,
+                            config,
+                            self.task_settings,
+                            self.ecf_files,
+                            input_template=input_template,
+                            variables=variables,
+                            trigger=None,
+                            ecf_files_remotely=self.ecf_files_remotely,
+                        )
 
-                            bdnr += 1
-                            bdtime += bdint
-                            if bdnr % bdmax == 0:
-                                intnr += 1
-                                int_trig = EcflowSuiteTriggers(
-                                    [EcflowSuiteTrigger(bch_fam)]
-                                )
-                                break
+                        bdnr += 1
+                        bdtime += bdint
+                        if bdnr % bdmax == 0:
+                            intnr += 1
+                            int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(bch_fam)])
+                            break
 
                     int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(int_fam)])
             else:
                 int_trig = inputdata_done
 
             cycle_fam = EcflowSuiteFamily(
-                "Cycle", time_family, self.ecf_files, trigger=int_trig
+                "Cycle",
+                time_family,
+                self.ecf_files,
+                trigger=int_trig,
+                ecf_files_remotely=self.ecf_files_remotely,
             )
             triggers = [EcflowSuiteTrigger(inputdata)]
             if prev_cycle_trigger is not None:
@@ -394,7 +471,11 @@ class SuiteDefinition(object):
             ready_for_cycle = EcflowSuiteTriggers(triggers)
             prev_cycle_trigger = [EcflowSuiteTrigger(cycle_fam)]
             initialization = EcflowSuiteFamily(
-                "Initialization", cycle_fam, self.ecf_files, trigger=ready_for_cycle
+                "Initialization",
+                cycle_fam,
+                self.ecf_files,
+                trigger=ready_for_cycle,
+                ecf_files_remotely=self.ecf_files_remotely,
             )
 
             cday = cycle["day"]
@@ -402,7 +483,7 @@ class SuiteDefinition(object):
             task_logs = config["system.wrk"]
             args = ";".join(
                 [
-                    f"joboutdir={self.joboutdir}/{self.suite_name}/{cday}/{ctime}",
+                    f"joboutdir={self.ecf_out}/{self.suite_name}/{cday}/{ctime}",
                     f"tarname={cday}_{ctime}",
                     f"task_logs={task_logs}",
                 ]
@@ -417,6 +498,7 @@ class SuiteDefinition(object):
                 input_template=input_template,
                 trigger=EcflowSuiteTriggers([EcflowSuiteTrigger(cycle_fam)]),
                 variables=variables,
+                ecf_files_remotely=self.ecf_files_remotely,
             )
 
             EcflowSuiteTask(
@@ -428,11 +510,16 @@ class SuiteDefinition(object):
                 input_template=input_template,
                 trigger=None,
                 variables=None,
+                ecf_files_remotely=self.ecf_files_remotely,
             )
 
             forecast_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(initialization)])
             forecasting = EcflowSuiteFamily(
-                "Forecasting", cycle_fam, self.ecf_files, trigger=forecast_trigger
+                "Forecasting",
+                cycle_fam,
+                self.ecf_files,
+                trigger=forecast_trigger,
+                ecf_files_remotely=self.ecf_files_remotely,
             )
             logger.debug(self.task_settings.get_task_settings("Forecast"))
 
@@ -444,19 +531,23 @@ class SuiteDefinition(object):
                 self.ecf_files,
                 input_template=input_template,
                 variables=None,
+                ecf_files_remotely=self.ecf_files_remotely,
             )
 
-            creategrib_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(forecast_task)])
-
-            EcflowSuiteTask(
-                "CreateGrib",
-                forecasting,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                trigger=creategrib_trigger,
-            )
+            if self.creategrib:
+                creategrib_trigger = EcflowSuiteTriggers(
+                    [EcflowSuiteTrigger(forecast_task)]
+                )
+                EcflowSuiteTask(
+                    "CreateGrib",
+                    forecasting,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    trigger=creategrib_trigger,
+                    ecf_files_remotely=self.ecf_files_remotely,
+                )
 
             if self.do_extractsqlite:
                 extractsqlite_trigger = EcflowSuiteTriggers(
@@ -485,6 +576,7 @@ class SuiteDefinition(object):
                     self.ecf_files,
                     input_template=input_template,
                     trigger=archiving_hour_trigger,
+                    ecf_files_remotely=self.ecf_files_remotely,
                 )
 
     def static_suite_part(self, config, input_template):
@@ -498,10 +590,20 @@ class SuiteDefinition(object):
             static_data: EcflowFamily object used for triggering
 
         """
-        static_data = EcflowSuiteFamily("StaticData", self.suite, self.ecf_files)
+        static_data = EcflowSuiteFamily(
+            "StaticData",
+            self.suite,
+            self.ecf_files,
+            ecf_files_remotely=self.ecf_files_remotely,
+        )
 
         if self.do_pgd:
-            pgd_input = EcflowSuiteFamily("PgdInput", static_data, self.ecf_files)
+            pgd_input = EcflowSuiteFamily(
+                "PgdInput",
+                static_data,
+                self.ecf_files,
+                ecf_files_remotely=self.ecf_files_remotely,
+            )
             EcflowSuiteTask(
                 "Gmted",
                 pgd_input,
@@ -510,6 +612,7 @@ class SuiteDefinition(object):
                 self.ecf_files,
                 input_template=input_template,
                 variables=None,
+                ecf_files_remotely=self.ecf_files_remotely,
             )
 
             if self.do_soil:
@@ -525,17 +628,55 @@ class SuiteDefinition(object):
 
             pgd_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd_input)])
 
-            pgd = EcflowSuiteTask(
-                "Pgd",
-                static_data,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                variables=None,
-                trigger=pgd_trigger,
-            )
-            e923_constant_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd)])
+            if self.one_decade:
+                pgd_family = EcflowSuiteFamily(
+                    "Pgd",
+                    static_data,
+                    self.ecf_files,
+                    trigger=pgd_trigger,
+                    ecf_files_remotely=self.ecf_files_remotely,
+                )
+                decade_dates = get_decadal_list(
+                    as_datetime(config["general.times.start"]),
+                    as_datetime(config["general.times.end"]),
+                )
+
+                for dec_date in decade_dates:
+                    decade_pgd_family = EcflowSuiteFamily(
+                        f"decade_{get_decade(dec_date)}",
+                        pgd_family,
+                        self.ecf_files,
+                        ecf_files_remotely=self.ecf_files_remotely,
+                    )
+
+                    pgd = EcflowSuiteTask(
+                        "Pgd",
+                        decade_pgd_family,
+                        config,
+                        self.task_settings,
+                        self.ecf_files,
+                        input_template=input_template,
+                        variables={"ARGS": f"basetime={dec_date}"},
+                        ecf_files_remotely=self.ecf_files_remotely,
+                    )
+
+                e923_constant_trigger = EcflowSuiteTriggers(
+                    [EcflowSuiteTrigger(pgd_family)]
+                )
+            else:
+                basetime = as_datetime(self.config["general.times.basetime"])
+                pgd = EcflowSuiteTask(
+                    "Pgd",
+                    static_data,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    variables={"ARGS": f"basetime={basetime}"},
+                    trigger=pgd_trigger,
+                    ecf_files_remotely=self.ecf_files_remotely,
+                )
+                e923_constant_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(pgd)])
         else:
             e923_constant_trigger = None
 
@@ -548,6 +689,7 @@ class SuiteDefinition(object):
             input_template=input_template,
             variables=None,
             trigger=e923_constant_trigger,
+            ecf_files_remotely=self.ecf_files_remotely,
         )
 
         e923_monthly_family_trigger = EcflowSuiteTriggers(
@@ -558,6 +700,7 @@ class SuiteDefinition(object):
             static_data,
             self.ecf_files,
             trigger=e923_monthly_family_trigger,
+            ecf_files_remotely=self.ecf_files_remotely,
         )
 
         seasons = {
@@ -568,22 +711,30 @@ class SuiteDefinition(object):
         }
 
         if self.one_decade:
-            basetime = as_datetime(config["general.times.start"])
-            basetime_month = int(basetime.month)
-            last_month = basetime_month - 1
+            month_list = get_month_list(
+                config["general.times.start"], config["general.times.end"]
+            )
+            last_month = month_list[0] - 1
             if last_month == 0:
                 last_month = 12
-            next_month = basetime_month + 1
+            next_month = month_list[-1] + 1
             if next_month == 13:
                 next_month = 1
-            seasons = {
-                f"m{last_month:02d}": f"{last_month:02d}",
-                f"m{basetime_month:02d}": f"{basetime_month:02d}",
-                f"m{next_month:02d}": f"{next_month:02d}",
-            }
+
+            month_list.insert(0, last_month)
+            month_list.append(next_month)
+
+            seasons = {}
+            for mm in sorted(month_list):
+                seasons[f"m{mm:02d}"] = f"{mm:02d}"
 
         for season, months in seasons.items():
-            month_family = EcflowSuiteFamily(season, e923_monthly_family, self.ecf_files)
+            month_family = EcflowSuiteFamily(
+                season,
+                e923_monthly_family,
+                self.ecf_files,
+                ecf_files_remotely=self.ecf_files_remotely,
+            )
 
             EcflowSuiteTask(
                 "E923Monthly",
@@ -593,20 +744,59 @@ class SuiteDefinition(object):
                 self.ecf_files,
                 input_template=input_template,
                 variables={"ARGS": f"months={months}"},
+                ecf_files_remotely=self.ecf_files_remotely,
             )
 
         if self.do_pgd:
             pgd_update_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(e923constant)])
-            EcflowSuiteTask(
-                "PgdUpdate",
-                static_data,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                variables=None,
-                trigger=pgd_update_trigger,
-            )
+
+            if self.one_decade:
+                pgd_update_family = EcflowSuiteFamily(
+                    "PgdUpdate",
+                    static_data,
+                    self.ecf_files,
+                    trigger=pgd_update_trigger,
+                    ecf_files_remotely=self.ecf_files_remotely,
+                )
+
+                decade_dates = get_decadal_list(
+                    as_datetime(config["general.times.start"]),
+                    as_datetime(config["general.times.end"]),
+                )
+
+                for dec_date in decade_dates:
+                    decade_pgdupdate_family = EcflowSuiteFamily(
+                        f"decade_{get_decade(dec_date)}",
+                        pgd_update_family,
+                        self.ecf_files,
+                        ecf_files_remotely=self.ecf_files_remotely,
+                    )
+
+                    EcflowSuiteTask(
+                        "PgdUpdate",
+                        decade_pgdupdate_family,
+                        config,
+                        self.task_settings,
+                        self.ecf_files,
+                        input_template=input_template,
+                        variables={"ARGS": f"basetime={dec_date}"},
+                        trigger=pgd_update_trigger,
+                        ecf_files_remotely=self.ecf_files_remotely,
+                    )
+
+            else:
+                basetime = as_datetime(self.config["general.times.basetime"])
+                EcflowSuiteTask(
+                    "PgdUpdate",
+                    static_data,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    variables={"ARGS": f"basetime={basetime}"},
+                    trigger=pgd_update_trigger,
+                    ecf_files_remotely=self.ecf_files_remotely,
+                )
 
         return static_data
 
@@ -616,6 +806,7 @@ class SuiteDefinition(object):
         Args:
             def_file (str): Name of definition file
         """
+        logger.info("save_as_defs.self.ecf_home:{}", self.ecf_home)
         self.suite.save_as_defs(def_file)
 
 
@@ -634,6 +825,7 @@ class EcflowNode:
         variables=None,
         trigger=None,
         def_status=None,
+        ecf_files_remotely=None,
     ):
         """Construct the EcflowNode.
 
@@ -645,6 +837,7 @@ class EcflowNode:
             variables (dict, optional): Variables to map. Defaults to None
             trigger (EcflowSuiteTriggers): Trigger. Defaults to None
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
+            ecf_files_remotely(str, optional): Remote file prefix
 
         Raises:
             NotImplementedError: Node type not implemented
@@ -681,7 +874,17 @@ class EcflowNode:
             path = self.ecf_node.get_abs_node_path()
 
         self.path = path
-        self.ecf_container_path = ecf_files + self.path
+        logger.debug("path={} ecf_files_remotely={}", self.path, ecf_files_remotely)
+        if ecf_files_remotely is None:
+            ecf_files_remotely = ecf_files
+        self.ecf_local_container_path = ecf_files + self.path
+        self.ecf_remote_container_path = ecf_files_remotely + self.path
+        logger.debug(
+            "path={} local_container={} remote_container={}",
+            self.path,
+            self.ecf_local_container_path,
+            self.ecf_remote_container_path,
+        )
         if variables is not None:
             for key, value in variables.items():
                 logger.debug("key={} value={}", key, value)
@@ -722,6 +925,7 @@ class EcflowNodeContainer(EcflowNode):
         variables=None,
         trigger=None,
         def_status=None,
+        ecf_files_remotely=None,
     ):
         """Construct EcflowNodeContainer.
 
@@ -733,6 +937,7 @@ class EcflowNodeContainer(EcflowNode):
             variables (dict, optional): Variables to map. Defaults to None
             trigger (EcflowSuiteTriggers): Trigger. Defaults to None
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
+            ecf_files_remotely(str, optional): ECF_FILES on ecflow server
 
         """
         EcflowNode.__init__(
@@ -744,13 +949,22 @@ class EcflowNodeContainer(EcflowNode):
             ecf_files=ecf_files,
             trigger=trigger,
             def_status=def_status,
+            ecf_files_remotely=ecf_files_remotely,
         )
 
 
 class EcflowSuite(EcflowNodeContainer):
     """EcflowSuite."""
 
-    def __init__(self, name, ecf_files, variables=None, dry_run=False, def_status=None):
+    def __init__(
+        self,
+        name,
+        ecf_files,
+        variables=None,
+        dry_run=False,
+        def_status=None,
+        ecf_files_remotely=None,
+    ):
         """Construct the Ecflow suite.
 
         Args:
@@ -759,6 +973,7 @@ class EcflowSuite(EcflowNodeContainer):
             variables (dict, optional): Variables to map. Defaults to None
             dry_run (bool, optional): Dry run not using ecflow. Defaults to False.
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
+            ecf_files_remotely(str, optional): ECF_FILES on ecflow server
 
         """
         if dry_run:
@@ -774,6 +989,7 @@ class EcflowSuite(EcflowNodeContainer):
             ecf_files,
             variables=variables,
             def_status=def_status,
+            ecf_files_remotely=ecf_files_remotely,
         )
 
     def save_as_defs(self, def_file):
@@ -791,18 +1007,26 @@ class EcflowSuiteFamily(EcflowNodeContainer):
     """A family in ecflow."""
 
     def __init__(
-        self, name, parent, ecf_files, variables=None, trigger=None, def_status=None
+        self,
+        name,
+        parent,
+        ecf_files,
+        variables=None,
+        trigger=None,
+        def_status=None,
+        ecf_files_remotely=None,
     ):
         """Construct the family.
 
         Args:
-            name (str): Name of the family.
-            parent (EcflowNodeContainer): Parent node.
-            ecf_files (str): Location of ecf files
-            variables (dict, optional): Variables to map. Defaults to None
-            trigger (EcflowSuiteTriggers): Trigger. Defaults to None
-            def_status (str, ecflow.Defstatus): Def status. Defaults to None
-
+                    name (str): Name of the family.
+                    parent (EcflowNodeContainer): Parent node.
+                    ecf_files (str): Location of ecf files
+                    variables (dict, optional): Variables to map. Defaults to None
+                    trigger (EcflowSuiteTriggers): Trigger. Defaults to None
+                    def_status (str, ecflow.Defstatus): Def status. Defaults to None
+                    ecf_files_remotely(str, optional): ECF_FILES on ecflow server
+        f
         """
         EcflowNodeContainer.__init__(
             self,
@@ -813,10 +1037,11 @@ class EcflowSuiteFamily(EcflowNodeContainer):
             variables=variables,
             trigger=trigger,
             def_status=def_status,
+            ecf_files_remotely=ecf_files_remotely,
         )
-        logger.debug(self.ecf_container_path)
+        logger.debug(self.ecf_remote_container_path)
         if self.ecf_node is not None:
-            self.ecf_node.add_variable("ECF_FILES", self.ecf_container_path)
+            self.ecf_node.add_variable("ECF_FILES", self.ecf_remote_container_path)
 
 
 class EcflowSuiteTask(EcflowNode):
@@ -835,6 +1060,7 @@ class EcflowSuiteTask(EcflowNode):
         ecf_micro="%",
         trigger=None,
         def_status=None,
+        ecf_files_remotely=None,
     ):
         """Constuct the EcflowSuiteTask.
 
@@ -851,6 +1077,7 @@ class EcflowSuiteTask(EcflowNode):
             ecf_micro (str, optional): ECF_MICRO. Defaults to %
             trigger (EcflowSuiteTriggers): Trigger. Defaults to None
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
+            ecf_files_remotely(str, optional): ECF_FILES on ecflow server
 
         Raises:
             ValueError: If input template is to be parsed but it is not passed.
@@ -866,11 +1093,12 @@ class EcflowSuiteTask(EcflowNode):
             variables=variables,
             trigger=trigger,
             def_status=def_status,
+            ecf_files_remotely=ecf_files_remotely,
         )
 
         logger.debug(parent.path)
-        logger.debug(parent.ecf_container_path)
-        task_container = parent.ecf_container_path + "/" + name + ".py"
+        logger.debug(parent.ecf_local_container_path)
+        task_container = parent.ecf_local_container_path + "/" + name + ".bash"
         if parse:
             if input_template is None:
                 raise ValueError("Must pass input template if it is to be parsed")

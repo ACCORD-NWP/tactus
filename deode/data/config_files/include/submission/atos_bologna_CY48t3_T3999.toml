@@ -1,0 +1,174 @@
+bindir = "/home/snh02/pack/48t3_fix.04.OMPIIFC2104.x/bin"
+default_submit_type = "serial"
+lfftw = true
+module_initpath = "/usr/local/apps/lmod/8.6.8/init"
+nproma = -32
+
+submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
+
+[background_hpc]
+  SCHOST = "localhost"
+  tasks = ["Background_hpc", "UnitTest"]
+
+[background_vm]
+  INTERPRETER = "#!/usr/bin/python3"
+  SCHOST = "localhost"
+  tasks = ["Background_vm"]
+
+[gnu]
+  NPROC = 1
+  NPROCX = 1
+  NPROCY = 1
+  SCHOST = "hpc"
+  tasks = ["ExtractSQLite"]
+  WRAPPER = "srun"
+
+[gnu.BATCH]
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  QOS = "#SBATCH --qos=nf"
+  WALLTIME = "#SBATCH --time=00:15:00"
+
+[gnu.MODULES]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+
+[parallel]
+  NPROC = 32
+  SCHOST = "hpc"
+  tasks = ["Forecast", "e927", "Pgd", "Prep", "c903"]
+  WRAPPER = "srun"
+
+[parallel.BATCH]
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  QOS = "#SBATCH --qos=np"
+  WALLTIME = "#SBATCH --time=00:10:00"
+
+[parallel.ENV]
+  DR_HOOK = 1
+  DR_HOOK_IGNORE_SIGNALS = -1
+  OMP_NUM_THREADS = 1
+  OMPI_MCA_btl = "^vader"
+
+[parallel.MODULES]
+  # First load the prgenv
+  PRGENV = ["load", "prgenv/intel"]
+  # The rest
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+  FFTW = ["load", "fftw/3.3.9"]
+  HDF5 = ["load", "hdf5/1.10.6"]
+  MKL = ["load", "intel-mkl/19.0.5"]
+  NETCDF = ["load", "netcdf4/4.7.4"]
+  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
+
+[serial]
+  NPROC = 1
+  NPROCX = 1
+  NPROCY = 1
+  SCHOST = "hpc"
+  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep"]
+  WRAPPER = "srun"
+
+[serial.BATCH]
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  QOS = "#SBATCH --qos=nf"
+  WALLTIME = "#SBATCH --time=00:15:00"
+
+[serial.ENV]
+  DR_HOOK_IGNORE_SIGNALS = -1
+  OMP_NUM_THREADS = 1
+  OMPI_MCA_btl = "^vader"
+
+[serial.MODULES]
+  # First load the prgenv
+  PRGENV = ["load", "prgenv/intel"]
+  # The rest
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+  FFTW = ["load", "fftw/3.3.9"]
+  HDF5 = ["load", "hdf5/1.10.6"]
+  MKL = ["load", "intel-mkl/19.0.5"]
+  NETCDF = ["load", "netcdf4/4.7.4"]
+  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
+
+[task]
+  wrapper = ""
+
+[task_exceptions.ArchiveHour.BATCH]
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[task_exceptions.ArchiveStatic.BATCH]
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[task_exceptions.c903]
+  NPROC = 72
+
+[task_exceptions.c903.BATCH]
+  MEM = "#SBATCH --mem=200GB"
+  NODE = "#SBATCH --nodes=36"
+  NTASKS = "#SBATCH --ntasks=72"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[task_exceptions.creategrib]
+  binary = "gl_20230823"
+  bindir = "/home/snh02/work/gl_binaries"
+
+[task_exceptions.CreateGrib.BATCH]
+  WALLTIME = "#SBATCH --time=01:00:00"
+
+[task_exceptions.e927]
+  NPROC = 16
+
+[task_exceptions.e927.BATCH]
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=16"
+
+[task_exceptions.Forecast]
+  NPROC = 256
+
+[task_exceptions.Forecast.BATCH]
+  MEM = "#SBATCH --mem=200GB"
+  NODES = "#SBATCH --nodes=2"
+  NTASKS = "#SBATCH --ntasks=256"
+  WALLTIME = "#SBATCH --time=01:00:00"
+
+[task_exceptions.Forecast.ENV]
+  RTTOV_COEFDIR = "/hpcperm/snh02/DEODE/satellite/rtcoef_rttov12/harm_coef/"
+  UCX_LOG_LEVEL = "error"
+
+[task_exceptions.Gmted.MODULES]
+  GDAL = ["load", "gdal/3.6.2"]
+
+[task_exceptions.Marsprep.BATCH]
+  MEM = "#SBATCH --mem=0GB"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  QOS = "#SBATCH --qos=np"
+  WALLTIME = "#SBATCH --time=01:00:00"
+
+[task_exceptions.Marsprep.ENV]
+  MARS_READANY_BUFFER_SIZE = 17893020000
+
+[task_exceptions.Pgd]
+  WRAPPER = "srun -n @NPROC@"
+
+[task_exceptions.Pgd.BATCH]
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=2"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[task_exceptions.PgdUpdate]
+  binary = "gl_20230823"
+  bindir = "/home/snh02/work/gl_binaries"
+
+[task_exceptions.Prep]
+  WRAPPER = "srun -n @NPROC@"
+
+[task_exceptions.Prep.BATCH]
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  WALLTIME = "#SBATCH --time=00:10:00"
+
+[task_exceptions.Soil.MODULES]
+  GDAL = ["load", "gdal/3.6.2"]

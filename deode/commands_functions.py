@@ -6,7 +6,9 @@ import sys
 from functools import partial
 from pathlib import Path
 
+import yaml
 from toml_formatter.formatter import FormattedToml
+from troika.connections.ssh import SSHConnection
 
 from . import GeneralConstants
 from .config_parser import BasicConfig, ParsedConfig
@@ -75,24 +77,114 @@ def start_suite(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
-    logger.info("Starting suite...")
-
     deode_home = set_deode_home(args, config)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
     config = config.copy(update=set_times(config))
+    platform = Platform(config)
+    update = {
+        "scheduler": {
+            "ecfvars": {
+                "hpc": platform.substitute(config["scheduler.ecfvars.hpc"]),
+                "ecf_out": platform.substitute(config["scheduler.ecfvars.ecf_out"]),
+                "ecf_jobout": platform.substitute(config["scheduler.ecfvars.ecf_jobout"]),
+                "ecf_files": platform.substitute(config["scheduler.ecfvars.ecf_files"]),
+                "ecf_files_remotely": platform.substitute(
+                    config["scheduler.ecfvars.ecf_files_remotely"]
+                ),
+                "ecf_home": platform.substitute(config["scheduler.ecfvars.ecf_home"]),
+                "ecf_host": platform.substitute(config["scheduler.ecfvars.ecf_host"]),
+                "ecf_port": platform.substitute(config["scheduler.ecfvars.ecf_port"]),
+                "ecf_user": platform.substitute(config["scheduler.ecfvars.ecf_user"]),
+                "ecf_remoteuser": platform.substitute(
+                    config["scheduler.ecfvars.ecf_remoteuser"]
+                ),
+            },
+        },
+    }
+    config = config.copy(update=update)
 
-    server = EcflowServer(
-        args.ecf_host, ecf_port=args.ecf_port, start_command=args.start_command
-    )
+    logger.info("Starting suite...")
+    logger.info("Settings and paths loaded: ")
+    logger.info("Config file: {}", args.config_file)
+    logger.info("Ecflow settings: ")
+
+    # Print Ecfvars
+    joboutdir = config["scheduler.ecfvars.ecf_jobout"]
+    ecf_files = config["scheduler.ecfvars.ecf_files"]
+    ecf_files_remotely = config["scheduler.ecfvars.ecf_files_remotely"]
+    ecf_home = config["scheduler.ecfvars.ecf_home"]
+    ecf_host = config["scheduler.ecfvars.ecf_host"]
+    ecf_port = config["scheduler.ecfvars.ecf_port"]
+    ecf_remoteuser = config["scheduler.ecfvars.ecf_remoteuser"]
+    ecf_user = config["scheduler.ecfvars.ecf_user"]
+
+    logger.info("ecf_host: {}", ecf_host)
+    logger.info("ecf_jobout: {}", joboutdir)
+    logger.info("ecf_port: {}", ecf_port)
+    logger.info("ecf_user: {}", ecf_user)
+    logger.info("ecf_files: {}", ecf_files)
+    logger.info("ecf_files_remotely: {}", ecf_files_remotely)
+    logger.info("ecf_home: {}", ecf_home)
+    logger.info("ecf_remoteuser: {}", ecf_remoteuser)
+
+    server = EcflowServer(config, start_command=args.start_command)
 
     suite_name = config["general.case"]
     suite_name = Platform(config).substitute(suite_name)
+    ecf_files_local = ecf_files
+
+    troika_config_file = Platform(config).substitute(config["troika.config_file"])
+    if ecf_home != joboutdir:
+        remote_troika_config_file = os.path.join(
+            ecf_files_remotely, suite_name, os.path.basename(troika_config_file)
+        )
+    else:
+        remote_troika_config_file = troika_config_file
+
+    config = config.copy(update={"troika": {"config_file": remote_troika_config_file}})
+
+    logger.info("Troika config (local): {}", troika_config_file)
+    logger.info("Troika file (remote) ={}", remote_troika_config_file)
+
+    server = EcflowServer(config, start_command=args.start_command)
     submission_defs = TaskSettings(config)
-    defs = SuiteDefinition(
-        suite_name, args.joboutdir, args.ecf_files, config, submission_defs
-    )
+    defs = SuiteDefinition(suite_name, config, submission_defs)
+    logger.info("defs.ecf_home:{}", defs.ecf_home)
     def_file = f"{suite_name}.def"
     defs.save_as_defs(def_file)
+
+    # Copy troika and containers
+    hpc = config["scheduler.ecfvars.hpc"]
+    if hpc == "lumi":
+        logger.info("**HPC detected: LUMI**")
+        logger.info("--- LUMI -> Ecflow server copy BEGIN ---")
+        logger.info(
+            "Copy ecflow files to: {}@{}:{}",
+            ecf_remoteuser,
+            ecf_host,
+            ecf_files_remotely,
+        )
+        cfg = {"host": ecf_host}
+        ssh = SSHConnection(cfg, ecf_remoteuser)
+        for root, __, files in os.walk(f"{ecf_files_local}/{suite_name}"):
+            for file in files:
+                src = f"{root}/{file}"
+                rpath = root.replace(f"{ecf_files_local}", "")
+                ssh.execute(["mkdir", "-p", f"{ecf_files_remotely}/{rpath}"])
+                dst = f"{ecf_files_remotely}/{rpath}/{file}"
+                logger.info("Copy src={} to dst={}", src, dst)
+                ssh.sendfile(src, dst)
+
+        # Read and parse the troika config file
+        temp_troika_config_file = f"parsed_{os.path.basename(troika_config_file)}"
+        with open(troika_config_file, "rb") as infile:
+            troika_input = yaml.safe_load(infile)
+        troika_output = platform.sub_str_dict(troika_input)
+        with open(temp_troika_config_file, "w") as outfile:
+            yaml.dump(troika_output, outfile, encoding="utf-8")
+
+        ssh.sendfile(temp_troika_config_file, remote_troika_config_file)
+        logger.info("--- LUMI -> Ecflow server copy DONE ---")
 
     server.start_suite(suite_name, def_file, begin=args.begin)
     logger.info("Done with suite.")

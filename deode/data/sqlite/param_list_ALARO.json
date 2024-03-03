@@ -1,0 +1,114 @@
+[ 
+{ "harp_param":"Pmsl",
+  "method":"bilin",
+  "grib_id":{ "shortName":"msl", "productDefinitionTemplateNumber":"0"}
+},
+
+{ "harp_param":"vis",
+  "method":"bilin",
+  "grib_id":{ "shortName":"vis", "productDefinitionTemplateNumber":"8", "typeOfStatisticalProcessing":"min"}
+},
+
+{ "harp_param":"MAXT2m",
+  "method":"bilin",
+  "grib_id":{ "shortName":"2t", "productDefinitionTemplateNumber":"8", "typeOfStatisticalProcessing":"max"}
+},
+
+{ "harp_param":"MINT2m",
+  "method":"bilin",
+  "grib_id":{ "shortName":"2t", "productDefinitionTemplateNumber":"8", "typeOfStatisticalProcessing":"min"}
+},
+
+{ "harp_param":"T",
+  "method":"bilin",
+  "grib_id":{"shortName":"t", "productDefinitionTemplateNumber":"0",
+             "typeOfLevel":"isobaricInhPa",
+             "level":[ 50, 100, 250, 300, 600, 700, 800, 925, 950]}
+},
+
+{ "harp_param":"RH",
+  "method":"bilin",
+  "grib_id":{"shortName":"r", "productDefinitionTemplateNumber":"0",
+             "typeOfLevel":"isobaricInhPa",
+             "level":[ 50, 100, 250, 300, 600, 700, 800, 925, 950]}
+},
+
+{ "harp_param" : "S",
+  "method" : "bilin",
+  "grib_id" : [ {"shortName":"u"}, {"shortName":"v"} ],
+  "common":{
+             "productDefinitionTemplateNumber":"0",
+             "typeOfLevel":"isobaricInhPa",
+             "level":[ 50, 100, 250, 300, 600, 700, 800, 925, 950]
+  },
+  "function":"vector_norm"
+},
+
+{ "harp_param" : "D",
+  "method" : "bilin",
+  "grib_id" : [ {"shortName":"u"}, {"shortName":"v"} ],
+  "common":{
+             "productDefinitionTemplateNumber":"0",
+             "typeOfLevel":"isobaricInhPa",
+             "level":[ 50, 100, 250, 300, 600, 700, 800, 925, 950]
+  },
+  "function":"vector_angle"
+},
+
+{ "harp_param" : "S10m",
+  "method" : "bilin",
+  "grib_id" : [ {"shortName":"10u"}, {"shortName":"10v"} ],
+  "common":{ "productDefinitionTemplateNumber":"0" },
+  "function":"vector_norm"
+},
+
+{ "harp_param" : "D10m",
+  "method" : "bilin",
+  "grib_id" : [ {"shortName":"10u"}, {"shortName":"10v"} ],
+  "common":{ "productDefinitionTemplateNumber":"0" },
+  "function":"vector_angle"
+},
+
+{ "harp_param" : "Gmax",
+  "method" : "bilin",
+  "grib_id" : [ {"shortName":"10efg"}, {"shortName":"10nfg"} ],
+  "common":{ "productDefinitionTemplateNumber":"8", "typeOfStatisticalProcessing":"max",
+             "typeOfLevel":"heightAboveGround",
+             "level":"10" },
+  "function":"vector_norm"
+},
+
+{ "harp_param":"RH2m",
+  "method":"bilin",
+  "grib_id":{ "shortName":"2r", "productDefinitionTemplateNumber":"0"}
+},
+
+{ "harp_param":"T2m",
+  "method":"bilin",
+  "grib_id":{ "shortName":"2t", "productDefinitionTemplateNumber":"0"}
+},
+
+{ "harp_param":"Pcp",
+  "method":"nearest",
+  "grib_id":[ {"parameterNumber":"55"},
+              {"parameterNumber":"56"},
+              {"parameterNumber":"76"},
+              {"parameterNumber":"77"}
+  ],
+  "common":{ "productDefinitionTemplateNumber":"8",
+             "typeOfStatisticalProcessing":"accum",
+             "parameterCategory":"1"
+  },
+  "function":"sum"
+},
+
+{ "harp_param":"Q2m",
+  "method":"bilin",
+  "grib_id":{ "shortName":"2sh", "productDefinitionTemplateNumber":"0"}
+},
+{ "harp_param":"CCtot",
+  "method":"bilin",
+  "grib_id":{ "shortName":"tcc" }
+}
+]
+

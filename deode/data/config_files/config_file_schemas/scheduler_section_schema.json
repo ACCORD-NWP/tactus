@@ -1,0 +1,33 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Ecflow HPC scheduler Section, defined in files under include/scheduler",
+    "description": "DEODE HPC specific ecflow settings",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+        "ecf_host": {
+            "type": "string",
+            "description": "Ecflow host. HPC dependent."
+        },
+        "ecf_port": {
+            "type": "integer",
+            "description": "Ecflow port. HPC dependent."
+	},
+        "ecf_jobout": {
+            "type": "string",
+            "description": "Path to Ecflow job output."
+        },
+        "ecf_files": {
+            "type": "string",
+            "description": "Path to Ecflow operating files."
+        },
+        "ecf_files_remotely": {
+            "type": "string",
+            "description": "Path to Ecflow operating files if in remote location, different to ecf_files."
+        },
+        "ecf_home": {
+            "type": "string",
+            "description": "Path to Ecflow home."
+        }
+    }
+}

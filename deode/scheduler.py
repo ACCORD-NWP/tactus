@@ -9,6 +9,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 
 from .logs import logger
+from .toolbox import Platform
 
 try:
     import ecflow
@@ -20,9 +21,10 @@ except ModuleNotFoundError:
 class Server(ABC):
     """Base server/scheduler class."""
 
-    def __init__(self):
+    def __init__(self, config):
         """Construct the server."""
         self.settings = None
+        self.config = config
 
     @abstractmethod
     def start_server(self):
@@ -79,12 +81,11 @@ class Server(ABC):
 class EcflowServer(Server):
     """Ecflow server."""
 
-    def __init__(self, ecf_host, ecf_port=3141, start_command=None):
+    def __init__(self, config, start_command=None):
         """Construct the EcflowServer.
 
         Args:
-            ecf_host (str): Ecflow server host.
-            ecf_port (int): Ecflow server port.
+            config (str): configuration settings.
             start_command (str): Ecflow start server command.
 
         Raises:
@@ -93,10 +94,22 @@ class EcflowServer(Server):
         """
         if ecflow is None:
             raise ModuleNotFoundError("Ecflow not found")
-        Server.__init__(self)
-        self.ecf_host = ecf_host
-        self.ecf_port = ecf_port
+
+        Server.__init__(self, config)
+
+        try:
+            ecf_host = self.config["scheduler.ecfvars.ecf_host"]
+            self.ecf_host = Platform(config).substitute(ecf_host)
+        except RuntimeError as error:
+            raise RuntimeError("Please set ecf_host in ecflow_HPC.toml") from error
+
+        try:
+            self.ecf_port = self.config["scheduler.ecfvars.ecf_port"]
+        except RuntimeError as error:
+            raise RuntimeError("Please set ecf_port in ecflow_HPC.toml") from error
+
         self.start_command = start_command
+        logger.debug("self.ecf_host={} self.ecf_port={}", self.ecf_host, self.ecf_port)
         self.ecf_client = ecflow.Client(self.ecf_host, self.ecf_port)
         logger.debug("self.ecf_client {}", self.ecf_client)
         self.settings = {"ECF_HOST": self.ecf_host, "ECF_PORT": self.ecf_port}

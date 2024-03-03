@@ -1,0 +1,4 @@
+parallel_method = [
+    "@DEODE_HOME@/deode/data/config_files/accelerator_device/lumi/lparallelmethod.txt.cpu",
+    "lparallelmethod.txt",
+]

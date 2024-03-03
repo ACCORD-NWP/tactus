@@ -536,6 +536,16 @@ class InputDataFromNamelist:
                                             if not my_key.endswith(".nc"):
                                                 my_key = my_key + ".nc"
                                             mapped_data.update({my_key: my_val})
+                                        elif value3.endswith(
+                                            ".txt"
+                                        ):  # need to remove the ".txt"
+                                            my_key, my_val = self.substitute(key3, value3)
+                                            logger.debug(
+                                                "my_key={}, my_val={}", my_key, my_val
+                                            )
+                                            if not my_key.endswith(".txt"):
+                                                my_key = my_key + ""
+                                            mapped_data.update({my_key: my_val})
                                         else:
                                             my_key, my_val = self.substitute(key3, value3)
                                             mapped_data.update({my_key: my_val})
@@ -606,23 +616,19 @@ class Pgd(Task):
 
         """
         Task.__init__(self, config, "Pgd")
+        self.program = "pgd"
         self.nlgen = NamelistGenerator(self.config, "surfex")
         self.climdir = self.platform.get_system_value("climdir")
         self.one_decade = self.config["pgd.one_decade"]
+        self.basetime = config["task.args.basetime"]
         self.pgd_prel = self.platform.substitute(
-            self.config["file_templates.pgd_prel.archive"]
+            self.config["file_templates.pgd_prel.archive"], basetime=self.basetime
         )
-
-        if self.one_decade:
-            self.program = "pgd_one_decade"
-        else:
-            self.program = "pgd"
         # TODO get from args
         self.force = True
 
     def execute(self):
         """Execute."""
-        basetime = as_datetime(self.config["general.times.basetime"])
         output = f"{self.climdir}/{self.pgd_prel}"
 
         if not os.path.exists(output) or self.force:
@@ -652,7 +658,9 @@ class Pgd(Task):
                             replace(v, match, repl)
                     return data
 
-                input_data = replace(input_data, "@DECADE@", get_decade(basetime))
+                input_data = replace(
+                    input_data, "@DECADE@", get_decade(as_datetime(self.basetime))
+                )
 
             # Could potentially manipulate input_data depending on settings
             # or send input_data as input from an external file
@@ -661,7 +669,7 @@ class Pgd(Task):
                 input_data,
                 self.program,
                 self.platform,
-                basetime=basetime,
+                basetime=self.basetime,
                 one_decade=self.one_decade,
             ).get()
             for dest, target in binput_data.items():
@@ -702,11 +710,10 @@ class Prep(Task):
             deodemakedirs(self.archive)
             batch = BatchJob(os.environ, wrapper=self.wrapper)
 
-            bdmodel = self.config["boundaries.bdmodel"]
             bd_has_surfex = self.config["boundaries.bd_has_surfex"]
             basetime = as_datetime(self.config["general.times.basetime"])
 
-            namelist_task = f"prep_{bdmodel}"
+            namelist_task = "prep"
             self.nlgen.load(namelist_task)
             settings = self.nlgen.assemble_namelist(namelist_task)
             settings["nam_prep_surf_atm"]["nyear"] = int(basetime.strftime("%Y"))
@@ -758,7 +765,7 @@ class Prep(Task):
             bdcycle = as_timedelta(self.config["boundaries.bdcycle"])
             bdshift = as_timedelta(self.config["boundaries.bdshift"])
 
-            bd_basetime = basetime - cycle_offset(basetime, bdcycle, shift=bdshift)
+            bd_basetime = basetime - cycle_offset(basetime, bdcycle, shift=-bdshift)
             prep_input_file = self.platform.substitute(
                 f"{bddir_sfx}/{bdfile_sfx_template}",
                 basetime=bd_basetime,

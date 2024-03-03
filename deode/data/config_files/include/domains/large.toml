@@ -1,0 +1,11 @@
+gridtype = "linear"
+name = "large"
+nimax = 989
+njmax = 989
+tstep = 20
+xdx = 750.0
+xdy = 750.0
+xlat0 = 52.5
+xlatcen = 52.5
+xlon0 = 4.9
+xloncen = 4.9

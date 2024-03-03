@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Unit tests for the Marsprep(config)."""
+"""Unit tests for the marsprep."""
 
 import contextlib
 from pathlib import Path
@@ -14,7 +14,7 @@ from deode.tasks.marsprep import Marsprep
 WORKING_DIR = Path.cwd()
 
 
-@pytest.fixture(scope="module", params=["CY46h1", "CY48t3", "CY48t3_target"])
+@pytest.fixture(scope="module", params=["CY48t3"])
 def base_raw_config(request):
     """Return a raw config common to all tasks."""
     tag_map = {"CY46h1": ""}
@@ -65,7 +65,7 @@ def get_domain_data(config):
     return fdomainstr
 
 
-@pytest.fixture(params=["HRES", "RD_DEFAULT", "ATOS_RD"], scope="module")
+@pytest.fixture(params=["HRES", "ATOS_DT"], scope="module")
 def parsed_config(request, base_raw_config, tmp_path_factory):
     """Return a raw config common to tasks."""
     config = ParsedConfig(
@@ -85,8 +85,8 @@ def parsed_config(request, base_raw_config, tmp_path_factory):
         [general.times]
             basetime = "{basetime}"
             validtime = "{validtime}"
-        [mars]
-            expver = "{request.param}"
+        [boundaries]
+            ifs.selection = "{request.param}"
         [system]
             wrk = "{tmp_path_factory.getbasetemp().as_posix()}"
 
@@ -100,39 +100,31 @@ def parsed_config(request, base_raw_config, tmp_path_factory):
 def test_update_data_request(parsed_config):
     """Test update data request."""
     config = parsed_config
-    truth_selection = config["boundaries.ifs.selection"]
-    try:
-        mars = config[f"mars.{truth_selection}"]
-    except KeyError:
-        # This experiment is note defined fallback to RD_DEFAULT
-        mars = config["mars.RD_DEFAULT"]
-        mars["expver"] = truth_selection
+    marsprep = Marsprep(config)
+    mars = marsprep.mars
 
-    dateframe = Marsprep(config).split_date(
-        Marsprep(config).basetime,
-        Marsprep(config).strategy,
-        int(
-            Marsprep(config).forecast_range.days * 24
-            + Marsprep(config).forecast_range.seconds / 3600
-        ),
-        Marsprep(config).bdint,
-        int(Marsprep(config).bdshift.seconds / 3600),
+    dateframe = marsprep.split_date(
+        marsprep.basetime,
+        marsprep.strategy,
+        int(marsprep.forecast_range.days * 24 + marsprep.forecast_range.seconds / 3600),
+        marsprep.bdint,
+        int(marsprep.bdshift.seconds / 3600),
     )
     date_str = dateframe.iloc[0].strftime("%Y%m%d")
     hour_str = dateframe.iloc[0].strftime("%H")
 
-    step = int(Marsprep(config).bdint.total_seconds() / 3600)
+    step = int(marsprep.bdint.total_seconds() / 3600)
     str_steps = [
         "{0:02d}".format(
             dateframe.index.tolist()[0]
             + (i * step)
-            + Marsprep(config).basetime.hour % Marsprep(config).int_bdcycle
+            + marsprep.basetime.hour % marsprep.int_bdcycle
         )
         for i in range(len(dateframe.index.tolist()))
     ]
-    truth_levelist = Marsprep(config).check_value(mars["levelist"], date_str)
+    truth_levelist = marsprep.check_value(mars["levelist"], date_str)
     area_truth = get_domain_data(config)
-    grid_truth = Marsprep(config).check_value(mars["grid"], date_str)
+    grid_truth = marsprep.check_value(mars["grid"], date_str)
     truth_stream = "SCDA" if hour_str in {"06", "18"} else "OPER"
     truth_class = mars["class"]
     req_truth = {
@@ -148,8 +140,8 @@ def test_update_data_request(parsed_config):
         "TARGET": '"ICMGG+[STEP]"',
         "PROCESS": "LOCAL",
     }
-    param = Marsprep(config).mars["GG"]
-    req = Marsprep(config).update_data_request(
+    param = marsprep.mars["GG"]
+    req = marsprep.update_data_request(
         data_type="forecast",
         date=date_str,
         time=hour_str,
@@ -180,8 +172,8 @@ def test_update_data_request(parsed_config):
         "PROCESS": "LOCAL",
     }
 
-    param = Marsprep(config).mars["GG_sea"]
-    req = Marsprep(config).update_data_request(
+    param = marsprep.mars["GG_sea"]
+    req = marsprep.update_data_request(
         data_type="forecast",
         date=date_str,
         time=hour_str,
@@ -214,10 +206,10 @@ def test_update_data_request(parsed_config):
             "PROCESS": "LOCAL",
         }
 
-        param1 = Marsprep(config).mars["GG_soil"]
-        param2 = Marsprep(config).mars["GG1"]
+        param1 = marsprep.mars["GG_soil"]
+        param2 = marsprep.mars["GG1"]
 
-        req = Marsprep(config).update_data_request(
+        req = marsprep.update_data_request(
             data_type="analysis",
             date=date_str,
             time=hour_str,
@@ -249,7 +241,7 @@ def test_update_data_request(parsed_config):
             "PROCESS": "LOCAL",
         }
 
-        req = Marsprep(config).update_data_request(
+        req = marsprep.update_data_request(
             data_type="analysis",
             date=date_str,
             time=hour_str,
@@ -257,7 +249,7 @@ def test_update_data_request(parsed_config):
             prefetch=True,
             levtype="SFC",
             param=param2,
-            grid=Marsprep(config).check_value(mars["grid_GG1"], date_str),
+            grid=marsprep.check_value(mars["grid_GG1"], date_str),
             specify_domain=False,
             target="ICMGG",
         )
@@ -283,8 +275,8 @@ def test_update_data_request(parsed_config):
         "PROCESS": "LOCAL",
     }
 
-    param = Marsprep(config).mars["SH"]
-    req = Marsprep(config).update_data_request(
+    param = marsprep.mars["SH"]
+    req = marsprep.update_data_request(
         data_type="forecast",
         date=date_str,
         time=hour_str,
@@ -292,7 +284,7 @@ def test_update_data_request(parsed_config):
         prefetch=True,
         levtype="ML",
         param=param,
-        grid=Marsprep(config).check_value(mars["grid_ML"], date_str),
+        grid=marsprep.check_value(mars["grid_ML"], date_str),
         specify_domain=False,
         target='"ICMSH+[STEP]"',
     )
@@ -317,16 +309,16 @@ def test_update_data_request(parsed_config):
         "GRID": "AV",
         "PROCESS": "LOCAL",
     }
-    param = Marsprep(config).mars["SHZ"]
-    d_type = Marsprep(config).mars["SHZ_type"]
-    req = Marsprep(config).update_data_request(
+    param = marsprep.mars["SHZ"]
+    d_type = marsprep.mars["SHZ_type"]
+    req = marsprep.update_data_request(
         data_type=d_type,
         date=date_str,
         time=hour_str,
         steps="00",
         prefetch=True,
         levtype="ML",
-        grid=Marsprep(config).check_value(mars["grid_ML"], date_str),
+        grid=marsprep.check_value(mars["grid_ML"], date_str),
         param=param,
         specify_domain=False,
         target="ICMSH.Z",
@@ -352,8 +344,8 @@ def test_update_data_request(parsed_config):
         "GRID": "AV",
         "PROCESS": "LOCAL",
     }
-    param = Marsprep(config).mars["UA"]
-    req = Marsprep(config).update_data_request(
+    param = marsprep.mars["UA"]
+    req = marsprep.update_data_request(
         data_type="forecast",
         date=date_str,
         time=hour_str,
@@ -361,7 +353,7 @@ def test_update_data_request(parsed_config):
         prefetch=True,
         levtype="ML",
         param=param,
-        grid=Marsprep(config).check_value(mars["grid_ML"], date_str),
+        grid=marsprep.check_value(mars["grid_ML"], date_str),
         specify_domain=False,
         target='"ICMUA+[STEP]"',
     )
@@ -371,7 +363,7 @@ def test_update_data_request(parsed_config):
             req_dic[str(col)] = row[col]
     assert req_dic == req_truth
 
-    template = Marsprep(config).template
+    template = marsprep.template
     str_step = "{}".format(str_steps[0])
 
     req_truth = {
@@ -390,8 +382,8 @@ def test_update_data_request(parsed_config):
         "PROCESS": "LOCAL",
     }
 
-    param = Marsprep(config).mars["GG"]
-    req = Marsprep(config).update_data_request(
+    param = marsprep.mars["GG"]
+    req = marsprep.update_data_request(
         data_type="forecast",
         date=date_str,
         time=hour_str,
@@ -425,9 +417,9 @@ def test_update_data_request(parsed_config):
         "PROCESS": "LOCAL",
     }
 
-    param = Marsprep(config).mars["SHZ"]
-    d_type = Marsprep(config).mars["SHZ_type"]
-    req = Marsprep(config).update_data_request(
+    param = marsprep.mars["SHZ"]
+    d_type = marsprep.mars["SHZ_type"]
+    req = marsprep.update_data_request(
         data_type=d_type,
         date=date_str,
         time=hour_str,

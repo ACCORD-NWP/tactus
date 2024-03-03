@@ -27,9 +27,10 @@
   bd_has_surfex = true
   bdcycle = "PT6H"
   bdint = "PT1H"
-  bdmodel = "arome"
+  bdmodel = "AROME"
   bdshift = "PT0H"
   bdtasks_per_batch = 24
+  humi_gp = true
   ifs.selection = "HRES"
   ifs.bdmember = ""
 
@@ -45,11 +46,13 @@
   macros = "include/macros.toml"
   mars = "include/mars_settings.toml"
   platform = "include/platform_paths/atos_bologna.toml"
+  scheduler = "include/scheduler/ecflow_atos_bologna.toml"
   submission = "include/submission/atos_bologna_CY46h1.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"
 
 [pgd]
   one_decade = true
+  use_osm = false
 
 [suite_control]
   create_static_data = true
@@ -58,7 +61,6 @@
   do_extractsqlite = true
   do_marsprep = false
   do_pgd = true
-  do_prep = true
   do_soil = true
   interpolate_boundaries = true
   mode = "cold_start"
@@ -71,7 +73,6 @@
   bdfile_template = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@"
   casedir = "@SCRATCH@/@CASE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@"
-  global_sfcdir = "/hpcperm/snh02/climate_fields_mir/climate.v020_MIR_orog/"
   host_case = "@CASEDIR@/../@CYCLE@_@CSC@"
   host_domain = "DEMO_60x80_2500m"
   logs = "@ARCHIVE_ROOT@/logs"

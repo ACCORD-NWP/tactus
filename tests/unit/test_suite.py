@@ -65,7 +65,6 @@ class TestSuite:
             {
                 "suite_control": {
                     "do_pgd": False,
-                    "do_prep": False,
                     "do_archiving": True,
                     "do_soil": False,
                     "cold_start": False,
@@ -73,11 +72,13 @@ class TestSuite:
                     "do_marsprep": True,
                 }
             },
+            {"suite_control": {"interpolate_boundaries": False}},
             {"suite_control": {"create_static_data": False}},
             {"suite_control": {"create_time_dependent_suite": False, "do_soil": False}},
+            {"submission": {"max_ecf_tasks": 2}},
         ],
     )
-    def test_suite(self, config_from_task_config_file, param):
+    def test_suite(self, config_from_task_config_file, param, tmp_directory):
         config = config_from_task_config_file
         config = config.copy(
             update={
@@ -93,11 +94,9 @@ class TestSuite:
         background = TaskSettings(config)
         defs = SuiteDefinition(
             suite_name,
-            "/tmp/joboutdir",  # noqa S108
-            "/tmp/ecf",  # noqa S108
             config,
             background,
             dry_run=True,
         )
-        def_file = f"/tmp/{suite_name}.def"  # noqa S108
+        def_file = f"{tmp_directory}/{suite_name}.def"
         defs.save_as_defs(def_file)

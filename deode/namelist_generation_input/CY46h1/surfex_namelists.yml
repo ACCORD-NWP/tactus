@@ -186,13 +186,15 @@ sfx_pgd_domain:
     XLONCEN: "${domain.xloncen}"
     XTRUNC: "${domain.xtrunc}"
 
-sfx_pgd_ecoclimap_sg:
+sfx_pgd_ecoclimap_sg_base:
   NAM_COVER:
     XRM_WM: 0.0
     YCOVER: "ecosg_final_map"
     YCOVERFILETYPE: "DIRECT"
   NAM_FRAC:
     LECOSG: True
+
+sfx_pgd_ecoclimap_sg_all_decade:
   NAM_DATA_ISBA:
     NTIME: 36
     CFNAM_ALBNIR_SOIL:
@@ -570,13 +572,7 @@ sfx_pgd_ecoclimap_sg:
     - - DIRTYP
     - - DIRTYP   
 
-sfx_pgd_ecoclimap_sg_single:
-  NAM_COVER:
-    XRM_WM: 0.0
-    YCOVER: "ecosg_final_map"
-    YCOVERFILETYPE: "DIRECT"
-  NAM_FRAC:
-    LECOSG: True
+sfx_pgd_ecoclimap_sg_one_decade:
   NAM_DATA_ISBA:
     NTIME: 1
     CFNAM_ALBNIR_SOIL:
@@ -696,6 +692,67 @@ sfx_pgd_zs_gmted:
     YZS: "gmted2010"
     YZSFILETYPE: "DIRECT"
 
+sfx_pgd_teb_osm:
+  NAM_FRAC:
+    CFNAM_SEA: "OSM_SEA_FRACTION"
+    CFTYP_SEA: "ASCLLV"
+    CFNAM_NATURE: "OSM_NATURE_FRACTION"
+    CFTYP_NATURE: "ASCLLV"
+    CFNAM_WATER: "OSM_WATER_FRACTION"
+    CFTYP_WATER: "ASCLLV"
+    CFNAM_TOWN: "OSM_TOWN_FRACTION"
+    CFTYP_TOWN: "ASCLLV"
+    LECOSG: True 
+  NAM_DATA_TEB:
+    CFNAM_GARDEN: "OSM_GARDEN_FRACTION"
+    CFTYP_GARDEN: "ASCLLV"
+    CFNAM_BLD_HEIGHT: "OSM_BUILDING_HEIGHT"
+    CFTYP_BLD_HEIGHT: "ASCLLV"
+    CFNAM_WALL_O_HOR: "OSM_WALL_O_HOR"
+    CFTYP_WALL_O_HOR: "ASCLLV"
+    CFNAM_BLD: "OSM_BUILDING_FRACTION"
+    CFTYP_BLD: "ASCLLV"
+    CFNAM_Z0_TOWN: "OSM_Z0_TOWN"
+    CFTYP_Z0_TOWN: "ASCLLV"
+  NAM_DATA_TEB_GARDEN: 
+    NTIME_GD: 12
+    CTYP_GARDEN_HVEG: "TREE"
+    CTYP_GARDEN_LVEG: "PARK"
+    CTYP_GARDEN_NVEG: "NO" 
+    CFNAM_FRAC_HVEG: "OSM_HIGH_VEGETATION_FRACTION"
+    CFTYP_FRAC_HVEG: "ASCLLV"
+    CFNAM_FRAC_LVEG: "OSM_LOW_VEGETATION_FRACTION"
+    CFTYP_FRAC_LVEG: "ASCLLV"
+    CFNAM_FRAC_NVEG: "OSM_NO_VEGETATION_FRACTION"
+    CFTYP_FRAC_NVEG: "ASCLLV"
+    XUNIF_H_HVEG: 10.0
+    XUNIF_LAI_HVEG: 
+      - 1.0
+      - 1.0
+      - 1.0
+      - 1.7
+      - 2.3
+      - 3.0
+      - 3.0
+      - 2.7
+      - 2.4
+      - 2.1
+      - 1.8
+      - 1.5
+    XUNIF_LAI_LVEG: 
+      - 1.5
+      - 1.5
+      - 1.5
+      - 1.5
+      - 1.5
+      - 1.5
+      - 1.5
+      - 1.5
+      - 1.5
+      - 1.5
+      - 1.5
+      - 1.5
+
 sfx_prep_sea:
   NAM_PREP_SEAFLUX:
     CSEAICE_SCHEME: "SICE"
@@ -754,3 +811,9 @@ sfx_prep_isba_snow_d95:
 sfx_prep_isba_snow_3l:
   NAM_PREP_ISBA_SNOW:
     CSNOW: "3-L"
+
+sfx_teb_osm:
+  NAM_TREEDRAG:
+    LFAKETREE: False
+  NAM_PGD_SCHEMES:
+    LGARDEN: True

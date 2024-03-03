@@ -1,10 +1,18 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Platform Section",
+    "title": "Platform Section, defined in files under include/platform_paths",
     "description": "DEODE platform specific path settings",
     "type": "object",
     "additionalProperties": true,
     "properties": {
+        "archive_type": {
+            "type": "string",
+            "description": "Method for archiving. The method working depends on the platform",
+	    "enum": [
+            "ecfs",
+            "fdb"
+	    ]
+        },
         "ecoclim_data_path": {
             "type": "string",
             "description": "Path to the ECOCLIMAP-II data"

@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Archiving Section",
+    "title": "Archiving Section, defined in include/archiving.toml",
     "description": "Archiving settings for ATOS to ECFS. Locations, and time intervals to archive for each file type",
     "type": "object",
     "additionalProperties": true,

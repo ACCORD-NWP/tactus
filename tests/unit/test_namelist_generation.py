@@ -18,6 +18,8 @@ def config_platform():
     """Set the platform specific configuration."""
     task_configs = tomlkit.parse(
         """
+        [boundaries]
+            bdmodel = "IFS"
         [general]
             case = "test_case"
             os_macros = ["USER", "HOME", "PWD"]
@@ -42,6 +44,10 @@ def config_platform():
             ilate = 11
             gridtype = "linear"
             tstep = 72
+        [macros]
+            gen_macros = ["boundaries.bdmodel"]
+            group_macros = ["platform", "system"]
+            os_macros = ["USER", "HOME", "PWD"]
         """
     )
     return task_configs
@@ -54,7 +60,7 @@ def parsed_config(config_platform):
     )
 
 
-@pytest.fixture(params=["pgd", "prep_ifs", "prep_arome", "forecast"])
+@pytest.fixture(params=["pgd", "prep", "forecast"])
 def _nlgen_surfex(parsed_config, tmp_path_factory, request):
     """Test namelist generation for surfex."""
     nam_type = request.param
@@ -78,7 +84,7 @@ class TestNamelistGenerator:
         output_file = f"{tmp_path_factory.getbasetemp().as_posix()}/fort.4"
         if os.path.exists(output_file):
             os.remove(output_file)
-        nlgen.generate_namelist("forecast_bdmodel_ifs", output_file)
+        nlgen.generate_namelist("forecast", output_file)
         assert os.path.exists(output_file)
 
     @pytest.mark.usefixtures("_nlgen_surfex")

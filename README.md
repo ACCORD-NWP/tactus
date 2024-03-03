@@ -34,24 +34,34 @@ We **highly recommend** you to also put the statement listed above in your shell
   ```
 
 * On LUMI
-  ```shell
-  module load LUMI
-  ```
+```shell
+ml use /scratch/project_465000527/SW/modules
+ml cray-python/3.10.10
+ml ecflow/5.9.2-gcc-3ztnr
+ ```
 
 ### Install Dependencies
 
-* python >=3.9
-* **Only for [Developers](#developer-mode-installation):**
+**Make sure you have python>=3.9**
 
-    * [`poetry`](https://python-poetry.org). To install/reinstall and configure it, run the following commands in youe shell:
+* On Macs (local install only)
+```shell
+brew install pyenv
+pyenv install 3.10.10
+# (or which ever version you want to universalise)
+pyenv global 3.10.10
+ ```
+Add eval "$(pyenv init --path)" to ~/.zprofile (or ~/.bash_profile or ~/.zshrc, whichever you need)
+
+Relaunch the shell and check that Python works, or run $ source ~/.zprofile
+
+    * [`poetry`](https://python-poetry.org). To install/reinstall and configure it, run the following commands in your shell:
       ```shell
       # Clean eventual previous install
       curl -sSL https://install.python-poetry.org | python3 - --uninstall
       rm -rf ${HOME}/.cache/pypoetry/ ${HOME}/.local/bin/poetry ${HOME}/.local/share/pypoetry
       # Download and install poetry
       curl -sSL https://install.python-poetry.org | python3 -
-      # Install needed poetry plugin(s)
-      poetry self add 'poethepoet[poetry_plugin]'
       ```
 
 ### Optional System Requirements
@@ -140,27 +150,37 @@ and general `deode` options. For info about specific subcommands and the
 options that apply to them only, **please run `deode SUBCOMMAND -h`** (note
 that the `-h` goes after the subcommand in this case).
 
-
 ## Examples
 
 These examples assume that you have successfully [initialised your environment](#prepare-your-environment-on-the-hpc-machines) and [installed `deode`](#installation). They should be run from the root level of your `deode` install directory. The examples also assume that the necessary
 input data is in place.
 
-### Running an `ecflow` suite from server `ecflow-gen-${USER}-001` on atos
+### Running ecflow suite on ATOS
 
 The following commands will launch a run under ecflow on atos (`hpc-login.ecmwf.int`) using the default experiment:
 ```shell
-ECF_HOST=`echo ecflow-gen-${USER}-001`
 deode start suite \
-      --config-file $PWD/deode/data/config_files/config.toml \
-      --ecf-host $ECF_HOST \
-      --ecf-port 3141 \
-      --joboutdir $HOME/deode_ecflow/job \
-      --ecf-files $HOME/deode_ecflow/ecf
+      --config-file $PWD/deode/data/config_files/config.toml
 ```
 
-After this, open `ecflow_ui` and add `ecflow-gen-${USER}-001` as the server with port `3141`. The default config will place the working directory under `$SCRATCH/deode`.
+The ecflow_scheduler variables live inside `deode/data/config_files/include/scheduler/ecflow_atos_bologna.toml`:
+```toml
+[ecfvars]
+  ecf_files = "@HOME@/deode_ecflow/ecf_files"
+  ecf_files_remotely = "@HOME@/deode_ecflow/ecf_files"
+  ecf_home = "@HOME@/deode_ecflow/jobout"
+  ecf_host = "ecflow-gen-@USER@-001"
+  ecf_jobout = "@HOME@/deode_ecflow/jobout"
+  ecf_out = "@HOME@/deode_ecflow/jobout"
+  ecf_port = "3141"
+  ecf_remoteuser = "@USER@"
+  ecf_ssl = "0"
+  ecf_user = "@USER@"
+  hpc = "atos"
+```
+which are set to default values. These can be changed in the file as required.
 
+After this, open `ecflow_ui` and add `ecflow-gen-${USER}-001` as the server with port `3141`. The default config will place the working directory under `$SCRATCH/deode`.
 
 ### Running the `"forecast"` task from the `hpc-login`'s command line
 
@@ -176,14 +196,3 @@ deode run \
 
 If you have done the above mentioned default ecflow test the stand alone forecast will pick the input data from the existing run and output the result in the same directories (as defined by the config file).
 
-### Running a stand-alone task with an example config file on LUMI
-
-```shell
-deode run \
-      --config-file $PWD/deode/data/config_files/config.toml \
-      --task Forecast \
-      --template $PWD/deode/templates/stand_alone.py \
-      --job $PWD/test.job \
-      --troika-config $PWD/deode/data/config_files/troika.yml \
-      --output $PWD/test.log
-```

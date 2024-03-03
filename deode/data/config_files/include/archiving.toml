@@ -1,41 +1,48 @@
-[default]
+[ecfs]
+
+[ecfs.default]
   active = true
   inpath = "@ARCHIVE@"
   outpath = "archive/@ARCHIVE_TIMESTAMP@"
 
-[hour]
+[ecfs.hour]
 
-[hour.logs]
+[ecfs.hour.logs]
   active = true
   inpath = "@LOGS@"
   outpath = "logs"
   pattern = "@YYYY@@MM@@DD@_@HH@@mm@.tar.gz"
 
-[hour.sqlite]
+[ecfs.hour.sqlite]
   active = "suite_control.do_extractsqlite"
   inpath = "@SQLITE_PATH@"
   outpath = "sqlite"
   pattern = "*"
 
-[paths]
+[ecfs.paths]
   aloc = "ectmp:"
   apath = "/@USER@/deode/@CASE@"
 
-[settings]
+[ecfs.settings]
   fullpos = "PT15M"
   history = "PT1H"
   surfex = "PT1H"
 
-[static]
+[ecfs.static]
 
-[static.climate]
+[ecfs.static.climate]
   active = true
   inpath = "@CLIMDIR@"
   outpath = "climate/@DOMAIN@"
   pattern = ["Const.Clim*", "PGD*"]
 
-[static.logs]
+[ecfs.static.logs]
   active = true
   inpath = "@LOGS@"
   outpath = "logs"
   pattern = "StaticData.tar.gz"
+
+[fdb]
+
+[fdb.default]
+  active = false

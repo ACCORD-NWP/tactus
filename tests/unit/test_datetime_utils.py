@@ -9,7 +9,9 @@ from deode.datetime_utils import (
     as_timedelta,
     cycle_offset,
     dt2str,
+    get_decadal_list,
     get_decade,
+    get_month_list,
     oi2dt_list,
 )
 
@@ -52,3 +54,29 @@ def test_oi2dt_list(param):
         datetime.timedelta(seconds=10800),
         datetime.timedelta(seconds=21600),
     ]
+
+
+@pytest.mark.parametrize("param", ["05", "26"])
+def test_get_decadal_list(param):
+    truth = {
+        "05": [datetime.datetime(2018, 12, 5, 0, tzinfo=datetime.timezone.utc)],
+        "26": [
+            datetime.datetime(2018, 12, 5, 0, tzinfo=datetime.timezone.utc),
+            datetime.datetime(2018, 12, 15, 0, tzinfo=datetime.timezone.utc),
+            datetime.datetime(2018, 12, 25, 0, tzinfo=datetime.timezone.utc),
+        ],
+    }
+    dt = as_datetime(f"201812{param}T00")
+    assert (
+        get_decadal_list(
+            datetime.datetime(2018, 12, 5, 0, tzinfo=datetime.timezone.utc), dt
+        )
+        == truth[param]
+    )
+
+
+@pytest.mark.parametrize("param", ["2024-02-03T00:00:00Z", "2023-10-10T00:00:00Z"])
+def test_get_month_list(param):
+    truth = {"2024-02-03T00:00:00Z": [10, 11, 12, 1, 2], "2023-10-10T00:00:00Z": [10]}
+
+    assert get_month_list("2023-10-02T00:00:00Z", param) == truth[param]
