@@ -7,11 +7,6 @@
 )](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/tests.yaml)
 [![codecov](https://codecov.io/github/destination-earth-digital-twins/Deode-Prototype/branch/develop/graph/badge.svg?token=4PRUK8DMZF)](https://codecov.io/github/destination-earth-digital-twins/Deode-Prototype)
 
-## About
-The [DEODE Scripting System](https://github.com/destination-earth-digital-twins/Deode-Prototype/) provides a `deode` python package that runs the [Destination Earth on Demand Extremes system](https://github.com/destination-earth-digital-twins).
-
-See the [project's documentation page](https://destination-earth-digital-twins.github.io/deode-prototype-docs) for more information.
-
 ## LUMI 
 ### Getting on LUMI
 To run the project on LUMI, you need to have a LUMI account and add your SSH key to it. Please check the [online instructions on how to do that](https://docs.lumi-supercomputer.eu/firststeps/SSH-keys/). Once you have your SSH key added, you can login to LUMI by running `ssh -i <your-private-key> <username>@@lumi.csc.fi`. Once logged in, create a SSH key and add that to your GitHub account so you can clone the repo. Then, please follow the download, install and usage instructions provided in the [README](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md) file.
@@ -107,7 +102,7 @@ And make sure you check these flags:
 "Add server to current view":  (check)
 ```
 
-### Troubleshooting
+#### Troubleshooting
 
 1. Once Ecflow is setup on LUMI you need to login as follows:
 
@@ -179,6 +174,27 @@ deode start suite --config-file $PWD/deode/data/config_files/config_CY48t3_lumi.
 ```
 
 Note: if you forget to use the --config-file flag, it will default to `--config-file $PWD/deode/data/config_files/config.toml` most likely causing errors.
+
+#### Data
+
+At the time of writing this, there is no streamlined way to obtain data from sources such as MARS etc, as it is with ATOS. We currently have a shared local directory on LUMI for this project:
+```shell
+/scratch/project_465000527/de_33050_common_data/
+```
+spend a few minutes just familiarising yourself with what's there. 
+
+IFS data for the boundaries (HRES and ATOS_DT) is currently stored here:
+```shell
+/scratch/project_465000527/de_33050_common_data/deode_ref/IFS
+```
+
+Should you require any extra data you will need to manually download this from ATOS yourself:
+```shell
+scp -r /home/snh02/work/dev-CY46h1_deode/climate/DEODE_LARGE adelsaid@lumi.csc.fi:/scratch/project_465000527/adelsaid/
+```
+for example.
+
+If you foresee that the data you download will be needed in the long term, contact a super user (Ulf Andrae, Denis Haumont, Trygve Aspelien) to assist you in getting it into the common area mentioned above, where it should be safer in the long term.
 
 #### Standalone task example (forecast)
 
