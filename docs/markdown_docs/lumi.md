@@ -17,7 +17,7 @@ To run the project on LUMI, you need to have a LUMI account and add your SSH key
 
 1. First step is to email ECMWF (cristina.duma@ecmwf.int with samet.demir@ecmwf.int; bojan.kasic@ecmwf.int in cc), providing them with: 
 
-a) Your **LUMI username**.
+a) Your **LUMI username** (USERNAME in the rest of this document).
 
 b) Your **LUMI public key** (usually under: /users/USERNAME/.ssh/id_rsa.pub)
 
@@ -107,7 +107,7 @@ And make sure you check these flags:
 1. Once Ecflow is setup on LUMI you need to login as follows:
 
 ```shell
-ssh -X adelsaid@lumi.csc.fi
+ssh -X USERNAME@lumi.csc.fi
 ```
 (use the -A flag if you have any problems with the -X flag above). Graphics are needed to see the Ecflow graphic UI.
 
