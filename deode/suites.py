@@ -454,7 +454,7 @@ class SuiteDefinition(object):
                             int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(bch_fam)])
                             break
 
-                    int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(int_fam)])
+                int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(int_fam)])
             else:
                 int_trig = inputdata_done
 
