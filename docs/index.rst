@@ -8,9 +8,9 @@ Welcome to the Deode Prototype Doc Page!
 .. toctree::
    :caption: Contents:
    :maxdepth: 1
-   
+
+   DEODE <readme_link>  
    LUMI  <lumi_link>
-   README <readme_link>
    Development Guidelines <development_guidelines_link.rst>
    API Documentation <deode>
    Misc <misc_section_in_doc_page>
