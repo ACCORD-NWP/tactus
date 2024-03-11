@@ -9,7 +9,11 @@ from .batch import BatchJob
 
 
 class E923Update(Task):
-    """Methods for the e923 work."""
+    """Methods for updating climfile for ALARO.
+
+    For mor informations see README in bindir
+
+    """
 
     def __init__(self, config):
         """Construct object.
@@ -20,7 +24,7 @@ class E923Update(Task):
         Task.__init__(self, config, __name__)
 
         self.climdir = self.platform.get_system_value("climdir")
-        self.months = [f"{mm:02d}" for mm in range(1, 13)]
+        self.bindir = self.platform.get_system_value("fa_sfx2clim_bin")
 
         self.archive = self.config["system.archive"]
         self.basetime = as_datetime(self.config["general.times.basetime"])
@@ -62,7 +66,7 @@ class E923Update(Task):
             )
             namelist.close()
 
-        fa_sfx2clim = "/home/snh02/work/fa_sfx2clim/fa_sfx2clim"
+        fa_sfx2clim = f"{self.bindir}fa_sfx2clim"
         self.fmanager.input(fa_sfx2clim, "fa_sfx2clim")
         batch = BatchJob(os.environ, wrapper=self.wrapper)
         batch.run(f"fa_sfx2clim nam pgd_file input_sfx {climfile}")

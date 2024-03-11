@@ -106,6 +106,10 @@
             "type": "string",
             "description": "Default unix group for directories created by deode, leave empty to use default group of user.",
             "default": ""
-        }
+        },
+	"fa_sfx2clim_dir": {
+	    "type": "string",
+	    "description": "The path to the binary or updating the climfiles when running ALARO"
+	}
     }
 }
