@@ -1,0 +1,11 @@
+gridtype = "cubic"
+name = "Norrkoping"
+nimax = 1489
+njmax = 1489
+tstep = 15
+xdx = 500.0
+xdy = 500.0
+xlat0 = 58.66
+xlatcen = 58.66
+xlon0 = 16.0
+xloncen = 16.0
