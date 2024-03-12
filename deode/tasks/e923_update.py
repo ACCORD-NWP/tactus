@@ -4,6 +4,7 @@ import glob
 import os
 
 from ..datetime_utils import as_datetime
+from ..logs import logger
 from .base import Task
 from .batch import BatchJob
 
@@ -21,10 +22,12 @@ class E923Update(Task):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Task.__init__(self, config, __name__)
+        Task.__init__(self, config, "E923Update")
 
         self.climdir = self.platform.get_system_value("climdir")
         self.bindir = self.platform.get_system_value("fa_sfx2clim_bin")
+        logger.info(f"Name: {self.name}")
+        self.fa_sfx2clim = self.get_binary("fa_sfx2clim")
 
         self.archive = self.config["system.archive"]
         self.basetime = as_datetime(self.config["general.times.basetime"])
@@ -66,9 +69,7 @@ class E923Update(Task):
             )
             namelist.close()
 
-        fa_sfx2clim = f"{self.bindir}fa_sfx2clim"
-        self.fmanager.input(fa_sfx2clim, "fa_sfx2clim")
         batch = BatchJob(os.environ, wrapper=self.wrapper)
-        batch.run(f"fa_sfx2clim nam pgd_file input_sfx {climfile}")
+        batch.run(f"{self.fa_sfx2clim} nam pgd_file input_sfx {climfile}")
 
         self.archive_logs(glob.glob("NODE.*"), target=self.climdir)
