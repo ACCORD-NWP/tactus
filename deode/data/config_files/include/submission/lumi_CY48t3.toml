@@ -4,7 +4,7 @@ default_submit_type = "serial"
 lfftw = true
 max_ecf_tasks = 2
 module_initpath = "/usr/share/lmod/8.3.1/init"
-nproma = -64
+nproma = -32
 submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite"]
 
 [background_hpc]
@@ -36,8 +36,6 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
   ECF_SSL = 1
   # Nodes, MPI tasks etc
   MPI_TASKS = 32 # $SLURM_NTASKS
-  MPITASKS_PER_NODE = 32 # MPI_TASKS/NNODES
-  NNODES = 4 # $SLURM_JOB_NUM_NODES
   OMP_NUM_THREADS = 4 # CPUS_PER_TASK
 
   # Open-MP business :
@@ -65,8 +63,8 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
   00_PURGE = ["purge", "--force"]
   01_LUMI = ["load", "LUMI/23.03"]
   02_PARTITION_G = ["load", "partition/C"]
-  03_PRG_ENV = ["load", "PrgEnv-cray"]
-  04_CPE = ["load", "cpe/23.03"]
+  03_CPE = ["load", "cpe/23.03"]
+  04_PRG_ENV = ["load", "PrgEnv-cray"]
   05_TRENTO = ["load", "craype-x86-trento"]
   06_MPICH = ["load", "cray-mpich"]
   07_LIBSCI = ["load", "cray-libsci"]
