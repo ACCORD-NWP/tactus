@@ -4,7 +4,6 @@ import glob
 import os
 
 from ..datetime_utils import as_datetime
-from ..logs import logger
 from .base import Task
 from .batch import BatchJob
 
@@ -26,7 +25,6 @@ class E923Update(Task):
 
         self.climdir = self.platform.get_system_value("climdir")
         self.bindir = self.platform.get_system_value("fa_sfx2clim_bin")
-        logger.info(f"Name: {self.name}")
         self.fa_sfx2clim = self.get_binary("fa_sfx2clim")
 
         self.archive = self.config["system.archive"]
