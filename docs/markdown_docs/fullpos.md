@@ -10,10 +10,13 @@ The fullpos output is controlled by the following settings
 Currently it's only implemented support for a single domain using the native geometry of the domain used for the model run.
 
 ## The fullpos config files
-There are three fullpos config file types under `deode/namelist_generation/fullpos/CYCLE/`
+There are a number of  fullpos config file types under `deode/namelist_generation/fullpos/CYCLE/`
 - rules.yml sets `LEVEL_MAP` and `PARAM_MAP` and tells how settings in the selection part should be translated to settings in `NAMFPC`. Normally this does not have to be changed.
 - namfpc_header.yml where we specify the non-field related settings in NAMFPC
-- master_selection.yml where all fields and levels are specified per output type as defined by fullpos
+- master_selection.yml where all fields and levels are specified per output type as defined by fullpos. This config file is for hourly output
+- master_subhour_selection.yml defines similar as above but for subhourly output. The separation here allows a more fine grained control of the subhourly output streams.
+- A number of impact model selections defined for all output steps.
+
 
 The settings done in the `selection` part will be used to fill `NAMFPC` and the correct level numbers will be filled in the final namelist.
 
@@ -72,7 +75,7 @@ A number of selection files can be combined by extending the `selection` in the 
 
 ```
 [fullpos]
- selection = ["rules", "namfpc_header", "master_selection" ,"my_additions"]
+ selection = ["rules", "namfpc_header", "master_selection" ,"aq_selection"]
 ```
 
 This allows to define different combination of output depending on other configuration choices.

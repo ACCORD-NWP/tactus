@@ -1,5 +1,5 @@
-# Do the selection of fields below. Note 
-# that xxt00000000 inherits from xxtddddhhmm
+# Do the selection of fields below.
+# Note that xxt00000000 inherits from xxtddddhhmm
 selection:
  xxtddddhhmm: &default
   NAMFPDYH:
@@ -9,7 +9,7 @@ selection:
    RFP3H:
     - 100.
 
- xxtddddhhmm:
+ xxtddddhh00:
    <<: *default
 
  xxt00000000:

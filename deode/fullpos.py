@@ -16,7 +16,7 @@ class InvalidSelectionCombinationError(ValueError):
 class Fullpos:
     """Fullpos namelist generator based on (yaml) dicts."""
 
-    def __init__(self, domain, fpdir=".", fpfiles=None, fpdict=None):
+    def __init__(self, domain, fpdir=".", fpfiles=None, fpdict=None, rules=None):
         """Construct the fullpos generator.
 
         Args:
@@ -24,11 +24,13 @@ class Fullpos:
             fpdir (str): Path to fullpos config files
             fpfiles (list): List of fullpos config files to read (wihtout the yml suffix)
             fpdict (dict): A dictionary of fullpos settings
+            rules (dict): A dictionary of substitution rules
 
         """
         self.domain = domain
         self.fpdir = fpdir
         self.nldict = {}
+        self.rules = rules if rules is not None else {}
         if fpfiles is not None:
             self.nldict.update(self.load(fpdir, fpfiles))
 
@@ -102,7 +104,7 @@ class Fullpos:
             d (dict): Merged dict
 
         Raises:
-            InvalidSelectionCombination    # noqa: DAR401
+            RuntimeError: Invalid type
 
         """
         d = d1.copy()
@@ -115,7 +117,7 @@ class Fullpos:
                         if x not in d[k]:
                             d[k].append(x)
                 else:
-                    raise InvalidSelectionCombinationError(v)
+                    raise RuntimeError("Invalid type:", type(v), v)
             else:
                 d[k] = v
 
@@ -146,6 +148,30 @@ class Fullpos:
                 self.nldict["selection"], additions_dict
             )
 
+    def replace_rules(self, vin):
+        """Replace patterns from the rules dict.
+
+        Args:
+            vin (str|list): Input values
+
+        Raises:
+            RuntimeError: Invalid type
+
+        Returns:
+            v (str|list): possibly replaced strings
+
+        """
+        v = vin if isinstance(vin, str) else vin.copy()
+        for rp, rv in self.rules.items():
+            if isinstance(v, list):
+                for y in v:
+                    if isinstance(y, str) and y == rp:
+                        i = v.index(y)
+                        v[i] = rv
+            else:
+                raise RuntimeError("Invalid type:", type(v), v)
+        return v
+
     def construct(self):
         """Construct the fullpos namelists.
 
@@ -154,7 +180,7 @@ class Fullpos:
             selection (dict): xxtddddhhmm part
 
         Raises:
-            InvalidSelectionCombination    # noqa: DAR401
+            InvalidSelectionCombination: Invalid combination in selection
 
         """
         namfpc_out = {"NAMFPC": self.nldict["NAMFPC"].copy()}
@@ -166,6 +192,11 @@ class Fullpos:
         for v in param_map.values():
             for vv in v.values():
                 namfpc[vv] = []
+
+        # Extract empty namelists
+        empty_namelists = {k: [] for k in level_map}
+        for k in param_map:
+            empty_namelists[k] = []
 
         # Map all fields and levels to the correct
         # entries in NAMFPC
@@ -180,6 +211,8 @@ class Fullpos:
                     if len(v.keys()) > 2:
                         raise InvalidSelectionCombinationError(v.keys())
                     x = level_map[k]
+                    if len(self.rules) > 0 and x == "NRFP3S":
+                        v[x] = self.replace_rules(v[x])
                     namfpc[x].append(v[x])
                     x = param_map[k]["CL3DF"]
                     namfpc[x].append(v["CL3DF"])
@@ -187,6 +220,8 @@ class Fullpos:
                 else:
                     for y in v.values():
                         x = level_map[k]
+                        if len(self.rules) > 0 and x == "NRFP3S":
+                            y[x] = self.replace_rules(y[x])
                         namfpc[x].append(y[x])
                         x = param_map[k]["CL3DF"]
                         namfpc[x].append(y["CL3DF"])
@@ -212,15 +247,23 @@ class Fullpos:
                     tmp[k] = d
                 elif "CL3DF" in v:
                     x = level_map[k]
+                    v[x] = list(set(flatten_list(v[x])))
                     tmp[k], i = self.expand(v, x, namfpc[x], self.domain, 0)
                 else:
                     x = level_map[k]
                     i = 0
                     for y in v.values():
+                        y[x] = list(set(flatten_list(y[x])))
                         d, i = self.expand(y, x, namfpc[x], self.domain, i)
                         tmp[k].update(d)
 
+            # Update the selection
             for k, v in tmp.items():
                 selection[kk][k] = v
+
+            # Make sure all namelists exists
+            for k in empty_namelists:
+                if k not in selection[kk]:
+                    selection[kk][k] = {}
 
         return namfpc_out, selection
