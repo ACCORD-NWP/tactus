@@ -68,6 +68,12 @@ def mock_codes_get_values(gribid):
     return np.array([0] * nx * ny)
 
 
+def mock_codes_release(msgid):
+    kl = list(msgid.keys())
+    for kk in kl:
+        del msgid[kk]
+
+
 class MockKeyValueNotFoundError(Exception):
     pass
 
@@ -78,6 +84,7 @@ mock_eccodes.codes_get_long = mock_codes_get_long
 mock_eccodes.codes_get_double = mock_codes_get_double
 mock_eccodes.codes_grib_new_from_file = mock_codes_grib_new_from_file
 mock_eccodes.codes_get_values = mock_codes_get_values
+mock_eccodes.codes_release = mock_codes_release
 mock_eccodes.KeyValueNotFoundError = MockKeyValueNotFoundError
 
 sys.modules["eccodes"] = mock_eccodes

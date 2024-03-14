@@ -8,12 +8,12 @@
         "parameter_list": {
             "type": "string",
             "description": "List of parameters to extract",
-            "default": "@DEODE_HOME@/deode/data/sqlite/param_list.json"
+            "default": "@DEODE_HOME@/deode/data/sqlite/param_list_@CSC@.json"
         },
         "sqlite_model_name": {
             "type": "string",
             "description": "Model name used in the sqlite tables",
-            "default": "@CNMEXP@"
+            "default": "@CASE@"
         },
         "sqlite_path": {
             "type": "string",
@@ -23,7 +23,7 @@
         "sqlite_template": {
             "type": "string",
             "description": "File name template for generated sqlite files",
-            "default": "FCTABLE_@PP@_@YYYY@@MM@_@HH@.sqlite"
+            "default": "FCTABLE/{MODEL}/{YYYY}/{MM}/FCTABLE_{PP}_{YYYY}{MM}_{HH}.sqlite"
         },
         "station_list": {
             "type": "string",
