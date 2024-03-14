@@ -11,7 +11,7 @@ from .batch import BatchJob
 class E923Update(Task):
     """Methods for updating climfile for ALARO.
 
-    For mor informations see README in bindir
+    For mor information see doc/markdown/e923_update.md.
 
     """
 
@@ -24,7 +24,6 @@ class E923Update(Task):
         Task.__init__(self, config, "E923Update")
 
         self.climdir = self.platform.get_system_value("climdir")
-        self.bindir = self.platform.get_system_value("fa_sfx2clim_bin")
         self.fa_sfx2clim = self.get_binary("fa_sfx2clim")
 
         self.archive = self.config["system.archive"]

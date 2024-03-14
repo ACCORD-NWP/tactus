@@ -166,11 +166,6 @@
       "description": "Suite control options",
       "type": "object",
       "properties": {
-	"do_e923_update": {
-          "description": "Activate update for climefile for ALARO.",
-          "type": "boolean",
-	  "default": false
-        },
         "do_soil": {
           "description": "Activate preparation of SOILGRID data as input for PGD",
           "type": "boolean"

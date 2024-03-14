@@ -21,7 +21,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
 [parallel]
   NPROC = 16
   SCHOST = "lumi-batch"
-  tasks = ["Forecast", "e927", "Pgd", "Prep", "c903", "E923Monthly", "E923Constant"]
+  tasks = ["Forecast", "e927", "Pgd", "Prep", "c903"]
   WRAPPER = "srun"
 
 [parallel.BATCH]
@@ -85,7 +85,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
 [serial]
   NPROC = 1
   SCHOST = "lumi-batch"
-  tasks = ["Gmted", "Soil", "PgdUpdate"]
+  tasks = ["Gmted", "Soil", "PgdUpdate", "E923Constant", "E923Monthly", "E923Update"]
   WRAPPER = "srun"
 
 [serial.BATCH]
@@ -160,6 +160,9 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
 
 [task_exceptions.E923Monthly]
   NPROC = 1
+
+[task_exceptions.e923Update]
+  bindir = "/users/kastelec/fa_sfx2clim/"
 
 [task_exceptions.e927]
   NPROC = 16
