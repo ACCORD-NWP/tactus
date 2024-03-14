@@ -51,6 +51,7 @@
   vertical_levels = "include/vertical_levels/MF_90.toml"
 
 [pgd]
+  npatch = 2
   one_decade = true
   use_osm = false
 

@@ -14,13 +14,13 @@ sfx_pgd_isba_3l:
   NAM_ISBA:
     CISBA: "3-L"
     NGROUND_LAYER: 3
-    NPATCH: 2
+    NPATCH: ${pgd.npatch}
 
 sfx_pgd_isba_dif:
   NAM_ISBA:
     CISBA: "DIF"
     NGROUND_LAYER: 14
-    NPATCH: 2
+    NPATCH: ${pgd.npatch}
     LMEB: True
     YSOC_TOP: "soc_top"
     YSOC_SUB: "soc_sub"
@@ -138,7 +138,7 @@ sfx_forecast_isba_dif:
   NAM_ISBA:
     CISBA: "DIF"
     NGROUND_LAYER: 14
-    NPATCH: 2
+    NPATCH: ${pgd.npatch}
     LMEB: True
     YSOC_TOP: "soc_top"
     YSOC_SUB: "soc_sub"
