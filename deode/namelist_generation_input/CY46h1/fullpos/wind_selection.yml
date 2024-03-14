@@ -1,5 +1,5 @@
-# Do the selection of fields below. Note 
-# that xxt00000000 inherits from xxtddddhhmm
+# Do the selection of fields below.
+# Note that xxt00000000 inherits from xxtddddhhmm
 selection:
  xxtddddhhmm: &default
   NAMFPDYH:

@@ -36,7 +36,7 @@
 
 [fullpos]
   config_path = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos"
-  selection = ["rules", "namfpc_header", "master_selection"]
+  selection = ["rules", "namfpc_header", "master_selection", "master_subhour_selection"]
 
 [include]
   archiving = "include/archiving.toml"

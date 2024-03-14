@@ -1,62 +1,7 @@
 # Do the selection of fields below. Note 
 # that xxt00000000 inherits from xxtddddhh00
 selection:
- xxtddddhh00: &default
-  NAMFPPHY:
-   CLCFU:
-    - 'SURFFLU.RAY.SOLA'
-    - 'SURFFLU.RAY.THER'
-    - 'SURFFLU.LAT.MEVA'
-    - 'SURFFLU.MEVAP.EA'
-    - 'SURFFLU.CHA.SENS'
-    - 'SURFRAYT SOLA DE'
-    - 'SURFRAYT THER DE'
-    - 'SURFACCPLUIE'
-    - 'SURFACCNEIGE'
-    - 'SURFACCGRAUPEL'
-    - 'SURFTENS.TURB.ZO'
-    - 'SURFTENS.TURB.ME'
-   CLXFU:   
-    - 'CLSTEMPERATURE'
-    - 'CLSHUMI.SPECIFIQ'
-    - 'CLSVENT.ZONAL'
-    - 'CLSVENT.MERIDIEN'
-    - 'SURFNEBUL.TOTALE'
-    - 'CLPMHAUT.MOD.XFU' 
-   CLPHY:
-    - 'SURFRESERV.NEIGE'
-    - 'SURFTEMPERATURE'
-  NAMFPDY2:
-   CL2DF:
-    - 'SURFPRESSION'
-    - 'MSLPRESSURE'
-  NAMFPDYI: {}
-  NAMFPDYV: {}
-  NAMFPDYH: {}
-  NAMFPDYP: {}
-  NAMFPDYS: 
-    CL3DF:
-     - 'GRAUPEL'
-     - 'RAIN'
-     - 'SNOW'
-     - 'TEMPERATURE'
-     - 'HUMI.SPECIFI'
-     - 'WIND.U.PHYS'
-     - 'WIND.V.PHYS'
-     - 'ICE_CRYSTAL'
-     - 'CLOUD_WATER'
-     - 'CLOUD_FRACTI'
-     - 'TKE'
-    NRFP3S: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-    21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-    41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60,
-    61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80,
-    81, 82, 83, 84, 85, 86, 87, 88, 89, 90]
-  NAMFPDYT: {}
-  NAMFPDYF : {}
-  NAMPPC : {}
-
- xxtddddhhmm:
+ xxtddddhhmm: &default
   NAMFPPHY:
    CLCFU:
     - 'SURFFLU.RAY.SOLA'
@@ -85,10 +30,6 @@ selection:
    CL2DF:
     - 'SURFPRESSION'
     - 'MSLPRESSURE'
-  NAMFPDYI: {}
-  NAMFPDYV: {}
-  NAMFPDYH: {}
-  NAMFPDYP: {}
   NAMFPDYS:
     CL3DF:
      - 'GRAUPEL'
@@ -102,14 +43,11 @@ selection:
      - 'CLOUD_WATER'
      - 'CLOUD_FRACTI'
      - 'TKE'
-    NRFP3S: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-    21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-    41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60,
-    61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80,
-    81, 82, 83, 84, 85, 86, 87, 88, 89, 90]
-  NAMFPDYT: {}
-  NAMFPDYF : {}
-  NAMPPC : {}
+    NRFP3S:
+     - ${namelist.nrfp3s}
  
+ xxtddddhh00:
+   <<: *default
+
  xxt00000000:
    <<: *default

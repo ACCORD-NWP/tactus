@@ -34,7 +34,12 @@
 
 [fullpos]
   config_path = "@DEODE_HOME@/deode/namelist_generation_input/@CYCLE@/fullpos"
-  selection = ["rules", "namfpc_header", "master_selection_ALARO"]
+  selection = [
+    "rules",
+    "namfpc_header",
+    "master_selection_ALARO",
+    "master_subhour_selection_ALARO",
+  ]
 
 [include]
   accelerator_device = "include/accelerator_device/lumi_gpu.toml"
