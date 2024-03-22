@@ -1,12 +1,10 @@
 account = "#SBATCH -A project_465000527"
-bindir = "/pfs/lustrep4/projappl/project_465000527/dhaumont/accord/pack/freeze_gpu_feb_2024/bin"
-lfftw = false
-
-default_submit_type = "parallel"
+bindir = "/scratch/project_465000527/jasinskas/CY48T3-gfortran12-O2_24-install/bin"
+default_submit_type = "serial"
+lfftw = true
 max_ecf_tasks = 2
 module_initpath = "/usr/share/lmod/8.3.1/init"
-nproma = -256
-
+nproma = -64
 submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite"]
 
 [background_hpc]
@@ -22,8 +20,8 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
 [parallel]
   NPROC = 16
   SCHOST = "lumi-batch"
-  tasks = ["Forecast", "e927", "Pgd", "Prep", "c903"]
-  WRAPPER = "srun"
+  tasks = ["Forecast", "e927", "Pgd", "Prep", "c903", "E923Monthly", "E923Constant"]
+  WRAPPER = "srun -n @NPROC@"
 
 [parallel.BATCH]
   NAME = "#SBATCH --job-name=@TASK_NAME@"
@@ -32,12 +30,13 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
   PARTITION = "#SBATCH -p debug"
   WALLTIME = "#SBATCH --time=00:10:00"
 
-# EXPORT_NONE = "#SBATCH --export=NONE"
+  # EXPORT_NONE = "#SBATCH --export=NONE"
+
 [parallel.ENV]
   ECF_SSL = 1
   # Nodes, MPI tasks etc
   MPI_TASKS = 32 # $SLURM_NTASKS
-  OMP_NUM_THREADS = 4 # CPUS_PER_TASK
+  OMP_NUM_THREADS = 1 # CPUS_PER_TASK
 
   # Open-MP business :
   # OMP_PLACES looks important for the binding by srun :
@@ -48,6 +47,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
 
   # DR_HOOK
   DR_HOOK = 1
+  DR_HOOK_ALLOW_COREDUMP = 0
   DR_HOOK_IGNORE_SIGNALS = 8
   DR_HOOK_SHOW_PROCESS_OPTIONS = 0
   DR_HOOK_SILENT = 1
@@ -62,30 +62,15 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
 
 [parallel.MODULES]
   00_PURGE = ["--force", "purge"]
-  01_LUMI = ["load", "LUMI/23.03"]
-  02_PARTITION_G = ["load", "partition/G"]
-  03_CPE = ["load", "cpe/23.03"]
-  04_PRG_ENV = ["load", "PrgEnv-cray"]
-  05_TRENTO = ["load", "craype-x86-trento"]
-  06_ACCEL = ["load", "craype-accel-amd-gfx90a"]
-  07_ROCM = ["load", "rocm"]
-  08_MPICH = ["load", "cray-mpich"]
-  09_LIBSCI = ["load", "cray-libsci"]
-  10_FFTW = ["load", "cray-fftw"]
-  11_PYTHON = ["load", "cray-python/3.10.10"]
-  12_HDF5 = ["load", " cray-hdf5-parallel"]
-  13_NETCDF = ["load", "cray-netcdf-hdf5parallel"]
-  14_BUILDTOOLS = ["load", "buildtools"]
-  15_NCURSES = ["load", "ncurses/6.4-cpeCray-23.03"]
-
-  #16_RIMVYDAS_USE = ["use", "/scratch/project_465000527/jasinskas/scl/modules/"]
-  #17_RIMVYDAS_FTN16 = ["load", "scl-ftn16_23"]
-  #18_RIMVYDAS_ECFLOW = ["load", "scl-ecflow_23"]
+  14_RIMVYDAS_USE = ["use", "/scratch/project_465000527/SW/modules/"]
+  15_RIMVYDAS_FTN16 = ["load", "scl-gfortran12_23"]
+  16_RIMVYDAS_ECFLOW = ["load", "scl-ecflow_23"]
+  99_LIST = ["list", ""]
 
 [serial]
   NPROC = 1
   SCHOST = "lumi-batch"
-  tasks = ["Gmted", "Soil", "PgdUpdate", "E923Constant", "E923Monthly", "E923Update"]
+  tasks = ["Gmted", "Soil", "PgdUpdate"]
   WRAPPER = "srun"
 
 [serial.BATCH]
@@ -98,19 +83,21 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
   #EXPORT_NONE = "#SBATCH --export=NONE"
 
 [serial.ENV]
+  DR_HOOK_ALLOW_COREDUMP = 0
   DR_HOOK_IGNORE_SIGNALS = 8
   ECF_SSL = 1
   MPI_TASKS = 32
   MPITASKS_PER_NODE = 8
   NPROC = 32
-  OMP_NUM_THREADS = 4
+  OMP_NUM_THREADS = 1
   OMPI_MCA_btl = '^vader'
 
 [serial.MODULES]
-  00_PYTHON = ["load", "cray-python/3.10.10"]
-  01_USE = ["use", "/scratch/project_465000527/jasinskas/scl/modules/"]
-  02_FTN16 = ["load", "scl-ftn16_23"]
+  00_PURGE = ["--force", "purge"]
+  01_USE = ["use", "/scratch/project_465000527/SW/modules/"]
+  02_FTN16 = ["load", "scl-gfortran12_23"]
   03_ECFLOW = ["load", "scl-ecflow_23"]
+  99_LIST = ["list", ""]
 
 [sqlite]
   NPROC = 1
@@ -131,8 +118,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
   ECF_SSL = 1
 
 [sqlite.MODULES]
-  00_PYTHON = ["load", "cray-python/3.10.10"]
-  01_USE = ["use", "/scratch/project_465000527/jasinskas/scl/modules/"]
+  01_USE = ["use", "/scratch/project_465000527/SW/modules/"]
   02_ECCODES = ["load", "scl-pyeccodes_23"]
   03_ECFLOW = ["load", "scl-ecflow_23"]
 
@@ -160,9 +146,6 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
 [task_exceptions.E923Monthly]
   NPROC = 1
 
-[task_exceptions.e923Update]
-  bindir = "/users/kastelec/fa_sfx2clim/"
-
 [task_exceptions.e927]
   NPROC = 16
 
@@ -171,41 +154,22 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
   NTASKS = "#SBATCH --ntasks=16"
 
 [task_exceptions.Forecast]
-  WRAPPER = "ulimit -s unlimited; srun -n @NPROC@ ./select_gpu"
+  WRAPPER = "ulimit -s unlimited; srun -n @NPROC@"
 
 [task_exceptions.Forecast.BATCH]
-  CPU = "#SBATCH --cpus-per-task=6"
+  CPU = "#SBATCH --cpus-per-task=4"
   JOBNAME = "#SBATCH --job-name=Forecast"
   NODES = "#SBATCH --nodes=2"
   NTASKS = "#SBATCH --ntasks=16"
-  PARTITION = "#SBATCH --partition=dev-g"
+  PARTITION = "#SBATCH --partition=debug"
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=8"
   WALLTIME = "#SBATCH --time=00:30:00"
+
   #EXCLUSIVE= "#SBATCH --exclusive"
-  GPUS_PER_NODE = "#SBATCH --gpus-per-node=8"
 
 [task_exceptions.Forecast.ENV]
   DR_HOOK = 1
   RTTOV_COEFDIR = "/scratch/project_465000527/de_33050_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
-  #Environment variables for ALARO PARALLEL
-  APL_ALARO = 1
-  INPART = 1
-  PARALLEL = 1
-
-  #Environment for LUMI GPU
-  #Allocate 8Gb of heap size on the GPU
-  CRAY_ACC_MALLOC_HEAPSIZE = 8000000000
-
-  #Allow direct GPU to GPU MPI connection
-  MPICH_GPU_SUPPORT_ENABLED = 1
-
-  # GPU: bind 8 MPI tasks to certain CPU cores (so that GPUs 0-7 are connected to tasks 0-7)
-  CPU_BIND = 'mask_cpu:7e000000000000,7e00000000000000,7e0000,7e000000,7e,7e00,7e00000000,7e0000000000'
-
-  #AMD_LOG_LEVEL=3
-  #CRAY_ACC_DEBUG=3
-  #ACC_NOTIFY=3
-  NOUTPUT = 2
 
 [task_exceptions.Gmted.MODULES]
   GDAL = ["load", "scl-gdal_23"]

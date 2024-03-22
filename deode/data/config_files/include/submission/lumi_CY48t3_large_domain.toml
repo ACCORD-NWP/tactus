@@ -24,7 +24,6 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
   WRAPPER = "srun"
 
 [parallel.BATCH]
-  ACCOUNT = "#SBATCH -A project_465000527"
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
@@ -61,7 +60,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
   FI_CXI_RX_MATCH_MODE = 'hybrid'
 
 [parallel.MODULES]
-  00_PURGE = ["purge", "--force"]
+  00_PURGE = ["--force", "purge"]
   01_LUMI = ["load", "LUMI/23.03"]
   02_PARTITION_G = ["load", "partition/C"]
   03_CPE = ["load", "cpe/23.03"]
@@ -86,7 +85,6 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
   WRAPPER = "srun"
 
 [serial.BATCH]
-  ACCOUNT = "#SBATCH -A project_465000527"
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
@@ -172,7 +170,6 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
   WRAPPER = "ulimit -s unlimited; srun -n @NPROC@"
 
 [task_exceptions.Forecast.BATCH]
-  ACCOUNT = "#SBATCH --account=project_465000527"
   CPU = "#SBATCH --cpus-per-task=6"
   JOBNAME = "#SBATCH --job-name=Forecast"
   MEM = "#SBATCH --mem=0GB"
