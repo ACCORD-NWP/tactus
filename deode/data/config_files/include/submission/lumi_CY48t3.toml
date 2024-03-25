@@ -156,7 +156,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
 [task_exceptions.E923Monthly]
   NPROC = 1
 
-[task_exceptions.e923Update]
+[task_exceptions.E923Update]
   bindir = "/users/kastelec/fa_sfx2clim/"
 
 [task_exceptions.e927]

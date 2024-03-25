@@ -118,7 +118,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 [task_exceptions.CreateGrib.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
 
-[task_exceptions.e923Update]
+[task_exceptions.E923Update]
   binary = "fa_sfx2clim"
   bindir = "/home/snh02/work/fa_sfx2clim/"
 
