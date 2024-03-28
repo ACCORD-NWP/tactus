@@ -130,7 +130,8 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   NTASKS = "#SBATCH --ntasks=16"
 
 [task_exceptions.Forecast]
-  NPROC = 3072
+  NPROC = 3058
+  NPROC_IO = 14
 
 [task_exceptions.Forecast.BATCH]
   MEM = "#SBATCH --mem=200GB"

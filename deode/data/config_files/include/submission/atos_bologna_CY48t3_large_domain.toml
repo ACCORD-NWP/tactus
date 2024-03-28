@@ -136,7 +136,8 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   NTASKS = "#SBATCH --ntasks=16"
 
 [task_exceptions.Forecast]
-  NPROC = 640
+  NPROC = 633
+  NPROC_IO = 7
   OMP_NUM_THREADS = "4"
 
 [task_exceptions.Forecast.BATCH]
