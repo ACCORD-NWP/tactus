@@ -23,7 +23,7 @@ class Forecast(Task):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Task.__init__(self, config, __name__)
+        Task.__init__(self, config, "Forecast")
 
         self.cycle = self.config["general.cycle"]
         self.cnmexp = self.config["general.cnmexp"]
