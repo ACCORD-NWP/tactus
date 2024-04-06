@@ -1,5 +1,6 @@
 account = "#SBATCH -A project_465000527"
 bindir = "/scratch/project_465000527/jasinskas/CY48T3-ftn16-O0_23-install/bin"
+cmicro = "OLD3"
 default_submit_type = "serial"
 lfftw = true
 max_ecf_tasks = 2

@@ -1,4 +1,5 @@
 bindir = "/pfs/lustrep4/projappl/project_465000527/dhaumont/accord/pack/freeze_gpu_feb_2024/bin"
+cmicro = "OLD3"
 lfftw = false
 
 default_submit_type = "parallel"

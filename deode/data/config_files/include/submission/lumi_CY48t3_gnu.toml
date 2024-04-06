@@ -1,5 +1,6 @@
 account = "#SBATCH -A project_465000527"
 bindir = "/scratch/project_465000527/jasinskas/CY48T3-gfortran12-O2_24-install/bin"
+cmicro = "OLD3"
 default_submit_type = "serial"
 lfftw = true
 max_ecf_tasks = 2
