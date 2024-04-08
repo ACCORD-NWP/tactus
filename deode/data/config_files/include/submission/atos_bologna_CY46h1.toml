@@ -1,4 +1,4 @@
-bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2023-10-18/R64"
+bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2024-03-27/R64"
 default_submit_type = "serial"
 lfftw = true
 module_initpath = "/usr/local/apps/lmod/8.6.8/init"
@@ -31,7 +31,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=00:15:00"
 
 [gnu.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
 
 [parallel]
   NPROC = 32
@@ -54,12 +54,12 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   # First load the prgenv
   PRGENV = ["load", "prgenv/intel"]
   # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
   FFTW = ["load", "fftw/3.3.9"]
   HDF5 = ["load", "hdf5/1.10.6"]
   MKL = ["load", "intel-mkl/19.0.5"]
   NETCDF = ["load", "netcdf4/4.7.4"]
-  OPENMPI = ["load", "openmpi/4.1.1.1"]
+  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
 
 [serial]
   NPROC = 1
@@ -85,12 +85,12 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   # First load the prgenv
   PRGENV = ["load", "prgenv/intel"]
   # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
   FFTW = ["load", "fftw/3.3.9"]
   HDF5 = ["load", "hdf5/1.10.6"]
   MKL = ["load", "intel-mkl/19.0.5"]
   NETCDF = ["load", "netcdf4/4.7.4"]
-  OPENMPI = ["load", "openmpi/4.1.1.1"]
+  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
 
 [task]
   wrapper = ""
@@ -131,14 +131,18 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 [task_exceptions.Forecast]
   NPROC = 114
   NPROC_IO = 14
+  OMP_NUM_THREADS = "1"
 
 [task_exceptions.Forecast.BATCH]
-  #  MEM = "#SBATCH --mem=200GB"
+  CPUSPERTASK = "#SBATCH --cpus-per-task=1"
+  HYPERTHREAD = "#SBATCH --hint=nomultithread"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=128"
   WALLTIME = "#SBATCH --time=00:30:00"
 
 [task_exceptions.Forecast.ENV]
+  KMP_BLOCKTIME = "12"
+  KMP_STACKSIZE = "4G"
   RTTOV_COEFDIR = "/hpcperm/snh02/DEODE/satellite/rtcoef_rttov12/harm_coef/"
   UCX_LOG_LEVEL = "error"
 

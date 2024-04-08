@@ -24,7 +24,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WRAPPER = "srun"
 
 [gnu.BATCH]
-  MEM = "#SBATCH --mem=64GB"
+  MEM = "#SBATCH --mem=128GB"
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
