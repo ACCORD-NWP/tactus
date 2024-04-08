@@ -755,7 +755,7 @@ f4_ALARO:
     LSLHD_SVD: True
     LSLHD_T: True
     LSLHD_W: True
-    ND4SYS: 1
+    ND4SYS: 2
     NDLNPR: 1
     NPDVAR: 2
     NVDVAR: 4
