@@ -63,6 +63,7 @@
   do_soil = true
   interpolate_boundaries = true
   mode = "cold_start"
+  split_mars = false
 
 [system]
   bdclimdir = "@HOST_CASE@/climate/@HOST_DOMAIN@"
