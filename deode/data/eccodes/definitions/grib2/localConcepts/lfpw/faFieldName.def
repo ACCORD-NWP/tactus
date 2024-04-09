@@ -1663,6 +1663,16 @@
     typeOfFirstFixedSurface = 103 ;
 }
 
+# Mean Radiant Temperature
+"CLSMEAN.RAD.TEMP" = {
+    discipline = 20 ;
+    parameterCategory = 0 ;
+    parameterNumber = 1 ;
+    scaledValueOfFirstFixedSurface = 2 ;
+    tablesVersion = 15 ;
+    typeOfFirstFixedSurface = 103 ;
+}
+
 # deep soil temperature
 "PROFTEMPERATURE" = {
     discipline = 2 ;

@@ -27,6 +27,7 @@ selection:
     - 'SURFNEBUL.MOYENN'
     - 'SURFNEBUL.BASSE'
     - 'SURFNEBUL.TOTALE'
+    - 'CLSMEAN.RAD.TEMP'
   NAMFPDY2:
    CL2DF:
     - 'SURFPRESSION'

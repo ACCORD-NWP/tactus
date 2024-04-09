@@ -1,4 +1,4 @@
-bindir = "/home/snh02/pack/48t3_fix.04.OMPIIFC2104.x/bin"
+bindir = "/home/snh02/pack/48t3_main.05.OMPIIFC2104.x/bin"
 default_submit_type = "serial"
 lfftw = true
 module_initpath = "/usr/local/apps/lmod/8.6.8/init"
@@ -32,7 +32,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=03:00:00"
 
 [gnu.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
 
 [parallel]
   NPROC = 32
@@ -55,7 +55,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   # First load the prgenv
   PRGENV = ["load", "prgenv/intel"]
   # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
   FFTW = ["load", "fftw/3.3.9"]
   HDF5 = ["load", "hdf5/1.10.6"]
   MKL = ["load", "intel-mkl/19.0.5"]
@@ -86,7 +86,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   # First load the prgenv
   PRGENV = ["load", "prgenv/intel"]
   # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
   FFTW = ["load", "fftw/3.3.9"]
   HDF5 = ["load", "hdf5/1.10.6"]
   MKL = ["load", "intel-mkl/19.0.5"]
@@ -136,17 +136,20 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   NTASKS = "#SBATCH --ntasks=16"
 
 [task_exceptions.Forecast]
-  NPROC = 633
-  NPROC_IO = 7
+  NPROC = 624
+  NPROC_IO = 16
   OMP_NUM_THREADS = "4"
+  WRAPPER = "srun @DEODE_HOME@/deode/data/config_files/include/submission/omp_wrapper"
 
 [task_exceptions.Forecast.BATCH]
   CPUSPERTASK = "#SBATCH --cpus-per-task=4"
+  HYPERTHREAD = "#SBATCH --hint=nomultithread"
   NODES = "#SBATCH --nodes=20"
-  NTASKS = "#SBATCH --ntasks=640"
+  NTASKS = "#SBATCH --ntasks-per-node=32"
   WALLTIME = "#SBATCH --time=08:00:00"
 
 [task_exceptions.Forecast.ENV]
+  KMP_AFFINITY = "granularity=core,scatter"
   KMP_BLOCKTIME = "12"
   KMP_STACKSIZE = "4G"
   RTTOV_COEFDIR = "/hpcperm/snh02/DEODE/satellite/rtcoef_rttov12/harm_coef/"

@@ -505,6 +505,7 @@ f4_AROME:
   NAMRIP:
     CSTOP: ${namelist.cstop}
     TSTEP: ${domain.tstep}
+    RAVGTIME: 3600.
   NAMSATS:
     LPARTIAL_COEF_FILES: True
   NAMTOPH:
@@ -537,6 +538,7 @@ f4_AROME:
     LXXGST: True
     NRAZTS: ${namelist.nrazts}
     NXGSTPERIOD: 3600
+    LXMRT: True
   NEMELBC0A:
     LESPCPL: True
     NBICNHX: 2
@@ -1093,6 +1095,7 @@ f4_ALARO:
   NAMRIP:
     CSTOP: ${namelist.cstop}
     TSTEP: ${domain.tstep}
+    RAVGTIME: 3600.
   NAMTOPH:
     ETCVIM: 0.0
     ETNEBU: 0.0
@@ -1189,6 +1192,10 @@ f4_common:
     LAEROSEA: True
     LAEROSOO: True
     LO3ABC: True
+  NAMFPC:
+    CFP3DF:
+      - "AVG_U"
+      - "AVG_V"
 
 f4_c903_main:
   NAMFPOBJ:
