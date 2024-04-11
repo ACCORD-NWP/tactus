@@ -70,6 +70,17 @@ sites:
     copy_script: true
     scancel_command: 'scancel -f'
 
+  leonardo-batch:
+    type: slurm
+    connection: local
+    host: localhost
+    kill_sequence: [[5, 2], [10, 9]]
+    pre_submit: ["create_output_dir"]
+    preprocess: ["remove_top_blank_lines", "slurm_add_output", "slurm_bubble"]
+    at_exit: ["copy_submit_logfile"]
+    sbatch_command: "sbatch"
+    scancel_command: 'scancel -f'
+
   lumi-prod:
     type: slurm
     connection: ssh
