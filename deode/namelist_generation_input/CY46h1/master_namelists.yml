@@ -729,10 +729,10 @@ f4_common:
     NOUTPUT: 1
     NPRINTLEV: 1
     NPROC: "${namelist.nproc}"
-    NPRGPEW: "${namelist.nprocx}"
-    NPRGPNS: "${namelist.nprocy}"
-    NPRTRV: "${namelist.nprocx}"
-    NPRTRW: "${namelist.nprocy}"
+    NPRGPEW: "${namelist.nprocx-0}"
+    NPRGPNS: "${namelist.nprocy-0}"
+    NPRTRV: "${namelist.nprocx-0}"
+    NPRTRW: "${namelist.nprocy-0}"
     NPROC: "${namelist.nproc}"
   NAMPAR1:
     LSPLIT: True
