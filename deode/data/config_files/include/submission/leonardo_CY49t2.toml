@@ -35,7 +35,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 
 [parallel]
   NPROC = 32
-  SCHOST = "leonardo-batch"
+  SCHOST = "leonardo"
   tasks = ["Forecast", "e927", "Pgd", "Prep", "c903"]
   WRAPPER = "srun"
 
@@ -51,15 +51,16 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   OMPI_MCA_btl = "^vader"
 
 [parallel.MODULES]
-  # First load the prgenv
-  PRGENV = ["load", "prgenv/intel"]
-  # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
-  FFTW = ["load", "fftw/3.3.9"]
-  HDF5 = ["load", "hdf5/1.10.6"]
-  MKL = ["load", "intel-mkl/19.0.5"]
-  NETCDF = ["load", "netcdf4/4.7.4"]
-  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
+  #1_CUDA = ["load", "cuda/11.8"]
+  2_METEO = ["load", "profile/meteo"]
+  #3_NVHPC = ["load", "eccodes/2.25.0--nvhpc--23.1"]
+  4_FFTW = ["load", "fftw/3.3.10--openmpi--4.1.4--nvhpc--23.1"]
+  5_NETCDF = ["load", "netcdf-fortran/4.6.0--openmpi--4.1.4--nvhpc--23.1"]
+  6_HDF5 = ["load", "hdf5/1.12.2--openmpi--4.1.4--nvhpc--23.1"]
+  #7_NINJA = ["load", "ninja/1.11.1"]
+  #9_EIGEN = ["load", "eigen/3.4.0--nvhpc--23.1"]
+  #10_AEC = ["load", "libaec/1.0.4--nvhpc--23.1"]
+
 
 [serial]
   NPROC = 1

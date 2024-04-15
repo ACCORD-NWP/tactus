@@ -70,7 +70,7 @@ sites:
     copy_script: true
     scancel_command: 'scancel -f'
 
-  leonardo-batch:
+  leonardo:
     type: slurm
     connection: local
     host: localhost
