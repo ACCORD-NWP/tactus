@@ -126,6 +126,11 @@
       "description": "Settings for control of Pgd selection.",
       "type": "object",
       "properties": {
+	"npatch": {
+	  "title": "Number of patches for surfex variables",
+	  "type": "integer",
+	  "default": 3
+	},
         "one_decade": {
           "title": "Option for using one decade",
           "type": "boolean",
@@ -197,7 +202,12 @@
         "create_time_dependent_suite": {
           "description": "Activate the time dependent part of the suite",
           "type": "boolean"
-        }
+        },
+	"split_mars": {
+	  "description": "Do marsprep only for one step before c903",
+	  "type": "boolean",
+	  "default": false
+	}
       }
     },
     "system": {

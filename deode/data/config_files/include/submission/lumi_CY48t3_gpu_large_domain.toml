@@ -1,4 +1,3 @@
-account = "#SBATCH -A project_465000527"
 bindir = "/pfs/lustrep4/projappl/project_465000527/dhaumont/accord/pack/freeze_gpu_feb_2024/bin"
 cmicro = "OLD3"
 lfftw = false
@@ -21,7 +20,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
   tasks = ["Background_vm"]
 
 [parallel]
-  NPROC = 16
+  NPROC = 160
   SCHOST = "lumi-batch"
   tasks = ["Forecast", "e927", "Pgd", "Prep", "c903"]
   WRAPPER = "srun"
@@ -33,7 +32,8 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
   PARTITION = "#SBATCH -p debug"
   WALLTIME = "#SBATCH --time=00:10:00"
 
-# EXPORT_NONE = "#SBATCH --export=NONE"
+  # EXPORT_NONE = "#SBATCH --export=NONE"
+
 [parallel.ENV]
   ECF_SSL = 1
   # Nodes, MPI tasks etc
@@ -93,8 +93,8 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
-  PARTITION = "#SBATCH --partition=debug"
-  WALLTIME = "#SBATCH --time=00:20:00"
+  PARTITION = "#SBATCH --partition=ju-standard"
+  WALLTIME = "#SBATCH --time=01:00:00"
 
   #EXPORT_NONE = "#SBATCH --export=NONE"
 
@@ -177,8 +177,9 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
 [task_exceptions.Forecast.BATCH]
   CPU = "#SBATCH --cpus-per-task=6"
   JOBNAME = "#SBATCH --job-name=Forecast"
-  NODES = "#SBATCH --nodes=2"
-  NTASKS = "#SBATCH --ntasks=16"
+  MEM = "#SBATCH --mem=0GB"
+  NODES = "#SBATCH --nodes=20"
+  NTASKS = "#SBATCH --ntasks=160"
   PARTITION = "#SBATCH --partition=dev-g"
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=8"
   WALLTIME = "#SBATCH --time=00:30:00"

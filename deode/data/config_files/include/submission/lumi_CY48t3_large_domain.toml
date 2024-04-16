@@ -1,13 +1,11 @@
 account = "#SBATCH -A project_465000527"
-bindir = "/pfs/lustrep4/projappl/project_465000527/dhaumont/accord/pack/freeze_gpu_feb_2024/bin"
+bindir = "/scratch/project_465000527/jasinskas/CY48T3-ftn16-O0_23-install/bin"
 cmicro = "OLD3"
-lfftw = false
-
-default_submit_type = "parallel"
+default_submit_type = "serial"
+lfftw = true
 max_ecf_tasks = 2
 module_initpath = "/usr/share/lmod/8.3.1/init"
-nproma = -256
-
+nproma = -32
 submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite"]
 
 [background_hpc]
@@ -21,7 +19,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
   tasks = ["Background_vm"]
 
 [parallel]
-  NPROC = 16
+  NPROC = 160
   SCHOST = "lumi-batch"
   tasks = ["Forecast", "e927", "Pgd", "Prep", "c903"]
   WRAPPER = "srun"
@@ -33,7 +31,8 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
   PARTITION = "#SBATCH -p debug"
   WALLTIME = "#SBATCH --time=00:10:00"
 
-# EXPORT_NONE = "#SBATCH --export=NONE"
+  # EXPORT_NONE = "#SBATCH --export=NONE"
+
 [parallel.ENV]
   ECF_SSL = 1
   # Nodes, MPI tasks etc
@@ -64,24 +63,21 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
 [parallel.MODULES]
   00_PURGE = ["--force", "purge"]
   01_LUMI = ["load", "LUMI/23.03"]
-  02_PARTITION_G = ["load", "partition/G"]
+  02_PARTITION_G = ["load", "partition/C"]
   03_CPE = ["load", "cpe/23.03"]
   04_PRG_ENV = ["load", "PrgEnv-cray"]
   05_TRENTO = ["load", "craype-x86-trento"]
-  06_ACCEL = ["load", "craype-accel-amd-gfx90a"]
-  07_ROCM = ["load", "rocm"]
-  08_MPICH = ["load", "cray-mpich"]
-  09_LIBSCI = ["load", "cray-libsci"]
-  10_FFTW = ["load", "cray-fftw"]
-  11_PYTHON = ["load", "cray-python/3.10.10"]
-  12_HDF5 = ["load", " cray-hdf5-parallel"]
-  13_NETCDF = ["load", "cray-netcdf-hdf5parallel"]
-  14_BUILDTOOLS = ["load", "buildtools"]
-  15_NCURSES = ["load", "ncurses/6.4-cpeCray-23.03"]
-
-  #16_RIMVYDAS_USE = ["use", "/scratch/project_465000527/jasinskas/scl/modules/"]
-  #17_RIMVYDAS_FTN16 = ["load", "scl-ftn16_23"]
-  #18_RIMVYDAS_ECFLOW = ["load", "scl-ecflow_23"]
+  06_MPICH = ["load", "cray-mpich"]
+  07_LIBSCI = ["load", "cray-libsci"]
+  08_FFTW = ["load", "cray-fftw"]
+  09_PYTHON = ["load", "cray-python/3.10.10"]
+  #10_HDF5 = ["load", " cray-hdf5-parallel"]
+  #11_NETCDF = ["load", "cray-netcdf-hdf5parallel"]
+  12_BUILDTOOLS = ["load", "buildtools"]
+  13_NCURSES = ["load", "ncurses/6.4-cpeCray-23.03"]
+  14_RIMVYDAS_USE = ["use", "/scratch/project_465000527/jasinskas/scl/modules/"]
+  15_RIMVYDAS_FTN16 = ["load", "scl-ftn16_23"]
+  16_RIMVYDAS_ECFLOW = ["load", "scl-ecflow_23"]
 
 [serial]
   NPROC = 1
@@ -93,8 +89,8 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
-  PARTITION = "#SBATCH --partition=debug"
-  WALLTIME = "#SBATCH --time=00:20:00"
+  PARTITION = "#SBATCH --partition=ju-standard"
+  WALLTIME = "#SBATCH --time=01:00:00"
 
   #EXPORT_NONE = "#SBATCH --export=NONE"
 
@@ -172,41 +168,23 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
   NTASKS = "#SBATCH --ntasks=16"
 
 [task_exceptions.Forecast]
-  WRAPPER = "ulimit -s unlimited; srun -n @NPROC@ ./select_gpu"
+  WRAPPER = "ulimit -s unlimited; srun -n @NPROC@"
 
 [task_exceptions.Forecast.BATCH]
   CPU = "#SBATCH --cpus-per-task=6"
   JOBNAME = "#SBATCH --job-name=Forecast"
-  NODES = "#SBATCH --nodes=2"
-  NTASKS = "#SBATCH --ntasks=16"
-  PARTITION = "#SBATCH --partition=dev-g"
+  MEM = "#SBATCH --mem=0GB"
+  NODES = "#SBATCH --nodes=20"
+  NTASKS = "#SBATCH --ntasks=160"
+  PARTITION = "#SBATCH --partition=ju-standard"
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=8"
   WALLTIME = "#SBATCH --time=00:30:00"
+
   #EXCLUSIVE= "#SBATCH --exclusive"
-  GPUS_PER_NODE = "#SBATCH --gpus-per-node=8"
 
 [task_exceptions.Forecast.ENV]
   DR_HOOK = 1
   RTTOV_COEFDIR = "/scratch/project_465000527/de_33050_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
-  #Environment variables for ALARO PARALLEL
-  APL_ALARO = 1
-  INPART = 1
-  PARALLEL = 1
-
-  #Environment for LUMI GPU
-  #Allocate 8Gb of heap size on the GPU
-  CRAY_ACC_MALLOC_HEAPSIZE = 8000000000
-
-  #Allow direct GPU to GPU MPI connection
-  MPICH_GPU_SUPPORT_ENABLED = 1
-
-  # GPU: bind 8 MPI tasks to certain CPU cores (so that GPUs 0-7 are connected to tasks 0-7)
-  CPU_BIND = 'mask_cpu:7e000000000000,7e00000000000000,7e0000,7e000000,7e,7e00,7e00000000,7e0000000000'
-
-  #AMD_LOG_LEVEL=3
-  #CRAY_ACC_DEBUG=3
-  #ACC_NOTIFY=3
-  NOUTPUT = 2
 
 [task_exceptions.Gmted.MODULES]
   GDAL = ["load", "scl-gdal_23"]

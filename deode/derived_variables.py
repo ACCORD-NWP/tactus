@@ -73,7 +73,12 @@ def check_fullpos_namelist(config, nlgen):
         fpdir = platform.substitute(fpdir)
         fpfiles = config["fullpos.selection"]
         domain = config["domain.name"]
-        fullpos = Fullpos(domain, fpdir=fpdir, fpfiles=fpfiles)
+        nrfp3s = list(range(1, int(config["vertical_levels.nlev"]) + 1))
+        rules = {
+            "${vertical_levels.nlev}": config["vertical_levels.nlev"],
+            "${namelist.nrfp3s}": nrfp3s,
+        }
+        fullpos = Fullpos(domain, fpdir=fpdir, fpfiles=fpfiles, rules=rules)
         namfpc, selections = fullpos.construct()
         logger.info("Create fullpos selection for {}", list(selections.keys()))
         for head, body in selections.items():

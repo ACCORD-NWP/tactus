@@ -20,7 +20,7 @@ def tmp_sqlite_path(tmp_path_factory):
 class TestExtractSQLite:
     """Test extractsqlite in parts."""
 
-    sqlite_template = "FC_@PP@_@YYYY@@MM@_@HH@.sqlite"
+    sqlite_template = "FCTABLE_{PP}_{YYYY}{MM}_{HH}.sqlite"
     fcdate = datetime.datetime.strptime("20230915T00", "%Y%m%dT%H")
 
     model_name = "DEODE"
@@ -124,4 +124,4 @@ class TestExtractSQLite:
         assert nt == 2
         assert ni == 2
         # check that sqlite file was created
-        assert os.path.isfile(tmp_sqlite_path + "/FC_T_202309_00.sqlite")
+        assert os.path.isfile(tmp_sqlite_path + "/FCTABLE_T_202309_00.sqlite")

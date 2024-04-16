@@ -55,7 +55,7 @@ def run_task(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
-    logger.info("Running {}...", args.task)
+    logger.info("Prepare {}...", args.task)
 
     deode_home = set_deode_home(args, config)
     config = config.copy(update={"platform": {"deode_home": deode_home}})

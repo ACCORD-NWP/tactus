@@ -58,13 +58,25 @@ def get_task(name, config):
         )
         logger.debug("Logger reset to level {}", config["general.loglevel"])
 
-    known_types = discover(tasks, Task, attrname="__type_name__")
+    known_types = available_tasks()
     try:
         cls = known_types[name.lower()]
     except KeyError as error:
-        raise NotImplementedError(f'Task "{name}" not implemented.') from error
+        raise NotImplementedError(f'Task "{name}" not implemented') from error
 
     return cls(config)
+
+
+def available_tasks():
+    """Create a list of available tasks.
+
+    Returns:
+        known_types (list): Task objects
+
+    """
+    known_types = discover(tasks, Task, attrname="__type_name__")
+
+    return known_types
 
 
 def discover(package, base, attrname="__plugin_name__"):

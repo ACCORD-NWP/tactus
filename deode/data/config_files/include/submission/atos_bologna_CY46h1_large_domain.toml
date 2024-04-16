@@ -1,4 +1,4 @@
-bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2023-10-18/R64"
+bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2024-03-27/R64"
 default_submit_type = "serial"
 lfftw = true
 module_initpath = "/usr/local/apps/lmod/8.6.8/init"
@@ -32,7 +32,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=03:00:00"
 
 [gnu.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
 
 [parallel]
   NPROC = 32
@@ -55,12 +55,12 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   # First load the prgenv
   PRGENV = ["load", "prgenv/intel"]
   # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
   FFTW = ["load", "fftw/3.3.9"]
   HDF5 = ["load", "hdf5/1.10.6"]
   MKL = ["load", "intel-mkl/19.0.5"]
   NETCDF = ["load", "netcdf4/4.7.4"]
-  OPENMPI = ["load", "openmpi/4.1.1.1"]
+  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
 
 [serial]
   NPROC = 1
@@ -86,12 +86,12 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   # First load the prgenv
   PRGENV = ["load", "prgenv/intel"]
   # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
   FFTW = ["load", "fftw/3.3.9"]
   HDF5 = ["load", "hdf5/1.10.6"]
   MKL = ["load", "intel-mkl/19.0.5"]
   NETCDF = ["load", "netcdf4/4.7.4"]
-  OPENMPI = ["load", "openmpi/4.1.1.1"]
+  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
 
 [task]
   wrapper = ""
@@ -130,15 +130,25 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   NTASKS = "#SBATCH --ntasks=16"
 
 [task_exceptions.Forecast]
-  NPROC = 3072
+  # This is optimised for a 1500x1500 domain
+  NPROC = 624
+  NPROC_IO = 16
+  NPROCX = 24
+  NPROCY = 26
+  OMP_NUM_THREADS = "4"
+  WRAPPER = "srun @DEODE_HOME@/deode/data/config_files/include/submission/omp_wrapper"
 
 [task_exceptions.Forecast.BATCH]
-  MEM = "#SBATCH --mem=200GB"
-  NODES = "#SBATCH --nodes=24"
-  NTASKS = "#SBATCH --ntasks=3072"
-  WALLTIME = "#SBATCH --time=08:00:00"
+  CPUSPERTASK = "#SBATCH --cpus-per-task=4"
+  HYPERTHREAD = "#SBATCH --hint=nomultithread"
+  NODES = "#SBATCH --nodes=20"
+  NTASKS = "#SBATCH --ntasks-per-node=32"
+  WALLTIME = "#SBATCH --time=8:00:00"
 
 [task_exceptions.Forecast.ENV]
+  KMP_AFFINITY = "granularity=core,scatter"
+  KMP_BLOCKTIME = "12"
+  KMP_STACKSIZE = "4G"
   RTTOV_COEFDIR = "/hpcperm/snh02/DEODE/satellite/rtcoef_rttov12/harm_coef/"
   UCX_LOG_LEVEL = "error"
 
@@ -152,7 +162,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   MEM = "#SBATCH --mem=128GB"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
-  WALLTIME = "#SBATCH --time=02:00:00"
+  WALLTIME = "#SBATCH --time=06:00:00"
 
 [task_exceptions.Marsprep.ENV]
   MARS_READANY_BUFFER_SIZE = 17893020000
