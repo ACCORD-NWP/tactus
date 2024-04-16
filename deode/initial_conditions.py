@@ -31,13 +31,6 @@ class InitialConditions(object):
         self.source = ""
         self.source_sfx = ""
 
-    def nosuccess(self):
-        """Report of not success."""
-        if self.surfex:
-            logger.warning("Could not find:\n  {}\n  {}", self.source, self.source_sfx)
-        else:
-            logger.warning("Could not find:\n  {}", self.source)
-
     def success(self):
         """Report of success."""
         if self.surfex:
@@ -52,13 +45,21 @@ class InitialConditions(object):
 
     def check_if_found(self):
         """Check if files are present."""
-        found = os.path.exists(self.source)
+        found = os.path.isfile(self.source)
+        if not found:
+            logger.warning("Could not find:\n  {}", self.source)
+
         if self.surfex:
-            found = found and os.path.exists(self.source_sfx)
+            if not os.path.isfile(self.source_sfx):
+                logger.warning("Could not find:\n  {}", self.source_sfx)
+                found = False
+            else:
+                found = found and True
+
         if found:
             self.success()
         else:
-            self.nosuccess()
+            logger.warning("Failed to find files for mode={}", self.mode)
 
         return found
 
