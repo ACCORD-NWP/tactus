@@ -49,8 +49,18 @@
           "type": "string",
           "description": "Troika config file",
           "default": "@DEODE_HOME@/deode/data/config_files/troika.yml"
-	}
+	      }
       }
+    },
+    "plugin_registry": {
+      "title": "Plug-in registry",
+      "type": "object",
+      "properties": {
+        "plugins": {
+          "title": "Loaded plugins",
+          "type": "object"
+       }
+     }
     },
     "boundaries": {
       "title": "Boundary Section",
@@ -166,6 +176,11 @@
       "description": "Suite control options",
       "type": "object",
       "properties": {
+	"suite_definition": {
+	  "description": "Suite definition to play in EcFlow",
+	  "type": "string",
+	  "default": "DeodeSuiteDefinition"
+	},
         "do_soil": {
           "description": "Activate preparation of SOILGRID data as input for PGD",
           "type": "boolean"

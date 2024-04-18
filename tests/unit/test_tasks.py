@@ -28,7 +28,7 @@ WORKING_DIR = Path.cwd()
 
 def classes_to_be_tested():
     """Return the names of the task-related classes to be tested."""
-    encountered_classes = discover(deode.tasks, Task, attrname="__type_name__")
+    encountered_classes = discover(deode.tasks, Task)
     return encountered_classes.keys()
 
 
