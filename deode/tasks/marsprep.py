@@ -1,4 +1,5 @@
 """Marsprep."""
+import ast
 import contextlib
 import glob
 import os
@@ -39,6 +40,12 @@ class Marsprep(Task):
         # Get the times from config.toml
         self.basetime = as_datetime(self.config["general.times.basetime"])
         start_date = as_datetime(self.mars["start_date"])
+        self.split_mars = self.config["suite_control.split_mars"]
+
+        if self.split_mars:
+            self.bdnr = int(self.config["task.args.bd_nr"])
+            self.prep_step = ast.literal_eval(self.config["task.args.prep_step"])
+
         if self.basetime < start_date:
             raise ValueError(f"No data for {self.basetime}!")
         self.cycle_length = as_timedelta(self.config["general.times.cycle_length"])
@@ -440,275 +447,285 @@ class Marsprep(Task):
             )
             for i in range(len(dateframe.index.tolist()))
         ]
-        logger.info("Need data for:{}", dateframe)
-        logger.info("Need steps:{}", str_steps)
 
-        #
-        # Do full extraction for global (c903 approach).
-        # Decided to split for easyer maintanance, still to be discussed
-        #
+        if self.split_mars and self.prep_step:
+            logger.debug("*** Need only latlon data")
+        else:
+            if self.split_mars:
+                str_steps = [str_steps[self.bdnr]]
 
-        # Prefetch GG
-        tag = "ICMGG"
-        base = self.check_file_exists(str_steps, tag)
-        if base != "":
-            self.fetch_info(base, tag)
-            param = self.check_value(self.mars["GG"], date_str)
-            self.update_data_request(
-                data_type="forecast",
-                date=date_str,
-                time=hour_str,
-                steps=base,
-                prefetch=True,
-                levtype="SFC",
-                param=param,
-                specify_domain=False,
-                target=f'"{tag}+[STEP]"',
-            )
-            self.write_mars_req(self.datarequest, f"{tag}.req", "retrieve")
-            self.create_executable(f"{tag}.req")
-            batch = BatchJob(os.environ, wrapper=self.wrapper)
-            batch.run(self.executable)
+            logger.info("Need data for:{}", dateframe)
+            logger.info("Need steps:{}", str_steps)
 
-            param = self.check_value(self.mars["GG_sea"], date_str)
-            self.update_data_request(
-                data_type="forecast",
-                date=date_str,
-                time=hour_str,
-                steps="00",
-                prefetch=True,
-                levtype="SFC",
-                param=param,
-                specify_domain=False,
-                target=f"{tag}.sea",
-            )
-            self.write_mars_req(self.datarequest, f"{tag}.sea.req", "retrieve")
-            self.create_executable(f"{tag}.sea.req")
-            batch = BatchJob(os.environ, wrapper=self.wrapper)
-            batch.run(self.executable)
+            #
+            # Do full extraction for global (c903 approach).
+            # Decided to split for easyer maintanance, still to be discussed
+            #
 
-            with open(f"{tag}.sea", "rb") as fp:
-                datagg_sea = fp.read()
-            fp.close()
-
-            exist_soil = False
-            with contextlib.suppress(KeyError):
-                param1 = self.check_value(self.mars["GG_soil"], date_str)
-                param2 = self.check_value(self.mars["GG1"], date_str)
-                exist_soil = True
-
-            if exist_soil:
+            # Prefetch GG
+            tag = "ICMGG"
+            base = self.check_file_exists(str_steps, tag)
+            if base != "":
+                self.fetch_info(base, tag)
+                param = self.check_value(self.mars["GG"], date_str)
                 self.update_data_request(
-                    data_type="analysis",
+                    data_type="forecast",
+                    date=date_str,
+                    time=hour_str,
+                    steps=base,
+                    prefetch=True,
+                    levtype="SFC",
+                    param=param,
+                    specify_domain=False,
+                    target=f'"{tag}+[STEP]"',
+                )
+                self.write_mars_req(self.datarequest, f"{tag}.req", "retrieve")
+                self.create_executable(f"{tag}.req")
+                batch = BatchJob(os.environ, wrapper=self.wrapper)
+                batch.run(self.executable)
+
+                param = self.check_value(self.mars["GG_sea"], date_str)
+                self.update_data_request(
+                    data_type="forecast",
                     date=date_str,
                     time=hour_str,
                     steps="00",
                     prefetch=True,
                     levtype="SFC",
-                    param=param1,
+                    param=param,
                     specify_domain=False,
-                    target=f"{tag}.soil",
+                    target=f"{tag}.sea",
                 )
-
-                self.write_mars_req(self.datarequest, f"{tag}.soil.req", "retrieve")
-                self.create_executable(f"{tag}.soil.req")
+                self.write_mars_req(self.datarequest, f"{tag}.sea.req", "retrieve")
+                self.create_executable(f"{tag}.sea.req")
                 batch = BatchJob(os.environ, wrapper=self.wrapper)
                 batch.run(self.executable)
 
-                self.update_data_request(
-                    data_type="analysis",
-                    date=date_str,
-                    time=hour_str,
-                    steps="00",
-                    prefetch=True,
-                    levtype="SFC",
-                    param=param2,
-                    grid=self.check_value(self.mars["grid_GG1"], date_str),
-                    specify_domain=False,
-                    target=tag,
-                )
-                self.write_mars_req(self.datarequest, f"{tag}1.req", "retrieve")
-                self.create_executable(f"{tag}1.req")
-                batch = BatchJob(os.environ, wrapper=self.wrapper)
-                batch.run(self.executable)
-
-                # Read the single-step MARS files first
-                with open(tag, "rb") as fp:
-                    datagg = fp.read()
-                with open(f"{tag}.soil", "rb") as fp:
-                    datagg_soil = fp.read()
-                fp.close()
-
-                os.remove(tag)
-                os.remove(f"{tag}.soil")
-                self.data += datagg + datagg_sea + datagg_soil
-
-            else:
-                tco = self.check_value(self.mars["tco"], date_str)
-                self.fmanager.input(f"{self.sfcdir}{tco}9_4/sdfor", "sdfor")
-                self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_aluvp", "aluvp")
-                self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_aluvd", "aluvd")
-                self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_alnip", "alnip")
-                self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_alnid", "alnid")
-                self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_lail", "lail")
-                self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_laih", "laih")
-
-                self.fmanager.input(f"{self.sfcdir}{tco}9_4/sfc", "sfc")
-                self.fmanager.input(f"{self.sfcdir}{tco}l_2/ISSOIL", "issoil")
-                self.fmanager.input(f"{self.sfcdir}{tco}9_4/cvh", "cvh")
-                self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_alb", "alb")
-
-                with open("sdfor", "rb") as fp:
-                    sdfor = fp.read()
-                with open("aluvp", "rb") as fp:
-                    aluvp = fp.read()
-                with open("aluvd", "rb") as fp:
-                    aluvd = fp.read()
-                with open("alnip", "rb") as fp:
-                    alnip = fp.read()
-                with open("alnid", "rb") as fp:
-                    alnid = fp.read()
-                with open("lail", "rb") as fp:
-                    lail = fp.read()
-                with open("laih", "rb") as fp:
-                    laih = fp.read()
                 with open(f"{tag}.sea", "rb") as fp:
                     datagg_sea = fp.read()
-                with open("sfc", "rb") as fp:
-                    sfc = fp.read()
-                with open("issoil", "rb") as fp:
-                    issoil = fp.read()
-                with open("cvh", "rb") as fp:
-                    cvh = fp.read()
-                with open("alb", "rb") as fp:
-                    alb = fp.read()
                 fp.close()
-                # Join the data from the single-step MARS files
-                self.data += (
-                    sdfor
-                    + aluvp
-                    + aluvd
-                    + alnip
-                    + alnid
-                    + lail
-                    + laih
-                    + datagg_sea
-                    + sfc
-                    + issoil
-                    + cvh
-                    + alb
+
+                exist_soil = False
+                with contextlib.suppress(KeyError):
+                    param1 = self.check_value(self.mars["GG_soil"], date_str)
+                    param2 = self.check_value(self.mars["GG1"], date_str)
+                    exist_soil = True
+
+                if exist_soil:
+                    self.update_data_request(
+                        data_type="analysis",
+                        date=date_str,
+                        time=hour_str,
+                        steps="00",
+                        prefetch=True,
+                        levtype="SFC",
+                        param=param1,
+                        specify_domain=False,
+                        target=f"{tag}.soil",
+                    )
+
+                    self.write_mars_req(self.datarequest, f"{tag}.soil.req", "retrieve")
+                    self.create_executable(f"{tag}.soil.req")
+                    batch = BatchJob(os.environ, wrapper=self.wrapper)
+                    batch.run(self.executable)
+
+                    self.update_data_request(
+                        data_type="analysis",
+                        date=date_str,
+                        time=hour_str,
+                        steps="00",
+                        prefetch=True,
+                        levtype="SFC",
+                        param=param2,
+                        grid=self.check_value(self.mars["grid_GG1"], date_str),
+                        specify_domain=False,
+                        target=tag,
+                    )
+                    self.write_mars_req(self.datarequest, f"{tag}1.req", "retrieve")
+                    self.create_executable(f"{tag}1.req")
+                    batch = BatchJob(os.environ, wrapper=self.wrapper)
+                    batch.run(self.executable)
+
+                    # Read the single-step MARS files first
+                    with open(tag, "rb") as fp:
+                        datagg = fp.read()
+                    with open(f"{tag}.soil", "rb") as fp:
+                        datagg_soil = fp.read()
+                    fp.close()
+
+                    os.remove(tag)
+                    os.remove(f"{tag}.soil")
+                    self.data += datagg + datagg_sea + datagg_soil
+
+                else:
+                    tco = self.check_value(self.mars["tco"], date_str)
+                    self.fmanager.input(f"{self.sfcdir}{tco}9_4/sdfor", "sdfor")
+                    self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_aluvp", "aluvp")
+                    self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_aluvd", "aluvd")
+                    self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_alnip", "alnip")
+                    self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_alnid", "alnid")
+                    self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_lail", "lail")
+                    self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_laih", "laih")
+
+                    self.fmanager.input(f"{self.sfcdir}{tco}9_4/sfc", "sfc")
+                    self.fmanager.input(f"{self.sfcdir}{tco}l_2/ISSOIL", "issoil")
+                    self.fmanager.input(f"{self.sfcdir}{tco}9_4/cvh", "cvh")
+                    self.fmanager.input(f"{self.sfcdir}{tco}l_2/month_alb", "alb")
+
+                    with open("sdfor", "rb") as fp:
+                        sdfor = fp.read()
+                    with open("aluvp", "rb") as fp:
+                        aluvp = fp.read()
+                    with open("aluvd", "rb") as fp:
+                        aluvd = fp.read()
+                    with open("alnip", "rb") as fp:
+                        alnip = fp.read()
+                    with open("alnid", "rb") as fp:
+                        alnid = fp.read()
+                    with open("lail", "rb") as fp:
+                        lail = fp.read()
+                    with open("laih", "rb") as fp:
+                        laih = fp.read()
+                    with open(f"{tag}.sea", "rb") as fp:
+                        datagg_sea = fp.read()
+                    with open("sfc", "rb") as fp:
+                        sfc = fp.read()
+                    with open("issoil", "rb") as fp:
+                        issoil = fp.read()
+                    with open("cvh", "rb") as fp:
+                        cvh = fp.read()
+                    with open("alb", "rb") as fp:
+                        alb = fp.read()
+                    fp.close()
+                    # Join the data from the single-step MARS files
+                    self.data += (
+                        sdfor
+                        + aluvp
+                        + aluvd
+                        + alnip
+                        + alnid
+                        + lail
+                        + laih
+                        + datagg_sea
+                        + sfc
+                        + issoil
+                        + cvh
+                        + alb
+                    )
+                os.remove(f"{tag}.sea")
+                for j in base.split("/"):
+                    i = int(j)
+                    i_fstring = f"{i:02d}"
+                    if os.path.exists(f"{tag}+{i}"):
+                        with open(f"{tag}+{i}", "ab") as fp:
+                            fp.write(self.data)
+                        fp.close()
+                        shutil.move(
+                            f"{tag}+{i}",
+                            os.path.join(self.prepdir, f"{tag}+{i_fstring}"),
+                        )
+
+            # Prefetch SH
+            tag = "ICMSH"
+            base = self.check_file_exists(str_steps, tag)
+            if base != "":
+                self.fetch_info(base, tag)
+                param = self.check_value(self.mars["SH"], date_str)
+                self.update_data_request(
+                    data_type="forecast",
+                    date=date_str,
+                    time=hour_str,
+                    steps=base,
+                    prefetch=True,
+                    levtype="ML",
+                    param=param,
+                    grid=self.mars["grid_ML"],
+                    specify_domain=False,
+                    target=f'"{tag}+[STEP]"',
                 )
-            os.remove(f"{tag}.sea")
-            for j in base.split("/"):
-                i = int(j)
-                i_fstring = f"{i:02d}"
-                if os.path.exists(f"{tag}+{i}"):
-                    with open(f"{tag}+{i}", "ab") as fp:
-                        fp.write(self.data)
-                    fp.close()
-                    shutil.move(
-                        f"{tag}+{i}",
-                        os.path.join(self.prepdir, f"{tag}+{i_fstring}"),
-                    )
+                self.write_mars_req(self.datarequest, f"{tag}.req", "retrieve")
+                self.create_executable(f"{tag}.req")
+                batch = BatchJob(os.environ, wrapper=self.wrapper)
+                batch.run(self.executable)
 
-        # Prefetch SH
-        tag = "ICMSH"
-        base = self.check_file_exists(str_steps, tag)
-        if base != "":
-            self.fetch_info(base, tag)
-            param = self.check_value(self.mars["SH"], date_str)
-            self.update_data_request(
-                data_type="forecast",
-                date=date_str,
-                time=hour_str,
-                steps=base,
-                prefetch=True,
-                levtype="ML",
-                param=param,
-                grid=self.mars["grid_ML"],
-                specify_domain=False,
-                target=f'"{tag}+[STEP]"',
-            )
-            self.write_mars_req(self.datarequest, f"{tag}.req", "retrieve")
-            self.create_executable(f"{tag}.req")
-            batch = BatchJob(os.environ, wrapper=self.wrapper)
-            batch.run(self.executable)
+                param = self.check_value(self.mars["SHZ"], date_str)
+                d_type = self.check_value(self.mars["SHZ_type"], date_str)
+                self.update_data_request(
+                    data_type=d_type,
+                    date=date_str,
+                    time=hour_str,
+                    steps="00",
+                    prefetch=True,
+                    levtype="ML",
+                    param=param,
+                    grid=self.mars["grid_ML"],
+                    specify_domain=False,
+                    target=f"{tag}.Z",
+                )
+                self.write_mars_req(self.datarequest, f"{tag}Z.req", "retrieve")
+                self.create_executable(f"{tag}Z.req")
+                batch = BatchJob(os.environ, wrapper=self.wrapper)
+                batch.run(self.executable)
 
-            param = self.check_value(self.mars["SHZ"], date_str)
-            d_type = self.check_value(self.mars["SHZ_type"], date_str)
-            self.update_data_request(
-                data_type=d_type,
-                date=date_str,
-                time=hour_str,
-                steps="00",
-                prefetch=True,
-                levtype="ML",
-                param=param,
-                grid=self.mars["grid_ML"],
-                specify_domain=False,
-                target=f"{tag}.Z",
-            )
-            self.write_mars_req(self.datarequest, f"{tag}Z.req", "retrieve")
-            self.create_executable(f"{tag}Z.req")
-            batch = BatchJob(os.environ, wrapper=self.wrapper)
-            batch.run(self.executable)
+                with open(f"{tag}.Z", "rb") as fp:
+                    data_z = fp.read()
+                fp.close()
+                os.remove(f"{tag}.Z")
 
-            with open(f"{tag}.Z", "rb") as fp:
-                data_z = fp.read()
-            fp.close()
-            os.remove(f"{tag}.Z")
+                for j in base.split("/"):
+                    i = int(j)
+                    i_fstring = f"{i:02d}"
+                    if os.path.exists(f"{tag}+{i}"):
+                        with open(f"{tag}+{i}", "ab") as fp:
+                            fp.write(data_z)
+                        fp.close()
+                        shutil.move(
+                            f"{tag}+{i}",
+                            os.path.join(self.prepdir, f"{tag}+{i_fstring}"),
+                        )
 
-            for j in base.split("/"):
-                i = int(j)
-                i_fstring = f"{i:02d}"
-                if os.path.exists(f"{tag}+{i}"):
-                    with open(f"{tag}+{i}", "ab") as fp:
-                        fp.write(data_z)
-                    fp.close()
-                    shutil.move(
-                        f"{tag}+{i}",
-                        os.path.join(self.prepdir, f"{tag}+{i_fstring}"),
-                    )
+            # Prefetch UA
+            tag = "ICMUA"
+            base = self.check_file_exists(str_steps, tag)
+            if base != "":
+                self.fetch_info(base, tag)
+                param = self.check_value(self.mars["UA"], date_str)
+                self.update_data_request(
+                    data_type="forecast",
+                    date=date_str,
+                    time=hour_str,
+                    steps=base,
+                    prefetch=True,
+                    levtype="ML",
+                    param=param,
+                    grid=self.mars["grid_ML"],
+                    specify_domain=False,
+                    target=f'"{tag}+[STEP]"',
+                )
+                self.write_mars_req(self.datarequest, f"{tag}.req", "retrieve")
+                self.create_executable(f"{tag}.req")
+                batch = BatchJob(os.environ, wrapper=self.wrapper)
+                batch.run(self.executable)
 
-        # Prefetch UA
-        tag = "ICMUA"
-        base = self.check_file_exists(str_steps, tag)
-        if base != "":
-            self.fetch_info(base, tag)
-            param = self.check_value(self.mars["UA"], date_str)
-            self.update_data_request(
-                data_type="forecast",
-                date=date_str,
-                time=hour_str,
-                steps=base,
-                prefetch=True,
-                levtype="ML",
-                param=param,
-                grid=self.mars["grid_ML"],
-                specify_domain=False,
-                target=f'"{tag}+[STEP]"',
-            )
-            self.write_mars_req(self.datarequest, f"{tag}.req", "retrieve")
-            self.create_executable(f"{tag}.req")
-            batch = BatchJob(os.environ, wrapper=self.wrapper)
-            batch.run(self.executable)
-
-            # Concat files
-            for j in base.split("/"):
-                i = int(j)
-                i_fstring = f"{i:02d}"
-                if os.path.exists(f"{tag}+{i}"):
-                    shutil.move(
-                        f"{tag}+{i}",
-                        os.path.join(self.prepdir, f"{tag}+{i_fstring}"),
-                    )
+                # Concat files
+                for j in base.split("/"):
+                    i = int(j)
+                    i_fstring = f"{i:02d}"
+                    if os.path.exists(f"{tag}+{i}"):
+                        shutil.move(
+                            f"{tag}+{i}",
+                            os.path.join(self.prepdir, f"{tag}+{i_fstring}"),
+                        )
 
         #
         # Split the lat/lon part and perform it here
         #
+
         mars_file_check = os.path.join(self.prepdir, self.prep_filename)
         if os.path.exists(mars_file_check):
             logger.debug("Warning: Prep file allready exists")
+        elif self.split_mars and not self.prep_step:
+            logger.debug("No need Prep file")
         else:
             str_step = "{}".format(str_steps[0])
             param = self.check_value(self.mars["GG"], date_str)

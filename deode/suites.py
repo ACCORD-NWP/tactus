@@ -85,6 +85,7 @@ class SuiteDefinition(object):
         self.surfex = config["general.surfex"]
         self.suite_name = suite_name
         self.mode = config["suite_control.mode"]
+        self.split_mars = config["suite_control.split_mars"]
 
         ecf_out = self.config["scheduler.ecfvars.ecf_out"]
         ecf_files = self.config["scheduler.ecfvars.ecf_files"]
@@ -353,7 +354,7 @@ class SuiteDefinition(object):
             if prev_interpolation_trigger is not None:
                 triggers = triggers + prev_interpolation_trigger
             ready_for_marsprep = EcflowSuiteTriggers(triggers)
-            if self.do_marsprep and self.interpolate_boundaries:
+            if self.do_marsprep and self.interpolate_boundaries and not self.split_mars:
                 EcflowSuiteTask(
                     "Marsprep",
                     inputdata,
@@ -399,14 +400,44 @@ class SuiteDefinition(object):
 
                 e923_update_done = None
 
+                split_mars_done = None
+
                 if self.do_prep:
-                    prep_task = EcflowSuiteTask(
+                    prep_fam = EcflowSuiteFamily(
                         "Prep",
                         int_fam,
+                        self.ecf_files,
+                        trigger=int_trig,
+                        variables=None,
+                        ecf_files_remotely=self.ecf_files_remotely,
+                    )
+                    if self.split_mars:
+                        args = f"bd_nr={bdnr};prep_step=True"
+                        variables = {"ARGS": args}
+                        split_mars_task = EcflowSuiteTask(
+                            "marsprep",
+                            prep_fam,
+                            config,
+                            self.task_settings,
+                            self.ecf_files,
+                            input_template=input_template,
+                            variables=variables,
+                            trigger=None,
+                            ecf_files_remotely=self.ecf_files_remotely,
+                        )
+
+                        split_mars_done = EcflowSuiteTriggers(
+                            [EcflowSuiteTrigger(split_mars_task)]
+                        )
+
+                    prep_task = EcflowSuiteTask(
+                        "Prep",
+                        prep_fam,
                         config,
                         self.task_settings,
                         self.ecf_files,
                         input_template=input_template,
+                        trigger=split_mars_done,
                         ecf_files_remotely=self.ecf_files_remotely,
                     )
                     prep_done = EcflowSuiteTriggers([EcflowSuiteTrigger(prep_task)])
@@ -450,7 +481,7 @@ class SuiteDefinition(object):
                     )
                     while bdtime <= endtime:
                         date_string = bdtime.isoformat(sep="T").replace("+00:00", "Z")
-                        args = f"bd_time={date_string};bd_nr={bdnr}"
+                        args = f"bd_time={date_string};bd_nr={bdnr};prep_step=False"
                         variables = {"ARGS": args}
                         lbc_fam = EcflowSuiteFamily(
                             f"LBC{bdnr*intbdint:02}",
@@ -463,6 +494,23 @@ class SuiteDefinition(object):
 
                         interpolation_task = "c903" if self.do_marsprep else "e927"
 
+                        if self.split_mars:
+                            split_mars_task = EcflowSuiteTask(
+                                "marsprep",
+                                lbc_fam,
+                                config,
+                                self.task_settings,
+                                self.ecf_files,
+                                input_template=input_template,
+                                variables=variables,
+                                trigger=None,
+                                ecf_files_remotely=self.ecf_files_remotely,
+                            )
+
+                            split_mars_done = EcflowSuiteTriggers(
+                                [EcflowSuiteTrigger(split_mars_task)]
+                            )
+
                         EcflowSuiteTask(
                             interpolation_task,
                             lbc_fam,
@@ -471,7 +519,7 @@ class SuiteDefinition(object):
                             self.ecf_files,
                             input_template=input_template,
                             variables=variables,
-                            trigger=None,
+                            trigger=split_mars_done,
                             ecf_files_remotely=self.ecf_files_remotely,
                         )
 

@@ -1,6 +1,6 @@
 # Do the selection of fields below.
 selection:
- xxtddddhhmm:
+ xxtddddhhmm: &default
   NAMFPPHY:
    CLCFU:
     - 'SOMMFLU.RAY.SOLA'
@@ -12,9 +12,6 @@ selection:
     - 'SURFFLU.CHA.SENS'
     - 'SURFRAYT SOLA DE'
     - 'SURFRAYT THER DE'
-    - 'SURFACCPLUIE'
-    - 'SURFACCNEIGE'
-    - 'SURFACCGRAUPEL'
     - 'SURFDIAG.FLASH'
    CLXFU:
     - 'SURFDIAGHAIL'
@@ -27,7 +24,6 @@ selection:
     - 'SURFNEBUL.MOYENN'
     - 'SURFNEBUL.BASSE'
     - 'SURFNEBUL.TOTALE'
-    - 'CLSMEAN.RAD.TEMP'
   NAMFPDY2:
    CL2DF:
     - 'SURFPRESSION'
@@ -57,3 +53,6 @@ selection:
     - 200.
     - 250.
     - 300.
+ 
+ xxt00000000:
+   <<: *default

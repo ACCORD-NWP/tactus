@@ -1,4 +1,4 @@
-bindir = "/home/snh02/pack/48t3_main.05.OMPIIFC2104.x/bin"
+bindir = "/scratch/snh/hm_home/CY49Th1/bin/"
 default_submit_type = "serial"
 lfftw = true
 module_initpath = "/usr/local/apps/lmod/8.6.8/init"
@@ -36,7 +36,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 [parallel]
   NPROC = 32
   SCHOST = "hpc"
-  tasks = ["Forecast", "e927", "Pgd", "Prep", "c903"]
+  tasks = ["Forecast", "e927", "c903"]
   WRAPPER = "srun"
 
 [parallel.BATCH]
@@ -66,7 +66,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   NPROCX = 1
   NPROCY = 1
   SCHOST = "hpc"
-  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep", "E923Update"]
+  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep", "Pgd", "Prep"]
   WRAPPER = "srun"
 
 [serial.BATCH]
@@ -77,7 +77,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=00:15:00"
 
 [serial.ENV]
-  DR_HOOK_IGNORE_SIGNALS = -1
+  DR_HOOK = 1
   OMP_NUM_THREADS = 1
   OMPI_MCA_btl = "^vader"
 
@@ -102,6 +102,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=03:00:00"
 
 [task_exceptions.c903]
+  #bindir = "/perm/snh02/pack/48t3_fix.04.OMPIIFC2104.x/bin"
   NPROC = 36
 
 [task_exceptions.c903.BATCH]
@@ -110,21 +111,15 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   NTASKS = "#SBATCH --ntasks=36"
   WALLTIME = "#SBATCH --time=00:30:00"
 
+[task_exceptions.c903.ENV]
+  DR_HOOK_SIGNALS = -1
+
 [task_exceptions.creategrib]
   binary = "gl_20230823"
   bindir = "/home/snh02/work/gl_binaries"
 
 [task_exceptions.CreateGrib.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
-
-[task_exceptions.E923Update]
-  bindir = "/home/snh02/work/fa_sfx2clim/"
-
-[task_exceptions.E923Update.ENV]
-  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/home/snh02/opt/install/eccodes-2.32.1/lib64:/perm/rme/packages/auxlibs/3.7/INTEL/2021.4/lib"
-
-[task_exceptions.E923Update.MODULES]
-  OPENMPI = ["load", "openmpi/4.1.1"]
 
 [task_exceptions.e927]
   NPROC = 16
@@ -136,14 +131,18 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 [task_exceptions.Forecast]
   NPROC = 28
   NPROC_IO = 4
+  OMP_NUM_THREADS = "1"
 
 [task_exceptions.Forecast.BATCH]
-  #  MEM = "#SBATCH --mem=200GB"
-  NODES = "#SBATCH --nodes=2"
+  CPUSPERTASK = "#SBATCH --cpus-per-task=1"
+  HYPERTHREAD = "#SBATCH --hint=nomultithread"
+  NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=32"
-  WALLTIME = "#SBATCH --time=01:00:00"
+  WALLTIME = "#SBATCH --time=00:30:00"
 
 [task_exceptions.Forecast.ENV]
+  KMP_BLOCKTIME = "12"
+  KMP_STACKSIZE = "4G"
   RTTOV_COEFDIR = "/hpcperm/snh02/DEODE/satellite/rtcoef_rttov12/harm_coef/"
   UCX_LOG_LEVEL = "error"
 
@@ -151,34 +150,29 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   GDAL = ["load", "gdal/3.6.2"]
 
 [task_exceptions.Marsprep.BATCH]
-  MEM = "#SBATCH --mem=0GB"
+  MEM = "#SBATCH --mem=32GB"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
-  QOS = "#SBATCH --qos=np"
   WALLTIME = "#SBATCH --time=01:00:00"
 
 [task_exceptions.Marsprep.ENV]
   MARS_READANY_BUFFER_SIZE = 17893020000
 
 [task_exceptions.Pgd]
-  WRAPPER = "srun -n @NPROC@"
+  WRAPPER = ""
 
-[task_exceptions.Pgd.BATCH]
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=2"
-  WALLTIME = "#SBATCH --time=00:30:00"
+[task_exceptions.Pgd.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = 0
 
 [task_exceptions.PgdUpdate]
   binary = "gl_20230823"
   bindir = "/home/snh02/work/gl_binaries"
 
 [task_exceptions.Prep]
-  WRAPPER = "srun -n @NPROC@"
+  WRAPPER = ""
 
-[task_exceptions.Prep.BATCH]
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=1"
-  WALLTIME = "#SBATCH --time=00:10:00"
+[task_exceptions.Prep.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = 0
 
 [task_exceptions.Soil.MODULES]
   GDAL = ["load", "gdal/3.6.2"]

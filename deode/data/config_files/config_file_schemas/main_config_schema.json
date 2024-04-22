@@ -202,7 +202,12 @@
         "create_time_dependent_suite": {
           "description": "Activate the time dependent part of the suite",
           "type": "boolean"
-        }
+        },
+	"split_mars": {
+	  "description": "Do marsprep only for one step before c903",
+	  "type": "boolean",
+	  "default": false
+	}
       }
     },
     "system": {
@@ -456,6 +461,7 @@
           "description": "IAL cycle",
           "type": "string",
           "enum": [
+            "CY49t1",
             "CY48t3",
             "CY46h1"
           ]

@@ -23,7 +23,7 @@ class Forecast(Task):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Task.__init__(self, config, __name__)
+        Task.__init__(self, config, "Forecast")
 
         self.cycle = self.config["general.cycle"]
         self.cnmexp = self.config["general.cnmexp"]
@@ -287,7 +287,7 @@ class Forecast(Task):
             logger.info("No accelerator_device section found")
 
         # Run MASTERODB
-        batch = BatchJob(os.environ, wrapper=self.wrapper)
+        batch = BatchJob(os.environ, wrapper=self.platform.substitute(self.wrapper))
         batch.run(self.master)
 
         # Store the output
