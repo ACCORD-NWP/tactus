@@ -36,7 +36,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 [parallel]
   NPROC = 32
   SCHOST = "hpc"
-  tasks = ["Forecast", "e927", "Pgd", "Prep", "c903"]
+  tasks = ["Forecast", "e927", "c903"]
   WRAPPER = "srun"
 
 [parallel.BATCH]
@@ -66,7 +66,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   NPROCX = 1
   NPROCY = 1
   SCHOST = "hpc"
-  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep"]
+  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep", "Pgd", "Prep"]
   WRAPPER = "srun"
 
 [serial.BATCH]
@@ -77,7 +77,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=00:15:00"
 
 [serial.ENV]
-  DR_HOOK_IGNORE_SIGNALS = -1
+  DR_HOOK = 1
   OMP_NUM_THREADS = 1
   OMPI_MCA_btl = "^vader"
 
@@ -159,24 +159,20 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   MARS_READANY_BUFFER_SIZE = 17893020000
 
 [task_exceptions.Pgd]
-  WRAPPER = "srun -n @NPROC@"
+  WRAPPER = ""
 
-[task_exceptions.Pgd.BATCH]
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=2"
-  WALLTIME = "#SBATCH --time=00:30:00"
+[task_exceptions.Pgd.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = 0
 
 [task_exceptions.PgdUpdate]
   binary = "gl_20230823"
   bindir = "/home/snh02/work/gl_binaries"
 
 [task_exceptions.Prep]
-  WRAPPER = "srun -n @NPROC@"
+  WRAPPER = ""
 
-[task_exceptions.Prep.BATCH]
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=1"
-  WALLTIME = "#SBATCH --time=00:10:00"
+[task_exceptions.Prep.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = 0
 
 [task_exceptions.Soil.MODULES]
   GDAL = ["load", "gdal/3.6.2"]

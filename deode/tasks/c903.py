@@ -21,6 +21,7 @@ class C903(Task):
         Task.__init__(self, config, __name__)
 
         self.climdir = self.platform.get_system_value("climdir")
+        self.rrtm_dir = self.platform.get_platform_value("RRTM_DIR")
 
         self.expdir = self.config["system.marsdir"]
         self.basetime = as_datetime(self.config["general.times.basetime"])
@@ -69,6 +70,12 @@ class C903(Task):
         # Climate files
         mm = bd_basetime.strftime("%m")
         self.fmanager.input(f"{self.climdir}/Const.Clim.{mm}", f"{self.dom}_{mm}")
+
+        # RRTM files
+        for ifile in [
+            "ECOZC",
+        ]:
+            self.fmanager.input(f"{self.rrtm_dir}/{ifile}", ifile)
 
         # Namelist
         self.nlgen.generate_namelist("c903_main", "fort.4")

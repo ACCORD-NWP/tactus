@@ -252,7 +252,6 @@ f4_AROME:
     CFPNCF: ECHFP
     LNHEE: True
     LSCREEN_OPENMP: False
-    LSPRT: True
     LTWOTL: True
     NFPOS: 1
     NFRHIS: 1
@@ -326,6 +325,7 @@ f4_AROME:
     LSLHD_SVD: False
     LSLHD_T: False
     LSLHD_W: False
+    LSPRT: True
     ND4SYS: 2
     NPDVAR: 2
     NVDVAR: 4
@@ -678,7 +678,6 @@ f4_ALARO:
     LREGETA: False
     LRPLANE: True
     LSCREEN_OPENMP: False
-    LSPRT: True
     LTWOTL: True
     NFPOS: 1
     NFRHIS: 1
@@ -757,6 +756,7 @@ f4_ALARO:
     LSLHD_SVD: True
     LSLHD_T: True
     LSLHD_W: True
+    LSPRT: True
     ND4SYS: 2
     NDLNPR: 1
     NPDVAR: 2
@@ -1233,13 +1233,14 @@ f4_c903_main:
     NFPOS: 2
     NFRPOS: 1
     NPOSTS: 0
-    LSPRT: True
     LARPEGEF: True
     LREFOUT: False
     NSPPR: 0
     CFPNCF: "ECHFP"
     CSCRIPT_PPSERVER: " "
     LGRIB_API: False
+  NAMDYNA:
+    LSPRT: True
   NAMTRANS:
     LFFTW: ${submission.lfftw}
   NAMOPH:
@@ -1379,6 +1380,7 @@ f4_c903_domain:
 f4_e927_AROME:
   NAMCT0:
     LNHEE: True
+  NAMDYNA:
     LSPRT: True
   NAMGFL:
     YA_NL%NREQIN: 1
@@ -1409,6 +1411,7 @@ f4_e927_AROME:
 f4_e927_IFS:
   NAMCT0:
     LNHEE: False
+  NAMDYNA:
     LSPRT: False
   NAMGFL:
     YA_NL%NREQIN: 1
@@ -1567,7 +1570,9 @@ empty:
   NAMDVISI: {}
   NAMDYN: {}
   NAMDYNA: {}
+  NAMDYNA_STATIC: {}
   NAMDYNCORE: {}
+  NAMDWET: {}
   NAMEMIS_CONF: {}
   NAMENKF: {}
   NAMENSCOV: {}
