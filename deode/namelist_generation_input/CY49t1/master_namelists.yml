@@ -260,7 +260,6 @@ f4_AROME:
     NHISTS: ${namelist.nhists}
     NPOSTS: ${namelist.nposts}
     NSFXHISTS: ${namelist.nsfxhists}
-    NUNDEFLD: -99999999
   NAMCT1:
     N1HIS: 1
     N1POS: 1
@@ -685,8 +684,10 @@ f4_ALARO:
     NFRSDI: 1
     NHISTS: ${namelist.nhists}
     NPOSTS: ${namelist.nposts}
-    NUNDEFLD: -99999999
     NSPPR: 0
+  NAMGEM:
+    LNONHYD_GEOM: True
+    LNHX_GEOM: True
   NAMCT1:
     N1HIS: 1
     N1POS: 1
