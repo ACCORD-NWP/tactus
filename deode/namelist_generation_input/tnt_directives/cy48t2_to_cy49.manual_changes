@@ -1,0 +1,66 @@
+Changes in the NOTVAR:
+---------------------
+
+With common cycle 49, the mapping NVAR/VARNO has changed for some variables.
+This have an impact to the NOTVAR in namelists.
+
+Here's an algorithm to update namelists accordingly:
+
+  for each 0 you have in the NOTVAR(x,y,2) table in the namelist:
+      if (the position of the 0 is equal to one number in the first column (NVAR 48) of the mapping table):
+          You have to flip values in the notvar array between NVAR 48 and NVAR 49 corresponding position
+
+For example:
+    NOTVAR(1,5)=0,0,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,-1,
+should be changed to
+    NOTVAR(1,5,2)=0,0,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,-1,-1,
+
+There is no 1,2 nor 3 in the first NVAR 48 column so the tree first 0 of the array are not influenced by the recent change.
+But the 4th 0 is at position 19. It is related to VARNO 7 Q. So we have to flip position 18 and 19 value in the NOTVAR array.
+
+Note the 3rd dimension of NOTVAR is new to 49T1 -- cf. PR #120 for more details
+
+Mapping table:
+
+NVAR-48 NVAR-49 NAME  VARNO
+19      18      Q        7
+20      19      FFS   127
+23      20      PWC   9
+24      21      TO3   206
+25      22      TCW   123
+26      23      RFL   192
+27      24      APD   128
+28      25      RO    162
+29      26      HLS   187
+30      27      AOD   174
+31      28      LRA   163
+32      29      NO2   181
+33      30      SO2   182
+34      31      CO    183
+35      32      CH2O  184
+36      33      O3    185
+37      35      CO2   186
+38      36      CH4   188
+40      37      COD   175
+41      38      RAO   176
+42      39      RFA   178
+43      40      ODA   177
+44      41      DOW   195
+45      42      SM    180
+46      43      SMN   201
+47      44      SFR   190
+48      45      LRR   203
+49      46      LBS   222
+50      47      Q2    281
+51      48      TD2   40
+52      49      N-CLOUD 91
+53      50      PMSL  108
+54      51      PTEND 30
+55      52      U-SHEAR 5
+56      53      V-SHEAR 6
+57      54      VIRT-T  56
+58      55      DEW-P 59
+59      56      PAST-WX 60
+60      57      PRES-WX 61
+66      58      VSP   8
+73      59      TSTS  12

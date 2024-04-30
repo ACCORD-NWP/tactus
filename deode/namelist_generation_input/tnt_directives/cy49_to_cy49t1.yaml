@@ -1,0 +1,194 @@
+
+# For a more comprehensive list of changes, cf.
+# https://github.com/ACCORD-NWP/IAL/issues?q=label%3Arequire-config-update
+
+new_blocks:
+    - NAMPERTOBS
+    - NAM_PARAM_MFSHALLn
+    - NAM_PARAM_ICEn
+    - NAM_TURBn
+    - NAM_NEBn
+    - NAMNRTAER
+    - NAMDWET
+    - NAM_SPP_ACTIVE
+    - NAM_SPP_MODIF
+
+blocks_to_move:
+    NAMLIMA: NAM_PARAM_LIMA
+
+keys_to_move:
+    NAMCOSJO:
+        NOTVAR(1,1):
+            NAMCOSJO: NOTVAR(1,1,2)
+        NOTVAR(1,2):
+            NAMCOSJO: NOTVAR(1,2,2)
+        NOTVAR(1,3):
+            NAMCOSJO: NOTVAR(1,3,2)
+        NOTVAR(1,4):
+            NAMCOSJO: NOTVAR(1,4,2)
+        NOTVAR(1,5):
+            NAMCOSJO: NOTVAR(1,5,2)
+        NOTVAR(1,6):
+            NAMCOSJO: NOTVAR(1,6,2)
+        NOTVAR(1,7):
+            NAMCOSJO: NOTVAR(1,7,2)
+        NOTVAR(1,8):
+            NAMCOSJO: NOTVAR(1,8,2)
+        NOTVAR(1,9):
+            NAMCOSJO: NOTVAR(1,9,2)
+        NOTVAR(1,10):
+            NAMCOSJO: NOTVAR(1,10,2)
+        NOTVAR(1,11):
+            NAMCOSJO: NOTVAR(1,11,2)
+        NOTVAR(1,12):
+            NAMCOSJO: NOTVAR(1,12,2)
+        NOTVAR(1,13):
+            NAMCOSJO: NOTVAR(1,13,2)
+    NAMPARAR:
+        LHGT_QS:
+            NAM_NEBn: LHGT_QS
+        LSTATNW:
+            NAM_NEBn: LSTATNW
+        LOSUBG_COND:
+            NAM_NEBn: LSUBG_COND
+        LOSIGMAS:
+            NAM_NEBn: LSIGMAS
+        VSIGQSAT:
+            NAM_NEBn: VSIGQSAT
+        CCONDENS:
+            NAM_NEBn: CCONDENS
+        CLAMBDA3:
+            NAM_NEBn: CLAMBDA3
+        CFRAC_ICE_SHALLOW_MF:
+            NAM_NEBn: CFRAC_ICE_SHALLOW_MF
+        CFRAC_ICE_ADJUST:
+            NAM_NEBn: CFRAC_ICE_ADJUST
+        XLINI:
+            NAM_TURBn: XLINI
+        LHARATU:
+            NAM_TURBn: LHARAT
+        CSEDIM:
+            NAM_PARAM_ICEn: CSEDIM
+        LOSEDIC:
+            NAM_PARAM_ICEn: LSEDIC
+        LOCND2:
+            NAM_PARAM_ICEn: LOCND2
+        RFRMIN:
+            NAM_PARAM_ICEn: XFRMIN_NAM
+        RCRIAUTI:
+            NAM_PARAM_ICEn: XCRIAUTI_NAM
+        RCRIAUTC:
+            NAM_PARAM_ICEn: XCRIAUTC_NAM
+        RT0CRIAUTI:
+            NAM_PARAM_ICEn: XT0CRIAUTI_NAM
+        LCRIAUTI:
+            NAM_PARAM_ICEn: LCRIAUTI
+        XTSTEP_TS:
+            NAM_PARAM_ICEn: XTSTEP_TS
+        CSNOWRIMING:
+            NAM_PARAM_ICEn: CSNOWRIMING
+        XMRSTEP:
+            NAM_PARAM_ICEn: XMRSTEP
+        LFEEDBACKT:
+            NAM_PARAM_ICEn: LFEEDBACKT
+        LEVLIMIT:
+            NAM_PARAM_ICEn: LEVLIMIT
+        LNULLWETG:
+            NAM_PARAM_ICEn: LNULLWETG
+        LWETGPOST:
+            NAM_PARAM_ICEn: LWETGPOST
+        LNULLWETH:
+            NAM_PARAM_ICEn: LNULLWETH
+        LWETHPOST:
+            NAM_PARAM_ICEn: LWETHPOST
+        NMAXITER_MICRO:
+            NAM_PARAM_ICEn: NMAXITER_MICRO
+        XFRACM90:
+            NAM_PARAM_ICEn: XFRACM90
+        LCONVHG:
+            NAM_PARAM_ICEn: LCONVHG
+        LCRFLIMIT:
+            NAM_PARAM_ICEn: LCRFLIMIT
+        XSPLIT_MAXCFL:
+            NAM_PARAM_ICEn: XSPLIT_MAXCFL
+        LSEDIM_AFTER:
+            NAM_PARAM_ICEn: LSEDIM_AFTER
+        LDEPOSC:
+            NAM_PARAM_ICEn: LDEPOSC
+        XVDEPOSC:
+            NAM_PARAM_ICEn: XVDEPOSC
+        RDEPSRED:
+            NAM_PARAM_ICEn: XDEPSRED_NAM
+        RDEPGRED:
+            NAM_PARAM_ICEn: XDEPGRED_NAM
+        CSUBG_RC_RR_ACCR:
+            NAM_PARAM_ICEn: CSUBG_RC_RR_ACCR
+        CSUBG_RR_EVAP:
+            NAM_PARAM_ICEn: CSUBG_RR_EVAP
+        CSUBG_PR_PDF:
+            NAM_PARAM_ICEn: CSUBG_PR_PDF
+        CSUBG_AUCV_RC:
+            NAM_PARAM_ICEn: CSUBG_AUCV_RC
+        CSUBG_AUCV_RI:
+            NAM_PARAM_ICEn: CSUBG_AUCV_RI
+        CSUBG_MF_PDF:
+            NAM_PARAM_ICEn: CSUBG_MF_PDF
+        CMF_UPDRAFT:
+            NAM_PARAM_MFSHALLn: CMF_UPDRAFT
+        CMF_CLOUD:
+            NAM_PARAM_MFSHALLn: CMF_CLOUD
+        LMIXUV:
+            NAM_PARAM_MFSHALLn: LMIXUV
+        XALP_PERT:
+            NAM_PARAM_MFSHALLn: XALP_PERT
+        XABUO:
+            NAM_PARAM_MFSHALLn: XABUO
+        XBENTR:
+            NAM_PARAM_MFSHALLn: XBENTR
+        XBDETR:
+            NAM_PARAM_MFSHALLn: XBDETR
+        XCMF:
+            NAM_PARAM_MFSHALLn: XCMF
+        XENTR_MF:
+            NAM_PARAM_MFSHALLn: XENTR_MF
+        XCRAD_MF:
+            NAM_PARAM_MFSHALLn: XCRAD_MF
+        XENTR_DRY:
+            NAM_PARAM_MFSHALLn: XENTR_DRY
+        XDETR_DRY:
+            NAM_PARAM_MFSHALLn: XDETR_DRY
+        XDETR_LUP:
+            NAM_PARAM_MFSHALLn: XDETR_LUP
+        XKCF_MF:
+            NAM_PARAM_MFSHALLn: XKCF_MF
+        XKRC_MF:
+            NAM_PARAM_MFSHALLn: XKRC_MF
+        XTAUSIGMF:
+            NAM_PARAM_MFSHALLn: XTAUSIGMF
+        XPRES_UV:
+            NAM_PARAM_MFSHALLn: XPRES_UV
+        XALPHA_MF:
+            NAM_PARAM_MFSHALLn: XALPHA_MF
+        XSIGMA_MF:
+            NAM_PARAM_MFSHALLn: XSIGMA_MF
+        XFRAC_UP_MAX:
+            NAM_PARAM_MFSHALLn: XFRAC_UP_MAX
+        XA1:
+            NAM_PARAM_MFSHALLn: XA1
+        XB:
+            NAM_PARAM_MFSHALLn: XB
+        XC:
+            NAM_PARAM_MFSHALLn: XC
+        XBETA1:
+            NAM_PARAM_MFSHALLn: XBETA1
+
+keys_to_remove:
+    NAMPARAR:
+        - LDEPSG
+        - LFPREC3D
+        - LSURFEX_KFROM
+        - LDIAGWMAX
+        - NDIAGWMAX
+        - NPRINTFR
+        - NPTP
+

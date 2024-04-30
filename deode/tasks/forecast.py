@@ -3,7 +3,6 @@ import glob
 import json
 import os
 import shutil
-import subprocess
 
 from ..datetime_utils import as_datetime, as_timedelta, oi2dt_list
 from ..derived_variables import check_fullpos_namelist
@@ -153,21 +152,6 @@ class Forecast(Task):
                 logger.debug(cmd)
                 BatchJob(os.environ, wrapper="").run(cmd)
     
-
-    def convert_namelist_between_cycles(self, namelist_filename, tnt_directive_yaml):
-         command = ["tnt.py", "-d", tnt_directive_yaml, namelist_filename]
-         subprocess.call(command)
-
-         file_name = os.path.basename(tnt_directive_yaml)
-         index = file_name.find("_to_")
-         cycle_from = file_name[0:index]
-         shutil.move(namelist_filename, namelist_filename+"."+ cycle_from)
-         shutil.move(namelist_filename + ".tnt", namelist_filename)
-
-    def upgrade_namelist_to_49t2(self, namelist_filename):
-        self.convert_namelist_between_cycles(namelist_filename,"/etc/ecmwf/nfs/dh1_home_b/cvap/software/thenamelisttool/tnt_directives/cy48t2_to_cy49.yaml")
-        self.convert_namelist_between_cycles(namelist_filename,"/etc/ecmwf/nfs/dh1_home_b/cvap/software/thenamelisttool/tnt_directives/cy49_to_cy49t1.yaml")
-
     def execute(self):
         """Execute forecast."""
         # CY48t3 input files not used in CY46
@@ -258,10 +242,10 @@ class Forecast(Task):
 
         nlres = self.nlgen_master.assemble_namelist(forecast_namelist)
         self.nlgen_master.write_namelist(nlres, "fort.4")
-        
-        self.upgrade_namelist_to_49t2("fort.4")
+            
+        if self.cycle in ["CY49t1"]:
+            self.nlgen_master.upgrade_namelist_to_49t2("fort.4")
 
-        #shutil.copy("/leonardo/home/userexternal/dhaumont/accord/namelists/fort.4.gpupack", "fort.4")
 
         # SURFEX: Namelists and input data
         self.nlgen_surfex.load("forecast")
