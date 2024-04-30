@@ -1,7 +1,7 @@
 bindir = "/leonardo/home/userexternal/dhaumont/gpupack/pack/49t2_alaro_gpu.01.NVHPC2311.1d/bin"
 
-default_submit_type = "serial"
-lfftw = true
+default_submit_type = "parallel"
+lfftw = false
 module_initpath = "/leonardo/pub/userexternal/dhaumont/install/lmod/lmod/init"
 nproma = -32
 
@@ -47,20 +47,17 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 
 [parallel.ENV]
   DR_HOOK = 1
-  DR_HOOK_IGNORE_SIGNALS = -1
-  OMP_NUM_THREADS = 1
+  DR_HOOK_IGNORE_SIGNALS = -8
   OMPI_MCA_btl = "^vader"
 
 [parallel.MODULES]
-  #1_CUDA = ["load", "cuda/11.8"]
-  2_METEO = ["load", "profile/meteo"]
-  #3_NVHPC = ["load", "eccodes/2.25.0--nvhpc--23.1"]
-  4_FFTW = ["load", "fftw/3.3.10--openmpi--4.1.4--nvhpc--23.1"]
-  5_NETCDF = ["load", "netcdf-fortran/4.6.0--openmpi--4.1.4--nvhpc--23.1"]
-  6_HDF5 = ["load", "hdf5/1.12.2--openmpi--4.1.4--nvhpc--23.1"]
-  #7_NINJA = ["load", "ninja/1.11.1"]
-  #9_EIGEN = ["load", "eigen/3.4.0--nvhpc--23.1"]
-  #10_AEC = ["load", "libaec/1.0.4--nvhpc--23.1"]
+  0_PURGE = ["--force", "purge"]
+  1_NVHPC = ["load", "nvhpc/23.11"]  
+  2_CUDA = ["load", "cuda/11.8"]
+  3_METEO = ["load", "profile/meteo"]
+  4_FFTW = ["load", "fftw/3.3.10--openmpi--4.1.6--nvhpc--23.11"]
+  5_NETCDF = ["load", "netcdf-fortran/4.6.1--openmpi--4.1.6--nvhpc--23.11"]
+  #_HDF5 = ["load", "hdf5/1.12.2--openmpi--4.1.4--nvhpc--23.1"]
 
 
 [serial]
@@ -84,15 +81,14 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   OMPI_MCA_btl = "^vader"
 
 [serial.MODULES]
-  # First load the prgenv
-  PRGENV = ["load", "prgenv/intel"]
-  # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
-  FFTW = ["load", "fftw/3.3.9"]
-  HDF5 = ["load", "hdf5/1.10.6"]
-  MKL = ["load", "intel-mkl/19.0.5"]
-  NETCDF = ["load", "netcdf4/4.7.4"]
-  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
+  0_PURGE = ["--force", "purge"]
+  1_NVHPC = ["load", "nvhpc/23.11"]  
+  2_CUDA = ["load", "cuda/11.8"]
+  3_METEO = ["load", "profile/meteo"]
+  4_FFTW = ["load", "fftw/3.3.10--openmpi--4.1.6--nvhpc--23.11"]
+  5_NETCDF = ["load", "netcdf-fortran/4.6.1--openmpi--4.1.6--nvhpc--23.11"]
+  #_HDF5 = ["load", "hdf5/1.12.2--openmpi--4.1.4--nvhpc--23.1"]
+
 
 [task]
   wrapper = ""
