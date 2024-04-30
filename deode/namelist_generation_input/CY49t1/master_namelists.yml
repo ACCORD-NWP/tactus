@@ -253,7 +253,7 @@ f4_AROME:
     LNHEE: True
     LSCREEN_OPENMP: False
     LTWOTL: True
-    NFPOS: 1
+    NFPOS: 0
     NFRHIS: 1
     NFRPOS: 1
     NFRSDI: 1
@@ -678,7 +678,7 @@ f4_ALARO:
     LRPLANE: True
     LSCREEN_OPENMP: False
     LTWOTL: True
-    NFPOS: 1
+    NFPOS: 0
     NFRHIS: 1
     NFRPOS: 1
     NFRSDI: 1
@@ -1231,7 +1231,7 @@ f4_c903_main:
     NCOMBFLEN: 128000000
     LEQ_REGIONS: False
   NAMCT0:
-    NFPOS: 2
+    NFPOS: 0
     NFRPOS: 1
     NPOSTS: 0
     LARPEGEF: True
@@ -1296,7 +1296,7 @@ f4_c903_domain:
     GFP_ST%IANO: 0
     TFP_Q%LLGP: ${boundaries.humi_gp} 
   NAMCT0:
-    NFPOS: 2
+    NFPOS: 0
     NSDITS(0): 1
     NSDITS(1): 1
     NSPPR: 0

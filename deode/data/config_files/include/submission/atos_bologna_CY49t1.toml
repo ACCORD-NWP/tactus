@@ -77,7 +77,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=00:15:00"
 
 [serial.ENV]
-  DR_HOOK = 1
+  DR_HOOK_IGNORE_SIGNALS = -1
   OMP_NUM_THREADS = 1
   OMPI_MCA_btl = "^vader"
 
@@ -131,14 +131,12 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 [task_exceptions.Forecast]
   NPROC = 28
   NPROC_IO = 4
-  OMP_NUM_THREADS = "1"
 
 [task_exceptions.Forecast.BATCH]
-  CPUSPERTASK = "#SBATCH --cpus-per-task=1"
-  HYPERTHREAD = "#SBATCH --hint=nomultithread"
-  NODES = "#SBATCH --nodes=1"
+  #  MEM = "#SBATCH --mem=200GB"
+  NODES = "#SBATCH --nodes=2"
   NTASKS = "#SBATCH --ntasks=32"
-  WALLTIME = "#SBATCH --time=00:30:00"
+  WALLTIME = "#SBATCH --time=01:00:00"
 
 [task_exceptions.Forecast.ENV]
   KMP_BLOCKTIME = "12"

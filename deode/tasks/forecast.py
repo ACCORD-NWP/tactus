@@ -124,29 +124,35 @@ class Forecast(Task):
         for dt in dt_list:
             ftemplate = self.file_templates[filetype]["model"]
             filename = self.platform.substitute(ftemplate, validtime=self.basetime + dt)
-            logger.debug("Merging file {}", filename)
+            cmd = None
             if filetype == "history":
-                lfitools = self.get_binary("lfitools")
-                cmd = f"{lfitools} facat all io_serv*.d/{filename}.gridall "
-                cmd += f"io_serv*.d/{filename}.speca* {filename}"
-                logger.debug(cmd)
-                BatchJob(os.environ, wrapper="").run(cmd)
+                list_of_files = glob.glob(f"io_serv*.d/{filename}.speca*")
+                speca_files = glob.glob(f"io_serv*.d/{filename}.gridall")
+
+                if len(list_of_files) > 0 and len(speca_files) > 0:
+                    lfitools = self.get_binary("lfitools")
+            #        cmd = f"{lfitools} facat all io_serv*.d/{filename}.gridall "
+            #        cmd += f"io_serv*.d/{filename}.speca* {filename}"
 
             elif filetype == "surfex":
                 # NOTE: .sfx also has a part in the working directory,
                 #        so you *must* change the name
-                lfitools = self.get_binary("lfitools")
-                os.rename(filename, filename + ".part")
-                cmd = f"{lfitools} facat all {filename}.part "
-                cmd += f"io_serv*.d/{filename} {filename}"
-                logger.debug(cmd)
-                BatchJob(os.environ, wrapper="").run(cmd)
-
+                list_of_files = glob.glob(f"io_serv*.d/{filename}")
+                if len(list_of_files) > 0:
+                    lfitools = self.get_binary("lfitools")
+                    os.rename(filename, filename + ".part")
+            #        cmd = f"{lfitools} facat all {filename}.part "
+            #        cmd += f"io_serv*.d/{filename} {filename}"
             else:
                 # Fullpos (grib2) output has .hpf as extra file extension
-                cmd = f"cat io_serv*.d/{filename}*.hfp > {filename}"
+                list_of_files = glob.glob(f"io_serv*.d/{filename}*.hfp")
+                if len(list_of_files) > 0:
+                   cmd = f"cat io_serv*.d/{filename}*.hfp > {filename}"
+            if cmd:
+                logger.debug("Merging file {}", filename)
                 logger.debug(cmd)
                 BatchJob(os.environ, wrapper="").run(cmd)
+    
 
     def convert_namelist_between_cycles(self, namelist_filename, tnt_directive_yaml):
          command = ["tnt.py", "-d", tnt_directive_yaml, namelist_filename]
@@ -159,8 +165,8 @@ class Forecast(Task):
          shutil.move(namelist_filename + ".tnt", namelist_filename)
 
     def upgrade_namelist_to_49t2(self, namelist_filename):
-        self.convert_namelist_between_cycles(namelist_filename,"/leonardo/home/userexternal/dhaumont/accord/thenamelisttool/tnt_directives/cy48t2_to_cy49.yaml")
-        self.convert_namelist_between_cycles(namelist_filename,"/leonardo/home/userexternal/dhaumont/accord/thenamelisttool/tnt_directives/cy49_to_cy49t1.yaml")
+        self.convert_namelist_between_cycles(namelist_filename,"/etc/ecmwf/nfs/dh1_home_b/cvap/software/thenamelisttool/tnt_directives/cy48t2_to_cy49.yaml")
+        self.convert_namelist_between_cycles(namelist_filename,"/etc/ecmwf/nfs/dh1_home_b/cvap/software/thenamelisttool/tnt_directives/cy49_to_cy49t1.yaml")
 
     def execute(self):
         """Execute forecast."""
