@@ -253,15 +253,25 @@ class DeodeSuiteDefinition(SuiteDefinition):
                 args = ""
                 int_trig = inputdata_done
 
+                inthourbdint = int(bdint.total_seconds() // 3600)
+                inthourbdintx = 1 if inthourbdint == 0 else inthourbdint
+                intminbdint = int(bdint.total_seconds() % 3600 // 60)
+                intsecbdint = int(bdint.total_seconds() % 60)
+
                 # we don't need LBC000 if this is not first cycle or mode != cold_start
                 if self.mode == "restart" or (self.mode == "start" and not self.do_prep):
                     bdtime = basetime + bdint
-                    bdnr = 1
+                    bdnr = inthourbdint
+                    bd_nr = 1
+                    subbdnr = intminbdint if (intminbdint or intsecbdint) else None
+                    subminbdnr = intsecbdint if intsecbdint else None
+
                 else:
                     bdtime = basetime
                     bdnr = 0
-
-                intbdint = int(bdint.total_seconds() // 3600)
+                    bd_nr = 0
+                    subbdnr = 0 if (intminbdint or intsecbdint) else None
+                    subminbdnr = 0 if intsecbdint else None
 
                 e923_update_done = None
 
@@ -346,10 +356,16 @@ class DeodeSuiteDefinition(SuiteDefinition):
                     )
                     while bdtime <= endtime:
                         date_string = bdtime.isoformat(sep="T").replace("+00:00", "Z")
-                        args = f"bd_time={date_string};bd_nr={bdnr};prep_step=False"
+                        args = f"bd_time={date_string};bd_nr={bd_nr};prep_step=False"
                         variables = {"ARGS": args}
+                        lbc_fam_name = (
+                            f"LBC{bdnr*inthourbdintx:02}{subbdnr:02}"
+                            + (f"{subminbdnr:02}" if subminbdnr is not None else "")
+                            if subbdnr is not None
+                            else f"LBC{bdnr*inthourbdintx:02}"
+                        )
                         lbc_fam = EcflowSuiteFamily(
-                            f"LBC{bdnr*intbdint:02}",
+                            lbc_fam_name,
                             bch_fam,
                             self.ecf_files,
                             trigger=e923_update_done,
@@ -387,10 +403,21 @@ class DeodeSuiteDefinition(SuiteDefinition):
                             trigger=split_mars_done,
                             ecf_files_remotely=self.ecf_files_remotely,
                         )
+                        if subbdnr is not None:
+                            subbdnr += intminbdint
+                            if subminbdnr is not None:
+                                subminbdnr += intsecbdint
+                                if subminbdnr >= 60:
+                                    subbdnr += 1
+                                    subminbdnr -= 60
+                            if subbdnr >= 60:
+                                bdnr += 1
+                                subbdnr -= 60
 
-                        bdnr += 1
+                        bdnr += inthourbdint
                         bdtime += bdint
-                        if bdnr % bdmax == 0:
+                        bd_nr += 1
+                        if bd_nr % bdmax == 0:
                             intnr += 1
                             int_trig = EcflowSuiteTriggers([EcflowSuiteTrigger(bch_fam)])
                             break
