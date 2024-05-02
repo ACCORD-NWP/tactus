@@ -50,7 +50,7 @@
   mars = "include/mars_settings.toml"
   platform = "include/platform_paths/atos_bologna.toml"
   scheduler = "include/scheduler/ecflow_atos_bologna.toml"
-  submission = "include/submission/atos_bologna_CY49t1.toml"
+  submission = "include/submission/atos_bologna_CY49t2.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"
 
 [pgd]
