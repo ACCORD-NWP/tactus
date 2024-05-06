@@ -49,8 +49,18 @@
           "type": "string",
           "description": "Troika config file",
           "default": "@DEODE_HOME@/deode/data/config_files/troika.yml"
-	}
+	      }
       }
+    },
+    "plugin_registry": {
+      "title": "Plug-in registry",
+      "type": "object",
+      "properties": {
+        "plugins": {
+          "title": "Loaded plugins",
+          "type": "object"
+       }
+     }
     },
     "boundaries": {
       "title": "Boundary Section",
@@ -126,6 +136,11 @@
       "description": "Settings for control of Pgd selection.",
       "type": "object",
       "properties": {
+	"npatch": {
+	  "title": "Number of patches for surfex variables",
+	  "type": "integer",
+	  "default": 3
+	},
         "one_decade": {
           "title": "Option for using one decade",
           "type": "boolean",
@@ -161,6 +176,11 @@
       "description": "Suite control options",
       "type": "object",
       "properties": {
+	"suite_definition": {
+	  "description": "Suite definition to play in EcFlow",
+	  "type": "string",
+	  "default": "DeodeSuiteDefinition"
+	},
         "do_soil": {
           "description": "Activate preparation of SOILGRID data as input for PGD",
           "type": "boolean"
@@ -197,7 +217,12 @@
         "create_time_dependent_suite": {
           "description": "Activate the time dependent part of the suite",
           "type": "boolean"
-        }
+        },
+	"split_mars": {
+	  "description": "Do marsprep only for one step before c903",
+	  "type": "boolean",
+	  "default": false
+	}
       }
     },
     "system": {

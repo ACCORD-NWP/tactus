@@ -1,4 +1,4 @@
-bindir = "/home/snh02/pack/48t3_fix.04.OMPIIFC2104.x/bin"
+bindir = "/home/snh02/pack/48t3_main.05.OMPIIFC2104.x/bin"
 default_submit_type = "serial"
 lfftw = true
 module_initpath = "/usr/local/apps/lmod/8.6.8/init"
@@ -31,7 +31,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=00:15:00"
 
 [gnu.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
 
 [parallel]
   NPROC = 32
@@ -54,7 +54,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   # First load the prgenv
   PRGENV = ["load", "prgenv/intel"]
   # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
   FFTW = ["load", "fftw/3.3.9"]
   HDF5 = ["load", "hdf5/1.10.6"]
   MKL = ["load", "intel-mkl/19.0.5"]
@@ -66,7 +66,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   NPROCX = 1
   NPROCY = 1
   SCHOST = "hpc"
-  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep"]
+  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep", "E923Update"]
   WRAPPER = "srun"
 
 [serial.BATCH]
@@ -85,7 +85,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   # First load the prgenv
   PRGENV = ["load", "prgenv/intel"]
   # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
   FFTW = ["load", "fftw/3.3.9"]
   HDF5 = ["load", "hdf5/1.10.6"]
   MKL = ["load", "intel-mkl/19.0.5"]
@@ -117,6 +117,15 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 [task_exceptions.CreateGrib.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
 
+[task_exceptions.E923Update]
+  bindir = "/home/snh02/work/fa_sfx2clim/"
+
+[task_exceptions.E923Update.ENV]
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/home/snh02/opt/install/eccodes-2.32.1/lib64:/perm/rme/packages/auxlibs/3.7/INTEL/2021.4/lib"
+
+[task_exceptions.E923Update.MODULES]
+  OPENMPI = ["load", "openmpi/4.1.1"]
+
 [task_exceptions.e927]
   NPROC = 16
 
@@ -125,12 +134,13 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   NTASKS = "#SBATCH --ntasks=16"
 
 [task_exceptions.Forecast]
-  NPROC = 256
+  NPROC = 28
+  NPROC_IO = 4
 
 [task_exceptions.Forecast.BATCH]
-  MEM = "#SBATCH --mem=200GB"
+  #  MEM = "#SBATCH --mem=200GB"
   NODES = "#SBATCH --nodes=2"
-  NTASKS = "#SBATCH --ntasks=256"
+  NTASKS = "#SBATCH --ntasks=32"
   WALLTIME = "#SBATCH --time=01:00:00"
 
 [task_exceptions.Forecast.ENV]

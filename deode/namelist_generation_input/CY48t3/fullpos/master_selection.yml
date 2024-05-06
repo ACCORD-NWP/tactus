@@ -37,7 +37,8 @@ selection:
     - 'CLSVISIN_60'
     - 'CLSVISIHYDN60'
     - 'CLSPTYPE_60M'
-    - 'CLSPTYPESEV_60M'   
+    - 'CLSPTYPESEV_60M'
+    - 'CLSMEAN.RAD.TEMP'
    CLPHY:
     - 'SURFTEMPERATURE'
     - 'SURFRESERV.NEIGE'
@@ -82,6 +83,8 @@ selection:
     - 'RAIN'
     - 'SNOW'  
     - 'TKE'
+    - 'AVG_U'
+    - 'AVG_V'
    RFP3H:
     - 15.
     - 30.
@@ -117,6 +120,8 @@ selection:
      - 'ICE_CRYSTAL'
      - 'CLOUD_WATER'
      - 'TKE'
+     - 'AVG_U'
+     - 'AVG_V'
     RFP3P:
      - 5000.
      - 10000.
@@ -148,75 +153,13 @@ selection:
      - 'ICE_CRYSTAL'
      - 'CLOUD_WATER'
      - 'TKE'
+     - 'AVG_U'
+     - 'AVG_V'
     NRFP3S:
      - ${vertical_levels.nlev} 
   NAMFPDYT: {}
   NAMFPDYF : {}
   NAMPPC : {}
 
- xxtddddhhmm:
-  NAMFPPHY:
-   CLCFU:
-    - 'SOMMFLU.RAY.SOLA'
-    - 'SURFFLU.RAY.SOLA'
-    - 'SOMMFLU.RAY.THER'
-    - 'SURFFLU.RAY.THER'
-    - 'SURFFLU.LAT.MEVA'
-    - 'SURFFLU.MEVAP.EA'
-    - 'SURFFLU.CHA.SENS'
-    - 'SURFRAYT SOLA DE'
-    - 'SURFRAYT THER DE'
-    - 'SURFACCPLUIE'
-    - 'SURFACCNEIGE'
-    - 'SURFACCGRAUPEL'
-    - 'SURFDIAG.FLASH'
-   CLXFU:
-    - 'SURFDIAGHAIL'
-    - 'CLSTEMPERATURE'
-    - 'CLSHUMI.RELATIVE'
-    - 'CLSHUMI.SPECIFIQ'
-    - 'CLSVENT.ZONAL'
-    - 'CLSVENT.MERIDIEN'
-    - 'SURFNEBUL.HAUTE'
-    - 'SURFNEBUL.MOYENN'
-    - 'SURFNEBUL.BASSE'
-    - 'SURFNEBUL.TOTALE'
-  NAMFPDY2:
-   CL2DF:
-    - 'SURFPRESSION'
-    - 'MSLPRESSURE'
-    - 'SURFREFLECT.MAX'
-    - 'REFLECT_DBZ.MAX'
-    - 'C002_METEOSAT_09_SEVIRI.POS'
-    - 'C006_METEOSAT_09_SEVIRI.POS'
-  NAMFPDYH:
-   CL3DF:
-    - 'HUMI_RELATIVE'
-    - 'HUMI.SPECIFI'
-    - 'TEMPERATURE'
-    - 'WIND.U.PHYS'
-    - 'WIND.V.PHYS'
-    - 'ICE_CRYSTAL'
-    - 'CLOUD_WATER'
-    - 'TKE'
-   RFP3H:
-    - 15.
-    - 30.
-    - 50.
-    - 75.
-    - 100.
-    - 130.
-    - 150.
-    - 200.
-    - 250.
-    - 300.
-  NAMFPDYI: {}     
-  NAMFPDYV: {}
-  NAMFPDYP: {}
-  NAMFPDYS: {}
-  NAMFPDYT: {}
-  NAMFPDYF: {}
-  NAMPPC: {}
- 
  xxt00000000:
    <<: *default

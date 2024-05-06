@@ -8,16 +8,15 @@ from pathlib import Path
 import pytest
 import tomlkit
 
-import deode
 from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import set_times
-from deode.initial_conditions import InitialConditions
+from deode.plugin import DeodePluginRegistry
 from deode.tasks.archive import ArchiveHour, ArchiveStatic
 from deode.tasks.base import Task
 from deode.tasks.batch import BatchJob
 from deode.tasks.collectlogs import CollectLogs
 from deode.tasks.creategrib import CreateGrib
-from deode.tasks.discover_task import discover, get_task
+from deode.tasks.discover_task import available_tasks, get_task
 from deode.tasks.e923 import E923
 from deode.tasks.extractsqlite import ExtractSQLite
 from deode.tasks.forecast import FirstGuess, Forecast
@@ -29,7 +28,8 @@ WORKING_DIR = Path.cwd()
 
 def classes_to_be_tested():
     """Return the names of the task-related classes to be tested."""
-    encountered_classes = discover(deode.tasks, Task, attrname="__type_name__")
+    reg = DeodePluginRegistry()
+    encountered_classes = available_tasks(reg)
     return encountered_classes.keys()
 
 
@@ -97,7 +97,6 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_task_archive_archivestatic_execute_method = ArchiveStatic.execute
     original_task_creategrib_creategrib_execute_method = CreateGrib.execute
     original_task_extractsqlite_extractsqlite_execute_method = ExtractSQLite.execute
-    original_task_initial_conditions_nosuccess_method = InitialConditions.nosuccess
     original_task_e923_constant_part_method = E923.constant_part
     original_task_e923_monthly_part_method = E923.monthly_part
     original_task_marsprep_run_method = Marsprep.run
@@ -161,11 +160,6 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         with contextlib.suppress(FileNotFoundError):
             original_task_marsprep_run_method(*args, **kwargs)
 
-    def new_task_initial_conditions_nosuccess_method(*args, **kwargs):
-        """Suppress some errors so that test continues if they happen."""
-        with contextlib.suppress(FileNotFoundError):
-            original_task_initial_conditions_nosuccess_method(*args, **kwargs)
-
     def new_task_e923_constant_part_method(*args, **kwargs):
         """Create needed file "Const.Clim" before running the original method."""
         with open("Const.Clim", "w", encoding="utf8"):
@@ -220,10 +214,6 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     session_mocker.patch(
         "deode.tasks.extractsqlite.ExtractSQLite.execute",
         new=new_task_extractsqlite_extractsqlite_execute_method,
-    )
-    session_mocker.patch(
-        "deode.initial_conditions.InitialConditions.nosuccess",
-        new=new_task_initial_conditions_nosuccess_method,
     )
     session_mocker.patch(
         "deode.tasks.e923.E923.constant_part", new=new_task_e923_constant_part_method

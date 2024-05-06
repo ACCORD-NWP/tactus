@@ -2,10 +2,13 @@
 import contextlib
 import importlib
 import inspect
+import os
 import pkgutil
+import sys
+import types
 
-from .. import tasks
 from ..logs import LoggerHandlers, logger
+from ..plugin import DeodePluginRegistryFromConfig
 from .base import Task, _get_name
 
 
@@ -24,12 +27,12 @@ def discover_modules(package, what="plugin"):
 
     """
     path = package.__path__
-    prefix = package.__name__ + "."
+    prefix = package.__name__ + ".tasks."
 
-    logger.debug("{} search path: {}", what.capitalize(), path)
+    logger.info("{} search path: {}", what.capitalize(), path)
     for _finder, mname, _ispkg in pkgutil.iter_modules(path):
         fullname = prefix + mname
-        logger.debug("Loading module {}", fullname)
+        logger.info("Loading module {}", fullname)
         try:
             mod = importlib.import_module(fullname)
         except ImportError as exc:
@@ -58,30 +61,55 @@ def get_task(name, config):
         )
         logger.debug("Logger reset to level {}", config["general.loglevel"])
 
-    known_types = discover(tasks, Task, attrname="__type_name__")
+    reg = DeodePluginRegistryFromConfig(config)
+    known_types = available_tasks(reg)
     try:
         cls = known_types[name.lower()]
     except KeyError as error:
-        raise NotImplementedError(f'Task "{name}" not implemented.') from error
+        raise NotImplementedError(f'Task "{name}" not implemented') from error
 
     return cls(config)
 
 
-def discover(package, base, attrname="__plugin_name__"):
+def available_tasks(reg):
+    """Create a list of available tasks.
+
+    Args:
+        reg (DeodePluginRegistry): Deode plugin registry
+
+    Returns:
+        known_types (list): Task objects
+
+    """
+    known_types = {}
+    for plg in reg.plugins:
+        if os.path.exists(plg.tasks_path):
+            tasks = types.ModuleType(plg.name)
+            tasks.__path__ = [plg.tasks_path]
+            sys.path.insert(0, plg.path)
+            found_types = discover(tasks, Task)
+            for ftype, cls in found_types.items():
+                if ftype in known_types:
+                    logger.warning("Overriding suite {}", ftype)
+                known_types[ftype] = cls
+        else:
+            logger.warning("Plug-in task {} not found", plg.tasks_path)
+    return known_types
+
+
+def discover(package, base):
     """Discover task classes.
 
     Plugin classes are discovered in a given namespace package, deriving from
     a given base class. The base class itself is ignored, as are classes
     imported from another module (based on ``cls.__module__``). Each discovered
-    class is identified by a name that is either the value of attribute
-    ``attrname`` if present, or deduced from the class name by changing it to
+    class is identified by the class name by changing it to
     lowercase and stripping the name of the base class, if it appears as a
     suffix.
 
     Args:
         package (types.ModuleType): Namespace package containing the plugins
         base (type): Base class for the plugins
-        attrname (str): Name of the attribute that contains the name for the plugin
 
     Returns:
         (dict of str: type): Discovered plugin classes
@@ -94,9 +122,9 @@ def discover(package, base, attrname="__plugin_name__"):
     discovered = {}
     for fullname, mod in discover_modules(package, what=what):
         for cname, cls in inspect.getmembers(mod, pred):
-            tname = _get_name(cname, cls, what.lower(), attrname=attrname)
+            tname = _get_name(cname, cls, what.lower())
             if cls.__module__ != fullname:
-                logger.debug(
+                logger.info(
                     "Skipping {} %r imported by %r", what.lower(), tname, fullname
                 )
                 continue

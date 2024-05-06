@@ -137,7 +137,7 @@ class TestSubmission:
 
         background = TaskSettings(config)
         sub = NoSchedulerSubmission(background)
-        with pytest.raises(NotImplementedError, match=f'Task "{task}" not implemented.'):
+        with pytest.raises(NotImplementedError, match=f"Task {task} not implemented"):
             sub.submit(task, config, template_job, task_job, output)
 
     def test_wrapper_and_nproc(self, config_from_task_config_file):

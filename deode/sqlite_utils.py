@@ -7,7 +7,7 @@ from .logs import logger
 # For now (on ATOS), only tasks with prgenv/gnu can import eccodes in python
 try:
     import eccodes
-except (ImportError, OSError):
+except (ImportError, OSError, RuntimeError):
     logger.warning("eccodes python API could not be imported. Usually OK.")
 
 import datetime
@@ -290,23 +290,25 @@ def param_match(gid, parameter_list):
     return None
 
 
-def sqlite_name(param, fcdate, sqlite_template):
+def sqlite_name(param, fcdate, model_name, sqlite_template):
     """Create the full name of the SQLite file from template and date.
 
     Args:
         param: parameter descriptor
         fcdate: forecast date
+        model_name: model name (string) used in the SQLite file name and data columns
         sqlite_template: template for SQLite file name
 
     Returns:
         full name of SQLite file
     """
     result = sqlite_template
-    result = result.replace("@PP@", param["harp_param"])
-    result = result.replace("@YYYY@", fcdate.strftime("%Y"))
-    result = result.replace("@MM@", fcdate.strftime("%m"))
-    result = result.replace("@DD@", fcdate.strftime("%d"))
-    result = result.replace("@HH@", fcdate.strftime("%H"))
+    result = result.replace("{PP}", param["harp_param"])
+    result = result.replace("{YYYY}", fcdate.strftime("%Y"))
+    result = result.replace("{MM}", fcdate.strftime("%m"))
+    result = result.replace("{DD}", fcdate.strftime("%d"))
+    result = result.replace("{HH}", fcdate.strftime("%H"))
+    result = result.replace("{MODEL}", model_name)
     return result
 
 
@@ -793,6 +795,8 @@ def parse_grib_file(
     leadtime = None
     gi = 0
     gt = 0
+    error_occured = False
+
     with open(infile, "rb") as gfile:
         while True:
             # loop over all grib records in the file
@@ -810,6 +814,7 @@ def parse_grib_file(
                 direct = False
                 param = param_match(gid, param_cmb_list)
                 if param is None:
+                    eccodes.codes_release(gid)
                     continue
                 logger.info(
                     "SQLITE: found combinded parameter {}:{}",
@@ -832,10 +837,17 @@ def parse_grib_file(
             )
 
             if weights is None:
-                # We assume that station list and weights are the same for all files
+                # We assume that station list and weights are the same for all GRIB fields
                 # so we only "train" once
                 # First reduce the station list to points inside the domain
                 station_list = points_restrict(gid, station_list)
+                if station_list.shape[0] == 0:
+                    # In this case, we can not extract any points
+                    logger.warning("SQLite: no stations inside model domain!")
+                    error_occured = True
+                    eccodes.codes_release(gid)
+                    break
+
                 logger.info(
                     "SQLITE: selected {} stations inside domain.", station_list.shape[0]
                 )
@@ -856,16 +868,25 @@ def parse_grib_file(
 
             # if this is a "direct" field, create a table and write to SQLite
             if direct:
+                sqlite_file = sqlite_name(param, fcdate, model_name, sqlite_template)
+                # NOTE: the column name for data gets an extra "_det"
+                #       as required by HARP
                 data = create_table(
-                    data_vector, station_list, param, fcdate, leadtime, model_name
+                    data_vector,
+                    station_list,
+                    param,
+                    fcdate,
+                    leadtime,
+                    model_name + "_det",
                 )
-                sqlite_file = sqlite_name(param, fcdate, sqlite_template)
-                write_to_sqlite(data, sqlite_file, param, model_name)
+                write_to_sqlite(data, sqlite_file, param, model_name + "_det")
 
-        # at this point, all grib records have been parsed
-        # make sure to release the grib handle
-        if gid is not None:
-            gid.release()
+            eccodes.codes_release(gid)
+
+    # at this point, all grib records have been parsed (or an error occured)
+    if error_occured:
+        logger.warning("An error occured. Exiting.")
+        return gt, gi
 
     # OK, we have parsed the whole file and written all "direct" parameters
     # So now we still need to check all the "combined" ones
@@ -877,12 +898,12 @@ def parse_grib_file(
         # only write to SQLite if ALL components were found!
         if data_vector is not None:
             logger.debug("SQLITE: writing combined field")
+            sqlite_file = sqlite_name(param, fcdate, model_name, sqlite_template)
             data = create_table(
-                data_vector, station_list, param, fcdate, leadtime, model_name
+                data_vector, station_list, param, fcdate, leadtime, model_name + "_det"
             )
-            sqlite_file = sqlite_name(param, fcdate, sqlite_template)
-            write_to_sqlite(data, sqlite_file, param, model_name)
-    # Return: total count and # of matchign param
+            write_to_sqlite(data, sqlite_file, param, model_name + "_det")
+    # Return: total count and # of matching param
     return gt, gi
 
 
@@ -909,6 +930,7 @@ def create_table(data_vector, station_list, param, fcdate, leadtime, model_name)
     ):
         prim_keys.append("elev")
     data = station_list[prim_keys].copy()
+    # NOTE: only deterministic mnodels for now! No EPS.
     data[model_name] = data_vector
 
     # prepare SQLITE output
@@ -948,12 +970,25 @@ def write_to_sqlite(data, sqlite_file, param, model_name):
         data: a data table
         sqlite_file: file name
         param: parameter descriptor
-        model_name: model name used in
-
+        model_name: model name used in file path and data table
     """
     logger.info("Writing to {}", sqlite_file)
+
     if os.path.isfile(sqlite_file):
         con = sqlite3.connect(sqlite_file)
+        # NOTE: If the table already exists,
+        #       we must check that all column names match!
+        #       Especially, we must check that the model name is identical.
+        #       Otherwise, the FC table should probably be deleted.
+        cur = con.cursor()
+        cn1 = cur.execute("select name from PRAGMA_TABLE_INFO('FC')").fetchall()
+        colnames = [x[0] for x in cn1]
+        if model_name not in colnames:
+            logger.error(
+                "ERROR: The FC table already exists with a different model name!"
+            )
+            con.close()
+            con = None
     else:
         sqlite_path = os.path.dirname(sqlite_file)
         if not os.path.isdir(sqlite_path):
@@ -962,17 +997,21 @@ def write_to_sqlite(data, sqlite_file, param, model_name):
         # if the SQLite file doesn't exist yet: create the SQLite table
         logger.info("SQLITE: Creating sqlite file {}.", sqlite_file)
         con = db_create(sqlite_file, param, model_name)
-    # NOTE: we need to cast to int (or float), because "numpy.int64" will not work in SQL
-    fcd = int(data.iloc[0]["fcst_dttm"])
-    # NOTE: we now take leadtime directly from the data table
-    #       this should keep it OK if we switch to sub-hourly.
-    leadtime = int(data.iloc[0]["lead_time"])
-    logger.debug("leadtime: {}", leadtime)
-    db_cleanup(param, fcd, leadtime, con)
 
-    # now write to SQLite
-    data.to_sql("FC", con, if_exists="append", index=False)
-    con.commit()
+    if con is not None:
+        # NOTE: we need to cast to int (or float),
+        #       because "numpy.int64" will not work in SQL
+        #       for now, we take float, so the values can be sub-hourly
+        #       BUT: this may change if harpPoint gets support for sub-hourly data
+        fcd = float(data.iloc[0]["fcst_dttm"])
+        leadtime = float(data.iloc[0]["lead_time"])
+        logger.debug("leadtime: {}", leadtime)
+        db_cleanup(param, fcd, leadtime, con)
+
+        # now write to SQLite
+        data.to_sql("FC", con, if_exists="append", index=False)
+        con.commit()
+
     con.close()
 
 
@@ -1054,12 +1093,12 @@ def db_create(sqlite_file, param, model_name):
     return con
 
 
-def fctable_definition(param, model):
+def fctable_definition(param, model_name):
     """Create the SQL command for FCtable definition.
 
     Args:
         param: the parameter descriptor
-        model: model name to be used
+        model_name: model name to be used
 
     Returns:
         SQL commands for creating the FCTABLE table
@@ -1076,7 +1115,7 @@ def fctable_definition(param, model):
         "valid_dttm": "INT",
         "parameter": "TEXT",
         "units": "TEXT",
-        model: "DOUBLE",
+        model_name: "DOUBLE",
     }
     # for T2m correction
     if "T2m" in param["harp_param"]:

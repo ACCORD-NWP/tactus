@@ -87,6 +87,7 @@ class E923(Task):
         # PGD input
 
         self.fmanager.input(f"{self.climdir}/{self.pgd_prel}", "Neworog")
+        self.fmanager.input(f"{self.climdir}/{self.pgd_prel}", "Newsuborog")
 
         # Part 0
         i = 0

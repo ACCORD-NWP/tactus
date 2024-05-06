@@ -7,11 +7,6 @@
 )](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/tests.yaml)
 [![codecov](https://codecov.io/github/destination-earth-digital-twins/Deode-Prototype/branch/develop/graph/badge.svg?token=4PRUK8DMZF)](https://codecov.io/github/destination-earth-digital-twins/Deode-Prototype)
 
-## About
-The [DEODE Scripting System](https://github.com/destination-earth-digital-twins/Deode-Prototype/) provides a `deode` python package that runs the [Destination Earth on Demand Extremes system](https://github.com/destination-earth-digital-twins).
-
-See the [project's documentation page](https://destination-earth-digital-twins.github.io/deode-prototype-docs) for more information.
-
 ## LUMI 
 ### Getting on LUMI
 To run the project on LUMI, you need to have a LUMI account and add your SSH key to it. Please check the [online instructions on how to do that](https://docs.lumi-supercomputer.eu/firststeps/SSH-keys/). Once you have your SSH key added, you can login to LUMI by running `ssh -i <your-private-key> <username>@@lumi.csc.fi`. Once logged in, create a SSH key and add that to your GitHub account so you can clone the repo. Then, please follow the download, install and usage instructions provided in the [README](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md) file.
@@ -22,7 +17,7 @@ To run the project on LUMI, you need to have a LUMI account and add your SSH key
 
 1. First step is to email ECMWF (cristina.duma@ecmwf.int with samet.demir@ecmwf.int; bojan.kasic@ecmwf.int in cc), providing them with: 
 
-a) Your **LUMI username**.
+a) Your **LUMI username** (USERNAME in the rest of this document).
 
 b) Your **LUMI public key** (usually under: /users/USERNAME/.ssh/id_rsa.pub)
 
@@ -32,7 +27,7 @@ And ask to be 'whitelisted' to be granted access to the Ecflow server from LUMI.
 
 a) server.ssl.gpg - an ssl certificate file
 
-b) 217.71.195.251.8443.ecf.custom_passwd.gpg - ecf custom password file
+b) 217.71.195.251.8443.ecf.custom_password.gpg - ecf custom password file
 
 c) id_rsa_troika.pub.gpg - public key for troika
 
@@ -46,20 +41,20 @@ using the **password: 'peterpiper'**.
 
 a) /users/USERNAME/.ecflowrc/ssl/server.crt
 
-b) /users/USERNAME/ecflow_server/217.71.195.251.8443.ecf.custom_passwd
+b) /users/USERNAME/ecflow_server/217.71.195.251.8443.ecf.custom_password
 
 **Note** The public key: 'id_rsa_troika.pub' needs to be uploaded to my.csc.fi or myaccessid provider.
 
 5. Then map custom password and SSL variable as follows:
 
 ```shell
-export ECF_CUSTOM_PASSWD="/users/USERNAME/ecflow_server/217.71.195.251.8443.ecf.custom_passwd"
+export ECF_CUSTOM_PASSWD="/users/USERNAME/ecflow_server/217.71.195.251.8443.ecf.custom_password"
 export ECF_SSL=1
 ```
 
 Which should look like this:
 ```shell
-adelsaid@uan01:/users/adelsaid> cat /users/USERNAME/ecflow_server/217.71.195.251.8443.ecf.custom_passwd
+adelsaid@uan01:/users/adelsaid> cat /users/USERNAME/ecflow_server/217.71.195.251.8443.ecf.custom_password
 5.11.3
 de_330 217.71.195.251 8443 {PASSWORD_OBTAINED_FROM_ECMWF}
 ```
@@ -107,12 +102,12 @@ And make sure you check these flags:
 "Add server to current view":  (check)
 ```
 
-### Troubleshooting
+#### Troubleshooting
 
 1. Once Ecflow is setup on LUMI you need to login as follows:
 
 ```shell
-ssh -X adelsaid@lumi.csc.fi
+ssh -X USERNAME@lumi.csc.fi
 ```
 (use the -A flag if you have any problems with the -X flag above). Graphics are needed to see the Ecflow graphic UI.
 
@@ -180,7 +175,43 @@ deode start suite --config-file $PWD/deode/data/config_files/config_CY48t3_lumi.
 
 Note: if you forget to use the --config-file flag, it will default to `--config-file $PWD/deode/data/config_files/config.toml` most likely causing errors.
 
+#### Data
+
+At the time of writing this, there is no streamlined way to obtain data from sources such as MARS etc, as it is with ATOS. We currently have a shared local directory on LUMI for this project:
+```shell
+/scratch/project_465000527/de_33050_common_data/
+```
+spend a few minutes just familiarising yourself with what's there. 
+
+IFS data for the boundaries (HRES and ATOS_DT) is currently stored here:
+```shell
+/scratch/project_465000527/de_33050_common_data/deode_ref/IFS
+```
+
+Should you require any extra data you will need to manually download this from ATOS yourself:
+```shell
+scp -r /home/snh02/work/dev-CY46h1_deode/climate/DEODE_LARGE adelsaid@lumi.csc.fi:/scratch/project_465000527/adelsaid/
+```
+for example.
+
+If you foresee that the data you download will be needed in the long term, contact a super user (Ulf Andrae, Denis Haumont, Trygve Aspelien) to assist you in getting it into the common area mentioned above, where it should be safer in the long term.
+
 #### Standalone task example (forecast)
+
+To run a standalone "Forecast" task, first you need to change the 'SCHOST' field from "lumi-batch" to "lumi" under [parallel], as shown below:
+
+```shell
+[parallel]
+  NPROC = 16
+  SCHOST = "lumi"
+  tasks = ["Forecast", "e927", "Pgd", "Prep", "c903"]
+  WRAPPER = "srun"
+
+```
+
+in: deode/data/config_files/include/submiossion/lumi_CY48t3.toml.
+
+This also applies to any task one wishes to run standalone. Then simply run the following comment below:
 
 ```shell
 deode run \

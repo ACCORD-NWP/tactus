@@ -9,7 +9,7 @@ import tomlkit
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import set_times
 from deode.submission import TaskSettings
-from deode.suites import SuiteDefinition
+from deode.suites.deode import DeodeSuiteDefinition
 
 
 @pytest.fixture()
@@ -80,8 +80,16 @@ class TestSuite:
     )
     def test_suite(self, config_from_task_config_file, param, tmp_directory):
         config = config_from_task_config_file
+        suite_name = "test_suite"
         config = config.copy(
             update={
+                "general": {"case": suite_name},
+                "scheduler": {
+                    "ecfvars": {
+                        "ecf_files": f"{tmp_directory}/ecf_files",
+                        "ecf_jobout": f"{tmp_directory}/jobout",
+                    }
+                },
                 "platform": {
                     "deode_home": f"{os.path.dirname(__file__)}/../..",
                     "unix_group": "",
@@ -90,12 +98,8 @@ class TestSuite:
         )
         config = config.copy(update=set_times(config))
         config = config.copy(update=param)
-        suite_name = "test_suite"
-        background = TaskSettings(config)
-        defs = SuiteDefinition(
-            suite_name,
+        defs = DeodeSuiteDefinition(
             config,
-            background,
             dry_run=True,
         )
         def_file = f"{tmp_directory}/{suite_name}.def"

@@ -8,7 +8,7 @@ Currently the system provides no support for compilation of any of the IAL code 
 There are several ways to specify which binary to be used. The standard way is to set `bindir` in the system config section. This assumes all required binaries are in the given directory and with the names used in the task. If, for whatever reason, a specific task should pick binaries from another directory, or with another name we can define location and/or name on task level by introducing a new section in the config file like:
 
 ```
-[task.creategrib]
+[task_exceptions.Forecast]
  bindir = "SOME_NEW_PATH"
  binary = "SOME_NEW_NAME"
 ```

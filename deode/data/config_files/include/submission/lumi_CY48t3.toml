@@ -1,10 +1,11 @@
 account = "#SBATCH -A project_465000527"
 bindir = "/scratch/project_465000527/jasinskas/CY48T3-ftn16-O0_23-install/bin"
+cmicro = "OLD3"
 default_submit_type = "serial"
 lfftw = true
 max_ecf_tasks = 2
 module_initpath = "/usr/share/lmod/8.3.1/init"
-nproma = -64
+nproma = -32
 submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite"]
 
 [background_hpc]
@@ -20,7 +21,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
 [parallel]
   NPROC = 16
   SCHOST = "lumi-batch"
-  tasks = ["Forecast", "e927", "Pgd", "Prep", "c903", "E923Monthly", "E923Constant"]
+  tasks = ["Forecast", "e927", "Pgd", "Prep", "c903"]
   WRAPPER = "srun"
 
 [parallel.BATCH]
@@ -36,8 +37,6 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
   ECF_SSL = 1
   # Nodes, MPI tasks etc
   MPI_TASKS = 32 # $SLURM_NTASKS
-  MPITASKS_PER_NODE = 32 # MPI_TASKS/NNODES
-  NNODES = 4 # $SLURM_JOB_NUM_NODES
   OMP_NUM_THREADS = 4 # CPUS_PER_TASK
 
   # Open-MP business :
@@ -62,11 +61,11 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
   FI_CXI_RX_MATCH_MODE = 'hybrid'
 
 [parallel.MODULES]
-  00_PURGE = ["purge", "--force"]
+  00_PURGE = ["--force", "purge"]
   01_LUMI = ["load", "LUMI/23.03"]
   02_PARTITION_G = ["load", "partition/C"]
-  03_PRG_ENV = ["load", "PrgEnv-cray"]
-  04_CPE = ["load", "cpe/23.03"]
+  03_CPE = ["load", "cpe/23.03"]
+  04_PRG_ENV = ["load", "PrgEnv-cray"]
   05_TRENTO = ["load", "craype-x86-trento"]
   06_MPICH = ["load", "cray-mpich"]
   07_LIBSCI = ["load", "cray-libsci"]
@@ -83,7 +82,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
 [serial]
   NPROC = 1
   SCHOST = "lumi-batch"
-  tasks = ["Gmted", "Soil", "PgdUpdate"]
+  tasks = ["Gmted", "Soil", "PgdUpdate", "E923Constant", "E923Monthly", "E923Update"]
   WRAPPER = "srun"
 
 [serial.BATCH]
@@ -157,6 +156,9 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
 
 [task_exceptions.E923Monthly]
   NPROC = 1
+
+[task_exceptions.E923Update]
+  bindir = "/users/kastelec/fa_sfx2clim/"
 
 [task_exceptions.e927]
   NPROC = 16

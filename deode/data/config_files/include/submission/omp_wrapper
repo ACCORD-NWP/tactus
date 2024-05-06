@@ -1,0 +1,52 @@
+#!/bin/bash
+
+set -eu
+
+host=$(hostname -s)
+
+errcnt=0
+
+# check num args
+if [[ $# -lt 1 ]] ; then
+    echo "$host: Error in $0: Usage $(basename $0) [...] executable [...]" >&2
+    ((++errcnt))
+fi
+
+# me = my rank
+me=${PMI_RANK:-""}
+[[ "$me" = "" ]] && me=${PMIX_RANK:-""} || :
+[[ "$me" = "" ]] && me=${OMPI_COMM_WORLD_RANK:-""} || :
+
+if [[ "$me" = "" ]] ; then
+    echo "$host: Error in $0: Unable to resolve rank -- none of the PMI_RANK, PMIX_RANK or OMPI_COMM_WORLD_RANK defined" >&2
+    ((++errcnt))
+fi
+
+# ncotasks = number of computational tasks
+ncotasks=$((SLURM_NTASKS - NPROC_IO))
+if [[ $ncotasks -lt 1 ]] ; then
+    echo "$host: Error in $0: Number of computational tasks (ncotasks) most likely undefined" >&2
+    ((++errcnt))
+fi
+
+# Error exit ?
+if [[ $errcnt -gt 0 ]] ; then
+    set -x
+    exit $errcnt
+fi
+
+if [[ $me -eq 0 ]] || [[ $me -eq $ncotasks ]] ; then # first computational task or first I/O task
+    export OMP_DISPLAY_ENV=verbose
+else
+    unset OMP_DISPLAY_ENV
+fi
+
+# Now reset OMP_NUM_THREADS for I/O-tasks to 1
+if [[ $me -ge $ncotasks ]] ; then
+    export OMP_NUM_THREADS=1
+fi
+
+#export OMP_PROC_BIND=true # may lead into warning messages if set when KMP_AFFINITY was set, too
+
+# Finally execute the main executable
+exec $@

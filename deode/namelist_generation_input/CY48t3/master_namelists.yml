@@ -405,7 +405,7 @@ f4_AROME:
   NAMPARAR:
     CFRAC_ICE_ADJUST: S
     CFRAC_ICE_SHALLOW_MF: S
-    CMICRO: ICE3
+    CMICRO: ${submission.cmicro-ICE3}
     CSEDIM: STAT
     CSNOWRIMING: M90
     LCONVHG: True
@@ -505,6 +505,7 @@ f4_AROME:
   NAMRIP:
     CSTOP: ${namelist.cstop}
     TSTEP: ${domain.tstep}
+    RAVGTIME: 3600.
   NAMSATS:
     LPARTIAL_COEF_FILES: True
   NAMTOPH:
@@ -537,6 +538,7 @@ f4_AROME:
     LXXGST: True
     NRAZTS: ${namelist.nrazts}
     NXGSTPERIOD: 3600
+    LXMRT: True
   NEMELBC0A:
     LESPCPL: True
     NBICNHX: 2
@@ -755,7 +757,7 @@ f4_ALARO:
     LSLHD_SVD: True
     LSLHD_T: True
     LSLHD_W: True
-    ND4SYS: 1
+    ND4SYS: 2
     NDLNPR: 1
     NPDVAR: 2
     NVDVAR: 4
@@ -1093,6 +1095,7 @@ f4_ALARO:
   NAMRIP:
     CSTOP: ${namelist.cstop}
     TSTEP: ${domain.tstep}
+    RAVGTIME: 3600.
   NAMTOPH:
     ETCVIM: 0.0
     ETNEBU: 0.0

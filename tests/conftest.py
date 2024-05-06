@@ -1,9 +1,13 @@
 # create a mock "eccodes" module
 # this must be in conftest.py to make sure it is read first
+import os
 import sys
 
 import numpy as np
 import pytest
+
+from deode import GeneralConstants
+from deode.config_parser import ConfigParserDefaults, ParsedConfig
 
 
 class MockObject(object):
@@ -68,6 +72,12 @@ def mock_codes_get_values(gribid):
     return np.array([0] * nx * ny)
 
 
+def mock_codes_release(msgid):
+    kl = list(msgid.keys())
+    for kk in kl:
+        del msgid[kk]
+
+
 class MockKeyValueNotFoundError(Exception):
     pass
 
@@ -78,6 +88,7 @@ mock_eccodes.codes_get_long = mock_codes_get_long
 mock_eccodes.codes_get_double = mock_codes_get_double
 mock_eccodes.codes_grib_new_from_file = mock_codes_grib_new_from_file
 mock_eccodes.codes_get_values = mock_codes_get_values
+mock_eccodes.codes_release = mock_codes_release
 mock_eccodes.KeyValueNotFoundError = MockKeyValueNotFoundError
 
 sys.modules["eccodes"] = mock_eccodes
@@ -87,3 +98,14 @@ sys.modules["eccodes"] = mock_eccodes
 def tmp_directory(tmp_path_factory):
     """Return a temp directory valid for this module."""
     return tmp_path_factory.getbasetemp().as_posix()
+
+
+@pytest.fixture(scope="module")
+def default_config():
+    default_config = os.path.join(
+        GeneralConstants.PACKAGE_DIRECTORY, "data", "config_files", "config.toml"
+    )
+    config = ParsedConfig.from_file(
+        default_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+    )
+    return config

@@ -56,6 +56,13 @@ class TestFullpos:
         dict_merged = Fullpos("test").merge_dict(d1, d2)
         assert dict_ref == dict_merged
 
+    def test_invalid_merge_dict(self):
+        """Test merge of two dictionaries."""
+        d1 = {0: {0: 0}}
+        d2 = {0: "x"}
+        with pytest.raises(RuntimeError):
+            Fullpos("test").merge_dict(d1, d2)
+
     def test_fullpos(self):
         """Test fullpos namelist generation for master."""
         fullpos_config = {
@@ -66,9 +73,14 @@ class TestFullpos:
                         "CLXFU": ["CLSTEMPERATURE"],
                         "CLPHY": ["SURFTEMPERATURE"],
                     },
-                    "NAMFPDYS": {"TEST": {"CL3DF": ["TEMPERATURE"], "NRFP3S": [65]}},
+                    "NAMFPDYS": {
+                        "TEST": {"CL3DF": ["TEMPERATURE"], "NRFP3S": ["test_compare"]}
+                    },
                     "NAMFPDYP": {"CL3DF": ["ABS_VORTICITY"], "RFP3P": [80000.0]},
-                }
+                },
+                "xxtddddhh00": {
+                    "NAMFPDYS": {"CL3DF": ["TEMPERATURE"], "NRFP3S": ["test_compare"]},
+                },
             },
             "LEVEL_MAP": {
                 "NAMFPDYI": "RFP3I",
@@ -146,10 +158,36 @@ class TestFullpos:
                 "IL3DF(1,1)": 1,
                 "CLD3DF(1,1)": "test",
             },
+            "NAMFPDYF": {},
+            "NAMFPDYH": {},
+            "NAMFPDYI": {},
+            "NAMFPDYT": {},
+            "NAMFPDY2": {},
+            "NAMFPDYV": {},
         }
 
-        namfpc, selection = Fullpos("test", fpdict=fullpos_config).construct()
+        ref_xxtddddhh00 = {
+            "NAMFPDYS": {
+                "CL3DF(1)": "TEMPERATURE",
+                "IL3DF(1,1)": 1,
+                "CLD3DF(1,1)": "test",
+            },
+            "NAMFPPHY": {},
+            "NAMFPDYP": {},
+            "NAMFPDYF": {},
+            "NAMFPDYH": {},
+            "NAMFPDYI": {},
+            "NAMFPDYT": {},
+            "NAMFPDY2": {},
+            "NAMFPDYV": {},
+        }
+
+        rules = {"test_compare": 65}
+        namfpc, selection = Fullpos(
+            "test", fpdict=fullpos_config, rules=rules
+        ).construct()
         assert selection["xxtddddhhmm"] == ref_xxtddddhhmm
+        assert selection["xxtddddhh00"] == ref_xxtddddhh00
         assert namfpc == ref_namfpc
 
     def test_exception(self):
@@ -167,6 +205,30 @@ class TestFullpos:
 
         with pytest.raises(InvalidSelectionCombinationError):
             namfpc, selection = Fullpos("test", fpdict=fullpos_config).construct()
+
+    def test_invalid_substitution(self):
+        fullpos_config = {
+            "selection": {
+                "xxtddddhhmm": {
+                    "NAMFPDYS": {
+                        "TEST": {"CL3DF": ["TEMPERATURE"], "NRFP3S": "test_compare"}
+                    },
+                }
+            },
+            "LEVEL_MAP": {
+                "NAMFPDYS": "NRFP3S",
+            },
+            "PARAM_MAP": {
+                "NAMFPDYS": {"CL3DF": "CFP3DF"},
+            },
+            "NAMFPC": {},
+        }
+
+        rules = {"test_compare": 65}
+        with pytest.raises(RuntimeError):
+            namfpc, selection = Fullpos(
+                "test", fpdict=fullpos_config, rules=rules
+            ).construct()
 
     def test_load(self):
         """Test load of the yml files."""
