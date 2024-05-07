@@ -1,4 +1,4 @@
-bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2024-03-27/R64"
+bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2024-04-26/R64"
 default_submit_type = "serial"
 lfftw = true
 module_initpath = "/usr/local/apps/lmod/8.6.8/init"
@@ -103,7 +103,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   WALLTIME = "#SBATCH --time=03:00:00"
 
 [task_exceptions.c903]
-  bindir = "/perm/snh02/pack/48t3_fix.04.OMPIIFC2104.x/bin"
+  bindir = "/perm/snh02/pack/48t3_main.05.OMPIIFC2104.x/bin"
   NPROC = 36
 
 [task_exceptions.c903.BATCH]
@@ -131,6 +131,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 
 [task_exceptions.Forecast]
   # This is optimised for a 1500x1500 domain
+  bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2024-04-26/R32"
   NPROC = 624
   NPROC_IO = 16
   NPROCX = 24
@@ -168,6 +169,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   MARS_READANY_BUFFER_SIZE = 17893020000
 
 [task_exceptions.Pgd]
+  binary = "PGD-offline"
   WRAPPER = "srun -n @NPROC@"
 
 [task_exceptions.Pgd.BATCH]
@@ -180,6 +182,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   bindir = "/home/snh02/work/gl_binaries"
 
 [task_exceptions.Prep]
+  binary = "PREP-offline"
   WRAPPER = "srun -n @NPROC@"
 
 [task_exceptions.Prep.BATCH]

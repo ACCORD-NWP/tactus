@@ -7,7 +7,7 @@ from .logs import logger
 # For now (on ATOS), only tasks with prgenv/gnu can import eccodes in python
 try:
     import eccodes
-except (ImportError, OSError):
+except (ImportError, OSError, RuntimeError):
     logger.warning("eccodes python API could not be imported. Usually OK.")
 
 import datetime

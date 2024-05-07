@@ -17,7 +17,7 @@ from .logs import logger
 from .namelist import NamelistComparator, NamelistGenerator, NamelistIntegrator
 from .scheduler import EcflowServer
 from .submission import NoSchedulerSubmission, TaskSettings
-from .suites import SuiteDefinition
+from .suites.discover_suite import get_suite
 from .toolbox import Platform
 
 
@@ -117,6 +117,10 @@ def start_suite(args, config):
     ecf_port = config["scheduler.ecfvars.ecf_port"]
     ecf_remoteuser = config["scheduler.ecfvars.ecf_remoteuser"]
     ecf_user = config["scheduler.ecfvars.ecf_user"]
+    try:
+        suite_def = config["suite_control.suite_definition"]
+    except KeyError:
+        suite_def = "DeodeSuiteDefinition"
 
     logger.info("ecf_host: {}", ecf_host)
     logger.info("ecf_jobout: {}", joboutdir)
@@ -126,6 +130,7 @@ def start_suite(args, config):
     logger.info("ecf_files_remotely: {}", ecf_files_remotely)
     logger.info("ecf_home: {}", ecf_home)
     logger.info("ecf_remoteuser: {}", ecf_remoteuser)
+    logger.info("suite definition: {}", suite_def)
 
     server = EcflowServer(config, start_command=args.start_command)
 
@@ -141,14 +146,18 @@ def start_suite(args, config):
     else:
         remote_troika_config_file = troika_config_file
 
-    config = config.copy(update={"troika": {"config_file": remote_troika_config_file}})
+    config = config.copy(
+        update={
+            "general": {"case": suite_name},
+            "troika": {"config_file": remote_troika_config_file},
+        }
+    )
 
     logger.info("Troika config (local): {}", troika_config_file)
     logger.info("Troika file (remote) ={}", remote_troika_config_file)
 
     server = EcflowServer(config, start_command=args.start_command)
-    submission_defs = TaskSettings(config)
-    defs = SuiteDefinition(suite_name, config, submission_defs)
+    defs = get_suite(suite_def, config)
     logger.info("defs.ecf_home:{}", defs.ecf_home)
     def_file = f"{suite_name}.def"
     defs.save_as_defs(def_file)
@@ -180,7 +189,7 @@ def start_suite(args, config):
         with open(troika_config_file, "rb") as infile:
             troika_input = yaml.safe_load(infile)
         troika_output = platform.sub_str_dict(troika_input)
-        with open(temp_troika_config_file, "w") as outfile:
+        with open(temp_troika_config_file, mode="w", encoding="utf8") as outfile:
             yaml.dump(troika_output, outfile, encoding="utf-8")
 
         ssh.sendfile(temp_troika_config_file, remote_troika_config_file)
