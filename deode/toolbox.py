@@ -203,6 +203,17 @@ class Platform:
         logger.debug("Pattern: {}", pattern)
         logger.debug("key={} value={}", key, value)
 
+        if not isinstance(value, str):
+            logger.warning(
+                "Input value {} for key={} is not a string, but {}!",
+                value,
+                key,
+                type(value),
+            )
+            if key == "RRR" and value == -1:
+                value = ""
+            value = str(value)
+
         if ci:
             compiled = re.compile(re.escape(f"{micro}{key}{micro}"), re.IGNORECASE)
         else:

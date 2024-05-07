@@ -8,6 +8,7 @@ import sys
 from .derived_variables import derived_variables
 from .logs import logger
 from .os_utils import deodemakedirs
+from .plugin import DeodePluginRegistryFromConfig
 from .tasks.discover_task import available_tasks
 from .toolbox import FileManager, Platform
 
@@ -386,7 +387,8 @@ class NoSchedulerSubmission:
         Raises:
             RuntimeError: Submission failure.
         """
-        known_tasks = available_tasks()
+        reg = DeodePluginRegistryFromConfig(config)
+        known_tasks = available_tasks(reg)
         name = task.lower()
         if name not in known_tasks:
             raise NotImplementedError(f"Task {name} not implemented")

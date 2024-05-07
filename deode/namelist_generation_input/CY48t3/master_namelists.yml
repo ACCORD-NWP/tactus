@@ -1192,10 +1192,6 @@ f4_common:
     LAEROSEA: True
     LAEROSOO: True
     LO3ABC: True
-  NAMFPC:
-    CFP3DF:
-      - "AVG_U"
-      - "AVG_V"
 
 f4_c903_main:
   NAMFPOBJ:

@@ -37,5 +37,9 @@ Miscellaneous Documentation
    :parser: myst_parser.sphinx_
 
 .. include::
+    markdown_docs/plugins.md
+   :parser: myst_parser.sphinx_
+
+.. include::
     markdown_docs/troubleshooting.md
    :parser: myst_parser.sphinx_

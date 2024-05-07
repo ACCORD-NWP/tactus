@@ -66,7 +66,8 @@ class ExtractSQLite(Task):
         dt_list = oi2dt_list(self.infile_dt, self.forecast_range)
         for dt in dt_list:
             infile = self.platform.substitute(
-                self.archive + self.infile_template, validtime=self.basetime + dt
+                os.path.join(self.archive, self.infile_template),
+                validtime=self.basetime + dt,
             )
             if not os.path.isfile(infile):
                 raise FileNotFoundError(f" missing {infile}")
