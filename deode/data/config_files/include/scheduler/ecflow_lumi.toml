@@ -9,4 +9,3 @@
   ecf_remoteuser = "ecflow-user"
   ecf_ssl = "1"
   ecf_user = "de_330"
-  hpc = "lumi"

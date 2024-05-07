@@ -9,4 +9,3 @@
   ecf_remoteuser = "@USER@"
   ecf_ssl = "0"
   ecf_user = "@USER@"
-  hpc = "atos"

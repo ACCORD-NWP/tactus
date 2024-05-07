@@ -774,5 +774,4 @@ class DeodeSuiteDefinition(SuiteDefinition):
         Args:
             def_file (str): Name of definition file
         """
-        logger.info("save_as_defs.self.ecf_home:{}", self.ecf_home)
         self.suite.save_as_defs(def_file)

@@ -76,11 +76,9 @@ def available_suites(reg):
     """
     known_types = {}
     for plg in reg.plugins:
-        logger.info("Check {} with path {}", plg.name, plg.suites_path)
         if os.path.exists(plg.suites_path):
             suites = types.ModuleType(plg.name)
             suites.__path__ = [plg.suites_path]
-            logger.info("Adding plugin {} with path {}", plg.name, plg.suites_path)
             sys.path.insert(0, plg.path)
             found_types = discover(suites, SuiteDefinition)
             for ftype, cls in found_types.items():

@@ -64,7 +64,6 @@ class SuiteDefinition(object):
         joboutdir = self.config["scheduler.ecfvars.ecf_jobout"]
         ecf_files_remotely = self.config["scheduler.ecfvars.ecf_files_remotely"]
         ecf_home = self.config["scheduler.ecfvars.ecf_home"]
-        logger.info("suite ecf_home:{}", ecf_home)
         ecf_ssl = self.config["scheduler.ecfvars.ecf_ssl"]
         ecf_host = self.config["scheduler.ecfvars.ecf_host"]
 
@@ -82,7 +81,6 @@ class SuiteDefinition(object):
         if ecf_home is None:
             ecf_home = joboutdir
         self.ecf_home = ecf_home
-        logger.info("suite self.ecf_home:{}", self.ecf_home)
         if ecf_out is None:
             ecf_out = joboutdir
         self.ecf_out = ecf_out
