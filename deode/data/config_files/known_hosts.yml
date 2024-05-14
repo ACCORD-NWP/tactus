@@ -1,0 +1,5 @@
+
+atos_bologna : 
+  hostname : "ac\\d-\\d\\d\\d"
+lumi : 
+  hostname : "uan\\d\\d"

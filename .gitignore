@@ -24,6 +24,7 @@ coverage.xml
 .env
 .venv
 .flakeheaven_cache/
+.exp_dependencies*
 
 # Files/directories generated at runtime
 archived_file

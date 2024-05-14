@@ -495,67 +495,19 @@
           "properties": {
             "history": {
               "description": "Output list for history files",
-              "anyOf": [
-	     {
-                "type": "string",
-                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-	     },
-	     {
-                "type": "array",
-                "items": {
-                   "type": "string",
-                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-                }
-	     }
-	      ]
+	      "$ref" : "#/$output_setting_rules"
             },
             "surfex": {
               "description": "Output list for surfex files",
-              "anyOf": [
-	     {
-                "type": "string",
-                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-	     },
-	     {
-                "type": "array",
-                "items": {
-                   "type": "string",
-                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-                }
-	     }
-	      ]
+	      "$ref" : "#/$output_setting_rules"
             },
             "fullpos": {
               "description": "Output list for fullpos files",
-              "anyOf": [
-	     {
-                "type": "string",
-                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-	     },
-	     {
-                "type": "array",
-                "items": {
-                   "type": "string",
-                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-                }
-	     }
-	      ]
+	      "$ref" : "#/$output_setting_rules"
             },
             "nrazts": {
               "description": "Reset times for instantaneous fluxes ( e.g. min/max temperature )",
-              "anyOf": [
-	     {
-                "type": "string",
-                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-	     },
-	     {
-                "type": "array",
-                "items": {
-                   "type": "string",
-                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-                }
-	     }
-	      ]
+	      "$ref" : "#/$output_setting_rules"
             }
           }
         },
@@ -569,5 +521,24 @@
         "times"
       ]
     }
+  },
+  "$output_setting_rules": {
+              "anyOf": [
+	     {
+                "type": "string",
+                "pattern": ""
+	     },
+	     {
+                "type": "string",
+                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+	     },
+	     {
+                "type": "array",
+                "items": {
+                   "type": "string",
+                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+                }
+	     }
+	      ]
   }
 }

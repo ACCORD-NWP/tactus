@@ -1,0 +1,23 @@
+[submission]
+
+[submission.parallel]
+  NPROC = 160
+
+[submission.parallel.BATCH]
+  ACCOUNT = "#SBATCH -A project_465000527"
+
+[submission.serial.BATCH]
+  ACCOUNT = "#SBATCH -A project_465000527"
+  PARTITION = "#SBATCH --partition=ju-standard"
+  WALLTIME = "#SBATCH --time=01:00:00"
+
+[submission.task_exceptions.Forecast]
+  WRAPPER = "ulimit -s unlimited; srun -n @NPROC@"
+
+[submission.task_exceptions.Forecast.BATCH]
+  ACCOUNT = "#SBATCH --account=project_465000527"
+  CPU = "#SBATCH --cpus-per-task=6"
+  MEM = "#SBATCH --mem=0GB"
+  NODES = "#SBATCH --nodes=20"
+  NTASKS = "#SBATCH --ntasks=160"
+  PARTITION = "#SBATCH --partition=ju-standard"

@@ -1,0 +1,227 @@
+"""Experiment tools."""
+import collections
+import os
+
+import tomlkit
+
+from .config_parser import ConfigParserDefaults, ParsedConfig
+from .logs import logger
+
+
+class Exp:
+    """Experiment class."""
+
+    def __init__(
+        self,
+        config,
+        merged_config,
+    ):
+        """Instanciate an object of the main experiment class.
+
+        Args:
+            config (.config_parser.ParsedConfig): Parsed config file contents.
+            merged_config (dict): Experiment configuration
+
+        """
+        logger.debug("Construct Exp")
+        config = config.copy(update=merged_config)
+        self.config = config
+
+
+class ExpFromFiles(Exp):
+    """Generate Exp object from existing files. Use config files from a setup."""
+
+    def __init__(
+        self, config, exp_dependencies, mod_files, host=None, merged_config=None
+    ):
+        """Construct an Exp object from files.
+
+        Args:
+            config (.config_parser.ParsedConfig): Parsed config file contents.
+            exp_dependencies (dict): Exp dependencies
+            mod_files (list): Case modifications
+            host (DeodeHost, optional): Deode host. Defaults to None.
+            merged_config (dict, optional): Possible merged input configuration.
+                                            Defaults to None.
+
+        Raises:
+            FileNotFoundError: If host file(s) not found
+
+        """
+        logger.debug("Construct ExpFromFiles")
+        logger.debug("Experiment dependencies: {}", exp_dependencies)
+
+        config_dir = exp_dependencies.get("config_dir")
+        include_paths = {}
+        if host is not None:
+            host = host.detect_deode_host()
+            logger.info("Setting up for host {}", host)
+            include_paths.update(
+                {
+                    "scheduler": f"{config_dir}/include/scheduler/ecflow_{host}.toml",
+                    "platform": f"{config_dir}/include/platform_paths/{host}.toml",
+                    "submission": f"{config_dir}/include/submission/{host}.toml",
+                }
+            )
+
+        for incp in include_paths.values():
+            if not os.path.exists(incp):
+                logger.error("Input file requested {} is not found", incp)
+                raise FileNotFoundError(incp)
+
+        config_dict = config.dict()
+        for inct, incp in include_paths.items():
+            if inct in ["platform", "submission"]:
+                del config_dict[inct]
+                config_dict.update({inct: {}})
+
+            with open(incp, mode="r", encoding="utf8") as fh:
+                mod_config = tomlkit.load(fh)
+
+            config_dict = self.deep_update(config_dict, mod_config)
+        config = ParsedConfig(
+            config_dict, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+        )
+
+        mods = {}
+        for mod in mod_files:
+            lmod = ExpFromFiles.toml_load(mod)
+            logger.info("Merging modifications from {}", mod)
+            logger.debug("-> {}", lmod)
+            mods = ExpFromFiles.deep_update(mods, lmod)
+
+        case = exp_dependencies.get("case")
+        if case is not None:
+            if "general" not in mods:
+                mods.update({"general": {}})
+            mods["general"].update({"case": case})
+
+        # Merge with possible incoming modifications
+        if merged_config is None:
+            merged_config = {}
+        merged_config = ExpFromFiles.deep_update(merged_config, mods)
+        Exp.__init__(
+            self,
+            config,
+            merged_config,
+        )
+
+    @staticmethod
+    def toml_load(fname):
+        """Load from toml file.
+
+        Using tomlkit to preserve stucture
+
+        Args:
+            fname (str): Filename
+
+        Returns:
+            dict: Loaded toml file
+
+        """
+        with open(fname, "r", encoding="utf8") as f_h:
+            res = tomlkit.parse(f_h.read())
+        return res
+
+    @staticmethod
+    def toml_dump(to_dump, fname):
+        """Dump toml to file.
+
+        Using tomlkit to preserve stucture
+
+        Args:
+            to_dump (dict): Data to save
+            fname (str): Filename
+
+        """
+        with open(fname, mode="w", encoding="utf8") as f_h:
+            f_h.write(tomlkit.dumps(to_dump))
+
+    @staticmethod
+    def deep_update(source, overrides):
+        """Update a nested dictionary or similar mapping.
+
+        Modify ``source`` in place.
+
+        Args:
+            source (dict): Source
+            overrides (dict): Updates
+
+        Returns:
+            dict: Updated dictionary
+
+        """
+        for key, value in overrides.items():
+            if isinstance(value, collections.abc.Mapping) and value:
+                returned = ExpFromFiles.deep_update(source.get(key, {}), value)
+                source[key] = returned
+            else:
+                override = overrides[key]
+
+                source[key] = override
+
+        return source
+
+    @staticmethod
+    def setup_files(
+        output_file,
+        case=None,
+        config_dir=None,
+    ):
+        """Set up the files for an experiment.
+
+        Args:
+            output_file (str): Output file
+            case (str, optional): Experiment name. Defaults to None.
+            config_dir (str, optional): Config directory. Defaults to None.
+
+        Returns:
+            exp_dependencies(dict): Experiment dependencies from setup.
+
+        """
+        exp_dependencies = {}
+        if config_dir is None:
+            config_dir = f"{os.getcwd()}/deode/data/config_files"
+            logger.info(
+                "Setting config_dir from current working directory: {}", config_dir
+            )
+
+        exp_dependencies.update(
+            {
+                "tmp_outfile": f"{output_file}.tmp.{os.getpid()}.toml",
+                "config_dir": config_dir,
+                "case": case,
+            }
+        )
+        return exp_dependencies
+
+
+def case_setup(
+    config,
+    output_file,
+    mod_files,
+    case=None,
+    host=None,
+    config_dir=None,
+):
+    """Do experiment setup.
+
+    Args:
+        config (.config_parser.ParsedConfig): Parsed config file contents.
+        output_file (str): Output config file.
+        mod_files (list): Modifications. Defaults to None.
+        case (str, optional): Case identifier. Defaults to None.
+        host (str, optional): host name. Defaults to None.
+        config_dir (str, optional): Configuration directory. Defaults to None.
+
+    """
+    logger.info("************ CaseSetup ******************")
+
+    exp_dependencies = ExpFromFiles.setup_files(
+        output_file,
+        case=case,
+        config_dir=config_dir,
+    )
+
+    exp = ExpFromFiles(config, exp_dependencies, mod_files, host=host)
+    exp.config.save_as(output_file)

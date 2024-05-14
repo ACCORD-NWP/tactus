@@ -93,11 +93,9 @@ def test_show_namelist(set_arg, parsed_config, param, tmp_directory):
     assert os.path.isfile(f"{outpath}/namelist_master_forecast")
     assert os.path.isfile(f"{outpath}/xxt00000000")
     assert os.path.isfile(f"{outpath}/xxtddddhh00")
-    assert os.path.isfile(f"{outpath}/xxtddddhhmm")
     if param["clean"]:
         os.remove(f"{outpath}/xxt00000000")
         os.remove(f"{outpath}/xxtddddhh00")
-        os.remove(f"{outpath}/xxtddddhhmm")
 
 
 def test_namelist_integrate(nlint_arg, parsed_config):

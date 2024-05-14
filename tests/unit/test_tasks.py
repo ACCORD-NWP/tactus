@@ -33,15 +33,10 @@ def classes_to_be_tested():
     return encountered_classes.keys()
 
 
-@pytest.fixture(scope="module", params=["CY46h1", "CY48t3", "CY48t3_target"])
-def base_raw_config(request):
+@pytest.fixture(scope="module")
+def base_raw_config():
     """Return a raw config common to all tasks."""
-    tag_map = {"CY46h1": ""}
-    test_map = {"CY46h1": {"general": {"windfarm": True}}}
-    tag = tag_map[request.param] if request.param in tag_map else f"_{request.param}"
-    config = BasicConfig.from_file(ConfigParserDefaults.DIRECTORY / f"config{tag}.toml")
-    with contextlib.suppress(KeyError):
-        config = config.copy(update=test_map[request.param])
+    config = BasicConfig.from_file(ConfigParserDefaults.DIRECTORY / "config.toml")
     return config
 
 

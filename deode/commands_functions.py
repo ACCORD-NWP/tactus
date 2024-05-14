@@ -14,6 +14,8 @@ from troika.connections.ssh import SSHConnection
 from . import GeneralConstants
 from .config_parser import BasicConfig, ParsedConfig
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
+from .experiment import case_setup
+from .host_actions import DeodeHost
 from .logs import logger
 from .namelist import NamelistComparator, NamelistGenerator, NamelistIntegrator
 from .scheduler import EcflowServer
@@ -94,6 +96,36 @@ def run_task(args, config):
     logger.info("Done with task {}", args.task)
 
 
+def create_exp(args, config):
+    """Implement the 'case' command.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+        config (.config_parser.ParsedConfig): Parsed config file contents.
+
+    """
+    deode_home = set_deode_home(args, config)
+    config = config.copy(update={"platform": {"deode_home": deode_home}})
+    config_dir = args.config_dir
+    known_hosts = args.host_file
+    if known_hosts is None:
+        known_hosts = f"{deode_home}/deode/data/config_files/known_hosts.yml"
+    host = DeodeHost(known_hosts=known_hosts)
+    output_file = args.output_file
+    case = args.case
+    mod_files = args.config_mods
+    if mod_files is None:
+        mod_files = []
+    case_setup(
+        config,
+        output_file,
+        mod_files,
+        case=case,
+        host=host,
+        config_dir=config_dir,
+    )
+
+
 def start_suite(args, config):
     """Implement the 'start suite' command.
 
@@ -111,6 +143,9 @@ def start_suite(args, config):
     update = {
         "scheduler": {
             "ecfvars": {
+                "case_prefix": platform.substitute(
+                    config["scheduler.ecfvars.case_prefix"]
+                ),
                 "ecf_out": platform.substitute(config["scheduler.ecfvars.ecf_out"]),
                 "ecf_jobout": platform.substitute(config["scheduler.ecfvars.ecf_jobout"]),
                 "ecf_files": platform.substitute(config["scheduler.ecfvars.ecf_files"]),

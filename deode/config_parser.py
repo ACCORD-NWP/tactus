@@ -10,12 +10,15 @@ from pathlib import Path
 import fastjsonschema
 import jsonref
 import tomli
+import tomlkit
 import yaml
 from fastjsonschema import JsonSchemaValueException
 from json_schema_for_humans.generate import (
     GenerationConfiguration,
     generate_from_file_object,
 )
+from toml_formatter.formatter import FormattedToml
+from toml_formatter.formatter_options import FormatterOptions
 
 from . import GeneralConstants
 from .aux_types import BaseMapping, QuasiConstant
@@ -73,6 +76,21 @@ class BasicConfig(BaseMapping):
         path = Path(path).resolve().as_posix()
         configs = _read_raw_config_file(path)
         return cls(configs, _metadata={"source_file_path": path}, **kwargs)
+
+    def save_as(self, config_file):
+        """Save config file.
+
+        Args:
+            config_file (str): Path to config file
+        """
+        with open(config_file, mode="w", encoding="utf8") as fh:
+            tomlkit.dump(self.dict(), fh)
+        config = FormatterOptions.from_toml_file("pyproject.toml")
+        formatted_toml = FormattedToml.from_file(
+            path=config_file, formatter_options=config
+        )
+        with open(config_file, mode="w", encoding="utf8") as f:
+            f.write(str(formatted_toml))
 
     @BaseMapping.data.setter
     def data(self, new):
@@ -258,24 +276,24 @@ def _expand_config_include_section(
     json_schema = modify_mappings(obj=json_schema, operator=dict)
 
     config_include_defs = _get_config_include_definitions(raw_config)
-    if not config_include_defs:
-        return raw_config, json_schema
 
     if "properties" not in json_schema:
         json_schema["properties"] = {}
     config_include_search_dir = Path(config_include_search_dir).resolve()
     config_include_sections = {}
     for section_name, include_path_ in config_include_defs.items():
-        include_path = Path(include_path_)
-        if not include_path.is_absolute():
-            include_path = config_include_search_dir / include_path
-        included_config_section = _read_raw_config_file(include_path)
-
+        if isinstance(include_path_, str):
+            include_path = Path(include_path_)
+            if not include_path.is_absolute():
+                include_path = config_include_search_dir / include_path
+            included_config_section = _read_raw_config_file(include_path)
+        else:
+            included_config_section = include_path_
         _sections_traversed = (*_parent_sections, section_name)
         sections_traversed_str = " -> ".join(_sections_traversed)
-        if section_name in json_schema["properties"]:
+        if "include" in raw_config and section_name in json_schema["properties"]:
             msg = f'Validation schema for `[include]` section "{sections_traversed_str}" '
-            msg += "also detected in its parent section's schehma. "
+            msg += "also detected in its parent section's schema. "
             msg += "`[include]` schemas must NOT be added to their parent's schemas, but "
             msg += "rather in their own separate files."
             raise ConflictingValidationSchemasError(msg)
@@ -295,11 +313,12 @@ def _expand_config_include_section(
             schemas_path=schemas_path,
             _parent_sections=_sections_traversed,
         )
-        config_include_sections[section_name] = updated_config
-        json_schema["properties"][section_name] = updated_schema
+        config_include_sections.update(updated_config)
+        json_schema["properties"].update({section_name: updated_schema})
 
     raw_config.update(config_include_sections)
-    raw_config.pop("include")
+    if "include" in raw_config:
+        raw_config.pop("include")
 
     return raw_config, json_schema
 
