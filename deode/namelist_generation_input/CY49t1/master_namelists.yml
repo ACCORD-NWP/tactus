@@ -1171,7 +1171,7 @@ f4_common:
     LMPOFF: False
     MBX_SIZE: 2048000000
     MP_TYPE: 2
-    NOUTPUT: 1
+    NOUTPUT: 2
     NPRINTLEV: 1
     NPROC: ${namelist.nproc}
   NAMPAR1:
@@ -1210,7 +1210,7 @@ f4_c903_main:
     LOPT_SCALAR: True
     MBX_SIZE: 2048000000
     MP_TYPE: 2
-    NOUTPUT: 1
+    NOUTPUT: 2
     NPRINTLEV: 0
   NAMARG:
     NCONF: 903

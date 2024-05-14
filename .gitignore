@@ -38,3 +38,6 @@ docs/_build/
 docs/deode.rst
 docs/modules.rst
 docs/markdown_docs/config.md
+
+#local files
+forecast_*
