@@ -8,15 +8,15 @@ from pathlib import Path
 import pytest
 import tomlkit
 
-import deode
 from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import set_times
+from deode.plugin import DeodePluginRegistry
 from deode.tasks.archive import ArchiveHour, ArchiveStatic
 from deode.tasks.base import Task
 from deode.tasks.batch import BatchJob
 from deode.tasks.collectlogs import CollectLogs
 from deode.tasks.creategrib import CreateGrib
-from deode.tasks.discover_task import discover, get_task
+from deode.tasks.discover_task import available_tasks, get_task
 from deode.tasks.e923 import E923
 from deode.tasks.extractsqlite import ExtractSQLite
 from deode.tasks.forecast import FirstGuess, Forecast
@@ -28,19 +28,15 @@ WORKING_DIR = Path.cwd()
 
 def classes_to_be_tested():
     """Return the names of the task-related classes to be tested."""
-    encountered_classes = discover(deode.tasks, Task, attrname="__type_name__")
+    reg = DeodePluginRegistry()
+    encountered_classes = available_tasks(reg)
     return encountered_classes.keys()
 
 
-@pytest.fixture(scope="module", params=["CY46h1", "CY48t3", "CY48t3_target"])
-def base_raw_config(request):
+@pytest.fixture(scope="module")
+def base_raw_config():
     """Return a raw config common to all tasks."""
-    tag_map = {"CY46h1": ""}
-    test_map = {"CY46h1": {"general": {"windfarm": True}}}
-    tag = tag_map[request.param] if request.param in tag_map else f"_{request.param}"
-    config = BasicConfig.from_file(ConfigParserDefaults.DIRECTORY / f"config{tag}.toml")
-    with contextlib.suppress(KeyError):
-        config = config.copy(update=test_map[request.param])
+    config = BasicConfig.from_file(ConfigParserDefaults.DIRECTORY / "config.toml")
     return config
 
 

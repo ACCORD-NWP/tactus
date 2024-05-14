@@ -27,7 +27,7 @@ And ask to be 'whitelisted' to be granted access to the Ecflow server from LUMI.
 
 a) server.ssl.gpg - an ssl certificate file
 
-b) 217.71.195.251.8443.ecf.custom_passwd.gpg - ecf custom password file
+b) 217.71.195.251.8443.ecf.custom_password.gpg - ecf custom password file
 
 c) id_rsa_troika.pub.gpg - public key for troika
 
@@ -41,20 +41,20 @@ using the **password: 'peterpiper'**.
 
 a) /users/USERNAME/.ecflowrc/ssl/server.crt
 
-b) /users/USERNAME/ecflow_server/217.71.195.251.8443.ecf.custom_passwd
+b) /users/USERNAME/ecflow_server/217.71.195.251.8443.ecf.custom_password
 
 **Note** The public key: 'id_rsa_troika.pub' needs to be uploaded to my.csc.fi or myaccessid provider.
 
 5. Then map custom password and SSL variable as follows:
 
 ```shell
-export ECF_CUSTOM_PASSWD="/users/USERNAME/ecflow_server/217.71.195.251.8443.ecf.custom_passwd"
+export ECF_CUSTOM_PASSWD="/users/USERNAME/ecflow_server/217.71.195.251.8443.ecf.custom_password"
 export ECF_SSL=1
 ```
 
 Which should look like this:
 ```shell
-adelsaid@uan01:/users/adelsaid> cat /users/USERNAME/ecflow_server/217.71.195.251.8443.ecf.custom_passwd
+adelsaid@uan01:/users/adelsaid> cat /users/USERNAME/ecflow_server/217.71.195.251.8443.ecf.custom_password
 5.11.3
 de_330 217.71.195.251 8443 {PASSWORD_OBTAINED_FROM_ECMWF}
 ```

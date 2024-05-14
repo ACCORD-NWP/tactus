@@ -87,7 +87,8 @@ def expand_output_settings(output_settings, forecast_range):
     oi = []
     if isinstance(output_settings, str):
         check_syntax([output_settings], 0)
-        oi = ["PT0H:" + forecast_range + ":" + output_settings]
+        if output_settings != "":
+            oi = ["PT0H:" + forecast_range + ":" + output_settings]
 
     elif isinstance(output_settings, (tuple, list)):
         check_syntax(output_settings, 2)

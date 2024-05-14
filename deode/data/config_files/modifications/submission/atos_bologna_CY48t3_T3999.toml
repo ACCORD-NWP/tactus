@@ -1,0 +1,6 @@
+[task_exceptions.c903]
+  NPROC = 72
+
+[task_exceptions.c903.BATCH]
+  NODE = "#SBATCH --nodes=36"
+  NTASKS = "#SBATCH --ntasks=72"
