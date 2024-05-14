@@ -1,0 +1,5 @@
+select_gpu = [
+    "@DEODE_HOME@/deode/data/config_files/accelerator_device/lumi/select_gpu",
+    "select_gpu",
+]
+

@@ -42,6 +42,7 @@
   ]
 
 [include]
+  accelerator_device = "include/accelerator_device/leonardo_cpu.toml"
   archiving = "include/archiving.toml"
   domain = "include/domains/DEMO_60x80_2500m.toml"
   extractsqlite = "include/sqlite.toml"
