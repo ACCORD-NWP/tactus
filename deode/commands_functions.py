@@ -2,6 +2,7 @@
 """Implement the package's commands."""
 import datetime
 import os
+import subprocess
 import sys
 from functools import partial
 from pathlib import Path
@@ -13,12 +14,38 @@ from troika.connections.ssh import SSHConnection
 from . import GeneralConstants
 from .config_parser import BasicConfig, ParsedConfig
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
+from .experiment import case_setup
+from .host_actions import DeodeHost
 from .logs import logger
 from .namelist import NamelistComparator, NamelistGenerator, NamelistIntegrator
 from .scheduler import EcflowServer
 from .submission import NoSchedulerSubmission, TaskSettings
-from .suites import SuiteDefinition
+from .suites.discover_suite import get_suite
 from .toolbox import Platform
+
+
+def ssh_cmd(host, user, cmd):
+    """SSH to remote server and execute basic commands.
+
+    Args:
+        host: Host name or server IP address
+        user: Username (string) to login to server with
+        cmd: Command to be executed
+
+    Returns:
+        Message to notify if failed and why or successfully completed.
+    """
+    try:
+        ssh_command = f'ssh {user}@{host} "{cmd}"'
+        subprocess.run(ssh_command, shell=True, check=True)  # noqa
+        logger.info("SSH command executed succesfully.")
+        return True
+    except subprocess.CalledProcessError as e:
+        logger.info(f"Error executing SSH command: {e}")
+        return False
+    except Exception as e:  # noqa
+        logger.info(f"Error: {e}")
+        return False
 
 
 def set_deode_home(args, config):
@@ -69,8 +96,8 @@ def run_task(args, config):
     logger.info("Done with task {}", args.task)
 
 
-def start_suite(args, config):
-    """Implement the 'start suite' command.
+def create_exp(args, config):
+    """Implement the 'case' command.
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
@@ -79,12 +106,46 @@ def start_suite(args, config):
     """
     deode_home = set_deode_home(args, config)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
+    config_dir = args.config_dir
+    known_hosts = args.host_file
+    if known_hosts is None:
+        known_hosts = f"{deode_home}/deode/data/config_files/known_hosts.yml"
+    host = DeodeHost(known_hosts=known_hosts)
+    output_file = args.output_file
+    case = args.case
+    mod_files = args.config_mods
+    if mod_files is None:
+        mod_files = []
+    case_setup(
+        config,
+        output_file,
+        mod_files,
+        case=case,
+        host=host,
+        config_dir=config_dir,
+    )
+
+
+def start_suite(args, config):
+    """Implement the 'start suite' command.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+        config (.config_parser.ParsedConfig): Parsed config file contents.
+
+    Raises:
+        SystemExit: If error occurs while transferring files.
+    """
+    deode_home = set_deode_home(args, config)
+    config = config.copy(update={"platform": {"deode_home": deode_home}})
     config = config.copy(update=set_times(config))
     platform = Platform(config)
     update = {
         "scheduler": {
             "ecfvars": {
-                "hpc": platform.substitute(config["scheduler.ecfvars.hpc"]),
+                "case_prefix": platform.substitute(
+                    config["scheduler.ecfvars.case_prefix"]
+                ),
                 "ecf_out": platform.substitute(config["scheduler.ecfvars.ecf_out"]),
                 "ecf_jobout": platform.substitute(config["scheduler.ecfvars.ecf_jobout"]),
                 "ecf_files": platform.substitute(config["scheduler.ecfvars.ecf_files"]),
@@ -93,8 +154,6 @@ def start_suite(args, config):
                 ),
                 "ecf_home": platform.substitute(config["scheduler.ecfvars.ecf_home"]),
                 "ecf_host": platform.substitute(config["scheduler.ecfvars.ecf_host"]),
-                "ecf_port": platform.substitute(config["scheduler.ecfvars.ecf_port"]),
-                "ecf_user": platform.substitute(config["scheduler.ecfvars.ecf_user"]),
                 "ecf_remoteuser": platform.substitute(
                     config["scheduler.ecfvars.ecf_remoteuser"]
                 ),
@@ -104,28 +163,20 @@ def start_suite(args, config):
     config = config.copy(update=update)
 
     logger.info("Starting suite...")
-    logger.info("Settings and paths loaded: ")
     logger.info("Config file: {}", args.config_file)
     logger.info("Ecflow settings: ")
 
-    # Print Ecfvars
+    # Assign Ecfvars
     joboutdir = config["scheduler.ecfvars.ecf_jobout"]
     ecf_files = config["scheduler.ecfvars.ecf_files"]
     ecf_files_remotely = config["scheduler.ecfvars.ecf_files_remotely"]
     ecf_home = config["scheduler.ecfvars.ecf_home"]
     ecf_host = config["scheduler.ecfvars.ecf_host"]
-    ecf_port = config["scheduler.ecfvars.ecf_port"]
     ecf_remoteuser = config["scheduler.ecfvars.ecf_remoteuser"]
-    ecf_user = config["scheduler.ecfvars.ecf_user"]
-
-    logger.info("ecf_host: {}", ecf_host)
-    logger.info("ecf_jobout: {}", joboutdir)
-    logger.info("ecf_port: {}", ecf_port)
-    logger.info("ecf_user: {}", ecf_user)
-    logger.info("ecf_files: {}", ecf_files)
-    logger.info("ecf_files_remotely: {}", ecf_files_remotely)
-    logger.info("ecf_home: {}", ecf_home)
-    logger.info("ecf_remoteuser: {}", ecf_remoteuser)
+    try:
+        suite_def = config["suite_control.suite_definition"]
+    except KeyError:
+        suite_def = "DeodeSuiteDefinition"
 
     server = EcflowServer(config, start_command=args.start_command)
 
@@ -141,50 +192,71 @@ def start_suite(args, config):
     else:
         remote_troika_config_file = troika_config_file
 
-    config = config.copy(update={"troika": {"config_file": remote_troika_config_file}})
-
-    logger.info("Troika config (local): {}", troika_config_file)
-    logger.info("Troika file (remote) ={}", remote_troika_config_file)
+    config = config.copy(
+        update={
+            "general": {"case": suite_name},
+            "troika": {"config_file": remote_troika_config_file},
+        }
+    )
 
     server = EcflowServer(config, start_command=args.start_command)
-    submission_defs = TaskSettings(config)
-    defs = SuiteDefinition(suite_name, config, submission_defs)
-    logger.info("defs.ecf_home:{}", defs.ecf_home)
+    defs = get_suite(suite_def, config)
     def_file = f"{suite_name}.def"
     defs.save_as_defs(def_file)
 
-    # Copy troika and containers
-    hpc = config["scheduler.ecfvars.hpc"]
-    if hpc == "lumi":
-        logger.info("**HPC detected: LUMI**")
-        logger.info("--- LUMI -> Ecflow server copy BEGIN ---")
-        logger.info(
-            "Copy ecflow files to: {}@{}:{}",
-            ecf_remoteuser,
-            ecf_host,
-            ecf_files_remotely,
-        )
-        cfg = {"host": ecf_host}
-        ssh = SSHConnection(cfg, ecf_remoteuser)
-        for root, __, files in os.walk(f"{ecf_files_local}/{suite_name}"):
-            for file in files:
-                src = f"{root}/{file}"
-                rpath = root.replace(f"{ecf_files_local}", "")
-                ssh.execute(["mkdir", "-p", f"{ecf_files_remotely}/{rpath}"])
-                dst = f"{ecf_files_remotely}/{rpath}/{file}"
-                logger.info("Copy src={} to dst={}", src, dst)
-                ssh.sendfile(src, dst)
+    # Clean, then copy troika and containers
+    srv = f"{ecf_remoteuser}@{ecf_host}"
+    src = f"{ecf_files_local}/{suite_name}"
+    dst = f"{srv}:{ecf_files_remotely}/"
+
+    if ecf_files_local != ecf_files_remotely:
+        logger.info("--- SSL protocol for remote Ecflow server detected ---")
+        logger.info("--- Copying job files to remote server ---")
+        logger.info("Copy ecflow files from : {} to: {}", src, dst)
+
+        # Clean command
+        del_cmd = f"rm -rf {ecf_files_remotely}/{suite_name}"
+
+        # Copy command
+        copy_cmd = [
+            "rsync",
+            "-az",
+            src,
+            dst,
+        ]
+
+        # Try cleaning and copying commands. If it fails, then stop with message
+        if ssh_cmd(ecf_host, ecf_remoteuser, del_cmd):
+            logger.info("SSH command successful.")
+        else:
+            logger.info("Failed to execute SSH command.")
+
+        try:
+            subprocess.run(copy_cmd, check=True)  # noqa
+            logger.info("Files transferred successfully.")
+        except subprocess.CalledProcessError as e:
+            logger.info(f"Error occurred: {e}")
+            raise SystemExit("Copying ecf files to ecflow server FAILED.") from e
 
         # Read and parse the troika config file
+        cfg = {"host": ecf_host}
+        ssh = SSHConnection(cfg, ecf_remoteuser)
+
         temp_troika_config_file = f"parsed_{os.path.basename(troika_config_file)}"
         with open(troika_config_file, "rb") as infile:
             troika_input = yaml.safe_load(infile)
         troika_output = platform.sub_str_dict(troika_input)
-        with open(temp_troika_config_file, "w") as outfile:
+        with open(temp_troika_config_file, mode="w", encoding="utf8") as outfile:
             yaml.dump(troika_output, outfile, encoding="utf-8")
 
-        ssh.sendfile(temp_troika_config_file, remote_troika_config_file)
-        logger.info("--- LUMI -> Ecflow server copy DONE ---")
+        # Use ssh for single files (troika)
+        try:
+            ssh.sendfile(temp_troika_config_file, remote_troika_config_file)
+            logger.info("Troika file transferred successfully.")
+        except subprocess.CalledProcessError as e:
+            logger.info(f"Error occurred transferring Troika: {e}")
+            raise SystemExit("Copying {temp_troika_config_file} FAILED.") from e
+        logger.info("--- File copying to Ecflow server DONE ---")
 
     server.start_suite(suite_name, def_file, begin=args.begin)
     logger.info("Done with suite.")

@@ -6,6 +6,7 @@ from pathlib import Path
 
 from . import GeneralConstants
 from .commands_functions import (
+    create_exp,
     doc_config,
     namelist_integrate,
     run_task,
@@ -65,7 +66,9 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     # Define main parser and general options #
     ##########################################
     main_parser = argparse.ArgumentParser(
-        prog=program_name, formatter_class=argparse.ArgumentDefaultsHelpFormatter
+        prog=program_name,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        fromfile_prefix_chars="?",
     )
 
     main_parser.add_argument(
@@ -100,6 +103,39 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     parser_run.add_argument("--troika", default="troika")
     parser_run.add_argument("--troika-config", default="/opt/troika/etc/troika.yml")
     parser_run.set_defaults(run_command=run_task)
+
+    ##########################################
+    # Configure parser for the "case" command #
+    ##########################################
+    parser_case = subparsers.add_parser(
+        "case",
+        help="Create a config file to run an experiment case",
+        parents=[common_parser],
+    )
+    parser_case.add_argument(
+        "--host-file", dest="host_file", help="Host", required=False, default=None
+    )
+    parser_case.add_argument(
+        "--config-dir", help="Config dir", required=False, default=None
+    )
+
+    parser_case.add_argument(
+        "--output",
+        "-o",
+        dest="output_file",
+        help="Output config file",
+        required=True,
+    )
+    parser_case.add_argument(
+        "--case-name", dest="case", help="Case name", required=False, default=None
+    )
+    parser_case.add_argument(
+        "config_mods",
+        help="Path to configuration modifications",
+        nargs="*",
+        default=None,
+    )
+    parser_case.set_defaults(run_command=create_exp)
 
     ############################################
     # Configure parser for the "start" command #

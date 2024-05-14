@@ -1,9 +1,12 @@
-gen_macros = [
+[macros]
+  gen_macros = [
     "boundaries.bdmodel",
     "general.cnmexp",
     "general.cycle",
     "general.csc",
+    "general.case",
     {sqlite_path = "extractsqlite.sqlite_path"},
+    {case_prefix = "scheduler.ecfvars.case_prefix"},
     {mars_selection = "boundaries.ifs.selection"},
     {bdmember = "boundaries.ifs.bdmember"},
     {duration_model = "file_templates.duration.model"},
@@ -13,6 +16,6 @@ gen_macros = [
     {case = "general.case"},
     {domain = "domain.name"},
     {rrr = "general.realization"},
-]
-group_macros = ["platform", "system"]
-os_macros = ["USER", "HOME", "PWD"]
+  ]
+  group_macros = ["platform", "system"]
+  os_macros = ["USER", "HOME", "PWD"]

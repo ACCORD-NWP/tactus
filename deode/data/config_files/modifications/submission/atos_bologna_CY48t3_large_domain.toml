@@ -1,0 +1,34 @@
+[gnu.BATCH]
+  MEM = "#SBATCH --mem=64GB"
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[task_exceptions.Forecast]
+  NPROC = 640
+  OMP_NUM_THREADS = "4"
+
+[task_exceptions.Forecast.BATCH]
+  CPUSPERTASK = "#SBATCH --cpus-per-task=4"
+  NODES = "#SBATCH --nodes=20"
+  NTASKS = "#SBATCH --ntasks=640"
+  WALLTIME = "#SBATCH --time=08:00:00"
+
+[task_exceptions.Forecast.ENV]
+  KMP_BLOCKTIME = "12"
+  KMP_STACKSIZE = "4G"
+
+[task_exceptions.Gmted.BATCH]
+  MEM = "#SBATCH --mem=32GB"
+
+[task_exceptions.Marsprep.BATCH]
+  MEM = "#SBATCH --mem=128GB"
+  WALLTIME = "#SBATCH --time=02:00:00"
+
+[task_exceptions.Pgd.BATCH]
+  NODES = "#SBATCH --nodes=2"
+  NTASKS = "#SBATCH --ntasks=32"
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[task_exceptions.Prep.BATCH]
+  NODES = "#SBATCH --nodes=2"
+  NTASKS = "#SBATCH --ntasks=32"
+  WALLTIME = "#SBATCH --time=00:50:00"
