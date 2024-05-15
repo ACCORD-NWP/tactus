@@ -83,8 +83,6 @@ selection:
     - 'RAIN'
     - 'SNOW'  
     - 'TKE'
-    - 'AVG_U'
-    - 'AVG_V'
    RFP3H:
     - 15.
     - 30.
@@ -120,8 +118,6 @@ selection:
      - 'ICE_CRYSTAL'
      - 'CLOUD_WATER'
      - 'TKE'
-     - 'AVG_U'
-     - 'AVG_V'
     RFP3P:
      - 5000.
      - 10000.
@@ -153,8 +149,6 @@ selection:
      - 'ICE_CRYSTAL'
      - 'CLOUD_WATER'
      - 'TKE'
-     - 'AVG_U'
-     - 'AVG_V'
     NRFP3S:
      - ${vertical_levels.nlev} 
   NAMFPDYT: {}

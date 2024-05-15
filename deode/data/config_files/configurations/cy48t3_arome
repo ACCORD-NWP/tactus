@@ -1,4 +1,5 @@
 --config-file
 deode/data/config_files/config.toml
 deode/data/config_files/modifications/CY48t3.toml
+deode/data/config_files/modifications/@HOST@_CY48t3.toml
 deode/data/config_files/modifications/submission/@HOST@_CY48t3.toml

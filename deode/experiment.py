@@ -92,10 +92,13 @@ class ExpFromFiles(Exp):
                 continue
 
             mod = _mod.replace("@HOST@", host)
-            logger.info("Merging modifications from {}", mod)
-            lmod = ExpFromFiles.toml_load(mod)
-            logger.debug("-> {}", lmod)
-            mods = ExpFromFiles.deep_update(mods, lmod)
+            if os.path.exists(mod):
+                logger.info("Merging modifications from {}", mod)
+                lmod = ExpFromFiles.toml_load(mod)
+                logger.debug("-> {}", lmod)
+                mods = ExpFromFiles.deep_update(mods, lmod)
+            else:
+                logger.warning("Skip missing modification file {}", mod)
 
         case = exp_dependencies.get("case")
         if case is not None:

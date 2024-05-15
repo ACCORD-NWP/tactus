@@ -150,6 +150,10 @@ namgfl_AROME:
     YR_NL%NCOUPLING: 1
     YS_NL%NCOUPLING: 1
 
+f4_atos_bologna:
+  NAMRIP:
+    RAVGTIME: 3600.
+
 f4_AROME:
   NAERAD:
     LRRTM: True
@@ -505,7 +509,6 @@ f4_AROME:
   NAMRIP:
     CSTOP: ${namelist.cstop}
     TSTEP: ${domain.tstep}
-    RAVGTIME: 3600.
   NAMSATS:
     LPARTIAL_COEF_FILES: True
   NAMTOPH:
@@ -1095,7 +1098,6 @@ f4_ALARO:
   NAMRIP:
     CSTOP: ${namelist.cstop}
     TSTEP: ${domain.tstep}
-    RAVGTIME: 3600.
   NAMTOPH:
     ETCVIM: 0.0
     ETNEBU: 0.0
