@@ -1,2 +1,2 @@
 [fullpos]
-  selection = ["rules", "namfpc_header", "master", "avg_wind"]
+  selection = ["rules", "namfpc_header", "master_selection", "avg_wind"]
