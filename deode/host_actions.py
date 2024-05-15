@@ -64,7 +64,7 @@ class DeodeHost:
         hh = [hostname_pattern] if isinstance(hostname_pattern, str) else hostname_pattern
         for x in hh:
             if re.match(x, hostname):
-                logger.info("Deode-host detected by hostname {}", x)
+                logger.debug("Deode-host detected by hostname {}", x)
                 return True
 
         return False
@@ -84,7 +84,7 @@ class DeodeHost:
                 vv = [value] if isinstance(value, str) else value
                 for x in vv:
                     if re.match(x, os.environ[var]):
-                        logger.info(
+                        logger.debug(
                             "Deode-host detected by environment variable {}={}", var, x
                         )
                         return True
