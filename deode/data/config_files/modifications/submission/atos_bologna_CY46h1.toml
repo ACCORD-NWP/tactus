@@ -1,11 +1,11 @@
 [submission]
-   bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2024-04-26/R64"
- 
+  bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2024-04-26/R64"
+
 [submission.task_exceptions.c903]
-   bindir = "/home/snh02/pack/48t3_main.05.OMPIIFC2104.x/bin"
+  bindir = "/home/snh02/pack/48t3_main.05.OMPIIFC2104.x/bin"
 
 [submission.task_exceptions.Pgd]
-   binary = "PGD-offline"
- 
+  binary = "PGD-offline"
+
 [submission.task_exceptions.Prep]
-   binary = "PREP-offline"
+  binary = "PREP-offline"

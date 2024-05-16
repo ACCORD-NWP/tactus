@@ -86,9 +86,8 @@ class ExpFromFiles(Exp):
 
         mods = {}
         for _mod in mod_files:
-
             # Skip empty lines
-            if len(_mod) == 0 : 
+            if len(_mod) == 0:
                 continue
 
             mod = _mod.replace("@HOST@", host)
