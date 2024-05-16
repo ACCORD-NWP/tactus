@@ -90,7 +90,7 @@ class ExpFromFiles(Exp):
             if len(_mod) == 0:
                 continue
 
-            mod = _mod.replace("@HOST@", host)
+            mod = _mod.replace("@HOST@", host) if host is not None else _mod
             if os.path.exists(mod):
                 logger.info("Merging modifications from {}", mod)
                 lmod = ExpFromFiles.toml_load(mod)
