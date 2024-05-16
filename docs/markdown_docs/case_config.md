@@ -5,7 +5,9 @@
 The Deode-workflow is designed to be highly configurable and driven from a single config file. The `deode case` functionality offers a way to reduce the number of lengthy config files by building the final config file from smaller sections of configuration settings. A number of pre-defined configurations are available under `deode/data/config_files/configurations`
 
 Example usage would be:
-`deode case ?deode/data/config_files/configurations/cy48t3_alaro_gpu_lumi -o test.toml`
+```
+deode case ?deode/data/config_files/configurations/cy48t3_alaro_gpu_lumi -o test.toml
+```
 
 where ? is a file includer operator where all the arguments are defined line by line. I.e. `deode/data/config_files/configurations/cy48t3_alaro_gpu_lumi` contains a list of arguments to be evaluated. In this case we have
 
@@ -24,9 +26,24 @@ The following configuration files will be read and added in order of appearence.
 
 The processed configuration output file, here `test.toml`, is self contained from a config point of view. All configuration settings (also defaults from json schema) are in the generated configuration file. 
 
-The produced config file, `test.toml` is now used to start a run by
-
+The produced config file, `test.toml` is now used to start a run the usual way.
 ```
 deode start suite --config-file test.toml
 ```
+
+## Time handling
+
+A typical use case is to run the same configuration for a number of dates or a longer period. The example above could easily be modified to run for any arbitrary date by running
+```
+deode case ?deode/data/config_files/configurations/cy48t3_alaro_gpu_lumi time.toml -o test.toml
+```
+where `time.toml` contains
+
+```
+[general.times]
+  end = "YYYY-MM-DD:HH:mm:ssZ"
+  start = "YYYY-MM-DD:HH:mm:ssZ"
+```
+or any additional extra information.
+
 
