@@ -1,3 +1,4 @@
+[platform]
 albnir_soil_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
 albnir_veg_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
 albvis_soil_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
