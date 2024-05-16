@@ -80,7 +80,7 @@ poetry devtools doc
 The testing procedure above does not test the full functionality together with the IAL code. While waiting for a automated CI/CD system to be in place a few manual steps are required on atos to check the functionality.
 
 - ✔️ Run the default config file, using CY48t3, under ecflow following the instructions in the [README](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md) file.
-- ✔️ Run the following sequence of case configurations, i.e. the three CSC's and the subsequent coupling of AROME -> AROME and HARMONIE-AROME -> HARMONIE-AROME
+- ✔️ Run the following sequence of case configurations, i.e. the three CSC's and the subsequent coupling of AROME -> AROME and HARMONIE-AROME -> HARMONIE-AROME. Note that the host runs have to complete before the target ones can be launched.
 ```
 for case in \
   cy48t3_arome \
