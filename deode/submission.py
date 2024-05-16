@@ -332,6 +332,9 @@ class TaskSettings(object):
 
                 file_handler.write(f". {env_file}\n")
                 for key in module_settings.values():
+                    # Skip empty sections
+                    if len(key) == 0:
+                        continue
                     if len(key) < 2 or len(key) > 3:
                         raise RuntimeError(f"Module command has the wrong length:{key}")
                     cmd = "module " + " ".join([f"{x}" for x in key])
