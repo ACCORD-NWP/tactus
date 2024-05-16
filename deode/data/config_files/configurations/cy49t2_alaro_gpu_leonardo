@@ -1,0 +1,6 @@
+--config-file
+deode/data/config_files/config.toml
+deode/data/config_files/modifications/CY49t2.toml
+deode/data/config_files/modifications/alaro.toml
+deode/data/config_files/include/accelerator_device/leonardo_gpu.toml
+deode/data/config_files/modifications/submission/leonardo_gpu_CY49t2.toml

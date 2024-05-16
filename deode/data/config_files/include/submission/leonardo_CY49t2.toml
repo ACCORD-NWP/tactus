@@ -1,3 +1,4 @@
+[submission]
 bindir = "/leonardo/home/userexternal/dhaumont/gpupack/pack/49t2_alaro_gpu.01.NVHPC2311.1d/bin"
 #bindir = "/leonardo_scratch/fast/DestE_340_24/dhaumont/gpupack/pack/49t2_openacc.01.NVHPC2311.1d/bin"
 default_submit_type = "parallel"
@@ -7,16 +8,16 @@ nproma = -32
 
 submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 
-[background_hpc]
+[submission.background_hpc]
   SCHOST = "localhost"
   tasks = ["Background_hpc", "UnitTest"]
 
-[background_vm]
+[submission.background_vm]
   INTERPRETER = "#!/usr/bin/python3"
   SCHOST = "localhost"
   tasks = ["Background_vm"]
 
-[gnu]
+[submission.gnu]
   NPROC = 1
   NPROCX = 1
   NPROCY = 1
@@ -24,27 +25,27 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   tasks = ["ExtractSQLite"]
   WRAPPER = "srun"
 
-[gnu.BATCH]
+[submission.gnu.BATCH]
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   QOS = "#SBATCH --qos=nf"
   WALLTIME = "#SBATCH --time=00:15:00"
 
-[gnu.MODULES]
+[submission.gnu.MODULES]
   ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
 
-[parallel]
+[submission.parallel]
   NPROC = 8
   SCHOST = "leonardo"
   tasks = ["Forecast", "e927", "Pgd", "Prep", "c903"]
   WRAPPER = "srun"
-[parallel.BATCH]
+[submission.parallel.BATCH]
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   QOS = "#SBATCH --qos=np"
   WALLTIME = "#SBATCH --time=00:10:00"
 
-[parallel.ENV]
+[submission.parallel.ENV]
   DR_HOOK = 1
   DR_HOOK_IGNORE_SIGNALS = 8
   OMPI_MCA_btl = "^vader"
@@ -58,7 +59,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   EC_PROFILE_HEAP=0
   EC_MPI_ATEXIT=0
 
-[parallel.MODULES]
+[submission.parallel.MODULES]
   0_PURGE = ["--force", "purge"]
   1_NVHPC = ["load", "nvhpc/23.11"]  
   2_CUDA = ["load", "cuda/11.8"]
@@ -68,7 +69,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   #_HDF5 = ["load", "hdf5/1.12.2--openmpi--4.1.4--nvhpc--23.1"]
 
 
-[serial]
+[submission.serial]
   NPROC = 1
   NPROCX = 1
   NPROCY = 1
@@ -76,19 +77,19 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep", "E923Update"]
   WRAPPER = "srun"
 
-[serial.BATCH]
+[submission.serial.BATCH]
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   QOS = "#SBATCH --qos=nf"
   WALLTIME = "#SBATCH --time=00:15:00"
 
-[serial.ENV]
+[submission.serial.ENV]
   DR_HOOK_IGNORE_SIGNALS = -1
   OMP_NUM_THREADS = 1
   OMPI_MCA_btl = "^vader"
 
-[serial.MODULES]
+[submission.serial.MODULES]
   0_PURGE = ["--force", "purge"]
   1_NVHPC = ["load", "nvhpc/23.11"]  
   2_CUDA = ["load", "cuda/11.8"]
@@ -98,53 +99,53 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   #_HDF5 = ["load", "hdf5/1.12.2--openmpi--4.1.4--nvhpc--23.1"]
 
 
-[task]
+[submission.task]
   wrapper = ""
 
-[task_exceptions.ArchiveHour.BATCH]
+[submission.task_exceptions.ArchiveHour.BATCH]
   WALLTIME = "#SBATCH --time=03:00:00"
 
-[task_exceptions.ArchiveStatic.BATCH]
+[submission.task_exceptions.ArchiveStatic.BATCH]
   WALLTIME = "#SBATCH --time=03:00:00"
 
-[task_exceptions.c903]
+[submission.task_exceptions.c903]
   NPROC = 32
 
-[task_exceptions.c903.BATCH]
+[submission.task_exceptions.c903.BATCH]
   MEM = "#SBATCH --mem=200GB"
   NODE = "#SBATCH --nodes=12"
   NTASKS = "#SBATCH --ntasks=36"
   WALLTIME = "#SBATCH --time=00:30:00"
 
-[task_exceptions.creategrib]
+[submission.task_exceptions.creategrib]
   binary = "gl_20230823"
   bindir = "/home/snh02/work/gl_binaries"
 
-[task_exceptions.CreateGrib.BATCH]
+[submission.task_exceptions.CreateGrib.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
 
-[task_exceptions.E923Update]
+[submission.task_exceptions.E923Update]
   bindir = "/home/snh02/work/fa_sfx2clim/"
 
-[task_exceptions.E923Update.ENV]
+[submission.task_exceptions.E923Update.ENV]
   LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/home/snh02/opt/install/eccodes-2.32.1/lib64:/perm/rme/packages/auxlibs/3.7/INTEL/2021.4/lib"
 
-[task_exceptions.E923Update.MODULES]
+[submission.task_exceptions.E923Update.MODULES]
   OPENMPI = ["load", "openmpi/4.1.1"]
 
-[task_exceptions.e927]
+[submission.task_exceptions.e927]
   NPROC = 16
 
-[task_exceptions.e927.BATCH]
+[submission.task_exceptions.e927.BATCH]
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=16"
 
-[task_exceptions.Forecast]
+[submission.task_exceptions.Forecast]
   NPROC = 8
   NPROC_IO = 0
   WRAPPER = "ulimit -s unlimited; srun -n @NPROC@ ./select_gpu"
 
-[task_exceptions.Forecast.BATCH]
+[submission.task_exceptions.Forecast.BATCH]
   #  MEM = "#SBATCH --mem=200GB"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=8"
@@ -153,12 +154,12 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   QOS="#SBATCH --qos boost_qos_dbg"
   ACCOUNT="#SBATCH -A deste_340_24 "
 
-[task_exceptions.Forecast.ENV]
+[submission.task_exceptions.Forecast.ENV]
   RTTOV_COEFDIR = "/hpcperm/snh02/DEODE/satellite/rtcoef_rttov12/harm_coef/"
   UCX_LOG_LEVEL = "error"
 
   NOUTPUT = 2
-[task_exceptions.Gmted.MODULES]
+[submission.task_exceptions.Gmted.MODULES]
   GDAL = ["load", "gdal/3.6.2"]
 
 [task_exceptions.Marsprep.BATCH]
@@ -168,28 +169,28 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   QOS = "#SBATCH --qos=np"
   WALLTIME = "#SBATCH --time=01:00:00"
 
-[task_exceptions.Marsprep.ENV]
+[submission.task_exceptions.Marsprep.ENV]
   MARS_READANY_BUFFER_SIZE = 17893020000
 
-[task_exceptions.Pgd]
+[submission.task_exceptions.Pgd]
   WRAPPER = "srun -n @NPROC@"
 
-[task_exceptions.Pgd.BATCH]
+[submission.task_exceptions.Pgd.BATCH]
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=2"
   WALLTIME = "#SBATCH --time=00:30:00"
 
-[task_exceptions.PgdUpdate]
+[submission.task_exceptions.PgdUpdate]
   binary = "gl_20230823"
   bindir = "/home/snh02/work/gl_binaries"
 
-[task_exceptions.Prep]
+[submission.task_exceptions.Prep]
   WRAPPER = "srun -n @NPROC@"
 
-[task_exceptions.Prep.BATCH]
+[submission.task_exceptions.Prep.BATCH]
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   WALLTIME = "#SBATCH --time=00:10:00"
 
-[task_exceptions.Soil.MODULES]
+[submission.task_exceptions.Soil.MODULES]
   GDAL = ["load", "gdal/3.6.2"]
