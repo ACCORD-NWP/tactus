@@ -520,7 +520,7 @@ f4_AROME:
     XDRMUK: 3.0e-7
     XDRMUP: 800.0
   NAMTRANS:
-    LFFTW: ${submission.lfftw}
+    LFFTW: ${submission.lfftw-"true"}
   NAMXFU:
     LXCLP: True
     LXCLS: True
@@ -1107,7 +1107,7 @@ f4_ALARO:
     XDRMUK: 3.0e-7
     XDRMUP: 800.0
   NAMTRANS:
-    LFFTW: ${submission.lfftw}
+    LFFTW: ${submission.lfftw-"true"}
   NAMXFU:
     LXCLP: True
     LXCLS: True
@@ -1239,7 +1239,7 @@ f4_c903_main:
     CSCRIPT_PPSERVER: " "
     LGRIB_API: False
   NAMTRANS:
-    LFFTW: ${submission.lfftw}
+    LFFTW: ${submission.lfftw-"true"}
   NAMOPH:
     CCLIMINC: "_"
   NAMGFL:
