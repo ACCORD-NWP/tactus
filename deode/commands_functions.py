@@ -12,7 +12,7 @@ from toml_formatter.formatter import FormattedToml
 from troika.connections.ssh import SSHConnection
 
 from . import GeneralConstants
-from .config_parser import BasicConfig, ParsedConfig
+from .config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
 from .experiment import case_setup
 from .host_actions import DeodeHost
@@ -124,6 +124,14 @@ def create_exp(args, config):
         host=host,
         config_dir=config_dir,
     )
+
+    if args.start_suite:
+        config = ParsedConfig.from_file(
+           output_file, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+        )
+        args.start_command = None
+        args.begin = True
+        start_suite(args, config)
 
 
 def start_suite(args, config):

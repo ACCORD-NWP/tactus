@@ -135,6 +135,13 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         nargs="*",
         default=None,
     )
+    parser_case.add_argument(
+        "--start-suite","-s",
+        action="store_true",
+        default=False,
+        help="Start suite as well",
+        required=False, 
+    )
     parser_case.set_defaults(run_command=create_exp)
 
     ############################################
