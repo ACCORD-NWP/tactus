@@ -31,6 +31,13 @@ The produced config file, `test.toml` is now used to start a run the usual way.
 deode start suite --config-file test.toml
 ```
 
+We can also do everything in one by adding the `--start-suite` flag
+```
+deode case ?deode/data/config_files/configurations/cy48t3_alaro_gpu_lumi -o test.toml --start-suite
+```
+
+To see all commands available for the case functionality run `deode case --help`.
+
 ## Adding a new host
 
 The host you're running on can be recognized either through the host name or by identifying a specific environment variable. This is configured in `deode/data/config_files/known_hosts.yml`. In the example below we see how `atos_bologna` and `lumi` are regonized via a hostname regular expression whereas `freja` is recognized from a specfici environment variable.
