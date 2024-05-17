@@ -127,7 +127,7 @@ def create_exp(args, config):
 
     if args.start_suite:
         config = ParsedConfig.from_file(
-           output_file, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+            output_file, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
         )
         args.start_command = None
         args.begin = True
