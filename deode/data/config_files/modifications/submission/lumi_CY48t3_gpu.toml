@@ -1,3 +1,5 @@
+[submission]
+  lfftw = false
 [submission.task_exceptions.Forecast]
   bindir = "/pfs/lustrep4/projappl/project_465000527/dhaumont/accord/pack/freeze_gpu_feb_2024/bin"
   WRAPPER = "ulimit -s unlimited; srun -n @NPROC@ ./select_gpu"
