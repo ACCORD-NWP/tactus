@@ -4,4 +4,3 @@ deode/data/config_files/modifications/CY48t3.toml
 deode/data/config_files/modifications/alaro.toml
 deode/data/config_files/include/accelerator_device/lumi_gpu.toml
 deode/data/config_files/modifications/submission/lumi_CY48t3_gpu.toml
-deode/data/config_files/modifications/suite_control.toml
