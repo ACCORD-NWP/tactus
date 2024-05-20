@@ -1,0 +1,182 @@
+
+# 1. Blocks to be added.
+new_blocks:
+    - namclradlid
+    - namecv
+    - namecvdesc
+    - namecvgrb
+    - namjbalphacv
+    - namjbecphysecv
+    - namjbsktecv
+    - nammoderrconf
+    - nammoderrcov
+    - nammoderrincrconf
+    - nammoderrmod
+    - namparecv
+    - namrstrhbias
+    - NAMDYNA_STATIC
+
+# 2. Blocks to be moved. If target block exists, raise an error.
+#blocks_to_move:
+#     NAMOLD1: NAMMOVED1
+#     NAMOLD1: NAMMOVED2
+
+
+# 3. Keys to be moved. If target exists or target block is missing, raise an error.
+# Blocks need to be consistent with above blocks movings.
+keys_to_move:
+    NAMCT0:
+        LSPRT:
+            NAMDYNA: LSPRT
+        LTWOTL:
+            NAMDYNA: LTWOTL
+        LNHEE:
+            NAMDYNA: LNHEE
+        LNHQE:
+            NAMDYNA: LNHQE
+        LREGETA:
+            NAMCVER: LREGETA
+    NAMARG:
+        LSLAG:
+            NAMDYNA: LSLAG
+    NAMDYNA:
+        REXP_VRAT:
+            NAMCVER: REXP_VRAT
+        LAPRXPK:
+            NAMCVER: LAPRXPK
+        RHYDR0:
+            NAMCVER: RHYDR0
+        NDLNPR:
+            NAMCVER: NDLNPR
+        LDRY_ECMWF:
+            NAMDYNA_STATIC: LDRY_ECMWF
+    NAMMODERR:
+        NTYPE_MODERR:
+            NAMMODERRCONF: NTYPE_MODERR
+        NORDER_MODERR:
+            NAMMODERRCONF: NORDER_MODERR
+        TSTEP_ERR:
+            NAMMODERRCOV: TSTEP_ERR
+        LPHAQ:
+            NAMMODERRCONF: LPHAQ
+        NSERR:
+            NAMMODERRCONF: NSERR
+        LJQVCOR:
+            NAMMODERRCOV: LJQVCOR
+        LJQHCOR:
+            NAMMODERRCOV: LJQHCOR
+        NLEVERR0:
+            NAMMODERRCOV: NLEVERR0
+        NLEVERR1:
+            NAMMODERRCOV: NLEVERR1
+        ALPHAQ_T:
+            NAMMODERRCONF: ALPHAQ_T
+        ALPHAQ_D:
+            NAMMODERRCONF: ALPHAQ_D
+        ALPHAQ_V:
+            NAMMODERRCONF: ALPHAQ_V
+        ALPHAQ_Q:
+            NAMMODERRCONF: ALPHAQ_Q
+        ALPHAQ_O:
+            NAMMODERRCONF: ALPHAQ_O
+        NPRTMODERR:
+            NAMMODERRCONF: NPRTMODERR
+        LTAPERERR:
+            NAMMODERRCONF: LTAPERERR
+        TAPERERR_INI:
+            NAMMODERRCONF: TAPERERR_INI
+        TAPERERR_END:
+            NAMMODERRCONF: TAPERERR_END
+
+
+# 4. Keys to be removed. Already missing keys are ignored.
+# Blocks need to be consistent with above movings.
+#am: these are here for information, but it is preferable to fall on errors to know what to do with missing variables
+#keys_to_remove:
+#    NAEAER:
+#        - LAERSOA_CHEM
+#        - LAERSOAEMIS_FLUX
+#    NAEPHY:
+#        - LSPCRM
+#        - LECO2DIU
+#    NAMAFN:
+#        - GFP_BCBF
+#        - GFP_BCFF
+#        - GFP_OMBF
+#        - GFP_OMFF
+#        - GFP_SO2L
+#        - GFP_SO2H
+#        - GFP_VOLC
+#        - GFP_VOLE
+#        - GFP_SOA
+#        - GFP_BCGF
+#        - GFP_OMGF
+#        - GFP_SOGF
+#        - GFP_SOACO
+#        - GFP_VOLCALTI
+#        - GFP_CO2OF
+#        - GFP_CO2NBF
+#        - GFP_INJF
+#        - GFP_CO2APF
+#        - GFP_CO2FIRE
+#        - GFP_CH4AG
+#        - GFP_CH4F
+#    NAMCHEM:
+#        - LCHEM_ACNOX
+#        - LCHEM_DVOL
+#    NAMCOMPO:
+#        - LCO2SFC
+#        - LCH4SFC
+#        - LAEROSFC
+#        - LFIRE
+#        - LINJ
+#        - LINJ_CHEM
+#        - LINJ_GHG
+#        - LGHG_ACCO2
+#        - LCOMPO_DCBB
+#        - LCOMPO_DCVOC
+#        - LCOMPO_DCANT
+#        - LANT_HIGH
+#        - LVOLC_ALTI
+#    NAMDYN:
+#        - LOLDALPHA
+#        - LGRADGP
+#        - LSLHDVER
+#    NAMMKODB:
+#        - L_T_REF_SONDE_BIAS_ADJUST
+#        - C_T_REF_SONDE_NAME
+#        - N_T_REF_SONDE_CODE
+#        - L_RH_REF_SONDE_BIAS_ADJUST
+#        - C_RH_REF_SONDE_NAME
+#        - N_RH_REF_SONDE_CODE
+#    NAMMWAVE:
+#        - ldmwave_land
+#        - ldmwave_seaice
+#    NAMSATS:
+#        - LCLDSTR_SIMPLE
+#    NAMTRGASDET:
+#        - R__Trace_Gas_Intercept
+#        - R__Trace_Gas_Gradient
+#    NAMVAR:
+#        - LVECADIN
+#    #NAMSPP: ...
+
+
+
+# 5. Keys to be set with a value (new or modified). If block is missing, raise an error.
+# Blocks need to be consistent with above movings.
+#keys_to_set:
+#   NAMGEM:
+#       LNONHYD_GEOM: .TRUE.
+#       LNHX_GEOM: .TRUE.
+
+# 6. Blocks to be removed. Already missing blocks are ignored.
+#blocks_to_remove:
+#    - NAMBLOCK1
+#    - NAMBLOCK2
+
+# 7. Macros: substitutions in the namelist's values. A *None* value ignores
+# the substitution (keeps the keyword, to be substituted later on).
+#macros:
+#    VAL_TO_SUBSTITUTE: 8
+#    VAL_TO_KEEP_AND_BE_SUBSTITUTED_LATER: null

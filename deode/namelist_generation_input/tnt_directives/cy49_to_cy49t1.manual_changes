@@ -1,0 +1,31 @@
+
+# README !!!
+# For a more comprehensive list of changes, cf.
+# https://github.com/ACCORD-NWP/IAL/issues?q=label%3Arequire-config-update
+
+# Data Assimilation
+   &NAMSCC:
+       XYSHIFT_THIBOX(?)=0.5,
+       =>
+       XYSHIFT_THIBOX(1:2,2,?)=0.5,0.5,
+       for indices 3,7,9,10
+
+# Arpege forecast
+   Surfex's NAM_SURF_ATM:LARP_PN has been removed, to be replaced by:
+   1) Creating PGD File with file OPTIONS1.nam containing:
+      &NAM_DATA_ISBA
+        XUNIF_CV(1:20)=20*0.8E-05,
+      /
+
+   2) Running SURFEX integration with EXSEG1.nam containing:
+      &NAM_SURF_ATM
+        XTAU_ICE=25000.,
+      /
+
+
+# Canari:
+   to reproduce former setup, set in Surfex namelist:
+   &NAM_OBS
+     NNCO=1,1,
+     NOBSTYPE=2,
+   /
