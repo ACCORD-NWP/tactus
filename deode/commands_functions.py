@@ -428,62 +428,94 @@ def convert_namelist(args, config):
 
     """
 
-    known_cycles = ["CY48t3","CY49t0", "CY49t1", "CY49t2" ]
-    to_next_version_tnt_filenames = ["48t3_to_49t0", "49t0_to_49t1", None]
-    start_cycle = "CY48t3"
-    end_cycle = "CY49t2"
-    input_yml = "deode/namelist_generation_input/CY48t3/master_namelists.yml"
-    start_index = known_cycles.find(start_cycle)
-    end_index = known_cycles.find(end_cycle)
-    if (start_index == -1 ):
-        raise SystemExit(f"Start Cycle {start_cycle} unknown")
-    if (end_index == -1 ):
-        raise SystemExit(f"End Cycle {end_cycle} unknown")
+    #definitions of the conversion to apply between cycles
+    known_cycles =                  ["CY48t2", 
+                                     "CY48t3",
+                                     "CY49", 
+                                     "CY49t1", 
+                                     "CY49t2" ]
+    to_next_version_tnt_filenames = [ None,                  #CY48t2 to CY48t3
+                                     "cy48t2_to_cy49.yaml",  #CY48t3 to CY49
+                                     "cy49_to_cy49t1.yaml",  #CY49   to CY49t1
+                                      None                   #CY49t1 to CY49t2
+                                      ]
+
+    #Configuration 
+    #Check that parameters are present
+    for parameter, parameter_name in zip([args.from_cycle, args.to_cycle, args.namelist,args.output],
+                          ["from_cycle", "to_cycle", "namelist", "output"]):
+        if not parameter: 
+            raise SystemExit("Please provide parameter {parameter_name}")
     
-    input_file = input_yml
+    start_cycle = args.from_cycle
+    target_cycle = args.to_cycle
+    input_yml = args.namelist
+    output_yml = args.output
 
-    for index in range(start_index,end_index -1):
-        output_file = input_file.replace( ".yml", known_cycles[index+1] + ".yml")
-        if to_next_version_tnt_filenames[index]:
-            apply_tnt_directives(to_next_version_tnt_filenames[index], input_file, output_file)
-        else:
-            shutil.copy(input_file, output_file)
-        input_file = output_file
-        
-
-def apply_tnt_directives(tnt_directive_filename, input_yml, output_yml):
-
-    with open(tnt_directive_filename, mode="rt", encoding="utf-8") as file:
-        tnt_directives = yaml.safe_load(file)
-    file.close()
-
+    #Verify that the Cycles are handled
+    try:
+        start_index = known_cycles.index(start_cycle)
+    except ValueError:
+            raise SystemExit(f"From Cycle {start_cycle} unknown")
+    
+    try:
+        target_index = known_cycles.index(target_cycle)
+    except ValueError:
+            raise SystemExit(f"Target Cycle {start_cycle} unknown")
+    
+    #Verify that target_cycle is older than start_cycle
+    if (start_index >= target_index):
+        raise SystemExit(f"No conversion possible between {start_cycle} and {target_cycle}")
+    
+    #Read the input namelist file (yaml)
     with open(input_yml, mode="rt", encoding="utf-8") as file:
         namelist = yaml.safe_load(file)
     file.close()
 
+    #Apply all the intermediate conversions
+    for index in range(start_index,target_index -1):
+        if to_next_version_tnt_filenames[index]:
+            namelist = apply_tnt_directives(to_next_version_tnt_filenames[index], namelist)
+            if not namelist:
+                raise SystemExit(f"Name list conversion failed")
+    
+    #Write the final results
+    with open(output_yml + ".tnt", mode = 'w', encoding="utf-8") as outfile:
+        yaml.dump(namelist, outfile,  encoding="utf-8",  default_flow_style=False)
+        outfile.close()
+
+def apply_tnt_directives(tnt_directive_filename, namelist):
+
+    #Open the directive file
+    with open(tnt_directive_filename, mode="rt", encoding="utf-8") as file:
+        tnt_directives = yaml.safe_load(file)
+    file.close()
+
+    #Use a copy to be able to modify dictionaries during iterations
     new_namelist = copy.deepcopy(namelist)
 
+    #Move keys from one section to another
     if "keys_to_move" in tnt_directives:
         for old_block in tnt_directives["keys_to_move"]:
             for old_key in tnt_directives["keys_to_move"][old_block]:
                 for new_block in tnt_directives["keys_to_move"][old_block][old_key]:            
                     new_key=tnt_directives["keys_to_move"][old_block][old_key][new_block]                    
 
-    for namelists_section in namelist:
-        for namelist_block in namelist[namelists_section]:                            
-            if old_block in namelist_block:                                
-                if old_key in namelist[namelists_section][namelist_block]:                                                                        
-                    if not new_block in new_namelist[namelists_section]:
-                        print("Create block ", new_block)
-    new_namelist[namelists_section][new_block] = dict()                                    
-    print("Add Key: ", new_block,"\\", new_key, ":", namelist[namelists_section][old_block][old_key])
-    new_namelist[namelists_section][new_block][new_key]=namelist[namelists_section][old_block][old_key]
-    print("Delete Key: ", old_block,"\\", old_key)
-    del new_namelist[namelists_section][old_block][old_key]
+                    for namelists_section in namelist:
+                        for namelist_block in namelist[namelists_section]:                            
+                            if old_block in namelist_block:                                
+                                if old_key in namelist[namelists_section][namelist_block]:                                                                        
+                                    if not new_block in new_namelist[namelists_section]:
+                                        print("Create block ", new_block)
+                                        new_namelist[namelists_section][new_block] = dict()                                    
+                                    print("Add Key: ", new_block,"\\", new_key, ":", namelist[namelists_section][old_block][old_key])
+                                    new_namelist[namelists_section][new_block][new_key]=namelist[namelists_section][old_block][old_key]
+                                    print("Delete Key: ", old_block,"\\", old_key)
+                                    del new_namelist[namelists_section][old_block][old_key]
 
+    #Creation of new blocks 
     if "new_blocks" in tnt_directives:
         for new_block in tnt_directives["new_blocks"]:    
-
             for namelists_section in namelist:
                 if "f4" in namelists_section:
                     for namelist_block in namelist[namelists_section]:                 
@@ -494,11 +526,13 @@ def apply_tnt_directives(tnt_directive_filename, input_yml, output_yml):
                                 print("Create block ", new_block, " for ", namelists_section)
                                 new_namelist[namelists_section][new_block] = dict()                                    
 
+    #Move of blocks(Not implemented)
     if "blocks_to_move" in tnt_directives:
         for blocks in tnt_directives["blocks_to_move"]:    
             print("Move block", blocks)
-            print("ERROR: Not implemented")
+            raise SystemExit("blocks_to_move section handling not implemented")
 
+    #Delete keys
     if "keys_to_remove" in tnt_directives:
         for blocks in tnt_directives["keys_to_remove"]:    
             print("Delete key", blocks)
@@ -509,6 +543,5 @@ def apply_tnt_directives(tnt_directive_filename, input_yml, output_yml):
                 print("Delete Key")
                 del new_namelist[namelists_section][blocks]
 
-
-    with open(output_yml + ".tnt", mode = 'w', encoding="utf-8") as outfile:
-        yaml.dump(new_namelist, outfile,  encoding="utf-8",  default_flow_style=False)
+    return new_namelist
+    

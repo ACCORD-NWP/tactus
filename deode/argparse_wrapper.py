@@ -361,16 +361,19 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         default=None,
     )
     parser_namelist_convert.add_argument(
-        "--from",
+        "--from-cyle",
         type=str,
+        choices=["CY48t3", "CY49t0", "CY49t1" ],
         help="From Cycle",
         required=True,
         default=None,
     )
+
     parser_namelist_convert.add_argument(
-        "--to",
+        "--to-cycle",
         type=str,
         help="Target Cycle",
+        choices=["CY49t0", "CY49t1", "CY49t2" ],
         required=True,
         default=None,
     )
