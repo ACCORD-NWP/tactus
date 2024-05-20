@@ -1,7 +1,7 @@
 [submission]
   lfftw = false
-  nproma = -256
   nfpgrib = 141
+  nproma = -256
 
 [submission.Forecast_cpu]
   tasks = []
@@ -13,9 +13,9 @@
   WRAPPER = "ulimit -s unlimited; srun -n @NPROC@ ./select_gpu"
 
 [submission.Forecast_gpu.BATCH]
-  NAME = "#SBATCH --job-name=@TASK_NAME@"
   CPU = "#SBATCH --cpus-per-task=6"
   GPUS_PER_NODE = "#SBATCH --gpus-per-node=8"
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=2"
   NTASKS = "#SBATCH --ntasks=16"
   PARTITION = "#SBATCH --partition=dev-g"
