@@ -130,6 +130,7 @@ def create_exp(args, config):
             output_file, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
         )
         args.start_command = None
+        args.config_file = output_file
         args.begin = True
         start_suite(args, config)
 
