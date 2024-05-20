@@ -4,6 +4,9 @@ import datetime
 import os
 import subprocess
 import sys
+import copy
+import shutil
+
 from functools import partial
 from pathlib import Path
 
@@ -91,8 +94,8 @@ def run_task(args, config):
     submission_defs = TaskSettings(config)
     sub = NoSchedulerSubmission(submission_defs)
     sub.submit(
-        args.task, config, args.template_job, args.task_job, args.output, args.troika
-    )
+            args.task, config, args.template_job, args.task_job, args.output, args.troika
+            )
     logger.info("Done with task {}", args.task)
 
 
@@ -117,13 +120,13 @@ def create_exp(args, config):
     if mod_files is None:
         mod_files = []
     case_setup(
-        config,
-        output_file,
-        mod_files,
-        case=case,
-        host=host,
-        config_dir=config_dir,
-    )
+            config,
+            output_file,
+            mod_files,
+            case=case,
+            host=host,
+            config_dir=config_dir,
+            )
 
 
 def start_suite(args, config):
@@ -141,25 +144,25 @@ def start_suite(args, config):
     config = config.copy(update=set_times(config))
     platform = Platform(config)
     update = {
-        "scheduler": {
-            "ecfvars": {
-                "case_prefix": platform.substitute(
-                    config["scheduler.ecfvars.case_prefix"]
-                ),
-                "ecf_out": platform.substitute(config["scheduler.ecfvars.ecf_out"]),
-                "ecf_jobout": platform.substitute(config["scheduler.ecfvars.ecf_jobout"]),
-                "ecf_files": platform.substitute(config["scheduler.ecfvars.ecf_files"]),
-                "ecf_files_remotely": platform.substitute(
-                    config["scheduler.ecfvars.ecf_files_remotely"]
-                ),
-                "ecf_home": platform.substitute(config["scheduler.ecfvars.ecf_home"]),
-                "ecf_host": platform.substitute(config["scheduler.ecfvars.ecf_host"]),
-                "ecf_remoteuser": platform.substitute(
-                    config["scheduler.ecfvars.ecf_remoteuser"]
-                ),
-            },
-        },
-    }
+            "scheduler": {
+                "ecfvars": {
+                    "case_prefix": platform.substitute(
+                        config["scheduler.ecfvars.case_prefix"]
+                        ),
+                    "ecf_out": platform.substitute(config["scheduler.ecfvars.ecf_out"]),
+                    "ecf_jobout": platform.substitute(config["scheduler.ecfvars.ecf_jobout"]),
+                    "ecf_files": platform.substitute(config["scheduler.ecfvars.ecf_files"]),
+                    "ecf_files_remotely": platform.substitute(
+                        config["scheduler.ecfvars.ecf_files_remotely"]
+                        ),
+                    "ecf_home": platform.substitute(config["scheduler.ecfvars.ecf_home"]),
+                    "ecf_host": platform.substitute(config["scheduler.ecfvars.ecf_host"]),
+                    "ecf_remoteuser": platform.substitute(
+                        config["scheduler.ecfvars.ecf_remoteuser"]
+                        ),
+                    },
+                },
+            }
     config = config.copy(update=update)
 
     logger.info("Starting suite...")
@@ -187,17 +190,17 @@ def start_suite(args, config):
     troika_config_file = Platform(config).substitute(config["troika.config_file"])
     if ecf_home != joboutdir:
         remote_troika_config_file = os.path.join(
-            ecf_files_remotely, suite_name, os.path.basename(troika_config_file)
-        )
+                ecf_files_remotely, suite_name, os.path.basename(troika_config_file)
+                )
     else:
         remote_troika_config_file = troika_config_file
 
     config = config.copy(
-        update={
-            "general": {"case": suite_name},
-            "troika": {"config_file": remote_troika_config_file},
-        }
-    )
+            update={
+                "general": {"case": suite_name},
+                "troika": {"config_file": remote_troika_config_file},
+                }
+            )
 
     server = EcflowServer(config, start_command=args.start_command)
     defs = get_suite(suite_def, config)
@@ -219,11 +222,11 @@ def start_suite(args, config):
 
         # Copy command
         copy_cmd = [
-            "rsync",
-            "-az",
-            src,
-            dst,
-        ]
+                "rsync",
+                "-az",
+                src,
+                dst,
+                ]
 
         # Try cleaning and copying commands. If it fails, then stop with message
         if ssh_cmd(ecf_host, ecf_remoteuser, del_cmd):
@@ -275,8 +278,8 @@ def doc_config(args, config: ParsedConfig):  # noqa ARG001
     """
     now = datetime.datetime.now().isoformat(timespec="seconds")
     sys.stdout.write(
-        f"This was automatically generated running `deode doc config` on {now}.\n\n"
-    )
+            f"This was automatically generated running `deode doc config` on {now}.\n\n"
+            )
     sys.stdout.write(config.json_schema.get_markdown_doc() + "\n")
 
 
@@ -291,20 +294,20 @@ def show_config(args, config):
     logger.info("Printing requested configs...")
 
     pkg_configs = BasicConfig.from_file(
-        GeneralConstants.PACKAGE_DIRECTORY.parent / "pyproject.toml"
-    )
+            GeneralConstants.PACKAGE_DIRECTORY.parent / "pyproject.toml"
+            )
 
     toml_formatting_function = partial(
-        FormattedToml.from_string,
-        formatter_options=pkg_configs.get("tool.toml-formatter", {}),
-    )
+            FormattedToml.from_string,
+            formatter_options=pkg_configs.get("tool.toml-formatter", {}),
+            )
 
     try:
         dumps = config.dumps(
-            section=args.section,
-            style=args.format,
-            toml_formatting_function=toml_formatting_function,
-        )
+                section=args.section,
+                style=args.format,
+                toml_formatting_function=toml_formatting_function,
+                )
     except KeyError:
         logger.error('Error retrieving config data for config section "{}"', args.section)
     else:
@@ -390,8 +393,8 @@ def namelist_integrate(args, config):
     if args.yaml:
         if not args.tag:
             raise SystemExit(
-                "With -y given, you must also specify with -t which tag to use as basis!"
-            )
+                    "With -y given, you must also specify with -t which tag to use as basis!"
+                    )
         # Read yaml to use as basis for comparisons
         nml = nlint.yml2dict(Path(args.yaml))
         if tag not in nml:
@@ -415,3 +418,97 @@ def namelist_integrate(args, config):
 
     # Write output yaml
     nlint.dict2yml(nml, Path(args.output))
+
+def convert_namelist(args, config):
+    """Implement the 'convert_namelist' command.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+        config (.config_parser.ParsedConfig): Parsed config file contents.
+
+    """
+
+    known_cycles = ["CY48t3","CY49t0", "CY49t1", "CY49t2" ]
+    to_next_version_tnt_filenames = ["48t3_to_49t0", "49t0_to_49t1", None]
+    start_cycle = "CY48t3"
+    end_cycle = "CY49t2"
+    input_yml = "deode/namelist_generation_input/CY48t3/master_namelists.yml"
+    start_index = known_cycles.find(start_cycle)
+    end_index = known_cycles.find(end_cycle)
+    if (start_index == -1 ):
+        raise SystemExit(f"Start Cycle {start_cycle} unknown")
+    if (end_index == -1 ):
+        raise SystemExit(f"End Cycle {end_cycle} unknown")
+    
+    input_file = input_yml
+
+    for index in range(start_index,end_index -1):
+        output_file = input_file.replace( ".yml", known_cycles[index+1] + ".yml")
+        if to_next_version_tnt_filenames[index]:
+            apply_tnt_directives(to_next_version_tnt_filenames[index], input_file, output_file)
+        else:
+            shutil.copy(input_file, output_file)
+        input_file = output_file
+        
+
+def apply_tnt_directives(tnt_directive_filename, input_yml, output_yml):
+
+    with open(tnt_directive_filename, mode="rt", encoding="utf-8") as file:
+        tnt_directives = yaml.safe_load(file)
+    file.close()
+
+    with open(input_yml, mode="rt", encoding="utf-8") as file:
+        namelist = yaml.safe_load(file)
+    file.close()
+
+    new_namelist = copy.deepcopy(namelist)
+
+    if "keys_to_move" in tnt_directives:
+        for old_block in tnt_directives["keys_to_move"]:
+            for old_key in tnt_directives["keys_to_move"][old_block]:
+                for new_block in tnt_directives["keys_to_move"][old_block][old_key]:            
+                    new_key=tnt_directives["keys_to_move"][old_block][old_key][new_block]                    
+
+    for namelists_section in namelist:
+        for namelist_block in namelist[namelists_section]:                            
+            if old_block in namelist_block:                                
+                if old_key in namelist[namelists_section][namelist_block]:                                                                        
+                    if not new_block in new_namelist[namelists_section]:
+                        print("Create block ", new_block)
+    new_namelist[namelists_section][new_block] = dict()                                    
+    print("Add Key: ", new_block,"\\", new_key, ":", namelist[namelists_section][old_block][old_key])
+    new_namelist[namelists_section][new_block][new_key]=namelist[namelists_section][old_block][old_key]
+    print("Delete Key: ", old_block,"\\", old_key)
+    del new_namelist[namelists_section][old_block][old_key]
+
+    if "new_blocks" in tnt_directives:
+        for new_block in tnt_directives["new_blocks"]:    
+
+            for namelists_section in namelist:
+                if "f4" in namelists_section:
+                    for namelist_block in namelist[namelists_section]:                 
+                        if new_block in namelist_block:                                
+                            print("ERROR: Block existing")
+                        else:
+                            if (not new_block in new_namelist[namelists_section]):
+                                print("Create block ", new_block, " for ", namelists_section)
+                                new_namelist[namelists_section][new_block] = dict()                                    
+
+    if "blocks_to_move" in tnt_directives:
+        for blocks in tnt_directives["blocks_to_move"]:    
+            print("Move block", blocks)
+            print("ERROR: Not implemented")
+
+    if "keys_to_remove" in tnt_directives:
+        for blocks in tnt_directives["keys_to_remove"]:    
+            print("Delete key", blocks)
+
+    for namelists_section in namelist:
+        for namelist_block in namelist[namelists_section]:                            
+            if blocks in namelist_block:                                
+                print("Delete Key")
+                del new_namelist[namelists_section][blocks]
+
+
+    with open(output_yml + ".tnt", mode = 'w', encoding="utf-8") as outfile:
+        yaml.dump(new_namelist, outfile,  encoding="utf-8",  default_flow_style=False)

@@ -9,6 +9,7 @@ from .commands_functions import (
     create_exp,
     doc_config,
     namelist_integrate,
+    namelist_convert,
     run_task,
     show_config,
     show_config_schema,
@@ -270,7 +271,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
 
     # namelist subparser
     parser_namelist = subparsers.add_parser(
-        "namelist", help="Namelist show (output) or integrate (input)"
+        "namelist", help="Namelist show (output), integrate (input) or convert"
     )
     namelist_command_subparsers = parser_namelist.add_subparsers(
         title="integrate",
@@ -323,5 +324,56 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         default=None,
     )
     parser_namelist_integrate.set_defaults(run_command=namelist_integrate)
+
+
+    namelist_command_subparsers = parser_namelist.add_subparsers(
+        title="convert",
+        dest="namelist_what",
+        required=True,
+        description=(
+            "Valid commands below (note that commands also accept their "
+            + "own arguments, in particular [-h]):"
+        ),
+        help="command description",
+    )
+
+    # namelist integrate
+    parser_namelist_convert = namelist_command_subparsers.add_parser(
+        "convert",
+        help="Read namelist definition (yaml) from a Cycle and output a namelist definition converted  (yaml) to a new Cycle",
+        parents=[common_parser],
+    )
+    parser_namelist_convert.add_argument(
+        "-n",
+        "--namelist",
+        nargs="+",
+        type=str,
+        help="Input namelist definition filename",
+        required=True,
+        default=None,
+    )
+    parser_namelist_convert.add_argument(
+        "-o",
+        "--output",
+        type=str,
+        help="Output namelist definition filename",
+        required=True,
+        default=None,
+    )
+    parser_namelist_convert.add_argument(
+        "--from",
+        type=str,
+        help="From Cycle",
+        required=True,
+        default=None,
+    )
+    parser_namelist_convert.add_argument(
+        "--to",
+        type=str,
+        help="Target Cycle",
+        required=True,
+        default=None,
+    )
+    parser_namelist_convert.set_defaults(run_command=namelist_convert)
 
     return main_parser.parse_args(argv)
