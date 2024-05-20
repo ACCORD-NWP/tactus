@@ -332,6 +332,21 @@ def show_config_schema(args, config):  # noqa ARG001
     sys.stdout.write(str(config.json_schema) + "\n")
 
 
+def show_host(args, config):  # noqa ARG001
+    """Implement the `show host` command.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+        config (.config_parser.ParsedConfig): Parsed config file contents.
+
+    """
+    dh = DeodeHost()
+    logger.info("Current host: {}", dh.detect_deode_host())
+    logger.info("Known hosts (host, recognition method):")
+    for host, pattern in dh.known_hosts.items():
+        logger.info("{:>16}   {}", host, pattern)
+
+
 def show_namelist(args, config):
     """Implement the 'show_namelist' command.
 
