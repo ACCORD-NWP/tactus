@@ -7,11 +7,11 @@
 )](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/tests.yaml)
 [![codecov](https://codecov.io/github/destination-earth-digital-twins/Deode-Prototype/branch/develop/graph/badge.svg?token=4PRUK8DMZF)](https://codecov.io/github/destination-earth-digital-twins/Deode-Prototype)
 
-## LUMI 
-### Getting on LUMI
+# LUMI 
+## Getting on LUMI
 To run the project on LUMI, you need to have a LUMI account and add your SSH key to it. Please check the [online instructions on how to do that](https://docs.lumi-supercomputer.eu/firststeps/SSH-keys/). Once you have your SSH key added, you can login to LUMI by running `ssh -i <your-private-key> <username>@@lumi.csc.fi`. Once logged in, create a SSH key and add that to your GitHub account so you can clone the repo. Then, please follow the download, install and usage instructions provided in the [README](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md) file.
 
-### Ecflow:  Initial setup
+## Ecflow:  Initial setup
 
 ** Do not proceed to other steps til this is complete **
 
@@ -60,7 +60,7 @@ de_330 217.71.195.251 8443 {PASSWORD_OBTAINED_FROM_ECMWF}
 ```
 Note: For now, the above file is the **same for every user**.
 
-#### Testing Ecflow server connection
+### Testing Ecflow server connection
 
 Only once these steps are completed, test your connection by pinging (you have to load the ecflow module first as described in the next section):
 ```shell
@@ -75,7 +75,7 @@ ssh ecflow-user@217.71.195.251
 
 Only once you have a working connection should you attempt to setup Ecflow UI below.
 
-#### Setting up Ecflow UI
+### Setting up Ecflow UI
 
 1. To bring up the Ecflow User Interface you need the following modules, by doing 'module load' (ml):
 
@@ -102,7 +102,7 @@ And make sure you check these flags:
 "Add server to current view":  (check)
 ```
 
-#### Troubleshooting
+### Troubleshooting
 
 1. Once Ecflow is setup on LUMI you need to login as follows:
 
@@ -166,7 +166,7 @@ a) You have been whitelisted by ECMWF according to your `~/.ssh/id_rsa.pub` key 
 
 b) You have added the contents of `~/.ssh/id_rsa.pub` to your csc.fi profile (or myaccessid if you use that).
 
-### Running DEODE on LUMI
+## Running DEODE on LUMI
 
 The following command launches DEODE on LUMI
 ```shell
@@ -175,7 +175,7 @@ deode start suite --config-file $PWD/deode/data/config_files/config_CY48t3_lumi.
 
 Note: if you forget to use the --config-file flag, it will default to `--config-file $PWD/deode/data/config_files/config.toml` most likely causing errors.
 
-#### Data
+### Data
 
 At the time of writing this, there is no streamlined way to obtain data from sources such as MARS etc, as it is with ATOS. We currently have a shared local directory on LUMI for this project:
 ```shell
@@ -196,7 +196,7 @@ for example.
 
 If you foresee that the data you download will be needed in the long term, contact a super user (Ulf Andrae, Denis Haumont, Trygve Aspelien) to assist you in getting it into the common area mentioned above, where it should be safer in the long term.
 
-#### Standalone task example (forecast)
+### Standalone task example (forecast)
 
 To run a standalone "Forecast" task, first you need to change the 'SCHOST' field from "lumi-batch" to "lumi" under [parallel], as shown below:
 
@@ -222,7 +222,7 @@ deode run \
       --output $PWD/forecast.log
 ```
 
-### Contacts
+## Contacts
 
 support@lumi-supercomputer.eu 
 

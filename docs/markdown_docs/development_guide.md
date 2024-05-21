@@ -80,9 +80,36 @@ poetry devtools doc
 The testing procedure above does not test the full functionality together with the IAL code. While waiting for a automated CI/CD system to be in place a few manual steps are required on atos to check the functionality.
 
 - ✔️ Run the default config file, using CY48t3, under ecflow following the instructions in the [README](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md) file.
-- ✔️ Repeat the same using the config file for CY46h1 and CY48t3\_Alaro, i.e. `deode/data/config_files/config_[CY46h1|CY48t3_Alaro].toml`.
-- ✔️ Test the nesting procedure for both CY46h1 and CY48t3 using the config files `deode/data/config_files/config_[CY46h1|CY48t3]_target.toml`. Both of the runs will use data from the first two tests.
+- ✔️ Run the following sequence of case configurations, i.e. the three CSC's.
+```
+for case in \
+  cy48t3_arome \
+  cy48t3_alaro \
+  cy46h1_harmonie_arome \
+  ; do
+  deode case ?deode/data/config_files/configurations/$case -o $case.toml --start-suite
+done
+```
+Once this has completed test the coupling of AROME -> AROME and HARMONIE-AROME -> HARMONIE-AROME:
+```
+for case in \
+  cy48t3_arome_target \
+  cy46h1_harmonie_arome_target \
+  ; do
+  deode case ?deode/data/config_files/configurations/$case -o $case.toml --start-suite 
+done
+```
 - ✔️ Finally test the stand alone task for the forecast following the instructions in the [README](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md) file.
+
+## Testing on lumi
+
+On lumi we expect the following configurations to be tested in the same way as above:
+```
+  cy48t3_arome
+  cy48t3_alaro
+  cy48t3_alaro_gpu_lumi
+```
+Note that due to the restrictions for the debug partition on lumi it's only possible to launch one suite at the time.
 
 ## Branches
 As of now, the repository has two main branches:

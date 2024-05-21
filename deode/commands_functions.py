@@ -12,7 +12,7 @@ from toml_formatter.formatter import FormattedToml
 from troika.connections.ssh import SSHConnection
 
 from . import GeneralConstants
-from .config_parser import BasicConfig, ParsedConfig
+from .config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
 from .experiment import case_setup
 from .host_actions import DeodeHost
@@ -124,6 +124,15 @@ def create_exp(args, config):
         host=host,
         config_dir=config_dir,
     )
+
+    if args.start_suite:
+        config = ParsedConfig.from_file(
+            output_file, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+        )
+        args.start_command = None
+        args.config_file = output_file
+        args.begin = True
+        start_suite(args, config)
 
 
 def start_suite(args, config):
@@ -321,6 +330,21 @@ def show_config_schema(args, config):  # noqa ARG001
     """
     logger.info("Printing JSON schema used in the validation of the configs...")
     sys.stdout.write(str(config.json_schema) + "\n")
+
+
+def show_host(args, config):  # noqa ARG001
+    """Implement the `show host` command.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+        config (.config_parser.ParsedConfig): Parsed config file contents.
+
+    """
+    dh = DeodeHost()
+    logger.info("Current host: {}", dh.detect_deode_host())
+    logger.info("Known hosts (host, recognition method):")
+    for host, pattern in dh.known_hosts.items():
+        logger.info("{:>16}   {}", host, pattern)
 
 
 def show_namelist(args, config):

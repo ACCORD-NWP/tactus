@@ -75,6 +75,7 @@ class ExpFromFiles(Exp):
                 del config_dict[inct]
                 config_dict.update({inct: {}})
 
+            logger.info("Input file loaded {}", incp)
             with open(incp, mode="r", encoding="utf8") as fh:
                 mod_config = tomlkit.load(fh)
 
@@ -84,11 +85,19 @@ class ExpFromFiles(Exp):
         )
 
         mods = {}
-        for mod in mod_files:
-            lmod = ExpFromFiles.toml_load(mod)
-            logger.info("Merging modifications from {}", mod)
-            logger.debug("-> {}", lmod)
-            mods = ExpFromFiles.deep_update(mods, lmod)
+        for _mod in mod_files:
+            # Skip empty lines
+            if len(_mod) == 0:
+                continue
+
+            mod = _mod.replace("@HOST@", host) if host is not None else _mod
+            if os.path.exists(mod):
+                logger.info("Merging modifications from {}", mod)
+                lmod = ExpFromFiles.toml_load(mod)
+                logger.debug("-> {}", lmod)
+                mods = ExpFromFiles.deep_update(mods, lmod)
+            else:
+                logger.warning("Skip missing modification file {}", mod)
 
         case = exp_dependencies.get("case")
         if case is not None:

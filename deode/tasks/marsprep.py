@@ -72,6 +72,7 @@ class Marsprep(Task):
             basetime=self.bd_basetime,
             validtime=self.basetime,
         )
+        logger.info("MARS data expected in:{}", self.prepdir)
 
         # Make linting happy
         self.data = b""
@@ -395,6 +396,7 @@ class Marsprep(Task):
             mars_file_check = os.path.join(self.prepdir, f"{file_name}+{step1:02d}")
             if not os.path.exists(mars_file_check):
                 base_list.append(step)
+                logger.info("Missing file:{}", mars_file_check)
 
         base = "/".join(base_list)
         return base

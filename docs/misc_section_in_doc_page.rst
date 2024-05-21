@@ -5,7 +5,7 @@ Miscellaneous Documentation
    :parser: myst_parser.sphinx_
 
 .. include::
-    markdown_docs/lumi.md
+    markdown_docs/case_config.md
    :parser: myst_parser.sphinx_
 
 .. include::
@@ -21,10 +21,6 @@ Miscellaneous Documentation
    :parser: myst_parser.sphinx_
 
 .. include::
-    markdown_docs/basics_adding_new_task.md
-   :parser: myst_parser.sphinx_
-
-.. include::
     markdown_docs/namelists.md
    :parser: myst_parser.sphinx_
 
@@ -34,6 +30,14 @@ Miscellaneous Documentation
 
 .. include::
     markdown_docs/fullpos.md
+   :parser: myst_parser.sphinx_
+
+.. include::
+    markdown_docs/e923_update.md
+   :parser: myst_parser.sphinx_
+
+.. include::
+    markdown_docs/basics_adding_new_task.md
    :parser: myst_parser.sphinx_
 
 .. include::

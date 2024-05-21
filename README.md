@@ -194,5 +194,6 @@ deode run \
       --output $PWD/forecast.log
 ```
 
-If you have done the above mentioned default ecflow test the stand alone forecast will pick the input data from the existing run and output the result in the same directories (as defined by the config file).
+For other platforms a new config file would have to be created first. Please consult the [configure cases](https://destination-earth-digital-twins.github.io/deode-prototype-docs/misc_section_in_doc_page.html#configure-cases) section in the documentation for more information.
 
+If you have done the above mentioned default ecflow test the stand alone forecast will pick the input data from the existing run and output the result in the same directories (as defined by the config file).
