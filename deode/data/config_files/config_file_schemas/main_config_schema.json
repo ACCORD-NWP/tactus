@@ -49,6 +49,11 @@
           "type": "string",
           "description": "Troika config file",
           "default": "@DEODE_HOME@/deode/data/config_files/troika.yml"
+	      },
+        "troika": {
+          "type": "string",
+          "description": "Troika command, allows to specify troika with full path",
+          "default": "troika"
 	      }
       }
     },
