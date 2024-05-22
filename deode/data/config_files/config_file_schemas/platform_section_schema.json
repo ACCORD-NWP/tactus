@@ -10,7 +10,8 @@
             "description": "Method for archiving. The method working depends on the platform",
 	    "enum": [
             "ecfs",
-            "fdb"
+            "fdb",
+            "scp"
 	    ]
         },
         "ecoclim_data_path": {
