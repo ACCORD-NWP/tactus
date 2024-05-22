@@ -155,15 +155,14 @@ that the `-h` goes after the subcommand in this case).
 These examples assume that you have successfully [initialised your environment](#prepare-your-environment-on-the-hpc-machines) and [installed `deode`](#installation). They should be run from the root level of your `deode` install directory. The examples also assume that the necessary
 input data is in place.
 
-### Running ecflow suite on ATOS
+### Running ecflow suite on ATOS or LUMI
 
-The following commands will launch a run under ecflow on atos (`hpc-login.ecmwf.int`) using the default experiment:
+The following command with run using the default experiment:
 ```shell
-deode start suite \
-      --config-file $PWD/deode/data/config_files/config.toml
+deode case ?deode/data/config_files/configurations/cy48t3_arome -o cy48t3_arome.toml --start-suite
 ```
 
-The ecflow_scheduler variables live inside `deode/data/config_files/include/scheduler/ecflow_atos_bologna.toml`:
+The ecflow_scheduler variables live inside `deode/data/config_files/include/scheduler/ecflow_atos_bologna.toml or deode/data/config_files/include/scheduler/ecflow_lumi.toml`:
 ```toml
 [ecfvars]
   ecf_files = "@HOME@/deode_ecflow/ecf_files"
@@ -179,8 +178,6 @@ The ecflow_scheduler variables live inside `deode/data/config_files/include/sche
   hpc = "atos"
 ```
 which are set to default values. These can be changed in the file as required.
-
-After this, open `ecflow_ui` and add `ecflow-gen-${USER}-001` as the server with port `3141`. The default config will place the working directory under `$SCRATCH/deode`.
 
 ### Running the `"forecast"` task from the `hpc-login`'s command line
 

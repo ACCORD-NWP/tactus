@@ -187,6 +187,16 @@ def start_suite(args, config):
     except KeyError:
         suite_def = "DeodeSuiteDefinition"
 
+    logger.info("ecf_host: {}", ecf_host)
+    logger.info("ecf_jobout: {}", joboutdir)
+    logger.info("ecf_files: {}", ecf_files)
+    logger.info("ecf_files_remotely: {}", ecf_files_remotely)
+    logger.info("ecf_home: {}", ecf_home)
+    logger.info("ecf_remoteuser: {}", ecf_remoteuser)
+    logger.info("suite definition: {}", suite_def)
+
+    os.environ["ECF_HOST"] = ecf_host
+
     server = EcflowServer(config, start_command=args.start_command)
 
     suite_name = config["general.case"]

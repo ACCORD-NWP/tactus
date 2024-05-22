@@ -5,7 +5,7 @@
   ecf_files = "/users/@USER@/deode_ecflow/ecf_files"
   ecf_files_remotely = "/home/ecflow-user/deode_ecflow/ecf_files"
   ecf_home = "/home/ecflow/deode_ecflow/ecf_files"
-  ecf_host = "217.71.195.251"
+  ecf_host = "217.71.194.208"
   ecf_jobout = "/users/@USER@/deode_ecflow/jobout"
   ecf_out = "@SCRATCH@/deode_ecflow/ecf_files/"
   ecf_port = "8443"
