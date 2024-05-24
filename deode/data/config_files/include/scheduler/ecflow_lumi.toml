@@ -8,7 +8,7 @@
   ecf_host = "217.71.194.208"
   ecf_jobout = "/users/@USER@/deode_ecflow/jobout"
   ecf_out = "@SCRATCH@/deode_ecflow/ecf_files/"
-  ecf_port = "8443"
+  ecf_port = 8443
   ecf_remoteuser = "ecflow-user"
   ecf_ssl = "1"
   ecf_user = "de_330"
