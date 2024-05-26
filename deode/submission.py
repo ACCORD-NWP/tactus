@@ -324,7 +324,11 @@ class TaskSettings(object):
             logger.debug("module settings {}", module_settings)
 
             if module_settings is not None and len(module_settings) > 0:
-                env_file = f"{self.submission_defs['module_initpath']}/bash"
+                env_file = (
+                    f"{self.submission_defs['module_initfile']}"
+                    if "module_initfile" in self.submission_defs
+                    else f"{self.submission_defs['module_initpath']}/bash"
+                )
                 if not os.path.isfile(env_file):
                     raise RuntimeError(
                         f"Environment file {env_file} is not a file or does not exists"
