@@ -610,8 +610,19 @@ class NamelistIntegrator:
 
 
 class NamelistConverter:
+    """Helper class to convert namelists between cycles, based on thenamelisttool."""
+
     @staticmethod
     def get_tnt_files_list(from_cycle, to_cycle):
+        """Return the list of tnt directive files required for the conversion.
+
+        Args:
+            from_cycle: the input cycle
+            to_cycle: the target cycle
+
+        Raises:
+            SystemExit   when arguments are incorrect
+        """
         # definitions of the conversion to apply between cycles
         tnt_directives_folder = (
             Path(__file__).parent / "namelist_generation_input/tnt_directives/"
@@ -627,12 +638,12 @@ class NamelistConverter:
         try:
             start_index = known_cycles.index(from_cycle)
         except ValueError:
-            raise SystemExit(f"ERROR: from-cycle {from_cycle} unknown")
+            raise SystemExit(f"ERROR: from-cycle {from_cycle} unknown") from ValueError
 
         try:
             target_index = known_cycles.index(to_cycle)
         except ValueError:
-            raise SystemExit(f"ERROR: to-cycle {to_cycle} unknown")
+            raise SystemExit(f"ERROR: to-cycle {to_cycle} unknown") from ValueError
 
         # Verify that to_cycle is older than from_cycle
         if start_index >= target_index:
@@ -640,7 +651,7 @@ class NamelistConverter:
                 f"ERROR: No conversion possible between {from_cycle} and {to_cycle}"
             )
         # Apply all the intermediate conversions
-        tnt_files = list()
+        tnt_files = []
         for index in range(start_index, target_index):
             if to_next_version_tnt_filenames[index]:
                 tnt_files.append(
@@ -650,6 +661,17 @@ class NamelistConverter:
 
     @staticmethod
     def convert_yml(input_yml, output_yml, from_cycle, to_cycle):
+        """Convert a namelist in yml file between two cycles.
+
+        Args:
+            input_yml: the input yaml filename
+            output_yml: the output yaml filename
+            from_cycle: the input cycle
+            to_cycle: the target cycle
+
+        Raises:
+            SystemExit   when conversion failed
+        """
         tnt_files = NamelistConverter.get_tnt_files_list(from_cycle, to_cycle)
 
         # Read the input namelist file (yaml)
@@ -661,7 +683,7 @@ class NamelistConverter:
                 tnt_file, nmldict
             )
             if not nmldict:
-                raise SystemExit("Name list conversion failed")
+                raise SystemExit("Name list conversion failed.  ")
 
         # Write the output namelist file (yaml)
         logger.info(f"Write {output_yml}")
@@ -669,6 +691,14 @@ class NamelistConverter:
 
     @staticmethod
     def convert_ftn(input_ftn, output_ftn, from_cycle, to_cycle):
+        """Convert a namelist in fortran file between two cycles.
+
+        Args:
+            input_ftn: the input fortran filename
+            output_ftn: the output fortran filename
+            from_cycle: the input cycle
+            to_cycle: the target cycle
+        """
         tnt_files = NamelistConverter.get_tnt_files_list(from_cycle, to_cycle)
 
         ftn_file = input_ftn
@@ -680,6 +710,15 @@ class NamelistConverter:
 
     @staticmethod
     def apply_tnt_directives_to_namelist_dict(tnt_directive_filename, namelist_dict):
+        """Apply the tnt directives to a namelist as dictionary.
+
+        Args:
+            tnt_directive_filename: the tnt directive filename
+            namelist_dict: the namelist dictionary
+
+        Raises:
+            SystemExit   when conversion failed
+        """
         logger.info(f"Apply {tnt_directive_filename}")
         # Open the directive file
         with open(tnt_directive_filename, mode="rt", encoding="utf-8") as file:
@@ -700,28 +739,21 @@ class NamelistConverter:
 
                         for namelists_section in namelist_dict:
                             for namelist_block in namelist_dict[namelists_section]:
-                                if old_block in namelist_block:
-                                    if (
+                                if (
+                                    old_block in namelist_block
+                                    and old_key
+                                    in namelist_dict[namelists_section][namelist_block]
+                                ):
+                                    if new_block not in new_namelist[namelists_section]:
+                                        new_namelist[namelists_section][new_block] = {}
+                                    new_namelist[namelists_section][new_block][
+                                        new_key
+                                    ] = namelist_dict[namelists_section][old_block][
                                         old_key
-                                        in namelist_dict[namelists_section][
-                                            namelist_block
-                                        ]
-                                    ):
-                                        if (
-                                            new_block
-                                            not in new_namelist[namelists_section]
-                                        ):
-                                            new_namelist[namelists_section][
-                                                new_block
-                                            ] = dict()
-                                        new_namelist[namelists_section][new_block][
-                                            new_key
-                                        ] = namelist_dict[namelists_section][old_block][
-                                            old_key
-                                        ]
-                                        del new_namelist[namelists_section][old_block][
-                                            old_key
-                                        ]
+                                    ]
+                                    del new_namelist[namelists_section][old_block][
+                                        old_key
+                                    ]
 
         # Creation of new blocks
         if "new_blocks" in tnt_directives:
@@ -731,17 +763,15 @@ class NamelistConverter:
                         for namelist_block in namelist_dict[namelists_section]:
                             if new_block in namelist_block:
                                 raise SystemExit("conversion FAILED: Block existing")
-                            else:
-                                if new_block not in new_namelist[namelists_section]:
-                                    new_namelist[namelists_section][new_block] = dict()
+
+                            if new_block not in new_namelist[namelists_section]:
+                                new_namelist[namelists_section][new_block] = {}
 
         # Move of blocks(Not implemented)
         if "blocks_to_move" in tnt_directives:
             for blocks in tnt_directives["blocks_to_move"]:
                 if blocks in namelist_block:
-                    raise SystemExit(
-                        "conversion FAILED: blocks_to_move section handling not implemented"
-                    )
+                    raise SystemExit("conversion FAILED: blocks_to_move not implemented")
 
         # Delete keys
         if "keys_to_remove" in tnt_directives:
@@ -755,6 +785,7 @@ class NamelistConverter:
 
     @staticmethod
     def apply_tnt_directives_to_ftn_namelist(tnt_directive_filename, input_ftn):
+        """Apply the tnt directives to a fotran namelist using tnt."""
         logger.info(f"Apply {tnt_directive_filename}")
         tnt_directives_folder = (
             Path(__file__).parent / "namelist_generation_input/tnt_directives/"
@@ -765,4 +796,8 @@ class NamelistConverter:
             tnt_directives_folder / tnt_directive_filename,
             input_ftn,
         ]
-        subprocess.call(command)
+
+        try:
+            subprocess.check_call(command)  # noqa S603
+        except subprocess.CalledProcessError as exception:
+            raise SystemExit(f"tnt failed with {exception!r}") from exception

@@ -180,8 +180,6 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         help="command description",
     )
 
-    # deode namelist convert -n deode/namelist_generation_input/CY48t3/master_namelists.yml --from-cycle CY48t3 --to-cycle CY49t2 --o 49t2.yml
-
     # show config
     parser_show_config = show_command_subparsers.add_parser(
         "config", help="Print configs in use and exit", parents=[common_parser]
@@ -331,7 +329,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     # namelist convert
     parser_namelist_convert = namelist_command_subparsers.add_parser(
         "convert",
-        help="Read namelist definition (yaml) from a Cycle and output a namelist definition converted  (yaml) to a new Cycle",
+        help="Convert a namelist (ftn or yml) to a new Cycle",
         parents=[common_parser],
     )
     parser_namelist_convert.add_argument(

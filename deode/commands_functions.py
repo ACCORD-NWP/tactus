@@ -422,7 +422,7 @@ def namelist_integrate(args, config):
     NamelistIntegrator.dict2yml(nml, Path(args.output))
 
 
-def namelist_convert(args, config):
+def namelist_convert(args, config: ParsedConfig):  # noqa ARG001
     """Implement the 'namelist convert' command.
 
     Args:
@@ -437,7 +437,7 @@ def namelist_convert(args, config):
         ["from_cycle", "to_cycle", "namelist", "output"],
     ):
         if not parameter:
-            raise SystemExit("Please provide parameter {parameter_name}")
+            raise SystemExit(f"Please provide parameter {parameter_name}")
 
     # Convert namelists
     logger.info(f"Convert namelist from cycle {args.from_cycle} to cycle {args.to_cycle}")
