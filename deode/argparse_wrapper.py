@@ -271,10 +271,10 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
 
     # namelist subparser
     parser_namelist = subparsers.add_parser(
-        "namelist", help="Namelist show (output), integrate (input) or convert"
+        "namelist", help="Namelist show (output), integrate (input)"
     )
     namelist_command_subparsers = parser_namelist.add_subparsers(
-        title="integrate",
+        title="namelist",
         dest="namelist_what",
         required=True,
         description=(
@@ -326,18 +326,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     parser_namelist_integrate.set_defaults(run_command=namelist_integrate)
 
 
-    namelist_command_subparsers = parser_namelist.add_subparsers(
-        title="convert",
-        dest="namelist_what",
-        required=True,
-        description=(
-            "Valid commands below (note that commands also accept their "
-            + "own arguments, in particular [-h]):"
-        ),
-        help="command description",
-    )
-
-    # namelist integrate
+    # namelist convert
     parser_namelist_convert = namelist_command_subparsers.add_parser(
         "convert",
         help="Read namelist definition (yaml) from a Cycle and output a namelist definition converted  (yaml) to a new Cycle",
@@ -361,7 +350,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         default=None,
     )
     parser_namelist_convert.add_argument(
-        "--from-cyle",
+        "--from-cycle",
         type=str,
         choices=["CY48t3", "CY49t0", "CY49t1" ],
         help="From Cycle",
@@ -378,5 +367,5 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         default=None,
     )
     parser_namelist_convert.set_defaults(run_command=namelist_convert)
-
+ 
     return main_parser.parse_args(argv)

@@ -420,7 +420,7 @@ def namelist_integrate(args, config):
     nlint.dict2yml(nml, Path(args.output))
 
 def namelist_convert(args, config):
-    """Implement the 'convert_namelist' command.
+    """Implement the 'namelist convert' command.
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
