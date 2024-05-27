@@ -236,7 +236,7 @@ class Forecast(Task):
 
         nlres = self.nlgen_master.assemble_namelist(forecast_namelist)
         self.nlgen_master.write_namelist(nlres, "fort.4")
-            
+
         # SURFEX: Namelists and input data
         self.nlgen_surfex.load("forecast")
         settings = self.nlgen_surfex.assemble_namelist("forecast")

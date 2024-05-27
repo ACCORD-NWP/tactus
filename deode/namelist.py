@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """Namelist handling for MASTERODB w/SURFEX."""
+import copy
 import os
 import re
-import subprocess
 import shutil
+import subprocess
 from collections import OrderedDict
 from pathlib import Path
-import copy
-import shutil
 
 import f90nml
 import yaml
@@ -609,129 +608,161 @@ class NamelistIntegrator:
         with open(ymlfile, mode="wb") as file:
             yaml.dump(nmldict, file, encoding="utf-8", default_flow_style=False)
 
-class NamelistConverter:    
+
+class NamelistConverter:
     @staticmethod
     def get_tnt_files_list(from_cycle, to_cycle):
-        #definitions of the conversion to apply between cycles
-        tnt_directives_folder = Path(__file__).parent/"namelist_generation_input/tnt_directives/"
-        known_cycles =  ["CY48t2", 
-                         "CY48t3",
-                         "CY49", 
-                         "CY49t1", 
-                         "CY49t2" ]
-        to_next_version_tnt_filenames = [ None,                   #CY48t2 to CY48t3
-                                          "cy48t2_to_cy49.yaml",  #CY48t3 to CY49
-                                          "cy49_to_cy49t1.yaml",  #CY49   to CY49t1
-                                          None                    #CY49t1 to CY49t2
-                                         ]
+        # definitions of the conversion to apply between cycles
+        tnt_directives_folder = (
+            Path(__file__).parent / "namelist_generation_input/tnt_directives/"
+        )
+        known_cycles = ["CY48t2", "CY48t3", "CY49", "CY49t1", "CY49t2"]
+        to_next_version_tnt_filenames = [
+            None,  # CY48t2 to CY48t3
+            "cy48t2_to_cy49.yaml",  # CY48t3 to CY49
+            "cy49_to_cy49t1.yaml",  # CY49   to CY49t1
+            None,  # CY49t1 to CY49t2
+        ]
 
         try:
             start_index = known_cycles.index(from_cycle)
         except ValueError:
             raise SystemExit(f"ERROR: from-cycle {from_cycle} unknown")
-        
+
         try:
             target_index = known_cycles.index(to_cycle)
         except ValueError:
-                raise SystemExit(f"ERROR: to-cycle {to_cycle} unknown")
-                
-        #Verify that to_cycle is older than from_cycle
-        if (start_index >= target_index):
-            raise SystemExit(f"ERROR: No conversion possible between {from_cycle} and {to_cycle}")
-         #Apply all the intermediate conversions
+            raise SystemExit(f"ERROR: to-cycle {to_cycle} unknown")
+
+        # Verify that to_cycle is older than from_cycle
+        if start_index >= target_index:
+            raise SystemExit(
+                f"ERROR: No conversion possible between {from_cycle} and {to_cycle}"
+            )
+        # Apply all the intermediate conversions
         tnt_files = list()
-        for index in range(start_index,target_index):
+        for index in range(start_index, target_index):
             if to_next_version_tnt_filenames[index]:
-                tnt_files.append(tnt_directives_folder / to_next_version_tnt_filenames[index])
+                tnt_files.append(
+                    tnt_directives_folder / to_next_version_tnt_filenames[index]
+                )
         return tnt_files
-    
+
     @staticmethod
     def convert_yml(input_yml, output_yml, from_cycle, to_cycle):
         tnt_files = NamelistConverter.get_tnt_files_list(from_cycle, to_cycle)
-        
-        #Read the input namelist file (yaml)    
-        logger.info(f'Read {input_yml}')
+
+        # Read the input namelist file (yaml)
+        logger.info(f"Read {input_yml}")
         nmldict = NamelistIntegrator.yml2dict(Path(input_yml))
 
         for tnt_file in tnt_files:
-                nmldict = NamelistConverter.apply_tnt_directives_to_namelist_dict(tnt_file, nmldict)
-                if not nmldict:
-                    raise SystemExit(f"Name list conversion failed")
-    
-        #Write the output namelist file (yaml)
-        logger.info(f'Write {output_yml}')
+            nmldict = NamelistConverter.apply_tnt_directives_to_namelist_dict(
+                tnt_file, nmldict
+            )
+            if not nmldict:
+                raise SystemExit("Name list conversion failed")
+
+        # Write the output namelist file (yaml)
+        logger.info(f"Write {output_yml}")
         NamelistIntegrator.dict2yml(nmldict, Path(output_yml))
-        
+
     @staticmethod
     def convert_ftn(input_ftn, output_ftn, from_cycle, to_cycle):
         tnt_files = NamelistConverter.get_tnt_files_list(from_cycle, to_cycle)
-        
+
         ftn_file = input_ftn
         for tnt_file in tnt_files:
-            NamelistConverter.apply_tnt_directives_to_ftn_namelist(tnt_file,ftn_file)
+            NamelistConverter.apply_tnt_directives_to_ftn_namelist(tnt_file, ftn_file)
             ftn_file = ftn_file + ".tnt"
 
         shutil.copy(ftn_file, output_ftn)
 
     @staticmethod
     def apply_tnt_directives_to_namelist_dict(tnt_directive_filename, namelist_dict):
-        logger.info(f'Apply {tnt_directive_filename}')
-        #Open the directive file        
+        logger.info(f"Apply {tnt_directive_filename}")
+        # Open the directive file
         with open(tnt_directive_filename, mode="rt", encoding="utf-8") as file:
             tnt_directives = yaml.safe_load(file)
         file.close()
 
-        #Use a copy to be able to modify dictionaries during iterations
+        # Use a copy to be able to modify dictionaries during iterations
         new_namelist = copy.deepcopy(namelist_dict)
 
-        #Move keys from one section to another
+        # Move keys from one section to another
         if "keys_to_move" in tnt_directives:
             for old_block in tnt_directives["keys_to_move"]:
                 for old_key in tnt_directives["keys_to_move"][old_block]:
-                    for new_block in tnt_directives["keys_to_move"][old_block][old_key]:            
-                        new_key=tnt_directives["keys_to_move"][old_block][old_key][new_block]                    
+                    for new_block in tnt_directives["keys_to_move"][old_block][old_key]:
+                        new_key = tnt_directives["keys_to_move"][old_block][old_key][
+                            new_block
+                        ]
 
                         for namelists_section in namelist_dict:
-                            for namelist_block in namelist_dict[namelists_section]:                            
-                                if old_block in namelist_block:                                
-                                    if old_key in namelist_dict[namelists_section][namelist_block]:                                                                        
-                                        if not new_block in new_namelist[namelists_section]:                                        
-                                            new_namelist[namelists_section][new_block] = dict()                                                                        
-                                        new_namelist[namelists_section][new_block][new_key]=namelist_dict[namelists_section][old_block][old_key]                                    
-                                        del new_namelist[namelists_section][old_block][old_key]
+                            for namelist_block in namelist_dict[namelists_section]:
+                                if old_block in namelist_block:
+                                    if (
+                                        old_key
+                                        in namelist_dict[namelists_section][
+                                            namelist_block
+                                        ]
+                                    ):
+                                        if (
+                                            new_block
+                                            not in new_namelist[namelists_section]
+                                        ):
+                                            new_namelist[namelists_section][
+                                                new_block
+                                            ] = dict()
+                                        new_namelist[namelists_section][new_block][
+                                            new_key
+                                        ] = namelist_dict[namelists_section][old_block][
+                                            old_key
+                                        ]
+                                        del new_namelist[namelists_section][old_block][
+                                            old_key
+                                        ]
 
-        #Creation of new blocks 
+        # Creation of new blocks
         if "new_blocks" in tnt_directives:
-            for new_block in tnt_directives["new_blocks"]:    
+            for new_block in tnt_directives["new_blocks"]:
                 for namelists_section in namelist_dict:
                     if "f4" in namelists_section:
-                        for namelist_block in namelist_dict[namelists_section]:                 
-                            if new_block in namelist_block:                                
+                        for namelist_block in namelist_dict[namelists_section]:
+                            if new_block in namelist_block:
                                 raise SystemExit("conversion FAILED: Block existing")
                             else:
-                                if (not new_block in new_namelist[namelists_section]):                                
-                                    new_namelist[namelists_section][new_block] = dict()                                    
+                                if new_block not in new_namelist[namelists_section]:
+                                    new_namelist[namelists_section][new_block] = dict()
 
-        #Move of blocks(Not implemented)
+        # Move of blocks(Not implemented)
         if "blocks_to_move" in tnt_directives:
-            for blocks in tnt_directives["blocks_to_move"]:                
+            for blocks in tnt_directives["blocks_to_move"]:
                 if blocks in namelist_block:
-                    raise SystemExit("conversion FAILED: blocks_to_move section handling not implemented")
+                    raise SystemExit(
+                        "conversion FAILED: blocks_to_move section handling not implemented"
+                    )
 
-        #Delete keys
+        # Delete keys
         if "keys_to_remove" in tnt_directives:
-            for blocks in tnt_directives["keys_to_remove"]:    
+            for blocks in tnt_directives["keys_to_remove"]:
                 for namelists_section in namelist_dict:
-                    for namelist_block in namelist_dict[namelists_section]:                            
-                        if blocks in namelist_block:                                                        
+                    for namelist_block in namelist_dict[namelists_section]:
+                        if blocks in namelist_block:
                             del new_namelist[namelists_section][blocks]
 
         return new_namelist
-    
+
     @staticmethod
     def apply_tnt_directives_to_ftn_namelist(tnt_directive_filename, input_ftn):
-            logger.info(f'Apply {tnt_directive_filename}')
-            tnt_directives_folder = Path(__file__).parent/"namelist_generation_input/tnt_directives/"
-            command = ["tnt.py", "-d", tnt_directives_folder / tnt_directive_filename, input_ftn]
-            subprocess.call(command)
-           
+        logger.info(f"Apply {tnt_directive_filename}")
+        tnt_directives_folder = (
+            Path(__file__).parent / "namelist_generation_input/tnt_directives/"
+        )
+        command = [
+            "tnt.py",
+            "-d",
+            tnt_directives_folder / tnt_directive_filename,
+            input_ftn,
+        ]
+        subprocess.call(command)

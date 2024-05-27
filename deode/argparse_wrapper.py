@@ -8,8 +8,8 @@ from . import GeneralConstants
 from .commands_functions import (
     create_exp,
     doc_config,
-    namelist_integrate,
     namelist_convert,
+    namelist_integrate,
     run_task,
     show_config,
     show_config_schema,
@@ -180,7 +180,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         help="command description",
     )
 
-    #deode namelist convert -n deode/namelist_generation_input/CY48t3/master_namelists.yml --from-cycle CY48t3 --to-cycle CY49t2 --o 49t2.yml
+    # deode namelist convert -n deode/namelist_generation_input/CY48t3/master_namelists.yml --from-cycle CY48t3 --to-cycle CY49t2 --o 49t2.yml
 
     # show config
     parser_show_config = show_command_subparsers.add_parser(
@@ -273,7 +273,8 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
 
     # namelist subparser
     parser_namelist = subparsers.add_parser(
-        "namelist", help="Namelist show (output), integrate (input), convert (input, output)"
+        "namelist",
+        help="Namelist show (output), integrate (input), convert (input, output)",
     )
     namelist_command_subparsers = parser_namelist.add_subparsers(
         title="namelist",
@@ -335,7 +336,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     )
     parser_namelist_convert.add_argument(
         "-n",
-        "--namelist",        
+        "--namelist",
         type=str,
         help="Input namelist definition filename",
         required=True,
@@ -366,12 +367,8 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     )
 
     parser_namelist_convert.add_argument(
-        "--format",
-        "-fmt",
-        help="Input format",
-        choices=["yaml", "ftn"],
-        default="yaml"
+        "--format", "-fmt", help="Input format", choices=["yaml", "ftn"], default="yaml"
     )
     parser_namelist_convert.set_defaults(run_command=namelist_convert)
- 
+
     return main_parser.parse_args(argv)
