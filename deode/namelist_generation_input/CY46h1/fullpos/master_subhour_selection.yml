@@ -1,7 +1,6 @@
 # Do the selection of fields below.
-# Note that xxt00000000 inherits from xxtddddhhmm
 selection:
- xxtddddhhmm: &default
+ xxtddddhhmm:
   NAMFPPHY:
    CLCFU:
     - 'SOMMFLU.RAY.SOLA'
@@ -57,6 +56,3 @@ selection:
     - 200.
     - 250.
     - 300.
- 
- xxt00000000:
-   <<: *default
