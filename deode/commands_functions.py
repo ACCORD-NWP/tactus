@@ -419,7 +419,7 @@ def namelist_integrate(args, config):
     # Write output yaml
     nlint.dict2yml(nml, Path(args.output))
 
-def convert_namelist(args, config):
+def namelist_convert(args, config):
     """Implement the 'convert_namelist' command.
 
     Args:
