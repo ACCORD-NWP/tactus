@@ -180,6 +180,8 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         help="command description",
     )
 
+    #deode namelist convert -n deode/namelist_generation_input/CY48t3/master_namelists.yml --from-cycle CY48t3 --to-cycle CY49t2 --o 49t2.yml
+
     # show config
     parser_show_config = show_command_subparsers.add_parser(
         "config", help="Print configs in use and exit", parents=[common_parser]
@@ -325,7 +327,6 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     )
     parser_namelist_integrate.set_defaults(run_command=namelist_integrate)
 
-
     # namelist convert
     parser_namelist_convert = namelist_command_subparsers.add_parser(
         "convert",
@@ -334,8 +335,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     )
     parser_namelist_convert.add_argument(
         "-n",
-        "--namelist",
-        nargs="+",
+        "--namelist",        
         type=str,
         help="Input namelist definition filename",
         required=True,

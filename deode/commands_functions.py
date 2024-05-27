@@ -435,8 +435,8 @@ def namelist_convert(args, config):
                                      "CY49t1", 
                                      "CY49t2" ]
     to_next_version_tnt_filenames = [ None,                  #CY48t2 to CY48t3
-                                     "cy48t2_to_cy49.yaml",  #CY48t3 to CY49
-                                     "cy49_to_cy49t1.yaml",  #CY49   to CY49t1
+                                     "deode/namelist_generation_input/tnt_directives/cy48t2_to_cy49.yaml",  #CY48t3 to CY49
+                                     "deode/namelist_generation_input/tnt_directives/cy49_to_cy49t1.yaml",  #CY49   to CY49t1
                                       None                   #CY49t1 to CY49t2
                                       ]
 
@@ -451,7 +451,7 @@ def namelist_convert(args, config):
     target_cycle = args.to_cycle
     input_yml = args.namelist
     output_yml = args.output
-
+    
     #Verify that the Cycles are handled
     try:
         start_index = known_cycles.index(start_cycle)
@@ -468,6 +468,7 @@ def namelist_convert(args, config):
         raise SystemExit(f"No conversion possible between {start_cycle} and {target_cycle}")
     
     #Read the input namelist file (yaml)
+    
     with open(input_yml, mode="rt", encoding="utf-8") as file:
         namelist = yaml.safe_load(file)
     file.close()
@@ -480,7 +481,7 @@ def namelist_convert(args, config):
                 raise SystemExit(f"Name list conversion failed")
     
     #Write the final results
-    with open(output_yml + ".tnt", mode = 'w', encoding="utf-8") as outfile:
+    with open(output_yml, mode = 'w', encoding="utf-8") as outfile:
         yaml.dump(namelist, outfile,  encoding="utf-8",  default_flow_style=False)
         outfile.close()
 
@@ -520,7 +521,7 @@ def apply_tnt_directives(tnt_directive_filename, namelist):
                 if "f4" in namelists_section:
                     for namelist_block in namelist[namelists_section]:                 
                         if new_block in namelist_block:                                
-                            print("ERROR: Block existing")
+                            raise SystemExit("conversion FAILED: Block existing")
                         else:
                             if (not new_block in new_namelist[namelists_section]):
                                 print("Create block ", new_block, " for ", namelists_section)
@@ -528,20 +529,20 @@ def apply_tnt_directives(tnt_directive_filename, namelist):
 
     #Move of blocks(Not implemented)
     if "blocks_to_move" in tnt_directives:
-        for blocks in tnt_directives["blocks_to_move"]:    
-            print("Move block", blocks)
-            raise SystemExit("blocks_to_move section handling not implemented")
+        for blocks in tnt_directives["blocks_to_move"]:                
+            if blocks in namelist_block:
+                raise SystemExit("conversion FAILED: blocks_to_move section handling not implemented")
 
     #Delete keys
     if "keys_to_remove" in tnt_directives:
         for blocks in tnt_directives["keys_to_remove"]:    
             print("Delete key", blocks)
 
-    for namelists_section in namelist:
-        for namelist_block in namelist[namelists_section]:                            
-            if blocks in namelist_block:                                
-                print("Delete Key")
-                del new_namelist[namelists_section][blocks]
+            for namelists_section in namelist:
+                for namelist_block in namelist[namelists_section]:                            
+                    if blocks in namelist_block:                                
+                        print("Delete Key")
+                        del new_namelist[namelists_section][blocks]
 
     return new_namelist
     
