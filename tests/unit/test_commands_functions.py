@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from deode.commands_functions import namelist_integrate, set_deode_home, show_namelist
+from deode.commands_functions import namelist_integrate, set_deode_home, show_namelist, namelist_convert
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
 
 
@@ -104,6 +104,34 @@ def test_namelist_integrate(nlint_arg, parsed_config):
     namelist_integrate(nlint_arg, parsed_config)
     assert os.path.isfile(nlint_arg.output)
 
+
+@pytest.fixture()
+def nlconyml_arg(tmp_directory):
+    arg = ArgumentParser()    
+    arg.namelist = "deode/data/namelists/unit_testing/nl_master_base.yml"    
+    arg.output = f"{tmp_directory}/nl_master_base.49t2.yml"
+    arg.from_cycle="CY48t2"
+    arg.to_cycle="CY49t2"
+    arg.format = "yaml"
+    return arg
+
+def test_namelist_convert_yml(nlconyml_arg, parsed_config):
+    namelist_convert(nlconyml_arg, parsed_config)
+    assert os.path.isfile(nlconyml_arg.output)
+
+@pytest.fixture()
+def nlconftn_arg(tmp_directory):
+    arg = ArgumentParser()    
+    arg.namelist = "deode/data/namelists/unit_testing/nl_master_base"    
+    arg.output = f"{tmp_directory}/nl_master_base.49t2"
+    arg.from_cycle="CY48t2"
+    arg.to_cycle="CY49t2"
+    arg.format = "ftn"
+    return arg
+
+def test_namelist_convert_ftn(nlconftn_arg, parsed_config):
+    namelist_convert(nlconftn_arg, parsed_config)
+    assert os.path.isfile(nlconftn_arg.output)
 
 if __name__ == "__main__":
     pytest.main()
