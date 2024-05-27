@@ -427,7 +427,7 @@ def namelist_convert(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
-
+    
     #definitions of the conversion to apply between cycles
     known_cycles =                  ["CY48t2", 
                                      "CY48t3",
@@ -451,7 +451,7 @@ def namelist_convert(args, config):
     target_cycle = args.to_cycle
     input_yml = args.namelist
     output_yml = args.output
-    
+    logger.info(f'Convert namelist from cycle {start_cycle} to cycle {target_cycle}')
     #Verify that the Cycles are handled
     try:
         start_index = known_cycles.index(start_cycle)
@@ -470,12 +470,13 @@ def namelist_convert(args, config):
     #Read the input namelist file (yaml)
     
     with open(input_yml, mode="rt", encoding="utf-8") as file:
-        print("Read: ", input_yml)
+        logger.info(f'Read {input_yml}')
         namelist = yaml.safe_load(file)
     file.close()
 
     #Apply all the intermediate conversions
-    for index in range(start_index,target_index -1):
+    
+    for index in range(start_index,target_index):
         if to_next_version_tnt_filenames[index]:
             namelist = apply_tnt_directives(to_next_version_tnt_filenames[index], namelist)
             if not namelist:
@@ -483,12 +484,12 @@ def namelist_convert(args, config):
     
     #Write the final results
     with open(output_yml, mode = 'w', encoding="utf-8") as outfile:
-        print("Write:", output_yml)
+        logger.info(f'Write {output_yml}')
         yaml.dump(namelist, outfile,  encoding="utf-8",  default_flow_style=False)
         outfile.close()
 
 def apply_tnt_directives(tnt_directive_filename, namelist):
-    print("Convert using: ", tnt_directive_filename)
+    logger.info(f'Apply {tnt_directive_filename}')
     #Open the directive file
     with open(tnt_directive_filename, mode="rt", encoding="utf-8") as file:
         tnt_directives = yaml.safe_load(file)
