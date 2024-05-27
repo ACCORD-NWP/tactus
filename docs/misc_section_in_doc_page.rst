@@ -1,6 +1,10 @@
 Miscellaneous Documentation
 ===========================
 .. include::
+    markdown_docs/local_installation.md
+   :parser: myst_parser.sphinx_
+
+.. include::
     markdown_docs/config.md
    :parser: myst_parser.sphinx_
 

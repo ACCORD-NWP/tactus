@@ -1,0 +1,66 @@
+[submission]
+  account = "#SBATCH -A accord"
+  bindir = "/nobackup/smhid19/proj/accord/sm_uandr/hm_home/dev_CY46h1_deode/bin/R64"
+  default_submit_type = "serial"
+  lfftw = true
+  module_initfile = "/software/sse2/init/nsc_lmod_init.sh"
+  nproma = -32
+  submit_types = ["background", "serial", "parallel", "compile"]
+
+[submission.background]
+  SCHOST = "localhost"
+  tasks = []
+
+[submission.parallel]
+  NPROC = 32
+  SCHOST = "freja"
+  tasks = ["Forecast", "e927", "c903"]
+  WRAPPER = "srun"
+
+[submission.parallel.BATCH]
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  WALLTIME = "#SBATCH --time=00:10:00"
+
+[submission.parallel.ENV]
+  DR_HOOK = 1
+  DR_HOOK_IGNORE_SIGNALS = -1
+  OMP_NUM_THREADS = 1
+  OMPI_MCA_btl = "^vader"
+
+[submission.parallel.MODULES]
+  # First load the prgenv
+  PRGENV = ["load", "prgenv/intel"]
+  # The rest
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+  FFTW = ["load", "fftw/3.3.9"]
+  HDF5 = ["load", "hdf5/1.10.6"]
+  MKL = ["load", "intel-mkl/19.0.5"]
+  NETCDF = ["load", "netcdf4/4.7.4"]
+  OPENMPI = ["load", "openmpi/4.1.1.1"]
+
+[submission.serial]
+  NPROC = 1
+  NPROCX = 1
+  NPROCY = 1
+  SCHOST = "freja"
+  tasks = ["CreateGrib", "Gmted", "Soil", "Pgd", "Prep", "Marsprep"]
+  WRAPPER = "srun"
+
+[submission.serial.BATCH]
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  WALLTIME = "#SBATCH --time=00:15:00"
+
+[submission.serial.ENV]
+  DR_HOOK_IGNORE_SIGNALS = -1
+  OMP_NUM_THREADS = 1
+  OMPI_MCA_btl = "^vader"
+
+[submission.serial.MODULES]
+  # First load the prgenv
+  00_PRGENV = ["-q", "purge"]
+  01_ECCODES = ["load", "eccodes-utils/2.32.0-ENABLE-AEC-hpc1-intel-2023a-eb"]
+
+[submission.task]
+  wrapper = ""
