@@ -4,8 +4,6 @@ import datetime
 import os
 import subprocess
 import sys
-import copy
-import shutil
 
 from functools import partial
 from pathlib import Path
@@ -20,7 +18,7 @@ from .derived_variables import check_fullpos_namelist, derived_variables, set_ti
 from .experiment import case_setup
 from .host_actions import DeodeHost
 from .logs import logger
-from .namelist import NamelistComparator, NamelistGenerator, NamelistIntegrator
+from .namelist import NamelistComparator, NamelistGenerator, NamelistIntegrator, NamelistConverter
 from .scheduler import EcflowServer
 from .submission import NoSchedulerSubmission, TaskSettings
 from .suites.discover_suite import get_suite
@@ -396,7 +394,7 @@ def namelist_integrate(args, config):
                     "With -y given, you must also specify with -t which tag to use as basis!"
                     )
         # Read yaml to use as basis for comparisons
-        nml = nlint.yml2dict(Path(args.yaml))
+        nml = NamelistIntegrator.yml2dict(Path(args.yaml))
         if tag not in nml:
             raise SystemExit(f"Tag {tag} was not found in input yaml file {args.yaml}!")
 
@@ -417,7 +415,7 @@ def namelist_integrate(args, config):
             nml[ltag] = nlcomp.compare_dicts(nml[tag], nml_in[ltag], "diff")
 
     # Write output yaml
-    nlint.dict2yml(nml, Path(args.output))
+    NamelistIntegrator.dict2yml(nml, Path(args.output))
 
 def namelist_convert(args, config):
     """Implement the 'namelist convert' command.
@@ -428,117 +426,18 @@ def namelist_convert(args, config):
 
     """
     
-    #definitions of the conversion to apply between cycles
-    known_cycles =                  ["CY48t2", 
-                                     "CY48t3",
-                                     "CY49", 
-                                     "CY49t1", 
-                                     "CY49t2" ]
-    to_next_version_tnt_filenames = [ None,                                                                 #CY48t2 to CY48t3
-                                     "deode/namelist_generation_input/tnt_directives/cy48t2_to_cy49.yaml",  #CY48t3 to CY49
-                                     "deode/namelist_generation_input/tnt_directives/cy49_to_cy49t1.yaml",  #CY49   to CY49t1
-                                      None                                                                  #CY49t1 to CY49t2
-                                      ]
-
     #Configuration 
     #Check that parameters are present
     for parameter, parameter_name in zip([args.from_cycle, args.to_cycle, args.namelist,args.output],
-                          ["from_cycle", "to_cycle", "namelist", "output"]):
+                                         ["from_cycle", "to_cycle", "namelist", "output"]):
         if not parameter: 
             raise SystemExit("Please provide parameter {parameter_name}")
-    
-    start_cycle = args.from_cycle
-    target_cycle = args.to_cycle
-    input_yml = args.namelist
-    output_yml = args.output
-    logger.info(f'Convert namelist from cycle {start_cycle} to cycle {target_cycle}')
-    #Verify that the Cycles are handled
-    try:
-        start_index = known_cycles.index(start_cycle)
-    except ValueError:
-            raise SystemExit(f"ERROR: from-cycle {start_cycle} unknown")
-    
-    try:
-        target_index = known_cycles.index(target_cycle)
-    except ValueError:
-            raise SystemExit(f"ERROR: to-cycle {target_cycle} unknown")
-    
-    #Verify that target_cycle is older than start_cycle
-    if (start_index >= target_index):
-        raise SystemExit(f"ERROR: No conversion possible between {start_cycle} and {target_cycle}")
-    
-    #Read the input namelist file (yaml)
-    
-    with open(input_yml, mode="rt", encoding="utf-8") as file:
-        logger.info(f'Read {input_yml}')
-        namelist = yaml.safe_load(file)
-    file.close()
-
-    #Apply all the intermediate conversions
-    
-    for index in range(start_index,target_index):
-        if to_next_version_tnt_filenames[index]:
-            namelist = apply_tnt_directives(to_next_version_tnt_filenames[index], namelist)
-            if not namelist:
-                raise SystemExit(f"Name list conversion failed")
-    
-    #Write the final results
-    with open(output_yml, mode = 'w', encoding="utf-8") as outfile:
-        logger.info(f'Write {output_yml}')
-        yaml.dump(namelist, outfile,  encoding="utf-8",  default_flow_style=False)
-        outfile.close()
-
-def apply_tnt_directives(tnt_directive_filename, namelist):
-    logger.info(f'Apply {tnt_directive_filename}')
-    #Open the directive file
-    with open(tnt_directive_filename, mode="rt", encoding="utf-8") as file:
-        tnt_directives = yaml.safe_load(file)
-    file.close()
-
-    #Use a copy to be able to modify dictionaries during iterations
-    new_namelist = copy.deepcopy(namelist)
-
-    #Move keys from one section to another
-    if "keys_to_move" in tnt_directives:
-        for old_block in tnt_directives["keys_to_move"]:
-            for old_key in tnt_directives["keys_to_move"][old_block]:
-                for new_block in tnt_directives["keys_to_move"][old_block][old_key]:            
-                    new_key=tnt_directives["keys_to_move"][old_block][old_key][new_block]                    
-
-                    for namelists_section in namelist:
-                        for namelist_block in namelist[namelists_section]:                            
-                            if old_block in namelist_block:                                
-                                if old_key in namelist[namelists_section][namelist_block]:                                                                        
-                                    if not new_block in new_namelist[namelists_section]:                                        
-                                        new_namelist[namelists_section][new_block] = dict()                                                                        
-                                    new_namelist[namelists_section][new_block][new_key]=namelist[namelists_section][old_block][old_key]                                    
-                                    del new_namelist[namelists_section][old_block][old_key]
-
-    #Creation of new blocks 
-    if "new_blocks" in tnt_directives:
-        for new_block in tnt_directives["new_blocks"]:    
-            for namelists_section in namelist:
-                if "f4" in namelists_section:
-                    for namelist_block in namelist[namelists_section]:                 
-                        if new_block in namelist_block:                                
-                            raise SystemExit("conversion FAILED: Block existing")
-                        else:
-                            if (not new_block in new_namelist[namelists_section]):                                
-                                new_namelist[namelists_section][new_block] = dict()                                    
-
-    #Move of blocks(Not implemented)
-    if "blocks_to_move" in tnt_directives:
-        for blocks in tnt_directives["blocks_to_move"]:                
-            if blocks in namelist_block:
-                raise SystemExit("conversion FAILED: blocks_to_move section handling not implemented")
-
-    #Delete keys
-    if "keys_to_remove" in tnt_directives:
-        for blocks in tnt_directives["keys_to_remove"]:    
-            for namelists_section in namelist:
-                for namelist_block in namelist[namelists_section]:                            
-                    if blocks in namelist_block:                                                        
-                        del new_namelist[namelists_section][blocks]
-
-    return new_namelist
-    
+   
+    #Convert namelists     
+    logger.info(f'Convert namelist from cycle {args.from_cycle} to cycle {args.to_cycle}')        
+    if args.format == "yaml":
+        NamelistConverter.convert_yml(args.namelist, args.output, args.from_cycle, args.to_cycle)
+    elif args.format == "ftn":
+        NamelistConverter.convert_ftn(args.namelist, args.output, args.from_cycle, args.to_cycle)
+    else:
+        raise SystemExit(f"Format {args.format} not handled")

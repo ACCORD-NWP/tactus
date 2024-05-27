@@ -364,6 +364,14 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         required=True,
         default=None,
     )
+
+    parser_namelist_convert.add_argument(
+        "--format",
+        "-fmt",
+        help="Input format",
+        choices=["yaml", "ftn"],
+        default="yaml"
+    )
     parser_namelist_convert.set_defaults(run_command=namelist_convert)
  
     return main_parser.parse_args(argv)
