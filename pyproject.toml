@@ -33,11 +33,11 @@
   pandas = "^1.4.0"
   pyproj = "^3.3.0, !=3.5.0"
   pyyaml = "^6.0"
+  thenamelisttool = {git = "https://github.com/UMR-CNRM/thenamelisttool.git"}
   toml-formatter = {git = "https://github.com/paulovcmedeiros/toml-formatter"}
   tomli = "^2.0.1"
   tomlkit = "^0.12.1"
   troika = {git = "https://git.ecmwf.int/scm/ecsdk/troika.git"}
-  thenamelisttool = {git = "https://github.com/UMR-CNRM/thenamelisttool.git"}
 
 [tool.poetry.group.dev.dependencies]
   ipython = "^8.12.3"

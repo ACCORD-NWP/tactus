@@ -614,15 +614,7 @@ class NamelistConverter:
 
     @staticmethod
     def get_tnt_files_list(from_cycle, to_cycle):
-        """Return the list of tnt directive files required for the conversion.
-
-        Args:
-            from_cycle: the input cycle
-            to_cycle: the target cycle
-
-        Raises:
-            SystemExit   when arguments are incorrect
-        """
+        """Return the list of tnt directive files required for the conversion."""
         # definitions of the conversion to apply between cycles
         tnt_directives_folder = (
             Path(__file__).parent / "namelist_generation_input/tnt_directives/"
@@ -670,7 +662,7 @@ class NamelistConverter:
             to_cycle: the target cycle
 
         Raises:
-            SystemExit   when conversion failed
+            SystemExit: when conversion failed
         """
         tnt_files = NamelistConverter.get_tnt_files_list(from_cycle, to_cycle)
 
@@ -716,8 +708,11 @@ class NamelistConverter:
             tnt_directive_filename: the tnt directive filename
             namelist_dict: the namelist dictionary
 
+        Returns:
+            new_namelist: the converted namelist dictionary
+
         Raises:
-            SystemExit   when conversion failed
+            SystemExit: when conversion failed
         """
         logger.info(f"Apply {tnt_directive_filename}")
         # Open the directive file
@@ -785,7 +780,15 @@ class NamelistConverter:
 
     @staticmethod
     def apply_tnt_directives_to_ftn_namelist(tnt_directive_filename, input_ftn):
-        """Apply the tnt directives to a fotran namelist using tnt."""
+        """Apply the tnt directives to a fotran namelist using tnt.
+
+        Args:
+            tnt_directive_filename: the tnt directive filename
+            input_ftn: the namelist fortran file
+
+        Raises:
+           SystemExit: when conversion failed
+        """
         logger.info(f"Apply {tnt_directive_filename}")
         tnt_directives_folder = (
             Path(__file__).parent / "namelist_generation_input/tnt_directives/"
