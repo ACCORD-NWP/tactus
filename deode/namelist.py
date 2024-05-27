@@ -651,12 +651,12 @@ class NamelistConverter:
                 f"ERROR: No conversion possible between {from_cycle} and {to_cycle}"
             )
         # Apply all the intermediate conversions
-        tnt_files = []
-        for index in range(start_index, target_index):
-            if to_next_version_tnt_filenames[index]:
-                tnt_files.append(
-                    tnt_directives_folder / to_next_version_tnt_filenames[index]
-                )
+        tnt_files = [
+            tnt_directives_folder / to_next_version_tnt_filenames[index]
+            for index in range(start_index, target_index)
+            if to_next_version_tnt_filenames[index]
+        ]
+
         return tnt_files
 
     @staticmethod
