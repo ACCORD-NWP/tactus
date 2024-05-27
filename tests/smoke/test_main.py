@@ -162,10 +162,11 @@ def test_integrate_namelists_command():
     ]
     main(args)
 
+
 @pytest.mark.usefixtures("_module_mockers")
 def test_convert_namelists_command(tmp_path):
     output_yml = f"{tmp_path.as_posix()}/nl_master_base.49t2.yml"
-    
+
     args = [
         "namelist",
         "convert",
@@ -178,7 +179,6 @@ def test_convert_namelists_command(tmp_path):
         "--to-cycle",
         "CY49t2",
         "--format",
-        "yaml"
+        "yaml",
     ]
     main(args)
-
