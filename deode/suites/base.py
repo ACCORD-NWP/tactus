@@ -122,7 +122,7 @@ class SuiteDefinition(object):
 
         platform = Platform(config)
         try:
-            troika = config["troika.troika"]
+            troika = platform.substitute(config["troika.troika"])
         except KeyError:
             troika = "troika"
         if troika is None:
