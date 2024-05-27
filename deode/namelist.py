@@ -669,9 +669,9 @@ class NamelistConverter:
         ftn_file = input_ftn
         for tnt_file in tnt_files:
             NamelistConverter.apply_tnt_directives_to_ftn_namelist(tnt_file,ftn_file)
-            ftn_file = ftn_file + ".ftn"
+            ftn_file = ftn_file + ".tnt"
 
-        shutil.move(ftn_file, output_ftn)
+        shutil.copy(ftn_file, output_ftn)
 
     @staticmethod
     def apply_tnt_directives_to_namelist_dict(tnt_directive_filename, namelist_dict):

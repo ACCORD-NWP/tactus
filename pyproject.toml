@@ -37,6 +37,7 @@
   tomli = "^2.0.1"
   tomlkit = "^0.12.1"
   troika = {git = "https://git.ecmwf.int/scm/ecsdk/troika.git"}
+  thenamelisttool = {git = "https://github.com/UMR-CNRM/thenamelisttool.git"}
 
 [tool.poetry.group.dev.dependencies]
   ipython = "^8.12.3"
