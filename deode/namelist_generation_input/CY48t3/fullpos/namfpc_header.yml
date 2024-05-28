@@ -1,6 +1,6 @@
 # Change only global settings in NAMFPC, no selection of fields
 NAMFPC:
-    NFPGRIB: 224
+    NFPGRIB: ${submission.nfpgrib-224}
     CFPDOM: "${domain.name}"
     LFPCAPEX: True
     LFPMOIS: False

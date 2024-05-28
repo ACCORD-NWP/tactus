@@ -1,0 +1,3 @@
+[platform]
+  host = "linda"
+  scratch = "@HOME@/deode_wrk"

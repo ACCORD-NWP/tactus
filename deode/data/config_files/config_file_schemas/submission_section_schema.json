@@ -23,6 +23,10 @@
           "description": "Use of the FFTW library. See the namelists for where it is used",
           "default": true
       },
+        "module_initfile": {
+            "type": "string",
+            "description": "File to use for module initialization, overrides module_initpath"
+        },
         "module_initpath": {
             "type": "string",
             "description": "Path to the version of env_modules_python.py to be used in the module initialization"

@@ -8,10 +8,12 @@ from . import GeneralConstants
 from .commands_functions import (
     create_exp,
     doc_config,
+    namelist_convert,
     namelist_integrate,
     run_task,
     show_config,
     show_config_schema,
+    show_host,
     show_namelist,
     start_suite,
 )
@@ -135,6 +137,14 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         nargs="*",
         default=None,
     )
+    parser_case.add_argument(
+        "--start-suite",
+        "-s",
+        action="store_true",
+        default=False,
+        help="Start suite as well",
+        required=False,
+    )
     parser_case.set_defaults(run_command=create_exp)
 
     ############################################
@@ -206,6 +216,12 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     )
     parser_show_config_schema.set_defaults(run_command=show_config_schema)
 
+    # show host
+    parser_show_host = show_command_subparsers.add_parser(
+        "host", help="Print current and available hosts", parents=[common_parser]
+    )
+    parser_show_host.set_defaults(run_command=show_host)
+
     # show namelist
     parser_show_namelist = show_command_subparsers.add_parser(
         "namelist", help="Print namelist in use and exit", parents=[common_parser]
@@ -270,10 +286,11 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
 
     # namelist subparser
     parser_namelist = subparsers.add_parser(
-        "namelist", help="Namelist show (output) or integrate (input)"
+        "namelist",
+        help="Namelist show (output), integrate (input), convert (input, output)",
     )
     namelist_command_subparsers = parser_namelist.add_subparsers(
-        title="integrate",
+        title="namelist",
         dest="namelist_what",
         required=True,
         description=(
@@ -323,5 +340,48 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         default=None,
     )
     parser_namelist_integrate.set_defaults(run_command=namelist_integrate)
+
+    # namelist convert
+    parser_namelist_convert = namelist_command_subparsers.add_parser(
+        "convert",
+        help="Convert a namelist (ftn or yml) to a new Cycle",
+        parents=[common_parser],
+    )
+    parser_namelist_convert.add_argument(
+        "-n",
+        "--namelist",
+        type=str,
+        help="Input namelist definition filename",
+        required=True,
+        default=None,
+    )
+    parser_namelist_convert.add_argument(
+        "-o",
+        "--output",
+        type=str,
+        help="Output namelist definition filename",
+        required=True,
+        default=None,
+    )
+    parser_namelist_convert.add_argument(
+        "--from-cycle",
+        type=str,
+        help="Cycle of input namelist",
+        required=True,
+        default=None,
+    )
+
+    parser_namelist_convert.add_argument(
+        "--to-cycle",
+        type=str,
+        help="Cycle of output namelist",
+        required=True,
+        default=None,
+    )
+
+    parser_namelist_convert.add_argument(
+        "--format", "-fmt", help="Input format", choices=["yaml", "ftn"], default="yaml"
+    )
+    parser_namelist_convert.set_defaults(run_command=namelist_convert)
 
     return main_parser.parse_args(argv)

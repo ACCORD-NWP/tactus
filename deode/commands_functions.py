@@ -12,12 +12,17 @@ from toml_formatter.formatter import FormattedToml
 from troika.connections.ssh import SSHConnection
 
 from . import GeneralConstants
-from .config_parser import BasicConfig, ParsedConfig
+from .config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
 from .experiment import case_setup
 from .host_actions import DeodeHost
 from .logs import logger
-from .namelist import NamelistComparator, NamelistGenerator, NamelistIntegrator
+from .namelist import (
+    NamelistComparator,
+    NamelistConverter,
+    NamelistGenerator,
+    NamelistIntegrator,
+)
 from .scheduler import EcflowServer
 from .submission import NoSchedulerSubmission, TaskSettings
 from .suites.discover_suite import get_suite
@@ -125,6 +130,15 @@ def create_exp(args, config):
         config_dir=config_dir,
     )
 
+    if args.start_suite:
+        config = ParsedConfig.from_file(
+            output_file, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+        )
+        args.start_command = None
+        args.config_file = output_file
+        args.begin = True
+        start_suite(args, config)
+
 
 def start_suite(args, config):
     """Implement the 'start suite' command.
@@ -177,6 +191,16 @@ def start_suite(args, config):
         suite_def = config["suite_control.suite_definition"]
     except KeyError:
         suite_def = "DeodeSuiteDefinition"
+
+    logger.info("ecf_host: {}", ecf_host)
+    logger.info("ecf_jobout: {}", joboutdir)
+    logger.info("ecf_files: {}", ecf_files)
+    logger.info("ecf_files_remotely: {}", ecf_files_remotely)
+    logger.info("ecf_home: {}", ecf_home)
+    logger.info("ecf_remoteuser: {}", ecf_remoteuser)
+    logger.info("suite definition: {}", suite_def)
+
+    os.environ["ECF_HOST"] = ecf_host
 
     server = EcflowServer(config, start_command=args.start_command)
 
@@ -323,6 +347,21 @@ def show_config_schema(args, config):  # noqa ARG001
     sys.stdout.write(str(config.json_schema) + "\n")
 
 
+def show_host(args, config):  # noqa ARG001
+    """Implement the `show host` command.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+        config (.config_parser.ParsedConfig): Parsed config file contents.
+
+    """
+    dh = DeodeHost()
+    logger.info("Current host: {}", dh.detect_deode_host())
+    logger.info("Known hosts (host, recognition method):")
+    for host, pattern in dh.known_hosts.items():
+        logger.info("{:>16}   {}", host, pattern)
+
+
 def show_namelist(args, config):
     """Implement the 'show_namelist' command.
 
@@ -393,7 +432,7 @@ def namelist_integrate(args, config):
                 "With -y given, you must also specify with -t which tag to use as basis!"
             )
         # Read yaml to use as basis for comparisons
-        nml = nlint.yml2dict(Path(args.yaml))
+        nml = NamelistIntegrator.yml2dict(Path(args.yaml))
         if tag not in nml:
             raise SystemExit(f"Tag {tag} was not found in input yaml file {args.yaml}!")
 
@@ -414,4 +453,35 @@ def namelist_integrate(args, config):
             nml[ltag] = nlcomp.compare_dicts(nml[tag], nml_in[ltag], "diff")
 
     # Write output yaml
-    nlint.dict2yml(nml, Path(args.output))
+    NamelistIntegrator.dict2yml(nml, Path(args.output))
+
+
+def namelist_convert(args, config: ParsedConfig):  # noqa ARG001
+    """Implement the 'namelist convert' command.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+        config (.config_parser.ParsedConfig): Parsed config file contents.
+
+    """
+    # Configuration
+    # Check that parameters are present
+    for parameter, parameter_name in zip(
+        [args.from_cycle, args.to_cycle, args.namelist, args.output],
+        ["from_cycle", "to_cycle", "namelist", "output"],
+    ):
+        if not parameter:
+            raise SystemExit(f"Please provide parameter {parameter_name}")
+
+    # Convert namelists
+    logger.info(f"Convert namelist from cycle {args.from_cycle} to cycle {args.to_cycle}")
+    if args.format == "yaml":
+        NamelistConverter.convert_yml(
+            args.namelist, args.output, args.from_cycle, args.to_cycle
+        )
+    elif args.format == "ftn":
+        NamelistConverter.convert_ftn(
+            args.namelist, args.output, args.from_cycle, args.to_cycle
+        )
+    else:
+        raise SystemExit(f"Format {args.format} not handled")

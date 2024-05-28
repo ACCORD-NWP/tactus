@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Namelist handling for MASTERODB w/SURFEX."""
+import copy
 import os
 import re
 import subprocess
@@ -609,13 +610,212 @@ class NamelistIntegrator:
             logger.warning(msg)
         return onml
 
-    def yml2dict(self, ymlfile):
+    @staticmethod
+    def yml2dict(ymlfile):
         """Read yaml namelist file and return as dict."""
         with open(ymlfile, mode="rt", encoding="utf-8") as file:
             ynml = yaml.safe_load(file)
         return ynml
 
-    def dict2yml(self, nmldict, ymlfile):
+    @staticmethod
+    def dict2yml(nmldict, ymlfile):
         """Write dict as yaml file."""
         with open(ymlfile, mode="wb") as file:
             yaml.dump(nmldict, file, encoding="utf-8", default_flow_style=False)
+
+
+class NamelistConverter:
+    """Helper class to convert namelists between cycles, based on thenamelisttool."""
+
+    @staticmethod
+    def get_tnt_files_list(from_cycle, to_cycle):
+        """Return the list of tnt directive files required for the conversion."""
+        # definitions of the conversion to apply between cycles
+        tnt_directives_folder = (
+            Path(__file__).parent / "namelist_generation_input/tnt_directives/"
+        )
+        known_cycles = ["CY48t2", "CY48t3", "CY49", "CY49t1", "CY49t2"]
+        to_next_version_tnt_filenames = [
+            None,  # CY48t2 to CY48t3
+            "cy48t2_to_cy49.yaml",  # CY48t3 to CY49
+            "cy49_to_cy49t1.yaml",  # CY49   to CY49t1
+            None,  # CY49t1 to CY49t2
+        ]
+
+        try:
+            start_index = known_cycles.index(from_cycle)
+        except ValueError:
+            raise SystemExit(f"ERROR: from-cycle {from_cycle} unknown") from ValueError
+
+        try:
+            target_index = known_cycles.index(to_cycle)
+        except ValueError:
+            raise SystemExit(f"ERROR: to-cycle {to_cycle} unknown") from ValueError
+
+        # Verify that to_cycle is older than from_cycle
+        if start_index >= target_index:
+            raise SystemExit(
+                f"ERROR: No conversion possible between {from_cycle} and {to_cycle}"
+            )
+        # Apply all the intermediate conversions
+        tnt_files = [
+            tnt_directives_folder / to_next_version_tnt_filenames[index]
+            for index in range(start_index, target_index)
+            if to_next_version_tnt_filenames[index]
+        ]
+
+        return tnt_files
+
+    @staticmethod
+    def convert_yml(input_yml, output_yml, from_cycle, to_cycle):
+        """Convert a namelist in yml file between two cycles.
+
+        Args:
+            input_yml: the input yaml filename
+            output_yml: the output yaml filename
+            from_cycle: the input cycle
+            to_cycle: the target cycle
+
+        Raises:
+            SystemExit: when conversion failed
+        """
+        tnt_files = NamelistConverter.get_tnt_files_list(from_cycle, to_cycle)
+
+        # Read the input namelist file (yaml)
+        logger.info(f"Read {input_yml}")
+        nmldict = NamelistIntegrator.yml2dict(Path(input_yml))
+
+        for tnt_file in tnt_files:
+            nmldict = NamelistConverter.apply_tnt_directives_to_namelist_dict(
+                tnt_file, nmldict
+            )
+            if not nmldict:
+                raise SystemExit("Name list conversion failed.  ")
+
+        # Write the output namelist file (yaml)
+        logger.info(f"Write {output_yml}")
+        NamelistIntegrator.dict2yml(nmldict, Path(output_yml))
+
+    @staticmethod
+    def convert_ftn(input_ftn, output_ftn, from_cycle, to_cycle):
+        """Convert a namelist in fortran file between two cycles.
+
+        Args:
+            input_ftn: the input fortran filename
+            output_ftn: the output fortran filename
+            from_cycle: the input cycle
+            to_cycle: the target cycle
+        """
+        tnt_files = NamelistConverter.get_tnt_files_list(from_cycle, to_cycle)
+
+        ftn_file = input_ftn
+        for tnt_file in tnt_files:
+            NamelistConverter.apply_tnt_directives_to_ftn_namelist(tnt_file, ftn_file)
+            ftn_file = ftn_file + ".tnt"
+
+        shutil.copy(ftn_file, output_ftn)
+
+    @staticmethod
+    def apply_tnt_directives_to_namelist_dict(tnt_directive_filename, namelist_dict):
+        """Apply the tnt directives to a namelist as dictionary.
+
+        Args:
+            tnt_directive_filename: the tnt directive filename
+            namelist_dict: the namelist dictionary
+
+        Returns:
+            new_namelist: the converted namelist dictionary
+
+        Raises:
+            SystemExit: when conversion failed
+        """
+        logger.info(f"Apply {tnt_directive_filename}")
+        # Open the directive file
+        with open(tnt_directive_filename, mode="rt", encoding="utf-8") as file:
+            tnt_directives = yaml.safe_load(file)
+        file.close()
+
+        # Use a copy to be able to modify dictionaries during iterations
+        new_namelist = copy.deepcopy(namelist_dict)
+
+        # Move keys from one section to another
+        if "keys_to_move" in tnt_directives:
+            for old_block in tnt_directives["keys_to_move"]:
+                for old_key in tnt_directives["keys_to_move"][old_block]:
+                    for new_block in tnt_directives["keys_to_move"][old_block][old_key]:
+                        new_key = tnt_directives["keys_to_move"][old_block][old_key][
+                            new_block
+                        ]
+
+                        for namelists_section in namelist_dict:
+                            for namelist_block in namelist_dict[namelists_section]:
+                                if (
+                                    old_block in namelist_block
+                                    and old_key
+                                    in namelist_dict[namelists_section][namelist_block]
+                                ):
+                                    if new_block not in new_namelist[namelists_section]:
+                                        new_namelist[namelists_section][new_block] = {}
+                                    new_namelist[namelists_section][new_block][
+                                        new_key
+                                    ] = namelist_dict[namelists_section][old_block][
+                                        old_key
+                                    ]
+                                    del new_namelist[namelists_section][old_block][
+                                        old_key
+                                    ]
+
+        # Creation of new blocks
+        if "new_blocks" in tnt_directives:
+            for new_block in tnt_directives["new_blocks"]:
+                for namelists_section in namelist_dict:
+                    if "f4" in namelists_section:
+                        for namelist_block in namelist_dict[namelists_section]:
+                            if new_block in namelist_block:
+                                raise SystemExit("conversion FAILED: Block existing")
+
+                            if new_block not in new_namelist[namelists_section]:
+                                new_namelist[namelists_section][new_block] = {}
+
+        # Move of blocks(Not implemented)
+        if "blocks_to_move" in tnt_directives:
+            for blocks in tnt_directives["blocks_to_move"]:
+                if blocks in namelist_block:
+                    raise SystemExit("conversion FAILED: blocks_to_move not implemented")
+
+        # Delete keys
+        if "keys_to_remove" in tnt_directives:
+            for blocks in tnt_directives["keys_to_remove"]:
+                for namelists_section in namelist_dict:
+                    for namelist_block in namelist_dict[namelists_section]:
+                        if blocks in namelist_block:
+                            del new_namelist[namelists_section][blocks]
+
+        return new_namelist
+
+    @staticmethod
+    def apply_tnt_directives_to_ftn_namelist(tnt_directive_filename, input_ftn):
+        """Apply the tnt directives to a fotran namelist using tnt.
+
+        Args:
+            tnt_directive_filename: the tnt directive filename
+            input_ftn: the namelist fortran file
+
+        Raises:
+           SystemExit: when conversion failed
+        """
+        logger.info(f"Apply {tnt_directive_filename}")
+        tnt_directives_folder = (
+            Path(__file__).parent / "namelist_generation_input/tnt_directives/"
+        )
+        command = [
+            "tnt.py",
+            "-d",
+            tnt_directives_folder / tnt_directive_filename,
+            input_ftn,
+        ]
+
+        try:
+            subprocess.check_call(command)  # noqa S603
+        except subprocess.CalledProcessError as exception:
+            raise SystemExit(f"tnt failed with {exception!r}") from exception

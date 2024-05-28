@@ -266,4 +266,34 @@ class Fullpos:
                 if k not in selection[kk]:
                     selection[kk][k] = {}
 
+        if "xxt00000000" in selection:
+            self.check_non_instant_fields(selection, "xxt00000000")
+
         return namfpc_out, selection
+
+    def check_non_instant_fields(self, selection, time_selection):
+        """Search for non instant fields.
+
+        Args:
+            selection (dict): Dict with fullpos settings to be examined
+            time_selection (str): Which selection time rules to check
+
+        Raises:
+            RuntimeError: Non instant fields found
+
+        """
+        field_list = []
+        for parlist in selection[time_selection].values():
+            for var in parlist.values():
+                if isinstance(var, list):
+                    fields = [x for x in var if x in self.nldict["NON_INSTANT_FIELDS"]]
+                    field_list.append(fields)
+
+        field_list = flatten_list(field_list)
+        if len(field_list) > 0:
+            logger.error("Non instant fields found for {}", time_selection)
+            logger.error(field_list)
+            logger.info(
+                "Change selection or empty `NON_INSTANT_FIELDS` in rules.yml to override"
+            )
+            raise RuntimeError("Non instant fields found")

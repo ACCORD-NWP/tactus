@@ -1,5 +1,7 @@
 # Domain configuration
 
+## Define new domains
+
 The domain you use for your run needs to be defined in a toml file and placed in include/domains folder and few test domains are provided.
 
 We recommend you use tools like domain_maker.py (EpyGraM) or [Domain Creation Tool](https://hirlam.github.io/HarmonieSystemDocumentation/dev/ExperimentConfiguration/ModelDomain/) (follow the link) to define your domain.

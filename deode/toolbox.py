@@ -3,6 +3,8 @@ import contextlib
 import os
 import re
 
+from troika.connections.ssh import SSHConnection
+
 from .datetime_utils import as_datetime, get_decade
 from .logs import logger
 
@@ -183,6 +185,9 @@ class Platform:
 
         if provider_id == "fdb":
             return FDB(self.config, target, fetch=fetch)
+
+        if provider_id == "scp":
+            return SCP(self.config, target, fetch=fetch)
 
         raise NotImplementedError(f"Provider for {provider_id} not implemented")
 
@@ -774,8 +779,7 @@ class ArchiveProvider(Provider):
             fetch (bool, optional): Fetch the data. Defaults to True.
 
         """
-        self.fetch = fetch
-        Provider.__init__(self, config, pattern)
+        Provider.__init__(self, config, pattern, fetch=fetch)
 
     def create_resource(self, resource):
         """Create the resource.
@@ -824,6 +828,45 @@ class ECFS(ArchiveProvider):
             os.system(
                 f"ecp -pu {resource.identifier} {self.identifier}"  # noqa S605, E800
             )
+        return True
+
+
+class SCP(ArchiveProvider):
+    """Transfer data with SCP."""
+
+    def __init__(self, config, pattern, fetch=True):
+        """Construct SCP provider.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+            pattern (str): Filepattern
+            fetch (bool, optional): Fetch the data. Defaults to True.
+        """
+        ArchiveProvider.__init__(self, config, pattern, fetch=fetch)
+
+    def create_resource(self, resource):
+        """Create the resource.
+
+        Args:
+            resource (Resource): Resource.
+
+        Returns:
+            bool: True if success
+
+        """
+        # Assumes self.identifier=host:full_file_path
+        remote_host, remote_file = str(self.identifier).split(":")
+        remote_dir = os.path.dirname(remote_file)
+
+        ssh = SSHConnection({"host": remote_host}, None)
+        if self.fetch:
+            logger.info("scp src={} to dst={}", self.identifier, resource.identifier)
+            ssh.sendfile(remote_file, resource.identifier)
+        else:
+            logger.info("scp src={} to dst={}", resource.identifier, self.identifier)
+            ssh.execute(["mkdir", "-p", f"{remote_dir}"])
+            ssh.sendfile(resource.identifier, remote_file)
+
         return True
 
 

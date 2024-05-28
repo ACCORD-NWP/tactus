@@ -6,7 +6,7 @@
     "additionalProperties": true,
     "properties": {
         "nlev": {
-            "type": "number",
+            "type": "integer",
             "description": "Number of vertical full levels"
         },
         "ahalf": {

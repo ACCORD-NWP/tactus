@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
+import os
 from unittest.mock import patch
 
 import pytest
@@ -34,6 +35,12 @@ def ecflow_server(parsed_config):
 
 
 class TestScheduler:
+    def test_ecf_port_setting(self, ecflow_server):
+        offset = 100
+        port = os.getuid() + offset
+        ecf_port = ecflow_server._set_port_from_user(offset)
+        assert port == ecf_port
+
     def test_ecflow_client(self, ecflow_server, ecflow_task):
         EcflowClient(ecflow_server, ecflow_task)
 
