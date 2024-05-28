@@ -176,11 +176,13 @@ def start_suite(args, config):
     logger.info("Ecflow settings: ")
 
     # Assign Ecfvars
+    ecf_user = config["scheduler.ecfvars.ecf_user"]
     joboutdir = config["scheduler.ecfvars.ecf_jobout"]
     ecf_files = config["scheduler.ecfvars.ecf_files"]
     ecf_files_remotely = config["scheduler.ecfvars.ecf_files_remotely"]
     ecf_home = config["scheduler.ecfvars.ecf_home"]
     ecf_host = config["scheduler.ecfvars.ecf_host"]
+    ecf_port = config["scheduler.ecfvars.ecf_port"]
     ecf_remoteuser = config["scheduler.ecfvars.ecf_remoteuser"]
     try:
         suite_def = config["suite_control.suite_definition"]
@@ -195,7 +197,10 @@ def start_suite(args, config):
     logger.info("ecf_remoteuser: {}", ecf_remoteuser)
     logger.info("suite definition: {}", suite_def)
 
-    os.environ["ECF_HOST"] = ecf_host
+    if "uan" in os.environ["HOST"]:
+        os.environ["ECF_HOST"] = ecf_host
+        os.environ["ECF_PORT"] = str(ecf_port)
+        os.environ["ECF_USER"] = ecf_user
 
     server = EcflowServer(config, start_command=args.start_command)
 
