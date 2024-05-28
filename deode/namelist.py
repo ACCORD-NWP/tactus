@@ -603,19 +603,16 @@ class NamelistIntegrator:
         return ynml
 
     @staticmethod
-    def dict2yml(nmldict, ymlfile):
-        """Write dict as yaml file."""
+    def dict2yml(nmldict, ymlfile, ordered_sections = None):
+        """Write dict as yaml file """
         with open(ymlfile, mode="wb") as file:
-            yaml.dump(nmldict, file, encoding="utf-8", default_flow_style=False)
-
-    @staticmethod
-    def dict2yml(nmldict, ymlfile, ordered_sections):
-        """Write dict as yaml file."""
-        with open(ymlfile, mode="wb") as file:
-            for section in ordered_sections:
-                output_dict = {}
-                output_dict[section] = nmldict[section]
-                yaml.dump(output_dict, file, encoding="utf-8", default_flow_style=False)
+            if ordered_sections:
+                for section in ordered_sections:
+                    output_dict = {}
+                    output_dict[section] = nmldict[section]
+                    yaml.dump(output_dict, file, encoding="utf-8", default_flow_style=False)
+            else:
+                yaml.dump(nmldict, file, encoding="utf-8", default_flow_style=False)
 
 class NamelistConverter:
     """Helper class to convert namelists between cycles, based on thenamelisttool."""
@@ -764,6 +761,8 @@ class NamelistConverter:
         # Creation of new blocks
         if "new_blocks" in tnt_directives:
             for new_block in tnt_directives["new_blocks"]:
+                if "empty" not in new_namelist:
+                    new_namelist["empty"] = {}
                 if new_block not in new_namelist["empty"]:
                     new_namelist["empty"][new_block] = {}
 
