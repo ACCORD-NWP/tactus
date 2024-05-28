@@ -18,6 +18,8 @@ See the [project's documentation page](https://destination-earth-digital-twins.g
 
 ## System Requirements
 
+**Make sure you have python>=3.10**
+
 ### Prepare your environment on the HPC machines
 <a name="#put-poetry-in-path"></a> Start by putting the `$HOME/.local/bin`
 directory in your `PATH`:
@@ -34,35 +36,33 @@ We **highly recommend** you to also put the statement listed above in your shell
   ```
 
 * On LUMI
-```shell
-ml use /scratch/project_465000527/SW/modules
-ml cray-python/3.10.10
-ml ecflow/5.9.2-gcc-3ztnr
- ```
+  ```shell
+  ml use /scratch/project_465000527/SW/modules
+  ml cray-python/3.10.10
+  ml ecflow/5.9.2-gcc-3ztnr
+   ```
+
+* On Macs (local install only)
+  ```shell
+  brew install pyenv
+  pyenv install 3.10.10
+  # (or which ever version you want to universalise)
+  pyenv global 3.10.10
+   ```
+  Add eval "$(pyenv init --path)" to ~/.zprofile (or ~/.bash_profile or ~/.zshrc, whichever you need). Relaunch the shell and check that Python works, or run $ source ~/.zprofile
 
 ### Install Dependencies
 
-**Make sure you have python>=3.9**
+* [`poetry`](https://python-poetry.org)
 
-* On Macs (local install only)
-```shell
-brew install pyenv
-pyenv install 3.10.10
-# (or which ever version you want to universalise)
-pyenv global 3.10.10
- ```
-Add eval "$(pyenv init --path)" to ~/.zprofile (or ~/.bash_profile or ~/.zshrc, whichever you need)
-
-Relaunch the shell and check that Python works, or run $ source ~/.zprofile
-
-    * [`poetry`](https://python-poetry.org). To install/reinstall and configure it, run the following commands in your shell:
-      ```shell
-      # Clean eventual previous install
-      curl -sSL https://install.python-poetry.org | python3 - --uninstall
-      rm -rf ${HOME}/.cache/pypoetry/ ${HOME}/.local/bin/poetry ${HOME}/.local/share/pypoetry
-      # Download and install poetry
-      curl -sSL https://install.python-poetry.org | python3 -
-      ```
+  To install/reinstall and configure it, run the following commands in your shell:
+  ```shell
+  # Clean eventual previous install
+  curl -sSL https://install.python-poetry.org | python3 - --uninstall
+  rm -rf ${HOME}/.cache/pypoetry/ ${HOME}/.local/bin/poetry ${HOME}/.local/share/pypoetry
+  # Download and install poetry
+  curl -sSL https://install.python-poetry.org | python3 -
+  ```
 
 ### Optional System Requirements
 * [`pygdal`](https://pypi.org/project/pygdal/)
@@ -71,7 +71,7 @@ Relaunch the shell and check that Python works, or run $ source ~/.zprofile
   ```shell
   pip install pygdal=="`gdal-config --version`.*"
   ```
-  **N.B.**: Do **not** run this installation command on Atos (`hpc-login`)!
+  **N.B.**: There is no special gdal installation required on Atos (`hpc-login`)!
 
   On Atos, simply run:
   ```shell
@@ -86,8 +86,8 @@ For the time being the recommended installation method is the [developer-mode in
 
 ### Developer Mode Installation
 
-:point_right: For those who need/wish to make changes to `deode`'s
-source code, or use code from a different branch than `master`.
+This is for those who need/wish to make changes to `deode`'s
+source code, or use code from a different branch than `master` and it's currently the recommended way to use `deode`.
 ```shell
 git clone git@github.com:destination-earth-digital-twins/Deode-Prototype.git
 cd Deode-Prototype
@@ -120,8 +120,6 @@ Installing in developer mode means that changes made in any of the package's sou
       ```shell
       deode -h
       ```
-  3. Create a [config file](#the-configuration-file).
-
 ### The Configuration File
 Before you can use `deode` (apart from the `-h` option), you will need a configuration file written in the
 [TOML](https://en.wikipedia.org/wiki/TOML) format. Please take a look at
