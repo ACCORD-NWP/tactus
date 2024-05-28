@@ -48,3 +48,18 @@
 
 [archiving.fdb.default]
   active = false
+
+[scp]
+
+[scp.default]
+  active = false
+
+[scp.hour.lumi]
+  active = false
+  inpath = "@ARCHIVE@"
+  outpath = "lumi_transfer:@SCRATCH@/@USER@_atos_@CASE@/archive/@ARCHIVE_TIMESTAMP@"
+  pattern = "GRIBPF*"
+
+[scp.paths]
+  aloc = ""
+  apath = ""

@@ -90,6 +90,7 @@ class EcflowServer(Server):
 
         Raises:
             ModuleNotFoundError: If ecflow is not found.
+            RuntimeError: If ecf_port is not set
 
         """
         if ecflow is None:
@@ -104,15 +105,35 @@ class EcflowServer(Server):
             raise RuntimeError("Please set ecf_host in ecflow_HPC.toml") from error
 
         try:
-            self.ecf_port = self.config["scheduler.ecfvars.ecf_port"]
+            ecf_port = self.config["scheduler.ecfvars.ecf_port"]
+            try:
+                self.ecf_port = int(ecf_port)
+            except ValueError:
+                func, arg = ecf_port.split("(")
+                if hasattr(self, func):
+                    function = getattr(self, func)
+                    self.ecf_port = function(arg[:-1])
         except RuntimeError as error:
-            raise RuntimeError("Please set ecf_port in ecflow_HPC.toml") from error
+            raise RuntimeError("Please set ecf_port") from error
 
         self.start_command = start_command
         logger.debug("self.ecf_host={} self.ecf_port={}", self.ecf_host, self.ecf_port)
         self.ecf_client = ecflow.Client(self.ecf_host, self.ecf_port)
         logger.debug("self.ecf_client {}", self.ecf_client)
         self.settings = {"ECF_HOST": self.ecf_host, "ECF_PORT": self.ecf_port}
+
+    def _set_port_from_user(self, offset=0):
+        """Set ecf_port from user id.
+
+        Arguments:
+            offset (int): Number to offset the user id with
+
+        Returns:
+            port (int): Derived port number
+
+        """
+        port = os.getuid() + int(offset)
+        return port
 
     def start_server(self):
         """Start the server.

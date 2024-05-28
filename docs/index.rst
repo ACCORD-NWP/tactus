@@ -14,6 +14,7 @@ Welcome to the Deode Prototype Doc Page!
    Development Guidelines <development_guidelines_link.rst>
    API Documentation <deode>
    Misc <misc_section_in_doc_page>
+   CHANGELOG <changelog_link.rst>
 
 Indices and Tables
 ==================

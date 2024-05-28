@@ -13,6 +13,7 @@ from .commands_functions import (
     run_task,
     show_config,
     show_config_schema,
+    show_host,
     show_namelist,
     start_suite,
 )
@@ -136,6 +137,14 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         nargs="*",
         default=None,
     )
+    parser_case.add_argument(
+        "--start-suite",
+        "-s",
+        action="store_true",
+        default=False,
+        help="Start suite as well",
+        required=False,
+    )
     parser_case.set_defaults(run_command=create_exp)
 
     ############################################
@@ -206,6 +215,12 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         "section", help="The config section (optional)", default="", nargs="?"
     )
     parser_show_config_schema.set_defaults(run_command=show_config_schema)
+
+    # show host
+    parser_show_host = show_command_subparsers.add_parser(
+        "host", help="Print current and available hosts", parents=[common_parser]
+    )
+    parser_show_host.set_defaults(run_command=show_host)
 
     # show namelist
     parser_show_namelist = show_command_subparsers.add_parser(

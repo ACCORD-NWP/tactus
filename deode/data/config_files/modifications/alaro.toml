@@ -5,14 +5,8 @@
 [general.output_settings]
   surfex = ""
 
-[general.times]
-  end = "2023-11-16T06:00:00Z"
-  start = "2023-11-16T00:00:00Z"
-
 [boundaries]
-  bdcycle = "PT24H"
   humi_gp = false
-  ifs.selection = "ATOS_DT"
 
 [fullpos]
   selection = ["rules", "namfpc_header", "master_selection_ALARO"]
