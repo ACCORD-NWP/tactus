@@ -603,17 +603,20 @@ class NamelistIntegrator:
         return ynml
 
     @staticmethod
-    def dict2yml(nmldict, ymlfile, ordered_sections = None):
-        """Write dict as yaml file """
+    def dict2yml(nmldict, ymlfile, ordered_sections=None):
+        """Write dict as yaml file."""
         with open(ymlfile, mode="wb") as file:
             if ordered_sections:
-                for section in ordered_sections:                    
+                for section in ordered_sections:
                     if section in nmldict:
                         output_dict = {}
                         output_dict[section] = nmldict[section]
-                        yaml.dump(output_dict, file, encoding="utf-8", default_flow_style=False)
+                        yaml.dump(
+                            output_dict, file, encoding="utf-8", default_flow_style=False
+                        )
             else:
                 yaml.dump(nmldict, file, encoding="utf-8", default_flow_style=False)
+
 
 class NamelistConverter:
     """Helper class to convert namelists between cycles, based on thenamelisttool."""
@@ -675,10 +678,14 @@ class NamelistConverter:
         # Read the input namelist file (yaml)
         logger.info(f"Read {input_yml}")
         nmldict = NamelistIntegrator.yml2dict(Path(input_yml))
-        
+
         with open(Path(input_yml), mode="rt", encoding="utf-8") as file:
-            ordered_sections = [line.split(':')[0] for line in file.readlines() if ':' in line and line.split(':')[0] in nmldict]
-                
+            ordered_sections = [
+                line.split(":")[0]
+                for line in file.readlines()
+                if ":" in line and line.split(":")[0] in nmldict
+            ]
+
         for tnt_file in tnt_files:
             nmldict = NamelistConverter.apply_tnt_directives_to_namelist_dict(
                 tnt_file, nmldict
@@ -688,10 +695,10 @@ class NamelistConverter:
 
         # Write the output namelist file (yaml)
         logger.info(f"Write {output_yml}")
-        if "empty" in nmldict and not "empty" in ordered_sections:
+        if "empty" in nmldict and "empty" not in ordered_sections:
             ordered_sections.append("empty")
-        
-        NamelistIntegrator.dict2yml(nmldict, Path(output_yml),ordered_sections)
+
+        NamelistIntegrator.dict2yml(nmldict, Path(output_yml), ordered_sections)
 
     @staticmethod
     def convert_ftn(input_ftn, output_ftn, from_cycle, to_cycle):
@@ -767,7 +774,7 @@ class NamelistConverter:
             for new_block in tnt_directives["new_blocks"]:
                 if "empty" not in new_namelist:
                     new_namelist["empty"] = {}
-                if new_block not in new_namelist["empty"]:                    
+                if new_block not in new_namelist["empty"]:
                     new_namelist["empty"][new_block] = {}
 
         # Move of blocks(Not implemented)
@@ -783,7 +790,6 @@ class NamelistConverter:
                     for namelist_block in namelist_dict[namelists_section]:
                         if blocks in namelist_block:
                             del new_namelist[namelists_section][blocks]
-
 
         return new_namelist
 
