@@ -1,0 +1,3 @@
+[suite_control]
+  do_archiving = false
+  do_marsprep = false

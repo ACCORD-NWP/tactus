@@ -25,6 +25,7 @@ coverage.xml
 .venv
 .flakeheaven_cache/
 .exp_dependencies*
+.conda/
 
 # Files/directories generated at runtime
 archived_file

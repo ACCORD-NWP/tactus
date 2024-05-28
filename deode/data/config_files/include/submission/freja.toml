@@ -15,7 +15,7 @@
   NPROC = 32
   SCHOST = "freja"
   tasks = ["Forecast", "e927", "c903"]
-  WRAPPER = "srun"
+  WRAPPER = "mpprun"
 
 [submission.parallel.BATCH]
   NAME = "#SBATCH --job-name=@TASK_NAME@"
@@ -44,9 +44,10 @@
   NPROCY = 1
   SCHOST = "freja"
   tasks = ["CreateGrib", "Gmted", "Soil", "Pgd", "Prep", "Marsprep"]
-  WRAPPER = "srun"
+  WRAPPER = "mpprun"
 
 [submission.serial.BATCH]
+  MEMORY = "#SBATCH --mem=64GB"
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
@@ -64,3 +65,7 @@
 
 [submission.task]
   wrapper = ""
+
+[submission.task_exceptions.Pgd.BATCH]
+  MEMORY = "#SBATCH --mem=64GB"
+  WALLTIME = "#SBATCH --time=00:30:00"
