@@ -3,6 +3,7 @@
 import os
 from argparse import ArgumentParser
 from pathlib import Path
+import filecmp
 
 import pytest
 
@@ -140,7 +141,9 @@ def nlconftn_arg(tmp_directory):
 def test_namelist_convert_ftn(nlconftn_arg, parsed_config):
     namelist_convert(nlconftn_arg, parsed_config)
     assert os.path.isfile(nlconftn_arg.output)
-
+    
+    reference = nlconftn_arg.output
+    assert filecmp.cmp(reference, nlconftn_arg.output)
 
 if __name__ == "__main__":
     pytest.main()
