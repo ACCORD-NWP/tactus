@@ -607,10 +607,11 @@ class NamelistIntegrator:
         """Write dict as yaml file """
         with open(ymlfile, mode="wb") as file:
             if ordered_sections:
-                for section in ordered_sections:
-                    output_dict = {}
-                    output_dict[section] = nmldict[section]
-                    yaml.dump(output_dict, file, encoding="utf-8", default_flow_style=False)
+                for section in ordered_sections:                    
+                    if section in nmldict:
+                        output_dict = {}
+                        output_dict[section] = nmldict[section]
+                        yaml.dump(output_dict, file, encoding="utf-8", default_flow_style=False)
             else:
                 yaml.dump(nmldict, file, encoding="utf-8", default_flow_style=False)
 
@@ -687,6 +688,9 @@ class NamelistConverter:
 
         # Write the output namelist file (yaml)
         logger.info(f"Write {output_yml}")
+        if "empty" in nmldict and not "empty" in ordered_sections:
+            ordered_sections.append("empty")
+        
         NamelistIntegrator.dict2yml(nmldict, Path(output_yml),ordered_sections)
 
     @staticmethod
@@ -763,7 +767,7 @@ class NamelistConverter:
             for new_block in tnt_directives["new_blocks"]:
                 if "empty" not in new_namelist:
                     new_namelist["empty"] = {}
-                if new_block not in new_namelist["empty"]:
+                if new_block not in new_namelist["empty"]:                    
                     new_namelist["empty"][new_block] = {}
 
         # Move of blocks(Not implemented)

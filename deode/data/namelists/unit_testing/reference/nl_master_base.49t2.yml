@@ -232,3 +232,27 @@ nl_master_base:
     LMIXUV: false
   NAM_TURBn:
     LHARAT: true
+empty:
+  NAMDWET: {}
+  NAMDYNA_STATIC: {}
+  NAMNRTAER: {}
+  NAMPERTOBS: {}
+  NAM_NEBn: {}
+  NAM_PARAM_ICEn: {}
+  NAM_PARAM_MFSHALLn: {}
+  NAM_SPP_ACTIVE: {}
+  NAM_SPP_MODIF: {}
+  NAM_TURBn: {}
+  namclradlid: {}
+  namecv: {}
+  namecvdesc: {}
+  namecvgrb: {}
+  namjbalphacv: {}
+  namjbecphysecv: {}
+  namjbsktecv: {}
+  nammoderrconf: {}
+  nammoderrcov: {}
+  nammoderrincrconf: {}
+  nammoderrmod: {}
+  namparecv: {}
+  namrstrhbias: {}

@@ -126,8 +126,11 @@ def nlconyml_arg(tmp_directory):
 
 
 def test_namelist_convert_yml(nlconyml_arg, parsed_config):
-    namelist_convert(nlconyml_arg, parsed_config)
+    if os.path.exists(nlconyml_arg.output):
+        os.remove(nlconyml_arg.output)
 
+    namelist_convert(nlconyml_arg, parsed_config)
+    
     assert os.path.isfile(nlconyml_arg.output)
     assert filecmp.cmp(nlconyml_arg.output_reference, nlconyml_arg.output)
 
@@ -147,9 +150,11 @@ def nlconftn_arg(tmp_directory):
 
 
 def test_namelist_convert_ftn(nlconftn_arg, parsed_config):
-    namelist_convert(nlconftn_arg, parsed_config)
-    assert os.path.isfile(nlconftn_arg.output)
+    if os.path.exists(nlconftn_arg.output):
+        os.remove(nlconftn_arg.output)
 
+    namelist_convert(nlconftn_arg, parsed_config)
+    assert os.path.isfile(nlconftn_arg.output)    
     assert filecmp.cmp(nlconftn_arg.output_reference, nlconftn_arg.output)
 
 
