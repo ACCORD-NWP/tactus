@@ -141,8 +141,7 @@ def nlconftn_arg(tmp_directory):
 def test_namelist_convert_ftn(nlconftn_arg, parsed_config):
     namelist_convert(nlconftn_arg, parsed_config)
     assert os.path.isfile(nlconftn_arg.output)
-    
-    reference = nlconftn_arg.output
+    reference = "deode/data/namelists/unit_testing/reference/nl_master_base.49t2"
     assert filecmp.cmp(reference, nlconftn_arg.output)
 
 if __name__ == "__main__":
