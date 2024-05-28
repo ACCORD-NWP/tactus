@@ -764,14 +764,8 @@ class NamelistConverter:
         # Creation of new blocks
         if "new_blocks" in tnt_directives:
             for new_block in tnt_directives["new_blocks"]:
-                for namelists_section in namelist_dict:
-                    if "f4" in namelists_section:
-                        for namelist_block in namelist_dict[namelists_section]:
-                            if new_block in namelist_block:
-                                raise SystemExit("conversion FAILED: Block existing")
-
-                            if new_block not in new_namelist[namelists_section]:
-                                new_namelist[namelists_section][new_block] = {}
+                if new_block not in new_namelist["empty"]:
+                    new_namelist["empty"][new_block] = {}
 
         # Move of blocks(Not implemented)
         if "blocks_to_move" in tnt_directives:
@@ -786,6 +780,7 @@ class NamelistConverter:
                     for namelist_block in namelist_dict[namelists_section]:
                         if blocks in namelist_block:
                             del new_namelist[namelists_section][blocks]
+
 
         return new_namelist
 
