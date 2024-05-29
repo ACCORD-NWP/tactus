@@ -737,13 +737,17 @@ class NamelistConverter:
 
         logger.info(f"Read {input_ftn}")
         ftn_file = input_ftn
-
+        temporary_files = []
         for tnt_file in tnt_files:
             NamelistConverter.apply_tnt_directives_to_ftn_namelist(tnt_file, ftn_file)
             ftn_file = ftn_file + ".tnt"
+            temporary_files.append(ftn_file)
 
         logger.info(f"Write {output_ftn}")
         shutil.copy(ftn_file, output_ftn)
+
+        for file in temporary_files:
+            os.remove(file)
 
     @staticmethod
     def apply_tnt_directives_to_namelist_dict(tnt_directive_filename, namelist_dict):
