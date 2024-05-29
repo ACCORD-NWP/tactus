@@ -171,14 +171,14 @@ def nlformatyml_arg(tmp_directory):
     return arg
 
 
-def test_namelist_format_yml(nlconyml_arg, parsed_config):
-    if os.path.exists(nlconyml_arg.output):
-        os.remove(nlconyml_arg.output)
+def test_namelist_format_yml(nlformatyml_arg, parsed_config):
+    if os.path.exists(nlformatyml_arg.output):
+        os.remove(nlformatyml_arg.output)
 
-    namelist_format(nlconyml_arg, parsed_config)
+    namelist_format(nlformatyml_arg, parsed_config)
 
-    assert os.path.isfile(nlconyml_arg.output)
-    assert filecmp.cmp(nlconyml_arg.output_reference, nlconyml_arg.output)
+    assert os.path.isfile(nlformatyml_arg.output)
+    assert filecmp.cmp(nlformatyml_arg.output_reference, nlformatyml_arg.output)
 
 
 @pytest.fixture()
@@ -193,13 +193,13 @@ def nlformatftn_arg(tmp_directory):
     return arg
 
 
-def test_namelist_format_ftn(nlconftn_arg, parsed_config):
-    if os.path.exists(nlconftn_arg.output):
-        os.remove(nlconftn_arg.output)
+def test_namelist_format_ftn(nlformatftn_arg, parsed_config):
+    if os.path.exists(nlformatftn_arg.output):
+        os.remove(nlformatftn_arg.output)
 
-    namelist_format(nlconftn_arg, parsed_config)
-    assert os.path.isfile(nlconftn_arg.output)
-    assert filecmp.cmp(nlconftn_arg.output_reference, nlconftn_arg.output)
+    namelist_format(nlformatftn_arg, parsed_config)
+    assert os.path.isfile(nlformatftn_arg.output)
+    assert filecmp.cmp(nlformatftn_arg.output_reference, nlformatftn_arg.output)
 
 
 if __name__ == "__main__":
