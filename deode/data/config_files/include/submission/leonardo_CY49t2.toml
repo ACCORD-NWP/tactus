@@ -1,13 +1,13 @@
 [submission]
-bindir = "/leonardo_scratch/fast/DestE_340_24/ddegrauw/accord/pack/test_49t2/bin"
-#bindir = "/leonardo/home/userexternal/dhaumont/gpupack/pack/49t2_alaro_gpu.01.NVHPC2311.1d/bin"
-#bindir = "/leonardo_scratch/fast/DestE_340_24/dhaumont/gpupack/pack/49t2_openacc.01.NVHPC2311.1d/bin"
-default_submit_type = "parallel"
-lfftw = false
-module_initpath = "/leonardo/pub/userexternal/dhaumont/install/lmod/lmod/init"
-nproma = -32
+  bindir = "/leonardo_scratch/fast/DestE_340_24/ddegrauw/accord/pack/test_49t2/bin"
+  #bindir = "/leonardo/home/userexternal/dhaumont/gpupack/pack/49t2_alaro_gpu.01.NVHPC2311.1d/bin"
+  #bindir = "/leonardo_scratch/fast/DestE_340_24/dhaumont/gpupack/pack/49t2_openacc.01.NVHPC2311.1d/bin"
+  default_submit_type = "parallel"
+  lfftw = false
+  module_initpath = "/leonardo/pub/userexternal/dhaumont/install/lmod/lmod/init"
+  nproma = -32
 
-submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
+  submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 
 [submission.background_hpc]
   SCHOST = "localhost"
@@ -41,6 +41,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
   SCHOST = "leonardo"
   tasks = ["Forecast", "e927", "Pgd", "Prep", "c903"]
   WRAPPER = "srun"
+
 [submission.parallel.BATCH]
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   QOS = "#SBATCH --qos=np"
@@ -49,26 +50,26 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 [submission.parallel.ENV]
   DR_HOOK = 1
   DR_HOOK_IGNORE_SIGNALS = 8
+  EC_MPI_ATEXIT = 0
+  EC_PROFILE_HEAP = 0
+  INPART = 0
+  KMP_MONITOR_STACKSIZE = "1G"
+  KMP_STACKSIZE = "4G"
+  LLSIMPLE_DGEMM = 1
+  OMP_STACKSIZE = "4G"
   OMPI_MCA_btl = "^vader"
-  INPART=0
-  PERSISTENT=0
-  PARALLEL=0
-  LLSIMPLE_DGEMM=1
-  OMP_STACKSIZE="4G"
-  KMP_STACKSIZE="4G"
-  KMP_MONITOR_STACKSIZE="1G"
-  EC_PROFILE_HEAP=0
-  EC_MPI_ATEXIT=0
+  PARALLEL = 0
+  PERSISTENT = 0
 
 [submission.parallel.MODULES]
   0_PURGE = ["--force", "purge"]
-  1_NVHPC = ["load", "nvhpc/23.11"]  
+  1_NVHPC = ["load", "nvhpc/23.11"]
   2_CUDA = ["load", "cuda/11.8"]
   3_METEO = ["load", "profile/meteo"]
-#  4_FFTW = ["load", "fftw/3.3.10--openmpi--4.1.6--nvhpc--23.11"]
+  #  4_FFTW = ["load", "fftw/3.3.10--openmpi--4.1.6--nvhpc--23.11"]
   5_NETCDF = ["load", "netcdf-fortran/4.6.1--openmpi--4.1.6--nvhpc--23.11"]
-  #_HDF5 = ["load", "hdf5/1.12.2--openmpi--4.1.4--nvhpc--23.1"]
 
+  #_HDF5 = ["load", "hdf5/1.12.2--openmpi--4.1.4--nvhpc--23.1"]
 
 [submission.serial]
   NPROC = 1
@@ -92,13 +93,13 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 
 [submission.serial.MODULES]
   0_PURGE = ["--force", "purge"]
-  1_NVHPC = ["load", "nvhpc/23.11"]  
+  1_NVHPC = ["load", "nvhpc/23.11"]
   2_CUDA = ["load", "cuda/11.8"]
   3_METEO = ["load", "profile/meteo"]
   # 4_FFTW = ["load", "fftw/3.3.10--openmpi--4.1.6--nvhpc--23.11"]
   5_NETCDF = ["load", "netcdf-fortran/4.6.1--openmpi--4.1.6--nvhpc--23.11"]
-  #_HDF5 = ["load", "hdf5/1.12.2--openmpi--4.1.4--nvhpc--23.1"]
 
+  #_HDF5 = ["load", "hdf5/1.12.2--openmpi--4.1.4--nvhpc--23.1"]
 
 [submission.task]
   wrapper = ""
@@ -144,31 +145,26 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 [submission.task_exceptions.Forecast]
   NPROC = 16
   NPROC_IO = 0
+
   #WRAPPER = "ulimit -s unlimited; srun -n @NPROC@ ./select_gpu"
 
 [submission.task_exceptions.Forecast.BATCH]
   #  MEM = "#SBATCH --mem=200GB"
+  ACCOUNT = "#SBATCH -A deste_340_24 "
   NODES = "#SBATCH --nodes=2"
   NTASKS = "#SBATCH --ntasks=16"
+  PARTITION = "#SBATCH -p boost_usr_prod"
+  QOS = "#SBATCH --qos boost_qos_dbg"
   WALLTIME = "#SBATCH --time=00:29:00"
-  PARTITION="#SBATCH -p boost_usr_prod"
-  QOS="#SBATCH --qos boost_qos_dbg"
-  ACCOUNT="#SBATCH -A deste_340_24 "
 
 [submission.task_exceptions.Forecast.ENV]
   RTTOV_COEFDIR = "/hpcperm/snh02/DEODE/satellite/rtcoef_rttov12/harm_coef/"
   UCX_LOG_LEVEL = "error"
 
   NOUTPUT = 2
+
 [submission.task_exceptions.Gmted.MODULES]
   GDAL = ["load", "gdal/3.6.2"]
-
-[task_exceptions.Marsprep.BATCH]
-  MEM = "#SBATCH --mem=0GB"
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=1"
-  QOS = "#SBATCH --qos=np"
-  WALLTIME = "#SBATCH --time=01:00:00"
 
 [submission.task_exceptions.Marsprep.ENV]
   MARS_READANY_BUFFER_SIZE = 17893020000
@@ -195,3 +191,10 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 
 [submission.task_exceptions.Soil.MODULES]
   GDAL = ["load", "gdal/3.6.2"]
+
+[task_exceptions.Marsprep.BATCH]
+  MEM = "#SBATCH --mem=0GB"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  QOS = "#SBATCH --qos=np"
+  WALLTIME = "#SBATCH --time=01:00:00"

@@ -16,11 +16,6 @@
 [mars.DT12.stream]
   12 = "OPER"
 
-
-[mars.HRES_CY49t2]
-  default = "HRES"
-  GG = "32/33/39/40/41/42/139/141/170/172/183/198/199/235/236/35/36/37/38/238/243/244/245"
-
 [mars.HRES]
   class = "OD"
   expver = "0001"
@@ -55,6 +50,10 @@
   06 = "SCDA"
   12 = "OPER"
   18 = "SCDA"
+
+[mars.HRES_CY49t2]
+  default = "HRES"
+  GG = "32/33/39/40/41/42/139/141/170/172/183/198/199/235/236/35/36/37/38/238/243/244/245"
 
 [mars.i5qp]
   default = "RD_DEFAULT"

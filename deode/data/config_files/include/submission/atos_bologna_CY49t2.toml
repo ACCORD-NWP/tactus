@@ -61,8 +61,6 @@
   NETCDF = ["load", "netcdf4/4.7.4"]
   OPENMPI = ["load", "openmpi/4.1.1.1"]
 
-
-
 [submission.serial]
   NPROC = 1
   NPROCX = 1
