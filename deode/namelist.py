@@ -623,16 +623,18 @@ class NamelistConverter:
 
     @staticmethod
     def get_known_cycles():
+        """Return the cycles handled by the converter."""
         return ["CY48t2", "CY48t3", "CY49", "CY49t1", "CY49t2"]
-    
+
     def get_to_next_version_tnt_filenames():
+        """Return the tnt file names between get_known_cycles()."""
         return [
             None,  # CY48t2 to CY48t3
             "cy48t2_to_cy49.yaml",  # CY48t3 to CY49
             "cy49_to_cy49t1.yaml",  # CY49   to CY49t1
             None,  # CY49t1 to CY49t2
         ]
-    
+
     @staticmethod
     def get_tnt_files_list(from_cycle, to_cycle):
         """Return the list of tnt directive files required for the conversion."""
@@ -640,15 +642,19 @@ class NamelistConverter:
         tnt_directives_folder = (
             Path(__file__).parent / "namelist_generation_input/tnt_directives/"
         )
-            
+
         if from_cycle and to_cycle:
             known_cycles = NamelistConverter.get_known_cycles()
-            to_next_version_tnt_filenames = NamelistConverter.get_to_next_version_tnt_filenames()
-        
+            to_next_version_tnt_filenames = (
+                NamelistConverter.get_to_next_version_tnt_filenames()
+            )
+
             try:
                 start_index = known_cycles.index(from_cycle)
             except ValueError:
-                raise SystemExit(f"ERROR: from-cycle {from_cycle} unknown") from ValueError
+                raise SystemExit(
+                    f"ERROR: from-cycle {from_cycle} unknown"
+                ) from ValueError
 
             try:
                 target_index = known_cycles.index(to_cycle)
@@ -663,18 +669,18 @@ class NamelistConverter:
         else:
             start_index = 0
             target_index = 0
-            
+
         if start_index == target_index:
             # Apply empty conversion
-            tnt_files = [tnt_directives_folder / "empty.yaml"]            
+            tnt_files = [tnt_directives_folder / "empty.yaml"]
         else:
-            # Apply all the intermediate conversions        
+            # Apply all the intermediate conversions
             tnt_files = [
                 tnt_directives_folder / to_next_version_tnt_filenames[index]
                 for index in range(start_index, target_index)
                 if to_next_version_tnt_filenames[index]
-            ]            
-        
+            ]
+
         return tnt_files
 
     @staticmethod
@@ -731,11 +737,11 @@ class NamelistConverter:
 
         logger.info(f"Read {input_ftn}")
         ftn_file = input_ftn
-        
+
         for tnt_file in tnt_files:
             NamelistConverter.apply_tnt_directives_to_ftn_namelist(tnt_file, ftn_file)
             ftn_file = ftn_file + ".tnt"
-        
+
         logger.info(f"Write {output_ftn}")
         shutil.copy(ftn_file, output_ftn)
 
@@ -788,21 +794,23 @@ class NamelistConverter:
                                     del new_namelist[namelists_section][old_block][
                                         old_key
                                     ]
-                                    if len(new_namelist[namelists_section][old_block]) == 0:
+                                    if (
+                                        len(new_namelist[namelists_section][old_block])
+                                        == 0
+                                    ):
                                         del new_namelist[namelists_section][old_block]
 
         if "keys_to_set" in tnt_directives:
-            for new_block in tnt_directives["keys_to_set"]:
-                  raise SystemExit("conversion FAILED: keys_to_set not implemented")
+            raise SystemExit("conversion FAILED: keys_to_set not implemented")
 
         # Creation of new blocks
         if "new_blocks" in tnt_directives:
             for new_block in tnt_directives["new_blocks"]:
                 if "empty" not in new_namelist:
                     new_namelist["empty"] = {}
-                new_block = new_block.upper()
-                if new_block not in new_namelist["empty"]:
-                    new_namelist["empty"][new_block] = {}
+                new_block_upper = new_block.upper()
+                if new_block_upper not in new_namelist["empty"]:
+                    new_namelist["empty"][new_block_upper] = {}
 
         # Move of blocks(Not implemented)
         if "blocks_to_move" in tnt_directives:

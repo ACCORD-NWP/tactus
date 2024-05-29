@@ -9,8 +9,8 @@ import pytest
 
 from deode.commands_functions import (
     namelist_convert,
-    namelist_integrate,
     namelist_format,
+    namelist_integrate,
     set_deode_home,
     show_namelist,
 )
@@ -149,6 +149,7 @@ def nlconftn_arg(tmp_directory):
     )
     return arg
 
+
 def test_namelist_convert_ftn(nlconftn_arg, parsed_config):
     if os.path.exists(nlconftn_arg.output):
         os.remove(nlconftn_arg.output)
@@ -156,6 +157,7 @@ def test_namelist_convert_ftn(nlconftn_arg, parsed_config):
     namelist_convert(nlconftn_arg, parsed_config)
     assert os.path.isfile(nlconftn_arg.output)
     assert filecmp.cmp(nlconftn_arg.output_reference, nlconftn_arg.output)
+
 
 @pytest.fixture()
 def nlformatyml_arg(tmp_directory):

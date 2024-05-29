@@ -21,6 +21,7 @@ from .commands_functions import (
 from .config_parser import ConfigParserDefaults
 from .namelist import NamelistConverter
 
+
 def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     """Get parsed command line arguments.
 
@@ -288,7 +289,8 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     # namelist subparser
     parser_namelist = subparsers.add_parser(
         "namelist",
-        help="Namelist show (output), integrate (input), convert (input, output), format (input, output)",
+        help="Namelist show (output), integrate (input), "
+        + "convert (input, output), format (input, output)",
     )
     namelist_command_subparsers = parser_namelist.add_subparsers(
         title="namelist",
@@ -368,7 +370,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         "--from-cycle",
         type=str,
         help="Cycle of input namelist",
-        choices = NamelistConverter.get_known_cycles(),
+        choices=NamelistConverter.get_known_cycles(),
         required=True,
         default=None,
     )
@@ -377,7 +379,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         "--to-cycle",
         type=str,
         help="Cycle of output namelist",
-        choices = NamelistConverter.get_known_cycles(),
+        choices=NamelistConverter.get_known_cycles(),
         required=True,
         default=None,
     )
@@ -408,7 +410,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         help="Output namelist definition filename",
         required=True,
         default=None,
-    )    
+    )
 
     parser_namelist_format.add_argument(
         "--format", "-fmt", help="Input format", choices=["yaml", "ftn"], default="yaml"
