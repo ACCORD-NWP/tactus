@@ -1360,7 +1360,6 @@ f4_c903_domain:
   NEMFPEZO:
     RCO_EZO: 180.0
 f4_e927_AROME:
-  NAMCT0: {}
   NAMDYNA:
     LNHEE: true
     LSPRT: true
@@ -1390,7 +1389,6 @@ f4_e927_AROME:
     YS_NL%NREQIN: 1
     YTKE_NL%NREQIN: 1
 f4_e927_IFS:
-  NAMCT0: {}
   NAMDYNA:
     LNHEE: false
     LSPRT: false
@@ -1525,6 +1523,7 @@ empty:
   NAMCLDP: {}
   NAMCLI: {}
   NAMCLOP15: {}
+  NAMCLRADLID: {}
   NAMCLTC: {}
   NAMCMEM_MW: {}
   NAMCOK: {}
@@ -1550,6 +1549,9 @@ empty:
   NAMDYNA: {}
   NAMDYNA_STATIC: {}
   NAMDYNCORE: {}
+  NAMECV: {}
+  NAMECVDESC: {}
+  NAMECVGRB: {}
   NAMEMIS_CONF: {}
   NAMENKF: {}
   NAMENSCOV: {}
@@ -1585,7 +1587,10 @@ empty:
   NAMIOMI: {}
   NAMIOS: {}
   NAMIO_SERV: {}
+  NAMJBALPHACV: {}
   NAMJBCODES: {}
+  NAMJBECPHYSECV: {}
+  NAMJBSKTECV: {}
   NAMJG: {}
   NAMLCZ: {}
   NAMLIMA: {}
@@ -1596,6 +1601,10 @@ empty:
   NAMMETHOX: {}
   NAMMKODB: {}
   NAMMODERR: {}
+  NAMMODERRCONF: {}
+  NAMMODERRCOV: {}
+  NAMMODERRINCRCONF: {}
+  NAMMODERRMOD: {}
   NAMMTS: {}
   NAMMWAVE: {}
   NAMNORGWD: {}
@@ -1610,6 +1619,7 @@ empty:
   NAMOPTCMEM: {}
   NAMPAR0: {}
   NAMPAR1: {}
+  NAMPARECV: {}
   NAMPERTOBS: {}
   NAMPERTPAR: {}
   NAMPHMSE: {}
@@ -1633,6 +1643,7 @@ empty:
   NAMRIP: {}
   NAMRIP0: {}
   NAMRLX: {}
+  NAMRSTRHBIAS: {}
   NAMSATS: {}
   NAMSATSIM: {}
   NAMSCC: {}
@@ -1676,12 +1687,12 @@ empty:
   NAMXFU: {}
   NAM_CANAPE: {}
   NAM_DISTRIBUTED_VECTORS: {}
-  NAM_NEBn: {}
-  NAM_PARAM_ICEn: {}
-  NAM_PARAM_MFSHALLn: {}
+  NAM_NEBN: {}
+  NAM_PARAM_ICEN: {}
+  NAM_PARAM_MFSHALLN: {}
   NAM_SPP_ACTIVE: {}
   NAM_SPP_MODIF: {}
-  NAM_TURBn: {}
+  NAM_TURBN: {}
   NAPHLC: {}
   NEMCT0: {}
   NEMDIM: {}
@@ -1693,16 +1704,3 @@ empty:
   NEMJK: {}
   NEMVAR: {}
   NEMWAVELET: {}
-  namclradlid: {}
-  namecv: {}
-  namecvdesc: {}
-  namecvgrb: {}
-  namjbalphacv: {}
-  namjbecphysecv: {}
-  namjbsktecv: {}
-  nammoderrconf: {}
-  nammoderrcov: {}
-  nammoderrincrconf: {}
-  nammoderrmod: {}
-  namparecv: {}
-  namrstrhbias: {}
