@@ -3,7 +3,6 @@
 import copy
 import os
 import re
-import subprocess
 import shutil
 from collections import OrderedDict
 from pathlib import Path
@@ -536,21 +535,6 @@ class NamelistGenerator:
 
         nml = self.assemble_namelist(target)
         self.write_namelist(nml, output_file)
-
-    def convert_namelist_between_cycles(self, namelist_filename, tnt_directive_yaml):
-        tnt_directives_folder = Path(__file__).parent/"namelist_generation_input/tnt_directives/"
-        command = ["tnt.py", "-d", tnt_directives_folder / tnt_directive_yaml, namelist_filename]
-        subprocess.call(command)
-
-        file_name = os.path.basename(tnt_directive_yaml)
-        index = file_name.find("_to_")
-        cycle_from = file_name[0:index]
-        shutil.move(namelist_filename, namelist_filename+"."+ cycle_from)
-        shutil.move(namelist_filename + ".tnt", namelist_filename)
-
-    def upgrade_namelist_to_49t2(self, namelist_filename):
-        self.convert_namelist_between_cycles(namelist_filename, "cy48t2_to_cy49.yaml")
-        self.convert_namelist_between_cycles(namelist_filename, "cy49_to_cy49t1.yaml")
 
 
 class NamelistIntegrator:
