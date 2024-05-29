@@ -660,15 +660,20 @@ class NamelistConverter:
                 raise SystemExit(
                     f"ERROR: No conversion possible between {from_cycle} and {to_cycle}"
                 )
+        else:
+            start_index = 0
+            target_index = 0
+            
+        if start_index == target_index:
+            # Apply empty conversion
+            tnt_files = [tnt_directives_folder / "empty.yaml"]            
+        else:
             # Apply all the intermediate conversions        
             tnt_files = [
                 tnt_directives_folder / to_next_version_tnt_filenames[index]
                 for index in range(start_index, target_index)
                 if to_next_version_tnt_filenames[index]
-            ]
-            
-        else:
-            tnt_files = [tnt_directives_folder / "empty.yaml"]
+            ]            
         
         return tnt_files
 
