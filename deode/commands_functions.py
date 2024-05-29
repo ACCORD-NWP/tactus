@@ -149,26 +149,12 @@ def start_suite(args, config):
     config = config.copy(update={"platform": {"deode_home": deode_home}})
     config = config.copy(update=set_times(config))
     platform = Platform(config)
-    update = {
-        "scheduler": {
-            "ecfvars": {
-                "case_prefix": platform.substitute(
-                    config["scheduler.ecfvars.case_prefix"]
-                ),
-                "ecf_out": platform.substitute(config["scheduler.ecfvars.ecf_out"]),
-                "ecf_jobout": platform.substitute(config["scheduler.ecfvars.ecf_jobout"]),
-                "ecf_files": platform.substitute(config["scheduler.ecfvars.ecf_files"]),
-                "ecf_files_remotely": platform.substitute(
-                    config["scheduler.ecfvars.ecf_files_remotely"]
-                ),
-                "ecf_home": platform.substitute(config["scheduler.ecfvars.ecf_home"]),
-                "ecf_host": platform.substitute(config["scheduler.ecfvars.ecf_host"]),
-                "ecf_remoteuser": platform.substitute(
-                    config["scheduler.ecfvars.ecf_remoteuser"]
-                ),
-            },
-        },
+
+    ecfvars = {
+        key: platform.substitute(val)
+        for key, val in config["scheduler.ecfvars"].dict().items()
     }
+    update = {"scheduler": {"ecfvars": ecfvars}}
     config = config.copy(update=update)
 
     logger.info("Starting suite...")
@@ -176,30 +162,29 @@ def start_suite(args, config):
     logger.info("Ecflow settings: ")
 
     # Assign Ecfvars
-    ecf_user = config["scheduler.ecfvars.ecf_user"]
     joboutdir = config["scheduler.ecfvars.ecf_jobout"]
     ecf_files = config["scheduler.ecfvars.ecf_files"]
     ecf_files_remotely = config["scheduler.ecfvars.ecf_files_remotely"]
     ecf_home = config["scheduler.ecfvars.ecf_home"]
     ecf_host = config["scheduler.ecfvars.ecf_host"]
     ecf_port = config["scheduler.ecfvars.ecf_port"]
+    ecf_user = config["scheduler.ecfvars.ecf_user"]
     ecf_remoteuser = config["scheduler.ecfvars.ecf_remoteuser"]
-    try:
-        suite_def = config["suite_control.suite_definition"]
-    except KeyError:
-        suite_def = "DeodeSuiteDefinition"
+
+    suite_def = config.get("suite_control.suite_definition", "DeodeSuiteDefinition")
 
     logger.info("ecf_host: {}", ecf_host)
     logger.info("ecf_jobout: {}", joboutdir)
     logger.info("ecf_files: {}", ecf_files)
     logger.info("ecf_files_remotely: {}", ecf_files_remotely)
     logger.info("ecf_home: {}", ecf_home)
+    logger.info("ecf_user: {}", ecf_user)
     logger.info("ecf_remoteuser: {}", ecf_remoteuser)
     logger.info("suite definition: {}", suite_def)
 
-    if "uan" in os.environ["HOST"]:
-        os.environ["ECF_HOST"] = ecf_host
-        os.environ["ECF_PORT"] = str(ecf_port)
+    os.environ["ECF_HOST"] = ecf_host
+    os.environ["ECF_PORT"] = str(ecf_port)
+    if ecf_user:
         os.environ["ECF_USER"] = ecf_user
 
     server = EcflowServer(config, start_command=args.start_command)
