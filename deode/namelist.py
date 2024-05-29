@@ -651,13 +651,16 @@ class NamelistConverter:
             raise SystemExit(
                 f"ERROR: No conversion possible between {from_cycle} and {to_cycle}"
             )
-        # Apply all the intermediate conversions
+        # Apply all the intermediate conversions        
         tnt_files = [
             tnt_directives_folder / to_next_version_tnt_filenames[index]
             for index in range(start_index, target_index)
             if to_next_version_tnt_filenames[index]
         ]
-
+        
+        if len(tnt_files) == 0:
+            tnt_files.append(tnt_directives_folder / "empty.yaml")
+        
         return tnt_files
 
     @staticmethod
@@ -713,6 +716,7 @@ class NamelistConverter:
         tnt_files = NamelistConverter.get_tnt_files_list(from_cycle, to_cycle)
 
         ftn_file = input_ftn
+        
         for tnt_file in tnt_files:
             NamelistConverter.apply_tnt_directives_to_ftn_namelist(tnt_file, ftn_file)
             ftn_file = ftn_file + ".tnt"
@@ -770,6 +774,10 @@ class NamelistConverter:
                                     ]
                                     if len(new_namelist[namelists_section][old_block]) == 0:
                                         del new_namelist[namelists_section][old_block]
+
+        if "keys_to_set" in tnt_directives:
+            for new_block in tnt_directives["keys_to_set"]:
+                  raise SystemExit("conversion FAILED: keys_to_set not implemented")
 
         # Creation of new blocks
         if "new_blocks" in tnt_directives:
