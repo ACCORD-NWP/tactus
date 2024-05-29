@@ -475,6 +475,7 @@ def namelist_convert(args, config: ParsedConfig):  # noqa ARG001
 
     # Convert namelists
     logger.info(f"Convert namelist from cycle {args.from_cycle} to cycle {args.to_cycle}")
+
     if args.format == "yaml":
         NamelistConverter.convert_yml(
             args.namelist, args.output, args.from_cycle, args.to_cycle
@@ -483,5 +484,32 @@ def namelist_convert(args, config: ParsedConfig):  # noqa ARG001
         NamelistConverter.convert_ftn(
             args.namelist, args.output, args.from_cycle, args.to_cycle
         )
+    else:
+        raise SystemExit(f"Format {args.format} not handled")
+
+
+def namelist_format(args, config: ParsedConfig):  # noqa ARG001
+    """Implement the 'namelist format' command.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+        config (.config_parser.ParsedConfig): Parsed config file contents.
+
+    """
+    # Configuration
+    # Check that parameters are present
+    for parameter, parameter_name in zip(
+        [args.namelist, args.output],
+        ["namelist", "output"],
+    ):
+        if not parameter:
+            raise SystemExit(f"Please provide parameter {parameter_name}")
+
+    # Convert namelists
+    logger.info("Format namelist")
+    if args.format == "yaml":
+        NamelistConverter.convert_yml(args.namelist, args.output, None, None)
+    elif args.format == "ftn":
+        NamelistConverter.convert_ftn(args.namelist, args.output, None, None)
     else:
         raise SystemExit(f"Format {args.format} not handled")

@@ -618,14 +618,37 @@ class NamelistIntegrator:
         return ynml
 
     @staticmethod
-    def dict2yml(nmldict, ymlfile):
+    def dict2yml(nmldict, ymlfile, ordered_sections=None):
         """Write dict as yaml file."""
         with open(ymlfile, mode="wb") as file:
-            yaml.dump(nmldict, file, encoding="utf-8", default_flow_style=False)
+            if ordered_sections:
+                for section in ordered_sections:
+                    if section in nmldict:
+                        output_dict = {}
+                        output_dict[section] = nmldict[section]
+                        yaml.dump(
+                            output_dict, file, encoding="utf-8", default_flow_style=False
+                        )
+            else:
+                yaml.dump(nmldict, file, encoding="utf-8", default_flow_style=False)
 
 
 class NamelistConverter:
     """Helper class to convert namelists between cycles, based on thenamelisttool."""
+
+    @staticmethod
+    def get_known_cycles():
+        """Return the cycles handled by the converter."""
+        return ["CY48t2", "CY48t3", "CY49", "CY49t1", "CY49t2"]
+
+    def get_to_next_version_tnt_filenames():
+        """Return the tnt file names between get_known_cycles()."""
+        return [
+            None,  # CY48t2 to CY48t3
+            "cy48t2_to_cy49.yaml",  # CY48t3 to CY49
+            "cy49_to_cy49t1.yaml",  # CY49   to CY49t1
+            None,  # CY49t1 to CY49t2
+        ]
 
     @staticmethod
     def get_tnt_files_list(from_cycle, to_cycle):
@@ -634,35 +657,44 @@ class NamelistConverter:
         tnt_directives_folder = (
             Path(__file__).parent / "namelist_generation_input/tnt_directives/"
         )
-        known_cycles = ["CY48t2", "CY48t3", "CY49", "CY49t1", "CY49t2"]
-        to_next_version_tnt_filenames = [
-            None,  # CY48t2 to CY48t3
-            "cy48t2_to_cy49.yaml",  # CY48t3 to CY49
-            "cy49_to_cy49t1.yaml",  # CY49   to CY49t1
-            None,  # CY49t1 to CY49t2
-        ]
 
-        try:
-            start_index = known_cycles.index(from_cycle)
-        except ValueError:
-            raise SystemExit(f"ERROR: from-cycle {from_cycle} unknown") from ValueError
-
-        try:
-            target_index = known_cycles.index(to_cycle)
-        except ValueError:
-            raise SystemExit(f"ERROR: to-cycle {to_cycle} unknown") from ValueError
-
-        # Verify that to_cycle is older than from_cycle
-        if start_index >= target_index:
-            raise SystemExit(
-                f"ERROR: No conversion possible between {from_cycle} and {to_cycle}"
+        if from_cycle and to_cycle:
+            known_cycles = NamelistConverter.get_known_cycles()
+            to_next_version_tnt_filenames = (
+                NamelistConverter.get_to_next_version_tnt_filenames()
             )
-        # Apply all the intermediate conversions
-        tnt_files = [
-            tnt_directives_folder / to_next_version_tnt_filenames[index]
-            for index in range(start_index, target_index)
-            if to_next_version_tnt_filenames[index]
-        ]
+
+            try:
+                start_index = known_cycles.index(from_cycle)
+            except ValueError:
+                raise SystemExit(
+                    f"ERROR: from-cycle {from_cycle} unknown"
+                ) from ValueError
+
+            try:
+                target_index = known_cycles.index(to_cycle)
+            except ValueError:
+                raise SystemExit(f"ERROR: to-cycle {to_cycle} unknown") from ValueError
+
+            # Verify that to_cycle is older than from_cycle
+            if start_index > target_index:
+                raise SystemExit(
+                    f"ERROR: No conversion possible between {from_cycle} and {to_cycle}"
+                )
+        else:
+            start_index = 0
+            target_index = 0
+
+        if start_index == target_index:
+            # Apply empty conversion
+            tnt_files = [tnt_directives_folder / "empty.yaml"]
+        else:
+            # Apply all the intermediate conversions
+            tnt_files = [
+                tnt_directives_folder / to_next_version_tnt_filenames[index]
+                for index in range(start_index, target_index)
+                if to_next_version_tnt_filenames[index]
+            ]
 
         return tnt_files
 
@@ -685,6 +717,13 @@ class NamelistConverter:
         logger.info(f"Read {input_yml}")
         nmldict = NamelistIntegrator.yml2dict(Path(input_yml))
 
+        with open(Path(input_yml), mode="rt", encoding="utf-8") as file:
+            ordered_sections = [
+                line.split(":")[0]
+                for line in file.readlines()
+                if ":" in line and line.split(":")[0] in nmldict
+            ]
+
         for tnt_file in tnt_files:
             nmldict = NamelistConverter.apply_tnt_directives_to_namelist_dict(
                 tnt_file, nmldict
@@ -694,7 +733,10 @@ class NamelistConverter:
 
         # Write the output namelist file (yaml)
         logger.info(f"Write {output_yml}")
-        NamelistIntegrator.dict2yml(nmldict, Path(output_yml))
+        if "empty" in nmldict and "empty" not in ordered_sections:
+            ordered_sections.append("empty")
+
+        NamelistIntegrator.dict2yml(nmldict, Path(output_yml), ordered_sections)
 
     @staticmethod
     def convert_ftn(input_ftn, output_ftn, from_cycle, to_cycle):
@@ -708,12 +750,19 @@ class NamelistConverter:
         """
         tnt_files = NamelistConverter.get_tnt_files_list(from_cycle, to_cycle)
 
+        logger.info(f"Read {input_ftn}")
         ftn_file = input_ftn
+        temporary_files = []
         for tnt_file in tnt_files:
             NamelistConverter.apply_tnt_directives_to_ftn_namelist(tnt_file, ftn_file)
             ftn_file = ftn_file + ".tnt"
+            temporary_files.append(ftn_file)
 
+        logger.info(f"Write {output_ftn}")
         shutil.copy(ftn_file, output_ftn)
+
+        for file in temporary_files:
+            os.remove(file)
 
     @staticmethod
     def apply_tnt_directives_to_namelist_dict(tnt_directive_filename, namelist_dict):
@@ -764,18 +813,23 @@ class NamelistConverter:
                                     del new_namelist[namelists_section][old_block][
                                         old_key
                                     ]
+                                    if (
+                                        len(new_namelist[namelists_section][old_block])
+                                        == 0
+                                    ):
+                                        del new_namelist[namelists_section][old_block]
+
+        if "keys_to_set" in tnt_directives:
+            raise SystemExit("conversion FAILED: keys_to_set not implemented")
 
         # Creation of new blocks
         if "new_blocks" in tnt_directives:
             for new_block in tnt_directives["new_blocks"]:
-                for namelists_section in namelist_dict:
-                    if "f4" in namelists_section:
-                        for namelist_block in namelist_dict[namelists_section]:
-                            if new_block in namelist_block:
-                                raise SystemExit("conversion FAILED: Block existing")
-
-                            if new_block not in new_namelist[namelists_section]:
-                                new_namelist[namelists_section][new_block] = {}
+                if "empty" not in new_namelist:
+                    new_namelist["empty"] = {}
+                new_block_upper = new_block.upper()
+                if new_block_upper not in new_namelist["empty"]:
+                    new_namelist["empty"][new_block_upper] = {}
 
         # Move of blocks(Not implemented)
         if "blocks_to_move" in tnt_directives:
