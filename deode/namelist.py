@@ -768,12 +768,15 @@ class NamelistConverter:
                                     del new_namelist[namelists_section][old_block][
                                         old_key
                                     ]
+                                    if len(new_namelist[namelists_section][old_block]) == 0:
+                                        del new_namelist[namelists_section][old_block]
 
         # Creation of new blocks
         if "new_blocks" in tnt_directives:
             for new_block in tnt_directives["new_blocks"]:
                 if "empty" not in new_namelist:
                     new_namelist["empty"] = {}
+                new_block = new_block.upper()
                 if new_block not in new_namelist["empty"]:
                     new_namelist["empty"][new_block] = {}
 
