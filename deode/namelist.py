@@ -715,12 +715,14 @@ class NamelistConverter:
         """
         tnt_files = NamelistConverter.get_tnt_files_list(from_cycle, to_cycle)
 
+        logger.info(f"Read {input_ftn}")
         ftn_file = input_ftn
         
         for tnt_file in tnt_files:
             NamelistConverter.apply_tnt_directives_to_ftn_namelist(tnt_file, ftn_file)
             ftn_file = ftn_file + ".tnt"
-
+        
+        logger.info(f"Write {output_ftn}")
         shutil.copy(ftn_file, output_ftn)
 
     @staticmethod
