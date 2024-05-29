@@ -182,3 +182,20 @@ def test_convert_namelists_command(tmp_path):
         "yaml",
     ]
     main(args)
+
+
+@pytest.mark.usefixtures("_module_mockers")
+def test_format_namelists_command(tmp_path):
+    output_yml = f"{tmp_path.as_posix()}/nl_master_base.format.yml"
+
+    args = [
+        "namelist",
+        "format",
+        "--namelist",
+        "deode/data/namelists/unit_testing/nl_master_base.yml",
+        "--output",
+        output_yml,
+        "--format",
+        "yaml",
+    ]
+    main(args)

@@ -10,6 +10,7 @@ import pytest
 from deode.commands_functions import (
     namelist_convert,
     namelist_integrate,
+    namelist_format,
     set_deode_home,
     show_namelist,
 )
@@ -148,12 +149,53 @@ def nlconftn_arg(tmp_directory):
     )
     return arg
 
-
 def test_namelist_convert_ftn(nlconftn_arg, parsed_config):
     if os.path.exists(nlconftn_arg.output):
         os.remove(nlconftn_arg.output)
 
     namelist_convert(nlconftn_arg, parsed_config)
+    assert os.path.isfile(nlconftn_arg.output)
+    assert filecmp.cmp(nlconftn_arg.output_reference, nlconftn_arg.output)
+
+@pytest.fixture()
+def nlformatyml_arg(tmp_directory):
+    arg = ArgumentParser()
+    arg.namelist = "deode/data/namelists/unit_testing/nl_master_base.yml"
+    arg.output = f"{tmp_directory}/nl_master_base.format.yml"
+    arg.format = "yaml"
+    arg.output_reference = (
+        "deode/data/namelists/unit_testing/reference/nl_master_base.format.yml"
+    )
+    return arg
+
+
+def test_namelist_format_yml(nlconyml_arg, parsed_config):
+    if os.path.exists(nlconyml_arg.output):
+        os.remove(nlconyml_arg.output)
+
+    namelist_format(nlconyml_arg, parsed_config)
+
+    assert os.path.isfile(nlconyml_arg.output)
+    assert filecmp.cmp(nlconyml_arg.output_reference, nlconyml_arg.output)
+
+
+@pytest.fixture()
+def nlformatftn_arg(tmp_directory):
+    arg = ArgumentParser()
+    arg.namelist = "deode/data/namelists/unit_testing/nl_master_base"
+    arg.output = f"{tmp_directory}/nl_master_base.format"
+    arg.format = "ftn"
+    arg.output_reference = (
+        "deode/data/namelists/unit_testing/reference/nl_master_base.format"
+    )
+    return arg
+
+
+def test_namelist_format_ftn(nlconftn_arg, parsed_config):
+    if os.path.exists(nlconftn_arg.output):
+        os.remove(nlconftn_arg.output)
+
+    namelist_format(nlconftn_arg, parsed_config)
     assert os.path.isfile(nlconftn_arg.output)
     assert filecmp.cmp(nlconftn_arg.output_reference, nlconftn_arg.output)
 

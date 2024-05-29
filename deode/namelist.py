@@ -622,44 +622,53 @@ class NamelistConverter:
     """Helper class to convert namelists between cycles, based on thenamelisttool."""
 
     @staticmethod
+    def get_known_cycles():
+        return ["CY48t2", "CY48t3", "CY49", "CY49t1", "CY49t2"]
+    
+    def get_to_next_version_tnt_filenames():
+        return [
+            None,  # CY48t2 to CY48t3
+            "cy48t2_to_cy49.yaml",  # CY48t3 to CY49
+            "cy49_to_cy49t1.yaml",  # CY49   to CY49t1
+            None,  # CY49t1 to CY49t2
+        ]
+    
+    @staticmethod
     def get_tnt_files_list(from_cycle, to_cycle):
         """Return the list of tnt directive files required for the conversion."""
         # definitions of the conversion to apply between cycles
         tnt_directives_folder = (
             Path(__file__).parent / "namelist_generation_input/tnt_directives/"
         )
-        known_cycles = ["CY48t2", "CY48t3", "CY49", "CY49t1", "CY49t2"]
-        to_next_version_tnt_filenames = [
-            None,  # CY48t2 to CY48t3
-            "cy48t2_to_cy49.yaml",  # CY48t3 to CY49
-            "cy49_to_cy49t1.yaml",  # CY49   to CY49t1
-            None,  # CY49t1 to CY49t2
-        ]
-
-        try:
-            start_index = known_cycles.index(from_cycle)
-        except ValueError:
-            raise SystemExit(f"ERROR: from-cycle {from_cycle} unknown") from ValueError
-
-        try:
-            target_index = known_cycles.index(to_cycle)
-        except ValueError:
-            raise SystemExit(f"ERROR: to-cycle {to_cycle} unknown") from ValueError
-
-        # Verify that to_cycle is older than from_cycle
-        if start_index > target_index:
-            raise SystemExit(
-                f"ERROR: No conversion possible between {from_cycle} and {to_cycle}"
-            )
-        # Apply all the intermediate conversions        
-        tnt_files = [
-            tnt_directives_folder / to_next_version_tnt_filenames[index]
-            for index in range(start_index, target_index)
-            if to_next_version_tnt_filenames[index]
-        ]
+            
+        if from_cycle and to_cycle:
+            known_cycles = NamelistConverter.get_known_cycles()
+            to_next_version_tnt_filenames = NamelistConverter.get_to_next_version_tnt_filenames()
         
-        if len(tnt_files) == 0:
-            tnt_files.append(tnt_directives_folder / "empty.yaml")
+            try:
+                start_index = known_cycles.index(from_cycle)
+            except ValueError:
+                raise SystemExit(f"ERROR: from-cycle {from_cycle} unknown") from ValueError
+
+            try:
+                target_index = known_cycles.index(to_cycle)
+            except ValueError:
+                raise SystemExit(f"ERROR: to-cycle {to_cycle} unknown") from ValueError
+
+            # Verify that to_cycle is older than from_cycle
+            if start_index > target_index:
+                raise SystemExit(
+                    f"ERROR: No conversion possible between {from_cycle} and {to_cycle}"
+                )
+            # Apply all the intermediate conversions        
+            tnt_files = [
+                tnt_directives_folder / to_next_version_tnt_filenames[index]
+                for index in range(start_index, target_index)
+                if to_next_version_tnt_filenames[index]
+            ]
+            
+        else:
+            tnt_files = [tnt_directives_folder / "empty.yaml"]
         
         return tnt_files
 
