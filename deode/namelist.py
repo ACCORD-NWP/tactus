@@ -505,6 +505,15 @@ class NamelistGenerator:
         # Finally perform variable substitution
         nlsubst = self.traverse(nlres)
         return f90nml.Namelist(nlsubst)
+    
+    def write_namelist(self, nml, output_file):
+        """Write namelist using f90nml.
+
+        Args:
+            nml (f90nml.Namelist): namelist to write
+            output_file (str) : namelist file name
+        """
+        write_namelist(nml,output_file)
 
     def update(self, nldict, cndict_tag):
         """Update with additional namelist dict.
@@ -535,7 +544,7 @@ class NamelistGenerator:
             pass
 
         nml = self.assemble_namelist(target)
-        write_namelist(nml, output_file)
+        self.write_namelist(nml, output_file)
 
 
 class NamelistIntegrator:
