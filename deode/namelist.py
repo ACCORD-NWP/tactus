@@ -3,7 +3,6 @@
 import copy
 import os
 import re
-import shutil
 import subprocess
 from collections import OrderedDict
 from pathlib import Path
@@ -61,23 +60,23 @@ def represent_ordereddict(dumper, data):
 
 
 def write_namelist(nml, output_file):
-        """Write namelist using f90nml.
+    """Write namelist using f90nml.
 
-        Args:
-            nml (f90nml.Namelist): namelist to write
-            output_file (str) : namelist file name
+    Args:
+        nml (f90nml.Namelist): namelist to write
+        output_file (str) : namelist file name
 
-        """
-        if isinstance(nml, dict):
-            nml = f90nml.Namelist(nml)
-        # Write result.
-        nml.uppercase = True
-        nml.true_repr = ".TRUE."
-        nml.false_repr = ".FALSE."
-        nml.end_comma = True  # AD: temp fix for IO_SERVER bug
-        nml.write(output_file, force=True)
+    """
+    if isinstance(nml, dict):
+        nml = f90nml.Namelist(nml)
+    # Write result.
+    nml.uppercase = True
+    nml.true_repr = ".TRUE."
+    nml.false_repr = ".FALSE."
+    nml.end_comma = True  # AD: temp fix for IO_SERVER bug
+    nml.write(output_file, force=True)
 
-        logger.debug("Wrote: {}", output_file)
+    logger.debug("Wrote: {}", output_file)
 
 
 class InvalidNamelistKindError(ValueError):
@@ -518,7 +517,6 @@ class NamelistGenerator:
         self.cndict[self.target].append(cndict_tag)
         self.nldict[cndict_tag] = nldict
 
-
     def generate_namelist(self, target, output_file):
         """Generate the namelists for 'target'.
 
@@ -747,7 +745,7 @@ class NamelistConverter:
 
         nl = f90nml.read(ftn_file)
         logger.info(f"Write {output_ftn}")
-        write_namelist(nl,output_ftn)
+        write_namelist(nl, output_ftn)
 
         for file in temporary_files:
             os.remove(file)
