@@ -818,7 +818,7 @@ class NamelistConverter:
             for block_to_set in tnt_directives["keys_to_set"]:
                 for namelists_section in namelist_dict:
                     if "f4_" in namelists_section:
-                        if not block_to_set in namelist_dict[namelists_section]:
+                        if block_to_set not in namelist_dict[namelists_section]:
                             new_namelist[namelists_section][block_to_set] = {}
                         for keys_to_set in tnt_directives["keys_to_set"][block_to_set]:
                             new_namelist[namelists_section][block_to_set][
