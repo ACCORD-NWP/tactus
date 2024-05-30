@@ -257,7 +257,6 @@ f4_AROME:
     NHISTS: ${namelist.nhists}
     NPOSTS: ${namelist.nposts}
     NSFXHISTS: ${namelist.nsfxhists}
-    NUNDEFLD: -99999999
   NAMCT1:
     N1HIS: 1
     N1POS: 1
@@ -401,6 +400,9 @@ f4_AROME:
     CFNHWF: ECHIS
     LINC: true
     NTIMEFMT: 2
+  NAMPARAR:
+    CMICRO: ${submission.cmicro-ICE3}
+    LOLSMC: true
   NAMPHMSE:
     LPGDFWR: false
   NAMPHY:
@@ -675,7 +677,6 @@ f4_ALARO:
     NHISTS: ${namelist.nhists}
     NPOSTS: ${namelist.nposts}
     NSPPR: 0
-    NUNDEFLD: -99999999
   NAMCT1:
     N1HIS: 1
     N1POS: 1
@@ -1619,6 +1620,7 @@ empty:
   NAMOPTCMEM: {}
   NAMPAR0: {}
   NAMPAR1: {}
+  NAMPARAR: {}
   NAMPARECV: {}
   NAMPERTOBS: {}
   NAMPERTPAR: {}

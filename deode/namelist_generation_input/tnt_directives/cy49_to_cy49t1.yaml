@@ -190,5 +190,6 @@ keys_to_remove:
         - LDIAGWMAX
         - NDIAGWMAX
         - NPRINTFR
-        - NPTP
-
+        - NPTP    
+    NAMCT0:
+        - NUNDEFLD

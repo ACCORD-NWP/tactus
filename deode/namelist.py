@@ -834,11 +834,15 @@ class NamelistConverter:
 
         # Delete keys
         if "keys_to_remove" in tnt_directives:
-            for blocks in tnt_directives["keys_to_remove"]:
+            for block_to_remove in tnt_directives["keys_to_remove"]:
                 for namelists_section in namelist_dict:
                     for namelist_block in namelist_dict[namelists_section]:
-                        if blocks in namelist_block:
-                            del new_namelist[namelists_section][blocks]
+                        if block_to_remove in namelist_block:                            
+                            for key_to_remove in tnt_directives["keys_to_remove"][block_to_remove]:                                
+                                if key_to_remove in namelist_dict[namelists_section][block_to_remove]:
+                                    del new_namelist[namelists_section][block_to_remove][key_to_remove]
+                                    if len(new_namelist[namelists_section][block_to_remove]) == 0:
+                                        del new_namelist[namelists_section][block_to_remove]
 
         return new_namelist
 
