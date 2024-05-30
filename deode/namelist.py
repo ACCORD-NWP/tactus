@@ -505,7 +505,7 @@ class NamelistGenerator:
         # Finally perform variable substitution
         nlsubst = self.traverse(nlres)
         return f90nml.Namelist(nlsubst)
-    
+
     def write_namelist(self, nml, output_file):
         """Write namelist using f90nml.
 
@@ -513,7 +513,7 @@ class NamelistGenerator:
             nml (f90nml.Namelist): namelist to write
             output_file (str) : namelist file name
         """
-        write_namelist(nml,output_file)
+        write_namelist(nml, output_file)
 
     def update(self, nldict, cndict_tag):
         """Update with additional namelist dict.
@@ -837,12 +837,28 @@ class NamelistConverter:
             for block_to_remove in tnt_directives["keys_to_remove"]:
                 for namelists_section in namelist_dict:
                     for namelist_block in namelist_dict[namelists_section]:
-                        if block_to_remove in namelist_block:                            
-                            for key_to_remove in tnt_directives["keys_to_remove"][block_to_remove]:                                
-                                if key_to_remove in namelist_dict[namelists_section][block_to_remove]:
-                                    del new_namelist[namelists_section][block_to_remove][key_to_remove]
-                                    if len(new_namelist[namelists_section][block_to_remove]) == 0:
-                                        del new_namelist[namelists_section][block_to_remove]
+                        if block_to_remove in namelist_block:
+                            for key_to_remove in tnt_directives["keys_to_remove"][
+                                block_to_remove
+                            ]:
+                                if (
+                                    key_to_remove
+                                    in namelist_dict[namelists_section][block_to_remove]
+                                ):
+                                    del new_namelist[namelists_section][block_to_remove][
+                                        key_to_remove
+                                    ]
+                                    if (
+                                        len(
+                                            new_namelist[namelists_section][
+                                                block_to_remove
+                                            ]
+                                        )
+                                        == 0
+                                    ):
+                                        del new_namelist[namelists_section][
+                                            block_to_remove
+                                        ]
 
         return new_namelist
 

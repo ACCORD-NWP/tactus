@@ -187,6 +187,20 @@ nl_master_base:
     _start_index:
       yezdiag_nl:
       - 1
+  NAMPARAR:
+    LICERAD: true
+    LKOGAN: true
+    LLCRIT: true
+    LOLSMC: true
+    LOTOWNC: true
+    LSHALLOWMF: true
+    LTOTPREC: false
+    NSWB_MNH: 6
+    RADGR: 0.5
+    RADSN: 1.0
+    _start_index:
+      rfrmin:
+      - 1
   NAM_NEBn:
     LHGT_QS: true
     LSIGMAS: true
