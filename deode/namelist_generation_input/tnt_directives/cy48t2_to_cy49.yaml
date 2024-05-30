@@ -167,8 +167,8 @@ keys_to_move:
 # Blocks need to be consistent with above movings.
 keys_to_set:
     NAMGEM:
-        LNONHYD_GEOM: __LNHDYN__
-        LNHX_GEOM: __LNHX__
+        LNONHYD_GEOM: true
+        LNHX_GEOM: true
 
 # 6. Blocks to be removed. Already missing blocks are ignored.
 #blocks_to_remove:

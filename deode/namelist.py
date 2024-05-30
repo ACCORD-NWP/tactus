@@ -506,6 +506,15 @@ class NamelistGenerator:
         nlsubst = self.traverse(nlres)
         return f90nml.Namelist(nlsubst)
 
+    def write_namelist(self, nml, output_file):
+        """Write namelist using f90nml.
+
+        Args:
+            nml (f90nml.Namelist): namelist to write
+            output_file (str) : namelist file name
+        """
+        write_namelist(nml, output_file)
+
     def update(self, nldict, cndict_tag):
         """Update with additional namelist dict.
 
@@ -535,7 +544,7 @@ class NamelistGenerator:
             pass
 
         nml = self.assemble_namelist(target)
-        write_namelist(nml, output_file)
+        self.write_namelist(nml, output_file)
 
 
 class NamelistIntegrator:
@@ -806,7 +815,15 @@ class NamelistConverter:
                                         del new_namelist[namelists_section][old_block]
 
         if "keys_to_set" in tnt_directives:
-            raise SystemExit("conversion FAILED: keys_to_set not implemented")
+            for block_to_set in tnt_directives["keys_to_set"]:
+                for namelists_section in namelist_dict:
+                    if "f4_" in namelists_section:
+                        if block_to_set not in namelist_dict[namelists_section]:
+                            new_namelist[namelists_section][block_to_set] = {}
+                        for keys_to_set in tnt_directives["keys_to_set"][block_to_set]:
+                            new_namelist[namelists_section][block_to_set][
+                                keys_to_set
+                            ] = tnt_directives["keys_to_set"][block_to_set][keys_to_set]
 
         # Creation of new blocks
         if "new_blocks" in tnt_directives:
@@ -828,12 +845,28 @@ class NamelistConverter:
             for block_to_remove in tnt_directives["keys_to_remove"]:
                 for namelists_section in namelist_dict:
                     for namelist_block in namelist_dict[namelists_section]:
-                        if block_to_remove in namelist_block:                            
-                            for key_to_remove in tnt_directives["keys_to_remove"][block_to_remove]:                                
-                                if key_to_remove in namelist_dict[namelists_section][block_to_remove]:
-                                    del new_namelist[namelists_section][block_to_remove][key_to_remove]
-                                    if len(new_namelist[namelists_section][block_to_remove]) == 0:
-                                        del new_namelist[namelists_section][block_to_remove]
+                        if block_to_remove in namelist_block:
+                            for key_to_remove in tnt_directives["keys_to_remove"][
+                                block_to_remove
+                            ]:
+                                if (
+                                    key_to_remove
+                                    in namelist_dict[namelists_section][block_to_remove]
+                                ):
+                                    del new_namelist[namelists_section][block_to_remove][
+                                        key_to_remove
+                                    ]
+                                    if (
+                                        len(
+                                            new_namelist[namelists_section][
+                                                block_to_remove
+                                            ]
+                                        )
+                                        == 0
+                                    ):
+                                        del new_namelist[namelists_section][
+                                            block_to_remove
+                                        ]
 
         return new_namelist
 
