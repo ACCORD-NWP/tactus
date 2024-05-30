@@ -1,13 +1,10 @@
-# Do the selection of fields below.
-# Note that xxt00000000 inherits from xxtddddhhmm
 selection:
- xxtddddhhmm: &default
-  NAMFPPHY:
-   CLCFU:
-    - 'SURFRAYT SOL CL'
-    - 'SURFRAYT THER CL'
-    - 'SURFDIR NORM IRR'
-    - 'SURFRAYT DIR SUR'
-
- xxtddddhh00:
-   <<: *default
+  xxtddddhh00:
+    NAMFPPHY: &id001
+      CLCFU:
+      - SURFRAYT SOL CL
+      - SURFRAYT THER CL
+      - SURFDIR NORM IRR
+      - SURFRAYT DIR SUR
+  xxtddddhhmm:
+    NAMFPPHY: *id001
