@@ -17,6 +17,8 @@ selection:
       - ATMOCLD.CEIL.H
       - ATMOCLD.BASE.P
       - ATMOCLD.BASE.H
+      - C002_METEOSAT_09_SEVIRI.POS
+      - C006_METEOSAT_09_SEVIRI.POS
     NAMFPDYH:
       CL3DF:
       - VERT.VELOCIT
@@ -106,12 +108,12 @@ selection:
       - TKE
       NRFP3S:
       - ${vertical_levels.nlev}
-    NAMFPDYV: &id002 {}
     NAMFPPHY:
       CLPHY:
       - SURFTEMPERATURE
       - SURFRESERV.NEIGE
       CLXFU:
+      - SURFINSPLUIE
       - CLSTEMPERATURE
       - CLSHUMI.RELATIVE
       - CLSHUMI.SPECIFIQ
@@ -122,6 +124,7 @@ selection:
       - SURFNEBUL.BASSE
       - SURFNEBUL.TOTALE
       - CLPMHAUT.MOD.XFU
+      - CLSMEAN.RAD.TEMP
   xxtddddhh00:
     NAMFPDY2:
       CL2DF:
@@ -140,6 +143,8 @@ selection:
       - ATMOCLD.CEIL.H
       - ATMOCLD.BASE.P
       - ATMOCLD.BASE.H
+      - C002_METEOSAT_09_SEVIRI.POS
+      - C006_METEOSAT_09_SEVIRI.POS
     NAMFPDYH:
       CL3DF:
       - VERT.VELOCIT
@@ -224,7 +229,6 @@ selection:
       - TKE
       NRFP3S:
       - ${vertical_levels.nlev}
-    NAMFPDYV: *id002
     NAMFPPHY:
       CLCFU:
       - SOMMFLU.RAY.SOLA
@@ -236,16 +240,16 @@ selection:
       - SURFFLU.CHA.SENS
       - SURFRAYT SOLA DE
       - SURFRAYT THER DE
+      - SURFACCPLUIE
+      - SURFACCNEIGE
+      - SURFACCGRAUPEL
       - SURFDIAG.FLASH
-      - SURFPREC.EAU.GEC
-      - SURFPREC.EAU.CON
-      - SURFPREC.NEI.GEC
-      - SURFPREC.NEI.CON
       CLPHY:
       - SURFTEMPERATURE
       - SURFRESERV.NEIGE
       CLXFU:
       - SURFDIAGHAIL
+      - SURFINSPLUIE
       - CLSTEMPERATURE
       - CLSHUMI.RELATIVE
       - CLSHUMI.SPECIFIQ
@@ -264,3 +268,28 @@ selection:
       - CLSVISIHYDN60
       - CLSPTYPE_60M
       - CLSPTYPESEV_60M
+      - CLSMEAN.RAD.TEMP
+empty:
+  NAMCLRADLID: {}
+  NAMDWET: {}
+  NAMDYNA_STATIC: {}
+  NAMECV: {}
+  NAMECVDESC: {}
+  NAMECVGRB: {}
+  NAMJBALPHACV: {}
+  NAMJBECPHYSECV: {}
+  NAMJBSKTECV: {}
+  NAMMODERRCONF: {}
+  NAMMODERRCOV: {}
+  NAMMODERRINCRCONF: {}
+  NAMMODERRMOD: {}
+  NAMNRTAER: {}
+  NAMPARECV: {}
+  NAMPERTOBS: {}
+  NAMRSTRHBIAS: {}
+  NAM_NEBN: {}
+  NAM_PARAM_ICEN: {}
+  NAM_PARAM_MFSHALLN: {}
+  NAM_SPP_ACTIVE: {}
+  NAM_SPP_MODIF: {}
+  NAM_TURBN: {}

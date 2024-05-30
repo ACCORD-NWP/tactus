@@ -1,16 +1,12 @@
-# Do the selection of fields below.
-# Note that xxt00000000 inherits from xxtddddhhmm
 selection:
- xxtddddhhmm: &default
-  NAMFPDYH:
-   CL3DF:
-    - 'WIND.U.PHYS'
-    - 'WIND.V.PHYS'
-   RFP3H:
-    - 100.
-
- xxtddddhh00:
-   <<: *default
-
- xxt00000000:
-   <<: *default
+  xxt00000000:
+    NAMFPDYH: &id001
+      CL3DF:
+      - WIND.U.PHYS
+      - WIND.V.PHYS
+      RFP3H:
+      - 100.0
+  xxtddddhh00:
+    NAMFPDYH: *id001
+  xxtddddhhmm:
+    NAMFPDYH: *id001
