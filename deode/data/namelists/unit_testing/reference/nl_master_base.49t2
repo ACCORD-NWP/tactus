@@ -55,6 +55,11 @@
     RFP3PV = 1.5e-06, 2e-06,
 /
 
+&NAMGEM
+    LNONHYD_GEOM = '.TRUE.',
+    LNHX_GEOM = '.TRUE.',
+/
+
 &NAMGFL
     NGFL_EZDIAG = 3,
     YA_NL%LPT = .FALSE.,
