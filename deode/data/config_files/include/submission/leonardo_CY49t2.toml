@@ -5,8 +5,8 @@
   default_submit_type = "parallel"
   lfftw = false
   module_initpath = "/leonardo/pub/userexternal/dhaumont/install/lmod/lmod/init"
-  nproma = -32
   nfpgrib = 141
+  nproma = -32
 
   submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
 
