@@ -114,6 +114,7 @@ nl_master_base:
     RFP3PV:
     - 1.5e-06
     - 2.0e-06
+  NAMGEM: {}
   NAMGFL:
     NGFL_EZDIAG: 3
     YA_NL:
