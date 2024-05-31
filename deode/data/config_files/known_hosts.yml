@@ -8,3 +8,5 @@ freja:
 linda: 
   env: 
     SMHI_DIST: "linda\\d+"
+leonardo: 
+  hostname: ".*leonardo.*"

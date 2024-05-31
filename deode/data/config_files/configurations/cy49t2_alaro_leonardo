@@ -2,5 +2,4 @@
 deode/data/config_files/config.toml
 deode/data/config_files/modifications/CY49t2.toml
 deode/data/config_files/modifications/alaro.toml
-deode/data/config_files/include/submission/leonardo_CY49t2.toml
-deode/data/config_files/include/platform_paths/leonardo.toml
+deode/data/config_files/modifications/submission/@HOST@_CY49t2.toml
