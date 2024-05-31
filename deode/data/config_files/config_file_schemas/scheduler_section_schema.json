@@ -42,6 +42,16 @@
             "ecf_home": {
                 "type": "string",
                 "description": "Path to Ecflow home."
+            },
+            "ecf_user": {
+                "type": "string",
+                "description": "Ecflow user, only set when required",
+		"default": ""
+            },
+            "ecf_remoteuser": {
+                "type": "string",
+                "description": "Ecflow remote user, only set when required",
+		"default": ""
             }
           }
       }
