@@ -770,6 +770,9 @@ f4_ALARO:
     NFPROMA: ${submission.nproma}
   NAMFPSC2_DEP:
     NFPROMA_DEP: ${submission.nproma}
+  NAMGEM:
+    LNHX_GEOM: true
+    LNONHYD_GEOM: true
   NAMGFL:
     YA_NL%LADV: false
     YA_NL%LGP: true
