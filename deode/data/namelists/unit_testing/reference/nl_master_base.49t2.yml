@@ -114,6 +114,9 @@ nl_master_base:
     RFP3PV:
     - 1.5e-06
     - 2.0e-06
+  NAMGEM:
+    LNHX_GEOM: true
+    LNONHYD_GEOM: true
   NAMGFL:
     NGFL_EZDIAG: 3
     YA_NL:
@@ -253,7 +256,6 @@ empty:
   NAMECV: {}
   NAMECVDESC: {}
   NAMECVGRB: {}
-  NAMGEM: {}
   NAMJBALPHACV: {}
   NAMJBECPHYSECV: {}
   NAMJBSKTECV: {}
