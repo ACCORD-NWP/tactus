@@ -20,15 +20,21 @@ deode case ?deode/data/config_files/configurations/cy48t3_arome -o cy48t3_arome.
 
 ### Ecflow server selection
 
+By default, all users will use the **dev server**.
+
 Every user can choose to run on the de330-dev or de330-prod ecflow servers. To do this, you only need to change the ecf_host variable in deode/data/config_files/include/scheduler/ecflow_lumi.toml:
 
 ```
 [ecfvars]
-  ecf_host = "217.71.195.251"
+  ecf_host = "217.71.194.208"
 ```
 
 1. 217.71.195.251 (this is the de330-prod server for **production only**) 
 2. 217.71.194.208 (this is the de330-dev server for **normal use**) 
+
+These are the 2 ecflow servers integrated with LUMI currently, 'Develop' (dev-330) and 'Production' (prod-330).
+
+**Should you require access to the prod server, you must be whitelisted by requesting permission from the ECMWF with someone senior in cc (Ulf Andrae - SMHI or Xiaohua Yang - DMI) . This is detailed in step 1 in the Ecflow Server Setup >> Initial setup section below.**
 
 ### Data
 
@@ -78,10 +84,6 @@ deode run \
 ```
 
 ## Ecflow Server Setup
-
-### Ecflow Servers: Production & Develop
-
-There are two ecflow servers integrated with LUMI currently, 'Develop' (dev-330) and 'Production' (prod-330), which can also be identified by their IP addresses: 217.71.194.208 (dev) and 217.71.195.251 (prod) respectively. Most users will only have access **to the dev server**. Should you require access to the prod server, you must be whitelisted by requesting permission from the ECMWF with a senior admin in cc (Ulf Andrae - SMHI or Xiaohua Yang - Met Norway) . This is in step 1 below.
 
 ###  Initial setup
 

@@ -6,7 +6,5 @@
   ecf_jobout = "/nobackup/smhid20/users/@USER@/deode_ecflow/jobout"
   ecf_out = "/nobackup/smhid20/users/@USER@/deode_ecflow/jobout"
   ecf_port = "_set_port_from_user(10000)"
-  ecf_remoteuser = "@USER@"
   ecf_ssl = "0"
-  ecf_user = "@USER@"
   hpc = "freja"
