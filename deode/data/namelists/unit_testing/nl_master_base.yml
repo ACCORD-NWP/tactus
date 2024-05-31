@@ -244,3 +244,4 @@ nl_master_base:
     _start_index:
       rfrmin:
       - 1
+  NAMGEM: {}

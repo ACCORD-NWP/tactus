@@ -15,7 +15,6 @@ new_blocks:
     - namparecv
     - namrstrhbias
     - NAMDYNA_STATIC
-    - NAMGEM
 
 # 2. Blocks to be moved. If target block exists, raise an error.
 #blocks_to_move:
