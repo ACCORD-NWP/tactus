@@ -1,0 +1,66 @@
+
+# README ! manual replacements are necessary wrt VFE:
+# LVFE_REGETA=.FALSE. -> NAMCVER/CVFE_ETAH='CHORDAL' (default)
+# LVFE_REGETA=.TRUE. and RVFE_ALPHA=RVFE_BETA=0 (default) -> NAMCVER/CVFE_ETAH='REGETA'
+
+new_blocks:
+    - NAMTRAJ
+    - NAMNPROF
+    - NAMSATSIM
+    - NAMGRIB
+    - NAMDPHY
+    - NAMGRIB
+    - NAMCMEM_MW
+    - NAMNUDGLH
+    - NAMVARBC_MODES
+    - NAMPERTPAR
+
+keys_to_move:
+    NAMVAR:
+        LTRAJGP:
+            NAMTRAJ: LTRAJGP
+        LTRAJHR:
+            NAMTRAJ: LTRAJHR
+        LREADGPTRAJ:
+            NAMTRAJ: LREADGPTRAJ
+        LTRAJHR_ALTI:
+            NAMTRAJ: LTRAJHR_ALTI
+        LTRAJHR_SURF:
+            NAMTRAJ: LTRAJHR_SURF
+
+keys_to_set:
+    NAMDPHY:
+        NCSNEC: 1
+    NAMGRIB:
+        NCYCLE: 48
+
+keys_to_remove:
+    NAMFPG:
+        - FPNLGINC
+        - FPRPK
+    NAMMTS:
+        - LMTS
+        - LMTSCL
+    NAMFPC:
+        - LFPLOSP
+    NAMOPH:
+        - NCADFORM
+    NEMFPEZO:
+        - NSTREFP
+    NAMCVER:
+        - NVFE_INTBC
+        - NVFE_DERBC
+        - NVFE_BC
+        - LVFE_LAPL
+        - LVFE_LAPL_TBC
+        - LVFE_LAPL_BBC
+        - LVFE_LAPL_HALF
+        - LVFE_X_TERM
+        - LVFE_Z_TERM
+        - LVFE_DELNHPRE
+        - LVFE_CENTRI
+        - RVFE_CENTRI
+        - LVFE_APPROX
+        - LVFE_FIX_ORDER
+    NAMCT0:
+        - LVFE_REGETA

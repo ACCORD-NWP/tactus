@@ -1,0 +1,30 @@
+
+# 1. Blocks to be added.
+new_blocks:
+    - NAMTRAJ
+    - NAMNPROF
+    - NAMSATSIM
+    - NAMGRIB
+    - NAMDPHY
+
+
+# 3. Keys to be moved. If target exists or target block is missing, raise an error.
+# Blocks need to be consistent with above blocks movings.
+keys_to_move:
+    NAMVAR:
+        LTRAJGP:
+            NAMTRAJ: LTRAJGP
+        LTRAJHR:
+            NAMTRAJ: LTRAJHR
+        LREADGPTRAJ:
+            NAMTRAJ: LREADGPTRAJ
+        LTRAJHR_ALTI:
+            NAMTRAJ: LTRAJHR_ALTI
+        LTRAJHR_SURF:
+            NAMTRAJ: LTRAJHR_SURF
+
+keys_to_set:
+    NAMDPHY:
+        NCSNEC: 1
+    NAMGRIB:
+        NCYCLE: 47
