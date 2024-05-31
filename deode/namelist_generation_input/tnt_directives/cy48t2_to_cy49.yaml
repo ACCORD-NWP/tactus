@@ -15,6 +15,7 @@ new_blocks:
     - namparecv
     - namrstrhbias
     - NAMDYNA_STATIC
+    - NAMGEM
 
 # 2. Blocks to be moved. If target block exists, raise an error.
 #blocks_to_move:
@@ -167,8 +168,8 @@ keys_to_move:
 # Blocks need to be consistent with above movings.
 keys_to_set:
     NAMGEM:
-        LNONHYD_GEOM: true
-        LNHX_GEOM: true
+        LNONHYD_GEOM: .TRUE.
+        LNHX_GEOM: .TRUE.
 
 # 6. Blocks to be removed. Already missing blocks are ignored.
 #blocks_to_remove:
