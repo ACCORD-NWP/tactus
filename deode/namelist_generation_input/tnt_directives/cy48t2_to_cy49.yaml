@@ -165,10 +165,10 @@ keys_to_move:
 
 # 5. Keys to be set with a value (new or modified). If block is missing, raise an error.
 # Blocks need to be consistent with above movings.
-#keys_to_set:
-#   NAMGEM:
-#       LNONHYD_GEOM: .TRUE.
-#       LNHX_GEOM: .TRUE.
+keys_to_set:
+    NAMGEM:
+        LNONHYD_GEOM: true
+        LNHX_GEOM: true
 
 # 6. Blocks to be removed. Already missing blocks are ignored.
 #blocks_to_remove:
