@@ -147,6 +147,7 @@ namgfl_AROME:
     YS_NL%NREQIN: 1
     YTKE_NL%NREQIN: 1
 f4_atos_bologna:
+  NAMGEM: {}
   NAMRIP:
     RAVGTIME: 3600.0
 f4_AROME:
@@ -339,6 +340,7 @@ f4_AROME:
     NFPROMA: ${submission.nproma}
   NAMFPSC2_DEP:
     NFPROMA_DEP: ${submission.nproma}
+  NAMGEM: {}
   NAMGFL:
     NGFL_EZDIAG: 4
     YA_NL%NREQIN: 1
@@ -767,6 +769,7 @@ f4_ALARO:
     NFPROMA: ${submission.nproma}
   NAMFPSC2_DEP:
     NFPROMA_DEP: ${submission.nproma}
+  NAMGEM: {}
   NAMGFL:
     YA_NL%LADV: false
     YA_NL%LGP: true
@@ -1153,6 +1156,7 @@ f4_common:
     NBITCS: -1
     NBITPG: -1
     NSTRON: -1
+  NAMGEM: {}
   NAMGFL:
     YG_NL%NREQIN: 0
     YI_NL%NREQIN: 0
@@ -1234,6 +1238,7 @@ f4_c903_main:
     CNAMELIST: ./namelist_c903_domain
     NFPCONF: 2
     NFPOBJ: 1
+  NAMGEM: {}
   NAMGFL:
     YO3_NL%LGP: false
     YQ_NL%LGP: true
@@ -1359,6 +1364,7 @@ f4_c903_domain:
     NFPROMA: ${submission.nproma}
   NAMFPSC2_DEP:
     NFPROMA_DEP: ${submission.nproma}
+  NAMGEM: {}
   NEMFPEZO:
     RCO_EZO: 180.0
 f4_e927_AROME:
@@ -1380,6 +1386,7 @@ f4_e927_AROME:
     - PRESS.DEPART
     - VERTIC.DIVER
     - TKE
+  NAMGEM: {}
   NAMGFL:
     YA_NL%NREQIN: 1
     YG_NL%NREQIN: 1
@@ -1394,6 +1401,7 @@ f4_e927_IFS:
   NAMCT0:
     LNHEE: false
     LSPRT: false
+  NAMGEM: {}
   NAMGFL:
     YA_NL%NREQIN: 1
     YG_NL%NREQIN: 0
@@ -1474,6 +1482,7 @@ f4_e927:
     NMFPMAX: ${domain.nmsmax}
   NAMFPIOS:
     NFPXFLD: 46
+  NAMGEM: {}
   NAMGFL:
     YQ_NL%LGP: false
     YQ_NL%LSP: true

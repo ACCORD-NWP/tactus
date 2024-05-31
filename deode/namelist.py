@@ -635,6 +635,7 @@ class NamelistConverter:
         """Return the cycles handled by the converter."""
         return ["CY48t2", "CY48t3", "CY49", "CY49t1", "CY49t2"]
 
+    @staticmethod
     def get_to_next_version_tnt_filenames():
         """Return the tnt file names between get_known_cycles()."""
         return [
@@ -817,13 +818,24 @@ class NamelistConverter:
         if "keys_to_set" in tnt_directives:
             for block_to_set in tnt_directives["keys_to_set"]:
                 for namelists_section in namelist_dict:
-                    if "f4_" in namelists_section:
-                        if block_to_set not in namelist_dict[namelists_section]:
-                            new_namelist[namelists_section][block_to_set] = {}
+                    if namelists_section != "empty":
                         for keys_to_set in tnt_directives["keys_to_set"][block_to_set]:
-                            new_namelist[namelists_section][block_to_set][
-                                keys_to_set
-                            ] = tnt_directives["keys_to_set"][block_to_set][keys_to_set]
+                            if block_to_set in namelist_dict[namelists_section]:
+                                key_value = tnt_directives["keys_to_set"][block_to_set][
+                                    keys_to_set
+                                ]
+                                if key_value in [".T.", ".TRUE."]:
+                                    key_value = True
+                                if key_value in [".F.", ".FALSE."]:
+                                    key_value = False
+                                new_namelist[namelists_section][block_to_set][
+                                    keys_to_set
+                                ] = key_value
+                            else:
+                                logger.warning(
+                                    f"'No {block_to_set} in {namelists_section}: \
+                                    skip insertion of {keys_to_set}'"
+                                )
 
         # Creation of new blocks
         if "new_blocks" in tnt_directives:
