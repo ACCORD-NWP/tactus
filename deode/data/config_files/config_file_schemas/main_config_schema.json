@@ -227,6 +227,11 @@
 	  "description": "Do marsprep only for one step before c903",
 	  "type": "boolean",
 	  "default": false
+	},
+	"do_cleaning": {
+          "description": "Do file cleaning",
+          "type": "boolean",
+          "default": false
 	}
       }
     },

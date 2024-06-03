@@ -51,3 +51,7 @@ Miscellaneous Documentation
 .. include::
     markdown_docs/troubleshooting.md
    :parser: myst_parser.sphinx_
+
+.. include::
+    markdown_docs/cleaning_readme.md
+   :parser: myst_parser.sphinx_
