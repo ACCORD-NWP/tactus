@@ -141,23 +141,38 @@ class Task(object):
             shutil.move(self.wdir, fdir)
             logger.info("Renamed {} to {}", self.wdir, fdir)
 
-    def get_binary(self, binary):
+    def get_binary(self, binary_name):
         """Determine binary path from task or system config section.
 
         Args:
-            binary (str): Name of binary
+            binary_name (str): Name of binary
 
         Returns:
             bindir (str): full path to binary
 
         """
+        binary = binary_name
         with contextlib.suppress(KeyError):
             binary = self.config[f"submission.task_exceptions.{self.name}.binary"]
 
         try:
             bindir = self.config[f"submission.task_exceptions.{self.name}.bindir"]
         except KeyError:
-            bindir = self.config["submission.bindir"]
+            try:
+                binaries = self.config[
+                    f"submission.task_exceptions.{self.name}.binaries.{binary_name}"
+                ]
+                logger.debug("binaries:{}", binaries)
+
+                with contextlib.suppress(KeyError):
+                    binary = binaries["binary"]
+                with contextlib.suppress(KeyError):
+                    bindir = binaries["bindir"]
+            except KeyError:
+                bindir = self.config["submission.bindir"]
+
+        logger.debug("binary:{}", binary)
+        logger.debug("bindir:{}", bindir)
 
         return f"{bindir}/{binary}"
 
