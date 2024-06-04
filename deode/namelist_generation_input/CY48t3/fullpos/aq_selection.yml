@@ -1,4 +1,5 @@
-# Do the selection of fields below.
+# Do the selection of fields below. Note 
+# that xxt00000000 partly inherits from xxtddddhh00
 selection:
  xxtddddhhmm: &default
   NAMFPPHY:
@@ -50,4 +51,34 @@ selection:
    <<: *default
 
  xxt00000000:
-   <<: *default
+  NAMFPPHY:
+   CLCFU:
+    - 'SURFTENS.TURB.ZO'
+    - 'SURFTENS.TURB.ME'
+   CLXFU:
+    - 'CLSTEMPERATURE'
+    - 'CLSHUMI.SPECIFIQ'
+    - 'CLSVENT.ZONAL'
+    - 'CLSVENT.MERIDIEN'
+    - 'SURFNEBUL.TOTALE'
+    - 'CLPMHAUT.MOD.XFU'
+   CLPHY:
+    - 'SURFRESERV.NEIGE'
+    - 'SURFTEMPERATURE'
+    - 'INTSURFGEOPOTENT'
+  NAMFPDYS:
+    CL3DF:
+     - 'GRAUPEL'
+     - 'RAIN'
+     - 'SNOW'
+     - 'TEMPERATURE'
+     - 'HUMI.SPECIFI'
+     - 'WIND.U.PHYS'
+     - 'WIND.V.PHYS'
+     - 'ICE_CRYSTAL'
+     - 'CLOUD_WATER'
+     - 'CLOUD_FRACTI'
+     - 'TKE'
+    NRFP3S:
+     - ${namelist.nrfp3s}
+  <<: *default

@@ -763,9 +763,12 @@ class Prep(Task):
             bddir_sfx = self.config["system.bddir_sfx"]
             bdfile_sfx_template = self.config["system.bdfile_sfx_template"]
             bdcycle = as_timedelta(self.config["boundaries.bdcycle"])
+            bdcycle_start = as_timedelta(self.config["boundaries.bdcycle_start"])
             bdshift = as_timedelta(self.config["boundaries.bdshift"])
 
-            bd_basetime = basetime - cycle_offset(basetime, bdcycle, shift=-bdshift)
+            bd_basetime = basetime - cycle_offset(
+                basetime, bdcycle, bdcycle_start=bdcycle_start, bdshift=-bdshift
+            )
             prep_input_file = self.platform.substitute(
                 f"{bddir_sfx}/{bdfile_sfx_template}",
                 basetime=bd_basetime,

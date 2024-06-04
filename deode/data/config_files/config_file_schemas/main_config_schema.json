@@ -49,6 +49,11 @@
           "type": "string",
           "description": "Troika config file",
           "default": "@DEODE_HOME@/deode/data/config_files/troika.yml"
+	      },
+        "troika": {
+          "type": "string",
+          "description": "Troika command, allows to specify troika with full path",
+          "default": "troika"
 	      }
       }
     },
@@ -88,6 +93,12 @@
         "bdcycle": {
           "description": "Boundary model cycle interval",
           "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        },
+        "bdcycle_start": {
+          "description": "Boundary model cycle start hour. Required to be set if bdcycle_start % bdcycle != 0",
+          "type": "string",
+	  "default": "PT0H",
           "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
         },
         "bdtasks_per_batch": {
@@ -222,6 +233,11 @@
 	  "description": "Do marsprep only for one step before c903",
 	  "type": "boolean",
 	  "default": false
+	},
+	"do_cleaning": {
+          "description": "Do file cleaning",
+          "type": "boolean",
+          "default": false
 	}
       }
     },
@@ -495,67 +511,19 @@
           "properties": {
             "history": {
               "description": "Output list for history files",
-              "anyOf": [
-	     {
-                "type": "string",
-                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-	     },
-	     {
-                "type": "array",
-                "items": {
-                   "type": "string",
-                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-                }
-	     }
-	      ]
+	      "$ref" : "#/$output_setting_rules"
             },
             "surfex": {
               "description": "Output list for surfex files",
-              "anyOf": [
-	     {
-                "type": "string",
-                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-	     },
-	     {
-                "type": "array",
-                "items": {
-                   "type": "string",
-                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-                }
-	     }
-	      ]
+	      "$ref" : "#/$output_setting_rules"
             },
             "fullpos": {
               "description": "Output list for fullpos files",
-              "anyOf": [
-	     {
-                "type": "string",
-                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-	     },
-	     {
-                "type": "array",
-                "items": {
-                   "type": "string",
-                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-                }
-	     }
-	      ]
+	      "$ref" : "#/$output_setting_rules"
             },
             "nrazts": {
               "description": "Reset times for instantaneous fluxes ( e.g. min/max temperature )",
-              "anyOf": [
-	     {
-                "type": "string",
-                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-	     },
-	     {
-                "type": "array",
-                "items": {
-                   "type": "string",
-                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-                }
-	     }
-	      ]
+	      "$ref" : "#/$output_setting_rules"
             }
           }
         },
@@ -569,5 +537,24 @@
         "times"
       ]
     }
+  },
+  "$output_setting_rules": {
+              "anyOf": [
+	     {
+                "type": "string",
+                "pattern": ""
+	     },
+	     {
+                "type": "string",
+                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+	     },
+	     {
+                "type": "array",
+                "items": {
+                   "type": "string",
+                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+                }
+	     }
+	      ]
   }
 }

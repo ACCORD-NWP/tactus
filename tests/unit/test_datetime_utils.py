@@ -36,14 +36,19 @@ def test_get_decade(param):
     assert get_decade(dt) == truth[param]
 
 
-@pytest.mark.parametrize("param", ["PT3H", "PT0H", "-PT3H"])
+@pytest.mark.parametrize("param", ["PT3H", "PT0H"])
 def test_offsetparam(param):
-    truth = {"PT3H": -3, "PT0H": 0, "-PT3H": 3}
+    truth_bdshift = {"PT3H": -3, "PT0H": 0}
+    truth_bdcycle_start = {"PT3H": 0, "PT0H": 3}
     basetime = as_datetime("20181010T21")
     bdcycle = as_timedelta("PT3H")
     shift = as_timedelta(param)
-    assert datetime.timedelta(hours=truth[param]) == cycle_offset(
-        basetime, bdcycle, shift=shift
+    assert datetime.timedelta(hours=truth_bdshift[param]) == cycle_offset(
+        basetime, bdcycle, bdshift=shift
+    )
+    bdcycle = as_timedelta("PT6H")
+    assert datetime.timedelta(hours=truth_bdcycle_start[param]) == cycle_offset(
+        basetime, bdcycle, bdcycle_start=shift
     )
 
 

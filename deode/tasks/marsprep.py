@@ -51,13 +51,14 @@ class Marsprep(Task):
         self.cycle_length = as_timedelta(self.config["general.times.cycle_length"])
         # Get forecast range
         self.forecast_range = as_timedelta(self.config["general.times.forecast_range"])
-        # Get boundary shift
+        # Get boundary time information
         self.bdint = as_timedelta(self.config["boundaries.bdint"])
+        bdcycle = as_timedelta(self.config["boundaries.bdcycle"])
+        bdcycle_start = as_timedelta(self.config["boundaries.bdcycle_start"])
         self.bdshift = as_timedelta(self.config["boundaries.bdshift"])
-        self.bdcycle = as_timedelta(self.config["boundaries.bdcycle"])
-        self.int_bdcycle = int(self.bdcycle.total_seconds()) // 3600
+        self.int_bdcycle = int(bdcycle.total_seconds()) // 3600
         self.bd_basetime = self.basetime - cycle_offset(
-            self.basetime, self.bdcycle, shift=-self.bdshift
+            self.basetime, bdcycle, bdcycle_start=bdcycle_start, bdshift=-self.bdshift
         )
 
         self.unix_group = self.platform.get_platform_value("unix_group")
@@ -72,6 +73,7 @@ class Marsprep(Task):
             basetime=self.bd_basetime,
             validtime=self.basetime,
         )
+        logger.info("MARS data expected in:{}", self.prepdir)
 
         # Make linting happy
         self.data = b""
@@ -395,6 +397,7 @@ class Marsprep(Task):
             mars_file_check = os.path.join(self.prepdir, f"{file_name}+{step1:02d}")
             if not os.path.exists(mars_file_check):
                 base_list.append(step)
+                logger.info("Missing file:{}", mars_file_check)
 
         base = "/".join(base_list)
         return base

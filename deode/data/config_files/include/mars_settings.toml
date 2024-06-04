@@ -1,20 +1,22 @@
-[ATOS_DT]
+[mars]
+
+[mars.ATOS_DT]
   default = "RD_DEFAULT"
   expver = "i4ql"
   start_date = "2023-09-09T00:00:00Z"
 
-[ATOS_DT.stream]
+[mars.ATOS_DT.stream]
   00 = "OPER"
 
-[DT12]
+[mars.DT12]
   default = "RD_DEFAULT"
   expver = "i8a8"
   start_date = "2023-10-29T00:00:00Z"
 
-[DT12.stream]
+[mars.DT12.stream]
   12 = "OPER"
 
-[HRES]
+[mars.HRES]
   class = "OD"
   expver = "0001"
   GG = "32/33/39/40/41/42/139/141/170/172/183/198/235/236/35/36/37/38/238/243/244/245"
@@ -30,50 +32,50 @@
   type_FC = "FC"
   UA = "133/75/76/246/247/248"
 
-[HRES.grid]
+[mars.HRES.grid]
   "2006-02-01T06:00:00Z" = "0.25/0.25"
   "2010-01-26T06:00:00Z" = "0.15/0.15"
   "2016-03-08T00:00:00Z" = "0.09/0.09"
 
-[HRES.grid_GG1]
+[mars.HRES.grid_GG1]
   "2006-02-01T06:00:00Z" = "AV"
   "2016-03-08T00:00:00Z" = "O640"
 
-[HRES.levelist]
+[mars.HRES.levelist]
   "2006-02-01T06:00:00Z" = "1/to/91"
   "2013-06-26T00:00:00Z" = "1/to/137"
 
-[HRES.stream]
+[mars.HRES.stream]
   00 = "OPER"
   06 = "SCDA"
   12 = "OPER"
   18 = "SCDA"
 
-[i5qp]
+[mars.i5qp]
   default = "RD_DEFAULT"
   stream.00 = "OPER"
 
-[i7u4]
+[mars.i7u4]
   default = "RD_DEFAULT"
   grid = "0.028/0.028"
   stream.00 = "LWDA"
   tco = "399"
 
-[i7ye]
+[mars.i7ye]
   default = "RD_DEFAULT"
   grid = "0.028/0.028"
   stream.00 = "LWDA"
   tco = "399"
 
-[i8hy]
+[mars.i8hy]
   default = "RD_DEFAULT"
   expver = "i8hy"
   start_date = "2017-01-20T00:00:00Z"
 
-[i8hy.stream]
+[mars.i8hy.stream]
   00 = "OPER"
 
-[IFSENS]
+[mars.IFSENS]
   class = "OD"
   expver = "0001"
   GG = "32/33/39/40/41/42/139/141/170/172/183/198/235/236/35/36/37/38/238/243/244/245"
@@ -91,14 +93,14 @@
   type_FC = "PF"
   UA = "133/75/76/246/247/248"
 
-[IFSENS.grid]
+[mars.IFSENS.grid]
   "2023-07-01T00:00:00Z" = "0.09/0.09"
 
-[IFSENS.grid_GG1]
+[mars.IFSENS.grid_GG1]
   "2006-02-01T06:00:00Z" = "AV"
   "2016-03-08T00:00:00Z" = "O640"
 
-[RD_DEFAULT]
+[mars.RD_DEFAULT]
   class = "RD"
   GG = "32/33/39/40/41/42/139/141/170/172/183/198/235/236/35/36/37/38/238/243/244/245"
   GG_sea = "31/34"
