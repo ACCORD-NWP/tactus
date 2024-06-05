@@ -142,9 +142,9 @@
 [submission.task_exceptions.Forecast.BATCH]
   CPUSPERTASK = "#SBATCH --cpus-per-task=4"
   HYPERTHREAD = "#SBATCH --hint=nomultithread"
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=32"
-  WALLTIME = "#SBATCH --time=00:30:00"
+  NODES = "#SBATCH --nodes=20"
+  NTASKS = "#SBATCH --ntasks-per-node=32"
+  WALLTIME = "#SBATCH --time=08:00:00"
 
 [submission.task_exceptions.Forecast.ENV]
   KMP_AFFINITY = "granularity=core,scatter"
