@@ -147,6 +147,9 @@ namgfl_AROME:
     YS_NL%NREQIN: 1
     YTKE_NL%NREQIN: 1
 f4_atos_bologna:
+  NAMGEM:
+    LNHX_GEOM: true
+    LNONHYD_GEOM: true
   NAMRIP:
     RAVGTIME: 3600.0
 f4_AROME:
@@ -249,10 +252,7 @@ f4_AROME:
   NAMCT0:
     CFPNCF: ECHFP
     CNPPATH: .
-    LNHEE: true
     LSCREEN_OPENMP: false
-    LSPRT: true
-    LTWOTL: true
     NFPOS: 1
     NFRHIS: 1
     NFRPOS: 1
@@ -260,7 +260,6 @@ f4_AROME:
     NHISTS: ${namelist.nhists}
     NPOSTS: ${namelist.nposts}
     NSFXHISTS: ${namelist.nsfxhists}
-    NUNDEFLD: -99999999
   NAMCT1:
     N1HIS: 1
     N1POS: 1
@@ -314,6 +313,7 @@ f4_AROME:
     LCOMAD_W: true
     LGWADV: true
     LNESC: true
+    LNHEE: true
     LPC_CHEAP: true
     LPC_FULL: true
     LRDBBC: false
@@ -325,6 +325,8 @@ f4_AROME:
     LSLHD_SVD: false
     LSLHD_T: false
     LSLHD_W: false
+    LSPRT: true
+    LTWOTL: true
     ND4SYS: 2
     NPDVAR: 2
     NVDVAR: 4
@@ -339,6 +341,9 @@ f4_AROME:
     NFPROMA: ${submission.nproma}
   NAMFPSC2_DEP:
     NFPROMA_DEP: ${submission.nproma}
+  NAMGEM:
+    LNHX_GEOM: true
+    LNONHYD_GEOM: true
   NAMGFL:
     NGFL_EZDIAG: 4
     YA_NL%NREQIN: 1
@@ -402,37 +407,8 @@ f4_AROME:
     LINC: true
     NTIMEFMT: 2
   NAMPARAR:
-    CFRAC_ICE_ADJUST: S
-    CFRAC_ICE_SHALLOW_MF: S
     CMICRO: ${submission.cmicro-ICE3}
-    CSEDIM: STAT
-    CSNOWRIMING: M90
-    LCONVHG: true
-    LCRFLIMIT: true
-    LCRIAUTI: true
-    LEVLIMIT: true
-    LFEEDBACKT: true
-    LFPREC3D: true
-    LNULLWETG: true
-    LNULLWETH: true
     LOLSMC: true
-    LOSEDIC: true
-    LOSIGMAS: true
-    LOSUBG_COND: true
-    LSEDIM_AFTER: false
-    LWETGPOST: true
-    LWETHPOST: true
-    NMAXITER_MICRO: 1
-    NPRINTFR: 10000
-    NPTP: 1
-    RCRIAUTC: 0.001
-    RCRIAUTI: 0.0002
-    RT0CRIAUTI: -5.0
-    VSIGQSAT: 0.02
-    XFRACM90: 0.1
-    XMRSTEP: 5.0e-05
-    XSPLIT_MAXCFL: 0.8
-    XTSTEP_TS: 0.0
   NAMPHMSE:
     LPGDFWR: false
   NAMPHY:
@@ -537,6 +513,34 @@ f4_AROME:
     LXXGST: true
     NRAZTS: ${namelist.nrazts}
     NXGSTPERIOD: 3600
+  NAM_NEBn:
+    CFRAC_ICE_ADJUST: S
+    CFRAC_ICE_SHALLOW_MF: S
+    LSIGMAS: true
+    LSUBG_COND: true
+    VSIGQSAT: 0.02
+  NAM_PARAM_ICEn:
+    CSEDIM: STAT
+    CSNOWRIMING: M90
+    LCONVHG: true
+    LCRFLIMIT: true
+    LCRIAUTI: true
+    LEVLIMIT: true
+    LFEEDBACKT: true
+    LNULLWETG: true
+    LNULLWETH: true
+    LSEDIC: true
+    LSEDIM_AFTER: false
+    LWETGPOST: true
+    LWETHPOST: true
+    NMAXITER_MICRO: 1
+    XCRIAUTC_NAM: 0.001
+    XCRIAUTI_NAM: 0.0002
+    XFRACM90: 0.1
+    XMRSTEP: 5.0e-05
+    XSPLIT_MAXCFL: 0.8
+    XT0CRIAUTI_NAM: -5.0
+    XTSTEP_TS: 0.0
   NEMELBC0A:
     LESPCPL: true
     NBICNHX: 2
@@ -670,12 +674,8 @@ f4_ALARO:
     LAROME: false
     LFBDAP: true
     LFDBOP: false
-    LNHEE: true
-    LREGETA: false
     LRPLANE: true
     LSCREEN_OPENMP: false
-    LSPRT: true
-    LTWOTL: true
     NFPOS: 1
     NFRHIS: 1
     NFRPOS: 1
@@ -683,7 +683,6 @@ f4_ALARO:
     NHISTS: ${namelist.nhists}
     NPOSTS: ${namelist.nposts}
     NSPPR: 0
-    NUNDEFLD: -99999999
   NAMCT1:
     N1HIS: 1
     N1POS: 1
@@ -691,7 +690,9 @@ f4_ALARO:
     N1SDI: 1
     N1SFXHIS: 0
   NAMCVER:
+    LREGETA: false
     LVERTFE: false
+    NDLNPR: 1
   NAMDPRECIPS:
     RDHAIL1: 0.5
     RDHAIL2: 1.0
@@ -741,6 +742,7 @@ f4_ALARO:
     LNESC: true
     LNESCT: false
     LNESCV: false
+    LNHEE: true
     LPC_CHEAP: true
     LPC_FULL: true
     LRDBBC: false
@@ -753,8 +755,9 @@ f4_ALARO:
     LSLHD_SVD: true
     LSLHD_T: true
     LSLHD_W: true
+    LSPRT: true
+    LTWOTL: true
     ND4SYS: 2
-    NDLNPR: 1
     NPDVAR: 2
     NVDVAR: 4
     SLHDEPSH: 0.016
@@ -767,6 +770,9 @@ f4_ALARO:
     NFPROMA: ${submission.nproma}
   NAMFPSC2_DEP:
     NFPROMA_DEP: ${submission.nproma}
+  NAMGEM:
+    LNHX_GEOM: true
+    LNONHYD_GEOM: true
   NAMGFL:
     YA_NL%LADV: false
     YA_NL%LGP: true
@@ -1137,22 +1143,26 @@ f4_common:
     CNMEXP: ${general.cnmexp}
     LECMWF: false
     LELAM: true
-    LSLAG: true
     NCONF: 1
     NSUPERSEDE: 1
   NAMCT0:
     LAROME: true
   NAMCT1:
     LRFILAF: false
+  NAMCVER:
+    NDLNPR: 1
   NAMDIM:
     NPROMA: ${submission.nproma}
   NAMDYNA:
-    NDLNPR: 1
+    LSLAG: true
   NAMFA:
     LEXTERN: true
     NBITCS: -1
     NBITPG: -1
     NSTRON: -1
+  NAMGEM:
+    LNHX_GEOM: true
+    LNONHYD_GEOM: true
   NAMGFL:
     YG_NL%NREQIN: 0
     YI_NL%NREQIN: 0
@@ -1208,7 +1218,6 @@ f4_c903_main:
     LARPEGEF: true
     LGRIB_API: false
     LREFOUT: false
-    LSPRT: true
     NFPOS: 2
     NFRPOS: 1
     NPOSTS: 0
@@ -1217,6 +1226,8 @@ f4_c903_main:
     LRFILAF: false
   NAMDIM:
     NPROMA: ${submission.nproma}
+  NAMDYNA:
+    LSPRT: true
   NAMFA:
     NBITCS: -1
     NBITPG: -1
@@ -1234,6 +1245,9 @@ f4_c903_main:
     CNAMELIST: ./namelist_c903_domain
     NFPCONF: 2
     NFPOBJ: 1
+  NAMGEM:
+    LNHX_GEOM: true
+    LNONHYD_GEOM: true
   NAMGFL:
     YO3_NL%LGP: false
     YQ_NL%LGP: true
@@ -1359,10 +1373,13 @@ f4_c903_domain:
     NFPROMA: ${submission.nproma}
   NAMFPSC2_DEP:
     NFPROMA_DEP: ${submission.nproma}
+  NAMGEM:
+    LNHX_GEOM: true
+    LNONHYD_GEOM: true
   NEMFPEZO:
     RCO_EZO: 180.0
 f4_e927_AROME:
-  NAMCT0:
+  NAMDYNA:
     LNHEE: true
     LSPRT: true
   NAMFPC:
@@ -1380,6 +1397,9 @@ f4_e927_AROME:
     - PRESS.DEPART
     - VERTIC.DIVER
     - TKE
+  NAMGEM:
+    LNHX_GEOM: true
+    LNONHYD_GEOM: true
   NAMGFL:
     YA_NL%NREQIN: 1
     YG_NL%NREQIN: 1
@@ -1391,9 +1411,12 @@ f4_e927_AROME:
     YS_NL%NREQIN: 1
     YTKE_NL%NREQIN: 1
 f4_e927_IFS:
-  NAMCT0:
+  NAMDYNA:
     LNHEE: false
     LSPRT: false
+  NAMGEM:
+    LNHX_GEOM: true
+    LNONHYD_GEOM: true
   NAMGFL:
     YA_NL%NREQIN: 1
     YG_NL%NREQIN: 0
@@ -1474,6 +1497,9 @@ f4_e927:
     NMFPMAX: ${domain.nmsmax}
   NAMFPIOS:
     NFPXFLD: 46
+  NAMGEM:
+    LNHX_GEOM: true
+    LNONHYD_GEOM: true
   NAMGFL:
     YQ_NL%LGP: false
     YQ_NL%LSP: true
@@ -1525,6 +1551,7 @@ empty:
   NAMCLDP: {}
   NAMCLI: {}
   NAMCLOP15: {}
+  NAMCLRADLID: {}
   NAMCLTC: {}
   NAMCMEM_MW: {}
   NAMCOK: {}
@@ -1545,9 +1572,14 @@ empty:
   NAMDPHY: {}
   NAMDPRECIPS: {}
   NAMDVISI: {}
+  NAMDWET: {}
   NAMDYN: {}
   NAMDYNA: {}
+  NAMDYNA_STATIC: {}
   NAMDYNCORE: {}
+  NAMECV: {}
+  NAMECVDESC: {}
+  NAMECVGRB: {}
   NAMEMIS_CONF: {}
   NAMENKF: {}
   NAMENSCOV: {}
@@ -1583,7 +1615,10 @@ empty:
   NAMIOMI: {}
   NAMIOS: {}
   NAMIO_SERV: {}
+  NAMJBALPHACV: {}
   NAMJBCODES: {}
+  NAMJBECPHYSECV: {}
+  NAMJBSKTECV: {}
   NAMJG: {}
   NAMLCZ: {}
   NAMLIMA: {}
@@ -1594,10 +1629,15 @@ empty:
   NAMMETHOX: {}
   NAMMKODB: {}
   NAMMODERR: {}
+  NAMMODERRCONF: {}
+  NAMMODERRCOV: {}
+  NAMMODERRINCRCONF: {}
+  NAMMODERRMOD: {}
   NAMMTS: {}
   NAMMWAVE: {}
   NAMNORGWD: {}
   NAMNPROF: {}
+  NAMNRTAER: {}
   NAMNUD: {}
   NAMNUDGLH: {}
   NAMOBS: {}
@@ -1608,6 +1648,8 @@ empty:
   NAMPAR0: {}
   NAMPAR1: {}
   NAMPARAR: {}
+  NAMPARECV: {}
+  NAMPERTOBS: {}
   NAMPERTPAR: {}
   NAMPHMSE: {}
   NAMPHY: {}
@@ -1630,6 +1672,7 @@ empty:
   NAMRIP: {}
   NAMRIP0: {}
   NAMRLX: {}
+  NAMRSTRHBIAS: {}
   NAMSATS: {}
   NAMSATSIM: {}
   NAMSCC: {}
@@ -1673,6 +1716,12 @@ empty:
   NAMXFU: {}
   NAM_CANAPE: {}
   NAM_DISTRIBUTED_VECTORS: {}
+  NAM_NEBN: {}
+  NAM_PARAM_ICEN: {}
+  NAM_PARAM_MFSHALLN: {}
+  NAM_SPP_ACTIVE: {}
+  NAM_SPP_MODIF: {}
+  NAM_TURBN: {}
   NAPHLC: {}
   NEMCT0: {}
   NEMDIM: {}

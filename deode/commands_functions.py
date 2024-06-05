@@ -17,7 +17,12 @@ from .derived_variables import check_fullpos_namelist, derived_variables, set_ti
 from .experiment import case_setup
 from .host_actions import DeodeHost
 from .logs import logger
-from .namelist import NamelistComparator, NamelistGenerator, NamelistIntegrator
+from .namelist import (
+    NamelistComparator,
+    NamelistConverter,
+    NamelistGenerator,
+    NamelistIntegrator,
+)
 from .scheduler import EcflowServer
 from .submission import NoSchedulerSubmission, TaskSettings
 from .suites.discover_suite import get_suite
@@ -417,7 +422,7 @@ def namelist_integrate(args, config):
                 "With -y given, you must also specify with -t which tag to use as basis!"
             )
         # Read yaml to use as basis for comparisons
-        nml = nlint.yml2dict(Path(args.yaml))
+        nml = NamelistIntegrator.yml2dict(Path(args.yaml))
         if tag not in nml:
             raise SystemExit(f"Tag {tag} was not found in input yaml file {args.yaml}!")
 
@@ -438,4 +443,63 @@ def namelist_integrate(args, config):
             nml[ltag] = nlcomp.compare_dicts(nml[tag], nml_in[ltag], "diff")
 
     # Write output yaml
-    nlint.dict2yml(nml, Path(args.output))
+    NamelistIntegrator.dict2yml(nml, Path(args.output))
+
+
+def namelist_convert(args, config: ParsedConfig):  # noqa ARG001
+    """Implement the 'namelist convert' command.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+        config (.config_parser.ParsedConfig): Parsed config file contents.
+
+    """
+    # Configuration
+    # Check that parameters are present
+    for parameter, parameter_name in zip(
+        [args.from_cycle, args.to_cycle, args.namelist, args.output],
+        ["from_cycle", "to_cycle", "namelist", "output"],
+    ):
+        if not parameter:
+            raise SystemExit(f"Please provide parameter {parameter_name}")
+
+    # Convert namelists
+    logger.info(f"Convert namelist from cycle {args.from_cycle} to cycle {args.to_cycle}")
+
+    if args.format == "yaml":
+        NamelistConverter.convert_yml(
+            args.namelist, args.output, args.from_cycle, args.to_cycle
+        )
+    elif args.format == "ftn":
+        NamelistConverter.convert_ftn(
+            args.namelist, args.output, args.from_cycle, args.to_cycle
+        )
+    else:
+        raise SystemExit(f"Format {args.format} not handled")
+
+
+def namelist_format(args, config: ParsedConfig):  # noqa ARG001
+    """Implement the 'namelist format' command.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+        config (.config_parser.ParsedConfig): Parsed config file contents.
+
+    """
+    # Configuration
+    # Check that parameters are present
+    for parameter, parameter_name in zip(
+        [args.namelist, args.output],
+        ["namelist", "output"],
+    ):
+        if not parameter:
+            raise SystemExit(f"Please provide parameter {parameter_name}")
+
+    # Convert namelists
+    logger.info("Format namelist")
+    if args.format == "yaml":
+        NamelistConverter.convert_yml(args.namelist, args.output, None, None)
+    elif args.format == "ftn":
+        NamelistConverter.convert_ftn(args.namelist, args.output, None, None)
+    else:
+        raise SystemExit(f"Format {args.format} not handled")

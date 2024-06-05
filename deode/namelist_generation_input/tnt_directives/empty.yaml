@@ -1,0 +1,35 @@
+
+# 1. Blocks to be added.
+#new_blocks:
+#    - namclradlid
+    
+# 2. Blocks to be moved. If target block exists, raise an error.
+#blocks_to_move:
+#     NAMOLD1: NAMMOVED1
+#     NAMOLD1: NAMMOVED2
+
+
+# 3. Keys to be moved. If target exists or target block is missing, raise an error.
+# Blocks need to be consistent with above blocks movings.
+#keys_to_move:
+ #   NAMCT0:
+ #       LSPRT:
+ #           NAMDYNA: LSPRT
+  
+# 5. Keys to be set with a value (new or modified). If block is missing, raise an error.
+# Blocks need to be consistent with above movings.
+#keys_to_set:
+#   NAMGEM:
+#       LNONHYD_GEOM: .TRUE.
+#       LNHX_GEOM: .TRUE.
+
+# 6. Blocks to be removed. Already missing blocks are ignored.
+blocks_to_remove:
+    - NONEXISTINGBLOCK
+#    - NAMBLOCK2
+
+# 7. Macros: substitutions in the namelist's values. A *None* value ignores
+# the substitution (keeps the keyword, to be substituted later on).
+#macros:
+#    VAL_TO_SUBSTITUTE: 8
+#    VAL_TO_KEEP_AND_BE_SUBSTITUTED_LATER: null
