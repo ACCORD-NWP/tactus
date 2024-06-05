@@ -39,6 +39,7 @@
 
 [include]
   archiving = "include/archiving.toml"
+  cleaning = "include/cleaning.toml"
   domain = "include/domains/DEMO_60x80_2500m.toml"
   extractsqlite = "include/sqlite.toml"
   file_templates = "include/file_templates.toml"
@@ -57,6 +58,7 @@
   create_static_data = true
   create_time_dependent_suite = true
   do_archiving = true
+  do_cleaning = true
   do_extractsqlite = true
   do_marsprep = true
   do_pgd = true

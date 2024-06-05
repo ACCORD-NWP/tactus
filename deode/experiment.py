@@ -92,10 +92,15 @@ class ExpFromFiles(Exp):
 
             mod = _mod.replace("@HOST@", host) if host is not None else _mod
             if os.path.exists(mod):
-                logger.info("Merging modifications from {}", mod)
-                lmod = ExpFromFiles.toml_load(mod)
-                logger.debug("-> {}", lmod)
-                mods = ExpFromFiles.deep_update(mods, lmod)
+                if mod[-5:] == ".toml":
+                    logger.info("Merging modifications from {}", mod)
+                    lmod = ExpFromFiles.toml_load(mod)
+                    logger.debug("-> {}", lmod)
+                    mods = ExpFromFiles.deep_update(mods, lmod)
+                else:
+                    logger.error("Expected a toml file but got {}", mod)
+                    logger.error("Did mean to write ?{}", mod)
+                    raise RuntimeError
             else:
                 logger.warning("Skip missing modification file {}", mod)
 

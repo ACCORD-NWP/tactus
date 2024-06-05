@@ -45,6 +45,7 @@ class DeodeSuiteDefinition(SuiteDefinition):
 
         self.csc = config["general.csc"]
 
+        self.do_cleaning = config["suite_control.do_cleaning"]
         self.create_static_data = config["suite_control.create_static_data"]
         self.do_soil = config["suite_control.do_soil"]
         self.do_pgd = config["suite_control.do_pgd"]
@@ -131,7 +132,28 @@ class DeodeSuiteDefinition(SuiteDefinition):
             static_data = None
 
         if self.create_time_dependent_suite:
-            self.time_dependent_suite_part(config, input_template, static_data)
+            time_family = self.time_dependent_suite_part(
+                config, input_template, static_data
+            )
+        else:
+            time_family = None
+
+        if self.do_cleaning:
+            trigger_object = time_family
+            if time_family is None and static_data is not None:
+                trigger_object = static_data
+            cleaning_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(trigger_object)])
+
+            EcflowSuiteTask(
+                "Cleaning",
+                self.suite,
+                config,
+                self.task_settings,
+                self.ecf_files,
+                input_template=input_template,
+                trigger=cleaning_trigger,
+                ecf_files_remotely=self.ecf_files_remotely,
+            )
 
     def time_dependent_suite_part(self, config, input_template, static_data):
         """Create the time dependent part of the suite.
@@ -140,6 +162,9 @@ class DeodeSuiteDefinition(SuiteDefinition):
             config (deode.ParsedConfig): Configuration settings
             input_template (str): Default task template
             static_data(EcflowFamily): EcflowFamily object used for triggering
+
+        Returns:
+            time_family: EcflowFamily object used for triggering
 
         """
         first_cycle = as_datetime(config["general.times.start"])
@@ -546,6 +571,8 @@ class DeodeSuiteDefinition(SuiteDefinition):
                     trigger=archiving_hour_trigger,
                     ecf_files_remotely=self.ecf_files_remotely,
                 )
+
+        return time_family
 
     def static_suite_part(self, config, input_template):
         """Create the time dependent part of the suite.
