@@ -108,6 +108,7 @@ On lumi we expect the following configurations to be tested in the same way as a
   cy48t3_arome
   cy48t3_alaro
   cy48t3_alaro_gpu_lumi
+  cy46h1_harmonie_arome
 ```
 Note that due to the restrictions for the debug partition on lumi it's only possible to launch one suite at the time.
 

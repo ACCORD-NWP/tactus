@@ -1,0 +1,62 @@
+[submission]
+  bindir = "/scratch/project_465000527/benacchi/HA/bin"
+  nproma = -64
+  submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite"]
+
+[submission.parallel]
+  NPROC = 16
+  SCHOST = "lumi-batch"
+  tasks = ["Forecast", "e927", "Pgd", "c903", "E923Monthly", "E923Constant"]
+  WRAPPER = "srun"
+
+[submission.parallel.ENV]
+  OMP_NUM_THREADS = 1 # CPUS_PER_TASK # this should be 4, to be tried
+
+  DR_HOOK_IGNORE_SIGNALS = 8
+
+  FI_CXI_RX_MATCH_MODE = 'hybrid'
+
+[submission.parallel.MODULES]
+  00_PURGE = ["--force", "purge"]
+  14_RIMVYDAS_USE = ["use", "/scratch/project_465000527/SW/modules/"]
+  15_RIMVYDAS_FTN16 = ["load", "scl-gfortran12_23"]
+  16_RIMVYDAS_ECFLOW = ["load", "scl-ecflow_23"]
+  99_LIST = ["list", ""]
+
+[submission.serial]
+  tasks = ["Gmted", "Soil", "PgdUpdate", "Prep"]
+
+[submission.serial.ENV]
+  DR_HOOK_ALLOW_COREDUMP = 0
+  OMP_NUM_THREADS = 1
+
+[submission.serial.MODULES]
+  00_PURGE = ["--force", "purge"]
+  01_USE = ["use", "/scratch/project_465000527/SW/modules/"]
+  02_FTN16 = ["load", "scl-gfortran12_23"]
+  99_LIST = ["list", ""]
+
+[submission.sqlite.MODULES]
+  01_USE = ["use", "/scratch/project_465000527/SW/modules/"]
+
+[submission.task_exceptions.c903]
+  bindir = "/scratch/project_465000527/jasinskas/CY48T3-gfortran12-O2_24-install/bin"
+
+[submission.task_exceptions.Forecast]
+  WRAPPER = "ulimit -s unlimited; srun -n @NPROC@"
+
+[submission.task_exceptions.Forecast.BATCH]
+  CPU = "#SBATCH --cpus-per-task=4"
+  JOBNAME = "#SBATCH --job-name=Forecast"
+  MEM = "#SBATCH --mem=32GB"
+  NODES = "#SBATCH --nodes=2"
+  NTASKS = "#SBATCH --ntasks=16"
+  PARTITION = "#SBATCH --partition=debug"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=8"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+  #EXCLUSIVE= "#SBATCH --exclusive"
+
+[submission.task_exceptions.Forecast.ENV]
+  DR_HOOK = 1
+  RTTOV_COEFDIR = "/scratch/project_465000527/de_33050_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"

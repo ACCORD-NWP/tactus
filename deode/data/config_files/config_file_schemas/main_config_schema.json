@@ -95,6 +95,12 @@
           "type": "string",
           "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
         },
+        "bdcycle_start": {
+          "description": "Boundary model cycle start hour. Required to be set if bdcycle_start % bdcycle != 0",
+          "type": "string",
+	  "default": "PT0H",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        },
         "bdtasks_per_batch": {
           "description": "Max number of parallel boundary interpolation tasks",
           "type": "number"
@@ -227,6 +233,11 @@
 	  "description": "Do marsprep only for one step before c903",
 	  "type": "boolean",
 	  "default": false
+	},
+	"do_cleaning": {
+          "description": "Do file cleaning",
+          "type": "boolean",
+          "default": false
 	}
       }
     },

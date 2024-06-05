@@ -1,0 +1,23 @@
+[cleaning]
+
+[cleaning.archive]
+  active = true
+  cleaning_delay = "P1D"
+  dry_run = true
+  include = "GRIBDEOD*"
+  path = "@ARCHIVE@"
+  step = "PT6H"
+
+[cleaning.defaults]
+  active = true
+  cleaning_delay = "P1D"
+  cleaning_max_delay = "P2D"
+  dry_run = true
+  include = "(.*)"
+  step = "PT6H"
+
+[cleaning.wrk]
+  active = true
+  dry_run = true
+  include = "ELS*"
+  path = "@WRK@"
