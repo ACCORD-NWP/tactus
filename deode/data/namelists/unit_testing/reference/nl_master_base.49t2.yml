@@ -114,6 +114,9 @@ nl_master_base:
     RFP3PV:
     - 1.5e-06
     - 2.0e-06
+  NAMGEM:
+    LNHX_GEOM: true
+    LNONHYD_GEOM: true
   NAMGFL:
     NGFL_EZDIAG: 3
     YA_NL:
@@ -188,29 +191,29 @@ nl_master_base:
       yezdiag_nl:
       - 1
   NAMPARAR:
-    CMF_CLOUD: STAT
-    CMF_UPDRAFT: DUAL
-    LHARATU: true
-    LHGT_QS: true
     LICERAD: true
     LKOGAN: true
     LLCRIT: true
-    LMIXUV: false
-    LOCND2: true
     LOLSMC: true
-    LOSEDIC: true
-    LOSIGMAS: true
-    LOSUBG_COND: true
     LOTOWNC: true
     LSHALLOWMF: true
-    LSTATNW: true
     LTOTPREC: false
-    NPRINTFR: 10000
-    NPTP: 1
     NSWB_MNH: 6
     RADGR: 0.5
     RADSN: 1.0
-    RFRMIN:
+    _start_index:
+      rfrmin:
+      - 1
+  NAM_NEBn:
+    LHGT_QS: true
+    LSIGMAS: true
+    LSTATNW: true
+    LSUBG_COND: true
+    VSIGQSAT: 0.02
+  NAM_PARAM_ICEn:
+    LOCND2: true
+    LSEDIC: true
+    XFRMIN_NAM:
     - 1.0e-05
     - 1.0e-08
     - 3.0e-09
@@ -240,8 +243,33 @@ nl_master_base:
     - null
     - null
     - 1000.0
-    VSIGQSAT: 0.02
-    _start_index:
-      rfrmin:
-      - 1
-  NAMGEM: {}
+  NAM_PARAM_MFSHALLn:
+    CMF_CLOUD: STAT
+    CMF_UPDRAFT: DUAL
+    LMIXUV: false
+  NAM_TURBn:
+    LHARAT: true
+empty:
+  NAMCLRADLID: {}
+  NAMDWET: {}
+  NAMDYNA_STATIC: {}
+  NAMECV: {}
+  NAMECVDESC: {}
+  NAMECVGRB: {}
+  NAMJBALPHACV: {}
+  NAMJBECPHYSECV: {}
+  NAMJBSKTECV: {}
+  NAMMODERRCONF: {}
+  NAMMODERRCOV: {}
+  NAMMODERRINCRCONF: {}
+  NAMMODERRMOD: {}
+  NAMNRTAER: {}
+  NAMPARECV: {}
+  NAMPERTOBS: {}
+  NAMRSTRHBIAS: {}
+  NAM_NEBN: {}
+  NAM_PARAM_ICEN: {}
+  NAM_PARAM_MFSHALLN: {}
+  NAM_SPP_ACTIVE: {}
+  NAM_SPP_MODIF: {}
+  NAM_TURBN: {}
