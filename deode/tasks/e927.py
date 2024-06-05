@@ -28,8 +28,13 @@ class E927(Task):
 
         self.bdmodel = self.config["boundaries.bdmodel"]
         self.bdint = self.config["boundaries.bdint"]
-        self.bdcycle = as_timedelta(config["boundaries.bdcycle"])
-        self.bdshift = as_timedelta(config["boundaries.bdshift"])
+        bdcycle = as_timedelta(config["boundaries.bdcycle"])
+        bdcycle_start = as_timedelta(config["boundaries.bdcycle_start"])
+        bdshift = as_timedelta(config["boundaries.bdshift"])
+        self.bd_basetime = self.basetime - cycle_offset(
+            self.basetime, bdcycle, bdcycle_start=bdcycle_start, bdshift=-bdshift
+        )
+
         self.intp_bddir = self.config["system.intp_bddir"]
         self.bdnr = config["task.args.bd_nr"]
         self.bd_time = config["task.args.bd_time"]
@@ -60,17 +65,13 @@ class E927(Task):
         # Namelist
         self.nlgen.generate_namelist("e927", "fort.4")
 
-        bd_basetime = self.basetime - cycle_offset(
-            self.basetime, self.bdcycle, shift=-self.bdshift
-        )
-
         # Input file
         bdnr = int(self.bdnr)
         initfile = f"ICMSH{self.cnmexp}INIT"
         self.fmanager.input(
             f"{self.bddir}/{self.bdfile_template}",
             initfile,
-            basetime=bd_basetime,
+            basetime=self.bd_basetime,
             validtime=as_datetime(self.bd_time),
         )
         # Run masterodb

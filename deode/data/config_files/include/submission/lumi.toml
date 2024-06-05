@@ -28,7 +28,8 @@
   tasks = ["Background_vm"]
 
 [submission.Forecast_cpu]
-  NPROC = 16
+  NPROC = 12
+  NPROC_IO = 4
   SCHOST = "lumi-batch"
   tasks = ["Forecast"]
   WRAPPER = "ulimit -s unlimited; srun"
