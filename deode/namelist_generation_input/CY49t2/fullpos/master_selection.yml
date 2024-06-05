@@ -143,8 +143,6 @@ selection:
       - ATMOCLD.CEIL.H
       - ATMOCLD.BASE.P
       - ATMOCLD.BASE.H
-      - C002_METEOSAT_09_SEVIRI.POS
-      - C006_METEOSAT_09_SEVIRI.POS
     NAMFPDYH:
       CL3DF:
       - VERT.VELOCIT
