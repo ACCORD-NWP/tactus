@@ -492,6 +492,7 @@
           "description": "IAL cycle",
           "type": "string",
           "enum": [
+            "CY49t2",
             "CY48t3",
             "CY46h1"
           ]

@@ -1,0 +1,293 @@
+selection:
+  xxt00000000:
+    NAMFPDY2:
+      CL2DF:
+      - SURFPRESSION
+      - SPECSURFGEOPOTEN
+      - MSLPRESSURE
+      - SURFISOTPW1.MALT
+      - SURFCAPE.POS.F00
+      - SURFCIEN.POS.F00
+      - SURFLIFTCONDLEV
+      - SURFFREECONVLEV
+      - SURFEQUILIBRLEV
+      - SURFREFLECT.MAX
+      - REFLECT_DBZ.MAX
+      - ATMOCLD.CEIL.P
+      - ATMOCLD.CEIL.H
+      - ATMOCLD.BASE.P
+      - ATMOCLD.BASE.H
+      - C002_METEOSAT_09_SEVIRI.POS
+      - C006_METEOSAT_09_SEVIRI.POS
+    NAMFPDYH:
+      CL3DF:
+      - VERT.VELOCIT
+      - CLOUD_FRACTI
+      - HUMI_RELATIVE
+      - HUMI.SPECIFI
+      - TEMPERATURE
+      - WIND.U.PHYS
+      - WIND.V.PHYS
+      - ICE_CRYSTAL
+      - CLOUD_WATER
+      - GRAUPEL
+      - RAIN
+      - SNOW
+      - TKE
+      RFP3H:
+      - 15.0
+      - 30.0
+      - 50.0
+      - 75.0
+      - 100.0
+      - 130.0
+      - 150.0
+      - 200.0
+      - 250.0
+      - 300.0
+      - 400.0
+      - 500.0
+      - 1000.0
+      - 1500.0
+      - 2000.0
+      - 3000.0
+      - 4000.0
+    NAMFPDYI: &id001
+      CL3DF:
+      - ISOT_ALTIT
+      RFP3I:
+      - -273.15
+      - -276.15
+    NAMFPDYP:
+      CL3DF:
+      - CLOUD_FRACTI
+      - GRAUPEL
+      - HUMI_RELATIVE
+      - PRESSURE
+      - RAIN
+      - SNOW
+      - TEMPERATURE
+      - GEOPOTENTIEL
+      - HUMI.SPECIFI
+      - WIND.U.PHYS
+      - WIND.V.PHYS
+      - VERT.VELOCIT
+      - ICE_CRYSTAL
+      - CLOUD_WATER
+      - TKE
+      RFP3P:
+      - 5000.0
+      - 10000.0
+      - 15000.0
+      - 20000.0
+      - 25000.0
+      - 30000.0
+      - 40000.0
+      - 50000.0
+      - 60000.0
+      - 70000.0
+      - 75000.0
+      - 80000.0
+      - 85000.0
+      - 90000.0
+      - 92500.0
+      - 95000.0
+      - 97500.0
+      - 100000.0
+    NAMFPDYS:
+      CL3DF:
+      - GRAUPEL
+      - RAIN
+      - SNOW
+      - TEMPERATURE
+      - HUMI.SPECIFI
+      - WIND.U.PHYS
+      - WIND.V.PHYS
+      - ICE_CRYSTAL
+      - CLOUD_WATER
+      - TKE
+      NRFP3S:
+      - ${vertical_levels.nlev}
+    NAMFPPHY:
+      CLPHY:
+      - SURFTEMPERATURE
+      - SURFRESERV.NEIGE
+      CLXFU:
+      - SURFINSPLUIE
+      - CLSTEMPERATURE
+      - CLSHUMI.RELATIVE
+      - CLSHUMI.SPECIFIQ
+      - CLSVENT.ZONAL
+      - CLSVENT.MERIDIEN
+      - SURFNEBUL.HAUTE
+      - SURFNEBUL.MOYENN
+      - SURFNEBUL.BASSE
+      - SURFNEBUL.TOTALE
+      - CLPMHAUT.MOD.XFU
+      - CLSMEAN.RAD.TEMP
+  xxtddddhh00:
+    NAMFPDY2:
+      CL2DF:
+      - SURFPRESSION
+      - SPECSURFGEOPOTEN
+      - MSLPRESSURE
+      - SURFISOTPW1.MALT
+      - SURFCAPE.POS.F00
+      - SURFCIEN.POS.F00
+      - SURFLIFTCONDLEV
+      - SURFFREECONVLEV
+      - SURFEQUILIBRLEV
+      - SURFREFLECT.MAX
+      - REFLECT_DBZ.MAX
+      - ATMOCLD.CEIL.P
+      - ATMOCLD.CEIL.H
+      - ATMOCLD.BASE.P
+      - ATMOCLD.BASE.H
+    NAMFPDYH:
+      CL3DF:
+      - VERT.VELOCIT
+      - CLOUD_FRACTI
+      - HUMI_RELATIVE
+      - HUMI.SPECIFI
+      - TEMPERATURE
+      - WIND.U.PHYS
+      - WIND.V.PHYS
+      - ICE_CRYSTAL
+      - CLOUD_WATER
+      - GRAUPEL
+      - RAIN
+      - SNOW
+      - TKE
+      RFP3H:
+      - 15.0
+      - 30.0
+      - 50.0
+      - 75.0
+      - 100.0
+      - 130.0
+      - 150.0
+      - 200.0
+      - 250.0
+      - 300.0
+      - 400.0
+      - 500.0
+      - 1000.0
+      - 1500.0
+      - 2000.0
+      - 3000.0
+      - 4000.0
+    NAMFPDYI: *id001
+    NAMFPDYP:
+      CL3DF:
+      - CLOUD_FRACTI
+      - GRAUPEL
+      - HUMI_RELATIVE
+      - PRESSURE
+      - RAIN
+      - SNOW
+      - TEMPERATURE
+      - GEOPOTENTIEL
+      - HUMI.SPECIFI
+      - WIND.U.PHYS
+      - WIND.V.PHYS
+      - VERT.VELOCIT
+      - ICE_CRYSTAL
+      - CLOUD_WATER
+      - TKE
+      RFP3P:
+      - 5000.0
+      - 10000.0
+      - 15000.0
+      - 20000.0
+      - 25000.0
+      - 30000.0
+      - 40000.0
+      - 50000.0
+      - 60000.0
+      - 70000.0
+      - 75000.0
+      - 80000.0
+      - 85000.0
+      - 90000.0
+      - 92500.0
+      - 95000.0
+      - 97500.0
+      - 100000.0
+    NAMFPDYS:
+      CL3DF:
+      - GRAUPEL
+      - RAIN
+      - SNOW
+      - TEMPERATURE
+      - HUMI.SPECIFI
+      - WIND.U.PHYS
+      - WIND.V.PHYS
+      - ICE_CRYSTAL
+      - CLOUD_WATER
+      - TKE
+      NRFP3S:
+      - ${vertical_levels.nlev}
+    NAMFPPHY:
+      CLCFU:
+      - SOMMFLU.RAY.SOLA
+      - SURFFLU.RAY.SOLA
+      - SOMMFLU.RAY.THER
+      - SURFFLU.RAY.THER
+      - SURFFLU.LAT.MEVA
+      - SURFFLU.MEVAP.EA
+      - SURFFLU.CHA.SENS
+      - SURFRAYT SOLA DE
+      - SURFRAYT THER DE
+      - SURFACCPLUIE
+      - SURFACCNEIGE
+      - SURFACCGRAUPEL
+      - SURFDIAG.FLASH
+      CLPHY:
+      - SURFTEMPERATURE
+      - SURFRESERV.NEIGE
+      CLXFU:
+      - SURFDIAGHAIL
+      - SURFINSPLUIE
+      - CLSTEMPERATURE
+      - CLSHUMI.RELATIVE
+      - CLSHUMI.SPECIFIQ
+      - CLSVENT.ZONAL
+      - CLSVENT.MERIDIEN
+      - CLSU.RAF60M.XFU
+      - CLSV.RAF60M.XFU
+      - CLSMAXI.TEMPERAT
+      - CLSMINI.TEMPERAT
+      - SURFNEBUL.HAUTE
+      - SURFNEBUL.MOYENN
+      - SURFNEBUL.BASSE
+      - SURFNEBUL.TOTALE
+      - CLPMHAUT.MOD.XFU
+      - CLSVISIN_60
+      - CLSVISIHYDN60
+      - CLSPTYPE_60M
+      - CLSPTYPESEV_60M
+      - CLSMEAN.RAD.TEMP
+empty:
+  NAMCLRADLID: {}
+  NAMDWET: {}
+  NAMDYNA_STATIC: {}
+  NAMECV: {}
+  NAMECVDESC: {}
+  NAMECVGRB: {}
+  NAMJBALPHACV: {}
+  NAMJBECPHYSECV: {}
+  NAMJBSKTECV: {}
+  NAMMODERRCONF: {}
+  NAMMODERRCOV: {}
+  NAMMODERRINCRCONF: {}
+  NAMMODERRMOD: {}
+  NAMNRTAER: {}
+  NAMPARECV: {}
+  NAMPERTOBS: {}
+  NAMRSTRHBIAS: {}
+  NAM_NEBN: {}
+  NAM_PARAM_ICEN: {}
+  NAM_PARAM_MFSHALLN: {}
+  NAM_SPP_ACTIVE: {}
+  NAM_SPP_MODIF: {}
+  NAM_TURBN: {}
