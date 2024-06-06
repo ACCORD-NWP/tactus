@@ -1,82 +1,84 @@
+# Do the selection of fields below. Note 
+# that xxt00000000 partly inherits from xxtddddhh00
 selection:
-  xxt00000000:
-    NAMFPDY2: &id001
-      CL2DF:
-      - SURFPRESSION
-      - MSLPRESSURE
-    NAMFPDYS:
-      CL3DF:
-      - GRAUPEL
-      - RAIN
-      - SNOW
-      - TEMPERATURE
-      - HUMI.SPECIFI
-      - WIND.U.PHYS
-      - WIND.V.PHYS
-      - ICE_CRYSTAL
-      - CLOUD_WATER
-      - CLOUD_FRACTI
-      - TKE
-      NRFP3S:
-      - ${namelist.nrfp3s}
-    NAMFPPHY:
-      CLCFU:
-      - SURFTENS.TURB.ZO
-      - SURFTENS.TURB.ME
-      CLPHY:
-      - SURFRESERV.NEIGE
-      - SURFTEMPERATURE
-      - INTSURFGEOPOTENT
-      CLXFU:
-      - CLSTEMPERATURE
-      - CLSHUMI.SPECIFIQ
-      - CLSVENT.ZONAL
-      - CLSVENT.MERIDIEN
-      - SURFNEBUL.TOTALE
-      - CLPMHAUT.MOD.XFU
-  xxtddddhh00:
-    NAMFPDY2: *id001
-    NAMFPDYS: &id002
-      CL3DF:
-      - GRAUPEL
-      - RAIN
-      - SNOW
-      - TEMPERATURE
-      - HUMI.SPECIFI
-      - WIND.U.PHYS
-      - WIND.V.PHYS
-      - ICE_CRYSTAL
-      - CLOUD_WATER
-      - CLOUD_FRACTI
-      - TKE
-      NRFP3S:
-      - ${namelist.nrfp3s}
-    NAMFPPHY: &id003
-      CLCFU:
-      - SURFFLU.RAY.SOLA
-      - SURFFLU.RAY.THER
-      - SURFFLU.LAT.MEVA
-      - SURFFLU.MEVAP.EA
-      - SURFFLU.CHA.SENS
-      - SURFRAYT SOLA DE
-      - SURFRAYT THER DE
-      - SURFACCPLUIE
-      - SURFACCNEIGE
-      - SURFACCGRAUPEL
-      - SURFTENS.TURB.ZO
-      - SURFTENS.TURB.ME
-      CLPHY:
-      - SURFRESERV.NEIGE
-      - SURFTEMPERATURE
-      - INTSURFGEOPOTENT
-      CLXFU:
-      - CLSTEMPERATURE
-      - CLSHUMI.SPECIFIQ
-      - CLSVENT.ZONAL
-      - CLSVENT.MERIDIEN
-      - SURFNEBUL.TOTALE
-      - CLPMHAUT.MOD.XFU
-  xxtddddhhmm:
-    NAMFPDY2: *id001
-    NAMFPDYS: *id002
-    NAMFPPHY: *id003
+ xxtddddhhmm: &default
+  NAMFPPHY:
+   CLCFU:
+    - 'SURFFLU.RAY.SOLA'
+    - 'SURFFLU.RAY.THER'
+    - 'SURFFLU.LAT.MEVA'
+    - 'SURFFLU.MEVAP.EA'
+    - 'SURFFLU.CHA.SENS'
+    - 'SURFRAYT SOLA DE'
+    - 'SURFRAYT THER DE'
+    - 'SURFACCPLUIE'
+    - 'SURFACCNEIGE'
+    - 'SURFACCGRAUPEL'
+    - 'SURFTENS.TURB.ZO'
+    - 'SURFTENS.TURB.ME'
+   CLXFU:
+    - 'CLSTEMPERATURE'
+    - 'CLSHUMI.SPECIFIQ'
+    - 'CLSVENT.ZONAL'
+    - 'CLSVENT.MERIDIEN'
+    - 'SURFNEBUL.TOTALE'
+    - 'CLPMHAUT.MOD.XFU'
+   CLPHY:
+    - 'SURFRESERV.NEIGE'
+    - 'SURFTEMPERATURE'
+    - 'INTSURFGEOPOTENT'
+  NAMFPDY2:
+   CL2DF:
+    - 'SURFPRESSION'
+    - 'MSLPRESSURE'
+  NAMFPDYS:
+    CL3DF:
+     - 'GRAUPEL'
+     - 'RAIN'
+     - 'SNOW'
+     - 'TEMPERATURE'
+     - 'HUMI.SPECIFI'
+     - 'WIND.U.PHYS'
+     - 'WIND.V.PHYS'
+     - 'ICE_CRYSTAL'
+     - 'CLOUD_WATER'
+     - 'CLOUD_FRACTI'
+     - 'TKE'
+    NRFP3S:
+     - ${namelist.nrfp3s}
+ 
+ xxtddddhh00:
+   <<: *default
+
+ xxt00000000:
+  NAMFPPHY:
+   CLCFU:
+    - 'SURFTENS.TURB.ZO'
+    - 'SURFTENS.TURB.ME'
+   CLXFU:
+    - 'CLSTEMPERATURE'
+    - 'CLSHUMI.SPECIFIQ'
+    - 'CLSVENT.ZONAL'
+    - 'CLSVENT.MERIDIEN'
+    - 'SURFNEBUL.TOTALE'
+    - 'CLPMHAUT.MOD.XFU'
+   CLPHY:
+    - 'SURFRESERV.NEIGE'
+    - 'SURFTEMPERATURE'
+    - 'INTSURFGEOPOTENT'
+  NAMFPDYS:
+    CL3DF:
+     - 'GRAUPEL'
+     - 'RAIN'
+     - 'SNOW'
+     - 'TEMPERATURE'
+     - 'HUMI.SPECIFI'
+     - 'WIND.U.PHYS'
+     - 'WIND.V.PHYS'
+     - 'ICE_CRYSTAL'
+     - 'CLOUD_WATER'
+     - 'CLOUD_FRACTI'
+     - 'TKE'
+    NRFP3S:
+     - ${namelist.nrfp3s}
+  <<: *default

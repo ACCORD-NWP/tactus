@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Registration and validation of options passed in the config file."""
 import contextlib
+import glob
 import json
 import os
 import tempfile
@@ -264,6 +265,29 @@ def _get_config_include_definitions(raw_config):
     return config_includes
 
 
+def _get_all_json_schemas(json_schema, schemas_path):
+    """Load and add all json schema files in the schemas_path directory.
+
+    Args:
+        json_schema (dict): Input json schema
+        schemas_path (str): Path to json files
+
+    Returns:
+        json_schema (dict): Updated json dict
+
+    """
+    exclude = ["main_config_schema.json", "default_config_schema.json"]
+
+    for filename in glob.glob(f"{schemas_path}/*.json"):
+        if os.path.basename(filename) in exclude:
+            continue
+        section_name = os.path.basename(filename).replace("_section_schema.json", "")
+        updated_schema = {"$ref": f"file:{filename}"}
+        json_schema["properties"].update({section_name: updated_schema})
+
+    return json_schema
+
+
 def _expand_config_include_section(
     raw_config,
     json_schema,
@@ -281,40 +305,44 @@ def _expand_config_include_section(
         json_schema["properties"] = {}
     config_include_search_dir = Path(config_include_search_dir).resolve()
     config_include_sections = {}
-    for section_name, include_path_ in config_include_defs.items():
-        if isinstance(include_path_, str):
-            include_path = Path(include_path_)
-            if not include_path.is_absolute():
-                include_path = config_include_search_dir / include_path
-            included_config_section = _read_raw_config_file(include_path)
-        else:
-            included_config_section = include_path_
-        _sections_traversed = (*_parent_sections, section_name)
-        sections_traversed_str = " -> ".join(_sections_traversed)
-        if "include" in raw_config and section_name in json_schema["properties"]:
-            msg = f'Validation schema for `[include]` section "{sections_traversed_str}" '
-            msg += "also detected in its parent section's schema. "
-            msg += "`[include]` schemas must NOT be added to their parent's schemas, but "
-            msg += "rather in their own separate files."
-            raise ConflictingValidationSchemasError(msg)
+    if len(config_include_defs) == 0:
+        json_schema = _get_all_json_schemas(json_schema, str(schemas_path))
+    else:
+        for section_name, include_path_ in config_include_defs.items():
+            if isinstance(include_path_, str):
+                include_path = Path(include_path_)
+                if not include_path.is_absolute():
+                    include_path = config_include_search_dir / include_path
+                included_config_section = _read_raw_config_file(include_path)
+            else:
+                included_config_section = include_path_
+            _sections_traversed = (*_parent_sections, section_name)
+            sections_traversed_str = " -> ".join(_sections_traversed)
+            if "include" in raw_config and section_name in json_schema["properties"]:
+                msg = "Validation schema for `[include]` section "
+                msg += f' "{sections_traversed_str}" '
+                msg += "also detected in its parent section's schema. "
+                msg += "`[include]` schemas must NOT be added to their parent's schemas,"
+                msg += "but rather in their own separate files."
+                raise ConflictingValidationSchemasError(msg)
 
-        schema_file = schemas_path / f"{section_name}_section_schema.json"
-        if not schema_file.is_file():
-            logger.warning(
-                'No validation schema for config section "{}". Using default.',
-                sections_traversed_str,
+            schema_file = schemas_path / f"{section_name}_section_schema.json"
+            if not schema_file.is_file():
+                logger.warning(
+                    'No validation schema for config section "{}". Using default.',
+                    sections_traversed_str,
+                )
+                schema_file = schemas_path / "default_section_schema.json"
+
+            updated_config, updated_schema = _expand_config_include_section(
+                raw_config=included_config_section,
+                json_schema={"$ref": f"file:{schema_file}"},
+                config_include_search_dir=config_include_search_dir,
+                schemas_path=schemas_path,
+                _parent_sections=_sections_traversed,
             )
-            schema_file = schemas_path / "default_section_schema.json"
-
-        updated_config, updated_schema = _expand_config_include_section(
-            raw_config=included_config_section,
-            json_schema={"$ref": f"file:{schema_file}"},
-            config_include_search_dir=config_include_search_dir,
-            schemas_path=schemas_path,
-            _parent_sections=_sections_traversed,
-        )
-        config_include_sections.update(updated_config)
-        json_schema["properties"].update({section_name: updated_schema})
+            config_include_sections.update(updated_config)
+            json_schema["properties"].update({section_name: updated_schema})
 
     raw_config.update(config_include_sections)
     if "include" in raw_config:
