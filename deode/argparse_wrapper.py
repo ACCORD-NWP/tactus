@@ -228,39 +228,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     parser_show_namelist = show_command_subparsers.add_parser(
         "namelist", help="Print namelist in use and exit", parents=[common_parser]
     )
-    parser_show_namelist.add_argument(
-        "--namelist-type",
-        "-t",
-        type=str,
-        help="Namelist target, master or surfex",
-        choices=["master", "surfex"],
-        required=True,
-        default=None,
-    )
-    parser_show_namelist.add_argument(
-        "--namelist",
-        "-n",
-        type=str,
-        help="Namelist to show, type anything to print available options",
-        required=True,
-        default=None,
-    )
-    parser_show_namelist.add_argument(
-        "--optional-namelist-name",
-        "-o",
-        type=str,
-        dest="namelist_name",
-        help="Optional namelist name",
-        default=None,
-    )
-    parser_show_namelist.add_argument(
-        "--no-substitute",
-        "-b",
-        action="store_false",
-        default=True,
-        help="Do not substitute config values in the written namelist",
-    )
-    parser_show_namelist.set_defaults(run_command=show_namelist)
+    add_namelist_args(parser_show_namelist)
 
     ###########################################
     # Configure parser for the "doc" command #
@@ -302,6 +270,12 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         ),
         help="command description",
     )
+
+    # show namelist
+    parser_namelist_show = namelist_command_subparsers.add_parser(
+        "show", help="Print namelist in use and exit", parents=[common_parser]
+    )
+    add_namelist_args(parser_namelist_show)
 
     # namelist integrate
     parser_namelist_integrate = namelist_command_subparsers.add_parser(
@@ -418,3 +392,50 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     parser_namelist_format.set_defaults(run_command=namelist_format)
 
     return main_parser.parse_args(argv)
+
+
+def add_namelist_args(parser_object):
+    """Add namelist args.
+
+    Args:
+        parser_object (args oject): args object to update
+
+    Returns:
+        parser_object (args oject): updated args object
+
+    """
+    parser_object.add_argument(
+        "--namelist-type",
+        "-t",
+        type=str,
+        help="Namelist target, master or surfex",
+        choices=["master", "surfex"],
+        required=True,
+        default=None,
+    )
+    parser_object.add_argument(
+        "--namelist",
+        "-n",
+        type=str,
+        help="Namelist to show, type anything to print available options",
+        required=True,
+        default=None,
+    )
+    parser_object.add_argument(
+        "--optional-namelist-name",
+        "-o",
+        type=str,
+        dest="namelist_name",
+        help="Optional namelist name",
+        default=None,
+    )
+    parser_object.add_argument(
+        "--no-substitute",
+        "-b",
+        action="store_false",
+        default=True,
+        help="Do not substitute config values in the written namelist",
+    )
+    parser_object.set_defaults(run_command=show_namelist)
+
+    return parser_object
