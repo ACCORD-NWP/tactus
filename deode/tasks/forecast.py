@@ -36,18 +36,12 @@ class Forecast(Task):
         self.intp_bddir = self.config["system.intp_bddir"]
         self.forecast_range = self.config["general.times.forecast_range"]
 
-        self.climdir = self.platform.get_system_value("climdir")
-        self.rrtm_dir = self.platform.get_platform_value("RRTM_DIR")
-        self.ncdir = self.config["platform.ncdir"]
         self.archive = self.platform.get_system_value("archive")
         self.deode_home = self.config["platform.deode_home"]
         self.output_settings = self.config["general.output_settings"]
         self.surfex = self.config["general.surfex"]
 
-        try:
-            self.accelerator_device = self.config["accelerator_device"]
-        except KeyError:
-            self.accelerator_device = None
+        self.accelerator_device = self.config.get("accelerator_device", None)
 
         # Update namelist settings
         self.nlgen_master = NamelistGenerator(self.config, "master")
@@ -148,81 +142,12 @@ class Forecast(Task):
 
     def execute(self):
         """Execute forecast."""
-        # CY48t3 input files not used in CY46
-        # *.nc files and ecoclimap.bin files
-        input_files = [
-            "greenhouse_gas_climatology_46r1.nc",
-            "greenhouse_gas_climatology_48r1.nc",
-            "greenhouse_gas_timeseries_CMIP3_A1B_46r1.nc",
-            "greenhouse_gas_timeseries_CMIP3_A2_46r1.nc",
-            "greenhouse_gas_timeseries_CMIP3_B1_46r1.nc",
-            "greenhouse_gas_timeseries_CMIP5_RCP3PD_46r1.nc",
-            "greenhouse_gas_timeseries_CMIP5_RCP45_46r1.nc",
-            "greenhouse_gas_timeseries_CMIP5_RCP6_46r1.nc",
-            "greenhouse_gas_timeseries_CMIP5_RCP85_46r1.nc",
-            "greenhouse_gas_timeseries_CMIP6_SSP126_CFC11equiv_47r1.nc",
-            "greenhouse_gas_timeseries_CMIP6_SSP245_CFC11equiv_47r1.nc",
-            "greenhouse_gas_timeseries_CMIP6_SSP370_CFC11equiv_47r1.nc",
-            "greenhouse_gas_timeseries_CMIP6_SSP585_CFC11equiv_47r1.nc",
-        ]
-        if self.cycle in ["CY48t3"]:
-            for ifile in input_files:
-                self.fmanager.input(f"{self.ncdir}/{ifile}", ifile)
-
-        # RRTM files
-        for ifile in [
-            "C11CLIM",
-            "C12CLIM",
-            "C22CLIM",
-            "CCL4CLIM",
-            "CH4CLIM",
-            "CO2CLIM",
-            "ECOZC",
-            "GCH4CLIM",
-            "GCO2CLIM",
-            "GOZOCLIM",
-            "MCH4CLIM",
-            "MCICA",
-            "MCO2CLIM",
-            "MOZOCLIM",
-            "N2OCLIM",
-            "NO2CLIM",
-            "OZOCLIM",
-            "RADAIOP",
-            "RADRRTM",
-            "RADSRTM",
-            "SO4_A1B2000",
-            "SO4_A1B2010",
-            "SO4_A1B2020",
-            "SO4_A1B2030",
-            "SO4_A1B2040",
-            "SO4_A1B2050",
-            "SO4_A1B2060",
-            "SO4_A1B2070",
-            "SO4_A1B2080",
-            "SO4_A1B2090",
-            "SO4_A1B2100",
-            "SO4_OBS1920",
-            "SO4_OBS1930",
-            "SO4_OBS1940",
-            "SO4_OBS1950",
-            "SO4_OBS1960",
-            "SO4_OBS1970",
-            "SO4_OBS1980",
-            "SO4_OBS1990",
-        ]:
-            self.fmanager.input(f"{self.rrtm_dir}/{ifile}", ifile)
-
-        # Climate files
-        mm = self.basetime.strftime("%m")
-        self.fmanager.input(f"{self.climdir}/Const.Clim.{mm}", "Const.Clim")
-        self.fmanager.input(
-            f"{self.climdir}/Const.Clim.{mm}", f"const.clim.{self.domain}"
-        )
-        self.fmanager.input(
-            f"{self.climdir}/{self.file_templates['pgd']['archive']}",
-            f"{self.file_templates['pgd']['model']}",
-        )
+        # Fetch forecast model static input data
+        input_definition = self.platform.get_system_value("forecast_input_definition")
+        logger.info("Read static data spec from: {}", input_definition)
+        with open(input_definition, "r", encoding="utf-8") as f:
+            input_data = json.load(f)
+        self.fmanager.input_data_iterator(input_data)
 
         # wind farm input data
         if self.windfarm:
@@ -242,8 +167,8 @@ class Forecast(Task):
         settings = self.nlgen_surfex.assemble_namelist("forecast")
         self.nlgen_surfex.write_namelist(settings, "EXSEG1.nam")
 
-        sfx_input_defs = self.platform.get_system_value("sfx_input_defs")
-        with open(sfx_input_defs, "r", encoding="utf-8") as f:
+        input_definition = self.platform.get_system_value("sfx_input_definition")
+        with open(input_definition, "r", encoding="utf-8") as f:
             input_data = json.load(f)
         binput_data = InputDataFromNamelist(
             settings, input_data, "forecast", self.platform
@@ -263,10 +188,7 @@ class Forecast(Task):
             self.fmanager.input(initfile_sfx, f"ICMSH{self.cnmexp}INIT.sfx")
 
         # Use explicitly defined boundary dir if defined
-        try:
-            intp_bddir = self.config["system.intp_bddir"]
-        except KeyError:
-            intp_bddir = self.wrk
+        intp_bddir = self.config.get("system.intp_bddir", self.wrk)
 
         # Link the boundary files, use initial file as first boundary file
         self.fmanager.input(initfile, f"ELSCF{self.cnmexp}ALBC000")

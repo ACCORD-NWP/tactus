@@ -9,6 +9,8 @@
     {case_prefix = "scheduler.ecfvars.case_prefix"},
     {mars_selection = "boundaries.ifs.selection"},
     {bdmember = "boundaries.ifs.bdmember"},
+    {pgd_archive = "file_templates.pgd.archive"},
+    {pgd_model = "file_templates.pgd.model"},
     {duration_model = "file_templates.duration.model"},
     {duration_archive = "file_templates.duration.archive"},
     {surfex_template = "file_templates.surfex.archive"},

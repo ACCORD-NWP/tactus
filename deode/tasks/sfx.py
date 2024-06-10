@@ -644,8 +644,8 @@ class Pgd(Task):
             pgdfile = f"{pgdfile}.{filetype}"
 
             # Input data
-            sfx_input_defs = self.platform.get_system_value("sfx_input_defs")
-            with open(sfx_input_defs, "r", encoding="utf-8") as f:
+            input_definition = self.platform.get_system_value("sfx_input_definition")
+            with open(input_definition, "r", encoding="utf-8") as f:
                 input_data = json.load(f)
 
             if self.one_decade:
@@ -726,8 +726,8 @@ class Prep(Task):
             self.nlgen.write_namelist(settings, "OPTIONS.nam")
 
             # Input data
-            sfx_input_defs = self.platform.get_system_value("sfx_input_defs")
-            with open(sfx_input_defs, "r", encoding="utf-8") as f:
+            input_definition = self.platform.get_system_value("sfx_input_definition")
+            with open(input_definition, "r", encoding="utf-8") as f:
                 input_data = json.load(f)
 
             # Determine PGD type and name
