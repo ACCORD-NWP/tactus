@@ -77,7 +77,7 @@
   13_NETCDF = ["load", "cray-netcdf-hdf5parallel"]
   14_BUILDTOOLS = ["load", "buildtools"]
   15_NCURSES = ["load", "ncurses/6.4-cpeCray-23.03"]
-  
+
 [submission.serial]
   NPROC = 1
   SCHOST = "lumi-batch"
