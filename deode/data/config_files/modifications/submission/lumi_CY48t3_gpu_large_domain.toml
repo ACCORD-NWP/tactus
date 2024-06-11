@@ -77,9 +77,6 @@
   13_NETCDF = ["load", "cray-netcdf-hdf5parallel"]
   14_BUILDTOOLS = ["load", "buildtools"]
   15_NCURSES = ["load", "ncurses/6.4-cpeCray-23.03"]
-  16_RIMVYDAS_USE = []
-  17_RIMVYDAS_FTN16 = []
-  18_RIMVYDAS_ECFLOW = []
 
 [submission.serial]
   NPROC = 1
