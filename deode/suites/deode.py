@@ -90,8 +90,23 @@ class DeodeSuiteDefinition(SuiteDefinition):
             self.do_prep = False
             self.create_static_data = False
 
+        final_cleaning_trigger = []
+        if self.do_cleaning:
+            initial_cleaning = EcflowSuiteTask(
+                "PreCleaning",
+                self.suite,
+                config,
+                self.task_settings,
+                self.ecf_files,
+                input_template=input_template,
+                ecf_files_remotely=self.ecf_files_remotely,
+            )
+            final_cleaning_trigger = [EcflowSuiteTrigger(initial_cleaning)]
+
+        static_data = final_cleaning_trigger
         if self.create_static_data:
-            static_data = self.static_suite_part(config, input_template)
+            input_trigger = EcflowSuiteTriggers(final_cleaning_trigger)
+            static_data = self.static_suite_part(config, input_template, input_trigger)
             task_logs = config["system.climdir"]
             args = ";".join(
                 [
@@ -109,16 +124,17 @@ class DeodeSuiteDefinition(SuiteDefinition):
                 self.task_settings,
                 self.ecf_files,
                 input_template=input_template,
-                trigger=EcflowSuiteTriggers([EcflowSuiteTrigger(static_data)]),
+                trigger=EcflowSuiteTriggers(static_data),
                 variables=variables,
                 ecf_files_remotely=self.ecf_files_remotely,
             )
+            final_cleaning_trigger = static_data
 
             if self.do_archiving:
                 archiving_static_trigger = EcflowSuiteTriggers(
                     [EcflowSuiteTrigger(collect_logs)]
                 )
-                EcflowSuiteTask(
+                archive_static = EcflowSuiteTask(
                     "ArchiveStatic",
                     self.suite,
                     config,
@@ -128,30 +144,29 @@ class DeodeSuiteDefinition(SuiteDefinition):
                     variables=None,
                     trigger=archiving_static_trigger,
                 )
-        else:
-            static_data = None
+                final_cleaning_trigger = [EcflowSuiteTrigger(archive_static)]
+            else:
+                archive_static = None
 
+        time_dependent_part = []
         if self.create_time_dependent_suite:
-            time_family = self.time_dependent_suite_part(
+            time_dependent_part = self.time_dependent_suite_part(
                 config, input_template, static_data
             )
-        else:
-            time_family = None
 
         if self.do_cleaning:
-            trigger_object = time_family
-            if time_family is None and static_data is not None:
-                trigger_object = static_data
-            cleaning_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(trigger_object)])
+            if time_dependent_part is not None:
+                final_cleaning_trigger += time_dependent_part
+            trigger = EcflowSuiteTriggers(final_cleaning_trigger)
 
             EcflowSuiteTask(
-                "Cleaning",
+                "PostMortem",
                 self.suite,
                 config,
                 self.task_settings,
                 self.ecf_files,
                 input_template=input_template,
-                trigger=cleaning_trigger,
+                trigger=trigger,
                 ecf_files_remotely=self.ecf_files_remotely,
             )
 
@@ -164,7 +179,7 @@ class DeodeSuiteDefinition(SuiteDefinition):
             static_data(EcflowFamily): EcflowFamily object used for triggering
 
         Returns:
-            time_family: EcflowFamily object used for triggering
+            prev_cycle_trigger (list) : List of triggers to be used by subsequent tasks
 
         """
         first_cycle = as_datetime(config["general.times.start"])
@@ -192,13 +207,11 @@ class DeodeSuiteDefinition(SuiteDefinition):
         days = []
         prev_cycle_trigger = None
         prev_interpolation_trigger = None
+        cycle_cleaning = None
 
         for i, cycle in cycles.items():
             cycle_day = cycle["day"]
-            if self.create_static_data:
-                inputdata_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(static_data)])
-            else:
-                inputdata_trigger = None
+            inputdata_trigger = EcflowSuiteTriggers(static_data)
 
             if cycle_day not in days:
                 day_family = EcflowSuiteFamily(
@@ -471,29 +484,6 @@ class DeodeSuiteDefinition(SuiteDefinition):
                 ecf_files_remotely=self.ecf_files_remotely,
             )
 
-            cday = cycle["day"]
-            ctime = cycle["time"]
-            task_logs = config["system.wrk"]
-            args = ";".join(
-                [
-                    f"joboutdir={self.ecf_out}/{self.suite_name}/{cday}/{ctime}",
-                    f"tarname={cday}_{ctime}",
-                    f"task_logs={task_logs}",
-                ]
-            )
-            variables = {"ARGS": args}
-            collect_logs_hour = EcflowSuiteTask(
-                "CollectLogs",
-                time_family,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                trigger=EcflowSuiteTriggers([EcflowSuiteTrigger(cycle_fam)]),
-                variables=variables,
-                ecf_files_remotely=self.ecf_files_remotely,
-            )
-
             EcflowSuiteTask(
                 "FirstGuess",
                 initialization,
@@ -556,14 +546,44 @@ class DeodeSuiteDefinition(SuiteDefinition):
                     trigger=extractsqlite_trigger,
                 )
 
+            postcycle_family = EcflowSuiteFamily(
+                "PostCycle",
+                time_family,
+                self.ecf_files,
+                trigger=EcflowSuiteTriggers([EcflowSuiteTrigger(cycle_fam)]),
+                ecf_files_remotely=self.ecf_files_remotely,
+            )
+
+            cday = cycle["day"]
+            ctime = cycle["time"]
+            task_logs = config["system.wrk"]
+            args = ";".join(
+                [
+                    f"joboutdir={self.ecf_out}/{self.suite_name}/{cday}/{ctime}",
+                    f"tarname={cday}_{ctime}",
+                    f"task_logs={task_logs}",
+                ]
+            )
+            variables = {"ARGS": args}
+            collect_logs_hour = EcflowSuiteTask(
+                "CollectLogs",
+                postcycle_family,
+                config,
+                self.task_settings,
+                self.ecf_files,
+                input_template=input_template,
+                variables=variables,
+                ecf_files_remotely=self.ecf_files_remotely,
+            )
+
             if self.do_archiving:
                 archiving_hour_trigger = EcflowSuiteTriggers(
                     [EcflowSuiteTrigger(collect_logs_hour)]
                 )
 
-                EcflowSuiteTask(
+                archive_hour = EcflowSuiteTask(
                     "ArchiveHour",
-                    time_family,
+                    postcycle_family,
                     config,
                     self.task_settings,
                     self.ecf_files,
@@ -572,23 +592,45 @@ class DeodeSuiteDefinition(SuiteDefinition):
                     ecf_files_remotely=self.ecf_files_remotely,
                 )
 
-        return time_family
+            if self.do_cleaning:
+                cleaning_triggers = triggers
+                if self.do_archiving:
+                    cleaning_triggers.append(EcflowSuiteTrigger(archive_hour))
+                if cycle_cleaning is not None:
+                    cleaning_triggers.append(EcflowSuiteTrigger(cycle_cleaning))
+                cleaning_trigger = EcflowSuiteTriggers(cleaning_triggers)
 
-    def static_suite_part(self, config, input_template):
+                cycle_cleaning = EcflowSuiteTask(
+                    "CycleCleaning",
+                    postcycle_family,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    trigger=cleaning_trigger,
+                    ecf_files_remotely=self.ecf_files_remotely,
+                )
+
+        prev_cycle_trigger.append(EcflowSuiteTrigger(cycle_cleaning))
+        return prev_cycle_trigger
+
+    def static_suite_part(self, config, input_template, input_trigger):
         """Create the time dependent part of the suite.
 
         Args:
             config (deode.ParsedConfig): Configuration settings
             input_template (str): Default task template
+            input_trigger (list): List of trigger objects for the static family
 
         Returns:
-            static_data: EcflowFamily object used for triggering
+            static_data (list) : List of trigger objects to be used by subsequent tasks
 
         """
         static_data = EcflowSuiteFamily(
             "StaticData",
             self.suite,
             self.ecf_files,
+            trigger=input_trigger,
             ecf_files_remotely=self.ecf_files_remotely,
         )
 
@@ -793,7 +835,7 @@ class DeodeSuiteDefinition(SuiteDefinition):
                     ecf_files_remotely=self.ecf_files_remotely,
                 )
 
-        return static_data
+        return [EcflowSuiteTrigger(static_data)]
 
     def save_as_defs(self, def_file):
         """Save definition file.

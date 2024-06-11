@@ -137,6 +137,9 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         with contextlib.suppress(FileNotFoundError):
             original_task_archive_archivestatic_execute_method(*args, **kwargs)
 
+    def new_task_cleaning_tasks_cleaner_execute_method(*args, **kwargs):  # noqa: ARG001
+        """Skip any work."""
+
     def new_task_creategrib_creategrib_execute_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
         with contextlib.suppress(FileNotFoundError):
@@ -201,6 +204,10 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     session_mocker.patch(
         "deode.tasks.archive.ArchiveStatic.execute",
         new=new_task_archive_archivestatic_execute_method,
+    )
+    session_mocker.patch(
+        "deode.tasks.cleaning_tasks.Cleaning.execute",
+        new=new_task_cleaning_tasks_cleaner_execute_method,
     )
     session_mocker.patch(
         "deode.tasks.creategrib.CreateGrib.execute",

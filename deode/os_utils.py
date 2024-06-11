@@ -6,6 +6,8 @@ import shutil
 import time
 from pathlib import Path
 
+from .logs import logger
+
 
 class Search:
     """Search class."""
@@ -178,3 +180,36 @@ def deodemakedirs(path, unixgroup="", exist_ok=True):
             os.makedirs(path)
         except OSError as err:
             raise OSError(f"Cannot create {path} properly") from err
+
+
+def remove_empty_dirs(src, dry_run=False):
+    """Remove directories.
+
+    Recursively and permanently removes the specified directory,
+    and all of its empty subdirectories.
+
+    Args:
+        src (str or Path): Top search directory
+        dry_run (boolean): Flag for execution of cleaning or not
+
+    Returns:
+        found_files (boolean): True if any files found
+    """
+    src_dir = Path(src)
+    found_files = False
+    if not src_dir.exists():
+        return found_files
+
+    for path in src_dir.iterdir():
+        if path.is_file():
+            found_files = True
+            continue
+        found_files = remove_empty_dirs(path) or found_files
+    if found_files:
+        logger.debug(f"Keep:{src_dir}")
+    else:
+        logger.info(f"Remove:{src_dir}")
+        if not dry_run:
+            src_dir.rmdir()
+
+    return found_files

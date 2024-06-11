@@ -6,6 +6,8 @@
     "general.csc",
     "general.case",
     {sqlite_path = "extractsqlite.sqlite_path"},
+    {ecf_out = "scheduler.ecfvars.ecf_out"},
+    {ecf_files = "scheduler.ecfvars.ecf_files"},
     {case_prefix = "scheduler.ecfvars.case_prefix"},
     {mars_selection = "boundaries.ifs.selection"},
     {bdmember = "boundaries.ifs.bdmember"},
