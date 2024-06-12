@@ -53,6 +53,7 @@
   NTASKS = "#SBATCH --ntasks=16"
   PARTITION = "#SBATCH --partition=debug"
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=8"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:30:00"
 
   #EXCLUSIVE= "#SBATCH --exclusive"

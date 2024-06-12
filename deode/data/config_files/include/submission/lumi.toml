@@ -40,6 +40,7 @@
   NTASKS = "#SBATCH --ntasks=16"
   PARTITION = "#SBATCH --partition=debug"
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=8"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:30:00"
 
 [submission.Forecast_cpu.ENV]
@@ -99,6 +100,7 @@
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   PARTITION = "#SBATCH -p debug"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:10:00"
 
 [submission.parallel.ENV]
@@ -159,6 +161,7 @@
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   PARTITION = "#SBATCH --partition=debug"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:20:00"
 
 [submission.serial.ENV]
@@ -189,6 +192,7 @@
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   PARTITION = "#SBATCH --partition=debug"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:20:00"
 
 [submission.sqlite.ENV]

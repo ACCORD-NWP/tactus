@@ -28,6 +28,7 @@
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   QOS = "#SBATCH --qos=nf"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:15:00"
 
 [submission.gnu.MODULES]
@@ -42,6 +43,7 @@
 [submission.parallel.BATCH]
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   QOS = "#SBATCH --qos=np"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:10:00"
 
 [submission.parallel.ENV]
@@ -74,6 +76,7 @@
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   QOS = "#SBATCH --qos=nf"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:15:00"
 
 [submission.serial.ENV]
