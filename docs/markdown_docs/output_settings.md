@@ -12,7 +12,7 @@ Output timings must be specified as follows:
 Here we explain output intervals through an example:
 
 ```
-  fullpos = ["PT0H:PT6H:PT15M", "PT6H:PT9H:PT30M", "PT1H"]
+  fullpos = ["PT0H:PT6H:PT15M", "PT6H:PT9H:PT30M", "PT9H:PT24H:PT1H"]
   history = "PT1H"
   nrazts = "PT1H"
   surfex = ["PT0H:PT9H:PT10M", "PT9H:PT24H:PT3H"]
