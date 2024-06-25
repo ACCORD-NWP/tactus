@@ -151,7 +151,7 @@ def test_doc_config_command():
         main(["doc", "config"])
 
 
-def test_integrate_namelists():
+def test_integrate_namelists_command():
     args = [
         "namelist",
         "integrate",
@@ -159,5 +159,43 @@ def test_integrate_namelists():
         "deode/data/namelists/unit_testing/nl_master_base",
         "--output",
         os.devnull,
+    ]
+    main(args)
+
+
+@pytest.mark.usefixtures("_module_mockers")
+def test_convert_namelists_command(tmp_path):
+    output_yml = f"{tmp_path.as_posix()}/nl_master_base.49t2.yml"
+
+    args = [
+        "namelist",
+        "convert",
+        "--namelist",
+        "deode/data/namelists/unit_testing/nl_master_base.yml",
+        "--output",
+        output_yml,
+        "--from-cycle",
+        "CY48t2",
+        "--to-cycle",
+        "CY49t2",
+        "--format",
+        "yaml",
+    ]
+    main(args)
+
+
+@pytest.mark.usefixtures("_module_mockers")
+def test_format_namelists_command(tmp_path):
+    output_yml = f"{tmp_path.as_posix()}/nl_master_base.format.yml"
+
+    args = [
+        "namelist",
+        "format",
+        "--namelist",
+        "deode/data/namelists/unit_testing/nl_master_base.yml",
+        "--output",
+        output_yml,
+        "--format",
+        "yaml",
     ]
     main(args)

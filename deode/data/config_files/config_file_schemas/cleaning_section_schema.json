@@ -12,18 +12,22 @@
                             "description": "regular experssion according to it which files to clean",
                             "type": "string"
                         },
+	                "ncycles_delay": {
+                           "description": "number of cycle_length periods with which the cleaning is shifted to the experiment start day to the past.",
+                           "type": "number"
+                        },
                         "cleaning_delay": {
-                             "description": "time period with which the cleaning is shifted to the experiment start day to the past",
+                             "description": "time period with which the cleaning is shifted to the experiment start day to the past. Should be a multiple of general.times.cycle_length.",
                              "type": "string",
                              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
                         },
                         "cleaning_max_delay": {
-                             "description": "time period which defines the cleaning according to the cleaning_delay to the past ",
+                             "description": "time period which defines the cleaning according to the cleaning_delay to the past. Should be a multiple of general.times.cycle_length.",
                              "type": "string",
                              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
                         },
                         "step": {
-                             "description": "time step which determines moments when to make a cleaning",
+                             "description": "time step which determines moments when to make a cleaning, should be a multiple of general.times.cycle_length.",
                              "type": "string",
                              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
                         },
@@ -36,51 +40,63 @@
                              "type": "boolean"
                         }		   
 		    },
-                    "required": ["include", "cleaning_delay", "cleaning_max_delay", "step", "active", "dry_run"]
+                    "oneOf": [
+			{
+                          "required": ["include", "ncycles_delay", "active"]
+			},
+			{
+                          "required": ["include", "cleaning_delay", "cleaning_max_delay", "active"]
+			}
+		    ]
                 },    
-                "wrk": {
+                "Cleaning_example": {
                     "type": "object",
                     "properties": {"$ref" : "#/$CLEANING_FOLDER_SETTINGS" },
-                    "required": ["path", "active"]
-                },
-                "archive": {
-                    "type": "object",
-                    "properties": { "$ref" : "#/$CLEANING_FOLDER_SETTINGS" },
-		"required": ["path", "active"]
-          }
+                    "required": ["path"]
+                }
        },  
-        "required": ["defaults", "wrk", "archive"],
+       "required": ["defaults"],
        "$CLEANING_FOLDER_SETTINGS": {
               "path": {
-                            "description" : "path to the folder where files will be cleaned",
-                            "type": "string"
+                  "description" : "path to the folder where files will be cleaned",
+                  "type": "string"
                },	       
 	       "include": {
-                  "description": "regular experssion according to it which files to clean",
-                      "type": "string"
+                  "description": "regular expression for files to select for cleaning",
+                  "type": "string",
+                  "default": "(.*)"
+               },
+	       "exclude": {
+                  "description": "regular expression for files to explicitly exclude from cleaning",
+                  "type": "string"
+               },
+	       "ncycles_delay": {
+                  "description": "number of cycle_length periods with which the cleaning is shifted to the experiment start day to the past.",
+                  "type": "number"
                },
               "cleaning_delay": {
-                  "description": "time period with which the cleaning is shifted to the experiment start day to the past",
-                      "type": "string",
-                      "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+                  "description": "time period with which the cleaning is shifted to the experiment start day to the past. Should be a multiple of general.times.cycle_length.",
+                  "type": "string",
+                  "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
                   },
               "cleaning_max_delay": {
-                  "description": "time period which defines the cleaning according to the cleaning_delay to the past ",
-                      "type": "string",
-                       "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+                  "description": "time period which defines the cleaning according to the cleaning_delay to the past. Should be a multiple of general.times.cycle_length.",
+                  "type": "string",
+                  "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
                   },
               "step": {
-                  "description": "time step which determines moments when to make a cleaning",
-                      "type": "string",
-                      "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+                  "description": "time step which determines moments when to make a cleaning, should be a multiple of general.times.cycle_length.",
+                             "type": "string",
+                  "type": "string",
+                  "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
                   },
               "active": {
                   "description": "Activate cleaning files",
-                      "type": "boolean"
+                  "type": "boolean"
                   },
               "dry_run": {
                    "description": "test cleaning without to  delete files",
-                       "type": "boolean"
+                   "type": "boolean"
                    }
 
           }

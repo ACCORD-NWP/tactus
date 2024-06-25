@@ -8,6 +8,8 @@ from . import GeneralConstants
 from .commands_functions import (
     create_exp,
     doc_config,
+    namelist_convert,
+    namelist_format,
     namelist_integrate,
     run_task,
     show_config,
@@ -17,6 +19,7 @@ from .commands_functions import (
     start_suite,
 )
 from .config_parser import ConfigParserDefaults
+from .namelist import NamelistConverter
 
 
 def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
@@ -225,39 +228,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     parser_show_namelist = show_command_subparsers.add_parser(
         "namelist", help="Print namelist in use and exit", parents=[common_parser]
     )
-    parser_show_namelist.add_argument(
-        "--namelist-type",
-        "-t",
-        type=str,
-        help="Namelist target, master or surfex",
-        choices=["master", "surfex"],
-        required=True,
-        default=None,
-    )
-    parser_show_namelist.add_argument(
-        "--namelist",
-        "-n",
-        type=str,
-        help="Namelist to show, type anything to print available options",
-        required=True,
-        default=None,
-    )
-    parser_show_namelist.add_argument(
-        "--optional-namelist-name",
-        "-o",
-        type=str,
-        dest="namelist_name",
-        help="Optional namelist name",
-        default=None,
-    )
-    parser_show_namelist.add_argument(
-        "--no-substitute",
-        "-b",
-        action="store_false",
-        default=True,
-        help="Do not substitute config values in the written namelist",
-    )
-    parser_show_namelist.set_defaults(run_command=show_namelist)
+    add_namelist_args(parser_show_namelist)
 
     ###########################################
     # Configure parser for the "doc" command #
@@ -285,10 +256,12 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
 
     # namelist subparser
     parser_namelist = subparsers.add_parser(
-        "namelist", help="Namelist show (output) or integrate (input)"
+        "namelist",
+        help="Namelist show (output), integrate (input), "
+        + "convert (input, output), format (input, output)",
     )
     namelist_command_subparsers = parser_namelist.add_subparsers(
-        title="integrate",
+        title="namelist",
         dest="namelist_what",
         required=True,
         description=(
@@ -297,6 +270,12 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         ),
         help="command description",
     )
+
+    # show namelist
+    parser_namelist_show = namelist_command_subparsers.add_parser(
+        "show", help="Print namelist in use and exit", parents=[common_parser]
+    )
+    add_namelist_args(parser_namelist_show)
 
     # namelist integrate
     parser_namelist_integrate = namelist_command_subparsers.add_parser(
@@ -339,4 +318,124 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     )
     parser_namelist_integrate.set_defaults(run_command=namelist_integrate)
 
+    # namelist convert
+    parser_namelist_convert = namelist_command_subparsers.add_parser(
+        "convert",
+        help="Convert a namelist (ftn or yml) to a new Cycle",
+        parents=[common_parser],
+    )
+    parser_namelist_convert.add_argument(
+        "-n",
+        "--namelist",
+        type=str,
+        help="Input namelist definition filename",
+        required=True,
+        default=None,
+    )
+    parser_namelist_convert.add_argument(
+        "-o",
+        "--output",
+        type=str,
+        help="Output namelist definition filename",
+        required=True,
+        default=None,
+    )
+    parser_namelist_convert.add_argument(
+        "--from-cycle",
+        type=str,
+        help="Cycle of input namelist",
+        choices=NamelistConverter.get_known_cycles(),
+        required=True,
+        default=None,
+    )
+
+    parser_namelist_convert.add_argument(
+        "--to-cycle",
+        type=str,
+        help="Cycle of output namelist",
+        choices=NamelistConverter.get_known_cycles(),
+        required=True,
+        default=None,
+    )
+
+    parser_namelist_convert.add_argument(
+        "--format", "-fmt", help="Input format", choices=["yaml", "ftn"], default="yaml"
+    )
+    parser_namelist_convert.set_defaults(run_command=namelist_convert)
+
+    # namelist format
+    parser_namelist_format = namelist_command_subparsers.add_parser(
+        "format",
+        help="Format a namelist (ftn or yml) ",
+        parents=[common_parser],
+    )
+    parser_namelist_format.add_argument(
+        "-n",
+        "--namelist",
+        type=str,
+        help="Input namelist definition filename",
+        required=True,
+        default=None,
+    )
+    parser_namelist_format.add_argument(
+        "-o",
+        "--output",
+        type=str,
+        help="Output namelist definition filename",
+        required=True,
+        default=None,
+    )
+
+    parser_namelist_format.add_argument(
+        "--format", "-fmt", help="Input format", choices=["yaml", "ftn"], default="yaml"
+    )
+    parser_namelist_format.set_defaults(run_command=namelist_format)
+
     return main_parser.parse_args(argv)
+
+
+def add_namelist_args(parser_object):
+    """Add namelist args.
+
+    Args:
+        parser_object (args oject): args object to update
+
+    Returns:
+        parser_object (args oject): updated args object
+
+    """
+    parser_object.add_argument(
+        "--namelist-type",
+        "-t",
+        type=str,
+        help="Namelist target, master or surfex",
+        choices=["master", "surfex"],
+        required=True,
+        default=None,
+    )
+    parser_object.add_argument(
+        "--namelist",
+        "-n",
+        type=str,
+        help="Namelist to show, type anything to print available options",
+        required=True,
+        default=None,
+    )
+    parser_object.add_argument(
+        "--optional-namelist-name",
+        "-o",
+        type=str,
+        dest="namelist_name",
+        help="Optional namelist name",
+        default=None,
+    )
+    parser_object.add_argument(
+        "--no-substitute",
+        "-b",
+        action="store_false",
+        default=True,
+        help="Do not substitute config values in the written namelist",
+    )
+    parser_object.set_defaults(run_command=show_namelist)
+
+    return parser_object

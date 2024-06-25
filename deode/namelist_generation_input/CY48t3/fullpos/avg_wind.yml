@@ -14,6 +14,3 @@ selection:
     CL3DF:
      - 'AVG_U'
      - 'AVG_V'
-
- xxt00000000:
-   <<: *default

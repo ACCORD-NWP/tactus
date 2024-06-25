@@ -1,0 +1,3 @@
+# These changes can be applied using TNT -- TheNamelistTool :
+# tnt.py -d <directive.yaml> <one or several namelist>
+# tnt.py is available under belenos:~verolive/vortex/vortex/bin/ or (EC) hpc-login:~sos/vortex/vortex/bin/

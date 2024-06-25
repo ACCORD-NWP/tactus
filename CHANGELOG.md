@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ### Added
+- Introduced a short description of available tasks [#658](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/658) (@uandrae)
+- Introduction of Leonardo machine [#645](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/645) (@dhaumont)
+- Adding 49t2 configuration files [#643](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/643) (@dhaumont)
+- Thenamelisttool integration to convert a namelist from one cycle to another [\#613](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/613) (@dhaumont)
 - Added option to pick binaries from the different repositories in the same task. [\#630](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/630) (@kastelecn)
 - Functionality to run CY46h1 on LUMI. [\#562](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/562) (@tbnc)
 - Introduce config files for SMHI laptop. [\#606](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/606) (@uandrae)
@@ -20,14 +24,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Additional way to initialise a module environment. [\#597](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/597) (@uandrae)
 - Function for setting ecf_port by userid. [\#598](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/598) (@uandrae)
 - Possibility for case setup and configurations. [\#557](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/557) (@trygveasp)
-- Possibility for cleaning of experiment. [\#587](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/587) (@milennimh)
+- Possibility for cleaning of experiment. [\#587](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/587) [\#637](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/637) (@milennimh, @uandrae)
 - Add mean winds grib2 definitions. [\#585](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/585) (@sbnielsen)
 
 ### Changed
+- Changed location of the binary fa\_sfx2clim. [\#672](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/672) (@kastelecn) 
+- Update the default case name to include the domain name. [\#655](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/655) (@uandrae)
+- Adapt settings to binary /scratch/project_465000527/ospaniel/executable_cy48t3/ works. [\#618](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/618) (@kastelecn)
+- Externalise the selection of static input data to the forecast. [\#619](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/619) (@uandrae)
 - Improve error message on erroneous command line usage. [\#629](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/629) (@uandrae)
 - README content and cosmetics corrections. [\#600](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/600) (@uandrae)
 
 ### Fixed
+- Restore large domain settings and arome -> arome config template. [\#642](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/642) (@uandrae)
+- Make sure schema files are included for validation when creating new config files. [\#601](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/601) (@uandrae)
+- Allow macro parsing of path to troika. [\#596](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/596) (@uandrae)
 - Handle shift in forcing model start time. [\#627](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/627) (@uandrae)
 - Allow macro parsing of path to troika. [\#596](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/596) (@uandrae)
 - Introduce support for scp as a provider method in the file manager. [\#579](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/579) (@uandrae)

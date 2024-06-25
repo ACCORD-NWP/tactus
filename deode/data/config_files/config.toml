@@ -1,6 +1,6 @@
 [general]
   accept_static_namelists = false
-  case = "@CASE_PREFIX@@CYCLE@_@CSC@"
+  case = "@CASE_PREFIX@@CYCLE@_@CSC@_@DOMAIN@"
   cnmexp = "DEOD"
   csc = "AROME"
   cycle = "CY48t3"

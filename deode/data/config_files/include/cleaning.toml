@@ -1,23 +1,40 @@
 [cleaning]
 
-[cleaning.archive]
-  active = true
-  cleaning_delay = "P1D"
-  dry_run = true
-  include = "GRIBDEOD*"
+[cleaning.CycleCleaning.archive]
+  ncycles_delay = 4
   path = "@ARCHIVE@"
-  step = "PT6H"
+
+[cleaning.CycleCleaning.ecf_out]
+  path = "@ECF_OUT@/@CASE@/@YMD@/@HH@@mm@"
+
+[cleaning.CycleCleaning.ifs]
+  active = false
+  ncycles_delay = 4
+  path = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD"
+  step = "PT1D"
+
+[cleaning.CycleCleaning.wrk]
+  ncycles_delay = 1
+  path = "@WRK@"
 
 [cleaning.defaults]
   active = true
-  cleaning_delay = "P1D"
-  cleaning_max_delay = "P2D"
-  dry_run = true
+  dry_run = false
   include = "(.*)"
-  step = "PT6H"
+  ncycles_delay = 1
 
-[cleaning.wrk]
-  active = true
-  dry_run = true
-  include = "ELS*"
-  path = "@WRK@"
+[cleaning.PostMortem.ecf_files]
+  exclude = "(.*)PostMortem(.*)"
+  ncycles_delay = 0
+  path = "@ECF_FILES@/@CASE@"
+
+[cleaning.PostMortem.ecf_out]
+  active = false
+  exclude = "(.*)PostMortem(.*)"
+  ncycles_delay = 0
+  path = "@ECF_OUT@/@CASE@"
+
+[cleaning.PreCleaning.ecf_out]
+  exclude = "(.*)PreCleaning(.*)"
+  ncycles_delay = 0
+  path = "@ECF_OUT@/@CASE@"

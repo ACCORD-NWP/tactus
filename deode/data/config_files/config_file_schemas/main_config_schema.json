@@ -315,16 +315,21 @@
           "type": "string",
           "description": "Path to SFC files needed for c903, which are not in MARS"
         },
-        "sfx_input_defs": {
-          "type": "string",
-          "description": "Path to the surfex json config file",
-          "default": "@DEODE_HOME@/deode/data/input/sfx_input_@CYCLE@.json"
-        },
 	"prev_case":{
           "description": "Name of the previous experiment",
           "type": "string",
           "default": "@CASE@"
-        }
+        },
+	"sfx_input_definition" : {
+          "description": "Path to the surfex json config file",
+          "type": "string",
+          "default": "@DEODE_HOME@/deode/data/input/@CYCLE@/sfx.json"
+	},
+	"forecast_input_definition" : {
+          "type": "string",
+          "description": "Path to the forecast json config file",
+          "default": "@DEODE_HOME@/deode/data/input/@CYCLE@/forecast.json"
+	}
       }
     },
     "general": {
@@ -492,6 +497,7 @@
           "description": "IAL cycle",
           "type": "string",
           "enum": [
+            "CY49t2",
             "CY48t3",
             "CY46h1"
           ]

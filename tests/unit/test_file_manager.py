@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
 import os
+from pathlib import Path
 
 import pytest
 import tomlkit
@@ -150,3 +151,29 @@ class TestFileManager:
         )
         test = fmanager.platform.substitute(istring)
         assert test == ostring
+
+    def test_input_data_iterator(self, parsed_config_with_paths):
+        prev_cwd = Path.cwd()
+        config = parsed_config_with_paths
+        fmanager = FileManager(config)
+        input_dir = "/tmp/test_in"  # noqa S108
+        output_dir = "/tmp/test_out"  # noqa S108
+        infile = f"{input_dir}/test"
+
+        os.makedirs(input_dir, exist_ok=True)  # S108
+        os.makedirs(output_dir, exist_ok=True)  # S108
+        os.system(f"touch {input_dir}/test")  # noqa S108
+        os.chdir(output_dir)
+
+        truth = {
+            "test_list": {"path": input_dir, "files": ["test"]},
+            "test_dict": {"path": input_dir, "files": {"test_out": "test"}},
+        }
+
+        fmanager.input_data_iterator(truth)
+        os.chdir(prev_cwd)
+
+        for outfile in [f"{output_dir}/test", f"{output_dir}/test_out"]:
+            assert os.path.exists(outfile)
+            link = os.readlink(outfile)
+            assert link == infile

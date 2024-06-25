@@ -1,12 +1,12 @@
 [submission]
   account = "#SBATCH -A project_465000527"
-  bindir = "/scratch/project_465000527/jasinskas/CY48T3-ftn16-O0_23-install/bin"
+  bindir = "/scratch/project_465000527/ospaniel/executable_cy48t3/"
   cmicro = "OLD3"
   default_submit_type = "serial"
   lfftw = true
   max_ecf_tasks = 2
   module_initpath = "/usr/share/lmod/8.3.1/init"
-  nproma = -32
+  nproma = -16
   submit_types = [
     "background_vm",
     "background_hpc",
@@ -40,6 +40,7 @@
   NTASKS = "#SBATCH --ntasks=16"
   PARTITION = "#SBATCH --partition=debug"
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=8"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:30:00"
 
 [submission.Forecast_cpu.ENV]
@@ -82,8 +83,6 @@
   07_LIBSCI = ["load", "cray-libsci"]
   08_FFTW = ["load", "cray-fftw"]
   09_PYTHON = ["load", "cray-python/3.10.10"]
-  #10_HDF5 = ["load", " cray-hdf5-parallel"]
-  #11_NETCDF = ["load", "cray-netcdf-hdf5parallel"]
   12_BUILDTOOLS = ["load", "buildtools"]
   13_NCURSES = ["load", "ncurses/6.4-cpeCray-23.03"]
   14_RIMVYDAS_USE = ["use", "/scratch/project_465000527/jasinskas/scl/modules/"]
@@ -101,6 +100,7 @@
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   PARTITION = "#SBATCH -p debug"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:10:00"
 
 [submission.parallel.ENV]
@@ -132,22 +132,23 @@
 
 [submission.parallel.MODULES]
   00_PURGE = ["--force", "purge"]
-  01_LUMI = ["load", "LUMI/23.03"]
+  01_LUMI = ["load", "LUMI/23.09"]
   02_PARTITION_G = ["load", "partition/C"]
-  03_CPE = ["load", "cpe/23.03"]
+  03_CPE = ["load", "cpe/23.09"]
+  03a_CPE = ["load", "libaec/1.0.6-cpeCray-23.09"]
   04_PRG_ENV = ["load", "PrgEnv-cray"]
-  05_TRENTO = ["load", "craype-x86-trento"]
   06_MPICH = ["load", "cray-mpich"]
   07_LIBSCI = ["load", "cray-libsci"]
   08_FFTW = ["load", "cray-fftw"]
   09_PYTHON = ["load", "cray-python/3.10.10"]
-  #10_HDF5 = ["load", " cray-hdf5-parallel"]
-  #11_NETCDF = ["load", "cray-netcdf-hdf5parallel"]
+  10_HDF5 = ["load", " cray-hdf5-parallel"]
+  11_NETCDF = ["load", "cray-netcdf-hdf5parallel"]
   12_BUILDTOOLS = ["load", "buildtools"]
-  13_NCURSES = ["load", "ncurses/6.4-cpeCray-23.03"]
-  14_RIMVYDAS_USE = ["use", "/scratch/project_465000527/jasinskas/scl/modules/"]
-  15_RIMVYDAS_FTN16 = ["load", "scl-ftn16_23"]
-  16_RIMVYDAS_ECFLOW = ["load", "scl-ecflow_23"]
+  13_NCURSES = ["load", "ncurses/6.4-cpeCray-23.09"]
+  14_CCE = ["load", "load cce/16.0.1"]
+  15_RIMVYDAS_USE = ["use", "/scratch/project_465000527/jasinskas/scl/modules/"]
+  16_RIMVYDAS_FTN16 = ["load", "scl-ftn16_23"]
+  17_RIMVYDAS_ECFLOW = ["load", "scl-ecflow_23"]
 
 [submission.serial]
   NPROC = 1
@@ -160,6 +161,7 @@
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   PARTITION = "#SBATCH --partition=debug"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:20:00"
 
 [submission.serial.ENV]
@@ -190,6 +192,7 @@
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   PARTITION = "#SBATCH --partition=debug"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:20:00"
 
 [submission.sqlite.ENV]
@@ -219,6 +222,10 @@
   DR_HOOK_TRAPFPE_OVERFLOW = 1
   OMP_NUM_THREADS = 1
 
+[submission.task_exceptions.creategrib]
+  binary = "gl"
+  bindir = "/scratch/project_465000527/jasinskas/CY48T3-ftn16-O0_23-install/bin"
+
 [submission.task_exceptions.E923Constant]
   NPROC = 1
 
@@ -226,7 +233,7 @@
   NPROC = 1
 
 [submission.task_exceptions.E923Update]
-  bindir = "/users/kastelec/fa_sfx2clim/"
+  bindir = "/scratch/project_465000527/kastelec/fa_sfx2clim/"
 
 [submission.task_exceptions.e927]
   NPROC = 16
@@ -234,6 +241,29 @@
 [submission.task_exceptions.e927.BATCH]
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=16"
+
+[submission.task_exceptions.Forecast.BATCH]
+  CPU = "#SBATCH --cpus-per-task=4"
+  MEM = "#SBATCH --mem=0GB"
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=2"
+  NTASKS = "#SBATCH --ntasks=16"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=8"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[submission.task_exceptions.Forecast.ENV]
+  DR_HOOK_IGNORE_SIGNALS = -1
+  ECCODES_DEFINITION_PATH = "/scratch/project_465000527/ospaniel/opt/eccodes-2.34.1/share/eccodes:deode/data/eccodes/definitions/grib2/localConcepts/lfpw"
+  ECCODES_SAMPLES_PATH = "/users/ospaniel/opt/share/eccodes/ifs_samples/grib1_mlgrib2"
+  FI_CXI_DEFAULT_TX_SIZE = 32768
+  FI_CXI_RDZV_THRESHOLD = 64000
+  FI_CXI_RX_MATCH_MODE = "hybrid"
+  I_MPI_LIBRARY_KIND = "release"
+  LIBSCI_ARCH_OVERRIDE = "broadwell"
+  MKL_CBWR = "AUTO,STRICT"
+  MKL_DEBUG_CPU_TYPE = 5
+  MKL_NUM_THREADS = 1
+  MPL_MBX_SIZE = 2048000000
 
 [submission.task_exceptions.Gmted.MODULES]
   GDAL = ["load", "scl-gdal_23"]
@@ -259,6 +289,10 @@
 
 [submission.task_exceptions.Pgd.ENV]
   OMP_NUM_THREADS = 1
+
+[submission.task_exceptions.PgdUpdate]
+  binary = "gl"
+  bindir = "/scratch/project_465000527/jasinskas/CY48T3-ftn16-O0_23-install/bin"
 
 [submission.task_exceptions.Soil.MODULES]
   GDAL = ["load", "scl-gdal_23"]
