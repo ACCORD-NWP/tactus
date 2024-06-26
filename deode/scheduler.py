@@ -9,6 +9,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 
 from .logs import logger
+from .os_utils import ping
 from .toolbox import Platform
 
 try:
@@ -84,6 +85,10 @@ class EcflowServer(Server):
     def __init__(self, config, start_command=None):
         """Construct the EcflowServer.
 
+        The values for ecf_host and ecf_port are taken from config as
+        strings/integer or the two functions _select_host_from_list()
+        or _set_port_from_user() defined below.
+
         Args:
             config (str): configuration settings.
             start_command (str): Ecflow start server command.
@@ -98,23 +103,24 @@ class EcflowServer(Server):
 
         Server.__init__(self, config)
 
+        ecf_host = self.config["scheduler.ecfvars.ecf_host"]
+        ecf_host = Platform(config).substitute(ecf_host)
         try:
-            ecf_host = self.config["scheduler.ecfvars.ecf_host"]
-            self.ecf_host = Platform(config).substitute(ecf_host)
-        except RuntimeError as error:
-            raise RuntimeError("Please set ecf_host in ecflow_HPC.toml") from error
+            func, arg = ecf_host.split("(")
+            if hasattr(self, func):
+                function = getattr(self, func)
+                self.ecf_host = function(arg[:-1].split(","))
+        except ValueError:
+            self.ecf_host = ecf_host
 
+        ecf_port = self.config["scheduler.ecfvars.ecf_port"]
         try:
-            ecf_port = self.config["scheduler.ecfvars.ecf_port"]
-            try:
-                self.ecf_port = int(ecf_port)
-            except ValueError:
-                func, arg = ecf_port.split("(")
-                if hasattr(self, func):
-                    function = getattr(self, func)
-                    self.ecf_port = function(arg[:-1])
-        except RuntimeError as error:
-            raise RuntimeError("Please set ecf_port") from error
+            self.ecf_port = int(ecf_port)
+        except ValueError:
+            func, arg = ecf_port.split("(")
+            if hasattr(self, func):
+                function = getattr(self, func)
+                self.ecf_port = function(arg[:-1])
 
         self.start_command = start_command
         logger.debug("self.ecf_host={} self.ecf_port={}", self.ecf_host, self.ecf_port)
@@ -122,7 +128,8 @@ class EcflowServer(Server):
         logger.debug("self.ecf_client {}", self.ecf_client)
         self.settings = {"ECF_HOST": self.ecf_host, "ECF_PORT": self.ecf_port}
 
-    def _set_port_from_user(self, offset=0):
+    @staticmethod
+    def _set_port_from_user(offset=0):
         """Set ecf_port from user id.
 
         Arguments:
@@ -134,6 +141,39 @@ class EcflowServer(Server):
         """
         port = os.getuid() + int(offset)
         return port
+
+    @staticmethod
+    def _select_host_from_list(hosts):
+        """Set ecf_host from list of options.
+
+        Arguments:
+            hosts (list): list of host options
+
+        Returns:
+            host (str): Selected host
+
+        Raises:
+            RuntimeError: In case no or more than one host found
+        """
+        found_hosts = []
+        for _host in hosts:
+            host = _host.strip()
+            if ping(host):
+                found_hosts.append(host)
+
+        if len(found_hosts) == 0:
+            host_list = ",".join(hosts)
+            msg = f"No ecflow host found, tried:{host_list}"
+            logger.error(msg)
+            raise RuntimeError(msg)
+
+        if len(found_hosts) > 1:
+            host_list = ",".join(found_hosts)
+            msg = f"Ambigious host selection:{host_list}"
+            logger.error(msg)
+            raise RuntimeError(msg)
+
+        return host
 
     def start_server(self):
         """Start the server.

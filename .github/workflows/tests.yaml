@@ -38,6 +38,11 @@ jobs:
       #----------------------------------------------
       #           add matrix specifics
       #----------------------------------------------
+      - name: Install ping
+        run: |
+          apt-get update
+          apt-get install -y inetutils-ping
+
       - name: Install system gdal libs
         run: |
           apt-get update

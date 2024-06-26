@@ -62,6 +62,7 @@ def _module_mockers(module_mocker, config_path, tmp_path_factory):
         new=new_no_scheduler_submission_submit_method,
     )
     module_mocker.patch("deode.scheduler.ecflow")
+    module_mocker.patch("deode.scheduler.EcflowServer._select_host_from_list")
     module_mocker.patch("deode.suites.base.ecflow")
     module_mocker.patch(
         "deode.submission.TaskSettings.parse_job",
