@@ -367,9 +367,7 @@ def show_namelist(args, config):
 
     nlgen = NamelistGenerator(config, args.namelist_type, substitute=args.no_substitute)
     nlgen.load(args.namelist)
-    update = config["namelist_update"]
-    if args.namelist_type in update:
-        nlgen.update(update[args.namelist_type], args.namelist_type)
+
     if "forecast" in args.namelist and args.namelist_type == "master":
         nlgen = check_fullpos_namelist(config, nlgen)
     nlres = nlgen.assemble_namelist(args.namelist)

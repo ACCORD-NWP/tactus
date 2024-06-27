@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - README content and cosmetics corrections. [\#600](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/600) (@uandrae)
 
 ### Fixed
+- Correct the namelist update functionality. [\#673](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/673) (@uandrae)
 - Fix bug in SQLite extraction at other times than midnight [\#680] (https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/680) (@adeckmyn)
 - Minor change to CY46h1/master_namelists.yml for simulated radiance calculation [\#670] (https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/670) (@fbaordo)
 - Restore large domain settings and arome -> arome config template. [\#642](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/642) (@uandrae)

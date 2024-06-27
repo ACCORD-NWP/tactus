@@ -372,7 +372,9 @@ class NamelistGenerator:
         self.nldict = nldict
         self.cndict = cndict
 
-        return nldict, cndict
+        self.update_from_config(target)
+
+        return self.nldict, self.cndict
 
     def check_replace_scalar(self, val):
         """Check a scalar for variable substitution from config.
@@ -515,6 +517,33 @@ class NamelistGenerator:
         """
         write_namelist(nml, output_file)
 
+    def update_from_config(self, target):
+        """Update with additional namelist dict from config.
+
+        Args:
+            target (str): task to generate namelists for
+
+        """
+        # Try to update potential global settings first
+        if target != "all_targets":
+            self.update_from_config("all_targets")
+
+        try:
+            _update = self.config["namelist_update"][self.kind][target].dict()
+
+            # Make sure everything is in upper case
+            update = {}
+            for namelist, keyval in _update.items():
+                nu = namelist.upper()
+                update[nu] = {}
+                for key, val in keyval.items():
+                    update[nu][key.upper()] = val
+
+            self.update(update, f"namelist_update_{target}")
+            logger.info("Namelist update found for {} {}", self.kind, target)
+        except KeyError:
+            pass
+
     def update(self, nldict, cndict_tag):
         """Update with additional namelist dict.
 
@@ -536,13 +565,6 @@ class NamelistGenerator:
         """
         logger.info("Generate namelist for: {}", target)
         self.load(target)
-        try:
-            update = self.config["namelist_update"]
-            if self.kind in update:
-                self.update(update, self.kind)
-        except KeyError:
-            pass
-
         nml = self.assemble_namelist(target)
         self.write_namelist(nml, output_file)
 
