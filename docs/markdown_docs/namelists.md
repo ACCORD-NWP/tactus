@@ -41,6 +41,6 @@ deode show namelist -h
 
 ## Add your own namelist
 
-The simplest way to change a namelist is to extract it as described above, make your modifications and add the namelist to the directory specified by `system.namelists` in the config file. The name of the namelist should be the same as when extracted above. Before the system will pick up your namelist you have to set `general.accept_stat_namelist = true` in the config file. Note that for the main forecast namelist any existing fullpos select files following the name convention "xxt\*" will be picked up as well if they exists. If not they will be generated.
+The simplest and recommended way to change a namelist is to extract it as described above using the `-b` option, make your modifications and add the namelist to the directory specified by `system.namelists` in the config file. The name of the namelist should be the same as when extracted above. Before the system will pick up your namelist you have to set `general.accept_stat_namelist = true` in the config file. Note that for the main forecast namelist any existing fullpos select files following the name convention "xxt\*" will be picked up as well if they exists. If not they will be generated.
 
 ```
