@@ -275,6 +275,8 @@ f4_HARMONIE_AROME:
     YG_NL%NREQIN: -1
     YG_NL%REFVALC: 0.0
     YG_NL%REFVALI: 0.0
+    YIRAD_NL%LGP: true
+    YLRAD_NL%LGP: true
     YI_NL%LPT: false
     YI_NL%LQM: true
     YI_NL%LSLHD: true
