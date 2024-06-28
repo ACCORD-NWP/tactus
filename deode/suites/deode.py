@@ -55,6 +55,12 @@ class DeodeSuiteDefinition(SuiteDefinition):
         ]
         self.interpolate_boundaries = config["suite_control.interpolate_boundaries"]
         self.do_marsprep = config["suite_control.do_marsprep"]
+
+        self.nproc_io = config.get("submission.task_exceptions.Forecast.NPROC_IO", 0)
+        if self.nproc_io > 0:
+            self.n_io_merge = config["suite_control.n_io_merge"]
+        else:
+            self.n_io_merge = 0
         self.do_extractsqlite = config["suite_control.do_extractsqlite"]
         self.do_archiving = config["suite_control.do_archiving"]
         self.surfex = config["general.surfex"]
@@ -516,6 +522,41 @@ class DeodeSuiteDefinition(SuiteDefinition):
                 variables=None,
                 ecf_files_remotely=self.ecf_files_remotely,
             )
+            if self.n_io_merge > 0:
+                # these tasks should trigger when the Forecast is *running*
+                iomerge_trigger = EcflowSuiteTriggers(
+                    [
+                        EcflowSuiteTrigger(forecast_task, "active"),
+                        EcflowSuiteTrigger(forecast_task, "complete"),
+                    ],
+                    mode="OR",
+                )
+                iomerge_family = EcflowSuiteFamily(
+                    "Merge_IO",
+                    forecasting,
+                    self.ecf_files,
+                    ecf_files_remotely=self.ecf_files_remotely,
+                    trigger=iomerge_trigger,
+                    variables=None,
+                )
+                for ionr in range(self.n_io_merge):
+                    iomerge_sub = EcflowSuiteFamily(
+                        f"IO_{ionr:02}",
+                        iomerge_family,
+                        self.ecf_files,
+                        ecf_files_remotely=self.ecf_files_remotely,
+                    )
+                    args = f"ionr={ionr}"
+                    EcflowSuiteTask(
+                        "IOmerge",
+                        iomerge_sub,
+                        config,
+                        self.task_settings,
+                        self.ecf_files,
+                        input_template=input_template,
+                        variables={"ARGS": args},
+                        ecf_files_remotely=self.ecf_files_remotely,
+                    )
 
             if self.creategrib:
                 creategrib_trigger = EcflowSuiteTriggers(

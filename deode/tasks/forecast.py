@@ -2,6 +2,7 @@
 import glob
 import json
 import os
+from time import sleep
 
 from ..datetime_utils import as_datetime, as_timedelta, oi2dt_list
 from ..derived_variables import check_fullpos_namelist
@@ -52,6 +53,7 @@ class Forecast(Task):
         self.file_templates = self.config["file_templates"]
 
         self.unix_group = self.platform.get_platform_value("unix_group")
+        self.n_io_merge = self.config["suite_control.n_io_merge"]
 
     def archive_output(self, filetype, periods):
         """Archive forecast model output.
@@ -110,6 +112,8 @@ class Forecast(Task):
 
         Final result is the expected output file name in the working directory
         (as if there was no IO server).
+        NOTE: This function has been replaced by io_merge tasks.
+              It is only called if n_io_merge=0.
         """
         dt_list = oi2dt_list(periods, self.forecast_range)
 
@@ -208,25 +212,46 @@ class Forecast(Task):
         else:
             logger.info("No accelerator_device section found")
 
+        # Create a link to working directory for IO_merge tasks
+        if os.path.islink("../Forecast"):
+            logger.info("Removing old link.")
+            os.unlink("../Forecast")
+        os.symlink(os.getcwd(), "../Forecast")
+
+        # Store the output
+        # Must happen before the forecast starts, so the io_merge tasks
+        #   can write to it.
+        deodemakedirs(self.archive, unixgroup=self.unix_group)
+
         # Run MASTERODB
         batch = BatchJob(os.environ, wrapper=self.platform.substitute(self.wrapper))
         batch.run(self.master)
 
-        # Store the output
-        deodemakedirs(self.archive, unixgroup=self.unix_group)
-
         io_server = os.path.exists("io_serv.000001.d")
-        if io_server:
+        if io_server and self.n_io_merge > 0:
+            logger.info("Waiting for iomerge output.")
             logger.debug("IO_SERVER detected!")
+            # Wait for all io_merge tasks to finish.
+            # This is signaled by creating (empty) files.
+            for ionr in range(self.n_io_merge):
+                io_name = f"io_merge_{ionr:02}"
+                logger.debug("Waiting for {}", io_name)
+                while not os.path.exists(io_name):
+                    sleep(5)
+        else:
+            for filetype, oi in self.output_settings.items():
+                if filetype in self.file_templates:
+                    if io_server:
+                        # No io_merge: should we even still consider this option?
+                        self.merge_output(filetype, oi)
 
-        for filetype, oi in self.output_settings.items():
-            if filetype in self.file_templates:
-                if io_server:
-                    self.merge_output(filetype, oi)
-
-                self.archive_output(self.file_templates[filetype], oi)
+                    self.archive_output(self.file_templates[filetype], oi)
 
         self.archive_logs(["fort.4", "EXSEG1.nam", "NODE.001_01"])
+
+        # Remove link to working directory for IO_mergetasks
+        if os.path.islink("../Forecast"):
+            os.unlink("../Forecast")
 
 
 class PrepareCycle(Task):
