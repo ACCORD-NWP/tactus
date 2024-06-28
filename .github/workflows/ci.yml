@@ -6,9 +6,6 @@ on:
       - master
       - develop
 
-  # Trigger the workflow on pull request
-  pull_request: ~
-
 jobs:
 
   call-workflow-atos:
