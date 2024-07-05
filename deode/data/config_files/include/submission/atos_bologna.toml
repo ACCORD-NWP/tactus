@@ -156,6 +156,9 @@
 [submission.task_exceptions.IOmerge.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
 
+[submission.task_exceptions.Marsprep]
+  bindir = "/usr/local/bin/"
+
 [submission.task_exceptions.Marsprep.BATCH]
   MEM = "#SBATCH --mem=0GB"
   NODES = "#SBATCH --nodes=1"
