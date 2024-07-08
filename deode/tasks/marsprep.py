@@ -836,7 +836,7 @@ class Marsprep(Task):
             self.update_data_request(
                 data_type=d_type,
                 date=date_str,
-                time=hour_str,
+                time="00",
                 steps=str_step,
                 prefetch=prefetch,
                 levtype="ML",
