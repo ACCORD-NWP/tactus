@@ -18,6 +18,25 @@ The following command launches DEODE, using AROME, on LUMI
 deode case ?deode/data/config_files/configurations/cy48t3_arome -o cy48t3_arome.toml --start-suite
 ```
 
+### Production user (lrb_465000527_efprd)
+
+There is a dedicated production user on LUMI. To access this, follow the steps below:
+
+1. Email ulf.andrae@smhi.se to ask for access to the production user. Without this step, you cannot gain access to the production user. 
+2. You need to **add** your public RSA (or otherwise) key to my.csc.fi 
+3. At KNMI we also use **myaccessid** : https://mms.myaccessid.org/fed-apps/profile/settings_sshkeys - if you have another equivalent to this please also ensure your ssh public key is added there and that your my.csc.fi account is linked to it (separate step).
+4. Wait an hour or two before attempting to connect: 
+```shell
+ssh lrb_465000527_efprd@lumi.csc.fi
+```
+5. To get started, as you would on your own user:
+```shell
+ cd $DEODE
+ poetry shell
+ deode case ?deode/data/config_files/configurations/cy48t3_arome -o cy48t3_arome.toml --start-suite
+```
+6. If you have any further issues please email ulf.andrae@smhi.se or servicedesk@csc.fi.
+
 ### Ecflow server selection
 
 By default, all users will use the **dev server**.
@@ -214,7 +233,7 @@ adelsaid@uan03:/users/adelsaid> ssh ecflow-user@217.71.195.251
 
 ```shell
 ml use /scratch/project_465000527/jasinskas/scl/modules/
-ml scl-ftn16_23
+ml cray-python/3.10.10
 ml scl-ecflow_23
 ```
 
