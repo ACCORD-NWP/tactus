@@ -360,16 +360,8 @@ class Marsprep(Task):
 
         if not prefetch:
             if levtype == "ML":
-                param_z = "orog" if self.mars["class"] == "D1" else "z"
-                self.tco_high = self.mars["tco"] + "9_4"
                 d.update(
-                    {
-                        "LEVTYPE": ["SFC"],
-                        "SOURCE": [f'"{self.sfcdir}/{self.tco_high}/{param_z}"'],
-                        "DATE": [self.mars["SHZdate"]],
-                        "CLASS": ["OD"],
-                        "EXPVER": "0001",
-                    }
+                    {"SOURCE": [f'"{self.prepdir}/ICMSH+{steps}"'], "REPRESS": ["GG"]}
                 )
             elif levtype == "SFC":
                 d.update(
@@ -836,7 +828,7 @@ class Marsprep(Task):
             self.update_data_request(
                 data_type=d_type,
                 date=date_str,
-                time="00",
+                time=hour_str,
                 steps=str_step,
                 prefetch=prefetch,
                 levtype="ML",
