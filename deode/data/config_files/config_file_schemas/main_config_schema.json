@@ -238,7 +238,13 @@
           "description": "Do file cleaning",
           "type": "boolean",
           "default": false
-	}
+	},
+        "n_io_merge": {
+          "description": "Number of IOmerge tasks",
+          "type": "integer",
+          "default": 1
+        }
+
       }
     },
     "system": {

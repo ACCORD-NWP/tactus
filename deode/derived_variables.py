@@ -222,7 +222,6 @@ def derived_variables(config, processor_layout=None):
             "sg_input": sg_input,
             "decades": decades,
         },
-        "namelist_update": {"master": {}},
     }
 
     # Wind farm parameterization

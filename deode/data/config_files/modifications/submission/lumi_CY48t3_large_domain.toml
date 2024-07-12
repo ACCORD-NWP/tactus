@@ -52,6 +52,9 @@
 [submission.task_exceptions.Gmted.MODULES]
   GDAL = ["load", "scl-gdal_23"]
 
+[submission.task_exceptions.IOmerge.BATCH]
+  WALLTIME = "#SBATCH --time=01:30:00"
+
 [submission.task_exceptions.Marsprep]
   WRAPPER = ""
 

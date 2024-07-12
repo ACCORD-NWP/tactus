@@ -36,11 +36,11 @@ We **highly recommend** you to also put the statement listed above in your shell
   ```
 
 * On LUMI
-  ```shell
-  ml use /scratch/project_465000527/SW/modules
-  ml cray-python/3.10.10
-  ml ecflow/5.9.2-gcc-3ztnr
-   ```
+```shell
+ml use /scratch/project_465000527/jasinskas/scl/modules/
+ml pyeccodes_23
+ml scl-ecflow_23
+```
 
 * On Macs (local install only)
   ```shell
@@ -67,13 +67,9 @@ We **highly recommend** you to also put the statement listed above in your shell
 ### Optional System Requirements
 * [`pygdal`](https://pypi.org/project/pygdal/)
 
-  The python library [`pygdal`](https://pypi.org/project/pygdal/) is needed to use certain parts of the system, especially for climate generation. This library depends on [`gdal`](https://gdal.org/), which is notoriously troublesome as dependency when targeting many systems. The versions of `pygdal` and the system's `gdal`should match. You may try installing it using the following command:
-  ```shell
-  pip install pygdal=="`gdal-config --version`.*"
-  ```
-  **N.B.**: There is no special gdal installation required on Atos (`hpc-login`)!
-
-  On Atos, simply run:
+  The python library [`pygdal`](https://pypi.org/project/pygdal/) is needed to use certain parts of the system, especially for climate generation. This library depends on [`gdal`](https://gdal.org/), which is notoriously troublesome as dependency when targeting many systems. The versions of `pygdal` and the system's `gdal`should match. 
+  
+  On Atos, if you have issues with gdal, simply run:
   ```shell
   ml gdal
   ```

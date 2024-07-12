@@ -6,6 +6,7 @@
   # Other package info
   authors = ["The WP5.1 development group in the DE_330 project."]
   documentation = "https://destination-earth-digital-twins.github.io/deode-prototype-docs"
+  include = [{path = "deode/data/**/*", format = ["sdist", "wheel"]}]
   license = "MIT"
   readme = "README.md"
   repository = "https://github.com/destination-earth-digital-twins/Deode-Prototype"

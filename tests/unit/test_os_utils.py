@@ -3,7 +3,7 @@ import os
 import shutil
 import tempfile
 
-from deode.os_utils import Search, deodemakedirs
+from deode.os_utils import Search, deodemakedirs, ping
 
 
 class TestSearch:
@@ -142,3 +142,11 @@ def test_deodemakedirs():
         shutil.rmtree(path)
     deodemakedirs(f"{path}/wrkdir")
     assert os.stat(path).st_gid in grpids
+
+
+def test_ping():
+    """Test the ping function."""
+    hostname = "localhost"
+
+    assert ping(hostname) is True
+    assert ping("foo") is False

@@ -67,7 +67,7 @@
   NPROCX = 1
   NPROCY = 1
   SCHOST = "hpc"
-  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep"]
+  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep", "IOmerge"]
   WRAPPER = "srun"
 
 [submission.serial.BATCH]
@@ -158,6 +158,9 @@
 
 [submission.task_exceptions.Gmted.MODULES]
   GDAL = ["load", "gdal/3.6.2"]
+
+[submission.task_exceptions.IOmerge.BATCH]
+  WALLTIME = "#SBATCH --time=08:00:00"
 
 [submission.task_exceptions.Marsprep.BATCH]
   MEM = "#SBATCH --mem=128GB"

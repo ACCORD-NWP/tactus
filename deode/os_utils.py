@@ -3,6 +3,7 @@ import contextlib
 import os
 import re
 import shutil
+import subprocess
 import time
 from pathlib import Path
 
@@ -213,3 +214,21 @@ def remove_empty_dirs(src, dry_run=False):
             src_dir.rmdir()
 
     return found_files
+
+
+def ping(host):
+    """Ping host.
+
+    Args:
+        host(str): Host to ping
+
+    Returns:
+        (boolean): True if host responded
+
+    """
+    cmd = ["ping", "-c", "1", host]
+    try:
+        subprocess.check_output(cmd, stderr=subprocess.STDOUT)  # noqa S603
+        return True
+    except subprocess.CalledProcessError:
+        return False
