@@ -52,6 +52,28 @@
         "background_hpc": {"$ref": "#/$submission_group" },
         "gnu": {"$ref": "#/$submission_group" }
     },
+    "file_age_limit": {
+          "title": "IO-merge processing wait limits",
+          "description": "Time in seconds to wait before processing files.",
+          "type": "object",
+          "properties": {
+            "history": {
+              "description": "History files",
+              "type": "number",
+	      "default": 20
+            },
+            "surfex": {
+              "description": "Surfex files",
+              "type": "number",
+	      "default": 15
+            },
+            "fullpos": {
+              "description": "Fullpos files",
+              "type": "number",
+	      "default": 15
+            }
+          }
+    },
     "$submission_group": {
             "title": "Submission group",
             "description": "Defines the properties avilable for a submit group. See the existing submission files for examples",

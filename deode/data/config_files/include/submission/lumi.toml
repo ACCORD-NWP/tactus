@@ -27,6 +27,11 @@
   SCHOST = "localhost"
   tasks = ["Background_vm"]
 
+[submission.file_age_limit]
+  fullpos = 15
+  history = 15
+  surfex = 15
+
 [submission.Forecast_cpu]
   NPROC = 16
   SCHOST = "lumi-batch"
