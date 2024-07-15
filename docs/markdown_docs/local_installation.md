@@ -27,6 +27,23 @@ freja:
 
 Any new host should be added in the same way and the names for the configuration files for `platform`, `scheduler` and submission should be named using the given hostname.
 
+## Setup ecflow 
+
+The ecflow server setup is defined in `deode/data/config_files/include/scheduler/ecflow_@HOST@.toml`. For your local installation you might add the proper configurations, e.g. `ecflow_freja.toml`: 
+```toml
+[scheduler.ecfvars]
+  ecf_files = "/nobackup/smhid20/users/@USER@/deode_ecflow/ecf_files"
+  ecf_files_remotely = "/nobackup/smhid20/users/@USER@/deode_ecflow/ecf_files"
+  ecf_home = "/nobackup/smhid20/users/@USER@/deode_ecflow/jobout"
+  ecf_host = "le1"
+  ecf_jobout = "/nobackup/smhid20/users/@USER@/deode_ecflow/jobout"
+  ecf_out = "/nobackup/smhid20/users/@USER@/deode_ecflow/jobout"
+  ecf_port = "_set_port_from_user(10000)"
+  ecf_ssl = "0"
+  hpc = "freja"
+```
+
+Note there are two functions available for the detection of `ecf_port` and `ecf_host` that might help to detect correct values for these two variables. `_set_port_from_user()` sets a user-id related ecf_port while `_select_host_from_list()` finds the active ecf_host from a list of possible hostnames (used in `ecflow_atos_bologna.toml`). Both functions are defined in `deode/scheduler.py`
 
 ## freja 
 

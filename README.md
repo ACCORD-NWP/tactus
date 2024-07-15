@@ -151,27 +151,11 @@ input data is in place.
 
 ### Running ecflow suite on ATOS or LUMI
 
-The following command with run using the default experiment:
+The following command will run  the full suite using the default experiment:
 ```shell
 deode case ?deode/data/config_files/configurations/cy48t3_arome -o cy48t3_arome.toml --start-suite
 ```
 
-The ecflow_scheduler variables live inside `deode/data/config_files/include/scheduler/ecflow_atos_bologna.toml or deode/data/config_files/include/scheduler/ecflow_lumi.toml`:
-```toml
-[ecfvars]
-  ecf_files = "@HOME@/deode_ecflow/ecf_files"
-  ecf_files_remotely = "@HOME@/deode_ecflow/ecf_files"
-  ecf_home = "@HOME@/deode_ecflow/jobout"
-  ecf_host = "ecflow-gen-@USER@-001"
-  ecf_jobout = "@HOME@/deode_ecflow/jobout"
-  ecf_out = "@HOME@/deode_ecflow/jobout"
-  ecf_port = "3141"
-  ecf_remoteuser = "@USER@"
-  ecf_ssl = "0"
-  ecf_user = "@USER@"
-  hpc = "atos"
-```
-which are set to default values. These can be changed in the file as required.
 
 ### Running the `"forecast"` task from the `hpc-login`'s command line
 
