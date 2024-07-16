@@ -24,7 +24,7 @@ class Forecast(Task):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Task.__init__(self, config, "Forecast")
+        Task.__init__(self, config, __class__.__name__)
 
         self.cycle = self.config["general.cycle"]
         self.cnmexp = self.config["general.cnmexp"]
@@ -282,7 +282,7 @@ class FirstGuess(Task):
             config (deode.ParsedConfig): Configuration
 
         """
-        Task.__init__(self, config, "FirstGuess")
+        Task.__init__(self, config, __class__.__name__)
 
     def execute(self):
         """Find initial file."""

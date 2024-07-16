@@ -1,7 +1,7 @@
-[submission.task_exceptions.c903]
+[submission.task_exceptions.C903]
   NPROC = 36
 
-[submission.task_exceptions.c903.BATCH]
+[submission.task_exceptions.C903.BATCH]
   MEM = "#SBATCH --mem=0"
   NODE = "#SBATCH --nodes=12"
   NTASKS = "#SBATCH --ntasks=36"
@@ -9,7 +9,7 @@
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=3"
   WALLTIME = "#SBATCH --time=00:30:00"
 
-[submission.task_exceptions.c903.ENV]
+[submission.task_exceptions.C903.ENV]
   DR_HOOK_TRAPFPE_DIVBYZERO = 1
   DR_HOOK_TRAPFPE_OVERFLOW = 1
   OMP_NUM_THREADS = 1
@@ -26,10 +26,10 @@
 [submission.task_exceptions.E923Monthly.BATCH]
   MEM = "#SBATCH --mem=0"
 
-[submission.task_exceptions.e927]
+[submission.task_exceptions.E927]
   NPROC = 16
 
-[submission.task_exceptions.e927.BATCH]
+[submission.task_exceptions.E927.BATCH]
   MEM = "#SBATCH --mem=0GB"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=16"

@@ -10,7 +10,7 @@ from .batch import BatchJob
 
 
 class C903(Task):
-    """C903task."""
+    """C903."""
 
     def __init__(self, config):
         """Construct forecast object.
@@ -18,7 +18,7 @@ class C903(Task):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Task.__init__(self, config, __name__)
+        Task.__init__(self, config, __class__.__name__)
 
         self.climdir = self.platform.get_system_value("climdir")
 

@@ -18,7 +18,7 @@ class Archive(Task):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Task.__init__(self, config, __name__)
+        Task.__init__(self, config, __class__.__name__)
 
         self.archive_type = self.platform.get_value("platform.archive_type")
         apath = self.platform.get_value(f"archiving.{self.archive_type}.paths.apath")

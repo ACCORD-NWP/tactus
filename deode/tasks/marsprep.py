@@ -26,7 +26,7 @@ class Marsprep(Task):
         Raises:
             ValueError: No data for this date.
         """
-        Task.__init__(self, config, "Marsprep")
+        Task.__init__(self, config, __class__.__name__)
 
         # Get MARS selection
         self.mars = self.mars_selection()

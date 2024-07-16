@@ -6,7 +6,7 @@
 [submission.parallel]
   NPROC = 16
   SCHOST = "lumi-batch"
-  tasks = ["Forecast", "e927", "Pgd", "c903", "E923Monthly", "E923Constant"]
+  tasks = ["Forecast", "E927", "Pgd", "C903", "E923Monthly", "E923Constant"]
   WRAPPER = "srun"
 
 [submission.parallel.ENV]
@@ -39,7 +39,7 @@
 [submission.sqlite.MODULES]
   01_USE = ["use", "/scratch/project_465000527/SW/modules/"]
 
-[submission.task_exceptions.c903]
+[submission.task_exceptions.C903]
   bindir = "/scratch/project_465000527/jasinskas/CY48T3-gfortran12-O2_24-install/bin"
 
 [submission.task_exceptions.Forecast]

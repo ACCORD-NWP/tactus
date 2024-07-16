@@ -417,11 +417,11 @@ class DeodeSuiteDefinition(SuiteDefinition):
                             ecf_files_remotely=self.ecf_files_remotely,
                         )
 
-                        interpolation_task = "c903" if self.do_marsprep else "e927"
+                        interpolation_task = "C903" if self.do_marsprep else "E927"
 
                         if self.split_mars:
                             split_mars_task = EcflowSuiteTask(
-                                "marsprep",
+                                "Marsprep",
                                 lbc_fam,
                                 config,
                                 self.task_settings,

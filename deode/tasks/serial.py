@@ -14,7 +14,7 @@ class Serial(Task):
             config (deode.ParsedConfig): Configuration
         """
         logger.info("Construct serial task")
-        Task.__init__(self, config, __name__)
+        Task.__init__(self, config, __class__.__name__)
 
     def execute(self):
         """Execute task."""

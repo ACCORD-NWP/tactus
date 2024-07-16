@@ -19,7 +19,7 @@
 [submission.parallel]
   NPROC = 32
   SCHOST = "freja"
-  tasks = ["Forecast", "e927", "c903"]
+  tasks = ["Forecast", "E927", "C903"]
   WRAPPER = "mpprun"
 
 [submission.parallel.BATCH]

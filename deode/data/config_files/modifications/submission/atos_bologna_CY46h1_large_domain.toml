@@ -37,7 +37,7 @@
 [submission.parallel]
   NPROC = 32
   SCHOST = "hpc"
-  tasks = ["Forecast", "e927", "Pgd", "Prep", "c903"]
+  tasks = ["Forecast", "E927", "Pgd", "Prep", "C903"]
   WRAPPER = "srun"
 
 [submission.parallel.BATCH]
@@ -102,30 +102,26 @@
 [submission.task_exceptions.ArchiveStatic.BATCH]
   WALLTIME = "#SBATCH --time=03:00:00"
 
-[submission.task_exceptions.c903]
+[submission.task_exceptions.C903]
   bindir = "/perm/snh02/pack/48t3_main.05.OMPIIFC2104.x/bin"
   NPROC = 36
 
-[submission.task_exceptions.c903.BATCH]
+[submission.task_exceptions.C903.BATCH]
   MEM = "#SBATCH --mem=200GB"
   NODE = "#SBATCH --nodes=12"
   NTASKS = "#SBATCH --ntasks=36"
   WALLTIME = "#SBATCH --time=00:30:00"
 
-[submission.task_exceptions.c903.ENV]
+[submission.task_exceptions.C903.ENV]
   DR_HOOK_SIGNALS = -1
-
-[submission.task_exceptions.creategrib]
-  binary = "gl_20230823"
-  bindir = "/home/snh02/work/gl_binaries"
 
 [submission.task_exceptions.CreateGrib.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
 
-[submission.task_exceptions.e927]
+[submission.task_exceptions.E927]
   NPROC = 16
 
-[submission.task_exceptions.e927.BATCH]
+[submission.task_exceptions.E927.BATCH]
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=16"
 
