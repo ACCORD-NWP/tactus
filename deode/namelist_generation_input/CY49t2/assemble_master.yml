@@ -1,10 +1,12 @@
 common_e923:
   - empty
   - e923_base
+  - e923_base_@CSC@
 
 e923_part_0:
   - common_e923
   - e923_0
+  - e923_0_@CSC@
 
 e923_part_1:
   - common_e923
@@ -29,6 +31,7 @@ e923_part_5:
 e923_part_6:
   - common_e923
   - e923_6
+  - e923_6_@CSC@
 
 e923_part_8:
   - common_e923
@@ -37,6 +40,7 @@ e923_part_8:
 e923_part_9:
   - common_e923
   - e923_9
+  - e923_9_@CSC@
 
 master_common:
   - empty

@@ -160,7 +160,6 @@ class Forecast(Task):
         # Construct master namelist and include fullpos config
         forecast_namelist = "forecast"
         self.nlgen_master.load(forecast_namelist)
-        logger.info(self.nlgen_master)
         self.nlgen_master = check_fullpos_namelist(self.config, self.nlgen_master)
 
         nlres = self.nlgen_master.assemble_namelist(forecast_namelist)

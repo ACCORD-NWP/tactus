@@ -1,0 +1,651 @@
+&NACIETEO
+/
+
+&NACOBS
+/
+
+&NACTAN
+/
+
+&NACTEX
+/
+
+&NACVEG
+/
+
+&NADOCK
+/
+
+&NAEAEM7
+/
+
+&NAEAER
+/
+
+&NAECOAPHY
+/
+
+&NAEPHLI
+/
+
+&NAEPHY
+    LEFLAKE = .FALSE.,
+    LEGWWMS = .FALSE.,
+    LELAIV = .FALSE.,
+    LEPHYS = .TRUE.,
+    LERADI = .FALSE.,
+/
+
+&NAERAD
+    LRRTM = .FALSE.,
+    LSRTM = .FALSE.,
+    NMCICA = 0,
+    NRPROMA = '${submission.nproma}',
+/
+
+&NAERCLI
+/
+
+&NAETLDIAG
+/
+
+&NAEVOL
+/
+
+&NAIMPO
+/
+
+&NALORI
+/
+
+&NAMACV
+/
+
+&NAMAFN
+    TFP_I%CLNAME = 'ICE_CRYSTAL',
+    TFP_L%CLNAME = 'CLOUD_WATER',
+    TFP_U%CLNAME = 'WIND.U.PHYS',
+    TFP_V%CLNAME = 'WIND.V.PHYS',
+/
+
+&NAMARG
+    CNMEXP = 'MARS',
+    LECMWF = .TRUE.,
+    NCONF = 903,
+    NFPSERVER = 1,
+    NSUPERSEDE = 1,
+/
+
+&NAMARPHY
+/
+
+&NAMCA
+/
+
+&NAMCAPE
+/
+
+&NAMCFU
+/
+
+&NAMCHEM
+/
+
+&NAMCHET
+/
+
+&NAMCHK
+/
+
+&NAMCLA
+/
+
+&NAMCLDP
+/
+
+&NAMCLI
+/
+
+&NAMCLOP15
+/
+
+&NAMCLTC
+/
+
+&NAMCMEM_MW
+/
+
+&NAMCOK
+/
+
+&NAMCOM
+/
+
+&NAMCOSJO
+/
+
+&NAMCOUPLO4
+/
+
+&NAMCT0
+    CFPNCF = 'ECHFP',
+    CSCRIPT_PPSERVER = ' ',
+    LARPEGEF = .TRUE.,
+    LGRIB_API = .FALSE.,
+    LREFOUT = .FALSE.,
+    LSPRT = .TRUE.,
+    NFPOS = 2,
+    NFRPOS = 1,
+    NPOSTS = 0,
+    NSPPR = 0,
+/
+
+&NAMCT1
+    LRFILAF = .FALSE.,
+/
+
+&NAMCUMF
+/
+
+&NAMCUMFS
+/
+
+&NAMCVER
+/
+
+&NAMCVMNH
+/
+
+&NAMDDH
+/
+
+&NAMDFI
+/
+
+&NAMDIM
+    NPROMA = '${submission.nproma}',
+/
+
+&NAMDIMO
+/
+
+&NAMDIM_TRAJ
+/
+
+&NAMDPHY
+/
+
+&NAMDPRECIPS
+/
+
+&NAMDVISI
+/
+
+&NAMDYN
+/
+
+&NAMDYNA
+/
+
+&NAMDYNCORE
+/
+
+&NAMEMIS_CONF
+/
+
+&NAMENKF
+/
+
+&NAMENSCOV
+/
+
+&NAMFA
+    NBITCS = -1,
+    NBITPG = -1,
+    NSTRON = -1,
+    YFAI%CLNAME = 'ICE_CRYSTAL',
+    YFAI%NBITS = 16,
+    YFAL%CLNAME = 'CLOUD_WATER',
+    YFAL%NBITS = 16,
+    YFAR%CLNAME = 'RAIN',
+    YFAR%NBITS = 16,
+    YFAS%CLNAME = 'SNOW',
+    YFAS%NBITS = 16,
+    YFA_MXCLWC%CLNAME = 'CLD_WX_60M',
+    YFA_VISICLD%CLNAME = 'CLSVISIN_60',
+    YFA_VISIHYD%CLNAME = 'CLSVISIHYDN60',
+    YFA_XPTYPE%CLNAME = 'CLSPTYPE_60M',
+    YFA_XPTYPESEV%CLNAME = 'CLSPTYPESEV_60M',
+    YFA_XUGST%CLNAME = 'CLSU.RAF60M.XFU',
+    YFA_XVGST%CLNAME = 'CLSV.RAF60M.XFU',
+/
+
+&NAMFAINIT
+    JPXLAT = 10240,
+    JPXTRO = 10240,
+/
+
+&NAMFPC
+    NFPCLI = 2,
+/
+
+&NAMFPD
+/
+
+&NAMFPDY2
+/
+
+&NAMFPDYF
+/
+
+&NAMFPDYH
+/
+
+&NAMFPDYI
+/
+
+&NAMFPDYP
+/
+
+&NAMFPDYS
+/
+
+&NAMFPDYT
+/
+
+&NAMFPDYV
+/
+
+&NAMFPF
+/
+
+&NAMFPG
+/
+
+&NAMFPIOS
+/
+
+&NAMFPMOVE
+/
+
+&NAMFPOBJ
+    CNAMELIST = './namelist_c903_domain',
+    NFPCONF = 2,
+    NFPOBJ = 1,
+/
+
+&NAMFPPHY
+/
+
+&NAMFPSC2
+/
+
+&NAMFPSC2_DEP
+/
+
+&NAMGEM
+/
+
+&NAMGFL
+    YO3_NL%LGP = .FALSE.,
+    YQ_NL%LGP = .TRUE.,
+    YQ_NL%LGPINGP = .TRUE.,
+    YQ_NL%LSP = .FALSE.,
+    YR_NL%NREQIN = -1,
+    YS_NL%NREQIN = -1,
+/
+
+&NAMGRIB
+/
+
+&NAMGWD
+/
+
+&NAMGWDIAG
+/
+
+&NAMGWWMS
+/
+
+&NAMIAU
+/
+
+&NAMICE
+/
+
+&NAMINI
+/
+
+&NAMINTFLEX
+/
+
+&NAMIOMI
+/
+
+&NAMIOS
+/
+
+&NAMIO_SERV
+/
+
+&NAMJBCODES
+/
+
+&NAMJG
+/
+
+&NAMLCZ
+/
+
+&NAMLIMA
+/
+
+&NAMLSFORC
+/
+
+&NAMMARS
+/
+
+&NAMMCC
+/
+
+&NAMMCUF
+/
+
+&NAMMETHOX
+/
+
+&NAMMKODB
+/
+
+&NAMMODERR
+/
+
+&NAMMTS
+/
+
+&NAMMWAVE
+/
+
+&NAMNORGWD
+/
+
+&NAMNPROF
+/
+
+&NAMNUD
+/
+
+&NAMNUDGLH
+/
+
+&NAMOBS
+/
+
+&NAMONEDVAR
+/
+
+&NAMOOPS
+/
+
+&NAMOPH
+    CCLIMINC = '_',
+/
+
+&NAMOPTCMEM
+/
+
+&NAMPAR0
+    LOPT_SCALAR = .TRUE.,
+    MBX_SIZE = 2048000000,
+    MP_TYPE = 2,
+    NOUTPUT = 1,
+    NPRINTLEV = 0,
+    NPROC = '${namelist.nproc}',
+    NPRTRV = 1,
+    NPRTRW = '${namelist.nproc}',
+/
+
+&NAMPAR1
+    LEQ_REGIONS = .FALSE.,
+    LSPLIT = .TRUE.,
+    NCOMBFLEN = 128000000,
+    NDISTIO = 0,
+    NFLDIN = 0,
+    NOUTTYPE = 1,
+    NSTROUT = '${namelist.nproc}',
+/
+
+&NAMPARAR
+/
+
+&NAMPERTPAR
+/
+
+&NAMPHMSE
+    LPGDFWR = .FALSE.,
+/
+
+&NAMPHY
+/
+
+&NAMPHY0
+/
+
+&NAMPHY1
+/
+
+&NAMPHY2
+/
+
+&NAMPHY3
+/
+
+&NAMPHYDS
+/
+
+&NAMPONG
+/
+
+&NAMPPC
+/
+
+&NAMPPVI
+    LESCALE_U = .FALSE.,
+/
+
+&NAMPRE
+/
+
+&NAMRAD15
+/
+
+&NAMRADCMEM
+/
+
+&NAMRCF
+/
+
+&NAMRCOEF
+/
+
+&NAMRES
+/
+
+&NAMRGRI
+/
+
+&NAMRINC
+/
+
+&NAMRIP
+/
+
+&NAMRIP0
+/
+
+&NAMRLX
+/
+
+&NAMSATS
+/
+
+&NAMSATSIM
+/
+
+&NAMSCC
+/
+
+&NAMSCEN
+/
+
+&NAMSCM
+/
+
+&NAMSEKF
+/
+
+&NAMSENS
+/
+
+&NAMSFXCMP
+/
+
+&NAMSIMPHL
+/
+
+&NAMSPNG
+/
+
+&NAMSPP
+/
+
+&NAMSPSDT
+/
+
+&NAMSTA
+/
+
+&NAMSTOPH
+/
+
+&NAMSWE
+/
+
+&NAMTESTVAR
+/
+
+&NAMTHLIM
+/
+
+&NAMTOPH
+/
+
+&NAMTRAJ
+/
+
+&NAMTRAJP
+/
+
+&NAMTRANS
+    LFFTW = '${submission.lfftw-"true"}',
+/
+
+&NAMTRANS0
+/
+
+&NAMVAR
+/
+
+&NAMVARBC
+/
+
+&NAMVARBC_AIREP
+/
+
+&NAMVARBC_ALLSKY
+/
+
+&NAMVARBC_GBRAD
+/
+
+&NAMVARBC_RAD
+/
+
+&NAMVARBC_SFCOBS
+/
+
+&NAMVARBC_TCWV
+/
+
+&NAMVARBC_TO3
+/
+
+&NAMVAREPS
+/
+
+&NAMVDF
+/
+
+&NAMVDOZ
+/
+
+&NAMVOLCANO
+/
+
+&NAMVRTL
+/
+
+&NAMVV0
+/
+
+&NAMVV1
+/
+
+&NAMVWRK
+/
+
+&NAMWAVELETJB
+/
+
+&NAMXFU
+/
+
+&NAM_CANAPE
+/
+
+&NAM_DISTRIBUTED_VECTORS
+/
+
+&NAPHLC
+/
+
+&NEMCT0
+/
+
+&NEMDIM
+/
+
+&NEMDYN
+/
+
+&NEMELBC0A
+/
+
+&NEMELBC0B
+/
+
+&NEMFPEZO
+/
+
+&NEMGEO
+/
+
+&NEMJK
+/
+
+&NEMVAR
+/
+
+&NEMWAVELET
+/

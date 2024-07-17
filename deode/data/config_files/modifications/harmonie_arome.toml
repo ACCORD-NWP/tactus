@@ -1,0 +1,3 @@
+[general]
+  csc = "HARMONIE_AROME"
+  windfarm = false
