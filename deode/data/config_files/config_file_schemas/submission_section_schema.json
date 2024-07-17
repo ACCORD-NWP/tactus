@@ -22,7 +22,7 @@
           "type": "boolean",
           "description": "Use of the FFTW library. See the namelists for where it is used",
           "default": true
-      },
+        },
         "module_initfile": {
             "type": "string",
             "description": "File to use for module initialization, overrides module_initpath"
@@ -50,29 +50,58 @@
         "parallel": {"$ref": "#/$submission_group" },
         "background_vm": {"$ref": "#/$submission_group" },
         "background_hpc": {"$ref": "#/$submission_group" },
-        "gnu": {"$ref": "#/$submission_group" }
-    },
-    "file_age_limit": {
-          "title": "IO-merge processing wait limits",
-          "description": "Time in seconds to wait before processing files.",
+        "gnu": {"$ref": "#/$submission_group" },
+        "iomerge":{
+          "title": "IO-merge group",
+          "description": "Defines settings related to the iomerge task",
           "type": "object",
           "properties": {
-            "history": {
-              "description": "History files",
-              "type": "number",
-	      "default": 20
+            "age_limit": {
+              "title": "IO-merge processing wait limits",
+              "description": "Time in seconds to wait before processing files.",
+              "type": "object",
+              "properties": {
+                "history": {
+                  "description": "History files",
+                  "type": "number",
+	          "default": 20
+                },
+                "surfex": {
+                  "description": "Surfex files",
+                  "type": "number",
+	          "default": 15
+                },
+                "fullpos": {
+                  "description": "Fullpos files",
+                  "type": "number",
+	          "default": 15
+                }
+              }
             },
-            "surfex": {
-              "description": "Surfex files",
-              "type": "number",
-	      "default": 15
-            },
-            "fullpos": {
-              "description": "Fullpos files",
-              "type": "number",
-	      "default": 15
+            "files_expected": {
+              "title": "IO-merge file expectations",
+              "description": "Number of files expected for merge. Set to 0 to let the code decide and -1 for no checking.",
+              "type": "object",
+              "properties": {
+                "history": {
+                  "description": "History files, 0 implies -1 as the number of files is highly output dependent.",
+                  "type": "number",
+	          "default": -1
+                },
+                "surfex": {
+                  "description": "Surfex files, 0 implies nproc_io files",
+                  "type": "number",
+	          "default": 0
+                },
+                "fullpos": {
+                  "description": "Fullpos files, 0 implies 1+nproc_io files",
+                  "type": "number",
+	          "default": 0
+                }
+              }
             }
           }
+        }
     },
     "$submission_group": {
             "title": "Submission group",

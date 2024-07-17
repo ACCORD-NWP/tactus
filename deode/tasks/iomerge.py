@@ -38,8 +38,8 @@ class IOmerge(Task):
         self.archive = self.platform.get_system_value("archive")
         self.deode_home = self.config["platform.deode_home"]
         self.file_templates = self.config["file_templates"]
-        self.nproc_io = config.get("submission.task_exceptions.Forecast.NPROC_IO", 0)
-        self.age_limit = config.get("submission.file_age_limit", {"default": 15})
+        self.nproc_io = int(self.config.get("task.args.nproc_io", "0"))
+        self.iomerge = self.config["submission.iomerge"]
 
     @staticmethod
     def wait_for_file(filename, age_limit=15):
@@ -73,10 +73,8 @@ class IOmerge(Task):
 
         """
         ftemplate = self.file_templates[filetype]["model"]
-        try:
-            age_limit = self.age_limit[filetype]
-        except KeyError:
-            age_limit = self.age_limit["default"]
+        age_limit = self.iomerge["age_limit"][filetype]
+        files_expected = self.iomerge["files_expected"][filetype]
 
         validtime = self.basetime + lt
         filename = self.platform.substitute(ftemplate, validtime=validtime)
@@ -86,19 +84,21 @@ class IOmerge(Task):
             ntries += 1
             file_list = []
             if filetype == "history":
-                files_expected = -1
+                files_expected = files_expected if files_expected != 0 else -1
                 for io in range(self.nproc_io):
                     iopath = f"io_serv.{io+1:06}.d"
                     file_list += glob.glob(f"{fc_path}/{iopath}/{filename}.speca.*")
                     file_list += glob.glob(f"{fc_path}/{iopath}/{filename}.gridall")
             elif filetype == "surfex":
-                files_expected = 1 + self.nproc_io
+                files_expected = (
+                    files_expected if files_expected != 0 else (1 + self.nproc_io)
+                )
                 file_list += [f"{fc_path}/{filename}"]
                 for io in range(self.nproc_io):
                     iopath = f"io_serv.{io+1:06}.d"
                     file_list += glob.glob(f"{fc_path}/{iopath}/{filename}")
             elif filetype == "fullpos":
-                files_expected = self.nproc_io
+                files_expected = files_expected if files_expected != 0 else self.nproc_io
                 # FIXME: what if we have fullpos output in FA format?
                 for io in range(self.nproc_io):
                     iopath = f"io_serv.{io+1:06}.d"

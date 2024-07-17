@@ -11,10 +11,15 @@
   SCHOST = "localhost"
   tasks = []
 
-[submission.file_age_limit]
+[submission.iomerge.age_limit]
   fullpos = 15
   history = 15
   surfex = 15
+
+[submission.iomerge.files_expected]
+  fullpos = 0
+  history = -1
+  surfex = 0
 
 [submission.parallel]
   NPROC = 32

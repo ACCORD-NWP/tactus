@@ -15,11 +15,6 @@
   SCHOST = "localhost"
   tasks = ["Background_vm"]
 
-[submission.file_age_limit]
-  fullpos = 15
-  history = 20
-  surfex = 15
-
 [submission.gnu]
   NPROC = 1
   NPROCX = 1
@@ -38,6 +33,16 @@
 
 [submission.gnu.MODULES]
   ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
+
+[submission.iomerge.age_limit]
+  fullpos = 15
+  history = 20
+  surfex = 15
+
+[submission.iomerge.files_expected]
+  fullpos = 0
+  history = -1
+  surfex = 0
 
 [submission.parallel]
   NPROC = 32

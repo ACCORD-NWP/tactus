@@ -11,6 +11,7 @@ from ..datetime_utils import (
 )
 from ..logs import logger
 from ..os_utils import deodemakedirs
+from ..submission import ProcessorLayout
 from .base import (
     EcflowSuiteFamily,
     EcflowSuiteTask,
@@ -56,7 +57,9 @@ class DeodeSuiteDefinition(SuiteDefinition):
         self.interpolate_boundaries = config["suite_control.interpolate_boundaries"]
         self.do_marsprep = config["suite_control.do_marsprep"]
 
-        self.nproc_io = config.get("submission.task_exceptions.Forecast.NPROC_IO", 0)
+        settings = self.task_settings.get_settings("Forecast")
+        procs = ProcessorLayout(settings).get_proc_dict()
+        self.nproc_io = procs["nproc_io"]
         if self.nproc_io > 0:
             self.n_io_merge = config["suite_control.n_io_merge"]
         else:
@@ -546,7 +549,7 @@ class DeodeSuiteDefinition(SuiteDefinition):
                         self.ecf_files,
                         ecf_files_remotely=self.ecf_files_remotely,
                     )
-                    args = f"ionr={ionr}"
+                    args = f"ionr={ionr};nproc_io={self.nproc_io}"
                     EcflowSuiteTask(
                         "IOmerge",
                         iomerge_sub,

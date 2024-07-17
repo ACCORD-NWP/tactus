@@ -27,11 +27,6 @@
   SCHOST = "localhost"
   tasks = ["Background_vm"]
 
-[submission.file_age_limit]
-  fullpos = 15
-  history = 15
-  surfex = 15
-
 [submission.Forecast_cpu]
   NPROC = 16
   SCHOST = "lumi-batch"
@@ -93,6 +88,16 @@
   14_RIMVYDAS_USE = ["use", "/scratch/project_465000527/jasinskas/scl/modules/"]
   15_RIMVYDAS_FTN16 = ["load", "scl-ftn16_23"]
   16_RIMVYDAS_ECFLOW = ["load", "scl-ecflow_23"]
+
+[submission.iomerge.age_limit]
+  fullpos = 15
+  history = 15
+  surfex = 15
+
+[submission.iomerge.files_expected]
+  fullpos = 0
+  history = -1
+  surfex = 0
 
 [submission.parallel]
   NPROC = 16
