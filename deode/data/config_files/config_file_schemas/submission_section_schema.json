@@ -123,6 +123,11 @@
                 "description": "Number of processors for this task",
                 "type": "number"
               },
+              "NPROC_IO": {
+                "description": "Number of io processors for this task, only applicable for tasks involving the forecast model",
+                "type": "number",
+	        "default": 0
+              },
               "WRAPPER": {
                 "description": "Prefix for binaries to be executed, e.g. srun",
                 "type": "string"

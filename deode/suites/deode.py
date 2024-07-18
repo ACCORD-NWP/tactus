@@ -59,7 +59,7 @@ class DeodeSuiteDefinition(SuiteDefinition):
 
         settings = self.task_settings.get_settings("Forecast")
         procs = ProcessorLayout(settings).get_proc_dict()
-        self.nproc_io = procs["nproc_io"]
+        self.nproc_io = procs["nproc_io"] if procs["nproc_io"] is not None else 0
         if self.nproc_io > 0:
             self.n_io_merge = config["suite_control.n_io_merge"]
         else:
