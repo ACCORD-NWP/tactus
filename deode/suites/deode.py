@@ -99,7 +99,7 @@ class DeodeSuiteDefinition(SuiteDefinition):
             self.do_prep = False
             self.create_static_data = False
 
-        final_cleaning_trigger = []
+        final_cleaning_trigger = [None]
         if self.do_cleaning:
             initial_cleaning = EcflowSuiteTask(
                 "PreCleaning",
