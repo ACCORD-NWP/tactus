@@ -1,133 +1,18 @@
 [submission]
-  bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2024-04-26/R64"
-  default_submit_type = "serial"
-  lfftw = true
-  module_initpath = "/usr/local/apps/lmod/8.6.8/init"
-  nproma = -32
-  submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
-
-[submission.background_hpc]
-  SCHOST = "localhost"
-  tasks = ["Background_hpc", "UnitTest"]
-
-[submission.background_vm]
-  INTERPRETER = "#!/usr/bin/python3"
-  SCHOST = "localhost"
-  tasks = ["Background_vm"]
-
-[submission.gnu]
-  NPROC = 1
-  NPROCX = 1
-  NPROCY = 1
-  SCHOST = "hpc"
-  tasks = ["ExtractSQLite"]
-  WRAPPER = "srun"
+  bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2024-07-08/R64"
 
 [submission.gnu.BATCH]
   MEM = "#SBATCH --mem=64GB"
-  NAME = "#SBATCH --job-name=@TASK_NAME@"
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=1"
-  QOS = "#SBATCH --qos=nf"
-  WALLTIME = "#SBATCH --time=03:00:00"
-
-[submission.gnu.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
-
-[submission.parallel]
-  NPROC = 32
-  SCHOST = "hpc"
-  tasks = ["Forecast", "E927", "Pgd", "Prep", "C903"]
-  WRAPPER = "srun"
-
-[submission.parallel.BATCH]
-  NAME = "#SBATCH --job-name=@TASK_NAME@"
-  QOS = "#SBATCH --qos=np"
-  WALLTIME = "#SBATCH --time=00:10:00"
-
-[submission.parallel.ENV]
-  DR_HOOK = 1
-  DR_HOOK_IGNORE_SIGNALS = -1
-  OMP_NUM_THREADS = 1
-  OMPI_MCA_btl = "^vader"
-
-[submission.parallel.MODULES]
-  # First load the prgenv
-  PRGENV = ["load", "prgenv/intel"]
-  # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
-  FFTW = ["load", "fftw/3.3.9"]
-  HDF5 = ["load", "hdf5/1.10.6"]
-  MKL = ["load", "intel-mkl/19.0.5"]
-  NETCDF = ["load", "netcdf4/4.7.4"]
-  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
-
-[submission.serial]
-  NPROC = 1
-  NPROCX = 1
-  NPROCY = 1
-  SCHOST = "hpc"
-  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep", "IOmerge"]
-  WRAPPER = "srun"
-
-[submission.serial.BATCH]
-  NAME = "#SBATCH --job-name=@TASK_NAME@"
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=1"
-  QOS = "#SBATCH --qos=nf"
-  WALLTIME = "#SBATCH --time=00:15:00"
-
-[submission.serial.ENV]
-  DR_HOOK_IGNORE_SIGNALS = -1
-  OMP_NUM_THREADS = 1
-  OMPI_MCA_btl = "^vader"
-
-[submission.serial.MODULES]
-  # First load the prgenv
-  PRGENV = ["load", "prgenv/intel"]
-  # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
-  FFTW = ["load", "fftw/3.3.9"]
-  HDF5 = ["load", "hdf5/1.10.6"]
-  MKL = ["load", "intel-mkl/19.0.5"]
-  NETCDF = ["load", "netcdf4/4.7.4"]
-  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
-
-[submission.task]
-  wrapper = ""
-
-[submission.task_exceptions.ArchiveHour.BATCH]
-  WALLTIME = "#SBATCH --time=03:00:00"
-
-[submission.task_exceptions.ArchiveStatic.BATCH]
   WALLTIME = "#SBATCH --time=03:00:00"
 
 [submission.task_exceptions.C903]
-  bindir = "/perm/snh02/pack/48t3_main.05.OMPIIFC2104.x/bin"
-  NPROC = 36
-
-[submission.task_exceptions.C903.BATCH]
-  MEM = "#SBATCH --mem=200GB"
-  NODE = "#SBATCH --nodes=12"
-  NTASKS = "#SBATCH --ntasks=36"
-  WALLTIME = "#SBATCH --time=00:30:00"
+  bindir = "/home/snh02/pack/48t3_main.05.OMPIIFC2104.x/bin"
 
 [submission.task_exceptions.C903.ENV]
   DR_HOOK_SIGNALS = -1
 
-[submission.task_exceptions.CreateGrib.BATCH]
-  WALLTIME = "#SBATCH --time=01:00:00"
-
-[submission.task_exceptions.E927]
-  NPROC = 16
-
-[submission.task_exceptions.E927.BATCH]
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=16"
-
 [submission.task_exceptions.Forecast]
   # This is optimised for a 1500x1500 domain
-  bindir = "/home/snh02/work/dev-CY46h1_deode/bin/2024-04-26/R32"
   NPROC = 624
   NPROC_IO = 16
   NPROCX = 24
@@ -146,26 +31,15 @@
   KMP_AFFINITY = "granularity=core,scatter"
   KMP_BLOCKTIME = "12"
   KMP_STACKSIZE = "4G"
-  RTTOV_COEFDIR = "/hpcperm/snh02/DEODE/satellite/rtcoef_rttov12/harm_coef/"
-  UCX_LOG_LEVEL = "error"
 
 [submission.task_exceptions.Gmted.BATCH]
   MEM = "#SBATCH --mem=32GB"
-
-[submission.task_exceptions.Gmted.MODULES]
-  GDAL = ["load", "gdal/3.6.2"]
 
 [submission.task_exceptions.IOmerge.BATCH]
   WALLTIME = "#SBATCH --time=08:00:00"
 
 [submission.task_exceptions.Marsprep.BATCH]
-  MEM = "#SBATCH --mem=128GB"
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=1"
   WALLTIME = "#SBATCH --time=06:00:00"
-
-[submission.task_exceptions.Marsprep.ENV]
-  MARS_READANY_BUFFER_SIZE = 17893020000
 
 [submission.task_exceptions.Pgd]
   binary = "PGD-offline"
@@ -176,18 +50,10 @@
   NTASKS = "#SBATCH --ntasks=32"
   WALLTIME = "#SBATCH --time=03:00:00"
 
-[submission.task_exceptions.PgdUpdate]
-  binary = "gl_20230823"
-  bindir = "/home/snh02/work/gl_binaries"
-
 [submission.task_exceptions.Prep]
   binary = "PREP-offline"
-  WRAPPER = "srun -n @NPROC@"
 
 [submission.task_exceptions.Prep.BATCH]
   NODES = "#SBATCH --nodes=2"
   NTASKS = "#SBATCH --ntasks=32"
   WALLTIME = "#SBATCH --time=00:50:00"
-
-[submission.task_exceptions.Soil.MODULES]
-  GDAL = ["load", "gdal/3.6.2"]
