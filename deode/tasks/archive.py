@@ -51,10 +51,9 @@ class Archive(Task):
             files = [x for x in glob.glob(search) if os.path.isfile(x)]
 
             for filename in files:
-                self.fmanager.input(
+                self.fmanager.output(
                     filename,
                     pathlib.PurePath(self.arch_loc, out, os.path.basename(filename)),
-                    check_archive=True,
                     provider_id=self.archive_type,
                 )
 
