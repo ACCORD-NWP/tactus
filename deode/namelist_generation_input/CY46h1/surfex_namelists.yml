@@ -44,14 +44,7 @@ sfx_pgd_isba_dif:
 
 sfx_treedrag:
   NAM_TREEDRAG:
-    LFAKETREE: 
-       - False
-       - True
-       - True
-       - True
-       - True
-       - True
-       - True
+    LFAKETREE: True
     XALLEN_TERM: 2.5
     XFORFRAC1: 1.0
     XFORFRAC2: 0.0
@@ -110,7 +103,7 @@ sfx_forecast:
     NUM_LAYERS: 4
     XICE_THICKNESS: 0.75
   NAM_SEAFLUXN:
-    CSEA_FLUX: "ECUME"
+    CSEA_FLUX: "ECUME6"
     LPERTFLUX: False
     LPRECIP: False
     LPWEBB: False

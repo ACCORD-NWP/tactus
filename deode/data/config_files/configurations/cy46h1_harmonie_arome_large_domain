@@ -1,5 +1,5 @@
 --config-file
 deode/data/config_files/config.toml
-deode/data/config_files/modifications/CY46h1.toml
 deode/data/config_files/include/domains/Norrkoping.toml
+deode/data/config_files/modifications/CY46h1.toml
 deode/data/config_files/modifications/submission/@HOST@_CY46h1_large_domain.toml
