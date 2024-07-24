@@ -184,7 +184,6 @@ f4_HARMONIE_AROME:
     LECHKTND: false
   NAMCT0:
     CNPPATH: .
-    LMSGINIT: false
     LNHEE: true
     LSPRT: true
     LTWOTL: true
