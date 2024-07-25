@@ -339,7 +339,7 @@ class Marsprep(Task):
             )
 
         # Try multilevel
-        if levtype == "ML" and steps == "00":
+        if levtype == "ML" and param == "129":
             d.update(
                 {
                     "LEVELIST": [1],
@@ -361,7 +361,11 @@ class Marsprep(Task):
         if not prefetch:
             if levtype == "ML":
                 d.update(
-                    {"SOURCE": [f'"{self.prepdir}/ICMSH+{steps}"'], "REPRESS": ["GG"]}
+                    {
+                        "SOURCE": [f'"{self.prepdir}/ICMSH+{steps}"'],
+                        "REPRESS": ["GG"],
+                        "STEP": ["00"],
+                    }
                 )
             elif levtype == "SFC":
                 d.update(
@@ -508,7 +512,11 @@ class Marsprep(Task):
             if base != "":
                 self.fetch_info(base, tag)
                 logger.info("marsGG: {}, {}", self.mars["GG"], date_str)
-                param = self.check_value(self.mars["GG"], date_str)
+                param = (
+                    self.check_value(self.mars["GG"], date_str)
+                    + "/"
+                    + self.check_value(self.mars["GG_sea"], date_str)
+                )
                 self.update_data_request(
                     data_type="forecast",
                     date=date_str,
@@ -524,27 +532,6 @@ class Marsprep(Task):
                 self.create_executable(f"{tag}.req")
                 batch = BatchJob(os.environ, wrapper=self.wrapper)
                 batch.run(self.executable)
-
-                param = self.check_value(self.mars["GG_sea"], date_str)
-                self.update_data_request(
-                    data_type="forecast",
-                    date=date_str,
-                    time=hour_str,
-                    steps="00",
-                    prefetch=True,
-                    levtype="SFC",
-                    param=param,
-                    specify_domain=False,
-                    target=f"{tag}.sea",
-                )
-                self.write_mars_req(self.datarequest, f"{tag}.sea.req", "retrieve")
-                self.create_executable(f"{tag}.sea.req")
-                batch = BatchJob(os.environ, wrapper=self.wrapper)
-                batch.run(self.executable)
-
-                with open(f"{tag}.sea", "rb") as fp:
-                    datagg_sea = fp.read()
-                fp.close()
 
                 exist_soil = False
                 with contextlib.suppress(KeyError):
@@ -596,7 +583,7 @@ class Marsprep(Task):
 
                     os.remove(tag)
                     os.remove(f"{tag}.soil")
-                    self.data += datagg + datagg_sea + datagg_soil
+                    self.data += datagg + datagg_soil
 
                 else:
                     tco = self.mars["tco"]
@@ -644,8 +631,6 @@ class Marsprep(Task):
                         lail = fp.read()
                     with open("laih", "rb") as fp:
                         laih = fp.read()
-                    with open(f"{tag}.sea", "rb") as fp:
-                        datagg_sea = fp.read()
                     with open("sfc", "rb") as fp:
                         sfc = fp.read()
                     with open("issoil", "rb") as fp:
@@ -664,13 +649,11 @@ class Marsprep(Task):
                         + alnid
                         + lail
                         + laih
-                        + datagg_sea
                         + sfc
                         + issoil
                         + cvh
                         + alb
                     )
-                os.remove(f"{tag}.sea")
                 for j in base.split("/"):
                     i = int(j)
                     i_fstring = f"{i:02d}"
@@ -728,7 +711,7 @@ class Marsprep(Task):
                         param=param,
                         grid=self.mars["grid_ML"],
                         specify_domain=False,
-                        target=f"{tag}.Z",
+                        target=f'"{tag}.Z"',
                     )
                     self.write_mars_req(self.datarequest, f"{tag}Z.req", "retrieve")
                     self.create_executable(f"{tag}Z.req")
