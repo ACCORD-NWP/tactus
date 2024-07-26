@@ -87,8 +87,8 @@ jobs:
           SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
         with:
           source-directory: 'docs/_build/'
-          destination-repository-name: 'destination-earth-digital-twins/Deode-Prototype-docs'
+          destination-repository-name: 'destination-earth-digital-twins/Deode-Workflow-docs'
           target-branch: gh-pages
           target-directory: docs/
-          user-name: Deode Prototype API Doc Builder
-          user-email: Deode-Prototype@noreply.github.com
+          user-name: Deode Workflow API Doc Builder
+          user-email: Deode-Workflow@noreply.github.com

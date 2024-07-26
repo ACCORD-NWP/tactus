@@ -1,5 +1,5 @@
 # Development guidelines
-Describes best practices and guidelines for development in the Deode-Prototype repository.
+Describes best practices and guidelines for development in the Deode-Workflow repository.
 
 ## Best practices
 - Authors of PRs should not merge themself - Instead request a reviewer and an assignee. Assignee is responsible for merging.
@@ -10,7 +10,7 @@ Describes best practices and guidelines for development in the Deode-Prototype r
 - We rely on the good sense of both author and reviewer.
 
 ### Checklist for authors
-- ✔️  Make sure your local environment is correctly initialised as described in the [README](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md) file.
+- ✔️  Make sure your local environment is correctly initialised as described in the [README](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md) file.
 - ✔️  Use forks for your changes
 - ✔️ If not up-to-date, update your fork with the changes from the target branch (use `pull` with `--rebase` option if possible).
 - ✔️ Describe what the PR contains.
@@ -84,7 +84,7 @@ poetry devtools doc
 
 The testing procedure above does not test the full functionality together with the IAL code. While waiting for a automated CI/CD system to be in place a few manual steps are required on atos to check the functionality.
 
-- ✔️ Run the default config file, using CY48t3, under ecflow following the instructions in the [README](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md) file.
+- ✔️ Run the default config file, using CY48t3, under ecflow following the instructions in the [README](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md) file.
 - ✔️ Run the following sequence of case configurations, i.e. the three CSC's.
 ```
 for case in \
@@ -104,7 +104,7 @@ for case in \
   deode case ?deode/data/config_files/configurations/$case -o $case.toml --start-suite 
 done
 ```
-- ✔️ Finally test the stand alone task for the forecast following the instructions in the [README](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md) file.
+- ✔️ Finally test the stand alone task for the forecast following the instructions in the [README](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md) file.
 
 ## Testing on lumi
 

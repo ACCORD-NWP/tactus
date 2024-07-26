@@ -15,16 +15,16 @@ Please delete options that are not relevant.
 - [ ] This change requires a documentation update
 
 ## Checklist before requesting a review
-- [ ] My change follows the [best practices for this project](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/docs/markdown_docs/development_guide.md#best-practices).
-- [ ] My local environment is correctly initialised as described in the [README](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md) file.
+- [ ] My change follows the [best practices for this project](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/docs/markdown_docs/development_guide.md#best-practices).
+- [ ] My local environment is correctly initialised as described in the [README](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md) file.
 - [ ] My branch is up-to-date with the target branch - if not update your fork with the changes from the target branch (use `pull` with `--rebase` option if possible).
 - [ ] I have performed a self-review of my code
 - [ ] I have commented my code, particularly in hard-to-understand areas
 - [ ] I have updated the documentation and docstrings to reflect the changes
 - [ ] I have added tests that prove my fix is effective or that my feature works
 - [ ] I have ensured that the code is still installable with `poetry` after the changes and runs
-- [ ] I have run this on ATOS ([instructions](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/docs/markdown_docs/development_guide.md#testing-on-atos))
-- [ ] I have run this on LUMI ([instructions](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/docs/markdown_docs/development_guide.md#run-on-lumi))
+- [ ] I have run this on ATOS ([instructions](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/docs/markdown_docs/development_guide.md#testing-on-atos))
+- [ ] I have run this on LUMI ([instructions](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/docs/markdown_docs/development_guide.md#run-on-lumi))
 - [ ] I have requested a reviewer and an assignee (assignee is responsible for merging)
 
 ## Checklist for reviewers
