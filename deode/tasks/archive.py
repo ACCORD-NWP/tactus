@@ -18,7 +18,7 @@ class Archive(Task):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Task.__init__(self, config, __name__)
+        Task.__init__(self, config, __class__.__name__)
 
         self.archive_type = self.platform.get_value("platform.archive_type")
         apath = self.platform.get_value(f"archiving.{self.archive_type}.paths.apath")
@@ -51,10 +51,9 @@ class Archive(Task):
             files = [x for x in glob.glob(search) if os.path.isfile(x)]
 
             for filename in files:
-                self.fmanager.input(
+                self.fmanager.output(
                     filename,
                     pathlib.PurePath(self.arch_loc, out, os.path.basename(filename)),
-                    check_archive=True,
                     provider_id=self.archive_type,
                 )
 

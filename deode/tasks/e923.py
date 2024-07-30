@@ -20,7 +20,7 @@ class E923(Task):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Task.__init__(self, config, __name__)
+        Task.__init__(self, config, __class__.__name__)
 
         self.climdir = self.platform.get_system_value("climdir")
         self.constant_file = f"{self.climdir}/Const.Clim.const"
@@ -277,7 +277,7 @@ class PgdUpdate(Task):
             config (deode.ParsedConfig): Configuration
 
         """
-        Task.__init__(self, config, "PgdUpdate")
+        Task.__init__(self, config, __class__.__name__)
 
         self.climdir = self.platform.get_system_value("climdir")
 

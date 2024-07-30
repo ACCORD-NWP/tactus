@@ -179,7 +179,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         Path(file1).parent.mkdir(parents=True, exist_ok=True)
         with open(file1, "w", encoding="utf8") as f1:
             f1.write("01:00:00")
-        with contextlib.suppress(FileNotFoundError):
+        with contextlib.suppress(FileNotFoundError, RuntimeError):
             original_task_iomerge_iomerge_execute_method(self)
 
     def new_task_collectlogs_collectlogs_execute_method(*args, **kwargs):

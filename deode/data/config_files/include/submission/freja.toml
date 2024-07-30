@@ -11,10 +11,20 @@
   SCHOST = "localhost"
   tasks = []
 
+[submission.iomerge.age_limit]
+  fullpos = 15
+  history = 15
+  surfex = 15
+
+[submission.iomerge.files_expected]
+  fullpos = 0
+  history = -1
+  surfex = 0
+
 [submission.parallel]
   NPROC = 32
   SCHOST = "freja"
-  tasks = ["Forecast", "e927", "c903"]
+  tasks = ["Forecast", "E927", "C903"]
   WRAPPER = "mpprun"
 
 [submission.parallel.BATCH]

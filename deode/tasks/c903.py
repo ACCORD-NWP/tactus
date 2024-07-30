@@ -1,5 +1,6 @@
 """C903."""
 
+import json
 import os
 
 from ..datetime_utils import as_datetime, as_timedelta, cycle_offset
@@ -10,19 +11,18 @@ from .batch import BatchJob
 
 
 class C903(Task):
-    """C903task."""
+    """C903, preform interpolation from IFS to IAL LAM."""
 
     def __init__(self, config):
-        """Construct forecast object.
+        """Construct C903 object.
 
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Task.__init__(self, config, __name__)
+        Task.__init__(self, config, __class__.__name__)
 
         self.climdir = self.platform.get_system_value("climdir")
 
-        self.expdir = self.config["system.marsdir"]
         self.basetime = as_datetime(self.config["general.times.basetime"])
         bdcycle = as_timedelta(self.config["boundaries.bdcycle"])
         bdcycle_start = as_timedelta(self.config["boundaries.bdcycle_start"])
@@ -36,29 +36,13 @@ class C903(Task):
         self.bd_time = self.config["task.args.bd_time"]
         self.forecast_range = self.config["general.times.forecast_range"]
 
-        self.dom = self.config["domain.name"]
-
         self.bdfile_template = self.config["system.bdfile_template"]
         self.intp_bddir = self.platform.get_system_value("intp_bddir")
-        logger.info("Domain: {}", self.dom)
 
         self.nlgen = NamelistGenerator(self.config, "master")
         self.master = self.get_binary("MASTERODB")
 
         self.name = f"{self.name}_{self.bdnr}"
-
-    def remove_links(self, link):
-        """Remove link.
-
-        Args:
-            link (list) : List of links to remove
-        """
-        logger.info("clean {}", link)
-        for x in link:
-            try:
-                os.unlink(x)
-            except FileNotFoundError:  # noqa: PERF203
-                logger.warning("Could not remove file '{}'.", x, exc_info=True)
 
     def execute(self):
         """Run task.
@@ -66,80 +50,36 @@ class C903(Task):
         Define run sequence.
 
         """
-        # Climate files
-        mm = self.bd_basetime.strftime("%m")
-        self.fmanager.input(f"{self.climdir}/Const.Clim.{mm}", f"{self.dom}_{mm}")
+        # Fetch input data
+        input_definition = self.platform.get_system_value("c903_input_definition")
+        logger.info("Read input data spec from: {}", input_definition)
+        with open(input_definition, "r", encoding="utf-8") as f:
+            input_data = json.load(f)
+
+        ifs_files = input_data.pop("IFS_files")
+
+        # Link the static data
+        self.fmanager.input_data_iterator(input_data)
+
+        # IFS input files
+        path = ifs_files["path"]
+        for dst, src in ifs_files["files"].items():
+            self.fmanager.input(
+                f"{path}/{src}",
+                dst,
+                basetime=self.bd_basetime,
+                validtime=as_datetime(self.bd_time),
+            )
 
         # Namelist
         self.nlgen.generate_namelist("c903_main", "fort.4")
         self.nlgen.generate_namelist("c903_domain", "namelist_c903_domain")
 
-        # Input files
-        self.fmanager.input(
-            f"{self.expdir}/ICMSH+@LL@",
-            "ICMSHMARSINIT",
-            basetime=self.bd_basetime,
-            validtime=as_datetime(self.bd_time),
-        )
-        self.fmanager.input(
-            f"{self.expdir}/ICMGG+@LL@",
-            "ICMGGMARSINIT",
-            basetime=self.bd_basetime,
-            validtime=as_datetime(self.bd_time),
-        )
-        self.fmanager.input(
-            f"{self.expdir}/ICMUA+@LL@",
-            "ICMUAMARSINIT",
-            basetime=self.bd_basetime,
-            validtime=as_datetime(self.bd_time),
-        )
-
-        self.fmanager.input(
-            f"{self.expdir}/ICMSH+@LL@",
-            "ICMSHMARS",
-            basetime=self.bd_basetime,
-            validtime=as_datetime(self.bd_time),
-        )
-        self.fmanager.input(
-            f"{self.expdir}/ICMGG+@LL@",
-            "ICMGGMARS",
-            basetime=self.bd_basetime,
-            validtime=as_datetime(self.bd_time),
-        )
-        self.fmanager.input(
-            f"{self.expdir}/ICMUA+@LL@",
-            "ICMUAMARS",
-            basetime=self.bd_basetime,
-            validtime=as_datetime(self.bd_time),
-        )
-
-        self.fmanager.input(
-            f"{self.expdir}/ICMSH+@LL@",
-            "ICMSHMARS+000000",
-            basetime=self.bd_basetime,
-            validtime=as_datetime(self.bd_time),
-        )
-        self.fmanager.input(
-            f"{self.expdir}/ICMGG+@LL@",
-            "ICMGGMARS+000000",
-            basetime=self.bd_basetime,
-            validtime=as_datetime(self.bd_time),
-        )
-        self.fmanager.input(
-            f"{self.expdir}/ICMUA+@LL@",
-            "ICMUAMARS+000000",
-            basetime=self.bd_basetime,
-            validtime=as_datetime(self.bd_time),
-        )
-
         # Run masterodb
-
         batch = BatchJob(os.environ, wrapper=self.wrapper)
         batch.run(self.master)
 
+        # Store result
         target = f"{self.intp_bddir}/{self.bdfile_template}"
-
-        logger.debug("WRKDIR: {}", self.wrk)
-        logger.debug("OUTPUT {}", f"ELSCFMARS{self.dom}+0000")
-        self.fmanager.output(f"ELSCFMARS{self.dom}+0000", target)
+        self.fmanager.output("ELSCFMARS@DOMAIN@+0000", target)
         self.archive_logs("NODE.001_01")

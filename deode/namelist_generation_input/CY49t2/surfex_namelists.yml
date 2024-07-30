@@ -8,11 +8,7 @@ sfx_io:
     CSURFFILE: "SURFOUT"
     CSURF_FILETYPE: "FA"
 
-sfx_pgd_isba_3l:
-  NAM_ISBA: {}
-  NAM_TREEDRAG: {}
-
-sfx_pgd_isba_dif:
+sfx_pgd_isba_dif_AROME:
   NAM_SGH_ISBAN:
    LSOC: True
   NAM_ISBA:
@@ -25,64 +21,132 @@ sfx_pgd_isba_dif:
     YSOC_SUB: "soc_sub"
     YSOCFILETYPE: "DIRECT"
 
-sfx_pgd:
-  NAMFA:
-    NVGRIB : 123
-  NAMSFXCMP:
-    NVGRIBSFX : 123
-  NAM_CONF_PROJ:
-    XBETA: ${domain.xbeta}
-    XLAT0: ${domain.xlat0}
-    XLON0: ${domain.xlon0}
-    XRPK: ${domain.xrpk}
-  NAM_CONF_PROJ_GRID:
-    ILATE: ${domain.ilate}
-    ILONE: ${domain.ilone}
-    NIMAX: ${domain.nimax}
-    NJMAX: ${domain.njmax}
-    XDX: ${domain.xdx}
-    XDY: ${domain.xdy}
-    XLATCEN: ${domain.xlatcen}
-    XLONCEN: ${domain.xloncen}
-  NAM_COVER:
-    YCOVER: "ecoclimap"
-    YCOVERFILETYPE: "DIRECT"
-  NAM_IO_OFFLINE:
-    CPGDFILE: "PGD"
-    CPREPFILE: PREP
-    CSURFFILE: SURFOUT
-    CSURF_FILETYPE: FA
-    CTIMESERIES_FILETYPE: FA
-    LFAGMAP: True
-    NHALO: 0
+sfx_pgd_isba_dif_HARMONIE_AROME:
   NAM_ISBA:
-    YCLAY: "CLAY_HWSD_MOY_v2"
-    YCLAYFILETYPE: "DIRECT"
-    YSAND: "SAND_HWSD_MOY_v2"
-    YSANDFILETYPE: "DIRECT"
     CISBA: "DIF"
     NGROUND_LAYER: 14
-    NPATCH: ${pgd.npatch} 
-  NAM_PGD_GRID:
-    CGRID: "CONF PROJ "
-  NAM_ZS:
-    CSVF: MANNERS
-    LFSSOSVF: False
-    LORORAD: True
-    YZS: "gmted2010"
-    YZSFILETYPE: "DIRECT"
-  NAM_ZS_FILTER:
-    NZSFILTER: 0
-  NAM_FRAC:
-    LECOSG: False
+    NPATCH: ${pgd.npatch}
+    LMEB: True
+    YSOC_TOP: "soc_top"
+    YSOC_SUB: "soc_sub"
+    YSOCFILETYPE: "DIRECT"
+    XUNIF_RUNOFFB: 0.2
+    CPEDO_FUNCTION: "CO84"
+    CPHOTO: "NON"
+  NAM_ISBAN:
+    CSCOND: "PL98"
+    CSNOWRES: "RIL"
+  NAM_MEB_ISBA:
+     LMEB_LITTER: True
+     LMEB_PATCH:
+      - False
+      - True
+  NAM_SGH_ISBAN:
+   CHORT: "DEF"
+   CRAIN: "SGH"
+   CRUNOFF: "DT92"
+   LSOC: True
+
+sfx_treedrag:
+  NAM_TREEDRAG:
+    LFAKETREE: True
+    XALLEN_TERM: 2.5
+    XFORFRAC1: 1.0
+    XFORFRAC2: 0.0
+    XFORLAT1: 1.0
+    XFORLAT2: 0.0
+    XGRASS_H_DNM: 3.0
+    #XSCALE_H_TREE: 1.0 Not yet implemented in CY49T2h
+    XZ0_MAX_LIMIT: 1.6
+    XZ0_MIN_LIMIT: 0.0
 
 sfx_surf_constants:
-  NAM_SURF_CSTS: {}
+  NAM_SURF_CSTS:
+    XZ0HSN: 0.0003
+    XZ0SN: 0.003
 
-sfx_split_patch:
-  NAM_WRITE_SURF_ATM: {}
+sfx_split_patch_AROME:
+  NAM_WRITE_SURF_ATM:
+    LNOWRITE_TEXFILE: True
+    LSPLIT_PATCH: True  
 
-sfx_forecast:
+sfx_split_patch_HARMONIE_AROME:
+  NAM_WRITE_SURF_ATM:
+    LSPLIT_PATCH: False  
+
+sfx_forecast_HARMONIE_AROME:
+  NAM_DIAG_ISBAN:
+    LPATCH_BUDGET: True
+    LPGD: True
+    LSURF_MISC_BUDGET: True
+    LSURF_MISC_DIF: True
+  NAM_DIAG_SURFN:
+    LCOEF: True
+    LRESET_BUDGETC: True
+    LSURF_BUDGET: True
+    LSURF_BUDGETC: True
+    LSURF_VARS: True
+    N2M: 2
+  NAM_DIAG_SURF_ATMN:
+    LT2MMW: True
+  NAM_ISBAN:
+    LCANOPY_DRAG: True
+    LPERTSURF: False
+    XCDRAG: 0.01
+    XCGMAX: 2.e-05
+    XCSMAX: 0.0002
+    XPERT_HIGH:
+      - 0.95
+      - 0.99
+      - 6.0
+      - 0.6
+      - 2.5e-5
+      - 1.5e-5
+    XPERT_LOW:
+      - 0.0
+      - 0.91
+      - 0.1
+      - 0.1
+      - 1.5e-5
+      - 0.5e-5
+  NAM_PREP_SEAICE_SICE:
+    NUM_LAYERS: 4
+    XICE_THICKNESS: 0.75
+  NAM_SEAFLUXN:
+    CSEA_FLUX: "ECUME6"
+    LPERTFLUX: False
+    LPRECIP: False
+    LPWEBB: False
+    LPWG: False
+  NAM_SEAICEN:
+    LVOLATILE_SIC: False
+    XSIC_EFOLDING_TIME: 1.0
+  NAM_SEAICE_SICE:
+    LICE_HAS_SNOW: False
+    LICE_MASS_BALANCE: True
+    XOCEAN_HEAT_FLUX: 2.0
+  NAM_SSON:
+    CROUGH: "NONE"
+    XCOROT: 500.0
+    XFRACZ0: 15.0
+    XSOROT: "${domain.xdx}"
+    XVOROT: 8.0
+  NAM_SURF_ATM:
+    XCD_COEFF1: 10.0
+    XCD_COEFF2: 5.0
+    XCH_COEFF1: 15.0
+    XRIMAX: 0.2
+    XRISHIFT: 0.0
+    XVMODFAC: 0.1
+  NAM_SURF_CSTS:
+    XZ0HSN: 0.0003
+    XZ0SN: 0.003
+  NAM_FRAC:
+    LECOSG: True
+
+
+
+sfx_forecast_AROME:
   NAM_DIAG_ISBAN:
     LPGD: True
     LSURF_MISC_BUDGET: True
@@ -122,9 +186,6 @@ sfx_forecast:
   NAM_FRAC:
     LECOSG: True
 
-sfx_selected_output:
-  NAM_WRITE_DIAG_SURFN: {}
-
 sfx_pgd_domain:
   NAM_PGD_GRID:
     CGRID: "CONF PROJ"
@@ -144,8 +205,18 @@ sfx_pgd_domain:
     XDY: "${domain.xdy}"
     XLATCEN: "${domain.xlatcen}"
     XLONCEN: "${domain.xloncen}"
+    XTRUNC: "${domain.xtrunc}"
 
-sfx_pgd_ecoclimap_sg_base:
+sfx_pgd_ecoclimap_sg_base_HARMONIE_AROME:
+  NAM_COVER:
+    XRM_WM: 0.0
+    YCOVER: "ecosg_final_map"
+    YCOVERFILETYPE: "DIRECT"
+  NAM_FRAC:
+    LECOSG: True
+
+
+sfx_pgd_ecoclimap_sg_base_AROME:
   NAM_COVER:
     YCOVER: "COVER_ECOSG_2010_V0.1"
     YCOVERFILETYPE: "DIRECT"
@@ -636,17 +707,26 @@ sfx_pgd_rsmin:
   NAM_DATA_ISBA: {}
 
 sfx_pgd_flake:
-  NAM_DATA_FLAKE: {}
-  NAM_FLAKEN: {}
+  NAM_DATA_FLAKE:
+    YWATER_DEPTH: "GlobalLakeDepth"
+    YWATER_DEPTHFILETYPE: "DIRECT"
+    YWATER_DEPTH_STATUS: "GlobalLakeStatus"
+  NAM_FLAKEN:
+    LSEDIMENTS: False
 
-sfx_pgd_schemes:
-  NAM_PGD_SCHEMES: {}
 
-sfx_pgd_schemes_water_flake:
-  NAM_PGD_SCHEMES: {}
-
-sfx_pgd_schemes_water_watflx:
+sfx_pgd_schemes_HARMONIE_AROME:
   NAM_PGD_SCHEMES:
+    CNATURE: "ISBA "
+    CSEA: "SEAFLX"
+    CTOWN: "TEB "
+    CWATER: "FLAKE"
+
+sfx_pgd_schemes_AROME:
+  NAM_PGD_SCHEMES:
+    CNATURE: "ISBA "
+    CSEA: "SEAFLX"
+    CTOWN: "TEB "
     CWATER: "WATFLX"
 
 sfx_pgd_soilgrid_clay:
@@ -670,7 +750,8 @@ sfx_pgd_sand:
     YSANDFILETYPE: "DIRECT"
 
 sfx_pgd_sea:
-  NAM_SEABATHY: {}
+  NAM_SEABATHY:
+    XUNIF_SEABATHY: 0.0
 
 sfx_pgd_zs_gmted:
   NAM_ZS:
@@ -755,24 +836,113 @@ sfx_pgd_teb_osm:
       - 1.5
       - 1.5
 
+sfx_pgd_cv:
+  NAM_DATA_ISBA:
+    XUNIF_CV:
+    - 2.0e-05
+    - 2.0e-05
+    - 2.0e-05
+    - 1.0e-05
+    - 1.0e-05
+    - 1.0e-05
+    - 1.0e-05
+    - 1.0e-05
+    - 1.0e-05
+    - 1.0e-05
+    - 1.0e-05
+    - 1.0e-05
+    - 2.0e-05
+    - 2.0e-05
+    - 2.0e-05
+    - 2.0e-05
+    - 2.0e-05
+    - 2.0e-05
+    - 1.0e-05
+    - 2.0e-05
+
+sfx_pgd_rsmin:
+  NAM_DATA_ISBA:
+    XUNIF_RSMIN:
+    - 40.0
+    - 40.0
+    - 40.0
+    - 169.50
+    - 169.50
+    - 169.50
+    - 169.50
+    - 175.0
+    - 216.00
+    - 216.00
+    - 216.00
+    - 169.50
+    - 40.0
+    - 40.0
+    - 120.0
+    - 60.0
+    - 60.0
+    - 135.60
+    - 150.0
+    - 40.0
+
+sfx_prep_atm:
+  NAM_SURF_ATM:
+    LVERTSHIFT: True
+
 sfx_prep_sea:
   NAM_PREP_SEAFLUX:
     LSEA_SBL: False
 
 sfx_prep_sea_sice:
-  NAM_PREP_SEAFLUX: {}
-  NAM_PREP_SEAICE_SICE: {}
-  NAM_SEAICE_SICE: {}
+  NAM_PREP_SEAFLUX:
+    CSEAICE_SCHEME: "SICE"
+  NAM_PREP_SEAICE_SICE:
+    NUM_LAYERS: 4
+    XICE_THICKNESS: 0.75
+  NAM_SEAICE_SICE:
+    LICE_HAS_SNOW: False
+    LICE_MASS_BALANCE: True
+    XOCEAN_HEAT_FLUX: 2.0
 
 sfx_prep_flake:
-  NAM_PREP_FLAKE: {}
+  NAM_PGD_SCHEMES:
+    CWATER: "FLAKE"
+  NAM_PREP_FLAKE:
+    LCLIM_LAKE: True
 
-sfx_prep_isba:
+sfx_prep_watflx:
+    LWAT_SBL: False
+
+sfx_prep_isba_HARMONIE_AROME:
   NAM_FRAC:
     LECOSG: True
-  NAM_PREP_ISBA_SNOW: {}
-  NAM_DIAG_ISBAN: {}
-  NAM_PREP_ISBA: {}
+  NAM_PREP_ISBA_SNOW:
+    CSNOW: "3-L"
+    LSWEMAX: True
+  NAM_DIAG_ISBAN:
+    LPATCH_BUDGET: True
+    LSURF_MISC_DIF: True
+  NAM_PREP_ISBA:
+    LEXTRAP_SN: True
+    LEXTRAP_TG: True
+    LEXTRAP_WG: True
+    LEXTRAP_WGI: True
+    LISBA_CANOPY: False
+
+sfx_prep_isba_AROME:
+  NAM_FRAC:
+    LECOSG: True
+  NAM_PREP_ISBA_SNOW:
+    CSNOW: "3-L"
+  NAM_DIAG_ISBAN:
+    LPGD: True
+    LSURF_DIAG_ALBEDO: True
+  NAM_PREP_ISBA:
+    LISBA_CANOPY: False
+  NAM_PREP_ISBA_SNOW:
+    CSNOW: "3-L"
+    LSNOW_IDEAL: False
+    NSNOW_LAYER: 12
+    XWSNOW: 0.0
 
 sfx_prep_isba_from_grib:
   NAM_PREP_SURF_ATM:
@@ -786,42 +956,6 @@ sfx_prep_isba_from_fa:
     CFILEPGD: "PGD_HOST"
     CFILEPGDTYPE: "FA"
 
-sfx_prep_isba_snow_d95:
-  NAM_PREP_ISBA_SNOW:
-    CSNOW: "D95"
-
-sfx_prep_isba_snow_3l:
-  NAM_PREP_ISBA_SNOW:
-    CSNOW: "3-L"
-
-sfx_prep:
-  NAM_DIAG_ISBAN:
-    LPGD: True
-    LSURF_DIAG_ALBEDO: True
-  NAM_PGD_GRID:
-    CGRID: "CONF PROJ "
-  NAM_PGD_SCHEMES:
-    CNATURE: 'ISBA  '
-    CSEA: SEAFLX
-    CTOWN: 'TEB   '
-    CWATER: WATFLX
-  NAM_PREP_ISBA:
-    LISBA_CANOPY: False
-  NAM_PREP_SURF_ATM:
-    NHALO_PREP: 0
-  NAM_PREP_WATFLUX:
-    LWAT_SBL: False
-  NAM_PREP_ISBA_SNOW:
-    CSNOW: '3-L'
-    NSNOW_LAYER: 12
-    LSNOW_IDEAL: False
-    XWSNOW: 0
-  NAM_SURF_ATM:
-    LVERTSHIFT: True
-  NAM_WRITE_SURF_ATM:
-    LNOWRITE_TEXFILE: True
-    LSPLIT_PATCH: True
-
-sfx_teb_osm:
-  NAM_PGD_SCHEMES:
-    LGARDEN: True
+sfx_teb_osm_HARMONIE_AROME:
+  NAM_TREEDRAG:
+    LFAKETREE: False

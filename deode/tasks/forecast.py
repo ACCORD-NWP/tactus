@@ -24,7 +24,7 @@ class Forecast(Task):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Task.__init__(self, config, "Forecast")
+        Task.__init__(self, config, __class__.__name__)
 
         self.cycle = self.config["general.cycle"]
         self.cnmexp = self.config["general.cnmexp"]
@@ -160,7 +160,6 @@ class Forecast(Task):
         # Construct master namelist and include fullpos config
         forecast_namelist = "forecast"
         self.nlgen_master.load(forecast_namelist)
-        logger.info(self.nlgen_master)
         self.nlgen_master = check_fullpos_namelist(self.config, self.nlgen_master)
 
         nlres = self.nlgen_master.assemble_namelist(forecast_namelist)
@@ -282,7 +281,7 @@ class FirstGuess(Task):
             config (deode.ParsedConfig): Configuration
 
         """
-        Task.__init__(self, config, "FirstGuess")
+        Task.__init__(self, config, __class__.__name__)
 
     def execute(self):
         """Find initial file."""

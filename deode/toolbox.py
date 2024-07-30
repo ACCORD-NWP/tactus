@@ -417,6 +417,7 @@ class FileManager:
 
         Raises:
             ProviderError: "No provider found for {target}"
+            NotImplementedError: "Checking archive not implemented yet"
 
         Returns:
             tuple: provider, resource
@@ -445,26 +446,23 @@ class FileManager:
             logger.debug("Using provider_id {}", provider_id)
             return provider, destination
 
-        # Try archive
-        # TODO check for archive
+        # TODO check archive for file
+
         if check_archive:
-            provider_id = "ecfs"
-            target = target.replace("@ARCHIVE@", "{self.aloc}/@YYYY@/@MM@/@DD@/@HH@")
+            raise NotImplementedError("Checking archive not implemented yet")
+            # Substitute based on ecfs
+            sub_target = self.platform.substitute(
+                target, basetime=basetime, validtime=validtime
+            )
 
-            if provider_id is not None:
-                # Substitute based on ecfs
-                sub_target = self.platform.substitute(
-                    target, basetime=basetime, validtime=validtime
-                )
+            logger.debug("Checking archiving provider_id {}", provider_id)
+            provider = self.platform.get_provider(provider_id, sub_target)
 
-                logger.debug("Checking archiving provider_id {}", provider_id)
-                provider = self.platform.get_provider(provider_id, sub_target)
+            if provider.create_resource(destination):
+                logger.debug("Using provider_id {}", provider_id)
+                return provider, destination
 
-                if provider.create_resource(destination):
-                    logger.debug("Using provider_id {}", provider_id)
-                    return provider, destination
-
-                logger.info("Could not archive {}", destination.identifier)
+            logger.info("Could not find in archive {}", destination.identifier)
         # Else raise exception
         raise ProviderError(
             f"No provider found for {sub_target} and provider_id {provider_id}"
@@ -551,6 +549,7 @@ class FileManager:
 
         Raises:
             ArchiveError: Could not archive data
+            NotImplementedError: Archive = True is not implemented
 
         """
         sub_target = self.platform.substitute(
@@ -577,16 +576,16 @@ class FileManager:
         aprovider = None
         if archive:
             # TODO check for archive and modify macros
-            provider_id = "ecfs"
-            destination = destination.replace(
-                "@ARCHIVE@", "{self.aloc}/@YYYY@/@MM@/@DD@/@HH@"
-            )
-
+            raise NotImplementedError("Archive = True is not implemented")
             sub_target = self.platform.substitute(
                 target, basetime=basetime, validtime=validtime
             )
             sub_destination = self.platform.substitute(
                 destination, basetime=basetime, validtime=validtime
+            )
+
+            target_resource = LocalFileOnDisk(
+                self.config, sub_target, basetime=basetime, validtime=validtime
             )
 
             logger.debug(
@@ -909,7 +908,10 @@ class FDB(ArchiveProvider):
             pattern (str): Filepattern
             fetch (bool, optional): Fetch the data. Defaults to True.
         """
+        import pyfdb
+
         ArchiveProvider.__init__(self, config, pattern, fetch=fetch)
+        self.fdb = pyfdb.FDB()
 
     def create_resource(self, resource):
         """Create the resource.
@@ -921,13 +923,46 @@ class FDB(ArchiveProvider):
             bool: True if success
 
         """
-        # TODO: Address the noqa check disablers
+        rules = dict(self.config["fdb.negative_rules"])
+        grib_set = dict(self.config["fdb.grib_set"])
+        grib_set["expver"] = self.config["general"]["cnmexp"]
         if self.fetch:
             logger.warning("FDB not yet implemented for {}", resource)
         else:
-            logger.warning("FDB not yet implemented for {}", resource)
+            logger.info("Archiving ", resource.identifier, " with pyfdb")
+
+            # Create rules-file, temp files to replace $2 and temp.grib
+            temp1 = "temp1.grib"
+            temp2 = "temp2.grib"
+            rules_file = "temp_rules"
+            self._write_rules_file(rules_file, rules)
+            os.system(
+                f"grib_filter {rules_file} {resource.identifier} -o {temp1}"  # noqa S605
+            )
+            set_values = ",".join([f"{key}={value}" for key, value in grib_set.items()])
+            cmd_for_grib = "grib_set -s " + set_values + f" {temp1} {temp2}"
+            logger.debug(cmd_for_grib)
+            os.system(cmd_for_grib)  # noqa S605
+            with open(temp2, "rb") as infile:
+                self.fdb.archive(infile.read())
+            self.fdb.flush()
+            os.remove(temp1)
+            os.remove(temp2)
+            os.remove(rules_file)
 
         return True
+
+    def _write_rules_file(self, filename, rules):
+        with open(filename, "w") as outfile:
+            outfile.write("set edition = 2;\n")
+            for name, values in rules.items():
+                if len(values) == 1:
+                    outfile.write(f'if (!({name} is "{values}")) ' + "{ append; }\n")
+                else:
+                    outfile.write("if (")
+                    for value in values[:-1]:
+                        outfile.write(f'!({name} is "{value}") && ')
+                    outfile.write(f'!({name} is "{values[-1]}"))' + "{ append; }\n")
 
 
 class Resource:

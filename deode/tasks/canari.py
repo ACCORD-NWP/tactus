@@ -14,7 +14,7 @@ class Canari(Task):
             config (deode.ParsedConfig): Configuration
 
         """
-        Task.__init__(self, config, __name__)
+        Task.__init__(self, config, __class__.__name__)
         logger.debug("Constructed canari task")
 
     def execute(self):

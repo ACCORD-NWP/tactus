@@ -49,17 +49,41 @@
 [archiving.fdb.default]
   active = false
 
-[scp]
+[archiving.fdb.hour]
 
-[scp.default]
+[archiving.fdb.hour.grib_files]
+  active = false
+  inpath = "@ARCHIVE@"
+  outpath = "fdb"
+  pattern = "GRIBPF*"
+
+[archiving.scp]
+
+[archiving.scp.default]
   active = false
 
-[scp.hour.lumi]
+[archiving.scp.hour.lumi]
   active = false
   inpath = "@ARCHIVE@"
   outpath = "lumi_transfer:@SCRATCH@/@USER@_atos_@CASE@/archive/@ARCHIVE_TIMESTAMP@"
   pattern = "GRIBPF*"
 
-[scp.paths]
+[archiving.scp.paths]
   aloc = ""
   apath = ""
+
+[fdb]
+
+[fdb.grib_set]
+  centre = "98"
+  class = "d1"
+  dataset = "on-demand-extremes-dt"
+  grib2LocalSectionNumber = "1"
+  localTablesVersion = "1"
+  productionStatusOfProcessedData = "12"
+  setLocalDefinition = "1"
+  subCentre = "84"
+  tablesVersion = "32"
+
+[fdb.negative_rules]
+  typeOfLevel = ["unknown", "not_found"]

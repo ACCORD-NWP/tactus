@@ -184,7 +184,6 @@ f4_HARMONIE_AROME:
     LECHKTND: false
   NAMCT0:
     CNPPATH: .
-    LMSGINIT: false
     LNHEE: true
     LSPRT: true
     LTWOTL: true
@@ -326,11 +325,14 @@ f4_HARMONIE_AROME:
   NAMNRTAER:
     CCNMIN: 10000000.0
     CLDROPMIN: 10000000.0
+      #IFNMINSIZE: 0.01
     LAECCN2CLDR: false
     LAEIFN: false
     LAERDRDEP: false
     LCAMS_NRT: false
     LMOCA_NRT: false
+      #SSMINUP: 0.0008
+      #SSMINLO: 0.0005
     SSMAX: 0.0008
     SSMIN: 0.0005
   NAMOPH:
@@ -352,6 +354,7 @@ f4_HARMONIE_AROME:
     LOSUBG_COND: true
     LOTOWNC: true
     LSCAWAREMF: true
+      #LWTHRESH: true
     LSHALLOWMF: true
     LSTATNW: true
     LTOTPREC: false

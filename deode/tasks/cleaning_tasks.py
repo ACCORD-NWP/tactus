@@ -14,7 +14,7 @@ class Cleaning(Task):
             config (deode.ParsedConfig): Configuration
             name (str): Name of task
         """
-        Task.__init__(self, config, __name__)
+        Task.__init__(self, config, __class__.__name__)
 
     def prep_clean_task(self, cleaning_type):
         """Setup clean task.

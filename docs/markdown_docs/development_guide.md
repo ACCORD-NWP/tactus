@@ -38,6 +38,11 @@ poetry devtools -h
 ```
 for more information.
 
+### Run and fix toml-formatter errors in place
+```shell
+toml-formatter check --fix-inplace /PATH/TO/FILE
+```
+
 ### Run linters and exit with an error if non-linted code is detected
 ```shell
 poetry devtools lint

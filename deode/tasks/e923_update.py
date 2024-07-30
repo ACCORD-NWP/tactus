@@ -21,7 +21,7 @@ class E923Update(Task):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Task.__init__(self, config, "E923Update")
+        Task.__init__(self, config, __class__.__name__)
 
         self.climdir = self.platform.get_system_value("climdir")
         self.fa_sfx2clim = self.get_binary("fa_sfx2clim")

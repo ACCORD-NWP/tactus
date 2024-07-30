@@ -15,10 +15,10 @@
 
 [submission]
 
-[submission.task_exceptions.c903]
+[submission.task_exceptions.C903]
   NPROC = 36
 
-[submission.task_exceptions.c903.BATCH]
+[submission.task_exceptions.C903.BATCH]
   MEM = "#SBATCH --mem=0"
   NODE = "#SBATCH --nodes=12"
   NTASKS = "#SBATCH --ntasks=36"
