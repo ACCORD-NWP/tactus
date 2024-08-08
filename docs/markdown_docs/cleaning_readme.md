@@ -4,7 +4,7 @@
 
 Each forecast experiment has a start and end dates and cycle length. These settings define the experiment timeline and used folders:
 
-<img src="../figs/experiment_timeline.jpg" alt="drawing"/>
+![drawing](../docs/figs/experiment_timeline.jpg)
 
 working folder - contains the workings folder of each suite task: wrk="@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/"
 
@@ -27,7 +27,7 @@ cleaning = "include/cleaning.toml"
 ```
 ## Cleaning settings are separeted to general default settings and folder specific settings:
 
-<img src="../figs/cleaning_image.jpg"  alt="cleaning scheme"/>
+![cleaning scheme](../docs/figs/cleaning_image.jpg)
 
 ```shell
 defaults

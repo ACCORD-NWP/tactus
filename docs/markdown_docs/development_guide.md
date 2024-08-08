@@ -123,7 +123,7 @@ As of now, the repository has two main branches:
 - `develop` - This is the branch that is deployed to staging.
 As the project grows, we may add more branches, such as an `integration` branch, where we can test the integration of multiple features before merging them to `develop`, and run a simpler pipeline (see image below).
 
-<img src="../figs/development_guide.png" alt="drawing" width="400"/>
+![drawing](../docs/figs/development_guide.png)
 
 ### Forks
 Forks are used to develop features and bug fixes. They are created from the `develop` branch by forking to a local repo. When a feature is ready, a PR is created to merge it to `develop`. When a bug fix is ready, a PR is created to merge it to `develop` and `master`.
