@@ -322,8 +322,8 @@ which look like:
 ```
 and are preset to default values. These can be changed in the file as required.
 
-6. If you get an errors related to publickey, similar to this:
-```shell
+6. If you get an error related to publickey similar to this:
+```
 ssh ecflow-user@217.71.194.199
 The authenticity of host '217.71.194.199 (217.71.194.199)' can't be established.
 ECDSA key fingerprint is ----
@@ -331,7 +331,7 @@ Are you sure you want to continue connection (yes/no/[fingerprint])? yes
 Warning: Permanently added '217.71.194.199' (ECDSA) to the list of known hosts.
 ecflow-user@217.71.194.199: Permission denied (publickey).
 ```
-check:
+check that:
 
 a) You have been whitelisted by ECMWF according to your `~/.ssh/id_rsa.pub` key (NOT `id_rsa_troika.pub`)
 
