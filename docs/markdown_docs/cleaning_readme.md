@@ -1,3 +1,4 @@
+(cleaning-of-experiment)=
 # Cleaning of experiment
  The forecast suite  produces a lot of files in the working and output folders. To avoid increased usage of file storage, it is needed to have a cleaning feature, which allows configurable options to delete files.
 

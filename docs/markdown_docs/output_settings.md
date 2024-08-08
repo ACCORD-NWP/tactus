@@ -1,6 +1,6 @@
 # Configure selection of timings in output settings
 
-Describes examples of timings in output settings for `[general.output_settings]` in the config file, see [output settings](https://destination-earth-digital-twins.github.io/deode-prototype-docs/misc_section_in_doc_page.html#property-config-general-output-settings).
+Describes examples of timings in output settings for `[general.output_settings]` in the config file, see [output settings](#property-config-general-output-settings).
 
 Output timings must be specified as follows:
 
