@@ -9,7 +9,7 @@
   include = [{path = "deode/data/**/*", format = ["sdist", "wheel"]}]
   license = "MIT"
   readme = "README.md"
-  repository = "https://github.com/destination-earth-digital-twins/Deode-Prototype"
+  repository = "https://github.com/destination-earth-digital-twins/Deode-Workflow"
 
 [tool.poetry.scripts]
   deode = "deode.__main__:main"
