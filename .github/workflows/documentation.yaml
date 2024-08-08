@@ -80,14 +80,14 @@ jobs:
         run: |
           touch docs/_build/.nojekyll
 
-      - name: Deploy to https://github.com/destination-earth-digital-twins/deode-prototype-docs
+      - name: Deploy to https://github.com/destination-earth-digital-twins/deode-workflow-docs
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
         uses: cpina/github-action-push-to-another-repository@main
         env:
           SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
         with:
           source-directory: 'docs/_build/'
-          destination-repository-name: 'destination-earth-digital-twins/Deode-Workflow-docs'
+          destination-repository-name: 'destination-earth-digital-twins/deode-workflow-docs'
           target-branch: gh-pages
           target-directory: docs/
           user-name: Deode Workflow API Doc Builder

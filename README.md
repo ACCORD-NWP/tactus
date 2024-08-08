@@ -1,5 +1,5 @@
 [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/destination-earth-digital-twins/Deode-Workflow)
-[![Github Pages](https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white)](https://destination-earth-digital-twins.github.io/deode-prototype-docs/)
+[![Github Pages](https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white)](https://destination-earth-digital-twins.github.io/deode-workflow-docs/)
 
 
 [![Linting](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/linting.yaml/badge.svg)](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/linting.yaml)
@@ -13,7 +13,7 @@
 
 The [DEODE Scripting System](https://github.com/destination-earth-digital-twins/Deode-Workflow/) provides a `deode` python package that runs the [Destination Earth on Demand Extremes system](https://github.com/destination-earth-digital-twins).
 
-See the [project's documentation page](https://destination-earth-digital-twins.github.io/deode-prototype-docs) for more information.
+See the [project's documentation page](https://destination-earth-digital-twins.github.io/deode-workflow-docs) for more information.
 
 
 ## System Requirements
@@ -121,7 +121,7 @@ Before you can use `deode` (apart from the `-h` option), you will need a configu
 [TOML](https://en.wikipedia.org/wiki/TOML) format. Please take a look at
  the default
  [config.toml](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/deode/data/config_files/config.toml) file, as well as the
- [project's Doc Page](https://destination-earth-digital-twins.github.io/deode-prototype-docs),
+ [project's Doc Page](https://destination-earth-digital-twins.github.io/deode-workflow-docs),
  for more information about this.
 
  To see all configs currently in place in your `deode` setup, please run
@@ -169,6 +169,6 @@ deode run \
       --output $PWD/forecast.log
 ```
 
-For other platforms a new config file would have to be created first. Please consult the [configure cases](https://destination-earth-digital-twins.github.io/deode-prototype-docs/misc_section_in_doc_page.html#configure-cases) section in the documentation for more information.
+For other platforms a new config file would have to be created first. Please consult the [configure cases](misc_section_in_doc_page.rst#configure-cases) section in the documentation for more information.
 
 If you have done the above mentioned default ecflow test the stand alone forecast will pick the input data from the existing run and output the result in the same directories (as defined by the config file).

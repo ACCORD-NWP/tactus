@@ -43,7 +43,7 @@ For archiving we have the following two tasks
  * {class}`deode.tasks.archive.ArchiveHour` archives output from each cycle. Configured under `config.archiving.ecfs`.
 
 ## Cleaning
-These tasks takes care of temporary files and directories or files that has been archived as described above. The rules for the cleaning tasks described below are defined in `config.cleaning.TASK`. Read more about the cleaning [here](#cleaning-of-experiment). [Source](https://destination-earth-digital-twins.github.io/deode-prototype-docs/_modules/deode/cleaning.html#CleanDeode)
+These tasks takes care of temporary files and directories or files that has been archived as described above. The rules for the cleaning tasks described below are defined in `config.cleaning.TASK`. Read more about the cleaning [here](#cleaning-of-experiment).
 
  * {class}`deode.tasks.cleaning_tasks.PreCleaning` prepares the run by removing old ecflow output and job files.
  * {class}`deode.tasks.cleaning_tasks.CycleCleaning` runs after each cycle and removes old directories and files with some delay as defined in the configuration.

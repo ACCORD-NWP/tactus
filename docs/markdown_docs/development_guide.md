@@ -68,7 +68,7 @@ or
 poetry devtools pytest
 ```
 
-### Generate and view the documentation to be published to our [docpages](https://destination-earth-digital-twins.github.io/deode-prototype-docs/)
+### Generate and view the documentation to be published to our [docpages](https://destination-earth-digital-twins.github.io/deode-workflow-docs/)
 
 ```shell
 poetry devtools doc clean
