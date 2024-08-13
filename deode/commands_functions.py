@@ -289,7 +289,8 @@ def doc_config(args, config: ParsedConfig):  # noqa ARG001
     """
     now = datetime.datetime.now().isoformat(timespec="seconds")
     sys.stdout.write(
-        f"This was automatically generated running `deode doc config` on {now}.\n\n"
+        f"""The following section was automatically generated running
+        `deode doc config` on {now}.\n\n"""
     )
     sys.stdout.write(config.json_schema.get_markdown_doc() + "\n")
 

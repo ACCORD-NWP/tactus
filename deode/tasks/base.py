@@ -64,7 +64,7 @@ class Task(object):
         self.wdir = wdir
         self.unix_group = self.platform.get_value("platform.unix_group")
 
-        logger.info("Task running in {}", self.wdir)
+        logger.info("Task {} running in {}", self.name, self.wdir)
 
         self._set_eccodes_environment()
 
@@ -256,4 +256,4 @@ class UnitTest(Task):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Task.__init__(self, config, __name__)
+        Task.__init__(self, config, __class__.__name__)

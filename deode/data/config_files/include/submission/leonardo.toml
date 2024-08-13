@@ -37,10 +37,20 @@
 [submission.gnu.MODULES]
   ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
 
+[submission.iomerge.age_limit]
+  fullpos = 15
+  history = 15
+  surfex = 15
+
+[submission.iomerge.files_expected]
+  fullpos = 0
+  history = -1
+  surfex = 0
+
 [submission.parallel]
   NPROC = 8
   SCHOST = "leonardo"
-  tasks = ["Forecast", "e927", "Pgd", "Prep", "c903"]
+  tasks = ["Forecast", "E927", "Pgd", "Prep", "C903"]
   WRAPPER = "srun"
 
 [submission.parallel.BATCH]
@@ -112,16 +122,16 @@
 [submission.task_exceptions.ArchiveStatic.BATCH]
   WALLTIME = "#SBATCH --time=03:00:00"
 
-[submission.task_exceptions.c903]
+[submission.task_exceptions.C903]
   NPROC = 32
 
-[submission.task_exceptions.c903.BATCH]
+[submission.task_exceptions.C903.BATCH]
   MEM = "#SBATCH --mem=200GB"
   NODE = "#SBATCH --nodes=12"
   NTASKS = "#SBATCH --ntasks=36"
   WALLTIME = "#SBATCH --time=00:30:00"
 
-[submission.task_exceptions.creategrib]
+[submission.task_exceptions.CreateGrib]
   binary = "gl_20230823"
   bindir = "/home/snh02/work/gl_binaries"
 
@@ -137,10 +147,10 @@
 [submission.task_exceptions.E923Update.MODULES]
   OPENMPI = ["load", "openmpi/4.1.1"]
 
-[submission.task_exceptions.e927]
+[submission.task_exceptions.E927]
   NPROC = 16
 
-[submission.task_exceptions.e927.BATCH]
+[submission.task_exceptions.E927.BATCH]
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=16"
 

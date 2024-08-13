@@ -1,10 +1,10 @@
 # Troubleshooting
 
-Welcome to our troubleshooting tips. Before proceeding, please make sure you have carefully read the [README](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md) file and, if applicable, the [development guide](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/docs/markdown_docs/development_guide.md).
+Welcome to our troubleshooting tips. Before proceeding, please make sure you have carefully read the [README](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md) file and, if applicable, the [development guide](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/docs/markdown_docs/development_guide.md).
 
 ## Cannot run `poetry`
-Make sure your system fulfills all [system requirements](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md#system-requirements).
-If you cannot execute `poetry` even so, you may need to reinstall and reconfigure it as instructed in the [README](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md) file.
+Make sure your system fulfills all [system requirements](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md#system-requirements).
+If you cannot execute `poetry` even so, you may need to reinstall and reconfigure it as instructed in the [README](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md) file.
 
 ## `Command not found` when trying to run `deode` or some related command
 Try running `poetry update`.

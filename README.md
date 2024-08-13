@@ -1,19 +1,19 @@
-[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/destination-earth-digital-twins/Deode-Prototype)
-[![Github Pages](https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white)](https://destination-earth-digital-twins.github.io/deode-prototype-docs/)
+[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/destination-earth-digital-twins/Deode-Workflow)
+[![Github Pages](https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white)](https://destination-earth-digital-twins.github.io/deode-workflow-docs/)
 
 
-[![Linting](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/linting.yaml/badge.svg)](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/linting.yaml)
-[![Tests](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/tests.yaml/badge.svg
-)](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/tests.yaml)
-[![codecov](https://codecov.io/github/destination-earth-digital-twins/Deode-Prototype/branch/develop/graph/badge.svg?token=4PRUK8DMZF)](https://codecov.io/github/destination-earth-digital-twins/Deode-Prototype)
+[![Linting](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/linting.yaml/badge.svg)](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/linting.yaml)
+[![Tests](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/tests.yaml/badge.svg
+)](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/tests.yaml)
+[![codecov](https://codecov.io/github/destination-earth-digital-twins/Deode-Workflow/branch/develop/graph/badge.svg?token=4PRUK8DMZF)](https://codecov.io/github/destination-earth-digital-twins/Deode-Workflow)
 
 # DEODE Scripting System
 
 ## About
 
-The [DEODE Scripting System](https://github.com/destination-earth-digital-twins/Deode-Prototype/) provides a `deode` python package that runs the [Destination Earth on Demand Extremes system](https://github.com/destination-earth-digital-twins).
+The [DEODE Scripting System](https://github.com/destination-earth-digital-twins/Deode-Workflow/) provides a `deode` python package that runs the [Destination Earth on Demand Extremes system](https://github.com/destination-earth-digital-twins).
 
-See the [project's documentation page](https://destination-earth-digital-twins.github.io/deode-prototype-docs) for more information.
+See the [project's documentation page](https://destination-earth-digital-twins.github.io/deode-workflow-docs) for more information.
 
 
 ## System Requirements
@@ -85,8 +85,8 @@ For the time being the recommended installation method is the [developer-mode in
 This is for those who need/wish to make changes to `deode`'s
 source code, or use code from a different branch than `master` and it's currently the recommended way to use `deode`.
 ```shell
-git clone git@github.com:destination-earth-digital-twins/Deode-Prototype.git
-cd Deode-Prototype
+git clone git@github.com:destination-earth-digital-twins/Deode-Workflow.git
+cd Deode-Workflow
 poetry install
 ```
 
@@ -120,8 +120,8 @@ Installing in developer mode means that changes made in any of the package's sou
 Before you can use `deode` (apart from the `-h` option), you will need a configuration file written in the
 [TOML](https://en.wikipedia.org/wiki/TOML) format. Please take a look at
  the default
- [config.toml](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/deode/data/config_files/config.toml) file, as well as the
- [project's Doc Page](https://destination-earth-digital-twins.github.io/deode-prototype-docs),
+ [config.toml](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/deode/data/config_files/config.toml) file, as well as the
+ [project's Doc Page](https://destination-earth-digital-twins.github.io/deode-workflow-docs),
  for more information about this.
 
  To see all configs currently in place in your `deode` setup, please run
@@ -151,27 +151,11 @@ input data is in place.
 
 ### Running ecflow suite on ATOS or LUMI
 
-The following command with run using the default experiment:
+The following command will run  the full suite using the default experiment:
 ```shell
 deode case ?deode/data/config_files/configurations/cy48t3_arome -o cy48t3_arome.toml --start-suite
 ```
 
-The ecflow_scheduler variables live inside `deode/data/config_files/include/scheduler/ecflow_atos_bologna.toml or deode/data/config_files/include/scheduler/ecflow_lumi.toml`:
-```toml
-[ecfvars]
-  ecf_files = "@HOME@/deode_ecflow/ecf_files"
-  ecf_files_remotely = "@HOME@/deode_ecflow/ecf_files"
-  ecf_home = "@HOME@/deode_ecflow/jobout"
-  ecf_host = "ecflow-gen-@USER@-001"
-  ecf_jobout = "@HOME@/deode_ecflow/jobout"
-  ecf_out = "@HOME@/deode_ecflow/jobout"
-  ecf_port = "3141"
-  ecf_remoteuser = "@USER@"
-  ecf_ssl = "0"
-  ecf_user = "@USER@"
-  hpc = "atos"
-```
-which are set to default values. These can be changed in the file as required.
 
 ### Running the `"forecast"` task from the `hpc-login`'s command line
 
@@ -185,6 +169,6 @@ deode run \
       --output $PWD/forecast.log
 ```
 
-For other platforms a new config file would have to be created first. Please consult the [configure cases](https://destination-earth-digital-twins.github.io/deode-prototype-docs/misc_section_in_doc_page.html#configure-cases) section in the documentation for more information.
+For other platforms a new config file would have to be created first. Please consult the [configure cases](misc_section_in_doc_page.rst#configure-cases) section in the documentation for more information.
 
 If you have done the above mentioned default ecflow test the stand alone forecast will pick the input data from the existing run and output the result in the same directories (as defined by the config file).

@@ -37,7 +37,7 @@ class Gmted(Task):
         """
         self.domain = self.get_domain_properties(config)
 
-        Task.__init__(self, config, "Gmted")
+        Task.__init__(self, config, __class__.__name__)
 
         self.gmted2010_path = self.fmanager.platform.get_platform_value(
             "gmted2010_data_path"
@@ -261,7 +261,7 @@ class Soil(Task):
         """
         self.domain = self.get_domain_properties(config)
 
-        Task.__init__(self, config, "Soil")
+        Task.__init__(self, config, __class__.__name__)
         logger.debug("Constructed Soil task")
 
     def get_domain_properties(self, config) -> dict:

@@ -335,6 +335,11 @@
           "type": "string",
           "description": "Path to the forecast json config file",
           "default": "@DEODE_HOME@/deode/data/input/@CYCLE@/forecast.json"
+	},
+	"c903_input_definition" : {
+          "type": "string",
+          "description": "Path to the c903 json config file",
+          "default": "@DEODE_HOME@/deode/data/input/@CYCLE@/c903.json"
 	}
       }
     },

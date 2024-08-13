@@ -17,7 +17,7 @@ class E927(Task):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Task.__init__(self, config, __name__)
+        Task.__init__(self, config, __class__.__name__)
 
         self.climdir = self.platform.get_system_value("climdir")
         self.archive = self.platform.get_system_value("archive")

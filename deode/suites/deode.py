@@ -11,6 +11,7 @@ from ..datetime_utils import (
 )
 from ..logs import logger
 from ..os_utils import deodemakedirs
+from ..submission import ProcessorLayout
 from .base import (
     EcflowSuiteFamily,
     EcflowSuiteTask,
@@ -56,7 +57,9 @@ class DeodeSuiteDefinition(SuiteDefinition):
         self.interpolate_boundaries = config["suite_control.interpolate_boundaries"]
         self.do_marsprep = config["suite_control.do_marsprep"]
 
-        self.nproc_io = config.get("submission.task_exceptions.Forecast.NPROC_IO", 0)
+        settings = self.task_settings.get_settings("Forecast")
+        procs = ProcessorLayout(settings).get_proc_dict()
+        self.nproc_io = procs["nproc_io"] if procs["nproc_io"] is not None else 0
         if self.nproc_io > 0:
             self.n_io_merge = config["suite_control.n_io_merge"]
         else:
@@ -96,7 +99,7 @@ class DeodeSuiteDefinition(SuiteDefinition):
             self.do_prep = False
             self.create_static_data = False
 
-        final_cleaning_trigger = []
+        final_cleaning_trigger = [None]
         if self.do_cleaning:
             initial_cleaning = EcflowSuiteTask(
                 "PreCleaning",
@@ -417,11 +420,11 @@ class DeodeSuiteDefinition(SuiteDefinition):
                             ecf_files_remotely=self.ecf_files_remotely,
                         )
 
-                        interpolation_task = "c903" if self.do_marsprep else "e927"
+                        interpolation_task = "C903" if self.do_marsprep else "E927"
 
                         if self.split_mars:
                             split_mars_task = EcflowSuiteTask(
-                                "marsprep",
+                                "Marsprep",
                                 lbc_fam,
                                 config,
                                 self.task_settings,
@@ -546,7 +549,7 @@ class DeodeSuiteDefinition(SuiteDefinition):
                         self.ecf_files,
                         ecf_files_remotely=self.ecf_files_remotely,
                     )
-                    args = f"ionr={ionr}"
+                    args = f"ionr={ionr};nproc_io={self.nproc_io}"
                     EcflowSuiteTask(
                         "IOmerge",
                         iomerge_sub,

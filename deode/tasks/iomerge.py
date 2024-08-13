@@ -19,7 +19,7 @@ class IOmerge(Task):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Task.__init__(self, config, "IOmerge")
+        Task.__init__(self, config, __class__.__name__)
 
         self.cycle = self.config["general.cycle"]
         self.cnmexp = self.config["general.cnmexp"]
@@ -38,7 +38,8 @@ class IOmerge(Task):
         self.archive = self.platform.get_system_value("archive")
         self.deode_home = self.config["platform.deode_home"]
         self.file_templates = self.config["file_templates"]
-        self.nproc_io = config.get("submission.task_exceptions.Forecast.NPROC_IO", 0)
+        self.nproc_io = int(self.config.get("task.args.nproc_io", "0"))
+        self.iomerge = self.config["submission.iomerge"]
 
     @staticmethod
     def wait_for_file(filename, age_limit=15):
@@ -55,42 +56,74 @@ class IOmerge(Task):
             now = time()
             st = os.stat(filename).st_mtime
 
-    def wait_for_io(self, filetype, lt, fc_path="../Forecast"):
+    def wait_for_io(self, filetype, lt, fc_path="../Forecast", maxtries=2):
         """Wait for all io_server output to be stable.
 
         Args:
             filetype (str): kind of output file
             lt (timeDelta): lead time
             fc_path (str): path to forecast directory
+            maxtries (int): maximum number of file search trials
+
+        Returns:
+            file_list (list): List of files expected
+
+        Raises:
+            RuntimeError: In case of erroneous number of files
+
         """
         ftemplate = self.file_templates[filetype]["model"]
+        age_limit = self.iomerge["age_limit"][filetype]
+        files_expected = self.iomerge["files_expected"][filetype]
+
         validtime = self.basetime + lt
         filename = self.platform.substitute(ftemplate, validtime=validtime)
 
-        file_list = []
-        if filetype == "history":
-            age_limit = 20
-            for io in range(self.nproc_io):
-                iopath = f"io_serv.{io+1:06}.d"
-                file_list += glob.glob(f"{fc_path}/{iopath}/{filename}.speca.*")
-                file_list += glob.glob(f"{fc_path}/{iopath}/{filename}.gridall")
-        elif filetype == "surfex":
-            age_limit = 15
-            file_list += [f"{fc_path}/{filename}"]
-            for io in range(self.nproc_io):
-                iopath = f"io_serv.{io+1:06}.d"
-                file_list += glob.glob(f"{fc_path}/{iopath}/{filename}")
-        elif filetype == "fullpos":
-            age_limit = 15
-            # FIXME: what if we have fullpos output in FA format?
-            for io in range(self.nproc_io):
-                iopath = f"io_serv.{io+1:06}.d"
-                file_list += glob.glob(f"{fc_path}/{iopath}/{filename}.hfp")
-        else:
-            logger.error("Bad file_type {}", filetype)
+        ntries = 0
+        while True:
+            ntries += 1
+            file_list = []
+            if filetype == "history":
+                files_expected = files_expected if files_expected != 0 else -1
+                for io in range(self.nproc_io):
+                    iopath = f"io_serv.{io+1:06}.d"
+                    file_list += glob.glob(f"{fc_path}/{iopath}/{filename}.speca.*")
+                    file_list += glob.glob(f"{fc_path}/{iopath}/{filename}.gridall")
+            elif filetype == "surfex":
+                files_expected = (
+                    files_expected if files_expected != 0 else (1 + self.nproc_io)
+                )
+                file_list += [f"{fc_path}/{filename}"]
+                for io in range(self.nproc_io):
+                    iopath = f"io_serv.{io+1:06}.d"
+                    file_list += glob.glob(f"{fc_path}/{iopath}/{filename}")
+            elif filetype == "fullpos":
+                files_expected = files_expected if files_expected != 0 else self.nproc_io
+                # FIXME: what if we have fullpos output in FA format?
+                for io in range(self.nproc_io):
+                    iopath = f"io_serv.{io+1:06}.d"
+                    file_list += glob.glob(f"{fc_path}/{iopath}/{filename}.hfp")
+            else:
+                files_expected = 0
+                logger.error("Bad file_type {}", filetype)
 
-        for ff in file_list:
-            self.wait_for_file(ff, age_limit)
+            for ff in file_list:
+                self.wait_for_file(ff, age_limit)
+
+            files_found = len(file_list)
+            if files_found == files_expected or files_expected < 0:
+                break
+
+            if ntries == maxtries:
+                logger.error(
+                    "Expected {} files found {} after {} scans",
+                    files_expected,
+                    files_found,
+                    ntries,
+                )
+                raise RuntimeError(f"Expected {files_expected} files found {files_found}")
+
+        return file_list
 
     def merge_output(self, lt, fc_path="../Forecast"):
         """Merge distributed forecast model output.
@@ -101,7 +134,6 @@ class IOmerge(Task):
 
         """
         logger.info("Merge_output called at lt = {}", lt)
-        io_path = f"{fc_path}/io_serv*.d"
 
         for filetype, oi in self.output_settings.items():
             if filetype not in list(self.file_templates.keys()):
@@ -122,33 +154,28 @@ class IOmerge(Task):
             filename_out = self.platform.substitute(ftemplate_out, validtime=validtime)
             logger.info("Merging file {}", filename)
 
-            self.wait_for_io(filetype, lt, fc_path=fc_path)
+            file_list = self.wait_for_io(filetype, lt, fc_path=fc_path)
+            files = " ".join(file_list)
+            logger.info("{} input files:", len(file_list))
+            for x in file_list:
+                logger.info("  {}", x)
 
-            if filetype == "history":
+            if filetype in ("history", "surfex"):
                 lfitools = self.get_binary("lfitools")
-                cmd = f"{lfitools} facat all {io_path}/{filename}.gridall "
-                cmd += f"{io_path}/{filename}.speca* {filename}"
-                logger.debug(cmd)
-                BatchJob(os.environ, wrapper="").run(cmd)
 
-            elif filetype == "surfex":
                 # NOTE: .sfx also has a part in the working directory,
                 #        so you *must* change the name
-                lfitools = self.get_binary("lfitools")
-                cmd = f"{lfitools} facat all {fc_path}/{filename} "
-                cmd += f"{io_path}/{filename} {filename}"
-                logger.debug(cmd)
-                BatchJob(os.environ, wrapper="").run(cmd)
+                cmd = f"{lfitools} facat all {files} {filename}"
 
             elif filetype == "fullpos":
                 # FIXME: fullpos output /can/ be FA or GRIB2
                 # Fullpos (grib2) output has .hfp as extra file extension
-                cmd = f"cat {io_path}/{filename}*.hfp > {filename}"
-                logger.debug(cmd)
-                BatchJob(os.environ, wrapper="").run(cmd)
+                cmd = f"cat {files} > {filename}"
             else:
                 logger.error("Unsupported filetype {}", filetype)
                 continue
+
+            BatchJob(os.environ, wrapper="").run(cmd)
 
             # write output to archive (or to the Forecast directory...)
             self.fmanager.output(filename, f"{self.archive}/{filename_out}")

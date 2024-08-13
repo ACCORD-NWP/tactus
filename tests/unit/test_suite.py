@@ -62,19 +62,21 @@ class TestSuite:
         "param",
         [
             {"boundaries": {"bdmax": 1}},
+            {"suite_control": {"create_static_data": False}},
+            {"suite_control": {"create_time_dependent_suite": False, "do_soil": False}},
             {
                 "suite_control": {
-                    "do_pgd": False,
                     "do_archiving": True,
-                    "do_soil": False,
-                    "cold_start": False,
-                    "interpolate_boundaries": False,
+                    "do_cleaning": False,
+                    "do_extractsqlite": True,
                     "do_marsprep": True,
+                    "do_pgd": False,
+                    "do_soil": False,
+                    "interpolate_boundaries": False,
+                    "cold_start": False,
                 }
             },
             {"suite_control": {"interpolate_boundaries": False}},
-            {"suite_control": {"create_static_data": False}},
-            {"suite_control": {"create_time_dependent_suite": False, "do_soil": False}},
             {"submission": {"max_ecf_tasks": 2}},
         ],
     )

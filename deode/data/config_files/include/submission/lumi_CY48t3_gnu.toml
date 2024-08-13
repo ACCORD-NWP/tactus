@@ -21,7 +21,7 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
 [parallel]
   NPROC = 16
   SCHOST = "lumi-batch"
-  tasks = ["Forecast", "e927", "Pgd", "Prep", "c903", "E923Monthly", "E923Constant"]
+  tasks = ["Forecast", "E927", "Pgd", "Prep", "C903", "E923Monthly", "E923Constant"]
   WRAPPER = "srun -n @NPROC@"
 
 [parallel.BATCH]
@@ -126,17 +126,17 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
 [task]
   wrapper = "time"
 
-[task_exceptions.c903]
+[task_exceptions.C903]
   NPROC = 12
 
-[task_exceptions.c903.BATCH]
+[task_exceptions.C903.BATCH]
   MEM = "#SBATCH --mem=0"
   NODE = "#SBATCH --nodes=4"
   NTASKS = "#SBATCH --ntasks=12"
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=3"
   WALLTIME = "#SBATCH --time=00:30:00"
 
-[task_exceptions.c903.ENV]
+[task_exceptions.C903.ENV]
   DR_HOOK_TRAPFPE_DIVBYZERO = 1
   DR_HOOK_TRAPFPE_OVERFLOW = 1
   OMP_NUM_THREADS = 1
@@ -147,10 +147,10 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
 [task_exceptions.E923Monthly]
   NPROC = 1
 
-[task_exceptions.e927]
+[task_exceptions.E927]
   NPROC = 16
 
-[task_exceptions.e927.BATCH]
+[task_exceptions.E927.BATCH]
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=16"
 

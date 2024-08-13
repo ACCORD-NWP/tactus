@@ -11,5 +11,8 @@
 [fullpos]
   selection = ["rules", "namfpc_header", "master_selection_ALARO"]
 
+[pgd]
+  npatch = 1
+
 [task.creategrib]
   conversions = []

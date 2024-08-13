@@ -615,7 +615,7 @@ class Pgd(Task):
             config (deode.ParsedConfig): Configuration
 
         """
-        Task.__init__(self, config, "Pgd")
+        Task.__init__(self, config, __class__.__name__)
         self.program = "pgd"
         self.nlgen = NamelistGenerator(self.config, "surfex")
         self.climdir = self.platform.get_system_value("climdir")
@@ -694,7 +694,7 @@ class Prep(Task):
             config (deode.ParsedConfig): Configuration
 
         """
-        Task.__init__(self, config, "Prep")
+        Task.__init__(self, config, __class__.__name__)
         self.nlgen = NamelistGenerator(self.config, "surfex")
         self.archive = self.platform.get_system_value("archive")
         # TODO get from args

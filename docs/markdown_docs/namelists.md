@@ -1,5 +1,5 @@
 # Namelist handling in deode
-Describes the namelist handling in the Deode-Prototype.
+Describes the namelist handling in the Deode-Workflow.
 
 ## Internal usage
 The deode namelists are stored as yml files and assembled following a set of rules. The upper air and surfex namelists are stored in `master_namelists.yml` and `surfex_namelists.yml` respectively. In these config files the namelists are grouped depending on function and application. E.g. the namelist for generation of climate files (configuration E923) are separated in a base block, `e923_base` and one additional block for each step, e.g. `e923_0`. In `assemble_master.yml` the rules for how these blocks are combinged is defined. For the initial part, `e923_part_0` is defined as
