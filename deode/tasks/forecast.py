@@ -113,7 +113,7 @@ class Forecast(Task):
         Final result is the expected output file name in the working directory
         (as if there was no IO server).
         NOTE: This function has been replaced by io_merge tasks.
-              It is only called if n_io_merge=0.
+        It is only called if n_io_merge=0.
         """
         dt_list = oi2dt_list(periods, self.forecast_range)
 

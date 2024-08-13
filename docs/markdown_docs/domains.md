@@ -6,7 +6,7 @@ The domain you use for your run needs to be defined in a toml file and placed in
 
 We recommend you use tools like domain_maker.py (EpyGraM) or [Domain Creation Tool](https://hirlam.github.io/HarmonieSystemDocumentation/dev/ExperimentConfiguration/ModelDomain/) (follow the link) to define your domain.
 
-The parameters you can put into your domain configuration can be found in [config/domain](https://destination-earth-digital-twins.github.io/deode-prototype-docs/misc_section_in_doc_page.html#property-config-domain) section.
+The parameters you can put into your domain configuration can be found in [the config/domain section](#property-config-domain).
 
 Some of the parameters are optional and derived automatically if not provided:
 
