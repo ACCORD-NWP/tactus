@@ -4,7 +4,7 @@ Follow the instructions below to add a new task to the system.
 
 ## Code requirements
 
-In order to start adding a new task to the deode prototype, a *file* containing your task needs to be created in the `$DEODE_PROTOTYPE/deode/tasks` folder, where **$DEODE_PROTOTYPE** points to the full name to the folder in which the deode prototype is installed.
+In order to start adding a new task to the deode workflow, a *file* containing your task needs to be created in the `$DEODE_WORKFLOW/deode/tasks` folder, where **$DEODE_WORKFLOW** points to the full name to the folder in which the deode workflow is installed.
 
 In the `tasks` folder, the `discover_task.py` file looks for the task specified in the ```deode run``` command. The task name should be the name of the **class** of your task, as it's in the class names that discover_task.py gets the tasks available. For ease of use, the *file* name containing your class can also be named the same as the class.
 

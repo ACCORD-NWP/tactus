@@ -1,15 +1,15 @@
-[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/destination-earth-digital-twins/Deode-Prototype)
-[![Github Pages](https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white)](https://destination-earth-digital-twins.github.io/deode-prototype-docs/)
+[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/destination-earth-digital-twins/Deode-Workflow)
+[![Github Pages](https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white)](https://destination-earth-digital-twins.github.io/deode-workflow-docs/)
 
 
-[![Linting](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/linting.yaml/badge.svg)](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/linting.yaml)
-[![Tests](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/tests.yaml/badge.svg
-)](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/tests.yaml)
-[![codecov](https://codecov.io/github/destination-earth-digital-twins/Deode-Prototype/branch/develop/graph/badge.svg?token=4PRUK8DMZF)](https://codecov.io/github/destination-earth-digital-twins/Deode-Prototype)
+[![Linting](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/linting.yaml/badge.svg)](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/linting.yaml)
+[![Tests](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/tests.yaml/badge.svg
+)](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/tests.yaml)
+[![codecov](https://codecov.io/github/destination-earth-digital-twins/Deode-Workflow/branch/develop/graph/badge.svg?token=4PRUK8DMZF)](https://codecov.io/github/destination-earth-digital-twins/Deode-Workflow)
 
 # LUMI 
 ## Getting on LUMI
-To run the project on LUMI, you need to have a LUMI account and add your SSH key to it. Please check the [online instructions on how to do that](https://docs.lumi-supercomputer.eu/firststeps/SSH-keys/). Once you have your SSH key added, you can login to LUMI by running `ssh -i <your-private-key> <username>@@lumi.csc.fi`. Once logged in, create a SSH key and add that to your GitHub account so you can clone the repo. Then, please follow the download, install and usage instructions provided in the [README](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/README.md) file.
+To run the project on LUMI, you need to have a LUMI account and add your SSH key to it. Please check the [online instructions on how to do that](https://docs.lumi-supercomputer.eu/firststeps/SSH-keys/). Once you have your SSH key added, you can login to LUMI by running `ssh -i <your-private-key> <username>@@lumi.csc.fi`. Once logged in, create a SSH key and add that to your GitHub account so you can clone the repo. Then, please follow the download, install and usage instructions provided in the [README](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md) file.
 
 ## Running DEODE on LUMI
 
@@ -151,7 +151,7 @@ ln -sf ~/.ecflowrc/ssl/217.71.194.208.8443.crt ~/.ecflowrc/ssl/de330-ecflow-dev.
 
 So now your file arrangement should look like:
 ```shell
-(deode-py3.10) adelsaid@uan03:/scratch/project_465000527/adelsaid/git/github/draelsaid/Deode-Prototype> ls -l ~/.ecflowrc/ssl/
+(deode-py3.10) adelsaid@uan03:/scratch/project_465000527/adelsaid/git/github/draelsaid/Deode-Workflow> ls -l ~/.ecflowrc/ssl/
 total 8
 -rw-rw---- 1 adelsaid adelsaid 1103 Apr 24 17:58 217.71.194.208.8443.crt
 -rw-rw---- 1 adelsaid adelsaid 1107 Oct 18  2023 217.71.194.208.8443.crt
@@ -160,14 +160,14 @@ lrwxrwxrwx 1 adelsaid adelsaid   54 Apr 29 11:00 de330-ecflow-prod.8443.crt -> /
 ```
 and
 ```shell
-adelsaid@uan02:/scratch/project_465000527/adelsaid/git/github/draelsaid/Deode-Prototype> ls ~/.ecflowrc/
+adelsaid@uan02:/scratch/project_465000527/adelsaid/git/github/draelsaid/Deode-Workflow> ls ~/.ecflowrc/
 ecf.custom_passwd  ssl
 ```
 
 6. Then map the following ECF variables:
 
 ```shell
-adelsaid@uan02:/scratch/project_465000527/adelsaid/git/github/draelsaid/Deode-Prototype> env | grep ECF
+adelsaid@uan02:/scratch/project_465000527/adelsaid/git/github/draelsaid/Deode-Workflow> env | grep ECF
 ECF_CUSTOM_PASSWD=/users/adelsaid/.ecflowrc/ecf.custom_passwd
 ECF_HOST=217.71.194.208
 ECF_PORT=8443
@@ -197,9 +197,9 @@ de_330 217.71.194.199 8443 {PASSWORD_OBTAINED_FROM_ECMWF}
 
 Only once these steps are completed, test your connection by pinging to **each server** (you have to load the ecflow module first as described in the next section):
 ```shell
-adelsaid@uan02:/scratch/project_465000527/adelsaid/git/github/draelsaid/Deode-Prototype> ecflow_client --ping --host 217.71.194.199 --port 8443
-ping server(217.71.194.199:8443) succeeded in 00:00:00.171897  ~171 milliseconds
-adelsaid@uan02:/scratch/project_465000527/adelsaid/git/github/draelsaid/Deode-Prototype> ecflow_client --ping --host 217.71.194.208 --port 8443
+adelsaid@uan02:/scratch/project_465000527/adelsaid/git/github/draelsaid/Deode-Workflow> ecflow_client --ping --host 217.71.195.251 --port 8443
+ping server(217.71.195.251:8443) succeeded in 00:00:00.171897  ~171 milliseconds
+adelsaid@uan02:/scratch/project_465000527/adelsaid/git/github/draelsaid/Deode-Workflow> ecflow_client --ping --host 217.71.194.208 --port 8443
 ping server(217.71.194.208:8443) succeeded in 00:00:00.147990  ~147 milliseconds
 ```
 If there are any obvious errors, rechart your steps by starting again. 
@@ -322,8 +322,8 @@ which look like:
 ```
 and are preset to default values. These can be changed in the file as required.
 
-6. If you get an errors related to publickey, similar to this:
-```shell
+6. If you get an error related to publickey similar to this:
+```
 ssh ecflow-user@217.71.194.199
 The authenticity of host '217.71.194.199 (217.71.194.199)' can't be established.
 ECDSA key fingerprint is ----
@@ -331,7 +331,7 @@ Are you sure you want to continue connection (yes/no/[fingerprint])? yes
 Warning: Permanently added '217.71.194.199' (ECDSA) to the list of known hosts.
 ecflow-user@217.71.194.199: Permission denied (publickey).
 ```
-check:
+check that:
 
 a) You have been whitelisted by ECMWF according to your `~/.ssh/id_rsa.pub` key (NOT `id_rsa_troika.pub`)
 

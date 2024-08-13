@@ -1,11 +1,11 @@
-[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/destination-earth-digital-twins/Deode-Prototype)
-[![Github Pages](https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white)](https://destination-earth-digital-twins.github.io/deode-prototype-docs/)
+[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/destination-earth-digital-twins/Deode-Workflow)
+[![Github Pages](https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white)](https://destination-earth-digital-twins.github.io/deode-workflow-docs/)
 
 
-[![Linting](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/linting.yaml/badge.svg)](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/linting.yaml)
-[![Tests](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/tests.yaml/badge.svg
-)](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/tests.yaml)
-[![codecov](https://codecov.io/github/destination-earth-digital-twins/Deode-Prototype/branch/develop/graph/badge.svg?token=4PRUK8DMZF)](https://codecov.io/github/destination-earth-digital-twins/Deode-Prototype)
+[![Linting](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/linting.yaml/badge.svg)](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/linting.yaml)
+[![Tests](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/tests.yaml/badge.svg
+)](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/tests.yaml)
+[![codecov](https://codecov.io/github/destination-earth-digital-twins/Deode-Workflow/branch/develop/graph/badge.svg?token=4PRUK8DMZF)](https://codecov.io/github/destination-earth-digital-twins/Deode-Workflow)
 
 # Local installations
 
@@ -53,8 +53,8 @@ Freja is the SMHI research cluster operated by NSC. For more details see https:/
 
 Get the code
 ```
-git clone git@github.com:destination-earth-digital-twins/Deode-Prototype.git 
-cd Deode-Prototype
+git clone git@github.com:destination-earth-digital-twins/Deode-Workflow.git 
+cd Deode-Workflow
 ```
 
 Create a conda environment and install ecflow, gdal and poetry.
@@ -84,7 +84,7 @@ mamba deactivate
 To load your new environment do
 
 ``` 
-$ cd Deode-Prototype
+$ cd Deode-Workflow
 $ mamba activate .conda/
 ``` 
 

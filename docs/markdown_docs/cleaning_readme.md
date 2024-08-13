@@ -1,9 +1,10 @@
+(cleaning-of-experiment)=
 # Cleaning of experiment
  The forecast suite  produces a lot of files in the working and output folders. To avoid increased usage of file storage, it is needed to have a cleaning feature, which allows configurable options to delete files.
 
 Each forecast experiment has a start and end dates and cycle length. These settings define the experiment timeline and used folders:
 
-<img src="../figs/experiment_timeline.jpg" alt="drawing"/>
+![drawing](../docs/figs/experiment_timeline.jpg)
 
 working folder - contains the workings folder of each suite task: wrk="@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/"
 
@@ -26,7 +27,7 @@ cleaning = "include/cleaning.toml"
 ```
 ## Cleaning settings are separeted to general default settings and folder specific settings:
 
-<img src="../figs/cleaning_image.jpg"  alt="cleaning scheme"/>
+![cleaning scheme](../docs/figs/cleaning_image.jpg)
 
 ```shell
 defaults
