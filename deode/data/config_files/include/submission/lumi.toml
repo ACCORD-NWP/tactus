@@ -173,12 +173,6 @@
   binary = "gl"
   bindir = "/scratch/project_465000527/jasinskas/CY48T3-ftn16-O0_23-install/bin"
 
-#[submission.task_exceptions.E923Constant]
-#  NPROC = 1
-#
-#[submission.task_exceptions.E923Monthly]
-#  NPROC = 1
-
 [submission.task_exceptions.E923Update]
   bindir = "/scratch/project_465000527/kastelec/fa_sfx2clim/"
 
@@ -188,6 +182,9 @@
 [submission.task_exceptions.E927.BATCH]
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=16"
+
+[submission.task_exceptions.Forecast.ENV]
+  RTTOV_COEFDIR = "/scratch/project_465000527/de_330_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
 
 [submission.task_exceptions.Gmted.MODULES]
   GDAL = ["load", "scl-gdal_23"]

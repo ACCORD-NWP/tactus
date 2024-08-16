@@ -59,6 +59,10 @@
             "type": "string",
             "description": "Path to RRTM input data"
         },
+	"rttov_coefdir": {
+            "type": "string",
+            "description": "Path to RTTOV_COEF input data"
+        },
         "scratch": {
             "type": "string",
             "description": "Path used as macro for e.g. wrk and other directories."

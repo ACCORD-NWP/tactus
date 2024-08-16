@@ -49,7 +49,6 @@
 
   ECCODES_DEFINITION_PATH = "/scratch/project_465000527/ospaniel/opt/eccodes-2.34.1/share/eccodes:deode/data/eccodes/definitions/grib2/localConcepts/lfpw"
   ECCODES_SAMPLES_PATH = "/users/ospaniel/opt/share/eccodes/ifs_samples/grib1_mlgrib2"
-  RTTOV_COEFDIR = "/scratch/project_465000527/de_33050_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
 
 [submission.Forecast_cpu.MODULES]
   00_PURGE = ["--force", "purge"]
