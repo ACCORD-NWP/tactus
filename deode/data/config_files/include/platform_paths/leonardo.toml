@@ -22,6 +22,7 @@
   osm_data = "@CLIMDATA@/OSM_SFX8_1/GARDEN/"
   pgd_data_path = "@CLIMDATA@/PGD"
   rrtm_dir = "@STATIC_DATA@/rrtm/@CYCLE@"
+  rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef/"
   scratch = "/leonardo_scratch/large/userexternal/@USER@/deode"
   soilgrid_data_path = "@CLIMDATA@/SOILGRID"
   static_data = "/leonardo_scratch/fast/DestE_340_24/de_33050_common_data/DEODE/"

@@ -170,7 +170,7 @@
   WALLTIME = "#SBATCH --time=00:29:00"
 
 [submission.task_exceptions.Forecast.ENV]
-  RTTOV_COEFDIR = "/hpcperm/snh02/DEODE/satellite/rtcoef_rttov12/harm_coef/"
+  #  RTTOV_COEFDIR = "/hpcperm/snh02/DEODE/satellite/rtcoef_rttov12/harm_coef/"
   UCX_LOG_LEVEL = "error"
 
   NOUTPUT = 2

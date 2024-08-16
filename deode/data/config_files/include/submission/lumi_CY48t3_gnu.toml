@@ -170,7 +170,8 @@ submit_types = ["background_vm", "background_hpc", "serial", "parallel", "sqlite
 
 [task_exceptions.Forecast.ENV]
   DR_HOOK = 1
-  RTTOV_COEFDIR = "/scratch/project_465000527/de_33050_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
+
+#  RTTOV_COEFDIR = "/scratch/project_465000527/de_330_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
 
 [task_exceptions.Gmted.MODULES]
   GDAL = ["load", "scl-gdal_23"]

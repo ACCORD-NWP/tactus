@@ -180,7 +180,6 @@
 
 [submission.task_exceptions.Forecast.ENV]
   DR_HOOK = 1
-  RTTOV_COEFDIR = "/scratch/project_465000527/de_33050_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
   #Environment variables for ALARO PARALLEL
   APL_ALARO = 1
   INPART = 1

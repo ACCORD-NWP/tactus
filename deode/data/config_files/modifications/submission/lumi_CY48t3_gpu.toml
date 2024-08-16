@@ -70,8 +70,6 @@
   #ACC_NOTIFY=3
   NOUTPUT = 2
 
-  RTTOV_COEFDIR = "/scratch/project_465000527/de_33050_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
-
 [submission.Forecast_gpu.MODULES]
   00_PURGE = ["--force", "purge"]
   01_LUMI = ["load", "LUMI/23.03"]
@@ -95,4 +93,5 @@
   bindir = "/pfs/lustrep4/projappl/project_465000527/dhaumont/accord/pack/freeze_gpu_feb_2024/bin"
 
 [submission.task_exceptions.Forecast.ENV]
-  RTTOV_COEFDIR = "/scratch/project_465000527/de_33050_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
+
+#  RTTOV_COEFDIR = "/scratch/project_465000527/de_330_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
