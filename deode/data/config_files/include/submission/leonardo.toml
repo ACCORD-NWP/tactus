@@ -178,6 +178,13 @@
 [submission.task_exceptions.Gmted.MODULES]
   GDAL = ["load", "gdal/3.6.2"]
 
+[submission.task_exceptions.Marsprep.BATCH]
+  MEM = "#SBATCH --mem=0GB"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  QOS = "#SBATCH --qos=np"
+  WALLTIME = "#SBATCH --time=01:00:00"
+
 [submission.task_exceptions.Marsprep.ENV]
   MARS_READANY_BUFFER_SIZE = 17893020000
 
@@ -203,10 +210,3 @@
 
 [submission.task_exceptions.Soil.MODULES]
   GDAL = ["load", "gdal/3.6.2"]
-
-[task_exceptions.Marsprep.BATCH]
-  MEM = "#SBATCH --mem=0GB"
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=1"
-  QOS = "#SBATCH --qos=np"
-  WALLTIME = "#SBATCH --time=01:00:00"
