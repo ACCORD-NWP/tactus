@@ -216,14 +216,6 @@ f4_AROME:
     TFP_V%IBITS: 12
     TFP_VOR%ZFK: 32.0
     TFP_VV%ZFK: 32.0
-  NAMARPAR:
-    CMF_CLOUD: STAT
-    LBL89ARPEGE: true
-    LBL89EXP: true
-    LDEPOSC: true
-    LGZ: true
-    LPROJQITURB: true
-    XGZ: 1.83
   NAMARPHY:
     LKFBCONV: false
     LKFBD: false
@@ -406,12 +398,14 @@ f4_AROME:
   NAMPARAR:
     CFRAC_ICE_ADJUST: S
     CFRAC_ICE_SHALLOW_MF: S
+    CMF_CLOUD: DIRE
     CMICRO: ${submission.cmicro-ICE3}
     CSEDIM: STAT
     CSNOWRIMING: M90
     LCONVHG: true
     LCRFLIMIT: true
     LCRIAUTI: true
+    LDEPOSC: false
     LEVLIMIT: true
     LFEEDBACKT: true
     LFPREC3D: true

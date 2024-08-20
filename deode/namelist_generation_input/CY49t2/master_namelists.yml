@@ -222,14 +222,6 @@ f4_AROME:
     TFP_V%IBITS: 12
     TFP_VOR%ZFK: 32.0
     TFP_VV%ZFK: 32.0
-  NAMARPAR:
-    CMF_CLOUD: STAT
-    LBL89ARPEGE: true
-    LBL89EXP: true
-    LDEPOSC: true
-    LGZ: true
-    LPROJQITURB: true
-    XGZ: 1.83
   NAMARPHY:
     LKFBCONV: false
     LKFBD: false
