@@ -6,6 +6,7 @@
     "general.csc",
     "general.case",
     {sqlite_path = "extractsqlite.sqlite_path"},
+    {sqlite_model_name = "extractsqlite.sqlite_model_name"},
     {ecf_out = "scheduler.ecfvars.ecf_out"},
     {ecf_files = "scheduler.ecfvars.ecf_files"},
     {case_prefix = "scheduler.ecfvars.case_prefix"},
