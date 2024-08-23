@@ -22,7 +22,7 @@
   pattern = "*"
 
 [archiving.ecfs.paths]
-  aloc = "ectmp:"
+  aloc = "ec:"
   apath = "/@USER@/deode/@CASE@"
 
 [archiving.ecfs.settings]
