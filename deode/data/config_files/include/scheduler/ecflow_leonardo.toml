@@ -2,6 +2,7 @@
 
 [scheduler.ecfvars]
   case_prefix = ""
+  ecf_deode_home = "@DEODE_HOME@"
   ecf_files = "@HOME@/deode_ecflow/ecf_files"
   ecf_files_remotely = "@HOME@/deode_ecflow/ecf_files"
   ecf_home = "@HOME@/deode_ecflow/jobout"

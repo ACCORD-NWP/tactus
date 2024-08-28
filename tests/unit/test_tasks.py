@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 import tomlkit
 
+from deode import GeneralConstants
 from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import set_times
 from deode.plugin import DeodePluginRegistry
@@ -23,8 +24,6 @@ from deode.tasks.forecast import FirstGuess, Forecast
 from deode.tasks.iomerge import IOmerge
 from deode.tasks.marsprep import Marsprep
 from deode.toolbox import ArchiveError, FileManager, ProviderError
-
-WORKING_DIR = Path.cwd()
 
 
 def classes_to_be_tested():
@@ -59,7 +58,7 @@ def task_name_and_configs(request, base_raw_config, tmp_path_factory):
             wrk = "{tmp_path_factory.getbasetemp().as_posix()}"
             bindir = "{tmp_path_factory.getbasetemp().as_posix()}/bin"
         [platform]
-            deode_home = "{WORKING_DIR}"
+            deode_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
             scratch = "{tmp_path_factory.getbasetemp().as_posix()}"
             static_data = "{tmp_path_factory.getbasetemp().as_posix()}"
             climdata = "{tmp_path_factory.getbasetemp().as_posix()}"

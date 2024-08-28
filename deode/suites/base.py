@@ -1,4 +1,5 @@
 """Ecflow suites base class."""
+
 import os
 
 from ..logs import LogDefaults, logger

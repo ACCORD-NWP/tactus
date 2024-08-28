@@ -1,7 +1,12 @@
 """Toolbox handling e.g. input/output."""
+
+import ast
 import contextlib
+import inspect
 import os
 import re
+import sys
+from typing import Any, Union
 
 from troika.connections.ssh import SSHConnection
 
@@ -374,6 +379,56 @@ class Platform:
 
         logger.debug("Return pattern={}", pattern)
         return pattern
+
+    def evaluate(self, command_string: str, object_: Union[str, object]) -> Any:
+        """Evaluate command string, by applying corresponding command of object.
+
+        Args:
+            command_string (str): Command string to evaluate
+            object_ (Union[str, object]): Object to apply command from (if command
+                is function of object). If str, the object is assumed to be a
+                module. If a class, the command is assumed to be a method of
+                the class.
+
+        Raises:
+            ModuleNotFoundError: If module {object_} not found
+            AttributeError: If module/class {object_} has no attribute named {func}
+            TypeError: If object is not a class or a string
+            TypeError: If the command to evaluate is not a function
+
+        Returns:
+            any: Return original command string if it is not a function call,
+                otherwise return the result of the function call.
+        """
+        # Check if command string is a function call
+        match = re.match(r"(\w+)\((.*)\)", command_string)
+        if match:
+            # Get function name and arguments
+            func = match.group(1)
+            args = ast.literal_eval(match.group(2))
+
+            # Get function from object, if object is a string, i.e. a module
+            if isinstance(object_, str):
+                # Try getting module
+                module = sys.modules.get(object_)
+                if module:
+                    function = getattr(module, func)
+                else:
+                    raise ModuleNotFoundError(f"Module {object_} not found")
+            # Get function from object, if object is a class
+            elif inspect.isclass(object_):
+                function = getattr(object_, func)
+            else:
+                raise TypeError(f"Object '{object_}' is not a class or a string")
+
+            # Call function with arguments if function is callable
+            if inspect.isfunction(function):
+                return function(*args)
+
+            raise TypeError(f"Object '{function}' is not a function")
+
+        # Return original command string if it is not a function call
+        return command_string
 
 
 class FileManager:

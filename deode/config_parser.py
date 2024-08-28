@@ -26,6 +26,7 @@ from .aux_types import BaseMapping, QuasiConstant
 from .datetime_utils import DatetimeConstants
 from .general_utils import modify_mappings
 from .logs import logger
+from .os_utils import resolve_path_relative_to_package
 
 
 class ConfigParserDefaults(QuasiConstant):
@@ -74,7 +75,8 @@ class BasicConfig(BaseMapping):
         Returns:
             cls: Configs retrieved from the specified path.
         """
-        path = Path(path).resolve().as_posix()
+        path = Path(path).resolve()
+
         configs = _read_raw_config_file(path)
         return cls(configs, _metadata={"source_file_path": path}, **kwargs)
 
@@ -237,9 +239,20 @@ class ParsedConfig(BasicConfig):
         return rtn
 
 
-def _read_raw_config_file(config_path):
-    """Read raw configs from files in miscellaneous formats."""
-    config_path = Path(config_path)
+def _read_raw_config_file(config_path: Path):
+    """Read raw configs from files in miscellaneous formats.
+
+    Args:
+        config_path (Path): Path to the config file.
+
+    Raises:
+        NotImplementedError: If the config file format is not supported.
+
+    Returns:
+        dict: Configs read from the specified path.
+    """
+    config_path = resolve_path_relative_to_package(config_path)
+
     logger.debug("Reading configs from file <{}>", config_path)
 
     with open(config_path, "rb") as config_file:

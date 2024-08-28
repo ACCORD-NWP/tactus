@@ -79,7 +79,7 @@ class Task(object):
             return
 
         deode_home = self.platform.get_platform_value("DEODE_HOME")
-        eccodes_definition_search_paths = [f"{deode_home}/deode/data/eccodes/definitions"]
+        eccodes_definition_search_paths = [f"{deode_home}/data/eccodes/definitions"]
         try:
             eccodes_dir = os.environ["ECCODES_DIR"]
             eccodes_definition_search_paths.append(

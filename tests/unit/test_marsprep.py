@@ -1,16 +1,12 @@
 #!/usr/bin/env python3
 """Unit tests for the marsprep."""
 
-from pathlib import Path
-
 import pytest
 import tomlkit
 
 from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from deode.geo_utils import Projection, Projstring
 from deode.tasks.marsprep import Marsprep
-
-WORKING_DIR = Path.cwd()
 
 
 @pytest.fixture(scope="module")

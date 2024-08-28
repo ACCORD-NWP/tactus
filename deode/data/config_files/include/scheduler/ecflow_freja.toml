@@ -1,4 +1,5 @@
 [scheduler.ecfvars]
+  ecf_deode_home = "@DEODE_HOME@"
   ecf_files = "/nobackup/smhid20/users/@USER@/deode_ecflow/ecf_files"
   ecf_files_remotely = "/nobackup/smhid20/users/@USER@/deode_ecflow/ecf_files"
   ecf_home = "/nobackup/smhid20/users/@USER@/deode_ecflow/jobout"

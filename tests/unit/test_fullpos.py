@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 """Unit tests for the fullpos."""
 
-from pathlib import Path
-
 import pytest
 import tomlkit
 
+from deode import GeneralConstants
 from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import set_times
 from deode.fullpos import Fullpos, InvalidSelectionCombinationError
 from deode.toolbox import Platform
-
-WORKING_DIR = Path.cwd()
 
 
 def load():
@@ -23,7 +20,7 @@ def load():
     config_patch = tomlkit.parse(
         f"""
         [platform]
-            deode_home = "{WORKING_DIR}"
+            deode_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
         """
     )
     config = config.copy(update=config_patch)

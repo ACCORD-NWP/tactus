@@ -1,11 +1,16 @@
 """Experiment tools."""
+
 import collections
 import os
+from pathlib import Path
+from typing import List
 
 import tomlkit
 
+from . import GeneralConstants
 from .config_parser import ConfigParserDefaults, ParsedConfig
 from .logs import logger
+from .os_utils import resolve_path_relative_to_package
 
 
 class Exp:
@@ -32,14 +37,19 @@ class ExpFromFiles(Exp):
     """Generate Exp object from existing files. Use config files from a setup."""
 
     def __init__(
-        self, config, exp_dependencies, mod_files, host=None, merged_config=None
+        self,
+        config,
+        exp_dependencies,
+        mod_files: List[Path],
+        host=None,
+        merged_config=None,
     ):
         """Construct an Exp object from files.
 
         Args:
             config (.config_parser.ParsedConfig): Parsed config file contents.
             exp_dependencies (dict): Exp dependencies
-            mod_files (list): Case modifications
+            mod_files (List[Path]): Case modifications
             host (DeodeHost, optional): Deode host. Defaults to None.
             merged_config (dict, optional): Possible merged input configuration.
                                             Defaults to None.
@@ -86,21 +96,23 @@ class ExpFromFiles(Exp):
 
         mods = {}
         for _mod in mod_files:
-            # Skip empty lines
-            if len(_mod) == 0:
+            # Skip empty paths
+            if _mod == Path():
                 continue
-
-            mod = _mod.replace("@HOST@", host) if host is not None else _mod
+            mod = Path(str(_mod).replace("@HOST@", host)) if host is not None else _mod
+            mod = resolve_path_relative_to_package(mod, ignore_errors=True)
+            # First check if mod exists as is
             if os.path.exists(mod):
-                if mod[-5:] == ".toml":
-                    logger.info("Merging modifications from {}", mod)
+                try:
                     lmod = ExpFromFiles.toml_load(mod)
-                    logger.debug("-> {}", lmod)
-                    mods = ExpFromFiles.deep_update(mods, lmod)
-                else:
+                except tomlkit.exceptions.ParseError as exc:
                     logger.error("Expected a toml file but got {}", mod)
                     logger.error("Did mean to write ?{}", mod)
-                    raise RuntimeError
+                    raise RuntimeError from exc
+
+                logger.info("Merging modifications from {}", mod)
+                logger.debug("-> {}", lmod)
+                mods = ExpFromFiles.deep_update(mods, lmod)
             else:
                 logger.warning("Skip missing modification file {}", mod)
 
@@ -195,7 +207,7 @@ class ExpFromFiles(Exp):
         """
         exp_dependencies = {}
         if config_dir is None:
-            config_dir = f"{os.getcwd()}/deode/data/config_files"
+            config_dir = f"{GeneralConstants.PACKAGE_DIRECTORY}/data/config_files"
             logger.info(
                 "Setting config_dir from current working directory: {}", config_dir
             )
@@ -213,7 +225,7 @@ class ExpFromFiles(Exp):
 def case_setup(
     config,
     output_file,
-    mod_files,
+    mod_files: List[Path],
     case=None,
     host=None,
     config_dir=None,

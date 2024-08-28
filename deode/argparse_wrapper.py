@@ -137,6 +137,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         "config_mods",
         help="Path to configuration modifications",
         nargs="*",
+        type=Path,
         default=None,
     )
     parser_case.add_argument(
