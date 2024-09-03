@@ -1,5 +1,5 @@
 [submission]
-    bindir = "/perm/deployde330/github-actions/install/cy46h1-v1.1.0/install/bin"
+  bindir = "/perm/deployde330/github-actions/install/cy46h1-v1.1.0/install/bin"
 
 [submission.gnu.BATCH]
   MEM = "#SBATCH --mem=64GB"
