@@ -1,5 +1,5 @@
 [submission]
-  bindir = "/perm/deployde330/github-actions/install/cy46h1-v1.0.0/install/bin"
+  bindir = "/perm/deployde330/github-actions/install/cy46h1-v1.1.0/install/bin"
 
 [submission.task_exceptions.C903]
   bindir = "/perm/deployde330/github-actions/install/cy48t3-v1.1.1/install/bin"
