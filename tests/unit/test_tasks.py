@@ -36,7 +36,7 @@ def classes_to_be_tested():
 @pytest.fixture(scope="module")
 def base_raw_config():
     """Return a raw config common to all tasks."""
-    config = BasicConfig.from_file(ConfigParserDefaults.DIRECTORY / "config.toml")
+    config = BasicConfig.from_file(ConfigParserDefaults.CONFIG_DIRECTORY / "config.toml")
     return config
 
 
