@@ -1,5 +1,5 @@
 [submission]
-  bindir = "/perm/deployde330/github-actions/install/cy48t3-v1.0.0/install/bin"
+  bindir = "/perm/deployde330/github-actions/install/cy48t3-v1.1.1/install/bin"
   default_submit_type = "serial"
   lfftw = true
   module_initpath = "/usr/local/apps/lmod/8.6.8/init"
@@ -129,9 +129,6 @@
 
 [submission.task_exceptions.CreateGrib.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
-
-[submission.task_exceptions.E923Update.MODULES]
-  OPENMPI = ["load", "openmpi/4.1.1"]
 
 [submission.task_exceptions.E927]
   NPROC = 16
