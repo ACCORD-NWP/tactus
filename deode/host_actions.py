@@ -7,7 +7,7 @@ import socket
 
 import yaml
 
-from . import GeneralConstants
+from .config_parser import ConfigParserDefaults
 from .logs import logger
 
 
@@ -33,14 +33,12 @@ class DeodeHost:
             known_host (dict): Known hosts config
 
         """
-        known_hosts_file = known_hosts
-        if known_hosts_file is None:
-            known_hosts_file = os.path.join(
-                GeneralConstants.PACKAGE_DIRECTORY,
-                "data",
-                "config_files",
-                "known_hosts.yml",
-            )
+        known_hosts_file = (
+            ConfigParserDefaults.CONFIG_DIRECTORY / "known_hosts.yml"
+            if known_hosts is None
+            else known_hosts
+        )
+
         with open(known_hosts_file, "rb") as infile:
             known_hosts = yaml.safe_load(infile)
 

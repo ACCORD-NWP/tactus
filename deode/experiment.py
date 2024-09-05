@@ -7,7 +7,6 @@ from typing import List
 
 import tomlkit
 
-from . import GeneralConstants
 from .config_parser import ConfigParserDefaults, ParsedConfig
 from .logs import logger
 from .os_utils import resolve_path_relative_to_package
@@ -207,10 +206,8 @@ class ExpFromFiles(Exp):
         """
         exp_dependencies = {}
         if config_dir is None:
-            config_dir = f"{GeneralConstants.PACKAGE_DIRECTORY}/data/config_files"
-            logger.info(
-                "Setting config_dir from current working directory: {}", config_dir
-            )
+            config_dir = ConfigParserDefaults.CONFIG_DIRECTORY
+            logger.info("Setting config_dir to package config directory: {}", config_dir)
 
         exp_dependencies.update(
             {

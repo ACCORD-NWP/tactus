@@ -112,7 +112,7 @@ def create_exp(args, config):
     config_dir = args.config_dir
     known_hosts = args.host_file
     if known_hosts is None:
-        known_hosts = f"{deode_home}/data/config_files/known_hosts.yml"
+        known_hosts = ConfigParserDefaults.CONFIG_DIRECTORY / "known_hosts.yml"
     host = DeodeHost(known_hosts=known_hosts)
     output_file = args.output_file
     case = args.case
