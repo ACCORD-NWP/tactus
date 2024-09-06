@@ -932,6 +932,9 @@ class SCP(ArchiveProvider):
         Args:
             resource (Resource): Resource.
 
+        Raises:
+            RuntimeError: If directory is not created
+
         Returns:
             bool: True if success
 
@@ -943,10 +946,23 @@ class SCP(ArchiveProvider):
         ssh = SSHConnection({"host": remote_host}, None)
         if self.fetch:
             logger.info("scp src={} to dst={}", self.identifier, resource.identifier)
-            ssh.sendfile(remote_file, resource.identifier)
+            ssh.getfile(remote_file, resource.identifier)
         else:
+            if len(remote_dir) > 0:
+                iret = 1
+                tries = 0
+                while iret != 0 and tries < 5:
+                    cmd = ssh.execute(["ls", remote_dir])
+                    cmd.communicate()
+                    iret = cmd.returncode
+                    if iret != 0:
+                        ssh.execute(["mkdir", "-p", f"{remote_dir}"])
+                    tries += 1
+
+            if iret != 0:
+                raise RuntimeError(f"Could not create remote directory: {remote_dir}")
+
             logger.info("scp src={} to dst={}", resource.identifier, self.identifier)
-            ssh.execute(["mkdir", "-p", f"{remote_dir}"])
             ssh.sendfile(resource.identifier, remote_file)
 
         return True
@@ -974,17 +990,23 @@ class FDB(ArchiveProvider):
         Args:
             resource (Resource): Resource.
 
+        Raises:
+            RuntimeError: If expver not set
         Returns:
             bool: True if success
 
         """
         rules = dict(self.config["fdb.negative_rules"])
         grib_set = dict(self.config["fdb.grib_set"])
-        grib_set["expver"] = self.config["general"]["cnmexp"]
+        if "expver" not in grib_set:
+            logger.error("Please set expver in fdb.grib_set before archiving to FDB")
+            logger.error("and consult documentation before selecting expver")
+
+            raise RuntimeError("Please set expver before archiving to FDB")
         if self.fetch:
             logger.warning("FDB not yet implemented for {}", resource)
         else:
-            logger.info("Archiving ", resource.identifier, " with pyfdb")
+            logger.info("Archiving {} with pyfdb", resource.identifier)
 
             # Create rules-file, temp files to replace $2 and temp.grib
             temp1 = "temp1.grib"
