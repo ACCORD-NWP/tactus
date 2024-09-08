@@ -5,14 +5,20 @@
     "type": "object",
     "additionalProperties": true,
     "properties": {
-        "archive_type": {
-            "type": "string",
-            "description": "Method for archiving. The method working depends on the platform",
-	    "enum": [
-            "ecfs",
-            "fdb",
-            "scp"
-	    ]
+        "archive_types": {
+            "description": "Methods available for archiving",
+	    "type": "array",
+            "default": ["copy", "move", "scp"],
+            "items": {
+               "type": "string",
+	       "enum": [
+                  "ecfs",
+                  "fdb",
+                  "scp",
+                  "copy",
+                  "move"
+	          ]
+            }
         },
         "ecoclim_data_path": {
             "type": "string",

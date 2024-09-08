@@ -1,76 +1,58 @@
 [archiving]
 
-[archiving.ecfs]
-
-[archiving.ecfs.default]
+[archiving.hour.ecfs.fa_files]
   active = true
   inpath = "@ARCHIVE@"
   outpath = "archive/@ARCHIVE_TIMESTAMP@"
+  pattern = "ICMSH*"
 
-[archiving.ecfs.hour]
+[archiving.hour.ecfs.grib_files]
+  active = true
+  inpath = "@ARCHIVE@"
+  outpath = "archive/@ARCHIVE_TIMESTAMP@"
+  pattern = "GRIB*"
 
-[archiving.ecfs.hour.logs]
+[archiving.hour.ecfs.logs]
   active = true
   inpath = "@LOGS@"
   outpath = "logs"
   pattern = "@YYYY@@MM@@DD@_@HH@@mm@.tar.gz"
 
-[archiving.ecfs.hour.sqlite]
+[archiving.hour.ecfs.sqlite]
   active = "suite_control.do_extractsqlite"
   inpath = "@SQLITE_PATH@"
   outpath = "sqlite"
   pattern = "*"
 
-[archiving.ecfs.paths]
-  aloc = "ec:"
-  apath = "/@USER@/deode/@CASE@"
+[archiving.hour.fdb]
 
-[archiving.ecfs.settings]
-  fullpos = "PT15M"
-  history = "PT1H"
-  surfex = "PT1H"
-
-[archiving.ecfs.static]
-
-[archiving.ecfs.static.climate]
-  active = true
-  inpath = "@CLIMDIR@"
-  outpath = "climate/@DOMAIN@"
-  pattern = ["Const.Clim*", "PGD*"]
-
-[archiving.ecfs.static.logs]
-  active = true
-  inpath = "@LOGS@"
-  outpath = "logs"
-  pattern = "StaticData.tar.gz"
-
-[archiving.fdb]
-
-[archiving.fdb.default]
-  active = false
-
-[archiving.fdb.hour]
-
-[archiving.fdb.hour.grib_files]
+[archiving.hour.fdb.grib2_files]
   active = false
   inpath = "@ARCHIVE@"
-  outpath = "fdb"
   pattern = "GRIBPF*"
 
-[archiving.scp]
-
-[archiving.scp.default]
-  active = false
-
-[archiving.scp.hour.lumi]
+[archiving.hour.scp.lumi_grib2]
   active = false
   inpath = "@ARCHIVE@"
   outpath = "lumi_transfer:@SCRATCH@/@USER@_atos_@CASE@/archive/@ARCHIVE_TIMESTAMP@"
   pattern = "GRIBPF*"
 
-[archiving.scp.paths]
-  aloc = ""
-  apath = ""
+[archiving.prefix]
+  ecfs = "ec:/@USER@/deode/@CASE@"
+
+[archiving.static.ecfs]
+
+[archiving.static.ecfs.climate_files]
+  active = true
+  inpath = "@CLIMDIR@"
+  outpath = "climate/@DOMAIN@"
+  pattern = ["Const.Clim*", "PGD*"]
+
+[archiving.static.ecfs.logs]
+  active = true
+  inpath = "@LOGS@"
+  outpath = "logs"
+  pattern = "StaticData.tar.gz"
 
 [fdb]
 

@@ -12,6 +12,7 @@ from troika.connections.ssh import SSHConnection
 
 from .datetime_utils import as_datetime, get_decade
 from .logs import logger
+from .os_utils import deodemakedirs
 
 
 class ArchiveError(Exception):
@@ -37,9 +38,21 @@ class Provider:
         self.config = config
         self.identifier = identifier
         self.fetch = fetch
+        self.unix_group = self.config.get("platform.unix_group")
+
         logger.debug(
             "Constructed Base Provider object. {} {} ", self.identifier, self.fetch
         )
+
+    def create_missing_dir(self, target):
+        """Create a directory if missing.
+
+        Args:
+            target (str): Name of target
+        """
+        target_dir = os.path.dirname(target)
+        if not os.path.isdir(target_dir) and len(target_dir) > 0:
+            deodemakedirs(target_dir, unixgroup=self.unix_group)
 
     def create_resource(self, resource):
         """Create the resource.
@@ -82,11 +95,12 @@ class Platform:
         except KeyError:
             return None
 
-    def get_value(self, setting):
+    def get_value(self, setting, alt=None):
         """Get the config value with substition.
 
         Args:
             setting (str): Type of variable to substitute
+            alt (str): Alternative return value
 
         Returns:
             str: Value from config with substituted variables
@@ -96,13 +110,14 @@ class Platform:
             val = self.config[setting]
             return self.substitute(val)
         except KeyError:
-            return None
+            return alt
 
-    def get_platform_value(self, role):
+    def get_platform_value(self, role, alt=None):
         """Get the path.
 
         Args:
             role (str): Type of variable to substitute
+            alt (str): Alternative return value
 
         Returns:
             str: Value from platform.[role]
@@ -113,7 +128,7 @@ class Platform:
             val = self.config[f"platform.{role}"]
             return self.substitute(val)
         except KeyError:
-            return None
+            return alt
 
     def get_platform(self):
         """Get the platform.
@@ -478,8 +493,6 @@ class FileManager:
             tuple: provider, resource
 
         """
-        self.aloc = self.platform.get_value("archiving.paths.aloc")
-
         destination = LocalFileOnDisk(
             self.config, destination, basetime=basetime, validtime=validtime
         )
@@ -791,6 +804,7 @@ class LocalFileSystemCopy(Provider):
         """
         if self.fetch:
             if os.path.exists(self.identifier):
+                self.create_missing_dir(resource.identifier)
                 logger.info("cp {} {} ", self.identifier, resource.identifier)
                 os.system(f"cp {self.identifier} {resource.identifier}")  # noqa S605
                 return True
@@ -799,6 +813,7 @@ class LocalFileSystemCopy(Provider):
             return False
 
         if os.path.exists(resource.identifier):
+            self.create_missing_dir(self.identifier)
             logger.info("cp {} {} ", resource.identifier, self.identifier)
             os.system(f"cp {resource.identifier} {self.identifier}")  # noqa S605
             return True
@@ -833,6 +848,7 @@ class LocalFileSystemMove(Provider):
         """
         if self.fetch:
             if os.path.exists(self.identifier):
+                self.create_missing_dir(resource.identifier)
                 logger.info("mv {} {} ", self.identifier, resource.identifier)
                 os.system(f"mv {self.identifier} {resource.identifier}")  # noqa S605
                 return True
@@ -841,6 +857,7 @@ class LocalFileSystemMove(Provider):
             return False
 
         if os.path.exists(resource.identifier):
+            self.create_missing_dir(self.identifier)
             logger.info("mv {} {} ", resource.identifier, self.identifier)
             os.system(f"mv {resource.identifier} {self.identifier}")  # noqa S605
             return True
@@ -999,10 +1016,12 @@ class FDB(ArchiveProvider):
         rules = dict(self.config["fdb.negative_rules"])
         grib_set = dict(self.config["fdb.grib_set"])
         if "expver" not in grib_set:
-            logger.error("Please set expver in fdb.grib_set before archiving to FDB")
-            logger.error("and consult documentation before selecting expver")
-
-            raise RuntimeError("Please set expver before archiving to FDB")
+            msg = """
+            Please set expver in the config section fdb.grib_set before archiving to FDB
+            and consult documentation before selecting expver
+            """
+            logger.error(msg)
+            raise RuntimeError(msg)
         if self.fetch:
             logger.warning("FDB not yet implemented for {}", resource)
         else:

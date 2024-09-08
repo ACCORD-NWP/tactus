@@ -79,5 +79,5 @@
   marsdir = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"
 
-[task.creategrib]
+[task.CreateGrib]
   conversions = ["surfex"]
