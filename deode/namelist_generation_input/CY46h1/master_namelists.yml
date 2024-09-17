@@ -354,6 +354,7 @@ f4_HARMONIE_AROME:
     LOTOWNC: true
     LSCAWAREMF: true
     LWTHRESH: true
+    LWTHRESHMOIST: true
     LSHALLOWMF: true
     LSTATNW: true
     LTOTPREC: false
