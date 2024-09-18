@@ -72,14 +72,6 @@
       "description": "Settings for control of boundary treatment.",
       "type": "object",
       "properties": {
-        "bdstrategy": {
-          "title": "Boundary strategy",
-          "default": "same_forecast",
-          "type": "string",
-          "enum": [
-            "same_forecast"
-          ]
-        },
         "bdint": {
           "description": "Boundary interval",
           "type": "string",
@@ -88,17 +80,6 @@
         "bdshift": {
           "description": "Shift of boundary initial time. E.g. 'PT3H' would mean use 3H old boundaries",
           "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-        },
-        "bdcycle": {
-          "description": "Boundary model cycle interval",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-        },
-        "bdcycle_start": {
-          "description": "Boundary model cycle start hour. Required to be set if bdcycle_start % bdcycle != 0",
-          "type": "string",
-          "default": "PT0H",
           "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
         },
         "bdtasks_per_batch": {

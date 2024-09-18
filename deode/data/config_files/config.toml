@@ -24,7 +24,6 @@
 
 [boundaries]
   bd_has_surfex = false
-  bdcycle = "PT6H"
   bdint = "PT1H"
   bdmodel = "IFS"
   bdshift = "PT0H"

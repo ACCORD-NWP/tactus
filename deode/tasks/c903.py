@@ -8,6 +8,7 @@ from ..logs import logger
 from ..namelist import NamelistGenerator
 from .base import Task
 from .batch import BatchJob
+from .marsprep import Marsprep
 
 
 class C903(Task):
@@ -22,10 +23,11 @@ class C903(Task):
         Task.__init__(self, config, __class__.__name__)
 
         self.climdir = self.platform.get_system_value("climdir")
-
         self.basetime = as_datetime(self.config["general.times.basetime"])
-        bdcycle = as_timedelta(self.config["boundaries.bdcycle"])
-        bdcycle_start = as_timedelta(self.config["boundaries.bdcycle_start"])
+
+        mars = Marsprep.mars_selection(self)
+        bdcycle = as_timedelta(mars["ifs_cycle_length"])
+        bdcycle_start = as_timedelta(mars["ifs_cycle_start"])
         bdshift = as_timedelta(self.config["boundaries.bdshift"])
         # Boundary basetime
         self.bd_basetime = self.basetime - cycle_offset(

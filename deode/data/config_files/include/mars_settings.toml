@@ -11,6 +11,7 @@
 [mars.DT12]
   default = "RD_DEFAULT"
   expver = "i8a8"
+  ifs_cycle_start = "PT12H"
   start_date = "2023-10-29T00:00:00Z"
 
 [mars.DT12.stream]
@@ -25,6 +26,7 @@
   GG_soil = "234/173/174/43/30/29/28/27"
   GGZ_type = "analysis"
   grid_ML = "AV"
+  ifs_cycle_length = "PT6H"
   latlon_method = "retrieve"
   SH = "152/138/155/130"
   SHZ = "129"
@@ -35,6 +37,7 @@
   type_AN = "AN"
   type_FC = "FC"
   UA = "133/75/76/246/247/248"
+  Zlev_type = "ML"
 
 [mars.HRES.grid]
   "2006-02-01T06:00:00Z" = "0.25/0.25"
@@ -92,6 +95,7 @@
   GG_soil = "234/173/174/43/30/29/28/27"
   GGZ_type = "analysis"
   grid_ML = "AV"
+  ifs_cycle_length = "PT6H"
   latlon_method = "retrieve"
   levelist = "1/to/137"
   SH = "152/138/155/130"
@@ -102,6 +106,7 @@
   type_AN = "CF"
   type_FC = "PF"
   UA = "133/75/76/246/247/248"
+  Zlev_type = "ML"
 
 [mars.IFSENS.grid]
   "2023-07-01T00:00:00Z" = "0.09/0.09"
@@ -114,12 +119,14 @@
   class = "D1"
   default = "RD_DEFAULT"
   expver = "0001"
+  GGZ_type = "analysis"
   latlon_method = "read"
   SHZ_type = "analysis"
   SHZclass = "OD"
   SHZdate = "20131129"
   start_date = "2024-04-06T00:00:00Z"
   tco = "255"
+  Zlev_type = "SFC"
 
 [mars.RD_DEFAULT]
   class = "RD"
@@ -128,6 +135,7 @@
   GGZ_type = "forecast"
   grid = "0.04/0.04"
   grid_ML = "AV"
+  ifs_cycle_length = "PT24H"
   latlon_method = "retrieve"
   levelist = "1/to/137"
   SH = "152/138/155/130"
@@ -140,3 +148,4 @@
   type_AN = "AN"
   type_FC = "FC"
   UA = "133/75/76/246/247/248"
+  Zlev_type = "ML"

@@ -65,7 +65,6 @@ class E923Update(Task):
 """
             )
             namelist.close()
-
         batch = BatchJob(os.environ, wrapper=self.wrapper)
         batch.run(f"{self.fa_sfx2clim} nam pgd_file input_sfx {climfile}")
 

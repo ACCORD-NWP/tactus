@@ -9,6 +9,8 @@
 
 [boundaries]
   bd_has_surfex = true
+  bdcycle = "PT6H"
+  bdcycle_start = "PT0H"
   bdmodel = "AROME"
 
 [domain]
