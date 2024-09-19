@@ -2,6 +2,7 @@
 import glob
 import json
 import os
+from time import sleep
 
 from ..datetime_utils import as_datetime, as_timedelta, oi2dt_list
 from ..derived_variables import check_fullpos_namelist
@@ -23,7 +24,7 @@ class Forecast(Task):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Task.__init__(self, config, "Forecast")
+        Task.__init__(self, config, __class__.__name__)
 
         self.cycle = self.config["general.cycle"]
         self.cnmexp = self.config["general.cnmexp"]
@@ -36,18 +37,12 @@ class Forecast(Task):
         self.intp_bddir = self.config["system.intp_bddir"]
         self.forecast_range = self.config["general.times.forecast_range"]
 
-        self.climdir = self.platform.get_system_value("climdir")
-        self.rrtm_dir = self.platform.get_platform_value("RRTM_DIR")
-        self.ncdir = self.config["platform.ncdir"]
         self.archive = self.platform.get_system_value("archive")
         self.deode_home = self.config["platform.deode_home"]
         self.output_settings = self.config["general.output_settings"]
         self.surfex = self.config["general.surfex"]
 
-        try:
-            self.accelerator_device = self.config["accelerator_device"]
-        except KeyError:
-            self.accelerator_device = None
+        self.accelerator_device = self.config.get("accelerator_device", None)
 
         # Update namelist settings
         self.nlgen_master = NamelistGenerator(self.config, "master")
@@ -58,6 +53,7 @@ class Forecast(Task):
         self.file_templates = self.config["file_templates"]
 
         self.unix_group = self.platform.get_platform_value("unix_group")
+        self.n_io_merge = self.config["suite_control.n_io_merge"]
 
     def archive_output(self, filetype, periods):
         """Archive forecast model output.
@@ -116,6 +112,8 @@ class Forecast(Task):
 
         Final result is the expected output file name in the working directory
         (as if there was no IO server).
+        NOTE: This function has been replaced by io_merge tasks.
+        It is only called if n_io_merge=0.
         """
         dt_list = oi2dt_list(periods, self.forecast_range)
 
@@ -148,81 +146,12 @@ class Forecast(Task):
 
     def execute(self):
         """Execute forecast."""
-        # CY48t3 input files not used in CY46
-        # *.nc files and ecoclimap.bin files
-        input_files = [
-            "greenhouse_gas_climatology_46r1.nc",
-            "greenhouse_gas_climatology_48r1.nc",
-            "greenhouse_gas_timeseries_CMIP3_A1B_46r1.nc",
-            "greenhouse_gas_timeseries_CMIP3_A2_46r1.nc",
-            "greenhouse_gas_timeseries_CMIP3_B1_46r1.nc",
-            "greenhouse_gas_timeseries_CMIP5_RCP3PD_46r1.nc",
-            "greenhouse_gas_timeseries_CMIP5_RCP45_46r1.nc",
-            "greenhouse_gas_timeseries_CMIP5_RCP6_46r1.nc",
-            "greenhouse_gas_timeseries_CMIP5_RCP85_46r1.nc",
-            "greenhouse_gas_timeseries_CMIP6_SSP126_CFC11equiv_47r1.nc",
-            "greenhouse_gas_timeseries_CMIP6_SSP245_CFC11equiv_47r1.nc",
-            "greenhouse_gas_timeseries_CMIP6_SSP370_CFC11equiv_47r1.nc",
-            "greenhouse_gas_timeseries_CMIP6_SSP585_CFC11equiv_47r1.nc",
-        ]
-        if self.cycle in ["CY48t3"]:
-            for ifile in input_files:
-                self.fmanager.input(f"{self.ncdir}/{ifile}", ifile)
-
-        # RRTM files
-        for ifile in [
-            "C11CLIM",
-            "C12CLIM",
-            "C22CLIM",
-            "CCL4CLIM",
-            "CH4CLIM",
-            "CO2CLIM",
-            "ECOZC",
-            "GCH4CLIM",
-            "GCO2CLIM",
-            "GOZOCLIM",
-            "MCH4CLIM",
-            "MCICA",
-            "MCO2CLIM",
-            "MOZOCLIM",
-            "N2OCLIM",
-            "NO2CLIM",
-            "OZOCLIM",
-            "RADAIOP",
-            "RADRRTM",
-            "RADSRTM",
-            "SO4_A1B2000",
-            "SO4_A1B2010",
-            "SO4_A1B2020",
-            "SO4_A1B2030",
-            "SO4_A1B2040",
-            "SO4_A1B2050",
-            "SO4_A1B2060",
-            "SO4_A1B2070",
-            "SO4_A1B2080",
-            "SO4_A1B2090",
-            "SO4_A1B2100",
-            "SO4_OBS1920",
-            "SO4_OBS1930",
-            "SO4_OBS1940",
-            "SO4_OBS1950",
-            "SO4_OBS1960",
-            "SO4_OBS1970",
-            "SO4_OBS1980",
-            "SO4_OBS1990",
-        ]:
-            self.fmanager.input(f"{self.rrtm_dir}/{ifile}", ifile)
-
-        # Climate files
-        mm = self.basetime.strftime("%m")
-        self.fmanager.input(f"{self.climdir}/Const.Clim.{mm}", "Const.Clim")
-        self.fmanager.input(
-            f"{self.climdir}/Const.Clim.{mm}", f"const.clim.{self.domain}"
-        )
-        self.fmanager.input(
-            f"{self.climdir}/{self.file_templates['pgd']['archive']}",
-            f"{self.file_templates['pgd']['model']}",
-        )
+        # Fetch forecast model static input data
+        input_definition = self.platform.get_system_value("forecast_input_definition")
+        logger.info("Read static data spec from: {}", input_definition)
+        with open(input_definition, "r", encoding="utf-8") as f:
+            input_data = json.load(f)
+        self.fmanager.input_data_iterator(input_data)
 
         # wind farm input data
         if self.windfarm:
@@ -231,7 +160,6 @@ class Forecast(Task):
         # Construct master namelist and include fullpos config
         forecast_namelist = "forecast"
         self.nlgen_master.load(forecast_namelist)
-        logger.info(self.nlgen_master)
         self.nlgen_master = check_fullpos_namelist(self.config, self.nlgen_master)
 
         nlres = self.nlgen_master.assemble_namelist(forecast_namelist)
@@ -242,8 +170,8 @@ class Forecast(Task):
         settings = self.nlgen_surfex.assemble_namelist("forecast")
         self.nlgen_surfex.write_namelist(settings, "EXSEG1.nam")
 
-        sfx_input_defs = self.platform.get_system_value("sfx_input_defs")
-        with open(sfx_input_defs, "r", encoding="utf-8") as f:
+        input_definition = self.platform.get_system_value("sfx_input_definition")
+        with open(input_definition, "r", encoding="utf-8") as f:
             input_data = json.load(f)
         binput_data = InputDataFromNamelist(
             settings, input_data, "forecast", self.platform
@@ -263,10 +191,7 @@ class Forecast(Task):
             self.fmanager.input(initfile_sfx, f"ICMSH{self.cnmexp}INIT.sfx")
 
         # Use explicitly defined boundary dir if defined
-        try:
-            intp_bddir = self.config["system.intp_bddir"]
-        except KeyError:
-            intp_bddir = self.wrk
+        intp_bddir = self.config.get("system.intp_bddir", self.wrk)
 
         # Link the boundary files, use initial file as first boundary file
         self.fmanager.input(initfile, f"ELSCF{self.cnmexp}ALBC000")
@@ -286,25 +211,46 @@ class Forecast(Task):
         else:
             logger.info("No accelerator_device section found")
 
+        # Create a link to working directory for IO_merge tasks
+        if os.path.islink("../Forecast"):
+            logger.info("Removing old link.")
+            os.unlink("../Forecast")
+        os.symlink(os.getcwd(), "../Forecast")
+
+        # Store the output
+        # Must happen before the forecast starts, so the io_merge tasks
+        #   can write to it.
+        deodemakedirs(self.archive, unixgroup=self.unix_group)
+
         # Run MASTERODB
         batch = BatchJob(os.environ, wrapper=self.platform.substitute(self.wrapper))
         batch.run(self.master)
 
-        # Store the output
-        deodemakedirs(self.archive, unixgroup=self.unix_group)
-
         io_server = os.path.exists("io_serv.000001.d")
-        if io_server:
+        if io_server and self.n_io_merge > 0:
+            logger.info("Waiting for iomerge output.")
             logger.debug("IO_SERVER detected!")
+            # Wait for all io_merge tasks to finish.
+            # This is signaled by creating (empty) files.
+            for ionr in range(self.n_io_merge):
+                io_name = f"io_merge_{ionr:02}"
+                logger.debug("Waiting for {}", io_name)
+                while not os.path.exists(io_name):
+                    sleep(5)
+        else:
+            for filetype, oi in self.output_settings.items():
+                if filetype in self.file_templates:
+                    if io_server:
+                        # No io_merge: should we even still consider this option?
+                        self.merge_output(filetype, oi)
 
-        for filetype, oi in self.output_settings.items():
-            if filetype in self.file_templates:
-                if io_server:
-                    self.merge_output(filetype, oi)
-
-                self.archive_output(self.file_templates[filetype], oi)
+                    self.archive_output(self.file_templates[filetype], oi)
 
         self.archive_logs(["fort.4", "EXSEG1.nam", "NODE.001_01"])
+
+        # Remove link to working directory for IO_mergetasks
+        if os.path.islink("../Forecast"):
+            os.unlink("../Forecast")
 
 
 class PrepareCycle(Task):
@@ -335,7 +281,7 @@ class FirstGuess(Task):
             config (deode.ParsedConfig): Configuration
 
         """
-        Task.__init__(self, config, "FirstGuess")
+        Task.__init__(self, config, __class__.__name__)
 
     def execute(self):
         """Find initial file."""

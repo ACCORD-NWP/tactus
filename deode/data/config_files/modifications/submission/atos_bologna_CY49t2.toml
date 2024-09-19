@@ -1,0 +1,24 @@
+[general]
+  accept_static_namelists = true
+
+[platform]
+  rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef"
+
+[submission]
+  bindir = "/home/snh02/work/CY49t2/bin/2024-07-10/R64"
+  nfpgrib = 141
+
+[submission.task_exceptions.C903]
+  bindir = "/perm/deployde330/github-actions/install/cy48t3-v1.1.1/install/bin"
+
+[submission.task_exceptions.Pgd]
+  WRAPPER = ""
+
+[submission.task_exceptions.Pgd.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = 0
+
+[submission.task_exceptions.Prep]
+  WRAPPER = ""
+
+[submission.task_exceptions.Prep.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = 0

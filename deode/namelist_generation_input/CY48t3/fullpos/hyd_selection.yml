@@ -17,4 +17,10 @@ selection:
    <<: *default
 
  xxt00000000:
-   <<: *default
+  NAMFPPHY:
+   CLXFU:
+    - 'CLSTEMPERATURE'
+   CLPHY:
+    - 'SURFRESERV.NEIGE'
+    - 'SURFIND.TERREMER'
+  <<: *default

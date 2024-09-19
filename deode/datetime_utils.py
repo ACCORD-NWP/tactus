@@ -87,7 +87,8 @@ def expand_output_settings(output_settings, forecast_range):
     oi = []
     if isinstance(output_settings, str):
         check_syntax([output_settings], 0)
-        oi = ["PT0H:" + forecast_range + ":" + output_settings]
+        if output_settings != "":
+            oi = ["PT0H:" + forecast_range + ":" + output_settings]
 
     elif isinstance(output_settings, (tuple, list)):
         check_syntax(output_settings, 2)
@@ -130,21 +131,30 @@ def oi2dt_list(output_settings, forecast_range):
     return dt
 
 
-def cycle_offset(basetime, dt, shift=DatetimeConstants.DEFAULT_SHIFT):
+def cycle_offset(
+    basetime,
+    bdcycle,
+    bdcycle_start=DatetimeConstants.DEFAULT_SHIFT,
+    bdshift=DatetimeConstants.DEFAULT_SHIFT,
+):
     """Calculcate offset from a reference time.
 
     Args:
         basetime (datetime): Reference time
-        dt (timedelta): duration
-        shift (timedelta): shift
+        bdcycle (timedelta): Interval between cycles
+        bdcycle_start (timedelta): Time of day when bdcycle starts
+        bdshift (timedelta): shift of boundary usage
 
     Returns:
         timedelta : a timdelta object of the offset
 
     """
     reftime = basetime.hour * 3600 + basetime.minute * 60 + basetime.second
-    k = reftime % int(dt.total_seconds()) - int(shift.total_seconds())
-    return pd.Timedelta(seconds=k)
+    bdcycle_shift = (
+        reftime - bdcycle_start.total_seconds() % bdcycle.total_seconds()
+    ) % bdcycle.total_seconds()
+    final_shift = bdcycle_shift - int(bdshift.total_seconds())
+    return pd.Timedelta(seconds=final_shift)
 
 
 def get_decade(dt) -> str:

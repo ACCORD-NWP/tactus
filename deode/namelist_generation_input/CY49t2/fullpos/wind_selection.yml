@@ -1,0 +1,36 @@
+selection:
+  xxt00000000:
+    NAMFPDYH: &id001
+      CL3DF:
+      - WIND.U.PHYS
+      - WIND.V.PHYS
+      RFP3H:
+      - 100.0
+  xxtddddhh00:
+    NAMFPDYH: *id001
+  xxtddddhhmm:
+    NAMFPDYH: *id001
+empty:
+  NAMCLRADLID: {}
+  NAMDWET: {}
+  NAMDYNA_STATIC: {}
+  NAMECV: {}
+  NAMECVDESC: {}
+  NAMECVGRB: {}
+  NAMJBALPHACV: {}
+  NAMJBECPHYSECV: {}
+  NAMJBSKTECV: {}
+  NAMMODERRCONF: {}
+  NAMMODERRCOV: {}
+  NAMMODERRINCRCONF: {}
+  NAMMODERRMOD: {}
+  NAMNRTAER: {}
+  NAMPARECV: {}
+  NAMPERTOBS: {}
+  NAMRSTRHBIAS: {}
+  NAM_NEBN: {}
+  NAM_PARAM_ICEN: {}
+  NAM_PARAM_MFSHALLN: {}
+  NAM_SPP_ACTIVE: {}
+  NAM_SPP_MODIF: {}
+  NAM_TURBN: {}

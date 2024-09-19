@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Registration and validation of options passed in the config file."""
 import contextlib
+import glob
 import json
 import os
 import tempfile
@@ -10,27 +11,32 @@ from pathlib import Path
 import fastjsonschema
 import jsonref
 import tomli
+import tomlkit
 import yaml
 from fastjsonschema import JsonSchemaValueException
 from json_schema_for_humans.generate import (
     GenerationConfiguration,
     generate_from_file_object,
 )
+from toml_formatter.formatter import FormattedToml
+from toml_formatter.formatter_options import FormatterOptions
 
 from . import GeneralConstants
 from .aux_types import BaseMapping, QuasiConstant
 from .datetime_utils import DatetimeConstants
 from .general_utils import modify_mappings
 from .logs import logger
+from .os_utils import resolve_path_relative_to_package
 
 
 class ConfigParserDefaults(QuasiConstant):
     """Defaults related to the parsing of config files."""
 
-    DIRECTORY = GeneralConstants.PACKAGE_DIRECTORY / "data" / "config_files"
-    PACKAGE_INCLUDE_DIR = DIRECTORY / "include"
+    DATA_DIRECTORY = GeneralConstants.PACKAGE_DIRECTORY / "data"
+    CONFIG_DIRECTORY = DATA_DIRECTORY / "config_files"
+    PACKAGE_INCLUDE_DIR = CONFIG_DIRECTORY / "include"
 
-    PACKAGE_CONFIG_PATH = (DIRECTORY / "config.toml").resolve(strict=True)
+    PACKAGE_CONFIG_PATH = (CONFIG_DIRECTORY / "config.toml").resolve(strict=True)
     # Define the default path to the config file
     try:
         CONFIG_PATH = Path(os.getenv("DEODE_CONFIG_PATH", "config.toml"))
@@ -38,7 +44,7 @@ class ConfigParserDefaults(QuasiConstant):
     except FileNotFoundError:
         CONFIG_PATH = PACKAGE_CONFIG_PATH
 
-    SCHEMAS_DIRECTORY = DIRECTORY / "config_file_schemas"
+    SCHEMAS_DIRECTORY = CONFIG_DIRECTORY / "config_file_schemas"
     MAIN_CONFIG_JSON_SCHEMA_PATH = SCHEMAS_DIRECTORY / "main_config_schema.json"
     MAIN_CONFIG_JSON_SCHEMA = json.loads(MAIN_CONFIG_JSON_SCHEMA_PATH.read_text())
 
@@ -70,9 +76,25 @@ class BasicConfig(BaseMapping):
         Returns:
             cls: Configs retrieved from the specified path.
         """
-        path = Path(path).resolve().as_posix()
+        path = Path(path).resolve()
+
         configs = _read_raw_config_file(path)
         return cls(configs, _metadata={"source_file_path": path}, **kwargs)
+
+    def save_as(self, config_file):
+        """Save config file.
+
+        Args:
+            config_file (str): Path to config file
+        """
+        with open(config_file, mode="w", encoding="utf8") as fh:
+            tomlkit.dump(self.dict(), fh)
+        config = FormatterOptions.from_toml_file("pyproject.toml")
+        formatted_toml = FormattedToml.from_file(
+            path=config_file, formatter_options=config
+        )
+        with open(config_file, mode="w", encoding="utf8") as f:
+            f.write(str(formatted_toml))
 
     @BaseMapping.data.setter
     def data(self, new):
@@ -152,7 +174,7 @@ class ParsedConfig(BasicConfig):
         self,
         *args,
         json_schema,
-        include_dir=ConfigParserDefaults.DIRECTORY,
+        include_dir=ConfigParserDefaults.CONFIG_DIRECTORY,
         **kwargs,
     ):
         """Initialise an instance with an arbitrary number of entries & validate them."""
@@ -218,9 +240,20 @@ class ParsedConfig(BasicConfig):
         return rtn
 
 
-def _read_raw_config_file(config_path):
-    """Read raw configs from files in miscellaneous formats."""
-    config_path = Path(config_path)
+def _read_raw_config_file(config_path: Path):
+    """Read raw configs from files in miscellaneous formats.
+
+    Args:
+        config_path (Path): Path to the config file.
+
+    Raises:
+        NotImplementedError: If the config file format is not supported.
+
+    Returns:
+        dict: Configs read from the specified path.
+    """
+    config_path = resolve_path_relative_to_package(config_path)
+
     logger.debug("Reading configs from file <{}>", config_path)
 
     with open(config_path, "rb") as config_file:
@@ -246,10 +279,33 @@ def _get_config_include_definitions(raw_config):
     return config_includes
 
 
+def _get_all_json_schemas(json_schema, schemas_path):
+    """Load and add all json schema files in the schemas_path directory.
+
+    Args:
+        json_schema (dict): Input json schema
+        schemas_path (str): Path to json files
+
+    Returns:
+        json_schema (dict): Updated json dict
+
+    """
+    exclude = ["main_config_schema.json", "default_config_schema.json"]
+
+    for filename in glob.glob(f"{schemas_path}/*.json"):
+        if os.path.basename(filename) in exclude:
+            continue
+        section_name = os.path.basename(filename).replace("_section_schema.json", "")
+        updated_schema = {"$ref": f"file:{filename}"}
+        json_schema["properties"].update({section_name: updated_schema})
+
+    return json_schema
+
+
 def _expand_config_include_section(
     raw_config,
     json_schema,
-    config_include_search_dir=ConfigParserDefaults.DIRECTORY,
+    config_include_search_dir=ConfigParserDefaults.CONFIG_DIRECTORY,
     schemas_path=ConfigParserDefaults.SCHEMAS_DIRECTORY,
     _parent_sections=(),
 ):
@@ -258,48 +314,53 @@ def _expand_config_include_section(
     json_schema = modify_mappings(obj=json_schema, operator=dict)
 
     config_include_defs = _get_config_include_definitions(raw_config)
-    if not config_include_defs:
-        return raw_config, json_schema
 
     if "properties" not in json_schema:
         json_schema["properties"] = {}
     config_include_search_dir = Path(config_include_search_dir).resolve()
     config_include_sections = {}
-    for section_name, include_path_ in config_include_defs.items():
-        include_path = Path(include_path_)
-        if not include_path.is_absolute():
-            include_path = config_include_search_dir / include_path
-        included_config_section = _read_raw_config_file(include_path)
+    if len(config_include_defs) == 0:
+        json_schema = _get_all_json_schemas(json_schema, str(schemas_path))
+    else:
+        for section_name, include_path_ in config_include_defs.items():
+            if isinstance(include_path_, str):
+                include_path = Path(include_path_)
+                if not include_path.is_absolute():
+                    include_path = config_include_search_dir / include_path
+                included_config_section = _read_raw_config_file(include_path)
+            else:
+                included_config_section = include_path_
+            _sections_traversed = (*_parent_sections, section_name)
+            sections_traversed_str = " -> ".join(_sections_traversed)
+            if "include" in raw_config and section_name in json_schema["properties"]:
+                msg = "Validation schema for `[include]` section "
+                msg += f' "{sections_traversed_str}" '
+                msg += "also detected in its parent section's schema. "
+                msg += "`[include]` schemas must NOT be added to their parent's schemas,"
+                msg += "but rather in their own separate files."
+                raise ConflictingValidationSchemasError(msg)
 
-        _sections_traversed = (*_parent_sections, section_name)
-        sections_traversed_str = " -> ".join(_sections_traversed)
-        if section_name in json_schema["properties"]:
-            msg = f'Validation schema for `[include]` section "{sections_traversed_str}" '
-            msg += "also detected in its parent section's schehma. "
-            msg += "`[include]` schemas must NOT be added to their parent's schemas, but "
-            msg += "rather in their own separate files."
-            raise ConflictingValidationSchemasError(msg)
+            schema_file = schemas_path / f"{section_name}_section_schema.json"
+            if not schema_file.is_file():
+                logger.warning(
+                    'No validation schema for config section "{}". Using default.',
+                    sections_traversed_str,
+                )
+                schema_file = schemas_path / "default_section_schema.json"
 
-        schema_file = schemas_path / f"{section_name}_section_schema.json"
-        if not schema_file.is_file():
-            logger.warning(
-                'No validation schema for config section "{}". Using default.',
-                sections_traversed_str,
+            updated_config, updated_schema = _expand_config_include_section(
+                raw_config=included_config_section,
+                json_schema={"$ref": f"file:{schema_file}"},
+                config_include_search_dir=config_include_search_dir,
+                schemas_path=schemas_path,
+                _parent_sections=_sections_traversed,
             )
-            schema_file = schemas_path / "default_section_schema.json"
-
-        updated_config, updated_schema = _expand_config_include_section(
-            raw_config=included_config_section,
-            json_schema={"$ref": f"file:{schema_file}"},
-            config_include_search_dir=config_include_search_dir,
-            schemas_path=schemas_path,
-            _parent_sections=_sections_traversed,
-        )
-        config_include_sections[section_name] = updated_config
-        json_schema["properties"][section_name] = updated_schema
+            config_include_sections.update(updated_config)
+            json_schema["properties"].update({section_name: updated_schema})
 
     raw_config.update(config_include_sections)
-    raw_config.pop("include")
+    if "include" in raw_config:
+        raw_config.pop("include")
 
     return raw_config, json_schema
 

@@ -1,0 +1,18 @@
+[general]
+  csc = "ALARO"
+  surfex = false
+
+[general.output_settings]
+  surfex = ""
+
+[boundaries]
+  humi_gp = false
+
+[fullpos]
+  selection = ["rules", "namfpc_header", "master_selection_ALARO"]
+
+[pgd]
+  npatch = 1
+
+[task.CreateGrib]
+  conversions = []

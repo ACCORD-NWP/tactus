@@ -10,6 +10,7 @@ from deode.namelist import (
     InvalidNamelistKindError,
     InvalidNamelistTargetError,
     NamelistGenerator,
+    NamelistIntegrator,
 )
 
 
@@ -48,6 +49,10 @@ def config_platform():
             gen_macros = ["boundaries.bdmodel"]
             group_macros = ["platform", "system"]
             os_macros = ["USER", "HOME", "PWD"]
+        [namelist_update.master.all_targets]
+            namct0 = { bar = "foo" }
+        [namelist_update.master.forecast]
+            namct0 = { foo = "bar" }
         """
     )
     return task_configs
@@ -86,6 +91,10 @@ class TestNamelistGenerator:
             os.remove(output_file)
         nlgen.generate_namelist("forecast", output_file)
         assert os.path.exists(output_file)
+
+        nl = NamelistIntegrator(parsed_config).ftn2dict(output_file)
+        assert nl["NAMCT0"]["FOO"] == "bar"
+        assert nl["NAMCT0"]["BAR"] == "foo"
 
     @pytest.mark.usefixtures("_nlgen_surfex")
     def test_nlgen_surfex(self):

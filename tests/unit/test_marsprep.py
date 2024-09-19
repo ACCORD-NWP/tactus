@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for the marsprep."""
 
-import contextlib
-from pathlib import Path
-
 import pytest
 import tomlkit
 
@@ -11,19 +8,11 @@ from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from deode.geo_utils import Projection, Projstring
 from deode.tasks.marsprep import Marsprep
 
-WORKING_DIR = Path.cwd()
 
-
-@pytest.fixture(scope="module", params=["CY48t3"])
-def base_raw_config(request):
+@pytest.fixture(scope="module")
+def base_raw_config():
     """Return a raw config common to all tasks."""
-    tag_map = {"CY46h1": ""}
-    test_map = {"CY46h1": {"general": {"windfarm": True}}}
-    tag = tag_map[request.param] if request.param in tag_map else f"_{request.param}"
-    config = BasicConfig.from_file(ConfigParserDefaults.DIRECTORY / f"config{tag}.toml")
-    with contextlib.suppress(KeyError):
-        config = config.copy(update=test_map[request.param])
-
+    config = BasicConfig.from_file(ConfigParserDefaults.CONFIG_DIRECTORY / "config.toml")
     return config
 
 
@@ -105,15 +94,13 @@ def test_update_data_request(parsed_config):
 
     dateframe = marsprep.split_date(
         marsprep.basetime,
-        marsprep.strategy,
-        int(marsprep.forecast_range.days * 24 + marsprep.forecast_range.seconds / 3600),
+        int(marsprep.forecast_range.total_seconds() // 3600),
         marsprep.bdint,
-        int(marsprep.bdshift.seconds / 3600),
     )
     date_str = dateframe.iloc[0].strftime("%Y%m%d")
     hour_str = dateframe.iloc[0].strftime("%H")
 
-    step = int(marsprep.bdint.total_seconds() / 3600)
+    step = int(marsprep.bdint.total_seconds() // 3600)
     str_steps = [
         "{0:02d}".format(
             dateframe.index.tolist()[0]

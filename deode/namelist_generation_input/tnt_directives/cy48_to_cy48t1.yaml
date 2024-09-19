@@ -1,0 +1,27 @@
+
+# README ! manual replacements are necessary wrt VFE:
+# LVFE_REGETA=.FALSE. -> NAMCVER/CVFE_ETAH='CHORDAL' (default)
+# LVFE_REGETA=.TRUE. and RVFE_ALPHA=RVFE_BETA=0 (default) -> NAMCVER/CVFE_ETAH='REGETA'
+
+new_blocks:
+    - NAMNUDGLH
+    - NAMVARBC_MODES
+
+keys_to_remove:
+    NAMCVER:
+        - NVFE_INTBC
+        - NVFE_DERBC
+        - NVFE_BC
+        - LVFE_LAPL
+        - LVFE_LAPL_TBC
+        - LVFE_LAPL_BBC
+        - LVFE_LAPL_HALF
+        - LVFE_X_TERM
+        - LVFE_Z_TERM
+        - LVFE_DELNHPRE
+        - LVFE_CENTRI
+        - RVFE_CENTRI
+        - LVFE_APPROX
+        - LVFE_FIX_ORDER
+    NAMCT0:
+        - LVFE_REGETA

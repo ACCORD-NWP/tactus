@@ -1,6 +1,6 @@
 # Configure selection of timings in output settings
 
-Describes examples of timings in output settings for `[general.output_settings]` in the config file, see [output settings](https://destination-earth-digital-twins.github.io/deode-prototype-docs/misc_section_in_doc_page.html#property-config-general-output-settings).
+Describes examples of timings in output settings for `[general.output_settings]` in the config file, see [output settings](#property-config-general-output-settings).
 
 Output timings must be specified as follows:
 
@@ -12,7 +12,7 @@ Output timings must be specified as follows:
 Here we explain output intervals through an example:
 
 ```
-  fullpos = ["PT0H:PT6H:PT15M", "PT6H:PT9H:PT30M", "PT1H"]
+  fullpos = ["PT0H:PT6H:PT15M", "PT6H:PT9H:PT30M", "PT9H:PT24H:PT1H"]
   history = "PT1H"
   nrazts = "PT1H"
   surfex = ["PT0H:PT9H:PT10M", "PT9H:PT24H:PT3H"]

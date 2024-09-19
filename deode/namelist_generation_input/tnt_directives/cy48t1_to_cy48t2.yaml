@@ -1,0 +1,17 @@
+
+new_blocks:
+    - NAMPERTPAR
+
+keys_to_remove:
+    NAMFPG:
+        - FPNLGINC
+        - FPRPK
+    NAMMTS:
+        - LMTS
+        - LMTSCL
+    NAMFPC:
+        - LFPLOSP
+    NAMOPH:
+        - NCADFORM
+    NEMFPEZO:
+        - NSTREFP

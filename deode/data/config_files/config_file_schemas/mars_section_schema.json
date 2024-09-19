@@ -10,6 +10,12 @@
 	  "description": "Parameters for oper data",
 	  "type": "object",
 	  "properties": {
+	    "ifs_cycle_start": {
+              "description": "Boundary model cycle start hour. Required to be set if bdcycle_start % bdcycle != 0",
+              "type": "string",
+              "default": "PT0H",
+              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+            },
 	    "class": {
 	      "type": "string",
 	      "description": "Class of expver"
@@ -22,6 +28,11 @@
 	      "type": "object",
 	      "description": "Dictionary (date:resolution), with dates of change in the resolution."
 	    },
+	    "ifs_cycle_length": {
+              "description": "Boundary model cycle interval",
+              "type": "string",
+              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+            },
 	    "start_date": {
 	      "type" : "string",
 	      "description" : "Date from when are data available in Mars",
@@ -67,6 +78,10 @@
               "type": "string",
               "description": "Type for geopotential"
             },
+	    "GGZ_type":{
+	      "type": "string",
+	      "description": "Type for geopotential in gridpoint"
+	    },
 	    "stream": {
 	      "type": "object",
 	      "description": "Dictionary (run:stream) to use the right stream for a given run."
@@ -78,6 +93,12 @@
           "description": "Parameters for oper data",
           "type": "object",
           "properties": {
+	    "ifs_cycle_start": {
+              "description": "Boundary model cycle start hour. Required to be set if bdcycle_start % bdcycle != 0",
+              "type": "string",
+              "default": "PT0H",
+              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+            },
             "class": {
               "type": "string",
               "description": "Class of expver"
@@ -89,6 +110,11 @@
             "grid": {
               "type": "object",
               "description": "Dictionary (date:resolution), with dates of change in the resolution."
+            },
+	    "ifs_cycle_length": {
+              "description": "Boundary model cycle interval",
+              "type": "string",
+              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
             },
             "start_date": {
               "type" : "string",
@@ -177,9 +203,22 @@
           "description": "Parameters for global DT data",
           "type": "object",
           "properties": { "$ref": "#/$RD_DEFAULT" }
+        },
+	"LUMI_DT": {
+          "title": "Global DT near real-time runs on LUMI",
+          "description": "Parameters for global DT data",
+          "type": "object",
+          "properties": { "$ref": "#/$RD_DEFAULT" }
         }
+
     },
     "$RD_DEFAULT":{
+	    "ifs_cycle_start": {
+              "description": "Boundary model cycle start hour. Required to be set if bdcycle_start % bdcycle != 0",
+              "type": "string",
+              "default": "PT0H",
+              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+            },
             "default": {
               "type": "string",
               "description": "Other section to copy settings from if not given here"
@@ -196,7 +235,12 @@
               "type": "string",
               "description": "Dictionary (date:resolution), with dates of change in the resolution."
             },
-            "start_date": {
+	    "ifs_cycle_length": {
+              "description": "Boundary model cycle interval",
+              "type": "string",
+              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+            },
+	    "start_date": {
               "type" : "string",
 	      "description" : "Date from when are data available in Mars",
               "format": "date-time"
@@ -233,6 +277,10 @@
             "SHZ_type": {
               "type": "string",
               "description": "Type for geopotential"
+            },
+	    "GGZ_type":{
+              "type": "string",
+              "description": "Type for geopotential in gridpoint"
             },
             "stream": {
 	      "description": "MARS stream or dictionary (run:stream) to use the right stream for a given run.",

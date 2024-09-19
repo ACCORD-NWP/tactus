@@ -52,6 +52,7 @@ forecast:
   - master_common
   - f4_@CSC@
   - namgfl_@BDMODEL@
+  - f4_@HOST@
 
 c903_main:
   - empty

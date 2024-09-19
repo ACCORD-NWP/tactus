@@ -3,7 +3,7 @@ Describes how to select fields and output settings for fullpos. The scripting al
 
 ## Overview
 The fullpos output is controlled by the following settings
-- Output interval, see [output settings](https://destination-earth-digital-twins.github.io/deode-prototype-docs/misc_section_in_doc_page.html#configure-selection-of-timings-in-output-settings)
+- Output interval, see [output settings](#configure-selection-of-timings-in-output-settings)
 
 - Field selection and settings for different output times is done in the fullpos main selection, `deode/namelist_generation/CYCLE/master_selection.yml`
 
