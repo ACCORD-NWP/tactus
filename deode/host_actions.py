@@ -7,7 +7,7 @@ import socket
 
 import yaml
 
-from .config_parser import ConfigParserDefaults
+from .config_parser import ConfigParserDefaults, ConfigPaths
 from .logs import logger
 
 
@@ -34,7 +34,7 @@ class DeodeHost:
 
         """
         known_hosts_file = (
-            ConfigParserDefaults.CONFIG_DIRECTORY / "known_hosts.yml"
+            ConfigPaths().config_files("known_hosts.yml")
             if known_hosts is None
             else known_hosts
         )

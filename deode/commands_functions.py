@@ -12,7 +12,7 @@ from toml_formatter.formatter import FormattedToml
 from troika.connections.ssh import SSHConnection
 
 from . import GeneralConstants
-from .config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
+from .config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig, ConfigPaths
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
 from .experiment import case_setup
 from .host_actions import DeodeHost
@@ -112,7 +112,8 @@ def create_exp(args, config):
     config_dir = args.config_dir
     known_hosts = args.host_file
     if known_hosts is None:
-        known_hosts = ConfigParserDefaults.CONFIG_DIRECTORY / "known_hosts.yml"
+        known_hosts = ConfigPaths().config_directory("known_hosts.yml")
+
     host = DeodeHost(known_hosts=known_hosts)
     output_file = args.output_file
     case = args.case

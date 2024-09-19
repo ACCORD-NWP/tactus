@@ -10,6 +10,7 @@ from pathlib import Path
 import f90nml
 import yaml
 
+from .config_parser import ConfigPaths
 from .logs import logger
 from .toolbox import Platform
 
@@ -281,18 +282,8 @@ class NamelistGenerator:
         self.substitute = substitute
         self.nlcomp = NamelistComparator(config)
         self.cycle = self.config["general.cycle"]
-        self.cnfile = (
-            Path(__file__).parent
-            / "namelist_generation_input"
-            / f"{self.cycle}"
-            / f"assemble_{kind}.yml"
-        )
-        self.nlfile = (
-            Path(__file__).parent
-            / "namelist_generation_input"
-            / f"{self.cycle}"
-            / f"{kind}_namelists.yml"
-        )
+        self.cnfile = ConfigPaths().namelist_generation_input(f"{self.cycle}/assemble_{kind}.yml")
+        self.nlfile = ConfigPaths().namelist_generation_input(f"{self.cycle}/{kind}_namelists.yml")
         self.domain_name = self.config["domain.name"]
         self.accept_static_namelist = self.config["general.accept_static_namelists"]
 
@@ -673,9 +664,7 @@ class NamelistConverter:
     def get_tnt_files_list(from_cycle, to_cycle):
         """Return the list of tnt directive files required for the conversion."""
         # definitions of the conversion to apply between cycles
-        tnt_directives_folder = (
-            Path(__file__).parent / "namelist_generation_input/tnt_directives/"
-        )
+        tnt_directives_folder = ConfigPaths().namelist_generation_input("tnt_directives", is_dir=True)
 
         if from_cycle and to_cycle:
             known_cycles = NamelistConverter.get_known_cycles()
@@ -918,9 +907,7 @@ class NamelistConverter:
            SystemExit: when conversion failed
         """
         logger.info(f"Apply {tnt_directive_filename}")
-        tnt_directives_folder = (
-            Path(__file__).parent / "namelist_generation_input/tnt_directives/"
-        )
+        tnt_directives_folder = ConfigPaths().namelist_generation_input("tnt_directives", is_dir=True)
         command = [
             "tnt.py",
             "-d",

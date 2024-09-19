@@ -33,7 +33,7 @@
   ifs.bdmember = ""
 
 [fullpos]
-  config_path = "@DEODE_HOME@/namelist_generation_input/@CYCLE@/fullpos"
+  config_path = "@CYCLE@/fullpos"
   selection = ["rules", "namfpc_header", "master_selection"]
 
 [include]

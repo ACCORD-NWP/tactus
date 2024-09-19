@@ -48,6 +48,34 @@ class ConfigParserDefaults(QuasiConstant):
     MAIN_CONFIG_JSON_SCHEMA_PATH = SCHEMAS_DIRECTORY / "main_config_schema.json"
     MAIN_CONFIG_JSON_SCHEMA = json.loads(MAIN_CONFIG_JSON_SCHEMA_PATH.read_text())
 
+class ConfigPaths:
+
+    def __init__(self):
+
+        self.dd = ConfigParserDefaults.DATA_DIRECTORY
+
+    def _any_directory(self, subpath, name, is_dir=False):
+        ddp = os.getenv("DEODE_DATA_PATH")
+        searchpath = ddp.split(":") if ddp is not None else []
+        searchpath.append(self.dd)
+        for p in searchpath:
+            full = Path(p) / subpath / name
+            if is_dir:
+              if os.path.isdir(full):
+                return full
+            else:
+              if os.path.isfile(full):
+                return full
+        raise RuntimeError(f"Could not find {name}")
+
+    def config_files(self, name, is_dir=False):
+        return self._any_directory("config_files", name, is_dir)
+
+    def config_file_schemas(self, name, is_dir=False):
+        return self._any_directory("config_file_schemas", name, is_dir)
+
+    def namelist_generation_input(self, name, is_dir=False):
+        return self._any_directory("namelist_generation_input", name, is_dir)
 
 class ConfigFileValidationError(Exception):
     """Error to be raised when parsing the input config file fails."""
@@ -326,7 +354,7 @@ def _expand_config_include_section(
             if isinstance(include_path_, str):
                 include_path = Path(include_path_)
                 if not include_path.is_absolute():
-                    include_path = config_include_search_dir / include_path
+                    include_path = ConfigPaths().config_files(include_path)
                 included_config_section = _read_raw_config_file(include_path)
             else:
                 included_config_section = include_path_
