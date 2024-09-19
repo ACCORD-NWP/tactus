@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ### Added
+- Add missing unit tests for creategrib [\#770](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/770) (@uandrae)
 - Add switch LWTHRESHMOIST in CY46h1 following implementation in [HARMONIE repo](https://github.com/destination-earth-digital-twins/Harmonie/pull/37) [\#757](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/757) (@natalieth)
 - Introduce the possibility for mulitple simultaneous archiving methods [\#752](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/762)(@uandrae)
 - Use of config files and mod files shipped with Deode-Workflow is now possible, when installing Deode-Workflow as a package in another repository [\#671](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/671)(@mafdmi)
@@ -59,6 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - README content and cosmetics corrections. [\#600](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/600) (@uandrae)
 
 ### Fixed
+- Correct notation and activation of the CreateGrib task [\#770](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/770) (@uandrae)
 - Creation of remote directories with scp [\#763](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/763) (@uandrae)
 - Adjust sqlite template and path to fix missing ecfs archiving [\#748](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/748) (@uandrae)
 - Erroneous submission section on leonardo [\#736](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/736) (@uandrae)
