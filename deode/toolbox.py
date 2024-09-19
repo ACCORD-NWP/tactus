@@ -1,10 +1,18 @@
 """Toolbox handling e.g. input/output."""
+
+import ast
 import contextlib
+import inspect
 import os
 import re
+import sys
+from typing import Any, Union
+
+from troika.connections.ssh import SSHConnection
 
 from .datetime_utils import as_datetime, get_decade
 from .logs import logger
+from .os_utils import deodemakedirs
 
 
 class ArchiveError(Exception):
@@ -30,9 +38,21 @@ class Provider:
         self.config = config
         self.identifier = identifier
         self.fetch = fetch
+        self.unix_group = self.config.get("platform.unix_group")
+
         logger.debug(
             "Constructed Base Provider object. {} {} ", self.identifier, self.fetch
         )
+
+    def create_missing_dir(self, target):
+        """Create a directory if missing.
+
+        Args:
+            target (str): Name of target
+        """
+        target_dir = os.path.dirname(target)
+        if not os.path.isdir(target_dir) and len(target_dir) > 0:
+            deodemakedirs(target_dir, unixgroup=self.unix_group)
 
     def create_resource(self, resource):
         """Create the resource.
@@ -75,11 +95,12 @@ class Platform:
         except KeyError:
             return None
 
-    def get_value(self, setting):
+    def get_value(self, setting, alt=None):
         """Get the config value with substition.
 
         Args:
             setting (str): Type of variable to substitute
+            alt (str): Alternative return value
 
         Returns:
             str: Value from config with substituted variables
@@ -89,13 +110,14 @@ class Platform:
             val = self.config[setting]
             return self.substitute(val)
         except KeyError:
-            return None
+            return alt
 
-    def get_platform_value(self, role):
+    def get_platform_value(self, role, alt=None):
         """Get the path.
 
         Args:
             role (str): Type of variable to substitute
+            alt (str): Alternative return value
 
         Returns:
             str: Value from platform.[role]
@@ -106,7 +128,7 @@ class Platform:
             val = self.config[f"platform.{role}"]
             return self.substitute(val)
         except KeyError:
-            return None
+            return alt
 
     def get_platform(self):
         """Get the platform.
@@ -183,6 +205,9 @@ class Platform:
 
         if provider_id == "fdb":
             return FDB(self.config, target, fetch=fetch)
+
+        if provider_id == "scp":
+            return SCP(self.config, target, fetch=fetch)
 
         raise NotImplementedError(f"Provider for {provider_id} not implemented")
 
@@ -370,6 +395,56 @@ class Platform:
         logger.debug("Return pattern={}", pattern)
         return pattern
 
+    def evaluate(self, command_string: str, object_: Union[str, object]) -> Any:
+        """Evaluate command string, by applying corresponding command of object.
+
+        Args:
+            command_string (str): Command string to evaluate
+            object_ (Union[str, object]): Object to apply command from (if command
+                is function of object). If str, the object is assumed to be a
+                module. If a class, the command is assumed to be a method of
+                the class.
+
+        Raises:
+            ModuleNotFoundError: If module {object_} not found
+            AttributeError: If module/class {object_} has no attribute named {func}
+            TypeError: If object is not a class or a string
+            TypeError: If the command to evaluate is not a function
+
+        Returns:
+            any: Return original command string if it is not a function call,
+                otherwise return the result of the function call.
+        """
+        # Check if command string is a function call
+        match = re.match(r"(\w+)\((.*)\)", command_string)
+        if match:
+            # Get function name and arguments
+            func = match.group(1)
+            args = ast.literal_eval(match.group(2))
+
+            # Get function from object, if object is a string, i.e. a module
+            if isinstance(object_, str):
+                # Try getting module
+                module = sys.modules.get(object_)
+                if module:
+                    function = getattr(module, func)
+                else:
+                    raise ModuleNotFoundError(f"Module {object_} not found")
+            # Get function from object, if object is a class
+            elif inspect.isclass(object_):
+                function = getattr(object_, func)
+            else:
+                raise TypeError(f"Object '{object_}' is not a class or a string")
+
+            # Call function with arguments if function is callable
+            if inspect.isfunction(function):
+                return function(*args)
+
+            raise TypeError(f"Object '{function}' is not a function")
+
+        # Return original command string if it is not a function call
+        return command_string
+
 
 class FileManager:
     """FileManager class.
@@ -412,13 +487,12 @@ class FileManager:
 
         Raises:
             ProviderError: "No provider found for {target}"
+            NotImplementedError: "Checking archive not implemented yet"
 
         Returns:
             tuple: provider, resource
 
         """
-        self.aloc = self.platform.get_value("archiving.paths.aloc")
-
         destination = LocalFileOnDisk(
             self.config, destination, basetime=basetime, validtime=validtime
         )
@@ -440,30 +514,55 @@ class FileManager:
             logger.debug("Using provider_id {}", provider_id)
             return provider, destination
 
-        # Try archive
-        # TODO check for archive
+        # TODO check archive for file
+
         if check_archive:
-            provider_id = "ecfs"
-            target = target.replace("@ARCHIVE@", "{self.aloc}/@YYYY@/@MM@/@DD@/@HH@")
+            raise NotImplementedError("Checking archive not implemented yet")
+            # Substitute based on ecfs
+            sub_target = self.platform.substitute(
+                target, basetime=basetime, validtime=validtime
+            )
 
-            if provider_id is not None:
-                # Substitute based on ecfs
-                sub_target = self.platform.substitute(
-                    target, basetime=basetime, validtime=validtime
-                )
+            logger.debug("Checking archiving provider_id {}", provider_id)
+            provider = self.platform.get_provider(provider_id, sub_target)
 
-                logger.debug("Checking archiving provider_id {}", provider_id)
-                provider = self.platform.get_provider(provider_id, sub_target)
+            if provider.create_resource(destination):
+                logger.debug("Using provider_id {}", provider_id)
+                return provider, destination
 
-                if provider.create_resource(destination):
-                    logger.debug("Using provider_id {}", provider_id)
-                    return provider, destination
-
-                logger.info("Could not archive {}", destination.identifier)
+            logger.info("Could not find in archive {}", destination.identifier)
         # Else raise exception
         raise ProviderError(
             f"No provider found for {sub_target} and provider_id {provider_id}"
         )
+
+    def input_data_iterator(self, input_data_definition, provider_id="symlink"):
+        """Handle input data spec dict.
+
+        Loop through the defined data types and fetch them.
+
+        Args:
+            input_data_definition (dict): Input data spec
+            provider_id (str): Provider id. Defaults to "symlink"
+
+        Raises:
+            RuntimeError: "Invalid data handle type"
+
+        """
+        for data_type, data in input_data_definition.items():
+            logger.info("Link data type: {}", data_type)
+            path = self.platform.substitute(data["path"])
+            files = data["files"]
+            if isinstance(files, list):
+                for filenames in files:
+                    self.input(f"{path}/{filenames}", filenames, provider_id=provider_id)
+            elif isinstance(files, dict):
+                for _outfile, _infile in files.items():
+                    infile = self.platform.substitute(_infile)
+                    outfile = self.platform.substitute(_outfile)
+                    self.input(f"{path}/{infile}", outfile, provider_id=provider_id)
+            else:
+                raise RuntimeError(f"Unknown data type in {input_data_definition}")
 
     def input(
         self,
@@ -518,6 +617,7 @@ class FileManager:
 
         Raises:
             ArchiveError: Could not archive data
+            NotImplementedError: Archive = True is not implemented
 
         """
         sub_target = self.platform.substitute(
@@ -544,16 +644,16 @@ class FileManager:
         aprovider = None
         if archive:
             # TODO check for archive and modify macros
-            provider_id = "ecfs"
-            destination = destination.replace(
-                "@ARCHIVE@", "{self.aloc}/@YYYY@/@MM@/@DD@/@HH@"
-            )
-
+            raise NotImplementedError("Archive = True is not implemented")
             sub_target = self.platform.substitute(
                 target, basetime=basetime, validtime=validtime
             )
             sub_destination = self.platform.substitute(
                 destination, basetime=basetime, validtime=validtime
+            )
+
+            target_resource = LocalFileOnDisk(
+                self.config, sub_target, basetime=basetime, validtime=validtime
             )
 
             logger.debug(
@@ -704,6 +804,7 @@ class LocalFileSystemCopy(Provider):
         """
         if self.fetch:
             if os.path.exists(self.identifier):
+                self.create_missing_dir(resource.identifier)
                 logger.info("cp {} {} ", self.identifier, resource.identifier)
                 os.system(f"cp {self.identifier} {resource.identifier}")  # noqa S605
                 return True
@@ -712,6 +813,7 @@ class LocalFileSystemCopy(Provider):
             return False
 
         if os.path.exists(resource.identifier):
+            self.create_missing_dir(self.identifier)
             logger.info("cp {} {} ", resource.identifier, self.identifier)
             os.system(f"cp {resource.identifier} {self.identifier}")  # noqa S605
             return True
@@ -746,6 +848,7 @@ class LocalFileSystemMove(Provider):
         """
         if self.fetch:
             if os.path.exists(self.identifier):
+                self.create_missing_dir(resource.identifier)
                 logger.info("mv {} {} ", self.identifier, resource.identifier)
                 os.system(f"mv {self.identifier} {resource.identifier}")  # noqa S605
                 return True
@@ -754,6 +857,7 @@ class LocalFileSystemMove(Provider):
             return False
 
         if os.path.exists(resource.identifier):
+            self.create_missing_dir(self.identifier)
             logger.info("mv {} {} ", resource.identifier, self.identifier)
             os.system(f"mv {resource.identifier} {self.identifier}")  # noqa S605
             return True
@@ -774,8 +878,7 @@ class ArchiveProvider(Provider):
             fetch (bool, optional): Fetch the data. Defaults to True.
 
         """
-        self.fetch = fetch
-        Provider.__init__(self, config, pattern)
+        Provider.__init__(self, config, pattern, fetch=fetch)
 
     def create_resource(self, resource):
         """Create the resource.
@@ -827,11 +930,11 @@ class ECFS(ArchiveProvider):
         return True
 
 
-class FDB(ArchiveProvider):
-    """Dummy FDB class."""
+class SCP(ArchiveProvider):
+    """Transfer data with SCP."""
 
     def __init__(self, config, pattern, fetch=True):
-        """Construct FDB provider.
+        """Construct SCP provider.
 
         Args:
             config (deode.ParsedConfig): Configuration
@@ -846,17 +949,116 @@ class FDB(ArchiveProvider):
         Args:
             resource (Resource): Resource.
 
+        Raises:
+            RuntimeError: If directory is not created
+
         Returns:
             bool: True if success
 
         """
-        # TODO: Address the noqa check disablers
+        # Assumes self.identifier=host:full_file_path
+        remote_host, remote_file = str(self.identifier).split(":")
+        remote_dir = os.path.dirname(remote_file)
+
+        ssh = SSHConnection({"host": remote_host}, None)
+        if self.fetch:
+            logger.info("scp src={} to dst={}", self.identifier, resource.identifier)
+            ssh.getfile(remote_file, resource.identifier)
+        else:
+            if len(remote_dir) > 0:
+                iret = 1
+                tries = 0
+                while iret != 0 and tries < 5:
+                    cmd = ssh.execute(["ls", remote_dir])
+                    cmd.communicate()
+                    iret = cmd.returncode
+                    if iret != 0:
+                        ssh.execute(["mkdir", "-p", f"{remote_dir}"])
+                    tries += 1
+
+            if iret != 0:
+                raise RuntimeError(f"Could not create remote directory: {remote_dir}")
+
+            logger.info("scp src={} to dst={}", resource.identifier, self.identifier)
+            ssh.sendfile(resource.identifier, remote_file)
+
+        return True
+
+
+class FDB(ArchiveProvider):
+    """Dummy FDB class."""
+
+    def __init__(self, config, pattern, fetch=True):
+        """Construct FDB provider.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+            pattern (str): Filepattern
+            fetch (bool, optional): Fetch the data. Defaults to True.
+        """
+        import pyfdb
+
+        ArchiveProvider.__init__(self, config, pattern, fetch=fetch)
+        self.fdb = pyfdb.FDB()
+
+    def create_resource(self, resource):
+        """Create the resource.
+
+        Args:
+            resource (Resource): Resource.
+
+        Raises:
+            RuntimeError: If expver not set
+        Returns:
+            bool: True if success
+
+        """
+        rules = dict(self.config["fdb.negative_rules"])
+        grib_set = dict(self.config["fdb.grib_set"])
+        if "expver" not in grib_set:
+            msg = """
+            Please set expver in the config section fdb.grib_set before archiving to FDB
+            and consult documentation before selecting expver
+            """
+            logger.error(msg)
+            raise RuntimeError(msg)
         if self.fetch:
             logger.warning("FDB not yet implemented for {}", resource)
         else:
-            logger.warning("FDB not yet implemented for {}", resource)
+            logger.info("Archiving {} with pyfdb", resource.identifier)
+
+            # Create rules-file, temp files to replace $2 and temp.grib
+            temp1 = "temp1.grib"
+            temp2 = "temp2.grib"
+            rules_file = "temp_rules"
+            self._write_rules_file(rules_file, rules)
+            os.system(
+                f"grib_filter {rules_file} {resource.identifier} -o {temp1}"  # noqa S605
+            )
+            set_values = ",".join([f"{key}={value}" for key, value in grib_set.items()])
+            cmd_for_grib = "grib_set -s " + set_values + f" {temp1} {temp2}"
+            logger.debug(cmd_for_grib)
+            os.system(cmd_for_grib)  # noqa S605
+            with open(temp2, "rb") as infile:
+                self.fdb.archive(infile.read())
+            self.fdb.flush()
+            os.remove(temp1)
+            os.remove(temp2)
+            os.remove(rules_file)
 
         return True
+
+    def _write_rules_file(self, filename, rules):
+        with open(filename, "w") as outfile:
+            outfile.write("set edition = 2;\n")
+            for name, values in rules.items():
+                if len(values) == 1:
+                    outfile.write(f'if (!({name} is "{values}")) ' + "{ append; }\n")
+                else:
+                    outfile.write("if (")
+                    for value in values[:-1]:
+                        outfile.write(f'!({name} is "{value}") && ')
+                    outfile.write(f'!({name} is "{values[-1]}"))' + "{ append; }\n")
 
 
 class Resource:

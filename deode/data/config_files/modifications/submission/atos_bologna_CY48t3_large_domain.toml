@@ -1,0 +1,42 @@
+[submission.gnu.BATCH]
+  MEM = "#SBATCH --mem=64GB"
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[submission.task_exceptions.Forecast]
+  NPROC = 624
+  NPROC_IO = 16
+  OMP_NUM_THREADS = "4"
+  WRAPPER = "srun @DEODE_HOME@/data/config_files/include/submission/omp_wrapper"
+
+[submission.task_exceptions.Forecast.BATCH]
+  CPUSPERTASK = "#SBATCH --cpus-per-task=4"
+  HYPERTHREAD = "#SBATCH --hint=nomultithread"
+  NODES = "#SBATCH --nodes=20"
+  NTASKS = "#SBATCH --ntasks-per-node=32"
+  WALLTIME = "#SBATCH --time=08:00:00"
+
+[submission.task_exceptions.Forecast.ENV]
+  KMP_AFFINITY = "granularity=core,scatter"
+  KMP_BLOCKTIME = "12"
+  KMP_STACKSIZE = "4G"
+  UCX_LOG_LEVEL = "error"
+
+[submission.task_exceptions.Gmted.BATCH]
+  MEM = "#SBATCH --mem=32GB"
+
+[submission.task_exceptions.IOmerge.BATCH]
+  WALLTIME = "#SBATCH --time=08:00:00"
+
+[submission.task_exceptions.Marsprep.BATCH]
+  MEM = "#SBATCH --mem=128GB"
+  WALLTIME = "#SBATCH --time=02:00:00"
+
+[submission.task_exceptions.Pgd.BATCH]
+  NODES = "#SBATCH --nodes=2"
+  NTASKS = "#SBATCH --ntasks=32"
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[submission.task_exceptions.Prep.BATCH]
+  NODES = "#SBATCH --nodes=2"
+  NTASKS = "#SBATCH --ntasks=32"
+  WALLTIME = "#SBATCH --time=00:50:00"

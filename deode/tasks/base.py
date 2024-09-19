@@ -64,7 +64,7 @@ class Task(object):
         self.wdir = wdir
         self.unix_group = self.platform.get_value("platform.unix_group")
 
-        logger.info("Task running in {}", self.wdir)
+        logger.info("Task {} running in {}", self.name, self.wdir)
 
         self._set_eccodes_environment()
 
@@ -79,7 +79,7 @@ class Task(object):
             return
 
         deode_home = self.platform.get_platform_value("DEODE_HOME")
-        eccodes_definition_search_paths = [f"{deode_home}/deode/data/eccodes/definitions"]
+        eccodes_definition_search_paths = [f"{deode_home}/data/eccodes/definitions"]
         try:
             eccodes_dir = os.environ["ECCODES_DIR"]
             eccodes_definition_search_paths.append(
@@ -141,23 +141,38 @@ class Task(object):
             shutil.move(self.wdir, fdir)
             logger.info("Renamed {} to {}", self.wdir, fdir)
 
-    def get_binary(self, binary):
+    def get_binary(self, binary_name):
         """Determine binary path from task or system config section.
 
         Args:
-            binary (str): Name of binary
+            binary_name (str): Name of binary
 
         Returns:
             bindir (str): full path to binary
 
         """
+        binary = binary_name
         with contextlib.suppress(KeyError):
             binary = self.config[f"submission.task_exceptions.{self.name}.binary"]
 
         try:
             bindir = self.config[f"submission.task_exceptions.{self.name}.bindir"]
         except KeyError:
-            bindir = self.config["submission.bindir"]
+            try:
+                binaries = self.config[
+                    f"submission.task_exceptions.{self.name}.binaries.{binary_name}"
+                ]
+                logger.debug("binaries:{}", binaries)
+
+                with contextlib.suppress(KeyError):
+                    binary = binaries["binary"]
+                with contextlib.suppress(KeyError):
+                    bindir = binaries["bindir"]
+            except KeyError:
+                bindir = self.config["submission.bindir"]
+
+        logger.debug("binary:{}", binary)
+        logger.debug("bindir:{}", bindir)
 
         return f"{bindir}/{binary}"
 
@@ -241,4 +256,4 @@ class UnitTest(Task):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Task.__init__(self, config, __name__)
+        Task.__init__(self, config, __class__.__name__)

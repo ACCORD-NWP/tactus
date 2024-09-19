@@ -1,0 +1,5 @@
+
+# 1. Blocks to be added.
+new_blocks:
+    - NAMGRIB
+    - NAMCMEM_MW

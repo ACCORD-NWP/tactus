@@ -9,6 +9,7 @@ from ..namelist import NamelistGenerator
 from ..os_utils import deodemakedirs
 from .base import Task
 from .batch import BatchJob
+from .marsprep import Marsprep
 
 
 class InputDataFromNamelist:
@@ -615,7 +616,7 @@ class Pgd(Task):
             config (deode.ParsedConfig): Configuration
 
         """
-        Task.__init__(self, config, "Pgd")
+        Task.__init__(self, config, __class__.__name__)
         self.program = "pgd"
         self.nlgen = NamelistGenerator(self.config, "surfex")
         self.climdir = self.platform.get_system_value("climdir")
@@ -644,8 +645,8 @@ class Pgd(Task):
             pgdfile = f"{pgdfile}.{filetype}"
 
             # Input data
-            sfx_input_defs = self.platform.get_system_value("sfx_input_defs")
-            with open(sfx_input_defs, "r", encoding="utf-8") as f:
+            input_definition = self.platform.get_system_value("sfx_input_definition")
+            with open(input_definition, "r", encoding="utf-8") as f:
                 input_data = json.load(f)
 
             if self.one_decade:
@@ -694,7 +695,7 @@ class Prep(Task):
             config (deode.ParsedConfig): Configuration
 
         """
-        Task.__init__(self, config, "Prep")
+        Task.__init__(self, config, __class__.__name__)
         self.nlgen = NamelistGenerator(self.config, "surfex")
         self.archive = self.platform.get_system_value("archive")
         # TODO get from args
@@ -726,8 +727,8 @@ class Prep(Task):
             self.nlgen.write_namelist(settings, "OPTIONS.nam")
 
             # Input data
-            sfx_input_defs = self.platform.get_system_value("sfx_input_defs")
-            with open(sfx_input_defs, "r", encoding="utf-8") as f:
+            input_definition = self.platform.get_system_value("sfx_input_definition")
+            with open(input_definition, "r", encoding="utf-8") as f:
                 input_data = json.load(f)
 
             # Determine PGD type and name
@@ -762,10 +763,19 @@ class Prep(Task):
             basetime = as_datetime(self.config["general.times.basetime"])
             bddir_sfx = self.config["system.bddir_sfx"]
             bdfile_sfx_template = self.config["system.bdfile_sfx_template"]
-            bdcycle = as_timedelta(self.config["boundaries.bdcycle"])
+            if self.config["boundaries.bdmodel"] != "IFS":
+                bdcycle = as_timedelta(self.config["boundaries.bdcycle"])
+                bdcycle_start = as_timedelta(self.config["boundaries.bdcycle_start"])
+            else:
+                mars = Marsprep.mars_selection(self)
+                bdcycle = as_timedelta(mars["ifs_cycle_length"])
+                bdcycle_start = as_timedelta(mars["ifs_cycle_start"])
+
             bdshift = as_timedelta(self.config["boundaries.bdshift"])
 
-            bd_basetime = basetime - cycle_offset(basetime, bdcycle, shift=-bdshift)
+            bd_basetime = basetime - cycle_offset(
+                basetime, bdcycle, bdcycle_start=bdcycle_start, bdshift=-bdshift
+            )
             prep_input_file = self.platform.substitute(
                 f"{bddir_sfx}/{bdfile_sfx_template}",
                 basetime=bd_basetime,

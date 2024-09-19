@@ -31,7 +31,9 @@ def get_date_info(gid):
     keys = [
         "productDefinitionTemplateNumber",
         "dataDate",
-        "dataTime",
+        "hour",
+        "minute",
+        "second",
         "indicatorOfUnitOfTimeRange",
         "forecastTime",
     ]
@@ -54,7 +56,10 @@ def date_from_gribinfo(info):
 
     """
     fcdate = datetime.datetime.strptime(
-        "{:8}T{:06}".format(info["dataDate"], info["dataTime"]), "%Y%m%dT%H%M%S"
+        "{:8}T{:02}{:02}{:02}".format(
+            info["dataDate"], info["hour"], info["minute"], info["second"]
+        ),
+        "%Y%m%dT%H%M%S",
     )
     if info["indicatorOfUnitOfTimeRange"] == 1:
         leadtime = info["forecastTime"] * 3600.0

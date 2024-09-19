@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 import tomlkit
 
+from deode import GeneralConstants
 from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import set_times
 from deode.plugin import DeodePluginRegistry
@@ -20,10 +21,9 @@ from deode.tasks.discover_task import available_tasks, get_task
 from deode.tasks.e923 import E923
 from deode.tasks.extractsqlite import ExtractSQLite
 from deode.tasks.forecast import FirstGuess, Forecast
+from deode.tasks.iomerge import IOmerge
 from deode.tasks.marsprep import Marsprep
 from deode.toolbox import ArchiveError, FileManager, ProviderError
-
-WORKING_DIR = Path.cwd()
 
 
 def classes_to_be_tested():
@@ -33,15 +33,10 @@ def classes_to_be_tested():
     return encountered_classes.keys()
 
 
-@pytest.fixture(scope="module", params=["CY46h1", "CY48t3", "CY48t3_target"])
-def base_raw_config(request):
+@pytest.fixture(scope="module")
+def base_raw_config():
     """Return a raw config common to all tasks."""
-    tag_map = {"CY46h1": ""}
-    test_map = {"CY46h1": {"general": {"windfarm": True}}}
-    tag = tag_map[request.param] if request.param in tag_map else f"_{request.param}"
-    config = BasicConfig.from_file(ConfigParserDefaults.DIRECTORY / f"config{tag}.toml")
-    with contextlib.suppress(KeyError):
-        config = config.copy(update=test_map[request.param])
+    config = BasicConfig.from_file(ConfigParserDefaults.CONFIG_DIRECTORY / "config.toml")
     return config
 
 
@@ -63,7 +58,7 @@ def task_name_and_configs(request, base_raw_config, tmp_path_factory):
             wrk = "{tmp_path_factory.getbasetemp().as_posix()}"
             bindir = "{tmp_path_factory.getbasetemp().as_posix()}/bin"
         [platform]
-            deode_home = "{WORKING_DIR}"
+            deode_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
             scratch = "{tmp_path_factory.getbasetemp().as_posix()}"
             static_data = "{tmp_path_factory.getbasetemp().as_posix()}"
             climdata = "{tmp_path_factory.getbasetemp().as_posix()}"
@@ -75,10 +70,19 @@ def task_name_and_configs(request, base_raw_config, tmp_path_factory):
             bd_nr = 1
             bd_time = "{basetime}"
             basetime = "{basetime}"
+            ionr = 0
         """
     )
-
     task_config = task_config.copy(update=config_patch)
+    if task_name == "e927":
+        config_e927 = tomlkit.parse(
+            """
+            [boundaries]
+                bdcycle = "PT6H"
+                bdcycle_start = "PT0H"
+            """
+        )
+        task_config = task_config.copy(update=config_e927)
     task_config = task_config.copy(update={"task": {"wrapper": "echo NPROC=@NPROC@;"}})
 
     return task_name, task_config
@@ -99,6 +103,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_task_extractsqlite_extractsqlite_execute_method = ExtractSQLite.execute
     original_task_e923_constant_part_method = E923.constant_part
     original_task_e923_monthly_part_method = E923.monthly_part
+    original_task_iomerge_iomerge_execute_method = IOmerge.execute
     original_task_marsprep_run_method = Marsprep.run
     original_task_collectlogs_collectlogs_execute_method = CollectLogs.execute
 
@@ -134,13 +139,16 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
 
     def new_task_archive_archivehour_execute_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
-        with contextlib.suppress(FileNotFoundError):
+        with contextlib.suppress(FileNotFoundError, TypeError):
             original_task_archive_archivehour_execute_method(*args, **kwargs)
 
     def new_task_archive_archivestatic_execute_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
         with contextlib.suppress(FileNotFoundError):
             original_task_archive_archivestatic_execute_method(*args, **kwargs)
+
+    def new_task_cleaning_tasks_cleaner_execute_method(*args, **kwargs):  # noqa: ARG001
+        """Skip any work."""
 
     def new_task_creategrib_creategrib_execute_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
@@ -171,6 +179,15 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         Path(constant_file).touch()
         Path("Const.Clim.01").touch()
         original_task_e923_monthly_part_method(self, constant_file)
+
+    def new_task_iomerge_iomerge_execute_method(self):
+        """Create needed file `ECHIS` before running the original method."""
+        file1 = self.wdir + "/../Forecast/io_serv.000001.d/ECHIS"
+        Path(file1).parent.mkdir(parents=True, exist_ok=True)
+        with open(file1, "w", encoding="utf8") as f1:
+            f1.write("01:00:00")
+        with contextlib.suppress(FileNotFoundError, RuntimeError):
+            original_task_iomerge_iomerge_execute_method(self)
 
     def new_task_collectlogs_collectlogs_execute_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
@@ -208,6 +225,10 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         new=new_task_archive_archivestatic_execute_method,
     )
     session_mocker.patch(
+        "deode.tasks.cleaning_tasks.Cleaning.execute",
+        new=new_task_cleaning_tasks_cleaner_execute_method,
+    )
+    session_mocker.patch(
         "deode.tasks.creategrib.CreateGrib.execute",
         new=new_task_creategrib_creategrib_execute_method,
     )
@@ -220,6 +241,10 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     )
     session_mocker.patch(
         "deode.tasks.e923.E923.monthly_part", new=new_task_e923_monthly_part_method
+    )
+    session_mocker.patch(
+        "deode.tasks.iomerge.IOmerge.execute",
+        new=new_task_iomerge_iomerge_execute_method,
     )
     session_mocker.patch(
         "deode.tasks.marsprep.BatchJob.run",

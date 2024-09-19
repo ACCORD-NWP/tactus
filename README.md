@@ -1,22 +1,24 @@
-[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/destination-earth-digital-twins/Deode-Prototype)
-[![Github Pages](https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white)](https://destination-earth-digital-twins.github.io/deode-prototype-docs/)
+[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/destination-earth-digital-twins/Deode-Workflow)
+[![Github Pages](https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white)](https://destination-earth-digital-twins.github.io/deode-workflow-docs/)
 
 
-[![Linting](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/linting.yaml/badge.svg)](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/linting.yaml)
-[![Tests](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/tests.yaml/badge.svg
-)](https://github.com/destination-earth-digital-twins/Deode-Prototype/actions/workflows/tests.yaml)
-[![codecov](https://codecov.io/github/destination-earth-digital-twins/Deode-Prototype/branch/develop/graph/badge.svg?token=4PRUK8DMZF)](https://codecov.io/github/destination-earth-digital-twins/Deode-Prototype)
+[![Linting](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/linting.yaml/badge.svg)](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/linting.yaml)
+[![Tests](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/tests.yaml/badge.svg
+)](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/tests.yaml)
+[![codecov](https://codecov.io/github/destination-earth-digital-twins/Deode-Workflow/branch/develop/graph/badge.svg?token=4PRUK8DMZF)](https://codecov.io/github/destination-earth-digital-twins/Deode-Workflow)
 
 # DEODE Scripting System
 
 ## About
 
-The [DEODE Scripting System](https://github.com/destination-earth-digital-twins/Deode-Prototype/) provides a `deode` python package that runs the [Destination Earth on Demand Extremes system](https://github.com/destination-earth-digital-twins).
+The [DEODE Scripting System](https://github.com/destination-earth-digital-twins/Deode-Workflow/) provides a `deode` python package that runs the [Destination Earth on Demand Extremes system](https://github.com/destination-earth-digital-twins).
 
-See the [project's documentation page](https://destination-earth-digital-twins.github.io/deode-prototype-docs) for more information.
+See the [project's documentation page](https://destination-earth-digital-twins.github.io/deode-workflow-docs) for more information.
 
 
 ## System Requirements
+
+**Make sure you have python>=3.10**
 
 ### Prepare your environment on the HPC machines
 <a name="#put-poetry-in-path"></a> Start by putting the `$HOME/.local/bin`
@@ -35,45 +37,39 @@ We **highly recommend** you to also put the statement listed above in your shell
 
 * On LUMI
 ```shell
-ml use /scratch/project_465000527/SW/modules
-ml cray-python/3.10.10
-ml ecflow/5.9.2-gcc-3ztnr
- ```
+ml use /scratch/project_465000527/jasinskas/scl/modules/
+ml pyeccodes_23
+ml scl-ecflow_23
+```
+
+* On Macs (local install only)
+  ```shell
+  brew install pyenv
+  pyenv install 3.10.10
+  # (or which ever version you want to universalise)
+  pyenv global 3.10.10
+   ```
+  Add eval "$(pyenv init --path)" to ~/.zprofile (or ~/.bash_profile or ~/.zshrc, whichever you need). Relaunch the shell and check that Python works, or run $ source ~/.zprofile
 
 ### Install Dependencies
 
-**Make sure you have python>=3.9**
+* [`poetry`](https://python-poetry.org)
 
-* On Macs (local install only)
-```shell
-brew install pyenv
-pyenv install 3.10.10
-# (or which ever version you want to universalise)
-pyenv global 3.10.10
- ```
-Add eval "$(pyenv init --path)" to ~/.zprofile (or ~/.bash_profile or ~/.zshrc, whichever you need)
-
-Relaunch the shell and check that Python works, or run $ source ~/.zprofile
-
-    * [`poetry`](https://python-poetry.org). To install/reinstall and configure it, run the following commands in your shell:
-      ```shell
-      # Clean eventual previous install
-      curl -sSL https://install.python-poetry.org | python3 - --uninstall
-      rm -rf ${HOME}/.cache/pypoetry/ ${HOME}/.local/bin/poetry ${HOME}/.local/share/pypoetry
-      # Download and install poetry
-      curl -sSL https://install.python-poetry.org | python3 -
-      ```
+  To install/reinstall and configure it, run the following commands in your shell:
+  ```shell
+  # Clean eventual previous install
+  curl -sSL https://install.python-poetry.org | python3 - --uninstall
+  rm -rf ${HOME}/.cache/pypoetry/ ${HOME}/.local/bin/poetry ${HOME}/.local/share/pypoetry
+  # Download and install poetry
+  curl -sSL https://install.python-poetry.org | python3 -
+  ```
 
 ### Optional System Requirements
 * [`pygdal`](https://pypi.org/project/pygdal/)
 
-  The python library [`pygdal`](https://pypi.org/project/pygdal/) is needed to use certain parts of the system, especially for climate generation. This library depends on [`gdal`](https://gdal.org/), which is notoriously troublesome as dependency when targeting many systems. The versions of `pygdal` and the system's `gdal`should match. You may try installing it using the following command:
-  ```shell
-  pip install pygdal=="`gdal-config --version`.*"
-  ```
-  **N.B.**: Do **not** run this installation command on Atos (`hpc-login`)!
-
-  On Atos, simply run:
+  The python library [`pygdal`](https://pypi.org/project/pygdal/) is needed to use certain parts of the system, especially for climate generation. This library depends on [`gdal`](https://gdal.org/), which is notoriously troublesome as dependency when targeting many systems. The versions of `pygdal` and the system's `gdal`should match. 
+  
+  On Atos, if you have issues with gdal, simply run:
   ```shell
   ml gdal
   ```
@@ -86,11 +82,11 @@ For the time being the recommended installation method is the [developer-mode in
 
 ### Developer Mode Installation
 
-:point_right: For those who need/wish to make changes to `deode`'s
-source code, or use code from a different branch than `master`.
+This is for those who need/wish to make changes to `deode`'s
+source code, or use code from a different branch than `master` and it's currently the recommended way to use `deode`.
 ```shell
-git clone git@github.com:destination-earth-digital-twins/Deode-Prototype.git
-cd Deode-Prototype
+git clone git@github.com:destination-earth-digital-twins/Deode-Workflow.git
+cd Deode-Workflow
 poetry install
 ```
 
@@ -120,14 +116,12 @@ Installing in developer mode means that changes made in any of the package's sou
       ```shell
       deode -h
       ```
-  3. Create a [config file](#the-configuration-file).
-
 ### The Configuration File
 Before you can use `deode` (apart from the `-h` option), you will need a configuration file written in the
 [TOML](https://en.wikipedia.org/wiki/TOML) format. Please take a look at
  the default
- [config.toml](https://github.com/destination-earth-digital-twins/Deode-Prototype/blob/develop/deode/data/config_files/config.toml) file, as well as the
- [project's Doc Page](https://destination-earth-digital-twins.github.io/deode-prototype-docs),
+ [config.toml](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/deode/data/config_files/config.toml) file, as well as the
+ [project's Doc Page](https://destination-earth-digital-twins.github.io/deode-workflow-docs),
  for more information about this.
 
  To see all configs currently in place in your `deode` setup, please run
@@ -155,32 +149,13 @@ that the `-h` goes after the subcommand in this case).
 These examples assume that you have successfully [initialised your environment](#prepare-your-environment-on-the-hpc-machines) and [installed `deode`](#installation). They should be run from the root level of your `deode` install directory. The examples also assume that the necessary
 input data is in place.
 
-### Running ecflow suite on ATOS
+### Running ecflow suite on ATOS or LUMI
 
-The following commands will launch a run under ecflow on atos (`hpc-login.ecmwf.int`) using the default experiment:
+The following command will run  the full suite using the default experiment:
 ```shell
-deode start suite \
-      --config-file $PWD/deode/data/config_files/config.toml
+deode case ?deode/data/config_files/configurations/cy48t3_arome -o cy48t3_arome.toml --start-suite
 ```
 
-The ecflow_scheduler variables live inside `deode/data/config_files/include/scheduler/ecflow_atos_bologna.toml`:
-```toml
-[ecfvars]
-  ecf_files = "@HOME@/deode_ecflow/ecf_files"
-  ecf_files_remotely = "@HOME@/deode_ecflow/ecf_files"
-  ecf_home = "@HOME@/deode_ecflow/jobout"
-  ecf_host = "ecflow-gen-@USER@-001"
-  ecf_jobout = "@HOME@/deode_ecflow/jobout"
-  ecf_out = "@HOME@/deode_ecflow/jobout"
-  ecf_port = "3141"
-  ecf_remoteuser = "@USER@"
-  ecf_ssl = "0"
-  ecf_user = "@USER@"
-  hpc = "atos"
-```
-which are set to default values. These can be changed in the file as required.
-
-After this, open `ecflow_ui` and add `ecflow-gen-${USER}-001` as the server with port `3141`. The default config will place the working directory under `$SCRATCH/deode`.
 
 ### Running the `"forecast"` task from the `hpc-login`'s command line
 
@@ -194,5 +169,6 @@ deode run \
       --output $PWD/forecast.log
 ```
 
-If you have done the above mentioned default ecflow test the stand alone forecast will pick the input data from the existing run and output the result in the same directories (as defined by the config file).
+For other platforms a new config file would have to be created first. Please consult the [configure cases](misc_section_in_doc_page.rst#configure-cases) section in the documentation for more information.
 
+If you have done the above mentioned default ecflow test the stand alone forecast will pick the input data from the existing run and output the result in the same directories (as defined by the config file).

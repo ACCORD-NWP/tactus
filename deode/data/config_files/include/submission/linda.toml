@@ -1,0 +1,8 @@
+[submission]
+  #bindir = "/dev/null"
+  default_submit_type = "background"
+  submit_types = ["background"]
+
+[submission.background]
+  SCHOST = "localhost"
+  WRAPPER = ""

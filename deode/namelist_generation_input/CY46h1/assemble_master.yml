@@ -51,6 +51,7 @@ e927:
 forecast:
   - master_common
   - f4_@CSC@
+  - f4_@CSC@_@HOST@
   - namgfl_@BDMODEL@
 
 c903_main:

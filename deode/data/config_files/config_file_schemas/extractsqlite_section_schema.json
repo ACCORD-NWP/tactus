@@ -8,7 +8,7 @@
         "parameter_list": {
             "type": "string",
             "description": "List of parameters to extract",
-            "default": "@DEODE_HOME@/deode/data/sqlite/param_list_@CSC@.json"
+            "default": "@DEODE_HOME@/data/sqlite/param_list_@CSC@.json"
         },
         "sqlite_model_name": {
             "type": "string",
@@ -28,7 +28,7 @@
         "station_list": {
             "type": "string",
             "description": "Station list used for extraction",
-            "default": "@DEODE_HOME@/deode/data/sqlite/station_list_default.csv"
+            "default": "@DEODE_HOME@/data/sqlite/station_list_default.csv"
         },
         "selection": {
             "type": "string",

@@ -18,7 +18,7 @@ class CreateGrib(Task):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Task.__init__(self, config, __name__)
+        Task.__init__(self, config, __class__.__name__)
 
         self.archive = self.platform.get_system_value("archive")
 

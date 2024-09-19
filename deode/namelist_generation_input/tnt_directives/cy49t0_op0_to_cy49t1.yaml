@@ -1,0 +1,39 @@
+
+# Part of these changes can be applied using TNT -- TheNamelistTool :
+# tnt.py -d <directive.yaml> <one or several namelist>
+# tnt.py is available under belenos:~verolive/vortex/vortex/bin/ or (EC) hpc-login:~sos/vortex/vortex/bin/
+
+new_blocks:
+    - NAMNRTAER
+    - NAMDWET
+    - NAM_SPP_ACTIVE
+    - NAM_SPP_MODIF
+
+keys_to_remove:
+    NAMPARAR:
+        - LSURFEX_KFROM
+        - LDIAGWMAX
+        - NDIAGWMAX
+        - NPRINTFR
+        - NPTP
+
+# WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# Arpege:
+# Surfex's NAM_SURF_ATM : LARP_PN removed, to be replaced by:
+#   1) Creating PGD File with file OPTIONS1.nam containing:
+#      &NAM_DATA_ISBA
+#        XUNIF_CV(1:20)=20*0.8E-05,
+#      /
+#
+#   2) Running SURFEX integration with EXSEG1.nam containing:
+#      &NAM_SURF_ATM
+#        XTAU_ICE=25000.,
+#      /
+#
+#
+# Canari:
+#   to reproduce former setup, in Surfex namelist:
+#   &NAM_OBS
+#     NNCO=1,1,
+#     NOBSTYPE=2,
+#   /

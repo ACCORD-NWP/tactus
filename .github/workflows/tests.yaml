@@ -2,13 +2,15 @@
 name: Unit Tests
 
 on:
+  push:
+    branches:
+      - master
+      - develop
+
   pull_request:
     branches:
       - master
       - develop
-  push:
-    branches:
-      - '**' # Every branch
 
 jobs:
   tests:
@@ -20,7 +22,7 @@ jobs:
         env: [ "pytest" ]
         python-version: [ "3.9" ]
 
-    name: "${{ matrix.os }}, python=${{ matrix.python-version }}"
+    name: "Unit-tests ${{ matrix.os }}, python=${{ matrix.python-version }}"
     runs-on: ${{ matrix.os }}
 
     container:
@@ -38,6 +40,11 @@ jobs:
       #----------------------------------------------
       #           add matrix specifics
       #----------------------------------------------
+      - name: Install ping
+        run: |
+          apt-get update
+          apt-get install -y inetutils-ping
+
       - name: Install system gdal libs
         run: |
           apt-get update
@@ -77,8 +84,9 @@ jobs:
         run: |
           poetry run pytest -n auto
 
-      - name: Upload test coverage report to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./.coverage.xml
+      # Disable upload to codecov until/if codecov is enabled
+      # - name: Upload test coverage report to Codecov
+      #   uses: codecov/codecov-action@v3
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     files: ./.coverage.xml

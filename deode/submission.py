@@ -324,7 +324,11 @@ class TaskSettings(object):
             logger.debug("module settings {}", module_settings)
 
             if module_settings is not None and len(module_settings) > 0:
-                env_file = f"{self.submission_defs['module_initpath']}/bash"
+                env_file = (
+                    f"{self.submission_defs['module_initfile']}"
+                    if "module_initfile" in self.submission_defs
+                    else f"{self.submission_defs['module_initpath']}/bash"
+                )
                 if not os.path.isfile(env_file):
                     raise RuntimeError(
                         f"Environment file {env_file} is not a file or does not exists"
@@ -332,6 +336,9 @@ class TaskSettings(object):
 
                 file_handler.write(f". {env_file}\n")
                 for key in module_settings.values():
+                    # Skip empty sections
+                    if len(key) == 0:
+                        continue
                     if len(key) < 2 or len(key) > 3:
                         raise RuntimeError(f"Module command has the wrong length:{key}")
                     cmd = "module " + " ".join([f"{x}" for x in key])

@@ -1,42 +1,54 @@
-[ecfs]
+[archiving]
 
-[ecfs.default]
+[archiving.hour.ecfs.fa_files]
   active = true
   inpath = "@ARCHIVE@"
   outpath = "archive/@ARCHIVE_TIMESTAMP@"
+  pattern = "ICMSH*"
 
-[ecfs.hour]
+[archiving.hour.ecfs.grib_files]
+  active = true
+  inpath = "@ARCHIVE@"
+  outpath = "archive/@ARCHIVE_TIMESTAMP@"
+  pattern = "GRIB*"
 
-[ecfs.hour.logs]
+[archiving.hour.ecfs.logs]
   active = true
   inpath = "@LOGS@"
   outpath = "logs"
   pattern = "@YYYY@@MM@@DD@_@HH@@mm@.tar.gz"
 
-[ecfs.hour.sqlite]
+[archiving.hour.ecfs.sqlite]
   active = "suite_control.do_extractsqlite"
   inpath = "@SQLITE_PATH@"
   outpath = "sqlite"
   pattern = "*"
 
-[ecfs.paths]
-  aloc = "ectmp:"
-  apath = "/@USER@/deode/@CASE@"
+[archiving.hour.fdb]
 
-[ecfs.settings]
-  fullpos = "PT15M"
-  history = "PT1H"
-  surfex = "PT1H"
+[archiving.hour.fdb.grib2_files]
+  active = false
+  inpath = "@ARCHIVE@"
+  pattern = "GRIBPF*"
 
-[ecfs.static]
+[archiving.hour.scp.lumi_grib2]
+  active = false
+  inpath = "@ARCHIVE@"
+  outpath = "lumi_transfer:@SCRATCH@/@USER@_atos_@CASE@/archive/@ARCHIVE_TIMESTAMP@"
+  pattern = "GRIBPF*"
 
-[ecfs.static.climate]
+[archiving.prefix]
+  ecfs = "ec:/@USER@/deode/@CASE@"
+
+[archiving.static.ecfs]
+
+[archiving.static.ecfs.climate_files]
   active = true
   inpath = "@CLIMDIR@"
   outpath = "climate/@DOMAIN@"
   pattern = ["Const.Clim*", "PGD*"]
 
-[ecfs.static.logs]
+[archiving.static.ecfs.logs]
   active = true
   inpath = "@LOGS@"
   outpath = "logs"
@@ -44,5 +56,16 @@
 
 [fdb]
 
-[fdb.default]
-  active = false
+[fdb.grib_set]
+  centre = "98"
+  class = "d1"
+  dataset = "on-demand-extremes-dt"
+  grib2LocalSectionNumber = "1"
+  localTablesVersion = "1"
+  productionStatusOfProcessedData = "12"
+  setLocalDefinition = "1"
+  subCentre = "84"
+  tablesVersion = "32"
+
+[fdb.negative_rules]
+  typeOfLevel = ["unknown", "not_found"]

@@ -1,0 +1,2 @@
+[troika]
+  troika = "@DEODE_HOME@/../.conda/bin/troika"

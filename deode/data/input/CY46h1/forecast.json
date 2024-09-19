@@ -1,0 +1,55 @@
+{
+  "climate" : {
+	  "path": "@CLIMDIR@",
+	  "files": {
+		   "Const.Clim": "Const.Clim.@MM@", 
+		   "const.clim.@DOMAIN@": "Const.Clim.@MM@",
+		   "@PGD_MODEL@": "@PGD_ARCHIVE@"
+	  }
+  },
+
+  "rrtm" : {
+      "path": "@RRTM_DIR@",
+      "files": [
+            "C11CLIM",
+            "C12CLIM",
+            "C22CLIM",
+            "CCL4CLIM",
+            "CH4CLIM",
+            "CO2CLIM",
+            "ECOZC",
+            "GCH4CLIM",
+            "GCO2CLIM",
+            "GOZOCLIM",
+            "MCH4CLIM",
+            "MCICA",
+            "MCO2CLIM",
+            "MOZOCLIM",
+            "N2OCLIM",
+            "NO2CLIM",
+            "OZOCLIM",
+            "RADAIOP",
+            "RADRRTM",
+            "RADSRTM",
+            "SO4_A1B2000",
+            "SO4_A1B2010",
+            "SO4_A1B2020",
+            "SO4_A1B2030",
+            "SO4_A1B2040",
+            "SO4_A1B2050",
+            "SO4_A1B2060",
+            "SO4_A1B2070",
+            "SO4_A1B2080",
+            "SO4_A1B2090",
+            "SO4_A1B2100",
+            "SO4_OBS1920",
+            "SO4_OBS1930",
+            "SO4_OBS1940",
+            "SO4_OBS1950",
+            "SO4_OBS1960",
+            "SO4_OBS1970",
+            "SO4_OBS1980",
+            "SO4_OBS1990"
+      ]
+  }
+}

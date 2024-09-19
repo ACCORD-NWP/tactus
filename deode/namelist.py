@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Namelist handling for MASTERODB w/SURFEX."""
+import copy
 import os
 import re
+import subprocess
 from collections import OrderedDict
 from pathlib import Path
 
@@ -55,6 +57,26 @@ def represent_ordereddict(dumper, data):
         vm = dumper.represent_data(v)
         my_od.append((km, vm))
     return yaml.nodes.MappingNode("tag:yaml.org,2002:map", my_od)
+
+
+def write_namelist(nml, output_file):
+    """Write namelist using f90nml.
+
+    Args:
+        nml (f90nml.Namelist): namelist to write
+        output_file (str) : namelist file name
+
+    """
+    if isinstance(nml, dict):
+        nml = f90nml.Namelist(nml)
+    # Write result.
+    nml.uppercase = True
+    nml.true_repr = ".TRUE."
+    nml.false_repr = ".FALSE."
+    nml.end_comma = True  # AD: temp fix for IO_SERVER bug
+    nml.write(output_file, force=True)
+
+    logger.debug("Wrote: {}", output_file)
 
 
 class InvalidNamelistKindError(ValueError):
@@ -295,9 +317,9 @@ class NamelistGenerator:
             cndict = {self.target: [target]}
             found = False
         else:
-            logger.warning(
-                "No reference namelist {} exists, fallback to yaml files", ref_namelist
-            )
+            logger.warning("No reference namelist {} exists.", ref_namelist)
+            logger.warning("Fallback to yaml files")
+
             found = True
             nldict = {}
             cndict = {}
@@ -325,7 +347,9 @@ class NamelistGenerator:
             use_yaml, nldict, cndict = self.load_user_namelist()
 
         if use_yaml:
-            logger.debug("Use {} and {} to generate namelist", self.nlfile, self.cnfile)
+            logger.info("Namelist generation input:")
+            logger.info(" namelists: {}", self.nlfile)
+            logger.info(" rules: {}", self.cnfile)
             # Read namelist file with all the categories
             with open(self.nlfile, mode="rt", encoding="utf-8") as file:
                 nldict = yaml.safe_load(file)
@@ -350,7 +374,9 @@ class NamelistGenerator:
         self.nldict = nldict
         self.cndict = cndict
 
-        return nldict, cndict
+        self.update_from_config(target)
+
+        return self.nldict, self.cndict
 
     def check_replace_scalar(self, val):
         """Check a scalar for variable substitution from config.
@@ -484,6 +510,42 @@ class NamelistGenerator:
         nlsubst = self.traverse(nlres)
         return f90nml.Namelist(nlsubst)
 
+    def write_namelist(self, nml, output_file):
+        """Write namelist using f90nml.
+
+        Args:
+            nml (f90nml.Namelist): namelist to write
+            output_file (str) : namelist file name
+        """
+        write_namelist(nml, output_file)
+
+    def update_from_config(self, target):
+        """Update with additional namelist dict from config.
+
+        Args:
+            target (str): task to generate namelists for
+
+        """
+        # Try to update potential global settings first
+        if target != "all_targets":
+            self.update_from_config("all_targets")
+
+        try:
+            _update = self.config["namelist_update"][self.kind][target].dict()
+
+            # Make sure everything is in upper case
+            update = {}
+            for namelist, keyval in _update.items():
+                nu = namelist.upper()
+                update[nu] = {}
+                for key, val in keyval.items():
+                    update[nu][key.upper()] = val
+
+            self.update(update, f"namelist_update_{target}")
+            logger.info("Namelist update found for {} {}", self.kind, target)
+        except KeyError:
+            pass
+
     def update(self, nldict, cndict_tag):
         """Update with additional namelist dict.
 
@@ -495,25 +557,6 @@ class NamelistGenerator:
         self.cndict[self.target].append(cndict_tag)
         self.nldict[cndict_tag] = nldict
 
-    def write_namelist(self, nml, output_file):
-        """Write namelist using f90nml.
-
-        Args:
-            nml (f90nml.Namelist): namelist to write
-            output_file (str) : namelist file name
-
-        """
-        if isinstance(nml, dict):
-            nml = f90nml.Namelist(nml)
-        # Write result.
-        nml.uppercase = True
-        nml.true_repr = ".TRUE."
-        nml.false_repr = ".FALSE."
-        nml.end_comma = True  # AD: temp fix for IO_SERVER bug
-        nml.write(output_file, force=True)
-
-        logger.debug("Wrote: {}", output_file)
-
     def generate_namelist(self, target, output_file):
         """Generate the namelists for 'target'.
 
@@ -524,13 +567,6 @@ class NamelistGenerator:
         """
         logger.info("Generate namelist for: {}", target)
         self.load(target)
-        try:
-            update = self.config["namelist_update"]
-            if self.kind in update:
-                self.update(update, self.kind)
-        except KeyError:
-            pass
-
         nml = self.assemble_namelist(target)
         self.write_namelist(nml, output_file)
 
@@ -592,13 +628,307 @@ class NamelistIntegrator:
             logger.warning(msg)
         return onml
 
-    def yml2dict(self, ymlfile):
+    @staticmethod
+    def yml2dict(ymlfile):
         """Read yaml namelist file and return as dict."""
         with open(ymlfile, mode="rt", encoding="utf-8") as file:
             ynml = yaml.safe_load(file)
         return ynml
 
-    def dict2yml(self, nmldict, ymlfile):
+    @staticmethod
+    def dict2yml(nmldict, ymlfile, ordered_sections=None):
         """Write dict as yaml file."""
         with open(ymlfile, mode="wb") as file:
-            yaml.dump(nmldict, file, encoding="utf-8", default_flow_style=False)
+            if ordered_sections:
+                for section in ordered_sections:
+                    if section in nmldict:
+                        output_dict = {}
+                        output_dict[section] = nmldict[section]
+                        yaml.dump(
+                            output_dict, file, encoding="utf-8", default_flow_style=False
+                        )
+            else:
+                yaml.dump(nmldict, file, encoding="utf-8", default_flow_style=False)
+
+
+class NamelistConverter:
+    """Helper class to convert namelists between cycles, based on thenamelisttool."""
+
+    @staticmethod
+    def get_known_cycles():
+        """Return the cycles handled by the converter."""
+        return ["CY48t2", "CY48t3", "CY49", "CY49t1", "CY49t2"]
+
+    @staticmethod
+    def get_to_next_version_tnt_filenames():
+        """Return the tnt file names between get_known_cycles()."""
+        return [
+            None,  # CY48t2 to CY48t3
+            "cy48t2_to_cy49.yaml",  # CY48t3 to CY49
+            "cy49_to_cy49t1.yaml",  # CY49   to CY49t1
+            None,  # CY49t1 to CY49t2
+        ]
+
+    @staticmethod
+    def get_tnt_files_list(from_cycle, to_cycle):
+        """Return the list of tnt directive files required for the conversion."""
+        # definitions of the conversion to apply between cycles
+        tnt_directives_folder = (
+            Path(__file__).parent / "namelist_generation_input/tnt_directives/"
+        )
+
+        if from_cycle and to_cycle:
+            known_cycles = NamelistConverter.get_known_cycles()
+            to_next_version_tnt_filenames = (
+                NamelistConverter.get_to_next_version_tnt_filenames()
+            )
+
+            try:
+                start_index = known_cycles.index(from_cycle)
+            except ValueError:
+                raise SystemExit(
+                    f"ERROR: from-cycle {from_cycle} unknown"
+                ) from ValueError
+
+            try:
+                target_index = known_cycles.index(to_cycle)
+            except ValueError:
+                raise SystemExit(f"ERROR: to-cycle {to_cycle} unknown") from ValueError
+
+            # Verify that to_cycle is older than from_cycle
+            if start_index > target_index:
+                raise SystemExit(
+                    f"ERROR: No conversion possible between {from_cycle} and {to_cycle}"
+                )
+        else:
+            start_index = 0
+            target_index = 0
+
+        if start_index == target_index:
+            # Apply empty conversion
+            tnt_files = [tnt_directives_folder / "empty.yaml"]
+        else:
+            # Apply all the intermediate conversions
+            tnt_files = [
+                tnt_directives_folder / to_next_version_tnt_filenames[index]
+                for index in range(start_index, target_index)
+                if to_next_version_tnt_filenames[index]
+            ]
+
+        return tnt_files
+
+    @staticmethod
+    def convert_yml(input_yml, output_yml, from_cycle, to_cycle):
+        """Convert a namelist in yml file between two cycles.
+
+        Args:
+            input_yml: the input yaml filename
+            output_yml: the output yaml filename
+            from_cycle: the input cycle
+            to_cycle: the target cycle
+
+        Raises:
+            SystemExit: when conversion failed
+        """
+        tnt_files = NamelistConverter.get_tnt_files_list(from_cycle, to_cycle)
+
+        # Read the input namelist file (yaml)
+        logger.info(f"Read {input_yml}")
+        nmldict = NamelistIntegrator.yml2dict(Path(input_yml))
+
+        with open(Path(input_yml), mode="rt", encoding="utf-8") as file:
+            ordered_sections = [
+                line.split(":")[0]
+                for line in file.readlines()
+                if ":" in line and line.split(":")[0] in nmldict
+            ]
+
+        for tnt_file in tnt_files:
+            nmldict = NamelistConverter.apply_tnt_directives_to_namelist_dict(
+                tnt_file, nmldict
+            )
+            if not nmldict:
+                raise SystemExit("Name list conversion failed.  ")
+
+        # Write the output namelist file (yaml)
+        logger.info(f"Write {output_yml}")
+        if "empty" in nmldict and "empty" not in ordered_sections:
+            ordered_sections.append("empty")
+
+        NamelistIntegrator.dict2yml(nmldict, Path(output_yml), ordered_sections)
+
+    @staticmethod
+    def convert_ftn(input_ftn, output_ftn, from_cycle, to_cycle):
+        """Convert a namelist in fortran file between two cycles.
+
+        Args:
+            input_ftn: the input fortran filename
+            output_ftn: the output fortran filename
+            from_cycle: the input cycle
+            to_cycle: the target cycle
+        """
+        tnt_files = NamelistConverter.get_tnt_files_list(from_cycle, to_cycle)
+
+        logger.info(f"Read {input_ftn}")
+        ftn_file = input_ftn
+        temporary_files = []
+        for tnt_file in tnt_files:
+            NamelistConverter.apply_tnt_directives_to_ftn_namelist(tnt_file, ftn_file)
+            ftn_file = ftn_file + ".tnt"
+            temporary_files.append(ftn_file)
+
+        nl = f90nml.read(ftn_file)
+        logger.info(f"Write {output_ftn}")
+        write_namelist(nl, output_ftn)
+
+        for file in temporary_files:
+            os.remove(file)
+
+    @staticmethod
+    def apply_tnt_directives_to_namelist_dict(tnt_directive_filename, namelist_dict):
+        """Apply the tnt directives to a namelist as dictionary.
+
+        Args:
+            tnt_directive_filename: the tnt directive filename
+            namelist_dict: the namelist dictionary
+
+        Returns:
+            new_namelist: the converted namelist dictionary
+
+        Raises:
+            SystemExit: when conversion failed
+        """
+        logger.info(f"Apply {tnt_directive_filename}")
+        # Open the directive file
+        with open(tnt_directive_filename, mode="rt", encoding="utf-8") as file:
+            tnt_directives = yaml.safe_load(file)
+        file.close()
+
+        # Use a copy to be able to modify dictionaries during iterations
+        new_namelist = copy.deepcopy(namelist_dict)
+
+        # Move keys from one section to another
+        if "keys_to_move" in tnt_directives:
+            for old_block in tnt_directives["keys_to_move"]:
+                for old_key in tnt_directives["keys_to_move"][old_block]:
+                    for new_block in tnt_directives["keys_to_move"][old_block][old_key]:
+                        new_key = tnt_directives["keys_to_move"][old_block][old_key][
+                            new_block
+                        ]
+
+                        for namelists_section in namelist_dict:
+                            for namelist_block in namelist_dict[namelists_section]:
+                                if (
+                                    old_block in namelist_block
+                                    and old_key
+                                    in namelist_dict[namelists_section][namelist_block]
+                                ):
+                                    if new_block not in new_namelist[namelists_section]:
+                                        new_namelist[namelists_section][new_block] = {}
+                                    new_namelist[namelists_section][new_block][
+                                        new_key
+                                    ] = namelist_dict[namelists_section][old_block][
+                                        old_key
+                                    ]
+                                    del new_namelist[namelists_section][old_block][
+                                        old_key
+                                    ]
+                                    if (
+                                        len(new_namelist[namelists_section][old_block])
+                                        == 0
+                                    ):
+                                        del new_namelist[namelists_section][old_block]
+
+        if "keys_to_set" in tnt_directives:
+            for block_to_set in tnt_directives["keys_to_set"]:
+                for namelists_section in namelist_dict:
+                    if namelists_section != "empty":
+                        for keys_to_set in tnt_directives["keys_to_set"][block_to_set]:
+                            if block_to_set in namelist_dict[namelists_section]:
+                                key_value = tnt_directives["keys_to_set"][block_to_set][
+                                    keys_to_set
+                                ]
+                                if key_value in [".T.", ".TRUE."]:
+                                    key_value = True
+                                if key_value in [".F.", ".FALSE."]:
+                                    key_value = False
+                                new_namelist[namelists_section][block_to_set][
+                                    keys_to_set
+                                ] = key_value
+                            else:
+                                logger.warning(
+                                    f"'No {block_to_set} in {namelists_section}: \
+                                    skip insertion of {keys_to_set}'"
+                                )
+
+        # Creation of new blocks
+        if "new_blocks" in tnt_directives:
+            for new_block in tnt_directives["new_blocks"]:
+                if "empty" not in new_namelist:
+                    new_namelist["empty"] = {}
+                new_block_upper = new_block.upper()
+                if new_block_upper not in new_namelist["empty"]:
+                    new_namelist["empty"][new_block_upper] = {}
+
+        # Move of blocks(Not implemented)
+        if "blocks_to_move" in tnt_directives:
+            for blocks in tnt_directives["blocks_to_move"]:
+                if blocks in namelist_block:
+                    raise SystemExit("conversion FAILED: blocks_to_move not implemented")
+
+        # Delete keys
+        if "keys_to_remove" in tnt_directives:
+            for block_to_remove in tnt_directives["keys_to_remove"]:
+                for namelists_section in namelist_dict:
+                    for namelist_block in namelist_dict[namelists_section]:
+                        if block_to_remove in namelist_block:
+                            for key_to_remove in tnt_directives["keys_to_remove"][
+                                block_to_remove
+                            ]:
+                                if (
+                                    key_to_remove
+                                    in namelist_dict[namelists_section][block_to_remove]
+                                ):
+                                    del new_namelist[namelists_section][block_to_remove][
+                                        key_to_remove
+                                    ]
+                                    if (
+                                        len(
+                                            new_namelist[namelists_section][
+                                                block_to_remove
+                                            ]
+                                        )
+                                        == 0
+                                    ):
+                                        del new_namelist[namelists_section][
+                                            block_to_remove
+                                        ]
+
+        return new_namelist
+
+    @staticmethod
+    def apply_tnt_directives_to_ftn_namelist(tnt_directive_filename, input_ftn):
+        """Apply the tnt directives to a fotran namelist using tnt.
+
+        Args:
+            tnt_directive_filename: the tnt directive filename
+            input_ftn: the namelist fortran file
+
+        Raises:
+           SystemExit: when conversion failed
+        """
+        logger.info(f"Apply {tnt_directive_filename}")
+        tnt_directives_folder = (
+            Path(__file__).parent / "namelist_generation_input/tnt_directives/"
+        )
+        command = [
+            "tnt.py",
+            "-d",
+            tnt_directives_folder / tnt_directive_filename,
+            input_ftn,
+        ]
+
+        try:
+            subprocess.check_call(command)  # noqa S603
+        except subprocess.CalledProcessError as exception:
+            raise SystemExit(f"tnt failed with {exception!r}") from exception

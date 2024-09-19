@@ -1,5 +1,5 @@
 # Namelist handling in deode
-Describes the namelist handling in the Deode-Prototype.
+Describes the namelist handling in the Deode-Workflow.
 
 ## Internal usage
 The deode namelists are stored as yml files and assembled following a set of rules. The upper air and surfex namelists are stored in `master_namelists.yml` and `surfex_namelists.yml` respectively. In these config files the namelists are grouped depending on function and application. E.g. the namelist for generation of climate files (configuration E923) are separated in a base block, `e923_base` and one additional block for each step, e.g. `e923_0`. In `assemble_master.yml` the rules for how these blocks are combinged is defined. For the initial part, `e923_part_0` is defined as
@@ -41,6 +41,15 @@ deode show namelist -h
 
 ## Add your own namelist
 
-The simplest way to change a namelist is to extract it as described above, make your modifications and add the namelist to the directory specified by `system.namelists` in the config file. The name of the namelist should be the same as when extracted above. Before the system will pick up your namelist you have to set `general.accept_stat_namelist = true` in the config file. Note that for the main forecast namelist any existing fullpos select files following the name convention "xxt\*" will be picked up as well if they exists. If not they will be generated.
+The simplest and recommended way to change a namelist is to extract it as described above using the `-b` option, make your modifications and add the namelist to the directory specified by `system.namelists` in the config file. The name of the namelist should be the same as when extracted above. Before the system will pick up your namelist you have to set `general.accept_stat_namelist = true` in the config file. Note that for the main forecast namelist any existing fullpos select files following the name convention "xxt\*" will be picked up as well if they exists. If not they will be generated.
 
+## Modify a namlist from config
+
+There are several ways to modify namelists. We can either use the `${}` syntax in the yaml files to substitute values. See e.g. how it's done for `nproma` or lfftw defined in the `submission` sections. Another way is to introduce a `namelist_update` section like
 ```
+  [namelist_update.master.all_targets]
+    namdim = { nproma = -99 }
+  [namelist_update.master.forecast]
+    namrip =  {  ravgtime = 99.0 }
+```
+where the first section updates all used namelists and the latter updates the forecast namelist only. This allows us to introduce namelist changes for a specific configuration without having to edit the yaml files or a static namelist.

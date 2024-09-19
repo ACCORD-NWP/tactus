@@ -4,7 +4,6 @@ import glob
 import os
 import pathlib
 
-from ..datetime_utils import as_datetime, oi2dt_list
 from ..logs import logger
 from .base import Task
 
@@ -12,18 +11,44 @@ from .base import Task
 class Archive(Task):
     """Archving data."""
 
-    def __init__(self, config):
-        """Construct object.
+    def __init__(self, config, datatype=None):
+        """Construct the archive object.
+
+        Loop over archive types (e.g. ecfs,fdb) for the current platform
+        and store the active selections from config.
 
         Args:
             config (deode.ParsedConfig): Configuration
+            datatype (str): Indicating data type (climate, hour)
         """
-        Task.__init__(self, config, __name__)
+        Task.__init__(self, config, __class__.__name__)
 
-        self.archive_type = self.platform.get_value("platform.archive_type")
-        apath = self.platform.get_value(f"archiving.{self.archive_type}.paths.apath")
-        aloc = self.platform.get_value(f"archiving.{self.archive_type}.paths.aloc")
-        self.arch_loc = f"{aloc}{apath}"
+        self.archive_types = self.config.get("platform.archive_types", [])
+
+        self.choices = {}
+        self.archive_loc = {}
+        if datatype is not None:
+            choices_for_type = self.config[f"archiving.{datatype}"].dict()
+            skipped_types = []
+            for archive_type, choices in choices_for_type.items():
+                d = {
+                    name: choice
+                    for name, choice in choices.items()
+                    if self.trigger(choice["active"])
+                }
+                if len(d) > 0:
+                    if archive_type in self.archive_types:
+                        self.choices[archive_type] = d
+                        self.archive_loc[archive_type] = self.platform.get_value(
+                            f"archiving.prefix.{archive_type}", ""
+                        )
+                    else:
+                        skipped_types.append(archive_type)
+
+            if len(skipped_types) > 0:
+                logger.warning(
+                    "Skipped archive types not defined for this host: {}", skipped_types
+                )
 
     def trigger(self, trigger):
         """Return trigger."""
@@ -31,14 +56,29 @@ class Archive(Task):
             return trigger
         return self.config[trigger]
 
-    def archive(self, pattern, outpath, inpath):
+    def execute(self):
+        """Loops over archive choices."""
+        for archive_type, choices in self.choices.items():
+            logger.info("Archiving type: {}", archive_type)
+            for name, choice in choices.items():
+                choice.pop("active")
+                logger.info("Archiving {} with: {}", name, choice)
+                outpath = choice["outpath"] if "outpath" in choice else ""
+                self.archive(
+                    choice["pattern"],
+                    choice["inpath"],
+                    outpath,
+                    archive_type,
+                )
+
+    def archive(self, pattern, inpath, outpath, archive_type=None):
         """Send files to the file manager.
 
         Args:
             pattern (str,list): string of list of patterns to search for
-            outpath (str): relative path on the output archive
             inpath (str): Full path on the input archive
-
+            outpath (str): relative path on the output archive
+            archive_type (str, optional): Archive type. Defaults to None.
         """
         out = self.platform.substitute(outpath)
         inp = self.platform.substitute(inpath)
@@ -50,12 +90,13 @@ class Archive(Task):
             search = str(pathlib.PurePath(inp, self.platform.substitute(ptrn)))
             files = [x for x in glob.glob(search) if os.path.isfile(x)]
 
-            for filename in files:
-                self.fmanager.input(
+            for filename in sorted(files):
+                self.fmanager.output(
                     filename,
-                    pathlib.PurePath(self.arch_loc, out, os.path.basename(filename)),
-                    check_archive=True,
-                    provider_id=self.archive_type,
+                    pathlib.PurePath(
+                        self.archive_loc[archive_type], out, os.path.basename(filename)
+                    ),
+                    provider_id=archive_type,
                 )
 
 
@@ -68,20 +109,7 @@ class ArchiveStatic(Archive):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Archive.__init__(self, config)
-
-        self.choices = self.config.get(f"archiving.{self.archive_type}.static", {})
-
-    def execute(self):
-        """Run task.
-
-        Define run sequence.
-
-        """
-        for name, choice in self.choices.items():
-            if self.trigger(choice["active"]):
-                logger.info("{}: {}", name, choice)
-                self.archive(choice["pattern"], choice["outpath"], choice["inpath"])
+        Archive.__init__(self, config, "static")
 
 
 class ArchiveHour(Archive):
@@ -93,77 +121,4 @@ class ArchiveHour(Archive):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Archive.__init__(self, config)
-
-        archiving = self.config[f"archiving.{self.archive_type}"].dict()
-        self.default = archiving["default"]
-        try:
-            self.choices = archiving["hour"]
-        except KeyError:
-            self.choices = {}
-
-        self.basetime = as_datetime(self.config["general.times.basetime"])
-        self.forecast_range = self.config["general.times.forecast_range"]
-        self.file_templates = self.config["file_templates"]
-
-        try:
-            self.archiving_settings = archiving["settings"]
-            if len(self.archiving_settings) == 0:
-                self.archiving_settings = None
-        except KeyError:
-            self.archiving_settings = None
-
-        try:
-            self.conversions = self.config["task.creategrib.conversions"]
-        except KeyError:
-            self.conversions = {}
-
-        if self.archiving_settings is None:
-            self.archiving_settings = {
-                x: y
-                for x, y in self.config["general.output_settings"].items()
-                if x != "nrazts"
-            }
-
-    def archive_loop(self, ftype, conv_type, inpath, outpath):
-        """Loop over a list fo files and archive them.
-
-        Args:
-            ftype(str): Filetype
-            conv_type(str): Converted file type
-            inpath: Absolute path on the input archive
-            outpath: Relatve path on the output archive
-
-        """
-        files = []
-        dt_list = oi2dt_list(self.archiving_settings[ftype], self.forecast_range)
-        for dt in dt_list:
-            fi = self.platform.substitute(
-                self.file_templates[ftype][conv_type], validtime=self.basetime + dt
-            )
-            files.append(fi)
-
-        self.archive(files, outpath, inpath)
-
-    def execute(self):
-        """Run task.
-
-        Define run sequence.
-
-        """
-        # Loop to find files based on template then rename for ECFS to accept
-        if self.trigger(self.default["active"]):
-            outpath = self.platform.substitute(self.default["outpath"])
-            inpath = self.platform.substitute(self.default["inpath"])
-            logger.info("default: {}", {"inpath": inpath, "outpath": outpath})
-
-            for filetype in self.archiving_settings:
-                self.archive_loop(filetype, "archive", inpath, outpath)
-                # Archive explicitly converted grib files
-                if filetype in self.conversions:
-                    self.archive_loop(filetype, "grib", inpath, outpath)
-
-        for name, choice in self.choices.items():
-            if self.trigger(choice["active"]):
-                logger.info("{}: {}", name, choice)
-                self.archive(choice["pattern"], choice["outpath"], choice["inpath"])
+        Archive.__init__(self, config, "hour")

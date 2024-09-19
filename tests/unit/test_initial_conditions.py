@@ -7,10 +7,9 @@ from pathlib import Path
 import pytest
 import tomlkit
 
+from deode import GeneralConstants
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.initial_conditions import InitialConditions
-
-WORKING_DIR = Path.cwd()
 
 
 @pytest.fixture(scope="module")
@@ -59,7 +58,7 @@ def parsed_config(request, tmpdir):
             intp_bddir = "{tmpdir}"
             archive = "{tmpdir}"
         [platform]
-            deode_home = "{WORKING_DIR}"
+            deode_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
         """
     )
 
@@ -80,7 +79,7 @@ def set_mode(request):
 @pytest.mark.parametrize(
     "param",
     [
-        {"general": {"deode_home": "{WORKING_DIR}"}},
+        {"general": {"deode_home": str(GeneralConstants.PACKAGE_DIRECTORY)}},
         {"general": {"initfile": "foo", "initfile_sfx": "foo"}},
         {"general": {"times": {"start": "2023-10-15T15:32:24Z"}}},
     ],

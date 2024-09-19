@@ -1,0 +1,6 @@
+
+# 1. Blocks to be added.
+new_blocks:
+    - NAMPERTPAR
+    - NAMVARBC_MODES
+

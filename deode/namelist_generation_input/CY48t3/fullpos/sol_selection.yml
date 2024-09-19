@@ -11,6 +11,3 @@ selection:
 
  xxtddddhh00:
    <<: *default
-
- xxt00000000:
-   <<: *default

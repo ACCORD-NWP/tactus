@@ -1,0 +1,7 @@
+--config-file
+deode/data/config_files/config.toml
+deode/data/config_files/modifications/alaro.toml
+deode/data/config_files/include/domains/Norrkoping.toml
+deode/data/config_files/modifications/submission/@HOST@_CY48t3_large_domain.toml
+deode/data/config_files/modifications/submission/@HOST@_CY48t3_alaro.toml
+deode/data/config_files/modifications/submission/@HOST@_CY48t3_alaro_large_domain.toml

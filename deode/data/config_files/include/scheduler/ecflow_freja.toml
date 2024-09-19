@@ -1,0 +1,11 @@
+[scheduler.ecfvars]
+  ecf_deode_home = "@DEODE_HOME@"
+  ecf_files = "/nobackup/smhid20/users/@USER@/deode_ecflow/ecf_files"
+  ecf_files_remotely = "/nobackup/smhid20/users/@USER@/deode_ecflow/ecf_files"
+  ecf_home = "/nobackup/smhid20/users/@USER@/deode_ecflow/jobout"
+  ecf_host = "le1"
+  ecf_jobout = "/nobackup/smhid20/users/@USER@/deode_ecflow/jobout"
+  ecf_out = "/nobackup/smhid20/users/@USER@/deode_ecflow/jobout"
+  ecf_port = "_set_port_from_user(10000)"
+  ecf_ssl = "0"
+  hpc = "freja"

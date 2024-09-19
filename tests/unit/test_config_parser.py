@@ -9,6 +9,7 @@ from collections import namedtuple
 from pathlib import Path
 
 import pytest
+import tomli
 import tomlkit
 
 from deode.config_parser import (
@@ -328,7 +329,7 @@ class TestGeneralBehaviour:
             config_path, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
         )
         config_source_file_path = config.metadata["source_file_path"]
-        assert isinstance(config_source_file_path, str)
+        assert isinstance(config_source_file_path, Path)
         assert Path(config_source_file_path) == Path(config_path)
 
     def test_can_modify_model_upon_copy(self, minimal_raw_config):
@@ -480,11 +481,14 @@ class TestPossibilityOfISO8601ComplianceEnforcement:
 @pytest.fixture()
 def valid_config_include_section():
     files_under_include_dir = list(ConfigParserDefaults.PACKAGE_INCLUDE_DIR.glob("*"))
-    include_section = {
-        fpath.stem: fpath.as_posix()
-        for fpath in files_under_include_dir
-        if fpath.is_file()
-    }
+
+    inc_files = [fpath.as_posix() for fpath in files_under_include_dir if fpath.is_file()]
+    include_section = {}
+    for inc_file in inc_files:
+        with open(inc_file, mode="rb") as fh:
+            inc_file_content = tomli.load(fh)
+        for key in inc_file_content:
+            include_section.update({key: inc_file})
     return include_section
 
 
@@ -536,6 +540,6 @@ class TestConfigIncludeSection:
 
         with pytest.raises(
             ConflictingValidationSchemasError,
-            match="also detected in its parent section's schehma",
+            match="also detected in its parent section's schema",
         ):
             _ = ParsedConfig(raw_config, json_schema=schema)

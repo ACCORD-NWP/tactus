@@ -49,8 +49,6 @@ selection:
     - 'SURFEQUILIBRLEV'
     - 'SURFREFLECT.MAX'
     - 'REFLECT_DBZ.MAX'
-    - 'C002_METEOSAT_09_SEVIRI.POS'
-    - 'C006_METEOSAT_09_SEVIRI.POS'
   NAMFPDYI:
    CL3DF:
     - 'ISOT_ALTIT'
@@ -142,4 +140,21 @@ selection:
      - ${vertical_levels.nlev} 
  
  xxt00000000:
-   <<: *default
+  NAMFPPHY:
+   CLXFU:
+    - 'SURFINSPLUIE'   
+    - 'CLSTEMPERATURE'
+    - 'CLSHUMI.RELATIVE'
+    - 'CLSHUMI.SPECIFIQ'
+    - 'CLSVENT.ZONAL'
+    - 'CLSVENT.MERIDIEN'
+    - 'SURFNEBUL.HAUTE'
+    - 'SURFNEBUL.MOYENN'
+    - 'SURFNEBUL.BASSE'
+    - 'SURFNEBUL.TOTALE'
+    - 'CLPMHAUT.MOD.XFU'
+    - 'CLSMEAN.RAD.TEMP'
+   CLPHY:
+    - 'SURFTEMPERATURE'
+    - 'SURFRESERV.NEIGE'
+  <<: *default

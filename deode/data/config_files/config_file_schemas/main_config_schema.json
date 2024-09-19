@@ -48,8 +48,13 @@
         "config_file": {
           "type": "string",
           "description": "Troika config file",
-          "default": "@DEODE_HOME@/deode/data/config_files/troika.yml"
-	      }
+          "default": "@DEODE_HOME@/data/config_files/troika.yml"
+        },
+        "troika": {
+          "type": "string",
+          "description": "Troika command, allows to specify troika with full path",
+          "default": "troika"
+        }
       }
     },
     "plugin_registry": {
@@ -59,22 +64,14 @@
         "plugins": {
           "title": "Loaded plugins",
           "type": "object"
-       }
-     }
+        }
+      }
     },
     "boundaries": {
       "title": "Boundary Section",
       "description": "Settings for control of boundary treatment.",
       "type": "object",
       "properties": {
-        "bdstrategy": {
-          "title": "Boundary strategy",
-          "default": "same_forecast",
-          "type": "string",
-          "enum": [
-            "same_forecast"
-          ]
-        },
         "bdint": {
           "description": "Boundary interval",
           "type": "string",
@@ -82,11 +79,6 @@
         },
         "bdshift": {
           "description": "Shift of boundary initial time. E.g. 'PT3H' would mean use 3H old boundaries",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-        },
-        "bdcycle": {
-          "description": "Boundary model cycle interval",
           "type": "string",
           "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
         },
@@ -103,28 +95,28 @@
           ],
           "type": "string"
         },
-	"humi_gp": {
-	  "type": "boolean",
-	  "description" : "Value of TFP_Q%LLGP in domain namelist for c903. True for gridpoint humidity."
-	}, 
-	"ifs.selection": {
-            "type": "string",
-            "description": "Selection",
-            "enum": [
+        "humi_gp": {
+          "type": "boolean",
+          "description": "Value of TFP_Q%LLGP in domain namelist for c903. True for gridpoint humidity."
+        },
+        "ifs.selection": {
+          "type": "string",
+          "description": "Selection",
+          "enum": [
             "HRES",
             "ATOS_DT",
             "DT12",
-	    "i5qp",
-	    "i7u4",
-	    "i7ye",
-	    "i8hy", 
-	    "IFSENS"
+            "i5qp",
+            "i7u4",
+            "i7ye",
+            "i8hy",
+            "IFSENS"
           ]
         },
-	"ifs.bdmember": {
-	    "type": "string",
-	    "description": "The number of members in ensemble if selection is IFSENS, else empty string."
-	},
+        "ifs.bdmember": {
+          "type": "string",
+          "description": "The number of members in ensemble if selection is IFSENS, else empty string."
+        },
         "bd_has_surfex": {
           "description": "Set to true if the host model runs with surfex",
           "type": "boolean"
@@ -136,20 +128,20 @@
       "description": "Settings for control of Pgd selection.",
       "type": "object",
       "properties": {
-	"npatch": {
-	  "title": "Number of patches for surfex variables",
-	  "type": "integer",
-	  "default": 3
-	},
+        "npatch": {
+          "title": "Number of patches for surfex variables",
+          "type": "integer",
+          "default": 3
+        },
         "one_decade": {
           "title": "Option for using one decade",
           "type": "boolean",
-	  "default": true
+          "default": true
         },
         "use_osm": {
           "title": "Option to use Open Street map input data",
           "type": "boolean",
-	  "default": false
+          "default": false
         }
       }
     },
@@ -176,11 +168,11 @@
       "description": "Suite control options",
       "type": "object",
       "properties": {
-	"suite_definition": {
-	  "description": "Suite definition to play in EcFlow",
-	  "type": "string",
-	  "default": "DeodeSuiteDefinition"
-	},
+        "suite_definition": {
+          "description": "Suite definition to play in EcFlow",
+          "type": "string",
+          "default": "DeodeSuiteDefinition"
+        },
         "do_soil": {
           "description": "Activate preparation of SOILGRID data as input for PGD",
           "type": "boolean"
@@ -189,15 +181,15 @@
           "description": "Activate generation of a PGD file",
           "type": "boolean"
         },
-	"mode": {
-	  "description": "Choose a strategy to achieve initial/initial_sfx files (start:  start from interpolated files and then propagate the FG between cycles, restart: start from a previous run and then propagate the FG between cycles, cold_start: always start from interpolated files).",
-	  "type": "string",
-	  "enum": [
-	    "start",
-	    "restart",
-	    "cold_start"
-	   ]
-	},
+        "mode": {
+          "description": "Choose a strategy to achieve initial/initial_sfx files (start:  start from interpolated files and then propagate the FG between cycles, restart: start from a previous run and then propagate the FG between cycles, cold_start: always start from interpolated files).",
+          "type": "string",
+          "enum": [
+            "start",
+            "restart",
+            "cold_start"
+          ]
+        },
         "interpolate_boundaries": {
           "description": "Activates the boundary interpolation",
           "type": "boolean"
@@ -218,11 +210,21 @@
           "description": "Activate the time dependent part of the suite",
           "type": "boolean"
         },
-	"split_mars": {
-	  "description": "Do marsprep only for one step before c903",
-	  "type": "boolean",
-	  "default": false
-	}
+        "split_mars": {
+          "description": "Do marsprep only for one step before c903",
+          "type": "boolean",
+          "default": false
+        },
+        "do_cleaning": {
+          "description": "Do file cleaning",
+          "type": "boolean",
+          "default": false
+        },
+        "n_io_merge": {
+          "description": "Number of IOmerge tasks",
+          "type": "integer",
+          "default": 1
+        }
       }
     },
     "system": {
@@ -250,7 +252,7 @@
           "type": "string",
           "description": "Location of boundaries on the current domain, i.e. the output directory of e927",
           "default": "@WRK@"
-	},
+        },
         "climdir": {
           "type": "string",
           "description": "Location of generated/used climate files (PGD/monthly files)"
@@ -276,12 +278,12 @@
           "type": "string",
           "description": "Relative path of date specific archive",
           "default": "@YYYY@/@MM@/@DD@/@HH@/"
-	},
+        },
         "archive": {
           "type": "string",
           "description": "Absolute path of date specific archive",
           "default": "@ARCHIVE_ROOT@/@ARCHIVE_TIMESTAMP@"
-	},
+        },
         "logs": {
           "type": "string",
           "description": "Location of collected logfiles"
@@ -289,7 +291,7 @@
         "namelists": {
           "type": "string",
           "description": "Path to static namelists",
-          "default": "@DEODE_HOME@/deode/data/namelists/@CYCLE@"
+          "default": "@DEODE_HOME@/data/namelists/@CYCLE@"
         },
         "marsdir": {
           "type": "string",
@@ -299,15 +301,25 @@
           "type": "string",
           "description": "Path to SFC files needed for c903, which are not in MARS"
         },
-        "sfx_input_defs": {
-          "type": "string",
-          "description": "Path to the surfex json config file",
-          "default": "@DEODE_HOME@/deode/data/input/sfx_input_@CYCLE@.json"
-        },
-	"prev_case":{
+        "prev_case": {
           "description": "Name of the previous experiment",
           "type": "string",
           "default": "@CASE@"
+        },
+        "sfx_input_definition": {
+          "description": "Path to the surfex json config file",
+          "type": "string",
+          "default": "@DEODE_HOME@/data/input/@CYCLE@/sfx.json"
+        },
+        "forecast_input_definition": {
+          "type": "string",
+          "description": "Path to the forecast json config file",
+          "default": "@DEODE_HOME@/data/input/@CYCLE@/forecast.json"
+        },
+        "c903_input_definition": {
+          "type": "string",
+          "description": "Path to the c903 json config file",
+          "default": "@DEODE_HOME@/data/input/@CYCLE@/c903.json"
         }
       }
     },
@@ -362,44 +374,44 @@
             }
           },
           "oneOf": [
-	    {
-            "anyOf": [
-             {
-              "required": [
-                "start",
-                "end"
-              ],
-              "not": {
-                "required": [
-                  "list"
-                ]
-              }
-             },
-	     {
-              "required": [
-                "basetime"
-              ],
-              "not": {
-               "anyOf": [
-		      {       
-                "required": [
-                  "end"
-                ]
-		      },
-		      {       
-                "required": [
-                  "list"
-                ]
-		      },
-		      {       
-                "required": [
-                  "start"
-                ]
-		      }
-	       ]
-              }
-	     }
-	    ]
+            {
+              "anyOf": [
+                {
+                  "required": [
+                    "start",
+                    "end"
+                  ],
+                  "not": {
+                    "required": [
+                      "list"
+                    ]
+                  }
+                },
+                {
+                  "required": [
+                    "basetime"
+                  ],
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "end"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "list"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "start"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
             },
             {
               "required": [
@@ -434,7 +446,7 @@
         "realization": {
           "description": "Placeholder for future ensemble or similar need",
           "type": "number",
-	  "default": -1
+          "default": -1
         },
         "cnmexp": {
           "description": "Experiment short name",
@@ -476,6 +488,7 @@
           "description": "IAL cycle",
           "type": "string",
           "enum": [
+            "CY49t2",
             "CY48t3",
             "CY46h1"
           ]
@@ -495,67 +508,19 @@
           "properties": {
             "history": {
               "description": "Output list for history files",
-              "anyOf": [
-	     {
-                "type": "string",
-                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-	     },
-	     {
-                "type": "array",
-                "items": {
-                   "type": "string",
-                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-                }
-	     }
-	      ]
+              "$ref": "#/$output_setting_rules"
             },
             "surfex": {
               "description": "Output list for surfex files",
-              "anyOf": [
-	     {
-                "type": "string",
-                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-	     },
-	     {
-                "type": "array",
-                "items": {
-                   "type": "string",
-                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-                }
-	     }
-	      ]
+              "$ref": "#/$output_setting_rules"
             },
             "fullpos": {
               "description": "Output list for fullpos files",
-              "anyOf": [
-	     {
-                "type": "string",
-                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-	     },
-	     {
-                "type": "array",
-                "items": {
-                   "type": "string",
-                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-                }
-	     }
-	      ]
+              "$ref": "#/$output_setting_rules"
             },
             "nrazts": {
               "description": "Reset times for instantaneous fluxes ( e.g. min/max temperature )",
-              "anyOf": [
-	     {
-                "type": "string",
-                "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-	     },
-	     {
-                "type": "array",
-                "items": {
-                   "type": "string",
-                   "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-                }
-	     }
-	      ]
+              "$ref": "#/$output_setting_rules"
             }
           }
         },
@@ -569,5 +534,24 @@
         "times"
       ]
     }
+  },
+  "$output_setting_rules": {
+    "anyOf": [
+      {
+        "type": "string",
+        "pattern": ""
+      },
+      {
+        "type": "string",
+        "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+      },
+      {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        }
+      }
+    ]
   }
 }

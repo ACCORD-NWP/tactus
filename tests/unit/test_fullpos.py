@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 """Unit tests for the fullpos."""
 
-from pathlib import Path
-
 import pytest
 import tomlkit
 
+from deode import GeneralConstants
 from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import set_times
 from deode.fullpos import Fullpos, InvalidSelectionCombinationError
 from deode.toolbox import Platform
-
-WORKING_DIR = Path.cwd()
 
 
 def load():
@@ -23,7 +20,7 @@ def load():
     config_patch = tomlkit.parse(
         f"""
         [platform]
-            deode_home = "{WORKING_DIR}"
+            deode_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
         """
     )
     config = config.copy(update=config_patch)
@@ -31,18 +28,16 @@ def load():
     platform = Platform(config)
 
     fpdir = platform.substitute(config["fullpos.config_path"])
+    fpfiles = config["fullpos.selection"]
 
-    return Fullpos(
-        "test",
-        fpdir=fpdir,
-        fpfiles=[
-            "rules",
-            "namfpc_header",
-            "aq_selection",
-            "master_selection",
-            "master_selection",
-        ],
-    )
+    nrfp3s = list(range(1, int(config["vertical_levels.nlev"]) + 1))
+    rules = {
+        "${vertical_levels.nlev}": config["vertical_levels.nlev"],
+        "${namelist.nrfp3s}": nrfp3s,
+    }
+    fullpos = Fullpos("test", fpdir=fpdir, fpfiles=fpfiles, rules=rules)
+
+    return fullpos
 
 
 class TestFullpos:
@@ -183,9 +178,8 @@ class TestFullpos:
         }
 
         rules = {"test_compare": 65}
-        namfpc, selection = Fullpos(
-            "test", fpdict=fullpos_config, rules=rules
-        ).construct()
+        fullpos = Fullpos("test", fpdict=fullpos_config, rules=rules)
+        namfpc, selection = fullpos.construct()
         assert selection["xxtddddhhmm"] == ref_xxtddddhhmm
         assert selection["xxtddddhh00"] == ref_xxtddddhh00
         assert namfpc == ref_namfpc
@@ -239,6 +233,13 @@ class TestFullpos:
         """Test update of the settings."""
         fp = load()
         fp.update_selection(additions_list=["master_selection"], additions_dict={})
+
+    def test_non_instant(self):
+        """Test the check of non instant fields."""
+        fp = load()
+        namfpc, selection = fp.construct()
+        with pytest.raises(RuntimeError):
+            fp.check_non_instant_fields(selection, "xxtddddhh00")
 
 
 if __name__ == "__main__":
