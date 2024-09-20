@@ -13,7 +13,7 @@ In  the following we have gathered instructions for all known platforms. If a pl
 
 ## Adding a new host
 
-In  the following we have gathered instructions for all known platforms. A host/platform can be recognized either through the host name or by identifying a specific environment variable. This is configured in `deode/data/config_files/known_hosts.yml`. In the example below we see how `atos_bologna` and `lumi` are regonized via a hostname regular expression whereas `freja` is recognized from a specfici environment variable.
+In  the following we have gathered instructions for all known platforms. In the standard case a host/platform can be recognized either through the host name or by identifying a specific environment variable. This is configured in `deode/data/config_files/known_hosts.yml`. In the example below we see how `atos_bologna` and `lumi` are regonized via a hostname regular expression whereas `freja` is recognized from a specific environment variable. A hostname can also be forced by setting the DEODE_HOST environment variable which overrides all settings in the known_hosts.yml file.
 
 ```
 atos_bologna : 

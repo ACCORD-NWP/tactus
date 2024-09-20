@@ -26,13 +26,27 @@ def _module_mockers_yaml(module_mocker):
 
 
 @pytest.mark.usefixtures("_module_mockers")
-def test_default_host():
+def test_by_host():
     dh = DeodeHost()
-    dh.known_hosts = {
-        "by_host": {"hostname": "undefined"},
-        "by_env": {"env": {"DEODE_HOST_TESTENV": "foo"}},
-    }
-    dh.detect_deode_host()
+    dh.known_hosts = {"by_host": {"hostname": "deode-test"}}
+    deode_host = dh.detect_deode_host()
+    assert deode_host == "by_host"
+
+
+def test_by_env():
+    dh = DeodeHost()
+    dh.known_hosts = {"by_env": {"env": {"DEODE_HOST_TESTENV": "foo"}}}
+    deode_host = dh.detect_deode_host()
+    assert deode_host == "by_env"
+
+
+def test_from_env_deode_host():
+    os.environ["DEODE_HOST"] = "bar"
+    dh = DeodeHost()
+    dh.known_hosts = {}
+    deode_host = dh.detect_deode_host()
+    assert deode_host == "bar"
+    del os.environ["DEODE_HOST"]
 
 
 def test_ambiguous_host():
@@ -46,6 +60,7 @@ def test_ambiguous_host():
         RuntimeError, match=re.escape("Ambiguous matches: ['by_host', 'by_env']")
     ):
         dh.detect_deode_host()
+    del os.environ["DEODE_HOST_TESTENV"]
 
 
 def test_non_existing_detect_method():
