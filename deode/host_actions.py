@@ -7,7 +7,7 @@ import socket
 
 import yaml
 
-from .config_parser import ConfigParserDefaults, ConfigPaths
+from .config_parser import ConfigPaths
 from .logs import logger
 
 

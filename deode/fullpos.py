@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """Fullpos namelist generation."""
 
-import os
 
 import yaml
 
+from .config_parser import ConfigPaths
 from .logs import logger
 from .namelist import flatten_list
-from .config_parser import ConfigPaths
 
 
 class InvalidSelectionCombinationError(ValueError):
@@ -135,7 +134,9 @@ class Fullpos:
         if additions_list is not None:
             # Read the update
             for addition in additions_list:
-                fpfile = ConfigPaths().namelist_generation_input(f"{fpdir}/{fpfile}.yml")
+                fpfile = ConfigPaths().namelist_generation_input(
+                    f"{self.fpdir}/{addition}.yml"
+                )
                 with open(fpfile, mode="rt", encoding="utf-8") as file:
                     nldict = yaml.safe_load(file)
                     file.close()

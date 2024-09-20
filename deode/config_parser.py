@@ -48,34 +48,94 @@ class ConfigParserDefaults(QuasiConstant):
     MAIN_CONFIG_JSON_SCHEMA_PATH = SCHEMAS_DIRECTORY / "main_config_schema.json"
     MAIN_CONFIG_JSON_SCHEMA = json.loads(MAIN_CONFIG_JSON_SCHEMA_PATH.read_text())
 
+
 class ConfigPaths:
+    """Support multiple path search."""
 
     def __init__(self):
-
+        """Init."""
         self.dd = ConfigParserDefaults.DATA_DIRECTORY
 
     def _any_directory(self, subpath, name, is_dir=False):
+        """Search multiple paths if defined.
+
+        Arguments:
+            subpath (str): Path to append
+            name (str): Target path or file
+            is_dir (boolean): Defines if name is file or directory
+
+        Raises:
+            RuntimeError: If target is not found
+
+        Returns:
+            full (str) : Full path to target
+
+        """
         ddp = os.getenv("DEODE_DATA_PATH")
         searchpath = ddp.split(":") if ddp is not None else []
         searchpath.append(self.dd)
         for p in searchpath:
             full = Path(p) / subpath / name
             if is_dir:
-              if os.path.isdir(full):
+                if os.path.isdir(full):
+                    return full
+            elif os.path.isfile(full):
                 return full
-            else:
-              if os.path.isfile(full):
-                return full
+
         raise RuntimeError(f"Could not find {name}")
 
     def config_files(self, name, is_dir=False):
+        """Interface for config_files path.
+
+        Arguments:
+            name (str): Target path or file
+            is_dir (boolean): Defines if name is file or directory
+
+        Returns:
+            (str) : Full path to target
+
+        """
         return self._any_directory("config_files", name, is_dir)
 
     def config_file_schemas(self, name, is_dir=False):
+        """Interface for config_file_schemas path.
+
+        Arguments:
+            name (str): Target path or file
+            is_dir (boolean): Defines if name is file or directory
+
+        Returns:
+            (str) : Full path to target
+
+        """
         return self._any_directory("config_file_schemas", name, is_dir)
 
     def namelist_generation_input(self, name, is_dir=False):
+        """Interface for namelist_generation_input path.
+
+        Arguments:
+            name (str): Target path or file
+            is_dir (boolean): Defines if name is file or directory
+
+        Returns:
+            (str) : Full path to target
+
+        """
         return self._any_directory("namelist_generation_input", name, is_dir)
+
+    def input(self, name, is_dir=False):
+        """Interface for input path.
+
+        Arguments:
+            name (str): Target path or file
+            is_dir (boolean): Defines if name is file or directory
+
+        Returns:
+            (str) : Full path to target
+
+        """
+        return self._any_directory("input", name, is_dir)
+
 
 class ConfigFileValidationError(Exception):
     """Error to be raised when parsing the input config file fails."""

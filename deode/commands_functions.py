@@ -12,7 +12,7 @@ from toml_formatter.formatter import FormattedToml
 from troika.connections.ssh import SSHConnection
 
 from . import GeneralConstants
-from .config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig, ConfigPaths
+from .config_parser import BasicConfig, ConfigParserDefaults, ConfigPaths, ParsedConfig
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
 from .experiment import case_setup
 from .host_actions import DeodeHost

@@ -309,17 +309,17 @@
         "sfx_input_definition": {
           "description": "Path to the surfex json config file",
           "type": "string",
-          "default": "@DEODE_HOME@/data/input/@CYCLE@/sfx.json"
+          "default": "@CYCLE@/sfx.json"
         },
         "forecast_input_definition": {
           "type": "string",
           "description": "Path to the forecast json config file",
-          "default": "@DEODE_HOME@/data/input/@CYCLE@/forecast.json"
+          "default": "@CYCLE@/forecast.json"
         },
         "c903_input_definition": {
           "type": "string",
           "description": "Path to the c903 json config file",
-          "default": "@DEODE_HOME@/data/input/@CYCLE@/c903.json"
+          "default": "@CYCLE@/c903.json"
         }
       }
     },

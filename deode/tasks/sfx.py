@@ -3,6 +3,7 @@
 import json
 import os
 
+from ..config_parser import ConfigPaths
 from ..datetime_utils import as_datetime, as_timedelta, cycle_offset, get_decade
 from ..logs import logger
 from ..namelist import NamelistGenerator
@@ -645,7 +646,10 @@ class Pgd(Task):
             pgdfile = f"{pgdfile}.{filetype}"
 
             # Input data
-            input_definition = self.platform.get_system_value("sfx_input_definition")
+            input_definition = ConfigPaths().input(
+                self.platform.get_system_value("sfx_input_definition")
+            )
+
             with open(input_definition, "r", encoding="utf-8") as f:
                 input_data = json.load(f)
 
@@ -727,7 +731,9 @@ class Prep(Task):
             self.nlgen.write_namelist(settings, "OPTIONS.nam")
 
             # Input data
-            input_definition = self.platform.get_system_value("sfx_input_definition")
+            input_definition = ConfigPaths().input(
+                self.platform.get_system_value("sfx_input_definition")
+            )
             with open(input_definition, "r", encoding="utf-8") as f:
                 input_data = json.load(f)
 
