@@ -16,6 +16,7 @@ from .commands_functions import (
     show_config_schema,
     show_host,
     show_namelist,
+    show_paths,
     start_suite,
 )
 from .config_parser import ConfigParserDefaults
@@ -230,6 +231,12 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         "namelist", help="Print namelist in use and exit", parents=[common_parser]
     )
     add_namelist_args(parser_show_namelist)
+
+    # show paths
+    parser_show_paths = show_command_subparsers.add_parser(
+        "paths", help="Print paths in use and exit", parents=[common_parser]
+    )
+    parser_show_paths.set_defaults(run_command=show_paths)
 
     ###########################################
     # Configure parser for the "doc" command #

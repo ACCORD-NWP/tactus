@@ -55,6 +55,34 @@ class ConfigPaths:
     def __init__(self):
         """Init."""
         self.dd = ConfigParserDefaults.DATA_DIRECTORY
+        self.ddp = os.getenv("DEODE_DATA_PATH")
+        self.searchpath = self.ddp.split(":") if self.ddp is not None else []
+        self.searchpath.append(self.dd)
+        self.fail_on_not_found = True
+
+    def print(self):
+        dirmap = {"config_file_schemas": "config_files/config_file_schemas"}
+
+        self.fail_on_not_found = False
+        path_info = {}
+        for path in [
+            "config_files",
+            "config_file_schemas",
+            "namelist_generation_input",
+            "input",
+        ]:
+            dirs = dirmap[path] if path in dirmap else path
+            path_info[path] = [
+                str(self._show_dir(s, dirs))
+                for s in self.searchpath
+                if self._show_dir(s, dirs) is not None
+            ]
+
+        logger.info("DEODE paths")
+        logger.info(" Package directory: {}", GeneralConstants.PACKAGE_DIRECTORY)
+        logger.info(" Data paths in search order:")
+        for k, v in path_info.items():
+            logger.info("  {}: {}", k, v)
 
     def _any_directory(self, subpath, name, is_dir=False):
         """Search multiple paths if defined.
@@ -71,10 +99,7 @@ class ConfigPaths:
             full (str) : Full path to target
 
         """
-        ddp = os.getenv("DEODE_DATA_PATH")
-        searchpath = ddp.split(":") if ddp is not None else []
-        searchpath.append(self.dd)
-        for p in searchpath:
+        for p in self.searchpath:
             full = Path(p) / subpath / name
             if is_dir:
                 if os.path.isdir(full):
@@ -82,7 +107,26 @@ class ConfigPaths:
             elif os.path.isfile(full):
                 return full
 
-        raise RuntimeError(f"Could not find {name}")
+        if self.fail_on_not_found:
+            raise RuntimeError(f"Could not find {name}")
+
+        return None
+
+    def _show_dir(self, path, subpath):
+        """Check if a path is present.
+
+        Arguments:
+            subpath (str): Path to append
+
+        Returns:
+            full (str, Nonetype) : Full path to target
+
+        """
+        full = Path(path) / subpath
+        if os.path.isdir(full):
+            return full
+
+        return None
 
     def config_files(self, name, is_dir=False):
         """Interface for config_files path.

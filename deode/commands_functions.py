@@ -392,6 +392,17 @@ def show_namelist(args, config):
     logger.info("Printing namelist in use to file {}", namelist_name)
 
 
+def show_paths(args, config):
+    """Implement the 'show_paths' command.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+        config (.config_parser.ParsedConfig): Parsed config file contents.
+
+    """
+    ConfigPaths().print()
+
+
 def namelist_integrate(args, config):
     """Implement the 'namelist integrate' command.
 
