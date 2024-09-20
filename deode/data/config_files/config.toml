@@ -29,7 +29,7 @@
   bdshift = "PT0H"
   bdtasks_per_batch = 24
   humi_gp = true
-  ifs.selection = "HRES"
+  ifs.selection = "ATOS_DT"
   ifs.bdmember = ""
 
 [fullpos]
