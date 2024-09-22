@@ -646,7 +646,7 @@ class Pgd(Task):
             pgdfile = f"{pgdfile}.{filetype}"
 
             # Input data
-            input_definition = ConfigPaths().input(
+            input_definition = ConfigPaths.path_from_subpath(
                 self.platform.get_system_value("sfx_input_definition")
             )
 
@@ -731,7 +731,7 @@ class Prep(Task):
             self.nlgen.write_namelist(settings, "OPTIONS.nam")
 
             # Input data
-            input_definition = ConfigPaths().input(
+            input_definition = ConfigPaths.path_from_subpath(
                 self.platform.get_system_value("sfx_input_definition")
             )
             with open(input_definition, "r", encoding="utf-8") as f:

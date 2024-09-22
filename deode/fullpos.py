@@ -81,7 +81,7 @@ class Fullpos:
         s = "selection"
         nldict = {s: {}}
         for fpfile in fpfiles:
-            f = ConfigPaths().namelist_generation_input(f"{fpdir}/{fpfile}.yml")
+            f = ConfigPaths.path_from_subpath(f"{fpdir}/{fpfile}.yml")
             logger.info("Read {}", f)
             with open(f, mode="rt", encoding="utf-8") as file:
                 n = yaml.safe_load(file)
@@ -134,7 +134,7 @@ class Fullpos:
         if additions_list is not None:
             # Read the update
             for addition in additions_list:
-                fpfile = ConfigPaths().namelist_generation_input(
+                fpfile = ConfigPaths.path_from_subpath(
                     f"{self.fpdir}/{addition}.yml"
                 )
                 with open(fpfile, mode="rt", encoding="utf-8") as file:

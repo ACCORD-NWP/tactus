@@ -48,137 +48,68 @@ class ConfigParserDefaults(QuasiConstant):
     MAIN_CONFIG_JSON_SCHEMA_PATH = SCHEMAS_DIRECTORY / "main_config_schema.json"
     MAIN_CONFIG_JSON_SCHEMA = json.loads(MAIN_CONFIG_JSON_SCHEMA_PATH.read_text())
 
+    _env_data_paths = os.getenv("DEODE_DATA_PATH")
+    DATA_SEARCHPATHS = _env_data_paths.split(":") if _env_data_paths is not None else []
+    DATA_SEARCHPATHS.append(DATA_DIRECTORY)
+
 
 class ConfigPaths:
     """Support multiple path search."""
 
-    def __init__(self):
-        """Init."""
-        self.dd = ConfigParserDefaults.DATA_DIRECTORY
-        self.ddp = os.getenv("DEODE_DATA_PATH")
-        self.searchpath = self.ddp.split(":") if self.ddp is not None else []
-        self.searchpath.append(self.dd)
-        self.fail_on_not_found = True
+    def print():
+        dirmap = {
+            "config_file_schemas": "config_files/config_file_schemas",
+            "data_input": "input",
+        }
 
-    def print(self):
-        dirmap = {"config_file_schemas": "config_files/config_file_schemas"}
-
-        self.fail_on_not_found = False
         path_info = {}
-        for path in [
+        for dir_ in [
             "config_files",
             "config_file_schemas",
             "namelist_generation_input",
-            "input",
+            "data_input",
         ]:
-            dirs = dirmap[path] if path in dirmap else path
-            path_info[path] = [
-                str(self._show_dir(s, dirs))
-                for s in self.searchpath
-                if self._show_dir(s, dirs) is not None
-            ]
+            dir = dirmap.get(dir_, dir_)
+            path_info[dir_] = []
+            pattern = f"**/{dir}"
+            for searchpath in ConfigParserDefaults.DATA_SEARCHPATHS:
+                res = list(Path(searchpath).rglob(pattern))
+                if len(res) > 0:
+                    path_info[dir_].append(str(res[0]))
 
         logger.info("DEODE paths")
         logger.info(" Package directory: {}", GeneralConstants.PACKAGE_DIRECTORY)
         logger.info(" Data paths in search order:")
-        for k, v in path_info.items():
-            logger.info("  {}: {}", k, v)
+        for k, val in path_info.items():
+            logger.info("  {}:", k)
+            for v in val:
+                logger.info("  {}", str(v))
 
-    def _any_directory(self, subpath, name, is_dir=False):
-        """Search multiple paths if defined.
+    def path_from_subpath(subpath, return_all=False) -> Path:
+        """Interface to find full path given any subpath, by searching 'searchpaths'.
 
         Arguments:
-            subpath (str): Path to append
-            name (str): Target path or file
-            is_dir (boolean): Defines if name is file or directory
+            subpath (str): Subpath to search for
+
+        Returns:
+            (Path): Full path to target
 
         Raises:
-            RuntimeError: If target is not found
-
-        Returns:
-            full (str) : Full path to target
-
+            RuntimeRerror
         """
-        for p in self.searchpath:
-            full = Path(p) / subpath / name
-            if is_dir:
-                if os.path.isdir(full):
-                    return full
-            elif os.path.isfile(full):
-                return full
+        pattern = f"**/{subpath}"
+        for searchpath in ConfigParserDefaults.DATA_SEARCHPATHS:
+            results = list(Path(searchpath).rglob(pattern))
+            if len(results) > 1:
+                logger.error(
+                    f"Multiple matches found for pattern '{pattern}' under path {path}"
+                )
+                raise RuntimeError()
 
-        if self.fail_on_not_found:
-            raise RuntimeError(f"Could not find {name}")
+            if len(results) == 1:
+                return results[0]
 
-        return None
-
-    def _show_dir(self, path, subpath):
-        """Check if a path is present.
-
-        Arguments:
-            subpath (str): Path to append
-
-        Returns:
-            full (str, Nonetype) : Full path to target
-
-        """
-        full = Path(path) / subpath
-        if os.path.isdir(full):
-            return full
-
-        return None
-
-    def config_files(self, name, is_dir=False):
-        """Interface for config_files path.
-
-        Arguments:
-            name (str): Target path or file
-            is_dir (boolean): Defines if name is file or directory
-
-        Returns:
-            (str) : Full path to target
-
-        """
-        return self._any_directory("config_files", name, is_dir)
-
-    def config_file_schemas(self, name, is_dir=False):
-        """Interface for config_file_schemas path.
-
-        Arguments:
-            name (str): Target path or file
-            is_dir (boolean): Defines if name is file or directory
-
-        Returns:
-            (str) : Full path to target
-
-        """
-        return self._any_directory("config_file_schemas", name, is_dir)
-
-    def namelist_generation_input(self, name, is_dir=False):
-        """Interface for namelist_generation_input path.
-
-        Arguments:
-            name (str): Target path or file
-            is_dir (boolean): Defines if name is file or directory
-
-        Returns:
-            (str) : Full path to target
-
-        """
-        return self._any_directory("namelist_generation_input", name, is_dir)
-
-    def input(self, name, is_dir=False):
-        """Interface for input path.
-
-        Arguments:
-            name (str): Target path or file
-            is_dir (boolean): Defines if name is file or directory
-
-        Returns:
-            (str) : Full path to target
-
-        """
-        return self._any_directory("input", name, is_dir)
+        raise RuntimeError(f"Could not find {subpath}")
 
 
 class ConfigFileValidationError(Exception):
@@ -458,7 +389,7 @@ def _expand_config_include_section(
             if isinstance(include_path_, str):
                 include_path = Path(include_path_)
                 if not include_path.is_absolute():
-                    include_path = ConfigPaths().config_files(include_path)
+                    include_path = ConfigPaths.path_from_subpath(include_path)
                 included_config_section = _read_raw_config_file(include_path)
             else:
                 included_config_section = include_path_

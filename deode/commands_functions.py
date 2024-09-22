@@ -112,7 +112,7 @@ def create_exp(args, config):
     config_dir = args.config_dir
     known_hosts = args.host_file
     if known_hosts is None:
-        known_hosts = ConfigPaths().config_directory("known_hosts.yml")
+        known_hosts = ConfigPaths.path_from_subpath("known_hosts.yml")
 
     host = DeodeHost(known_hosts=known_hosts)
     output_file = args.output_file
@@ -400,7 +400,7 @@ def show_paths(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
-    ConfigPaths().print()
+    ConfigPaths.print()
 
 
 def namelist_integrate(args, config):

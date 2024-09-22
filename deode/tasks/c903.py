@@ -54,7 +54,7 @@ class C903(Task):
 
         """
         # Fetch input data
-        input_definition = ConfigPaths().input(
+        input_definition = ConfigPaths.path_from_subpath(
             self.platform.get_system_value("c903_input_definition")
         )
 

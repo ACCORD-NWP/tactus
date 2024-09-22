@@ -148,7 +148,7 @@ class Forecast(Task):
     def execute(self):
         """Execute forecast."""
         # Fetch forecast model static input data
-        input_definition = ConfigPaths().input(
+        input_definition = ConfigPaths.path_from_subpath(
             self.platform.get_system_value("forecast_input_definition")
         )
         logger.info("Read static data spec from: {}", input_definition)
