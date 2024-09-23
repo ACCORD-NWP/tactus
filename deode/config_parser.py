@@ -85,11 +85,7 @@ class ConfigPaths:
 
         logger.info("DEODE paths")
         logger.info(" Package directory: {}", GeneralConstants.PACKAGE_DIRECTORY)
-        logger.info(" Data paths in search order:")
-        for k, val in path_info.items():
-            logger.info("  {}:", k)
-            for v in val:
-                logger.info("  {}", str(v))
+        logger.info(f" Data paths in search order: {json.dumps(path_info, indent=4)}")
 
     @staticmethod
     def path_from_subpath(subpath) -> Path:
