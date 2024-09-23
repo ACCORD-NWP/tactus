@@ -3,6 +3,7 @@
 import datetime
 import itertools
 import json
+import os
 import re
 import uuid
 from collections import namedtuple
@@ -16,6 +17,7 @@ from deode.config_parser import (
     BasicConfig,
     ConfigFileValidationError,
     ConfigParserDefaults,
+    ConfigPaths,
     ConflictingValidationSchemasError,
     JsonSchema,
     ParsedConfig,
@@ -543,3 +545,38 @@ class TestConfigIncludeSection:
             match="also detected in its parent section's schema",
         ):
             _ = ParsedConfig(raw_config, json_schema=schema)
+
+
+class TestConfigPaths:
+    def test_show_paths(self):
+        ConfigPaths.print()
+
+    def test_match_new_path(self, tmp_test_data_dir):
+        path1 = tmp_test_data_dir / "test" / "config_files"
+        os.makedirs(path1, exist_ok=True)
+
+        ConfigPaths.DATA_SEARCHPATHS = (
+            tmp_test_data_dir / "test",
+            ConfigParserDefaults.DATA_DIRECTORY,
+        )
+
+        path = ConfigPaths.path_from_subpath("config_files")
+        assert path == tmp_test_data_dir / "test" / "config_files"
+
+        path = ConfigPaths.path_from_subpath("input")
+        assert path == ConfigParserDefaults.DATA_DIRECTORY / "input"
+
+    def test_multiple_paths(self, tmp_test_data_dir):
+        path1 = tmp_test_data_dir / "test" / "config_files"
+        path2 = tmp_test_data_dir / "test" / "test" / "config_files"
+        os.makedirs(path1, exist_ok=True)
+        os.makedirs(path2, exist_ok=True)
+
+        ConfigPaths.DATA_SEARCHPATHS = (
+            tmp_test_data_dir / "test",
+            tmp_test_data_dir / "test" / "test",
+            ConfigParserDefaults.DATA_DIRECTORY,
+        )
+
+        with pytest.raises(RuntimeError, match="Multiple matches"):
+            ConfigPaths.path_from_subpath("config_files")

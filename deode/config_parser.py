@@ -48,13 +48,13 @@ class ConfigParserDefaults(QuasiConstant):
     MAIN_CONFIG_JSON_SCHEMA_PATH = SCHEMAS_DIRECTORY / "main_config_schema.json"
     MAIN_CONFIG_JSON_SCHEMA = json.loads(MAIN_CONFIG_JSON_SCHEMA_PATH.read_text())
 
-    _env_data_paths = os.getenv("DEODE_DATA_PATH")
-    DATA_SEARCHPATHS = _env_data_paths.split(":") if _env_data_paths is not None else []
-    DATA_SEARCHPATHS.append(DATA_DIRECTORY)
-
 
 class ConfigPaths:
     """Support multiple path search."""
+
+    _env_data_paths = os.getenv("DEODE_DATA_PATH")
+    DATA_SEARCHPATHS = _env_data_paths.split(":") if _env_data_paths is not None else []
+    DATA_SEARCHPATHS.append(ConfigParserDefaults.DATA_DIRECTORY)
 
     @staticmethod
     def print():
@@ -74,14 +74,14 @@ class ConfigPaths:
             rdir = dirmap.get(dir_, dir_)
             path_info[dir_] = []
             pattern = f"**/{rdir}"
-            for searchpath in ConfigParserDefaults.DATA_SEARCHPATHS:
+            for searchpath in ConfigPaths.DATA_SEARCHPATHS:
                 res = list(Path(searchpath).rglob(pattern))
                 if len(res) == 1:
                     path_info[dir_].append(str(res[0]))
                 if len(res) > 1:
-                  logger.error("Multiple matches found for subpath: {}", searchpath)
-                  logger.error("Results: {}", res)
-                  raise RuntimeError
+                    logger.error("Multiple matches found for subpath: {}", searchpath)
+                    logger.error("Results: {}", res)
+                    raise RuntimeError
 
         logger.info("DEODE paths")
         logger.info(" Package directory: {}", GeneralConstants.PACKAGE_DIRECTORY)
@@ -101,12 +101,12 @@ class ConfigPaths:
             RuntimeRerror: Various errors
         """
         pattern = f"**/{subpath}"
-        for searchpath in ConfigParserDefaults.DATA_SEARCHPATHS:
+        for searchpath in ConfigPaths.DATA_SEARCHPATHS:
             results = list(Path(searchpath).rglob(pattern))
             if len(results) > 1:
                 logger.error("Multiple matches found for subpath: {}", subpath)
                 logger.error("Results: {}", results)
-                raise RuntimeError
+                raise RuntimeError("Multiple matches")
 
             if len(results) == 1:
                 return results[0]
