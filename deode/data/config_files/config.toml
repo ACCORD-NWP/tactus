@@ -9,17 +9,19 @@
   keep_workdirs = true
   surfex = true
 
+[general.namelist]
+  nrazts = "PT1H"
+  radiation_frequency = "PT5M"
+
 [general.output_settings]
   fullpos = "PT1H"
   history = "PT1H"
-  nrazts = "PT1H"
   surfex = "PT1H"
 
 [general.times]
   cycle_length = "PT6H"
   end = "2023-09-16T06:00:00Z"
   forecast_range = "PT6H"
-  radiation_frequency = "PT5M"
   start = "2023-09-16T00:00:00Z"
 
 [boundaries]
@@ -33,7 +35,7 @@
   ifs.bdmember = ""
 
 [fullpos]
-  config_path = "@DEODE_HOME@/namelist_generation_input/@CYCLE@/fullpos"
+  config_path = "@DEODE_HOME@/data/namelist_generation_input/@CYCLE@/fullpos"
   selection = ["rules", "namfpc_header", "master_selection"]
 
 [include]

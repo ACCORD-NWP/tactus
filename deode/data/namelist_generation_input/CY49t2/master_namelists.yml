@@ -11,7 +11,7 @@ e923_0:
 e923_0_HARMONIE_AROME:
   NAMCLA:
     LNEWORO: false
-    LSPSMORO: ${domain.lspsmoro}
+    LSPSMORO: ${cfg:domain.lspsmoro}
 
 e923_1:
   NAMMCC:
@@ -65,7 +65,7 @@ e923_base:
   NAERAD:
     LSRTM: false
   NAMARG:
-    CNMEXP: ${general.cnmexp}
+    CNMEXP: ${cfg:general.cnmexp}
     LECMWF: false
     LELAM: true
     NCONF: 923
@@ -86,13 +86,13 @@ e923_base:
   NAMCT0:
     LRPLANE: true
   NAMDIM:
-    NDGLG: ${domain.ndglg}
-    NDGUXG: ${domain.njmax}
-    NDLON: ${domain.ndguxg}
-    NDLUXG: ${domain.nimax}
+    NDGLG: ${cfg:domain.ndglg}
+    NDGUXG: ${cfg:domain.njmax}
+    NDLON: ${cfg:domain.ndguxg}
+    NDLUXG: ${cfg:domain.nimax}
     NFLEVG: 1
-    NMSMAX: ${domain.nmsmax}
-    NSMAX: ${domain.nsmax}
+    NMSMAX: ${cfg:domain.nmsmax}
+    NSMAX: ${cfg:domain.nsmax}
   NAMFA:
     NVGRIB: 123
   NAMFAINIT:
@@ -110,15 +110,15 @@ e923_base:
   NAMPHY0:
     GCVPSI: 0.0
   NEMDIM:
-    NBZONG: ${domain.nbzong}
-    NBZONL: ${domain.nbzonl}
+    NBZONG: ${cfg:domain.nbzong}
+    NBZONL: ${cfg:domain.nbzonl}
   NEMGEO:
-    EDELX: ${domain.xdx}
-    EDELY: ${domain.xdy}
-    ELAT0: ${domain.xlat0}
-    ELATC: ${domain.xlatcen}
-    ELON0: ${domain.xlon0}
-    ELONC: ${domain.xloncen}
+    EDELX: ${cfg:domain.xdx}
+    EDELY: ${cfg:domain.xdy}
+    ELAT0: ${cfg:domain.xlat0}
+    ELATC: ${cfg:domain.xlatcen}
+    ELON0: ${cfg:domain.xlon0}
+    ELONC: ${cfg:domain.xloncen}
 
 namgfl_ifs:
   NAMGFL: {}
@@ -164,7 +164,7 @@ f4_AROME:
     NLIQOPT: 3
     NOVLP: 6
     NOZOCL: 2
-    NRADFR: ${namelist.nradfr}
+    NRADFR: ${stepfreq:${cfg:general.namelist.radiation_frequency}}
     NRADIP: 3
     NRADLP: 2
     NSW: 6
@@ -253,9 +253,9 @@ f4_AROME:
     NFRHIS: 1
     NFRPOS: 1
     NFRSDI: 1
-    NHISTS: ${namelist.nhists}
-    NPOSTS: ${namelist.nposts}
-    NSFXHISTS: ${namelist.nsfxhists}
+    NHISTS: ${steplist:${cfg:general.output_settings.history}}
+    NPOSTS: ${steplist:${cfg:general.output_settings.fullpos}}
+    NSFXHISTS: ${steplist:${cfg:general.output_settings.surfex}}
   NAMCT1:
     N1HIS: 1
     N1POS: 1
@@ -334,9 +334,9 @@ f4_AROME:
   NAMFPG:
     NFPDISTRIB: 1
   NAMFPSC2:
-    NFPROMA: ${submission.nproma}
+    NFPROMA: ${cfg:submission.nproma}
   NAMFPSC2_DEP:
-    NFPROMA_DEP: ${submission.nproma}
+    NFPROMA_DEP: ${cfg:submission.nproma}
   NAMGEM:
     LNHX_GEOM: true
     LNONHYD_GEOM: true
@@ -397,13 +397,13 @@ f4_AROME:
     NMSG_LEVEL_CLIENT: 0
     NMSG_LEVEL_SERVER: 0
     NPROCESS_LEVEL: 5
-    NPROC_IO: ${namelist.nproc_io-0}
+    NPROC_IO: ${cfg:namelist.nproc_io,0}
   NAMOPH:
     CFNHWF: ECHIS
     LINC: true
     NTIMEFMT: 2
   NAMPARAR:
-    CMICRO: ${submission.cmicro-ICE3}
+    CMICRO: ${cfg:submission.cmicro,ICE3}
     LOLSMC: true
   NAMPHMSE:
     LPGDFWR: false
@@ -474,8 +474,8 @@ f4_AROME:
     XDAMP: 1.0
     XMULAF: -1.85
   NAMRIP:
-    CSTOP: ${namelist.cstop}
-    TSTEP: ${domain.tstep}
+    CSTOP: ${cfg:namelist.cstop}
+    TSTEP: ${cfg:domain.tstep}
   NAMSATS:
     LPARTIAL_COEF_FILES: true
   NAMTOPH:
@@ -487,7 +487,7 @@ f4_AROME:
     XDRMUK: 3.0e-07
     XDRMUP: 800.0
   NAMTRANS:
-    LFFTW: ${submission.lfftw-"true"}
+    LFFTW: ${cfg:submission.lfftw,"true"}
   NAMXFU:
     LXCLP: true
     LXCLS: true
@@ -507,7 +507,7 @@ f4_AROME:
     LXVISI: true
     LXXDIAGH: true
     LXXGST: true
-    NRAZTS: ${namelist.nrazts}
+    NRAZTS: ${steplist:${cfg:general.namelist.nrazts}}
     NXGSTPERIOD: 3600
   NAM_NEBn:
     CFRAC_ICE_ADJUST: S
@@ -556,12 +556,12 @@ f4_AROME:
     SPNUDQ: 0.0
     SPNUDT: 0.3
     SPNUDVOR: 0.3
-    TEFRCL: ${namelist.tefrcl}
+    TEFRCL: ${cfg:namelist.tefrcl}
 
 f4_ALARO:
   NAERAD:
     LRRTM: false
-    NRADFR: ${namelist.nradfr}
+    NRADFR: ${stepfreq:${cfg:general.namelist.radiation_frequency}}
   NAMAFN:
     GFP_10U%IBITS: 12
     GFP_10V%IBITS: 12
@@ -659,8 +659,8 @@ f4_ALARO:
     NFRHIS: 1
     NFRPOS: 1
     NFRSDI: 1
-    NHISTS: ${namelist.nhists}
-    NPOSTS: ${namelist.nposts}
+    NHISTS: ${steplist:${cfg:general.output_settings.history}}
+    NPOSTS: ${steplist:${cfg:general.output_settings.fullpos}}
     NSPPR: 0
   NAMCT1:
     N1HIS: 1
@@ -746,9 +746,9 @@ f4_ALARO:
   NAMFPG:
     NFPDISTRIB: 1
   NAMFPSC2:
-    NFPROMA: ${submission.nproma}
+    NFPROMA: ${cfg:submission.nproma}
   NAMFPSC2_DEP:
-    NFPROMA_DEP: ${submission.nproma}
+    NFPROMA_DEP: ${cfg:submission.nproma}
   NAMGEM:
     LNHX_GEOM: true
     LNONHYD_GEOM: true
@@ -904,7 +904,7 @@ f4_ALARO:
     NMSG_LEVEL_CLIENT: 0
     NMSG_LEVEL_SERVER: 0
     NPROCESS_LEVEL: 5
-    NPROC_IO: ${namelist.nproc_io-0}
+    NPROC_IO: ${cfg:namelist.nproc_io,0}
   NAMJFH:
     N_VMASS: 0
   NAMOPH:
@@ -1074,8 +1074,8 @@ f4_ALARO:
     FCM_NU_DL: 0.0
     RLAMB_SOLID: 0.6
   NAMRIP:
-    CSTOP: ${namelist.cstop}
-    TSTEP: ${domain.tstep}
+    CSTOP: ${cfg:namelist.cstop}
+    TSTEP: ${cfg:domain.tstep}
   NAMTOPH:
     ETCVIM: 0.0
     ETNEBU: 0.0
@@ -1085,7 +1085,7 @@ f4_ALARO:
     XDRMUK: 3.0e-07
     XDRMUP: 800.0
   NAMTRANS:
-    LFFTW: ${submission.lfftw-"true"}
+    LFFTW: ${cfg:submission.lfftw,"true"}
   NAMXFU:
     LXCLP: true
     LXCLS: true
@@ -1103,7 +1103,7 @@ f4_ALARO:
     LXXDIAGH: true
     LXXGST: true
     NFRRAZ: 1
-    NRAZTS: ${namelist.nrazts}
+    NRAZTS: ${steplist:${cfg:general.namelist.nrazts}}
   NEMELBC0A:
     LQCPL: true
     NBICNHX: 2
@@ -1114,7 +1114,7 @@ f4_ALARO:
     NBICVD: 2
     NECRIPL: 1
   NEMELBC0B:
-    TEFRCL: ${namelist.tefrcl}
+    TEFRCL: ${cfg:namelist.tefrcl}
 
 f4_HARMONIE_AROME:
   NAERAD:
@@ -1124,7 +1124,7 @@ f4_HARMONIE_AROME:
     NAER: 1
     NOVLP: 6
     NOZOCL: 2
-    NRADFR: ${namelist.nradfr}
+    NRADFR: ${stepfreq:${cfg:general.namelist.radiation_frequency}}
     NRADLP: 2
     NSW: 6
   NAMAFN:
@@ -1165,9 +1165,9 @@ f4_HARMONIE_AROME:
     NFRGDI: 15
     NFRHIS: 1
     NFRSDI: 15
-    NHISTS: ${namelist.nhists}
-    NPOSTS: ${namelist.nposts}
-    NSFXHISTS: ${namelist.nsfxhists}
+    NHISTS: ${steplist:${cfg:general.output_settings.history}}
+    NPOSTS: ${steplist:${cfg:general.output_settings.fullpos}}
+    NSFXHISTS: ${steplist:${cfg:general.output_settings.surfex}}
   NAMCT1:
     N1POS: 1
     N1RES: 0
@@ -1298,7 +1298,7 @@ f4_HARMONIE_AROME:
     NMSG_LEVEL_CLIENT: 0
     NMSG_LEVEL_SERVER: 0
     NPROCESS_LEVEL: 5
-    NPROC_IO: ${namelist.nproc_io-0}
+    NPROC_IO: ${cfg:namelist.nproc_io,0}
   NAMNRTAER:
     CCNMIN: 10000000.0
     CLDROPMIN: 10000000.0
@@ -1410,8 +1410,8 @@ f4_HARMONIE_AROME:
     FCM_NU_DL: 0.0
     RLAMB_SOLID: 0.6
   NAMRIP:
-    CSTOP: ${namelist.cstop}
-    TSTEP: ${domain.tstep}
+    CSTOP: ${cfg:namelist.cstop}
+    TSTEP: ${cfg:domain.tstep}
   NAMSPBD:
     LSPBDC: false
   NAMSTOPH:
@@ -1449,7 +1449,7 @@ f4_HARMONIE_AROME:
     LXXDIAGH: true
     LXXGST: true
     NFRRAZ: 1
-    NRAZTS: ${namelist.nrazts}
+    NRAZTS: ${steplist:${cfg:general.namelist.nrazts}}
     NXGSTPERIOD: 3600
   NAM_NEBn:
     LHGT_QS: true
@@ -1483,13 +1483,13 @@ f4_HARMONIE_AROME:
     NBICPD: 2
     NBICVD: 2
   NEMELBC0B:
-    TEFRCL: ${namelist.tefrcl}
+    TEFRCL: ${cfg:namelist.tefrcl}
 
 f4_common:
   NAERAD:
     LSRTM: false
   NAMARG:
-    CNMEXP: ${general.cnmexp}
+    CNMEXP: ${cfg:general.cnmexp}
     LECMWF: false
     LELAM: true
     NCONF: 1
@@ -1501,7 +1501,7 @@ f4_common:
   NAMCVER:
     NDLNPR: 1
   NAMDIM:
-    NPROMA: ${submission.nproma}
+    NPROMA: ${cfg:submission.nproma}
   NAMDYNA:
     LSLAG: true
   NAMFA:
@@ -1526,7 +1526,7 @@ f4_common:
     MP_TYPE: 2
     NOUTPUT: 1
     NPRINTLEV: 1
-    NPROC: ${namelist.nproc}
+    NPROC: ${cfg:namelist.nproc}
   NAMPAR1:
     LEQ_REGIONS: false
     LSLONDEM: true
@@ -1535,8 +1535,8 @@ f4_common:
     LSYNC_TRANS: false
     L_GATHERV_WRGP: false
     NCOMBFLEN: 1800000
-    NSTRIN: ${namelist.nproc}
-    NSTROUT: ${namelist.nproc}
+    NSTRIN: ${cfg:namelist.nproc}
+    NSTROUT: ${cfg:namelist.nproc}
   NAMPHY:
     LAERODES: true
     LAEROLAN: true
@@ -1555,7 +1555,7 @@ f4_c903_main:
     LRRTM: false
     LSRTM: false
     NMCICA: 0
-    NRPROMA: ${submission.nproma}
+    NRPROMA: ${cfg:submission.nproma}
   NAMARG:
     CNMEXP: MARS
     LECMWF: true
@@ -1575,7 +1575,7 @@ f4_c903_main:
   NAMCT1:
     LRFILAF: false
   NAMDIM:
-    NPROMA: ${submission.nproma}
+    NPROMA: ${cfg:submission.nproma}
   NAMDYNA:
     LSPRT: true
   NAMFA:
@@ -1613,9 +1613,9 @@ f4_c903_main:
     MP_TYPE: 2
     NOUTPUT: 1
     NPRINTLEV: 0
-    NPROC: ${namelist.nproc}
+    NPROC: ${cfg:namelist.nproc}
     NPRTRV: 1
-    NPRTRW: ${namelist.nproc}
+    NPRTRW: ${cfg:namelist.nproc}
   NAMPAR1:
     LEQ_REGIONS: false
     LSPLIT: true
@@ -1623,17 +1623,17 @@ f4_c903_main:
     NDISTIO: 0
     NFLDIN: 0
     NOUTTYPE: 1
-    NSTROUT: ${namelist.nproc}
+    NSTROUT: ${cfg:namelist.nproc}
   NAMPHMSE:
     LPGDFWR: false
   NAMPPVI:
     LESCALE_U: false
   NAMTRANS:
-    LFFTW: ${submission.lfftw-"true"}
+    LFFTW: ${cfg:submission.lfftw,"true"}
 f4_c903_domain:
   NAMAFN:
     GFP_ST%IANO: 0
-    TFP_Q%LLGP: ${boundaries.humi_gp}
+    TFP_Q%LLGP: ${cfg:boundaries.humi_gp}
   NAMCT0:
     NFPOS: 2
     NSDITS(0): 1
@@ -1656,7 +1656,7 @@ f4_c903_domain:
     - PRESS.DEPART
     - VERTIC.DIVER
     CFPDIR: ELSCF
-    CFPDOM: ${domain.name}
+    CFPDOM: ${cfg:domain.name}
     CFPFMT: LELAM
     CFPPHY:
     - SURFTEMPERATURE
@@ -1696,33 +1696,33 @@ f4_c903_domain:
     - SURFALBEDO.SOLNU
     - SURFALBEDO.VEG
     NFPCLI: 2
-    NRFP3S: ${namelist.nrfp3s}
+    NRFP3S: ${cfg:namelist.nrfp3s}
   NAMFPD:
-    NFPBZONG: ${domain.nbzong}
-    NFPBZONL: ${domain.nbzonl}
-    NFPGUX: ${domain.njmax}
-    NFPLUX: ${domain.nimax}
-    NLAT: ${domain.ndglg}
-    NLON: ${domain.ndguxg}
-    RDELX: ${domain.xdx}
-    RDELY: ${domain.xdy}
-    RLATC: ${domain.xlatcen}
-    RLONC: ${domain.xloncen}
+    NFPBZONG: ${cfg:domain.nbzong}
+    NFPBZONL: ${cfg:domain.nbzonl}
+    NFPGUX: ${cfg:domain.njmax}
+    NFPLUX: ${cfg:domain.nimax}
+    NLAT: ${cfg:domain.ndglg}
+    NLON: ${cfg:domain.ndguxg}
+    RDELX: ${cfg:domain.xdx}
+    RDELY: ${cfg:domain.xdy}
+    RLATC: ${cfg:domain.xlatcen}
+    RLONC: ${cfg:domain.xloncen}
   NAMFPG:
-    FPLAT0: ${domain.xlat0}
-    FPLON0: ${domain.xlon0}
-    FPVALH: ${vertical_levels.ahalf}
-    FPVBH: ${vertical_levels.bhalf}
-    NFPLEV: ${vertical_levels.nlev}
-    NFPMAX: ${domain.nsmax}
-    NMFPMAX: ${domain.nmsmax}
+    FPLAT0: ${cfg:domain.xlat0}
+    FPLON0: ${cfg:domain.xlon0}
+    FPVALH: ${cfg:vertical_levels.ahalf}
+    FPVBH: ${cfg:vertical_levels.bhalf}
+    NFPLEV: ${cfg:vertical_levels.nlev}
+    NFPMAX: ${cfg:domain.nsmax}
+    NMFPMAX: ${cfg:domain.nmsmax}
   NAMFPIOS:
-    CFPCLIFNAME: ${domain.name}
+    CFPCLIFNAME: ${cfg:domain.name}
     NFPXFLD: 10
   NAMFPSC2:
-    NFPROMA: ${submission.nproma}
+    NFPROMA: ${cfg:submission.nproma}
   NAMFPSC2_DEP:
-    NFPROMA_DEP: ${submission.nproma}
+    NFPROMA_DEP: ${cfg:submission.nproma}
   NAMGEM:
     LNHX_GEOM: true
     LNONHYD_GEOM: true
@@ -1827,26 +1827,26 @@ f4_e927:
     - SURFRESERV.NEIGE
     LFPQ: false
     NFPCLI: 1
-    NRFP3S: ${namelist.nrfp3s}
+    NRFP3S: ${cfg:namelist.nrfp3s}
   NAMFPD:
-    NFPBZONG: ${domain.nbzong}
-    NFPBZONL: ${domain.nbzonl}
-    NFPGUX: ${domain.njmax}
-    NFPLUX: ${domain.nimax}
-    NLAT: ${domain.ndglg}
-    NLON: ${domain.ndguxg}
-    RDELX: ${domain.xdx}
-    RDELY: ${domain.xdy}
-    RLATC: ${domain.xlatcen}
-    RLONC: ${domain.xloncen}
+    NFPBZONG: ${cfg:domain.nbzong}
+    NFPBZONL: ${cfg:domain.nbzonl}
+    NFPGUX: ${cfg:domain.njmax}
+    NFPLUX: ${cfg:domain.nimax}
+    NLAT: ${cfg:domain.ndglg}
+    NLON: ${cfg:domain.ndguxg}
+    RDELX: ${cfg:domain.xdx}
+    RDELY: ${cfg:domain.xdy}
+    RLATC: ${cfg:domain.xlatcen}
+    RLONC: ${cfg:domain.xloncen}
   NAMFPG:
-    FPLAT0: ${domain.xlat0}
-    FPLON0: ${domain.xlon0}
-    FPVALH: ${vertical_levels.ahalf}
-    FPVBH: ${vertical_levels.bhalf}
-    NFPLEV: ${vertical_levels.nlev}
-    NFPMAX: ${domain.nsmax}
-    NMFPMAX: ${domain.nmsmax}
+    FPLAT0: ${cfg:domain.xlat0}
+    FPLON0: ${cfg:domain.xlon0}
+    FPVALH: ${cfg:vertical_levels.ahalf}
+    FPVBH: ${cfg:vertical_levels.bhalf}
+    NFPLEV: ${cfg:vertical_levels.nlev}
+    NFPMAX: ${cfg:domain.nsmax}
+    NMFPMAX: ${cfg:domain.nmsmax}
   NAMFPIOS:
     NFPXFLD: 46
   NAMGEM:
