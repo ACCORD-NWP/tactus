@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Namelist handling for MASTERODB w/SURFEX."""
+import ast
 import copy
 import os
 import re
@@ -9,33 +10,69 @@ from pathlib import Path
 
 import f90nml
 import yaml
+from omegaconf import OmegaConf
+from omegaconf.listconfig import ListConfig
 
 from .config_parser import ConfigPaths
+from .datetime_utils import as_timedelta, oi2dt_list
 from .logs import logger
 from .toolbox import Platform
 
 
-def flatten_list(li):
+def flatten_cn(li):
     """Recursively flatten a list of lists (of lists)."""
-    if li == []:
-        return li
-    if isinstance(li[0], list):
-        return flatten_list(li[0]) + flatten_list(li[1:])
-    return li[:1] + flatten_list(li[1:])
+    for x in li:
+        if isinstance(x, (list, ListConfig)):
+            yield from flatten_cn(x)
+        else:
+            yield x
 
 
-def find_num(s):
-    """Purpose: un-quote numbers."""
-    try:
-        i = int(s)
-        return i
-    except ValueError:
-        pass
-    try:
-        f = float(s)
-        return f
-    except ValueError:
+def to_dict(x):
+    """Recursively modify OrderedDict etc. to normal dict (required for OmegaConf)."""
+    # Namelist and OrderedDict both inherit from dict
+    if isinstance(x, dict):
+        return {k: to_dict(v) for k, v in x.items()}
+    if isinstance(x, list):
+        return [to_dict(k) for k in x]
+    return x
+
+
+def find_value(s):
+    """Purpose: un-quote (list of) numbers and booleans."""
+    if isinstance(s, list):
+        return [find_value(x) for x in s]
+
+    if isinstance(s, dict):
+        # This happens if the namelist is read with f90nml
+        # any name with "%" is parsed as a sub-namelist
+        # so an extra level in the structure
+        logger.debug("EVALUATE: SUB-DICT")
+        return {k: find_value(v) for k, v in s.items()}
+
+    if not isinstance(s, str):
         return s
+    if s.lower() == "true":
+        logger.debug("EVALUATE BOOLEAN: {} -> {}", s, True)
+        result = True
+    elif s.lower() == "false":
+        logger.debug("EVALUATE BOOLEAN: {} -> {}", s, False)
+        result = False
+    else:
+        try:
+            result = ast.literal_eval(s)
+            logger.debug("EVALUATE: {} -> {}", s, result)
+        except (ValueError, SyntaxError):
+            logger.debug("UN-EVALUATED: {}", s)
+            result = s
+    if isinstance(result, tuple):
+        result = list(result)
+
+    if isinstance(result, list):
+        logger.debug("EVALUATE NESTED: {} -> {}")
+        result = [find_value(x) for x in result]
+
+    return result
 
 
 def list_set_at_index(li, ix, val):
@@ -308,7 +345,10 @@ class NamelistGenerator:
             logger.info("Use reference namelist {}", ref_namelist)
             nl = f90nml.read(ref_namelist)
             target = "user_namelist"
-            nldict = {target: nl.todict()}
+            # NOTE: f90nml.todict() returns OrderedDict
+            #       which makes OmegaConf fail.
+            #       but maybe we should consider to_dict(nl.todict()) ???
+            nldict = {target: to_dict(nl)}
             cndict = {self.target: [target]}
             found = False
         else:
@@ -320,6 +360,57 @@ class NamelistGenerator:
             cndict = {}
 
         return found, nldict, cndict
+
+    def fn_stepfreq(self, arg):
+        """Resolve namelist function stepfreq."""
+        tstep = int(self.config["domain.tstep"])
+        freq = as_timedelta(arg)
+        result = int(freq.seconds / tstep)
+        return f"{result}"
+
+    def fn_steplist(self, arg):
+        """Resolve namelist function steplist."""
+        forecast_range = self.config["general.times.forecast_range"]
+        tstep = int(self.config["domain.tstep"])
+        # default value:
+        output_timesteps = [1, -1]
+
+        dtlist = oi2dt_list(arg, forecast_range)
+        logger.debug("steplist: {} // {}", arg, forecast_range)
+        logger.debug("dtlist: {}", dtlist)
+        output_timesteps = [
+            int((dt.days * 24 * 3600 + dt.seconds) / tstep) for dt in dtlist
+        ]
+        output_timesteps.insert(0, len(output_timesteps))
+        logger.debug("result: {}", output_timesteps)
+        # NOTE: a resolver can not return a list
+        # so turn into a string
+        return f"{output_timesteps}"
+
+    def fn_config(self, arg, default=None):
+        """Resolve namelist function cfg."""
+        try:
+            result = self.platform.config[arg]
+            logger.debug("CFG INSERT: {} -> {}", arg, self.platform.config[arg])
+        except KeyError:
+            result = default if default is not None else arg
+            logger.debug("CFG UNKNOWN: {} default {}", arg, default)
+        # NOTE: all values are returned as STRINGS
+        #       which means you must re-interpret with find_val()
+        #       this is only really necessary for e.g. lists
+        return f"{result}"
+
+    def resolve_macros(self, cn):
+        """Resolve all macros in a nested dict (both keys and values!)."""
+        if isinstance(cn, list):
+            result = [self.platform.substitute(x) for x in cn]
+        elif isinstance(cn, dict):
+            result = {
+                self.platform.substitute(x): self.resolve_macros(y) for x, y in cn.items()
+            }
+        else:
+            result = self.platform.substitute(cn)
+        return result
 
     def load(self, target):
         """Generate the namelists for 'target'.
@@ -335,11 +426,20 @@ class NamelistGenerator:
 
         """
         self.target = target
+        # define OmegaConf resolvers
+        OmegaConf.clear_resolvers()
+        OmegaConf.register_new_resolver("stepfreq", lambda arg: self.fn_stepfreq(arg))
+        OmegaConf.register_new_resolver("steplist", lambda arg: self.fn_steplist(arg))
+        OmegaConf.register_new_resolver(
+            "cfg", lambda arg, default=None: self.fn_config(arg, default)
+        )
 
         # Use static namelist if given
         use_yaml = True
         if self.accept_static_namelist:
-            use_yaml, nldict, cndict = self.load_user_namelist()
+            use_yaml, nldict0, cndict0 = self.load_user_namelist()
+            nldict = OmegaConf.create(nldict0)
+            cndict = OmegaConf.create(cndict0)
 
         if use_yaml:
             logger.info("Namelist generation input:")
@@ -347,12 +447,15 @@ class NamelistGenerator:
             logger.info(" rules: {}", self.cnfile)
             # Read namelist file with all the categories
             with open(self.nlfile, mode="rt", encoding="utf-8") as file:
-                nldict = yaml.safe_load(file)
+                nldict = OmegaConf.load(file)
 
             # Read file that describes assembly category order
             # for the various targets (tasks)
             with open(self.cnfile, mode="rt", encoding="utf-8") as file:
-                cndict = yaml.safe_load(file)
+                cndict_m1 = yaml.safe_load(file)
+                cndict_m2 = self.resolve_macros(cndict_m1)
+                cndict = OmegaConf.create(cndict_m2)
+                OmegaConf.resolve(cndict)
 
         # Check target is valid
         if target not in cndict:
@@ -369,106 +472,10 @@ class NamelistGenerator:
         self.nldict = nldict
         self.cndict = cndict
 
+        logger.info("Namelist updating")
         self.update_from_config(target)
 
         return self.nldict, self.cndict
-
-    def check_replace_scalar(self, val):
-        """Check a scalar for variable substitution from config.
-
-        Args:
-            val: value to be checked
-
-        Returns:
-            value after possible substitution
-
-        Raises:
-            KeyError   # noqa: DAR401
-
-        """
-        finval = val
-        # Replace ${var-def} with value from config, possibly macro-expanded
-        # For now assumes only one subst. per line, could be generalized if needed
-        if str(finval).find("$") >= 0 and self.substitute:
-            m = re.search(r"^([^\$]*)\$\{([\w\.]+)\-?([^}]*)\}(.*)", str(val))
-            if m:
-                pre = m.group(1)
-                nam = m.group(2)
-                defval = m.group(3)
-                post = m.group(4)
-                try:
-                    repval = self.platform.get_value(nam)
-                except KeyError:
-                    repval = None
-                if repval is None:
-                    if defval != "":
-                        logger.debug(
-                            "Using default value {} for '{}'",
-                            defval,
-                            nam,
-                        )
-                        repval = find_num(defval)
-                    else:
-                        logger.debug("No value found for: '{}'", nam)
-                        repval = finval
-                else:
-                    logger.debug("Replaced {} with: {}", nam, str(repval))
-                if isinstance(repval, str):
-                    finval = str(pre) + str(repval) + str(post)
-                else:
-                    finval = repval
-            else:
-                raise KeyError(val)
-        if isinstance(finval, tuple):
-            finval = list(finval)
-        return finval
-
-    def traverse(self, node):
-        """Traverse a nested structure and do variable substitution where needed.
-
-        Args:
-            node: (dict, list, str, float, int, bool)
-
-        Returns:
-            node, with values replaced
-        """
-        if isinstance(node, dict):
-            return {k: self.traverse(v) for k, v in node.items()}
-
-        if isinstance(node, list):
-            return [self.traverse(v) for v in node]
-
-        return self.check_replace_scalar(node)
-
-    def expand_cndict(self, target):
-        """Recursively generates list of namelist groups to assemble.
-
-        Args:
-            target (str): task to generate namelists for
-
-        Raises:
-            RuntimeError:
-
-        Returns:
-            cnlist (list): list of namelist groups
-
-        """
-        cndt = self.cndict_targets
-        if target in self.cndict_targets:
-            raise RuntimeError(
-                f"Target {target} already in cnlist causing endless loop:{cndt}"
-            )
-        self.cndict_targets.append(target)
-
-        cnlist = [self.platform.substitute(x) for x in flatten_list(self.cndict[target])]
-        cnlist_ = cnlist.copy()
-        for x in cnlist_:
-            if x in self.cndict:
-                i = cnlist.index(x)
-                cnlist[i] = self.expand_cndict(x)
-
-        cnlist = flatten_list(cnlist)
-        return cnlist
 
     def assemble_namelist(self, target):
         """Generate the namelists for 'target'.
@@ -480,30 +487,31 @@ class NamelistGenerator:
             nlres (f90nml.Namelist): Assembled namelist
 
         """
-        # Start with empty result dictionary
-        nlres = {}
         nldict = self.nldict
 
         # Assemble the target namelists based on the given category order
-        self.cndict_targets = []
-        for catg in self.expand_cndict(target):
-            # variable substitution removed at this level (may be resurrected)
-            # assemble namelists for this category
-            if catg in nldict:
-                for nl in nldict[catg]:
-                    if nl not in nlres:
-                        # create the result namelist dict
-                        nlres[nl] = {}
-                    if catg == "rm{" + nl + "}":
-                        # clear/remove the given namelist (but not used for now)
-                        nlres[nl].clear()
-                    else:
-                        nlres[nl] = self.nlcomp.compare_dicts(
-                            nlres[nl], nldict[catg][nl], "union"
-                        )
-        # Finally perform variable substitution
-        nlsubst = self.traverse(nlres)
-        return f90nml.Namelist(nlsubst)
+        # also replace all macro's ("@XXX@")
+        cnlist = [self.platform.substitute(x) for x in flatten_cn(self.cndict[target])]
+
+        # merge all the partial namelists
+        logger.debug("MERGING NLDICT")
+        logger.debug("assembly list {}", cnlist)
+        nl_merged = OmegaConf.to_container(
+            OmegaConf.merge(*[nldict[i] for i in cnlist if i in nldict]),
+            resolve=self.substitute,
+        )
+
+        # make sure that booleans, integers etc. are not represented as strings!
+        if self.substitute:
+            nlres = {
+                n: {v: find_value(vx) for v, vx in nx.items()}
+                for n, nx in nl_merged.items()
+            }
+        else:
+            nlres = nl_merged
+
+        logger.debug("FINAL NAMELIST: {}", nlres)
+        return f90nml.Namelist(nlres)
 
     def write_namelist(self, nml, output_file):
         """Write namelist using f90nml.
@@ -512,8 +520,10 @@ class NamelistGenerator:
             nml (f90nml.Namelist): namelist to write
             output_file (str) : namelist file name
         """
+        logger.info("Writing main namelist to {}", output_file)
         write_namelist(nml, output_file)
 
+    # NOTE: should also work with OmegaConf objects
     def update_from_config(self, target):
         """Update with additional namelist dict from config.
 
@@ -533,14 +543,20 @@ class NamelistGenerator:
             for namelist, keyval in _update.items():
                 nu = namelist.upper()
                 update[nu] = {}
+                # NOTE: tomlkit returns type "tomlkit.type.String" in stead of "str"
+                #       and similar for "tomlkit.type.Integer" vs. "int".
+                # But OmegaConf can not handle those non-standard types
+                # So we must "convert" to str()
+                # This shouldn't do any harm to integers, as they are fixed later.
                 for key, val in keyval.items():
-                    update[nu][key.upper()] = val
+                    update[nu][key.upper()] = str(val)
 
             self.update(update, f"namelist_update_{target}")
             logger.info("Namelist update found for {} {}", self.kind, target)
         except KeyError:
             pass
 
+    # NOTE: should also work with OmegaConf objects
     def update(self, nldict, cndict_tag):
         """Update with additional namelist dict.
 
@@ -550,7 +566,7 @@ class NamelistGenerator:
 
         """
         self.cndict[self.target].append(cndict_tag)
-        self.nldict[cndict_tag] = nldict
+        self.nldict[cndict_tag] = nldict  # maybe OmegaConf.create(nldict)
 
     def generate_namelist(self, target, output_file):
         """Generate the namelists for 'target'.
