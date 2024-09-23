@@ -35,7 +35,7 @@ class DeodeHost:
 
         """
         known_hosts_file = (
-            ConfigPaths.path_from_subpaths("known_hosts.yml")
+            ConfigPaths.path_from_subpath("known_hosts.yml")
             if known_hosts is None
             else known_hosts
         )

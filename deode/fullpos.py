@@ -142,9 +142,7 @@ class Fullpos:
         if additions_list is not None:
             # Read the update
             for addition in additions_list:
-                fpfile = ConfigPaths.path_from_subpath(
-                    f"{self.fpdir}/{addition}.yml"
-                )
+                fpfile = ConfigPaths.path_from_subpath(f"{self.fpdir}/{addition}.yml")
                 with open(fpfile, mode="rt", encoding="utf-8") as file:
                     nldict = yaml.safe_load(file)
                     file.close()

@@ -319,12 +319,8 @@ class NamelistGenerator:
         self.substitute = substitute
         self.nlcomp = NamelistComparator(config)
         self.cycle = self.config["general.cycle"]
-        self.cnfile = ConfigPaths.path_from_subpath(
-            f"{self.cycle}/assemble_{kind}.yml"
-        )
-        self.nlfile = ConfigPaths.path_from_subpath(
-            f"{self.cycle}/{kind}_namelists.yml"
-        )
+        self.cnfile = ConfigPaths.path_from_subpath(f"{self.cycle}/assemble_{kind}.yml")
+        self.nlfile = ConfigPaths.path_from_subpath(f"{self.cycle}/{kind}_namelists.yml")
         self.domain_name = self.config["domain.name"]
         self.accept_static_namelist = self.config["general.accept_static_namelists"]
 
@@ -684,9 +680,7 @@ class NamelistConverter:
     def get_tnt_files_list(from_cycle, to_cycle):
         """Return the list of tnt directive files required for the conversion."""
         # definitions of the conversion to apply between cycles
-        tnt_directives_folder = ConfigPaths.path_from_subpath(
-            "tnt_directives"
-        )
+        tnt_directives_folder = ConfigPaths.path_from_subpath("tnt_directives")
 
         if from_cycle and to_cycle:
             known_cycles = NamelistConverter.get_known_cycles()
