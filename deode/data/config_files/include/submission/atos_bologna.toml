@@ -1,5 +1,5 @@
 [submission]
-  bindir = "/perm/deployde330/github-actions/install/cy48t3-v1.1.1/install/bin"
+  bindir = "/perm/deployde330/github-actions/install/cy48t3-v1.1.2/install/bin"
   default_submit_type = "serial"
   lfftw = true
   module_initpath = "/usr/local/apps/lmod/8.6.8/init"
