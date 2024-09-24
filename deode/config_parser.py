@@ -54,6 +54,9 @@ class ConfigPaths:
 
     _env_data_paths = os.getenv("DEODE_DATA_PATH")
     DATA_SEARCHPATHS = _env_data_paths.split(":") if _env_data_paths is not None else []
+    erroneous_paths = [path for path in DATA_SEARCHPATHS if not os.path.isabs(path)]
+    if len(erroneous_paths) > 0:
+        raise RuntimeError(f"DEODE_DATA_PATH is not absolute: {erroneous_paths}")
     DATA_SEARCHPATHS.append(ConfigParserDefaults.DATA_DIRECTORY)
 
     @staticmethod
