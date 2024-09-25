@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - change default ifs\_delection to ATOS\_DT [#775](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/775) (@kastelecn)
 
+### Fixed
+- Fix ecf_host selector not selecting the correct naming convention on Atos [#781](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/781) (@adam-otruba)
+
 ## [0.6.0] - 2024-09-19
 
 ### Added

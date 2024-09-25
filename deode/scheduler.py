@@ -165,7 +165,7 @@ class EcflowServer(Server):
             logger.error(msg)
             raise RuntimeError(msg)
 
-        return host
+        return found_hosts[0]
 
     def start_server(self):
         """Start the server.
