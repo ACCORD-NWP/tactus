@@ -336,11 +336,21 @@ class Platform:
             if isinstance(validtime, str):
                 validtime = as_datetime(validtime)
 
-            pattern = self.sub_value(pattern, "YYYY", basetime.strftime("%Y"))
-            pattern = self.sub_value(pattern, "MM", basetime.strftime("%m"), ci=False)
-            pattern = self.sub_value(pattern, "DD", basetime.strftime("%d"))
-            pattern = self.sub_value(pattern, "HH", basetime.strftime("%H"))
-            pattern = self.sub_value(pattern, "mm", basetime.strftime("%M"), ci=False)
+            if basetime is not None:
+                pattern = self.sub_value(pattern, "YMD", basetime.strftime("%Y%m%d"))
+                pattern = self.sub_value(pattern, "YYYY", basetime.strftime("%Y"))
+                pattern = self.sub_value(pattern, "YY", basetime.strftime("%y"))
+                pattern = self.sub_value(pattern, "MM", basetime.strftime("%m"), ci=False)
+                pattern = self.sub_value(pattern, "DD", basetime.strftime("%d"))
+                pattern = self.sub_value(pattern, "HH", basetime.strftime("%H"))
+                pattern = self.sub_value(pattern, "mm", basetime.strftime("%M"), ci=False)
+                pattern = self.sub_value(pattern, "ss", basetime.strftime("%S"), ci=False)
+
+                one_decade_pattern = (
+                    get_decade(basetime) if self.config["pgd.one_decade"] else ""
+                )
+                pattern = self.sub_value(pattern, "ONE_DECADE", one_decade_pattern)
+
             if basetime is not None and validtime is not None:
                 logger.debug(
                     "Substituted date/time info: basetime={} validtime={}",
@@ -376,21 +386,6 @@ class Platform:
                     lead_step = lead_seconds // tstep
                     pattern = self.sub_value(pattern, "TTT", f"{lead_step:03d}")
                     pattern = self.sub_value(pattern, "TTTT", f"{lead_step:04d}")
-
-            if basetime is not None:
-                pattern = self.sub_value(pattern, "YMD", basetime.strftime("%Y%m%d"))
-                pattern = self.sub_value(pattern, "YYYY", basetime.strftime("%Y"))
-                pattern = self.sub_value(pattern, "YY", basetime.strftime("%y"))
-                pattern = self.sub_value(pattern, "MM", basetime.strftime("%m"), ci=False)
-                pattern = self.sub_value(pattern, "DD", basetime.strftime("%d"))
-                pattern = self.sub_value(pattern, "HH", basetime.strftime("%H"))
-                pattern = self.sub_value(pattern, "mm", basetime.strftime("%M"), ci=False)
-                pattern = self.sub_value(pattern, "ss", basetime.strftime("%S"), ci=False)
-
-                one_decade_pattern = (
-                    get_decade(basetime) if self.config["pgd.one_decade"] else ""
-                )
-                pattern = self.sub_value(pattern, "ONE_DECADE", one_decade_pattern)
 
         logger.debug("Return pattern={}", pattern)
         return pattern
