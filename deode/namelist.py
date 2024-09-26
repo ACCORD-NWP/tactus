@@ -550,13 +550,8 @@ class NamelistGenerator:
             for namelist, keyval in _update.items():
                 nu = namelist.upper()
                 update[nu] = {}
-                # NOTE: tomlkit returns type "tomlkit.type.String" in stead of "str"
-                #       and similar for "tomlkit.type.Integer" vs. "int".
-                # But OmegaConf can not handle those non-standard types
-                # So we must "convert" to str()
-                # This shouldn't do any harm to integers, as they are fixed later.
                 for key, val in keyval.items():
-                    update[nu][key.upper()] = str(val)
+                    update[nu][key.upper()] = val
 
             self.update(update, f"namelist_update_{target}")
             logger.info("Namelist update found for {} {}", self.kind, target)
