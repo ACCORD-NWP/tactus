@@ -1,7 +1,9 @@
 """Experiment tools."""
 
 import collections
+import contextlib
 import os
+import subprocess
 from pathlib import Path
 from typing import List
 
@@ -29,6 +31,7 @@ class Exp:
         """
         logger.debug("Construct Exp")
         config = config.copy(update=merged_config)
+        config = config.copy(update={"git_info": get_git_info()})
         self.config = config
 
 
@@ -248,3 +251,31 @@ def case_setup(
 
     exp = ExpFromFiles(config, exp_dependencies, mod_files, host=host)
     exp.config.save_as(output_file)
+
+
+def get_git_info():
+    """Get git information."""
+    gitcmds = {
+        "branch": ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+        "commit": ["git", "rev-parse", "HEAD"],
+        "remote": ["git", "rev-parse", "--abbrev-ref", "@{u}"],
+        "describe": ["git", "describe", "--long", "--always", "--tags", "--dirty"],
+    }
+
+    git_info = {}
+    for label, cmd in gitcmds.items():
+        with contextlib.suppress(subprocess.CalledProcessError):
+            git_info[label] = (
+                subprocess.check_output(cmd, stderr=subprocess.DEVNULL)  # noqa S603
+                .strip()
+                .decode("utf-8")
+            )
+    with contextlib.suppress(KeyError, subprocess.CalledProcessError):
+        remote = git_info["remote"].split("/")[0]
+        cmd = ["git", "remote", "get-url", remote]
+        git_info["remote_url"] = (
+            subprocess.check_output(cmd, stderr=subprocess.DEVNULL)  # noqa S603
+            .strip()
+            .decode("utf-8")
+        )
+    return git_info

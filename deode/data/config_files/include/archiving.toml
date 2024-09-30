@@ -1,5 +1,11 @@
 [archiving]
 
+[archiving.hour.ecfs.config]
+  active = true
+  inpath = ""
+  outpath = "archive/@ARCHIVE_TIMESTAMP@"
+  pattern = "@CONFIG@"
+
 [archiving.hour.ecfs.fa_files]
   active = true
   inpath = "@ARCHIVE@"
@@ -47,6 +53,12 @@
   inpath = "@CLIMDIR@"
   outpath = "climate/@DOMAIN@"
   pattern = ["Const.Clim*", "PGD*"]
+
+[archiving.static.ecfs.config]
+  active = true
+  inpath = ""
+  outpath = ""
+  pattern = "@CONFIG@"
 
 [archiving.static.ecfs.logs]
   active = true
