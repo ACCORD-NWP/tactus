@@ -10,8 +10,10 @@ from typing import List
 import tomlkit
 
 from .config_parser import ConfigParserDefaults, ParsedConfig
+from .derived_variables import set_times
 from .logs import logger
 from .os_utils import resolve_path_relative_to_package
+from .toolbox import Platform
 
 
 class Exp:
@@ -250,6 +252,11 @@ def case_setup(
     )
 
     exp = ExpFromFiles(config, exp_dependencies, mod_files, host=host)
+    if output_file is None:
+        config = exp.config.copy(update=set_times(exp.config))
+        output_file = config.get("general.case") + ".toml"
+        output_file = Platform(config).substitute(output_file)
+    logger.info("Save config to: {}", output_file)
     exp.config.save_as(output_file)
 
 
