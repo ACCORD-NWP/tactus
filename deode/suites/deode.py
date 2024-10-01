@@ -71,7 +71,7 @@ class DeodeSuiteDefinition(SuiteDefinition):
         self.mode = config["suite_control.mode"]
         self.split_mars = config["suite_control.split_mars"]
 
-        self.creategrib = bool("task.creategrib" in config)
+        self.creategrib = len(config.get("task.CreateGrib.conversions", [])) > 0
 
         unix_group = self.platform.get_platform_value("unix_group")
         deodemakedirs(self.joboutdir, unixgroup=unix_group)

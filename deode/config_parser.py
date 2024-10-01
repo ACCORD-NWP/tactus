@@ -26,15 +26,17 @@ from .aux_types import BaseMapping, QuasiConstant
 from .datetime_utils import DatetimeConstants
 from .general_utils import modify_mappings
 from .logs import logger
+from .os_utils import resolve_path_relative_to_package
 
 
 class ConfigParserDefaults(QuasiConstant):
     """Defaults related to the parsing of config files."""
 
-    DIRECTORY = GeneralConstants.PACKAGE_DIRECTORY / "data" / "config_files"
-    PACKAGE_INCLUDE_DIR = DIRECTORY / "include"
+    DATA_DIRECTORY = GeneralConstants.PACKAGE_DIRECTORY / "data"
+    CONFIG_DIRECTORY = DATA_DIRECTORY / "config_files"
+    PACKAGE_INCLUDE_DIR = CONFIG_DIRECTORY / "include"
 
-    PACKAGE_CONFIG_PATH = (DIRECTORY / "config.toml").resolve(strict=True)
+    PACKAGE_CONFIG_PATH = (CONFIG_DIRECTORY / "config.toml").resolve(strict=True)
     # Define the default path to the config file
     try:
         CONFIG_PATH = Path(os.getenv("DEODE_CONFIG_PATH", "config.toml"))
@@ -42,7 +44,7 @@ class ConfigParserDefaults(QuasiConstant):
     except FileNotFoundError:
         CONFIG_PATH = PACKAGE_CONFIG_PATH
 
-    SCHEMAS_DIRECTORY = DIRECTORY / "config_file_schemas"
+    SCHEMAS_DIRECTORY = CONFIG_DIRECTORY / "config_file_schemas"
     MAIN_CONFIG_JSON_SCHEMA_PATH = SCHEMAS_DIRECTORY / "main_config_schema.json"
     MAIN_CONFIG_JSON_SCHEMA = json.loads(MAIN_CONFIG_JSON_SCHEMA_PATH.read_text())
 
@@ -74,7 +76,8 @@ class BasicConfig(BaseMapping):
         Returns:
             cls: Configs retrieved from the specified path.
         """
-        path = Path(path).resolve().as_posix()
+        path = Path(path).resolve()
+
         configs = _read_raw_config_file(path)
         return cls(configs, _metadata={"source_file_path": path}, **kwargs)
 
@@ -171,7 +174,7 @@ class ParsedConfig(BasicConfig):
         self,
         *args,
         json_schema,
-        include_dir=ConfigParserDefaults.DIRECTORY,
+        include_dir=ConfigParserDefaults.CONFIG_DIRECTORY,
         **kwargs,
     ):
         """Initialise an instance with an arbitrary number of entries & validate them."""
@@ -237,9 +240,20 @@ class ParsedConfig(BasicConfig):
         return rtn
 
 
-def _read_raw_config_file(config_path):
-    """Read raw configs from files in miscellaneous formats."""
-    config_path = Path(config_path)
+def _read_raw_config_file(config_path: Path):
+    """Read raw configs from files in miscellaneous formats.
+
+    Args:
+        config_path (Path): Path to the config file.
+
+    Raises:
+        NotImplementedError: If the config file format is not supported.
+
+    Returns:
+        dict: Configs read from the specified path.
+    """
+    config_path = resolve_path_relative_to_package(config_path)
+
     logger.debug("Reading configs from file <{}>", config_path)
 
     with open(config_path, "rb") as config_file:
@@ -291,7 +305,7 @@ def _get_all_json_schemas(json_schema, schemas_path):
 def _expand_config_include_section(
     raw_config,
     json_schema,
-    config_include_search_dir=ConfigParserDefaults.DIRECTORY,
+    config_include_search_dir=ConfigParserDefaults.CONFIG_DIRECTORY,
     schemas_path=ConfigParserDefaults.SCHEMAS_DIRECTORY,
     _parent_sections=(),
 ):

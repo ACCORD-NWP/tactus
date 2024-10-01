@@ -40,7 +40,7 @@
     LRRTM = .FALSE.,
     LSRTM = .FALSE.,
     NMCICA = 0,
-    NRPROMA = '${submission.nproma}',
+    NRPROMA = '${cfg:submission.nproma}',
 /
 
 &NAERCLI
@@ -163,7 +163,7 @@
 /
 
 &NAMDIM
-    NPROMA = '${submission.nproma}',
+    NPROMA = '${cfg:submission.nproma}',
 /
 
 &NAMDIMO
@@ -401,9 +401,9 @@
     MP_TYPE = 2,
     NOUTPUT = 1,
     NPRINTLEV = 0,
-    NPROC = '${namelist.nproc}',
+    NPROC = '${cfg:namelist.nproc}',
     NPRTRV = 1,
-    NPRTRW = '${namelist.nproc}',
+    NPRTRW = '${cfg:namelist.nproc}',
 /
 
 &NAMPAR1
@@ -413,7 +413,7 @@
     NDISTIO = 0,
     NFLDIN = 0,
     NOUTTYPE = 1,
-    NSTROUT = '${namelist.nproc}',
+    NSTROUT = '${cfg:namelist.nproc}',
 /
 
 &NAMPARAR
@@ -548,7 +548,7 @@
 /
 
 &NAMTRANS
-    LFFTW = '${submission.lfftw-"true"}',
+    LFFTW = '${cfg:submission.lfftw,"true"}',
 /
 
 &NAMTRANS0

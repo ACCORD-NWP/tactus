@@ -5,7 +5,6 @@ import os
 import shutil
 from contextlib import redirect_stderr, redirect_stdout, suppress
 from io import StringIO
-from pathlib import Path
 from unittest import mock
 
 import pytest
@@ -15,8 +14,7 @@ from deode.__main__ import main
 from deode.argparse_wrapper import get_parsed_args
 from deode.config_parser import ConfigParserDefaults
 from deode.submission import NoSchedulerSubmission, TaskSettings
-
-WORKING_DIR = Path.cwd()
+from deode.toolbox import Platform
 
 
 @pytest.fixture(scope="module")
@@ -46,6 +44,7 @@ def _module_mockers(module_mocker, config_path, tmp_path_factory):
 
     original_no_scheduler_submission_submit_method = NoSchedulerSubmission.submit
     original_submission_task_settings_parse_job = TaskSettings.parse_job
+    original_platform_evaluate_function = Platform.evaluate
 
     def new_no_scheduler_submission_submit_method(*args, **kwargs):
         """Wrap the original method to catch ."""
@@ -57,12 +56,19 @@ def _module_mockers(module_mocker, config_path, tmp_path_factory):
         with suppress(RuntimeError):
             original_submission_task_settings_parse_job(self, **kwargs)
 
+    def new_platform_evaluate_function(self, *args, **kwargs):
+        with suppress(TypeError):
+            original_platform_evaluate_function(self, *args, **kwargs)
+
     module_mocker.patch(
         "deode.submission.NoSchedulerSubmission.submit",
         new=new_no_scheduler_submission_submit_method,
     )
     module_mocker.patch("deode.scheduler.ecflow")
     module_mocker.patch("deode.scheduler.EcflowServer._select_host_from_list")
+    module_mocker.patch(
+        "deode.toolbox.Platform.evaluate", new=new_platform_evaluate_function
+    )
     module_mocker.patch("deode.suites.base.ecflow")
     module_mocker.patch(
         "deode.submission.TaskSettings.parse_job",
@@ -132,7 +138,7 @@ def test_run_task_command(tmp_path):
             "--task",
             "Forecast",
             "--template",
-            f"{WORKING_DIR.as_posix()}/deode/templates/stand_alone.py",
+            str(GeneralConstants.PACKAGE_DIRECTORY / "deode/templates/stand_alone.py"),
             "--job",
             f"{tmp_path.as_posix()}/forecast.job",
             "-o",

@@ -1,4 +1,5 @@
 """Test case setup."""
+
 import difflib
 import os
 from pathlib import Path
@@ -8,15 +9,14 @@ import tomlkit
 from toml_formatter.formatter import FormattedToml
 from toml_formatter.formatter_options import FormatterOptions
 
-from deode import GeneralConstants
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.experiment import case_setup
 
 
-@pytest.fixture(scope="module")
-def tmp_directory(tmp_path_factory):
+@pytest.fixture(scope="module", name="tmp_directory")
+def fixture_tmp_directory(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Return a temp directory valid for this module."""
-    return tmp_path_factory.getbasetemp().as_posix()
+    return tmp_path_factory.getbasetemp()
 
 
 @pytest.fixture()
@@ -46,17 +46,15 @@ def default_config_dir():
 
 @pytest.fixture(scope="module")
 def default_config():
-    default_config = os.path.join(
-        GeneralConstants.PACKAGE_DIRECTORY, "data", "config_files", "config.toml"
-    )
+    default_config = ConfigParserDefaults.CONFIG_DIRECTORY / "config.toml"
     config = ParsedConfig.from_file(
         default_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
     )
     return config
 
 
-def test_save_config(tmp_directory, default_config):
-    saved_config = f"{tmp_directory}/saved_config.toml"
+def test_save_config(tmp_directory: Path, default_config):
+    saved_config = tmp_directory / "saved_config.toml"
     config = default_config
     config.save_as(saved_config)
     config = ParsedConfig.from_file(
@@ -74,13 +72,13 @@ def _module_mockers_atos_bologna(module_mocker):
 
 @pytest.mark.usefixtures("_module_mockers_atos_bologna")
 def test_set_domain_from_file(
-    tmp_directory, test_domain, default_config, default_config_dir
+    tmp_directory: Path, test_domain, default_config, default_config_dir
 ):
-    config_dir = f"{tmp_directory}/data/config/"
+    config_dir = tmp_directory / "data/config/"
     output_file = f"{default_config_dir}/test_set_domain_from_file.toml"
-    domains_dir = f"{config_dir}/include/domains"
+    domains_dir = config_dir / "include/domains"
     os.makedirs(domains_dir, exist_ok=True)
-    domain_file = f"{domains_dir}/TEST_DOMAIN.toml"
+    domain_file = domains_dir / "TEST_DOMAIN.toml"
     with open(domain_file, mode="w", encoding="utf8") as fh:
         tomlkit.dump({"domain": test_domain}, fh)
 

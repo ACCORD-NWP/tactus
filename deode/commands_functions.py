@@ -72,9 +72,7 @@ def set_deode_home(args, config):
     elif deode_home_from_config != "set-by-the-system":
         deode_home = deode_home_from_config
     else:
-        deode_home = os.environ.get("PWD")
-        if deode_home is None:
-            deode_home = f"{os.path.dirname(__file__)}/.."
+        deode_home = str(GeneralConstants.PACKAGE_DIRECTORY)
 
     return deode_home
 
@@ -114,7 +112,7 @@ def create_exp(args, config):
     config_dir = args.config_dir
     known_hosts = args.host_file
     if known_hosts is None:
-        known_hosts = f"{deode_home}/deode/data/config_files/known_hosts.yml"
+        known_hosts = ConfigParserDefaults.CONFIG_DIRECTORY / "known_hosts.yml"
     host = DeodeHost(known_hosts=known_hosts)
     output_file = args.output_file
     case = args.case
@@ -198,7 +196,20 @@ def start_suite(args, config):
     suite_name = Platform(config).substitute(suite_name)
     ecf_files_local = ecf_files
 
-    troika_config_file = Platform(config).substitute(config["troika.config_file"])
+    # Evaluate and update ecf_deode_home
+    ecf_deode_home = str(
+        Platform(config).evaluate(
+            config["scheduler.ecfvars.ecf_deode_home"], object_="deode.os_utils"
+        )
+    )
+    update = {"scheduler": {"ecfvars": {"ecf_deode_home": ecf_deode_home}}}
+    config = config.copy(update=update)
+
+    # Get the troika config file - in case defined in ecfvars, use that to allow
+    # for scheduler specific troika config file
+    troika_config_file = Platform(config).substitute(
+        config.get("scheduler.ecfvars.troika.config_file", config["troika.config_file"])
+    )
     if ecf_home != joboutdir:
         remote_troika_config_file = os.path.join(
             ecf_files_remotely, suite_name, os.path.basename(troika_config_file)

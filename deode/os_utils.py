@@ -1,12 +1,16 @@
 """Utilities for simple tasks on OS level."""
+
 import contextlib
 import os
+import pathlib
 import re
 import shutil
 import subprocess
 import time
 from pathlib import Path
+from typing import Union
 
+from . import GeneralConstants
 from .logs import logger
 
 
@@ -232,3 +236,101 @@ def ping(host):
         return True
     except subprocess.CalledProcessError:
         return False
+
+
+def strip_off_mount_path(path: Union[str, Path]) -> Path:
+    """Strip off the mount path from a given path.
+
+    Assumptions:
+        - the path contains the user name as a directory.
+        - the parent of the user directory is of the format "<new-dir-name>" or
+          "*_<new-dir-name>_*", where "*" contains no underscore(s) and
+          where the <new-dir-name> will be used as the new parent directory name
+          relative to the user directory.
+
+    Args:
+        path (Union[str, Path]): Path to strip off the mount path from.
+
+    Returns:
+        path: Path with the mount path stripped off.
+
+    Raises:
+        ValueError: If the parent of the user directory does not contain 0
+                    or 2 underscores.
+
+    Example:
+        >>> strip_off_mount_path("/etc/ecmwf/nfs/dh1_home_b/$USER/Deode-Workflow/deode")
+        Path("/home/$USER/Deode-Workflow/deode")
+    """
+    file_parts = Path(path).parts
+    user = os.environ.get("USER")
+    if user is None:
+        return Path(path)
+
+    index_of_user = file_parts.index(user)
+    parent_of_user = file_parts[max(0, index_of_user - 1)]
+    # Get number of underscores in parent_of_user
+    n_underscores = parent_of_user.count("_")
+    if n_underscores not in [0, 2]:
+        raise ValueError(
+            "Parent of user directory must contain 0 or 2 underscores, "
+            + f"but found {n_underscores}. Path: {path}"
+        )
+    # Get middle part of parent_of_user if it contains 2 underscores
+    if n_underscores == 2:
+        parent_of_user_parts = parent_of_user.split("_")
+        parent_of_user = parent_of_user_parts[1]
+
+    return Path(pathlib.os.sep, parent_of_user, *file_parts[index_of_user:])
+
+
+def resolve_path_relative_to_package(path: Path, ignore_errors: bool = False) -> Path:
+    """Resolve path relative to package directory.
+
+    If the path exists as is, return it. If not, check if it exists in the
+    package directory and return path relative to package
+
+    Args:
+        path (Path): Path to resolve.
+        ignore_errors (bool, optional): Option to ignore errors.
+            Defaults to False.
+
+    Raises:
+        FileNotFoundError: If it was impossible to determine path relative to package.
+        FileNotFoundError: If file does not exist locally or in the package directory.
+
+    Returns:
+        Path: Original path (if exists locally), or resolved path relative to
+            package directory.
+
+    """
+    path = path.resolve()
+    # First check if path exists as is
+    if not os.path.exists(path):
+        # Get path relative to package. Needed when Deode-Workflow is installed as
+        # a site-package e.g. when creating plugins.
+        if GeneralConstants.PACKAGE_NAME in path.parts:
+            # Find last occurence of package name in path
+            package_index_in_path = (
+                len(path.parts)
+                - path.parts[::-1].index(GeneralConstants.PACKAGE_NAME)
+                - 1
+            )
+            # Stick together the path in the package directory
+            config_parts = path.parts[package_index_in_path:]
+            path = GeneralConstants.PACKAGE_DIRECTORY.parent / Path(*config_parts)
+        elif not ignore_errors:
+            raise FileNotFoundError(
+                f"Could not determine path {path} relative to the "
+                + f"{GeneralConstants.PACKAGE_NAME} package."
+            )
+
+        # If not, check if it exists in the package directory (used when
+        # deode is installed as package)
+        if not os.path.exists(path) and not ignore_errors:
+            raise FileNotFoundError(
+                f"Config file {path} not found locally or in package directory"
+            )
+        return path
+
+    return path

@@ -26,22 +26,24 @@ def ecflow_task(__):
     return EcflowTask(ecf_name, ecf_tryno, ecf_pass, ecf_rid, ecf_timeout=ecf_timeout)
 
 
+# TODO: The mocked ecflow module is treated as the config, but it is not a config
 @pytest.fixture()
 @patch("deode.scheduler.ecflow")
 def ecflow_server(parsed_config):
     config = parsed_config
     start_command = "start"
-    return EcflowServer(config, start_command)
+    with patch("deode.scheduler.Platform"):
+        return EcflowServer(config, start_command)
 
 
 class TestScheduler:
-    def test_ecf_port_setting(self, ecflow_server):
+    def test_ecf_port_setting(self, ecflow_server: EcflowServer):
         offset = 100
         port = os.getuid() + offset
         ecf_port = ecflow_server._set_port_from_user(offset)
         assert port == ecf_port
 
-    def test_select_host_from_list(self, ecflow_server):
+    def test_select_host_from_list(self, ecflow_server: EcflowServer):
         hostname = "localhost"
         hosts = ["foo", hostname]
         host_list = ",".join(hosts)
@@ -61,11 +63,11 @@ class TestScheduler:
         with pytest.raises(RuntimeError, match=msg):
             ecflow_server._select_host_from_list(hosts)
 
-    def test_ecflow_client(self, ecflow_server, ecflow_task):
+    def test_ecflow_client(self, ecflow_server: EcflowServer, ecflow_task):
         EcflowClient(ecflow_server, ecflow_task)
 
     @patch("deode.scheduler.ecflow")
-    def test_start_suite(self, mock, ecflow_server):
+    def test_start_suite(self, mock, ecflow_server: EcflowServer):
         logger.debug("Print mock: {}", mock)
         def_file = f"/tmp/{suite_name()}.def"  # noqa
         ecflow_server.start_suite(suite_name(), def_file)

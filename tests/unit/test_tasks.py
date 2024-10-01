@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 import tomlkit
 
+from deode import GeneralConstants
 from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import set_times
 from deode.plugin import DeodePluginRegistry
@@ -24,8 +25,6 @@ from deode.tasks.iomerge import IOmerge
 from deode.tasks.marsprep import Marsprep
 from deode.toolbox import ArchiveError, FileManager, ProviderError
 
-WORKING_DIR = Path.cwd()
-
 
 def classes_to_be_tested():
     """Return the names of the task-related classes to be tested."""
@@ -37,7 +36,7 @@ def classes_to_be_tested():
 @pytest.fixture(scope="module")
 def base_raw_config():
     """Return a raw config common to all tasks."""
-    config = BasicConfig.from_file(ConfigParserDefaults.DIRECTORY / "config.toml")
+    config = BasicConfig.from_file(ConfigParserDefaults.CONFIG_DIRECTORY / "config.toml")
     return config
 
 
@@ -59,7 +58,7 @@ def task_name_and_configs(request, base_raw_config, tmp_path_factory):
             wrk = "{tmp_path_factory.getbasetemp().as_posix()}"
             bindir = "{tmp_path_factory.getbasetemp().as_posix()}/bin"
         [platform]
-            deode_home = "{WORKING_DIR}"
+            deode_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
             scratch = "{tmp_path_factory.getbasetemp().as_posix()}"
             static_data = "{tmp_path_factory.getbasetemp().as_posix()}"
             climdata = "{tmp_path_factory.getbasetemp().as_posix()}"
@@ -74,8 +73,16 @@ def task_name_and_configs(request, base_raw_config, tmp_path_factory):
             ionr = 0
         """
     )
-
     task_config = task_config.copy(update=config_patch)
+    if task_name == "e927":
+        config_e927 = tomlkit.parse(
+            """
+            [boundaries]
+                bdcycle = "PT6H"
+                bdcycle_start = "PT0H"
+            """
+        )
+        task_config = task_config.copy(update=config_e927)
     task_config = task_config.copy(update={"task": {"wrapper": "echo NPROC=@NPROC@;"}})
 
     return task_name, task_config
@@ -132,7 +139,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
 
     def new_task_archive_archivehour_execute_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
-        with contextlib.suppress(FileNotFoundError):
+        with contextlib.suppress(FileNotFoundError, TypeError):
             original_task_archive_archivehour_execute_method(*args, **kwargs)
 
     def new_task_archive_archivestatic_execute_method(*args, **kwargs):

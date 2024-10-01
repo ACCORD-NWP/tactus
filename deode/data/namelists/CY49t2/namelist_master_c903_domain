@@ -56,7 +56,7 @@
     GFP_ST%IANO = 0,
     TFP_I%CLNAME = 'ICE_CRYSTAL',
     TFP_L%CLNAME = 'CLOUD_WATER',
-    TFP_Q%LLGP = '${boundaries.humi_gp}',
+    TFP_Q%LLGP = '${cfg:boundaries.humi_gp}',
     TFP_U%CLNAME = 'WIND.U.PHYS',
     TFP_V%CLNAME = 'WIND.V.PHYS',
 /
@@ -200,7 +200,7 @@
              'CLOUD_WATER', 'ICE_CRYSTAL', 'CLOUD_FRACTI', 'PRESS.DEPART',
              'VERTIC.DIVER',
     CFPDIR = 'ELSCF',
-    CFPDOM = '${domain.name}',
+    CFPDOM = '${cfg:domain.name}',
     CFPFMT = 'LELAM',
     CFPPHY = 'SURFTEMPERATURE', 'SURFA.OF.OZONE  ', 'SURFB.OF.OZONE  ',
              'SURFC.OF.OZONE  ', 'SURFAEROS.SEA   ', 'SURFAEROS.LAND  ',
@@ -214,20 +214,20 @@
              'SURFRESERV.GLACE', 'SURFDENSIT.NEIGE', 'SURFALBEDO NEIGE',
              'SURFALBEDO.SOLNU', 'SURFALBEDO.VEG',
     NFPCLI = 2,
-    NRFP3S = '${namelist.nrfp3s}',
+    NRFP3S = '${cfg:namelist.nrfp3s}',
 /
 
 &NAMFPD
-    NFPBZONG = '${domain.nbzong}',
-    NFPBZONL = '${domain.nbzonl}',
-    NFPGUX = '${domain.njmax}',
-    NFPLUX = '${domain.nimax}',
-    NLAT = '${domain.ndglg}',
-    NLON = '${domain.ndguxg}',
-    RDELX = '${domain.xdx}',
-    RDELY = '${domain.xdy}',
-    RLATC = '${domain.xlatcen}',
-    RLONC = '${domain.xloncen}',
+    NFPBZONG = '${cfg:domain.nbzong}',
+    NFPBZONL = '${cfg:domain.nbzonl}',
+    NFPGUX = '${cfg:domain.njmax}',
+    NFPLUX = '${cfg:domain.nimax}',
+    NLAT = '${cfg:domain.ndglg}',
+    NLON = '${cfg:domain.ndguxg}',
+    RDELX = '${cfg:domain.xdx}',
+    RDELY = '${cfg:domain.xdy}',
+    RLATC = '${cfg:domain.xlatcen}',
+    RLONC = '${cfg:domain.xloncen}',
 /
 
 &NAMFPDY2
@@ -258,17 +258,17 @@
 /
 
 &NAMFPG
-    FPLAT0 = '${domain.xlat0}',
-    FPLON0 = '${domain.xlon0}',
-    FPVALH = '${vertical_levels.ahalf}',
-    FPVBH = '${vertical_levels.bhalf}',
-    NFPLEV = '${vertical_levels.nlev}',
-    NFPMAX = '${domain.nsmax}',
-    NMFPMAX = '${domain.nmsmax}',
+    FPLAT0 = '${cfg:domain.xlat0}',
+    FPLON0 = '${cfg:domain.xlon0}',
+    FPVALH = '${cfg:vertical_levels.ahalf}',
+    FPVBH = '${cfg:vertical_levels.bhalf}',
+    NFPLEV = '${cfg:vertical_levels.nlev}',
+    NFPMAX = '${cfg:domain.nsmax}',
+    NMFPMAX = '${cfg:domain.nmsmax}',
 /
 
 &NAMFPIOS
-    CFPCLIFNAME = '${domain.name}',
+    CFPCLIFNAME = '${cfg:domain.name}',
     NFPXFLD = 10,
 /
 
@@ -282,11 +282,11 @@
 /
 
 &NAMFPSC2
-    NFPROMA = '${submission.nproma}',
+    NFPROMA = '${cfg:submission.nproma}',
 /
 
 &NAMFPSC2_DEP
-    NFPROMA_DEP = '${submission.nproma}',
+    NFPROMA_DEP = '${cfg:submission.nproma}',
 /
 
 &NAMGEM

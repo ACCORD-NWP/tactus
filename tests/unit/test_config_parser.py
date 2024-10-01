@@ -329,7 +329,7 @@ class TestGeneralBehaviour:
             config_path, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
         )
         config_source_file_path = config.metadata["source_file_path"]
-        assert isinstance(config_source_file_path, str)
+        assert isinstance(config_source_file_path, Path)
         assert Path(config_source_file_path) == Path(config_path)
 
     def test_can_modify_model_upon_copy(self, minimal_raw_config):

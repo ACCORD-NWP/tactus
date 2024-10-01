@@ -1,9 +1,12 @@
 """Unit tests for os_utils."""
+
 import os
 import shutil
 import tempfile
+from pathlib import Path
+from unittest import mock
 
-from deode.os_utils import Search, deodemakedirs, ping
+from deode.os_utils import Search, deodemakedirs, ping, strip_off_mount_path
 
 
 class TestSearch:
@@ -150,3 +153,55 @@ def test_ping():
 
     assert ping(hostname) is True
     assert ping("foo") is False
+
+
+def with_mock_user(func):
+    """Decorator to set the USER environment variable to a mock user."""
+    mock_user = "testuser1234"
+
+    def wrapper(self, *args, **kwargs):
+        with mock.patch.dict(os.environ, {"USER": mock_user}):
+            return func(self, mock_user, *args, **kwargs)
+
+    return wrapper
+
+
+def with_no_user_var(func):
+    """Decorator to unset the USER environment variable."""
+
+    def wrapper(self, *args, **kwargs):
+        original_user = os.environ.get("USER")
+        # Only unset the USER environment variable if it is set
+        if original_user:
+            os.environ.pop("USER")
+
+        func(self, *args, **kwargs)
+        # Restore the original USER environment variable
+        if original_user:
+            os.environ["USER"] = original_user
+
+    return wrapper
+
+
+class TestStripOffMountPath:
+    """Test the strip_off_mount_path function."""
+
+    @with_no_user_var
+    def test_no_user_in_path(self):
+        """Test that the function returns input path, when no user in path."""
+        test_path = Path("/foo/bar")
+        assert strip_off_mount_path(test_path) == test_path
+
+    @with_mock_user
+    def test_user_in_path(self, mock_user):
+        """Test the function when user in path, but nothing to strip."""
+        test_path = Path(f"/home/{mock_user}/foo/bar")
+        assert strip_off_mount_path(test_path) == test_path
+
+    @with_mock_user
+    def test_user_in_path_with_mount(self, mock_user):
+        """Test the function when user in path and mount path to strip."""
+        test_path = Path(f"/etc/ecmwf/nfs/dh1_home_b/{mock_user}/foo/bar")
+        expected_result = Path(f"/home/{mock_user}/foo/bar")
+
+        assert strip_off_mount_path(test_path) == expected_result

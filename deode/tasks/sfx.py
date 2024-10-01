@@ -9,6 +9,7 @@ from ..namelist import NamelistGenerator
 from ..os_utils import deodemakedirs
 from .base import Task
 from .batch import BatchJob
+from .marsprep import Marsprep
 
 
 class InputDataFromNamelist:
@@ -762,8 +763,14 @@ class Prep(Task):
             basetime = as_datetime(self.config["general.times.basetime"])
             bddir_sfx = self.config["system.bddir_sfx"]
             bdfile_sfx_template = self.config["system.bdfile_sfx_template"]
-            bdcycle = as_timedelta(self.config["boundaries.bdcycle"])
-            bdcycle_start = as_timedelta(self.config["boundaries.bdcycle_start"])
+            if self.config["boundaries.bdmodel"] != "IFS":
+                bdcycle = as_timedelta(self.config["boundaries.bdcycle"])
+                bdcycle_start = as_timedelta(self.config["boundaries.bdcycle_start"])
+            else:
+                mars = Marsprep.mars_selection(self)
+                bdcycle = as_timedelta(mars["ifs_cycle_length"])
+                bdcycle_start = as_timedelta(mars["ifs_cycle_start"])
+
             bdshift = as_timedelta(self.config["boundaries.bdshift"])
 
             bd_basetime = basetime - cycle_offset(

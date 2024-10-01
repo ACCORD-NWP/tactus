@@ -33,8 +33,6 @@ class Marsprep(Task):
 
         self.sfcdir = self.platform.get_platform_value("global_sfcdir")
         logger.info(f"sfc dir: {self.sfcdir}")
-        # Get boundary strategy
-        self.strategy = self.config["boundaries.bdstrategy"]
         # Get output file template
         self.template = "mars_prefetch_[levtype]_[date]_[time]+[step]"
 
@@ -54,13 +52,18 @@ class Marsprep(Task):
         self.forecast_range = as_timedelta(self.config["general.times.forecast_range"])
         # Get boundary time information
         self.bdint = as_timedelta(self.config["boundaries.bdint"])
-        bdcycle = as_timedelta(self.config["boundaries.bdcycle"])
-        bdcycle_start = as_timedelta(self.config["boundaries.bdcycle_start"])
+        bdcycle = as_timedelta(self.mars["ifs_cycle_length"])
+        bdcycle_start = as_timedelta(self.mars["ifs_cycle_start"])
         self.bdshift = as_timedelta(self.config["boundaries.bdshift"])
+
+        if self.bdshift.total_seconds() % bdcycle.total_seconds() != 0:
+            raise ValueError("bdshift needs to be a multiple of bdcycle!")
+
         self.int_bdcycle = int(bdcycle.total_seconds()) // 3600
         self.bd_basetime = self.basetime - cycle_offset(
             self.basetime, bdcycle, bdcycle_start=bdcycle_start, bdshift=-self.bdshift
         )
+        logger.info("bd_basetime: {}", self.bd_basetime)
         tco = self.mars["tco"]
         self.tco_high = tco + "9_4"
         self.tco_low = self.tco_high if self.mars["class"] == "D1" else tco + "l_2"
@@ -202,54 +205,38 @@ class Marsprep(Task):
 
         raise ValueError(f"Value not found for {key} within {value}")
 
-    def split_date(self, date, strategy, length, interval, bdshift):
+    def split_date(self, date, length, interval):
         """Manipulate the dates for Mars request.
 
         Args:
             date:       full date provided for spliting into parts
-            strategy:   valid boundary strategy
             length:     forecast cycle length in hours
             interval:   boundary interval in hours "1H","3H","6H"
-            bdshift:    boundary shift in hours
 
         Returns:
             Pandas dataframe object
 
-        Raises:
-            ValueError: Boundary strategy is not implemented
         """
-        # Check if the selected boundary strategy is valid
-        if strategy in [
-            "same_forecast",
-        ]:
-            # Check options for manipulating dates for MARS extraction
-            # Still needs some more relations with the fclen here
-            strategy_options = {strategy: {}}
+        # Check options for manipulating dates for MARS extraction
+        # Still needs some more relations with the fclen here
 
-            for i in range(self.int_bdcycle):
-                strategy_options[strategy].update(
-                    {i: {"shifthours": i + bdshift, "shiftrange": i, "pickrange": 0}}
-                )
+        # Check if we're dealing with 00 or 03 ... etc.
+        init_hour = int(date.strftime("%H")) % self.int_bdcycle
 
-            # Check if we're dealing with 00 or 03 ... etc.
-            init_hour = int(date.strftime("%H")) % self.int_bdcycle
-            boundary_options = strategy_options[strategy][init_hour]
-
-        else:
-            raise ValueError("Invalid boundary strategy {}".format(strategy))
         # Create Pandas date series for MARS extraction
         interval_int = int(interval.total_seconds()) // 3600
+
         request_date_frame = pd.Series(
             pd.date_range(
-                date - pd.Timedelta(hours=boundary_options["shifthours"]),
-                periods=length // interval_int + 1,
+                date - pd.Timedelta(hours=init_hour),
+                periods=(length + init_hour) // interval_int + 1,
                 freq=interval,
             )
         )
-        # Strip the series object according to the selected boundary strategy
+        # Strip the series object according to the selected bdshift
         request_date_frame = pd.concat(
             [
-                request_date_frame.iloc[boundary_options["pickrange"] :],
+                request_date_frame.iloc[init_hour:],
             ]
         )
 
@@ -359,7 +346,7 @@ class Marsprep(Task):
         d["STREAM"] = [stream]
 
         if not prefetch:
-            if levtype == "ML":
+            if target == "mars_latlonZ":
                 d.update(
                     {
                         "SOURCE": [f'"{self.prepdir}/ICMSH+{steps}"'],
@@ -367,7 +354,16 @@ class Marsprep(Task):
                         "STEP": ["00"],
                     }
                 )
-            elif levtype == "SFC":
+                if self.mars["class"] == "D1":
+                    d.update(
+                        {
+                            "DATE": ["20201019"],
+                            "TIME": ["1200"],
+                            "CLASS": ["OD"],
+                        }
+                    )
+
+            elif target == "mars_latlonGG":
                 d.update(
                     {
                         "SOURCE": [f'"{self.prepdir}/ICMGG+{steps}"'],
@@ -468,28 +464,27 @@ class Marsprep(Task):
         except OSError as e:
             raise RuntimeError(f"Error while preparing the mars folder: {e}") from e
 
-        # Get the time information based on boundary strategy and forecast length
+        # Get the time information based on bdshift and forecast length
         # Need to check the forecast range
         dateframe = self.split_date(
             self.bd_basetime,
-            self.strategy,
-            int(self.forecast_range.total_seconds() / 3600),
+            int(self.forecast_range.total_seconds() // 3600),
             self.bdint,
-            0,
         )
+
         # Get initial date information in detail
         date_str = dateframe.iloc[0].strftime("%Y%m%d")
         hour_str = dateframe.iloc[0].strftime("%H")
 
         # Format MARS steps
-        step = int(self.bdint.total_seconds() / 3600)
+        step = int(self.bdint.total_seconds() // 3600)
         str_steps = [
             "{0:02d}".format(
-                int(self.bdshift.total_seconds() / 3600)
+                int(self.bdshift.total_seconds() // 3600)
                 + (i * step)
                 + self.basetime.hour % self.int_bdcycle
             )
-            for i in range(len(dateframe.index.tolist()))
+            for i in (dateframe.index.tolist())
         ]
 
         if self.split_mars and self.prep_step:
@@ -808,13 +803,14 @@ class Marsprep(Task):
             # Retrieve for Surface Geopotential in lat/lon
             param = self.check_value(self.mars["SHZ"], date_str)
             d_type = self.check_value(self.mars["GGZ_type"], date_str)
+            lev_type = self.check_value(self.mars["Zlev_type"], date_str)
             self.update_data_request(
                 data_type=d_type,
                 date=date_str,
                 time=hour_str,
                 steps=str_step,
                 prefetch=prefetch,
-                levtype="ML",
+                levtype=lev_type,
                 param=param,
                 specify_domain=True,
                 target="mars_latlonZ",

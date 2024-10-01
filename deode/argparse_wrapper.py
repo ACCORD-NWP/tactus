@@ -127,8 +127,9 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         "--output",
         "-o",
         dest="output_file",
-        help="Output config file",
-        required=True,
+        help="Output config file, if not given the name will be the same as the case",
+        default=None,
+        required=False,
     )
     parser_case.add_argument(
         "--case-name", dest="case", help="Case name", required=False, default=None
@@ -137,6 +138,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         "config_mods",
         help="Path to configuration modifications",
         nargs="*",
+        type=Path,
         default=None,
     )
     parser_case.add_argument(

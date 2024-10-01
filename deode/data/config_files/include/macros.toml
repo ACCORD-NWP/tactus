@@ -6,8 +6,10 @@
     "general.csc",
     "general.case",
     {sqlite_path = "extractsqlite.sqlite_path"},
+    {sqlite_model_name = "extractsqlite.sqlite_model_name"},
     {ecf_out = "scheduler.ecfvars.ecf_out"},
     {ecf_files = "scheduler.ecfvars.ecf_files"},
+    {ecf_deode_home = "scheduler.ecfvars.ecf_deode_home"},
     {case_prefix = "scheduler.ecfvars.case_prefix"},
     {mars_selection = "boundaries.ifs.selection"},
     {bdmember = "boundaries.ifs.bdmember"},
@@ -21,4 +23,4 @@
     {rrr = "general.realization"},
   ]
   group_macros = ["platform", "system"]
-  os_macros = ["USER", "HOME", "PWD"]
+  os_macros = ["USER", "HOME", "PWD", "CONFIG"]

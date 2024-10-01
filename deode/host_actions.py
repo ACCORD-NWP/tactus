@@ -7,7 +7,7 @@ import socket
 
 import yaml
 
-from . import GeneralConstants
+from .config_parser import ConfigParserDefaults
 from .logs import logger
 
 
@@ -19,6 +19,7 @@ class DeodeHost:
         self.known_hosts = self._load_known_hosts(known_hosts)
         self.available_hosts = list(self.known_hosts)
         self.default_host = self.available_hosts[0]
+        self.deode_host = os.getenv("DEODE_HOST")
 
     def _load_known_hosts(self, known_hosts=None):
         """Loads the known_hosts config.
@@ -33,14 +34,12 @@ class DeodeHost:
             known_host (dict): Known hosts config
 
         """
-        known_hosts_file = known_hosts
-        if known_hosts_file is None:
-            known_hosts_file = os.path.join(
-                GeneralConstants.PACKAGE_DIRECTORY,
-                "data",
-                "config_files",
-                "known_hosts.yml",
-            )
+        known_hosts_file = (
+            ConfigParserDefaults.CONFIG_DIRECTORY / "known_hosts.yml"
+            if known_hosts is None
+            else known_hosts
+        )
+
         with open(known_hosts_file, "rb") as infile:
             known_hosts = yaml.safe_load(infile)
 
@@ -94,6 +93,10 @@ class DeodeHost:
     def detect_deode_host(self):
         """Detect deode host by matching various properties.
 
+        First check self.deode_host as set by os.getenv("DEODE_HOST"),
+        second use the defined hosts in known_hosts.yml. If no matches
+        are found return the first host defined in known_hosts.yml
+
         Raises:
             RuntimeError: Ambiguous matches
 
@@ -101,6 +104,9 @@ class DeodeHost:
             deode_host (str): mapped hostname
 
         """
+        if self.deode_host is not None:
+            return self.deode_host
+
         matches = []
         for deode_host, detect_methods in self.known_hosts.items():
             for method, pattern in detect_methods.items():

@@ -1,2 +1,3 @@
 [scheduler.ecfvars]
   case_prefix = ""
+  ecf_deode_home = "@DEODE_HOME@"

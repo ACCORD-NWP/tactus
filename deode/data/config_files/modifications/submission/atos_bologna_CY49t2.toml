@@ -9,7 +9,7 @@
   nfpgrib = 141
 
 [submission.task_exceptions.C903]
-  bindir = "/home/snh02/pack/48t3_main.05.OMPIIFC2104.x/bin"
+  bindir = "/perm/deployde330/github-actions/install/cy48t3-v1.1.1/install/bin"
 
 [submission.task_exceptions.Pgd]
   WRAPPER = ""

@@ -29,11 +29,11 @@ pgd_HARMONIE_AROME:
   - sfx_treedrag
 
 pgd:
-  - pgd_common
+  - ${pgd_common}
   - sfx_pgd_ecoclimap_sg_@DECADES@
   - sfx_pgd_teb_@SG_INPUT@
   - sfx_teb_@SG_INPUT@
-  - pgd_@CSC@
+  - ${pgd_@CSC@}
 
 prep_csc_HARMONIE_AROME:
   - sfx_treedrag
@@ -46,13 +46,15 @@ prep_csc_ALARO:
   - sfx_split_patch_AROME
   - sfx_teb_@SG_INPUT@_AROME
 
+prep_csc_AROME:
+
 prep:
   - sfx_io
   - sfx_surf_constants_@SCS@
   - sfx_prep_sea
-  - prep_csc_@CSC@
+  - ${prep_csc_@CSC@}
   - sfx_prep_isba_@CSC@
-  - prep_bdmodel_@BDMODEL@
+  - ${prep_bdmodel_@BDMODEL@}
   - sfx_split_patch_@CSC@
   - sfx_teb_@SG_INPUT@
   - sfx_teb_@SG_INPUT@_@CSC@
@@ -66,10 +68,14 @@ prep_bdmodel_IFS:
 forecast_HARMONIE_AROME:
   - sfx_treedrag
 
+forecast_AROME:
+
+forecast_ALARO:
+
 forecast:
   - sfx_io
   - sfx_teb_@SG_INPUT@
   - sfx_teb_@SG_INPUT@_@CSC@
   - sfx_split_patch_@CSC@
   - sfx_forecast_@CSC@
-  - forecast_@CSC@
+  - ${forecast_@CSC@}

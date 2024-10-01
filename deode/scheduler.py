@@ -1,4 +1,5 @@
 """Scheduler module."""
+
 import os
 import platform
 import signal
@@ -105,22 +106,13 @@ class EcflowServer(Server):
 
         ecf_host = self.config["scheduler.ecfvars.ecf_host"]
         ecf_host = Platform(config).substitute(ecf_host)
-        try:
-            func, arg = ecf_host.split("(")
-            if hasattr(self, func):
-                function = getattr(self, func)
-                self.ecf_host = function(arg[:-1].split(","))
-        except ValueError:
-            self.ecf_host = ecf_host
+        self.ecf_host = Platform(config).evaluate(ecf_host, object_=EcflowServer)
 
         ecf_port = self.config["scheduler.ecfvars.ecf_port"]
         try:
             self.ecf_port = int(ecf_port)
         except ValueError:
-            func, arg = ecf_port.split("(")
-            if hasattr(self, func):
-                function = getattr(self, func)
-                self.ecf_port = function(arg[:-1])
+            self.ecf_port = Platform(config).evaluate(ecf_port, object_=EcflowServer)
 
         self.start_command = start_command
         logger.debug("self.ecf_host={} self.ecf_port={}", self.ecf_host, self.ecf_port)
@@ -173,7 +165,7 @@ class EcflowServer(Server):
             logger.error(msg)
             raise RuntimeError(msg)
 
-        return host
+        return found_hosts[0]
 
     def start_server(self):
         """Start the server.

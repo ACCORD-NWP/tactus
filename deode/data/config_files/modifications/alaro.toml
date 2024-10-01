@@ -14,5 +14,5 @@
 [pgd]
   npatch = 1
 
-[task.creategrib]
+[task.CreateGrib]
   conversions = []

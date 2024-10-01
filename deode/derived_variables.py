@@ -4,7 +4,7 @@
 import shutil
 from math import atan, floor, sin
 
-from .datetime_utils import as_datetime, as_timedelta, oi2dt_list
+from .datetime_utils import as_datetime, as_timedelta
 from .fullpos import Fullpos
 from .logs import logger
 from .os_utils import Search
@@ -145,36 +145,14 @@ def derived_variables(config, processor_layout=None):
     time = basetime.strftime("%H%M")
 
     # Time ranges
-    tstep = int(config["domain.tstep"])
     bdint = as_timedelta(config["boundaries.bdint"])
     forecast_range = as_timedelta(config["general.times.forecast_range"])
     cstop = int((forecast_range.days * 24 * 3600 + forecast_range.seconds) / 60)
-    radiation_frequency = as_timedelta(config["general.times.radiation_frequency"])
-    nradfr = int(radiation_frequency.seconds / tstep)
     if cstop % 60 == 0:
         cstop = int(cstop / 60)
         cstop = f"h{cstop}"
     else:
         cstop = f"m{cstop}"
-
-    # Output settings
-    namoutput = {
-        "history": [1, -1],
-        "fullpos": [1, -1],
-        "surfex": [1, -1],
-        "nrazts": [1, -1],
-    }
-    oi = config["general.output_settings"]
-
-    forecast_range_org = config["general.times.forecast_range"]
-    for x, y in oi.items():
-        dtlist = oi2dt_list(y, forecast_range_org)
-        output_timesteps = [
-            int((dt.days * 24 * 3600 + dt.seconds) / tstep) for dt in dtlist
-        ]
-
-        output_timesteps.insert(0, len(output_timesteps))
-        namoutput[x] = output_timesteps
 
     # Wind farm parameterization
     if config["general.windfarm"]:
@@ -207,11 +185,6 @@ def derived_variables(config, processor_layout=None):
             "gen_macros": gen_macros,
         },
         "namelist": {
-            "nradfr": nradfr,
-            "nrazts": namoutput["nrazts"],
-            "nhists": namoutput["history"],
-            "nposts": namoutput["fullpos"],
-            "nsfxhists": namoutput["surfex"],
             "cstop": cstop,
             "tefrcl": bdint.seconds,
             "nrfp3s": nrfp3s,
