@@ -387,6 +387,18 @@ class Platform:
                     pattern = self.sub_value(pattern, "TTT", f"{lead_step:03d}")
                     pattern = self.sub_value(pattern, "TTTT", f"{lead_step:04d}")
 
+                start = self.config.get("general.times.start", None)
+                if start is not None:
+                    start = as_datetime(start)
+                    pattern = self.sub_value(
+                        pattern, "YMD_START", start.strftime("%Y%m%d")
+                    )
+
+                end = self.config.get("general.times.end", None)
+                if end is not None:
+                    end = as_datetime(end)
+                    pattern = self.sub_value(pattern, "YMD_END", end.strftime("%Y%m%d"))
+
         logger.debug("Return pattern={}", pattern)
         return pattern
 
