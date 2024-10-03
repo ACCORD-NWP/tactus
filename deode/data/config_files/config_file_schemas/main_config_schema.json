@@ -160,6 +160,11 @@
           "items": {
             "type": "string"
           }
+        },
+        "domain_name": {
+            "type": "string",
+            "description": "Name of your domain as used by fullpos",
+	    "maxLength" : 20
         }
       }
     },

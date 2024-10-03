@@ -20,6 +20,7 @@
     {surfex_template = "file_templates.surfex.archive"},
     {history_template = "file_templates.history.archive"},
     {domain = "domain.name"},
+    {fpdomain = "fullpos.domain_name"},
     {rrr = "general.realization"},
   ]
   group_macros = ["platform", "system"]

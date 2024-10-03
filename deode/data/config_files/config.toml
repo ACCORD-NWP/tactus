@@ -36,6 +36,7 @@
 
 [fullpos]
   config_path = "@DEODE_HOME@/data/namelist_generation_input/@CYCLE@/fullpos"
+  domain_name = "DOMAIN"
   selection = ["rules", "namfpc_header", "master_selection"]
 
 [include]

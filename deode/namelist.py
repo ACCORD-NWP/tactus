@@ -397,8 +397,9 @@ class NamelistGenerator:
     def fn_config(self, arg, default=None):
         """Resolve namelist function cfg."""
         try:
-            result = self.platform.config[arg]
-            logger.debug("CFG INSERT: {} -> {}", arg, self.platform.config[arg])
+            _result = self.platform.config[arg]
+            result = self.platform.substitute(_result)
+            logger.debug("CFG INSERT: {} -> {}", arg, result)
         except KeyError:
             result = default if default is not None else arg
             logger.debug("CFG UNKNOWN: {} default {}", arg, default)

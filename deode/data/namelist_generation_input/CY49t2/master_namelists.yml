@@ -1656,7 +1656,7 @@ f4_c903_domain:
     - PRESS.DEPART
     - VERTIC.DIVER
     CFPDIR: ELSCF
-    CFPDOM: ${cfg:domain.name}
+    CFPDOM: ${cfg:fullpos.domain_name}
     CFPFMT: LELAM
     CFPPHY:
     - SURFTEMPERATURE
@@ -1717,7 +1717,7 @@ f4_c903_domain:
     NFPMAX: ${cfg:domain.nsmax}
     NMFPMAX: ${cfg:domain.nmsmax}
   NAMFPIOS:
-    CFPCLIFNAME: ${cfg:domain.name}
+    CFPCLIFNAME: ${cfg:fullpos.domain_name}
     NFPXFLD: 10
   NAMFPSC2:
     NFPROMA: ${cfg:submission.nproma}

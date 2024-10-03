@@ -69,10 +69,11 @@ def check_fullpos_namelist(config, nlgen):
             generate_namelist = False
 
     if generate_namelist:
-        fpdir = config["fullpos.config_path"]
-        fpdir = platform.substitute(fpdir)
+        _fpdir = config["fullpos.config_path"]
+        fpdir = platform.substitute(_fpdir)
         fpfiles = config["fullpos.selection"]
-        domain = config["domain.name"]
+        _domain = config["fullpos.domain_name"]
+        domain = platform.substitute(_domain)
         nrfp3s = list(range(1, int(config["vertical_levels.nlev"]) + 1))
         rules = {
             "${vertical_levels.nlev}": config["vertical_levels.nlev"],
