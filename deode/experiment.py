@@ -242,6 +242,9 @@ def case_setup(
         host (str, optional): host name. Defaults to None.
         config_dir (str, optional): Configuration directory. Defaults to None.
 
+    Returns:
+        output_file (str): Output config file.
+
     """
     logger.info("************ CaseSetup ******************")
 
@@ -258,6 +261,8 @@ def case_setup(
         output_file = Platform(config).substitute(output_file)
     logger.info("Save config to: {}", output_file)
     exp.config.save_as(output_file)
+
+    return output_file
 
 
 def get_git_info():

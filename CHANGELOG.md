@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
-- Automatic name convention for config file output from `deode case` [\#785](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/785) (@uandrae)
+- Automatic name convention for config file output from `deode case` [\#785](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/785) [\#798](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/798) (@uandrae)
 - Allow host specification by environment variable DEODE_HOST [\#774](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/774) (@uandrae)
 
 ### Changed
