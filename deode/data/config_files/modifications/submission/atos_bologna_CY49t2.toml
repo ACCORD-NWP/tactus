@@ -9,7 +9,7 @@
   nfpgrib = 141
 
 [submission.task_exceptions.C903]
-  bindir = "/perm/deployde330/github-actions/install/cy48t3-v1.1.1/install/bin"
+  bindir = "/perm/deployde330/github-actions/install/cy48t3-v1.1.2/install/bin"
 
 [submission.task_exceptions.Pgd]
   WRAPPER = ""
