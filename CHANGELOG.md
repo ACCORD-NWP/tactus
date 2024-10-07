@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change default ifs\_delection to ATOS\_DT [#775](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/775) (@kastelecn)
 
 ### Fixed
+- Fix lost target run functionality [\#803](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/803) (@uandrae)
 - Correct usage of start date in the case name [\#801](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/801) (@uandrae)
 - Correct setting of ECCODES_DEFINITION_PATH depending on ECcodes version [\#766](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/766) (@uandrae)
 - Correct notation and activation of the CreateGrib task [\#770](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/770) (@uandrae)
