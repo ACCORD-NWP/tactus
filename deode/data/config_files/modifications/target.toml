@@ -30,11 +30,11 @@
   do_marsprep = false
 
 [system]
-  bdclimdir = "@HOST_CASE@_@HOST_DOMAIN@/climate/@HOST_DOMAIN@"
-  bddir = "@HOST_CASE@_@HOST_DOMAIN@/archive/@YYYY@/@MM@/@DD@/@HH@"
-  bddir_sfx = "@HOST_CASE@_@HOST_DOMAIN@/archive/@YYYY@/@MM@/@DD@/@HH@"
+  bdclimdir = "@HOST_CASE@/climate/@HOST_DOMAIN@"
+  bddir = "@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@"
+  bddir_sfx = "@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@"
   bdfile_sfx_template = "@BDFILE_TEMPLATE@.sfx"
   bdfile_template = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@"
-  host_case = "@CASEDIR@/../@CYCLE@_@CSC@"
+  host_case = "@CASEDIR@/../@CYCLE@_@CSC@_@HOST_DOMAIN@_@YMD_START@"
   host_domain = "DEMO_60x80_2500m"
