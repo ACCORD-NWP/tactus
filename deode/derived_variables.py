@@ -5,7 +5,7 @@ import shutil
 from math import atan, floor, sin
 
 from .datetime_utils import as_datetime, as_timedelta
-from .fullpos import Fullpos
+from .fullpos import Fullpos, flatten_list
 from .logs import logger
 from .os_utils import Search
 from .toolbox import Platform
@@ -71,7 +71,10 @@ def check_fullpos_namelist(config, nlgen):
     if generate_namelist:
         _fpdir = config["fullpos.config_path"]
         fpdir = platform.substitute(_fpdir)
-        fpfiles = config["fullpos.selection"]
+        selection = config.get("fullpos.selection", {})
+        fplist = [v if isinstance(v, str) else list(v) for v in selection.values()]
+        fplist.append(list(config["fullpos.main"]))
+        fpfiles = flatten_list(fplist)
         _domain = config["fullpos.domain_name"]
         domain = platform.substitute(_domain)
         nrfp3s = list(range(1, int(config["vertical_levels.nlev"]) + 1))
@@ -200,9 +203,7 @@ def derived_variables(config, processor_layout=None):
 
     # Wind farm parameterization
     if config["general.windfarm"]:
-        selection = list(config["fullpos.selection"])
-        selection.append("windfarm")
-        update["fullpos"] = {"selection": selection}
+        update["fullpos"] = {"selection": {"windfarm": ["windfarm"]}}
 
     if processor_layout is not None:
         procs = processor_layout.get_proc_dict()

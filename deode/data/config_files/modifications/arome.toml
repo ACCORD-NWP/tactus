@@ -1,2 +1,5 @@
 [general]
   csc = "AROME"
+
+[fullpos.selection]
+  master = ["master_selection", "avg_wind", "meteosat"]

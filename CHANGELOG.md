@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow host specification by environment variable DEODE_HOST [\#774](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/774) (@uandrae)
 
 ### Changed
+- Change fullpos selection syntax from a list to a dictionary of lists to allow better merge functionality [#792](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/792) (@uandrae)
 - Remove domain name from the stored grib files [#788](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/788) (@uandrae)
 - Change URL for troika [#795](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/795) (@uandrae)
 - Change default ifs\_delection to ATOS\_DT [#775](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/775) (@kastelecn)

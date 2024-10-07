@@ -37,7 +37,9 @@
 [fullpos]
   config_path = "@DEODE_HOME@/data/namelist_generation_input/@CYCLE@/fullpos"
   domain_name = "DOMAIN"
-  selection = ["rules", "namfpc_header", "master_selection"]
+
+[fullpos.selection]
+  master = ["master_selection", "avg_wind", "meteosat"]
 
 [include]
   archiving = "include/archiving.toml"

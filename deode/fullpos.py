@@ -30,7 +30,7 @@ class Fullpos:
         Args:
             domain (str): Domain name
             fpdir (str): Path to fullpos config files
-            fpfiles (list): List of fullpos config files to read (wihtout the yml suffix)
+            fpfiles (list): List of fullpos config files to read (without the yml suffix)
             fpdict (dict): A dictionary of fullpos settings
             rules (dict): A dictionary of substitution rules
 
