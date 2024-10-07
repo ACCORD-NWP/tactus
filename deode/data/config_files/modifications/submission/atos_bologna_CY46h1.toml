@@ -1,8 +1,8 @@
 [submission]
-  bindir = "/perm/deployde330/github-actions/install/cy46h1-v1.1.0/install/bin"
+  bindir = "/perm/deployde330/github-actions/install/cy46h1/latest/bin"
 
 [submission.task_exceptions.C903]
-  bindir = "/perm/deployde330/github-actions/install/cy48t3-v1.1.2/install/bin"
+  bindir = "/perm/deployde330/github-actions/install/cy48t3/latest/bin"
 
 [submission.task_exceptions.Pgd]
   binary = "PGD"
