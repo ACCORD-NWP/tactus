@@ -1,3 +1,6 @@
 [general]
   csc = "HARMONIE_AROME"
   windfarm = false
+
+[fullpos.selection]
+  master = ["master_selection"]

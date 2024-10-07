@@ -32,3 +32,6 @@
   tree_height_dir = "@CLIMDATA@/ECOCLIMAP-SG/HT"
   unix_group = "msdeode"
   windfarm_path = "@STATIC_DATA@/WFP_input_files/"
+
+[platform.impact]
+  ehype = "/home/snh02/DE_Impact/EHYPE/forecast/pyflow/utils"

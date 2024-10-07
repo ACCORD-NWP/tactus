@@ -1,0 +1,19 @@
+[general]
+  event_type = "flooding"
+
+[domain]
+  gridtype = "cubic"
+  name = "domain_name"
+  nimax = 1489
+  njmax = 1489
+  tstep = 15
+  xdx = 500.0
+  xdy = 500.0
+  xlat0 = ""
+  xlon0 = ""
+
+[fullpos.selection]
+  flooding = ["hyd_selection"]
+
+[impact.ehype]
+  active = true

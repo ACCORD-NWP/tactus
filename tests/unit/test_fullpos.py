@@ -7,7 +7,7 @@ import tomlkit
 from deode import GeneralConstants
 from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import set_times
-from deode.fullpos import Fullpos, InvalidSelectionCombinationError
+from deode.fullpos import Fullpos, InvalidSelectionCombinationError, flatten_list
 from deode.toolbox import Platform
 
 
@@ -28,7 +28,9 @@ def load():
     platform = Platform(config)
 
     fpdir = platform.substitute(config["fullpos.config_path"])
-    fpfiles = config["fullpos.selection"]
+    _fpfiles = ["master_selection"]
+    _fpfiles.append(list(config["fullpos.main"]))
+    fpfiles = flatten_list(_fpfiles)
 
     nrfp3s = list(range(1, int(config["vertical_levels.nlev"]) + 1))
     rules = {

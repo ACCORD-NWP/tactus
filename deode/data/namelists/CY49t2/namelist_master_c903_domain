@@ -200,7 +200,7 @@
              'CLOUD_WATER', 'ICE_CRYSTAL', 'CLOUD_FRACTI', 'PRESS.DEPART',
              'VERTIC.DIVER',
     CFPDIR = 'ELSCF',
-    CFPDOM = '${cfg:domain.name}',
+    CFPDOM = '${cfg:fullpos.domain_name}',
     CFPFMT = 'LELAM',
     CFPPHY = 'SURFTEMPERATURE', 'SURFA.OF.OZONE  ', 'SURFB.OF.OZONE  ',
              'SURFC.OF.OZONE  ', 'SURFAEROS.SEA   ', 'SURFAEROS.LAND  ',
@@ -268,7 +268,7 @@
 /
 
 &NAMFPIOS
-    CFPCLIFNAME = '${cfg:domain.name}',
+    CFPCLIFNAME = '${cfg:fullpos.domain_name}',
     NFPXFLD = 10,
 /
 

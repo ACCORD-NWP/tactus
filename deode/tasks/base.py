@@ -6,6 +6,7 @@ import os
 import shutil
 import socket
 
+from ..config_parser import ConfigParserDefaults
 from ..logs import logger
 from ..os_utils import deodemakedirs
 from ..toolbox import FileManager
@@ -71,23 +72,41 @@ class Task(object):
     def _set_eccodes_environment(self):
         """Set correct path for ECCODES tables.
 
-        Respect ECCODES_DEINITION_PATH if set and
-        assume ECCODES_DIR is defined.
+        Respect ECCODES_DEINITION_PATH if set or combine local settings with library
+        ones in different ways depending on version
 
         """
-        if os.getenv("ECCODES_DEFINITION_PATH") is not None:
+        eccodes_definition_path = os.getenv("ECCODES_DEFINITION_PATH")
+        if eccodes_definition_path is not None:
+            logger.info("Use ECCODES_DEFINITION_PATH {}", eccodes_definition_path)
             return
 
-        deode_home = self.platform.get_platform_value("DEODE_HOME")
-        eccodes_definition_search_paths = [f"{deode_home}/data/eccodes/definitions"]
+        # Path to local tables
+        deode_eccodes_definition_path = str(
+            ConfigParserDefaults.DATA_DIRECTORY / "eccodes/definitions"
+        )
+
         try:
-            eccodes_dir = os.environ["ECCODES_DIR"]
-            eccodes_definition_search_paths.append(
-                f"{eccodes_dir}/share/eccodes/definitions"
+            eccodes_version = tuple(
+                [int(x) for x in os.getenv("ECCODES_VERSION").split(".")]
             )
-        except KeyError:
-            pass
-        os.environ["ECCODES_DEFINITION_PATH"] = ":".join(eccodes_definition_search_paths)
+        except AttributeError:
+            eccodes_version = (2, 30, 0)
+
+        eccodes_definition_path = deode_eccodes_definition_path
+        if eccodes_version < (2, 30, 0):
+            try:
+                eccodes_dir = os.environ["ECCODES_DIR"]
+                eccodes_definition_path = ":".join(
+                    [
+                        eccodes_definition_path,
+                        f"{eccodes_dir}/share/eccodes/definitions",
+                    ]
+                )
+            except KeyError:
+                pass
+
+        os.environ["ECCODES_DEFINITION_PATH"] = str(eccodes_definition_path)
         logger.info(
             "Set ECCODES_DEFINITION_PATH to {}", os.environ["ECCODES_DEFINITION_PATH"]
         )

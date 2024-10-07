@@ -338,6 +338,9 @@ class Platform:
 
             if basetime is not None:
                 pattern = self.sub_value(pattern, "YMD", basetime.strftime("%Y%m%d"))
+                pattern = self.sub_value(
+                    pattern, "BASETIME", basetime.strftime("%Y-%m-%dT%H:%M:%SZ")
+                )
                 pattern = self.sub_value(pattern, "YYYY", basetime.strftime("%Y"))
                 pattern = self.sub_value(pattern, "YY", basetime.strftime("%y"))
                 pattern = self.sub_value(pattern, "MM", basetime.strftime("%m"), ci=False)
@@ -386,6 +389,18 @@ class Platform:
                     lead_step = lead_seconds // tstep
                     pattern = self.sub_value(pattern, "TTT", f"{lead_step:03d}")
                     pattern = self.sub_value(pattern, "TTTT", f"{lead_step:04d}")
+
+                start = self.config.get("general.times.start", None)
+                if start is not None:
+                    start = as_datetime(start)
+                    pattern = self.sub_value(
+                        pattern, "YMD_START", start.strftime("%Y%m%d")
+                    )
+
+                end = self.config.get("general.times.end", None)
+                if end is not None:
+                    end = as_datetime(end)
+                    pattern = self.sub_value(pattern, "YMD_END", end.strftime("%Y%m%d"))
 
         logger.debug("Return pattern={}", pattern)
         return pattern

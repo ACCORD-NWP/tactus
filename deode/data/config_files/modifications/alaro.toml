@@ -8,8 +8,8 @@
 [boundaries]
   humi_gp = false
 
-[fullpos]
-  selection = ["rules", "namfpc_header", "master_selection_ALARO"]
+[fullpos.selection]
+  master = ["master_selection_ALARO", "avg_wind", "meteosat"]
 
 [pgd]
   npatch = 1

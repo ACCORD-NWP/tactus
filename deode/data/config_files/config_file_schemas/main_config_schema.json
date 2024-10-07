@@ -152,14 +152,35 @@
       "properties": {
         "config_path": {
           "title": "Path to fullpos config files",
-          "type": "string"
+          "type": "string",
+          "default": "@DEODE_HOME@/data/namelist_generation_input/@CYCLE@/fullpos"
         },
-        "selection": {
-          "description": "List of rules and selections to include",
+        "main": {
+          "description": "List of mandatory rules",
           "type": "array",
           "items": {
             "type": "string"
+          },
+          "default": [
+            "rules",
+            "namfpc_header"
+          ]
+        },
+        "selection": {
+          "description": "List of selections to include",
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
+        },
+        "domain_name": {
+          "type": "string",
+          "description": "Name of your domain as used by fullpos",
+          "maxLength": 20,
+          "default": "DOMAIN"
         }
       }
     },
@@ -493,6 +514,15 @@
             "CY46h1"
           ]
         },
+        "event_type": {
+          "description": "Type of extreme event",
+          "type": "string",
+	  "default": "nwp",
+          "enum": [
+	    "nwp",
+            "flooding"
+          ]
+        },
         "initfile": {
           "description": "Initial file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",
           "type": "string"
@@ -514,7 +544,6 @@
               "description": "Time interval for radiation compitations in the model.",
               "type": "string"
             }
-
           }
         },
         "output_settings": {
@@ -532,7 +561,7 @@
             },
             "fullpos": {
               "description": "Output list for fullpos files",
-	      "$ref" : "#/$output_setting_rules"
+              "$ref": "#/$output_setting_rules"
             }
           }
         },
