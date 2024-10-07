@@ -338,6 +338,9 @@ class Platform:
 
             if basetime is not None:
                 pattern = self.sub_value(pattern, "YMD", basetime.strftime("%Y%m%d"))
+                pattern = self.sub_value(
+                    pattern, "BASETIME", basetime.strftime("%Y-%m-%dT%H:%M:%SZ")
+                )
                 pattern = self.sub_value(pattern, "YYYY", basetime.strftime("%Y"))
                 pattern = self.sub_value(pattern, "YY", basetime.strftime("%y"))
                 pattern = self.sub_value(pattern, "MM", basetime.strftime("%m"), ci=False)

@@ -1,6 +1,6 @@
 [general]
   accept_static_namelists = false
-  case = "@CASE_PREFIX@@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@"
+  case = "@CASE_PREFIX@@CYCLE@_@CSC@_@EVENT_TYPE@_@DOMAIN@_@YMD_START@"
   cnmexp = "DEOD"
   csc = "AROME"
   cycle = "CY48t3"
@@ -47,6 +47,7 @@
   domain = "include/domains/DEMO_60x80_2500m.toml"
   extractsqlite = "include/sqlite.toml"
   file_templates = "include/file_templates.toml"
+  impact = "include/impact.toml"
   macros = "include/macros.toml"
   mars = "include/mars_settings.toml"
   platform = "include/platform_paths/atos_bologna.toml"

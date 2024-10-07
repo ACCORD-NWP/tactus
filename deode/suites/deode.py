@@ -12,6 +12,7 @@ from ..datetime_utils import (
 from ..logs import logger
 from ..os_utils import deodemakedirs
 from ..submission import ProcessorLayout
+from ..tasks.impacts import ImpactModels
 from .base import (
     EcflowSuiteFamily,
     EcflowSuiteTask,
@@ -56,6 +57,8 @@ class DeodeSuiteDefinition(SuiteDefinition):
         ]
         self.interpolate_boundaries = config["suite_control.interpolate_boundaries"]
         self.do_marsprep = config["suite_control.do_marsprep"]
+
+        self.do_impact = ImpactModels(config, "StartImpactModels").is_active
 
         settings = self.task_settings.get_settings("Forecast")
         procs = ProcessorLayout(settings).get_proc_dict()
@@ -588,6 +591,18 @@ class DeodeSuiteDefinition(SuiteDefinition):
                     self.ecf_files,
                     input_template=input_template,
                     trigger=extractsqlite_trigger,
+                )
+
+            if self.do_impact:
+                EcflowSuiteTask(
+                    "StartImpactModels",
+                    forecasting,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    trigger=EcflowSuiteTriggers([EcflowSuiteTrigger(forecast_task)]),
+                    variables=None,
                 )
 
             postcycle_family = EcflowSuiteFamily(

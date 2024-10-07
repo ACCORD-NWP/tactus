@@ -514,6 +514,15 @@
             "CY46h1"
           ]
         },
+        "event_type": {
+          "description": "Type of extreme event",
+          "type": "string",
+	  "default": "nwp",
+          "enum": [
+	    "nwp",
+            "flooding"
+          ]
+        },
         "initfile": {
           "description": "Initial file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",
           "type": "string"

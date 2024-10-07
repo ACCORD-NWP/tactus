@@ -135,8 +135,15 @@ def derived_variables(config, processor_layout=None):
     nsmax = floor((ndglg - 2) / truncation[gridtype])
     nmsmax = floor((ndguxg - 2) / truncation[gridtype])
 
+    xlat0 = config.get("domain.xlat0", "")
+    xlon0 = config.get("domain.xlon0", "")
+    if xlat0 == "":
+        xlat0 = config.get("domain.xlatcen")
+    if xlon0 == "":
+        xlon0 = config.get("domain.xloncen")
+
     pi = 4.0 * atan(1.0)
-    xrpk = sin(float(config["domain.xlat0"]) * pi / 180.0)
+    xrpk = sin(float(xlat0) * pi / 180.0)
 
     # Vertical levels
     nrfp3s = list(range(1, int(config["vertical_levels.nlev"]) + 1))
@@ -180,6 +187,8 @@ def derived_variables(config, processor_layout=None):
             "ndguxg": ndguxg,
             "ndglg": ndglg,
             "xrpk": xrpk,
+            "xlat0": xlat0,
+            "xlon0": xlon0,
             "xtrunc": truncation[gridtype],
             "nsmax": nsmax,
             "nmsmax": nmsmax,
