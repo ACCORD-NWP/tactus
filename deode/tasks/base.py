@@ -189,7 +189,7 @@ class Task(object):
                     bindir = binaries["bindir"]
             except KeyError:
                 bindir = self.config["submission.bindir"]
-        
+
         bindir = os.path.realpath(bindir)
 
         logger.debug("binary:{}", binary)
