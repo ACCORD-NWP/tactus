@@ -5,11 +5,11 @@
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef"
 
 [submission]
-  bindir = "/home/snh02/work/CY49t2/bin/2024-07-10/R64"
+  bindir = "/perm/deployde330/github-actions/install/cy49t2/latest/bin"
   nfpgrib = 141
 
 [submission.task_exceptions.C903]
-  bindir = "/perm/deployde330/github-actions/install/cy48t3-v1.1.2/install/bin"
+  bindir = "/perm/deployde330/github-actions/install/cy48t3/latest/bin"
 
 [submission.task_exceptions.Pgd]
   WRAPPER = ""
