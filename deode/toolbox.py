@@ -298,12 +298,16 @@ class Platform:
             for macro in self.config["macros.gen_macros"]:
                 if isinstance(macro, dict):
                     key = next(iter(macro))
-                    val = self.config[macro[key].lower()]
+                    val = self.config.get(macro[key].lower(), None)
                     key = key.upper()
                 else:
-                    val = self.config[macro.lower()]
+                    val = self.config.get(macro.lower(), None)
                     key = macro.split(".")[-1].upper()
-                all_macros[key] = val
+
+                if val is None:
+                    logger.warning("Macro {} is not defined", macro)
+                else:
+                    all_macros[key] = val
 
             i = [m.start() for m in re.finditer(r"@", pattern)]
             last_pattern = "#"

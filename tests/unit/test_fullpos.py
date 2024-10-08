@@ -28,7 +28,7 @@ def load():
     platform = Platform(config)
 
     fpdir = platform.substitute(config["fullpos.config_path"])
-    _fpfiles = ["master_selection"]
+    _fpfiles = ["master_selection_AROME"]
     _fpfiles.append(list(config["fullpos.main"]))
     fpfiles = flatten_list(_fpfiles)
 
@@ -234,7 +234,7 @@ class TestFullpos:
     def test_update(self):
         """Test update of the settings."""
         fp = load()
-        fp.update_selection(additions_list=["master_selection"], additions_dict={})
+        fp.update_selection(additions_list=["master_selection_AROME"], additions_dict={})
 
     def test_non_instant(self):
         """Test the check of non instant fields."""

@@ -91,7 +91,7 @@ def test_show_namelist(set_arg, parsed_config, param, tmp_directory):
     outpath = f"{tmp_directory}/{pth}"
     if "system" in update and "namelists" in update["system"]:
         update["system"]["namelists"] = outpath
-    update["fullpos"] = {"selection": {"test": ["master_selection"]}}
+    update["fullpos"] = {"selection": {"test": ["master_selection_AROME"]}}
     config = parsed_config.copy(update=update)
 
     prev_cwd = Path.cwd()
