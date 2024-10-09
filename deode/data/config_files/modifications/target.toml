@@ -36,5 +36,5 @@
   bdfile_sfx_template = "@BDFILE_TEMPLATE@.sfx"
   bdfile_template = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@"
-  host_case = "@CASEDIR@/../@CYCLE@_@CSC@_@HOST_DOMAIN@_@YMD_START@"
+  host_case = "@CASEDIR@/../@CYCLE@_@CSC@_@EVENT_TYPE@_@HOST_DOMAIN@_@YMD_START@"
   host_domain = "DEMO_60x80_2500m"
