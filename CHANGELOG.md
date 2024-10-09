@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow host specification by environment variable DEODE_HOST [\#774](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/774) (@uandrae)
 
 ### Changed
+- Updated runtime thresholds for CreateGrib task to 2 hours [#809](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/809) (@tbnc)
 - Separate fullpos selections by CSC where required [#808](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/808) (@uandrae)
 - Updated binary paths to include the "latest" installations of IAL and gl [#807](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/807) (@pardallio)
 - Change fullpos selection syntax from a list to a dictionary of lists to allow better merge functionality [#792](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/792) (@uandrae)

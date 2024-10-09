@@ -96,7 +96,7 @@
   #  NTASKS = "#SBATCH --ntasks=36"
   PARTITION = "#SBATCH --partition=standard"
   #  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=3"
-  WALLTIME = "#SBATCH --time=00:20:00"
+  WALLTIME = "#SBATCH --time=02:00:00"
 
 [submission.task_exceptions.E923Constant]
   NPROC = 1
