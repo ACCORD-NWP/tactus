@@ -1,15 +1,19 @@
 """Experiment tools."""
 
 import collections
+import contextlib
 import os
+import subprocess
 from pathlib import Path
 from typing import List
 
 import tomlkit
 
 from .config_parser import ConfigParserDefaults, ParsedConfig
+from .derived_variables import set_times
 from .logs import logger
 from .os_utils import resolve_path_relative_to_package
+from .toolbox import Platform
 
 
 class Exp:
@@ -29,6 +33,7 @@ class Exp:
         """
         logger.debug("Construct Exp")
         config = config.copy(update=merged_config)
+        config = config.copy(update={"git_info": get_git_info()})
         self.config = config
 
 
@@ -237,6 +242,9 @@ def case_setup(
         host (str, optional): host name. Defaults to None.
         config_dir (str, optional): Configuration directory. Defaults to None.
 
+    Returns:
+        output_file (str): Output config file.
+
     """
     logger.info("************ CaseSetup ******************")
 
@@ -247,4 +255,39 @@ def case_setup(
     )
 
     exp = ExpFromFiles(config, exp_dependencies, mod_files, host=host)
+    if output_file is None:
+        config = exp.config.copy(update=set_times(exp.config))
+        output_file = config.get("general.case") + ".toml"
+        output_file = Platform(config).substitute(output_file)
+    logger.info("Save config to: {}", output_file)
     exp.config.save_as(output_file)
+
+    return output_file
+
+
+def get_git_info():
+    """Get git information."""
+    gitcmds = {
+        "branch": ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+        "commit": ["git", "rev-parse", "HEAD"],
+        "remote": ["git", "rev-parse", "--abbrev-ref", "@{u}"],
+        "describe": ["git", "describe", "--long", "--always", "--tags", "--dirty"],
+    }
+
+    git_info = {}
+    for label, cmd in gitcmds.items():
+        with contextlib.suppress(subprocess.CalledProcessError):
+            git_info[label] = (
+                subprocess.check_output(cmd, stderr=subprocess.DEVNULL)  # noqa S603
+                .strip()
+                .decode("utf-8")
+            )
+    with contextlib.suppress(KeyError, subprocess.CalledProcessError):
+        remote = git_info["remote"].split("/")[0]
+        cmd = ["git", "remote", "get-url", remote]
+        git_info["remote_url"] = (
+            subprocess.check_output(cmd, stderr=subprocess.DEVNULL)  # noqa S603
+            .strip()
+            .decode("utf-8")
+        )
+    return git_info

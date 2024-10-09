@@ -5,9 +5,9 @@
   model = "@LLLH@:@LM@:@LS@"
 
 [file_templates.fullpos]
-  archive = "GRIBPF@CNMEXP@@DOMAIN@+@DURATION_ARCHIVE@"
-  grib = "GRIBPF@CNMEXP@@DOMAIN@+@DURATION_ARCHIVE@"
-  model = "GRIBPF@CNMEXP@@DOMAIN@+@DURATION_MODEL@"
+  archive = "GRIBPF@CNMEXP@+@DURATION_ARCHIVE@"
+  grib = "GRIBPF@CNMEXP@+@DURATION_ARCHIVE@"
+  model = "GRIBPF@CNMEXP@@FPDOMAIN@+@DURATION_MODEL@"
 
 [file_templates.history]
   archive = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@"

@@ -3,7 +3,7 @@
 	  "path": "@CLIMDIR@",
 	  "files": {
 		   "Const.Clim": "Const.Clim.@MM@", 
-		   "const.clim.@DOMAIN@": "Const.Clim.@MM@",
+		   "const.clim.@FPDOMAIN@": "Const.Clim.@MM@",
 		   "@PGD_MODEL@": "@PGD_ARCHIVE@"
 	  }
   },

@@ -128,6 +128,12 @@
   binary = "gl"
   bindir = "/scratch/project_465000527/benacchi/HA/bin"
 
+[submission.task_exceptions.CreateGrib.BATCH]
+  MEM = "#SBATCH --mem=0"
+  NODE = "#SBATCH --nodes=2"
+  PARTITION = "#SBATCH --partition=standard"
+  WALLTIME = "#SBATCH --time=02:00:00"
+
 [submission.task_exceptions.E923Constant.BATCH]
   MEM = "#SBATCH --mem=0GB"
   NODES = "#SBATCH --nodes=1"

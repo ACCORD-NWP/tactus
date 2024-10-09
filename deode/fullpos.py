@@ -6,7 +6,15 @@ import os
 import yaml
 
 from .logs import logger
-from .namelist import flatten_list
+
+
+def flatten_list(li):
+    """Recursively flatten a list of lists (of lists)."""
+    if li == []:
+        return li
+    if isinstance(li[0], list):
+        return flatten_list(li[0]) + flatten_list(li[1:])
+    return li[:1] + flatten_list(li[1:])
 
 
 class InvalidSelectionCombinationError(ValueError):
@@ -22,7 +30,7 @@ class Fullpos:
         Args:
             domain (str): Domain name
             fpdir (str): Path to fullpos config files
-            fpfiles (list): List of fullpos config files to read (wihtout the yml suffix)
+            fpfiles (list): List of fullpos config files to read (without the yml suffix)
             fpdict (dict): A dictionary of fullpos settings
             rules (dict): A dictionary of substitution rules
 

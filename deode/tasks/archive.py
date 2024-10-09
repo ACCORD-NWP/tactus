@@ -3,6 +3,7 @@
 import glob
 import os
 import pathlib
+import shutil
 
 from ..logs import logger
 from .base import Task
@@ -63,15 +64,17 @@ class Archive(Task):
             for name, choice in choices.items():
                 choice.pop("active")
                 logger.info("Archiving {} with: {}", name, choice)
-                outpath = choice["outpath"] if "outpath" in choice else ""
+                outpath = choice.get("outpath", "")
+                newname = choice.get("newname", None)
                 self.archive(
                     choice["pattern"],
                     choice["inpath"],
                     outpath,
                     archive_type,
+                    newname,
                 )
 
-    def archive(self, pattern, inpath, outpath, archive_type=None):
+    def archive(self, pattern, inpath, outpath, archive_type=None, newname=None):
         """Send files to the file manager.
 
         Args:
@@ -79,14 +82,34 @@ class Archive(Task):
             inpath (str): Full path on the input archive
             outpath (str): relative path on the output archive
             archive_type (str, optional): Archive type. Defaults to None.
+            newname (str, optional): Forces a rename of an identified file.
+                                     Defaults to None.
+
+        Raises:
+            FileNotFoundError: If file not found
+
         """
         out = self.platform.substitute(outpath)
         inp = self.platform.substitute(inpath)
 
-        if isinstance(pattern, str):
-            pattern = [pattern]
+        if newname is not None and isinstance(pattern, str):
+            ptrn = self.platform.substitute(pattern)
+            try:
+                shutil.copy(ptrn, newname)
+            except FileNotFoundError as error:
+                raise FileNotFoundError(
+                    f"Could not find {ptrn}, incorrect pattern"
+                ) from error
 
-        for ptrn in pattern:
+            _pattern = [pathlib.PurePath(os.getcwd(), newname)]
+            logger.info("Copy {} to {}", ptrn, newname)
+
+        elif isinstance(pattern, str):
+            _pattern = [pattern]
+        else:
+            _pattern = pattern
+
+        for ptrn in _pattern:
             search = str(pathlib.PurePath(inp, self.platform.substitute(ptrn)))
             files = [x for x in glob.glob(search) if os.path.isfile(x)]
 

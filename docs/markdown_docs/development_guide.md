@@ -91,8 +91,10 @@ for case in \
   cy48t3_arome \
   cy48t3_alaro \
   cy46h1_harmonie_arome \
+  cy49t2_arome \
+  cy49t2_alaro \
   ; do
-  deode case ?deode/data/config_files/configurations/$case -o $case.toml --start-suite
+  deode case ?deode/data/config_files/configurations/$case --start-suite
 done
 ```
 Once this has completed test the coupling of AROME -> AROME and HARMONIE-AROME -> HARMONIE-AROME:
@@ -101,7 +103,7 @@ for case in \
   cy48t3_arome_target \
   cy46h1_harmonie_arome_target \
   ; do
-  deode case ?deode/data/config_files/configurations/$case -o $case.toml --start-suite 
+  deode case ?deode/data/config_files/configurations/$case --start-suite 
 done
 ```
 - ✔️ Finally test the stand alone task for the forecast following the instructions in the [README](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md) file.
