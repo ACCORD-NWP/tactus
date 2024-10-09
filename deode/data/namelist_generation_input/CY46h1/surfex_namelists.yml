@@ -14,13 +14,13 @@ sfx_pgd_isba_3l:
   NAM_ISBA:
     CISBA: "3-L"
     NGROUND_LAYER: 3
-    NPATCH: ${pgd.npatch}
+    NPATCH: ${cfg:pgd.npatch}
 
 sfx_pgd_isba_dif:
   NAM_ISBA:
     CISBA: "DIF"
     NGROUND_LAYER: 14
-    NPATCH: ${pgd.npatch}
+    NPATCH: ${cfg:pgd.npatch}
     LMEB: True
     YSOC_TOP: "soc_top"
     YSOC_SUB: "soc_sub"
@@ -137,7 +137,7 @@ sfx_forecast:
     CROUGH: "NONE"
     XCOROT: 500.0
     XFRACZ0: 15.0
-    XSOROT: "${domain.xdx}"
+    XSOROT: "${cfg:domain.xdx}"
     XVOROT: 8.0
   NAM_SURF_ATM:
     XCD_COEFF1: 10.0
@@ -156,7 +156,7 @@ sfx_forecast_isba_dif:
   NAM_ISBA:
     CISBA: "DIF"
     NGROUND_LAYER: 14
-    NPATCH: ${pgd.npatch}
+    NPATCH: ${cfg:pgd.npatch}
     LMEB: True
     YSOC_TOP: "soc_top"
     YSOC_SUB: "soc_sub"
@@ -187,22 +187,22 @@ sfx_pgd_domain:
   NAM_PGD_GRID:
     CGRID: "CONF PROJ"
   NAM_CONF_PROJ:
-    XBETA: "${domain.xbeta}"
-    XLAT0: "${domain.xlat0}"
-    XLON0: "${domain.xlon0}"
-    XRPK: "${domain.xrpk}"
+    XBETA: "${cfg:domain.xbeta}"
+    XLAT0: "${cfg:domain.xlat0}"
+    XLON0: "${cfg:domain.xlon0}"
+    XRPK: "${cfg:domain.xrpk}"
   NAM_CONF_PROJ_GRID:
-    ILATE: "${domain.ilate}"
-    ILONE: "${domain.ilone}"
-    IWIDTH_I_X: "${domain.nbzong}"
-    IWIDTH_I_Y: "${domain.nbzonl}"
-    NIMAX: "${domain.nimax}"
-    NJMAX: "${domain.njmax}"
-    XDX: "${domain.xdx}"
-    XDY: "${domain.xdy}"
-    XLATCEN: "${domain.xlatcen}"
-    XLONCEN: "${domain.xloncen}"
-    XTRUNC: "${domain.xtrunc}"
+    ILATE: "${cfg:domain.ilate}"
+    ILONE: "${cfg:domain.ilone}"
+    IWIDTH_I_X: "${cfg:domain.nbzong}"
+    IWIDTH_I_Y: "${cfg:domain.nbzonl}"
+    NIMAX: "${cfg:domain.nimax}"
+    NJMAX: "${cfg:domain.njmax}"
+    XDX: "${cfg:domain.xdx}"
+    XDY: "${cfg:domain.xdy}"
+    XLATCEN: "${cfg:domain.xlatcen}"
+    XLONCEN: "${cfg:domain.xloncen}"
+    XTRUNC: "${cfg:domain.xtrunc}"
 
 sfx_pgd_ecoclimap_sg_base:
   NAM_COVER:
@@ -612,8 +612,6 @@ sfx_pgd_ecoclimap_sg_one_decade:
     CFTYP_ALBVIS_SOIL:
     - DIRTYP
     CFTYP_ALBVIS_VEG:
-    - DIRTYP
-    CFTYP_ALBNIR_SOIL:
     - DIRTYP
     CFTYP_LAI:
     - DIRTYP

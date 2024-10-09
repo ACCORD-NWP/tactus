@@ -1,42 +1,46 @@
 common_e923:
   - empty
   - e923_base
+  - e923_base_@CSC@
 
 e923_part_0:
-  - common_e923
+  - ${common_e923}
   - e923_0
+  - e923_0_@CSC@
 
 e923_part_1:
-  - common_e923
+  - ${common_e923}
   - e923_1
 
 e923_part_2:
-  - common_e923
+  - ${common_e923}
   - e923_2
 
 e923_part_3:
-  - common_e923
+  - ${common_e923}
   - e923_3
 
 e923_part_4:
-  - common_e923
+  - ${common_e923}
   - e923_4
 
 e923_part_5:
-  - common_e923
+  - ${common_e923}
   - e923_5
 
 e923_part_6:
-  - common_e923
+  - ${common_e923}
   - e923_6
+  - e923_6_@CSC@
 
 e923_part_8:
-  - common_e923
+  - ${common_e923}
   - e923_8
 
 e923_part_9:
-  - common_e923
+  - ${common_e923}
   - e923_9
+  - e923_9_@CSC@
 
 master_common:
   - empty
@@ -44,15 +48,14 @@ master_common:
   - f4_common
 
 e927:
-  - master_common
+  - ${master_common}
   - f4_e927
   - f4_e927_@BDMODEL@
 
 forecast:
-  - master_common
+  - ${master_common}
   - f4_@CSC@
   - namgfl_@BDMODEL@
-  - f4_@HOST@
 
 c903_main:
   - empty

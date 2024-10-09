@@ -1,0 +1,27 @@
+# Do the selection of fields below.
+# Note that xxt00000000 inherits from xxtddddhhmm
+selection:
+ xxtddddhhmm: &default
+  NAMFPPHY:
+   CLCFU:
+    - 'SURFPREC.EAU.CON'
+    - 'SURFPREC.EAU.GEC'
+    - 'SURFPREC.NEI.CON'
+    - 'SURFPREC.NEI.GEC'
+   CLXFU:
+    - 'CLSTEMPERATURE'
+   CLPHY:
+    - 'SURFRESERV.NEIGE'
+    - 'SURFIND.TERREMER'
+
+ xxtddddhh00:
+   <<: *default
+
+ xxt00000000:
+  NAMFPPHY:
+   CLXFU:
+    - 'CLSTEMPERATURE'
+   CLPHY:
+    - 'SURFRESERV.NEIGE'
+    - 'SURFIND.TERREMER'
+  <<: *default

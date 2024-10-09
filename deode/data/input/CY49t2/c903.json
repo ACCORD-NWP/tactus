@@ -2,7 +2,7 @@
   "climate" : {
 	  "path": "@CLIMDIR@",
 	  "files": {
-		   "@DOMAIN@_@MM@": "Const.Clim.@MM@"
+		   "@FPDOMAIN@_@MM@": "Const.Clim.@MM@"
 	  }
   },
 

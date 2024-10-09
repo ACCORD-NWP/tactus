@@ -4,7 +4,7 @@
   albvis_soil_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
   albvis_veg_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
   archive_root = "@SCRATCH@/@CASE@/archive"
-  archive_types = ["ecfs", "fdb"]
+  archive_types = ["copy", "ecfs", "fdb"]
   climdata = "@STATIC_DATA@/climate"
   deode_home = "set-by-the-system"
   e923_data = "@STATIC_DATA@/climate/E923_DATA"
@@ -32,3 +32,6 @@
   tree_height_dir = "@CLIMDATA@/ECOCLIMAP-SG/HT"
   unix_group = "msdeode"
   windfarm_path = "@STATIC_DATA@/WFP_input_files/"
+
+[platform.impact]
+  ehype = "/home/snh02/DE_Impact/EHYPE/forecast/pyflow/utils"

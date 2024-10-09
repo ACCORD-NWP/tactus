@@ -1,6 +1,6 @@
 [general]
   accept_static_namelists = false
-  case = "@CASE_PREFIX@@CYCLE@_@CSC@_@DOMAIN@"
+  case = "@CASE_PREFIX@@CYCLE@_@CSC@_@EVENT_TYPE@_@DOMAIN@_@YMD_START@"
   cnmexp = "DEOD"
   csc = "AROME"
   cycle = "CY48t3"
@@ -9,17 +9,19 @@
   keep_workdirs = true
   surfex = true
 
+[general.namelist]
+  nrazts = "PT1H"
+  radiation_frequency = "PT5M"
+
 [general.output_settings]
   fullpos = "PT1H"
   history = "PT1H"
-  nrazts = "PT1H"
   surfex = "PT1H"
 
 [general.times]
   cycle_length = "PT6H"
   end = "2023-09-16T06:00:00Z"
   forecast_range = "PT6H"
-  radiation_frequency = "PT5M"
   start = "2023-09-16T00:00:00Z"
 
 [boundaries]
@@ -33,8 +35,11 @@
   ifs.bdmember = ""
 
 [fullpos]
-  config_path = "@DEODE_HOME@/namelist_generation_input/@CYCLE@/fullpos"
-  selection = ["rules", "namfpc_header", "master_selection"]
+  config_path = "@DEODE_HOME@/data/namelist_generation_input/@CYCLE@/fullpos"
+  domain_name = "DOMAIN"
+
+[fullpos.selection]
+  master = ["master_selection_@CSC@", "avg_wind", "meteosat"]
 
 [include]
   archiving = "include/archiving.toml"
@@ -42,6 +47,7 @@
   domain = "include/domains/DEMO_60x80_2500m.toml"
   extractsqlite = "include/sqlite.toml"
   file_templates = "include/file_templates.toml"
+  impact = "include/impact.toml"
   macros = "include/macros.toml"
   mars = "include/mars_settings.toml"
   platform = "include/platform_paths/atos_bologna.toml"

@@ -1,3 +1,6 @@
+[submission.task_exceptions.CreateGrib.BATCH]
+  WALLTIME = "#SBATCH --time=02:00:00"
+
 [submission.task_exceptions.Forecast]
   bindir = "/users/ospaniel/pack/48t3_main.68.CRAYFTN1601.x/bin"
   NPROC = 128
