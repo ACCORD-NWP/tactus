@@ -30,6 +30,11 @@ class CreateGrib(Task):
         except KeyError:
             self.conversions = {}
 
+
+        self.rules = {}
+        for filetype in self.conversions:
+            self.rules[filetype] = self.config[f"task.{self.name}.{filetype}"].dict()
+
         self.output_settings = self.config["general.output_settings"]
         self.file_templates = self.config["file_templates"]
 
@@ -47,51 +52,53 @@ class CreateGrib(Task):
 
         return files
 
-    def convert2grib(self, infile, outfile):
+    def convert2grib(self, infile, outfile, filetype):
         """Convert FA to grib.
-
+        Namelist arguments are given in the task.creategrib config part
+        per filetype
         Args:
             infile (str): Input file
             outfile (str): Output file
-
+            filetype (str): filetype to look for in rules
         Raises:
             FileNotFoundError: Could not find file
         """
         if not os.path.isfile(infile):
             raise FileNotFoundError(f" missing {infile}")
 
-        cmd = f"{self.gl} -p {infile} -o {outfile}"
-        if infile.endswith(".sfx"):
-            # Convert surfex files
-            namelist_file = "namsfx"
+        of = self.rules[filetype]["output_format"]
+        cmd = f"{self.gl} -p {infile} -o {outfile} -of {of}"
+        if len(self.rules[filetype]["namelist"]) > 0:
+            # Write namelist as given in rules
+            namelist_file = "namelist"
             with open(namelist_file, "w") as namelist:
-                namelist.write(
-                    """&naminterp
-  stepunits = 'h'
-/
-              """
-                )
+                namelist.write("&naminterp\n")
+                for x in self.rules[filetype]["namelist"]:
+                    namelist.write(f"{x}\n")
+                namelist.write("/\n")
                 namelist.close()
-
-            cmd = f"{cmd} -igs -of GRIB -n {namelist_file}"
-        else:
-            # Convert other files files
-            cmd = f"{cmd} -of GRIB2"
+            cmd += f" -n {namelist_file}"
 
         # Run gl
         BatchJob(os.environ, wrapper=self.wrapper).run(cmd)
 
+
     def execute(self):
         """Execute creategrib."""
         for filetype in self.conversions:
+            # Map file type if asked for
+            try:
+                filetype_map = self.rules[filetype]["filetype_map"]
+            except KeyError:
+                filetype_map = filetype
             file_handle = self.create_list(
-                self.file_templates[filetype]["archive"], self.output_settings[filetype]
+                self.file_templates[filetype]["archive"],
+                self.output_settings[filetype_map],
             )
-
             for validtime, fname in file_handle.items():
                 output = self.platform.substitute(
                     self.file_templates[filetype]["grib"], validtime=validtime
                 )
                 logger.info("Convert: {} to {}", fname, output)
-                self.convert2grib(fname, output)
+                self.convert2grib(fname, output, filetype)
                 self.fmanager.output(output, f"{self.archive}/{output}")

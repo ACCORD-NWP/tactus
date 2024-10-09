@@ -1,5 +1,6 @@
 [general]
   accept_static_namelists = false
+  aqgrib2 = false
   case = "@CASE_PREFIX@@CYCLE@_@CSC@_@EVENT_TYPE@_@DOMAIN@_@YMD_START@"
   cnmexp = "DEOD"
   csc = "AROME"
@@ -85,4 +86,16 @@
   prev_case = "@CASE@"
 
 [task.CreateGrib]
-  conversions = ["surfex"]
+  conversions = ["surfex", "surfex_aq"]
+
+[task.creategrib.surfex]
+  namelist = ["stepunits='h'"]
+  output_format = "GRIB"
+[task.creategrib.surfex_aq]
+
+  filetype_map = "surfex"
+  namelist = [
+    "outgeo%center=85",
+    "READKEY%FANAME='SFX.SST','SFX.SIC','SFX.Z0','SFX.TG1P3','SFX.TG2P3','SFX.WG1P3','SFX.WG2P3','SFX.LAIP3','SFX.TS'",
+  ]
+  output_format = "FA2GRIB2"
