@@ -28,6 +28,9 @@
     },
     "include": {
       "$ref": "#/definitions/include"
+    },
+    "gribmodify": {
+      "$ref": "#/definitions/gribmodify"
     }
   },
   "required": [
@@ -343,6 +346,90 @@
           "default": "@DEODE_HOME@/data/input/@CYCLE@/c903.json"
         }
       }
+    },
+    "gribmodify": {
+       "title": "Section for modify grib",
+       "description": "Rules for modify grib to get total prcipitation",
+       "type": "object",
+       "properties": {
+	  "3": {
+	     "title": "Total precpipation",
+	     "description": "shortName for the total precipitation.",
+	     "type": "object",
+	     "properties": {
+		"input": {
+		   "title": "Input parameters",
+		   "description": "List of parameters",
+		   "type": "array",
+	           "items": {
+         	   "type": "string"
+        	  }
+		},
+		"operator": {
+		  "title": "Operator",
+		  "description": "Operator for compute the new field from input parameters",
+		  "type": "string"
+		},
+                "output": {
+                  "title": "Output parameter",
+                  "description": "shortName of output parameter.",
+                  "type": "string"
+                }
+
+	     }
+	     },
+	   "2": {
+             "title": "Total snow",
+             "description": "shortName for the total precipitation.",
+             "type": "object",
+             "properties": {
+                "input": {
+                   "title": "Input parameters",
+                   "description": "List of parameters",
+                   "type": "array",
+                   "items": {
+                   "type": "string"
+                  }
+	},
+                "operator": {
+                  "title": "Operator",
+                  "description": "Operator for compute the new field from input parameters",
+                  "type": "string"
+                },
+                "output": {
+                  "title": "Output parameter",
+                  "description": "shortName of output parameter.",
+                  "type": "string"
+                }
+
+             }
+             },
+	     "1": {
+             "title": "Total rain",
+             "description": "shortName for the total precipitation.",
+             "type": "object",
+             "properties": {
+                "input": {
+                   "title": "Input parameters",
+                   "description": "List of parameters",
+                   "type": "array",
+                   "items": {
+                   "type": "string"
+                  }
+		},
+                "operator": {
+                  "title": "Operator",
+                  "description": "Operator for compute the new field from input parameters",
+                  "type": "string"
+                },
+		"output": {
+                  "title": "Output parameter",
+                  "description": "shortName of output parameter.",
+                  "type": "string"
+                }
+             }
+             }
+       }
     },
     "general": {
       "title": "General Section",
