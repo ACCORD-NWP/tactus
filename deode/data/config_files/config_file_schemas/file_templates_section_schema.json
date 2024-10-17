@@ -123,18 +123,6 @@
               "type": "string"
             }
           }
-    },
-    "surfex_aq": {
-          "title": "Surfex AQ files",
-          "description": "File name templates for surfex files for AQ",
-          "type": "object",
-          "properties": {
-            "archive": {
-              "description": "File template as stored in the archive",
-              "default": "GRIBSFX@CNMEXP@+@DURATION_ARCHIVE@",
-              "type": "string"
-            }
-          }
     }
   },
   "additionalProperties": false,
