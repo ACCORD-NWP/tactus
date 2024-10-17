@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.7.1] - 2024-10-17
+
+### Added
+- Add total precipitation to grib and add total rain and snow to grib (ALARO). [\#804](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/804) (@kastelecn)
+
+## [0.7.0] - 2024-10-09
+
 ### Added
 - Introduce a general method for starting impact models in general and EHYPE in particular [\#793](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/793) (@uandrae)
 - Automatic name convention for config file output from `deode case` [\#785](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/785) [\#798](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/798) (@uandrae)
@@ -25,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change default ifs\_delection to ATOS\_DT [#775](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/775) (@kastelecn)
 
 ### Fixed
+- Various configuration settings lost in translation [\#813](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/813) (@uandrae)
 - Store config file with a fixed name rather than the user one [\#808](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/808) (@uandrae)
 - Repeat calls to ecflow host fixing failures due to unreacheable ecflow host [\#805](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/805) (@uandrae)
 - Fix lost target run functionality [\#803](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/803) (@uandrae)

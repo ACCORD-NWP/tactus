@@ -5,7 +5,7 @@
   bindir = "/perm/deployde330/github-actions/install/cy48t3/latest/bin"
 
 [submission.task_exceptions.Pgd]
-  binary = "PGD"
+  binary = "PGD-offline"
 
 [submission.task_exceptions.Prep]
-  binary = "PREP"
+  binary = "PREP-offline"
