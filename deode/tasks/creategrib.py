@@ -5,6 +5,7 @@ import os
 
 from ..datetime_utils import as_datetime, oi2dt_list
 from ..logs import logger
+from ..toolbox import FileManager
 from .base import Task
 from .batch import BatchJob
 
@@ -84,8 +85,12 @@ class CreateGrib(Task):
     def execute(self):
         """Execute creategrib."""
         for filetype in self.conversions:
-            file_handle = self.create_list(
-                self.file_templates[filetype]["archive"], self.output_settings[filetype]
+            file_handle = FileManager.create_list(
+                self,
+                self.basetime,
+                self.forecast_range,
+                self.file_templates[filetype]["archive"],
+                self.output_settings[filetype],
             )
 
             for validtime, fname in file_handle.items():
