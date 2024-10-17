@@ -123,6 +123,18 @@
               "type": "string"
             }
           }
+    },
+    "surfex_aq": {
+          "title": "AQ output from Surfex",
+          "description": "File name templates for AQ surfex output files",
+          "type": "object",
+          "properties": {
+            "archive": {
+              "description": "File template as used by the model",
+              "default": "ICMSH@CNMEXP@+@DURATION_ARCHIVE@.sfx",
+              "type": "string"
+            }
+          }
     }
   },
   "additionalProperties": false,
