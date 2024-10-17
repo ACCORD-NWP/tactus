@@ -18,6 +18,7 @@
   fullpos = "PT1H"
   history = "PT1H"
   surfex = "PT1H"
+  surfex_aq = "PT1H"
 
 [general.times]
   cycle_length = "PT6H"
@@ -40,7 +41,7 @@
   domain_name = "DOMAIN"
 
 [fullpos.selection]
-  master = ["master_selection_@CSC@", "avg_wind", "meteosat"]
+  master = ["master_selection_@CSC@", "aq_selection"]
 
 [include]
   archiving = "include/archiving.toml"
@@ -88,12 +89,11 @@
 [task.CreateGrib]
   conversions = ["surfex", "surfex_aq"]
 
-[task.creategrib.surfex]
+[task.CreateGrib.surfex]
   namelist = ["stepunits='h'"]
   output_format = "GRIB"
-[task.creategrib.surfex_aq]
 
-  filetype_map = "surfex"
+[task.CreateGrib.surfex_aq]
   namelist = [
     "outgeo%center=85",
     "READKEY%FANAME='SFX.SST','SFX.SIC','SFX.Z0','SFX.TG1P3','SFX.TG2P3','SFX.WG1P3','SFX.WG2P3','SFX.LAIP3','SFX.TS'",

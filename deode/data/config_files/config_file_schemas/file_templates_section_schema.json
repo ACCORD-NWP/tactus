@@ -131,7 +131,7 @@
           "properties": {
             "archive": {
               "description": "File template as stored in the archive",
-              "default": "ICMSH@CNMEXP@+@DURATION_ARCHIVE@.sfx",
+              "default": "GRIBSFX@CNMEXP@+@DURATION_ARCHIVE@",
               "type": "string"
             }
           }
