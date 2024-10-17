@@ -39,7 +39,24 @@
   domain_name = "DOMAIN"
 
 [fullpos.selection]
-  master = ["master_selection", "avg_wind", "meteosat"]
+  master = ["master_selection_@CSC@", "avg_wind", "meteosat"]
+
+[gribmodify]
+
+[gribmodify.1]
+  input = ["crr", "lsrr"]
+  operator = "add"
+  output = "tirf"
+
+[gribmodify.2]
+  input = ["csfr", "lssfr"]
+  operator = "add"
+  output = "tsnowp"
+
+[gribmodify.3]
+  input = ["tirf", "tsnowp"]
+  operator = "add"
+  output = "tp"
 
 [include]
   archiving = "include/archiving.toml"

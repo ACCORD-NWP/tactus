@@ -74,7 +74,7 @@ def check_fullpos_namelist(config, nlgen):
         selection = config.get("fullpos.selection", {})
         fplist = [v if isinstance(v, str) else list(v) for v in selection.values()]
         fplist.append(list(config["fullpos.main"]))
-        fpfiles = flatten_list(fplist)
+        fpfiles = [platform.substitute(x) for x in flatten_list(fplist)]
         _domain = config["fullpos.domain_name"]
         domain = platform.substitute(_domain)
         nrfp3s = list(range(1, int(config["vertical_levels.nlev"]) + 1))

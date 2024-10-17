@@ -1,10 +1,17 @@
 [archiving]
 
-[archiving.hour.ecfs.config]
+[archiving.hour.copy.config]
   active = true
   inpath = ""
-  outpath = "archive/@ARCHIVE_TIMESTAMP@"
+  newname = "config.toml"
+  outpath = "@ARCHIVE@"
   pattern = "@CONFIG@"
+
+[archiving.hour.ecfs.config]
+  active = true
+  inpath = "@ARCHIVE@"
+  outpath = "archive/@ARCHIVE_TIMESTAMP@"
+  pattern = "config.toml"
 
 [archiving.hour.ecfs.fa_files]
   active = true
@@ -46,6 +53,13 @@
 [archiving.prefix]
   ecfs = "ec:/@USER@/deode/@CASE@"
 
+[archiving.static.copy.config]
+  active = true
+  inpath = ""
+  newname = "config.toml"
+  outpath = "@ARCHIVE_ROOT@"
+  pattern = "@CONFIG@"
+
 [archiving.static.ecfs]
 
 [archiving.static.ecfs.climate_files]
@@ -56,9 +70,9 @@
 
 [archiving.static.ecfs.config]
   active = true
-  inpath = ""
+  inpath = "@ARCHIVE_ROOT@"
   outpath = ""
-  pattern = "@CONFIG@"
+  pattern = "config.toml"
 
 [archiving.static.ecfs.logs]
   active = true

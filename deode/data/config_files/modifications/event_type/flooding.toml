@@ -13,7 +13,7 @@
   xlon0 = ""
 
 [fullpos.selection]
-  flooding = ["hyd_selection"]
+  flooding = ["hyd_selection_@CSC@"]
 
 [impact.ehype]
   active = true

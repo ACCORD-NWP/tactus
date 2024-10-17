@@ -1,2 +1,2 @@
 [fullpos.selection]
-  master = ["master_selection", "meteosat"]
+  master = ["master_selection_@CSC@", "meteosat"]

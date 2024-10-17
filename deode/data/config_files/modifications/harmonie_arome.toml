@@ -3,4 +3,4 @@
   windfarm = false
 
 [fullpos.selection]
-  master = ["master_selection"]
+  master = ["master_selection_@CSC@"]
