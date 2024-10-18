@@ -239,7 +239,7 @@ class Forecast(Task):
                     sleep(5)
         else:
             for filetype, oi in self.output_settings.items():
-                if filetype in self.file_templates: # if filetype in self.file_templates and filetype != "surfex_aq":
+                if filetype in self.file_templates and filetype != "surfex_aq":
                     if io_server:
                         # No io_merge: should we even still consider this option?
                         self.merge_output(filetype, oi)
