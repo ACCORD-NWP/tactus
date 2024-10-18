@@ -92,6 +92,14 @@ class CreateGrib(Task):
                 filetype_map = self.rules[filetype]["filetype_map"]
             except KeyError:
                 filetype_map = filetype
+            #           file_handle = FileManager.create_list(
+            #    self,
+            #    self.basetime,
+            #    self.forecast_range,
+            #    self.file_templates[filetype]["archive"],
+            #    self.output_settings[filetype_map],
+            #)
+            #
             file_handle = self.create_list(
                 self.file_templates[filetype]["archive"],
                 self.output_settings[filetype_map],
