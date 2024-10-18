@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.7.1] - 2024-10-17
+
+### Added
+- Add total precipitation to grib and add total rain and snow to grib (ALARO). [\#804](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/804) (@kastelecn)
+
 ## [0.7.0] - 2024-10-09
 
 ### Added
