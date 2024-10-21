@@ -30,6 +30,3 @@
   archive = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@.sfx"
   grib = "GRIB@CNMEXP@+@DURATION_ARCHIVE@.sfx"
   model = "ICMSH@CNMEXP@+@DURATION_MODEL@.sfx"
-
-[file_templates.surfex_aq]
-  grib = "GRIBSFX@CNMEXP@+@DURATION_ARCHIVE@.grib2"

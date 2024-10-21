@@ -18,7 +18,6 @@
   fullpos = "PT1H"
   history = "PT1H"
   surfex = "PT1H"
-  surfex_aq = "PT1H"
 
 [general.times]
   cycle_length = "PT6H"
@@ -104,15 +103,10 @@
   prev_case = "@CASE@"
 
 [task.CreateGrib]
-  conversions = ["surfex", "surfex_aq"]
+  conversions = ["surfex"]
 
 [task.CreateGrib.surfex]
   namelist = ["stepunits='h'"]
   output_format = "GRIB"
 
-[task.CreateGrib.surfex_aq]
-  namelist = [
-    "outgeo%center=85",
-    "READKEY%FANAME='SFX.SST','SFX.SIC','SFX.Z0','SFX.TG1P3','SFX.TG2P3','SFX.WG1P3','SFX.WG2P3','SFX.LAIP3','SFX.TS'",
-  ]
-  output_format = "FA2GRIB2"
+
