@@ -65,23 +65,30 @@ class ExpFromFiles(Exp):
         logger.debug("Construct ExpFromFiles")
         logger.debug("Experiment dependencies: {}", exp_dependencies)
 
-        config_dir = exp_dependencies.get("config_dir")
+        config_dirs = str(exp_dependencies.get("config_dir")).split(":")
         include_paths = {}
         if host is not None:
             host = host.detect_deode_host()
             logger.info("Setting up for host {}", host)
-            include_paths.update(
-                {
-                    "scheduler": f"{config_dir}/include/scheduler/ecflow_{host}.toml",
-                    "platform": f"{config_dir}/include/platform_paths/{host}.toml",
-                    "submission": f"{config_dir}/include/submission/{host}.toml",
-                }
-            )
-
-        for incp in include_paths.values():
-            if not os.path.exists(incp):
-                logger.error("Input file requested {} is not found", incp)
-                raise FileNotFoundError(incp)
+            include_needs = {
+                "scheduler": f"scheduler/ecflow_{host}.toml",
+                "platform": f"platform_paths/{host}.toml",
+                "submission": f"submission/{host}.toml",
+            }
+            missing_include = {}
+            for include, include_path in include_needs.items():
+                missing_include[include] = []
+                for config_dir in config_dirs:
+                    incp = f"{config_dir}/include/{include_path}"
+                    if os.path.exists(incp):
+                        include_paths.update({include: incp})
+                        break
+                    else:  # noqa RET508
+                        missing_include[include].append(incp)
+            if len(include_paths) != 3:
+                for include, include_path in missing_include.items():
+                    logger.error(" No {} include files as {}", include, include_path)
+                raise FileNotFoundError
 
         config_dict = config.dict()
         for inct, incp in include_paths.items():
@@ -212,7 +219,9 @@ class ExpFromFiles(Exp):
         exp_dependencies = {}
         if config_dir is None:
             config_dir = ConfigParserDefaults.CONFIG_DIRECTORY
-            logger.info("Setting config_dir to package config directory: {}", config_dir)
+        else:
+            config_dir += f":{ConfigParserDefaults.CONFIG_DIRECTORY}"
+        logger.info("Setting search path(s) config include files: {}", config_dir)
 
         exp_dependencies.update(
             {

@@ -120,8 +120,13 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     parser_case.add_argument(
         "--host-file", dest="host_file", help="Host", required=False, default=None
     )
+    _help = "Search path for config directory."
+    _help += " Use multiple search paths by PATH1:PATH2:..."
     parser_case.add_argument(
-        "--config-dir", help="Config dir", required=False, default=None
+        "--config-dir",
+        help=_help,
+        required=False,
+        default=None,
     )
 
     parser_case.add_argument(
