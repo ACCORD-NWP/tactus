@@ -43,13 +43,13 @@ class TestScheduler:
         ecf_port = ecflow_server._set_port_from_user(offset)
         assert port == ecf_port
 
-    def test_select_host_from_list(self, ecflow_server: EcflowServer):
+    def test_successfully_select_host_from_list(self, ecflow_server: EcflowServer):
         hostname = "localhost"
         hosts = ["foo", hostname]
-        host_list = ",".join(hosts)
         ecf_host = ecflow_server._select_host_from_list(hosts)
         assert ecf_host == hostname
 
+    def test_fail_to_find_host_from_list(self, ecflow_server: EcflowServer):
         hosts = ["foo"]
         host_list = ",".join(hosts)
         with pytest.raises(
@@ -57,6 +57,8 @@ class TestScheduler:
         ):
             ecflow_server._select_host_from_list(hosts)
 
+    def test_to_many_hosts_found_from_list(self, ecflow_server: EcflowServer):
+        hostname = "localhost"
         hosts = [hostname, hostname]
         host_list = ",".join(hosts)
         msg = f"Ambigious host selection:{host_list}"

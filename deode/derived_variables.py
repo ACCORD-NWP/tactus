@@ -5,7 +5,7 @@ import shutil
 from math import atan, floor, sin
 
 from .datetime_utils import as_datetime, as_timedelta
-from .fullpos import Fullpos
+from .fullpos import Fullpos, flatten_list
 from .logs import logger
 from .os_utils import Search
 from .toolbox import Platform
@@ -69,10 +69,14 @@ def check_fullpos_namelist(config, nlgen):
             generate_namelist = False
 
     if generate_namelist:
-        fpdir = config["fullpos.config_path"]
-        fpdir = platform.substitute(fpdir)
-        fpfiles = config["fullpos.selection"]
-        domain = config["domain.name"]
+        _fpdir = config["fullpos.config_path"]
+        fpdir = platform.substitute(_fpdir)
+        selection = config.get("fullpos.selection", {})
+        fplist = [v if isinstance(v, str) else list(v) for v in selection.values()]
+        fplist.append(list(config["fullpos.main"]))
+        fpfiles = [platform.substitute(x) for x in flatten_list(fplist)]
+        _domain = config["fullpos.domain_name"]
+        domain = platform.substitute(_domain)
         nrfp3s = list(range(1, int(config["vertical_levels.nlev"]) + 1))
         rules = {
             "${vertical_levels.nlev}": config["vertical_levels.nlev"],
@@ -131,8 +135,15 @@ def derived_variables(config, processor_layout=None):
     nsmax = floor((ndglg - 2) / truncation[gridtype])
     nmsmax = floor((ndguxg - 2) / truncation[gridtype])
 
+    xlat0 = config.get("domain.xlat0", "")
+    xlon0 = config.get("domain.xlon0", "")
+    if xlat0 == "":
+        xlat0 = config.get("domain.xlatcen")
+    if xlon0 == "":
+        xlon0 = config.get("domain.xloncen")
+
     pi = 4.0 * atan(1.0)
-    xrpk = sin(float(config["domain.xlat0"]) * pi / 180.0)
+    xrpk = sin(float(xlat0) * pi / 180.0)
 
     # Vertical levels
     nrfp3s = list(range(1, int(config["vertical_levels.nlev"]) + 1))
@@ -176,6 +187,8 @@ def derived_variables(config, processor_layout=None):
             "ndguxg": ndguxg,
             "ndglg": ndglg,
             "xrpk": xrpk,
+            "xlat0": xlat0,
+            "xlon0": xlon0,
             "xtrunc": truncation[gridtype],
             "nsmax": nsmax,
             "nmsmax": nmsmax,
@@ -199,9 +212,7 @@ def derived_variables(config, processor_layout=None):
 
     # Wind farm parameterization
     if config["general.windfarm"]:
-        selection = list(config["fullpos.selection"])
-        selection.append("windfarm")
-        update["fullpos"] = {"selection": selection}
+        update["fullpos"] = {"selection": {"windfarm": ["windfarm"]}}
 
     if processor_layout is not None:
         procs = processor_layout.get_proc_dict()

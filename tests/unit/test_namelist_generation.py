@@ -3,7 +3,7 @@
 import os
 
 import pytest
-import tomlkit
+import tomli
 
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.namelist import (
@@ -17,7 +17,7 @@ from deode.namelist import (
 @pytest.fixture()
 def config_platform():
     """Set the platform specific configuration."""
-    task_configs = tomlkit.parse(
+    task_configs = tomli.loads(
         """
         [boundaries]
             bdmodel = "IFS"

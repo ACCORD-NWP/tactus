@@ -1,5 +1,5 @@
 NAMFPC:
-  CFPDOM: ${cfg:domain.name}
+  CFPDOM: ${cfg:fullpos.domain_name}
   LFPCAPEX: true
   LFPMOIS: false
   LISOT_ABOVEG: true

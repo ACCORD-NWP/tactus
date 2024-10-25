@@ -12,6 +12,7 @@ from ..datetime_utils import (
 from ..logs import logger
 from ..os_utils import deodemakedirs
 from ..submission import ProcessorLayout
+from ..tasks.impacts import ImpactModels
 from .base import (
     EcflowSuiteFamily,
     EcflowSuiteTask,
@@ -56,6 +57,8 @@ class DeodeSuiteDefinition(SuiteDefinition):
         ]
         self.interpolate_boundaries = config["suite_control.interpolate_boundaries"]
         self.do_marsprep = config["suite_control.do_marsprep"]
+
+        self.do_impact = ImpactModels(config, "StartImpactModels").is_active
 
         settings = self.task_settings.get_settings("Forecast")
         procs = ProcessorLayout(settings).get_proc_dict()
@@ -561,10 +564,25 @@ class DeodeSuiteDefinition(SuiteDefinition):
                         ecf_files_remotely=self.ecf_files_remotely,
                     )
 
+            creategrib_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(forecast_task)])
+
+            add_total_prec_task = EcflowSuiteTask(
+                "AddTotalPrec",
+                forecasting,
+                config,
+                self.task_settings,
+                self.ecf_files,
+                input_template=input_template,
+                variables=None,
+                trigger=creategrib_trigger,
+                ecf_files_remotely=self.ecf_files_remotely,
+            )
+
+            add_total_prec_trigger = EcflowSuiteTriggers(
+                [EcflowSuiteTrigger(add_total_prec_task)]
+            )
+
             if self.creategrib:
-                creategrib_trigger = EcflowSuiteTriggers(
-                    [EcflowSuiteTrigger(forecast_task)]
-                )
                 EcflowSuiteTask(
                     "CreateGrib",
                     forecasting,
@@ -577,9 +595,6 @@ class DeodeSuiteDefinition(SuiteDefinition):
                 )
 
             if self.do_extractsqlite:
-                extractsqlite_trigger = EcflowSuiteTriggers(
-                    [EcflowSuiteTrigger(forecast_task)]
-                )
                 EcflowSuiteTask(
                     "ExtractSQLite",
                     forecasting,
@@ -587,7 +602,19 @@ class DeodeSuiteDefinition(SuiteDefinition):
                     self.task_settings,
                     self.ecf_files,
                     input_template=input_template,
-                    trigger=extractsqlite_trigger,
+                    trigger=add_total_prec_trigger,
+                )
+
+            if self.do_impact:
+                EcflowSuiteTask(
+                    "StartImpactModels",
+                    forecasting,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    trigger=EcflowSuiteTriggers([EcflowSuiteTrigger(forecast_task)]),
+                    variables=None,
                 )
 
             postcycle_family = EcflowSuiteFamily(

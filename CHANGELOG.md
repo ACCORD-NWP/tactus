@@ -10,11 +10,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.7.1] - 2024-10-17
+
 ### Added
+- Add total precipitation to grib and add total rain and snow to grib (ALARO). [\#804](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/804) (@kastelecn)
+
+## [0.7.0] - 2024-10-09
+
+### Added
+- Introduce a general method for starting impact models in general and EHYPE in particular [\#793](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/793) (@uandrae)
+- Automatic name convention for config file output from `deode case` [\#785](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/785) [\#798](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/798) (@uandrae)
 - Allow host specification by environment variable DEODE_HOST [\#774](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/774) (@uandrae)
 
 ### Changed
-- change default ifs\_delection to ATOS\_DT [#775](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/775) (@kastelecn)
+- Updated runtime thresholds for CreateGrib task to 2 hours [#809](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/809) (@tbnc)
+- Separate fullpos selections by CSC where required [#808](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/808) (@uandrae)
+- Updated binary paths to include the "latest" installations of IAL and gl [#807](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/807) (@pardallio)
+- Change fullpos selection syntax from a list to a dictionary of lists to allow better merge functionality [#792](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/792) (@uandrae)
+- Remove domain name from the stored grib files [#788](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/788) (@uandrae)
+- Change URL for troika [#795](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/795) (@uandrae)
+- Change default ifs\_delection to ATOS\_DT [#775](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/775) (@kastelecn)
+
+### Fixed
+- Various configuration settings lost in translation [\#813](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/813) (@uandrae)
+- Store config file with a fixed name rather than the user one [\#808](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/808) (@uandrae)
+- Repeat calls to ecflow host fixing failures due to unreacheable ecflow host [\#805](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/805) (@uandrae)
+- Fix lost target run functionality [\#803](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/803) (@uandrae)
+- Correct usage of start date in the case name [\#801](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/801) (@uandrae)
+- Correct setting of ECCODES_DEFINITION_PATH depending on ECcodes version [\#766](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/766) (@uandrae)
+- Correct notation and activation of the CreateGrib task [\#770](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/770) (@uandrae)
+- Respect input types in namelist config parsing [#784](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/784) (@uandrae)
+- Removed duplicated parsing [#783](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/783) (@uandrae)
+- Fix ecf_host selector not selecting the correct naming convention on Atos [#781](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/781) (@adam-otruba)
 
 ## [0.6.0] - 2024-09-19
 
@@ -68,7 +95,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - README content and cosmetics corrections. [\#600](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/600) (@uandrae)
 
 ### Fixed
-- Correct notation and activation of the CreateGrib task [\#770](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/770) (@uandrae)
 - Creation of remote directories with scp [\#763](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/763) (@uandrae)
 - Adjust sqlite template and path to fix missing ecfs archiving [\#748](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/748) (@uandrae)
 - Erroneous submission section on leonardo [\#736](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/736) (@uandrae)

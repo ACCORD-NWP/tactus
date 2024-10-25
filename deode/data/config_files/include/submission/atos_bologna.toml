@@ -1,5 +1,5 @@
 [submission]
-  bindir = "/perm/deployde330/github-actions/install/cy48t3-v1.1.1/install/bin"
+  bindir = "/perm/deployde330/github-actions/install/cy48t3/latest/bin"
   default_submit_type = "serial"
   lfftw = true
   module_initpath = "/usr/local/apps/lmod/8.6.8/init"
@@ -128,8 +128,8 @@
   WALLTIME = "#SBATCH --time=00:30:00"
 
 [submission.task_exceptions.CreateGrib]
-  binary = "gl_20230823"
-  bindir = "/home/snh02/work/gl_binaries"
+  binary = "gl"
+  bindir = "/perm/deployde330/github-actions/install/gl/latest/bin/"
 
 [submission.task_exceptions.CreateGrib.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
@@ -169,7 +169,7 @@
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   QOS = "#SBATCH --qos=np"
-  WALLTIME = "#SBATCH --time=01:00:00"
+  WALLTIME = "#SBATCH --time=03:00:00"
 
 [submission.task_exceptions.Marsprep.ENV]
   MARS_READANY_BUFFER_SIZE = 17893020000
@@ -183,8 +183,8 @@
   WALLTIME = "#SBATCH --time=00:30:00"
 
 [submission.task_exceptions.PgdUpdate]
-  binary = "gl_20230823"
-  bindir = "/home/snh02/work/gl_binaries"
+  binary = "gl"
+  bindir = "/perm/deployde330/github-actions/install/gl/latest/bin/"
 
 [submission.task_exceptions.Prep]
   WRAPPER = "srun -n @NPROC@"

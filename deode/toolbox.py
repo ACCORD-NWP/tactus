@@ -10,7 +10,7 @@ from typing import Any, Union
 
 from troika.connections.ssh import SSHConnection
 
-from .datetime_utils import as_datetime, get_decade
+from .datetime_utils import as_datetime, get_decade, oi2dt_list
 from .logs import logger
 from .os_utils import deodemakedirs
 
@@ -298,12 +298,16 @@ class Platform:
             for macro in self.config["macros.gen_macros"]:
                 if isinstance(macro, dict):
                     key = next(iter(macro))
-                    val = self.config[macro[key].lower()]
+                    val = self.config.get(macro[key].lower(), None)
                     key = key.upper()
                 else:
-                    val = self.config[macro.lower()]
+                    val = self.config.get(macro.lower(), None)
                     key = macro.split(".")[-1].upper()
-                all_macros[key] = val
+
+                if val is None:
+                    logger.warning("Macro {} is not defined", macro)
+                else:
+                    all_macros[key] = val
 
             i = [m.start() for m in re.finditer(r"@", pattern)]
             last_pattern = "#"
@@ -336,11 +340,24 @@ class Platform:
             if isinstance(validtime, str):
                 validtime = as_datetime(validtime)
 
-            pattern = self.sub_value(pattern, "YYYY", basetime.strftime("%Y"))
-            pattern = self.sub_value(pattern, "MM", basetime.strftime("%m"), ci=False)
-            pattern = self.sub_value(pattern, "DD", basetime.strftime("%d"))
-            pattern = self.sub_value(pattern, "HH", basetime.strftime("%H"))
-            pattern = self.sub_value(pattern, "mm", basetime.strftime("%M"), ci=False)
+            if basetime is not None:
+                pattern = self.sub_value(pattern, "YMD", basetime.strftime("%Y%m%d"))
+                pattern = self.sub_value(
+                    pattern, "BASETIME", basetime.strftime("%Y-%m-%dT%H:%M:%SZ")
+                )
+                pattern = self.sub_value(pattern, "YYYY", basetime.strftime("%Y"))
+                pattern = self.sub_value(pattern, "YY", basetime.strftime("%y"))
+                pattern = self.sub_value(pattern, "MM", basetime.strftime("%m"), ci=False)
+                pattern = self.sub_value(pattern, "DD", basetime.strftime("%d"))
+                pattern = self.sub_value(pattern, "HH", basetime.strftime("%H"))
+                pattern = self.sub_value(pattern, "mm", basetime.strftime("%M"), ci=False)
+                pattern = self.sub_value(pattern, "ss", basetime.strftime("%S"), ci=False)
+
+                one_decade_pattern = (
+                    get_decade(basetime) if self.config["pgd.one_decade"] else ""
+                )
+                pattern = self.sub_value(pattern, "ONE_DECADE", one_decade_pattern)
+
             if basetime is not None and validtime is not None:
                 logger.debug(
                     "Substituted date/time info: basetime={} validtime={}",
@@ -377,20 +394,17 @@ class Platform:
                     pattern = self.sub_value(pattern, "TTT", f"{lead_step:03d}")
                     pattern = self.sub_value(pattern, "TTTT", f"{lead_step:04d}")
 
-            if basetime is not None:
-                pattern = self.sub_value(pattern, "YMD", basetime.strftime("%Y%m%d"))
-                pattern = self.sub_value(pattern, "YYYY", basetime.strftime("%Y"))
-                pattern = self.sub_value(pattern, "YY", basetime.strftime("%y"))
-                pattern = self.sub_value(pattern, "MM", basetime.strftime("%m"), ci=False)
-                pattern = self.sub_value(pattern, "DD", basetime.strftime("%d"))
-                pattern = self.sub_value(pattern, "HH", basetime.strftime("%H"))
-                pattern = self.sub_value(pattern, "mm", basetime.strftime("%M"), ci=False)
-                pattern = self.sub_value(pattern, "ss", basetime.strftime("%S"), ci=False)
+                start = self.config.get("general.times.start", None)
+                if start is not None:
+                    start = as_datetime(start)
+                    pattern = self.sub_value(
+                        pattern, "YMD_START", start.strftime("%Y%m%d")
+                    )
 
-                one_decade_pattern = (
-                    get_decade(basetime) if self.config["pgd.one_decade"] else ""
-                )
-                pattern = self.sub_value(pattern, "ONE_DECADE", one_decade_pattern)
+                end = self.config.get("general.times.end", None)
+                if end is not None:
+                    end = as_datetime(end)
+                    pattern = self.sub_value(pattern, "YMD_END", end.strftime("%Y%m%d"))
 
         logger.debug("Return pattern={}", pattern)
         return pattern
@@ -734,6 +748,28 @@ class FileManager:
                     raise ValueError(
                         f"Unknown file type '{ftype}'. Must be either 'input' or 'output'"
                     )
+
+    def create_list(self, basetime, forecast_range, input_template, output_settings):
+        """Create list of files to process.
+
+        Args:
+            basetime (datetime.datetime): Base time,
+            forecast_range (datetime.datetime): forecast range,
+            input_template (str): Input template,
+            output_settings (str): Output settings
+        Returns:
+            dict: dict of validates and grib fiels
+        """
+        logger.info("template: {}, settings: {}", input_template, output_settings)
+        files = {}
+        # Store the output
+        dt_list = oi2dt_list(output_settings, forecast_range)
+        for dt in dt_list:
+            validtime = basetime + dt
+            fname = self.platform.substitute(input_template, validtime=validtime)
+            files[validtime] = f"{self.archive}/{fname}"
+
+        return files
 
 
 class LocalFileSystemSymlink(Provider):

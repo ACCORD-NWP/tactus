@@ -120,7 +120,7 @@ def create_exp(args, config):
     mod_files = args.config_mods
     if mod_files is None:
         mod_files = []
-    case_setup(
+    output_file = case_setup(
         config,
         output_file,
         mod_files,
