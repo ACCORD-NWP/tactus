@@ -135,11 +135,15 @@ class EcflowServer(Server):
         return port
 
     @staticmethod
-    def _select_host_from_list(hosts):
+    def _select_host_from_list(hosts, tries=3, delay=1):
         """Set ecf_host from list of options.
+
+           Try to ping server tries times before giving up.
 
         Arguments:
             hosts (list): list of host options
+            tries (int): number of times to try to find a host
+            delay (int): number of seconds to wait between each try
 
         Returns:
             host (str): Selected host
@@ -148,24 +152,32 @@ class EcflowServer(Server):
             RuntimeError: In case no or more than one host found
         """
         found_hosts = []
-        for _host in hosts:
-            host = _host.strip()
-            if ping(host):
-                found_hosts.append(host)
+        ntry = 1
+        while ntry <= tries:
+            for _host in hosts:
+                host = _host.strip()
+                if ping(host):
+                    found_hosts.append(host)
 
-        if len(found_hosts) == 0:
-            host_list = ",".join(hosts)
-            msg = f"No ecflow host found, tried:{host_list}"
-            logger.error(msg)
-            raise RuntimeError(msg)
+            if len(found_hosts) == 0 and ntry == tries:
+                host_list = ",".join(hosts)
+                msg = f"No ecflow host found, tried:{host_list}"
+                logger.error(msg)
+                raise RuntimeError(msg)
 
-        if len(found_hosts) > 1:
-            host_list = ",".join(found_hosts)
-            msg = f"Ambigious host selection:{host_list}"
-            logger.error(msg)
-            raise RuntimeError(msg)
+            if len(found_hosts) == 1:
+                break
 
-        return host
+            if len(found_hosts) > 1:
+                host_list = ",".join(found_hosts)
+                msg = f"Ambigious host selection:{host_list}"
+                logger.error(msg)
+                raise RuntimeError(msg)
+
+            time.sleep(delay)
+            ntry += 1
+
+        return found_hosts[0]
 
     def start_server(self):
         """Start the server.

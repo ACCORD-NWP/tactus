@@ -28,6 +28,9 @@
     },
     "include": {
       "$ref": "#/definitions/include"
+    },
+    "gribmodify": {
+      "$ref": "#/definitions/gribmodify"
     }
   },
   "required": ["general"],
@@ -146,14 +149,35 @@
       "properties": {
         "config_path": {
           "title": "Path to fullpos config files",
-          "type": "string"
+          "type": "string",
+          "default": "@DEODE_HOME@/data/namelist_generation_input/@CYCLE@/fullpos"
         },
-        "selection": {
-          "description": "List of rules and selections to include",
+        "main": {
+          "description": "List of mandatory rules",
           "type": "array",
           "items": {
             "type": "string"
+          },
+          "default": [
+            "rules",
+            "namfpc_header"
+          ]
+        },
+        "selection": {
+          "description": "List of selections to include",
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
+        },
+        "domain_name": {
+          "type": "string",
+          "description": "Name of your domain as used by fullpos",
+          "maxLength": 20,
+          "default": "DOMAIN"
         }
       }
     },
@@ -313,6 +337,90 @@
         }
       }
     },
+    "gribmodify": {
+       "title": "Section for modify grib",
+       "description": "Rules for modify grib to get total prcipitation",
+       "type": "object",
+       "properties": {
+	  "3": {
+	     "title": "Total precpipation",
+	     "description": "shortName for the total precipitation.",
+	     "type": "object",
+	     "properties": {
+		"input": {
+		   "title": "Input parameters",
+		   "description": "List of parameters",
+		   "type": "array",
+	           "items": {
+         	   "type": "string"
+        	  }
+		},
+		"operator": {
+		  "title": "Operator",
+		  "description": "Operator for compute the new field from input parameters",
+		  "type": "string"
+		},
+                "output": {
+                  "title": "Output parameter",
+                  "description": "shortName of output parameter.",
+                  "type": "string"
+                }
+
+	     }
+	     },
+	   "2": {
+             "title": "Total snow",
+             "description": "shortName for the total precipitation.",
+             "type": "object",
+             "properties": {
+                "input": {
+                   "title": "Input parameters",
+                   "description": "List of parameters",
+                   "type": "array",
+                   "items": {
+                   "type": "string"
+                  }
+	},
+                "operator": {
+                  "title": "Operator",
+                  "description": "Operator for compute the new field from input parameters",
+                  "type": "string"
+                },
+                "output": {
+                  "title": "Output parameter",
+                  "description": "shortName of output parameter.",
+                  "type": "string"
+                }
+
+             }
+             },
+	     "1": {
+             "title": "Total rain",
+             "description": "shortName for the total precipitation.",
+             "type": "object",
+             "properties": {
+                "input": {
+                   "title": "Input parameters",
+                   "description": "List of parameters",
+                   "type": "array",
+                   "items": {
+                   "type": "string"
+                  }
+		},
+                "operator": {
+                  "title": "Operator",
+                  "description": "Operator for compute the new field from input parameters",
+                  "type": "string"
+                },
+		"output": {
+                  "title": "Output parameter",
+                  "description": "shortName of output parameter.",
+                  "type": "string"
+                }
+             }
+             }
+       }
+    },
     "general": {
       "title": "General Section",
       "description": "Model for the 'general' section.",
@@ -450,6 +558,15 @@
           "type": "string",
           "enum": ["CY49t2", "CY48t3", "CY46h1"]
         },
+        "event_type": {
+          "description": "Type of extreme event",
+          "type": "string",
+	  "default": "nwp",
+          "enum": [
+	    "nwp",
+            "flooding"
+          ]
+        },
         "initfile": {
           "description": "Initial file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",
           "type": "string"
@@ -457,6 +574,21 @@
         "initfile_sfx": {
           "description": "Initial surfex file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",
           "type": "string"
+        },
+        "namelist": {
+          "title": "Namelist",
+          "description": "Namelist settings. Various settings for the forecast namelist that have no other place to go.",
+          "type": "object",
+          "properties": {
+            "nrazts": {
+              "description": "Reset times for instantaneous fluxes ( e.g. min/max temperature )",
+              "type": "string"
+            },
+            "radiation_frequency": {
+              "description": "Time interval for radiation compitations in the model.",
+              "type": "string"
+            }
+          }
         },
         "output_settings": {
           "title": "Output Settings",
@@ -473,10 +605,6 @@
             },
             "fullpos": {
               "description": "Output list for fullpos files",
-              "$ref": "#/$output_setting_rules"
-            },
-            "nrazts": {
-              "description": "Reset times for instantaneous fluxes ( e.g. min/max temperature )",
               "$ref": "#/$output_setting_rules"
             }
           }

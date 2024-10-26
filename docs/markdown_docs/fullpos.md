@@ -71,14 +71,13 @@ Where `VOR` and `DIV` in the example above are just arbitrary names used to sepa
 
 ### Combine selection files
 
-A number of selection files can be combined by extending the `selection` in the fullpos part of the config file
+A number of selection files can be combined by adding keys to `fullpos.selection` in the fullpos part of the config file
 
 ```
-[fullpos]
- selection = ["rules", "namfpc_header", "master_selection" ,"aq_selection"]
+[fullpos.selection]
+ AROME = ["master_selection" ,"aq_selection"]
 ```
-
-This allows to define different combination of output depending on other configuration choices.
+The name `AROME` here is just a label. This allows to define different combination of output depending on other configuration choices.
 
 
 ## Example

@@ -1,15 +1,12 @@
-[submission]
-  bindir = "/perm/deployde330/github-actions/install/cy46h1-v1.1.0/install/bin"
-
 [submission.gnu.BATCH]
   MEM = "#SBATCH --mem=64GB"
   WALLTIME = "#SBATCH --time=03:00:00"
 
-[submission.task_exceptions.C903]
-  bindir = "/perm/deployde330/github-actions/install/cy48t3-v1.1.1/install/bin"
-
 [submission.task_exceptions.C903.ENV]
   DR_HOOK_SIGNALS = -1
+
+[submission.task_exceptions.CreateGrib.BATCH]
+  WALLTIME = "#SBATCH --time=02:00:00"
 
 [submission.task_exceptions.Forecast]
   # This is optimised for a 1500x1500 domain

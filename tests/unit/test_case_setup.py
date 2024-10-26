@@ -10,7 +10,9 @@ from toml_formatter.formatter import FormattedToml
 from toml_formatter.formatter_options import FormatterOptions
 
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
+from deode.derived_variables import set_times
 from deode.experiment import case_setup
+from deode.toolbox import Platform
 
 
 @pytest.fixture(scope="module", name="tmp_directory")
@@ -102,6 +104,14 @@ def test_set_case_name(default_config, default_config_dir):
     )
     assert config["general.case"] == case
     os.remove(output_file)
+
+
+@pytest.mark.usefixtures("_module_mockers_atos_bologna")
+def test_output_file_name(default_config, default_config_dir):
+    config = default_config.copy(update=set_times(default_config))
+    output_file_name = case_setup(config, None, [], config_dir=default_config_dir)
+    case = Platform(config).substitute(config.get("general.case"))
+    assert output_file_name[:-5] == case
 
 
 def test_write_read_config(default_config, default_config_dir):

@@ -125,12 +125,12 @@ def discover(package, base):
             tname = _get_name(cname, cls, what.lower())
             if cls.__module__ != fullname:
                 logger.info(
-                    "Skipping {} %r imported by %r", what.lower(), tname, fullname
+                    "Skipping {} {} imported by {}", what.lower(), tname, fullname
                 )
                 continue
             if tname in discovered:
                 logger.warning(
-                    "{} type %r is defined more than once", what.capitalize(), tname
+                    "{} type {} is defined more than once", what.capitalize(), tname
                 )
                 continue
             discovered[tname] = cls

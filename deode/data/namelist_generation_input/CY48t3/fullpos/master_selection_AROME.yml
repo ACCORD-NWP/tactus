@@ -1,0 +1,272 @@
+# Do the selection of fields below. Note 
+# that xxt00000000 inherits from xxtddddhh00
+selection:
+ xxtddddhh00: &default
+  NAMFPPHY:
+   CLCFU:
+    - 'SOMMFLU.RAY.SOLA'
+    - 'SURFFLU.RAY.SOLA'
+    - 'SOMMFLU.RAY.THER'
+    - 'SURFFLU.RAY.THER'
+    - 'SURFFLU.LAT.MEVA'
+    - 'SURFFLU.MEVAP.EA'
+    - 'SURFFLU.CHA.SENS'
+    - 'SURFRAYT SOLA DE'
+    - 'SURFRAYT THER DE'
+    - 'SURFACCPLUIE'
+    - 'SURFACCNEIGE'
+    - 'SURFACCGRAUPEL'
+    - 'SURFDIAG.FLASH'
+   CLXFU:
+    - 'SURFDIAGHAIL'
+    - 'SURFINSPLUIE'   
+    - 'CLSTEMPERATURE'
+    - 'CLSHUMI.RELATIVE'
+    - 'CLSHUMI.SPECIFIQ'
+    - 'CLSVENT.ZONAL'
+    - 'CLSVENT.MERIDIEN'
+    - 'CLSU.RAF60M.XFU'
+    - 'CLSV.RAF60M.XFU'
+    - 'CLSMAXI.TEMPERAT'
+    - 'CLSMINI.TEMPERAT'
+    - 'SURFNEBUL.HAUTE'
+    - 'SURFNEBUL.MOYENN'
+    - 'SURFNEBUL.BASSE'
+    - 'SURFNEBUL.TOTALE'
+    - 'CLPMHAUT.MOD.XFU'
+    - 'CLSVISIN_60'
+    - 'CLSVISIHYDN60'
+    - 'CLSPTYPE_60M'
+    - 'CLSPTYPESEV_60M'
+    - 'CLSMEAN.RAD.TEMP'
+   CLPHY:
+    - 'SURFTEMPERATURE'
+    - 'SURFRESERV.NEIGE'
+  NAMFPDY2:
+   CL2DF:
+    - 'SURFPRESSION'
+    - 'SPECSURFGEOPOTEN'
+    - 'MSLPRESSURE'
+    - 'SURFISOTPW1.MALT'
+    - 'SURFCAPE.POS.F00'
+    - 'SURFCIEN.POS.F00'
+    - 'SURFLIFTCONDLEV'
+    - 'SURFFREECONVLEV'
+    - 'SURFEQUILIBRLEV'
+    - 'SURFREFLECT.MAX'
+    - 'REFLECT_DBZ.MAX'
+    - 'ATMOCLD.CEIL.P'
+    - 'ATMOCLD.CEIL.H'
+    - 'ATMOCLD.BASE.P'
+    - 'ATMOCLD.BASE.H'
+  NAMFPDYI:
+   CL3DF:
+    - 'ISOT_ALTIT'
+   RFP3I:
+    - -273.15
+    - -276.15  
+  NAMFPDYH:
+   CL3DF:
+    - 'VERT.VELOCIT'
+    - 'CLOUD_FRACTI'
+    - 'HUMI_RELATIVE'
+    - 'HUMI.SPECIFI'
+    - 'TEMPERATURE'
+    - 'WIND.U.PHYS'
+    - 'WIND.V.PHYS'
+    - 'ICE_CRYSTAL'
+    - 'CLOUD_WATER'
+    - 'GRAUPEL'  
+    - 'RAIN'
+    - 'SNOW'  
+    - 'TKE'
+   RFP3H:
+    - 15.
+    - 30.
+    - 50.
+    - 75.
+    - 100.
+    - 130.
+    - 150.
+    - 200.
+    - 250.
+    - 300.
+    - 400.
+    - 500.
+    - 1000.
+    - 1500.
+    - 2000.
+    - 3000.
+    - 4000.
+  NAMFPDYP:
+    CL3DF:
+     - 'CLOUD_FRACTI'
+     - 'GRAUPEL'
+     - 'HUMI_RELATIVE'
+     - 'PRESSURE'
+     - 'RAIN'
+     - 'SNOW'
+     - 'TEMPERATURE'
+     - 'GEOPOTENTIEL'
+     - 'HUMI.SPECIFI'
+     - 'WIND.U.PHYS'
+     - 'WIND.V.PHYS'
+     - 'VERT.VELOCIT'
+     - 'ICE_CRYSTAL'
+     - 'CLOUD_WATER'
+     - 'TKE'
+    RFP3P:
+     - 5000.
+     - 10000.
+     - 15000.
+     - 20000.
+     - 25000.
+     - 30000.
+     - 40000.
+     - 50000.
+     - 60000.
+     - 70000.
+     - 75000.
+     - 80000.
+     - 85000.
+     - 90000.
+     - 92500.
+     - 95000.
+     - 97500.
+     - 100000.
+  NAMFPDYS: 
+    CL3DF:
+     - 'GRAUPEL'
+     - 'RAIN'
+     - 'SNOW'
+     - 'TEMPERATURE'
+     - 'HUMI.SPECIFI'
+     - 'WIND.U.PHYS'
+     - 'WIND.V.PHYS'
+     - 'ICE_CRYSTAL'
+     - 'CLOUD_WATER'
+     - 'TKE'
+    NRFP3S:
+      - ${cfg:vertical_levels.nlev} 
+ 
+ xxt00000000:
+  NAMFPPHY:
+   CLXFU:
+    - 'SURFINSPLUIE'   
+    - 'CLSTEMPERATURE'
+    - 'CLSHUMI.RELATIVE'
+    - 'CLSHUMI.SPECIFIQ'
+    - 'CLSVENT.ZONAL'
+    - 'CLSVENT.MERIDIEN'
+    - 'SURFNEBUL.HAUTE'
+    - 'SURFNEBUL.MOYENN'
+    - 'SURFNEBUL.BASSE'
+    - 'SURFNEBUL.TOTALE'
+    - 'CLPMHAUT.MOD.XFU'
+    - 'CLSMEAN.RAD.TEMP'
+   CLPHY:
+    - 'SURFTEMPERATURE'
+    - 'SURFRESERV.NEIGE'
+  NAMFPDY2:
+   CL2DF:
+    - 'SURFPRESSION'
+    - 'SPECSURFGEOPOTEN'
+    - 'MSLPRESSURE'
+    - 'SURFISOTPW1.MALT'
+    - 'SURFCAPE.POS.F00'
+    - 'SURFCIEN.POS.F00'
+    - 'SURFLIFTCONDLEV'
+    - 'SURFFREECONVLEV'
+    - 'SURFEQUILIBRLEV'
+    - 'SURFREFLECT.MAX'
+    - 'REFLECT_DBZ.MAX'
+    - 'ATMOCLD.CEIL.P'
+    - 'ATMOCLD.CEIL.H'
+    - 'ATMOCLD.BASE.P'
+    - 'ATMOCLD.BASE.H'
+    - 'C002_METEOSAT_09_SEVIRI.POS'
+    - 'C006_METEOSAT_09_SEVIRI.POS'
+  NAMFPDYH:
+   CL3DF:
+    - 'VERT.VELOCIT'
+    - 'CLOUD_FRACTI'
+    - 'HUMI_RELATIVE'
+    - 'HUMI.SPECIFI'
+    - 'TEMPERATURE'
+    - 'WIND.U.PHYS'
+    - 'WIND.V.PHYS'
+    - 'ICE_CRYSTAL'
+    - 'CLOUD_WATER'
+    - 'GRAUPEL'  
+    - 'RAIN'
+    - 'SNOW'  
+    - 'TKE'
+   RFP3H:
+    - 15.
+    - 30.
+    - 50.
+    - 75.
+    - 100.
+    - 130.
+    - 150.
+    - 200.
+    - 250.
+    - 300.
+    - 400.
+    - 500.
+    - 1000.
+    - 1500.
+    - 2000.
+    - 3000.
+    - 4000.
+  NAMFPDYP:
+    CL3DF:
+     - 'CLOUD_FRACTI'
+     - 'GRAUPEL'
+     - 'HUMI_RELATIVE'
+     - 'PRESSURE'
+     - 'RAIN'
+     - 'SNOW'
+     - 'TEMPERATURE'
+     - 'GEOPOTENTIEL'
+     - 'HUMI.SPECIFI'
+     - 'WIND.U.PHYS'
+     - 'WIND.V.PHYS'
+     - 'VERT.VELOCIT'
+     - 'ICE_CRYSTAL'
+     - 'CLOUD_WATER'
+     - 'TKE'
+    RFP3P:
+     - 5000.
+     - 10000.
+     - 15000.
+     - 20000.
+     - 25000.
+     - 30000.
+     - 40000.
+     - 50000.
+     - 60000.
+     - 70000.
+     - 75000.
+     - 80000.
+     - 85000.
+     - 90000.
+     - 92500.
+     - 95000.
+     - 97500.
+     - 100000.
+  NAMFPDYS: 
+    CL3DF:
+     - 'GRAUPEL'
+     - 'RAIN'
+     - 'SNOW'
+     - 'TEMPERATURE'
+     - 'HUMI.SPECIFI'
+     - 'WIND.U.PHYS'
+     - 'WIND.V.PHYS'
+     - 'ICE_CRYSTAL'
+     - 'CLOUD_WATER'
+     - 'TKE'
+    NRFP3S:
+      - ${cfg:vertical_levels.nlev} 
+  <<: *default
