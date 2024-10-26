@@ -30,9 +30,7 @@
       "$ref": "#/definitions/include"
     }
   },
-  "required": [
-    "general"
-  ],
+  "required": ["general"],
   "definitions": {
     "include": {
       "title": "Include Section",
@@ -88,11 +86,7 @@
         },
         "bdmodel": {
           "description": "Coupling model",
-          "enum": [
-            "ALARO",
-            "AROME",
-            "IFS"
-          ],
+          "enum": ["ALARO", "AROME", "IFS"],
           "type": "string"
         },
         "humi_gp": {
@@ -184,11 +178,7 @@
         "mode": {
           "description": "Choose a strategy to achieve initial/initial_sfx files (start:  start from interpolated files and then propagate the FG between cycles, restart: start from a previous run and then propagate the FG between cycles, cold_start: always start from interpolated files).",
           "type": "string",
-          "enum": [
-            "start",
-            "restart",
-            "cold_start"
-          ]
+          "enum": ["start", "restart", "cold_start"]
         },
         "interpolate_boundaries": {
           "description": "Activates the boundary interpolation",
@@ -377,36 +367,23 @@
             {
               "anyOf": [
                 {
-                  "required": [
-                    "start",
-                    "end"
-                  ],
+                  "required": ["start", "end"],
                   "not": {
-                    "required": [
-                      "list"
-                    ]
+                    "required": ["list"]
                   }
                 },
                 {
-                  "required": [
-                    "basetime"
-                  ],
+                  "required": ["basetime"],
                   "not": {
                     "anyOf": [
                       {
-                        "required": [
-                          "end"
-                        ]
+                        "required": ["end"]
                       },
                       {
-                        "required": [
-                          "list"
-                        ]
+                        "required": ["list"]
                       },
                       {
-                        "required": [
-                          "start"
-                        ]
+                        "required": ["start"]
                       }
                     ]
                   }
@@ -414,20 +391,14 @@
               ]
             },
             {
-              "required": [
-                "list"
-              ],
+              "required": ["list"],
               "not": {
                 "anyOf": [
                   {
-                    "required": [
-                      "start"
-                    ]
+                    "required": ["start"]
                   },
                   {
-                    "required": [
-                      "end"
-                    ]
+                    "required": ["end"]
                   }
                 ]
               }
@@ -458,13 +429,7 @@
         "loglevel": {
           "description": "Logger output level",
           "type": "string",
-          "enum": [
-            "CRITICAL",
-            "ERROR",
-            "DEBUG",
-            "INFO",
-            "WARNING"
-          ]
+          "enum": ["CRITICAL", "ERROR", "DEBUG", "INFO", "WARNING"]
         },
         "surfex": {
           "description": "SURFEX switch",
@@ -478,20 +443,12 @@
           "description": "CSC",
           "default": "AROME",
           "type": "string",
-          "enum": [
-            "AROME",
-            "ALARO",
-            "HARMONIE_AROME"
-          ]
+          "enum": ["AROME", "ALARO", "HARMONIE_AROME"]
         },
         "cycle": {
           "description": "IAL cycle",
           "type": "string",
-          "enum": [
-            "CY49t2",
-            "CY48t3",
-            "CY46h1"
-          ]
+          "enum": ["CY49t2", "CY48t3", "CY46h1"]
         },
         "initfile": {
           "description": "Initial file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",
@@ -530,20 +487,18 @@
           "default": false
         }
       },
-      "required": [
-        "times"
-      ]
+      "required": ["times"]
     }
   },
   "$output_setting_rules": {
     "anyOf": [
       {
         "type": "string",
-        "pattern": ""
+        "maxLength": 0
       },
       {
         "type": "string",
-        "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
       },
       {
         "type": "array",
