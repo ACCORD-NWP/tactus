@@ -40,7 +40,7 @@
   domain_name = "DOMAIN"
 
 [fullpos.selection]
-  master = ["master_selection_@CSC@", "aq_selection"]
+  master = ["master_selection_@CSC@", "avg_wind", "meteosat"]
 
 [gribmodify]
 
