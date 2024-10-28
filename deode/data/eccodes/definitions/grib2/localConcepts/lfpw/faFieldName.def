@@ -142,18 +142,22 @@
 "SURFTENS.TURB.ZO" = {
     discipline = 0 ;
     parameterCategory = 2 ;
-    parameterNumber = 38 ;
+    parameterNumber = 17 ;
     tablesVersion = 15 ;
-    scaledValueOfFirstFixedSurface = 0 ;
+    typeOfFirstFixedSurface = 1 ;
+    typeOfSecondFixedSurface = missing() ;
+    typeOfStatisticalProcessing = 1 ;
 }
 
 # CUMULATED TURBULENT FLUX OF V-MOMEMTUM
 "SURFTENS.TURB.ME" = {
     discipline = 0 ;
     parameterCategory = 2 ;
-    parameterNumber = 37 ;
+    parameterNumber = 18 ;
     tablesVersion = 15 ;
-    scaledValueOfFirstFixedSurface = 0 ;
+    typeOfFirstFixedSurface = 1 ;
+    typeOfSecondFixedSurface = missing() ;
+    typeOfStatisticalProcessing = 1 ;
 }
 
 # Flux de rayonnement solaire (Visible) par ciel clair
