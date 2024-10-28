@@ -104,7 +104,7 @@ class Marsprep(Task):
 
         """
         if selection is None:
-            selection = self.config["boundaries.ifs.selection"]
+            selection = self.platform.substitute(self.config["boundaries.ifs.selection"])
         mars = self.config[f"mars.{selection}"].dict()
         if "expver" not in mars:
             mars["expver"] = selection

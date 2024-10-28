@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add functionality for user macros and to expand macros in config file. [\#824](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/824) (@uandrae)
 
+### Changed
+- Change default ifs.selection to point to the valid DT on the current host. With this the default selection on atos is coming from expver=iekm	  . [\#826](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/826) (@uandrae)
+
 ## [0.7.1] - 2024-10-17
 
 ### Added
