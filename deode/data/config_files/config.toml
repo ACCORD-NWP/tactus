@@ -20,9 +20,9 @@
 
 [general.times]
   cycle_length = "PT6H"
-  end = "2023-09-16T06:00:00Z"
+  end = "2024-09-16T06:00:00Z"
   forecast_range = "PT6H"
-  start = "2023-09-16T00:00:00Z"
+  start = "2024-09-16T00:00:00Z"
 
 [boundaries]
   bd_has_surfex = false
@@ -31,7 +31,7 @@
   bdshift = "PT0H"
   bdtasks_per_batch = 24
   humi_gp = true
-  ifs.selection = "ATOS_DT"
+  ifs.selection = "@HOST@_DT"
   ifs.bdmember = ""
 
 [fullpos]

@@ -127,6 +127,7 @@ def create_exp(args, config):
         case=case,
         host=host,
         config_dir=config_dir,
+        expand_config=args.expand_config,
     )
 
     if args.start_suite:

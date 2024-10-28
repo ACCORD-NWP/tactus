@@ -580,3 +580,14 @@ class TestConfigPaths:
 
         with pytest.raises(RuntimeError, match="Multiple matches"):
             ConfigPaths.path_from_subpath("config_files")
+
+
+class TestConfigExpand:
+    def test_expand_config(self, parsed_config_with_included_sections):
+        """Test function for expanding macros."""
+        config = parsed_config_with_included_sections
+        config = config.copy(
+            update={"general": {"case": "@CSC@"}, "macros": {"group_macros": ["system"]}}
+        )
+        _config = config.expand_macros()
+        assert _config["general.case"] != config["general.case"]

@@ -1,5 +1,10 @@
 [mars]
 
+[mars.atos_bologna_DT]
+  default = "RD_DEFAULT"
+  expver = "iekm"
+  start_date = "2024-07-21T00:00:00Z"
+
 [mars.ATOS_DT]
   default = "RD_DEFAULT"
   expver = "i4ql"

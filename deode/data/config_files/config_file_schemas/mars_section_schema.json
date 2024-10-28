@@ -168,7 +168,13 @@
           }
         },
 	"ATOS_DT": {
-          "title": "Global DT near real-time runs on ATOS",
+          "title": "Global DT near real-time runs on ATOS based on CY48r1",
+          "description": "Parameters for global DT data",
+          "type": "object",
+          "properties": { "$ref": "#/$RD_DEFAULT" }
+        },
+	"atos_bologna_DT": {
+          "title": "Global DT near real-time runs on ATOS based on CY49r1",
           "description": "Parameters for global DT data",
           "type": "object",
           "properties": { "$ref": "#/$RD_DEFAULT" }

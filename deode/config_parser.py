@@ -27,6 +27,7 @@ from .datetime_utils import DatetimeConstants
 from .general_utils import modify_mappings
 from .logs import logger
 from .os_utils import resolve_path_relative_to_package
+from .toolbox import Platform
 
 
 class ConfigParserDefaults(QuasiConstant):
@@ -306,6 +307,15 @@ class ParsedConfig(BasicConfig):
         rtn = super().__repr__().strip(")")
         rtn += f", json_schema={self.json_schema.dumps(style='json')})"
         return rtn
+
+    def expand_macros(self):
+        """Expand macros in config recursively."""
+        _config = self.copy(update={"macros": self.get("macros.case", self["macros"])})
+        macro_platform = Platform(_config)
+        config = macro_platform.resolve_macros(self.dict())
+        config = self.copy(update=config)
+
+        return config
 
 
 def _read_raw_config_file(config_path: Path):
