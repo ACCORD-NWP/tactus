@@ -173,7 +173,9 @@ class Forecast(Task):
         settings = self.nlgen_surfex.assemble_namelist("forecast")
         self.nlgen_surfex.write_namelist(settings, "EXSEG1.nam")
 
-        input_definition = self.platform.get_system_value("sfx_input_definition")
+        input_definition = ConfigPaths.path_from_subpath(
+          self.platform.get_system_value("sfx_input_definition")
+        )
         with open(input_definition, "r", encoding="utf-8") as f:
             input_data = json.load(f)
         binput_data = InputDataFromNamelist(
