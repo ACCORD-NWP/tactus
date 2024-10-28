@@ -1,0 +1,16 @@
+[general]
+  event_type = "airquality"
+
+[file_templates.surfex]
+  grib = "GRIBSFX@CNMEXP@+@DURATION_ARCHIVE@.grib2"
+
+[fullpos.selection]
+  master = ["aq_selection"]
+
+[task.CreateGrib.surfex]
+  namelist = [
+    "outgeo%center=85",
+    "READKEY%FANAME='SFX.SST','SFX.SIC','SFX.Z0','SFX.TG1P3','SFX.TG2P3','SFX.WG1P3','SFX.WG2P3','SFX.LAIP3','SFX.TS'",
+  ]
+  output_format = "FA2GRIB2"
+
