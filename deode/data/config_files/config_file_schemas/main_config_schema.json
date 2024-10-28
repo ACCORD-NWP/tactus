@@ -607,7 +607,8 @@
 	  "default": "nwp",
           "enum": [
 	    "nwp",
-            "flooding"
+            "flooding",
+	    "airquality"
           ]
         },
         "initfile": {
