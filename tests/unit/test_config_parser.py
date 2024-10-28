@@ -543,3 +543,14 @@ class TestConfigIncludeSection:
             match="also detected in its parent section's schema",
         ):
             _ = ParsedConfig(raw_config, json_schema=schema)
+
+
+class TestConfigExpand:
+    def test_expand_config(self, parsed_config_with_included_sections):
+        """Test function for expanding macros."""
+        config = parsed_config_with_included_sections
+        config = config.copy(
+            update={"general": {"case": "@CSC@"}, "macros": {"group_macros": ["system"]}}
+        )
+        _config = config.expand_macros()
+        assert _config["general.case"] != config["general.case"]

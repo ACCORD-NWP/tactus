@@ -64,10 +64,21 @@ def fixture_exp_dependencies(output_file: Path):
 @pytest.fixture(name="config")
 def fixture_config():
     """Fixture that provides a parsed configuration object for testing."""
-    return ParsedConfig.from_file(
+    update = {
+        "macros": {
+            "case": {
+                "gen_macros": ["general.csc"],
+                "group_macros": [],
+                "os_macros": [],
+            }
+        }
+    }
+    config = ParsedConfig.from_file(
         ConfigParserDefaults.CONFIG_PATH,
         json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
     )
+    config = config.copy(update=update)
+    return config
 
 
 def test_exp_from_nonexisting_file(

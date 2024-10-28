@@ -51,6 +51,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     )
     common_parser.add_argument(
         "--config-file",
+        "-c",
         metavar="CONFIG_FILE_PATH",
         default=ConfigParserDefaults.CONFIG_PATH,
         type=Path,
@@ -140,6 +141,14 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         nargs="*",
         type=Path,
         default=None,
+    )
+    parser_case.add_argument(
+        "--expand-config",
+        "-e",
+        action="store_true",
+        default=False,
+        help="Expand macros in config",
+        required=False,
     )
     parser_case.add_argument(
         "--start-suite",
