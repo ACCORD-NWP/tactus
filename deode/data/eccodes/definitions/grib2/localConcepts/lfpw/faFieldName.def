@@ -3325,6 +3325,58 @@
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
 }
+# Soil temperature for AQ CY46h1
+"X001TG1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 0 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 1 ;
+    tablesVersion = 15 ;
+}
+# Soil temperature for AQ CY46h1
+"X001TG2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 1 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 2 ;
+    tablesVersion = 15 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X001WG1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 0 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 1 ;
+    tablesVersion = 15 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X001WG2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 1 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 2 ;
+    tablesVersion = 15 ;
+}
+# Leaf Area Index, low veg for AQ CY46h1
+"X001LAI"= {
+    discipline = 2 ;
+    parameterCategory = 0 ;
+    parameterNumber = 28 ;
+    tablesVersion = 15 ;
+    typeOfFirstFixedSurface = 1 ;
+}
 # Skin temperature for AQ 
 "SFX.TS"= {
     discipline = 0 ;
