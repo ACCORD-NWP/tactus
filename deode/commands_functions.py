@@ -135,7 +135,7 @@ def create_exp(args, config):
         )
         args.start_command = None
         args.config_file = output_file
-        args.begin = True
+        args.def_file = ""
         start_suite(args, config)
 
 
@@ -226,9 +226,13 @@ def start_suite(args, config):
     )
 
     server = EcflowServer(config, start_command=args.start_command)
-    defs = get_suite(suite_def, config)
-    def_file = f"{suite_name}.def"
-    defs.save_as_defs(def_file)
+    if args.def_file == "":
+        defs = get_suite(suite_def, config)
+        def_file = f"{suite_name}.def"
+        defs.save_as_defs(def_file)
+    else:
+        def_file = args.def_file
+        logger.info("Start suite from: {}", def_file)
 
     # Clean, then copy troika and containers
     srv = f"{ecf_remoteuser}@{ecf_host}"
@@ -284,8 +288,11 @@ def start_suite(args, config):
             raise SystemExit("Copying {temp_troika_config_file} FAILED.") from e
         logger.info("--- File copying to Ecflow server DONE ---")
 
-    server.start_suite(suite_name, def_file, begin=args.begin)
+    server.start_suite(suite_name, def_file)
     logger.info("Done with suite.")
+
+    if not args.keep_def_file:
+        os.remove(def_file)
 
 
 #########################################
