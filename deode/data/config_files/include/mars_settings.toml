@@ -120,7 +120,7 @@
   "2006-02-01T06:00:00Z" = "AV"
   "2016-03-08T00:00:00Z" = "O640"
 
-[mars.LUMI_DT]
+[mars.lumi_DT]
   class = "D1"
   default = "RD_DEFAULT"
   expver = "0001"
