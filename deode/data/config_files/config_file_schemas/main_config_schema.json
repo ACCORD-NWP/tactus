@@ -11,6 +11,9 @@
     "suite_control": {
       "$ref": "#/definitions/suite_control"
     },
+    "clean_old_data": {
+      "$ref": "#/definitions/clean_old_data"
+    },
     "system": {
       "$ref": "#/definitions/system"
     },
@@ -126,6 +129,36 @@
         }
       }
     },
+    "clean_old_data": {
+       "title": "Cleaning old data",
+       "decription": "Option for vleaning old data",
+       "type": "object",
+       "properties": {
+          "scratch_data_period": {
+             "description": "Age for old data in days",
+             "type": "string",
+	     "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
+	     "default": "P14D"
+          },
+          "suites_period": {
+             "description": "Age for old data in days",
+             "type": "string",
+	     "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
+	     "default": "P14D"
+          },
+          "IFS_period": {
+             "description": "Age for old data in days",
+             "type": "string",
+	     "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
+	     "default": "P7D"
+          },
+	  "ignore": {
+             "decription": "File not to remove",
+             "type": "array",
+             "default": []
+          }
+          }
+     },
     "pgd": {
       "title": "Pgd Section",
       "description": "Settings for control of Pgd selection.",
@@ -248,7 +281,41 @@
           "description": "Number of IOmerge tasks",
           "type": "integer",
           "default": 1
+        },
+	"DeodeCleaningSuiteDefinition": {
+	  "decription": "Settings for Cleaning Suite",
+	  "type": "object",
+	  "properties": {
+	    "do_clean_scratch_data": {
+              "description": "Activate cleaning the scratch data",
+              "type": "boolean",
+	      "default": true
+            },
+            "do_clean_suites": {
+              "description": "Activate cleaning the suites",
+              "type": "boolean",
+	      "default": true
+            },
+            "do_clean_IFS": {
+              "description": "Activate cleaning IFS data",
+              "type": "boolean",
+	      "default": true
+            },
+            "days_in_week": {
+              "description": "List of days when cleaning suite will run, 0-6 Sunday-Saturday",
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "time_to_run": {
+              "description": "Time to run",
+              "type": "string",
+	      "pattern": "^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$"
         }
+
+      }
+      }
       }
     },
     "system": {
@@ -348,88 +415,86 @@
       }
     },
     "gribmodify": {
-       "title": "Section for modify grib",
-       "description": "Rules for modify grib to get total prcipitation",
-       "type": "object",
-       "properties": {
-	  "3": {
-	     "title": "Total precpipation",
-	     "description": "shortName for the total precipitation.",
-	     "type": "object",
-	     "properties": {
-		"input": {
-		   "title": "Input parameters",
-		   "description": "List of parameters",
-		   "type": "array",
-	           "items": {
-         	   "type": "string"
-        	  }
-		},
-		"operator": {
-		  "title": "Operator",
-		  "description": "Operator for compute the new field from input parameters",
-		  "type": "string"
-		},
-                "output": {
-                  "title": "Output parameter",
-                  "description": "shortName of output parameter.",
-                  "type": "string"
-                }
-
-	     }
-	     },
-	   "2": {
-             "title": "Total snow",
-             "description": "shortName for the total precipitation.",
-             "type": "object",
-             "properties": {
-                "input": {
-                   "title": "Input parameters",
-                   "description": "List of parameters",
-                   "type": "array",
-                   "items": {
-                   "type": "string"
-                  }
-	},
-                "operator": {
-                  "title": "Operator",
-                  "description": "Operator for compute the new field from input parameters",
-                  "type": "string"
-                },
-                "output": {
-                  "title": "Output parameter",
-                  "description": "shortName of output parameter.",
-                  "type": "string"
-                }
-
-             }
-             },
-	     "1": {
-             "title": "Total rain",
-             "description": "shortName for the total precipitation.",
-             "type": "object",
-             "properties": {
-                "input": {
-                   "title": "Input parameters",
-                   "description": "List of parameters",
-                   "type": "array",
-                   "items": {
-                   "type": "string"
-                  }
-		},
-                "operator": {
-                  "title": "Operator",
-                  "description": "Operator for compute the new field from input parameters",
-                  "type": "string"
-                },
-		"output": {
-                  "title": "Output parameter",
-                  "description": "shortName of output parameter.",
-                  "type": "string"
-                }
-             }
-             }
-       }
+      "title": "Section for modify grib",
+      "description": "Rules for modify grib to get total prcipitation",
+      "type": "object",
+      "properties": {
+        "3": {
+          "title": "Total precpipation",
+          "description": "shortName for the total precipitation.",
+          "type": "object",
+          "properties": {
+            "input": {
+              "title": "Input parameters",
+              "description": "List of parameters",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "operator": {
+              "title": "Operator",
+              "description": "Operator for compute the new field from input parameters",
+              "type": "string"
+            },
+            "output": {
+              "title": "Output parameter",
+              "description": "shortName of output parameter.",
+              "type": "string"
+            }
+          }
+        },
+        "2": {
+          "title": "Total snow",
+          "description": "shortName for the total precipitation.",
+          "type": "object",
+          "properties": {
+            "input": {
+              "title": "Input parameters",
+              "description": "List of parameters",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "operator": {
+              "title": "Operator",
+              "description": "Operator for compute the new field from input parameters",
+              "type": "string"
+            },
+            "output": {
+              "title": "Output parameter",
+              "description": "shortName of output parameter.",
+              "type": "string"
+            }
+          }
+        },
+        "1": {
+          "title": "Total rain",
+          "description": "shortName for the total precipitation.",
+          "type": "object",
+          "properties": {
+            "input": {
+              "title": "Input parameters",
+              "description": "List of parameters",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "operator": {
+              "title": "Operator",
+              "description": "Operator for compute the new field from input parameters",
+              "type": "string"
+            },
+            "output": {
+              "title": "Output parameter",
+              "description": "shortName of output parameter.",
+              "type": "string"
+            }
+          }
+        }
+      }
     },
     "general": {
       "title": "General Section",
@@ -553,8 +618,17 @@
         },
         "realization": {
           "description": "Placeholder for future ensemble or similar need",
-          "type": "number",
-          "default": -1
+          "default": "",
+          "oneOf": [
+            {
+              "type": "string",
+              "maxLength": 0
+            },
+            {
+              "type": "number",
+              "minimum": 0
+            }
+          ]
         },
         "cnmexp": {
           "description": "Experiment short name",
@@ -604,11 +678,11 @@
         "event_type": {
           "description": "Type of extreme event",
           "type": "string",
-	  "default": "nwp",
+          "default": "nwp",
           "enum": [
-	    "nwp",
+            "nwp",
             "flooding",
-	    "airquality"
+            "airquality"
           ]
         },
         "initfile": {

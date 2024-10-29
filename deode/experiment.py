@@ -231,6 +231,7 @@ def case_setup(
     case=None,
     host=None,
     config_dir=None,
+    expand_config=False,
 ):
     """Do experiment setup.
 
@@ -241,6 +242,7 @@ def case_setup(
         case (str, optional): Case identifier. Defaults to None.
         host (str, optional): host name. Defaults to None.
         config_dir (str, optional): Configuration directory. Defaults to None.
+        expand_config (boolean, optional): Flag for expanding macros in config
 
     Returns:
         output_file (str): Output config file.
@@ -254,11 +256,15 @@ def case_setup(
         config_dir=config_dir,
     )
 
+    if expand_config:
+        config = config.expand_macros()
     exp = ExpFromFiles(config, exp_dependencies, mod_files, host=host)
+
     if output_file is None:
         config = exp.config.copy(update=set_times(exp.config))
         output_file = config.get("general.case") + ".toml"
         output_file = Platform(config).substitute(output_file)
+
     logger.info("Save config to: {}", output_file)
     exp.config.save_as(output_file)
 

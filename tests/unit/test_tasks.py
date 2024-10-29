@@ -15,6 +15,7 @@ from deode.plugin import DeodePluginRegistry
 from deode.tasks.archive import ArchiveHour, ArchiveStatic
 from deode.tasks.base import Task
 from deode.tasks.batch import BatchJob
+from deode.tasks.clean_old_data import CleanSuites
 from deode.tasks.collectlogs import CollectLogs
 from deode.tasks.creategrib import CreateGrib
 from deode.tasks.discover_task import available_tasks, get_task
@@ -100,6 +101,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_task_forecast_firstguess_execute_method = FirstGuess.execute
     original_task_archive_archivehour_execute_method = ArchiveHour.execute
     original_task_archive_archivestatic_execute_method = ArchiveStatic.execute
+    original_task_clean_old_data_cleansuites_execute_method = CleanSuites.execute
     original_task_creategrib_creategrib_execute_method = CreateGrib.execute
     original_task_gribmodify_addtotalprec_execute_method = AddTotalPrec.execute
     original_task_extractsqlite_extractsqlite_execute_method = ExtractSQLite.execute
@@ -128,6 +130,11 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         """Suppress some errors so that test continues if they happen."""
         with contextlib.suppress(ArchiveError, ProviderError, NotImplementedError):
             original_toolbox_filemanager_input_method(*args, **kwargs)
+
+    def new_task_clean_old_data_cleansuites_execute_method(*args, **kwargs):
+        """Suppress some errors so that test continues if they happen."""
+        with contextlib.suppress(ModuleNotFoundError, NotImplementedError):
+            original_task_clean_old_data_cleansuites_execute_method(*args, **kwargs)
 
     def new_task_forecast_forecast_execute_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
@@ -214,6 +221,10 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     session_mocker.patch("deode.tasks.batch.BatchJob.run", new=new_batchjob_run_method)
     session_mocker.patch(
         "deode.toolbox.FileManager.input", new=new_toolbox_filemanager_input_method
+    )
+    session_mocker.patch(
+        "deode.tasks.clean_old_data.CleanSuites.execute",
+        new=new_task_clean_old_data_cleansuites_execute_method,
     )
     session_mocker.patch(
         "deode.tasks.forecast.Forecast.execute",

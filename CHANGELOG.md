@@ -10,6 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+### Added
+- Add settings for suite CleanOldData, which clean scratch data, suites in ecflow server and IFS data. It include cron. [\#825](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/825) (@kastelecn)
+- Add posibility to read, and remove, suite definition file. [\#799](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/799) (@uandrae)
+- Add functionality for user macros and to expand macros in config file. [\#824](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/824) (@uandrae)
+
+### Changed
+- Change mars setings to work on lumi with lumi\_DT selection. [\#817](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/817) (@kastelecn)
+- Remove used suite definition file by default. [\#799](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/799) (@uandrae)
+- Change default ifs.selection to point to the valid DT on the current host. With this the default selection on atos is coming from expver=iekm	  . [\#826](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/826) (@uandrae)
+
 ## [0.7.1] - 2024-10-17
 
 ### Added

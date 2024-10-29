@@ -51,6 +51,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     )
     common_parser.add_argument(
         "--config-file",
+        "-c",
         metavar="CONFIG_FILE_PATH",
         default=ConfigParserDefaults.CONFIG_PATH,
         type=Path,
@@ -142,12 +143,23 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         default=None,
     )
     parser_case.add_argument(
+        "--expand-config",
+        "-e",
+        action="store_true",
+        default=False,
+        help="Expand macros in config",
+        required=False,
+    )
+    parser_case.add_argument(
         "--start-suite",
         "-s",
         action="store_true",
         default=False,
         help="Start suite as well",
         required=False,
+    )
+    add_keep_def_file(
+        parser_case, help_message="Keep suite definition file in case of submission"
     )
     parser_case.set_defaults(run_command=create_exp)
 
@@ -173,7 +185,13 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     parser_start_suite.add_argument(
         "--start-command", type=str, help="Start command for server", default=None
     )
-    parser_start_suite.add_argument("--begin", "-b", help="Begin suite", default=True)
+    parser_start_suite.add_argument(
+        "--def-file",
+        "-f",
+        help="Suite definition file",
+        default="",
+    )
+    add_keep_def_file(parser_start_suite)
     parser_start_suite.set_defaults(run_command=start_suite)
 
     ###########################################
@@ -441,3 +459,23 @@ def add_namelist_args(parser_object):
     parser_object.set_defaults(run_command=show_namelist)
 
     return parser_object
+
+
+def add_keep_def_file(
+    parser_object, help_message="Keep suite definition file after submission"
+):
+    """Add object args.
+
+    Args:
+        parser_object (args oject): args object to update
+        help_message (str): Help text
+
+    """
+    parser_object.add_argument(
+        "--keep-def-file",
+        "-k",
+        help=help_message,
+        action="store_true",
+        default=False,
+        required=False,
+    )

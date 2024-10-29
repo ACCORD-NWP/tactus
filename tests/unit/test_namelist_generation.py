@@ -24,7 +24,7 @@ def config_platform():
         [general]
             case = "test_case"
             os_macros = ["USER", "HOME", "PWD"]
-            realization = -1
+            realization = ""
             cnmexp = "HARM"
             bdint = "PT3H"
             cycle = "CY46h1"
