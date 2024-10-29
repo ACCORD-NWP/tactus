@@ -31,7 +31,6 @@ class CreateGrib(Task):
         except KeyError:
             self.conversions = {}
 
-
         self.rules = {}
         for filetype in self.conversions:
             self.rules[filetype] = self.config[f"task.{self.name}.{filetype}"].dict()
@@ -82,7 +81,6 @@ class CreateGrib(Task):
 
         # Run gl
         BatchJob(os.environ, wrapper=self.wrapper).run(cmd)
-
 
     def execute(self):
         """Execute creategrib."""
