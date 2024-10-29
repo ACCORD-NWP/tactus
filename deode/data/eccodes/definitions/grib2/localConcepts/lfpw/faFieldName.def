@@ -143,6 +143,7 @@
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 17 ;
+    productDefinitionTemplateNumber = 8 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     typeOfSecondFixedSurface = missing() ;
@@ -154,6 +155,7 @@
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 18 ;
+    productDefinitionTemplateNumber = 8 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     typeOfSecondFixedSurface = missing() ;
