@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add settings for suite CleanOldData, which clean scratch data, suites in ecflow server and IFS data. It include cron. [\#825](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/825) (@kastelecn)
-- Add posibility to read, and remove, suite definition file. [\#799](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/799) (@uandrae)
+- Add posibility to read, and remove, suite definition file. [\#799](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/799) [\#832](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/832) (@uandrae)
 - Add functionality for user macros and to expand macros in config file. [\#824](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/824) (@uandrae)
 
 ### Changed
