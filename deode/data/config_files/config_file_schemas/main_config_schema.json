@@ -551,8 +551,7 @@
               "anyOf": [
                 {
                   "required": [
-                    "start",
-                    "end"
+                    "start"
                   ],
                   "not": {
                     "required": [
@@ -680,8 +679,11 @@
           "type": "string",
           "default": "nwp",
           "enum": [
-            "nwp",
-            "flooding"
+	    "nwp",
+            "heatwave",
+            "flooding",
+            "convection",
+            "storm"
           ]
         },
         "initfile": {
