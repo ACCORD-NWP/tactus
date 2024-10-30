@@ -125,7 +125,8 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     _help += " Use multiple search paths by PATH1:PATH2:..."
     parser_case.add_argument(
         "--config-dir",
-        help=_help,
+        help=("Search path for config directory."
+              + " Use multiple search paths by PATH1:PATH2:..."),
         required=False,
         default=None,
     )
