@@ -551,8 +551,7 @@
               "anyOf": [
                 {
                   "required": [
-                    "start",
-                    "end"
+                    "start"
                   ],
                   "not": {
                     "required": [
@@ -682,6 +681,9 @@
           "enum": [
             "nwp",
             "flooding",
+            "heatwave",
+            "convection",
+            "storm"
             "airquality"
           ]
         },

@@ -341,6 +341,36 @@ class Platform:
 
         return d
 
+    def substitute_datetime(self, pattern, datetime, suffix=""):
+        """Substitute datetime related properties.
+
+        Args:
+            pattern (str): _description_
+            datetime(DateTime object): datetime to treat
+            suffix (str): Add on to key
+
+        Returns:
+            str: Substituted string.
+
+        """
+        datetime_substitution_map = {
+            "YMD": "%Y%m%d",
+            "BASETIME": "%Y-%m-%dT%H:%M:%SZ",
+            "YYYY": "%Y",
+            "YY": "%y",
+            "MM": "%m",
+            "DD": "%d",
+            "HH": "%H",
+            "mm": "%M",
+            "ss": "%S",
+        }
+        for key, val in datetime_substitution_map.items():
+            ci = key not in ["MM", "mm", "ss"]
+            _key = key + suffix
+            pattern = self.sub_value(pattern, _key, datetime.strftime(val), ci=ci)
+
+        return pattern
+
     def substitute(self, pattern, basetime=None, validtime=None, keyval=None):
         """Substitute pattern.
 
@@ -406,18 +436,7 @@ class Platform:
             validtime = as_datetime(validtime)
 
         if basetime is not None:
-            pattern = self.sub_value(pattern, "YMD", basetime.strftime("%Y%m%d"))
-            pattern = self.sub_value(
-                pattern, "BASETIME", basetime.strftime("%Y-%m-%dT%H:%M:%SZ")
-            )
-            pattern = self.sub_value(pattern, "YYYY", basetime.strftime("%Y"))
-            pattern = self.sub_value(pattern, "YY", basetime.strftime("%y"))
-            pattern = self.sub_value(pattern, "MM", basetime.strftime("%m"), ci=False)
-            pattern = self.sub_value(pattern, "DD", basetime.strftime("%d"))
-            pattern = self.sub_value(pattern, "HH", basetime.strftime("%H"))
-            pattern = self.sub_value(pattern, "mm", basetime.strftime("%M"), ci=False)
-            pattern = self.sub_value(pattern, "ss", basetime.strftime("%S"), ci=False)
-
+            pattern = self.substitute_datetime(pattern, basetime)
             one_decade_pattern = (
                 get_decade(basetime) if self.config["pgd.one_decade"] else ""
             )
@@ -429,13 +448,8 @@ class Platform:
                 basetime.strftime("%Y%m%d%H%M"),
                 validtime.strftime("%Y%m%d%H%M"),
             )
+            pattern = self.substitute_datetime(pattern, validtime, "_LL")
             lead_time = validtime - basetime
-            pattern = self.sub_value(pattern, "YYYY_LL", validtime.strftime("%Y"))
-            pattern = self.sub_value(pattern, "MM_LL", validtime.strftime("%m"), ci=False)
-            pattern = self.sub_value(pattern, "DD_LL", validtime.strftime("%d"))
-            pattern = self.sub_value(pattern, "HH_LL", validtime.strftime("%H"))
-            pattern = self.sub_value(pattern, "mm_LL", validtime.strftime("%M"), ci=False)
-
             lead_seconds = int(lead_time.total_seconds())
             lh = int(lead_seconds / 3600)
             lm = int((lead_seconds % 3600 - lead_seconds % 60) / 60)
@@ -449,6 +463,7 @@ class Platform:
             pattern = self.sub_value(pattern, "LLLL", f"{lh:04d}")
             pattern = self.sub_value(pattern, "LM", f"{lm:02d}")
             pattern = self.sub_value(pattern, "LS", f"{ls:02d}")
+
             tstep = self.config["domain.tstep"]
             if tstep is not None:
                 lead_step = lead_seconds // tstep
@@ -457,13 +472,11 @@ class Platform:
 
             start = self.config.get("general.times.start", None)
             if start is not None:
-                start = as_datetime(start)
-                pattern = self.sub_value(pattern, "YMD_START", start.strftime("%Y%m%d"))
+                pattern = self.substitute_datetime(pattern, as_datetime(start), "_START")
 
             end = self.config.get("general.times.end", None)
             if end is not None:
-                end = as_datetime(end)
-                pattern = self.sub_value(pattern, "YMD_END", end.strftime("%Y%m%d"))
+                pattern = self.substitute_datetime(pattern, as_datetime(end), "_END")
 
         logger.debug("Return pattern={}", pattern)
         return pattern

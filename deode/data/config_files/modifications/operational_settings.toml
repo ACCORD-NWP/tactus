@@ -1,0 +1,92 @@
+[general]
+  case = "@CSC@_@XDX@m_@DOMAIN_NUMBER@_@EVENT_TYPE@_@YMD_START@"
+  keep_workdirs = false
+
+[archiving.hour.copy.config]
+  active = true
+  inpath = ""
+  newname = "config.toml"
+  outpath = "@SUB_CASEDIR@"
+  pattern = "@CONFIG@"
+
+[archiving.hour.ecfs.config]
+  active = true
+  inpath = "@ARCHIVE@"
+  outpath = "@SUB_CASEDIR@"
+  pattern = "config.toml"
+
+[archiving.hour.ecfs.fa_files]
+  active = true
+  inpath = "@ARCHIVE@"
+  outpath = "@SUB_CASEDIR@"
+  pattern = "ICMSH*"
+
+[archiving.hour.ecfs.grib_files]
+  active = true
+  inpath = "@ARCHIVE@"
+  outpath = "@SUB_CASEDIR@"
+  pattern = "GRIB*"
+
+[archiving.hour.ecfs.logs]
+  active = true
+  inpath = "@LOGS@"
+  outpath = "@SUB_CASEDIR@"
+  pattern = "@YYYY@@MM@@DD@_@HH@@mm@.tar.gz"
+
+[archiving.hour.ecfs.sqlite]
+  active = "suite_control.do_extractsqlite"
+  inpath = "@SQLITE_PATH@"
+  outpath = "@SUB_CASEDIR@"
+  pattern = "*"
+
+[archiving.prefix]
+  ecfs = "ec:/@USER@/DE_NWP/deode/"
+
+[archiving.static.copy.config]
+  active = true
+  inpath = ""
+  newname = "config.toml"
+  outpath = "@SUB_CASEDIR@"
+  pattern = "@CONFIG@"
+
+[archiving.static.ecfs]
+
+[archiving.static.ecfs.climate_files]
+  active = true
+  inpath = "@CLIMDIR@"
+  outpath = "@ECFS_STATIC@"
+  pattern = ["Const.Clim*", "PGD*"]
+
+[archiving.static.ecfs.config]
+  active = true
+  inpath = "@ARCHIVE_ROOT@"
+  outpath = ""
+  pattern = "config.toml"
+
+[archiving.static.ecfs.logs]
+  active = true
+  inpath = "@LOGS@"
+  outpath = "@ECFS_STATIC@"
+  pattern = "StaticData.tar.gz"
+
+[cleaning.CycleCleaning.archive]
+  active = false
+
+[cleaning.CycleCleaning.wrk]
+  ncycles_delay = 0
+
+[domain]
+  number = 0
+
+[extractsqlite]
+  sqlite_path = "@CASEDIR@/sqlite/FCTABLE"
+
+[system]
+  archive = "@CASEDIR@"
+  archive_timestamp_start = "@YYYY_START@/@MM_START@/@DD_START@/@HH_START@"
+  case_identifier = "@EVENT_TYPE@/@DOMAIN_NUMBER@/@CSC@_@XDX@m"
+  casedir = "@SCRATCH@/@SUB_CASEDIR@"
+  climdir = "@SCRATCH@/@ARCHIVE_TIMESTAMP_START@/@CASE_IDENTIFIER@/climate"
+  ecfs_static = "@ARCHIVE_TIMESTAMP_START@/@CASE_IDENTIFIER@/climate"
+  logs = "@CASEDIR@"
+  sub_casedir = "@ARCHIVE_TIMESTAMP@/@CASE_IDENTIFIER@"

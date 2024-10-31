@@ -4,15 +4,22 @@
 import pytest
 import tomlkit
 
-from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
+from deode.config_parser import ConfigParserDefaults, ParsedConfig
+from deode.derived_variables import derived_variables, set_times
 from deode.geo_utils import Projection, Projstring
 from deode.tasks.marsprep import Marsprep
 
 
 @pytest.fixture(scope="module")
-def base_raw_config():
-    """Return a raw config common to all tasks."""
-    config = BasicConfig.from_file(ConfigParserDefaults.CONFIG_DIRECTORY / "config.toml")
+def base_parsed_config():
+    """Return a parsed config common to all tasks."""
+    config = ParsedConfig.from_file(
+        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
+        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
+    )
+    config = config.copy(update=set_times(config))
+    config = config.copy(update=derived_variables(config))
+
     return config
 
 
@@ -55,25 +62,10 @@ def get_domain_data(config):
 
 
 @pytest.fixture(params=["HRES", "ATOS_DT"], scope="module")
-def parsed_config(request, base_raw_config, tmp_path_factory):
-    """Return a raw config common to tasks."""
-    config = ParsedConfig(
-        base_raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
-    )
-
-    try:
-        basetime = config["general.times.basetime"]
-    except KeyError:
-        basetime = config["general.times.start"]
-    try:
-        validtime = config["general.times.validtime"]
-    except KeyError:
-        validtime = basetime
+def parsed_config(request, base_parsed_config, tmp_path_factory):
+    """Return a parsed config common to tasks."""
     config_patch = tomlkit.parse(
         f"""
-        [general.times]
-            basetime = "{basetime}"
-            validtime = "{validtime}"
         [boundaries]
             ifs.selection = "{request.param}"
         [system]
@@ -82,7 +74,7 @@ def parsed_config(request, base_raw_config, tmp_path_factory):
         """
     )
 
-    config = config.copy(update=config_patch)
+    config = base_parsed_config.copy(update=config_patch)
     return config
 
 

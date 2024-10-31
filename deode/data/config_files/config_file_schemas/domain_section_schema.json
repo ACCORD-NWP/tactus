@@ -19,6 +19,20 @@
       "type": "string",
       "description": "Name of your domain"
     },
+    "number": {
+      "description": "Sequence number for domain",
+      "default": "",
+      "oneOf": [
+        {
+          "type": "string",
+          "maxLength": 0
+        },
+        {
+          "type": "number",
+          "minimum": 0
+        }
+      ]
+    },
     "nimax": {
       "type": "number",
       "description": "Number of grid points zonally",

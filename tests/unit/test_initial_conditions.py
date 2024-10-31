@@ -24,8 +24,8 @@ def parsed_config(request, tmpdir):
         for f in [
             "foo",
             "ELSCFTESTALBC000",
-            "ICMSHTEST+0006h00m00s",
-            "ICMSHTEST+0006h00m00s.sfx",
+            "ICMSHTEST+0003h00m00s",
+            "ICMSHTEST+0003h00m00s.sfx",
             "ICMSHTESTINIT.sfx",
         ]:
             Path(f"{tmpdir}/{f}").touch()
@@ -91,14 +91,14 @@ def test_find_initial_files(tmpdir, parsed_config, set_surfex, set_mode, param):
             truth = f"{tmpdir}/ELSCFTESTALBC000"
             truth_sfx = f"{tmpdir}/ICMSHTESTINIT.sfx"
             if "times" in param["general"]:
-                truth = f"{tmpdir}/ICMSHTEST+0006h00m00s"
-                truth_sfx = f"{tmpdir}/ICMSHTEST+0006h00m00s.sfx"
+                truth = f"{tmpdir}/ICMSHTEST+0003h00m00s"
+                truth_sfx = f"{tmpdir}/ICMSHTEST+0003h00m00s.sfx"
         elif set_mode["suite_control"]["mode"] == "cold_start":
             truth = f"{tmpdir}/ELSCFTESTALBC000"
             truth_sfx = f"{tmpdir}/ICMSHTESTINIT.sfx"
         elif set_mode["suite_control"]["mode"] == "restart":
-            truth = f"{tmpdir}/ICMSHTEST+0006h00m00s"
-            truth_sfx = f"{tmpdir}/ICMSHTEST+0006h00m00s.sfx"
+            truth = f"{tmpdir}/ICMSHTEST+0003h00m00s"
+            truth_sfx = f"{tmpdir}/ICMSHTEST+0003h00m00s.sfx"
             if "initfile" in param["general"]:
                 truth = f"{tmpdir}/foo"
                 truth_sfx = f"{tmpdir}/foo"
