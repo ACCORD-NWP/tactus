@@ -9,7 +9,7 @@ from typing import List
 
 import tomlkit
 
-from .config_parser import ConfigParserDefaults, ParsedConfig
+from .config_parser import ConfigParserDefaults, ConfigPaths, ParsedConfig
 from .derived_variables import set_times
 from .logs import logger
 from .os_utils import resolve_path_relative_to_package
@@ -65,7 +65,7 @@ class ExpFromFiles(Exp):
         logger.debug("Construct ExpFromFiles")
         logger.debug("Experiment dependencies: {}", exp_dependencies)
 
-        config_dirs = str(exp_dependencies.get("config_dir")).split(":")
+        config_dir = exp_dependencies.get("config_dir")
         include_paths = {}
         if host is not None:
             host = host.detect_deode_host()
@@ -75,20 +75,9 @@ class ExpFromFiles(Exp):
                 "platform": f"platform_paths/{host}.toml",
                 "submission": f"submission/{host}.toml",
             }
-            missing_include = {}
             for include, include_path in include_needs.items():
-                missing_include[include] = []
-                for config_dir in config_dirs:
-                    incp = f"{config_dir}/include/{include_path}"
-                    if os.path.exists(incp):
-                        include_paths.update({include: incp})
-                        break
-                    else:  # noqa RET508
-                        missing_include[include].append(incp)
-            if len(include_paths) != 3:
-                for include, include_path in missing_include.items():
-                    logger.error(" No {} include files as {}", include, include_path)
-                raise FileNotFoundError
+                incp = ConfigPaths.path_from_subpath(include_path, config_dir)
+                include_paths.update({include: incp})
 
         config_dict = config.dict()
         for inct, incp in include_paths.items():
@@ -216,20 +205,11 @@ class ExpFromFiles(Exp):
             exp_dependencies(dict): Experiment dependencies from setup.
 
         """
-        exp_dependencies = {}
-        if config_dir is None:
-            config_dir = ConfigParserDefaults.CONFIG_DIRECTORY
-        else:
-            config_dir += f":{ConfigParserDefaults.CONFIG_DIRECTORY}"
-        logger.info("Setting search path(s) config include files: {}", config_dir)
-
-        exp_dependencies.update(
-            {
-                "tmp_outfile": f"{output_file}.tmp.{os.getpid()}.toml",
-                "config_dir": config_dir,
-                "case": case,
-            }
-        )
+        exp_dependencies = {
+            "tmp_outfile": f"{output_file}.tmp.{os.getpid()}.toml",
+            "config_dir": config_dir,
+            "case": case,
+        }
         return exp_dependencies
 
 

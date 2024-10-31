@@ -92,11 +92,12 @@ class ConfigPaths:
         logger.info(f" Data paths in search order: {json.dumps(path_info, indent=4)}")
 
     @staticmethod
-    def path_from_subpath(subpath) -> Path:
+    def path_from_subpath(subpath, additional_path=None) -> Path:
         """Interface to find full path given any subpath, by searching 'searchpaths'.
 
         Arguments:
             subpath (str): Subpath to search for
+            additional_path (Path) : Extra path to search in
 
         Returns:
             (Path): Full path to target
@@ -105,7 +106,10 @@ class ConfigPaths:
             RuntimeRerror: Various errors
         """
         pattern = f"**/{subpath}"
-        for searchpath in ConfigPaths.DATA_SEARCHPATHS:
+        searchpaths = ConfigPaths.DATA_SEARCHPATHS
+        if additional_path is not None:
+            searchpaths.insert(0, additional_path)
+        for searchpath in searchpaths:
             results = list(Path(searchpath).rglob(pattern))
             if len(results) > 1:
                 logger.error("Multiple matches found for subpath: {}", subpath)
