@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+
+## [0.8.0] - 2024-10-31
+
 ### Added
 - Added a operational config toml to be activated after further inspection. [\#829](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/829) (@uandrae)
 - Added the same macros to `general.times.[start|end|validtime]` as for `basetime`. [\#829](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/829) (@uandrae)
