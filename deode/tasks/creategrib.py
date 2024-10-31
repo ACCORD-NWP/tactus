@@ -5,6 +5,7 @@ import os
 
 from ..datetime_utils import as_datetime, oi2dt_list
 from ..logs import logger
+from ..toolbox import FileManager
 from .base import Task
 from .batch import BatchJob
 
@@ -38,6 +39,7 @@ class CreateGrib(Task):
         self.file_templates = self.config["file_templates"]
 
         self.gl = self.get_binary("gl")
+        self.csc = self.config["general.csc"]
 
     def create_list(self, input_template, output_settings):
         """Create list of files to process."""
@@ -53,7 +55,6 @@ class CreateGrib(Task):
 
     def convert2grib(self, infile, outfile, filetype):
         """Convert FA to grib.
-
         Namelist arguments are given in the task.creategrib config part
         per filetype
         Args:
@@ -68,12 +69,18 @@ class CreateGrib(Task):
 
         of = self.rules[filetype]["output_format"]
         cmd = f"{self.gl} -p {infile} -o {outfile} -of {of}"
-        if len(self.rules[filetype]["namelist"]) > 0:
+        gl_namelist = (
+            self.rules[filetype][self.csc]["namelist"]
+            if self.csc in self.rules[filetype]
+            else self.rules[filetype]["namelist"]
+        )
+
+        if len(gl_namelist) > 0:
             # Write namelist as given in rules
             namelist_file = "namelist"
             with open(namelist_file, "w") as namelist:
                 namelist.write("&naminterp\n")
-                for x in self.rules[filetype]["namelist"]:
+                for x in gl_namelist:
                     y = self.platform.substitute(x)
                     namelist.write(f"{y}\n")
                 namelist.write("/\n")
@@ -86,9 +93,14 @@ class CreateGrib(Task):
     def execute(self):
         """Execute creategrib."""
         for filetype in self.conversions:
+            # Map file type if asked for
+            try:
+                filetype_map = self.rules[filetype]["filetype_map"]
+            except KeyError:
+                filetype_map = filetype
             file_handle = self.create_list(
                 self.file_templates[filetype]["archive"],
-                self.output_settings[filetype],
+                self.output_settings[filetype_map],
             )
             for validtime, fname in file_handle.items():
                 output = self.platform.substitute(

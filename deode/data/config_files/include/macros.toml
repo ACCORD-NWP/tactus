@@ -19,7 +19,6 @@
     {ecf_out = "scheduler.ecfvars.ecf_out"},
     {ecfs_prefix = "archiving.prefix.ecfs"},
     {ehype_path = "platform.impact.ehype"},
-    {faname_map = "task.CreateGrib.surfx.faname_map"},
     {forecast_range = "general.times.forecast_range"},
     {fpdomain = "fullpos.domain_name"},
     {fullpos_output_freq = "general.output_settings.fullpos"},
