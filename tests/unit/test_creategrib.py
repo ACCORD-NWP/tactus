@@ -54,4 +54,4 @@ def test_convert2grib(basic_config, filetype):
     inpath = os.path.dirname(infile)
     os.makedirs(inpath, exist_ok=True)
     Path(infile).touch()
-    cg.convert2grib(output_list[cg.basetime], "foo")
+    cg.convert2grib(output_list[cg.basetime], "foo", filetype)

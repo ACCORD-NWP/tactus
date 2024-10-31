@@ -93,14 +93,9 @@ class CreateGrib(Task):
     def execute(self):
         """Execute creategrib."""
         for filetype in self.conversions:
-            # Map file type if asked for
-            try:
-                filetype_map = self.rules[filetype]["filetype_map"]
-            except KeyError:
-                filetype_map = filetype
             file_handle = self.create_list(
                 self.file_templates[filetype]["archive"],
-                self.output_settings[filetype_map],
+                self.output_settings[filetype],
             )
             for validtime, fname in file_handle.items():
                 output = self.platform.substitute(
