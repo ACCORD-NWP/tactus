@@ -5,7 +5,6 @@ import os
 
 from ..datetime_utils import as_datetime, oi2dt_list
 from ..logs import logger
-from ..toolbox import FileManager
 from .base import Task
 from .batch import BatchJob
 

@@ -1,6 +1,11 @@
 [general]
   event_type = "airquality"
 
+[archiving.hour.fdb.surfex_grib2]
+  active = false
+  inpath = "@ARCHIVE@"
+  pattern = "GRIBSFX*grib2"
+
 [file_templates.surfex]
   grib = "GRIBSFX@CNMEXP@+@DURATION_ARCHIVE@.grib2"
 
@@ -19,10 +24,5 @@
 [task.CreateGrib.surfex.HARMONIE_AROME]
   namelist = [
     "outgeo%center=85",
-    "READKEY%FANAME='SFX.SST','SFX.SIC','SFX.Z0','X001TG1','X001TG2','X001WG1','X001WG2','X001LAI','SFX.TS'"
+    "READKEY%FANAME='SFX.SST','SFX.SIC','SFX.Z0','X001TG1','X001TG2','X001WG1','X001WG2','X001LAI','SFX.TS'",
   ]
-
-[archiving.hour.fdb.surfex_grib2]
-  active = false
-  inpath = "@ARCHIVE@"
-  pattern = "GRIBSFX*grib2"
