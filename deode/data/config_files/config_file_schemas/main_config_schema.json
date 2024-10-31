@@ -158,10 +158,7 @@
           "items": {
             "type": "string"
           },
-          "default": [
-            "rules",
-            "namfpc_header"
-          ]
+          "default": ["rules", "namfpc_header"]
         },
         "selection": {
           "description": "List of selections to include",
@@ -338,88 +335,86 @@
       }
     },
     "gribmodify": {
-       "title": "Section for modify grib",
-       "description": "Rules for modify grib to get total prcipitation",
-       "type": "object",
-       "properties": {
-	  "3": {
-	     "title": "Total precpipation",
-	     "description": "shortName for the total precipitation.",
-	     "type": "object",
-	     "properties": {
-		"input": {
-		   "title": "Input parameters",
-		   "description": "List of parameters",
-		   "type": "array",
-	           "items": {
-         	   "type": "string"
-        	  }
-		},
-		"operator": {
-		  "title": "Operator",
-		  "description": "Operator for compute the new field from input parameters",
-		  "type": "string"
-		},
-                "output": {
-                  "title": "Output parameter",
-                  "description": "shortName of output parameter.",
-                  "type": "string"
-                }
-
-	     }
-	     },
-	   "2": {
-             "title": "Total snow",
-             "description": "shortName for the total precipitation.",
-             "type": "object",
-             "properties": {
-                "input": {
-                   "title": "Input parameters",
-                   "description": "List of parameters",
-                   "type": "array",
-                   "items": {
-                   "type": "string"
-                  }
-	},
-                "operator": {
-                  "title": "Operator",
-                  "description": "Operator for compute the new field from input parameters",
-                  "type": "string"
-                },
-                "output": {
-                  "title": "Output parameter",
-                  "description": "shortName of output parameter.",
-                  "type": "string"
-                }
-
-             }
-             },
-	     "1": {
-             "title": "Total rain",
-             "description": "shortName for the total precipitation.",
-             "type": "object",
-             "properties": {
-                "input": {
-                   "title": "Input parameters",
-                   "description": "List of parameters",
-                   "type": "array",
-                   "items": {
-                   "type": "string"
-                  }
-		},
-                "operator": {
-                  "title": "Operator",
-                  "description": "Operator for compute the new field from input parameters",
-                  "type": "string"
-                },
-		"output": {
-                  "title": "Output parameter",
-                  "description": "shortName of output parameter.",
-                  "type": "string"
-                }
-             }
-             }
-       }
+      "title": "Section for modify grib",
+      "description": "Rules for modify grib to get total prcipitation",
+      "type": "object",
+      "properties": {
+        "3": {
+          "title": "Total precpipation",
+          "description": "shortName for the total precipitation.",
+          "type": "object",
+          "properties": {
+            "input": {
+              "title": "Input parameters",
+              "description": "List of parameters",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "operator": {
+              "title": "Operator",
+              "description": "Operator for compute the new field from input parameters",
+              "type": "string"
+            },
+            "output": {
+              "title": "Output parameter",
+              "description": "shortName of output parameter.",
+              "type": "string"
+            }
+          }
+        },
+        "2": {
+          "title": "Total snow",
+          "description": "shortName for the total precipitation.",
+          "type": "object",
+          "properties": {
+            "input": {
+              "title": "Input parameters",
+              "description": "List of parameters",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "operator": {
+              "title": "Operator",
+              "description": "Operator for compute the new field from input parameters",
+              "type": "string"
+            },
+            "output": {
+              "title": "Output parameter",
+              "description": "shortName of output parameter.",
+              "type": "string"
+            }
+          }
+        },
+        "1": {
+          "title": "Total rain",
+          "description": "shortName for the total precipitation.",
+          "type": "object",
+          "properties": {
+            "input": {
+              "title": "Input parameters",
+              "description": "List of parameters",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "operator": {
+              "title": "Operator",
+              "description": "Operator for compute the new field from input parameters",
+              "type": "string"
+            },
+            "output": {
+              "title": "Output parameter",
+              "description": "shortName of output parameter.",
+              "type": "string"
+            }
+          }
+        }
+      }
     },
     "general": {
       "title": "General Section",
@@ -561,11 +556,8 @@
         "event_type": {
           "description": "Type of extreme event",
           "type": "string",
-	  "default": "nwp",
-          "enum": [
-	    "nwp",
-            "flooding"
-          ]
+          "default": "nwp",
+          "enum": ["nwp", "flooding"]
         },
         "initfile": {
           "description": "Initial file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",
@@ -626,7 +618,7 @@
       },
       {
         "type": "string",
-        "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)$"
       },
       {
         "type": "array",
