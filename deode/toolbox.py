@@ -77,6 +77,7 @@ class Platform:
 
         """
         self.config = config
+        self.fill_macros()
 
     def get_system_value(self, role):
         """Get the system value.
@@ -139,14 +140,27 @@ class Platform:
         """
         return self.config["general.platform"]
 
-    def get_macros(self):
-        """Get the macros.
+    def fill_each_macro(self, macro_config):
+        """Fill each of the macros."""
+        group_macros = f"{macro_config}.group_macros"
+        for source in self.config.get(group_macros, []):
+            for macro, val in self.config[source].dict().items():
+                self.store_macro(macro.upper(), val)
 
-        Returns:
-            dict: Macros to define.
+        os_macros = f"{macro_config}.os_macros"
+        for macro in list(self.config.get(os_macros, [])):
+            with contextlib.suppress(KeyError):
+                self.store_macro(macro, os.environ[macro])
 
-        """
-        return list(self.config["platform"].keys())
+        gen_macros = f"{macro_config}.gen_macros"
+        for key, val in self.expand_macros(self.config.get(gen_macros, {})).items():
+            self.store_macro(key, val)
+
+    def fill_macros(self):
+        """Fill the macros."""
+        self.macros = {}
+        self.fill_each_macro("macros")
+        self.fill_each_macro("macros.user_macros")
 
     def get_system_macros(self):
         """Get the macros.
@@ -174,6 +188,64 @@ class Platform:
 
         """
         return self.config["macros.gen_macros"]
+
+    def store_macro(self, key, val):
+        """Check and store a macro.
+
+        Args:
+            key (str) : Macro key
+            val (str) : Macro value
+
+        Raises:
+            RuntimeError: If macro already exists
+
+        """
+        if key in self.macros:
+            logger.error("Duplicated macro: {} {}", key, val)
+            logger.error("Existing macro value: {}", self.macros[key])
+            raise RuntimeError(f"Duplicated macro: {key}")
+
+        self.macros[key] = val
+
+    def expand_macros(self, macros):
+        """Check and expand macros.
+
+        Args:
+            macros (dict): Input macros
+
+        Returns:
+            out_macros (dict): Stored macros
+
+        """
+        out_macros = {}
+        for macro in macros:
+            if isinstance(macro, dict):
+                key = next(iter(macro))
+                val = self.config.get(macro[key].lower(), None)
+                key = key.upper()
+            else:
+                val = self.config.get(macro.lower(), None)
+                key = macro.split(".")[-1].upper()
+
+            if val is None:
+                logger.warning("Macro {} is not defined", macro)
+            else:
+                out_macros[key] = val
+
+        return out_macros
+
+    def resolve_macros(self, config_dict, keyval=None):
+        """Resolve all macros in a nested dict (both keys and values!)."""
+        if isinstance(config_dict, list):
+            result = [self.substitute(x, keyval=keyval) for x in config_dict]
+        elif isinstance(config_dict, dict):
+            result = {
+                self.substitute(x): self.resolve_macros(y, keyval=x)
+                for x, y in config_dict.items()
+            }
+        else:
+            result = self.substitute(config_dict, keyval=keyval)
+        return result
 
     def get_provider(self, provider_id, target, fetch=True):
         """Get the needed provider.
@@ -229,15 +301,13 @@ class Platform:
         logger.debug("key={} value={}", key, value)
 
         if not isinstance(value, str):
-            logger.warning(
+            value = str(value)
+            logger.debug(
                 "Input value {} for key={} is not a string, but {}!",
                 value,
                 key,
                 type(value),
             )
-            if key == "RRR" and value == -1:
-                value = ""
-            value = str(value)
 
         if ci:
             compiled = re.compile(re.escape(f"{micro}{key}{micro}"), re.IGNORECASE)
@@ -271,140 +341,142 @@ class Platform:
 
         return d
 
-    def substitute(self, pattern, basetime=None, validtime=None):
+    def substitute_datetime(self, pattern, datetime, suffix=""):
+        """Substitute datetime related properties.
+
+        Args:
+            pattern (str): _description_
+            datetime(DateTime object): datetime to treat
+            suffix (str): Add on to key
+
+        Returns:
+            str: Substituted string.
+
+        """
+        datetime_substitution_map = {
+            "YMD": "%Y%m%d",
+            "BASETIME": "%Y-%m-%dT%H:%M:%SZ",
+            "YYYY": "%Y",
+            "YY": "%y",
+            "MM": "%m",
+            "DD": "%d",
+            "HH": "%H",
+            "mm": "%M",
+            "ss": "%S",
+        }
+        for key, val in datetime_substitution_map.items():
+            ci = key not in ["MM", "mm", "ss"]
+            _key = key + suffix
+            pattern = self.sub_value(pattern, _key, datetime.strftime(val), ci=ci)
+
+        return pattern
+
+    def substitute(self, pattern, basetime=None, validtime=None, keyval=None):
         """Substitute pattern.
 
         Args:
             pattern (str): _description_
             basetime (datetime.datetime, optional): Base time. Defaults to None.
             validtime (datetime.datetime, optional): Valid time. Defaults to None.
+            keyval (str): Key associated with pattern
 
         Returns:
             str: Substituted string.
 
+        Raises:
+            RuntimeError: In case of erroneous macro
+
         """
-        if isinstance(pattern, str):
-            # Collect what is defined in config.macros, the group, os and general macros
-            all_macros = {}
+        if not isinstance(pattern, str):
+            return pattern
 
-            for source in self.config["macros.group_macros"]:
-                for macro, val in self.config[source].dict().items():
-                    all_macros[macro.upper()] = val
+        if pattern.count("@") % 2 != 0:
+            if keyval is None:
+                message = f"Erroneous macro somewhere in pattern={pattern}"
+            else:
+                message = f"Erroneous macro for config key={keyval}"
+                message += f" somewhere in pattern={pattern}"
+            logger.debug(message)
+            return pattern
 
-            for macro in list(self.get_os_macros()):
-                with contextlib.suppress(KeyError):
-                    all_macros[macro] = os.environ[macro]
+        i = [m.start() for m in re.finditer(r"@", pattern)]
+        try:
+            sub_patterns = [pattern[i[j] + 1 : i[j + 1]] for j in range(0, len(i), 2)]
+        except IndexError as error:
+            raise IndexError(f"Could not separate pattern:{pattern} by '@'") from error
 
-            for macro in self.config["macros.gen_macros"]:
-                if isinstance(macro, dict):
-                    key = next(iter(macro))
-                    val = self.config.get(macro[key].lower(), None)
-                    key = key.upper()
-                else:
-                    val = self.config.get(macro.lower(), None)
-                    key = macro.split(".")[-1].upper()
+        for sub_pattern in sub_patterns:
+            with contextlib.suppress(KeyError):
+                val = self.macros[sub_pattern.upper()]
+                try:
+                    if val.count("@") > 0:
+                        val = self.substitute(val, basetime, validtime, keyval)
+                except AttributeError:
+                    pass
 
-                if val is None:
-                    logger.warning("Macro {} is not defined", macro)
-                else:
-                    all_macros[key] = val
+                logger.debug("before replace macro={} pattern={}", sub_pattern, pattern)
+                pattern = self.sub_value(pattern, sub_pattern, val)
+                logger.debug("after replace macro={} pattern={}", sub_pattern, pattern)
 
-            i = [m.start() for m in re.finditer(r"@", pattern)]
-            last_pattern = "#"
-            while len(i) > 0 and last_pattern != pattern:
-                sub_patterns = [pattern[i[j] + 1 : i[j + 1]] for j in range(0, len(i), 2)]
-                last_pattern = pattern
-                for sub_pattern in sub_patterns:
-                    with contextlib.suppress(KeyError):
-                        val = all_macros[sub_pattern.upper()]
-                        logger.debug("before replace macro={} pattern={}", macro, pattern)
-                        pattern = self.sub_value(pattern, sub_pattern, val)
-                        logger.debug("after replace macro={} pattern={}", macro, pattern)
+        # LBC number handling
+        try:
+            bd_nr = int(self.config["task.args.bd_nr"])
+            pattern = self.sub_value(pattern, "NNN", f"{bd_nr:03d}")
+        except KeyError:
+            pass
 
-                i = [m.start() for m in re.finditer(r"@", pattern)]
+        # Time handling
+        if basetime is None:
+            basetime = self.config.get("general.times.basetime", None)
+        if validtime is None:
+            validtime = self.config.get("general.times.validtime", None)
+        if isinstance(basetime, str):
+            basetime = as_datetime(basetime)
+        if isinstance(validtime, str):
+            validtime = as_datetime(validtime)
 
-            # LBC number handling
-            try:
-                bd_nr = int(self.config["task.args.bd_nr"])
-                pattern = self.sub_value(pattern, "NNN", f"{bd_nr:03d}")
-            except KeyError:
-                pass
+        if basetime is not None:
+            pattern = self.substitute_datetime(pattern, basetime)
+            one_decade_pattern = (
+                get_decade(basetime) if self.config["pgd.one_decade"] else ""
+            )
+            pattern = self.sub_value(pattern, "ONE_DECADE", one_decade_pattern)
 
-            # Time handling
-            if basetime is None:
-                basetime = str(self.config["general.times.basetime"])
-            if validtime is None:
-                validtime = str(self.config["general.times.validtime"])
-            if isinstance(basetime, str):
-                basetime = as_datetime(basetime)
-            if isinstance(validtime, str):
-                validtime = as_datetime(validtime)
+        if basetime is not None and validtime is not None:
+            logger.debug(
+                "Substituted date/time info: basetime={} validtime={}",
+                basetime.strftime("%Y%m%d%H%M"),
+                validtime.strftime("%Y%m%d%H%M"),
+            )
+            pattern = self.substitute_datetime(pattern, validtime, "_LL")
+            lead_time = validtime - basetime
+            lead_seconds = int(lead_time.total_seconds())
+            lh = int(lead_seconds / 3600)
+            lm = int((lead_seconds % 3600 - lead_seconds % 60) / 60)
+            ls = int(lead_seconds % 60)
 
-            if basetime is not None:
-                pattern = self.sub_value(pattern, "YMD", basetime.strftime("%Y%m%d"))
-                pattern = self.sub_value(
-                    pattern, "BASETIME", basetime.strftime("%Y-%m-%dT%H:%M:%SZ")
-                )
-                pattern = self.sub_value(pattern, "YYYY", basetime.strftime("%Y"))
-                pattern = self.sub_value(pattern, "YY", basetime.strftime("%y"))
-                pattern = self.sub_value(pattern, "MM", basetime.strftime("%m"), ci=False)
-                pattern = self.sub_value(pattern, "DD", basetime.strftime("%d"))
-                pattern = self.sub_value(pattern, "HH", basetime.strftime("%H"))
-                pattern = self.sub_value(pattern, "mm", basetime.strftime("%M"), ci=False)
-                pattern = self.sub_value(pattern, "ss", basetime.strftime("%S"), ci=False)
+            pattern = self.sub_value(pattern, "LH", f"{lh:02d}")
+            pattern = self.sub_value(pattern, "LL", f"{lh:02d}")
+            pattern = self.sub_value(pattern, "LLH", f"{lh:03d}")
+            pattern = self.sub_value(pattern, "LLL", f"{lh:03d}")
+            pattern = self.sub_value(pattern, "LLLH", f"{lh:04d}")
+            pattern = self.sub_value(pattern, "LLLL", f"{lh:04d}")
+            pattern = self.sub_value(pattern, "LM", f"{lm:02d}")
+            pattern = self.sub_value(pattern, "LS", f"{ls:02d}")
 
-                one_decade_pattern = (
-                    get_decade(basetime) if self.config["pgd.one_decade"] else ""
-                )
-                pattern = self.sub_value(pattern, "ONE_DECADE", one_decade_pattern)
+            tstep = self.config["domain.tstep"]
+            if tstep is not None:
+                lead_step = lead_seconds // tstep
+                pattern = self.sub_value(pattern, "TTT", f"{lead_step:03d}")
+                pattern = self.sub_value(pattern, "TTTT", f"{lead_step:04d}")
 
-            if basetime is not None and validtime is not None:
-                logger.debug(
-                    "Substituted date/time info: basetime={} validtime={}",
-                    basetime.strftime("%Y%m%d%H%M"),
-                    validtime.strftime("%Y%m%d%H%M"),
-                )
-                lead_time = validtime - basetime
-                pattern = self.sub_value(pattern, "YYYY_LL", validtime.strftime("%Y"))
-                pattern = self.sub_value(
-                    pattern, "MM_LL", validtime.strftime("%m"), ci=False
-                )
-                pattern = self.sub_value(pattern, "DD_LL", validtime.strftime("%d"))
-                pattern = self.sub_value(pattern, "HH_LL", validtime.strftime("%H"))
-                pattern = self.sub_value(
-                    pattern, "mm_LL", validtime.strftime("%M"), ci=False
-                )
+            start = self.config.get("general.times.start", None)
+            if start is not None:
+                pattern = self.substitute_datetime(pattern, as_datetime(start), "_START")
 
-                lead_seconds = int(lead_time.total_seconds())
-                lh = int(lead_seconds / 3600)
-                lm = int((lead_seconds % 3600 - lead_seconds % 60) / 60)
-                ls = int(lead_seconds % 60)
-
-                pattern = self.sub_value(pattern, "LH", f"{lh:02d}")
-                pattern = self.sub_value(pattern, "LL", f"{lh:02d}")
-                pattern = self.sub_value(pattern, "LLH", f"{lh:03d}")
-                pattern = self.sub_value(pattern, "LLL", f"{lh:03d}")
-                pattern = self.sub_value(pattern, "LLLH", f"{lh:04d}")
-                pattern = self.sub_value(pattern, "LLLL", f"{lh:04d}")
-                pattern = self.sub_value(pattern, "LM", f"{lm:02d}")
-                pattern = self.sub_value(pattern, "LS", f"{ls:02d}")
-                tstep = self.config["domain.tstep"]
-                if tstep is not None:
-                    lead_step = lead_seconds // tstep
-                    pattern = self.sub_value(pattern, "TTT", f"{lead_step:03d}")
-                    pattern = self.sub_value(pattern, "TTTT", f"{lead_step:04d}")
-
-                start = self.config.get("general.times.start", None)
-                if start is not None:
-                    start = as_datetime(start)
-                    pattern = self.sub_value(
-                        pattern, "YMD_START", start.strftime("%Y%m%d")
-                    )
-
-                end = self.config.get("general.times.end", None)
-                if end is not None:
-                    end = as_datetime(end)
-                    pattern = self.sub_value(pattern, "YMD_END", end.strftime("%Y%m%d"))
+            end = self.config.get("general.times.end", None)
+            if end is not None:
+                pattern = self.substitute_datetime(pattern, as_datetime(end), "_END")
 
         logger.debug("Return pattern={}", pattern)
         return pattern

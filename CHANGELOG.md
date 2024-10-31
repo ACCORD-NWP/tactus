@@ -10,10 +10,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+
+## [0.8.0] - 2024-10-31
+
+### Added
+- Added a operational config toml to be activated after further inspection. [\#829](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/829) (@uandrae)
+- Added the same macros to `general.times.[start|end|validtime]` as for `basetime`. [\#829](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/829) (@uandrae)
+- Add settings for suite CleanOldData, which clean scratch data, suites in ecflow server and IFS data. It include cron. [\#825](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/825) (@kastelecn)
+- Add posibility to read, and remove, suite definition file. [\#799](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/799) [\#832](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/832) (@uandrae)
+- Add functionality for user macros and to expand macros in config file. [\#824](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/824) (@uandrae)
+
+### Changed
+- Changed the test procedure to require using `deode/data/config_files/modifications/test_settings.toml`. [\#829](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/829) (@uandrae)
+- Renamed the Norrkoping domain to 500m tempalate and changed useage accordingly. [\#829](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/829) (@uandrae)
+- Change mars setings to work on lumi with lumi\_DT selection. [\#817](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/817) (@kastelecn)
+- Remove used suite definition file by default. [\#799](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/799) (@uandrae)
+- Change default ifs.selection to point to the valid DT on the current host. With this the default selection on atos is coming from expver=iekm	  . [\#826](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/826) (@uandrae)
+
+### Removed
+- Removed the requirement to set `general.times.end`. [\#829](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/829) (@uandrae)
+- Removed the requirement to set `domain.[xlat0|xlon0]`. [\#829](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/829) (@uandrae)
+
+
 ## [0.7.1] - 2024-10-17
 
 ### Added
 - Add total precipitation to grib and add total rain and snow to grib (ALARO). [\#804](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/804) (@kastelecn)
+
 
 ## [0.7.0] - 2024-10-09
 
@@ -43,6 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed duplicated parsing [#783](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/783) (@uandrae)
 - Fix ecf_host selector not selecting the correct naming convention on Atos [#781](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/781) (@adam-otruba)
 
+
 ##[bugfix\_v0.6.2] - 2024-09-26
 
 ### Fixed
@@ -51,6 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [bugfix\_v0.6.1] - 2024-09-24
 - change binary version for CY48t3
 - set ATOS\_DT as default ifs.selection
+
 
 ## [0.6.0] - 2024-09-19
 
