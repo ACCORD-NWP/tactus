@@ -74,7 +74,8 @@ class CreateGrib(Task):
             with open(namelist_file, "w") as namelist:
                 namelist.write("&naminterp\n")
                 for x in self.rules[filetype]["namelist"]:
-                    namelist.write(f"{x}\n")
+                    y = self.platform.substitute(x)
+                    namelist.write(f"{y}\n")
                 namelist.write("/\n")
                 namelist.close()
             cmd += f" -n {namelist_file}"
