@@ -107,5 +107,3 @@
 [task.CreateGrib.surfex]
   namelist = ["stepunits='h'"]
   output_format = "GRIB"
-
-

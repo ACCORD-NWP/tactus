@@ -54,6 +54,7 @@ class CreateGrib(Task):
 
     def convert2grib(self, infile, outfile, filetype):
         """Convert FA to grib.
+
         Namelist arguments are given in the task.creategrib config part
         per filetype
         Args:
