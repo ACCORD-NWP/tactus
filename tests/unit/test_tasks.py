@@ -10,7 +10,7 @@ import tomlkit
 
 from deode import GeneralConstants
 from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
-from deode.derived_variables import set_times
+from deode.derived_variables import derived_variables, set_times
 from deode.plugin import DeodePluginRegistry
 from deode.tasks.archive import ArchiveHour, ArchiveStatic
 from deode.tasks.base import Task
@@ -50,6 +50,7 @@ def task_name_and_configs(request, base_raw_config, tmp_path_factory):
         base_raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
     )
     task_config = task_config.copy(update=set_times(task_config))
+    task_config = task_config.copy(update=derived_variables(task_config))
 
     basetime = task_config["general.times.basetime"]
     config_patch = tomlkit.parse(
