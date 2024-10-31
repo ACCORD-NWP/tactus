@@ -552,8 +552,8 @@ class TestConfigPaths:
         ConfigPaths.print()
 
     def test_match_new_path(self, tmp_test_data_dir):
-        path1 = tmp_test_data_dir / "test" / "config_files"
-        os.makedirs(path1, exist_ok=True)
+        test_path1 = tmp_test_data_dir / "test" / "config_files"
+        os.makedirs(test_path1, exist_ok=True)
 
         ConfigPaths.DATA_SEARCHPATHS = (
             tmp_test_data_dir / "test",
@@ -561,16 +561,16 @@ class TestConfigPaths:
         )
 
         path = ConfigPaths.path_from_subpath("config_files")
-        assert path == tmp_test_data_dir / "test" / "config_files"
+        assert path == test_path1
 
         path = ConfigPaths.path_from_subpath("input")
         assert path == ConfigParserDefaults.DATA_DIRECTORY / "input"
 
     def test_multiple_paths(self, tmp_test_data_dir):
-        path1 = tmp_test_data_dir / "test" / "config_files"
-        path2 = tmp_test_data_dir / "test" / "test" / "config_files"
-        os.makedirs(path1, exist_ok=True)
-        os.makedirs(path2, exist_ok=True)
+        test_path1 = tmp_test_data_dir / "test" / "config_files"
+        test_path2 = tmp_test_data_dir / "test" / "test" / "config_files"
+        os.makedirs(test_path1, exist_ok=True)
+        os.makedirs(test_path2, exist_ok=True)
 
         ConfigPaths.DATA_SEARCHPATHS = (
             tmp_test_data_dir / "test",
