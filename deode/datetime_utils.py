@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Implement helper routines to deal with dates and times."""
 from datetime import timezone
+from typing import List, Tuple, Union
 
 import dateutil.parser
 import pandas as pd
@@ -70,7 +71,9 @@ def check_syntax(output_settings, length):
             )
 
 
-def expand_output_settings(output_settings, forecast_range):
+def expand_output_settings(
+    output_settings: Union[str, Tuple[str], List[str]], forecast_range: str
+) -> List[List[pd.Timedelta]]:
     """Expand the output_settings coming from config.
 
     Args:
@@ -81,25 +84,33 @@ def expand_output_settings(output_settings, forecast_range):
         RuntimeError: Handle erroneous time increment
 
     Returns:
-        sections (list) : List of output subsections
+        sections (list) : List of output subsections. Can be empty in case of
+                            empty output_settings
 
     """
-    oi = []
+    output_intervals = []
     if isinstance(output_settings, str):
         check_syntax([output_settings], 0)
+        # Infer the output intervals from the forecast range and output settings
         if output_settings != "":
-            oi = ["PT0H:" + forecast_range + ":" + output_settings]
-
+            output_intervals = [":".join(["PT0H", forecast_range, output_settings])]
+        else:
+            return output_intervals
     elif isinstance(output_settings, (tuple, list)):
         check_syntax(output_settings, 2)
-        oi = output_settings
+        output_intervals = output_settings
 
-    dt0 = as_timedelta("PT0H")
-    for x in oi:
-        if as_timedelta(x.split(":")[2]) == dt0:
-            raise RuntimeError(f"Zero size time increments not allowed:{x}")
+    # Check for zero size time increments
+    zero_increment = as_timedelta("PT0H")
+    for interval in output_intervals:
+        if as_timedelta(interval.split(":")[2]) == zero_increment:
+            raise RuntimeError(f"Zero size time increments not allowed:{interval}")
 
-    sections = [[as_timedelta(y) for y in x.split(":")] for x in oi]
+    # Convert the output intervals to a list of lists of timedelta objects
+    sections = [
+        [as_timedelta(item) for item in interval.split(":")]
+        for interval in output_intervals
+    ]
 
     return sections
 
@@ -116,19 +127,14 @@ def oi2dt_list(output_settings, forecast_range):
     """
     sections = expand_output_settings(output_settings, forecast_range)
 
-    dt = []
-    cdt = as_timedelta("PT0H")
-    fdt = as_timedelta(forecast_range)
-    for s in sections:
-        cdt = s[0]
-        edt = s[1]
-        while cdt <= edt and cdt <= fdt:
-            if cdt not in dt:
-                dt.append(cdt)
-            cdt += s[2]
+    output_dt = set()
+    forecast_timedelta = as_timedelta(forecast_range)
+    for start, end, step in sections:
+        while start <= end and start <= forecast_timedelta:
+            output_dt.add(start)
+            start += step
 
-    dt.sort()
-    return dt
+    return sorted(output_dt)
 
 
 def cycle_offset(

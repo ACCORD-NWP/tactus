@@ -2,13 +2,16 @@
 """Unit tests for datetime_utils.py."""
 import datetime
 
+import pandas as pd
 import pytest
+from pytest_mock import MockFixture
 
 from deode.datetime_utils import (
     as_datetime,
     as_timedelta,
     cycle_offset,
     dt2str,
+    expand_output_settings,
     get_decadal_list,
     get_decade,
     get_month_list,
@@ -85,3 +88,47 @@ def test_get_month_list(param):
     truth = {"2024-02-03T00:00:00Z": [10, 11, 12, 1, 2], "2023-10-10T00:00:00Z": [10]}
 
     assert get_month_list("2023-10-02T00:00:00Z", param) == truth[param]
+
+
+@pytest.mark.parametrize(
+    "output_settings, forecast_range, expected",
+    [
+        ("", "PT6H", []),
+        ("PT1H", "PT6H", [[pd.Timedelta("0H"), pd.Timedelta("6H"), pd.Timedelta("1H")]]),
+        (
+            ["PT0H:PT6H:PT1H", "PT6H:PT12H:PT2H"],
+            "PT12H",
+            [
+                [pd.Timedelta("0H"), pd.Timedelta("6H"), pd.Timedelta("1H")],
+                [pd.Timedelta("6H"), pd.Timedelta("12H"), pd.Timedelta("2H")],
+            ],
+        ),
+        (
+            ("PT0H:PT6H:PT1H", "PT6H:PT12H:PT2H"),
+            "PT12H",
+            [
+                [pd.Timedelta("0H"), pd.Timedelta("6H"), pd.Timedelta("1H")],
+                [pd.Timedelta("6H"), pd.Timedelta("12H"), pd.Timedelta("2H")],
+            ],
+        ),
+    ],
+)
+def test_expand_output_settings(
+    output_settings, forecast_range, expected, mocker: MockFixture
+):
+    mocker.patch("deode.datetime_utils.check_syntax")
+    assert expand_output_settings(output_settings, forecast_range) == expected
+
+
+@pytest.mark.parametrize(
+    "output_settings, forecast_range, exception",
+    [
+        (["PT0H:PT6H:PT0H"], "PT6H", RuntimeError),
+    ],
+)
+def test_expand_output_settings_exceptions(
+    output_settings, forecast_range, exception, mocker: MockFixture
+):
+    mocker.patch("deode.datetime_utils.check_syntax")
+    with pytest.raises(exception):
+        expand_output_settings(output_settings, forecast_range)
