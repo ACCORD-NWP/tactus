@@ -1,6 +1,5 @@
 [general]
   accept_static_namelists = false
-  aqgrib2 = false
   case = "@CASE_PREFIX@@CYCLE@_@CSC@_@EVENT_TYPE@_@DOMAIN@_@YMD_START@"
   cnmexp = "DEOD"
   csc = "AROME"
