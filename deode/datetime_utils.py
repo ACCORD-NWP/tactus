@@ -132,11 +132,13 @@ def oi2dt_list(
     sections = expand_output_settings(output_settings, forecast_range)
 
     output_dt = set()
+    current_dt: pd.Timedelta
     forecast_timedelta = as_timedelta(forecast_range)
     for start, end, step in sections:
-        while start <= end and start <= forecast_timedelta:
-            output_dt.add(start)
-            start += step
+        current_dt = start
+        while current_dt <= end and current_dt <= forecast_timedelta:
+            output_dt.add(current_dt)
+            current_dt += step
 
     return sorted(output_dt)
 

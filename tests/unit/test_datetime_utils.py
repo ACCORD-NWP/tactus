@@ -36,7 +36,9 @@ def test_as_dt2str():
 
 @pytest.mark.parametrize("param", ["05", "15", "25", "29", "31"])
 def test_get_decade(
-    param: Literal["05"] | Literal["15"] | Literal["25"] | Literal["29"] | Literal["31"],
+    param: Union[
+        Literal["05"], Literal["15"], Literal["25"], Literal["29"], Literal["31"]
+    ],
 ):
     truth = {"05": "1205", "15": "1215", "25": "1225", "29": "0105", "31": "0105"}
     dt = as_datetime(f"202312{param}T00")
@@ -44,7 +46,7 @@ def test_get_decade(
 
 
 @pytest.mark.parametrize("param", ["PT3H", "PT0H"])
-def test_offsetparam(param: Literal["PT3H"] | Literal["PT0H"]):
+def test_offsetparam(param: Union[Literal["PT3H"], Literal["PT0H"]]):
     truth_bdshift = {"PT3H": -3, "PT0H": 0}
     truth_bdcycle_start = {"PT3H": 0, "PT0H": 3}
     basetime = as_datetime("20181010T21")
@@ -60,7 +62,7 @@ def test_offsetparam(param: Literal["PT3H"] | Literal["PT0H"]):
 
 
 @pytest.mark.parametrize(
-    "output_settings, expanded_output_settings",
+    ("output_settings", "expanded_output_settings"),
     [
         ("PT3H", [[pd.Timedelta(hours=0), pd.Timedelta(hours=6), pd.Timedelta(hours=3)]]),
         (
@@ -96,7 +98,7 @@ def test_oi2dt_list(
 
 
 @pytest.mark.parametrize("param", ["05", "26"])
-def test_get_decadal_list(param: Literal["05"] | Literal["26"]):
+def test_get_decadal_list(param: Union[Literal["05"], Literal["26"]]):
     truth = {
         "05": [datetime.datetime(2018, 12, 5, 0, tzinfo=datetime.timezone.utc)],
         "26": [
@@ -116,7 +118,7 @@ def test_get_decadal_list(param: Literal["05"] | Literal["26"]):
 
 @pytest.mark.parametrize("param", ["2024-02-03T00:00:00Z", "2023-10-10T00:00:00Z"])
 def test_get_month_list(
-    param: Literal["2024-02-03T00:00:00Z"] | Literal["2023-10-10T00:00:00Z"],
+    param: Union[Literal["2024-02-03T00:00:00Z"], Literal["2023-10-10T00:00:00Z"]],
 ):
     truth = {"2024-02-03T00:00:00Z": [10, 11, 12, 1, 2], "2023-10-10T00:00:00Z": [10]}
 
@@ -124,7 +126,7 @@ def test_get_month_list(
 
 
 @pytest.mark.parametrize(
-    "output_settings, forecast_range, expected",
+    ("output_settings", "forecast_range", "expected"),
     [
         ("", "PT6H", []),
         ("PT1H", "PT6H", [[pd.Timedelta("0H"), pd.Timedelta("6H"), pd.Timedelta("1H")]]),
@@ -160,13 +162,12 @@ def test_expand_output_settings(
         expected (List[List[pd.Timedelta]]): The expected expanded output settings.
         mocker (MockFixture): The mocker object used to mock functions.
     """
-
     mocker.patch("deode.datetime_utils.check_syntax")
     assert expand_output_settings(output_settings, forecast_range) == expected
 
 
 @pytest.mark.parametrize(
-    "output_settings, forecast_range, exception",
+    ("output_settings", "forecast_range", "exception"),
     [
         (["PT0H:PT6H:PT0H"], "PT6H", RuntimeError),
     ],
@@ -191,7 +192,7 @@ def test_expand_output_settings_exceptions(
 
 
 @pytest.mark.parametrize(
-    "output_settings, length, exception",
+    ("output_settings", "length", "exception"),
     [
         (["PT0H:PT6H"], 2, SystemExit),
         (["PT0H:PT6H:PT1H"], 1, SystemExit),
@@ -214,7 +215,7 @@ def test_check_syntax_exceptions(
 
 
 @pytest.mark.parametrize(
-    "output_settings, length",
+    ("output_settings", "length"),
     [
         (["PT0H:PT6H"], 1),
         (["PT0H:PT6H:PT1H"], 2),
