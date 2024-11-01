@@ -51,11 +51,11 @@ def dt2str(dt):
     return duration
 
 
-def check_syntax(output_settings, length):
+def check_syntax(output_settings: Union[Tuple[str], List[str]], length: int):
     """Check syntax of output_settings.
 
     Args:
-        output_settings (tuple, list, str): Specifies the output steps
+        output_settings (Union[Tuple[str], List[str]]): Specifies the output steps
         length (integer): length to check on
 
     Raises:
@@ -77,15 +77,16 @@ def expand_output_settings(
     """Expand the output_settings coming from config.
 
     Args:
-        output_settings (tuple, list, str): Specifies the output steps
+        output_settings (Union[str, Tuple[str], List[str]]):
+            Specifies the output steps
         forecast_range (str): Forecast range in duration syntax
 
     Raises:
         RuntimeError: Handle erroneous time increment
 
     Returns:
-        sections (list) : List of output subsections. Can be empty in case of
-                            empty output_settings
+        sections (List[List[pd.Timedelta]]) : List of output subsections.
+            Can be empty in case of empty output_settings
 
     """
     output_intervals = []
@@ -115,15 +116,18 @@ def expand_output_settings(
     return sections
 
 
-def oi2dt_list(output_settings: Union[str, Tuple[str], List[str]], forecast_range: str):
+def oi2dt_list(
+    output_settings: Union[str, Tuple[str], List[str]], forecast_range: str
+) -> List[pd.Timedelta]:
     """Build list of output occurences.
 
     Args:
-        output_settings (tuple,list,str): Specifies the output steps
+        output_settings (Union[str, Tuple[str], List[str]]):
+            Specifies the output steps
         forecast_range (str): Forecast range in duration syntax
 
     Returns:
-        dt (list) : List of output occurences
+        dt (List[pd.Timedelta]) : Sorted list of output occurences
     """
     sections = expand_output_settings(output_settings, forecast_range)
 
