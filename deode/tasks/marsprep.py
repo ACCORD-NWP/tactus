@@ -46,7 +46,7 @@ class Marsprep(Task):
             self.prep_step = ast.literal_eval(self.config["task.args.prep_step"])
 
         if self.basetime < start_date:
-            raise ValueError(f"No data for {self.basetime}!")
+            raise ValueError(f"No data for {self.basetime}! Data available after {start_date}")
         self.cycle_length = as_timedelta(self.config["general.times.cycle_length"])
         # Get forecast range
         self.forecast_range = as_timedelta(self.config["general.times.forecast_range"])
