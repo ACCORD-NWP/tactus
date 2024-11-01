@@ -115,7 +115,7 @@ def expand_output_settings(
     return sections
 
 
-def oi2dt_list(output_settings, forecast_range):
+def oi2dt_list(output_settings: Union[str, Tuple[str], List[str]], forecast_range: str):
     """Build list of output occurences.
 
     Args:
