@@ -679,12 +679,12 @@
           "type": "string",
           "default": "nwp",
           "enum": [
-            "nwp",
+            "airquality",
+            "convection",
             "flooding",
             "heatwave",
-            "convection",
-            "storm",
-            "airquality"
+            "nwp",
+            "storm"
           ]
         },
         "initfile": {

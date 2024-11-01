@@ -6,9 +6,6 @@
   inpath = "@ARCHIVE@"
   pattern = "GRIBSFX*grib2"
 
-[file_templates.surfex]
-  grib = "GRIBSFX@CNMEXP@+@DURATION_ARCHIVE@.grib2"
-
 [fullpos.selection]
   aq = ["aq_selection"]
 
