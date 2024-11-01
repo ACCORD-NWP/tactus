@@ -10,7 +10,7 @@
   grib = "GRIBSFX@CNMEXP@+@DURATION_ARCHIVE@.grib2"
 
 [fullpos.selection]
-  master = ["aq_selection"]
+  aq = ["aq_selection"]
 
 [task.CreateGrib.surfex]
   output_format = "FA2GRIB2"
