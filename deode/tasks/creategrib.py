@@ -26,7 +26,7 @@ class CreateGrib(Task):
         self.forecast_range = self.config["general.times.forecast_range"]
 
         self.conversions = self.config.get(f"task.{self.name}.conversions", {})
-        
+
         self.rules = {}
         for filetype in self.conversions:
             try:
@@ -72,7 +72,7 @@ class CreateGrib(Task):
             cmd += " -of {of}"
         except KeyError:
             pass
-        
+
         gl_namelist = (
             self.rules[filetype][self.csc]["namelist"]
             if self.csc in self.rules[filetype]
