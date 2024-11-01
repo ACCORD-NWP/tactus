@@ -10,6 +10,8 @@
     {bdmember = "boundaries.ifs.bdmember"},
     {case_prefix = "scheduler.ecfvars.case_prefix"},
     {domain = "domain.name"},
+    {xdx = "domain.xdx"},
+    {domain_number = "domain.number"},
     {duration_archive = "file_templates.duration.archive"},
     {duration_model = "file_templates.duration.model"},
     {ecf_deode_home = "scheduler.ecfvars.ecf_deode_home"},
@@ -31,3 +33,8 @@
   ]
   group_macros = ["platform", "system"]
   os_macros = ["USER", "HOME", "PWD", "CONFIG"]
+
+#[macros.case]
+ # gen_macros = ["general.csc"]
+ # group_macros = []
+ # os_macros = ["USER"]

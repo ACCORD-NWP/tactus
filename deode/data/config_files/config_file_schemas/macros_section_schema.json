@@ -7,15 +7,72 @@
   "properties": {
     "gen_macros": {
       "type": "array",
-      "description": "Turns any string config to a macro, use a dict to rename an attribute."
-    },
-    "os_macros": {
-      "type": "array",
-      "description": "Environment variables used as macros"
+      "description": "Turns any string config to a macro, use a dict to rename an attribute.",
+      "items": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "object"
+          }
+        ]
+      }
     },
     "group_macros": {
       "type": "array",
-      "description": "Turns a full config section to a macro"
+      "description": "Turns a full config section to a macro",
+      "items": {
+        "type": "string"
+      }
+    },
+    "os_macros": {
+      "type": "array",
+      "description": "Environment variables used as macros",
+      "items": {
+        "type": "string"
+      }
+    },
+  "user_macros": {
+    "type": "object",
+    "description": "User defined macros, intended to use when using the Deode-Workflow as a package",
+    "properties": {
+      "gen_macros": {
+        "type": "array",
+        "description": "Turns any string config to a macro, use a dict to rename an attribute.",
+        "items": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "group_macros": {
+        "type": "array",
+        "description": "Turns a full config section to a macro",
+        "items": {
+          "type": "string"
+        }
+      },
+      "ignore": {
+        "type": "array",
+        "description": "Turns a full config section to a macro",
+        "items": {
+          "type": "string"
+        }
+      },
+      "os_macros": {
+        "type": "array",
+        "description": "Environment variables used as macros",
+        "items": {
+          "type": "string"
+        }
+      }
     }
+  }
   }
 }

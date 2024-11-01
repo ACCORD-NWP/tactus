@@ -200,6 +200,7 @@ class EcflowNode:
         trigger=None,
         def_status=None,
         ecf_files_remotely=None,
+        cron=None,
     ):
         """Construct the EcflowNode.
 
@@ -212,6 +213,7 @@ class EcflowNode:
             trigger (EcflowSuiteTriggers): Trigger. Defaults to None
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
             ecf_files_remotely(str, optional): Remote file prefix
+            cron (EcflowSuiteCron): Cron. Defauts to None
 
         Raises:
             NotImplementedError: Node type not implemented
@@ -276,6 +278,12 @@ class EcflowNode:
                 raise TypeError("Triggers must be an EcflowSuiteTriggers object")
         self.trigger = trigger
 
+        if cron is not None:
+            if isinstance(cron, EcflowSuiteCron):
+                self.ecf_node.add_cron(cron.cron)
+            else:
+                raise TypeError("Cron must be an EcflowSuiteCron object")
+
         if def_status is not None and self.ecf_node is not None:
             if isinstance(def_status, str):
                 self.ecf_node.add_defstatus(ecflow.Defstatus(def_status))
@@ -300,6 +308,7 @@ class EcflowNodeContainer(EcflowNode):
         trigger=None,
         def_status=None,
         ecf_files_remotely=None,
+        cron=None,
     ):
         """Construct EcflowNodeContainer.
 
@@ -312,6 +321,8 @@ class EcflowNodeContainer(EcflowNode):
             trigger (EcflowSuiteTriggers): Trigger. Defaults to None
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
             ecf_files_remotely(str, optional): ECF_FILES on ecflow server
+            cron (EcflowSuiteCron): Cron. Defauts to None
+
 
         """
         EcflowNode.__init__(
@@ -324,6 +335,7 @@ class EcflowNodeContainer(EcflowNode):
             trigger=trigger,
             def_status=def_status,
             ecf_files_remotely=ecf_files_remotely,
+            cron=cron,
         )
 
 
@@ -389,6 +401,7 @@ class EcflowSuiteFamily(EcflowNodeContainer):
         trigger=None,
         def_status=None,
         ecf_files_remotely=None,
+        cron=None,
     ):
         """Construct the family.
 
@@ -400,7 +413,7 @@ class EcflowSuiteFamily(EcflowNodeContainer):
                     trigger (EcflowSuiteTriggers): Trigger. Defaults to None
                     def_status (str, ecflow.Defstatus): Def status. Defaults to None
                     ecf_files_remotely(str, optional): ECF_FILES on ecflow server
-        f
+                    cron (EcflowSuiteCron): Cron. Defaut None
         """
         EcflowNodeContainer.__init__(
             self,
@@ -412,6 +425,7 @@ class EcflowSuiteFamily(EcflowNodeContainer):
             trigger=trigger,
             def_status=def_status,
             ecf_files_remotely=ecf_files_remotely,
+            cron=cron,
         )
         logger.debug(self.ecf_remote_container_path)
         if self.ecf_node is not None:
@@ -435,6 +449,7 @@ class EcflowSuiteTask(EcflowNode):
         trigger=None,
         def_status=None,
         ecf_files_remotely=None,
+        cron=None,
     ):
         """Constuct the EcflowSuiteTask.
 
@@ -452,6 +467,7 @@ class EcflowSuiteTask(EcflowNode):
             trigger (EcflowSuiteTriggers): Trigger. Defaults to None
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
             ecf_files_remotely(str, optional): ECF_FILES on ecflow server
+            cron (EcflowSuiteCron): Cron. Defaut None
 
         Raises:
             ValueError: If input template is to be parsed but it is not passed.
@@ -468,6 +484,7 @@ class EcflowSuiteTask(EcflowNode):
             trigger=trigger,
             def_status=def_status,
             ecf_files_remotely=ecf_files_remotely,
+            cron=cron,
         )
 
         logger.debug(parent.path)
@@ -583,3 +600,19 @@ class EcflowSuiteTrigger:
         """
         self.node = node
         self.mode = mode
+
+
+class EcflowSuiteCron:
+    """EcFlow Cron in a suite."""
+
+    def __init__(self, days_of_week, time):
+        """Create a EcFlow cron oject.
+
+        Args:
+            days_of_week (list of int):  0-6, Sunday-Saturday
+            time   (datatime):  time to start
+        """
+        time_str = time.strftime("%H:%M")
+        days_of_week = list(days_of_week)
+        logger.info("days: {}, time: {}", days_of_week, time_str)
+        self.cron = ecflow.Cron(time_str, days_of_week=days_of_week)

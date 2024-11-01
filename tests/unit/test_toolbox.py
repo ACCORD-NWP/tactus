@@ -109,3 +109,51 @@ class TestPlatformEvaluate:
         ) as mock_command_function:
             platform.evaluate("method(1, 2,)", OneMethodClass)
             mock_command_function.assert_called_once()
+
+
+class TestPlatformSubstitute:
+    def test_substitute(self, platform: Platform, config):
+        case = platform.substitute(config["general.case"])
+        assert case != config["general.case"]
+
+    def test_user_macro(self, config):
+        os.environ["TEST"] = "from_os_macros"
+        os.environ["AAAA"] = "from_user_os_macors"
+        config = config.copy(
+            update={
+                "general": {
+                    "case": "@FOO@_@AAAA@_@AAA@_@TEST@_@CSC@",
+                    "csc": "AROME",
+                    "event_type": "nwp",
+                },
+                "foo": {"foo": "foo_section"},
+                "macros": {
+                    "os_macros": ["TEST"],
+                    "gen_macros": ["general.csc"],
+                    "group_macros": [],
+                    "user_macros": {
+                        "os_macros": ["AAAA"],
+                        "gen_macros": [{"aaa": "general.event_type"}],
+                        "group_macros": ["foo"],
+                    },
+                },
+            }
+        )
+        pl = Platform(config)
+        case = pl.substitute(config["general.case"])
+        assert case == "foo_section_from_user_os_macors_nwp_from_os_macros_AROME"
+
+    def test_duplicated_macro(self, config):
+        os.environ["FOO"] = "bar"
+        config = config.copy(
+            update={
+                "macros": {
+                    "os_macros": ["FOO"],
+                    "user_macros": {
+                        "os_macros": ["FOO"],
+                    },
+                },
+            }
+        )
+        with pytest.raises(RuntimeError, match="Duplicated macro: FOO"):
+            Platform(config)

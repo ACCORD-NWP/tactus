@@ -73,7 +73,7 @@ class TestSubmission:
             }
         )
         tmp = tmp_directory
-        config = config.copy(update={"platform": {"SCRATCH": tmp, "unix_group": ""}})
+        config = config.copy(update={"platform": {"scratch": tmp, "unix_group": ""}})
         config = config.copy(update=set_times(config))
         task = "UnitTest"
         template_job = "deode/templates/stand_alone.py"
