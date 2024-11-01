@@ -69,7 +69,7 @@ class CreateGrib(Task):
         cmd = f"{self.gl} -p {infile} -o {outfile}"
         try:
             of = self.rules[filetype]["output_format"]
-            cmd += " -of {of}"
+            cmd += f" -of {of}"
         except KeyError:
             pass
 
