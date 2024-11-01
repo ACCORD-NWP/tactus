@@ -23,7 +23,11 @@ def basic_config(tmpdir):
     )
     scratch = str(tmpdir)
     config = config.copy(update=set_times(config))
-    config = config.copy(update={"platform": {"scratch": scratch}})
+    update = {
+        "platform": {"scratch": scratch},
+        "task": {"CreateGrib": {"conversions": ["surfex", "history"]}},
+    }
+    config = config.copy(update=update)
     return config
 
 

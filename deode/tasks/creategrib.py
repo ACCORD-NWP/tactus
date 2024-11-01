@@ -25,15 +25,14 @@ class CreateGrib(Task):
         self.basetime = as_datetime(self.config["general.times.basetime"])
         self.forecast_range = self.config["general.times.forecast_range"]
 
-        try:
-            self.conversions = self.config[f"task.{self.name}.conversions"]
-        except KeyError:
-            self.conversions = {}
-
+        self.conversions = self.config.get(f"task.{self.name}.conversions", {})
+        
         self.rules = {}
         for filetype in self.conversions:
-            self.rules[filetype] = self.config[f"task.{self.name}.{filetype}"].dict()
-
+            try:
+                self.rules[filetype] = self.config[f"task.{self.name}.{filetype}"].dict()
+            except KeyError:
+                self.rules[filetype] = {"namelist": []}
         self.output_settings = self.config["general.output_settings"]
         self.file_templates = self.config["file_templates"]
 
@@ -67,8 +66,13 @@ class CreateGrib(Task):
         if not os.path.isfile(infile):
             raise FileNotFoundError(f" missing {infile}")
 
-        of = self.rules[filetype]["output_format"]
-        cmd = f"{self.gl} -p {infile} -o {outfile} -of {of}"
+        cmd = f"{self.gl} -p {infile} -o {outfile}"
+        try:
+            of = self.rules[filetype]["output_format"]
+            cmd += " -of {of}"
+        except KeyError:
+            pass
+        
         gl_namelist = (
             self.rules[filetype][self.csc]["namelist"]
             if self.csc in self.rules[filetype]
