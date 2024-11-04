@@ -200,13 +200,15 @@ def remove_empty_dirs(src, dry_run=False):
     Returns:
         found_files (boolean): True if any files found
     """
+    cwd = os.getcwd()
     src_dir = Path(src)
     found_files = False
     if not src_dir.exists():
         return found_files
 
     for path in src_dir.iterdir():
-        if path.is_file():
+        realpath = os.path.realpath(path)
+        if path.is_file() or realpath == cwd:
             found_files = True
             continue
         found_files = remove_empty_dirs(path) or found_files

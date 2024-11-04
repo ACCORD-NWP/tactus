@@ -22,20 +22,20 @@ def set_times(config):
     """
     times = config["general.times"].dict()
     if "basetime" not in times:
-        times.update({"basetime": config["general"]["times"]["start"]})
-        logger.info("Set basetime to {}", times["basetime"])
+        times.update({"basetime": times["start"]})
+        logger.debug("Set basetime to {}", times["basetime"])
     if "validtime" not in times:
         try:
-            times.update({"validtime": config["general"]["times"]["basetime"]})
+            times.update({"validtime": times["basetime"]})
         except KeyError:
-            times.update({"validtime": config["general"]["times"]["start"]})
-        logger.info("Set validtime to {}", times["validtime"])
+            times.update({"validtime": times["start"]})
+        logger.debug("Set validtime to {}", times["validtime"])
     if "start" not in times:
-        times.update({"start": config["general"]["times"]["basetime"]})
-        logger.info("Set start to {}", times["start"])
+        times.update({"start": times["basetime"]})
+        logger.debug("Set start to {}", times["start"])
     if "end" not in times:
-        times.update({"end": config["general"]["times"]["basetime"]})
-        logger.info("Set end to {}", times["end"])
+        times.update({"end": times["basetime"]})
+        logger.debug("Set end to {}", times["end"])
 
     update = {"general": {"times": times}}
     return update

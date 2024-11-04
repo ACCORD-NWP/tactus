@@ -103,9 +103,16 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         "run", help="Runs a task.", parents=[common_parser]
     )
     parser_run.add_argument("--task", "-t", help="Task name", required=True)
-    parser_run.add_argument("--template-job", help="Template", required=True)
-    parser_run.add_argument("--job", dest="task_job", help="Task job file", required=True)
-    parser_run.add_argument("--output", "-o", help="Task output file", required=True)
+    parser_run.add_argument(
+        "--template-job",
+        help="Template",
+        required=False,
+        default=f"{GeneralConstants.PACKAGE_DIRECTORY}/templates/stand_alone.py",
+    )
+    parser_run.add_argument(
+        "--job", dest="task_job", help="Task job file", required=False
+    )
+    parser_run.add_argument("--output", "-o", help="Task output file", required=False)
     parser_run.add_argument("--troika", default="troika")
     parser_run.add_argument("--troika-config", default="/opt/troika/etc/troika.yml")
     parser_run.set_defaults(run_command=run_task)
@@ -167,6 +174,9 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         help="Start suite as well",
         required=False,
     )
+    add_keep_def_file(
+        parser_case, help_message="Keep suite definition file in case of submission"
+    )
     parser_case.set_defaults(run_command=create_exp)
 
     ############################################
@@ -191,7 +201,13 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     parser_start_suite.add_argument(
         "--start-command", type=str, help="Start command for server", default=None
     )
-    parser_start_suite.add_argument("--begin", "-b", help="Begin suite", default=True)
+    parser_start_suite.add_argument(
+        "--def-file",
+        "-f",
+        help="Suite definition file",
+        default="",
+    )
+    add_keep_def_file(parser_start_suite)
     parser_start_suite.set_defaults(run_command=start_suite)
 
     ###########################################
@@ -465,3 +481,23 @@ def add_namelist_args(parser_object):
     parser_object.set_defaults(run_command=show_namelist)
 
     return parser_object
+
+
+def add_keep_def_file(
+    parser_object, help_message="Keep suite definition file after submission"
+):
+    """Add object args.
+
+    Args:
+        parser_object (args oject): args object to update
+        help_message (str): Help text
+
+    """
+    parser_object.add_argument(
+        "--keep-def-file",
+        "-k",
+        help=help_message,
+        action="store_true",
+        default=False,
+        required=False,
+    )

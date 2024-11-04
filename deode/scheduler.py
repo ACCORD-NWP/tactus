@@ -253,6 +253,21 @@ class EcflowServer(Server):
             except RuntimeError as err:
                 raise RuntimeError("Could not replace suite " + suite_name) from err
 
+    def remove_suites(self, suite_list):
+        """Remove suites selected from a list.
+
+        Args:
+            suite_list (list): Suite names.
+
+        """
+        self.ecf_client.sync_local()
+
+        suites = self.ecf_client.get_defs().suites
+        for suite in suites:
+            if suite.name() in suite_list:
+                logger.info("Removing suite {}", suite.name())
+                self.ecf_client.delete(suite.name())
+
 
 class EcflowLogServer:
     """Ecflow log server."""

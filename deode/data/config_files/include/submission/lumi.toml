@@ -155,12 +155,13 @@
   FDB5_HOME = "/appl/local/climatedt/mars/versions/6.99.2.0/"
 
 [submission.task_exceptions.C903]
-  NPROC = 12
+  NPROC = 36
 
 [submission.task_exceptions.C903.BATCH]
   MEM = "#SBATCH --mem=0"
-  NODE = "#SBATCH --nodes=4"
-  NTASKS = "#SBATCH --ntasks=12"
+  NODE = "#SBATCH --nodes=12"
+  NTASKS = "#SBATCH --ntasks=36"
+  PARTITION = "#SBATCH -p standard"
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=3"
   WALLTIME = "#SBATCH --time=00:30:00"
 
@@ -190,6 +191,7 @@
   GDAL = ["load", "scl-gdal_23"]
 
 [submission.task_exceptions.Marsprep]
+  bindir = "/appl/local/climatedt/bin"
   WRAPPER = ""
 
 [submission.task_exceptions.Marsprep.BATCH]
@@ -200,6 +202,7 @@
 
 [submission.task_exceptions.Marsprep.ENV]
   MARS_READANY_BUFFER_SIZE = 17893020000
+  PATH = "$PATH:/appl/local/climatedt/mars/versions/current/bin:/appl/local/climatedt/bin"
 
 [submission.task_exceptions.Pgd.BATCH]
   NODES = "#SBATCH --nodes=1"

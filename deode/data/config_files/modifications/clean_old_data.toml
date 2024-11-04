@@ -1,0 +1,22 @@
+[general]
+  case = "Clean_old_data"
+  keep_workdirs = false
+
+[clean_old_data]
+  IFS_period = "P7D"
+  ignore = []
+  scratch_data_period = "P14D"
+  suites_period = "P14D"
+
+[suite_control]
+  suite_definition = "DeodeCleaningSuiteDefinition"
+
+[suite_control.DeodeCleaningSuiteDefinition]
+  days_in_week = [1]
+  do_clean_IFS = true
+  do_clean_scratch_data = true
+  do_clean_suites = true
+  time_to_run = "07:30:00Z"
+
+[system]
+  wrk = "@CASEDIR@"

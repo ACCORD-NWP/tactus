@@ -46,7 +46,9 @@ class Marsprep(Task):
             self.prep_step = ast.literal_eval(self.config["task.args.prep_step"])
 
         if self.basetime < start_date:
-            raise ValueError(f"No data for {self.basetime}!")
+            raise ValueError(
+                f"No data for {self.basetime}! Data available after {start_date}"
+            )
         self.cycle_length = as_timedelta(self.config["general.times.cycle_length"])
         # Get forecast range
         self.forecast_range = as_timedelta(self.config["general.times.forecast_range"])
@@ -426,12 +428,13 @@ class Marsprep(Task):
         self.executable = f"{self.mars_bin} {marsfile}"
         return self.executable
 
-    def check_file_exists(self, steps, file_name):
+    def check_file_exists(self, steps, path, file_name):
         """Check if which mars file already exist."""
         base_list = []
         for step in steps:
             step1 = int(step)
-            mars_file_check = os.path.join(self.prepdir, f"{file_name}+{step1:02d}")
+            step_str = str(step1) if path == "" else f"{step1:02d}"
+            mars_file_check = os.path.join(path, f"{file_name}+{step_str}")
             if not os.path.exists(mars_file_check):
                 base_list.append(step)
                 logger.info("Missing file:{}", mars_file_check)
@@ -503,7 +506,7 @@ class Marsprep(Task):
 
             # Prefetch GG
             tag = "ICMGG"
-            base = self.check_file_exists(str_steps, tag)
+            base = self.check_file_exists(str_steps, self.prepdir, tag)
             if base != "":
                 self.fetch_info(base, tag)
                 logger.info("marsGG: {}, {}", self.mars["GG"], date_str)
@@ -527,6 +530,10 @@ class Marsprep(Task):
                 self.create_executable(f"{tag}.req")
                 batch = BatchJob(os.environ, wrapper=self.wrapper)
                 batch.run(self.executable)
+
+                file_check = self.check_file_exists(base.split("/"), "", tag)
+                if file_check != "":
+                    raise FileNotFoundError(f"There is no data in fdb for {tag}")
 
                 exist_soil = False
                 with contextlib.suppress(KeyError):
@@ -663,7 +670,7 @@ class Marsprep(Task):
 
             # Prefetch SH
             tag = "ICMSH"
-            base = self.check_file_exists(str_steps, tag)
+            base = self.check_file_exists(str_steps, self.prepdir, tag)
             if base != "":
                 self.fetch_info(base, tag)
                 param = self.check_value(self.mars["SH"], date_str)
@@ -683,6 +690,11 @@ class Marsprep(Task):
                 self.create_executable(f"{tag}.req")
                 batch = BatchJob(os.environ, wrapper=self.wrapper)
                 batch.run(self.executable)
+
+                file_check = self.check_file_exists(base.split("/"), "", tag)
+
+                if file_check != "":
+                    raise ValueError(f"There is no data in fdb for {tag}")
 
                 if self.mars["class"] == "D1":
                     tco = self.mars["tco"]
@@ -732,7 +744,7 @@ class Marsprep(Task):
 
             # Prefetch UA
             tag = "ICMUA"
-            base = self.check_file_exists(str_steps, tag)
+            base = self.check_file_exists(str_steps, self.prepdir, tag)
             if base != "":
                 self.fetch_info(base, tag)
                 param = self.check_value(self.mars["UA"], date_str)
@@ -752,6 +764,11 @@ class Marsprep(Task):
                 self.create_executable(f"{tag}.req")
                 batch = BatchJob(os.environ, wrapper=self.wrapper)
                 batch.run(self.executable)
+
+                file_check = self.check_file_exists(base.split("/"), "", tag)
+
+                if file_check != "":
+                    raise ValueError(f"There is no data in fdb for {tag}")
 
                 # Concat files
                 for j in base.split("/"):

@@ -11,6 +11,9 @@
     "suite_control": {
       "$ref": "#/definitions/suite_control"
     },
+    "clean_old_data": {
+      "$ref": "#/definitions/clean_old_data"
+    },
     "system": {
       "$ref": "#/definitions/system"
     },
@@ -126,6 +129,36 @@
         }
       }
     },
+    "clean_old_data": {
+       "title": "Cleaning old data",
+       "decription": "Option for vleaning old data",
+       "type": "object",
+       "properties": {
+          "scratch_data_period": {
+             "description": "Age for old data in days",
+             "type": "string",
+	     "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
+	     "default": "P14D"
+          },
+          "suites_period": {
+             "description": "Age for old data in days",
+             "type": "string",
+	     "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
+	     "default": "P14D"
+          },
+          "IFS_period": {
+             "description": "Age for old data in days",
+             "type": "string",
+	     "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
+	     "default": "P7D"
+          },
+	  "ignore": {
+             "decription": "File not to remove",
+             "type": "array",
+             "default": []
+          }
+          }
+     },
     "pgd": {
       "title": "Pgd Section",
       "description": "Settings for control of Pgd selection.",
@@ -248,7 +281,41 @@
           "description": "Number of IOmerge tasks",
           "type": "integer",
           "default": 1
+        },
+	"DeodeCleaningSuiteDefinition": {
+	  "decription": "Settings for Cleaning Suite",
+	  "type": "object",
+	  "properties": {
+	    "do_clean_scratch_data": {
+              "description": "Activate cleaning the scratch data",
+              "type": "boolean",
+	      "default": true
+            },
+            "do_clean_suites": {
+              "description": "Activate cleaning the suites",
+              "type": "boolean",
+	      "default": true
+            },
+            "do_clean_IFS": {
+              "description": "Activate cleaning IFS data",
+              "type": "boolean",
+	      "default": true
+            },
+            "days_in_week": {
+              "description": "List of days when cleaning suite will run, 0-6 Sunday-Saturday",
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "time_to_run": {
+              "description": "Time to run",
+              "type": "string",
+	      "pattern": "^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$"
         }
+
+      }
+      }
       }
     },
     "system": {
@@ -484,8 +551,7 @@
               "anyOf": [
                 {
                   "required": [
-                    "start",
-                    "end"
+                    "start"
                   ],
                   "not": {
                     "required": [
@@ -613,8 +679,12 @@
           "type": "string",
           "default": "nwp",
           "enum": [
+            "airquality",
+            "convection",
+            "flooding",
+            "heatwave",
             "nwp",
-            "flooding"
+            "storm"
           ]
         },
         "initfile": {

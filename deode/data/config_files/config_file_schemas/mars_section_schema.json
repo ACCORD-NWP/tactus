@@ -167,6 +167,12 @@
             }
           }
         },
+	"atos_bologna_DT": {
+          "title": "Global DT near real-time runs on ATOS",
+          "description": "Parameters for global DT data",
+          "type": "object",
+          "properties": { "$ref": "#/$RD_DEFAULT" }
+        },
 	"ATOS_DT": {
           "title": "Global DT near real-time runs on ATOS based on CY48r1",
           "description": "Parameters for global DT data",
@@ -210,7 +216,7 @@
           "type": "object",
           "properties": { "$ref": "#/$RD_DEFAULT" }
         },
-	"LUMI_DT": {
+	"lumi_DT": {
           "title": "Global DT near real-time runs on LUMI",
           "description": "Parameters for global DT data",
           "type": "object",

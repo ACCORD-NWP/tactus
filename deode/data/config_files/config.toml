@@ -19,8 +19,6 @@
   surfex = "PT1H"
 
 [general.times]
-  cycle_length = "PT6H"
-  end = "2024-09-16T06:00:00Z"
   forecast_range = "PT6H"
   start = "2024-09-16T00:00:00Z"
 
@@ -103,3 +101,7 @@
 
 [task.CreateGrib]
   conversions = ["surfex"]
+
+[task.CreateGrib.surfex]
+  namelist = ["stepunits='h'"]
+  output_format = "GRIB"

@@ -23,7 +23,11 @@ def basic_config(tmpdir):
     )
     scratch = str(tmpdir)
     config = config.copy(update=set_times(config))
-    config = config.copy(update={"platform": {"scratch": scratch}})
+    update = {
+        "platform": {"scratch": scratch},
+        "task": {"CreateGrib": {"conversions": ["surfex", "history"]}},
+    }
+    config = config.copy(update=update)
     return config
 
 
@@ -54,4 +58,4 @@ def test_convert2grib(basic_config, filetype):
     inpath = os.path.dirname(infile)
     os.makedirs(inpath, exist_ok=True)
     Path(infile).touch()
-    cg.convert2grib(output_list[cg.basetime], "foo")
+    cg.convert2grib(output_list[cg.basetime], "foo", filetype)
