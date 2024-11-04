@@ -3325,6 +3325,14 @@
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
 }
+# Intercepted Water for AQ CY46h1
+"SFX.WRP3"= {
+    discipline = 2 ;
+    parameterCategory = 0 ;
+    parameterNumber = 13 ;
+    tablesVersion = 15 ;
+    typeOfFirstFixedSurface = 1 ;
+}
 # Soil temperature for AQ CY46h1
 "X001TG1"= {
     discipline = 2 ;
@@ -3374,6 +3382,14 @@
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 28 ;
+    tablesVersion = 15 ;
+    typeOfFirstFixedSurface = 1 ;
+}
+# Intercepted Water for AQ CY46h1
+"X001WR"= {
+    discipline = 2 ;
+    parameterCategory = 0 ;
+    parameterNumber = 13 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
 }
