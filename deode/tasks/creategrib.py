@@ -27,12 +27,10 @@ class CreateGrib(Task):
 
         self.conversions = self.config.get(f"task.{self.name}.conversions", {})
 
-        self.rules = {}
-        for filetype in self.conversions:
-            try:
-                self.rules[filetype] = self.config[f"task.{self.name}.{filetype}"].dict()
-            except KeyError:
-                self.rules[filetype] = {"namelist": []}
+        self.rules = {
+            filetype: self.config.get(f"task.{self.name}.{filetype}", {"namelist": []})
+            for filetype in self.conversions
+        }
         self.output_settings = self.config["general.output_settings"]
         self.file_templates = self.config["file_templates"]
 
