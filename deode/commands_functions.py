@@ -88,6 +88,17 @@ def run_task(args, config):
     logger.info("Prepare {}...", args.task)
 
     deode_home = set_deode_home(args, config)
+
+    cwd = Path.cwd()
+
+    if not args.task_job:
+        args.task_job = cwd / Path(f"{args.task}.job")
+    if not args.output:
+        args.output = cwd / Path(f"{args.task}.log")
+    args.task_job = os.path.abspath(args.task_job)
+    args.output = os.path.abspath(args.output)
+    args.template_job = os.path.abspath(args.template_job)
+
     config = config.copy(update={"platform": {"deode_home": deode_home}})
     config = config.copy(update=set_times(config))
 
