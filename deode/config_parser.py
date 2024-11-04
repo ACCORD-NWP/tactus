@@ -92,12 +92,13 @@ class ConfigPaths:
         logger.info(f" Data paths in search order: {json.dumps(path_info, indent=4)}")
 
     @staticmethod
-    def path_from_subpath(subpath, additional_path=None) -> Path:
+    def path_from_subpath(subpath, additional_path=None, insert_index=0) -> Path:
         """Interface to find full path given any subpath, by searching 'searchpaths'.
 
         Arguments:
             subpath (str): Subpath to search for
             additional_path (Path) : Extra path to search in
+            insert_index (integer): Where to insert the additional path
 
         Returns:
             (Path): Full path to target
@@ -107,8 +108,8 @@ class ConfigPaths:
         """
         pattern = f"**/{subpath}"
         searchpaths = ConfigPaths.DATA_SEARCHPATHS
-        if additional_path is not None:
-            searchpaths.insert(0, additional_path)
+        if additional_path is not None and additional_path not in searchpaths:
+            searchpaths.insert(insert_index, additional_path)
         for searchpath in searchpaths:
             results = list(Path(searchpath).rglob(pattern))
             if len(results) > 1:
@@ -408,7 +409,9 @@ def _expand_config_include_section(
             if isinstance(include_path_, str):
                 include_path = Path(include_path_)
                 if not include_path.is_absolute():
-                    include_path = ConfigPaths.path_from_subpath(include_path)
+                    include_path = ConfigPaths.path_from_subpath(
+                        include_path, config_include_search_dir, -1
+                    )
                 included_config_section = _read_raw_config_file(include_path)
             else:
                 included_config_section = include_path_

@@ -104,7 +104,7 @@ class ExpFromFiles(Exp):
             # First check if mod exists as is
             if os.path.exists(mod):
                 try:
-                    lmod = ExpFromFiles.toml_load(mod)
+                    lmod = ParsedConfig.from_file(mod, json_schema={})
                 except tomlkit.exceptions.ParseError as exc:
                     logger.error("Expected a toml file but got {}", mod)
                     logger.error("Did mean to write ?{}", mod)
@@ -131,23 +131,6 @@ class ExpFromFiles(Exp):
             config,
             merged_config,
         )
-
-    @staticmethod
-    def toml_load(fname):
-        """Load from toml file.
-
-        Using tomlkit to preserve stucture
-
-        Args:
-            fname (str): Filename
-
-        Returns:
-            dict: Loaded toml file
-
-        """
-        with open(fname, "r", encoding="utf8") as f_h:
-            res = tomlkit.parse(f_h.read())
-        return res
 
     @staticmethod
     def toml_dump(to_dump, fname):
