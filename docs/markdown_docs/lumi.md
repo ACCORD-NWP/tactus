@@ -94,12 +94,7 @@ in: deode/data/config_files/include/submiossion/lumi_CY48t3.toml.
 This also applies to any task one wishes to run standalone. Then simply run the following comment below:
 
 ```shell
-deode run \
-      --config-file $PWD/deode/data/config_files/config_CY48t3_lumi.toml \
-      --task Forecast \
-      --template $PWD/deode/templates/stand_alone.py \
-      --job $PWD/forecast.job \
-      --output $PWD/forecast.log
+deode run --config-file config_CY48t3_lumi.toml --task Forecast
 ```
 
 ## Ecflow Server Setup
