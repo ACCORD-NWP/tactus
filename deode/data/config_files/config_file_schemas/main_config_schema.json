@@ -679,10 +679,11 @@
           "type": "string",
           "default": "nwp",
           "enum": [
-	    "nwp",
-            "heatwave",
-            "flooding",
+            "airquality",
             "convection",
+            "flooding",
+            "heatwave",
+            "nwp",
             "storm"
           ]
         },
