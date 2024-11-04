@@ -4,7 +4,7 @@
 [archiving.hour.fdb.surfex_grib2]
   active = false
   inpath = "@ARCHIVE@"
-  pattern = "GRIBSFX*grib2"
+  pattern = "GRIB*sfx"
 
 [fullpos.selection]
   aq = ["aq_selection"]
