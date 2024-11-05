@@ -370,11 +370,12 @@ def show_config_schema(args, config):  # noqa ARG001
     sys.stdout.write(str(config.json_schema) + "\n")
 
 
-def show_host(args):
+def show_host(args, config):  # noqa ARG001
     """Implement the `show host` command.
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
+        config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
     dh = DeodeHost()

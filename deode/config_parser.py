@@ -81,8 +81,12 @@ class ConfigPaths:
             pattern = f"**/{rdir}"
             for searchpath in ConfigPaths.DATA_SEARCHPATHS:
                 res = list(Path(searchpath).rglob(pattern))
-                if len(res) > 0:
+                if len(res) == 1:
                     path_info[dir_].append(str(res[0]))
+                if len(res) > 1:
+                    logger.error("Multiple matches found for subpath: {}", searchpath)
+                    logger.error("Results: {}", res)
+                    raise RuntimeError
 
         logger.info("DEODE paths")
         logger.info(" Package directory: {}", GeneralConstants.PACKAGE_DIRECTORY)
@@ -105,15 +109,16 @@ class ConfigPaths:
         """
         pattern = f"**/{subpath}"
         searchpaths = list(ConfigPaths.DATA_SEARCHPATHS)
-        #logger.info("Searchpaths: {}", searchpaths)
-        #logger.info("additional_path: {}", additional_path)
         if additional_path is not None:
             searchpaths.insert(insert_index, additional_path)
-        #logger.info("Searchpaths: {}", searchpaths)
         for searchpath in searchpaths:
             results = list(Path(searchpath).rglob(pattern))
-            if len(results) > 0:
-                logger.info("Found: {}", results[0])
+            if len(results) > 1:
+                logger.error("Multiple matches found for subpath: {}", subpath)
+                logger.error("Results: {}", results)
+                raise RuntimeError("Multiple matches")
+
+            if len(results) == 1:
                 return results[0]
 
         raise RuntimeError(f"Could not find {subpath}")
@@ -245,14 +250,13 @@ class ParsedConfig(BasicConfig):
         *args,
         json_schema,
         include_dir=ConfigParserDefaults.CONFIG_DIRECTORY,
+        host=None,
         **kwargs,
     ):
         """Initialise an instance with an arbitrary number of entries & validate them."""
         self.include_dir = include_dir
         self.json_schema = json_schema
-        self.host = None
-        if "host" in kwargs:
-            self.host = kwargs["host"]
+        self.host = host
         super().__init__(*args, **kwargs)
 
     @BasicConfig.data.setter
@@ -408,12 +412,12 @@ def _expand_config_include_section(
     else:
         for section_name, include_path_ in config_include_defs.items():
             if isinstance(include_path_, str):
-                include_path_ = (
+                include_path = (
                     include_path_.replace("@HOST@", host)
                     if host is not None
                     else include_path_
                 )
-                include_path = Path(include_path_)
+                include_path = Path(include_path)
                 if not include_path.is_absolute():
                     include_path = ConfigPaths.path_from_subpath(
                         include_path, config_include_search_dir, -1

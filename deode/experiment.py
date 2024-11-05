@@ -9,7 +9,7 @@ from typing import List
 
 import tomlkit
 
-from .config_parser import ConfigParserDefaults, ConfigPaths, ParsedConfig
+from .config_parser import ParsedConfig
 from .derived_variables import set_times
 from .logs import logger
 from .os_utils import resolve_path_relative_to_package
@@ -65,7 +65,6 @@ class ExpFromFiles(Exp):
         logger.debug("Construct ExpFromFiles")
         logger.debug("Experiment dependencies: {}", exp_dependencies)
 
-        config_dir = exp_dependencies.get("config_dir")
         mods = {}
         for _mod in mod_files:
             # Skip empty paths

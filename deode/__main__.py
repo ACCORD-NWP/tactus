@@ -8,7 +8,6 @@ from .config_parser import ConfigParserDefaults, ParsedConfig
 from .host_actions import DeodeHost
 from .logs import LoggerHandlers, log_elapsed_time, logger
 
-
 # Enable logger if the project is being used as an application
 logger.enable(GeneralConstants.PACKAGE_NAME)
 
@@ -19,8 +18,9 @@ def main(argv=None):
     args = get_parsed_args(argv=argv)
     deode_host = DeodeHost().detect_deode_host()
     config = ParsedConfig.from_file(
-        args.config_file, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-        host = deode_host
+        args.config_file,
+        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
+        host=deode_host,
     )
     with contextlib.suppress(KeyError):
         # Reset default loglevel if specified in the config
