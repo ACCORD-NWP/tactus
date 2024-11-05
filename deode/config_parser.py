@@ -400,6 +400,8 @@ def _expand_config_include_section(
     host=None,
 ):
     """Merge config includes and return new config & corresponding validation schema."""
+    # If the json schema is empty on arrival, keep it empty
+    ditch_json_schema = len(json_schema) == 0
     raw_config = modify_mappings(obj=raw_config, operator=dict)
     json_schema = modify_mappings(obj=json_schema, operator=dict)
 
@@ -459,6 +461,8 @@ def _expand_config_include_section(
     if "include" in raw_config:
         raw_config.pop("include")
 
+    if ditch_json_schema:
+        json_schema = {}
     return raw_config, json_schema
 
 
