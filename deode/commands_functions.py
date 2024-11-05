@@ -125,7 +125,7 @@ def create_exp(args, config):
     if known_hosts is None:
         known_hosts = ConfigPaths.path_from_subpath("known_hosts.yml")
 
-    host = DeodeHost(known_hosts=known_hosts)
+    host = DeodeHost(known_hosts=known_hosts).detect_deode_host()
     output_file = args.output_file
     case = args.case
     mod_files = args.config_mods
@@ -370,12 +370,11 @@ def show_config_schema(args, config):  # noqa ARG001
     sys.stdout.write(str(config.json_schema) + "\n")
 
 
-def show_host(args, config):  # noqa ARG001
+def show_host(args):
     """Implement the `show host` command.
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
     dh = DeodeHost()

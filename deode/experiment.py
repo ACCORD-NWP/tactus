@@ -66,34 +66,6 @@ class ExpFromFiles(Exp):
         logger.debug("Experiment dependencies: {}", exp_dependencies)
 
         config_dir = exp_dependencies.get("config_dir")
-        include_paths = {}
-        if host is not None:
-            host = host.detect_deode_host()
-            logger.info("Setting up for host {}", host)
-            include_needs = {
-                "scheduler": f"scheduler/ecflow_{host}.toml",
-                "platform": f"platform_paths/{host}.toml",
-                "submission": f"submission/{host}.toml",
-            }
-            for include, include_path in include_needs.items():
-                incp = ConfigPaths.path_from_subpath(include_path, config_dir)
-                include_paths.update({include: incp})
-
-        config_dict = config.dict()
-        for inct, incp in include_paths.items():
-            if inct in ["platform", "submission"]:
-                del config_dict[inct]
-                config_dict.update({inct: {}})
-
-            logger.info("Input file loaded {}", incp)
-            with open(incp, mode="r", encoding="utf8") as fh:
-                mod_config = tomlkit.load(fh)
-
-            config_dict = self.deep_update(config_dict, mod_config)
-        config = ParsedConfig(
-            config_dict, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
-        )
-
         mods = {}
         for _mod in mod_files:
             # Skip empty paths
@@ -104,7 +76,7 @@ class ExpFromFiles(Exp):
             # First check if mod exists as is
             if os.path.exists(mod):
                 try:
-                    lmod = ParsedConfig.from_file(mod, json_schema={})
+                    lmod = ParsedConfig.from_file(mod, json_schema={}, host=host)
                 except tomlkit.exceptions.ParseError as exc:
                     logger.error("Expected a toml file but got {}", mod)
                     logger.error("Did mean to write ?{}", mod)
