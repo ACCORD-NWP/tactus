@@ -79,6 +79,7 @@ class ConfigPaths:
             rdir = dirmap.get(dir_, dir_)
             path_info[dir_] = []
             pattern = f"**/{rdir}"
+
             for searchpath in ConfigPaths.DATA_SEARCHPATHS:
                 res = list(Path(searchpath).rglob(pattern))
                 if len(res) == 1:
@@ -90,6 +91,7 @@ class ConfigPaths:
 
         logger.info("DEODE paths")
         logger.info(" Package directory: {}", GeneralConstants.PACKAGE_DIRECTORY)
+        logger.info(" Searchpaths: {}", [str(x) for x in ConfigPaths.DATA_SEARCHPATHS])
         logger.info(f" Data paths in search order: {json.dumps(path_info, indent=4)}")
 
     @staticmethod
