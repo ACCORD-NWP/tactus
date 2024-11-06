@@ -26,6 +26,7 @@ selection:
    CLPHY:
     - 'SURFRESERV.NEIGE'
     - 'SURFTEMPERATURE'
+    - 'SURFIND.TERREMER'
   NAMFPDY2:
    CL2DF:
     - 'SURFPRESSION'

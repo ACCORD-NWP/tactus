@@ -10,11 +10,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+### Added
+- Airquality event type configuration file. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818)
+- Temporary SURFEX grib2 definitions for CY6h1 and CY48t3. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818)
+- Canopy water and land-sea-mask to fullpos aq selection. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818)
+
 ### Changed
-- Change the behaviour of `deode run` to only require the `--task` argument. The other arguments will default to names based on the task name. [\#836](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/836) (@uandrae)
+- Creategrib task has been changed so that it is more flexible and can handle several conversions. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818)
+- Grib definitions of momentum fluxes and canopy water. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818)
 
 ### Fixed
 - Made it impossible to parse any string to output_settings. Only empty string, string of ISO8601 format, or list of strings of ISO8601 format are possible. [\#830](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/830) (@mafdmi)
+- Bug that made it impossible to merge namelists with more than one hybrid level with master selection in CY48t3
+- Change the behaviour of `deode run` to only require the `--task` argument. The other arguments will default to names based on the task name. [\#836](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/836) (@uandrae)
 - 
 ## [0.8.0] - 2024-10-31
 

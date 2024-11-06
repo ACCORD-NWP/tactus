@@ -632,7 +632,14 @@
           "description": "Type of extreme event",
           "type": "string",
           "default": "nwp",
-          "enum": ["nwp", "heatwave", "flooding", "convection", "storm"]
+          "enum": [
+            "airquality",
+            "convection",
+            "flooding",
+            "heatwave",
+            "nwp",
+            "storm"
+          ]
         },
         "initfile": {
           "description": "Initial file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",

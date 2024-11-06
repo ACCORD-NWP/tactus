@@ -147,7 +147,7 @@ selection:
      - 'CLOUD_WATER'
      - 'TKE'
     NRFP3S:
-      - ${cfg:vertical_levels.nlev} 
+      - ${vertical_levels.nlev} 
  
  xxt00000000:
   NAMFPPHY:
@@ -268,5 +268,5 @@ selection:
      - 'CLOUD_WATER'
      - 'TKE'
     NRFP3S:
-      - ${cfg:vertical_levels.nlev} 
+      - ${vertical_levels.nlev} 
   <<: *default
