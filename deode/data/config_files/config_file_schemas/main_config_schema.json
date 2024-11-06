@@ -36,9 +36,7 @@
       "$ref": "#/definitions/gribmodify"
     }
   },
-  "required": [
-    "general"
-  ],
+  "required": ["general"],
   "definitions": {
     "include": {
       "title": "Include Section",
@@ -94,11 +92,7 @@
         },
         "bdmodel": {
           "description": "Coupling model",
-          "enum": [
-            "ALARO",
-            "AROME",
-            "IFS"
-          ],
+          "enum": ["ALARO", "AROME", "IFS"],
           "type": "string"
         },
         "humi_gp": {
@@ -130,35 +124,35 @@
       }
     },
     "clean_old_data": {
-       "title": "Cleaning old data",
-       "decription": "Option for vleaning old data",
-       "type": "object",
-       "properties": {
-          "scratch_data_period": {
-             "description": "Age for old data in days",
-             "type": "string",
-	     "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
-	     "default": "P14D"
-          },
-          "suites_period": {
-             "description": "Age for old data in days",
-             "type": "string",
-	     "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
-	     "default": "P14D"
-          },
-          "IFS_period": {
-             "description": "Age for old data in days",
-             "type": "string",
-	     "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
-	     "default": "P7D"
-          },
-	  "ignore": {
-             "decription": "File not to remove",
-             "type": "array",
-             "default": []
-          }
-          }
-     },
+      "title": "Cleaning old data",
+      "decription": "Option for vleaning old data",
+      "type": "object",
+      "properties": {
+        "scratch_data_period": {
+          "description": "Age for old data in days",
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
+          "default": "P14D"
+        },
+        "suites_period": {
+          "description": "Age for old data in days",
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
+          "default": "P14D"
+        },
+        "IFS_period": {
+          "description": "Age for old data in days",
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
+          "default": "P7D"
+        },
+        "ignore": {
+          "decription": "File not to remove",
+          "type": "array",
+          "default": []
+        }
+      }
+    },
     "pgd": {
       "title": "Pgd Section",
       "description": "Settings for control of Pgd selection.",
@@ -197,10 +191,7 @@
           "items": {
             "type": "string"
           },
-          "default": [
-            "rules",
-            "namfpc_header"
-          ]
+          "default": ["rules", "namfpc_header"]
         },
         "selection": {
           "description": "List of selections to include",
@@ -241,11 +232,7 @@
         "mode": {
           "description": "Choose a strategy to achieve initial/initial_sfx files (start:  start from interpolated files and then propagate the FG between cycles, restart: start from a previous run and then propagate the FG between cycles, cold_start: always start from interpolated files).",
           "type": "string",
-          "enum": [
-            "start",
-            "restart",
-            "cold_start"
-          ]
+          "enum": ["start", "restart", "cold_start"]
         },
         "interpolate_boundaries": {
           "description": "Activates the boundary interpolation",
@@ -282,24 +269,24 @@
           "type": "integer",
           "default": 1
         },
-	"DeodeCleaningSuiteDefinition": {
-	  "decription": "Settings for Cleaning Suite",
-	  "type": "object",
-	  "properties": {
-	    "do_clean_scratch_data": {
+        "DeodeCleaningSuiteDefinition": {
+          "decription": "Settings for Cleaning Suite",
+          "type": "object",
+          "properties": {
+            "do_clean_scratch_data": {
               "description": "Activate cleaning the scratch data",
               "type": "boolean",
-	      "default": true
+              "default": true
             },
             "do_clean_suites": {
               "description": "Activate cleaning the suites",
               "type": "boolean",
-	      "default": true
+              "default": true
             },
             "do_clean_IFS": {
               "description": "Activate cleaning IFS data",
               "type": "boolean",
-	      "default": true
+              "default": true
             },
             "days_in_week": {
               "description": "List of days when cleaning suite will run, 0-6 Sunday-Saturday",
@@ -311,11 +298,10 @@
             "time_to_run": {
               "description": "Time to run",
               "type": "string",
-	      "pattern": "^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$"
+              "pattern": "^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$"
+            }
+          }
         }
-
-      }
-      }
       }
     },
     "system": {
@@ -550,35 +536,23 @@
             {
               "anyOf": [
                 {
-                  "required": [
-                    "start"
-                  ],
+                  "required": ["start"],
                   "not": {
-                    "required": [
-                      "list"
-                    ]
+                    "required": ["list"]
                   }
                 },
                 {
-                  "required": [
-                    "basetime"
-                  ],
+                  "required": ["basetime"],
                   "not": {
                     "anyOf": [
                       {
-                        "required": [
-                          "end"
-                        ]
+                        "required": ["end"]
                       },
                       {
-                        "required": [
-                          "list"
-                        ]
+                        "required": ["list"]
                       },
                       {
-                        "required": [
-                          "start"
-                        ]
+                        "required": ["start"]
                       }
                     ]
                   }
@@ -586,20 +560,14 @@
               ]
             },
             {
-              "required": [
-                "list"
-              ],
+              "required": ["list"],
               "not": {
                 "anyOf": [
                   {
-                    "required": [
-                      "start"
-                    ]
+                    "required": ["start"]
                   },
                   {
-                    "required": [
-                      "end"
-                    ]
+                    "required": ["end"]
                   }
                 ]
               }
@@ -639,13 +607,7 @@
         "loglevel": {
           "description": "Logger output level",
           "type": "string",
-          "enum": [
-            "CRITICAL",
-            "ERROR",
-            "DEBUG",
-            "INFO",
-            "WARNING"
-          ]
+          "enum": ["CRITICAL", "ERROR", "DEBUG", "INFO", "WARNING"]
         },
         "surfex": {
           "description": "SURFEX switch",
@@ -659,20 +621,12 @@
           "description": "CSC",
           "default": "AROME",
           "type": "string",
-          "enum": [
-            "AROME",
-            "ALARO",
-            "HARMONIE_AROME"
-          ]
+          "enum": ["AROME", "ALARO", "HARMONIE_AROME"]
         },
         "cycle": {
           "description": "IAL cycle",
           "type": "string",
-          "enum": [
-            "CY49t2",
-            "CY48t3",
-            "CY46h1"
-          ]
+          "enum": ["CY49t2", "CY48t3", "CY46h1"]
         },
         "event_type": {
           "description": "Type of extreme event",
@@ -735,16 +689,14 @@
           "default": false
         }
       },
-      "required": [
-        "times"
-      ]
+      "required": ["times"]
     }
   },
   "$output_setting_rules": {
     "anyOf": [
       {
         "type": "string",
-        "pattern": ""
+        "maxLength": 0
       },
       {
         "type": "string",
