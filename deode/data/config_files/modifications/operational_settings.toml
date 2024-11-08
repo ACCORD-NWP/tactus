@@ -1,5 +1,5 @@
 [general]
-  case = "@CSC@_@XDX@m_@DOMAIN_NUMBER@_@EVENT_TYPE@_@YMD_START@"
+  case = "@CSC@_@XDX@m_@DOMAIN@"
   keep_workdirs = false
 
 [archiving.hour.copy.config]
@@ -81,12 +81,20 @@
 [extractsqlite]
   sqlite_path = "@CASEDIR@/sqlite/FCTABLE"
 
+[scheduler.ecfvars]
+  ecf_tries = 2
+
+[submission.task_exceptions.ArchiveHour.BATCH]
+  WALLTIME = "#SBATCH --time=06:00:00"
+
 [system]
   archive = "@CASEDIR@"
   archive_timestamp_start = "@YYYY_START@/@MM_START@/@DD_START@/@HH_START@"
   case_identifier = "@EVENT_TYPE@/@DOMAIN_NUMBER@/@CSC@_@XDX@m"
-  casedir = "@SCRATCH@/@SUB_CASEDIR@"
-  climdir = "@SCRATCH@/@ARCHIVE_TIMESTAMP_START@/@CASE_IDENTIFIER@/climate"
+  casedir = "@SCRATCH_OPER@/@SUB_CASEDIR@"
+  climdir = "@SCRATCH_OPER@/@ARCHIVE_TIMESTAMP_START@/@CASE_IDENTIFIER@/climate"
   ecfs_static = "@ARCHIVE_TIMESTAMP_START@/@CASE_IDENTIFIER@/climate"
   logs = "@CASEDIR@"
+  marsdir = "@SCRATCH_OPER@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
+  scratch_oper = "@SCRATCH@/DE_NWP/deode"
   sub_casedir = "@ARCHIVE_TIMESTAMP@/@CASE_IDENTIFIER@"

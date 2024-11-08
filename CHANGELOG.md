@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Canopy water and land-sea-mask to fullpos aq selection. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
 
 ### Changed
+- Updated operational settings [\#859](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/859) (@kastelecn)
 - Added LACE's station lists for verification [\#860] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/860) (@svianaj)
 - Creategrib task has been changed so that it is more flexible and can handle several conversions. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
 - Grib definitions of momentum fluxes and canopy water. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)

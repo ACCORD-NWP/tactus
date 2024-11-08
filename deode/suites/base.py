@@ -67,6 +67,7 @@ class SuiteDefinition(object):
         ecf_home = self.config["scheduler.ecfvars.ecf_home"]
         ecf_ssl = self.config["scheduler.ecfvars.ecf_ssl"]
         ecf_host = self.config["scheduler.ecfvars.ecf_host"]
+        ecf_tries = self.config["scheduler.ecfvars.ecf_tries"]
 
         self.ecf_user = ecf_user
         self.ecf_host = ecf_host
@@ -139,7 +140,7 @@ class SuiteDefinition(object):
             "ECF_USER": self.ecf_user,
             "ECFTYPES": "fc",
             "ECF_EXTN": ".bash",
-            "ECF_TRIES": 1,
+            "ECF_TRIES": ecf_tries,
             "ECF_FILES": self.ecf_files_remotely,
             "ECF_INCLUDE": self.ecf_include,
             "ECF_SSL": self.ecf_ssl,

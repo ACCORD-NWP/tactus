@@ -66,17 +66,19 @@ def test_remove_old(tmpdir, parsed_config):
     cleanolddata = CleanScratchData(config)
     dic_old_file = cleanolddata.get_old(
         os.path.join(tmpdir, "clean"),
+        "/([^/]+)/([^/]+)",
         cleanolddata.cutoff(as_timedelta("P2D")),
-        return_files=True,
     )
     dic_old_dir = cleanolddata.get_old(
-        os.path.join(tmpdir, "clean"), cleanolddata.cutoff(as_timedelta("P2D"))
+        os.path.join(tmpdir, "clean"),
+        "/([^/]+)",
+        cleanolddata.cutoff(as_timedelta("P2D")),
     )
-    cleanolddata.remove_dic(dic_old_file, files=True)
+    cleanolddata.remove_list(dic_old_file, files=True)
     left_files = list(glob.glob(f"{tmpdir}/clean/*/*"))
     assert len(left_files) == 1
     assert left_files[0] == f"{tmpdir}/clean/dir_new/file_new"
-    cleanolddata.remove_dic(dic_old_dir)
+    cleanolddata.remove_list(dic_old_dir)
     left_dir = list(glob.glob(f"{tmpdir}/clean/*/"))
     assert len(left_dir) == 1
     assert left_dir[0] == f"{tmpdir}/clean/dir_new/"
