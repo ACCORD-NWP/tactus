@@ -412,9 +412,10 @@ def show_namelist(args, config):
     logger.info("Printing namelist in use to file {}", namelist_name)
 
 
-def show_paths(args, config):  # noqa: ARG001
+def show_paths(args):
     """Implement the 'show_paths' command."""
-    ConfigPaths.print(args.config_file)
+    dh = DeodeHost()
+    ConfigPaths.print(args.config_file, dh.detect_deode_host())
 
 
 def namelist_integrate(args, config):

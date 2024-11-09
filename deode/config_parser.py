@@ -62,7 +62,7 @@ class ConfigPaths:
     DATA_SEARCHPATHS = tuple(DATA_SEARCHPATHS)
 
     @staticmethod
-    def print(config_file=None):
+    def print(config_file=None, host=None):
         """Prints the available paths."""
         dirmap = {
             "config_file_schemas": "config_files/config_file_schemas",
@@ -75,12 +75,12 @@ class ConfigPaths:
             "data_input",
         ]
         raw_config = BasicConfig.from_file(config_file)
-        for _key, value in raw_config.get("include",{}).items():
-            path = "/".join(value.split("/")[:-1])
+        for _key, _value in raw_config.get("include", {}).items():
             key = f"{_key}_section"
+            value = _value.replace("@HOST@", host) if host is not None else _value
             dirmap[key] = value
             if key not in list_paths:
-              list_paths.append(key)
+                list_paths.append(key)
 
         path_info = {}
         for dir_ in list_paths:

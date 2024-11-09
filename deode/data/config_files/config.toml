@@ -65,9 +65,9 @@
   impact = "include/impact.toml"
   macros = "include/macros.toml"
   mars = "include/mars_settings.toml"
-  platform = "include/platform_paths/atos_bologna.toml"
-  scheduler = "include/scheduler/ecflow_atos_bologna.toml"
-  submission = "include/submission/atos_bologna.toml"
+  platform = "include/platform_paths/@HOST@.toml"
+  scheduler = "include/scheduler/ecflow_@HOST@.toml"
+  submission = "include/submission/@HOST@.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"
 
 [pgd]
