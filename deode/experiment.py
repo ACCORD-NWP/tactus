@@ -256,9 +256,10 @@ def case_setup(
         config_dir=config_dir,
     )
 
-    if expand_config:
-        config = config.expand_macros()
     exp = ExpFromFiles(config, exp_dependencies, mod_files, host=host)
+
+    if expand_config:
+        exp.config = exp.config.expand_macros()
 
     if output_file is None:
         config = exp.config.copy(update=set_times(exp.config))
