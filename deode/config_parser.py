@@ -53,29 +53,37 @@ class ConfigParserDefaults(QuasiConstant):
 class ConfigPaths:
     """Support multiple path search."""
 
-    _env_data_paths = os.getenv("DEODE_DATA_PATH")
+    _env_data_paths = os.getenv("DEODE_CONFIG_DATA_DIR")
     DATA_SEARCHPATHS = _env_data_paths.split(":") if _env_data_paths is not None else []
     erroneous_paths = [path for path in DATA_SEARCHPATHS if not os.path.isabs(path)]
     if len(erroneous_paths) > 0:
-        raise RuntimeError(f"DEODE_DATA_PATH is not absolute: {erroneous_paths}")
+        raise RuntimeError(f"DEODE_CONFIG_DATA_DIR is not absolute: {erroneous_paths}")
     DATA_SEARCHPATHS.append(ConfigParserDefaults.DATA_DIRECTORY)
     DATA_SEARCHPATHS = tuple(DATA_SEARCHPATHS)
 
     @staticmethod
-    def print():
+    def print(config_file=None):
         """Prints the available paths."""
         dirmap = {
             "config_file_schemas": "config_files/config_file_schemas",
             "data_input": "input",
         }
-
-        path_info = {}
-        for dir_ in [
+        list_paths = [
             "config_files",
             "config_file_schemas",
             "namelist_generation_input",
             "data_input",
-        ]:
+        ]
+        raw_config = BasicConfig.from_file(config_file)
+        for _key, value in raw_config.get("include",{}).items():
+            path = "/".join(value.split("/")[:-1])
+            key = f"{_key}_section"
+            dirmap[key] = value
+            if key not in list_paths:
+              list_paths.append(key)
+
+        path_info = {}
+        for dir_ in list_paths:
             rdir = dirmap.get(dir_, dir_)
             path_info[dir_] = []
             pattern = f"**/{rdir}"
@@ -401,7 +409,6 @@ def _expand_config_include_section(
 ):
     """Merge config includes and return new config & corresponding validation schema."""
     # If the json schema is empty on arrival, keep it empty
-    ditch_json_schema = len(json_schema) == 0
     raw_config = modify_mappings(obj=raw_config, operator=dict)
     json_schema = modify_mappings(obj=json_schema, operator=dict)
 
@@ -461,8 +468,6 @@ def _expand_config_include_section(
     if "include" in raw_config:
         raw_config.pop("include")
 
-    if ditch_json_schema:
-        json_schema = {}
     return raw_config, json_schema
 
 

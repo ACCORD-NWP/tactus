@@ -120,7 +120,7 @@ def create_exp(args, config):
     """
     deode_home = set_deode_home(args, config)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
-    config_dir = args.config_dir
+    config_data_dir = args.config_data_dir
     known_hosts = args.host_file
     if known_hosts is None:
         known_hosts = ConfigPaths.path_from_subpath("known_hosts.yml")
@@ -137,7 +137,7 @@ def create_exp(args, config):
         mod_files,
         case=case,
         host=host,
-        config_dir=config_dir,
+        config_dir=config_data_dir,
         expand_config=args.expand_config,
     )
 
@@ -414,7 +414,7 @@ def show_namelist(args, config):
 
 def show_paths(args, config):  # noqa: ARG001
     """Implement the 'show_paths' command."""
-    ConfigPaths.print()
+    ConfigPaths.print(args.config_file)
 
 
 def namelist_integrate(args, config):

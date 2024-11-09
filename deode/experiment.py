@@ -75,13 +75,13 @@ class ExpFromFiles(Exp):
             # First check if mod exists as is
             if os.path.exists(mod):
                 try:
+                    logger.info("Merging modifications from {}", mod)
                     lmod = ParsedConfig.from_file(mod, json_schema={}, host=host)
                 except tomlkit.exceptions.ParseError as exc:
                     logger.error("Expected a toml file but got {}", mod)
                     logger.error("Did mean to write ?{}", mod)
                     raise RuntimeError from exc
 
-                logger.info("Merging modifications from {}", mod)
                 logger.debug("-> {}", lmod)
                 mods = ExpFromFiles.deep_update(mods, lmod)
             else:
