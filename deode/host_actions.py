@@ -20,6 +20,7 @@ class DeodeHost:
         self.available_hosts = list(self.known_hosts)
         self.default_host = self.available_hosts[0]
         self.deode_host = os.getenv("DEODE_HOST")
+        self.hostname = socket.gethostname()
 
     def _load_known_hosts(self, known_hosts=None):
         """Loads the known_hosts config.
@@ -58,11 +59,10 @@ class DeodeHost:
             (boolean): Match or not
 
         """
-        hostname = socket.gethostname()
-        logger.debug("hostname={}", hostname)
+        logger.debug("hostname={}", self.hostname)
         hh = [hostname_pattern] if isinstance(hostname_pattern, str) else hostname_pattern
         for x in hh:
-            if re.match(x, hostname):
+            if re.match(x, self.hostname):
                 logger.debug("Deode-host detected by hostname {}", x)
                 return True
 
@@ -121,7 +121,10 @@ class DeodeHost:
 
         if len(matches) == 0:
             matches = list(self.known_hosts)[0:1]
-            logger.info(f"No deode-host detected, use {self.default_host}")
+            current_host = os.getenv("HOSTNAME")
+            logger.info(
+                f"No deode-host detected from {self.hostname}, use {self.default_host}"
+            )
         if len(matches) > 1:
             raise RuntimeError(f"Ambiguous matches: {matches}")
 

@@ -1,7 +1,7 @@
 atos_bologna: 
   hostname: "ac\\d-\\d\\d\\d"
 lumi: 
-  hostname: "uan\\d\\d"
+  hostname: ["uan\\d\\d", "nid\\d+"]
 freja: 
   env:
     SNIC_RESOURCE: "freja"
