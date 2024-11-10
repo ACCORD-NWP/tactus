@@ -4,8 +4,8 @@
   cnmexp = "DEOD"
   csc = "AROME"
   cycle = "CY48t3"
-  initfile = "@SCRATCH@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@HISTORY_TEMPLATE@"
-  initfile_sfx = "@SCRATCH@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
+  initfile = "@SCRATCH@/deode/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@HISTORY_TEMPLATE@"
+  initfile_sfx = "@SCRATCH@/deode/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
   keep_workdirs = true
   surfex = true
 
@@ -93,7 +93,7 @@
   bddir_sfx = "@MARSDIR@"
   bdfile_sfx_template = "ECSFCSFX@DOMAIN@+@LLL@"
   bdfile_template = "ELSCF@CNMEXP@ALBC@NNN@"
-  casedir = "@SCRATCH@/@CASE@"
+  casedir = "@SCRATCH@/deode/@CASE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@/"
   logs = "@ARCHIVE_ROOT@/logs"
   marsdir = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"

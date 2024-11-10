@@ -10,6 +10,11 @@
             "description": "DEODE HPC specific ecflow settings",
             "type": "object",
             "properties": {
+		"ecf_tries": {
+                    "type": "integer",
+                    "description": "Ecflow tries.",
+		    "default": 1
+                },
                 "ecf_host": {
                     "type": "string",
                     "description": "Ecflow host. HPC dependent."
