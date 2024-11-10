@@ -4,6 +4,7 @@ import os
 
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import derived_variables, set_times
+from deode.host_actions import DeodeHost
 from deode.logs import logger  # Use deode's own configs for logger
 from deode.submission import ProcessorLayout, TaskSettings
 from deode.tasks.discover_task import get_task
@@ -19,8 +20,10 @@ def default_main(task, config, deode_home):
         config (str): Config file
         deode_home(str): Deode home path
     """
+    deode_host = DeodeHost().detect_deode_host()
+
     config = ParsedConfig.from_file(
-        config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+        config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA, host=deode_host
     )
     config = config.copy(update=set_times(config))
     config = config.copy(update={"platform": {"deode_home": deode_home}})
