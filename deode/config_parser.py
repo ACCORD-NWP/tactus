@@ -76,7 +76,7 @@ class ConfigPaths:
         ]
         raw_config = BasicConfig.from_file(config_file)
         for _key, _value in raw_config.get("include", {}).items():
-            key = f"{_key}_section"
+            key = f"config_file_{_key}_section"
             value = _value.replace("@HOST@", host) if host is not None else _value
             dirmap[key] = value
             if key not in list_paths:
