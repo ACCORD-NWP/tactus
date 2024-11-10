@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
+from deode.config_parser import default_config
 from deode.derived_variables import set_times
 from deode.tasks.creategrib import CreateGrib
 from deode.toolbox import Platform
@@ -17,10 +17,7 @@ def tmpdir(tmp_path_factory):
 
 @pytest.fixture(scope="module")
 def basic_config(tmpdir):
-    config = ParsedConfig.from_file(
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
-        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-    )
+    config = default_config()
     scratch = str(tmpdir)
     config = config.copy(update=set_times(config))
     update = {

@@ -7,22 +7,13 @@ from pathlib import Path
 import f90nml
 import pytest
 
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
+from deode.config_parser import default_config
 from deode.datetime_utils import as_datetime
 from deode.logs import logger
 from deode.tasks.sfx import InputDataFromNamelist
 from deode.toolbox import Platform
 
 logger.enable("deode")
-
-
-@pytest.fixture(scope="module")
-def deode_config():
-    """Return a raw config common to all tasks."""
-    return ParsedConfig.from_file(
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
-        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-    )
 
 
 @pytest.fixture()
@@ -106,7 +97,7 @@ def f90ml_namelist(tmp_path_factory):
     return nml
 
 
-def test_new_binary_input(deode_config, f90ml_namelist, binary_input_data):
+def test_new_binary_input(f90ml_namelist, binary_input_data):
     update = {
         "system": {"climdir": "/climdir"},
         "platform": {
@@ -125,7 +116,7 @@ def test_new_binary_input(deode_config, f90ml_namelist, binary_input_data):
             "gmted": "/gmted",
         },
     }
-    config = deode_config
+    config = default_config()
     config = config.copy(update=update)
 
     platform = Platform(config)

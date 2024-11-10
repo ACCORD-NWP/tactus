@@ -6,7 +6,7 @@ from contextlib import suppress
 import pytest
 import tomlkit
 
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
+from deode.config_parser import ConfigParserDefaults, ParsedConfig, default_config
 from deode.derived_variables import set_times
 from deode.submission import TaskSettings
 from deode.suites.deode import DeodeSuiteDefinition
@@ -32,10 +32,7 @@ def minimal_parsed_config(minimal_raw_config):
 @pytest.fixture()
 def config_from_task_config_file():
     """Return a raw config common to all tasks."""
-    return ParsedConfig.from_file(
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
-        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-    )
+    return default_config()
 
 
 @pytest.fixture(scope="module")

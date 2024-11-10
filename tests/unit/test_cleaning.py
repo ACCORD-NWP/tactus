@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 from deode.cleaning import CleanDeode
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
+from deode.config_parser import default_config
 from deode.datetime_utils import as_datetime
 from deode.derived_variables import set_times
 
@@ -21,10 +21,7 @@ def tmpdir(tmp_path_factory):
 
 @pytest.fixture(scope="module")
 def basic_config():
-    config = ParsedConfig.from_file(
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
-        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-    )
+    config = default_config()
     config = config.copy(update=set_times(config))
     return config
 

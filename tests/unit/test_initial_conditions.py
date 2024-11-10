@@ -8,7 +8,7 @@ import pytest
 import tomlkit
 
 from deode import GeneralConstants
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
+from deode.config_parser import default_config
 from deode.initial_conditions import InitialConditions
 
 
@@ -30,10 +30,7 @@ def parsed_config(request, tmpdir):
         ]:
             Path(f"{tmpdir}/{f}").touch()
 
-    config = ParsedConfig.from_file(
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
-        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-    )
+    config = default_config()
 
     try:
         basetime = config["general.times.basetime"]

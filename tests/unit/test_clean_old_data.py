@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 import tomlkit
 
-from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
+from deode.config_parser import default_config
 from deode.datetime_utils import as_timedelta
 from deode.tasks.clean_old_data import CleanScratchData
 
@@ -20,18 +20,9 @@ def tmpdir(tmp_path_factory):
 
 
 @pytest.fixture(scope="module")
-def base_raw_config():
-    """Return a raw config common to all tasks."""
-    config = BasicConfig.from_file(ConfigParserDefaults.CONFIG_DIRECTORY / "config.toml")
-    return config
-
-
-@pytest.fixture(scope="module")
-def parsed_config(base_raw_config, tmp_path_factory):
+def parsed_config(tmp_path_factory):
     """Return a raw config common to tasks."""
-    config = ParsedConfig(
-        base_raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
-    )
+    config = default_config()
 
     config_patch = tomlkit.parse(
         f"""

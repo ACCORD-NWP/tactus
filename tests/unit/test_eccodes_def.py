@@ -7,7 +7,7 @@ from pathlib import Path, PosixPath
 import pytest
 import tomlkit
 
-from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
+from deode.config_parser import ConfigParserDefaults, default_config
 from deode.derived_variables import set_times
 from deode.tasks.base import Task
 
@@ -22,12 +22,7 @@ def tmpdir(tmp_path_factory):
 
 @pytest.fixture(scope="module")
 def task(tmpdir):
-    raw_config = BasicConfig.from_file(
-        ConfigParserDefaults.CONFIG_DIRECTORY / "config.toml"
-    )
-    config = ParsedConfig(
-        raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
-    )
+    config = default_config()
     config = config.copy(update=set_times(config))
 
     config_patch = tomlkit.parse(

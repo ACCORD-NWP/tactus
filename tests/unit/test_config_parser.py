@@ -144,7 +144,7 @@ def config_path(minimal_raw_config, tmp_test_data_dir):
 @pytest.fixture()
 def package_main_config_without_validation():
     return ParsedConfig.from_file(
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH, json_schema={}
+        ConfigParserDefaults.PACKAGE_CONFIG_PATH, json_schema={}, host="atos_bologna"
     )
 
 
@@ -548,7 +548,7 @@ class TestConfigIncludeSection:
 
 class TestConfigPaths:
     def test_show_paths(self):
-        ConfigPaths.print()
+        ConfigPaths.print(ConfigParserDefaults.PACKAGE_CONFIG_PATH, "atos_bologna")
 
     def test_match_new_path(self, tmp_test_data_dir):
         test_path1 = tmp_test_data_dir / "test" / "config_files"

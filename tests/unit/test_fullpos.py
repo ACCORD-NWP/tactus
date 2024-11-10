@@ -5,7 +5,7 @@ import pytest
 import tomlkit
 
 from deode import GeneralConstants
-from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
+from deode.config_parser import default_config
 from deode.derived_variables import set_times
 from deode.fullpos import Fullpos, InvalidSelectionCombinationError, flatten_list
 from deode.toolbox import Platform
@@ -13,10 +13,7 @@ from deode.toolbox import Platform
 
 def load():
     """Test load of the yml files."""
-    raw_config = BasicConfig.from_file(ConfigParserDefaults.PACKAGE_CONFIG_PATH)
-    config = ParsedConfig(
-        raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
-    )
+    config = default_config()
     config_patch = tomlkit.parse(
         f"""
         [platform]

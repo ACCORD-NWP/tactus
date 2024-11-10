@@ -6,17 +6,14 @@ from unittest import mock
 
 import pytest
 
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
+from deode.config_parser import default_config
 from deode.toolbox import Platform
 
 
 @pytest.fixture(name="config", scope="module")
 def fixture_config():
     """Return a raw config common to all tasks."""
-    return ParsedConfig.from_file(
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
-        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-    )
+    return default_config()
 
 
 @pytest.fixture(name="platform")

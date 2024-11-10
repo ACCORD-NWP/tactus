@@ -9,7 +9,7 @@ import pytest
 import tomlkit
 
 from deode import GeneralConstants
-from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
+from deode.config_parser import default_config
 from deode.derived_variables import derived_variables, set_times
 from deode.plugin import DeodePluginRegistry
 from deode.tasks.archive import ArchiveHour, ArchiveStatic
@@ -35,20 +35,11 @@ def classes_to_be_tested():
     return encountered_classes.keys()
 
 
-@pytest.fixture(scope="module")
-def base_raw_config():
-    """Return a raw config common to all tasks."""
-    config = BasicConfig.from_file(ConfigParserDefaults.CONFIG_DIRECTORY / "config.toml")
-    return config
-
-
 @pytest.fixture(params=classes_to_be_tested(), scope="module")
-def task_name_and_configs(request, base_raw_config, tmp_path_factory):
+def task_name_and_configs(request, tmp_path_factory):
     """Return a ParsedConfig with a task-specific section according to `params`."""
     task_name = request.param
-    task_config = ParsedConfig(
-        base_raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
-    )
+    task_config = default_config()
     task_config = task_config.copy(update=set_times(task_config))
     task_config = task_config.copy(update=derived_variables(task_config))
 

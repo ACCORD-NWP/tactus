@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
+from deode.config_parser import default_config
 from deode.derived_variables import set_times
 from deode.tasks.archive import Archive
 
@@ -24,10 +24,7 @@ def basic_config(tmpdir):
     os.system("touch " + str(tmp1) + "/copy")  # noqa S108
     os.system("touch " + str(tmp1) + "/xtra")  # noqa S108
     os.system("touch " + str(tmp1) + "/move")  # noqa S108
-    config = ParsedConfig.from_file(
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
-        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-    )
+    config = default_config()
     config = config.copy(update=set_times(config))
     config = config.copy(
         update={

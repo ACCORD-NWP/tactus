@@ -4,7 +4,7 @@
 import pytest
 import tomlkit
 
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
+from deode.config_parser import default_config
 from deode.derived_variables import derived_variables, set_times
 from deode.geo_utils import Projection, Projstring
 from deode.tasks.marsprep import Marsprep
@@ -13,10 +13,7 @@ from deode.tasks.marsprep import Marsprep
 @pytest.fixture(scope="module")
 def base_parsed_config():
     """Return a parsed config common to all tasks."""
-    config = ParsedConfig.from_file(
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
-        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-    )
+    config = default_config()
     config = config.copy(update=set_times(config))
     config = config.copy(update=derived_variables(config))
 

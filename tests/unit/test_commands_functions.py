@@ -14,16 +14,13 @@ from deode.commands_functions import (
     set_deode_home,
     show_namelist,
 )
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
+from deode.config_parser import default_config
 
 
 @pytest.fixture()
 def parsed_config():
     """Return a raw config common to all tasks."""
-    return ParsedConfig.from_file(
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
-        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-    )
+    return default_config()
 
 
 def test_set_deode_home(parsed_config):
