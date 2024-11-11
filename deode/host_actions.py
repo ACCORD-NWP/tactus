@@ -121,7 +121,6 @@ class DeodeHost:
 
         if len(matches) == 0:
             matches = list(self.known_hosts)[0:1]
-            current_host = os.getenv("HOSTNAME")
             logger.info(
                 f"No deode-host detected from {self.hostname}, use {self.default_host}"
             )
