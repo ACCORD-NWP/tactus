@@ -114,11 +114,11 @@ class ImpactModels(Task):
             if (
                 impact_model["active"]
                 and name in installed_impact
-                and impact_model["task"] == taskname
+                and taskname in impact_model
             ):
-                impact_model.pop("active")
-                impact_model.pop("task")
-                self.impact[name] = impact_model
+                self.impact[name] = impact_model[taskname]
+                for conf in ["communicate", "path", "config_name"]:
+                    self.impact[name][conf] = impact_model[conf]
 
         self.is_active = len(self.impact) > 0
 

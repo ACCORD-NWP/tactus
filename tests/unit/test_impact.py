@@ -57,12 +57,12 @@ def basic_config(tmpdir):
             deode_home = "{WORKING_DIR}"
         [impact.unittest]
             active = true
-            arguments = "hello world"
             config_name = "{tmpdir}/unittest.json"
             path = "{tmpdir}"
-            task = "test"
         [impact.unittest.communicate]
             foo = "bar"
+        [impact.unittest.test]
+            arguments = "hello world"
         """
     )
     config = config.copy(update=config_patch)
