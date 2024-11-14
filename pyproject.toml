@@ -20,7 +20,7 @@
 
 [tool.poetry.dependencies]
   # Python version
-  python = ">=3.9,<3.13"
+  python = ">=3.10,<3.13"
   # General dependencies
   dateutils = "^0.6.12"
   f90nml = "^1.4.3"
