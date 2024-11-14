@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Intercept standard logging in loguru log handler. [\#855] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/855)
 - Add end time for expver i4ql (ATOS\_DT) [\#866] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/866) (@kastelecn)
 - Airquality event type configuration file. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
 - Temporary SURFEX grib2 definitions for CY6h1 and CY48t3. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
