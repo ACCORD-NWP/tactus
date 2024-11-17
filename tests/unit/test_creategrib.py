@@ -4,21 +4,15 @@ from pathlib import Path
 
 import pytest
 
-from deode.config_parser import default_config
 from deode.derived_variables import set_times
 from deode.tasks.creategrib import CreateGrib
 from deode.toolbox import Platform
 
 
 @pytest.fixture(scope="module")
-def tmpdir(tmp_path_factory):
-    return tmp_path_factory.getbasetemp().as_posix()
-
-
-@pytest.fixture(scope="module")
-def basic_config(tmpdir):
-    config = default_config()
-    scratch = str(tmpdir)
+def basic_config(tmp_directory, default_config):
+    config = default_config
+    scratch = str(tmp_directory)
     config = config.copy(update=set_times(config))
     update = {
         "platform": {"scratch": scratch},

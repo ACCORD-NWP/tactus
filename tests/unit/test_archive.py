@@ -6,7 +6,6 @@ from pathlib import Path
 
 import pytest
 
-from deode.config_parser import default_config
 from deode.derived_variables import set_times
 from deode.tasks.archive import Archive
 
@@ -17,14 +16,14 @@ def tmpdir(tmp_path_factory):
 
 
 @pytest.fixture(scope="module")
-def basic_config(tmpdir):
+def basic_config(tmpdir, default_config):
     tmp1 = Path(tmpdir, "inpath")
     tmp2 = Path(tmpdir, "outpath")
     os.makedirs(tmp1, exist_ok=True)
     os.system("touch " + str(tmp1) + "/copy")  # noqa S108
     os.system("touch " + str(tmp1) + "/xtra")  # noqa S108
     os.system("touch " + str(tmp1) + "/move")  # noqa S108
-    config = default_config()
+    config = default_config
     config = config.copy(update=set_times(config))
     config = config.copy(
         update={

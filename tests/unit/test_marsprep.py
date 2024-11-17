@@ -4,16 +4,15 @@
 import pytest
 import tomlkit
 
-from deode.config_parser import default_config
 from deode.derived_variables import derived_variables, set_times
 from deode.geo_utils import Projection, Projstring
 from deode.tasks.marsprep import Marsprep
 
 
 @pytest.fixture(scope="module")
-def base_parsed_config():
+def base_parsed_config(default_config):
     """Return a parsed config common to all tasks."""
-    config = default_config()
+    config = default_config
     config = config.copy(update=set_times(config))
     config = config.copy(update=derived_variables(config))
 
@@ -59,14 +58,14 @@ def get_domain_data(config):
 
 
 @pytest.fixture(params=["HRES", "ATOS_DT"], scope="module")
-def parsed_config(request, base_parsed_config, tmp_path_factory):
+def parsed_config(request, base_parsed_config, tmp_directory):
     """Return a parsed config common to tasks."""
     config_patch = tomlkit.parse(
         f"""
         [boundaries]
             ifs.selection = "{request.param}"
         [system]
-            wrk = "{tmp_path_factory.getbasetemp().as_posix()}"
+            wrk = "{tmp_directory}"
 
         """
     )

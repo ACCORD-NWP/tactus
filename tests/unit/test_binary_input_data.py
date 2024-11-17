@@ -7,7 +7,6 @@ from pathlib import Path
 import f90nml
 import pytest
 
-from deode.config_parser import default_config
 from deode.datetime_utils import as_datetime
 from deode.logs import logger
 from deode.tasks.sfx import InputDataFromNamelist
@@ -97,7 +96,7 @@ def f90ml_namelist(tmp_path_factory):
     return nml
 
 
-def test_new_binary_input(f90ml_namelist, binary_input_data):
+def test_new_binary_input(f90ml_namelist, binary_input_data, default_config):
     update = {
         "system": {"climdir": "/climdir"},
         "platform": {
@@ -116,7 +115,7 @@ def test_new_binary_input(f90ml_namelist, binary_input_data):
             "gmted": "/gmted",
         },
     }
-    config = default_config()
+    config = default_config
     config = config.copy(update=update)
 
     platform = Platform(config)

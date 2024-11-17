@@ -5,15 +5,15 @@ import pytest
 import tomlkit
 
 from deode import GeneralConstants
-from deode.config_parser import default_config
 from deode.derived_variables import set_times
 from deode.fullpos import Fullpos, InvalidSelectionCombinationError, flatten_list
 from deode.toolbox import Platform
 
 
-def load():
+@pytest.fixture()
+def load(default_config):
     """Test load of the yml files."""
-    config = default_config()
+    config = default_config
     config_patch = tomlkit.parse(
         f"""
         [platform]
@@ -223,19 +223,19 @@ class TestFullpos:
                 "test", fpdict=fullpos_config, rules=rules
             ).construct()
 
-    def test_load(self):
+    def test_load(self, load):
         """Test load of the yml files."""
-        fp = load()
+        fp = load
         assert isinstance(fp.nldict, dict)
 
-    def test_update(self):
+    def test_update(self, load):
         """Test update of the settings."""
-        fp = load()
+        fp = load
         fp.update_selection(additions_list=["master_selection_AROME"], additions_dict={})
 
-    def test_non_instant(self):
+    def test_non_instant(self, load):
         """Test the check of non instant fields."""
-        fp = load()
+        fp = load
         namfpc, selection = fp.construct()
         with pytest.raises(RuntimeError):
             fp.check_non_instant_fields(selection, "xxtddddhh00")

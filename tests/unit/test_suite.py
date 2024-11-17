@@ -6,7 +6,7 @@ from contextlib import suppress
 import pytest
 import tomlkit
 
-from deode.config_parser import ConfigParserDefaults, ParsedConfig, default_config
+from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import set_times
 from deode.submission import TaskSettings
 from deode.suites.deode import DeodeSuiteDefinition
@@ -27,12 +27,6 @@ def minimal_parsed_config(minimal_raw_config):
     return ParsedConfig(
         minimal_raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
     )
-
-
-@pytest.fixture()
-def config_from_task_config_file():
-    """Return a raw config common to all tasks."""
-    return default_config()
 
 
 @pytest.fixture(scope="module")
@@ -77,8 +71,8 @@ class TestSuite:
             {"submission": {"max_ecf_tasks": 2}},
         ],
     )
-    def test_suite(self, config_from_task_config_file, param, tmp_directory):
-        config = config_from_task_config_file
+    def test_suite(self, default_config, param, tmp_directory):
+        config = default_config
         suite_name = "test_suite"
         config = config.copy(
             update={

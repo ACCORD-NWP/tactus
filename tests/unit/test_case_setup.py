@@ -10,7 +10,6 @@ from toml_formatter.formatter import FormattedToml
 from toml_formatter.formatter_options import FormatterOptions
 
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
-from deode.config_parser import default_config as package_config
 from deode.derived_variables import set_times
 from deode.experiment import case_setup
 from deode.toolbox import Platform
@@ -45,11 +44,6 @@ def test_domain():
 def default_config_dir():
     rootdir = f"{os.path.dirname(__file__)}/../.."
     return f"{rootdir}/deode/data/config_files"
-
-
-@pytest.fixture(scope="module")
-def default_config():
-    return package_config()
 
 
 def test_save_config(tmp_directory: Path, default_config):

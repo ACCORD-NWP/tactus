@@ -501,12 +501,3 @@ def _get_json_validation_function(json_schema):
             ) from err
 
     return validate
-
-
-def default_config():
-    """Return a parsed config to be used for unit tests."""
-    return ParsedConfig.from_file(
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
-        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-        host="atos_bologna",
-    )

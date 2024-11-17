@@ -8,17 +8,12 @@ import pytest
 import tomlkit
 
 from deode import GeneralConstants
-from deode.config_parser import default_config
+from deode.derived_variables import set_times
 from deode.initial_conditions import InitialConditions
 
 
-@pytest.fixture(scope="module")
-def tmpdir(tmp_path_factory):
-    return tmp_path_factory.getbasetemp().as_posix()
-
-
 @pytest.fixture(params=[False, True])
-def parsed_config(request, tmpdir):
+def parsed_config(request, tmp_directory, default_config):
     """Return a raw config common to all tasks."""
     if request.param:
         for f in [
@@ -28,32 +23,21 @@ def parsed_config(request, tmpdir):
             "ICMSHTEST+0003h00m00s.sfx",
             "ICMSHTESTINIT.sfx",
         ]:
-            Path(f"{tmpdir}/{f}").touch()
+            Path(f"{tmp_directory}/{f}").touch()
 
-    config = default_config()
-
-    try:
-        basetime = config["general.times.basetime"]
-    except KeyError:
-        basetime = config["general.times.start"]
-    try:
-        validtime = config["general.times.validtime"]
-    except KeyError:
-        validtime = basetime
+    config = default_config
+    config = config.copy(update=set_times(config))
 
     config_patch = tomlkit.parse(
         f"""
         [general]
             cnmexp = "TEST"
             bogus = "{request.param}"
-            initfile = "{tmpdir}/@HISTORY_TEMPLATE@"
-            initfile_sfx = "{tmpdir}/@SURFEX_TEMPLATE@"
-        [general.times]
-            basetime = "{basetime}"
-            validtime = "{validtime}"
+            initfile = "{tmp_directory}/@HISTORY_TEMPLATE@"
+            initfile_sfx = "{tmp_directory}/@SURFEX_TEMPLATE@"
         [system]
-            intp_bddir = "{tmpdir}"
-            archive = "{tmpdir}"
+            intp_bddir = "{tmp_directory}"
+            archive = "{tmp_directory}"
         [platform]
             deode_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
         """
@@ -81,28 +65,28 @@ def set_mode(request):
         {"general": {"times": {"start": "2023-10-15T15:32:24Z"}}},
     ],
 )
-def test_find_initial_files(tmpdir, parsed_config, set_surfex, set_mode, param):
+def test_find_initial_files(tmp_directory, parsed_config, set_surfex, set_mode, param):
     """Test load of the yml files."""
     if parsed_config["general"]["bogus"] == "True":
         if set_mode["suite_control"]["mode"] == "start":
-            truth = f"{tmpdir}/ELSCFTESTALBC000"
-            truth_sfx = f"{tmpdir}/ICMSHTESTINIT.sfx"
+            truth = f"{tmp_directory}/ELSCFTESTALBC000"
+            truth_sfx = f"{tmp_directory}/ICMSHTESTINIT.sfx"
             if "times" in param["general"]:
-                truth = f"{tmpdir}/ICMSHTEST+0003h00m00s"
-                truth_sfx = f"{tmpdir}/ICMSHTEST+0003h00m00s.sfx"
+                truth = f"{tmp_directory}/ICMSHTEST+0003h00m00s"
+                truth_sfx = f"{tmp_directory}/ICMSHTEST+0003h00m00s.sfx"
         elif set_mode["suite_control"]["mode"] == "cold_start":
-            truth = f"{tmpdir}/ELSCFTESTALBC000"
-            truth_sfx = f"{tmpdir}/ICMSHTESTINIT.sfx"
+            truth = f"{tmp_directory}/ELSCFTESTALBC000"
+            truth_sfx = f"{tmp_directory}/ICMSHTESTINIT.sfx"
         elif set_mode["suite_control"]["mode"] == "restart":
-            truth = f"{tmpdir}/ICMSHTEST+0003h00m00s"
-            truth_sfx = f"{tmpdir}/ICMSHTEST+0003h00m00s.sfx"
+            truth = f"{tmp_directory}/ICMSHTEST+0003h00m00s"
+            truth_sfx = f"{tmp_directory}/ICMSHTEST+0003h00m00s.sfx"
             if "initfile" in param["general"]:
-                truth = f"{tmpdir}/foo"
-                truth_sfx = f"{tmpdir}/foo"
+                truth = f"{tmp_directory}/foo"
+                truth_sfx = f"{tmp_directory}/foo"
 
     for key in ["initfile", "initfile_sfx"]:
         if key in param["general"]:
-            param["general"][key] = f"{tmpdir}/foo"
+            param["general"][key] = f"{tmp_directory}/foo"
 
     config = parsed_config
     config = config.copy(update=set_surfex)

@@ -11,7 +11,6 @@ import tomli
 import tomlkit
 import yaml
 
-from deode.config_parser import default_config
 from deode.derived_variables import set_times
 from deode.tasks.batch import BatchJob
 from deode.tasks.impacts import ImpactModel, ImpactModels
@@ -34,20 +33,15 @@ class UnitTest(ImpactModel):
 
 
 @pytest.fixture(scope="module")
-def tmpdir(tmp_path_factory):
-    return tmp_path_factory.getbasetemp().as_posix()
-
-
-@pytest.fixture(scope="module")
-def basic_config(tmpdir):
-    config = default_config()
+def basic_config(tmp_directory, default_config):
+    config = default_config
     config = config.copy(update=set_times(config))
     config_patch = tomlkit.parse(
         f"""
         [general]
             keep_workdirs = false
         [system]
-            wrk = "{tmpdir}"
+            wrk = "{tmp_directory}"
         [submission.task]
             wrapper = "echo"
         [platform]
@@ -55,8 +49,8 @@ def basic_config(tmpdir):
         [impact.unittest]
             active = true
             arguments = "hello world"
-            config_name = "{tmpdir}/unittest.json"
-            path = "{tmpdir}"
+            config_name = "{tmp_directory}/unittest.json"
+            path = "{tmp_directory}"
             task = "test"
         [impact.unittest.communicate]
             foo = "bar"
@@ -68,11 +62,11 @@ def basic_config(tmpdir):
 
 
 @pytest.fixture(scope="module")
-def basic_config_installed(basic_config):
+def basic_config_installed(basic_config, tmp_directory):
     config_patch = tomlkit.parse(
         f"""
         [platform.impact]
-            unittest = "{tmpdir}"
+            unittest = "{tmp_directory}"
         """
     )
     config = basic_config.copy(update=config_patch)
@@ -98,20 +92,20 @@ def test_impact_inactive_wrong_task(basic_config_installed):
     assert model.is_active is False
 
 
-def test_impact_run_cmd(basic_config_installed, tmpdir):
+def test_impact_run_cmd(basic_config_installed, tmp_directory):
     model = ImpactModels(basic_config_installed, "test")
     assert model.is_active is True
     model.execute()
 
-    txtfile = f"{tmpdir}/txtfile"
+    txtfile = f"{tmp_directory}/txtfile"
     with open(txtfile, "r", encoding="utf-8") as f:
         line = f.read()
     assert line.strip() == "hello world"
 
 
 @pytest.mark.parametrize("filetype", ["yml", "json", "toml"])
-def test_impact_different_configs(basic_config_installed, tmpdir, filetype):
-    filename = f"{tmpdir}/unittest.{filetype}"
+def test_impact_different_configs(basic_config_installed, tmp_directory, filetype):
+    filename = f"{tmp_directory}/unittest.{filetype}"
     basic_config = basic_config_installed.copy(
         update={"impact": {"unittest": {"config_name": filename}}}
     )

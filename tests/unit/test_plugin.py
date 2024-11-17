@@ -4,7 +4,6 @@ import os
 import yaml
 
 import deode
-from deode.config_parser import default_config
 from deode.plugin import (
     DeodePlugin,
     DeodePluginRegistry,
@@ -31,7 +30,7 @@ def create_suite_class(name, path):
         )
 
 
-def test_plugin(tmp_directory):
+def test_plugin(tmp_directory, default_config):
     """Simple plugin test."""
     tasks_dir = f"{tmp_directory}/extension/tasks"
     suites_dir = f"{tmp_directory}/extension/suites"
@@ -64,7 +63,7 @@ def test_plugin(tmp_directory):
             raise NotImplementedError
 
     update = {"general": {"plugin_registry": {"extension": tmp_directory}}}
-    config = default_config()
+    config = default_config
     config = config.copy(update=update)
     reg = DeodePluginRegistryFromConfig(config)
     for plg in reg.plugins:

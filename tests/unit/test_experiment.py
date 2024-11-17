@@ -7,7 +7,7 @@ import pytest
 import tomli
 import tomlkit
 
-from deode.config_parser import ParsedConfig, default_config
+from deode.config_parser import ParsedConfig
 from deode.experiment import ExpFromFiles
 
 
@@ -63,7 +63,7 @@ def fixture_exp_dependencies(output_file: Path):
 
 
 @pytest.fixture(name="config")
-def fixture_config():
+def fixture_config(default_config):
     """Fixture that provides a parsed configuration object for testing."""
     update = {
         "macros": {
@@ -74,7 +74,7 @@ def fixture_config():
             }
         }
     }
-    config = default_config()
+    config = default_config
     config = config.copy(update=update)
     return config
 
