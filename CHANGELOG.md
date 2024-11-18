@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Add xml dumper impact models configs. [\#837] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/837) (@uandrae)
 - Add mars settings for expver iit7 (eps example) [\#879] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/870) (@kastelecn)
 - Intercept standard logging in loguru log handler. [\#855] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/855)
 - Add end time for expver i4ql (ATOS\_DT) [\#866] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/866) (@kastelecn)

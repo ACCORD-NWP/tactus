@@ -8,6 +8,7 @@ from typing import Optional
 
 import tomlkit
 import yaml
+from dicttoxml import dicttoxml as dtx
 
 from ..config_parser import BasicConfig
 from ..logs import logger
@@ -50,6 +51,9 @@ class ImpactModel(ABC):
         if self.filename.endswith(".toml"):
             with open(self.filename, mode="w", encoding="utf8") as f_h:
                 f_h.write(tomlkit.dumps(to_dump))
+        elif self.filename.endswith((".xml")):
+            with open(self.filename, mode="wb") as f_h:
+                f_h.write(dtx(to_dump, root=False, attr_type=False))
         elif self.filename.endswith((".yml", ".yaml")):
             with open(self.filename, mode="wb") as f_h:
                 yaml.dump(to_dump, f_h, encoding="utf-8", default_flow_style=False)
