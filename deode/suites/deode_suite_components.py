@@ -1,9 +1,9 @@
 """Module to create the different parts of the DEODE ecFlow suite."""
 
-import itertools
-from copy import copy
 from datetime import datetime, timedelta
-from typing import Generator
+from typing import Generator, Optional
+
+from deode.suites.suite_utils import Cycle, Cycles, bd_generator, lbc_times_generator
 
 from ..datetime_utils import (
     as_datetime,
@@ -17,11 +17,11 @@ from ..submission import ProcessorLayout, TaskSettings
 from ..tasks.impacts import ImpactModels
 from .base import (
     EcflowSuiteFamily,
+    EcflowSuiteLimit,
     EcflowSuiteTask,
     EcflowSuiteTrigger,
     EcflowSuiteTriggers,
 )
-from .suite_utils import Cycle, Cycles, batch_times_generator, bd_generator
 
 
 class PgdInputFamily(EcflowSuiteFamily):
@@ -386,8 +386,8 @@ class PrepFamily(EcflowSuiteFamily):
         )
 
 
-class LBCFamilyGenerator(EcflowSuiteFamily):
-    """Class for creating the ecFlow LBCFamilyGenerator.
+class LBCSubFamilyGenerator(EcflowSuiteFamily):
+    """Class for creating the ecFlow LBCSubFamilyGenerator.
 
     When iterating over this class, it will create a new LBC family for each
     time in the lbc_time_generator.
@@ -405,6 +405,7 @@ class LBCFamilyGenerator(EcflowSuiteFamily):
         trigger=None,
         ecf_files_remotely=None,
         do_prep: bool = True,
+        limit: Optional[EcflowSuiteLimit] = None,
     ):
         """Class initialization."""
         self.parent = parent
@@ -415,6 +416,7 @@ class LBCFamilyGenerator(EcflowSuiteFamily):
         self.trigger = trigger
         self.ecf_files_remotely = ecf_files_remotely
         self.do_prep = do_prep
+        self.limit = limit
         self.bdint = bdint
         self.lbc_time_generator = lbc_time_generator
         self.bd_generator_instance = bd_generator(
@@ -433,10 +435,10 @@ class LBCFamilyGenerator(EcflowSuiteFamily):
             variables = {"ARGS": args}
 
             lbc_family_name = (
-                f"LBC{bdnr*inthourbdintx:02}{subbdnr:02}"
+                f"LBC{bd_nr*inthourbdintx:02}{subbdnr:02}"
                 + (f"{subminbdnr:02}" if subminbdnr is not None else "")
                 if subbdnr is not None
-                else f"LBC{bdnr*inthourbdintx:02}"
+                else f"LBC{bd_nr*inthourbdintx:02}"
             )
 
             super().__init__(
@@ -446,6 +448,7 @@ class LBCFamilyGenerator(EcflowSuiteFamily):
                 trigger=self.trigger,
                 variables=None,
                 ecf_files_remotely=self.ecf_files_remotely,
+                limit=self.limit,
             )
 
             split_mars_task = None
@@ -480,12 +483,8 @@ class LBCFamilyGenerator(EcflowSuiteFamily):
             yield self
 
 
-class BatchFamilyGenerator(EcflowSuiteFamily):
-    """Class for creating the ecFlow BatchFamilyGenerator.
-
-    When iterating over this class, it will create a new batch family for each
-    batch in the batch_times_generator.
-    """
+class LBCFamily(EcflowSuiteFamily):
+    """Class for creating the ecFlow LBCFamily."""
 
     def __init__(
         self,
@@ -499,64 +498,51 @@ class BatchFamilyGenerator(EcflowSuiteFamily):
         lbc_family_trigger=None,
         ecf_files_remotely=None,
         do_prep: bool = True,
+        dry_run: bool = False,
     ):
         """Class initialization."""
-        self.parent = parent
-        self.config = config
-        self.task_settings = task_settings
-        self.input_template = input_template
-        self.ecf_files = ecf_files
-        self.cycle = cycle
-        self.trigger = trigger
-        self.lbc_family_trigger = lbc_family_trigger
-        self.ecf_files_remotely = ecf_files_remotely
-        self.do_prep = do_prep
+        super().__init__(
+            "LBCs",
+            parent,
+            ecf_files,
+            trigger=trigger,
+            ecf_files_remotely=ecf_files_remotely,
+        )
 
-    def __iter__(self):
-        basetime = as_datetime(self.cycle.basetime)
-        forecast_range = as_timedelta(self.config["general.times.forecast_range"])
+        if not dry_run:
+            bdmax = config["boundaries.max_interpolation_tasks"]
+            lbc_limit = EcflowSuiteLimit("lbc_limit", bdmax)
+            self.ecf_node.add_limit(lbc_limit.limit_name, lbc_limit.max_jobs)
+
+        basetime = as_datetime(cycle.basetime)
+        forecast_range = as_timedelta(config["general.times.forecast_range"])
         endtime = basetime + forecast_range
-        bdint = as_timedelta(self.config["boundaries.bdint"])
-        bdtasks_per_batch = self.config["boundaries.bdtasks_per_batch"]
-        batch_times_generator_instance = batch_times_generator(
+        bdint = as_timedelta(config["boundaries.bdint"])
+        lbc_times_generator_instance = lbc_times_generator(
             basetime,
             endtime,
             bdint,
-            bdtasks_per_batch,
-            mode=self.config["suite_control.mode"],
-            do_prep=self.do_prep,
+            mode=config["suite_control.mode"],
+            do_prep=do_prep,
         )
-        lbc_family_generator_instance = LBCFamilyGenerator(
+        lbc_family_generator_instance = LBCSubFamilyGenerator(
             self,
-            self.config,
-            self.task_settings,
-            self.input_template,
-            self.ecf_files,
+            config,
+            task_settings,
+            input_template,
+            ecf_files,
             bdint,
-            batch_times_generator_instance,
-            trigger=self.lbc_family_trigger,
-            ecf_files_remotely=self.ecf_files_remotely,
-            do_prep=self.do_prep,
+            lbc_times_generator_instance,
+            trigger=lbc_family_trigger,
+            ecf_files_remotely=ecf_files_remotely,
+            do_prep=do_prep,
+            limit=lbc_limit if not dry_run else None,
         )
-        batch_trigger = self.trigger
-        for batch_nr in batch_times_generator_instance:
-            super().__init__(
-                f"Batch{batch_nr:02}",
-                self.parent,
-                self.ecf_files,
-                trigger=batch_trigger,
-                ecf_files_remotely=self.ecf_files_remotely,
-            )
 
-            # Iterate through the LBC family generator to create the next
-            # bdtasks_per_batch LBC families
-            for _ in itertools.islice(lbc_family_generator_instance, bdtasks_per_batch):
-                pass
-
-            yield self
-
-            # Update trigger to make next batch dependent on current
-            batch_trigger = copy(self)
+        # Iterate through the LBC family generator to create the next
+        # LBC families
+        for _ in lbc_family_generator_instance:
+            pass
 
 
 class InterpolationFamily(EcflowSuiteFamily):
@@ -573,6 +559,7 @@ class InterpolationFamily(EcflowSuiteFamily):
         trigger=None,
         ecf_files_remotely=None,
         do_prep: bool = True,
+        dry_run: bool = False,
     ):
         """Class initialization."""
         super().__init__(
@@ -614,7 +601,7 @@ class InterpolationFamily(EcflowSuiteFamily):
         if csc == "ALARO" and cycles.end_of_month:
             do_prep = True
 
-        batch_family_generator_instance = BatchFamilyGenerator(
+        LBCFamily(
             self,
             config,
             task_settings,
@@ -624,10 +611,8 @@ class InterpolationFamily(EcflowSuiteFamily):
             lbc_family_trigger=e923_update_task,
             ecf_files_remotely=ecf_files_remotely,
             do_prep=do_prep,
+            dry_run=dry_run,
         )
-        # Iterate over the batch times to create the batch families
-        for _ in batch_family_generator_instance:
-            pass
 
 
 class InitializationFamily(EcflowSuiteFamily):
@@ -948,6 +933,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
         trigger=None,
         ecf_files_remotely=None,
         do_prep: bool = True,
+        dry_run: bool = False,
     ):
         """Class initialization."""
         cycles = Cycles(
@@ -1006,6 +992,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     trigger=inputdata,
                     ecf_files_remotely=ecf_files_remotely,
                     do_prep=do_prep,
+                    dry_run=dry_run,
                 )
 
                 ready_for_cycle = prev_interpolation_trigger = [int_family]

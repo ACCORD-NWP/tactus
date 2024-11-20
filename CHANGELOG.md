@@ -11,8 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
-- Add xml dumper impact models configs. [\#837] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/837) (@uandrae)
 - Add mars settings for expver iit7 (eps example) [\#879] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/870) (@kastelecn)
+- Add xml dumper impact models configs. [\#837] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/837) (@uandrae)
 - Intercept standard logging in loguru log handler. [\#855] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/855)
 - Add end time for expver i4ql (ATOS\_DT) [\#866] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/866) (@kastelecn)
 - Airquality event type configuration file. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Canopy water and land-sea-mask to fullpos aq selection. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
 
 ### Changed
+- Replace batches with ecflow limit for LBC tasks. [\#850](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/850)(@kastelecn)
 - deodemakedirs will use default linux permission unless unixgroup is specified. [\#879] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/879) (@trygveasp)
 - Refactored the DEODE ecFlow suite generation scripts. Bumped python version to 3.10 in both test environment and pyproject.toml. [\#831](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/831) (@mafdmi)
 - Changed impact model config layout [\#838](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/838) (@uandrae)

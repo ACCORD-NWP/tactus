@@ -205,6 +205,7 @@ class EcflowNode:
         def_status=None,
         ecf_files_remotely=None,
         cron=None,
+        limit=None,
     ):
         """Construct the EcflowNode.
 
@@ -219,7 +220,7 @@ class EcflowNode:
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
             ecf_files_remotely(str, optional): Remote file prefix
             cron (EcflowSuiteCron): Cron. Defauts to None
-
+            limit (EcflowSuiteLimit): Limit. Defaults to None
         Raises:
             NotImplementedError: Node type not implemented
             TypeError: "Triggers must be an EcflowSuiteTriggers object"
@@ -314,6 +315,16 @@ class EcflowNode:
                 self.ecf_node.add_cron(cron.cron)
             else:
                 raise TypeError("Cron must be an EcflowSuiteCron object")
+        if limit is not None:
+            if isinstance(limit, EcflowSuiteLimit):
+                if self.node_type == "family":
+                    self.ecf_node.add_inlimit(limit.limit_name)
+                else:
+                    raise NotImplementedError(
+                        "Limit is implemented only for Suite and Family!"
+                    )
+            else:
+                raise TypeError("Limit should be an EcflowSuitenLimit object")
 
         if def_status is not None and self.ecf_node is not None:
             if isinstance(def_status, str):
@@ -340,6 +351,7 @@ class EcflowNodeContainer(EcflowNode):
         def_status=None,
         ecf_files_remotely=None,
         cron=None,
+        limit=None,
     ):
         """Construct EcflowNodeContainer.
 
@@ -353,7 +365,7 @@ class EcflowNodeContainer(EcflowNode):
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
             ecf_files_remotely(str, optional): ECF_FILES on ecflow server
             cron (EcflowSuiteCron): Cron. Defauts to None
-
+            limit (EcflowSuiteLimit): Limit. Default None
 
         """
         EcflowNode.__init__(
@@ -367,6 +379,7 @@ class EcflowNodeContainer(EcflowNode):
             def_status=def_status,
             ecf_files_remotely=ecf_files_remotely,
             cron=cron,
+            limit=limit,
         )
 
 
@@ -433,6 +446,7 @@ class EcflowSuiteFamily(EcflowNodeContainer):
         def_status=None,
         ecf_files_remotely=None,
         cron=None,
+        limit=None,
     ):
         """Construct the family.
 
@@ -445,6 +459,7 @@ class EcflowSuiteFamily(EcflowNodeContainer):
                     def_status (str, ecflow.Defstatus): Def status. Defaults to None
                     ecf_files_remotely(str, optional): ECF_FILES on ecflow server
                     cron (EcflowSuiteCron): Cron. Defaut None
+                    limit (EcflowSuiteLimit): Limit. Default None
         """
         EcflowNodeContainer.__init__(
             self,
@@ -457,6 +472,7 @@ class EcflowSuiteFamily(EcflowNodeContainer):
             def_status=def_status,
             ecf_files_remotely=ecf_files_remotely,
             cron=cron,
+            limit=limit,
         )
         logger.debug(self.ecf_remote_container_path)
         if self.ecf_node is not None:
@@ -637,7 +653,7 @@ class EcflowSuiteCron:
     """EcFlow Cron in a suite."""
 
     def __init__(self, days_of_week, time):
-        """Create a EcFlow cron oject.
+        """Create a EcFlow cron object.
 
         Args:
             days_of_week (list of int):  0-6, Sunday-Saturday
@@ -647,3 +663,17 @@ class EcflowSuiteCron:
         days_of_week = list(days_of_week)
         logger.info("days: {}, time: {}", days_of_week, time_str)
         self.cron = ecflow.Cron(time_str, days_of_week=days_of_week)
+
+
+class EcflowSuiteLimit:
+    """Ecflow limit for active jobs in family."""
+
+    def __init__(self, limit_name, max_jobs):
+        """Create a EcFlow limit object.
+
+        Args:
+            limit_name (str): Name of the limit
+            max_jobs (int): number of maximal active jobs
+        """
+        self.limit_name = limit_name
+        self.max_jobs = max_jobs

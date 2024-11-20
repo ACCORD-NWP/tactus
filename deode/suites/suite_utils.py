@@ -102,52 +102,40 @@ class Cycles:
             self._current_index += 1
 
 
-def batch_times_generator(
+def lbc_times_generator(
     basetime: datetime,
     endtime: datetime,
     step: timedelta,
-    tasks_per_batch: int,
     mode: str = "start",
     do_prep: bool = True,
 ) -> Generator[Union[int, datetime], None, None]:
-    """Generate batch times.
+    """Generate lbc times.
 
-    The times are divided into batches of tasks_per_batch tasks.
+    For each of them there will be LBC[NN] family.
 
     Args:
         basetime: The base time.
         endtime: The end time.
         step: The step size.
-        tasks_per_batch: The number of tasks per batch.
         mode: The mode of the workflow.
         do_prep: Whether to do prep.
 
     Yields:
-        Union[int, datetime]: The batch number or the next time in the batch.
-            First yield returns batch number, then the next `tasks_per_batch`
-            yields return the batch times of the batch. Repeat.
+            datetime: The time period for which the next LBC will be computed.
 
+    Returns:
+            datetime: The time period for which the last LBC will be computed.
     """
     if mode == "restart" or (mode == "start" and not do_prep):
         basetime += step
 
-    def subgenerator(start_time: datetime) -> Generator[datetime, None, None]:
-        counter = 0
-        while start_time <= endtime and counter < tasks_per_batch:
-            yield start_time
-            start_time += step
-            counter += 1
-        return start_time
-
-    batch_nr = 1
-
     while basetime <= endtime:
-        subgenerator_ = subgenerator(basetime)
-        # First yield the batch number
-        yield batch_nr
-        # Then yield the next time in the batch
-        basetime = yield from subgenerator_
-        batch_nr += 1
+        # Yield the updated basetime
+        yield basetime
+        basetime += step
+
+    # Return the last basetime
+    return basetime
 
 
 def bd_generator(

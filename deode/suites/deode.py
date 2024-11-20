@@ -140,6 +140,7 @@ class DeodeSuiteDefinition(SuiteDefinition):
                 time_dependent_trigger_node,
                 ecf_files_remotely=self.ecf_files_remotely,
                 do_prep=self.do_prep,
+                dry_run=dry_run,
             )
             # Update trigger for next time dependent node
             last_time_dependent_part = time_dependent_family.last_node
