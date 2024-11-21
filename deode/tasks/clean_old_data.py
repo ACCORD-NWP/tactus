@@ -1,6 +1,8 @@
 """Clean old data."""
 
+import glob
 import os
+import re
 import shutil
 from datetime import datetime
 
@@ -35,53 +37,55 @@ class CleanOldData(Task):
         cutoff = self.now - delay
         return cutoff.timestamp()
 
-    def get_old(self, path, cutoff_time, return_files=False, ignore=None):
+    def get_old(self, path, form, cutoff_time, ignore=None):
         """Get directories which are older cutoff.
 
         Args:
             path (str): Path to start of searching old directories
+            form (str): regex for path
             cutoff_time (int): Directories or files older then cutoff
-            return_files (boolean): return files to clean, default False
             ignore (list): List of directories to ignore
         Returns:
-            dic_to_remove (dict): Dictionary of directories for remove
+            list_to_remove (list): List of directories for remove
         """
-        dic_to_remove = {}
-        for root, _dirs, files in os.walk(path):
-            dirs = _dirs if ignore is None else [x for x in _dirs if x not in ignore]
-            if not return_files:
-                for dir_name in dirs:
-                    dir_path = os.path.join(root, dir_name)
-                    dir_mtime = os.path.getmtime(dir_path)
-                    logger.debug(
-                        "path: {}, time: {}, cutoff: {}", dir_path, dir_mtime, cutoff_time
-                    )
-                    if dir_mtime < cutoff_time:
-                        dic_to_remove[dir_name] = dir_path
-                del _dirs[:]
-            else:
-                for filename in files:
-                    file_path = os.path.join(root, filename)
+        list_to_remove = []
+        glob_str = "*/".join(["*"] * (form.count("/") - form.count("^/")))
+        logger.info(glob_str)
+        logger.info(path)
+        glob_pattern = os.path.join(path, glob_str)
+        initial_matches = glob.glob(glob_pattern)
+        logger.info("initial: {}", initial_matches)
+        pattern = r"^" + re.escape(path) + r"{}".format(form)
+        pattern_no_whitespace = re.sub(r"\s+", "", pattern)
+        logger.info("patteren: {}", pattern_no_whitespace)
+        pattern_compiled = re.compile(pattern_no_whitespace)
+        matched_directories = [d for d in initial_matches if pattern_compiled.match(d)]
+        logger.info("Matched: {}", matched_directories)
+        for dir_path in matched_directories:
+            dir_mtime = os.path.getmtime(dir_path)
+            logger.debug(
+                "path: {}, time: {}, cutoff: {}",
+                dir_path,
+                dir_mtime,
+                cutoff_time,
+            )
+            if dir_mtime < cutoff_time:
+                if ignore is not None:
+                    if os.path.basename(dir_path) not in ignore:
+                        list_to_remove.append(dir_path)
+                else:
+                    list_to_remove.append(dir_path)
+        return list_to_remove
 
-                    file_mtime = os.path.getmtime(file_path)
-                    logger.debug(
-                        "path: {}, time: {}, cutoff: {}",
-                        file_path,
-                        file_mtime,
-                        cutoff_time,
-                    )
-                    if file_mtime < cutoff_time:
-                        dic_to_remove[filename] = file_path
-        return dic_to_remove
-
-    def remove_dic(self, dic, files=False):
-        """Remove directories/files from the dictionary.
+    def remove_list(self, dir_list, files=False):
+        """Remove directories/files from the list.
 
         Args:
-            dic    (dictionary): Dictionary of directories/files
-            files     (boolean): If in dic are files, Default False
+            dir_list    (list): Dictionary of directories/files
+            files     (boolean): If in list are files, Default False
         """
-        for dir_file in dic.values():
+        logger.info(dir_list)
+        for dir_file in dir_list:
             if files:
                 os.remove(dir_file)
             else:
@@ -101,18 +105,26 @@ class CleanScratchData(CleanOldData):
         CleanOldData.__init__(self, config)
         self.name = "CleanScratchData"
         self.delay = as_timedelta(config["clean_old_data.scratch_data_period"])
-        self.scratch = self.platform.get_platform_value("scratch")
+        logger.info(self.platform.get_platform_value("scratch"))
+        self.scratch = (
+            self.platform.get_platform_value("scratch")
+            + config["clean_old_data.scratch_ext"]
+        )
         self.cutoff_time = self.cutoff(self.delay)
+        self.scratch_form = config["clean_old_data.scratch_format"]
         ignore = list(config["clean_old_data.ignore"])
         logger.info("Ignore: {}", ignore)
         self.ignore_dir = ["IFS", "Clean_old_data", *ignore]
 
     def execute(self):
         """Run clean data from scratch."""
-        dict_to_remove = self.get_old(
-            self.scratch, self.cutoff_time, ignore=self.ignore_dir
+        list_to_remove = self.get_old(
+            self.scratch,
+            self.scratch_form,
+            self.cutoff_time,
+            ignore=self.ignore_dir,
         )
-        self.remove_dic(dict_to_remove)
+        self.remove_list(list_to_remove)
 
 
 class CleanSuites(CleanOldData):
@@ -128,27 +140,31 @@ class CleanSuites(CleanOldData):
         self.name = "CleanSuites"
         self.ecf_jobout = self.platform.get_value("scheduler.ecfvars.ecf_jobout")
         self.ecf_files = self.platform.get_value("scheduler.ecfvars.ecf_files")
+        self.suite_form = config["clean_old_data.suite_format"]
 
         self.delay = as_timedelta(config["clean_old_data.suites_period"])
         self.cutoff_time = self.cutoff(self.delay)
         ignore = list(config["clean_old_data.ignore"])
         logger.info("Ignore: {}", ignore)
-        self.ignore_suite = ["IFS", "Clean_old_data", *ignore]
+        self.ignore_suite = ["IFS", "Clean_old_data", "DE_NWP", *ignore]
 
     def execute(self):
         """Run clean suites."""
         logger.info("Delay: {}, Cutoff:{}", self.delay, self.cutoff_time)
-        dic_to_remove_files = self.get_old(
-            self.ecf_files, self.cutoff_time, ignore=self.ignore_suite
+        list_to_remove_files = self.get_old(
+            self.ecf_files, self.suite_form, self.cutoff_time, ignore=self.ignore_suite
         )
-        dic_to_remove_jobout = self.get_old(
-            self.ecf_jobout, self.cutoff_time, ignore=self.ignore_suite
+        list_to_remove_jobout = self.get_old(
+            self.ecf_jobout, self.suite_form, self.cutoff_time, ignore=self.ignore_suite
         )
 
-        self.remove_dic(dic_to_remove_files)
-        self.remove_dic(dic_to_remove_jobout)
+        self.remove_list(list_to_remove_files)
+        self.remove_list(list_to_remove_jobout)
 
-        suites = set(list(dic_to_remove_files) + list(dic_to_remove_jobout))
+        suites = [
+            os.path.basename(x)
+            for x in set(list(list_to_remove_files) + list(list_to_remove_jobout))
+        ]
         EcflowServer(self.config).remove_suites(suites)
 
 
@@ -163,11 +179,15 @@ class CleanIFSData(CleanOldData):
         """
         CleanOldData.__init__(self, config)
         self.name = "CleanIFSData"
-        self.marsdir = self.platform.get_platform_value("reference_data") + "/IFS"
+        self.marsdir = (
+            self.platform.get_platform_value("scratch")
+            + config["clean_old_data.scratch_ext"]
+        )
+        self.ifs_form = config["clean_old_data.ifs_format"]
         self.delay = as_timedelta(config["clean_old_data.IFS_period"])
         self.cutoff_time = self.cutoff(self.delay)
 
     def execute(self):
         """Run clean IFS data."""
-        dict_to_remove = self.get_old(self.marsdir, self.cutoff_time, return_files=True)
-        self.remove_dic(dict_to_remove, files=True)
+        list_to_remove = self.get_old(self.marsdir, self.ifs_form, self.cutoff_time)
+        self.remove_list(list_to_remove, files=True)

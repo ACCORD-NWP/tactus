@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 import tomli
 import tomlkit
+import xmltodict
 import yaml
 
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
@@ -57,12 +58,12 @@ def basic_config(tmpdir):
             deode_home = "{WORKING_DIR}"
         [impact.unittest]
             active = true
-            arguments = "hello world"
             config_name = "{tmpdir}/unittest.json"
             path = "{tmpdir}"
-            task = "test"
         [impact.unittest.communicate]
             foo = "bar"
+        [impact.unittest.test]
+            arguments = "hello world"
         """
     )
     config = config.copy(update=config_patch)
@@ -112,7 +113,7 @@ def test_impact_run_cmd(basic_config_installed, tmpdir):
     assert line.strip() == "hello world"
 
 
-@pytest.mark.parametrize("filetype", ["yml", "json", "toml"])
+@pytest.mark.parametrize("filetype", ["yml", "json", "toml", "xml"])
 def test_impact_different_configs(basic_config_installed, tmpdir, filetype):
     filename = f"{tmpdir}/unittest.{filetype}"
     basic_config = basic_config_installed.copy(
@@ -128,5 +129,7 @@ def test_impact_different_configs(basic_config_installed, tmpdir, filetype):
             config_data = tomli.load(f)
         if filename.endswith((".yaml", ".yml")):
             config_data = yaml.safe_load(f)
+        if filename.endswith((".xml")):
+            config_data = xmltodict.parse(f.read())
 
     assert config_data == {"foo": "bar"}

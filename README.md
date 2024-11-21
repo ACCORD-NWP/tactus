@@ -157,18 +157,12 @@ deode case ?deode/data/config_files/configurations/cy48t3_arome -o cy48t3_arome.
 ```
 
 
-### Running the `"forecast"` task from the `hpc-login`'s command line
+### Running the `"Forecast"` task from the `hpc-login`'s command line
 
-The command below runs `deode`'s task `"forecast"` using the batch system rules defined in your `config.toml`:
+Given that input data is prepared and in the right location any task visible in the ecflow suite can be executed outside of ecflow. The command below runs the task `"Forecast"` using the batch system rules defined in your `cy48t3_config.toml`:
 ```shell
-deode run \
-      --config-file $PWD/deode/data/config_files/config.toml \
-      --task Forecast \
-      --template $PWD/deode/templates/stand_alone.py \
-      --job $PWD/forecast.job \
-      --output $PWD/forecast.log
+deode run --task Forecast --config-file cy48t3_config.toml 
 ```
+The generated job and logfiles will appear in the current directory.
 
 For other platforms a new config file would have to be created first. Please consult the [configure cases](misc_section_in_doc_page.rst#configure-cases) section in the documentation for more information.
-
-If you have done the above mentioned default ecflow test the stand alone forecast will pick the input data from the existing run and output the result in the same directories (as defined by the config file).
