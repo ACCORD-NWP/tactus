@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.9.0] - 2024-11-20
+
 ### Added
 - Add mars settings for expver iit7 (eps example) [\#879] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/870) (@kastelecn)
 - Add xml dumper impact models configs. [\#837] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/837) (@uandrae)
@@ -38,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Made it impossible to parse any string to output_settings. Only empty string, string of ISO8601 format, or list of strings of ISO8601 format are possible. [\#830](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/830) (@mafdmi)
 - Bug that made it impossible to merge namelists with more than one hybrid level with master selection in CY48t3 [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
 - Change the behaviour of `deode run` to only require the `--task` argument. The other arguments will default to names based on the task name. [\#836](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/836) (@uandrae)
-- 
+ 
 ## [0.8.0] - 2024-10-31
 
 ### Added
