@@ -141,7 +141,7 @@ def filepath_iterator(paths, filename_pattern="*"):
             yield path
 
 
-def deodemakedirs(path, unixgroup="", exist_ok=True):
+def deodemakedirs(path, unixgroup="", exist_ok=True, def_dir_mode=0o755):
     """Create directories and change unix group as required.
 
     For a given path the top directory that does not yet exist is searched for, created
@@ -153,6 +153,7 @@ def deodemakedirs(path, unixgroup="", exist_ok=True):
         unixgroup (str, optional): unix group the newly created dirs should belong to.
         exist_ok (boolean, optional): Define whether directories may already exist
             or whether an error should be raised.
+        def_dir_mode(int, optional): Default directory persmission mode. Defaults to 0o755
 
     Raises:
         OSError: If cannot create the directory.
@@ -160,13 +161,17 @@ def deodemakedirs(path, unixgroup="", exist_ok=True):
     """
     p = Path(path).resolve()
 
+    dir_mode = def_dir_mode
+    if unixgroup != "":
+        dir_mode = 0o2750
+
     if p.parents[0].is_dir():
         try:
-            os.makedirs(path, mode=0o2750, exist_ok=exist_ok)
+            os.makedirs(path, mode=dir_mode, exist_ok=exist_ok)
             if unixgroup and (str(Path(path).group()) != str(unixgroup)):
                 shutil.chown(path, group=unixgroup)
                 # TODO: Check if we really need this permissive mask
-                os.chmod(path, mode=0o2750)  # noqa S103
+                os.chmod(path, mode=dir_mode)
         except OSError as err:
             raise OSError(f"Cannot create {path} properly") from err
     else:

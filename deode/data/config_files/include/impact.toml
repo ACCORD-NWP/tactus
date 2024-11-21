@@ -2,10 +2,8 @@
 
 [impact.ehype]
   active = false
-  arguments = "@ARCHIVE@/ehype.json"
   config_name = "@ARCHIVE@/ehype.json"
   path = "@EHYPE_PATH@"
-  task = "StartImpactModels"
 
 [impact.ehype.communicate]
   archive = "@ARCHIVE@"
@@ -17,3 +15,6 @@
   name = "@CASE@_@YMD@_@HH@"
   nwp_model = "@CSC@"
   ouput_freq = "@FULLPOS_OUTPUT_FREQ@"
+
+[impact.ehype.StartImpactModels]
+  arguments = "@ARCHIVE@/ehype.json"

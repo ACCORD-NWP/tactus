@@ -4,8 +4,8 @@
   cnmexp = "DEOD"
   csc = "AROME"
   cycle = "CY48t3"
-  initfile = "@SCRATCH@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@HISTORY_TEMPLATE@"
-  initfile_sfx = "@SCRATCH@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
+  initfile = "@SCRATCH@/deode/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@HISTORY_TEMPLATE@"
+  initfile_sfx = "@SCRATCH@/deode/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
   keep_workdirs = true
   surfex = true
 
@@ -27,10 +27,10 @@
   bdint = "PT1H"
   bdmodel = "IFS"
   bdshift = "PT0H"
-  bdtasks_per_batch = 24
   humi_gp = true
   ifs.selection = "@HOST@_DT"
   ifs.bdmember = ""
+  max_interpolation_tasks = 10
 
 [fullpos]
   config_path = "@DEODE_HOME@/data/namelist_generation_input/@CYCLE@/fullpos"
@@ -93,7 +93,7 @@
   bddir_sfx = "@MARSDIR@"
   bdfile_sfx_template = "ECSFCSFX@DOMAIN@+@LLL@"
   bdfile_template = "ELSCF@CNMEXP@ALBC@NNN@"
-  casedir = "@SCRATCH@/@CASE@"
+  casedir = "@SCRATCH@/deode/@CASE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@/"
   logs = "@ARCHIVE_ROOT@/logs"
   marsdir = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
@@ -101,3 +101,7 @@
 
 [task.CreateGrib]
   conversions = ["surfex"]
+
+[task.CreateGrib.surfex]
+  namelist = ["stepunits='h'"]
+  output_format = "GRIB"

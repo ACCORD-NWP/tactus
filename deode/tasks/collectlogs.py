@@ -28,6 +28,8 @@ class CollectLogs(Task):
         self.task_logs = self.platform.substitute(self.config["task.args.task_logs"])
         self.parent = os.path.dirname(self.joboutdir)
         self.target = os.path.basename(self.joboutdir)
+        if self.target == "":
+            self.target = "."
         self.tarfile = f"{self.wrk}/{self.tarname}.tar.gz"
 
     def scan_logs(self, tarlog, parent, target, pattern="", exclude=""):
@@ -40,15 +42,20 @@ class CollectLogs(Task):
             pattern (str) : Optional search pattern
             exclude (str) : Optional string for files to be excluded
 
-        """
-        os.chdir(parent)
-        logger.info("Searching for logs under {}", f"{parent}/{target}")
-        files = Search.find_files(target, pattern=pattern, fullpath=True)
-        if exclude != "":
-            files = [x for x in files if exclude not in x]
-        for f in files:
-            tarlog.add(f)
+        Raises:
+            FileNotFoundError: If parent directory does not exist
 
+        """
+        logger.info("Searching for logs under parent={} target={}", parent, target)
+        if os.path.exists(parent):
+            os.chdir(parent)
+            files = Search.find_files(target, pattern=pattern, fullpath=True)
+            if exclude != "":
+                files = [x for x in files if exclude not in x]
+            for f in files:
+                tarlog.add(f)
+        else:
+            raise FileNotFoundError
         logger.info(" found {} files \n {}", len(files), files)
 
     def execute(self):
@@ -68,7 +75,11 @@ class CollectLogs(Task):
             exclude="CollectLogs",
         )
         # Task logs
-        self.scan_logs(tarlog, f"{self.task_logs}/logs", ".")
+        task_logs = f"{self.task_logs}/logs"
+        try:
+            self.scan_logs(tarlog, task_logs, ".")
+        except FileNotFoundError:
+            logger.warning("task logs directory {} not found", task_logs)
 
         tarlog.close()
         self.fmanager.output(self.tarfile, self.logs)
