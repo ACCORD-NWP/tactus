@@ -1,6 +1,7 @@
 """Ecflow suites base class."""
 
 import os
+from typing import List, Optional, Union
 
 from ..logs import LogDefaults, logger
 from ..submission import TaskSettings
@@ -49,12 +50,10 @@ class SuiteDefinition(object):
         if ecflow is None and not dry_run:
             raise ModuleNotFoundError("Ecflow not found")
 
-        suite_name = config["general.case"]
-        task_settings = TaskSettings(config)
+        self.task_settings = TaskSettings(config)
 
-        self.name = suite_name
+        self.name = config["general.case"]
         self.config = config
-        self.task_settings = task_settings
 
         self.platform = Platform(config)
         self.config = config
@@ -168,7 +167,7 @@ class SuiteDefinition(object):
         }
 
         self.suite = EcflowSuite(
-            suite_name,
+            self.name,
             ecf_files,
             variables=variables,
             dry_run=dry_run,
@@ -188,7 +187,9 @@ class SuiteDefinition(object):
 class EcflowNode:
     """A Node class is the abstract base class for Suite, Family and Task.
 
-    Every Node instance has a name, and a path relative to a suite
+    Every Node instance has a name, and a path relative to a suite.
+    The trigger of a node can either be another EcflowNode, a list of EcflowNode
+    objects or an EcflowSuiteTriggers object.
     """
 
     def __init__(
@@ -198,10 +199,13 @@ class EcflowNode:
         parent,
         ecf_files,
         variables=None,
-        trigger=None,
+        trigger: Optional[
+            Union["EcflowSuiteTriggers", List["EcflowNode"], "EcflowNode"]
+        ] = None,
         def_status=None,
         ecf_files_remotely=None,
         cron=None,
+        limit=None,
     ):
         """Construct the EcflowNode.
 
@@ -211,11 +215,12 @@ class EcflowNode:
             parent (EcflowNode): Parent node
             ecf_files (str): Location of ecf files
             variables (dict, optional): Variables to map. Defaults to None
-            trigger (EcflowSuiteTriggers): Trigger. Defaults to None
+            trigger (Union[EcflowSuiteTriggers, List[EcflowNode], EcflowNode]):
+                Trigger. Defaults to None
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
             ecf_files_remotely(str, optional): Remote file prefix
             cron (EcflowSuiteCron): Cron. Defauts to None
-
+            limit (EcflowSuiteLimit): Limit. Defaults to None
         Raises:
             NotImplementedError: Node type not implemented
             TypeError: "Triggers must be an EcflowSuiteTriggers object"
@@ -269,14 +274,40 @@ class EcflowNode:
                     self.ecf_node.add_variable(key, value)
 
         if trigger is not None:
+            # Add trigger to the node from an EcflowSuiteTriggers object
             if isinstance(trigger, EcflowSuiteTriggers):
                 if trigger.trigger_string is not None:
                     if self.ecf_node is not None:
                         self.ecf_node.add_trigger(trigger.trigger_string)
                 else:
                     logger.warning("Empty trigger")
+            elif isinstance(trigger, list):
+                if len(trigger) == 0:
+                    logger.warning("Empty trigger list")
+                # Resolve the trigger list into an EcflowSuiteTriggers object,
+                # and add the trigger string to the node
+                elif all(isinstance(node, EcflowNode) for node in trigger):
+                    trigger = EcflowSuiteTriggers(
+                        [EcflowSuiteTrigger(node) for node in trigger]
+                    )
+                    if trigger.trigger_string is not None and self.ecf_node is not None:
+                        self.ecf_node.add_trigger(trigger.trigger_string)
+                else:
+                    raise TypeError(
+                        "When parsing a list of trigger, the "
+                        + "triggers must be EcflowNode objects"
+                    )
+            # Turn the EcflowNode trigger into an EcflowSuiteTriggers object
+            # and add the trigger string to the node
+            elif isinstance(trigger, EcflowNode):
+                trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(trigger)])
+                if trigger.trigger_string is not None and self.ecf_node is not None:
+                    self.ecf_node.add_trigger(trigger.trigger_string)
             else:
-                raise TypeError("Triggers must be an EcflowSuiteTriggers object")
+                raise TypeError(
+                    "Triggers must be an EcflowSuiteTriggers, List[EcflowNode]"
+                    + " or a EcflowNode object"
+                )
         self.trigger = trigger
 
         if cron is not None:
@@ -284,6 +315,16 @@ class EcflowNode:
                 self.ecf_node.add_cron(cron.cron)
             else:
                 raise TypeError("Cron must be an EcflowSuiteCron object")
+        if limit is not None:
+            if isinstance(limit, EcflowSuiteLimit):
+                if self.node_type == "family":
+                    self.ecf_node.add_inlimit(limit.limit_name)
+                else:
+                    raise NotImplementedError(
+                        "Limit is implemented only for Suite and Family!"
+                    )
+            else:
+                raise TypeError("Limit should be an EcflowSuitenLimit object")
 
         if def_status is not None and self.ecf_node is not None:
             if isinstance(def_status, str):
@@ -310,6 +351,7 @@ class EcflowNodeContainer(EcflowNode):
         def_status=None,
         ecf_files_remotely=None,
         cron=None,
+        limit=None,
     ):
         """Construct EcflowNodeContainer.
 
@@ -323,7 +365,7 @@ class EcflowNodeContainer(EcflowNode):
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
             ecf_files_remotely(str, optional): ECF_FILES on ecflow server
             cron (EcflowSuiteCron): Cron. Defauts to None
-
+            limit (EcflowSuiteLimit): Limit. Default None
 
         """
         EcflowNode.__init__(
@@ -337,6 +379,7 @@ class EcflowNodeContainer(EcflowNode):
             def_status=def_status,
             ecf_files_remotely=ecf_files_remotely,
             cron=cron,
+            limit=limit,
         )
 
 
@@ -403,6 +446,7 @@ class EcflowSuiteFamily(EcflowNodeContainer):
         def_status=None,
         ecf_files_remotely=None,
         cron=None,
+        limit=None,
     ):
         """Construct the family.
 
@@ -415,6 +459,7 @@ class EcflowSuiteFamily(EcflowNodeContainer):
                     def_status (str, ecflow.Defstatus): Def status. Defaults to None
                     ecf_files_remotely(str, optional): ECF_FILES on ecflow server
                     cron (EcflowSuiteCron): Cron. Defaut None
+                    limit (EcflowSuiteLimit): Limit. Default None
         """
         EcflowNodeContainer.__init__(
             self,
@@ -427,6 +472,7 @@ class EcflowSuiteFamily(EcflowNodeContainer):
             def_status=def_status,
             ecf_files_remotely=ecf_files_remotely,
             cron=cron,
+            limit=limit,
         )
         logger.debug(self.ecf_remote_container_path)
         if self.ecf_node is not None:
@@ -607,7 +653,7 @@ class EcflowSuiteCron:
     """EcFlow Cron in a suite."""
 
     def __init__(self, days_of_week, time):
-        """Create a EcFlow cron oject.
+        """Create a EcFlow cron object.
 
         Args:
             days_of_week (list of int):  0-6, Sunday-Saturday
@@ -617,3 +663,17 @@ class EcflowSuiteCron:
         days_of_week = list(days_of_week)
         logger.info("days: {}, time: {}", days_of_week, time_str)
         self.cron = ecflow.Cron(time_str, days_of_week=days_of_week)
+
+
+class EcflowSuiteLimit:
+    """Ecflow limit for active jobs in family."""
+
+    def __init__(self, limit_name, max_jobs):
+        """Create a EcFlow limit object.
+
+        Args:
+            limit_name (str): Name of the limit
+            max_jobs (int): number of maximal active jobs
+        """
+        self.limit_name = limit_name
+        self.max_jobs = max_jobs

@@ -27,10 +27,10 @@
   bdint = "PT1H"
   bdmodel = "IFS"
   bdshift = "PT0H"
-  bdtasks_per_batch = 24
   humi_gp = true
   ifs.selection = "@HOST@_DT"
   ifs.bdmember = ""
+  max_interpolation_tasks = 10
 
 [fullpos]
   config_path = "@DEODE_HOME@/data/namelist_generation_input/@CYCLE@/fullpos"

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Logging-related classes, functions and definitions."""
+import inspect
+import logging as builtin_logging
 import os
 import pprint
 import sys
@@ -123,6 +125,38 @@ def log_elapsed_time(**kwargs):
         return wrapper
 
     return log_elapsed_time_decorator
+
+
+class InterceptHandler(builtin_logging.Handler):
+    """Add logging handler to augment python stdlib logging.
+
+    Logs which would otherwise go to stdlib logging are redirected through
+    loguru.
+    """
+
+    def emit(self, record: builtin_logging.LogRecord) -> None:
+        """Emit a record.
+
+        Parameters:
+            record(builtin_logging.LogRecord): Output record
+        """
+        # Get corresponding Loguru level if it exists.
+        level = "INFO"
+        try:
+            level = logger.level(record.levelname).name
+        except ValueError:
+            level = record.levelno
+
+        # Find caller from where originated the logged message.
+        frame = inspect.currentframe()
+        depth = 0
+        while frame and (
+            depth == 0 or frame.f_code.co_filename == builtin_logging.__file__
+        ):
+            frame = frame.f_back
+            depth += 1
+
+        logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
 
 
 logger.configure(handlers=LoggerHandlers())

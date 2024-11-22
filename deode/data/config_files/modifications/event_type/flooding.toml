@@ -9,8 +9,6 @@
   tstep = 15
   xdx = 500.0
   xdy = 500.0
-  xlat0 = ""
-  xlon0 = ""
 
 [fullpos.selection]
   flooding = ["hyd_selection_@CSC@"]

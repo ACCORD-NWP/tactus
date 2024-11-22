@@ -4,8 +4,9 @@ import os
 
 import pytest
 import tomli
+import tomlkit
 
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
+from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from deode.namelist import (
     InvalidNamelistKindError,
     InvalidNamelistTargetError,
@@ -91,7 +92,6 @@ class TestNamelistGenerator:
             os.remove(output_file)
         nlgen.generate_namelist("forecast", output_file)
         assert os.path.exists(output_file)
-
         nl = NamelistIntegrator(parsed_config).ftn2dict(output_file)
         assert nl["NAMCT0"]["FOO"] == "bar"
         assert nl["NAMCT0"]["BAR"] == "foo"
@@ -111,6 +111,39 @@ class TestNamelistGenerator:
         output_file = f"{tmp_path_factory.getbasetemp().as_posix()}/fort.4"
         with pytest.raises(InvalidNamelistTargetError):
             nlgen.generate_namelist("analysis", output_file)
+
+    def test_nlgen_timesteps(self, tmp_path_factory):
+        # basic config file from config.toml
+        config = BasicConfig.from_file(
+            ConfigParserDefaults.CONFIG_DIRECTORY / "config.toml"
+        )
+        task_config = ParsedConfig(
+            config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+        )
+
+        # modify time intervals
+        config_patch = tomlkit.parse(
+            """
+        [general.output_settings]
+            history = ["PT0H:PT4H:PT2H", "PT4H:PT6H:PT1H"]
+            fullpos = "PT1H"
+        """
+        )
+        task_config = task_config.copy(update=config_patch)
+
+        # generate and write namelist
+        nlgen = NamelistGenerator(task_config, "master")
+        output_file = f"{tmp_path_factory.getbasetemp().as_posix()}/fort.4"
+        if os.path.exists(output_file):
+            os.remove(output_file)
+        nlgen.generate_namelist("forecast", output_file)
+
+        # Check if output exists and is as expected
+        assert os.path.exists(output_file)
+        nl = NamelistIntegrator(task_config).ftn2dict(output_file)
+
+        assert nl["NAMCT0"]["NHISTS"] == [5, 0, 96, 192, 240, 288]
+        assert nl["NAMCT0"]["NPOSTS"] == [7, 0, 48, 96, 144, 192, 240, 288]
 
 
 if __name__ == "__main__":

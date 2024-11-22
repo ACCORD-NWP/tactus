@@ -45,9 +45,19 @@ class Marsprep(Task):
             self.bdnr = int(self.config["task.args.bd_nr"])
             self.prep_step = ast.literal_eval(self.config["task.args.prep_step"])
 
-        if self.basetime < start_date:
+        is_end_date = False
+        with contextlib.suppress(KeyError):
+            end_date = as_datetime(self.mars["end_date"])
+            is_end_date = True
+
+        if is_end_date and (self.basetime < start_date or self.basetime > end_date):
             raise ValueError(
-                f"No data for {self.basetime}! Data available after {start_date}"
+                f"No data for {self.basetime}! The data is available between "
+                f"{start_date} and {end_date}."
+            )
+        if not is_end_date and self.basetime < start_date:
+            raise ValueError(
+                f"No data for {self.basetime}! The data is available after {start_date}."
             )
         self.cycle_length = as_timedelta(self.config["general.times.cycle_length"])
         # Get forecast range
