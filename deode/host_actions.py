@@ -7,7 +7,7 @@ import socket
 
 import yaml
 
-from .config_parser import ConfigParserDefaults
+from .config_parser import ConfigParserDefaults, GeneralConstants
 from .logs import logger
 
 
@@ -126,3 +126,26 @@ class DeodeHost:
             raise RuntimeError(f"Ambiguous matches: {matches}")
 
         return matches[0]
+
+
+def set_deode_home(config, deode_home=None):
+    """Set deode_home in various ways.
+
+    Args:
+        config (.config_parser.ParsedConfig): Parsed config file contents.
+        deode_home (str): Externally set deode_home
+
+    Returns:
+        deode_home
+    """
+    if deode_home is None:
+        try:
+            deode_home_from_config = config["platform.deode_home"]
+        except KeyError:
+            deode_home_from_config = "set-by-the-system"
+        if deode_home_from_config != "set-by-the-system":
+            deode_home = deode_home_from_config
+        else:
+            deode_home = str(GeneralConstants.PACKAGE_DIRECTORY)
+
+    return deode_home

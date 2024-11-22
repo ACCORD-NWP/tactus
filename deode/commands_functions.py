@@ -15,7 +15,7 @@ from . import GeneralConstants
 from .config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
 from .experiment import case_setup
-from .host_actions import DeodeHost
+from .host_actions import DeodeHost, set_deode_home
 from .logs import logger
 from .namelist import (
     NamelistComparator,
@@ -53,30 +53,6 @@ def ssh_cmd(host, user, cmd):
         return False
 
 
-def set_deode_home(args, config):
-    """Set deode_home in various ways.
-
-    Args:
-        args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
-
-    Returns:
-        deode_home
-    """
-    try:
-        deode_home_from_config = config["platform.deode_home"]
-    except KeyError:
-        deode_home_from_config = "set-by-the-system"
-    if args.deode_home is not None:
-        deode_home = args.deode_home
-    elif deode_home_from_config != "set-by-the-system":
-        deode_home = deode_home_from_config
-    else:
-        deode_home = str(GeneralConstants.PACKAGE_DIRECTORY)
-
-    return deode_home
-
-
 def run_task(args, config):
     """Implement the 'run' command.
 
@@ -87,7 +63,7 @@ def run_task(args, config):
     """
     logger.info("Prepare {}...", args.task)
 
-    deode_home = set_deode_home(args, config)
+    deode_home = set_deode_home(config, args.deode_home)
 
     cwd = Path.cwd()
 
@@ -118,7 +94,7 @@ def create_exp(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
-    deode_home = set_deode_home(args, config)
+    deode_home = set_deode_home(config, args.deode_home)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
     config_dir = args.config_dir
     known_hosts = args.host_file
@@ -160,11 +136,10 @@ def start_suite(args, config):
     Raises:
         SystemExit: If error occurs while transferring files.
     """
-    deode_home = set_deode_home(args, config)
+    deode_home = set_deode_home(config, args.deode_home)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
     config = config.copy(update=set_times(config))
     platform = Platform(config)
-
     ecfvars = {
         key: platform.substitute(val)
         for key, val in config["scheduler.ecfvars"].dict().items()
@@ -392,7 +367,7 @@ def show_namelist(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
-    deode_home = set_deode_home(args, config)
+    deode_home = set_deode_home(config, args.deode_home)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
     config = config.copy(update=set_times(config))
     config = config.copy(update=derived_variables(config))
