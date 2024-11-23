@@ -34,7 +34,7 @@
   group_macros = ["platform", "system"]
   os_macros = ["USER", "HOME", "PWD", "CONFIG"]
 
-#[macros.case]
- # gen_macros = ["general.csc"]
- # group_macros = []
- # os_macros = ["USER"]
+[macros.case]
+  gen_macros = []
+  group_macros = []
+  os_macros = ["USER"]
