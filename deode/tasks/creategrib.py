@@ -1,6 +1,6 @@
 """CreateGrib."""
 
-
+import contextlib
 import os
 
 from ..datetime_utils import as_datetime, oi2dt_list
@@ -71,13 +71,16 @@ class CreateGrib(Task):
         except KeyError:
             pass
 
-        gl_namelist = (
-            self.rules[filetype][self.csc]["namelist"]
-            if self.csc in self.rules[filetype]
-            else self.rules[filetype]["namelist"]
-        )
+        gl_namelist = None
 
-        if len(gl_namelist) > 0:
+        with contextlib.suppress(KeyError):
+            gl_namelist = (
+                self.rules[filetype][self.csc]["namelist"]
+                if self.csc in self.rules[filetype]
+                else self.rules[filetype]["namelist"]
+            )
+
+        if gl_namelist is not None:
             # Write namelist as given in rules
             namelist_file = "namelist"
             with open(namelist_file, "w") as namelist:
@@ -88,9 +91,8 @@ class CreateGrib(Task):
                 namelist.write("/\n")
                 namelist.close()
             cmd += f" -n {namelist_file}"
-
-        # Run gl
-        BatchJob(os.environ, wrapper=self.wrapper).run(cmd)
+            # Run gl
+            BatchJob(os.environ, wrapper=self.wrapper).run(cmd)
 
     def execute(self):
         """Execute creategrib."""

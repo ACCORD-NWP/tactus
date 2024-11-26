@@ -9,6 +9,15 @@
 [fullpos.selection]
   aq = ["aq_selection"]
 
+[task.CreateGrib]
+  conversions = ["surfex", "history"]
+
+[task.CreateGrib.history]
+  output_format = "FA2GRIB2"
+
+[task.CreateGrib.history.HARMONIE_AROME]
+  namelist = ["outgeo%center=85", "READKEY%FANAME='SPECSURFGEOPOTEN'"]
+
 [task.CreateGrib.surfex]
   output_format = "FA2GRIB2"
 

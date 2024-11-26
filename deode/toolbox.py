@@ -931,7 +931,7 @@ class LocalFileSystemCopy(Provider):
 
 
 class LocalFileSystemMove(Provider):
-    """Local file system copy."""
+    """Local file system move."""
 
     def __init__(self, config, pattern, fetch=False):
         """Construct the object.
