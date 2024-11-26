@@ -9,7 +9,7 @@ from typing import List
 
 import tomlkit
 
-from .config_parser import ParsedConfig
+from .config_parser import BasicConfig, ParsedConfig
 from .derived_variables import set_times
 from .logs import logger
 from .os_utils import resolve_path_relative_to_package
@@ -97,6 +97,17 @@ class ExpFromFiles(Exp):
         if merged_config is None:
             merged_config = {}
         merged_config = ExpFromFiles.deep_update(merged_config, mods)
+
+        # Remove sections from the input config
+        remove_sections = merged_config["general"].get("remove_sections", [])
+        if len(remove_sections) > 0:
+            logger.info("Remove sections:{}", remove_sections)
+            reduced_config = config.dict()
+            for key in remove_sections:
+                reduced_config.pop(key)
+            merged_config["general"].pop("remove_sections")
+            config = BasicConfig(reduced_config)
+
         Exp.__init__(
             self,
             config,
@@ -137,7 +148,6 @@ class ExpFromFiles(Exp):
                 source[key] = returned
             else:
                 override = overrides[key]
-
                 source[key] = override
 
         return source
