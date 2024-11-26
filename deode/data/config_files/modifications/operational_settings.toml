@@ -6,7 +6,7 @@
   active = true
   inpath = ""
   newname = "config.toml"
-  outpath = "@SUB_CASEDIR@"
+  outpath = "@ARCHIVE@"
   pattern = "@CONFIG@"
 
 [archiving.hour.ecfs.config]
@@ -46,7 +46,7 @@
   active = true
   inpath = ""
   newname = "config.toml"
-  outpath = "@SUB_CASEDIR@"
+  outpath = "@ARCHIVE@"
   pattern = "@CONFIG@"
 
 [archiving.static.ecfs]
@@ -59,8 +59,8 @@
 
 [archiving.static.ecfs.config]
   active = true
-  inpath = "@ARCHIVE_ROOT@"
-  outpath = ""
+  inpath = "@ARCHIVE@"
+  outpath = "@SUB_CASEDIR@"
   pattern = "config.toml"
 
 [archiving.static.ecfs.logs]

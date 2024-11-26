@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.9.1] - 2024-11-25
+### Fixed
+- Archiving of config file in operational setting [\#896] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/896) (@FlorianW-ZAMG)
+
 ## [0.9.0] - 2024-11-20
 
 ### Added
