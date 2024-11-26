@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 import tomli
 import tomlkit
+import xmltodict
 import yaml
 
 from deode.derived_variables import set_times
@@ -54,6 +55,8 @@ def basic_config(tmp_directory, default_config):
             task = "test"
         [impact.unittest.communicate]
             foo = "bar"
+        [impact.unittest.test]
+            arguments = "hello world"
         """
     )
     config = config.copy(update=config_patch)
@@ -103,7 +106,7 @@ def test_impact_run_cmd(basic_config_installed, tmp_directory):
     assert line.strip() == "hello world"
 
 
-@pytest.mark.parametrize("filetype", ["yml", "json", "toml"])
+@pytest.mark.parametrize("filetype", ["yml", "json", "toml", "xml"])
 def test_impact_different_configs(basic_config_installed, tmp_directory, filetype):
     filename = f"{tmp_directory}/unittest.{filetype}"
     basic_config = basic_config_installed.copy(
@@ -119,5 +122,7 @@ def test_impact_different_configs(basic_config_installed, tmp_directory, filetyp
             config_data = tomli.load(f)
         if filename.endswith((".yaml", ".yml")):
             config_data = yaml.safe_load(f)
+        if filename.endswith((".xml")):
+            config_data = xmltodict.parse(f.read())
 
     assert config_data == {"foo": "bar"}

@@ -86,8 +86,8 @@
           "type": "string",
           "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
         },
-        "bdtasks_per_batch": {
-          "description": "Max number of parallel boundary interpolation tasks",
+        "max_interpolation_tasks": {
+          "description": "Number of interpolate tasks run in parallel",
           "type": "number"
         },
         "bdmodel": {

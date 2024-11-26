@@ -72,15 +72,33 @@ def test_set_domain_from_file(
     domains_dir = config_dir / "include/domains"
     os.makedirs(domains_dir, exist_ok=True)
     domain_file = domains_dir / "TEST_DOMAIN.toml"
-    with open(domain_file, mode="w", encoding="utf8") as fh:
-        tomlkit.dump({"domain": test_domain}, fh)
+    update = {
+        "general": {"case": "@GRIDTYPE@"},
+        "domain": test_domain,
+        "macros": {
+            "user_macros": {
+                "gen_macros": ["domain.gridtype"],
+            },
+        },
+    }
 
-    case_setup(default_config, output_file, [domain_file], config_dir=default_config_dir)
+    with open(domain_file, mode="w", encoding="utf8") as fh:
+        tomlkit.dump(update, fh)
+
+    case_setup(
+        default_config,
+        output_file,
+        [domain_file],
+        config_dir=default_config_dir,
+        expand_config=True,
+    )
     config = ParsedConfig.from_file(
         output_file, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
     )
     assert config["domain.name"] == "TEST_DOMAIN"
     assert config["domain.name"] == test_domain["name"]
+    assert config["general.case"] == test_domain["gridtype"]
+
     os.remove(output_file)
 
 

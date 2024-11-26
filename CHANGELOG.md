@@ -12,22 +12,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Introduce possibility for multiple search path for config files. [\#776](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/776) (@uandrae)
+
+### Fixed
+- Fixes to make `deode case -e` produce a correct config file [\#897] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/897) (@uandrae)
+
+## [0.9.0] - 2024-11-20
+
+### Added
+- Add unit test for standalone template file [\#890] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/890) (@pardallio)
+
+
+## [0.9.0] - 2024-11-20
+
+### Added
+- Add mars settings for expver iit7 (eps example) [\#879] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/870) (@kastelecn)
+- Add xml dumper impact models configs. [\#837] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/837) (@uandrae)
+- Intercept standard logging in loguru log handler. [\#855] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/855)
+- Add end time for expver i4ql (ATOS\_DT) [\#866] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/866) (@kastelecn)
 - Airquality event type configuration file. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
 - Temporary SURFEX grib2 definitions for CY6h1 and CY48t3. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
 - Canopy water and land-sea-mask to fullpos aq selection. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
 
 ### Changed
+- Replace batches with ecflow limit for LBC tasks. [\#850](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/850)(@kastelecn)
+- deodemakedirs will use default linux permission unless unixgroup is specified. [\#879] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/879) (@trygveasp)
+- Refactored the DEODE ecFlow suite generation scripts. Bumped python version to 3.10 in both test environment and pyproject.toml. [\#831](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/831) (@mafdmi)
+- Changed impact model config layout [\#838](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/838) (@uandrae)
 - Updated operational settings [\#859](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/859) (@kastelecn)
 - Added LACE's station lists for verification [\#860] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/860) (@svianaj)
 - Creategrib task has been changed so that it is more flexible and can handle several conversions. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
 - Grib definitions of momentum fluxes and canopy water. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
 
 ### Fixed
-- Correct lost setting of NPATCH for HARMONIE-AROME. The bug implies NPATCH=3 instead of the intended NPATCH=2 since v0.6.0. [\858](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/858) (@uandrae)
+- Added find_value function to fn_steplist to decode string into list. [\#883](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/883) (@pardallio)
+- Added empty modification submission files for alaro on atos\_bologna to silent erroneous warnings. [\#887](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/887) (@kastelecn)
+- Not abort on missing logs directory. [\#878] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/878) (@trygveasp)
+- Fixed bug in clean\_old\_data.toml. [\#882](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/882) (@kastelecn)
+- Set NPATCH=3 explicitly for HARMONIE-AROME. [\871](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/871) (@uandrae)
 - Made it impossible to parse any string to output_settings. Only empty string, string of ISO8601 format, or list of strings of ISO8601 format are possible. [\#830](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/830) (@mafdmi)
 - Bug that made it impossible to merge namelists with more than one hybrid level with master selection in CY48t3 [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
 - Change the behaviour of `deode run` to only require the `--task` argument. The other arguments will default to names based on the task name. [\#836](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/836) (@uandrae)
-- 
+ 
 ## [0.8.0] - 2024-10-31
 
 ### Added

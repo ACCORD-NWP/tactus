@@ -364,15 +364,17 @@ class NamelistGenerator:
         result = int(freq.seconds / tstep)
         return f"{result}"
 
-    def fn_steplist(self, arg):
+    def fn_steplist(self, time_intervals):
         """Resolve namelist function steplist."""
         forecast_range = self.config["general.times.forecast_range"]
         tstep = int(self.config["domain.tstep"])
         # default value:
         output_timesteps = [1, -1]
+        # decode string into list
+        time_intervals = find_value(time_intervals)
 
-        dtlist = oi2dt_list(arg, forecast_range)
-        logger.debug("steplist: {} // {}", arg, forecast_range)
+        dtlist = oi2dt_list(time_intervals, forecast_range)
+        logger.debug("steplist: {} // {}", time_intervals, forecast_range)
         logger.debug("dtlist: {}", dtlist)
         output_timesteps = [
             int((dt.days * 24 * 3600 + dt.seconds) / tstep) for dt in dtlist

@@ -586,7 +586,10 @@ class TestConfigExpand:
         """Test function for expanding macros."""
         config = parsed_config_with_included_sections
         config = config.copy(
-            update={"general": {"case": "@CSC@"}, "macros": {"group_macros": ["system"]}}
+            update={
+                "general": {"case": "@CSC@", "csc": "AROME"},
+                "macros": {"case": {"gen_macros": ["general.csc"]}},
+            }
         )
         _config = config.expand_macros()
-        assert _config["general.case"] != config["general.case"]
+        assert _config["general.case"] == "AROME"

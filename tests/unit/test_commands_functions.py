@@ -11,16 +11,8 @@ from deode.commands_functions import (
     namelist_convert,
     namelist_format,
     namelist_integrate,
-    set_deode_home,
     show_namelist,
 )
-
-
-def test_set_deode_home(default_config):
-    arg = ArgumentParser()
-    arg.deode_home = None
-    deode_home = set_deode_home(arg, default_config)
-    assert os.path.isdir(deode_home)
 
 
 @pytest.fixture()

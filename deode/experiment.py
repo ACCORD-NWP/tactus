@@ -11,6 +11,7 @@ import tomlkit
 
 from .config_parser import BasicConfig, ParsedConfig
 from .derived_variables import set_times
+from .host_actions import set_deode_home
 from .logs import logger
 from .os_utils import resolve_path_relative_to_package
 from .toolbox import Platform
@@ -209,9 +210,12 @@ def case_setup(
         config_dir=config_dir,
     )
 
-    if expand_config:
-        config = config.expand_macros()
     exp = ExpFromFiles(config, exp_dependencies, mod_files, host=host)
+
+    if expand_config:
+        deode_home = set_deode_home(config)
+        exp.config = exp.config.copy(update={"platform": {"deode_home": deode_home}})
+        exp.config = exp.config.expand_macros()
 
     if output_file is None:
         config = exp.config.copy(update=set_times(exp.config))

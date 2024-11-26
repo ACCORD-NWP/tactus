@@ -16,7 +16,7 @@ from .toolbox import FileManager, Platform
 class ProcessorLayout:
     """Set processor information."""
 
-    def __init__(self, kwargs):
+    def __init__(self, kwargs: dict):
         """Construct object.
 
            Use integers internally.
