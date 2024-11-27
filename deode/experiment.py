@@ -9,7 +9,7 @@ from typing import List
 
 import tomlkit
 
-from .config_parser import BasicConfig, ParsedConfig
+from .config_parser import BasicConfig, ConfigPaths, ParsedConfig
 from .derived_variables import set_times
 from .host_actions import set_deode_home
 from .logs import logger
@@ -65,6 +65,8 @@ class ExpFromFiles(Exp):
         """
         logger.debug("Construct ExpFromFiles")
         logger.debug("Experiment dependencies: {}", exp_dependencies)
+        if exp_dependencies["config_dir"] is not None:
+            ConfigPaths.DATA_SEARCHPATHS.insert(0, exp_dependencies["config_dir"])
 
         mods = {}
         for _mod in mod_files:
@@ -100,14 +102,15 @@ class ExpFromFiles(Exp):
         merged_config = ExpFromFiles.deep_update(merged_config, mods)
 
         # Remove sections from the input config
-        remove_sections = merged_config["general"].get("remove_sections", [])
-        if len(remove_sections) > 0:
-            logger.info("Remove sections:{}", remove_sections)
-            reduced_config = config.dict()
-            for key in remove_sections:
-                reduced_config.pop(key)
-            merged_config["general"].pop("remove_sections")
-            config = BasicConfig(reduced_config)
+        with contextlib.suppress(KeyError):
+            remove_sections = merged_config["general"].get("remove_sections", [])
+            if len(remove_sections) > 0:
+                logger.info("Remove sections from background config:{}", remove_sections)
+                reduced_config = config.dict()
+                for key in remove_sections:
+                    reduced_config.pop(key)
+                merged_config["general"].pop("remove_sections")
+                config = BasicConfig(reduced_config)
 
         Exp.__init__(
             self,

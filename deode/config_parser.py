@@ -59,7 +59,6 @@ class ConfigPaths:
     if len(erroneous_paths) > 0:
         raise RuntimeError(f"DEODE_CONFIG_DATA_DIR is not absolute: {erroneous_paths}")
     DATA_SEARCHPATHS.append(ConfigParserDefaults.DATA_DIRECTORY)
-    DATA_SEARCHPATHS = tuple(DATA_SEARCHPATHS)
 
     @staticmethod
     def print(config_file=None, host=None):
@@ -118,9 +117,10 @@ class ConfigPaths:
             RuntimeRerror: Various errors
         """
         pattern = f"**/{subpath}"
-        searchpaths = list(ConfigPaths.DATA_SEARCHPATHS)
-        if additional_path is not None:
-            searchpaths.insert(insert_index, additional_path)
+        searchpaths = ConfigPaths.DATA_SEARCHPATHS.copy()
+        if additional_path is not None:  # noqa SIM102
+            if not GeneralConstants.PACKAGE_DIRECTORY.is_relative_to(additional_path):
+                searchpaths.insert(insert_index, additional_path)
         for searchpath in searchpaths:
             results = list(Path(searchpath).rglob(pattern))
             if len(results) > 1:

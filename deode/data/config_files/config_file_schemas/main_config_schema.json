@@ -704,6 +704,11 @@
             }
           }
         },
+        "remove_sections": {
+          "description": "Sections to remove prior to config merge",
+          "type": "array",
+          "default": []
+        },
         "windfarm": {
           "description": "Switch on wind farm parameterisation",
           "type": "boolean",
