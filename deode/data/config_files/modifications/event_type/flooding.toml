@@ -15,3 +15,21 @@
 
 [impact.ehype]
   active = true
+  config_name = "@ARCHIVE@/ehype.json"
+  path = "@EHYPE_PATH@"
+
+[impact.ehype.communicate]
+  archive = "@ARCHIVE@"
+  archive_1 = "@ARCHIVE@"
+  archive_2 = "@ECFS_PREFIX@/archive/@ARCHIVE_TIMESTAMP@"
+  basetime = "@BASETIME@"
+  ecfs_archive_root = "ec:/@USER@/DE_Impact"
+  file_template = "GRIBPF*h00m00s"
+  forecast_range = "@FORECAST_RANGE@"
+  name = "@CASE@_@YMD@_@HH@"
+  nwp_model = "@CSC@"
+  ouput_freq = "@FULLPOS_OUTPUT_FREQ@"
+  run_root = "@SCRATCH@/DE_Impact"
+
+[impact.ehype.StartImpactModels]
+  arguments = "@ARCHIVE@/ehype.json"
