@@ -1182,6 +1182,8 @@ f4_common:
     LAEROSEA: true
     LAEROSOO: true
     LO3ABC: true
+  NAMSFXCMP:
+    NVGRIBSFX: 0
 f4_c903_main:
   NAEPHY:
     LEFLAKE: false
