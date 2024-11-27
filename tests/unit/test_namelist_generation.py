@@ -112,14 +112,9 @@ class TestNamelistGenerator:
         with pytest.raises(InvalidNamelistTargetError):
             nlgen.generate_namelist("analysis", output_file)
 
-    def test_nlgen_timesteps(self, tmp_path_factory):
+    def test_nlgen_timesteps(self, tmp_path_factory, default_config):
         # basic config file from config.toml
-        config = BasicConfig.from_file(
-            ConfigParserDefaults.CONFIG_DIRECTORY / "config.toml"
-        )
-        task_config = ParsedConfig(
-            config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
-        )
+        task_config = default_config
 
         # modify time intervals
         config_patch = tomlkit.parse(

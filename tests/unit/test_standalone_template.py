@@ -11,15 +11,9 @@ logger.enable("deode")
 
 
 class TestStandalone:
-    def test_standalone_template(self, tmp_path_factory):
+    def test_standalone_template(self, tmp_path_factory, default_config):
         deode_home = str(GeneralConstants.PACKAGE_DIRECTORY)
-        config = BasicConfig.from_file(
-            ConfigParserDefaults.CONFIG_DIRECTORY / "config.toml"
-        )
-        task_config = ParsedConfig(
-            config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
-        )
-
+        task_config = default_config
         task_config = task_config.copy(
             update={
                 "submission": {"serial": {"tasks": ["UnitTest"]}},
