@@ -6,7 +6,7 @@ import pytest
 import tomli
 import tomlkit
 
-from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
+from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.namelist import (
     InvalidNamelistKindError,
     InvalidNamelistTargetError,

@@ -3,7 +3,6 @@
 import os
 
 from deode import GeneralConstants
-from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from deode.logs import logger  # Use deode's own configs for logger
 from deode.templates.stand_alone import default_main
 
