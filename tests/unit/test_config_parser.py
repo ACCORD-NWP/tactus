@@ -554,10 +554,10 @@ class TestConfigPaths:
         test_path1 = tmp_test_data_dir / "test" / "config_files"
         os.makedirs(test_path1, exist_ok=True)
 
-        ConfigPaths.DATA_SEARCHPATHS = (
+        ConfigPaths.DATA_SEARCHPATHS = [
             tmp_test_data_dir / "test",
             ConfigParserDefaults.DATA_DIRECTORY,
-        )
+        ]
 
         path = ConfigPaths.path_from_subpath("config_files")
         assert path == test_path1
@@ -571,11 +571,11 @@ class TestConfigPaths:
         os.makedirs(test_path1, exist_ok=True)
         os.makedirs(test_path2, exist_ok=True)
 
-        ConfigPaths.DATA_SEARCHPATHS = (
+        ConfigPaths.DATA_SEARCHPATHS = [
             tmp_test_data_dir / "test",
             tmp_test_data_dir / "test" / "test",
             ConfigParserDefaults.DATA_DIRECTORY,
-        )
+        ]
 
         with pytest.raises(RuntimeError, match="Multiple matches"):
             ConfigPaths.path_from_subpath("config_files")
