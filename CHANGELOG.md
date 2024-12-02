@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add unit test for standalone template file [\#890] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/890) (@pardallio)
 
+###Fixed
+- Fixed fullpos.selection for subhourly output and added CLSMEAN.RAD.TEMP to alaro fullpus namelist. [\#893](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/893) (@kastelecn)
+- Fixes to make `deode case -e` produce a correct config file [\#897] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/897) (@uandrae)
 
 ## [0.9.0] - 2024-11-20
 

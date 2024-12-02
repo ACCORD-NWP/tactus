@@ -38,6 +38,7 @@ selection:
     - 'CLSVISIHYDN60'
     - 'CLSPTYPE_60M'
     - 'CLSPTYPESEV_60M'   
+    - 'CLSMEAN.RAD.TEMP'
    CLPHY:
     - 'SURFTEMPERATURE'
     - 'SURFRESERV.NEIGE'

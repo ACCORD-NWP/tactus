@@ -3,7 +3,7 @@
   windfarm = false
 
 [fullpos.selection]
-  master = ["master_selection_@CSC@"]
+  master = ["master_selection_@CSC@", "master_subhour_selection_@CSC@"]
 
 [pgd]
   npatch = 3
