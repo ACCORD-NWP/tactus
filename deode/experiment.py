@@ -9,7 +9,7 @@ from typing import List
 
 import tomlkit
 
-from .config_parser import BasicConfig, ConfigPaths, ParsedConfig
+from .config_parser import BasicConfig, ConfigParserDefaults, ConfigPaths, ParsedConfig
 from .derived_variables import set_times
 from .host_actions import set_deode_home
 from .logs import logger
@@ -48,6 +48,7 @@ class ExpFromFiles(Exp):
         mod_files: List[Path],
         host=None,
         merged_config=None,
+        config_file=None,
     ):
         """Construct an Exp object from files.
 
@@ -67,6 +68,12 @@ class ExpFromFiles(Exp):
         logger.debug("Experiment dependencies: {}", exp_dependencies)
         if exp_dependencies["config_dir"] is not None:
             ConfigPaths.DATA_SEARCHPATHS.insert(0, exp_dependencies["config_dir"])
+            _config_file = config_file if config_file is not None else ConfigParserDefaults.PACKAGE_CONFIG_PATH
+            config = ParsedConfig.from_file(
+                _config_file,
+                json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
+                host=host,
+            )
 
         mods = {}
         for _mod in mod_files:
@@ -189,6 +196,7 @@ def case_setup(
     host=None,
     config_dir=None,
     expand_config=False,
+    config_file=None,
 ):
     """Do experiment setup.
 
@@ -213,7 +221,7 @@ def case_setup(
         config_dir=config_dir,
     )
 
-    exp = ExpFromFiles(config, exp_dependencies, mod_files, host=host)
+    exp = ExpFromFiles(config, exp_dependencies, mod_files, host=host, config_file=config_file)
 
     if expand_config:
         deode_home = set_deode_home(config)
