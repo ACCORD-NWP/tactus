@@ -2,16 +2,25 @@
 Describes best practices and guidelines for development in the Deode-Workflow repository.
 
 ## Best practices
-- Authors of PRs should not merge themself - Instead request a reviewer and an assignee. Assignee is responsible for merging.
+- Assignee should not merge before the PR has been reviewed and approved (see below on how to request reviewer(s)).
+- Assignee and PR author refer to the same person by default.
+- Assignee is responsible for merging.
 - Assignee and reviewer may not be the same person.
-- Authors of PRs are responsible for ensuring that the PR is up to date with the base branch before merging.
-- Assignees should not merge PRs that have failing tests.
+- Assignee is responsible for ensuring that the PR is up to date with the base branch before merging.
+- Assignee should not merge PRs that have failing tests.
 - Commits to `master` and `develop` branches should only be via PRs.
-- We rely on the good sense of both author and reviewer.
+- We rely on the good sense of both assignee and reviewer.
 
-### Checklist for authors
-- ✔️  Make sure your local environment is correctly initialised as described in the [README](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md) file.
-- ✔️  Use forks for your changes
+### Requesting and accepting/declining reviews
+- To request a review of a PR, the assignee invites one or more persons to review.
+- The invited reviewers accept/decline the invitation by adding a comment to the PR like “I’m on it” or “I’ll not review”.
+- After 48 hours, the assignee removes the reviewers that haven't responded.
+- Repeat, if none of the invited reviewers were able to review. Minimum one reviewer is required.
+
+
+### Checklist for assignee
+- ✔️ Make sure your local environment is correctly initialised as described in the [README](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md) file.
+- ✔️ Use forks for your changes
 - ✔️ If not up-to-date, update your fork with the changes from the target branch (use `pull` with `--rebase` option if possible).
 - ✔️ Describe what the PR contains.
 - ✔️ Ensure your PR does not contain seperate features.
@@ -23,9 +32,10 @@ Each PR comes with its own improvements and flaws. The reviewer should check the
 - ✔️ Is the code documented?
 - ✔️ Is the code easy to maintain?
 
-### Checklist for assignees
+### Checklist for assignee after completed review
 - ✔️ Is the PR up to date with the base branch?
 - ✔️ Are the tests passing?
+- ✔️ Have the reviewers who accepted to review approved the PR?
 - ✔️ Is the PR ready to be merged?
 - ✔️ Squash commits and merge the PR.
 

@@ -8,9 +8,6 @@
 [boundaries]
   humi_gp = false
 
-[fullpos.selection]
-  master = ["master_selection_@CSC@", "avg_wind", "meteosat"]
-
 [pgd]
   npatch = 1
 

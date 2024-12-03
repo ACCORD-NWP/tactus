@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Introduce possibility for multiple search path for config files. [\#776](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/776) (@uandrae)
+- Output surface geopotential (CY46h1) using gl to separate file in air quality events [\#854] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/854) (@sbnielsen)
+
+### Changed
+- Updated docs with accept/decline procedure for reviewers; all accepting reviewers now have to approve before merge. [\#872](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/872) (@mafdmi)
 
 ### Fixed
 - Fixes to make `deode case -e` produce a correct config file [\#897] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/897) (@uandrae)
@@ -19,15 +23,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Correctly mask surfex values where missing in CY48t3 [\#854] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/854) (@sbnielsen)
 - Output surface geopotential (CY48t3) and land-sea-mask (CY48t3 and CY46h1) at analysis instead of forecast in air quality events [\#854] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/854) (@sbnielsen)
 
-### Added
-- Output surface geopotential (CY46h1) using gl to separate file in air quality events [\#854] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/854) (@sbnielsen)
-
-
 ## [0.9.0] - 2024-11-20
 
 ### Added
 - Add unit test for standalone template file [\#890] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/890) (@pardallio)
 
+###Fixed
+- Fixed fullpos.selection for subhourly output and added CLSMEAN.RAD.TEMP to alaro fullpus namelist. [\#893](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/893) (@kastelecn)
+- Fixes to make `deode case -e` produce a correct config file [\#897] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/897) (@uandrae)
 
 ## [0.9.0] - 2024-11-20
 
