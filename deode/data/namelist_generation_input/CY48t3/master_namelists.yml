@@ -650,6 +650,9 @@ f4_ALARO:
     TFP_Z%CLNAME: GEOPOTENTIEL
     TFP_Z%IBITS: 16
   NAMCFU:
+    CALFLASH1: 0.94
+    LFLASH: true
+    NMTFLASH: 1
     LCUMFU: true
     LFPLC: true
     LFPLS: true
