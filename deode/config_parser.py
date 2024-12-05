@@ -54,52 +54,89 @@ class ConfigPaths:
     """Support multiple path search."""
 
     _env_data_paths = os.getenv("DEODE_CONFIG_DATA_DIR")
-    DATA_SEARCHPATHS = _env_data_paths.split(":") if _env_data_paths is not None else []
-    erroneous_paths = [path for path in DATA_SEARCHPATHS if not os.path.isabs(path)]
+    CONFIG_DATA_SEARCHPATHS = (
+        _env_data_paths.split(":") if _env_data_paths is not None else []
+    )
+    erroneous_paths = [
+        path for path in CONFIG_DATA_SEARCHPATHS if not os.path.isabs(path)
+    ]
     if len(erroneous_paths) > 0:
         raise RuntimeError(f"DEODE_CONFIG_DATA_DIR is not absolute: {erroneous_paths}")
-    DATA_SEARCHPATHS.append(ConfigParserDefaults.DATA_DIRECTORY)
+    CONFIG_DATA_SEARCHPATHS.append(ConfigParserDefaults.DATA_DIRECTORY)
 
     @staticmethod
     def print(config_file=None, host=None):
-        """Prints the available paths."""
+        """Prints the available config directories.
+
+        Displays the main config search paths as defined by list_paths
+        in addition to the actual search paths in the config file used.
+
+        """
+
+        def path_info(list_paths, dirmap=tuple({})):
+            """Populates the a list of search paths with found directories.
+
+            Args:
+                list_paths (list): directories to search for
+                dirmap (dict): Mapping between display name and actual path
+
+            Raises:
+                RuntimeError: In case of multiple conflicting paths detected
+
+            Returns:
+                mapping (dict): Dict of search result
+
+            """
+            mapping = {}
+            for dir_ in list_paths:
+                rdir = dirmap.get(dir_, dir_)
+                mapping[dir_] = []
+                pattern = f"**/{rdir}"
+
+                for searchpath in ConfigPaths.CONFIG_DATA_SEARCHPATHS:
+                    res = list(Path(searchpath).rglob(pattern))
+                    if len(res) == 1:
+                        mapping[dir_].append(str(res[0]))
+                    if len(res) > 1:
+                        logger.error("Multiple matches found for subpath: {}", searchpath)
+                        logger.error("Results: {}", res)
+                        raise RuntimeError
+
+            return mapping
+
         dirmap = {
             "config_file_schemas": "config_files/config_file_schemas",
-            "data_input": "input",
         }
         list_paths = [
             "config_files",
             "config_file_schemas",
             "namelist_generation_input",
-            "data_input",
+            "input",
         ]
+        list_config_paths = []
         raw_config = BasicConfig.from_file(config_file)
         for _key, _value in raw_config.get("include", {}).items():
             key = f"config_file_{_key}_section"
             value = _value.replace("@HOST@", host) if host is not None else _value
             dirmap[key] = value
             if key not in list_paths:
-                list_paths.append(key)
+                list_config_paths.append(key)
 
-        path_info = {}
-        for dir_ in list_paths:
-            rdir = dirmap.get(dir_, dir_)
-            path_info[dir_] = []
-            pattern = f"**/{rdir}"
+        path_info_main = path_info(list_paths, dirmap)
+        path_info_config = path_info(list_config_paths, dirmap)
 
-            for searchpath in ConfigPaths.DATA_SEARCHPATHS:
-                res = list(Path(searchpath).rglob(pattern))
-                if len(res) == 1:
-                    path_info[dir_].append(str(res[0]))
-                if len(res) > 1:
-                    logger.error("Multiple matches found for subpath: {}", searchpath)
-                    logger.error("Results: {}", res)
-                    raise RuntimeError
-
-        logger.info("DEODE paths")
+        logger.info("DEODE paths for host={}", host)
         logger.info(" Package directory: {}", GeneralConstants.PACKAGE_DIRECTORY)
-        logger.info(" Searchpaths: {}", [str(x) for x in ConfigPaths.DATA_SEARCHPATHS])
-        logger.info(f" Data paths in search order: {json.dumps(path_info, indent=4)}")
+        logger.info(
+            " Searchpaths: {}", [str(x) for x in ConfigPaths.CONFIG_DATA_SEARCHPATHS]
+        )
+        logger.info(
+            " Data paths in search order: {}", json.dumps(path_info_main, indent=4)
+        )
+        logger.info(
+            " Config file include paths in search order: {}",
+            json.dumps(path_info_config, indent=4),
+        )
 
     @staticmethod
     def path_from_subpath(subpath, additional_path=None, insert_index=0) -> Path:
@@ -117,7 +154,7 @@ class ConfigPaths:
             RuntimeRerror: Various errors
         """
         pattern = f"**/{subpath}"
-        searchpaths = ConfigPaths.DATA_SEARCHPATHS.copy()
+        searchpaths = ConfigPaths.CONFIG_DATA_SEARCHPATHS.copy()
         if additional_path is not None:  # noqa SIM102
             if not GeneralConstants.PACKAGE_DIRECTORY.is_relative_to(additional_path):
                 searchpaths.insert(insert_index, additional_path)
@@ -423,6 +460,10 @@ def _expand_config_include_section(
     else:
         for section_name, include_path_ in config_include_defs.items():
             if isinstance(include_path_, str):
+                if "@HOST@" in include_path_ and host is None:
+                    raise RuntimeError(
+                        f"include_path={include_path_} requires host to be set"
+                    )
                 include_path = (
                     include_path_.replace("@HOST@", host)
                     if host is not None

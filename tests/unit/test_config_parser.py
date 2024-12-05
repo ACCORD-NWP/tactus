@@ -554,7 +554,7 @@ class TestConfigPaths:
         test_path1 = tmp_test_data_dir / "test" / "config_files"
         os.makedirs(test_path1, exist_ok=True)
 
-        ConfigPaths.DATA_SEARCHPATHS = [
+        ConfigPaths.CONFIG_DATA_SEARCHPATHS = [
             tmp_test_data_dir / "test",
             ConfigParserDefaults.DATA_DIRECTORY,
         ]
@@ -571,7 +571,7 @@ class TestConfigPaths:
         os.makedirs(test_path1, exist_ok=True)
         os.makedirs(test_path2, exist_ok=True)
 
-        ConfigPaths.DATA_SEARCHPATHS = [
+        ConfigPaths.CONFIG_DATA_SEARCHPATHS = [
             tmp_test_data_dir / "test",
             tmp_test_data_dir / "test" / "test",
             ConfigParserDefaults.DATA_DIRECTORY,

@@ -67,6 +67,24 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
             + "'"
         ),
     )
+    common_parser.add_argument(
+        "--host-file",
+        dest="host_file",
+        help="Config file for host recognition rules",
+        required=False,
+        default=None,
+    )
+    _help = "Search path for config directory."
+    _help += " Use multiple search paths by PATH1:PATH2:..."
+    common_parser.add_argument(
+        "--config-data-dir",
+        help=(
+            "Search path for config directory."
+            + " Use multiple search paths by PATH1:PATH2:..."
+        ),
+        required=False,
+        default=None,
+    )
 
     ##########################################
     # Define main parser and general options #
@@ -125,21 +143,6 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         help="Create a config file to run an experiment case",
         parents=[common_parser],
     )
-    parser_case.add_argument(
-        "--host-file", dest="host_file", help="Host", required=False, default=None
-    )
-    _help = "Search path for config directory."
-    _help += " Use multiple search paths by PATH1:PATH2:..."
-    parser_case.add_argument(
-        "--config-data-dir",
-        help=(
-            "Search path for config directory."
-            + " Use multiple search paths by PATH1:PATH2:..."
-        ),
-        required=False,
-        default=None,
-    )
-
     parser_case.add_argument(
         "--output",
         "-o",
