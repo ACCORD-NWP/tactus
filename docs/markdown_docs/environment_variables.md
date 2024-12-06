@@ -12,4 +12,4 @@ The following environment variables can be used to control various behaviour.
 
 - DEODE_LOGLEVEL sets the logger log level. Select e.g. between info and debug. For more options see the [loguru](https://loguru.readthedocs.io/) documentation.
 - DEODE_HOST allows to override the automatic detection of host. The host is used to pick up specific configuration settings. See e.g. `deode show host`
-- DEODE_CONFIG_DATA_PATH sets additional search paths for config files. This is useful when using DEODE as a package. To see paths in use run `deode show paths`.
+- DEODE_CONFIG_DATA_DIR sets additional search paths for config files. This is useful when using DEODE as a package. To see paths in use run `deode show paths`.

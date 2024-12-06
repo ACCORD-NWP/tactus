@@ -74,8 +74,6 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         required=False,
         default=None,
     )
-    _help = "Search path for config directory."
-    _help += " Use multiple search paths by PATH1:PATH2:..."
     common_parser.add_argument(
         "--config-data-dir",
         help=(

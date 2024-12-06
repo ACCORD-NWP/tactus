@@ -303,6 +303,7 @@ class ParsedConfig(BasicConfig):
         """Initialise an instance with an arbitrary number of entries & validate them."""
         self.include_dir = include_dir
         self.json_schema = json_schema
+        self.validate_json_schema = len(json_schema) > 0
         self.host = host
         super().__init__(*args, **kwargs)
 
@@ -317,19 +318,25 @@ class ParsedConfig(BasicConfig):
         )
         ParsedConfig.json_schema.fset(self, json_schema, _validate_data=False)
 
-        # Make sure all sections defined in the schema are also present in the new config
-        sections_that_should_not_be_defaulted = [
-            "include",
-            *new,
-            *json_schema.get("required", []),
-        ]
-        for property_name, property_schema in json_schema.get("properties", {}).items():
-            if property_name in sections_that_should_not_be_defaulted:
-                continue
-            if property_schema.get("type", "") == "object":
-                new[property_name] = {}
+        if self.validate_json_schema:
+            # Make sure all sections defined in the schema
+            # are also present in the new config
+            sections_that_should_not_be_defaulted = [
+                "include",
+                *new,
+                *json_schema.get("required", []),
+            ]
+            for property_name, property_schema in json_schema.get(
+                "properties", {}
+            ).items():
+                if property_name in sections_that_should_not_be_defaulted:
+                    continue
+                if property_schema.get("type", "") == "object":
+                    new[property_name] = {}
 
-        BasicConfig.data.fset(self, self.json_schema.validate(new))
+            BasicConfig.data.fset(self, self.json_schema.validate(new))
+        else:
+            BasicConfig.data.fset(self, new)
 
     @property
     def include_dir(self):
