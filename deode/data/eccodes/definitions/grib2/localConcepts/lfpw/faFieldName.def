@@ -3334,7 +3334,7 @@
     typeOfFirstFixedSurface = 1 ;
 }
 # Soil temperature for AQ CY46h1
-"X001TG1"= {
+"X003TG1"= {
     discipline = 2 ;
     parameterCategory = 3 ;
     parameterNumber = 18 ;
@@ -3345,7 +3345,7 @@
     tablesVersion = 15 ;
 }
 # Soil temperature for AQ CY46h1
-"X001TG2"= {
+"X003TG2"= {
     discipline = 2 ;
     parameterCategory = 3 ;
     parameterNumber = 18 ;
@@ -3356,7 +3356,7 @@
     tablesVersion = 15 ;
 }
 # Volumetric soil moisture for AQ CY46h1
-"X001WG1"= {
+"X003WG1"= {
     discipline = 2 ;
     parameterCategory = 3 ;
     parameterNumber = 10 ;
@@ -3367,7 +3367,7 @@
     tablesVersion = 15 ;
 }
 # Volumetric soil moisture for AQ CY46h1
-"X001WG2"= {
+"X003WG2"= {
     discipline = 2 ;
     parameterCategory = 3 ;
     parameterNumber = 10 ;
@@ -3378,7 +3378,7 @@
     tablesVersion = 15 ;
 }
 # Leaf Area Index, low veg for AQ CY46h1
-"X001LAI"= {
+"X003LAI"= {
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 28 ;
@@ -3386,7 +3386,7 @@
     typeOfFirstFixedSurface = 1 ;
 }
 # Intercepted Water for AQ CY46h1
-"X001WR"= {
+"X003WR"= {
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 13 ;
