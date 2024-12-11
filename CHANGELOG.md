@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.9.1] - 2024-11-22
+- Archiving of config file in operational setting [\#896] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/896) (@FlorianW-ZAMG)
+
 ### Changed
 - Updated docs with accept/decline procedure for reviewers; all accepting reviewers now have to approve before merge. [\#872](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/872) (@mafdmi)
 - Updated air quality event output in cy46h1 to use surfex parameters from tile 3 instead of 1 to fix issue since transition to 3 patches. [\#912](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/912) (@sbnielsen) 
