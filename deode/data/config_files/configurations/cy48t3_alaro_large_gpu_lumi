@@ -3,6 +3,7 @@ deode/data/config_files/config.toml
 --case-name
 @CASE_PREFIX@@CYCLE@_@CSC@_large
 deode/data/config_files/modifications/alaro.toml
+deode/data/config_files/include/vertical_levels/MF_87.toml
 deode/data/config_files/include/domains/SMSW.toml
 deode/data/config_files/include/accelerator_device/lumi_gpu.toml
 deode/data/config_files/modifications/submission/lumi_CY48t3_gpu_large_domain.toml
