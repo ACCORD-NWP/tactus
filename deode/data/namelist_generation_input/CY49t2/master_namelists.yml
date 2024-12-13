@@ -562,6 +562,9 @@ f4_ALARO:
   NAERAD:
     LRRTM: false
     NRADFR: ${stepfreq:${cfg:general.namelist.radiation_frequency}}
+    NOZOCL: 0
+    STBKG: 0.045
+    TRBKG: 0.03
   NAMAFN:
     GFP_10U%IBITS: 12
     GFP_10V%IBITS: 12
@@ -639,11 +642,13 @@ f4_ALARO:
   NAMCFU:
     CALFLASH1: 0.94
     LFLASH: true
+    LAMIP: false
     NMTFLASH: 1
     RBASEMAX: -1.0
     LCUMFU: true
     LFPLC: true
     LFPLS: true
+    LFPLSG: true
     LFR: true
     LFSF: true
     LFSOIL: true
@@ -677,8 +682,8 @@ f4_ALARO:
     LVERTFE: false
     NDLNPR: 1
   NAMDPRECIPS:
-    RDHAIL1: 0.5
-    RDHAIL2: 1.0
+    RDHAIL1: 2.4
+    RDHAIL2: 6.5
   NAMDYN:
     LADVF: true
     LQMHT: false
@@ -900,6 +905,17 @@ f4_ALARO:
     YUOM_NL%LREQOUT: false
     YUOM_NL%LSLHD: false
     YUOM_NL%NREQIN: 0
+    YG_NL%LADV: true
+    YG_NL%LGP: true
+    YG_NL%LGPINGP: false
+    YG_NL%LPC: true
+    YG_NL%LQM: false
+    YG_NL%LQMH: false
+    YG_NL%LREQOUT: false
+    YG_NL%LSLHD: false
+    YG_NL%LSP: false
+    YG_NL%NCOUPLING: 0
+    YG_NL%NREQIN: 0
   NAMGRIB:
     NCYCLE: 48
   NAMIO_SERV:
@@ -947,10 +963,13 @@ f4_ALARO:
     LDPRECIPS: true
     LDPRECIPS2: true
     LENTCH: true
+    LEVAPLOP: true
     LFPCOR: true
     LFSFIX: false
     LFSVAR: true
+    LFVGICE3: true
     LGLT: false
+    LGRAPRO: true
     LGWD: false
     LHUCN: true
     LNEBCV: true
@@ -986,6 +1005,7 @@ f4_ALARO:
     LVOIGT: true
     LXRCDEV: true
     LZ0HSREL: true
+    LZ0SNOWH: true
     NDIFFNEB: 3
     NDPRECPERIOD2: 10800
     NIMELIT: 2
@@ -1021,7 +1041,7 @@ f4_ALARO:
     GWDVALI: 0.5
     HUCOE: 1.0
     HUCRED: 1.2
-    HUCREDRA: 0.42
+    HUCREDRA: 0.46
     HUTIL2: 0.5
     NUPTKE: 0.5265
     QSMODC: 4.0
@@ -1036,21 +1056,25 @@ f4_ALARO:
     QXRDEL: 0.5
     QXRR: 0.25
     QXRTGH: 2.0
-    RAUTEFR: 0.0005
-    RAUTEFS: 0.002
+    RAUTEFR: 0.0008
+    RAUTEFS: 0.001
     RCIN: 1.0
     RCVEVAP: 0.25
     RDECRD: 1.0e+20
+    RDECRD1: 8000.
+    RDECRD2: 215000.
     RDECRDRED: 0.4
+    RDTFAC: 0.75
     REFLKUO: 5000.0
     REVASX: 2.0e-07
+    REVASXR: 7.0e-07
     REVGSL: 15.0
     RMULACVG: 5.5
     RPHI0: 600.0
     RQICRMAX: 5.0e-05
     RQICRMIN: 8.0e-07
-    RQLCR: 0.0003
-    RWBF1: 1600.0
+    RQLCR: 0.0004
+    RWBF1: 300.0
     SCLESPS: 5100.0
     TDDFR: 0.0012
     TDDGP: 0.8
@@ -1061,16 +1085,21 @@ f4_ALARO:
     TFVL: 0.02
     VZ0CM: 0.0001
     VZIUSTAR0: 12.0
+    XMAXLM: 0.0
   NAMPHY1:
     ACLS_HS: 1.0
     ALRCN2: 10.0
     LCLS_HS: true
     RCTVEG(3): 1.4e-05
     RCTVEG(4): 1.1e-05
-    WCRIN: 4.0
+    RZ0_TO_HEIGHT: 0.1
+    WCRIN: 10.0
   NAMPHY2:
-    FACRAF: 12.0
+    FACRAF: 3.6
+    HTKERAF: 20.0
     LMULAF: false
+    LRAFTKE: true
+    LRAFTUR: false
     XDAMP: 1.0
     XMULAF: 0.0
   NAMPHY3:

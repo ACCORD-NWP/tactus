@@ -57,7 +57,7 @@
   output = "tsnowp"
 
 [gribmodify.3]
-  input = ["tirf", "tsnowp"]
+  input = ["tirf", "tsnowp", "tgrp"]
   operator = "add"
   output = "tp"
 

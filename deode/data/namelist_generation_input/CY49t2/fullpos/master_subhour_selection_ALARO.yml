@@ -43,6 +43,7 @@ selection:
       - SURFPREC.EAU.CON
       - SURFPREC.NEI.GEC
       - SURFPREC.NEI.CON
+      - SURFPREC.GRA.GEC
       CLXFU:
       - SURFDIAGHAIL
       - CLSTEMPERATURE

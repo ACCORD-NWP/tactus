@@ -575,6 +575,8 @@ f4_ALARO:
   NAERAD:
     LRRTM: false
     NRADFR: ${stepfreq:${cfg:general.namelist.radiation_frequency}}
+    STBKG: 0.045
+    TRBKG: 0.03
   NAMAFN:
     GFP_10U%IBITS: 12
     GFP_10V%IBITS: 12
@@ -654,6 +656,7 @@ f4_ALARO:
     LFLASH: true
     NMTFLASH: 1
     LCUMFU: true
+    LFPLSG: true
     LFPLC: true
     LFPLS: true
     LFR: true
@@ -692,8 +695,8 @@ f4_ALARO:
   NAMCVER:
     LVERTFE: false
   NAMDPRECIPS:
-    RDHAIL1: 0.5
-    RDHAIL2: 1.0
+    RDHAIL1: 2.8 
+    RDHAIL2: 7.5
   NAMDYN:
     LADVF: true
     LQMHT: false
@@ -911,6 +914,17 @@ f4_ALARO:
     YUOM_NL%LREQOUT: false
     YUOM_NL%LSLHD: false
     YUOM_NL%NREQIN: 0
+    YG_NL%LADV: true
+    YG_NL%LGP: true
+    YG_NL%LGPINGP: false
+    YG_NL%LPC: true
+    YG_NL%LQM: false
+    YG_NL%LQMH: false
+    YG_NL%LREQOUT: false
+    YG_NL%LSLHD: false
+    YG_NL%LSP: false
+    YG_NL%NCOUPLING: 0
+    YG_NL%NREQIN: 0
   NAMGRIB:
     NCYCLE: 48
   NAMIO_SERV:
@@ -962,6 +976,7 @@ f4_ALARO:
     LFSFIX: false
     LFSVAR: true
     LGLT: false
+    LGRAPRO: true
     LGWD: false
     LHUCN: true
     LNEBCV: true
