@@ -3424,3 +3424,12 @@
     typeOfFirstFixedSurface = 1 ;
     tablesVersion = 15 ;
 }
+
+# Roughness Length for AQ 
+"SFX.TALB_ISBA"= {
+    discipline = 0 ;
+    parameterCategory = 19 ;
+    parameterNumber = 1 ;
+    typeOfFirstFixedSurface = 1 ;
+    tablesVersion = 15 ;
+}
