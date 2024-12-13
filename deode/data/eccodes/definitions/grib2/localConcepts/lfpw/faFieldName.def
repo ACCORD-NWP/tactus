@@ -3424,8 +3424,7 @@
     typeOfFirstFixedSurface = 1 ;
     tablesVersion = 15 ;
 }
-
-# Roughness Length for AQ 
+# Surface Albedo for AQ 
 "SFX.TALB_ISBA"= {
     discipline = 0 ;
     parameterCategory = 19 ;
