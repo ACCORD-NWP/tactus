@@ -61,6 +61,26 @@
   operator = "add"
   output = "tp"
 
+[gribmodify.4]
+  input = ["10u", "10v"]
+  operator = "vectorLength"
+  output = "10si"
+
+[gribmodify.5]
+  input = ["10u", "10v"]
+  operator = "vectorDirection"
+  output = "10wdir"
+
+[gribmodify.6]
+  input = ["100u", "100v"]
+  operator = "vectorLength"
+  output = "100si"
+
+[gribmodify.7]
+  input = ["10efg", "10nfg"]
+  operator = "vectorLength"
+  output = "10fg"
+
 [include]
   archiving = "include/archiving.toml"
   cleaning = "include/cleaning.toml"
