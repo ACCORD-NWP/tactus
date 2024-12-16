@@ -10,35 +10,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
-## [0.9.1] - 2024-11-22
-- Archiving of config file in operational setting [\#896] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/896) (@FlorianW-ZAMG)
-
-### Changed
-- Additional fixes for ALARO lightning, finall fixes for ALARO namelist, add graupel to total precipitation for all CSC. [\#915](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/915)(@kastelecn)
-- Add MF\_87 vertical levels for ALARO (instead of MF\_90). [\#914](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/914) (@kastelecn)
-- Updated docs with accept/decline procedure for reviewers; all accepting reviewers now have to approve before merge. [\#872](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/872) (@mafdmi)
-- Updated air quality event output in cy46h1 to use surfex parameters from tile 3 instead of 1 to fix issue since transition to 3 patches. [\#912](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/912) (@sbnielsen) 
+### Added
+- Add unit test for standalone template file [\#890] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/890) (@pardallio)
+- Add wind fields to grib output. [\#916](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/916) (@kastelecn)
+- Add lightning to ALARO. [\#907](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/907) (@kastelecn)
+- Output surface geopotential (CY46h1) using gl to separate file in air quality events [\#854] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/854) (@sbnielsen)
 
 ### Fixed
+- Fixed fullpos.selection for subhourly output and added CLSMEAN.RAD.TEMP to alaro fullpus namelist. [\#893](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/893) (@kastelecn)
 - Fixes to make `deode case -e` produce a correct config file [\#897] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/897) (@uandrae)
 - Only run gl if there is an actual gl namelist [\#854] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/854) (@sbnielsen)
 - Correctly mask surfex values where missing in CY48t3 [\#854] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/854) (@sbnielsen)
 - Output surface geopotential (CY48t3) and land-sea-mask (CY48t3 and CY46h1) at analysis instead of forecast in air quality events [\#854] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/854) (@sbnielsen)
 
-### Added
-- Add wind fields to grib output. [\#916](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/916) (@kastelecn)
-- Add lightning to ALARO. [\#907](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/907) (@kastelecn)
-- Output surface geopotential (CY46h1) using gl to separate file in air quality events [\#854] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/854) (@sbnielsen)
+### Changed
+- Updated git branch structure of repository to standardize branch names and workflows. [\#885](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/885) (@mafdmi)
+- Additional fixes for ALARO lightning, finall fixes for ALARO namelist, add graupel to total precipitation for all CSC. [\#915](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/915)(@kastelecn)
+- Add MF\_87 vertical levels for ALARO (instead of MF\_90). [\#914](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/914) (@kastelecn)
+- Updated docs with accept/decline procedure for reviewers; all accepting reviewers now have to approve before merge. [\#872](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/872) (@mafdmi)
+- Updated air quality event output in cy46h1 to use surfex parameters from tile 3 instead of 1 to fix issue since transition to 3 patches. [\#912](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/912) (@sbnielsen) 
 
+## [0.9.1] - 2024-11-22
 
-## [0.9.0] - 2024-11-20
-
-### Added
-- Add unit test for standalone template file [\#890] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/890) (@pardallio)
-
-###Fixed
-- Fixed fullpos.selection for subhourly output and added CLSMEAN.RAD.TEMP to alaro fullpus namelist. [\#893](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/893) (@kastelecn)
-- Fixes to make `deode case -e` produce a correct config file [\#897] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/897) (@uandrae)
+### Fixed
+- Archiving of config file in operational setting [\#896] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/896) (@FlorianW-ZAMG)
 
 ## [0.9.0] - 2024-11-20
 
