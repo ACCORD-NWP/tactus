@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Output surface geopotential (CY46h1) using gl to separate file in air quality events [\#854] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/854) (@sbnielsen)
 
 ### Fixed
+- Fixed get_decadal_list [#924](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/924)(@natalieth)
 - Fixed fullpos.selection for subhourly output and added CLSMEAN.RAD.TEMP to alaro fullpus namelist. [\#893](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/893) (@kastelecn)
 - Fixes to make `deode case -e` produce a correct config file [\#897] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/897) (@uandrae)
 - Only run gl if there is an actual gl namelist [\#854] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/854) (@sbnielsen)

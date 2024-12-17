@@ -97,14 +97,15 @@ def test_oi2dt_list(
     ]
 
 
-@pytest.mark.parametrize("param", ["05", "26"])
-def test_get_decadal_list(param: Union[Literal["05"], Literal["26"]]):
+@pytest.mark.parametrize("param", ["05", "30"])
+def test_get_decadal_list(param: Union[Literal["05"], Literal["30"]]):
     truth = {
         "05": [datetime.datetime(2018, 12, 5, 0, tzinfo=datetime.timezone.utc)],
-        "26": [
+        "30": [
             datetime.datetime(2018, 12, 5, 0, tzinfo=datetime.timezone.utc),
-            datetime.datetime(2018, 12, 15, 0, tzinfo=datetime.timezone.utc),
-            datetime.datetime(2018, 12, 25, 0, tzinfo=datetime.timezone.utc),
+            datetime.datetime(2018, 12, 9, 0, tzinfo=datetime.timezone.utc),
+            datetime.datetime(2018, 12, 19, 0, tzinfo=datetime.timezone.utc),
+            datetime.datetime(2018, 12, 29, 0, tzinfo=datetime.timezone.utc),
         ],
     }
     dt = as_datetime(f"201812{param}T00")
