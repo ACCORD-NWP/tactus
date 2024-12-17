@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 - Add namelists to create needed output for postprocessing [\#923] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/923) (@egregow)
 
+## [0.10.0] - 2024-12-17
+
 ### Added
 - Add unit test for standalone template file [\#890] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/890) (@pardallio)
 - Add wind fields to grib output. [\#916](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/916) (@kastelecn)
