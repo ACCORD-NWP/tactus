@@ -1,4 +1,6 @@
-"""AddTotalPrec."""
+"""AddCalculatedFields."""
+
+import math
 
 from ..datetime_utils import as_datetime
 from ..logs import logger
@@ -12,7 +14,7 @@ except (ImportError, OSError, RuntimeError):
     logger.warning("eccodes python API could not be imported. Usually OK.")
 
 
-class AddTotalPrec(Task):
+class AddCalculatedFields(Task):
     """Create grib files."""
 
     def __init__(self, config):
@@ -43,39 +45,50 @@ class AddTotalPrec(Task):
         Raises:
             NotImplementedError: Operation not implemented yet"
         """
-        gid1 = None
-        gid2 = None
+        gids = [None for i in range(len(params))]
         if any(params) is None:
             raise ValueError("Parameters are not define")
 
         with open(fname, "rb") as f_in, open(fname, "ab") as f_out:
-            while gid1 is None or gid2 is None:
+            while None in gids:
                 gid = eccodes.codes_grib_new_from_file(f_in)
                 par_nam = eccodes.codes_get(gid, "shortName")
-                if par_nam == params[0]:
-                    gid1 = gid
-                elif par_nam == params[1]:
-                    gid2 = gid
+                if par_nam in params:
+                    gids[params.index(par_nam)] = gid
                 else:
                     eccodes.codes_release(gid)
 
-            values1 = eccodes.codes_get_values(gid1)
-            values2 = eccodes.codes_get_values(gid2)
+            values_list = [eccodes.codes_get_values(gid) for gid in gids]
+
             if operation == "add":
-                values_sum = [v1 + v2 for v1, v2 in zip(values1, values2)]
+                result_values = [sum(values) for values in zip(*values_list)]
+            elif operation == "vectorLength":
+                if len(params) != 2:
+                    raise ValueError("Vector must has 2 components!")
+                result_values = [
+                    math.sqrt(values[0] * values[0] + values[1] * values[1])
+                    for values in zip(*values_list)
+                ]
+            elif operation == "vectorDirection":
+                if len(params) != 2:
+                    raise ValueError("Vector must has 2 components!")
+                result_values = [
+                    (math.atan2(values[0], values[1]) * 180 / math.pi) % 360
+                    for values in zip(*values_list)
+                ]
             else:
                 raise NotImplementedError("Operation {} not implemented yet.", operation)
 
-            gid_sum = eccodes.codes_clone(gid1)
+            gid_res = eccodes.codes_clone(gids[0])
 
-            eccodes.codes_set_values(gid_sum, values_sum)
-            eccodes.codes_set(gid_sum, "shortNameECMF", short_name)
-            eccodes.codes_set(gid_sum, "shortName", short_name)
+            eccodes.codes_set_values(gid_res, result_values)
+            eccodes.codes_set(gid_res, "shortNameECMF", short_name)
+            eccodes.codes_set(gid_res, "shortName", short_name)
 
-            eccodes.codes_write(gid_sum, f_out)
-            eccodes.codes_release(gid1)
-            eccodes.codes_release(gid2)
-            eccodes.codes_release(gid_sum)
+            eccodes.codes_write(gid_res, f_out)
+            eccodes.codes_release(gid_res)
+            for gid in gids:
+                eccodes.codes_release(gid)
             f_in.close()
             f_out.close()
 

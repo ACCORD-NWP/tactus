@@ -22,7 +22,7 @@ from deode.tasks.discover_task import available_tasks, get_task
 from deode.tasks.e923 import E923
 from deode.tasks.extractsqlite import ExtractSQLite
 from deode.tasks.forecast import FirstGuess, Forecast
-from deode.tasks.gribmodify import AddTotalPrec
+from deode.tasks.gribmodify import AddCalculatedFields
 from deode.tasks.iomerge import IOmerge
 from deode.tasks.marsprep import Marsprep
 from deode.toolbox import ArchiveError, FileManager, ProviderError
@@ -104,7 +104,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_task_archive_archivestatic_execute_method = ArchiveStatic.execute
     original_task_clean_old_data_cleansuites_execute_method = CleanSuites.execute
     original_task_creategrib_creategrib_execute_method = CreateGrib.execute
-    original_task_gribmodify_addtotalprec_execute_method = AddTotalPrec.execute
+    original_task_gribmodify_addtotalprec_execute_method = AddCalculatedFields.execute
     original_task_extractsqlite_extractsqlite_execute_method = ExtractSQLite.execute
     original_task_e923_constant_part_method = E923.constant_part
     original_task_e923_monthly_part_method = E923.monthly_part
@@ -252,7 +252,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         new=new_task_creategrib_creategrib_execute_method,
     )
     session_mocker.patch(
-        "deode.tasks.gribmodify.AddTotalPrec.execute",
+        "deode.tasks.gribmodify.AddCalculatedFields.execute",
         new=new_task_gribmodify_addtotalprec_execute_method,
     )
     session_mocker.patch(

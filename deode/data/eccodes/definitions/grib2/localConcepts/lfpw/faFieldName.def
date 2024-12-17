@@ -1311,6 +1311,17 @@
     LSTCUM = 1 ;
 }
 
+"SURFPREC.GRA.GEC" = {
+    discipline = 0 ;
+    parameterCategory = 1 ;
+    parameterNumber = 75 ;
+    productDefinitionTemplateNumber = 8 ;
+    tablesVersion = 15 ;
+    typeOfFirstFixedSurface = 1 ;
+    typeOfStatisticalProcessing = 1 ;
+    LSTCUM = 1 ;
+}
+
 # Depth of the boundary layer
 "CLPMHAUT.MOD.XFU" = {
     discipline = 0 ;
@@ -1387,9 +1398,12 @@
     parameterNumber = 3 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
-    typeOfSecondFixedSurface = 255 ;
+    scaleFactorOfFirstFixedSurface = missing() ;
+    scaledValueOfFirstFixedSurface = missing() ;
+    typeOfSecondFixedSurface = 100 ;
+    scaleFactorOfSecondFixedSurface = 0 ;
+    scaledValueOfSecondFixedSurface = 80000 ;
     FMULTE = 2 ;
-    scaledValueOfFirstFixedSurface = 0 ;
 }
 
 # Convective-levels Cloudiness
@@ -1440,8 +1454,12 @@
     parameterCategory = 6 ;
     parameterNumber = 5 ;
     tablesVersion = 15 ;
-    typeOfFirstFixedSurface = 1 ;
-    typeOfSecondFixedSurface = 255 ;
+    typeOfFirstFixedSurface = 100 ;
+    scaleFactorOfFirstFixedSurface = 0 ;
+    scaledValueOfFirstFixedSurface = 45000 ;
+    typeOfSecondFixedSurface = 8 ;
+    scaleFactorOfSecondFixedSurface = missing() ;
+    scaledValueOfSecondFixedSurface = missing() ;
     FMULTE = 2 ;
 }
 
@@ -1466,8 +1484,12 @@
     parameterCategory = 6 ;
     parameterNumber = 4 ;
     tablesVersion = 15 ;
-    typeOfFirstFixedSurface = 1 ;
-    typeOfSecondFixedSurface = 255 ;
+    typeOfFirstFixedSurface = 100 ;
+    scaleFactorOfFirstFixedSurface = 0 ;
+    scaledValueOfFirstFixedSurface = 80000 ;
+    typeOfSecondFixedSurface = 100 ;
+    scaleFactorOfSecondFixedSurface = 0 ;
+    scaledValueOfSecondFixedSurface = 45000 ;
     FMULTE = 2 ;
 }
 
@@ -1494,6 +1516,8 @@
     parameterNumber = 1 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
+    scaleFactorOfFirstFixedSurface = missing() ;
+    scaledValueOfFirstFixedSurface = missing() ;
     typeOfSecondFixedSurface = 8 ;
     FMULTE = 2 ;
 }
@@ -2107,6 +2131,7 @@
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaledValueOfFirstFixedSurface = 0 ;
+    typeOfSecondFixedSurface = 8 ;
 }
 
 # Density of moist air
@@ -3334,7 +3359,7 @@
     typeOfFirstFixedSurface = 1 ;
 }
 # Soil temperature for AQ CY46h1
-"X001TG1"= {
+"X003TG1"= {
     discipline = 2 ;
     parameterCategory = 3 ;
     parameterNumber = 18 ;
@@ -3345,7 +3370,7 @@
     tablesVersion = 15 ;
 }
 # Soil temperature for AQ CY46h1
-"X001TG2"= {
+"X003TG2"= {
     discipline = 2 ;
     parameterCategory = 3 ;
     parameterNumber = 18 ;
@@ -3356,7 +3381,7 @@
     tablesVersion = 15 ;
 }
 # Volumetric soil moisture for AQ CY46h1
-"X001WG1"= {
+"X003WG1"= {
     discipline = 2 ;
     parameterCategory = 3 ;
     parameterNumber = 10 ;
@@ -3367,7 +3392,7 @@
     tablesVersion = 15 ;
 }
 # Volumetric soil moisture for AQ CY46h1
-"X001WG2"= {
+"X003WG2"= {
     discipline = 2 ;
     parameterCategory = 3 ;
     parameterNumber = 10 ;
@@ -3378,7 +3403,7 @@
     tablesVersion = 15 ;
 }
 # Leaf Area Index, low veg for AQ CY46h1
-"X001LAI"= {
+"X003LAI"= {
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 28 ;
@@ -3386,7 +3411,7 @@
     typeOfFirstFixedSurface = 1 ;
 }
 # Intercepted Water for AQ CY46h1
-"X001WR"= {
+"X003WR"= {
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 13 ;

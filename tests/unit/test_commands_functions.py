@@ -11,7 +11,6 @@ from deode.commands_functions import (
     namelist_convert,
     namelist_format,
     namelist_integrate,
-    set_deode_home,
     show_namelist,
 )
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
@@ -24,13 +23,6 @@ def parsed_config():
         ConfigParserDefaults.PACKAGE_CONFIG_PATH,
         json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
     )
-
-
-def test_set_deode_home(parsed_config):
-    arg = ArgumentParser()
-    arg.deode_home = None
-    deode_home = set_deode_home(arg, parsed_config)
-    assert os.path.isdir(deode_home)
 
 
 @pytest.fixture()

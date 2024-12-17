@@ -15,7 +15,6 @@ selection:
     - 'SURFACCPLUIE'
     - 'SURFACCNEIGE'
     - 'SURFACCGRAUPEL'
-    - 'SURFDIAG.FLASH'
    CLXFU:
     - 'SURFDIAGHAIL'
     - 'CLSTEMPERATURE'
@@ -28,6 +27,7 @@ selection:
     - 'SURFNEBUL.BASSE'
     - 'SURFNEBUL.TOTALE'
     - 'CLSMEAN.RAD.TEMP'
+    - 'CLSRAFAL.MOD.XFU'
   NAMFPDY2:
    CL2DF:
     - 'SURFPRESSION'

@@ -25,7 +25,7 @@ Please delete options that are not relevant.
 - [ ] I have ensured that the code is still installable with `poetry` after the changes and runs
 - [ ] I have run this on ATOS ([instructions](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/docs/markdown_docs/development_guide.md#testing-on-atos))
 - [ ] I have run this on LUMI ([instructions](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/docs/markdown_docs/development_guide.md#run-on-lumi))
-- [ ] I have requested a reviewer and an assignee (assignee is responsible for merging)
+- [ ] I have requested one or more reviewer(s) and an assignee (assignee is responsible for merging). At least one reviewer has accepted to review.
 
 ## Checklist for reviewers
 Each PR comes with its own improvements and flaws. The reviewer should check the following:
@@ -44,6 +44,7 @@ Each PR comes with its own improvements and flaws. The reviewer should check the
 - [ ] PR is up to date with the base branch
 - [ ] the tests passing
 - [ ] author has added an entry to the changelog (and designated the change as *added*, *changed* or *fixed*)
+- [ ] the PR has been approved by all the reviewers, that accepted to review.
 - Once the PR ready to be merged, squash commits and merge the PR.
 
 ## Tag possible reviewers

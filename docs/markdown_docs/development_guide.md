@@ -2,19 +2,28 @@
 Describes best practices and guidelines for development in the Deode-Workflow repository.
 
 ## Best practices
-- Authors of PRs should not merge themself - Instead request a reviewer and an assignee. Assignee is responsible for merging.
+- Assignee should not merge before the PR has been reviewed and approved (see below on how to request reviewer(s)).
+- Assignee and PR author refer to the same person by default.
+- Assignee is responsible for merging.
 - Assignee and reviewer may not be the same person.
-- Authors of PRs are responsible for ensuring that the PR is up to date with the base branch before merging.
-- Assignees should not merge PRs that have failing tests.
+- Assignee is responsible for ensuring that the PR is up to date with the base branch before merging.
+- Assignee should not merge PRs that have failing tests.
 - Commits to `master` and `develop` branches should only be via PRs.
-- We rely on the good sense of both author and reviewer.
+- We rely on the good sense of both assignee and reviewer.
 
-### Checklist for authors
-- ✔️  Make sure your local environment is correctly initialised as described in the [README](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md) file.
-- ✔️  Use forks for your changes
+### Requesting and accepting/declining reviews
+- To request a review of a PR, the assignee invites one or more persons to review.
+- The invited reviewers accept/decline the invitation by adding a comment to the PR like “I’m on it” or “I’ll not review”.
+- After 48 hours, the assignee removes the reviewers that haven't responded.
+- Repeat, if none of the invited reviewers were able to review. Minimum one reviewer is required.
+
+
+### Checklist for assignee
+- ✔️ Make sure your local environment is correctly initialised as described in the [README](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md) file.
+- ✔️ Use forks for your changes
 - ✔️ If not up-to-date, update your fork with the changes from the target branch (use `pull` with `--rebase` option if possible).
 - ✔️ Describe what the PR contains.
-- ✔️ Ensure your PR does not contain seperate features.
+- ✔️ Ensure your PR does not contain separate features.
 
 ### Checklist for reviewers
 Each PR comes with its own improvements and flaws. The reviewer should check the following:
@@ -23,9 +32,10 @@ Each PR comes with its own improvements and flaws. The reviewer should check the
 - ✔️ Is the code documented?
 - ✔️ Is the code easy to maintain?
 
-### Checklist for assignees
+### Checklist for assignee after completed review
 - ✔️ Is the PR up to date with the base branch?
 - ✔️ Are the tests passing?
+- ✔️ Have the reviewers who accepted to review approved the PR?
 - ✔️ Is the PR ready to be merged?
 - ✔️ Squash commits and merge the PR.
 
@@ -119,13 +129,170 @@ On lumi we expect the following configurations to be tested in the same way as a
 ```
 Note that due to the restrictions for the debug partition on lumi it's only possible to launch one suite at the time.
 
-## Branches
-As of now, the repository has two main branches:
-- `master` - This is the main branch. It is the branch that is deployed to production.
-- `develop` - This is the branch that is deployed to staging.
-As the project grows, we may add more branches, such as an `integration` branch, where we can test the integration of multiple features before merging them to `develop`, and run a simpler pipeline (see image below).
+## Git Branching Structure and Workflow
 
-![drawing](../docs/figs/development_guide.png)
+This section describes the Git branching and tag structure used when developing. In the following we differentiate between **branches in the upstream repository** and **branches in developers' forks**. Forks are used to develop features, bugfixes etc. They are created from the upstream's `develop` branch by forking to a local repo.
 
-### Forks
-Forks are used to develop features and bug fixes. They are created from the `develop` branch by forking to a local repo. When a feature is ready, a PR is created to merge it to `develop`. When a bug fix is ready, a PR is created to merge it to `develop` and `master`.
+### Branching Structure
+
+#### Branches in the Upstream Repository
+These branches are centralized and exist in the upstream repository. The branches are never deleted.
+
+**`master` branch**:
+   - Represents the production-ready codebase.
+   - Contains tagged releases (e.g. `v0.1`, `v0.2`).
+   - Hotfixes merged into this branch represent stable updates to deployed versions.
+
+**`develop` branch**:
+   - Serves as the main branch for development integration.
+   - Receives completed features, bug fixes, and hotfixes from developers' forks.
+
+**`legacy-support/vX.Y` branches** (used only when necessary):
+   - Created for maintaining older versions (e.g. `v0.1`) when newer releases (e.g. `v0.2`) are already available.
+   - Hotfixes targeting older versions are merged here and tagged (e.g. `v0.1.1`).
+
+#### Branches in Developers' Forks
+These branches are created and reside in developers' personal forks of the upstream repository. They are temporary and merged back into the upstream repository when work is completed.
+
+**`feature/<name>` branches**:
+   - Created for new feature development.
+   - Based on the `develop` branch.
+   - Merged back into the upstream's `develop` branch upon completion.
+
+**`bugfix/<name>` branches**:
+   - Used for fixing non-critical bugs.
+   - Based on the `develop` branch.
+   - Merged back into the upstream's `develop` branch upon completion.
+
+**`hotfix/<name>` branches**:
+   - For critical fixes to production releases.
+   - Based on a tag on `master` branch.
+   - Merged back into `master` in the upstream repository.
+
+**`release/vX.Y.Z` branches**:
+   - Created to prepare a new release.
+   - Based on the `develop` branch.
+   - Merged back into the upstream's `develop` branch upon completion.
+
+**`binary-update/vX.Y.Z` branches**:
+   - Created to update the binary versions used by the specific version (`vX.Y.Z`) of Deode-Workflow .
+   - Based on the `develop` branch.
+   - Merged back into `master` in the upstream repository.
+
+<br>
+
+*Git branching structure with hotfix to the latest release:*
+
+![git_branch_structure](../figs/git_branch_structure.svg)
+
+*Git branching structure with hotfix to an older release:*
+![git_branch_structure](../figs/git_branch_structure_legacy_support.svg)
+
+### Workflow
+
+If you prefer to branch out from your local fork's `develop`, remember to synchronize your fork's `develop` with `upstream/develop` before starting any of the below workflows.
+
+To be able to work with branches in the upstream repository from within your local fork, you can add the upstream as a remote:
+```bash
+git remote add upstream <upstream_repository_URL>
+```
+This is e.g. relevant, when tagging a new release on the upstream's `master` branch (see below), or if you prefer to branch out from the upstream's `develop` branch. In the latter case, please replace `origin/develop` with `upstream/develop` in below commands.
+
+#### Developing New Features
+  1. In your fork, create a new `feature/<name>` branch based on `develop`:
+     ```bash
+     git checkout -b feature/<name> origin/develop
+     ```
+  2. Implement and commit your changes.
+  3. Push the branch to your fork and create a pull request to merge it into the upstream's `develop` branch. Follow the instructions in the PR.
+
+#### Fixing Bugs
+  1. In your fork, create a new `bugfix/<name>` branch based on `develop`:
+     ```bash
+     git checkout -b bugfix/<name> origin/develop
+     ```
+  2. Implement the bug fix and commit your changes.
+  3. Push the branch to your fork and create a pull request to merge it into the upstream's `develop` branch. Follow the instructions in the PR.
+
+#### Creating a Hotfix
+ 1. Make sure you have fetched any new tags by calling
+      ```bash
+      git fetch --all --tags
+      ```
+ 2. In your fork, create a `hotfix/<name>` branch based on the desired tag from the upstream repository:
+     ```bash
+     git checkout -b hotfix/<name> <tag>
+      ```
+ 3. Implement the fix and push the branch to your fork.
+ 4. Follow step 3-5 from the section "Creating a New Release" to adjust version numbers and changelog.
+ 5. 
+    a. If the issue affects the latest release:
+
+     1. Create a pull request to merge the hotfix into the upstream's `master` branch. Follow the instructions in the PR.
+
+    b. If the issue affects an older release:
+
+     3. Create a `legacy-support/vX.Y` branch in the upstream repository based on the tag of the older release (e.g. `legacy-support/v0.1`).
+     4. Create a pull request to merge the hotfix into the upstream's `legacy-support/vX.Y` branch. Follow the instructions in the PR.
+ 6. After merging, follow the instructions in the section "Creating a New Release" starting from 9. to create a new release.
+
+#### Creating a New Release
+1. Ensure your local fork is up to date with the upstream repository.
+2. In your fork, create a new `release/vX.Y.Z` branch based on `develop`:
+    ```bash
+    git checkout -b release/vX.Y.Z origin/develop
+    ```
+3. Update the `CHANGELOG.md` with a new **[vX.Y.Z] YYYY.mm.dd** section containing all changes that are released.
+4. Update the version number in the `pyproject.toml` file.
+5. Commit the changes:
+    ```bash
+    git add CHANGELOG.md pyproject.toml
+    git commit -m "Prepare release vX.Y.Z"
+    ```
+6. Push the branch to your fork:
+    ```bash
+    git push origin release/vX.Y.Z
+    ```
+7. Create a pull request to merge the `release/vX.Y.Z` branch into the upstream's `develop` branch. Follow the instructions in the PR.
+8. When the PR to develop has been merged, determine if the release requires updates of binary versions
+
+   a. If yes:
+      1. Create a `binary-update/vX.Y.Z` branch in your fork based on the upstream's `develop` branch.
+      2. Implement the necessary changes and push the branch to your fork.
+      3. Create a pull request to merge the `binary-update/vX.Y.Z` branch into the upstream's `master` branch. Follow the instructions in the PR.
+
+   b. If no:
+
+      1. Create a pull request to merge the upstream's `develop` branch into the upstream's `master` branch. Follow the instructions in the PR.
+9. Once the pull request is approved and merged, create a new tag on the `master` branch:
+    ```bash
+    git checkout master
+    git pull upstream master
+    git tag -a vX.Y.Z -m "Release vX.Y.Z"
+    git push upstream vX.Y.Z
+    ```
+10. Create a new release in GitHub
+    1.  The release shall be based on the just created tag.
+    2.  The title of the release shall be identical to the tag
+    3.  Copy and paste the changelog items relevant to this release into the description of the release.
+    4.  Set the release as the latest release
+    5.  Publish the release
+
+11. If the release is not a legacy-support hotfix release
+    1.  Create a pull request to merge the master branch back into the develop branch. Follow the instructions in the PR.
+    
+    > :warning: **IMPORTANT**: When merging, revert the binary updates implemented in 8.a above, as the develop branch should always refer to the `latest` tag of binaries.
+
+
+### Summary of Branch Responsibilities
+
+| **Branch Type**              | **Location**               | **Purpose**                                                                                       |
+|------------------------------|----------------------------|---------------------------------------------------------------------------------------------------|
+| `master`                     | Upstream                   | Holds production-ready releases, tagged with version numbers.                                     |
+| `develop`                    | Upstream                   | Main branch for integrating features and bug fixes.                                               |
+| `legacy-support/vX.Y`        | Upstream                   | For maintaining older versions and applying hotfixes to legacy releases.                          |
+| `feature/<name>`             | Developers' Fork           | For developing new features. Based on `develop`.                                                  |
+| `bugfix/<name>`              | Developers' Fork           | For resolving bugs found during development. Based on `develop`.                                  |
+| `hotfix/<name>`              | Developers' Fork           | For critical fixes to released versions. Based on `master`.|
+| `release/vX.Y.Z`          | Developers' Fork           | To prepare a new release. Based on `develop`.|
+| `binary-update/vX.Y.Z`    | Developers' Fork           | To update binary versions, when releasing a new release to master. Based on `develop`.|

@@ -200,22 +200,21 @@ def get_decade(dt) -> str:
 def get_decadal_list(dt_start, dt_end) -> list:
     """Return a list of dates for which decadal pgd files have to be created."""
     # check decade of start and end of period
-    start_decade = get_decade(dt_start)
-    end_decade = get_decade(dt_end)
+    dt_start0 = dt_start.replace(hour=0, minute=0, second=0)
+    dt_end0 = dt_end.replace(hour=0, minute=0, second=0)
+    start_decade = get_decade(dt_start0)
+    end_decade = get_decade(dt_end0)
 
+    decades = {}
+    decades[start_decade] = dt_start0
     if start_decade != end_decade:
         # More than one decade is covered by period.
-        if (dt_end - dt_start).days > 10:
-            for x in range(0, (dt_end - dt_start).days, 10):
-                if x == 0:
-                    list_of_decades = [dt_start]
-                else:
-                    list_of_decades.append(dt_start + as_timedelta(f"P{x}D"))
-        else:
-            list_of_decades = [dt_start, dt_end]
-    else:
-        list_of_decades = [dt_start]
-    return list_of_decades
+        for x in range(1, (dt_end0 - dt_start0).days + 1, 1):
+            date = dt_start0 + as_timedelta(f"P{x}D")
+            decade = get_decade(date)
+            if decade not in decades:
+                decades[decade] = date
+    return list(decades.values())
 
 
 def get_month_list(start, end) -> list:
