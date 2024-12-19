@@ -3449,11 +3449,19 @@
     typeOfFirstFixedSurface = 1 ;
     tablesVersion = 15 ;
 }
-# Surface Albedo for AQ 
-"SFX.TALB_ISBA"= {
+"SFX.TALB_ISBA" = {
     discipline = 0 ;
     parameterCategory = 19 ;
     parameterNumber = 1 ;
+    tileIndex = 1 ;
+    tileClassification = 4 ;
+    typeOfTile = 1501 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
     typeOfFirstFixedSurface = 1 ;
-    tablesVersion = 15 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
 }
