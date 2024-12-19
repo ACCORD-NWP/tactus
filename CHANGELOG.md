@@ -9,7 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
-- Add surface albedo to air quality output [\#920] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/920) (@sbnielsen)
 
 ## [0.9.1] - 2024-11-22
 - Archiving of config file in operational setting [\#896] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/896) (@FlorianW-ZAMG)
