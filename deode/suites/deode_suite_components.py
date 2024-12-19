@@ -753,7 +753,7 @@ class ForecastFamily(EcflowSuiteFamily):
             )
 
         add_total_prec_task = EcflowSuiteTask(
-            "AddTotalPrec",
+            "AddCalculatedFields",
             self,
             config,
             task_settings,
