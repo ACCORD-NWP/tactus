@@ -1,0 +1,22 @@
+#!/bin/bash
+#SBATCH --job-name=FirstGuess
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --qos=nf
+#SBATCH --signal=USR1@30
+#SBATCH --time=00:15:00
+. /usr/local/apps/lmod/8.6.8/init/bash
+module load ecmwf-toolbox/2024.02.1.0
+module load fftw/3.3.9
+module load hdf5/1.10.6
+module load intel-mkl/19.0.5
+module load netcdf4/4.7.4
+module load hpcx-openmpi/2.9.0
+module load prgenv/intel
+export DR_HOOK_IGNORE_SIGNALS="-1"
+export OMP_NUM_THREADS="1"
+export OMPI_MCA_btl="^vader"
+export STAND_ALONE_TASK_NAME="FirstGuess"
+export STAND_ALONE_DEODE_HOME="/etc/ecmwf/nfs/dh2_perm_b/nhab/hm_home/deode/my_fork/deode"
+export STAND_ALONE_TASK_CONFIG="/etc/ecmwf/nfs/dh2_perm_b/nhab/hm_home/deode/my_fork/cy46h1_aq_3patch.toml"
+/etc/ecmwf/nfs/dh2_perm_b/nhab/hm_home/deode/my_fork/.venv/bin/python /etc/ecmwf/nfs/dh2_perm_b/nhab/hm_home/deode/my_fork/deode/templates/stand_alone.py || exit 1
