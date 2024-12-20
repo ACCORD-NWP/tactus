@@ -70,6 +70,22 @@
     LSTCUM=2;
 }
 
+# "60 min gust wind speed (maximum between two outputs)"
+"CLSRAFAL.MOD.XFU" = {
+    discipline = 0 ;
+    parameterCategory = 2 ;
+    parameterNumber = 22 ;
+    productDefinitionTemplateNumber = 8 ;
+    scaleFactorOfFirstFixedSurface = 0 ;
+    scaledValueOfFirstFixedSurface = 10 ;
+    tablesVersion = 15 ;
+    typeOfFirstFixedSurface = 103 ;
+    typeOfStatisticalProcessing = 2 ;
+    indicatorOfUnitForTimeRange = 1 ;
+    lengthOfTimeRange = 1 ;
+}
+
+
 # "Zonal component of 60 min gust wind (maximum between two outputs)"
 "CLSU.RAF60M.XFU" = {
     discipline = 0 ;

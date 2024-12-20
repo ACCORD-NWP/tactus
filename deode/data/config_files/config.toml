@@ -76,11 +76,6 @@
   operator = "vectorLength"
   output = "100si"
 
-[gribmodify.7]
-  input = ["10efg", "10nfg"]
-  operator = "vectorLength"
-  output = "10fg"
-
 [include]
   archiving = "include/archiving.toml"
   cleaning = "include/cleaning.toml"
