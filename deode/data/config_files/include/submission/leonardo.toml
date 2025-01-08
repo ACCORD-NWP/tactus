@@ -8,35 +8,6 @@
   nfpgrib = 141
   nproma = -32
 
-  submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
-
-[submission.background_hpc]
-  SCHOST = "localhost"
-  tasks = ["Background_hpc", "UnitTest"]
-
-[submission.background_vm]
-  INTERPRETER = "#!/usr/bin/python3"
-  SCHOST = "localhost"
-  tasks = ["Background_vm"]
-
-[submission.gnu]
-  NPROC = 1
-  NPROCX = 1
-  NPROCY = 1
-  SCHOST = "hpc"
-  tasks = ["ExtractSQLite"]
-  WRAPPER = "srun"
-
-[submission.gnu.BATCH]
-  NAME = "#SBATCH --job-name=@TASK_NAME@"
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=1"
-  QOS = "#SBATCH --qos=nf"
-  WALLTIME = "#SBATCH --time=00:15:00"
-
-[submission.gnu.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
-
 [submission.iomerge.age_limit]
   fullpos = 15
   history = 15
@@ -47,18 +18,45 @@
   history = -1
   surfex = 0
 
-[submission.parallel]
+[submission.types.background_hpc]
+  SCHOST = "localhost"
+  tasks = ["Background_hpc", "UnitTest"]
+
+[submission.types.background_vm]
+  INTERPRETER = "#!/usr/bin/python3"
+  SCHOST = "localhost"
+  tasks = ["Background_vm"]
+
+[submission.types.gnu]
+  NPROC = 1
+  NPROCX = 1
+  NPROCY = 1
+  SCHOST = "hpc"
+  tasks = ["ExtractSQLite"]
+  WRAPPER = "srun"
+
+[submission.types.gnu.BATCH]
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  QOS = "#SBATCH --qos=nf"
+  WALLTIME = "#SBATCH --time=00:15:00"
+
+[submission.types.gnu.MODULES]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
+
+[submission.types.parallel]
   NPROC = 8
   SCHOST = "leonardo"
   tasks = ["Forecast", "E927", "Pgd", "Prep", "C903"]
   WRAPPER = "srun"
 
-[submission.parallel.BATCH]
+[submission.types.parallel.BATCH]
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   QOS = "#SBATCH --qos=np"
   WALLTIME = "#SBATCH --time=00:10:00"
 
-[submission.parallel.ENV]
+[submission.types.parallel.ENV]
   DR_HOOK = 1
   DR_HOOK_IGNORE_SIGNALS = 8
   EC_MPI_ATEXIT = 0
@@ -73,7 +71,7 @@
   PARALLEL = 0
   PERSISTENT = 0
 
-[submission.parallel.MODULES]
+[submission.types.parallel.MODULES]
   0_PURGE = ["--force", "purge"]
   1_PRGENV = ["load", "prgenv/intel"]
   2_NVHPC = ["load", "nvhpc/23.11"]
@@ -83,7 +81,7 @@
 
   #_HDF5 = ["load", "hdf5/1.12.2--openmpi--4.1.4--nvhpc--23.1"]
 
-[submission.serial]
+[submission.types.serial]
   NPROC = 1
   NPROCX = 1
   NPROCY = 1
@@ -91,19 +89,19 @@
   tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep", "E923Update"]
   WRAPPER = "srun"
 
-[submission.serial.BATCH]
+[submission.types.serial.BATCH]
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   QOS = "#SBATCH --qos=nf"
   WALLTIME = "#SBATCH --time=00:15:00"
 
-[submission.serial.ENV]
+[submission.types.serial.ENV]
   DR_HOOK_IGNORE_SIGNALS = -1
   OMP_NUM_THREADS = 1
   OMPI_MCA_btl = "^vader"
 
-[submission.serial.MODULES]
+[submission.types.serial.MODULES]
   0_PURGE = ["--force", "purge"]
   1_NVHPC = ["load", "nvhpc/23.11"]
   2_CUDA = ["load", "cuda/11.8"]
