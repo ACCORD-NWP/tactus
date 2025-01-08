@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add albedo to AQ event output. [\#920](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/920) (@sbnielsen)
 
 ### Fixed
+- Remove 10wdir from gribmodify.[\#934](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/934) (@kastelecn)
 - Add FA2GRIB translation for gust wind speed, makes the gribmodify part obsolete. [\#928](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/928) (@uandrae)
 - Bump python version to 3.10 in github linting action. [\#933](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/933) (@johtoblan)
 

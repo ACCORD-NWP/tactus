@@ -67,11 +67,6 @@
   output = "10si"
 
 [gribmodify.5]
-  input = ["10u", "10v"]
-  operator = "vectorDirection"
-  output = "10wdir"
-
-[gribmodify.6]
   input = ["100u", "100v"]
   operator = "vectorLength"
   output = "100si"
