@@ -48,6 +48,8 @@ poetry devtools -h
 ```
 for more information.
 
+Note: devtools lint does not currently work for Python >=3.12 (as it depends on flakeheaven)
+
 ### Run and fix toml-formatter errors in place
 ```shell
 toml-formatter check --fix-inplace /PATH/TO/FILE
