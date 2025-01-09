@@ -18,6 +18,7 @@ selection:
     - 'SURFPREC.EAU.CON'
     - 'SURFPREC.NEI.GEC'
     - 'SURFPREC.NEI.CON'
+    - 'SURFPREC.GRA.GEC'
    CLXFU:
     - 'SURFDIAGHAIL'
     - 'CLSTEMPERATURE'
@@ -29,6 +30,7 @@ selection:
     - 'CLSV.RAF60M.XFU'
     - 'CLSMAXI.TEMPERAT'
     - 'CLSMINI.TEMPERAT'
+    - 'CLSRAFAL.MOD.XFU'
     - 'SURFNEBUL.HAUTE'
     - 'SURFNEBUL.MOYENN'
     - 'SURFNEBUL.BASSE'

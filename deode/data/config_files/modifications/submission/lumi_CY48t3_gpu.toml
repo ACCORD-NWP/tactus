@@ -3,16 +3,21 @@
   nfpgrib = 141
   nproma = -256
 
-[submission.Forecast_cpu]
+[submission.task_exceptions.Forecast]
+  bindir = "/pfs/lustrep4/projappl/project_465000527/dhaumont/accord/pack/freeze_gpu_feb_2024/bin"
+
+[submission.task_exceptions.Forecast.ENV]
+
+[submission.types.Forecast_cpu]
   tasks = []
 
-[submission.Forecast_gpu]
+[submission.types.Forecast_gpu]
   NPROC = 16
   SCHOST = "lumi-batch"
   tasks = ["Forecast"]
   WRAPPER = "ulimit -s unlimited; srun -n @NPROC@ ./select_gpu"
 
-[submission.Forecast_gpu.BATCH]
+[submission.types.Forecast_gpu.BATCH]
   CPU = "#SBATCH --cpus-per-task=6"
   GPUS_PER_NODE = "#SBATCH --gpus-per-node=8"
   NAME = "#SBATCH --job-name=@TASK_NAME@"
@@ -23,7 +28,7 @@
   WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:30:00"
 
-[submission.Forecast_gpu.ENV]
+[submission.types.Forecast_gpu.ENV]
   ECF_SSL = 1
   # Nodes, MPI tasks etc
   MPI_TASKS = 32 # $SLURM_NTASKS
@@ -70,7 +75,7 @@
   #ACC_NOTIFY=3
   NOUTPUT = 2
 
-[submission.Forecast_gpu.MODULES]
+[submission.types.Forecast_gpu.MODULES]
   00_PURGE = ["--force", "purge"]
   01_LUMI = ["load", "LUMI/23.03"]
   02_PARTITION_G = ["load", "partition/G"]
@@ -88,10 +93,5 @@
   14_BUILDTOOLS = ["load", "buildtools"]
   15_MODULE_PATH = ["use", "/scratch/project_465000527/jasinskas/scl/modules"]
   16_ECFLOW = ["load", "scl-ecflow_23"]
-
-[submission.task_exceptions.Forecast]
-  bindir = "/pfs/lustrep4/projappl/project_465000527/dhaumont/accord/pack/freeze_gpu_feb_2024/bin"
-
-[submission.task_exceptions.Forecast.ENV]
 
 #  RTTOV_COEFDIR = "/scratch/project_465000527/de_330_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"

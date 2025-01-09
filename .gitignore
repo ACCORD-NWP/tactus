@@ -44,3 +44,6 @@ docs/deode.templates.rst
 docs/deode.templates.ecflow.rst
 docs/modules.rst
 docs/markdown_docs/config.md
+
+# Stuff related to draw.io
+*.drawio.bkp

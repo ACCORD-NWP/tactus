@@ -312,8 +312,12 @@ def show_config(args, config):
     """
     logger.info("Printing requested configs...")
 
-    pkg_configs = BasicConfig.from_file(
-        GeneralConstants.PACKAGE_DIRECTORY.parent / "pyproject.toml"
+    pyproject_toml = GeneralConstants.PACKAGE_DIRECTORY.parent / "pyproject.toml"
+
+    pkg_configs = (
+        BasicConfig.from_file(pyproject_toml)
+        if os.path.isfile(pyproject_toml)
+        else BasicConfig({})
     )
 
     toml_formatting_function = partial(

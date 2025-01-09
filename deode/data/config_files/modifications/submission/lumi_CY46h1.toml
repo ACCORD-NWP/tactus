@@ -1,23 +1,25 @@
 [submission]
   bindir = "/scratch/project_465000527/benacchi/HA/bin"
   nproma = -64
-  submit_types = [
-    "background_vm",
-    "background_hpc",
-    "serial",
-    "parallel",
-    "Forecast_cpu",
-    "Forecast_gpu",
-    "sqlite",
-  ]
 
-[submission.Forecast_cpu]
+[submission.task_exceptions.C903]
+  bindir = "/scratch/project_465000527/ospaniel/executable_cy48t3/"
+
+[submission.task_exceptions.CreateGrib]
+  binary = "gl"
+  bindir = "/scratch/project_465000527/benacchi/HA/bin"
+
+[submission.task_exceptions.PgdUpdate]
+  binary = "gl"
+  bindir = "/scratch/project_465000527/benacchi/HA/bin"
+
+[submission.types.Forecast_cpu]
   NPROC = 16
   SCHOST = "lumi-batch"
   tasks = ["Forecast"]
   WRAPPER = "ulimit -s unlimited; srun"
 
-[submission.Forecast_cpu.BATCH]
+[submission.types.Forecast_cpu.BATCH]
   CPU = "#SBATCH --cpus-per-task=4"
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=2"
@@ -27,7 +29,7 @@
   WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:30:00"
 
-[submission.Forecast_cpu.ENV]
+[submission.types.Forecast_cpu.ENV]
   MPI_TASKS = 32 # $SLURM_NTASKS
 
   OMP_NUM_THREADS = 4
@@ -55,7 +57,7 @@
   ECCODES_DEFINITION_PATH = "/scratch/project_465000527/ospaniel/opt/eccodes-2.34.1/share/eccodes:deode/data/eccodes/definitions/grib2/localConcepts/lfpw"
   ECCODES_SAMPLES_PATH = "/users/ospaniel/opt/share/eccodes/ifs_samples/grib1_mlgrib2"
 
-[submission.Forecast_cpu.MODULES]
+[submission.types.Forecast_cpu.MODULES]
   00_PURGE = ["--force", "purge"]
   01_PYTHON = ["load", "cray-python/3.10.10"]
   02_USE = ["use", "/scratch/project_465000527/SW/modules/"]
@@ -63,18 +65,18 @@
   04_ECFLOW = ["load", "scl-ecflow_23"]
   99_LIST = ["list", ""]
 
-[submission.parallel]
+[submission.types.parallel]
   NPROC = 16
   SCHOST = "lumi-batch"
   tasks = ["E927", "C903"]
   WRAPPER = "srun"
 
-[submission.parallel.ENV]
+[submission.types.parallel.ENV]
   DR_HOOK_IGNORE_SIGNALS = 8
   FI_CXI_RX_MATCH_MODE = 'hybrid'
   OMP_NUM_THREADS = 1 # CPUS_PER_TASK # this should be 4, to be tried
 
-[submission.parallel.MODULES]
+[submission.types.parallel.MODULES]
   00_PURGE = ["--force", "purge"]
   01_LUMI = ["load", "LUMI/23.03"]
   02_PARTITION_G = ["load", "partition/C"]
@@ -95,29 +97,18 @@
   16_RIMVYDAS_FTN16 = ["load", "scl-ftn16_23"]
   17_RIMVYDAS_ECFLOW = ["load", "scl-ecflow_23"]
 
-[submission.serial]
+[submission.types.serial]
   tasks = ["Gmted", "Soil", "Pgd", "PgdUpdate", "Prep", "E923Monthly", "E923Constant"]
 
-[submission.serial.ENV]
+[submission.types.serial.ENV]
   DR_HOOK_ALLOW_COREDUMP = 0
   OMP_NUM_THREADS = 1
 
-[submission.serial.MODULES]
+[submission.types.serial.MODULES]
   00_PURGE = ["--force", "purge"]
   01_USE = ["use", "/scratch/project_465000527/SW/modules/"]
   02_FTN16 = ["load", "scl-gfortran12_23"]
   99_LIST = ["list", ""]
 
-[submission.sqlite.MODULES]
+[submission.types.sqlite.MODULES]
   01_USE = ["use", "/scratch/project_465000527/SW/modules/"]
-
-[submission.task_exceptions.C903]
-  bindir = "/scratch/project_465000527/ospaniel/executable_cy48t3/"
-
-[submission.task_exceptions.CreateGrib]
-  binary = "gl"
-  bindir = "/scratch/project_465000527/benacchi/HA/bin"
-
-[submission.task_exceptions.PgdUpdate]
-  binary = "gl"
-  bindir = "/scratch/project_465000527/benacchi/HA/bin"

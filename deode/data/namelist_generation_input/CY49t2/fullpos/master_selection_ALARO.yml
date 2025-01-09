@@ -1,3 +1,5 @@
+# Do the selection of fields below. Note
+# that xxt00000000 inherits from xxtddddhh00
 selection:
   xxt00000000:
     NAMFPDY2:
@@ -241,6 +243,7 @@ selection:
       - SURFPREC.EAU.CON
       - SURFPREC.NEI.GEC
       - SURFPREC.NEI.CON
+      - SURFPREC.GRA.GEC
       CLPHY:
       - SURFTEMPERATURE
       - SURFRESERV.NEIGE
@@ -251,6 +254,7 @@ selection:
       - CLSHUMI.SPECIFIQ
       - CLSVENT.ZONAL
       - CLSVENT.MERIDIEN
+      - CLSRAFAL.MOD.XFU
       - CLSU.RAF60M.XFU
       - CLSV.RAF60M.XFU
       - CLSMAXI.TEMPERAT

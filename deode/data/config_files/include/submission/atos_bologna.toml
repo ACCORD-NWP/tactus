@@ -4,35 +4,6 @@
   lfftw = true
   module_initpath = "/usr/local/apps/lmod/8.6.8/init"
   nproma = -32
-  submit_types = ["background_vm", "background_hpc", "serial", "parallel", "gnu"]
-
-[submission.background_hpc]
-  SCHOST = "localhost"
-  tasks = ["Background_hpc", "UnitTest"]
-
-[submission.background_vm]
-  INTERPRETER = "#!/usr/bin/python3"
-  SCHOST = "localhost"
-  tasks = ["Background_vm"]
-
-[submission.gnu]
-  NPROC = 1
-  NPROCX = 1
-  NPROCY = 1
-  SCHOST = "hpc"
-  tasks = ["ExtractSQLite"]
-  WRAPPER = "srun"
-
-[submission.gnu.BATCH]
-  NAME = "#SBATCH --job-name=@TASK_NAME@"
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=1"
-  QOS = "#SBATCH --qos=nf"
-  WALLSIGNAL = "#SBATCH --signal=USR1@30"
-  WALLTIME = "#SBATCH --time=00:15:00"
-
-[submission.gnu.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
 
 [submission.iomerge.age_limit]
   fullpos = 15
@@ -43,67 +14,6 @@
   fullpos = 0
   history = -1
   surfex = 0
-
-[submission.parallel]
-  NPROC = 32
-  SCHOST = "hpc"
-  tasks = ["Forecast", "E927", "Pgd", "Prep", "C903"]
-  WRAPPER = "srun"
-
-[submission.parallel.BATCH]
-  NAME = "#SBATCH --job-name=@TASK_NAME@"
-  QOS = "#SBATCH --qos=np"
-  WALLSIGNAL = "#SBATCH --signal=USR1@30"
-  WALLTIME = "#SBATCH --time=00:10:00"
-
-[submission.parallel.ENV]
-  DR_HOOK = 1
-  DR_HOOK_IGNORE_SIGNALS = -1
-  OMP_NUM_THREADS = 1
-  OMPI_MCA_btl = "^vader"
-
-[submission.parallel.MODULES]
-  # First load the prgenv
-  PRGENV = ["load", "prgenv/intel"]
-  # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
-  FFTW = ["load", "fftw/3.3.9"]
-  HDF5 = ["load", "hdf5/1.10.6"]
-  MKL = ["load", "intel-mkl/19.0.5"]
-  NETCDF = ["load", "netcdf4/4.7.4"]
-  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
-
-[submission.serial]
-  NPROC = 1
-  NPROCX = 1
-  NPROCY = 1
-  SCHOST = "hpc"
-  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep", "E923Update", "IOmerge"]
-  WRAPPER = "srun"
-
-[submission.serial.BATCH]
-  NAME = "#SBATCH --job-name=@TASK_NAME@"
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=1"
-  QOS = "#SBATCH --qos=nf"
-  WALLSIGNAL = "#SBATCH --signal=USR1@30"
-  WALLTIME = "#SBATCH --time=00:15:00"
-
-[submission.serial.ENV]
-  DR_HOOK_IGNORE_SIGNALS = -1
-  OMP_NUM_THREADS = 1
-  OMPI_MCA_btl = "^vader"
-
-[submission.serial.MODULES]
-  # First load the prgenv
-  PRGENV = ["load", "prgenv/intel"]
-  # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
-  FFTW = ["load", "fftw/3.3.9"]
-  HDF5 = ["load", "hdf5/1.10.6"]
-  MKL = ["load", "intel-mkl/19.0.5"]
-  NETCDF = ["load", "netcdf4/4.7.4"]
-  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
 
 [submission.task]
   wrapper = ""
@@ -196,3 +106,92 @@
 
 [submission.task_exceptions.Soil.MODULES]
   GDAL = ["load", "gdal/3.6.2"]
+
+[submission.types.background_hpc]
+  SCHOST = "localhost"
+  tasks = ["Background_hpc", "UnitTest"]
+
+[submission.types.background_vm]
+  INTERPRETER = "#!/usr/bin/python3"
+  SCHOST = "localhost"
+  tasks = ["Background_vm"]
+
+[submission.types.gnu]
+  NPROC = 1
+  NPROCX = 1
+  NPROCY = 1
+  SCHOST = "hpc"
+  tasks = ["ExtractSQLite"]
+  WRAPPER = "srun"
+
+[submission.types.gnu.BATCH]
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  QOS = "#SBATCH --qos=nf"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
+  WALLTIME = "#SBATCH --time=00:15:00"
+
+[submission.types.gnu.MODULES]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
+
+[submission.types.parallel]
+  NPROC = 32
+  SCHOST = "hpc"
+  tasks = ["Forecast", "E927", "Pgd", "Prep", "C903"]
+  WRAPPER = "srun"
+
+[submission.types.parallel.BATCH]
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  QOS = "#SBATCH --qos=np"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
+  WALLTIME = "#SBATCH --time=00:10:00"
+
+[submission.types.parallel.ENV]
+  DR_HOOK = 1
+  DR_HOOK_IGNORE_SIGNALS = -1
+  OMP_NUM_THREADS = 1
+  OMPI_MCA_btl = "^vader"
+
+[submission.types.parallel.MODULES]
+  # First load the prgenv
+  PRGENV = ["load", "prgenv/intel"]
+  # The rest
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
+  FFTW = ["load", "fftw/3.3.9"]
+  HDF5 = ["load", "hdf5/1.10.6"]
+  MKL = ["load", "intel-mkl/19.0.5"]
+  NETCDF = ["load", "netcdf4/4.7.4"]
+  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
+
+[submission.types.serial]
+  NPROC = 1
+  NPROCX = 1
+  NPROCY = 1
+  SCHOST = "hpc"
+  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep", "E923Update", "IOmerge"]
+  WRAPPER = "srun"
+
+[submission.types.serial.BATCH]
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  QOS = "#SBATCH --qos=nf"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
+  WALLTIME = "#SBATCH --time=00:15:00"
+
+[submission.types.serial.ENV]
+  DR_HOOK_IGNORE_SIGNALS = -1
+  OMP_NUM_THREADS = 1
+  OMPI_MCA_btl = "^vader"
+
+[submission.types.serial.MODULES]
+  # First load the prgenv
+  PRGENV = ["load", "prgenv/intel"]
+  # The rest
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
+  FFTW = ["load", "fftw/3.3.9"]
+  HDF5 = ["load", "hdf5/1.10.6"]
+  MKL = ["load", "intel-mkl/19.0.5"]
+  NETCDF = ["load", "netcdf4/4.7.4"]
+  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]

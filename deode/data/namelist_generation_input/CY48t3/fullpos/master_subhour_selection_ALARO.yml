@@ -17,6 +17,7 @@ selection:
     - 'SURFPREC.EAU.CON'
     - 'SURFPREC.NEI.GEC'
     - 'SURFPREC.NEI.CON'
+    - 'SURFPREC.GRA.GEC'
    CLXFU:
     - 'SURFDIAGHAIL'
     - 'CLSTEMPERATURE'
@@ -29,6 +30,7 @@ selection:
     - 'SURFNEBUL.BASSE'
     - 'SURFNEBUL.TOTALE'
     - 'CLSMEAN.RAD.TEMP'
+    - 'CLSRAFAL.MOD.XFU'
   NAMFPDY2:
    CL2DF:
     - 'SURFPRESSION'

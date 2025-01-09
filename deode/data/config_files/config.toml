@@ -57,9 +57,19 @@
   output = "tsnowp"
 
 [gribmodify.3]
-  input = ["tirf", "tsnowp"]
+  input = ["tirf", "tsnowp", "tgrp"]
   operator = "add"
   output = "tp"
+
+[gribmodify.4]
+  input = ["10u", "10v"]
+  operator = "vectorLength"
+  output = "10si"
+
+[gribmodify.5]
+  input = ["100u", "100v"]
+  operator = "vectorLength"
+  output = "100si"
 
 [include]
   archiving = "include/archiving.toml"
