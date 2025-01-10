@@ -139,13 +139,11 @@ class ConfigPaths:
         )
 
     @staticmethod
-    def path_from_subpath(subpath, additional_path=None, insert_index=0) -> Path:
+    def path_from_subpath(subpath) -> Path:
         """Interface to find full path given any subpath, by searching 'searchpaths'.
 
         Arguments:
             subpath (str): Subpath to search for
-            additional_path (Path) : Extra path to search in
-            insert_index (integer): Where to insert the additional path
 
         Returns:
             (Path): Full path to target
@@ -155,9 +153,6 @@ class ConfigPaths:
         """
         pattern = f"**/{subpath}"
         searchpaths = ConfigPaths.CONFIG_DATA_SEARCHPATHS.copy()
-        if additional_path is not None:  # noqa SIM102
-            if not GeneralConstants.PACKAGE_DIRECTORY.is_relative_to(additional_path):
-                searchpaths.insert(insert_index, additional_path)
         for searchpath in searchpaths:
             results = list(Path(searchpath).rglob(pattern))
             if len(results) > 1:
@@ -337,6 +332,7 @@ class ParsedConfig(BasicConfig):
             BasicConfig.data.fset(self, self.json_schema.validate(new))
         else:
             BasicConfig.data.fset(self, new)
+            self.validate_json_schema = True
 
     @property
     def include_dir(self):
@@ -478,9 +474,7 @@ def _expand_config_include_section(
                 )
                 include_path = Path(include_path)
                 if not include_path.is_absolute():
-                    include_path = ConfigPaths.path_from_subpath(
-                        include_path, config_include_search_dir, -1
-                    )
+                    include_path = ConfigPaths.path_from_subpath(include_path)
                 included_config_section = _read_raw_config_file(include_path)
             else:
                 included_config_section = include_path_
