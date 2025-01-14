@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Make submission groups more flexible. [\#867](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/867) (@uandrae)
+- Add pandas 2.0 compatible versions to allowed dependencies. [\#942](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/942) (@observingClouds)
 
 ### Fixed
 - Remove erroneous domain specification from flooding event [\#943](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/943) (@uandrae)
