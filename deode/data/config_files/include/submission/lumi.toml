@@ -1,6 +1,6 @@
 [submission]
   account = "#SBATCH -A project_465000527"
-  bindir = "/scratch/project_465000527/ospaniel/executable_cy48t3/"
+  bindir = "/scratch/project_465000527/ospaniel/work/DEODE_testbed/executable/48t3_fix.87.CRAYFTN1601.x.modif/"
   cmicro = "OLD3"
   default_submit_type = "serial"
   lfftw = true
@@ -42,7 +42,7 @@
 
 [submission.task_exceptions.CreateGrib]
   binary = "gl"
-  bindir = "/scratch/project_465000527/jasinskas/CY48T3-ftn16-O0_23-install/bin"
+  bindir = "/scratch/project_465000527/pardalmi/gl/lumi.cray.gmkpack/bin"
 
 [submission.task_exceptions.E923Update]
   bindir = "/scratch/project_465000527/kastelec/fa_sfx2clim/"
@@ -83,6 +83,7 @@
 
 [submission.task_exceptions.PgdUpdate]
   binary = "gl"
+  bindir = "/scratch/project_465000527/pardalmi/gl/lumi.cray.gmkpack/bin"
 
 [submission.task_exceptions.Soil.MODULES]
   GDAL = ["load", "scl-gdal_23"]
@@ -149,7 +150,7 @@
   11_NETCDF = ["load", "cray-netcdf-hdf5parallel"]
   12_BUILDTOOLS = ["load", "buildtools"]
   13_NCURSES = ["load", "ncurses/6.4-cpeCray-23.09"]
-  14_CCE = ["load", "load cce/16.0.1"]
+  14_CCE = ["load", "cce/16.0.1"]
   15_RIMVYDAS_USE = ["use", "/scratch/project_465000527/jasinskas/scl/modules/"]
   16_RIMVYDAS_FTN16 = ["load", "scl-ftn16_23"]
   17_RIMVYDAS_ECFLOW = ["load", "scl-ecflow_23"]
@@ -205,5 +206,4 @@
 [submission.types.sqlite.MODULES]
   00_PYTHON = ["load", "cray-python/3.10.10"]
   01_USE = ["use", "/scratch/project_465000527/jasinskas/scl/modules/"]
-  02_ECCODES = ["load", "scl-pyeccodes_23"]
   03_ECFLOW = ["load", "scl-ecflow_23"]
