@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add albedo to AQ event output. [\#920](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/920) (@sbnielsen)
 
 ### Changed
+- Externalise sqlite_utils to grib2sqlite. [\#949] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/949) (@adeckmyn)
 - Make submission groups more flexible. [\#867](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/867) (@uandrae)
 - Add pandas 2.0 compatible versions to allowed dependencies. [\#942](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/942) (@observingClouds)
 
