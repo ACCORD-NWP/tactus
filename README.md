@@ -72,8 +72,7 @@ Then install/reinstall [`poetry`](https://python-poetry.org) by runnning the fol
   curl -sSL https://install.python-poetry.org | python3 - --uninstall
   rm -rf ${HOME}/.cache/pypoetry/ ${HOME}/.local/bin/poetry ${HOME}/.local/share/pypoetry
   # Download and install poetry
-  curl -sSL https://install.python-poetry.org | python3 -
-  pip install poetry-plugin-shell
+  curl -sSL https://install.python-poetry.org | python3 -  
   poetry install
   ```
 
