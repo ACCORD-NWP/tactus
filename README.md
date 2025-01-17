@@ -93,7 +93,7 @@ Finally, install [`pygdal`](https://pypi.org/project/pygdal/), which is required
 
 Deode-Workflow should be installed in a folder accessible by ecflow server.
 
-On Atos, itt should be installed in your $HOME directory.
+On Atos, it should be installed in your $HOME or $PERM directory.
 
 
 ## Usage
