@@ -94,7 +94,7 @@ ssh ecflow-user@217.71.194.199
 
 - SSL certificates
     - 217.71.194.208.8443.crt.gpg (prod server)
-    - 217.71.194.199.8443.crt.gpg ( dev server)
+    - 217.71.194.199.8443.crt.gpg (dev server)
 
 - ecf custom password file (for prod and dev servers)
     - ecf.custom_passwd.gpg 
@@ -130,11 +130,11 @@ gpg id_rsa_troika_PROD.pub.gpg
 ### 3.3 Copy decrypted files to their current location:
 
 
-- SSL certificates to /users/<user name>/.ecflowrc/ssl/
+- SSL certificates to `/users/<user name>/.ecflowrc/ssl/`
 
-- Password file to /users/<user name>/.ecflowrc/
+- Password file to `/users/<user name>/.ecflowrc/`
 
-- Troika public uploaded to my.csc.fi (or myaccessid)
+- Troika public keys uploaded to `my.csc.fi` (or myaccessid)
 
 
 ```shell
@@ -440,7 +440,7 @@ Please check that:
     ```shell
     $  env | grep ECF
 
-    ECF_CUSTOM_PASSWD=/users//<user name>/.ecflowrc/ecf.custom_passwd
+    ECF_CUSTOM_PASSWD=/users/<user name>/.ecflowrc/ecf.custom_passwd
     ECF_HOST=217.71.194.208
     ECF_PORT=8443
     ECF_USER=de_330
