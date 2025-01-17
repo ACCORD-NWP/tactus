@@ -11,14 +11,13 @@
 
 ## Introduction
 
-We provide in this page a step-by-step instructions guide for installing Deode-Workflow on LUMI.
-
 Two ecflow servers are provided on LUMI:
 
 1. de330-dev: development server at 217.71.194.208 (**normal use**) 
-2. de330-prod : production server at 217.71.194.199 (**production only**) 
+2. de330-prod : production server at 217.71.194.199 (**production, authorized users only**) 
 
-**Note: Please do not use the production server unless authorised to do so**
+We provide on this page a step-by-step instructions guide for installing Deode-Workflow and communicate with these ecflow servers on LUMI.
+
 
 ## Step 1. Getting on LUMI
 
