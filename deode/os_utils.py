@@ -1,6 +1,7 @@
 """Utilities for simple tasks on OS level."""
 
 import contextlib
+import glob
 import os
 import pathlib
 import re
@@ -341,3 +342,19 @@ def resolve_path_relative_to_package(path: Path, ignore_errors: bool = False) ->
         return path
 
     return path
+
+
+def list_files_join(folder, f_pattern):
+    """Read and return file names based on given pattern.
+
+    Args:
+        folder: path with file location
+        f_pattern: glob pattern
+
+    Returns:
+        list of files that should be joined
+    """
+    pattern_list = os.path.join(folder, f_pattern)
+    filenames = glob.glob(pattern_list)
+
+    return filenames

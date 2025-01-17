@@ -354,14 +354,14 @@ class PrepFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
-        bdnr = 0
+        bd_step_index = 0
         mode = config["suite_control.mode"]
         if mode == "restart":
-            bdnr = 1
+            bd_step_index = 1
 
         split_mars_task = None
         if config["suite_control.split_mars"]:
-            args = f"bd_nr={bdnr};prep_step=True"
+            args = f"bd_index={bd_step_index};prep_step=True"
             variables = {"ARGS": args}
             split_mars_task = EcflowSuiteTask(
                 "marsprep",
@@ -424,21 +424,20 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
         )
 
     def __iter__(self):
-        inthourbdint = int(self.bdint.total_seconds() // 3600)
-        inthourbdintx = 1 if inthourbdint == 0 else inthourbdint
-
         for lbc_time in self.lbc_time_generator:
-            bdnr, subbdnr, subminbdnr, bd_nr = next(self.bd_generator_instance)
+            bd_step_index, subbd_step_index, subminbd_step_index, bd_index = next(
+                self.bd_generator_instance
+            )
             date_string = lbc_time.isoformat(sep="T").replace("+00:00", "Z")
-            args = f"bd_time={date_string};bd_nr={bd_nr};prep_step=False"
-            args = f"bd_time={date_string};bd_nr={bd_nr};prep_step=False"
+            args = f"bd_time={date_string};bd_index={bd_index};prep_step=False"
+            args = f"bd_time={date_string};bd_index={bd_index};prep_step=False"
             variables = {"ARGS": args}
 
             lbc_family_name = (
-                f"LBC{bd_nr*inthourbdintx:02}{subbdnr:02}"
-                + (f"{subminbdnr:02}" if subminbdnr is not None else "")
-                if subbdnr is not None
-                else f"LBC{bd_nr*inthourbdintx:02}"
+                f"LBC{bd_step_index:02}{subbd_step_index:02}"
+                + (f"{subminbd_step_index:02}" if subminbd_step_index is not None else "")
+                if subbd_step_index is not None
+                else f"LBC{bd_step_index:02}"
             )
 
             super().__init__(
