@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add albedo to AQ event output. [\#920](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/920) (@sbnielsen)
 
 ### Changed
+- Add EcCodes as a python dependency [\#937](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/937) (@johtoblan)
 - Make version of poethepoet more flexible [\#950](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/950) (@johtoblan)
 - Updated README.md for poetry >= v2.0.0 shell plugin installation. [\#935](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/935) (@BertvanUlft)
 - Externalise sqlite_utils to grib2sqlite. [\#949] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/949) (@adeckmyn)

@@ -24,6 +24,7 @@
   # General dependencies
   dateutils = "^0.6.12"
   dicttoxml = "^1.0.0"
+  eccodes = "^2.39"
   f90nml = "^1.4.3"
   fastjsonschema = "2.18.1"
   grib2sqlite = {git = "https://github.com/destination-earth-digital-twins/grib2sqlite", tag = "v0.2.0"}

@@ -52,7 +52,7 @@
   output = "tirf"
 
 [gribmodify.2]
-  input = ["csfr", "lssfr"]
+  input = ["csfwe", "lsfwe"]
   operator = "add"
   output = "tsnowp"
 

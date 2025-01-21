@@ -25,6 +25,9 @@
   FDB5_HOME = "/usr/local/apps/mars/versions/6.33.19.9/"
   FDB_HOME = "/home/fdbdev/destine/"
 
+[submission.task_exceptions.ArchiveHour.MODULES]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.11.0.0"]
+
 [submission.task_exceptions.ArchiveStatic.BATCH]
   WALLTIME = "#SBATCH --time=03:00:00"
 
