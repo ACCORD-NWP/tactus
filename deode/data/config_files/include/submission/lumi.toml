@@ -71,6 +71,7 @@
   WALLTIME = "#SBATCH --time=00:30:00"
 
 [submission.task_exceptions.Marsprep.ENV]
+  MARS_READANY_BUFFER_SIZE = 17893020000
   PATH = "$PATH:/appl/local/climatedt/mars/versions/current/bin:/appl/local/climatedt/bin"
 
 [submission.task_exceptions.Pgd.BATCH]

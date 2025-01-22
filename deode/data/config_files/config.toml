@@ -29,7 +29,7 @@
   bdshift = "PT0H"
   humi_gp = true
   ifs.selection = "@HOST@_DT"
-  ifs.bdmember = []
+  ifs.bdmember = ""
   max_interpolation_tasks = 10
 
 [fullpos]
@@ -111,7 +111,7 @@
   casedir = "@SCRATCH@/deode/@CASE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@/"
   logs = "@ARCHIVE_ROOT@/logs"
-  marsdir = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
+  marsdir = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"
 
 [task.CreateGrib]

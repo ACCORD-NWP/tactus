@@ -70,7 +70,7 @@ def task_name_and_configs(request, base_raw_config, tmp_path_factory):
             joboutdir = "foo"
             tarname= "foo"
             task_logs = "foo"
-            bd_index = 1
+            bd_nr = 1
             bd_time = "{basetime}"
             basetime = "{basetime}"
             ionr = 0

@@ -36,7 +36,7 @@
   latlon_method = "retrieve"
   SH = "152/138/155/130"
   SHZ = "129"
-  SHZ_type = "AN"
+  SHZ_type = "analysis"
   SHZdate = "20131129"
   start_date = "2015-05-13T00:00:00Z"
   tco = "255"
@@ -106,7 +106,7 @@
   levelist = "1/to/137"
   SH = "152/138/155/130"
   SHZ = "129.128"
-  SHZ_type = "CF"
+  SHZ_type = "analysis"
   start_date = "1900-01-01T00:00:00Z"
   stream = "ENFO"
   type_AN = "CF"
@@ -125,9 +125,7 @@
   default = "RD_DEFAULT"
   end_date = "2024-07-09T00:00:00Z"
   expver = "iit7"
-  GGZ_type = "CF"
   ifs_cycle_start = "PT0H"
-  SHZ_type = "CF"
   start_date = "2024-07-09T00:00:00Z"
   stream = "ENFO"
   type_AN = "CF"
@@ -137,9 +135,9 @@
   class = "D1"
   default = "RD_DEFAULT"
   expver = "0001"
-  GGZ_type = "AN"
+  GGZ_type = "analysis"
   latlon_method = "read"
-  SHZ_type = "AN"
+  SHZ_type = "analysis"
   SHZclass = "OD"
   SHZdate = "20131129"
   start_date = "2024-04-06T00:00:00Z"
@@ -150,26 +148,15 @@
   class = "RD"
   GG = "32/33/39/40/41/42/139/141/170/172/183/198/235/236/35/36/37/38/238/243/244/245"
   GG_sea = "31/34"
-  GGZ_type = "FC"
+  GGZ_type = "forecast"
   grid = "0.04/0.04"
   grid_ML = "AV"
   ifs_cycle_length = "PT24H"
   latlon_method = "retrieve"
   levelist = "1/to/137"
-  sfc_high_res_params = ["sdfor", "sfc", "cvh"]
-  sfc_low_res_params = [
-    "month_aluvp",
-    "month_aluvd",
-    "month_alnip",
-    "month_alnid",
-    "month_lail",
-    "month_laih",
-    "ISSOIL",
-    "month_alb",
-  ]
   SH = "152/138/155/130"
   SHZ = "129"
-  SHZ_type = "FC"
+  SHZ_type = "forecast"
   SHZdate = "20131129"
   start_date = "1900-01-01T00:00:00Z"
   stream = "OPER"

@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 """Unit tests for the marsprep."""
 
-from unittest.mock import mock_open, patch
-
 import pytest
 import tomlkit
 
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import derived_variables, set_times
-from deode.mars_utils import BaseRequest, get_value_from_dict
+from deode.geo_utils import Projection, Projstring
 from deode.tasks.marsprep import Marsprep
 
 
@@ -23,6 +21,44 @@ def base_parsed_config():
     config = config.copy(update=derived_variables(config))
 
     return config
+
+
+def get_domain_data(config):
+    """Read and return domain data.
+
+    Args:
+         config: config method
+
+    Returns:
+         String containing the domain info for MARS
+    """
+    # Get domain specs
+    domain_spec = {
+        "nlon": config["domain.nimax"],
+        "nlat": config["domain.njmax"],
+        "latc": config["domain.xlatcen"],
+        "lonc": config["domain.xloncen"],
+        "lat0": config["domain.xlat0"],
+        "lon0": config["domain.xlon0"],
+        "gsize": config["domain.xdx"],
+    }
+
+    # Get domain properties
+    projstring = Projstring()
+    projection = Projection(
+        projstring.get_projstring(lon0=domain_spec["lon0"], lat0=domain_spec["lat0"])
+    )
+    domain_properties = projection.get_domain_properties(domain_spec)
+    fdomainstr = "/".join(
+        [
+            str(domain_properties["maxlat"]),
+            str(domain_properties["minlon"]),
+            str(domain_properties["minlat"]),
+            str(domain_properties["maxlon"]),
+        ]
+    )
+
+    return fdomainstr
 
 
 @pytest.fixture(params=["HRES", "ATOS_DT"], scope="module")
@@ -42,93 +78,342 @@ def parsed_config(request, base_parsed_config, tmp_path_factory):
     return config
 
 
-@pytest.fixture()
-def marsprep_instance(parsed_config):
-    """Create a Marsprep instance using the parsed config."""
-    instance = Marsprep(parsed_config)
-    return instance
+def test_update_data_request(parsed_config):
+    """Test update data request."""
+    config = parsed_config
+    marsprep = Marsprep(config)
+    mars = marsprep.mars
 
+    dateframe = marsprep.split_date(
+        marsprep.basetime,
+        int(marsprep.forecast_range.total_seconds() // 3600),
+        marsprep.bdint,
+    )
+    date_str = dateframe.iloc[0].strftime("%Y%m%d")
+    hour_str = dateframe.iloc[0].strftime("%H")
 
-def test_mars_selection(marsprep_instance):
-    """Test the mars_selection method with the parsed config."""
-    selection = marsprep_instance.mars_selection()
-
-    assert "expver" in selection
-
-
-def test_update_data_request(marsprep_instance):
-    """Test the update_data_request method with the parsed config."""
-    param = (
-        get_value_from_dict(marsprep_instance.mars["GG"], marsprep_instance.init_date_str)
-        + "/"
-        + get_value_from_dict(
-            marsprep_instance.mars["GG_sea"], marsprep_instance.init_date_str
+    step = int(marsprep.bdint.total_seconds() // 3600)
+    str_steps = [
+        "{0:02d}".format(
+            dateframe.index.tolist()[0]
+            + (i * step)
+            + marsprep.basetime.hour % marsprep.int_bdcycle
         )
-    )
-    base_request = BaseRequest(
-        class_=marsprep_instance.mars["class"],
-        data_type=marsprep_instance.mars["type_FC"],
-        expver=marsprep_instance.mars["expver"],
-        levtype="SFC",
-        date=marsprep_instance.init_date_str,
-        time=marsprep_instance.init_hour_str,
-        steps="0/1/2",
-        param=param,
-        target='"test+[STEP]"',
-    )
-
-    marsprep_instance.update_data_request(
-        base_request,
+        for i in range(len(dateframe.index.tolist()))
+    ]
+    truth_levelist = marsprep.check_value(mars["levelist"], date_str)
+    area_truth = get_domain_data(config)
+    grid_truth = marsprep.check_value(mars["grid"], date_str)
+    truth_stream = "SCDA" if hour_str in {"06", "18"} else "OPER"
+    truth_class = mars["class"]
+    req_truth = {
+        "CLASS": truth_class,
+        "EXPVER": mars["expver"],
+        "LEVTYPE": "SFC",
+        "STREAM": truth_stream,
+        "DATE": date_str,
+        "TIME": hour_str,
+        "STEP": str_steps,
+        "PARAM": mars["GG"],
+        "TYPE": "FC",
+        "TARGET": '"ICMGG+[STEP]"',
+        "PROCESS": "LOCAL",
+    }
+    param = marsprep.mars["GG"]
+    req = marsprep.update_data_request(
+        data_type="forecast",
+        date=date_str,
+        time=hour_str,
+        steps=str_steps,
         prefetch=True,
-        specify_domain=False,
-        members=["1", "2"],
-    )
-
-    assert "NUMBER" in base_request.request
-    assert base_request.request["NUMBER"] == ["1/2"]
-    assert "STREAM" in base_request.request
-    assert base_request.request["TARGET"] == ['"test_[NUMBER]+[STEP]"']
-
-    param = get_value_from_dict(
-        marsprep_instance.mars["SHZ"], marsprep_instance.init_date_str
-    )
-    request_shz = BaseRequest(
-        class_=marsprep_instance.mars["class"],
-        data_type=marsprep_instance.mars["GGZ_type"],
-        expver=marsprep_instance.mars["expver"],
-        levtype="ML",
-        date=marsprep_instance.init_date_str,
-        time=marsprep_instance.init_hour_str,
-        steps="00",
+        levtype="SFC",
         param=param,
-        target="mars_latlonZ",
+        specify_domain=False,
+        target='"ICMGG+[STEP]"',
     )
-    marsprep_instance.update_data_request(
-        request_shz, prefetch=False, members=[], specify_domain=True, source="test_source"
+    req_dic = {}
+    for col in req.columns:
+        for _index, row in req.iterrows():
+            req_dic[str(col)] = row[col]
+    assert req_dic == req_truth
+
+    req_truth = {
+        "CLASS": truth_class,
+        "EXPVER": mars["expver"],
+        "LEVTYPE": "SFC",
+        "STREAM": truth_stream,
+        "DATE": date_str,
+        "TIME": hour_str,
+        "STEP": "00",
+        "PARAM": mars["GG_sea"],
+        "TYPE": "FC",
+        "TARGET": "ICMGG.sea",
+        "PROCESS": "LOCAL",
+    }
+
+    param = marsprep.mars["GG_sea"]
+    req = marsprep.update_data_request(
+        data_type="forecast",
+        date=date_str,
+        time=hour_str,
+        steps="00",
+        prefetch=True,
+        levtype="SFC",
+        param=param,
+        specify_domain=False,
+        target="ICMGG.sea",
     )
-    assert "NUMBER" not in request_shz.request
-    assert request_shz.request["SOURCE"] == ["test_source"]
-    assert "GRID" in request_shz.request
-    assert "AREA" in request_shz.request
 
+    req_dic = {}
+    for col in req.columns:
+        for _index, row in req.iterrows():
+            req_dic[str(col)] = row[col]
+    assert req_dic == req_truth
 
-@patch("builtins.open", new_callable=mock_open, read_data=b"mocked binary data")
-@patch("os.remove")  # Mock os.remove to prevent actual file deletion
-def test_add_additional_data(mock_remove, mock_open, marsprep_instance):
-    """Test the add_additional_data method."""
-    marsprep_instance.additional_data = {}
+    if mars["expver"] == "0001":
+        req_truth = {
+            "CLASS": truth_class,
+            "EXPVER": mars["expver"],
+            "LEVTYPE": "SFC",
+            "STREAM": truth_stream,
+            "DATE": date_str,
+            "TIME": hour_str,
+            "STEP": "00",
+            "PARAM": mars["GG_soil"],
+            "TYPE": "AN",
+            "TARGET": "ICMGG.soil",
+            "PROCESS": "LOCAL",
+        }
 
-    # Run the method that should read the file and add the data to the dictionary
-    marsprep_instance.add_additional_data("test_file", "001")
+        param1 = marsprep.mars["GG_soil"]
+        param2 = marsprep.mars["GG1"]
 
-    # Assert that the correct data has been added
-    assert "001" in marsprep_instance.additional_data
-    assert (
-        marsprep_instance.additional_data["001"] == b"mocked binary data"
-    )  # Ensure the binary data was added correctly
+        req = marsprep.update_data_request(
+            data_type="analysis",
+            date=date_str,
+            time=hour_str,
+            steps="00",
+            prefetch=True,
+            levtype="SFC",
+            param=param1,
+            specify_domain=False,
+            target="ICMGG.soil",
+        )
+        req_dic = {}
+        for col in req.columns:
+            for _index, row in req.iterrows():
+                req_dic[str(col)] = row[col]
+        assert req_dic == req_truth
 
-    # Check that open was called with the correct arguments
-    mock_open.assert_called_with("test_file", "rb")
+        req_truth = {
+            "CLASS": truth_class,
+            "EXPVER": mars["expver"],
+            "LEVTYPE": "SFC",
+            "STREAM": truth_stream,
+            "DATE": date_str,
+            "TIME": hour_str,
+            "STEP": "00",
+            "PARAM": mars["GG1"],
+            "TYPE": "AN",
+            "TARGET": "ICMGG",
+            "GRID": "O640",
+            "PROCESS": "LOCAL",
+        }
 
-    # Ensure that os.remove was called to remove the file
-    mock_remove.assert_called_with("test_file")
+        req = marsprep.update_data_request(
+            data_type="analysis",
+            date=date_str,
+            time=hour_str,
+            steps="00",
+            prefetch=True,
+            levtype="SFC",
+            param=param2,
+            grid=marsprep.check_value(mars["grid_GG1"], date_str),
+            specify_domain=False,
+            target="ICMGG",
+        )
+        req_dic = {}
+        for col in req.columns:
+            for _index, row in req.iterrows():
+                req_dic[str(col)] = row[col]
+        assert req_dic == req_truth
+
+    req_truth = {
+        "CLASS": truth_class,
+        "EXPVER": mars["expver"],
+        "LEVTYPE": "ML",
+        "LEVELIST": truth_levelist,
+        "STREAM": truth_stream,
+        "DATE": date_str,
+        "TIME": hour_str,
+        "STEP": str_steps,
+        "PARAM": mars["SH"],
+        "TYPE": "FC",
+        "TARGET": '"ICMSH+[STEP]"',
+        "GRID": "AV",
+        "PROCESS": "LOCAL",
+    }
+
+    param = marsprep.mars["SH"]
+    req = marsprep.update_data_request(
+        data_type="forecast",
+        date=date_str,
+        time=hour_str,
+        steps=str_steps,
+        prefetch=True,
+        levtype="ML",
+        param=param,
+        grid=marsprep.check_value(mars["grid_ML"], date_str),
+        specify_domain=False,
+        target='"ICMSH+[STEP]"',
+    )
+    req_dic = {}
+    for col in req.columns:
+        for _index, row in req.iterrows():
+            req_dic[str(col)] = row[col]
+    assert req_dic == req_truth
+
+    req_truth = {
+        "CLASS": truth_class,
+        "EXPVER": mars["expver"],
+        "LEVTYPE": "ML",
+        "LEVELIST": 1,
+        "STREAM": truth_stream,
+        "DATE": date_str,
+        "TIME": hour_str,
+        "STEP": "00",
+        "PARAM": mars["SHZ"],
+        "TYPE": "AN" if mars["expver"] == "0001" else "FC",
+        "TARGET": "ICMSH.Z",
+        "GRID": "AV",
+        "PROCESS": "LOCAL",
+    }
+    param = marsprep.mars["SHZ"]
+    d_type = marsprep.mars["SHZ_type"]
+    req = marsprep.update_data_request(
+        data_type=d_type,
+        date=date_str,
+        time=hour_str,
+        steps="00",
+        prefetch=True,
+        levtype="ML",
+        grid=marsprep.check_value(mars["grid_ML"], date_str),
+        param=param,
+        specify_domain=False,
+        target="ICMSH.Z",
+    )
+    req_dic = {}
+    for col in req.columns:
+        for _index, row in req.iterrows():
+            req_dic[str(col)] = row[col]
+    assert req_dic == req_truth
+
+    req_truth = {
+        "CLASS": truth_class,
+        "EXPVER": mars["expver"],
+        "LEVTYPE": "ML",
+        "LEVELIST": truth_levelist,
+        "STREAM": truth_stream,
+        "DATE": date_str,
+        "TIME": hour_str,
+        "STEP": str_steps,
+        "PARAM": mars["UA"],
+        "TYPE": "FC",
+        "TARGET": '"ICMUA+[STEP]"',
+        "GRID": "AV",
+        "PROCESS": "LOCAL",
+    }
+    param = marsprep.mars["UA"]
+    req = marsprep.update_data_request(
+        data_type="forecast",
+        date=date_str,
+        time=hour_str,
+        steps=str_steps,
+        prefetch=True,
+        levtype="ML",
+        param=param,
+        grid=marsprep.check_value(mars["grid_ML"], date_str),
+        specify_domain=False,
+        target='"ICMUA+[STEP]"',
+    )
+    req_dic = {}
+    for col in req.columns:
+        for _index, row in req.iterrows():
+            req_dic[str(col)] = row[col]
+    assert req_dic == req_truth
+
+    template = marsprep.template
+    str_step = "{}".format(str_steps[0])
+
+    req_truth = {
+        "CLASS": truth_class,
+        "EXPVER": mars["expver"],
+        "LEVTYPE": "SFC",
+        "STREAM": truth_stream,
+        "DATE": date_str,
+        "TIME": hour_str,
+        "STEP": str_step,
+        "PARAM": mars["GG"],
+        "TYPE": "FC",
+        "TARGET": '"{}"'.format(template),
+        "GRID": grid_truth,
+        "AREA": area_truth,
+        "PROCESS": "LOCAL",
+    }
+
+    param = marsprep.mars["GG"]
+    req = marsprep.update_data_request(
+        data_type="forecast",
+        date=date_str,
+        time=hour_str,
+        steps=str_step,
+        prefetch=True,
+        levtype="SFC",
+        param=param,
+        specify_domain=True,
+        target='"{}"'.format(template),
+    )
+    req_dic = {}
+    for col in req.columns:
+        for _index, row in req.iterrows():
+            req_dic[str(col)] = row[col]
+    assert req_dic == req_truth
+
+    req_truth = {
+        "CLASS": truth_class,
+        "EXPVER": mars["expver"],
+        "LEVTYPE": "ML",
+        "STREAM": truth_stream,
+        "DATE": date_str,
+        "TIME": hour_str,
+        "STEP": "00",
+        "LEVELIST": 1,
+        "PARAM": mars["SHZ"],
+        "TYPE": "AN" if mars["expver"] == "0001" else "FC",
+        "TARGET": '"{}"'.format(template + ".Z"),
+        "GRID": grid_truth,
+        "AREA": area_truth,
+        "PROCESS": "LOCAL",
+    }
+
+    param = marsprep.mars["SHZ"]
+    d_type = marsprep.mars["SHZ_type"]
+    req = marsprep.update_data_request(
+        data_type=d_type,
+        date=date_str,
+        time=hour_str,
+        steps="00",
+        prefetch=True,
+        levtype="ML",
+        param=param,
+        specify_domain=True,
+        target='"{}"'.format(template + ".Z"),
+    )
+
+    for col in req.columns:
+        for _index, row in req.iterrows():
+            req_dic[str(col)] = row[col]
+    assert req_dic == req_truth
+
+    if __name__ == "__main__":
+        pytest.main()

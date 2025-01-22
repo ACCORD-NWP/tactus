@@ -36,7 +36,7 @@ class E927(Task):
         )
 
         self.intp_bddir = self.config["system.intp_bddir"]
-        self.bd_index = config["task.args.bd_index"]
+        self.bdnr = config["task.args.bd_nr"]
         self.bd_time = config["task.args.bd_time"]
         self.bddir = self.config["system.bddir"]
         self.bdfile_template = self.config["system.bdfile_template"]
@@ -45,7 +45,7 @@ class E927(Task):
         self.nlgen = NamelistGenerator(self.config, "master")
         self.master = self.get_binary("MASTERODB")
 
-        self.name = f"{self.name}_{self.bd_index}"
+        self.name = f"{self.name}_{self.bdnr}"
 
     def execute(self):
         """Run task.
@@ -66,7 +66,7 @@ class E927(Task):
         self.nlgen.generate_namelist("e927", "fort.4")
 
         # Input file
-        bd_index = int(self.bd_index)
+        bdnr = int(self.bdnr)
         initfile = f"ICMSH{self.cnmexp}INIT"
         self.fmanager.input(
             f"{self.bddir}/{self.bdfile_template}",
@@ -78,6 +78,6 @@ class E927(Task):
         batch = BatchJob(os.environ, wrapper=self.wrapper)
         batch.run(self.master)
 
-        target = f"{self.intp_bddir}/ELSCF{self.cnmexp}ALBC{bd_index:03d}"
+        target = f"{self.intp_bddir}/ELSCF{self.cnmexp}ALBC{bdnr:03d}"
         self.fmanager.output(f"PF{self.cnmexp}000+0000", target)
         self.archive_logs("NODE.001_01")

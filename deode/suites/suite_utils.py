@@ -159,34 +159,34 @@ def bd_generator(
 
     # we don't need LBC000 if this is not first cycle or mode != cold_start
     if mode == "restart" or (mode == "start" and not do_prep):
-        bd_step_index = inthourbdint
-        bd_index = 1
-        subbd_step_index = intminbdint if (intminbdint or intsecbdint) else None
-        subminbd_step_index = intsecbdint if intsecbdint else None
+        bdnr = inthourbdint
+        bd_nr = 1
+        subbdnr = intminbdint if (intminbdint or intsecbdint) else None
+        subminbdnr = intsecbdint if intsecbdint else None
     else:
-        bd_step_index = 0
-        bd_index = 0
-        subbd_step_index = 0 if (intminbdint or intsecbdint) else None
-        subminbd_step_index = 0 if intsecbdint else None
+        bdnr = 0
+        bd_nr = 0
+        subbdnr = 0 if (intminbdint or intsecbdint) else None
+        subminbdnr = 0 if intsecbdint else None
 
     while True:
         yield (
-            bd_step_index,
-            subbd_step_index,
-            subminbd_step_index,
-            bd_index,
+            bdnr,
+            subbdnr,
+            subminbdnr,
+            bd_nr,
         )
 
-        if subbd_step_index is not None:
-            subbd_step_index += intminbdint
-            if subminbd_step_index is not None:
-                subminbd_step_index += intsecbdint
-                if subminbd_step_index >= 60:
-                    subbd_step_index += 1
-                    subminbd_step_index -= 60
-            if subbd_step_index >= 60:
-                bd_step_index += 1
-                subbd_step_index -= 60
+        if subbdnr is not None:
+            subbdnr += intminbdint
+            if subminbdnr is not None:
+                subminbdnr += intsecbdint
+                if subminbdnr >= 60:
+                    subbdnr += 1
+                    subminbdnr -= 60
+            if subbdnr >= 60:
+                bdnr += 1
+                subbdnr -= 60
 
-        bd_step_index += inthourbdint
-        bd_index += 1
+        bdnr += inthourbdint
+        bd_nr += 1
