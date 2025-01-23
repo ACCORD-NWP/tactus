@@ -18,6 +18,9 @@
 [submission.task]
   wrapper = ""
 
+[submission.task_exceptions.AddCalculatedFields.MODULES]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.11.0.0"]
+
 [submission.task_exceptions.ArchiveHour.BATCH]
   WALLTIME = "#SBATCH --time=03:00:00"
 
