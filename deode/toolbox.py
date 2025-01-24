@@ -1130,16 +1130,18 @@ class FDB(ArchiveProvider):
             """
             logger.error(msg)
             raise RuntimeError(msg)
+
         if self.fetch:
             logger.warning("FDB not yet implemented for {}", resource)
         else:
             logger.info("Archiving {} with pyfdb", resource.identifier)
+            filename = os.path.basename(resource.identifier)
 
             # Create rules-file, temp files to replace $2 and temp.grib
-            temp1 = "temp1.grib"
-            temp2 = "temp2.grib"
+            temp1 = f"{filename}_temp1.grib"
+            temp2 = f"{filename}_temp2.grib"
             rules_file = "temp_rules"
-            self._write_rules_file(rules_file, rules)
+            self._write_rules_file(rules_file, rules, neg="!")
             os.system(
                 f"grib_filter {rules_file} {resource.identifier} -o {temp1}"  # noqa S605
             )
@@ -1150,23 +1152,35 @@ class FDB(ArchiveProvider):
             with open(temp2, "rb") as infile:
                 self.fdb.archive(infile.read())
             self.fdb.flush()
-            os.remove(temp1)
-            os.remove(temp2)
-            os.remove(rules_file)
+
+            create_inv = self.config.get("fdb.create_filter_inverse", False)
+            if create_inv:
+                # Create example files for parameters not archived
+                inv_temp1 = f"{filename}_temp1_inv.grib"
+                inv_rules_file = "inv_temp_rules"
+                self._write_rules_file(inv_rules_file, rules, oper=" || ")
+                os.system(
+                    f"grib_filter {inv_rules_file} {resource.identifier} -o {inv_temp1}"  # noqa S605
+                )
+                if os.path.isfile(inv_temp1):
+                    logger.info("Created file with non archived fields as {}", inv_temp1)
+            else:
+                os.remove(temp1)
+                os.remove(temp2)
+                os.remove(rules_file)
 
         return True
 
-    def _write_rules_file(self, filename, rules):
+    def _write_rules_file(self, filename, rules, neg="", oper=" && "):
+        x = [
+            f'{neg}({name} is "{value}")'
+            for name, values in rules.items()
+            for value in values
+        ]
+        rule = "if (" + oper.join(x) + ") { append; }\n"
         with open(filename, "w") as outfile:
             outfile.write("set edition = 2;\n")
-            for name, values in rules.items():
-                if len(values) == 1:
-                    outfile.write(f'if (!({name} is "{values}")) ' + "{ append; }\n")
-                else:
-                    outfile.write("if (")
-                    for value in values[:-1]:
-                        outfile.write(f'!({name} is "{value}") && ')
-                    outfile.write(f'!({name} is "{values[-1]}"))' + "{ append; }\n")
+            outfile.write(rule)
 
 
 class Resource:
