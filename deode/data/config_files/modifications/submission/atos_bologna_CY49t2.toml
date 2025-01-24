@@ -2,7 +2,7 @@
   accept_static_namelists = true
 
 [platform]
-  rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef"
+  rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov13/coef"
 
 [submission]
   bindir = "/perm/deployde330/github-actions/install/cy49t2/latest/bin"
