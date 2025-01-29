@@ -146,10 +146,12 @@ namgfl_AROME:
     YS_NL%NCOUPLING: 1
     YS_NL%NREQIN: 1
     YTKE_NL%NREQIN: 1
+
 f4_atos_bologna:
   NAMGEM: {}
   NAMRIP:
     RAVGTIME: 3600.0
+
 f4_AROME:
   NAERAD:
     LRRTM: true
@@ -269,7 +271,7 @@ f4_AROME:
     LQMVD: false
     LRHDI_LASTITERPC: true
     NITMP: 4
-    NSITER: 2
+    NSITER: 1
     NSPDLAG: 3
     NSVDLAG: 3
     NTLAG: 3
@@ -278,7 +280,7 @@ f4_AROME:
     RDAMPDIV: 20.0
     RDAMPPD: 20.0
     RDAMPQ: 0.0
-    RDAMPT: 0.0
+    RDAMPT: 20.0
     RDAMPVD: 20.0
     RDAMPVOR: 20.0
     REPS1: 0.0
@@ -287,9 +289,9 @@ f4_AROME:
     REPSM2: 0.0
     REPSP1: 0.0
     SDRED: 1.0
-    SIPR: 60000.0
+    SIPR: 90000.0
     SITR: 350.0
-    SITRA: 50.0
+    SITRA: 100.0
     SLHDA0: 0.25
     SLHDD00: 6.5e-05
     VESL: 0.05
