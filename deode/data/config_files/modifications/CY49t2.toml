@@ -1,2 +1,3 @@
 [general]
+  accept_static_namelists = true
   cycle = "CY49t2"
