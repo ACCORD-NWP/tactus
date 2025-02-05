@@ -8,6 +8,7 @@ import re
 import sys
 from typing import Any, Union
 
+import geohash_hilbert
 from troika.connections.ssh import SSHConnection
 
 from .datetime_utils import as_datetime, get_decade, oi2dt_list
@@ -1130,7 +1131,7 @@ class FDB(ArchiveProvider):
             """
             logger.error(msg)
             raise RuntimeError(msg)
-
+        grib_set["georef"] = compute_georef(self.config["domain"])
         if self.fetch:
             logger.warning("FDB not yet implemented for {}", resource)
         else:
@@ -1181,6 +1182,14 @@ class FDB(ArchiveProvider):
         with open(filename, "w") as outfile:
             outfile.write("set edition = 2;\n")
             outfile.write(rule)
+
+
+def compute_georef(domain_config):
+    """Computes georef from domain_config."""
+    lat_center = domain_config["xlatcen"]
+    lon_center = domain_config["xloncen"]
+
+    return geohash_hilbert.encode(lng=lon_center, lat=lat_center, precision=6)
 
 
 class Resource:

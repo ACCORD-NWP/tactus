@@ -27,6 +27,7 @@
   eccodes = "^2.39"
   f90nml = "^1.4.3"
   fastjsonschema = "2.18.1"
+  geohash-hilbert = "^2.0.0"
   grib2sqlite = {git = "https://github.com/destination-earth-digital-twins/grib2sqlite", tag = "v0.2.0"}
   humanize = "^4.8.0"
   json-schema-for-humans = {git = "https://github.com/paulovcmedeiros/json-schema-for-humans.git", branch = "feature/choose-properties-table-columns"}

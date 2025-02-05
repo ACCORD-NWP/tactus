@@ -113,3 +113,7 @@ fdb wipe class=d1,dataset=on-demand-extremes-dt,expver=JoLa,stream=oper,date=202
 ```{note}
 This is a bit buggy on LUMI as the as the archive.lock file created while clearing the fdb-directory is not removed and as such you can not archive again into the same folder (defined by the combination class,dataset,expver,stream,date,time) without removing this archive.lock file.
 ```
+
+
+## Notes about georef
+We are using a [geohashing algorithm](https://github.com/tammoippen/geohash-hilbert) with Base64 string-representation of the hash, and a Hilbert space-filling curves instead of Z-order space-filling curves
