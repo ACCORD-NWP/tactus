@@ -1,34 +1,12 @@
+# Do the selection of fields below.
 selection:
-  xxtddddhh00:
-    NAMFPPHY: &id001
-      CLCFU:
-      - SURFRAYT SOL CL
-      - SURFRAYT THER CL
-      - SURFDIR NORM IRR
-      - SURFRAYT DIR SUR
-  xxtddddhhmm:
-    NAMFPPHY: *id001
-empty:
-  NAMCLRADLID: {}
-  NAMDWET: {}
-  NAMDYNA_STATIC: {}
-  NAMECV: {}
-  NAMECVDESC: {}
-  NAMECVGRB: {}
-  NAMJBALPHACV: {}
-  NAMJBECPHYSECV: {}
-  NAMJBSKTECV: {}
-  NAMMODERRCONF: {}
-  NAMMODERRCOV: {}
-  NAMMODERRINCRCONF: {}
-  NAMMODERRMOD: {}
-  NAMNRTAER: {}
-  NAMPARECV: {}
-  NAMPERTOBS: {}
-  NAMRSTRHBIAS: {}
-  NAM_NEBN: {}
-  NAM_PARAM_ICEN: {}
-  NAM_PARAM_MFSHALLN: {}
-  NAM_SPP_ACTIVE: {}
-  NAM_SPP_MODIF: {}
-  NAM_TURBN: {}
+ xxtddddhhmm: &default
+  NAMFPPHY:
+   CLCFU:
+    - 'SURFRAYT SOL CL'
+    - 'SURFRAYT THER CL'
+    - 'SURFDIR NORM IRR'
+    - 'SURFRAYT DIR SUR'
+
+ xxtddddhh00:
+   <<: *default
