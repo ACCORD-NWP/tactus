@@ -1577,6 +1577,10 @@ f4_c903_main:
     LELAIV: false
     LEPHYS: true
     LERADI: false
+    LEC4MAP: false
+    LWETONLINE: false
+    NSNMLWS: 0
+    LESNML: false
   NAERAD:
     LRRTM: false
     LSRTM: false

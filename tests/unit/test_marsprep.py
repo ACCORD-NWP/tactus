@@ -61,7 +61,7 @@ def get_domain_data(config):
     return fdomainstr
 
 
-@pytest.fixture(params=["HRES", "ATOS_DT"], scope="module")
+@pytest.fixture(params=["HRES", "atos_bologna_DT"], scope="module")
 def parsed_config(request, base_parsed_config, tmp_path_factory):
     """Return a parsed config common to tasks."""
     config_patch = tomlkit.parse(
