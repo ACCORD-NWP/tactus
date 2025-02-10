@@ -503,9 +503,8 @@ class NamelistGenerator:
         # also replace all macro's ("@XXX@")
         cnlist = [self.platform.substitute(x) for x in flatten_cn(self.cndict[target])]
 
-        # merge all the partial namelists
-        logger.debug("MERGING NLDICT")
-        logger.debug("assembly list {}", cnlist)
+        # Merge all the partial namelists
+        logger.info("Namelist assembly sections {}", cnlist)
         nl_merged = OmegaConf.to_container(
             OmegaConf.merge(*[nldict[i] for i in cnlist if i in nldict]),
             resolve=self.substitute,

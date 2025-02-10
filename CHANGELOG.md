@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Detach selection of orography filtering method from CSC. [\#960](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/960)(@uandrae)
 - Namelist changes for c903 CY49t2, retrieve snow parameters on SOIL levels from mars.[\#978](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/978)(@kastelecn)
 - Add large domain submission rules for CY49 on atos_bologna [#945](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/945) (@uandrae)
 - Add synthetic satellite fields for cy49t2 [#954](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/954) (@FlorianW-ZAMG)
@@ -32,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add pandas 2.0 compatible versions to allowed dependencies. [\#942](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/942) (@observingClouds)
 
 ### Fixed
+- Correct orography truncation for linear grid. [\#960](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/960)(@uandrae)
 - Correct merge of fullpos selection [\#941](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/941)(@uandrae)
 - Load ecmwf-toolbox/2024.11.0.0 for AddCalculateFields [\#958](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/958)(@KristianHMoller)
 - Semi-functional settings for running DW on LUMI (GMK binary, Cray 16).[\#947](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/947)(@kastelecn)

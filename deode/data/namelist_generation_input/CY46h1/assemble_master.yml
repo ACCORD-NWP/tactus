@@ -5,6 +5,7 @@ common_e923:
 e923_part_0:
   - ${common_e923}
   - e923_0
+  - e923_0_@OROGRAPHIC_SMOOTHING_METHOD@
 
 e923_part_1:
   - ${common_e923}

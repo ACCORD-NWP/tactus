@@ -1,10 +1,24 @@
 e923_0:
   NAMCLA:
     LIPGD: true
+    NLISSP: 0
+
+e923_0_truncation:
+  NAMCLA:
+    LNEWORO: true
+  NAMDIM:
+    NMSMAX: ${cfg:domain.nmsmax_oro}
+    NSMAX: ${cfg:domain.nsmax_oro}
+
+e923_0_spectral:
+  NAMCLA:
     LNEWORO: false
     LSPSMORO: ${cfg:domain.lspsmoro}
-    NLISSP: 0
-e923_1: {}
+
+e923_1:
+  NAMMCC:
+    N923: 1
+
 e923_2:
   NAMMCC:
     N923: 2

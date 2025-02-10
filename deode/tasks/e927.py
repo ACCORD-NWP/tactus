@@ -80,4 +80,4 @@ class E927(Task):
 
         target = f"{self.intp_bddir}/ELSCF{self.cnmexp}ALBC{bdnr:03d}"
         self.fmanager.output(f"PF{self.cnmexp}000+0000", target)
-        self.archive_logs("NODE.001_01")
+        self.archive_logs(["fort.4", "NODE.001_01"])

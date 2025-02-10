@@ -2,6 +2,9 @@
   csc = "HARMONIE_AROME"
   windfarm = false
 
+[domain]
+  orographic_smoothing_method = "spectral"
+
 [fdb.grib_set]
   backgroundProcess = "5"
 

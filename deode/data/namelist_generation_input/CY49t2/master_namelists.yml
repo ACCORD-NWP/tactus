@@ -1,21 +1,35 @@
 e923_0:
   NAMCLA:
     LIPGD: true
-    LNEWORO: true
     NLISSP: 0
   NAMCLI:
     RSTR: 5.0
   NAMMCC:
     N923: 1
 
-e923_0_HARMONIE_AROME:
+e923_0_truncation:
+  NAMCLA:
+    LNEWORO: true
+  NAMDIM:
+    NMSMAX: ${cfg:domain.nmsmax_oro}
+    NSMAX: ${cfg:domain.nsmax_oro}
+
+e923_0_spectral:
   NAMCLA:
     LNEWORO: false
     LSPSMORO: ${cfg:domain.lspsmoro}
 
+e923_0_HARMONIE_AROME:
+  NAMCLA:
+    NLISSZ: 3
+
 e923_1:
   NAMMCC:
     N923: 1
+
+e923_1_HARMONIE_AROME:
+  NAMCLA:
+    NLISSZ: 3
 
 e923_2:
   NAMMCC:
@@ -41,6 +55,7 @@ e923_6_HARMONIE_AROME:
   NAMCLI:
     NDATX: 360
     NDATY: 180
+    RSTR: 0.0
 
 e923_8:
   NAMMCC:
@@ -59,7 +74,8 @@ e923_9_HARMONIE_AROME:
 e923_base_HARMONIE_AROME:
   NAMCLA:
     FACZ0: 0.53
-    LNEWORO: true
+  NAMCLI:
+    LZ0THER: true
 
 e923_base:
   NAERAD:
