@@ -20,7 +20,7 @@
 
 [general.times]
   forecast_range = "PT6H"
-  start = "2024-09-16T00:00:00Z"
+  start = "2025-02-09T00:00:00Z"
 
 [boundaries]
   bd_has_surfex = false
@@ -37,12 +37,7 @@
   domain_name = "DOMAIN"
 
 [fullpos.selection]
-  master = [
-    "master_selection_@CSC@",
-    "master_subhour_selection_@CSC@",
-    "avg_wind",
-    "meteosat",
-  ]
+  master = ["master_selection_@CSC@", "master_subhour_selection_@CSC@", "meteosat"]
 
 [gribmodify]
 
@@ -52,7 +47,7 @@
   output = "tirf"
 
 [gribmodify.2]
-  input = ["csfr", "lssfr"]
+  input = ["csfwe", "lsfwe"]
   operator = "add"
   output = "tsnowp"
 

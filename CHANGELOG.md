@@ -11,13 +11,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Add Harmonie-Arome configurations and update namelist creation for cy49t2 [\#969](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/969) (@romick-knmi)
+- Detach selection of orography filtering method from CSC. [\#960](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/960)(@uandrae)
+- Namelist changes for c903 CY49t2, retrieve snow parameters on SOIL levels from mars.[\#978](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/978)(@kastelecn)
+- Add large domain submission rules for CY49 on atos_bologna [#945](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/945) (@uandrae)
+- Add synthetic satellite fields for cy49t2 [#954](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/954) (@FlorianW-ZAMG)
 - Add albedo to AQ event output. [\#920](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/920) (@sbnielsen)
+- Add documentation for archiving with FDB on ATOS [\#768](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/768) (@johtoblan)
+- Track fields not archived to fdb[\#754](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/754) (@uandrae, @sbnielsen, @KristianHMoller)
+- Add geohash algorithm to identify starting area in FDB [\#973](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/973) (@johtoblan)
+- Add model version mapping to FDB grib_set parameters [\#975](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/975) (@KristianHMoller)
 
 ### Changed
+- Update fullpos selection for CY49 [\#941](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/941)(@uandrae)
+- Increased walltime from 15 to 30 minutes for AddCalculatedFields [\#948](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/948) (@KristianHMoller)
+- Updated FA2GRIB2 translations [\#754](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/754) (@uandrae, @sbnielsen, @KristianHMoller)
+- Add EcCodes as a python dependency [\#937](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/937) (@johtoblan)
+- Make version of poethepoet more flexible [\#950](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/950) (@johtoblan)
+- Updated README.md for poetry >= v2.0.0 shell plugin installation. [\#935](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/935) (@BertvanUlft)
+- Externalise sqlite_utils to grib2sqlite. [\#949] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/949) (@adeckmyn)
 - Make submission groups more flexible. [\#867](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/867) (@uandrae)
 - Add pandas 2.0 compatible versions to allowed dependencies. [\#942](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/942) (@observingClouds)
 
 ### Fixed
+- Correct orography truncation for linear grid. [\#960](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/960)(@uandrae)
+- Correct merge of fullpos selection [\#941](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/941)(@uandrae)
+- Load ecmwf-toolbox/2024.11.0.0 for AddCalculateFields [\#958](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/958)(@KristianHMoller)
 - Semi-functional settings for running DW on LUMI (GMK binary, Cray 16).[\#947](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/947)(@kastelecn)
 - Remove erroneous domain specification from flooding event [\#943](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/943) (@uandrae)
 - Remove 10wdir from gribmodify.[\#934](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/934) (@kastelecn)

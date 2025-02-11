@@ -137,20 +137,21 @@ selection:
      - 95000.
      - 97500.
      - 100000.
-  NAMFPDYS: 
-    CL3DF:
-     - 'GRAUPEL'
-     - 'RAIN'
-     - 'SNOW'
-     - 'TEMPERATURE'
-     - 'HUMI.SPECIFI'
-     - 'WIND.U.PHYS'
-     - 'WIND.V.PHYS'
-     - 'ICE_CRYSTAL'
-     - 'CLOUD_WATER'
-     - 'TKE'
-    NRFP3S:
-     - ${vertical_levels.nlev} 
+  NAMFPDYS:
+    MASTER:
+     CL3DF:
+      - 'GRAUPEL'
+      - 'RAIN'
+      - 'SNOW'
+      - 'TEMPERATURE'
+      - 'HUMI.SPECIFI'
+      - 'WIND.U.PHYS'
+      - 'WIND.V.PHYS'
+      - 'ICE_CRYSTAL'
+      - 'CLOUD_WATER'
+      - 'TKE'
+     NRFP3S:
+      - ${vertical_levels.nlev}
 
  xxt00000000:
   NAMFPPHY:
@@ -255,17 +256,18 @@ selection:
      - 97500.
      - 100000.
   NAMFPDYS: 
-    CL3DF:
-     - 'GRAUPEL'
-     - 'RAIN'
-     - 'SNOW'
-     - 'TEMPERATURE'
-     - 'HUMI.SPECIFI'
-     - 'WIND.U.PHYS'
-     - 'WIND.V.PHYS'
-     - 'ICE_CRYSTAL'
-     - 'CLOUD_WATER'
-     - 'TKE'
-    NRFP3S:
-     - ${vertical_levels.nlev} 
+    MASTER:
+     CL3DF:
+      - 'GRAUPEL'
+      - 'RAIN'
+      - 'SNOW'
+      - 'TEMPERATURE'
+      - 'HUMI.SPECIFI'
+      - 'WIND.U.PHYS'
+      - 'WIND.V.PHYS'
+      - 'ICE_CRYSTAL'
+      - 'CLOUD_WATER'
+      - 'TKE'
+     NRFP3S:
+      - ${vertical_levels.nlev} 
   <<: *default

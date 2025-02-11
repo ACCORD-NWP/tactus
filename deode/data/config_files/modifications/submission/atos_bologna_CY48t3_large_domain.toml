@@ -1,3 +1,6 @@
+[submission.task_exceptions.AddCalculatedFields.BATCH]
+  WALLTIME = "#SBATCH --time=00:30:00"
+
 [submission.task_exceptions.CreateGrib.BATCH]
   WALLTIME = "#SBATCH --time=02:00:00"
 
@@ -43,3 +46,6 @@
 [submission.types.gnu.BATCH]
   MEM = "#SBATCH --mem=64GB"
   WALLTIME = "#SBATCH --time=03:00:00"
+
+[suite_control]
+  n_io_merge = 2

@@ -83,6 +83,7 @@
 [fdb]
 
 [fdb.grib_set]
+  backgroundProcess = "99"
   centre = "98"
   class = "d1"
   dataset = "on-demand-extremes-dt"
@@ -92,6 +93,9 @@
   setLocalDefinition = "1"
   subCentre = "84"
   tablesVersion = "32"
+  type = "fc"
 
 [fdb.negative_rules]
+  levtype = ["unknown"]
+  param = ["0", "231049", "231066", "260015"]
   typeOfLevel = ["unknown", "not_found"]

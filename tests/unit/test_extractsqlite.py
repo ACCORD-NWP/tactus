@@ -2,10 +2,9 @@
 import datetime
 import os
 
+import grib2sqlite as sqlite
 import pandas
 import pytest
-
-import deode.sqlite_utils as sqlite
 
 
 class MockObject(object):

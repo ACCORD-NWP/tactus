@@ -24,8 +24,11 @@
   # General dependencies
   dateutils = "^0.6.12"
   dicttoxml = "^1.0.0"
+  eccodes = "^2.39"
   f90nml = "^1.4.3"
   fastjsonschema = "2.18.1"
+  geohash-hilbert = "^2.0.0"
+  grib2sqlite = {git = "https://github.com/destination-earth-digital-twins/grib2sqlite", tag = "v0.2.0"}
   humanize = "^4.8.0"
   json-schema-for-humans = {git = "https://github.com/paulovcmedeiros/json-schema-for-humans.git", branch = "feature/choose-properties-table-columns"}
   jsonref = "^1.1.0"
@@ -64,7 +67,7 @@
   toml-formatter = {git = "https://github.com/paulovcmedeiros/toml-formatter"}
   # flake8 plugins for stuff not yet on ruff.
   # See <https://github.com/astral-sh/ruff/issues/458>.
-  poethepoet = {extras = ["poetry-plugin"], version = "0.24.4"}
+  poethepoet = {extras = ["poetry-plugin"], version = ">=0.24.4"}
   pydoclint = "^0.3.8" # Replaces darglint, but is maintained & faster
 
 [tool.poetry.group.test.dependencies]

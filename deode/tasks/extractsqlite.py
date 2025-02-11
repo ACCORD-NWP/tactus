@@ -4,10 +4,11 @@ import json
 import os
 
 import pandas
+from grib2sqlite import logger as sqlite_logger
+from grib2sqlite import parse_grib_file
 
 from ..datetime_utils import as_datetime, oi2dt_list
-from ..logs import logger
-from ..sqlite_utils import parse_grib_file
+from ..logs import LogDefaults, logger
 from .base import Task
 
 
@@ -43,11 +44,12 @@ class ExtractSQLite(Task):
         self.model_name = self.platform.substitute(
             self.config["extractsqlite.sqlite_model_name"]
         )
-        stationfile = self.platform.substitute(self.config["extractsqlite.station_list"])
-        if not os.path.isfile(stationfile):
-            raise FileNotFoundError(f" missing {stationfile}")
-        logger.info("Station list: {}", stationfile)
-        self.station_list = pandas.read_csv(stationfile, skipinitialspace=True)
+        self.stationfile = self.platform.substitute(
+            self.config["extractsqlite.station_list"]
+        )
+        if not os.path.isfile(self.stationfile):
+            raise FileNotFoundError(f" missing {self.stationfile}")
+        logger.info("Station list: {}", self.stationfile)
         paramfile = self.platform.substitute(self.config["extractsqlite.parameter_list"])
         if not os.path.isfile(paramfile):
             raise FileNotFoundError(f" missing {paramfile}")
@@ -55,7 +57,6 @@ class ExtractSQLite(Task):
         with open(paramfile) as pf:
             self.parameter_list = json.load(pf)
             pf.close()
-        self.weights = None
         self.output_settings = self.config["general.output_settings"]
 
     def execute(self):
@@ -64,6 +65,7 @@ class ExtractSQLite(Task):
 
         # loop over lead times
         dt_list = oi2dt_list(self.infile_dt, self.forecast_range)
+        station_list = pandas.read_csv(self.stationfile, skipinitialspace=True)
         for dt in dt_list:
             infile = self.platform.substitute(
                 os.path.join(self.archive, self.infile_template),
@@ -72,12 +74,14 @@ class ExtractSQLite(Task):
             if not os.path.isfile(infile):
                 raise FileNotFoundError(f" missing {infile}")
             logger.info("SQLITE EXTRACTION: {}", infile)
+            loglevel = self.config.get("general.loglevel", LogDefaults.LEVEL).upper()
+            sqlite_logger.setLevel(loglevel)
 
             parse_grib_file(
                 infile=infile,
                 param_list=self.parameter_list,
-                station_list=self.station_list,
+                station_list=station_list,
                 sqlite_template=self.sqlite_path + "/" + self.sqlite_template,
                 model_name=self.model_name,
-                weights=self.weights,
+                weights=None,
             )

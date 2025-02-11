@@ -74,6 +74,8 @@ Then install/reinstall [`poetry`](https://python-poetry.org) by runnning the fol
   # Download and install poetry
   curl -sSL https://install.python-poetry.org | python3 -  
   poetry install
+  # Add the poetry shell command as a plugin (for poetry >= v2.0.0)
+  poetry self add poetry-plugin-shell
   ```
 
 Finally, install [`pygdal`](https://pypi.org/project/pygdal/), which is required for climate generation. [`pygdal`](https://pypi.org/project/pygdal/) depends on [`gdal`](https://gdal.org/), which is notoriously troublesome as dependency when targeting many systems. The versions of `pygdal` and the system's `gdal`should match. 

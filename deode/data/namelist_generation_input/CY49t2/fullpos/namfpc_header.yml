@@ -1,5 +1,6 @@
 NAMFPC:
   CFPDOM: ${cfg:fullpos.domain_name}
+  CFPFMT: LELAM
   LFPCAPEX: true
   LFPMOIS: false
   LISOT_ABOVEG: true

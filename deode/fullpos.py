@@ -201,78 +201,98 @@ class Fullpos:
             for vv in v.values():
                 namfpc[vv] = []
 
-        # Extract empty namelists
+        # Set empty namelists
         empty_namelists = {k: [] for k in level_map}
         for k in param_map:
             empty_namelists[k] = []
 
         # Map all fields and levels to the correct
         # entries in NAMFPC
-        for vv in selection.values():
-            for k, v in vv.items():
-                if k in ["NAMFPPHY", "NAMPPC", "NAMFPDY2"]:
-                    for s, t in v.items():
-                        x = param_map[k][s]
-                        namfpc[x].append(t)
+        for namelists in selection.values():
+            for namelist, namelist_key in namelists.items():
+                if namelist in ["NAMFPPHY", "NAMPPC", "NAMFPDY2"]:
+                    for key, fields in namelist_key.items():
+                        x = param_map[namelist][key]
+                        namfpc[x].append(fields)
 
-                elif "CL3DF" in v:
-                    if len(v.keys()) > 2:
-                        raise InvalidSelectionCombinationError(v.keys())
-                    x = level_map[k]
-                    if len(self.rules) > 0 and x == "NRFP3S":
-                        v[x] = self.replace_rules(v[x])
-                    namfpc[x].append(v[x])
-                    x = param_map[k]["CL3DF"]
-                    namfpc[x].append(v["CL3DF"])
+                elif "CL3DF" in namelist_key:
+                    # Handle selection sections without label
+                    if len(namelist_key.keys()) > 2:
+                        raise InvalidSelectionCombinationError(namelist_key.keys())
+                    lmap = level_map[namelist]
+                    if len(self.rules) > 0 and lmap == "NRFP3S":
+                        namelist_key[lmap] = self.replace_rules(namelist_key[lmap])
+                    namfpc[lmap].append(namelist_key[lmap])
+                    pmap = param_map[namelist]["CL3DF"]
+                    namfpc[pmap].append(namelist_key["CL3DF"])
 
                 else:
-                    for y in v.values():
-                        x = level_map[k]
-                        if len(self.rules) > 0 and x == "NRFP3S":
-                            y[x] = self.replace_rules(y[x])
-                        namfpc[x].append(y[x])
-                        x = param_map[k]["CL3DF"]
-                        namfpc[x].append(y["CL3DF"])
+                    # Handle selection sections with label
+                    lmap = level_map[namelist]
+                    for y in namelist_key.values():
+                        if len(self.rules) > 0 and lmap == "NRFP3S":
+                            y[lmap] = self.replace_rules(y[lmap])
+                        namfpc[lmap].append(y[lmap])
+                        pmap = param_map[namelist]["CL3DF"]
+                        namfpc[pmap].append(y["CL3DF"])
 
         namfpc = {k: list(set(flatten_list(v))) for k, v in namfpc.items()}
 
-        for k in namfpc:
-            if len(namfpc[k]) > 0:
-                namfpc[k].sort()
-                namfpc_out["NAMFPC"][k] = namfpc[k]
+        for key in namfpc:
+            if len(namfpc[key]) > 0:
+                namfpc[key].sort()
+                namfpc_out["NAMFPC"][key] = namfpc[key]
 
         # Add domain and level mapping
-        for kk, vv in selection.items():
-            tmp = {}
-            for k, v in vv.items():
-                tmp[k] = {}
-                if k in ["NAMFPPHY", "NAMPPC", "NAMFPDY2"]:
-                    d = {}
-                    for p, q in v.items():
-                        x = "".join([p[0:2], "D", p[2:]])
-                        d[p] = q
-                        d[x] = [self.domain for j in range(len(q))]
-                    tmp[k] = d
-                elif "CL3DF" in v:
-                    x = level_map[k]
-                    v[x] = list(set(flatten_list(v[x])))
-                    tmp[k], i = self.expand(v, x, namfpc[x], self.domain, 0)
+        for time_section, namelists in selection.items():
+            # Initialize with empty namelists
+            tmp = {namelist: {} for namelist in empty_namelists}
+            for namelist, keys in namelists.items():
+                if namelist in ["NAMFPPHY", "NAMPPC", "NAMFPDY2"]:
+                    section = {}
+                    for key, val in keys.items():
+                        param = "".join([key[0:2], "D", key[2:]])
+                        section[key] = val
+                        section[param] = [self.domain for j in range(len(val))]
+                    tmp[namelist] = section
+                elif "CL3DF" in keys:
+                    # Handle selection sections without label
+                    level_key = level_map[namelist]
+                    keys[level_key] = list(set(flatten_list(keys[level_key])))
+                    tmp[namelist], i = self.expand(
+                        keys, level_key, namfpc[level_key], self.domain, 0
+                    )
                 else:
-                    x = level_map[k]
+                    # Handle selection sections with label
+                    level_key = level_map[namelist]
                     i = 0
-                    for y in v.values():
-                        y[x] = list(set(flatten_list(y[x])))
-                        d, i = self.expand(y, x, namfpc[x], self.domain, i)
-                        tmp[k].update(d)
+                    params = {}
+                    # Set levels per requested field
+                    for sub_selection in keys.values():
+                        for param in sub_selection["CL3DF"]:
+                            if param not in params:
+                                params[param] = {
+                                    "CL3DF": [param],
+                                    "NRFP3S": [sub_selection[level_key]],
+                                }
+                            params[param]["NRFP3S"].append(sub_selection[level_key])
+
+                    for par in params:
+                        params[par]["NRFP3S"] = list(
+                            set(flatten_list(params[par]["NRFP3S"]))
+                        )
+
+                    for sub_selection in params.values():
+                        sub_selection[level_key] = list(
+                            set(flatten_list(sub_selection[level_key]))
+                        )
+                        d, i = self.expand(
+                            sub_selection, level_key, namfpc[level_key], self.domain, i
+                        )
+                        tmp[namelist].update(d)
 
             # Update the selection
-            for k, v in tmp.items():
-                selection[kk][k] = v
-
-            # Make sure all namelists exists
-            for k in empty_namelists:
-                if k not in selection[kk]:
-                    selection[kk][k] = {}
+            selection[time_section] = tmp
 
         if "xxt00000000" in selection:
             self.check_non_instant_fields(selection, "xxt00000000")

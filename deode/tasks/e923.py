@@ -143,9 +143,10 @@ class E923(Task):
         self.myexec(self.master, 2)
         self.remove_links(ifiles)
 
-        files = glob.glob("NODE.*")
-        logger.info(files)
-        self.archive_logs(files, target=self.climdir)
+        # Archive namelists and NODE files
+        self.archive_logs(glob.glob("NODE.*"), target=self.climdir)
+        self.archive_logs(glob.glob("fort.4*"), target=self.climdir)
+
         self.fmanager.output("Const.Clim", constant_file, provider_id="copy")
 
     def monthly_part(self, constant_file):
@@ -390,3 +391,4 @@ class E923Monthly(E923):
             self.fmanager.output(source, target)
 
             self.archive_logs(glob.glob("NODE.*"), target=self.climdir)
+            self.archive_logs(glob.glob("fort.4*"), target=self.climdir)
