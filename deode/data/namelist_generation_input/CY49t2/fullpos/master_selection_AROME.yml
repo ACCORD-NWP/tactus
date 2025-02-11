@@ -5,6 +5,7 @@ selection:
       - SURFPRESSION
       - SPECSURFGEOPOTEN
       - MSLPRESSURE
+      - SURFTOT.WAT.VAPO
       - SURFISOTPW1.MALT
       - SURFCAPE.POS.F00
       - SURFCIEN.POS.F00

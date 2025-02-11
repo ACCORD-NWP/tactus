@@ -1,5 +1,5 @@
 [platform]
-  rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef"
+  rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov13/coef"
 
 [submission]
   bindir = "/perm/deployde330/github-actions/install/cy49t2/latest/bin"
@@ -20,6 +20,8 @@
 [submission.task_exceptions.Forecast]
   NPROC = 624
   NPROC_IO = 16
+  NPROCX = 24
+  NPROCY = 26
   OMP_NUM_THREADS = "4"
   WRAPPER = "srun @DEODE_HOME@/data/config_files/include/submission/omp_wrapper"
 
