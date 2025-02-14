@@ -1,6 +1,6 @@
 [submission]
   account = "#SBATCH -A project_465000527"
-  bindir = "/scratch/project_465000527/ospaniel/work/DEODE_testbed/executable/48t3_fix.87.CRAYFTN1601.x.modif/"
+  bindir = "/projappl/project_465000527/github-actions/install/cy48t3/latest/bin"
   cmicro = "OLD3"
   default_submit_type = "serial"
   lfftw = true
@@ -22,7 +22,7 @@
   wrapper = "time"
 
 [submission.task_exceptions.ArchiveHour.ENV]
-  FDB5_HOME = "/appl/local/climatedt/mars/versions/6.99.2.0/"
+  FDB5_HOME = "/appl/local/destine/mars/versions/6.99.2.0/"
 
 [submission.task_exceptions.C903]
   NPROC = 36
@@ -42,26 +42,19 @@
 
 [submission.task_exceptions.CreateGrib]
   binary = "gl"
-  bindir = "/scratch/project_465000527/pardalmi/gl/lumi.cray.gmkpack/bin"
+  bindir = "/projappl/project_465000527/github-actions/install/gl/latest/bin"
+
+[submission.task_exceptions.CreateGrib.ENV]
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/pardalmi/local/eccodes-2.39.0-ftn16-LUMI/lib64"
 
 [submission.task_exceptions.E923Update]
-  bindir = "/scratch/project_465000527/kastelec/fa_sfx2clim/"
-
-[submission.task_exceptions.E927]
-  NPROC = 16
-
-[submission.task_exceptions.E927.BATCH]
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=16"
-
-[submission.task_exceptions.Forecast.ENV]
-  RTTOV_COEFDIR = "/scratch/project_465000527/de_330_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
+  bindir = "/projappl/project_465000527/github-actions/install/cy48t3/latest/bin"
 
 [submission.task_exceptions.Gmted.MODULES]
   GDAL = ["load", "scl-gdal_23"]
 
 [submission.task_exceptions.Marsprep]
-  bindir = "/appl/local/climatedt/bin"
+  bindir = "/appl/local/destine/bin"
   WRAPPER = ""
 
 [submission.task_exceptions.Marsprep.BATCH]
@@ -72,18 +65,17 @@
 
 [submission.task_exceptions.Marsprep.ENV]
   MARS_READANY_BUFFER_SIZE = 17893020000
-  PATH = "$PATH:/appl/local/climatedt/mars/versions/current/bin:/appl/local/climatedt/bin"
-
-[submission.task_exceptions.Pgd.BATCH]
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=16"
+  PATH = "$PATH:/appl/local/destine/mars/versions/current/bin:/appl/local/destine/bin"
 
 [submission.task_exceptions.Pgd.ENV]
   OMP_NUM_THREADS = 1
 
 [submission.task_exceptions.PgdUpdate]
   binary = "gl"
-  bindir = "/scratch/project_465000527/pardalmi/gl/lumi.cray.gmkpack/bin"
+  bindir = "/projappl/project_465000527/github-actions/install/gl/latest/bin"
+
+[submission.task_exceptions.PgdUpdate.ENV]
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/pardalmi/local/eccodes-2.39.0-ftn16-LUMI/lib64"
 
 [submission.task_exceptions.Soil.MODULES]
   GDAL = ["load", "scl-gdal_23"]
@@ -98,6 +90,67 @@
   SCHOST = "localhost"
   tasks = ["Background_vm"]
 
+[submission.types.Forecast_cpu]
+  NPROC = 16
+  SCHOST = "lumi-batch"
+  tasks = ["Forecast"]
+  WRAPPER = "ulimit -s unlimited; srun"
+
+[submission.types.Forecast_cpu.BATCH]
+  CPU = "#SBATCH --cpus-per-task=4"
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=2"
+  NTASKS = "#SBATCH --ntasks=16"
+  PARTITION = "#SBATCH --partition=debug"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=8"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[submission.types.Forecast_cpu.ENV]
+  DR_HOOK = 1
+  DR_HOOK_IGNORE_SIGNALS = -1
+  DR_HOOK_SHOW_PROCESS_OPTIONS = 0
+  DR_HOOK_SILENT = 1
+
+  FI_CXI_DEFAULT_TX_SIZE = 32768
+  FI_CXI_RDZV_THRESHOLD = 64000
+  FI_CXI_RX_MATCH_MODE = "hybrid"
+
+  I_MPI_LIBRARY_KIND = "release"
+  LIBSCI_ARCH_OVERRIDE = "broadwell"
+
+  MKL_CBWR = "AUTO,STRICT"
+  MKL_DEBUG_CPU_TYPE = 5
+  MKL_NUM_THREADS = 1
+  MPL_MBX_SIZE = 2048000000
+
+  EC_MEMINFO = 0
+  EC_MPI_ATEXIT = 0
+  EC_PROFILE_HEAP = 0
+  EC_PROFILE_MEM = 0
+  ECF_SSL = 1
+
+  KMP_MONITOR_STACKSIZE = "4G"
+  KMP_STACKSIZE = "4G"
+
+  OMP_NUM_THREADS = 4 # CPUS_PER_TASK
+  OMP_PLACES = "threads"
+  OMP_STACKSIZE = "4G"
+
+  RTTOV_COEFDIR = "/scratch/project_465000527/de_330_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
+
+[submission.types.Forecast_cpu.MODULES]
+  00_PURGE = ["--force", "purge"]
+  01_LUMI = ["load", "LUMI/23.09"]
+  02_PARTITION_C = ["load", "partition/C"]
+  03_AEC = ["load", "libaec/1.0.6-cpeCray-23.09"]
+  04_HDF5 = ["load", "cray-hdf5-parallel"]
+  05_NETCDF = ["load", "cray-netcdf-hdf5parallel"]
+  06_FFTW = ["load", "cray-fftw"]
+  07_PYTHON = ["load", "cray-python"]
+  15_RIMVYDAS_USE = ["use", "/scratch/project_465000527/jasinskas/scl/modules/"]
+  17_RIMVYDAS_ECFLOW = ["load", "scl-ecflow_23"]
+
 [submission.types.parallel]
   NPROC = 16
   SCHOST = "lumi-batch"
@@ -107,15 +160,13 @@
 [submission.types.parallel.BATCH]
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=1"
+  NTASKS = "#SBATCH --ntasks=16"
   PARTITION = "#SBATCH -p debug"
   WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:10:00"
 
 [submission.types.parallel.ENV]
   ECF_SSL = 1
-
-  MPI_TASKS = 32 # $SLURM_NTASKS
   OMP_NUM_THREADS = 4 # CPUS_PER_TASK
 
   KMP_MONITOR_STACKSIZE = "4G"
@@ -138,21 +189,13 @@
 [submission.types.parallel.MODULES]
   00_PURGE = ["--force", "purge"]
   01_LUMI = ["load", "LUMI/23.09"]
-  02_PARTITION_G = ["load", "partition/C"]
-  03_CPE = ["load", "cpe/23.09"]
-  03a_CPE = ["load", "libaec/1.0.6-cpeCray-23.09"]
-  04_PRG_ENV = ["load", "PrgEnv-cray"]
-  06_MPICH = ["load", "cray-mpich"]
-  07_LIBSCI = ["load", "cray-libsci"]
-  08_FFTW = ["load", "cray-fftw"]
-  09_PYTHON = ["load", "cray-python/3.10.10"]
-  10_HDF5 = ["load", " cray-hdf5-parallel"]
-  11_NETCDF = ["load", "cray-netcdf-hdf5parallel"]
-  12_BUILDTOOLS = ["load", "buildtools"]
-  13_NCURSES = ["load", "ncurses/6.4-cpeCray-23.09"]
-  14_CCE = ["load", "cce/16.0.1"]
+  02_PARTITION_C = ["load", "partition/C"]
+  03_AEC = ["load", "libaec/1.0.6-cpeCray-23.09"]
+  04_HDF5 = ["load", "cray-hdf5-parallel"]
+  05_NETCDF = ["load", "cray-netcdf-hdf5parallel"]
+  06_FFTW = ["load", "cray-fftw"]
+  07_PYTHON = ["load", "cray-python"]
   15_RIMVYDAS_USE = ["use", "/scratch/project_465000527/jasinskas/scl/modules/"]
-  16_RIMVYDAS_FTN16 = ["load", "scl-ftn16_23"]
   17_RIMVYDAS_ECFLOW = ["load", "scl-ecflow_23"]
 
 [submission.types.serial]
@@ -162,6 +205,7 @@
   WRAPPER = "srun"
 
 [submission.types.serial.BATCH]
+  MEM = "#SBATCH --mem=0GB"
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
@@ -172,17 +216,19 @@
 [submission.types.serial.ENV]
   DR_HOOK_IGNORE_SIGNALS = 8
   ECF_SSL = 1
-  MPI_TASKS = 32
-  MPITASKS_PER_NODE = 8
-  NPROC = 32
-  OMP_NUM_THREADS = 4
   OMPI_MCA_btl = '^vader'
 
 [submission.types.serial.MODULES]
-  00_PYTHON = ["load", "cray-python/3.10.10"]
-  01_USE = ["use", "/scratch/project_465000527/jasinskas/scl/modules/"]
-  02_FTN16 = ["load", "scl-ftn16_23"]
-  03_ECFLOW = ["load", "scl-ecflow_23"]
+  00_PURGE = ["--force", "purge"]
+  01_LUMI = ["load", "LUMI/23.09"]
+  02_PARTITION_C = ["load", "partition/C"]
+  03_AEC = ["load", "libaec/1.0.6-cpeCray-23.09"]
+  04_HDF5 = ["load", "cray-hdf5-parallel"]
+  05_NETCDF = ["load", "cray-netcdf-hdf5parallel"]
+  06_FFTW = ["load", "cray-fftw"]
+  07_PYTHON = ["load", "cray-python"]
+  15_RIMVYDAS_USE = ["use", "/scratch/project_465000527/jasinskas/scl/modules/"]
+  17_RIMVYDAS_ECFLOW = ["load", "scl-ecflow_23"]
 
 [submission.types.sqlite]
   NPROC = 1
