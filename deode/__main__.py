@@ -21,7 +21,8 @@ def main(argv=None):
     deode_host = DeodeHost().detect_deode_host()
     with contextlib.suppress(AttributeError):
         if args.config_data_dir is not None:
-            ConfigPaths.CONFIG_DATA_SEARCHPATHS.insert(0, args.config_data_dir)
+            for config_data_dir in args.config_data_dir[::-1]:
+                ConfigPaths.CONFIG_DATA_SEARCHPATHS.insert(0, config_data_dir)
     config = ParsedConfig.from_file(
         args.config_file,
         json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,

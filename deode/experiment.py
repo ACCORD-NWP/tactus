@@ -158,14 +158,12 @@ class ExpFromFiles(Exp):
     def setup_files(
         output_file,
         case=None,
-        config_dir=None,
     ):
         """Set up the files for an experiment.
 
         Args:
             output_file (str): Output file
             case (str, optional): Experiment name. Defaults to None.
-            config_dir (str, optional): Config directory. Defaults to None.
 
         Returns:
             exp_dependencies(dict): Experiment dependencies from setup.
@@ -173,7 +171,6 @@ class ExpFromFiles(Exp):
         """
         exp_dependencies = {
             "tmp_outfile": f"{output_file}.tmp.{os.getpid()}.toml",
-            "config_dir": config_dir,
             "case": case,
         }
         return exp_dependencies
@@ -185,7 +182,6 @@ def case_setup(
     mod_files: List[Path],
     case=None,
     host=None,
-    config_dir=None,
     expand_config=False,
 ):
     """Do experiment setup.
@@ -196,7 +192,6 @@ def case_setup(
         mod_files (list): Modifications. Defaults to None.
         case (str, optional): Case identifier. Defaults to None.
         host (str, optional): host name. Defaults to None.
-        config_dir (str, optional): Configuration directory. Defaults to None.
         expand_config (boolean, optional): Flag for expanding macros in config
 
     Returns:
@@ -208,7 +203,6 @@ def case_setup(
     exp_dependencies = ExpFromFiles.setup_files(
         output_file,
         case=case,
-        config_dir=config_dir,
     )
 
     exp = ExpFromFiles(config, exp_dependencies, mod_files, host=host)
