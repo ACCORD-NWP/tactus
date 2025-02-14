@@ -59,10 +59,11 @@ selection:
      - 95000.
      - 97500.
   NAMFPDYS:
-   CL3DF:
-    - 'CLOUD_WATER'
-   NRFP3S:
-    - ${namelist.nrfp3s}
+   CLOUD_WATER:
+    CL3DF:
+     - 'CLOUD_WATER'
+    NRFP3S:
+     - ${namelist.nrfp3s}
 
  xxt00000000:
   NAMFPPHY:

@@ -1,0 +1,5 @@
+[general]
+  cycle = "CY48t3"
+
+[fdb.grib_set]
+  generatingProcessIdentifier = "2"

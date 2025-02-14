@@ -68,7 +68,10 @@ class TestSubmission:
     def test_submit(self, config_from_task_config_file, tmp_directory):
         config = config_from_task_config_file.copy(
             update={
-                "submission": {"default_submit_type": "background_hpc"},
+                "submission": {
+                    "default_submit_type": "background_hpc",
+                    "types": {"background_hpc": {}},
+                },
                 "troika": {"config_file": "deode/data/config_files/troika.yml"},
             }
         )
@@ -91,9 +94,10 @@ class TestSubmission:
         config = config_from_task_config_file.copy(
             update={
                 "submission": {
-                    "submit_types": ["unittest"],
                     "default_submit_type": "unittest",
-                    "unittest": {"BATCH": {"TEST": arg, "NAME": argname}},
+                    "types": {
+                        "unittest": {"BATCH": {"TEST": arg, "NAME": argname}},
+                    },
                 }
             }
         )
@@ -109,11 +113,12 @@ class TestSubmission:
         config = config_from_task_config_file.copy(
             update={
                 "submission": {
-                    "submit_types": ["unittest"],
                     "default_submit_type": "unittest",
-                    "unittest": {
-                        "tasks": ["unittest"],
-                        "BATCH": {"TEST_INCLUDED": arg, "TEST": "NOT USED"},
+                    "types": {
+                        "unittest": {
+                            "tasks": ["unittest"],
+                            "BATCH": {"TEST_INCLUDED": arg, "TEST": "NOT USED"},
+                        },
                     },
                     "task_exceptions": {"unittest": {"BATCH": {"TEST": arg}}},
                 }
@@ -144,9 +149,10 @@ class TestSubmission:
         config = config_from_task_config_file.copy(
             update={
                 "submission": {
-                    "submit_types": ["unittest"],
                     "default_submit_type": "unittest",
-                    "unittest": {"WRAPPER": "@NPROC@", "NPROC": 2, "NPROCX": 1},
+                    "types": {
+                        "unittest": {"WRAPPER": "@NPROC@", "NPROC": 2, "NPROCX": 1},
+                    },
                 }
             }
         )
@@ -170,9 +176,10 @@ class TestSubmission:
         config = config_from_task_config_file.copy(
             update={
                 "submission": {
-                    "submit_types": ["unittest"],
                     "default_submit_type": "unittest",
-                    "unittest": {"NPROC": 2, "NPROCX": 1},
+                    "types": {
+                        "unittest": {"NPROC": 2, "NPROCX": 1},
+                    },
                 }
             }
         )

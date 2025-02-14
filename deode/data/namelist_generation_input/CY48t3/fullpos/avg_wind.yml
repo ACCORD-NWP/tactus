@@ -2,15 +2,10 @@
 # that xxt00000000 inherits from xxtddddhh00
 selection:
  xxtddddhh00: &default
-  NAMFPDYH:
-   CL3DF:
-    - 'AVG_U'
-    - 'AVG_V'
-  NAMFPDYP:
-    CL3DF:
-     - 'AVG_U'
-     - 'AVG_V'
   NAMFPDYS: 
-    CL3DF:
-     - 'AVG_U'
-     - 'AVG_V'
+    AVERAGE_WIND:
+     CL3DF:
+      - 'AVG_U'
+      - 'AVG_V'
+     NRFP3S:
+      - ${vertical_levels.nlev}

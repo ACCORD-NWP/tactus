@@ -1,21 +1,35 @@
 e923_0:
   NAMCLA:
     LIPGD: true
-    LNEWORO: true
     NLISSP: 0
   NAMCLI:
     RSTR: 5.0
   NAMMCC:
     N923: 1
 
-e923_0_HARMONIE_AROME:
+e923_0_truncation:
+  NAMCLA:
+    LNEWORO: true
+  NAMDIM:
+    NMSMAX: ${cfg:domain.nmsmax_oro}
+    NSMAX: ${cfg:domain.nsmax_oro}
+
+e923_0_spectral:
   NAMCLA:
     LNEWORO: false
     LSPSMORO: ${cfg:domain.lspsmoro}
 
+e923_0_HARMONIE_AROME:
+  NAMCLA:
+    NLISSZ: 3
+
 e923_1:
   NAMMCC:
     N923: 1
+
+e923_1_HARMONIE_AROME:
+  NAMCLA:
+    NLISSZ: 3
 
 e923_2:
   NAMMCC:
@@ -41,6 +55,7 @@ e923_6_HARMONIE_AROME:
   NAMCLI:
     NDATX: 360
     NDATY: 180
+    RSTR: 0.0
 
 e923_8:
   NAMMCC:
@@ -59,7 +74,8 @@ e923_9_HARMONIE_AROME:
 e923_base_HARMONIE_AROME:
   NAMCLA:
     FACZ0: 0.53
-    LNEWORO: true
+  NAMCLI:
+    LZ0THER: true
 
 e923_base:
   NAERAD:
@@ -271,7 +287,7 @@ f4_AROME:
     LQMVD: false
     LRHDI_LASTITERPC: true
     NITMP: 4
-    NSITER: 2
+    NSITER: 1
     NSPDLAG: 3
     NSVDLAG: 3
     NTLAG: 3
@@ -280,7 +296,7 @@ f4_AROME:
     RDAMPDIV: 20.0
     RDAMPPD: 20.0
     RDAMPQ: 0.0
-    RDAMPT: 0.0
+    RDAMPT: 20.0
     RDAMPVD: 20.0
     RDAMPVOR: 20.0
     REPS1: 0.0
@@ -289,9 +305,9 @@ f4_AROME:
     REPSM2: 0.0
     REPSP1: 0.0
     SDRED: 1.0
-    SIPR: 60000.0
+    SIPR: 90000.0
     SITR: 350.0
-    SITRA: 50.0
+    SITRA: 100.0
     SLHDA0: 0.25
     SLHDD00: 6.5e-05
     VESL: 0.05
@@ -573,19 +589,13 @@ f4_ALARO:
     GFP_CCC%IBITS: 16
     GFP_CCP%IBITS: 16
     GFP_CCSF%IBITS: 16
-    GFP_CDNI%CLNAME: SURFDIR.NORM.IRR
     GFP_CDNI%IBITS: 16
-    GFP_CGNI%CLNAME: SURFGLB.NORM.IRR
     GFP_CGNI%IBITS: 16
     GFP_CLSP%IBITS: 16
     GFP_CLSS%IBITS: 16
-    GFP_CSLH%CLNAME: SURFFLU.LAT.TOTA
-    GFP_CSOP%CLNAME: SURF.RAYT.DIR
-    GFP_CTOP%CLNAME: TOP.RAYT.DIR
     GFP_HCC%IBITS: 8
     GFP_LCC%IBITS: 8
     GFP_MCC%IBITS: 8
-    GFP_MXCLWC%CLNAME: CLS.MXCLWC
     GFP_MXCLWC%IBITS: 12
     GFP_TCC%IBITS: 8
     GFP_VISICLD%IBITS: 12
@@ -614,7 +624,6 @@ f4_ALARO:
     GFP_XX2T%IBITS: 12
     TFP_ETH%IBITS: 12
     TFP_FGST%IBITS: 12
-    TFP_HCLP%CLNAME: CLPMHAUT.MOD.XFU
     TFP_HU%CLNAME: HUMI_RELATIVE
     TFP_HU%IBITS: 12
     TFP_I%IBITS: 16
@@ -1167,6 +1176,13 @@ f4_HARMONIE_AROME:
     GFP_XLSG%CLNAME: SURFINSGRAUPEL
     GFP_XLSP%CLNAME: SURFINSPLUIE
     GFP_XLSS%CLNAME: SURFINSNEIGE
+    GFP_ST%IANO: 0
+    GFP_X10U%IANO: 0
+    GFP_X10V%IANO: 0
+    GFP_X2RH%IANO: 0
+    GFP_X2T%IANO: 0
+    GFP_XUGST%IANO: 0
+    GFP_XVGST%IANO: 0
   NAMARPHY:
     LKFBCONV: false
     LKFBD: false
@@ -1177,7 +1193,9 @@ f4_HARMONIE_AROME:
     LMSE: true
     LTURB: true
   NAMCFU:
+    CALFLASH1: 0.018
     LCUMFU: true
+    LFLASH: true
     LFPLS: true
     LFPLSG: true
     LFR: true
@@ -1187,6 +1205,7 @@ f4_HARMONIE_AROME:
     LNEBTT: true
     LRAYD: true
     LRAYS: true
+    NMTFLASH: 1
   NAMCHK:
     LECHKEVO: false
     LECHKPS: false
@@ -1267,16 +1286,31 @@ f4_HARMONIE_AROME:
     SLHDEPSH: 0.0025
   NAMFA:
     LEXTERN: true
+    YFACLF%CLNAME: CLOUD_FRACTI
+    YFACLF%NBITS: 16
+    YFAG%CLNAME: GRAUPEL
+    YFAG%NBITS: 16
+    YFAI%NBITS: 16
+    YFAL%NBITS: 16
+    YFAR%NBITS: 16
+    YFAS%NBITS: 16
+    YFATKE%CLNAME: TKE
+    YFATKE%NBITS: 16
+  NAMFPC:
+    LCRITSNOWTEMP: false
+    NFPCLI: 2
   NAMGFL:
     NGFL_EZDIAG: 3
     YA_NL%LPT: false
     YA_NL%LREQOUT: true
+    YA_NL%NREQIN: 1
     YEZDIAG_NL(1)%CNAME: EZDIAG01
     YEZDIAG_NL(1)%LREQOUT: false
     YEZDIAG_NL(2)%CNAME: EZDIAG02
     YEZDIAG_NL(2)%LREQOUT: false
     YEZDIAG_NL(3)%CNAME: EZDIAG03
     YEZDIAG_NL(3)%LREQOUT: false
+    YG_NL%CNAME: GRAUPEL
     YG_NL%LPT: false
     YG_NL%LQM: true
     YG_NL%LSLHD: true
@@ -1285,23 +1319,29 @@ f4_HARMONIE_AROME:
     YG_NL%REFVALC: 0.0
     YG_NL%REFVALI: 0.0
     YIRAD_NL%LGP: true
+    YI_NL%CNAME: ICE_CRYSTAL
     YI_NL%LPT: false
     YI_NL%LQM: true
     YI_NL%LSLHD: true
     YI_NL%NCOUPLING: -1
     YI_NL%REFVALC: 0.0
+    YI_NL%NREQIN: 1
     YLRAD_NL%LGP: true
+    YL_NL%CNAME: CLOUD_WATER
     YL_NL%LPT: false
     YL_NL%LQM: true
     YL_NL%LSLHD: true
     YL_NL%NCOUPLING: -1
     YL_NL%REFVALC: 0.0
+    YL_NL%NREQIN: 1
+    YQ_NL%CNAME: HUMI.SPECIFI
     YQ_NL%LCOMAD: true
     YQ_NL%LPT: false
     YQ_NL%LQM: true
     YQ_NL%LSLHD: false
     YQ_NL%NCOUPLING: 1
     YQ_NL%NREQIN: 1
+    YR_NL%CNAME: RAIN
     YR_NL%LPT: false
     YR_NL%LQM: true
     YR_NL%LSLHD: true
@@ -1310,6 +1350,7 @@ f4_HARMONIE_AROME:
     YR_NL%REFVALC: 0.0
     YR_NL%REFVALI: 0.0
     YSRC_NL%LPT: false
+    YS_NL%CNAME: SNOW
     YS_NL%LPT: false
     YS_NL%LQM: true
     YS_NL%LSLHD: true
@@ -1338,10 +1379,15 @@ f4_HARMONIE_AROME:
     LAECCN2CLDR: false
     LAEIFN: false
     LAERDRDEP: false
+    LAERSSEM: false
     LCAMS_NRT: false
     LMOCA_NRT: false
-    SSMAX: 0.0008
-    SSMIN: 0.0005
+    SSMAX: 0.10000E-01
+    RCCNMINR: 10.0E6
+    RCLDROPMIN: 10.0E6
+    RIFNMINSIZE: 0.01
+    SSMINLO: 0.0005
+    SSMINUP: 0.0008
   NAMOPH:
     LINC: true
     NTIMEFMT: 2
@@ -1353,6 +1399,8 @@ f4_HARMONIE_AROME:
     LOTOWNC: true
     LSCAWAREMF: true
     LTOTPREC: false
+    LWTHRESH: true
+    LWTHRESHMOIST: true
     NSWB_MNH: 6
     RADGR: 0.5
     RADSN: 1.0
@@ -1360,8 +1408,11 @@ f4_HARMONIE_AROME:
     LHISFWR: true
     LPGDFWR: false
   NAMPHY:
+    LAEROMMR: false
+    LAERONRT: false
     LCLSATUR: true
     LHLRADUPD: true
+    LDPRECIPS: true
     LMPHYS: true
     LRAY: false
     LRAYFM: true
@@ -1371,6 +1422,7 @@ f4_HARMONIE_AROME:
     LRTPP: true
     LVFULL: false
     LVOIGT: true
+    LWINDFARM: false
     NRAUTOEV: 3
     NRAY: 2
     NSORAYFR: -1
@@ -1479,6 +1531,7 @@ f4_HARMONIE_AROME:
     LXTHW: true
     LXTRT: true
     LXTTCLS: true
+    LXVISI: true
     LXXDIAGH: true
     LXXGST: true
     NFRRAZ: 1
@@ -1584,6 +1637,10 @@ f4_c903_main:
     LELAIV: false
     LEPHYS: true
     LERADI: false
+    LEC4MAP: false
+    LWETONLINE: false
+    NSNMLWS: 0
+    LESNML: false
   NAERAD:
     LRRTM: false
     LSRTM: false

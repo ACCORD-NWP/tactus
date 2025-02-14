@@ -31,20 +31,21 @@ selection:
     - 'SURFPRESSION'
     - 'MSLPRESSURE'
   NAMFPDYS:
-   CL3DF:
-    - 'GRAUPEL'
-    - 'RAIN'
-    - 'SNOW'
-    - 'TEMPERATURE'
-    - 'HUMI.SPECIFI'
-    - 'WIND.U.PHYS'
-    - 'WIND.V.PHYS'
-    - 'ICE_CRYSTAL'
-    - 'CLOUD_WATER'
-    - 'CLOUD_FRACTI'
-    - 'TKE'
-   NRFP3S:
-    - ${namelist.nrfp3s}
+   AQ_SELECTION:
+    CL3DF:
+     - 'GRAUPEL'
+     - 'RAIN'
+     - 'SNOW'
+     - 'TEMPERATURE'
+     - 'HUMI.SPECIFI'
+     - 'WIND.U.PHYS'
+     - 'WIND.V.PHYS'
+     - 'ICE_CRYSTAL'
+     - 'CLOUD_WATER'
+     - 'CLOUD_FRACTI'
+     - 'TKE'
+    NRFP3S:
+     - ${namelist.nrfp3s}
  
  xxtddddhh00:
    <<: *default
@@ -64,21 +65,5 @@ selection:
    CLPHY:
     - 'SURFRESERV.NEIGE'
     - 'SURFTEMPERATURE'
-    - 'INTSURFGEOPOTENT'
     - 'SURFIND.TERREMER'
-  NAMFPDYS:
-   CL3DF:
-    - 'GRAUPEL'
-    - 'RAIN'
-    - 'SNOW'
-    - 'TEMPERATURE'
-    - 'HUMI.SPECIFI'
-    - 'WIND.U.PHYS'
-    - 'WIND.V.PHYS'
-    - 'ICE_CRYSTAL'
-    - 'CLOUD_WATER'
-    - 'CLOUD_FRACTI'
-    - 'TKE'
-   NRFP3S:
-    - ${namelist.nrfp3s}
   <<: *default

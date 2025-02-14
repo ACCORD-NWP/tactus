@@ -329,7 +329,8 @@ class Marsprep(Task):
                     "NUMBER": [self.config["boundaries.ifs.bdmember"]],
                 }
             )
-
+        if levtype == "SOL":
+            d.update({"LEVELIST": "1/2/3/4/5"})
         if self.mars["class"] != "D1":
             d.update(
                 {
@@ -545,6 +546,27 @@ class Marsprep(Task):
                 if file_check != "":
                     raise FileNotFoundError(f"There is no data in fdb for {tag}")
 
+                exist_snow = False
+                with contextlib.suppress(KeyError):
+                    param3 = self.check_value(self.mars["GG_snow"], date_str)
+                    exist_snow = True
+                if exist_snow:
+                    self.update_data_request(
+                        data_type="forecast",
+                        date=date_str,
+                        time=hour_str,
+                        steps=base,
+                        prefetch=True,
+                        levtype="SOL",
+                        param=param3,
+                        specify_domain=False,
+                        target=f'"{tag}+[STEP].snow"',
+                    )
+                    self.write_mars_req(self.datarequest, f"{tag}.snow.req", "retrieve")
+                    self.create_executable(f"{tag}.snow.req")
+                    batch = BatchJob(os.environ, wrapper=self.wrapper)
+                    batch.run(self.executable)
+
                 exist_soil = False
                 with contextlib.suppress(KeyError):
                     param1 = self.check_value(self.mars["GG_soil"], date_str)
@@ -670,8 +692,12 @@ class Marsprep(Task):
                     i = int(j)
                     i_fstring = f"{i:02d}"
                     if os.path.exists(f"{tag}+{i}"):
+                        with open(f"{tag}+{i}.snow", "rb") as gp:
+                            snow = gp.read()
+                        gp.close()
                         with open(f"{tag}+{i}", "ab") as fp:
                             fp.write(self.data)
+                            fp.write(snow)
                         fp.close()
                         shutil.move(
                             f"{tag}+{i}",

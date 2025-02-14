@@ -1,14 +1,23 @@
-[submission.task_exceptions.AddCalculatedFields.BATCH]
-  WALLTIME = "#SBATCH --time=00:30:00"
+[platform]
+  rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov13/coef"
 
-[submission.task_exceptions.C903.ENV]
-  DR_HOOK_SIGNALS = -1
+[submission]
+  bindir = "/perm/deployde330/github-actions/install/cy49t2/cy49t2-v1.3.0/bin"
+
+[submission.gnu.BATCH]
+  MEM = "#SBATCH --mem=64GB"
+  WALLTIME = "#SBATCH --time=03:00:00"
 
 [submission.task_exceptions.CreateGrib.BATCH]
   WALLTIME = "#SBATCH --time=02:00:00"
 
+[submission.task_exceptions.E923Monthly.BATCH]
+  MEM = "#SBATCH --mem=32GB"
+
+[submission.task_exceptions.E923Update.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = 0
+
 [submission.task_exceptions.Forecast]
-  # This is optimised for a 1500x1500 domain
   NPROC = 624
   NPROC_IO = 16
   NPROCX = 24
@@ -27,6 +36,7 @@
   KMP_AFFINITY = "granularity=core,scatter"
   KMP_BLOCKTIME = "12"
   KMP_STACKSIZE = "4G"
+  UCX_LOG_LEVEL = "error"
 
 [submission.task_exceptions.Gmted.BATCH]
   MEM = "#SBATCH --mem=32GB"
@@ -35,19 +45,13 @@
   WALLTIME = "#SBATCH --time=08:00:00"
 
 [submission.task_exceptions.Marsprep.BATCH]
-  WALLTIME = "#SBATCH --time=06:00:00"
-
-[submission.task_exceptions.Pgd]
-  binary = "PGD-offline"
-  WRAPPER = "srun -n @NPROC@"
+  MEM = "#SBATCH --mem=128GB"
+  WALLTIME = "#SBATCH --time=02:00:00"
 
 [submission.task_exceptions.Pgd.BATCH]
   NODES = "#SBATCH --nodes=2"
   NTASKS = "#SBATCH --ntasks=32"
   WALLTIME = "#SBATCH --time=03:00:00"
-
-[submission.task_exceptions.Prep]
-  binary = "PREP-offline"
 
 [submission.task_exceptions.Prep.BATCH]
   NODES = "#SBATCH --nodes=2"

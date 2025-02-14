@@ -18,6 +18,7 @@ Try removing the package's `.venv` directory and run the command again. If it st
 ## Failing linting checks
 You can run `poetry devtools lint --fix` locally to fix some of the linting issues. You will need to solve the remaining issues manually, but the output of the linting tools usually tell you what is wrong and which place in the code you should look.
 
+Note: devtools lint does not currently work for Python >=3.12 (as it depends on flakeheaven)
 
 ## Failing tests
 It is always recommended to run the test suite locally address any encountered issue *before* pushing to you pull request.

@@ -49,14 +49,20 @@ sfx_pgd_isba_dif_HARMONIE_AROME:
 
 sfx_treedrag:
   NAM_TREEDRAG:
-    LFAKETREE: True
+    LFAKETREE:
+      - False
+      - True
+      - True
+      - True
+      - True
+      - True
     XALLEN_TERM: 2.5
     XFORFRAC1: 1.0
     XFORFRAC2: 0.0
     XFORLAT1: 1.0
     XFORLAT2: 0.0
     XGRASS_H_DNM: 3.0
-    #XSCALE_H_TREE: 1.0 Not yet implemented in CY49T2h
+    #XSCALE_H_TREE: 1.0 #Not yet implemented in CY49T2h
     XZ0_MAX_LIMIT: 1.6
     XZ0_MIN_LIMIT: 0.0
 
@@ -113,7 +119,7 @@ sfx_forecast_HARMONIE_AROME:
     NUM_LAYERS: 4
     XICE_THICKNESS: 0.75
   NAM_SEAFLUXN:
-    CSEA_FLUX: "ECUME6"
+    CSEA_FLUX: "ECUME"
     LPERTFLUX: False
     LPRECIP: False
     LPWEBB: False
@@ -143,8 +149,6 @@ sfx_forecast_HARMONIE_AROME:
     XZ0SN: 0.003
   NAM_FRAC:
     LECOSG: True
-
-
 
 sfx_forecast_AROME:
   NAM_DIAG_ISBAN:

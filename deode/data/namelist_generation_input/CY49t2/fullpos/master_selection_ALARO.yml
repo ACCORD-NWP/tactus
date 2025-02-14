@@ -1,3 +1,5 @@
+# Do the selection of fields below. Note
+# that xxt00000000 inherits from xxtddddhh00
 selection:
   xxt00000000:
     NAMFPDY2:
@@ -93,6 +95,7 @@ selection:
       - 97500.0
       - 100000.0
     NAMFPDYS:
+     MASTER:
       CL3DF:
       - GRAUPEL
       - RAIN
@@ -211,6 +214,7 @@ selection:
       - 97500.0
       - 100000.0
     NAMFPDYS:
+     MASTER:
       CL3DF:
       - GRAUPEL
       - RAIN
@@ -252,6 +256,7 @@ selection:
       - CLSHUMI.SPECIFIQ
       - CLSVENT.ZONAL
       - CLSVENT.MERIDIEN
+      - CLSRAFAL.MOD.XFU
       - CLSU.RAF60M.XFU
       - CLSV.RAF60M.XFU
       - CLSMAXI.TEMPERAT
@@ -265,27 +270,3 @@ selection:
       - CLSVISIHYDN60
       - CLSPTYPE_60M
       - CLSPTYPESEV_60M
-empty:
-  NAMCLRADLID: {}
-  NAMDWET: {}
-  NAMDYNA_STATIC: {}
-  NAMECV: {}
-  NAMECVDESC: {}
-  NAMECVGRB: {}
-  NAMJBALPHACV: {}
-  NAMJBECPHYSECV: {}
-  NAMJBSKTECV: {}
-  NAMMODERRCONF: {}
-  NAMMODERRCOV: {}
-  NAMMODERRINCRCONF: {}
-  NAMMODERRMOD: {}
-  NAMNRTAER: {}
-  NAMPARECV: {}
-  NAMPERTOBS: {}
-  NAMRSTRHBIAS: {}
-  NAM_NEBN: {}
-  NAM_PARAM_ICEN: {}
-  NAM_PARAM_MFSHALLN: {}
-  NAM_SPP_ACTIVE: {}
-  NAM_SPP_MODIF: {}
-  NAM_TURBN: {}

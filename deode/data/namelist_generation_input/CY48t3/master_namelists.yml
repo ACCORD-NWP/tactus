@@ -1,10 +1,22 @@
 e923_0:
   NAMCLA:
     LIPGD: true
-    LNEWORO: true
     NLISSP: 0
   NAMMCC:
     N923: 1
+
+e923_0_truncation:
+  NAMCLA:
+    LNEWORO: true
+  NAMDIM:
+    NMSMAX: ${cfg:domain.nmsmax_oro}
+    NSMAX: ${cfg:domain.nsmax_oro}
+
+e923_0_spectral:
+  NAMCLA:
+    LNEWORO: false
+    LSPSMORO: ${cfg:domain.lspsmoro}
+
 e923_1:
   NAMCLA:
     LIPGD: false
@@ -146,10 +158,12 @@ namgfl_AROME:
     YS_NL%NCOUPLING: 1
     YS_NL%NREQIN: 1
     YTKE_NL%NREQIN: 1
+
 f4_atos_bologna:
   NAMGEM: {}
   NAMRIP:
     RAVGTIME: 3600.0
+
 f4_AROME:
   NAERAD:
     LRRTM: true
@@ -269,7 +283,7 @@ f4_AROME:
     LQMVD: false
     LRHDI_LASTITERPC: true
     NITMP: 4
-    NSITER: 2
+    NSITER: 1
     NSPDLAG: 3
     NSVDLAG: 3
     NTLAG: 3
@@ -278,7 +292,7 @@ f4_AROME:
     RDAMPDIV: 20.0
     RDAMPPD: 20.0
     RDAMPQ: 0.0
-    RDAMPT: 0.0
+    RDAMPT: 20.0
     RDAMPVD: 20.0
     RDAMPVOR: 20.0
     REPS1: 0.0
@@ -287,9 +301,9 @@ f4_AROME:
     REPSM2: 0.0
     REPSP1: 0.0
     SDRED: 1.0
-    SIPR: 60000.0
+    SIPR: 90000.0
     SITR: 350.0
-    SITRA: 50.0
+    SITRA: 100.0
     SLHDA0: 0.25
     SLHDD00: 6.5e-05
     VESL: 0.05
@@ -585,19 +599,13 @@ f4_ALARO:
     GFP_CCC%IBITS: 16
     GFP_CCP%IBITS: 16
     GFP_CCSF%IBITS: 16
-    GFP_CDNI%CLNAME: SURFDIR.NORM.IRR
     GFP_CDNI%IBITS: 16
-    GFP_CGNI%CLNAME: SURFGLB.NORM.IRR
     GFP_CGNI%IBITS: 16
     GFP_CLSP%IBITS: 16
     GFP_CLSS%IBITS: 16
-    GFP_CSLH%CLNAME: SURFFLU.LAT.TOTA
-    GFP_CSOP%CLNAME: SURF.RAYT.DIR
-    GFP_CTOP%CLNAME: TOP.RAYT.DIR
     GFP_HCC%IBITS: 8
     GFP_LCC%IBITS: 8
     GFP_MCC%IBITS: 8
-    GFP_MXCLWC%CLNAME: CLS.MXCLWC
     GFP_MXCLWC%IBITS: 12
     GFP_TCC%IBITS: 8
     GFP_VISICLD%IBITS: 12
@@ -626,7 +634,6 @@ f4_ALARO:
     GFP_XX2T%IBITS: 12
     TFP_ETH%IBITS: 12
     TFP_FGST%IBITS: 12
-    TFP_HCLP%CLNAME: CLPMHAUT.MOD.XFU
     TFP_HU%CLNAME: HUMI_RELATIVE
     TFP_HU%IBITS: 12
     TFP_I%IBITS: 16

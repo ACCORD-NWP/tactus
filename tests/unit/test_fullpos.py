@@ -71,7 +71,11 @@ class TestFullpos:
                         "CLPHY": ["SURFTEMPERATURE"],
                     },
                     "NAMFPDYS": {
-                        "TEST": {"CL3DF": ["TEMPERATURE"], "NRFP3S": ["test_compare"]}
+                        "TEST": {
+                            "CL3DF": ["TEMPERATURE", "FOO"],
+                            "NRFP3S": ["test_compare"],
+                        },
+                        "TEST2": {"CL3DF": ["TEMPERATURE"], "NRFP3S": [0]},
                     },
                     "NAMFPDYP": {"CL3DF": ["ABS_VORTICITY"], "RFP3P": [80000.0]},
                 },
@@ -128,8 +132,8 @@ class TestFullpos:
                 "RFPVCAP": 7000,
                 "RENTRA": 0.0001,
                 "RFP3P": [80000.0],
-                "NRFP3S": [65],
-                "CFP3DF": ["ABS_VORTICITY", "TEMPERATURE"],
+                "NRFP3S": [0, 65],
+                "CFP3DF": ["ABS_VORTICITY", "FOO", "TEMPERATURE"],
                 "CFPCFU": ["SURFACCGRAUPEL"],
                 "CFPXFU": ["CLSTEMPERATURE"],
                 "CFPPHY": ["SURFTEMPERATURE"],
@@ -147,8 +151,13 @@ class TestFullpos:
             },
             "NAMFPDYS": {
                 "CL3DF(1)": "TEMPERATURE",
+                "CL3DF(2)": "FOO",
                 "IL3DF(1,1)": 1,
+                "IL3DF(2,1)": 2,
+                "IL3DF(1,2)": 2,
                 "CLD3DF(1,1)": "test",
+                "CLD3DF(2,1)": "test",
+                "CLD3DF(1,2)": "test",
             },
             "NAMFPDYP": {
                 "CL3DF(1)": "ABS_VORTICITY",
@@ -166,7 +175,7 @@ class TestFullpos:
         ref_xxtddddhh00 = {
             "NAMFPDYS": {
                 "CL3DF(1)": "TEMPERATURE",
-                "IL3DF(1,1)": 1,
+                "IL3DF(1,1)": 2,
                 "CLD3DF(1,1)": "test",
             },
             "NAMFPPHY": {},

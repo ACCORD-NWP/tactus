@@ -79,12 +79,11 @@ class TaskSettings(object):
         Args:
              config(deode.ParserdConfig): Configuration
         """
-        submission_defs = config["submission"].dict()
-        self.submission_defs = submission_defs
+        self.config = config
+        self.submission_defs = self.config["submission"].dict()
         self.job_type = None
         self.processor_layout = None
 
-        self.config = config
         self.fmanager = FileManager(self.config)
         self.platform = self.fmanager.platform
         self.unix_group = self.platform.get_value("platform.unix_group")
@@ -117,35 +116,48 @@ class TaskSettings(object):
         Returns:
             dict: Parsed settings
 
+        Raises:
+            RuntimeError: Undefined submit type
+
         """
         task_settings = {"BATCH": {}, "ENV": {}, "MODULES": {}}
         all_defs = self.submission_defs
-        submit_types = all_defs["submit_types"]
+        try:
+            all_types = all_defs["types"]
+        except KeyError:
+            all_types = {}
+
+        submit_types = list(all_types)
         default_submit_type = all_defs["default_submit_type"]
+        if default_submit_type not in submit_types:
+            raise RuntimeError(
+                f"Default submit type: {default_submit_type} is not defined"
+            )
         logger.debug("default_submit_type={}", default_submit_type)
         task_submit_type = None
         for s_t in submit_types:
-            if s_t in all_defs and "tasks" in all_defs[s_t]:
-                for tname in all_defs[s_t]["tasks"]:
+            if s_t in all_types and "tasks" in all_types[s_t]:
+                for tname in all_types[s_t]["tasks"]:
                     if tname == task:
                         task_submit_type = s_t
         if task_submit_type is None:
             task_submit_type = default_submit_type
 
-        if task_submit_type in all_defs:
-            logger.debug("task_submit_type for task {}: {}", task, task_submit_type)
-            task_settings = self.update_task_setting(
-                task_settings, all_defs[task_submit_type]
-            )
+        logger.debug("task_submit_type for task {}: {}", task, task_submit_type)
 
-            if (
-                "BATCH" in task_settings
-                and "NAME" in task_settings["BATCH"]
-                and "@TASK_NAME@" in task_settings["BATCH"]["NAME"]
-            ):
-                task_settings["BATCH"]["NAME"] = task_settings["BATCH"]["NAME"].replace(
-                    "@TASK_NAME@", task
-                )
+        # Update task_settings
+        task_settings = self.update_task_setting(
+            task_settings, all_types[task_submit_type]
+        )
+
+        if (
+            "BATCH" in task_settings
+            and "NAME" in task_settings["BATCH"]
+            and "@TASK_NAME@" in task_settings["BATCH"]["NAME"]
+        ):
+            task_settings["BATCH"]["NAME"] = task_settings["BATCH"]["NAME"].replace(
+                "@TASK_NAME@", task
+            )
 
         if "task_exceptions" in all_defs and task in all_defs["task_exceptions"]:
             logger.debug("Task task_exceptions for task {}", task)

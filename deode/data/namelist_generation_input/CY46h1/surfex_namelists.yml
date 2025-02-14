@@ -64,12 +64,7 @@ sfx_split_patch:
   NAM_WRITE_SURF_ATM:
     LSPLIT_PATCH: False  
 
-sfx_forecast_HARMONIE_AROME_lumi:
-  NAM_SEAFLUXN:
-    CSEA_FLUX: "ECUME6"
-  NAM_TREEDRAG:
-    LFAKETREE: True
-sfx_forecast_HARMONIE_AROME_atos_bologna:
+sfx_forecast_HARMONIE_AROME:
   NAM_SEAFLUXN:
     CSEA_FLUX: "ECUME"
   NAM_TREEDRAG:

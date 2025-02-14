@@ -5,11 +5,6 @@
   lfftw = true
   module_initfile = "/software/sse2/init/nsc_lmod_init.sh"
   nproma = -32
-  submit_types = ["background", "serial", "parallel", "compile"]
-
-[submission.background]
-  SCHOST = "localhost"
-  tasks = []
 
 [submission.iomerge.age_limit]
   fullpos = 15
@@ -21,23 +16,27 @@
   history = -1
   surfex = 0
 
-[submission.parallel]
+[submission.types.background]
+  SCHOST = "localhost"
+  tasks = []
+
+[submission.types.parallel]
   NPROC = 32
   SCHOST = "freja"
   tasks = ["Forecast", "E927", "C903"]
   WRAPPER = "mpprun"
 
-[submission.parallel.BATCH]
+[submission.types.parallel.BATCH]
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   WALLTIME = "#SBATCH --time=00:10:00"
 
-[submission.parallel.ENV]
+[submission.types.parallel.ENV]
   DR_HOOK = 1
   DR_HOOK_IGNORE_SIGNALS = -1
   OMP_NUM_THREADS = 1
   OMPI_MCA_btl = "^vader"
 
-[submission.parallel.MODULES]
+[submission.types.parallel.MODULES]
   # First load the prgenv
   PRGENV = ["load", "prgenv/intel"]
   # The rest
@@ -48,7 +47,7 @@
   NETCDF = ["load", "netcdf4/4.7.4"]
   OPENMPI = ["load", "openmpi/4.1.1.1"]
 
-[submission.serial]
+[submission.types.serial]
   NPROC = 1
   NPROCX = 1
   NPROCY = 1
@@ -56,26 +55,26 @@
   tasks = ["CreateGrib", "Gmted", "Soil", "Pgd", "Prep", "Marsprep"]
   WRAPPER = "mpprun"
 
-[submission.serial.BATCH]
+[submission.types.serial.BATCH]
   MEMORY = "#SBATCH --mem=64GB"
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   WALLTIME = "#SBATCH --time=00:15:00"
 
-[submission.serial.ENV]
+[submission.types.serial.ENV]
   DR_HOOK_IGNORE_SIGNALS = -1
   OMP_NUM_THREADS = 1
   OMPI_MCA_btl = "^vader"
 
-[submission.serial.MODULES]
+[submission.types.serial.MODULES]
   # First load the prgenv
   00_PRGENV = ["-q", "purge"]
   01_ECCODES = ["load", "eccodes-utils/2.32.0-ENABLE-AEC-hpc1-intel-2023a-eb"]
 
-[submission.task]
+[submission.types.task]
   wrapper = ""
 
-[submission.task_exceptions.Pgd.BATCH]
+[submission.types.task_exceptions.Pgd.BATCH]
   MEMORY = "#SBATCH --mem=64GB"
   WALLTIME = "#SBATCH --time=00:30:00"

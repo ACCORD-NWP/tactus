@@ -103,6 +103,9 @@ def derived_variables(config, processor_layout=None):
     Returns:
         update (dict) : Derived config update
 
+    Raises:
+        NotImplementedError: For configurations checking
+
     """
     # Geometry
     nbzonl = int(config["domain.nbzonl"])
@@ -121,19 +124,48 @@ def derived_variables(config, processor_layout=None):
         if int(config["domain.njmax"]) < 250:
             nbzong = 8
 
-    truncation = {"linear": 2, "quadratic": 3, "cubic": 4, "custom": None}
-    lspsmoro = {"linear": True, "quadratic": False, "cubic": False, "custom": True}
-
     ndguxg = int(config["domain.nimax"]) + int(config["domain.ilone"])
     ndglg = int(config["domain.njmax"]) + int(config["domain.ilate"])
 
+    # Calculate spectral truncation
+    truncation_map = {"linear": 2, "quadratic": 3, "cubic": 4, "custom": None}
     gridtype = config["domain.gridtype"]
 
     if gridtype == "custom":
-        truncation[gridtype] = config["domain.custom_truncation"]
+        truncation_map[gridtype] = config["domain.custom_truncation"]
 
-    nsmax = floor((ndglg - 2) / truncation[gridtype])
-    nmsmax = floor((ndguxg - 2) / truncation[gridtype])
+    truncation = truncation_map[gridtype]
+    nsmax = floor((ndglg - 2) / truncation)
+    nmsmax = floor((ndguxg - 2) / truncation)
+
+    orographic_smoothing_method = config["domain.orographic_smoothing_method"]
+
+    if orographic_smoothing_method == "spectral":
+        gridtype_oro = gridtype
+        lspsmoro_map = config["domain.spectral_smoothing_by_gridtype"]
+        lspsmoro = lspsmoro_map[gridtype]
+        logger.info("lspsmoro:{}", lspsmoro)
+        nsmax_oro = nsmax
+        nmsmax_oro = nmsmax
+    elif orographic_smoothing_method == "truncation":
+        lspsmoro = False
+        gridtype_oro = config["domain.gridtype_oro"]
+        if gridtype_oro == "":
+            gridtype_oro_map = config["domain.truncation_by_gridtype"]
+            gridtype_oro = gridtype_oro_map[gridtype]
+            logger.info("gridtype_oro set to {}", gridtype_oro)
+
+        if gridtype_oro == "custom":
+            truncation_map[gridtype] = config["domain.custom_truncation_oro"]
+
+        nsmax_oro = floor((ndglg - 2) / truncation_map[gridtype_oro])
+        nmsmax_oro = floor((ndguxg - 2) / truncation_map[gridtype_oro])
+    else:
+        msg = (
+            "Orographic smoothing method: "
+            f"{orographic_smoothing_method} is not implemented"
+        )
+        raise NotImplementedError(msg)
 
     xlat0 = config.get("domain.xlat0", "")
     xlon0 = config.get("domain.xlon0", "")
@@ -182,6 +214,7 @@ def derived_variables(config, processor_layout=None):
     # Update config and namelist settings
     update = {
         "domain": {
+            "gridtype_oro": gridtype_oro,
             "nbzong": nbzong,
             "nbzonl": nbzonl,
             "ndguxg": ndguxg,
@@ -189,10 +222,12 @@ def derived_variables(config, processor_layout=None):
             "xrpk": xrpk,
             "xlat0": xlat0,
             "xlon0": xlon0,
-            "xtrunc": truncation[gridtype],
+            "xtrunc": truncation,
             "nsmax": nsmax,
             "nmsmax": nmsmax,
-            "lspsmoro": lspsmoro[gridtype],
+            "nsmax_oro": nsmax_oro,
+            "nmsmax_oro": nmsmax_oro,
+            "lspsmoro": lspsmoro,
         },
         "macros": {
             "gen_macros": gen_macros,

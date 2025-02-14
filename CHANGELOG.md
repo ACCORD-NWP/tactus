@@ -10,22 +10,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.11.0] - 2025-02-13
+
+### Added
+- Add Harmonie-Arome configurations and update namelist creation for cy49t2 [\#969](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/969) (@romick-knmi)
+- Detach selection of orography filtering method from CSC. [\#960](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/960)(@uandrae)
+- Namelist changes for c903 CY49t2, retrieve snow parameters on SOIL levels from mars.[\#978](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/978)(@kastelecn)
+- Add large domain submission rules for CY49 on atos_bologna [#945](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/945) (@uandrae)
+- Add synthetic satellite fields for cy49t2 [#954](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/954) (@FlorianW-ZAMG)
+- Add albedo to AQ event output. [\#920](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/920) (@sbnielsen)
+- Add documentation for archiving with FDB on ATOS [\#768](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/768) (@johtoblan)
+- Track fields not archived to fdb[\#754](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/754) (@uandrae, @sbnielsen, @KristianHMoller)
+- Add geohash algorithm to identify starting area in FDB [\#973](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/973) (@johtoblan)
+- Add model version mapping to FDB grib_set parameters [\#975](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/975) (@KristianHMoller)
+
+### Changed
+- Update AROME dynamics settings [\#966](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/966)(@uandrae)
+- Update fullpos selection for CY49 [\#941](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/941)(@uandrae)
+- Increased walltime from 15 to 30 minutes for AddCalculatedFields [\#948](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/948) (@KristianHMoller)
+- Updated FA2GRIB2 translations [\#754](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/754) (@uandrae, @sbnielsen, @KristianHMoller)
+- Add EcCodes as a python dependency [\#937](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/937) (@johtoblan)
+- Make version of poethepoet more flexible [\#950](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/950) (@johtoblan)
+- Updated README.md for poetry >= v2.0.0 shell plugin installation. [\#935](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/935) (@BertvanUlft)
+- Externalise sqlite_utils to grib2sqlite. [\#949] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/949) (@adeckmyn)
+- Make submission groups more flexible. [\#867](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/867) (@uandrae)
+- Add pandas 2.0 compatible versions to allowed dependencies. [\#942](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/942) (@observingClouds)
+
+### Fixed
+- Correct orography truncation for linear grid. [\#960](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/960)(@uandrae)
+- Correct merge of fullpos selection [\#941](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/941)(@uandrae)
+- Load ecmwf-toolbox/2024.11.0.0 for AddCalculateFields [\#958](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/958)(@KristianHMoller)
+- Semi-functional settings for running DW on LUMI (GMK binary, Cray 16).[\#947](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/947)(@kastelecn)
+- Remove erroneous domain specification from flooding event [\#943](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/943) (@uandrae)
+- Remove 10wdir from gribmodify.[\#934](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/934) (@kastelecn)
+- Add FA2GRIB translation for gust wind speed, makes the gribmodify part obsolete. [\#928](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/928) (@uandrae)
+- Bump python version to 3.10 in github linting action. [\#933](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/933) (@johtoblan)
+
 ## [0.10.0] - 2024-12-17
 
 ### Added
-- Add namelists to create needed output for postprocessing [\#923] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/923) (@egregow)
-- Add unit test for standalone template file [\#890] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/890) (@pardallio)
+- Add namelists to create needed output for postprocessing [\#923](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/923) (@egregow)
+- Add unit test for standalone template file [\#890](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/890) (@pardallio)
 - Add wind fields to grib output. [\#916](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/916) (@kastelecn)
 - Add lightning to ALARO. [\#907](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/907) (@kastelecn)
-- Output surface geopotential (CY46h1) using gl to separate file in air quality events [\#854] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/854) (@sbnielsen)
+- Output surface geopotential (CY46h1) using gl to separate file in air quality events [\#854](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/854) (@sbnielsen)
 
 ### Fixed
 - Fixed get_decadal_list [#924](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/924)(@natalieth)
 - Fixed fullpos.selection for subhourly output and added CLSMEAN.RAD.TEMP to alaro fullpus namelist. [\#893](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/893) (@kastelecn)
-- Fixes to make `deode case -e` produce a correct config file [\#897] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/897) (@uandrae)
-- Only run gl if there is an actual gl namelist [\#854] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/854) (@sbnielsen)
-- Correctly mask surfex values where missing in CY48t3 [\#854] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/854) (@sbnielsen)
-- Output surface geopotential (CY48t3) and land-sea-mask (CY48t3 and CY46h1) at analysis instead of forecast in air quality events [\#854] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/854) (@sbnielsen)
+- Fixes to make `deode case -e` produce a correct config file [\#897](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/897) (@uandrae)
+- Only run gl if there is an actual gl namelist [\#854](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/854) (@sbnielsen)
+- Correctly mask surfex values where missing in CY48t3 [\#854](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/854) (@sbnielsen)
+- Output surface geopotential (CY48t3) and land-sea-mask (CY48t3 and CY46h1) at analysis instead of forecast in air quality events [\#854](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/854) (@sbnielsen)
 
 ### Changed
 - Updated git branch structure of repository to standardize branch names and workflows. [\#885](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/885) (@mafdmi)
@@ -34,43 +70,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated docs with accept/decline procedure for reviewers; all accepting reviewers now have to approve before merge. [\#872](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/872) (@mafdmi)
 - Updated air quality event output in cy46h1 to use surfex parameters from tile 3 instead of 1 to fix issue since transition to 3 patches. [\#912](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/912) (@sbnielsen) 
 
-- Added WOW's station lists and others for verification [\#860] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/918) (@svianaj)
+- Added WOW's station lists and others for verification [\#860](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/918) (@svianaj)
 
 
 ## [0.9.1] - 2024-11-22
 
 ### Fixed
-- Archiving of config file in operational setting [\#896] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/896) (@FlorianW-ZAMG)
+- Archiving of config file in operational setting [\#896](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/896) (@FlorianW-ZAMG)
 
 ## [0.9.0] - 2024-11-20
 
 ### Added
-- Add mars settings for expver iit7 (eps example) [\#879] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/870) (@kastelecn)
-- Add xml dumper impact models configs. [\#837] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/837) (@uandrae)
-- Intercept standard logging in loguru log handler. [\#855] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/855)
-- Add end time for expver i4ql (ATOS\_DT) [\#866] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/866) (@kastelecn)
-- Airquality event type configuration file. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
-- Temporary SURFEX grib2 definitions for CY6h1 and CY48t3. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
-- Canopy water and land-sea-mask to fullpos aq selection. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
+- Add mars settings for expver iit7 (eps example) [\#879](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/870) (@kastelecn)
+- Add xml dumper impact models configs. [\#837](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/837) (@uandrae)
+- Intercept standard logging in loguru log handler. [\#855](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/855)
+- Add end time for expver i4ql (ATOS\_DT) [\#866](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/866) (@kastelecn)
+- Airquality event type configuration file. [\#818](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
+- Temporary SURFEX grib2 definitions for CY6h1 and CY48t3. [\#818](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
+- Canopy water and land-sea-mask to fullpos aq selection. [\#818](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
 
 ### Changed
 - Replace batches with ecflow limit for LBC tasks. [\#850](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/850)(@kastelecn)
-- deodemakedirs will use default linux permission unless unixgroup is specified. [\#879] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/879) (@trygveasp)
+- deodemakedirs will use default linux permission unless unixgroup is specified. [\#879](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/879) (@trygveasp)
 - Refactored the DEODE ecFlow suite generation scripts. Bumped python version to 3.10 in both test environment and pyproject.toml. [\#831](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/831) (@mafdmi)
 - Changed impact model config layout [\#838](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/838) (@uandrae)
 - Updated operational settings [\#859](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/859) (@kastelecn)
 - Added LACE's station lists for verification [\#860] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/860) (@svianaj)
 - Creategrib task has been changed so that it is more flexible and can handle several conversions. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
 - Grib definitions of momentum fluxes and canopy water. [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
+- Updated descriptions for setting up environment and installation in README.md. [\#894] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/894) (@ole-dmi)
 
 ### Fixed
 - Added find_value function to fn_steplist to decode string into list. [\#883](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/883) (@pardallio)
 - Added empty modification submission files for alaro on atos\_bologna to silent erroneous warnings. [\#887](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/887) (@kastelecn)
-- Not abort on missing logs directory. [\#878] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/878) (@trygveasp)
+- Not abort on missing logs directory. [\#878](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/878) (@trygveasp)
 - Fixed bug in clean\_old\_data.toml. [\#882](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/882) (@kastelecn)
 - Set NPATCH=3 explicitly for HARMONIE-AROME. [\871](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/871) (@uandrae)
 - Made it impossible to parse any string to output_settings. Only empty string, string of ISO8601 format, or list of strings of ISO8601 format are possible. [\#830](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/830) (@mafdmi)
-- Bug that made it impossible to merge namelists with more than one hybrid level with master selection in CY48t3 [\#818] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
+- Bug that made it impossible to merge namelists with more than one hybrid level with master selection in CY48t3 [\#818](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
 - Change the behaviour of `deode run` to only require the `--task` argument. The other arguments will default to names based on the task name. [\#836](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/836) (@uandrae)
  
 ## [0.8.0] - 2024-10-31
@@ -151,7 +188,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduced CY49t2 namelist and config files for all three CSCs [#698](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/698) (@uandrae)
 - Updated documentation of ecflow server settings [#659](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/659) (@FlorianW-ZAMG)
 - Mars works on LUMI, added selection LUMI\_DT [#647](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/647) (@kastelcn)
-- Introduced IOmerge task[s] that can run the merging of IOSERVER output in parallel while the forecast is running, rather than after [#677] (https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/677) (@adeckmyn)
+- Introduced IOmerge task[s] that can run the merging of IOSERVER output in parallel while the forecast is running, rather than after [#677](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/677) (@adeckmyn)
 - Introduced a ecf_host selection function to handle the old and new ecflow server name conventions on atos[#675](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/675) (@uandrae)
 - Introduced a short description of available tasks [#658](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/658) (@uandrae)
 - Introduction of Leonardo machine [#645](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/645) (@dhaumont)
@@ -171,7 +208,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Introduce OmegaConf for namelist configuration handling. Move namelist data to /data sub-directory. [\#759] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/759) (@adeckmyn)
+- Introduce OmegaConf for namelist configuration handling. Move namelist data to /data sub-directory. [\#759](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/759) (@adeckmyn)
 - Move bdcycle ro mars\_settings, fixes for mars on LUMI [\#765](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/765) (@kastelecn)
 - Force user to set expver manually for FDB archiving [\#763](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/763) (@uandrae)
 - Updates path to Cycle 48t3  and 46h1 binaries to comply with CI/CD [\#760](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/760) (@pardallio)
@@ -198,8 +235,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removes platform-specific namelist settings from the Cy46h1 master namelist file following Jul 2024 binaries update. [#742](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/742) (@tbnc)
 - Fix mars retrieve for latlon z. [#687](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/687) (@kastelecn)
 - Correct the namelist update functionality. [\#673](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/673) (@uandrae)
-- Fix bug in SQLite extraction at other times than midnight [\#680] (https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/680) (@adeckmyn)
-- Minor change to CY46h1/master_namelists.yml for simulated radiance calculation [\#670] (https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/670) (@fbaordo)
+- Fix bug in SQLite extraction at other times than midnight [\#680](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/680) (@adeckmyn)
+- Minor change to CY46h1/master_namelists.yml for simulated radiance calculation [\#670](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/670) (@fbaordo)
 - Restore large domain settings and arome -> arome config template. [\#642](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/642) (@uandrae)
 - Make sure schema files are included for validation when creating new config files. [\#601](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/601) (@uandrae)
 - Allow macro parsing of path to troika. [\#596](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/596) (@uandrae)
