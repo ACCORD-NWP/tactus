@@ -6,20 +6,24 @@ Each forecast experiment has a start and end dates and cycle length. These setti
 
 ![drawing](../docs/figs/experiment_timeline.jpg)
 
-working folder - contains the workings folder of each suite task: wrk="@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/"
+- working folder - contains the workings folder of each suite task: `wrk="@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/"`
 
-archive folder - contains the forecast result folders: archive="@ARCHIVE_ROOT@/@ARCHIVE_TIMESTAMP@"="@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"
+- archive folder - contains the forecast result folders: `archive="@ARCHIVE_ROOT@/@ARCHIVE_TIMESTAMP@"="@ARCHIVE_ROOT@/@YYYY@/@MM@/@DD@/@HH@/"`
 
 These folder paths are parameterized by settings in the config file and its include setting files. Here  for working folder the time parameters are from the experiment start date.
 For the archive folder the time parameters are specific for each cycle.
 Regular usage of suite forecast for different start dates produces a series of specific folders and files in the experiment working and archive folders.
 
-## Cleaning task to clean experiment files . 
-It is added an option in the suite_control setting section of the config file, which allows to add or not an ecflow cleaning task.
+## Cleaning task to clean experiment files
+
+It is added an option in the `suite_control` setting section of the config file, which allows to add or not an ecflow cleaning task.
+
 ```shell
-do_cleaning = true 
+[suite_control]
+  do_cleaning = true
+
 ```
-To use the cleanig task it is created a ecflow task which is the last task in the forecast suite. It is triggered after successfully execution of the previous suite tasks.
+To use the cleanig task it is created a ecFlow task which is the last task in the forecast suite. It is triggered after successfully execution of the previous suite tasks.
 
 Cleaning settings are grouped in the cleaning include file, which is referred as a setting in the include setting section of the config file.
 ```shell
@@ -44,9 +48,11 @@ step - defines the time moments in the cleaning interval when to clean files
 
 All of the default settings are required. But these values could be changed in the specific folder settings.
 
-## Settings for the working folder. 
-Required settings are "active" and "path". "path" defines the working folder path - the root folder which contains all working files and folders. 
-Example value of the working path: "/ec/res4/scratch/bgmt/deode/CY48t3_AROME/20230916_0000/"
+## Settings for the working folder
+
+Required settings are `active` and `path`. `path` defines the working folder path - the root folder which contains all working files and folders. 
+
+Example value of the working path: `/ec/res4/scratch/bgmt/deode/CY48t3_AROME/20230916_0000/`
 ```shell
 [wrk]
   active = true
@@ -54,9 +60,11 @@ Example value of the working path: "/ec/res4/scratch/bgmt/deode/CY48t3_AROME/202
   include  = "ELS*"
   path = "@WRK@"
 ```
-## Settings for the archive folder. 
-Required settings are "active" and "path". 
-Example value of the archive folder path is "/ec/res4/scratch/bgmt/deode/CY48t3_AROME/archive/2023/09/16/00/"
+## Settings for the archive folder
+
+Required settings are `active` and `path`.
+Example value of the archive folder path is `/ec/res4/scratch/bgmt/deode/CY48t3_AROME/archive/2023/09/16/00/`
+
 ```shell
 [archive]
   active = true
