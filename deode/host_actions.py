@@ -14,19 +14,22 @@ from .logs import logger
 class DeodeHost:
     """DeodeHost object."""
 
-    def __init__(self, known_hosts=None):
+    def __init__(self, known_hosts=None, known_hosts_file=None):
         """Constructs the DeodeHost object."""
-        self.known_hosts = self._load_known_hosts(known_hosts)
+        self.known_hosts = self._load_known_hosts(
+            known_hosts=known_hosts, known_hosts_file=known_hosts_file
+        )
         self.available_hosts = list(self.known_hosts)
         self.default_host = self.available_hosts[0]
         self.deode_host = os.getenv("DEODE_HOST")
         self.hostname = socket.gethostname()
 
-    def _load_known_hosts(self, known_hosts=None):
+    def _load_known_hosts(self, known_hosts=None, known_hosts_file=None):
         """Loads the known_hosts config.
 
         Args:
-            known_hosts (str, optional): Known hosts file. Defaults to None
+            known_hosts (dict, optional): Known hosts dict. Defaults to None
+            known_hosts_file (str, optional): Known hosts file. Defaults to None
 
         Raises:
             RuntimeError: No host identifiers loaded
@@ -35,11 +38,11 @@ class DeodeHost:
             known_host (dict): Known hosts config
 
         """
-        known_hosts_file = (
-            ConfigPaths.path_from_subpath("known_hosts.yml")
-            if known_hosts is None
-            else known_hosts
-        )
+        if known_hosts is not None:
+            return known_hosts
+
+        if known_hosts_file is None:
+            known_hosts_file = ConfigPaths.path_from_subpath("known_hosts.yml")
 
         with open(known_hosts_file, "rb") as infile:
             known_hosts = yaml.safe_load(infile)

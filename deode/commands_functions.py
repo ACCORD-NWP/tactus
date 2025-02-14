@@ -97,11 +97,11 @@ def create_exp(args, config):
     deode_home = set_deode_home(config, args.deode_home)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
     config_data_dir = args.config_data_dir
-    known_hosts = args.host_file
-    if known_hosts is None:
-        known_hosts = ConfigPaths.path_from_subpath("known_hosts.yml")
+    known_hosts_file = args.host_file
+    if known_hosts_file is None:
+        known_hosts_file = ConfigPaths.path_from_subpath("known_hosts.yml")
 
-    host = DeodeHost(known_hosts=known_hosts).detect_deode_host()
+    host = DeodeHost(known_hosts_file=known_hosts_file).detect_deode_host()
     output_file = args.output_file
     case = args.case
     mod_files = args.config_mods
