@@ -2,12 +2,26 @@
 """Unit tests for the archiving methods."""
 
 import os
+import sys
 from pathlib import Path
 
 import pytest
 
 from deode.derived_variables import set_times
 from deode.tasks.archive import Archive
+from deode.toolbox import compute_georef
+
+
+class MockFDB:
+    def archive(self, a):
+        pass
+
+    def flush(self):
+        pass
+
+
+class PyFDB:
+    FDB = MockFDB
 
 
 @pytest.fixture(scope="module")
@@ -45,9 +59,17 @@ def basic_config(tmpdir, default_config):
                             "pattern": "m*",
                         }
                     },
+                    "fdb": {
+                        "fdb_file": {
+                            "active": True,
+                            "inpath": str(tmp1),
+                            "outpath": str(tmp2),
+                            "pattern": "x*",
+                        }
+                    },
                 }
             },
-            "platform": {"archive_types": ["copy", "move"], "unix_group": ""},
+            "platform": {"archive_types": ["copy", "move", "fdb"], "unix_group": ""},
         }
     )
     return config
@@ -79,3 +101,36 @@ def test_move(basic_config):
 
     assert os.path.isfile(f"{tmp2}/move")
     assert not os.path.isfile(f"{tmp1}/move")
+
+
+def test_fdb(monkeypatch, basic_config):
+    config = basic_config.copy(update={"fdb": {"grib_set": {"expver": "test"}}})
+    tmp1 = basic_config["archiving.test.move.move_file.inpath"]
+
+    os.system("touch xtra_temp1.grib")  # noqa S108
+    os.system("touch xtra_temp2.grib")  # noqa S108
+    a = Archive(config, "test")
+    choice = a.choices["fdb"]["fdb_file"]
+    output = []
+    with monkeypatch.context() as mp:
+        mp.setitem(sys.modules, "pyfdb", PyFDB)
+        mp.setattr(os, "system", output.append)
+        a.archive(choice["pattern"], choice["inpath"], choice["outpath"], "fdb")
+
+    assert f"grib_filter temp_rules {tmp1}/xtra -o xtra_temp1.grib" == output[0]
+    assert output[1].startswith("grib_set -s")
+    assert "expver=test" in output[1]
+    assert "georef=Z4Q1B4" in output[1]
+    assert output[1].endswith("xtra_temp1.grib xtra_temp2.grib")
+
+
+def test_fdb_compute_georef():
+    # Demo domain
+    config_demo = {"xlatcen": 52.0, "xloncen": 4.9}
+    # Very Precise lon and lat center
+    # But we hardcode precision = 6, so this will truncate
+    config_precise = {"xlatcen": 37.7749, "xloncen": -122.4194}
+    georef = compute_georef(config_demo)
+    georef2 = compute_georef(config_precise)
+    assert georef == "Z4Q0s4"
+    assert georef2 == "Hr6kQI"

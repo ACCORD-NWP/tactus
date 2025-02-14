@@ -7,7 +7,7 @@
   pattern = "GRIB*sfx"
 
 [fullpos.selection]
-  aq = ["aq_selection"]
+  aq = ["aq_selection_@CSC@"]
 
 [task.CreateGrib]
   conversions = ["surfex", "history"]

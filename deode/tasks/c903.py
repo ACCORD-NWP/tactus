@@ -88,4 +88,4 @@ class C903(Task):
         # Store result
         target = f"{self.intp_bddir}/{self.bdfile_template}"
         self.fmanager.output("ELSCFMARS@FPDOMAIN@+0000", target)
-        self.archive_logs("NODE.001_01")
+        self.archive_logs(["fort.4", "namelist_c903_domain", "NODE.001_01"])

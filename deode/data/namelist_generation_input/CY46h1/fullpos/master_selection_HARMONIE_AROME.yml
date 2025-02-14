@@ -125,7 +125,8 @@ selection:
      - 95000.
      - 97500.
      - 100000.
-  NAMFPDYS: 
+  NAMFPDYS:
+   MASTER:
     CL3DF:
      - 'GRAUPEL'
      - 'RAIN'

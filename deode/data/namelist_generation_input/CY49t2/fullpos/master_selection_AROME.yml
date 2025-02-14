@@ -5,6 +5,7 @@ selection:
       - SURFPRESSION
       - SPECSURFGEOPOTEN
       - MSLPRESSURE
+      - SURFTOT.WAT.VAPO
       - SURFISOTPW1.MALT
       - SURFCAPE.POS.F00
       - SURFCIEN.POS.F00
@@ -93,6 +94,7 @@ selection:
       - 97500.0
       - 100000.0
     NAMFPDYS:
+     MASTER:
       CL3DF:
       - GRAUPEL
       - RAIN
@@ -212,6 +214,7 @@ selection:
       - 97500.0
       - 100000.0
     NAMFPDYS:
+     MASTER:
       CL3DF:
       - GRAUPEL
       - RAIN
@@ -266,27 +269,3 @@ selection:
       - CLSPTYPE_60M
       - CLSPTYPESEV_60M
       - CLSMEAN.RAD.TEMP
-empty:
-  NAMCLRADLID: {}
-  NAMDWET: {}
-  NAMDYNA_STATIC: {}
-  NAMECV: {}
-  NAMECVDESC: {}
-  NAMECVGRB: {}
-  NAMJBALPHACV: {}
-  NAMJBECPHYSECV: {}
-  NAMJBSKTECV: {}
-  NAMMODERRCONF: {}
-  NAMMODERRCOV: {}
-  NAMMODERRINCRCONF: {}
-  NAMMODERRMOD: {}
-  NAMNRTAER: {}
-  NAMPARECV: {}
-  NAMPERTOBS: {}
-  NAMRSTRHBIAS: {}
-  NAM_NEBN: {}
-  NAM_PARAM_ICEN: {}
-  NAM_PARAM_MFSHALLN: {}
-  NAM_SPP_ACTIVE: {}
-  NAM_SPP_MODIF: {}
-  NAM_TURBN: {}

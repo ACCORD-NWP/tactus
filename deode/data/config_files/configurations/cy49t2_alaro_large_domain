@@ -1,0 +1,8 @@
+--config-file
+deode/data/config_files/config.toml
+deode/data/config_files/include/domains/500m_template.toml
+deode/data/config_files/modifications/alaro.toml
+deode/data/config_files/include/vertical_levels/MF_87.toml
+deode/data/config_files/modifications/alaro_CY49t2.toml
+deode/data/config_files/modifications/CY49t2.toml
+deode/data/config_files/modifications/submission/@HOST@_CY49t2_large_domain.toml

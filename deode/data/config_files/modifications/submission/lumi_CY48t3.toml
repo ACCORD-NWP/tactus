@@ -1,13 +1,13 @@
 [submission.task_exceptions.CreateGrib]
   binary = "gl"
-  bindir = "/scratch/project_465000527/jasinskas/CY48T3-ftn16-O0_23-install/bin"
+  bindir = "/scratch/project_465000527/pardalmi/gl/lumi.cray.gmkpack/bin"
 
 [submission.task_exceptions.E923Update]
   bindir = "/scratch/project_465000527/kastelec/fa_sfx2clim/"
 
 [submission.task_exceptions.PgdUpdate]
   binary = "gl"
-  bindir = "/scratch/project_465000527/jasinskas/CY48T3-ftn16-O0_23-install/bin"
+  bindir = "/scratch/project_465000527/pardalmi/gl/lumi.cray.gmkpack/bin"
 
 [submission.types.Forecast_cpu]
   NPROC = 16
@@ -67,7 +67,7 @@
   02_PARTITION_G = ["load", "partition/C"]
   03_CPE = ["load", "cpe/23.03"]
   04_PRG_ENV = ["load", "PrgEnv-cray"]
-  05_TRENTO = ["load", "craype-x86-trento"]
+  05_MILAN = ["load", "craype-x86-milan"]
   06_MPICH = ["load", "cray-mpich"]
   07_LIBSCI = ["load", "cray-libsci"]
   08_FFTW = ["load", "cray-fftw"]

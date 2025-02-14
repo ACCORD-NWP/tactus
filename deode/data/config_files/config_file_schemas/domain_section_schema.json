@@ -15,6 +15,27 @@
         "custom"
       ]
     },
+    "gridtype_oro": {
+      "type": "string",
+      "description": "Select truncation type for orographic_smoothing",
+      "enum": [
+        "linear",
+        "quadratic",
+        "cubic",
+        "custom",
+        ""
+      ],
+      "default" : ""
+    },
+    "orographic_smoothing_method": {
+      "type": "string",
+      "description": "Orographic smoothing method",
+      "enum": [
+        "spectral",
+        "truncation"
+      ],
+      "default" : "truncation"
+    },
     "name": {
       "type": "string",
       "description": "Name of your domain"
@@ -127,6 +148,14 @@
       "type": "number",
       "description": "Rotation parameter for the conformal projection",
       "default": 0.0
+    },
+    "spectral_smoothing_by_gridtype": {
+      "description": "Defines for which gridypes spectral smoothing is applied when activated",
+      "default": {"linear": true, "quadratic": false, "cubic": false, "custom": true}
+    },
+    "truncation_by_gridtype": {
+      "description": "Defines default gridtype_oro mapping when truncation smoothing is applied.",
+      "default": {"linear": "quadratic", "quadratic": "quadratic", "cubic": "cubic", "custom": "custom"}
     }
   }
 }

@@ -1,10 +1,13 @@
+# Do the selection of fields below. Note 
+# that xxt00000000 partly inherits from xxtddddhh00
 selection:
   xxt00000000:
     NAMFPDY2: &id001
       CL2DF:
       - SURFPRESSION
       - MSLPRESSURE
-    NAMFPDYS:
+    NAMFPDYS: &id002
+     AQ_SELECTION:
       CL3DF:
       - GRAUPEL
       - RAIN
@@ -17,6 +20,8 @@ selection:
       - CLOUD_WATER
       - CLOUD_FRACTI
       - TKE
+      - AVG_U
+      - AVG_V
       NRFP3S:
       - ${namelist.nrfp3s}
     NAMFPPHY:
@@ -36,21 +41,7 @@ selection:
       - CLPMHAUT.MOD.XFU
   xxtddddhh00:
     NAMFPDY2: *id001
-    NAMFPDYS: &id002
-      CL3DF:
-      - GRAUPEL
-      - RAIN
-      - SNOW
-      - TEMPERATURE
-      - HUMI.SPECIFI
-      - WIND.U.PHYS
-      - WIND.V.PHYS
-      - ICE_CRYSTAL
-      - CLOUD_WATER
-      - CLOUD_FRACTI
-      - TKE
-      NRFP3S:
-      - ${namelist.nrfp3s}
+    NAMFPDYS: *id002
     NAMFPPHY: &id003
       CLCFU:
       - SURFFLU.RAY.SOLA
@@ -80,27 +71,3 @@ selection:
     NAMFPDY2: *id001
     NAMFPDYS: *id002
     NAMFPPHY: *id003
-empty:
-  NAMCLRADLID: {}
-  NAMDWET: {}
-  NAMDYNA_STATIC: {}
-  NAMECV: {}
-  NAMECVDESC: {}
-  NAMECVGRB: {}
-  NAMJBALPHACV: {}
-  NAMJBECPHYSECV: {}
-  NAMJBSKTECV: {}
-  NAMMODERRCONF: {}
-  NAMMODERRCOV: {}
-  NAMMODERRINCRCONF: {}
-  NAMMODERRMOD: {}
-  NAMNRTAER: {}
-  NAMPARECV: {}
-  NAMPERTOBS: {}
-  NAMRSTRHBIAS: {}
-  NAM_NEBN: {}
-  NAM_PARAM_ICEN: {}
-  NAM_PARAM_MFSHALLN: {}
-  NAM_SPP_ACTIVE: {}
-  NAM_SPP_MODIF: {}
-  NAM_TURBN: {}

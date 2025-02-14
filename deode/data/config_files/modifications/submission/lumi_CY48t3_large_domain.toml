@@ -53,103 +53,13 @@
 
 #  RTTOV_COEFDIR = "/scratch/project_465000527/de_330_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
 
-[submission.task_exceptions.C903]
-  NPROC = 36
-
-[submission.task_exceptions.C903.BATCH]
-  MEM = "#SBATCH --mem=0"
-  NODE = "#SBATCH --nodes=12"
-  NTASKS = "#SBATCH --ntasks=36"
-  PARTITION = "#SBATCH --partition=standard"
-  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=3"
-  WALLTIME = "#SBATCH --time=00:30:00"
-
-[submission.task_exceptions.C903.ENV]
-  DR_HOOK_TRAPFPE_DIVBYZERO = 1
-  DR_HOOK_TRAPFPE_OVERFLOW = 1
-  OMP_NUM_THREADS = 1
-
-[submission.task_exceptions.CreateGrib]
-  binary = "gl"
-  bindir = "/scratch/project_465000527/jasinskas/CY48T3-ftn16-O0_23-install/bin"
-
-[submission.task_exceptions.CreateGrib.BATCH]
-  MEM = "#SBATCH --mem=0"
-  NODE = "#SBATCH --nodes=2"
-  #  NTASKS = "#SBATCH --ntasks=36"
-  PARTITION = "#SBATCH --partition=standard"
-  #  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=3"
-  WALLTIME = "#SBATCH --time=02:00:00"
-
-[submission.task_exceptions.E923Constant]
-  NPROC = 1
-
-[submission.task_exceptions.E923Constant.BATCH]
-  MEM = "#SBATCH --mem=0"
-
-[submission.task_exceptions.E923Monthly]
-  NPROC = 1
-
-[submission.task_exceptions.E923Monthly.BATCH]
-  MEM = "#SBATCH --mem=0"
-
-[submission.task_exceptions.E927]
-  NPROC = 16
-
-[submission.task_exceptions.E927.BATCH]
-  MEM = "#SBATCH --mem=0GB"
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=16"
-
-[submission.task_exceptions.Gmted.MODULES]
-  GDAL = ["load", "scl-gdal_23"]
-
-[submission.task_exceptions.IOmerge.BATCH]
-  WALLTIME = "#SBATCH --time=01:30:00"
-
-[submission.task_exceptions.Marsprep]
-  WRAPPER = ""
-
-[submission.task_exceptions.Marsprep.BATCH]
-  MEM = "#SBATCH --mem=0GB"
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=1"
-  WALLTIME = "#SBATCH --time=00:30:00"
-
-[submission.task_exceptions.Marsprep.ENV]
-  MARS_READANY_BUFFER_SIZE = 17893020000
-
-[submission.task_exceptions.Pgd]
-  NPROC = 16
-
-[submission.task_exceptions.Pgd.BATCH]
-  MEM = "#SBATCH --mem=0GB"
-  NODES = "#SBATCH --nodes=4"
-  NTASKS = "#SBATCH --ntasks=16"
-  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=4"
-  WALLTIME = "#SBATCH --time=00:30:00"
-
-[submission.task_exceptions.Pgd.ENV]
-  OMP_NUM_THREADS = 1
-
-[submission.task_exceptions.PgdUpdate]
-  binary = "gl"
-  bindir = "/scratch/project_465000527/jasinskas/CY48T3-ftn16-O0_23-install/bin"
-
-[submission.task_exceptions.PgdUpdate.BATCH]
-  MEM = "#SBATCH --mem=0GB"
-
-[submission.task_exceptions.Prep.BATCH]
-  MEM = "#SBATCH --mem=0GB"
-  WALLTIME = "#SBATCH --time=00:30:00"
-
 [submission.types.Forecast_cpu.MODULES]
   00_PURGE = ["--force", "purge"]
   01_LUMI = ["load", "LUMI/23.03"]
   02_PARTITION_G = ["load", "partition/C"]
   03_CPE = ["load", "cpe/23.03"]
   04_PRG_ENV = ["load", "PrgEnv-cray"]
-  05_TRENTO = ["load", "craype-x86-trento"]
+  05_MILAN = ["load", "craype-x86-milan"]
   06_MPICH = ["load", "cray-mpich"]
   07_LIBSCI = ["load", "cray-libsci"]
   08_FFTW = ["load", "cray-fftw"]
