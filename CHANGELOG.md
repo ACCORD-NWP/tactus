@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.11.0] - 2025-02-13
+
 ### Added
 - Add Harmonie-Arome configurations and update namelist creation for cy49t2 [\#969](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/969) (@romick-knmi)
 - Detach selection of orography filtering method from CSC. [\#960](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/960)(@uandrae)
@@ -23,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add model version mapping to FDB grib_set parameters [\#975](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/975) (@KristianHMoller)
 
 ### Changed
+- Update AROME dynamics settings [\#966](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/966)(@uandrae)
 - Update fullpos selection for CY49 [\#941](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/941)(@uandrae)
 - Increased walltime from 15 to 30 minutes for AddCalculatedFields [\#948](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/948) (@KristianHMoller)
 - Updated FA2GRIB2 translations [\#754](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/754) (@uandrae, @sbnielsen, @KristianHMoller)
