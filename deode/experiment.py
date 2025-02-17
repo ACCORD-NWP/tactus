@@ -4,17 +4,20 @@ import collections
 import contextlib
 import os
 import subprocess
+from dataclasses import asdict
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 import tomlkit
 
-from .config_parser import BasicConfig, ParsedConfig
-from .derived_variables import set_times
-from .host_actions import set_deode_home
-from .logs import logger
-from .os_utils import resolve_path_relative_to_package
-from .toolbox import Platform
+from deode.config_parser import BasicConfig, ParsedConfig
+from deode.derived_variables import set_times
+from deode.eps.eps_setup import EPSConfig, generate_member_settings
+from deode.general_utils import modify_mappings, recursive_dict_deviation
+from deode.host_actions import set_deode_home
+from deode.logs import logger
+from deode.os_utils import resolve_path_relative_to_package
+from deode.toolbox import Platform
 
 
 class Exp:
@@ -22,8 +25,8 @@ class Exp:
 
     def __init__(
         self,
-        config,
-        merged_config,
+        config: ParsedConfig,
+        merged_config: Optional[dict],
     ):
         """Instanciate an object of the main experiment class.
 
@@ -43,7 +46,7 @@ class ExpFromFiles(Exp):
 
     def __init__(
         self,
-        config,
+        config: ParsedConfig,
         exp_dependencies,
         mod_files: List[Path],
         host=None,
@@ -176,8 +179,58 @@ class ExpFromFiles(Exp):
         return exp_dependencies
 
 
+class EPSExp(Exp):
+    """Setup EPS experiment from config file."""
+
+    def __init__(
+        self,
+        config: ParsedConfig,
+    ):
+        """Setup EPS experiment.
+
+        Args:
+            config (.config_parser.ParsedConfig): Parsed config file contents.
+        """
+        super().__init__(config=config, merged_config=None)
+
+    def setup_exp(self):
+        """Generate EPS member settings and update config file.
+
+        Only deviations of member settings from general EPS settings are added
+        to the config.
+        """
+        # First convert self.config["eps"] to a plain dict. This is needed before
+        # we turn config objects into pydantic dataclasses.
+        eps_plain_dict = modify_mappings(self.config["eps"], operator=dict)
+
+        # Then convert the general EPS settings to a dataclass
+        epsconfig = EPSConfig(**eps_plain_dict)
+
+        # Get default EPS member settings
+        default_member_settings = eps_plain_dict["member_settings"]
+        # Generate member setting deviations
+        member_settings_dict = {}
+        for member_index, member_settings in generate_member_settings(epsconfig):
+            member_settings_dict[str(member_index)] = recursive_dict_deviation(
+                base_dict=default_member_settings,
+                deviating_dict=member_settings,
+            )
+        # Add members section with deviations to config
+        output_settings_dict = {"members": member_settings_dict}
+
+        # Add default member settings and general settings to config
+        output_settings_dict["general"] = asdict(epsconfig.general)
+
+        # Update config
+        self.config = self.config.copy(
+            update={
+                "eps": output_settings_dict,
+            }
+        )
+
+
 def case_setup(
-    config,
+    config: ParsedConfig,
     output_file,
     mod_files: List[Path],
     case=None,
@@ -207,6 +260,13 @@ def case_setup(
 
     exp = ExpFromFiles(config, exp_dependencies, mod_files, host=host)
 
+    # Setup EPS if requested in config file
+    if "eps" in exp.config:
+        logger.info("Setting up EPS configuration")
+        eps_exp = EPSExp(exp.config)
+        eps_exp.setup_exp()
+        exp = eps_exp
+
     if expand_config:
         deode_home = set_deode_home(config)
         exp.config = exp.config.copy(update={"platform": {"deode_home": deode_home}})
@@ -217,7 +277,7 @@ def case_setup(
         output_file = config.get("general.case") + ".toml"
         output_file = Platform(config).substitute(output_file)
 
-    logger.info("Save config to: {}", output_file)
+        logger.info("Save config to: {}", output_file)
     exp.config.save_as(output_file)
 
     return output_file

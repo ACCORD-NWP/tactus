@@ -24,6 +24,7 @@ from toml_formatter.formatter_options import FormatterOptions
 from . import GeneralConstants
 from .aux_types import BaseMapping, QuasiConstant
 from .datetime_utils import DatetimeConstants
+from .formatters import duration_format_validator, duration_slice_format_validator
 from .general_utils import modify_mappings
 from .logs import logger
 from .os_utils import resolve_path_relative_to_package
@@ -518,7 +519,13 @@ def _get_json_validation_function(json_schema):
     if not json_schema:
         # Validation will just convert everything to dict in this case
         return lambda obj: modify_mappings(obj=obj, operator=dict)
-    validation_func = fastjsonschema.compile(json_schema.dict())
+    validation_func = fastjsonschema.compile(
+        json_schema.dict(),
+        formats={
+            "duration": duration_format_validator,
+            "duration_slice": duration_slice_format_validator,
+        },
+    )
 
     def validate(obj):
         try:

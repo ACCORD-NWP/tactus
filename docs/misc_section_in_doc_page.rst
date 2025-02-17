@@ -17,6 +17,10 @@ Miscellaneous Documentation
    :parser: myst_parser.sphinx_
 
 .. include::
+    markdown_docs/eps_config.md
+   :parser: myst_parser.sphinx_
+
+.. include::
     markdown_docs/domains.md
    :parser: myst_parser.sphinx_
 

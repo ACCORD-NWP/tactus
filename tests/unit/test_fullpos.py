@@ -42,21 +42,6 @@ def load(default_config):
 class TestFullpos:
     """Test Fullpos."""
 
-    def test_merge_dict(self):
-        """Test merge of two dictionaries."""
-        d1 = {0: [0, 1, 2], 1: {0: [0]}, 2: 0}
-        d2 = {0: [3, 4], 1: {0: [1], 1: 0}, 3: [0, 1]}
-        dict_ref = {0: [0, 1, 2, 3, 4], 1: {0: [0, 1], 1: 0}, 2: 0, 3: [0, 1]}
-        dict_merged = Fullpos("test").merge_dict(d1, d2)
-        assert dict_ref == dict_merged
-
-    def test_invalid_merge_dict(self):
-        """Test merge of two dictionaries."""
-        d1 = {0: {0: 0}}
-        d2 = {0: "x"}
-        with pytest.raises(RuntimeError):
-            Fullpos("test").merge_dict(d1, d2)
-
     def test_fullpos(self):
         """Test fullpos namelist generation for master."""
         fullpos_config = {

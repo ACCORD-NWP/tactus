@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EPS Members Configuration",
+  "type": "object",
+  "properties": {
+    "general": {
+      "type": "object",
+      "properties": {
+        "members": {
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "List of sequences 'M:N' or integers",
+              "default": "0:2"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "description": "List of integers"
+            }
+          ]
+        },
+        "control_member": {
+          "type": "integer",
+          "description": "Integer",
+          "default": 0
+        },
+        "run_continously": {
+          "type": "boolean",
+          "description": "Boolean",
+          "default": false
+        }
+      }
+    }
+  }
+}

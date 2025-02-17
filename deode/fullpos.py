@@ -5,6 +5,7 @@
 import yaml
 
 from .config_parser import ConfigPaths
+from .general_utils import merge_dicts
 from .logs import logger
 
 
@@ -95,41 +96,11 @@ class Fullpos:
                 n = yaml.safe_load(file)
                 file.close()
                 if s in n:
-                    nldict[s] = self.merge_dict(nldict[s], n[s])
+                    nldict[s] = merge_dicts(nldict[s], n[s])
                 else:
                     nldict.update(n)
 
         return nldict
-
-    def merge_dict(self, d1, d2):
-        """Merge two dictionaries, tailored for the fullpos yml structure.
-
-        Args:
-            d1 (dict): Reference dict
-            d2 (dict): Update dict
-
-        Returns:
-            d (dict): Merged dict
-
-        Raises:
-            RuntimeError: Invalid type
-
-        """
-        d = d1.copy()
-        for k, v in d2.items():
-            if k in d:
-                if isinstance(v, dict):
-                    d[k] = self.merge_dict(d[k], v)
-                elif isinstance(v, list):
-                    for x in v:
-                        if x not in d[k]:
-                            d[k].append(x)
-                else:
-                    raise RuntimeError("Invalid type:", type(v), v)
-            else:
-                d[k] = v
-
-        return d
 
     def update_selection(self, additions_list=None, additions_dict=None):
         """Add choices to the selection section.
@@ -147,12 +118,10 @@ class Fullpos:
                     nldict = yaml.safe_load(file)
                     file.close()
 
-                self.nldict["selection"] = self.merge_dict(
-                    self.nldict["selection"], nldict
-                )
+                self.nldict["selection"] = merge_dicts(self.nldict["selection"], nldict)
 
         if additions_dict is not None:
-            self.nldict["selection"] = self.merge_dict(
+            self.nldict["selection"] = merge_dicts(
                 self.nldict["selection"], additions_dict
             )
 

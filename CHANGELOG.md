@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Introduce possibility to generate ensemble config file. [\#865](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/865) (@mafdmi)
 - Introduce possibility for multiple search path for config files. [\#776](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/776) (@uandrae)
 - Added support for CMake compiled binaries on LUMI [\#980](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/980) (@pardallio)
 
