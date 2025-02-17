@@ -115,7 +115,7 @@ def test_set_case_name(default_config, default_config_dir):
 
 
 @pytest.mark.usefixtures("_module_mockers_atos_bologna")
-def test_output_file_name(default_config, default_config_dir):
+def test_output_file_name(default_config):
     config = default_config.copy(update=set_times(default_config))
     output_file_name = case_setup(config, None, [])
     case = Platform(config).substitute(config.get("general.case"))
