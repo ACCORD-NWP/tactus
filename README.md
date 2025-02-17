@@ -65,13 +65,14 @@ git clone git@github.com:<username>/Deode-Workflow.git
 cd Deode-Workflow
 ```
 
+
 Then install/reinstall [`poetry`](https://python-poetry.org) by runnning the following commands in your shell:
   ```shell
   # Clean eventual previous install
   curl -sSL https://install.python-poetry.org | python3 - --uninstall
   rm -rf ${HOME}/.cache/pypoetry/ ${HOME}/.local/bin/poetry ${HOME}/.local/share/pypoetry
   # Download and install poetry
-  curl -sSL https://install.python-poetry.org | python3 -
+  curl -sSL https://install.python-poetry.org | python3 -  
   poetry install
   # Add the poetry shell command as a plugin (for poetry >= v2.0.0)
   poetry self add poetry-plugin-shell
@@ -89,6 +90,11 @@ Finally, install [`pygdal`](https://pypi.org/project/pygdal/), which is required
     ```
   If installation is not succesful, please contact the IT support in your organisation or HPC facility.
 
+### Important
+
+Deode-Workflow should be installed in a folder accessible by ecflow server.
+
+On Atos, it should be installed in your $HOME or $PERM directory.
 
 
 ## Usage

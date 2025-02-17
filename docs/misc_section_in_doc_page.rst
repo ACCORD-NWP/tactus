@@ -9,10 +9,6 @@ Miscellaneous Documentation
    :parser: myst_parser.sphinx_
 
 .. include::
-    markdown_docs/config.md
-   :parser: myst_parser.sphinx_
-
-.. include::
     markdown_docs/case_config.md
    :parser: myst_parser.sphinx_
 
@@ -57,13 +53,17 @@ Miscellaneous Documentation
    :parser: myst_parser.sphinx_
 
 .. include::
-    markdown_docs/troubleshooting.md
-   :parser: myst_parser.sphinx_
-
-.. include::
     markdown_docs/cleaning_readme.md
    :parser: myst_parser.sphinx_
 
 .. include::
     markdown_docs/fdb.md
+   :parser: myst_parser.sphinx_
+
+.. include::
+    markdown_docs/config.md
+   :parser: myst_parser.sphinx_
+
+.. include::
+    markdown_docs/troubleshooting.md
    :parser: myst_parser.sphinx_
