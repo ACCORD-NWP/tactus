@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Fullpos namelist generation."""
 
-import os
 
 import yaml
 
+from .config_parser import ConfigPaths
 from .logs import logger
 
 
@@ -89,7 +89,7 @@ class Fullpos:
         s = "selection"
         nldict = {s: {}}
         for fpfile in fpfiles:
-            f = os.path.join(fpdir, f"{fpfile}.yml")
+            f = ConfigPaths.path_from_subpath(f"{fpdir}/{fpfile}.yml")
             logger.info("Read {}", f)
             with open(f, mode="rt", encoding="utf-8") as file:
                 n = yaml.safe_load(file)
@@ -142,7 +142,7 @@ class Fullpos:
         if additions_list is not None:
             # Read the update
             for addition in additions_list:
-                fpfile = os.path.join(self.fpdir, f"{addition}.yml")
+                fpfile = ConfigPaths.path_from_subpath(f"{self.fpdir}/{addition}.yml")
                 with open(fpfile, mode="rt", encoding="utf-8") as file:
                     nldict = yaml.safe_load(file)
                     file.close()

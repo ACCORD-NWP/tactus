@@ -13,16 +13,6 @@ from deode.commands_functions import (
     namelist_integrate,
     show_namelist,
 )
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
-
-
-@pytest.fixture()
-def parsed_config():
-    """Return a raw config common to all tasks."""
-    return ParsedConfig.from_file(
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
-        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-    )
 
 
 @pytest.fixture()
@@ -77,14 +67,14 @@ def nlint_arg(tmp_directory):
         },
     ],
 )
-def test_show_namelist(set_arg, parsed_config, param, tmp_directory):
+def test_show_namelist(set_arg, default_config, param, tmp_directory):
     update = param["config"]
     pth = param["path"]
     outpath = f"{tmp_directory}/{pth}"
     if "system" in update and "namelists" in update["system"]:
         update["system"]["namelists"] = outpath
     update["fullpos"] = {"selection": {"test": ["master_selection_AROME"]}}
-    config = parsed_config.copy(update=update)
+    config = default_config.copy(update=update)
 
     prev_cwd = Path.cwd()
     os.makedirs(outpath, mode=0o1777, exist_ok=True)
@@ -99,10 +89,10 @@ def test_show_namelist(set_arg, parsed_config, param, tmp_directory):
         os.remove(f"{outpath}/xxtddddhh00")
 
 
-def test_namelist_integrate(nlint_arg, parsed_config):
+def test_namelist_integrate(nlint_arg, default_config):
     if os.path.exists(nlint_arg.output):
         os.remove(nlint_arg.output)
-    namelist_integrate(nlint_arg, parsed_config)
+    namelist_integrate(nlint_arg, default_config)
     assert os.path.isfile(nlint_arg.output)
 
 
@@ -120,11 +110,11 @@ def nlconyml_arg(tmp_directory):
     return arg
 
 
-def test_namelist_convert_yml(nlconyml_arg, parsed_config):
+def test_namelist_convert_yml(nlconyml_arg, default_config):
     if os.path.exists(nlconyml_arg.output):
         os.remove(nlconyml_arg.output)
 
-    namelist_convert(nlconyml_arg, parsed_config)
+    namelist_convert(nlconyml_arg, default_config)
 
     assert os.path.isfile(nlconyml_arg.output)
     assert filecmp.cmp(nlconyml_arg.output_reference, nlconyml_arg.output)
@@ -144,11 +134,11 @@ def nlconftn_arg(tmp_directory):
     return arg
 
 
-def test_namelist_convert_ftn(nlconftn_arg, parsed_config):
+def test_namelist_convert_ftn(nlconftn_arg, default_config):
     if os.path.exists(nlconftn_arg.output):
         os.remove(nlconftn_arg.output)
 
-    namelist_convert(nlconftn_arg, parsed_config)
+    namelist_convert(nlconftn_arg, default_config)
     assert os.path.isfile(nlconftn_arg.output)
     assert filecmp.cmp(nlconftn_arg.output_reference, nlconftn_arg.output)
 
@@ -165,11 +155,11 @@ def nlformatyml_arg(tmp_directory):
     return arg
 
 
-def test_namelist_format_yml(nlformatyml_arg, parsed_config):
+def test_namelist_format_yml(nlformatyml_arg, default_config):
     if os.path.exists(nlformatyml_arg.output):
         os.remove(nlformatyml_arg.output)
 
-    namelist_format(nlformatyml_arg, parsed_config)
+    namelist_format(nlformatyml_arg, default_config)
 
     assert os.path.isfile(nlformatyml_arg.output)
     assert filecmp.cmp(nlformatyml_arg.output_reference, nlformatyml_arg.output)
@@ -187,11 +177,11 @@ def nlformatftn_arg(tmp_directory):
     return arg
 
 
-def test_namelist_format_ftn(nlformatftn_arg, parsed_config):
+def test_namelist_format_ftn(nlformatftn_arg, default_config):
     if os.path.exists(nlformatftn_arg.output):
         os.remove(nlformatftn_arg.output)
 
-    namelist_format(nlformatftn_arg, parsed_config)
+    namelist_format(nlformatftn_arg, default_config)
     assert os.path.isfile(nlformatftn_arg.output)
     assert filecmp.cmp(nlformatftn_arg.output_reference, nlformatftn_arg.output)
 

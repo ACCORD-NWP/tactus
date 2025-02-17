@@ -9,7 +9,7 @@ from typing import List
 
 import tomlkit
 
-from .config_parser import ConfigParserDefaults, ParsedConfig
+from .config_parser import BasicConfig, ParsedConfig
 from .derived_variables import set_times
 from .host_actions import set_deode_home
 from .logs import logger
@@ -66,39 +66,6 @@ class ExpFromFiles(Exp):
         logger.debug("Construct ExpFromFiles")
         logger.debug("Experiment dependencies: {}", exp_dependencies)
 
-        config_dir = exp_dependencies.get("config_dir")
-        include_paths = {}
-        if host is not None:
-            host = host.detect_deode_host()
-            logger.info("Setting up for host {}", host)
-            include_paths.update(
-                {
-                    "scheduler": f"{config_dir}/include/scheduler/ecflow_{host}.toml",
-                    "platform": f"{config_dir}/include/platform_paths/{host}.toml",
-                    "submission": f"{config_dir}/include/submission/{host}.toml",
-                }
-            )
-
-        for incp in include_paths.values():
-            if not os.path.exists(incp):
-                logger.error("Input file requested {} is not found", incp)
-                raise FileNotFoundError(incp)
-
-        config_dict = config.dict()
-        for inct, incp in include_paths.items():
-            if inct in ["platform", "submission"]:
-                del config_dict[inct]
-                config_dict.update({inct: {}})
-
-            logger.info("Input file loaded {}", incp)
-            with open(incp, mode="r", encoding="utf8") as fh:
-                mod_config = tomlkit.load(fh)
-
-            config_dict = self.deep_update(config_dict, mod_config)
-        config = ParsedConfig(
-            config_dict, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
-        )
-
         mods = {}
         for _mod in mod_files:
             # Skip empty paths
@@ -109,13 +76,13 @@ class ExpFromFiles(Exp):
             # First check if mod exists as is
             if os.path.exists(mod):
                 try:
-                    lmod = ExpFromFiles.toml_load(mod)
+                    logger.info("Merging modifications from {}", mod)
+                    lmod = ParsedConfig.from_file(mod, json_schema={}, host=host)
                 except tomlkit.exceptions.ParseError as exc:
                     logger.error("Expected a toml file but got {}", mod)
                     logger.error("Did mean to write ?{}", mod)
                     raise RuntimeError from exc
 
-                logger.info("Merging modifications from {}", mod)
                 logger.debug("-> {}", lmod)
                 mods = ExpFromFiles.deep_update(mods, lmod)
             else:
@@ -131,28 +98,23 @@ class ExpFromFiles(Exp):
         if merged_config is None:
             merged_config = {}
         merged_config = ExpFromFiles.deep_update(merged_config, mods)
+
+        # Remove sections from the input config
+        with contextlib.suppress(KeyError):
+            remove_sections = merged_config["general"].get("remove_sections", [])
+            if len(remove_sections) > 0:
+                logger.info("Remove sections from background config:{}", remove_sections)
+                reduced_config = config.dict()
+                for key in remove_sections:
+                    reduced_config.pop(key)
+                merged_config["general"].pop("remove_sections")
+                config = BasicConfig(reduced_config)
+
         Exp.__init__(
             self,
             config,
             merged_config,
         )
-
-    @staticmethod
-    def toml_load(fname):
-        """Load from toml file.
-
-        Using tomlkit to preserve stucture
-
-        Args:
-            fname (str): Filename
-
-        Returns:
-            dict: Loaded toml file
-
-        """
-        with open(fname, "r", encoding="utf8") as f_h:
-            res = tomlkit.parse(f_h.read())
-        return res
 
     @staticmethod
     def toml_dump(to_dump, fname):
@@ -188,7 +150,6 @@ class ExpFromFiles(Exp):
                 source[key] = returned
             else:
                 override = overrides[key]
-
                 source[key] = override
 
         return source
@@ -197,31 +158,21 @@ class ExpFromFiles(Exp):
     def setup_files(
         output_file,
         case=None,
-        config_dir=None,
     ):
         """Set up the files for an experiment.
 
         Args:
             output_file (str): Output file
             case (str, optional): Experiment name. Defaults to None.
-            config_dir (str, optional): Config directory. Defaults to None.
 
         Returns:
             exp_dependencies(dict): Experiment dependencies from setup.
 
         """
-        exp_dependencies = {}
-        if config_dir is None:
-            config_dir = ConfigParserDefaults.CONFIG_DIRECTORY
-            logger.info("Setting config_dir to package config directory: {}", config_dir)
-
-        exp_dependencies.update(
-            {
-                "tmp_outfile": f"{output_file}.tmp.{os.getpid()}.toml",
-                "config_dir": config_dir,
-                "case": case,
-            }
-        )
+        exp_dependencies = {
+            "tmp_outfile": f"{output_file}.tmp.{os.getpid()}.toml",
+            "case": case,
+        }
         return exp_dependencies
 
 
@@ -231,7 +182,6 @@ def case_setup(
     mod_files: List[Path],
     case=None,
     host=None,
-    config_dir=None,
     expand_config=False,
 ):
     """Do experiment setup.
@@ -242,7 +192,6 @@ def case_setup(
         mod_files (list): Modifications. Defaults to None.
         case (str, optional): Case identifier. Defaults to None.
         host (str, optional): host name. Defaults to None.
-        config_dir (str, optional): Configuration directory. Defaults to None.
         expand_config (boolean, optional): Flag for expanding macros in config
 
     Returns:
@@ -254,7 +203,6 @@ def case_setup(
     exp_dependencies = ExpFromFiles.setup_files(
         output_file,
         case=case,
-        config_dir=config_dir,
     )
 
     exp = ExpFromFiles(config, exp_dependencies, mod_files, host=host)

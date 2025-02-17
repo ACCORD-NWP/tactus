@@ -13,6 +13,7 @@ import yaml
 from omegaconf import OmegaConf
 from omegaconf.listconfig import ListConfig
 
+from .config_parser import ConfigPaths
 from .datetime_utils import as_timedelta, oi2dt_list
 from .logs import logger
 from .toolbox import Platform
@@ -318,20 +319,8 @@ class NamelistGenerator:
         self.substitute = substitute
         self.nlcomp = NamelistComparator(config)
         self.cycle = self.config["general.cycle"]
-        self.cnfile = (
-            Path(__file__).parent
-            / "data"
-            / "namelist_generation_input"
-            / f"{self.cycle}"
-            / f"assemble_{kind}.yml"
-        )
-        self.nlfile = (
-            Path(__file__).parent
-            / "data"
-            / "namelist_generation_input"
-            / f"{self.cycle}"
-            / f"{kind}_namelists.yml"
-        )
+        self.cnfile = ConfigPaths.path_from_subpath(f"{self.cycle}/assemble_{kind}.yml")
+        self.nlfile = ConfigPaths.path_from_subpath(f"{self.cycle}/{kind}_namelists.yml")
         self.domain_name = self.config["domain.name"]
         self.accept_static_namelist = self.config["general.accept_static_namelists"]
 
@@ -688,9 +677,7 @@ class NamelistConverter:
     def get_tnt_files_list(from_cycle, to_cycle):
         """Return the list of tnt directive files required for the conversion."""
         # definitions of the conversion to apply between cycles
-        tnt_directives_folder = (
-            Path(__file__).parent / "data/namelist_generation_input/tnt_directives/"
-        )
+        tnt_directives_folder = ConfigPaths.path_from_subpath("tnt_directives")
 
         if from_cycle and to_cycle:
             known_cycles = NamelistConverter.get_known_cycles()
@@ -933,8 +920,8 @@ class NamelistConverter:
            SystemExit: when conversion failed
         """
         logger.info(f"Apply {tnt_directive_filename}")
-        tnt_directives_folder = (
-            Path(__file__).parent / "data/namelist_generation_input/tnt_directives/"
+        tnt_directives_folder = ConfigPaths.path_from_subpath(
+            "tnt_directives",
         )
         command = [
             "tnt.py",

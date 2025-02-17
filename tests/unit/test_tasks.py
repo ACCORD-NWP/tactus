@@ -9,7 +9,6 @@ import pytest
 import tomlkit
 
 from deode import GeneralConstants
-from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import derived_variables, set_times
 from deode.plugin import DeodePluginRegistry
 from deode.tasks.archive import ArchiveHour, ArchiveStatic
@@ -35,20 +34,11 @@ def classes_to_be_tested():
     return encountered_classes.keys()
 
 
-@pytest.fixture(scope="module")
-def base_raw_config():
-    """Return a raw config common to all tasks."""
-    config = BasicConfig.from_file(ConfigParserDefaults.CONFIG_DIRECTORY / "config.toml")
-    return config
-
-
 @pytest.fixture(params=classes_to_be_tested(), scope="module")
-def task_name_and_configs(request, base_raw_config, tmp_path_factory):
+def task_name_and_configs(request, default_config, tmp_directory):
     """Return a ParsedConfig with a task-specific section according to `params`."""
     task_name = request.param
-    task_config = ParsedConfig(
-        base_raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
-    )
+    task_config = default_config
     task_config = task_config.copy(update=set_times(task_config))
     task_config = task_config.copy(update=derived_variables(task_config))
 
@@ -58,14 +48,14 @@ def task_name_and_configs(request, base_raw_config, tmp_path_factory):
         [general]
             keep_workdirs = false
         [system]
-            wrk = "{tmp_path_factory.getbasetemp().as_posix()}"
-            bindir = "{tmp_path_factory.getbasetemp().as_posix()}/bin"
+            wrk = "{tmp_directory}"
+            bindir = "{tmp_directory}/bin"
         [platform]
             deode_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
-            scratch = "{tmp_path_factory.getbasetemp().as_posix()}"
-            static_data = "{tmp_path_factory.getbasetemp().as_posix()}"
-            climdata = "{tmp_path_factory.getbasetemp().as_posix()}"
-            soilgrid_data_path = "{tmp_path_factory.getbasetemp().as_posix()}"
+            scratch = "{tmp_directory}"
+            static_data = "{tmp_directory}"
+            climdata = "{tmp_directory}"
+            soilgrid_data_path = "{tmp_directory}"
         [task.args]
             joboutdir = "foo"
             tarname= "foo"

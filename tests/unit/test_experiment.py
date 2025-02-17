@@ -4,9 +4,10 @@
 from pathlib import Path
 
 import pytest
+import tomli
 import tomlkit
 
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
+from deode.config_parser import ParsedConfig
 from deode.experiment import ExpFromFiles
 
 
@@ -62,7 +63,7 @@ def fixture_exp_dependencies(output_file: Path):
 
 
 @pytest.fixture(name="config")
-def fixture_config():
+def fixture_config(default_config):
     """Fixture that provides a parsed configuration object for testing."""
     update = {
         "macros": {
@@ -73,10 +74,7 @@ def fixture_config():
             }
         }
     }
-    config = ParsedConfig.from_file(
-        ConfigParserDefaults.CONFIG_PATH,
-        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-    )
+    config = default_config
     config = config.copy(update=update)
     return config
 
@@ -92,7 +90,7 @@ def test_exp_from_nontoml_file(
     config: ParsedConfig, nontoml_file: Path, exp_dependencies: dict
 ):
     """Test function for creating an experiment from a non-TOML file."""
-    with pytest.raises(RuntimeError):
+    with pytest.raises((RuntimeError, tomli.TOMLDecodeError)):
         ExpFromFiles(config, exp_dependencies, [nontoml_file])
 
 

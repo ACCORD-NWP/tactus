@@ -16,6 +16,7 @@ from .commands_functions import (
     show_config_schema,
     show_host,
     show_namelist,
+    show_paths,
     start_suite,
 )
 from .config_parser import ConfigParserDefaults
@@ -65,6 +66,21 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
             + f"{ConfigParserDefaults.PACKAGE_CONFIG_PATH}"
             + "'"
         ),
+    )
+    common_parser.add_argument(
+        "--host-file",
+        dest="host_file",
+        help="Config file for host recognition rules",
+        required=False,
+        default=None,
+    )
+    common_parser.add_argument(
+        "--config-data-dir",
+        nargs="+",
+        type=str,
+        help="Search path(s) for config directory.",
+        required=False,
+        default=None,
     )
 
     ##########################################
@@ -124,13 +140,6 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         help="Create a config file to run an experiment case",
         parents=[common_parser],
     )
-    parser_case.add_argument(
-        "--host-file", dest="host_file", help="Host", required=False, default=None
-    )
-    parser_case.add_argument(
-        "--config-dir", help="Config dir", required=False, default=None
-    )
-
     parser_case.add_argument(
         "--output",
         "-o",
@@ -256,6 +265,12 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         "namelist", help="Print namelist in use and exit", parents=[common_parser]
     )
     add_namelist_args(parser_show_namelist)
+
+    # show paths
+    parser_show_paths = show_command_subparsers.add_parser(
+        "paths", help="Print paths in use and exit", parents=[common_parser]
+    )
+    parser_show_paths.set_defaults(run_command=show_paths)
 
     ###########################################
     # Configure parser for the "doc" command #

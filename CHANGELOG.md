@@ -10,18 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
-## [0.11.0] - 2025-02-13
-
 ### Added
-
+- Introduce possibility for multiple search path for config files. [\#776](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/776) (@uandrae)
 - Added support for CMake compiled binaries on LUMI [\#980](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/980) (@pardallio)
 
 ### Changed
 - Changed binary location o LUMI to CI/CD compiled binaries [\#980](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/980) (@pardallio)
 
-
 ## [0.11.0] - 2025-02-13
-
 
 - Add Harmonie-Arome configurations and update namelist creation for cy49t2 [\#969](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/969) (@romick-knmi)
 - Detach selection of orography filtering method from CSC. [\#960](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/960)(@uandrae)

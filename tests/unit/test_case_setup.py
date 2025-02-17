@@ -46,15 +46,6 @@ def default_config_dir():
     return f"{rootdir}/deode/data/config_files"
 
 
-@pytest.fixture(scope="module")
-def default_config():
-    default_config = ConfigParserDefaults.CONFIG_DIRECTORY / "config.toml"
-    config = ParsedConfig.from_file(
-        default_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
-    )
-    return config
-
-
 def test_save_config(tmp_directory: Path, default_config):
     saved_config = tmp_directory / "saved_config.toml"
     config = default_config
@@ -98,7 +89,6 @@ def test_set_domain_from_file(
         default_config,
         output_file,
         [domain_file],
-        config_dir=default_config_dir,
         expand_config=True,
     )
     config = ParsedConfig.from_file(
@@ -116,7 +106,7 @@ def test_set_case_name(default_config, default_config_dir):
     output_file = f"{default_config_dir}/test_set_case_name.toml"
     case = "a_unique_name"
 
-    case_setup(default_config, output_file, [], case=case, config_dir=default_config_dir)
+    case_setup(default_config, output_file, [], case=case)
     config = ParsedConfig.from_file(
         output_file, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
     )
@@ -125,9 +115,9 @@ def test_set_case_name(default_config, default_config_dir):
 
 
 @pytest.mark.usefixtures("_module_mockers_atos_bologna")
-def test_output_file_name(default_config, default_config_dir):
+def test_output_file_name(default_config):
     config = default_config.copy(update=set_times(default_config))
-    output_file_name = case_setup(config, None, [], config_dir=default_config_dir)
+    output_file_name = case_setup(config, None, [])
     case = Platform(config).substitute(config.get("general.case"))
     assert output_file_name[:-5] == case
 

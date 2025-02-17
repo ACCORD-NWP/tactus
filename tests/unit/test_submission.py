@@ -37,15 +37,6 @@ def parsed_config_with_task(raw_config_with_task):
 
 
 @pytest.fixture()
-def config_from_task_config_file():
-    """Return a raw config common to all tasks."""
-    return ParsedConfig.from_file(
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
-        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-    )
-
-
-@pytest.fixture()
 def _module_mockers(module_mocker):
     # Patching ConfigParserDefaults.CONFIG_PATH so tests use the generated config
     original_submission_task_settings_parse_job = TaskSettings.parse_job
@@ -65,8 +56,8 @@ class TestSubmission:
     def test_config_can_be_instantiated(self, parsed_config_with_task):
         assert isinstance(parsed_config_with_task, ParsedConfig)
 
-    def test_submit(self, config_from_task_config_file, tmp_directory):
-        config = config_from_task_config_file.copy(
+    def test_submit(self, default_config, tmp_directory):
+        config = default_config.copy(
             update={
                 "submission": {
                     "default_submit_type": "background_hpc",
@@ -88,10 +79,10 @@ class TestSubmission:
         sub = NoSchedulerSubmission(background)
         sub.submit(task, config, template_job, task_job, output)
 
-    def test_get_batch_info(self, config_from_task_config_file):
+    def test_get_batch_info(self, default_config):
         arg = "#SBATCH UNITTEST"
         argname = "job-name=@TASK_NAME@"
-        config = config_from_task_config_file.copy(
+        config = default_config.copy(
             update={
                 "submission": {
                     "default_submit_type": "unittest",
@@ -108,9 +99,9 @@ class TestSubmission:
         assert settings["BATCH"]["TEST"] == arg
         assert settings["BATCH"]["NAME"] == "job-name=unittest"
 
-    def test_get_batch_info_exception(self, config_from_task_config_file):
+    def test_get_batch_info_exception(self, default_config):
         arg = "#SBATCH UNITTEST"
-        config = config_from_task_config_file.copy(
+        config = default_config.copy(
             update={
                 "submission": {
                     "default_submit_type": "unittest",
@@ -130,10 +121,8 @@ class TestSubmission:
         assert settings["TEST"] != "NOT USED"
         assert settings["TEST_INCLUDED"] == arg
 
-    def test_cannot_submit_non_existing_task(
-        self, config_from_task_config_file, tmp_directory
-    ):
-        config = config_from_task_config_file.copy()
+    def test_cannot_submit_non_existing_task(self, default_config, tmp_directory):
+        config = default_config.copy()
         task = "not_existing"
         tmp = tmp_directory
         template_job = "deode/templates/stand_alone.py"
@@ -145,8 +134,8 @@ class TestSubmission:
         with pytest.raises(NotImplementedError, match=f"Task {task} not implemented"):
             sub.submit(task, config, template_job, task_job, output)
 
-    def test_wrapper_and_nproc(self, config_from_task_config_file):
-        config = config_from_task_config_file.copy(
+    def test_wrapper_and_nproc(self, default_config):
+        config = default_config.copy(
             update={
                 "submission": {
                     "default_submit_type": "unittest",
@@ -172,8 +161,8 @@ class TestSubmission:
         with pytest.raises(KeyError, match="'nprocy'"):
             config["namelist.nprocy"]
 
-    def test_empty_wrapper_and_nproc(self, config_from_task_config_file):
-        config = config_from_task_config_file.copy(
+    def test_empty_wrapper_and_nproc(self, default_config):
+        config = default_config.copy(
             update={
                 "submission": {
                     "default_submit_type": "unittest",

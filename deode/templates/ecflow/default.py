@@ -4,6 +4,7 @@ import os
 
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
 from deode.derived_variables import derived_variables
+from deode.host_actions import DeodeHost
 from deode.logs import LogDefaults, LoggerHandlers, logger
 from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
 from deode.submission import ProcessorLayout
@@ -40,8 +41,9 @@ def parse_ecflow_vars():
 def default_main(**kwargs):
     """Ecflow container default method."""
     config = kwargs.get("CONFIG")
+    deode_host = DeodeHost().detect_deode_host()
     config = ParsedConfig.from_file(
-        config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+        config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA, host=deode_host
     )
 
     # Reset loglevel according to (in order of priority):

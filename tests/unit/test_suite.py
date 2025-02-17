@@ -29,15 +29,6 @@ def minimal_parsed_config(minimal_raw_config):
     )
 
 
-@pytest.fixture()
-def config_from_task_config_file():
-    """Return a raw config common to all tasks."""
-    return ParsedConfig.from_file(
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
-        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-    )
-
-
 @pytest.fixture(scope="module")
 def _module_mockers(module_mocker):
     # Patching ConfigParserDefaults.CONFIG_PATH so tests use the generated config
@@ -80,8 +71,8 @@ class TestSuite:
             {"submission": {"max_ecf_tasks": 2}},
         ],
     )
-    def test_suite(self, config_from_task_config_file, param, tmp_directory):
-        config = config_from_task_config_file
+    def test_suite(self, default_config, param, tmp_directory):
+        config = default_config
         suite_name = "test_suite"
         config = config.copy(
             update={
