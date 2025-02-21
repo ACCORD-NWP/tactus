@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Clean Marsprep slurm settings for atos_bologna [\#1001](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1001) (@uandrae)
 - Changed binary location o LUMI to CI/CD compiled binaries [\#980](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/980) (@pardallio)
+- Update ehype config settings. [\#967](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/967)(@uandrae)
 
 ## [0.11.0] - 2025-02-13
 

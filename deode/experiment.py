@@ -14,7 +14,7 @@ from deode.config_parser import BasicConfig, ParsedConfig
 from deode.derived_variables import set_times
 from deode.eps.eps_setup import EPSConfig, generate_member_settings
 from deode.general_utils import modify_mappings, recursive_dict_deviation
-from deode.host_actions import set_deode_home
+from deode.host_actions import HostNotFoundError, SelectHost, set_deode_home
 from deode.logs import logger
 from deode.os_utils import resolve_path_relative_to_package
 from deode.toolbox import Platform
@@ -271,6 +271,18 @@ def case_setup(
         deode_home = set_deode_home(config)
         exp.config = exp.config.copy(update={"platform": {"deode_home": deode_home}})
         exp.config = exp.config.expand_macros()
+
+    # Resolve ecf_host if used
+    with contextlib.suppress(HostNotFoundError):
+        ecf_host = exp.config.get("scheduler.ecfvars.ecf_host", None)
+        if ecf_host is not None:
+            pl = Platform(exp.config)
+            ecf_host = pl.substitute(ecf_host)
+            ecf_host = pl.evaluate(ecf_host, object_=SelectHost)
+
+            exp.config = exp.config.copy(
+                update={"scheduler": {"ecfvars": {"ecf_host": ecf_host}}}
+            )
 
     if output_file is None:
         config = exp.config.copy(update=set_times(exp.config))

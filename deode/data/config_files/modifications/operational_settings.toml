@@ -81,6 +81,10 @@
 [extractsqlite]
   sqlite_path = "@CASEDIR@/sqlite/FCTABLE"
 
+[impact.ehype.communicate]
+  output_root = "@SCRATCH@/DE_Impact/EHYPE"
+  output_subpath = "@SUB_CASEDIR@"
+
 [scheduler.ecfvars]
   ecf_tries = 2
 

@@ -93,6 +93,51 @@ class CleanOldData(Task):
             logger.info("Removing {}", dir_file)
 
 
+class CleanEhypeData(CleanOldData):
+    """Clean old data from scratch."""
+
+    def __init__(self, config):
+        """Construct object.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+        """
+        CleanOldData.__init__(self, config)
+        self.name = "CleanEhypeData"
+        self.delay = as_timedelta(config["clean_old_data.ehype_data_period"])
+        self.active = True
+        try:
+            self.ehype_scratch = config["impact.ehype.communicate.run_root"]
+            self.ehype_work = config["impact.ehype.communicate.work_root"]
+            self.ehype_form = config["clean_old_data.ehype_format"]
+        except KeyError:
+            logger.warning("Switch of ehype cleaning as config is incomplete")
+            self.active = False
+        self.cutoff_time = self.cutoff(self.delay)
+        ignore = list(config["clean_old_data.ignore"])
+        logger.info("Ignore: {}", ignore)
+        self.ignore_dir = [*ignore]
+
+    def execute(self):
+        """Run clean data from scratch."""
+        if self.active:
+            list_to_remove_run = self.get_old(
+                self.ehype_scratch,
+                self.ehype_form,
+                self.cutoff_time,
+                ignore=self.ignore_dir,
+            )
+            self.remove_list(list_to_remove_run)
+
+            list_to_remove_work = self.get_old(
+                self.ehype_work,
+                self.ehype_form,
+                self.cutoff_time,
+                ignore=self.ignore_dir,
+            )
+            self.remove_list(list_to_remove_work)
+
+
 class CleanScratchData(CleanOldData):
     """Clean old data from scratch."""
 

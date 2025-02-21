@@ -4,11 +4,14 @@
 import os
 import re
 import socket
+import time
+from dataclasses import dataclass
 
 import yaml
 
 from .config_parser import ConfigPaths, GeneralConstants
 from .logs import logger
+from .os_utils import ping
 
 
 class DeodeHost:
@@ -154,3 +157,61 @@ def set_deode_home(config, deode_home=None):
             deode_home = str(GeneralConstants.PACKAGE_DIRECTORY)
 
     return deode_home
+
+
+class HostNotFoundError(ValueError):
+    """Custom exception."""
+
+
+class AmbigiousHostError(ValueError):
+    """Custom exception."""
+
+
+@dataclass
+class SelectHost:
+    """Class for the host selection."""
+
+    @staticmethod
+    def _select_host_from_list(hosts, tries=3, delay=1):
+        """Set ecf_host from list of options.
+
+           Try to ping server tries times before giving up.
+
+        Arguments:
+            hosts (list): list of host options
+            tries (int): number of times to try to find a host
+            delay (int): number of seconds to wait between each try
+
+        Returns:
+            host (str): Selected host
+
+        Raises:
+            RuntimeError: In case no or more than one host found
+        """
+        found_hosts = []
+        ntry = 1
+        while ntry <= tries:
+            for _host in hosts:
+                host = _host.strip()
+                if ping(host):
+                    found_hosts.append(host)
+
+            if len(found_hosts) == 0 and ntry == tries:
+                host_list = ",".join(hosts)
+                msg = f"No host found, tried:{host_list}"
+                logger.error(msg)
+                raise HostNotFoundError(msg)
+
+            if len(found_hosts) == 1:
+                break
+
+            if len(found_hosts) > 1:
+                host_list = ",".join(found_hosts)
+                msg = f"Ambigious host selection:{host_list}"
+                logger.error(msg)
+                raise AmbigiousHostError(msg)
+
+            time.sleep(delay)
+            ntry += 1
+
+        return found_hosts[0]

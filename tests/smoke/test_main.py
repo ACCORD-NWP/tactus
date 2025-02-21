@@ -13,6 +13,7 @@ from deode import GeneralConstants
 from deode.__main__ import main
 from deode.argparse_wrapper import get_parsed_args
 from deode.config_parser import ConfigParserDefaults
+from deode.host_actions import HostNotFoundError
 from deode.submission import NoSchedulerSubmission, TaskSettings
 from deode.toolbox import Platform
 
@@ -65,7 +66,6 @@ def _module_mockers(module_mocker, config_path, tmp_path_factory):
         new=new_no_scheduler_submission_submit_method,
     )
     module_mocker.patch("deode.scheduler.ecflow")
-    module_mocker.patch("deode.scheduler.EcflowServer._select_host_from_list")
     module_mocker.patch(
         "deode.toolbox.Platform.evaluate", new=new_platform_evaluate_function
     )
@@ -150,7 +150,7 @@ def test_run_task_command(tmp_path):
 @pytest.mark.usefixtures("_module_mockers")
 def test_start_suite_command():
     os.environ["DEODE_HOST"] = "atos_bologna"
-    with suppress(FileNotFoundError):
+    with suppress(FileNotFoundError, HostNotFoundError):
         main(["start", "suite"])
     del os.environ["DEODE_HOST"]
 

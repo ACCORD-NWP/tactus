@@ -9,8 +9,8 @@ import traceback
 from abc import ABC, abstractmethod
 from datetime import datetime
 
+from .host_actions import SelectHost
 from .logs import logger
-from .os_utils import ping
 from .toolbox import Platform
 
 try:
@@ -103,16 +103,17 @@ class EcflowServer(Server):
             raise ModuleNotFoundError("Ecflow not found")
 
         Server.__init__(self, config)
+        platform = Platform(config)
 
         ecf_host = self.config["scheduler.ecfvars.ecf_host"]
-        ecf_host = Platform(config).substitute(ecf_host)
-        self.ecf_host = Platform(config).evaluate(ecf_host, object_=EcflowServer)
+        ecf_host = platform.substitute(ecf_host)
+        self.ecf_host = platform.evaluate(ecf_host, object_=SelectHost)
 
         ecf_port = self.config["scheduler.ecfvars.ecf_port"]
         try:
             self.ecf_port = int(ecf_port)
         except ValueError:
-            self.ecf_port = Platform(config).evaluate(ecf_port, object_=EcflowServer)
+            self.ecf_port = platform.evaluate(ecf_port, object_=EcflowServer)
 
         self.start_command = start_command
         logger.debug("self.ecf_host={} self.ecf_port={}", self.ecf_host, self.ecf_port)
@@ -133,51 +134,6 @@ class EcflowServer(Server):
         """
         port = os.getuid() + int(offset)
         return port
-
-    @staticmethod
-    def _select_host_from_list(hosts, tries=3, delay=1):
-        """Set ecf_host from list of options.
-
-           Try to ping server tries times before giving up.
-
-        Arguments:
-            hosts (list): list of host options
-            tries (int): number of times to try to find a host
-            delay (int): number of seconds to wait between each try
-
-        Returns:
-            host (str): Selected host
-
-        Raises:
-            RuntimeError: In case no or more than one host found
-        """
-        found_hosts = []
-        ntry = 1
-        while ntry <= tries:
-            for _host in hosts:
-                host = _host.strip()
-                if ping(host):
-                    found_hosts.append(host)
-
-            if len(found_hosts) == 0 and ntry == tries:
-                host_list = ",".join(hosts)
-                msg = f"No ecflow host found, tried:{host_list}"
-                logger.error(msg)
-                raise RuntimeError(msg)
-
-            if len(found_hosts) == 1:
-                break
-
-            if len(found_hosts) > 1:
-                host_list = ",".join(found_hosts)
-                msg = f"Ambigious host selection:{host_list}"
-                logger.error(msg)
-                raise RuntimeError(msg)
-
-            time.sleep(delay)
-            ntry += 1
-
-        return found_hosts[0]
 
     def start_server(self):
         """Start the server.

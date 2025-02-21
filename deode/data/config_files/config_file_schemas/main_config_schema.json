@@ -128,6 +128,12 @@
       "decription": "Option for cleaning old data",
       "type": "object",
       "properties": {
+        "ehype_data_period": {
+          "description": "Age for old ehype data in days",
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
+          "default": "P14D"
+        },
         "scratch_data_period": {
           "description": "Age for old data in days",
           "type": "string",

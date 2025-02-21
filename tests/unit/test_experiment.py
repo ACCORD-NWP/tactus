@@ -2,7 +2,7 @@
 """Unit tests for the experiment.py."""
 
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 import tomli
@@ -80,6 +80,16 @@ def fixture_config(default_config):
     return config
 
 
+@pytest.fixture(name="mock_exp_from_files")
+def fixture_mock_exp_from_files():
+    """Fixture that provides a mock instance of ExpFromFiles."""
+    with patch("deode.experiment.ExpFromFiles.__new__") as mock_new:
+        mock_exp = MagicMock()
+        mock_exp.config = MagicMock()
+        mock_new.return_value = mock_exp
+        yield mock_exp
+
+
 class TestExpFromFiles:
     """Unit tests for the ExpFromFiles class."""
 
@@ -108,38 +118,38 @@ class TestExpFromFiles:
         exp.config.save_as(output_file)
 
 
-@patch("deode.experiment.EPSExp")
 class TestCaseSetup:
     """Unit tests for the case_setup function."""
 
-    @patch("deode.experiment.ExpFromFiles")
+    @patch("deode.experiment.EPSExp")
     def test_eps_not_activated(
         self,
-        exp_from_files: Mock,
         epsexp_mock: Mock,
         config: ParsedConfig,
         output_file: Path,
+        mock_exp_from_files: MagicMock,
     ):
         """Test that EPS setup is not activated."""
-        exp_from_files.config = config
+        mock_exp_from_files.config.get.return_value = None
 
         case_setup(config=config, output_file=output_file, mod_files=[])
 
         epsexp_mock.assert_not_called()
 
-    @patch("deode.experiment.ExpFromFiles")
     def test_eps_activated(
         self,
-        epsexp_mock: Mock,
-        exp_from_files: Mock,
         config: ParsedConfig,
         output_file: Path,
+        mock_exp_from_files: MagicMock,
     ):
         """Test that EPS setup is activated."""
-        # Add EPS configuration to the main configuration to activate EPS
-        config = config.copy(update={"eps": {}})
-        exp_from_files.config = config
+        mock_exp_from_files.config = {"eps": {}}
 
-        case_setup(config=config, output_file=output_file, mod_files=[])
+        with patch("deode.experiment.EPSExp.__new__") as epsexp_mock_new:
+            epsexp_mock = MagicMock()
+            epsexp_mock.config.get.return_value = None
+            epsexp_mock_new.return_value = epsexp_mock
 
-        epsexp_mock.assert_called_once()
+            case_setup(config=config, output_file=output_file, mod_files=[])
+
+            epsexp_mock_new.assert_called_once()
