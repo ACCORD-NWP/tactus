@@ -177,6 +177,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix ecf_host selector not selecting the correct naming convention on Atos [#781](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/781) (@adam-otruba)
 
 
+##[bugfix\_v0.6.2] - 2024-09-26
+
+### Fixed
+- Fix ecf\_host selector not selecting the correct naming convention on Atos [\#781](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/781) (@adam-otruba)
+
+## [bugfix\_v0.6.1] - 2024-09-24
+- change binary version for CY48t3
+- set ATOS\_DT as default ifs.selection
+
+
 ## [0.6.0] - 2024-09-19
 
 ### Added
