@@ -2,7 +2,7 @@
   # Package ID info
   description = "The DEODE scripting system."
   name = "deode"
-  version = "0.11.0"
+  version = "0.12.0"
   # Other package info
   authors = ["The DE_330 project."]
   documentation = "https://destination-earth-digital-twins.github.io/deode-workflow-docs"
