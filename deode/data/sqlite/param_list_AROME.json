@@ -23,14 +23,14 @@
   "method":"bilin",
   "grib_id":{"shortName":"t", "productDefinitionTemplateNumber":"0",
              "typeOfLevel":"isobaricInhPa",
-             "level":[ 50, 100, 250, 300, 600, 700, 800, 925, 950]}
+             "level":[ 50, 100, 150, 200, 250, 300, 400, 500, 700, 850, 925, 1000]}
 },
 
 { "harp_param":"RH",
   "method":"bilin",
   "grib_id":{"shortName":"r", "productDefinitionTemplateNumber":"0",
              "typeOfLevel":"isobaricInhPa",
-             "level":[ 50, 100, 250, 300, 600, 700, 800, 925, 950]}
+             "level":[ 50, 100, 150, 200, 250, 300, 400, 500, 700, 850, 925, 1000]}
 },
 
 { "harp_param" : "S",
@@ -39,8 +39,7 @@
   "common":{
              "productDefinitionTemplateNumber":"0",
              "typeOfLevel":"isobaricInhPa",
-             "level":[ 50, 100, 250, 300, 600, 700, 800, 925, 950]
-  },
+             "level":[ 50, 100, 150, 200, 250, 300, 400, 500, 700, 850, 925, 1000]},
   "function":"vector_norm"
 },
 
@@ -50,8 +49,7 @@
   "common":{
              "productDefinitionTemplateNumber":"0",
              "typeOfLevel":"isobaricInhPa",
-             "level":[ 50, 100, 250, 300, 600, 700, 800, 925, 950]
-  },
+             "level":[ 50, 100, 150, 200, 250, 300, 400, 500, 700, 850, 925, 1000]},
   "function":"vector_angle"
 },
 
