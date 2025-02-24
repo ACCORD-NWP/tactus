@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+
+## [0.12.1] - 2025-02-21
+
+###Fixed
+- Fix operational setting for ehype. [\#1015](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1015) (@kastelecn)
+
 ## [0.12.0] - 2025-02-21
 
 ### Added
