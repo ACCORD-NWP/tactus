@@ -6,125 +6,124 @@
   "additionalProperties": true,
   "properties": {
     "duration": {
-          "title": "Duration",
-          "description": "Time stamp templates for output files",
-          "type": "object",
-          "properties": {
-            "archive": {
-              "description": "File template as stored in the archive",
-	      "default": "@LLLH@h@LM@m@LS@s",
-              "type": "string"
-            },
-            "model": {
-              "description": "File template as used by the model",
-	      "default": "@LLLH@:@LM@:@LS@",
-              "type": "string"
-            }
-          }
+      "title": "Duration",
+      "description": "Time stamp templates for output files",
+      "type": "object",
+      "properties": {
+        "archive": {
+          "description": "File template as stored in the archive",
+          "default": "@LLLH@h@LM@m@LS@s",
+          "type": "string"
+        },
+        "model": {
+          "description": "File template as used by the model",
+          "default": "@LLLH@:@LM@:@LS@",
+          "type": "string"
+        }
+      }
     },
     "fullpos": {
-          "title": "Fullpos",
-          "description": "File name templates for fullpos files",
-          "type": "object",
-          "properties": {
-            "archive": {
-              "description": "File template as stored in the archive",
-              "default": "GRIBPF@CNMEXP@@DOMAIN@+@DURATION_ARCHIVE@",
-              "type": "string"
-            },
-            "model": {
-              "description": "File template as used by the model",
-              "default": "GRIBPF@CNMEXP@@DOMAIN@+@DURATION_MODEL@",
-              "type": "string"
-            }
-          }
+      "title": "Fullpos",
+      "description": "File name templates for fullpos files",
+      "type": "object",
+      "properties": {
+        "archive": {
+          "description": "File template as stored in the archive",
+          "default": "GRIBPF@CNMEXP@@DOMAIN@+@DURATION_ARCHIVE@",
+          "type": "string"
+        },
+        "model": {
+          "description": "File template as used by the model",
+          "default": "GRIBPF@CNMEXP@@DOMAIN@+@DURATION_MODEL@",
+          "type": "string"
+        }
+      }
     },
     "history": {
-          "title": "History",
-          "description": "File name templates for history files",
-          "type": "object",
-          "properties": {
-            "archive": {
-              "description": "File template as stored in the archive",
-              "default": "ICMSH@CNMEXP@+@DURATION_ARCHIVE@",
-              "type": "string"
-            },
-            "model": {
-              "description": "File template as used by the model",
-              "default": "ICMSH@CNMEXP@+@DURATION_MODEL@",
-              "type": "string"
-            }
-          }
+      "title": "History",
+      "description": "File name templates for history files",
+      "type": "object",
+      "properties": {
+        "archive": {
+          "description": "File template as stored in the archive",
+          "default": "ICMSH@CNMEXP@+@DURATION_ARCHIVE@",
+          "type": "string"
+        },
+        "model": {
+          "description": "File template as used by the model",
+          "default": "ICMSH@CNMEXP@+@DURATION_MODEL@",
+          "type": "string"
+        }
+      }
     },
     "pgd": {
-          "title": "PGD",
-          "description": "File name templates for final PGD files",
-          "type": "object",
-          "properties": {
-            "archive": {
-              "description": "File template as stored in the archive",
-              "default": "Const.Clim@ONE_DECADE@.sfx",
-              "type": "string"
-            },
-            "model": {
-              "description": "File template as used by the model",
-              "default": "Const.Clim.sfx",
-              "type": "string"
-            }
-          }
+      "title": "PGD",
+      "description": "File name templates for final PGD files",
+      "type": "object",
+      "properties": {
+        "archive": {
+          "description": "File template as stored in the archive",
+          "default": "Const.Clim@ONE_DECADE@.sfx",
+          "type": "string"
+        },
+        "model": {
+          "description": "File template as used by the model",
+          "default": "Const.Clim.sfx",
+          "type": "string"
+        }
+      }
     },
     "pgd_prel": {
-          "title": "Preliminary PGD",
-          "description": "File name templates for the preliminary PGD files",
-          "type": "object",
-          "properties": {
-            "archive": {
-              "description": "File template as stored in the archive",
-              "default": "PGD_prel@ONE_DECADE@.fa",
-              "type": "string"
-            },
-            "model": {
-              "description": "File template as used by the model",
-              "default": "PGD_prel.fa",
-              "type": "string"
-            }
-          }
+      "title": "Preliminary PGD",
+      "description": "File name templates for the preliminary PGD files",
+      "type": "object",
+      "properties": {
+        "archive": {
+          "description": "File template as stored in the archive",
+          "default": "PGD_prel@ONE_DECADE@.fa",
+          "type": "string"
+        },
+        "model": {
+          "description": "File template as used by the model",
+          "default": "PGD_prel.fa",
+          "type": "string"
+        }
+      }
     },
     "pgd_host": {
-          "title": "Host PGD",
-          "description": "File name templates for potential PGD files from the host model. Used if host_surfex=true",
-          "type": "object",
-          "properties": {
-            "archive": {
-              "description": "File template as stored in the archive",
-              "default": "Const.Clim@ONE_DECADE@.sfx",
-              "type": "string"
-            },
-            "model": {
-              "description": "File template as used by the model",
-              "default": "Const.Clim.sfx",
-              "type": "string"
-            }
-          }
+      "title": "Host PGD",
+      "description": "File name templates for potential PGD files from the host model. Used if host_surfex=true",
+      "type": "object",
+      "properties": {
+        "archive": {
+          "description": "File template as stored in the archive",
+          "default": "Const.Clim@ONE_DECADE@.sfx",
+          "type": "string"
+        },
+        "model": {
+          "description": "File template as used by the model",
+          "default": "Const.Clim.sfx",
+          "type": "string"
+        }
+      }
     },
     "surfex": {
-          "title": "Surfex",
-          "description": "File name templates for surfex output files",
-          "type": "object",
-          "properties": {
-            "archive": {
-              "description": "File template as stored in the archive",
-              "default": "ICMSH@CNMEXP@+@DURATION_ARCHIVE@.sfx",
-              "type": "string"
-            },
-            "model": {
-              "description": "File template as used by the model",
-              "default": "ICMSH@CNMEXP@+@DURATION_MODEL@.sfx",
-              "type": "string"
-            }
-          }
+      "title": "Surfex",
+      "description": "File name templates for surfex output files",
+      "type": "object",
+      "properties": {
+        "archive": {
+          "description": "File template as stored in the archive",
+          "default": "ICMSH@CNMEXP@+@DURATION_ARCHIVE@.sfx",
+          "type": "string"
+        },
+        "model": {
+          "description": "File template as used by the model",
+          "default": "ICMSH@CNMEXP@+@DURATION_MODEL@.sfx",
+          "type": "string"
+        }
+      }
     }
   },
-  "additionalProperties": false,
   "minProperties": 7
 }

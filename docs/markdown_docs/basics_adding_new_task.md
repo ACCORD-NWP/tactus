@@ -10,7 +10,7 @@ In the `tasks` folder, the `discover_task.py` file looks for the task specified 
 
 A created task **class** usually inherits the **Task** class from the `base.py` file inside the `tasks` folder The new tasks inherit the **Task** class, one can define their own `execute` , `prep` , `post`  and `run` functions and possibly define new ones.
 
-Inside that [task.taskname] directive, the *wrapper* and *command* settings could be set to their appropriate values if they are used by the task. The *wrapper* setting sets a wrapper for the command needed to be run, most commonly commands `time` or `srun`. The *wrapper* setting comes from the **BatchJob** class included from `batch.py` inside `base.py`.
+Inside that `[task.taskname]` directive, the *wrapper* and *command* settings could be set to their appropriate values if they are used by the task. The *wrapper* setting sets a wrapper for the command needed to be run, most commonly commands `time` or `srun`. The *wrapper* setting comes from the **BatchJob** class included from `batch.py` inside `base.py`.
 
 ```
 wrapper = self.get_task_setting("wrapper")

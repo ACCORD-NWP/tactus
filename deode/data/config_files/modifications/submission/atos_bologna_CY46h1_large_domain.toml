@@ -34,9 +34,6 @@
 [submission.task_exceptions.IOmerge.BATCH]
   WALLTIME = "#SBATCH --time=08:00:00"
 
-[submission.task_exceptions.Marsprep.BATCH]
-  WALLTIME = "#SBATCH --time=06:00:00"
-
 [submission.task_exceptions.Pgd]
   binary = "PGD-offline"
   WRAPPER = "srun -n @NPROC@"

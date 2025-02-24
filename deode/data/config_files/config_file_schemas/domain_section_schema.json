@@ -8,12 +8,7 @@
     "gridtype": {
       "type": "string",
       "description": "Select truncation type",
-      "enum": [
-        "linear",
-        "quadratic",
-        "cubic",
-        "custom"
-      ]
+      "enum": ["linear", "quadratic", "cubic", "custom"]
     },
     "gridtype_oro": {
       "type": "string",

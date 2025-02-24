@@ -6,15 +6,12 @@ from collections.abc import Mapping, MutableMapping, MutableSequence, MutableSet
 from functools import reduce
 from operator import getitem
 from types import MappingProxyType
-from typing import Any, Callable, Iterator, Literal, Optional, TypeVar, Union
+from typing import Any, Callable, Iterator, Literal, Optional, Union
 
 import tomlkit
 import yaml
 
 from .general_utils import get_empty_nested_defaultdict, modify_mappings
-
-# To use in type hints for functions with generic input/output types
-GenericType = TypeVar("GenericType")
 
 
 class QuasiConstantMetaclass(type):

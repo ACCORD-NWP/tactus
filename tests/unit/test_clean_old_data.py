@@ -9,34 +9,19 @@ from pathlib import Path
 import pytest
 import tomlkit
 
-from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from deode.datetime_utils import as_timedelta
 from deode.tasks.clean_old_data import CleanScratchData
 
 
 @pytest.fixture(scope="module")
-def tmpdir(tmp_path_factory):
-    return tmp_path_factory.getbasetemp().as_posix()
-
-
-@pytest.fixture(scope="module")
-def base_raw_config():
-    """Return a raw config common to all tasks."""
-    config = BasicConfig.from_file(ConfigParserDefaults.CONFIG_DIRECTORY / "config.toml")
-    return config
-
-
-@pytest.fixture(scope="module")
-def parsed_config(base_raw_config, tmp_path_factory):
+def parsed_config(tmp_directory, default_config):
     """Return a raw config common to tasks."""
-    config = ParsedConfig(
-        base_raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
-    )
+    config = default_config
 
     config_patch = tomlkit.parse(
         f"""
         [system]
-            wrk = "{tmp_path_factory.getbasetemp().as_posix()}"
+            wrk = "{tmp_directory}"
 
         """
     )
@@ -45,8 +30,8 @@ def parsed_config(base_raw_config, tmp_path_factory):
     return config
 
 
-def test_remove_old(tmpdir, parsed_config):
-    dir_old = f"{tmpdir}/clean/dir_old"
+def test_remove_old(tmp_directory, parsed_config):
+    dir_old = f"{tmp_directory}/clean/dir_old"
     os.makedirs(dir_old)
     file_old = f"{dir_old}/file_old"
     Path(file_old).touch()
@@ -54,7 +39,7 @@ def test_remove_old(tmpdir, parsed_config):
     os.utime(dir_old, (timestamp_old, timestamp_old))
     os.utime(file_old, (timestamp_old, timestamp_old))
 
-    dir_new = f"{tmpdir}/clean/dir_new"
+    dir_new = f"{tmp_directory}/clean/dir_new"
     os.makedirs(dir_new)
     file_new = f"{dir_new}/file_new"
     Path(file_new).touch()
@@ -65,20 +50,20 @@ def test_remove_old(tmpdir, parsed_config):
     config = parsed_config
     cleanolddata = CleanScratchData(config)
     dic_old_file = cleanolddata.get_old(
-        os.path.join(tmpdir, "clean"),
+        os.path.join(tmp_directory, "clean"),
         "/([^/]+)/([^/]+)",
         cleanolddata.cutoff(as_timedelta("P2D")),
     )
     dic_old_dir = cleanolddata.get_old(
-        os.path.join(tmpdir, "clean"),
+        os.path.join(tmp_directory, "clean"),
         "/([^/]+)",
         cleanolddata.cutoff(as_timedelta("P2D")),
     )
     cleanolddata.remove_list(dic_old_file, files=True)
-    left_files = list(glob.glob(f"{tmpdir}/clean/*/*"))
+    left_files = list(glob.glob(f"{tmp_directory}/clean/*/*"))
     assert len(left_files) == 1
-    assert left_files[0] == f"{tmpdir}/clean/dir_new/file_new"
+    assert left_files[0] == f"{tmp_directory}/clean/dir_new/file_new"
     cleanolddata.remove_list(dic_old_dir)
-    left_dir = list(glob.glob(f"{tmpdir}/clean/*/"))
+    left_dir = list(glob.glob(f"{tmp_directory}/clean/*/"))
     assert len(left_dir) == 1
-    assert left_dir[0] == f"{tmpdir}/clean/dir_new/"
+    assert left_dir[0] == f"{tmp_directory}/clean/dir_new/"

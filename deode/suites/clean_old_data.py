@@ -39,6 +39,9 @@ class DeodeCleaningSuiteDefinition(SuiteDefinition):
         self.clean_IFS_data = self.config[
             "suite_control.DeodeCleaningSuiteDefinition.do_clean_IFS"
         ]
+        self.clean_ehype_data = self.config[
+            "suite_control.DeodeCleaningSuiteDefinition.do_clean_ehype_data"
+        ]
         self.cron_days = self.config[
             "suite_control.DeodeCleaningSuiteDefinition.days_in_week"
         ]
@@ -98,6 +101,16 @@ class DeodeCleaningSuiteDefinition(SuiteDefinition):
         if self.clean_IFS_data:
             EcflowSuiteTask(
                 "CleanIFSData",
+                clean_family,
+                config,
+                self.task_settings,
+                self.ecf_files,
+                input_template=input_template,
+            )
+
+        if self.clean_ehype_data:
+            EcflowSuiteTask(
+                "CleanEhypeData",
                 clean_family,
                 config,
                 self.task_settings,

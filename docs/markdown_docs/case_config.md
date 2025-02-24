@@ -40,16 +40,21 @@ To see all commands available for the case functionality run `deode case --help`
 
 ## Adding a new host
 
-The host you're running on can be recognized either through the host name or by identifying a specific environment variable. This is configured in `deode/data/config_files/known_hosts.yml`. In the example below we see how `atos_bologna` and `lumi` are regonized via a hostname regular expression whereas `freja` is recognized from a specfici environment variable.
+The host you're running on can be recognized either through the host name or by identifying a specific environment variable. This is configured in `deode/data/config_files/known_hosts.yml`. In the example below we see how `atos_bologna` and `lumi` are regonized via a hostname regular expression whereas `freja` is recognized from a specific environment variable.
 
 ```
-atos_bologna : 
-  hostname : "ac\\d-\\d\\d\\d"
-lumi : 
-  hostname : "uan\\d\\d"
+atos_bologna: 
+  hostname: "ac\\d-\\d\\d\\d"
+lumi: 
+  hostname: "uan\\d\\d"
 freja: 
   env:
-   SNIC_RESOURCE: "freja"
+    SNIC_RESOURCE: "freja"
+linda: 
+  env: 
+    SMHI_DIST: "linda\\d+"
+leonardo: 
+  hostname: ".*leonardo.*"
 ```
 
 Any new host should be added in the same way and the names for the configuration files for `platform`, `scheduler` and submission should be named using the given hostname.

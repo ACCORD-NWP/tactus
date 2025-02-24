@@ -7,7 +7,7 @@ from pathlib import Path, PosixPath
 import pytest
 import tomlkit
 
-from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
+from deode.config_parser import ConfigParserDefaults
 from deode.derived_variables import set_times
 from deode.tasks.base import Task
 
@@ -16,18 +16,8 @@ DEODE_DEFS = ConfigParserDefaults.DATA_DIRECTORY / "eccodes/definitions"
 
 
 @pytest.fixture(scope="module")
-def tmpdir(tmp_path_factory):
-    return tmp_path_factory.getbasetemp().as_posix()
-
-
-@pytest.fixture(scope="module")
-def task(tmpdir):
-    raw_config = BasicConfig.from_file(
-        ConfigParserDefaults.CONFIG_DIRECTORY / "config.toml"
-    )
-    config = ParsedConfig(
-        raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
-    )
+def task(tmp_directory, default_config):
+    config = default_config
     config = config.copy(update=set_times(config))
 
     config_patch = tomlkit.parse(
@@ -35,7 +25,7 @@ def task(tmpdir):
         [general]
             keep_workdirs = false
         [system]
-            wrk = "{tmpdir}"
+            wrk = "{tmp_directory}"
         [platform]
             deode_home = "{WORKING_DIR}"
         """

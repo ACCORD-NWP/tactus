@@ -51,6 +51,7 @@ def test_from_env_deode_host():
 
 def test_ambiguous_host():
     dh = DeodeHost()
+    dh.hostname = "deode-test"
     dh.known_hosts = {
         "by_host": {"hostname": "deode-test"},
         "by_env": {"env": {"DEODE_HOST_TESTENV": "foo"}},

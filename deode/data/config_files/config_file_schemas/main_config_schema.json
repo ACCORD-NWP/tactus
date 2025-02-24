@@ -79,12 +79,12 @@
         "bdint": {
           "description": "Boundary interval",
           "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+          "format": "duration"
         },
         "bdshift": {
           "description": "Shift of boundary initial time. E.g. 'PT3H' would mean use 3H old boundaries",
           "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+          "format": "duration"
         },
         "max_interpolation_tasks": {
           "description": "Number of interpolate tasks run in parallel",
@@ -124,56 +124,61 @@
       }
     },
     "clean_old_data": {
-       "title": "Cleaning old data",
-       "decription": "Option for cleaning old data",
-       "type": "object",
-       "properties": {
-          "scratch_data_period": {
-             "description": "Age for old data in days",
-             "type": "string",
-	     "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
-	     "default": "P14D"
-          },
-          "suites_period": {
-             "description": "Age for old data in days",
-             "type": "string",
-	     "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
-	     "default": "P14D"
-          },
-          "IFS_period": {
-             "description": "Age for old data in days",
-             "type": "string",
-	     "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
-	     "default": "P7D"
-          },
-	  "ignore": {
-             "decription": "File not to remove",
-             "type": "array",
-             "default": []
-          },
-          "suite_format": {
-             "decription": "Format of path to ecf files",
-             "type": "string",
-             "default": "/"
-          },
-          "scratch_format": {
-             "decription": "Format of path to scratch",
-             "type": "string",
-             "default": "/"
-          },
-          "ifs_format": {
-             "decription": "Format of path to IFS",
-             "type": "string",
-	     "default": "/IFS/(\\d{4})/(0[1-9]|1[0-2])/(0[1-9]|[12]\\d|3[01])/([01]\\d|2[0-3])"
-          },
-	  "scratch_ext": {
-	     "decription": "Extention of cratche for operational user.",
-	     "type": "string",
-	     "default": "deode" 
-	  }
-
-          }
-     },
+      "title": "Cleaning old data",
+      "decription": "Option for cleaning old data",
+      "type": "object",
+      "properties": {
+        "ehype_data_period": {
+          "description": "Age for old ehype data in days",
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
+          "default": "P14D"
+        },
+        "scratch_data_period": {
+          "description": "Age for old data in days",
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
+          "default": "P14D"
+        },
+        "suites_period": {
+          "description": "Age for old data in days",
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
+          "default": "P14D"
+        },
+        "IFS_period": {
+          "description": "Age for old data in days",
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
+          "default": "P7D"
+        },
+        "ignore": {
+          "decription": "File not to remove",
+          "type": "array",
+          "default": []
+        },
+        "suite_format": {
+          "decription": "Format of path to ecf files",
+          "type": "string",
+          "default": "/"
+        },
+        "scratch_format": {
+          "decription": "Format of path to scratch",
+          "type": "string",
+          "default": "/"
+        },
+        "ifs_format": {
+          "decription": "Format of path to IFS",
+          "type": "string",
+          "default": "/IFS/(\\d{4})/(0[1-9]|1[0-2])/(0[1-9]|[12]\\d|3[01])/([01]\\d|2[0-3])"
+        },
+        "scratch_ext": {
+          "decription": "Extention of cratche for operational user.",
+          "type": "string",
+          "default": "deode"
+        }
+      }
+    },
     "pgd": {
       "title": "Pgd Section",
       "description": "Settings for control of Pgd selection.",
@@ -407,17 +412,17 @@
         "sfx_input_definition": {
           "description": "Path to the surfex json config file",
           "type": "string",
-          "default": "@DEODE_HOME@/data/input/@CYCLE@/sfx.json"
+          "default": "@CYCLE@/sfx.json"
         },
         "forecast_input_definition": {
           "type": "string",
           "description": "Path to the forecast json config file",
-          "default": "@DEODE_HOME@/data/input/@CYCLE@/forecast.json"
+          "default": "@CYCLE@/forecast.json"
         },
         "c903_input_definition": {
           "type": "string",
           "description": "Path to the c903 json config file",
-          "default": "@DEODE_HOME@/data/input/@CYCLE@/c903.json"
+          "default": "@CYCLE@/c903.json"
         }
       }
     },
@@ -516,7 +521,7 @@
             "forecast_range": {
               "description": "Forecast range",
               "type": "string",
-              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+              "format": "duration"
             },
             "start": {
               "description": "Start",
@@ -540,7 +545,7 @@
               "description": "Cycle length defined as duration",
               "default": "PT3H",
               "type": "string",
-              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+              "format": "duration"
             },
             "basetime": {
               "description": "Initial date and time for the current task.",
@@ -704,6 +709,11 @@
             }
           }
         },
+        "remove_sections": {
+          "description": "Sections to remove prior to config merge",
+          "type": "array",
+          "default": []
+        },
         "windfarm": {
           "description": "Switch on wind farm parameterisation",
           "type": "boolean",
@@ -721,13 +731,17 @@
       },
       {
         "type": "string",
-        "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        "format": "duration"
       },
       {
         "type": "array",
         "items": {
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?:P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "duration_slice"
+            }
+          ]
         }
       }
     ]

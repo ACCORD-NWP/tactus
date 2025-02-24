@@ -100,8 +100,9 @@ def tmp_directory(tmp_path_factory):
 
 @pytest.fixture(scope="module")
 def default_config():
-    default_config = ConfigParserDefaults.CONFIG_DIRECTORY / "config.toml"
-    config = ParsedConfig.from_file(
-        default_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+    """Return a parsed config to be used for unit tests."""
+    return ParsedConfig.from_file(
+        ConfigParserDefaults.PACKAGE_CONFIG_PATH,
+        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
+        host="atos_bologna",
     )
-    return config

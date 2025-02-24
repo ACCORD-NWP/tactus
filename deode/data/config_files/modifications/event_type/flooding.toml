@@ -19,8 +19,12 @@
   forecast_range = "@FORECAST_RANGE@"
   name = "@CASE@_@YMD@_@HH@"
   nwp_model = "@CSC@"
-  ouput_freq = "@FULLPOS_OUTPUT_FREQ@"
-  run_root = "@SCRATCH@/DE_Impact"
+  output_freq = "@FULLPOS_OUTPUT_FREQ@"
+  output_root = "@SCRATCH@/DE_Impact/EHYPE"
+  output_subpath = "@CASE@_@YMD@_@HH@"
+  run_root = "@SCRATCH@/DE_Impact/EHYPE/"
+  user_ecf_host = "@ECF_HOST@"
+  work_root = "/perm/@USER@/DE_Impact/EHYPE/"
 
 [impact.ehype.StartImpactModels]
   arguments = "@ARCHIVE@/ehype.json"

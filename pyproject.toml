@@ -2,7 +2,7 @@
   # Package ID info
   description = "The DEODE scripting system."
   name = "deode"
-  version = "0.11.0"
+  version = "0.12.0"
   # Other package info
   authors = ["The DE_330 project."]
   documentation = "https://destination-earth-digital-twins.github.io/deode-workflow-docs"
@@ -30,6 +30,7 @@
   geohash-hilbert = "^2.0.0"
   grib2sqlite = {git = "https://github.com/destination-earth-digital-twins/grib2sqlite", tag = "v0.2.0"}
   humanize = "^4.8.0"
+  isodate = "^0.6.1"
   json-schema-for-humans = {git = "https://github.com/paulovcmedeiros/json-schema-for-humans.git", branch = "feature/choose-properties-table-columns"}
   jsonref = "^1.1.0"
   loguru = "^0.7.1"
@@ -37,6 +38,7 @@
   numpy = "^1.22.4"
   omegaconf = "^2.3"
   pandas = ">=1.4.0,<3.0.0"
+  pydantic = "^2.9.2"
   pyfdb = {git = "https://github.com/ecmwf/pyfdb.git"}
   pyproj = "^3.3.0, !=3.5.0"
   pyyaml = "^6.0"

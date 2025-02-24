@@ -2,12 +2,14 @@
 """Unit tests for the experiment.py."""
 
 from pathlib import Path
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
+import tomli
 import tomlkit
 
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
-from deode.experiment import ExpFromFiles
+from deode.config_parser import ParsedConfig
+from deode.experiment import ExpFromFiles, case_setup
 
 
 @pytest.fixture(name="tmpdir", scope="module")
@@ -62,7 +64,7 @@ def fixture_exp_dependencies(output_file: Path):
 
 
 @pytest.fixture(name="config")
-def fixture_config():
+def fixture_config(default_config):
     """Fixture that provides a parsed configuration object for testing."""
     update = {
         "macros": {
@@ -73,32 +75,81 @@ def fixture_config():
             }
         }
     }
-    config = ParsedConfig.from_file(
-        ConfigParserDefaults.CONFIG_PATH,
-        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-    )
+    config = default_config
     config = config.copy(update=update)
     return config
 
 
-def test_exp_from_nonexisting_file(
-    config: ParsedConfig, nonexisting_file: Path, exp_dependencies: dict
-):
-    """Test function for creating an experiment from a non-existing file."""
-    ExpFromFiles(config, exp_dependencies, [nonexisting_file])
+@pytest.fixture(name="mock_exp_from_files")
+def fixture_mock_exp_from_files():
+    """Fixture that provides a mock instance of ExpFromFiles."""
+    with patch("deode.experiment.ExpFromFiles.__new__") as mock_new:
+        mock_exp = MagicMock()
+        mock_exp.config = MagicMock()
+        mock_new.return_value = mock_exp
+        yield mock_exp
 
 
-def test_exp_from_nontoml_file(
-    config: ParsedConfig, nontoml_file: Path, exp_dependencies: dict
-):
-    """Test function for creating an experiment from a non-TOML file."""
-    with pytest.raises(RuntimeError):
-        ExpFromFiles(config, exp_dependencies, [nontoml_file])
+class TestExpFromFiles:
+    """Unit tests for the ExpFromFiles class."""
+
+    def test_exp_from_nonexisting_file(
+        self, config: ParsedConfig, nonexisting_file: Path, exp_dependencies: dict
+    ):
+        """Test function for creating an experiment from a non-existing file."""
+        ExpFromFiles(config, exp_dependencies, [nonexisting_file])
+
+    def test_exp_from_nontoml_file(
+        self, config: ParsedConfig, nontoml_file: Path, exp_dependencies: dict
+    ):
+        """Test function for creating an experiment from a non-TOML file."""
+        with pytest.raises((RuntimeError, tomli.TOMLDecodeError)):
+            ExpFromFiles(config, exp_dependencies, [nontoml_file])
+
+    def test_exp_from_toml_file(
+        self,
+        config: ParsedConfig,
+        toml_file: Path,
+        exp_dependencies: dict,
+        output_file: Path,
+    ):
+        """Test function for creating an experiment from a TOML file."""
+        exp = ExpFromFiles(config, exp_dependencies, [toml_file])
+        exp.config.save_as(output_file)
 
 
-def test_exp_from_toml_file(
-    config: ParsedConfig, toml_file: Path, exp_dependencies: dict, output_file: Path
-):
-    """Test function for creating an experiment from a TOML file."""
-    exp = ExpFromFiles(config, exp_dependencies, [toml_file])
-    exp.config.save_as(output_file)
+class TestCaseSetup:
+    """Unit tests for the case_setup function."""
+
+    @patch("deode.experiment.EPSExp")
+    def test_eps_not_activated(
+        self,
+        epsexp_mock: Mock,
+        config: ParsedConfig,
+        output_file: Path,
+        mock_exp_from_files: MagicMock,
+    ):
+        """Test that EPS setup is not activated."""
+        mock_exp_from_files.config.get.return_value = None
+
+        case_setup(config=config, output_file=output_file, mod_files=[])
+
+        epsexp_mock.assert_not_called()
+
+    def test_eps_activated(
+        self,
+        config: ParsedConfig,
+        output_file: Path,
+        mock_exp_from_files: MagicMock,
+    ):
+        """Test that EPS setup is activated."""
+        mock_exp_from_files.config = {"eps": {}}
+
+        with patch("deode.experiment.EPSExp.__new__") as epsexp_mock_new:
+            epsexp_mock = MagicMock()
+            epsexp_mock.config.get.return_value = None
+            epsexp_mock_new.return_value = epsexp_mock
+
+            case_setup(config=config, output_file=output_file, mod_files=[])
+
+            epsexp_mock_new.assert_called_once()

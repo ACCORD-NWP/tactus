@@ -130,21 +130,21 @@ def test_get_month_list(
     ("output_settings", "forecast_range", "expected"),
     [
         ("", "PT6H", []),
-        ("PT1H", "PT6H", [[pd.Timedelta("0H"), pd.Timedelta("6H"), pd.Timedelta("1H")]]),
+        ("PT1H", "PT6H", [[pd.Timedelta("0h"), pd.Timedelta("6h"), pd.Timedelta("1h")]]),
         (
             ["PT0H:PT6H:PT1H", "PT6H:PT12H:PT2H"],
             "PT12H",
             [
-                [pd.Timedelta("0H"), pd.Timedelta("6H"), pd.Timedelta("1H")],
-                [pd.Timedelta("6H"), pd.Timedelta("12H"), pd.Timedelta("2H")],
+                [pd.Timedelta("0h"), pd.Timedelta("6h"), pd.Timedelta("1h")],
+                [pd.Timedelta("6h"), pd.Timedelta("12h"), pd.Timedelta("2h")],
             ],
         ),
         (
             ("PT0H:PT6H:PT1H", "PT6H:PT12H:PT2H"),
             "PT12H",
             [
-                [pd.Timedelta("0H"), pd.Timedelta("6H"), pd.Timedelta("1H")],
-                [pd.Timedelta("6H"), pd.Timedelta("12H"), pd.Timedelta("2H")],
+                [pd.Timedelta("0h"), pd.Timedelta("6h"), pd.Timedelta("1h")],
+                [pd.Timedelta("6h"), pd.Timedelta("12h"), pd.Timedelta("2h")],
             ],
         ),
     ],

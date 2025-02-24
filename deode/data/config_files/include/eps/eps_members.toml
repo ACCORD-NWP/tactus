@@ -1,0 +1,10 @@
+[eps.general]
+  control_member = 0
+  members = "0:3"
+  run_continously = false
+
+[eps.member_settings.boundaries.ifs]
+  selection = {"1:3" = "IFSENS"}
+
+[eps.member_settings.general]
+  realization = "-1"

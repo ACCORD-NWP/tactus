@@ -12,7 +12,7 @@ from toml_formatter.formatter import FormattedToml
 from troika.connections.ssh import SSHConnection
 
 from . import GeneralConstants
-from .config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
+from .config_parser import BasicConfig, ConfigParserDefaults, ConfigPaths, ParsedConfig
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
 from .experiment import case_setup
 from .host_actions import DeodeHost, set_deode_home
@@ -96,11 +96,11 @@ def create_exp(args, config):
     """
     deode_home = set_deode_home(config, args.deode_home)
     config = config.copy(update={"platform": {"deode_home": deode_home}})
-    config_dir = args.config_dir
-    known_hosts = args.host_file
-    if known_hosts is None:
-        known_hosts = ConfigParserDefaults.CONFIG_DIRECTORY / "known_hosts.yml"
-    host = DeodeHost(known_hosts=known_hosts)
+    known_hosts_file = args.host_file
+    if known_hosts_file is None:
+        known_hosts_file = ConfigPaths.path_from_subpath("known_hosts.yml")
+
+    host = DeodeHost(known_hosts_file=known_hosts_file).detect_deode_host()
     output_file = args.output_file
     case = args.case
     mod_files = args.config_mods
@@ -112,7 +112,6 @@ def create_exp(args, config):
         mod_files,
         case=case,
         host=host,
-        config_dir=config_dir,
         expand_config=args.expand_config,
     )
 
@@ -388,6 +387,12 @@ def show_namelist(args, config):
         namelist_name = f"namelist_{args.namelist_type}_{args.namelist}"
     nlgen.write_namelist(nlres, namelist_name)
     logger.info("Printing namelist in use to file {}", namelist_name)
+
+
+def show_paths(args, config):  # noqa ARG001
+    """Implement the 'show_paths' command."""
+    dh = DeodeHost()
+    ConfigPaths.print(args.config_file, dh.detect_deode_host())
 
 
 def namelist_integrate(args, config):

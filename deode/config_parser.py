@@ -24,6 +24,7 @@ from toml_formatter.formatter_options import FormatterOptions
 from . import GeneralConstants
 from .aux_types import BaseMapping, QuasiConstant
 from .datetime_utils import DatetimeConstants
+from .formatters import duration_format_validator, duration_slice_format_validator
 from .general_utils import modify_mappings
 from .logs import logger
 from .os_utils import resolve_path_relative_to_package
@@ -48,6 +49,122 @@ class ConfigParserDefaults(QuasiConstant):
     SCHEMAS_DIRECTORY = CONFIG_DIRECTORY / "config_file_schemas"
     MAIN_CONFIG_JSON_SCHEMA_PATH = SCHEMAS_DIRECTORY / "main_config_schema.json"
     MAIN_CONFIG_JSON_SCHEMA = json.loads(MAIN_CONFIG_JSON_SCHEMA_PATH.read_text())
+
+
+class ConfigPaths:
+    """Support multiple path search."""
+
+    _env_data_paths = os.getenv("DEODE_CONFIG_DATA_DIR")
+    CONFIG_DATA_SEARCHPATHS = (
+        _env_data_paths.split(":") if _env_data_paths is not None else []
+    )
+    erroneous_paths = [
+        path for path in CONFIG_DATA_SEARCHPATHS if not os.path.isabs(path)
+    ]
+    if len(erroneous_paths) > 0:
+        raise RuntimeError(f"DEODE_CONFIG_DATA_DIR is not absolute: {erroneous_paths}")
+    CONFIG_DATA_SEARCHPATHS.append(ConfigParserDefaults.DATA_DIRECTORY)
+
+    @staticmethod
+    def print(config_file=None, host=None):
+        """Prints the available config directories.
+
+        Displays the main config search paths as defined by list_paths
+        in addition to the actual search paths in the config file used.
+
+        """
+
+        def path_info(list_paths, dirmap=tuple({})):
+            """Populates the a list of search paths with found directories.
+
+            Args:
+                list_paths (list): directories to search for
+                dirmap (dict): Mapping between display name and actual path
+
+            Raises:
+                RuntimeError: In case of multiple conflicting paths detected
+
+            Returns:
+                mapping (dict): Dict of search result
+
+            """
+            mapping = {}
+            for dir_ in list_paths:
+                rdir = dirmap.get(dir_, dir_)
+                mapping[dir_] = []
+                pattern = f"**/{rdir}"
+
+                for searchpath in ConfigPaths.CONFIG_DATA_SEARCHPATHS:
+                    res = list(Path(searchpath).rglob(pattern))
+                    if len(res) == 1:
+                        mapping[dir_].append(str(res[0]))
+                    if len(res) > 1:
+                        logger.error("Multiple matches found for subpath: {}", searchpath)
+                        logger.error("Results: {}", res)
+                        raise RuntimeError
+
+            return mapping
+
+        dirmap = {
+            "config_file_schemas": "config_files/config_file_schemas",
+        }
+        list_paths = [
+            "config_files",
+            "config_file_schemas",
+            "namelist_generation_input",
+            "input",
+        ]
+        list_config_paths = []
+        raw_config = BasicConfig.from_file(config_file)
+        for _key, _value in raw_config.get("include", {}).items():
+            key = f"config_file_{_key}_section"
+            value = _value.replace("@HOST@", host) if host is not None else _value
+            dirmap[key] = value
+            if key not in list_paths:
+                list_config_paths.append(key)
+
+        path_info_main = path_info(list_paths, dirmap)
+        path_info_config = path_info(list_config_paths, dirmap)
+
+        logger.info("DEODE paths for host={}", host)
+        logger.info(" Package directory: {}", GeneralConstants.PACKAGE_DIRECTORY)
+        logger.info(
+            " Searchpaths: {}", [str(x) for x in ConfigPaths.CONFIG_DATA_SEARCHPATHS]
+        )
+        logger.info(
+            " Data paths in search order: {}", json.dumps(path_info_main, indent=4)
+        )
+        logger.info(
+            " Config file include paths in search order: {}",
+            json.dumps(path_info_config, indent=4),
+        )
+
+    @staticmethod
+    def path_from_subpath(subpath) -> Path:
+        """Interface to find full path given any subpath, by searching 'searchpaths'.
+
+        Arguments:
+            subpath (str): Subpath to search for
+
+        Returns:
+            (Path): Full path to target
+
+        Raises:
+            RuntimeRerror: Various errors
+        """
+        pattern = f"**/{subpath}"
+        searchpaths = ConfigPaths.CONFIG_DATA_SEARCHPATHS.copy()
+        for searchpath in searchpaths:
+            results = list(Path(searchpath).rglob(pattern))
+            if len(results) > 1:
+                logger.error("Multiple matches found for subpath: {}", subpath)
+                logger.error("Results: {}", results)
+                raise RuntimeError("Multiple matches")
+
+            if len(results) == 1:
+                return results[0]
+
+        raise RuntimeError(f"Could not find {subpath}")
 
 
 class ConfigFileValidationError(Exception):
@@ -176,20 +293,29 @@ class ParsedConfig(BasicConfig):
         *args,
         json_schema,
         include_dir=ConfigParserDefaults.CONFIG_DIRECTORY,
+        host=None,
         **kwargs,
     ):
         """Initialise an instance with an arbitrary number of entries & validate them."""
         self.include_dir = include_dir
         self.json_schema = json_schema
+        self.host = host
         super().__init__(*args, **kwargs)
 
     @BasicConfig.data.setter
     def data(self, new):
-        """Set the underlying data stored by the instance."""
+        """Set the underlying data stored by the instance.
+
+        Skip the validation if the class is instantiated with an empty schema.
+
+        """
+        validate_json_schema = len(self.json_schema) > 0
+
         new, json_schema = _expand_config_include_section(
             raw_config=new,
             json_schema=self.json_schema,
             config_include_search_dir=self.include_dir,
+            host=self.host,
         )
         ParsedConfig.json_schema.fset(self, json_schema, _validate_data=False)
 
@@ -205,7 +331,9 @@ class ParsedConfig(BasicConfig):
             if property_schema.get("type", "") == "object":
                 new[property_name] = {}
 
-        BasicConfig.data.fset(self, self.json_schema.validate(new))
+        if validate_json_schema:
+            new = self.json_schema.validate(new)
+        BasicConfig.data.fset(self, new)
 
     @property
     def include_dir(self):
@@ -318,8 +446,10 @@ def _expand_config_include_section(
     config_include_search_dir=ConfigParserDefaults.CONFIG_DIRECTORY,
     schemas_path=ConfigParserDefaults.SCHEMAS_DIRECTORY,
     _parent_sections=(),
+    host=None,
 ):
     """Merge config includes and return new config & corresponding validation schema."""
+    # If the json schema is empty on arrival, keep it empty
     raw_config = modify_mappings(obj=raw_config, operator=dict)
     json_schema = modify_mappings(obj=json_schema, operator=dict)
 
@@ -334,9 +464,18 @@ def _expand_config_include_section(
     else:
         for section_name, include_path_ in config_include_defs.items():
             if isinstance(include_path_, str):
-                include_path = Path(include_path_)
+                if "@HOST@" in include_path_ and host is None:
+                    raise RuntimeError(
+                        f"include_path={include_path_} requires host to be set"
+                    )
+                include_path = (
+                    include_path_.replace("@HOST@", host)
+                    if host is not None
+                    else include_path_
+                )
+                include_path = Path(include_path)
                 if not include_path.is_absolute():
-                    include_path = config_include_search_dir / include_path
+                    include_path = ConfigPaths.path_from_subpath(include_path)
                 included_config_section = _read_raw_config_file(include_path)
             else:
                 included_config_section = include_path_
@@ -380,7 +519,13 @@ def _get_json_validation_function(json_schema):
     if not json_schema:
         # Validation will just convert everything to dict in this case
         return lambda obj: modify_mappings(obj=obj, operator=dict)
-    validation_func = fastjsonschema.compile(json_schema.dict())
+    validation_func = fastjsonschema.compile(
+        json_schema.dict(),
+        formats={
+            "duration": duration_format_validator,
+            "duration_slice": duration_slice_format_validator,
+        },
+    )
 
     def validate(obj):
         try:

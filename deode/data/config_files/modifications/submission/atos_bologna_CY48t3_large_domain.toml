@@ -29,10 +29,6 @@
 [submission.task_exceptions.IOmerge.BATCH]
   WALLTIME = "#SBATCH --time=08:00:00"
 
-[submission.task_exceptions.Marsprep.BATCH]
-  MEM = "#SBATCH --mem=128GB"
-  WALLTIME = "#SBATCH --time=02:00:00"
-
 [submission.task_exceptions.Pgd.BATCH]
   NODES = "#SBATCH --nodes=2"
   NTASKS = "#SBATCH --ntasks=32"

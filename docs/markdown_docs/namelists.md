@@ -2,7 +2,7 @@
 Describes the namelist handling in the Deode-Workflow.
 
 ## Internal usage
-The deode namelists are stored as yml files and assembled following a set of rules. The upper air and surfex namelists are stored in `master_namelists.yml` and `surfex_namelists.yml` respectively. In these config files the namelists are grouped depending on function and application. E.g. the namelist for generation of climate files (configuration E923) are separated in a base block, `e923_base` and one additional block for each step, e.g. `e923_0`. In `assemble_master.yml` the rules for how these blocks are combinged is defined. For the initial part, `e923_part_0` is defined as
+The deode namelists are stored as yml files in `deode/data/namelist_generation_input/CYCLE` and assembled following a set of rules. The upper air and surfex namelists are stored in `master_namelists.yml` and `surfex_namelists.yml` respectively. In these config files the namelists are grouped depending on function and application. E.g. the namelist for generation of climate files (configuration E923) are separated in a base block, `e923_base` and one additional block for each step, e.g. `e923_0`. In `assemble_master.yml` the rules for how these blocks are combinged is defined. For the initial part, `e923_part_0` is defined as
 
 ```
 e923_part_0:
@@ -16,7 +16,7 @@ where `common_e923` is another group in the assemble rules and `e923_0` is a gro
   - e923_0
 ```
 
-In addition the defined macros (see `marcos.toml`) are use in the namelist for config driven selections. For e.g. the forecast the settings are dependent on the CSC used as well as the forcing model and the config keys `general.csc` and `boundaries.bdmodel` are used accordingly like:
+In addition the defined macros (see `deode/data/config_files/include/macros.toml`) are use in the namelist for config driven selections. For e.g. the forecast the settings are dependent on the CSC used as well as the forcing model and the config keys `general.csc` and `boundaries.bdmodel` are used accordingly like:
 ```
 forecast:
   - master_common
@@ -41,9 +41,9 @@ deode show namelist -h
 
 ## Add your own namelist
 
-The simplest and recommended way to change a namelist is to extract it as described above using the `-b` option, make your modifications and add the namelist to the directory specified by `system.namelists` in the config file. The name of the namelist should be the same as when extracted above. Before the system will pick up your namelist you have to set `general.accept_stat_namelist = true` in the config file. Note that for the main forecast namelist any existing fullpos select files following the name convention "xxt\*" will be picked up as well if they exists. If not they will be generated.
+The simplest and recommended way to change a namelist is to extract it as described above using the `-b` option, make your modifications and add the namelist to the directory specified by `system.namelists` in the config file. The name of the namelist should be the same as when extracted above. Before the system will pick up your namelist you have to set `general.accept_static_namelists = true` in the config file. Note that for the main forecast namelist any existing fullpos select files following the name convention "xxt\*" will be picked up as well if they exists. If not they will be generated.
 
-## Modify a namlist from config
+## Modify a namelist from config
 
 There are several ways to modify namelists. We can either use the `${}` syntax in the yaml files to substitute values. See e.g. how it's done for `nproma` or lfftw defined in the `submission` sections. Another way is to introduce a `namelist_update` section like
 ```

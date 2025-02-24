@@ -4,6 +4,7 @@ import json
 import os
 from time import sleep
 
+from ..config_parser import ConfigPaths
 from ..datetime_utils import as_datetime, as_timedelta, oi2dt_list
 from ..derived_variables import check_fullpos_namelist
 from ..initial_conditions import InitialConditions
@@ -147,7 +148,9 @@ class Forecast(Task):
     def execute(self):
         """Execute forecast."""
         # Fetch forecast model static input data
-        input_definition = self.platform.get_system_value("forecast_input_definition")
+        input_definition = ConfigPaths.path_from_subpath(
+            self.platform.get_system_value("forecast_input_definition")
+        )
         logger.info("Read static data spec from: {}", input_definition)
         with open(input_definition, "r", encoding="utf-8") as f:
             input_data = json.load(f)
@@ -170,7 +173,9 @@ class Forecast(Task):
         settings = self.nlgen_surfex.assemble_namelist("forecast")
         self.nlgen_surfex.write_namelist(settings, "EXSEG1.nam")
 
-        input_definition = self.platform.get_system_value("sfx_input_definition")
+        input_definition = ConfigPaths.path_from_subpath(
+            self.platform.get_system_value("sfx_input_definition")
+        )
         with open(input_definition, "r", encoding="utf-8") as f:
             input_data = json.load(f)
         binput_data = InputDataFromNamelist(
