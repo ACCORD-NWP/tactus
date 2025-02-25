@@ -144,7 +144,6 @@ def derived_variables(config, processor_layout=None):
         gridtype_oro = gridtype
         lspsmoro_map = config["domain.spectral_smoothing_by_gridtype"]
         lspsmoro = lspsmoro_map[gridtype]
-        logger.info("lspsmoro:{}", lspsmoro)
         nsmax_oro = nsmax
         nmsmax_oro = nmsmax
     elif orographic_smoothing_method == "truncation":

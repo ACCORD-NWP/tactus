@@ -2,7 +2,7 @@
 
 import os
 
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
+from deode.config_parser import ConfigParserDefaults, GeneralConstants, ParsedConfig
 from deode.derived_variables import derived_variables
 from deode.host_actions import DeodeHost
 from deode.logs import LogDefaults, LoggerHandlers, logger
@@ -10,7 +10,7 @@ from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
 from deode.submission import ProcessorLayout
 from deode.tasks.discover_task import get_task
 
-logger.enable("deode")
+logger.enable(GeneralConstants.PACKAGE_NAME)
 
 
 def parse_ecflow_vars():
@@ -40,10 +40,12 @@ def parse_ecflow_vars():
 
 def default_main(**kwargs):
     """Ecflow container default method."""
-    config = kwargs.get("CONFIG")
+    config_file = kwargs.get("CONFIG")
     deode_host = DeodeHost().detect_deode_host()
     config = ParsedConfig.from_file(
-        config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA, host=deode_host
+        config_file,
+        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
+        host=deode_host,
     )
 
     # Reset loglevel according to (in order of priority):
@@ -52,6 +54,7 @@ def default_main(**kwargs):
     #     (c) The default `LogDefaults.level` if none of the above is found.
     loglevel = kwargs.get("LOGLEVEL", config.get("loglevel", LogDefaults.LEVEL)).upper()
     logger.configure(handlers=LoggerHandlers(default_level=loglevel))
+    logger.info("Read config from {}", config_file)
 
     args = kwargs.get("ARGS")
     args_dict = {}
@@ -103,6 +106,7 @@ def default_main(**kwargs):
 
 
 if __name__ == "__main__":
+    logger.info("Running {} v{}", GeneralConstants.PACKAGE_NAME, GeneralConstants.VERSION)
     # Get ecflow variables
     kwargs_main = parse_ecflow_vars()
     default_main(**kwargs_main)
