@@ -12,7 +12,7 @@
         "active": {
           "description": "Activates this impact model",
           "type": "boolean",
-          "default": "false"
+          "default": false
         },
         "arguments": {
           "type": "string",

@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Use bddir_sfx for MARS latlon file for more flexibilty on output location [\#1012](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1012) (@uandrae)
 
+###Fixed
+- Fix json schema for impact models. [\#1020](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1020#pullrequestreview-2641340748)(@kastelecn) 
+
 ## [0.12.0] - 2025-02-21
 
 ### Added
