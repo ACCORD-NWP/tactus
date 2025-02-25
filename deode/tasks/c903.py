@@ -35,7 +35,7 @@ class C903(Task):
             self.basetime, bdcycle, bdcycle_start=bdcycle_start, bdshift=-bdshift
         )
 
-        self.bdnr = self.config["task.args.bd_nr"]
+        self.bd_index = self.config["task.args.bd_index"]
         self.bd_time = self.config["task.args.bd_time"]
         self.forecast_range = self.config["general.times.forecast_range"]
 
@@ -45,7 +45,7 @@ class C903(Task):
         self.nlgen = NamelistGenerator(self.config, "master")
         self.master = self.get_binary("MASTERODB")
 
-        self.name = f"{self.name}_{self.bdnr}"
+        self.name = f"{self.name}_{self.bd_index}"
 
     def execute(self):
         """Run task.

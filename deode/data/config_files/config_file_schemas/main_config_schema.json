@@ -114,8 +114,12 @@
           ]
         },
         "ifs.bdmember": {
-          "type": "string",
-          "description": "The number of members in ensemble if selection is IFSENS, else empty string."
+          "type": "array",
+          "description": "The number of members in ensemble if selection is IFSENS, else empty string.",
+	  "default": [],
+	  "items": {
+                "type": "integer"
+              }
         },
         "bd_has_surfex": {
           "description": "Set to true if the host model runs with surfex",

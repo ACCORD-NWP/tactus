@@ -421,8 +421,8 @@ class Platform:
 
         # LBC number handling
         try:
-            bd_nr = int(self.config["task.args.bd_nr"])
-            pattern = self.sub_value(pattern, "NNN", f"{bd_nr:03d}")
+            bd_index = int(self.config["task.args.bd_index"])
+            pattern = self.sub_value(pattern, "NNN", f"{bd_index:03d}")
         except KeyError:
             pass
 

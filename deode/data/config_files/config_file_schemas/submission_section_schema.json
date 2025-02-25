@@ -37,7 +37,32 @@
     },
     "task_exceptions": {
       "type": "object",
-      "description": "Allows to define task specific settings like BATCH, MODULES, NPROC. Use as task_exceptions.taskname.property"
+      "description": "Allows to define task specific settings like BATCH, MODULES, NPROC. Use as task_exceptions.taskname.property",
+      "properties": {
+        "Marsprep": {
+          "type": "object",
+          "description": "Settings specific to Marsprep tasks",
+          "properties": {
+            "ENV": {
+              "type": "object",
+              "description": "Sets environment variables",
+              "properties": {
+                "MARS_MULTITARGET_STRICT_FORMAT": {
+                  "type": "number",
+                  "description": "Strict format for multitarget operations",
+                  "default": 1
+                },
+		"MARS_READANY_BUFFER_SIZE": {
+		  "type": "number",
+	  	  "description": "Reandomly buffer size in mars",
+		  "default":  17893020000
+		}
+              },
+	      "default": {}
+            }
+          }
+        }
+      }
     },
     "types": {
       "title": "Submission types",

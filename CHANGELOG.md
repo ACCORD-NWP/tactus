@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.12.0] - 2025-02-21
 
 ### Added
+- Add possibility to retrieve several EPS members at the same time.[#988](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/988)(@kastelecn)
 - Introduce possibility to generate ensemble config file. [\#865](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/865) (@mafdmi)
 - Introduce possibility for multiple search path for config files. [\#776](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/776) (@uandrae)
 - Added support for CMake compiled binaries on LUMI [\#980](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/980) (@pardallio)
