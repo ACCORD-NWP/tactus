@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed binary location o LUMI to CI/CD compiled binaries [\#980](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/980) (@pardallio)
 - Update ehype config settings. [\#967](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/967)(@uandrae)
 
+### Fixed
+- Correct EcCodes module inconsistency for atos_bologna [\#1006](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1006) (@uandrae)
+
 ## [0.11.0] - 2025-02-13
 
 - Add Harmonie-Arome configurations and update namelist creation for cy49t2 [\#969](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/969) (@romick-knmi)
