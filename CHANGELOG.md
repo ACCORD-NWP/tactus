@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Print deode version and config file used for each task [\#1011](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1011) (@uandrae)
 
 ### Changed
+- Increase walltime for CreateGrib on atos_bologna [\#1009](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1009) (@uandrae)
 - Use bddir_sfx for MARS latlon file for more flexibilty on output location [\#1012](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1012) (@uandrae)
 
 ###Fixed
