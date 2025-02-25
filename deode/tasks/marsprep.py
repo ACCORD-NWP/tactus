@@ -87,6 +87,11 @@ class Marsprep(Task):
             basetime=self.bd_basetime,
             validtime=self.basetime,
         )
+        self.bddir_sfx = self.platform.substitute(
+            self.config["system.bddir_sfx"],
+            basetime=self.bd_basetime,
+            validtime=self.basetime,
+        )
         self.prep_filename = self.platform.substitute(
             self.config["system.bdfile_sfx_template"],
             basetime=self.bd_basetime,
@@ -820,12 +825,13 @@ class Marsprep(Task):
         # Split the lat/lon part and perform it here
         #
 
-        mars_file_check = os.path.join(self.prepdir, self.prep_filename)
+        mars_file_check = os.path.join(self.bddir_sfx, self.prep_filename)
         if os.path.exists(mars_file_check):
-            logger.debug("Warning: Prep file allready exists")
+            logger.info("Prep file already exists as {}", mars_file_check)
         elif self.split_mars and not self.prep_step:
             logger.debug("No need Prep file")
         else:
+            logger.info("Create prep input file {}", mars_file_check)
             prefetch = False
 
             method = self.mars["latlon_method"]
@@ -882,7 +888,4 @@ class Marsprep(Task):
                     with open(filename, "rb") as input_file:
                         output_file.write(input_file.read())
                     os.remove(filename)
-            shutil.move(
-                self.prep_filename,
-                os.path.join(self.prepdir, self.prep_filename),
-            )
+            self.fmanager.output(self.prep_filename, mars_file_check)
