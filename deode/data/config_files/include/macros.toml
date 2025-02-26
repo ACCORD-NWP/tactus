@@ -8,7 +8,6 @@
     "general.case",
     "general.event_type",
     "domain.orographic_smoothing_method",
-    {bdmember = "boundaries.ifs.bdmember"},
     {case_prefix = "scheduler.ecfvars.case_prefix"},
     {ecf_host = "scheduler.ecfvars.ecf_host"},
     {domain = "domain.name"},
