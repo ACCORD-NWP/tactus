@@ -1,6 +1,6 @@
 [submission]
   account = "#SBATCH -A project_465000527"
-  bindir = "/projappl/project_465000527/github-actions/install/cy48t3/latest/bin"
+  bindir = "/projappl/project_465000527/github-actions/install/cy48t3/cy48t3-v1.4.2/bin"
   cmicro = "OLD3"
   default_submit_type = "serial"
   lfftw = true
@@ -42,13 +42,13 @@
 
 [submission.task_exceptions.CreateGrib]
   binary = "gl"
-  bindir = "/projappl/project_465000527/github-actions/install/gl/latest/bin"
+  bindir = "/projappl/project_465000527/github-actions/install/gl/cy48t3-v1.4.2/bin"
 
 [submission.task_exceptions.CreateGrib.ENV]
   LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/pardalmi/local/eccodes-2.39.0-ftn16-LUMI/lib64"
 
 [submission.task_exceptions.E923Update]
-  bindir = "/projappl/project_465000527/github-actions/install/cy48t3/latest/bin"
+  bindir = "/projappl/project_465000527/github-actions/install/cy48t3/cy48t3-v1.4.2/bin"
 
 [submission.task_exceptions.Gmted.MODULES]
   GDAL = ["load", "scl-gdal_23"]
@@ -72,7 +72,7 @@
 
 [submission.task_exceptions.PgdUpdate]
   binary = "gl"
-  bindir = "/projappl/project_465000527/github-actions/install/gl/latest/bin"
+  bindir = "/projappl/project_465000527/github-actions/install/gl/gl-v1.3.0/bin"
 
 [submission.task_exceptions.PgdUpdate.ENV]
   LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/pardalmi/local/eccodes-2.39.0-ftn16-LUMI/lib64"
