@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Print deode version and config file used for each task [\#1011](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1011) (@uandrae)
+- Configure dependabot for frequent dependency updates. [\#989](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/989) (@observingClouds)
 
 ### Changed
 - Name convention for LBC families [\#984](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/984)(@uandrae) 
