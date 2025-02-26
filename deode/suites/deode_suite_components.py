@@ -3,7 +3,7 @@
 from datetime import datetime, timedelta
 from typing import Generator, Optional
 
-from deode.suites.suite_utils import Cycle, Cycles, bd_generator, lbc_times_generator
+from deode.suites.suite_utils import Cycle, Cycles, lbc_times_generator
 
 from ..datetime_utils import (
     as_datetime,
@@ -419,26 +419,14 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
         self.limit = limit
         self.bdint = bdint
         self.lbc_time_generator = lbc_time_generator
-        self.bd_generator_instance = bd_generator(
-            self.bdint, mode=config["suite_control.mode"], do_prep=self.do_prep
-        )
 
     def __iter__(self):
-        for lbc_time in self.lbc_time_generator:
-            bd_step_index, subbd_step_index, subminbd_step_index, bd_index = next(
-                self.bd_generator_instance
-            )
+        for bd_index, lbc_time in enumerate(self.lbc_time_generator):
             date_string = lbc_time.isoformat(sep="T").replace("+00:00", "Z")
-            args = f"bd_time={date_string};bd_index={bd_index};prep_step=False"
             args = f"bd_time={date_string};bd_index={bd_index};prep_step=False"
             variables = {"ARGS": args}
 
-            lbc_family_name = (
-                f"LBC{bd_step_index:02}{subbd_step_index:02}"
-                + (f"{subminbd_step_index:02}" if subminbd_step_index is not None else "")
-                if subbd_step_index is not None
-                else f"LBC{bd_step_index:02}"
-            )
+            lbc_family_name = date_string.replace("-", "").replace(":", "_")
 
             super().__init__(
                 lbc_family_name,

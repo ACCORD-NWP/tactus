@@ -144,7 +144,11 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         "--output",
         "-o",
         dest="output_file",
-        help="Output config file, if not given the name will be the same as the case",
+        help=(
+            "Output config file, if not given the name will be the same as the case. "
+            + "If the name does not end with '.toml' it's assumed to be a directory "
+            + "and the file name will be the same as the case."
+        ),
         default=None,
         required=False,
     )

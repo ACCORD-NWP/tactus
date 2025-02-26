@@ -67,15 +67,6 @@ def task_name_and_configs(request, default_config, tmp_directory):
         """
     )
     task_config = task_config.copy(update=config_patch)
-    if task_name == "e927":
-        config_e927 = tomlkit.parse(
-            """
-            [boundaries]
-                bdcycle = "PT6H"
-                bdcycle_start = "PT0H"
-            """
-        )
-        task_config = task_config.copy(update=config_e927)
     task_config = task_config.copy(update={"task": {"wrapper": "echo NPROC=@NPROC@;"}})
 
     return task_name, task_config

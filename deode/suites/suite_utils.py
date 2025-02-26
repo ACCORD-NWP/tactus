@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Generator, Iterator, List, Tuple, Union
+from typing import Generator, Iterator, List, Union
 
 from ..datetime_utils import as_datetime, as_timedelta
 from ..logs import logger
@@ -136,57 +136,3 @@ def lbc_times_generator(
 
     # Return the last basetime
     return basetime
-
-
-def bd_generator(
-    bdint: timedelta,
-    mode: str = "start",
-    do_prep: bool = True,
-) -> Generator[Tuple[int, int, int, int], None, None]:
-    """Generate batch numbers.
-
-    Args:
-        bdint: The batch interval.
-        mode: The mode of the workflow.
-        do_prep: Whether to do prep.
-
-    Yields:
-        Tuple[int, int, int, int]:
-    """
-    inthourbdint = int(bdint.total_seconds() // 3600)
-    intminbdint = int(bdint.total_seconds() % 3600 // 60)
-    intsecbdint = int(bdint.total_seconds() % 60)
-
-    # we don't need LBC000 if this is not first cycle or mode != cold_start
-    if mode == "restart" or (mode == "start" and not do_prep):
-        bd_step_index = inthourbdint
-        bd_index = 1
-        subbd_step_index = intminbdint if (intminbdint or intsecbdint) else None
-        subminbd_step_index = intsecbdint if intsecbdint else None
-    else:
-        bd_step_index = 0
-        bd_index = 0
-        subbd_step_index = 0 if (intminbdint or intsecbdint) else None
-        subminbd_step_index = 0 if intsecbdint else None
-
-    while True:
-        yield (
-            bd_step_index,
-            subbd_step_index,
-            subminbd_step_index,
-            bd_index,
-        )
-
-        if subbd_step_index is not None:
-            subbd_step_index += intminbdint
-            if subminbd_step_index is not None:
-                subminbd_step_index += intsecbdint
-                if subminbd_step_index >= 60:
-                    subbd_step_index += 1
-                    subminbd_step_index -= 60
-            if subbd_step_index >= 60:
-                bd_step_index += 1
-                subbd_step_index -= 60
-
-        bd_step_index += inthourbdint
-        bd_index += 1

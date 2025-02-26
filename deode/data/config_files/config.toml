@@ -25,12 +25,16 @@
 [boundaries]
   bd_has_surfex = false
   bdint = "PT1H"
-  bdmodel = "IFS"
+  bdmodel = "ifs"
   bdshift = "PT0H"
   humi_gp = true
-  ifs.selection = "@HOST@_DT"
-  ifs.bdmember = []
   max_interpolation_tasks = 10
+
+[boundaries.ifs]
+  bdmember = []
+  selection = "@HOST@_DT"
+
+[boundaries.lam]
 
 [fullpos]
   config_path = "@CYCLE@/fullpos"

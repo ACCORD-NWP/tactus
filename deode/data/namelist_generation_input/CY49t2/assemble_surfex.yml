@@ -59,10 +59,10 @@ prep:
   - sfx_teb_@SG_INPUT@
   - sfx_teb_@SG_INPUT@_@CSC@
 
-prep_bdmodel_AROME:
+prep_bdmodel_lam:
   - sfx_prep_isba_from_fa
 
-prep_bdmodel_IFS:
+prep_bdmodel_ifs:
   - sfx_prep_isba_from_grib
 
 forecast_HARMONIE_AROME:

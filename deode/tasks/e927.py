@@ -28,8 +28,8 @@ class E927(Task):
 
         self.bdmodel = self.config["boundaries.bdmodel"]
         self.bdint = self.config["boundaries.bdint"]
-        bdcycle = as_timedelta(config["boundaries.bdcycle"])
-        bdcycle_start = as_timedelta(config["boundaries.bdcycle_start"])
+        bdcycle = as_timedelta(config["boundaries.lam.bdcycle"])
+        bdcycle_start = as_timedelta(config["boundaries.lam.bdcycle_start"])
         bdshift = as_timedelta(config["boundaries.bdshift"])
         self.bd_basetime = self.basetime - cycle_offset(
             self.basetime, bdcycle, bdcycle_start=bdcycle_start, bdshift=-bdshift
