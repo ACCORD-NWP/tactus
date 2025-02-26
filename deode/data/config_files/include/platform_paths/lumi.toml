@@ -15,7 +15,7 @@
   fixed_bddir = "/scratch/sism/DEOL/@YYYY@/@MM@/@DD@/@HH@"
   fixed_bddir_sfx = "/home/snh02/work/dev-CY46h1_deode/boundaries/HRES/@YYYY@/@MM@/@DD@/@HH@"
   flake_dir = "@STATIC_DATA@/climate/PGD"
-  global_sfcdir = "/projappl/project_465000527/models/ifs/static-data/rdx/data/climate/climate.v020/"
+  global_sfcdir = "/projappl/project_465000527/models/ifs/static-data/rdx/data/climate/climate.v020/@MM@"
   gmted2010_data_path = "@CLIMDATA@/GMTED2010"
   host = "lumi"
   lai_dir = "@CLIMDATA@/ECOCLIMAP-SG/LAI_SAT"

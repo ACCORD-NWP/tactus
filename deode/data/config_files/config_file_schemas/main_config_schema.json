@@ -92,30 +92,64 @@
         },
         "bdmodel": {
           "description": "Coupling model",
-          "enum": ["ALARO", "AROME", "IFS"],
+          "default": "ifs",
+          "enum": ["lam", "ifs"],
           "type": "string"
         },
         "humi_gp": {
           "type": "boolean",
           "description": "Value of TFP_Q%LLGP in domain namelist for c903. True for gridpoint humidity."
         },
-        "ifs.selection": {
-          "type": "string",
-          "description": "Selection",
-          "enum": [
-            "HRES",
-            "ATOS_DT",
-            "DT12",
-            "i5qp",
-            "i7u4",
-            "i7ye",
-            "i8hy",
-            "IFSENS"
-          ]
+        "lam": {
+          "title": "LAM related boundary settings",
+          "description": "LAM related boundary settings",
+          "type": "object",
+          "properties": {
+	    "bdcycle_start": {
+              "description": "lam boundary model cycle start hour",
+              "type": "string",
+              "default": "PT0H",
+              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+            },
+	    "bdcycle": {
+              "description": "lam boundary model cycle interval",
+              "type": "string",
+              "default": "PT24H",
+              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+            }
+          }
         },
-        "ifs.bdmember": {
-          "type": "string",
-          "description": "The number of members in ensemble if selection is IFSENS, else empty string."
+        "ifs": {
+          "title": "IFS related settings",
+          "description": "Model for the 'general.times' section.",
+          "type": "object",
+          "properties": {
+            "selection": {
+              "type": "string",
+              "description": "Selection",
+              "enum": [
+                "atos_bologna_DT",
+                "lumi_DT",
+                "ATOS_DT",
+                "HRES",
+                "@HOST@_DT",
+                "DT12",
+                "i5qp",
+                "i7u4",
+                "i7ye",
+                "i8hy",
+                "IFSENS"
+              ]
+            },
+            "bdmember": {
+              "type": "array",
+              "description": "List of members in ensemble if selection is IFSENS.",
+	      "default": [],
+              "items": {
+                "type": "integer"
+              }
+            }
+          }
         },
         "bd_has_surfex": {
           "description": "Set to true if the host model runs with surfex",

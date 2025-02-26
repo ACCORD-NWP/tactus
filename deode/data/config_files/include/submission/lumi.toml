@@ -1,6 +1,6 @@
 [submission]
   account = "#SBATCH -A project_465000527"
-  bindir = "/projappl/project_465000527/github-actions/install/cy48t3/cy48t3-v1.4.1/bin"
+  bindir = "/projappl/project_465000527/github-actions/install/cy48t3/cy48t3-v1.4.2/bin"
   cmicro = "OLD3"
   default_submit_type = "serial"
   lfftw = true
@@ -48,7 +48,7 @@
   LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/pardalmi/local/eccodes-2.39.0-ftn16-LUMI/lib64"
 
 [submission.task_exceptions.E923Update]
-  bindir = "/projappl/project_465000527/github-actions/install/cy48t3/cy48t3-v1.4.1/bin"
+  bindir = "/projappl/project_465000527/github-actions/install/cy48t3/cy48t3-v1.4.2/bin"
 
 [submission.task_exceptions.Gmted.MODULES]
   GDAL = ["load", "scl-gdal_23"]

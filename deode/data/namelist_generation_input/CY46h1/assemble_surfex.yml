@@ -36,10 +36,10 @@ prep:
   - sfx_prep_isba_snow_3l
   - sfx_teb_@SG_INPUT@
 
-prep_AROME:
+prep_lam:
   - sfx_prep_isba_from_fa
 
-prep_IFS:
+prep_ifs:
   - sfx_prep_isba_from_grib
 
 forecast:

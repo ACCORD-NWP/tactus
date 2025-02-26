@@ -764,7 +764,7 @@ f4_common:
     NVGRIBSFX: 0
   NEMELBC0B:
     TEFRCL: ${cfg:namelist.tefrcl}
-f4_e927_AROME:
+f4_e927_lam:
   NAMCT0:
     LNHEE: true
     LSPRT: true
@@ -790,7 +790,7 @@ f4_e927_AROME:
     YR_NL%NREQIN: 1
     YS_NL%NREQIN: 1
     YTKE_NL%NREQIN: 1
-f4_e927_IFS:
+f4_e927_ifs:
   NAMCT0:
     LNHEE: false
     LSPRT: false

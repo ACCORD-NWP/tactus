@@ -1819,7 +1819,7 @@ f4_c903_domain:
   NEMFPEZO:
     RCO_EZO: 180.0
 
-f4_e927_AROME:
+f4_e927_lam:
   NAMDYNA:
     LNHEE: true
     LSPRT: true
@@ -1852,7 +1852,7 @@ f4_e927_AROME:
     YS_NL%NREQIN: 1
     YTKE_NL%NREQIN: 1
 
-f4_e927_IFS:
+f4_e927_ifs:
   NAMDYNA:
     LNHEE: false
     LSPRT: false

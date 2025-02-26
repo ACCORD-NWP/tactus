@@ -2,7 +2,7 @@
 
 import os
 
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
+from deode.config_parser import ConfigParserDefaults, GeneralConstants, ParsedConfig
 from deode.derived_variables import derived_variables, set_times
 from deode.host_actions import DeodeHost
 from deode.logs import logger  # Use deode's own configs for logger
@@ -12,18 +12,20 @@ from deode.tasks.discover_task import get_task
 logger.enable("deode")
 
 
-def default_main(task, config, deode_home):
+def default_main(task, config_file, deode_home):
     """Execute default main.
 
     Args:
         task (str): Task name
-        config (str): Config file
+        config_file (str): Config file
         deode_home(str): Deode home path
     """
     deode_host = DeodeHost().detect_deode_host()
-
+    logger.info("Read config from {}", config_file)
     config = ParsedConfig.from_file(
-        config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA, host=deode_host
+        config_file,
+        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
+        host=deode_host,
     )
     config = config.copy(update=set_times(config))
     config = config.copy(update={"platform": {"deode_home": deode_home}})
@@ -39,6 +41,7 @@ def default_main(task, config, deode_home):
 
 
 if __name__ == "__main__":
+    logger.info("Running {} v{}", GeneralConstants.PACKAGE_NAME, GeneralConstants.VERSION)
     TASK_NAME = os.environ["STAND_ALONE_TASK_NAME"]
     CONFIG = os.environ["STAND_ALONE_TASK_CONFIG"]
     DEODE_HOME = os.environ["STAND_ALONE_DEODE_HOME"]

@@ -3,7 +3,7 @@
 from datetime import datetime, timedelta
 from typing import Generator, Optional
 
-from deode.suites.suite_utils import Cycle, Cycles, bd_generator, lbc_times_generator
+from deode.suites.suite_utils import Cycle, Cycles, lbc_times_generator
 
 from ..datetime_utils import (
     as_datetime,
@@ -354,14 +354,14 @@ class PrepFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
-        bdnr = 0
+        bd_step_index = 0
         mode = config["suite_control.mode"]
         if mode == "restart":
-            bdnr = 1
+            bd_step_index = 1
 
         split_mars_task = None
         if config["suite_control.split_mars"]:
-            args = f"bd_nr={bdnr};prep_step=True"
+            args = f"bd_index={bd_step_index};prep_step=True"
             variables = {"ARGS": args}
             split_mars_task = EcflowSuiteTask(
                 "marsprep",
@@ -419,27 +419,14 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
         self.limit = limit
         self.bdint = bdint
         self.lbc_time_generator = lbc_time_generator
-        self.bd_generator_instance = bd_generator(
-            self.bdint, mode=config["suite_control.mode"], do_prep=self.do_prep
-        )
 
     def __iter__(self):
-        inthourbdint = int(self.bdint.total_seconds() // 3600)
-        inthourbdintx = 1 if inthourbdint == 0 else inthourbdint
-
-        for lbc_time in self.lbc_time_generator:
-            bdnr, subbdnr, subminbdnr, bd_nr = next(self.bd_generator_instance)
+        for bd_index, lbc_time in enumerate(self.lbc_time_generator):
             date_string = lbc_time.isoformat(sep="T").replace("+00:00", "Z")
-            args = f"bd_time={date_string};bd_nr={bd_nr};prep_step=False"
-            args = f"bd_time={date_string};bd_nr={bd_nr};prep_step=False"
+            args = f"bd_time={date_string};bd_index={bd_index};prep_step=False"
             variables = {"ARGS": args}
 
-            lbc_family_name = (
-                f"LBC{bd_nr*inthourbdintx:02}{subbdnr:02}"
-                + (f"{subminbdnr:02}" if subminbdnr is not None else "")
-                if subbdnr is not None
-                else f"LBC{bd_nr*inthourbdintx:02}"
-            )
+            lbc_family_name = date_string.replace("-", "").replace(":", "_")
 
             super().__init__(
                 lbc_family_name,

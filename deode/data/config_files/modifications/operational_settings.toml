@@ -81,9 +81,6 @@
 [extractsqlite]
   sqlite_path = "@CASEDIR@/sqlite/FCTABLE"
 
-[impact.ehype]
-  active = false
-
 [impact.ehype.communicate]
   output_root = "@SCRATCH@/DE_Impact/EHYPE"
   output_subpath = "@SUB_CASEDIR@"
@@ -102,6 +99,6 @@
   climdir = "@SCRATCH_OPER@/@ARCHIVE_TIMESTAMP_START@/@CASE_IDENTIFIER@/climate"
   ecfs_static = "@ARCHIVE_TIMESTAMP_START@/@CASE_IDENTIFIER@/climate"
   logs = "@CASEDIR@"
-  marsdir = "@SCRATCH_OPER@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
+  marsdir = "@SCRATCH_OPER@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
   scratch_oper = "@SCRATCH@/DE_NWP/deode"
   sub_casedir = "@ARCHIVE_TIMESTAMP@/@CASE_IDENTIFIER@"

@@ -9,7 +9,7 @@
   WALLTIME = "#SBATCH --time=03:00:00"
 
 [submission.task_exceptions.CreateGrib.BATCH]
-  WALLTIME = "#SBATCH --time=02:00:00"
+  WALLTIME = "#SBATCH --time=03:00:00"
 
 [submission.task_exceptions.E923Monthly.BATCH]
   MEM = "#SBATCH --mem=32GB"

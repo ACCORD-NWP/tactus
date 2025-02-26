@@ -10,7 +10,7 @@
 [cleaning.CycleCleaning.ifs]
   active = false
   ncycles_delay = 4
-  path = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@"
+  path = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@"
   step = "PT1D"
 
 [cleaning.CycleCleaning.wrk]

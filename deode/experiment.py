@@ -284,10 +284,13 @@ def case_setup(
                 update={"scheduler": {"ecfvars": {"ecf_host": ecf_host}}}
             )
 
-    if output_file is None:
+    if output_file is None or ".toml" not in str(output_file):
+        output_dir = output_file
         config = exp.config.copy(update=set_times(exp.config))
         output_file = config.get("general.case") + ".toml"
         output_file = Platform(config).substitute(output_file)
+        if output_dir is not None:
+            output_file = os.path.join(output_dir, output_file)
 
         logger.info("Save config to: {}", output_file)
     exp.config.save_as(output_file)

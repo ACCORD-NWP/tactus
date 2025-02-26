@@ -25,12 +25,16 @@
 [boundaries]
   bd_has_surfex = false
   bdint = "PT1H"
-  bdmodel = "IFS"
+  bdmodel = "ifs"
   bdshift = "PT0H"
   humi_gp = true
-  ifs.selection = "@HOST@_DT"
-  ifs.bdmember = ""
   max_interpolation_tasks = 10
+
+[boundaries.ifs]
+  bdmember = []
+  selection = "@HOST@_DT"
+
+[boundaries.lam]
 
 [fullpos]
   config_path = "@CYCLE@/fullpos"
@@ -106,7 +110,7 @@
   casedir = "@SCRATCH@/deode/@CASE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@/"
   logs = "@ARCHIVE_ROOT@/logs"
-  marsdir = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@BDMEMBER@/@YYYY@/@MM@/@DD@/@HH@"
+  marsdir = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"
 
 [task.CreateGrib]

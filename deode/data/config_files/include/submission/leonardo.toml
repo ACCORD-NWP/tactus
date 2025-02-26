@@ -183,9 +183,6 @@
   QOS = "#SBATCH --qos=np"
   WALLTIME = "#SBATCH --time=01:00:00"
 
-[submission.task_exceptions.Marsprep.ENV]
-  MARS_READANY_BUFFER_SIZE = 17893020000
-
 [submission.task_exceptions.Pgd]
   WRAPPER = "srun -n @NPROC@"
 

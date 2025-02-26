@@ -21,7 +21,7 @@ def config_platform():
     task_configs = tomli.loads(
         """
         [boundaries]
-            bdmodel = "IFS"
+            bdmodel = "ifs"
         [general]
             case = "test_case"
             os_macros = ["USER", "HOME", "PWD"]

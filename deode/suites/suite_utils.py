@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Generator, Iterator, List, Tuple, Union
+from typing import Generator, Iterator, List, Union
 
 from ..datetime_utils import as_datetime, as_timedelta
 from ..logs import logger
@@ -136,57 +136,3 @@ def lbc_times_generator(
 
     # Return the last basetime
     return basetime
-
-
-def bd_generator(
-    bdint: timedelta,
-    mode: str = "start",
-    do_prep: bool = True,
-) -> Generator[Tuple[int, int, int, int], None, None]:
-    """Generate batch numbers.
-
-    Args:
-        bdint: The batch interval.
-        mode: The mode of the workflow.
-        do_prep: Whether to do prep.
-
-    Yields:
-        Tuple[int, int, int, int]:
-    """
-    inthourbdint = int(bdint.total_seconds() // 3600)
-    intminbdint = int(bdint.total_seconds() % 3600 // 60)
-    intsecbdint = int(bdint.total_seconds() % 60)
-
-    # we don't need LBC000 if this is not first cycle or mode != cold_start
-    if mode == "restart" or (mode == "start" and not do_prep):
-        bdnr = inthourbdint
-        bd_nr = 1
-        subbdnr = intminbdint if (intminbdint or intsecbdint) else None
-        subminbdnr = intsecbdint if intsecbdint else None
-    else:
-        bdnr = 0
-        bd_nr = 0
-        subbdnr = 0 if (intminbdint or intsecbdint) else None
-        subminbdnr = 0 if intsecbdint else None
-
-    while True:
-        yield (
-            bdnr,
-            subbdnr,
-            subminbdnr,
-            bd_nr,
-        )
-
-        if subbdnr is not None:
-            subbdnr += intminbdint
-            if subminbdnr is not None:
-                subminbdnr += intsecbdint
-                if subminbdnr >= 60:
-                    subbdnr += 1
-                    subminbdnr -= 60
-            if subbdnr >= 60:
-                bdnr += 1
-                subbdnr -= 60
-
-        bdnr += inthourbdint
-        bd_nr += 1

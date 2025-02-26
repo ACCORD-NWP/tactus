@@ -10,6 +10,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.13.0] - 2025-02-26
+
+### Added
+- Print deode version and config file used for each task [\#1011](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1011) (@uandrae)
+- Configure dependabot for frequent dependency updates. [\#989](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/989) (@observingClouds)
+
+### Changed
+- Name convention for LBC families [\#984](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/984)(@uandrae) 
+- Increase walltime for CreateGrib on atos_bologna [\#1009](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1009) (@uandrae)
+- Use bddir_sfx for MARS latlon file for more flexibilty on output location [\#1012](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1012) (@uandrae)
+
+###Fixed
+- Remove BDMEMBER from all config files. [\#1024](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1024)(@kastelecn)
+- Restored lost bdcycle setting [\#984](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/984)(@uandrae) 
+- Fix json schema for impact models. [\#1020](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1020)(@kastelecn) 
 
 ## [0.12.1] - 2025-02-21
 
@@ -19,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.12.0] - 2025-02-21
 
 ### Added
+- Add possibility to retrieve several EPS members at the same time.[#988](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/988)(@kastelecn)
 - Introduce possibility to generate ensemble config file. [\#865](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/865) (@mafdmi)
 - Introduce possibility for multiple search path for config files. [\#776](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/776) (@uandrae)
 - Added support for CMake compiled binaries on LUMI [\#980](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/980) (@pardallio)
@@ -27,6 +43,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clean Marsprep slurm settings for atos_bologna [\#1001](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1001) (@uandrae)
 - Changed binary location o LUMI to CI/CD compiled binaries [\#980](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/980) (@pardallio)
 - Update ehype config settings. [\#967](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/967)(@uandrae)
+
+### Fixed
+- Correct EcCodes module inconsistency for atos_bologna [\#1006](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1006) (@uandrae)
 
 ## [0.11.0] - 2025-02-13
 
@@ -182,6 +201,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed duplicated parsing [#783](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/783) (@uandrae)
 - Fix ecf_host selector not selecting the correct naming convention on Atos [#781](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/781) (@adam-otruba)
 
+##[0.6.2] - 2024-09-26
+
+### Fixed
+- Fix ecf\_host selector not selecting the correct naming convention on Atos [\#781](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/781) (@adam-otruba)
+
+## [0.6.1] - 2024-09-24
+- change binary version for CY48t3
+- set ATOS\_DT as default ifs.selection
 
 ##[bugfix\_v0.6.2] - 2024-09-26
 

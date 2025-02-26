@@ -1,5 +1,5 @@
 [submission]
-  bindir = "/perm/deployde330/github-actions/install/cy48t3/cy48t3-v1.4.1/bin"
+  bindir = "/perm/deployde330/github-actions/install/cy48t3/cy48t3-v1.4.2/bin"
   default_submit_type = "serial"
   lfftw = true
   module_initpath = "/usr/local/apps/lmod/8.6.8/init"
@@ -87,9 +87,6 @@
   QOS = "#SBATCH --qos=np"
   WALLTIME = "#SBATCH --time=06:00:00"
 
-[submission.task_exceptions.Marsprep.ENV]
-  MARS_READANY_BUFFER_SIZE = 17893020000
-
 [submission.task_exceptions.Pgd]
   WRAPPER = "srun -n @NPROC@"
 
@@ -139,7 +136,7 @@
   WALLTIME = "#SBATCH --time=00:15:00"
 
 [submission.types.gnu.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.11.0.0"]
 
 [submission.types.parallel]
   NPROC = 32
@@ -163,7 +160,7 @@
   # First load the prgenv
   PRGENV = ["load", "prgenv/intel"]
   # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.11.0.0"]
   FFTW = ["load", "fftw/3.3.9"]
   HDF5 = ["load", "hdf5/1.10.6"]
   MKL = ["load", "intel-mkl/19.0.5"]
@@ -195,7 +192,7 @@
   # First load the prgenv
   PRGENV = ["load", "prgenv/intel"]
   # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.02.1.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.11.0.0"]
   FFTW = ["load", "fftw/3.3.9"]
   HDF5 = ["load", "hdf5/1.10.6"]
   MKL = ["load", "intel-mkl/19.0.5"]
