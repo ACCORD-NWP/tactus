@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.13.1] - 2025-02-27
+
+### Changed
+- Use gl binary built with correct eccodes version [\#1029](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1029) (@uandrae))
+
 ## [0.13.0] - 2025-02-26
 
 ### Added
