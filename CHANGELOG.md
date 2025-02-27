@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Name convention for LBC families [\#984](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/984)(@uandrae) 
 - Increase walltime for CreateGrib on atos_bologna [\#1009](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1009) (@uandrae)
 - Use bddir_sfx for MARS latlon file for more flexibilty on output location [\#1012](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1012) (@uandrae)
+- Sqlite extraction increased & limited to standard pressure levels for RH,S,T,D [\#1013] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1013) (@svianaj)
+- Updated station list for sqlite extraction with new ones from WOW 2023-2024 period [\#1030] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1030) (@svianaj)
+
 
 ###Fixed
 - Remove BDMEMBER from all config files. [\#1024](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1024)(@kastelecn)
