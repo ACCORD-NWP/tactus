@@ -17,11 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Configure dependabot for frequent dependency updates. [\#989](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/989) (@observingClouds)
 
 ### Changed
+- Set lumi_DT as default ifs selection on LUMI, seperate option for running on debug partition. [\#1034](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1034)(@kastelen)
 - Name convention for LBC families [\#984](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/984)(@uandrae) 
 - Increase walltime for CreateGrib on atos_bologna [\#1009](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1009) (@uandrae)
 - Use bddir_sfx for MARS latlon file for more flexibilty on output location [\#1012](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1012) (@uandrae)
 
-###Fixed
+### Fixed
 - Remove BDMEMBER from all config files. [\#1024](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1024)(@kastelecn)
 - Restored lost bdcycle setting [\#984](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/984)(@uandrae) 
 - Fix json schema for impact models. [\#1020](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1020)(@kastelecn) 

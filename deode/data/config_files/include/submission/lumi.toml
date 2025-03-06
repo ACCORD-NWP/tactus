@@ -4,7 +4,6 @@
   cmicro = "OLD3"
   default_submit_type = "serial"
   lfftw = true
-  max_ecf_tasks = 2
   module_initpath = "/usr/share/lmod/8.3.1/init"
   nproma = -16
 
@@ -31,7 +30,6 @@
   MEM = "#SBATCH --mem=0"
   NODE = "#SBATCH --nodes=12"
   NTASKS = "#SBATCH --ntasks=36"
-  PARTITION = "#SBATCH -p standard"
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=3"
   WALLTIME = "#SBATCH --time=00:30:00"
 
@@ -101,7 +99,7 @@
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=2"
   NTASKS = "#SBATCH --ntasks=16"
-  PARTITION = "#SBATCH --partition=debug"
+  PARTITION = "#SBATCH --partition=standard"
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=8"
   WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:30:00"
@@ -161,7 +159,7 @@
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=16"
-  PARTITION = "#SBATCH -p debug"
+  PARTITION = "#SBATCH --partition=standard"
   WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:10:00"
 
@@ -209,7 +207,7 @@
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
-  PARTITION = "#SBATCH --partition=debug"
+  PARTITION = "#SBATCH --partition=standard"
   WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:20:00"
 
@@ -242,7 +240,7 @@
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
-  PARTITION = "#SBATCH --partition=debug"
+  PARTITION = "#SBATCH --partition=standard"
   WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:20:00"
 

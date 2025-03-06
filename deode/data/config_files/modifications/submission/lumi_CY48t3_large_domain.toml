@@ -1,3 +1,6 @@
+[submission]
+  max_ecf_tasks = -1
+
 [submission.task_exceptions.Pgd.BATCH]
   MEM = "#SBATCH --mem=0GB"
   NODES = "#SBATCH --nodes=4"
