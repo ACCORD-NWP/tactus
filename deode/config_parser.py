@@ -5,6 +5,7 @@ import glob
 import json
 import os
 import tempfile
+from datetime import datetime, timedelta
 from functools import reduce
 from pathlib import Path
 
@@ -396,7 +397,8 @@ def _read_raw_config_file(config_path: Path):
 
     with open(config_path, "rb") as config_file:
         if config_path.suffix == ".toml":
-            return tomli.load(config_file)
+            config_data = tomli.load(config_file)
+            return evaluate_dynamic_dates(config_data)
 
         if config_path.suffix in [".yaml", ".yml"]:
             return yaml.safe_load(config_file)
@@ -550,3 +552,15 @@ def _get_json_validation_function(json_schema):
             ) from err
 
     return validate
+
+
+def evaluate_dynamic_dates(config_data):
+    """Replace dynamic dates like 'yesterday' with actual timestamps."""
+    times_section = config_data.get("general", {}).get("times", {})
+
+    if times_section.get("start") == "yesterday":
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        start_time = datetime(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0)
+        times_section["start"] = start_time.isoformat() + "Z"
+
+    return config_data
