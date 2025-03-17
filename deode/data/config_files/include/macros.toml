@@ -1,4 +1,9 @@
-[macros]
+[macros.case]
+  gen_macros = []
+  group_macros = []
+  os_macros = ["USER"]
+
+[macros.select.default]
   gen_macros = [
     "boundaries.bdmodel",
     "domain.name",
@@ -34,8 +39,3 @@
   ]
   group_macros = ["platform", "system"]
   os_macros = ["USER", "HOME", "PWD", "CONFIG"]
-
-[macros.case]
-  gen_macros = []
-  group_macros = []
-  os_macros = ["USER"]

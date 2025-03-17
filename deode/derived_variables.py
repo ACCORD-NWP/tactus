@@ -202,13 +202,18 @@ def derived_variables(config, processor_layout=None):
         selection.append("windfarm")
 
     # Turn boolean to strings and macros
-    gen_macros = list(config["macros.gen_macros"])
+    default_macros = config.get(
+        "macros.select.default",
+        {"gen_macros": [], "group_macros": [], "os_macros": []},
+    ).dict()
+    gen_macros = list(default_macros["gen_macros"])
 
     decades = "one_decade" if config["pgd.one_decade"] else "all_decade"
     gen_macros.append("namelist.decades")
 
     sg_input = "osm" if config["pgd.use_osm"] else ""
     gen_macros.append("namelist.sg_input")
+    default_macros["gen_macros"] = gen_macros
 
     # Update config and namelist settings
     update = {
@@ -228,9 +233,7 @@ def derived_variables(config, processor_layout=None):
             "nmsmax_oro": nmsmax_oro,
             "lspsmoro": lspsmoro,
         },
-        "macros": {
-            "gen_macros": gen_macros,
-        },
+        "macros": {"select": {"default": default_macros}},
         "namelist": {
             "cstop": cstop,
             "tefrcl": bdint.seconds,

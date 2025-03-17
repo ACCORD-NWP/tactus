@@ -371,8 +371,12 @@ class ParsedConfig(BasicConfig):
 
     def expand_macros(self):
         """Expand macros in config recursively."""
-        _config = self.copy(update={"macros": self.get("macros.case", self["macros"])})
-        macro_platform = Platform(_config)
+        config = self.dict()
+        macros = config["macros"]
+        if "case" in macros:
+            macros["select"] = {"case": self["macros.case"]}
+        config["macros"] = macros
+        macro_platform = Platform(BasicConfig(config))
         config = macro_platform.resolve_macros(self.dict())
         config = self.copy(update=config)
 
@@ -478,6 +482,7 @@ def _expand_config_include_section(
                 include_path = Path(include_path)
                 if not include_path.is_absolute():
                     include_path = ConfigPaths.path_from_subpath(include_path)
+                logger.info("Include: {}", include_path)
                 included_config_section = _read_raw_config_file(include_path)
             else:
                 included_config_section = include_path_

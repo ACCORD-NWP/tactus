@@ -160,8 +160,8 @@ class Platform:
     def fill_macros(self):
         """Fill the macros."""
         self.macros = {}
-        self.fill_each_macro("macros")
-        self.fill_each_macro("macros.user_macros")
+        for macro in self.config["macros.select"]:
+            self.fill_each_macro(f"macros.select.{macro}")
 
     def get_system_macros(self):
         """Get the macros.

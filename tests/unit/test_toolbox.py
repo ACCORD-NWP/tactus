@@ -124,13 +124,17 @@ class TestPlatformSubstitute:
                 },
                 "foo": {"foo": "foo_section"},
                 "macros": {
-                    "os_macros": ["TEST"],
-                    "gen_macros": ["general.csc"],
-                    "group_macros": [],
-                    "user_macros": {
-                        "os_macros": ["AAAA"],
-                        "gen_macros": [{"aaa": "general.event_type"}],
-                        "group_macros": ["foo"],
+                    "select": {
+                        "default": {
+                            "os_macros": ["TEST"],
+                            "gen_macros": ["general.csc"],
+                            "group_macros": [],
+                        },
+                        "user_macros": {
+                            "os_macros": ["AAAA"],
+                            "gen_macros": [{"aaa": "general.event_type"}],
+                            "group_macros": ["foo"],
+                        },
                     },
                 },
             }
@@ -144,11 +148,15 @@ class TestPlatformSubstitute:
         config = config.copy(
             update={
                 "macros": {
-                    "os_macros": ["FOO"],
-                    "user_macros": {
-                        "os_macros": ["FOO"],
+                    "select": {
+                        "default": {
+                            "os_macros": ["FOO"],
+                        },
+                        "user_macros": {
+                            "os_macros": ["FOO"],
+                        },
                     },
-                },
+                }
             }
         )
         with pytest.raises(RuntimeError, match="Duplicated macro: FOO"):
