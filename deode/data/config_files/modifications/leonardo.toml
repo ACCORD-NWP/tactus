@@ -1,0 +1,5 @@
+[boundaries.ifs]
+  selection = "atos_bologna_DT"
+
+[macros.select.leonardo]
+  os_macros = ["CINECA_SCRATCH"]

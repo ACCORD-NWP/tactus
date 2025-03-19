@@ -509,6 +509,9 @@ class Platform:
             func = match.group(1)
             args = ast.literal_eval(match.group(2))
 
+            if not isinstance(args, list):
+                args = list(args)
+
             # Get function from object, if object is a string, i.e. a module
             if isinstance(object_, str):
                 # Try getting module
