@@ -8,6 +8,14 @@
 	  }
   },
 
+  "eclipse" : {
+	  "path": "@ECLIPSE_DATA_DIR@",
+	  "files": [
+      "sun_pos.dta",
+      "moon_pos.dta"
+    ]
+  },
+
   "greenhouse_gases" : {
 	  "path": "@NCDIR@",
 	  "files": [
