@@ -104,6 +104,7 @@ def create_exp(args, config):
     output_file = args.output_file
     case = args.case
     mod_files = args.config_mods
+
     if mod_files is None:
         mod_files = []
     output_file = case_setup(

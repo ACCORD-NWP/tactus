@@ -401,8 +401,7 @@ def _read_raw_config_file(config_path: Path):
 
     with open(config_path, "rb") as config_file:
         if config_path.suffix == ".toml":
-            config_data = tomli.load(config_file)
-            return evaluate_dynamic_dates(config_data)
+            return tomli.load(config_file)
 
         if config_path.suffix in [".yaml", ".yml"]:
             return yaml.safe_load(config_file)

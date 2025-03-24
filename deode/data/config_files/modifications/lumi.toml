@@ -1,2 +1,2 @@
 [general.times]
-  start = "yesterday"
+  start = "-P1D"

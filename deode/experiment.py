@@ -11,6 +11,7 @@ from typing import List, Optional
 import tomlkit
 
 from deode.config_parser import BasicConfig, ParsedConfig
+from deode.datetime_utils import evaluate_date
 from deode.derived_variables import set_times
 from deode.eps.eps_setup import EPSConfig, generate_member_settings
 from deode.general_utils import modify_mappings, recursive_dict_deviation
@@ -101,6 +102,12 @@ class ExpFromFiles(Exp):
         if merged_config is None:
             merged_config = {}
         merged_config = ExpFromFiles.deep_update(merged_config, mods)
+
+        # Evaluate relative dates
+        with contextlib.suppress(KeyError):
+            merged_config["general"]["times"]["start"] = evaluate_date(
+                merged_config["general"]["times"]["start"]
+            )
 
         # Remove sections from the input config
         with contextlib.suppress(KeyError):
