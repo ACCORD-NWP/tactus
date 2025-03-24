@@ -3,10 +3,10 @@ selection:
  xxtddddhhmm: &default
   NAMFPPHY:
    CLCFU:
-    - 'SURFRAYT SOL CL'
-    - 'SURFRAYT THER CL'
-    - 'SURFDIR NORM IRR'
-    - 'SURFRAYT DIR SUR'
+    - SURFRAYT SOL CL
+    - SURFRAYT THER CL
+    - SURFDIR NORM IRR
+    - SURFRAYT DIR SUR
 
  xxtddddhh00:
    <<: *default

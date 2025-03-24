@@ -19,6 +19,7 @@ selection:
       - ATMOCLD.CEIL.H
       - ATMOCLD.BASE.P
       - ATMOCLD.BASE.H
+      - SURFTOT.WAT.VAPO
     NAMFPDYH:
       CL3DF:
       - VERT.VELOCIT
@@ -125,6 +126,7 @@ selection:
       - SURFNEBUL.BASSE
       - SURFNEBUL.TOTALE
       - CLPMHAUT.MOD.XFU
+      - CLSMEAN.RAD.TEMP
   xxtddddhh00:
     NAMFPDY2:
       CL2DF:
@@ -270,3 +272,4 @@ selection:
       - CLSVISIHYDN60
       - CLSPTYPE_60M
       - CLSPTYPESEV_60M
+      - CLSMEAN.RAD.TEMP

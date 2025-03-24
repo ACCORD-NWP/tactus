@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+### Added
+- Uniform the fullpos namelists for all CSC's in cy49 [\#1028](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1028) (@egregow)
+
 ### Changed
 - Add support to configure simulations for eventtype eclipse [\#1063](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1063)(@jacobsnoeijer)
 - Change macro configuration to be more flexible [\#1032](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1032)(@uandrae) 

@@ -4,15 +4,15 @@ selection:
  xxtddddhhmm: &default
   NAMFPPHY:
    CLCFU:
-    - 'SURFPREC.EAU.CON'
-    - 'SURFPREC.EAU.GEC'
-    - 'SURFPREC.NEI.CON'
-    - 'SURFPREC.NEI.GEC'
+    - SURFPREC.EAU.CON
+    - SURFPREC.EAU.GEC
+    - SURFPREC.NEI.CON
+    - SURFPREC.NEI.GEC
    CLXFU:
-    - 'CLSTEMPERATURE'
+    - CLSTEMPERATURE
    CLPHY:
-    - 'SURFRESERV.NEIGE'
-    - 'SURFIND.TERREMER'
+    - SURFRESERV.NEIGE
+    - SURFIND.TERREMER
 
  xxtddddhh00:
    <<: *default
@@ -20,8 +20,8 @@ selection:
  xxt00000000:
   NAMFPPHY:
    CLXFU:
-    - 'CLSTEMPERATURE'
+    - CLSTEMPERATURE
    CLPHY:
-    - 'SURFRESERV.NEIGE'
-    - 'SURFIND.TERREMER'
+    - SURFRESERV.NEIGE
+    - SURFIND.TERREMER
   <<: *default
