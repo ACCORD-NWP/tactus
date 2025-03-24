@@ -33,7 +33,6 @@ selection:
     - 'SURFNEBUL.BASSE'
     - 'SURFNEBUL.TOTALE'
     - 'CLPMHAUT.MOD.XFU'
-    - 'CLSRAFAL.MOD.XFU'
     - 'CLSMEAN.RAD.TEMP'
    CLPHY:
     - 'SURFTEMPERATURE'

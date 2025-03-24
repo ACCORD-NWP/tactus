@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+
+## [0.13.2] - 2025-03-21
+
+- Reintroduced calculation of wind gust to gribmodify and removed from fullpos [\#1070](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1070) (@KristianHMoller)
+
 ## [0.13.1] - 2025-02-27
 
 ### Changed
