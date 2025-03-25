@@ -24,13 +24,13 @@
   FDB5_HOME = "/appl/local/destine/mars/versions/6.99.2.0/"
 
 [submission.task_exceptions.C903]
-  NPROC = 36
+  NPROC = 24
 
 [submission.task_exceptions.C903.BATCH]
   MEM = "#SBATCH --mem=0"
   NODE = "#SBATCH --nodes=12"
-  NTASKS = "#SBATCH --ntasks=36"
-  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=3"
+  NTASKS = "#SBATCH --ntasks=24"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=2"
   WALLTIME = "#SBATCH --time=00:30:00"
 
 [submission.task_exceptions.C903.ENV]

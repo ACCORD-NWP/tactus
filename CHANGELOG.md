@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change macro configuration to be more flexible [\#1032](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1032)(@uandrae) 
 
 ### Fixed
+- Reduce ntasks for C903 on lumi. [\#1080](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1080) (@kastelecn)
 - Add snowfields to IFSENS MARS request [\#1055](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1055)(@uandrae)
 
 ## [0.13.0] - 2025-02-26
