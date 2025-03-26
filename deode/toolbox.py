@@ -8,7 +8,7 @@ import re
 import sys
 from typing import Any, Union
 
-import geohash_hilbert
+import geohash
 from troika.connections.ssh import SSHConnection
 
 from .datetime_utils import as_datetime, get_decade, oi2dt_list
@@ -1192,7 +1192,7 @@ def compute_georef(domain_config):
     lat_center = domain_config["xlatcen"]
     lon_center = domain_config["xloncen"]
 
-    return geohash_hilbert.encode(lng=lon_center, lat=lat_center, precision=6)
+    return geohash.encode(longitude=lon_center, latitude=lat_center, precision=6)
 
 
 class Resource:

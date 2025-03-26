@@ -27,7 +27,7 @@
   eccodes = "^2.39"
   f90nml = "^1.4.3"
   fastjsonschema = "2.18.1"
-  geohash-hilbert = "^2.0.0"
+  geohash = {git = "https://github.com/destination-earth-digital-twins/geohash.git", tag = "v1.1"}
   grib2sqlite = {git = "https://github.com/destination-earth-digital-twins/grib2sqlite", tag = "v0.2.0"}
   humanize = "^4.8.0"
   isodate = "^0.6.1"
