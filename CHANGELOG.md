@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Added documentation for installation on leonardo. [\#1062](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1062)(@uandrae)
+- Added setup for running CY48t3_arome and CY49t2_arome on Leonardo, for both 60x80 and large domains. [\#1057](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1057)(@mippoliti-cin)
 - Uniform the fullpos namelists for all CSC's in cy49 [\#1028](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1028) (@egregow)
 - Add function for evaluate relative dates from config file. [\#1085](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1058#pullrequestreview-2710477467) (@kastelecn)
 
@@ -41,8 +43,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add possibility to set start to yesterday. [\#1047](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1047#pullrequestreview-2677820249) (@kastelecn)
 - Print deode version and config file used for each task [\#1011](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1011) (@uandrae)
 - Configure dependabot for frequent dependency updates. [\#989](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/989) (@observingClouds)
-- Added setup for running CY48t3_arome and CY49t2_arome on Leonardo, for both 60x80 and large domains. [\#1057](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1057)(@mippoliti-cin)
-
 ### Changed
 - Set lumi_DT as default ifs selection on LUMI, seperate option for running on debug partition. [\#1034](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1034)(@kastelen)
 - Name convention for LBC families [\#984](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/984)(@uandrae) 
