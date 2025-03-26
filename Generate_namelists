@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -x 
+
+branch=$( git branch --show-current )
+b=$( echo $branch | sed "s/\//_/g" )
+
+for csc in arome harmonie_arome ; do
+
+  dir=$b/$csc
+  mkdir -p $dir
+  poetry run deode case ?deode/data/config_files/configurations/cy49t2_$csc -o $dir/$csc.toml || exit 
+  for namelist in prep pgd forecast ; do
+    poetry run deode show namelist --config-file $dir/$csc.toml -t surfex -n $namelist -o $dir/$namelist  || exit 
+  done 
+
+done

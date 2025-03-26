@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add function for evaluate relative dates from config file. [\#1085](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1058#pullrequestreview-2710477467) (@kastelecn)
 
 ### Changed
+- Update surfex namelist settings for CY49. [\#1050](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1050)(@uandrae)
 - Add support to configure simulations for eventtype eclipse [\#1063](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1063)(@jacobsnoeijer)
 - Change macro configuration to be more flexible [\#1032](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1032)(@uandrae) 
 

@@ -50,6 +50,9 @@
 [submission.task_exceptions.CreateGrib.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
 
+[submission.task_exceptions.CreateGribStatic]
+  bindir = "/perm/deployde330/github-actions/install/gl/latest/bin/"
+
 [submission.task_exceptions.E927]
   NPROC = 16
 
