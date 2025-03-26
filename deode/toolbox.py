@@ -503,6 +503,8 @@ class Platform:
                 otherwise return the result of the function call.
         """
         # Check if command string is a function call
+        if not isinstance(command_string, str):
+            return command_string
         match = re.match(r"(\w+)\((.*)\)", command_string)
         if match:
             # Get function name and arguments

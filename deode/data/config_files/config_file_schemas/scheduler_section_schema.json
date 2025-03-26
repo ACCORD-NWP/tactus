@@ -19,6 +19,11 @@
                     "type": "string",
                     "description": "Ecflow host. HPC dependent."
                 },
+                "ecf_host_resolved": {
+                    "type": "string",
+                    "description": "Resolved Ecflow host for downstream usage",
+		    "default": ""
+                },
                 "ecf_port": {
                     "description": "Ecflow port, HPC or user dependet. To set depending on userid use `_set_port_from_user(offset)` where offset is an interger to be added to the userid ",
                     "type": [
@@ -36,6 +41,22 @@
                         {
                             "type": "string",
                             "pattern": "_set_port_from_json\\((.*),\\)"
+                        }
+                    ]
+                },
+                "ecf_port_resolved": {
+                    "description": "Parsed ecflow port for communication",
+		    "default": "",
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
+                    "anyOf": [
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "type": "string"
                         }
                     ]
                 },

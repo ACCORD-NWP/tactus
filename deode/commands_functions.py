@@ -94,8 +94,6 @@ def create_exp(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
-    deode_home = set_deode_home(config, args.deode_home)
-    config = config.copy(update={"platform": {"deode_home": deode_home}})
     known_hosts_file = args.host_file
     if known_hosts_file is None:
         known_hosts_file = ConfigPaths.path_from_subpath("known_hosts.yml")
