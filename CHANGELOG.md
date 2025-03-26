@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Check on output frequency for fields calculated in gribmodify [\#1085](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1085) (@uandrae)
 - Added documentation for installation on leonardo. [\#1062](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1062)(@uandrae)
 - Added setup for running CY48t3_arome and CY49t2_arome on Leonardo, for both 60x80 and large domains. [\#1057](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1057)(@mippoliti-cin)
 - Uniform the fullpos namelists for all CSC's in cy49 [\#1028](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1028) (@egregow)
