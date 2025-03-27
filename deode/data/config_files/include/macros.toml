@@ -1,4 +1,9 @@
-[macros]
+[macros.case]
+  gen_macros = []
+  group_macros = []
+  os_macros = ["USER"]
+
+[macros.select.default]
   gen_macros = [
     "boundaries.bdmodel",
     "domain.name",
@@ -9,7 +14,8 @@
     "general.event_type",
     "domain.orographic_smoothing_method",
     {case_prefix = "scheduler.ecfvars.case_prefix"},
-    {ecf_host = "scheduler.ecfvars.ecf_host"},
+    {ecf_host_resolved = "scheduler.ecfvars.ecf_host_resolved"},
+    {ecf_port_resolved = "scheduler.ecfvars.ecf_port_resolved"},
     {domain = "domain.name"},
     {xdx = "domain.xdx"},
     {domain_number = "domain.number"},
@@ -34,8 +40,3 @@
   ]
   group_macros = ["platform", "system"]
   os_macros = ["USER", "HOME", "PWD", "CONFIG"]
-
-[macros.case]
-  gen_macros = []
-  group_macros = []
-  os_macros = ["USER"]

@@ -55,3 +55,4 @@ selection:
       - SURFNEBUL.MOYENN
       - SURFNEBUL.BASSE
       - SURFNEBUL.TOTALE
+      - CLSMEAN.RAD.TEMP

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Implement helper routines to deal with dates and times."""
-from datetime import timezone
+from datetime import datetime, timezone
 from typing import List, Tuple, Union
 
 import dateutil.parser
+import isodate
 import pandas as pd
 from dateutil.utils import default_tzinfo
 
@@ -227,3 +228,44 @@ def get_month_list(start, end) -> list:
         month_list.insert(0, int(as_datetime(start).month))
 
     return month_list
+
+
+def evaluate_date(date: str) -> str:
+    """Parses an ISO 8601 datetime and/or duration and returns the computed datetime.
+
+    - If the input is a datetime (e.g., "2025-03-19T00:00:00Z"), it returns it as-is.
+    - If the input includes a duration (e.g., "2025-03-19T00:00:00Z/-P1D"), it applies
+      the duration to the datetime.
+    - If the input is only a duration (e.g., "-P1D"), it applies it to today's midnight
+    (UTC).
+
+    Args:
+        date (str): An ISO 8601 datetime, duration, or both.
+
+    Returns:
+        str: The computed datetime in ISO format.
+    """
+    if "/" in date:
+        datetime_part, duration_part = date.split("/")
+        return (
+            (
+                isodate.parse_datetime(datetime_part)
+                + isodate.parse_duration(duration_part)
+            )
+            .isoformat(timespec="seconds")
+            .replace("+00:00", "Z")
+        )
+
+    if date.startswith(("P", "-P")):
+        today_midnight = datetime.now(timezone.utc).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        return (
+            (today_midnight + isodate.parse_duration(date))
+            .isoformat(timespec="seconds")
+            .replace("+00:00", "Z")
+        )
+
+    return (
+        isodate.parse_datetime(date).isoformat(timespec="seconds").replace("+00:00", "Z")
+    )

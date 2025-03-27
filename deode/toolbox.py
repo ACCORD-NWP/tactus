@@ -8,7 +8,7 @@ import re
 import sys
 from typing import Any, Union
 
-import geohash_hilbert
+import geohash
 from troika.connections.ssh import SSHConnection
 
 from .datetime_utils import as_datetime, get_decade, oi2dt_list
@@ -160,8 +160,8 @@ class Platform:
     def fill_macros(self):
         """Fill the macros."""
         self.macros = {}
-        self.fill_each_macro("macros")
-        self.fill_each_macro("macros.user_macros")
+        for macro in self.config["macros.select"]:
+            self.fill_each_macro(f"macros.select.{macro}")
 
     def get_system_macros(self):
         """Get the macros.
@@ -503,11 +503,16 @@ class Platform:
                 otherwise return the result of the function call.
         """
         # Check if command string is a function call
+        if not isinstance(command_string, str):
+            return command_string
         match = re.match(r"(\w+)\((.*)\)", command_string)
         if match:
             # Get function name and arguments
             func = match.group(1)
             args = ast.literal_eval(match.group(2))
+
+            if not isinstance(args, list):
+                args = list(args)
 
             # Get function from object, if object is a string, i.e. a module
             if isinstance(object_, str):
@@ -1189,7 +1194,7 @@ def compute_georef(domain_config):
     lat_center = domain_config["xlatcen"]
     lon_center = domain_config["xloncen"]
 
-    return geohash_hilbert.encode(lng=lon_center, lat=lat_center, precision=6)
+    return geohash.encode(longitude=lon_center, latitude=lat_center, precision=6)
 
 
 class Resource:

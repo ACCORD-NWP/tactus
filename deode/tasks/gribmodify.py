@@ -2,7 +2,7 @@
 
 import math
 
-from ..datetime_utils import as_datetime
+from ..datetime_utils import as_datetime, as_timedelta
 from ..logs import logger
 from ..toolbox import FileManager
 from .base import Task
@@ -125,25 +125,34 @@ class AddCalculatedFields(Task):
         )
         del file_handle[self.basetime]
         modify_rules = self.config["gribmodify"]
-        for fname in file_handle.values():
-            for name in modify_rules:
-                logger.info(fname)
-                if not self.find_par(modify_rules[name]["output"], fname):
-                    logger.info(
-                        "Adding field with shortName: {}", modify_rules[name]["output"]
+        for validtime, fname in file_handle.items():
+            dt = validtime - self.basetime
+            logger.info("Process {}", fname)
+            for name, rules in modify_rules.items():
+                logger.debug("Check rule {}:{}", name, rules)
+                if not self.find_par(rules["output"], fname):
+                    min_freq = (
+                        as_timedelta(rules["minimum_frequency"])
+                        if "minimum_frequency" in rules
+                        else as_timedelta(dt)
                     )
-                    if self.find_par(
-                        modify_rules[name]["input"][0], fname
-                    ) and self.find_par(modify_rules[name]["input"][1], fname):
+                    if as_timedelta(dt) % min_freq != as_timedelta("PT0H"):
+                        logger.info("Skip field with shortName: {}", rules["output"])
+                        continue
+
+                    logger.info("Adding field with shortName: {}", rules["output"])
+                    if self.find_par(rules["input"][0], fname) and self.find_par(
+                        rules["input"][1], fname
+                    ):
                         self.add_field_to_grib(
                             fname,
-                            modify_rules[name]["input"],
-                            modify_rules[name]["operator"],
-                            modify_rules[name]["output"],
+                            rules["input"],
+                            rules["operator"],
+                            rules["output"],
                         )
                     else:
                         raise ValueError(
                             "There are no input parameters {} for output parameter {}",
-                            modify_rules[name]["input"],
-                            modify_rules[name]["output"],
+                            rules["input"],
+                            rules["output"],
                         )

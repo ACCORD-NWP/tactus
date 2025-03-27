@@ -103,6 +103,11 @@
       "type": "string",
       "description": "Path to wind farm parameterisation input data."
     },
+    "eclipse_data_dir": {
+      "type": "string",
+      "description": "Path to sun/moon position as used for eclipses.",
+      "default": "@STATIC_DATA@/climate/eclipse"
+    },
     "archive_root": {
       "type": "string",
       "description": "Path to the main archive directory"

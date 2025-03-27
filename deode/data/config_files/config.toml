@@ -72,6 +72,7 @@
 
 [gribmodify.6]
   input = ["10efg", "10nfg"]
+  minimum_frequency = "PT1H"
   operator = "vectorLength"
   output = "10fg"
 

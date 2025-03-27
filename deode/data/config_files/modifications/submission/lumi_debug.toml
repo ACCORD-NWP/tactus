@@ -1,0 +1,25 @@
+[submission]
+  max_ecf_tasks = 2
+
+[submission.task_exceptions.C903]
+  NPROC = 36
+
+[submission.task_exceptions.C903.BATCH]
+  MEM = "#SBATCH --mem=0"
+  NODE = "#SBATCH --nodes=12"
+  NTASKS = "#SBATCH --ntasks=36"
+  PARTITION = "#SBATCH -p standard"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=3"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[submission.types.Forecast_cpu.BATCH]
+  PARTITION = "#SBATCH --partition=debug"
+
+[submission.types.parallel.BATCH]
+  PARTITION = "#SBATCH --partition=debug"
+
+[submission.types.serial.BATCH]
+  PARTITION = "#SBATCH --partition=debug"
+
+[submission.types.sqlite.BATCH]
+  PARTITION = "#SBATCH --partition=standard"

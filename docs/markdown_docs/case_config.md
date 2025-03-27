@@ -38,6 +38,14 @@ deode case ?deode/data/config_files/configurations/cy48t3_alaro_gpu_lumi -o test
 
 To see all commands available for the case functionality run `deode case --help`.
 
+### Lumi exception
+
+To create a config file for the DEMO domain on LUMI, we suggest using the following command:
+```
+deode case `deode/data/config_files/configurations/cy48t3_arome deode/data/config_files/modifications/submission/lumi_debug.toml
+```
+This will ensure that tasks run on the debug partition, reducing queue time. Please note that the `lumi_debug` setting can only be used for small domains.
+
 ## Adding a new host
 
 The host you're running on can be recognized either through the host name or by identifying a specific environment variable. This is configured in `deode/data/config_files/known_hosts.yml`. In the example below we see how `atos_bologna` and `lumi` are regonized via a hostname regular expression whereas `freja` is recognized from a specific environment variable.

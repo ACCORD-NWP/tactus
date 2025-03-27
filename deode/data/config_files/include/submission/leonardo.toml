@@ -1,11 +1,9 @@
 [submission]
-  bindir = "/leonardo_scratch/fast/DestE_340_24/ddegrauw/accord/pack/test_49t2/bin"
-  #bindir = "/leonardo/home/userexternal/dhaumont/gpupack/pack/49t2_alaro_gpu.01.NVHPC2311.1d/bin"
-  #bindir = "/leonardo_scratch/fast/DestE_340_24/dhaumont/gpupack/pack/49t2_openacc.01.NVHPC2311.1d/bin"
-  default_submit_type = "parallel"
+  account = "#SBATCH -A DestE_330_25_0"
+  bindir = "/leonardo_work/DestE_330_25/users/SAN/install/cy48t3/bin/"
+  default_submit_type = "serial"
   lfftw = false
-  module_initpath = "/leonardo/pub/userexternal/dhaumont/install/lmod/lmod/init"
-  nfpgrib = 141
+  module_initpath = "/leonardo_work/DestE_330_25/users/SAN/install/lmod/lmod/init"
   nproma = -32
 
 [submission.iomerge.age_limit]
@@ -17,6 +15,100 @@
   fullpos = 0
   history = -1
   surfex = 0
+
+[submission.task]
+  wrapper = ""
+
+[submission.task_exceptions.ArchiveHour.BATCH]
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[submission.task_exceptions.ArchiveStatic.BATCH]
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[submission.task_exceptions.C903]
+  NPROC = 36
+
+[submission.task_exceptions.C903.BATCH]
+  MEM = "#SBATCH --mem=480GB"
+  NODE = "#SBATCH --nodes=6"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=6"
+  #NTASKS = "#SBATCH --ntasks=36"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[submission.task_exceptions.CreateGrib]
+  binary = "gl"
+  bindir = "/leonardo_work/DestE_330_25/users/SAN/install/gl/leonardo.cy49t2.intel/bin"
+
+[submission.task_exceptions.CreateGrib.BATCH]
+  WALLTIME = "#SBATCH --time=01:00:00"
+
+[submission.task_exceptions.CreateGrib.MODULES]
+  4_FFTW3 = [
+    "load",
+    "fftw/3.3.10--intel-oneapi-mpi--2021.10.0--oneapi--2023.2.0-sremgts ",
+  ]
+
+[submission.task_exceptions.E923Update]
+  bindir = "/leonardo_work/DestE_330_25/users/SAN/install/cy48t3/bin"
+
+[submission.task_exceptions.E923Update.MODULES]
+  OPENMPI = ["load", "openmpi/4.1.6--nvhpc--23.11"]
+
+[submission.task_exceptions.E927]
+  NPROC = 16
+
+[submission.task_exceptions.E927.BATCH]
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=16"
+
+[submission.task_exceptions.Forecast]
+  NPROC = 32
+  NPROC_IO = 0
+  WRAPPER = "mpirun"
+
+[submission.task_exceptions.Forecast.BATCH]
+  MEM = "#SBATCH --mem=480GB"
+  NODES = "#SBATCH --nodes=2"
+  PARTITION = "#SBATCH --partition=dcgp_usr_prod"
+  QOS = "#SBATCH --qos=dcgp_qos_bprod"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=16"
+  WALLTIME = "#SBATCH --time=00:29:00"
+
+[submission.task_exceptions.Forecast.ENV]
+  NOUTPUT = 2
+  RTTOV_COEFDIR = "/leonardo_work/DestE_330_25/users/SAN/static/DEODE/satellite/rtcoef_rttov12/harm_coef/"
+  UCX_LOG_LEVEL = "error"
+
+[submission.task_exceptions.Marsprep]
+  bindir = "/leonardo_work/DestE_330_25/users/SAN/mars/versions/current/bin"
+
+[submission.task_exceptions.Marsprep.BATCH]
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  WALLTIME = "#SBATCH --time=01:00:00"
+
+[submission.task_exceptions.Pgd]
+  NPROC = 32
+
+[submission.task_exceptions.Pgd.BATCH]
+  NODES = "#SBATCH --nodes=2"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=32"
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[submission.task_exceptions.PgdUpdate]
+  binary = "gl"
+  bindir = "/leonardo_work/DestE_330_25/users/SAN/install/gl/leonardo.cy49t2.intel/bin"
+
+[submission.task_exceptions.PgdUpdate.MODULES]
+  4_FFTW3 = [
+    "load",
+    "fftw/3.3.10--intel-oneapi-mpi--2021.10.0--oneapi--2023.2.0-sremgts ",
+  ]
+
+[submission.task_exceptions.Prep.BATCH]
+  NODES = "#SBATCH --nodes=3"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=8"
+  WALLTIME = "#SBATCH --time=00:10:00"
 
 [submission.types.background_hpc]
   SCHOST = "localhost"
@@ -31,7 +123,7 @@
   NPROC = 1
   NPROCX = 1
   NPROCY = 1
-  SCHOST = "hpc"
+  SCHOST = "leonardo"
   tasks = ["ExtractSQLite"]
   WRAPPER = "srun"
 
@@ -39,21 +131,21 @@
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
-  QOS = "#SBATCH --qos=nf"
+  PARTITION = "#SBATCH --partition=lrd_all_serial"
   WALLTIME = "#SBATCH --time=00:15:00"
 
 [submission.types.gnu.MODULES]
   ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2021.08.3.0"]
 
 [submission.types.parallel]
-  NPROC = 8
+  NPROC = 32
   SCHOST = "leonardo"
   tasks = ["Forecast", "E927", "Pgd", "Prep", "C903"]
   WRAPPER = "srun"
 
 [submission.types.parallel.BATCH]
   NAME = "#SBATCH --job-name=@TASK_NAME@"
-  QOS = "#SBATCH --qos=np"
+  PARTITION = "#SBATCH --partition=dcgp_usr_prod"
   WALLTIME = "#SBATCH --time=00:10:00"
 
 [submission.types.parallel.ENV]
@@ -62,30 +154,37 @@
   EC_MPI_ATEXIT = 0
   EC_PROFILE_HEAP = 0
   INPART = 0
-  KMP_MONITOR_STACKSIZE = "1G"
-  KMP_STACKSIZE = "4G"
+  #KMP_MONITOR_STACKSIZE = "1G"
+  #KMP_STACKSIZE = "4G"
   LLSIMPLE_DGEMM = 1
   OMP_NUM_THREADS = 1
-  OMP_STACKSIZE = "4G"
+  #OMP_STACKSIZE = "4G"
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/leonardo_work/DestE_330_25/users/SAN/install/eccodes-2.40.0-intel/lib64/"
   OMPI_MCA_btl = "^vader"
   PARALLEL = 0
   PERSISTENT = 0
 
 [submission.types.parallel.MODULES]
-  0_PURGE = ["--force", "purge"]
-  1_PRGENV = ["load", "prgenv/intel"]
-  2_NVHPC = ["load", "nvhpc/23.11"]
-  3_CUDA = ["load", "cuda/11.8"]
-  4_METEO = ["load", "profile/meteo"]
-  5_NETCDF = ["load", "netcdf-fortran/4.6.1--openmpi--4.1.6--nvhpc--23.11"]
-
-  #_HDF5 = ["load", "hdf5/1.12.2--openmpi--4.1.4--nvhpc--23.1"]
+  #0_PURGE = ["--force", "purge"]
+  1_INTEL_COMPILERS = ["load", "intel-oneapi-compilers/2023.2.1"]
+  2_INTEL_MPI = ["load", "intel-oneapi-mpi/2021.10.0"]
+  3_INTEL_MKL = ["load", "intel-oneapi-mkl/2023.2.0"]
+  4_HDF5 = ["load", "hdf5/1.14.3--intel-oneapi-mpi--2021.10.0--oneapi--2023.2.0 "]
+  5_NETCDFC = ["load", "netcdf-c/4.9.2--intel-oneapi-mpi--2021.10.0--oneapi--2023.2.0"]
+  6_NETCDFF = [
+    "load",
+    "netcdf-fortran/4.6.1--intel-oneapi-mpi--2021.10.0--oneapi--2023.2.0",
+  ]
+  7_FFTW3 = [
+    "load",
+    "fftw/3.3.10--intel-oneapi-mpi--2021.10.0--oneapi--2023.2.0-sremgts ",
+  ]
 
 [submission.types.serial]
   NPROC = 1
   NPROCX = 1
   NPROCY = 1
-  SCHOST = "hpc"
+  SCHOST = "leonardo"
   tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep", "E923Update"]
   WRAPPER = "srun"
 
@@ -93,115 +192,22 @@
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
-  QOS = "#SBATCH --qos=nf"
+  PARTITION = "#SBATCH --partition=lrd_all_serial"
   WALLTIME = "#SBATCH --time=00:15:00"
 
 [submission.types.serial.ENV]
   DR_HOOK_IGNORE_SIGNALS = -1
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/leonardo_work/DestE_330_25/users/SAN/install/eccodes-2.40.0-intel/lib64/"
   OMP_NUM_THREADS = 1
   OMPI_MCA_btl = "^vader"
 
 [submission.types.serial.MODULES]
-  0_PURGE = ["--force", "purge"]
-  1_NVHPC = ["load", "nvhpc/23.11"]
-  2_CUDA = ["load", "cuda/11.8"]
-  3_METEO = ["load", "profile/meteo"]
-  # 4_FFTW = ["load", "fftw/3.3.10--openmpi--4.1.6--nvhpc--23.11"]
-  5_NETCDF = ["load", "netcdf-fortran/4.6.1--openmpi--4.1.6--nvhpc--23.11"]
-
-  #_HDF5 = ["load", "hdf5/1.12.2--openmpi--4.1.4--nvhpc--23.1"]
-
-[submission.task]
-  wrapper = ""
-
-[submission.task_exceptions.ArchiveHour.BATCH]
-  WALLTIME = "#SBATCH --time=03:00:00"
-
-[submission.task_exceptions.ArchiveStatic.BATCH]
-  WALLTIME = "#SBATCH --time=03:00:00"
-
-[submission.task_exceptions.C903]
-  NPROC = 32
-
-[submission.task_exceptions.C903.BATCH]
-  MEM = "#SBATCH --mem=200GB"
-  NODE = "#SBATCH --nodes=12"
-  NTASKS = "#SBATCH --ntasks=36"
-  WALLTIME = "#SBATCH --time=00:30:00"
-
-[submission.task_exceptions.CreateGrib]
-  binary = "gl_20230823"
-  bindir = "/home/snh02/work/gl_binaries"
-
-[submission.task_exceptions.CreateGrib.BATCH]
-  WALLTIME = "#SBATCH --time=01:00:00"
-
-[submission.task_exceptions.E923Update]
-  bindir = "/home/snh02/work/fa_sfx2clim/"
-
-[submission.task_exceptions.E923Update.ENV]
-  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/home/snh02/opt/install/eccodes-2.32.1/lib64:/perm/rme/packages/auxlibs/3.7/INTEL/2021.4/lib"
-
-[submission.task_exceptions.E923Update.MODULES]
-  OPENMPI = ["load", "openmpi/4.1.1"]
-
-[submission.task_exceptions.E927]
-  NPROC = 16
-
-[submission.task_exceptions.E927.BATCH]
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=16"
-
-[submission.task_exceptions.Forecast]
-  NPROC = 16
-  NPROC_IO = 0
-
-  #WRAPPER = "ulimit -s unlimited; srun -n @NPROC@ ./select_gpu"
-
-[submission.task_exceptions.Forecast.BATCH]
-  #  MEM = "#SBATCH --mem=200GB"
-  ACCOUNT = "#SBATCH -A deste_340_24 "
-  NODES = "#SBATCH --nodes=2"
-  NTASKS = "#SBATCH --ntasks=16"
-  PARTITION = "#SBATCH -p boost_usr_prod"
-  QOS = "#SBATCH --qos boost_qos_dbg"
-  WALLTIME = "#SBATCH --time=00:29:00"
-
-[submission.task_exceptions.Forecast.ENV]
-  #  RTTOV_COEFDIR = "/hpcperm/snh02/DEODE/satellite/rtcoef_rttov12/harm_coef/"
-  UCX_LOG_LEVEL = "error"
-
-  NOUTPUT = 2
-
-[submission.task_exceptions.Gmted.MODULES]
-  GDAL = ["load", "gdal/3.6.2"]
-
-[submission.task_exceptions.Marsprep.BATCH]
-  MEM = "#SBATCH --mem=0GB"
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=1"
-  QOS = "#SBATCH --qos=np"
-  WALLTIME = "#SBATCH --time=01:00:00"
-
-[submission.task_exceptions.Pgd]
-  WRAPPER = "srun -n @NPROC@"
-
-[submission.task_exceptions.Pgd.BATCH]
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=2"
-  WALLTIME = "#SBATCH --time=00:30:00"
-
-[submission.task_exceptions.PgdUpdate]
-  binary = "gl_20230823"
-  bindir = "/home/snh02/work/gl_binaries"
-
-[submission.task_exceptions.Prep]
-  WRAPPER = "srun -n @NPROC@"
-
-[submission.task_exceptions.Prep.BATCH]
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=1"
-  WALLTIME = "#SBATCH --time=00:10:00"
-
-[submission.task_exceptions.Soil.MODULES]
-  GDAL = ["load", "gdal/3.6.2"]
+  #0_PURGE = ["--force", "purge"]
+  1_INTEL_COMPILERS = ["load", "intel-oneapi-compilers/2023.2.1"]
+  2_INTEL_MPI = ["load", "intel-oneapi-mpi/2021.10.0"]
+  3_INTEL_MKL = ["load", "intel-oneapi-mkl/2023.2.0"]
+  4_NETCDFC = ["load", "netcdf-c/4.9.2--intel-oneapi-mpi--2021.10.0--oneapi--2023.2.0"]
+  6_NETCDFF = [
+    "load",
+    "netcdf-fortran/4.6.1--intel-oneapi-mpi--2021.10.0--oneapi--2023.2.0",
+  ]

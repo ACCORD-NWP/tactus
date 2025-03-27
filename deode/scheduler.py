@@ -1,5 +1,6 @@
 """Scheduler module."""
 
+import json
 import os
 import platform
 import signal
@@ -113,6 +114,7 @@ class EcflowServer(Server):
         try:
             self.ecf_port = int(ecf_port)
         except ValueError:
+            ecf_port = platform.substitute(ecf_port)
             self.ecf_port = platform.evaluate(ecf_port, object_=EcflowServer)
 
         self.start_command = start_command
@@ -120,6 +122,31 @@ class EcflowServer(Server):
         self.ecf_client = ecflow.Client(self.ecf_host, self.ecf_port)
         logger.debug("self.ecf_client {}", self.ecf_client)
         self.settings = {"ECF_HOST": self.ecf_host, "ECF_PORT": self.ecf_port}
+
+    @staticmethod
+    def _set_port_from_json(json_file):
+        """Set ecf_port from user id.
+
+        Arguments:
+            json_file (str): Json file user to port mapping
+
+        Returns:
+            port (int): Derived port number
+
+        Raises:
+            KeyError: For users not mapped
+
+        """
+        user = os.environ.get("USER")
+        with open(json_file, "r", encoding="utf-8") as f:
+            user_mapping = json.load(f)
+
+        try:
+            port = user_mapping[user]["ecf_port"]
+        except KeyError as err:
+            raise KeyError(f"Could not find user {user} in {json_file}") from err
+
+        return port
 
     @staticmethod
     def _set_port_from_user(offset=0):

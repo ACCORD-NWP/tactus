@@ -1,2 +1,2 @@
-[boundaries]
-  ifs.selection = "atos_bologna_DT"
+[general.times]
+  start = "-P1D"

@@ -1,5 +1,5 @@
 [submission]
-  bindir = "/perm/deployde330/github-actions/install/cy48t3/cy48t3-v1.4.2/bin"
+  bindir = "/perm/deployde330/github-actions/install/cy48t3/cy48t3-v1.4.3/bin"
   default_submit_type = "serial"
   lfftw = true
   module_initpath = "/usr/local/apps/lmod/8.6.8/init"
@@ -26,7 +26,7 @@
 
 [submission.task_exceptions.ArchiveHour.ENV]
   FDB5_HOME = "/usr/local/apps/mars/versions/6.33.19.9"
-  FDB_HOME = "/home/snh02/fdb"
+  FDB_HOME = "/home/fdbtest"
 
 [submission.task_exceptions.ArchiveHour.MODULES]
   ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.11.0.0"]
@@ -49,6 +49,9 @@
 
 [submission.task_exceptions.CreateGrib.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
+
+[submission.task_exceptions.CreateGribStatic]
+  bindir = "/perm/deployde330/github-actions/install/gl/gl-v1.3.1/bin"
 
 [submission.task_exceptions.E927]
   NPROC = 16

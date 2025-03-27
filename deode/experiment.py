@@ -11,12 +11,14 @@ from typing import List, Optional
 import tomlkit
 
 from deode.config_parser import BasicConfig, ParsedConfig
+from deode.datetime_utils import evaluate_date
 from deode.derived_variables import set_times
 from deode.eps.eps_setup import EPSConfig, generate_member_settings
 from deode.general_utils import modify_mappings, recursive_dict_deviation
 from deode.host_actions import HostNotFoundError, SelectHost, set_deode_home
 from deode.logs import logger
 from deode.os_utils import resolve_path_relative_to_package
+from deode.scheduler import EcflowServer
 from deode.toolbox import Platform
 
 
@@ -101,6 +103,12 @@ class ExpFromFiles(Exp):
         if merged_config is None:
             merged_config = {}
         merged_config = ExpFromFiles.deep_update(merged_config, mods)
+
+        # Evaluate relative dates
+        with contextlib.suppress(KeyError):
+            merged_config["general"]["times"]["start"] = evaluate_date(
+                merged_config["general"]["times"]["start"]
+            )
 
         # Remove sections from the input config
         with contextlib.suppress(KeyError):
@@ -272,16 +280,26 @@ def case_setup(
         exp.config = exp.config.copy(update={"platform": {"deode_home": deode_home}})
         exp.config = exp.config.expand_macros()
 
-    # Resolve ecf_host if used
+    # Resolve ecf_host/ecf_port if used
     with contextlib.suppress(HostNotFoundError):
         ecf_host = exp.config.get("scheduler.ecfvars.ecf_host", None)
-        if ecf_host is not None:
+        ecf_port = exp.config.get("scheduler.ecfvars.ecf_port", None)
+
+        if ecf_host is not None and ecf_port is not None:
             pl = Platform(exp.config)
             ecf_host = pl.substitute(ecf_host)
             ecf_host = pl.evaluate(ecf_host, object_=SelectHost)
-
+            ecf_port = pl.substitute(ecf_port)
+            ecf_port = pl.evaluate(ecf_port, object_=EcflowServer)
             exp.config = exp.config.copy(
-                update={"scheduler": {"ecfvars": {"ecf_host": ecf_host}}}
+                update={
+                    "scheduler": {
+                        "ecfvars": {
+                            "ecf_host_resolved": ecf_host,
+                            "ecf_port_resolved": ecf_port,
+                        }
+                    }
+                }
             )
 
     if output_file is None or ".toml" not in str(output_file):

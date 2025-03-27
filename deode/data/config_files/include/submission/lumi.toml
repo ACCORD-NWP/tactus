@@ -1,10 +1,9 @@
 [submission]
   account = "#SBATCH -A project_465000527"
-  bindir = "/projappl/project_465000527/github-actions/install/cy48t3/cy48t3-v1.4.2/bin"
+  bindir = "/projappl/project_465000527/github-actions/install/cy48t3/cy48t3-v1.4.3/bin"
   cmicro = "OLD3"
   default_submit_type = "serial"
   lfftw = true
-  max_ecf_tasks = 2
   module_initpath = "/usr/share/lmod/8.3.1/init"
   nproma = -16
 
@@ -25,14 +24,13 @@
   FDB5_HOME = "/appl/local/destine/mars/versions/6.99.2.0/"
 
 [submission.task_exceptions.C903]
-  NPROC = 36
+  NPROC = 24
 
 [submission.task_exceptions.C903.BATCH]
   MEM = "#SBATCH --mem=0"
   NODE = "#SBATCH --nodes=12"
-  NTASKS = "#SBATCH --ntasks=36"
-  PARTITION = "#SBATCH -p standard"
-  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=3"
+  NTASKS = "#SBATCH --ntasks=24"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=2"
   WALLTIME = "#SBATCH --time=00:30:00"
 
 [submission.task_exceptions.C903.ENV]
@@ -48,7 +46,7 @@
   LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/pardalmi/local/eccodes-2.39.0-ftn16-LUMI/lib64"
 
 [submission.task_exceptions.E923Update]
-  bindir = "/projappl/project_465000527/github-actions/install/cy48t3/cy48t3-v1.4.2/bin"
+  bindir = "/projappl/project_465000527/github-actions/install/cy48t3/cy48t3-v1.4.3/bin"
 
 [submission.task_exceptions.Gmted.MODULES]
   GDAL = ["load", "scl-gdal_23"]
@@ -101,7 +99,7 @@
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=2"
   NTASKS = "#SBATCH --ntasks=16"
-  PARTITION = "#SBATCH --partition=debug"
+  PARTITION = "#SBATCH --partition=standard"
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=8"
   WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:30:00"
@@ -161,7 +159,7 @@
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=16"
-  PARTITION = "#SBATCH -p debug"
+  PARTITION = "#SBATCH --partition=standard"
   WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:10:00"
 
@@ -209,7 +207,7 @@
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
-  PARTITION = "#SBATCH --partition=debug"
+  PARTITION = "#SBATCH --partition=standard"
   WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:20:00"
 
@@ -242,7 +240,7 @@
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
-  PARTITION = "#SBATCH --partition=debug"
+  PARTITION = "#SBATCH --partition=standard"
   WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:20:00"
 

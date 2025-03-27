@@ -36,7 +36,9 @@
       "$ref": "#/definitions/gribmodify"
     }
   },
-  "required": ["general"],
+  "required": [
+    "general"
+  ],
   "definitions": {
     "include": {
       "title": "Include Section",
@@ -93,7 +95,10 @@
         "bdmodel": {
           "description": "Coupling model",
           "default": "ifs",
-          "enum": ["lam", "ifs"],
+          "enum": [
+            "lam",
+            "ifs"
+          ],
           "type": "string"
         },
         "humi_gp": {
@@ -105,13 +110,13 @@
           "description": "LAM related boundary settings",
           "type": "object",
           "properties": {
-	    "bdcycle_start": {
+            "bdcycle_start": {
               "description": "lam boundary model cycle start hour",
               "type": "string",
               "default": "PT0H",
               "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
             },
-	    "bdcycle": {
+            "bdcycle": {
               "description": "lam boundary model cycle interval",
               "type": "string",
               "default": "PT24H",
@@ -144,7 +149,7 @@
             "bdmember": {
               "type": "array",
               "description": "List of members in ensemble if selection is IFSENS.",
-	      "default": [],
+              "default": [],
               "items": {
                 "type": "integer"
               }
@@ -251,7 +256,10 @@
           "items": {
             "type": "string"
           },
-          "default": ["rules", "namfpc_header"]
+          "default": [
+            "rules",
+            "namfpc_header"
+          ]
         },
         "selection": {
           "description": "List of selections to include",
@@ -292,7 +300,11 @@
         "mode": {
           "description": "Choose a strategy to achieve initial/initial_sfx files (start:  start from interpolated files and then propagate the FG between cycles, restart: start from a previous run and then propagate the FG between cycles, cold_start: always start from interpolated files).",
           "type": "string",
-          "enum": ["start", "restart", "cold_start"]
+          "enum": [
+            "start",
+            "restart",
+            "cold_start"
+          ]
         },
         "interpolate_boundaries": {
           "description": "Activates the boundary interpolation",
@@ -462,82 +474,55 @@
     },
     "gribmodify": {
       "title": "Section for modify grib",
-      "description": "Rules for modify grib to get total prcipitation",
+      "description": "Rules for modifications to be made to the grib output",
       "type": "object",
       "properties": {
-        "3": {
-          "title": "Total precpipation",
-          "description": "shortName for the total precipitation.",
+        "1": {
+          "title": "Total rain",
+          "description": "Calculates total rain from components",
           "type": "object",
           "properties": {
-            "input": {
-              "title": "Input parameters",
-              "description": "List of parameters",
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "operator": {
-              "title": "Operator",
-              "description": "Operator for compute the new field from input parameters",
-              "type": "string"
-            },
-            "output": {
-              "title": "Output parameter",
-              "description": "shortName of output parameter.",
-              "type": "string"
-            }
+            "$ref": "#/$gribmodify_rules"
           }
         },
         "2": {
           "title": "Total snow",
-          "description": "shortName for the total precipitation.",
+          "description": "Calculates total snow from components",
           "type": "object",
           "properties": {
-            "input": {
-              "title": "Input parameters",
-              "description": "List of parameters",
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "operator": {
-              "title": "Operator",
-              "description": "Operator for compute the new field from input parameters",
-              "type": "string"
-            },
-            "output": {
-              "title": "Output parameter",
-              "description": "shortName of output parameter.",
-              "type": "string"
-            }
+            "$ref": "#/$gribmodify_rules"
           }
         },
-        "1": {
-          "title": "Total rain",
-          "description": "shortName for the total precipitation.",
+        "3": {
+          "title": "Total precpipation",
+          "description": "Calculates total precipitation from components",
           "type": "object",
           "properties": {
-            "input": {
-              "title": "Input parameters",
-              "description": "List of parameters",
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "operator": {
-              "title": "Operator",
-              "description": "Operator for compute the new field from input parameters",
-              "type": "string"
-            },
-            "output": {
-              "title": "Output parameter",
-              "description": "shortName of output parameter.",
-              "type": "string"
-            }
+            "$ref": "#/$gribmodify_rules"
+          }
+        },
+        "4": {
+          "title": "10m wind speed",
+          "description": "Calculates 10m wind speed",
+          "type": "object",
+          "properties": {
+            "$ref": "#/$gribmodify_rules"
+          }
+        },
+        "5": {
+          "title": "100m wind speed",
+          "description": "Calculates 100m wind speed",
+          "type": "object",
+          "properties": {
+            "$ref": "#/$gribmodify_rules"
+          }
+        },
+        "6": {
+          "title": "10m gust wind speed",
+          "description": "Calculates 10m gust wind speed",
+          "type": "object",
+          "properties": {
+            "$ref": "#/$gribmodify_rules"
           }
         }
       }
@@ -596,23 +581,35 @@
             {
               "anyOf": [
                 {
-                  "required": ["start"],
+                  "required": [
+                    "start"
+                  ],
                   "not": {
-                    "required": ["list"]
+                    "required": [
+                      "list"
+                    ]
                   }
                 },
                 {
-                  "required": ["basetime"],
+                  "required": [
+                    "basetime"
+                  ],
                   "not": {
                     "anyOf": [
                       {
-                        "required": ["end"]
+                        "required": [
+                          "end"
+                        ]
                       },
                       {
-                        "required": ["list"]
+                        "required": [
+                          "list"
+                        ]
                       },
                       {
-                        "required": ["start"]
+                        "required": [
+                          "start"
+                        ]
                       }
                     ]
                   }
@@ -620,14 +617,20 @@
               ]
             },
             {
-              "required": ["list"],
+              "required": [
+                "list"
+              ],
               "not": {
                 "anyOf": [
                   {
-                    "required": ["start"]
+                    "required": [
+                      "start"
+                    ]
                   },
                   {
-                    "required": ["end"]
+                    "required": [
+                      "end"
+                    ]
                   }
                 ]
               }
@@ -667,7 +670,13 @@
         "loglevel": {
           "description": "Logger output level",
           "type": "string",
-          "enum": ["CRITICAL", "ERROR", "DEBUG", "INFO", "WARNING"]
+          "enum": [
+            "CRITICAL",
+            "ERROR",
+            "DEBUG",
+            "INFO",
+            "WARNING"
+          ]
         },
         "surfex": {
           "description": "SURFEX switch",
@@ -681,12 +690,20 @@
           "description": "CSC",
           "default": "AROME",
           "type": "string",
-          "enum": ["AROME", "ALARO", "HARMONIE_AROME"]
+          "enum": [
+            "AROME",
+            "ALARO",
+            "HARMONIE_AROME"
+          ]
         },
         "cycle": {
           "description": "IAL cycle",
           "type": "string",
-          "enum": ["CY49t2", "CY48t3", "CY46h1"]
+          "enum": [
+            "CY49t2",
+            "CY48t3",
+            "CY46h1"
+          ]
         },
         "event_type": {
           "description": "Type of extreme event",
@@ -754,7 +771,9 @@
           "default": false
         }
       },
-      "required": ["times"]
+      "required": [
+        "times"
+      ]
     }
   },
   "$output_setting_rules": {
@@ -779,5 +798,30 @@
         }
       }
     ]
+  },
+  "$gribmodify_rules": {
+    "input": {
+      "title": "Input parameters",
+      "description": "List of parameters defined by their shortName",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "operator": {
+      "title": "Operator",
+      "description": "Operator for computing the new field from input parameters",
+      "type": "string"
+    },
+    "output": {
+      "title": "Output parameter",
+      "description": "shortName of output parameter.",
+      "type": "string"
+    },
+    "minumum_frequency": {
+      "title": "Minimum frequency",
+      "description": "Minimum output frequency expected",
+      "format": "duration"
+    }
   }
 }

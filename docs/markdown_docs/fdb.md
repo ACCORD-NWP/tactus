@@ -15,7 +15,7 @@ This is to use the fdb command line tool, if you want to read, write or wipe the
 
 On ATOS:
 ```
-export FDB_HOME=/home/fdbdev/destine/
+export FDB_HOME=/home/fdbtest
 export FDB5_HOME=/usr/local/apps/mars/versions/6.33.19.9/
 ```
 
@@ -116,4 +116,4 @@ This is a bit buggy on LUMI as the as the archive.lock file created while cleari
 
 
 ## Notes about georef
-We are using a [geohashing algorithm](https://github.com/tammoippen/geohash-hilbert) with Base64 string-representation of the hash, and a Hilbert space-filling curves instead of Z-order space-filling curves
+We are using a [geohashing algorithm](https://github.com/destination-earth-digital-twins/geohash) with *a* Base32 string-representation of the hash, and Z-order space-filling curves with precision set to 6.

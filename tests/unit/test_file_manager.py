@@ -22,7 +22,7 @@ def config_platform(tmp_directory):
             case = "mytest"
             realization = ""
             cnmexp = "DEOD"
-        [macros]
+        [macros.select.default]
             os_macros = ["USER", "HOME"]
             group_macros = ["platform","system"]
             gen_macros = ["general.cnmexp",
@@ -143,9 +143,13 @@ class TestFileManager:
                 },
             },
             "macros": {
-                "os_macros": ["FILE_TEST"],
-                "groups_macros": ["platform"],
-                "gen_macros": ["general.cnmexp", {"domain": "domain.name"}],
+                "select": {
+                    "default": {
+                        "os_macros": ["FILE_TEST"],
+                        "groups_macros": ["platform"],
+                        "gen_macros": ["general.cnmexp", {"domain": "domain.name"}],
+                    },
+                },
             },
             "domain": {"name": "DOMAIN"},
             "system": {"climdir": "my_dir"},

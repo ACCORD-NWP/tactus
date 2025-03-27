@@ -76,7 +76,7 @@ def test_set_domain_from_file(
         "general": {"case": "@GRIDTYPE@"},
         "domain": test_domain,
         "macros": {
-            "user_macros": {
+            "case": {
                 "gen_macros": ["domain.gridtype"],
             },
         },

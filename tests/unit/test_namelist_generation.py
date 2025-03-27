@@ -24,7 +24,6 @@ def config_platform():
             bdmodel = "ifs"
         [general]
             case = "test_case"
-            os_macros = ["USER", "HOME", "PWD"]
             realization = ""
             cnmexp = "HARM"
             bdint = "PT3H"
@@ -46,7 +45,7 @@ def config_platform():
             ilate = 11
             gridtype = "linear"
             tstep = 72
-        [macros]
+        [macros.select.default]
             gen_macros = ["boundaries.bdmodel"]
             group_macros = ["platform", "system"]
             os_macros = ["USER", "HOME", "PWD"]

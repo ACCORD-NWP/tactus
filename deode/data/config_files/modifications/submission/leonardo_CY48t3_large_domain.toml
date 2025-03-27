@@ -1,35 +1,20 @@
-[platform]
-  rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov13/coef"
-
-[submission]
-  bindir = "/perm/deployde330/github-actions/install/cy49t2/cy49t2-v1.4.1/bin"
-
-[submission.gnu.BATCH]
-  MEM = "#SBATCH --mem=64GB"
-  WALLTIME = "#SBATCH --time=03:00:00"
+[submission.task_exceptions.AddCalculatedFields.BATCH]
+  WALLTIME = "#SBATCH --time=00:30:00"
 
 [submission.task_exceptions.CreateGrib.BATCH]
   WALLTIME = "#SBATCH --time=03:00:00"
 
-[submission.task_exceptions.E923Monthly.BATCH]
-  MEM = "#SBATCH --mem=32GB"
-
-[submission.task_exceptions.E923Update.ENV]
-  DR_HOOK_ASSERT_MPI_INITIALIZED = 0
-
 [submission.task_exceptions.Forecast]
-  NPROC = 624
-  NPROC_IO = 16
-  NPROCX = 24
-  NPROCY = 26
+  NPROC = 405
+  NPROC_IO = 0
   OMP_NUM_THREADS = "4"
-  WRAPPER = "srun @DEODE_HOME@/data/config_files/include/submission/omp_wrapper"
+  WRAPPER = "mpirun"
 
 [submission.task_exceptions.Forecast.BATCH]
   CPUSPERTASK = "#SBATCH --cpus-per-task=4"
   HYPERTHREAD = "#SBATCH --hint=nomultithread"
-  NODES = "#SBATCH --nodes=20"
-  NTASKS = "#SBATCH --ntasks-per-node=32"
+  NODES = "#SBATCH --nodes=15"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=27"
   WALLTIME = "#SBATCH --time=08:00:00"
 
 [submission.task_exceptions.Forecast.ENV]
@@ -44,18 +29,33 @@
 [submission.task_exceptions.IOmerge.BATCH]
   WALLTIME = "#SBATCH --time=08:00:00"
 
+[submission.task_exceptions.Pgd]
+  NPROC = 64
+
 [submission.task_exceptions.Pgd.BATCH]
   NODES = "#SBATCH --nodes=2"
-  NTASKS = "#SBATCH --ntasks=32"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=32"
   WALLTIME = "#SBATCH --time=03:00:00"
 
+[submission.task_exceptions.Prep]
+  NPROC = 64
+
 [submission.task_exceptions.Prep.BATCH]
+  MEM = "#SBATCH --mem=480GB"
   NODES = "#SBATCH --nodes=2"
-  NTASKS = "#SBATCH --ntasks=32"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=32"
   WALLTIME = "#SBATCH --time=00:50:00"
 
 [submission.types.gnu.BATCH]
   MEM = "#SBATCH --mem=64GB"
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[submission.types.serial.BATCH]
+  MEM = "#SBATCH --mem=64GB"
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=1"
+  PARTITION = "#SBATCH --partition=dcgp_usr_prod"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=1"
   WALLTIME = "#SBATCH --time=03:00:00"
 
 [suite_control]

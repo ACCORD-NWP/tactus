@@ -10,9 +10,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.14.0] - 2025-03-27
+
+### Added
+- Check on output frequency for fields calculated in gribmodify [\#1085](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1085) (@uandrae)
+- Added documentation for installation on leonardo. [\#1062](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1062)(@uandrae)
+- Added setup for running CY48t3_arome and CY49t2_arome on Leonardo, for both 60x80 and large domains. [\#1057](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1057)(@mippoliti-cin)
+- Uniform the fullpos namelists for all CSC's in cy49 [\#1028](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1028) (@egregow)
+- Add function for evaluate relative dates from config file. [\#1085](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1058#pullrequestreview-2710477467) (@kastelecn)
+
+### Changed
+- Update surfex namelist settings for CY49. [\#1050](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1050)(@uandrae)
+- Add support to configure simulations for eventtype eclipse [\#1063](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1063)(@jacobsnoeijer)
+- Change macro configuration to be more flexible [\#1032](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1032)(@uandrae) 
+
+### Fixed
+- Restore problematic deode_home and ecf_host changed in v0.13.0  [\#1068](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1068)(@uandrae)
+- Use 32 bit space filling curve for geohash [\#1042](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1042) (@johtoblan)
+- Reduce ntasks for C903 on lumi. [\#1080](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1080) (@kastelecn)
+- Add snowfields to IFSENS MARS request [\#1055](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1055)(@uandrae)
 
 ## [0.13.2] - 2025-03-21
 
+### Changed
 - Reintroduced calculation of wind gust to gribmodify and removed from fullpos [\#1070](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1070) (@KristianHMoller)
 
 ## [0.13.1] - 2025-02-27
@@ -23,15 +43,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.13.0] - 2025-02-26
 
 ### Added
+- Add possibility to set start to yesterday. [\#1047](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1047#pullrequestreview-2677820249) (@kastelecn)
 - Print deode version and config file used for each task [\#1011](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1011) (@uandrae)
 - Configure dependabot for frequent dependency updates. [\#989](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/989) (@observingClouds)
-
 ### Changed
+- Set lumi_DT as default ifs selection on LUMI, seperate option for running on debug partition. [\#1034](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1034)(@kastelen)
 - Name convention for LBC families [\#984](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/984)(@uandrae) 
 - Increase walltime for CreateGrib on atos_bologna [\#1009](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1009) (@uandrae)
 - Use bddir_sfx for MARS latlon file for more flexibilty on output location [\#1012](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1012) (@uandrae)
+- Sqlite extraction increased & limited to standard pressure levels for RH,S,T,D [\#1013] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1013) (@svianaj)
+- Updated station list for sqlite extraction with new ones from WOW 2023-2024 period [\#1030] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1030) (@svianaj)
 
-###Fixed
+
+### Fixed
 - Remove BDMEMBER from all config files. [\#1024](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1024)(@kastelecn)
 - Restored lost bdcycle setting [\#984](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/984)(@uandrae) 
 - Fix json schema for impact models. [\#1020](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1020)(@kastelecn) 
