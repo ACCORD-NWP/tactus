@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.14.0] - 2025-03-27
+
 ### Added
 - Check on output frequency for fields calculated in gribmodify [\#1085](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1085) (@uandrae)
 - Added documentation for installation on leonardo. [\#1062](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1062)(@uandrae)
