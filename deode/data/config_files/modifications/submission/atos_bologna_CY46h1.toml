@@ -2,7 +2,6 @@
   bindir = "/perm/deployde330/github-actions/install/cy46h1/cy46h1-v1.4.0/bin"
 
 [submission.task_exceptions.C903]
-
   bindir = "/perm/deployde330/github-actions/install/cy48t3/cy48t3-v1.4.3/bin"
   
 [submission.task_exceptions.Pgd]
