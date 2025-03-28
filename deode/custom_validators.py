@@ -2,8 +2,8 @@
 
 Exports:
     validate_durations: Validate the format of a duration string against ISO8601.
-    import_from_string: Validate if a string can be imported and
-        return the imported object.
+    import_from_string: Validate if a string can be imported and return the
+    imported object.
 """
 
 import importlib

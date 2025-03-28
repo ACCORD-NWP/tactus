@@ -493,8 +493,8 @@ class Platform:
                 the class.
 
         Raises:
-            ModuleNotFoundError: If module {object_} not found
-            AttributeError: If module/class {object_} has no attribute named {func}
+            ModuleNotFoundError: If module `object_` not found
+            AttributeError: If module/class `object_` has no attribute named `func`
             TypeError: If object is not a class or a string
             TypeError: If the command to evaluate is not a function
 

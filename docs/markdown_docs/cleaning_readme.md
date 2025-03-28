@@ -4,7 +4,7 @@
 
 Each forecast experiment has a start and end dates and cycle length. These settings define the experiment timeline and used folders:
 
-![drawing](../docs/figs/experiment_timeline.jpg)
+![drawing](/figs/experiment_timeline.jpg)
 
 - working folder - contains the workings folder of each suite task: `wrk="@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/"`
 

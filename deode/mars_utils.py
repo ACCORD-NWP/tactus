@@ -234,7 +234,7 @@ class BaseRequest:
     the request structure. The request data is stored in a dictionary
     accessible via the `request` attribute.
 
-    Attributes:
+    Parameters:
         class_ (str): The class of the request, e.g., "D1".
         data_type (str): The type of data requested (e.g., analysis, forecast).
         expver (str): Experiment version identifier.

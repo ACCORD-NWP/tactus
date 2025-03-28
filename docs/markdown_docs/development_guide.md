@@ -185,10 +185,10 @@ These branches are created and reside in developers' personal forks of the upstr
 
 *Git branching structure with hotfix to the latest release:*
 
-![git_branch_structure](../figs/git_branch_structure.svg)
+![git_branch_structure](/figs/git_branch_structure.svg)
 
 *Git branching structure with hotfix to an older release:*
-![git_branch_structure](../figs/git_branch_structure_legacy_support.svg)
+![git_branch_structure](/figs/git_branch_structure_legacy_support.svg)
 
 ### Workflow
 
