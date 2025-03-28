@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+### Fixed
+- Make sure the IOmerge tasks fails if the Forecast task fails [\#1090](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1090)(@uandrae)
+
 ## [0.14.0] - 2025-03-27
 
 ### Added

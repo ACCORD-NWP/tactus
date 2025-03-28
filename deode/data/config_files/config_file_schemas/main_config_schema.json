@@ -381,6 +381,11 @@
       "description": "DEODE system specific path settings",
       "type": "object",
       "properties": {
+        "forecast_dir_link": {
+          "type": "string",
+          "description": "Name of the softlink pointing to the Forecast task work directory",
+	  "default": "../Forecast"
+        },
         "bdfile_sfx_template": {
           "type": "string",
           "description": "Name template for input initial surfex file for prep"

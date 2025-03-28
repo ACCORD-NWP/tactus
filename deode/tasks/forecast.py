@@ -31,6 +31,7 @@ class Forecast(Task):
         self.cnmexp = self.config["general.cnmexp"]
         self.domain = self.config["domain.name"]
         self.windfarm = self.config.get("general.windfarm", False)
+        self.forecast_dir_link = self.config["system.forecast_dir_link"]
 
         self.basetime = as_datetime(self.config["general.times.basetime"])
         self.cycle_length = as_timedelta(self.config["general.times.cycle_length"])
@@ -217,10 +218,10 @@ class Forecast(Task):
             logger.info("No accelerator_device section found")
 
         # Create a link to working directory for IO_merge tasks
-        if os.path.islink("../Forecast"):
+        if os.path.islink(self.forecast_dir_link):
             logger.info("Removing old link.")
-            os.unlink("../Forecast")
-        os.symlink(os.getcwd(), "../Forecast")
+            os.unlink(self.forecast_dir_link)
+        os.symlink(os.getcwd(), self.forecast_dir_link)
 
         # Store the output
         # Must happen before the forecast starts, so the io_merge tasks

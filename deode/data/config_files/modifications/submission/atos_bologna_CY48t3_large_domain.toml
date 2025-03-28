@@ -44,4 +44,4 @@
   WALLTIME = "#SBATCH --time=03:00:00"
 
 [suite_control]
-  n_io_merge = 2
+  n_io_merge = 1

@@ -2,6 +2,7 @@
 import datetime
 import glob
 import os
+from pathlib import Path
 from time import sleep, time
 
 from ..datetime_utils import as_datetime, as_timedelta, oi2dt_list
@@ -41,6 +42,27 @@ class IOmerge(Task):
         self.nproc_io = int(self.config.get("task.args.nproc_io", "0"))
         self.iomerge = self.config["submission.iomerge"]
 
+        self.fc_path = self.config["system.forecast_dir_link"]
+        # NOTE: this is a link to the current Forecast directory.
+        #       you could manipulate via os.path.basename(os.path.realpath(fc_path))
+        #       e.g. to get the real path name or even add "Finished_task_Forecast_".
+        self.age_limit_forecast_directory = self.iomerge["age_limit"][
+            "forecast_directory"
+        ]
+
+    def check_fc_path(self):
+        """Check if fc_path exists.
+
+        Raises:
+            FileNotFoundError: If directory is not present
+
+        """
+        fc_path_resolved = Path(self.fc_path).resolve()
+        if not os.path.exists(fc_path_resolved):
+            raise FileNotFoundError(
+                f"Forecast directory does not exist: {fc_path_resolved}"
+            )
+
     @staticmethod
     def wait_for_file(filename, age_limit=15):
         """Wait until a file is at least N seconds old.
@@ -56,13 +78,12 @@ class IOmerge(Task):
             now = time()
             st = os.stat(filename).st_mtime
 
-    def wait_for_io(self, filetype, lt, fc_path="../Forecast", maxtries=2):
+    def wait_for_io(self, filetype, lt, maxtries=2):
         """Wait for all io_server output to be stable.
 
         Args:
             filetype (str): kind of output file
             lt (timeDelta): lead time
-            fc_path (str): path to forecast directory
             maxtries (int): maximum number of file search trials
 
         Returns:
@@ -87,22 +108,22 @@ class IOmerge(Task):
                 files_expected = files_expected if files_expected != 0 else -1
                 for io in range(self.nproc_io):
                     iopath = f"io_serv.{io+1:06}.d"
-                    file_list += glob.glob(f"{fc_path}/{iopath}/{filename}.speca.*")
-                    file_list += glob.glob(f"{fc_path}/{iopath}/{filename}.gridall")
+                    file_list += glob.glob(f"{self.fc_path}/{iopath}/{filename}.speca.*")
+                    file_list += glob.glob(f"{self.fc_path}/{iopath}/{filename}.gridall")
             elif filetype == "surfex":
                 files_expected = (
                     files_expected if files_expected != 0 else (1 + self.nproc_io)
                 )
-                file_list += [f"{fc_path}/{filename}"]
+                file_list += [f"{self.fc_path}/{filename}"]
                 for io in range(self.nproc_io):
                     iopath = f"io_serv.{io+1:06}.d"
-                    file_list += glob.glob(f"{fc_path}/{iopath}/{filename}")
+                    file_list += glob.glob(f"{self.fc_path}/{iopath}/{filename}")
             elif filetype == "fullpos":
                 files_expected = files_expected if files_expected != 0 else self.nproc_io
                 # FIXME: what if we have fullpos output in FA format?
                 for io in range(self.nproc_io):
                     iopath = f"io_serv.{io+1:06}.d"
-                    file_list += glob.glob(f"{fc_path}/{iopath}/{filename}.hfp")
+                    file_list += glob.glob(f"{self.fc_path}/{iopath}/{filename}.hfp")
             else:
                 files_expected = 0
                 logger.error("Bad file_type {}", filetype)
@@ -125,12 +146,11 @@ class IOmerge(Task):
 
         return file_list
 
-    def merge_output(self, lt, fc_path="../Forecast"):
+    def merge_output(self, lt):
         """Merge distributed forecast model output.
 
         Args:
             lt (timeDelta): lead time
-            fc_path (str): path to forecast directory
 
         """
         logger.info("Merge_output called at lt = {}", lt)
@@ -153,8 +173,9 @@ class IOmerge(Task):
             filename = self.platform.substitute(ftemplate, validtime=validtime)
             filename_out = self.platform.substitute(ftemplate_out, validtime=validtime)
             logger.info("Merging file {}", filename)
+            self.check_fc_path()
 
-            file_list = self.wait_for_io(filetype, lt, fc_path=fc_path)
+            file_list = self.wait_for_io(filetype, lt)
             files = " ".join(file_list)
             logger.info("{} input files:", len(file_list))
             for x in file_list:
@@ -198,11 +219,7 @@ class IOmerge(Task):
             logger.info("Nothing left to do.")
             return
 
-        fc_path = "../Forecast"
-        # NOTE: this is a link to the current Forecast directory.
-        #       you could manipulate via os.path.basename(os.path.realpath(fc_path))
-        #       e.g. to get the real path name or even add "Finished_task_Forecast_".
-        io_path = f"{fc_path}/io_serv.000001.d"
+        io_path = f"{self.fc_path}/io_serv.000001.d"
         echis = f"{io_path}/ECHIS"
 
         full_dt_list = []
@@ -230,8 +247,17 @@ class IOmerge(Task):
         # We must wait for the io_server output to appear
         # BUT: how long should we wait before aborting?
         logger.info("Waiting for forecast output.")
+        start = time()
+        waiting_time = 0
         while not os.path.exists(echis):
             sleep(5)
+            now = time()
+            waiting_time = now - start
+            if waiting_time > self.age_limit_forecast_directory:
+                raise FileNotFoundError(
+                    "Forecast output has not appeared after "
+                    f"{self.age_limit_forecast_directory}s"
+                )
 
         logger.info("IO_SERVER {} detected!", echis)
 
@@ -239,6 +265,7 @@ class IOmerge(Task):
         for dt in dt_list:
             logger.info("Waiting for {}", dt)
             while True:
+                self.check_fc_path()
                 with open(f"{io_path}/ECHIS", "r") as ll:
                     lt = ll.read()
                     hh, mm, ss = [int(x) for x in lt.split(":")]
@@ -251,7 +278,12 @@ class IOmerge(Task):
             # we have reached the next 'merge time'
             logger.info("lead time {} is available", dt)
             # NOTE: merge_output will first wait for files to be "complete"
-            self.merge_output(dt, fc_path=fc_path)
+            start = time()
+            self.merge_output(dt)
+            end = time()
+            logger.info("Merge of {} took {} seconds", dt, int(end - start))
 
         # signal completion of all merge tasks to the forecast task
-        BatchJob(os.environ, wrapper="").run(f"touch {fc_path}/io_merge_{self.ionr:02}")
+        BatchJob(os.environ, wrapper="").run(
+            f"touch {self.fc_path}/io_merge_{self.ionr:02}"
+        )
