@@ -1,0 +1,12 @@
+[creategrib.CreateGrib]
+  conversions = ["surfex"]
+
+[creategrib.CreateGrib.surfex]
+  namelist = ["stepunits='h'"]
+  output_format = "GRIB"
+
+[creategrib.CreateGribStatic.pgd]
+  files_in = ["@CLIMDIR@/@PGD_ARCHIVE@"]
+  files_out = ["@CLIMDIR@/@PGD_ARCHIVE@.grib1"]
+  namelist = []
+  output_format = "GRIB"

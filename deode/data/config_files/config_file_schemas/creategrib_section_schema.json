@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Creategrib Section, defined in include/creategrib.toml",
+  "description": "Settings for grib conversions with gl",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "CreateGrib": {
+      "title": "CreateGrib definitions",
+      "description": "Definitions for grib conversion of time dependent data",
+      "type": "object",
+      "properties": {
+        "conversions": {
+          "description": "List of file types to be converted",
+          "type": "array",
+          "default": []
+        },
+        "surfex": {
+          "title": "Rules for surfex files",
+          "type": "object",
+          "properties": {
+            "namelist": {
+              "description": "List of namelist arguments",
+              "type": "array",
+              "default": []
+            },
+            "output_format": {
+              "description": "Output format",
+              "type": "string",
+              "default": "FA2GRIB2"
+            }
+          }
+        }
+      }
+    },
+    "CreateGribStatic": {
+      "title": "CreateGribStatic definitions",
+      "description": "Definitions for grib conversion of static data",
+      "type": "object",
+      "properties": {
+        "pgd": {
+          "title": "Rules for pgd files",
+          "type": "object",
+          "properties": {
+            "files_in": {
+              "description": "List of input files",
+              "type": "array",
+              "default": []
+            },
+            "files_out": {
+              "description": "List of input files",
+              "type": "array",
+              "default": []
+            },
+            "output_format": {
+              "description": "Output format",
+              "type": "string",
+              "default": "GRIB"
+            },
+            "namelist": {
+              "description": "List of namelist arguments",
+              "type": "array",
+              "default": []
+            }
+          }
+        }
+      }
+    }
+  }
+}

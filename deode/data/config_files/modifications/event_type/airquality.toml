@@ -6,29 +6,40 @@
   inpath = "@ARCHIVE@"
   pattern = "GRIB*sfx"
 
-[fullpos.selection]
-  aq = ["aq_selection_@CSC@"]
-
-[task.CreateGrib]
+[creategrib.CreateGrib]
   conversions = ["surfex", "history"]
 
-[task.CreateGrib.history]
+[creategrib.CreateGrib.history]
   output_format = "FA2GRIB2"
 
-[task.CreateGrib.history.HARMONIE_AROME]
+[creategrib.CreateGrib.history.HARMONIE_AROME]
   namelist = ["outgeo%center=85", "READKEY%FANAME='SPECSURFGEOPOTEN'"]
 
-[task.CreateGrib.surfex]
+[creategrib.CreateGrib.surfex]
   output_format = "FA2GRIB2"
 
-[task.CreateGrib.surfex.AROME]
+[creategrib.CreateGrib.surfex.AROME]
   namelist = [
     "outgeo%center=85",
     "READKEY%FANAME='SFX.SST','SFX.SIC','SFX.Z0','SFX.TG1P3','SFX.TG2P3','SFX.WG1P3','SFX.WG2P3','SFX.LAIP3','SFX.WRP3','SFX.TS','SFX.TALB_ISBA'",
   ]
 
-[task.CreateGrib.surfex.HARMONIE_AROME]
+[creategrib.CreateGrib.surfex.HARMONIE_AROME]
   namelist = [
     "outgeo%center=85",
     "READKEY%FANAME='SFX.SST','SFX.SIC','SFX.Z0','X003TG1','X003TG2','X003WG1','X003WG2','X003LAI','X003WR','SFX.TS','SFX.TALB_ISBA'",
   ]
+
+[creategrib.CreateGribStatic.pgd]
+  files_in = ["@CLIMDIR@/@PGD_ARCHIVE@"]
+  files_out = ["@CLIMDIR@/@PGD_ARCHIVE@.grib1"]
+  namelist = [
+    "READKEY%FANAME= 'SFX.FRAC_SEA','SFX.FRAC_NATURE','SFX.FRAC_WATER','SFX.FRAC_TOWN','SFX.COVER001', 'SFX.COVER002', 'SFX.COVER003', 'SFX.COVER004', 'SFX.COVER005', 'SFX.COVER006', 'SFX.COVER007', 'SFX.COVER008', 'SFX.COVER009', 'SFX.COVER010', 'SFX.COVER011', 'SFX.COVER012', 'SFX.COVER013', 'SFX.COVER014', 'SFX.COVER015', 'SFX.COVER016', 'SFX.COVER017', 'SFX.COVER018', 'SFX.COVER019', 'SFX.COVER020', 'SFX.COVER021', 'SFX.COVER022', 'SFX.COVER023', 'SFX.COVER024', 'SFX.COVER025', 'SFX.COVER026', 'SFX.COVER027', 'SFX.COVER028', 'SFX.COVER029', 'SFX.COVER030', 'SFX.COVER031', 'SFX.COVER032', 'SFX.COVER033','SFX.CLAY','SFX.SAND'",
+  ]
+  output_format = "GRIB"
+
+[fullpos.selection]
+  aq = ["aq_selection_@CSC@"]
+
+[suite_control]
+  do_creategrib_static = true

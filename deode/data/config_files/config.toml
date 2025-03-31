@@ -79,6 +79,7 @@
 [include]
   archiving = "include/archiving.toml"
   cleaning = "include/cleaning.toml"
+  creategrib = "include/creategrib.toml"
   domain = "include/domains/DEMO_60x80_2500m.toml"
   extractsqlite = "include/sqlite.toml"
   file_templates = "include/file_templates.toml"
@@ -118,10 +119,3 @@
   logs = "@ARCHIVE_ROOT@/logs"
   marsdir = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"
-
-[task.CreateGrib]
-  conversions = ["surfex"]
-
-[task.CreateGrib.surfex]
-  namelist = ["stepunits='h'"]
-  output_format = "GRIB"

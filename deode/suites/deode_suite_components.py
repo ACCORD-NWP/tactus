@@ -267,7 +267,7 @@ class StaticDataFamily(EcflowSuiteFamily):
         )
 
         if config["suite_control.do_pgd"]:
-            pgd_node = PgdNode(
+            pgd_update = PgdNode(
                 "PgdUpdate",
                 self,
                 config,
@@ -275,6 +275,20 @@ class StaticDataFamily(EcflowSuiteFamily):
                 input_template,
                 ecf_files,
                 trigger=e923constant,
+                ecf_files_remotely=ecf_files_remotely,
+            )
+        else:
+            pgd_update = None
+
+        if config["suite_control.do_creategrib_static"]:
+            PgdNode(
+                "CreateGribStatic",
+                self,
+                config,
+                task_settings,
+                input_template,
+                ecf_files,
+                trigger=pgd_update,
                 ecf_files_remotely=ecf_files_remotely,
             )
 
@@ -750,7 +764,7 @@ class ForecastFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
-        if len(config.get("task.CreateGrib.conversions", [])) > 0:
+        if len(config.get("creategrib.CreateGrib.conversions", [])) > 0:
             EcflowSuiteTask(
                 "CreateGrib",
                 self,

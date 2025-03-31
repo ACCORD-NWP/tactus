@@ -8,11 +8,11 @@
 [boundaries]
   humi_gp = false
 
+[creategrib.CreateGrib]
+  conversions = []
+
 [fdb.grib_set]
   backgroundProcess = "3"
 
 [pgd]
   npatch = 1
-
-[task.CreateGrib]
-  conversions = []
