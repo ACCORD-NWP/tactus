@@ -9,107 +9,20 @@
       "title": "Settings for EHYPE",
       "type": "object",
       "properties": {
-        "active": {
-          "description": "Activates this impact model",
-          "type": "boolean",
-          "default": false
-        },
-        "arguments": {
-          "type": "string",
-          "description": "Arguments to send to the impact model start command"
-        },
-        "config_name": {
-          "type": "string",
-          "description": "Name of the output config file aimed for the particular impact model"
-        },
-        "path": {
-          "type": "string",
-          "description": "Path to the impact model start command. Preferably defined in the platform section and used as a macro here"
-        },
-        "task": {
-          "type": "string",
-          "description": "Which of the dedicated tasks the impact model should be started from. Has to be defined in impact.py"
-        },
-        "communicate": {
-          "description": "Impact model specific config settings",
-          "type": "object",
-          "properties": {
-            "archive": {
-              "description": "Location of data",
-              "type": "string"
-            },
-            "archive_1": {
-              "description": "Primary location of data (future implementation)",
-              "type": "string"
-            },
-            "archive_2": {
-              "description": "Secondary location of data (future implementation)",
-              "type": "string"
-            },
-            "basetime": {
-              "description": "Initial time",
-              "type": "string",
-              "oneOf": [
-                {
-                  "format": "date-time"
-                },
-                {
-                  "pattern": "^@(.*)@$"
-                }
-              ]
-            },
-            "file_pattern": {
-              "description": "Pattern for input files to search for",
-              "type": "string"
-            },
-            "output_frequency": {
-              "description": "data availability frequncy in duration syntax",
-              "type": "string",
-              "oneOf": [
-                {
-                  "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-                },
-                {
-                  "pattern": "^@(.*)@$"
-                }
-              ]
-            },
-            "forecast_range": {
-              "description": "Leadtime in duration syntax",
-              "type": "string",
-              "oneOf": [
-                {
-                  "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-                },
-                {
-                  "pattern": "^@(.*)@$"
-                }
-              ]
-            },
-            "name": {
-              "description": "Name of the generated EHYPE suite",
-              "type": "string"
-            },
-            "nwp_model": {
-              "description": "CSC name",
-              "type": "string",
-              "oneOf": [
-                {
-                  "enum": [
-                    "AROME",
-                    "ALARO",
-                    "HARMONIE_AROME"
-                  ]
-                },
-                {
-                  "pattern": "^@(.*)@$"
-                }
-              ]
-            },
-            "additionalProperties": false
-          }
-        }
+        "$ref": "#/$default_impact_properties"
       }
     }
+  },
+  "$default_impact_properties": {
+      "active": {
+        "description": "Activates this impact model",
+        "type": "boolean",
+        "default": false
+      },
+      "path": {
+        "type": "string",
+        "description": "Path to the impact model start command. Preferably defined in the platform section and used as a macro here",
+        "default": ""
+      }
   }
 }
