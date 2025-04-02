@@ -83,7 +83,6 @@
 [fdb]
 
 [fdb.grib_set]
-  backgroundProcess = "99"
   centre = "98"
   class = "d1"
   dataset = "on-demand-extremes-dt"
