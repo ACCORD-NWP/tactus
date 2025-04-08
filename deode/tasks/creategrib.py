@@ -113,10 +113,18 @@ class GlGrib(Task):
 
         elif self.name == "CreateGrib":
             for filetype in self.conversions:
-                file_handle = self.create_list(
-                    self.file_templates[filetype]["archive"],
-                    self.output_settings[filetype],
-                )
+                if "output_frequency_reference" not in self.rules[filetype]:
+                    file_handle = self.create_list(
+                        self.file_templates[filetype]["archive"],
+                        self.output_settings[filetype],
+                    )
+                else:
+                    file_handle = self.create_list(
+                        self.file_templates[filetype]["archive"],
+                        self.output_settings[
+                            self.rules[filetype]["output_frequency_reference"]
+                        ],
+                    )
                 for validtime, fname in file_handle.items():
                     output = self.platform.substitute(
                         self.file_templates[filetype]["grib"], validtime=validtime

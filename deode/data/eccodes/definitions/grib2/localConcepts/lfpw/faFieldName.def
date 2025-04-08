@@ -1338,7 +1338,7 @@
     LSTCUM = 1 ;
 }
 
-# "Short-wave radiation flux (integrated since the start of the run)"
+# "Short-wave surface net radiation flux (integrated since the start of the run)"
 "SURFFLU.RAY.SOLA" = {
     discipline = 0 ;
     parameterCategory = 4 ;
@@ -1366,7 +1366,21 @@
     LSTCUM = 1 ;
 }
 
-# (integrated since the start of the run) parrallel flux
+# Downward short-wave radiation flux at surface
+"SURFRAYT SOLA DE" = {
+    discipline = 0 ;
+    parameterCategory = 4 ;
+    parameterNumber = 7 ;
+    productDefinitionTemplateNumber = 8 ;
+    tablesVersion = 15 ;
+    typeOfFirstFixedSurface = 1 ;
+    scaleFactorOfFirstFixedSurface = missing() ;
+    scaledValueOfFirstFixedSurface = missing() ;
+    typeOfStatisticalProcessing = 1 ;
+    LSTCUM = 1 ;
+}
+
+# (integrated since the start of the run) parallel flux
 "SURFRAYT_DIR_SUR" = {
     discipline = 0 ;
     parameterCategory = 4 ;
@@ -3251,9 +3265,9 @@
     typeOfSecondFixedSurface = 100 ;
     productDefinitionTemplateNumber = 15 ;
     scaledValueOfFirstFixedSurface = 69680 ;
-    scaledValueOfSecondFixedSurface  = 46560 ;
+    scaledValueOfSecondFixedSurface = 46560 ;
     scaleFactorOfFirstFixedSurface = 0 ;
-    scaleFactorOfSecondFixedSurface  = 0 ; 
+    scaleFactorOfSecondFixedSurface = 0 ; 
     statisticalProcess = 2 ;
     spatialProcessing = 0 ;
     tablesVersion = 15 ;
@@ -3267,9 +3281,9 @@
     typeOfSecondFixedSurface = 100 ;
     productDefinitionTemplateNumber = 15 ;
     scaledValueOfFirstFixedSurface = 46560  ;
-    scaledValueOfSecondFixedSurface  = 7170 ;
+    scaledValueOfSecondFixedSurface = 7170 ;
     scaleFactorOfFirstFixedSurface = 0 ;
-    scaleFactorOfSecondFixedSurface  = 0 ; 
+    scaleFactorOfSecondFixedSurface = 0 ; 
     statisticalProcess = 2 ;
     spatialProcessing = 0 ;
     tablesVersion = 15 ;
@@ -3283,9 +3297,9 @@
     typeOfSecondFixedSurface = 100 ;
     productDefinitionTemplateNumber = 1 ;
     scaledValueOfFirstFixedSurface = 69680 ;
-    scaledValueOfSecondFixedSurface  = 46560 ;
+    scaledValueOfSecondFixedSurface = 46560 ;
     scaleFactorOfFirstFixedSurface = 0 ;
-    scaleFactorOfSecondFixedSurface  = 0 ; 
+    scaleFactorOfSecondFixedSurface = 0 ; 
     tablesVersion = 15 ;
 }
 # High-levels Ellrod1 for ensemble forecast
@@ -3297,9 +3311,9 @@
     typeOfSecondFixedSurface = 100 ;
     productDefinitionTemplateNumber = 1 ;
     scaledValueOfFirstFixedSurface = 46560  ;
-    scaledValueOfSecondFixedSurface  = 7170 ;
+    scaledValueOfSecondFixedSurface = 7170 ;
     scaleFactorOfFirstFixedSurface = 0 ;
-    scaleFactorOfSecondFixedSurface  = 0 ; 
+    scaleFactorOfSecondFixedSurface = 0 ; 
     tablesVersion = 15 ;
 }
 
@@ -3491,6 +3505,326 @@
     typeOfStatisticalProcessing = 0 ;
 }
 # Soil temperature for AQ CY48t3
+"SFX.TG1P1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 0 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 1 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY48t3
+"SFX.TG2P1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 1 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 2 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY48t3
+"SFX.TG3P1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 2 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 3 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY48t3
+"SFX.TG4P1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 3 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 4 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY48t3
+"SFX.TG5P1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 4 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 5 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY48t3
+"SFX.TG6P1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 5 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 6 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY48t3
+"SFX.TG7P1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 6 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 7 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY48t3
+"SFX.TG8P1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 7 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 8 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY48t3
+"SFX.TG1P2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 0 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 1 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY48t3
+"SFX.TG2P2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 1 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 2 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY48t3
+"SFX.TG3P2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 2 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 3 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY48t3
+"SFX.TG4P2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 3 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 4 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY48t3
+"SFX.TG5P2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 4 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 5 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY48t3
+"SFX.TG6P2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 5 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 6 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY48t3
+"SFX.TG7P2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 6 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 7 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY48t3
+"SFX.TG8P2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 7 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 8 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY48t3
 "SFX.TG1P3"= {
     discipline = 2 ;
     parameterCategory = 3 ;
@@ -3499,9 +3833,18 @@
     scaledValueOfFirstFixedSurface = 0 ;
     typeOfSecondFixedSurface = 151 ;
     scaledValueOfSecondFixedSurface = 1 ;
-    tablesVersion = 15 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
 }
-# Soil temperature for AQ  CY48t3
+# Soil temperature for AQ CY48t3
 "SFX.TG2P3"= {
     discipline = 2 ;
     parameterCategory = 3 ;
@@ -3510,37 +3853,198 @@
     scaledValueOfFirstFixedSurface = 1 ;
     typeOfSecondFixedSurface = 151 ;
     scaledValueOfSecondFixedSurface = 2 ;
-    tablesVersion = 15 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
 }
-# Volumetric soil moisture for AQ  CY48t3
-"SFX.WG1P3"= {
+# Soil temperature for AQ CY48t3
+"SFX.TG3P3"= {
     discipline = 2 ;
     parameterCategory = 3 ;
-    parameterNumber = 10 ;
+    parameterNumber = 18 ;
     typeOfFirstFixedSurface = 151 ;
-    scaledValueOfFirstFixedSurface = 0 ;
+    scaledValueOfFirstFixedSurface = 2 ;
     typeOfSecondFixedSurface = 151 ;
-    scaledValueOfSecondFixedSurface = 1 ;
-    tablesVersion = 15 ;
+    scaledValueOfSecondFixedSurface = 3 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
 }
-# Volumetric soil moisture for AQ  CY48t3
-"SFX.WG2P3"= {
+# Soil temperature for AQ CY48t3
+"SFX.TG4P3"= {
     discipline = 2 ;
     parameterCategory = 3 ;
-    parameterNumber = 10 ;
+    parameterNumber = 18 ;
     typeOfFirstFixedSurface = 151 ;
-    scaledValueOfFirstFixedSurface = 1 ;
+    scaledValueOfFirstFixedSurface = 3 ;
     typeOfSecondFixedSurface = 151 ;
-    scaledValueOfSecondFixedSurface = 2 ;
-    tablesVersion = 15 ;
+    scaledValueOfSecondFixedSurface = 4 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
 }
-# Leaf Area Index, low veg for AQ  CY48t3
+# Soil temperature for AQ CY48t3
+"SFX.TG5P3"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 4 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 5 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY48t3
+"SFX.TG6P3"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 5 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 6 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY48t3
+"SFX.TG7P3"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 6 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 7 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY48t3
+"SFX.TG8P3"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 7 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 8 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Leaf Area Index, low veg for AQ CY48t3
 "SFX.LAIP3"= {
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 28 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
+}
+# Leaf Area Index, nature tile
+"SFX.LAI_ISBA"= {
+    discipline = 2 ;
+    parameterCategory = 0 ;
+    parameterNumber = 28 ;
+    tablesVersion = 15 ;
+    typeOfFirstFixedSurface = 1 ;
+    tileIndex = 1 ;
+    tileClassification = 4 ;
+    typeOfTile = 1501 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Intercepted Water for AQ CY46h1
+"SFX.WRP1"= {
+    discipline = 2 ;
+    parameterCategory = 0 ;
+    parameterNumber = 13 ;
+    tablesVersion = 15 ;
+    typeOfFirstFixedSurface = 1 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Intercepted Water for AQ CY46h1
+"SFX.WRP2"= {
+    discipline = 2 ;
+    parameterCategory = 0 ;
+    parameterNumber = 13 ;
+    tablesVersion = 15 ;
+    typeOfFirstFixedSurface = 1 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
 }
 # Intercepted Water for AQ CY46h1
 "SFX.WRP3"= {
@@ -3549,6 +4053,336 @@
     parameterNumber = 13 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X001TG1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 0 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 1 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X001TG2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 1 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 2 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X001TG3"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 2 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 3 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X001TG4"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 3 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 4 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X001TG5"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 4 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 5 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X001TG6"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 5 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 6 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X001TG7"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 6 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 7 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X001TG8"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 7 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 8 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X002TG1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 0 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 1 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X002TG2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 1 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 2 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X002TG3"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 2 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 3 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X002TG4"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 3 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 4 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X002TG5"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 4 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 5 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X002TG6"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 5 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 6 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X002TG7"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 6 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 7 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X002TG8"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 7 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 8 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
 }
 # Soil temperature for AQ CY46h1
 "X003TG1"= {
@@ -3559,7 +4393,16 @@
     scaledValueOfFirstFixedSurface = 0 ;
     typeOfSecondFixedSurface = 151 ;
     scaledValueOfSecondFixedSurface = 1 ;
-    tablesVersion = 15 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
 }
 # Soil temperature for AQ CY46h1
 "X003TG2"= {
@@ -3570,7 +4413,456 @@
     scaledValueOfFirstFixedSurface = 1 ;
     typeOfSecondFixedSurface = 151 ;
     scaledValueOfSecondFixedSurface = 2 ;
-    tablesVersion = 15 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X003TG3"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 2 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 3 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X003TG4"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 3 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 4 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X003TG5"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 4 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 5 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X003TG6"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 5 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 6 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X003TG7"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 6 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 7 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Soil temperature for AQ CY46h1
+"X003TG8"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 18 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 7 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 8 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X001WG1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 0 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 1 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X001WG2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 1 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 2 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X001WG3"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 2 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 3 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X001WG4"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 3 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 4 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X001WG5"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 4 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 5 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X001WG6"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 5 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 6 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X001WG7"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 6 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 7 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X001WG8"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 7 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 8 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X002WG1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 0 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 1 ;
+    numberOfUsedSpatialTiles = 7 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X002WG2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 1 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 2 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile =  1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X002WG3"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 2 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 3 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile =  1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X002WG4"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 3 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 4 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile =  1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X002WG5"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 4 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 5 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile =  1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X002WG6"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 5 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 6 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile =  1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X002WG7"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 6 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 7 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile =  1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X002WG8"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 7 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 8 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile =  1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
 }
 # Volumetric soil moisture for AQ CY46h1
 "X003WG1"= {
@@ -3581,7 +4873,16 @@
     scaledValueOfFirstFixedSurface = 0 ;
     typeOfSecondFixedSurface = 151 ;
     scaledValueOfSecondFixedSurface = 1 ;
-    tablesVersion = 15 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile =  1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
 }
 # Volumetric soil moisture for AQ CY46h1
 "X003WG2"= {
@@ -3592,7 +4893,616 @@
     scaledValueOfFirstFixedSurface = 1 ;
     typeOfSecondFixedSurface = 151 ;
     scaledValueOfSecondFixedSurface = 2 ;
-    tablesVersion = 15 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile =  1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X003WG3"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 2 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 3 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile =  1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X003WG4"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 3 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 4 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile =  1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X003WG5"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 4 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 5 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile =  1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X003WG6"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 5 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 6 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile =  1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X003WG7"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 6 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 7 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile =  1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY46h1
+"X003WG8"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 7 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 8 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile =  1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG1P1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 0 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 1 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG2P1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 1 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 2 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG3P1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 2 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 3 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG4P1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 3 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 4 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG5P1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 4 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 5 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG6P1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 5 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 6 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG7P1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 6 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 7 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG8P1"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 7 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 8 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG1P2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 0 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 1 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG2P2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 1 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 2 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG3P2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 2 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 3 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG4P2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 3 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 4 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG5P2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 4 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 5 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG6P2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 5 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 6 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG7P2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 6 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 7 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG8P2"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 7 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 8 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG1P3"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 0 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 1 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG2P3"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 1 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 2 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG3P3"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 2 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 3 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG4P3"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 3 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 4 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG5P3"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 4 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 5 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG6P3"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 5 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 6 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG7P3"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 6 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 7 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Volumetric soil moisture for AQ CY48t3
+"SFX.WG8P3"= {
+    discipline = 2 ;
+    parameterCategory = 3 ;
+    parameterNumber = 10 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaledValueOfFirstFixedSurface = 7 ;
+    typeOfSecondFixedSurface = 151 ;
+    scaledValueOfSecondFixedSurface = 8 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
 }
 # Leaf Area Index, low veg for AQ CY46h1
 "X003LAI"= {
@@ -3603,12 +5513,58 @@
     typeOfFirstFixedSurface = 1 ;
 }
 # Intercepted Water for AQ CY46h1
+"X001WR"= {
+    discipline = 2 ;
+    parameterCategory = 0 ;
+    parameterNumber = 13 ;
+    tablesVersion = 15 ;
+    typeOfFirstFixedSurface = 1 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Intercepted Water for AQ CY46h1
+"X002WR"= {
+    discipline = 2 ;
+    parameterCategory = 0 ;
+    parameterNumber = 13 ;
+    tablesVersion = 15 ;
+    typeOfFirstFixedSurface = 1 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+# Intercepted Water for AQ CY46h1
 "X003WR"= {
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 13 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
 }
 # Skin temperature for AQ 
 "SFX.TS"= {
@@ -3633,6 +5589,32 @@
     typeOfFirstFixedSurface = 1 ;
     tablesVersion = 15 ;
 }
+# Accumulated surface sensible heat flux for AQ
+"SURFFLU.CHA.SENS"= {
+    discipline = 0 ;
+    parameterCategory = 0 ;
+    parameterNumber = 11 ;
+    typeOfFirstFixedSurface = 1 ;
+    tablesVersion = 15 ;
+    statisticalProcess = 1 ;
+}
+# Accumulated surface latent evaporation flux for AQ
+"SURFFLU.LAT.MEVA"= {
+    discipline = 0 ;
+    parameterCategory = 0 ;
+    parameterNumber = 30 ;
+    typeOfFirstFixedSurface = 1 ;
+    tablesVersion = 15 ;
+    typeOfStatisticalProcessing = 1 ;
+}
+# Lowest model level drag coefficient for AQ
+"SFX.CD"= {
+    discipline = 0 ;
+    parameterCategory = 2 ;
+    parameterNumber = 29 ;
+    typeOfFirstFixedSurface = 1 ;
+    tablesVersion = 15 ;
+}
 # Roughness Length for AQ 
 "SFX.Z0"= {
     discipline = 2 ;
@@ -3641,10 +5623,28 @@
     typeOfFirstFixedSurface = 1 ;
     tablesVersion = 15 ;
 }
+# 2-m specific humidity for AQ 
+"SFX.Q2M"= {
+    discipline = 0 ;
+    parameterCategory = 1 ;
+    parameterNumber = 0 ;
+    typeOfFirstFixedSurface = 103 ;
+    scaledValueOfFirstFixedSurface = 2 ;
+    tablesVersion = 15 ;
+}
+# 2-m specific humidity for AQ 
+"SFX.QS"= {
+    discipline = 0 ;
+    parameterCategory = 1 ;
+    parameterNumber = 0 ;
+    typeOfFirstFixedSurface = 1 ;
+    tablesVersion = 15 ;
+}
 "SFX.TALB_ISBA" = {
     discipline = 0 ;
     parameterCategory = 19 ;
     parameterNumber = 1 ;
+    typeOfFirstFixedSurface = 1 ;
     tileIndex = 1 ;
     tileClassification = 4 ;
     typeOfTile = 1501 ;
@@ -3653,7 +5653,139 @@
     numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
     numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
     totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+"SFX.FRAC_NATURE" = {
+    discipline = 2 ;
+    parameterCategory = 0 ;
+    parameterNumber = 36 ;
     typeOfFirstFixedSurface = 1 ;
+    tileIndex = 1 ;
+    tileClassification = 4 ;
+    typeOfTile = 1501 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+"SFX.PATCHP1" = {
+    discipline = 2 ;
+    parameterCategory = 0 ;
+    parameterNumber = 36 ;
+    typeOfFirstFixedSurface = 1 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+"SFX.PATCHP2" = {
+    discipline = 2 ;
+    parameterCategory = 0 ;
+    parameterNumber = 36 ;
+    typeOfFirstFixedSurface = 1 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+"SFX.PATCHP3" = {
+    discipline = 2 ;
+    parameterCategory = 0 ;
+    parameterNumber = 36 ;
+    typeOfFirstFixedSurface = 1 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+"X001PATCH" = {
+    discipline = 2 ;
+    parameterCategory = 0 ;
+    parameterNumber = 36 ;
+    typeOfFirstFixedSurface = 1 ;
+    tileIndex = 5 ;
+    tileClassification = 4 ;
+    typeOfTile = 1504 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+"X002PATCH" = {
+    discipline = 2 ;
+    parameterCategory = 0 ;
+    parameterNumber = 36 ;
+    typeOfFirstFixedSurface = 1 ;
+    tileIndex = 6 ;
+    tileClassification = 4 ;
+    typeOfTile = 1506 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+"X003PATCH" = {
+    discipline = 2 ;
+    parameterCategory = 0 ;
+    parameterNumber = 36 ;
+    typeOfFirstFixedSurface = 1 ;
+    tileIndex = 7 ;
+    tileClassification = 4 ;
+    typeOfTile = 1505 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
+    productDefinitionTemplateNumber = 113 ;
+    tablesVersion = 32 ;
+}
+"SFX.WG_D2_ISBA" = {
+    discipline = 2 ;
+    parameterCategory = 0 ;
+    parameterNumber = 25 ;
+    typeOfFirstFixedSurface = 151 ;
+    scaleFactorOfFirstFixedSurface = 0 ; 
+    scaledValueOfFirstFixedSurface = 1 ; 
+    typeOfSecondFixedSurface = 151 ; 
+    scaleFactorOfSecondFixedSurface = 0 ; 
+    scaledValueOfSecondFixedSurface = 2 ; 
+    tileIndex = 1 ;
+    tileClassification = 4 ;
+    typeOfTile = 1501 ;
+    attributeOfTile = 7 ;
+    numberOfUsedSpatialTiles = 7 ;
+    numberOfUsedTileAttributeCombinationsForTypeOfTile = 7 ;
+    numberOfUsedTileAttributesForTileAttributeCombination = 7 ;
+    totalTileAttCombo = 7 ;
     productDefinitionTemplateNumber = 113 ;
     tablesVersion = 32 ;
 }

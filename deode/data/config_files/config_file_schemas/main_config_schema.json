@@ -487,7 +487,16 @@
       "description": "Rules for modifications to be made to the grib output",
       "type": "object",
       "properties": {
-        "1": {
+        "conversions": {
+          "description": "List of file types to be converted",
+          "type": "array",
+          "default": []
+        },
+        "gribmodify_rules_file": {
+          "description": "File specifying the gribmodify rules for the specified conversions",
+          "type": "string"
+        },
+        "fullpos.1": {
           "title": "Total rain",
           "description": "Calculates total rain from components",
           "type": "object",
@@ -495,7 +504,7 @@
             "$ref": "#/$gribmodify_rules"
           }
         },
-        "2": {
+        "fullpos.2": {
           "title": "Total snow",
           "description": "Calculates total snow from components",
           "type": "object",
@@ -503,7 +512,7 @@
             "$ref": "#/$gribmodify_rules"
           }
         },
-        "3": {
+        "fullpos.3": {
           "title": "Total precpipation",
           "description": "Calculates total precipitation from components",
           "type": "object",
@@ -511,7 +520,7 @@
             "$ref": "#/$gribmodify_rules"
           }
         },
-        "4": {
+        "fullpos.4": {
           "title": "10m wind speed",
           "description": "Calculates 10m wind speed",
           "type": "object",
@@ -519,7 +528,7 @@
             "$ref": "#/$gribmodify_rules"
           }
         },
-        "5": {
+        "fullpos.5": {
           "title": "100m wind speed",
           "description": "Calculates 100m wind speed",
           "type": "object",
@@ -527,9 +536,73 @@
             "$ref": "#/$gribmodify_rules"
           }
         },
-        "6": {
+        "fullpos.6": {
           "title": "10m gust wind speed",
           "description": "Calculates 10m gust wind speed",
+          "type": "object",
+          "properties": {
+            "$ref": "#/$gribmodify_rules"
+          }
+        },
+        "surfex.1": {
+          "title": "Leaf area index",
+          "description": "Calculates nature-weighted leaf area index",
+          "type": "object",
+          "properties": {
+            "$ref": "#/$gribmodify_rules"
+          }
+        },
+        "surfex.2": {
+          "title": "Albedo",
+          "description": "Calculates albedo",
+          "type": "object",
+          "properties": {
+            "$ref": "#/$gribmodify_rules"
+          }
+        },
+        "surfex.3": {
+          "title": "Top 20 cm average soil moisture",
+          "description": "Calculates the nature-weighted patch-averaged soil moisture in the top 20 cm",
+          "type": "object",
+          "properties": {
+            "$ref": "#/$gribmodify_rules"
+          }
+        },
+        "surfex.4": {
+          "title": "Top 100 cm average soil moisture",
+          "description": "Calculates the nature-weighted patch-averaged soil moisture in the top 100 cm",
+          "type": "object",
+          "properties": {
+            "$ref": "#/$gribmodify_rules"
+          }
+        },
+        "surfex.5": {
+          "title": "Top 20 cm average soil temperature",
+          "description": "Calculates the patch-averaged soil temperature in the top 20 cm",
+          "type": "object",
+          "properties": {
+            "$ref": "#/$gribmodify_rules"
+          }
+        },
+        "surfex.6": {
+          "title": "Top 100 cm soil temperature",
+          "description": "Calculates the patch-averaged soil temperature in the top 100 cm",
+          "type": "object",
+          "properties": {
+            "$ref": "#/$gribmodify_rules"
+          }
+        },
+        "surfex.7": {
+          "title": "Root depth soil moisture",
+          "description": "Calculates root depth soil moisture",
+          "type": "object",
+          "properties": {
+            "$ref": "#/$gribmodify_rules"
+          }
+        },
+        "surfex.8": {
+          "title": "Canopy water",
+          "description": "Calculates the patch-averaged canopy water",
           "type": "object",
           "properties": {
             "$ref": "#/$gribmodify_rules"
@@ -810,22 +883,17 @@
     ]
   },
   "$gribmodify_rules": {
-    "input": {
-      "title": "Input parameters",
-      "description": "List of parameters defined by their shortName",
+    "csc_specific": {
+      "title": "CSC specific selection",
+      "description": "The CSCs for which the specified conversion should happen.",
       "type": "array",
       "items": {
         "type": "string"
       }
-    },
-    "operator": {
-      "title": "Operator",
-      "description": "Operator for computing the new field from input parameters",
-      "type": "string"
-    },
-    "output": {
-      "title": "Output parameter",
-      "description": "shortName of output parameter.",
+    },    
+    "output_name": {
+      "title": "Output parameter name",
+      "description": "Chosen name of output parameter.",
       "type": "string"
     },
     "minumum_frequency": {

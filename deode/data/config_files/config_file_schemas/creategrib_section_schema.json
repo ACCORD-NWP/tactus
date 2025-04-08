@@ -30,6 +30,40 @@
               "default": "FA2GRIB2"
             }
           }
+        },
+        "history": {
+          "title": "Rules for history files",
+          "type": "object",
+          "properties": {
+            "namelist": {
+              "description": "List of namelist arguments",
+              "type": "array"
+            },
+            "output_format": {
+              "description": "Output format",
+              "type": "string",
+              "default": "FA2GRIB2"
+            }
+          }
+        },
+        "tiles": {
+          "title": "Rules for files output on tiles",
+          "type": "object",
+          "properties": {
+            "output_frequency_reference": {
+              "description": "The variable for which the forecast output frequency is defined",
+              "type": "string"
+            },
+            "namelist": {
+              "description": "List of namelist arguments",
+              "type": "array"
+            },
+            "output_format": {
+              "description": "Output format",
+              "type": "string",
+              "default": "FA2GRIB2"
+            }
+          }
         }
       }
     },

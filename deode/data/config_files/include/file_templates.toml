@@ -30,3 +30,8 @@
   archive = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@.sfx"
   grib = "GRIB@CNMEXP@+@DURATION_ARCHIVE@.sfx"
   model = "ICMSH@CNMEXP@+@DURATION_MODEL@.sfx"
+
+[file_templates.tiles]
+  archive = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@.sfx"
+  grib = "GRIBTILE@CNMEXP@+@DURATION_ARCHIVE@.sfx"
+  model = "ICMSH@CNMEXP@+@DURATION_MODEL@.sfx"

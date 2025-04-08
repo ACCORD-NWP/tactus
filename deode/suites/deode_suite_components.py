@@ -741,7 +741,9 @@ class ForecastFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
+        creategrib = forecast_task
         io_merge = forecast_task
+
         if n_io_merge > 0:
             io_merge = MergeIOFamily(
                 self,
@@ -755,18 +757,6 @@ class ForecastFamily(EcflowSuiteFamily):
                 ecf_files_remotely=ecf_files_remotely,
             )
 
-        add_calc_fields_task = EcflowSuiteTask(
-            "AddCalculatedFields",
-            self,
-            config,
-            task_settings,
-            ecf_files,
-            input_template=input_template,
-            trigger=io_merge,
-            ecf_files_remotely=ecf_files_remotely,
-        )
-        fdb_trigger = [EcflowSuiteTrigger(add_calc_fields_task)]
-
         if len(config.get("creategrib.CreateGrib.conversions", [])) > 0:
             creategrib = EcflowSuiteTask(
                 "CreateGrib",
@@ -778,11 +768,20 @@ class ForecastFamily(EcflowSuiteFamily):
                 trigger=io_merge,
                 ecf_files_remotely=ecf_files_remotely,
             )
-            fdb_trigger.append(EcflowSuiteTrigger(creategrib))
+
+        add_calc_fields_task = EcflowSuiteTask(
+            "AddCalculatedFields",
+            self,
+            config,
+            task_settings,
+            ecf_files,
+            input_template=input_template,
+            trigger=creategrib,
+            ecf_files_remotely=ecf_files_remotely,
+        )
 
         fdb_sel = config.get("archiving.FDB.fdb", {})
         fdb_archiving_active = [v["active"] for v in fdb_sel.values()]
-        fdb_trigger = EcflowSuiteTriggers(fdb_trigger)
         if any(fdb_archiving_active):
             EcflowSuiteTask(
                 "ArchiveFDB",
@@ -791,7 +790,7 @@ class ForecastFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
-                trigger=fdb_trigger,
+                trigger=add_calc_fields_task,
                 ecf_files_remotely=ecf_files_remotely,
             )
 
@@ -814,7 +813,7 @@ class ForecastFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
-                trigger=fdb_trigger,
+                trigger=add_calc_fields_task,
             )
 
 

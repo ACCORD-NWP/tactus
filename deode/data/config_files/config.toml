@@ -44,37 +44,27 @@
   master = ["master_selection_@CSC@", "master_subhour_selection_@CSC@", "meteosat"]
 
 [gribmodify]
+  conversions = ["fullpos"]
+  gribmodify_rules_file = "@DEODE_HOME@/data/gribmodify/gribmodify_rules.json"
 
-[gribmodify.1]
-  input = ["crr", "lsrr"]
-  operator = "add"
-  output = "tirf"
+[gribmodify.fullpos.1]
+  output_name = "tirf"
 
-[gribmodify.2]
-  input = ["csfwe", "lsfwe"]
-  operator = "add"
-  output = "tsnowp"
+[gribmodify.fullpos.2]
+  output_name = "tsnowp"
 
-[gribmodify.3]
-  input = ["tirf", "tsnowp", "tgrp"]
-  operator = "add"
-  output = "tp"
+[gribmodify.fullpos.3]
+  output_name = "tp"
 
-[gribmodify.4]
-  input = ["10u", "10v"]
-  operator = "vectorLength"
-  output = "10si"
+[gribmodify.fullpos.4]
+  output_name = "10si"
 
-[gribmodify.5]
-  input = ["100u", "100v"]
-  operator = "vectorLength"
-  output = "100si"
+[gribmodify.fullpos.5]
+  output_name = "100si"
 
-[gribmodify.6]
-  input = ["10efg", "10nfg"]
+[gribmodify.fullpos.6]
   minimum_frequency = "PT1H"
-  operator = "vectorLength"
-  output = "10fg"
+  output_name = "10fg"
 
 [include]
   archiving = "include/archiving.toml"

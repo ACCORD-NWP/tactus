@@ -62,7 +62,6 @@ class ExtractSQLite(Task):
     def execute(self):
         """Execute ExtractSQLite on all output files."""
         # split into "combined" and "direct" parameters
-
         # loop over lead times
         dt_list = oi2dt_list(self.infile_dt, self.forecast_range)
         station_list = pandas.read_csv(self.stationfile, skipinitialspace=True)
