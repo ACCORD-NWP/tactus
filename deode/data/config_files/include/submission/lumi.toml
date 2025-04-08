@@ -20,7 +20,7 @@
 [submission.task]
   wrapper = "time"
 
-[submission.task_exceptions.ArchiveHour.ENV]
+[submission.task_exceptions.ArchiveFDB.ENV]
   FDB5_HOME = "/appl/local/destine/mars/versions/6.99.2.0/"
 
 [submission.task_exceptions.C903]

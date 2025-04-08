@@ -1115,6 +1115,26 @@ class FDB(ArchiveProvider):
         ArchiveProvider.__init__(self, config, pattern, fetch=fetch)
         self.fdb = pyfdb.FDB()
 
+    def check_expver_restrictions(self, expver):
+        """Check if user is allowed to archive this expver.
+
+        Args:
+            expver (str): FDB experiment identifier
+
+        Raises:
+            RuntimeError: If user is not allowed to archive
+        """
+        user = os.environ["USER"]
+        expver_restrictions = self.config["fdb.expver_restrictions"]
+        with contextlib.suppress(KeyError):
+            if user not in expver_restrictions[expver]:
+                msg = (
+                    f"The user {user} is not allowed to archive expver={expver}\n"
+                    + f"according to expver_restrictions={expver_restrictions}\n"
+                    "Do not alter the rules!"
+                )
+                raise RuntimeError(msg)
+
     def create_resource(self, resource):
         """Create the resource.
 
@@ -1136,6 +1156,8 @@ class FDB(ArchiveProvider):
             """
             logger.error(msg)
             raise RuntimeError(msg)
+        self.check_expver_restrictions(grib_set["expver"])
+
         grib_set["georef"] = compute_georef(self.config["domain"])
         if self.fetch:
             logger.warning("FDB not yet implemented for {}", resource)

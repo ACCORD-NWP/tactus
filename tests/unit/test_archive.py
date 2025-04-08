@@ -9,7 +9,7 @@ import pytest
 
 from deode.derived_variables import set_times
 from deode.tasks.archive import Archive
-from deode.toolbox import compute_georef
+from deode.toolbox import FDB, compute_georef
 
 
 class MockFDB:
@@ -80,6 +80,16 @@ def test_defaults(basic_config):
     assert a.choices == basic_config["archiving.test"]
 
 
+def test_method_is_included(basic_config):
+    with pytest.raises(RuntimeError):
+        Archive(basic_config, "test", include=["copy"])
+
+
+def test_method_is_excluded(basic_config):
+    with pytest.raises(RuntimeError):
+        Archive(basic_config, "test", exclude=["fdb"])
+
+
 def test_copy(basic_config):
     tmp2 = basic_config["archiving.test.copy.copy_file.outpath"]
 
@@ -104,6 +114,8 @@ def test_move(basic_config):
 
 
 def test_fdb(monkeypatch, basic_config):
+    if "USER" not in os.environ:
+        os.environ["USER"] = "foo"
     config = basic_config.copy(update={"fdb": {"grib_set": {"expver": "test"}}})
     tmp1 = basic_config["archiving.test.move.move_file.inpath"]
 
@@ -122,6 +134,20 @@ def test_fdb(monkeypatch, basic_config):
     assert "expver=test" in output[1]
     assert "georef=u15rxs" in output[1]
     assert output[1].endswith("xtra_temp1.grib xtra_temp2.grib")
+
+
+def test_fdb_user_restriction(monkeypatch, basic_config):
+    user = os.environ["USER"] if "USER" in os.environ else "foo"
+    user = os.environ.get("USER", "foo")
+    nouser = "no" + user
+    config = basic_config.copy(
+        update={"fdb": {"expver_restrictions": {"test": [user], "tset": [nouser]}}}
+    )
+    with monkeypatch.context() as mp:
+        mp.setitem(sys.modules, "pyfdb", PyFDB)
+        FDB(config, "").check_expver_restrictions("test")
+        with pytest.raises(RuntimeError):
+            FDB(config, "").check_expver_restrictions("tset")
 
 
 def test_fdb_compute_georef():

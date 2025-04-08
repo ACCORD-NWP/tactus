@@ -12,7 +12,7 @@ from .base import Task
 class Archive(Task):
     """Archving data."""
 
-    def __init__(self, config, datatype=None):
+    def __init__(self, config, datatype=None, include=None, exclude=None):
         """Construct the archive object.
 
         Loop over archive types (e.g. ecfs,fdb) for the current platform
@@ -21,6 +21,11 @@ class Archive(Task):
         Args:
             config (deode.ParsedConfig): Configuration
             datatype (str): Indicating data type (climate, hour)
+            include (list): List of archiving methods supported, empty implies all
+            exclude (list): List of archiving methods not supported, empty implies none
+
+        Raises:
+            RuntimeError: For not allowed methods
         """
         Task.__init__(self, config, __class__.__name__)
 
@@ -28,10 +33,28 @@ class Archive(Task):
 
         self.choices = {}
         self.archive_loc = {}
+        if include is None:
+            include = []
+        if exclude is None:
+            exclude = []
         if datatype is not None:
             choices_for_type = self.config[f"archiving.{datatype}"].dict()
             skipped_types = []
+
             for archive_type, choices in choices_for_type.items():
+                abort = (
+                    archive_type not in include
+                    and len(include) > 0
+                    or archive_type in exclude
+                )
+                if abort:
+                    msg = f"Archive method {archive_type} is not allowed for this task\n"
+                    if len(exclude) > 0:
+                        msg += f"Excluded methods: {','.join(exclude)}\n"
+                    if len(include) > 0:
+                        msg += f"Included methods: {','.join(include)}\n"
+                    raise RuntimeError(msg)
+
                 d = {
                     name: choice
                     for name, choice in choices.items()
@@ -144,4 +167,16 @@ class ArchiveHour(Archive):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Archive.__init__(self, config, "hour")
+        Archive.__init__(self, config, "hour", exclude=["fdb"])
+
+
+class ArchiveFDB(Archive):
+    """Archving task for time dependent data dedicated for FDB."""
+
+    def __init__(self, config):
+        """Construct object.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+        """
+        Archive.__init__(self, config, "FDB", include=["fdb"])

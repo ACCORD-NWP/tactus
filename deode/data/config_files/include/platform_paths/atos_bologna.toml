@@ -6,6 +6,7 @@
   archive_root = "@SCRATCH@/deode/@CASE@/archive"
   archive_types = ["copy", "ecfs", "fdb"]
   climdata = "@STATIC_DATA@/climate"
+  deode_fdb_home = "/home/fdbtest"
   deode_home = "set-by-the-system"
   e923_data = "@STATIC_DATA@/climate/E923_DATA"
   ecoclim_data_path = "@CLIMDATA@/ecoclimap"

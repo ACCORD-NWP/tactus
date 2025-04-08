@@ -2,6 +2,9 @@
   case = "@CSC@_@XDX@m_@DOMAIN@"
   keep_workdirs = false
 
+[archiving.FDB.fdb.fpgrib_files]
+  active = true
+
 [archiving.hour.copy.config]
   active = true
   inpath = ""
@@ -21,11 +24,17 @@
   outpath = "@SUB_CASEDIR@"
   pattern = "ICMSH*"
 
-[archiving.hour.ecfs.grib_files]
+[archiving.hour.ecfs.fpgrib_files]
   active = true
   inpath = "@ARCHIVE@"
   outpath = "@SUB_CASEDIR@"
-  pattern = "GRIB*"
+  pattern = "GRIBPF*"
+
+[archiving.hour.ecfs.glgrib_files]
+  active = true
+  inpath = "@ARCHIVE@"
+  outpath = "@SUB_CASEDIR@"
+  pattern = "GRIB@CNMEXP@*"
 
 [archiving.hour.ecfs.logs]
   active = true
@@ -80,6 +89,9 @@
 
 [extractsqlite]
   sqlite_path = "@CASEDIR@/sqlite/FCTABLE"
+
+[fdb.grib_set]
+  expver = "0099"
 
 [impact.ehype.communicate]
   output_root = "@SCRATCH@/DE_Impact/EHYPE"

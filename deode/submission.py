@@ -88,8 +88,7 @@ class TaskSettings(object):
         self.platform = self.fmanager.platform
         self.unix_group = self.platform.get_value("platform.unix_group")
 
-    @staticmethod
-    def update_task_setting(dic, upd):
+    def update_task_setting(self, dic, upd):
         """Update task settings dictionary.
 
         Args:
@@ -99,10 +98,11 @@ class TaskSettings(object):
         Returns:
             dict: updated dictionary
         """
-        for key, val in upd.items():
-            if isinstance(val, collections.abc.Mapping):
-                dic[key] = TaskSettings.update_task_setting(dic.get(key, {}), val)
+        for key, _val in upd.items():
+            if isinstance(_val, collections.abc.Mapping):
+                dic[key] = self.update_task_setting(dic.get(key, {}), _val)
             else:
+                val = self.platform.substitute(_val)
                 logger.debug("key={} value={}", key, val)
                 dic[key] = val
         return dic
@@ -150,14 +150,16 @@ class TaskSettings(object):
             task_settings, all_types[task_submit_type]
         )
 
-        if (
-            "BATCH" in task_settings
-            and "NAME" in task_settings["BATCH"]
-            and "@TASK_NAME@" in task_settings["BATCH"]["NAME"]
-        ):
-            task_settings["BATCH"]["NAME"] = task_settings["BATCH"]["NAME"].replace(
-                "@TASK_NAME@", task
-            )
+        for task_name in ["@TASK_NAME@", "@STAND_ALONE_TASK_NAME@"]:
+            if (
+                "BATCH" in task_settings
+                and "NAME" in task_settings["BATCH"]
+                and task_name in task_settings["BATCH"]["NAME"]
+            ):
+                task_settings["BATCH"]["NAME"] = task_settings["BATCH"]["NAME"].replace(
+                    task_name, task
+                )
+                break
 
         if "task_exceptions" in all_defs and task in all_defs["task_exceptions"]:
             logger.debug("Task task_exceptions for task {}", task)
@@ -362,14 +364,14 @@ class TaskSettings(object):
             )
             logger.debug(env_settings)
 
-            for key, val in env_settings.items():
+            for key, _val in env_settings.items():
+                val = self.platform.substitute(_val)
                 file_handler.write(f'export {key}="{val}"\n')
 
             if scheduler is None:
                 file_handler.write(f'export STAND_ALONE_TASK_NAME="{task}"\n')
 
-                platform = Platform(config)
-                deode_home = platform.get_platform_value("DEODE_HOME")
+                deode_home = self.platform.get_platform_value("DEODE_HOME")
 
                 file_handler.write(f'export STAND_ALONE_DEODE_HOME="{deode_home}"\n')
                 config_file = config.metadata["source_file_path"]

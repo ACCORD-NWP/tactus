@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Activate FDB archiving in operations and add a new FDB archiving task. [\#1096](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1096) (@uandrae)
 - Add grib conversion of static files [\#1035](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1035) (@uandrae)
 
 ### Fixed
