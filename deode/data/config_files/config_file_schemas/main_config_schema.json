@@ -346,6 +346,11 @@
           "type": "integer",
           "default": 1
         },
+	"max_monthly_tasks": {
+	  "description": "Limit for max number of monthly tasks, run at same time",
+	  "type": "integer",
+	  "default": 10
+	},
         "DeodeCleaningSuiteDefinition": {
           "decription": "Settings for Cleaning Suite",
           "type": "object",

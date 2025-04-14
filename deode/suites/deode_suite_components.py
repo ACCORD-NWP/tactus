@@ -81,6 +81,7 @@ class E923MonthlyFamily(EcflowSuiteFamily):
         ecf_files,
         trigger=None,
         ecf_files_remotely=None,
+        dry_run: bool = False,
     ):
         """Class initialization."""
         super().__init__(
@@ -90,6 +91,11 @@ class E923MonthlyFamily(EcflowSuiteFamily):
             trigger=trigger,
             ecf_files_remotely=ecf_files_remotely,
         )
+
+        if not dry_run:
+            e923max = config["suite_control.max_monthly_tasks"]
+            e923_limit = EcflowSuiteLimit("e923_limit", e923max)
+            self.ecf_node.add_limit(e923_limit.limit_name, e923_limit.max_jobs)
 
         seasons = {
             "Q1": "01,02,03",
@@ -122,6 +128,7 @@ class E923MonthlyFamily(EcflowSuiteFamily):
                 self,
                 ecf_files,
                 ecf_files_remotely=ecf_files_remotely,
+                limit=e923_limit if not dry_run else None,
             )
 
             EcflowSuiteTask(
@@ -212,6 +219,7 @@ class StaticDataFamily(EcflowSuiteFamily):
         ecf_files,
         trigger=None,
         ecf_files_remotely=None,
+        dry_run: bool = False,
     ):
         """Class initialization."""
         super().__init__(
@@ -264,6 +272,7 @@ class StaticDataFamily(EcflowSuiteFamily):
             ecf_files,
             trigger=e923constant,
             ecf_files_remotely=ecf_files_remotely,
+            dry_run=dry_run,
         )
 
         if config["suite_control.do_pgd"]:
