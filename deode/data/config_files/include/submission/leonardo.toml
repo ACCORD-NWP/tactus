@@ -80,11 +80,14 @@
   UCX_LOG_LEVEL = "error"
 
 [submission.task_exceptions.Marsprep]
-  bindir = "/leonardo_work/DestE_330_25/users/SAN/mars/versions/current/bin"
+  bindir = "/leonardo_work/DestE_330_25/users/SAN/install/mars"
+  mars_version = "7"
 
 [submission.task_exceptions.Marsprep.BATCH]
+  MEM = "#SBATCH --exclusive"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
+  PARTITION = "#SBATCH --partition=dcgp_usr_prod"
   WALLTIME = "#SBATCH --time=01:00:00"
 
 [submission.task_exceptions.Pgd]

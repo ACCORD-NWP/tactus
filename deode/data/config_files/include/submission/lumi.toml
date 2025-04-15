@@ -53,6 +53,7 @@
 
 [submission.task_exceptions.Marsprep]
   bindir = "/appl/local/destine/bin"
+  mars_version = "7"
   WRAPPER = ""
 
 [submission.task_exceptions.Marsprep.BATCH]

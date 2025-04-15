@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change default behaviour of the deode show namelist command. Now produces unparsed namelists. [\#1099](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1099) (@uandrae)
 
 ### Fixed
+- Fixed some details in Mars requests depending on Mars client version and data origin [\#1066] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1066) (@adeckmyn)
 - Remove erroneous macro warnings for non-existent impact model [\#1091](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1091) (@uandrae)
 - Made git branch structure figures appear in documentation. Resolved sphinx warnings [\#1077](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1077) (@mafdmi)
 - Make sure the IOmerge tasks fails if the Forecast task fails [\#1090](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1090)(@uandrae)
