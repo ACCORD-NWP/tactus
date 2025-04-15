@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Modified gribmodify to use a json file for configuration [\#1049](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1049) (@KristianHMoller)
 - Updated gribmodify to do patch averaging for AQ needs [\#1049](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1049) (@KristianHMoller)
 
+### Changed
+- Change default behaviour of the deode show namelist command. Now produces unparsed namelists. [\#1099](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1099) (@uandrae)
+
 ### Fixed
 - Remove erroneous macro warnings for non-existent impact model [\#1091](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1091) (@uandrae)
 - Made git branch structure figures appear in documentation. Resolved sphinx warnings [\#1077](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1077) (@mafdmi)

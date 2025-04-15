@@ -23,7 +23,7 @@ def set_arg():
     arg.namelist = "forecast"
     arg.namelist_name = None
     arg.domain = "test"
-    arg.no_substitute = True
+    arg.substitute = False
     return arg
 
 

@@ -476,11 +476,15 @@ def add_namelist_args(parser_object):
         default=None,
     )
     parser_object.add_argument(
-        "--no-substitute",
-        "-b",
-        action="store_false",
-        default=True,
-        help="Do not substitute config values in the written namelist",
+        "--substitute",
+        "-s",
+        action="store_true",
+        default=False,
+        help=(
+            "Substitute config values in the written namelist. "
+            + "Note that this does not handle task submission "
+            + "dependent settings such as NPROC."
+        ),
     )
     parser_object.set_defaults(run_command=show_namelist)
 

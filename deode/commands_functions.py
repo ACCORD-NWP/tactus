@@ -374,7 +374,7 @@ def show_namelist(args, config):
     config = config.copy(update=set_times(config))
     config = config.copy(update=derived_variables(config))
 
-    nlgen = NamelistGenerator(config, args.namelist_type, substitute=args.no_substitute)
+    nlgen = NamelistGenerator(config, args.namelist_type, substitute=args.substitute)
     nlgen.load(args.namelist)
 
     if "forecast" in args.namelist and args.namelist_type == "master":
