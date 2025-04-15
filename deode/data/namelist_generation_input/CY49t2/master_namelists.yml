@@ -1422,7 +1422,6 @@ f4_HARMONIE_AROME:
     LRTPP: true
     LVFULL: false
     LVOIGT: true
-    LWINDFARM: false
     NRAUTOEV: 3
     NRAY: 2
     NSORAYFR: -1
@@ -1580,6 +1579,10 @@ f4_common:
     LELAM: true
     NCONF: 1
     NSUPERSEDE: 1
+  NAMCFU:
+    LWFPAC: ${cfg:general.windfarm}
+  NAMXFU:
+    LXWFPIN: ${cfg:general.windfarm}
   NAMCT0:
     LAROME: true
   NAMCT1:
@@ -1629,6 +1632,7 @@ f4_common:
     LAEROSEA: true
     LAEROSOO: true
     LO3ABC: true
+    LWINDFARM: ${cfg:general.windfarm}
 
 f4_c903_main:
   NAEPHY:

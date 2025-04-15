@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Add wfp configuration for all cscs and event-type for windfarm [\#999](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/999) (@jacobsnoeijer)
 - Activate FDB archiving in operations and add a new FDB archiving task. [\#1096](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1096) (@uandrae)
 - Add grib conversion of static files [\#1035](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1035) (@uandrae)
 - Modified gribmodify to use a json file for configuration [\#1049](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1049) (@KristianHMoller)

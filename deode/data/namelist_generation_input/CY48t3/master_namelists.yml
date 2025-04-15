@@ -1017,6 +1017,7 @@ f4_ALARO:
     LVFULL: false
     LVGSN: true
     LVOIGT: true
+    LWINDFARM: ${cfg:general.windfarm}
     LXRCDEV: true
     LZ0HSREL: true
     NDIFFNEB: 3

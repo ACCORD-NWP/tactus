@@ -3469,8 +3469,9 @@
     discipline = 20 ;
     parameterCategory = 3 ;
     parameterNumber = 3 ;
-    tablesVersion = 15 ;
+    tablesVersion = 32 ;
     typeOfFirstFixedSurface = 1 ;
+    typeOfSecondFixedSurface = 8 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
 }
@@ -3479,9 +3480,10 @@
     discipline = 20 ;
     parameterCategory = 3 ;
     parameterNumber = 3 ;
-    tablesVersion = 15 ;
+    tablesVersion = 32 ;
     productDefinitionTemplateNumber = 8 ;
     typeOfFirstFixedSurface = 1 ;
+    typeOfSecondFixedSurface = 8 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
     typeOfStatisticalProcessing = 1 ;
