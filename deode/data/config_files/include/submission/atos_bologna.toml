@@ -61,8 +61,8 @@
   NTASKS = "#SBATCH --ntasks=16"
 
 [submission.task_exceptions.Forecast]
-  NPROC = 28
-  NPROC_IO = 4
+  NPROC = 30
+  NPROC_IO = 2
 
 [submission.task_exceptions.Forecast.BATCH]
   #  MEM = "#SBATCH --mem=200GB"
