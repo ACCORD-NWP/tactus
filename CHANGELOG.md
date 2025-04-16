@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Change default balance between PROCs used for Forecast and IO for default (small domain) configuration [\1114](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1114)(@jacobsnoeijer)
 - Change default behaviour of the deode show namelist command. Now produces unparsed namelists. [\#1099](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1099) (@uandrae)
+- Let the IOmerge tasks cleanup the Forecast working directories[\#1102](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1102) (@uandrae)
 
 ### Fixed
 - Fix name of suite to ignore in cleaning. [\#1116](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1116) (@kastelecn)

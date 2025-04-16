@@ -1,8 +1,8 @@
 """Forecast."""
+import atexit
 import glob
 import json
 import os
-from time import sleep
 
 from ..config_parser import ConfigPaths
 from ..datetime_utils import as_datetime, as_timedelta, oi2dt_list
@@ -46,6 +46,11 @@ class Forecast(Task):
 
         self.accelerator_device = self.config.get("accelerator_device", None)
 
+        self.io_server = int(os.environ.get("NPROC_IO", "0")) > 0
+        self.iomerge_is_external = (
+            self.io_server and self.config["suite_control.n_io_merge"] > 0
+        )
+
         # Update namelist settings
         self.nlgen_master = NamelistGenerator(self.config, "master")
         self.nlgen_surfex = NamelistGenerator(self.config, "surfex")
@@ -55,7 +60,16 @@ class Forecast(Task):
         self.file_templates = self.config["file_templates"]
 
         self.unix_group = self.platform.get_platform_value("unix_group")
-        self.n_io_merge = self.config["suite_control.n_io_merge"]
+
+    def post(self):
+        """Do special post for Foreast."""
+        logger.debug("Forecast class post")
+        if not self.iomerge_is_external:
+            # Clean workdir
+            if self.config["general.keep_workdirs"]:
+                self.rename_wdir(prefix="Finished_task_")
+            else:
+                self.remove_wdir()
 
     def archive_output(self, filetype, periods):
         """Archive forecast model output.
@@ -218,10 +232,11 @@ class Forecast(Task):
             logger.info("No accelerator_device section found")
 
         # Create a link to working directory for IO_merge tasks
-        if os.path.islink(self.forecast_dir_link):
-            logger.info("Removing old link.")
-            os.unlink(self.forecast_dir_link)
-        os.symlink(os.getcwd(), self.forecast_dir_link)
+        if self.iomerge_is_external:
+            if os.path.islink(self.forecast_dir_link):
+                logger.debug("Removing old link.")
+                os.unlink(self.forecast_dir_link)
+            os.symlink(os.getcwd(), self.forecast_dir_link)
 
         # Store the output
         # Must happen before the forecast starts, so the io_merge tasks
@@ -232,31 +247,15 @@ class Forecast(Task):
         batch = BatchJob(os.environ, wrapper=self.platform.substitute(self.wrapper))
         batch.run(self.master)
 
-        io_server = os.path.exists("io_serv.000001.d")
-        if io_server and self.n_io_merge > 0:
-            logger.info("Waiting for iomerge output.")
-            logger.debug("IO_SERVER detected!")
-            # Wait for all io_merge tasks to finish.
-            # This is signaled by creating (empty) files.
-            for ionr in range(self.n_io_merge):
-                io_name = f"io_merge_{ionr:02}"
-                logger.debug("Waiting for {}", io_name)
-                while not os.path.exists(io_name):
-                    sleep(5)
-        else:
+        if self.iomerge_is_external:
+            atexit.unregister(self.rename_wdir)
+        elif self.io_server:
             for filetype, oi in self.output_settings.items():
                 if filetype in self.file_templates:
-                    if io_server:
-                        # No io_merge: should we even still consider this option?
-                        self.merge_output(filetype, oi)
-
+                    self.merge_output(filetype, oi)
                     self.archive_output(self.file_templates[filetype], oi)
 
         self.archive_logs(["fort.4", "EXSEG1.nam", "NODE.001_01"])
-
-        # Remove link to working directory for IO_mergetasks
-        if os.path.islink("../Forecast"):
-            os.unlink("../Forecast")
 
 
 class PrepareCycle(Task):

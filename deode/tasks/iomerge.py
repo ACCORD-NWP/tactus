@@ -50,6 +50,8 @@ class IOmerge(Task):
             "forecast_directory"
         ]
 
+        self.name = f"{self.name}_{self.ionr:02}"
+
     def check_fc_path(self):
         """Check if fc_path exists.
 
@@ -241,8 +243,8 @@ class IOmerge(Task):
         full_dt_list.sort()
         # now subset for this worker:
         dt_list = full_dt_list[self.ionr :: self.n_io_merge]
-        logger.info("IONR = {}, N_IO_MERGE = {}", self.ionr, self.n_io_merge)
-        logger.info("DT list {}", dt_list)
+        logger.debug("IONR = {}, N_IO_MERGE = {}", self.ionr, self.n_io_merge)
+        logger.debug("DT list {}", dt_list)
 
         # We must wait for the io_server output to appear
         # BUT: how long should we wait before aborting?
@@ -287,3 +289,21 @@ class IOmerge(Task):
         BatchJob(os.environ, wrapper="").run(
             f"touch {self.fc_path}/io_merge_{self.ionr:02}"
         )
+
+        if full_dt_list.index(dt) == len(full_dt_list) - 1:
+            logger.info("Remove Forecast directory since all files have been processed")
+            # Wait for all io_merge tasks to finish.
+            # This is signaled by creating (empty) files.
+            for ionr in range(self.n_io_merge):
+                io_name = f"{self.fc_path}/io_merge_{ionr:02}"
+                while not os.path.exists(io_name):
+                    logger.info("Waiting for {}", io_name)
+                    sleep(5)
+
+            # Handle the Forecast task working directory
+            fc_path_resolved = Path(self.fc_path).resolve()
+            logger.debug("fc_path_resolved:{}", fc_path_resolved)
+
+            if os.path.islink(self.fc_path):
+                os.unlink(self.fc_path)
+            self.post(source=fc_path_resolved, target="Forecast")
