@@ -191,7 +191,7 @@ class CleanSuites(CleanOldData):
         self.cutoff_time = self.cutoff(self.delay)
         ignore = list(config["clean_old_data.ignore"])
         logger.info("Ignore: {}", ignore)
-        self.ignore_suite = ["IFS", "Clean_old_data", "DE_NWP", *ignore]
+        self.ignore_suite = ["IFS", "Clean_Old_Data", "DE_NWP", *ignore]
 
     def execute(self):
         """Run clean suites."""
