@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add grib conversion of static files [\#1035](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1035) (@uandrae)
 - Modified gribmodify to use a json file for configuration [\#1049](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1049) (@KristianHMoller)
 - Updated gribmodify to do patch averaging for AQ needs [\#1049](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1049) (@KristianHMoller)
+- Added config files for running CY49 in leonardo [\#1064](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1064) (@pardallio)
+- Added config files for running CY49 in SP [\#1064](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1064) (@pardallio)
 
 ### Changed
 - Change default balance between PROCs used for Forecast and IO for default (small domain) configuration [\1114](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1114)(@jacobsnoeijer)

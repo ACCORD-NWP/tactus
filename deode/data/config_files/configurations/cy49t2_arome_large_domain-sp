@@ -5,3 +5,4 @@ deode/data/config_files/modifications/arome_CY49t2.toml
 deode/data/config_files/modifications/CY49t2.toml
 deode/data/config_files/modifications/@HOST@.toml
 deode/data/config_files/modifications/submission/@HOST@_CY49t2_large_domain.toml
+deode/data/config_files/modifications/submission/@HOST@_CY49t2_single_precision.toml
