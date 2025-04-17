@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added config files for running CY49 in SP [\#1064](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1064) (@pardallio)
 
 ### Changed
+- Change walltime for Forecast task on LUMI for cy48t3 [\#1113](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1113) (FlorianW-ZAMG)
 - Change bindir for CY49t2 to match new name convention [\1122](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1122)(@uandrae)
 - Change default balance between PROCs used for Forecast and IO for default (small domain) configuration [\1114](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1114)(@jacobsnoeijer)
 - Change default behaviour of the deode show namelist command. Now produces unparsed namelists. [\#1099](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1099) (@uandrae)

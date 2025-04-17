@@ -20,7 +20,7 @@
   NTASKS = "#SBATCH --ntasks=640"
   PARTITION = "#SBATCH --partition=standard"
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=32"
-  WALLTIME = "#SBATCH --time=04:00:00"
+  WALLTIME = "#SBATCH --time=07:00:00"
 
 [submission.types.parallel.BATCH]
   MEM = "#SBATCH --mem=0GB"
