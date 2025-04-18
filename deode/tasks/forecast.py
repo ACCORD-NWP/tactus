@@ -249,10 +249,11 @@ class Forecast(Task):
 
         if self.iomerge_is_external:
             atexit.unregister(self.rename_wdir)
-        elif self.io_server:
+        else:
             for filetype, oi in self.output_settings.items():
                 if filetype in self.file_templates:
-                    self.merge_output(filetype, oi)
+                    if self.io_server:
+                        self.merge_output(filetype, oi)
                     self.archive_output(self.file_templates[filetype], oi)
 
         self.archive_logs(["fort.4", "EXSEG1.nam", "NODE.001_01"])
