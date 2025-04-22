@@ -208,7 +208,8 @@ class BasicConfig(BaseMapping):
         """
         with open(config_file, mode="w", encoding="utf8") as fh:
             tomlkit.dump(self.dict(), fh)
-        config = FormatterOptions.from_toml_file("pyproject.toml")
+        pyproject_toml = GeneralConstants.PACKAGE_DIRECTORY.parent / "pyproject.toml"
+        config = FormatterOptions.from_toml_file(pyproject_toml)
         formatted_toml = FormattedToml.from_file(
             path=config_file, formatter_options=config
         )
