@@ -1,7 +1,10 @@
 """Clean deode file systems."""
 
+from pathlib import Path
+
 from ..cleaning import CleanDeode
 from .base import Task
+from ..os_utils import deodemakedirs
 
 
 class Cleaning(Task):
@@ -45,6 +48,13 @@ class PreCleaning(Cleaning):
         Cleaning.__init__(self, config)
         self.name = "PreCleaning"
         self.prep_clean_task(self.name)
+
+        # Create (parsed) config file
+        parsed_config = config.expand_macros(True)
+        archive_root = Path(parsed_config["platform.archive_root"])
+        deodemakedirs(archive_root, unixgroup=parsed_config["platform.unix_group"])
+        parsed_config.save_as(archive_root / "parsed_config.toml")
+        config.save_as(archive_root / "config.toml")
 
 
 class CycleCleaning(Cleaning):
