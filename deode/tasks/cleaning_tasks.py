@@ -2,9 +2,10 @@
 
 from pathlib import Path
 
-from ..cleaning import CleanDeode
-from ..os_utils import deodemakedirs
-from .base import Task
+from deode.cleaning import CleanDeode
+from deode.config_parser import BasicConfig, ParsedConfig
+from deode.os_utils import deodemakedirs
+from deode.tasks.base import Task
 
 
 class Cleaning(Task):
@@ -50,7 +51,11 @@ class PreCleaning(Cleaning):
         self.prep_clean_task(self.name)
 
         # Create (parsed) config file
-        parsed_config = config.expand_macros(True)
+        parsed_config = config.dict()
+        parsed_config["general"]["times"].pop("basetime")
+        parsed_config["general"]["times"].pop("validtime")
+
+        parsed_config = ParsedConfig(parsed_config, json_schema={}).expand_macros(True)
         archive_root = Path(parsed_config["platform.archive_root"])
         deodemakedirs(archive_root, unixgroup=parsed_config["platform.unix_group"])
         parsed_config.save_as(archive_root / "parsed_config.toml")
