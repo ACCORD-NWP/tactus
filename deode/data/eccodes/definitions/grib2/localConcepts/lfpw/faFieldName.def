@@ -3037,7 +3037,7 @@
     lengthOfTimeRange = 1 ;
     typeOfFirstFixedSurface = 1;
     scaledValueOfFirstFixedSurface = 0 ;
-    LSTCUM = 0;
+    LSTCUM = 0 ;
 }
 # "minimum visibility for a period"
 "CLSVISIN_15" = {
@@ -3128,6 +3128,7 @@
     typeOfStatisticalProcessing = 101 ;
     indicatorOfUnitForTimeRange = 1 ;
     lengthOfTimeRange = 1 ;
+    LSTCUM = 60 ;
 }
 # more severe precipitation type
 "CLSPTYPESEV_60M" = {
@@ -3142,6 +3143,7 @@
     typeOfStatisticalProcessing = 100 ;
     indicatorOfUnitForTimeRange = 1 ;
     lengthOfTimeRange = 1 ;
+    LSTCUM = 60 ;
 }
 # precipitation type
 "CLSPTYPE_180M" = {
@@ -3186,7 +3188,7 @@
     scaledValueOfFirstFixedSurface = missing() ;
     indicatorOfUnitForTimeRange = 1 ;
     lengthOfTimeRange = 1 ;
-    LSTCUM = 0;
+    LSTCUM = 60 ;
 }
 # more severe precipitation type
 "CLSPTYPESEV_60M" = {
@@ -3201,7 +3203,7 @@
     typeOfStatisticalProcessing = 2 ;
     indicatorOfUnitForTimeRange = 1 ;
     lengthOfTimeRange = 1 ;
-    LSTCUM = 0;
+    LSTCUM = 60 ;
 }
 # precipitation type
 "CLSPTYPE_15M" = {

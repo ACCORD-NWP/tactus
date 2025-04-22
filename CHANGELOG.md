@@ -55,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use 32 bit space filling curve for geohash [\#1042](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1042) (@johtoblan)
 - Reduce ntasks for C903 on lumi. [\#1080](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1080) (@kastelecn)
 - Add snowfields to IFSENS MARS request [\#1055](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1055)(@uandrae)
+- Specify timeIncrement to hours for 60M precipitation variables in faFieldNames.def[\#1052](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1052)(@KristianHMoller)
 
 ## [0.13.2] - 2025-03-21
 
