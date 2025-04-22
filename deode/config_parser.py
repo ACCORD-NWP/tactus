@@ -375,6 +375,9 @@ class ParsedConfig(BasicConfig):
 
         Args:
             expand_all (boolean): Flag to expand all macros
+
+        Returns:
+            config (ParsedConfig): Parsed configuration
         """
         config = self.dict()
         macros = config["macros"]

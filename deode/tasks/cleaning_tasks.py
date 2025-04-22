@@ -3,8 +3,8 @@
 from pathlib import Path
 
 from ..cleaning import CleanDeode
-from .base import Task
 from ..os_utils import deodemakedirs
+from .base import Task
 
 
 class Cleaning(Task):
