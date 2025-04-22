@@ -346,7 +346,7 @@
           "type": "integer",
           "default": 1
         },
-	"max_monthly_tasks": {
+	"max_static_data_tasks": {
 	  "description": "Limit for max number of monthly tasks, run at same time",
 	  "type": "integer",
 	  "default": 10

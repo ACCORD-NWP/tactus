@@ -2,4 +2,4 @@
   start = "-P1D"
 
 [suite_control]
-  max_monthly_tasks = 2
+  max_static_data_tasks = 2

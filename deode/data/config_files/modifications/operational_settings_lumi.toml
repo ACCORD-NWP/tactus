@@ -1,0 +1,5 @@
+[submission.types.serial.BATCH]
+  PARTITION = "#SBATCH --partition=standard"
+
+[suite_control]
+  max_static_data_tasks = 10
