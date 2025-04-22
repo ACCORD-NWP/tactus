@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Let the IOmerge tasks cleanup the Forecast working directories[\#1102](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1102) (@uandrae)
 
 ### Fixed
+- Fix trigger bug introduced in #1102. [\#1125](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1125) (@uandrae)
 - Fix forecast archive bug introduced in #1102. [\#1124](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1124) (@uandrae)
 - Fix name of suite to ignore in cleaning. [\#1116](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1116) (@kastelecn)
 - Fixed some details in Mars requests depending on Mars client version and data origin [\#1066] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1066) (@adeckmyn)

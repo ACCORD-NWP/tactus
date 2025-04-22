@@ -757,8 +757,8 @@ class ForecastFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
-        creategrib = forecast_task
-        io_merge = forecast_task
+        add_calc_fields_trigger = forecast_task
+        creategrib_trigger = forecast_task
 
         if n_io_merge > 0:
             io_merge = MergeIOFamily(
@@ -772,16 +772,18 @@ class ForecastFamily(EcflowSuiteFamily):
                 trigger=forecast_task,
                 ecf_files_remotely=ecf_files_remotely,
             )
+            add_calc_fields_trigger = io_merge
+            creategrib_trigger = io_merge
 
         if len(config.get("creategrib.CreateGrib.conversions", [])) > 0:
-            creategrib = EcflowSuiteTask(
+            add_calc_fields_trigger = EcflowSuiteTask(
                 "CreateGrib",
                 self,
                 config,
                 task_settings,
                 ecf_files,
                 input_template=input_template,
-                trigger=io_merge,
+                trigger=creategrib_trigger,
                 ecf_files_remotely=ecf_files_remotely,
             )
 
@@ -792,7 +794,7 @@ class ForecastFamily(EcflowSuiteFamily):
             task_settings,
             ecf_files,
             input_template=input_template,
-            trigger=creategrib,
+            trigger=add_calc_fields_trigger,
             ecf_files_remotely=ecf_files_remotely,
         )
 
