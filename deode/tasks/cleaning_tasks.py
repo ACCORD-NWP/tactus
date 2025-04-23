@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from deode.cleaning import CleanDeode
-from deode.config_parser import BasicConfig, ParsedConfig
+from deode.config_parser import ParsedConfig
 from deode.os_utils import deodemakedirs
 from deode.tasks.base import Task
 
