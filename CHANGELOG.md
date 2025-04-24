@@ -90,6 +90,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Restored lost bdcycle setting [\#984](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/984)(@uandrae) 
 - Fix json schema for impact models. [\#1020](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1020)(@kastelecn) 
 
+## [0.12.1] - 2025-02-21
+
+###Fixed
+- Fix operational setting for ehype. [\#1015](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1015) (@kastelecn)
+
 ## [0.12.0] - 2025-02-21
 
 ### Added
@@ -259,6 +264,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Respect input types in namelist config parsing [#784](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/784) (@uandrae)
 - Removed duplicated parsing [#783](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/783) (@uandrae)
 - Fix ecf_host selector not selecting the correct naming convention on Atos [#781](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/781) (@adam-otruba)
+
+##[0.6.2] - 2024-09-26
+
+### Fixed
+- Fix ecf\_host selector not selecting the correct naming convention on Atos [\#781](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/781) (@adam-otruba)
+
+## [0.6.1] - 2024-09-24
+- change binary version for CY48t3
+- set ATOS\_DT as default ifs.selection
+
+##[bugfix\_v0.6.2] - 2024-09-26
+
+### Fixed
+- Fix ecf\_host selector not selecting the correct naming convention on Atos [\#781](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/781) (@adam-otruba)
+
+## [bugfix\_v0.6.1] - 2024-09-24
+- change binary version for CY48t3
+- set ATOS\_DT as default ifs.selection
 
 
 ## [0.6.0] - 2024-09-19
