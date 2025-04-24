@@ -34,7 +34,7 @@
   ncycles_delay = 0
   path = "@ECF_OUT@/@CASE@"
 
-[cleaning.PreCleaning.ecf_out]
-  exclude = "(.*)PreCleaning(.*)"
+[cleaning.PrepRun.ecf_out]
+  exclude = "(.*)PrepRun(.*)"
   ncycles_delay = 0
   path = "@ECF_OUT@/@CASE@"
