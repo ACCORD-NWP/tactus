@@ -234,7 +234,7 @@ class BaseRequest:
     the request structure. The request data is stored in a dictionary
     accessible via the `request` attribute.
 
-    Attributes:
+    Parameters:
         class_ (str): The class of the request, e.g., "D1".
         data_type (str): The type of data requested (e.g., analysis, forecast).
         expver (str): Experiment version identifier.
@@ -278,8 +278,7 @@ class BaseRequest:
         Args:
             grid (string): resolution of the grid
         """
-        if self.class_ != "D1":
-            self.request["GRID"] = [grid]
+        self.request["GRID"] = [grid]
 
     def add_eps_members(self, members: list, prefetch: bool):
         """Fix parameters in case of eps members.
@@ -308,8 +307,7 @@ class BaseRequest:
 
     def add_process(self):
         """Add process if needed."""
-        if self.class_ != "D1":
-            self.request["PROCESS"] = ["LOCAL"]
+        self.request["PROCESS"] = ["LOCAL"]
 
     def add_levelist(self, levelist: str):
         """Set multilevel if needed.

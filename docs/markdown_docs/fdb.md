@@ -16,7 +16,6 @@ This is to use the fdb command line tool, if you want to read, write or wipe the
 On ATOS:
 ```
 export FDB_HOME=/home/fdbtest
-export FDB5_HOME=/usr/local/apps/mars/versions/6.33.19.9/
 ```
 
 On LUMI:
@@ -37,10 +36,10 @@ retrieve,
 	expver=aaaa
 
 
-{class=d1,dataset=on-demand-extremes-dt,expver=aaaa,stream=oper,date=20230916,time=0000}{type=fc,levtype=sfc}{step=6,param=129}
-{class=d1,dataset=on-demand-extremes-dt,expver=aaaa,stream=oper,date=20230916,time=0000}{type=fc,levtype=sfc}{step=6,param=130}
-{class=d1,dataset=on-demand-extremes-dt,expver=aaaa,stream=oper,date=20230916,time=0000}{type=fc,levtype=sfc}{step=6,param=134}
-{class=d1,dataset=on-demand-extremes-dt,expver=aaaa,stream=oper,date=20230916,time=0000}{type=fc,levtype=sfc}{step=6,param=146}
+{class=d1,dataset=on-demand-extremes-dt,expver=aaaa,stream=oper,date=20250209,time=0000}{type=fc,levtype=sfc,georef=u15rxs}{step=6,param=129}
+{class=d1,dataset=on-demand-extremes-dt,expver=aaaa,stream=oper,date=20250209,time=0000}{type=fc,levtype=sfc,georef=u15rxs}{step=6,param=130}
+{class=d1,dataset=on-demand-extremes-dt,expver=aaaa,stream=oper,date=20250209,time=0000}{type=fc,levtype=sfc,georef=u15rxs}{step=6,param=134}
+{class=d1,dataset=on-demand-extremes-dt,expver=aaaa,stream=oper,date=20250209,time=0000}{type=fc,levtype=sfc,georef=u15rxs}{step=6,param=151}
 ```
 
 ## How to retrieve archived data from FDB:
@@ -49,16 +48,17 @@ retrieve,
 Where the request.mars file looks something like this (Constructed from last line of output of the fdb list above):
 ```
 retrieve,
-    class = d1,
-    dataset = on-demand-extremes-dt,
-    expver = aaaa,
-    stream = oper,
-    date = 20230916,
-    time = 0000,
-    type = fc,
-    levtype=sfc,
-    step = 6,
-    param = 146
+	class = d1,
+	dataset = on-demand-extremes-dt,
+	expver = aaaa,
+	stream = oper,
+	date = 20250209,
+	time = 0000,
+	type = fc,
+	levtype = sfc,
+	georef = u15rxs,
+	step = 6,
+	param = 151
 ```
 
 ## How to set expver in DEODE Workflow
@@ -103,11 +103,11 @@ Use `fdb wipe`
 
 To list out what data will be deleted:
 ```
-fdb wipe class=d1,dataset=on-demand-extremes-dt,expver=JoLa,stream=oper,date=20230916,time=0600
+fdb wipe class=d1,dataset=on-demand-extremes-dt,expver=aaaa,stream=oper,date=20250209,time=0000
 ```
 And to actually delete it (add the --doit flag):
 ```
-fdb wipe class=d1,dataset=on-demand-extremes-dt,expver=JoLa,stream=oper,date=20230916,time=0600 --doit
+fdb wipe class=d1,dataset=on-demand-extremes-dt,expver=aaaa,stream=oper,date=20250209,time=0000 --doit
 ```
 
 ```{note}

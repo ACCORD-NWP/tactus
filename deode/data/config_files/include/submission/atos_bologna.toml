@@ -21,15 +21,15 @@
 [submission.task_exceptions.AddCalculatedFields.MODULES]
   ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.11.0.0"]
 
+[submission.task_exceptions.ArchiveFDB.ENV]
+  FDB5_HOME = "/usr/local/apps/mars/versions/6.33.19.9"
+  FDB_HOME = "@DEODE_FDB_HOME@"
+
+[submission.task_exceptions.ArchiveFDB.MODULES]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.11.0.0"]
+
 [submission.task_exceptions.ArchiveHour.BATCH]
   WALLTIME = "#SBATCH --time=03:00:00"
-
-[submission.task_exceptions.ArchiveHour.ENV]
-  FDB5_HOME = "/usr/local/apps/mars/versions/6.33.19.9"
-  FDB_HOME = "/home/fdbtest"
-
-[submission.task_exceptions.ArchiveHour.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.11.0.0"]
 
 [submission.task_exceptions.ArchiveStatic.BATCH]
   WALLTIME = "#SBATCH --time=03:00:00"
@@ -61,8 +61,8 @@
   NTASKS = "#SBATCH --ntasks=16"
 
 [submission.task_exceptions.Forecast]
-  NPROC = 28
-  NPROC_IO = 4
+  NPROC = 30
+  NPROC_IO = 2
 
 [submission.task_exceptions.Forecast.BATCH]
   #  MEM = "#SBATCH --mem=200GB"

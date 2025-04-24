@@ -197,7 +197,7 @@ def derived_variables(config, processor_layout=None):
         cstop = f"m{cstop}"
 
     # Wind farm parameterization
-    if config["general.windfarm"]:
+    if config["general.windfarm"] and config.get("general.fullpos_windpower", True):
         selection = list(config["fullpos.selection"])
         selection.append("windfarm")
 
@@ -248,7 +248,7 @@ def derived_variables(config, processor_layout=None):
     }
 
     # Wind farm parameterization
-    if config["general.windfarm"]:
+    if config["general.windfarm"] and config.get("general.fullpos_windpower", True):
         update["fullpos"] = {"selection": {"windfarm": ["windfarm"]}}
 
     if processor_layout is not None:

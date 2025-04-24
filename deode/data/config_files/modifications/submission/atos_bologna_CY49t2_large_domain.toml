@@ -2,7 +2,7 @@
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov13/coef"
 
 [submission]
-  bindir = "/perm/deployde330/github-actions/install/cy49t2/cy49t2-v1.4.1/bin"
+  bindir = "/perm/deployde330/github-actions/install/CY49t2/CY49t2-v1.5.1/bin"
 
 [submission.gnu.BATCH]
   MEM = "#SBATCH --mem=64GB"
@@ -59,4 +59,4 @@
   WALLTIME = "#SBATCH --time=03:00:00"
 
 [suite_control]
-  n_io_merge = 2
+  n_io_merge = 1

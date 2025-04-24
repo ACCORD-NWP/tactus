@@ -107,7 +107,7 @@ fullpos = "..."
 to the eps include file. The various ways of setting member specific settings are:
 
 
-#### 1. Single value -> all members get the same setting
+### 1. Single value -> all members get the same setting
 ```toml
 [eps.member_settings]
 parameter = "value"
@@ -121,14 +121,14 @@ parameter = "value"
 ...
 ```
 
-#### 2. List of values -> first member gets first item, second member gets second item, etc. (with "circular boundary condition")
+### 2. List of values -> first member gets first item, second member gets second item, etc. (with "circular boundary condition")
 ```toml
 [eps.member_settings]
 parameter = ["value1", "value2", "value3", "..."]
 ```
 
 *Result:*
-```toml
+```
 [eps.members.0]
   parameter = "value1"
 [eps.members.1]
@@ -140,7 +140,7 @@ parameter = ["value1", "value2", "value3", "..."]
   parameter = "value1"
 ...
 ```
-#### 3. Dict of mbr/value pairs -> a given member get the value of the mbr key
+### 3. Dict of mbr/value pairs -> a given member get the value of the mbr key
 ```toml
 [eps.member_settings]
 parameter = {0 = "value1", 1 = "value2", "2:5:2" = "value3", ...}
@@ -173,7 +173,7 @@ parameter = {0 = "value1", 1 = "value2", "2:5:2" = "value3", ...}
 >  ```
 >  `parameter` will be set to `"value2"` for member 3.
 
-#### 4. Python subclass of `deode.eps.custom_generators.BaseGenerator`. Generates member settings based on list of members.
+### 4. Python subclass of `deode.eps.custom_generators.BaseGenerator`. Generates member settings based on list of members.
 
 E.g. to generate random boolean values for each member, one could define a generator class like
 

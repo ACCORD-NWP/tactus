@@ -29,3 +29,6 @@
 
 [impact.ehype.StartImpactModels]
   arguments = "@ARCHIVE@/ehype.json"
+
+[macros.select.ehype]
+  gen_macros = [{ehype_path = "platform.impact.ehype"}]

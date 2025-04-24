@@ -1,5 +1,12 @@
 [archiving]
 
+[archiving.FDB.fdb]
+
+[archiving.FDB.fdb.fpgrib_files]
+  active = false
+  inpath = "@ARCHIVE@"
+  pattern = "GRIBPF*"
+
 [archiving.hour.copy.config]
   active = true
   inpath = ""
@@ -19,11 +26,17 @@
   outpath = "archive/@ARCHIVE_TIMESTAMP@"
   pattern = "ICMSH*"
 
-[archiving.hour.ecfs.grib_files]
+[archiving.hour.ecfs.fpgrib_files]
   active = true
   inpath = "@ARCHIVE@"
   outpath = "archive/@ARCHIVE_TIMESTAMP@"
-  pattern = "GRIB*"
+  pattern = "GRIBPF*"
+
+[archiving.hour.ecfs.glgrib_files]
+  active = true
+  inpath = "@ARCHIVE@"
+  outpath = "archive/@ARCHIVE_TIMESTAMP@"
+  pattern = "GRIB@CNMEXP@*"
 
 [archiving.hour.ecfs.logs]
   active = true
@@ -36,13 +49,6 @@
   inpath = "@SQLITE_PATH@"
   outpath = "sqlite"
   pattern = "*"
-
-[archiving.hour.fdb]
-
-[archiving.hour.fdb.grib2_files]
-  active = false
-  inpath = "@ARCHIVE@"
-  pattern = "GRIBPF*"
 
 [archiving.hour.scp.lumi_grib2]
   active = false
@@ -81,21 +87,25 @@
   pattern = "StaticData.tar.gz"
 
 [fdb]
+  create_inverse_filter = true
+
+[fdb.expver_restrictions]
+  0001 = ["aut6432"]
+  0099 = ["aut6432", "snh02"]
 
 [fdb.grib_set]
-  backgroundProcess = "99"
   centre = "98"
   class = "d1"
   dataset = "on-demand-extremes-dt"
   grib2LocalSectionNumber = "1"
-  localTablesVersion = "1"
   productionStatusOfProcessedData = "12"
   setLocalDefinition = "1"
   subCentre = "84"
-  tablesVersion = "32"
+  tablesVersion = "34"
   type = "fc"
 
 [fdb.negative_rules]
   levtype = ["unknown"]
-  param = ["0", "231049", "231066", "260015"]
+  param = ["0", "231049", "231066"]
+  productDefinitionTemplateNumber = ["113", "114"]
   typeOfLevel = ["unknown", "not_found"]

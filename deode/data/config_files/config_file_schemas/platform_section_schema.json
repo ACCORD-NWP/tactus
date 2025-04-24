@@ -116,6 +116,19 @@
       "type": "string",
       "description": "Default unix group for directories created by deode, leave empty to use default group of user.",
       "default": ""
+    },
+    "properties": {
+      "impact": {
+        "title": "Impact model paths (where applicable)",
+        "type": "object",
+        "properties": {
+           "ehype": {
+             "type": "string",
+             "description": "EHYPE model path",
+             "default": ""
+           }
+        }
+      }
     }
   }
 }

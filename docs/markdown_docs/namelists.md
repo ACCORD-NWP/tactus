@@ -34,7 +34,7 @@ If you are uncertain about the name of the namelist you're searching for just ty
 ```
 deode show namelist -t master -n showme 
 ```
-If you'd like have the namelist without the substituted values from the config file add a `-b` to the command. For more information about namelist extraction use the help command.
+By default none of the namelist values are substituted with config settings, like e.g. output frequency. If you'd like have the namelist with the substituted values from the config file add a `-s` to the command. For more information about namelist extraction use the help command.
 ```
 deode show namelist -h
 ```

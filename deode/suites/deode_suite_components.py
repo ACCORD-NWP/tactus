@@ -81,6 +81,8 @@ class E923MonthlyFamily(EcflowSuiteFamily):
         ecf_files,
         trigger=None,
         ecf_files_remotely=None,
+        dry_run: bool = False,
+        limit=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -122,6 +124,7 @@ class E923MonthlyFamily(EcflowSuiteFamily):
                 self,
                 ecf_files,
                 ecf_files_remotely=ecf_files_remotely,
+                limit=limit if not dry_run else None,
             )
 
             EcflowSuiteTask(
@@ -149,6 +152,7 @@ class PgdNode(EcflowSuiteFamily, EcflowSuiteTask):
         ecf_files,
         trigger=None,
         ecf_files_remotely=None,
+        limit=None,
     ):
         """Class initialization."""
         if config["pgd.one_decade"]:
@@ -171,6 +175,7 @@ class PgdNode(EcflowSuiteFamily, EcflowSuiteTask):
                     self,
                     ecf_files,
                     ecf_files_remotely=ecf_files_remotely,
+                    limit=limit,
                 )
 
                 EcflowSuiteTask(
@@ -212,6 +217,7 @@ class StaticDataFamily(EcflowSuiteFamily):
         ecf_files,
         trigger=None,
         ecf_files_remotely=None,
+        dry_run: bool = False,
     ):
         """Class initialization."""
         super().__init__(
@@ -221,6 +227,13 @@ class StaticDataFamily(EcflowSuiteFamily):
             trigger=trigger,
             ecf_files_remotely=ecf_files_remotely,
         )
+
+        if not dry_run:
+            static_data_max = config["suite_control.max_static_data_tasks"]
+            static_data_limit = EcflowSuiteLimit("static_data_limit", static_data_max)
+            self.ecf_node.add_limit(
+                static_data_limit.limit_name, static_data_limit.max_jobs
+            )
 
         pgd_node = None
         if config["suite_control.do_pgd"]:
@@ -264,10 +277,12 @@ class StaticDataFamily(EcflowSuiteFamily):
             ecf_files,
             trigger=e923constant,
             ecf_files_remotely=ecf_files_remotely,
+            dry_run=dry_run,
+            limit=static_data_limit if not dry_run else None,
         )
 
         if config["suite_control.do_pgd"]:
-            pgd_node = PgdNode(
+            pgd_update = PgdNode(
                 "PgdUpdate",
                 self,
                 config,
@@ -275,6 +290,21 @@ class StaticDataFamily(EcflowSuiteFamily):
                 input_template,
                 ecf_files,
                 trigger=e923constant,
+                ecf_files_remotely=ecf_files_remotely,
+                limit=static_data_limit if not dry_run else None,
+            )
+        else:
+            pgd_update = None
+
+        if config["suite_control.do_creategrib_static"]:
+            PgdNode(
+                "CreateGribStatic",
+                self,
+                config,
+                task_settings,
+                input_template,
+                ecf_files,
+                trigger=pgd_update,
                 ecf_files_remotely=ecf_files_remotely,
             )
 
@@ -726,8 +756,12 @@ class ForecastFamily(EcflowSuiteFamily):
             input_template=input_template,
             ecf_files_remotely=ecf_files_remotely,
         )
+
+        add_calc_fields_trigger = forecast_task
+        creategrib_trigger = forecast_task
+
         if n_io_merge > 0:
-            MergeIOFamily(
+            io_merge = MergeIOFamily(
                 self,
                 config,
                 task_settings,
@@ -738,27 +772,43 @@ class ForecastFamily(EcflowSuiteFamily):
                 trigger=forecast_task,
                 ecf_files_remotely=ecf_files_remotely,
             )
+            add_calc_fields_trigger = io_merge
+            creategrib_trigger = io_merge
 
-        add_total_prec_task = EcflowSuiteTask(
-            "AddCalculatedFields",
-            self,
-            config,
-            task_settings,
-            ecf_files,
-            input_template=input_template,
-            trigger=forecast_task,
-            ecf_files_remotely=ecf_files_remotely,
-        )
-
-        if len(config.get("task.CreateGrib.conversions", [])) > 0:
-            EcflowSuiteTask(
+        if len(config.get("creategrib.CreateGrib.conversions", [])) > 0:
+            add_calc_fields_trigger = EcflowSuiteTask(
                 "CreateGrib",
                 self,
                 config,
                 task_settings,
                 ecf_files,
                 input_template=input_template,
-                trigger=forecast_task,
+                trigger=creategrib_trigger,
+                ecf_files_remotely=ecf_files_remotely,
+            )
+
+        add_calc_fields_task = EcflowSuiteTask(
+            "AddCalculatedFields",
+            self,
+            config,
+            task_settings,
+            ecf_files,
+            input_template=input_template,
+            trigger=add_calc_fields_trigger,
+            ecf_files_remotely=ecf_files_remotely,
+        )
+
+        fdb_sel = config.get("archiving.FDB.fdb", {})
+        fdb_archiving_active = [v["active"] for v in fdb_sel.values()]
+        if any(fdb_archiving_active):
+            EcflowSuiteTask(
+                "ArchiveFDB",
+                self,
+                config,
+                task_settings,
+                ecf_files,
+                input_template=input_template,
+                trigger=add_calc_fields_task,
                 ecf_files_remotely=ecf_files_remotely,
             )
 
@@ -770,7 +820,7 @@ class ForecastFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
-                trigger=add_total_prec_task,
+                trigger=add_calc_fields_task,
             )
 
         if ImpactModels(config, "StartImpactModels").is_active:
@@ -781,7 +831,7 @@ class ForecastFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
-                trigger=forecast_task,
+                trigger=add_calc_fields_task,
             )
 
 

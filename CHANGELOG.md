@@ -10,6 +10,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.15.0] - 2025-04-24
+
+### Added
+- Add wfp configuration for all cscs and event-type for windfarm [\#999](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/999) (@jacobsnoeijer)
+- Prepare for activation of FDB archiving in operations and add a new FDB archiving task. [\#1096](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1096). FDB archiving switch off due to memory problems in [\#1127](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1126). (@uandrae)
+- Add grib conversion of static files [\#1035](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1035) (@uandrae)
+- Modified gribmodify to use a json file for configuration [\#1049](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1049) (@KristianHMoller)
+- Updated gribmodify to do patch averaging for AQ needs [\#1049](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1049) (@KristianHMoller)
+- Added config files for running CY49 in leonardo [\#1064](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1064) (@pardallio)
+- Added config files for running CY49 in SP [\#1064](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1064) (@pardallio)
+
+### Changed
+- Move Ecflow limit from E923 Family to StaticData family. [\#1121] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1121) (@kastelecn)
+- Change walltime for Forecast task on LUMI for cy48t3 [\#1113](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1113) (FlorianW-ZAMG)
+- Change bindir for CY49t2 to match new name convention [\1122](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1122)(@uandrae)
+- Change default balance between PROCs used for Forecast and IO for default (small domain) configuration [\1114](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1114)(@jacobsnoeijer)
+- Change default behaviour of the deode show namelist command. Now produces unparsed namelists. [\#1099](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1099) (@uandrae)
+- Let the IOmerge tasks cleanup the Forecast working directories[\#1102](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1102) (@uandrae)
+
+### Fixed
+- Fix trigger bug introduced in #1102. [\#1125](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1125) (@uandrae)
+- Fix forecast archive bug introduced in #1102. [\#1124](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1124) (@uandrae)
+- Fix name of suite to ignore in cleaning. [\#1116](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1116) (@kastelecn)
+- Fixed some details in Mars requests depending on Mars client version and data origin [\#1066] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1066) (@adeckmyn)
+- Remove erroneous macro warnings for non-existent impact model [\#1091](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1091) (@uandrae)
+- Made git branch structure figures appear in documentation. Resolved sphinx warnings [\#1077](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1077) (@mafdmi)
+- Make sure the IOmerge tasks fails if the Forecast task fails [\#1090](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1090)(@uandrae)
+- Updated documentation of FDB as georef is added, also remove backgroundProcess = "99" as default grib_set [\#1094](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1094) (@johtoblan)
+
 ## [0.14.0] - 2025-03-27
 
 ### Added
@@ -29,6 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use 32 bit space filling curve for geohash [\#1042](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1042) (@johtoblan)
 - Reduce ntasks for C903 on lumi. [\#1080](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1080) (@kastelecn)
 - Add snowfields to IFSENS MARS request [\#1055](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1055)(@uandrae)
+- Specify timeIncrement to hours for 60M precipitation variables in faFieldNames.def[\#1052](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1052)(@KristianHMoller)
 
 ## [0.13.2] - 2025-03-21
 

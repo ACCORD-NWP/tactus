@@ -102,6 +102,9 @@ class Marsprep(Task):
         logger.info("MARS data expected in:{}", self.prepdir)
 
         self.mars_bin = self.get_binary("mars")
+        self.mars_version = int(
+            self.config.get("submission.task_exceptions.Marsprep.mars_version", "6")
+        )
         self.batch = BatchJob(os.environ, wrapper=self.wrapper)
 
         self.additional_data = {}
@@ -168,14 +171,15 @@ class Marsprep(Task):
             source:             Sorce for retrieve data from disk. Defaults None.
 
         """
-        if grid is not None:
+        if grid is not None and self.mars_version == 6:
             request.add_grid(grid)
 
         # Additional request parameters if EPS
         if members:
             request.add_eps_members(members, prefetch=prefetch)
 
-        request.add_process()
+        if self.mars_version == 6:
+            request.add_process()
         request.add_levelist(self.mars["levelist"])
 
         # Set stream
@@ -343,7 +347,7 @@ class Marsprep(Task):
         """Get Lat/Lon data."""
         prefetch = False
 
-        method = self.mars["latlon_method"]
+        method = "retrieve" if self.mars_version == 6 else "read"
         str_step = "{}".format(steps[0])
         param = (
             get_value_from_dict(self.mars["GG"], self.init_date_str)

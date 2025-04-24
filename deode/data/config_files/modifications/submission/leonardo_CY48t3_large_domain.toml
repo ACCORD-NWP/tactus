@@ -14,6 +14,7 @@
   CPUSPERTASK = "#SBATCH --cpus-per-task=4"
   HYPERTHREAD = "#SBATCH --hint=nomultithread"
   NODES = "#SBATCH --nodes=15"
+  QOS = "#SBATCH --qos=normal"
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=27"
   WALLTIME = "#SBATCH --time=08:00:00"
 

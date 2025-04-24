@@ -9,6 +9,7 @@ This section contains tasks that are done only once during a model run. In case 
 
  * {class}`deode.tasks.sfx.Pgd` runs PGD using ECOCLIMAP SG for either a single 10 day period or the full year. Check `config.pgd` for PGD configuration options and use `deode show namelist [--config-file your_config.toml] -t surfex -n pgd` to print the used namelist.
  * {class}`deode.tasks.e923.PgdUpdate` updates the topography in the Const.Clim.sfx file with the one filtered/truncated in E923Constant.
+ * {class}`deode.tasks.creategrib.CreateGribStatic` converts static FA files to GRIB files.
 
 ### E923
 These task handles the generation of the non-SURFEX related static data required by the model. Type `deode show namelist -t master -n show` to show the available namelists used in e923.
@@ -28,7 +29,7 @@ These task handles the generation of the non-SURFEX related static data required
  * {class}`deode.tasks.forecast.Forecast` runs the forecast for any of the three CSCs. Namelists can be extracted with `deode show namelist [--config-file your_config.yoml] -t master -n forecast` for the upper air namelist and with `-t surfex -n forecast` for the surfex part.
 
 ## Postprocessing
- * {class}`deode.tasks.creategrib.CreateGrib` converts FA files to GRIB files. Configured to only work with output from SURFEX producing GRIB1 files.
+ * {class}`deode.tasks.creategrib.CreateGrib` converts FA files to GRIB files.
 
  * {class}`deode.tasks.extractsqlite.ExtractSQLite` extracts data for point verification with harp. Options defined in [config.extractsqlite](#property-config-extractsqlite) and in the parameter lists under `deode/data/sqlite`
 

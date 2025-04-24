@@ -1,2 +1,5 @@
 [general.times]
   start = "-P1D"
+
+[suite_control]
+  max_static_data_tasks = 2

@@ -9,33 +9,38 @@ from .base import Task
 from .batch import BatchJob
 
 
-class CreateGrib(Task):
+class GlGrib(Task):
     """Create grib files."""
 
-    def __init__(self, config):
+    def __init__(self, config, name=""):
         """Construct create grib object.
 
         Args:
             config (deode.ParsedConfig): Configuration
+            name (str): Task name
         """
-        Task.__init__(self, config, __class__.__name__)
+        Task.__init__(self, config, name)
 
         self.archive = self.platform.get_system_value("archive")
-
-        self.basetime = as_datetime(self.config["general.times.basetime"])
-        self.forecast_range = self.config["general.times.forecast_range"]
-
-        self.conversions = self.config.get(f"task.{self.name}.conversions", {})
-
-        self.rules = {
-            filetype: self.config.get(f"task.{self.name}.{filetype}", {"namelist": []})
-            for filetype in self.conversions
-        }
-        self.output_settings = self.config["general.output_settings"]
         self.file_templates = self.config["file_templates"]
+        self.csc = self.config["general.csc"]
+
+        if self.name == "CreateGribStatic":
+            self.rules = self.config.get(f"creategrib.{self.name}", {})
+
+        elif self.name == "CreateGrib":
+            self.conversions = self.config.get(f"creategrib.{self.name}.conversions", {})
+            self.rules = {
+                filetype: self.config.get(
+                    f"creategrib.{self.name}.{filetype}", {"namelist": []}
+                )
+                for filetype in self.conversions
+            }
+            self.output_settings = self.config["general.output_settings"]
+            self.forecast_range = self.config["general.times.forecast_range"]
+            self.basetime = as_datetime(self.config["general.times.basetime"])
 
         self.gl = self.get_binary("gl")
-        self.csc = self.config["general.csc"]
 
     def create_list(self, input_template, output_settings):
         """Create list of files to process."""
@@ -52,7 +57,7 @@ class CreateGrib(Task):
     def convert2grib(self, infile, outfile, filetype):
         """Convert FA to grib.
 
-        Namelist arguments are given in the task.creategrib config part
+        Namelist arguments are given in the creategrib.NAME config part
         per filetype
         Args:
             infile (str): Input file
@@ -96,15 +101,61 @@ class CreateGrib(Task):
 
     def execute(self):
         """Execute creategrib."""
-        for filetype in self.conversions:
-            file_handle = self.create_list(
-                self.file_templates[filetype]["archive"],
-                self.output_settings[filetype],
-            )
-            for validtime, fname in file_handle.items():
-                output = self.platform.substitute(
-                    self.file_templates[filetype]["grib"], validtime=validtime
-                )
-                logger.info("Convert: {} to {}", fname, output)
-                self.convert2grib(fname, output, filetype)
-                self.fmanager.output(output, f"{self.archive}/{output}")
+        if self.name == "CreateGribStatic":
+            for filetype, rules in self.rules.items():
+                for i, _fname in enumerate(rules["files_in"]):
+                    fname = self.platform.substitute(_fname)
+                    output = self.platform.substitute(rules["files_out"][i])
+                    outfile = os.path.basename(output)
+                    logger.info("Convert: {} to {}", fname, outfile)
+                    self.convert2grib(fname, outfile, filetype)
+                    self.fmanager.output(outfile, output)
+
+        elif self.name == "CreateGrib":
+            for filetype in self.conversions:
+                if "output_frequency_reference" not in self.rules[filetype]:
+                    file_handle = self.create_list(
+                        self.file_templates[filetype]["archive"],
+                        self.output_settings[filetype],
+                    )
+                else:
+                    file_handle = self.create_list(
+                        self.file_templates[filetype]["archive"],
+                        self.output_settings[
+                            self.rules[filetype]["output_frequency_reference"]
+                        ],
+                    )
+                for validtime, fname in file_handle.items():
+                    output = self.platform.substitute(
+                        self.file_templates[filetype]["grib"], validtime=validtime
+                    )
+                    logger.info("Convert: {} to {}", fname, output)
+                    self.convert2grib(fname, output, filetype)
+                    self.fmanager.output(output, f"{self.archive}/{output}")
+
+        else:
+            raise NotImplementedError(f"Not implemented name={self.name}")
+
+
+class CreateGrib(GlGrib):
+    """Convert time dependent files."""
+
+    def __init__(self, config):
+        """Construct object.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+        """
+        GlGrib.__init__(self, config, __class__.__name__)
+
+
+class CreateGribStatic(GlGrib):
+    """Convert static files."""
+
+    def __init__(self, config):
+        """Construct object.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+        """
+        GlGrib.__init__(self, config, __class__.__name__)

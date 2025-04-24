@@ -1374,16 +1374,13 @@ f4_HARMONIE_AROME:
     NPROCESS_LEVEL: 5
     NPROC_IO: ${cfg:namelist.nproc_io,0}
   NAMNRTAER:
-    CCNMIN: 10000000.0
-    CLDROPMIN: 10000000.0
     LAECCN2CLDR: false
     LAEIFN: false
     LAERDRDEP: false
     LAERSSEM: false
     LCAMS_NRT: false
     LMOCA_NRT: false
-    SSMAX: 0.10000E-01
-    RCCNMINR: 10.0E6
+    RCCNMIN: 10.0E6
     RCLDROPMIN: 10.0E6
     RIFNMINSIZE: 0.01
     SSMINLO: 0.0005
@@ -1422,7 +1419,6 @@ f4_HARMONIE_AROME:
     LRTPP: true
     LVFULL: false
     LVOIGT: true
-    LWINDFARM: false
     NRAUTOEV: 3
     NRAY: 2
     NSORAYFR: -1
@@ -1580,6 +1576,10 @@ f4_common:
     LELAM: true
     NCONF: 1
     NSUPERSEDE: 1
+  NAMCFU:
+    LWFPAC: ${cfg:general.windfarm}
+  NAMXFU:
+    LXWFPIN: ${cfg:general.windfarm}
   NAMCT0:
     LAROME: true
   NAMCT1:
@@ -1629,6 +1629,7 @@ f4_common:
     LAEROSEA: true
     LAEROSOO: true
     LO3ABC: true
+    LWINDFARM: ${cfg:general.windfarm}
 
 f4_c903_main:
   NAEPHY:

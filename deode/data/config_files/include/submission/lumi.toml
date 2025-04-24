@@ -20,7 +20,7 @@
 [submission.task]
   wrapper = "time"
 
-[submission.task_exceptions.ArchiveHour.ENV]
+[submission.task_exceptions.ArchiveFDB.ENV]
   FDB5_HOME = "/appl/local/destine/mars/versions/6.99.2.0/"
 
 [submission.task_exceptions.C903]
@@ -53,13 +53,15 @@
 
 [submission.task_exceptions.Marsprep]
   bindir = "/appl/local/destine/bin"
+  mars_version = "7"
   WRAPPER = ""
 
 [submission.task_exceptions.Marsprep.BATCH]
   MEM = "#SBATCH --mem=0GB"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
-  WALLTIME = "#SBATCH --time=00:30:00"
+  PARTITION = "#SBATCH --partition=standard"
+  WALLTIME = "#SBATCH --time=06:00:00"
 
 [submission.task_exceptions.Marsprep.ENV]
   MARS_READANY_BUFFER_SIZE = 17893020000
@@ -207,7 +209,7 @@
   NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
-  PARTITION = "#SBATCH --partition=standard"
+  PARTITION = "#SBATCH --partition=debug"
   WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:20:00"
 

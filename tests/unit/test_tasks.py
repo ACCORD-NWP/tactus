@@ -16,7 +16,7 @@ from deode.tasks.base import Task
 from deode.tasks.batch import BatchJob
 from deode.tasks.clean_old_data import CleanSuites
 from deode.tasks.collectlogs import CollectLogs
-from deode.tasks.creategrib import CreateGrib
+from deode.tasks.creategrib import GlGrib
 from deode.tasks.discover_task import available_tasks, get_task
 from deode.tasks.e923 import E923
 from deode.tasks.extractsqlite import ExtractSQLite
@@ -84,7 +84,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_task_archive_archivehour_execute_method = ArchiveHour.execute
     original_task_archive_archivestatic_execute_method = ArchiveStatic.execute
     original_task_clean_old_data_cleansuites_execute_method = CleanSuites.execute
-    original_task_creategrib_creategrib_execute_method = CreateGrib.execute
+    original_task_creategrib_glgrib_execute_method = GlGrib.execute
     original_task_gribmodify_addtotalprec_execute_method = AddCalculatedFields.execute
     original_task_extractsqlite_extractsqlite_execute_method = ExtractSQLite.execute
     original_task_e923_constant_part_method = E923.constant_part
@@ -141,10 +141,10 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     def new_task_cleaning_tasks_cleaner_execute_method(*args, **kwargs):  # noqa: ARG001
         """Skip any work."""
 
-    def new_task_creategrib_creategrib_execute_method(*args, **kwargs):
+    def new_task_creategrib_glgrib_execute_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
-        with contextlib.suppress(FileNotFoundError):
-            original_task_creategrib_creategrib_execute_method(*args, **kwargs)
+        with contextlib.suppress(NotImplementedError, FileNotFoundError):
+            original_task_creategrib_glgrib_execute_method(*args, **kwargs)
 
     def new_task_gribmodify_addtotalprec_execute_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
@@ -229,8 +229,8 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         new=new_task_cleaning_tasks_cleaner_execute_method,
     )
     session_mocker.patch(
-        "deode.tasks.creategrib.CreateGrib.execute",
-        new=new_task_creategrib_creategrib_execute_method,
+        "deode.tasks.creategrib.GlGrib.execute",
+        new=new_task_creategrib_glgrib_execute_method,
     )
     session_mocker.patch(
         "deode.tasks.gribmodify.AddCalculatedFields.execute",

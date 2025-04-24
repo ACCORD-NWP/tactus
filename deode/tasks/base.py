@@ -142,23 +142,28 @@ class Task(object):
         """Change to task working dir."""
         os.chdir(self.wdir)
 
-    def remove_wdir(self):
+    def remove_wdir(self, wdir=None):
         """Remove working directory."""
-        os.chdir(self.wrk)
-        shutil.rmtree(self.wdir)
-        logger.debug("Remove {}", self.wdir)
+        if wdir is None:
+            wdir = self.wdir
+        shutil.rmtree(wdir)
+        logger.info("Remove working directory {}", wdir)
 
-    def rename_wdir(self, prefix="Failed_task_"):
-        """Rename failed working directory."""
-        if os.path.isdir(self.wdir):
-            fdir = f"{self.wrk}/{prefix}{self.name}"
+    def rename_wdir(self, prefix="Failed_task_", source=None, target=None):
+        """Rename failed/completed working directory."""
+        if source is None:
+            source = self.wdir
+        if target is None:
+            target = self.name
+        if os.path.isdir(source):
+            fdir = f"{self.wrk}/{prefix}{target}"
             if os.path.exists(fdir):
                 logger.debug("{} exists. Remove it", fdir)
                 shutil.rmtree(fdir)
-            pid = os.path.basename(self.wdir)
+            pid = os.path.basename(source)
             fdir = f"{fdir}_{pid}"
-            shutil.move(self.wdir, fdir)
-            logger.info("Renamed {} to {}", self.wdir, fdir)
+            shutil.move(source, fdir)
+            logger.info("Renamed {} to {}", source, fdir)
 
     def get_binary(self, binary_name):
         """Determine binary path from task or system config section.
@@ -213,7 +218,7 @@ class Task(object):
 
         atexit.register(self.rename_wdir)
 
-    def post(self):
+    def post(self, source=None, target=None):
         """Do default postfix.
 
         E.g. clean
@@ -222,10 +227,9 @@ class Task(object):
         logger.debug("Base class post")
         # Clean workdir
         if self.config["general.keep_workdirs"]:
-            self.rename_wdir(prefix="Finished_task_")
-
+            self.rename_wdir(prefix="Finished_task_", source=source, target=target)
         else:
-            self.remove_wdir()
+            self.remove_wdir(wdir=source)
 
     def run(self):
         """Run task.

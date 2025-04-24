@@ -84,6 +84,7 @@ class DeodeSuiteDefinition(SuiteDefinition):
                 self.ecf_files,
                 trigger=initial_cleaning,
                 ecf_files_remotely=self.ecf_files_remotely,
+                dry_run=dry_run,
             )
             # Update trigger for time dependent node
             time_dependent_trigger_node = static_data
