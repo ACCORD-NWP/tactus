@@ -71,7 +71,7 @@
   active = true
   inpath = "@ARCHIVE_ROOT@"
   outpath = ""
-  pattern = "config.toml"
+  pattern = ["config.toml", "expanded_config.toml"]
 
 [archiving.static.ecfs.logs]
   active = true
