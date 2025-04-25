@@ -3,7 +3,7 @@
   keep_workdirs = false
 
 [archiving.FDB.fdb.fpgrib_files]
-  active = true
+  active = false
 
 [archiving.hour.copy.config]
   active = true
