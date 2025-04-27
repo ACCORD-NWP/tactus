@@ -1,5 +1,8 @@
 # Available tasks
 
+## Preparations
+ * {class}`deode.tasks.cleaning_tasks.PrepRun` prepares the run by storing the used (and expanded) config file and by removing old ecflow output and job files.
+
 ## Preparation of static files
 This section contains tasks that are done only once during a model run. In case the static files already exists the tasks can be deactivated in the suite setting `config.suite_control.create_static_data` to `False`. The location of the background input data used is defined in `config.platform` and the resulting output files are stored in a directory defined by `config.system.climdir`.
 
@@ -46,7 +49,6 @@ For archiving we have the following two tasks
 ## Cleaning
 These tasks takes care of temporary files and directories or files that has been archived as described above. The rules for the cleaning tasks described below are defined in `config.cleaning.TASK`. Read more about the cleaning [here](#cleaning-of-experiment).
 
- * {class}`deode.tasks.cleaning_tasks.PreCleaning` prepares the run by removing old ecflow output and job files.
  * {class}`deode.tasks.cleaning_tasks.CycleCleaning` runs after each cycle and removes old directories and files with some delay as defined in the configuration.
  * {class}`deode.tasks.cleaning_tasks.PostMortem` runs at the very end of the suite and could potentially remove all obsolete ecflow output files.
 

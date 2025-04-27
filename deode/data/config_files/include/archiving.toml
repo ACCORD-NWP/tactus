@@ -59,13 +59,6 @@
 [archiving.prefix]
   ecfs = "ec:/@USER@/deode/@CASE@"
 
-[archiving.static.copy.config]
-  active = true
-  inpath = ""
-  newname = "config.toml"
-  outpath = "@ARCHIVE_ROOT@"
-  pattern = "@CONFIG@"
-
 [archiving.static.ecfs]
 
 [archiving.static.ecfs.climate_files]
@@ -78,7 +71,7 @@
   active = true
   inpath = "@ARCHIVE_ROOT@"
   outpath = ""
-  pattern = "config.toml"
+  pattern = ["config.toml", "expanded_config.toml"]
 
 [archiving.static.ecfs.logs]
   active = true

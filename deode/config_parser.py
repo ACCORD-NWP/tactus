@@ -208,7 +208,8 @@ class BasicConfig(BaseMapping):
         """
         with open(config_file, mode="w", encoding="utf8") as fh:
             tomlkit.dump(self.dict(), fh)
-        config = FormatterOptions.from_toml_file("pyproject.toml")
+        pyproject_toml = GeneralConstants.PACKAGE_DIRECTORY.parent / "pyproject.toml"
+        config = FormatterOptions.from_toml_file(pyproject_toml)
         formatted_toml = FormattedToml.from_file(
             path=config_file, formatter_options=config
         )
@@ -369,11 +370,18 @@ class ParsedConfig(BasicConfig):
         rtn += f", json_schema={self.json_schema.dumps(style='json')})"
         return rtn
 
-    def expand_macros(self):
-        """Expand macros in config recursively."""
+    def expand_macros(self, expand_all=False):
+        """Expand macros in config recursively.
+
+        Args:
+            expand_all (boolean): Flag to expand all macros
+
+        Returns:
+            config (ParsedConfig): Parsed configuration
+        """
         config = self.dict()
         macros = config["macros"]
-        if "case" in macros:
+        if "case" in macros and not expand_all:
             macros["select"] = {"case": self["macros.case"]}
         config["macros"] = macros
         macro_platform = Platform(BasicConfig(config))

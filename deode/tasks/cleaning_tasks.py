@@ -1,7 +1,8 @@
 """Clean deode file systems."""
 
-from ..cleaning import CleanDeode
-from .base import Task
+
+from deode.cleaning import CleanDeode
+from deode.tasks.base import Task
 
 
 class Cleaning(Task):
@@ -31,20 +32,6 @@ class Cleaning(Task):
     def execute(self):
         """Run the cleaning."""
         self.cleaner.clean()
-
-
-class PreCleaning(Cleaning):
-    """Preparatory cleaning task."""
-
-    def __init__(self, config):
-        """Construct object.
-
-        Args:
-            config (deode.ParsedConfig): Configuration
-        """
-        Cleaning.__init__(self, config)
-        self.name = "PreCleaning"
-        self.prep_clean_task(self.name)
 
 
 class CycleCleaning(Cleaning):
