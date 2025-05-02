@@ -4,9 +4,10 @@
 import os
 import tarfile
 
-from ..logs import logger
-from ..os_utils import Search, deodemakedirs
-from .base import Task
+from deode.archive import Archive
+from deode.logs import logger
+from deode.os_utils import Search, deodemakedirs
+from deode.tasks.base import Task
 
 
 class CollectLogs(Task):
@@ -26,11 +27,15 @@ class CollectLogs(Task):
         self.joboutdir = self.config["task.args.joboutdir"]
         self.tarname = self.config["task.args.tarname"]
         self.task_logs = self.platform.substitute(self.config["task.args.task_logs"])
+        self.config_label = self.platform.substitute(
+            self.config["task.args.config_label"]
+        )
         self.parent = os.path.dirname(self.joboutdir)
         self.target = os.path.basename(self.joboutdir)
         if self.target == "":
             self.target = "."
         self.tarfile = f"{self.wrk}/{self.tarname}.tar.gz"
+        self.do_archiving = config["suite_control.do_archiving"]
 
     def scan_logs(self, tarlog, parent, target, pattern="", exclude=""):
         """Search for files matching a pattern and add them to a tar file.
@@ -83,3 +88,5 @@ class CollectLogs(Task):
 
         tarlog.close()
         self.fmanager.output(self.tarfile, self.logs)
+        if self.do_archiving:
+            Archive(self.config, self.config_label, exclude=["FDB"]).execute()

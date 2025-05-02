@@ -903,27 +903,8 @@ class PostCycleFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
-        task_logs = config["system.wrk"]
-        args = ";".join(
-            [
-                (f"joboutdir={ecf_out}/{suite_name}" + f"/{cycle.day}/{cycle.time}"),
-                f"tarname={cycle.day}_{cycle.time}",
-                f"task_logs={task_logs}",
-            ]
-        )
-        variables = {"ARGS": args}
-        collect_logs_hour = EcflowSuiteTask(
-            "CollectLogs",
-            self,
-            config,
-            task_settings,
-            ecf_files,
-            input_template=input_template,
-            variables=variables,
-            ecf_files_remotely=ecf_files_remotely,
-        )
-
-        cleaning_triggers = [collect_logs_hour]
+        collectlogs_triggers = []
+        cleaning_triggers = []
         if config["suite_control.do_archiving"]:
             archive_hour = EcflowSuiteTask(
                 "ArchiveHour",
@@ -932,10 +913,10 @@ class PostCycleFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
-                trigger=collect_logs_hour,
                 ecf_files_remotely=ecf_files_remotely,
             )
-            cleaning_triggers = [archive_hour]
+            cleaning_triggers.append(archive_hour)
+            collectlogs_triggers.append(archive_hour)
 
         if (
             config["suite_control.do_cleaning"]
@@ -943,7 +924,7 @@ class PostCycleFamily(EcflowSuiteFamily):
         ):
             cleaning_triggers.append(external_cycle_cleaning_trigger)
 
-            EcflowSuiteTask(
+            cleaning_task = EcflowSuiteTask(
                 "CycleCleaning",
                 self,
                 config,
@@ -953,6 +934,29 @@ class PostCycleFamily(EcflowSuiteFamily):
                 trigger=cleaning_triggers,
                 ecf_files_remotely=ecf_files_remotely,
             )
+            cleaning_triggers.append(cleaning_task)
+            collectlogs_triggers.append(cleaning_task)
+
+        task_logs = config["system.wrk"]
+        args = ";".join(
+            [
+                (f"joboutdir={ecf_out}/{suite_name}" + f"/{cycle.day}/{cycle.time}"),
+                f"tarname={cycle.day}_{cycle.time}",
+                f"task_logs={task_logs}",
+                "config_label=hourlogs",
+            ]
+        )
+        EcflowSuiteTask(
+            "CollectLogs",
+            self,
+            config,
+            task_settings,
+            ecf_files,
+            input_template=input_template,
+            variables={"ARGS": args},
+            trigger=collectlogs_triggers,
+            ecf_files_remotely=ecf_files_remotely,
+        )
 
 
 class TimeDependentFamily(EcflowSuiteFamily):

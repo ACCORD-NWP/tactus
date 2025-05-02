@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
+from deode.archive import Archive
 from deode.derived_variables import set_times
-from deode.tasks.archive import Archive
 from deode.toolbox import FDB, compute_georef
 
 

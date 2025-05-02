@@ -38,12 +38,6 @@
   outpath = "archive/@ARCHIVE_TIMESTAMP@"
   pattern = "GRIB@CNMEXP@*"
 
-[archiving.hour.ecfs.logs]
-  active = true
-  inpath = "@LOGS@"
-  outpath = "logs"
-  pattern = "@YYYY@@MM@@DD@_@HH@@mm@.tar.gz"
-
 [archiving.hour.ecfs.sqlite]
   active = "suite_control.do_extractsqlite"
   inpath = "@SQLITE_PATH@"
@@ -55,6 +49,12 @@
   inpath = "@ARCHIVE@"
   outpath = "lumi_transfer:@SCRATCH@/@USER@_atos_@CASE@/archive/@ARCHIVE_TIMESTAMP@"
   pattern = "GRIBPF*"
+
+[archiving.hourlogs.ecfs.logs]
+  active = true
+  inpath = "@LOGS@"
+  outpath = "logs"
+  pattern = "@YYYY@@MM@@DD@_@HH@@mm@.tar.gz"
 
 [archiving.prefix]
   ecfs = "ec:/@USER@/deode/@CASE@"
@@ -73,7 +73,7 @@
   outpath = ""
   pattern = ["config.toml", "expanded_config.toml"]
 
-[archiving.static.ecfs.logs]
+[archiving.staticlogs.ecfs.logs]
   active = true
   inpath = "@LOGS@"
   outpath = "logs"

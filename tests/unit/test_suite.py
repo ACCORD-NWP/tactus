@@ -57,7 +57,7 @@ class TestSuite:
             {"suite_control": {"create_time_dependent_suite": False, "do_soil": False}},
             {
                 "suite_control": {
-                    "do_archiving": True,
+                    "do_archiving": False,
                     "do_cleaning": False,
                     "do_extractsqlite": True,
                     "do_marsprep": True,
