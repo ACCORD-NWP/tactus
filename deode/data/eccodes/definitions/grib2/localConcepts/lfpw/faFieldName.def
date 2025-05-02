@@ -5776,12 +5776,8 @@
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 25 ;
-    typeOfFirstFixedSurface = 151 ;
-    scaleFactorOfFirstFixedSurface = 0 ; 
-    scaledValueOfFirstFixedSurface = 1 ; 
-    typeOfSecondFixedSurface = 151 ; 
-    scaleFactorOfSecondFixedSurface = 0 ; 
-    scaledValueOfSecondFixedSurface = 2 ; 
+    typeOfFirstFixedSurface = 1 ;
+    typeOfSecondFixedSurface = 167 ;
     tileIndex = 1 ;
     tileClassification = 4 ;
     typeOfTile = 1501 ;
