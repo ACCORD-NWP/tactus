@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Introduce caching of parameters to speedup the search in GRIB files in gribmody.py.[\#1136](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1136) (@uandrae)
 - Add generation and storage of expanded config file for dcmbd usage.[\#1126](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1126) (@uandrae)
 
 ### Changed

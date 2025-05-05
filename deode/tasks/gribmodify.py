@@ -43,6 +43,8 @@ class AddCalculatedFields(Task):
 
         self.csc = self.config["general.csc"]
 
+        self.toc = {}
+
     def expand_input_grib_id(self, rules):
         """Expand input_grib_id entries into separate instances."""
         expanded_rules = []
@@ -101,6 +103,7 @@ class AddCalculatedFields(Task):
                 additional_file_path = self.platform.substitute(additional_file_value)
 
             if not os.path.exists(additional_file_path):
+                logger.warning("Additional files requested:{}", additional_files)
                 raise ValueError(f"Additional file {additional_file_path} does not exist")
             additional_file_paths.append(additional_file_path)
 
@@ -116,16 +119,33 @@ class AddCalculatedFields(Task):
             bool: True if field exists
         """
         found = False
+        param_sorted = dict(sorted(param.items()))
+        keys_hash = hash(str(param_sorted.keys()))
+        vals_hash = hash(str(param_sorted.values()))
+
+        if fname not in self.toc:
+            self.toc[fname] = {}
+        if keys_hash not in self.toc[fname]:
+            self.toc[fname][keys_hash] = {}
+
+        # Search through the dict
+        if vals_hash in self.toc[fname][keys_hash]:
+            return True
+
         with open(fname, "rb") as f_in:
             while not found:
                 gid = eccodes.codes_grib_new_from_file(f_in)
                 if gid is None:
                     break
-                match = all(
-                    self.safe_codes_get(gid, key) == value for key, value in param.items()
-                )
+                keys = {
+                    key: self.safe_codes_get(gid, key) for key, value in param.items()
+                }
+                keys_sorted = dict(sorted(keys.items()))
+                grib_vals_hash = hash(str(keys_sorted.values()))
+                if grib_vals_hash not in self.toc[fname][keys_hash]:
+                    self.toc[fname][keys_hash][grib_vals_hash] = keys
+                found = grib_vals_hash == vals_hash
                 eccodes.codes_release(gid)
-                found = match
             f_in.close()
 
         return found
@@ -138,7 +158,7 @@ class AddCalculatedFields(Task):
         try:
             return eccodes.codes_get(gid, key)
         except eccodes.KeyValueNotFoundError:
-            logger.info("Key not found {}", key)
+            logger.debug("Key not found {}", key)
             return None
 
     def find_in_files(self, param, fname, additional_files):
