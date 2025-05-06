@@ -4,13 +4,16 @@ import collections.abc
 import os
 import subprocess
 import sys
+from pathlib import Path
+from typing import Optional
 
-from .derived_variables import derived_variables
-from .logs import logger
-from .os_utils import deodemakedirs
-from .plugin import DeodePluginRegistryFromConfig
-from .tasks.discover_task import available_tasks
-from .toolbox import FileManager, Platform
+from deode.config_parser import ParsedConfig
+from deode.derived_variables import derived_variables
+from deode.logs import logger
+from deode.os_utils import deodemakedirs
+from deode.plugin import DeodePluginRegistryFromConfig
+from deode.tasks.discover_task import available_tasks
+from deode.toolbox import FileManager, Platform
 
 
 class ProcessorLayout:
@@ -258,24 +261,27 @@ class TaskSettings(object):
 
     def parse_job(
         self,
-        task,
-        config,
-        input_template_job,
-        task_job,
+        task: str,
+        config: ParsedConfig,
+        input_template_job: str,
+        task_job: Path,
+        member: Optional[int] = None,
         variables=None,
-        ecf_micro="%",
-        scheduler="ecflow",
+        ecf_micro: str = "%",
+        scheduler: str = "ecflow",
     ):
         """Read default job and change interpretor.
 
         Args:
-            task (str): Task name
-            config (deode.config): The configuration
-            input_template_job (str): Input container template.
-            task_job (str): Task container
+            task                   (str): Task name
+            config        (deode.config): The configuration
+            input_template_job     (str): Input container template.
+            task_job              (Path): Task container
+            member       (int, optional): Member number for which to parse job.
+                Defaults to None.
             variables (_type_, optional): _description_. Defaults to None.
-            ecf_micro (str, optional): _description_.
-            scheduler (str, optional): Scheduler. Defaults to ecflow.
+            ecf_micro    (str, optional): _description_.
+            scheduler    (str, optional): Scheduler. Defaults to ecflow.
 
         Raises:
             RuntimeError: In case of missing module env file
@@ -287,7 +293,7 @@ class TaskSettings(object):
             interpreter = f"{sys.executable}"
 
         logger.debug(interpreter)
-        dir_name = os.path.dirname(os.path.realpath(task_job))
+        dir_name = task_job.resolve().parent
 
         deodemakedirs(dir_name, unixgroup=self.unix_group)
 
@@ -311,12 +317,7 @@ class TaskSettings(object):
                     "ECF_HOST",
                     "ECF_PORT",
                     "ECF_NAME",
-                    "ECF_PASS",
-                    "ECF_TRYNO",
-                    "ECF_RID",
-                    "ECF_TIMEOUT",
-                    "BASETIME",
-                    "VALIDTIME",
+                    "CONFIG",
                     "LOGLEVEL",
                     "ARGS",
                     "WRAPPER",
@@ -324,9 +325,6 @@ class TaskSettings(object):
                     "NPROC_IO",
                     "NPROCX",
                     "NPROCY",
-                    "CONFIG",
-                    "DEODE_HOME",
-                    "KEEP_WORKDIRS",
                 ]
                 for ecf_var in ecf_vars:
                     file_handler.write(f'export {ecf_var}="%{ecf_var}%"\n')
@@ -377,10 +375,12 @@ class TaskSettings(object):
                 config_file = config.metadata["source_file_path"]
 
                 file_handler.write(f'export STAND_ALONE_TASK_CONFIG="{config_file!s}"\n')
+                if member is not None:
+                    file_handler.write(f"export STAND_ALONE_MEMBER={member}\n")
 
             file_handler.write(f"{interpreter} {input_template_job} || exit 1\n")
         # Make file executable for user
-        os.chmod(task_job, 0o744)
+        task_job.chmod(0o744)
 
 
 class NoSchedulerSubmission:
@@ -392,41 +392,52 @@ class NoSchedulerSubmission:
         Args:
              task_settings (dict): Submission definitions
         """
-        self.task_settings = task_settings
+        self.task_settings: TaskSettings = task_settings
 
-    def submit(self, task, config, template_job, task_job, output, troika="troika"):
+    def submit(
+        self,
+        task: str,
+        config: ParsedConfig,
+        template_job: str,
+        task_job: Path,
+        output: Path,
+        member: Optional[int] = None,
+        troika: str = "troika",
+    ):
         """Submit task.
 
         Args:
-            task (str): Task name
+            task                  (str): Task name
             config (deode.ParsedConfig): Config
-            template_job (str): Task template job file
-            task_job (str): Task job file
-            output(str): Output file
-            troika (str, optional): troika binary. Defaults to "troika".
+            template_job          (str): Task template job file
+            task_job             (Path): Task job file
+            output               (Path): Output file
+            member      (int, optional): Member number for which to submit job.
+                Defaults to None.
+            troika      (str, optional): troika binary. Defaults to "troika".
 
         Raises:
             RuntimeError: Submission failure.
         """
-        reg = DeodePluginRegistryFromConfig(config)
-        known_tasks = available_tasks(reg)
         name = task.lower()
-        if name not in known_tasks:
+        if name not in available_tasks(DeodePluginRegistryFromConfig(config)):
             raise NotImplementedError(f"Task {name} not implemented")
-        platform = Platform(config)
 
-        # Update dervived variables (nproc etc)
-        settings = self.task_settings.get_settings(task)
-        processor_layout = ProcessorLayout(settings)
-        update = derived_variables(config, processor_layout=processor_layout)
-        config = config.copy(update=update)
-
-        troika_config = platform.get_value("troika.config_file")
+        troika_config = Platform(config).get_value("troika.config_file")
         self.task_settings.parse_job(
             task=task,
-            config=config,
+            config=config.copy(
+                # Use derived variables (nproc etc)
+                update=derived_variables(
+                    config,
+                    processor_layout=ProcessorLayout(
+                        self.task_settings.get_settings(task)
+                    ),
+                )
+            ),
             input_template_job=template_job,
             task_job=task_job,
+            member=member,
             scheduler=None,
         )
         cmd = (

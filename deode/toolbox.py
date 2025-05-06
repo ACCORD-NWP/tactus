@@ -456,6 +456,7 @@ class Platform:
             lm = int((lead_seconds % 3600 - lead_seconds % 60) / 60)
             ls = int(lead_seconds % 60)
 
+            pattern = self.sub_value(pattern, "L", lh)
             pattern = self.sub_value(pattern, "LH", f"{lh:02d}")
             pattern = self.sub_value(pattern, "LL", f"{lh:02d}")
             pattern = self.sub_value(pattern, "LLH", f"{lh:03d}")

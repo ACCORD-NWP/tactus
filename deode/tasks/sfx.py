@@ -770,7 +770,12 @@ class Prep(Task):
             bddir_sfx = self.config["system.bddir_sfx"]
             bdfile_sfx_template = self.config["system.bdfile_sfx_template"]
             if self.config["boundaries.bdmodel"] == "ifs":
-                mars = Marsprep.mars_selection(self)
+                mars = Marsprep.mars_selection(
+                    selection=self.platform.substitute(
+                        self.config["boundaries.ifs.selection"]
+                    ),
+                    config=self.config,
+                )
                 bdcycle = as_timedelta(mars["ifs_cycle_length"])
                 bdcycle_start = as_timedelta(mars["ifs_cycle_start"])
             else:

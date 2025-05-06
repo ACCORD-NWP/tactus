@@ -20,7 +20,6 @@ def config_platform(tmp_directory):
         """
         [general]
             case = "mytest"
-            realization = ""
             cnmexp = "DEOD"
         [macros.select.default]
             os_macros = ["USER", "HOME"]

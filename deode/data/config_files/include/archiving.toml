@@ -79,6 +79,14 @@
   outpath = "logs"
   pattern = "StaticData.tar.gz"
 
+[archiving.staticmember.ecfs]
+
+[archiving.staticmember.ecfs.climate_files]
+  active = true
+  inpath = "@CLIMDIR@"
+  outpath = "climate/@DOMAIN@/@MEMBER_STR@"
+  pattern = ["Const.Clim*", "PGD*"]
+
 [fdb]
   create_inverse_filter = true
 

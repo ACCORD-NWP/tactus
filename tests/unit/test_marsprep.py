@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for the marsprep."""
 
-from unittest.mock import mock_open, patch
 
 import pytest
 import tomlkit
@@ -21,13 +20,16 @@ def base_parsed_config(default_config):
     return config
 
 
-@pytest.fixture(params=["HRES", "atos_bologna_DT"], scope="module")
-def parsed_config(request, base_parsed_config, tmp_directory):
+@pytest.fixture(
+    name="parsed_config_and_selection", params=["HRES", "atos_bologna_DT"], scope="module"
+)
+def fixture_parsed_config_and_selection(request, base_parsed_config, tmp_directory):
     """Return a parsed config common to tasks."""
+    selection = request.param
     config_patch = tomlkit.parse(
         f"""
         [boundaries]
-            ifs.selection = "{request.param}"
+            ifs.selection = "{selection}"
         [system]
             wrk = "{tmp_directory}"
 
@@ -35,24 +37,26 @@ def parsed_config(request, base_parsed_config, tmp_directory):
     )
 
     config = base_parsed_config.copy(update=config_patch)
-    return config
+    return selection, config
 
 
-@pytest.fixture()
-def marsprep_instance(parsed_config):
+@pytest.fixture(name="marsprep_instance")
+def fixture_marsprep_instance(parsed_config_and_selection):
     """Create a Marsprep instance using the parsed config."""
-    instance = Marsprep(parsed_config)
+    _, config = parsed_config_and_selection
+    instance = Marsprep(config)
     return instance
 
 
-def test_mars_selection(marsprep_instance):
+def test_mars_selection(parsed_config_and_selection):
     """Test the mars_selection method with the parsed config."""
-    selection = marsprep_instance.mars_selection()
+    selection_str, config = parsed_config_and_selection
+    selection = Marsprep.mars_selection(selection=selection_str, config=config)
 
     assert "expver" in selection
 
 
-def test_update_data_request(marsprep_instance):
+def test_update_data_request(marsprep_instance: Marsprep):
     """Test the update_data_request method with the parsed config."""
     param = (
         get_value_from_dict(marsprep_instance.mars["GG"], marsprep_instance.init_date_str)
@@ -77,7 +81,7 @@ def test_update_data_request(marsprep_instance):
         base_request,
         prefetch=True,
         specify_domain=False,
-        members=["1", "2"],
+        bdmembers=[1, 2],
     )
 
     assert "NUMBER" in base_request.request
@@ -100,31 +104,13 @@ def test_update_data_request(marsprep_instance):
         target="mars_latlonZ",
     )
     marsprep_instance.update_data_request(
-        request_shz, prefetch=False, members=[], specify_domain=True, source="test_source"
+        request_shz,
+        prefetch=False,
+        bdmembers=[],
+        specify_domain=True,
+        source="test_source",
     )
     assert "NUMBER" not in request_shz.request
     assert request_shz.request["SOURCE"] == ["test_source"]
     assert "GRID" in request_shz.request
     assert "AREA" in request_shz.request
-
-
-@patch("builtins.open", new_callable=mock_open, read_data=b"mocked binary data")
-@patch("os.remove")  # Mock os.remove to prevent actual file deletion
-def test_add_additional_data(mock_remove, mock_open, marsprep_instance):
-    """Test the add_additional_data method."""
-    marsprep_instance.additional_data = {}
-
-    # Run the method that should read the file and add the data to the dictionary
-    marsprep_instance.add_additional_data("test_file", "001")
-
-    # Assert that the correct data has been added
-    assert "001" in marsprep_instance.additional_data
-    assert (
-        marsprep_instance.additional_data["001"] == b"mocked binary data"
-    )  # Ensure the binary data was added correctly
-
-    # Check that open was called with the correct arguments
-    mock_open.assert_called_with("test_file", "rb")
-
-    # Ensure that os.remove was called to remove the file
-    mock_remove.assert_called_with("test_file")

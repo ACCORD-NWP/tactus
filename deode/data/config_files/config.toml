@@ -31,7 +31,8 @@
   max_interpolation_tasks = 10
 
 [boundaries.ifs]
-  bdmember = []
+  bdmember = 0
+  bdmembers = []
   selection = "@HOST@_DT"
 
 [boundaries.lam]
@@ -71,6 +72,7 @@
   cleaning = "include/cleaning.toml"
   creategrib = "include/creategrib.toml"
   domain = "include/domains/DEMO_60x80_2500m.toml"
+  eps = "include/eps/eps_default.toml"
   extractsqlite = "include/sqlite.toml"
   file_templates = "include/file_templates.toml"
   impact = "include/impact.toml"
@@ -102,10 +104,10 @@
   bdclimdir = "@FIXED_BDCLIMDIR@"
   bddir = "@INTP_BDDIR@"
   bddir_sfx = "@MARSDIR@"
-  bdfile_sfx_template = "ECSFCSFX@DOMAIN@+@LLL@"
+  bdfile_sfx_template = "ECSFCSFX@DOMAIN@_@BDMEMBER@+@LLL@"
   bdfile_template = "ELSCF@CNMEXP@ALBC@NNN@"
   casedir = "@SCRATCH@/deode/@CASE@"
-  climdir = "@CASEDIR@/climate/@DOMAIN@/"
+  climdir = "@CASEDIR@/climate/@DOMAIN@"
   logs = "@ARCHIVE_ROOT@/logs"
   marsdir = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"

@@ -1,6 +1,5 @@
 """ARCHIVEHOUR // ARCHIVESTATIC."""
 
-
 from deode.archive import Archive
 from deode.tasks.base import Task
 
@@ -16,6 +15,18 @@ class ArchiveTask(Task):
     def execute(self):
         """Loops over archive choices."""
         self.da.execute()
+
+
+class ArchiveStaticMember(ArchiveTask):
+    """Archving task for static data."""
+
+    def __init__(self, config):
+        """Construct object.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+        """
+        ArchiveTask.__init__(self, config, "staticmember")
 
 
 class ArchiveStatic(ArchiveTask):

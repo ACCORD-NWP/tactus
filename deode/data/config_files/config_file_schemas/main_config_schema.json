@@ -36,9 +36,7 @@
       "$ref": "#/definitions/gribmodify"
     }
   },
-  "required": [
-    "general"
-  ],
+  "required": ["general"],
   "definitions": {
     "include": {
       "title": "Include Section",
@@ -95,10 +93,7 @@
         "bdmodel": {
           "description": "Coupling model",
           "default": "ifs",
-          "enum": [
-            "lam",
-            "ifs"
-          ],
+          "enum": ["lam", "ifs"],
           "type": "string"
         },
         "humi_gp": {
@@ -143,16 +138,40 @@
                 "i7u4",
                 "i7ye",
                 "i8hy",
-                "IFSENS"
+                "IFSENS",
+                "iit7",
+                "ilv7"
               ]
             },
+            "bdmembers": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                }
+              ],
+              "description": "List of members in ensemble if selection is IFS.",
+              "default": []
+            },
             "bdmember": {
-              "type": "array",
-              "description": "List of members in ensemble if selection is IFSENS.",
-              "default": [],
-              "items": {
-                "type": "integer"
-              }
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "description": "Boundary member number a given ensemble member shall use if selection is IFS",
+              "default": 0
             }
           }
         },
@@ -256,10 +275,7 @@
           "items": {
             "type": "string"
           },
-          "default": [
-            "rules",
-            "namfpc_header"
-          ]
+          "default": ["rules", "namfpc_header"]
         },
         "selection": {
           "description": "List of selections to include",
@@ -305,11 +321,7 @@
         "mode": {
           "description": "Choose a strategy to achieve initial/initial_sfx files (start:  start from interpolated files and then propagate the FG between cycles, restart: start from a previous run and then propagate the FG between cycles, cold_start: always start from interpolated files).",
           "type": "string",
-          "enum": [
-            "start",
-            "restart",
-            "cold_start"
-          ]
+          "enum": ["start", "restart", "cold_start"]
         },
         "interpolate_boundaries": {
           "description": "Activates the boundary interpolation",
@@ -346,11 +358,21 @@
           "type": "integer",
           "default": 1
         },
-	"max_static_data_tasks": {
-	  "description": "Limit for max number of monthly tasks, run at same time",
-	  "type": "integer",
-	  "default": 10
-	},
+        "member_specific_static_data": {
+          "description": "Whether to create member specific static data (true) or not",
+          "type": "boolean",
+          "default": false
+        },
+        "member_specific_mars_prep": {
+          "description": "Whether to do member specific marsprep (true) or common marsprep",
+          "type": "boolean",
+          "default": false
+        },
+        "max_static_data_tasks": {
+          "description": "Limit for max number of monthly tasks, run at same time",
+          "type": "integer",
+          "default": 10
+        },
         "DeodeCleaningSuiteDefinition": {
           "decription": "Settings for Cleaning Suite",
           "type": "object",
@@ -394,7 +416,7 @@
         "forecast_dir_link": {
           "type": "string",
           "description": "Name of the softlink pointing to the Forecast task work directory",
-	  "default": "../Forecast"
+          "default": "../Forecast"
         },
         "bdfile_sfx_template": {
           "type": "string",
@@ -432,7 +454,7 @@
         "wrk": {
           "type": "string",
           "description": "Location of date specific working directory",
-          "default": "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/"
+          "default": "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@"
         },
         "fullpos_config_file": {
           "type": "string",
@@ -446,7 +468,7 @@
         "archive": {
           "type": "string",
           "description": "Absolute path of date specific archive",
-          "default": "@ARCHIVE_ROOT@/@ARCHIVE_TIMESTAMP@"
+          "default": "@ARCHIVE_ROOT@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
         },
         "logs": {
           "type": "string",
@@ -669,35 +691,23 @@
             {
               "anyOf": [
                 {
-                  "required": [
-                    "start"
-                  ],
+                  "required": ["start"],
                   "not": {
-                    "required": [
-                      "list"
-                    ]
+                    "required": ["list"]
                   }
                 },
                 {
-                  "required": [
-                    "basetime"
-                  ],
+                  "required": ["basetime"],
                   "not": {
                     "anyOf": [
                       {
-                        "required": [
-                          "end"
-                        ]
+                        "required": ["end"]
                       },
                       {
-                        "required": [
-                          "list"
-                        ]
+                        "required": ["list"]
                       },
                       {
-                        "required": [
-                          "start"
-                        ]
+                        "required": ["start"]
                       }
                     ]
                   }
@@ -705,20 +715,14 @@
               ]
             },
             {
-              "required": [
-                "list"
-              ],
+              "required": ["list"],
               "not": {
                 "anyOf": [
                   {
-                    "required": [
-                      "start"
-                    ]
+                    "required": ["start"]
                   },
                   {
-                    "required": [
-                      "end"
-                    ]
+                    "required": ["end"]
                   }
                 ]
               }
@@ -734,19 +738,16 @@
           "default": "deode_case",
           "type": "string"
         },
-        "realization": {
-          "description": "Placeholder for future ensemble or similar need",
-          "default": "",
-          "oneOf": [
-            {
-              "type": "string",
-              "maxLength": 0
-            },
-            {
-              "type": "number",
-              "minimum": 0
-            }
-          ]
+        "member_str": {
+          "description": "String identifier of a member in the ensemble",
+          "default": "mbr000",
+          "type": "string",
+          "pattern": "^mbr\\d{3}$"
+        },
+        "member": {
+          "description": "Member number of a member in the ensemble",
+          "default": 0,
+          "type": "integer"
         },
         "cnmexp": {
           "description": "Experiment short name",
@@ -758,13 +759,7 @@
         "loglevel": {
           "description": "Logger output level",
           "type": "string",
-          "enum": [
-            "CRITICAL",
-            "ERROR",
-            "DEBUG",
-            "INFO",
-            "WARNING"
-          ]
+          "enum": ["CRITICAL", "ERROR", "DEBUG", "INFO", "WARNING"]
         },
         "surfex": {
           "description": "SURFEX switch",
@@ -778,20 +773,12 @@
           "description": "CSC",
           "default": "AROME",
           "type": "string",
-          "enum": [
-            "AROME",
-            "ALARO",
-            "HARMONIE_AROME"
-          ]
+          "enum": ["AROME", "ALARO", "HARMONIE_AROME"]
         },
         "cycle": {
           "description": "IAL cycle",
           "type": "string",
-          "enum": [
-            "CY49t2",
-            "CY48t3",
-            "CY46h1"
-          ]
+          "enum": ["CY49t2", "CY48t3", "CY46h1"]
         },
         "event_type": {
           "description": "Type of extreme event",
@@ -859,9 +846,7 @@
           "default": false
         }
       },
-      "required": [
-        "times"
-      ]
+      "required": ["times"]
     }
   },
   "$output_setting_rules": {
@@ -895,7 +880,7 @@
       "items": {
         "type": "string"
       }
-    },    
+    },
     "output_name": {
       "title": "Output parameter name",
       "description": "Chosen name of output parameter.",

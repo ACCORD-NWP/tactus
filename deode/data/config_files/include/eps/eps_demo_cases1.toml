@@ -1,0 +1,22 @@
+[general]
+  case = "EPS_DEMO_CASES1_@EVENT_TYPE@_@DOMAIN@_@YMD_START@"
+
+[eps.general]
+  members = "1:6"
+
+[eps.member_settings.modifications]
+  mod1 = {1 = "modifications/arome.toml", 2 = "modifications/alaro.toml", 3 = "modifications/harmonie_arome.toml", 4 = "modifications/arome.toml", 5 = "modifications/alaro.toml"}
+  mod2 = {1 = "modifications/CY48t3.toml", 2 = "modifications/CY48t3.toml", 3 = "modifications/CY46h1.toml", 4 = "modifications/arome_CY49t2.toml", 5 = "include/vertical_levels/MF_87.toml"}
+  mod3 = {1 = "modifications/@HOST@.toml", 2 = "include/vertical_levels/MF_87.toml", 3 = "modifications/submission/@HOST@_CY46h1.toml", 4 = "modifications/CY49t2.toml", 5 = "modifications/alaro_CY49t2.toml"}
+  mod4 = {1 = "modifications/submission/@HOST@_CY48t3.toml", 2 = "modifications/submission/@HOST@_CY48t3.toml", 4 = "modifications/@HOST@.toml", 5 = "modifications/CY49t2.toml"}
+  mod5 = {2 = "modifications/submission/@HOST@_CY48t3_alaro.toml", 4 = "modifications/submission/@HOST@_CY49t2.toml", 5 = "modifications/submission/@HOST@_CY49t2.toml"}
+
+[eps.member_settings.system]
+  wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
+
+[suite_control]
+  member_specific_mars_prep = true
+  member_specific_static_data = true
+
+[system]
+  climdir = "@CASEDIR@/climate/@DOMAIN@/@MEMBER_STR@"

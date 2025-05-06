@@ -117,19 +117,25 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     parser_run = subparsers.add_parser(
         "run", help="Runs a task.", parents=[common_parser]
     )
-    parser_run.add_argument("--task", "-t", help="Task name", required=True)
+    parser_run.add_argument("--task", "-t", type=str, help="Task name", required=True)
     parser_run.add_argument(
         "--template-job",
         help="Template",
         required=False,
-        default=f"{GeneralConstants.PACKAGE_DIRECTORY}/templates/stand_alone.py",
+        type=Path,
+        default=GeneralConstants.PACKAGE_DIRECTORY / "templates/stand_alone.py",
     )
     parser_run.add_argument(
-        "--job", dest="task_job", help="Task job file", required=False
+        "--job", dest="task_job", type=Path, help="Task job file", required=False
     )
-    parser_run.add_argument("--output", "-o", help="Task output file", required=False)
-    parser_run.add_argument("--troika", default="troika")
-    parser_run.add_argument("--troika-config", default="/opt/troika/etc/troika.yml")
+    parser_run.add_argument(
+        "--output", "-o", type=Path, help="Task output file", required=False
+    )
+    parser_run.add_argument("--troika", type=str, default="troika")
+    parser_run.add_argument(
+        "--troika-config", type=str, default="/opt/troika/etc/troika.yml"
+    )
+    parser_run.add_argument("--members", nargs="+", type=int, default=None)
     parser_run.set_defaults(run_command=run_task)
 
     ##########################################

@@ -1,4 +1,5 @@
 """Discover tasks."""
+
 import contextlib
 import importlib
 import inspect
@@ -41,7 +42,7 @@ def discover_modules(package, what="plugin"):
         yield fullname, mod
 
 
-def get_task(name, config):
+def get_task(name, config) -> Task:
     """Create a `deode.tasks.Task` object from configuration.
 
     Args:
@@ -52,7 +53,8 @@ def get_task(name, config):
         NotImplementedError: If task `name` is not amongst the known task names.
 
     Returns:
-        _type_: _description_
+        Task: The task object with name `name`. The task object has to be a subclass
+        of Task to be retrievable.
     """
     with contextlib.suppress(KeyError):
         # loglevel may have been overridden, e.g., via ECFLOW UI

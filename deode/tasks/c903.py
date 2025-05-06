@@ -2,6 +2,7 @@
 
 import json
 import os
+from typing import Dict
 
 from ..config_parser import ConfigPaths
 from ..datetime_utils import as_datetime, as_timedelta, cycle_offset
@@ -26,7 +27,10 @@ class C903(Task):
         self.climdir = self.platform.get_system_value("climdir")
         self.basetime = as_datetime(self.config["general.times.basetime"])
 
-        mars = Marsprep.mars_selection(self)
+        mars = Marsprep.mars_selection(
+            selection=self.platform.substitute(self.config["boundaries.ifs.selection"]),
+            config=self.config,
+        )
         bdcycle = as_timedelta(mars["ifs_cycle_length"])
         bdcycle_start = as_timedelta(mars["ifs_cycle_start"])
         bdshift = as_timedelta(self.config["boundaries.bdshift"])
@@ -62,7 +66,7 @@ class C903(Task):
         with open(input_definition, "r", encoding="utf-8") as f:
             input_data = json.load(f)
 
-        ifs_files = input_data.pop("IFS_files")
+        ifs_files: Dict[str, str | Dict[str, str]] = input_data.pop("IFS_files")
 
         # Link the static data
         self.fmanager.input_data_iterator(input_data)
@@ -70,8 +74,15 @@ class C903(Task):
         # IFS input files
         path = ifs_files["path"]
         for dst, src in ifs_files["files"].items():
+            # Default to 0 for bdmember if no bdmember specified. This is to
+            # be able to reference files created by marsprep, which contains
+            # bdmember = 0 even for "deterministic" runs.
+            src_local = src
+            if not self.config["boundaries.ifs.bdmember"]:
+                src_local = src_local.replace("@BDMEMBER@", "0")
+
             self.fmanager.input(
-                f"{path}/{src}",
+                f"{path}/{src_local}",
                 dst,
                 basetime=self.bd_basetime,
                 validtime=as_datetime(self.bd_time),

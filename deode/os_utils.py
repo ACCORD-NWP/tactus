@@ -142,7 +142,7 @@ def filepath_iterator(paths, filename_pattern="*"):
             yield path
 
 
-def deodemakedirs(path, unixgroup="", exist_ok=True, def_dir_mode=0o755):
+def deodemakedirs(path: str | Path, unixgroup="", exist_ok=True, def_dir_mode=0o755):
     """Create directories and change unix group as required.
 
     For a given path the top directory that does not yet exist is searched for, created
@@ -150,7 +150,8 @@ def deodemakedirs(path, unixgroup="", exist_ok=True, def_dir_mode=0o755):
     and new files inherit the unix group.
 
     Args:
-        path (str): directory path that should be created if it doesn't already exist.
+        path (str | Path): directory path that should be created if it doesn't
+            already exist.
         unixgroup (str, optional): unix group the newly created dirs should belong to.
         exist_ok (boolean, optional): Define whether directories may already exist
             or whether an error should be raised.

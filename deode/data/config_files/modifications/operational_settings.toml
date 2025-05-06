@@ -113,4 +113,4 @@
   logs = "@CASEDIR@"
   marsdir = "@SCRATCH_OPER@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
   scratch_oper = "@SCRATCH@/DE_NWP/deode"
-  sub_casedir = "@ARCHIVE_TIMESTAMP@/@CASE_IDENTIFIER@"
+  sub_casedir = "@ARCHIVE_TIMESTAMP@/@CASE_IDENTIFIER@/@MEMBER_STR@"

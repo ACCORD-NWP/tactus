@@ -1,6 +1,10 @@
-import pytest
+from pathlib import Path
+from unittest.mock import MagicMock, patch
 
-from deode.config_parser import ParsedConfig
+import pytest
+import tomlkit
+
+from deode.config_parser import ConfigPaths, ParsedConfig
 from deode.experiment import EPSExp
 
 
@@ -11,9 +15,7 @@ def fixture_eps_config(default_config: ParsedConfig):
         update={
             "eps": {
                 "general": {
-                    "control_member": 0,
                     "members": "0:3,5,7",
-                    "run_continously": False,
                 },
                 "member_settings": {
                     "boundaries": {
@@ -23,7 +25,6 @@ def fixture_eps_config(default_config: ParsedConfig):
                     },
                     "general": {
                         "csc": ["AROME", "ALARO", "HARMONIE-AROME"],
-                        "realization": "-1",
                         "output_settings": {
                             "fullpos": {"1": "PT15M", "5:": "PT3H"},
                         },
@@ -41,6 +42,39 @@ def fixture_eps_config(default_config: ParsedConfig):
             }
         }
     )
+
+
+@pytest.fixture(name="module_scope_tmp_path", scope="module")
+def fixture_module_scope_tmp_path(tmp_path_factory):
+    """Fixture that provides a temporary path with module scope."""
+    # Create a temporary directory with module scope
+    tmp_path = tmp_path_factory.mktemp("module_scope_tmp")
+    return tmp_path
+
+
+@pytest.fixture(name="modifications")
+def fixture_modifications(module_scope_tmp_path: Path):
+    """Fixture that creates modification files in the temporary directory."""
+    mods = [
+        "modifications/mod0.toml",
+        "modifications/mod1.toml",
+        "modifications/mod2.toml",
+        "modifications/mod5.toml",
+        "modifications/mod7.toml",
+    ]
+    for mod in mods:
+        mod_path = Path(mod)
+        # Add content to the modification file
+        modification = {
+            "general": {
+                "case": f"test_case_{mod_path.stem}",
+            }
+        }
+        (module_scope_tmp_path / mod_path.parent).mkdir(parents=True, exist_ok=True)
+        with open(module_scope_tmp_path / mod, "w", encoding="UTF-8") as file_:
+            tomlkit.dump(modification, file_)
+
+    return mods
 
 
 class TestEPSExp:
@@ -81,3 +115,29 @@ class TestEPSExp:
         # Assert that the csc update of deviating members are correctly set
         for member in expected_members:
             assert "csc" in eps_exp.config[f"eps.mbr{member}.general"]
+
+    @patch.object(ConfigPaths, "CONFIG_DATA_SEARCHPATHS")
+    def test_setup_exp_with_modifications(
+        self,
+        mock_config_data_searchpaths: MagicMock,
+        eps_config: ParsedConfig,
+        modifications: list[str],
+        module_scope_tmp_path: Path,
+    ) -> None:
+        """Test the setup_exp method of the EPSExp class with modifications."""
+        # Add modifications to the configuration
+        eps_config = eps_config.copy(
+            update={"eps": {"member_settings": {"modifications": {"mod": modifications}}}}
+        )
+        # Mock the CONFIG_DATA_SEARCHPATHS to include the temporary path
+        mock_config_data_searchpaths.copy.return_value = [
+            str(module_scope_tmp_path),
+        ]
+        # Setup the eps experiment
+        eps_exp = EPSExp(eps_config)
+        eps_exp.setup_exp()
+
+        # Assert that the modifications are correctly resolved
+        for mod, member in zip(modifications, eps_exp.config["eps.general.members"]):
+            case_name = f"test_case_{Path(mod).stem}"
+            assert case_name == eps_exp.config["eps.members"][str(member)]["general.case"]

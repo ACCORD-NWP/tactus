@@ -31,8 +31,8 @@
 
 [system]
   bdclimdir = "@HOST_CASE@/climate/@HOST_DOMAIN@"
-  bddir = "@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@"
-  bddir_sfx = "@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@"
+  bddir = "@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+  bddir_sfx = "@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
   bdfile_sfx_template = "@BDFILE_TEMPLATE@.sfx"
   bdfile_template = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@"

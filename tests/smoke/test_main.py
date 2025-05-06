@@ -18,8 +18,8 @@ from deode.submission import NoSchedulerSubmission, TaskSettings
 from deode.toolbox import Platform
 
 
-@pytest.fixture(scope="module")
-def config_path(tmp_path_factory):
+@pytest.fixture(name="config_path", scope="module")
+def fixture_config_path(tmp_path_factory: pytest.TempPathFactory):
     main_configs_test_dir = tmp_path_factory.getbasetemp() / "config_files"
     main_configs_test_dir.mkdir()
     shutil.copy(ConfigParserDefaults.PACKAGE_CONFIG_PATH, main_configs_test_dir)
@@ -33,7 +33,7 @@ def config_path(tmp_path_factory):
 
 
 @pytest.fixture(scope="module")
-def _module_mockers(module_mocker, config_path, tmp_path_factory):
+def _module_mockers(module_mocker, config_path, tmp_path_factory: pytest.TempPathFactory):
     # Patching ConfigParserDefaults.CONFIG_PATH so tests use the generated config
     module_mocker.patch(
         "deode.config_parser.ConfigParserDefaults.__class__.__setattr__",
@@ -53,7 +53,7 @@ def _module_mockers(module_mocker, config_path, tmp_path_factory):
             original_no_scheduler_submission_submit_method(*args, **kwargs)
 
     def new_submission_task_settings_parse_job(self, **kwargs):
-        kwargs["task_job"] = (tmp_path_factory.getbasetemp() / "task_job.txt").as_posix()
+        kwargs["task_job"] = tmp_path_factory.getbasetemp() / "task_job.txt"
         with suppress(RuntimeError):
             original_submission_task_settings_parse_job(self, **kwargs)
 

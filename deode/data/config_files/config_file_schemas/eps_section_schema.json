@@ -8,31 +8,22 @@
       "properties": {
         "members": {
           "oneOf": [
+            { "type": "integer" },
             {
-              "type": "string",
-              "description": "List of sequences 'M:N' or integers",
-              "default": "0:2"
+              "type": "string"
             },
             {
               "type": "array",
               "items": {
                 "type": "integer"
-              },
-              "description": "List of integers"
+              }
             }
-          ]
-        },
-        "control_member": {
-          "type": "integer",
-          "description": "Integer",
-          "default": 0
-        },
-        "run_continously": {
-          "type": "boolean",
-          "description": "Boolean",
-          "default": false
+          ],
+          "description": "The members of the ensemble",
+          "default": [0]
         }
-      }
+      },
+      "default": {}
     }
   }
 }

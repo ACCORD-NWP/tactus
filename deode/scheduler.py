@@ -297,6 +297,14 @@ class EcflowTask:
         if self.ecf_families is not None:
             self.family1 = self.ecf_families[-1]
 
+    def __str__(self):
+        """String representation of the task.
+
+        Returns:
+            str: String representation of the task.
+        """
+        return f"{self.ecf_name}"
+
 
 class EcflowClient(object):
     """An ecflow client.

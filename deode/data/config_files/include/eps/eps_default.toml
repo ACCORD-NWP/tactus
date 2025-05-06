@@ -1,0 +1,2 @@
+[eps.member_settings.system]
+  wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"

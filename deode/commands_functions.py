@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Implement the package's commands."""
+import argparse
 import datetime
 import os
 import subprocess
 import sys
 from functools import partial
 from pathlib import Path
+from typing import List, Optional
 
 import yaml
 from toml_formatter.formatter import FormattedToml
@@ -53,7 +55,19 @@ def ssh_cmd(host, user, cmd):
         return False
 
 
-def run_task(args, config):
+class RunTaskNamespace(argparse.Namespace):
+    """Namespace for the 'run' command."""
+
+    task: str
+    deode_home: str
+    task_job: Path
+    output: Path
+    template_job: Path
+    troika: str
+    members: Optional[List[int]] = None
+
+
+def run_task(args: RunTaskNamespace, config: ParsedConfig):
     """Implement the 'run' command.
 
     Args:
@@ -67,23 +81,44 @@ def run_task(args, config):
 
     cwd = Path.cwd()
 
-    if not args.task_job:
-        args.task_job = cwd / Path(f"{args.task}.job")
-    if not args.output:
-        args.output = cwd / Path(f"{args.task}.log")
-    args.task_job = os.path.abspath(args.task_job)
-    args.output = os.path.abspath(args.output)
-    args.template_job = os.path.abspath(args.template_job)
+    # note: Path.cwd() is already resolved, so no need to resolve in this case
+    task_job = (
+        cwd / Path(f"{args.task}.job") if not args.task_job else args.task_job.resolve()
+    )
+    output = cwd / Path(f"{args.task}.log") if not args.output else args.output.resolve()
+    template_job = args.template_job.resolve()
 
     config = config.copy(update={"platform": {"deode_home": deode_home}})
     config = config.copy(update=set_times(config))
 
     submission_defs = TaskSettings(config)
     sub = NoSchedulerSubmission(submission_defs)
-    sub.submit(
-        args.task, config, args.template_job, args.task_job, args.output, args.troika
-    )
-    logger.info("Done with task {}", args.task)
+
+    if args.members is None:
+        sub.submit(
+            task=args.task,
+            config=config,
+            template_job=template_job,
+            task_job=task_job,
+            output=output,
+            troika=args.troika,
+        )
+        logger.info("Task {} submitted.", args.task)
+    else:
+        for member in args.members:
+            # Change suffixes to include member string
+            output_ = output.with_suffix(f".mbr{member:03d}{output.suffix}")
+            task_job_ = task_job.with_suffix(f".mbr{member:03d}{task_job.suffix}")
+            sub.submit(
+                task=args.task,
+                config=config,
+                template_job=template_job,
+                task_job=task_job_,
+                output=output_,
+                member=member,
+                troika=args.troika,
+            )
+            logger.info("Task {} submitted for member {}.", args.task, member)
 
 
 def create_exp(args, config):
