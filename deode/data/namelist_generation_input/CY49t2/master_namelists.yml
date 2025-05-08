@@ -961,7 +961,7 @@ f4_ALARO:
     LCOEFK_PTTE: true
     LCOEFK_RIS: false
     LCOEFK_SCQ: true
-    LCOEFK_TOMS: true
+    LCOEFK_TOMS: false
     LCOMOD: false
     LCONDWT: true
     LCVGQM: true

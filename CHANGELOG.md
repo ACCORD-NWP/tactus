@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add generation and storage of expanded config file for dcmbd usage.[\#1126](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1126) (@uandrae)
 
 ### Changed
+- Deactivate TOMS computations to allow execution of forecast model in SP.[\#1135](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1135) (@uandrae)
 - Allow archiving to be called from any task. Allows log collection to run after archiving.[\#1117](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1117) (@uandrae)
 - Rename PreCleaning to RunPrep as it also handles storing of config files.[\#1126](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1126) (@uandrae)
 - Update GRIB encoding of root depth parameter for AQ.[\#1134](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1134) (@KristianHMoller)
