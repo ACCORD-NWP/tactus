@@ -98,6 +98,8 @@
   do_soil = true
   interpolate_boundaries = true
   mode = "cold_start"
+  n_addcalculatedfields = 2
+  n_creategrib = 2
   n_io_merge = 0
 
 [system]

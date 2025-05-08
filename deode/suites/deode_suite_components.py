@@ -792,8 +792,8 @@ class InitializationFamily(EcflowSuiteFamily):
         )
 
 
-class MergeIOFamily(EcflowSuiteFamily):
-    """Class for creating the MergeIO ecFlow family."""
+class SubTaskFamily(EcflowSuiteFamily):
+    """Class for creating a subtask ecFlow family."""
 
     def __init__(
         self,
@@ -802,39 +802,34 @@ class MergeIOFamily(EcflowSuiteFamily):
         task_settings: TaskSettings,
         input_template,
         ecf_files,
-        n_io_merge: int,
-        nproc_io: int,
+        taskname,
+        ntasks: int,
+        extra_args=None,
         trigger=None,
         ecf_files_remotely=None,
     ):
         """Class initialization."""
-        # these tasks should trigger when the Forecast is *active* or *complete*
-        iomerge_trigger = EcflowSuiteTriggers(
-            [
-                EcflowSuiteTrigger(trigger, "active"),
-                EcflowSuiteTrigger(trigger, "complete"),
-            ],
-            mode="OR",
-        )
         super().__init__(
-            "MergeIO",
+            f"{taskname}Tasks",
             parent,
             ecf_files,
-            trigger=iomerge_trigger,
+            trigger=trigger,
             ecf_files_remotely=ecf_files_remotely,
         )
 
-        for ionr in range(n_io_merge):
-            iomerge_sub = EcflowSuiteFamily(
-                f"IO_{ionr:02}",
+        for tasknr in range(ntasks):
+            subfamily = EcflowSuiteFamily(
+                f"Subtask_{tasknr:02}",
                 self,
                 ecf_files,
                 ecf_files_remotely=ecf_files_remotely,
             )
-            args = f"ionr={ionr};nproc_io={nproc_io}"
+            args = f"tasknr={tasknr};ntasks={ntasks}"
+            if extra_args is not None:
+                args += f";{extra_args}"
             EcflowSuiteTask(
-                "IOmerge",
-                iomerge_sub,
+                taskname,
+                subfamily,
                 config,
                 task_settings,
                 ecf_files,
@@ -888,39 +883,49 @@ class ForecastFamily(EcflowSuiteFamily):
         creategrib_trigger = forecast_task
 
         if n_io_merge > 0:
-            io_merge = MergeIOFamily(
+            iomerge_trigger = EcflowSuiteTriggers(
+                [
+                    EcflowSuiteTrigger(forecast_task, "active"),
+                    EcflowSuiteTrigger(forecast_task, "complete"),
+                ],
+                mode="OR",
+            )
+            io_merge = SubTaskFamily(
                 self,
                 config,
                 task_settings,
                 input_template,
                 ecf_files,
+                "IOmerge",
                 n_io_merge,
-                nproc_io,
-                trigger=forecast_task,
+                extra_args=f"nproc_io={nproc_io}",
+                trigger=iomerge_trigger,
                 ecf_files_remotely=ecf_files_remotely,
             )
             add_calc_fields_trigger = io_merge
             creategrib_trigger = io_merge
 
         if len(config.get("creategrib.CreateGrib.conversions", [])) > 0:
-            add_calc_fields_trigger = EcflowSuiteTask(
-                "CreateGrib",
+            add_calc_fields_trigger = SubTaskFamily(
                 self,
                 config,
                 task_settings,
+                input_template,
                 ecf_files,
-                input_template=input_template,
+                "CreateGrib",
+                config.get("suite_control.n_creategrib", 1),
                 trigger=creategrib_trigger,
                 ecf_files_remotely=ecf_files_remotely,
             )
 
-        add_calc_fields_task = EcflowSuiteTask(
-            "AddCalculatedFields",
+        add_calc_fields_family = SubTaskFamily(
             self,
             config,
             task_settings,
+            input_template,
             ecf_files,
-            input_template=input_template,
+            "AddCalculatedFields",
+            config.get("suite_control.n_addcalculatedfields", 1),
             trigger=add_calc_fields_trigger,
             ecf_files_remotely=ecf_files_remotely,
         )
@@ -935,7 +940,7 @@ class ForecastFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
-                trigger=add_calc_fields_task,
+                trigger=add_calc_fields_family,
                 ecf_files_remotely=ecf_files_remotely,
             )
 
@@ -947,7 +952,7 @@ class ForecastFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
-                trigger=add_calc_fields_task,
+                trigger=add_calc_fields_family,
             )
 
         if ImpactModels(config, "StartImpactModels").is_active:
@@ -958,7 +963,7 @@ class ForecastFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
-                trigger=add_calc_fields_task,
+                trigger=add_calc_fields_family,
             )
 
 

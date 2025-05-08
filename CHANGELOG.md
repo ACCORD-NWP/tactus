@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Introduce subtasks for CreateGrib and AddCalculatedFields to reduce time to solution.[\#1138](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1138) (@uandrae)
 - Introduced EPS in the workflow. By default, every run is now treated as an ensemble. [\#1031](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1031)
 - Introduce caching of parameters to speedup the search in GRIB files in gribmody.py.[\#1136](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1136) (@uandrae)
 - Add generation and storage of expanded config file for dcmbd usage.[\#1126](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1126) (@uandrae)

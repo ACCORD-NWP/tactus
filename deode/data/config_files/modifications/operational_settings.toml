@@ -103,6 +103,10 @@
 [submission.task_exceptions.ArchiveHour.BATCH]
   WALLTIME = "#SBATCH --time=06:00:00"
 
+[suite_control]
+  n_addcalculatedfields = 6
+  n_creategrib = 6
+
 [system]
   archive = "@CASEDIR@"
   archive_timestamp_start = "@YYYY_START@/@MM_START@/@DD_START@/@HH_START@"

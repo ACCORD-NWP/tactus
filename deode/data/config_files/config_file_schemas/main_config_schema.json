@@ -358,6 +358,16 @@
           "type": "integer",
           "default": 1
         },
+        "n_creategrib": {
+          "description": "Number of CreateGrib tasks",
+          "type": "integer",
+          "default": 1
+        },
+        "n_addcalculatedfields": {
+          "description": "Number of AddCalculatedFields tasks",
+          "type": "integer",
+          "default": 1
+        },
         "member_specific_static_data": {
           "description": "Whether to create member specific static data (true) or not",
           "type": "boolean",

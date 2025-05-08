@@ -32,6 +32,9 @@ class AddCalculatedFields(Task):
         """
         Task.__init__(self, config, __class__.__name__)
 
+        self.tasknr = int(config.get("task.args.tasknr", "0"))
+        self.ntasks = int(config.get("task.args.ntasks", "1"))
+
         self.archive = self.platform.get_system_value("archive")
 
         self.basetime = as_datetime(self.config["general.times.basetime"])
@@ -43,6 +46,7 @@ class AddCalculatedFields(Task):
 
         self.csc = self.config["general.csc"]
 
+        self.name = f"{self.name}_{self.tasknr:02}"
         self.toc = {}
 
     def expand_input_grib_id(self, rules):
@@ -507,6 +511,7 @@ class AddCalculatedFields(Task):
 
     def execute(self):
         """Execute gribmodify."""
+        compute_list = []
         for filetype in self.conversions:
             if self.config["general"].get(filetype, None) is False:
                 logger.info(
@@ -538,86 +543,101 @@ class AddCalculatedFields(Task):
             config_modify_rules = self.config["gribmodify"][filetype]
 
             for validtime, fname in file_handle.items():
-                dt = validtime - self.basetime
-                logger.info("Process {}", fname)
-                for name in config_modify_rules:
-                    rule = next(
-                        (
-                            rule
-                            for rule in modify_rules
-                            if rule["output_name"]
-                            == config_modify_rules[name]["output_name"]
-                        ),
-                        None,
+                compute_list.append(
+                    {
+                        "validtime": validtime,
+                        "fname": fname,
+                        "modify_rules": modify_rules,
+                        "config_modify_rules": config_modify_rules,
+                    }
+                )
+
+        # Loop over computations to be executed for this task
+        for items in compute_list[self.tasknr :: self.ntasks]:
+            validtime, fname, modify_rules, config_modify_rules = (
+                items["validtime"],
+                items["fname"],
+                items["modify_rules"],
+                items["config_modify_rules"],
+            )
+
+            dt = validtime - self.basetime
+            logger.info("Process {} {}", fname, validtime)
+            for name in config_modify_rules:
+                rule = next(
+                    (
+                        rule
+                        for rule in modify_rules
+                        if rule["output_name"] == config_modify_rules[name]["output_name"]
+                    ),
+                    None,
+                )
+                if rule is None:
+                    raise ValueError(
+                        f"No modify rule found for output: "
+                        f"{config_modify_rules[name]['output_name']}"
                     )
-                    if rule is None:
-                        raise ValueError(
-                            f"No modify rule found for output: "
-                            f"{config_modify_rules[name]['output_name']}"
-                        )
 
-                    additional_files = rule.get("additional_files", [])
-                    additional_file_paths = (
-                        self.find_additional_files(additional_files, validtime)
-                        if additional_files
-                        else []
-                    )
+                additional_files = rule.get("additional_files", [])
+                additional_file_paths = (
+                    self.find_additional_files(additional_files, validtime)
+                    if additional_files
+                    else []
+                )
 
-                    layer_weights = rule.get("layer_weights")
-                    csc_specific = config_modify_rules[name].get("csc_specific", False)
-                    physical_range = rule.get("physical_range")
+                layer_weights = rule.get("layer_weights")
+                csc_specific = config_modify_rules[name].get("csc_specific", False)
+                physical_range = rule.get("physical_range")
 
-                    if csc_specific:
-                        if isinstance(csc_specific, str):
-                            csc_specific = csc_specific.split()
+                if csc_specific:
+                    if isinstance(csc_specific, str):
+                        csc_specific = csc_specific.split()
 
-                        csc_specific = [
-                            csc_specific.casefold() for csc_specific in csc_specific
-                        ]
+                    csc_specific = [
+                        csc_specific.casefold() for csc_specific in csc_specific
+                    ]
 
-                        if self.csc.casefold() not in csc_specific:
-                            logger.info(
-                                "Skipping field with name: {} for CSC {}",
-                                rule["output_name"],
-                                self.csc,
-                            )
-                            continue
-
-                    if not self.find_par(rule["output_grib_id"], fname):
-                        min_freq = (
-                            as_timedelta(config_modify_rules[name]["minimum_frequency"])
-                            if "minimum_frequency" in config_modify_rules[name]
-                            else as_timedelta(dt)
-                        )
-                        if as_timedelta(dt) % min_freq != as_timedelta("PT0H"):
-                            logger.info(
-                                "Skip field with label: {}",
-                                config_modify_rules[name]["output_name"],
-                            )
-                            continue
-
-                        logger.info("Adding field with name: {}", rule["output_name"])
-
-                        if all(
-                            self.find_in_files(input_param, fname, additional_file_paths)
-                            for input_param in rule["input_grib_id"]
-                        ):
-                            self.add_field_to_grib(
-                                [fname, *additional_file_paths],
-                                rule["input_grib_id"],
-                                rule["operator"],
-                                rule["output_grib_id"],
-                                layer_weights,
-                                physical_range,
-                            )
-                        else:
-                            raise ValueError(
-                                "Missing input parameters {} for output {}".format(
-                                    rule["input_grib_id"],
-                                    rule["output_grib_id"]["shortName"],
-                                )
-                            )
-                    else:
+                    if self.csc.casefold() not in csc_specific:
                         logger.info(
-                            "Field with name: {} already exists", rule["output_name"]
+                            "Skipping field with name: {} for CSC {}",
+                            rule["output_name"],
+                            self.csc,
                         )
+                        continue
+
+                if not self.find_par(rule["output_grib_id"], fname):
+                    min_freq = (
+                        as_timedelta(config_modify_rules[name]["minimum_frequency"])
+                        if "minimum_frequency" in config_modify_rules[name]
+                        else as_timedelta(dt)
+                    )
+                    if as_timedelta(dt) % min_freq != as_timedelta("PT0H"):
+                        logger.info(
+                            "Skip field with label: {}",
+                            config_modify_rules[name]["output_name"],
+                        )
+                        continue
+
+                    logger.info("Adding field with name: {}", rule["output_name"])
+
+                    if all(
+                        self.find_in_files(input_param, fname, additional_file_paths)
+                        for input_param in rule["input_grib_id"]
+                    ):
+                        self.add_field_to_grib(
+                            [fname, *additional_file_paths],
+                            rule["input_grib_id"],
+                            rule["operator"],
+                            rule["output_grib_id"],
+                            layer_weights,
+                            physical_range,
+                        )
+                    else:
+                        raise ValueError(
+                            "Missing input parameters {} for output {}".format(
+                                rule["input_grib_id"],
+                                rule["output_grib_id"]["shortName"],
+                            )
+                        )
+                else:
+                    logger.info("Field with name: {} already exists", rule["output_name"])
