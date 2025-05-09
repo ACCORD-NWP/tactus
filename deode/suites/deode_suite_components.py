@@ -426,7 +426,7 @@ class StaticDataTasks:
         if config["suite_control.do_creategrib_static"]:
             PgdNode(
                 "CreateGribStatic",
-                self,
+                parent,
                 config,
                 task_settings,
                 input_template,
