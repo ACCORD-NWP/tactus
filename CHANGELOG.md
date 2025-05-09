@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rename PreCleaning to RunPrep as it also handles storing of config files.[\#1126](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1126) (@uandrae)
 - Update GRIB encoding of root depth parameter for AQ.[\#1134](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1134) (@KristianHMoller)
 
+### Fixed
+- Revert fetching ecFlow variables from ecFlow server. [\#1142](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1142) (@mafdmi)
+
 ## [0.15.0] - 2025-04-24
 
 ### Added

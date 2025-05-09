@@ -317,7 +317,12 @@ class TaskSettings(object):
                     "ECF_HOST",
                     "ECF_PORT",
                     "ECF_NAME",
-                    "CONFIG",
+                    "ECF_PASS",
+                    "ECF_TRYNO",
+                    "ECF_RID",
+                    "ECF_TIMEOUT",
+                    "BASETIME",
+                    "VALIDTIME",
                     "LOGLEVEL",
                     "ARGS",
                     "WRAPPER",
@@ -325,6 +330,10 @@ class TaskSettings(object):
                     "NPROC_IO",
                     "NPROCX",
                     "NPROCY",
+                    "CONFIG",
+                    "DEODE_HOME",
+                    "KEEP_WORKDIRS",
+                    "MEMBER",
                 ]
                 for ecf_var in ecf_vars:
                     file_handler.write(f'export {ecf_var}="%{ecf_var}%"\n')

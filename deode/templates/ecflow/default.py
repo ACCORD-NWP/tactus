@@ -1,7 +1,6 @@
 """Default ecflow container."""
 
 import os
-from typing import Dict
 
 import ecflow as ecf
 
@@ -35,37 +34,30 @@ def query_ecflow_variable(client: ecf.Client, ecf_name: str, variable: str):
         return None
 
 
-def parse_ecflow_vars() -> Dict[str, str]:
+def parse_ecflow_vars():
     """Parse the ecflow variables."""
-    ecf_host = os.environ["ECF_HOST"]
-    ecf_port = os.environ["ECF_PORT"]
-    ecf_name = os.environ["ECF_NAME"]
-    client = ecf.Client(f"{ecf_host}:{ecf_port}")
-
-    ecflow_vars = {
-        "ECF_HOST": ecf_host,
-        "ECF_PORT": ecf_port,
-        "ECF_NAME": ecf_name,
-        "ECF_PASS": query_ecflow_variable(client, ecf_name, "ECF_PASS"),
-        "ECF_TRYNO": query_ecflow_variable(client, ecf_name, "ECF_TRYNO"),
-        "ECF_RID": query_ecflow_variable(client, ecf_name, "ECF_RID"),
-        "ECF_TIMEOUT": query_ecflow_variable(client, ecf_name, "ECF_TIMEOUT"),
-        "BASETIME": query_ecflow_variable(client, ecf_name, "BASETIME"),
-        "VALIDTIME": query_ecflow_variable(client, ecf_name, "VALIDTIME"),
-        "LOGLEVEL": query_ecflow_variable(client, ecf_name, "LOGLEVEL"),
-        "ARGS": query_ecflow_variable(client, ecf_name, "ARGS"),
-        "WRAPPER": query_ecflow_variable(client, ecf_name, "WRAPPER"),
-        "NPROC": query_ecflow_variable(client, ecf_name, "NPROC"),
-        "NPROC_IO": query_ecflow_variable(client, ecf_name, "NPROC_IO"),
-        "NPROCX": query_ecflow_variable(client, ecf_name, "NPROCX"),
-        "NPROCY": query_ecflow_variable(client, ecf_name, "NPROCY"),
-        "CONFIG": query_ecflow_variable(client, ecf_name, "CONFIG"),
-        "DEODE_HOME": query_ecflow_variable(client, ecf_name, "DEODE_HOME"),
-        "KEEP_WORKDIRS": query_ecflow_variable(client, ecf_name, "KEEP_WORKDIRS"),
-        "MEMBER": query_ecflow_variable(client, ecf_name, "MEMBER"),
+    return {
+        "ECF_HOST": os.environ["ECF_HOST"],
+        "ECF_PORT": os.environ["ECF_PORT"],
+        "ECF_NAME": os.environ["ECF_NAME"],
+        "ECF_PASS": os.environ["ECF_PASS"],
+        "ECF_TRYNO": os.environ["ECF_TRYNO"],
+        "ECF_RID": os.environ["ECF_RID"],
+        "ECF_TIMEOUT": os.environ["ECF_TIMEOUT"],
+        "BASETIME": os.environ["BASETIME"],
+        "VALIDTIME": os.environ["VALIDTIME"],
+        "LOGLEVEL": os.environ["LOGLEVEL"],
+        "ARGS": os.environ["ARGS"],
+        "WRAPPER": os.environ["WRAPPER"],
+        "NPROC": os.environ["NPROC"],
+        "NPROC_IO": os.environ["NPROC_IO"],
+        "NPROCX": os.environ["NPROCX"],
+        "NPROCY": os.environ["NPROCY"],
+        "CONFIG": os.environ["CONFIG"],
+        "DEODE_HOME": os.environ["DEODE_HOME"],
+        "KEEP_WORKDIRS": os.environ["KEEP_WORKDIRS"],
+        "MEMBER": os.environ["MEMBER"],
     }
-
-    return ecflow_vars
 
 
 def default_main(kwargs: dict):
@@ -125,7 +117,7 @@ def default_main(kwargs: dict):
     # If member is not an integer, skip EPS setup
     try:
         member = int(member)
-    except TypeError:
+    except (TypeError, ValueError):
         logger.debug("MEMBER is not an integer, skipping eps setup for task {}", task)
     else:
         # Update config based on member

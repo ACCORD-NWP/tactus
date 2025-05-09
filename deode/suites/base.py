@@ -165,6 +165,7 @@ class SuiteDefinition(object):
             "NPROCX": "",
             "NPROCY": "",
             "KEEP_WORKDIRS": keep_workdirs,
+            "MEMBER": "",
         }
 
         self.suite = EcflowSuite(
