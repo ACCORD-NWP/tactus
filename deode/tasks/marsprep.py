@@ -90,6 +90,18 @@ class Marsprep(Task):
         )
         logger.info("bd_basetime: {}", self.bd_basetime)
 
+        exist_snow = False
+        with contextlib.suppress(KeyError):
+            self.param_snow = get_value_from_dict(
+                self.mars["GG_snow"], self.init_date_str
+            )
+            exist_snow = True
+
+        start_snow_date = as_datetime(self.mars["start_date"])
+        with contextlib.suppress(KeyError):
+            start_snow_date = as_datetime(self.mars["start_snow_date"])
+
+        self.exist_snow = exist_snow and self.bd_basetime >= start_snow_date
         # Split mars by bdint
         self.split_mars = self.config["suite_control.split_mars"]
         if self.split_mars:
@@ -248,13 +260,9 @@ class Marsprep(Task):
 
                 additional_data["common_data"] = get_and_remove_data("sfcdata")
 
-            exist_snow = False
-            with contextlib.suppress(KeyError):
-                param_snow = get_value_from_dict(self.mars["GG_snow"], self.init_date_str)
-                exist_snow = True
-            if exist_snow:
+            if self.exist_snow:
                 additional_data |= self.get_gg_snow_data(
-                    tag, steps, members_dict, param_snow
+                    tag, steps, members_dict, self.param_snow
                 )
 
                 add_additional_file_specific_data(additional_data=additional_data)
