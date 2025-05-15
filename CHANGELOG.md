@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Introduce fixed global orography on gaussian grid for marsprep speedup. [\#1143](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1143) (@adeckmyn)
 - Set start date for snow data. [\#1097](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1097) (@kastelecn)
 - Introduce subtasks for CreateGrib and AddCalculatedFields to reduce time to solution.[\#1138](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1138) (@uandrae)
 - Introduced EPS in the workflow. By default, every run is now treated as an ensemble. [\#1031](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1031)

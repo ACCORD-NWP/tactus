@@ -85,9 +85,9 @@ def test_update_data_request(marsprep_instance: Marsprep):
     )
 
     assert "NUMBER" in base_request.request
-    assert base_request.request["NUMBER"] == ["1/2"]
+    assert base_request.request["NUMBER"] == "1/2"
     assert "STREAM" in base_request.request
-    assert base_request.request["TARGET"] == ['"test_[NUMBER]+[STEP]"']
+    assert base_request.request["TARGET"] == '"test_[NUMBER]+[STEP]"'
 
     param = get_value_from_dict(
         marsprep_instance.mars["SHZ"], marsprep_instance.init_date_str
@@ -103,6 +103,9 @@ def test_update_data_request(marsprep_instance: Marsprep):
         param=param,
         target="mars_latlonZ",
     )
+    # make sure not to trigger get_mars_keys (not supported in test)
+    marsprep_instance.use_static_sh_oro = False
+    marsprep_instance.use_static_gg_oro = False
     marsprep_instance.update_data_request(
         request_shz,
         prefetch=False,
@@ -111,6 +114,6 @@ def test_update_data_request(marsprep_instance: Marsprep):
         source="test_source",
     )
     assert "NUMBER" not in request_shz.request
-    assert request_shz.request["SOURCE"] == ["test_source"]
+    assert request_shz.request["SOURCE"] == "test_source"
     assert "GRID" in request_shz.request
     assert "AREA" in request_shz.request

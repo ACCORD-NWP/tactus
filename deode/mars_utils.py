@@ -6,6 +6,7 @@ import shutil
 from dataclasses import dataclass, field, replace
 from datetime import datetime, timedelta
 from pathlib import Path
+from subprocess import run
 from typing import Dict, List, Tuple
 
 import pandas as pd
@@ -27,20 +28,52 @@ def write_mars_req(req, name, method):
     sep1 = " = "
     sep2 = ","
 
-    df_req = req.to_dataframe()
+    keys = list(req.request.keys())
     with open(name, "w") as f:
         f.write(str(method.upper()) + ",\n")
 
-        for col in df_req.columns:
-            for _, row in df_req.iterrows():
-                # do not use the comma in the last line
-                if col == df_req.columns[-1]:
-                    row_str = sep0 + str(col) + sep1 + str(row[col])
-
-                else:
-                    row_str = sep0 + str(col) + sep1 + str(row[col]) + sep2
+        for key in keys:
+            row_str = sep0 + key + sep1 + str(req.request[key])
+            if key != keys[-1]:
+                row_str += sep2
 
             f.write(row_str + "\n")
+
+
+def get_mars_keys(source, key_filter="-w shortName:s=z"):
+    """Get the basic MARS settings from a static file, to correct a request."""
+    if source is None or not os.path.exists(source.strip("\"'")):
+        logger.error("Missing file: {}", source)
+    logger.info("Reading MARS config settings from {}", source)
+    grib_command = f"grib_get {key_filter} "
+    param_list = {
+        "CLASS": "marsClass",
+        "STREAM": "marsStream",
+        "TYPE": "marsType",
+        "EXPVER": "experimentVersionNumber",
+        "DATE": "dataDate",
+        "TIME": "dataTime",
+        "STEP": "stepRange",
+        "LEVTYPE": "levelType",
+        "LEVEL": "level",
+    }
+
+    result = {}
+    for prm in param_list:
+        # TODO: could be faster with only 1 call for all keys
+        # All output is then space-separated, so just use .split()
+        result[prm] = (
+            run(
+                grib_command + f"-p {param_list[prm]}:s {source}",
+                check=True,
+                shell=True,  # noqa
+                capture_output=True,
+            )
+            .stdout.decode()
+            .strip("\n")
+        )
+        logger.info("Mars config - {} = {}", prm, result[prm])
+    return result
 
 
 def get_steps_and_members_to_retrieve(
@@ -408,24 +441,24 @@ class BaseRequest:
 
     def __post_init__(self):
         self.request = {
-            "CLASS": [self.class_],
-            "TYPE": [self.data_type],
-            "EXPVER": [self.expver],
-            "LEVTYPE": [self.levtype],
-            "DATE": [self.date],
-            "TIME": [self.time],
-            "STEP": ["/".join(map(str, self.steps))],
-            "PARAM": [self.param],
-            "TARGET": [self.target],
+            "CLASS": self.class_,
+            "TYPE": self.data_type,
+            "EXPVER": self.expver,
+            "LEVTYPE": self.levtype,
+            "DATE": self.date,
+            "TIME": self.time,
+            "STEP": "/".join(map(str, self.steps)),
+            "PARAM": self.param,
+            "TARGET": self.target,
         }
 
-    def add_grid(self, grid):
-        """Add grid key.
+    def update_request(self, upd: dict):
+        """Add or replace heys in a mars request.
 
         Args:
-            grid (string): resolution of the grid
+            upd (dict): a dict with keys and values
         """
-        self.request["GRID"] = [grid]
+        self.request.update(upd)
 
     def add_eps_members(self, members: List[int], prefetch: bool):
         """Fix parameters in case of eps members.
@@ -442,16 +475,12 @@ class BaseRequest:
 
             self.request.update(
                 {
-                    "NUMBER": ["/".join(map(str, members))],
-                    "TARGET": [self.target],
+                    "NUMBER": "/".join(map(str, members)),
+                    "TARGET": self.target,
                 }
             )
         else:
-            self.request["TARGET"] = [self.target + f"_{members[0]}"]
-
-    def add_process(self):
-        """Add process if needed."""
-        self.request["PROCESS"] = ["LOCAL"]
+            self.request["TARGET"] = self.target + f"_{members[0]}"
 
     def add_levelist(self, levelist: str):
         """Set multilevel if needed.
@@ -476,38 +505,7 @@ class BaseRequest:
             return
 
         # Add levelist to request
-        self.request["LEVELIST"] = [local_levelist]
-
-    def update_based_on_target(self, source: str):
-        """Update request based on target.
-
-        Args:
-            source      (Path): Path to source
-        Raises:
-            ValueError (error): wrong method used
-        """
-        logger.info("Target: {}", self.target)
-        if "mars_latlonZ" in self.target:
-            self.request.update(
-                {
-                    "SOURCE": [source],
-                    "REPRESS": ["GG"],
-                    "STEP": ["00"],
-                }
-            )
-            if self.class_ == "D1":
-                self.request.update(
-                    {
-                        "DATE": ["20201019"],
-                        "TIME": ["1200"],
-                        "CLASS": ["OD"],
-                    }
-                )
-
-        elif "mars_latlonGG" in self.target:
-            self.request["SOURCE"] = [source]
-        else:
-            raise ValueError("Wrong call of read")
+        self.request["LEVELIST"] = local_levelist
 
     def add_database_options(self):
         """Add database options."""
@@ -523,10 +521,6 @@ class BaseRequest:
                         "DATABASE": "fdb",
                     }
                 )
-
-    def to_dataframe(self):
-        """Write request to dataframe."""
-        return pd.DataFrame(data=self.request)
 
     def replace(self, **kwargs):
         """Return new instance with updated values."""

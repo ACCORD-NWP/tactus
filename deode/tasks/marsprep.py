@@ -19,6 +19,7 @@ from ..mars_utils import (
     get_and_remove_data,
     get_date_time_info,
     get_domain_data,
+    get_mars_keys,
     get_steps_and_members_to_retrieve,
     get_value_from_dict,
     move_files,
@@ -119,6 +120,24 @@ class Marsprep(Task):
         )
         logger.info("MARS data expected in:{}", self.prepdir)
 
+        # Use fixed static orography files (spherical harmonics and/or gaussian grid)
+        # TODO: check existence of static orography files & read settings
+        if "use_static_sh" in self.mars:
+            self.use_static_sh_oro = bool(self.mars["use_static_sh"])
+        else:
+            self.use_static_sh_oro = False
+        if self.use_static_sh_oro:
+            self.sh_oro_source = self.mars["sh_oro_source"]
+            logger.info("Using static SH orography file {}", self.sh_oro_source)
+
+        if "use_static_gg" in self.mars:
+            self.use_static_gg_oro = bool(self.mars["use_static_gg"])
+        else:
+            self.use_static_gg_oro = False
+        if self.use_static_gg_oro:
+            self.gg_oro_source = self.mars["gg_oro_source"]
+            logger.info("Using static GG orography file {}", self.gg_oro_source)
+
     @staticmethod
     def mars_selection(selection: str, config: ParsedConfig) -> dict:
         """Copy default settings if requested.
@@ -171,7 +190,7 @@ class Marsprep(Task):
 
         """
         if grid is not None and self.mars_version == 6:
-            request.add_grid(grid)
+            request.update_request({"GRID": grid})
 
         # Additional request parameters if EPS
         # Only if all members are True like. This makes it possible to distinguish
@@ -182,24 +201,29 @@ class Marsprep(Task):
             request.add_eps_members(bdmembers, prefetch=prefetch)
 
         if self.mars_version == 6:
-            request.add_process()
+            request.update_request({"PROCESS": "LOCAL"})
         request.add_levelist(self.mars["levelist"])
 
         # Set stream
         stream = get_value_from_dict(self.mars["stream"], request.time)
-        request.request["STREAM"] = [stream]
+        request.update_request({"STREAM": stream})
 
         # Retrieve from already fetched data
         if not prefetch:
-            request.update_based_on_target(source)
+            request.update_request({"SOURCE": source})
+            if "mars_latlonZ" in request.target and (
+                self.use_static_gg_oro or self.use_static_sh_oro
+            ):
+                z_keys = get_mars_keys(source)
+                request.update_request(z_keys)
 
         request.add_database_options()
 
         if specify_domain:
-            request.request.update(
+            request.update_request(
                 {
-                    "GRID": [get_value_from_dict(self.mars["grid"], request.date)],
-                    "AREA": [get_domain_data(self.config)],
+                    "GRID": get_value_from_dict(self.mars["grid"], request.date),
+                    "AREA": get_domain_data(self.config),
                 }
             )
 
@@ -309,27 +333,28 @@ class Marsprep(Task):
     def get_sfx_data(self):
         """Get SFX data."""
         # Split the lat/lon part and perform it here
-        mars_file_check_list = []
-        bddir_sfx = Path(
-            self.platform.substitute(
-                self.config["system.bddir_sfx"],
-                basetime=self.bd_basetime,
-                validtime=self.basetime,
-            )
-        )
+        mars_file_check_list = {}
         for member in self.bdmembers:
+            bddir_sfx = Path(
+                self.platform.substitute(
+                    self.config["system.bddir_sfx"],
+                    basetime=self.bd_basetime,
+                    validtime=self.basetime,
+                )
+            )
             bdfile_sfx = self.config["system.bdfile_sfx_template"].replace(
-                "@BDMEMBER@", str(member)
+                "@BDMEMBER@", str(member or 0)
             )
             prep_filename = self.platform.substitute(
                 bdfile_sfx,
                 basetime=self.bd_basetime,
                 validtime=self.basetime,
             )
-            mars_file_check_list.append(bddir_sfx / prep_filename)
+            mars_file_check_list[member] = bddir_sfx / prep_filename
 
         if all(
-            os.path.exists(mars_file_check) for mars_file_check in mars_file_check_list
+            os.path.exists(mars_file_check)
+            for mars_file_check in mars_file_check_list.values()
         ):
             logger.info("Prep files already exists as {}", mars_file_check_list)
         elif self.split_mars and not self.prep_step:
@@ -339,27 +364,18 @@ class Marsprep(Task):
             self.get_geopotential_latlon()
             # Get the file list to join
             for member in self.bdmembers:
-                bdfile_sfx = self.config["system.bdfile_sfx_template"].replace(
-                    "@BDMEMBER@", str(member or 0)
-                )
-                prep_filename = self.platform.substitute(
-                    bdfile_sfx,
-                    basetime=self.bd_basetime,
-                    validtime=self.basetime,
-                )
-                # Default to 0 if member is None
                 prep_pattern = f"mars_latlon*_{member or 0}"
                 logger.info("prep_pattern: {}", prep_pattern)
                 filenames = list_files_join(self.wdir, prep_pattern)
                 logger.info(filenames)
-                with open(prep_filename, "ab") as output_file:
+                prep_filename = mars_file_check_list[member]
+                _prep_filename = os.path.basename(prep_filename)
+                with open(_prep_filename, "wb") as output_file:
                     for filename in filenames:
                         with open(filename, "rb") as input_file:
                             output_file.write(input_file.read())
-                shutil.move(
-                    prep_filename,
-                    os.path.join(self.prepdir, prep_filename),
-                )
+                shutil.move(_prep_filename, prep_filename)
+                logger.info("Created {}", prep_filename)
 
     def get_lat_lon_data(self):
         """Get Lat/Lon data."""
@@ -397,6 +413,14 @@ class Marsprep(Task):
         lev_type = get_value_from_dict(self.mars["Zlev_type"], self.init_date_str)
 
         first_member = self.bdmembers[0]
+
+        if self.use_static_gg_oro:
+            self.fmanager.input(self.gg_oro_source, "gg_oro.Z")
+            z_source = "gg_oro.Z"
+        else:
+            # Default to ICMSH_0+* if member is None
+            z_source = f'"{self.prepdir}/ICMSH_{first_member or 0}+{self.steps[0]}"'
+
         self._build_and_run_request(
             req_file_name="latlonz.req",
             data_type=data_type,
@@ -407,8 +431,7 @@ class Marsprep(Task):
             target=f"mars_latlonZ_{first_member or 0}",
             prefetch=prefetch,
             specify_domain=True,
-            # Default to ICMSH_0+* if member is None
-            source=f'"{self.prepdir}/ICMSH_{first_member or 0}+{self.steps[0]}"',
+            source=z_source,
             write_method="retrieve" if self.mars_version == 6 else "read",
         )
         for member in self.bdmembers[1:]:
@@ -444,12 +467,9 @@ class Marsprep(Task):
             )
 
     def get_shz_data(self, tag: str):
-        """Get geopotential in spectral harmonic."""
-        # there is no sh geopotential in LUMI fdb
-        if self.mars["class"] == "D1":
-            # the spectral orography on Lumi is taken from sfcdir,
-            # we use the one with tco=2559_4
-            self.fmanager.input(f"{self.sfcdir}/../2559_4/sporog", f"{tag}.Z")
+        """Get geopotential in spherical harmonics."""
+        if self.use_static_sh_oro:
+            self.fmanager.input(self.sh_oro_source, f"{tag}.Z")
 
         else:
             param = get_value_from_dict(self.mars["SHZ"], self.init_date_str)
