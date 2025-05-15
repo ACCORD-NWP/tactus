@@ -1,2 +1,2 @@
 [submission.task_exceptions.Forecast]
-  bindir = "/perm/deployde330/github-actions/install/CY49t2-sp/latest/bin"
+  bindir = "@INSTALL_DIR@/CY49t2-sp/latest/bin"

@@ -1,10 +1,8 @@
 --config-file
 deode/data/config_files/config.toml
-deode/data/config_files/modifications/alaro.toml
-deode/data/config_files/modifications/CY48t3.toml
-deode/data/config_files/modifications/@HOST@.toml
+deode/data/config_files/modifications/csc/alaro.toml
+deode/data/config_files/modifications/cycle/CY48t3.toml
 deode/data/config_files/include/vertical_levels/MF_87.toml
 deode/data/config_files/include/domains/500m_template.toml
+deode/data/config_files/modifications/submission/@HOST@_large_domain.toml
 deode/data/config_files/modifications/@HOST@.toml
-deode/data/config_files/modifications/submission/@HOST@_CY48t3_large_domain.toml
-deode/data/config_files/modifications/submission/@HOST@_CY48t3_alaro.toml

@@ -1,7 +1,0 @@
-[general]
-  csc = "HARMONIE_AROME"
-  cycle = "CY46h1"
-  windfarm = false
-
-[fdb.grib_set]
-  generatingProcessIdentifier = "1"

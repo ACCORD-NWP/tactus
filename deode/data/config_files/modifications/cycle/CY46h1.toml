@@ -1,0 +1,15 @@
+[general]
+  cycle = "CY46h1"
+  windfarm = false
+
+[fdb.grib_set]
+  generatingProcessIdentifier = "1"
+
+[submission.task_exceptions.C903]
+  bindir = "@INSTALL_DIR@/cy48t3/latest/bin"
+
+[submission.task_exceptions.Pgd]
+  binary = "PGD-offline"
+
+[submission.task_exceptions.Prep]
+  binary = "PREP-offline"

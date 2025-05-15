@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow archiving to be called from any task. Allows log collection to run after archiving.[\#1117](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1117) (@uandrae)
 - Rename PreCleaning to RunPrep as it also handles storing of config files.[\#1126](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1126) (@uandrae)
 - Update GRIB encoding of root depth parameter for AQ.[\#1134](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1134) (@KristianHMoller)
+- Simplifies config files, having one for each cyle, one for each csc, and one for each host, instead of the combinations of all of these.[\#1088](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1088) (@pardallio)
+
 
 ### Fixed
 - Fix error with parent node for "CreateGribStatic" task. [\#1152](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1152) (@mafdmi)

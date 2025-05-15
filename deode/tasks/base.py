@@ -195,6 +195,7 @@ class Task(object):
             except KeyError:
                 bindir = self.config["submission.bindir"]
 
+        bindir = self.platform.substitute(bindir)
         bindir = os.path.realpath(bindir)
 
         logger.debug("binary:{}", binary)

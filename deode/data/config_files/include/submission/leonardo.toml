@@ -1,6 +1,5 @@
 [submission]
   account = "#SBATCH -A DestE_330_25_0"
-  bindir = "/leonardo_work/DestE_330_25/users/SAN/install/cy48t3/bin/"
   default_submit_type = "serial"
   lfftw = false
   module_initpath = "/leonardo_work/DestE_330_25/users/SAN/install/lmod/lmod/init"
@@ -37,7 +36,7 @@
 
 [submission.task_exceptions.CreateGrib]
   binary = "gl"
-  bindir = "/leonardo_work/DestE_330_25/users/SAN/install/gl/leonardo.cy49t2.intel/bin"
+  bindir = "@INSTALL_DIR@/gl/leonardo.cy49t2.intel/bin"
 
 [submission.task_exceptions.CreateGrib.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
@@ -58,7 +57,7 @@
 [submission.task_exceptions.Forecast]
   NPROC = 32
   NPROC_IO = 0
-  WRAPPER = "mpirun"
+  WRAPPER = "srun"
 
 [submission.task_exceptions.Forecast.BATCH]
   MEM = "#SBATCH --mem=480GB"
@@ -93,7 +92,7 @@
 
 [submission.task_exceptions.PgdUpdate]
   binary = "gl"
-  bindir = "/leonardo_work/DestE_330_25/users/SAN/install/gl/leonardo.cy49t2.intel/bin"
+  bindir = "@INSTALL_DIR@/gl/leonardo.cy49t2.intel/bin"
 
 [submission.task_exceptions.PgdUpdate.MODULES]
   4_FFTW3 = [

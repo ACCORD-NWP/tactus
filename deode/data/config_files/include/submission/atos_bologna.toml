@@ -1,5 +1,4 @@
 [submission]
-  bindir = "/perm/deployde330/github-actions/install/cy48t3/latest/bin"
   default_submit_type = "serial"
   lfftw = true
   module_initpath = "/usr/local/apps/lmod/8.6.8/init"
@@ -45,13 +44,13 @@
 
 [submission.task_exceptions.CreateGrib]
   binary = "gl"
-  bindir = "/perm/deployde330/github-actions/install/gl/latest/bin/"
+  bindir = "@INSTALL_DIR@/gl/latest/bin/"
 
 [submission.task_exceptions.CreateGrib.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
 
 [submission.task_exceptions.CreateGribStatic]
-  bindir = "/perm/deployde330/github-actions/install/gl/latest/bin/"
+  bindir = "@INSTALL_DIR@/gl/latest/bin/"
 
 [submission.task_exceptions.E927]
   NPROC = 16
@@ -100,7 +99,7 @@
 
 [submission.task_exceptions.PgdUpdate]
   binary = "gl"
-  bindir = "/perm/deployde330/github-actions/install/gl/latest/bin/"
+  bindir = "@INSTALL_DIR@/gl/latest/bin/"
 
 [submission.task_exceptions.Prep]
   WRAPPER = "srun -n @NPROC@"

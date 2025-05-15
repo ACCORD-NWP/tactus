@@ -1,11 +1,10 @@
 [submission]
   account = "#SBATCH -A project_465000527"
-  bindir = "/projappl/project_465000527/github-actions/install/cy48t3/latest/bin"
-  cmicro = "OLD3"
+  cmicro = "ICE3"
   default_submit_type = "serial"
   lfftw = true
   module_initpath = "/usr/share/lmod/8.3.1/init"
-  nproma = -16
+  nproma = -32
 
 [submission.iomerge.age_limit]
   fullpos = 15
@@ -40,13 +39,10 @@
 
 [submission.task_exceptions.CreateGrib]
   binary = "gl"
-  bindir = "/projappl/project_465000527/github-actions/install/gl/latest/bin"
+  bindir = "@INSTALL_DIR@/gl/latest-gnu/bin"
 
 [submission.task_exceptions.CreateGrib.ENV]
-  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/pardalmi/local/eccodes-2.39.0-ftn16-LUMI/lib64"
-
-[submission.task_exceptions.E923Update]
-  bindir = "/projappl/project_465000527/github-actions/install/cy48t3/latest/bin"
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/pardalmi/local/eccodes-2.39.0-gcc-12.2.0//lib64"
 
 [submission.task_exceptions.Gmted.MODULES]
   GDAL = ["load", "scl-gdal_23"]
@@ -72,10 +68,10 @@
 
 [submission.task_exceptions.PgdUpdate]
   binary = "gl"
-  bindir = "/projappl/project_465000527/github-actions/install/gl/latest/bin"
+  bindir = "@INSTALL_DIR@/gl/latest-gnu/bin"
 
 [submission.task_exceptions.PgdUpdate.ENV]
-  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/pardalmi/local/eccodes-2.39.0-ftn16-LUMI/lib64"
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/pardalmi/local/eccodes-2.39.0-gcc-12.2.0//lib64"
 
 [submission.task_exceptions.Soil.MODULES]
   GDAL = ["load", "scl-gdal_23"]
@@ -137,13 +133,11 @@
   OMP_PLACES = "threads"
   OMP_STACKSIZE = "4G"
 
-  RTTOV_COEFDIR = "/scratch/project_465000527/de_330_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
-
 [submission.types.Forecast_cpu.MODULES]
   00_PURGE = ["--force", "purge"]
-  01_LUMI = ["load", "LUMI/23.09"]
-  02_PARTITION_C = ["load", "partition/C"]
-  03_AEC = ["load", "libaec/1.0.6-cpeCray-23.09"]
+  01_LUMI = ["load", "LUMI/23.09 partition/C"]
+  02_PARTITION_C = ["load", "PrgEnv-gnu"]
+  03_AEC = ["load", "libaec"]
   04_HDF5 = ["load", "cray-hdf5-parallel"]
   05_NETCDF = ["load", "cray-netcdf-hdf5parallel"]
   06_FFTW = ["load", "cray-fftw"]
@@ -188,9 +182,9 @@
 
 [submission.types.parallel.MODULES]
   00_PURGE = ["--force", "purge"]
-  01_LUMI = ["load", "LUMI/23.09"]
-  02_PARTITION_C = ["load", "partition/C"]
-  03_AEC = ["load", "libaec/1.0.6-cpeCray-23.09"]
+  01_LUMI = ["load", "LUMI/23.09 partition/C"]
+  02_PARTITION_C = ["load", "PrgEnv-gnu"]
+  03_AEC = ["load", "libaec"]
   04_HDF5 = ["load", "cray-hdf5-parallel"]
   05_NETCDF = ["load", "cray-netcdf-hdf5parallel"]
   06_FFTW = ["load", "cray-fftw"]
@@ -220,9 +214,9 @@
 
 [submission.types.serial.MODULES]
   00_PURGE = ["--force", "purge"]
-  01_LUMI = ["load", "LUMI/23.09"]
-  02_PARTITION_C = ["load", "partition/C"]
-  03_AEC = ["load", "libaec/1.0.6-cpeCray-23.09"]
+  01_LUMI = ["load", "LUMI/23.09 partition/C"]
+  02_PARTITION_C = ["load", "PrgEnv-gnu"]
+  03_AEC = ["load", "libaec"]
   04_HDF5 = ["load", "cray-hdf5-parallel"]
   05_NETCDF = ["load", "cray-netcdf-hdf5parallel"]
   06_FFTW = ["load", "cray-fftw"]
