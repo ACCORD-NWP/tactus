@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Generator, Iterator, List, Union
+from typing import Generator, Iterator, List, Tuple
 
 from ..datetime_utils import as_datetime, as_timedelta
 from ..logs import logger
@@ -108,7 +108,7 @@ def lbc_times_generator(
     step: timedelta,
     mode: str = "start",
     do_prep: bool = True,
-) -> Generator[Union[int, datetime], None, None]:
+) -> Generator[Tuple[int, datetime], None, None]:
     """Generate lbc times.
 
     For each of them there will be LBC[NN] family.
@@ -126,12 +126,15 @@ def lbc_times_generator(
     Returns:
             datetime: The time period for which the last LBC will be computed.
     """
+    index = 0
     if mode == "restart" or (mode == "start" and not do_prep):
         basetime += step
+        index = 1
 
     while basetime <= endtime:
         # Yield the updated basetime
-        yield basetime
+        yield index, basetime
+        index += 1
         basetime += step
 
     # Return the last basetime

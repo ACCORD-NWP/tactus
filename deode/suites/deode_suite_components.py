@@ -1,7 +1,7 @@
 """Module to create the different parts of the DEODE ecFlow suite."""
 
 from datetime import datetime, timedelta
-from typing import Generator, Optional
+from typing import Generator, Optional, Tuple
 
 from deode.suites.suite_utils import Cycle, Cycles, lbc_times_generator
 
@@ -558,7 +558,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
         input_template,
         ecf_files,
         bdint: timedelta,
-        lbc_time_generator: Generator[datetime, None, None],
+        lbc_time_generator: Generator[Tuple[int, datetime], None, None],
         trigger=None,
         ecf_files_remotely=None,
         do_prep: bool = True,
@@ -578,7 +578,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
         self.lbc_time_generator = lbc_time_generator
 
     def __iter__(self):
-        for bd_index, lbc_time in enumerate(self.lbc_time_generator):
+        for bd_index, lbc_time in self.lbc_time_generator:
             date_string = lbc_time.isoformat(sep="T").replace("+00:00", "Z")
             args = f"bd_time={date_string};bd_index={bd_index};prep_step=False"
             variables = {"ARGS": args}
