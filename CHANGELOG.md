@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ### Fixed
+- Made host resolvement for impact models happen run-time instead of when generating config. [\#1148](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1148) (@mafdmi)
 - Fix error with parent node for "CreateGribStatic" task. [\#1152](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1152) (@mafdmi)
 - Revert fetching ecFlow variables from ecFlow server. [\#1142](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1142) (@mafdmi)
 
