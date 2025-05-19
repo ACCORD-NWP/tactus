@@ -1,2 +1,3 @@
 [eps.member_settings.system]
+  logs = "@ARCHIVE_ROOT@/logs/@MEMBER_STR@"
   wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
