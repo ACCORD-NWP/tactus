@@ -92,7 +92,8 @@
 
 [fdb.expver_restrictions]
   0001 = ["aut6432"]
-  0099 = ["aut6432", "snh02"]
+  0098 = ["snh02"]
+  0099 = ["aut6432"]
 
 [fdb.grib_set]
   centre = "98"

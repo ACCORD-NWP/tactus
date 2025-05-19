@@ -116,7 +116,14 @@ def test_move(basic_config):
 def test_fdb(monkeypatch, basic_config):
     if "USER" not in os.environ:
         os.environ["USER"] = "foo"
-    config = basic_config.copy(update={"fdb": {"grib_set": {"expver": "test"}}})
+    config = basic_config.copy(
+        update={
+            "fdb": {
+                "grib_set": {"expver": "test"},
+                "expver_restrictions": {"test": os.environ["USER"]},
+            }
+        }
+    )
     tmp1 = basic_config["archiving.test.move.move_file.inpath"]
 
     os.system("touch xtra_temp1.grib")  # noqa S108

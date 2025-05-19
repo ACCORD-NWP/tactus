@@ -21,11 +21,13 @@
   ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.11.0.0"]
 
 [submission.task_exceptions.ArchiveFDB.ENV]
-  FDB5_HOME = "/usr/local/apps/mars/versions/6.33.19.9"
+  FDB5_HOME = "$ECMWF_TOOLBOX_DIR"
+  FDB_ENABLE_GRIBJUMP = "1"
   FDB_HOME = "@DEODE_FDB_HOME@"
+  GRIBJUMP_CONFIG_FILE = "@DEODE_FDB_HOME@/etc/gribjump/config_on-demand-extremes-dt.yaml"
 
 [submission.task_exceptions.ArchiveFDB.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.11.0.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
 
 [submission.task_exceptions.ArchiveHour.BATCH]
   WALLTIME = "#SBATCH --time=03:00:00"
