@@ -408,6 +408,20 @@ class StaticDataTasks:
             )
             archive_static_member_trigger = pgd_update
 
+        if config["general.csc"] == "ALARO" and config["general.surfex"]:
+            pgd_filter_town_frac = PgdNode(
+                "PgdFilterTownFrac",
+                parent,
+                config,
+                task_settings,
+                input_template,
+                ecf_files,
+                trigger=pgd_update,
+                ecf_files_remotely=ecf_files_remotely,
+                limit=limit,
+            )
+            archive_static_member_trigger = pgd_filter_town_frac
+
         if (
             config["suite_control.do_archiving"]
             and config["suite_control.member_specific_static_data"]
@@ -431,7 +445,7 @@ class StaticDataTasks:
                 task_settings,
                 input_template,
                 ecf_files,
-                trigger=pgd_update,
+                trigger=archive_static_member_trigger,
                 ecf_files_remotely=ecf_files_remotely,
             )
 
@@ -727,7 +741,7 @@ class InterpolationFamily(EcflowSuiteFamily):
                 ecf_files_remotely=ecf_files_remotely,
             )
 
-            if csc == "ALARO":
+            if csc == "ALARO" and not config["general.surfex"]:
                 e923_update_task = EcflowSuiteTask(
                     "E923Update",
                     self,
@@ -742,7 +756,7 @@ class InterpolationFamily(EcflowSuiteFamily):
             if config["suite_control.mode"] != "cold_start" or csc == "ALARO":
                 do_prep = False
 
-        if csc == "ALARO" and cycles.end_of_month:
+        if csc == "ALARO" and not config["general.surfex"] and cycles.end_of_month:
             do_prep = True
 
         LBCFamily(
@@ -1149,7 +1163,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     ecf_files_remotely=ecf_files_remotely,
                     external_marsprep_trigger_node=external_marsprep_trigger_nodes,
                 )
-                ready_for_cycle = [inputdata]
+                ready_for_cycle = inputdata
 
             for member in config["eps.general.members"]:
                 member_family = EcflowSuiteFamily(
@@ -1191,7 +1205,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                         ecf_files_remotely=ecf_files_remotely,
                         external_marsprep_trigger_node=external_marsprep_trigger_nodes,
                     )
-                    ready_for_cycle = [inputdata]
+                    ready_for_cycle = inputdata
 
                 if config["suite_control.interpolate_boundaries"]:
                     int_family = InterpolationFamily(

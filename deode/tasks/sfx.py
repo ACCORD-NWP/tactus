@@ -817,3 +817,39 @@ class Prep(Task):
 
         else:
             logger.info("Output already exists: {}", output)
+
+
+class PgdFilterTownFrac(Task):
+    """PgdFilterTownFrac.
+
+    Reduce Town frac in Pgd file made with eccoclimapII.
+    """
+
+    def __init__(self, config):
+        """Construct object.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+
+        """
+        Task.__init__(self, config, __class__.__name__)
+
+        self.climdir = self.platform.get_system_value("climdir")
+
+        self.pgd_frac = self.get_binary("pgd_frac")
+        self.basetime = config["task.args.basetime"]
+        self.inoutfile = self.platform.substitute(
+            self.config["file_templates.pgd.archive"], basetime=self.basetime
+        )
+
+    def execute(self):
+        """Run task."""
+        self.fmanager.input(
+            f"{self.climdir}/{self.inoutfile}", self.inoutfile, provider_id="copy"
+        )
+
+        # Run pgd_frac
+        batch = BatchJob(os.environ, wrapper=self.wrapper)
+        batch.run(f"{self.pgd_frac} {self.inoutfile}")
+
+        self.fmanager.output(self.inoutfile, f"{self.climdir}/{self.inoutfile}")

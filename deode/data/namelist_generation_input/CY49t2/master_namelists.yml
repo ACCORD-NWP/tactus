@@ -579,6 +579,7 @@ f4_ALARO:
     LRRTM: false
     NRADFR: ${stepfreq:${cfg:general.namelist.radiation_frequency}}
     NOZOCL: 0
+    NSW: 1
     STBKG: 0.045
     TRBKG: 0.03
   NAMAFN:
@@ -648,6 +649,9 @@ f4_ALARO:
     TFP_VV%IBITS: 16
     TFP_Z%CLNAME: GEOPOTENTIEL
     TFP_Z%IBITS: 16
+  NAMARPHY:
+    CCOUPLING: I
+    LMSE: true
   NAMCFU:
     CALFLASH1: 0.94
     LFLASH: true
@@ -679,13 +683,14 @@ f4_ALARO:
     NFRSDI: 1
     NHISTS: ${steplist:${cfg:general.output_settings.history}}
     NPOSTS: ${steplist:${cfg:general.output_settings.fullpos}}
+    NSFXHISTS: ${steplist:${cfg:general.output_settings.surfex}}
     NSPPR: 0
   NAMCT1:
     N1HIS: 1
     N1POS: 1
     N1RES: 0
     N1SDI: 1
-    N1SFXHIS: 0
+    N1SFXHIS: 1 
   NAMCVER:
     LREGETA: false
     LVERTFE: false
@@ -761,6 +766,9 @@ f4_ALARO:
     SLHDEPSV: 0.0
     SLHDKMAX: 6.0
     SLHDKMIN: -0.6
+  NAMFPC:
+    LCRITSNOWTEMP: false
+    LFPPACKING: false
   NAMFPG:
     NFPDISTRIB: 1
   NAMFPSC2:
@@ -940,6 +948,8 @@ f4_ALARO:
     CFNHWF: ECHIS
     LINC: true
     NTIMEFMT: 2
+  NAMPARAR:
+    NSWB_MNH: 1
   NAMPHY:
     CGMIXLEN: EL0
     CGTURS: MD2
@@ -988,7 +998,7 @@ f4_ALARO:
     LNEWSTAT: true
     LNOIAS: true
     LO3ABC: true
-    LPHSPSH: true
+    LPHSPSH: false 
     LPRGML: true
     LPTKE: true
     LPTOPC: true
@@ -1013,8 +1023,6 @@ f4_ALARO:
     LVGSN: true
     LVOIGT: true
     LXRCDEV: true
-    LZ0HSREL: true
-    LZ0SNOWH: true
     NDIFFNEB: 3
     NDPRECPERIOD2: 10800
     NIMELIT: 2
@@ -1097,12 +1105,8 @@ f4_ALARO:
     XMAXLM: 0.0
   NAMPHY1:
     ACLS_HS: 1.0
-    ALRCN2: 10.0
     LCLS_HS: true
-    RCTVEG(3): 1.4e-05
-    RCTVEG(4): 1.1e-05
-    RZ0_TO_HEIGHT: 0.1
-    WCRIN: 10.0
+    LCLS_TOUCANS: true
   NAMPHY2:
     FACRAF: 3.6
     HTKERAF: 20.0

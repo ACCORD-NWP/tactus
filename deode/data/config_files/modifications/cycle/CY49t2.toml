@@ -1,8 +1,18 @@
 [general]
   cycle = "CY49t2"
+  surfex = true
+
+[general.output_settings]
+  surfex = "PT1H"
+
+[creategrib.CreateGrib]
+  conversions = ["surfex"]
 
 [fdb.grib_set]
   generatingProcessIdentifier = "3"
+
+[pgd]
+  npatch = 3
 
 [platform]
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov13/coef"

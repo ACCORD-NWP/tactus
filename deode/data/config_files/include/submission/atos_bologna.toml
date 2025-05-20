@@ -99,6 +99,9 @@
   NTASKS = "#SBATCH --ntasks=2"
   WALLTIME = "#SBATCH --time=00:30:00"
 
+[submission.task_exceptions.PgdFilterTownFrac.ENV]
+  DR_HOOK_NOT_MPI = 1
+
 [submission.task_exceptions.PgdUpdate]
   binary = "gl"
   bindir = "@INSTALL_DIR@/gl/latest/bin/"

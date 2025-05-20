@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Add posibility to run ALARO cy49t2 with surfex.[\#1128](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1128) (@kastelecn)
 - Add more control of expver for FDB archiving.[\#1120](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1120) (@uandrae)
 - Introduce fixed global orography on gaussian grid for marsprep speedup. [\#1143](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1143) (@adeckmyn)
 - Set start date for snow data. [\#1097](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1097) (@kastelecn)
