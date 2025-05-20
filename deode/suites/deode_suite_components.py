@@ -1019,9 +1019,6 @@ class PostCycleFamily(EcflowSuiteFamily):
         task_settings: TaskSettings,
         input_template,
         ecf_files,
-        cycle: Cycle,
-        ecf_out,
-        suite_name,
         trigger=None,
         external_cycle_cleaning_trigger=None,
         ecf_files_remotely=None,
@@ -1069,23 +1066,14 @@ class PostCycleFamily(EcflowSuiteFamily):
             cleaning_triggers.append(cleaning_task)
             collectlogs_triggers.append(cleaning_task)
 
-        task_logs = config["system.wrk"]
-        args = ";".join(
-            [
-                (f"joboutdir={ecf_out}/{suite_name}" + f"/{cycle.day}/{cycle.time}"),
-                f"tarname={cycle.day}_{cycle.time}",
-                f"task_logs={task_logs}",
-                "config_label=hourlogs",
-            ]
-        )
         EcflowSuiteTask(
-            "CollectLogs",
+            "CollectLogsHour",
             self,
             config,
             task_settings,
             ecf_files,
             input_template=input_template,
-            variables={"ARGS": args},
+            variables=None,
             trigger=collectlogs_triggers,
             ecf_files_remotely=ecf_files_remotely,
         )
@@ -1101,8 +1089,6 @@ class TimeDependentFamily(EcflowSuiteFamily):
         task_settings: TaskSettings,
         input_template,
         ecf_files,
-        ecf_out,
-        suite_name,
         trigger: Optional[EcflowSuiteTask | StaticDataFamily] = None,
         ecf_files_remotely=None,
         do_prep: bool = True,
@@ -1244,9 +1230,6 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     task_settings,
                     input_template,
                     ecf_files,
-                    cycle,
-                    ecf_out=ecf_out,
-                    suite_name=suite_name,
                     trigger=cycle_family,
                     external_cycle_cleaning_trigger=postcycle_families.get(member),
                     ecf_files_remotely=ecf_files_remotely,

@@ -37,6 +37,16 @@
 
 [boundaries.lam]
 
+[collectlogs.hourlogs]
+  joboutdir = "@ECF_OUT@/@CASE@/@YYYY@@MM@@DD@/@HH@@mm@"
+  tarname = "@YYYY@@MM@@DD@_@HH@@mm@"
+  task_logs = "@WRK@"
+
+[collectlogs.staticlogs]
+  joboutdir = "@ECF_OUT@/@CASE@/StaticData"
+  tarname = "StaticData"
+  task_logs = "@CLIMDIR@"
+
 [fullpos]
   config_path = "@CYCLE@/fullpos"
   domain_name = "DOMAIN"

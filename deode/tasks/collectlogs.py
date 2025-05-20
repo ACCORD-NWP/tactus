@@ -13,29 +13,33 @@ from deode.tasks.base import Task
 class CollectLogs(Task):
     """Collect task and scheduler logfiles and store them as tarfiles."""
 
-    def __init__(self, config):
+    def __init__(self, config, config_label="staticlogs"):
         """Construct object.
 
         Args:
             config (deode.ParsedConfig): Configuration
+            config_label (str,optional): Which data to search for
         """
         Task.__init__(self, config, __class__.__name__)
 
-        self.archive = self.platform.get_system_value("archive")
-        self.logs = self.platform.get_system_value("logs")
-        self.wrk = self.platform.get_system_value("wrk")
-        self.joboutdir = self.config["task.args.joboutdir"]
-        self.tarname = self.config["task.args.tarname"]
-        self.task_logs = self.platform.substitute(self.config["task.args.task_logs"])
-        self.config_label = self.platform.substitute(
-            self.config["task.args.config_label"]
-        )
+        self.config_label = config_label
+        collectlogs = {
+            key: self.platform.substitute(value)
+            for key, value in self.config[f"collectlogs.{self.config_label}"].items()
+        }
+        self.joboutdir = collectlogs["joboutdir"]
+        self.tarname = collectlogs["tarname"]
+        self.task_logs = collectlogs["task_logs"]
         self.parent = os.path.dirname(self.joboutdir)
         self.target = os.path.basename(self.joboutdir)
         if self.target == "":
             self.target = "."
         self.tarfile = f"{self.wrk}/{self.tarname}.tar.gz"
         self.do_archiving = config["suite_control.do_archiving"]
+
+        self.archive = self.platform.get_system_value("archive")
+        self.logs = self.platform.get_system_value("logs")
+        self.wrk = self.platform.get_system_value("wrk")
 
     def scan_logs(self, tarlog, parent, target, pattern="", exclude=""):
         """Search for files matching a pattern and add them to a tar file.
@@ -90,3 +94,27 @@ class CollectLogs(Task):
         self.fmanager.output(self.tarfile, self.logs)
         if self.do_archiving:
             Archive(self.config, self.config_label, exclude=["FDB"]).execute()
+
+
+class CollectLogsStatic(CollectLogs):
+    """Collectlog task for static data."""
+
+    def __init__(self, config):
+        """Construct object.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+        """
+        CollectLogs.__init__(self, config, "staticlogs")
+
+
+class CollectLogsHour(CollectLogs):
+    """Collectlog task for static data."""
+
+    def __init__(self, config):
+        """Construct object.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+        """
+        CollectLogs.__init__(self, config, "hourlogs")

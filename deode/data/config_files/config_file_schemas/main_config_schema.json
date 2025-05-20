@@ -20,6 +20,9 @@
     "boundaries": {
       "$ref": "#/definitions/boundaries"
     },
+    "collectlogs": {
+      "$ref": "#/definitions/collectlogs"
+    },
     "pgd": {
       "$ref": "#/definitions/pgd"
     },
@@ -178,6 +181,49 @@
         "bd_has_surfex": {
           "description": "Set to true if the host model runs with surfex",
           "type": "boolean"
+        }
+      }
+    },
+    "collectlogs": {
+      "title": "CollectLogs Section",
+      "description": "Settings for control of log collection.",
+      "type": "object",
+      "properties": {
+	"staticlogs": {
+          "description": "Collection settings for static tasks",
+          "type": "object",
+          "properties": {
+            "joboutdir": {
+              "description": "Top output dir to collect logs from ",
+              "type": "string"
+            },
+            "tarname": {
+              "description": "Name of the resulting tar file",
+              "type": "string"
+            },
+            "task_logs": {
+              "description": "Search path for task specific logs",
+              "type": "string"
+            }
+          }
+        },
+	"hourlogs": {
+          "description": "Collection settings for time dependent tasks",
+          "type": "object",
+          "properties": {
+            "joboutdir": {
+              "description": "Top output dir to collect logs from ",
+              "type": "string"
+            },
+            "tarname": {
+              "description": "Name of the resulting tar file",
+              "type": "string"
+            },
+            "task_logs": {
+              "description": "Search path for task specific logs",
+              "type": "string"
+            }
+          }
         }
       }
     },

@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add generation and storage of expanded config file for dcmbd usage.[\#1126](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1126) (@uandrae)
 
 ### Changed
+- Make log collection settings configurable. [\#1167](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1167) (@uandrae)
 - Use module related environment variable for FDB5_HOME on atos_bologna.[\#1120](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1120) (@uandrae)
 - Deactivate TOMS computations to allow execution of forecast model in SP.[\#1135](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1135) (@uandrae)
 - Allow archiving to be called from any task. Allows log collection to run after archiving.[\#1117](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1117) (@uandrae)
@@ -29,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ### Fixed
+- Restore gathering of task specific log files. [\#1167](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1167) (@uandrae)
 - Fix LBC filenames in case of mode = "restart". [\#1162](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1162) (@kastelecn)
 - Added @MEMBER_STR@ to archive outpath where missing. [\#1147](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1147) (@mafdmi)
 - Made host resolvement for impact models happen run-time instead of when generating config. [\#1148](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1148) (@mafdmi)

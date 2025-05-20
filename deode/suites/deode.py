@@ -90,18 +90,6 @@ class DeodeSuiteDefinition(SuiteDefinition):
             time_dependent_trigger_node = static_data
             collect_logs_trigger = [static_data]
 
-            # Prepare arguments for CollectLogs
-            task_logs = config["system.climdir"]
-            args = ";".join(
-                [
-                    f"joboutdir={self.ecf_out}/{self.name}/StaticData",
-                    "tarname=StaticData",
-                    f"task_logs={task_logs}",
-                    "config_label=staticlogs",
-                ]
-            )
-            variables = {"ARGS": args}
-
             if config["suite_control.do_archiving"]:
                 archive_static = EcflowSuiteTask(
                     "ArchiveStatic",
@@ -116,14 +104,14 @@ class DeodeSuiteDefinition(SuiteDefinition):
                 collect_logs_trigger.append(archive_static)
 
             collect_logs = EcflowSuiteTask(
-                "CollectLogs",
+                "CollectLogsStatic",
                 self.suite,
                 config,
                 self.task_settings,
                 self.ecf_files,
                 input_template=input_template,
                 trigger=collect_logs_trigger,
-                variables=variables,
+                variables=None,
                 ecf_files_remotely=self.ecf_files_remotely,
             )
             # Update triggers for final cleaning node
@@ -137,8 +125,6 @@ class DeodeSuiteDefinition(SuiteDefinition):
                 self.task_settings,
                 input_template,
                 self.ecf_files,
-                self.ecf_out,
-                self.name,
                 time_dependent_trigger_node,
                 ecf_files_remotely=self.ecf_files_remotely,
                 do_prep=self.do_prep,
