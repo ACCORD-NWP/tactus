@@ -17,7 +17,6 @@
 [platform]
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov13/coef"
 
-
 [submission]
   bindir = "@INSTALL_DIR@/@CYCLE@/@CYCLE@-v1.7.0/bin"
 
