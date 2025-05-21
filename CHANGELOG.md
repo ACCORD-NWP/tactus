@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Json schema check on expver for FDB archiving.[\#1168](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1168) (@uandrae)
 - Add posibility to run ALARO cy49t2 with surfex.[\#1128](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1128) (@kastelecn)
 - Add more control of expver for FDB archiving.[\#1120](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1120) (@uandrae)
 - Introduce fixed global orography on gaussian grid for marsprep speedup. [\#1143](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1143) (@adeckmyn)
@@ -21,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add generation and storage of expanded config file for dcmbd usage.[\#1126](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1126) (@uandrae)
 
 ### Changed
+- Switch on FDB archiving in operations and updated the FDB documentation. [\#1168](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1168) (@uandrae)
 - Make log collection settings configurable. [\#1167](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1167) (@uandrae)
 - Use module related environment variable for FDB5_HOME on atos_bologna.[\#1120](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1120) (@uandrae)
 - Deactivate TOMS computations to allow execution of forecast model in SP.[\#1135](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1135) (@uandrae)
