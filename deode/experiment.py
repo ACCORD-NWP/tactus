@@ -10,15 +10,14 @@ from typing import List, Optional
 
 import tomlkit
 
-from deode.config_parser import BasicConfig, ParsedConfig
+from deode.config_parser import BasicConfig, ConfigPaths, ParsedConfig
 from deode.datetime_utils import evaluate_date
 from deode.derived_variables import set_times
 from deode.eps.eps_setup import EPSConfig, generate_member_settings
 from deode.general_utils import modify_mappings, recursive_dict_deviation
-from deode.host_actions import HostNotFoundError, SelectHost, set_deode_home
+from deode.host_actions import set_deode_home
 from deode.logs import logger
 from deode.os_utils import resolve_path_relative_to_package
-from deode.scheduler import EcflowServer
 from deode.toolbox import Platform
 
 
@@ -201,7 +200,7 @@ class EPSExp(Exp):
         """
         super().__init__(config=config, merged_config=None)
 
-    def setup_exp(self):
+    def setup_exp(self, host=None):
         """Generate EPS member settings and update config file.
 
         Only deviations of member settings from general EPS settings are added
@@ -210,7 +209,6 @@ class EPSExp(Exp):
         # First convert self.config["eps"] to a plain dict. This is needed before
         # we turn config objects into pydantic dataclasses.
         eps_plain_dict = modify_mappings(self.config["eps"], operator=dict)
-
         # Then convert the general EPS settings to a dataclass
         epsconfig = EPSConfig(**eps_plain_dict)
 
@@ -218,11 +216,64 @@ class EPSExp(Exp):
         default_member_settings = eps_plain_dict["member_settings"]
         # Generate member setting deviations
         member_settings_dict = {}
-        for member_index, member_settings in generate_member_settings(epsconfig):
-            member_settings_dict[str(member_index)] = recursive_dict_deviation(
+        for member, member_settings in generate_member_settings(epsconfig):
+            member_settings_deviation = recursive_dict_deviation(
                 base_dict=default_member_settings,
                 deviating_dict=member_settings,
             )
+
+            # Resolve any modification files in the member settings
+            mods = {}
+            if "modifications" in member_settings_deviation:
+                for _mod in member_settings_deviation["modifications"].values():
+                    # Skip empty paths
+                    if _mod == Path():
+                        continue
+
+                    mod = (
+                        Path(str(_mod).replace("@HOST@", host))
+                        if host is not None
+                        else _mod
+                    )
+                    try:
+                        mod = ConfigPaths.path_from_subpath(mod)
+                    except RuntimeError:
+                        mod = resolve_path_relative_to_package(mod, ignore_errors=True)
+
+                    # First check if mod exists as is
+                    if os.path.exists(mod):
+                        try:
+                            logger.info(
+                                (
+                                    "Merging modifications from {} into eps member "
+                                    + "{} settings"
+                                ),
+                                mod,
+                                member,
+                            )
+                            lmod = BasicConfig.from_file(mod, json_schema={})
+                        except tomlkit.exceptions.ParseError as exc:
+                            logger.error("Expected a toml file but got {}", mod)
+                            logger.error("Did mean to write ?{}", mod)
+                            raise RuntimeError from exc
+
+                        logger.debug("-> {}", lmod)
+                        mods = ExpFromFiles.deep_update(mods, lmod)
+
+                        # Merge modifications with remainder member settings.
+                        # Modifications take precendence over any existing settings.
+                        member_settings_deviation = modify_mappings(
+                            member_settings_deviation, lmod
+                        )
+                    else:
+                        logger.warning("Skip missing modification file {}", mod)
+
+                # Remove modifications from the member settings, since they've now
+                # been resolved.
+                member_settings_deviation.pop("modifications")
+
+            member_settings_dict[str(member)] = member_settings_deviation
+
         # Add members section with deviations to config
         output_settings_dict = {"members": member_settings_dict}
 
@@ -272,35 +323,13 @@ def case_setup(
     if "eps" in exp.config:
         logger.info("Setting up EPS configuration")
         eps_exp = EPSExp(exp.config)
-        eps_exp.setup_exp()
+        eps_exp.setup_exp(host=host)
         exp = eps_exp
 
     if expand_config:
         deode_home = set_deode_home(config)
         exp.config = exp.config.copy(update={"platform": {"deode_home": deode_home}})
         exp.config = exp.config.expand_macros()
-
-    # Resolve ecf_host/ecf_port if used
-    with contextlib.suppress(HostNotFoundError):
-        ecf_host = exp.config.get("scheduler.ecfvars.ecf_host", None)
-        ecf_port = exp.config.get("scheduler.ecfvars.ecf_port", None)
-
-        if ecf_host is not None and ecf_port is not None:
-            pl = Platform(exp.config)
-            ecf_host = pl.substitute(ecf_host)
-            ecf_host = pl.evaluate(ecf_host, object_=SelectHost)
-            ecf_port = pl.substitute(ecf_port)
-            ecf_port = pl.evaluate(ecf_port, object_=EcflowServer)
-            exp.config = exp.config.copy(
-                update={
-                    "scheduler": {
-                        "ecfvars": {
-                            "ecf_host_resolved": ecf_host,
-                            "ecf_port_resolved": ecf_port,
-                        }
-                    }
-                }
-            )
 
     if output_file is None or ".toml" not in str(output_file):
         output_dir = output_file

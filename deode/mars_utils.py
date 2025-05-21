@@ -2,7 +2,12 @@
 
 import contextlib
 import os
+import shutil
 from dataclasses import dataclass, field, replace
+from datetime import datetime, timedelta
+from pathlib import Path
+from subprocess import run
+from typing import Dict, List, Tuple
 
 import pandas as pd
 
@@ -23,58 +28,103 @@ def write_mars_req(req, name, method):
     sep1 = " = "
     sep2 = ","
 
-    df_req = req.to_dataframe()
+    keys = list(req.request.keys())
     with open(name, "w") as f:
         f.write(str(method.upper()) + ",\n")
 
-        for col in df_req.columns:
-            for _, row in df_req.iterrows():
-                # do not use the comma in the last line
-                if col == df_req.columns[-1]:
-                    row_str = sep0 + str(col) + sep1 + str(row[col])
-
-                else:
-                    row_str = sep0 + str(col) + sep1 + str(row[col]) + sep2
+        for key in keys:
+            row_str = sep0 + key + sep1 + str(req.request[key])
+            if key != keys[-1]:
+                row_str += sep2
 
             f.write(row_str + "\n")
 
 
-def get_steps_and_members_to_retrieve(steps, path, file_name, members):
+def get_mars_keys(source, key_filter="-w shortName:s=z"):
+    """Get the basic MARS settings from a static file, to correct a request."""
+    if source is None or not os.path.exists(source.strip("\"'")):
+        logger.error("Missing file: {}", source)
+    logger.info("Reading MARS config settings from {}", source)
+    grib_command = f"grib_get {key_filter} "
+    param_list = {
+        "CLASS": "marsClass",
+        "STREAM": "marsStream",
+        "TYPE": "marsType",
+        "EXPVER": "experimentVersionNumber",
+        "DATE": "dataDate",
+        "TIME": "dataTime",
+        "STEP": "stepRange",
+        "LEVTYPE": "levelType",
+        "LEVEL": "level",
+    }
+
+    result = {}
+    for prm in param_list:
+        # TODO: could be faster with only 1 call for all keys
+        # All output is then space-separated, so just use .split()
+        result[prm] = (
+            run(
+                grib_command + f"-p {param_list[prm]}:s {source}",
+                check=True,
+                shell=True,  # noqa
+                capture_output=True,
+            )
+            .stdout.decode()
+            .strip("\n")
+        )
+        logger.info("Mars config - {} = {}", prm, result[prm])
+    return result
+
+
+def get_steps_and_members_to_retrieve(
+    steps: List[int], path: Path, file_name: str, members: List[int]
+) -> Tuple[List[int], Dict[str, List[int | None]]]:
     """Check which mars file already exist and returns steps and members which missing.
 
     Args:
-        steps       (list): list of steps
-        path      (string): path to global files
-        file_name (string): name of file to check
-        members     (list): members to retrieve
+        steps   (List[int]): list of steps
+        path (pathlib.Path): path to global files
+        file_name  (string): name of file to check
+        members (List[int]): members to retrieve
+
     Returns:
-        steps             (list): steps to retrieve
-        members           (list): members to retrieve
-        is_control_member (bool): true control (0) is needed
+        steps   (List[int]): steps to retrieve
+        members_dict (Dict[str, List[int | None]]): members to retrieve
     """
     step_list = []
     member_list = []
     for step in steps:
-        step1 = int(step)
-        step_str = str(step1) if path == "" else f"{step1:02d}"
-        if not members:
-            mars_file_check = path / f"{file_name}+{step_str}"
+        for member in members:
+            # Default to member 0 if member is None without adding member to
+            # the member_list. This covers the deterministic case with no
+            # boundary member nesting.
+            mars_file_check = path / f"{file_name}_{member or 0}+{step}"
             if not os.path.exists(mars_file_check):
                 step_list.append(step)
                 logger.info("Missing file:{}", mars_file_check)
-        else:
-            for member in members:
-                mars_file_check = os.path.join(path, f"{file_name}_{member}+{step_str}")
-                if not os.path.exists(mars_file_check):
-                    step_list.append(step)
-                    logger.info("Missing file:{}", mars_file_check)
-                    member_list.append(member)
-
-    is_control_member = bool(0 in members)
-    members = [member for member in sorted(set(member_list)) if member != 0]
+                member_list.append(member)
 
     steps = sorted(set(step_list))
-    return steps, members, is_control_member
+    # Get perturbed members only
+    perturbed_members = [member for member in sorted(set(member_list)) if member != 0]
+    # Construct dictionary with perturbed members and control depending on the
+    # provided bdmembers list
+    members_dict = {}
+    if 0 in members:
+        members_dict["control_member"] = [0]
+        # If no perturbed members requested, return
+        if not perturbed_members:
+            return steps, members_dict
+
+    # Add perturbed members for the cases where
+    # - control and perturbed members are requested
+    # - only perturbed members are requested
+    # - no perturbed members are requested (perturbed_members = [None])
+    # The latter case covers the "deterministic" case, where the ensemble only
+    # contains one member.
+    members_dict["perturbed_members"] = perturbed_members
+
+    return steps, members_dict
 
 
 def check_data_available(basetime, mars):
@@ -170,7 +220,13 @@ def get_value_from_dict(dict_, key_orig):
     raise ValueError(f"Value not found for {key_orig} within {dict_}")
 
 
-def get_date_time_info(date, fc_cycle, bdint, bdcycle, bdshift):
+def get_date_time_info(
+    date: datetime,
+    fc_cycle: timedelta,
+    bdint: timedelta,
+    bdcycle: timedelta,
+    bdshift: timedelta,
+) -> Tuple[str, str, List[int]]:
     """Manipulate the dates for Mars request.
 
     Args:
@@ -183,7 +239,7 @@ def get_date_time_info(date, fc_cycle, bdint, bdcycle, bdshift):
     Returns:
         init_date_str (string): initial date
         init_hour_str (string): initial hour
-        str_steps       (list): list of steps in string
+        steps      (List[int]): list of steps
 
     """
     # Check if we're dealing with 00 or 03 ... etc.
@@ -211,18 +267,142 @@ def get_date_time_info(date, fc_cycle, bdint, bdcycle, bdshift):
 
     step = int(bdint.total_seconds() // 3600)
     # Get steps according to bdshift and bdcycle
-    str_steps = [
-        "{0:02d}".format(
-            int(
-                bdshift.total_seconds() // 3600
-                + (i * step)
-                + date.hour % int(bdcycle.total_seconds()) // 3600
-            )
+    steps = [
+        int(
+            bdshift.total_seconds() // 3600
+            + (i * step)
+            + date.hour % int(bdcycle.total_seconds()) // 3600
         )
-        for i in (request_datetimes_series.index.tolist())
+        for i in request_datetimes_series.index.tolist()
     ]
 
-    return init_date_str, init_hour_str, str_steps
+    return init_date_str, init_hour_str, steps
+
+
+def get_and_remove_data(file_name: str) -> bytes:
+    """Read in and subsequently remove binary data.
+
+    Args:
+        file_name (str): The name of the file containing the data to be read.
+
+    Returns:
+        bytes: The binary data read from the file.
+    """
+    with open(file_name, "rb") as fp:
+        additional_data = fp.read()
+
+    os.remove(file_name)
+    return additional_data
+
+
+def add_additional_file_specific_data(
+    additional_data: Dict[str, bytes],
+):
+    """Add additional file specific data.
+
+    The additional_data dict is expected to have the following structure, where
+    the "common_data" key is optional:
+    {
+        "common_data": b"Common data to add to all files",
+        "file1": b"Data to add to file1",
+        "file2": b"Data to add to file2",
+        ...
+    }
+
+    If the "common_data" key is present, the data will be added to a file before
+    the file-specific data is added.
+
+    Args:
+        additional_data (Dict[str, bytes]): Dictionary containing the data to
+            add (value) to a given file (key).
+
+    Raises:
+        FileNotFoundError: If a file does not exist when trying to append
+            data to it.
+    """
+    common_data = additional_data.get("common_data", b"")
+
+    for key, data in additional_data.items():
+        if key == "common_data":
+            continue
+
+        combined_data = common_data + data
+
+        if os.path.exists(key):
+            if combined_data:
+                logger.debug("Adding additional file specific data to file: {}", key)
+                with open(key, "ab") as fp:
+                    fp.write(combined_data)
+            else:
+                raise FileNotFoundError(
+                    f"File {key} not found. Trying to append data to non-existing file."
+                )
+
+
+def add_additional_data_to_all(
+    tag: str,
+    steps: List[str],
+    members_dict: Dict[str, List[int]],
+    additional_data: Dict[str, bytes],
+):
+    """Add additional common data to all files defined by tag, step and member.
+
+    The additional_data dict is expected to have the following structure:
+    {
+        "data_key1": b"Data to add to all files",
+        "data_key2": b"Data to add to all files",
+        ...
+    }
+
+    Args:
+        tag (str): Name of tag
+        steps (List[int]): Steps used to construct filename.
+        members_dict (Dict[str, List[int]]): Dictionary with members used to
+            construct filename.
+        additional_data (Dict[str, bytes]): Dictionary containing the data to add.
+
+    Raises:
+        FileNotFoundError: If a file does not exist when trying to append
+            data to it.
+    """
+    for step in steps:
+        for members in members_dict.values():
+            for member in members:
+                filename = f"{tag}_{member or 0}+{step}"
+                if os.path.exists(filename):
+                    with open(filename, "ab") as fp:
+                        for key, data in additional_data.items():
+                            logger.debug(
+                                "Adding additional common data ({}) to file: {}",
+                                key,
+                                filename,
+                            )
+                            fp.write(data)
+                else:
+                    raise FileNotFoundError(
+                        f"File {filename} not found. "
+                        "Trying to append data to non-existing file."
+                    )
+
+
+def move_files(
+    tag: str, steps: List[int], members_dict: Dict[str, List[int]], target_dir: Path
+):
+    """Move files to the final location.
+
+    Args:
+        tag (str): Name of tag
+        steps (list): steps to process the files
+        members_dict (Dict[str, List[int]]): dict with members to procces the files
+        target_dir (Path): target directory to move the files to
+    """
+    for step in steps:
+        for members in members_dict.values():
+            for member in members:
+                # Define target file name. Member defaults to 0 if member is None
+                file_name = f"{tag}_{member or 0}+{step}"
+                if os.path.exists(file_name):
+                    shutil.move(file_name, target_dir / file_name)
 
 
 @dataclass(kw_only=True)
@@ -261,26 +441,26 @@ class BaseRequest:
 
     def __post_init__(self):
         self.request = {
-            "CLASS": [self.class_],
-            "TYPE": [self.data_type],
-            "EXPVER": [self.expver],
-            "LEVTYPE": [self.levtype],
-            "DATE": [self.date],
-            "TIME": [self.time],
-            "STEP": [self.steps],
-            "PARAM": [self.param],
-            "TARGET": [self.target],
+            "CLASS": self.class_,
+            "TYPE": self.data_type,
+            "EXPVER": self.expver,
+            "LEVTYPE": self.levtype,
+            "DATE": self.date,
+            "TIME": self.time,
+            "STEP": "/".join(map(str, self.steps)),
+            "PARAM": self.param,
+            "TARGET": self.target,
         }
 
-    def add_grid(self, grid):
-        """Add grid key.
+    def update_request(self, upd: dict):
+        """Add or replace heys in a mars request.
 
         Args:
-            grid (string): resolution of the grid
+            upd (dict): a dict with keys and values
         """
-        self.request["GRID"] = [grid]
+        self.request.update(upd)
 
-    def add_eps_members(self, members: list, prefetch: bool):
+    def add_eps_members(self, members: List[int], prefetch: bool):
         """Fix parameters in case of eps members.
 
         Args:
@@ -295,19 +475,12 @@ class BaseRequest:
 
             self.request.update(
                 {
-                    "NUMBER": ["/".join(map(str, members))],
-                    "TARGET": [self.target],
+                    "NUMBER": "/".join(map(str, members)),
+                    "TARGET": self.target,
                 }
             )
         else:
-            target_ = self.target + f"_{members[0]}"
-            self.request["TARGET"] = [target_]
-            if members[0] == 0:
-                self.request["TYPE"] = ["CF"]
-
-    def add_process(self):
-        """Add process if needed."""
-        self.request["PROCESS"] = ["LOCAL"]
+            self.request["TARGET"] = self.target + f"_{members[0]}"
 
     def add_levelist(self, levelist: str):
         """Set multilevel if needed.
@@ -332,38 +505,7 @@ class BaseRequest:
             return
 
         # Add levelist to request
-        self.request["LEVELIST"] = [local_levelist]
-
-    def update_based_on_target(self, source: str):
-        """Update request based on target.
-
-        Args:
-            source      (Path): Path to source
-        Raises:
-            ValueError (error): wrong method used
-        """
-        logger.info("Target: {}", self.target)
-        if "mars_latlonZ" in self.target:
-            self.request.update(
-                {
-                    "SOURCE": [source],
-                    "REPRESS": ["GG"],
-                    "STEP": ["00"],
-                }
-            )
-            if self.class_ == "D1":
-                self.request.update(
-                    {
-                        "DATE": ["20201019"],
-                        "TIME": ["1200"],
-                        "CLASS": ["OD"],
-                    }
-                )
-
-        elif "mars_latlonGG" in self.target:
-            self.request["SOURCE"] = [source]
-        else:
-            raise ValueError("Wrong call of read")
+        self.request["LEVELIST"] = local_levelist
 
     def add_database_options(self):
         """Add database options."""
@@ -379,10 +521,6 @@ class BaseRequest:
                         "DATABASE": "fdb",
                     }
                 )
-
-    def to_dataframe(self):
-        """Write request to dataframe."""
-        return pd.DataFrame(data=self.request)
 
     def replace(self, **kwargs):
         """Return new instance with updated values."""

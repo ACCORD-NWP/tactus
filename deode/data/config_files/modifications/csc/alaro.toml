@@ -16,3 +16,6 @@
 
 [pgd]
   npatch = 1
+
+[submission.task_exceptions.Forecast.ENV]
+  APL_ALARO = "1"

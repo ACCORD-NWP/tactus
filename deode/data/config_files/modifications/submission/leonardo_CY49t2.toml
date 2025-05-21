@@ -1,8 +1,0 @@
-[platform]
-  rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov13/coef"
-
-[submission]
-  bindir = "/leonardo_work/DestE_330_25/users/SAN/install/cy49t2/bin/"
-
-[submission.task_exceptions.E923Update.ENV]
-  DR_HOOK_ASSERT_MPI_INITIALIZED = 0

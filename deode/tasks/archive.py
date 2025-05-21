@@ -1,152 +1,23 @@
 """ARCHIVEHOUR // ARCHIVESTATIC."""
 
-import glob
-import os
-import pathlib
-import shutil
-
-from ..logs import logger
-from .base import Task
+from deode.archive import Archive
+from deode.tasks.base import Task
 
 
-class Archive(Task):
+class ArchiveTask(Task):
     """Archving data."""
 
     def __init__(self, config, datatype=None, include=None, exclude=None):
-        """Construct the archive object.
-
-        Loop over archive types (e.g. ecfs,fdb) for the current platform
-        and store the active selections from config.
-
-        Args:
-            config (deode.ParsedConfig): Configuration
-            datatype (str): Indicating data type (climate, hour)
-            include (list): List of archiving methods supported, empty implies all
-            exclude (list): List of archiving methods not supported, empty implies none
-
-        Raises:
-            RuntimeError: For not allowed methods
-        """
+        """Construct the archive object."""
         Task.__init__(self, config, __class__.__name__)
-
-        self.archive_types = self.config.get("platform.archive_types", [])
-
-        self.choices = {}
-        self.archive_loc = {}
-        if include is None:
-            include = []
-        if exclude is None:
-            exclude = []
-        if datatype is not None:
-            choices_for_type = self.config[f"archiving.{datatype}"].dict()
-            skipped_types = []
-
-            for archive_type, choices in choices_for_type.items():
-                abort = (
-                    archive_type not in include
-                    and len(include) > 0
-                    or archive_type in exclude
-                )
-                if abort:
-                    msg = f"Archive method {archive_type} is not allowed for this task\n"
-                    if len(exclude) > 0:
-                        msg += f"Excluded methods: {','.join(exclude)}\n"
-                    if len(include) > 0:
-                        msg += f"Included methods: {','.join(include)}\n"
-                    raise RuntimeError(msg)
-
-                d = {
-                    name: choice
-                    for name, choice in choices.items()
-                    if self.trigger(choice["active"])
-                }
-                if len(d) > 0:
-                    if archive_type in self.archive_types:
-                        self.choices[archive_type] = d
-                        self.archive_loc[archive_type] = self.platform.get_value(
-                            f"archiving.prefix.{archive_type}", ""
-                        )
-                    else:
-                        skipped_types.append(archive_type)
-
-            if len(skipped_types) > 0:
-                logger.warning(
-                    "Skipped archive types not defined for this host: {}", skipped_types
-                )
-
-    def trigger(self, trigger):
-        """Return trigger."""
-        if isinstance(trigger, bool):
-            return trigger
-        return self.config[trigger]
+        self.da = Archive(config, datatype, include=include, exclude=exclude)
 
     def execute(self):
         """Loops over archive choices."""
-        for archive_type, choices in self.choices.items():
-            logger.info("Archiving type: {}", archive_type)
-            for name, choice in choices.items():
-                choice.pop("active")
-                logger.info("Archiving {} with: {}", name, choice)
-                outpath = choice.get("outpath", "")
-                newname = choice.get("newname", None)
-                self.archive(
-                    choice["pattern"],
-                    choice["inpath"],
-                    outpath,
-                    archive_type,
-                    newname,
-                )
-
-    def archive(self, pattern, inpath, outpath, archive_type=None, newname=None):
-        """Send files to the file manager.
-
-        Args:
-            pattern (str,list): string of list of patterns to search for
-            inpath (str): Full path on the input archive
-            outpath (str): relative path on the output archive
-            archive_type (str, optional): Archive type. Defaults to None.
-            newname (str, optional): Forces a rename of an identified file.
-                                     Defaults to None.
-
-        Raises:
-            FileNotFoundError: If file not found
-
-        """
-        out = self.platform.substitute(outpath)
-        inp = self.platform.substitute(inpath)
-
-        if newname is not None and isinstance(pattern, str):
-            ptrn = self.platform.substitute(pattern)
-            try:
-                shutil.copy(ptrn, newname)
-            except FileNotFoundError as error:
-                raise FileNotFoundError(
-                    f"Could not find {ptrn}, incorrect pattern"
-                ) from error
-
-            _pattern = [pathlib.PurePath(os.getcwd(), newname)]
-            logger.info("Copy {} to {}", ptrn, newname)
-
-        elif isinstance(pattern, str):
-            _pattern = [pattern]
-        else:
-            _pattern = pattern
-
-        for ptrn in _pattern:
-            search = str(pathlib.PurePath(inp, self.platform.substitute(ptrn)))
-            files = [x for x in glob.glob(search) if os.path.isfile(x)]
-
-            for filename in sorted(files):
-                self.fmanager.output(
-                    filename,
-                    pathlib.PurePath(
-                        self.archive_loc[archive_type], out, os.path.basename(filename)
-                    ),
-                    provider_id=archive_type,
-                )
+        self.da.execute()
 
 
-class ArchiveStatic(Archive):
+class ArchiveStaticMember(ArchiveTask):
     """Archving task for static data."""
 
     def __init__(self, config):
@@ -155,10 +26,22 @@ class ArchiveStatic(Archive):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Archive.__init__(self, config, "static")
+        ArchiveTask.__init__(self, config, "staticmember")
 
 
-class ArchiveHour(Archive):
+class ArchiveStatic(ArchiveTask):
+    """Archving task for static data."""
+
+    def __init__(self, config):
+        """Construct object.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+        """
+        ArchiveTask.__init__(self, config, "static")
+
+
+class ArchiveHour(ArchiveTask):
     """Archving task for time dependent data."""
 
     def __init__(self, config):
@@ -167,10 +50,10 @@ class ArchiveHour(Archive):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Archive.__init__(self, config, "hour", exclude=["fdb"])
+        ArchiveTask.__init__(self, config, "hour", exclude=["fdb"])
 
 
-class ArchiveFDB(Archive):
+class ArchiveFDB(ArchiveTask):
     """Archving task for time dependent data dedicated for FDB."""
 
     def __init__(self, config):
@@ -179,4 +62,4 @@ class ArchiveFDB(Archive):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Archive.__init__(self, config, "FDB", include=["fdb"])
+        ArchiveTask.__init__(self, config, "FDB", include=["fdb"])

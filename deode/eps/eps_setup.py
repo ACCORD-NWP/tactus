@@ -47,51 +47,43 @@ class EPSGeneralConfigs:
     The infer_members field validator infers members from a members string,
     before validating the members field.
 
-    If the control member is not in the members list, it is added to the list
-    in the __post_init__ method.
-
     Attributes:
-        control_member (int): The control member.
         members (List[int]): The members.
-        run_continously (bool): Whether to run continuously.
 
     """
 
-    control_member: int
     members: List[int]
-    run_continously: bool
 
     @field_validator("members", mode="before")
-    def infer_members(cls, value: str | List[int]) -> List[int]:  # noqa: N805
-        """Infer members from the members string.
+    def infer_members(cls, value: str | int | List[int]) -> List[int]:  # noqa: N805
+        """Infer members from the members string. Accepts ints or list of ints too.
 
         The members string can be a comma separated sequence of integers or ranges.
-        After converting the members string to a list of integers, the control
-        member is added to the list if it is not already present.
-        Also, the final list of members is sorted and filtered to contain only
-        unique values.
+        The string is converted into a sorted list of integers. The list is
+        filtered to contain only unique values.
 
         E.g. "0:3,4,5,10:15" or "0,1,2,3,4,5,10,11,12,13,14"
 
+        In case of value being an integer, it is converted to a list of integers.
+        In case of value not being an int or string, it is assumed to be a list
+        of integers and returned sorted.
+
+        Args:
+            value: The members string, integer or list to infer members from.
+
+        Returns:
+            List[int]: The inferred members.
         """
-        if isinstance(value, str):
+        if isinstance(value, int):
+            value = [value]
+        elif isinstance(value, str):
             _members = [
                 list(range(*map(int, x.split(":")))) if ":" in x else [int(x)]
                 for x in value.split(",")
             ]
             value = list(chain.from_iterable(_members))
 
-        if not isinstance(value, list):
-            raise TypeError(
-                f"Expected that value is of type list. Got type '{type(value)}'"
-            )
-
         return sorted(set(value))
-
-    def __post_init__(self):
-        if self.control_member not in self.members:
-            self.members.append(self.control_member)
-        self.members = sorted(set(self.members))
 
     @property
     def n_members(self) -> int:
@@ -188,15 +180,13 @@ def generate_member_settings(
     )
 
     # Generate member settings for all members
-    for member_index in eps_config.general.members:
-        logger.debug(f"Generating member settings for mbr{member_index}")
+    for member in eps_config.general.members:
+        logger.debug(f"Generating member settings for mbr{member}")
         generated_values = generate_values(
             config=eps_config.member_settings, generators=generators
         )
-        # Update the realization field with the member_index
-        generated_values["general"]["realization"] = member_index
-        # Yield the member_index and the generated member settings object
-        yield member_index, generated_values
+        # Yield the member and the generated member settings object
+        yield member, generated_values
 
 
 def instantiate_generators(config: dict, members: List[int]) -> dict:
@@ -338,19 +328,19 @@ def check_expandable_keys(mapping: Mapping[str, Any]) -> List[bool]:
     return expandable_keys
 
 
-def get_member_config(config: ParsedConfig, member_index: int) -> ParsedConfig:
-    """Get the member specific config from a member_index.
+def get_member_config(config: ParsedConfig, member: int) -> ParsedConfig:
+    """Get the member specific config from a member.
 
-    The settings for the `member_index` EPS member overwrites any
+    The settings for the `member` EPS member overwrites any
     existing values for a given key in the config.
 
     Args:
         config: The parsed config.
-        member_index: The member index.
+        member: The member index.
 
     Raises:
         KeyError: If the members list is not present in the config.
-        ValueError: If the member_index is not in the members list.
+        ValueError: If the member is not in the members list.
 
     Returns:
         The new instance of the dataclass.
@@ -362,9 +352,9 @@ def get_member_config(config: ParsedConfig, member_index: int) -> ParsedConfig:
         config["eps.member_settings"], operator=dict
     )
 
-    # Get a clean dict of the member settings for the specific member_index.
+    # Get a clean dict of the member settings for the specific member.
     specific_member_settings = {}
-    mbr_key = f"eps.members.{member_index}"
+    member_key = f"eps.members.{member}"
 
     # Check that the members list is present
     if "eps.general.members" not in config:
@@ -373,22 +363,28 @@ def get_member_config(config: ParsedConfig, member_index: int) -> ParsedConfig:
             + " Cannot get member settings."
         )
 
-    # Check if the member_index is in the members list
-    if member_index not in config["eps.general.members"]:
+    # Check if the member is in the members list
+    if member not in config["eps.general.members"]:
         raise ValueError(
-            f"Member index {member_index} is not in the members list."
+            f"Member index {member} is not in the members list."
             + " Cannot get member settings."
         )
 
-    # Check if there are specific settings for the member_index
-    if mbr_key in config:
-        specific_member_settings = modify_mappings(config[mbr_key], operator=dict)
+    # Check if there are specific settings for the member
+    if member_key in config:
+        specific_member_settings = modify_mappings(config[member_key], operator=dict)
     else:
-        logger.debug(f"No settings found for member {member_index}. Using defaults.")
+        logger.debug(f"No settings found for member {member}. Using defaults.")
 
     # Merge the default member settings with the specific member settings
     merged_settings = merge_dicts(
         default_member_settings, specific_member_settings, overwrite=True
     )
+    # Update the member number in the general settings
+    if "general" not in merged_settings:
+        merged_settings["general"] = {}
+    merged_settings["general"]["member"] = member
+    merged_settings["general"]["member_str"] = f"mbr{member:03d}"
+
     # Return the config updated with member settings
     return config.copy(update={**merged_settings})

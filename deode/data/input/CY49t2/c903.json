@@ -1,31 +1,28 @@
 {
-  "climate" : {
-	  "path": "@CLIMDIR@",
-	  "files": {
-		   "@FPDOMAIN@_@MM@": "Const.Clim.@MM@"
-	  }
+  "climate": {
+    "path": "@CLIMDIR@",
+    "files": {
+      "@FPDOMAIN@_@MM@": "Const.Clim.@MM@"
+    }
   },
 
-  "rrtm" : {
-      "path": "@RRTM_DIR@",
-      "files": [
-            "ECOZC"
-      ]
+  "rrtm": {
+    "path": "@RRTM_DIR@",
+    "files": ["ECOZC"]
   },
 
   "IFS_files": {
-	  "path": "@MARSDIR@",
-	  "files": {
-            "ICMSHMARSINIT" : "ICMSH+@LL@",
-            "ICMSHMARS" : "ICMSH+@LL@",
-            "ICMSHMARS+000000" : "ICMSH+@LL@",
-            "ICMGGMARSINIT" : "ICMGG+@LL@",
-            "ICMGGMARS" : "ICMGG+@LL@",
-            "ICMGGMARS+000000" : "ICMGG+@LL@",
-            "ICMUAMARSINIT" : "ICMUA+@LL@",
-            "ICMUAMARS" : "ICMUA+@LL@",
-            "ICMUAMARS+000000" : "ICMUA+@LL@"
-          }
+    "path": "@MARSDIR@",
+    "files": {
+      "ICMSHMARSINIT": "ICMSH_@BDMEMBER@+@L@",
+      "ICMSHMARS": "ICMSH_@BDMEMBER@+@L@",
+      "ICMSHMARS+000000": "ICMSH_@BDMEMBER@+@L@",
+      "ICMGGMARSINIT": "ICMGG_@BDMEMBER@+@L@",
+      "ICMGGMARS": "ICMGG_@BDMEMBER@+@L@",
+      "ICMGGMARS+000000": "ICMGG_@BDMEMBER@+@L@",
+      "ICMUAMARSINIT": "ICMUA_@BDMEMBER@+@L@",
+      "ICMUAMARS": "ICMUA_@BDMEMBER@+@L@",
+      "ICMUAMARS+000000": "ICMUA_@BDMEMBER@+@L@"
+    }
   }
-
 }

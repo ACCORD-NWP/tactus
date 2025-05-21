@@ -53,7 +53,7 @@
                 },
                 "NAM_COVER#YCOVERFILETYPE": {
                     "DIRECT": {
-                        "NAM_COVER#YCOVER": "@pgd_data_path@/ECOCLIMAP_II_EUROP_V2.5_plus.dir"
+                        "NAM_COVER#YCOVER": "@pgd_data_path@/ECOCLIMAP_II_EUROP_V2.6.dir"
                     }
                 }
             }

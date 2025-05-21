@@ -63,7 +63,7 @@ def task_name_and_configs(request, default_config, tmp_directory):
             bd_index = 1
             bd_time = "{basetime}"
             basetime = "{basetime}"
-            ionr = 0
+            config_label = "foo"
         """
     )
     task_config = task_config.copy(update=config_patch)

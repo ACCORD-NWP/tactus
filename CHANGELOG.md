@@ -10,6 +10,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.16.0] - 2025-05-21
+
+### Added
+- Json schema check on expver for FDB archiving.[\#1168](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1168) (@uandrae)
+- Add posibility to run ALARO cy49t2 with surfex.[\#1128](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1128) (@kastelecn)
+- Add more control of expver for FDB archiving.[\#1120](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1120) (@uandrae)
+- Introduce fixed global orography on gaussian grid for marsprep speedup. [\#1143](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1143) (@adeckmyn)
+- Set start date for snow data. [\#1097](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1097) (@kastelecn)
+- Introduce subtasks for CreateGrib and AddCalculatedFields to reduce time to solution.[\#1138](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1138) (@uandrae)
+- Introduced EPS in the workflow. By default, every run is now treated as an ensemble. [\#1031](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1031)
+- Introduce caching of parameters to speedup the search in GRIB files in gribmody.py.[\#1136](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1136) (@uandrae)
+- Add generation and storage of expanded config file for dcmbd usage.[\#1126](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1126) (@uandrae)
+
+### Changed
+- Switch on FDB archiving in operations and updated the FDB documentation. [\#1168](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1168) (@uandrae)
+- Make log collection settings configurable. [\#1167](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1167) (@uandrae)
+- Use module related environment variable for FDB5_HOME on atos_bologna.[\#1120](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1120) (@uandrae)
+- Deactivate TOMS computations to allow execution of forecast model in SP.[\#1135](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1135) (@uandrae)
+- Allow archiving to be called from any task. Allows log collection to run after archiving.[\#1117](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1117) (@uandrae)
+- Rename PreCleaning to RunPrep as it also handles storing of config files.[\#1126](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1126) (@uandrae)
+- Update GRIB encoding of root depth parameter for AQ.[\#1134](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1134) (@KristianHMoller)
+- Simplifies config files, having one for each cyle, one for each csc, and one for each host, instead of the combinations of all of these.[\#1088](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1088) (@pardallio)
+
+
+### Fixed
+- Restore gathering of task specific log files. [\#1167](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1167) (@uandrae)
+- Fix LBC filenames in case of mode = "restart". [\#1162](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1162) (@kastelecn)
+- Added @MEMBER_STR@ to archive outpath where missing. [\#1147](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1147) (@mafdmi)
+- Made host resolvement for impact models happen run-time instead of when generating config. [\#1148](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1148) (@mafdmi)
+- Fix error with parent node for "CreateGribStatic" task. [\#1152](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1152) (@mafdmi)
+- Revert fetching ecFlow variables from ecFlow server. [\#1142](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1142) (@mafdmi)
+
 ## [0.15.0] - 2025-04-24
 
 ### Added

@@ -31,10 +31,21 @@
   max_interpolation_tasks = 10
 
 [boundaries.ifs]
-  bdmember = []
+  bdmember = 0
+  bdmembers = []
   selection = "@HOST@_DT"
 
 [boundaries.lam]
+
+[collectlogs.hourlogs]
+  joboutdir = "@ECF_OUT@/@CASE@/@YYYY@@MM@@DD@/@HH@@mm@"
+  tarname = "@YYYY@@MM@@DD@_@HH@@mm@"
+  task_logs = "@WRK@"
+
+[collectlogs.staticlogs]
+  joboutdir = "@ECF_OUT@/@CASE@/StaticData"
+  tarname = "StaticData"
+  task_logs = "@CLIMDIR@"
 
 [fullpos]
   config_path = "@CYCLE@/fullpos"
@@ -71,7 +82,9 @@
   cleaning = "include/cleaning.toml"
   creategrib = "include/creategrib.toml"
   domain = "include/domains/DEMO_60x80_2500m.toml"
+  eps = "include/eps/eps_default.toml"
   extractsqlite = "include/sqlite.toml"
+  fdb = "include/fdb.toml"
   file_templates = "include/file_templates.toml"
   impact = "include/impact.toml"
   macros = "include/macros.toml"
@@ -96,16 +109,18 @@
   do_soil = true
   interpolate_boundaries = true
   mode = "cold_start"
+  n_addcalculatedfields = 2
+  n_creategrib = 2
   n_io_merge = 0
 
 [system]
   bdclimdir = "@FIXED_BDCLIMDIR@"
   bddir = "@INTP_BDDIR@"
   bddir_sfx = "@MARSDIR@"
-  bdfile_sfx_template = "ECSFCSFX@DOMAIN@+@LLL@"
+  bdfile_sfx_template = "ECSFCSFX@DOMAIN@_@BDMEMBER@+@LLL@"
   bdfile_template = "ELSCF@CNMEXP@ALBC@NNN@"
   casedir = "@SCRATCH@/deode/@CASE@"
-  climdir = "@CASEDIR@/climate/@DOMAIN@/"
+  climdir = "@CASEDIR@/climate/@DOMAIN@"
   logs = "@ARCHIVE_ROOT@/logs"
   marsdir = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"

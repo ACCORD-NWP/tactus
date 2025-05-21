@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
 from contextlib import suppress
+from pathlib import Path
 
 import pytest
 import tomlkit
@@ -71,8 +72,8 @@ class TestSubmission:
         config = config.copy(update=set_times(config))
         task = "UnitTest"
         template_job = "deode/templates/stand_alone.py"
-        task_job = f"{tmp}/{task}.job"
-        output = f"{tmp}/{task}.log"
+        task_job = Path(tmp, f"{task}.job")
+        output = Path(tmp, f"{task}.log")
 
         assert config["submission.default_submit_type"] == "background_hpc"
         background = TaskSettings(config)
@@ -126,8 +127,8 @@ class TestSubmission:
         task = "not_existing"
         tmp = tmp_directory
         template_job = "deode/templates/stand_alone.py"
-        task_job = f"{tmp}/{task}.job"
-        output = f"{tmp}/{task}.log"
+        task_job = Path(tmp, f"{task}.job")
+        output = Path(tmp, f"{task}.log")
 
         background = TaskSettings(config)
         sub = NoSchedulerSubmission(background)

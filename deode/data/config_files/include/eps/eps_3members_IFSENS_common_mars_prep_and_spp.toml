@@ -1,0 +1,13 @@
+[boundaries.ifs]
+  bdmembers = [0, 1, 2]
+  selection = "IFSENS"
+
+[eps.general]
+  members = "0:3"
+
+[eps.member_settings.boundaries.ifs]
+  bdmember = [0, 1, 2]
+
+[eps.member_settings.namelist_update.master.forecast.namspp]
+  iezdiag_pos = {0 = 1, "1:" = -1}
+  lspp = {0 = false, "1:" = true}

@@ -3,20 +3,25 @@ pgd_common:
   - sfx_pgd_domain
   - sfx_pgd_schemes
   - sfx_pgd_zs_gmted
-  - sfx_pgd_isba_dif
   - sfx_pgd_soilgrid_sand
   - sfx_pgd_soilgrid_clay
   - sfx_pgd_ecoclimap_sg_base
 
 pgd_ALARO:
+  - sfx_pgd_isba_dif_@CSC@
   - sfx_pgd_zs_filter
-  - sfx_pgd_zs_AROME
+  - sfx_pgd_@CSC@
+  - sfx_@CSC@
 
 pgd_AROME:
+  - sfx_pgd_ecoclimap_sg_@DECADES@
+  - sfx_pgd_isba_dif
   - sfx_pgd_zs_filter
   - sfx_pgd_zs_@CSC@
 
 pgd_HARMONIE_AROME:
+  - sfx_pgd_ecoclimap_sg_@DECADES@
+  - sfx_pgd_isba_dif
   - sfx_pgd_cv
   - sfx_pgd_rsmin
   - sfx_pgd_sea
@@ -25,7 +30,6 @@ pgd_HARMONIE_AROME:
 
 pgd:
   - ${pgd_common}
-  - sfx_pgd_ecoclimap_sg_@DECADES@
   - sfx_pgd_teb_@SG_INPUT@
   - sfx_teb_@SG_INPUT@
   - ${pgd_@CSC@}
@@ -39,7 +43,8 @@ prep:
   - ${prep_@CSC@}
 
 prep_ALARO:
-  - sfx_prep_isba_AROME
+  - sfx_prep_watflx
+  - sfx_@CSC@
 
 prep_AROME:
 

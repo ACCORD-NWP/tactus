@@ -1,0 +1,24 @@
+[fdb]
+  create_inverse_filter = false
+
+[fdb.expver_restrictions]
+  0001 = ["aut6432"]
+  0098 = ["snh02"]
+  0099 = ["aut6432"]
+
+[fdb.grib_set]
+  centre = "98"
+  class = "d1"
+  dataset = "on-demand-extremes-dt"
+  grib2LocalSectionNumber = "1"
+  productionStatusOfProcessedData = "12"
+  setLocalDefinition = "1"
+  subCentre = "84"
+  tablesVersion = "34"
+  type = "fc"
+
+[fdb.negative_rules]
+  levtype = ["unknown"]
+  param = ["0", "231049", "231066"]
+  productDefinitionTemplateNumber = ["113", "114"]
+  typeOfLevel = ["unknown", "not_found"]

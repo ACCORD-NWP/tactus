@@ -35,7 +35,7 @@ class IOmerge(Task):
         self.surfex = self.config["general.surfex"]
 
         self.n_io_merge = self.config["suite_control.n_io_merge"]
-        self.ionr = int(config["task.args.ionr"])
+        self.ionr = int(config.get("task.args.tasknr", "0"))
         self.archive = self.platform.get_system_value("archive")
         self.deode_home = self.config["platform.deode_home"]
         self.file_templates = self.config["file_templates"]
@@ -148,59 +148,49 @@ class IOmerge(Task):
 
         return file_list
 
-    def merge_output(self, lt):
+    def merge_output(self, lt, filetype):
         """Merge distributed forecast model output.
 
         Args:
             lt (timeDelta): lead time
+            filetype (str): Type of file
 
         """
-        logger.info("Merge_output called at lt = {}", lt)
+        logger.info("merge_output called at lt = {}, filetype = {}", lt, filetype)
 
-        for filetype, oi in self.output_settings.items():
-            if filetype not in list(self.file_templates.keys()):
-                continue
+        ftemplate = self.file_templates[filetype]["model"]
+        ftemplate_out = self.file_templates[filetype]["archive"]
+        validtime = self.basetime + lt
+        filename = self.platform.substitute(ftemplate, validtime=validtime)
+        filename_out = self.platform.substitute(ftemplate_out, validtime=validtime)
+        logger.info("Merging file {}", filename)
+        self.check_fc_path()
 
-            #   NOTE: various output types (history, surfex, fullpos)
-            #   may be created at other time intervals
-            #   so we have to check validtime for every filetype
-            dt_list = oi2dt_list(oi, self.forecast_range)
-            if lt not in dt_list:
-                logger.info("{} not required at time {}", filetype, lt)
-                continue
+        file_list = self.wait_for_io(filetype, lt)
+        files = " ".join(file_list)
+        logger.info("{} input files:", len(file_list))
+        for x in file_list:
+            logger.info("  {}", x)
 
-            ftemplate = self.file_templates[filetype]["model"]
-            ftemplate_out = self.file_templates[filetype]["archive"]
-            validtime = self.basetime + lt
-            filename = self.platform.substitute(ftemplate, validtime=validtime)
-            filename_out = self.platform.substitute(ftemplate_out, validtime=validtime)
-            logger.info("Merging file {}", filename)
-            self.check_fc_path()
+        if filetype in ("history", "surfex"):
+            lfitools = self.get_binary("lfitools")
 
-            file_list = self.wait_for_io(filetype, lt)
-            files = " ".join(file_list)
-            logger.info("{} input files:", len(file_list))
-            for x in file_list:
-                logger.info("  {}", x)
+            # NOTE: .sfx also has a part in the working directory,
+            #        so you *must* change the name
+            cmd = f"{lfitools} facat all {files} {filename}"
 
-            if filetype in ("history", "surfex"):
-                lfitools = self.get_binary("lfitools")
+        elif filetype == "fullpos":
+            # FIXME: fullpos output /can/ be FA or GRIB2
+            # Fullpos (grib2) output has .hfp as extra file extension
+            cmd = f"cat {files} > {filename}"
+        else:
+            logger.error("Unsupported filetype {}", filetype)
+            cmd = None
 
-                # NOTE: .sfx also has a part in the working directory,
-                #        so you *must* change the name
-                cmd = f"{lfitools} facat all {files} {filename}"
-
-            elif filetype == "fullpos":
-                # FIXME: fullpos output /can/ be FA or GRIB2
-                # Fullpos (grib2) output has .hfp as extra file extension
-                cmd = f"cat {files} > {filename}"
-            else:
-                logger.error("Unsupported filetype {}", filetype)
-                continue
-
+        if cmd is not None:
             BatchJob(os.environ, wrapper="").run(cmd)
 
-            # write output to archive (or to the Forecast directory...)
+            # Write output to archive (or to the Forecast directory...)
             self.fmanager.output(filename, f"{self.archive}/{filename_out}")
 
     def execute(self):
@@ -224,27 +214,26 @@ class IOmerge(Task):
         io_path = f"{self.fc_path}/io_serv.000001.d"
         echis = f"{io_path}/ECHIS"
 
-        full_dt_list = []
-        oi_list = []
-
         # build the list of lead times (all output types combined):
         # NOTE: like in the Forecast task, we assume that a filetype is
         #       in output_settings AND in file_templates.
         #       Alternatively, ["history", "fullpos", "surfex"] could be
         #       hard coded.
+        dt_list = {}
         for filetype, oi in self.output_settings.items():
             if filetype in list(self.file_templates.keys()):
                 logger.debug("filetype: {}, oi: {}", filetype, oi)
-                if oi not in oi_list:
-                    oi_list += oi
-                    full_dt_list += oi2dt_list(oi, self.forecast_range)
-        # remove duplicates and sort
-        full_dt_list = list(set(full_dt_list))
-        full_dt_list.sort()
-        # now subset for this worker:
-        dt_list = full_dt_list[self.ionr :: self.n_io_merge]
+                for dt in oi2dt_list(oi, self.forecast_range):
+                    if dt not in dt_list:
+                        dt_list[dt] = []
+                    dt_list[dt].append({"dt": dt, "filetype": filetype})
+
+        full_merge_list = [x for dt in sorted(dt_list) for x in dt_list[dt]]
+
+        # Now subset for this worker:
+        merge_list = full_merge_list[self.ionr :: self.n_io_merge]
         logger.debug("IONR = {}, N_IO_MERGE = {}", self.ionr, self.n_io_merge)
-        logger.debug("DT list {}", dt_list)
+        logger.debug("merge_list {}", merge_list)
 
         # We must wait for the io_server output to appear
         # BUT: how long should we wait before aborting?
@@ -264,8 +253,9 @@ class IOmerge(Task):
         logger.info("IO_SERVER {} detected!", echis)
 
         # Now we wait for the output times allotted to this IO worker.
-        for dt in dt_list:
-            logger.info("Waiting for {}", dt)
+        for items in merge_list:
+            dt, filetype = items["dt"], items["filetype"]
+            logger.info("Waiting for {} {}", dt, filetype)
             while True:
                 self.check_fc_path()
                 with open(f"{io_path}/ECHIS", "r") as ll:
@@ -278,19 +268,20 @@ class IOmerge(Task):
                     break
 
             # we have reached the next 'merge time'
-            logger.info("lead time {} is available", dt)
             # NOTE: merge_output will first wait for files to be "complete"
             start = time()
-            self.merge_output(dt)
+            self.merge_output(dt, filetype)
             end = time()
-            logger.info("Merge of {} took {} seconds", dt, int(end - start))
+            logger.info(
+                "Merge of {} for {} took {} seconds", dt, filetype, int(end - start)
+            )
 
         # signal completion of all merge tasks to the forecast task
         BatchJob(os.environ, wrapper="").run(
             f"touch {self.fc_path}/io_merge_{self.ionr:02}"
         )
 
-        if full_dt_list.index(dt) == len(full_dt_list) - 1:
+        if full_merge_list[-1] == items:
             logger.info("Remove Forecast directory since all files have been processed")
             # Wait for all io_merge tasks to finish.
             # This is signaled by creating (empty) files.

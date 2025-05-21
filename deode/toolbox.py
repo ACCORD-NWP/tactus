@@ -456,6 +456,7 @@ class Platform:
             lm = int((lead_seconds % 3600 - lead_seconds % 60) / 60)
             ls = int(lead_seconds % 60)
 
+            pattern = self.sub_value(pattern, "L", lh)
             pattern = self.sub_value(pattern, "LH", f"{lh:02d}")
             pattern = self.sub_value(pattern, "LL", f"{lh:02d}")
             pattern = self.sub_value(pattern, "LLH", f"{lh:03d}")
@@ -1122,18 +1123,27 @@ class FDB(ArchiveProvider):
             expver (str): FDB experiment identifier
 
         Raises:
-            RuntimeError: If user is not allowed to archive
+            RuntimeError: If user is not allowed to archive for this expver
         """
         user = os.environ["USER"]
         expver_restrictions = self.config["fdb.expver_restrictions"]
-        with contextlib.suppress(KeyError):
-            if user not in expver_restrictions[expver]:
-                msg = (
-                    f"The user {user} is not allowed to archive expver={expver}\n"
-                    + f"according to expver_restrictions={expver_restrictions}\n"
-                    "Do not alter the rules!"
-                )
-                raise RuntimeError(msg)
+        if isinstance(expver_restrictions, str):
+            expver_restrictions = [expver_restrictions]
+        if expver not in expver_restrictions:
+            msg = (
+                f"The user allowed to archive for expver={expver} is not defined in\n "
+                + f"expver_restrictions={expver_restrictions}\n"
+                "Plese consult the documentation before adding a rule!"
+            )
+            raise RuntimeError(msg)
+
+        if user not in expver_restrictions[expver]:
+            msg = (
+                f"The user {user} is not allowed to archive expver={expver}\n"
+                + f"according to expver_restrictions={expver_restrictions}\n"
+                "Do not alter the rules without consulting the documentation!"
+            )
+            raise RuntimeError(msg)
 
     def create_resource(self, resource):
         """Create the resource.
@@ -1181,7 +1191,7 @@ class FDB(ArchiveProvider):
                 self.fdb.archive(infile.read())
             self.fdb.flush()
 
-            create_inv = self.config.get("fdb.create_filter_inverse", False)
+            create_inv = self.config.get("fdb.create_inverse_filter", False)
             if create_inv:
                 # Create example files for parameters not archived
                 inv_temp1 = f"{filename}_temp1_inv.grib"

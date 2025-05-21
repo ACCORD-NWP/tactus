@@ -1,6 +1,7 @@
 """Ecflow suites base class."""
 
 import os
+from pathlib import Path
 from typing import List, Optional, Union
 
 from ..logs import LogDefaults, logger
@@ -164,6 +165,7 @@ class SuiteDefinition(object):
             "NPROCX": "",
             "NPROCY": "",
             "KEEP_WORKDIRS": keep_workdirs,
+            "MEMBER": "",
         }
 
         self.suite = EcflowSuite(
@@ -487,7 +489,7 @@ class EcflowSuiteTask(EcflowNode):
         name,
         parent,
         config,
-        task_settings,
+        task_settings: TaskSettings,
         ecf_files,
         input_template=None,
         parse=True,
@@ -536,7 +538,9 @@ class EcflowSuiteTask(EcflowNode):
 
         logger.debug(parent.path)
         logger.debug(parent.ecf_local_container_path)
-        task_container = parent.ecf_local_container_path + "/" + name + ".bash"
+        task_container = (Path(parent.ecf_local_container_path) / name).with_suffix(
+            ".bash"
+        )
         if parse:
             if input_template is None:
                 raise ValueError("Must pass input template if it is to be parsed")

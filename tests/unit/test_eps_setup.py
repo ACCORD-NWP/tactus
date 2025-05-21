@@ -44,28 +44,8 @@ class TestEPSGeneralConfigs:
             input_members (list[int] | str): The input members as string or list
             expected_output (list[int]): The expected list of members
         """
-        result = EPSGeneralConfigs.infer_members(input_members)
+        result = EPSGeneralConfigs.infer_members(value=input_members)
         assert result == expected_output
-
-    def test_infer_members_invalid_type(self):
-        """Test that method raises exception on unexpected type."""
-        with pytest.raises(TypeError, match=r".*value is of type list.*"):
-            EPSGeneralConfigs.infer_members(123)
-
-    def test_post_init_adds_control_member(self):
-        """Test that control member is added to list of members."""
-        config = EPSGeneralConfigs(
-            control_member=0, members=[1, 2, 3], run_continously=False
-        )
-        assert 0 in config.members
-        assert config.members == [0, 1, 2, 3]
-
-    def test_post_init_does_not_duplicate_control_member(self):
-        """Test that control member is not duplicated in list of members."""
-        config = EPSGeneralConfigs(
-            control_member=0, members=[0, 1, 2, 3], run_continously=True
-        )
-        assert config.members == [0, 1, 2, 3]
 
 
 class TestValidateExpandables:
@@ -74,7 +54,7 @@ class TestValidateExpandables:
     @pytest.fixture(name="eps_general_config", scope="class")
     def fixture_eps_general_config(self) -> EPSGeneralConfigs:
         """Fixture for defining a test EPSGeneralConfigs class."""
-        return EPSGeneralConfigs(control_member=0, members=[0, 1], run_continously=False)
+        return EPSGeneralConfigs(control_member=0, members=[0, 1])
 
     def test_with_valid_data(self, eps_general_config: EPSGeneralConfigs):
         """Test with valid expandable data."""
@@ -155,9 +135,7 @@ class TestValidateExpandables:
 @pytest.fixture(name="eps_config", scope="class")
 def fixture_eps_config() -> EPSConfig:
     """Fixture for defining a test EPSConfig class."""
-    general_config = EPSGeneralConfigs(
-        control_member=0, members=[0, 1], run_continously=False
-    )
+    general_config = EPSGeneralConfigs(control_member=0, members=[0, 1])
     return EPSConfig(general=general_config, member_settings={})
 
 
@@ -170,12 +148,11 @@ class TestGenerateMemberSettings:
         mock_generate_values: Mock,
         eps_config: EPSConfig,
     ):
-        """Test that `realization` is added as key in the resulting member dict."""
-        # Make mocked function return some test dict, where realization is not
-        # updated.
+        """Test that correct member is returned."""
+        # Make mocked function return some test dict
         mock_generate_values.side_effect = [
-            {"general": {"realization": -1}, "field1": 1, "field2": 3},
-            {"general": {"realization": -1}, "field1": 2, "field2": 4},
+            {"field1": 1},
+            {"field1": 2},
         ]
 
         # Mock out instantiate_generators
@@ -183,10 +160,10 @@ class TestGenerateMemberSettings:
             # Call function under test
             result = list(generate_member_settings(eps_config))
 
-        # Check that realization value is updated according to members in ensemble.
+        # Check that correct member is returned according to members in ensemble.
         assert result == [
-            (0, {"field1": 1, "field2": 3, "general": {"realization": 0}}),
-            (1, {"field1": 2, "field2": 4, "general": {"realization": 1}}),
+            (0, {"field1": 1}),
+            (1, {"field1": 2}),
         ]
 
 
@@ -465,16 +442,16 @@ class TestGetMemberConfig:
     """Unit tests for the get_member_config function."""
 
     @pytest.mark.parametrize(
-        ("member_index", "csc", "cycle"),
+        ("member", "csc", "cycle"),
         [(0, "AROME", "CY49t2"), (1, "ALARO", "CY48t3"), (2, "HARMONIE_AROME", "CY46h1")],
     )
     def test_get_member_config(
-        self, default_config: ParsedConfig, member_index: int, csc: str, cycle: str
+        self, default_config: ParsedConfig, member: int, csc: str, cycle: str
     ):
         """Test that get_member_config correctly updates the config for each member."""
-        # Define some test values
-        forecast_range_value = f"PT{member_index}H"
-        climdir_value = f"climdir{member_index}"
+        # Define some test values based on member for uniqueness
+        forecast_range_value = f"PT{member}H"
+        climdir_value = f"climdir{member}"
 
         # Add test member settings to the default config
         default_config = default_config.copy(
@@ -482,7 +459,7 @@ class TestGetMemberConfig:
                 "eps": {
                     "general": {"members": [0, 1, 2]},
                     "members": {
-                        str(member_index): {
+                        str(member): {
                             "general": {
                                 "csc": csc,
                                 "cycle": cycle,
@@ -501,22 +478,23 @@ class TestGetMemberConfig:
         )
 
         # Call the function under test
-        updated_config = get_member_config(default_config, member_index)
+        updated_config = get_member_config(default_config, member)
 
         # Assert that the fields in the original default_config are updated
         assert updated_config["general"]["csc"] == csc
         assert updated_config["general"]["cycle"] == cycle
+        assert updated_config["general"]["member"] == member
         assert (
             updated_config["general"]["times"]["forecast_range"] == forecast_range_value
         )
         assert updated_config["system"]["climdir"] == climdir_value
 
     @pytest.mark.parametrize(
-        "member_index",
+        "member",
         [-1, 3, 100],
     )
-    def test_get_member_config_invalid_member_index(
-        self, default_config: ParsedConfig, member_index: int
+    def test_get_member_config_invalid_member(
+        self, default_config: ParsedConfig, member: int
     ):
         """Test that get_member_config raises an exception on invalid member index."""
         # Prepare the config with some eps settings
@@ -532,4 +510,4 @@ class TestGetMemberConfig:
 
         # Test invalid member indices
         with pytest.raises(ValueError, match=r".*not in the members list.*"):
-            get_member_config(default_config, member_index)
+            get_member_config(default_config, member)

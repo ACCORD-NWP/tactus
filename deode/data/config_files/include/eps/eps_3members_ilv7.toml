@@ -1,0 +1,15 @@
+[general]
+  case = "@CASE_PREFIX@@CYCLE@_@CSC@_@EVENT_TYPE@_@DOMAIN@_@YMD_START@_3member_ilv7"
+
+[general.times]
+  start = "2021-08-17T00:00:00Z"
+
+[boundaries.ifs]
+  bdmembers = [0, 1, 2]
+  selection = "ilv7"
+
+[eps.general]
+  members = "0,1,2"
+
+[system]
+  marsdir = "@REFERENCE_DATA@/ilv7_ENS_3member/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"

@@ -37,6 +37,16 @@ sfx_pgd_isba_dif:
       - True
       - True
 
+sfx_pgd_isba_dif_ALARO:
+  NAM_ISBA:
+    CISBA: "DIF"
+    NPATCH: ${cfg:pgd.npatch}
+    YCLAY: "clay"
+    YCLAYFILETYPE: "DIRECT"
+    YSAND: "sand"
+    YSANDFILETYPE: "DIRECT"
+
+
 sfx_treedrag:
   NAM_TREEDRAG:
     LFAKETREE:
@@ -143,6 +153,48 @@ sfx_forecast_AROME:
     XEMISSN: 0.99
     XZ0HSN: 0.001
     XZ0SN: 0.01
+
+sfx_forecast_ALARO:
+  NAM_DIAG_SURFN:
+    N2M: 0
+    LSURF_VARS: True 
+  NAM_SEAFLUXN:
+    CSEA_FLUX: "ECUME"
+  NAM_SURF_ATM:
+    LALDTHRES: True
+    LDRAG_COEF_ARP: True
+    LRRGUST_ARP: True
+    LVZIUSTAR0_ARP: True
+    LZ0SNOWH_ARP: True
+    LZ0_AVG_EXACT: True
+    LZ0_EFF: True
+    XCISMIN: 0.00055
+    XFACZ0: 0.53
+    XRRGAMMA: 0.8
+    XRRSCALE: .000115
+    XRZ0_TO_HEIGHT: 0.13
+    XUTILGUST: 0.125
+    XVMODMIN: 0
+    XVZIUSTAR0: 12.0
+    XWCRN: 10
+  NAM_ISBA:
+    CALBEDO: 'CM13'
+  NAM_SSON:
+    CROUGH: 'NONE'
+  NAM_TEBN:
+    CCH_BEM: 'DOE-2'
+  NAM_TREEDRAG:
+    XSCALE_H_TREE_ECOFG(13): 1.5
+    XSCALE_H_TREE_ECOFG(14): 1.5
+    XSCALE_H_TREE_ECOFG(15): 1.5
+    XSCALE_H_TREE_ECOFG(16): 1.5
+    XSCALE_H_TREE_ECOFG(17): 1.5
+    XSCALE_H_TREE_ECOFG(19): 1.5
+    XSCALE_H_TREE_ECOFG(4): 1.5
+    XSCALE_H_TREE_ECOFG(5): 1.5
+    XSCALE_H_TREE_ECOFG(6): 1.5
+  NAM_FRAC:
+    LECOSG: False
 
 sfx_pgd_domain:
   NAM_PGD_GRID:
@@ -755,6 +807,24 @@ sfx_pgd_rsmin:
     - 150.0
     - 40.0
 
+sfx_pgd_ALARO:
+  NAM_PGD_SCHEMES:
+    LGARDEN: True
+  NAM_DATA_TEB:
+    XUNIF_H_TRAFFIC: 0.0
+    XUNIF_LE_TRAFFIC: 0.0
+  NAM_ZS:
+    LORORAD: False
+  NAM_COVER:
+    YCOVER: 'ecoclimap'
+  NAM_ISBA_DATA: {}
+
+sfx_ALARO:
+ NAM_IO_OFFLINE:
+    LRESTART: False
+ NAM_FRAC:
+    LECOSG: False
+
 sfx_prep_atm:
   NAM_SURF_ATM:
     LVERTSHIFT: True
@@ -781,6 +851,7 @@ sfx_prep_flake:
     LCLIM_LAKE: True
 
 sfx_prep_watflx:
+  NAM_PREP_WATFLUX:
     LWAT_SBL: False
 
 sfx_prep_isba_HARMONIE_AROME:
@@ -812,6 +883,18 @@ sfx_prep_isba_AROME:
     LSNOW_IDEAL: False
     NSNOW_LAYER: 12
     XWSNOW: 0.0
+
+sfx_prep_isba_ALARO:
+  NAM_DIAG_ISBAN:
+    LPGD: True
+  NAM_PREP_ISBA:
+    LISBA_CANOPY: False
+  NAM_PREP_ISBA_SNOW:
+    CSNOW: "3-L"
+    NSNOW_LAYER: 12
+  NAM_PREP_TEB_SNOW:
+    XWSNOW_ROAD: 0.0
+    XWSNOW_ROOF: 0.0
 
 sfx_prep_isba_from_grib:
   NAM_PREP_SURF_ATM:

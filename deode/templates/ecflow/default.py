@@ -2,8 +2,11 @@
 
 import os
 
+import ecflow as ecf
+
 from deode.config_parser import ConfigParserDefaults, GeneralConstants, ParsedConfig
 from deode.derived_variables import derived_variables
+from deode.eps.eps_setup import get_member_config
 from deode.host_actions import DeodeHost
 from deode.logs import LogDefaults, LoggerHandlers, logger
 from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
@@ -11,6 +14,24 @@ from deode.submission import ProcessorLayout
 from deode.tasks.discover_task import get_task
 
 logger.enable(GeneralConstants.PACKAGE_NAME)
+
+
+def query_ecflow_variable(client: ecf.Client, ecf_name: str, variable: str):
+    """Query ecflow variable from client.
+
+    Args:
+        client (ecf.Client): ecflow client.
+        ecf_name (str): ecflow name, i.e. path to ecFlow node.
+        variable (str): variable to query.
+
+    Returns:
+        str or None: variable value if variable exists on client.
+    """
+    try:
+        return client.query("variable", ecf_name, variable)
+    except RuntimeError:
+        logger.warning("Could not find variable {} in ecflow", variable)
+        return None
 
 
 def parse_ecflow_vars():
@@ -35,10 +56,11 @@ def parse_ecflow_vars():
         "CONFIG": os.environ["CONFIG"],
         "DEODE_HOME": os.environ["DEODE_HOME"],
         "KEEP_WORKDIRS": os.environ["KEEP_WORKDIRS"],
+        "MEMBER": os.environ["MEMBER"],
     }
 
 
-def default_main(**kwargs):
+def default_main(kwargs: dict):
     """Ecflow container default method."""
     config_file = kwargs.get("CONFIG")
     deode_host = DeodeHost().detect_deode_host()
@@ -64,7 +86,7 @@ def default_main(**kwargs):
             if len(parts) == 2:
                 args_dict.update({parts[0]: parts[1]})
             else:
-                logger.warning("Could not convert ARGS:{} to dict, skip it", arg)
+                logger.debug("Could not convert ARGS:{} to dict, skip it", arg)
 
     # Update config based on ecflow settings
     config = config.copy(
@@ -83,9 +105,6 @@ def default_main(**kwargs):
         }
     )
 
-    # TODO Add wrapper
-    server = EcflowServer(config)
-
     ecf_name = kwargs.get("ECF_NAME")
     ecf_pass = kwargs.get("ECF_PASS")
     ecf_tryno = kwargs.get("ECF_TRYNO")
@@ -93,6 +112,19 @@ def default_main(**kwargs):
     ecf_timeout = kwargs.get("ECF_TIMEOUT")
     task = EcflowTask(ecf_name, ecf_tryno, ecf_pass, ecf_rid, ecf_timeout=ecf_timeout)
 
+    # Get member number
+    member = kwargs.get("MEMBER")
+    # If member is not an integer, skip EPS setup
+    try:
+        member = int(member)
+    except (TypeError, ValueError):
+        logger.debug("MEMBER is not an integer, skipping eps setup for task {}", task)
+    else:
+        # Update config based on member
+        config = get_member_config(config, member=member)
+
+    # TODO Add wrapper
+    server = EcflowServer(config)
     # This will also handle call to sys.exit(), i.e. Client.__exit__ will still be called.
     with EcflowClient(server, task):
         processor_layout = ProcessorLayout(kwargs)
@@ -109,4 +141,4 @@ if __name__ == "__main__":
     logger.info("Running {} v{}", GeneralConstants.PACKAGE_NAME, GeneralConstants.VERSION)
     # Get ecflow variables
     kwargs_main = parse_ecflow_vars()
-    default_main(**kwargs_main)
+    default_main(kwargs_main)

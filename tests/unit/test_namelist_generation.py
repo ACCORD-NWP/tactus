@@ -24,7 +24,7 @@ def config_platform():
             bdmodel = "ifs"
         [general]
             case = "test_case"
-            realization = ""
+            os_macros = ["USER", "HOME", "PWD"]
             cnmexp = "HARM"
             bdint = "PT3H"
             cycle = "CY46h1"

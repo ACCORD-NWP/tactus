@@ -39,6 +39,7 @@
   SHZ_type = "AN"
   SHZdate = "20131129"
   start_date = "2015-05-13T00:00:00Z"
+  start_snow_date = "2023-06-27T00:00:00Z"
   type_AN = "AN"
   type_FC = "FC"
   UA = "133/75/76/246/247/248"
@@ -73,11 +74,13 @@
 
 [mars.i7u4]
   default = "RD_DEFAULT"
+  gg_oro_source = "@STATIC_DATA@/IFS_gridpoint_orography/oro_T3999_F3214"
   grid = "0.028/0.028"
   stream.00 = "LWDA"
 
 [mars.i7ye]
   default = "RD_DEFAULT"
+  gg_oro_source = "@STATIC_DATA@/IFS_gridpoint_orography/oro_T3999_F3214"
   grid = "0.028/0.028"
   stream.00 = "LWDA"
 
@@ -97,7 +100,7 @@
   GG_sea = "31/34"
   GG_snow = "33/238/228038/228141"
   GG_soil = "234/173/174/43/30/29/28/27"
-  GGZ_type = "analysis"
+  GGZ_type = "CF"
   grid_ML = "AV"
   ifs_cycle_length = "PT6H"
   levelist = "1/to/137"
@@ -105,6 +108,7 @@
   SHZ = "129.128"
   SHZ_type = "CF"
   start_date = "1900-01-01T00:00:00Z"
+  start_snow_date = "2023-06-27T00:00:00Z"
   stream = "ENFO"
   type_AN = "CF"
   type_FC = "PF"
@@ -130,20 +134,35 @@
   type_AN = "CF"
   type_FC = "PF"
 
+[mars.ilv7]
+  default = "RD_DEFAULT"
+  end_date = "2021-08-17T00:00:00Z"
+  expver = "ilv7"
+  GGZ_type = "CF"
+  ifs_cycle_start = "PT0H"
+  SHZ_type = "CF"
+  start_date = "2021-08-17T00:00:00Z"
+  stream = "ENFO"
+  type_AN = "CF"
+  type_FC = "PF"
+
 [mars.lumi_DT]
   class = "D1"
   default = "RD_DEFAULT"
   expver = "0001"
   GGZ_type = "AN"
+  sh_oro_source = "/projappl/project_465000527/models/ifs/static-data/rdx/data/climate/climate.v020/2559_4/sporog"
   SHZ_type = "AN"
   SHZclass = "OD"
   SHZdate = "20131129"
   start_date = "2024-04-06T00:00:00Z"
+  use_static_sh = true
   Zlev_type = "SFC"
 
 [mars.RD_DEFAULT]
   class = "RD"
   GG = "32/33/39/40/41/42/139/141/170/172/183/198/235/236/35/36/37/38/238/243/244/245"
+  gg_oro_source = "@STATIC_DATA@/IFS_gridpoint_orography/oro_T2559_F2250"
   GG_sea = "31/34"
   GG_snow = "33/238/228038/228141"
   GGZ_type = "FC"
@@ -160,4 +179,5 @@
   type_AN = "AN"
   type_FC = "FC"
   UA = "133/75/76/246/247/248"
+  use_static_gg = true
   Zlev_type = "ML"

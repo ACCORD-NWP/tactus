@@ -1,5 +1,4 @@
 [submission]
-  bindir = "/perm/deployde330/github-actions/install/cy48t3/cy48t3-v1.4.3/bin"
   default_submit_type = "serial"
   lfftw = true
   module_initpath = "/usr/local/apps/lmod/8.6.8/init"
@@ -22,11 +21,13 @@
   ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.11.0.0"]
 
 [submission.task_exceptions.ArchiveFDB.ENV]
-  FDB5_HOME = "/usr/local/apps/mars/versions/6.33.19.9"
+  FDB5_HOME = "$ECMWF_TOOLBOX_DIR"
+  FDB_ENABLE_GRIBJUMP = "1"
   FDB_HOME = "@DEODE_FDB_HOME@"
+  GRIBJUMP_CONFIG_FILE = "@DEODE_FDB_HOME@/etc/gribjump/config_on-demand-extremes-dt.yaml"
 
 [submission.task_exceptions.ArchiveFDB.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.11.0.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
 
 [submission.task_exceptions.ArchiveHour.BATCH]
   WALLTIME = "#SBATCH --time=03:00:00"
@@ -45,13 +46,13 @@
 
 [submission.task_exceptions.CreateGrib]
   binary = "gl"
-  bindir = "/perm/deployde330/github-actions/install/gl/gl-v1.3.1/bin"
+  bindir = "@INSTALL_DIR@/gl/gl-v1.5.0/bin/"
 
 [submission.task_exceptions.CreateGrib.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
 
 [submission.task_exceptions.CreateGribStatic]
-  bindir = "/perm/deployde330/github-actions/install/gl/gl-v1.3.1/bin"
+  bindir = "@INSTALL_DIR@/gl/gl-v1.5.0-gnu/bin/"
 
 [submission.task_exceptions.E927]
   NPROC = 16
@@ -98,9 +99,12 @@
   NTASKS = "#SBATCH --ntasks=2"
   WALLTIME = "#SBATCH --time=00:30:00"
 
+[submission.task_exceptions.PgdFilterTownFrac.ENV]
+  DR_HOOK_NOT_MPI = 1
+
 [submission.task_exceptions.PgdUpdate]
   binary = "gl"
-  bindir = "/perm/deployde330/github-actions/install/gl/gl-v1.3.1/bin"
+  bindir = "@INSTALL_DIR@/gl/gl-v1.5.0/bin/"
 
 [submission.task_exceptions.Prep]
   WRAPPER = "srun -n @NPROC@"

@@ -11,7 +11,8 @@
     },
     "bindir": {
       "type": "string",
-      "description": "Location of binaries"
+      "description": "Location of binaries",
+      "default":"@INSTALL_DIR@/@CYCLE@/latest/bin"
     },
     "nproma": {
       "type": "number",

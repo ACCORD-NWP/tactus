@@ -3,3 +3,6 @@
 
 [fdb.grib_set]
   generatingProcessIdentifier = "2"
+
+[submission]
+  bindir = "@INSTALL_DIR@/@CYCLE@/@CYCLE@-v1.5.0/bin"

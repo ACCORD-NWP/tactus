@@ -1,7 +1,5 @@
 --config-file
 deode/data/config_files/config.toml
-deode/data/config_files/modifications/arome.toml
-deode/data/config_files/modifications/arome_CY49t2.toml
-deode/data/config_files/modifications/CY49t2.toml
+deode/data/config_files/modifications/csc/arome.toml
+deode/data/config_files/modifications/cycle/CY49t2.toml
 deode/data/config_files/modifications/@HOST@.toml
-deode/data/config_files/modifications/submission/@HOST@_CY49t2.toml

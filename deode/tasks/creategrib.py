@@ -21,9 +21,12 @@ class GlGrib(Task):
         """
         Task.__init__(self, config, name)
 
+        self.tasknr = int(config.get("task.args.tasknr", "0"))
+        self.ntasks = int(config.get("task.args.ntasks", "1"))
         self.archive = self.platform.get_system_value("archive")
         self.file_templates = self.config["file_templates"]
         self.csc = self.config["general.csc"]
+        self.gl = self.get_binary("gl")
 
         if self.name == "CreateGribStatic":
             self.rules = self.config.get(f"creategrib.{self.name}", {})
@@ -40,7 +43,7 @@ class GlGrib(Task):
             self.forecast_range = self.config["general.times.forecast_range"]
             self.basetime = as_datetime(self.config["general.times.basetime"])
 
-        self.gl = self.get_binary("gl")
+            self.name = f"{self.name}_{self.tasknr:02}"
 
     def create_list(self, input_template, output_settings):
         """Create list of files to process."""
@@ -111,7 +114,8 @@ class GlGrib(Task):
                     self.convert2grib(fname, outfile, filetype)
                     self.fmanager.output(outfile, output)
 
-        elif self.name == "CreateGrib":
+        elif "CreateGrib_" in self.name:
+            convert_dict = {}
             for filetype in self.conversions:
                 if "output_frequency_reference" not in self.rules[filetype]:
                     file_handle = self.create_list(
@@ -129,9 +133,22 @@ class GlGrib(Task):
                     output = self.platform.substitute(
                         self.file_templates[filetype]["grib"], validtime=validtime
                     )
-                    logger.info("Convert: {} to {}", fname, output)
-                    self.convert2grib(fname, output, filetype)
-                    self.fmanager.output(output, f"{self.archive}/{output}")
+                    if validtime not in convert_dict:
+                        convert_dict[validtime] = []
+                    convert_dict[validtime].append(
+                        {"fname": fname, "output": output, "filetype": filetype}
+                    )
+
+            convert_list = [x for t in sorted(convert_dict) for x in convert_dict[t]]
+            for items in convert_list[self.tasknr :: self.ntasks]:
+                fname, output, filetype = (
+                    items["fname"],
+                    items["output"],
+                    items["filetype"],
+                )
+                logger.info("Convert: {} to {} for {}", fname, output, filetype)
+                self.convert2grib(fname, output, filetype)
+                self.fmanager.output(output, f"{self.archive}/{output}")
 
         else:
             raise NotImplementedError(f"Not implemented name={self.name}")

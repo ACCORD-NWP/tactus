@@ -5,17 +5,17 @@
   WALLTIME = "#SBATCH --time=03:00:00"
 
 [submission.task_exceptions.Forecast]
-  NPROC = 405
+  NPROC = 2200
   NPROC_IO = 0
-  OMP_NUM_THREADS = "4"
+  OMP_NUM_THREADS = "1"
   WRAPPER = "mpirun"
 
 [submission.task_exceptions.Forecast.BATCH]
-  CPUSPERTASK = "#SBATCH --cpus-per-task=4"
-  HYPERTHREAD = "#SBATCH --hint=nomultithread"
-  NODES = "#SBATCH --nodes=15"
-  QOS = "#SBATCH --qos=normal"
-  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=27"
+  #CPUSPERTASK = "#SBATCH --cpus-per-task=4"
+  #HYPERTHREAD = "#SBATCH --hint=nomultithread"
+  NODES = "#SBATCH --nodes=20"
+  QOS = "#SBATCH --qos=dcgp_qos_bprod"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=110"
   WALLTIME = "#SBATCH --time=08:00:00"
 
 [submission.task_exceptions.Forecast.ENV]

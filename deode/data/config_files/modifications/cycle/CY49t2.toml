@@ -1,0 +1,24 @@
+[general]
+  cycle = "CY49t2"
+  surfex = true
+
+[general.output_settings]
+  surfex = "PT1H"
+
+[creategrib.CreateGrib]
+  conversions = ["surfex"]
+
+[fdb.grib_set]
+  generatingProcessIdentifier = "3"
+
+[pgd]
+  npatch = 3
+
+[platform]
+  rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov13/coef"
+
+[submission]
+  bindir = "@INSTALL_DIR@/@CYCLE@/@CYCLE@-v1.7.0/bin"
+
+[submission.task_exceptions.E923Update.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = 0
