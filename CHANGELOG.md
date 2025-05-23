@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.16.1] - 2025-05-23
+
 ### Fixed
 - Reverted referencing pyproject.toml relative to package directory, since, when installing deode as a package, it does not include pyproject.toml file. [\#1177](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1177) (@mafdmi)
 
