@@ -20,7 +20,6 @@ from json_schema_for_humans.generate import (
     generate_from_file_object,
 )
 from toml_formatter.formatter import FormattedToml
-from toml_formatter.formatter_options import FormatterOptions
 
 from . import GeneralConstants
 from .aux_types import BaseMapping, QuasiConstant
@@ -208,11 +207,7 @@ class BasicConfig(BaseMapping):
         """
         with open(config_file, mode="w", encoding="utf8") as fh:
             tomlkit.dump(self.dict(), fh)
-        pyproject_toml = GeneralConstants.PACKAGE_DIRECTORY.parent / "pyproject.toml"
-        config = FormatterOptions.from_toml_file(pyproject_toml)
-        formatted_toml = FormattedToml.from_file(
-            path=config_file, formatter_options=config
-        )
+        formatted_toml = FormattedToml.from_file(path=config_file)
         with open(config_file, mode="w", encoding="utf8") as f:
             f.write(str(formatted_toml))
 
