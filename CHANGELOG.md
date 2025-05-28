@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ### Fixed
+- Fix lagged boundary conditions (bd_shift). [\#1175](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1175) (@adeckmyn)
 - Restore gathering of task specific log files. [\#1167](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1167) (@uandrae)
 - Fix LBC filenames in case of mode = "restart". [\#1162](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1162) (@kastelecn)
 - Added @MEMBER_STR@ to archive outpath where missing. [\#1147](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1147) (@mafdmi)

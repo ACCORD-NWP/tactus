@@ -36,7 +36,7 @@ class C903(Task):
         bdshift = as_timedelta(self.config["boundaries.bdshift"])
         # Boundary basetime
         self.bd_basetime = self.basetime - cycle_offset(
-            self.basetime, bdcycle, bdcycle_start=bdcycle_start, bdshift=-bdshift
+            self.basetime, bdcycle, bdcycle_start=bdcycle_start, bdshift=bdshift
         )
 
         self.bd_index = self.config["task.args.bd_index"]

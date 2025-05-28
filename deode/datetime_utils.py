@@ -166,7 +166,7 @@ def cycle_offset(
     bdcycle_shift = (
         reftime - bdcycle_start.total_seconds() % bdcycle.total_seconds()
     ) % bdcycle.total_seconds()
-    final_shift = bdcycle_shift - int(bdshift.total_seconds())
+    final_shift = bdcycle_shift + int(bdshift.total_seconds())
     return pd.Timedelta(seconds=final_shift)
 
 
