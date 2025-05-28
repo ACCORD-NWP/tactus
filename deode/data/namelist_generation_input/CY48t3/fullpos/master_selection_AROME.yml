@@ -45,7 +45,6 @@ selection:
   NAMFPDY2:
    CL2DF:
     - 'SURFPRESSION'
-    - 'SPECSURFGEOPOTEN'
     - 'MSLPRESSURE'
     - 'SURFISOTPW1.MALT'
     - 'SURFCAPE.POS.F00'

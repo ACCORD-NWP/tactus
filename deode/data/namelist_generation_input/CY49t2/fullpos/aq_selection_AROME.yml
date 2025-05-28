@@ -1,8 +1,8 @@
 # Do the selection of fields below. Note 
-# that xxt00000000 partly inherits from xxtddddhh00
+# that xxtddddhh00 and xxtddddhhmm partly inherits from preceding selections
 selection:
   xxt00000000:
-    NAMFPDY2: &id001
+    NAMFPDY2:
       CL2DF:
       - SURFPRESSION
       - MSLPRESSURE
@@ -32,6 +32,7 @@ selection:
       - SURFRESERV.NEIGE
       - SURFTEMPERATURE
       - INTSURFGEOPOTENT
+      - SURFIND.TERREMER
       CLXFU:
       - CLSTEMPERATURE
       - CLSHUMI.SPECIFIQ
@@ -40,13 +41,17 @@ selection:
       - SURFNEBUL.TOTALE
       - CLPMHAUT.MOD.XFU
   xxtddddhh00:
-    NAMFPDY2: *id001
+    NAMFPDY2:
+      CL2DF:
+      - SURFPRESSION
+      - MSLPRESSURE
     NAMFPDYS: *id002
     NAMFPPHY: &id003
       CLCFU:
       - SURFFLU.RAY.SOLA
       - SURFFLU.RAY.THER
       - SURFFLU.LAT.MEVA
+      - SURFFLU.LAT.MSUB
       - SURFFLU.MEVAP.EA
       - SURFFLU.CHA.SENS
       - SURFRAYT SOLA DE
@@ -59,7 +64,6 @@ selection:
       CLPHY:
       - SURFRESERV.NEIGE
       - SURFTEMPERATURE
-      - INTSURFGEOPOTENT
       CLXFU:
       - CLSTEMPERATURE
       - CLSHUMI.SPECIFIQ
@@ -68,6 +72,9 @@ selection:
       - SURFNEBUL.TOTALE
       - CLPMHAUT.MOD.XFU
   xxtddddhhmm:
-    NAMFPDY2: *id001
+    NAMFPDY2:
+      CL2DF:
+      - SURFPRESSION
+      - MSLPRESSURE
     NAMFPDYS: *id002
     NAMFPPHY: *id003

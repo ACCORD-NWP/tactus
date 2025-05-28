@@ -205,6 +205,8 @@ class AddCalculatedFields(Task):
             NotImplementedError: Operation not implemented yet"
         """
         gids = [None for _ in range(len(params))]
+        gid_to_file_map = {}
+
         if any(params) is None:
             raise ValueError("Parameters are not defined")
 
@@ -213,7 +215,7 @@ class AddCalculatedFields(Task):
             f_out = stack.enter_context(open(fnames[0], "ab"))
 
             while None in gids:
-                for f_in in files:
+                for f_in, fname in zip(files, fnames):
                     gid = eccodes.codes_grib_new_from_file(f_in)
                     if gid is None:
                         continue
@@ -224,6 +226,7 @@ class AddCalculatedFields(Task):
                         )
                         if match:
                             gids[i] = gid
+                            gid_to_file_map[gid] = fname
                             break
                     else:
                         eccodes.codes_release(gid)
@@ -316,21 +319,34 @@ class AddCalculatedFields(Task):
                     "Operation {} not implemented yet.".format(operation)
                 )
 
-            # Ensure that the gid used for cloning does not come from the additional file
+            # Prioritize cloning GRIB message from original file
+            # followed by order in "additional files"
             gid_res = None
-            for gid in gids:
-                if gid is not None and eccodes.codes_get(gid, "file") == fnames[0]:
-                    gid_res = eccodes.codes_clone(gid)
+            found = False
+            for file in fnames:
+                for gid in gids:
+                    if gid is not None and gid_to_file_map[gid] == file:
+                        gid_res = eccodes.codes_clone(gid)
+                        found = True
+                        break
+                if found:
                     break
-
-            if gid_res is None:
-                gid_res = eccodes.codes_clone(gids[0])
 
             eccodes.codes_set_values(gid_res, result_values)
             for output_parameter in output_params:
-                eccodes.codes_set(
-                    gid_res, output_parameter, output_params[output_parameter]
-                )
+                if output_parameter == "productDefinitionTemplateNumber":
+                    # Special case for productDefinitionTemplateNumber as
+                    # setting this changes the time unit
+                    self.set_while_retaining_time_unit(
+                        gid_res,
+                        output_parameter,
+                        output_params[output_parameter],
+                    )
+
+                else:
+                    eccodes.codes_set(
+                        gid_res, output_parameter, output_params[output_parameter]
+                    )
 
             eccodes.codes_write(gid_res, f_out)
             eccodes.codes_release(gid_res)
@@ -509,6 +525,19 @@ class AddCalculatedFields(Task):
 
         return list(unique_values)
 
+    def set_while_retaining_time_unit(self, gid_res, key, value):
+        """Set a key in a GRIB message while retaining the time unit."""
+        # Get the current time unit and forecast time from the original GRIB message
+        time_unit_indicator = eccodes.codes_get(gid_res, "indicatorOfUnitForForecastTime")
+        forecast_time = eccodes.codes_get(gid_res, "forecastTime")
+
+        # Set the new value
+        eccodes.codes_set(gid_res, key, value)
+
+        # Restore the time unit and forecast time
+        eccodes.codes_set(gid_res, "indicatorOfUnitForForecastTime", time_unit_indicator)
+        eccodes.codes_set(gid_res, "forecastTime", forecast_time)
+
     def execute(self):
         """Execute gribmodify."""
         compute_list = []
@@ -527,7 +556,6 @@ class AddCalculatedFields(Task):
                 self.file_templates[filetype]["grib"],
                 self.output_settings[filetype],
             )
-            del file_handle[self.basetime]
 
             # Load gribmodify rules from JSON file
             grib_modify_rules_file = self.platform.substitute(
@@ -578,6 +606,24 @@ class AddCalculatedFields(Task):
                         f"{config_modify_rules[name]['output_name']}"
                     )
 
+                # Check if the rule is valid at basetime
+                if validtime == self.basetime:
+                    valid_at_basetime = rule.get("valid_at_basetime", False)
+                    static_field = rule.get("static_field", False)
+                    if not (valid_at_basetime or static_field):
+                        logger.info(
+                            "Skipping field with name: {} as it is not valid at basetime",
+                            rule["output_name"],
+                        )
+                        continue
+                elif rule.get("static_field", False):
+                    # Do not process static fields at times different from basetime
+                    logger.debug(
+                        "Skipping field with name: {} as it is not basetime",
+                        rule["output_name"],
+                    )
+                    continue
+
                 additional_files = rule.get("additional_files", [])
                 additional_file_paths = (
                     self.find_additional_files(additional_files, validtime)
@@ -611,7 +657,9 @@ class AddCalculatedFields(Task):
                         if "minimum_frequency" in config_modify_rules[name]
                         else as_timedelta(dt)
                     )
-                    if as_timedelta(dt) % min_freq != as_timedelta("PT0H"):
+                    if min_freq != as_timedelta("PT0H") and as_timedelta(
+                        dt
+                    ) % min_freq != as_timedelta("PT0H"):
                         logger.info(
                             "Skip field with label: {}",
                             config_modify_rules[name]["output_name"],
