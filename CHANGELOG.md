@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add generation and storage of expanded config file for dcmbd usage.[\#1126](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1126) (@uandrae)
 
 ### Changed
+- Added FDB paths and expver for LUMI. [\#1181](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1181) (@KristianHMoller)
 - Switch on FDB archiving in operations and updated the FDB documentation. [\#1168](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1168) (@uandrae)
 - Make log collection settings configurable. [\#1167](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1167) (@uandrae)
 - Use module related environment variable for FDB5_HOME on atos_bologna.[\#1120](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1120) (@uandrae)

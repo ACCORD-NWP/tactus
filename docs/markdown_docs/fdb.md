@@ -11,26 +11,33 @@ export FDB_HOME=/home/fdbtest
 
 On LUMI:
 ```
-module use /appl/local/climatedt/modules
+export PATH=/appl/local/destine/mars/versions/current/bin:$PATH
+export FDB_HOME=/appl/local/destine/fdb
 ```
 
 ## How to list available data
-To list available data in fdb, use the fdb list (Here with head -10 to only read the 4 first entries):
+To list available data in fdb, use the fdb list (Here with head -10 to only read the 3 first entries):
 ```
-fdb list class=d1,expver=aaaa | head -10
+fdb list class=d1,expver=0099,dataset=on-demand-extremes-dt | head -10
 ```
 `[OUTPUT]`
 ```
 Listing for request
 retrieve,
 	class=d1,
-	expver=aaaa
+	expver=0099,
+	dataset=on-demand-extremes-dt
 
 
-{class=d1,dataset=on-demand-extremes-dt,expver=aaaa,stream=oper,date=20250209,time=0000}{type=fc,levtype=sfc,georef=u15rxs}{step=6,param=129}
-{class=d1,dataset=on-demand-extremes-dt,expver=aaaa,stream=oper,date=20250209,time=0000}{type=fc,levtype=sfc,georef=u15rxs}{step=6,param=130}
-{class=d1,dataset=on-demand-extremes-dt,expver=aaaa,stream=oper,date=20250209,time=0000}{type=fc,levtype=sfc,georef=u15rxs}{step=6,param=134}
-{class=d1,dataset=on-demand-extremes-dt,expver=aaaa,stream=oper,date=20250209,time=0000}{type=fc,levtype=sfc,georef=u15rxs}{step=6,param=151}
+{class=d1,dataset=on-demand-extremes-dt,expver=0099,stream=oper,date=20250209,time=0000}{type=fc,levtype=sfc,georef=u15rxs}{step=0-6,param=146}
+{class=d1,dataset=on-demand-extremes-dt,expver=0099,stream=oper,date=20250209,time=0000}{type=fc,levtype=sfc,georef=u15rxs}{step=0-6,param=169}
+{class=d1,dataset=on-demand-extremes-dt,expver=0099,stream=oper,date=20250209,time=0000}{type=fc,levtype=sfc,georef=u15rxs}{step=0-6,param=175}
+```
+
+The output from `fdb list` can be filtered by specifying a combination of the parameters given in the output above, e.g.:
+
+```
+fdb list class=d1,expver=0099,dataset=on-demand-extremes-dt,date=20250209,levtype=pl,step=3
 ```
 
 ## How to retrieve archived data from FDB:

@@ -1,3 +1,9 @@
+[archiving.FDB.fdb.fpgrib_files]
+  active = true
+
+[fdb.grib_set]
+  expver = "0099"
+
 [submission.types.serial.BATCH]
   PARTITION = "#SBATCH --partition=standard"
 

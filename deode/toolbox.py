@@ -1115,6 +1115,7 @@ class FDB(ArchiveProvider):
 
         ArchiveProvider.__init__(self, config, pattern, fetch=fetch)
         self.fdb = pyfdb.FDB()
+        self.platform = Platform(self.config)
 
     def check_expver_restrictions(self, expver):
         """Check if user is allowed to archive this expver.
@@ -1127,13 +1128,30 @@ class FDB(ArchiveProvider):
         """
         user = os.environ["USER"]
         expver_restrictions = self.config["fdb.expver_restrictions"]
-        if isinstance(expver_restrictions, str):
-            expver_restrictions = [expver_restrictions]
+
+        # Convert to dictionary if necessary
+        if hasattr(expver_restrictions, "dict"):
+            expver_restrictions = expver_restrictions.dict()
+
+        # Iterate over items in expver_restrictions
+        for key, value in expver_restrictions.items():
+            if isinstance(value, tuple):
+                # Resolve macros for each item in the tuple
+                expver_restrictions[key] = [
+                    self.platform.substitute(item) for item in value
+                ]
+            elif isinstance(value, str):
+                expver_restrictions[key] = self.platform.substitute(value)
+            else:
+                raise RuntimeError(
+                    f"Unexpected type for expver_restrictions[{key}]: {type(value)}"
+                )
+
         if expver not in expver_restrictions:
             msg = (
                 f"The user allowed to archive for expver={expver} is not defined in\n "
                 + f"expver_restrictions={expver_restrictions}\n"
-                "Plese consult the documentation before adding a rule!"
+                "Please consult the documentation before adding a rule!"
             )
             raise RuntimeError(msg)
 
