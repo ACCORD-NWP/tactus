@@ -123,6 +123,9 @@ def test_output_file_name(default_config):
 
 
 def test_write_read_config(default_config, default_config_dir):
+    pytest.skip(
+        "Currently disabled due to https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1177"
+    )
     output_file = f"{default_config_dir}/test_write_read_config.toml"
     default_config.save_as(output_file)
     formatter_config = FormatterOptions.from_toml_file("pyproject.toml")

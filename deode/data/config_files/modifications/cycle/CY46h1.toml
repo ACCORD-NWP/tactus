@@ -6,7 +6,7 @@
   generatingProcessIdentifier = "1"
 
 [submission.task_exceptions.C903]
-  bindir = "@INSTALL_DIR@/cy48t3/latest/bin"
+  bindir = "@INSTALL_DIR@/CY48t3/latest/bin"
 
 [submission.task_exceptions.Pgd]
   binary = "PGD-offline"

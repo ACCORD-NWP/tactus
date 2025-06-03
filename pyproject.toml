@@ -2,7 +2,7 @@
   # Package ID info
   description = "The DEODE scripting system."
   name = "deode"
-  version = "0.16.0"
+  version = "0.16.1"
   # Other package info
   authors = ["The DE_330 project."]
   documentation = "https://destination-earth-digital-twins.github.io/deode-workflow-docs"
@@ -80,9 +80,9 @@
   pytest-timeout = "^2.1.0"
   pytest-xdist = "^3.2.0"
 
-  ##################
-  # Linter configs #
-  ##################
+    ##################
+    # Linter configs #
+    ##################
 
 [tool.black]
   line-length = 90
