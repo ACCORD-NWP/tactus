@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fix arome nudging settings to remove spikes in norms of pressure-departure. [\#1180](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1180) (@kastelecn)
 - Synced develop with master [\#1186](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1186) (@mafdmi)
+- Corrected paths in config files for running demo cases as an ensemble. [\#1191](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1191) (@mafdmi)
 
 ## [0.16.1] - 2025-05-23
 
