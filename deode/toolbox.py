@@ -542,7 +542,7 @@ class Platform:
 class FileManager:
     """FileManager class.
 
-    Default DEDODE provider.
+    Default DEODE provider.
 
     Platform specific.
 
@@ -629,13 +629,21 @@ class FileManager:
             f"No provider found for {sub_target} and provider_id {provider_id}"
         )
 
-    def input_data_iterator(self, input_data_definition, provider_id="symlink"):
+    def input_data_iterator(
+        self,
+        input_data_definition,
+        basetime=None,
+        validtime=None,
+        provider_id="symlink",
+    ):
         """Handle input data spec dict.
 
         Loop through the defined data types and fetch them.
 
         Args:
             input_data_definition (dict): Input data spec
+            basetime (datetime.datetime, optional): Base time. Defaults to None.
+            validtime (datetime.datetime, optional): Valid time. Defaults to None.
             provider_id (str): Provider id. Defaults to "symlink"
 
         Raises:
@@ -644,16 +652,25 @@ class FileManager:
         """
         for data_type, data in input_data_definition.items():
             logger.info("Link data type: {}", data_type)
-            path = self.platform.substitute(data["path"])
             files = data["files"]
             if isinstance(files, list):
-                for filenames in files:
-                    self.input(f"{path}/{filenames}", filenames, provider_id=provider_id)
+                for filename in files:
+                    self.input(
+                        f"{data['path']}/{filename}",
+                        filename,
+                        basetime=basetime,
+                        validtime=validtime,
+                        provider_id=provider_id,
+                    )
             elif isinstance(files, dict):
-                for _outfile, _infile in files.items():
-                    infile = self.platform.substitute(_infile)
-                    outfile = self.platform.substitute(_outfile)
-                    self.input(f"{path}/{infile}", outfile, provider_id=provider_id)
+                for outfile, infile in files.items():
+                    self.input(
+                        f"{data['path']}/{infile}",
+                        outfile,
+                        basetime=basetime,
+                        validtime=validtime,
+                        provider_id=provider_id,
+                    )
             else:
                 raise RuntimeError(f"Unknown data type in {input_data_definition}")
 

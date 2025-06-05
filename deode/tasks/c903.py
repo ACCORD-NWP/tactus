@@ -69,7 +69,9 @@ class C903(Task):
         ifs_files: Dict[str, str | Dict[str, str]] = input_data.pop("IFS_files")
 
         # Link the static data
-        self.fmanager.input_data_iterator(input_data)
+        self.fmanager.input_data_iterator(
+            input_data, basetime=self.bd_basetime, validtime=as_datetime(self.bd_time)
+        )
 
         # IFS input files
         path = ifs_files["path"]
