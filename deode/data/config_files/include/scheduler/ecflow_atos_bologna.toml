@@ -10,7 +10,6 @@
   ecf_jobout = "@HOME@/deode_ecflow/jobout"
   ecf_out = "@HOME@/deode_ecflow/jobout"
   ecf_port = 3141
-  ecf_ssl = "0"
 
 [scheduler.ecfvars.troika]
   config_file = "@ECF_DEODE_HOME@/data/config_files/troika.yml"

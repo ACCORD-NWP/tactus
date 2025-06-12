@@ -11,5 +11,4 @@
   ecf_out = "@HOME@/deode_ecflow/jobout"
   ecf_port = "_set_port_from_json('/leonardo_work/DestE_330_25/users/SAN/leonardo_install/leonardo_users.json',)"
   ecf_remoteuser = ""
-  ecf_ssl = "0"
   ecf_user = ""

@@ -1,12 +1,11 @@
 [submission]
-  #bindir = "/dev/null"
-  default_submit_type = "background"
+  default_submit_type = "pytest"
 
 [submission.iomerge.age_limit]
 
 [submission.task]
   wrapper = ""
 
-[submission.types.background]
+[submission.types.pytest]
   SCHOST = "localhost"
   WRAPPER = ""

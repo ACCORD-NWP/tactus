@@ -9,6 +9,16 @@ import pytest
 from deode.host_actions import DeodeHost, set_deode_home
 
 
+def test_set_deode_home(default_config):
+    deode_home = set_deode_home(default_config)
+    assert os.path.isdir(deode_home)
+
+
+def test_set_deode_home_from_arg(default_config):
+    deode_home = set_deode_home(default_config, "foo")
+    assert deode_home == "foo"
+
+
 @pytest.fixture()
 def _module_mockers(module_mocker):
     def new_socket_gethostname():
@@ -75,13 +85,3 @@ def test_non_existing_detect_method():
 def test_load_known_hosts_handles_none():
     with pytest.raises(RuntimeError, match="No hosts available in"):
         DeodeHost()
-
-
-def test_set_deode_home(default_config):
-    deode_home = set_deode_home(default_config)
-    assert os.path.isdir(deode_home)
-
-
-def test_set_deode_home_from_arg(default_config):
-    deode_home = set_deode_home(default_config, "foo")
-    assert deode_home == "foo"

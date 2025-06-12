@@ -72,6 +72,7 @@ poetry devtools pre-push-checks
 ```
 
 ### Run tests
+Tests will run as if they were on current platform, if recognized. If the platform is not recognized a bogus plaform `pytest` is used as defined under `tests/include`. To force the tests to run as on the `pytest` platform export `DEODE_HOST=pytest` before running pytest. Run the tests with
 ```shell
 pytest
 ```

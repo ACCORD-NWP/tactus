@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from deode.config_parser import ConfigParserDefaults, ParsedConfig
+from deode.host_actions import DeodeHost
 
 
 class MockObject(object):
@@ -99,10 +100,18 @@ def tmp_directory(tmp_path_factory):
 
 
 @pytest.fixture(scope="module")
-def default_config():
+def default_config(tmp_directory):
     """Return a parsed config to be used for unit tests."""
-    return ParsedConfig.from_file(
+    deode_host = DeodeHost().detect_deode_host(use_default=False)
+    if deode_host is None:
+        deode_host = "pytest"
+
+    config = ParsedConfig.from_file(
         ConfigParserDefaults.PACKAGE_CONFIG_PATH,
         json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-        host="atos_bologna",
+        host=deode_host,
     )
+    if deode_host == "pytest":
+        config = config.copy(update={"platform": {"scratch": str(tmp_directory)}})
+
+    return config

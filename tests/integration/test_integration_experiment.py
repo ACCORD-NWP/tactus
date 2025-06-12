@@ -97,24 +97,29 @@ class TestEPSExp:
         # Assert that the fullpos setting of deviating members are correctly set
         fullpos_deviating_members = (1, 5, 7)
         for member in fullpos_deviating_members:
-            assert "fullpos" in eps_exp.config[f"eps.mbr{member}.general.output_settings"]
+            assert (
+                "fullpos"
+                in eps_exp.config[f"eps.members.{member}.general.output_settings"]
+            )
 
         no_fullpos_members = set(expected_members) - set(fullpos_deviating_members)
         for member in no_fullpos_members:
-            assert "output_settings" not in eps_exp.config[f"eps.mbr{member}.general"]
+            assert (
+                "output_settings" not in eps_exp.config[f"eps.members.{member}.general"]
+            )
 
         # Assert that the namelist update of deviating members are correctly set
         for member in expected_members:
             assert (
                 "lspp"
                 in eps_exp.config[
-                    f"eps.mbr{member}.namelist_update.master.forecast.namspp"
+                    f"eps.members.{member}.namelist_update.master.forecast.namspp"
                 ]
             )
 
         # Assert that the csc update of deviating members are correctly set
         for member in expected_members:
-            assert "csc" in eps_exp.config[f"eps.mbr{member}.general"]
+            assert "csc" in eps_exp.config[f"eps.members.{member}.general"]
 
     @patch.object(ConfigPaths, "CONFIG_DATA_SEARCHPATHS")
     def test_setup_exp_with_modifications(
@@ -140,4 +145,4 @@ class TestEPSExp:
         # Assert that the modifications are correctly resolved
         for mod, member in zip(modifications, eps_exp.config["eps.general.members"]):
             case_name = f"test_case_{Path(mod).stem}"
-            assert case_name == eps_exp.config["eps.members"][str(member)]["general.case"]
+            assert case_name == eps_exp.config[f"eps.members.{member}.general.case"]

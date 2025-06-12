@@ -61,8 +61,8 @@ class TestSubmission:
         config = default_config.copy(
             update={
                 "submission": {
-                    "default_submit_type": "background_hpc",
-                    "types": {"background_hpc": {}},
+                    "default_submit_type": "pytest",
+                    "types": {"pytest": {"SCHOST": "localhost", "WRAPPER": ""}},
                 },
                 "troika": {"config_file": "deode/data/config_files/troika.yml"},
             }
@@ -75,7 +75,7 @@ class TestSubmission:
         task_job = Path(tmp, f"{task}.job")
         output = Path(tmp, f"{task}.log")
 
-        assert config["submission.default_submit_type"] == "background_hpc"
+        assert config["submission.default_submit_type"] == "pytest"
         background = TaskSettings(config)
         sub = NoSchedulerSubmission(background)
         sub.submit(task, config, template_job, task_job, output)
