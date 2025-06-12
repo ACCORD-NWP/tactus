@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Clarify procedure for creating a hotfix [\#1076](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1076)(@KristianHMoller)
+- Updated to using ecCodes 2.41 on ATOS. [\#1187](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1187)(@KristianHMoller)
+- Remove param 231049 from FDB exclusion. [\#1187](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1187)(@KristianHMoller)
 
 ### Fixed
 - Allow FDB archiving without excluding fields. [\#1198](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1198) (@KristianHMoller)

@@ -18,7 +18,7 @@
   wrapper = ""
 
 [submission.task_exceptions.AddCalculatedFields.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.11.0.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
 
 [submission.task_exceptions.ArchiveFDB.ENV]
   FDB5_HOME = "$ECMWF_TOOLBOX_DIR"
@@ -143,7 +143,7 @@
   WALLTIME = "#SBATCH --time=00:15:00"
 
 [submission.types.gnu.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.11.0.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
 
 [submission.types.parallel]
   NPROC = 32
@@ -167,7 +167,7 @@
   # First load the prgenv
   PRGENV = ["load", "prgenv/intel"]
   # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.11.0.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
   FFTW = ["load", "fftw/3.3.9"]
   HDF5 = ["load", "hdf5/1.10.6"]
   MKL = ["load", "intel-mkl/19.0.5"]
@@ -199,7 +199,7 @@
   # First load the prgenv
   PRGENV = ["load", "prgenv/intel"]
   # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2024.11.0.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
   FFTW = ["load", "fftw/3.3.9"]
   HDF5 = ["load", "hdf5/1.10.6"]
   MKL = ["load", "intel-mkl/19.0.5"]

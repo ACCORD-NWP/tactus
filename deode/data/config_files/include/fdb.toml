@@ -19,6 +19,6 @@
 
 [fdb.negative_rules]
   levtype = ["unknown"]
-  param = ["0", "231049", "231066"]
+  param = ["0", "231066"]
   productDefinitionTemplateNumber = ["113", "114"]
   typeOfLevel = ["unknown", "not_found"]
