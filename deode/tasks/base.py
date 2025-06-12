@@ -217,6 +217,10 @@ class Task(object):
         self.create_wdir()
         self.change_to_wdir()
 
+        outfile = f"{self.wdir}/config.toml"
+        logger.info("Store used config as {}", outfile)
+        self.config.save_as(outfile)
+
         atexit.register(self.rename_wdir)
 
     def post(self, source=None, target=None):

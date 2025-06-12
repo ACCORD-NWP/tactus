@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix lagged boundary conditions (bd_shift). [\#1175](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1175) (@adeckmyn)
 - Moved incorrectly placed entries in changelog. [\#1192](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1192)(@KristianHMoller)
 - Corrected paths in config files for running demo cases as an ensemble. [\#1191](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1191) (@mafdmi)
+- Make config file saved to wrk dir for every task. Removed member env in standalone task. [\1155](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1155) (@mafdmi)
 
 ## [0.16.1] - 2025-05-23
 

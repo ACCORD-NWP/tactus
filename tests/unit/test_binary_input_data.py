@@ -9,6 +9,7 @@ import pytest
 
 from deode.datetime_utils import as_datetime
 from deode.logs import logger
+from deode.os_utils import resolve_path_relative_to_package
 from deode.tasks.sfx import InputDataFromNamelist
 from deode.toolbox import Platform
 
@@ -17,7 +18,11 @@ logger.enable("deode")
 
 @pytest.fixture()
 def binary_input_data():
-    with open("deode/data/input/CY46h1/sfx.json", "r", encoding="utf-8") as f:
+    with open(
+        resolve_path_relative_to_package(Path("deode/data/input/CY46h1/sfx.json")),
+        "r",
+        encoding="utf-8",
+    ) as f:
         return json.load(f)
 
 

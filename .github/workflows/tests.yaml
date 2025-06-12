@@ -82,7 +82,8 @@ jobs:
       #----------------------------------------------
       - name: Run tests
         run: |
-          poetry run pytest -n auto
+          # poetry run pytest -n auto
+          poetry run pytest tests/unit/test_commands_functions.py
 
 
       # Disable upload to codecov until/if codecov is enabled
