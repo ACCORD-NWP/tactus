@@ -141,8 +141,8 @@ def nlconftn_arg(tmp_directory):
     arg.from_cycle = "CY48t2"
     arg.to_cycle = "CY49t2"
     arg.format = "ftn"
-    arg.output_reference = (
-        "deode/data/namelists/unit_testing/reference/nl_master_base.49t2"
+    arg.output_reference = resolve_path_relative_to_package(
+        Path("deode/data/namelists/unit_testing/reference/nl_master_base.49t2")
     )
     return arg
 
