@@ -115,55 +115,7 @@ class ImpactModels(Task):
         """
         Task.__init__(self, config, __class__.__name__)
 
-        impact = self.config.get("impact", BasicConfig({})).dict()
-        installed_impact = self.config.get("platform.impact", {})
-        self.impact = {}
-        # Resolve ecf_host/ecf_port if used
-        with contextlib.suppress(HostNotFoundError):
-            ecf_host = self.config.get("scheduler.ecfvars.ecf_host")
-            ecf_port = self.config.get("scheduler.ecfvars.ecf_port")
-
-            if ecf_host is not None and ecf_port is not None:
-                pl = Platform(self.config)
-                ecf_host = pl.substitute(ecf_host)
-                ecf_host = pl.evaluate(ecf_host, object_=SelectHost)
-                ecf_port = pl.substitute(ecf_port)
-                ecf_port = pl.evaluate(ecf_port, object_=EcflowServer)
-
-                self.config = self.config.copy(
-                    update={
-                        "scheduler": {
-                            "ecfvars": {
-                                "ecf_host_resolved": ecf_host,
-                                "ecf_port_resolved": ecf_port,
-                            }
-                        }
-                    }
-                )
-
-        for name, impact_model in impact.items():
-            if (
-                impact_model["active"]
-                and name in installed_impact
-                and taskname in impact_model
-            ):
-                self.impact[name] = impact_model[taskname]
-                for conf in ["communicate", "path", "config_name"]:
-                    self.impact[name][conf] = impact_model[conf]
-
-                # Update user ecf host and port with resolved values
-                user_ecf_host = self.impact[name]["communicate"].get("user_ecf_host")
-                user_ecf_port = self.impact[name]["communicate"].get("user_ecf_port")
-                if user_ecf_host is not None and user_ecf_port is not None:
-                    pl = Platform(self.config)
-                    self.impact[name]["communicate"]["user_ecf_host"] = pl.substitute(
-                        user_ecf_host
-                    )
-                    self.impact[name]["communicate"]["user_ecf_port"] = pl.substitute(
-                        user_ecf_port
-                    )
-
-        self.is_active = len(self.impact) > 0
+        self.impact = get_impact(config, taskname)
 
     def execute(self):
         """Start the impact model(s)."""
@@ -171,6 +123,68 @@ class ImpactModels(Task):
             impact_model_ = impact_model
             model = ImpactModel(name=name, config=impact_model_, platform=self.platform)
             model.execute()
+
+
+def get_impact(config, taskname):
+    """Gather impact settings.
+
+    Args:
+        config (deode.ParsedConfig): Configuration
+        taskname (str): Indicating taskname
+
+    Returns:
+        impact (dict): Impact model settings
+    """
+    _impact = config.get("impact", BasicConfig({})).dict()
+    installed_impact = config.get("platform.impact", {})
+    impact = {}
+
+    # Resolve ecf_host/ecf_port if used
+    with contextlib.suppress(HostNotFoundError):
+        ecf_host = config.get("scheduler.ecfvars.ecf_host")
+        ecf_port = config.get("scheduler.ecfvars.ecf_port")
+
+        if ecf_host is not None and ecf_port is not None:
+            pl = Platform(config)
+            ecf_host = pl.substitute(ecf_host)
+            ecf_host = pl.evaluate(ecf_host, object_=SelectHost)
+            ecf_port = pl.substitute(ecf_port)
+            ecf_port = pl.evaluate(ecf_port, object_=EcflowServer)
+
+            config = config.copy(
+                update={
+                    "scheduler": {
+                        "ecfvars": {
+                            "ecf_host_resolved": ecf_host,
+                            "ecf_port_resolved": ecf_port,
+                        }
+                    }
+                }
+            )
+
+    for name, impact_model in _impact.items():
+        if (
+            impact_model["active"]
+            and name in installed_impact
+            and taskname in impact_model
+        ):
+            impact[name] = impact_model[taskname]
+            for conf in ["communicate", "path", "config_name"]:
+                impact[name][conf] = impact_model[conf]
+
+            # Update user ecf host and port with resolved values
+            user_ecf_host = impact[name]["communicate"].get("user_ecf_host")
+            user_ecf_port = impact[name]["communicate"].get("user_ecf_port")
+            if user_ecf_host is not None and user_ecf_port is not None:
+                pl = Platform(config)
+                impact[name]["communicate"]["user_ecf_host"] = pl.substitute(
+                    user_ecf_host
+                )
+                impact[name]["communicate"]["user_ecf_port"] = pl.substitute(
+                    user_ecf_port
+                )
+
+    return impact
 
 
 class StartImpactModels(ImpactModels):

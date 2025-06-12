@@ -79,7 +79,7 @@ def basic_config_installed(basic_config, tmp_directory):
 
 def test_impact_inactive_not_installed(basic_config):
     model = ImpactModels(basic_config, "test")
-    assert model.is_active is False
+    assert len(model.impact) == 0
 
 
 def test_impact_inactive_active_false(basic_config_installed):
@@ -87,17 +87,17 @@ def test_impact_inactive_active_false(basic_config_installed):
         update={"impact": {"unittest": {"active": False}}}
     )
     model = ImpactModels(basic_config, "test")
-    assert model.is_active is False
+    assert len(model.impact) == 0
 
 
 def test_impact_inactive_wrong_task(basic_config_installed):
     model = ImpactModels(basic_config_installed)
-    assert model.is_active is False
+    assert len(model.impact) == 0
 
 
 def test_impact_run_cmd(basic_config_installed, tmp_directory):
     model = ImpactModels(basic_config_installed, "test")
-    assert model.is_active is True
+    assert len(model.impact) > 0
     model.execute()
 
     txtfile = f"{tmp_directory}/txtfile"

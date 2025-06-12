@@ -14,7 +14,7 @@ from ..datetime_utils import (
 )
 from ..logs import logger
 from ..submission import ProcessorLayout, TaskSettings
-from ..tasks.impacts import ImpactModels
+from ..tasks.impacts import get_impact
 from .base import (
     EcflowSuiteFamily,
     EcflowSuiteLimit,
@@ -969,7 +969,7 @@ class ForecastFamily(EcflowSuiteFamily):
                 trigger=add_calc_fields_family,
             )
 
-        if ImpactModels(config, "StartImpactModels").is_active:
+        if len(get_impact(config, "StartImpactModels")) > 0:
             EcflowSuiteTask(
                 "StartImpactModels",
                 self,

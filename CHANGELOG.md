@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove param 231049 from FDB exclusion. [\#1187](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1187)(@KristianHMoller)
 
 ### Fixed
+- Avoid generating a task when checking for active impact models. [\#1196](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1196) (@uandrae)
 - Allow FDB archiving without excluding fields. [\#1198](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1198) (@KristianHMoller)
 - Correct fullpos merge method. Removes dependency of merge order. [\#1195](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1195) (@uandrae)
 - Fix c903 climate file for lagged boundary conditions (bdshift). [\#1194](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1194) (@adeckmyn)
