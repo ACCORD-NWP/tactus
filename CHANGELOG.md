@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clarify procedure for creating a hotfix [\#1076](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1076)(@KristianHMoller)
 
 ### Fixed
+- Allow FDB archiving without excluding fields. [\#1198](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1198) (@KristianHMoller)
 - Correct fullpos merge method. Removes dependency of merge order. [\#1195](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1195) (@uandrae)
 - Fix c903 climate file for lagged boundary conditions (bdshift). [\#1194](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1194) (@adeckmyn)
 - Fix arome nudging settings to remove spikes in norms of pressure-departure. [\#1180](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1180) (@kastelecn)

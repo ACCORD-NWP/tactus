@@ -1192,7 +1192,7 @@ class FDB(ArchiveProvider):
             bool: True if success
 
         """
-        rules = dict(self.config["fdb.negative_rules"])
+        rules = self.config.get("fdb.negative_rules", {})
         grib_set = dict(self.config["fdb.grib_set"])
         if "expver" not in grib_set:
             msg = """
@@ -1227,7 +1227,7 @@ class FDB(ArchiveProvider):
             self.fdb.flush()
 
             create_inv = self.config.get("fdb.create_inverse_filter", False)
-            if create_inv:
+            if create_inv and bool(rules):
                 # Create example files for parameters not archived
                 inv_temp1 = f"{filename}_temp1_inv.grib"
                 inv_rules_file = "inv_temp_rules"
@@ -1245,12 +1245,19 @@ class FDB(ArchiveProvider):
         return True
 
     def _write_rules_file(self, filename, rules, neg="", oper=" && "):
-        x = [
-            f'{neg}({name} is "{value}")'
-            for name, values in rules.items()
-            for value in values
-        ]
-        rule = "if (" + oper.join(x) + ") { append; }\n"
+        if bool(rules):
+            logger.info("Applying rules from fdb.negative_rules")
+            x = [
+                f'{neg}({name} is "{value}")'
+                for name, values in rules.items()
+                for value in values
+            ]
+            rule = "if (" + oper.join(x) + ") { append; }\n"
+        else:
+            logger.info(
+                "No parameters excluded in fdb.negative_rules. Archiving all fields."
+            )
+            rule = "append;\n"
         with open(filename, "w") as outfile:
             outfile.write("set edition = 2;\n")
             outfile.write(rule)
