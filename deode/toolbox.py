@@ -542,7 +542,7 @@ class Platform:
 class FileManager:
     """FileManager class.
 
-    Default DEDODE provider.
+    Default DEODE provider.
 
     Platform specific.
 
@@ -629,13 +629,21 @@ class FileManager:
             f"No provider found for {sub_target} and provider_id {provider_id}"
         )
 
-    def input_data_iterator(self, input_data_definition, provider_id="symlink"):
+    def input_data_iterator(
+        self,
+        input_data_definition,
+        basetime=None,
+        validtime=None,
+        provider_id="symlink",
+    ):
         """Handle input data spec dict.
 
         Loop through the defined data types and fetch them.
 
         Args:
             input_data_definition (dict): Input data spec
+            basetime (datetime.datetime, optional): Base time. Defaults to None.
+            validtime (datetime.datetime, optional): Valid time. Defaults to None.
             provider_id (str): Provider id. Defaults to "symlink"
 
         Raises:
@@ -644,16 +652,25 @@ class FileManager:
         """
         for data_type, data in input_data_definition.items():
             logger.info("Link data type: {}", data_type)
-            path = self.platform.substitute(data["path"])
             files = data["files"]
             if isinstance(files, list):
-                for filenames in files:
-                    self.input(f"{path}/{filenames}", filenames, provider_id=provider_id)
+                for filename in files:
+                    self.input(
+                        f"{data['path']}/{filename}",
+                        filename,
+                        basetime=basetime,
+                        validtime=validtime,
+                        provider_id=provider_id,
+                    )
             elif isinstance(files, dict):
-                for _outfile, _infile in files.items():
-                    infile = self.platform.substitute(_infile)
-                    outfile = self.platform.substitute(_outfile)
-                    self.input(f"{path}/{infile}", outfile, provider_id=provider_id)
+                for outfile, infile in files.items():
+                    self.input(
+                        f"{data['path']}/{infile}",
+                        outfile,
+                        basetime=basetime,
+                        validtime=validtime,
+                        provider_id=provider_id,
+                    )
             else:
                 raise RuntimeError(f"Unknown data type in {input_data_definition}")
 
@@ -1115,6 +1132,7 @@ class FDB(ArchiveProvider):
 
         ArchiveProvider.__init__(self, config, pattern, fetch=fetch)
         self.fdb = pyfdb.FDB()
+        self.platform = Platform(self.config)
 
     def check_expver_restrictions(self, expver):
         """Check if user is allowed to archive this expver.
@@ -1127,13 +1145,30 @@ class FDB(ArchiveProvider):
         """
         user = os.environ["USER"]
         expver_restrictions = self.config["fdb.expver_restrictions"]
-        if isinstance(expver_restrictions, str):
-            expver_restrictions = [expver_restrictions]
+
+        # Convert to dictionary if necessary
+        if hasattr(expver_restrictions, "dict"):
+            expver_restrictions = expver_restrictions.dict()
+
+        # Iterate over items in expver_restrictions
+        for key, value in expver_restrictions.items():
+            if isinstance(value, tuple):
+                # Resolve macros for each item in the tuple
+                expver_restrictions[key] = [
+                    self.platform.substitute(item) for item in value
+                ]
+            elif isinstance(value, str):
+                expver_restrictions[key] = self.platform.substitute(value)
+            else:
+                raise RuntimeError(
+                    f"Unexpected type for expver_restrictions[{key}]: {type(value)}"
+                )
+
         if expver not in expver_restrictions:
             msg = (
                 f"The user allowed to archive for expver={expver} is not defined in\n "
                 + f"expver_restrictions={expver_restrictions}\n"
-                "Plese consult the documentation before adding a rule!"
+                "Please consult the documentation before adding a rule!"
             )
             raise RuntimeError(msg)
 
@@ -1157,7 +1192,7 @@ class FDB(ArchiveProvider):
             bool: True if success
 
         """
-        rules = dict(self.config["fdb.negative_rules"])
+        rules = self.config.get("fdb.negative_rules", {})
         grib_set = dict(self.config["fdb.grib_set"])
         if "expver" not in grib_set:
             msg = """
@@ -1192,7 +1227,7 @@ class FDB(ArchiveProvider):
             self.fdb.flush()
 
             create_inv = self.config.get("fdb.create_inverse_filter", False)
-            if create_inv:
+            if create_inv and bool(rules):
                 # Create example files for parameters not archived
                 inv_temp1 = f"{filename}_temp1_inv.grib"
                 inv_rules_file = "inv_temp_rules"
@@ -1210,12 +1245,19 @@ class FDB(ArchiveProvider):
         return True
 
     def _write_rules_file(self, filename, rules, neg="", oper=" && "):
-        x = [
-            f'{neg}({name} is "{value}")'
-            for name, values in rules.items()
-            for value in values
-        ]
-        rule = "if (" + oper.join(x) + ") { append; }\n"
+        if bool(rules):
+            logger.info("Applying rules from fdb.negative_rules")
+            x = [
+                f'{neg}({name} is "{value}")'
+                for name, values in rules.items()
+                for value in values
+            ]
+            rule = "if (" + oper.join(x) + ") { append; }\n"
+        else:
+            logger.info(
+                "No parameters excluded in fdb.negative_rules. Archiving all fields."
+            )
+            rule = "append;\n"
         with open(filename, "w") as outfile:
             outfile.write("set edition = 2;\n")
             outfile.write(rule)

@@ -47,7 +47,7 @@ def test_get_decade(
 
 @pytest.mark.parametrize("param", ["PT3H", "PT0H"])
 def test_offsetparam(param: Union[Literal["PT3H"], Literal["PT0H"]]):
-    truth_bdshift = {"PT3H": -3, "PT0H": 0}
+    truth_bdshift = {"PT3H": 3, "PT0H": 0}
     truth_bdcycle_start = {"PT3H": 0, "PT0H": 3}
     basetime = as_datetime("20181010T21")
     bdcycle = as_timedelta("PT3H")

@@ -6,7 +6,9 @@
   archive_root = "@SCRATCH@/deode/@CASE@/archive"
   archive_types = ["copy", "fdb"]
   climdata = "@STATIC_DATA@/climate"
+  deode_fdb_home = "/appl/local/destine/fdb"
   deode_home = "set-by-the-system"
+  dev_user = "lrb_465000527_efdev"
   e923_data = "@STATIC_DATA@/climate/E923_DATA"
   ecoclim_data_path = "@CLIMDATA@/ecoclimap"
   ecoclimap_bin_dir = "@ecoclim_data_path@"
@@ -23,6 +25,7 @@
   ncdir = "@STATIC_DATA@/ncdir"
   osm_data = "@CLIMDATA@/OSM_SFX8_1/GARDEN/"
   pgd_data_path = "@CLIMDATA@/PGD"
+  prod_user = "lrb_465000527_efprd"
   reference_data = "@SCRATCH@/deode"
   rrtm_dir = "@STATIC_DATA@/rrtm/@CYCLE@"
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef/"

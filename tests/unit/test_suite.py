@@ -4,29 +4,11 @@ import os
 from contextlib import suppress
 
 import pytest
-import tomlkit
 
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
+from deode.config_parser import ParsedConfig
 from deode.derived_variables import set_times
 from deode.submission import TaskSettings
 from deode.suites.deode import DeodeSuiteDefinition
-
-
-@pytest.fixture()
-def minimal_raw_config():
-    return tomlkit.parse(
-        """
-        [general]
-            times.list = ["2000-01-01T00:00:00Z"]
-        """
-    )
-
-
-@pytest.fixture()
-def minimal_parsed_config(minimal_raw_config):
-    return ParsedConfig(
-        minimal_raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
-    )
 
 
 @pytest.fixture(scope="module")
@@ -46,8 +28,8 @@ def _module_mockers(module_mocker):
 
 @pytest.mark.usefixtures("_module_mockers")
 class TestSuite:
-    def test_config_can_be_instantiated(self, minimal_parsed_config):
-        assert isinstance(minimal_parsed_config, ParsedConfig)
+    def test_config_can_be_instantiated(self, default_config):
+        assert isinstance(default_config, ParsedConfig)
 
     @pytest.mark.parametrize(
         "param",

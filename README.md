@@ -155,12 +155,16 @@ deode case ?deode/data/config_files/configurations/cy48t3_arome -o cy48t3_arome.
 
 ### Running the `"Forecast"` task from the `hpc-login`'s command line
 
-The command below runs `deode`'s task `"Forecast"` using the batch system rules defined in your `config.toml`:
+The command below runs `deode`'s task `"Forecast"` for the member specified in the config file using the batch system rules defined in your `config.toml`:
 ```shell
 deode run --task Forecast --config-file cy48t3_arome.toml 
 ```
 
 Note that this requires a previous run of the [ecflow suite](#running-ecflow-suite-on-atos-or-lumi) for the given config file to have finished succesfully.
+
+To run the Forecast task for a different member, simply point to the config file with the desired member number specified.
+
+NOTE: the config file used by a given task, is always saved to the working directory, when the task is run. Thus one can e.g. point to the config file used by the mbr001/Cycle/Forecasting/Forecast task to rerun the Forecast task for member 1):
 
 This way, the stand alone forecast will pick the input data from the existing run and output the result in the same directories (as defined by the config file).
 

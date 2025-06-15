@@ -67,7 +67,7 @@ def test_basetime(basic_config):
 def test_full_cleaning(tmpdir, basic_config):
     config = basic_config
     path = f"{tmpdir}/deode"
-    os.makedirs(path)
+    os.makedirs(path, exist_ok=True)
 
     for f in ["ELS", "ICMSHTEST"]:
         Path(f"{path}/{f}").touch()

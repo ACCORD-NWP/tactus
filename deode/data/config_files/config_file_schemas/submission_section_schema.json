@@ -12,7 +12,7 @@
     "bindir": {
       "type": "string",
       "description": "Location of binaries",
-      "default":"@INSTALL_DIR@/@CYCLE@/latest/bin"
+      "default": "@INSTALL_DIR@/@CYCLE@/latest/bin"
     },
     "nproma": {
       "type": "number",
@@ -53,13 +53,13 @@
                   "description": "Strict format for multitarget operations",
                   "default": 1
                 },
-		"MARS_READANY_BUFFER_SIZE": {
-		  "type": "number",
-	  	  "description": "Reandomly buffer size in mars",
-		  "default":  17893020000
-		}
+                "MARS_READANY_BUFFER_SIZE": {
+                  "type": "number",
+                  "description": "Reandomly buffer size in mars",
+                  "default": 17893020000
+                }
               },
-	      "default": {}
+              "default": {}
             }
           }
         }

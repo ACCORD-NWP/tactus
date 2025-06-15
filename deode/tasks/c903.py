@@ -36,7 +36,7 @@ class C903(Task):
         bdshift = as_timedelta(self.config["boundaries.bdshift"])
         # Boundary basetime
         self.bd_basetime = self.basetime - cycle_offset(
-            self.basetime, bdcycle, bdcycle_start=bdcycle_start, bdshift=-bdshift
+            self.basetime, bdcycle, bdcycle_start=bdcycle_start, bdshift=bdshift
         )
 
         self.bd_index = self.config["task.args.bd_index"]
@@ -69,7 +69,9 @@ class C903(Task):
         ifs_files: Dict[str, str | Dict[str, str]] = input_data.pop("IFS_files")
 
         # Link the static data
-        self.fmanager.input_data_iterator(input_data)
+        self.fmanager.input_data_iterator(
+            input_data, basetime=self.bd_basetime, validtime=as_datetime(self.bd_time)
+        )
 
         # IFS input files
         path = ifs_files["path"]

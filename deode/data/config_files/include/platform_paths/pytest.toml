@@ -1,0 +1,3 @@
+[platform]
+  archive_root = "@SCRATCH@/deode/@CASE@/archive"
+  scratch = ""

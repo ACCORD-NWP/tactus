@@ -37,11 +37,13 @@ def test_create_list(basic_config):
 
 
 @pytest.mark.parametrize("filetype", ["surfex", "history"])
-def test_convert2grib(basic_config, filetype):
+def test_convert2grib(basic_config, filetype, tmp_directory):
     cg = CreateGrib(basic_config)
     cg.wrapper = "echo"
     cg.gl = "gl"
 
+    prev_cwd = Path.cwd()
+    os.chdir(tmp_directory)
     output_list = cg.create_list(
         cg.file_templates[filetype]["archive"], cg.output_settings[filetype]
     )
@@ -49,4 +51,5 @@ def test_convert2grib(basic_config, filetype):
     inpath = os.path.dirname(infile)
     os.makedirs(inpath, exist_ok=True)
     Path(infile).touch()
-    cg.convert2grib(output_list[cg.basetime], "foo", filetype)
+    cg.convert2grib(infile, "foo", filetype)
+    os.chdir(prev_cwd)

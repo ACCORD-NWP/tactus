@@ -43,6 +43,11 @@
               "description": "Output format",
               "type": "string",
               "default": "FA2GRIB2"
+            },
+            "basetime_only": {
+              "description": "Output only at basetime",
+              "type": "boolean",
+              "default": false
             }
           }
         },

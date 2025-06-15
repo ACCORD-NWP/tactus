@@ -2,7 +2,7 @@
   # Package ID info
   description = "The DEODE scripting system."
   name = "deode"
-  version = "0.16.1"
+  version = "0.17.0"
   # Other package info
   authors = ["The DE_330 project."]
   documentation = "https://destination-earth-digital-twins.github.io/deode-workflow-docs"
@@ -24,7 +24,7 @@
   # General dependencies
   dateutils = "^0.6.12"
   dicttoxml = "^1.0.0"
-  eccodes = "^2.39"
+  eccodes = "^2.41"
   f90nml = "^1.4.3"
   fastjsonschema = "2.18.1"
   geohash = {git = "https://github.com/destination-earth-digital-twins/geohash.git", tag = "v1.1"}

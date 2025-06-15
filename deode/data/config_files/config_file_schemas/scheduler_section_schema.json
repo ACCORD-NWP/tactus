@@ -1,96 +1,95 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Scheduler Section, defined in files under include/scheduler",
-    "description": "Settings for implemented schedulers",
-    "type": "object",
-    "additionalProperties": true,
-    "properties": {
-        "ecfvars": {
-            "title": "Ecflow HPC scheduler Section, defined in files under include/scheduler",
-            "description": "DEODE HPC specific ecflow settings",
-            "type": "object",
-            "properties": {
-		"ecf_tries": {
-                    "type": "integer",
-                    "description": "Ecflow tries.",
-		    "default": 1
-                },
-                "ecf_host": {
-                    "type": "string",
-                    "description": "Ecflow host. HPC dependent."
-                },
-                "ecf_host_resolved": {
-                    "type": "string",
-                    "description": "Resolved Ecflow host for downstream usage",
-		    "default": ""
-                },
-                "ecf_port": {
-                    "description": "Ecflow port, HPC or user dependet. To set depending on userid use `_set_port_from_user(offset)` where offset is an interger to be added to the userid ",
-                    "type": [
-                        "integer",
-                        "string"
-                    ],
-                    "anyOf": [
-                        {
-                            "type": "integer"
-                        },
-                        {
-                            "type": "string",
-                            "pattern": "_set_port_from_user\\((\\d+)\\)"
-                        },
-                        {
-                            "type": "string",
-                            "pattern": "_set_port_from_json\\((.*),\\)"
-                        }
-                    ]
-                },
-                "ecf_port_resolved": {
-                    "description": "Parsed ecflow port for communication",
-		    "default": "",
-                    "type": [
-                        "integer",
-                        "string"
-                    ],
-                    "anyOf": [
-                        {
-                            "type": "integer"
-                        },
-                        {
-                            "type": "string"
-                        }
-                    ]
-                },
-                "ecf_jobout": {
-                    "type": "string",
-                    "description": "Path to Ecflow job output."
-                },
-                "ecf_files": {
-                    "type": "string",
-                    "description": "Path to Ecflow operating files."
-                },
-                "ecf_files_remotely": {
-                    "type": "string",
-                    "description": "Path to Ecflow operating files if in remote location, different to ecf_files."
-                },
-                "ecf_home": {
-                    "type": "string",
-                    "description": "Path to Ecflow home."
-                },
-                "ecf_user": {
-                    "type": "string",
-                    "description": "Ecflow user, only set when required",
-                    "default": ""
-                },
-                "ecf_remoteuser": {
-                    "type": "string",
-                    "description": "Ecflow remote user, only set when required",
-                    "default": ""
-                },
-                "ecf_deode_home": {
-                    "type": "string",
-                    "description": "Deode home directory stripped for parts specific to where a node is mounted on a cluster"
-                }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Scheduler Section, defined in files under include/scheduler",
+  "description": "Settings for implemented schedulers",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "ecfvars": {
+      "title": "Ecflow HPC scheduler Section, defined in files under include/scheduler",
+      "description": "DEODE HPC specific ecflow settings",
+      "type": "object",
+      "properties": {
+        "ecf_ssl": {
+          "type": "string",
+          "description": "Ecflow comminucation using SSL",
+          "default": "0"
+        },
+        "ecf_tries": {
+          "type": "integer",
+          "description": "Ecflow tries.",
+          "default": 1
+        },
+        "ecf_host": {
+          "type": "string",
+          "description": "Ecflow host. HPC dependent."
+        },
+        "ecf_host_resolved": {
+          "type": "string",
+          "description": "Resolved Ecflow host for downstream usage",
+          "default": ""
+        },
+        "ecf_port": {
+          "description": "Ecflow port, HPC or user dependet. To set depending on userid use `_set_port_from_user(offset)` where offset is an interger to be added to the userid ",
+          "type": ["integer", "string"],
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "string",
+              "pattern": "_set_port_from_user\\((\\d+)\\)"
+            },
+            {
+              "type": "string",
+              "pattern": "_set_port_from_json\\((.*),\\)"
             }
+          ]
+        },
+        "ecf_port_resolved": {
+          "description": "Parsed ecflow port for communication",
+          "default": "",
+          "type": ["integer", "string"],
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "ecf_jobout": {
+          "type": "string",
+          "description": "Path to Ecflow job output."
+        },
+        "ecf_files": {
+          "type": "string",
+          "description": "Path to Ecflow operating files."
+        },
+        "ecf_files_remotely": {
+          "type": "string",
+          "description": "Path to Ecflow operating files if in remote location, different to ecf_files."
+        },
+        "ecf_home": {
+          "type": "string",
+          "description": "Path to Ecflow home."
+        },
+        "ecf_user": {
+          "type": "string",
+          "description": "Ecflow user, only set when required",
+          "default": ""
+        },
+        "ecf_remoteuser": {
+          "type": "string",
+          "description": "Ecflow remote user, only set when required",
+          "default": ""
+        },
+        "ecf_deode_home": {
+          "type": "string",
+          "description": "Deode home directory stripped for parts specific to where a node is mounted on a cluster"
         }
+      }
     }
+  }
 }

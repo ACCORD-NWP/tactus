@@ -558,14 +558,14 @@ f4_AROME:
     NECRIPL: 1
   NEMELBC0B:
     NEFRSPCPL: 1
-    NEK0: 220
-    NEK1: 255
+    NEK0: 20
+    NEK1: 30
     NEN1: 4
     NEN2: 8
-    SPNUDDIV: 0.3
+    SPNUDDIV: 0.01
     SPNUDQ: 0.0
-    SPNUDT: 0.3
-    SPNUDVOR: 0.3
+    SPNUDT: 0.01
+    SPNUDVOR: 0.01
     TEFRCL: ${cfg:namelist.tefrcl}
 fa_names:
   NAMAFN:

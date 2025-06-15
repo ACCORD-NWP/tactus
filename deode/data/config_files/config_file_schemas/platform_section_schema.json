@@ -31,6 +31,11 @@
       "type": "string",
       "description": "Path to solgrid input data"
     },
+    "global_sfcdir": {
+      "type": "string",
+      "description": "Path to global IFS surface data",
+      "default" : ""
+    },
     "gmted2010_data_path": {
       "type": "string",
       "description": "Path to gmted2010 input"

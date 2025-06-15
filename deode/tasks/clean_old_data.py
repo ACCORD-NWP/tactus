@@ -37,25 +37,25 @@ class CleanOldData(Task):
         cutoff = self.now - delay
         return cutoff.timestamp()
 
-    def get_old(self, path, form, cutoff_time, ignore=None):
-        """Get directories which are older cutoff.
+    def get_old(self, path, format_, cutoff_time, ignore=None):
+        """Get directories which are older than cutoff.
 
         Args:
             path (str): Path to start of searching old directories
-            form (str): regex for path
+            format_ (str): regex for path
             cutoff_time (int): Directories or files older then cutoff
             ignore (list): List of directories to ignore
         Returns:
             list_to_remove (list): List of directories for remove
         """
         list_to_remove = []
-        glob_str = "*/".join(["*"] * (form.count("/") - form.count("^/")))
+        glob_str = "*/".join(["*"] * (format_.count("/") - format_.count("^/")))
         logger.info(glob_str)
         logger.info(path)
         glob_pattern = os.path.join(path, glob_str)
         initial_matches = glob.glob(glob_pattern)
         logger.info("initial: {}", initial_matches)
-        pattern = r"^" + re.escape(path) + r"{}".format(form)
+        pattern = r"^" + re.escape(path) + r"{}".format(format_)
         pattern_no_whitespace = re.sub(r"\s+", "", pattern)
         logger.info("patteren: {}", pattern_no_whitespace)
         pattern_compiled = re.compile(pattern_no_whitespace)
@@ -156,7 +156,7 @@ class CleanScratchData(CleanOldData):
             + config["clean_old_data.scratch_ext"]
         )
         self.cutoff_time = self.cutoff(self.delay)
-        self.scratch_form = config["clean_old_data.scratch_format"]
+        self.scratch_format = config["clean_old_data.scratch_format"]
         ignore = list(config["clean_old_data.ignore"])
         logger.info("Ignore: {}", ignore)
         self.ignore_dir = ["IFS", "Clean_old_data", *ignore]
@@ -165,7 +165,7 @@ class CleanScratchData(CleanOldData):
         """Run clean data from scratch."""
         list_to_remove = self.get_old(
             self.scratch,
-            self.scratch_form,
+            self.scratch_format,
             self.cutoff_time,
             ignore=self.ignore_dir,
         )

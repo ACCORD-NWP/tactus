@@ -5,4 +5,4 @@
   generatingProcessIdentifier = "2"
 
 [submission]
-  bindir = "@INSTALL_DIR@/@CYCLE@/@CYCLE@-v1.5.0/bin"
+  bindir = "@INSTALL_DIR@/@CYCLE@/@CYCLE@-v1.6.0/bin"

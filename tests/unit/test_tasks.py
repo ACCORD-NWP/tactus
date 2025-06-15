@@ -2,8 +2,10 @@
 """Unit tests for the config file parsing module."""
 import contextlib
 import subprocess
+import sys
 from os import chdir, makedirs
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 import tomlkit
@@ -26,6 +28,9 @@ from deode.tasks.iomerge import IOmerge
 from deode.tasks.marsprep import Marsprep
 from deode.toolbox import ArchiveError, FileManager, ProviderError
 
+with contextlib.suppress(ModuleNotFoundError):
+    import ecflow
+
 
 def classes_to_be_tested():
     """Return the names of the task-related classes to be tested."""
@@ -47,6 +52,8 @@ def task_name_and_configs(request, default_config, tmp_directory):
         f"""
         [general]
             keep_workdirs = false
+        [boundaries.ifs]
+            selection = "atos_bologna_DT"
         [system]
             wrk = "{tmp_directory}"
             bindir = "{tmp_directory}/bin"
@@ -56,6 +63,7 @@ def task_name_and_configs(request, default_config, tmp_directory):
             static_data = "{tmp_directory}"
             climdata = "{tmp_directory}"
             soilgrid_data_path = "{tmp_directory}"
+            gmted2010_data_path = "{tmp_directory}"
         [task.args]
             joboutdir = "foo"
             tarname= "foo"
@@ -116,7 +124,11 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     def new_task_clean_old_data_cleansuites_execute_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
         with contextlib.suppress(ModuleNotFoundError, NotImplementedError):
-            original_task_clean_old_data_cleansuites_execute_method(*args, **kwargs)
+            if "ecflow" in sys.modules:
+                with patch.object(ecflow.Client, "delete"):
+                    original_task_clean_old_data_cleansuites_execute_method(
+                        *args, **kwargs
+                    )
 
     def new_task_forecast_forecast_execute_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
@@ -264,7 +276,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     )
 
     # Create files needed by gmtedsoil tasks
-    tif_files_dir = tmp_path_factory.getbasetemp() / "GMTED2010"
+    tif_files_dir = tmp_path_factory.getbasetemp()
     makedirs(tif_files_dir, exist_ok=True)
 
     for fname in ["50N000E_20101117_gmted_mea075", "30N000E_20101117_gmted_mea075"]:

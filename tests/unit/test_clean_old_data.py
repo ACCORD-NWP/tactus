@@ -13,8 +13,8 @@ from deode.datetime_utils import as_timedelta
 from deode.tasks.clean_old_data import CleanScratchData
 
 
-@pytest.fixture(scope="module")
-def parsed_config(tmp_directory, default_config):
+@pytest.fixture(name="parsed_config", scope="module")
+def fixture_parsed_config(tmp_directory, default_config):
     """Return a raw config common to tasks."""
     config = default_config
 
@@ -31,24 +31,25 @@ def parsed_config(tmp_directory, default_config):
 
 
 def test_remove_old(tmp_directory, parsed_config):
-    dir_old = f"{tmp_directory}/clean/dir_old"
-    os.makedirs(dir_old)
-    file_old = f"{dir_old}/file_old"
-    Path(file_old).touch()
+    # Prepare dir with old files
+    dir_old = Path(f"{tmp_directory}/clean/dir_old")
+    dir_old.mkdir(parents=True)
+    file_old = dir_old / "file_old"
+    file_old.touch()
     timestamp_old = (datetime.now() - timedelta(days=3)).timestamp()
     os.utime(dir_old, (timestamp_old, timestamp_old))
     os.utime(file_old, (timestamp_old, timestamp_old))
 
-    dir_new = f"{tmp_directory}/clean/dir_new"
-    os.makedirs(dir_new)
-    file_new = f"{dir_new}/file_new"
-    Path(file_new).touch()
+    # Prepare dir with new files
+    dir_new = Path(f"{tmp_directory}/clean/dir_new")
+    dir_new.mkdir(parents=True)
+    file_new = dir_new / "file_new"
+    file_new.touch()
     timestamp_new = (datetime.now() - timedelta(days=1)).timestamp()
     os.utime(dir_new, (timestamp_new, timestamp_new))
     os.utime(file_new, (timestamp_new, timestamp_new))
 
-    config = parsed_config
-    cleanolddata = CleanScratchData(config)
+    cleanolddata = CleanScratchData(parsed_config)
     dic_old_file = cleanolddata.get_old(
         os.path.join(tmp_directory, "clean"),
         "/([^/]+)/([^/]+)",
@@ -62,8 +63,8 @@ def test_remove_old(tmp_directory, parsed_config):
     cleanolddata.remove_list(dic_old_file, files=True)
     left_files = list(glob.glob(f"{tmp_directory}/clean/*/*"))
     assert len(left_files) == 1
-    assert left_files[0] == f"{tmp_directory}/clean/dir_new/file_new"
+    assert Path(left_files[0]) == file_new
     cleanolddata.remove_list(dic_old_dir)
     left_dir = list(glob.glob(f"{tmp_directory}/clean/*/"))
     assert len(left_dir) == 1
-    assert left_dir[0] == f"{tmp_directory}/clean/dir_new/"
+    assert Path(left_dir[0]) == dir_new

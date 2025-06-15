@@ -1,6 +1,11 @@
 [general]
   event_type = "airquality"
 
+[archiving.FDB.fdb.history_grib2]
+  active = false
+  inpath = "@ARCHIVE@"
+  pattern = "GRIB@CNMEXP@*s"
+
 [archiving.FDB.fdb.surfex_grib2]
   active = false
   inpath = "@ARCHIVE@"
@@ -12,26 +17,18 @@
 [creategrib.CreateGrib.history]
   output_format = "FA2GRIB2"
 
-[creategrib.CreateGrib.history.ALARO]
-  namelist = [
-    "outgeo%center=85",
-    "READKEY%FANAME='SPECSURFGEOPOTEN','SURFFLU.LAT.MEVA','SURFFLU.LAT.MSUB','SURFFLU.CHA.SENS','SURFFLU.RAY.SOLA','SURFRAYT SOLA DE'",
-  ]
-
-[creategrib.CreateGrib.history.AROME]
-  namelist = [
-    "outgeo%center=85",
-    "READKEY%FANAME='SPECSURFGEOPOTEN','SURFFLU.LAT.MEVA','SURFFLU.LAT.MSUB','SURFFLU.CHA.SENS','SURFFLU.RAY.SOLA','SURFRAYT SOLA DE'",
-  ]
-
 [creategrib.CreateGrib.history.HARMONIE_AROME]
-  namelist = [
-    "outgeo%center=85",
-    "READKEY%FANAME='SPECSURFGEOPOTEN','SURFFLU.LAT.MEVA','SURFFLU.LAT.MSUB','SURFFLU.CHA.SENS','SURFFLU.RAY.SOLA','SURFRAYT SOLA DE'",
-  ]
+  basetime_only = true
+  namelist = ["outgeo%center=85", "READKEY%FANAME='SPECSURFGEOPOTEN'"]
 
 [creategrib.CreateGrib.surfex]
   output_format = "FA2GRIB2"
+
+[creategrib.CreateGrib.surfex.ALARO]
+  namelist = [
+    "outgeo%center=85",
+    "READKEY%FANAME='SFX.SST','SFX.TS','SFX.CD','SFX.Z0','SFX.QS'",
+  ]
 
 [creategrib.CreateGrib.surfex.AROME]
   namelist = [
@@ -48,6 +45,12 @@
 [creategrib.CreateGrib.tiles]
   output_format = "FA2GRIB2"
   output_frequency_reference = "surfex"
+
+[creategrib.CreateGrib.tiles.ALARO]
+  namelist = [
+    "outgeo%center=85",
+    "READKEY%FANAME='SFX.WG1P1','SFX.WG1P2','SFX.WG1P3','SFX.WG2P1','SFX.WG2P2','SFX.WG2P3','SFX.WG3P1','SFX.WG3P2','SFX.WG3P3','SFX.WG4P1','SFX.WG4P2','SFX.WG4P3','SFX.WG5P1','SFX.WG5P2','SFX.WG5P3','SFX.WG6P1','SFX.WG6P2','SFX.WG6P3','SFX.WG7P1','SFX.WG7P2','SFX.WG7P3','SFX.WG8P1','SFX.WG8P2','SFX.WG8P3','SFX.TG1P1','SFX.TG1P2','SFX.TG1P3','SFX.TG2P1','SFX.TG2P2','SFX.TG2P3','SFX.TG3P1','SFX.TG3P2','SFX.TG3P3','SFX.TG4P1','SFX.TG4P2','SFX.TG4P3','SFX.TG5P1','SFX.TG5P2','SFX.TG5P3','SFX.TG6P1','SFX.TG6P2','SFX.TG6P3','SFX.TG7P1','SFX.TG7P2','SFX.TG7P3','SFX.TG8P1','SFX.TG8P2','SFX.TG8P3','SFX.PATCHP1','SFX.PATCHP2','SFX.PATCHP3','SFX.LAI_ISBA','SFX.WRP1','SFX.WRP2','SFX.WRP3'",
+  ]
 
 [creategrib.CreateGrib.tiles.AROME]
   namelist = [

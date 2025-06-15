@@ -2,9 +2,9 @@
   create_inverse_filter = false
 
 [fdb.expver_restrictions]
-  0001 = ["aut6432"]
-  0098 = ["snh02"]
-  0099 = ["aut6432"]
+  0001 = "@PROD_USER@"
+  0098 = "@DEV_USER@"
+  0099 = "@PROD_USER@"
 
 [fdb.grib_set]
   centre = "98"
@@ -19,6 +19,6 @@
 
 [fdb.negative_rules]
   levtype = ["unknown"]
-  param = ["0", "231049", "231066"]
+  param = ["0", "231066"]
   productDefinitionTemplateNumber = ["113", "114"]
   typeOfLevel = ["unknown", "not_found"]

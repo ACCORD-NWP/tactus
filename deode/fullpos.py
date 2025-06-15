@@ -221,6 +221,7 @@ class Fullpos:
                     section = {}
                     for key, val in keys.items():
                         param = "".join([key[0:2], "D", key[2:]])
+                        val.sort()
                         section[key] = val
                         section[param] = [self.domain for j in range(len(val))]
                     tmp[namelist] = section

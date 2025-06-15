@@ -32,7 +32,7 @@ class E927(Task):
         bdcycle_start = as_timedelta(config["boundaries.lam.bdcycle_start"])
         bdshift = as_timedelta(config["boundaries.bdshift"])
         self.bd_basetime = self.basetime - cycle_offset(
-            self.basetime, bdcycle, bdcycle_start=bdcycle_start, bdshift=-bdshift
+            self.basetime, bdcycle, bdcycle_start=bdcycle_start, bdshift=bdshift
         )
 
         self.intp_bddir = self.config["system.intp_bddir"]

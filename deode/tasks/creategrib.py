@@ -27,6 +27,7 @@ class GlGrib(Task):
         self.file_templates = self.config["file_templates"]
         self.csc = self.config["general.csc"]
         self.gl = self.get_binary("gl")
+        self.basetime = as_datetime(self.config["general.times.basetime"])
 
         if self.name == "CreateGribStatic":
             self.rules = self.config.get(f"creategrib.{self.name}", {})
@@ -129,6 +130,23 @@ class GlGrib(Task):
                             self.rules[filetype]["output_frequency_reference"]
                         ],
                     )
+                # Check for "basetime_only" specifying output only at basetime
+                basetime_only = (
+                    self.rules[filetype].get(self.csc, {}).get("basetime_only", False)
+                )
+
+                if basetime_only:
+                    # Remove all but basetime
+                    logger.info("Remove all but basetime for filetype={}", filetype)
+                    if self.basetime in file_handle:
+                        file_handle = {self.basetime: file_handle[self.basetime]}
+                    else:
+                        logger.warning(
+                            "Basetime {} not found in file_handle for filetype={}",
+                            self.basetime,
+                            filetype,
+                        )
+
                 for validtime, fname in file_handle.items():
                     output = self.platform.substitute(
                         self.file_templates[filetype]["grib"], validtime=validtime

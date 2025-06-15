@@ -96,12 +96,15 @@ class DeodeHost:
 
         return False
 
-    def detect_deode_host(self):
+    def detect_deode_host(self, use_default=True):
         """Detect deode host by matching various properties.
 
         First check self.deode_host as set by os.getenv("DEODE_HOST"),
         second use the defined hosts in known_hosts.yml. If no matches
         are found return the first host defined in known_hosts.yml
+
+        Args:
+            use_default (boolean, optional): Flag to return default host if host not found
 
         Raises:
             RuntimeError: Ambiguous matches
@@ -126,10 +129,15 @@ class DeodeHost:
                     raise RuntimeError(f"No deode-host detection using {method}")
 
         if len(matches) == 0:
-            matches = list(self.known_hosts)[0:1]
-            logger.info(
-                f"No deode-host detected from {self.hostname}, use {self.default_host}"
-            )
+            if use_default:
+                matches = list(self.known_hosts)[0:1]
+                logger.info(
+                    f"No deode-host detected from {self.hostname}, "
+                    + f"use {self.default_host}"
+                )
+            else:
+                matches = [None]
+                logger.info(f"No deode-host detected from {self.hostname}, return None")
         if len(matches) > 1:
             raise RuntimeError(f"Ambiguous matches: {matches}")
 

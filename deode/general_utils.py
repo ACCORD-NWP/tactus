@@ -240,9 +240,11 @@ def merge_dicts(dict1: dict, dict2: dict, overwrite: bool = False) -> dict:
         RuntimeError: Invalid type
 
     """
-    new_dict = dict1.copy()
+    new_dict = copy.deepcopy(dict1)
     for key2, val2 in dict2.items():
         if key2 in new_dict:
+            if val2 is None:
+                continue
             if isinstance(val2, dict):
                 new_dict[key2] = merge_dicts(new_dict[key2], val2, overwrite=overwrite)
             elif isinstance(val2, list):

@@ -17,9 +17,9 @@ from ..mars_utils import (
     add_additional_file_specific_data,
     check_data_available,
     get_and_remove_data,
-    get_date_time_info,
     get_domain_data,
     get_mars_keys,
+    get_steplist,
     get_steps_and_members_to_retrieve,
     get_value_from_dict,
     move_files,
@@ -71,25 +71,24 @@ class Marsprep(Task):
         bdcycle_start = as_timedelta(self.mars["ifs_cycle_start"])
         bdshift = as_timedelta(self.config["boundaries.bdshift"])
 
-        # Get date/time/steps info
-        self.init_date_str, self.init_hour_str, self.steps = get_date_time_info(
-            self.basetime,
-            forecast_range,
-            bdint,
-            bdcycle,
-            bdshift,
-        )
-
         if bdshift.total_seconds() % bdcycle.total_seconds() != 0:
             raise ValueError("bdshift needs to be a multiple of bdcycle!")
 
-        self.bd_basetime = self.basetime - cycle_offset(
+        # Get date/time/steps info
+        bd_offset = cycle_offset(
             self.basetime,
             bdcycle,
             bdcycle_start=bdcycle_start,
-            bdshift=-bdshift,
+            bdshift=bdshift,
         )
+
+        self.bd_basetime = self.basetime - bd_offset
+        self.steps = get_steplist(bd_offset, forecast_range, bdint)
+
         logger.info("bd_basetime: {}", self.bd_basetime)
+
+        self.init_date_str = self.bd_basetime.strftime("%Y%m%d")
+        self.init_hour_str = self.bd_basetime.strftime("%H")
 
         exist_snow = False
         with contextlib.suppress(KeyError):
@@ -211,6 +210,7 @@ class Marsprep(Task):
         # Retrieve from already fetched data
         if not prefetch:
             request.update_request({"SOURCE": source})
+            # NOTE: the following could be moved to get_geopotential_latlon()
             if "mars_latlonZ" in request.target and (
                 self.use_static_gg_oro or self.use_static_sh_oro
             ):
@@ -420,13 +420,13 @@ class Marsprep(Task):
         else:
             # Default to ICMSH_0+* if member is None
             z_source = f'"{self.prepdir}/ICMSH_{first_member or 0}+{self.steps[0]}"'
-
+        # NOTE: for z, the step is always 0, while steps[0] may be shifted!
         self._build_and_run_request(
             req_file_name="latlonz.req",
             data_type=data_type,
             levtype=lev_type,
             param=param,
-            steps=[self.steps[0]],
+            steps=[0],
             members=[first_member],
             target=f"mars_latlonZ_{first_member or 0}",
             prefetch=prefetch,

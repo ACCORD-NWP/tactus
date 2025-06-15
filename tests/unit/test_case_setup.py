@@ -120,6 +120,7 @@ def test_output_file_name(default_config):
     output_file_name = case_setup(config, None, [])
     case = Platform(config).substitute(config.get("general.case"))
     assert output_file_name[:-5] == case
+    os.remove(output_file_name)
 
 
 def test_write_read_config(default_config, default_config_dir):

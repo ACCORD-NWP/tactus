@@ -1,15 +1,12 @@
-"""Utilsty for marsprep."""
+"""Utility for marsprep."""
 
 import contextlib
 import os
 import shutil
 from dataclasses import dataclass, field, replace
-from datetime import datetime, timedelta
 from pathlib import Path
 from subprocess import run
 from typing import Dict, List, Tuple
-
-import pandas as pd
 
 from .datetime_utils import as_datetime
 from .geo_utils import Projection, Projstring
@@ -220,63 +217,23 @@ def get_value_from_dict(dict_, key_orig):
     raise ValueError(f"Value not found for {key_orig} within {dict_}")
 
 
-def get_date_time_info(
-    date: datetime,
-    fc_cycle: timedelta,
-    bdint: timedelta,
-    bdcycle: timedelta,
-    bdshift: timedelta,
-) -> Tuple[str, str, List[int]]:
-    """Manipulate the dates for Mars request.
+def get_steplist(bd_offset, fc_range, bdint):
+    """Get the list of steps for Mars request.
 
     Args:
-       date         (datetime):   full date provided for spliting into parts
-       fc_cycle    (timedelta):   forecast cycle length in hours
-       bdint       (timedelta):   boundary interval in hours "1H","3H","6H"
-       bdcycle     (timedelta):   length of IFS cycle
-       bdshift     (timedelta):   shift of boundaries in hours
+       bd_offset (timedelta):   first boundary time
+       fc_range     (timedelta):   forecast range
+       bdint        (timedelta):   frequency of boundary files
 
     Returns:
-        init_date_str (string): initial date
-        init_hour_str (string): initial hour
-        steps      (List[int]): list of steps
-
+         steps      (List[int]): list of steps
     """
-    # Check if we're dealing with 00 or 03 ... etc.
-    init_hour = date.hour % (bdcycle.total_seconds() // 3600)
+    step_int = int(bdint.total_seconds() // 3600)
+    first_step = int(bd_offset.total_seconds() // 3600)
+    fc_range_int = int(fc_range.total_seconds() // 3600)
 
-    # Create Pandas date series for MARS extraction
-    interval_int = bdint.total_seconds() // 3600
-    forecast_range_int = fc_cycle.total_seconds() // 3600
-
-    forecast_datetimes_series = pd.Series(
-        pd.date_range(
-            date - pd.Timedelta(hours=init_hour),
-            periods=(forecast_range_int + init_hour) // interval_int + 1,
-            freq=bdint,
-        )
-    )
-    request_datetimes_series = pd.concat(
-        [
-            forecast_datetimes_series.iloc[int(init_hour) :],
-        ]
-    )
-
-    init_date_str = forecast_datetimes_series.iloc[0].strftime("%Y%m%d")
-    init_hour_str = forecast_datetimes_series.iloc[0].strftime("%H")
-
-    step = int(bdint.total_seconds() // 3600)
-    # Get steps according to bdshift and bdcycle
-    steps = [
-        int(
-            bdshift.total_seconds() // 3600
-            + (i * step)
-            + date.hour % int(bdcycle.total_seconds()) // 3600
-        )
-        for i in request_datetimes_series.index.tolist()
-    ]
-
-    return init_date_str, init_hour_str, steps
+    steps = list(range(first_step, first_step + fc_range_int + step_int, step_int))
+    return steps
 
 
 def get_and_remove_data(file_name: str) -> bytes:

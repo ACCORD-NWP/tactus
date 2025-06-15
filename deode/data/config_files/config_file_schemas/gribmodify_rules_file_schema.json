@@ -54,6 +54,18 @@
               "type": "number"
             },
             "description": "Allowed physical range of the input physical parameters."
+        },
+        "static_field": {
+          "title": "Output of static field",
+          "description": "Logical to specify writing only at basetime.",
+          "type": "boolean",
+          "default": false
+        },
+        "valid_at_basetime": {
+          "title": "Output at basetime",
+          "description": "Logical to specify if an output is valid at basetime.",
+          "type": "boolean",
+          "default": false
         }
     }
 }

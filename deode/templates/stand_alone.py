@@ -1,7 +1,6 @@
 """NoSchedulerTemplate."""
 
 import os
-from typing import Optional
 
 from deode.config_parser import ConfigParserDefaults, GeneralConstants, ParsedConfig
 from deode.derived_variables import derived_variables, set_times
@@ -14,17 +13,13 @@ from deode.tasks.discover_task import get_task
 logger.enable("deode")
 
 
-def default_main(
-    task: str, config_file: str, deode_home: str, member: Optional[int] = None
-):
+def default_main(task: str, config_file: str, deode_home: str):
     """Execute default main.
 
     Args:
         task (str): Task name
         config_file (str): Config file
         deode_home(str): Deode home path
-        member (Optional[int], optional): Member number for which to run the
-            standalone task. Defaults to None.
     """
     deode_host = DeodeHost().detect_deode_host()
     logger.info("Read config from {}", config_file)
@@ -33,7 +28,14 @@ def default_main(
         json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
         host=deode_host,
     )
-    if member is not None:
+    # Get eps member specific config if a member is specified
+    try:
+        member = int(config["general.member"])
+    except (TypeError, ValueError):
+        logger.debug("MEMBER is not an integer, skipping eps setup for task {}", task)
+    else:
+        # Update config based on member
+        logger.info("Setup EPS")
         config = get_member_config(config, member=member)
 
     config = config.copy(update=set_times(config))
@@ -52,10 +54,8 @@ def default_main(
 
 if __name__ == "__main__":
     logger.info("Running {} v{}", GeneralConstants.PACKAGE_NAME, GeneralConstants.VERSION)
-    member_ = os.environ.get("STAND_ALONE_MEMBER")
     default_main(
         task=os.environ["STAND_ALONE_TASK_NAME"],
         config_file=os.environ["STAND_ALONE_TASK_CONFIG"],
         deode_home=os.environ["STAND_ALONE_DEODE_HOME"],
-        member=int(member_) if member_ is not None else None,
     )

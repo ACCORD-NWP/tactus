@@ -72,6 +72,7 @@ poetry devtools pre-push-checks
 ```
 
 ### Run tests
+Tests will run as if they were on current platform, if recognized. If the platform is not recognized a bogus plaform `pytest` is used as defined under `tests/include`. To force the tests to run as on the `pytest` platform export `DEODE_HOST=pytest` before running pytest. Run the tests with
 ```shell
 pytest
 ```
@@ -228,11 +229,11 @@ This is e.g. relevant, when tagging a new release on the upstream's `master` bra
  3. Implement the fix and push the branch to your fork.
  4. Follow step 3-5 from the section "Creating a New Release" to adjust version numbers and changelog.
  5. 
-    a. If the issue affects the latest release:
+    a. Most likely scenario: If the issue affects the latest release (even if created by a previous release):
 
-     1. Create a pull request to merge the hotfix into the upstream's `master` branch. Follow the instructions in the PR.
+     1. Create a pull request to merge the hotfix into the upstream's `master` branch. Follow the best practices on creating a PR, requesting review and merging as outlined in the PR instructions.
 
-    b. If the issue affects an older release:
+    b. If the issue affects an older release, which needs continuous support:
 
      3. Create a `legacy-support/vX.Y` branch in the upstream repository based on the tag of the older release (e.g. `legacy-support/v0.1`).
      4. Create a pull request to merge the hotfix into the upstream's `legacy-support/vX.Y` branch. Follow the instructions in the PR.
@@ -266,7 +267,7 @@ This is e.g. relevant, when tagging a new release on the upstream's `master` bra
    b. If no:
 
       1. Create a pull request to merge the upstream's `develop` branch into the upstream's `master` branch. Follow the instructions in the PR.
-9. Once the pull request is approved and merged, create a new tag on the `master` branch:
+9. Once the pull request is approved and merged, create a new tag on the `master` branch, while still in your own fork:
     ```bash
     git checkout master
     git pull upstream master
@@ -275,10 +276,13 @@ This is e.g. relevant, when tagging a new release on the upstream's `master` bra
     ```
 10. Create a new release in GitHub
     1.  The release shall be based on the just created tag.
-    2.  The title of the release shall be identical to the tag
-    3.  Copy and paste the changelog items relevant to this release into the description of the release.
-    4.  Set the release as the latest release
-    5.  Publish the release
+    2.  Click the 'Releases' section to the right on the repository's homepage near the bottom.
+    3.  Click 'Draft a new release'.
+    4.  Choose the relevant tag and set target branch to 'master'.
+    5.  Set the name of the tag as the title of the release.
+    6.  Copy and paste the changelog items relevant to this release into the description of the release.
+    7.  Set the release as the latest release.
+    8.  Publish the release.
 
 11. If the release is not a legacy-support hotfix release
     1.  Create a pull request to merge the master branch back into the develop branch. Follow the instructions in the PR.

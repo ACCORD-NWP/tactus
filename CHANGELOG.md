@@ -10,6 +10,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.17.0] - 2025-06-13
+
+### Added
+- Add option to write output only at first output time to creategrib and gribmodify. [\#1156](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1156)(@KristianHMoller)
+- Added FDB paths and expver for LUMI. [\#1181](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1181) (@KristianHMoller)
+
+### Changed
+- Clarify procedure for creating a hotfix [\#1076](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1076)(@KristianHMoller)
+- Updated to using ecCodes 2.41 on ATOS. [\#1187](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1187)(@KristianHMoller)
+- Remove param 231049 from FDB exclusion. [\#1187](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1187)(@KristianHMoller)
+
+### Fixed
+- Avoid generating a task when checking for active impact models. [\#1196](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1196) (@uandrae)
+- Allow FDB archiving without excluding fields. [\#1198](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1198) (@KristianHMoller)
+- Correct fullpos merge method. Removes dependency of merge order. [\#1195](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1195) (@uandrae)
+- Fix c903 climate file for lagged boundary conditions (bdshift). [\#1194](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1194) (@adeckmyn)
+- Fix arome nudging settings to remove spikes in norms of pressure-departure. [\#1180](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1180) (@kastelecn)
+- Synced develop with master [\#1186](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1186) (@mafdmi)
+- Correct time unit when changing productDefinitionTemplateNumber. [\#1156](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1156)(@KristianHMoller)
+- Output surface geopotential only at analysis time. [\#1156](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1156)(@KristianHMoller)
+- Remove duplicated radiation parameters from AQ output. [\#1156](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1156)(@KristianHMoller)
+- Fix GRIB2 encoding for tile attribute properties. [\#1156](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1156)(@KristianHMoller)
+- Fix lagged boundary conditions (bd_shift). [\#1175](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1175) (@adeckmyn)
+- Moved incorrectly placed entries in changelog. [\#1192](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1192)(@KristianHMoller)
+- Corrected paths in config files for running demo cases as an ensemble. [\#1191](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1191) (@mafdmi)
+- Fixed pytest removing data on ATOS. [\#1043](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1043) (@mafdmi)
+- Make config file saved to wrk dir for every task. Removed member env in standalone task. [\1155](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1155) (@mafdmi)
+- Revert test command in tests.yaml workflow. [\#1201](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1201) (@mafdmi)
+
 ## [0.16.1] - 2025-05-23
 
 ### Fixed
