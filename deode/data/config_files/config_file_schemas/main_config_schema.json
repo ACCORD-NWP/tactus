@@ -709,17 +709,31 @@
               "format": "duration"
             },
             "start": {
-              "description": "Start",
+              "description": "Start time, given as a date-time string 'YYYY-MM-DDTHH:mm:ssZ' or duration, e.g. '-P1D' for yesterday, which is relative to the current date at 00Z.",
               "type": "string",
-              "format": "date-time"
+              "oneOf": [
+		  {
+                    "format": "date-time"
+	          },
+		  {
+                    "format": "duration"
+	          }
+              ]
             },
             "end": {
-              "description": "End",
+              "description": "End time if the run covers several cycles. Same format as start",
               "type": "string",
-              "format": "date-time"
+              "oneOf": [
+		  {
+                    "format": "date-time"
+	          },
+		  {
+                    "format": "duration"
+	          }
+              ]
             },
             "list": {
-              "description": "List",
+              "description": "List of dates, placeholder for future needs.",
               "type": "array",
               "items": {
                 "type": "string",

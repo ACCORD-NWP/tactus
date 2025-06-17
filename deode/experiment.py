@@ -39,6 +39,23 @@ class Exp:
         logger.debug("Construct Exp")
         config = config.copy(update=merged_config)
         config = config.copy(update={"git_info": get_git_info()})
+        # Evaluate relative dates
+        with contextlib.suppress(KeyError):
+            config = config.copy(
+                update={
+                    "general": {
+                        "times": {"start": evaluate_date(config["general.times.start"])}
+                    }
+                }
+            )
+            config = config.copy(
+                update={
+                    "general": {
+                        "times": {"end": evaluate_date(config["general.times.end"])}
+                    }
+                }
+            )
+
         self.config = config
 
 
@@ -102,12 +119,6 @@ class ExpFromFiles(Exp):
         if merged_config is None:
             merged_config = {}
         merged_config = ExpFromFiles.deep_update(merged_config, mods)
-
-        # Evaluate relative dates
-        with contextlib.suppress(KeyError):
-            merged_config["general"]["times"]["start"] = evaluate_date(
-                merged_config["general"]["times"]["start"]
-            )
 
         # Remove sections from the input config
         with contextlib.suppress(KeyError):
