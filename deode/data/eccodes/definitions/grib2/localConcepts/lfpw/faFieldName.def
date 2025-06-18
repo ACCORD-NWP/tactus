@@ -2917,8 +2917,6 @@
     discipline = 0 ;
     parameterCategory = 16 ;
     parameterNumber = 4 ;
-    productDefinitionTemplateNumber = 15 ;
-    statisticalProcess = 2 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
