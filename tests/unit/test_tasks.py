@@ -21,11 +21,11 @@ from deode.tasks.collectlogs import CollectLogs
 from deode.tasks.creategrib import GlGrib
 from deode.tasks.discover_task import available_tasks, get_task
 from deode.tasks.e923 import E923
-from deode.tasks.extractsqlite import ExtractSQLite
 from deode.tasks.forecast import FirstGuess, Forecast
 from deode.tasks.gribmodify import AddCalculatedFields
 from deode.tasks.iomerge import IOmerge
 from deode.tasks.marsprep import Marsprep
+from deode.tasks.sqlite import ExtractSQLite, MergeSQLites
 from deode.toolbox import ArchiveError, FileManager, ProviderError
 
 with contextlib.suppress(ModuleNotFoundError):
@@ -95,6 +95,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_task_creategrib_glgrib_execute_method = GlGrib.execute
     original_task_gribmodify_addtotalprec_execute_method = AddCalculatedFields.execute
     original_task_extractsqlite_extractsqlite_execute_method = ExtractSQLite.execute
+    original_task_mergesqlites_mergesqlites_execute_method = MergeSQLites.execute
     original_task_e923_constant_part_method = E923.constant_part
     original_task_e923_monthly_part_method = E923.monthly_part
     original_task_iomerge_iomerge_execute_method = IOmerge.execute
@@ -167,6 +168,11 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         """Suppress some errors so that test continues if they happen."""
         with contextlib.suppress(FileNotFoundError):
             original_task_extractsqlite_extractsqlite_execute_method(*args, **kwargs)
+
+    def new_task_mergesqlites_mergesqlites_execute_method(*args, **kwargs):
+        """Suppress some errors so that test continues if they happen."""
+        with contextlib.suppress(FileNotFoundError):
+            original_task_mergesqlites_mergesqlites_execute_method(*args, **kwargs)
 
     def new_task_mars_batchjob_run_method(*args, **kwargs):  # noqa: ARG001
         """Skip any work."""
@@ -249,8 +255,12 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         new=new_task_gribmodify_addtotalprec_execute_method,
     )
     session_mocker.patch(
-        "deode.tasks.extractsqlite.ExtractSQLite.execute",
+        "deode.tasks.sqlite.ExtractSQLite.execute",
         new=new_task_extractsqlite_extractsqlite_execute_method,
+    )
+    session_mocker.patch(
+        "deode.tasks.sqlite.MergeSQLites.execute",
+        new=new_task_mergesqlites_mergesqlites_execute_method,
     )
     session_mocker.patch(
         "deode.tasks.e923.E923.constant_part", new=new_task_e923_constant_part_method

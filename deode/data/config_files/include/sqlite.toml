@@ -1,4 +1,5 @@
 [extractsqlite]
+  merged_sqlite_path = "@ARCHIVE_ROOT@/merged_sqlite/FCTABLE/@SQLITE_MODEL_NAME@/@YYYY@/@MM@"
   parameter_list = "@DEODE_HOME@/data/sqlite/param_list_@CSC@.json"
   selection = "PT1H"
   sqlite_model_name = "@CASE@"

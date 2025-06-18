@@ -1,7 +1,7 @@
 """Module to create the different parts of the DEODE ecFlow suite."""
 
 from datetime import datetime, timedelta
-from typing import Generator, Optional, Tuple
+from typing import Generator, List, Optional, Tuple
 
 from deode.suites.suite_utils import Cycle, Cycles, lbc_times_generator
 
@@ -1165,6 +1165,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                 )
                 ready_for_cycle = inputdata
 
+            member_families: List[EcflowSuiteFamily] = []
             for member in config["eps.general.members"]:
                 member_family = EcflowSuiteFamily(
                     f"mbr{member:03d}",
@@ -1173,6 +1174,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     variables={"MEMBER": member},
                     ecf_files_remotely=ecf_files_remotely,
                 )
+                member_families.append(member_family)
 
                 mbr_trigger = trigger
                 if config["suite_control.member_specific_static_data"]:
@@ -1248,8 +1250,65 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     external_cycle_cleaning_trigger=postcycle_families.get(member),
                     ecf_files_remotely=ecf_files_remotely,
                 )
+            if (
+                config["suite_control.do_extractsqlite"]
+                and config["suite_control.do_mergesqlite"]
+                and len(config["eps.general.members"]) > 1
+            ):
+                MergeSQLitesFamily(
+                    time_family,
+                    config,
+                    task_settings,
+                    ecf_files,
+                    trigger=member_families,
+                    input_template=input_template,
+                    ecf_files_remotely=ecf_files_remotely,
+                )
 
     @property
     def last_node(self):
         """Return the last family node of self."""
         return self._last_node
+
+
+class MergeSQLitesFamily(EcflowSuiteFamily):
+    """Class for creating the MergeSQLites ecFlow family."""
+
+    def __init__(
+        self,
+        parent,
+        config,
+        task_settings: TaskSettings,
+        ecf_files,
+        trigger=None,
+        input_template=None,
+        ecf_files_remotely=None,
+    ):
+        """Class initialization."""
+        super().__init__(
+            "MergeSQLites",
+            parent,
+            ecf_files,
+            trigger=trigger,
+            ecf_files_remotely=ecf_files_remotely,
+        )
+        merge_sqlites = EcflowSuiteTask(
+            "MergeSQLites",
+            self,
+            config,
+            task_settings,
+            ecf_files,
+            input_template=input_template,
+            trigger=trigger,
+            ecf_files_remotely=ecf_files_remotely,
+        )
+        EcflowSuiteTask(
+            "ArchiveMergedSQLites",
+            self,
+            config,
+            task_settings,
+            ecf_files,
+            trigger=merge_sqlites,
+            input_template=input_template,
+            ecf_files_remotely=ecf_files_remotely,
+        )

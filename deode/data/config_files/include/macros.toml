@@ -36,6 +36,7 @@
     {member = "general.member"},
     {member_str = "general.member_str"},
     {sqlite_path = "extractsqlite.sqlite_path"},
+    {merged_sqlite_path = "extractsqlite.merged_sqlite_path"},
     {sqlite_model_name = "extractsqlite.sqlite_model_name"},
     {surfex_template = "file_templates.surfex.archive"},
   ]

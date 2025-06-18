@@ -189,7 +189,7 @@
       "description": "Settings for control of log collection.",
       "type": "object",
       "properties": {
-	"staticlogs": {
+        "staticlogs": {
           "description": "Collection settings for static tasks",
           "type": "object",
           "properties": {
@@ -207,7 +207,7 @@
             }
           }
         },
-	"hourlogs": {
+        "hourlogs": {
           "description": "Collection settings for time dependent tasks",
           "type": "object",
           "properties": {
@@ -379,6 +379,10 @@
         },
         "do_extractsqlite": {
           "description": "Activates extraction of selected points to SQLite files for verification.",
+          "type": "boolean"
+        },
+        "do_mergesqlite": {
+          "description": "Activates merging of extracted sqlite files. Requires do_extractsqlite to be true, and number of ensemble members to be greater than 1, to have an effect.",
           "type": "boolean"
         },
         "create_static_data": {

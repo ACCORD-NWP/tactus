@@ -14,6 +14,7 @@
   wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
 
 [suite_control]
+  do_mergesqlite = false
   member_specific_mars_prep = true
   member_specific_static_data = true
 

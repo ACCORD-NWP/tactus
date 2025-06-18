@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+### Added
+- Add merging of sqlite files in cases of more than 1 ensemble member. [\#1193](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1193)(@mafdmi)
+
 ### Fixed
 - Specify tagged version 0.1.2 or above of pyfdb in pyproject.toml. [\#1205](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1205)(@KristianHMoller) 
 
