@@ -1203,7 +1203,6 @@ class FDB(ArchiveProvider):
             raise RuntimeError(msg)
         self.check_expver_restrictions(grib_set["expver"])
 
-        grib_set["georef"] = compute_georef(self.config["domain"])
         if self.fetch:
             logger.warning("FDB not yet implemented for {}", resource)
         else:

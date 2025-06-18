@@ -18,7 +18,7 @@ from deode.general_utils import modify_mappings, recursive_dict_deviation
 from deode.host_actions import set_deode_home
 from deode.logs import logger
 from deode.os_utils import resolve_path_relative_to_package
-from deode.toolbox import Platform
+from deode.toolbox import Platform, compute_georef
 
 
 class Exp:
@@ -351,6 +351,20 @@ def case_setup(
             output_file = os.path.join(output_dir, output_file)
 
         logger.info("Save config to: {}", output_file)
+
+    if "fdb" in exp.config:
+        stream = "oper" if len(exp.config["eps.members"]) == 1 else "enfo"
+        exp.config = exp.config.copy(
+            update={
+                "fdb": {
+                    "grib_set": {
+                        "georef": compute_georef(exp.config["domain"]),
+                        "stream": stream,
+                    }
+                }
+            }
+        )
+
     exp.config.save_as(output_file)
 
     return output_file

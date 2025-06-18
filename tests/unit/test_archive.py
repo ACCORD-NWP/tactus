@@ -119,7 +119,7 @@ def test_fdb(monkeypatch, basic_config):
     config = basic_config.copy(
         update={
             "fdb": {
-                "grib_set": {"expver": "test"},
+                "grib_set": {"expver": "test", "georef": "test_georef"},
                 "expver_restrictions": {"test": os.environ["USER"]},
             }
         }
@@ -139,7 +139,7 @@ def test_fdb(monkeypatch, basic_config):
     assert f"grib_filter temp_rules {tmp1}/xtra -o xtra_temp1.grib" == output[0]
     assert output[1].startswith("grib_set -s")
     assert "expver=test" in output[1]
-    assert "georef=u15rxs" in output[1]
+    assert "georef=test_georef" in output[1]
     assert output[1].endswith("xtra_temp1.grib xtra_temp2.grib")
 
 
