@@ -721,7 +721,7 @@ f4_common:
     YI_NL%NREQIN: 1
     YL_NL%NREQIN: 1
   NAMGRIB:
-    NENSFNB: -1
+    NENSFNB: ${cfg:general.member}
   NAMIO_SERV:
     LMSG_FLUSH_CLIENT: false
     LMSG_FLUSH_SERVER: false

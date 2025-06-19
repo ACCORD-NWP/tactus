@@ -12,13 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add merging of sqlite files in cases of more than 1 ensemble member. [\#1193](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1193)(@mafdmi)
-<<<<<<< bugfix/product15
 - Add georef-calculation and determination of stream-type to deode case command [\#1213](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1213)(@johtoblan)
-=======
 - Introduce first CSC dependent EPS settings. [\#1217](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1217)(@uandrae) 
->>>>>>> develop
+- Add georef-calculation and determination of stream-type to deode case command [\#1213](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1213)(@johtoblan)
 
 ### Fixed
+- Set ensemble member number in namelist by default. [\#1216](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1216)(@uandrae) 
 - Specify tagged version 0.1.2 or above of pyfdb in pyproject.toml. [\#1205](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1205)(@KristianHMoller) 
 - Fix grib2 encodings of radar product to allow ensemble production. [\#1219](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1219) (@sbnielsen)
 

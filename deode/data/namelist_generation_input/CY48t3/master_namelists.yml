@@ -1183,6 +1183,8 @@ f4_common:
     YL_NL%NREQIN: 0
     YR_NL%NREQIN: 0
     YS_NL%NREQIN: 0
+  NAMGRIB:
+    NENSFNB: ${cfg:general.member}
   NAMINI:
     LDFI: false
   NAMPAR0:
