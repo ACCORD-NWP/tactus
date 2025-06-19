@@ -24,6 +24,7 @@ class InitialConditions(object):
         self.starttime = as_datetime(self.config["general.times.start"])
         self.cycle_length = as_timedelta(self.config["general.times.cycle_length"])
         self.archive = self.config["system.archive"]
+        self.intp_bddir_sfx = self.config.get("system.intp_bddir_sfx", self.archive)
         self.file_templates = self.config["file_templates"].dict()
         self.surfex = self.config["general.surfex"]
         self.mode = self.config["suite_control.mode"]
@@ -87,7 +88,7 @@ class InitialConditions(object):
                 f"{self.intp_bddir}/ELSCF@CNMEXP@ALBC000"
             )
             self.source_sfx = self.platform.substitute(
-                f"{self.archive}/ICMSH@CNMEXP@INIT.sfx"
+                f"{self.intp_bddir_sfx}/ICMSH@CNMEXP@INIT.sfx"
             )
 
         else:

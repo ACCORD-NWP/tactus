@@ -1,0 +1,10 @@
+[suite_control]
+  create_static_data = false
+  do_marsprep = false
+  interpolate_boundaries = false
+
+[system]
+  climdir = "@REFERENCE_CASE@/climate/@DOMAIN@"
+  intp_bddir = "@REFERENCE_CASE@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
+  intp_bddir_sfx = "@REFERENCE_CASE@/archive/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_case = "@CASEDIR@/../@CASE@"
