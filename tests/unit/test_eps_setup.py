@@ -1,6 +1,7 @@
 """Unit tests for classes and functions in eps_setup.py."""
 
 import random
+from collections import deque
 from types import GeneratorType
 from typing import Dict
 from unittest.mock import Mock, patch
@@ -17,6 +18,7 @@ from deode.eps.eps_setup import (
     check_expandable_keys,
     generate_member_settings,
     generate_values,
+    get_expandable_keys,
     get_member_config,
     instantiate_generators,
 )
@@ -436,6 +438,79 @@ class TestCheckExpandableKeys:
         """Test that check_expandable_keys raises exception on invalid keys."""
         with pytest.raises(TypeError, match=r".*must be strings.*"):
             check_expandable_keys({None: 1, 123: 2})
+
+
+class TestGetExpandableKeys:
+    """Unit tests for the get_expandable_keys function."""
+
+    @staticmethod
+    def depth(d):
+        queue = deque([(id(d), d, 1)])
+        memo = set()
+        while queue:
+            id_, o, level = queue.popleft()
+            if id_ in memo:
+                continue
+            memo.add(id_)
+            if isinstance(o, dict):
+                queue += ((id(v), v, level + 1) for v in o.values())
+        return level
+
+    @pytest.fixture()
+    def mock_check_expandable_keys(self, mocker):
+        return mocker.patch("deode.eps.eps_setup.check_expandable_keys")
+
+    def test_empty_dict(self, mock_check_expandable_keys):
+        """Test that get_expandable_keys returns an empty dict for an empty dictionary."""
+        mock_check_expandable_keys.return_value = []
+        result = get_expandable_keys({})
+        assert result == {}
+
+    def test_no_expandable_keys(self, mock_check_expandable_keys):
+        """Test that get_expandable_keys returns an empty dict when no expandable keys are found."""
+        mock_check_expandable_keys.return_value = [False, False, False]
+        result = get_expandable_keys({"test": [1, 2, 3]})
+        assert result == {}
+
+    def test_some_expandable_keys(self, mock_check_expandable_keys):
+        """Test that get_expandable_keys returns a dict with expandable keys."""
+        test_dict = {"a": {"1:4": 1, "4": 2}, "b": 3}
+
+        def side_effect(mapping):
+            # Determine the recursion level based on the depth of the mapping
+            depth_ = self.depth(mapping)
+            if depth_ == 2:
+                return [True, True]  # Covers the '"a": {"1:4": 1, "4": 2}' part
+            if depth_ == 1:
+                return [False]  # Covers the '"b": 3' part
+            return []
+
+        # # Set the side effect for the mock
+        mock_check_expandable_keys.side_effect = side_effect
+        result = get_expandable_keys(test_dict)
+        assert result == {"a": None}
+
+    def test_recursive_dict(self, mock_check_expandable_keys):
+        """Test that get_expandable_keys works recursively."""
+        test_dict = {"a": {"b": {"1:4": 1, "4": 2}, "c": 2}, "d": 3}
+
+        def side_effect(mapping):
+            # Determine the recursion level based on the depth of the mapping
+            depth_ = self.depth(mapping)
+            if depth_ == 3:
+                return [
+                    False,
+                    False,
+                ]  # Covers the '"a": {"b": {"1:4": 1, "4": 2}, "c": 2}' part
+            if depth_ == 2:
+                return [True, True]  # Covers the '"b": {"1:4": 1, "4": 2}' part
+            if depth_ == 1:
+                return [False]  # Covers the '"d": 3' part
+            return []
+
+        mock_check_expandable_keys.side_effect = side_effect
+        result = get_expandable_keys(test_dict)
+        assert result == {"a": {"b": None}}
 
 
 class TestGetMemberConfig:
