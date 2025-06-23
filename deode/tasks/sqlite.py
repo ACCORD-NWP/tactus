@@ -13,6 +13,7 @@ from grib2sqlite import parse_grib_file
 from deode.datetime_utils import as_datetime, oi2dt_list
 from deode.logs import LogDefaults, logger
 from deode.tasks.base import Task
+from deode.eps.eps_setup import get_member_config
 
 
 class ExtractSQLite(Task):
@@ -116,7 +117,6 @@ class MergeSQLites(Task):
             self.config["extractsqlite.sqlite_model_name"]
         )
         paramfile = self.platform.substitute(self.config["extractsqlite.parameter_list"])
-        member_str_template = self.platform.substitute(self.config["general.member_str"])
         if not os.path.isfile(paramfile):
             raise FileNotFoundError(f"Missing parameter file: {paramfile}")
 
@@ -133,12 +133,9 @@ class MergeSQLites(Task):
             # Prepare sqlite file paths for every member
             sqlite_file_dict: Dict[int, str] = {}
             for member in self.config["eps.general.members"]:
-                member_str = f"mbr{member:03d}"
-                member_path_template = self.platform.substitute(
-                    self.config["extractsqlite.sqlite_path"]
-                )
-                member_path = member_path_template.replace(
-                    member_str_template, member_str
+                member_config = get_member_config(self.config, member) 
+                member_path = self.platform.substitute(
+                    member_config["extractsqlite.sqlite_path"]
                 )
                 full_sqlite_path = Path(member_path) / sqlite_file
                 sqlite_file_dict[member] = str(full_sqlite_path)
