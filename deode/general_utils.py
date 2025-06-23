@@ -262,3 +262,23 @@ def merge_dicts(dict1: dict, dict2: dict, overwrite: bool = False) -> dict:
             new_dict[key2] = val2
 
     return new_dict
+
+
+def recursive_delete_keys(mapping: Dict[str, Any], keys_dict: Dict[str, bool]):
+    """Recursively delete keys from a mapping based on a dictionary of keys to delete.
+
+    Keys are deleted in-place on the `mapping` object.
+
+    Args:
+        mapping: The mapping to delete keys from.
+        keys_dict: The dictionary of keys to delete.
+    """
+    for key, value in keys_dict.items():
+        if key in mapping:
+            if isinstance(value, dict):
+                recursive_delete_keys(mapping[key], value)
+                # Make sure to delete empty dicts
+                if not mapping[key]:
+                    del mapping[key]
+            else:
+                del mapping[key]

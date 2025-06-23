@@ -9,5 +9,5 @@
   bdmember = [0, 1, 2]
 
 [eps.member_settings.namelist_update.master.forecast.namspp]
-  iezdiag_pos = {0 = 1, "1:" = -1}
-  lspp = {0 = false, "1:" = true}
+  iezdiag_pos = {"1:" = -1}
+  lspp = {"1:" = true}

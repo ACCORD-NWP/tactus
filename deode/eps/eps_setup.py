@@ -26,6 +26,7 @@ from deode.general_utils import (
     expand_dict_key_slice,
     merge_dicts,
     modify_mappings,
+    recursive_delete_keys,
     value_from_any_generator,
 )
 from deode.logs import logger
@@ -328,6 +329,35 @@ def check_expandable_keys(mapping: Mapping[str, Any]) -> List[bool]:
     return expandable_keys
 
 
+def get_expandable_keys(
+    mapping: Mapping[str, Any],
+) -> dict[str, Any | bool]:
+    """Recursively get expandable keys from a mapping.
+
+    By "expandable keys" we mean either integers or string slices, where string
+    slices are strings of format "start:end:step", "start:end" or "start:".
+
+    Args:
+        mapping: The mapping to get expandable keys from.
+
+    Returns:
+        A list of booleans indicating if the keys are expandable.
+    """
+    expandable_keys_dict = {}
+    for mapping_key, mapping_value in mapping.items():
+        if isinstance(mapping_value, dict):
+            expandable_keys = check_expandable_keys(mapping_value)
+            if not all(expandable_keys):
+                keys = get_expandable_keys(mapping_value)
+                if keys:
+                    expandable_keys_dict[mapping_key] = keys
+            else:
+                # Only keys are relevant, so just set None value
+                expandable_keys_dict[mapping_key] = None
+
+    return expandable_keys_dict
+
+
 def get_member_config(config: ParsedConfig, member: int) -> ParsedConfig:
     """Get the member specific config from a member.
 
@@ -348,9 +378,14 @@ def get_member_config(config: ParsedConfig, member: int) -> ParsedConfig:
     """
     # Get a clean dict of the default member settings. Needed to be able
     # to merge the default settings with the specific member settings.
-    default_member_settings = modify_mappings(
+    default_member_settings: dict = modify_mappings(
         config["eps.member_settings"], operator=dict
     )
+    # Determine which keys are expandable and delete them to avoid that a member
+    # specific setting defaults to an expandable dict if no member specific
+    # setting is present.
+    expandable_keys = get_expandable_keys(default_member_settings)
+    recursive_delete_keys(default_member_settings, expandable_keys)
 
     # Get a clean dict of the member settings for the specific member.
     specific_member_settings = {}
