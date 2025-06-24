@@ -14,6 +14,7 @@ from deode.datetime_utils import as_datetime, oi2dt_list
 from deode.eps.eps_setup import get_member_config
 from deode.logs import LogDefaults, logger
 from deode.tasks.base import Task
+from deode.toolbox import Platform
 
 
 class ExtractSQLite(Task):
@@ -134,7 +135,7 @@ class MergeSQLites(Task):
             sqlite_file_dict: Dict[int, str] = {}
             for member in self.config["eps.general.members"]:
                 member_config = get_member_config(self.config, member)
-                member_path = self.platform.substitute(
+                member_path = Platform(member_config).substitute(
                     member_config["extractsqlite.sqlite_path"]
                 )
                 full_sqlite_path = Path(member_path) / sqlite_file
