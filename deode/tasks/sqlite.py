@@ -11,9 +11,9 @@ from grib2sqlite import logger as sqlite_logger
 from grib2sqlite import parse_grib_file
 
 from deode.datetime_utils import as_datetime, oi2dt_list
+from deode.eps.eps_setup import get_member_config
 from deode.logs import LogDefaults, logger
 from deode.tasks.base import Task
-from deode.eps.eps_setup import get_member_config
 
 
 class ExtractSQLite(Task):
