@@ -133,7 +133,7 @@ class MergeSQLites(Task):
             # Prepare sqlite file paths for every member
             sqlite_file_dict: Dict[int, str] = {}
             for member in self.config["eps.general.members"]:
-                member_config = get_member_config(self.config, member) 
+                member_config = get_member_config(self.config, member)
                 member_path = self.platform.substitute(
                     member_config["extractsqlite.sqlite_path"]
                 )
