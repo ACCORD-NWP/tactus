@@ -11,8 +11,10 @@ from grib2sqlite import logger as sqlite_logger
 from grib2sqlite import parse_grib_file
 
 from deode.datetime_utils import as_datetime, oi2dt_list
+from deode.eps.eps_setup import get_member_config
 from deode.logs import LogDefaults, logger
 from deode.tasks.base import Task
+from deode.toolbox import Platform
 
 
 class ExtractSQLite(Task):
@@ -130,16 +132,14 @@ class MergeSQLites(Task):
             sqlite_file = Path(self.platform.substitute(sqlite_param_template))
             merged_sqlite_file_path = merged_sqlite_path / sqlite_file
             # Prepare sqlite file paths for every member
-            sqlite_file_dict: Dict[int, str] = {
-                member: str(
-                    Path(
-                        self.platform.substitute(self.config["extractsqlite.sqlite_path"])
-                    )
-                    / sqlite_file
+            sqlite_file_dict: Dict[int, str] = {}
+            for member in self.config["eps.general.members"]:
+                member_config = get_member_config(self.config, member)
+                member_path = Platform(member_config).substitute(
+                    member_config["extractsqlite.sqlite_path"]
                 )
-                for member in self.config["eps.general.members"]
-            }
-
+                full_sqlite_path = Path(member_path) / sqlite_file
+                sqlite_file_dict[member] = str(full_sqlite_path)
             logger.info(
                 f"Files to merge for parameter {harp_param} are:\n"
                 + json.dumps(sqlite_file_dict, indent=4)
