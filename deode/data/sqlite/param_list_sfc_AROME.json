@@ -19,40 +19,6 @@
   "grib_id":{ "shortName":"2t", "productDefinitionTemplateNumber":"8", "typeOfStatisticalProcessing":"min"}
 },
 
-{ "harp_param":"T",
-  "method":"bilin",
-  "grib_id":{"shortName":"t", "productDefinitionTemplateNumber":"0",
-             "typeOfLevel":"isobaricInhPa",
-             "level":[ 50, 100, 150, 200, 250, 300, 400, 500, 700, 850, 925, 1000]}
-},
-
-{ "harp_param":"RH",
-  "method":"bilin",
-  "grib_id":{"shortName":"r", "productDefinitionTemplateNumber":"0",
-             "typeOfLevel":"isobaricInhPa",
-             "level":[ 50, 100, 150, 200, 250, 300, 400, 500, 700, 850, 925, 1000]}
-},
-
-{ "harp_param" : "S",
-  "method" : "bilin",
-  "grib_id" : [ {"shortName":"u"}, {"shortName":"v"} ],
-  "common":{
-             "productDefinitionTemplateNumber":"0",
-             "typeOfLevel":"isobaricInhPa",
-             "level":[ 50, 100, 150, 200, 250, 300, 400, 500, 700, 850, 925, 1000]},
-  "function":"vector_norm"
-},
-
-{ "harp_param" : "D",
-  "method" : "bilin",
-  "grib_id" : [ {"shortName":"u"}, {"shortName":"v"} ],
-  "common":{
-             "productDefinitionTemplateNumber":"0",
-             "typeOfLevel":"isobaricInhPa",
-             "level":[ 50, 100, 150, 200, 250, 300, 400, 500, 700, 850, 925, 1000]},
-  "function":"vector_angle"
-},
-
 { "harp_param" : "S10m",
   "method" : "bilin",
   "grib_id" : [ {"shortName":"10u"}, {"shortName":"10v"} ],
@@ -88,10 +54,9 @@
 
 { "harp_param":"Pcp",
   "method":"nearest",
-  "grib_id":[ {"parameterNumber":"55"},
-              {"parameterNumber":"56"},
-              {"parameterNumber":"76"},
-              {"parameterNumber":"77"}
+  "grib_id":[ {"parameterNumber":"65"},
+              {"parameterNumber":"66"},
+              {"parameterNumber":"75"}
   ],
   "common":{ "productDefinitionTemplateNumber":"8",
              "typeOfStatisticalProcessing":"accum",

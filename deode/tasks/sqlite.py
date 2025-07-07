@@ -49,26 +49,41 @@ class ExtractSQLite(Task):
         self.model_name = self.platform.substitute(
             self.config["extractsqlite.sqlite_model_name"]
         )
-        self.stationfile = self.platform.substitute(
-            self.config["extractsqlite.station_list"]
+        self.stationfile_sfc = self.platform.substitute(
+            self.config["extractsqlite.station_list_sfc"]
         )
-        if not os.path.isfile(self.stationfile):
-            raise FileNotFoundError(f" missing {self.stationfile}")
-        logger.info("Station list: {}", self.stationfile)
-        paramfile = self.platform.substitute(self.config["extractsqlite.parameter_list"])
-        if not os.path.isfile(paramfile):
-            raise FileNotFoundError(f" missing {paramfile}")
-        logger.info("Parameter list: {}", paramfile)
-        with open(paramfile, "r", encoding="utf-8") as pf:
-            self.parameter_list = json.load(pf)
+        if not os.path.isfile(self.stationfile_sfc):
+            raise FileNotFoundError(f" missing {self.stationfile_sfc}")
+        logger.info("Station list: {}", self.stationfile_sfc)
+        self.stationfile_ua = self.platform.substitute(
+            self.config["extractsqlite.station_list_ua"]
+        )
+        if not os.path.isfile(self.stationfile_ua):
+            raise FileNotFoundError(f" missing {self.stationfile_ua}")
+        logger.info("Station list: {}", self.stationfile_ua)
+        paramfile_sfc = self.platform.substitute(self.config["extractsqlite.parameter_list_sfc"])
+        if not os.path.isfile(paramfile_sfc):
+            raise FileNotFoundError(f" missing {paramfile_sfc}")
+        logger.info("Surface parameter list: {}", paramfile_sfc)
+        with open(paramfile_sfc, "r", encoding="utf-8") as pf:
+            self.parameter_list_sfc = json.load(pf)
+        paramfile_ua = self.platform.substitute(self.config["extractsqlite.parameter_list_ua"])
+        if not os.path.isfile(paramfile_ua):
+            raise FileNotFoundError(f" missing {paramfile_ua}")
+        logger.info("Upper air parameter list: {}", paramfile_ua)
+        with open(paramfile_ua, "r", encoding="utf-8") as pf:
+            self.parameter_list_ua = json.load(pf)
         self.output_settings = self.config["general.output_settings"]
 
     def execute(self):
         """Execute ExtractSQLite on all output files."""
         # split into "combined" and "direct" parameters
         # loop over lead times
+        # Also split extraction between UA and SFC parameters
+        # with different station lists.
         dt_list = oi2dt_list(self.infile_dt, self.forecast_range)
-        station_list = pd.read_csv(self.stationfile, skipinitialspace=True)
+        station_list_sfc = pd.read_csv(self.stationfile_sfc, skipinitialspace=True)
+        station_list_ua = pd.read_csv(self.stationfile_ua, skipinitialspace=True)
         for dt in dt_list:
             infile = self.platform.substitute(
                 os.path.join(self.archive, self.infile_template),
@@ -82,8 +97,16 @@ class ExtractSQLite(Task):
 
             parse_grib_file(
                 infile=infile,
-                param_list=self.parameter_list,
-                station_list=station_list,
+                param_list=self.parameter_list_sfc,
+                station_list=station_list_sfc,
+                sqlite_template=self.sqlite_path + "/" + self.sqlite_template,
+                model_name=self.model_name,
+                weights=None,
+            )
+            parse_grib_file(
+                infile=infile,
+                param_list=self.parameter_list_ua,
+                station_list=station_list_ua,
                 sqlite_template=self.sqlite_path + "/" + self.sqlite_template,
                 model_name=self.model_name,
                 weights=None,
