@@ -8,4 +8,3 @@
   sqlite_template = "FCTABLE_{PP}_{YYYY}{MM}_{HH}.sqlite"
   station_list_sfc = "@DEODE_HOME@/data/sqlite/station_list_default.csv"
   station_list_ua = "@DEODE_HOME@/data/sqlite/temp_list_default.csv"
-
