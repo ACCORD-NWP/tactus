@@ -17,16 +17,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduce first CSC dependent EPS settings. [\#1217](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1217)(@uandrae) 
 
 ### Fixed
-- Set ensemble member number in namelist by default. [\#1216](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1216)(@uandrae) 
+- Correct per member generation of input file for prep. [\#1214](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1214)(@uandrae) 
 - Specify tagged version 0.1.2 or above of pyfdb in pyproject.toml. [\#1205](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1205)(@KristianHMoller) 
+- Allow using duration notation for both general.times.start and end. [\#1209](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1209) (@uandrae)
+- Set ensemble member number in namelist by default. [\#1216](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1216)(@uandrae) 
 - Fix grib2 encodings of radar product to allow ensemble production. [\#1219](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1219) (@sbnielsen)
 - Fixed issue with the user having to specify all members when using the dict syntax in eps configuration. [\#1220](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1220)(@mafdmi)
 - Fix bug in creation of merged sqlite files which contained member 0 in all data columns [\#1223](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1223])(@svianaj)
 
 ## [0.17.0] - 2025-06-13
-
-### Fixed
-- Allow using duration notation for both general.times.start and end. [\#1209](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1209) (@uandrae)
 
 ### Added
 - Add option to write output only at first output time to creategrib and gribmodify. [\#1156](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1156)(@KristianHMoller)

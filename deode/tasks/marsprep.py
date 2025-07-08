@@ -352,23 +352,41 @@ class Marsprep(Task):
             )
             mars_file_check_list[member] = bddir_sfx / prep_filename
 
-        if all(
-            os.path.exists(mars_file_check)
-            for mars_file_check in mars_file_check_list.values()
-        ):
-            logger.info("Prep files already exists as {}", mars_file_check_list)
+        bdmember_fetch_list = [
+            bdmember
+            for bdmember, mars_file_check in mars_file_check_list.items()
+            if not os.path.exists(mars_file_check)
+        ]
+        if not bdmember_fetch_list:
+            logger.info("Prep files already exists as:")
+            for bdmember, filename in mars_file_check_list.items():
+                logger.info(" {}: {}", bdmember, filename)
         elif self.split_mars and not self.prep_step:
             logger.debug("No need Prep file")
         else:
-            self.get_lat_lon_data()
-            self.get_geopotential_latlon()
+            for bdmember in self.bdmembers:
+                if bdmember not in bdmember_fetch_list:
+                    logger.info(
+                        "Prep file member={} already exists as {}",
+                        bdmember,
+                        mars_file_check_list[member],
+                    )
+                else:
+                    logger.info(
+                        "Create prep file member={} as {}",
+                        bdmember,
+                        mars_file_check_list[bdmember],
+                    )
+
+            self.get_lat_lon_data(bdmember_fetch_list)
+            self.get_geopotential_latlon(self.bdmembers[0], bdmember_fetch_list)
             # Get the file list to join
-            for member in self.bdmembers:
-                prep_pattern = f"mars_latlon*_{member or 0}"
+            for bdmember in bdmember_fetch_list:
+                prep_pattern = f"mars_latlon*_{bdmember or 0}"
                 logger.info("prep_pattern: {}", prep_pattern)
                 filenames = list_files_join(self.wdir, prep_pattern)
                 logger.info(filenames)
-                prep_filename = mars_file_check_list[member]
+                prep_filename = mars_file_check_list[bdmember]
                 _prep_filename = os.path.basename(prep_filename)
                 with open(_prep_filename, "wb") as output_file:
                     for filename in filenames:
@@ -377,8 +395,13 @@ class Marsprep(Task):
                 shutil.move(_prep_filename, prep_filename)
                 logger.info("Created {}", prep_filename)
 
-    def get_lat_lon_data(self):
-        """Get Lat/Lon data."""
+    def get_lat_lon_data(self, bdmember_list: List[int]):
+        """Get Lat/Lon data.
+
+        Args:
+            bdmember_list (List[int]): Members to fetch data for
+
+        """
         prefetch = False
 
         param = (
@@ -387,7 +410,7 @@ class Marsprep(Task):
             + get_value_from_dict(self.mars["GG_sea"], self.init_date_str)
         )
 
-        for member in self.bdmembers:
+        for member in bdmember_list:
             data_type = self.mars["type_AN"] if member == 0 else self.mars["type_FC"]
             self._build_and_run_request(
                 req_file_name="latlonGG.req",
@@ -404,15 +427,19 @@ class Marsprep(Task):
                 write_method="retrieve" if self.mars_version == 6 else "read",
             )
 
-    def get_geopotential_latlon(self):
-        """Get geopotential in lat/lon."""
+    def get_geopotential_latlon(self, first_member, bdmember_list):
+        """Get geopotential in lat/lon.
+
+        Args:
+            first_member (int): First bdmember in ensemble
+            bdmember_list (List[int]): Members to fetch data for
+
+        """
         prefetch = False
         # Retrieve for Surface Geopotential in lat/lon
         param = get_value_from_dict(self.mars["SHZ"], self.init_date_str)
         data_type = get_value_from_dict(self.mars["GGZ_type"], self.init_date_str)
         lev_type = get_value_from_dict(self.mars["Zlev_type"], self.init_date_str)
-
-        first_member = self.bdmembers[0]
 
         if self.use_static_gg_oro:
             self.fmanager.input(self.gg_oro_source, "gg_oro.Z")
@@ -421,6 +448,7 @@ class Marsprep(Task):
             # Default to ICMSH_0+* if member is None
             z_source = f'"{self.prepdir}/ICMSH_{first_member or 0}+{self.steps[0]}"'
         # NOTE: for z, the step is always 0, while steps[0] may be shifted!
+        target = f"mars_latlonZ_{first_member or 0}"
         self._build_and_run_request(
             req_file_name="latlonz.req",
             data_type=data_type,
@@ -428,16 +456,16 @@ class Marsprep(Task):
             param=param,
             steps=[0],
             members=[first_member],
-            target=f"mars_latlonZ_{first_member or 0}",
+            target=target,
             prefetch=prefetch,
             specify_domain=True,
             source=z_source,
             write_method="retrieve" if self.mars_version == 6 else "read",
         )
-        for member in self.bdmembers[1:]:
-            self.fmanager.input(
-                f"mars_latlonZ_{first_member or 0}", f"mars_latlonZ_{member}"
-            )
+        for member in bdmember_list:
+            if member == first_member:
+                continue
+            self.fmanager.input(target, f"mars_latlonZ_{member}")
 
     def get_sh_data(self, tag: str, steps: List[int], members_dict: Dict[str, List[int]]):
         """Get SH data."""
