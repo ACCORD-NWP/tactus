@@ -61,13 +61,17 @@ class ExtractSQLite(Task):
         if not os.path.isfile(self.stationfile_ua):
             raise FileNotFoundError(f" missing {self.stationfile_ua}")
         logger.info("Station list: {}", self.stationfile_ua)
-        paramfile_sfc = self.platform.substitute(self.config["extractsqlite.parameter_list_sfc"])
+        paramfile_sfc = self.platform.substitute(
+            self.config["extractsqlite.parameter_list_sfc"]
+        )
         if not os.path.isfile(paramfile_sfc):
             raise FileNotFoundError(f" missing {paramfile_sfc}")
         logger.info("Surface parameter list: {}", paramfile_sfc)
         with open(paramfile_sfc, "r", encoding="utf-8") as pf:
             self.parameter_list_sfc = json.load(pf)
-        paramfile_ua = self.platform.substitute(self.config["extractsqlite.parameter_list_ua"])
+        paramfile_ua = self.platform.substitute(
+            self.config["extractsqlite.parameter_list_ua"]
+        )
         if not os.path.isfile(paramfile_ua):
             raise FileNotFoundError(f" missing {paramfile_ua}")
         logger.info("Upper air parameter list: {}", paramfile_ua)
