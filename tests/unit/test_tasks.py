@@ -23,6 +23,7 @@ from deode.tasks.discover_task import available_tasks, get_task
 from deode.tasks.e923 import E923
 from deode.tasks.forecast import FirstGuess, Forecast
 from deode.tasks.gribmodify import AddCalculatedFields
+from deode.tasks.interpolsstsic import InterpolSstSic
 from deode.tasks.iomerge import IOmerge
 from deode.tasks.marsprep import Marsprep
 from deode.tasks.sqlite import ExtractSQLite, MergeSQLites
@@ -98,6 +99,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_task_mergesqlites_mergesqlites_execute_method = MergeSQLites.execute
     original_task_e923_constant_part_method = E923.constant_part
     original_task_e923_monthly_part_method = E923.monthly_part
+    original_task_interpolsstsic_interpolsstsic_execute_method = InterpolSstSic.execute
     original_task_iomerge_iomerge_execute_method = IOmerge.execute
     original_task_marsprep_run_method = Marsprep.run
     original_task_collectlogs_collectlogs_execute_method = CollectLogs.execute
@@ -194,6 +196,9 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         Path("Const.Clim.01").touch()
         original_task_e923_monthly_part_method(self, constant_file)
 
+    def new_task_interpolsstsic_interpolsstsic_execute_method(*args, **kwargs):
+        original_task_interpolsstsic_interpolsstsic_execute_method(*args, **kwargs)
+
     def new_task_iomerge_iomerge_execute_method(self):
         """Create needed file `ECHIS` before running the original method."""
         file1 = self.wdir + "/../Forecast/io_serv.000001.d/ECHIS"
@@ -267,6 +272,10 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     )
     session_mocker.patch(
         "deode.tasks.e923.E923.monthly_part", new=new_task_e923_monthly_part_method
+    )
+    session_mocker.patch(
+        "deode.tasks.interpolsstsic.InterpolSstSic.execute",
+        new=new_task_interpolsstsic_interpolsstsic_execute_method,
     )
     session_mocker.patch(
         "deode.tasks.iomerge.IOmerge.execute",

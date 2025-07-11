@@ -8,6 +8,7 @@
   initfile_sfx = "@SCRATCH@/deode/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
   keep_workdirs = true
   surfex = true
+  upd_sst_sic = false
 
 [general.namelist]
   nrazts = "PT1H"
@@ -29,6 +30,8 @@
   bdshift = "PT0H"
   humi_gp = true
   max_interpolation_tasks = 10
+  sst_is_lsm = "auto"
+  sstmodels = ["IFS"]
 
 [boundaries.ifs]
   bdmember = 0
@@ -104,6 +107,7 @@
   do_archiving = true
   do_cleaning = true
   do_extractsqlite = true
+  do_interpolsstsic = false
   do_marsprep = true
   do_mergesqlite = true
   do_pgd = true
@@ -118,10 +122,13 @@
   bdclimdir = "@FIXED_BDCLIMDIR@"
   bddir = "@INTP_BDDIR@"
   bddir_sfx = "@MARSDIR@"
+  bddir_sst = "@MARSDIR@"
   bdfile_sfx_template = "ECSFCSFX@DOMAIN@_@BDMEMBER@+@LLL@"
+  bdfile_sst_template = "ECSFCSST@DOMAIN@_@BDMEMBER@+@NNN@"
   bdfile_template = "ELSCF@CNMEXP@ALBC@NNN@"
   casedir = "@SCRATCH@/deode/@CASE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@"
   logs = "@ARCHIVE_ROOT@/logs"
   marsdir = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"
+  sstfile_template = "EXT_SST_SIC@NNN@"

@@ -105,6 +105,19 @@ class Forecast(Task):
             infile = os.path.basename(ifile)
             self.fmanager.input(ifile, infile)
 
+    def sst_sic_input(self, intp_bddir):
+        """Link SST & SIC input file to forecast directory."""
+        current_datetime = self.basetime
+        end_datetime = self.basetime + as_timedelta(self.forecast_range)
+        i = 0
+        while current_datetime <= end_datetime:
+            source = self.platform.substitute(
+                self.config["system.sstfile_template"], bd_index=i
+            )
+            self.fmanager.input(f"{intp_bddir}/{source}", source)
+            current_datetime += self.bdint
+            i += 1
+
     def accelerator_device_input(self):
         """Copy the input files for GPU execution.
 
@@ -216,14 +229,17 @@ class Forecast(Task):
         # Link the boundary files, use initial file as first boundary file
         self.fmanager.input(initfile, f"ELSCF{self.cnmexp}ALBC000")
 
-        cdtg = self.basetime + self.bdint
-        dtgend = self.basetime + as_timedelta(self.forecast_range)
+        current_datetime = self.basetime + self.bdint
+        end_datetime = self.basetime + as_timedelta(self.forecast_range)
         i = 1
-        while cdtg <= dtgend:
+        while current_datetime <= end_datetime:
             source = f"ELSCF{self.cnmexp}ALBC{i:03d}"
             self.fmanager.input(f"{intp_bddir}/{source}", source)
-            cdtg += self.bdint
+            current_datetime += self.bdint
             i += 1
+
+        if self.config.get("general.upd_sst_sic", False):
+            self.sst_sic_input(intp_bddir)
 
         if self.accelerator_device:
             logger.info("Processing accelerator_device section")

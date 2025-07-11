@@ -372,13 +372,16 @@ class Platform:
 
         return pattern
 
-    def substitute(self, pattern, basetime=None, validtime=None, keyval=None):
+    def substitute(
+        self, pattern, basetime=None, validtime=None, bd_index=None, keyval=None
+    ):
         """Substitute pattern.
 
         Args:
             pattern (str): _description_
             basetime (datetime.datetime, optional): Base time. Defaults to None.
             validtime (datetime.datetime, optional): Valid time. Defaults to None.
+            bd_index (int, optional): Boundary file index. Defaults to None
             keyval (str): Key associated with pattern
 
         Returns:
@@ -411,7 +414,7 @@ class Platform:
                 val = self.macros[sub_pattern.upper()]
                 try:
                     if val.count("@") > 0:
-                        val = self.substitute(val, basetime, validtime, keyval)
+                        val = self.substitute(val, basetime, validtime, bd_index, keyval)
                 except AttributeError:
                     pass
 
@@ -421,7 +424,8 @@ class Platform:
 
         # LBC number handling
         try:
-            bd_index = int(self.config["task.args.bd_index"])
+            if bd_index is None:
+                bd_index = int(self.config["task.args.bd_index"])
             pattern = self.sub_value(pattern, "NNN", f"{bd_index:03d}")
         except KeyError:
             pass

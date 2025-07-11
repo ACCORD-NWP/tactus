@@ -41,10 +41,6 @@ class C903(Task):
 
         self.bd_index = self.config["task.args.bd_index"]
         self.bd_time = self.config["task.args.bd_time"]
-        self.forecast_range = self.config["general.times.forecast_range"]
-
-        self.bdfile_template = self.config["system.bdfile_template"]
-        self.intp_bddir = self.platform.get_system_value("intp_bddir")
 
         self.nlgen = NamelistGenerator(self.config, "master")
         self.master = self.get_binary("MASTERODB")
@@ -99,6 +95,9 @@ class C903(Task):
         batch.run(self.master)
 
         # Store result
-        target = f"{self.intp_bddir}/{self.bdfile_template}"
+        bdfile_template = self.config["system.bdfile_template"]
+        intp_bddir = self.platform.get_system_value("intp_bddir")
+
+        target = f"{intp_bddir}/{bdfile_template}"
         self.fmanager.output("ELSCFMARS@FPDOMAIN@+0000", target)
         self.archive_logs(["fort.4", "namelist_c903_domain", "NODE.001_01"])
