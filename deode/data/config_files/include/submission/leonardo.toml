@@ -72,8 +72,8 @@
   UCX_LOG_LEVEL = "error"
 
 [submission.task_exceptions.InterpolSstSic]
-  binary = "gl_20230823"
-  bindir = "/home/snh02/work/gl_binaries"
+  binary = "gl"
+  bindir = "@INSTALL_DIR@/gl/leonardo.cy49t2.intel/bin"
 
 [submission.task_exceptions.Marsprep]
   bindir = "/leonardo_work/DestE_330_25/users/SAN/install/mars"

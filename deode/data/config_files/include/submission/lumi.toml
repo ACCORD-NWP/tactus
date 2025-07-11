@@ -51,7 +51,7 @@
 
 [submission.task_exceptions.InterpolSstSic]
   binary = "gl"
-  bindir = "/scratch/project_465000527/pardalmi/gl/lumi.cray.gmkpack/bin"
+  bindir = "@INSTALL_DIR@/gl/latest-gnu/bin"
 
 [submission.task_exceptions.Marsprep]
   bindir = "/appl/local/destine/bin"

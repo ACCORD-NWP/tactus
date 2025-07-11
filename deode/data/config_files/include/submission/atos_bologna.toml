@@ -80,7 +80,7 @@
 
 [submission.task_exceptions.InterpolSstSic]
   binary = "gl"
-  bindir = "/perm/deployde330/github-actions/install/gl/latest/bin/"
+  bindir = "@INSTALL_DIR@/gl/latest/bin/"
 
 [submission.task_exceptions.IOmerge.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
