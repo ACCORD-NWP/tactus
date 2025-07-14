@@ -438,7 +438,8 @@ class Marsprep(Task):
             self.get_lat_lon_sst_data(missing_steps_per_member, members_dict)
 
             # Get the file list to join
-            for member, steps in missing_steps_per_member:
+            for member in missing_steps_per_member:
+                steps = missing_steps_per_member[member]
                 for step in steps:
                     merge_pattern = f"mars_latlonGG*_{member or 0}+{step}"
                     filenames = list_files_join(self.wdir, merge_pattern)
