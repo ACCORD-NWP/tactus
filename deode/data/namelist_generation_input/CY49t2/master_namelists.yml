@@ -1591,6 +1591,7 @@ f4_common:
   NAMDYNA:
     LSLAG: true
   NAMFA:
+    CMODEL: ${cfg:general.cmodel}
     LEXTERN: true
     NBITCS: -1
     NBITPG: -1

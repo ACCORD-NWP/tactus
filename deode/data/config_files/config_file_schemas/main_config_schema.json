@@ -900,6 +900,10 @@
             "storm"
           ]
         },
+	"famodel": {
+	  "description": "faModelName for handling grib output settings. Needed to specify encodings of ensemble members as well as sub-hourly outputs. Do not replace default name.",
+	  "type": "string"
+	},
         "initfile": {
           "description": "Initial file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",
           "type": "string"

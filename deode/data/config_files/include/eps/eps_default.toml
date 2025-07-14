@@ -1,3 +1,9 @@
+[eps.member_settings.general]
+  famodel = "deode.eps.custom_generators.CmodelGenerator"
+
+[eps.member_settings.namelist_update.master.forecast.namfa]
+  cmodel = "@FAMODEL@"
+
 [eps.member_settings.system]
   logs = "@ARCHIVE_ROOT@/logs/@MEMBER_STR@"
   wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"

@@ -702,6 +702,7 @@ f4_common:
     NDLNPR: 1
     NVDVAR: 4
   NAMFA:
+    CMODEL: ${cfg:general.cmodel}
     NBITCS: -1
     NBITPG: -1
     NSTRON: -1

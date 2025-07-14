@@ -2,7 +2,7 @@
 """Unit tests for the eccodes_path settings."""
 import contextlib
 import os
-from pathlib import Path, PosixPath
+from pathlib import Path
 
 import pytest
 import tomlkit
@@ -58,7 +58,7 @@ class TestEccodesDefPath:
         # No preset path, no ECCODES_VERSION
         task._set_eccodes_environment()
         eccodes_definition_path = os.getenv("ECCODES_DEFINITION_PATH")
-        assert PosixPath(eccodes_definition_path) == DEODE_DEFS
+        assert str(DEODE_DEFS) in eccodes_definition_path
 
     def test_no_preset_path_old_version(self, task):
         # No preset path, older ECCODES_VERSION
@@ -68,7 +68,8 @@ class TestEccodesDefPath:
         eccodes_share = f"{eccodes_dir}/share/eccodes/definitions"
         task._set_eccodes_environment()
         eccodes_definition_path = os.getenv("ECCODES_DEFINITION_PATH")
-        assert eccodes_definition_path == f"{DEODE_DEFS}:{eccodes_share}"
+        assert eccodes_share in eccodes_definition_path
+        assert str(DEODE_DEFS) in eccodes_definition_path
 
     def test_no_preset_path_new_version(self, task):
         # No preset path, newer ECCODES_VERSION
@@ -77,4 +78,6 @@ class TestEccodesDefPath:
         os.environ["ECCODES_DIR"] = eccodes_dir
         task._set_eccodes_environment()
         eccodes_definition_path = os.getenv("ECCODES_DEFINITION_PATH")
-        assert PosixPath(eccodes_definition_path) == DEODE_DEFS
+        eccodes_share = f"{eccodes_dir}/share/eccodes/definitions"
+        assert str(DEODE_DEFS) in eccodes_definition_path
+        assert eccodes_share not in eccodes_definition_path

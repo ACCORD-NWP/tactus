@@ -27,6 +27,7 @@
     {ecf_files = "scheduler.ecfvars.ecf_files"},
     {ecf_out = "scheduler.ecfvars.ecf_out"},
     {ecfs_prefix = "archiving.prefix.ecfs"},
+    {famodel = "general.famodel"},
     {forecast_range = "general.times.forecast_range"},
     {fpdomain = "fullpos.domain_name"},
     {fullpos_output_freq = "general.output_settings.fullpos"},

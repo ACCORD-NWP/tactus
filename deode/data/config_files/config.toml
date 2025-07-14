@@ -4,6 +4,7 @@
   cnmexp = "DEOD"
   csc = "AROME"
   cycle = "CY48t3"
+  famodel = "destine-@CYCLE@-@CSC@-oper"
   initfile = "@SCRATCH@/deode/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@HISTORY_TEMPLATE@"
   initfile_sfx = "@SCRATCH@/deode/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
   keep_workdirs = true

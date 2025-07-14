@@ -535,14 +535,13 @@ class NamelistGenerator:
 
         try:
             _update = self.config["namelist_update"][self.kind][target].dict()
-
             # Make sure everything is in upper case
             update = {}
             for namelist, keyval in _update.items():
                 nu = namelist.upper()
                 update[nu] = {}
                 for key, val in keyval.items():
-                    update[nu][key.upper()] = val
+                    update[nu][key.upper()] = self.platform.substitute(val)
 
             self.update(update, f"namelist_update_{target}")
             logger.info("Namelist update found for {} {}", self.kind, target)
