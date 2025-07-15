@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Make CY49 the default cycle [\#1239](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1239) (ealerskans, @mafdmi)
-- Add option to update SST/SIC during simulation from host model [\#1231, \#1236, \#1238](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1231) (@jacobsnoeijer, @BertvanUlft)
+- Add option to update SST/SIC during simulation from host model [\#1231, \#1236, \#1238, \#1240](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1231) (@jacobsnoeijer, @BertvanUlft)
 - Add path in config to prep input file to allow better control of file location. [\#1212](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1212)(@uandrae)
 - Add merging of sqlite files in cases of more than 1 ensemble member. [\#1193](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1193)(@mafdmi)
 - Add georef-calculation and determination of stream-type to deode case command [\#1213](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1213)(@johtoblan)
