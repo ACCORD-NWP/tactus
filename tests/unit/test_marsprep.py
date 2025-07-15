@@ -6,7 +6,7 @@ import pytest
 import tomlkit
 
 from deode.derived_variables import derived_variables, set_times
-from deode.mars_utils import BaseRequest, get_value_from_dict
+from deode.mars_utils import BaseRequest, compile_target, get_value_from_dict
 from deode.tasks.marsprep import Marsprep
 
 
@@ -65,6 +65,10 @@ def test_update_data_request(marsprep_instance: Marsprep):
             marsprep_instance.mars["GG_sea"], marsprep_instance.init_date_str
         )
     )
+
+    tag = "test"
+    members = [1, 2]
+
     base_request = BaseRequest(
         class_=marsprep_instance.mars["class"],
         data_type=marsprep_instance.mars["type_FC"],
@@ -74,20 +78,20 @@ def test_update_data_request(marsprep_instance: Marsprep):
         time=marsprep_instance.init_hour_str,
         steps="0/1/2",
         param=param,
-        target='"test+[STEP]"',
+        target=compile_target(tag, "perturbed_members", members),
     )
 
     marsprep_instance.update_data_request(
         base_request,
         prefetch=True,
         specify_domain=False,
-        bdmembers=[1, 2],
+        bdmembers=members,
     )
 
     assert "NUMBER" in base_request.request
     assert base_request.request["NUMBER"] == "1/2"
     assert "STREAM" in base_request.request
-    assert base_request.request["TARGET"] == '"test_[NUMBER]+[STEP]"'
+    assert base_request.request["TARGET"] == f'"{tag}_[NUMBER]+[STEP]"'
 
     param = get_value_from_dict(
         marsprep_instance.mars["SHZ"], marsprep_instance.init_date_str

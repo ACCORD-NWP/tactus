@@ -9,7 +9,7 @@ import shutil
 import subprocess
 import time
 from pathlib import Path
-from typing import Union
+from typing import List, Union
 
 from . import GeneralConstants
 from .logs import logger
@@ -359,3 +359,19 @@ def list_files_join(folder, f_pattern):
     filenames = glob.glob(pattern_list)
 
     return filenames
+
+
+def join_files(input_files: List[str], output_filepath: str):
+    """Joins multiple files into a single file.
+
+    Args:
+        input_files (List[str]): List of files to be joined/concatenated
+        output_filepath (str):   Output file
+    """
+    output_filename = os.path.basename(output_filepath)
+    with open(output_filename, "wb") as output_file:
+        for filename in input_files:
+            with open(filename, "rb") as input_file:
+                output_file.write(input_file.read())
+    shutil.move(output_filename, output_filepath)
+    logger.info(f"Created {output_filepath} out of files '{input_files}'")

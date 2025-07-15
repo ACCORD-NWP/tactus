@@ -11,23 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Add option to update SST/SIC during simulation from host model [\#1231, \#1236, \#1238](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1231) (@jacobsnoeijer, @BertvanUlft)
 - Add path in config to prep input file to allow better control of file location. [\#1212](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1212)(@uandrae)
 - Add merging of sqlite files in cases of more than 1 ensemble member. [\#1193](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1193)(@mafdmi)
 - Add georef-calculation and determination of stream-type to deode case command [\#1213](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1213)(@johtoblan)
 - Introduce first CSC dependent EPS settings. [\#1217](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1217)(@uandrae)
 - Add sqlite extraction for Z&Q and limit extraction of all upper air variables to the locations of TEMP stations [\#1235](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1235])(@svianaj)
+- Introduce destineFaModelSource for handling output settings of ensemble members as well as sub-hourly output. [\#1211](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1211)(@sbnielsen, @KristianHMoller)
 
 ### Fixed
-- Set ensemble member number in namelist by default. [\#1216](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1216)(@uandrae) 
+- Correct per member generation of input file for prep. [\#1214](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1214)(@uandrae) 
 - Specify tagged version 0.1.2 or above of pyfdb in pyproject.toml. [\#1205](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1205)(@KristianHMoller) 
+- Allow using duration notation for both general.times.start and end. [\#1209](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1209) (@uandrae)
+- Set ensemble member number in namelist by default. [\#1216](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1216)(@uandrae) 
 - Fix grib2 encodings of radar product to allow ensemble production. [\#1219](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1219) (@sbnielsen)
 - Fixed issue with the user having to specify all members when using the dict syntax in eps configuration. [\#1220](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1220)(@mafdmi)
 - Fix bug in creation of merged sqlite files which contained member 0 in all data columns [\#1223](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1223])(@svianaj)
 
 ## [0.17.0] - 2025-06-13
-
-### Fixed
-- Allow using duration notation for both general.times.start and end. [\#1209](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1209) (@uandrae)
 
 ### Added
 - Add option to write output only at first output time to creategrib and gribmodify. [\#1156](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1156)(@KristianHMoller)

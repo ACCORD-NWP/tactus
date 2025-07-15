@@ -27,6 +27,7 @@ These task handles the generation of the non-SURFEX related static data required
 
  * {class}`deode.tasks.c903.C903` creates an initial atmospheric state and boundary files from a global ECMWF file. Use `deode show namelist [--config-file your_config.toml] -t master -n c903_[main|domain]` to see the two namelists required.
  * {class}`deode.tasks.e927.E927` creates an initial atmospheric state and boundary files from a AROME/HARMONIE-AROME file. Use `deode show namelist [--config-file your_config.toml] -t master -n e927` to see the namelist used.
+ * {class}`deode.tasks.interpolsstsic.InterpolSstSic` interpolate SST/SIC from the host model to the model geometry with gl.
 
 ## Forecasting
  * {class}`deode.tasks.forecast.Forecast` runs the forecast for any of the three CSCs. Namelists can be extracted with `deode show namelist [--config-file your_config.yoml] -t master -n forecast` for the upper air namelist and with `-t surfex -n forecast` for the surfex part.

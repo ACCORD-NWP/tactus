@@ -49,6 +49,10 @@
 [submission.task_exceptions.Gmted.MODULES]
   GDAL = ["load", "scl-gdal_23"]
 
+[submission.task_exceptions.InterpolSstSic]
+  binary = "gl"
+  bindir = "@INSTALL_DIR@/gl/latest-gnu/bin"
+
 [submission.task_exceptions.Marsprep]
   bindir = "/appl/local/destine/bin"
   mars_version = "7"
@@ -197,7 +201,15 @@
 [submission.types.serial]
   NPROC = 1
   SCHOST = "lumi-batch"
-  tasks = ["Gmted", "Soil", "PgdUpdate", "E923Constant", "E923Monthly", "E923Update"]
+  tasks = [
+    "Gmted",
+    "Soil",
+    "PgdUpdate",
+    "E923Constant",
+    "E923Monthly",
+    "E923Update",
+    "InterpolSstSic",
+  ]
   WRAPPER = "srun"
 
 [submission.types.serial.BATCH]
