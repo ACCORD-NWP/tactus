@@ -1,8 +1,10 @@
 [extractsqlite]
   merged_sqlite_path = "@ARCHIVE_ROOT@/merged_sqlite/FCTABLE/@SQLITE_MODEL_NAME@/@YYYY@/@MM@"
-  parameter_list = "@DEODE_HOME@/data/sqlite/param_list_@CSC@.json"
+  parameter_list_sfc = "@DEODE_HOME@/data/sqlite/param_list_sfc_@CSC@.json"
+  parameter_list_ua = "@DEODE_HOME@/data/sqlite/param_list_ua.json"
   selection = "PT1H"
   sqlite_model_name = "@CASE@"
   sqlite_path = "@ARCHIVE_ROOT@/sqlite/FCTABLE/@SQLITE_MODEL_NAME@/@YYYY@/@MM@/@MEMBER_STR@"
   sqlite_template = "FCTABLE_{PP}_{YYYY}{MM}_{HH}.sqlite"
-  station_list = "@DEODE_HOME@/data/sqlite/station_list_default.csv"
+  station_list_sfc = "@DEODE_HOME@/data/sqlite/station_list_default.csv"
+  station_list_ua = "@DEODE_HOME@/data/sqlite/temp_list_default.csv"

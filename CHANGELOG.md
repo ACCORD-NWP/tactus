@@ -15,9 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add path in config to prep input file to allow better control of file location. [\#1212](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1212)(@uandrae)
 - Add merging of sqlite files in cases of more than 1 ensemble member. [\#1193](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1193)(@mafdmi)
 - Add georef-calculation and determination of stream-type to deode case command [\#1213](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1213)(@johtoblan)
-- Introduce first CSC dependent EPS settings. [\#1217](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1217)(@uandrae) 
+- Introduce first CSC dependent EPS settings. [\#1217](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1217)(@uandrae)
+- Add sqlite extraction for Z&Q and limit extraction of all upper air variables to the locations of TEMP stations [\#1235](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1235])(@svianaj)
 - Introduce destineFaModelSource for handling output settings of ensemble members as well as sub-hourly output. [\#1211](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1211)(@sbnielsen, @KristianHMoller)
-
 
 ### Fixed
 - Fix cleaning for EHYPE data, add cleaning of empty directories. [\#1227](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1227) (@kastelecn)
