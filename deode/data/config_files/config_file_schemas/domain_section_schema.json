@@ -13,23 +13,14 @@
     "gridtype_oro": {
       "type": "string",
       "description": "Select truncation type for orographic_smoothing",
-      "enum": [
-        "linear",
-        "quadratic",
-        "cubic",
-        "custom",
-        ""
-      ],
-      "default" : ""
+      "enum": ["linear", "quadratic", "cubic", "custom", ""],
+      "default": ""
     },
     "orographic_smoothing_method": {
       "type": "string",
       "description": "Orographic smoothing method",
-      "enum": [
-        "spectral",
-        "truncation"
-      ],
-      "default" : "truncation"
+      "enum": ["spectral", "truncation"],
+      "default": "truncation"
     },
     "name": {
       "type": "string",
@@ -95,7 +86,14 @@
     },
     "tstep": {
       "description": "Model time step in seconds",
-      "type": "number"
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        }
+      ]
     },
     "xloncen": {
       "type": "number",
@@ -146,11 +144,21 @@
     },
     "spectral_smoothing_by_gridtype": {
       "description": "Defines for which gridypes spectral smoothing is applied when activated",
-      "default": {"linear": true, "quadratic": false, "cubic": false, "custom": true}
+      "default": {
+        "linear": true,
+        "quadratic": false,
+        "cubic": false,
+        "custom": true
+      }
     },
     "truncation_by_gridtype": {
       "description": "Defines default gridtype_oro mapping when truncation smoothing is applied.",
-      "default": {"linear": "quadratic", "quadratic": "quadratic", "cubic": "cubic", "custom": "custom"}
+      "default": {
+        "linear": "quadratic",
+        "quadratic": "quadratic",
+        "cubic": "cubic",
+        "custom": "custom"
+      }
     }
   }
 }

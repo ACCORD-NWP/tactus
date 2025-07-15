@@ -3,7 +3,7 @@
   case = "@CASE_PREFIX@@CYCLE@_@CSC@_@EVENT_TYPE@_@DOMAIN@_@YMD_START@"
   cnmexp = "DEOD"
   csc = "AROME"
-  cycle = "CY48t3"
+  cycle = "CY49t2"
   famodel = "destine-@CYCLE@-@CSC@-oper"
   initfile = "@SCRATCH@/deode/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@HISTORY_TEMPLATE@"
   initfile_sfx = "@SCRATCH@/deode/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
@@ -99,6 +99,7 @@
   vertical_levels = "include/vertical_levels/MF_90.toml"
 
 [pgd]
+  npatch = 3
   one_decade = true
   use_osm = false
 

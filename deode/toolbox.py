@@ -11,6 +11,7 @@ from typing import Any, Union
 import geohash
 from troika.connections.ssh import SSHConnection
 
+from .csc_actions import SelectTstep
 from .datetime_utils import as_datetime, get_decade, oi2dt_list
 from .logs import logger
 from .os_utils import deodemakedirs
@@ -372,6 +373,47 @@ class Platform:
 
         return pattern
 
+    def substitute_tstep(self, pattern):
+        """Substitute tstep.
+
+        Args:
+            pattern (str): _description_
+
+        Returns:
+            str: Substituted string.
+
+        Raises:
+            RuntimeError: In case of erroneous macro
+        """
+        if not isinstance(pattern, str):
+            return pattern
+
+        if pattern.count("@") % 2 != 0:
+            message = f"Erroneous macro somewhere in pattern={pattern}"
+            logger.debug(message)
+            return pattern
+
+        i = [m.start() for m in re.finditer(r"@", pattern)]
+        try:
+            sub_patterns = [pattern[i[j] + 1 : i[j + 1]] for j in range(0, len(i), 2)]
+        except IndexError as error:
+            raise IndexError(f"Could not separate pattern:{pattern} by '@'") from error
+
+        for sub_pattern in sub_patterns:
+            with contextlib.suppress(KeyError):
+                val = self.macros[sub_pattern.upper()]
+                try:
+                    if val.count("@") > 0:
+                        val = self.substitute(val)
+                except AttributeError:
+                    pass
+
+                logger.debug("before replace macro={} pattern={}", sub_pattern, pattern)
+                pattern = self.sub_value(pattern, sub_pattern, val)
+                logger.debug("after replace macro={} pattern={}", sub_pattern, pattern)
+
+        return pattern
+
     def substitute(
         self, pattern, basetime=None, validtime=None, bd_index=None, keyval=None
     ):
@@ -471,6 +513,12 @@ class Platform:
             pattern = self.sub_value(pattern, "LS", f"{ls:02d}")
 
             tstep = self.config["domain.tstep"]
+            tstep = self.substitute_tstep(tstep)
+            try:
+                tstep = int(tstep)
+            except ValueError:
+                tstep = self.evaluate(tstep, SelectTstep)
+
             if tstep is not None:
                 lead_step = lead_seconds // tstep
                 pattern = self.sub_value(pattern, "TTT", f"{lead_step:03d}")

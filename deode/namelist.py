@@ -14,6 +14,7 @@ from omegaconf import OmegaConf
 from omegaconf.listconfig import ListConfig
 
 from .config_parser import ConfigPaths
+from .csc_actions import SelectTstep
 from .datetime_utils import as_timedelta, oi2dt_list
 from .logs import logger
 from .toolbox import Platform
@@ -359,15 +360,33 @@ class NamelistGenerator:
 
     def fn_stepfreq(self, arg):
         """Resolve namelist function stepfreq."""
-        tstep = int(self.config["domain.tstep"])
+        tstep = self.platform.substitute(self.config["domain.tstep"])
+        try:
+            tstep = int(tstep)
+        except ValueError:
+            tstep = self.platform.evaluate(tstep, SelectTstep)
+
         freq = as_timedelta(arg)
         result = int(freq.seconds / tstep)
+        return f"{result}"
+
+    def fn_tstep(self, arg):
+        """Resolve namelist function tstep."""
+        try:
+            result = int(arg)
+        except ValueError:
+            result = self.platform.evaluate(arg, SelectTstep)
+
         return f"{result}"
 
     def fn_steplist(self, time_intervals):
         """Resolve namelist function steplist."""
         forecast_range = self.config["general.times.forecast_range"]
-        tstep = int(self.config["domain.tstep"])
+        tstep = self.platform.substitute(self.config["domain.tstep"])
+        try:
+            tstep = int(tstep)
+        except ValueError:
+            tstep = self.platform.evaluate(tstep, SelectTstep)
         # default value:
         output_timesteps = [1, -1]
         # decode string into list
@@ -432,6 +451,7 @@ class NamelistGenerator:
         OmegaConf.register_new_resolver(
             "cfg", lambda arg, default=None: self.fn_config(arg, default)
         )
+        OmegaConf.register_new_resolver("timestep", lambda arg: self.fn_tstep(arg))
 
         # Use static namelist if given
         use_yaml = True

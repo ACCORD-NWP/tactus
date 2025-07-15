@@ -21,6 +21,7 @@
     {domain = "domain.name"},
     {xdx = "domain.xdx"},
     {domain_number = "domain.number"},
+    {precision = "general.precision"},
     {duration_archive = "file_templates.duration.archive"},
     {duration_model = "file_templates.duration.model"},
     {ecf_deode_home = "scheduler.ecfvars.ecf_deode_home"},

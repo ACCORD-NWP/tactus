@@ -1,5 +1,9 @@
 [general]
   cycle = "CY48t3"
+  precision = ""
 
 [fdb.grib_set]
   generatingProcessIdentifier = "2"
+
+[platform]
+  rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef/"

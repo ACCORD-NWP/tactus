@@ -489,7 +489,7 @@ f4_AROME:
     XMULAF: -1.85
   NAMRIP:
     CSTOP: ${cfg:namelist.cstop}
-    TSTEP: ${cfg:domain.tstep}
+    TSTEP: ${timestep:${cfg:domain.tstep}}
   NAMSATS:
     LPARTIAL_COEF_FILES: true
   NAMTOPH:
@@ -1117,7 +1117,7 @@ f4_ALARO:
     RLAMB_SOLID: 0.6
   NAMRIP:
     CSTOP: ${cfg:namelist.cstop}
-    TSTEP: ${cfg:domain.tstep}
+    TSTEP: ${timestep:${cfg:domain.tstep}}
   NAMTOPH:
     ETCVIM: 0.0
     ETNEBU: 0.0
@@ -1492,7 +1492,7 @@ f4_HARMONIE_AROME:
     RLAMB_SOLID: 0.6
   NAMRIP:
     CSTOP: ${cfg:namelist.cstop}
-    TSTEP: ${cfg:domain.tstep}
+    TSTEP: ${timestep:${cfg:domain.tstep}}
   NAMSPBD:
     LSPBDC: false
   NAMSTOPH:

@@ -749,24 +749,24 @@
               "description": "Start time, given as a date-time string 'YYYY-MM-DDTHH:mm:ssZ' or duration, e.g. '-P1D' for yesterday, which is relative to the current date at 00Z.",
               "type": "string",
               "oneOf": [
-		  {
-                    "format": "date-time"
-	          },
-		  {
-                    "format": "duration"
-	          }
+                {
+                  "format": "date-time"
+                },
+                {
+                  "format": "duration"
+                }
               ]
             },
             "end": {
               "description": "End time if the run covers several cycles. Same format as start",
               "type": "string",
               "oneOf": [
-		  {
-                    "format": "date-time"
-	          },
-		  {
-                    "format": "duration"
-	          }
+                {
+                  "format": "date-time"
+                },
+                {
+                  "format": "duration"
+                }
               ]
             },
             "list": {
@@ -966,6 +966,12 @@
           "type": "string",
           "enum": ["sice", "none"],
           "default": "sice"
+        },
+        "precision": {
+          "description": "Floating point precision",
+          "type": "string",
+          "enum": ["", "-sp"],
+          "default": "-sp"
         }
       },
       "required": ["times"]

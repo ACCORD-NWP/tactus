@@ -3,7 +3,7 @@
   name = "500m_template"
   nimax = 1489
   njmax = 1489
-  tstep = 15
+  tstep = "_select_tstep_based_on_csc_and_resolution('@CSC@', '@XDX@')"
   xdx = 500
   xdy = 500
   xlatcen = 58.66
