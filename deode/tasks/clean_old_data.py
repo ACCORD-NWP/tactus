@@ -77,6 +77,25 @@ class CleanOldData(Task):
                     list_to_remove.append(dir_path)
         return list_to_remove
 
+    def find_empty_directories(self, path):
+        """Return a list of full paths to empty directories under the given path.
+
+        Args:
+            path (str): Root directory to search.
+
+        Returns:
+            List[str]: Full paths of empty directories.
+        """
+        empty_dirs = set()
+
+        for root, dirs, files in os.walk(path, topdown=False):
+            if not files and (
+                not dirs or all(os.path.join(root, d) in empty_dirs for d in dirs)
+            ):
+                empty_dirs.add(root)
+
+        return list(empty_dirs)
+
     def remove_list(self, dir_list, files=False):
         """Remove directories/files from the list.
 
@@ -107,9 +126,15 @@ class CleanEhypeData(CleanOldData):
         self.delay = as_timedelta(config["clean_old_data.ehype_data_period"])
         self.active = True
         try:
-            self.ehype_scratch = config["impact.ehype.communicate.run_root"]
-            self.ehype_work = config["impact.ehype.communicate.work_root"]
+            self.ehype_scratch = self.platform.get_value(
+                "impact.ehype.communicate.run_root"
+            )
+            self.ehype_work = self.platform.get_value(
+                "impact.ehype.communicate.work_root"
+            )
             self.ehype_form = config["clean_old_data.ehype_format"]
+            self.ehype_form_run = config["clean_old_data.ehype_format_run"]
+            self.ehype_form_perm = config["clean_old_data.ehype_format_perm"]
         except KeyError:
             logger.warning("Switch of ehype cleaning as config is incomplete")
             self.active = False
@@ -121,21 +146,31 @@ class CleanEhypeData(CleanOldData):
     def execute(self):
         """Run clean data from scratch."""
         if self.active:
-            list_to_remove_run = self.get_old(
+            list_to_remove_scratch = self.get_old(
                 self.ehype_scratch,
                 self.ehype_form,
                 self.cutoff_time,
                 ignore=self.ignore_dir,
             )
+            self.remove_list(list_to_remove_scratch)
+
+            list_to_remove_run = self.get_old(
+                self.ehype_scratch,
+                self.ehype_form_run,
+                self.cutoff_time,
+                ignore=self.ignore_dir,
+            )
             self.remove_list(list_to_remove_run)
+            self.remove_list(self.find_empty_directories(self.ehype_scratch))
 
             list_to_remove_work = self.get_old(
                 self.ehype_work,
-                self.ehype_form,
+                self.ehype_form_perm,
                 self.cutoff_time,
                 ignore=self.ignore_dir,
             )
             self.remove_list(list_to_remove_work)
+            self.remove_list(self.find_empty_directories(self.ehype_work))
 
 
 class CleanScratchData(CleanOldData):
@@ -170,6 +205,7 @@ class CleanScratchData(CleanOldData):
             ignore=self.ignore_dir,
         )
         self.remove_list(list_to_remove)
+        self.remove_list(self.find_empty_directories(self.scratch))
 
 
 class CleanSuites(CleanOldData):
@@ -206,6 +242,8 @@ class CleanSuites(CleanOldData):
         self.remove_list(list_to_remove_files)
         self.remove_list(list_to_remove_jobout)
 
+        self.remove_list(self.find_empty_directories(self.ecf_files))
+        self.remove_list(self.find_empty_directories(self.ecf_jobout))
         suites = [
             os.path.basename(x)
             for x in set(list(list_to_remove_files) + list(list_to_remove_jobout))
@@ -236,3 +274,4 @@ class CleanIFSData(CleanOldData):
         """Run clean IFS data."""
         list_to_remove = self.get_old(self.marsdir, self.ifs_form, self.cutoff_time)
         self.remove_list(list_to_remove, files=True)
+        self.remove_list(self.find_empty_directories(self.marsdir))

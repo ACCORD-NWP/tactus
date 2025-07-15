@@ -4,7 +4,9 @@
 
 [clean_old_data]
   ehype_data_period = "P14D"
-  ehype_format = "*/"
+  ehype_format = "/(\\d{4})/(0[1-9]|1[0-2])/(0[1-9]|[12]\\d|3[01])"
+  ehype_format_perm = "/DE_Impact_EHYPE_forecast*"
+  ehype_format_run = "/run/DE_Impact_EHYPE_forecast*"
   ifs_format = "/IFS/([^/]+)/(\\d{4})/(0[1-9]|1[0-2])/(0[1-9]|[12]\\d|3[01])/([01]\\d|2[0-3])/([^/]+)"
   IFS_period = "P7D"
   ignore = []
