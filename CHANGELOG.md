@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Turn on SST/SIC update by default for CY49 and CY46 HARMONIE-AROME [\#1241](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1241) (@jacobsnoeijer)
 - Make CY49 the default cycle [\#1239](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1239) (ealerskans, @mafdmi)
 - Add option to update SST/SIC during simulation from host model [\#1231, \#1236, \#1238, \#1240](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1231) (@jacobsnoeijer, @BertvanUlft)
 - Add path in config to prep input file to allow better control of file location. [\#1212](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1212)(@uandrae)

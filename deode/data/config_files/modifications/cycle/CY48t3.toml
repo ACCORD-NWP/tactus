@@ -1,9 +1,13 @@
 [general]
   cycle = "CY48t3"
   precision = ""
+  upd_sst_sic = false
 
 [fdb.grib_set]
   generatingProcessIdentifier = "2"
 
 [platform]
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef/"
+
+[suite_control]
+  do_interpolsstsic = false

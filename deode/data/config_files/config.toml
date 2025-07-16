@@ -9,7 +9,7 @@
   initfile_sfx = "@SCRATCH@/deode/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
   keep_workdirs = true
   surfex = true
-  upd_sst_sic = false
+  upd_sst_sic = true
 
 [general.namelist]
   nrazts = "PT1H"
@@ -109,7 +109,7 @@
   do_archiving = true
   do_cleaning = true
   do_extractsqlite = true
-  do_interpolsstsic = false
+  do_interpolsstsic = true
   do_marsprep = true
   do_mergesqlite = true
   do_pgd = true
