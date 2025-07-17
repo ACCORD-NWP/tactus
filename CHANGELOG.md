@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.18.0] - 2025-07-16
+
 ### Added
 - Turn on SST/SIC update by default for CY49 and CY46 HARMONIE-AROME [\#1241](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1241) (@jacobsnoeijer)
 - Make CY49 the default cycle [\#1239](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1239) (ealerskans, @mafdmi)
