@@ -2,7 +2,7 @@
   # Package ID info
   description = "The DEODE scripting system."
   name = "deode"
-  version = "0.17.0"
+  version = "0.18.0"
   # Other package info
   authors = ["The DE_330 project."]
   documentation = "https://destination-earth-digital-twins.github.io/deode-workflow-docs"
@@ -39,7 +39,7 @@
   omegaconf = "^2.3"
   pandas = ">=1.4.0,<3.0.0"
   pydantic = "^2.9.2"
-  pyfdb = {git = "https://github.com/ecmwf/pyfdb.git"}
+  pyfdb = "^0.1.2"
   pyproj = "^3.3.0, !=3.5.0"
   pyyaml = "^6.0"
   thenamelisttool = {git = "https://github.com/UMR-CNRM/thenamelisttool.git"}

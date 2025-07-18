@@ -1,5 +1,6 @@
 [general]
   case = "@CYCLE@_@CSC@_@DOMAIN@"
+  upd_sst_sic = false
 
 [general.times]
   cycle_length = "PT1H"

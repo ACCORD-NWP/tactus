@@ -337,6 +337,9 @@ f4_HARMONIE_AROME:
     NMSG_LEVEL_SERVER: 0
     NPROCESS_LEVEL: 5
     NPROC_IO: ${cfg:namelist.nproc_io,0}
+  NAMMCC:
+    LMCC01_MSE: ${cfg:general.upd_sst_sic}
+    LMCCECSST: ${cfg:general.upd_sst_sic}
   NAMNRTAER:
     CCNMIN: 10000000.0
     CLDROPMIN: 10000000.0
@@ -476,7 +479,7 @@ f4_HARMONIE_AROME:
     RLAMB_SOLID: 0.6
   NAMRIP:
     CSTOP: ${cfg:namelist.cstop}
-    TSTEP: ${cfg:domain.tstep}
+    TSTEP: ${timestep:${cfg:domain.tstep}}
   NAMSPBD:
     LSPBDC: false
   NAMSPP:
@@ -699,6 +702,7 @@ f4_common:
     NDLNPR: 1
     NVDVAR: 4
   NAMFA:
+    CMODEL: ${cfg:general.cmodel}
     NBITCS: -1
     NBITPG: -1
     NSTRON: -1
@@ -721,7 +725,7 @@ f4_common:
     YI_NL%NREQIN: 1
     YL_NL%NREQIN: 1
   NAMGRIB:
-    NENSFNB: -1
+    NENSFNB: ${cfg:general.member}
   NAMIO_SERV:
     LMSG_FLUSH_CLIENT: false
     LMSG_FLUSH_SERVER: false

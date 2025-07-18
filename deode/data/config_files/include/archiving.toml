@@ -56,6 +56,12 @@
   outpath = "logs/@MEMBER_STR@"
   pattern = "@YYYY@@MM@@DD@_@HH@@mm@.tar.gz"
 
+[archiving.merged_sqlite.ecfs.merged_sqlite]
+  active = "suite_control.do_mergesqlite"
+  inpath = "@MERGED_SQLITE_PATH@"
+  outpath = "merged_sqlite"
+  pattern = "*"
+
 [archiving.prefix]
   ecfs = "ec:/@USER@/deode/@CASE@"
 

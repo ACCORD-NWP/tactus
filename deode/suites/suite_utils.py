@@ -107,7 +107,8 @@ def lbc_times_generator(
     endtime: datetime,
     step: timedelta,
     mode: str = "start",
-    do_prep: bool = True,
+    is_first_cycle: bool = True,
+    do_interpolsstsic: bool = False,
 ) -> Generator[Tuple[int, datetime], None, None]:
     """Generate lbc times.
 
@@ -118,7 +119,8 @@ def lbc_times_generator(
         endtime: The end time.
         step: The step size.
         mode: The mode of the workflow.
-        do_prep: Whether to do prep.
+        is_first_cycle: Whether this is the first cycle.
+        do_interpolsstsic: Whether to do SST/SIC interpolation.
 
     Yields:
             datetime: The time period for which the next LBC will be computed.
@@ -127,7 +129,9 @@ def lbc_times_generator(
             datetime: The time period for which the last LBC will be computed.
     """
     index = 0
-    if mode == "restart" or (mode == "start" and not do_prep):
+    if (
+        mode == "restart" or (mode == "start" and not is_first_cycle)
+    ) and not do_interpolsstsic:
         basetime += step
         index = 1
 

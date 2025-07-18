@@ -81,9 +81,16 @@ class Task(object):
             logger.info("Use ECCODES_DEFINITION_PATH {}", eccodes_definition_path)
             return
 
+        # Path to modelname definitions
+        deode_eccodes_modelname_path = os.path.join(
+            self.platform.get_platform_value("archive_root"), "eccodes", "definitions"
+        )
         # Path to local tables
         deode_eccodes_definition_path = str(
             ConfigParserDefaults.DATA_DIRECTORY / "eccodes/definitions"
+        )
+        deode_eccodes_definition_path = ":".join(
+            [deode_eccodes_definition_path, deode_eccodes_modelname_path]
         )
 
         try:

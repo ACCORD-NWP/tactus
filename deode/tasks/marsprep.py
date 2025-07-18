@@ -3,7 +3,6 @@
 import ast
 import contextlib
 import os
-import shutil
 from functools import cached_property
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -16,16 +15,19 @@ from ..mars_utils import (
     add_additional_data_to_all,
     add_additional_file_specific_data,
     check_data_available,
+    compile_target,
     get_and_remove_data,
     get_domain_data,
     get_mars_keys,
     get_steplist,
     get_steps_and_members_to_retrieve,
     get_value_from_dict,
+    mars_write_method,
     move_files,
-    write_mars_req,
+    write_compute_mars_req,
+    write_retrieve_mars_req,
 )
-from ..os_utils import deodemakedirs, list_files_join
+from ..os_utils import deodemakedirs, join_files, list_files_join
 from ..tasks.batch import BatchJob
 from .base import Task
 
@@ -119,6 +121,8 @@ class Marsprep(Task):
         )
         logger.info("MARS data expected in:{}", self.prepdir)
 
+        self.mars_bin = self.get_binary("mars")
+
         # Use fixed static orography files (spherical harmonics and/or gaussian grid)
         # TODO: check existence of static orography files & read settings
         if "use_static_sh" in self.mars:
@@ -176,6 +180,7 @@ class Marsprep(Task):
         bdmembers: Optional[List[int]] = None,
         grid: Optional[str] = None,
         source: Optional[str] = None,
+        fieldset: Optional[str] = None,
     ):
         """Create ECMWF MARS system request.
 
@@ -186,6 +191,7 @@ class Marsprep(Task):
             bdmembers:          Boundary members to retrieve in case of eps.
             grid:               Specific grid for some request. Default None.
             source:             Sorce for retrieve data from disk. Defaults None.
+            fieldset:           Name of fieldset. Defaults None.
 
         """
         if grid is not None and self.mars_version == 6:
@@ -197,7 +203,7 @@ class Marsprep(Task):
         # and an ensemble run with boundary member nesting (e.g. members = [0]
         # for a one member ensemble, members = [0, 1, 2] for a three member ensemble etc.)
         if bdmembers and all(bdmembers):
-            request.add_eps_members(bdmembers, prefetch=prefetch)
+            request.update_request({"NUMBER": "/".join(map(str, bdmembers))})
 
         if self.mars_version == 6:
             request.update_request({"PROCESS": "LOCAL"})
@@ -227,6 +233,9 @@ class Marsprep(Task):
                 }
             )
 
+        if fieldset:
+            request.update_request({"FIELDSET": fieldset})
+
     def execute(self):
         """Run task.
 
@@ -254,12 +263,15 @@ class Marsprep(Task):
             self.get_spectral_harmonic_data()
             self.get_grid_point_upper_air_data()
 
+            if self.config["suite_control.do_interpolsstsic"]:
+                self.get_sst_data()
+
         self.get_sfx_data()
 
     def get_grid_point_surface_data(self):
         """Get grid point surface data."""
         tag = "ICMGG"
-        steps, members_dict = get_steps_and_members_to_retrieve(
+        steps, members_dict, _ = get_steps_and_members_to_retrieve(
             self.steps, self.prepdir, tag, self.bdmembers
         )
         if steps:
@@ -288,18 +300,16 @@ class Marsprep(Task):
                 additional_data |= self.get_gg_snow_data(
                     tag, steps, members_dict, self.param_snow
                 )
-
                 add_additional_file_specific_data(additional_data=additional_data)
-
-                move_files(tag, steps, members_dict, self.prepdir)
             else:
                 add_additional_data_to_all(tag, steps, members_dict, additional_data)
-                move_files(tag, steps, members_dict, self.prepdir)
+
+            move_files(tag, steps, members_dict, self.prepdir)
 
     def get_spectral_harmonic_data(self):
         """Get spectral harmonic data."""
         tag = "ICMSH"
-        steps, members_dict = get_steps_and_members_to_retrieve(
+        steps, members_dict, _ = get_steps_and_members_to_retrieve(
             self.steps, self.prepdir, tag, self.bdmembers
         )
 
@@ -318,7 +328,7 @@ class Marsprep(Task):
     def get_grid_point_upper_air_data(self):
         """Get gridpoint upper air data."""
         tag = "ICMUA"
-        steps, members_dict = get_steps_and_members_to_retrieve(
+        steps, members_dict, _ = get_steps_and_members_to_retrieve(
             self.steps, self.prepdir, tag, self.bdmembers
         )
         if steps:
@@ -330,55 +340,125 @@ class Marsprep(Task):
             )
             move_files(tag, steps, members_dict, self.prepdir)
 
-    def get_sfx_data(self):
-        """Get SFX data."""
-        # Split the lat/lon part and perform it here
+    def get_bdmember_fetch_list(self, bddir: str, bdfile: str):
+        """Builds the list of missing files to fetch from MARS."""
         mars_file_check_list = {}
-        for member in self.bdmembers:
-            bddir_sfx = Path(
-                self.platform.substitute(
-                    self.config["system.bddir_sfx"],
-                    basetime=self.bd_basetime,
-                    validtime=self.basetime,
-                )
-            )
-            bdfile_sfx = self.config["system.bdfile_sfx_template"].replace(
-                "@BDMEMBER@", str(member or 0)
-            )
-            prep_filename = self.platform.substitute(
-                bdfile_sfx,
+        prep_dir = Path(
+            self.platform.substitute(
+                bddir,
                 basetime=self.bd_basetime,
                 validtime=self.basetime,
             )
-            mars_file_check_list[member] = bddir_sfx / prep_filename
+        )
 
-        if all(
-            os.path.exists(mars_file_check)
-            for mars_file_check in mars_file_check_list.values()
-        ):
-            logger.info("Prep files already exists as {}", mars_file_check_list)
+        for member in self.bdmembers:
+            prep_filename = self.platform.substitute(
+                bdfile.replace("@BDMEMBER@", str(member or 0)),
+                basetime=self.bd_basetime,
+                validtime=self.basetime,
+            )
+
+            mars_file_check_list[member] = prep_dir / prep_filename
+
+        bdmember_fetch_list = [
+            bdmember
+            for bdmember, mars_file_check in mars_file_check_list.items()
+            if not os.path.exists(mars_file_check)
+        ]
+
+        if not bdmember_fetch_list:
+            logger.info("Prep files already exists as:")
+            for bdmember, filename in mars_file_check_list.items():
+                logger.info(f" {bdmember}: {filename}")
+
         elif self.split_mars and not self.prep_step:
             logger.debug("No need Prep file")
+            bdmember_fetch_list = []
         else:
-            self.get_lat_lon_data()
-            self.get_geopotential_latlon()
-            # Get the file list to join
             for member in self.bdmembers:
-                prep_pattern = f"mars_latlon*_{member or 0}"
-                logger.info("prep_pattern: {}", prep_pattern)
-                filenames = list_files_join(self.wdir, prep_pattern)
-                logger.info(filenames)
-                prep_filename = mars_file_check_list[member]
-                _prep_filename = os.path.basename(prep_filename)
-                with open(_prep_filename, "wb") as output_file:
-                    for filename in filenames:
-                        with open(filename, "rb") as input_file:
-                            output_file.write(input_file.read())
-                shutil.move(_prep_filename, prep_filename)
-                logger.info("Created {}", prep_filename)
+                if member not in bdmember_fetch_list:
+                    logger.info(
+                        "Prep file member={} already exists as {}",
+                        member,
+                        mars_file_check_list[member],
+                    )
+                else:
+                    logger.info(
+                        "Create prep file member={} as {}",
+                        member,
+                        mars_file_check_list[member],
+                    )
 
-    def get_lat_lon_data(self):
-        """Get Lat/Lon data."""
+        return mars_file_check_list, bdmember_fetch_list
+
+    def get_sfx_data(self):
+        """Get SFX data."""
+        bddir = self.config["system.bddir_sfx"]
+        bdfile = self.config["system.bdfile_sfx_template"]
+        mars_file_check_list, bdmember_fetch_list = self.get_bdmember_fetch_list(
+            bddir, bdfile
+        )
+
+        # Split the lat/lon part and perform it here
+        self.get_lat_lon_data(bdmember_fetch_list)
+        self.get_geopotential_latlon(self.bdmembers[0], bdmember_fetch_list)
+
+        # Get the file list to join
+        for bdmember in bdmember_fetch_list:
+            prep_pattern = f"mars_latlon*_{bdmember or 0}"
+            filenames = list_files_join(self.wdir, prep_pattern)
+            prep_filepath = mars_file_check_list[bdmember]
+            join_files(filenames, prep_filepath)
+
+    def get_sst_data(self):
+        """Get SST data."""
+        prep_dir = Path(
+            self.platform.substitute(
+                self.config["system.bddir_sst"],
+                basetime=self.bd_basetime,
+                validtime=self.basetime,
+            )
+        )
+        bdfile = self.config["system.bdfile_sst_template"]
+
+        _, members_dict, missing_steps_per_member = get_steps_and_members_to_retrieve(
+            self.steps,
+            prep_dir,
+            bdfile,
+            self.bdmembers,
+            platform=self.platform,
+            basetime=self.bd_basetime,
+            validtime=self.basetime,
+        )
+
+        if not missing_steps_per_member:
+            logger.info("All SST files already exists")
+        else:
+            # Get lat lon data
+            self.get_lat_lon_sst_data(missing_steps_per_member, members_dict)
+
+            # Get the file list to join
+            for member in missing_steps_per_member:
+                steps = missing_steps_per_member[member]
+                for step in steps:
+                    merge_pattern = f"mars_latlonGG*_{member or 0}+{step}"
+                    filenames = list_files_join(self.wdir, merge_pattern)
+                    sst_filename = self.platform.substitute(
+                        bdfile.replace("@BDMEMBER@", str(member or 0)),
+                        basetime=self.bd_basetime,
+                        validtime=self.basetime,
+                        bd_index=step,
+                    )
+                    prep_filepath = prep_dir / sst_filename
+                    join_files(filenames, prep_filepath)
+
+    def get_lat_lon_data(self, bdmember_list: List[int]):
+        """Get Lat/Lon data.
+
+        Args:
+            bdmember_list (List[int]): Members to fetch data for
+
+        """
         prefetch = False
 
         param = (
@@ -387,9 +467,9 @@ class Marsprep(Task):
             + get_value_from_dict(self.mars["GG_sea"], self.init_date_str)
         )
 
-        for member in self.bdmembers:
+        for member in bdmember_list:
             data_type = self.mars["type_AN"] if member == 0 else self.mars["type_FC"]
-            self._build_and_run_request(
+            self._build_and_run_retrieve_request(
                 req_file_name="latlonGG.req",
                 data_type=data_type,
                 levtype="SFC",
@@ -401,18 +481,108 @@ class Marsprep(Task):
                 specify_domain=True,
                 # Default to ICMGG_0+* if member is None
                 source=f'"{self.prepdir}/ICMGG_{member or 0}+{self.steps[0]}"',
-                write_method="retrieve" if self.mars_version == 6 else "read",
+                write_method=mars_write_method(self.mars_version),
             )
 
-    def get_geopotential_latlon(self):
-        """Get geopotential in lat/lon."""
+    def get_lat_lon_sst_data(
+        self,
+        missing_steps_per_member: Dict[int, List[int]],
+        members_dict: Dict[str, List[int]],
+    ):
+        """Get lat/lon data for sst."""
+        tag_mask = "ICMGG_maskland"
+        tag_sea = "sea_latlon"
+        tag_aux = "aux_latlon"
+
+        prefetch = False
+        param_sea = get_value_from_dict(self.mars["GG_sea"], self.init_date_str)
+        param_lsm = get_value_from_dict(self.mars["GG_lsm"], self.init_date_str)
+        param_skt = get_value_from_dict(self.mars["GG_skt"], self.init_date_str)
+
+        target_aux = "mars_latlonGG"
+        target_maskland = "mars_latlonGG_maskland"
+
+        fieldset_dict = dict.fromkeys(["sst_sic", "lsm"])
+        fieldset_dict["sst_sic"] = {"param": param_sea, "target": target_aux}
+        fieldset_dict["lsm"] = {"param": param_lsm, "target": target_aux}
+
+        for member_type, members in members_dict.items():
+            data_type = (
+                self.mars["type_AN"]
+                if member_type == "control_member"
+                else self.mars["type_FC"]
+            )
+
+            members_to_process = list(set(members) & set(missing_steps_per_member.keys()))
+            for member in members_to_process:
+                # SST/SIC for updating during run (on lat/lon), must be done in loop as
+                # COMPUTE doesn't seem to support multiple steps
+                for step in missing_steps_per_member[member]:
+                    source = compile_target(
+                        f"{self.prepdir}/ICMGG", member_type, member, step
+                    )
+                    target = compile_target(tag_mask, member_type, member, step)
+
+                    # Execute MARS request to mask land
+                    self._build_and_run_compute_request(
+                        req_file_name=f"{tag_mask}.req",
+                        data_type=data_type,
+                        levtype="SFC",
+                        param=None,  # Params are per fieldset defined in fieldset_dict
+                        steps=[step],
+                        target=target,
+                        fieldset_dict=fieldset_dict,
+                        formula='"bitmap(sst_sic, bitmap(lsm > 0.5, 1))"',
+                        members=[member],
+                        source=source,
+                        prefetch=prefetch,
+                        specify_domain=False,
+                        write_method=mars_write_method(self.mars_version),
+                    )
+
+                    # Interpolate masked ocean fields
+                    self._build_and_run_retrieve_request(
+                        req_file_name=f"{tag_sea}.req",
+                        data_type=data_type,
+                        levtype="SFC",
+                        param=param_sea,
+                        steps=[step],
+                        target=compile_target(target_maskland, member_type, member),
+                        members=[member],
+                        source=target,
+                        prefetch=prefetch,
+                        specify_domain=True,
+                        write_method=mars_write_method(self.mars_version),
+                    )
+
+                    # Interpolate lsm & skt
+                    self._build_and_run_retrieve_request(
+                        req_file_name=f"{tag_aux}.req",
+                        data_type=data_type,
+                        levtype="SFC",
+                        param=param_lsm + "/" + param_skt,
+                        steps=[step],
+                        target=compile_target(target_aux, member_type, member),
+                        members=[member],
+                        source=source,
+                        prefetch=prefetch,
+                        specify_domain=True,
+                        write_method=mars_write_method(self.mars_version),
+                    )
+
+    def get_geopotential_latlon(self, first_member, bdmember_list):
+        """Get geopotential in lat/lon.
+
+        Args:
+            first_member (int): First bdmember in ensemble
+            bdmember_list (List[int]): Members to fetch data for
+
+        """
         prefetch = False
         # Retrieve for Surface Geopotential in lat/lon
         param = get_value_from_dict(self.mars["SHZ"], self.init_date_str)
         data_type = get_value_from_dict(self.mars["GGZ_type"], self.init_date_str)
         lev_type = get_value_from_dict(self.mars["Zlev_type"], self.init_date_str)
-
-        first_member = self.bdmembers[0]
 
         if self.use_static_gg_oro:
             self.fmanager.input(self.gg_oro_source, "gg_oro.Z")
@@ -421,23 +591,25 @@ class Marsprep(Task):
             # Default to ICMSH_0+* if member is None
             z_source = f'"{self.prepdir}/ICMSH_{first_member or 0}+{self.steps[0]}"'
         # NOTE: for z, the step is always 0, while steps[0] may be shifted!
-        self._build_and_run_request(
+
+        target = f"mars_latlonZ_{first_member or 0}"
+        self._build_and_run_retrieve_request(
             req_file_name="latlonz.req",
             data_type=data_type,
             levtype=lev_type,
             param=param,
             steps=[0],
             members=[first_member],
-            target=f"mars_latlonZ_{first_member or 0}",
+            target=target,
             prefetch=prefetch,
             specify_domain=True,
             source=z_source,
-            write_method="retrieve" if self.mars_version == 6 else "read",
+            write_method=mars_write_method(self.mars_version),
         )
-        for member in self.bdmembers[1:]:
-            self.fmanager.input(
-                f"mars_latlonZ_{first_member or 0}", f"mars_latlonZ_{member}"
-            )
+        for member in bdmember_list:
+            if member == first_member:
+                continue
+            self.fmanager.input(target, f"mars_latlonZ_{member}")
 
     def get_sh_data(self, tag: str, steps: List[int], members_dict: Dict[str, List[int]]):
         """Get SH data."""
@@ -450,19 +622,14 @@ class Marsprep(Task):
                 if member_type == "control_member"
                 else self.mars["type_FC"]
             )
-            self._build_and_run_request(
+            self._build_and_run_retrieve_request(
                 req_file_name=f"{member_type}_{tag}.req",
                 data_type=data_type,
                 levtype="ML",
                 param=param,
                 steps=steps,
                 members=members,
-                target=(
-                    f'"{tag}_0+[STEP]"'
-                    if member_type == "control_member"
-                    or not all(members)  # Default to target="*_0+*" if member is None
-                    else f'"{tag}+[STEP]"'
-                ),
+                target=compile_target(tag, member_type, members),
                 grid=self.mars["grid_ML"],
             )
 
@@ -473,7 +640,7 @@ class Marsprep(Task):
 
         else:
             param = get_value_from_dict(self.mars["SHZ"], self.init_date_str)
-            self._build_and_run_request(
+            self._build_and_run_retrieve_request(
                 req_file_name=f"{tag}Z.req",
                 data_type=self.mars["SHZ_type"],
                 levtype="ML",
@@ -496,19 +663,14 @@ class Marsprep(Task):
                 if member_type == "control_member"
                 else self.mars["type_FC"]
             )
-            self._build_and_run_request(
+            self._build_and_run_retrieve_request(
                 req_file_name=f"{member_type}_{tag}.req",
                 data_type=data_type,
                 levtype="ML",
                 param=param,
                 steps=steps,
                 members=members,
-                target=(
-                    f'"{tag}_0+[STEP]"'
-                    if member_type == "control_member"
-                    or not all(members)  # Default to target="*_0+*" if member is None
-                    else f'"{tag}+[STEP]"'
-                ),
+                target=compile_target(tag, member_type, members),
                 grid=self.mars["grid_ML"],
             )
 
@@ -528,26 +690,21 @@ class Marsprep(Task):
                 else self.mars["type_FC"]
             )
 
-            self._build_and_run_request(
+            self._build_and_run_retrieve_request(
                 req_file_name=f"{member_type}_{tag}.req",
                 data_type=data_type,
                 levtype="SFC",
                 param=param,
                 steps=steps,
                 members=members,
-                target=(
-                    f'"{tag}_0+[STEP]"'
-                    if member_type == "control_member"
-                    or not all(members)  # Default to target="*_0+*" if member is None
-                    else f'"{tag}+[STEP]"'
-                ),
+                target=compile_target(tag, member_type, members),
             )
 
     def get_gg_soil_data(self, tag: str, params: dict):
         """Get soil gridpoint data."""
         for param_name, param in params.items():
             target = f"{tag}.{param_name}"
-            self._build_and_run_request(
+            self._build_and_run_retrieve_request(
                 req_file_name=f"{target}.req",
                 data_type=self.mars["type_AN"],
                 levtype="SFC",
@@ -574,19 +731,14 @@ class Marsprep(Task):
                 if member_type == "control_member"
                 else self.mars["type_FC"]
             )
-            self._build_and_run_request(
+            self._build_and_run_retrieve_request(
                 req_file_name=f"{member_type}_{tag}.snow.req",
                 data_type=data_type,
                 levtype="SOL",
                 param=param,
                 steps=steps,
                 members=members,
-                target=(
-                    f'"{tag}.snow_0+[STEP]"'
-                    if member_type == "control_member"
-                    or not all(members)  # Default to target="*_0+*" if member is None
-                    else f'"{tag}.snow+[STEP]"'
-                ),
+                target=compile_target(f"{tag}.snow", member_type, members),
             )
 
             for step in steps:
@@ -598,7 +750,76 @@ class Marsprep(Task):
 
         return additional_data
 
-    def _build_and_run_request(
+    def _build_retrieve_request(
+        self,
+        data_type: str,
+        levtype: str,
+        param: str,
+        steps: List[int],
+        target: str,
+        members: Optional[List[int]] = None,
+        source: Optional[str] = None,
+        prefetch: bool = True,
+        specify_domain: bool = False,
+        grid: Optional[str] = None,
+        fieldset: Optional[str] = None,
+    ) -> BaseRequest:
+        """Build request to retrieve data from mars.
+
+        Args:
+            data_type: Data type.
+            levtype: Level type.
+            param: Parameter(s) to retrieve.
+            steps: Steps to retrieve.
+            target: Name of the target file.
+            members: Members to retrieve data from.
+            source: Source file to retrieve data from.
+            prefetch: Prefetch.
+            specify_domain: Whether to specify domain or not.
+            grid: The grid to use.
+            fieldset: Name of fieldset. Defaults None.
+
+        Returns:
+            request: BaseRequest to retrieve data
+
+        """
+        request = BaseRequest(
+            class_=self.mars["class"],
+            data_type=data_type,
+            expver=self.mars["expver"],
+            levtype=levtype,
+            date=self.init_date_str,
+            time=self.init_hour_str,
+            steps=steps,
+            param=param,
+            target=target,
+        )
+        self.update_data_request(
+            request,
+            prefetch=prefetch,
+            specify_domain=specify_domain,
+            bdmembers=members,
+            grid=grid,
+            source=source,
+            fieldset=fieldset,
+        )
+
+        return request
+
+    def _run_request_file(
+        self,
+        req_file_name: str,
+    ) -> None:
+        """Run request to retrieve data from mars.
+
+        Args:
+            req_file_name: Name of the request file.
+        """
+        BatchJob(os.environ, wrapper=self.wrapper).run(
+            f"{self.get_binary('mars')} {req_file_name}"
+        )
+
+    def _build_and_run_retrieve_request(
         self,
         req_file_name: str,
         data_type: str,
@@ -629,26 +850,94 @@ class Marsprep(Task):
             write_method: The write method to use when writing the request to file.
             grid: The grid to use.
         """
-        request = BaseRequest(
-            class_=self.mars["class"],
-            data_type=data_type,
-            expver=self.mars["expver"],
-            levtype=levtype,
-            date=self.init_date_str,
-            time=self.init_hour_str,
-            steps=steps,
-            param=param,
-            target=target,
+        request = self._build_retrieve_request(
+            data_type,
+            levtype,
+            param,
+            steps,
+            target,
+            members,
+            source,
+            prefetch,
+            specify_domain,
+            grid,
         )
-        self.update_data_request(
-            request,
-            prefetch=prefetch,
-            specify_domain=specify_domain,
-            bdmembers=members,
-            source=source,
-            grid=grid,
-        )
-        write_mars_req(request, req_file_name, write_method)
-        BatchJob(os.environ, wrapper=self.wrapper).run(
-            f"{self.get_binary('mars')} {req_file_name}"
-        )
+
+        # Write the request to file
+        write_retrieve_mars_req(request, req_file_name, write_method)
+
+        # Execute written request
+        self._run_request_file(req_file_name)
+
+    def _build_and_run_compute_request(
+        self,
+        req_file_name: str,
+        data_type: str,
+        levtype: str,
+        param: str,
+        steps: List[int],
+        target: str,
+        fieldset_dict: dict,
+        formula: str,
+        members: Optional[List[int]] = None,
+        source: Optional[str] = None,
+        prefetch: bool = True,
+        specify_domain: bool = False,
+        write_method: str = "retrieve",
+        grid: Optional[str] = None,
+    ) -> None:
+        """Build and run request to retrieve and process data from mars.
+
+        Args:
+            req_file_name: Name of the request file.
+            data_type: Data type.
+            levtype: Level type.
+            param: Parameter(s) to retrieve.
+            steps: Steps to retrieve.
+            target: Name of the target file.
+            fieldset_dict: Dict with fieldset and fieldset-specific data
+            formula: Formula for compute.
+            members: Members to retrieve data from.
+            source: Source file to retrieve data from.
+            prefetch: Prefetch.
+            specify_domain: Whether to specify domain or not.
+            write_method: The write method to use when writing the request to file.
+            grid: The grid to use.
+        """
+        # First request will write to a new file
+        omode = "w"
+
+        for fieldset, fieldset_data in fieldset_dict.items():
+            fieldset_param = param
+            if "param" in fieldset_data:
+                fieldset_param = fieldset_data["param"]
+
+            fieldset_target = target
+            if "target" in fieldset_data:
+                fieldset_target = fieldset_data["target"]
+
+            request = self._build_retrieve_request(
+                data_type,
+                levtype,
+                fieldset_param,
+                steps,
+                fieldset_target,
+                members,
+                source,
+                prefetch,
+                specify_domain,
+                grid,
+                fieldset,
+            )
+
+            # Write/append request to file
+            write_retrieve_mars_req(request, req_file_name, write_method, omode)
+
+            # All upcomming requests will be appened to the same file
+            omode = "a"
+
+        # Write/append compute request to file
+        write_compute_mars_req(req_file_name, formula, target, omode)
+
+        # Execute written request
+        self._run_request_file(req_file_name)

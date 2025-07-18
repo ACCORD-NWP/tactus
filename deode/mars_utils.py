@@ -11,22 +11,24 @@ from typing import Dict, List, Tuple
 from .datetime_utils import as_datetime
 from .geo_utils import Projection, Projstring
 from .logs import logger
+from .toolbox import Platform
 
 
-def write_mars_req(req, name, method):
-    """Write a request for MARS.
+def write_retrieve_mars_req(req, name: str, method: str, omode: str = "w"):
+    """Write a RETRIEVE/READ request for MARS.
 
     Args:
-       req (BaseRequest):    namelist object to write
-       name     (string):   request file name
-       method   (string): selected method, retrieve or read
+       req (BaseRequest):  namelist object to write
+       name     (string):  request file name
+       method   (string):  selected method, retrieve or read
+       omode    (string):  file open mode (w: create, a: append), default="w"
     """
     sep0 = "{:<2}".format("")
     sep1 = " = "
     sep2 = ","
 
     keys = list(req.request.keys())
-    with open(name, "w") as f:
+    with open(name, omode) as f:
         f.write(str(method.upper()) + ",\n")
 
         for key in keys:
@@ -35,6 +37,21 @@ def write_mars_req(req, name, method):
                 row_str += sep2
 
             f.write(row_str + "\n")
+
+
+def write_compute_mars_req(name: str, formula: str, target: str, omode: str = "w"):
+    """Write a COMPUTE request for MARS.
+
+    Args:
+        name    (string): name of request
+        formula (string): formula for computation.
+        target  (string): target file
+        omode   (string): file open mode (w: create, a: append), default="a"
+    """
+    with open(name, omode) as f:
+        f.write("COMPUTE,\n")
+        f.write(f"  FORMULA = {formula},\n")
+        f.write(f"  TARGET = {target}\n")
 
 
 def get_mars_keys(source, key_filter="-w shortName:s=z"):
@@ -74,32 +91,63 @@ def get_mars_keys(source, key_filter="-w shortName:s=z"):
 
 
 def get_steps_and_members_to_retrieve(
-    steps: List[int], path: Path, file_name: str, members: List[int]
-) -> Tuple[List[int], Dict[str, List[int | None]]]:
+    steps: List[int],
+    path: Path,
+    tag: str,
+    members: List[int],
+    platform: Platform = None,
+    basetime=None,
+    validtime=None,
+) -> Tuple[List[int], Dict[str, List[int | None]], Dict[int, List[int]]]:
     """Check which mars file already exist and returns steps and members which missing.
 
     Args:
         steps   (List[int]): list of steps
         path (pathlib.Path): path to global files
-        file_name  (string): name of file to check
+        tag  (string): name of tag to check
         members (List[int]): members to retrieve
+        platform (Platform, optional): Platform to process macro's in tag
+        basetime (optional): Base time used in platform.substitute. Defaults to None.
+        validtime (optional): Valid time used in platform.substitute. Defaults to None.
 
     Returns:
         steps   (List[int]): steps to retrieve
         members_dict (Dict[str, List[int | None]]): members to retrieve
+        missing_member_steps (Dict[int, List[int]]): dict with missing steps per member
     """
-    step_list = []
     member_list = []
-    for step in steps:
-        for member in members:
+    step_list = []
+    missing_member_steps = {}
+
+    for member in members:
+        missing_steps_current_member = []
+        for step in steps:
             # Default to member 0 if member is None without adding member to
             # the member_list. This covers the deterministic case with no
             # boundary member nesting.
-            mars_file_check = path / f"{file_name}_{member or 0}+{step}"
-            if not os.path.exists(mars_file_check):
-                step_list.append(step)
-                logger.info("Missing file:{}", mars_file_check)
+
+            if platform is not None and "@" in tag:
+                filename = platform.substitute(
+                    tag.replace("@BDMEMBER@", str(member or 0)),
+                    basetime=basetime,
+                    validtime=validtime,
+                    bd_index=step,
+                )
+            else:
+                filename = f"{tag}_{member or 0}+{step}"
+
+            filename = path / filename
+
+            if not os.path.exists(filename):
+                logger.info("Missing file:{}", filename)
                 member_list.append(member)
+                step_list.append(step)
+                missing_steps_current_member.append(step)
+            else:
+                logger.info("Found file:{}", filename)
+
+        if missing_steps_current_member:
+            missing_member_steps[member] = sorted(set(missing_steps_current_member))
 
     steps = sorted(set(step_list))
     # Get perturbed members only
@@ -109,9 +157,6 @@ def get_steps_and_members_to_retrieve(
     members_dict = {}
     if 0 in members:
         members_dict["control_member"] = [0]
-        # If no perturbed members requested, return
-        if not perturbed_members:
-            return steps, members_dict
 
     # Add perturbed members for the cases where
     # - control and perturbed members are requested
@@ -119,9 +164,10 @@ def get_steps_and_members_to_retrieve(
     # - no perturbed members are requested (perturbed_members = [None])
     # The latter case covers the "deterministic" case, where the ensemble only
     # contains one member.
-    members_dict["perturbed_members"] = perturbed_members
+    if perturbed_members:
+        members_dict["perturbed_members"] = perturbed_members
 
-    return steps, members_dict
+    return steps, members_dict, missing_member_steps
 
 
 def check_data_available(basetime, mars):
@@ -362,6 +408,55 @@ def move_files(
                     shutil.move(file_name, target_dir / file_name)
 
 
+def compile_target(
+    tag: str, member_type: str, members: int | List[int], step: str | int = "[STEP]"
+) -> str:
+    """Compiles a target name given member_type, members and (optinally) step.
+
+    Args:
+        tag (str): the tag used for this target
+        member_type (str): member_type for member, control_member or perturbed_members
+        members (int or List[int]): the id of the member(s)
+        step (str or int): the id of the step(s)
+
+    Returns:
+        Compiled target name
+
+    """
+    if member_type == "control_member" or members is None:
+        member = "0"
+    elif isinstance(members, int):
+        # Allow for single member (int) argument in stead of List[int]
+        member = f"{members}"
+    elif not all(members):
+        member = "0"
+    elif len(members) > 1:
+        member = "[NUMBER]"
+    else:
+        member = f"{members[0]}"
+
+    # Merge target parts
+    member_part = f"_{member}" if member is not None else ""
+    step_part = f"+{step}" if step is not None else ""
+
+    target = f'"{tag}{member_part}{step_part}"'
+
+    return target
+
+
+def mars_write_method(mars_version: int) -> str:
+    """Gets the mars write_method depending on mars version.
+
+    Args:
+        mars_version (int): version of mars client
+
+    Returns:
+        write_method: retrieve or read
+
+    """
+    return "retrieve" if mars_version == 6 else "read"
+
+
 @dataclass(kw_only=True)
 class BaseRequest:
     """Represents a structured data request with configurable parameters.
@@ -410,34 +505,12 @@ class BaseRequest:
         }
 
     def update_request(self, upd: dict):
-        """Add or replace heys in a mars request.
+        """Add or replace keys in a mars request.
 
         Args:
             upd (dict): a dict with keys and values
         """
         self.request.update(upd)
-
-    def add_eps_members(self, members: List[int], prefetch: bool):
-        """Fix parameters in case of eps members.
-
-        Args:
-            members    (list): members to retrieve
-            prefetch (string): type of retrieve
-        """
-        if prefetch:
-            if "+[STEP]" in self.target:
-                self.target = self.target.replace("+[STEP]", "_[NUMBER]+[STEP]")
-            else:
-                self.target = f'"{self.target}_[NUMBER]"'
-
-            self.request.update(
-                {
-                    "NUMBER": "/".join(map(str, members)),
-                    "TARGET": self.target,
-                }
-            )
-        else:
-            self.request["TARGET"] = self.target + f"_{members[0]}"
 
     def add_levelist(self, levelist: str):
         """Set multilevel if needed.

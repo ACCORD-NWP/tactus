@@ -702,13 +702,14 @@ class Prep(Task):
         Task.__init__(self, config, __class__.__name__)
         self.nlgen = NamelistGenerator(self.config, "surfex")
         self.archive = self.platform.get_system_value("archive")
+        self.intp_bddir_sfx = self.platform.get_system_value("intp_bddir_sfx")
         # TODO get from args
         self.force = True
 
     def execute(self):
         """Execute."""
         cnmexp = self.config["general.cnmexp"]
-        output = f"{self.archive}/ICMSH{cnmexp}INIT.sfx"
+        output = f"{self.intp_bddir_sfx}/ICMSH{cnmexp}INIT.sfx"
 
         if not os.path.exists(output) or self.force:
             binary = self.get_binary("PREP")

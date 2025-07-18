@@ -27,6 +27,7 @@ These task handles the generation of the non-SURFEX related static data required
 
  * {class}`deode.tasks.c903.C903` creates an initial atmospheric state and boundary files from a global ECMWF file. Use `deode show namelist [--config-file your_config.toml] -t master -n c903_[main|domain]` to see the two namelists required.
  * {class}`deode.tasks.e927.E927` creates an initial atmospheric state and boundary files from a AROME/HARMONIE-AROME file. Use `deode show namelist [--config-file your_config.toml] -t master -n e927` to see the namelist used.
+ * {class}`deode.tasks.interpolsstsic.InterpolSstSic` interpolate SST/SIC from the host model to the model geometry with gl.
 
 ## Forecasting
  * {class}`deode.tasks.forecast.Forecast` runs the forecast for any of the three CSCs. Namelists can be extracted with `deode show namelist [--config-file your_config.yoml] -t master -n forecast` for the upper air namelist and with `-t surfex -n forecast` for the surfex part.
@@ -34,7 +35,8 @@ These task handles the generation of the non-SURFEX related static data required
 ## Postprocessing
  * {class}`deode.tasks.creategrib.CreateGrib` converts FA files to GRIB files.
 
- * {class}`deode.tasks.extractsqlite.ExtractSQLite` extracts data for point verification with harp. Options defined in [config.extractsqlite](#property-config-extractsqlite) and in the parameter lists under `deode/data/sqlite`
+ * {class}`deode.tasks.sqlite.ExtractSQLite` extracts data for point verification with harp. Options defined in [config.extractsqlite](#property-config-extractsqlite) and in the parameter lists under `deode/data/sqlite`
+ * {class}`deode.tasks.sqlite.MergeSQLites` Merge multiple sqlite files into a single sqlite file in the cases of an ensemble. Options defined in [config.extractsqlite](#property-config-extractsqlite). The task is only active in case of more than 1 ensemble member and if the suite control setting `config.suite_control.do_mergesqlite` is `True`.
 
 ## Archiving
 All non temporary files produced by the Deode-Workflow are stored in a directory defined by `config.system.archive` usually defined as `SOME_PATH/YOUR_EXP/archive/YYYY/MM/DD/HH`. Depending on your system these file may be left there for further usage or sent to a more permanent storage. Currently support is implemented or on the way to be implemented for the following
@@ -45,6 +47,7 @@ All non temporary files produced by the Deode-Workflow are stored in a directory
 For archiving we have the following two tasks
  * {class}`deode.tasks.archive.ArchiveStatic` archives the output from the Pgd and E923 tasks. Configured under `config.archiving.ecfs.static`.
  * {class}`deode.tasks.archive.ArchiveHour` archives output from each cycle. Configured under `config.archiving.ecfs`.
+ * {class}`deode.tasks.archive.ArchiveMergedSQLites` archives merged sqlite files. Configured under `config.archiving.merged_sqlite.ecfs`. The task is only active in case of more than 1 ensemble member and if the suite control setting `config.suite_control.do_mergesqlite` is `True`.
 
 ## Cleaning
 These tasks takes care of temporary files and directories or files that has been archived as described above. The rules for the cleaning tasks described below are defined in `config.cleaning.TASK`. Read more about the cleaning [here](#cleaning-of-experiment).

@@ -3,11 +3,13 @@
   case = "@CASE_PREFIX@@CYCLE@_@CSC@_@EVENT_TYPE@_@DOMAIN@_@YMD_START@"
   cnmexp = "DEOD"
   csc = "AROME"
-  cycle = "CY48t3"
+  cycle = "CY49t2"
+  famodel = "destine-@CYCLE@-@CSC@-oper"
   initfile = "@SCRATCH@/deode/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@HISTORY_TEMPLATE@"
   initfile_sfx = "@SCRATCH@/deode/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
   keep_workdirs = true
   surfex = true
+  upd_sst_sic = true
 
 [general.namelist]
   nrazts = "PT1H"
@@ -29,6 +31,8 @@
   bdshift = "PT0H"
   humi_gp = true
   max_interpolation_tasks = 10
+  sst_is_lsm = "auto"
+  sstmodels = ["IFS"]
 
 [boundaries.ifs]
   bdmember = 0
@@ -95,6 +99,7 @@
   vertical_levels = "include/vertical_levels/MF_90.toml"
 
 [pgd]
+  npatch = 3
   one_decade = true
   use_osm = false
 
@@ -104,7 +109,9 @@
   do_archiving = true
   do_cleaning = true
   do_extractsqlite = true
+  do_interpolsstsic = true
   do_marsprep = true
+  do_mergesqlite = true
   do_pgd = true
   do_soil = true
   interpolate_boundaries = true
@@ -117,10 +124,13 @@
   bdclimdir = "@FIXED_BDCLIMDIR@"
   bddir = "@INTP_BDDIR@"
   bddir_sfx = "@MARSDIR@"
+  bddir_sst = "@MARSDIR@"
   bdfile_sfx_template = "ECSFCSFX@DOMAIN@_@BDMEMBER@+@LLL@"
+  bdfile_sst_template = "ECSFCSST@DOMAIN@_@BDMEMBER@+@NNN@"
   bdfile_template = "ELSCF@CNMEXP@ALBC@NNN@"
   casedir = "@SCRATCH@/deode/@CASE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@"
   logs = "@ARCHIVE_ROOT@/logs"
   marsdir = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"
+  sstfile_template = "EXT_SST_SIC@NNN@"

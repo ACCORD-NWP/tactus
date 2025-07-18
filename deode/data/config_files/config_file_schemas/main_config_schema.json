@@ -99,6 +99,22 @@
           "enum": ["lam", "ifs"],
           "type": "string"
         },
+        "sstmodels": {
+          "description": "Coupling model for SST & SIC",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "IFS"
+            ]
+          }
+        },
+        "sst_is_lsm": {
+          "description": "Switch for using SST as LSM",
+          "default": "auto",
+          "enum": ["lsm", "sst", "auto"],
+          "type": "string"
+        },
         "humi_gp": {
           "type": "boolean",
           "description": "Value of TFP_Q%LLGP in domain namelist for c903. True for gridpoint humidity."
@@ -189,7 +205,7 @@
       "description": "Settings for control of log collection.",
       "type": "object",
       "properties": {
-	"staticlogs": {
+        "staticlogs": {
           "description": "Collection settings for static tasks",
           "type": "object",
           "properties": {
@@ -207,7 +223,7 @@
             }
           }
         },
-	"hourlogs": {
+        "hourlogs": {
           "description": "Collection settings for time dependent tasks",
           "type": "object",
           "properties": {
@@ -373,12 +389,20 @@
           "description": "Activates the boundary interpolation",
           "type": "boolean"
         },
+        "do_interpolsstsic": {
+          "description": "Activates the SST & SIC boundary interpolation",
+          "type": "boolean"
+        },
         "do_marsprep": {
           "description": "Run marsprep or skip extraction",
           "type": "boolean"
         },
         "do_extractsqlite": {
           "description": "Activates extraction of selected points to SQLite files for verification.",
+          "type": "boolean"
+        },
+        "do_mergesqlite": {
+          "description": "Activates merging of extracted sqlite files. Requires do_extractsqlite to be true, and number of ensemble members to be greater than 1, to have an effect.",
           "type": "boolean"
         },
         "create_static_data": {
@@ -478,9 +502,17 @@
           "type": "string",
           "description": "Name template for input initial surfex file for prep"
         },
+        "bdfile_sst_template": {
+          "type": "string",
+          "description": "Name template for input SST & SIC files of the host model"
+        },
         "bdfile_template": {
           "type": "string",
           "description": "Name template for input boundary files"
+        },
+        "sstfile_template": {
+          "type": "string",
+          "description": "Name template for SST & SIC input boundary files interpolated to the model grid (currently hard-coded in model code)"
         },
         "bddir_sfx": {
           "type": "string",
@@ -494,6 +526,11 @@
           "type": "string",
           "description": "Location of boundaries on the current domain, i.e. the output directory of e927",
           "default": "@WRK@"
+        },
+        "intp_bddir_sfx": {
+          "type": "string",
+          "description": "Location of the inital surfex file for the current domain, i.e. the output directory of Prep",
+          "default": "@ARCHIVE@"
         },
         "climdir": {
           "type": "string",
@@ -709,17 +746,31 @@
               "format": "duration"
             },
             "start": {
-              "description": "Start",
+              "description": "Start time, given as a date-time string 'YYYY-MM-DDTHH:mm:ssZ' or duration, e.g. '-P1D' for yesterday, which is relative to the current date at 00Z.",
               "type": "string",
-              "format": "date-time"
+              "oneOf": [
+                {
+                  "format": "date-time"
+                },
+                {
+                  "format": "duration"
+                }
+              ]
             },
             "end": {
-              "description": "End",
+              "description": "End time if the run covers several cycles. Same format as start",
               "type": "string",
-              "format": "date-time"
+              "oneOf": [
+                {
+                  "format": "date-time"
+                },
+                {
+                  "format": "duration"
+                }
+              ]
             },
             "list": {
-              "description": "List",
+              "description": "List of dates, placeholder for future needs.",
               "type": "array",
               "items": {
                 "type": "string",
@@ -849,6 +900,10 @@
             "storm"
           ]
         },
+	"famodel": {
+	  "description": "faModelName for handling grib output settings. Needed to specify encodings of ensemble members as well as sub-hourly outputs. Do not replace default name.",
+	  "type": "string"
+	},
         "initfile": {
           "description": "Initial file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",
           "type": "string"
@@ -900,6 +955,23 @@
           "description": "Switch on wind farm parameterisation",
           "type": "boolean",
           "default": false
+        },
+        "upd_sst_sic": {
+          "description": "Switch to update SST/SIC during forecast",
+          "type": "boolean",
+          "default": false
+        },
+        "surfex_sea_ice": {
+          "description": "Treatment of sea ice in surfex",
+          "type": "string",
+          "enum": ["sice", "none"],
+          "default": "sice"
+        },
+        "precision": {
+          "description": "Floating point precision",
+          "type": "string",
+          "enum": ["", "-sp"],
+          "default": "-sp"
         }
       },
       "required": ["times"]

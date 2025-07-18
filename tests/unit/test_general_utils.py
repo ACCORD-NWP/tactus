@@ -7,6 +7,7 @@ import pytest
 from deode.general_utils import (
     expand_dict_key_slice,
     merge_dicts,
+    recursive_delete_keys,
     recursive_dict_deviation,
     value_from_any_generator,
     value_from_mapping_generator,
@@ -232,3 +233,47 @@ class TestRecursiveDictDeviation:
         result = recursive_dict_deviation(base_dict, deviating_dict)
         expected_result = {"b": {"c": "different_type"}}
         assert result == expected_result
+
+
+class TestRecursiveDeleteKeys:
+    """Unit tests for the recursive_delete_keys function."""
+
+    def test_with_empty_dicts(self):
+        """Test with empty dictionaries."""
+        mapping = {}
+        keys_dict = {}
+        expected_result = {}
+        recursive_delete_keys(mapping, keys_dict)
+        assert mapping == expected_result
+
+    def test_with_no_keys_to_delete(self):
+        """Test with no keys to delete."""
+        mapping = {"a": 1, "b": 2}
+        keys_dict = {}
+        expected_result = mapping
+        recursive_delete_keys(mapping, keys_dict)
+        assert mapping == expected_result
+
+    def test_with_single_key_to_delete(self):
+        """Test with a single key to delete."""
+        mapping = {"a": 1, "b": 2}
+        keys_dict = {"a": None}
+        expected_result = {"b": 2}
+        recursive_delete_keys(mapping, keys_dict)
+        assert mapping == expected_result
+
+    def test_with_nested_dicts(self):
+        """Test with nested dictionaries."""
+        mapping = {"a": 1, "b": {"c": 2, "d": 3}}
+        keys_dict = {"b": {"c": None}}
+        expected_result = {"a": 1, "b": {"d": 3}}
+        recursive_delete_keys(mapping, keys_dict)
+        assert mapping == expected_result
+
+    def test_empty_dict_deletion(self):
+        """Test with recursive delete."""
+        mapping = {"a": 1, "b": {"c": 2, "d": {"e": 3}}}
+        keys_dict = {"b": {"d": {"e": None}}}
+        expected_result = {"a": 1, "b": {"c": 2}}
+        recursive_delete_keys(mapping, keys_dict)
+        assert mapping == expected_result

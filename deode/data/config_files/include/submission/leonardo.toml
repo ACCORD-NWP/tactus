@@ -71,6 +71,10 @@
   RTTOV_COEFDIR = "/leonardo_work/DestE_330_25/users/SAN/static/DEODE/satellite/rtcoef_rttov12/harm_coef/"
   UCX_LOG_LEVEL = "error"
 
+[submission.task_exceptions.InterpolSstSic]
+  binary = "gl"
+  bindir = "@INSTALL_DIR@/gl/leonardo.cy49t2.intel/bin"
+
 [submission.task_exceptions.Marsprep]
   bindir = "/leonardo_work/DestE_330_25/users/SAN/install/mars"
   mars_version = "7"
@@ -104,6 +108,8 @@
   NODES = "#SBATCH --nodes=3"
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=8"
   WALLTIME = "#SBATCH --time=00:10:00"
+
+  #FIXME: This path seems to be a path on ATOS and not on LEONARDO
 
 [submission.types.background_hpc]
   SCHOST = "localhost"
@@ -180,7 +186,7 @@
   NPROCX = 1
   NPROCY = 1
   SCHOST = "leonardo"
-  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep", "E923Update"]
+  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep", "E923Update", "InterpolSstSic"]
   WRAPPER = "srun"
 
 [submission.types.serial.BATCH]

@@ -1,5 +1,6 @@
 [general]
   csc = "ALARO"
+  precision = ""
   surfex = false
 
 [general.output_settings]

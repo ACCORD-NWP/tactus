@@ -22,10 +22,10 @@
   output_freq = "@FULLPOS_OUTPUT_FREQ@"
   output_root = "@SCRATCH@/DE_Impact/EHYPE"
   output_subpath = "@CASE@_@YMD@_@HH@/@MEMBER_STR@"
-  run_root = "@SCRATCH@/DE_Impact/EHYPE/"
+  run_root = "@SCRATCH@/DE_Impact/EHYPE"
   user_ecf_host = "@ECF_HOST_RESOLVED@"
   user_ecf_port = "@ECF_PORT_RESOLVED@"
-  work_root = "/perm/@USER@/DE_Impact/EHYPE/"
+  work_root = "/perm/@USER@/DE_Impact/EHYPE"
 
 [impact.ehype.StartImpactModels]
   arguments = "@ARCHIVE@/ehype.json"

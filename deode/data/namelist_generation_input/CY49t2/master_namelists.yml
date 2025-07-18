@@ -114,7 +114,7 @@ e923_base:
   NAMFAINIT:
     JPXTRO: 2000
   NAMGRIB:
-    NCYCLE: 48
+    NCYCLE: 49
   NAMPAR0:
     NPROC: 1
   NAMPAR1:
@@ -405,8 +405,6 @@ f4_AROME:
     YS_NL%REFVALC: 0.0
     YTKE_NL%NCOUPLING: 0
     YTKE_NL%NREQIN: -1
-  NAMGRIB:
-    NCYCLE: 48
   NAMIO_SERV:
     NIO_SERV_BUF_MAXSIZE: 20
     NIO_SERV_METHOD: 2
@@ -414,6 +412,9 @@ f4_AROME:
     NMSG_LEVEL_SERVER: 0
     NPROCESS_LEVEL: 5
     NPROC_IO: ${cfg:namelist.nproc_io,0}
+  NAMMCC:
+    LMCC01_MSE: ${cfg:general.upd_sst_sic}
+    LMCCECSST: ${cfg:general.upd_sst_sic}
   NAMOPH:
     CFNHWF: ECHIS
     LINC: true
@@ -491,7 +492,7 @@ f4_AROME:
     XMULAF: -1.85
   NAMRIP:
     CSTOP: ${cfg:namelist.cstop}
-    TSTEP: ${cfg:domain.tstep}
+    TSTEP: ${timestep:${cfg:domain.tstep}}
   NAMSATS:
     LPARTIAL_COEF_FILES: true
   NAMTOPH:
@@ -933,8 +934,6 @@ f4_ALARO:
     YG_NL%LSP: false
     YG_NL%NCOUPLING: 0
     YG_NL%NREQIN: 0
-  NAMGRIB:
-    NCYCLE: 48
   NAMIO_SERV:
     NIO_SERV_BUF_MAXSIZE: 20
     NIO_SERV_METHOD: 2
@@ -942,6 +941,9 @@ f4_ALARO:
     NMSG_LEVEL_SERVER: 0
     NPROCESS_LEVEL: 5
     NPROC_IO: ${cfg:namelist.nproc_io,0}
+  NAMMCC:
+    LMCC01_MSE: ${cfg:general.upd_sst_sic}
+    LMCCECSST: ${cfg:general.upd_sst_sic}
   NAMJFH:
     N_VMASS: 0
   NAMOPH:
@@ -1121,7 +1123,7 @@ f4_ALARO:
     RLAMB_SOLID: 0.6
   NAMRIP:
     CSTOP: ${cfg:namelist.cstop}
-    TSTEP: ${cfg:domain.tstep}
+    TSTEP: ${timestep:${cfg:domain.tstep}}
   NAMTOPH:
     ETCVIM: 0.0
     ETNEBU: 0.0
@@ -1377,6 +1379,9 @@ f4_HARMONIE_AROME:
     NMSG_LEVEL_SERVER: 0
     NPROCESS_LEVEL: 5
     NPROC_IO: ${cfg:namelist.nproc_io,0}
+  NAMMCC:
+    LMCC01_MSE: ${cfg:general.upd_sst_sic}
+    LMCCECSST: ${cfg:general.upd_sst_sic}
   NAMNRTAER:
     LAECCN2CLDR: false
     LAEIFN: false
@@ -1496,7 +1501,7 @@ f4_HARMONIE_AROME:
     RLAMB_SOLID: 0.6
   NAMRIP:
     CSTOP: ${cfg:namelist.cstop}
-    TSTEP: ${cfg:domain.tstep}
+    TSTEP: ${timestep:${cfg:domain.tstep}}
   NAMSPBD:
     LSPBDC: false
   NAMSTOPH:
@@ -1595,6 +1600,7 @@ f4_common:
   NAMDYNA:
     LSLAG: true
   NAMFA:
+    CMODEL: ${cfg:general.cmodel}
     LEXTERN: true
     NBITCS: -1
     NBITPG: -1
@@ -1610,6 +1616,9 @@ f4_common:
     YS_NL%NREQIN: 0
   NAMINI:
     LDFI: false
+  NAMGRIB:
+    NCYCLE: 49
+    NENSFNB: ${cfg:general.member}
   NAMPAR0:
     LMPOFF: false
     MBX_SIZE: 2048000000

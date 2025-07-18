@@ -4,7 +4,7 @@
 import shutil
 from math import atan, floor, sin
 
-from .datetime_utils import as_datetime, as_timedelta
+from .datetime_utils import as_datetime, as_timedelta, evaluate_date
 from .fullpos import Fullpos, flatten_list
 from .logs import logger
 from .os_utils import Search
@@ -17,10 +17,14 @@ def set_times(config):
     Args:
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
+    Raises:
+        ValueError: If start > end
     Returns:
         update (dict): Dict of corrected basetime/validtime
     """
     times = config["general.times"].dict()
+    if "start" in times:
+        times.update({"start": evaluate_date(times["start"])})
     if "basetime" not in times:
         times.update({"basetime": times["start"]})
         logger.debug("Set basetime to {}", times["basetime"])
@@ -37,6 +41,17 @@ def set_times(config):
         times.update({"end": times["basetime"]})
         logger.debug("Set end to {}", times["end"])
 
+    times.update({"start": evaluate_date(times["start"])})
+    times.update({"end": evaluate_date(times["end"])})
+
+    if as_datetime(times["start"]) > as_datetime(times["end"]):
+        raise ValueError(
+            (
+                f"general.times.start ({times['start']}) "
+                + "cannot be larger than "
+                + f"general.times.end ({times['end']})"
+            )
+        )
     update = {"general": {"times": times}}
     return update
 

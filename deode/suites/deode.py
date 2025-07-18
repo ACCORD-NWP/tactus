@@ -60,18 +60,17 @@ class DeodeSuiteDefinition(SuiteDefinition):
         # Construct the suite from individual ecFlow components
         final_cleaning_trigger = None
         time_dependent_trigger_node = None
-        prep_run = None
+        prep_run = EcflowSuiteTask(
+            "PrepRun",
+            self.suite,
+            config,
+            self.task_settings,
+            self.ecf_files,
+            input_template=input_template,
+            ecf_files_remotely=self.ecf_files_remotely,
+        )
+        # Update triggers for final cleaning and time dependent nodes
         if config["suite_control.do_cleaning"]:
-            prep_run = EcflowSuiteTask(
-                "PrepRun",
-                self.suite,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                ecf_files_remotely=self.ecf_files_remotely,
-            )
-            # Update triggers for final cleaning and time dependent nodes
             final_cleaning_trigger = [prep_run]
             time_dependent_trigger_node = prep_run
 

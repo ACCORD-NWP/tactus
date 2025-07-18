@@ -1,9 +1,19 @@
 #!/usr/bin/env python3
 """Unit tests for the derived_types generation module."""
 
+import re
+
 import pytest
 
 from deode.derived_variables import derived_variables, set_times
+
+
+def test_set_times(default_config):
+    config = default_config.copy(
+        update={"general": {"times": {"end": "P1D", "start": "P2D"}}}
+    )
+    with pytest.raises(ValueError, match=re.escape("cannot be larger than")):
+        config = set_times(config)
 
 
 @pytest.fixture(scope="module")

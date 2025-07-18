@@ -63,3 +63,15 @@ class ArchiveFDB(ArchiveTask):
             config (deode.ParsedConfig): Configuration
         """
         ArchiveTask.__init__(self, config, "FDB", include=["fdb"])
+
+
+class ArchiveMergedSQLites(ArchiveTask):
+    """Archving task for time dependent data."""
+
+    def __init__(self, config):
+        """Construct object.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+        """
+        ArchiveTask.__init__(self, config, "merged_sqlite", exclude=["fdb"])

@@ -513,7 +513,7 @@ f4_AROME:
     XMULAF: -1.85
   NAMRIP:
     CSTOP: ${cfg:namelist.cstop}
-    TSTEP: ${cfg:domain.tstep}
+    TSTEP: ${timestep:${cfg:domain.tstep}}
   NAMSATS:
     LPARTIAL_COEF_FILES: true
   NAMTOPH:
@@ -1113,7 +1113,7 @@ f4_ALARO:
     RLAMB_SOLID: 0.6
   NAMRIP:
     CSTOP: ${cfg:namelist.cstop}
-    TSTEP: ${cfg:domain.tstep}
+    TSTEP: ${timestep:${cfg:domain.tstep}}
   NAMTOPH:
     ETCVIM: 0.0
     ETNEBU: 0.0
@@ -1172,6 +1172,7 @@ f4_common:
   NAMDYNA:
     NDLNPR: 1
   NAMFA:
+    CMODEL: ${cfg:general.cmodel}
     LEXTERN: true
     NBITCS: -1
     NBITPG: -1
@@ -1183,6 +1184,8 @@ f4_common:
     YL_NL%NREQIN: 0
     YR_NL%NREQIN: 0
     YS_NL%NREQIN: 0
+  NAMGRIB:
+    NENSFNB: ${cfg:general.member}
   NAMINI:
     LDFI: false
   NAMPAR0:

@@ -57,3 +57,14 @@ class BaseGenerator(Generic[GeneratorT]):
     @abstractmethod
     def __iter__(self) -> Generator[GeneratorT, None, None]:
         """Overwrite this method to define the generator's behaviour."""
+
+
+@pydantic_dataclass
+class CmodelGenerator(BaseGenerator[dict]):
+    """Generator class to generate a full fdb.grib_set dictionary per member."""
+
+    def __iter__(self):
+        if len(self.members) == 1:
+            yield "destine-@CYCLE@-@CSC@-oper"
+        for member in self.members:
+            yield f"destine-@CYCLE@-@CSC@-enfo-{member}"

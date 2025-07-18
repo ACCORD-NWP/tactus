@@ -1,9 +1,9 @@
 """Module to create the different parts of the DEODE ecFlow suite."""
 
 from datetime import datetime, timedelta
-from typing import Generator, Optional, Tuple
+from typing import Generator, List, Optional, Tuple
 
-from deode.suites.suite_utils import Cycle, Cycles, lbc_times_generator
+from deode.suites.suite_utils import Cycles, lbc_times_generator
 
 from ..datetime_utils import (
     as_datetime,
@@ -575,7 +575,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
         lbc_time_generator: Generator[Tuple[int, datetime], None, None],
         trigger=None,
         ecf_files_remotely=None,
-        do_prep: bool = True,
+        is_first_cycle: bool = True,
         limit: Optional[EcflowSuiteLimit] = None,
     ):
         """Class initialization."""
@@ -586,7 +586,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
         self.ecf_files = ecf_files
         self.trigger = trigger
         self.ecf_files_remotely = ecf_files_remotely
-        self.do_prep = do_prep
+        self.is_first_cycle = is_first_cycle
         self.limit = limit
         self.bdint = bdint
         self.lbc_time_generator = lbc_time_generator
@@ -623,20 +623,49 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
                     ecf_files_remotely=self.ecf_files_remotely,
                 )
 
+            # do we need to run E927/C903 boundary interpolation, or just SST/SIC
+            if (
+                self.config["suite_control.mode"] == "restart"
+                or (
+                    self.config["suite_control.mode"] == "start"
+                    and not self.is_first_cycle
+                )
+            ) and self.config["suite_control.do_interpolsstsic"]:
+                do_intp_task = False
+            else:
+                do_intp_task = True
+
             interpolation_task_name = (
                 "C903" if self.config["suite_control.do_marsprep"] else "E927"
             )
-            EcflowSuiteTask(
-                interpolation_task_name,
-                self,
-                self.config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=self.input_template,
-                variables=variables,
-                trigger=split_mars_task,
-                ecf_files_remotely=self.ecf_files_remotely,
-            )
+            if do_intp_task:
+                EcflowSuiteTask(
+                    interpolation_task_name,
+                    self,
+                    self.config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=self.input_template,
+                    variables=variables,
+                    trigger=split_mars_task,
+                    ecf_files_remotely=self.ecf_files_remotely,
+                )
+
+            if (
+                self.config["suite_control.do_interpolsstsic"]
+                and interpolation_task_name == "C903"
+            ):
+                EcflowSuiteTask(
+                    "InterpolSstSic",
+                    self,
+                    self.config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=self.input_template,
+                    variables=variables,
+                    trigger=split_mars_task,
+                    ecf_files_remotely=self.ecf_files_remotely,
+                )
 
             yield self
 
@@ -651,11 +680,10 @@ class LBCFamily(EcflowSuiteFamily):
         task_settings: TaskSettings,
         input_template,
         ecf_files,
-        cycle: Cycle,
+        cycles: Cycles,
         trigger=None,
         lbc_family_trigger=None,
         ecf_files_remotely=None,
-        do_prep: bool = True,
         dry_run: bool = False,
     ):
         """Class initialization."""
@@ -672,16 +700,18 @@ class LBCFamily(EcflowSuiteFamily):
             lbc_limit = EcflowSuiteLimit("lbc_limit", bdmax)
             self.ecf_node.add_limit(lbc_limit.limit_name, lbc_limit.max_jobs)
 
-        basetime = as_datetime(cycle.basetime)
+        basetime = as_datetime(cycles.current_cycle.basetime)
         forecast_range = as_timedelta(config["general.times.forecast_range"])
         endtime = basetime + forecast_range
         bdint = as_timedelta(config["boundaries.bdint"])
+        is_first_cycle = cycles.current_index == 0
         lbc_times_generator_instance = lbc_times_generator(
             basetime,
             endtime,
             bdint,
             mode=config["suite_control.mode"],
-            do_prep=do_prep,
+            is_first_cycle=is_first_cycle,
+            do_interpolsstsic=config["suite_control.do_interpolsstsic"],
         )
         lbc_family_generator_instance = LBCSubFamilyGenerator(
             self,
@@ -693,7 +723,7 @@ class LBCFamily(EcflowSuiteFamily):
             lbc_times_generator_instance,
             trigger=lbc_family_trigger,
             ecf_files_remotely=ecf_files_remotely,
-            do_prep=do_prep,
+            is_first_cycle=is_first_cycle,
             limit=lbc_limit if not dry_run else None,
         )
 
@@ -765,10 +795,9 @@ class InterpolationFamily(EcflowSuiteFamily):
             task_settings,
             input_template,
             ecf_files,
-            cycles.current_cycle,
+            cycles,
             lbc_family_trigger=e923_update_task,
             ecf_files_remotely=ecf_files_remotely,
-            do_prep=do_prep,
             dry_run=dry_run,
         )
 
@@ -1165,6 +1194,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                 )
                 ready_for_cycle = inputdata
 
+            member_families: List[EcflowSuiteFamily] = []
             for member in config["eps.general.members"]:
                 member_family = EcflowSuiteFamily(
                     f"mbr{member:03d}",
@@ -1173,6 +1203,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     variables={"MEMBER": member},
                     ecf_files_remotely=ecf_files_remotely,
                 )
+                member_families.append(member_family)
 
                 mbr_trigger = trigger
                 if config["suite_control.member_specific_static_data"]:
@@ -1248,8 +1279,65 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     external_cycle_cleaning_trigger=postcycle_families.get(member),
                     ecf_files_remotely=ecf_files_remotely,
                 )
+            if (
+                config["suite_control.do_extractsqlite"]
+                and config["suite_control.do_mergesqlite"]
+                and len(config["eps.general.members"]) > 1
+            ):
+                MergeSQLitesFamily(
+                    time_family,
+                    config,
+                    task_settings,
+                    ecf_files,
+                    trigger=member_families,
+                    input_template=input_template,
+                    ecf_files_remotely=ecf_files_remotely,
+                )
 
     @property
     def last_node(self):
         """Return the last family node of self."""
         return self._last_node
+
+
+class MergeSQLitesFamily(EcflowSuiteFamily):
+    """Class for creating the MergeSQLites ecFlow family."""
+
+    def __init__(
+        self,
+        parent,
+        config,
+        task_settings: TaskSettings,
+        ecf_files,
+        trigger=None,
+        input_template=None,
+        ecf_files_remotely=None,
+    ):
+        """Class initialization."""
+        super().__init__(
+            "MergeSQLites",
+            parent,
+            ecf_files,
+            trigger=trigger,
+            ecf_files_remotely=ecf_files_remotely,
+        )
+        merge_sqlites = EcflowSuiteTask(
+            "MergeSQLites",
+            self,
+            config,
+            task_settings,
+            ecf_files,
+            input_template=input_template,
+            trigger=trigger,
+            ecf_files_remotely=ecf_files_remotely,
+        )
+        EcflowSuiteTask(
+            "ArchiveMergedSQLites",
+            self,
+            config,
+            task_settings,
+            ecf_files,
+            trigger=merge_sqlites,
+            input_template=input_template,
+            ecf_files_remotely=ecf_files_remotely,
+        )

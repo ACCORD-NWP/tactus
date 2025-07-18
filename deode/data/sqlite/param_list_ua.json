@@ -1,0 +1,48 @@
+[ 
+{ "harp_param":"T",
+  "method":"bilin",
+  "grib_id":{"shortName":"t", "productDefinitionTemplateNumber":"0",
+             "typeOfLevel":"isobaricInhPa",
+             "level":[ 50, 100, 150, 200, 250, 300, 400, 500, 700, 850, 925, 1000]}
+},
+
+{ "harp_param":"RH",
+  "method":"bilin",
+  "grib_id":{"shortName":"r", "productDefinitionTemplateNumber":"0",
+             "typeOfLevel":"isobaricInhPa",
+             "level":[ 50, 100, 150, 200, 250, 300, 400, 500, 700, 850, 925, 1000]}
+},
+{ "harp_param":"Q",
+  "method":"bilin",
+  "grib_id":{"shortName":"q", "productDefinitionTemplateNumber":"0",
+             "typeOfLevel":"isobaricInhPa",
+             "level":[ 50, 100, 150, 200, 250, 300, 400, 500, 700, 850, 925, 1000]}
+},
+{ "harp_param":"Z",
+  "method":"bilin",
+  "grib_id":{"shortName":"z", "productDefinitionTemplateNumber":"0",
+             "typeOfLevel":"isobaricInhPa",
+             "level":[ 50, 100, 150, 200, 250, 300, 400, 500, 700, 850, 925, 1000]}
+},
+
+{ "harp_param" : "S",
+  "method" : "bilin",
+  "grib_id" : [ {"shortName":"u"}, {"shortName":"v"} ],
+  "common":{
+             "productDefinitionTemplateNumber":"0",
+             "typeOfLevel":"isobaricInhPa",
+             "level":[ 50, 100, 150, 200, 250, 300, 400, 500, 700, 850, 925, 1000]},
+  "function":"vector_norm"
+},
+
+{ "harp_param" : "D",
+  "method" : "bilin",
+  "grib_id" : [ {"shortName":"u"}, {"shortName":"v"} ],
+  "common":{
+             "productDefinitionTemplateNumber":"0",
+             "typeOfLevel":"isobaricInhPa",
+             "level":[ 50, 100, 150, 200, 250, 300, 400, 500, 700, 850, 925, 1000]},
+  "function":"vector_angle"
+}
+]
+
