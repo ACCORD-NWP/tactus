@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.18.1] - 2025-07-22
+
+### Fixed
+- Sort list of empty dirs in CleanOldData. [\#1251](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1251)(@kastelcn)
+
 ## [0.18.0] - 2025-07-16
 
 ### Added
