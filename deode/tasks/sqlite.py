@@ -144,10 +144,14 @@ class MergeSQLites(Task):
         model_name = self.platform.substitute(
             self.config["extractsqlite.sqlite_model_name"]
         )
-        paramfile_sfc = self.platform.substitute(self.config["extractsqlite.parameter_list_sfc"])
+        paramfile_sfc = self.platform.substitute(
+            self.config["extractsqlite.parameter_list_sfc"]
+        )
         if not os.path.isfile(paramfile_sfc):
             raise FileNotFoundError(f"Missing parameter file: {paramfile_sfc}")
-        paramfile_ua = self.platform.substitute(self.config["extractsqlite.parameter_list_ua"])
+        paramfile_ua = self.platform.substitute(
+            self.config["extractsqlite.parameter_list_ua"]
+        )
         if not os.path.isfile(paramfile_ua):
             raise FileNotFoundError(f"Missing parameter file: {paramfile_ua}")
         logger.info("Parameter list sfc: {}", paramfile_sfc)
@@ -155,7 +159,7 @@ class MergeSQLites(Task):
         for paramfile in [paramfile_sfc, paramfile_ua]:
             with open(paramfile, "r", encoding="utf-8") as file_:
                 parameter_list = json.load(file_)
-   
+
             for param in parameter_list:
                 harp_param = param["harp_param"]
                 # Get param specific sqlite template and path
@@ -176,7 +180,7 @@ class MergeSQLites(Task):
                     + json.dumps(sqlite_file_dict, indent=4)
                 )
                 logger.info(f"Merged filepath: {merged_sqlite_file_path}")
-    
+
                 # Initialize the merged DataFrame
                 df_merged: pd.DataFrame | None = None
                 for member, file_path in sqlite_file_dict.items():
@@ -185,31 +189,34 @@ class MergeSQLites(Task):
                             f"SQLite file not found for member {member}: {file_path}"
                         )
                         continue
-    
+
                     with sqlite3.connect(file_path) as connection:
                         df_member = pd.read_sql_query("SELECT * FROM FC", connection)
-    
+
                     # Find column that contains model_name
                     value_cols = [col for col in df_member.columns if model_name in col]
                     if not value_cols:
                         logger.warning(
-                            f"No value column containing '{model_name}' found in {file_path}"
+                            f"No value column containing '{model_name}' \
+                                    found in {file_path}"
                         )
                         continue
                     if len(value_cols) > 1:
                         raise ValueError(f"Multiple value columns found in {file_path}")
-    
+
                     df_member = df_member.rename(
                         columns={value_cols[0]: f"{model_name}_mbr{member:03d}"}
                     )
-    
+
                     # Merge dataframes by keys that do not contain model_name
-                    merge_keys = [col for col in df_member.columns if model_name not in col]
+                    merge_keys = [
+                        col for col in df_member.columns if model_name not in col
+                    ]
                     if df_merged is None:
                         df_merged = df_member
                     else:
                         df_merged = df_merged.merge(df_member, on=merge_keys, how="inner")
-    
+
                 if df_merged is not None:
                     # Reorder columns: keys first, *_mbrXXX columns at the end
                     key_cols = [
@@ -221,11 +228,13 @@ class MergeSQLites(Task):
                     ]
                     mbr_cols = [col for col in df_merged.columns if col not in key_cols]
                     df_merged = df_merged[key_cols + mbr_cols]
-    
+
                     # Write merged dataframe to file
                     os.makedirs(merged_sqlite_file_path.parent, exist_ok=True)
                     with sqlite3.connect(merged_sqlite_file_path) as connection:
-                        df_merged.to_sql("FC", connection, if_exists="replace", index=False)
+                        df_merged.to_sql(
+                            "FC", connection, if_exists="replace", index=False
+                        )
                     logger.info(f"Merged file written to: {merged_sqlite_file_path}")
                 else:
-                    logger.warning(f"No data merged for parameter {harp_param}")   
+                    logger.warning(f"No data merged for parameter {harp_param}")
