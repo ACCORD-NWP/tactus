@@ -94,7 +94,7 @@ class CleanOldData(Task):
             ):
                 empty_dirs.add(root)
 
-        return list(empty_dirs)
+        return sorted(empty_dirs, key=lambda x: x.count(os.sep), reverse=True)
 
     def remove_list(self, dir_list, files=False):
         """Remove directories/files from the list.
