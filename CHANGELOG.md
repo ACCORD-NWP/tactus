@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Updated FDB parameters for archiving of ensemble forecasts [\#1222](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1222)(@KristianHMoller)
 
+### Fixed
+- Fixed eccodes version to 2.41 in pyproject.toml [\#1261](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1261)(@KristianHMoller)
+
 ## [0.18.1] - 2025-07-22
 
 ### Fixed
