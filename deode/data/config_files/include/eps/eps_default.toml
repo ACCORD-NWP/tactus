@@ -1,3 +1,6 @@
+[eps.member_settings.fdb.grib_set]
+  type = "deode.eps.custom_generators.FDBTypeGenerator"
+
 [eps.member_settings.general]
   famodel = "deode.eps.custom_generators.CmodelGenerator"
 

@@ -7,7 +7,7 @@ inherit from the BaseGenerator class and implement the __iter__ method.
 Example from toml file:
 
 [eps.member_settings.dataassimilation]
-  ensemble_jk = "deode.eps.custom_generators:BoolGenerator"
+  ensemble_jk = "deode.eps.custom_generators.BoolGenerator"
 
 Exports:
     BaseGenerator: Base class that all other generators inherit from.
@@ -60,6 +60,21 @@ class BaseGenerator(Generic[GeneratorT]):
 
 
 @pydantic_dataclass
+class FDBTypeGenerator(BaseGenerator[dict]):
+    """Generator class to generate type values for FDB."""
+
+    def __iter__(self):
+        if len(self.members) == 1:
+            yield "fc"
+        for member in self.members:
+            # For now, type="cf" does not have "number" in mars namespace
+            # and thus cannot be archived to FDB enfo stream
+            # The line below is the correct one to use when type="cf"
+            # is supported in mars namespace
+            # yield "cf" if member == 0 else "pf" pylint: disable=ERA001
+            yield "pf" if member == 0 else "pf"
+
+
 class CmodelGenerator(BaseGenerator[dict]):
     """Generator class to generate a full fdb.grib_set dictionary per member."""
 

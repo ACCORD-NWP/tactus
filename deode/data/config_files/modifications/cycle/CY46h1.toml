@@ -3,9 +3,6 @@
   precision = ""
   windfarm = false
 
-[fdb.grib_set]
-  generatingProcessIdentifier = "1"
-
 [platform]
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef/"
 
