@@ -8,9 +8,6 @@
 [creategrib.CreateGrib]
   conversions = ["surfex"]
 
-[fdb.grib_set]
-  generatingProcessIdentifier = "3"
-
 [pgd]
   npatch = 3
 

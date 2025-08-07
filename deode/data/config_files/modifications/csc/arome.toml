@@ -1,5 +1,2 @@
 [general]
   csc = "AROME"
-
-[fdb.grib_set]
-  backgroundProcess = "4"

@@ -5,9 +5,6 @@
 [domain]
   orographic_smoothing_method = "spectral"
 
-[fdb.grib_set]
-  backgroundProcess = "5"
-
 [fullpos.selection]
   master = ["master_selection_@CSC@", "master_subhour_selection_@CSC@"]
 

@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add first operational ensemble config modification files. Add 750m domain template. [\#1215](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1215) (@mafdmi)
 
+## [0.18.1] - 2025-07-22
+
+### Fixed
+- Sort list of empty dirs in CleanOldData. [\#1251](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1251)(@kastelcn)
 
 ## [0.18.0] - 2025-07-16
 
