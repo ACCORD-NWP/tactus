@@ -37,9 +37,12 @@ deode case --config-file <path_to_config_file> --start-suite
 The `eps_3members_IFSENS_common_mars_prep.toml` file contains the following settings:
 
 ```toml
+[general.times]
+  start = "-P1D"
+
 [boundaries.ifs]
-  selection = "IFSENS"
   bdmembers = [0, 1, 2]
+  selection = "IFSENS"
 
 [eps.general]
   members = "0:3"
@@ -51,6 +54,9 @@ The `eps_3members_IFSENS_common_mars_prep.toml` file contains the following sett
 Translated into words, including this file in the main config file will make the `deode case` command produce a config file with three members:
 
 ```toml
+[general.times]
+  start = "-P1D"
+
 [eps.general]
   members = [0, 1, 2]
 
@@ -73,6 +79,10 @@ Translated into words, including this file in the main config file will make the
   bdmember = 2
 ```
 
+
+> **_NOTE:_**:
+> The general.times.start setting is set to "-P1D" by default, to make the example able to run out-of-the-box, since IFSENS data is only available in mars for the past two weeks.
+
 The three members (0, 1, and 2) will use the lateral boundary data from corresponding IFSENS member. Note, that member 0 of the IFSENS is the control member, so the EPS member 0 will use the control member data. This is a quite bare bones example, since they only differs in what boundary data they use.
 
 ## Adjusting which member uses which IFSENS member data
@@ -80,6 +90,9 @@ The three members (0, 1, and 2) will use the lateral boundary data from correspo
 Let's instead say, that you wanted the member 2 to use the IFSENS member 0 boundary data, i.e. the control member data, and member 0 and 1 to use the IFSENS member 1 and 2 boundary cata, respectively. You can do this by setting `eps.member_settings.boundaries.ifs = [1, 2, 0]`, e.g.
 
 ```toml
+[general.times]
+  start = "-P1D"
+
 [boundaries.ifs]
   selection = "IFSENS"
   bdmembers = [0, 1, 2]
@@ -94,6 +107,9 @@ Let's instead say, that you wanted the member 2 to use the IFSENS member 0 bound
 Running the `deode case` command will result in a config file with the following `[eps]` section:
 
 ```toml
+[general.times]
+  start = "-P1D"
+
 [eps.general]
   members = [0, 1, 2]
 
@@ -116,10 +132,16 @@ Running the `deode case` command will result in a config file with the following
   bdmember = 0
 ```
 
+> **_NOTE:_**:
+> The general.times.start setting is set to "-P1D" by default, to make the example able to run out-of-the-box, since IFSENS data is only available in mars for the past two weeks.
+
 ## Common or member specific mars data retrieval
 By default, mars data is retrieved for all members simultaneously to optimize the mars requests. This is controlled by the `suite_control.member_specific_mars_prep = false` setting. As shown in above example, all what one has to do, to retrieve the correct members, is to set the `bdmembers` and `bdmember` settings:
 
 ```toml
+[general.times]
+  start = "-P1D"
+
 [boundaries.ifs]
   selection = "IFSENS"
   bdmembers = [0, 1, 2]
@@ -130,6 +152,9 @@ By default, mars data is retrieved for all members simultaneously to optimize th
 [eps.member_settings.boundaries.ifs]
   bdmember = [0, 1, 2]  # or bdmember = "@MEMBER@"
 ```
+
+> **_NOTE:_**:
+> The general.times.start setting is set to "-P1D" by default, to make the example able to run out-of-the-box, since IFSENS data is only available in mars for the past two weeks.
 
 One can ask why we need both a `boundaries.ifs.bdmembers` and a `eps.member_settings.boundaries.ifs.bdmember` setting. The reason is that the `bdmembers` setting is used to determine which boundary members we should retrieve IFSENS data for, whereas the `bdmember` setting is used to determine which IFSENS member data to use for each member.
 
@@ -215,6 +240,9 @@ Let's imagine we have tree different modification toml files:
 
 If we add a section `[eps.member_settings.modifications]` to e.g. the `eps_3members_IFSENS.toml` file from [Running a minimal ensemble](#running-a-minimal-ensemble), and at the same time imagine that we have defined a general member setting for the `fullpos` setting:
 ```toml
+[general.times]
+  start = "-P1D"
+
 [boundaries.ifs]
   selection = "IFSENS"
   bdmembers = [0, 1, 2]
@@ -235,6 +263,9 @@ If we add a section `[eps.member_settings.modifications]` to e.g. the `eps_3memb
 then the three modification files will be merged into the resulting config file for the respective members and overwrite any existing setting. E.g. the resulting eps section for member 0 will include settings from `"modifications/mod1.toml"`, for member 1 from `"modifications/mod2.toml"` and for member 2 from `"modifications/mod3.toml"`. The resulting config file will look like this:
 
 ```toml
+[general.times]
+  start = "-P1D"
+
 [eps.general]
   members = [0, 1, 2]
 
@@ -272,10 +303,10 @@ then the three modification files will be merged into the resulting config file 
   bdmember = 2
   
 ```
-
 > **_NOTE:_**:
 > - It's not important what the keys in the modification section are called. They are just used to label the different modification files.
 > - The settings in the modification files will overwrite any existing value for that setting. 
+> - The general.times.start setting is set to "-P1D" by default, to make the example able to run out-of-the-box, since IFSENS data is only available in mars for the past two weeks.
 
 Now to the 3 CSC ensemble example. To set this up, one needs to have the following in the eps config file (NOTE: the exact modification file paths may change with the Deode-Workflow version): 
 

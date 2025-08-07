@@ -1,3 +1,6 @@
+[general.times]
+  start = "-P1D"
+
 [boundaries.ifs]
   bdmember = "@MEMBER@"
   bdmembers = ["@MEMBER@"]

@@ -1,3 +1,6 @@
+[general.times]
+  start = "-P1D"
+
 [boundaries.ifs]
   bdmembers = [0, 1, 2]
   selection = "IFSENS"

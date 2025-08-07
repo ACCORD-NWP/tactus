@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed eccodes version to 2.41 in pyproject.toml [\#1261](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1261)(@KristianHMoller)
 
+### Added
+- Add first operational ensemble config modification files. Add 750m domain template. [\#1215](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1215) (@mafdmi)
+
 ## [0.18.1] - 2025-07-22
 
 ### Fixed
