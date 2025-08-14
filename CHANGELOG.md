@@ -9,7 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
+
+
 ### Added
+- Added GNU config files for ATOS and LUMI [\#1265](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1265)(@pardallio)
 - Updated FDB parameters for archiving of ensemble forecasts [\#1222](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1222)(@KristianHMoller)
 
 ### Fixed

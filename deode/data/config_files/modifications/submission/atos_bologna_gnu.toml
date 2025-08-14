@@ -1,0 +1,34 @@
+[submission]
+  bindir = "@INSTALL_DIR@/@CYCLE@-gnu/latest/bin"
+
+[submission.task_exceptions.CreateGrib]
+  binary = "gl"
+  bindir = "@INSTALL_DIR@/gl/latest-gnu/bin"
+
+[submission.task_exceptions.CreateGribStatic]
+  bindir = "@INSTALL_DIR@/gl/latest-gnu/bin"
+
+[submission.task_exceptions.Forecast]
+  bindir = "@INSTALL_DIR@/@CYCLE@-gnu/latest/bin"
+
+[submission.task_exceptions.PgdUpdate]
+  binary = "gl"
+  bindir = "@INSTALL_DIR@/gl/latest-gnu/bin"
+
+[submission.types.parallel.MODULES]
+  00_PRGENV = ["load", "prgenv/gnu"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+  FFTW = ["load", "fftw/3.3.10"]
+  HDF5 = ["load", "hdf5/1.14.6"]
+  MKL = ["load", "openblas"]
+  NETCDF = ["load", "netcdf4/4.9.3"]
+  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
+
+[submission.types.serial.MODULES]
+  00_PRGENV = ["load", "prgenv/gnu"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+  FFTW = ["load", "fftw/3.3.10"]
+  HDF5 = ["load", "hdf5/1.14.6"]
+  MKL = ["load", "openblas"]
+  NETCDF = ["load", "netcdf4/4.9.3"]
+  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]

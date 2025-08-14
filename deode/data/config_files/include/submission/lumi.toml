@@ -44,7 +44,7 @@
   bindir = "@INSTALL_DIR@/gl/latest-gnu/bin"
 
 [submission.task_exceptions.CreateGrib.ENV]
-  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/pardalmi/local/eccodes-2.39.0-gcc-12.2.0//lib64"
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/lrb_465000527_efdev/local/eccodes-2.42.0-gcc-13.2.0/lib64"
 
 [submission.task_exceptions.Gmted.MODULES]
   GDAL = ["load", "scl-gdal_23"]
@@ -77,7 +77,7 @@
   bindir = "@INSTALL_DIR@/gl/latest-gnu/bin"
 
 [submission.task_exceptions.PgdUpdate.ENV]
-  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/pardalmi/local/eccodes-2.39.0-gcc-12.2.0//lib64"
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/lrb_465000527_efdev/local/eccodes-2.42.0-gcc-13.2.0/lib64"
 
 [submission.task_exceptions.Soil.MODULES]
   GDAL = ["load", "scl-gdal_23"]
@@ -112,7 +112,7 @@
   DR_HOOK = 1
   DR_HOOK_IGNORE_SIGNALS = -1
   DR_HOOK_SHOW_PROCESS_OPTIONS = 0
-  DR_HOOK_SILENT = 1
+  DR_HOOK_SILENT = 0
 
   FI_CXI_DEFAULT_TX_SIZE = 32768
   FI_CXI_RDZV_THRESHOLD = 64000
@@ -141,7 +141,7 @@
 
 [submission.types.Forecast_cpu.MODULES]
   00_PURGE = ["--force", "purge"]
-  01_LUMI = ["load", "LUMI/23.09 partition/C"]
+  01_LUMI = ["load", "LUMI/24.03 partition/C"]
   02_PARTITION_C = ["load", "PrgEnv-gnu"]
   03_AEC = ["load", "libaec"]
   04_HDF5 = ["load", "cray-hdf5-parallel"]
@@ -175,7 +175,7 @@
   OMP_STACKSIZE = "4G"
 
   DR_HOOK = 1
-  DR_HOOK_IGNORE_SIGNALS = 8
+  DR_HOOK_IGNORE_SIGNALS = -1
   DR_HOOK_SHOW_PROCESS_OPTIONS = 0
   DR_HOOK_SILENT = 1
 
@@ -188,7 +188,7 @@
 
 [submission.types.parallel.MODULES]
   00_PURGE = ["--force", "purge"]
-  01_LUMI = ["load", "LUMI/23.09 partition/C"]
+  01_LUMI = ["load", "LUMI/24.03 partition/C"]
   02_PARTITION_C = ["load", "PrgEnv-gnu"]
   03_AEC = ["load", "libaec"]
   04_HDF5 = ["load", "cray-hdf5-parallel"]
@@ -222,13 +222,13 @@
   WALLTIME = "#SBATCH --time=00:20:00"
 
 [submission.types.serial.ENV]
-  DR_HOOK_IGNORE_SIGNALS = 8
+  DR_HOOK_IGNORE_SIGNALS = -1
   ECF_SSL = 1
   OMPI_MCA_btl = '^vader'
 
 [submission.types.serial.MODULES]
   00_PURGE = ["--force", "purge"]
-  01_LUMI = ["load", "LUMI/23.09 partition/C"]
+  01_LUMI = ["load", "LUMI/24.03 partition/C"]
   02_PARTITION_C = ["load", "PrgEnv-gnu"]
   03_AEC = ["load", "libaec"]
   04_HDF5 = ["load", "cray-hdf5-parallel"]
