@@ -1,0 +1,10 @@
+[domain]
+  gridtype = "cubic"
+  name = "750m_template"
+  nimax = 989
+  njmax = 989
+  tstep = "_select_tstep_based_on_csc_and_resolution('@CSC@', '@XDX@')"
+  xdx = 750
+  xdy = 750
+  xlatcen = 58.66
+  xloncen = 16.0

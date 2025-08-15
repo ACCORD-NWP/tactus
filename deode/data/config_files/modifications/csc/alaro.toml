@@ -12,11 +12,11 @@
 [creategrib.CreateGrib]
   conversions = []
 
-[fdb.grib_set]
-  backgroundProcess = "3"
-
 [pgd]
   npatch = 1
 
 [submission.task_exceptions.Forecast.ENV]
   APL_ALARO = "1"
+
+[submission.task_exceptions.PgdFilterTownFrac.ENV]
+  DR_HOOK_NOT_MPI = 1

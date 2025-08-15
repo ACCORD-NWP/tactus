@@ -1,0 +1,17 @@
+[general.output_settings]
+  fullpos = "PT1H"
+  history = "PT49H"
+  surfex = "PT49H"
+
+[archiving.FDB.fdb.fpgrib_files]
+  active = false
+
+[boundaries.ifs]
+  bdmembers = [0, 1, 2, 3, 4, 5, 6]
+  selection = "IFSENS"
+
+[eps.general]
+  members = "0:7"
+
+[eps.member_settings.boundaries.ifs]
+  bdmember = "@MEMBER@"

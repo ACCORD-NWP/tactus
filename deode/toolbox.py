@@ -1269,7 +1269,9 @@ class FDB(ArchiveProvider):
             os.system(
                 f"grib_filter {rules_file} {resource.identifier} -o {temp1}"  # noqa S605
             )
-            set_values = ",".join([f"{key}={value}" for key, value in grib_set.items()])
+            set_values = ",".join(
+                [f"{key}={value}" for key, value in grib_set.items() if value != ""]
+            )
             cmd_for_grib = "grib_set -s " + set_values + f" {temp1} {temp2}"
             logger.debug(cmd_for_grib)
             os.system(cmd_for_grib)  # noqa S605

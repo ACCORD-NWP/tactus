@@ -28,7 +28,7 @@
   prod_user = "lrb_465000527_efprd"
   reference_data = "@SCRATCH@/deode"
   rrtm_dir = "@STATIC_DATA@/rrtm/@CYCLE@"
-  rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef/"
+  rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov13/coef/"
   scratch = "/scratch/@UNIX_GROUP@/@USER@"
   soilgrid_data_path = "@CLIMDATA@/SOILGRID"
   static_data = "/scratch/@UNIX_GROUP@/de_330_common_data/DEODE/"

@@ -3,17 +3,8 @@
   precision = ""
   upd_sst_sic = false
 
-[fdb.grib_set]
-  generatingProcessIdentifier = "2"
-
 [platform]
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef/"
-
-[submission]
-  bindir = "@INSTALL_DIR@/@CYCLE@/@CYCLE@-v1.6.0/bin"
-
-[submission.task_exceptions.Forecast]
-  bindir = "@INSTALL_DIR@/@CYCLE@/@CYCLE@-v1.6.0/bin"
 
 [suite_control]
   do_interpolsstsic = false

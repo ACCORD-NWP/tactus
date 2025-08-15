@@ -13,9 +13,7 @@
   grib2LocalSectionNumber = "1"
   productionStatusOfProcessedData = "12"
   setLocalDefinition = "1"
-  subCentre = "84"
   tablesVersion = "34"
-  type = "fc"
 
 [fdb.negative_rules]
   levtype = ["unknown"]

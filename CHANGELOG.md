@@ -10,6 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.19.0] - 2025-08-14
+
+### Added
+- Added GNU config files for ATOS and LUMI [\#1265](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1265)(@pardallio)
+- Updated FDB parameters for archiving of ensemble forecasts [\#1222](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1222)(@KristianHMoller)
+- Add first operational ensemble config modification files. Add 750m domain template. [\#1215](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1215) (@mafdmi)
+
+### Fixed
+- Fixed eccodes version to 2.41 in pyproject.toml [\#1261](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1261)(@KristianHMoller)
+- Fix MergeSQLites class/task to comply with new way of referencing parameter lists (separate lists for sfc and upper air variables)  [\#1253](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1253)(@svianaj)
+
 ## [0.18.1] - 2025-07-22
 
 ### Fixed
