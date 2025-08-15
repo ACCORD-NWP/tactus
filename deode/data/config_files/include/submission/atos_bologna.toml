@@ -46,13 +46,13 @@
 
 [submission.task_exceptions.CreateGrib]
   binary = "gl"
-  bindir = "@INSTALL_DIR@/gl/latest/bin/"
+  bindir = "@INSTALL_DIR@/gl/gl-v1.7.0/bin/"
 
 [submission.task_exceptions.CreateGrib.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
 
 [submission.task_exceptions.CreateGribStatic]
-  bindir = "@INSTALL_DIR@/gl/latest/bin/"
+  bindir = "@INSTALL_DIR@/gl/gl-v1.7.0/bin/"
 
 [submission.task_exceptions.E927]
   NPROC = 16
@@ -62,7 +62,7 @@
   NTASKS = "#SBATCH --ntasks=16"
 
 [submission.task_exceptions.Forecast]
-  bindir = "@INSTALL_DIR@/@CYCLE@@PRECISION@/latest/bin"
+  bindir = "@INSTALL_DIR@/@CYCLE@@PRECISION@/CY49t2-v1.9.0/bin"
   NPROC = 30
   NPROC_IO = 2
 
@@ -81,7 +81,7 @@
 
 [submission.task_exceptions.InterpolSstSic]
   binary = "gl"
-  bindir = "@INSTALL_DIR@/gl/latest/bin/"
+  bindir = "@INSTALL_DIR@/gl/gl-v1.7.0/bin/"
 
 [submission.task_exceptions.IOmerge.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
@@ -106,7 +106,7 @@
 
 [submission.task_exceptions.PgdUpdate]
   binary = "gl"
-  bindir = "@INSTALL_DIR@/gl/latest/bin/"
+  bindir = "@INSTALL_DIR@/gl/gl-v1.7.0/bin/"
 
 [submission.task_exceptions.Prep]
   WRAPPER = "srun -n @NPROC@"
