@@ -6,79 +6,79 @@
   # Other package info
   authors = ["The DE_330 project."]
   documentation = "https://destination-earth-digital-twins.github.io/deode-workflow-docs"
-  include = [{ path = "deode/data/**/*", format = ["sdist", "wheel"] }]
+  include = [{path = "deode/data/**/*", format = ["sdist", "wheel"]}]
   license = "MIT"
   readme = "README.md"
   repository = "https://github.com/destination-earth-digital-twins/Deode-Workflow"
 
-  [tool.poetry.scripts]
-    deode = "deode.__main__:main"
+[tool.poetry.scripts]
+  deode = "deode.__main__:main"
 
 [build-system]
   build-backend = "poetry.core.masonry.api"
   requires = ["poetry-core >= 1.0.0"]
 
-  [tool.poetry.dependencies]
-    # Python version
-    python = ">=3.10,<3.13"
-    # General dependencies
-    dateutils = "^0.6.12"
-    dicttoxml = "^1.0.0"
-    eccodes = "2.41"
-    f90nml = "^1.4.3"
-    fastjsonschema = "2.18.1"
-    geohash = { git = "https://github.com/destination-earth-digital-twins/geohash.git", tag = "v1.1" }
-    grib2sqlite = { git = "https://github.com/destination-earth-digital-twins/grib2sqlite", tag = "v0.2.0" }
-    humanize = "^4.8.0"
-    isodate = "^0.6.1"
-    json-schema-for-humans = { git = "https://github.com/paulovcmedeiros/json-schema-for-humans.git", branch = "feature/choose-properties-table-columns" }
-    jsonref = "^1.1.0"
-    loguru = "^0.7.1"
-    numexpr = "^2.8.4"
-    numpy = "^1.22.4"
-    omegaconf = "^2.3"
-    pandas = ">=1.4.0,<3.0.0"
-    pydantic = "^2.9.2"
-    pyfdb = "^0.1.2"
-    pyproj = "^3.3.0, !=3.5.0"
-    pyyaml = "^6.0"
-    thenamelisttool = { git = "https://github.com/UMR-CNRM/thenamelisttool.git" }
-    toml-formatter = { git = "https://github.com/paulovcmedeiros/toml-formatter" }
-    tomli = "^2.0.1"
-    tomlkit = "^0.12.1"
-    troika = { git = "https://github.com/ecmwf/troika.git" }
-    xmltodict = "^0.14.2"
+[tool.poetry.dependencies]
+  # Python version
+  python = ">=3.10,<3.13"
+  # General dependencies
+  dateutils = "^0.6.12"
+  dicttoxml = "^1.0.0"
+  eccodes = "2.41"
+  f90nml = "^1.4.3"
+  fastjsonschema = "2.18.1"
+  geohash = {git = "https://github.com/destination-earth-digital-twins/geohash.git", tag = "v1.1"}
+  grib2sqlite = {git = "https://github.com/destination-earth-digital-twins/grib2sqlite", tag = "v0.2.0"}
+  humanize = "^4.8.0"
+  isodate = "^0.6.1"
+  json-schema-for-humans = {git = "https://github.com/paulovcmedeiros/json-schema-for-humans.git", branch = "feature/choose-properties-table-columns"}
+  jsonref = "^1.1.0"
+  loguru = "^0.7.1"
+  numexpr = "^2.8.4"
+  numpy = "^1.22.4"
+  omegaconf = "^2.3"
+  pandas = ">=1.4.0,<3.0.0"
+  pydantic = "^2.9.2"
+  pyfdb = "^0.1.2"
+  pyproj = "^3.3.0, !=3.5.0"
+  pyyaml = "^6.0"
+  thenamelisttool = {git = "https://github.com/UMR-CNRM/thenamelisttool.git"}
+  toml-formatter = {git = "https://github.com/paulovcmedeiros/toml-formatter"}
+  tomli = "^2.0.1"
+  tomlkit = "^0.12.1"
+  troika = {git = "https://github.com/ecmwf/troika.git"}
+  xmltodict = "^0.14.2"
 
-  [tool.poetry.group.dev.dependencies]
-    ipython = "^8.12.3"
-    jupyterlab = "^3.6.1"
-    nb-clean = "^2.4.0"
-    pre-commit = "^3.0.4"
+[tool.poetry.group.dev.dependencies]
+  ipython = "^8.12.3"
+  jupyterlab = "^3.6.1"
+  nb-clean = "^2.4.0"
+  pre-commit = "^3.0.4"
 
-  [tool.poetry.group.doc.dependencies]
-    myst-parser = "^2.0.0"
-    sphinx = "^7.2.6"
-    sphinx-rtd-theme = "^1.3.0"
+[tool.poetry.group.doc.dependencies]
+  myst-parser = "^2.0.0"
+  sphinx = "^7.2.6"
+  sphinx-rtd-theme = "^1.3.0"
 
-  [tool.poetry.group.linting.dependencies]
-    black = { extras = ["jupyter"], version = "^23.10.0" }
-    flake8 = ">=4.0.1, <5.0.0"
-    flakeheaven = "^3.3.0"
-    isort = "^5.12.0"
-    ruff = "^0.1.0"
-    toml-formatter = { git = "https://github.com/paulovcmedeiros/toml-formatter" }
-    # flake8 plugins for stuff not yet on ruff.
-    # See <https://github.com/astral-sh/ruff/issues/458>.
-    poethepoet = { extras = ["poetry-plugin"], version = ">=0.24.4" }
-    pydoclint = "^0.3.8"                                              # Replaces darglint, but is maintained & faster
+[tool.poetry.group.linting.dependencies]
+  black = {extras = ["jupyter"], version = "^23.10.0"}
+  flake8 = ">=4.0.1, <5.0.0"
+  flakeheaven = "^3.3.0"
+  isort = "^5.12.0"
+  ruff = "^0.1.0"
+  toml-formatter = {git = "https://github.com/paulovcmedeiros/toml-formatter"}
+  # flake8 plugins for stuff not yet on ruff.
+  # See <https://github.com/astral-sh/ruff/issues/458>.
+  poethepoet = {extras = ["poetry-plugin"], version = ">=0.24.4"}
+  pydoclint = "^0.3.8" # Replaces darglint, but is maintained & faster
 
-  [tool.poetry.group.test.dependencies]
-    pytest = "^7.2.2"
-    pytest-cov = "^4.1.0"
-    pytest-mock = "^3.7.0"
-    pytest-profiling = "^1.7.0"
-    pytest-timeout = "^2.1.0"
-    pytest-xdist = "^3.2.0"
+[tool.poetry.group.test.dependencies]
+  pytest = "^7.2.2"
+  pytest-cov = "^4.1.0"
+  pytest-mock = "^3.7.0"
+  pytest-profiling = "^1.7.0"
+  pytest-timeout = "^2.1.0"
+  pytest-xdist = "^3.2.0"
 
     ##################
     # Linter configs #
@@ -139,25 +139,25 @@
     "W",
   ]
 
-  [tool.ruff.per-file-ignores]
-    # S101: Use of `assert` detected
-    "scheduler.py" = ["T201"]
-    "tests/**/*.py" = [
-      "D100",
-      "D101",
-      "D102",
-      "D103",
-      "D104",
-      "D105",
-      "D106",
-      "D107",
-      "E501",
-      "S101",
-      "SLF001",
-    ]
+[tool.ruff.per-file-ignores]
+  # S101: Use of `assert` detected
+  "scheduler.py" = ["T201"]
+  "tests/**/*.py" = [
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D106",
+    "D107",
+    "E501",
+    "S101",
+    "SLF001",
+  ]
 
-  [tool.ruff.pydocstyle]
-    convention = "google"
+[tool.ruff.pydocstyle]
+  convention = "google"
 
 [tool.toml-formatter]
   indentation = 2
@@ -186,73 +186,67 @@
 [tool.poe]
   poetry_command = "devtools"
 
-  [tool.poe.tasks]
-    # Doc-related stuff
-    _doc_build.shell = """
+[tool.poe.tasks]
+  # Doc-related stuff
+  _doc_build.shell = """
     deode doc config >| docs/markdown_docs/config.md
     sphinx-apidoc deode -o docs/ --force --no-toc --module-first
     sphinx-build docs docs/_build/
     touch docs/_build/.nojekyll
   """
-    # Linting tasks
-    _black = "black ."
-    _isort = "isort ."
-    _ruff = "ruff check ."
-    _toml_formatter = "toml-formatter check ."
-    # Test-related tasks
-    pytest = "pytest"
-    # Tasks to be run as pre-push checks
-    pre-push-checks = ["lint", "doc clean", "doc build", "pytest"]
+  # Linting tasks
+  _black = "black ."
+  _isort = "isort ."
+  _ruff = "ruff check ."
+  _toml_formatter = "toml-formatter check ."
+  # Test-related tasks
+  pytest = "pytest"
+  # Tasks to be run as pre-push checks
+  pre-push-checks = ["lint", "doc clean", "doc build", "pytest"]
 
-    [tool.poe.tasks._flake8]
-      cmd = "flakeheaven lint ."
-      env = { FLAKEHEAVEN_CACHE_TIMEOUT = "0" }
+[tool.poe.tasks._flake8]
+  cmd = "flakeheaven lint ."
+  env = {FLAKEHEAVEN_CACHE_TIMEOUT = "0"}
 
-    [tool.poe.tasks.doc]
-      args = [
-        { name = "doc_action", positional = true, help = "{all,clean,build,view}", default = "all" },
-      ]
-      control = { expr = "doc_action" }
+[tool.poe.tasks.doc]
+  args = [
+    {name = "doc_action", positional = true, help = "{all,clean,build,view}", default = "all"},
+  ]
+  control = {expr = "doc_action"}
 
-      [[tool.poe.tasks.doc.switch]]
-        case = "all"
-        sequence = ["doc build", "doc view"]
+[[tool.poe.tasks.doc.switch]]
+  case = "all"
+  sequence = ["doc build", "doc view"]
 
-      [[tool.poe.tasks.doc.switch]]
-        case = "clean"
-        cmd = "rm -rf docs/_build/ docs/deode.rst docs/markdown_docs/config.md"
+[[tool.poe.tasks.doc.switch]]
+  case = "clean"
+  cmd = "rm -rf docs/_build/ docs/deode.rst docs/markdown_docs/config.md"
 
-      [[tool.poe.tasks.doc.switch]]
-        case = "build"
-        sequence = ["doc clean", "_doc_build"]
+[[tool.poe.tasks.doc.switch]]
+  case = "build"
+  sequence = ["doc clean", "_doc_build"]
 
-      [[tool.poe.tasks.doc.switch]]
-        case = "view"
-        sequence = [
-          { shell = "[ ! -f docs/_build/index.html ] && poetry devtools doc build || exit 0" },
-          { script = "webbrowser:open('docs/_build/index.html')" },
-        ]
+[[tool.poe.tasks.doc.switch]]
+  case = "view"
+  sequence = [
+    {shell = "[ ! -f docs/_build/index.html ] && poetry devtools doc build || exit 0"},
+    {script = "webbrowser:open('docs/_build/index.html')"},
+  ]
 
-    [tool.poe.tasks.lint]
-      args = [{ name = "fix", type = "boolean", default = false }]
-      control = { expr = "fix" }
+[tool.poe.tasks.lint]
+  args = [{name = "fix", type = "boolean", default = false}]
+  control = {expr = "fix"}
 
-      [[tool.poe.tasks.lint.switch]]
-        case = "True"
-        sequence = [
-          "_isort",
-          "_black",
-          "_ruff --fix",
-          "_flake8",
-          "_toml_formatter --fix",
-        ]
+[[tool.poe.tasks.lint.switch]]
+  case = "True"
+  sequence = ["_isort", "_black", "_ruff --fix", "_flake8", "_toml_formatter --fix"]
 
-      [[tool.poe.tasks.lint.switch]]
-        case = "False"
-        sequence = [
-          "_isort --check-only",
-          "_black --check --diff",
-          "_ruff",
-          "_flake8",
-          "_toml_formatter",
-        ]
+[[tool.poe.tasks.lint.switch]]
+  case = "False"
+  sequence = [
+    "_isort --check-only",
+    "_black --check --diff",
+    "_ruff",
+    "_flake8",
+    "_toml_formatter",
+  ]
