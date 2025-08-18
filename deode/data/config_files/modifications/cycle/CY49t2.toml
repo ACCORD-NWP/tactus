@@ -11,8 +11,5 @@
 [pgd]
   npatch = 3
 
-[submission]
-  bindir = "@INSTALL_DIR@/@CYCLE@/@CYCLE@-v1.9.0/bin"
-
 [submission.task_exceptions.E923Update.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
