@@ -252,7 +252,7 @@
   NTASKS = "#SBATCH --ntasks=1"
   PARTITION = "#SBATCH --partition=standard"
   WALLSIGNAL = "#SBATCH --signal=USR1@30"
-  WALLTIME = "#SBATCH --time=00:20:00"
+  WALLTIME = "#SBATCH --time=03:00:00"
 
 [submission.types.sqlite.ENV]
   ECF_SSL = 1
