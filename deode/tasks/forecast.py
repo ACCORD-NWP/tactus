@@ -4,6 +4,9 @@ import glob
 import json
 import os
 
+from pysurfex.namelist import InputDataFromNamelist
+from pysurfex.platform_deps import SystemFilePathsFromFile
+
 from ..config_parser import ConfigPaths
 from ..datetime_utils import as_datetime, as_timedelta, oi2dt_list
 from ..derived_variables import check_fullpos_namelist
@@ -13,10 +16,10 @@ from ..namelist import NamelistGenerator
 from ..os_utils import deodemakedirs
 from .base import Task
 from .batch import BatchJob
-from .sfx import InputDataFromNamelist
+from .sfx import PySurfexBaseTask
 
 
-class Forecast(Task):
+class Forecast(PySurfexBaseTask):
     """Forecast task."""
 
     def __init__(self, config):
@@ -25,7 +28,7 @@ class Forecast(Task):
         Args:
             config (deode.ParsedConfig): Configuration
         """
-        Task.__init__(self, config, __class__.__name__)
+        PySurfexBaseTask.__init__(self, config, __class__.__name__)
 
         self.cycle = self.config["general.cycle"]
         self.cnmexp = self.config["general.cnmexp"]
@@ -207,8 +210,11 @@ class Forecast(Task):
         with open(input_definition, "r", encoding="utf-8") as f:
             input_data = json.load(f)
         binput_data = InputDataFromNamelist(
-            settings, input_data, "forecast", self.platform
-        ).get()
+            settings,
+            input_data,
+            "forecast",
+            SystemFilePathsFromFile(self.pysurfex_system_file),
+        ).data
 
         for dest, target in binput_data.items():
             logger.debug("target={}, dest={}", target, dest)

@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Use pysurfex in surfex related tasks [\#1210](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1210)(@trygveasp)
 - Add support for E927 and alaro -> alaro coupling in CY49. [\#1165](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1165)(@uandrae)
 
 ### Changed
