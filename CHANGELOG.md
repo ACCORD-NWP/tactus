@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - disables sst interpolation for lumi runs [\#1276](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1276)(@pardallio)
 
+### Fixed
+- Make sure unit tests runs on atos. Fixes ecflow connection problem and location of the troika file. [\#1277](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1277)(@uandrae)
 
 ## [0.19.0] - 2025-08-14
 
