@@ -11,8 +11,8 @@
     "files": ["ECOZC"]
   },
 
-  "IFS_files": {
-    "path": "@MARSDIR@",
+  "host_model_files": {
+    "path": "@BDDIR@",
     "files": {
       "ICMSHMARSINIT": "ICMSH_@BDMEMBER@+@L@",
       "ICMSHMARS": "ICMSH_@BDMEMBER@+@L@",

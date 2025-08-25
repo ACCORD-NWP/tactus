@@ -1,0 +1,27 @@
+{
+  "climate" : {
+    "path": "@CLIMDIR@",
+    "files": {
+      "const.clim.000": "Const.Clim.@MM@"
+    }
+  },
+
+  "bdclimate" : {
+    "path": "@BDCLIMDIR@",
+    "files": {
+      "Const.Clim": "Const.Clim.@MM@"
+    }
+  },
+
+  "rrtm": {
+    "path": "@RRTM_DIR@",
+    "files": ["ECOZC"]
+  },
+
+  "host_model_files": {
+    "path": "@BDDIR@",
+    "files": {
+      "ICMSH@CNMEXP@INIT": "@BDFILE_TEMPLATE@"
+    }
+  }
+}

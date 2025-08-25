@@ -769,7 +769,7 @@ class Prep(Task):
             # Select the correct input file
             basetime = as_datetime(self.config["general.times.basetime"])
             bddir_sfx = self.config["system.bddir_sfx"]
-            bdfile_sfx_template = self.config["system.bdfile_sfx_template"]
+            bdfile_sfx_template = self.config["file_templates.bdfile_sfx.archive"]
             if self.config["boundaries.bdmodel"] == "ifs":
                 mars = Marsprep.mars_selection(
                     selection=self.platform.substitute(

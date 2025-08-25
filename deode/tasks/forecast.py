@@ -112,7 +112,7 @@ class Forecast(Task):
         i = 0
         while current_datetime <= end_datetime:
             source = self.platform.substitute(
-                self.config["system.sstfile_template"], bd_index=i
+                self.config["file_templates.sstfile.archive"], bd_index=i
             )
             self.fmanager.input(f"{intp_bddir}/{source}", source)
             current_datetime += self.bdint
@@ -227,14 +227,29 @@ class Forecast(Task):
         intp_bddir = self.config.get("system.intp_bddir", self.wrk)
 
         # Link the boundary files, use initial file as first boundary file
-        self.fmanager.input(initfile, f"ELSCF{self.cnmexp}ALBC000")
+        initfile_model = self.platform.substitute(
+            self.file_templates["interpolated_boundaries"]["model"],
+            validtime=self.basetime,
+            bd_index=0,
+        )
+
+        self.fmanager.input(initfile, initfile_model)
 
         current_datetime = self.basetime + self.bdint
         end_datetime = self.basetime + as_timedelta(self.forecast_range)
         i = 1
         while current_datetime <= end_datetime:
-            source = f"ELSCF{self.cnmexp}ALBC{i:03d}"
-            self.fmanager.input(f"{intp_bddir}/{source}", source)
+            source = self.platform.substitute(
+                self.file_templates["interpolated_boundaries"]["archive"],
+                validtime=current_datetime,
+                bd_index=i,
+            )
+            target = self.platform.substitute(
+                self.file_templates["interpolated_boundaries"]["model"],
+                validtime=current_datetime,
+                bd_index=i,
+            )
+            self.fmanager.input(f"{intp_bddir}/{source}", target)
             current_datetime += self.bdint
             i += 1
 

@@ -172,22 +172,24 @@ class Task(object):
             shutil.move(source, fdir)
             logger.info("Renamed {} to {}", source, fdir)
 
-    def get_binary(self, binary_name):
+    def get_binary(self, binary_name, task_name=None):
         """Determine binary path from task or system config section.
 
         Args:
             binary_name (str): Name of binary
+            task_name (str, Optional): Optional name for task specific setting
 
         Returns:
             bindir (str): full path to binary
 
         """
         binary = binary_name
+        task = task_name if task_name is not None else self.name
         with contextlib.suppress(KeyError):
-            binary = self.config[f"submission.task_exceptions.{self.name}.binary"]
+            binary = self.config[f"submission.task_exceptions.{task}.binary"]
 
         try:
-            bindir = self.config[f"submission.task_exceptions.{self.name}.bindir"]
+            bindir = self.config[f"submission.task_exceptions.{task}.bindir"]
         except KeyError:
             try:
                 binaries = self.config[

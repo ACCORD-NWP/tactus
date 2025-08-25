@@ -1,5 +1,4 @@
 [general]
-  case = "@CYCLE@_@CSC@_@DOMAIN@"
   upd_sst_sic = false
 
 [general.times]
@@ -27,15 +26,17 @@
   xlon0 = 4.9
   xloncen = 4.9
 
+[file_templates.bdfile_sfx]
+  archive = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@.sfx"
+
 [suite_control]
   do_marsprep = false
 
 [system]
-  bdclimdir = "@HOST_CASE@/climate/@HOST_DOMAIN@"
-  bddir = "@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
-  bddir_sfx = "@HOST_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
-  bdfile_sfx_template = "@BDFILE_TEMPLATE@.sfx"
-  bdfile_template = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@"
+  bdclimdir = "@HOST_CASE_DIR@/climate/@HOST_DOMAIN@"
+  bddir = "@HOST_CASE_DIR@/archive/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+  bddir_sfx = "@HOST_CASE_DIR@/archive/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
   climdir = "@CASEDIR@/climate/@DOMAIN@"
-  host_case = "@CASEDIR@/../@CYCLE@_@CSC@_@EVENT_TYPE@_@HOST_DOMAIN@_@YMD_START@"
+  host_case = "@CYCLE@_@CSC@_@EVENT_TYPE@_@HOST_DOMAIN@_@YMD_START@"
+  host_case_dir = "@CASEDIR@/../@HOST_CASE@"
   host_domain = "DEMO_60x80_2500m"

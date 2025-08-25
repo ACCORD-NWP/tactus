@@ -30,11 +30,13 @@ def parsed_config(request, tmp_directory, default_config):
 
     config_patch = tomlkit.parse(
         f"""
+        [file_templates.initfile]
+            archive = "@INTP_BDDIR@/@HISTORY_TEMPLATE@"
+        [file_templates.initfile_sfx]
+            archive = "@INTP_BDDIR@/@SURFEX_TEMPLATE@"
         [general]
             cnmexp = "TEST"
             bogus = "{request.param}"
-            initfile = "{tmp_directory}/@HISTORY_TEMPLATE@"
-            initfile_sfx = "{tmp_directory}/@SURFEX_TEMPLATE@"
         [system]
             intp_bddir = "{tmp_directory}"
             archive = "{tmp_directory}"
@@ -61,32 +63,38 @@ def set_mode(request):
     "param",
     [
         {"general": {"deode_home": str(GeneralConstants.PACKAGE_DIRECTORY)}},
-        {"general": {"initfile": "foo", "initfile_sfx": "foo"}},
+        {
+            "file_templates": {
+                "initfile": {"archive": "@INTP_BDDIR@/@HISTORY_TEMPLATE@"},
+                "initfile_sfx": {"archive": "@INTP_BDDIR@/@SURFEX_TEMPLATE@"},
+            }
+        },
         {"general": {"times": {"start": "2023-10-15T15:32:24Z"}}},
     ],
 )
 def test_find_initial_files(tmp_directory, parsed_config, set_surfex, set_mode, param):
     """Test load of the yml files."""
-    if parsed_config["general"]["bogus"] == "True":
-        if set_mode["suite_control"]["mode"] == "start":
-            truth = f"{tmp_directory}/ELSCFTESTALBC000"
-            truth_sfx = f"{tmp_directory}/ICMSHTESTINIT.sfx"
+    if set_mode["suite_control"]["mode"] == "start":
+        truth = f"{tmp_directory}/ELSCFTESTALBC000"
+        truth_sfx = f"{tmp_directory}/ICMSHTESTINIT.sfx"
+        with contextlib.suppress(KeyError):
             if "times" in param["general"]:
                 truth = f"{tmp_directory}/ICMSHTEST+0003h00m00s"
                 truth_sfx = f"{tmp_directory}/ICMSHTEST+0003h00m00s.sfx"
-        elif set_mode["suite_control"]["mode"] == "cold_start":
-            truth = f"{tmp_directory}/ELSCFTESTALBC000"
-            truth_sfx = f"{tmp_directory}/ICMSHTESTINIT.sfx"
-        elif set_mode["suite_control"]["mode"] == "restart":
-            truth = f"{tmp_directory}/ICMSHTEST+0003h00m00s"
-            truth_sfx = f"{tmp_directory}/ICMSHTEST+0003h00m00s.sfx"
-            if "initfile" in param["general"]:
+    elif set_mode["suite_control"]["mode"] == "cold_start":
+        truth = f"{tmp_directory}/ELSCFTESTALBC000"
+        truth_sfx = f"{tmp_directory}/ICMSHTESTINIT.sfx"
+    elif set_mode["suite_control"]["mode"] == "restart":
+        truth = f"{tmp_directory}/ICMSHTEST+0003h00m00s"
+        truth_sfx = f"{tmp_directory}/ICMSHTEST+0003h00m00s.sfx"
+        with contextlib.suppress(KeyError):
+            if "initfile" in param["file_templates"]:
                 truth = f"{tmp_directory}/foo"
                 truth_sfx = f"{tmp_directory}/foo"
 
     for key in ["initfile", "initfile_sfx"]:
-        if key in param["general"]:
-            param["general"][key] = f"{tmp_directory}/foo"
+        with contextlib.suppress(KeyError):
+            param["file_templates"][key]["archive"] = f"{tmp_directory}/foo"
 
     config = parsed_config
     config = config.copy(update=set_surfex)
