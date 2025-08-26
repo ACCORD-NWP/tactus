@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Make sure unit tests runs on atos. Fixes ecflow connection problem and location of the troika file. [\#1277](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1277)(@uandrae)
+- Introduce tile fraction normalization to tile averaging. [\#1275](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1275)(@KristianHMoller)
 
 ## [0.19.0] - 2025-08-14
 

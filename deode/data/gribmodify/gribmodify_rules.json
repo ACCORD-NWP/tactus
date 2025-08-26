@@ -53,7 +53,12 @@
     {
     "input_grib_id" : [ {"shortName":"liqvsm", "tile": ["GNOVE", "GLVEG", "GTREE"], "level":[1, 2, 3, 4]}, {"shortName":"tifr", "tile":["GNATU", "GNOVE", "GLVEG", "GTREE"]} ],
     "operator" : "patch_averaging_moisture",
-    "layer_weights": [0.05, 0.15, 0.3, 0.5],
+    "layer_weights": {
+        "1": 0.05,
+        "2": 0.15,
+        "3": 0.3,
+        "4": 0.5
+    },
     "physical_range": [0, 1],
     "output_name" : "soil_moisture_top20cm",
     "output_grib_id" : { "productDefinitionTemplateNumber":0, "shortName":"vsw20" },
@@ -63,7 +68,16 @@
     {
     "input_grib_id" : [ {"shortName":"liqvsm", "tile": ["GNOVE", "GLVEG", "GTREE"], "level":[1, 2, 3, 4, 5, 6, 7, 8]}, {"shortName":"tifr", "tile":["GNATU", "GNOVE", "GLVEG", "GTREE"]} ],
     "operator" : "patch_averaging_moisture",
-    "layer_weights": [ 0.01, 0.03, 0.06, 0.1, 0.2, 0.2, 0.2, 0.2 ],
+    "layer_weights": {
+        "1": 0.01,
+        "2": 0.03,
+        "3": 0.06,
+        "4": 0.1,
+        "5": 0.2,
+        "6": 0.2,
+        "7": 0.2,
+        "8": 0.2
+    },
     "physical_range": [0, 1],
     "output_name" : "soil_moisture_top100cm",
     "output_grib_id" : { "productDefinitionTemplateNumber": 0, "shortName":"vsw100" },
@@ -73,7 +87,12 @@
     {
     "input_grib_id" : [ {"shortName":"sot", "tile": ["GNOVE", "GLVEG", "GTREE"], "level":[1, 2, 3, 4]}, {"shortName":"tifr", "tile": ["GNATU", "GNOVE", "GLVEG", "GTREE"]} ],
     "operator" : "patch_averaging_temperature",
-    "layer_weights": [0.05, 0.15, 0.3, 0.5],
+    "layer_weights": {
+        "1": 0.05,
+        "2": 0.15,
+        "3": 0.3,
+        "4": 0.5
+    },
     "physical_range": [100, 400],
     "output_name" : "soil_temperature_top20cm",
     "output_grib_id" : { "productDefinitionTemplateNumber":0, "shortName":"st20" },
@@ -83,7 +102,16 @@
     {
     "input_grib_id" : [ {"shortName":"sot", "tile": ["GNOVE", "GLVEG", "GTREE"], "level":[1, 2, 3, 4, 5, 6, 7, 8]}, {"shortName":"tifr", "tile": ["GNATU", "GNOVE", "GLVEG", "GTREE"]} ],
     "operator" : "patch_averaging_temperature",
-    "layer_weights": [ 0.01, 0.03, 0.06, 0.1, 0.2, 0.2, 0.2, 0.2 ],
+    "layer_weights": {
+        "1": 0.01,
+        "2": 0.03,
+        "3": 0.06,
+        "4": 0.1,
+        "5": 0.2,
+        "6": 0.2,
+        "7": 0.2,
+        "8": 0.2
+    },
     "physical_range": [100, 400],
     "output_name" : "soil_temperature_top100cm",
     "output_grib_id" : { "productDefinitionTemplateNumber":0, "shortName":"st100" },
@@ -101,7 +129,7 @@
     {
     "input_grib_id" : [ {"shortName":"cnwat", "tile": ["GNOVE", "GLVEG", "GTREE"], "level": [0]}, {"shortName":"tifr", "tile":["GNATU", "GNOVE", "GLVEG", "GTREE"]} ],
     "operator" : "patch_averaging_surface",
-    "layer_weights": [1.0],
+    "layer_weights": { "0": 1.0 },
     "output_name" : "canopy_water",
     "output_grib_id" : { "productDefinitionTemplateNumber":0, "shortName":"cnwat" },
     "additional_files" : [ {"base":"file_templates.tiles", "entry":"grib", "static":"False"}, {"base":"creategrib.CreateGribStatic.pgd_grib2", "entry":"files_out", "static":"True"} ],
