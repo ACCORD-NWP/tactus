@@ -84,6 +84,7 @@ def available_tasks(reg):
 
     """
     known_types = {}
+    abstract_classes = ["pysurfexbase"]
     for plg in reg.plugins:
         if os.path.exists(plg.tasks_path):
             tasks = types.ModuleType(plg.name)
@@ -91,9 +92,10 @@ def available_tasks(reg):
             sys.path.insert(0, plg.path)
             found_types = discover(tasks, Task)
             for ftype, cls in found_types.items():
-                if ftype in known_types:
-                    logger.warning("Overriding suite {}", ftype)
-                known_types[ftype] = cls
+                if ftype not in abstract_classes:
+                    if ftype in known_types:
+                        logger.warning("Overriding suite {}", ftype)
+                    known_types[ftype] = cls
         else:
             logger.warning("Plug-in task {} not found", plg.tasks_path)
     return known_types

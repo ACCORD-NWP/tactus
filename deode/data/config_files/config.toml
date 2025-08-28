@@ -5,8 +5,6 @@
   csc = "AROME"
   cycle = "CY49t2"
   famodel = "destine-@CYCLE@-@CSC@-oper"
-  initfile = "@SCRATCH@/deode/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@HISTORY_TEMPLATE@"
-  initfile_sfx = "@SCRATCH@/deode/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
   keep_workdirs = true
   surfex = true
   upd_sst_sic = true
@@ -122,15 +120,10 @@
 
 [system]
   bdclimdir = "@FIXED_BDCLIMDIR@"
-  bddir = "@INTP_BDDIR@"
-  bddir_sfx = "@MARSDIR@"
-  bddir_sst = "@MARSDIR@"
-  bdfile_sfx_template = "ECSFCSFX@DOMAIN@_@BDMEMBER@+@LLL@"
-  bdfile_sst_template = "ECSFCSST@DOMAIN@_@BDMEMBER@+@NNN@"
-  bdfile_template = "ELSCF@CNMEXP@ALBC@NNN@"
+  bddir = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
+  bddir_sfx = "@BDDIR@"
+  bddir_sst = "@BDDIR@"
   casedir = "@SCRATCH@/deode/@CASE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@"
   logs = "@ARCHIVE_ROOT@/logs"
-  marsdir = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
   prev_case = "@CASE@"
-  sstfile_template = "EXT_SST_SIC@NNN@"

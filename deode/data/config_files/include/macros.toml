@@ -15,6 +15,7 @@
     "general.surfex_sea_ice",
     "domain.orographic_smoothing_method",
     {bdmember = "boundaries.ifs.bdmember"},
+    {bdfile_template = "file_templates.bdfile.archive"},
     {case_prefix = "scheduler.ecfvars.case_prefix"},
     {ecf_host_resolved = "scheduler.ecfvars.ecf_host_resolved"},
     {ecf_port_resolved = "scheduler.ecfvars.ecf_port_resolved"},

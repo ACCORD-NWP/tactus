@@ -415,7 +415,12 @@ class Platform:
         return pattern
 
     def substitute(
-        self, pattern, basetime=None, validtime=None, bd_index=None, keyval=None
+        self,
+        pattern,
+        basetime=None,
+        validtime=None,
+        bd_index=None,
+        keyval=None,
     ):
         """Substitute pattern.
 
@@ -465,12 +470,10 @@ class Platform:
                 logger.debug("after replace macro={} pattern={}", sub_pattern, pattern)
 
         # LBC number handling
-        try:
+        with contextlib.suppress(KeyError):
             if bd_index is None:
                 bd_index = int(self.config["task.args.bd_index"])
             pattern = self.sub_value(pattern, "NNN", f"{bd_index:03d}")
-        except KeyError:
-            pass
 
         # Time handling
         if basetime is None:

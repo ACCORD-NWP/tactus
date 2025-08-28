@@ -52,6 +52,7 @@ e927:
   - ${master_common}
   - f4_e927
   - f4_e927_@BDMODEL@
+  - f4_e927_@BDMODEL@_@CSC@
 
 forecast:
   - ${master_common}

@@ -12,7 +12,7 @@ import pytest
 from deode import GeneralConstants
 from deode.__main__ import main
 from deode.argparse_wrapper import get_parsed_args
-from deode.config_parser import ConfigParserDefaults
+from deode.config_parser import ConfigFileValidationError, ConfigParserDefaults
 from deode.host_actions import HostNotFoundError
 from deode.submission import NoSchedulerSubmission, TaskSettings
 from deode.toolbox import Platform
@@ -150,7 +150,7 @@ def test_run_task_command(tmp_path):
 @pytest.mark.usefixtures("_module_mockers")
 def test_start_suite_command():
     os.environ["DEODE_HOST"] = "atos_bologna"
-    with suppress(FileNotFoundError, HostNotFoundError):
+    with suppress(FileNotFoundError, HostNotFoundError, ConfigFileValidationError):
         main(["start", "suite"])
     del os.environ["DEODE_HOST"]
 

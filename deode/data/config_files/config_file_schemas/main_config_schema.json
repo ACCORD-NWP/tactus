@@ -522,7 +522,7 @@
         },
         "bddir": {
           "type": "string",
-          "description": "Location of input boundaries"
+          "description": "Location of input boundaries from e.g. MARS"
         },
         "intp_bddir": {
           "type": "string",
@@ -574,10 +574,6 @@
           "description": "Path to static namelists",
           "default": "@DEODE_HOME@/data/namelists/@CYCLE@"
         },
-        "marsdir": {
-          "type": "string",
-          "description": "Location input files extracted from MARS by Marsprep"
-        },
         "global_sfcdir": {
           "type": "string",
           "description": "Path to SFC files needed for c903, which are not in MARS"
@@ -601,6 +597,11 @@
           "type": "string",
           "description": "Path to the c903 json config file",
           "default": "@CYCLE@/c903.json"
+        },
+        "e927_input_definition": {
+          "type": "string",
+          "description": "Path to the e927 json config file",
+          "default": "@CYCLE@/e927.json"
         }
       }
     },

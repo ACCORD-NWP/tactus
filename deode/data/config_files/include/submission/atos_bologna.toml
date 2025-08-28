@@ -104,9 +104,6 @@
   NTASKS = "#SBATCH --ntasks=2"
   WALLTIME = "#SBATCH --time=00:30:00"
 
-[submission.task_exceptions.PgdFilterTownFrac.ENV]
-  DR_HOOK_NOT_MPI = 1
-
 [submission.task_exceptions.PgdUpdate]
   binary = "gl"
   bindir = "@INSTALL_DIR@/gl/latest/bin/"
@@ -170,7 +167,7 @@
 
 [submission.types.parallel.MODULES]
   # First load the prgenv
-  PRGENV = ["load", "prgenv/intel"]
+  00_PRGENV = ["load", "prgenv/intel"]
   # The rest
   ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
   FFTW = ["load", "fftw/3.3.9"]
@@ -210,7 +207,7 @@
 
 [submission.types.serial.MODULES]
   # First load the prgenv
-  PRGENV = ["load", "prgenv/intel"]
+  00_PRGENV = ["load", "prgenv/intel"]
   # The rest
   ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
   FFTW = ["load", "fftw/3.3.9"]

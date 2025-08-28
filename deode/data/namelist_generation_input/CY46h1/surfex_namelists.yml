@@ -796,6 +796,11 @@ sfx_prep_isba:
   NAM_DIAG_ISBAN:
     LPATCH_BUDGET: True
     LSURF_MISC_DIF: True
+  NAM_PREP_SURF_ATM:
+    NYEAR: "@PREP_NYEAR@"
+    NMONTH: "@PREP_NMONTH@"
+    NDAY: "@PREP_NDAY@"
+    XTIME: "@PREP_XTIME@"
   NAM_PREP_ISBA:
     LEXTRAP_SN: True
     LEXTRAP_TG: True

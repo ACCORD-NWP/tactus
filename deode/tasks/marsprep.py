@@ -111,15 +111,16 @@ class Marsprep(Task):
 
         self.prepdir = Path(
             self.platform.substitute(
-                self.config["system.marsdir"],
+                self.config["system.bddir"],
                 basetime=self.bd_basetime,
                 validtime=self.basetime,
             )
         )
+        logger.info("MARS data expected in:{}", self.prepdir)
+
         self.mars_version = int(
             self.config.get("submission.task_exceptions.Marsprep.mars_version", "6")
         )
-        logger.info("MARS data expected in:{}", self.prepdir)
 
         self.mars_bin = self.get_binary("mars")
 
@@ -394,7 +395,7 @@ class Marsprep(Task):
     def get_sfx_data(self):
         """Get SFX data."""
         bddir = self.config["system.bddir_sfx"]
-        bdfile = self.config["system.bdfile_sfx_template"]
+        bdfile = self.config["file_templates.bdfile_sfx.archive"]
         mars_file_check_list, bdmember_fetch_list = self.get_bdmember_fetch_list(
             bddir, bdfile
         )
@@ -419,7 +420,7 @@ class Marsprep(Task):
                 validtime=self.basetime,
             )
         )
-        bdfile = self.config["system.bdfile_sst_template"]
+        bdfile = self.config["file_templates.bdfile_sst.archive"]
 
         _, members_dict, missing_steps_per_member = get_steps_and_members_to_retrieve(
             self.steps,

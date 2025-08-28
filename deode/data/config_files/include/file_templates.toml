@@ -1,5 +1,14 @@
 [file_templates]
 
+[file_templates.bdfile]
+  archive = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@"
+
+[file_templates.bdfile_sfx]
+  archive = "ECSFCSFX@DOMAIN@_@BDMEMBER@+@LLL@"
+
+[file_templates.bdfile_sst]
+  archive = "ECSFCSST@DOMAIN@_@BDMEMBER@+@NNN@"
+
 [file_templates.duration]
   archive = "@LLLH@h@LM@m@LS@s"
   model = "@LLLH@:@LM@:@LS@"
@@ -14,6 +23,16 @@
   grib = "GRIB@CNMEXP@+@DURATION_ARCHIVE@"
   model = "ICMSH@CNMEXP@+@DURATION_MODEL@"
 
+[file_templates.initfile]
+  archive = "@SCRATCH@/deode/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@HISTORY_TEMPLATE@"
+
+[file_templates.initfile_sfx]
+  archive = "@SCRATCH@/deode/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
+
+[file_templates.interpolated_boundaries]
+  archive = "ELSCF@CNMEXP@ALBC@NNN@"
+  model = "ELSCF@CNMEXP@ALBC@NNN@"
+
 [file_templates.pgd]
   archive = "Const.Clim@ONE_DECADE@.sfx"
   model = "Const.Clim.sfx"
@@ -25,6 +44,9 @@
 [file_templates.pgd_prel]
   archive = "PGD_prel@ONE_DECADE@.fa"
   model = "PGD_prel.fa"
+
+[file_templates.sstfile]
+  archive = "EXT_SST_SIC@NNN@"
 
 [file_templates.surfex]
   archive = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@.sfx"

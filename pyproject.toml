@@ -2,7 +2,7 @@
   # Package ID info
   description = "The DEODE scripting system."
   name = "deode"
-  version = "0.18.1"
+  version = "0.19.0"
   # Other package info
   authors = ["The DE_330 project."]
   documentation = "https://destination-earth-digital-twins.github.io/deode-workflow-docs"
@@ -41,6 +41,7 @@
   pydantic = "^2.9.2"
   pyfdb = "^0.1.2"
   pyproj = "^3.3.0, !=3.5.0"
+  pysurfex = "^0.1.2"
   pyyaml = "^6.0"
   thenamelisttool = {git = "https://github.com/UMR-CNRM/thenamelisttool.git"}
   toml-formatter = {git = "https://github.com/paulovcmedeiros/toml-formatter"}

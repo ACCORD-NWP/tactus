@@ -62,14 +62,14 @@ class InterpolSstSic(Task):
         self.fmanager.input(f"{climdir}/{climfile}", climfile)
 
         # Boundary input file(s)
-        marsdir = self.config["system.marsdir"]
+        marsdir = self.config["system.bddir"]
 
         merge_ocean_models = ""
         merge_ocean_files = ""
         for sstmodel in self.config["boundaries.sstmodels"]:
             if sstmodel == "IFS":
                 infile = self.platform.substitute(
-                    self.config["system.bdfile_sst_template"],
+                    self.config["file_templates.bdfile_sst.archive"],
                     basetime=self.bd_basetime,
                     validtime=as_datetime(self.bd_time),
                 )
@@ -94,7 +94,7 @@ class InterpolSstSic(Task):
             adjust_sst_under_ice = ".FALSE."
 
         # Output file, name hard-coded in source code
-        sstfile_template = self.config["system.sstfile_template"]
+        sstfile_template = self.config["file_templates.sstfile.archive"]
 
         intp_bddir = self.platform.get_system_value("intp_bddir")
         outfile = sstfile_template

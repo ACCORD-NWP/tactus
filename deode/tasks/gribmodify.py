@@ -198,7 +198,7 @@ class AddCalculatedFields(Task):
             params (list): list of parameter dictionaries of input parameters
             operation (str): operation to compute new field
             output_params (dict) : list of parameter dictionaries of output parameters
-            layer_weights (list): list of weights for each layer
+            layer_weights (dict): dict of level weights with level numbers as keys
             physical_range (list): list of physical range for each parameter
 
         Raises:
@@ -312,7 +312,6 @@ class AddCalculatedFields(Task):
                     bitmap_list,
                     physical_range,
                     nature_weighting=False,
-                    surface=True,
                 )
             else:
                 raise NotImplementedError(
@@ -374,6 +373,10 @@ class AddCalculatedFields(Task):
                 if return_bitmap:
                     return value, bitmap
                 return value
+
+        # Return appropriate default when no match is found
+        if return_bitmap:
+            return None, None
         return None
 
     def calc_patch_averaging(
@@ -384,7 +387,6 @@ class AddCalculatedFields(Task):
         bitmap_list,
         physical_range,
         nature_weighting,
-        surface=False,
     ):
         """Calculate patch averaging.
 
@@ -400,9 +402,16 @@ class AddCalculatedFields(Task):
         tile_fraction_range = [0, 1]
         tiles = self.get_unique_values(params, "tile", exclude=nature_tile)
 
+        # Verify that the layer_weights is a dict with layer numbers as keys
+        if not isinstance(layer_weights, dict):
+            raise ValueError("Layer weights must be a dict with layer numbers as keys.")
+        if not all(isinstance(key, str) and key.isdigit() for key in layer_weights):
+            raise ValueError("Layer weights must be a dict with layer numbers as keys.")
+
         # Verify that the layer weights sum to 1 within numerical uncertainty
-        if sum(layer_weights) - 1 > 1e-6:
-            raise ValueError("Layer weights must sum to 1. Fails for: ", layer_weights)
+        weight_sum = sum(layer_weights.values())
+        if (abs(weight_sum) - 1.0) > 1e-6:
+            raise ValueError(f"Layer weights must sum to 1. Current sum: {weight_sum}")
 
         physical_parameter_name = self.get_unique_values(
             params, "shortName", exclude=tile_fraction_name
@@ -410,6 +419,10 @@ class AddCalculatedFields(Task):
         if len(physical_parameter_name) != 1:
             raise ValueError("Only one physical parameter is allowed.")
         physical_parameter_name = physical_parameter_name[0]
+
+        # Get the keys to iterate over for levels
+        weight_keys = list(layer_weights.keys())
+        weight_keys.sort(key=int)  # Sort numerically: ["1", "2", "3", ...]
 
         # Initialize arrays
         num_tiles = len(tiles)
@@ -422,6 +435,7 @@ class AddCalculatedFields(Task):
             (num_tiles, num_layers, len(values_list[0]))
         )
 
+        # Populate arrays with values and bitmaps
         for tile_index, tile in enumerate(tiles):
             tile_fraction_value, tile_fraction_bitmap = self.get_value_for_params(
                 params,
@@ -443,8 +457,11 @@ class AddCalculatedFields(Task):
             tile_fraction_values[tile_index] = tile_fraction_value
             tile_fraction_bitmaps[tile_index] = tile_fraction_bitmap
 
-            for layer_index, layer_weight in enumerate(layer_weights):
-                level = 0 if surface is True else layer_index + 1
+            for layer_index, weight_key in enumerate(weight_keys):
+                level = int(weight_key)  # Convert string to int
+                layer_weight = layer_weights[
+                    weight_key
+                ]  # Get the layer weight for this level
                 (
                     physical_parameter_value,
                     physical_parameter_bitmap,
@@ -459,6 +476,7 @@ class AddCalculatedFields(Task):
                     bitmap_list,
                     return_bitmap=True,
                 )
+
                 if physical_range is not None:
                     physical_parameter_value = np.where(
                         np.logical_and(
@@ -480,16 +498,22 @@ class AddCalculatedFields(Task):
                 # and physical parameter bitmaps are not equal
 
         # Do the layer weighting
-        for layer_index, _ in enumerate(layer_weights):
+        for layer_index in range(num_layers):
             for tile_index, _ in enumerate(tiles):
                 tile_fraction_value = tile_fraction_values[tile_index]
+
+                # The tile fraction value is normalized by the sum of the fraction values
+                tile_fraction_sum = np.sum(tile_fraction_values, axis=0)
+                tile_fraction_value = tile_fraction_value / tile_fraction_sum
                 physical_parameter_value = physical_parameter_values[
                     tile_index, layer_index
                 ]
+
                 # The layer weight is normalized by the sum of the layer weights
                 layer_weight = layer_weight_array[tile_index, layer_index] / (
                     np.sum(layer_weight_array[tile_index], axis=0)
                 )
+
                 value = physical_parameter_value * layer_weight * tile_fraction_value
                 if nature_weighting:
                     nature_fraction = self.get_value_for_params(
@@ -499,6 +523,7 @@ class AddCalculatedFields(Task):
                         bitmap_list,
                         apply_bitmap=True,
                     )
+
                     nature_fraction = np.where(
                         np.logical_and(
                             nature_fraction >= np.min(tile_fraction_range),
@@ -567,7 +592,6 @@ class AddCalculatedFields(Task):
             # Expand input_grib_id entries
             expanded_modify_rules = self.expand_input_grib_id(modify_rules)
             modify_rules = expanded_modify_rules
-
             config_modify_rules = self.config["gribmodify"][filetype]
 
             for validtime, fname in file_handle.items():
@@ -600,6 +624,7 @@ class AddCalculatedFields(Task):
                     ),
                     None,
                 )
+
                 if rule is None:
                     raise ValueError(
                         f"No modify rule found for output: "
