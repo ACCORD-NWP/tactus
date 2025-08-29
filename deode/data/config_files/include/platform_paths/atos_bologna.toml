@@ -17,7 +17,7 @@
   fixed_bddir = "/scratch/sism/DEOL/@YYYY@/@MM@/@DD@/@HH@"
   fixed_bddir_sfx = "/home/snh02/work/dev-CY46h1_deode/boundaries/HRES/@YYYY@/@MM@/@DD@/@HH@"
   flake_dir = "@STATIC_DATA@/climate/PGD"
-  global_sfcdir = "@STATIC_DATA@/climate_fields_mir/climate.v020_MIR_orog/@MM@"
+  global_sfcdir = "@STATIC_DATA@/climate_fields_mir/climate.v020_MIR_orog/@RESOLUTION@km/@MM@"
   gmted2010_data_path = "@CLIMDATA@/GMTED2010"
   host = "atos_bologna"
   install_dir = "/perm/deployde330/github-actions/install/"
