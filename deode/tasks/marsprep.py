@@ -57,7 +57,14 @@ class Marsprep(Task):
         )
 
         # path to sfcdata on disk
-        self.sfcdir = Path(self.platform.get_platform_value("global_sfcdir"))
+        resolution = self.mars["resolution"]
+        self.platform.store_macro("RESOLUTION", resolution)
+        self.sfcdir = Path(
+            self.platform.substitute(
+                str(self.platform.get_platform_value("global_sfcdir"))
+            )
+        )
+
         logger.info(f"sfc dir: {self.sfcdir}")
 
         # Get the times from config.toml
