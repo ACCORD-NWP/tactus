@@ -283,6 +283,23 @@ class AddCalculatedFields(Task):
                     result_values = (
                         100 * result_values
                     )  # Converted to percent to comply with WMO
+            elif operation == "dewpoint_calc":
+                # Based on Lawrence 2005, BAMS, doi: 10.1175/BAMS-86-2-225
+                if len(params) != 2:
+                    raise ValueError(
+                        "Dewpoint calculation needs 2 params: t (in K) and r (in %)"
+                    )
+                a1 = 17.625
+                b1 = 243.04  # C
+                temperature_in_celsius = values_list[0] - 273.15
+                relative_humidity = values_list[1]
+                alfa = np.log(relative_humidity / 100.0) + (
+                    a1 * temperature_in_celsius
+                ) / (b1 + temperature_in_celsius)
+                dewpoint_in_celsius = (b1 * alfa) / (a1 - alfa)
+                result_values = (
+                    np.minimum(dewpoint_in_celsius, temperature_in_celsius) + 273.15
+                )
             elif operation == "patch_averaging_moisture":
                 result_values = self.calc_patch_averaging(
                     params,

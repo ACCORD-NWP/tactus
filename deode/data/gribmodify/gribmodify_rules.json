@@ -134,5 +134,14 @@
     "output_grib_id" : { "productDefinitionTemplateNumber":0, "shortName":"cnwat" },
     "additional_files" : [ {"base":"file_templates.tiles", "entry":"grib", "static":"False"}, {"base":"creategrib.CreateGribStatic.pgd_grib2", "entry":"files_out", "static":"True"} ],
     "valid_at_basetime" : true
+    },
+    {
+        "input_grib_id": [
+            { "shortName": "2t" },
+            { "shortName": "2r" }
+        ],
+        "operator": "dewpoint_calc",
+        "output_name": "2d",
+        "output_grib_id": { "shortName": "2d" }
     }
 ]

@@ -667,6 +667,14 @@
             "$ref": "#/$gribmodify_rules"
           }
         },
+        "fullpos.7": {
+          "title": "2m dewpoint temperature",
+          "description": "Calculates 2m temperature based on Lawrence 2005, BAMS, doi: 10.1175/BAMS-86-2-225",
+          "type": "object",
+          "properties": {
+            "$ref": "#/$gribmodify_rules"
+          }
+        },
         "surfex.1": {
           "title": "Leaf area index",
           "description": "Calculates nature-weighted leaf area index",

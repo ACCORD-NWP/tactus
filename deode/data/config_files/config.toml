@@ -79,6 +79,9 @@
   minimum_frequency = "PT1H"
   output_name = "10fg"
 
+[gribmodify.fullpos.7]
+  output_name = "2d"
+
 [include]
   archiving = "include/archiving.toml"
   cleaning = "include/cleaning.toml"
