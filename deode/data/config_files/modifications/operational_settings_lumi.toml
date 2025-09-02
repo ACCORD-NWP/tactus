@@ -9,3 +9,4 @@
 
 [suite_control]
   max_static_data_tasks = 10
+  mirror_globalDT = false

@@ -97,6 +97,10 @@
   output_root = "@SCRATCH@/DE_Impact/EHYPE"
   output_subpath = "@SUB_CASEDIR@"
 
+[platform.mirrorglobalDT]
+  remote_host = "ecflow-pifs-rd-v-1"
+  remote_path = "/pabv/iekm/fc/main/fcgroup/00/model"
+
 [scheduler.ecfvars]
   ecf_tries = 2
 
@@ -104,6 +108,7 @@
   WALLTIME = "#SBATCH --time=06:00:00"
 
 [suite_control]
+  mirror_globalDT = true
   n_addcalculatedfields = 6
   n_creategrib = 6
 

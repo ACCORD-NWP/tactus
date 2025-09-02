@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use pysurfex in surfex related tasks [\#1210](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1210)(@trygveasp)
 - Add support for E927 and alaro -> alaro coupling in CY49. [\#1165](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1165)(@uandrae)
 - Add 2m dewpoint temperature to gribmodify and standard output [\#1279](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1279)(@sbnielsen)
-- Add ecflow mirror functionality -> allows mirror of globalDT [\#1107](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1107)(@FlorianW-ZAMG)
+- Add ecflow mirror functionality -> allows mirror of globalDT and activate in operations on atos. [\#1107](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1107), [\#1284](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1284) (@FlorianW-ZAMG, @uandrae)
 
 ### Changed
 - Disables sst interpolation for lumi runs [\#1276](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1276)(@pardallio)
