@@ -116,6 +116,8 @@
   do_pgd = true
   do_soil = true
   interpolate_boundaries = true
+  mirror_globalDT = false
+  mirror_offline = false
   mode = "cold_start"
   n_addcalculatedfields = 2
   n_creategrib = 2

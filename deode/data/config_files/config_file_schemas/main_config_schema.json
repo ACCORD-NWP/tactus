@@ -450,6 +450,16 @@
           "type": "boolean",
           "default": false
         },
+        "mirror_globalDT": {
+          "description": "Mirror globalDT suite (true) and trigger if globalDT is available",
+          "type": "boolean",
+          "default": false
+        },
+        "mirror_offline": {
+          "description": "Mirror offlineSFX suite and trigger if offline is available",
+          "type": "boolean",
+          "default": false
+        },
         "max_static_data_tasks": {
           "description": "Limit for max number of monthly tasks, run at same time",
           "type": "integer",

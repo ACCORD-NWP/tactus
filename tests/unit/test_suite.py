@@ -68,9 +68,11 @@ class TestSuite:
                 "platform": {
                     "deode_home": f"{os.path.dirname(__file__)}/../..",
                     "unix_group": "",
+                    "mirrorglobalDT": {"remote_path": "@YYYY@/@HH@mm@"},
                 },
             }
         )
+
         config = config.copy(update=set_times(config))
         config = config.copy(update=param)
         defs = DeodeSuiteDefinition(

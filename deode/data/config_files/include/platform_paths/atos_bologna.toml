@@ -39,3 +39,23 @@
 
 [platform.impact]
   ehype = "/home/snh02/DE_Impact/EHYPE/forecast/pyflow/utils"
+
+[platform.mirrorglobalDT]
+  check_var = "YMD"
+  mirror_name = "globaldt"
+  remote_auth = ""
+  remote_host = "ecflow-gen-snh02-001"
+  remote_path = "/mirror_globalDT_iekm/pabv/iekm/fc/main/fcgroup/00/model"
+  remote_polling = "120"
+  remote_port = "3141"
+  remote_ssl = false
+
+[platform.mirroroffline]
+  check_var = ""
+  mirror_name = "offlinesfx"
+  remote_auth = ""
+  remote_host = "ecfg-aut6432-1"
+  remote_path = "/CY49DT_OFFLINE_dt_2_5_2500x2500/@YYYY@@MM@@DD@/@HHHH@/CycleInput"
+  remote_polling = "120"
+  remote_port = "3141"
+  remote_ssl = false

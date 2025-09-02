@@ -15,6 +15,7 @@ from ..datetime_utils import (
 from ..logs import logger
 from ..submission import ProcessorLayout, TaskSettings
 from ..tasks.impacts import get_impact
+from ..toolbox import Platform
 from .base import (
     EcflowSuiteFamily,
     EcflowSuiteLimit,
@@ -450,6 +451,62 @@ class StaticDataTasks:
             )
 
 
+class MirrorFamily(EcflowSuiteFamily):
+    """Class for creating the InputDataFamily ecFlow family."""
+
+    def __init__(
+        self,
+        parent,
+        config,
+        task_settings: TaskSettings,
+        input_template,
+        ecf_files,
+        trigger=None,
+        ecf_files_remotely=None,
+        cycle_valid=None,
+    ):
+        """Class initialization."""
+        super().__init__(
+            "Mirrors",
+            parent,
+            ecf_files,
+            trigger=trigger,
+            ecf_files_remotely=ecf_files_remotely,
+        )
+
+        if config["suite_control.mirror_globalDT"]:
+            EcflowSuiteTask(
+                config["platform.mirrorglobalDT"]["remote_path"].split("/")[-1],
+                self,
+                config,
+                task_settings,
+                ecf_files,
+                input_template=input_template,
+                trigger=[trigger],
+                mirror=True,
+                mirror_config=config["platform.mirrorglobalDT"],
+                ecf_files_remotely=ecf_files_remotely,
+            )
+
+        if config["suite_control.mirror_offline"]:
+            mirror_config = config["platform.mirroroffline"].dict()
+            mirror_config["remote_path"] = Platform(config).substitute(
+                mirror_config["remote_path"], validtime=cycle_valid
+            )
+            EcflowSuiteTask(
+                config["platform.mirroroffline"]["remote_path"].split("/")[-1],
+                self,
+                config,
+                task_settings,
+                ecf_files,
+                input_template=input_template,
+                trigger=[trigger],
+                mirror=True,
+                mirror_config=mirror_config,
+                ecf_files_remotely=ecf_files_remotely,
+            )
+
+
 class InputDataFamily(EcflowSuiteFamily):
     """Class for creating the InputDataFamily ecFlow family."""
 
@@ -463,6 +520,8 @@ class InputDataFamily(EcflowSuiteFamily):
         trigger=None,
         ecf_files_remotely=None,
         external_marsprep_trigger_node=None,
+        add_var_trigger=None,
+        remote_path=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -483,6 +542,7 @@ class InputDataFamily(EcflowSuiteFamily):
         )
 
         marsprep_trigger_nodes = [prepare_cycle]
+
         if external_marsprep_trigger_node is not None:
             marsprep_trigger_nodes.extend(external_marsprep_trigger_node)
 
@@ -500,6 +560,8 @@ class InputDataFamily(EcflowSuiteFamily):
                 input_template=input_template,
                 trigger=marsprep_trigger_nodes,
                 ecf_files_remotely=ecf_files_remotely,
+                add_var_trigger=add_var_trigger,
+                remote_path=remote_path,
             )
 
 
@@ -748,6 +810,8 @@ class InterpolationFamily(EcflowSuiteFamily):
         ecf_files_remotely=None,
         do_prep: bool = True,
         dry_run: bool = False,
+        add_var_trigger=None,
+        remote_path=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -756,8 +820,9 @@ class InterpolationFamily(EcflowSuiteFamily):
             ecf_files,
             trigger=trigger,
             ecf_files_remotely=ecf_files_remotely,
+            add_var_trigger=add_var_trigger,
+            remote_path=remote_path,
         )
-
         e923_update_task = None
         csc = config["general.csc"]
 
@@ -1172,6 +1237,8 @@ class TimeDependentFamily(EcflowSuiteFamily):
                 ecf_files_remotely=ecf_files_remotely,
             )
 
+            check_globaldt_date = check_offline_date = path_globaldt = path_offline = None
+
             if not config["suite_control.member_specific_mars_prep"]:
                 external_marsprep_trigger_nodes = [
                     prev_interpolation_triggers.get(member)
@@ -1182,6 +1249,61 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     if all(external_marsprep_trigger_nodes)
                     else None
                 )
+
+                if (
+                    config["suite_control.mirror_globalDT"]
+                    and "platform.mirrorglobalDT" in config
+                ) or (
+                    config["suite_control.mirror_offline"]
+                    and "platform.mirroroffline" in config
+                ):
+                    MirrorFamily(
+                        time_family,
+                        config,
+                        task_settings,
+                        input_template,
+                        ecf_files,
+                        ecf_files_remotely=ecf_files_remotely,
+                        cycle_valid=cycle.validtime,
+                    )
+
+                    if (
+                        config["suite_control.mirror_globalDT"]
+                        and "platform.mirrorglobalDT" in config
+                    ):
+                        path_globaldt = "{0}/{1}/{2}/Mirrors/{3}".format(
+                            parent.path,
+                            cycle.day,
+                            cycle.time,
+                            config["platform.mirrorglobalDT"]["remote_path"].split("/")[
+                                -1
+                            ],
+                        )
+
+                        if config["platform.mirrorglobalDT"]["check_var"]:
+                            check_globaldt_date = {
+                                config["platform.mirrorglobalDT"]["check_var"]: cycle.day
+                            }
+
+                    if (
+                        config["suite_control.mirror_offline"]
+                        and "platform.mirroroffline" in config
+                    ):
+                        path_offline = "{0}/{1}/{2}/Mirrors/{3}".format(
+                            parent.path,
+                            cycle.day,
+                            cycle.time,
+                            config["platform.mirroroffline"]["remote_path"].split("/")[
+                                -1
+                            ],
+                        )
+                        if config["platform.mirroroffline"]["check_var"]:
+                            check_offline_date = {
+                                config["platform.mirroroffline"][
+                                    "check_var"
+                                ]: "{0}/{1}".format(cycle.day, cycle.time)
+                            }
+
                 inputdata = InputDataFamily(
                     time_family,
                     config,
@@ -1191,6 +1313,8 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     trigger=trigger,
                     ecf_files_remotely=ecf_files_remotely,
                     external_marsprep_trigger_node=external_marsprep_trigger_nodes,
+                    add_var_trigger=check_globaldt_date,
+                    remote_path=path_globaldt,
                 )
                 ready_for_cycle = inputdata
 
@@ -1226,6 +1350,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                         if all(external_marsprep_trigger_nodes)
                         else None
                     )
+
                     inputdata = InputDataFamily(
                         member_family,
                         config,
@@ -1250,6 +1375,8 @@ class TimeDependentFamily(EcflowSuiteFamily):
                         ecf_files_remotely=ecf_files_remotely,
                         do_prep=do_prep,
                         dry_run=dry_run,
+                        add_var_trigger=check_offline_date,
+                        remote_path=path_offline,
                     )
 
                     ready_for_cycle = prev_interpolation_triggers[member] = int_family
