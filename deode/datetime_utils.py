@@ -27,10 +27,20 @@ def as_datetime(obj):
     """Convert obj to string, parse into datetime and add UTC timezone iff naive."""
     return default_tzinfo(dateutil.parser.parse(str(obj)), tzinfo=timezone.utc)
 
+
 def as_julian(yyyymmdd):
+    """Convert a date in YYYYMMDD format to a Julian Day Number.
+
+    Args:
+        yyyymmdd (int or str): Date in YYYYMMDD format.
+
+    Returns:
+        int: Julian Day Number corresponding to the given date at midnight.
+    """
     date = datetime.strptime(str(yyyymmdd), "%Y%m%d").date()
     julian_day = date.toordinal() + 1721425  # Julian Day Number at midnight
     return julian_day
+
 
 def as_timedelta(obj):
     """Convert obj to string and parse into pd.Timedelta."""
