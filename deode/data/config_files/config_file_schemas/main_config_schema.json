@@ -987,12 +987,6 @@
           "type": "string",
           "enum": ["sice", "none"],
           "default": "sice"
-        },
-        "precision": {
-          "description": "Floating point precision",
-          "type": "string",
-          "enum": ["", "-sp"],
-          "default": "-sp"
         }
       },
       "required": ["times"]

@@ -96,6 +96,10 @@
       "type": "string",
       "description": "Path to visible spectrum vegetation data."
     },
+    "install_dir": {
+      "type": "string",
+      "description": "Install location"
+    },
     "lai_dir": {
       "type": "string",
       "description": "TBA"

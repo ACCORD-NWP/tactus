@@ -11,8 +11,29 @@
     },
     "bindir": {
       "type": "string",
-      "description": "Location of binaries",
-      "default": "@INSTALL_DIR@/@CYCLE@/latest/bin"
+      "description": "Location of IAL binaries",
+      "default": "@INSTALL_DIR@/@CYCLE@/@IAL_VERSION@/bin"
+    },
+    "bindir_gl": {
+      "type": "string",
+      "description": "Location of GL binary",
+      "default": "@INSTALL_DIR@/gl/@GL_VERSION@/bin/"
+    },
+    "precision": {
+      "description": "Floating point precision as used in the Forecast task",
+      "type": "string",
+      "enum": ["", "-sp"],
+      "default": "-sp"
+    },
+    "ial_version": {
+      "description": "Version of IAL binary to use",
+      "type": "string",
+      "default": "latest"
+    },
+    "gl_version": {
+      "description": "Version of GL binary to use",
+      "type": "string",
+      "default": "latest"
     },
     "nproma": {
       "type": "number",

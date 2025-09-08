@@ -22,7 +22,7 @@
     {domain = "domain.name"},
     {xdx = "domain.xdx"},
     {domain_number = "domain.number"},
-    {precision = "general.precision"},
+    {precision = "submission.precision"},
     {duration_archive = "file_templates.duration.archive"},
     {duration_model = "file_templates.duration.model"},
     {ecf_deode_home = "scheduler.ecfvars.ecf_deode_home"},
@@ -43,6 +43,9 @@
     {merged_sqlite_path = "extractsqlite.merged_sqlite_path"},
     {sqlite_model_name = "extractsqlite.sqlite_model_name"},
     {surfex_template = "file_templates.surfex.archive"},
+    {bindir_gl = "submission.bindir_gl"},
+    {gl_version = "submission.gl_version"},
+    {ial_version = "submission.ial_version"},
   ]
   group_macros = ["platform", "system"]
   os_macros = ["USER", "HOME", "PWD", "CONFIG"]
