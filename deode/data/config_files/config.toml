@@ -33,8 +33,7 @@
   sstmodels = ["IFS"]
 
 [boundaries.ifs]
-  bdmember = 0
-  bdmembers = []
+  bdmember = []
   selection = "@HOST@_DT"
 
 [boundaries.lam]

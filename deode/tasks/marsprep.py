@@ -7,6 +7,8 @@ from functools import cached_property
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from deode.eps.eps_setup import get_member_config, infer_members
+
 from ..config_parser import ParsedConfig
 from ..datetime_utils import as_datetime, as_timedelta, cycle_offset
 from ..logs import logger
@@ -45,16 +47,35 @@ class Marsprep(Task):
         """
         Task.__init__(self, config, __class__.__name__)
 
-        # Default to [None] to cover the deterministic case with no
-        # boundary member nesting.
-        self.bdmembers = (
-            [
-                int(self.platform.substitute(bdmember))
-                for bdmember in self.config["boundaries.ifs.bdmembers"]
-            ]
-            if self.config["boundaries.ifs.bdmembers"]
-            else [None]
-        )
+        # Get bdmember(s) from member specific eps setting if member specific
+        # mars prep is enabled
+        if self.config["suite_control.member_specific_mars_prep"]:
+            try:
+                member_ = int(os.environ.get("MEMBER"))
+            except ValueError as exc:
+                raise ValueError(
+                    "MEMBER environment variable must be an integer if "
+                    "suite_control.member_specific_mars_prep is True"
+                ) from exc
+            else:
+                member_config = get_member_config(self.config, member_)
+                bdmember_config_value = member_config["boundaries.ifs.bdmember"]
+
+        # Get bdmember(s) from eps members settings (attempted first) or
+        # boundaries.ifs.bdmember.
+        else:
+            try:
+                bdmember_config_value = self.config[
+                    "eps.member_settings.boundaries.ifs.bdmember"
+                ]
+            except KeyError:
+                bdmember_config_value = self.config["boundaries.ifs.bdmember"]
+
+        self.bdmember = infer_members(self.platform.substitute(bdmember_config_value))
+        # Default to [None] if self.bdmember is empty to cover the deterministic
+        # case with no boundary member nesting.
+        if not self.bdmember:
+            self.bdmember = [None]
 
         # path to sfcdata on disk
         resolution = self.mars["resolution"]
@@ -185,7 +206,7 @@ class Marsprep(Task):
         request: BaseRequest,
         prefetch: bool,
         specify_domain: bool,
-        bdmembers: Optional[List[int]] = None,
+        bdmember: Optional[List[int]] = None,
         grid: Optional[str] = None,
         source: Optional[str] = None,
         fieldset: Optional[str] = None,
@@ -196,7 +217,7 @@ class Marsprep(Task):
             request:            BaseRequest object to update
             prefetch:           Retrieve or stage
             specify_domain:     Use lat/lon and rotation or use global (default)
-            bdmembers:          Boundary members to retrieve in case of eps.
+            bdmember:          Boundary members to retrieve in case of eps.
             grid:               Specific grid for some request. Default None.
             source:             Sorce for retrieve data from disk. Defaults None.
             fieldset:           Name of fieldset. Defaults None.
@@ -210,8 +231,8 @@ class Marsprep(Task):
         # between a deterministic run with no boundary member nesting (members = [None])
         # and an ensemble run with boundary member nesting (e.g. members = [0]
         # for a one member ensemble, members = [0, 1, 2] for a three member ensemble etc.)
-        if bdmembers and all(bdmembers):
-            request.update_request({"NUMBER": "/".join(map(str, bdmembers))})
+        if bdmember and all(bdmember):
+            request.update_request({"NUMBER": "/".join(map(str, bdmember))})
 
         if self.mars_version == 6:
             request.update_request({"PROCESS": "LOCAL"})
@@ -280,7 +301,7 @@ class Marsprep(Task):
         """Get grid point surface data."""
         tag = "ICMGG"
         steps, members_dict, _ = get_steps_and_members_to_retrieve(
-            self.steps, self.prepdir, tag, self.bdmembers
+            self.steps, self.prepdir, tag, self.bdmember
         )
         if steps:
             self.get_gg_data(tag, steps, members_dict)
@@ -318,7 +339,7 @@ class Marsprep(Task):
         """Get spectral harmonic data."""
         tag = "ICMSH"
         steps, members_dict, _ = get_steps_and_members_to_retrieve(
-            self.steps, self.prepdir, tag, self.bdmembers
+            self.steps, self.prepdir, tag, self.bdmember
         )
 
         if steps:
@@ -337,7 +358,7 @@ class Marsprep(Task):
         """Get gridpoint upper air data."""
         tag = "ICMUA"
         steps, members_dict, _ = get_steps_and_members_to_retrieve(
-            self.steps, self.prepdir, tag, self.bdmembers
+            self.steps, self.prepdir, tag, self.bdmember
         )
         if steps:
             self.get_ua_data(tag, steps, members_dict)
@@ -359,7 +380,7 @@ class Marsprep(Task):
             )
         )
 
-        for member in self.bdmembers:
+        for member in self.bdmember:
             prep_filename = self.platform.substitute(
                 bdfile.replace("@BDMEMBER@", str(member or 0)),
                 basetime=self.bd_basetime,
@@ -383,7 +404,7 @@ class Marsprep(Task):
             logger.debug("No need Prep file")
             bdmember_fetch_list = []
         else:
-            for member in self.bdmembers:
+            for member in self.bdmember:
                 if member not in bdmember_fetch_list:
                     logger.info(
                         "Prep file member={} already exists as {}",
@@ -409,7 +430,7 @@ class Marsprep(Task):
 
         # Split the lat/lon part and perform it here
         self.get_lat_lon_data(bdmember_fetch_list)
-        self.get_geopotential_latlon(self.bdmembers[0], bdmember_fetch_list)
+        self.get_geopotential_latlon(self.bdmember[0], bdmember_fetch_list)
 
         # Get the file list to join
         for bdmember in bdmember_fetch_list:
@@ -433,7 +454,7 @@ class Marsprep(Task):
             self.steps,
             prep_dir,
             bdfile,
-            self.bdmembers,
+            self.bdmember,
             platform=self.platform,
             basetime=self.bd_basetime,
             validtime=self.basetime,
@@ -806,7 +827,7 @@ class Marsprep(Task):
             request,
             prefetch=prefetch,
             specify_domain=specify_domain,
-            bdmembers=members,
+            bdmember=members,
             grid=grid,
             source=source,
             fieldset=fieldset,

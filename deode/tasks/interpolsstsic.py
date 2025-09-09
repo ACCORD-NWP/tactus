@@ -68,8 +68,15 @@ class InterpolSstSic(Task):
         merge_ocean_files = ""
         for sstmodel in self.config["boundaries.sstmodels"]:
             if sstmodel == "IFS":
+                infile: str = self.config["file_templates.bdfile_sst.archive"]
+                # Default to 0 for bdmember if no bdmember specified. This is to
+                # be able to reference files created by marsprep, which contains
+                # bdmember = 0 even for "deterministic" runs.
+                if not self.config["boundaries.ifs.bdmember"]:
+                    infile = infile.replace("@BDMEMBER@", "0")
+
                 infile = self.platform.substitute(
-                    self.config["file_templates.bdfile_sst.archive"],
+                    infile,
                     basetime=self.bd_basetime,
                     validtime=as_datetime(self.bd_time),
                 )

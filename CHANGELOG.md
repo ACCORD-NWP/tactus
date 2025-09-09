@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed eccodes version to 2.41 in pyproject.toml [\#1261](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1261)(@KristianHMoller)
 - Fix MergeSQLites class/task to comply with new way of referencing parameter lists (separate lists for sfc and upper air variables)  [\#1253](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1253)(@svianaj)
+- Simplified bdmembers/bdmember. [\#1204](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1221)(@mafdmi)
 
 ## [0.18.1] - 2025-07-22
 

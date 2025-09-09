@@ -14,7 +14,7 @@ Exports:
 
 from collections.abc import Mapping
 from itertools import chain
-from typing import Any, Dict, Generator, List, Tuple
+from typing import Any, Dict, Generator, List, Sequence, Tuple
 
 from pydantic import RootModel, field_validator
 from pydantic.dataclasses import dataclass as pydantic_dataclass
@@ -24,6 +24,7 @@ from deode.custom_validators import import_from_string
 from deode.eps.custom_generators import BaseGenerator
 from deode.general_utils import (
     expand_dict_key_slice,
+    expand_string_slice,
     merge_dicts,
     modify_mappings,
     recursive_delete_keys,
@@ -56,35 +57,19 @@ class EPSGeneralConfigs:
     members: List[int]
 
     @field_validator("members", mode="before")
-    def infer_members(cls, value: str | int | List[int]) -> List[int]:  # noqa: N805
-        """Infer members from the members string. Accepts ints or list of ints too.
+    def validate_members(cls, value: str | int | List[int]) -> List[int]:  # noqa: N805
+        """Validate and infer members from the members string.
 
-        The members string can be a comma separated sequence of integers or ranges.
-        The string is converted into a sorted list of integers. The list is
-        filtered to contain only unique values.
-
-        E.g. "0:3,4,5,10:15" or "0,1,2,3,4,5,10,11,12,13,14"
-
-        In case of value being an integer, it is converted to a list of integers.
-        In case of value not being an int or string, it is assumed to be a list
-        of integers and returned sorted.
+        Accepts ints or list of ints too.
 
         Args:
-            value: The members string, integer or list to infer members from.
+            value (str | int | List[int]): The members string, integer or list
+                to validate and infer members from.
 
         Returns:
-            List[int]: The inferred members.
+            List[int]: The validated and inferred members.
         """
-        if isinstance(value, int):
-            value = [value]
-        elif isinstance(value, str):
-            _members = [
-                list(range(*map(int, x.split(":")))) if ":" in x else [int(x)]
-                for x in value.split(",")
-            ]
-            value = list(chain.from_iterable(_members))
-
-        return sorted(set(value))
+        return infer_members(value)
 
     @property
     def n_members(self) -> int:
@@ -253,6 +238,11 @@ def instantiate_generators(config: dict, members: List[int]) -> dict:
             except (ImportError, ValueError):
                 pass
 
+            if is_expandable(local_field_value):
+                generators[field_name] = expand_string_slice(local_field_value, members)
+                # Continue to avoid overwriting generator
+                continue
+
         # Expand field to give one value per member.
         # The self.general.members list is respected, so no value
         # is generated for members not in the list.
@@ -303,11 +293,23 @@ def generate_values(config: dict, generators: dict) -> dict:
     return generated_values
 
 
+def is_expandable(string_: str):
+    """Check if a string is expandable.
+
+    By "expandable" we mean either integers or string slices, where string
+    slices are strings of format "start:end:step", "start:end" or "start:".
+
+    Args:
+        string_: The string to check.
+
+    Returns:
+        A boolean indicating if the string is expandable.
+    """
+    return string_.isdigit() or (isinstance(string_, str) and ":" in string_)
+
+
 def check_expandable_keys(mapping: Mapping[str, Any]) -> List[bool]:
     """Check if a mapping contains expandable keys.
-
-    By "expandable keys" we mean either integers or string slices, where string
-    slices are strings of format "start:end:step", "start:end" or "start:".
 
     Args:
         mapping: The mapping to check.
@@ -322,9 +324,7 @@ def check_expandable_keys(mapping: Mapping[str, Any]) -> List[bool]:
     if not all(isinstance(key, str) for key in current_keys):
         raise TypeError("Keys in mapping must be strings.")
 
-    expandable_keys = [
-        key_.isdigit() or (isinstance(key_, str) and ":" in key_) for key_ in current_keys
-    ]
+    expandable_keys = [is_expandable(key_) for key_ in current_keys]
 
     return expandable_keys
 
@@ -354,6 +354,9 @@ def get_expandable_keys(
             else:
                 # Only keys are relevant, so just set None value
                 expandable_keys_dict[mapping_key] = None
+        elif isinstance(mapping_value, str) and is_expandable(mapping_value):
+            # Only keys are relevant, so just set None value
+            expandable_keys_dict[mapping_key] = None
 
     return expandable_keys_dict
 
@@ -423,3 +426,41 @@ def get_member_config(config: ParsedConfig, member: int) -> ParsedConfig:
 
     # Return the config updated with member settings
     return config.copy(update={**merged_settings})
+
+
+def infer_members(members: str | int | List[int]) -> List[int]:
+    """Infer members from the members string. Accepts ints or list of ints too.
+
+    The members string can be a comma separated sequence of integers or ranges.
+    The string is converted into a sorted list of integers. The list is
+    filtered to contain only unique values.
+
+    E.g. "0:3,4,5,10:15" or "0,1,2,3,4,5,10,11,12,13,14"
+
+    In case of members being an integer, it is converted to a list of integers.
+    In case of members not being an int or string, it is assumed to be a list
+    of integers and returned sorted.
+
+    Args:
+        members: The members string, integer or list to infer members from.
+
+    Raises:
+        TypeError: If members is not an int, str or Sequence of ints.
+
+    Returns:
+        List[int]: The inferred members.
+    """
+    if isinstance(members, int):
+        members_inferred = [members]
+    elif isinstance(members, str):
+        _members = [
+            list(range(*map(int, x.split(":")))) if ":" in x else [int(x)]
+            for x in members.split(",")
+        ]
+        members_inferred = list(chain.from_iterable(_members))
+    elif isinstance(members, Sequence):
+        members_inferred = members
+    else:
+        raise TypeError("Members must be an int, str or Sequence of ints.")
+
+    return sorted(set(members_inferred))

@@ -153,7 +153,7 @@ def get_steps_and_members_to_retrieve(
     # Get perturbed members only
     perturbed_members = [member for member in sorted(set(member_list)) if member != 0]
     # Construct dictionary with perturbed members and control depending on the
-    # provided bdmembers list
+    # provided members list
     members_dict = {}
     if 0 in members:
         members_dict["control_member"] = [0]

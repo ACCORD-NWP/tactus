@@ -151,6 +151,62 @@ def value_from_any_generator(
         yield any_
 
 
+def expand_string_slice(
+    string: int | str, indices: List[int]
+) -> Generator[int | List[int], None, None]:
+    """Expand a string slice into a list of integers returned as generator.
+
+    Args:
+        string (int | str): The string to expand
+        indices (List[int]): Indices to respect, i.e. for max/min bounds
+
+    Raises:
+        ValueError: If string, that is not a slice string, cannot be converted
+            to int
+
+    Yields:
+        Generator[int | List[int], None, None]: The expanded string returned as
+            a generator.
+    """
+    # Check if key is a slice
+    if ":" in str(string):
+        # Parse slice
+        start, *args = (int(x) if x else None for x in str(string).split(":"))
+        stop, step = args if len(args) == 2 else (args[0], None)
+
+        # Set bounds of start/stop if indices is not empty
+        if len(indices) > 0:
+            # If start is None, set it to min index (permits strings like ":5")
+            start = cast(int, start or min(indices))
+            # If stop is None, set it to max index (permits strings like "5:")
+            # +1 to include the last index
+            stop = stop or max(indices) + 1
+        else:
+            logger.debug(
+                "Indices is empty, cannot set bounds of slice strings."
+                + " Return from generator"
+            )
+            return
+
+        # Make type checker understand that now start and stop are not None
+        start = cast(int, start)
+        stop = cast(int, stop)
+
+        # Iterate over the expanded strings and yield them together with the value
+        for string_expanded in range(start, stop, step or 1):
+            yield string_expanded
+    else:
+        # Return string as int, and value as is if string is not a slice
+        try:
+            yield int(string)
+        except ValueError as exc:
+            raise ValueError(
+                f"string '{string}' could not be converted to int. "
+                "If string is not string slice, it should be convertible"
+                " to int."
+            ) from exc
+
+
 def expand_dict_key_slice(
     dict_: Dict[Union[int, str], Any], indices: List[int]
 ) -> Dict[int, Any]:
@@ -176,43 +232,8 @@ def expand_dict_key_slice(
 
     def generate_key_value_pairs() -> Generator[Tuple[int, Any], None, None]:
         for key, value in dict_.items():
-            # Check if key is a slice
-            if ":" in str(key):
-                # Parse slice
-                start, *args = (int(x) if x else None for x in str(key).split(":"))
-                stop, step = args if len(args) == 2 else (args[0], None)
-
-                # Set bounds of start/stop if indices is not empty
-                if len(indices) > 0:
-                    # If start is None, set it to min index (permits keys like ":5")
-                    start = cast(int, start or min(indices))
-                    # If stop is None, set it to max index (permits keys like "5:")
-                    # +1 to include the last index
-                    stop = stop or max(indices) + 1
-                else:
-                    logger.debug(
-                        "Indices is empty, cannot set bounds of slice keys."
-                        + " Return from generator"
-                    )
-                    return
-
-                # Make type checker understand that now start and stop are not None
-                start = cast(int, start)
-                stop = cast(int, stop)
-
-                # Iterate over the expanded keys and yield them together with the value
-                for key_expanded in range(start, stop, step or 1):
-                    yield key_expanded, value
-            else:
-                # Return key as int, and value as is if key is not a slice
-                try:
-                    yield int(key), value
-                except ValueError as exc:
-                    raise ValueError(
-                        f"Key '{key}' could not be converted to int. "
-                        "If key is not string slice, it should be convertible"
-                        " to int."
-                    ) from exc
+            for expanded_key in expand_string_slice(key, indices):
+                yield expanded_key, value
 
     for key, value in generate_key_value_pairs():
         if key in indices:

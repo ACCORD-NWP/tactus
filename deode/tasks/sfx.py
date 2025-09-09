@@ -163,6 +163,7 @@ class Prep(PySurfexBaseTask):
         """Execute."""
         cnmexp = self.config["general.cnmexp"]
         output = f"{self.intp_bddir_sfx}/ICMSH{cnmexp}INIT.sfx"
+        bdmodel = self.config["boundaries.bdmodel"]
 
         if not os.path.exists(output) or self.force:
             binary = self.get_binary("PREP")
@@ -180,8 +181,7 @@ class Prep(PySurfexBaseTask):
             # Select the correct input file
             basetime = as_datetime(self.config["general.times.basetime"])
             bddir_sfx = self.config["system.bddir_sfx"]
-            bdfile_sfx_template = self.config["file_templates.bdfile_sfx.archive"]
-            if self.config["boundaries.bdmodel"] == "ifs":
+            if bdmodel == "ifs":
                 mars = Marsprep.mars_selection(
                     selection=self.platform.substitute(
                         self.config["boundaries.ifs.selection"]
@@ -198,6 +198,10 @@ class Prep(PySurfexBaseTask):
             bd_basetime = basetime - cycle_offset(
                 basetime, bdcycle, bdcycle_start=bdcycle_start, bdshift=bdshift
             )
+
+            bdfile_sfx_template: str = self.config["file_templates.bdfile_sfx.archive"]
+            if not self.config.get(f"boundaries.{bdmodel}.bdmember"):
+                bdfile_sfx_template = bdfile_sfx_template.replace("@BDMEMBER@", "0")
             prep_input_file = self.platform.substitute(
                 f"{bddir_sfx}/{bdfile_sfx_template}",
                 basetime=bd_basetime,
