@@ -123,7 +123,7 @@
                 "NAM_PREP_SURF_ATM#CFILE": "@PREP_INPUT_FILE_WITH_PATH@"
             },
             "FA": {
-                "NAM_PREP_SURF_ATM#CFILE": "@PREP_INPUT_FILE_WITH_PATH@"
+                "INFILE.fa": "@PREP_INPUT_FILE_WITH_PATH@"
             }
         },
         "NAM_PREP_SURF_ATM#CFILEPGDTYPE": {
@@ -134,7 +134,7 @@
                 "NAM_PREP_SURF_ATM#CFILEPGD": "@PREP_PGD_INPUT_FILE_WITH_PATH@"
             },
             "FA": {
-                "NAM_PREP_SURF_ATM#CFILEPGD": "@PREP_PGD_INPUT_FILE_WITH_PATH@"
+                "PGD_HOST.fa": "@PREP_PGD_INPUT_FILE_WITH_PATH@"
             }
         }
     },
