@@ -62,7 +62,7 @@ class InterpolSstSic(Task):
         self.fmanager.input(f"{climdir}/{climfile}", climfile)
 
         # Boundary input file(s)
-        marsdir = self.config["system.bddir"]
+        bddir_sst = self.config["system.bddir_sst"]
 
         merge_ocean_models = ""
         merge_ocean_files = ""
@@ -81,7 +81,7 @@ class InterpolSstSic(Task):
                     validtime=as_datetime(self.bd_time),
                 )
                 self.fmanager.input(
-                    f"{marsdir}/{infile}",
+                    f"{bddir_sst}/{infile}",
                     infile,
                     basetime=self.bd_basetime,
                     validtime=as_datetime(self.bd_time),

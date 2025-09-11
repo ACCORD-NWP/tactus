@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Merge boundary interpolation tasks in one [\#1165](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1165)(@uandrae)
 
 ### Fixed
+- Correct usaged of bddir_sst path [\#1300](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1300)(@uandrae)
 - Fix names of the inputs for e927 and Prep.[\#1298](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1298)(@kastelecn)
 - Make sure unit tests runs on atos. Fixes ecflow connection problem and location of the troika file. [\#1277](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1277)(@uandrae)
 - Introduce tile fraction normalization to tile averaging. [\#1275](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1275)(@KristianHMoller)
