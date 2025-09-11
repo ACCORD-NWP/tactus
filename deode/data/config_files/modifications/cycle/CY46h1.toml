@@ -1,10 +1,12 @@
 [general]
   cycle = "CY46h1"
-  precision = ""
   windfarm = false
 
 [platform]
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef/"
+
+[submission]
+  precision = ""
 
 [submission.task_exceptions.C903]
   bindir = "@INSTALL_DIR@/CY48t3/latest/bin"

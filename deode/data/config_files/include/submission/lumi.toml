@@ -1,5 +1,6 @@
 [submission]
   account = "#SBATCH -A project_465000527"
+  bindir_gl = "@INSTALL_DIR@/gl/@GL_VERSION@-gnu/bin"
   cmicro = "ICE3"
   default_submit_type = "serial"
   lfftw = true
@@ -41,7 +42,7 @@
 
 [submission.task_exceptions.CreateGrib]
   binary = "gl"
-  bindir = "@INSTALL_DIR@/gl/latest-gnu/bin"
+  bindir = "@BINDIR_GL@"
 
 [submission.task_exceptions.CreateGrib.ENV]
   LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/lrb_465000527_efdev/local/eccodes-2.42.0-gcc-13.2.0/lib64"
@@ -51,7 +52,7 @@
 
 [submission.task_exceptions.InterpolSstSic]
   binary = "gl"
-  bindir = "@INSTALL_DIR@/gl/latest-gnu/bin"
+  bindir = "@BINDIR_GL@"
 
 [submission.task_exceptions.Marsprep]
   bindir = "/appl/local/destine/bin"
@@ -74,7 +75,7 @@
 
 [submission.task_exceptions.PgdUpdate]
   binary = "gl"
-  bindir = "@INSTALL_DIR@/gl/latest-gnu/bin"
+  bindir = "@BINDIR_GL@"
 
 [submission.task_exceptions.PgdUpdate.ENV]
   LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/lrb_465000527_efdev/local/eccodes-2.42.0-gcc-13.2.0/lib64"

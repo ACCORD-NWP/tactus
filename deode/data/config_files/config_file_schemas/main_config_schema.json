@@ -164,24 +164,6 @@
                 "irok"
               ]
             },
-            "bdmembers": {
-              "anyOf": [
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "integer"
-                  }
-                }
-              ],
-              "description": "List of members in ensemble if selection is IFS.",
-              "default": []
-            },
             "bdmember": {
               "anyOf": [
                 {
@@ -189,10 +171,13 @@
                 },
                 {
                   "type": "string"
+                },
+                {
+                  "type": "array"
                 }
               ],
-              "description": "Boundary member number a given ensemble member shall use if selection is IFS",
-              "default": 0
+              "description": "Specification of boundary members to nest in if selection is IFS. The order of bdmembers determines which member uses what bdmember. The bdmembers can be specified as integer, string slice or a list of integers. String slices have to be in the format 'start:end[:step]'. Use empty list for no bdmembers.",
+              "default": []
             }
           }
         },
@@ -987,12 +972,6 @@
           "type": "string",
           "enum": ["sice", "none"],
           "default": "sice"
-        },
-        "precision": {
-          "description": "Floating point precision",
-          "type": "string",
-          "enum": ["", "-sp"],
-          "default": "-sp"
         }
       },
       "required": ["times"]

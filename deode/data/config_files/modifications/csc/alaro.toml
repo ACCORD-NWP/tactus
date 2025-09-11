@@ -1,6 +1,5 @@
 [general]
   csc = "ALARO"
-  precision = ""
   surfex = false
 
 [general.output_settings]
@@ -14,6 +13,9 @@
 
 [pgd]
   npatch = 1
+
+[submission]
+  precision = ""
 
 [submission.task_exceptions.Forecast.ENV]
   APL_ALARO = "1"

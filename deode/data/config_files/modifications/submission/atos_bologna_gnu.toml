@@ -1,19 +1,9 @@
 [submission]
-  bindir = "@INSTALL_DIR@/@CYCLE@-gnu/latest/bin"
-
-[submission.task_exceptions.CreateGrib]
-  binary = "gl"
-  bindir = "@INSTALL_DIR@/gl/latest-gnu/bin"
-
-[submission.task_exceptions.CreateGribStatic]
-  bindir = "@INSTALL_DIR@/gl/latest-gnu/bin"
+  bindir = "@INSTALL_DIR@/@CYCLE@-gnu/@IAL_VERSION@/bin"
+  bindir_gl = "@INSTALL_DIR@/gl/@GL_VERSION@-gnu/bin"
 
 [submission.task_exceptions.Forecast]
-  bindir = "@INSTALL_DIR@/@CYCLE@-gnu/latest/bin"
-
-[submission.task_exceptions.PgdUpdate]
-  binary = "gl"
-  bindir = "@INSTALL_DIR@/gl/latest-gnu/bin"
+  bindir = "@INSTALL_DIR@/@CYCLE@-gnu/@IAL_VERSION@/bin"
 
 [submission.types.parallel.MODULES]
   00_PRGENV = ["load", "prgenv/gnu"]

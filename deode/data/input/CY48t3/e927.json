@@ -2,7 +2,7 @@
   "climate" : {
     "path": "@CLIMDIR@",
     "files": {
-      "const.clim": "Const.Clim.@MM@"
+      "const.clim.000": "Const.Clim.@MM@"
     }
   },
 
