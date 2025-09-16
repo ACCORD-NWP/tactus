@@ -1063,17 +1063,6 @@ class ForecastFamily(EcflowSuiteFamily):
                 trigger=add_calc_fields_family,
             )
 
-        if len(get_impact(config, "StartImpactModels")) > 0:
-            EcflowSuiteTask(
-                "StartImpactModels",
-                self,
-                config,
-                task_settings,
-                ecf_files,
-                input_template=input_template,
-                trigger=add_calc_fields_family,
-            )
-
 
 class CycleFamily(EcflowSuiteFamily):
     """Class for creating the Cycle ecFlow family."""
@@ -1319,6 +1308,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                 ready_for_cycle = inputdata
 
             member_families: List[EcflowSuiteFamily] = []
+            member_cycle_families: List[EcflowSuiteFamily] = []
             for member in config["eps.general.members"]:
                 member_family = EcflowSuiteFamily(
                     f"mbr{member:03d}",
@@ -1394,6 +1384,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     trigger=ready_for_cycle,
                     ecf_files_remotely=ecf_files_remotely,
                 )
+                member_cycle_families.append(cycle_family)
                 prev_cycle_triggers[member] = [cycle_family]
 
                 postcycle_families[member] = PostCycleFamily(
@@ -1418,6 +1409,18 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     ecf_files,
                     trigger=member_families,
                     input_template=input_template,
+                    ecf_files_remotely=ecf_files_remotely,
+                )
+
+            if len(get_impact(config, "StartImpactModels")) > 0:
+                EcflowSuiteTask(
+                    "StartImpactModels",
+                    time_family,
+                    config,
+                    task_settings,
+                    ecf_files,
+                    input_template=input_template,
+                    trigger=member_cycle_families,
                     ecf_files_remotely=ecf_files_remotely,
                 )
 
