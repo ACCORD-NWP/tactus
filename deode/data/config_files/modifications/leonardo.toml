@@ -2,4 +2,4 @@
   selection = "atos_bologna_DT"
 
 [macros.select.leonardo]
-  os_macros = ["CINECA_SCRATCH","SUBMIT_HOST"]
+  os_macros = ["CINECA_SCRATCH", "SUBMIT_HOST"]
