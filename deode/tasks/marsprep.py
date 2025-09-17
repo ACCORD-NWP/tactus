@@ -448,7 +448,7 @@ class Marsprep(Task):
                 validtime=self.basetime,
             )
         )
-        bdfile = self.config["file_templates.bdfile_sst.archive"]
+        bdfile = self.config["file_templates.bdfile_sst.model"]
 
         _, members_dict, missing_steps_per_member = get_steps_and_members_to_retrieve(
             self.steps,

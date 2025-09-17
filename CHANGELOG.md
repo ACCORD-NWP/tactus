@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Merge boundary interpolation tasks in one [\#1165](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1165)(@uandrae)
 
 ### Fixed
+- Fixed bddir\_sst file template to allow runs with bdshift>0. [\#1308](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1308)(@kastelecn)
 - Restore lost recreation of surfex files [\#1303](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1303)(@uandrae)
 - Correct usage of bddir_sst path [\#1300](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1300)(@uandrae)
 - Fix names of the inputs for e927 and Prep.[\#1298](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1298)(@kastelecn)
