@@ -159,26 +159,10 @@
                 "i8hy",
                 "IFSENS",
                 "iit7",
-                "ilv7"
+                "ilv7",
+                "is6g",
+                "irok"
               ]
-            },
-            "bdmembers": {
-              "anyOf": [
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "integer"
-                  }
-                }
-              ],
-              "description": "List of members in ensemble if selection is IFS.",
-              "default": []
             },
             "bdmember": {
               "anyOf": [
@@ -187,10 +171,13 @@
                 },
                 {
                   "type": "string"
+                },
+                {
+                  "type": "array"
                 }
               ],
-              "description": "Boundary member number a given ensemble member shall use if selection is IFS",
-              "default": 0
+              "description": "Specification of boundary members to nest in if selection is IFS. The order of bdmembers determines which member uses what bdmember. The bdmembers can be specified as integer, string slice or a list of integers. String slices have to be in the format 'start:end[:step]'. Use empty list for no bdmembers.",
+              "default": []
             }
           }
         },
@@ -448,6 +435,16 @@
           "type": "boolean",
           "default": false
         },
+        "mirror_globalDT": {
+          "description": "Mirror globalDT suite (true) and trigger if globalDT is available",
+          "type": "boolean",
+          "default": false
+        },
+        "mirror_offline": {
+          "description": "Mirror offlineSFX suite and trigger if offline is available",
+          "type": "boolean",
+          "default": false
+        },
         "max_static_data_tasks": {
           "description": "Limit for max number of monthly tasks, run at same time",
           "type": "integer",
@@ -520,7 +517,7 @@
         },
         "bddir": {
           "type": "string",
-          "description": "Location of input boundaries"
+          "description": "Location of input boundaries from e.g. MARS"
         },
         "intp_bddir": {
           "type": "string",
@@ -572,10 +569,6 @@
           "description": "Path to static namelists",
           "default": "@DEODE_HOME@/data/namelists/@CYCLE@"
         },
-        "marsdir": {
-          "type": "string",
-          "description": "Location input files extracted from MARS by Marsprep"
-        },
         "global_sfcdir": {
           "type": "string",
           "description": "Path to SFC files needed for c903, which are not in MARS"
@@ -599,6 +592,11 @@
           "type": "string",
           "description": "Path to the c903 json config file",
           "default": "@CYCLE@/c903.json"
+        },
+        "e927_input_definition": {
+          "type": "string",
+          "description": "Path to the e927 json config file",
+          "default": "@CYCLE@/e927.json"
         }
       }
     },
@@ -659,6 +657,14 @@
         "fullpos.6": {
           "title": "10m gust wind speed",
           "description": "Calculates 10m gust wind speed",
+          "type": "object",
+          "properties": {
+            "$ref": "#/$gribmodify_rules"
+          }
+        },
+        "fullpos.7": {
+          "title": "2m dewpoint temperature",
+          "description": "Calculates 2m temperature based on Lawrence 2005, BAMS, doi: 10.1175/BAMS-86-2-225",
           "type": "object",
           "properties": {
             "$ref": "#/$gribmodify_rules"
@@ -885,7 +891,7 @@
         "cycle": {
           "description": "IAL cycle",
           "type": "string",
-          "enum": ["CY49t2", "CY48t3", "CY46h1"]
+          "enum": ["CY50t1", "CY49t2", "CY48t3", "CY46h1"]
         },
         "event_type": {
           "description": "Type of extreme event",
@@ -966,12 +972,6 @@
           "type": "string",
           "enum": ["sice", "none"],
           "default": "sice"
-        },
-        "precision": {
-          "description": "Floating point precision",
-          "type": "string",
-          "enum": ["", "-sp"],
-          "default": "-sp"
         }
       },
       "required": ["times"]

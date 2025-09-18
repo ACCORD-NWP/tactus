@@ -64,7 +64,11 @@ class TestSubmission:
                     "default_submit_type": "pytest",
                     "types": {"pytest": {"SCHOST": "localhost", "WRAPPER": ""}},
                 },
-                "troika": {"config_file": "deode/data/config_files/troika.yml"},
+                "troika": {
+                    "config_file": str(
+                        ConfigParserDefaults.CONFIG_DIRECTORY / "troika.yml"
+                    )
+                },
             }
         )
         tmp = tmp_directory

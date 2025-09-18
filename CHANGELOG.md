@@ -10,6 +10,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.20.0] - 2025-09-18
+
+### Added
+- CY50t1 introduction [\#1280](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1280)(@dhaumont)
+- Add "resolution" to sfcdir and mars settings for is6g/irok [\#1263](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1263)(@kastelcn,@j-fannon)
+- Use pysurfex in surfex related tasks [\#1210](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1210)(@trygveasp)
+- Add support for E927 and alaro -> alaro coupling in CY49. [\#1165](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1165)(@uandrae)
+- Add 2m dewpoint temperature to gribmodify and standard output [\#1279](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1279)(@sbnielsen)
+- Add ecflow mirror functionality -> allows mirror of globalDT and activate in operations on atos. [\#1107](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1107), [\#1284](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1284) (@FlorianW-ZAMG, @uandrae)
+
+### Changed
+- Changes binary path defaults to include compiler and precision as R64 or R32 changes way of setting precision ("R32"/"R64" vs "-sp"/"") [\1288](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1288) (@pardallio)
+- Move StartImpact outside of the ensemble loop [\1302](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1302) (@uandrae)
+- Create one single point to define gl-binary and make ial/gl version Deode-configurable [\1288](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1288) (@jacobsnoeijer)
+- Disables sst interpolation for lumi runs [\#1276](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1276)(@pardallio)
+- Merge boundary interpolation tasks in one [\#1165](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1165)(@uandrae)
+
+### Fixed
+- Fixed bddir\_sst file template to allow runs with bdshift>0. [\#1308](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1308)(@kastelecn)
+- Restore lost recreation of surfex files [\#1303](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1303)(@uandrae)
+- Correct usage of bddir_sst path [\#1300](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1300)(@uandrae)
+- Fix names of the inputs for e927 and Prep.[\#1298](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1298)(@kastelecn)
+- Make sure unit tests runs on atos. Fixes ecflow connection problem and location of the troika file. [\#1277](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1277)(@uandrae)
+- Introduce tile fraction normalization to tile averaging. [\#1275](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1275)(@KristianHMoller)
+
 ## [0.19.0] - 2025-08-14
 
 ### Added
@@ -20,6 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed eccodes version to 2.41 in pyproject.toml [\#1261](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1261)(@KristianHMoller)
 - Fix MergeSQLites class/task to comply with new way of referencing parameter lists (separate lists for sfc and upper air variables)  [\#1253](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1253)(@svianaj)
+- Simplified bdmembers/bdmember. [\#1204](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1221)(@mafdmi)
 
 ## [0.18.1] - 2025-07-22
 

@@ -113,6 +113,25 @@
         },
         "NAM_PGD_SCHEMES#CWATER": {
                 "FLAKE": {"LAKE_LTA_NEW.nc": "@flake_dir@/LAKE_LTA_NEW.nc"}
+        },
+        "NAM_PREP_SURF_ATM#CFILETYPE": {
+            "GRIB": {
+                "NAM_PREP_SURF_ATM#CFILE": "@PREP_INPUT_FILE_WITH_PATH@"
+            },
+            "FA": {
+                "NAM_PREP_SURF_ATM#CFILE": "@PREP_INPUT_FILE_WITH_PATH@"
+            }
+        },
+        "NAM_PREP_SURF_ATM#CFILEPGDTYPE": {
+            "NC": {
+                "NAM_PREP_SURF_ATM#CFILEPGD": "@PREP_PGD_INPUT_FILE_WITH_PATH@"
+            },
+            "ASCII": {
+                "NAM_PREP_SURF_ATM#CFILEPGD": "@PREP_PGD_INPUT_FILE_WITH_PATH@"
+            },
+            "FA": {
+                "NAM_PREP_SURF_ATM#CFILEPGD": "@PREP_PGD_INPUT_FILE_WITH_PATH@"
+            }
         }
     },
     "forecast": {

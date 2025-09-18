@@ -41,7 +41,6 @@ The `eps_3members_IFSENS_common_mars_prep.toml` file contains the following sett
   start = "-P1D"
 
 [boundaries.ifs]
-  bdmembers = [0, 1, 2]
   selection = "IFSENS"
 
 [eps.general]
@@ -95,7 +94,6 @@ Let's instead say, that you wanted the member 2 to use the IFSENS member 0 bound
 
 [boundaries.ifs]
   selection = "IFSENS"
-  bdmembers = [0, 1, 2]
 
 [eps.general]
   members = "0:3"
@@ -136,7 +134,7 @@ Running the `deode case` command will result in a config file with the following
 > The general.times.start setting is set to "-P1D" by default, to make the example able to run out-of-the-box, since IFSENS data is only available in mars for the past two weeks.
 
 ## Common or member specific mars data retrieval
-By default, mars data is retrieved for all members simultaneously to optimize the mars requests. This is controlled by the `suite_control.member_specific_mars_prep = false` setting. As shown in above example, all what one has to do, to retrieve the correct members, is to set the `bdmembers` and `bdmember` settings:
+By default, mars data is retrieved for all members simultaneously to optimize the mars requests. This is controlled by the `suite_control.member_specific_mars_prep = false` setting. As shown in above example, all what one has to do, to retrieve the correct members, is to set the `bdmember` settings:
 
 ```toml
 [general.times]
@@ -144,23 +142,18 @@ By default, mars data is retrieved for all members simultaneously to optimize th
 
 [boundaries.ifs]
   selection = "IFSENS"
-  bdmembers = [0, 1, 2]
 
 [eps.general]
   members = "0:3"
 
 [eps.member_settings.boundaries.ifs]
-  bdmember = [0, 1, 2]  # or bdmember = "@MEMBER@"
+  bdmember = [0, 1, 2]
 ```
 
 > **_NOTE:_**:
 > The general.times.start setting is set to "-P1D" by default, to make the example able to run out-of-the-box, since IFSENS data is only available in mars for the past two weeks.
 
-One can ask why we need both a `boundaries.ifs.bdmembers` and a `eps.member_settings.boundaries.ifs.bdmember` setting. The reason is that the `bdmembers` setting is used to determine which boundary members we should retrieve IFSENS data for, whereas the `bdmember` setting is used to determine which IFSENS member data to use for each member.
-
-To instead retrieve mars data individually for each member, one has to
-1. set the `member_specific_mars_prep` setting to `true` in the `[suite_control]` section.
-2. set the `bdmembers` and `bdmember` setting individually for each member either in the `[boundaries.ifs]` section or in the `[eps.member_settings.boundaries.ifs]` section. In both cases, one can use macros to define the members. Only in the latter case, one can set them to explicit numbers.
+To instead retrieve mars data individually for each member, one just has to set the `member_specific_mars_prep` setting to `true` in the `[suite_control]` section.
 
 i.e.
 ```toml
@@ -168,7 +161,6 @@ i.e.
   member_specific_mars_prep = true
 
 [boundaries.ifs]
-  bdmembers = ["@MEMBER@"]
   bdmember = "@MEMBER@"
   selection = "IFSENS"
 
@@ -187,24 +179,8 @@ or
   members = "0:3"
 
 [eps.member_settings.boundaries.ifs]
-  bdmembers = [["@MEMBER@"]]  # or bdmembers = [[0], [1], [2]]. Note the extra brackets. They area necessary to make bdmembers be a list after member settings expansion
-  bdmember = "@MEMBER@"   # or bdmember = [0, 1, 2]
+  bdmember = [0, 1, 2]   # or bdmember = "@MEMBER@"
 ```
-
-To make it clear why one cannot set explicit numbers in the `[boundaries.ifs]` section while `member_specific_mars_prep = true`, if one e.g. did
-```toml
-[suite_control]
-  member_specific_mars_prep = true
-
-[boundaries.ifs]
-  bdmembers = [0, 1, 2]
-  bdmember = 0
-  selection = "IFSENS"
-
-[eps.general]
-  members = "0:3"
-```
-it would result in every member retrieving data for member 0, 1, and 2, but only using member 0 data.
 
 ## Member specific static data
 By default, the static data is generated one time for all members. To generate static data for each member individually, one has to set the `member_specific_static_data` setting to `true` in the `[suite_control]` section, and adjust the `climdir` to have a "@MEMBER_STR@" directory.
@@ -245,7 +221,6 @@ If we add a section `[eps.member_settings.modifications]` to e.g. the `eps_3memb
 
 [boundaries.ifs]
   selection = "IFSENS"
-  bdmembers = [0, 1, 2]
 
 [eps.general]
   members = "0:3"
@@ -341,6 +316,7 @@ E.g. `members = [1, 3, 5]` will include members 1, 3, and 5 in the ensemble,
 whereas `members = "0, 1, 2, 4:10:2"` will include members 0, 1, 2, 4, 6, and 8. Setting `members = 1` will include only member 1.
 The format of the string slices follows the Python slice notation, i.e. `start:stop:step`.
 The default value for `step` is 1, so `start:stop` is equivalent to `start:stop:1`.
+The above rules also apply for the `bdmember` setting.
 
 To adjust the default member settings to ones needs, one can set member specific settings
 for basically any existing settings of the Deode-Workflow config file. There are various

@@ -82,6 +82,10 @@
           "type": "string",
           "description": "Type for geopotential in gridpoint"
         },
+	"resolution": {
+          "type": "string",
+          "description": "Resolution of global model"
+        },
         "stream": {
           "type": "object",
           "description": "Dictionary (run:stream) to use the right stream for a given run."
@@ -160,6 +164,10 @@
         "SHZ_type": {
           "type": "string",
           "description": "Type for geopotential"
+        },
+	"resolution": {
+          "type": "string",
+          "description": "Resolution of global model"
         },
         "stream": {
           "type": "string",
@@ -286,6 +294,10 @@
     "GGZ_type": {
       "type": "string",
       "description": "Type for geopotential in gridpoint"
+    },
+    "resolution": {
+          "type": "string",
+          "description": "Resolution of global model"
     },
     "stream": {
       "description": "MARS stream or dictionary (run:stream) to use the right stream for a given run.",

@@ -43,9 +43,9 @@
             "title" : "Layer weights",
             "type": "array",
             "items": {
-              "type": "number"
+              "type": "object"
             },
-            "description": "Weight for each soil layer in weighted averaging starting from the surface. The numbers must sum to one."
+            "description": "Dicionary of level and weight for each soil layer in weighted averaging. The weights must sum to one."
         },
         "physical_range": {
             "title" : "Physical range",

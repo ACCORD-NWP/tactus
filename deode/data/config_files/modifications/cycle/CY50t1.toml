@@ -1,0 +1,21 @@
+[general]
+  cycle = "CY50t1"
+  surfex = true
+
+[general.output_settings]
+  surfex = "PT1H"
+
+[creategrib.CreateGrib]
+  conversions = ["surfex"]
+
+[pgd]
+  npatch = 3
+
+[submission.task_exceptions.E923Update.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = 0
+
+[submission.task_exceptions.Pgd.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = 0
+
+[submission.task_exceptions.PgdFilterTownFrac]
+  binary = "PGD_FRAC"

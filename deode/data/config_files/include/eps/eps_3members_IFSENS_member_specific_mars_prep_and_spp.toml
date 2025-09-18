@@ -2,14 +2,13 @@
   start = "-P1D"
 
 [boundaries.ifs]
-  bdmember = "@MEMBER@"
-  bdmembers = ["@MEMBER@"]
   selection = "IFSENS"
 
 [eps.general]
   members = "0:3"
 
 [eps.member_settings.boundaries.ifs]
+  bdmember = "0:3"
 
 [eps.member_settings.namelist_update.master.forecast.namspp]
   iezdiag_pos = {"1:" = -1}

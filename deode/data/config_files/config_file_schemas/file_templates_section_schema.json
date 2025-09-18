@@ -39,6 +39,21 @@
         }
       }
     },
+    "interpolated_boundaries": {
+      "title": "Interpolated boundaries",
+      "description": "File name templates for interpolated boundary files",
+      "type": "object",
+      "properties": {
+        "archive": {
+          "description": "File template as stored in the archive",
+          "type": "string"
+        },
+        "model": {
+          "description": "File template as used by the model",
+          "type": "string"
+        }
+      }
+    },
     "history": {
       "title": "History",
       "description": "File name templates for history files",

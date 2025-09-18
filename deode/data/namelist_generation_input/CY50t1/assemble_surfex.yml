@@ -1,0 +1,74 @@
+pgd_common:
+  - sfx_io
+  - sfx_pgd_domain
+  - sfx_pgd_schemes
+  - sfx_pgd_zs_gmted
+  - sfx_pgd_soilgrid_sand
+  - sfx_pgd_soilgrid_clay
+  - sfx_pgd_ecoclimap_sg_base
+
+pgd_ALARO:
+  - sfx_pgd_isba_dif_@CSC@
+  - sfx_pgd_zs_filter
+  - sfx_pgd_@CSC@
+  - sfx_@CSC@
+
+pgd_AROME:
+  - sfx_pgd_ecoclimap_sg_@DECADES@
+  - sfx_pgd_isba_dif
+  - sfx_pgd_zs_filter
+  - sfx_pgd_zs_@CSC@
+
+pgd_HARMONIE_AROME:
+  - sfx_pgd_ecoclimap_sg_@DECADES@
+  - sfx_pgd_isba_dif
+  - sfx_pgd_cv
+  - sfx_pgd_rsmin
+  - sfx_pgd_sea
+  - sfx_pgd_@CSC@
+  - sfx_treedrag
+
+pgd:
+  - ${pgd_common}
+  - sfx_pgd_teb_@SG_INPUT@
+  - sfx_teb_@SG_INPUT@
+  - ${pgd_@CSC@}
+
+prep:
+  - sfx_io
+  - sfx_prep_sea
+  - sfx_prep_isba_@CSC@
+  - ${prep_bdmodel_@BDMODEL@}
+  - sfx_teb_@SG_INPUT@
+  - ${prep_@CSC@}
+
+prep_ALARO:
+  - sfx_prep_watflx
+  - sfx_@CSC@
+
+prep_AROME:
+
+prep_HARMONIE_AROME:
+  - sfx_prep_sea_sice
+  - sfx_treedrag
+  - sfx_surf_constants
+
+prep_bdmodel_lam:
+  - sfx_prep_isba_from_fa
+
+prep_bdmodel_ifs:
+  - sfx_prep_isba_from_grib
+
+forecast:
+  - sfx_io
+  - sfx_teb_@SG_INPUT@
+  - sfx_forecast
+  - sfx_forecast_@CSC@
+  - ${forecast_@CSC@}
+
+forecast_ALARO:
+
+forecast_AROME:
+
+forecast_HARMONIE_AROME:
+  - sfx_treedrag

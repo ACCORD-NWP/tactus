@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 from typing import List, Optional, Union
 
+from ..datetime_utils import as_datetime
 from ..logs import LogDefaults, logger
 from ..submission import TaskSettings
 from ..toolbox import Platform
@@ -204,6 +205,9 @@ class EcflowNode:
         trigger: Optional[
             Union["EcflowSuiteTriggers", List["EcflowNode"], "EcflowNode"]
         ] = None,
+        mirror_config=None,
+        add_var_trigger=None,
+        remote_path=None,
         def_status=None,
         ecf_files_remotely=None,
         cron=None,
@@ -219,6 +223,11 @@ class EcflowNode:
             variables (dict, optional): Variables to map. Defaults to None
             trigger (Union[EcflowSuiteTriggers, List[EcflowNode], EcflowNode]):
                 Trigger. Defaults to None
+            mirror_config (dict, optional): Variables for the mirror task
+            add_var_trigger(dict): Dictionary to add trigger based on ECF-variable.
+                Defaults to None
+            remote_path(str): path to the mirror node on the remote ecflow suite.
+                Defaults to None
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
             ecf_files_remotely(str, optional): Remote file prefix
             cron (EcflowSuiteCron): Cron. Defauts to None
@@ -252,6 +261,10 @@ class EcflowNode:
                 self.ecf_node = parent.ecf_node.add_task(self.name)
             elif self.node_type == "suite":
                 self.ecf_node = parent.add_suite(self.name)
+            elif self.node_type == "mirror":
+                if mirror_config["check_var"]:
+                    variables = {mirror_config["check_var"]: "placeholder"}
+                self.ecf_node = parent.ecf_node.add_task(self.name)
             else:
                 raise NotImplementedError
 
@@ -293,6 +306,22 @@ class EcflowNode:
                         [EcflowSuiteTrigger(node) for node in trigger]
                     )
                     if trigger.trigger_string is not None and self.ecf_node is not None:
+                        if add_var_trigger is not None:
+                            for key, val in add_var_trigger.items():
+                                trigger.trigger_string = (
+                                    "({0} AND (({1} == complete "
+                                    "AND {1}:{2} == {3}) OR {1}:{2} > {3}))".format(
+                                        trigger.trigger_string,
+                                        remote_path,
+                                        key,
+                                        as_datetime(val).strftime("%Y%m%d"),
+                                    )
+                                )
+                        elif remote_path:
+                            trigger.trigger_string = "{0} AND {1} == complete".format(
+                                trigger.trigger_string, remote_path
+                            )
+
                         self.ecf_node.add_trigger(trigger.trigger_string)
                 else:
                     raise TypeError(
@@ -304,6 +333,22 @@ class EcflowNode:
             elif isinstance(trigger, EcflowNode):
                 trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(trigger)])
                 if trigger.trigger_string is not None and self.ecf_node is not None:
+                    if add_var_trigger is not None:
+                        for key, val in add_var_trigger.items():
+                            trigger.trigger_string = (
+                                "({0} AND (({1} == complete "
+                                "AND {1}:{2} == {3}) OR {1}:{2} > {3}))".format(
+                                    trigger.trigger_string,
+                                    remote_path,
+                                    key,
+                                    as_datetime(val).strftime("%Y%m%d"),
+                                )
+                            )
+
+                    elif remote_path:
+                        trigger.trigger_string = "{0} AND {1} == complete".format(
+                            trigger.trigger_string, remote_path
+                        )
                     self.ecf_node.add_trigger(trigger.trigger_string)
             else:
                 raise TypeError(
@@ -338,6 +383,19 @@ class EcflowNode:
                     "defstatus must be either str or an ecflow.Defstatus object"
                 )
 
+        if self.node_type == "mirror":
+            self.ecf_node.add_mirror(
+                ecflow.MirrorAttr(
+                    mirror_config["mirror_name"],
+                    mirror_config["remote_path"],
+                    mirror_config["remote_host"],
+                    mirror_config["remote_port"],
+                    mirror_config["remote_polling"],
+                    mirror_config["remote_ssl"],
+                    mirror_config["remote_auth"],
+                )
+            )
+
 
 class EcflowNodeContainer(EcflowNode):
     """Ecflow node container."""
@@ -354,6 +412,8 @@ class EcflowNodeContainer(EcflowNode):
         ecf_files_remotely=None,
         cron=None,
         limit=None,
+        add_var_trigger=None,
+        remote_path=None,
     ):
         """Construct EcflowNodeContainer.
 
@@ -368,6 +428,10 @@ class EcflowNodeContainer(EcflowNode):
             ecf_files_remotely(str, optional): ECF_FILES on ecflow server
             cron (EcflowSuiteCron): Cron. Defauts to None
             limit (EcflowSuiteLimit): Limit. Default None
+            add_var_trigger(dict): Dictionary to add trigger based on ECF-variable.
+                Defaults to None
+            remote_path(str): path to the mirror node on the remote ecflow suite.
+                Defaults to None
 
         """
         EcflowNode.__init__(
@@ -382,6 +446,8 @@ class EcflowNodeContainer(EcflowNode):
             ecf_files_remotely=ecf_files_remotely,
             cron=cron,
             limit=limit,
+            add_var_trigger=add_var_trigger,
+            remote_path=remote_path,
         )
 
 
@@ -449,6 +515,8 @@ class EcflowSuiteFamily(EcflowNodeContainer):
         ecf_files_remotely=None,
         cron=None,
         limit=None,
+        add_var_trigger=None,
+        remote_path=None,
     ):
         """Construct the family.
 
@@ -462,6 +530,10 @@ class EcflowSuiteFamily(EcflowNodeContainer):
                     ecf_files_remotely(str, optional): ECF_FILES on ecflow server
                     cron (EcflowSuiteCron): Cron. Defaut None
                     limit (EcflowSuiteLimit): Limit. Default None
+                    add_var_trigger(dict): dict to add trigger based on ECF-variable.
+                        Defaults to None
+                    remote_path(str): path to the mirror node on the remote ecflow suite.
+                        Defaults to None
         """
         EcflowNodeContainer.__init__(
             self,
@@ -475,6 +547,8 @@ class EcflowSuiteFamily(EcflowNodeContainer):
             ecf_files_remotely=ecf_files_remotely,
             cron=cron,
             limit=limit,
+            add_var_trigger=add_var_trigger,
+            remote_path=remote_path,
         )
         logger.debug(self.ecf_remote_container_path)
         if self.ecf_node is not None:
@@ -496,11 +570,15 @@ class EcflowSuiteTask(EcflowNode):
         variables=None,
         ecf_micro="%",
         trigger=None,
+        mirror=None,
+        mirror_config=None,
         def_status=None,
         ecf_files_remotely=None,
         cron=None,
+        add_var_trigger=None,
+        remote_path=None,
     ):
-        """Constuct the EcflowSuiteTask.
+        """Construct the EcflowSuiteTask.
 
         Args:
             name (str): Name of task
@@ -514,27 +592,50 @@ class EcflowSuiteTask(EcflowNode):
             variables (dict, optional): Variables to map. Defaults to None
             ecf_micro (str, optional): ECF_MICRO. Defaults to %
             trigger (EcflowSuiteTriggers): Trigger. Defaults to None
+            mirror (bool, optional): Task is a mirror (True) or a regular task,
+                Defaults to False
+            mirror_config (dict, optional): dictionary with remote mirror settings,
+                Defaults to None
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
             ecf_files_remotely(str, optional): ECF_FILES on ecflow server
             cron (EcflowSuiteCron): Cron. Defaut None
-
+            add_var_trigger(dict): dict to add trigger based on ECF-variable.
+                Defaults to None
+            remote_path(str): path to the mirror node on the remote ecflow suite.
+                Defaults to None
         Raises:
             ValueError: If input template is to be parsed but it is not passed.
             FileNotFoundError: If the task container is not found.
 
         """
-        EcflowNode.__init__(
-            self,
-            name,
-            "task",
-            parent,
-            ecf_files,
-            variables=variables,
-            trigger=trigger,
-            def_status=def_status,
-            ecf_files_remotely=ecf_files_remotely,
-            cron=cron,
-        )
+        if mirror:
+            trigger = list(trigger) if trigger is not None else []
+
+        if mirror:
+            EcflowNode.__init__(
+                self,
+                name,
+                "mirror",
+                parent,
+                ecf_files,
+                mirror_config=mirror_config,
+            )
+
+        else:
+            EcflowNode.__init__(
+                self,
+                name,
+                "task",
+                parent,
+                ecf_files,
+                variables=variables,
+                trigger=trigger,
+                def_status=def_status,
+                ecf_files_remotely=ecf_files_remotely,
+                cron=cron,
+                add_var_trigger=add_var_trigger,
+                remote_path=remote_path,
+            )
 
         logger.debug(parent.path)
         logger.debug(parent.ecf_local_container_path)
@@ -562,7 +663,7 @@ class EcflowSuiteTask(EcflowNode):
                 variables=variables,
                 ecf_micro=ecf_micro,
             )
-        elif not os.path.exists(task_container):
+        elif (not os.path.exists(task_container)) and (not mirror):
             raise FileNotFoundError(f"Container {task_container} is missing!")
 
 

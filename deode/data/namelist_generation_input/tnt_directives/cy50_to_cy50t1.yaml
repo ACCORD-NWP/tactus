@@ -1,0 +1,19 @@
+
+# Part of these changes can be applied using TNT -- TheNamelistTool :
+# tnt.py -d <directive.yaml> <one or several namelist>
+# tnt.py is available under belenos:~verolive/vortex/vortex/bin/ or (EC) hpc-login:~sos/vortex/vortex/bin/
+
+new_blocks:
+    - NAMPERTPAR
+    - NAMAERO
+    - NAMRPP
+
+keys_to_remove:
+    NAMPAR1:
+        - M_BARRINC_DIWRGRID
+        - L_GATHERV_WRGP
+    NAMSCC:
+        - SSCAT_XGRID
+    # bator
+    BUFR:
+        - SSCAT_XGRID

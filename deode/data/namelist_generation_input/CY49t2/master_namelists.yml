@@ -1833,6 +1833,54 @@ f4_c903_domain:
   NEMFPEZO:
     RCO_EZO: 180.0
 
+f4_e927_lam_AROME:
+  NAMFPC:
+    CFP3DF:
+    - CLOUD_FRACTI
+    - CLOUD_WATER
+    - GRAUPEL
+    - HUMI.SPECIFIQUE
+    - ICE_CRYSTAL
+    - PRESS.DEPART
+    - RAIN
+    - SNOW
+    - TEMPERATURE
+    - TKE
+    - VERTIC.DIVER
+    - WIND.U.PHYS
+    - WIND.V.PHYS
+
+f4_e927_lam_HARMONIE_AROME:
+  NAMFPC:
+    CFP3DF:
+    - CLOUD_FRACTI
+    - CLOUD_WATER
+    - GRAUPEL
+    - HUMI.SPECIFIQUE
+    - ICE_CRYSTAL
+    - PRESS.DEPART
+    - RAIN
+    - SNOW
+    - TEMPERATURE
+    - TKE
+    - VERTIC.DIVER
+    - WIND.U.PHYS
+    - WIND.V.PHYS
+
+f4_e927_lam_ALARO:
+  NAMAFN:
+    TFP_Q%LLGP: ${cfg:boundaries.humi_gp}
+  NAMGFL:
+    YA_NL%NREQIN: 0
+    YG_NL%NREQIN: 0
+    YI_NL%NREQIN: 0
+    YL_NL%NREQIN: 0
+    YQ_NL%LGP: false
+    YQ_NL%LSP: true
+    YR_NL%NREQIN: 0
+    YS_NL%NREQIN: 0
+    YTKE_NL%NREQIN: 0
+
 f4_e927_lam:
   NAMDYNA:
     LNHEE: true
@@ -1843,15 +1891,8 @@ f4_e927_lam:
     - HUMI.SPECIFIQUE
     - WIND.U.PHYS
     - WIND.V.PHYS
-    - CLOUD_WATER
-    - ICE_CRYSTAL
-    - RAIN
-    - SNOW
-    - GRAUPEL
-    - CLOUD_FRACTI
     - PRESS.DEPART
     - VERTIC.DIVER
-    - TKE
   NAMGEM:
     LNHX_GEOM: true
     LNONHYD_GEOM: true
@@ -1870,6 +1911,17 @@ f4_e927_ifs:
   NAMDYNA:
     LNHEE: false
     LSPRT: false
+  NAMFPC:
+    CFP3DF:
+    - TEMPERATURE
+    - HUMI.SPECIFIQUE
+    - WIND.U.PHYS
+    - WIND.V.PHYS
+    - PRESS.DEPART
+    - VERTIC.DIVER
+    - CLOUD_WATER
+    - ICE_CRYSTAL
+    - CLOUD_FRACTI
   NAMGEM:
     LNHX_GEOM: true
     LNONHYD_GEOM: true
@@ -1883,6 +1935,7 @@ f4_e927_ifs:
     YR_NL%NREQIN: 0
     YS_NL%NREQIN: 0
     YTKE_NL%NREQIN: 0
+
 f4_e927:
   NAERAD:
     LRRTM: false
@@ -1907,16 +1960,6 @@ f4_e927:
     CFP2DF:
     - SURFPRESSION
     - SPECSURFGEOPOTENTIEL
-    CFP3DF:
-    - TEMPERATURE
-    - HUMI.SPECIFIQUE
-    - WIND.U.PHYS
-    - WIND.V.PHYS
-    - PRESS.DEPART
-    - VERTIC.DIVER
-    - CLOUD_WATER
-    - ICE_CRYSTAL
-    - CLOUD_FRACTI
     CFPFMT: LELAM
     CFPPHY:
     - SURFTEMPERATURE

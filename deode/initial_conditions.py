@@ -69,8 +69,8 @@ class InitialConditions(object):
         # Find data explicitly defined
         if self.mode == "restart" and self.starttime == self.basetime:
             pdtg = self.basetime - self.cycle_length
-            initfile = self.config["general.initfile"]
-            initfile_sfx = self.config["general.initfile_sfx"]
+            initfile = self.config["file_templates.initfile.archive"]
+            initfile_sfx = self.config["file_templates.initfile_sfx.archive"]
             self.source = self.platform.substitute(
                 initfile,
                 basetime=pdtg,
@@ -85,7 +85,8 @@ class InitialConditions(object):
         # Find data prepared by Prep and the boundary interpolation
         elif self.mode == "cold_start" or self.starttime == self.basetime:
             self.source = self.platform.substitute(
-                f"{self.intp_bddir}/ELSCF@CNMEXP@ALBC000"
+                f"{self.intp_bddir}/{self.file_templates['interpolated_boundaries']['model']}",
+                bd_index=0,
             )
             self.source_sfx = self.platform.substitute(
                 f"{self.intp_bddir_sfx}/ICMSH@CNMEXP@INIT.sfx"

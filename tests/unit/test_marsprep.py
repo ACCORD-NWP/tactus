@@ -85,7 +85,7 @@ def test_update_data_request(marsprep_instance: Marsprep):
         base_request,
         prefetch=True,
         specify_domain=False,
-        bdmembers=members,
+        bdmember=members,
     )
 
     assert "NUMBER" in base_request.request
@@ -113,7 +113,7 @@ def test_update_data_request(marsprep_instance: Marsprep):
     marsprep_instance.update_data_request(
         request_shz,
         prefetch=False,
-        bdmembers=[],
+        bdmember=[],
         specify_domain=True,
         source="test_source",
     )

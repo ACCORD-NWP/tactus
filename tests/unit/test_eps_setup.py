@@ -20,12 +20,13 @@ from deode.eps.eps_setup import (
     generate_values,
     get_expandable_keys,
     get_member_config,
+    infer_members,
     instantiate_generators,
 )
 
 
-class TestEPSGeneralConfigs:
-    """Unit tests of the EPSGeneralConfigs class."""
+class TestInferMembers:
+    """Unit tests of the infer_members function."""
 
     @pytest.mark.parametrize(
         ("input_members", "expected_output"),
@@ -46,7 +47,7 @@ class TestEPSGeneralConfigs:
             input_members (list[int] | str): The input members as string or list
             expected_output (list[int]): The expected list of members
         """
-        result = EPSGeneralConfigs.infer_members(value=input_members)
+        result = infer_members(input_members)
         assert result == expected_output
 
 

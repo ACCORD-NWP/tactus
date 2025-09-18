@@ -293,6 +293,10 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         "deode.tasks.collectlogs.CollectLogs.execute",
         new=new_task_collectlogs_collectlogs_execute_method,
     )
+    # Mock pysurfex calls. Could be done with finer granularity,
+    # but some paths are not subsistuted
+    session_mocker.patch("deode.tasks.sfx.pgd")
+    session_mocker.patch("deode.tasks.sfx.prep")
 
     # Create files needed by gmtedsoil tasks
     tif_files_dir = tmp_path_factory.getbasetemp()

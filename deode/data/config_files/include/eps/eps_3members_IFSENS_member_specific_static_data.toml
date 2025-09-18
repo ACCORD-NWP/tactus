@@ -2,12 +2,13 @@
   start = "-P1D"
 
 [boundaries.ifs]
-  bdmember = "@MEMBER@"
-  bdmembers = [0, 1, 2]
   selection = "IFSENS"
 
 [eps.general]
   members = "0:3"
+
+[eps.member_settings.boundaries.ifs]
+  bdmember = "0:3"
 
 [suite_control]
   member_specific_static_data = true

@@ -12,7 +12,8 @@
   npatch = 3
 
 [submission]
-  bindir = "@INSTALL_DIR@/@CYCLE@/@CYCLE@-v1.9.0/bin"
+  gl_version = "gl-v1.8.0"
+  ial_version = "CY49t2-v1.10.0"
 
 [submission.task_exceptions.E923Update.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
