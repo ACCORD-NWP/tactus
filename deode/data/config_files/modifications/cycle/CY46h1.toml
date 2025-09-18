@@ -6,6 +6,8 @@
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef/"
 
 [submission]
+  bindir = "@INSTALL_DIR@/@CYCLE@/@IAL_VERSION@/bin"
+  compiler = ""
   precision = ""
 
 [submission.task_exceptions.C903]

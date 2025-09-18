@@ -1,7 +1,7 @@
 [submission]
   account = "#SBATCH -A project_465000527"
-  bindir_gl = "@INSTALL_DIR@/gl/@GL_VERSION@-gnu/bin"
   cmicro = "ICE3"
+  compiler = "gnu"
   default_submit_type = "serial"
   lfftw = true
   module_initpath = "/usr/share/lmod/8.3.1/init"
@@ -46,6 +46,9 @@
 
 [submission.task_exceptions.CreateGrib.ENV]
   LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/lrb_465000527_efdev/local/eccodes-2.42.0-gcc-13.2.0/lib64"
+
+[submission.task_exceptions.Forecast]
+  bindir = "@INSTALL_DIR@/@CYCLE@/@COMPILER@/@PRECISION@/@IAL_VERSION@/bin"
 
 [submission.task_exceptions.Gmted.MODULES]
   GDAL = ["load", "scl-gdal_23"]
