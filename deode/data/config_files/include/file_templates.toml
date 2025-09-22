@@ -7,7 +7,8 @@
   archive = "ECSFCSFX@DOMAIN@_@BDMEMBER@+@LLL@"
 
 [file_templates.bdfile_sst]
-  archive = "ECSFCSST@DOMAIN@_@BDMEMBER@+@NNN@"
+  archive = "ECSFCSST@DOMAIN@_@BDMEMBER@+@LLL@"
+  model = "ECSFCSST@DOMAIN@_@BDMEMBER@+@NNN@"
 
 [file_templates.duration]
   archive = "@LLLH@h@LM@m@LS@s"

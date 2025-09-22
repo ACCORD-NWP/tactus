@@ -1,9 +1,5 @@
 [submission]
-  bindir = "@INSTALL_DIR@/@CYCLE@-gnu/@IAL_VERSION@/bin"
-  bindir_gl = "@INSTALL_DIR@/gl/@GL_VERSION@-gnu/bin"
-
-[submission.task_exceptions.Forecast]
-  bindir = "@INSTALL_DIR@/@CYCLE@-gnu/@IAL_VERSION@/bin"
+  compiler = "gnu"
 
 [submission.types.parallel.MODULES]
   00_PRGENV = ["load", "prgenv/gnu"]

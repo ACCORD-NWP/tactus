@@ -33,9 +33,14 @@ class InterpolSstSic(Task):
         bdcycle = as_timedelta(mars["ifs_cycle_length"])
         bdcycle_start = as_timedelta(mars["ifs_cycle_start"])
         bdshift = as_timedelta(self.config["boundaries.bdshift"])
+
+        self.outfile = self.config["file_templates.sstfile.archive"]
+        self.target = (
+            f"{self.platform.get_system_value('intp_bddir')}" + "/" + f"{self.outfile}"
+        )
         # Boundary basetime
         self.bd_basetime = self.basetime - cycle_offset(
-            self.basetime, bdcycle, bdcycle_start=bdcycle_start, bdshift=-bdshift
+            self.basetime, bdcycle, bdcycle_start=bdcycle_start, bdshift=bdshift
         )
 
         self.bd_index = self.config["task.args.bd_index"]
@@ -62,7 +67,7 @@ class InterpolSstSic(Task):
         self.fmanager.input(f"{climdir}/{climfile}", climfile)
 
         # Boundary input file(s)
-        marsdir = self.config["system.bddir"]
+        bddir_sst = self.config["system.bddir_sst"]
 
         merge_ocean_models = ""
         merge_ocean_files = ""
@@ -81,7 +86,7 @@ class InterpolSstSic(Task):
                     validtime=as_datetime(self.bd_time),
                 )
                 self.fmanager.input(
-                    f"{marsdir}/{infile}",
+                    f"{bddir_sst}/{infile}",
                     infile,
                     basetime=self.bd_basetime,
                     validtime=as_datetime(self.bd_time),
@@ -99,13 +104,6 @@ class InterpolSstSic(Task):
             adjust_sst_under_ice = ".TRUE."
         else:
             adjust_sst_under_ice = ".FALSE."
-
-        # Output file, name hard-coded in source code
-        sstfile_template = self.config["file_templates.sstfile.archive"]
-
-        intp_bddir = self.platform.get_system_value("intp_bddir")
-        outfile = sstfile_template
-        target = f"{intp_bddir}/{sstfile_template}"
 
         # Create namelist for gl
         with open("namgl", "w") as namelist:
@@ -138,8 +136,8 @@ class InterpolSstSic(Task):
 
         # Run gl
         batch = BatchJob(os.environ, wrapper=self.wrapper)
-        batch.run(f"{self.gl} -sst3 -n namgl -o {self.platform.substitute(outfile)}")
+        batch.run(f"{self.gl} -sst3 -n namgl -o {self.platform.substitute(self.outfile)}")
 
         logger.debug("WRKDIR: {}", self.wrk)
-        logger.debug("OUTPUT {}", outfile)
-        self.fmanager.output(outfile, target)
+        logger.debug("OUTPUT {}", self.outfile)
+        self.fmanager.output(self.outfile, self.target)

@@ -891,7 +891,7 @@
         "cycle": {
           "description": "IAL cycle",
           "type": "string",
-          "enum": ["CY49t2", "CY48t3", "CY46h1"]
+          "enum": ["CY50t1", "CY49t2", "CY48t3", "CY46h1"]
         },
         "event_type": {
           "description": "Type of extreme event",

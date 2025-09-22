@@ -62,7 +62,7 @@
   NTASKS = "#SBATCH --ntasks=16"
 
 [submission.task_exceptions.Forecast]
-  bindir = "@INSTALL_DIR@/@CYCLE@@PRECISION@/@IAL_VERSION@/bin"
+  bindir = "@INSTALL_DIR@/@CYCLE@/@COMPILER@/@PRECISION@/@IAL_VERSION@/bin"
   NPROC = 30
   NPROC_IO = 2
 

@@ -100,7 +100,6 @@ class Pgd(PySurfexBaseTask):
         self.pgd_prel = self.platform.substitute(
             self.config["file_templates.pgd_prel.archive"], basetime=self.basetime
         )
-        # TODO get from args
         self.force = True
 
     def execute(self):
@@ -132,6 +131,9 @@ class Pgd(PySurfexBaseTask):
                 self.wrapper,
             ]
 
+            if self.force:
+                argv.append("--force")
+
             if self.one_decade:
                 basetime = as_datetime(self.basetime).strftime("%Y%m%d%H")
                 argv += ["--basetime", basetime, "--one-decade"]
@@ -156,7 +158,6 @@ class Prep(PySurfexBaseTask):
         self.nlgen = NamelistGenerator(self.config, "surfex")
         self.archive = self.platform.get_system_value("archive")
         self.intp_bddir_sfx = self.platform.get_system_value("intp_bddir_sfx")
-        # TODO get from args
         self.force = True
 
     def execute(self):
@@ -235,6 +236,9 @@ class Prep(PySurfexBaseTask):
                 "--wrapper",
                 self.wrapper,
             ]
+
+            if self.force:
+                argv.append("--force")
 
             if bd_has_surfex:
                 const_clim_host = self.config["file_templates.pgd_host.archive"]
