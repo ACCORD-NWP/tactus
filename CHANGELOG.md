@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+
+### Changed
+- Added deode run with the default configuration to atos workflow. Added job to check if the deode run is completed [\#1000](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1000)(@milennimh)
+
+
 ## [0.20.0] - 2025-09-18
 
 ### Added
