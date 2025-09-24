@@ -48,6 +48,12 @@
   outpath = "@SUB_CASEDIR@"
   pattern = "*"
 
+[archiving.merged_sqlite.ecfs.merged_sqlite]
+  active = "suite_control.do_mergesqlite"
+  inpath = "@MERGED_SQLITE_PATH@"
+  outpath = "@SUB_CASEDIR@/../merged_sqlite/FCTABLE"
+  pattern = "*"
+
 [archiving.prefix]
   ecfs = "ec:/@USER@/DE_NWP/deode/"
 
@@ -88,6 +94,7 @@
   number = 0
 
 [extractsqlite]
+  merged_sqlite_path = "@CASEDIR@/../merged_sqlite/FCTABLE"
   sqlite_path = "@CASEDIR@/sqlite/FCTABLE"
 
 [fdb.grib_set]
