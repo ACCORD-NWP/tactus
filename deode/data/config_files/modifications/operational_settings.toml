@@ -104,6 +104,9 @@
   output_root = "@SCRATCH@/DE_Impact/EHYPE"
   output_subpath = "@SUB_CASEDIR@"
 
+[platform]
+  reference_data = "@SCRATCH_OPER@"
+
 [platform.mirrorglobalDT]
   remote_host = "ecflow-pifs-rd-v-1"
   remote_path = "/pabv/iekm/fc/main/fcgroup/00/model"
