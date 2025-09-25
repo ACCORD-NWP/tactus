@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.20.0] - 2025-09-18
 
 ### Added
+- Add link to documentation for LUMI setup in general README [\#1318](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1318)(@tbnc)
 - CY50t1 introduction [\#1280](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1280)(@dhaumont)
 - Add "resolution" to sfcdir and mars settings for is6g/irok [\#1263](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1263)(@kastelcn,@j-fannon)
 - Use pysurfex in surfex related tasks [\#1210](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1210)(@trygveasp)
