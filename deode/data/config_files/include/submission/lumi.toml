@@ -20,6 +20,11 @@
 [submission.task]
   wrapper = "time"
 
+[submission.task_exceptions.ArchiveDataBridge.ENV]
+  FDB5_HOME = "/appl/local/destine/mars/versions/current/"
+  FDB_HOME = "@DEODE_DATABRIDGE_HOME@"
+  PATH = "$PATH:/appl/local/destine/mars/versions/current/bin/"
+
 [submission.task_exceptions.ArchiveFDB.ENV]
   FDB5_HOME = "/appl/local/destine/mars/versions/current/"
   FDB_HOME = "@DEODE_FDB_HOME@"

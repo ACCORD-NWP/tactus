@@ -14,6 +14,10 @@ On LUMI:
 export PATH=/appl/local/destine/mars/versions/current/bin:$PATH
 export FDB_HOME=/appl/local/destine/fdb
 ```
+or for access to the databridge
+```
+export FDB_HOME=/appl/local/destine/databridge
+```
 
 ## How to list available data
 To list available data in fdb, use the fdb list (Here with head -10 to only read the 3 first entries):
