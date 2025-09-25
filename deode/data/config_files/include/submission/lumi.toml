@@ -57,6 +57,12 @@
   binary = "gl"
   bindir = "@BINDIR_GL@"
 
+[submission.task_exceptions.InterpolSstSic.BATCH]
+  PARTITION = "#SBATCH --partition=standard"
+
+[submission.task_exceptions.InterpolSstSic.ENV]
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/lrb_465000527_efdev/local/eccodes-2.42.0-gcc-13.2.0/lib64"
+
 [submission.task_exceptions.Marsprep]
   bindir = "/appl/local/destine/bin"
   mars_version = "7"

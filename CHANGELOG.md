@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Added deode run with the default configuration to atos workflow. Added job to check if the deode run is completed [\#1000](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1000)(@milennimh)
+- Reenable sst interpolation for lumi runs [\1313](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1313/) (@jacobsnoeijer)
+
+### Fixed
+- Created a verbose version of the ICMGG_maskland MARS request that can be processed on LUMI's MARS version [\1313](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1313/)(@jacobsnoeijer)
 
 ### Fixed
 - Issue with merging and archiving of sqlite files in operational ensemble runs [\#1316](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1316)(@mafdmi)
