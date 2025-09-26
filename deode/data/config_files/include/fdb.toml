@@ -1,5 +1,6 @@
 [fdb]
   create_inverse_filter = false
+  databridge_user = "@PROD_USER@"
 
 [fdb.expver_restrictions]
   0001 = "@PROD_USER@"

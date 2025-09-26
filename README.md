@@ -41,6 +41,8 @@ We **highly recommend** you to also put the statement listed above in your shell
   ml scl-ecflow_23
   ```
 
+See also [lumi doc](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/docs/markdown_docs/lumi.md) for more details.
+
 * On Macs (local install only)
   ```shell
   brew install pyenv
