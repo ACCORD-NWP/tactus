@@ -6,6 +6,7 @@
   archive_root = "@SCRATCH@/deode/@CASE@/archive"
   archive_types = ["copy", "fdb"]
   climdata = "@STATIC_DATA@/climate"
+  deode_databridge_home = "/appl/local/destine/databridge"
   deode_fdb_home = "/appl/local/destine/fdb"
   deode_home = "set-by-the-system"
   dev_user = "lrb_465000527_efdev"

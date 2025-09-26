@@ -1052,6 +1052,20 @@ class ForecastFamily(EcflowSuiteFamily):
                 ecf_files_remotely=ecf_files_remotely,
             )
 
+        databridge_sel = config.get("archiving.DataBridge.fdb", {})
+        databridge_archiving_active = [v["active"] for v in databridge_sel.values()]
+        if any(databridge_archiving_active):
+            EcflowSuiteTask(
+                "ArchiveDataBridge",
+                self,
+                config,
+                task_settings,
+                ecf_files,
+                input_template=input_template,
+                trigger=add_calc_fields_family,
+                ecf_files_remotely=ecf_files_remotely,
+            )
+
         if config["suite_control.do_extractsqlite"]:
             EcflowSuiteTask(
                 "ExtractSQLite",

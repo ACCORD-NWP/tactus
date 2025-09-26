@@ -28,6 +28,7 @@ from ..mars_utils import (
     move_files,
     write_compute_mars_req,
     write_retrieve_mars_req,
+    write_write_mars_req,
 )
 from ..os_utils import deodemakedirs, join_files, list_files_join
 from ..tasks.batch import BatchJob
@@ -523,6 +524,14 @@ class Marsprep(Task):
         tag_sea = "sea_latlon"
         tag_aux = "aux_latlon"
 
+        # JS: MARS 7 doesn't support all the features as supported by MARS 6
+        use_verbose_mode = self.mars_version == 7 or self.config.get(
+            "submission.task_exceptions.Marsprep.verbose_ICMGG_maskland", False
+        )
+
+        if use_verbose_mode:
+            logger.info("MARS request for 'ICMGG_maskland' is using verbose mode")
+
         prefetch = False
         param_sea = get_value_from_dict(self.mars["GG_sea"], self.init_date_str)
         param_lsm = get_value_from_dict(self.mars["GG_lsm"], self.init_date_str)
@@ -531,8 +540,8 @@ class Marsprep(Task):
         target_aux = "mars_latlonGG"
         target_maskland = "mars_latlonGG_maskland"
 
-        fieldset_dict = dict.fromkeys(["sst_sic", "lsm"])
-        fieldset_dict["sst_sic"] = {"param": param_sea, "target": target_aux}
+        fieldset_dict = dict.fromkeys(["sic_sst", "lsm"])
+        fieldset_dict["sic_sst"] = {"param": param_sea, "target": target_aux}
         fieldset_dict["lsm"] = {"param": param_lsm, "target": target_aux}
 
         for member_type, members in members_dict.items():
@@ -552,6 +561,25 @@ class Marsprep(Task):
                     )
                     target = compile_target(tag_mask, member_type, member, step)
 
+                    if use_verbose_mode:
+                        # Make an verbose formula
+                        target_striped = target.strip('"')
+                        formula = [
+                            {"formula": '"lsm > 0.5"', "fieldset": "mask"},
+                            {
+                                "formula": '"bitmap(sic, mask)"',
+                                "fieldset": "sic_masked",
+                                "target": f'"sic_{target_striped}"',
+                            },
+                            {
+                                "formula": '"bitmap(sst, mask)"',
+                                "fieldset": "sst_masked",
+                                "target": f'"sst_{target_striped}"',
+                            },
+                        ]
+                    else:
+                        formula = '"bitmap(sic_sst, bitmap(lsm > 0.5, 1))"'
+
                     # Execute MARS request to mask land
                     self._build_and_run_compute_request(
                         req_file_name=f"{tag_mask}.req",
@@ -561,7 +589,7 @@ class Marsprep(Task):
                         steps=[step],
                         target=target,
                         fieldset_dict=fieldset_dict,
-                        formula='"bitmap(sst_sic, bitmap(lsm > 0.5, 1))"',
+                        formula=formula,
                         members=[member],
                         source=source,
                         prefetch=prefetch,
@@ -576,7 +604,9 @@ class Marsprep(Task):
                         levtype="SFC",
                         param=param_sea,
                         steps=[step],
-                        target=compile_target(target_maskland, member_type, member),
+                        target=compile_target(
+                            target_maskland, member_type, member, step=step
+                        ),
                         members=[member],
                         source=target,
                         prefetch=prefetch,
@@ -591,7 +621,7 @@ class Marsprep(Task):
                         levtype="SFC",
                         param=param_lsm + "/" + param_skt,
                         steps=[step],
-                        target=compile_target(target_aux, member_type, member),
+                        target=compile_target(target_aux, member_type, member, step=step),
                         members=[member],
                         source=source,
                         prefetch=prefetch,
@@ -907,7 +937,7 @@ class Marsprep(Task):
         steps: List[int],
         target: str,
         fieldset_dict: dict,
-        formula: str,
+        formula: str | List[Dict],
         members: Optional[List[int]] = None,
         source: Optional[str] = None,
         prefetch: bool = True,
@@ -925,7 +955,7 @@ class Marsprep(Task):
             steps: Steps to retrieve.
             target: Name of the target file.
             fieldset_dict: Dict with fieldset and fieldset-specific data
-            formula: Formula for compute.
+            formula: Formula for compute (or list of dics with formulas and fieldsets).
             members: Members to retrieve data from.
             source: Source file to retrieve data from.
             prefetch: Prefetch.
@@ -936,6 +966,8 @@ class Marsprep(Task):
         # First request will write to a new file
         omode = "w"
 
+        use_verbose_mode = isinstance(formula, list)
+
         for fieldset, fieldset_data in fieldset_dict.items():
             fieldset_param = param
             if "param" in fieldset_data:
@@ -945,28 +977,80 @@ class Marsprep(Task):
             if "target" in fieldset_data:
                 fieldset_target = fieldset_data["target"]
 
-            request = self._build_retrieve_request(
-                data_type,
-                levtype,
-                fieldset_param,
-                steps,
-                fieldset_target,
-                members,
-                source,
-                prefetch,
-                specify_domain,
-                grid,
-                fieldset,
-            )
+            if use_verbose_mode:
+                # MARS version 7 cannot handle reading multiple PARMS to one FIELDSET,
+                # so split them into multiple requests
+                fieldset_param_list = fieldset_param.split("/")
+                fieldset_name_list = fieldset.split("_")
+                if len(fieldset_param_list) != len(fieldset_name_list):
+                    # Cannot split request into mulpile
+                    logger.error(
+                        (
+                            "Cannot split MARS request; number of PARAMs (="
+                            f"{len(fieldset_param_list)}"
+                            ") and FIELDSETs (="
+                            f"{len(fieldset_name_list)}"
+                            ") not equal"
+                        )
+                    )
+            else:
+                fieldset_param_list = [fieldset_param]
+                fieldset_name_list = [fieldset]
 
-            # Write/append request to file
-            write_retrieve_mars_req(request, req_file_name, write_method, omode)
+            for single_param, single_fieldset in zip(
+                fieldset_param_list, fieldset_name_list
+            ):
+                request = self._build_retrieve_request(
+                    data_type,
+                    levtype,
+                    single_param,
+                    steps,
+                    fieldset_target,
+                    members,
+                    source,
+                    prefetch,
+                    specify_domain,
+                    grid,
+                    single_fieldset,
+                )
 
-            # All upcomming requests will be appened to the same file
-            omode = "a"
+                # Write/append request to file
+                write_retrieve_mars_req(request, req_file_name, write_method, omode)
+
+                # All upcomming requests will be appened to the same file
+                omode = "a"
 
         # Write/append compute request to file
-        write_compute_mars_req(req_file_name, formula, target, omode)
+        if use_verbose_mode:
+            for formula_part in formula:
+                if "fieldset" in formula_part:
+                    write_compute_mars_req(
+                        req_file_name,
+                        formula=formula_part["formula"],
+                        fieldset=formula_part["fieldset"],
+                        omode=omode,
+                    )
+
+                if "target" in formula_part:
+                    write_write_mars_req(
+                        req_file_name,
+                        fieldset=formula_part["fieldset"],
+                        target=formula_part["target"],
+                        omode=omode,
+                    )
+        else:
+            write_compute_mars_req(
+                req_file_name, formula=formula, target=target, omode=omode
+            )
 
         # Execute written request
         self._run_request_file(req_file_name)
+
+        if use_verbose_mode:
+            # Join different output files
+            generated_files = [
+                formula_part.get("target").strip('"')
+                for formula_part in formula
+                if formula_part.get("target") is not None
+            ]
+            join_files(generated_files, target.strip('"'))

@@ -1,9 +1,5 @@
-[general]
-  upd_sst_sic = false
-
 [general.times]
   start = "-P1D"
 
 [suite_control]
-  do_interpolsstsic = false
   max_static_data_tasks = 2
