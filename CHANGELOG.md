@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.21.0] - 2025-09-25
+
 ### Added
 - Introduce archiving to the databridge[\#1321](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1321)(@uandrae)
 
@@ -19,10 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Created a verbose version of the ICMGG_maskland MARS request that can be processed on LUMI's MARS version [\1313](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1313/)(@jacobsnoeijer)
-
-### Fixed
 - Issue with merging and archiving of sqlite files in operational ensemble runs [\#1316](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1316)(@mafdmi)
 - Fixes for the  operational settings. [\#1219](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1319)(@kastelecn)
+
 ## [0.20.0] - 2025-09-18
 
 ### Added
