@@ -26,6 +26,7 @@ class E923(Task):
         self.constant_file = f"{self.climdir}/Const.Clim.const"
         self.pgd_prel = self.config["file_templates.pgd_prel.archive"]
         self.months = [f"{mm:02d}" for mm in range(1, 13)]
+        self.optional_sections = self.config.get("general.e923_optional_sections", [])
 
         self.master = self.get_binary("MASTERODB")
 
@@ -212,37 +213,39 @@ class E923(Task):
             self.myexec(self.master, 4)
             self.remove_links(files)
 
-            # PART 5
-            files = []
-            for vegtype in ["veg", "lai"]:
-                source = f"@E923_DATA@/SURFACE_L/{vegtype}_{mm}_HR"
-                target = f"{vegtype}_HR"
-                files.append(target)
-                self.fmanager.input(source, target)
+            if 5 in self.optional_sections:
+                # PART 5
+                files = []
+                for vegtype in ["veg", "lai"]:
+                    source = f"@E923_DATA@/SURFACE_L/{vegtype}_{mm}_HR"
+                    target = f"{vegtype}_HR"
+                    files.append(target)
+                    self.fmanager.input(source, target)
 
-            self.nlgen.generate_namelist("e923_part_5", "fort.4")
-            shutil.copy("fort.4", "fort.4_5")
-            self.print_part(5, mm)
-            self.myexec(self.master, 5)
-            self.remove_links(files)
+                self.nlgen.generate_namelist("e923_part_5", "fort.4")
+                shutil.copy("fort.4", "fort.4_5")
+                self.print_part(5, mm)
+                self.myexec(self.master, 5)
+                self.remove_links(files)
 
-            # PART 6
-            indata = ["tpl", "wpl", "snl"]
-            for x in indata:
-                target = f"{x}_GL.Z"
-                source = f"@E923_DATA@/CLIM_G/v2/{x}_{mm}_GL.Z"
-                self.fmanager.input(source, target, provider_id="copy")
+            if 6 in self.optional_sections:
+                # PART 6
+                indata = ["tpl", "wpl", "snl"]
+                for x in indata:
+                    target = f"{x}_GL.Z"
+                    source = f"@E923_DATA@/CLIM_G/v2/{x}_{mm}_GL.Z"
+                    self.fmanager.input(source, target, provider_id="copy")
 
-            for x in indata:
-                os.system(f"gunzip -f {x}_GL.Z")  # noqa
+                for x in indata:
+                    os.system(f"gunzip -f {x}_GL.Z")  # noqa
 
-            self.fmanager.input("tpl_GL", "tsl_GL", provider_id="copy")
-            self.fmanager.input("wpl_GL", "wsl_GL", provider_id="copy")
+                self.fmanager.input("tpl_GL", "tsl_GL", provider_id="copy")
+                self.fmanager.input("wpl_GL", "wsl_GL", provider_id="copy")
 
-            self.nlgen.generate_namelist("e923_part_6", "fort.4")
-            shutil.copy("fort.4", "fort.4_6")
-            self.print_part(6, mm)
-            self.myexec(self.master, 6)
+                self.nlgen.generate_namelist("e923_part_6", "fort.4")
+                shutil.copy("fort.4", "fort.4_6")
+                self.print_part(6, mm)
+                self.myexec(self.master, 6)
 
             # PART 8
             self.fmanager.input(f"@E923_DATA@/abc_O3/abc_quadra_{mm}", "abc_coef")

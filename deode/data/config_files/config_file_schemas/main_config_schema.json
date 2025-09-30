@@ -874,6 +874,14 @@
           "type": "string",
           "enum": ["CRITICAL", "ERROR", "DEBUG", "INFO", "WARNING"]
         },
+        "e923_optional_sections": {
+          "description": "Option to include/exclude part 5 and 6 of e923. Set to '[5,6]' to retain traditional climate files.",
+          "type": "array",
+	  "default": [],
+          "items": {
+                "type": "integer"
+          }
+        },
         "surfex": {
           "description": "SURFEX switch",
           "type": "boolean"
