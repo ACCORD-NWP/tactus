@@ -1526,7 +1526,7 @@ f4_HARMONIE_AROME:
   NAM_PARAM_ICEn:
     LKOGAN: true
     LOCND2: true
-    LRED: true
+    LRED: false
     LSEDIC: true
     XFRMIN_NAM(1): 1.0e-05
     XFRMIN_NAM(12): 0.05

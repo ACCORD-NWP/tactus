@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+### Fixed
+- Set correct LRED defaults for AROME (true) and HARMONIE-AROME (false) [\1329](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1329/)(@rolfhm)
+
 ### Added 
  - Add suport for conversion to julian days in datetime utils, useful for delayed start of plugins [\#1290](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1290) (@svianaj)
 
