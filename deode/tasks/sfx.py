@@ -28,31 +28,24 @@ class PySurfexBaseTask(Task):
         """
         Task.__init__(self, config, name)
 
-        climdir = self.platform.get_system_value("climdir")
-        deodemakedirs(climdir)
-        self.pysurfex_domain_file = f"{climdir}/domain.json"
-        self.pysurfex_system_file = f"{climdir}/system.json"
-        if not os.path.exists(self.pysurfex_domain_file):
-            # Domain/geo
-            conf_proj_dict = {
-                "nam_pgd_grid": {"cgrid": "CONF PROJ"},
-                "nam_conf_proj_grid": {
-                    "nimax": self.config["domain.nimax"],
-                    "njmax": self.config["domain.njmax"],
-                    "xloncen": self.config["domain.xloncen"],
-                    "xlatcen": self.config["domain.xlatcen"],
-                    "xdx": self.config["domain.xdx"],
-                    "xdy": self.config["domain.xdy"],
-                    "ilone": self.config["domain.ilone"],
-                    "ilate": self.config["domain.ilate"],
-                },
-                "nam_conf_proj": {
-                    "xlon0": self.config["domain.xlon0"],
-                    "xlat0": self.config["domain.xlat0"],
-                },
-            }
-            with open(self.pysurfex_domain_file, mode="w", encoding="utf8") as fhandler:
-                json.dump(conf_proj_dict, fhandler)
+        # Domain/geo
+        conf_proj_dict = {
+            "nam_pgd_grid": {"cgrid": "CONF PROJ"},
+            "nam_conf_proj_grid": {
+                "nimax": self.config["domain.nimax"],
+                "njmax": self.config["domain.njmax"],
+                "xloncen": self.config["domain.xloncen"],
+                "xlatcen": self.config["domain.xlatcen"],
+                "xdx": self.config["domain.xdx"],
+                "xdy": self.config["domain.xdy"],
+                "ilone": self.config["domain.ilone"],
+                "ilate": self.config["domain.ilate"],
+            },
+            "nam_conf_proj": {
+                "xlon0": self.config["domain.xlon0"],
+                "xlat0": self.config["domain.xlat0"],
+            },
+        }
 
         # Binary input data
         self.pysurfex_input_definition = ConfigPaths.path_from_subpath(
@@ -72,9 +65,31 @@ class PySurfexBaseTask(Task):
             lval = self.platform.substitute(val)
             exp_file_paths.update({lkey: lval})
 
-        if not os.path.exists(self.pysurfex_system_file):
-            with open(self.pysurfex_system_file, mode="w", encoding="utf8") as fhandler:
-                json.dump(exp_file_paths, fhandler)
+        # Create a file in the working directory
+        self.create_wdir()
+        self.pysurfex_domain_file = f"{self.wdir}/domain.json"
+        self.pysurfex_system_file = f"{self.wdir}/system.json"
+        self._dump_config(self.pysurfex_system_file, exp_file_paths, force=True)
+        self._dump_config(self.pysurfex_domain_file, conf_proj_dict, force=True)
+
+        # Store in climdir for reference
+        climdir = self.platform.get_system_value("climdir")
+        deodemakedirs(climdir)
+        self._dump_config(f"{climdir}/system.json", exp_file_paths)
+        self._dump_config(f"{climdir}/domain.json", conf_proj_dict)
+
+    @staticmethod
+    def _dump_config(jsonfile, config_settings, force=False):
+        """Dump the config file if it does not exist.
+
+        Args:
+            jsonfile (string): Full path to json file to write
+            config_settings (dict): Dict to dump
+            force (boolean): Force output
+        """
+        if not os.path.exists(jsonfile) or force:
+            with open(jsonfile, mode="w", encoding="utf8") as fhandler:
+                json.dump(config_settings, fhandler)
 
     def execute(self):
         """Execute."""
