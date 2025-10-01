@@ -110,7 +110,7 @@ sfx_forecast_HARMONIE_AROME:
     CSEA_FLUX: "ECUME"
     LPRECIP: False
   NAM_SEAICEN:
-    LVOLATILE_SIC: False
+    LVOLATILE_SIC: ${cfg:general.upd_sst_sic}
     XSIC_EFOLDING_TIME: 1.0
   NAM_SEAICE_SICE:
     LICE_HAS_SNOW: False
@@ -808,6 +808,8 @@ sfx_pgd_rsmin:
     - 40.0
 
 sfx_pgd_ALARO:
+  NAM_DATA_ISBA:
+    NTIME: 36
   NAM_PGD_SCHEMES:
     LGARDEN: True
   NAM_DATA_TEB:
@@ -826,6 +828,11 @@ sfx_ALARO:
     LECOSG: False
 
 sfx_prep_atm:
+  NAM_PREP_SURF_ATM:
+    NYEAR: "@PREP_NYEAR@"
+    NMONTH: "@PREP_NMONTH@"
+    NDAY: "@PREP_NDAY@"
+    XTIME: "@PREP_XTIME@"
   NAM_SURF_ATM:
     LVERTSHIFT: True
 

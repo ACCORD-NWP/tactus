@@ -11,6 +11,12 @@
 [pgd]
   npatch = 3
 
+[submission]
+  bindir = "/etc/ecmwf/nfs/dh1_perm_a/deployde330/github-actions/install/CY50t1/latest/bin"
+
+[submission.task_exceptions.C903]
+  bindir = "/etc/ecmwf/nfs/dh1_perm_a/deployde330/github-actions/install/CY49t2/latest/bin"
+
 [submission.task_exceptions.E923Update.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
 
@@ -19,3 +25,6 @@
 
 [submission.task_exceptions.PgdFilterTownFrac]
   binary = "PGD_FRAC"
+
+[submission.task_exceptions.Prep.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = 0

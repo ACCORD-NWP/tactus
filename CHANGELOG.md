@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
  - Exclude parts of e923 (climate generation) that is not strictly required without assimilation. Avoids crashes for sea domains. [\#1328](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1328) (@uandrae)
+ - Cy50t1: Fix PGD and C903 [\#1331](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1331) (@dhaumont)
 
 ## [0.21.0] - 2025-09-25
 
