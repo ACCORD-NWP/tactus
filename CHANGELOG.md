@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Exclude parts of e923 (climate generation) that is not strictly required without assimilation. Avoids crashes for sea domains. [\#1328](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1328) (@uandrae)
  - Cy50t1: Fix PGD and C903 [\#1331](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1331) (@dhaumont)
 
+### Fixed
+ - Fix lost array indexing in the static namelist reader. [\#1332](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1332) (@uandrae)
+
 ## [0.21.0] - 2025-09-25
 
 ### Added

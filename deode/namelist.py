@@ -345,7 +345,7 @@ class NamelistGenerator:
             # NOTE: f90nml.todict() returns OrderedDict
             #       which makes OmegaConf fail.
             #       but maybe we should consider to_dict(nl.todict()) ???
-            nldict = {target: to_dict(nl)}
+            nldict = {target: to_dict(nl.todict())}
             cndict = {self.target: [target]}
             found = False
         else:
