@@ -6,9 +6,21 @@
     "additionalProperties": true,
     "properties": {
         "parameter_list": {
-            "type": "string",
-            "description": "List of parameters to extract",
-            "default": "@DEODE_HOME@/data/sqlite/param_list_@CSC@.json"
+            "type": "array",
+            "description": "A list where each element contains name of parameter and location files",
+            "items": {
+                "type": "object",
+                "required": [ "param_file", "location_file" ],
+                "properties": {
+                    "param_list": {
+                      "type": "string"
+                    },
+                    "location_list": {
+                      "type": "string"
+                    }
+                }
+            },
+            "default": []
         },
         "sqlite_model_name": {
             "type": "string",
@@ -24,11 +36,6 @@
             "type": "string",
             "description": "File name template for generated sqlite files",
             "default": "FCTABLE/{MODEL}/{YYYY}/{MM}/FCTABLE_{PP}_{YYYY}{MM}_{HH}.sqlite"
-        },
-        "station_list": {
-            "type": "string",
-            "description": "Station list used for extraction",
-            "default": "@DEODE_HOME@/data/sqlite/station_list_default.csv"
         },
         "selection": {
             "type": "string",
