@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Fixed
+- Fix namelist update functionality by ensure namelist names are always in upper case.[\1336](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1336/)(@uandrae)
 - Set correct LRED defaults for AROME (true) and HARMONIE-AROME (false) [\1329](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1329/)(@rolfhm)
 
 ### Added 

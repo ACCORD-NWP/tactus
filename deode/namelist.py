@@ -465,8 +465,18 @@ class NamelistGenerator:
             logger.info(" namelists: {}", self.nlfile)
             logger.info(" rules: {}", self.cnfile)
             # Read namelist file with all the categories
+            # and make sure all namelist names are uppercase
+            # required for the update to work
             with open(self.nlfile, mode="rt", encoding="utf-8") as file:
-                nldict = OmegaConf.load(file)
+                _nldict = yaml.safe_load(file)
+                nldict = {
+                    section: {
+                        namelist_name.upper(): values
+                        for namelist_name, values in namelists.items()
+                    }
+                    for section, namelists in _nldict.items()
+                }
+                nldict = OmegaConf.create(nldict)
 
             # Read file that describes assembly category order
             # for the various targets (tasks)

@@ -526,13 +526,13 @@ f4_AROME:
     LXXGST: true
     NRAZTS: ${steplist:${cfg:general.namelist.nrazts}}
     NXGSTPERIOD: 3600
-  NAM_NEBn:
+  NAM_NEBN:
     CFRAC_ICE_ADJUST: S
     CFRAC_ICE_SHALLOW_MF: S
     LSIGMAS: true
     LSUBG_COND: true
     VSIGQSAT: 0.02
-  NAM_PARAM_ICEn:
+  NAM_PARAM_ICEN:
     CSEDIM: STAT
     CSNOWRIMING: M90
     LCONVHG: true
@@ -1543,13 +1543,13 @@ f4_HARMONIE_AROME:
     NFRRAZ: 1
     NRAZTS: ${steplist:${cfg:general.namelist.nrazts}}
     NXGSTPERIOD: 3600
-  NAM_NEBn:
+  NAM_NEBN:
     LHGT_QS: true
     LSIGMAS: true
     LSTATNW: true
     LSUBG_COND: true
     VSIGQSAT: 0.02
-  NAM_PARAM_ICEn:
+  NAM_PARAM_ICEN:
     LKOGAN: true
     LOCND2: true
     LRED: false
@@ -1564,11 +1564,11 @@ f4_HARMONIE_AROME:
     XFRMIN_NAM(3): 3.0e-9
     XFRMIN_NAM(4): 3.0e-9
     XFRMIN_NAM(7): 0.
-  NAM_PARAM_MFSHALLn:
+  NAM_PARAM_MFSHALLN:
     CMF_CLOUD: STAT
     CMF_UPDRAFT: DUAL
     LMIXUV: false
-  NAM_TURBn:
+  NAM_TURBN:
     LHARAT: true
   NEMELBC0A:
     LESPCPL: false
