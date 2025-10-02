@@ -17,6 +17,9 @@
 [submission.task_exceptions.C903]
   bindir = "/etc/ecmwf/nfs/dh1_perm_a/deployde330/github-actions/install/CY49t2/latest/bin"
 
+[submission.task_exceptions.E923Update]
+  binary = "FA_SFX2CLIM"
+
 [submission.task_exceptions.E923Update.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
 
