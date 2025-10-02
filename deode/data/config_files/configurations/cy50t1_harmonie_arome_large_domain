@@ -1,0 +1,7 @@
+--config-file
+deode/data/config_files/config.toml
+deode/data/config_files/include/domains/500m_template.toml
+deode/data/config_files/modifications/csc/harmonie_arome.toml
+deode/data/config_files/modifications/cycle/CY50t1.toml
+deode/data/config_files/modifications/submission/@HOST@_large_domain.toml
+deode/data/config_files/modifications/@HOST@.toml
