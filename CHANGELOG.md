@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Add suport for conversion to julian days in datetime utils, useful for delayed start of plugins [\#1290](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1290) (@svianaj)
 
 ### Changed
+ - Set ECF\_TRIES to 15 dor PgdFilterTownFrac on LUMI. [\#1360](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1360)(@kastelecn)
  - Activate FDB archiving for EPS in operations. [\#1340](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1340) (@uandrae)
  - Write pysurfex json config files to both work and climate directory to ensure correct usage and picking up confing changes. [\#1334](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1334) (@uandrae)
  - Exclude parts of e923 (climate generation) that is not strictly required without assimilation. Avoids crashes for sea domains. [\#1328](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1328) (@uandrae)
