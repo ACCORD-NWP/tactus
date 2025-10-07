@@ -989,7 +989,6 @@ class ForecastFamily(EcflowSuiteFamily):
 
         add_calc_fields_trigger = forecast_task
         creategrib_trigger = forecast_task
-
         if n_io_merge > 0:
             iomerge_trigger = EcflowSuiteTriggers(
                 [
@@ -1014,7 +1013,7 @@ class ForecastFamily(EcflowSuiteFamily):
             creategrib_trigger = io_merge
 
         if len(config.get("creategrib.CreateGrib.conversions", [])) > 0:
-            add_calc_fields_trigger = SubTaskFamily(
+            create_grib_family = SubTaskFamily(
                 self,
                 config,
                 task_settings,
@@ -1025,6 +1024,7 @@ class ForecastFamily(EcflowSuiteFamily):
                 trigger=creategrib_trigger,
                 ecf_files_remotely=ecf_files_remotely,
             )
+            add_calc_fields_trigger = create_grib_family
 
         add_calc_fields_family = SubTaskFamily(
             self,
