@@ -21,14 +21,14 @@
   wrapper = "time"
 
 [submission.task_exceptions.ArchiveDataBridge.ENV]
-  FDB5_HOME = "/appl/local/destine/mars/versions/current/"
+  FDB5_HOME = "/appl/local/destine/mars/versions/7.1.3.0/"
   FDB_HOME = "@DEODE_DATABRIDGE_HOME@"
-  PATH = "$PATH:/appl/local/destine/mars/versions/current/bin/"
+  PATH = "$PATH:/appl/local/destine/mars/versions/7.1.3.0/bin/"
 
 [submission.task_exceptions.ArchiveFDB.ENV]
-  FDB5_HOME = "/appl/local/destine/mars/versions/current/"
+  FDB5_HOME = "/appl/local/destine/mars/versions/7.1.3.0/"
   FDB_HOME = "@DEODE_FDB_HOME@"
-  PATH = "$PATH:/appl/local/destine/mars/versions/current/bin/"
+  PATH = "$PATH:/appl/local/destine/mars/versions/7.1.3.0/bin/"
 
 [submission.task_exceptions.C903]
   NPROC = 24
@@ -50,14 +50,14 @@
   bindir = "@BINDIR_GL@"
 
 [submission.task_exceptions.CreateGrib.ENV]
-  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/lrb_465000527_efdev/local/eccodes-2.42.0-gcc-13.2.0/lib64"
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/appl/local/destine/mars/versions/7.1.3.0/lib64"
 
 [submission.task_exceptions.CreateGribStatic]
   binary = "gl"
   bindir = "@BINDIR_GL@"
 
 [submission.task_exceptions.CreateGribStatic.ENV]
-  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/lrb_465000527_efdev/local/eccodes-2.42.0-gcc-13.2.0/lib64"
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/appl/local/destine/mars/versions/7.1.3.0/lib64"
 
 [submission.task_exceptions.Forecast]
   bindir = "@INSTALL_DIR@/@CYCLE@/@COMPILER@/@PRECISION@/@IAL_VERSION@/bin"
@@ -73,7 +73,7 @@
   PARTITION = "#SBATCH --partition=standard"
 
 [submission.task_exceptions.InterpolSstSic.ENV]
-  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/lrb_465000527_efdev/local/eccodes-2.42.0-gcc-13.2.0/lib64"
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/appl/local/destine/mars/versions/7.1.3.0/lib64"
 
 [submission.task_exceptions.Marsprep]
   bindir = "/appl/local/destine/bin"
@@ -89,17 +89,20 @@
 
 [submission.task_exceptions.Marsprep.ENV]
   MARS_READANY_BUFFER_SIZE = 17893020000
-  PATH = "$PATH:/appl/local/destine/mars/versions/current/bin:/appl/local/destine/bin"
+  PATH = "$PATH:/appl/local/destine/mars/versions/7.1.3.0/bin:/appl/local/destine/bin"
 
 [submission.task_exceptions.Pgd.ENV]
   OMP_NUM_THREADS = 1
+
+[submission.task_exceptions.PgdFilterTownFrac.ENV]
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/appl/local/destine/mars/versions/7.1.3.0/lib64"
 
 [submission.task_exceptions.PgdUpdate]
   binary = "gl"
   bindir = "@BINDIR_GL@"
 
 [submission.task_exceptions.PgdUpdate.ENV]
-  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/projappl/project_465000527/lrb_465000527_efdev/local/eccodes-2.42.0-gcc-13.2.0/lib64"
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/appl/local/destine/mars/versions/7.1.3.0/lib64"
 
 [submission.task_exceptions.Soil.MODULES]
   GDAL = ["load", "scl-gdal_23"]
