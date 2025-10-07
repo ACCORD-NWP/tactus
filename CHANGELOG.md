@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix GRIB keys for SQLite extraction eps vs deterministic. Also flexible use of multiple parameter lists. [\1335] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1335/)(@adeckmyn)
 - Fix namelist update functionality by ensure namelist names are always in upper case.[\1336](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1336/)(@uandrae)
 - Set correct LRED defaults for AROME (true) and HARMONIE-AROME (false) [\1329](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1329/)(@rolfhm)
+- Remove duplicate entries of FA field names in eccodes definitions [\1357](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1329/)(@sbnielsen)
 
 ### Added 
  - Add suport for conversion to julian days in datetime utils, useful for delayed start of plugins [\#1290](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1290) (@svianaj)
