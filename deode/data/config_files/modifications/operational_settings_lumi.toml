@@ -2,10 +2,13 @@
   active = true
 
 [domain]
-  name = "@EVENT_TYPE@_@DOMAIN_NUMBER@"
+  name = "@YYYY@@MM@@DD@@HH@_@EVENT_TYPE@_@DOMAIN_NUMBER@"
 
 [scheduler.ecfvars]
   ecf_host = "217.71.194.199"
+
+[submission.task_exceptions.ArchiveDataBridge.BATCH]
+  WALLTIME = "#SBATCH --time=01:00:00"
 
 [submission.types.serial.BATCH]
   PARTITION = "#SBATCH --partition=standard"

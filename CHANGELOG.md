@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Fixed
+- Update lumi operational settings.[\#1363](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1363)(@kastelecn)
 - Create surfex grib files only in case of AQ case.[\#1358](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1358)(@kastelecn)
 - CY50: change FA_SFX2CLIM in upper case [\1343](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1343) (@dhaumont)
 - CY50: Reanable NFPGRIB as workaround is not needed anymore on CY590 [\1344](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1344/)(@jacobsnoeijer)
