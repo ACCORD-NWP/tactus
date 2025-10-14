@@ -210,7 +210,7 @@ class Prep(PySurfexBaseTask):
                 bdcycle = as_timedelta(self.config["boundaries.lam.bdcycle"])
                 bdcycle_start = as_timedelta(self.config["boundaries.lam.bdcycle_start"])
 
-            bdshift = as_timedelta(self.config["boundaries.bdshift"])
+            bdshift = as_timedelta(self.config["boundaries.bdshift_sfx"])
             bd_basetime = basetime - cycle_offset(
                 basetime, bdcycle, bdcycle_start=bdcycle_start, bdshift=bdshift
             )

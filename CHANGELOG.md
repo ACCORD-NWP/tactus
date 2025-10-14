@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+### Added
+- Use offline SURFEX EUR run for Prep [\#1233](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1233)(@BolliPalmason)
+
 ### Fixed
 - Update lumi operational settings.[\#1363](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1363)(@kastelecn)
 - Create surfex grib files only in case of AQ case.[\#1358](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1358)(@kastelecn)

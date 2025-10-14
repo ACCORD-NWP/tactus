@@ -27,6 +27,7 @@
   bdint = "PT1H"
   bdmodel = "ifs"
   bdshift = "PT0H"
+  bdshift_sfx = "PT0H"
   humi_gp = true
   max_interpolation_tasks = 10
   sst_is_lsm = "auto"

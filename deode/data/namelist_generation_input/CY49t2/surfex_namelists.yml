@@ -914,3 +914,10 @@ sfx_prep_isba_from_fa:
     CFILETYPE: "FA"
     CFILEPGD: "PGD_HOST"
     CFILEPGDTYPE: "FA"
+
+sfx_prep_isba_from_nc:
+  NAM_PREP_SURF_ATM:
+    CFILE: "INFILE"
+    CFILETYPE: "NC"
+    CFILEPGD: "PGD_HOST"
+    CFILEPGDTYPE: "NC"

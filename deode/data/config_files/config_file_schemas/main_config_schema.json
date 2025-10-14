@@ -89,6 +89,11 @@
           "type": "string",
           "format": "duration"
         },
+        "bdshift_sfx": {
+          "description": "Shift of SURFEX prep input initial time. E.g. 'PT24H' would mean use 24H old file",
+          "type": "string",
+          "format": "duration"
+        },
         "max_interpolation_tasks": {
           "description": "Number of interpolate tasks run in parallel",
           "type": "number"
@@ -97,6 +102,12 @@
           "description": "Coupling model",
           "default": "ifs",
           "enum": ["lam", "ifs"],
+          "type": "string"
+        },
+        "bdmodel_sfx": {
+          "description": "SURFEX prep input file",
+          "default": "from_grib",
+          "enum": ["from_grib", "from_fa", "from_nc"],
           "type": "string"
         },
         "sstmodels": {

@@ -6,6 +6,7 @@
 [macros.select.default]
   gen_macros = [
     "boundaries.bdmodel",
+    "boundaries.bdmodel_sfx",
     "domain.name",
     "general.cnmexp",
     "general.cycle",

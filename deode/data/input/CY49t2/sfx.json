@@ -124,6 +124,9 @@
             },
             "FA": {
                 "INFILE.fa": "@PREP_INPUT_FILE_WITH_PATH@"
+            },
+            "NC": {
+                "INFILE.nc": "@PREP_INPUT_FILE_WITH_PATH@"
             }
         },
         "NAM_PREP_SURF_ATM#CFILEPGDTYPE": {
