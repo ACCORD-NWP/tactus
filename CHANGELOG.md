@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Add new dynamic option in namelist for forecast. [\#1366](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1366)(@kastelecn)
 - Use offline SURFEX EUR run for Prep [\#1233](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1233)(@BolliPalmason)
 
 ### Fixed

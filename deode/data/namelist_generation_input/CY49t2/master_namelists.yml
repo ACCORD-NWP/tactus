@@ -339,11 +339,13 @@ f4_AROME:
     LSLHD_W: false
     LSPRT: true
     LTWOTL: true
-    ND4SYS: 2
+    ND4SYS: 0 
     NPDVAR: 2
-    NVDVAR: 4
+    NVDVAR: 4 
     SLHDEPSH: 0.08
     SLHDKMAX: 6
+    LSI_NHEE: true
+    L_RDRY_NHX: true
   NAMFPF:
     NFMAX(1): 60
     NFMAX(2): 80
@@ -761,13 +763,15 @@ f4_ALARO:
     LSLHD_W: true
     LSPRT: true
     LTWOTL: true
-    ND4SYS: 2
+    ND4SYS: 0 
     NPDVAR: 2
     NVDVAR: 4
     SLHDEPSH: 0.016
     SLHDEPSV: 0.0
     SLHDKMAX: 6.0
     SLHDKMIN: -0.6
+    LSI_NHEE: true
+    L_RDRY_NHX: true
   NAMFPC:
     LCRITSNOWTEMP: false
     LFPPACKING: false
@@ -1288,9 +1292,12 @@ f4_HARMONIE_AROME:
     LSLHD_W: false
     LSPRT: true
     LTWOTL: true
+    ND4SYS: 0
     NPDVAR: 2
-    NVDVAR: 4
+    NVDVAR: 4 
     SLHDEPSH: 0.0025
+    LSI_NHEE: true
+    L_RDRY_NHX: true
   NAMFA:
     LEXTERN: true
     YFACLF%CLNAME: CLOUD_FRACTI
