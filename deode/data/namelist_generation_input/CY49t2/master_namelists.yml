@@ -1415,6 +1415,8 @@ f4_HARMONIE_AROME:
     LTOTPREC: false
     LWTHRESH: true
     LWTHRESHMOIST: true
+    LSUBEVAP: false
+    LDRYMFREDUC: false
     NSWB_MNH: 6
     RADGR: 0.5
     RADSN: 1.0
@@ -1598,6 +1600,9 @@ f4_common:
     LWFPAC: ${cfg:general.windfarm}
   NAMXFU:
     LXWFPIN: ${cfg:general.windfarm}
+  NAM_NEBN:
+    LVARRESDEP: false
+    LTAUCONV: false  
   NAMCT0:
     LAROME: true
   NAMCT1:
