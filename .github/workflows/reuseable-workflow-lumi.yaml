@@ -9,6 +9,7 @@ on:
 jobs:
 
     test-install-deode-workflow-lumi:
+        if: ${{ github.event_name != 'pull_request' }}
         runs-on: [hpc]
         steps:
 

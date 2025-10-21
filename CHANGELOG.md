@@ -10,11 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+
 ### Added
 - Add new dynamic option in namelist for forecast. [\#1366](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1366)(@kastelecn)
 - Use offline SURFEX EUR run for Prep [\#1233](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1233)(@BolliPalmason)
 
 ### Fixed
+- added a condition not to run lumi workflow on pull request event and atos build wheel job [\1341](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1341)(@milennimh)
 - Fix lam to lam coupling [\#1375](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1375)(@uandrae)
 - Fix marsprep on LUMI. [\#1374](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1374)(@kastelecn)
 - Fix strip_off_mount_path to support multiple underscores in prefix.[\#1364](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1364)(@jacobsnoeijer)
@@ -30,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added 
  - Add different namelist switches for optional new physics [\#1326](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1326) (@jacobsnoeijer) 
  - Support to use EU-scale Open street map data for urban parameters and surface fractions [\#1349](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1349) (@natalieth)
+ - Use offline SURFEX EUR run for Prep [\#1233](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1233)(@BolliPalmason)
  - Introduce static files for ecrad and a namelist example [\#1355](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1355) (@uandrae)
  - Add support for conversion to julian days in datetime utils, useful for delayed start of plugins [\#1290](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1290) (@svianaj)
 
