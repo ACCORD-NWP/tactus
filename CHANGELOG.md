@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Add support for conversion to julian days in datetime utils, useful for delayed start of plugins [\#1290](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1290) (@svianaj)
 
 ### Changed
+ - Change AROME namelist settings [\#1356](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1356) (@uandrae)
  - Change polling frequency for mirrors of globalDT, to reduce load on ecf-servers [\#1365](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1365)(@FlorianW-ZAMG)
  - Use official ecCodes 2.41.0 installation on LUMI. [\#1333](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1333)(@KristianHMoller)
  - Set ECF\_TRIES to 15 dor PgdFilterTownFrac on LUMI. [\#1360](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1360)(@kastelecn)

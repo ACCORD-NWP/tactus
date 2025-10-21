@@ -424,6 +424,8 @@ f4_AROME:
   NAMPARAR:
     CMICRO: ${cfg:submission.cmicro,ICE3}
     LOLSMC: true
+    XVMAXTHM: 1.9
+    XVMAXTHP: 1.6
   NAMPHMSE:
     LPGDFWR: false
   NAMPHY:
@@ -431,6 +433,7 @@ f4_AROME:
     LEDR: true
     LMPHYS: true
     LRAYFM: true
+    NSOLE: 1
   NAMPHY0:
     ALMAV: 300.0
     BEDIFV: 0.05
@@ -540,6 +543,7 @@ f4_AROME:
     LCONVHG: true
     LCRFLIMIT: true
     LCRIAUTI: true
+    LDEPOSC: true
     LEVLIMIT: true
     LFEEDBACKT: true
     LNULLWETG: true
@@ -557,6 +561,8 @@ f4_AROME:
     XSPLIT_MAXCFL: 0.8
     XT0CRIAUTI_NAM: -5.0
     XTSTEP_TS: 0.0
+  NAM_TURBN:
+    LBL89TOP: true
   NEMELBC0A:
     LESPCPL: true
     NBICNHX: 2
