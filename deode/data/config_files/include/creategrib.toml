@@ -1,5 +1,5 @@
 [creategrib.CreateGrib]
-  conversions = ["surfex"]
+  conversions = []
 
 [creategrib.CreateGrib.surfex]
   namelist = ["stepunits='h'"]

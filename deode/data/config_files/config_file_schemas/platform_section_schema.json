@@ -104,6 +104,10 @@
       "type": "string",
       "description": "TBA"
     },
+    "osm_data_eu": {
+      "type": "string",
+      "description": "Directory containing OSM data for Europe"
+    },
     "tree_height_dir": {
       "type": "string",
       "description": "Path to tree_height data."

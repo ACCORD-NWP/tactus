@@ -167,6 +167,7 @@ jobs:
               #SBATCH --time=00:60:00
   
   build-deode-workflow-atos:
+    if: ${{ github.event_name != 'pull_request' }}
     runs-on: [hpc]
     needs: test-install-deode-workflow-atos
     steps:

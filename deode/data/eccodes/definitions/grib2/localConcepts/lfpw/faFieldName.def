@@ -2500,14 +2500,6 @@
     tablesVersion = 15 ;
 }
 
-# Potential temperature
-"TEMPE_POTENT" = {
-    discipline = 0 ;
-    parameterCategory = 0 ;
-    parameterNumber = 2 ;
-    tablesVersion = 15 ;
-}
-
 # Virtual potential temperature
 "THETA_VIRT" = {
     discipline = 0 ;
@@ -3093,7 +3085,7 @@
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
-    typeOfStatisticalProcessing = 0 ;
+    typeOfStatisticalProcessing = 101 ;
     indicatorOfUnitForTimeRange = 0 ;
     lengthOfTimeRange = 15 ;
     LSTCUM = 0;
@@ -3108,7 +3100,7 @@
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
-    typeOfStatisticalProcessing = 2 ;
+    typeOfStatisticalProcessing = 100 ;
     indicatorOfUnitForTimeRange = 0 ;
     lengthOfTimeRange = 15 ;
     LSTCUM = 0;
@@ -3153,7 +3145,7 @@
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
-    typeOfStatisticalProcessing = 0 ;
+    typeOfStatisticalProcessing = 101 ;
     indicatorOfUnitForTimeRange = 1 ;
     lengthOfTimeRange = 3 ;
     LSTCUM = 0;
@@ -3168,69 +3160,9 @@
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
-    typeOfStatisticalProcessing = 2 ;
+    typeOfStatisticalProcessing = 100 ;
     indicatorOfUnitForTimeRange = 1 ;
     lengthOfTimeRange = 3 ;
-    LSTCUM = 0;
-}
-# precipitation type
-"CLSPTYPE_60M" = {
-    discipline = 0 ;
-    parameterCategory = 1 ;
-    parameterNumber = 19 ;
-    productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
-    typeOfStatisticalProcessing = 0 ;
-    typeOfFirstFixedSurface = 1 ;
-    scaleFactorOfFirstFixedSurface = missing() ;
-    scaledValueOfFirstFixedSurface = missing() ;
-    indicatorOfUnitForTimeRange = 1 ;
-    lengthOfTimeRange = 1 ;
-    LSTCUM = 60 ;
-}
-# more severe precipitation type
-"CLSPTYPESEV_60M" = {
-    discipline = 0 ;
-    parameterCategory = 1 ;
-    parameterNumber = 19 ;
-    productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
-    typeOfFirstFixedSurface = 1 ;
-    scaleFactorOfFirstFixedSurface = missing() ;
-    scaledValueOfFirstFixedSurface = missing() ;
-    typeOfStatisticalProcessing = 2 ;
-    indicatorOfUnitForTimeRange = 1 ;
-    lengthOfTimeRange = 1 ;
-    LSTCUM = 60 ;
-}
-# precipitation type
-"CLSPTYPE_15M" = {
-    discipline = 0 ;
-    parameterCategory = 1 ;
-    parameterNumber = 19 ;
-    productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
-    typeOfFirstFixedSurface = 1 ;
-    scaleFactorOfFirstFixedSurface = missing() ;
-    scaledValueOfFirstFixedSurface = missing() ;
-    typeOfStatisticalProcessing = 0 ;
-    indicatorOfUnitForTimeRange = 0 ;
-    lengthOfTimeRange = 15 ;
-    LSTCUM = 0;
-}
-# more severe precipitation type
-"CLSPTYPESEV_15M" = {
-    discipline = 0 ;
-    parameterCategory = 1 ;
-    parameterNumber = 19 ;
-    productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
-    typeOfFirstFixedSurface = 1 ;
-    scaleFactorOfFirstFixedSurface = missing() ;
-    scaledValueOfFirstFixedSurface = missing() ;
-    typeOfStatisticalProcessing = 2 ;
-    indicatorOfUnitForTimeRange = 0 ;
-    lengthOfTimeRange = 15 ;
     LSTCUM = 0;
 }
 #WETBT

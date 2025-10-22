@@ -10,6 +10,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.22.0] - 2025-10-21
+
+### Added
+- Add new dynamic option in namelist for forecast. [\#1366](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1366)(@kastelecn)
+- Use offline SURFEX EUR run for Prep [\#1233](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1233)(@BolliPalmason)
+
+### Fixed
+- added a condition not to run lumi workflow on pull request event and atos build wheel job [\1341](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1341)(@milennimh)
+- Fix lam to lam coupling [\#1375](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1375)(@uandrae)
+- Fix marsprep on LUMI. [\#1374](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1374)(@kastelecn)
+- Fix strip_off_mount_path to support multiple underscores in prefix.[\#1364](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1364)(@jacobsnoeijer)
+- Update lumi operational settings.[\#1363](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1363)(@kastelecn)
+- Create surfex grib files only in case of AQ case.[\#1358](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1358)(@kastelecn)
+- CY50: change FA_SFX2CLIM in upper case [\1343](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1343) (@dhaumont)
+- CY50: Reanable NFPGRIB as workaround is not needed anymore on CY590 [\1344](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1344/)(@jacobsnoeijer)
+- Fix GRIB keys for SQLite extraction eps vs deterministic. Also flexible use of multiple parameter lists. [\1335] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1335/)(@adeckmyn)
+- Fix namelist update functionality by ensure namelist names are always in upper case.[\1336](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1336/)(@uandrae)
+- Set correct LRED defaults for AROME (true) and HARMONIE-AROME (false) [\1329](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1329/)(@rolfhm)
+- Remove duplicate entries of FA field names in eccodes definitions [\1357](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1329/)(@sbnielsen)
+
+### Added 
+ - Add different namelist switches for optional new physics [\#1326](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1326) (@jacobsnoeijer) 
+ - Support to use EU-scale Open street map data for urban parameters and surface fractions [\#1349](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1349) (@natalieth)
+ - Use offline SURFEX EUR run for Prep [\#1233](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1233)(@BolliPalmason)
+ - Introduce static files for ecrad and a namelist example [\#1355](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1355) (@uandrae)
+ - Add support for conversion to julian days in datetime utils, useful for delayed start of plugins [\#1290](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1290) (@svianaj)
+
+### Changed
+ - Change AROME namelist settings [\#1356](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1356) (@uandrae)
+ - Change polling frequency for mirrors of globalDT, to reduce load on ecf-servers [\#1365](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1365)(@FlorianW-ZAMG)
+ - Use official ecCodes 2.41.0 installation on LUMI. [\#1333](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1333)(@KristianHMoller)
+ - Set ECF\_TRIES to 15 dor PgdFilterTownFrac on LUMI. [\#1360](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1360)(@kastelecn)
+ - Activate FDB archiving for EPS in operations. [\#1340](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1340) (@uandrae)
+ - Write pysurfex json config files to both work and climate directory to ensure correct usage and picking up confing changes. [\#1334](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1334) (@uandrae)
+ - Exclude parts of e923 (climate generation) that is not strictly required without assimilation. Avoids crashes for sea domains. [\#1328](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1328) (@uandrae)
+ - Cy50t1: Fix PGD and C903 [\#1331](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1331) (@dhaumont)
+
+### Fixed
+ - Fix lost array indexing in the static namelist reader. [\#1332](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1332) (@uandrae)
+
 ## [0.21.0] - 2025-09-25
 
 ### Added

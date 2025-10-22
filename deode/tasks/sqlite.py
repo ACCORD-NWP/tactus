@@ -49,72 +49,68 @@ class ExtractSQLite(Task):
         self.model_name = self.platform.substitute(
             self.config["extractsqlite.sqlite_model_name"]
         )
-        self.stationfile_sfc = self.platform.substitute(
-            self.config["extractsqlite.station_list_sfc"]
-        )
-        if not os.path.isfile(self.stationfile_sfc):
-            raise FileNotFoundError(f" missing {self.stationfile_sfc}")
-        logger.info("Station list: {}", self.stationfile_sfc)
-        self.stationfile_ua = self.platform.substitute(
-            self.config["extractsqlite.station_list_ua"]
-        )
-        if not os.path.isfile(self.stationfile_ua):
-            raise FileNotFoundError(f" missing {self.stationfile_ua}")
-        logger.info("Station list: {}", self.stationfile_ua)
-        paramfile_sfc = self.platform.substitute(
-            self.config["extractsqlite.parameter_list_sfc"]
-        )
-        if not os.path.isfile(paramfile_sfc):
-            raise FileNotFoundError(f" missing {paramfile_sfc}")
-        logger.info("Surface parameter list: {}", paramfile_sfc)
-        with open(paramfile_sfc, "r", encoding="utf-8") as pf:
-            self.parameter_list_sfc = json.load(pf)
-        paramfile_ua = self.platform.substitute(
-            self.config["extractsqlite.parameter_list_ua"]
-        )
-        if not os.path.isfile(paramfile_ua):
-            raise FileNotFoundError(f" missing {paramfile_ua}")
-        logger.info("Upper air parameter list: {}", paramfile_ua)
-        with open(paramfile_ua, "r", encoding="utf-8") as pf:
-            self.parameter_list_ua = json.load(pf)
+
+        extraction_list = self.config["extractsqlite.parameter_list"]
+        # NOTE: If you provide an empty list, it is replaced by the default!
+        #       If you don't want SQLite extraction, turn off the switch in stead.
+        #       Not a perfect situation, but I think its OK for now.
+        if len(extraction_list) == 0:
+            is_ensemble = len(self.config["eps.general.members"]) > 1
+            if is_ensemble:
+                logger.info("Using default eps parameter extraction.")
+                extraction_list = self.config["extractsqlite.parameter_list_default_eps"]
+            else:
+                logger.info("Using default deterministic parameter extraction.")
+                extraction_list = self.config["extractsqlite.parameter_list_default_det"]
+
+        self.n_list = len(extraction_list)
+        logger.info("Found {} extraction lists.", self.n_list)
+        self.param_file = []
+        self.station_file = []
+        for i in range(self.n_list):
+            station_file = self.platform.substitute(extraction_list[i]["location_file"])
+            if not os.path.isfile(station_file):
+                raise FileNotFoundError(f" missing {station_file}")
+            self.station_file.append(station_file)
+
+            param_file = self.platform.substitute(extraction_list[i]["param_file"])
+            if not os.path.isfile(param_file):
+                raise FileNotFoundError(f" missing {param_file}")
+            self.param_file.append(param_file)
+
         self.output_settings = self.config["general.output_settings"]
 
     def execute(self):
         """Execute ExtractSQLite on all output files."""
         # split into "combined" and "direct" parameters
         # loop over lead times
-        # Also split extraction between UA and SFC parameters
+        # Also allow multiple extraction lists, typically UA and SFC parameters
         # with different station lists.
         dt_list = oi2dt_list(self.infile_dt, self.forecast_range)
-        station_list_sfc = pd.read_csv(self.stationfile_sfc, skipinitialspace=True)
-        station_list_ua = pd.read_csv(self.stationfile_ua, skipinitialspace=True)
-        for dt in dt_list:
-            infile = self.platform.substitute(
-                os.path.join(self.archive, self.infile_template),
-                validtime=self.basetime + dt,
-            )
-            if not os.path.isfile(infile):
-                raise FileNotFoundError(f" missing {infile}")
-            logger.info("SQLITE EXTRACTION: {}", infile)
-            loglevel = self.config.get("general.loglevel", LogDefaults.LEVEL).upper()
-            sqlite_logger.setLevel(loglevel)
-
-            parse_grib_file(
-                infile=infile,
-                param_list=self.parameter_list_sfc,
-                station_list=station_list_sfc,
-                sqlite_template=self.sqlite_path + "/" + self.sqlite_template,
-                model_name=self.model_name,
-                weights=None,
-            )
-            parse_grib_file(
-                infile=infile,
-                param_list=self.parameter_list_ua,
-                station_list=station_list_ua,
-                sqlite_template=self.sqlite_path + "/" + self.sqlite_template,
-                model_name=self.model_name,
-                weights=None,
-            )
+        for i in range(self.n_list):
+            logger.info("SQLITE: parameter file {}", self.param_file[i])
+            logger.info("SQLITE: station file {}", self.station_file[i])
+            station_list = pd.read_csv(self.station_file[i], skipinitialspace=True)
+            with open(self.param_file[i], "r", encoding="utf-8") as pf:
+                param_list = json.load(pf)
+            for dt in dt_list:
+                infile = self.platform.substitute(
+                    os.path.join(self.archive, self.infile_template),
+                    validtime=self.basetime + dt,
+                )
+                if not os.path.isfile(infile):
+                    raise FileNotFoundError(f" missing {infile}")
+                logger.info("SQLITE EXTRACTION: {}", infile)
+                loglevel = self.config.get("general.loglevel", LogDefaults.LEVEL).upper()
+                sqlite_logger.setLevel(loglevel)
+                parse_grib_file(
+                    infile=infile,
+                    param_list=param_list,
+                    station_list=station_list,
+                    sqlite_template=self.sqlite_path + "/" + self.sqlite_template,
+                    model_name=self.model_name,
+                    weights=None,
+                )
 
 
 class MergeSQLites(Task):
@@ -144,19 +140,26 @@ class MergeSQLites(Task):
         model_name = self.platform.substitute(
             self.config["extractsqlite.sqlite_model_name"]
         )
-        paramfile_sfc = self.platform.substitute(
-            self.config["extractsqlite.parameter_list_sfc"]
-        )
-        if not os.path.isfile(paramfile_sfc):
-            raise FileNotFoundError(f"Missing parameter file: {paramfile_sfc}")
-        paramfile_ua = self.platform.substitute(
-            self.config["extractsqlite.parameter_list_ua"]
-        )
-        if not os.path.isfile(paramfile_ua):
-            raise FileNotFoundError(f"Missing parameter file: {paramfile_ua}")
-        logger.info("Parameter list sfc: {}", paramfile_sfc)
-        logger.info("Parameter list ua: {}", paramfile_ua)
-        for paramfile in [paramfile_sfc, paramfile_ua]:
+
+        extraction_list = self.config["extractsqlite.parameter_list"]
+        if len(extraction_list) == 0:
+            is_ensemble = len(self.config["eps.general.members"]) > 1
+            if is_ensemble:
+                # NOTE: in this context, we expect eps data, of course.
+                logger.info("Using default eps parameter extraction.")
+                extraction_list = self.config["extractsqlite.parameter_list_default_eps"]
+            else:
+                logger.info("Using default deterministic parameter extraction.")
+                extraction_list = self.config["extractsqlite.parameter_list_default_det"]
+
+        n_list = len(extraction_list)
+        logger.info("Found {} extraction lists.", n_list)
+
+        for i in range(n_list):
+            paramfile = self.platform.substitute(extraction_list[i]["param_file"])
+            if not os.path.isfile(paramfile):
+                raise FileNotFoundError(f"Missing parameter file: {paramfile}")
+            logger.info("Parameter list {}: {}", i + 1, paramfile)
             with open(paramfile, "r", encoding="utf-8") as file_:
                 parameter_list = json.load(file_)
 

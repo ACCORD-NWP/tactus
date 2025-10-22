@@ -296,7 +296,8 @@ class Marsprep(Task):
             if self.config["suite_control.do_interpolsstsic"]:
                 self.get_sst_data()
 
-        self.get_sfx_data()
+        if not self.config["boundaries.bd_has_surfex"]:
+            self.get_sfx_data()
 
     def get_grid_point_surface_data(self):
         """Get grid point surface data."""

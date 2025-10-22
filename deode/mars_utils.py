@@ -560,7 +560,7 @@ class BaseRequest:
 
     def add_database_options(self):
         """Add database options."""
-        if self.class_ == "D1":
+        if self.request["CLASS"] == "D1":
             self.request.update(
                 {
                     "DATASET": "extremes-dt",

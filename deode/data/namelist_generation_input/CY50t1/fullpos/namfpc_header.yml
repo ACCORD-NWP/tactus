@@ -6,6 +6,7 @@ NAMFPC:
   LISOT_ABOVEG: true
   L_READ_MODEL_DATE: true
   NFPCAPE: 5
+  NFPGRIB: ${cfg:submission.nfpgrib,224}
   RENTRA: 0.0001
   RFPCD2: 5
   RFPCSAB: 50

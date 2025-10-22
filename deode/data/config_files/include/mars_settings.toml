@@ -185,6 +185,7 @@
   class = "D1"
   default = "RD_DEFAULT"
   expver = "0001"
+  GG_snow = "33/238"
   GGZ_type = "AN"
   sh_oro_source = "/projappl/project_465000527/models/ifs/static-data/rdx/data/climate/climate.v020/2559_4/sporog"
   SHZ_type = "AN"
