@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.22.0] - 2025-10-21
 
 ### Added
 - Add new dynamic option in namelist for forecast. [\#1366](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1366)(@kastelecn)
