@@ -1387,7 +1387,11 @@ class TimeDependentFamily(EcflowSuiteFamily):
 
                 prev_cycle_trigger = prev_cycle_triggers.get(member)
                 if prev_cycle_trigger:
-                    ready_for_cycle = [ready_for_cycle, *prev_cycle_trigger]
+                    ready_for_cycle = (
+                        [*ready_for_cycle, *prev_cycle_trigger]
+                        if isinstance(ready_for_cycle, list)
+                        else [ready_for_cycle, *prev_cycle_trigger]
+                    )
 
                 cycle_family = CycleFamily(
                     member_family,
