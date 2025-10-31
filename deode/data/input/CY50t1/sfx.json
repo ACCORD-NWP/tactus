@@ -62,7 +62,7 @@
                 }
             }
         },
-        "NAM_ZS#YZSFILETYPE": {"DIRECT": {"NAM_ZS#YZS": "@climdir@/gmted2010.dir"}},
+        "NAM_ZS#YZSFILETYPE": {"DIRECT": {"NAM_ZS#YZS": "@climdir@/topo.dir"}},
         "NAM_ISBA#YSANDFILETYPE": {
             "DIRECT": {"NAM_ISBA#YSAND": "@climdir@/SAND_SOILGRID.dir"}
         },

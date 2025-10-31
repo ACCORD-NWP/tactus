@@ -35,9 +35,6 @@
   KMP_BLOCKTIME = "12"
   KMP_STACKSIZE = "4G"
 
-[submission.task_exceptions.Gmted.BATCH]
-  MEM = "#SBATCH --mem=32GB"
-
 [submission.task_exceptions.IOmerge.BATCH]
   WALLTIME = "#SBATCH --time=08:00:00"
 
@@ -50,6 +47,9 @@
   NODES = "#SBATCH --nodes=2"
   NTASKS = "#SBATCH --ntasks=32"
   WALLTIME = "#SBATCH --time=00:50:00"
+
+[submission.task_exceptions.Topography.BATCH]
+  MEM = "#SBATCH --mem=32GB"
 
 [submission.types.gnu.BATCH]
   MEM = "#SBATCH --mem=64GB"

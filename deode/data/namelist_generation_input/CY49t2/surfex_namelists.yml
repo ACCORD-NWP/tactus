@@ -669,9 +669,9 @@ sfx_pgd_sea:
   NAM_SEABATHY:
     XUNIF_SEABATHY: 0.0
 
-sfx_pgd_zs_gmted:
+sfx_pgd_zs_topo:
   NAM_ZS:
-    YZS: "gmted2010"
+    YZS: "topo"
     YZSFILETYPE: "DIRECT"
 
 sfx_pgd_zs_AROME:

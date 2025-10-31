@@ -69,7 +69,7 @@ sfx_pgd:
     CSVF: MANNERS
     LFSSOSVF: False
     LORORAD: True
-    YZS: "gmted2010"
+    YZS: "topo"
     YZSFILETYPE: "DIRECT"
   NAM_ZS_FILTER:
     NZSFILTER: 0
@@ -669,17 +669,9 @@ sfx_pgd_sand:
 sfx_pgd_sea:
   NAM_SEABATHY: {}
 
-sfx_pgd_zs_gmted:
+sfx_pgd_zs_topo:
   NAM_ZS:
-    YZS: "gmted2010"
-    YZSFILETYPE: "DIRECT"
-
-sfx_pgd_zs_gtopo:
-  NAM_ZS:
-    CSVF: MANNERS
-    LFSSOSVF: False
-    LORORAD: True
-    YZS: "gtopo30"
+    YZS: "topo"
     YZSFILETYPE: "DIRECT"
 
 sfx_pgd_zs_filter:

@@ -1,4 +1,4 @@
-"""GMTED and SOILGRID."""
+"""Topography and SOILGRID data preparation tasks."""
 
 import os
 import shutil
@@ -26,11 +26,11 @@ def _import_gdal():
         raise ImportError(msg) from error
 
 
-class Gmted(Task):
-    """GMTED."""
+class Topography(Task):
+    """Topography data preparation."""
 
     def __init__(self, config):
-        """Init Gmted.
+        """Init Topography.
 
         Args:
             config (Config): Config object
@@ -39,9 +39,10 @@ class Gmted(Task):
 
         Task.__init__(self, config, __class__.__name__)
 
-        self.gmted2010_path = self.fmanager.platform.get_platform_value(
-            "gmted2010_data_path"
+        self.topo_source = self.fmanager.platform.get_platform_value(
+            "topo_source", alt="gmted2010"
         )
+        self.topo_data_path = self.fmanager.platform.get_platform_value("topo_data_path")
 
     def get_domain_properties(self, config) -> dict:
         """Get domain properties.
@@ -151,7 +152,7 @@ class Gmted(Task):
 
         for lat in gmted2010_input_lats:
             for lon in gmted2010_input_lons:
-                tif_file = f"{self.gmted2010_path}/{lat}{lon}_20101117_gmted_mea075.tif"
+                tif_file = f"{self.topo_data_path}/{lat}{lon}_20101117_gmted_mea075.tif"
                 tif_files.append(tif_file)
 
         for tif_file in tif_files:
@@ -213,39 +214,79 @@ class Gmted(Task):
         unix_group = self.platform.get_platform_value("unix_group")
         deodemakedirs(climdir, unixgroup=unix_group)
 
-        projstr = Projstring().get_projstring(
-            lon0=self.domain["lon0"], lat0=self.domain["lat0"]
+        if self.topo_source == "gmted2010":
+            # Process GMTED2010 geotif files
+            projstr = Projstring().get_projstring(
+                lon0=self.domain["lon0"], lat0=self.domain["lat0"]
+            )
+            proj = Projection(projstr)
+            domain_properties = proj.get_domain_properties(self.domain)
+
+            tif_files, hdr_east, hdr_west, hdr_south, hdr_north = self.define_gmted_input(
+                domain_properties
+            )
+
+            # Output merged GMTED file to working directory as file gmted_mea075.tif
+            gdal = _import_gdal()
+            gd = gdal.Warp(
+                "gmted_mea075.tif",
+                tif_files,
+                format="GTiff",
+                options=["COMPRESS=LZW", "TILED=YES"],
+            )
+
+            Topography.tif2bin(gd, "gmted_mea075.bin")
+            shutil.move("gmted_mea075.bin", f"{climdir}/gmted2010.dir")
+
+            # Get number of rows and columns
+            hdr_rows = gd.RasterYSize
+            hdr_cols = gd.RasterXSize
+
+            gd = None
+
+            # Create the header file
+            header_file = f"{climdir}/gmted2010.hdr"
+            logger.debug("Write header file {}", header_file)
+            Topography.write_gmted_header_file(
+                header_file, hdr_north, hdr_south, hdr_west, hdr_east, hdr_rows, hdr_cols
+            )
+
+            # Create symlinks to generic topo files
+            topo_dir_target = f"{climdir}/gmted2010.dir"
+            topo_hdr_target = f"{climdir}/gmted2010.hdr"
+        else:
+            # Use custom topography files provided by user
+            # topo_source is the base filename (without extension)
+            topo_dir_target = f"{self.topo_data_path}/{self.topo_source}.dir"
+            topo_hdr_target = f"{self.topo_data_path}/{self.topo_source}.hdr"
+
+            if not os.path.isfile(topo_dir_target):
+                logger.error("Custom topography .dir file not found: {}", topo_dir_target)
+                sys.exit(1)
+
+            if not os.path.isfile(topo_hdr_target):
+                logger.error("Custom topography .hdr file not found: {}", topo_hdr_target)
+                sys.exit(1)
+
+            logger.info(
+                "Using custom topography files: {} and {}",
+                topo_dir_target,
+                topo_hdr_target,
+            )
+
+        # Create symlinks topo.dir and topo.hdr pointing to the appropriate files
+        # using filemanager for consistency with other tasks
+        self.fmanager.input(
+            topo_dir_target,
+            f"{climdir}/topo.dir",
+            check_archive=False,
+            provider_id="symlink",
         )
-        proj = Projection(projstr)
-        domain_properties = proj.get_domain_properties(self.domain)
-
-        tif_files, hdr_east, hdr_west, hdr_south, hdr_north = self.define_gmted_input(
-            domain_properties
-        )
-
-        # Output merged GMTED file to working directory as file gmted_mea075.tif
-        gdal = _import_gdal()
-        gd = gdal.Warp(
-            "gmted_mea075.tif",
-            tif_files,
-            format="GTiff",
-            options=["COMPRESS=LZW", "TILED=YES"],
-        )
-
-        Gmted.tif2bin(gd, "gmted_mea075.bin")
-        shutil.move("gmted_mea075.bin", f"{climdir}/gmted2010.dir")
-
-        # Get number of rows and columns
-        hdr_rows = gd.RasterYSize
-        hdr_cols = gd.RasterXSize
-
-        gd = None
-
-        # Create the header file
-        header_file = f"{climdir}/gmted2010.hdr"
-        logger.debug("Write header file {}", header_file)
-        Gmted.write_gmted_header_file(
-            header_file, hdr_north, hdr_south, hdr_west, hdr_east, hdr_rows, hdr_cols
+        self.fmanager.input(
+            topo_hdr_target,
+            f"{climdir}/topo.hdr",
+            check_archive=False,
+            provider_id="symlink",
         )
 
 

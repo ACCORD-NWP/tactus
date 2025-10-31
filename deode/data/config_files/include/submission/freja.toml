@@ -52,7 +52,15 @@
   NPROCX = 1
   NPROCY = 1
   SCHOST = "freja"
-  tasks = ["CreateGrib", "Gmted", "Soil", "Pgd", "Prep", "Marsprep", "InterpolSstSic"]
+  tasks = [
+    "CreateGrib",
+    "Topography",
+    "Soil",
+    "Pgd",
+    "Prep",
+    "Marsprep",
+    "InterpolSstSic",
+  ]
   WRAPPER = "mpprun"
 
 [submission.types.serial.BATCH]

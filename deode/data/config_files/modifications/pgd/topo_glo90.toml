@@ -1,0 +1,3 @@
+[platform]
+  topo_data_path = "@CLIMDATA@/GLO-90"
+  topo_source = "glo90"

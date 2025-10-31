@@ -76,9 +76,6 @@
   RTTOV_COEFDIR = "/hpcperm/snh02/DEODE/satellite/rtcoef_rttov12/harm_coef/"
   UCX_LOG_LEVEL = "error"
 
-[submission.task_exceptions.Gmted.MODULES]
-  GDAL = ["load", "gdal/3.6.2"]
-
 [submission.task_exceptions.InterpolSstSic]
   binary = "gl"
   bindir = "@BINDIR_GL@"
@@ -117,6 +114,9 @@
   WALLTIME = "#SBATCH --time=00:10:00"
 
 [submission.task_exceptions.Soil.MODULES]
+  GDAL = ["load", "gdal/3.6.2"]
+
+[submission.task_exceptions.Topography.MODULES]
   GDAL = ["load", "gdal/3.6.2"]
 
 [submission.types.background_hpc]
@@ -183,7 +183,7 @@
   SCHOST = "hpc"
   tasks = [
     "CreateGrib",
-    "Gmted",
+    "Topography",
     "Soil",
     "Marsprep",
     "E923Update",

@@ -48,7 +48,7 @@ class PgdInputFamily(EcflowSuiteFamily):
         )
 
         EcflowSuiteTask(
-            "Gmted",
+            "Topography",
             self,
             config,
             task_settings,
