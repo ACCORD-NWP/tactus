@@ -8,11 +8,8 @@
 [pgd]
   npatch = 3
 
-[submission]
-  bindir = "/etc/ecmwf/nfs/dh1_perm_a/deployde330/github-actions/install/CY50t1/latest/bin"
-
 [submission.task_exceptions.C903]
-  bindir = "/etc/ecmwf/nfs/dh1_perm_a/deployde330/github-actions/install/CY49t2/latest/bin"
+  bindir = "@INSTALL_DIR@/CY49t2/intel/R64/latest/bin"
 
 [submission.task_exceptions.E923Update]
   binary = "FA_SFX2CLIM"

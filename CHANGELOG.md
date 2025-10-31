@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Fixed
+- Fix cycle50 binary path [\#1377](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1377)(@pardallio)
+- Disabled surfex for ALARO cy50 [\#1377](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1377)(@pardallio)
+- Enabled sst_sic for harmonie and arome cy50[\#1377](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1377(@pardallio)
 - Fix triggers by flattening list [\1386](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1386)(@uandrae)
 
 ## [0.22.0] - 2025-10-21
