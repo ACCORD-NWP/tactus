@@ -1,0 +1,5 @@
+[general]
+  upd_sst_sic = false
+
+[suite_control]
+  do_interpolsstsic = false
