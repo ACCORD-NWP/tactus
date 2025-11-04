@@ -111,3 +111,5 @@
 
 [suite_control]
   do_creategrib_static = true
+  n_addcalculatedfields = 3
+  n_creategrib = 3

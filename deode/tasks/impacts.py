@@ -3,7 +3,7 @@
 import contextlib
 import json
 import os
-from abc import ABC, abstractmethod
+from abc import ABC
 from dataclasses import dataclass
 from typing import Optional
 
@@ -11,14 +11,14 @@ import tomlkit
 import yaml
 from dicttoxml import dicttoxml as dtx
 
+from deode.config_parser import BasicConfig
+from deode.datetime_utils import as_datetime, as_timedelta
 from deode.host_actions import HostNotFoundError, SelectHost
+from deode.logs import logger
 from deode.scheduler import EcflowServer
-
-from ..config_parser import BasicConfig
-from ..logs import logger
-from ..toolbox import Platform
-from .base import Task
-from .batch import BatchJob
+from deode.tasks.base import Task
+from deode.tasks.batch import BatchJob
+from deode.toolbox import Platform
 
 
 @dataclass()
@@ -38,9 +38,19 @@ class ImpactModel(ABC):
                 return instance
         raise ValueError(f"No valid ImpactModel subclass found for name: {name}")
 
-    @abstractmethod
     def run(self):
-        """Abstract method."""
+        """Starts a plugin suite."""
+        poetry = self.platform.substitute(self.config["poetry"])
+        path = self.platform.substitute(self.config["path"])
+        args = self.platform.substitute(self.config["arguments"])
+        logger.info("Change directory to: {}", path)
+        os.chdir(path)
+        if isinstance(args, str):
+            args = [args]
+        for arg in args:
+            cmd = self.platform.substitute(f"{poetry} run {arg}")
+            logger.info(cmd)
+            BatchJob(os.environ, wrapper="").run(cmd)
 
     def dump(self, to_dump):
         """Write config to selected format.
@@ -57,7 +67,7 @@ class ImpactModel(ABC):
                 f_h.write(tomlkit.dumps(to_dump))
         elif self.filename.endswith((".xml")):
             with open(self.filename, mode="wb") as f_h:
-                f_h.write(dtx(to_dump, root=False, attr_type=False))
+                f_h.write(dtx(to_dump, attr_type=False))
         elif self.filename.endswith((".yml", ".yaml")):
             with open(self.filename, mode="wb") as f_h:
                 yaml.dump(to_dump, f_h, encoding="utf-8", default_flow_style=False)
@@ -73,15 +83,11 @@ class ImpactModel(ABC):
         logger.info("Impact model:{} ", str(self))
         self.filename = self.platform.substitute(self.config["config_name"])
         # List and parse settings
-        logger.info(" communication keys:")
-        com = {}
-        for key, value in self.config["communicate"].items():
-            v = self.platform.substitute(value)
-            logger.info("  {} = {}", key, v)
-            com[key] = v
-
+        com = self.platform.resolve_macros(self.config["communicate"])
+        logger.info(" communication keys: {}", com)
         # Write the config file
-        self.dump(com)
+        if len(com) > 0:
+            self.dump(com)
         # Execute the impact model specific command
         self.run()
 
@@ -100,7 +106,22 @@ class Ehype(ImpactModel):
         path = self.platform.substitute(self.config["path"])
         args = self.platform.substitute(self.config["arguments"])
         cmd = f"{path}/deploy_suite.sh {args}"
+        logger.info(cmd)
         BatchJob(os.environ, wrapper="").run(cmd)
+
+
+@dataclass()
+class Verification(ImpactModel):
+    """Verification specific methods."""
+
+    name = "verification"
+
+
+@dataclass()
+class AQModels(ImpactModel):
+    """Verification specific methods."""
+
+    name = "aq"
 
 
 class ImpactModels(Task):
@@ -125,6 +146,50 @@ class ImpactModels(Task):
             model.execute()
 
 
+def get_fdb_info(config):
+    """Build a fdb request.
+
+    Args:
+        config (deode.ParsedConfig): Configuration
+
+    Returns:
+        fdb_req (dict): fdb request with appropriate keys
+    """
+    include_keys = ("class", "dataset", "expver", "georef", "stream")
+    fdb_req = {x: config.get(f"fdb.grib_set.{x}") for x in include_keys}
+
+    if fdb_req["expver"] is None:
+        return None
+
+    add_keys = {
+        "number": "eps.general.members",
+        "basetime": "general.times.basetime",
+        "forecast_range": "general.times.forecast_range",
+    }
+    for key, value in add_keys.items():
+        fdb_req[key] = config.get(value)
+
+    # Handle members
+    if fdb_req["stream"] == "enfo":
+        fdb_req["number"] = list(fdb_req["number"])
+    else:
+        fdb_req.pop("number")
+
+    # Date/time
+    fdb_req["basetime"] = as_datetime(fdb_req["basetime"])
+    fdb_req["date"] = fdb_req["basetime"].strftime("%Y%m%d")
+    fdb_req["time"] = fdb_req["basetime"].strftime("%H%M")
+    fdb_req.pop("basetime")
+
+    # Assumes hourly data!!!
+    fdb_req["forecast_range"] = as_timedelta(fdb_req["forecast_range"])
+    total_hours = int(fdb_req["forecast_range"].total_seconds() / 3600)
+    fdb_req["step"] = list(range(total_hours + 1))
+    fdb_req.pop("forecast_range")
+
+    return fdb_req
+
+
 def get_impact(config, taskname):
     """Gather impact settings.
 
@@ -139,6 +204,7 @@ def get_impact(config, taskname):
     installed_impact = config.get("platform.impact", {})
     impact = {}
 
+    fdb_keys = get_fdb_info(config)
     # Resolve ecf_host/ecf_port if used
     with contextlib.suppress(HostNotFoundError):
         ecf_host = config.get("scheduler.ecfvars.ecf_host")
@@ -169,26 +235,34 @@ def get_impact(config, taskname):
             and taskname in impact_model
         ):
             impact[name] = impact_model[taskname]
-            for conf in ["communicate", "path", "config_name"]:
-                impact[name][conf] = impact_model[conf]
+            for conf, alt in {
+                "communicate": {},
+                "poetry": "poetry",
+                "path": None,
+                "config_name": "",
+            }.items():
+                impact[name][conf] = impact_model.get(conf, alt)
 
+            if fdb_keys is not None:
+                impact[name]["communicate"]["fdb_request"] = fdb_keys
             # Update user ecf host and port with resolved values
-            user_ecf_host = impact[name]["communicate"].get("user_ecf_host")
-            user_ecf_port = impact[name]["communicate"].get("user_ecf_port")
-            if user_ecf_host is not None and user_ecf_port is not None:
-                pl = Platform(config)
-                impact[name]["communicate"]["user_ecf_host"] = pl.substitute(
-                    user_ecf_host
-                )
-                impact[name]["communicate"]["user_ecf_port"] = pl.substitute(
-                    user_ecf_port
-                )
+            with contextlib.suppress(KeyError):
+                user_ecf_host = impact[name]["communicate"].get("user_ecf_host")
+                user_ecf_port = impact[name]["communicate"].get("user_ecf_port")
+                if user_ecf_host is not None and user_ecf_port is not None:
+                    pl = Platform(config)
+                    impact[name]["communicate"]["user_ecf_host"] = pl.substitute(
+                        user_ecf_host
+                    )
+                    impact[name]["communicate"]["user_ecf_port"] = pl.substitute(
+                        user_ecf_port
+                    )
 
     return impact
 
 
 class StartImpactModels(ImpactModels):
-    """Starts the impact models."""
+    """Starts plugins and impact models."""
 
     def __init__(self, config):
         """Construct object.

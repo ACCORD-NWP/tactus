@@ -61,6 +61,9 @@
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=16"
 
+[submission.task_exceptions.ExtractSQlite]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+
 [submission.task_exceptions.Forecast]
   bindir = "@INSTALL_DIR@/@CYCLE@/@COMPILER@/@PRECISION@/@IAL_VERSION@/bin"
   NPROC = 30
@@ -133,7 +136,7 @@
   NPROCX = 1
   NPROCY = 1
   SCHOST = "hpc"
-  tasks = ["ExtractSQLite"]
+  tasks = ["ExtractSQLite", "StartImpactModels"]
   WRAPPER = "srun"
 
 [submission.types.gnu.BATCH]
@@ -143,9 +146,6 @@
   QOS = "#SBATCH --qos=nf"
   WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:15:00"
-
-[submission.types.gnu.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
 
 [submission.types.parallel]
   NPROC = 32

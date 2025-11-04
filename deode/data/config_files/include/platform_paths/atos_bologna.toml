@@ -41,6 +41,14 @@
 [platform.impact]
   ehype = "/home/snh02/DE_Impact/EHYPE/forecast/pyflow/utils"
 
+[platform.impact.aq]
+  path = "/perm/snh02/DE_Impact/AQ/Deode-AQ-Workflow"
+  poetry = "/home/snh02/.local/bin/poetry"
+
+[platform.impact.verification]
+  path = "/hpcperm/snh02/DE_Verification/plugins/harpverify"
+  poetry = "/home/snh02/.local/bin/poetry"
+
 [platform.mirrorglobalDT]
   check_var = "YMD"
   mirror_name = "globaldt"

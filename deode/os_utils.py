@@ -277,7 +277,10 @@ def strip_off_mount_path(path: Union[str, Path]) -> Path:
     if user is None:
         return Path(path)
 
-    index_of_user = file_parts.index(user)
+    try:
+        index_of_user = file_parts.index(user)
+    except ValueError:
+        return Path(path)
     parent_of_user = file_parts[max(0, index_of_user - 1)]
     # Get number of underscores in parent_of_user
     n_underscores = parent_of_user.count("_")
