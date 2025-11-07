@@ -40,6 +40,7 @@
 
 [platform.impact]
   ehype = "/home/snh02/DE_Impact/EHYPE/forecast/pyflow/utils"
+  eps_upscaling = "/perm/@USER@/DE_Impact/eps_upscaling"
 
 [platform.impact.aq]
   path = "/perm/snh02/DE_Impact/AQ/Deode-AQ-Workflow"

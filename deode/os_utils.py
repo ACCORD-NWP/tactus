@@ -319,7 +319,7 @@ def resolve_path_relative_to_package(path: Path, ignore_errors: bool = False) ->
             package directory.
 
     """
-    path = path.resolve()
+    path = path.expanduser().resolve()
     # First check if path exists as is
     if not os.path.exists(path):
         # Get path relative to package. Needed when Deode-Workflow is installed as

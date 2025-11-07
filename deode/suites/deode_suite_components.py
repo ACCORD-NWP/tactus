@@ -1415,6 +1415,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     external_cycle_cleaning_trigger=postcycle_families.get(member),
                     ecf_files_remotely=ecf_files_remotely,
                 )
+
             if (
                 config["suite_control.do_extractsqlite"]
                 and config["suite_control.do_mergesqlite"]

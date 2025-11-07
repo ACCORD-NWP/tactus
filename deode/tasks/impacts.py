@@ -3,18 +3,23 @@
 import contextlib
 import json
 import os
-from abc import ABC
+import tempfile
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Optional
 
 import tomlkit
+import xmltodict
 import yaml
 from dicttoxml import dicttoxml as dtx
+from isodate import parse_duration
 
 from deode.config_parser import BasicConfig
 from deode.datetime_utils import as_datetime, as_timedelta
+from deode.general_utils import recursive_substitute
 from deode.host_actions import HostNotFoundError, SelectHost
 from deode.logs import logger
+from deode.os_utils import deodemakedirs
 from deode.scheduler import EcflowServer
 from deode.tasks.base import Task
 from deode.tasks.batch import BatchJob
@@ -22,13 +27,13 @@ from deode.toolbox import Platform
 
 
 @dataclass()
-class ImpactModel(ABC):
+class ImpactModel:
     """Abstract class for impact models."""
 
     name: str
     config: BasicConfig
     platform: Platform
-    filename: Optional[str] = ""
+    filename: Optional[Path] = None
 
     def __new__(cls, name: str, *_args, **_kwargs):
         """Create a new instance of a subclass based on the field_type."""
@@ -52,6 +57,25 @@ class ImpactModel(ABC):
             logger.info(cmd)
             BatchJob(os.environ, wrapper="").run(cmd)
 
+    def load(self) -> dict:
+        """Load the config from the file into memory.
+
+        Raises:
+            TypeError: Unknown input file type
+
+        Returns:
+            dict: The loaded config.
+        """
+        if self.filename.suffix == ".toml":
+            return tomlkit.loads(self.filename.read_text())
+        if self.filename.suffix == ".xml":
+            return xmltodict.parse(self.filename.read_text())
+        if self.filename.suffix in [".yml", ".yaml"]:
+            return yaml.safe_load(self.filename.read_text())
+        if self.filename.suffix == ".json":
+            return json.loads(self.filename.read_text())
+        raise TypeError(f"Unknown input file type: {self.filename.suffix}")
+
     def dump(self, to_dump):
         """Write config to selected format.
 
@@ -62,27 +86,38 @@ class ImpactModel(ABC):
             TypeError: Unknown output file type
         """
         logger.info(" Dump config to: {}", self.filename)
-        if self.filename.endswith(".toml"):
-            with open(self.filename, mode="w", encoding="utf8") as f_h:
+        if self.filename.suffix == ".toml":
+            with open(self.filename, mode="w", encoding="utf-8") as f_h:
                 f_h.write(tomlkit.dumps(to_dump))
-        elif self.filename.endswith((".xml")):
+        elif self.filename.suffix == ".xml":
             with open(self.filename, mode="wb") as f_h:
                 f_h.write(dtx(to_dump, attr_type=False))
-        elif self.filename.endswith((".yml", ".yaml")):
+        elif self.filename.suffix in [".yml", ".yaml"]:
             with open(self.filename, mode="wb") as f_h:
                 yaml.dump(to_dump, f_h, encoding="utf-8", default_flow_style=False)
-        elif self.filename.endswith(".json"):
+        elif self.filename.suffix == ".json":
             json_object = json.dumps(to_dump, indent=4)
-            with open(self.filename, "w", encoding="utf8") as f_h:
+            with open(self.filename, "w", encoding="utf-8") as f_h:
                 f_h.write(json_object)
         else:
-            raise TypeError(f"Unknown filetype:{self.filename}")
+            raise TypeError(f"Unknown filetype: {self.filename}")
 
     def execute(self):
         """Prepares and runs the impact model commands."""
         logger.info("Impact model:{} ", str(self))
-        self.filename = self.platform.substitute(self.config["config_name"])
-        # List and parse settings
+        self.filename = Path(self.platform.substitute(self.config["config_name"]))
+
+        # Recursively substitute variables in communicate config
+        for key, value in self.config["communicate"].items():
+            if isinstance(value, dict):
+                self.config["communicate"][key] = recursive_substitute(
+                    value, self.platform
+                )
+            else:
+                self.config["communicate"][key] = self.platform.substitute(value)
+
+        # Write the config file
+        self.filename.parent.mkdir(exist_ok=True, parents=True)
         com = self.platform.resolve_macros(self.config["communicate"])
         logger.info(" communication keys: {}", com)
         # Write the config file
@@ -111,6 +146,45 @@ class Ehype(ImpactModel):
 
 
 @dataclass()
+class EPSUpscaling(ImpactModel):
+    """EHYPE specific methods."""
+
+    name = "eps_upscaling"
+
+    def run(self):
+        """Starts the EPS upscaling suite."""
+        path = self.platform.substitute(self.config["path"])
+        tmp_path = Path(
+            tempfile.NamedTemporaryFile(
+                prefix="eps_upscaling_", dir=path, delete=True
+            ).name
+        )
+        deodemakedirs(tmp_path, unixgroup=self.config.get("platform.unix_group"))
+
+        # Update communicate config with tmp_path
+        config_ = self.load()
+        config_["run_dir"] = str(tmp_path)
+        config_["general"]["plugin_registry"] = {
+            "plugins": {"eps_upscaling": str(tmp_path)}
+        }
+        self.dump(config_)
+
+        remote_url = config_["remote_url"]
+        branch = config_["branch"]
+        forecast_range = parse_duration(config_["general"]["times"]["forecast_range"])
+        total_hours = int(forecast_range.total_seconds() // 3600)
+        forecast_range_str = f"PT{total_hours}H"
+        cmd = f"""
+            git clone --single-branch --branch {branch} {remote_url} {tmp_path};
+            cd {tmp_path};
+            mv -f {self.filename} . ;
+            export UV_CACHE_DIR={config_["uv_cache_dir"]}
+            ./deploy_suite.sh -p {tmp_path / self.filename.name} \
+                -f {forecast_range_str};
+        """
+        BatchJob(os.environ, wrapper="").run(cmd)
+
+
 class Verification(ImpactModel):
     """Verification specific methods."""
 
