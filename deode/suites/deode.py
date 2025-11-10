@@ -38,17 +38,11 @@ class DeodeSuiteDefinition(SuiteDefinition):
         input_template = input_template.as_posix()
 
         # Set max_ecf_tasks from config
-        max_ecf_tasks = -1
-        try:
-            max_ecf_tasks = self.config["submission.max_ecf_tasks"]
-        except KeyError:
-            max_ecf_tasks = -1
+        max_ecf_tasks = self.config.get("submission.max_ecf_tasks", -1)
         # Add limits to suite
         if max_ecf_tasks > 0 and self.suite.ecf_node is not None:
             self.suite.ecf_node.add_limit("max_ecf_tasks", max_ecf_tasks)
-            self.suite.ecf_node.add_inlimit(
-                "max_ecf_tasks", f"/{self.name}", max_ecf_tasks
-            )
+            self.suite.ecf_node.add_inlimit("max_ecf_tasks", f"/{self.name}")
 
         # Adjust parameters depending on suite_control.mode
         self.do_prep = True

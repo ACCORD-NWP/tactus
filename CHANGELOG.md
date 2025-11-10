@@ -12,10 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added installation instructions for Belenos (@nicolasCtd).
 
 ### Added
+- Allow to disable max_static_data_tasks and max_interpolation_tasks by setting them <0. [\#1388](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1388) (@uandrae)
 - Add Deode-EPS-Upscaling impact model [\#1252](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1252/) (@mafmdi)
 - Introduce plugin launcher, like for AQ. [\#1243](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1243)(@uandrae)
 
 ### Fixed
+- Erroneous implementation of max_ecf_tasks. [\#1388](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1388) (@uandrae)
 - Workaround for missing SST update in CY50 IAL: disable upd_sst_sic [\#1352](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1352) (@jacobsnoeijer)
 - Fix cycle50 binary path [\#1378](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1378) (@pardallio)
 - Disabled surfex for ALARO cy50 [\#1378](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1378) (@pardallio)
