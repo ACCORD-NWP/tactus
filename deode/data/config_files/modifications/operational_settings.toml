@@ -25,7 +25,7 @@
   pattern = "ICMSH*"
 
 [archiving.hour.ecfs.fpgrib_files]
-  active = true
+  active = false
   inpath = "@ARCHIVE@"
   outpath = "@SUB_CASEDIR@"
   pattern = "GRIBPF*"
