@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Switch off ecfs archiving of GRIB2 data in operations [\#1405](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1405)(@uandrae)
 
 ### Fixed
+- Do not coupled hydrometors for harmone-arome and arome. [\#1376](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1376)(@kastelecn)
 - Erroneous implementation of max_ecf_tasks. [\#1388](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1388) (@uandrae)
 - Workaround for missing SST update in CY50 IAL: disable upd_sst_sic [\#1352](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1352) (@jacobsnoeijer)
 - Fix cycle50 binary path [\#1378](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1378) (@pardallio)
@@ -35,7 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use offline SURFEX EUR run for Prep [\#1233](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1233)(@BolliPalmason)
 
 ### Fixed
-- added a condition not to run lumi workflow on pull request event and atos build wheel job [\1341](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1341)(@milennimh)
+- Added a condition not to run lumi workflow on pull request event and atos build wheel job [\1341](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1341)(@milennimh)
 - Fix lam to lam coupling [\#1375](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1375)(@uandrae)
 - Fix marsprep on LUMI. [\#1374](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1374)(@kastelecn)
 - Fix strip_off_mount_path to support multiple underscores in prefix.[\#1364](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1364)(@jacobsnoeijer)
