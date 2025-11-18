@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduce plugin launcher, like for AQ. [\#1243](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1243)(@uandrae)
 
 ### Changed
+- Delete only finished suite in Clean\_old\_data. [\#1379](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1379) (@kastelecn) 
 - Switch off ecfs archiving of GRIB2 data in operations [\#1405](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1405)(@uandrae)
 
 ### Fixed

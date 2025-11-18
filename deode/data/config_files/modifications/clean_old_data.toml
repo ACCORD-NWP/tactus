@@ -14,7 +14,7 @@
   scratch_ext = "/deode"
   scratch_format = "/"
   suite_format = "/"
-  suites_period = "P14D"
+  suites_period = "P7D"
 
 [suite_control]
   suite_definition = "DeodeCleaningSuiteDefinition"
