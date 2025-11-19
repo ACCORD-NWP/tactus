@@ -100,7 +100,7 @@ class Topography(Task):
         # GMTED2010 Longitudes
         gmted2010_input_lons = []
         i = 0
-        for lon in range(-180, 150, longitude_bin_size):
+        for lon in range(-180, 180 + longitude_bin_size, longitude_bin_size):
             if west < lon:
                 rel_lon = lon - longitude_bin_size
                 gmtedlon = (

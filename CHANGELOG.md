@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Switch off ecfs archiving of GRIB2 data in operations [\#1405](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1405)(@uandrae)
 
 ### Fixed
+- Correct GMTED reading for longitudes > 120 deg. [\#1402](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1402)(@natalieth)
 - Do not coupled hydrometors for harmone-arome and arome. [\#1376](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1376)(@kastelecn)
 - Erroneous implementation of max_ecf_tasks. [\#1388](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1388) (@uandrae)
 - Workaround for missing SST update in CY50 IAL: disable upd_sst_sic [\#1352](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1352) (@jacobsnoeijer)
