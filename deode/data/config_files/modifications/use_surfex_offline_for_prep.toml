@@ -23,9 +23,6 @@
   NTASKS = "#SBATCH --ntasks=32"
   WALLTIME = "#SBATCH --time=00:30:00"
 
-[submission.task_exceptions.Prep.binaries]
-  PREP = {binary = "PREP", bindir = "/hpcperm/sbu/binaries/optimized_prep"}
-
 [submission.task_exceptions.Prep.MODULES]
   OPENMPI = ["load", "intel-mpi/2021.4.0"]
 
