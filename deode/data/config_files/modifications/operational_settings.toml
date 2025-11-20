@@ -104,6 +104,13 @@
   output_root = "@SCRATCH@/DE_Impact/EHYPE"
   output_subpath = "@SUB_CASEDIR@"
 
+[macros.select.operational_settings]
+  gen_macros = [
+    {expver = "fdb.grib_set.expver"},
+    {georef = "fdb.grib_set.georef"},
+    {stream = "fdb.grib_set.stream"},
+  ]
+
 [platform]
   reference_data = "@SCRATCH_OPER@"
 
@@ -125,7 +132,7 @@
 [system]
   archive = "@CASEDIR@"
   archive_timestamp_start = "@YYYY_START@/@MM_START@/@DD_START@/@HH_START@"
-  case_identifier = "@EVENT_TYPE@/@DOMAIN_NUMBER@/@CSC@_@XDX@m"
+  case_identifier = "/@EXPVER@/@EVENT_TYPE@/@GEOREF@/@STREAM@/@CSC@_@XDX@m"
   casedir = "@SCRATCH_OPER@/@SUB_CASEDIR@"
   climdir = "@SCRATCH_OPER@/@ARCHIVE_TIMESTAMP_START@/@CASE_IDENTIFIER@/climate"
   ecfs_static = "@ARCHIVE_TIMESTAMP_START@/@CASE_IDENTIFIER@/climate"
