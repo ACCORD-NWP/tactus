@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added installation instructions for Belenos (@nicolasCtd).
 
 ### Changed 
+- Optimized SPP settings for Harmonie-AROME [\#1417](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1417) (@pirkkao) 
+
+### Changed 
 - Optimized SPP settings for AROME [\#1412](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1412) (@cwastl) 
 
 ### Added
