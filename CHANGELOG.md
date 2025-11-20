@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 - Added installation instructions for Belenos (@nicolasCtd).
 
+### Changed 
+- Optimized SPP settings for AROME [\#1412](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1412) (@cwastl) 
+
 ### Added
 - Allow to disable max_static_data_tasks and max_interpolation_tasks by setting them <0. [\#1388](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1388) (@uandrae)
 - Add Deode-EPS-Upscaling impact model [\#1252](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1252/) (@mafmdi)
