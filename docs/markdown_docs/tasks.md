@@ -7,8 +7,8 @@
 This section contains tasks that are done only once during a model run. In case the static files already exists the tasks can be deactivated in the suite setting `config.suite_control.create_static_data` to `False`. The location of the background input data used is defined in `config.platform` and the resulting output files are stored in a directory defined by `config.system.climdir`.
 
 ### Surfex
- * {class}`deode.tasks.gmtedsoil.Gmted` prepares topograhpic data from gmted input data. 
- * {class}`deode.tasks.gmtedsoil.Soil` prepares soil data input for PGD using SOILGRID.
+ * {class}`deode.tasks.toposoil.Topography` prepares topograhpic data from input data. 
+ * {class}`deode.tasks.toposoil.Soil` prepares soil data input for PGD using SOILGRID.
 
  * {class}`deode.tasks.sfx.Pgd` runs PGD using ECOCLIMAP SG for either a single 10 day period or the full year. Check `config.pgd` for PGD configuration options and use `deode show namelist [--config-file your_config.toml] -t surfex -n pgd` to print the used namelist.
  * {class}`deode.tasks.e923.PgdUpdate` updates the topography in the Const.Clim.sfx file with the one filtered/truncated in E923Constant.

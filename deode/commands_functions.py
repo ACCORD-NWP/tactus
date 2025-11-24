@@ -251,7 +251,11 @@ def start_suite(args, config):
         defs.save_as_defs(def_file)
     else:
         def_file = args.def_file
-        args.keep_def_file = True
+        if os.path.exists(def_file):
+            args.keep_def_file = True
+        else:
+            defs = get_suite(suite_def, config)
+            defs.save_as_defs(def_file)
         logger.info("Start suite from: {}", def_file)
 
     # Clean, then copy troika and containers

@@ -48,7 +48,7 @@ class PgdInputFamily(EcflowSuiteFamily):
         )
 
         EcflowSuiteTask(
-            "Gmted",
+            "Topography",
             self,
             config,
             task_settings,
@@ -250,10 +250,13 @@ class StaticDataFamily(EcflowSuiteFamily):
             static_data_limit = None
             if not dry_run:
                 static_data_max = config["suite_control.max_static_data_tasks"]
-                static_data_limit = EcflowSuiteLimit("static_data_limit", static_data_max)
-                self.ecf_node.add_limit(
-                    static_data_limit.limit_name, static_data_limit.max_jobs
-                )
+                if static_data_max > 0:
+                    static_data_limit = EcflowSuiteLimit(
+                        "static_data_limit", static_data_max
+                    )
+                    self.ecf_node.add_limit(
+                        static_data_limit.limit_name, static_data_limit.max_jobs
+                    )
 
             StaticDataTasks(
                 parent=self,
@@ -308,10 +311,11 @@ class StaticDataMemberGenerator:
         static_data_limit = None
         if not self.dry_run:
             static_data_max = self.config["suite_control.max_static_data_tasks"]
-            static_data_limit = EcflowSuiteLimit("static_data_limit", static_data_max)
-            member_family.ecf_node.add_limit(
-                static_data_limit.limit_name, static_data_limit.max_jobs
-            )
+            if static_data_max > 0:
+                static_data_limit = EcflowSuiteLimit("static_data_limit", static_data_max)
+                member_family.ecf_node.add_limit(
+                    static_data_limit.limit_name, static_data_limit.max_jobs
+                )
 
         StaticDataTasks(
             member_family,
@@ -757,10 +761,12 @@ class LBCFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
+        lbc_limit = None
         if not dry_run:
             bdmax = config["boundaries.max_interpolation_tasks"]
-            lbc_limit = EcflowSuiteLimit("lbc_limit", bdmax)
-            self.ecf_node.add_limit(lbc_limit.limit_name, lbc_limit.max_jobs)
+            if bdmax > 0:
+                lbc_limit = EcflowSuiteLimit("lbc_limit", bdmax)
+                self.ecf_node.add_limit(lbc_limit.limit_name, lbc_limit.max_jobs)
 
         basetime = as_datetime(cycles.current_cycle.basetime)
         forecast_range = as_timedelta(config["general.times.forecast_range"])
@@ -1387,7 +1393,11 @@ class TimeDependentFamily(EcflowSuiteFamily):
 
                 prev_cycle_trigger = prev_cycle_triggers.get(member)
                 if prev_cycle_trigger:
-                    ready_for_cycle = [ready_for_cycle, *prev_cycle_trigger]
+                    ready_for_cycle = (
+                        [*ready_for_cycle, *prev_cycle_trigger]
+                        if isinstance(ready_for_cycle, list)
+                        else [ready_for_cycle, *prev_cycle_trigger]
+                    )
 
                 cycle_family = CycleFamily(
                     member_family,
@@ -1411,6 +1421,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     external_cycle_cleaning_trigger=postcycle_families.get(member),
                     ecf_files_remotely=ecf_files_remotely,
                 )
+
             if (
                 config["suite_control.do_extractsqlite"]
                 and config["suite_control.do_mergesqlite"]

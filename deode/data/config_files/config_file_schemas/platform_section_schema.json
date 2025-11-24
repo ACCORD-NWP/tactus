@@ -36,9 +36,15 @@
       "description": "Path to global IFS surface data",
       "default" : ""
     },
-    "gmted2010_data_path": {
+    "topo_data_path": {
       "type": "string",
-      "description": "Path to gmted2010 input"
+      "description": "Path to topography input data directory"
+    },
+    "topo_source": {
+      "type": "string",
+      "description": "Topography data source type",
+      "default": "gmted2010",
+      "enum": ["gmted2010", "gmted_eur", "gtopo30", "glo90"]
     },
     "ecosg_data_path": {
       "type": "string",

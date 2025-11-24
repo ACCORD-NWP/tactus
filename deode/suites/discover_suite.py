@@ -1,13 +1,12 @@
 """Discover suites."""
 import importlib
 import inspect
-import os
 import pkgutil
 import sys
 import types
 
 from ..logs import logger
-from ..plugin import DeodePluginRegistryFromConfig
+from ..plugin import DeodePluginRegistry, DeodePluginRegistryFromConfig
 from .base import SuiteDefinition, _get_name
 
 
@@ -64,7 +63,7 @@ def get_suite(name, config):
     return cls(config)
 
 
-def available_suites(reg):
+def available_suites(reg: DeodePluginRegistry):
     """Create a list of available tasks.
 
     Args:
@@ -76,9 +75,9 @@ def available_suites(reg):
     """
     known_types = {}
     for plg in reg.plugins:
-        if os.path.exists(plg.suites_path):
+        if plg.suites_path.exists():
             suites = types.ModuleType(plg.name)
-            suites.__path__ = [plg.suites_path]
+            suites.__path__ = [str(plg.suites_path)]
             sys.path.insert(0, plg.path)
             found_types = discover(suites, SuiteDefinition)
             for ftype, cls in found_types.items():

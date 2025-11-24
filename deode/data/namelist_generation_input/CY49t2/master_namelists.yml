@@ -373,21 +373,21 @@ f4_AROME:
     YG_NL%LINTLIN: true
     YG_NL%LQM: true
     YG_NL%LSLHD: false
-    YG_NL%NCOUPLING: -1
+    YG_NL%NCOUPLING: 0 
     YG_NL%REFVALC: 0.0
     YIRAD_NL%LGP: true
     YI_NL%LCOMAD: true
     YI_NL%LINTLIN: true
     YI_NL%LQM: true
     YI_NL%LSLHD: false
-    YI_NL%NCOUPLING: -1
+    YI_NL%NCOUPLING: 0 
     YI_NL%REFVALC: 0.0
     YLRAD_NL%LGP: true
     YL_NL%LCOMAD: true
     YL_NL%LINTLIN: true
     YL_NL%LQM: true
     YL_NL%LSLHD: false
-    YL_NL%NCOUPLING: -1
+    YL_NL%NCOUPLING: 0 
     YL_NL%REFVALC: 0.0
     YQ_NL%LCOMAD: true
     YQ_NL%LQM: true
@@ -397,16 +397,16 @@ f4_AROME:
     YR_NL%LINTLIN: true
     YR_NL%LQM: true
     YR_NL%LSLHD: false
-    YR_NL%NCOUPLING: -1
+    YR_NL%NCOUPLING: 0
     YR_NL%REFVALC: 0.0
     YS_NL%LCOMAD: true
     YS_NL%LINTLIN: true
     YS_NL%LQM: true
     YS_NL%LSLHD: false
-    YS_NL%NCOUPLING: -1
+    YS_NL%NCOUPLING: 0 
     YS_NL%REFVALC: 0.0
     YTKE_NL%NCOUPLING: 0
-    YTKE_NL%NREQIN: -1
+    YTKE_NL%NREQIN: 0
   NAMIO_SERV:
     NIO_SERV_BUF_MAXSIZE: 20
     NIO_SERV_METHOD: 2
@@ -1334,8 +1334,8 @@ f4_HARMONIE_AROME:
     YG_NL%LPT: false
     YG_NL%LQM: true
     YG_NL%LSLHD: true
-    YG_NL%NCOUPLING: -1
-    YG_NL%NREQIN: -1
+    YG_NL%NCOUPLING: 0 
+    YG_NL%NREQIN: 0
     YG_NL%REFVALC: 0.0
     YG_NL%REFVALI: 0.0
     YIRAD_NL%LGP: true
@@ -1343,7 +1343,7 @@ f4_HARMONIE_AROME:
     YI_NL%LPT: false
     YI_NL%LQM: true
     YI_NL%LSLHD: true
-    YI_NL%NCOUPLING: -1
+    YI_NL%NCOUPLING: 0
     YI_NL%REFVALC: 0.0
     YI_NL%NREQIN: 1
     YLRAD_NL%LGP: true
@@ -1351,7 +1351,7 @@ f4_HARMONIE_AROME:
     YL_NL%LPT: false
     YL_NL%LQM: true
     YL_NL%LSLHD: true
-    YL_NL%NCOUPLING: -1
+    YL_NL%NCOUPLING: 0
     YL_NL%REFVALC: 0.0
     YL_NL%NREQIN: 1
     YQ_NL%CNAME: HUMI.SPECIFI
@@ -1365,8 +1365,8 @@ f4_HARMONIE_AROME:
     YR_NL%LPT: false
     YR_NL%LQM: true
     YR_NL%LSLHD: true
-    YR_NL%NCOUPLING: -1
-    YR_NL%NREQIN: -1
+    YR_NL%NCOUPLING: 0
+    YR_NL%NREQIN: 0
     YR_NL%REFVALC: 0.0
     YR_NL%REFVALI: 0.0
     YSRC_NL%LPT: false
@@ -1374,13 +1374,13 @@ f4_HARMONIE_AROME:
     YS_NL%LPT: false
     YS_NL%LQM: true
     YS_NL%LSLHD: true
-    YS_NL%NCOUPLING: -1
-    YS_NL%NREQIN: -1
+    YS_NL%NCOUPLING: 0
+    YS_NL%NREQIN: 0
     YS_NL%REFVALC: 0.0
     YS_NL%REFVALI: 0.0
     YTKE_NL%LPT: false
     YTKE_NL%NCOUPLING: 0
-    YTKE_NL%NREQIN: -1
+    YTKE_NL%NREQIN: 0 
   NAMINI:
     LDFI: false
   NAMINTFLEX:

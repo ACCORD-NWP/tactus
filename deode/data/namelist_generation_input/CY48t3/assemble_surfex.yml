@@ -4,7 +4,7 @@ pgd_common:
   - sfx_pgd_domain
   - sfx_pgd_schemes_water_flake
   - sfx_split_patch
-  - sfx_pgd_zs_gtopo
+  - sfx_pgd_zs_topo
   - sfx_pgd_zs_filter
   - sfx_pgd_isba_dif
   - sfx_pgd_soilgrid_sand

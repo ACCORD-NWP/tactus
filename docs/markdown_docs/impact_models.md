@@ -27,6 +27,9 @@ In addition a `communicate` section can be used to inform the impact model about
   nwp_model = "@CSC@"
   ouput_freq = "@FULLPOS_OUTPUT_FREQ@"
 ```
+
+The communication section can include nested sections as well, depending on the needs of the impact model. 
+
 Once this is defined we need to write a function in impact.py that executes the impact model start command. For ehype it's simply
 
 ```
@@ -47,3 +50,7 @@ With this is in place the impact model is ready for execution, from the workflow
 ## EHYPE
 
 The configuration settings for EHYPE are described in the example below. The model itself consists of two parts: One continous run to maintain a good initial state and the on-demand part triggered by the above mentioned settings. The activation above will trigger a separate suite following the settings in the communicate section. On atos EHYPE is installed under the sn02 user and execution is available for any user. Results will be found under `$SCRATCH/$USER/DE_Impact/EHYPE`.
+
+## Deode-EPS-Upscaling
+The configuration settings for the [Deode-EPS-Upscaling](https://github.com/destination-earth-digital-twins/Deode-EPS-Upscaling) model is documented in the README of the repo. The model can be activated by including the config file `deode/data/config_files/modifications/eps/eps_upscaling.toml` when launching a run.
+The activation will trigger a runtime installation of the model into a temporary directory, and launch a separate ecflow suite following the settings in the communicate section. The resulting upscaled fields will be stored at the path `@ARCHIVE_ROOT@/@ARCHIVE_TIMESTAMP@/eps_upscaling/`.

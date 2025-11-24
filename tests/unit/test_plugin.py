@@ -1,5 +1,6 @@
 """Test plugin fuctionality."""
 import os
+from pathlib import Path
 
 import yaml
 
@@ -42,8 +43,8 @@ def test_plugin(tmp_directory, default_config):
     reg = DeodePluginRegistry()
     for plg in reg.plugins:
         if plg.name == "deode":
-            assert f"{os.path.dirname(deode.__path__[0])}/deode/tasks" == plg.tasks_path
-            assert f"{os.path.dirname(deode.__path__[0])}/deode/suites" == plg.suites_path
+            assert Path(deode.__path__[0]).parent / "deode/tasks" == plg.tasks_path
+            assert Path(deode.__path__[0]).parent / "deode/suites" == plg.suites_path
         elif plg.name == "extension":
             assert tasks_dir == plg.tasks_path
             assert suites_dir == plg.suites_path
@@ -54,8 +55,8 @@ def test_plugin(tmp_directory, default_config):
     reg = DeodePluginRegistryFromFile(reg_config_file)
     for plg in reg.plugins:
         if plg.name == "deode":
-            assert f"{os.path.dirname(deode.__path__[0])}/deode/tasks" == plg.tasks_path
-            assert f"{os.path.dirname(deode.__path__[0])}/deode/suites" == plg.suites_path
+            assert Path(deode.__path__[0]).parent / "deode/tasks" == plg.tasks_path
+            assert Path(deode.__path__[0]).parent / "deode/suites" == plg.suites_path
         elif plg.name == "extension":
             assert tasks_dir == plg.tasks_path
             assert suites_dir == plg.suites_path
@@ -68,8 +69,8 @@ def test_plugin(tmp_directory, default_config):
     reg = DeodePluginRegistryFromConfig(config)
     for plg in reg.plugins:
         if plg.name == "deode":
-            assert f"{os.path.dirname(deode.__path__[0])}/deode/tasks" == plg.tasks_path
-            assert f"{os.path.dirname(deode.__path__[0])}/deode/suites" == plg.suites_path
+            assert Path(deode.__path__[0]).parent / "deode/tasks" == plg.tasks_path
+            assert Path(deode.__path__[0]).parent / "deode/suites" == plg.suites_path
         elif plg.name == "extension":
             assert tasks_dir == plg.tasks_path
             assert suites_dir == plg.suites_path
@@ -82,8 +83,8 @@ def test_empty_config():
     reg = DeodePluginRegistry()
 
     for plg in reg.plugins:
-        assert f"{os.path.dirname(deode.__path__[0])}/deode/tasks" == plg.tasks_path
-        assert f"{os.path.dirname(deode.__path__[0])}/deode/suites" == plg.suites_path
+        assert Path(deode.__path__[0]).parent / "deode/tasks" == plg.tasks_path
+        assert Path(deode.__path__[0]).parent / "deode/suites" == plg.suites_path
 
 
 def test_tasks(tmp_directory):
@@ -92,7 +93,7 @@ def test_tasks(tmp_directory):
     create_task_class("MyExtension", f"{tmp_directory}/extension/tasks/mod_file.py")
     create_suite_class("MyExtension", f"{tmp_directory}/extension/suites/mod_suite.py")
 
-    plg = DeodePlugin("extension", tmp_directory)
+    plg = DeodePlugin("extension", Path(tmp_directory))
     reg.register_plugin(plg)
     known_tasks = available_tasks(reg)
     assert "pgd" in known_tasks

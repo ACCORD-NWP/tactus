@@ -187,7 +187,14 @@
   NPROCX = 1
   NPROCY = 1
   SCHOST = "leonardo"
-  tasks = ["CreateGrib", "Gmted", "Soil", "Marsprep", "E923Update", "InterpolSstSic"]
+  tasks = [
+    "CreateGrib",
+    "Topography",
+    "Soil",
+    "Marsprep",
+    "E923Update",
+    "InterpolSstSic",
+  ]
   WRAPPER = "srun"
 
 [submission.types.serial.BATCH]

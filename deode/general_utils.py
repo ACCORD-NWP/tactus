@@ -303,3 +303,13 @@ def recursive_delete_keys(mapping: Dict[str, Any], keys_dict: Dict[str, bool]):
                     del mapping[key]
             else:
                 del mapping[key]
+
+
+def recursive_substitute(value, platform):
+    """Recursively substitute variables in a nested dictionary."""
+    if isinstance(value, dict):
+        for key, val in value.items():
+            value[key] = recursive_substitute(val, platform)
+    else:
+        value = platform.substitute(value)
+    return value

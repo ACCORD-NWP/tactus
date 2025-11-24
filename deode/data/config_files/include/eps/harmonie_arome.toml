@@ -1,15 +1,113 @@
 [eps.member_settings.namelist_update.master.forecast.nam_spp_active]
-  requested_perts = {"0:" = ["PSIGQSAT", "CLDDPTHDP"]}
+  requested_perts = {"1:" = ["PSIGQSAT", "CLDDPTHDP", "ICE_CLD_WGT", "ICENU", "KGN_ACON", "KGN_SBGR", "RADGR", "RADSN", "RFAC_TWOC", "RZC_H", "RZL_INF", "ALPHAC2", "RZNUC", "RZMFDRY", "RZMBCLOSURE", "SLWIND"]}
 
 [eps.member_settings.namelist_update.master.forecast.nam_spp_modif]
   "pnx(1)%idistr" = 1
   "pnx(1)%label" = "PSIGQSAT"
   "pnx(1)%ln1" = true
-  "pnx(1)%xmag(1)" = 0.3
-  "pnx(2)%idistr" = 1
+  "pnx(1)%xmag(1)" = 0.25
+
+  "pnx(2)%idistr" = 2
   "pnx(2)%label" = "CLDDPTHDP"
-  "pnx(2)%ln1" = true
-  "pnx(2)%xmag(1)" = 0.6
+  "pnx(2)%xclipmax" = 100000.0
+  "pnx(2)%xclipmin" = 0.0
+  "pnx(2)%xmag(1)" = 1.4
+  "pnx(2)%xuniform_offset" = 0.5
+
+  "pnx(3)%idistr" = 2
+  "pnx(3)%label" = "ICE_CLD_WGT"
+  "pnx(3)%xclipmax" = 100.0
+  "pnx(3)%xclipmin" = 0.01
+  "pnx(3)%xmag(1)" = 1.0
+  "pnx(3)%xuniform_offset" = 0.465
+
+  "pnx(4)%idistr" = 2
+  "pnx(4)%label" = "ICENU"
+  "pnx(4)%tau" = 10800
+  "pnx(4)%xclipmax" = 100000.0
+  "pnx(4)%xclipmin" = 1.0
+  "pnx(4)%xlcor" = 50000
+  "pnx(4)%xmag(1)" = 1.5
+  "pnx(4)%xuniform_offset" = 0.475
+
+  "pnx(5)%idistr" = 1
+  "pnx(5)%label" = "KGN_ACON"
+  "pnx(5)%ln1" = true
+  "pnx(5)%xmag(1)" = 1.5
+
+  "pnx(6)%idistr" = 1
+  "pnx(6)%label" = "KGN_SBGR"
+  "pnx(6)%ln1" = true
+  "pnx(6)%xclipmax" = 1.0
+  "pnx(6)%xclipmin" = 0.0
+  "pnx(6)%xmag(1)" = 0.3
+
+  "pnx(7)%idistr" = 1
+  "pnx(7)%label" = "RADGR"
+  "pnx(7)%ln1" = true
+  "pnx(7)%xclipmax" = 2.0
+  "pnx(7)%xclipmin" = 0.0
+  "pnx(7)%xmag(1)" = 0.4
+
+  "pnx(8)%idistr" = 1
+  "pnx(8)%label" = "RADSN"
+  "pnx(8)%ln1" = true
+  "pnx(8)%xclipmax" = 2.0
+  "pnx(8)%xclipmin" = 0.0
+  "pnx(8)%xmag(1)" = 0.175
+
+  "pnx(9)%idistr" = 2
+  "pnx(9)%label" = "RFAC_TWOC"
+  "pnx(9)%xclipmax" = 100.0
+  "pnx(9)%xclipmin" = 0.0
+  "pnx(9)%xmag(1)" = 0.9
+  "pnx(9)%xuniform_offset" = 0.45
+
+  "pnx(10)%idistr" = 2
+  "pnx(10)%label" = "RZC_H"
+  "pnx(10)%xclipmax" = 100.0
+  "pnx(10)%xclipmin" = 0.001
+  "pnx(10)%xmag(1)" = 0.75
+  "pnx(10)%xuniform_offset" = 0.5
+
+  "pnx(11)%idistr" = 1
+  "pnx(11)%label" = "RZL_INF"
+  "pnx(11)%ln1" = true
+  "pnx(11)%rf_pert_label" = "RZC_H"
+  "pnx(11)%xmag(1)" = 0.33
+
+  "pnx(12)%idistr" = 2
+  "pnx(12)%label" = "ALPHAC2"
+  "pnx(12)%xclipmax" = 100.0
+  "pnx(12)%xclipmin" = 0.0
+  "pnx(12)%xmag(1)" = 1.5
+  "pnx(12)%xuniform_offset" = 0.57
+
+  "pnx(13)%idistr" = 1
+  "pnx(13)%label" = "RZNUC"
+  "pnx(13)%ln1" = true
+  "pnx(13)%xmag(1)" = 0.3
+
+  "pnx(14)%idistr" = 2
+  "pnx(14)%label" = "RZMFDRY"
+  "pnx(14)%xclipmax" = 100.0
+  "pnx(14)%xclipmin" = 0.0
+  "pnx(14)%xmag(1)" = 1.6
+  "pnx(14)%xuniform_offset" = 0.445
+
+  "pnx(15)%idistr" = 2
+  "pnx(15)%label" = "RZMBCLOSURE"
+  "pnx(15)%xclipmax" = 100.0
+  "pnx(15)%xclipmin" = 0.0
+  "pnx(15)%xmag(1)" = 1.3
+  "pnx(15)%xuniform_offset" = 0.5
+
+  "pnx(16)%idistr" = 2
+  "pnx(16)%label" = "SLWIND"
+  "pnx(16)%xclipmax" = 0.1
+  "pnx(16)%xclipmin" = -0.1
+  "pnx(16)%xmag(1)" = 0.05
+  "pnx(16)%xuniform_offset" = 0.5
 
 [eps.member_settings.namelist_update.master.forecast.namgfl]
   ngfl_ezdiag = {0 = 3, "1:" = 4}

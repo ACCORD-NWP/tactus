@@ -1,9 +1,11 @@
 """Plug-in functionality."""
-import os
+from pathlib import Path
+from typing import List
 
 import yaml
 
 import deode
+from deode.os_utils import resolve_path_relative_to_package
 
 from .logs import logger
 
@@ -25,17 +27,17 @@ class DeodePluginRegistry:
             config = {}
         self.config_input = config
         self.config = self.get_registry_config()
-        self.plugins = []
+        self.plugins: List[DeodePlugin] = []
         self.deode_plugin()
         self.load_plugins()
 
     def deode_plugin(self):
         """Base DEODE plugin."""
-        path = os.path.dirname(deode.__path__[0])
+        path = Path(deode.__path__[0]).parent
         plugin = DeodePlugin("deode", path)
         self.register_plugin(plugin)
 
-    def load_plugin(self, plugin):
+    def load_plugin(self, plugin: "DeodePlugin"):
         """Load plugin.
 
         Args:
@@ -43,17 +45,18 @@ class DeodePluginRegistry:
 
         """
         self.plugins += [plugin]
-        self.config["plugins"].update({plugin.name: plugin.path})
+        self.config["plugins"].update({plugin.name: str(plugin.path)})
 
     def load_plugins(self):
         """Load all registered plugins."""
         plugins = self.config["plugins"]
         for name, path in plugins.items():
+            path_ = resolve_path_relative_to_package(Path(path))
             if name != "deode":
-                plugin = DeodePlugin(name, path)
+                plugin = DeodePlugin(name, path_)
                 self.load_plugin(plugin)
 
-    def plugin_exists(self, plugin):
+    def plugin_exists(self, plugin: "DeodePlugin"):
         """Check if plugin exists.
 
         Args:
@@ -65,7 +68,7 @@ class DeodePluginRegistry:
         """
         return any(plg.name == plugin.name for plg in self.plugins)
 
-    def register_plugin(self, plugin):
+    def register_plugin(self, plugin: "DeodePlugin"):
         """Register plugin.
 
         Args:
@@ -73,7 +76,7 @@ class DeodePluginRegistry:
 
         """
         if not self.plugin_exists(plugin):
-            self.config["plugins"].update({plugin.name: plugin.path})
+            self.config["plugins"].update({plugin.name: str(plugin.path)})
             self.load_plugin(plugin)
         else:
             logger.warning("Plugin {} does already exists", plugin.name)
@@ -133,18 +136,18 @@ class DeodePluginRegistryFromConfig(DeodePluginRegistry):
 class DeodePlugin:
     """Deode plugin."""
 
-    def __init__(self, name, path):
+    def __init__(self, name: str, path: Path):
         """Construct the plugin.
 
         Args:
             name (str): Lower case name of plugin
-            path (str): Root path to plugin.
+            path (Path): Root path to plugin.
 
         """
         self.name = name.lower()
         self.path = path
-        self.tasks_path = f"{self.path}/{self.name}/tasks"
-        self.suites_path = f"{self.path}/{self.name}/suites"
+        self.tasks_path = self.path / self.name / "tasks"
+        self.suites_path = self.path / self.name / "suites"
 
 
 class DeodePluginFromConfigFile(DeodePlugin):
@@ -159,7 +162,7 @@ class DeodePluginFromConfigFile(DeodePlugin):
         """
         config = self.get_plugin_config(config_file)
         name = config["name"]
-        path = config["path"]
+        path = Path(config["path"])
         DeodePlugin.__init__(self, name, path)
 
     @staticmethod

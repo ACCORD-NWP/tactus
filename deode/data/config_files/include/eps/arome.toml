@@ -1,11 +1,37 @@
 [eps.member_settings.namelist_update.master.forecast.nam_spp_active]
-  requested_perts = {"0:" = ["XCTP", "PSIGQSAT", "RSWINHF", "RLWINHF"]}
+  requested_perts = {"1:" = ["RCRIAUTI", "ZRDEPRED", "PSIGQSAT", "RLWINHF", "RSWINHF"]}
 
 [eps.member_settings.namelist_update.master.forecast.nam_spp_modif]
   "pnx(1)%idistr" = 1
-  "pnx(1)%label" = "PSIGQSAT"
+  "pnx(1)%label" = "RCRIAUTI"
   "pnx(1)%ln1" = true
-  "pnx(1)%xmag(1)" = 0.3
+  "pnx(1)%xclipmax" = 0.00025
+  "pnx(1)%xclipmin" = 2e-05
+  "pnx(1)%xmag(1)" = 0.4
+  "pnx(2)%idistr" = 1
+  "pnx(2)%label" = "ZRDEPRED"
+  "pnx(2)%ln1" = true
+  "pnx(2)%xclipmax" = 1.0
+  "pnx(2)%xclipmin" = 0.0
+  "pnx(2)%xmag(1)" = 0.5
+  "pnx(3)%idistr" = 1
+  "pnx(3)%label" = "PSIGQSAT"
+  "pnx(3)%ln1" = true
+  "pnx(3)%xclipmax" = 0.1
+  "pnx(3)%xclipmin" = 0.0
+  "pnx(3)%xmag(1)" = 0.25
+  "pnx(4)%idistr" = 1
+  "pnx(4)%label" = "RLWINHF"
+  "pnx(4)%ln1" = true
+  "pnx(4)%xclipmax" = 1.5
+  "pnx(4)%xclipmin" = 0.6
+  "pnx(4)%xmag(1)" = 0.13
+  "pnx(5)%idistr" = 1
+  "pnx(5)%label" = "RSWINHF"
+  "pnx(5)%ln1" = true
+  "pnx(5)%xclipmax" = 1.5
+  "pnx(5)%xclipmin" = 0.6
+  "pnx(5)%xmag(1)" = 0.13
 
 [eps.member_settings.namelist_update.master.forecast.namgfl]
   ngfl_ezdiag = {0 = 4, "1:" = 5}

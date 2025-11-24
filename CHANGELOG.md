@@ -9,15 +9,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
+- Added installation instructions for Belenos (@nicolasCtd).
+
+## [0.23.0] - 2025-11-24
+
+### Added
+- Allow to disable max_static_data_tasks and max_interpolation_tasks by setting them <0. [\#1388](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1388) (@uandrae)
+- Add Deode-EPS-Upscaling impact model [\#1252](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1252/) (@mafmdi)
+- Introduce plugin launcher, like for AQ. [\#1243](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1243)(@uandrae)
+- Add .toml to enable use of new high-res ECOCLIMAPSG+ML data [\#1390](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1390)(@PanuMaaFMI)
+
+### Changed
+- Optimized SPP settings for Harmonie-AROME [\#1417](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1417) (@pirkkao) 
+- Optimized SPP settings for AROME [\#1412](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1412) (@cwastl) 
+- Change operational archive path.[\#1387](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1387)(@kastelecn)
+- Delete only finished suite in Clean\_old\_data. [\#1379](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1379) (@kastelecn) 
+- Switch off ecfs archiving of GRIB2 data in operations [\#1405](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1405)(@uandrae)
+- Use default binary for PREP when initializing from offline SURFEX [\#1401](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1401)(@trygveasp)
+  
+### Fixed
+- Correct GMTED reading for longitudes > 120 deg. [\#1402](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1402)(@natalieth)
+- Do not coupled hydrometors for harmone-arome and arome. [\#1376](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1376)(@kastelecn)
+- Erroneous implementation of max_ecf_tasks. [\#1388](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1388) (@uandrae)
+- Workaround for missing SST update in CY50 IAL: disable upd_sst_sic [\#1352](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1352) (@jacobsnoeijer)
+- Fix cycle50 binary path [\#1378](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1378) (@pardallio)
+- Disabled surfex for ALARO cy50 [\#1378](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1378) (@pardallio)
+- Couple NAMMCC.LMCCECSST to upd_sst_sic for harmonie-arome and arome cy50[\#1378](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1378) (@pardallio)
+- Fix triggers by flattening list [\1386](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1386) (@uandrae)
 
 ## [0.22.0] - 2025-10-21
 
 ### Added
+- Add custom topography input to PGD. [\#1372](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1372)(@BolliPalmason)
 - Add new dynamic option in namelist for forecast. [\#1366](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1366)(@kastelecn)
 - Use offline SURFEX EUR run for Prep [\#1233](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1233)(@BolliPalmason)
 
 ### Fixed
-- added a condition not to run lumi workflow on pull request event and atos build wheel job [\1341](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1341)(@milennimh)
+- Added a condition not to run lumi workflow on pull request event and atos build wheel job [\1341](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1341)(@milennimh)
 - Fix lam to lam coupling [\#1375](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1375)(@uandrae)
 - Fix marsprep on LUMI. [\#1374](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1374)(@kastelecn)
 - Fix strip_off_mount_path to support multiple underscores in prefix.[\#1364](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1364)(@jacobsnoeijer)

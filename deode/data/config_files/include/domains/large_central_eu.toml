@@ -1,0 +1,10 @@
+[domain]
+  gridtype = "linear"
+  name = "large_central_eu"
+  nimax = 989
+  njmax = 989
+  tstep = "_select_tstep_based_on_csc_and_resolution('@CSC@', '@XDX@')"
+  xdx = 750
+  xdy = 750
+  xlatcen = 48.7
+  xloncen = 19.1

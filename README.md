@@ -40,6 +40,12 @@ We **highly recommend** you to also put the statement listed above in your shell
   ml pyeccodes_23
   ml scl-ecflow_23
   ```
+  
+* On Belenos
+  ```shell
+  conda create -n <env_name> python=3.10.* gdal=3.6.2 ecflow -c conda-forge
+  conda activate <env_name>
+  ```
 
 See also [lumi doc](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/docs/markdown_docs/lumi.md) for more details.
 
@@ -90,6 +96,12 @@ Finally, install [`pygdal`](https://pypi.org/project/pygdal/), which is required
     poetry shell
     pip install pygdal==3.6.2.11
     ```
+  
+  On Belenos, you should install the project in the conda environment that was created, directly with the `pip` command.
+  ```shell
+  pip install -e . --no-cache --prefer-binary
+  ```
+  
   If installation is not succesful, please contact the IT support in your organisation or HPC facility.
 
 ### Important
@@ -171,4 +183,5 @@ NOTE: the config file used by a given task, is always saved to the working direc
 This way, the stand alone forecast will pick the input data from the existing run and output the result in the same directories (as defined by the config file).
 
 For other platforms a new config file would have to be created first. Please consult the [configure cases](misc_section_in_doc_page.rst#configure-cases) section in the documentation for more information.
+
 

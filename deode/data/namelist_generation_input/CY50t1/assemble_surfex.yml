@@ -2,7 +2,7 @@ pgd_common:
   - sfx_io
   - sfx_pgd_domain
   - sfx_pgd_schemes
-  - sfx_pgd_zs_gmted
+  - sfx_pgd_zs_topo
   - sfx_pgd_soilgrid_sand
   - sfx_pgd_soilgrid_clay
   - sfx_pgd_ecoclimap_sg_base

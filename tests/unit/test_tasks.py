@@ -64,7 +64,7 @@ def task_name_and_configs(request, default_config, tmp_directory):
             static_data = "{tmp_directory}"
             climdata = "{tmp_directory}"
             soilgrid_data_path = "{tmp_directory}"
-            gmted2010_data_path = "{tmp_directory}"
+            topo_data_path = "{tmp_directory}"
         [task.args]
             joboutdir = "foo"
             tarname= "foo"
@@ -317,7 +317,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         fpath.touch()
 
     # Mock things that we don't want to test here (e.g., external binaries)
-    session_mocker.patch("deode.tasks.gmtedsoil._import_gdal")
+    session_mocker.patch("deode.tasks.toposoil._import_gdal")
 
 
 class TestTasks:

@@ -394,6 +394,7 @@ f4_AROME:
     NPROC_IO: ${cfg:namelist.nproc_io,0}
   NAMMCC:
     LMCC01_MSE: ${cfg:general.upd_sst_sic}
+    LMCCECSST: ${cfg:general.upd_sst_sic}
   NAMOPH:
     CFNHWF: ECHIS
     LINC: true
@@ -631,7 +632,7 @@ f4_ALARO:
     TFP_Z%IBITS: 16
   NAMARPHY:
     CCOUPLING: I
-    LMSE: true
+    LMSE: false
   NAMCFU:
     CALFLASH1: 0.94
     LAMIP: false
@@ -923,7 +924,7 @@ f4_ALARO:
   NAMJFH:
     N_VMASS: 0
   NAMMCC:
-    LMCC01_MSE: ${cfg:general.upd_sst_sic}
+    LMCC01_MSE: false
   NAMOPH:
     CFNHWF: ECHIS
     LINC: true
@@ -1357,6 +1358,7 @@ f4_HARMONIE_AROME:
     NPROC_IO: ${cfg:namelist.nproc_io,0}
   NAMMCC:
     LMCC01_MSE: ${cfg:general.upd_sst_sic}
+    LMCCECSST: ${cfg:general.upd_sst_sic}
   NAMNRTAER:
     LAECCN2CLDR: false
     LAEIFN: false

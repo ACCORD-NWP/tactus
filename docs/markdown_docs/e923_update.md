@@ -11,7 +11,7 @@ NB:
 ## Original instructions:
 
 Utility e923\_update serves for updating roughness fields in e923 clim
-files from SURFEX, i.e. using GMTED2010 topography and ECOCLIMAP
+files from SURFEX, i.e. using GMTED2010 or other topography and ECOCLIMAP
 physiography. As a preparatory step, climake for target domain must be
 run, delivering PGD file and preliminary clim files.
 
