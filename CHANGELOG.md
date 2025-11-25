@@ -11,7 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
-- Introduce nzsfilter config option for orography filtering[\#1409](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1409) (@uandrae).
+- Introduce nzsfilter config option for orography filtering [\#1409](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1409) (@uandrae)
+
+### Fixed
+- Fix IOmerge task missing output files [\#1411](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1411) (@uandrae)
 
 ## [0.23.0] - 2025-11-24
 
