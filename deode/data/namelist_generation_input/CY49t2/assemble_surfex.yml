@@ -6,17 +6,16 @@ pgd_common:
   - sfx_pgd_soilgrid_sand
   - sfx_pgd_soilgrid_clay
   - sfx_pgd_ecoclimap_sg_base
+  - sfx_pgd_zs_filter
 
 pgd_ALARO:
   - sfx_pgd_isba_dif_@CSC@
-  - sfx_pgd_zs_filter
   - sfx_pgd_@CSC@
   - sfx_@CSC@
 
 pgd_AROME:
   - sfx_pgd_ecoclimap_sg_@DECADES@
   - sfx_pgd_isba_dif
-  - sfx_pgd_zs_filter
   - sfx_pgd_zs_@CSC@
 
 pgd_HARMONIE_AROME:

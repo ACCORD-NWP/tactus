@@ -9,11 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
-- Added installation instructions for Belenos (@nicolasCtd).
+
+### Added
+- Introduce nzsfilter config option for orography filtering[\#1409](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1409) (@uandrae).
 
 ## [0.23.0] - 2025-11-24
 
 ### Added
+- Added installation instructions for Belenos [\#1396](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1396) (@nicolasCtd).
 - Allow to disable max_static_data_tasks and max_interpolation_tasks by setting them <0. [\#1388](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1388) (@uandrae)
 - Add Deode-EPS-Upscaling impact model [\#1252](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1252/) (@mafmdi)
 - Introduce plugin launcher, like for AQ. [\#1243](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1243)(@uandrae)

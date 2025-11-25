@@ -161,6 +161,7 @@ def derived_variables(config, processor_layout=None):
         lspsmoro = lspsmoro_map[gridtype]
         nsmax_oro = nsmax
         nmsmax_oro = nmsmax
+        nzsfilter = 1
     elif orographic_smoothing_method == "truncation":
         lspsmoro = False
         gridtype_oro = config["domain.gridtype_oro"]
@@ -174,6 +175,19 @@ def derived_variables(config, processor_layout=None):
 
         nsmax_oro = floor((ndglg - 2) / truncation_map[gridtype_oro])
         nmsmax_oro = floor((ndguxg - 2) / truncation_map[gridtype_oro])
+        nzsfilter = 0
+    elif orographic_smoothing_method == "nzsfilter":
+        lspsmoro = False
+        nsmax_oro = nsmax
+        nmsmax_oro = nmsmax
+        gridtype_oro = gridtype
+        nzsfilter = 1
+    elif orographic_smoothing_method == "raw":
+        lspsmoro = False
+        nsmax_oro = nsmax
+        nmsmax_oro = nmsmax
+        gridtype_oro = gridtype
+        nzsfilter = 0
     else:
         msg = (
             "Orographic smoothing method: "
@@ -245,6 +259,7 @@ def derived_variables(config, processor_layout=None):
             "nsmax": nsmax,
             "nmsmax": nmsmax,
             "nsmax_oro": nsmax_oro,
+            "nzsfilter": nzsfilter,
             "nmsmax_oro": nmsmax_oro,
             "lspsmoro": lspsmoro,
         },
