@@ -1,1 +1,56 @@
-master_subhour_selection_AROME.yml
+selection:
+  xxtddddhhmm:
+    NAMFPDY2:
+      CL2DF:
+      - SURFPRESSION
+      - MSLPRESSURE
+      - SURFREFLECT.MAX
+      - REFLECT_DBZ.MAX
+    NAMFPDYH:
+      CL3DF:
+      - HUMI_RELATIVE
+      - HUMI.SPECIFI
+      - TEMPERATURE
+      - WIND.U.PHYS
+      - WIND.V.PHYS
+      - ICE_CRYSTAL
+      - CLOUD_WATER
+      - TKE
+      RFP3H:
+      - 15.0
+      - 30.0
+      - 50.0
+      - 75.0
+      - 100.0
+      - 130.0
+      - 150.0
+      - 200.0
+      - 250.0
+      - 300.0
+    NAMFPPHY:
+      CLCFU:
+      - SOMMFLU.RAY.SOLA
+      - SURFFLU.RAY.SOLA
+      - SOMMFLU.RAY.THER
+      - SURFFLU.RAY.THER
+      - SURFFLU.LAT.MEVA
+      - SURFFLU.MEVAP.EA
+      - SURFFLU.CHA.SENS
+      - SURFRAYT SOLA DE
+      - SURFRAYT THER DE
+      - SURFACCPLUIE
+      - SURFACCNEIGE
+      - SURFACCGRAUPEL
+      - SURFDIAG.FLASH
+      CLXFU:
+      - SURFDIAGHAIL
+      - CLSTEMPERATURE
+      - CLSHUMI.RELATIVE
+      - CLSHUMI.SPECIFIQ
+      - CLSVENT.ZONAL
+      - CLSVENT.MERIDIEN
+      - SURFNEBUL.HAUTE
+      - SURFNEBUL.MOYENN
+      - SURFNEBUL.BASSE
+      - SURFNEBUL.TOTALE
+      - CLSMEAN.RAD.TEMP
