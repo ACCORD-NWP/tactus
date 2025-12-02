@@ -272,7 +272,7 @@ ml scl-ecflow_23
 The following command slaunches DEODE suite, using AROME, on LUMI
 
 ```
-deode case ?deode/data/config_files/configurations/cy48t3_arome -o cy48t3_arome.toml --start-suite
+deode case ?deode/data/config_files/configurations/cy49t2_arome -o cy49t2_arome.toml --start-suite
 ```
 
 ### Standalone task example (forecast)
@@ -376,7 +376,7 @@ ssh lrb_465000527_efprd@lumi.csc.fi
 ```shell
  cd $DEODE
  poetry shell
- deode case ?deode/data/config_files/configurations/cy48t3_arome -o cy48t3_arome.toml --start-suite
+ deode case ?deode/data/config_files/configurations/cy49t2_arome -o cy49t2_arome.toml --start-suite
 ```
 
 6. If you have any further issues please email ulf.andrae@smhi.se or servicedesk@csc.fi.
