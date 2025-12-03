@@ -12,13 +12,13 @@
 
 [impact.eps_upscaling.communicate.archiving.eps_upscaling.ecfs.eps_upscaling]
   active = true
-  inpath = "@ARCHIVE_ROOT@/@ARCHIVE_TIMESTAMP@/eps_upscaling"
+  inpath = "@ARCHIVE@/../eps_upscaling"
   outpath = "eps_upscaling"
   pattern = "*upscaled*"
 
 [impact.eps_upscaling.communicate.eps_upscaling]
-  input = "@ARCHIVE_ROOT@/@ARCHIVE_TIMESTAMP@/mbr{MBR}/GRIBPFDEOD+{LLLLhLLmLLs}"
-  output = "@ARCHIVE_ROOT@/@ARCHIVE_TIMESTAMP@/eps_upscaling/{TYPE}/upscaled_{parameter}_GRIBPFDEOD+{LLLLhLLmLLs}"
+  input = "@ARCHIVE@/../mbr{MBR}/GRIBPFDEOD+{LLLLhLLmLLs}"
+  output = "@ARCHIVE@/../eps_upscaling/{TYPE}/upscaled_{parameter}_GRIBPFDEOD+{LLLLhLLmLLs}"
 
 [impact.eps_upscaling.communicate.general]
   case = "EPS_Upscale_@CASE@"
