@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduce nzsfilter config option for orography filtering [\#1409](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1409) (@uandrae)
 
 ### Changed
+- Produce more LBCs in one call of MASTERODB.[\#1414](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1414)(@kastelecn)
 - Replace all config symlinks by files to allow installation as a package. [\#1419](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1419) (@uandrae)
 
 ### Fixed

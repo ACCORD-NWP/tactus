@@ -11,18 +11,24 @@
     "files": ["ECOZC"]
   },
 
-  "host_model_files": {
+    "host_model_static_files": {
     "path": "@BDDIR@",
     "files": {
       "ICMSHMARSINIT": "ICMSH_@BDMEMBER@+@L@",
       "ICMSHMARS": "ICMSH_@BDMEMBER@+@L@",
-      "ICMSHMARS+000000": "ICMSH_@BDMEMBER@+@L@",
       "ICMGGMARSINIT": "ICMGG_@BDMEMBER@+@L@",
       "ICMGGMARS": "ICMGG_@BDMEMBER@+@L@",
-      "ICMGGMARS+000000": "ICMGG_@BDMEMBER@+@L@",
       "ICMUAMARSINIT": "ICMUA_@BDMEMBER@+@L@",
-      "ICMUAMARS": "ICMUA_@BDMEMBER@+@L@",
-      "ICMUAMARS+000000": "ICMUA_@BDMEMBER@+@L@"
+      "ICMUAMARS": "ICMUA_@BDMEMBER@+@L@"
     }
+  },
+    "host_model_files": {
+    "path": "@BDDIR@",
+    "files": {
+      "ICMSHMARS+00000@NNN@": "ICMSH_@BDMEMBER@+@L@",
+      "ICMGGMARS+00000@NNN@": "ICMGG_@BDMEMBER@+@L@",
+      "ICMUAMARS+00000@NNN@": "ICMUA_@BDMEMBER@+@L@"
+    }
+
   }
 }

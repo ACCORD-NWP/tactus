@@ -94,6 +94,11 @@
           "type": "string",
           "format": "duration"
         },
+	"lbc_per_task": {
+	  "description": "Number of LBCs processed in a single task",
+	  "type": "number",
+	  "default": 7
+	},
         "max_interpolation_tasks": {
           "description": "Number of interpolate tasks run in parallel",
           "type": "number"

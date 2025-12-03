@@ -69,7 +69,8 @@ def task_name_and_configs(request, default_config, tmp_directory):
             joboutdir = "foo"
             tarname= "foo"
             task_logs = "foo"
-            bd_index = 1
+            bd_index_time_dict = "{{0: \\"{basetime}\\"}}"
+            bd_index = 0
             bd_time = "{basetime}"
             basetime = "{basetime}"
             config_label = "foo"

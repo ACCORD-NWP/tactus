@@ -638,7 +638,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
         input_template,
         ecf_files,
         bdint: timedelta,
-        lbc_time_generator: Generator[Tuple[int, datetime], None, None],
+        lbc_time_generator: Generator[Tuple[List[int], List[datetime]], None, None],
         trigger=None,
         ecf_files_remotely=None,
         is_first_cycle: bool = True,
@@ -658,12 +658,19 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
         self.lbc_time_generator = lbc_time_generator
 
     def __iter__(self):
-        for bd_index, lbc_time in self.lbc_time_generator:
-            date_string = lbc_time.isoformat(sep="T").replace("+00:00", "Z")
-            args = f"bd_time={date_string};bd_index={bd_index};prep_step=False"
+        for bd_index_time_dict in self.lbc_time_generator:
+            args = f"bd_index_time_dict={bd_index_time_dict};prep_step=False"
             variables = {"ARGS": args}
 
-            lbc_family_name = date_string.replace("-", "").replace(":", "_")
+            min_time, max_time = (
+                bd_index_time_dict[k]
+                for k in (min(bd_index_time_dict), max(bd_index_time_dict))
+            )
+
+            def format_time(t):
+                return t.replace("+00:00", "Z").replace("-", "").replace(":", "_")
+
+            lbc_family_name = f"{format_time(min_time)}to{format_time(max_time)}"
 
             super().__init__(
                 lbc_family_name,
@@ -780,6 +787,7 @@ class LBCFamily(EcflowSuiteFamily):
             mode=config["suite_control.mode"],
             is_first_cycle=is_first_cycle,
             do_interpolsstsic=config["suite_control.do_interpolsstsic"],
+            lbc_per_task=int(config["boundaries.lbc_per_task"]),
         )
         lbc_family_generator_instance = LBCSubFamilyGenerator(
             self,
