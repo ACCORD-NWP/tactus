@@ -1,0 +1,71 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Gribmodify rules Section, defined in deode/data/gribmodify/gribmodify_rules.json",
+    "description": "Rules for doing conversions to generate new messages in grib files.",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+        "input_grib_id": {
+            "title" : "Input GRIB IDs",
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "GRIB key/value pairs for each input parameter. These need to uniquely identify the input parameter in the grib file."
+        },
+        "operator": {
+            "title": "Operator",
+            "description": "Operator for computing the new field from input parameters",
+            "type": "string"
+          },
+        "output_name": {
+            "title": "Output parameter shortName",
+            "description": "shortName of output parameter.",
+            "type": "string"
+          },
+        "output_grib_id": {
+            "title" : "Output GRIB ID",
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "GRIB key/value pairs for the output parameter."
+        },
+        "additional_files": {
+            "title": "List of dictionaries defining the additional files",
+            "description": "For each additional file, a dictionary specifying, base: Toml-file header for the additional file, entry: toml-file key and static: boolean indicating whether the additional file is static or time-dependent.",
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+        },
+        "layer_weights": {
+            "title" : "Layer weights",
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Dicionary of level and weight for each soil layer in weighted averaging. The weights must sum to one."
+        },
+        "physical_range": {
+            "title" : "Physical range",
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "description": "Allowed physical range of the input physical parameters."
+        },
+        "static_field": {
+          "title": "Output of static field",
+          "description": "Logical to specify writing only at basetime.",
+          "type": "boolean",
+          "default": false
+        },
+        "valid_at_basetime": {
+          "title": "Output at basetime",
+          "description": "Logical to specify if an output is valid at basetime.",
+          "type": "boolean",
+          "default": false
+        }
+    }
+}

@@ -1,0 +1,59 @@
+# Do the selection of fields below.
+selection:
+ xxtddddhhmm: &default
+  NAMFPPHY:
+   CLCFU:
+    - 'SOMMFLU.RAY.SOLA'
+    - 'SURFFLU.RAY.SOLA'
+    - 'SOMMFLU.RAY.THER'
+    - 'SURFFLU.RAY.THER'
+    - 'SURFFLU.LAT.MEVA'
+    - 'SURFFLU.MEVAP.EA'
+    - 'SURFFLU.CHA.SENS'
+    - 'SURFRAYT SOLA DE'
+    - 'SURFRAYT THER DE'
+    - 'SURFDIAG.FLASH'
+    - 'SURFPREC.EAU.GEC'
+    - 'SURFPREC.EAU.CON'
+    - 'SURFPREC.NEI.GEC'
+    - 'SURFPREC.NEI.CON'
+    - 'SURFPREC.GRA.GEC'
+   CLXFU:
+    - 'SURFDIAGHAIL'
+    - 'CLSTEMPERATURE'
+    - 'CLSHUMI.RELATIVE'
+    - 'CLSHUMI.SPECIFIQ'
+    - 'CLSVENT.ZONAL'
+    - 'CLSVENT.MERIDIEN'
+    - 'SURFNEBUL.HAUTE'
+    - 'SURFNEBUL.MOYENN'
+    - 'SURFNEBUL.BASSE'
+    - 'SURFNEBUL.TOTALE'
+    - 'CLSMEAN.RAD.TEMP'
+  NAMFPDY2:
+   CL2DF:
+    - 'SURFPRESSION'
+    - 'MSLPRESSURE'
+    - 'SURFREFLECT.MAX'
+    - 'REFLECT_DBZ.MAX'
+  NAMFPDYH:
+   CL3DF:
+    - 'HUMI_RELATIVE'
+    - 'HUMI.SPECIFI'
+    - 'TEMPERATURE'
+    - 'WIND.U.PHYS'
+    - 'WIND.V.PHYS'
+    - 'ICE_CRYSTAL'
+    - 'CLOUD_WATER'
+    - 'TKE'
+   RFP3H:
+    - 15.
+    - 30.
+    - 50.
+    - 75.
+    - 100.
+    - 130.
+    - 150.
+    - 200.
+    - 250.
+    - 300.

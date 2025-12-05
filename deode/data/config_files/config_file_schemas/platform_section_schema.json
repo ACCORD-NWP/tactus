@@ -1,0 +1,245 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Platform Section, defined in files under include/platform_paths",
+  "description": "DEODE platform specific path settings",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "archive_types": {
+      "description": "Methods available for archiving",
+      "type": "array",
+      "default": ["copy", "move", "scp"],
+      "items": {
+        "type": "string",
+        "enum": ["ecfs", "fdb", "scp", "copy", "move"]
+      }
+    },
+    "ecoclim_data_path": {
+      "type": "string",
+      "description": "Path to the ECOCLIMAP-II data"
+    },
+    "deode_home": {
+      "type": "string",
+      "description": "Path to the deode code, normally no need to change",
+      "default": "set-by-the-system"
+    },
+    "pgd_data_path": {
+      "type": "string",
+      "description": "Path to PGD input data"
+    },
+    "soilgrid_data_path": {
+      "type": "string",
+      "description": "Path to solgrid input data"
+    },
+    "global_sfcdir": {
+      "type": "string",
+      "description": "Path to global IFS surface data",
+      "default" : ""
+    },
+    "topo_data_path": {
+      "type": "string",
+      "description": "Path to topography input data directory"
+    },
+    "topo_source": {
+      "type": "string",
+      "description": "Topography data source type",
+      "default": "gmted2010",
+      "enum": ["gmted2010", "gmted_eur", "gtopo30", "glo90"]
+    },
+    "ecosg_data_path": {
+      "type": "string",
+      "description": "Path to ECOCLIMAP SG data"
+    },
+    "climdata": {
+      "type": "string",
+      "description": "Macro used in other platform paths"
+    },
+    "static_data": {
+      "type": "string",
+      "description": "Macro used in other platform paths"
+    },
+    "e923_data": {
+      "type": "string",
+      "description": "Path to e923 input data"
+    },
+    "ncdir": {
+      "type": "string",
+      "description": "Path to ECrad NetCDF data"
+    },
+    "rrtm_dir": {
+      "type": "string",
+      "description": "Path to RRTM input data"
+    },
+    "rttov_coefdir": {
+      "type": "string",
+      "description": "Path to RTTOV_COEF input data"
+    },
+    "scratch": {
+      "type": "string",
+      "description": "Path used as macro for e.g. wrk and other directories."
+    },
+    "task_name": {
+      "type": "string",
+      "description": "Placeholder macro."
+    },
+    "flake_dir": {
+      "type": "string",
+      "description": "Path to climate PGD dir."
+    },
+    "albnir_soil_dir": {
+      "type": "string",
+      "description": "Path to near-infrared spectrum soil data."
+    },
+    "albnir_veg_dir": {
+      "type": "string",
+      "description": "Path to near-infrared spectrum vegetation data."
+    },
+    "albvis_soil_dir": {
+      "type": "string",
+      "description": "Path to visible soil spectrum data."
+    },
+    "albvis_veg_dir": {
+      "type": "string",
+      "description": "Path to visible spectrum vegetation data."
+    },
+    "install_dir": {
+      "type": "string",
+      "description": "Install location"
+    },
+    "lai_dir": {
+      "type": "string",
+      "description": "TBA"
+    },
+    "osm_data_eu": {
+      "type": "string",
+      "description": "Directory containing OSM data for Europe"
+    },
+    "tree_height_dir": {
+      "type": "string",
+      "description": "Path to tree_height data."
+    },
+    "windfarm_path": {
+      "type": "string",
+      "description": "Path to wind farm parameterisation input data."
+    },
+    "eclipse_data_dir": {
+      "type": "string",
+      "description": "Path to sun/moon position as used for eclipses.",
+      "default": "@STATIC_DATA@/climate/eclipse"
+    },
+    "archive_root": {
+      "type": "string",
+      "description": "Path to the main archive directory"
+    },
+    "unix_group": {
+      "type": "string",
+      "description": "Default unix group for directories created by deode, leave empty to use default group of user.",
+      "default": ""
+    },
+    "properties": {
+      "impact": {
+        "title": "Impact model paths (where applicable)",
+        "type": "object",
+        "properties": {
+           "ehype": {
+             "type": "string",
+             "description": "EHYPE model path",
+             "default": ""
+           }
+        }
+      },
+      "mirrorglobalDT": {
+        "title": "Settings to mirror globalDT",
+        "type": "object",
+        "properties": {
+           "check_var": {
+             "type": "string",
+             "description": "Remote variable (like YMD) that is checked for triggering. Leave empty if not required.",
+             "default": ""
+           },
+           "mirror_name": {
+             "type": "string",
+             "description": "Name for the mirror in ecflow",
+             "default": ""
+           },
+           "remote_auth": {
+             "type": "string",
+             "description": "the location to the Mirror authentication credentials file, if required",
+             "default": ""
+           },
+            "remote_host": {
+             "type": "string",
+             "description": "the remote ecFlow server host",
+             "default": ""
+           },
+           "remote_path": {
+             "type": "string",
+             "description": "the path of the node on the remote ecFlow server",
+             "default": ""
+           },
+           "remote_port": {
+             "type": "string",
+             "description": "the remote ecFlow server port",
+             "default": ""
+           },
+           "remote_polling": {
+             "type": "string",
+             "description": "the value (in seconds) used to periodically contact the remote ecFlow server",
+             "default": ""
+           },
+           "remote_ssl": {
+             "type": "string",
+             "description": "to connect to the ecFlow server using SSL",
+             "default": ""
+           }
+        }
+      },
+     "mirroroffline": {
+        "title": "Settings to mirror offlineSFX",
+        "type": "object",
+        "properties": {
+           "check_var": {
+             "type": "string",
+             "description": "Remote variable (like YMD) that is checked for triggering. Leave empty if not required.",
+             "default": ""
+           },
+           "mirror_name": {
+             "type": "string",
+             "description": "Name for the mirror in ecflow",
+             "default": ""
+           },
+           "remote_auth": {
+             "type": "string",
+             "description": "the location to the Mirror authentication credentials file, if required",
+             "default": ""
+           },
+            "remote_host": {
+             "type": "string",
+             "description": "the remote ecFlow server host",
+             "default": ""
+           },
+           "remote_path": {
+             "type": "string",
+             "description": "the path of the node on the remote ecFlow server",
+             "default": ""
+           },
+           "remote_port": {
+             "type": "string",
+             "description": "the remote ecFlow server port",
+             "default": ""
+           },
+           "remote_polling": {
+             "type": "string",
+             "description": "the value (in seconds) used to periodically contact the remote ecFlow server",
+             "default": ""
+           },
+           "remote_ssl": {
+             "type": "string",
+             "description": "to connect to the ecFlow server using SSL",
+             "default": ""
+           }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,63 @@
+[submission.task_exceptions.AddCalculatedFields.BATCH]
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[submission.task_exceptions.CreateGrib.BATCH]
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[submission.task_exceptions.Forecast]
+  NPROC = 2200
+  NPROC_IO = 0
+  OMP_NUM_THREADS = "1"
+  WRAPPER = "mpirun"
+
+[submission.task_exceptions.Forecast.BATCH]
+  #CPUSPERTASK = "#SBATCH --cpus-per-task=4"
+  #HYPERTHREAD = "#SBATCH --hint=nomultithread"
+  NODES = "#SBATCH --nodes=20"
+  QOS = "#SBATCH --qos=dcgp_qos_bprod"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=110"
+  WALLTIME = "#SBATCH --time=08:00:00"
+
+[submission.task_exceptions.Forecast.ENV]
+  KMP_AFFINITY = "granularity=core,scatter"
+  KMP_BLOCKTIME = "12"
+  KMP_STACKSIZE = "4G"
+  UCX_LOG_LEVEL = "error"
+
+[submission.task_exceptions.Gmted.BATCH]
+  MEM = "#SBATCH --mem=32GB"
+
+[submission.task_exceptions.IOmerge.BATCH]
+  WALLTIME = "#SBATCH --time=08:00:00"
+
+[submission.task_exceptions.Pgd]
+  NPROC = 64
+
+[submission.task_exceptions.Pgd.BATCH]
+  NODES = "#SBATCH --nodes=2"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=32"
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[submission.task_exceptions.Prep]
+  NPROC = 64
+
+[submission.task_exceptions.Prep.BATCH]
+  MEM = "#SBATCH --mem=480GB"
+  NODES = "#SBATCH --nodes=2"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=32"
+  WALLTIME = "#SBATCH --time=00:50:00"
+
+[submission.types.gnu.BATCH]
+  MEM = "#SBATCH --mem=64GB"
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[submission.types.serial.BATCH]
+  MEM = "#SBATCH --mem=64GB"
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=1"
+  PARTITION = "#SBATCH --partition=dcgp_usr_prod"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=1"
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[suite_control]
+  n_io_merge = 2

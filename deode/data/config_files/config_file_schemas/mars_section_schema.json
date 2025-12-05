@@ -1,0 +1,314 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MARS settings, defined in include/mars_settings.toml",
+  "description": "Options for MARS extraction, for RD DT data check <a href='https://confluence.ecmwf.int/display/DEEWDC/List+of+Continuous+of+DT+experiments+for+On-Demand+DT'>here</a> for more details.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "HRES": {
+      "title": "Operational HRES",
+      "description": "Parameters for oper data",
+      "type": "object",
+      "properties": {
+        "ifs_cycle_start": {
+          "description": "Boundary model cycle start hour. Required to be set if bdcycle_start % bdcycle != 0",
+          "type": "string",
+          "default": "PT0H",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        },
+        "class": {
+          "type": "string",
+          "description": "Class of expver"
+        },
+        "levelist": {
+          "type": "object",
+          "description": "Dictionary (date:levels), with dates of change in the number of levels."
+        },
+        "grid": {
+          "type": "object",
+          "description": "Dictionary (date:resolution), with dates of change in the resolution."
+        },
+        "ifs_cycle_length": {
+          "description": "Boundary model cycle interval",
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        },
+        "start_date": {
+          "type": "string",
+          "description": "Date from when are data available in Mars",
+          "format": "date-time"
+        },
+        "GG": {
+          "type": "string",
+          "description": "List of parameters for grid point data, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+        },
+        "GG1": {
+          "type": "string",
+          "description": "List of constant field parameters for grid point data, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+        },
+        "GG_sea": {
+          "type": "string",
+          "description": "Parameters for grid point sea data, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+        },
+        "GG_soil": {
+          "type": "string",
+          "description": "Parameters for grid point soil data, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+        },
+        "grid_GG1": {
+          "description": "Grid parameter for mars request of GG1 fields",
+          "type": "object"
+        },
+        "grid_ML": {
+          "type": "string",
+          "description": "Grid parameter for mars request of model level fields"
+        },
+        "SH": {
+          "type": "string",
+          "description": "Parameters for spectral harmonic data, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+        },
+        "SHZ": {
+          "type": "string",
+          "description": "Geopotential on ground, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+        },
+        "UA": {
+          "type": "string",
+          "description": "Upper air grid point parameters, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+        },
+        "SHZ_type": {
+          "type": "string",
+          "description": "Type for geopotential"
+        },
+        "GGZ_type": {
+          "type": "string",
+          "description": "Type for geopotential in gridpoint"
+        },
+	"resolution": {
+          "type": "string",
+          "description": "Resolution of global model"
+        },
+        "stream": {
+          "type": "object",
+          "description": "Dictionary (run:stream) to use the right stream for a given run."
+        }
+      }
+    },
+    "IFSENS": {
+      "title": "Operational ensemble forecasts",
+      "description": "Parameters for oper data",
+      "type": "object",
+      "properties": {
+        "ifs_cycle_start": {
+          "description": "Boundary model cycle start hour. Required to be set if bdcycle_start % bdcycle != 0",
+          "type": "string",
+          "default": "PT0H",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        },
+        "class": {
+          "type": "string",
+          "description": "Class of expver"
+        },
+        "levelist": {
+          "type": "string",
+          "description": "Dictionary (date:levels), with dates of change in the number of levels."
+        },
+        "grid": {
+          "type": "object",
+          "description": "Dictionary (date:resolution), with dates of change in the resolution."
+        },
+        "ifs_cycle_length": {
+          "description": "Boundary model cycle interval",
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        },
+        "start_date": {
+          "type": "string",
+          "description": "Date from when are data available in Mars. Note that IFSENS is only stored for a limited amount of time.",
+          "format": "date-time"
+        },
+        "GG": {
+          "type": "string",
+          "description": "List of parameters for grid point data, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+        },
+        "GG1": {
+          "type": "string",
+          "description": "List of constant field parameters for grid point data, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+        },
+        "GG_sea": {
+          "type": "string",
+          "description": "Parameters for grid point sea data, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+        },
+        "GG_soil": {
+          "type": "string",
+          "description": "Parameters for grid point soil data, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+        },
+        "grid_GG1": {
+          "description": "Grid parameter for mars request of GG1 fields",
+          "type": "object"
+        },
+        "grid_ML": {
+          "type": "string",
+          "description": "Grid parameter for mars request of model level fields"
+        },
+        "SH": {
+          "type": "string",
+          "description": "Parameters for spectral harmonic data, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+        },
+        "SHZ": {
+          "type": "string",
+          "description": "Geopotential on ground, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+        },
+        "UA": {
+          "type": "string",
+          "description": "Upper air grid point parameters, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+        },
+        "SHZ_type": {
+          "type": "string",
+          "description": "Type for geopotential"
+        },
+	"resolution": {
+          "type": "string",
+          "description": "Resolution of global model"
+        },
+        "stream": {
+          "type": "string",
+          "description": "MARS stream"
+        }
+      }
+    },
+    "ATOS_DT": {
+      "title": "Global DT near real-time runs on ATOS based on CY48r1",
+      "description": "Parameters for global DT data",
+      "type": "object",
+      "properties": { "$ref": "#/$RD_DEFAULT" }
+    },
+    "atos_bologna_DT": {
+      "title": "Global DT near real-time runs on ATOS based on CY49r1",
+      "description": "Parameters for global DT data",
+      "type": "object",
+      "properties": { "$ref": "#/$RD_DEFAULT" }
+    },
+    "DT12": {
+      "title": "Global DT runs on ATOS but starting at 12Z",
+      "description": "Parameters for global DT data",
+      "type": "object",
+      "properties": { "$ref": "#/$RD_DEFAULT" }
+    },
+    "i5qp": {
+      "title": "Paris RDP case Tco2559",
+      "description": "Parameters for global DT data",
+      "type": "object",
+      "properties": { "$ref": "#/$RD_DEFAULT" }
+    },
+    "i7u4": {
+      "title": "Paris RDP case Tco3999 with Urban scheme",
+      "description": "Parameters for global DT data",
+      "type": "object",
+      "properties": { "$ref": "#/$RD_DEFAULT" }
+    },
+    "i7ye": {
+      "title": "Global DT near real-time runs on ATOS",
+      "title": "Paris RDP case Tco3999 without Urban scheme",
+      "description": "Parameters for global DT data",
+      "type": "object",
+      "properties": { "$ref": "#/$RD_DEFAULT" }
+    },
+    "i8hy": {
+      "title": "AQ winter case over central Europe",
+      "description": "Parameters for global DT data",
+      "type": "object",
+      "properties": { "$ref": "#/$RD_DEFAULT" }
+    },
+    "lumi_DT": {
+      "title": "Global DT near real-time runs on LUMI",
+      "description": "Parameters for global DT data",
+      "type": "object",
+      "properties": { "$ref": "#/$RD_DEFAULT" }
+    }
+  },
+  "$RD_DEFAULT": {
+    "ifs_cycle_start": {
+      "description": "Boundary model cycle start hour. Required to be set if bdcycle_start % bdcycle != 0",
+      "type": "string",
+      "default": "PT0H",
+      "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+    },
+    "default": {
+      "type": "string",
+      "description": "Other section to copy settings from if not given here"
+    },
+    "class": {
+      "type": "string",
+      "description": "Class of expver"
+    },
+    "levelist": {
+      "type": "string",
+      "description": "Dictionary (date:levels), with dates of change in the number of levels."
+    },
+    "grid": {
+      "type": "string",
+      "description": "Dictionary (date:resolution), with dates of change in the resolution."
+    },
+    "ifs_cycle_length": {
+      "description": "Boundary model cycle interval",
+      "type": "string",
+      "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+    },
+    "start_date": {
+      "type": "string",
+      "description": "Date from when are data available in Mars",
+      "format": "date-time"
+    },
+    "GG": {
+      "type": "string",
+      "description": "List of parameters for grid point data, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+    },
+    "GG_sea": {
+      "type": "string",
+      "description": "Parameters for grid point sea data, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+    },
+    "tco": {
+      "type": "string",
+      "description": "Truncation for static RD data",
+      "enum": ["255", "399"]
+    },
+    "grid_ML": {
+      "type": "string",
+      "description": "Grid parameter for mars request of model level fields"
+    },
+    "SH": {
+      "type": "string",
+      "description": "Parameters for spectral harmonic data, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+    },
+    "SHZ": {
+      "type": "string",
+      "description": "Geopotential on ground, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+    },
+    "UA": {
+      "type": "string",
+      "description": "Upper air grid point parameters, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+    },
+    "SHZ_type": {
+      "type": "string",
+      "description": "Type for geopotential"
+    },
+    "GGZ_type": {
+      "type": "string",
+      "description": "Type for geopotential in gridpoint"
+    },
+    "resolution": {
+          "type": "string",
+          "description": "Resolution of global model"
+    },
+    "stream": {
+      "description": "MARS stream or dictionary (run:stream) to use the right stream for a given run.",
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object"
+        }
+      ]
+    }
+  }
+}

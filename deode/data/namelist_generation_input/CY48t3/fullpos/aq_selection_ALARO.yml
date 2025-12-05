@@ -1,0 +1,77 @@
+# Do the selection of fields below. Note 
+# that xxt00000000 partly inherits from xxtddddhh00
+selection:
+ xxtddddhhmm: &default
+  NAMFPPHY:
+   CLCFU:
+    - 'SURFFLU.RAY.SOLA'
+    - 'SURFFLU.RAY.THER'
+    - 'SURFFLU.LAT.MEVA'
+    - 'SURFFLU.LAT.MSUB'
+    - 'SURFFLU.MEVAP.EA'
+    - 'SURFFLU.CHA.SENS'
+    - 'SURFRAYT SOLA DE'
+    - 'SURFRAYT THER DE'
+    - 'SURFPREC.EAU.GEC'
+    - 'SURFPREC.EAU.CON'
+    - 'SURFPREC.NEI.GEC'
+    - 'SURFPREC.NEI.CON'
+    - 'SURFPREC.GRA.GEC'
+    - 'SURFTENS.TURB.ZO'
+    - 'SURFTENS.TURB.ME'
+   CLXFU:
+    - 'CLSTEMPERATURE'
+    - 'CLSHUMI.SPECIFIQ'
+    - 'CLSVENT.ZONAL'
+    - 'CLSVENT.MERIDIEN'
+    - 'SURFNEBUL.TOTALE'
+    - 'CLPMHAUT.MOD.XFU'
+   CLPHY:
+    - 'SURFRESERV.NEIGE'
+    - 'SURFTEMPERATURE'
+  NAMFPDY2:
+   CL2DF:
+    - 'SURFPRESSION'
+    - 'MSLPRESSURE'
+  NAMFPDYS:
+   AQ_SELECTION:
+    CL3DF:
+     - 'AVG_U'
+     - 'AVG_V'
+     - 'GRAUPEL'
+     - 'RAIN'
+     - 'SNOW'
+     - 'TEMPERATURE'
+     - 'HUMI.SPECIFI'
+     - 'WIND.U.PHYS'
+     - 'WIND.V.PHYS'
+     - 'ICE_CRYSTAL'
+     - 'CLOUD_WATER'
+     - 'CLOUD_FRACTI'
+     - 'TKE'
+    NRFP3S:
+     - ${namelist.nrfp3s}
+ 
+ xxtddddhh00:
+   <<: *default
+
+ xxt00000000:
+  NAMFPPHY:
+   CLCFU:
+    - 'SURFTENS.TURB.ZO'
+    - 'SURFTENS.TURB.ME'
+   CLXFU:
+    - 'CLSTEMPERATURE'
+    - 'CLSHUMI.SPECIFIQ'
+    - 'CLSVENT.ZONAL'
+    - 'CLSVENT.MERIDIEN'
+    - 'SURFNEBUL.TOTALE'
+    - 'CLPMHAUT.MOD.XFU'
+   CLPHY:
+    - 'SURFRESERV.NEIGE'
+    - 'SURFTEMPERATURE'
+    - 'INTSURFGEOPOTENT'
+    - 'SURFIND.TERREMER'
+  NAMFPDY2:
+   CL2DF:
+  <<: *default

@@ -1,0 +1,12 @@
+[domain]
+  gridtype = "linear"
+  name = "NETHERLANDS_750m"
+  nimax = 1489
+  njmax = 1489
+  tstep = 20
+  xdx = 750.0
+  xdy = 750.0
+  xlat0 = 52.5
+  xlatcen = 51.967
+  xlon0 = 0.0
+  xloncen = 4.9

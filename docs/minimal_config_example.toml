@@ -1,0 +1,4 @@
+# This config is just a template.
+# Please change the data provided here to your own.
+[general]
+  times.list = ["2020-01-01T12:00:00Z"]

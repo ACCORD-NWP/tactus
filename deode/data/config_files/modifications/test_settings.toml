@@ -1,0 +1,4 @@
+[general.times]
+  cycle_length = "PT6H"
+  end = "2025-02-09T06:00:00Z"
+  start = "2025-02-09T00:00:00Z"

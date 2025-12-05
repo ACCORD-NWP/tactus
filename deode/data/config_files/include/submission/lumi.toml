@@ -1,0 +1,288 @@
+[submission]
+  account = "#SBATCH -A project_465000527"
+  cmicro = "ICE3"
+  compiler = "gnu"
+  default_submit_type = "serial"
+  lfftw = true
+  module_initpath = "/usr/share/lmod/8.3.1/init"
+  nproma = -32
+
+[submission.iomerge.age_limit]
+  fullpos = 15
+  history = 15
+  surfex = 15
+
+[submission.iomerge.files_expected]
+  fullpos = 0
+  history = -1
+  surfex = 0
+
+[submission.task]
+  wrapper = "time"
+
+[submission.task_exceptions.ArchiveDataBridge.ENV]
+  FDB5_HOME = "/appl/local/destine/mars/versions/7.1.3.0/"
+  FDB_HOME = "@DEODE_DATABRIDGE_HOME@"
+  PATH = "$PATH:/appl/local/destine/mars/versions/7.1.3.0/bin/"
+
+[submission.task_exceptions.ArchiveFDB.ENV]
+  FDB5_HOME = "/appl/local/destine/mars/versions/7.1.3.0/"
+  FDB_HOME = "@DEODE_FDB_HOME@"
+  PATH = "$PATH:/appl/local/destine/mars/versions/7.1.3.0/bin/"
+
+[submission.task_exceptions.C903]
+  NPROC = 24
+
+[submission.task_exceptions.C903.BATCH]
+  MEM = "#SBATCH --mem=0"
+  NODE = "#SBATCH --nodes=12"
+  NTASKS = "#SBATCH --ntasks=24"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=2"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[submission.task_exceptions.C903.ENV]
+  DR_HOOK_TRAPFPE_DIVBYZERO = 1
+  DR_HOOK_TRAPFPE_OVERFLOW = 1
+  OMP_NUM_THREADS = 1
+
+[submission.task_exceptions.CreateGrib]
+  binary = "gl"
+  bindir = "@BINDIR_GL@"
+
+[submission.task_exceptions.CreateGrib.ENV]
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/appl/local/destine/mars/versions/7.1.3.0/lib64"
+
+[submission.task_exceptions.CreateGribStatic]
+  binary = "gl"
+  bindir = "@BINDIR_GL@"
+
+[submission.task_exceptions.CreateGribStatic.ENV]
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/appl/local/destine/mars/versions/7.1.3.0/lib64"
+
+[submission.task_exceptions.Forecast]
+  bindir = "@INSTALL_DIR@/@CYCLE@/@COMPILER@/@PRECISION@/@IAL_VERSION@/bin"
+
+[submission.task_exceptions.InterpolSstSic]
+  binary = "gl"
+  bindir = "@BINDIR_GL@"
+
+[submission.task_exceptions.InterpolSstSic.BATCH]
+  PARTITION = "#SBATCH --partition=standard"
+
+[submission.task_exceptions.InterpolSstSic.ENV]
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/appl/local/destine/mars/versions/7.1.3.0/lib64"
+
+[submission.task_exceptions.Marsprep]
+  bindir = "/appl/local/destine/bin"
+  mars_version = "7"
+  WRAPPER = ""
+
+[submission.task_exceptions.Marsprep.BATCH]
+  MEM = "#SBATCH --mem=0GB"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  PARTITION = "#SBATCH --partition=standard"
+  WALLTIME = "#SBATCH --time=06:00:00"
+
+[submission.task_exceptions.Marsprep.ENV]
+  MARS_READANY_BUFFER_SIZE = 17893020000
+  PATH = "$PATH:/appl/local/destine/mars/versions/7.1.3.0/bin:/appl/local/destine/bin"
+
+[submission.task_exceptions.Pgd.ENV]
+  OMP_NUM_THREADS = 1
+
+[submission.task_exceptions.PgdFilterTownFrac.ENV]
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/appl/local/destine/mars/versions/7.1.3.0/lib64"
+
+[submission.task_exceptions.PgdUpdate]
+  binary = "gl"
+  bindir = "@BINDIR_GL@"
+
+[submission.task_exceptions.PgdUpdate.ENV]
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/appl/local/destine/mars/versions/7.1.3.0/lib64"
+
+[submission.task_exceptions.Soil.MODULES]
+  GDAL = ["load", "scl-gdal_23"]
+
+[submission.task_exceptions.Topography.MODULES]
+  GDAL = ["load", "scl-gdal_23"]
+
+[submission.types.background_hpc]
+  SCHOST = "localhost"
+  tasks = ["Background_hpc", "UnitTest"]
+  wrapper = "time"
+
+[submission.types.background_vm]
+  INTERPRETER = "#!/usr/bin/python3"
+  SCHOST = "localhost"
+  tasks = ["Background_vm"]
+
+[submission.types.Forecast_cpu]
+  NPROC = 16
+  SCHOST = "lumi-batch"
+  tasks = ["Forecast"]
+  WRAPPER = "ulimit -s unlimited; srun"
+
+[submission.types.Forecast_cpu.BATCH]
+  CPU = "#SBATCH --cpus-per-task=4"
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=2"
+  NTASKS = "#SBATCH --ntasks=16"
+  PARTITION = "#SBATCH --partition=standard"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=8"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[submission.types.Forecast_cpu.ENV]
+  DR_HOOK = 1
+  DR_HOOK_IGNORE_SIGNALS = -1
+  DR_HOOK_SHOW_PROCESS_OPTIONS = 0
+  DR_HOOK_SILENT = 0
+
+  FI_CXI_DEFAULT_TX_SIZE = 32768
+  FI_CXI_RDZV_THRESHOLD = 64000
+  FI_CXI_RX_MATCH_MODE = "hybrid"
+
+  I_MPI_LIBRARY_KIND = "release"
+  LIBSCI_ARCH_OVERRIDE = "broadwell"
+
+  MKL_CBWR = "AUTO,STRICT"
+  MKL_DEBUG_CPU_TYPE = 5
+  MKL_NUM_THREADS = 1
+  MPL_MBX_SIZE = 2048000000
+
+  EC_MEMINFO = 0
+  EC_MPI_ATEXIT = 0
+  EC_PROFILE_HEAP = 0
+  EC_PROFILE_MEM = 0
+  ECF_SSL = 1
+
+  KMP_MONITOR_STACKSIZE = "4G"
+  KMP_STACKSIZE = "4G"
+
+  OMP_NUM_THREADS = 4 # CPUS_PER_TASK
+  OMP_PLACES = "threads"
+  OMP_STACKSIZE = "4G"
+
+[submission.types.Forecast_cpu.MODULES]
+  00_PURGE = ["--force", "purge"]
+  01_LUMI = ["load", "LUMI/24.03 partition/C"]
+  02_PARTITION_C = ["load", "PrgEnv-gnu"]
+  03_AEC = ["load", "libaec"]
+  04_HDF5 = ["load", "cray-hdf5-parallel"]
+  05_NETCDF = ["load", "cray-netcdf-hdf5parallel"]
+  06_FFTW = ["load", "cray-fftw"]
+  07_PYTHON = ["load", "cray-python"]
+  15_RIMVYDAS_USE = ["use", "/scratch/project_465000527/jasinskas/scl/modules/"]
+  17_RIMVYDAS_ECFLOW = ["load", "scl-ecflow_23"]
+
+[submission.types.parallel]
+  NPROC = 16
+  SCHOST = "lumi-batch"
+  tasks = ["E927", "Pgd", "Prep", "C903"]
+  WRAPPER = "srun"
+
+[submission.types.parallel.BATCH]
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=16"
+  PARTITION = "#SBATCH --partition=standard"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
+  WALLTIME = "#SBATCH --time=00:10:00"
+
+[submission.types.parallel.ENV]
+  ECF_SSL = 1
+  OMP_NUM_THREADS = 4 # CPUS_PER_TASK
+
+  KMP_MONITOR_STACKSIZE = "4G"
+  KMP_STACKSIZE = "4G"
+  OMP_PLACES = "threads"
+  OMP_STACKSIZE = "4G"
+
+  DR_HOOK = 1
+  DR_HOOK_IGNORE_SIGNALS = -1
+  DR_HOOK_SHOW_PROCESS_OPTIONS = 0
+  DR_HOOK_SILENT = 1
+
+  EC_MEMINFO = 0
+  EC_MPI_ATEXIT = 0
+  EC_PROFILE_HEAP = 0
+  EC_PROFILE_MEM = 0
+
+  FI_CXI_RX_MATCH_MODE = 'hybrid'
+
+[submission.types.parallel.MODULES]
+  00_PURGE = ["--force", "purge"]
+  01_LUMI = ["load", "LUMI/24.03 partition/C"]
+  02_PARTITION_C = ["load", "PrgEnv-gnu"]
+  03_AEC = ["load", "libaec"]
+  04_HDF5 = ["load", "cray-hdf5-parallel"]
+  05_NETCDF = ["load", "cray-netcdf-hdf5parallel"]
+  06_FFTW = ["load", "cray-fftw"]
+  07_PYTHON = ["load", "cray-python"]
+  15_RIMVYDAS_USE = ["use", "/scratch/project_465000527/jasinskas/scl/modules/"]
+  17_RIMVYDAS_ECFLOW = ["load", "scl-ecflow_23"]
+
+[submission.types.serial]
+  NPROC = 1
+  SCHOST = "lumi-batch"
+  tasks = [
+    "Topography",
+    "Soil",
+    "PgdUpdate",
+    "E923Constant",
+    "E923Monthly",
+    "E923Update",
+    "InterpolSstSic",
+  ]
+  WRAPPER = "srun"
+
+[submission.types.serial.BATCH]
+  MEM = "#SBATCH --mem=0GB"
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  PARTITION = "#SBATCH --partition=debug"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
+  WALLTIME = "#SBATCH --time=00:20:00"
+
+[submission.types.serial.ENV]
+  DR_HOOK_IGNORE_SIGNALS = -1
+  ECF_SSL = 1
+  OMPI_MCA_btl = '^vader'
+
+[submission.types.serial.MODULES]
+  00_PURGE = ["--force", "purge"]
+  01_LUMI = ["load", "LUMI/24.03 partition/C"]
+  02_PARTITION_C = ["load", "PrgEnv-gnu"]
+  03_AEC = ["load", "libaec"]
+  04_HDF5 = ["load", "cray-hdf5-parallel"]
+  05_NETCDF = ["load", "cray-netcdf-hdf5parallel"]
+  06_FFTW = ["load", "cray-fftw"]
+  07_PYTHON = ["load", "cray-python"]
+  15_RIMVYDAS_USE = ["use", "/scratch/project_465000527/jasinskas/scl/modules/"]
+  17_RIMVYDAS_ECFLOW = ["load", "scl-ecflow_23"]
+
+[submission.types.sqlite]
+  NPROC = 1
+  SCHOST = "lumi-batch"
+  tasks = ["ExtractSQLite"]
+  WRAPPER = "time"
+
+[submission.types.sqlite.BATCH]
+  EXPORT = "#SBATCH --export=NONE"
+  MEM = "#SBATCH --mem=0"
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  PARTITION = "#SBATCH --partition=standard"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[submission.types.sqlite.ENV]
+  ECF_SSL = 1
+
+[submission.types.sqlite.MODULES]
+  00_PYTHON = ["load", "cray-python/3.10.10"]
+  01_USE = ["use", "/scratch/project_465000527/jasinskas/scl/modules/"]
+  03_ECFLOW = ["load", "scl-ecflow_23"]

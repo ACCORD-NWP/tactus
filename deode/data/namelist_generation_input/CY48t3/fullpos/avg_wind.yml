@@ -1,0 +1,11 @@
+# Do the selection of fields below. Note 
+# that xxt00000000 inherits from xxtddddhh00
+selection:
+ xxtddddhh00: &default
+  NAMFPDYS: 
+    AVERAGE_WIND:
+     CL3DF:
+      - 'AVG_U'
+      - 'AVG_V'
+     NRFP3S:
+      - ${vertical_levels.nlev}

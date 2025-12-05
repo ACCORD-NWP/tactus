@@ -1,0 +1,23 @@
+[fdb]
+  create_inverse_filter = false
+  databridge_user = "@PROD_USER@"
+
+[fdb.expver_restrictions]
+  0001 = "@PROD_USER@"
+  0098 = "@DEV_USER@"
+  0099 = "@PROD_USER@"
+
+[fdb.grib_set]
+  centre = "98"
+  class = "d1"
+  dataset = "on-demand-extremes-dt"
+  grib2LocalSectionNumber = "1"
+  productionStatusOfProcessedData = "12"
+  setLocalDefinition = "1"
+  tablesVersion = "34"
+
+[fdb.negative_rules]
+  levtype = ["unknown"]
+  param = ["0", "231066"]
+  productDefinitionTemplateNumber = ["113", "114"]
+  typeOfLevel = ["unknown", "not_found"]

@@ -1,0 +1,31 @@
+[boundaries]
+  bd_has_surfex = true
+  bdmodel_sfx = "from_nc"
+  bdshift_sfx = "PT24H"
+
+[file_templates.bdfile_sfx]
+  archive = "SURFOUT.nc"
+
+[file_templates.pgd_host]
+  archive = "PGD_@ONE_DECADE@.nc"
+
+[namelist_update.surfex.prep.nam_prep_seaflux]
+  cseaice_scheme = 'NONE'
+
+[namelist_update.surfex.prep.nam_prep_surf_atm]
+  lkdtree = true
+  luse_cache = true
+  nmax_cache = 30
+
+[submission.task_exceptions.Prep.BATCH]
+  MEM = "#SBATCH --mem=0GB"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=32"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[submission.task_exceptions.Prep.MODULES]
+  OPENMPI = ["load", "intel-mpi/2021.4.0"]
+
+[system]
+  bdclimdir = "/scratch/aut6432/surfexp/CY49DT_OFFLINE_dt_2_5_2500x2500/climate/DT_2_5_2500x2500"
+  bddir_sfx = "/scratch/aut6432/surfexp/CY49DT_OFFLINE_dt_2_5_2500x2500/archive/@YYYY@/@MM@/@DD@/@HH@"

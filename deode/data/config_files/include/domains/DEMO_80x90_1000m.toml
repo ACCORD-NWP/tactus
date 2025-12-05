@@ -1,0 +1,10 @@
+[domain]
+  gridtype = "cubic"
+  name = "DEMO_80x90_1000m"
+  nimax = 69
+  njmax = 79
+  tstep = 30
+  xdx = 1000.0
+  xdy = 1000.0
+  xlatcen = 52.0
+  xloncen = 4.9

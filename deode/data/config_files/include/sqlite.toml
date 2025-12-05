@@ -1,0 +1,22 @@
+[extractsqlite]
+  merged_sqlite_path = "@ARCHIVE_ROOT@/merged_sqlite/FCTABLE/@SQLITE_MODEL_NAME@/@YYYY@/@MM@"
+  selection = "PT1H"
+  sqlite_model_name = "@CASE@"
+  sqlite_path = "@ARCHIVE_ROOT@/sqlite/FCTABLE/@SQLITE_MODEL_NAME@/@YYYY@/@MM@/@MEMBER_STR@"
+  sqlite_template = "FCTABLE_{PP}_{YYYY}{MM}_{HH}.sqlite"
+
+[[extractsqlite.parameter_list_default_det]]
+  location_file = "@DEODE_HOME@/data/sqlite/station_list_default.csv"
+  param_file = "@DEODE_HOME@/data/sqlite/param_list_sfc_@CSC@_det.json"
+
+[[extractsqlite.parameter_list_default_det]]
+  location_file = "@DEODE_HOME@/data/sqlite/temp_list_default.csv"
+  param_file = "@DEODE_HOME@/data/sqlite/param_list_ua_det.json"
+
+[[extractsqlite.parameter_list_default_eps]]
+  location_file = "@DEODE_HOME@/data/sqlite/station_list_default.csv"
+  param_file = "@DEODE_HOME@/data/sqlite/param_list_sfc_@CSC@_eps.json"
+
+[[extractsqlite.parameter_list_default_eps]]
+  location_file = "@DEODE_HOME@/data/sqlite/temp_list_default.csv"
+  param_file = "@DEODE_HOME@/data/sqlite/param_list_ua_eps.json"

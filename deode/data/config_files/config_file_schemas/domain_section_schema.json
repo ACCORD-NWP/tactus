@@ -1,0 +1,176 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Domain Section, defined in files under include/domains",
+  "description": "Model for validation of the data in the 'domain' section of the config file.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "gridtype": {
+      "type": "string",
+      "description": "Select truncation type",
+      "enum": ["linear", "quadratic", "cubic", "custom"]
+    },
+    "gridtype_oro": {
+      "type": "string",
+      "description": "Select truncation type for orographic_smoothing",
+      "enum": ["linear", "quadratic", "cubic", "custom", ""],
+      "default": ""
+    },
+    "orographic_smoothing_method": {
+      "type": "string",
+      "description": "Orographic smoothing method",
+      "enum": ["spectral", "truncation","nzsfilter","raw"],
+      "default": "truncation"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of your domain"
+    },
+    "number": {
+      "description": "Sequence number for domain",
+      "default": "",
+      "oneOf": [
+        {
+          "type": "string",
+          "maxLength": 0
+        },
+        {
+          "type": "number",
+          "minimum": 0
+        }
+      ]
+    },
+    "nzsfilter": {
+      "type": "number",
+      "description": "Activate the PGD orographic filtering",
+      "enum": [0,1]
+    },
+    "nimax": {
+      "type": "number",
+      "description": "Number of grid points zonally",
+      "minimum": 0
+    },
+    "njmax": {
+      "type": "number",
+      "description": "Number of grid points meridionally",
+      "minimum": 0
+    },
+    "xdx": {
+      "type": "number",
+      "description": "Zonal grid size in meters",
+      "minimum": 0
+    },
+    "xdy": {
+      "type": "number",
+      "description": "Meridional grid size in meters",
+      "minimum": 0
+    },
+    "ilone": {
+      "type": "number",
+      "description": "Zonal extension zone",
+      "minimum": 0,
+      "default": 11
+    },
+    "ilate": {
+      "type": "number",
+      "description": "Meridional extension zone",
+      "minimum": 0,
+      "default": 11
+    },
+    "nbzong": {
+      "type": "number",
+      "description": "Meridional coupling zone width",
+      "minimum": -1,
+      "default": -1
+    },
+    "nbzonl": {
+      "type": "number",
+      "description": "Zonal coupling zone width",
+      "minimum": -1,
+      "default": -1
+    },
+    "tstep": {
+      "description": "Model time step in seconds",
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        }
+      ]
+    },
+    "xloncen": {
+      "type": "number",
+      "description": "Domain center longitude",
+      "minimum": -180,
+      "maximum": 180
+    },
+    "xlatcen": {
+      "type": "number",
+      "description": "Domain center latitude",
+      "minimum": -90,
+      "maximum": 90
+    },
+    "xlon0": {
+      "description": "Longitude of center of projection",
+      "default": "",
+      "oneOf": [
+        {
+          "type": "string",
+          "maxLength": 0
+        },
+        {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
+        }
+      ]
+    },
+    "xlat0": {
+      "description": "Latitude of center of projection",
+      "default": "",
+      "oneOf": [
+        {
+          "type": "string",
+          "maxLength": 0
+        },
+        {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        }
+      ]
+    },
+    "xbeta": {
+      "type": "number",
+      "description": "Rotation parameter for the conformal projection",
+      "default": 0.0
+    },
+    "spectral_smoothing_by_gridtype": {
+      "description": "Defines for which gridypes spectral smoothing is applied when activated",
+      "default": {
+        "linear": true,
+        "quadratic": false,
+        "cubic": false,
+        "custom": true
+      }
+    },
+    "truncation_by_gridtype": {
+      "description": "Defines default gridtype_oro mapping when truncation smoothing is applied.",
+      "default": {
+        "linear": "quadratic",
+        "quadratic": "quadratic",
+        "cubic": "cubic",
+        "custom": "custom"
+      }
+    },
+    "dtf_lead_time": {
+      "description": "Lead time of DTF, which trigger the domain",
+      "default": "",
+      "type": "string",
+      "enum": ["", "01", "02"]
+    }
+
+  }
+}

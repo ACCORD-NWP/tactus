@@ -1,0 +1,14 @@
+[scheduler]
+
+[scheduler.ecfvars]
+  case_prefix = ""
+  ecf_deode_home = "@DEODE_HOME@"
+  ecf_files = "@HOME@/deode_ecflow/ecf_files"
+  ecf_files_remotely = "@HOME@/deode_ecflow/ecf_files"
+  ecf_home = "@HOME@/deode_ecflow/jobout"
+  ecf_host = "login02.leonardo.local"
+  ecf_jobout = "@HOME@/deode_ecflow/jobout"
+  ecf_out = "@HOME@/deode_ecflow/jobout"
+  ecf_port = "_set_port_from_json('/leonardo_work/DestE_330_25/users/SAN/leonardo_install/leonardo_users.json',)"
+  ecf_remoteuser = ""
+  ecf_user = ""

@@ -1,0 +1,14 @@
+[general]
+  cycle = "CY48t3"
+  upd_sst_sic = false
+
+[platform]
+  rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef/"
+
+[submission]
+  bindir = "@INSTALL_DIR@/@CYCLE@/@IAL_VERSION@/bin"
+  compiler = ""
+  precision = ""
+
+[suite_control]
+  do_interpolsstsic = false

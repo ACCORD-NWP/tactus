@@ -1,0 +1,12 @@
+[general]
+  csc = "HARMONIE_AROME"
+  windfarm = false
+
+[domain]
+  orographic_smoothing_method = "spectral"
+
+[fullpos.selection]
+  master = ["master_selection_@CSC@", "master_subhour_selection_@CSC@"]
+
+[pgd]
+  npatch = 3

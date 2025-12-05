@@ -1,0 +1,20 @@
+[general]
+  cycle = "CY46h1"
+  windfarm = false
+
+[platform]
+  rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef/"
+
+[submission]
+  bindir = "@INSTALL_DIR@/@CYCLE@/@IAL_VERSION@/bin"
+  compiler = ""
+  precision = ""
+
+[submission.task_exceptions.C903]
+  bindir = "@INSTALL_DIR@/CY48t3/latest/bin"
+
+[submission.task_exceptions.Pgd]
+  binary = "PGD-offline"
+
+[submission.task_exceptions.Prep]
+  binary = "PREP-offline"

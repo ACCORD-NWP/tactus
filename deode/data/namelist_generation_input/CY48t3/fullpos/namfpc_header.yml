@@ -1,0 +1,13 @@
+# Change only global settings in NAMFPC, no selection of fields
+NAMFPC:
+    NFPGRIB: ${cfg:submission.nfpgrib,224}
+    CFPDOM: "${cfg:fullpos.domain_name}"
+    LFPCAPEX: True
+    LFPMOIS: False
+    LISOT_ABOVEG: True
+    L_READ_MODEL_DATE: True
+    NFPCAPE: 5
+    RFPCD2: 5
+    RFPCSAB: 50
+    RFPVCAP: 7000
+    RENTRA: 0.0001

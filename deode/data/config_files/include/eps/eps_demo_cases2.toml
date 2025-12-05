@@ -1,0 +1,22 @@
+[general]
+  case = "EPS_DEMO_CASES2_@EVENT_TYPE@_@DOMAIN@_@YMD_START@"
+
+[eps.general]
+  members = "1:3"
+
+[eps.member_settings.modifications]
+  mod1 = {1 = "modifications/csc/arome.toml", 2 = "modifications/csc/harmonie_arome.toml"}
+  mod2 = {1 = "modifications/cycle/CY48t3.toml", 2 = "modifications/cycle/CY46h1.toml"}
+  mod3 = "modifications/target.toml"
+  mod4 = {1 = "modifications/submission/@HOST@.toml"}
+
+[eps.member_settings.system]
+  wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
+
+[suite_control]
+  do_mergesqlite = false
+  member_specific_mars_prep = true
+  member_specific_static_data = true
+
+[system]
+  climdir = "@CASEDIR@/climate/@DOMAIN@/@MEMBER_STR@"

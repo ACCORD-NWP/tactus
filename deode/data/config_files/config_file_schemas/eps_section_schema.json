@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EPS Members Configuration",
+  "type": "object",
+  "properties": {
+    "general": {
+      "type": "object",
+      "properties": {
+        "members": {
+          "oneOf": [
+            { "type": "integer" },
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          ],
+          "description": "The members of the ensemble",
+          "default": [0]
+        }
+      },
+      "default": {}
+    }
+  }
+}

@@ -1,0 +1,217 @@
+[submission]
+  default_submit_type = "serial"
+  lfftw = true
+  module_initpath = "/usr/local/apps/lmod/8.6.8/init"
+  nproma = -32
+
+[submission.iomerge.age_limit]
+  fullpos = 15
+  history = 20
+  surfex = 15
+
+[submission.iomerge.files_expected]
+  fullpos = 0
+  history = -1
+  surfex = 0
+
+[submission.task]
+  wrapper = ""
+
+[submission.task_exceptions.AddCalculatedFields.MODULES]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+
+[submission.task_exceptions.ArchiveFDB.ENV]
+  FDB5_HOME = "$ECMWF_TOOLBOX_DIR"
+  FDB_ENABLE_GRIBJUMP = "1"
+  FDB_HOME = "@DEODE_FDB_HOME@"
+  GRIBJUMP_CONFIG_FILE = "@DEODE_FDB_HOME@/etc/gribjump/config_on-demand-extremes-dt.yaml"
+
+[submission.task_exceptions.ArchiveFDB.MODULES]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+
+[submission.task_exceptions.ArchiveHour.BATCH]
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[submission.task_exceptions.ArchiveStatic.BATCH]
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[submission.task_exceptions.C903]
+  NPROC = 36
+
+[submission.task_exceptions.C903.BATCH]
+  MEM = "#SBATCH --mem=200GB"
+  NODE = "#SBATCH --nodes=12"
+  NTASKS = "#SBATCH --ntasks=36"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[submission.task_exceptions.CreateGrib]
+  binary = "gl"
+  bindir = "@BINDIR_GL@"
+
+[submission.task_exceptions.CreateGrib.BATCH]
+  WALLTIME = "#SBATCH --time=01:00:00"
+
+[submission.task_exceptions.CreateGribStatic]
+  bindir = "@BINDIR_GL@"
+
+[submission.task_exceptions.E927]
+  NPROC = 16
+
+[submission.task_exceptions.E927.BATCH]
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=16"
+
+[submission.task_exceptions.ExtractSQlite]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+
+[submission.task_exceptions.Forecast]
+  bindir = "@INSTALL_DIR@/@CYCLE@/@COMPILER@/@PRECISION@/@IAL_VERSION@/bin"
+  NPROC = 30
+  NPROC_IO = 2
+
+[submission.task_exceptions.Forecast.BATCH]
+  #  MEM = "#SBATCH --mem=200GB"
+  NODES = "#SBATCH --nodes=2"
+  NTASKS = "#SBATCH --ntasks=32"
+  WALLTIME = "#SBATCH --time=01:00:00"
+
+[submission.task_exceptions.Forecast.ENV]
+  RTTOV_COEFDIR = "/hpcperm/snh02/DEODE/satellite/rtcoef_rttov12/harm_coef/"
+  UCX_LOG_LEVEL = "error"
+
+[submission.task_exceptions.InterpolSstSic]
+  binary = "gl"
+  bindir = "@BINDIR_GL@"
+
+[submission.task_exceptions.IOmerge.BATCH]
+  WALLTIME = "#SBATCH --time=01:00:00"
+
+[submission.task_exceptions.Marsprep]
+  bindir = "/usr/local/bin/"
+
+[submission.task_exceptions.Marsprep.BATCH]
+  MEM = "#SBATCH --mem=128GB"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  QOS = "#SBATCH --qos=np"
+  WALLTIME = "#SBATCH --time=06:00:00"
+
+[submission.task_exceptions.Pgd]
+  WRAPPER = "srun -n @NPROC@"
+
+[submission.task_exceptions.Pgd.BATCH]
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=2"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[submission.task_exceptions.PgdUpdate]
+  binary = "gl"
+  bindir = "@BINDIR_GL@"
+
+[submission.task_exceptions.Prep]
+  WRAPPER = "srun -n @NPROC@"
+
+[submission.task_exceptions.Prep.BATCH]
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  WALLTIME = "#SBATCH --time=00:10:00"
+
+[submission.task_exceptions.Soil.MODULES]
+  GDAL = ["load", "gdal/3.6.2"]
+
+[submission.task_exceptions.Topography.MODULES]
+  GDAL = ["load", "gdal/3.6.2"]
+
+[submission.types.background_hpc]
+  SCHOST = "localhost"
+  tasks = ["Background_hpc", "UnitTest"]
+
+[submission.types.background_vm]
+  INTERPRETER = "#!/usr/bin/python3"
+  SCHOST = "localhost"
+  tasks = ["Background_vm"]
+
+[submission.types.gnu]
+  NPROC = 1
+  NPROCX = 1
+  NPROCY = 1
+  SCHOST = "hpc"
+  tasks = ["ExtractSQLite", "StartImpactModels"]
+  WRAPPER = "srun"
+
+[submission.types.gnu.BATCH]
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  QOS = "#SBATCH --qos=nf"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
+  WALLTIME = "#SBATCH --time=00:15:00"
+
+[submission.types.parallel]
+  NPROC = 32
+  SCHOST = "hpc"
+  tasks = ["Forecast", "E927", "Pgd", "Prep", "C903"]
+  WRAPPER = "srun"
+
+[submission.types.parallel.BATCH]
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  QOS = "#SBATCH --qos=np"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
+  WALLTIME = "#SBATCH --time=00:10:00"
+
+[submission.types.parallel.ENV]
+  DR_HOOK = 1
+  DR_HOOK_IGNORE_SIGNALS = -1
+  OMP_NUM_THREADS = 1
+  OMPI_MCA_btl = "^vader"
+
+[submission.types.parallel.MODULES]
+  # First load the prgenv
+  00_PRGENV = ["load", "prgenv/intel"]
+  # The rest
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+  FFTW = ["load", "fftw/3.3.9"]
+  HDF5 = ["load", "hdf5/1.10.6"]
+  MKL = ["load", "intel-mkl/19.0.5"]
+  NETCDF = ["load", "netcdf4/4.7.4"]
+  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
+
+[submission.types.serial]
+  NPROC = 1
+  NPROCX = 1
+  NPROCY = 1
+  SCHOST = "hpc"
+  tasks = [
+    "CreateGrib",
+    "Topography",
+    "Soil",
+    "Marsprep",
+    "E923Update",
+    "IOmerge",
+    "InterpolSstSic",
+  ]
+  WRAPPER = "srun"
+
+[submission.types.serial.BATCH]
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  QOS = "#SBATCH --qos=nf"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
+  WALLTIME = "#SBATCH --time=00:15:00"
+
+[submission.types.serial.ENV]
+  DR_HOOK_IGNORE_SIGNALS = -1
+  OMP_NUM_THREADS = 1
+  OMPI_MCA_btl = "^vader"
+
+[submission.types.serial.MODULES]
+  # First load the prgenv
+  00_PRGENV = ["load", "prgenv/intel"]
+  # The rest
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+  FFTW = ["load", "fftw/3.3.9"]
+  HDF5 = ["load", "hdf5/1.10.6"]
+  MKL = ["load", "intel-mkl/19.0.5"]
+  NETCDF = ["load", "netcdf4/4.7.4"]
+  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]

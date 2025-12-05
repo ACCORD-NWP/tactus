@@ -1,0 +1,31 @@
+[general]
+  case = "Clean_Old_Data"
+  keep_workdirs = false
+
+[clean_old_data]
+  ehype_data_period = "P14D"
+  ehype_format = "/(\\d{4})/(0[1-9]|1[0-2])/(0[1-9]|[12]\\d|3[01])"
+  ehype_format_perm = "/DE_Impact_EHYPE_forecast*"
+  ehype_format_run = "/run/DE_Impact_EHYPE_forecast*"
+  ifs_format = "/IFS/([^/]+)/(\\d{4})/(0[1-9]|1[0-2])/(0[1-9]|[12]\\d|3[01])/([01]\\d|2[0-3])/([^/]+)"
+  IFS_period = "P7D"
+  ignore = []
+  scratch_data_period = "P14D"
+  scratch_ext = "/deode"
+  scratch_format = "/"
+  suite_format = "/"
+  suites_period = "P7D"
+
+[suite_control]
+  suite_definition = "DeodeCleaningSuiteDefinition"
+
+[suite_control.DeodeCleaningSuiteDefinition]
+  days_in_week = [1]
+  do_clean_ehype_data = true
+  do_clean_IFS = true
+  do_clean_scratch_data = true
+  do_clean_suites = true
+  time_to_run = "07:30:00Z"
+
+[system]
+  wrk = "@CASEDIR@"

@@ -1,0 +1,44 @@
+[general]
+  upd_sst_sic = false
+
+[general.times]
+  cycle_length = "PT1H"
+  end = "2025-02-09T02:00:00Z"
+  forecast_range = "PT3H"
+  start = "2025-02-09T01:00:00Z"
+
+[boundaries]
+  bd_has_surfex = true
+  bdmodel = "lam"
+  bdmodel_sfx = "from_fa"
+  bdshift_sfx = "PT0H"
+  lam.bdcycle = "PT6H"
+  lam.bdcycle_start = "PT0H"
+
+[domain]
+  gridtype = "cubic"
+  name = "DEMO_80x90_1000m"
+  nimax = 69
+  njmax = 79
+  tstep = 30
+  xdx = 1000.0
+  xdy = 1000.0
+  xlat0 = 52.0
+  xlatcen = 52.0
+  xlon0 = 4.9
+  xloncen = 4.9
+
+[file_templates.bdfile_sfx]
+  archive = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@.sfx"
+
+[suite_control]
+  do_marsprep = false
+
+[system]
+  bdclimdir = "@HOST_CASE_DIR@/climate/@HOST_DOMAIN@"
+  bddir = "@HOST_CASE_DIR@/archive/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+  bddir_sfx = "@HOST_CASE_DIR@/archive/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+  climdir = "@CASEDIR@/climate/@DOMAIN@"
+  host_case = "@CYCLE@_@CSC@_@EVENT_TYPE@_@HOST_DOMAIN@_@YMD_START@"
+  host_case_dir = "@CASEDIR@/../@HOST_CASE@"
+  host_domain = "DEMO_60x80_2500m"

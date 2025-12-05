@@ -1,0 +1,2 @@
+[submission.task_exceptions.Forecast]
+  bindir = "@INSTALL_DIR@/CY49t2-sp/bin/"

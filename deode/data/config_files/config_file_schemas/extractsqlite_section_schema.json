@@ -1,0 +1,46 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Extract sqlite Section, defined in include/sqlite.toml",
+    "description": "Model for validation of the data in the 'sqlite' section of the config file.",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+        "parameter_list": {
+            "type": "array",
+            "description": "A list where each element contains name of parameter and location files",
+            "items": {
+                "type": "object",
+                "required": [ "param_file", "location_file" ],
+                "properties": {
+                    "param_list": {
+                      "type": "string"
+                    },
+                    "location_list": {
+                      "type": "string"
+                    }
+                }
+            },
+            "default": []
+        },
+        "sqlite_model_name": {
+            "type": "string",
+            "description": "Model name used in the sqlite tables",
+            "default": "@CASE@"
+        },
+        "sqlite_path": {
+            "type": "string",
+            "description": "Path to generated sqlite files",
+            "default": "@ARCHIVE_ROOT@/sqlite/"
+        },
+        "sqlite_template": {
+            "type": "string",
+            "description": "File name template for generated sqlite files",
+            "default": "FCTABLE/{MODEL}/{YYYY}/{MM}/FCTABLE_{PP}_{YYYY}{MM}_{HH}.sqlite"
+        },
+        "selection": {
+            "type": "string",
+            "description": "Temporal selection. Same syntax as for output_settings. Leave empty to inherit the fullpos settings.",
+            "default": "PT1H"
+        }
+    }
+}

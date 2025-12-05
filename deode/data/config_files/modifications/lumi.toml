@@ -1,0 +1,8 @@
+[general.times]
+  start = "-P1D"
+
+[submission.task_exceptions.PgdFilterTownFrac.ENV]
+  ECF_TRIES = 15
+
+[suite_control]
+  max_static_data_tasks = 2

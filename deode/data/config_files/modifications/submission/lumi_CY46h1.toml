@@ -1,0 +1,114 @@
+[submission]
+  bindir = "/scratch/project_465000527/benacchi/HA/bin"
+  nproma = -64
+
+[submission.task_exceptions.C903]
+  bindir = "/scratch/project_465000527/ospaniel/executable_cy48t3/"
+
+[submission.task_exceptions.CreateGrib]
+  binary = "gl"
+  bindir = "/scratch/project_465000527/benacchi/HA/bin"
+
+[submission.task_exceptions.PgdUpdate]
+  binary = "gl"
+  bindir = "/scratch/project_465000527/benacchi/HA/bin"
+
+[submission.types.Forecast_cpu]
+  NPROC = 16
+  SCHOST = "lumi-batch"
+  tasks = ["Forecast"]
+  WRAPPER = "ulimit -s unlimited; srun"
+
+[submission.types.Forecast_cpu.BATCH]
+  CPU = "#SBATCH --cpus-per-task=4"
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=2"
+  NTASKS = "#SBATCH --ntasks=16"
+  PARTITION = "#SBATCH --partition=debug"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=8"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[submission.types.Forecast_cpu.ENV]
+  MPI_TASKS = 32 # $SLURM_NTASKS
+
+  OMP_NUM_THREADS = 4
+  OMP_PLACES = "threads"
+  OMP_STACKSIZE = "4G"
+
+  DR_HOOK = 1
+  DR_HOOK_IGNORE_SIGNALS = 8
+  DR_HOOK_SHOW_PROCESS_OPTIONS = 0
+  DR_HOOK_SILENT = 1
+
+  KMP_MONITOR_STACKSIZE = "4G"
+  KMP_STACKSIZE = "4G"
+
+  EC_MEMINFO = 0
+  EC_MPI_ATEXIT = 0
+  EC_PROFILE_HEAP = 0
+  EC_PROFILE_MEM = 0
+  ECF_SSL = 1
+
+  FI_CXI_DEFAULT_TX_SIZE = 64000
+  FI_CXI_RDZV_THRESHOLD = 128000
+  FI_CXI_RX_MATCH_MODE = 'hybrid'
+
+  ECCODES_DEFINITION_PATH = "/scratch/project_465000527/ospaniel/opt/eccodes-2.34.1/share/eccodes:deode/data/eccodes/definitions/grib2/localConcepts/lfpw"
+  ECCODES_SAMPLES_PATH = "/users/ospaniel/opt/share/eccodes/ifs_samples/grib1_mlgrib2"
+
+[submission.types.Forecast_cpu.MODULES]
+  00_PURGE = ["--force", "purge"]
+  01_PYTHON = ["load", "cray-python/3.10.10"]
+  02_USE = ["use", "/scratch/project_465000527/SW/modules/"]
+  03_GFTN12 = ["load", "scl-gfortran12_23"]
+  04_ECFLOW = ["load", "scl-ecflow_23"]
+  99_LIST = ["list", ""]
+
+[submission.types.parallel]
+  NPROC = 16
+  SCHOST = "lumi-batch"
+  tasks = ["E927", "C903"]
+  WRAPPER = "srun"
+
+[submission.types.parallel.ENV]
+  DR_HOOK_IGNORE_SIGNALS = 8
+  FI_CXI_RX_MATCH_MODE = 'hybrid'
+  OMP_NUM_THREADS = 1 # CPUS_PER_TASK # this should be 4, to be tried
+
+[submission.types.parallel.MODULES]
+  00_PURGE = ["--force", "purge"]
+  01_LUMI = ["load", "LUMI/23.03"]
+  02_PARTITION_G = ["load", "partition/C"]
+  03_CPE = ["load", "cpe/23.03"]
+  03a_CPE = ["load", "libaec/1.0.6-cpeCray-23.09"]
+  04_PRG_ENV = ["load", "PrgEnv-cray"]
+  05_TRENTO = ["load", "craype-x86-trento"]
+  06_MPICH = ["load", "cray-mpich"]
+  07_LIBSCI = ["load", "cray-libsci"]
+  08_FFTW = ["load", "cray-fftw"]
+  09_PYTHON = ["load", "cray-python/3.10.10"]
+  10_HDF5 = ["load", " cray-hdf5-parallel"]
+  11_NETCDF = ["load", "cray-netcdf-hdf5parallel"]
+  12_BUILDTOOLS = ["load", "buildtools"]
+  13_NCURSES = ["load", "ncurses/6.4-cpeCray-23.09"]
+  14_CCE = ["load", "load cce/16.0.1"]
+  15_RIMVYDAS_USE = ["use", "/scratch/project_465000527/jasinskas/scl/modules/"]
+  16_RIMVYDAS_FTN16 = ["load", "scl-ftn16_23"]
+  17_RIMVYDAS_ECFLOW = ["load", "scl-ecflow_23"]
+
+[submission.types.serial]
+  tasks = ["Gmted", "Soil", "Pgd", "PgdUpdate", "Prep", "E923Monthly", "E923Constant"]
+
+[submission.types.serial.ENV]
+  DR_HOOK_ALLOW_COREDUMP = 0
+  OMP_NUM_THREADS = 1
+
+[submission.types.serial.MODULES]
+  00_PURGE = ["--force", "purge"]
+  01_USE = ["use", "/scratch/project_465000527/SW/modules/"]
+  02_FTN16 = ["load", "scl-gfortran12_23"]
+  99_LIST = ["list", ""]
+
+[submission.types.sqlite.MODULES]
+  01_USE = ["use", "/scratch/project_465000527/SW/modules/"]

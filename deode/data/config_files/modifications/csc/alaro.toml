@@ -1,0 +1,24 @@
+[general]
+  csc = "ALARO"
+  surfex = false
+
+[general.output_settings]
+  surfex = ""
+
+[boundaries]
+  humi_gp = false
+
+[creategrib.CreateGrib]
+  conversions = []
+
+[pgd]
+  npatch = 1
+
+[submission]
+  precision = "R64"
+
+[submission.task_exceptions.Forecast.ENV]
+  APL_ALARO = "1"
+
+[submission.task_exceptions.PgdFilterTownFrac.ENV]
+  DR_HOOK_NOT_MPI = 1

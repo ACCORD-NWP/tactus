@@ -1,0 +1,29 @@
+[submission]
+  max_ecf_tasks = -1
+
+[submission.task_exceptions.Pgd.BATCH]
+  MEM = "#SBATCH --mem=0GB"
+  NODES = "#SBATCH --nodes=4"
+  NTASKS = "#SBATCH --ntasks=16"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=4"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[submission.types.Forecast_cpu]
+  NPROC = 640
+  NPROC_IO = 0
+
+[submission.types.Forecast_cpu.BATCH]
+  CPU = "#SBATCH --cpus-per-task=4"
+  MEM = "#SBATCH --mem=0GB"
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=20"
+  NTASKS = "#SBATCH --ntasks=640"
+  PARTITION = "#SBATCH --partition=standard"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=32"
+  WALLTIME = "#SBATCH --time=07:00:00"
+
+[submission.types.parallel.BATCH]
+  MEM = "#SBATCH --mem=0GB"
+
+[submission.types.serial.BATCH]
+  MEM = "#SBATCH --mem=0GB"

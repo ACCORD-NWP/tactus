@@ -1,0 +1,20 @@
+[submission]
+  compiler = "gnu"
+
+[submission.types.parallel.MODULES]
+  00_PRGENV = ["load", "prgenv/gnu"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+  FFTW = ["load", "fftw/3.3.10"]
+  HDF5 = ["load", "hdf5/1.14.6"]
+  MKL = ["load", "openblas"]
+  NETCDF = ["load", "netcdf4/4.9.3"]
+  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
+
+[submission.types.serial.MODULES]
+  00_PRGENV = ["load", "prgenv/gnu"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+  FFTW = ["load", "fftw/3.3.10"]
+  HDF5 = ["load", "hdf5/1.14.6"]
+  MKL = ["load", "openblas"]
+  NETCDF = ["load", "netcdf4/4.9.3"]
+  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]

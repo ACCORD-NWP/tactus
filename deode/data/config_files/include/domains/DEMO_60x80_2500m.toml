@@ -1,0 +1,10 @@
+[domain]
+  gridtype = "linear"
+  name = "DEMO_60x80_2500m"
+  nimax = 49
+  njmax = 69
+  tstep = 75
+  xdx = 2500
+  xdy = 2500
+  xlatcen = 51.967
+  xloncen = 4.9

@@ -1,0 +1,18 @@
+[general.times]
+  start = "-P1D"
+
+[boundaries.ifs]
+  selection = "IFSENS"
+
+[eps.general]
+  members = "0:3"
+
+[eps.member_settings.boundaries.ifs]
+  bdmember = "0:3"
+
+[eps.member_settings.namelist_update.master.forecast.namspp]
+  iezdiag_pos = {"1:" = -1}
+  lspp = {"1:" = true}
+
+[suite_control]
+  member_specific_mars_prep = true

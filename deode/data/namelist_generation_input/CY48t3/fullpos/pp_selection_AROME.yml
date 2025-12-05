@@ -1,0 +1,85 @@
+# Do the selection of fields below.
+# Note that xxt00000000 inherits from xxtddddhhmm
+selection:
+ xxtddddhhmm: &default
+  NAMFPPHY:
+   CLPHY:
+    - 'SURFTEMPERATURE'
+    - 'SURFIND.TERREMER'
+   CLCFU:
+    - 'SOMMFLU.RAY.SOLA'
+    - 'SURFRAYT SOLA DE'
+    - 'SURFACCPLUIE'
+    - 'SURFACCNEIGE'
+    - 'SURFACCGRAUPEL'
+   CLXFU:
+    - 'SURFNEBUL.HAUTE'
+    - 'SURFNEBUL.MOYENN'
+    - 'SURFNEBUL.BASSE'
+    - 'SURFNEBUL.TOTALE'
+    - 'CLSU.RAF60M.XFU'
+    - 'CLSV.RAF60M.XFU'
+    - 'CLSVENT.ZONAL'
+    - 'CLSVENT.MERIDIEN'
+    - 'CLSTEMPERATURE'
+  NAMFPDY2:
+   CL2DF:
+    - 'SURFPRESSION'
+    - 'SURFCAPE.POS.F00'
+    - 'SURFCIEN.POS.F00'
+    - 'SURFTOT.WAT.VAPO'
+    - 'SPECSURFGEOPOTEN'
+  NAMFPDYH:
+   CL3DF:
+    - 'TEMPERATURE'
+    - 'WIND.U.PHYS'
+    - 'WIND.V.PHYS'
+    - 'TKE'
+   RFP3H:
+    - 75.
+    - 100.
+    - 130.
+    - 150.
+    - 200.
+  NAMFPDYP:
+    CL3DF:
+     - 'TEMPERATURE'
+     - 'WIND.U.PHYS'
+     - 'WIND.V.PHYS'
+     - 'GEOPOTENTIEL'
+     - 'TKE'
+    RFP3P:
+     - 50000.
+     - 60000.
+     - 70000.
+     - 75000.
+     - 80000.
+     - 85000.
+     - 90000.
+     - 92500.
+     - 95000.
+     - 97500.
+  NAMFPDYS:
+   CLOUD_WATER:
+    CL3DF:
+     - 'CLOUD_WATER'
+    NRFP3S:
+     - ${namelist.nrfp3s}
+
+ xxtddddhh00:
+  <<: *default
+
+ xxt00000000:
+  NAMFPPHY:
+   CLPHY:
+    - 'SURFTEMPERATURE'
+    - 'SURFIND.TERREMER'
+   CLXFU:
+    - 'SURFNEBUL.HAUTE'
+    - 'SURFNEBUL.MOYENN'
+    - 'SURFNEBUL.BASSE'
+    - 'SURFNEBUL.TOTALE'
+    - 'CLSVENT.ZONAL'
+    - 'CLSVENT.MERIDIEN'
+    - 'CLSTEMPERATURE'
+  <<: *default

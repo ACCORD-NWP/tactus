@@ -1,0 +1,15 @@
+[scheduler]
+
+[scheduler.ecfvars]
+  case_prefix = ""
+  ecf_deode_home = "strip_off_mount_path('@DEODE_HOME@',)"
+  ecf_files = "@HOME@/deode_ecflow/ecf_files"
+  ecf_files_remotely = "@HOME@/deode_ecflow/ecf_files"
+  ecf_home = "@HOME@/deode_ecflow/jobout"
+  ecf_host = "_select_host_from_list(['ecfg-@USER@-1', 'ecflow-gen-@USER@-001'],)"
+  ecf_jobout = "@HOME@/deode_ecflow/jobout"
+  ecf_out = "@HOME@/deode_ecflow/jobout"
+  ecf_port = 3141
+
+[scheduler.ecfvars.troika]
+  config_file = "@ECF_DEODE_HOME@/data/config_files/troika.yml"

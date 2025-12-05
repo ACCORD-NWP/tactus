@@ -1,0 +1,247 @@
+nl_master_base:
+  NAMFPC:
+    CFP2DF:
+    - MSLPRESSURE
+    - SURFCAPE.POS.F00
+    - SURFCIEN.POS.F00
+    - SURFEQUILIBRLEV
+    - SURFFREECONVLEV
+    - SURFISOTPW0.MALT
+    - SURFLIFTCONDLEV
+    - SURFPRESSION
+    - SURFTOT.WAT.VAPO
+    CFP3DF:
+    - ABS_VORTICITY
+    - CLOUD_FRACTI
+    - DIVERGENCE
+    - GEOPOTENTIEL
+    - GRAUPEL
+    - HUMI.SPECIFI
+    - HUMI_RELATIVE
+    - ISOT_ALTIT
+    - LIQUID_WATER
+    - POT_VORTICITY
+    - PRESSURE
+    - RAIN
+    - SNOW
+    - SOLID_WATER
+    - TEMPERATURE
+    - TEMPE_POTENT
+    - THETA_PRIM_W
+    - THETA_VIRTUA
+    - VERT.VELOCIT
+    - WIND.U.PHYS
+    - WIND.V.PHYS
+    CFPCFU:
+    - SOMMFLU.RAY.SOLA
+    - SOMMFLU.RAY.THER
+    - SURFACCGRAUPEL
+    - SURFACCNEIGE
+    - SURFACCPLUIE
+    - SURFFLU.CHA.SENS
+    - SURFFLU.LAT.MEVA
+    - SURFFLU.LAT.MSUB
+    - SURFFLU.MEVAP.EA
+    - SURFFLU.MSUBL.NE
+    - SURFFLU.RAY.SOLA
+    - SURFFLU.RAY.THER
+    - SURFRAYT SOLA DE
+    - SURFRAYT THER DE
+    - SURFTENS.TURB.ME
+    - SURFTENS.TURB.ZO
+    CFPDOM: DEMO_60x80_2500m
+    CFPFMT: LELAM
+    CFPPHY:
+    - SURFRESERV.NEIGE
+    - SURFTEMPERATURE
+    CFPXFU:
+    - CLPMHAUT.MOD.XFU
+    - CLSHUMI.RELATIVE
+    - CLSHUMI.SPECIFIQ
+    - CLSMAXI.TEMPERAT
+    - CLSMINI.TEMPERAT
+    - CLSTEMPERATURE
+    - CLSU.RAF.MOD.XFU
+    - CLSV.RAF.MOD.XFU
+    - CLSVENT.MERIDIEN
+    - CLSVENT.ZONAL
+    - SURFDIAGHAIL
+    - SURFINSGRAUPEL
+    - SURFINSNEIGE
+    - SURFINSPLUIE
+    - SURFNEBUL.BASSE
+    - SURFNEBUL.CONVEC
+    - SURFNEBUL.HAUTE
+    - SURFNEBUL.MOYENN
+    - SURFNEBUL.TOTALE
+    LFPCAPEX: true
+    LFPMOIS: false
+    LISOT_ABOVEG: true
+    L_READ_MODEL_DATE: true
+    NFPCAPE: 5
+    NFPCLI: 1
+    NFPGRIB: 141
+    NRFP3S: 65
+    RFP3H:
+    - 20.0
+    - 50.0
+    - 100.0
+    - 250.0
+    - 500.0
+    - 750.0
+    - 1000.0
+    - 1250.0
+    - 1500.0
+    - 2000.0
+    - 2500.0
+    - 3000.0
+    RFP3I:
+    - -273.15
+    - -263.15
+    RFP3P:
+    - 5000.0
+    - 10000.0
+    - 25000.0
+    - 30000.0
+    - 50000.0
+    - 60000.0
+    - 70000.0
+    - 80000.0
+    - 85000.0
+    - 92500.0
+    - 95000.0
+    - 100000.0
+    RFP3PV:
+    - 1.5e-06
+    - 2.0e-06
+  NAMGFL:
+    NGFL_EZDIAG: 3
+    YA_NL:
+      LPT: false
+      LREQOUT: true
+      NREQIN: 1
+    YEZDIAG_NL:
+    - CNAME: EZDIAG01
+      LREQOUT: false
+    - CNAME: EZDIAG02
+      LREQOUT: false
+    - CNAME: EZDIAG03
+      LREQOUT: false
+    YG_NL:
+      CNAME: GRAUPEL
+      LPT: false
+      LQM: true
+      LSLHD: true
+      NCOUPLING: -1
+      NREQIN: -1
+      REFVALC: 0.0
+      REFVALI: 0.0
+    YI_NL:
+      CNAME: SOLID_WATER
+      LPT: false
+      LQM: true
+      LSLHD: true
+      NCOUPLING: -1
+      NREQIN: 1
+      REFVALC: 0.0
+    YL_NL:
+      CNAME: LIQUID_WATER
+      LPT: false
+      LQM: true
+      LSLHD: true
+      NCOUPLING: -1
+      NREQIN: 1
+      REFVALC: 0.0
+    YQ_NL:
+      CNAME: HUMI.SPECIFI
+      LCOMAD: true
+      LPT: false
+      LQM: true
+      LSLHD: false
+      NCOUPLING: 1
+      NREQIN: 1
+    YR_NL:
+      CNAME: RAIN
+      LPT: false
+      LQM: true
+      LSLHD: true
+      NCOUPLING: -1
+      NREQIN: -1
+      REFVALC: 0.0
+      REFVALI: 0.0
+    YSRC_NL:
+      LPT: false
+    YS_NL:
+      CNAME: SNOW
+      LPT: false
+      LQM: true
+      LSLHD: true
+      NCOUPLING: -1
+      NREQIN: -1
+      REFVALC: 0.0
+      REFVALI: 0.0
+    YTKE_NL:
+      LPT: false
+      NCOUPLING: 0
+      NREQIN: -1
+    _start_index:
+      yezdiag_nl:
+      - 1
+  NAMPARAR:
+    CMF_CLOUD: STAT
+    CMF_UPDRAFT: DUAL
+    LHARATU: true
+    LHGT_QS: true
+    LICERAD: true
+    LKOGAN: true
+    LLCRIT: true
+    LMIXUV: false
+    LOCND2: true
+    LOLSMC: true
+    LOSEDIC: true
+    LOSIGMAS: true
+    LOSUBG_COND: true
+    LOTOWNC: true
+    LSHALLOWMF: true
+    LSTATNW: true
+    LTOTPREC: false
+    NPRINTFR: 10000
+    NPTP: 1
+    NSWB_MNH: 6
+    RADGR: 0.5
+    RADSN: 1.0
+    RFRMIN:
+    - 1.0e-05
+    - 1.0e-08
+    - 3.0e-09
+    - 3.0e-09
+    - null
+    - null
+    - 0.0
+    - null
+    - null
+    - null
+    - null
+    - 0.05
+    - null
+    - null
+    - null
+    - null
+    - null
+    - null
+    - null
+    - null
+    - null
+    - 0.25
+    - null
+    - 2.5
+    - null
+    - 250000000.0
+    - null
+    - null
+    - 1000.0
+    VSIGQSAT: 0.02
+    _start_index:
+      rfrmin:
+      - 1
+  NAMGEM: {}

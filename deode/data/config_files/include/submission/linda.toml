@@ -1,0 +1,12 @@
+[submission]
+  #bindir = "/dev/null"
+  default_submit_type = "background"
+
+[submission.iomerge.age_limit]
+
+[submission.task]
+  wrapper = ""
+
+[submission.types.background]
+  SCHOST = "localhost"
+  WRAPPER = ""

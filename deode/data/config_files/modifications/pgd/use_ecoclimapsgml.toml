@@ -1,0 +1,16 @@
+[namelist_update.surfex.pgd.NAM_DATA_ISBA]
+  XUNIF_ALBNIR_SOIL = 0.0
+  XUNIF_ALBNIR_VEG = 0.0
+  XUNIF_ALBVIS_SOIL = 0.0
+  XUNIF_ALBVIS_VEG = 0.0
+  XUNIF_H_TREE = 0.0
+  XUNIF_LAI = 0.0
+
+[platform]
+  albnir_soil_dir = "@ecosg_data_path@/ALBNIR_SAT"
+  albnir_veg_dir = "@ecosg_data_path@/ALBNIR_SAT"
+  albvis_soil_dir = "@ecosg_data_path@/ALBVIS_SAT"
+  albvis_veg_dir = "@ecosg_data_path@/ALBVIS_SAT"
+  ecosg_data_path = "@CLIMDATA@/ECOCLIMAP-SG-ML"
+  lai_dir = "@ecosg_data_path@/LAI/60M"
+  tree_height_dir = "@ecosg_data_path@/HT"

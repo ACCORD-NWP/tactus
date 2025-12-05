@@ -1,0 +1,22 @@
+frameworks:
+  destine:
+    subCentre: 84
+    indicatorOfUnitOfTimeRange: 13
+
+cycles:
+  CY46h1:
+    generatingProcessIdentifier: 1
+  CY48t3:
+    generatingProcessIdentifier: 2
+  CY49t2:
+    generatingProcessIdentifier: 3
+  CY50t1:
+    generatingProcessIdentifier: 4
+
+cscs:
+  ALARO:
+    backgroundProcess: 3
+  AROME:
+    backgroundProcess: 4
+  HARMONIE_AROME:
+    backgroundProcess: 5

@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Macros Section, defined in include/macros.toml",
+  "description": "Model for the 'macros' section.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "select": {
+       "title": "Macro subsection",
+       "type": "object",
+       "properties": {
+         "default": {
+          "title": "Default macros",
+          "type": "object",
+          "properties": {
+            "gen_macros": {
+              "type": "array",
+              "description": "Turns any string config to a macro, use a dict to rename an attribute.",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object"
+                  }
+                ]
+              }
+            },
+            "group_macros": {
+              "type": "array",
+              "description": "Turns a full config section to a macro",
+              "items": {
+                "type": "string"
+              }
+            },
+            "os_macros": {
+              "type": "array",
+              "description": "Environment variables used as macros",
+              "items": {
+                "type": "string"
+              }
+            }
+	  }
+         }
+       }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+[scheduler]
+
+[scheduler.ecfvars]
+  ecf_deode_home = ""
+  ecf_files = ""
+  ecf_files_remotely = ""
+  ecf_home = ""
+  ecf_host = "bogus"
+  ecf_jobout = ""
+  ecf_out = ""
+  ecf_port = -1

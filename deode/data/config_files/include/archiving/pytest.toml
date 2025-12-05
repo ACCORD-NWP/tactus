@@ -1,0 +1,101 @@
+[archiving]
+
+[archiving.DataBridge.fdb]
+
+[archiving.DataBridge.fdb.fpgrib_files]
+  active = false
+  inpath = "@ARCHIVE@"
+  pattern = "GRIBPF*"
+
+[archiving.FDB.fdb]
+
+[archiving.FDB.fdb.fpgrib_files]
+  active = false
+  inpath = "@ARCHIVE@"
+  pattern = "GRIBPF*"
+
+[archiving.hour.copy.config]
+  active = true
+  inpath = ""
+  newname = "config.toml"
+  outpath = "@ARCHIVE@"
+  pattern = "@CONFIG@"
+
+[archiving.hour.ecfs.config]
+  active = true
+  inpath = "@ARCHIVE@"
+  outpath = "archive/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  pattern = "config.toml"
+
+[archiving.hour.ecfs.fa_files]
+  active = true
+  inpath = "@ARCHIVE@"
+  outpath = "archive/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  pattern = "ICMSH*"
+
+[archiving.hour.ecfs.fpgrib_files]
+  active = true
+  inpath = "@ARCHIVE@"
+  outpath = "archive/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  pattern = "GRIBPF*"
+
+[archiving.hour.ecfs.glgrib_files]
+  active = true
+  inpath = "@ARCHIVE@"
+  outpath = "archive/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  pattern = "GRIB@CNMEXP@*"
+
+[archiving.hour.ecfs.sqlite]
+  active = "suite_control.do_extractsqlite"
+  inpath = "@SQLITE_PATH@"
+  outpath = "sqlite/@MEMBER_STR@"
+  pattern = "*"
+
+[archiving.hour.scp.lumi_grib2]
+  active = false
+  inpath = "@ARCHIVE@"
+  outpath = "lumi_transfer:@SCRATCH@/@USER@_atos_@CASE@/archive/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  pattern = "GRIBPF*"
+
+[archiving.hourlogs.ecfs.logs]
+  active = true
+  inpath = "@LOGS@"
+  outpath = "logs/@MEMBER_STR@"
+  pattern = "@YYYY@@MM@@DD@_@HH@@mm@.tar.gz"
+
+[archiving.merged_sqlite.ecfs.merged_sqlite]
+  active = "suite_control.do_mergesqlite"
+  inpath = "@MERGED_SQLITE_PATH@"
+  outpath = "merged_sqlite"
+  pattern = "*"
+
+[archiving.prefix]
+  ecfs = "ec:/@USER@/deode/@CASE@"
+
+[archiving.static.ecfs]
+
+[archiving.static.ecfs.climate_files]
+  active = true
+  inpath = "@CLIMDIR@"
+  outpath = "climate/@DOMAIN@/@MEMBER_STR@"
+  pattern = ["Const.Clim*", "PGD*"]
+
+[archiving.static.ecfs.config]
+  active = true
+  inpath = "@ARCHIVE_ROOT@"
+  outpath = ""
+  pattern = ["config.toml", "expanded_config.toml"]
+
+[archiving.staticlogs.ecfs.logs]
+  active = true
+  inpath = "@LOGS@"
+  outpath = "logs"
+  pattern = "StaticData.tar.gz"
+
+[archiving.staticmember.ecfs]
+
+[archiving.staticmember.ecfs.climate_files]
+  active = true
+  inpath = "@CLIMDIR@"
+  outpath = "climate/@DOMAIN@/@MEMBER_STR@"
+  pattern = ["Const.Clim*", "PGD*"]

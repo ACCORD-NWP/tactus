@@ -1,0 +1,11 @@
+[general.times]
+  start = "-P1D"
+
+[boundaries.ifs]
+  selection = "IFSENS"
+
+[eps.general]
+  members = "0:3"
+
+[eps.member_settings.boundaries.ifs]
+  bdmember = "0:3"
