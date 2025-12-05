@@ -1,0 +1,49 @@
+*.swp
+__pycache__/
+*.so
+*.Rhistory
+*.c
+tmp_*
+temp_*
+tmp\.*
+temp\.*
+*.egg-info
+build/
+#*.csv
+*outfile*
+list/
+.tox/
+tmp/
+poetry.lock
+dist/
+.idea/
+.vscode/
+coverage.xml
+.coverage.xml
+.coverage
+.env
+.venv
+.flakeheaven_cache/
+.exp_dependencies*
+.conda/
+
+# Files/directories generated at runtime
+archived_file
+input_file
+ecf/[A-Z]*.py
+
+# Stuff related to jupyter notebooks
+.ipynb_checkpoints/
+
+# Stuff related to Sphinx documentation
+docs/_build/
+docs/deode.rst
+docs/deode.suites.rst
+docs/deode.tasks.rst
+docs/deode.templates.rst
+docs/deode.templates.ecflow.rst
+docs/modules.rst
+docs/markdown_docs/config.md
+
+# Stuff related to draw.io
+*.drawio.bkp

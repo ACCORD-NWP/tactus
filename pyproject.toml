@@ -2,7 +2,7 @@
   # Package ID info
   description = "The Tactus scripting system."
   name = "tactus"
-  version = "0.23.0"
+  version = "0.1.0"
   # Other package info
   authors = ["The DE_330 project."]
   documentation = "https://destination-earth-digital-twins.github.io/deode-workflow-docs"

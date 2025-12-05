@@ -4,7 +4,7 @@ from pathlib import Path
 
 import yaml
 
-import deode
+import tactus
 from tactus.plugin import (
     DeodePlugin,
     DeodePluginRegistry,
