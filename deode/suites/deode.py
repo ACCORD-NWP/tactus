@@ -2,9 +2,9 @@
 
 from pathlib import Path
 
-from ..os_utils import deodemakedirs
-from .base import EcflowSuiteTask, SuiteDefinition
-from .deode_suite_components import StaticDataFamily, TimeDependentFamily
+from deode.os_utils import deodemakedirs
+from deode.suites.base import EcflowSuiteTask, SuiteDefinition
+from deode.suites.deode_suite_components import StaticDataFamily, TimeDependentFamily
 
 
 class DeodeSuiteDefinition(SuiteDefinition):

@@ -3,26 +3,27 @@
 from datetime import datetime, timedelta
 from typing import Generator, List, Optional, Tuple
 
-from deode.suites.suite_utils import Cycles, lbc_times_generator
-
-from ..datetime_utils import (
+from deode.boundary_utils import Boundary
+from deode.datetime_utils import (
     as_datetime,
     as_timedelta,
     get_decadal_list,
     get_decade,
     get_month_list,
 )
-from ..logs import logger
-from ..submission import ProcessorLayout, TaskSettings
-from ..tasks.impacts import get_impact
-from ..toolbox import Platform
-from .base import (
+from deode.host_actions import SelectHost
+from deode.logs import logger
+from deode.submission import ProcessorLayout, TaskSettings
+from deode.suites.base import (
     EcflowSuiteFamily,
     EcflowSuiteLimit,
     EcflowSuiteTask,
     EcflowSuiteTrigger,
     EcflowSuiteTriggers,
 )
+from deode.suites.suite_utils import Cycles, lbc_times_generator
+from deode.tasks.impacts import get_impact
+from deode.toolbox import Platform
 
 
 class PgdInputFamily(EcflowSuiteFamily):
@@ -478,9 +479,11 @@ class MirrorFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
+        platform = Platform(config)
+
         if config["suite_control.mirror_globalDT"]:
             EcflowSuiteTask(
-                config["platform.mirrorglobalDT"]["remote_path"].split("/")[-1],
+                config["scheduler.mirror_globalDT"]["remote_path"].split("/")[-1],
                 self,
                 config,
                 task_settings,
@@ -488,17 +491,42 @@ class MirrorFamily(EcflowSuiteFamily):
                 input_template=input_template,
                 trigger=[trigger],
                 mirror=True,
-                mirror_config=config["platform.mirrorglobalDT"],
+                mirror_config=config["scheduler.mirror_globalDT"],
+                ecf_files_remotely=ecf_files_remotely,
+            )
+
+        if config["suite_control.mirror_host_case"]:
+            mirror_config = config["scheduler.mirror_host_case"].dict()
+            remote_host = mirror_config["remote_host"]
+            remote_host = platform.substitute(remote_host)
+            mirror_config["remote_host"] = platform.evaluate(
+                remote_host, object_=SelectHost
+            )
+
+            bd_basetime = Boundary(config).bd_basetime
+            mirror_config["remote_path"] = platform.substitute(
+                mirror_config["remote_path"], basetime=bd_basetime, validtime=cycle_valid
+            )
+            EcflowSuiteTask(
+                config["scheduler.mirror_host_case"]["remote_path"].split("/")[-1],
+                self,
+                config,
+                task_settings,
+                ecf_files,
+                input_template=input_template,
+                trigger=[trigger],
+                mirror=True,
+                mirror_config=mirror_config,
                 ecf_files_remotely=ecf_files_remotely,
             )
 
         if config["suite_control.mirror_offline"]:
-            mirror_config = config["platform.mirroroffline"].dict()
-            mirror_config["remote_path"] = Platform(config).substitute(
+            mirror_config = config["scheduler.mirror_offline"].dict()
+            mirror_config["remote_path"] = platform.substitute(
                 mirror_config["remote_path"], validtime=cycle_valid
             )
             EcflowSuiteTask(
-                config["platform.mirroroffline"]["remote_path"].split("/")[-1],
+                config["scheduler.mirror_offline"]["remote_path"].split("/")[-1],
                 self,
                 config,
                 task_settings,
@@ -1267,13 +1295,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     else None
                 )
 
-                if (
-                    config["suite_control.mirror_globalDT"]
-                    and "platform.mirrorglobalDT" in config
-                ) or (
-                    config["suite_control.mirror_offline"]
-                    and "platform.mirroroffline" in config
-                ):
+                if self.has_mirror_family(config):
                     MirrorFamily(
                         time_family,
                         config,
@@ -1284,41 +1306,54 @@ class TimeDependentFamily(EcflowSuiteFamily):
                         cycle_valid=cycle.validtime,
                     )
 
-                    if (
-                        config["suite_control.mirror_globalDT"]
-                        and "platform.mirrorglobalDT" in config
-                    ):
+                    if self.active_mirror(config, "globalDT"):
                         path_globaldt = "{0}/{1}/{2}/Mirrors/{3}".format(
                             parent.path,
                             cycle.day,
                             cycle.time,
-                            config["platform.mirrorglobalDT"]["remote_path"].split("/")[
+                            config["scheduler.mirror_globalDT"]["remote_path"].split("/")[
                                 -1
                             ],
                         )
 
-                        if config["platform.mirrorglobalDT"]["check_var"]:
+                        if config["scheduler.mirror_globalDT"]["check_var"]:
                             check_globaldt_date = {
-                                config["platform.mirrorglobalDT"]["check_var"]: cycle.day
+                                config["scheduler.mirror_globalDT"][
+                                    "check_var"
+                                ]: cycle.day
                             }
 
-                    if (
-                        config["suite_control.mirror_offline"]
-                        and "platform.mirroroffline" in config
-                    ):
+                    if self.active_mirror(config, "offline"):
                         path_offline = "{0}/{1}/{2}/Mirrors/{3}".format(
                             parent.path,
                             cycle.day,
                             cycle.time,
-                            config["platform.mirroroffline"]["remote_path"].split("/")[
+                            config["scheduler.mirror_offline"]["remote_path"].split("/")[
                                 -1
                             ],
                         )
-                        if config["platform.mirroroffline"]["check_var"]:
+                        if config["scheduler.mirror_offline"]["check_var"]:
                             check_offline_date = {
-                                config["platform.mirroroffline"][
+                                config["scheduler.mirror_offline"][
                                     "check_var"
                                 ]: "{0}/{1}".format(cycle.day, cycle.time)
+                            }
+
+                    if self.active_mirror(config, "host_case"):
+                        path_offline = "{0}/{1}/{2}/Mirrors/{3}".format(
+                            parent.path,
+                            cycle.day,
+                            cycle.time,
+                            config["scheduler.mirror_host_case"]["remote_path"].split(
+                                "/"
+                            )[-1],
+                        )
+                        logger.info(config["scheduler.mirror_host_case"]["check_var"])
+                        if config["scheduler.mirror_host_case"]["check_var"]:
+                            check_offline_date = {
+                                config["scheduler.mirror_host_case"][
+                                    "check_var"
+                                ]: "{0}/{1}".format(cycle.day, "0000")
                             }
 
                 inputdata = InputDataFamily(
@@ -1461,6 +1496,20 @@ class TimeDependentFamily(EcflowSuiteFamily):
     def last_node(self):
         """Return the last family node of self."""
         return self._last_node
+
+    def active_mirror(self, config, tag):
+        """Detects active mirror from a given tag."""
+        return (
+            config[f"suite_control.mirror_{tag}"] and f"scheduler.mirror_{tag}" in config
+        )
+
+    def has_mirror_family(self, config):
+        """Detects if we have any active mirrors."""
+        mirror_options = ("globalDT", "offline", "host_case")
+        return any(
+            (config[f"suite_control.mirror_{x}"] and f"scheduler.mirror_{x}" in config)
+            for x in mirror_options
+        )
 
 
 class MergeSQLitesFamily(EcflowSuiteFamily):

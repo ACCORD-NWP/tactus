@@ -4,14 +4,14 @@ import os
 
 from pysurfex.cli import pgd, prep
 
-from ..config_parser import ConfigPaths
-from ..datetime_utils import as_datetime, as_timedelta, cycle_offset
-from ..logs import logger
-from ..namelist import NamelistGenerator
-from ..os_utils import deodemakedirs
-from .base import Task
-from .batch import BatchJob
-from .marsprep import Marsprep
+from deode.boundary_utils import Boundary
+from deode.config_parser import ConfigPaths
+from deode.datetime_utils import as_datetime
+from deode.logs import logger
+from deode.namelist import NamelistGenerator
+from deode.os_utils import deodemakedirs
+from deode.tasks.base import Task
+from deode.tasks.batch import BatchJob
 
 
 class PySurfexBaseTask(Task):
@@ -179,15 +179,12 @@ class Prep(PySurfexBaseTask):
         """Execute."""
         cnmexp = self.config["general.cnmexp"]
         output = f"{self.intp_bddir_sfx}/ICMSH{cnmexp}INIT.sfx"
-        bdmodel = self.config["boundaries.bdmodel"]
 
         if not os.path.exists(output) or self.force:
             binary = self.get_binary("PREP")
             deodemakedirs(self.archive)
 
             bd_has_surfex = self.config["boundaries.bd_has_surfex"]
-            basetime = as_datetime(self.config["general.times.basetime"])
-
             namelist_task = "prep"
             self.nlgen.load(namelist_task)
             settings = self.nlgen.assemble_namelist(namelist_task)
@@ -196,31 +193,14 @@ class Prep(PySurfexBaseTask):
             # TODO this should be externalized
             # Select the correct input file
             basetime = as_datetime(self.config["general.times.basetime"])
+            self.boundary = Boundary(self.config)
             bddir_sfx = self.config["system.bddir_sfx"]
-            if bdmodel == "ifs":
-                mars = Marsprep.mars_selection(
-                    selection=self.platform.substitute(
-                        self.config["boundaries.ifs.selection"]
-                    ),
-                    config=self.config,
-                )
-                bdcycle = as_timedelta(mars["ifs_cycle_length"])
-                bdcycle_start = as_timedelta(mars["ifs_cycle_start"])
-            else:
-                bdcycle = as_timedelta(self.config["boundaries.lam.bdcycle"])
-                bdcycle_start = as_timedelta(self.config["boundaries.lam.bdcycle_start"])
-
-            bdshift = as_timedelta(self.config["boundaries.bdshift_sfx"])
-            bd_basetime = basetime - cycle_offset(
-                basetime, bdcycle, bdcycle_start=bdcycle_start, bdshift=bdshift
-            )
-
             bdfile_sfx_template: str = self.config["file_templates.bdfile_sfx.archive"]
-            if not self.config.get(f"boundaries.{bdmodel}.bdmember"):
+            if not self.config.get(f"boundaries.{self.boundary.bdmodel}.bdmember"):
                 bdfile_sfx_template = bdfile_sfx_template.replace("@BDMEMBER@", "0")
             prep_input_file = self.platform.substitute(
                 f"{bddir_sfx}/{bdfile_sfx_template}",
-                basetime=bd_basetime,
+                basetime=self.boundary.bd_basetime_sfx,
                 validtime=basetime,
             )
 

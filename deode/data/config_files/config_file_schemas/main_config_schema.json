@@ -456,6 +456,11 @@
           "type": "boolean",
           "default": false
         },
+        "mirror_host_case": {
+          "description": "Mirror a host suite and trigger if available.",
+          "type": "boolean",
+          "default": false
+        },
         "mirror_offline": {
           "description": "Mirror offlineSFX suite and trigger if offline is available",
           "type": "boolean",

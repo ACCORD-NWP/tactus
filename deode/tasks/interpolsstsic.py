@@ -1,13 +1,13 @@
 """InterpolSstSic."""
 
-import ast
 import os
 
-from ..datetime_utils import as_datetime, as_timedelta, cycle_offset
+from deode.boundary_utils import Boundary
+
+from ..datetime_utils import as_datetime
 from ..logs import logger
 from .base import Task
 from .batch import BatchJob
-from .marsprep import Marsprep
 
 
 class InterpolSstSic(Task):
@@ -26,26 +26,11 @@ class InterpolSstSic(Task):
         Task.__init__(self, config, __class__.__name__)
 
         self.basetime = as_datetime(self.config["general.times.basetime"])
-
-        mars = Marsprep.mars_selection(
-            selection=self.platform.substitute(self.config["boundaries.ifs.selection"]),
-            config=self.config,
-        )
-        bdcycle = as_timedelta(mars["ifs_cycle_length"])
-        bdcycle_start = as_timedelta(mars["ifs_cycle_start"])
-        bdshift = as_timedelta(self.config["boundaries.bdshift"])
+        self.boundary = Boundary(config)
 
         self.outfile = self.config["file_templates.sstfile.archive"]
         self.target = (
             f"{self.platform.get_system_value('intp_bddir')}" + "/" + f"{self.outfile}"
-        )
-        # Boundary basetime
-        self.bd_basetime = self.basetime - cycle_offset(
-            self.basetime, bdcycle, bdcycle_start=bdcycle_start, bdshift=bdshift
-        )
-
-        self.bd_index_time_dict = ast.literal_eval(
-            self.config.get("task.args.bd_index_time_dict")
         )
         self.gl = self.get_binary("gl")
 
@@ -70,7 +55,7 @@ class InterpolSstSic(Task):
         # Boundary input file(s)
         bddir_sst = self.config["system.bddir_sst"]
 
-        for bd_index, bd_time in self.bd_index_time_dict.items():
+        for bd_index, bd_time in self.boundary.bd_index_time_dict.items():
             merge_ocean_models = ""
             merge_ocean_files = ""
             for sstmodel in self.config["boundaries.sstmodels"]:
@@ -84,13 +69,13 @@ class InterpolSstSic(Task):
 
                     infile = self.platform.substitute(
                         infile,
-                        basetime=self.bd_basetime,
+                        basetime=self.boundary.bd_basetime,
                         validtime=as_datetime(bd_time),
                     )
                     self.fmanager.input(
                         f"{bddir_sst}/{infile}",
                         infile,
-                        basetime=self.bd_basetime,
+                        basetime=self.boundary.bd_basetime,
                         validtime=as_datetime(bd_time),
                     )
                 else:
@@ -102,10 +87,9 @@ class InterpolSstSic(Task):
             sst_is_lsm = self.config["boundaries.sst_is_lsm"]
 
             # ADJUST_SST_UNDER_ICE must be TRUE only if sice is used
-            if self.config["general.surfex_sea_ice"] == "sice":
-                adjust_sst_under_ice = ".TRUE."
-            else:
-                adjust_sst_under_ice = ".FALSE."
+            adjust_sst_under_ice = (
+                ".TRUE." if self.config["general.surfex_sea_ice"] == "sice" else ".FALSE."
+            )
 
             # Create namelist for gl
             with open("namgl", "w") as namelist:
@@ -115,7 +99,7 @@ class InterpolSstSic(Task):
       MERGE_OCEAN_FILES={
           self.platform.substitute(
               merge_ocean_files,
-              basetime=self.bd_basetime,
+              basetime=self.boundary.bd_basetime,
               validtime=as_datetime(bd_time)
           )
       }
@@ -125,7 +109,7 @@ class InterpolSstSic(Task):
       OUTKEY%ENDSTEP={
           self.platform.substitute(
               "@LL@",
-              basetime=self.bd_basetime,
+              basetime=self.boundary.bd_basetime,
               validtime=as_datetime(bd_time)
           )
       },
