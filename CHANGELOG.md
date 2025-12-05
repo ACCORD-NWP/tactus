@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Fixed
+- Increase nodes for PGD to prevent failures in ALARO when the domain is located too far east. [\#1434](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1434)(@kastelecn)
 - Fix paths for eps-upscaling impact model [\#1430](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1430) (@mafdmi)
 
 ## [0.23.0] - 2025-11-24
