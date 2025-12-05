@@ -2,10 +2,8 @@
 """Unit tests for the config file parsing module."""
 import contextlib
 import subprocess
-import sys
 from os import chdir, makedirs
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 import tomlkit
@@ -16,7 +14,6 @@ from tactus.plugin import DeodePluginRegistry
 from tactus.tasks.archive import ArchiveDataBridge, ArchiveHour, ArchiveStatic
 from tactus.tasks.base import Task
 from tactus.tasks.batch import BatchJob
-from tactus.tasks.clean_old_data import CleanCases
 from tactus.tasks.collectlogs import CollectLogs
 from tactus.tasks.creategrib import GlGrib
 from tactus.tasks.discover_task import available_tasks, get_task
@@ -95,7 +92,6 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_task_archive_archivedatabridge__check_user = ArchiveDataBridge._check_user
     original_task_archive_archivehour_execute_method = ArchiveHour.execute
     original_task_archive_archivestatic_execute_method = ArchiveStatic.execute
-    original_task_clean_old_data_cleancases_execute_method = CleanCases.execute
     original_task_creategrib_glgrib_execute_method = GlGrib.execute
     original_task_gribmodify_addtotalprec_execute_method = AddCalculatedFields.execute
     original_task_extractsqlite_extractsqlite_execute_method = ExtractSQLite.execute
@@ -127,15 +123,6 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         """Suppress some errors so that test continues if they happen."""
         with contextlib.suppress(ArchiveError, ProviderError, NotImplementedError):
             original_toolbox_filemanager_input_method(*args, **kwargs)
-
-    def new_task_clean_old_data_cleancases_execute_method(*args, **kwargs):
-        """Suppress some errors so that test continues if they happen."""
-        with contextlib.suppress(ModuleNotFoundError, NotImplementedError):
-            if "ecflow" in sys.modules:
-                with patch.object(ecflow.Client, "delete"):
-                    original_task_clean_old_data_cleancases_execute_method(
-                        *args, **kwargs
-                    )
 
     def new_task_forecast_forecast_execute_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
@@ -239,10 +226,6 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     session_mocker.patch("tactus.tasks.batch.BatchJob.run", new=new_batchjob_run_method)
     session_mocker.patch(
         "tactus.toolbox.FileManager.input", new=new_toolbox_filemanager_input_method
-    )
-    session_mocker.patch(
-        "tactus.tasks.clean_old_data.CleanCases.execute",
-        new=new_task_clean_old_data_cleancases_execute_method,
     )
     session_mocker.patch(
         "tactus.tasks.forecast.Forecast.execute",
