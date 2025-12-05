@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from deode.general_utils import (
+from tactus.general_utils import (
     expand_dict_key_slice,
     merge_dicts,
     recursive_delete_keys,
@@ -52,7 +52,7 @@ class TestValueFromAnyGenerator:
         assert next(generator) == "single_value"
         assert next(generator) == "single_value"  # Always returns the same value
 
-    @patch("deode.general_utils.value_from_sequence_generator")
+    @patch("tactus.general_utils.value_from_sequence_generator")
     def test_call_when_sequence(self, mock_value_from_sequence: Mock):
         """Test that value_from_sequence is called when input is a sequence."""
         sequence = [1, 2, 3]

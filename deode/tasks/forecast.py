@@ -27,7 +27,7 @@ class Forecast(PySurfexBaseTask):
         """Construct forecast object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         PySurfexBaseTask.__init__(self, config, __class__.__name__)
 
@@ -318,7 +318,7 @@ class PrepareCycle(Task):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
 
         """
         Task.__init__(self, config, self.__class__.__name__)
@@ -336,7 +336,7 @@ class FirstGuess(Task):
         """Construct FirstGuess object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
 
         """
         Task.__init__(self, config, __class__.__name__)

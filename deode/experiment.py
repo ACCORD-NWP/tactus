@@ -10,20 +10,20 @@ from typing import List, Optional
 
 import tomlkit
 
-from deode.config_parser import (
+from tactus.config_parser import (
     BasicConfig,
     ConfigParserDefaults,
     ConfigPaths,
     ParsedConfig,
 )
-from deode.datetime_utils import evaluate_date
-from deode.derived_variables import set_times
-from deode.eps.eps_setup import EPSConfig, generate_member_settings
-from deode.general_utils import modify_mappings, recursive_dict_deviation
-from deode.host_actions import set_deode_home
-from deode.logs import logger
-from deode.os_utils import resolve_path_relative_to_package
-from deode.toolbox import Platform, compute_georef
+from tactus.datetime_utils import evaluate_date
+from tactus.derived_variables import set_times
+from tactus.eps.eps_setup import EPSConfig, generate_member_settings
+from tactus.general_utils import modify_mappings, recursive_dict_deviation
+from tactus.host_actions import set_deode_home
+from tactus.logs import logger
+from tactus.os_utils import resolve_path_relative_to_package
+from tactus.toolbox import Platform, compute_georef
 
 
 class Exp:

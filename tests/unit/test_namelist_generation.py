@@ -6,8 +6,8 @@ import pytest
 import tomli
 import tomlkit
 
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
-from deode.namelist import (
+from tactus.config_parser import ConfigParserDefaults, ParsedConfig
+from tactus.namelist import (
     InvalidNamelistKindError,
     InvalidNamelistTargetError,
     NamelistGenerator,

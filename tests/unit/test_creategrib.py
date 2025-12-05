@@ -4,9 +4,9 @@ from pathlib import Path
 
 import pytest
 
-from deode.derived_variables import set_times
-from deode.tasks.creategrib import CreateGrib
-from deode.toolbox import Platform
+from tactus.derived_variables import set_times
+from tactus.tasks.creategrib import CreateGrib
+from tactus.toolbox import Platform
 
 
 @pytest.fixture(scope="module")

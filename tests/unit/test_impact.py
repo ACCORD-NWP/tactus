@@ -12,9 +12,9 @@ import tomlkit
 import xmltodict
 import yaml
 
-from deode.derived_variables import set_times
-from deode.tasks.batch import BatchJob
-from deode.tasks.impacts import ImpactModel, ImpactModels, get_fdb_info
+from tactus.derived_variables import set_times
+from tactus.tasks.batch import BatchJob
+from tactus.tasks.impacts import ImpactModel, ImpactModels, get_fdb_info
 
 WORKING_DIR = Path.cwd()
 

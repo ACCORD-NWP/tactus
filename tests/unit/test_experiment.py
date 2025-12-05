@@ -8,8 +8,8 @@ import pytest
 import tomli
 import tomlkit
 
-from deode.config_parser import ParsedConfig
-from deode.experiment import ExpFromFiles, case_setup
+from tactus.config_parser import ParsedConfig
+from tactus.experiment import ExpFromFiles, case_setup
 
 
 @pytest.fixture(name="tmpdir", scope="module")
@@ -83,7 +83,7 @@ def fixture_config(default_config):
 @pytest.fixture(name="mock_exp_from_files")
 def fixture_mock_exp_from_files():
     """Fixture that provides a mock instance of ExpFromFiles."""
-    with patch("deode.experiment.ExpFromFiles.__new__") as mock_new:
+    with patch("tactus.experiment.ExpFromFiles.__new__") as mock_new:
         mock_exp = MagicMock()
         mock_exp.config = MagicMock()
         mock_new.return_value = mock_exp
@@ -121,7 +121,7 @@ class TestExpFromFiles:
 class TestCaseSetup:
     """Unit tests for the case_setup function."""
 
-    @patch("deode.experiment.EPSExp")
+    @patch("tactus.experiment.EPSExp")
     def test_eps_not_activated(
         self,
         epsexp_mock: Mock,

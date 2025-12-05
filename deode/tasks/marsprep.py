@@ -7,11 +7,11 @@ from functools import cached_property
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from deode.boundary_utils import Boundary
-from deode.datetime_utils import as_datetime, as_timedelta
-from deode.eps.eps_setup import get_member_config, infer_members
-from deode.logs import logger
-from deode.mars_utils import (
+from tactus.boundary_utils import Boundary
+from tactus.eps.eps_setup import get_member_config, infer_members
+from tactus.logs import logger
+from tactus.datetime_utils import as_datetime, as_timedelta
+from tactus.mars_utils import (
     BaseRequest,
     add_additional_data_to_all,
     add_additional_file_specific_data,
@@ -42,7 +42,7 @@ class Marsprep(Task):
         """Construct forecast object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         Raises:
             ValueError: No data for this date.
         """

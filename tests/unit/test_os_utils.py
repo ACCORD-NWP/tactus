@@ -6,7 +6,7 @@ import tempfile
 from pathlib import Path
 from unittest import mock
 
-from deode.os_utils import Search, deodemakedirs, ping, strip_off_mount_path
+from tactus.os_utils import Search, deodemakedirs, ping, strip_off_mount_path
 
 
 class TestSearch:

@@ -2,8 +2,8 @@
 
 import os
 
-from deode.archive import Archive
-from deode.tasks.base import Task
+from tactus.archive import Archive
+from tactus.tasks.base import Task
 
 
 class ArchiveTask(Task):
@@ -26,7 +26,7 @@ class ArchiveStaticMember(ArchiveTask):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         ArchiveTask.__init__(self, config, "staticmember")
 
@@ -38,7 +38,7 @@ class ArchiveStatic(ArchiveTask):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         ArchiveTask.__init__(self, config, "static")
 
@@ -50,7 +50,7 @@ class ArchiveHour(ArchiveTask):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         ArchiveTask.__init__(self, config, "hour", exclude=["fdb"])
 
@@ -62,7 +62,7 @@ class ArchiveFDB(ArchiveTask):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         ArchiveTask.__init__(self, config, "FDB", include=["fdb"])
 
@@ -74,7 +74,7 @@ class ArchiveDataBridge(ArchiveTask):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         ArchiveTask.__init__(self, config, "DataBridge", include=["fdb"])
         self._check_user()
@@ -100,6 +100,6 @@ class ArchiveMergedSQLites(ArchiveTask):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         ArchiveTask.__init__(self, config, "merged_sqlite", exclude=["fdb"])

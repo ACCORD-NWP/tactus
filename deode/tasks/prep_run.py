@@ -4,12 +4,12 @@ from pathlib import Path
 
 import yaml
 
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
-from deode.eps.eps_setup import get_member_config
-from deode.logs import logger
-from deode.os_utils import deodemakedirs
-from deode.tasks.cleaning_tasks import Cleaning
-from deode.toolbox import Platform
+from tactus.config_parser import ConfigParserDefaults, ParsedConfig
+from tactus.eps.eps_setup import get_member_config
+from tactus.logs import logger
+from tactus.os_utils import deodemakedirs
+from tactus.tasks.cleaning_tasks import Cleaning
+from tactus.toolbox import Platform
 
 from .base import Task
 
@@ -21,7 +21,7 @@ class PrepRun(Task):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         self.name = "PrepRun"
         Task.__init__(self, config, __class__.__name__)

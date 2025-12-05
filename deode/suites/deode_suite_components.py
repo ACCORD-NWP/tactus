@@ -4,7 +4,9 @@ from datetime import datetime, timedelta
 from typing import Generator, List, Optional, Tuple
 
 from deode.boundary_utils import Boundary
-from deode.datetime_utils import (
+from tactus.suites.suite_utils import Cycles, lbc_times_generator
+
+from tactus.datetime_utils import (
     as_datetime,
     as_timedelta,
     get_decadal_list,

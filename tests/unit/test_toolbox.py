@@ -6,7 +6,7 @@ from unittest import mock
 
 import pytest
 
-from deode.toolbox import Platform
+from tactus.toolbox import Platform
 
 
 @pytest.fixture(name="config", scope="module")

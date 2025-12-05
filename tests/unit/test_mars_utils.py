@@ -5,7 +5,7 @@ from typing import Generator
 
 import pytest
 
-from deode.mars_utils import (
+from tactus.mars_utils import (
     add_additional_file_specific_data,
     compile_target,
     get_steps_and_members_to_retrieve,

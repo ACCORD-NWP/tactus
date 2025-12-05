@@ -20,7 +20,7 @@ class IOmerge(Task):
         """Construct IOmerge object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         Task.__init__(self, config, __class__.__name__)
 

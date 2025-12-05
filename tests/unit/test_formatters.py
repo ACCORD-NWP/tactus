@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
-from deode.formatters import duration_format_validator, duration_slice_format_validator
+from tactus.formatters import duration_format_validator, duration_slice_format_validator
 
 
 class TestDurationFormatValidator:
@@ -31,7 +31,7 @@ class TestDurationFormatValidator:
 class TestDurationSliceFormatValidator:
     """Unit tests for the duration_slice_format_validator function."""
 
-    @patch("deode.formatters.duration_format_validator")
+    @patch("tactus.formatters.duration_format_validator")
     @pytest.mark.parametrize(
         ("duration", "expected"),
         [

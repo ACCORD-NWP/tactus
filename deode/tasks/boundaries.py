@@ -4,13 +4,13 @@ import json
 import os
 from typing import Dict
 
-from deode.boundary_utils import Boundary
-from deode.config_parser import ConfigPaths
-from deode.datetime_utils import as_datetime
-from deode.logs import logger
-from deode.namelist import NamelistGenerator
-from deode.tasks.base import Task
-from deode.tasks.batch import BatchJob
+from tactus.boundary_utils import Boundary
+from tactus.config_parser import ConfigPaths
+from tactus.datetime_utils import as_datetime
+from tactus.logs import logger
+from tactus.namelist import NamelistGenerator
+from tactus.tasks.base import Task
+from tactus.tasks.batch import BatchJob
 
 
 class InterpolateBoundaries(Task):
@@ -20,7 +20,7 @@ class InterpolateBoundaries(Task):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         Task.__init__(self, config, __class__.__name__)
 
@@ -155,7 +155,7 @@ class E927(InterpolateBoundaries):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         InterpolateBoundaries.__init__(self, config)
 
@@ -167,6 +167,6 @@ class C903(InterpolateBoundaries):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         InterpolateBoundaries.__init__(self, config)

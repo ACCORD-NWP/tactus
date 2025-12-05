@@ -245,7 +245,7 @@ def get_domain_data(config):
     """Read and return domain data.
 
     Args:
-        config (deode.ParsedConfig): Configuration from which we get the domain data
+        config (tactus.ParsedConfig): Configuration from which we get the domain data
     Returns:
         String containing the domain info for MARS
     """

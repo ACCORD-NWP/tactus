@@ -6,9 +6,9 @@ import pathlib
 import shutil
 import tarfile
 
-from deode.fullpos import flatten_list
-from deode.logs import logger
-from deode.toolbox import FileManager, Platform
+from tactus.fullpos import flatten_list
+from tactus.logs import logger
+from tactus.toolbox import FileManager, Platform
 
 
 class Archive:

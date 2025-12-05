@@ -1,7 +1,7 @@
 import re
 
-from deode.config_parser import ConfigParserDefaults
-from deode.tasks.prep_run import PrepRun
+from tactus.config_parser import ConfigParserDefaults
+from tactus.tasks.prep_run import PrepRun
 
 FA_MODEL_SOURCE_YML = (
     ConfigParserDefaults.DATA_DIRECTORY / "eccodes" / "destineFaModelSource.yml"
