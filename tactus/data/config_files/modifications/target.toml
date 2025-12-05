@@ -14,6 +14,7 @@
   bdshift_sfx = "PT0H"
   lam.bdcycle = "PT6H"
   lam.bdcycle_start = "PT0H"
+  lbc_per_task = 1
 
 [domain]
   gridtype = "cubic"

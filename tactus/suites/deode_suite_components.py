@@ -638,7 +638,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
         input_template,
         ecf_files,
         bdint: timedelta,
-        lbc_time_generator: Generator[Tuple[int, datetime], None, None],
+        lbc_time_generator: Generator[Tuple[List[int], List[datetime]], None, None],
         trigger=None,
         ecf_files_remotely=None,
         is_first_cycle: bool = True,
