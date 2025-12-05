@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Gribmodify rules Section, defined in deode/data/gribmodify/gribmodify_rules.json",
+    "title": "Gribmodify rules Section, defined in tactus/data/gribmodify/gribmodify_rules.json",
     "description": "Rules for doing conversions to generate new messages in grib files.",
     "type": "object",
     "additionalProperties": true,
