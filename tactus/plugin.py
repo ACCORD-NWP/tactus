@@ -4,7 +4,7 @@ from typing import List
 
 import yaml
 
-import deode
+import tactus
 from tactus.os_utils import resolve_path_relative_to_package
 
 from .logs import logger
@@ -34,7 +34,7 @@ class DeodePluginRegistry:
     def deode_plugin(self):
         """Base DEODE plugin."""
         path = Path(tactus.__path__[0]).parent
-        plugin = DeodePlugin("deode", path)
+        plugin = DeodePlugin("tactus", path)
         self.register_plugin(plugin)
 
     def load_plugin(self, plugin: "DeodePlugin"):
@@ -52,7 +52,7 @@ class DeodePluginRegistry:
         plugins = self.config["plugins"]
         for name, path in plugins.items():
             path_ = resolve_path_relative_to_package(Path(path))
-            if name != "deode":
+            if name != "tactus":
                 plugin = DeodePlugin(name, path_)
                 self.load_plugin(plugin)
 

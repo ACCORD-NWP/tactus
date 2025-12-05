@@ -1,7 +1,7 @@
 [tool.poetry]
   # Package ID info
-  description = "The DEODE scripting system."
-  name = "deode"
+  description = "The Tactus scripting system."
+  name = "tactus"
   version = "0.25.0"
   # Other package info
   authors = ["The DE_330 project."]
