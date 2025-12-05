@@ -10,11 +10,11 @@ import pandas as pd
 from grib2sqlite import logger as sqlite_logger
 from grib2sqlite import parse_grib_file
 
-from deode.datetime_utils import as_datetime, oi2dt_list
-from deode.eps.eps_setup import get_member_config
-from deode.logs import LogDefaults, logger
-from deode.tasks.base import Task
-from deode.toolbox import Platform
+from tactus.datetime_utils import as_datetime, oi2dt_list
+from tactus.eps.eps_setup import get_member_config
+from tactus.logs import LogDefaults, logger
+from tactus.tasks.base import Task
+from tactus.toolbox import Platform
 
 
 class ExtractSQLite(Task):
@@ -24,7 +24,7 @@ class ExtractSQLite(Task):
         """Construct ExtractSQLite object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
 
         Raises:
             FileNotFoundError: Required file not fount
@@ -120,7 +120,7 @@ class MergeSQLites(Task):
         """Construct ExtractSQLite object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
 
         Raises:
             FileNotFoundError: Required file not found

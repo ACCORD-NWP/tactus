@@ -4,14 +4,14 @@ import os
 
 import ecflow as ecf
 
-from deode.config_parser import ConfigParserDefaults, GeneralConstants, ParsedConfig
-from deode.derived_variables import derived_variables
-from deode.eps.eps_setup import get_member_config
-from deode.host_actions import DeodeHost
-from deode.logs import LogDefaults, LoggerHandlers, logger
-from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
-from deode.submission import ProcessorLayout
-from deode.tasks.discover_task import get_task
+from tactus.config_parser import ConfigParserDefaults, GeneralConstants, ParsedConfig
+from tactus.derived_variables import derived_variables
+from tactus.eps.eps_setup import get_member_config
+from tactus.host_actions import DeodeHost
+from tactus.logs import LogDefaults, LoggerHandlers, logger
+from tactus.scheduler import EcflowClient, EcflowServer, EcflowTask
+from tactus.submission import ProcessorLayout
+from tactus.tasks.discover_task import get_task
 
 logger.enable(GeneralConstants.PACKAGE_NAME)
 

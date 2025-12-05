@@ -5,10 +5,10 @@ from contextlib import suppress
 
 import pytest
 
-from deode.config_parser import ParsedConfig
-from deode.derived_variables import set_times
-from deode.submission import TaskSettings
-from deode.suites.deode import DeodeSuiteDefinition
+from tactus.config_parser import ParsedConfig
+from tactus.derived_variables import set_times
+from tactus.submission import TaskSettings
+from tactus.suites.deode import DeodeSuiteDefinition
 
 
 @pytest.fixture(scope="module")
@@ -21,7 +21,7 @@ def _module_mockers(module_mocker):
             original_submission_task_settings_parse_job(self, **kwargs)
 
     module_mocker.patch(
-        "deode.submission.TaskSettings.parse_job",
+        "tactus.submission.TaskSettings.parse_job",
         new=new_submission_task_settings_parse_job,
     )
 

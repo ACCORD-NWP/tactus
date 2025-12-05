@@ -13,7 +13,7 @@ import pytest
 import tomli
 import tomlkit
 
-from deode.config_parser import (
+from tactus.config_parser import (
     BasicConfig,
     ConfigFileValidationError,
     ConfigParserDefaults,
@@ -22,7 +22,7 @@ from deode.config_parser import (
     JsonSchema,
     ParsedConfig,
 )
-from deode.datetime_utils import DatetimeConstants, as_datetime
+from tactus.datetime_utils import DatetimeConstants, as_datetime
 
 
 @pytest.fixture()

@@ -6,9 +6,9 @@ from pathlib import Path
 import pytest
 import tomlkit
 
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
-from deode.logs import logger
-from deode.toolbox import FileManager
+from tactus.config_parser import ConfigParserDefaults, ParsedConfig
+from tactus.logs import logger
+from tactus.toolbox import FileManager
 
 logger.enable("deode")
 

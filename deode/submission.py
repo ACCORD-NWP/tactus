@@ -7,13 +7,13 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from deode.config_parser import ParsedConfig
-from deode.derived_variables import derived_variables
-from deode.logs import logger
-from deode.os_utils import deodemakedirs
-from deode.plugin import DeodePluginRegistryFromConfig
-from deode.tasks.discover_task import available_tasks
-from deode.toolbox import FileManager, Platform
+from tactus.config_parser import ParsedConfig
+from tactus.derived_variables import derived_variables
+from tactus.logs import logger
+from tactus.os_utils import deodemakedirs
+from tactus.plugin import DeodePluginRegistryFromConfig
+from tactus.tasks.discover_task import available_tasks
+from tactus.toolbox import FileManager, Platform
 
 
 class ProcessorLayout:
@@ -80,7 +80,7 @@ class TaskSettings(object):
         """Construct the task specific settings.
 
         Args:
-             config(deode.ParserdConfig): Configuration
+             config(tactus.ParserdConfig): Configuration
         """
         self.config = config
         self.submission_defs = self.config["submission"].dict()
@@ -274,7 +274,7 @@ class TaskSettings(object):
 
         Args:
             task                   (str): Task name
-            config        (deode.config): The configuration
+            config        (tactus.config): The configuration
             input_template_job     (str): Input container template.
             task_job              (Path): Task container
             member       (int, optional): Member number for which to parse job.
@@ -417,7 +417,7 @@ class NoSchedulerSubmission:
 
         Args:
             task                  (str): Task name
-            config (deode.ParsedConfig): Config
+            config (tactus.ParsedConfig): Config
             template_job          (str): Task template job file
             task_job             (Path): Task job file
             output               (Path): Output file

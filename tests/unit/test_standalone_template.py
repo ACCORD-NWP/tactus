@@ -3,8 +3,8 @@
 import os
 
 from deode import GeneralConstants
-from deode.logs import logger  # Use deode's own configs for logger
-from deode.templates.stand_alone import default_main
+from tactus.logs import logger  # Use deode's own configs for logger
+from tactus.templates.stand_alone import default_main
 
 logger.enable("deode")
 

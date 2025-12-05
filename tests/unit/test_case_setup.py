@@ -9,10 +9,10 @@ import tomlkit
 from toml_formatter.formatter import FormattedToml
 from toml_formatter.formatter_options import FormatterOptions
 
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
-from deode.derived_variables import set_times
-from deode.experiment import case_setup
-from deode.toolbox import Platform
+from tactus.config_parser import ConfigParserDefaults, ParsedConfig
+from tactus.derived_variables import set_times
+from tactus.experiment import case_setup
+from tactus.toolbox import Platform
 
 
 @pytest.fixture(scope="module", name="tmp_directory")

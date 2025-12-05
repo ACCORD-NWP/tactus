@@ -1,8 +1,8 @@
 """Clean deode file systems."""
 
 
-from deode.cleaning import CleanDeode
-from deode.tasks.base import Task
+from tactus.cleaning import CleanDeode
+from tactus.tasks.base import Task
 
 
 class Cleaning(Task):
@@ -12,7 +12,7 @@ class Cleaning(Task):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
             name (str): Name of task
         """
         Task.__init__(self, config, __class__.__name__)
@@ -41,7 +41,7 @@ class CycleCleaning(Cleaning):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         Cleaning.__init__(self, config)
         self.name = "CycleCleaning"
@@ -55,7 +55,7 @@ class PostMortem(Cleaning):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         Cleaning.__init__(self, config)
         self.name = "PostMortem"

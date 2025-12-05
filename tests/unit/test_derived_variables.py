@@ -5,7 +5,7 @@ import re
 
 import pytest
 
-from deode.derived_variables import derived_variables, set_times
+from tactus.derived_variables import derived_variables, set_times
 
 
 def test_set_times(default_config):

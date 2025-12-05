@@ -9,10 +9,10 @@ and prepares export bash commnad, which is printed as a string output
 
 import sys
 
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
-from deode.derived_variables import set_times
-from deode.host_actions import DeodeHost, SelectHost
-from deode.toolbox import Platform
+from tactus.config_parser import ConfigParserDefaults, ParsedConfig
+from tactus.derived_variables import set_times
+from tactus.host_actions import DeodeHost, SelectHost
+from tactus.toolbox import Platform
 
 config_file = sys.argv[1]
 

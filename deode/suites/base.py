@@ -585,8 +585,8 @@ class EcflowSuiteTask(EcflowNode):
             parent (EcflowNode): Parent node.
             ecf_files (str): Path to ecflow containers
             task_settings (TaskSettings): Submission configuration
-            config (deode.ParsedConfig): Configuration file
-            task_settings (deode.TaskSettings): Task settings
+            config (tactus.ParsedConfig): Configuration file
+            task_settings (tactus.TaskSettings): Task settings
             input_template(str, optional): Input template
             parse (bool, optional): To parse template file or not
             variables (dict, optional): Variables to map. Defaults to None

@@ -60,7 +60,7 @@ def check_fullpos_namelist(config, nlgen):
     """Find existing fullpos select files or generate them.
 
     Args:
-        config (deode.ParsedConfig): Configuration
+        config (tactus.ParsedConfig): Configuration
         nlgen (dict): master forecast namelist
 
     Returns:
@@ -112,7 +112,7 @@ def derived_variables(config, processor_layout=None):
     """Derive some variables required in the namelists.
 
     Args:
-        config (deode.ParsedConfig): Configuration
+        config (tactus.ParsedConfig): Configuration
         processor_layout (ProcessorLayout, optional): Processor layout object
 
     Returns:

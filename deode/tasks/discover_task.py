@@ -43,7 +43,7 @@ def discover_modules(package, what="plugin"):
 
 
 def get_task(name, config) -> Task:
-    """Create a `deode.tasks.Task` object from configuration.
+    """Create a `tactus.tasks.Task` object from configuration.
 
     Args:
         name (_type_): _description_

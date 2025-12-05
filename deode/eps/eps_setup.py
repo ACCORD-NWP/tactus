@@ -19,10 +19,10 @@ from typing import Any, Dict, Generator, List, Sequence, Tuple
 from pydantic import RootModel, field_validator
 from pydantic.dataclasses import dataclass as pydantic_dataclass
 
-from deode.config_parser import ParsedConfig
-from deode.custom_validators import import_from_string
-from deode.eps.custom_generators import BaseGenerator
-from deode.general_utils import (
+from tactus.config_parser import ParsedConfig
+from tactus.custom_validators import import_from_string
+from tactus.eps.custom_generators import BaseGenerator
+from tactus.general_utils import (
     expand_dict_key_slice,
     expand_string_slice,
     merge_dicts,
@@ -30,7 +30,7 @@ from deode.general_utils import (
     recursive_delete_keys,
     value_from_any_generator,
 )
-from deode.logs import logger
+from tactus.logs import logger
 
 PrimitiveTypes = int | float | str | bool
 ListTypes = List[PrimitiveTypes] | List[List[PrimitiveTypes]]

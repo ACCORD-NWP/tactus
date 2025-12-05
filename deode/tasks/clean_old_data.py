@@ -19,7 +19,7 @@ class CleanOldData(Task):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
             name (str): Name of task
         """
         Task.__init__(self, config, __class__.__name__)
@@ -95,7 +95,7 @@ class CleanCases(CleanOldData):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         CleanOldData.__init__(self, config)
         self.name = "CleanCases"

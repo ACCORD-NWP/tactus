@@ -6,7 +6,7 @@ import re
 
 import pytest
 
-from deode.host_actions import DeodeHost, set_deode_home
+from tactus.host_actions import DeodeHost, set_deode_home
 
 
 def test_set_deode_home(default_config):

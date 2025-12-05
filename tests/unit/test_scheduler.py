@@ -5,9 +5,9 @@ from unittest.mock import patch
 
 import pytest
 
-from deode.host_actions import AmbigiousHostError, HostNotFoundError, SelectHost
-from deode.logs import logger
-from deode.scheduler import EcflowClient, EcflowServer, EcflowTask
+from tactus.host_actions import AmbigiousHostError, HostNotFoundError, SelectHost
+from tactus.logs import logger
+from tactus.scheduler import EcflowClient, EcflowServer, EcflowTask
 
 logger.enable("deode")
 
@@ -17,7 +17,7 @@ def suite_name():
 
 
 @pytest.fixture()
-@patch("deode.scheduler.ecflow")
+@patch("tactus.scheduler.ecflow")
 def ecflow_task(__):
     ecf_name = f"/{suite_name}/family/Task"
     ecf_tryno = "1"
@@ -29,11 +29,11 @@ def ecflow_task(__):
 
 # TODO: The mocked ecflow module is treated as the config, but it is not a config
 @pytest.fixture()
-@patch("deode.scheduler.ecflow")
+@patch("tactus.scheduler.ecflow")
 def ecflow_server(parsed_config):
     config = parsed_config
     start_command = "start"
-    with patch("deode.scheduler.Platform"):
+    with patch("tactus.scheduler.Platform"):
         return EcflowServer(config, start_command)
 
 
@@ -67,7 +67,7 @@ class TestScheduler:
     def test_ecflow_client(self, ecflow_server: EcflowServer, ecflow_task):
         EcflowClient(ecflow_server, ecflow_task)
 
-    @patch("deode.scheduler.ecflow")
+    @patch("tactus.scheduler.ecflow")
     def test_start_suite(self, mock, ecflow_server: EcflowServer):
         logger.debug("Print mock: {}", mock)
         def_file = f"/tmp/{suite_name()}.def"  # noqa

@@ -1,7 +1,7 @@
 """Unit tests for geo_utils."""
 import pytest
 
-from deode.geo_utils import Projection, Projstring
+from tactus.geo_utils import Projection, Projstring
 
 
 class TestProjstring:

@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 from pytest_mock import MockFixture
 
-from deode.datetime_utils import (
+from tactus.datetime_utils import (
     as_datetime,
     as_timedelta,
     check_syntax,
@@ -86,7 +86,7 @@ def test_oi2dt_list(
     """
     forecast_range = "PT6H"
     mocker.patch(
-        "deode.datetime_utils.expand_output_settings",
+        "tactus.datetime_utils.expand_output_settings",
         return_value=expanded_output_settings,
     )
 
@@ -163,7 +163,7 @@ def test_expand_output_settings(
         expected (List[List[pd.Timedelta]]): The expected expanded output settings.
         mocker (MockFixture): The mocker object used to mock functions.
     """
-    mocker.patch("deode.datetime_utils.check_syntax")
+    mocker.patch("tactus.datetime_utils.check_syntax")
     assert expand_output_settings(output_settings, forecast_range) == expected
 
 
@@ -187,7 +187,7 @@ def test_expand_output_settings_exceptions(
         exception (type[RuntimeError]): The expected exception.
         mocker (MockFixture): The mocker object used to mock functions.
     """
-    mocker.patch("deode.datetime_utils.check_syntax")
+    mocker.patch("tactus.datetime_utils.check_syntax")
     with pytest.raises(exception):
         expand_output_settings(output_settings, forecast_range)
 

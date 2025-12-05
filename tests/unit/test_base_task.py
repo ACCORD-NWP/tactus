@@ -3,8 +3,8 @@
 import os
 from pathlib import Path
 
-from deode.config_parser import ParsedConfig
-from deode.tasks.base import Task
+from tactus.config_parser import ParsedConfig
+from tactus.tasks.base import Task
 
 
 class TestBaseTask:

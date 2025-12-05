@@ -42,7 +42,7 @@ class Task(object):
         """Construct base task.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
             name (str): Task name
 
         Raises:
@@ -293,6 +293,6 @@ class UnitTest(Task):
         """Construct test task.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         Task.__init__(self, config, __class__.__name__)

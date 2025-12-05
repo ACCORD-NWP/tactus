@@ -4,10 +4,10 @@
 import os
 import tarfile
 
-from deode.archive import Archive
-from deode.logs import logger
-from deode.os_utils import Search, deodemakedirs
-from deode.tasks.base import Task
+from tactus.archive import Archive
+from tactus.logs import logger
+from tactus.os_utils import Search, deodemakedirs
+from tactus.tasks.base import Task
 
 
 class CollectLogs(Task):
@@ -17,7 +17,7 @@ class CollectLogs(Task):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
             config_label (str,optional): Which data to search for
         """
         Task.__init__(self, config, __class__.__name__)
@@ -105,7 +105,7 @@ class CollectLogsStatic(CollectLogs):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         CollectLogs.__init__(self, config, "staticlogs")
 
@@ -117,6 +117,6 @@ class CollectLogsHour(CollectLogs):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         CollectLogs.__init__(self, config, "hourlogs")

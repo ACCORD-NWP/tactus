@@ -221,7 +221,7 @@ def start_suite(args, config):
     # Evaluate and update ecf_deode_home
     ecf_deode_home = str(
         Platform(config).evaluate(
-            config["scheduler.ecfvars.ecf_deode_home"], object_="deode.os_utils"
+            config["scheduler.ecfvars.ecf_deode_home"], object_="tactus.os_utils"
         )
     )
     update = {"scheduler": {"ecfvars": {"ecf_deode_home": ecf_deode_home}}}

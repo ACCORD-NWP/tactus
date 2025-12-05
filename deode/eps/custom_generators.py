@@ -7,7 +7,7 @@ inherit from the BaseGenerator class and implement the __iter__ method.
 Example from toml file:
 
 [eps.member_settings.dataassimilation]
-  ensemble_jk = "deode.eps.custom_generators.BoolGenerator"
+  ensemble_jk = "tactus.eps.custom_generators.BoolGenerator"
 
 Exports:
     BaseGenerator: Base class that all other generators inherit from.

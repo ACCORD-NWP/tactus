@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Test eventual aspects from logger that are not touched in other parts of the code."""
 from deode import GeneralConstants
-from deode.logs import InterceptHandler, LoggerHandlers, builtin_logging, logger
+from tactus.logs import InterceptHandler, LoggerHandlers, builtin_logging, logger
 
 
 def test_add_logger_handlers(tmpdir_factory):

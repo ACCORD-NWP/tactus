@@ -4,27 +4,27 @@ from datetime import datetime, timedelta
 from itertools import tee
 from typing import Generator, List, Optional, Tuple
 
-from deode.boundary_utils import Boundary
-from deode.datetime_utils import (
+from tactus.boundary_utils import Boundary
+from tactus.datetime_utils import (
     as_datetime,
     as_timedelta,
     get_decadal_list,
     get_decade,
     get_month_list,
 )
-from deode.host_actions import SelectHost
-from deode.logs import logger
-from deode.submission import ProcessorLayout, TaskSettings
-from deode.suites.base import (
+from tactus.host_actions import SelectHost
+from tactus.logs import logger
+from tactus.submission import ProcessorLayout, TaskSettings
+from tactus.suites.base import (
     EcflowSuiteFamily,
     EcflowSuiteLimit,
     EcflowSuiteTask,
     EcflowSuiteTrigger,
     EcflowSuiteTriggers,
 )
-from deode.suites.suite_utils import Cycles, lbc_times_generator, slaf_planner
-from deode.tasks.impacts import get_impact
-from deode.toolbox import Platform
+from tactus.suites.suite_utils import Cycles, lbc_times_generator, slaf_planner
+from tactus.tasks.impacts import get_impact
+from tactus.toolbox import Platform
 
 
 class PgdInputFamily(EcflowSuiteFamily):
