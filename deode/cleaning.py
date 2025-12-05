@@ -16,7 +16,7 @@ class CleanDeode:
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
             defaults (dict): Default cleaning settings
             basetime (dateTime object): Reference time
 

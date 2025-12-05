@@ -6,9 +6,9 @@ from pathlib import Path
 import pytest
 import tomlkit
 
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
-from deode.derived_variables import derived_variables, set_times
-from deode.submission import NoSchedulerSubmission, ProcessorLayout, TaskSettings
+from tactus.config_parser import ConfigParserDefaults, ParsedConfig
+from tactus.derived_variables import derived_variables, set_times
+from tactus.submission import NoSchedulerSubmission, ProcessorLayout, TaskSettings
 
 
 @pytest.fixture()
@@ -47,7 +47,7 @@ def _module_mockers(module_mocker):
             original_submission_task_settings_parse_job(self, **kwargs)
 
     module_mocker.patch(
-        "deode.submission.TaskSettings.parse_job",
+        "tactus.submission.TaskSettings.parse_job",
         new=new_submission_task_settings_parse_job,
     )
 

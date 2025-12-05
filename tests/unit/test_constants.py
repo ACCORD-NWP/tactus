@@ -4,7 +4,7 @@ import uuid
 
 import pytest
 
-from deode.aux_types import QuasiConstant
+from tactus.aux_types import QuasiConstant
 
 
 @pytest.fixture()

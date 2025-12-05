@@ -32,7 +32,7 @@ class Provider:
         """Construct the object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
             identifier (str): Identifier string
             fetch (bool, optional): Fetch data. Defaults to False.
 
@@ -75,7 +75,7 @@ class Platform:
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Config.
+            config (tactus.ParsedConfig): Config.
 
         """
         self.config = config
@@ -607,7 +607,7 @@ class FileManager:
         """Construct the object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
 
         """
         self.config = config
@@ -623,7 +623,7 @@ class FileManager:
         check_archive=False,
         provider_id="symlink",
     ):
-        """Set input data to deode.
+        """Set input data to tactus.
 
         Args:
             target (str): Input file pattern
@@ -738,7 +738,7 @@ class FileManager:
         check_archive=False,
         provider_id="symlink",
     ):
-        """Set input data to deode.
+        """Set input data to tactus.
 
         Args:
             target (str): Input file pattern
@@ -767,7 +767,7 @@ class FileManager:
         archive=False,
         provider_id="move",
     ):
-        """Set output data from deode.
+        """Set output data from tactus.
 
         Args:
             target (str): Input file pattern
@@ -846,7 +846,7 @@ class FileManager:
         archive=False,
         provider_id="move",
     ):
-        """Set output data from deode.
+        """Set output data from tactus.
 
         Args:
             target (str): Input file pattern
@@ -930,7 +930,7 @@ class LocalFileSystemSymlink(Provider):
         """Construct the object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
             pattern (str): Identifier string
             fetch (bool, optional): Fetch data. Defaults to True.
 
@@ -972,7 +972,7 @@ class LocalFileSystemCopy(Provider):
         """Construct the object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
             pattern (str): Identifier string
             fetch (bool, optional): Fetch data. Defaults to False.
 
@@ -1016,7 +1016,7 @@ class LocalFileSystemMove(Provider):
         """Construct the object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
             pattern (str): Identifier string
             fetch (bool, optional): Fetch data. Defaults to False.
 
@@ -1060,7 +1060,7 @@ class ArchiveProvider(Provider):
         """Construct the object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
             pattern (str): Filepattern
             fetch (bool, optional): Fetch the data. Defaults to True.
 
@@ -1087,7 +1087,7 @@ class ECFS(ArchiveProvider):
         """Construct ECFS provider.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
             pattern (str): Filepattern
             fetch (bool, optional): Fetch the data. Defaults to True.
         """
@@ -1124,7 +1124,7 @@ class SCP(ArchiveProvider):
         """Construct SCP provider.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
             pattern (str): Filepattern
             fetch (bool, optional): Fetch the data. Defaults to True.
         """
@@ -1179,7 +1179,7 @@ class FDB(ArchiveProvider):
         """Construct FDB provider.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
             pattern (str): Filepattern
             fetch (bool, optional): Fetch the data. Defaults to True.
         """
@@ -1334,7 +1334,7 @@ class Resource:
         """Construct resource.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
             identifier (str): Resource identifier
 
         """
@@ -1349,7 +1349,7 @@ class LocalFileOnDisk(Resource):
         """Construct local file on disk.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
             pattern (str): Identifier pattern
             basetime (datetime.datetime, optional): Base time. Defaults to None.
             validtime (datetime.datetime, optional): Valid time. Defaults to None.

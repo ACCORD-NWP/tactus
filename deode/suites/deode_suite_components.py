@@ -3,7 +3,7 @@
 from datetime import datetime, timedelta
 from typing import Generator, List, Optional, Tuple
 
-from deode.suites.suite_utils import Cycles, lbc_times_generator
+from tactus.suites.suite_utils import Cycles, lbc_times_generator
 
 from ..datetime_utils import (
     as_datetime,

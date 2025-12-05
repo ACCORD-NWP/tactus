@@ -7,7 +7,7 @@ from functools import cached_property
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from deode.eps.eps_setup import get_member_config, infer_members
+from tactus.eps.eps_setup import get_member_config, infer_members
 
 from ..config_parser import ParsedConfig
 from ..datetime_utils import as_datetime, as_timedelta, cycle_offset
@@ -42,7 +42,7 @@ class Marsprep(Task):
         """Construct forecast object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         Raises:
             ValueError: No data for this date.
         """
@@ -177,7 +177,7 @@ class Marsprep(Task):
 
         Args:
             selection             (str): The selection to use.
-            config (deode.ParsedConfig): Configuration object
+            config (tactus.ParsedConfig): Configuration object
 
         Returns:
              mars                (dict): mars config section

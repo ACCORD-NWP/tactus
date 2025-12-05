@@ -11,7 +11,7 @@ class Serial(Task):
         """Construct serial task.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         logger.info("Construct serial task")
         Task.__init__(self, config, __class__.__name__)

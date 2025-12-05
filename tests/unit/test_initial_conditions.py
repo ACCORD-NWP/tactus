@@ -8,8 +8,8 @@ import pytest
 import tomlkit
 
 from deode import GeneralConstants
-from deode.derived_variables import set_times
-from deode.initial_conditions import InitialConditions
+from tactus.derived_variables import set_times
+from tactus.initial_conditions import InitialConditions
 
 
 @pytest.fixture(params=[False, True])

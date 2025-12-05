@@ -2,13 +2,13 @@
 
 import os
 
-from deode.config_parser import ConfigParserDefaults, GeneralConstants, ParsedConfig
-from deode.derived_variables import derived_variables, set_times
-from deode.eps.eps_setup import get_member_config
-from deode.host_actions import DeodeHost
-from deode.logs import logger  # Use deode's own configs for logger
-from deode.submission import ProcessorLayout, TaskSettings
-from deode.tasks.discover_task import get_task
+from tactus.config_parser import ConfigParserDefaults, GeneralConstants, ParsedConfig
+from tactus.derived_variables import derived_variables, set_times
+from tactus.eps.eps_setup import get_member_config
+from tactus.host_actions import DeodeHost
+from tactus.logs import logger  # Use deode's own configs for logger
+from tactus.submission import ProcessorLayout, TaskSettings
+from tactus.tasks.discover_task import get_task
 
 logger.enable("deode")
 

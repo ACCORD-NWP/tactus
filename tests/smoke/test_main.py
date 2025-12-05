@@ -10,12 +10,12 @@ from unittest import mock
 import pytest
 
 from deode import GeneralConstants
-from deode.__main__ import main
-from deode.argparse_wrapper import get_parsed_args
-from deode.config_parser import ConfigFileValidationError, ConfigParserDefaults
-from deode.host_actions import HostNotFoundError
-from deode.submission import NoSchedulerSubmission, TaskSettings
-from deode.toolbox import Platform
+from tactus.__main__ import main
+from tactus.argparse_wrapper import get_parsed_args
+from tactus.config_parser import ConfigFileValidationError, ConfigParserDefaults
+from tactus.host_actions import HostNotFoundError
+from tactus.submission import NoSchedulerSubmission, TaskSettings
+from tactus.toolbox import Platform
 
 
 @pytest.fixture(name="config_path", scope="module")
@@ -36,11 +36,11 @@ def fixture_config_path(tmp_path_factory: pytest.TempPathFactory):
 def _module_mockers(module_mocker, config_path, tmp_path_factory: pytest.TempPathFactory):
     # Patching ConfigParserDefaults.CONFIG_PATH so tests use the generated config
     module_mocker.patch(
-        "deode.config_parser.ConfigParserDefaults.__class__.__setattr__",
+        "tactus.config_parser.ConfigParserDefaults.__class__.__setattr__",
         new=type.__setattr__,
     )
     module_mocker.patch(
-        "deode.config_parser.ConfigParserDefaults.CONFIG_PATH", new=config_path
+        "tactus.config_parser.ConfigParserDefaults.CONFIG_PATH", new=config_path
     )
 
     original_no_scheduler_submission_submit_method = NoSchedulerSubmission.submit
@@ -62,16 +62,16 @@ def _module_mockers(module_mocker, config_path, tmp_path_factory: pytest.TempPat
             original_platform_evaluate_function(self, *args, **kwargs)
 
     module_mocker.patch(
-        "deode.submission.NoSchedulerSubmission.submit",
+        "tactus.submission.NoSchedulerSubmission.submit",
         new=new_no_scheduler_submission_submit_method,
     )
-    module_mocker.patch("deode.scheduler.ecflow")
+    module_mocker.patch("tactus.scheduler.ecflow")
     module_mocker.patch(
-        "deode.toolbox.Platform.evaluate", new=new_platform_evaluate_function
+        "tactus.toolbox.Platform.evaluate", new=new_platform_evaluate_function
     )
-    module_mocker.patch("deode.suites.base.ecflow")
+    module_mocker.patch("tactus.suites.base.ecflow")
     module_mocker.patch(
-        "deode.submission.TaskSettings.parse_job",
+        "tactus.submission.TaskSettings.parse_job",
         new=new_submission_task_settings_parse_job,
     )
     module_mocker.patch("shutil.chown")

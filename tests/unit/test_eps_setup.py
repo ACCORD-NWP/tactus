@@ -10,9 +10,9 @@ import numpy as np
 import pytest
 from pydantic import ValidationError
 
-from deode.config_parser import ParsedConfig
-from deode.eps.custom_generators import BaseGenerator
-from deode.eps.eps_setup import (
+from tactus.config_parser import ParsedConfig
+from tactus.eps.custom_generators import BaseGenerator
+from tactus.eps.eps_setup import (
     EPSConfig,
     EPSGeneralConfigs,
     check_expandable_keys,
@@ -145,7 +145,7 @@ def fixture_eps_config() -> EPSConfig:
 class TestGenerateMemberSettings:
     """Unit tests for the generate_member_settings function."""
 
-    @patch("deode.eps.eps_setup.generate_values")
+    @patch("tactus.eps.eps_setup.generate_values")
     def test_generate_member_settings(
         self,
         mock_generate_values: Mock,
@@ -159,7 +159,7 @@ class TestGenerateMemberSettings:
         ]
 
         # Mock out instantiate_generators
-        with patch("deode.eps.eps_setup.instantiate_generators"):
+        with patch("tactus.eps.eps_setup.instantiate_generators"):
             # Call function under test
             result = list(generate_member_settings(eps_config))
 
@@ -213,8 +213,8 @@ class TestInstantiateGenerators:
         generated_values = [next(result["field1"]) for _ in range(10)]
         assert len(generated_values) > 0
 
-    @patch("deode.custom_validators.import_from_string")
-    # @patch("deode.eps.eps_setup.value_from_any_generator")
+    @patch("tactus.custom_validators.import_from_string")
+    # @patch("tactus.eps.eps_setup.value_from_any_generator")
     def test_with_base_generator(
         self,
         # mock_value_from_any_generator: Mock,
@@ -459,7 +459,7 @@ class TestGetExpandableKeys:
 
     @pytest.fixture()
     def mock_check_expandable_keys(self, mocker):
-        return mocker.patch("deode.eps.eps_setup.check_expandable_keys")
+        return mocker.patch("tactus.eps.eps_setup.check_expandable_keys")
 
     def test_empty_dict(self, mock_check_expandable_keys):
         """Test that get_expandable_keys returns an empty dict for an empty dictionary."""

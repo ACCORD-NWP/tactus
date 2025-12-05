@@ -8,9 +8,9 @@ from pathlib import Path
 
 import pytest
 
-from deode.cleaning import CleanDeode
-from deode.datetime_utils import as_datetime
-from deode.derived_variables import set_times
+from tactus.cleaning import CleanDeode
+from tactus.datetime_utils import as_datetime
+from tactus.derived_variables import set_times
 
 
 @pytest.fixture(scope="module")

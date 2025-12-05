@@ -4,8 +4,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 import tomlkit
 
-from deode.config_parser import ConfigPaths, ParsedConfig
-from deode.experiment import EPSExp
+from tactus.config_parser import ConfigPaths, ParsedConfig
+from tactus.experiment import EPSExp
 
 
 @pytest.fixture(name="eps_config")

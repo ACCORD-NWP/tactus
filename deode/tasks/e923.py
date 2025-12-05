@@ -18,7 +18,7 @@ class E923(Task):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         Task.__init__(self, config, __class__.__name__)
 
@@ -278,7 +278,7 @@ class PgdUpdate(Task):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
 
         """
         Task.__init__(self, config, __class__.__name__)
@@ -338,7 +338,7 @@ class E923Constant(E923):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         E923.__init__(self, config)
         self.name = "E923Constant"
@@ -364,7 +364,7 @@ class E923Monthly(E923):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         try:
             months = config["task.args.months"].split(",")

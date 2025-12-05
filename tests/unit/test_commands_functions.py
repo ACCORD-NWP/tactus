@@ -7,13 +7,13 @@ from pathlib import Path
 
 import pytest
 
-from deode.commands_functions import (
+from tactus.commands_functions import (
     namelist_convert,
     namelist_format,
     namelist_integrate,
     show_namelist,
 )
-from deode.os_utils import resolve_path_relative_to_package
+from tactus.os_utils import resolve_path_relative_to_package
 
 
 @pytest.fixture()

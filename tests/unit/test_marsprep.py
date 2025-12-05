@@ -5,9 +5,9 @@
 import pytest
 import tomlkit
 
-from deode.derived_variables import derived_variables, set_times
-from deode.mars_utils import BaseRequest, compile_target, get_value_from_dict
-from deode.tasks.marsprep import Marsprep
+from tactus.derived_variables import derived_variables, set_times
+from tactus.mars_utils import BaseRequest, compile_target, get_value_from_dict
+from tactus.tasks.marsprep import Marsprep
 
 
 @pytest.fixture(scope="module")

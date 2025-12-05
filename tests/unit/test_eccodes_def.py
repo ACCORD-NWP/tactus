@@ -7,9 +7,9 @@ from pathlib import Path
 import pytest
 import tomlkit
 
-from deode.config_parser import ConfigParserDefaults
-from deode.derived_variables import set_times
-from deode.tasks.base import Task
+from tactus.config_parser import ConfigParserDefaults
+from tactus.derived_variables import set_times
+from tactus.tasks.base import Task
 
 WORKING_DIR = Path.cwd()
 DEODE_DEFS = ConfigParserDefaults.DATA_DIRECTORY / "eccodes/definitions"

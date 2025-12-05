@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from deode.archive import Archive
-from deode.derived_variables import set_times
-from deode.toolbox import FDB, compute_georef
+from tactus.archive import Archive
+from tactus.derived_variables import set_times
+from tactus.toolbox import FDB, compute_georef
 
 
 class MockFDB:

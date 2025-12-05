@@ -19,7 +19,7 @@ class DeodeCleaningSuiteDefinition(SuiteDefinition):
         """Construct the definition.
 
         Args:
-            config (deode.ParsedConfig): Configuration file
+            config (tactus.ParsedConfig): Configuration file
             dry_run (bool, optional): Dry run not using ecflow. Defaults to False.
 
         Raises:

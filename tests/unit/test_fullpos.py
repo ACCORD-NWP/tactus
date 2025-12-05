@@ -5,9 +5,9 @@ import pytest
 import tomlkit
 
 from deode import GeneralConstants
-from deode.derived_variables import set_times
-from deode.fullpos import Fullpos, InvalidSelectionCombinationError, flatten_list
-from deode.toolbox import Platform
+from tactus.derived_variables import set_times
+from tactus.fullpos import Fullpos, InvalidSelectionCombinationError, flatten_list
+from tactus.toolbox import Platform
 
 
 @pytest.fixture()

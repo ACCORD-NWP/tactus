@@ -11,23 +11,23 @@ import pytest
 import tomlkit
 
 from deode import GeneralConstants
-from deode.derived_variables import derived_variables, set_times
-from deode.plugin import DeodePluginRegistry
-from deode.tasks.archive import ArchiveDataBridge, ArchiveHour, ArchiveStatic
-from deode.tasks.base import Task
-from deode.tasks.batch import BatchJob
-from deode.tasks.clean_old_data import CleanSuites
-from deode.tasks.collectlogs import CollectLogs
-from deode.tasks.creategrib import GlGrib
-from deode.tasks.discover_task import available_tasks, get_task
-from deode.tasks.e923 import E923
-from deode.tasks.forecast import FirstGuess, Forecast
-from deode.tasks.gribmodify import AddCalculatedFields
-from deode.tasks.interpolsstsic import InterpolSstSic
-from deode.tasks.iomerge import IOmerge
-from deode.tasks.marsprep import Marsprep
-from deode.tasks.sqlite import ExtractSQLite, MergeSQLites
-from deode.toolbox import ArchiveError, FileManager, ProviderError
+from tactus.derived_variables import derived_variables, set_times
+from tactus.plugin import DeodePluginRegistry
+from tactus.tasks.archive import ArchiveDataBridge, ArchiveHour, ArchiveStatic
+from tactus.tasks.base import Task
+from tactus.tasks.batch import BatchJob
+from tactus.tasks.clean_old_data import CleanSuites
+from tactus.tasks.collectlogs import CollectLogs
+from tactus.tasks.creategrib import GlGrib
+from tactus.tasks.discover_task import available_tasks, get_task
+from tactus.tasks.e923 import E923
+from tactus.tasks.forecast import FirstGuess, Forecast
+from tactus.tasks.gribmodify import AddCalculatedFields
+from tactus.tasks.interpolsstsic import InterpolSstSic
+from tactus.tasks.iomerge import IOmerge
+from tactus.tasks.marsprep import Marsprep
+from tactus.tasks.sqlite import ExtractSQLite, MergeSQLites
+from tactus.toolbox import ArchiveError, FileManager, ProviderError
 
 with contextlib.suppress(ModuleNotFoundError):
     import ecflow
@@ -227,86 +227,86 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     # Do the actual mocking
     session_mocker.patch("shutil.chown")
     session_mocker.patch(
-        "deode.tasks.batch.BatchJob.__init__", new=new_batchjob_init_method
+        "tactus.tasks.batch.BatchJob.__init__", new=new_batchjob_init_method
     )
-    session_mocker.patch("deode.tasks.batch.BatchJob.run", new=new_batchjob_run_method)
+    session_mocker.patch("tactus.tasks.batch.BatchJob.run", new=new_batchjob_run_method)
     session_mocker.patch(
-        "deode.toolbox.FileManager.input", new=new_toolbox_filemanager_input_method
+        "tactus.toolbox.FileManager.input", new=new_toolbox_filemanager_input_method
     )
     session_mocker.patch(
-        "deode.tasks.clean_old_data.CleanSuites.execute",
+        "tactus.tasks.clean_old_data.CleanSuites.execute",
         new=new_task_clean_old_data_cleansuites_execute_method,
     )
     session_mocker.patch(
-        "deode.tasks.forecast.Forecast.execute",
+        "tactus.tasks.forecast.Forecast.execute",
         new=new_task_forecast_forecast_execute_method,
     )
     session_mocker.patch(
-        "deode.tasks.forecast.FirstGuess.execute",
+        "tactus.tasks.forecast.FirstGuess.execute",
         new=new_task_forecast_firstguess_execute_method,
     )
     session_mocker.patch(
-        "deode.tasks.archive.ArchiveDataBridge._check_user",
+        "tactus.tasks.archive.ArchiveDataBridge._check_user",
         new=new_task_archive_archivedatabridge__check_user,
     )
     session_mocker.patch(
-        "deode.tasks.archive.ArchiveHour.execute",
+        "tactus.tasks.archive.ArchiveHour.execute",
         new=new_task_archive_archivehour_execute_method,
     )
     session_mocker.patch(
-        "deode.tasks.archive.ArchiveStatic.execute",
+        "tactus.tasks.archive.ArchiveStatic.execute",
         new=new_task_archive_archivestatic_execute_method,
     )
     session_mocker.patch(
-        "deode.tasks.cleaning_tasks.Cleaning.execute",
+        "tactus.tasks.cleaning_tasks.Cleaning.execute",
         new=new_task_cleaning_tasks_cleaner_execute_method,
     )
     session_mocker.patch(
-        "deode.tasks.creategrib.GlGrib.execute",
+        "tactus.tasks.creategrib.GlGrib.execute",
         new=new_task_creategrib_glgrib_execute_method,
     )
     session_mocker.patch(
-        "deode.tasks.gribmodify.AddCalculatedFields.execute",
+        "tactus.tasks.gribmodify.AddCalculatedFields.execute",
         new=new_task_gribmodify_addtotalprec_execute_method,
     )
     session_mocker.patch(
-        "deode.tasks.sqlite.ExtractSQLite.execute",
+        "tactus.tasks.sqlite.ExtractSQLite.execute",
         new=new_task_extractsqlite_extractsqlite_execute_method,
     )
     session_mocker.patch(
-        "deode.tasks.sqlite.MergeSQLites.execute",
+        "tactus.tasks.sqlite.MergeSQLites.execute",
         new=new_task_mergesqlites_mergesqlites_execute_method,
     )
     session_mocker.patch(
-        "deode.tasks.e923.E923.constant_part", new=new_task_e923_constant_part_method
+        "tactus.tasks.e923.E923.constant_part", new=new_task_e923_constant_part_method
     )
     session_mocker.patch(
-        "deode.tasks.e923.E923.monthly_part", new=new_task_e923_monthly_part_method
+        "tactus.tasks.e923.E923.monthly_part", new=new_task_e923_monthly_part_method
     )
     session_mocker.patch(
-        "deode.tasks.interpolsstsic.InterpolSstSic.execute",
+        "tactus.tasks.interpolsstsic.InterpolSstSic.execute",
         new=new_task_interpolsstsic_interpolsstsic_execute_method,
     )
     session_mocker.patch(
-        "deode.tasks.iomerge.IOmerge.execute",
+        "tactus.tasks.iomerge.IOmerge.execute",
         new=new_task_iomerge_iomerge_execute_method,
     )
     session_mocker.patch(
-        "deode.tasks.marsprep.BatchJob.run",
+        "tactus.tasks.marsprep.BatchJob.run",
         new=new_task_mars_batchjob_run_method,
     )
     session_mocker.patch(
-        "deode.tasks.marsprep.Marsprep.run",
+        "tactus.tasks.marsprep.Marsprep.run",
         new=new_task_marsprep_run_method,
     )
     session_mocker.patch(
-        "deode.tasks.collectlogs.CollectLogs.execute",
+        "tactus.tasks.collectlogs.CollectLogs.execute",
         new=new_task_collectlogs_collectlogs_execute_method,
     )
     # Mock pysurfex calls. Could be done with finer granularity,
     # but some paths are not subsistuted
-    session_mocker.patch("deode.tasks.sfx.pgd")
-    session_mocker.patch("deode.tasks.sfx.prep")
+    session_mocker.patch("tactus.tasks.sfx.pgd")
+    session_mocker.patch("tactus.tasks.sfx.prep")
 
     # Create files needed by gmtedsoil tasks
     tif_files_dir = tmp_path_factory.getbasetemp()
@@ -317,7 +317,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         fpath.touch()
 
     # Mock things that we don't want to test here (e.g., external binaries)
-    session_mocker.patch("deode.tasks.toposoil._import_gdal")
+    session_mocker.patch("tactus.tasks.toposoil._import_gdal")
 
 
 class TestTasks:

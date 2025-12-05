@@ -14,16 +14,16 @@ import yaml
 from dicttoxml import dicttoxml as dtx
 from isodate import parse_duration
 
-from deode.config_parser import BasicConfig
-from deode.datetime_utils import as_datetime, as_timedelta
-from deode.general_utils import recursive_substitute
-from deode.host_actions import HostNotFoundError, SelectHost
-from deode.logs import logger
-from deode.os_utils import deodemakedirs
-from deode.scheduler import EcflowServer
-from deode.tasks.base import Task
-from deode.tasks.batch import BatchJob
-from deode.toolbox import Platform
+from tactus.config_parser import BasicConfig
+from tactus.datetime_utils import as_datetime, as_timedelta
+from tactus.general_utils import recursive_substitute
+from tactus.host_actions import HostNotFoundError, SelectHost
+from tactus.logs import logger
+from tactus.os_utils import deodemakedirs
+from tactus.scheduler import EcflowServer
+from tactus.tasks.base import Task
+from tactus.tasks.batch import BatchJob
+from tactus.toolbox import Platform
 
 
 @dataclass()
@@ -205,7 +205,7 @@ class ImpactModels(Task):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
             taskname (str): Indicating taskname
         """
         Task.__init__(self, config, __class__.__name__)
@@ -224,7 +224,7 @@ def get_fdb_info(config):
     """Build a fdb request.
 
     Args:
-        config (deode.ParsedConfig): Configuration
+        config (tactus.ParsedConfig): Configuration
 
     Returns:
         fdb_req (dict): fdb request with appropriate keys
@@ -268,7 +268,7 @@ def get_impact(config, taskname):
     """Gather impact settings.
 
     Args:
-        config (deode.ParsedConfig): Configuration
+        config (tactus.ParsedConfig): Configuration
         taskname (str): Indicating taskname
 
     Returns:
@@ -342,6 +342,6 @@ class StartImpactModels(ImpactModels):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         ImpactModels.__init__(self, config, __class__.__name__)

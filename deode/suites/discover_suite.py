@@ -40,7 +40,7 @@ def discover_modules(package, what="plugin"):
 
 
 def get_suite(name, config):
-    """Create a `deode.suites.SuiteDefinition` object from configuration.
+    """Create a `tactus.suites.SuiteDefinition` object from configuration.
 
     Args:
         name (_type_): _description_

@@ -297,7 +297,7 @@ class Soil(Task):
         """Construct soil data object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
 
         """
         self.domain = self.get_domain_properties(config)
@@ -309,7 +309,7 @@ class Soil(Task):
         """Get domain properties.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
 
         Returns:
             dict: Domain properties

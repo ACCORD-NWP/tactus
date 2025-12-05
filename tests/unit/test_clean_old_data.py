@@ -9,8 +9,8 @@ from pathlib import Path
 import pytest
 import tomlkit
 
-from deode.datetime_utils import as_timedelta
-from deode.tasks.clean_old_data import CleanScratchData
+from tactus.datetime_utils import as_timedelta
+from tactus.tasks.clean_old_data import CleanScratchData
 
 
 @pytest.fixture(name="parsed_config", scope="module")

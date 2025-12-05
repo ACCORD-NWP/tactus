@@ -5,8 +5,8 @@ import os
 import pathlib
 import shutil
 
-from deode.logs import logger
-from deode.toolbox import FileManager, Platform
+from tactus.logs import logger
+from tactus.toolbox import FileManager, Platform
 
 
 class Archive:

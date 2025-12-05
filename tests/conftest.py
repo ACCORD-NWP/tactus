@@ -5,8 +5,8 @@ import sys
 import numpy as np
 import pytest
 
-from deode.config_parser import ConfigParserDefaults, ParsedConfig
-from deode.host_actions import DeodeHost
+from tactus.config_parser import ConfigParserDefaults, ParsedConfig
+from tactus.host_actions import DeodeHost
 
 
 class MockObject(object):

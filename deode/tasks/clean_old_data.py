@@ -19,7 +19,7 @@ class CleanOldData(Task):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
             name (str): Name of task
         """
         Task.__init__(self, config, __class__.__name__)
@@ -119,7 +119,7 @@ class CleanEhypeData(CleanOldData):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         CleanOldData.__init__(self, config)
         self.name = "CleanEhypeData"
@@ -180,7 +180,7 @@ class CleanScratchData(CleanOldData):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         CleanOldData.__init__(self, config)
         self.name = "CleanScratchData"
@@ -215,7 +215,7 @@ class CleanSuites(CleanOldData):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         CleanOldData.__init__(self, config)
         self.name = "CleanSuites"
@@ -261,7 +261,7 @@ class CleanIFSData(CleanOldData):
         """Construct object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         CleanOldData.__init__(self, config)
         self.name = "CleanIFSData"
