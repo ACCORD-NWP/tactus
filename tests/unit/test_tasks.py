@@ -9,8 +9,8 @@ from unittest.mock import patch
 
 import pytest
 import tomlkit
-
 from deode import GeneralConstants
+
 from tactus.derived_variables import derived_variables, set_times
 from tactus.plugin import DeodePluginRegistry
 from tactus.tasks.archive import ArchiveDataBridge, ArchiveHour, ArchiveStatic
