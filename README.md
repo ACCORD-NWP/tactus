@@ -40,7 +40,6 @@ We **highly recommend** you to also put the statement listed above in your shell
   ml pyeccodes_23
   ml scl-ecflow_23
   ```
-
 * On Belenos
   ```shell
   conda create -n <env_name> python=3.10.* gdal=3.6.2 ecflow -c conda-forge
@@ -96,12 +95,10 @@ Finally, install [`pygdal`](https://pypi.org/project/pygdal/), which is required
     poetry shell
     pip install pygdal==3.6.2.11
     ```
-
   On Belenos, you should install the project in the conda environment that was created, directly with the `pip` command.
   ```shell
   pip install -e . --no-cache --prefer-binary
   ```
-
   If installation is not succesful, please contact the IT support in your organisation or HPC facility.
 
 ### Important
@@ -117,7 +114,6 @@ Initially set up the environment by repeating the steps in [Set up environment](
 ```shell
 poetry shell
 ```
-
 Alternatively, to activate a `deode` installation located in an arbitrary
 directory `MY_DEODE_SOURCE_DIRECTORY`, please run:
 ```shell
