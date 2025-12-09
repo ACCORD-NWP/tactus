@@ -339,11 +339,13 @@ f4_AROME:
     LSLHD_W: false
     LSPRT: true
     LTWOTL: true
-    ND4SYS: 2
+    ND4SYS: 0 
     NPDVAR: 2
-    NVDVAR: 4
+    NVDVAR: 4 
     SLHDEPSH: 0.08
     SLHDKMAX: 6
+    LSI_NHEE: true
+    L_RDRY_NHX: true
   NAMFPF:
     NFMAX(1): 60
     NFMAX(2): 80
@@ -371,21 +373,21 @@ f4_AROME:
     YG_NL%LINTLIN: true
     YG_NL%LQM: true
     YG_NL%LSLHD: false
-    YG_NL%NCOUPLING: -1
+    YG_NL%NCOUPLING: 0 
     YG_NL%REFVALC: 0.0
     YIRAD_NL%LGP: true
     YI_NL%LCOMAD: true
     YI_NL%LINTLIN: true
     YI_NL%LQM: true
     YI_NL%LSLHD: false
-    YI_NL%NCOUPLING: -1
+    YI_NL%NCOUPLING: 0 
     YI_NL%REFVALC: 0.0
     YLRAD_NL%LGP: true
     YL_NL%LCOMAD: true
     YL_NL%LINTLIN: true
     YL_NL%LQM: true
     YL_NL%LSLHD: false
-    YL_NL%NCOUPLING: -1
+    YL_NL%NCOUPLING: 0 
     YL_NL%REFVALC: 0.0
     YQ_NL%LCOMAD: true
     YQ_NL%LQM: true
@@ -395,16 +397,16 @@ f4_AROME:
     YR_NL%LINTLIN: true
     YR_NL%LQM: true
     YR_NL%LSLHD: false
-    YR_NL%NCOUPLING: -1
+    YR_NL%NCOUPLING: 0
     YR_NL%REFVALC: 0.0
     YS_NL%LCOMAD: true
     YS_NL%LINTLIN: true
     YS_NL%LQM: true
     YS_NL%LSLHD: false
-    YS_NL%NCOUPLING: -1
+    YS_NL%NCOUPLING: 0 
     YS_NL%REFVALC: 0.0
     YTKE_NL%NCOUPLING: 0
-    YTKE_NL%NREQIN: -1
+    YTKE_NL%NREQIN: 0
   NAMIO_SERV:
     NIO_SERV_BUF_MAXSIZE: 20
     NIO_SERV_METHOD: 2
@@ -422,6 +424,8 @@ f4_AROME:
   NAMPARAR:
     CMICRO: ${cfg:submission.cmicro,ICE3}
     LOLSMC: true
+    XVMAXTHM: 1.9
+    XVMAXTHP: 1.6
   NAMPHMSE:
     LPGDFWR: false
   NAMPHY:
@@ -429,6 +433,7 @@ f4_AROME:
     LEDR: true
     LMPHYS: true
     LRAYFM: true
+    NSOLE: 1
   NAMPHY0:
     ALMAV: 300.0
     BEDIFV: 0.05
@@ -526,22 +531,24 @@ f4_AROME:
     LXXGST: true
     NRAZTS: ${steplist:${cfg:general.namelist.nrazts}}
     NXGSTPERIOD: 3600
-  NAM_NEBn:
+  NAM_NEBN:
     CFRAC_ICE_ADJUST: S
     CFRAC_ICE_SHALLOW_MF: S
     LSIGMAS: true
     LSUBG_COND: true
     VSIGQSAT: 0.02
-  NAM_PARAM_ICEn:
+  NAM_PARAM_ICEN:
     CSEDIM: STAT
     CSNOWRIMING: M90
     LCONVHG: true
     LCRFLIMIT: true
     LCRIAUTI: true
+    LDEPOSC: true
     LEVLIMIT: true
     LFEEDBACKT: true
     LNULLWETG: true
     LNULLWETH: true
+    LRED: true
     LSEDIC: true
     LSEDIM_AFTER: false
     LWETGPOST: true
@@ -554,6 +561,8 @@ f4_AROME:
     XSPLIT_MAXCFL: 0.8
     XT0CRIAUTI_NAM: -5.0
     XTSTEP_TS: 0.0
+  NAM_TURBN:
+    LBL89TOP: true
   NEMELBC0A:
     LESPCPL: true
     NBICNHX: 2
@@ -760,13 +769,15 @@ f4_ALARO:
     LSLHD_W: true
     LSPRT: true
     LTWOTL: true
-    ND4SYS: 2
+    ND4SYS: 0 
     NPDVAR: 2
     NVDVAR: 4
     SLHDEPSH: 0.016
     SLHDEPSV: 0.0
     SLHDKMAX: 6.0
     SLHDKMIN: -0.6
+    LSI_NHEE: true
+    L_RDRY_NHX: true
   NAMFPC:
     LCRITSNOWTEMP: false
     LFPPACKING: false
@@ -1287,9 +1298,12 @@ f4_HARMONIE_AROME:
     LSLHD_W: false
     LSPRT: true
     LTWOTL: true
+    ND4SYS: 0
     NPDVAR: 2
-    NVDVAR: 4
+    NVDVAR: 4 
     SLHDEPSH: 0.0025
+    LSI_NHEE: true
+    L_RDRY_NHX: true
   NAMFA:
     LEXTERN: true
     YFACLF%CLNAME: CLOUD_FRACTI
@@ -1320,8 +1334,8 @@ f4_HARMONIE_AROME:
     YG_NL%LPT: false
     YG_NL%LQM: true
     YG_NL%LSLHD: true
-    YG_NL%NCOUPLING: -1
-    YG_NL%NREQIN: -1
+    YG_NL%NCOUPLING: 0 
+    YG_NL%NREQIN: 0
     YG_NL%REFVALC: 0.0
     YG_NL%REFVALI: 0.0
     YIRAD_NL%LGP: true
@@ -1329,7 +1343,7 @@ f4_HARMONIE_AROME:
     YI_NL%LPT: false
     YI_NL%LQM: true
     YI_NL%LSLHD: true
-    YI_NL%NCOUPLING: -1
+    YI_NL%NCOUPLING: 0
     YI_NL%REFVALC: 0.0
     YI_NL%NREQIN: 1
     YLRAD_NL%LGP: true
@@ -1337,7 +1351,7 @@ f4_HARMONIE_AROME:
     YL_NL%LPT: false
     YL_NL%LQM: true
     YL_NL%LSLHD: true
-    YL_NL%NCOUPLING: -1
+    YL_NL%NCOUPLING: 0
     YL_NL%REFVALC: 0.0
     YL_NL%NREQIN: 1
     YQ_NL%CNAME: HUMI.SPECIFI
@@ -1351,8 +1365,8 @@ f4_HARMONIE_AROME:
     YR_NL%LPT: false
     YR_NL%LQM: true
     YR_NL%LSLHD: true
-    YR_NL%NCOUPLING: -1
-    YR_NL%NREQIN: -1
+    YR_NL%NCOUPLING: 0
+    YR_NL%NREQIN: 0
     YR_NL%REFVALC: 0.0
     YR_NL%REFVALI: 0.0
     YSRC_NL%LPT: false
@@ -1360,13 +1374,13 @@ f4_HARMONIE_AROME:
     YS_NL%LPT: false
     YS_NL%LQM: true
     YS_NL%LSLHD: true
-    YS_NL%NCOUPLING: -1
-    YS_NL%NREQIN: -1
+    YS_NL%NCOUPLING: 0
+    YS_NL%NREQIN: 0
     YS_NL%REFVALC: 0.0
     YS_NL%REFVALI: 0.0
     YTKE_NL%LPT: false
     YTKE_NL%NCOUPLING: 0
-    YTKE_NL%NREQIN: -1
+    YTKE_NL%NREQIN: 0 
   NAMINI:
     LDFI: false
   NAMINTFLEX:
@@ -1407,6 +1421,8 @@ f4_HARMONIE_AROME:
     LTOTPREC: false
     LWTHRESH: true
     LWTHRESHMOIST: true
+    LSUBEVAP: false
+    LDRYMFREDUC: false
     NSWB_MNH: 6
     RADGR: 0.5
     RADSN: 1.0
@@ -1542,15 +1558,16 @@ f4_HARMONIE_AROME:
     NFRRAZ: 1
     NRAZTS: ${steplist:${cfg:general.namelist.nrazts}}
     NXGSTPERIOD: 3600
-  NAM_NEBn:
+  NAM_NEBN:
     LHGT_QS: true
     LSIGMAS: true
     LSTATNW: true
     LSUBG_COND: true
     VSIGQSAT: 0.02
-  NAM_PARAM_ICEn:
+  NAM_PARAM_ICEN:
     LKOGAN: true
     LOCND2: true
+    LRED: false
     LSEDIC: true
     XFRMIN_NAM(1): 1.0e-5
     XFRMIN_NAM(12): 0.05
@@ -1562,11 +1579,11 @@ f4_HARMONIE_AROME:
     XFRMIN_NAM(3): 3.0e-9
     XFRMIN_NAM(4): 3.0e-9
     XFRMIN_NAM(7): 0.
-  NAM_PARAM_MFSHALLn:
+  NAM_PARAM_MFSHALLN:
     CMF_CLOUD: STAT
     CMF_UPDRAFT: DUAL
     LMIXUV: false
-  NAM_TURBn:
+  NAM_TURBN:
     LHARAT: true
   NEMELBC0A:
     LESPCPL: false
@@ -1589,6 +1606,9 @@ f4_common:
     LWFPAC: ${cfg:general.windfarm}
   NAMXFU:
     LXWFPIN: ${cfg:general.windfarm}
+  NAM_NEBN:
+    LVARRESDEP: false
+    LTAUCONV: false  
   NAMCT0:
     LAROME: true
   NAMCT1:
@@ -2018,6 +2038,49 @@ f4_e927:
   NAMRIP:
     CSTOP: t0
     TSTEP: 1.0
+
+#
+# ecrad options
+#
+ecrad:
+  NAERAD:
+    LAER3D: true
+    LSRTM: true
+    LUSEPRE2017RAD: false
+    NAER: 0
+    NAERMACC: 1
+    NDUMPBADINPUTS: 0
+    NLIQOPT: 2
+    NMCICA: 1
+    NOVLP: 1
+    NOZOCL: 4
+
+  RADIATION:
+    CLOUD_FRACTION_THRESHOLD: 1e-06
+    CLOUD_INHOM_DECORR_SCALING: 1.0
+    CLOUD_MIXING_RATIO_THRESHOLD: 1e-09
+    DIRECTORY_NAME: "."
+    DO_CLEAR: true
+    DO_FU_LW_ICE_OPTICS_BUG: false
+    DO_LW_AEROSOL_SCATTERING: false
+    DO_LW_CLOUD_SCATTERING: false
+    DO_LW_DERIVATIVES: true
+    DO_SAVE_GPOINT_FLUX: false
+    DO_SAVE_RADIATIVE_PROPERTIES: false
+    DO_SAVE_SPECTRAL_FLUX: false
+    DO_SURFACE_SW_SPECTRAL_FLUX: true
+    DO_SW_DELTA_SCALING_WITH_GASES: false
+    GAS_MODEL_NAME: "RRTMG-IFS"
+    ICE_MODEL_NAME: "Fu-IFS"
+    IVERBOSE: 1
+    IVERBOSESETUP: 3
+    LIQUID_MODEL_NAME: "Nielsen"
+    LW_SOLVER_NAME: "McICA"
+    OVERLAP_SCHEME_NAME: "Exp-Ran"
+    SW_SOLVER_NAME: "McICA"
+    USE_AEROSOLS: true
+    USE_BETA_OVERLAP: false
+
 empty:
   NACIETEO: {}
   NACOBS: {}

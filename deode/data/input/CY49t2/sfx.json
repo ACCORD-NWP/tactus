@@ -62,7 +62,7 @@
                 }
             }
         },
-        "NAM_ZS#YZSFILETYPE": {"DIRECT": {"NAM_ZS#YZS": "@climdir@/gmted2010.dir"}},
+        "NAM_ZS#YZSFILETYPE": {"DIRECT": {"NAM_ZS#YZS": "@climdir@/topo.dir"}},
         "NAM_ISBA#YSANDFILETYPE": {
             "DIRECT": {"NAM_ISBA#YSAND": "@climdir@/SAND_SOILGRID.dir"}
         },
@@ -82,27 +82,27 @@
             }
         },
         "NAM_FRAC#CFTYP_NATURE": {
-            "ASCLLV": {
-                "NAM_FRAC#CFNAM_SEA": "@osm_data@/OSM_SFX8_1_100m_SEA_LAT_LON.txt",
-                "NAM_FRAC#CFNAM_WATER": "@osm_data@/OSM_SFX8_1_100m_WATER_LAT_LON.txt",
-                "NAM_FRAC#CFNAM_NATURE": "@osm_data@/OSM_SFX8_1_100m_NATURE_LAT_LON.txt",
-                "NAM_FRAC#CFNAM_TOWN": "@osm_data@/OSM_SFX8_1_100m_TOWN_LAT_LON.txt"
+            "DIRECT":{
+                "NAM_FRAC#CFNAM_SEA": "@osm_data_eu@/OSM_EUROPE_60m_SEA.dir",
+                "NAM_FRAC#CFNAM_WATER": "@osm_data_eu@/OSM_EUROPE_60m_WATER.dir",
+                "NAM_FRAC#CFNAM_NATURE": "@osm_data_eu@/OSM_EUROPE_60m_NATURE.dir",
+                "NAM_FRAC#CFNAM_TOWN": "@osm_data_eu@/OSM_EUROPE_60m_TOWN.dir"
             }
         },
         "NAM_DATA_TEB#CFTYP_BLD_HEIGHT": {
-            "ASCLLV": {
-                "NAM_DATA_TEB#CFNAM_GARDEN": "@osm_data@/OSM_SFX8_1_100m_GARDEN_FRACTION_LAT_LON.txt",
-                "NAM_DATA_TEB#CFNAM_BLD_HEIGHT": "@osm_data@/OSM_SFX8_1_100m_BUILDING_HEIGHT_LAT_LON.txt",
-                "NAM_DATA_TEB#CFNAM_WALL_O_HOR": "@osm_data@/OSM_SFX8_1_100m_WALL_O_HOR_LAT_LON.txt",
-                "NAM_DATA_TEB#CFNAM_BLD": "@osm_data@/OSM_SFX8_1_100m_BUILDING_FRACTION_LAT_LON.txt",
-                "NAM_DATA_TEB#CFNAM_Z0_TOWN": "@osm_data@/OSM_SFX8_1_100m_Z0_TOWN_LAT_LON.txt"
+            "DIRECT": {
+                "NAM_DATA_TEB#CFNAM_GARDEN": "@osm_data_eu@/OSM_EUROPE_60m_GARDEN.dir",
+                "NAM_DATA_TEB#CFNAM_BLD_HEIGHT": "@osm_data_eu@/OSM_EUROPE_60m_BLD_HEIGHT.dir",
+                "NAM_DATA_TEB#CFNAM_WALL_O_HOR": "@osm_data_eu@/OSM_EUROPE_60m_WALL_O_HOR.dir",
+                "NAM_DATA_TEB#CFNAM_BLD": "@osm_data_eu@/OSM_EUROPE_60m_BLD.dir",
+                "NAM_DATA_TEB#CFNAM_Z0_TOWN": "@osm_data_eu@/OSM_EUROPE_60m_Z0_TOWN.dir"
             }
         },
         "NAM_DATA_TEB_GARDEN#CFTYP_FRAC_HVEG": {
-            "ASCLLV": {
-                "NAM_DATA_TEB_GARDEN#CFNAM_FRAC_HVEG": "@osm_data@/OSM_SFX8_1_100m_HIGH_VEGETATION_FRACTION_LAT_LON.txt",
-                "NAM_DATA_TEB_GARDEN#CFNAM_FRAC_LVEG": "@osm_data@/OSM_SFX8_1_100m_LOW_VEGETATION_FRACTION_LAT_LON.txt",
-                "NAM_DATA_TEB_GARDEN#CFNAM_FRAC_NVEG": "@osm_data@/OSM_SFX8_1_100m_NVEG_FRACTION_LAT_LON.txt"
+            "DIRECT": {
+                "NAM_DATA_TEB_GARDEN#CFNAM_FRAC_HVEG": "@osm_data_eu@/OSM_EUROPE_60m_VEGH.dir",
+                "NAM_DATA_TEB_GARDEN#CFNAM_FRAC_LVEG": "@osm_data_eu@/OSM_EUROPE_60m_VEGB.dir",
+                "NAM_DATA_TEB_GARDEN#CFNAM_FRAC_NVEG": "@osm_data_eu@/OSM_EUROPE_60m_NVEG.dir"
                 }
         }
     },
@@ -124,6 +124,9 @@
             },
             "FA": {
                 "INFILE.fa": "@PREP_INPUT_FILE_WITH_PATH@"
+            },
+            "NC": {
+                "INFILE.nc": "@PREP_INPUT_FILE_WITH_PATH@"
             }
         },
         "NAM_PREP_SURF_ATM#CFILEPGDTYPE": {

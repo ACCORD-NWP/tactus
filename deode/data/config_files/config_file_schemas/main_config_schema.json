@@ -89,6 +89,16 @@
           "type": "string",
           "format": "duration"
         },
+        "bdshift_sfx": {
+          "description": "Shift of SURFEX prep input initial time. E.g. 'PT24H' would mean use 24H old file",
+          "type": "string",
+          "format": "duration"
+        },
+	"lbc_per_task": {
+	  "description": "Number of LBCs processed in a single task",
+	  "type": "number",
+	  "default": 7
+	},
         "max_interpolation_tasks": {
           "description": "Number of interpolate tasks run in parallel",
           "type": "number"
@@ -97,6 +107,12 @@
           "description": "Coupling model",
           "default": "ifs",
           "enum": ["lam", "ifs"],
+          "type": "string"
+        },
+        "bdmodel_sfx": {
+          "description": "SURFEX prep input file",
+          "default": "from_grib",
+          "enum": ["from_grib", "from_fa", "from_nc"],
           "type": "string"
         },
         "sstmodels": {
@@ -437,6 +453,11 @@
         },
         "mirror_globalDT": {
           "description": "Mirror globalDT suite (true) and trigger if globalDT is available",
+          "type": "boolean",
+          "default": false
+        },
+        "mirror_host_case": {
+          "description": "Mirror a host suite and trigger if available.",
           "type": "boolean",
           "default": false
         },
@@ -873,6 +894,14 @@
           "description": "Logger output level",
           "type": "string",
           "enum": ["CRITICAL", "ERROR", "DEBUG", "INFO", "WARNING"]
+        },
+        "e923_optional_sections": {
+          "description": "Option to include/exclude part 5 and 6 of e923. Set to '[5,6]' to retain traditional climate files.",
+          "type": "array",
+	  "default": [],
+          "items": {
+                "type": "integer"
+          }
         },
         "surfex": {
           "description": "SURFEX switch",

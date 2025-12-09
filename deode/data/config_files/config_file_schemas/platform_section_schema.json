@@ -36,9 +36,15 @@
       "description": "Path to global IFS surface data",
       "default" : ""
     },
-    "gmted2010_data_path": {
+    "topo_data_path": {
       "type": "string",
-      "description": "Path to gmted2010 input"
+      "description": "Path to topography input data directory"
+    },
+    "topo_source": {
+      "type": "string",
+      "description": "Topography data source type",
+      "default": "gmted2010",
+      "enum": ["gmted2010", "gmted_eur", "gtopo30", "glo90"]
     },
     "ecosg_data_path": {
       "type": "string",
@@ -104,6 +110,10 @@
       "type": "string",
       "description": "TBA"
     },
+    "osm_data_eu": {
+      "type": "string",
+      "description": "Directory containing OSM data for Europe"
+    },
     "tree_height_dir": {
       "type": "string",
       "description": "Path to tree_height data."
@@ -134,98 +144,6 @@
            "ehype": {
              "type": "string",
              "description": "EHYPE model path",
-             "default": ""
-           }
-        }
-      },
-      "mirrorglobalDT": {
-        "title": "Settings to mirror globalDT",
-        "type": "object",
-        "properties": {
-           "check_var": {
-             "type": "string",
-             "description": "Remote variable (like YMD) that is checked for triggering. Leave empty if not required.",
-             "default": ""
-           },
-           "mirror_name": {
-             "type": "string",
-             "description": "Name for the mirror in ecflow",
-             "default": ""
-           },
-           "remote_auth": {
-             "type": "string",
-             "description": "the location to the Mirror authentication credentials file, if required",
-             "default": ""
-           },
-            "remote_host": {
-             "type": "string",
-             "description": "the remote ecFlow server host",
-             "default": ""
-           },
-           "remote_path": {
-             "type": "string",
-             "description": "the path of the node on the remote ecFlow server",
-             "default": ""
-           },
-           "remote_port": {
-             "type": "string",
-             "description": "the remote ecFlow server port",
-             "default": ""
-           },
-           "remote_polling": {
-             "type": "string",
-             "description": "the value (in seconds) used to periodically contact the remote ecFlow server",
-             "default": ""
-           },
-           "remote_ssl": {
-             "type": "string",
-             "description": "to connect to the ecFlow server using SSL",
-             "default": ""
-           }
-        }
-      },
-     "mirroroffline": {
-        "title": "Settings to mirror offlineSFX",
-        "type": "object",
-        "properties": {
-           "check_var": {
-             "type": "string",
-             "description": "Remote variable (like YMD) that is checked for triggering. Leave empty if not required.",
-             "default": ""
-           },
-           "mirror_name": {
-             "type": "string",
-             "description": "Name for the mirror in ecflow",
-             "default": ""
-           },
-           "remote_auth": {
-             "type": "string",
-             "description": "the location to the Mirror authentication credentials file, if required",
-             "default": ""
-           },
-            "remote_host": {
-             "type": "string",
-             "description": "the remote ecFlow server host",
-             "default": ""
-           },
-           "remote_path": {
-             "type": "string",
-             "description": "the path of the node on the remote ecFlow server",
-             "default": ""
-           },
-           "remote_port": {
-             "type": "string",
-             "description": "the remote ecFlow server port",
-             "default": ""
-           },
-           "remote_polling": {
-             "type": "string",
-             "description": "the value (in seconds) used to periodically contact the remote ecFlow server",
-             "default": ""
-           },
-           "remote_ssl": {
-             "type": "string",
-             "description": "to connect to the ecFlow server using SSL",
              "default": ""
            }
         }

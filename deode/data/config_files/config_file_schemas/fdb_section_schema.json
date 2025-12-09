@@ -5,18 +5,74 @@
   "type": "object",
   "additionalProperties": true,
   "properties": {
+    "negative_rules": {
+      "type": "object",
+      "description": "Fields to filter out prior to archiving. For a given key a list of values should be given",
+      "properties": {
+        "levtype": {
+          "description": "Type of level",
+          "type": "array"
+        }
+      }
+    },
+    "expver_restrictions": {
+      "type": "object",
+      "description": "List users allowed to archive to a specific expver. ",
+      "properties": {
+        "0001": {
+          "description": "Operational expver",
+          "anyOf": [
+             {
+                "type": "string",
+                "default": "@PROD_USER@"
+             },
+             {
+                "type": "array"
+             }
+          ]
+        },
+        "0099": {
+          "description": "Pre-operational expver",
+          "anyOf": [
+             {
+                "type": "string",
+                "default": "@PROD_USER@"
+             },
+             {
+                "type": "array"
+             }
+          ]
+        },
+        "0098": {
+          "description": "Development expver",
+          "anyOf": [
+             {
+                "type": "string",
+                "default": "@DEV_USER@"
+             },
+             {
+                "type": "array"
+             }
+          ]
+        }
+      }
+    },
     "grib_set": {
       "type": "object",
-      "description": "Suite definition to play in EcFlow",
+      "description": "GRIB2 metadata updated before archiving to FDB. Any GRIB key may be added",
       "properties": {
         "expver": {
           "description": "Experiment id for FDB, read documentation before use ",
           "type": "string",
-          "default": "NONE",
           "minLength": 4,
           "maxLength": 4
         }
       }
+    },
+    "databridge_user": {
+      "type": "string",
+      "description": "User allowed to write to the databridge",
+      "default": "@PROD_USER@"
     }
   }
 }

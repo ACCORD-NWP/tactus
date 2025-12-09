@@ -4,14 +4,14 @@ import os
 
 from pysurfex.cli import pgd, prep
 
-from ..config_parser import ConfigPaths
-from ..datetime_utils import as_datetime, as_timedelta, cycle_offset
-from ..logs import logger
-from ..namelist import NamelistGenerator
-from ..os_utils import deodemakedirs
-from .base import Task
-from .batch import BatchJob
-from .marsprep import Marsprep
+from deode.boundary_utils import Boundary
+from deode.config_parser import ConfigPaths
+from deode.datetime_utils import as_datetime
+from deode.logs import logger
+from deode.namelist import NamelistGenerator
+from deode.os_utils import deodemakedirs
+from deode.tasks.base import Task
+from deode.tasks.batch import BatchJob
 
 
 class PySurfexBaseTask(Task):
@@ -28,31 +28,24 @@ class PySurfexBaseTask(Task):
         """
         Task.__init__(self, config, name)
 
-        climdir = self.platform.get_system_value("climdir")
-        deodemakedirs(climdir)
-        self.pysurfex_domain_file = f"{climdir}/domain.json"
-        self.pysurfex_system_file = f"{climdir}/system.json"
-        if not os.path.exists(self.pysurfex_domain_file):
-            # Domain/geo
-            conf_proj_dict = {
-                "nam_pgd_grid": {"cgrid": "CONF PROJ"},
-                "nam_conf_proj_grid": {
-                    "nimax": self.config["domain.nimax"],
-                    "njmax": self.config["domain.njmax"],
-                    "xloncen": self.config["domain.xloncen"],
-                    "xlatcen": self.config["domain.xlatcen"],
-                    "xdx": self.config["domain.xdx"],
-                    "xdy": self.config["domain.xdy"],
-                    "ilone": self.config["domain.ilone"],
-                    "ilate": self.config["domain.ilate"],
-                },
-                "nam_conf_proj": {
-                    "xlon0": self.config["domain.xlon0"],
-                    "xlat0": self.config["domain.xlat0"],
-                },
-            }
-            with open(self.pysurfex_domain_file, mode="w", encoding="utf8") as fhandler:
-                json.dump(conf_proj_dict, fhandler)
+        # Domain/geo
+        conf_proj_dict = {
+            "nam_pgd_grid": {"cgrid": "CONF PROJ"},
+            "nam_conf_proj_grid": {
+                "nimax": self.config["domain.nimax"],
+                "njmax": self.config["domain.njmax"],
+                "xloncen": self.config["domain.xloncen"],
+                "xlatcen": self.config["domain.xlatcen"],
+                "xdx": self.config["domain.xdx"],
+                "xdy": self.config["domain.xdy"],
+                "ilone": self.config["domain.ilone"],
+                "ilate": self.config["domain.ilate"],
+            },
+            "nam_conf_proj": {
+                "xlon0": self.config["domain.xlon0"],
+                "xlat0": self.config["domain.xlat0"],
+            },
+        }
 
         # Binary input data
         self.pysurfex_input_definition = ConfigPaths.path_from_subpath(
@@ -72,9 +65,31 @@ class PySurfexBaseTask(Task):
             lval = self.platform.substitute(val)
             exp_file_paths.update({lkey: lval})
 
-        if not os.path.exists(self.pysurfex_system_file):
-            with open(self.pysurfex_system_file, mode="w", encoding="utf8") as fhandler:
-                json.dump(exp_file_paths, fhandler)
+        # Create a file in the working directory
+        self.create_wdir()
+        self.pysurfex_domain_file = f"{self.wdir}/domain.json"
+        self.pysurfex_system_file = f"{self.wdir}/system.json"
+        self._dump_config(self.pysurfex_system_file, exp_file_paths, force=True)
+        self._dump_config(self.pysurfex_domain_file, conf_proj_dict, force=True)
+
+        # Store in climdir for reference
+        climdir = self.platform.get_system_value("climdir")
+        deodemakedirs(climdir)
+        self._dump_config(f"{climdir}/system.json", exp_file_paths)
+        self._dump_config(f"{climdir}/domain.json", conf_proj_dict)
+
+    @staticmethod
+    def _dump_config(jsonfile, config_settings, force=False):
+        """Dump the config file if it does not exist.
+
+        Args:
+            jsonfile (string): Full path to json file to write
+            config_settings (dict): Dict to dump
+            force (boolean): Force output
+        """
+        if not os.path.exists(jsonfile) or force:
+            with open(jsonfile, mode="w", encoding="utf8") as fhandler:
+                json.dump(config_settings, fhandler)
 
     def execute(self):
         """Execute."""
@@ -164,15 +179,12 @@ class Prep(PySurfexBaseTask):
         """Execute."""
         cnmexp = self.config["general.cnmexp"]
         output = f"{self.intp_bddir_sfx}/ICMSH{cnmexp}INIT.sfx"
-        bdmodel = self.config["boundaries.bdmodel"]
 
         if not os.path.exists(output) or self.force:
             binary = self.get_binary("PREP")
             deodemakedirs(self.archive)
 
             bd_has_surfex = self.config["boundaries.bd_has_surfex"]
-            basetime = as_datetime(self.config["general.times.basetime"])
-
             namelist_task = "prep"
             self.nlgen.load(namelist_task)
             settings = self.nlgen.assemble_namelist(namelist_task)
@@ -181,31 +193,14 @@ class Prep(PySurfexBaseTask):
             # TODO this should be externalized
             # Select the correct input file
             basetime = as_datetime(self.config["general.times.basetime"])
+            self.boundary = Boundary(self.config)
             bddir_sfx = self.config["system.bddir_sfx"]
-            if bdmodel == "ifs":
-                mars = Marsprep.mars_selection(
-                    selection=self.platform.substitute(
-                        self.config["boundaries.ifs.selection"]
-                    ),
-                    config=self.config,
-                )
-                bdcycle = as_timedelta(mars["ifs_cycle_length"])
-                bdcycle_start = as_timedelta(mars["ifs_cycle_start"])
-            else:
-                bdcycle = as_timedelta(self.config["boundaries.lam.bdcycle"])
-                bdcycle_start = as_timedelta(self.config["boundaries.lam.bdcycle_start"])
-
-            bdshift = as_timedelta(self.config["boundaries.bdshift"])
-            bd_basetime = basetime - cycle_offset(
-                basetime, bdcycle, bdcycle_start=bdcycle_start, bdshift=bdshift
-            )
-
             bdfile_sfx_template: str = self.config["file_templates.bdfile_sfx.archive"]
-            if not self.config.get(f"boundaries.{bdmodel}.bdmember"):
+            if not self.config.get(f"boundaries.{self.boundary.bdmodel}.bdmember"):
                 bdfile_sfx_template = bdfile_sfx_template.replace("@BDMEMBER@", "0")
             prep_input_file = self.platform.substitute(
                 f"{bddir_sfx}/{bdfile_sfx_template}",
-                basetime=bd_basetime,
+                basetime=self.boundary.bd_basetime_sfx,
                 validtime=basetime,
             )
 

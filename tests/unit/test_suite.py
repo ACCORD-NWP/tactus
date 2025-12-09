@@ -34,6 +34,22 @@ class TestSuite:
     @pytest.mark.parametrize(
         "param",
         [
+            {
+                "suite_control": {
+                    "do_marsprep": False,
+                    "interpolate_boundaries": False,
+                    "create_static_data": False,
+                },
+                "general": {
+                    "times": {
+                        "end": "2022-05-03T00:00:00Z",
+                        "start": "2022-05-02T00:00:00Z",
+                    },
+                },
+                "eps": {
+                    "general": {"members": [0, 1]},
+                },
+            },
             {"boundaries": {"bdmax": 1}},
             {"suite_control": {"create_static_data": False}},
             {"suite_control": {"create_time_dependent_suite": False, "do_soil": False}},

@@ -1,0 +1,3 @@
+[platform]
+  topo_data_path = "@CLIMDATA@/GMTED2010"
+  topo_source = "gmted_eur"

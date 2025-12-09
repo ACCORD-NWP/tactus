@@ -7,12 +7,11 @@ from functools import cached_property
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from deode.boundary_utils import Boundary
+from deode.datetime_utils import as_datetime, as_timedelta
 from deode.eps.eps_setup import get_member_config, infer_members
-
-from ..config_parser import ParsedConfig
-from ..datetime_utils import as_datetime, as_timedelta, cycle_offset
-from ..logs import logger
-from ..mars_utils import (
+from deode.logs import logger
+from deode.mars_utils import (
     BaseRequest,
     add_additional_data_to_all,
     add_additional_file_specific_data,
@@ -24,14 +23,16 @@ from ..mars_utils import (
     get_steplist,
     get_steps_and_members_to_retrieve,
     get_value_from_dict,
+    mars_selection,
     mars_write_method,
     move_files,
     write_compute_mars_req,
     write_retrieve_mars_req,
+    write_write_mars_req,
 )
-from ..os_utils import deodemakedirs, join_files, list_files_join
-from ..tasks.batch import BatchJob
-from .base import Task
+from deode.os_utils import deodemakedirs, join_files, list_files_join
+from deode.tasks.base import Task
+from deode.tasks.batch import BatchJob
 
 
 class Marsprep(Task):
@@ -96,29 +97,13 @@ class Marsprep(Task):
         check_data_available(self.basetime, self.mars)
 
         # Get boundary informations
-        bdint = as_timedelta(self.config["boundaries.bdint"])
-        bdcycle = as_timedelta(self.mars["ifs_cycle_length"])
-        bdcycle_start = as_timedelta(self.mars["ifs_cycle_start"])
-        bdshift = as_timedelta(self.config["boundaries.bdshift"])
-
-        if bdshift.total_seconds() % bdcycle.total_seconds() != 0:
-            raise ValueError("bdshift needs to be a multiple of bdcycle!")
-
-        # Get date/time/steps info
-        bd_offset = cycle_offset(
-            self.basetime,
-            bdcycle,
-            bdcycle_start=bdcycle_start,
-            bdshift=bdshift,
+        self.boundary = Boundary(config)
+        self.steps = get_steplist(
+            self.boundary.bd_offset, forecast_range, self.boundary.bdint
         )
 
-        self.bd_basetime = self.basetime - bd_offset
-        self.steps = get_steplist(bd_offset, forecast_range, bdint)
-
-        logger.info("bd_basetime: {}", self.bd_basetime)
-
-        self.init_date_str = self.bd_basetime.strftime("%Y%m%d")
-        self.init_hour_str = self.bd_basetime.strftime("%H")
+        self.init_date_str = self.boundary.bd_basetime.strftime("%Y%m%d")
+        self.init_hour_str = self.boundary.bd_basetime.strftime("%H")
 
         exist_snow = False
         with contextlib.suppress(KeyError):
@@ -131,7 +116,7 @@ class Marsprep(Task):
         with contextlib.suppress(KeyError):
             start_snow_date = as_datetime(self.mars["start_snow_date"])
 
-        self.exist_snow = exist_snow and self.bd_basetime >= start_snow_date
+        self.exist_snow = exist_snow and self.boundary.bd_basetime >= start_snow_date
         # Split mars by bdint
         self.split_mars = self.config["suite_control.split_mars"]
         if self.split_mars:
@@ -140,7 +125,7 @@ class Marsprep(Task):
         self.prepdir = Path(
             self.platform.substitute(
                 self.config["system.bddir"],
-                basetime=self.bd_basetime,
+                basetime=self.boundary.bd_basetime,
                 validtime=self.basetime,
             )
         )
@@ -170,36 +155,11 @@ class Marsprep(Task):
             self.gg_oro_source = self.mars["gg_oro_source"]
             logger.info("Using static GG orography file {}", self.gg_oro_source)
 
-    @staticmethod
-    def mars_selection(selection: str, config: ParsedConfig) -> dict:
-        """Copy default settings if requested.
-
-        Args:
-            selection             (str): The selection to use.
-            config (deode.ParsedConfig): Configuration object
-
-        Returns:
-             mars                (dict): mars config section
-
-        """
-        mars = config[f"mars.{selection}"].dict()
-        if "expver" not in mars:
-            mars["expver"] = selection
-
-        # Copy default settings if requested
-        if "default" in mars:
-            default = config[f"mars.{mars['default']}"]
-            for k in default:
-                if k not in mars:
-                    mars[k] = default[k]
-
-        return mars
-
     @cached_property
     def mars(self) -> dict:
         """Get mars selection."""
         selection = self.platform.substitute(self.config["boundaries.ifs.selection"])
-        return self.mars_selection(selection, self.config)
+        return mars_selection(selection, self.config)
 
     def update_data_request(
         self,
@@ -295,7 +255,8 @@ class Marsprep(Task):
             if self.config["suite_control.do_interpolsstsic"]:
                 self.get_sst_data()
 
-        self.get_sfx_data()
+        if not self.config["boundaries.bd_has_surfex"]:
+            self.get_sfx_data()
 
     def get_grid_point_surface_data(self):
         """Get grid point surface data."""
@@ -375,7 +336,7 @@ class Marsprep(Task):
         prep_dir = Path(
             self.platform.substitute(
                 bddir,
-                basetime=self.bd_basetime,
+                basetime=self.boundary.bd_basetime,
                 validtime=self.basetime,
             )
         )
@@ -383,7 +344,7 @@ class Marsprep(Task):
         for member in self.bdmember:
             prep_filename = self.platform.substitute(
                 bdfile.replace("@BDMEMBER@", str(member or 0)),
-                basetime=self.bd_basetime,
+                basetime=self.boundary.bd_basetime,
                 validtime=self.basetime,
             )
 
@@ -444,11 +405,11 @@ class Marsprep(Task):
         prep_dir = Path(
             self.platform.substitute(
                 self.config["system.bddir_sst"],
-                basetime=self.bd_basetime,
+                basetime=self.boundary.bd_basetime,
                 validtime=self.basetime,
             )
         )
-        bdfile = self.config["file_templates.bdfile_sst.archive"]
+        bdfile = self.config["file_templates.bdfile_sst.model"]
 
         _, members_dict, missing_steps_per_member = get_steps_and_members_to_retrieve(
             self.steps,
@@ -456,7 +417,7 @@ class Marsprep(Task):
             bdfile,
             self.bdmember,
             platform=self.platform,
-            basetime=self.bd_basetime,
+            basetime=self.boundary.bd_basetime,
             validtime=self.basetime,
         )
 
@@ -474,7 +435,7 @@ class Marsprep(Task):
                     filenames = list_files_join(self.wdir, merge_pattern)
                     sst_filename = self.platform.substitute(
                         bdfile.replace("@BDMEMBER@", str(member or 0)),
-                        basetime=self.bd_basetime,
+                        basetime=self.boundary.bd_basetime,
                         validtime=self.basetime,
                         bd_index=step,
                     )
@@ -523,6 +484,14 @@ class Marsprep(Task):
         tag_sea = "sea_latlon"
         tag_aux = "aux_latlon"
 
+        # JS: MARS 7 doesn't support all the features as supported by MARS 6
+        use_verbose_mode = self.mars_version == 7 or self.config.get(
+            "submission.task_exceptions.Marsprep.verbose_ICMGG_maskland", False
+        )
+
+        if use_verbose_mode:
+            logger.info("MARS request for 'ICMGG_maskland' is using verbose mode")
+
         prefetch = False
         param_sea = get_value_from_dict(self.mars["GG_sea"], self.init_date_str)
         param_lsm = get_value_from_dict(self.mars["GG_lsm"], self.init_date_str)
@@ -531,8 +500,8 @@ class Marsprep(Task):
         target_aux = "mars_latlonGG"
         target_maskland = "mars_latlonGG_maskland"
 
-        fieldset_dict = dict.fromkeys(["sst_sic", "lsm"])
-        fieldset_dict["sst_sic"] = {"param": param_sea, "target": target_aux}
+        fieldset_dict = dict.fromkeys(["sic_sst", "lsm"])
+        fieldset_dict["sic_sst"] = {"param": param_sea, "target": target_aux}
         fieldset_dict["lsm"] = {"param": param_lsm, "target": target_aux}
 
         for member_type, members in members_dict.items():
@@ -552,6 +521,25 @@ class Marsprep(Task):
                     )
                     target = compile_target(tag_mask, member_type, member, step)
 
+                    if use_verbose_mode:
+                        # Make an verbose formula
+                        target_striped = target.strip('"')
+                        formula = [
+                            {"formula": '"lsm > 0.5"', "fieldset": "mask"},
+                            {
+                                "formula": '"bitmap(sic, mask)"',
+                                "fieldset": "sic_masked",
+                                "target": f'"sic_{target_striped}"',
+                            },
+                            {
+                                "formula": '"bitmap(sst, mask)"',
+                                "fieldset": "sst_masked",
+                                "target": f'"sst_{target_striped}"',
+                            },
+                        ]
+                    else:
+                        formula = '"bitmap(sic_sst, bitmap(lsm > 0.5, 1))"'
+
                     # Execute MARS request to mask land
                     self._build_and_run_compute_request(
                         req_file_name=f"{tag_mask}.req",
@@ -561,7 +549,7 @@ class Marsprep(Task):
                         steps=[step],
                         target=target,
                         fieldset_dict=fieldset_dict,
-                        formula='"bitmap(sst_sic, bitmap(lsm > 0.5, 1))"',
+                        formula=formula,
                         members=[member],
                         source=source,
                         prefetch=prefetch,
@@ -576,7 +564,9 @@ class Marsprep(Task):
                         levtype="SFC",
                         param=param_sea,
                         steps=[step],
-                        target=compile_target(target_maskland, member_type, member),
+                        target=compile_target(
+                            target_maskland, member_type, member, step=step
+                        ),
                         members=[member],
                         source=target,
                         prefetch=prefetch,
@@ -591,7 +581,7 @@ class Marsprep(Task):
                         levtype="SFC",
                         param=param_lsm + "/" + param_skt,
                         steps=[step],
-                        target=compile_target(target_aux, member_type, member),
+                        target=compile_target(target_aux, member_type, member, step=step),
                         members=[member],
                         source=source,
                         prefetch=prefetch,
@@ -907,7 +897,7 @@ class Marsprep(Task):
         steps: List[int],
         target: str,
         fieldset_dict: dict,
-        formula: str,
+        formula: str | List[Dict],
         members: Optional[List[int]] = None,
         source: Optional[str] = None,
         prefetch: bool = True,
@@ -925,7 +915,7 @@ class Marsprep(Task):
             steps: Steps to retrieve.
             target: Name of the target file.
             fieldset_dict: Dict with fieldset and fieldset-specific data
-            formula: Formula for compute.
+            formula: Formula for compute (or list of dics with formulas and fieldsets).
             members: Members to retrieve data from.
             source: Source file to retrieve data from.
             prefetch: Prefetch.
@@ -936,6 +926,8 @@ class Marsprep(Task):
         # First request will write to a new file
         omode = "w"
 
+        use_verbose_mode = isinstance(formula, list)
+
         for fieldset, fieldset_data in fieldset_dict.items():
             fieldset_param = param
             if "param" in fieldset_data:
@@ -945,28 +937,80 @@ class Marsprep(Task):
             if "target" in fieldset_data:
                 fieldset_target = fieldset_data["target"]
 
-            request = self._build_retrieve_request(
-                data_type,
-                levtype,
-                fieldset_param,
-                steps,
-                fieldset_target,
-                members,
-                source,
-                prefetch,
-                specify_domain,
-                grid,
-                fieldset,
-            )
+            if use_verbose_mode:
+                # MARS version 7 cannot handle reading multiple PARMS to one FIELDSET,
+                # so split them into multiple requests
+                fieldset_param_list = fieldset_param.split("/")
+                fieldset_name_list = fieldset.split("_")
+                if len(fieldset_param_list) != len(fieldset_name_list):
+                    # Cannot split request into mulpile
+                    logger.error(
+                        (
+                            "Cannot split MARS request; number of PARAMs (="
+                            f"{len(fieldset_param_list)}"
+                            ") and FIELDSETs (="
+                            f"{len(fieldset_name_list)}"
+                            ") not equal"
+                        )
+                    )
+            else:
+                fieldset_param_list = [fieldset_param]
+                fieldset_name_list = [fieldset]
 
-            # Write/append request to file
-            write_retrieve_mars_req(request, req_file_name, write_method, omode)
+            for single_param, single_fieldset in zip(
+                fieldset_param_list, fieldset_name_list
+            ):
+                request = self._build_retrieve_request(
+                    data_type,
+                    levtype,
+                    single_param,
+                    steps,
+                    fieldset_target,
+                    members,
+                    source,
+                    prefetch,
+                    specify_domain,
+                    grid,
+                    single_fieldset,
+                )
 
-            # All upcomming requests will be appened to the same file
-            omode = "a"
+                # Write/append request to file
+                write_retrieve_mars_req(request, req_file_name, write_method, omode)
+
+                # All upcomming requests will be appened to the same file
+                omode = "a"
 
         # Write/append compute request to file
-        write_compute_mars_req(req_file_name, formula, target, omode)
+        if use_verbose_mode:
+            for formula_part in formula:
+                if "fieldset" in formula_part:
+                    write_compute_mars_req(
+                        req_file_name,
+                        formula=formula_part["formula"],
+                        fieldset=formula_part["fieldset"],
+                        omode=omode,
+                    )
+
+                if "target" in formula_part:
+                    write_write_mars_req(
+                        req_file_name,
+                        fieldset=formula_part["fieldset"],
+                        target=formula_part["target"],
+                        omode=omode,
+                    )
+        else:
+            write_compute_mars_req(
+                req_file_name, formula=formula, target=target, omode=omode
+            )
 
         # Execute written request
         self._run_request_file(req_file_name)
+
+        if use_verbose_mode:
+            # Join different output files
+            generated_files = [
+                formula_part.get("target").strip('"')
+                for formula_part in formula
+                if formula_part.get("target") is not None
+            ]
+            join_files(generated_files, target.strip('"'))

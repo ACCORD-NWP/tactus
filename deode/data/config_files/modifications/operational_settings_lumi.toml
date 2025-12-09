@@ -1,8 +1,14 @@
-[archiving.FDB.fdb.fpgrib_files]
+[archiving.DataBridge.fdb.fpgrib_files]
   active = true
 
-[fdb.grib_set]
-  expver = "0099"
+[domain]
+  name = "@YYYY@@MM@@DD@@HH@_@EVENT_TYPE@_@DOMAIN_NUMBER@"
+
+[scheduler.ecfvars]
+  ecf_host = "217.71.194.199"
+
+[submission.task_exceptions.ArchiveDataBridge.BATCH]
+  WALLTIME = "#SBATCH --time=01:00:00"
 
 [submission.types.serial.BATCH]
   PARTITION = "#SBATCH --partition=standard"

@@ -19,7 +19,7 @@
     "orographic_smoothing_method": {
       "type": "string",
       "description": "Orographic smoothing method",
-      "enum": ["spectral", "truncation"],
+      "enum": ["spectral", "truncation","nzsfilter","raw"],
       "default": "truncation"
     },
     "name": {
@@ -39,6 +39,11 @@
           "minimum": 0
         }
       ]
+    },
+    "nzsfilter": {
+      "type": "number",
+      "description": "Activate the PGD orographic filtering",
+      "enum": [0,1]
     },
     "nimax": {
       "type": "number",
@@ -159,6 +164,13 @@
         "cubic": "cubic",
         "custom": "custom"
       }
+    },
+    "dtf_lead_time": {
+      "description": "Lead time of DTF, which trigger the domain",
+      "default": "",
+      "type": "string",
+      "enum": ["", "01", "02"]
     }
+
   }
 }

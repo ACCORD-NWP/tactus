@@ -106,6 +106,8 @@ class IOmerge(Task):
         while True:
             ntries += 1
             file_list = []
+            # Force a sync of the file system
+            os.system(f"sync {self.fc_path}")  # noqa S605
             if filetype == "history":
                 files_expected = files_expected if files_expected != 0 else -1
                 for io in range(self.nproc_io):
@@ -134,10 +136,12 @@ class IOmerge(Task):
                 self.wait_for_file(ff, age_limit)
 
             files_found = len(file_list)
-            if files_found == files_expected or files_expected < 0:
+            if files_found == files_expected:
                 break
 
             if ntries == maxtries:
+                if files_expected < 0:
+                    break
                 logger.error(
                     "Expected {} files found {} after {} scans",
                     files_expected,
@@ -168,9 +172,10 @@ class IOmerge(Task):
 
         file_list = self.wait_for_io(filetype, lt)
         files = " ".join(file_list)
-        logger.info("{} input files:", len(file_list))
+        logger.debug("{} input files:", len(file_list))
+        self.file_tracker[filetype][lt] = file_list
         for x in file_list:
-            logger.info("  {}", x)
+            logger.debug("  {}", x)
 
         if filetype in ("history", "surfex"):
             lfitools = self.get_binary("lfitools")
@@ -220,7 +225,9 @@ class IOmerge(Task):
         #       Alternatively, ["history", "fullpos", "surfex"] could be
         #       hard coded.
         dt_list = {}
+        self.file_tracker = {}
         for filetype, oi in self.output_settings.items():
+            self.file_tracker[filetype] = {}
             if filetype in list(self.file_templates.keys()):
                 logger.debug("filetype: {}, oi: {}", filetype, oi)
                 for dt in oi2dt_list(oi, self.forecast_range):
@@ -255,7 +262,7 @@ class IOmerge(Task):
         # Now we wait for the output times allotted to this IO worker.
         for items in merge_list:
             dt, filetype = items["dt"], items["filetype"]
-            logger.info("Waiting for {} {}", dt, filetype)
+            logger.info("Waiting for {} {} output", dt, filetype)
             while True:
                 self.check_fc_path()
                 with open(f"{io_path}/ECHIS", "r") as ll:
@@ -273,8 +280,20 @@ class IOmerge(Task):
             self.merge_output(dt, filetype)
             end = time()
             logger.info(
-                "Merge of {} for {} took {} seconds", dt, filetype, int(end - start)
+                "Merge of {} files at {} for {} took {} seconds",
+                len(self.file_tracker[filetype][dt]),
+                dt,
+                filetype,
+                int(end - start),
             )
+
+        if self.file_tracker["history"]:
+            file_tracker = [len(x) for x in self.file_tracker["history"].values()]
+            if len(set(file_tracker)) != 1:
+                raise RuntimeError(
+                    "Some history files have missing io-server input\n"
+                    f" {self.file_tracker['history']}"
+                )
 
         # signal completion of all merge tasks to the forecast task
         BatchJob(os.environ, wrapper="").run(

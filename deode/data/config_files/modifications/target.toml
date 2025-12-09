@@ -10,8 +10,11 @@
 [boundaries]
   bd_has_surfex = true
   bdmodel = "lam"
+  bdmodel_sfx = "from_fa"
+  bdshift_sfx = "PT0H"
   lam.bdcycle = "PT6H"
   lam.bdcycle_start = "PT0H"
+  lbc_per_task = 1
 
 [domain]
   gridtype = "cubic"
@@ -31,6 +34,7 @@
 
 [suite_control]
   do_marsprep = false
+  mirror_host_case = false
 
 [system]
   bdclimdir = "@HOST_CASE_DIR@/climate/@HOST_DOMAIN@"

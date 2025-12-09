@@ -337,6 +337,19 @@ def case_setup(
         eps_exp.setup_exp(host=host)
         exp = eps_exp
 
+    if "fdb" in exp.config:
+        stream = "oper" if len(exp.config["eps.members"]) == 1 else "enfo"
+        exp.config = exp.config.copy(
+            update={
+                "fdb": {
+                    "grib_set": {
+                        "georef": compute_georef(exp.config["domain"]),
+                        "stream": stream,
+                    }
+                }
+            }
+        )
+
     if expand_config:
         deode_home = set_deode_home(config)
         exp.config = exp.config.copy(update={"platform": {"deode_home": deode_home}})
@@ -351,19 +364,6 @@ def case_setup(
             output_file = os.path.join(output_dir, output_file)
 
         logger.info("Save config to: {}", output_file)
-
-    if "fdb" in exp.config:
-        stream = "oper" if len(exp.config["eps.members"]) == 1 else "enfo"
-        exp.config = exp.config.copy(
-            update={
-                "fdb": {
-                    "grib_set": {
-                        "georef": compute_georef(exp.config["domain"]),
-                        "stream": stream,
-                    }
-                }
-            }
-        )
 
     exp.config.save_as(output_file)
 

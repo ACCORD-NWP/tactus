@@ -3,26 +3,27 @@
 from datetime import datetime, timedelta
 from typing import Generator, List, Optional, Tuple
 
-from deode.suites.suite_utils import Cycles, lbc_times_generator
-
-from ..datetime_utils import (
+from deode.boundary_utils import Boundary
+from deode.datetime_utils import (
     as_datetime,
     as_timedelta,
     get_decadal_list,
     get_decade,
     get_month_list,
 )
-from ..logs import logger
-from ..submission import ProcessorLayout, TaskSettings
-from ..tasks.impacts import get_impact
-from ..toolbox import Platform
-from .base import (
+from deode.host_actions import SelectHost
+from deode.logs import logger
+from deode.submission import ProcessorLayout, TaskSettings
+from deode.suites.base import (
     EcflowSuiteFamily,
     EcflowSuiteLimit,
     EcflowSuiteTask,
     EcflowSuiteTrigger,
     EcflowSuiteTriggers,
 )
+from deode.suites.suite_utils import Cycles, lbc_times_generator
+from deode.tasks.impacts import get_impact
+from deode.toolbox import Platform
 
 
 class PgdInputFamily(EcflowSuiteFamily):
@@ -48,7 +49,7 @@ class PgdInputFamily(EcflowSuiteFamily):
         )
 
         EcflowSuiteTask(
-            "Gmted",
+            "Topography",
             self,
             config,
             task_settings,
@@ -250,10 +251,13 @@ class StaticDataFamily(EcflowSuiteFamily):
             static_data_limit = None
             if not dry_run:
                 static_data_max = config["suite_control.max_static_data_tasks"]
-                static_data_limit = EcflowSuiteLimit("static_data_limit", static_data_max)
-                self.ecf_node.add_limit(
-                    static_data_limit.limit_name, static_data_limit.max_jobs
-                )
+                if static_data_max > 0:
+                    static_data_limit = EcflowSuiteLimit(
+                        "static_data_limit", static_data_max
+                    )
+                    self.ecf_node.add_limit(
+                        static_data_limit.limit_name, static_data_limit.max_jobs
+                    )
 
             StaticDataTasks(
                 parent=self,
@@ -308,10 +312,11 @@ class StaticDataMemberGenerator:
         static_data_limit = None
         if not self.dry_run:
             static_data_max = self.config["suite_control.max_static_data_tasks"]
-            static_data_limit = EcflowSuiteLimit("static_data_limit", static_data_max)
-            member_family.ecf_node.add_limit(
-                static_data_limit.limit_name, static_data_limit.max_jobs
-            )
+            if static_data_max > 0:
+                static_data_limit = EcflowSuiteLimit("static_data_limit", static_data_max)
+                member_family.ecf_node.add_limit(
+                    static_data_limit.limit_name, static_data_limit.max_jobs
+                )
 
         StaticDataTasks(
             member_family,
@@ -474,9 +479,11 @@ class MirrorFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
+        platform = Platform(config)
+
         if config["suite_control.mirror_globalDT"]:
             EcflowSuiteTask(
-                config["platform.mirrorglobalDT"]["remote_path"].split("/")[-1],
+                config["scheduler.mirror_globalDT"]["remote_path"].split("/")[-1],
                 self,
                 config,
                 task_settings,
@@ -484,17 +491,42 @@ class MirrorFamily(EcflowSuiteFamily):
                 input_template=input_template,
                 trigger=[trigger],
                 mirror=True,
-                mirror_config=config["platform.mirrorglobalDT"],
+                mirror_config=config["scheduler.mirror_globalDT"],
+                ecf_files_remotely=ecf_files_remotely,
+            )
+
+        if config["suite_control.mirror_host_case"]:
+            mirror_config = config["scheduler.mirror_host_case"].dict()
+            remote_host = mirror_config["remote_host"]
+            remote_host = platform.substitute(remote_host)
+            mirror_config["remote_host"] = platform.evaluate(
+                remote_host, object_=SelectHost
+            )
+
+            bd_basetime = Boundary(config).bd_basetime
+            mirror_config["remote_path"] = platform.substitute(
+                mirror_config["remote_path"], basetime=bd_basetime, validtime=cycle_valid
+            )
+            EcflowSuiteTask(
+                config["scheduler.mirror_host_case"]["remote_path"].split("/")[-1],
+                self,
+                config,
+                task_settings,
+                ecf_files,
+                input_template=input_template,
+                trigger=[trigger],
+                mirror=True,
+                mirror_config=mirror_config,
                 ecf_files_remotely=ecf_files_remotely,
             )
 
         if config["suite_control.mirror_offline"]:
-            mirror_config = config["platform.mirroroffline"].dict()
-            mirror_config["remote_path"] = Platform(config).substitute(
+            mirror_config = config["scheduler.mirror_offline"].dict()
+            mirror_config["remote_path"] = platform.substitute(
                 mirror_config["remote_path"], validtime=cycle_valid
             )
             EcflowSuiteTask(
-                config["platform.mirroroffline"]["remote_path"].split("/")[-1],
+                config["scheduler.mirror_offline"]["remote_path"].split("/")[-1],
                 self,
                 config,
                 task_settings,
@@ -634,7 +666,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
         input_template,
         ecf_files,
         bdint: timedelta,
-        lbc_time_generator: Generator[Tuple[int, datetime], None, None],
+        lbc_time_generator: Generator[Tuple[List[int], List[datetime]], None, None],
         trigger=None,
         ecf_files_remotely=None,
         is_first_cycle: bool = True,
@@ -654,12 +686,19 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
         self.lbc_time_generator = lbc_time_generator
 
     def __iter__(self):
-        for bd_index, lbc_time in self.lbc_time_generator:
-            date_string = lbc_time.isoformat(sep="T").replace("+00:00", "Z")
-            args = f"bd_time={date_string};bd_index={bd_index};prep_step=False"
+        for bd_index_time_dict in self.lbc_time_generator:
+            args = f"bd_index_time_dict={bd_index_time_dict};prep_step=False"
             variables = {"ARGS": args}
 
-            lbc_family_name = date_string.replace("-", "").replace(":", "_")
+            min_time, max_time = (
+                bd_index_time_dict[k]
+                for k in (min(bd_index_time_dict), max(bd_index_time_dict))
+            )
+
+            def format_time(t):
+                return t.replace("+00:00", "Z").replace("-", "").replace(":", "_")
+
+            lbc_family_name = f"{format_time(min_time)}to{format_time(max_time)}"
 
             super().__init__(
                 lbc_family_name,
@@ -757,10 +796,12 @@ class LBCFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
+        lbc_limit = None
         if not dry_run:
             bdmax = config["boundaries.max_interpolation_tasks"]
-            lbc_limit = EcflowSuiteLimit("lbc_limit", bdmax)
-            self.ecf_node.add_limit(lbc_limit.limit_name, lbc_limit.max_jobs)
+            if bdmax > 0:
+                lbc_limit = EcflowSuiteLimit("lbc_limit", bdmax)
+                self.ecf_node.add_limit(lbc_limit.limit_name, lbc_limit.max_jobs)
 
         basetime = as_datetime(cycles.current_cycle.basetime)
         forecast_range = as_timedelta(config["general.times.forecast_range"])
@@ -774,6 +815,7 @@ class LBCFamily(EcflowSuiteFamily):
             mode=config["suite_control.mode"],
             is_first_cycle=is_first_cycle,
             do_interpolsstsic=config["suite_control.do_interpolsstsic"],
+            lbc_per_task=int(config["boundaries.lbc_per_task"]),
         )
         lbc_family_generator_instance = LBCSubFamilyGenerator(
             self,
@@ -989,7 +1031,6 @@ class ForecastFamily(EcflowSuiteFamily):
 
         add_calc_fields_trigger = forecast_task
         creategrib_trigger = forecast_task
-
         if n_io_merge > 0:
             iomerge_trigger = EcflowSuiteTriggers(
                 [
@@ -1014,7 +1055,7 @@ class ForecastFamily(EcflowSuiteFamily):
             creategrib_trigger = io_merge
 
         if len(config.get("creategrib.CreateGrib.conversions", [])) > 0:
-            add_calc_fields_trigger = SubTaskFamily(
+            create_grib_family = SubTaskFamily(
                 self,
                 config,
                 task_settings,
@@ -1025,6 +1066,7 @@ class ForecastFamily(EcflowSuiteFamily):
                 trigger=creategrib_trigger,
                 ecf_files_remotely=ecf_files_remotely,
             )
+            add_calc_fields_trigger = create_grib_family
 
         add_calc_fields_family = SubTaskFamily(
             self,
@@ -1043,6 +1085,20 @@ class ForecastFamily(EcflowSuiteFamily):
         if any(fdb_archiving_active):
             EcflowSuiteTask(
                 "ArchiveFDB",
+                self,
+                config,
+                task_settings,
+                ecf_files,
+                input_template=input_template,
+                trigger=add_calc_fields_family,
+                ecf_files_remotely=ecf_files_remotely,
+            )
+
+        databridge_sel = config.get("archiving.DataBridge.fdb", {})
+        databridge_archiving_active = [v["active"] for v in databridge_sel.values()]
+        if any(databridge_archiving_active):
+            EcflowSuiteTask(
+                "ArchiveDataBridge",
                 self,
                 config,
                 task_settings,
@@ -1239,13 +1295,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     else None
                 )
 
-                if (
-                    config["suite_control.mirror_globalDT"]
-                    and "platform.mirrorglobalDT" in config
-                ) or (
-                    config["suite_control.mirror_offline"]
-                    and "platform.mirroroffline" in config
-                ):
+                if self.has_mirror_family(config):
                     MirrorFamily(
                         time_family,
                         config,
@@ -1256,41 +1306,54 @@ class TimeDependentFamily(EcflowSuiteFamily):
                         cycle_valid=cycle.validtime,
                     )
 
-                    if (
-                        config["suite_control.mirror_globalDT"]
-                        and "platform.mirrorglobalDT" in config
-                    ):
+                    if self.active_mirror(config, "globalDT"):
                         path_globaldt = "{0}/{1}/{2}/Mirrors/{3}".format(
                             parent.path,
                             cycle.day,
                             cycle.time,
-                            config["platform.mirrorglobalDT"]["remote_path"].split("/")[
+                            config["scheduler.mirror_globalDT"]["remote_path"].split("/")[
                                 -1
                             ],
                         )
 
-                        if config["platform.mirrorglobalDT"]["check_var"]:
+                        if config["scheduler.mirror_globalDT"]["check_var"]:
                             check_globaldt_date = {
-                                config["platform.mirrorglobalDT"]["check_var"]: cycle.day
+                                config["scheduler.mirror_globalDT"][
+                                    "check_var"
+                                ]: cycle.day
                             }
 
-                    if (
-                        config["suite_control.mirror_offline"]
-                        and "platform.mirroroffline" in config
-                    ):
+                    if self.active_mirror(config, "offline"):
                         path_offline = "{0}/{1}/{2}/Mirrors/{3}".format(
                             parent.path,
                             cycle.day,
                             cycle.time,
-                            config["platform.mirroroffline"]["remote_path"].split("/")[
+                            config["scheduler.mirror_offline"]["remote_path"].split("/")[
                                 -1
                             ],
                         )
-                        if config["platform.mirroroffline"]["check_var"]:
+                        if config["scheduler.mirror_offline"]["check_var"]:
                             check_offline_date = {
-                                config["platform.mirroroffline"][
+                                config["scheduler.mirror_offline"][
                                     "check_var"
                                 ]: "{0}/{1}".format(cycle.day, cycle.time)
+                            }
+
+                    if self.active_mirror(config, "host_case"):
+                        path_offline = "{0}/{1}/{2}/Mirrors/{3}".format(
+                            parent.path,
+                            cycle.day,
+                            cycle.time,
+                            config["scheduler.mirror_host_case"]["remote_path"].split(
+                                "/"
+                            )[-1],
+                        )
+                        logger.info(config["scheduler.mirror_host_case"]["check_var"])
+                        if config["scheduler.mirror_host_case"]["check_var"]:
+                            check_offline_date = {
+                                config["scheduler.mirror_host_case"][
+                                    "check_var"
+                                ]: "{0}/{1}".format(cycle.day, "0000")
                             }
 
                 inputdata = InputDataFamily(
@@ -1373,7 +1436,11 @@ class TimeDependentFamily(EcflowSuiteFamily):
 
                 prev_cycle_trigger = prev_cycle_triggers.get(member)
                 if prev_cycle_trigger:
-                    ready_for_cycle = [ready_for_cycle, *prev_cycle_trigger]
+                    ready_for_cycle = (
+                        [*ready_for_cycle, *prev_cycle_trigger]
+                        if isinstance(ready_for_cycle, list)
+                        else [ready_for_cycle, *prev_cycle_trigger]
+                    )
 
                 cycle_family = CycleFamily(
                     member_family,
@@ -1397,6 +1464,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     external_cycle_cleaning_trigger=postcycle_families.get(member),
                     ecf_files_remotely=ecf_files_remotely,
                 )
+
             if (
                 config["suite_control.do_extractsqlite"]
                 and config["suite_control.do_mergesqlite"]
@@ -1428,6 +1496,20 @@ class TimeDependentFamily(EcflowSuiteFamily):
     def last_node(self):
         """Return the last family node of self."""
         return self._last_node
+
+    def active_mirror(self, config, tag):
+        """Detects active mirror from a given tag."""
+        return (
+            config[f"suite_control.mirror_{tag}"] and f"scheduler.mirror_{tag}" in config
+        )
+
+    def has_mirror_family(self, config):
+        """Detects if we have any active mirrors."""
+        mirror_options = ("globalDT", "offline", "host_case")
+        return any(
+            (config[f"suite_control.mirror_{x}"] and f"scheduler.mirror_{x}" in config)
+            for x in mirror_options
+        )
 
 
 class MergeSQLitesFamily(EcflowSuiteFamily):

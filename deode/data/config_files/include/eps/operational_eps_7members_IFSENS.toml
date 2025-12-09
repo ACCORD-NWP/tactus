@@ -3,9 +3,6 @@
   history = "PT49H"
   surfex = "PT49H"
 
-[archiving.FDB.fdb.fpgrib_files]
-  active = false
-
 [boundaries.ifs]
   selection = "IFSENS"
 

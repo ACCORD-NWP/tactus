@@ -97,7 +97,7 @@ poetry devtools doc
 
 The testing procedure above does not test the full functionality together with the IAL code. While waiting for a automated CI/CD system to be in place a few manual steps are required on atos to check the functionality.
 
-- ✔️ Run the default config file, using CY48t3, under ecflow following the instructions in the [README](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md) file.
+- ✔️ Run the default config file, using CY49t2, under ecflow following the instructions in the [README](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md) file.
 - ✔️ Run the following sequence of case configurations, i.e. the three CSC's.
 ```
 for case in \
@@ -106,15 +106,21 @@ for case in \
   cy46h1_harmonie_arome \
   cy49t2_arome \
   cy49t2_alaro \
+  cy49t2_harmonie_arome \
+  cy49t2_arome \
+  cy49t2_alaro \
+  alaro \
+  arome \
+  harmonie_arome \
   ; do
-  deode case ?deode/data/config_files/configurations/$case deode/data/config_files/modifications/test_settings.toml --start-suite
+  deode case ?deode/data/config_files/configurations/$case --start-suite
 done
 ```
 Once this has completed test the coupling of AROME -> AROME and HARMONIE-AROME -> HARMONIE-AROME:
 ```
 for case in \
-  cy48t3_arome_target \
-  cy46h1_harmonie_arome_target \
+  cy49t2_arome_target \
+  cy49t2_harmonie_arome_target \
   ; do
   deode case ?deode/data/config_files/configurations/$case deode/data/config_files/modifications/test_settings.toml --start-suite
 done
@@ -125,10 +131,12 @@ done
 
 On lumi we expect the following configurations to be tested in the same way as above:
 ```
-  cy48t3_arome
-  cy48t3_alaro
-  cy48t3_alaro_gpu_lumi
-  cy46h1_harmonie_arome
+  cy49t2_arome
+  cy49t2_alaro
+  cy49h2_harmonie_arome
+  alaro
+  arome
+  harmonie_arome
 ```
 Note that due to the restrictions for the debug partition on lumi it's only possible to launch one suite at the time.
 

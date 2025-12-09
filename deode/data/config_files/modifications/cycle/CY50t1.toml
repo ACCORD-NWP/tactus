@@ -5,11 +5,14 @@
 [general.output_settings]
   surfex = "PT1H"
 
-[creategrib.CreateGrib]
-  conversions = ["surfex"]
-
 [pgd]
   npatch = 3
+
+[submission.task_exceptions.C903]
+  bindir = "@INSTALL_DIR@/CY49t2/intel/R64/latest/bin"
+
+[submission.task_exceptions.E923Update]
+  binary = "FA_SFX2CLIM"
 
 [submission.task_exceptions.E923Update.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
@@ -19,3 +22,6 @@
 
 [submission.task_exceptions.PgdFilterTownFrac]
   binary = "PGD_FRAC"
+
+[submission.task_exceptions.Prep.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = 0

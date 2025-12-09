@@ -205,3 +205,11 @@ class TestStripOffMountPath:
         expected_result = Path(f"/home/{mock_user}/foo/bar")
 
         assert strip_off_mount_path(test_path) == expected_result
+
+    @with_mock_user
+    def test_user_in_path_with_mount_double_underscore(self, mock_user):
+        """Test the function when user in path and double underscore mount path to strip."""
+        test_path = Path(f"/etc/ecmwf/nfs/dh1_10_perm_b/{mock_user}/foo/bar")
+        expected_result = Path(f"/perm/{mock_user}/foo/bar")
+
+        assert strip_off_mount_path(test_path) == expected_result

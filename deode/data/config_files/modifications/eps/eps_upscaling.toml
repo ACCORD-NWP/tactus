@@ -1,0 +1,37 @@
+[impact.eps_upscaling]
+  active = true
+  config_name = "@EPS_UPSCALING_PATH@/@ARCHIVE_TIMESTAMP@/eps_upscaling_communicate.toml"
+  path = "@EPS_UPSCALING_PATH@/@ARCHIVE_TIMESTAMP@"
+
+[impact.eps_upscaling.communicate]
+  branch = "main"
+  members = "@MEMBERS@"
+  output_freq = "@FULLPOS_OUTPUT_FREQ@"
+  remote_url = "git@github.com:destination-earth-digital-twins/Deode-EPS-Upscaling.git"
+  uv_cache_dir = "/perm/@USER@/.cache/uv"
+
+[impact.eps_upscaling.communicate.archiving.eps_upscaling.ecfs.eps_upscaling]
+  active = true
+  inpath = "@ARCHIVE@/../eps_upscaling"
+  outpath = "eps_upscaling"
+  pattern = "*upscaled*"
+
+[impact.eps_upscaling.communicate.eps_upscaling]
+  input = "@ARCHIVE@/../mbr{MBR}/GRIBPFDEOD+{LLLLhLLmLLs}"
+  output = "@ARCHIVE@/../eps_upscaling/{TYPE}/upscaled_{parameter}_GRIBPFDEOD+{LLLLhLLmLLs}"
+
+[impact.eps_upscaling.communicate.general]
+  case = "EPS_Upscale_@CASE@"
+
+[impact.eps_upscaling.communicate.general.times]
+  cycle_length = "@CYCLE_LENGTH@"
+  forecast_range = "@FORECAST_RANGE@"
+  start = "@BASETIME@"
+
+[impact.eps_upscaling.communicate.macros.select.eps_upscaling]
+  gen_macros = [{eps_upscaling_path = "platform.impact.eps_upscaling"}]
+
+[impact.eps_upscaling.StartImpactModels]
+
+[macros.select.eps_upscaling]
+  gen_macros = [{eps_upscaling_path = "platform.impact.eps_upscaling"}]

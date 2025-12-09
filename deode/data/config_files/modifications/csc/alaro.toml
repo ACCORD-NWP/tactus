@@ -15,7 +15,7 @@
   npatch = 1
 
 [submission]
-  precision = ""
+  precision = "R64"
 
 [submission.task_exceptions.Forecast.ENV]
   APL_ALARO = "1"

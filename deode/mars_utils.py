@@ -8,10 +8,36 @@ from pathlib import Path
 from subprocess import run
 from typing import Dict, List, Tuple
 
+from .config_parser import ParsedConfig
 from .datetime_utils import as_datetime
 from .geo_utils import Projection, Projstring
 from .logs import logger
 from .toolbox import Platform
+
+
+def mars_selection(selection: str, config: ParsedConfig) -> dict:
+    """Copy default settings if requested.
+
+    Args:
+        selection             (str): The selection to use.
+        config (deode.ParsedConfig): Configuration object
+
+    Returns:
+         mars                (dict): mars config section
+
+    """
+    mars = config[f"mars.{selection}"].dict()
+    if "expver" not in mars:
+        mars["expver"] = selection
+
+    # Copy default settings if requested
+    if "default" in mars:
+        default = config[f"mars.{mars['default']}"]
+        for k in default:
+            if k not in mars:
+                mars[k] = default[k]
+
+    return mars
 
 
 def write_retrieve_mars_req(req, name: str, method: str, omode: str = "w"):
@@ -39,18 +65,39 @@ def write_retrieve_mars_req(req, name: str, method: str, omode: str = "w"):
             f.write(row_str + "\n")
 
 
-def write_compute_mars_req(name: str, formula: str, target: str, omode: str = "w"):
+def write_compute_mars_req(
+    name: str, formula: str, fieldset: str = "", target: str = "", omode: str = "w"
+):
     """Write a COMPUTE request for MARS.
 
     Args:
         name    (string): name of request
         formula (string): formula for computation.
+        fieldset (string): fieldset for computation.
         target  (string): target file
         omode   (string): file open mode (w: create, a: append), default="a"
     """
     with open(name, omode) as f:
         f.write("COMPUTE,\n")
-        f.write(f"  FORMULA = {formula},\n")
+        f.write(f"  FORMULA = {formula}{',' if fieldset or target else ''}\n")
+        if fieldset:
+            f.write(f"  FIELDSET = {fieldset}{',' if target else ''}\n")
+        if target:
+            f.write(f"  TARGET = {target}\n")
+
+
+def write_write_mars_req(name: str, fieldset: str, target: str, omode: str = "w"):
+    """Write a WRITE request for MARS.
+
+    Args:
+        name    (string): name of request
+        fieldset (string): fieldset for computation.
+        target  (string): target file
+        omode   (string): file open mode (w: create, a: append), default="a"
+    """
+    with open(name, omode) as f:
+        f.write("WRITE,\n")
+        f.write(f"  FIELDSET = {fieldset},\n")
         f.write(f"  TARGET = {target}\n")
 
 
@@ -539,7 +586,7 @@ class BaseRequest:
 
     def add_database_options(self):
         """Add database options."""
-        if self.class_ == "D1":
+        if self.request["CLASS"] == "D1":
             self.request.update(
                 {
                     "DATASET": "extremes-dt",

@@ -240,6 +240,7 @@ class CleanSuites(CleanOldData):
         )
 
         self.remove_list(list_to_remove_files)
+
         self.remove_list(list_to_remove_jobout)
 
         self.remove_list(self.find_empty_directories(self.ecf_files))
@@ -248,7 +249,9 @@ class CleanSuites(CleanOldData):
             os.path.basename(x)
             for x in set(list(list_to_remove_files) + list(list_to_remove_jobout))
         ]
-        EcflowServer(self.config).remove_suites(suites)
+
+        server = EcflowServer(self.config)
+        server.remove_suites(suites, check_if_complete=True)
 
 
 class CleanIFSData(CleanOldData):

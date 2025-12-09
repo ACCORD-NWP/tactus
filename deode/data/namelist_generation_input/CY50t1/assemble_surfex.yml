@@ -2,7 +2,7 @@ pgd_common:
   - sfx_io
   - sfx_pgd_domain
   - sfx_pgd_schemes
-  - sfx_pgd_zs_gmted
+  - sfx_pgd_zs_topo
   - sfx_pgd_soilgrid_sand
   - sfx_pgd_soilgrid_clay
   - sfx_pgd_ecoclimap_sg_base
@@ -49,7 +49,7 @@ prep_ALARO:
 prep_AROME:
 
 prep_HARMONIE_AROME:
-  - sfx_prep_sea_sice
+  - sfx_prep_sea_@SURFEX_SEA_ICE@
   - sfx_treedrag
   - sfx_surf_constants
 

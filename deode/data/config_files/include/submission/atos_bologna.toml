@@ -37,12 +37,20 @@
 
 [submission.task_exceptions.C903]
   NPROC = 36
+  OMP_NUM_THREADS = "4"
 
 [submission.task_exceptions.C903.BATCH]
-  MEM = "#SBATCH --mem=200GB"
-  NODE = "#SBATCH --nodes=12"
-  NTASKS = "#SBATCH --ntasks=36"
-  WALLTIME = "#SBATCH --time=00:30:00"
+  CPUSPERTASK = "#SBATCH --cpus-per-task=4"
+  HYPERTHREAD = "#SBATCH --hint=nomultithread"
+  MEM_CPU = "#SCATCH --mem-per-cpu=50G"
+  NODES = "#SBATCH --nodes=18"
+  NTASKS = "#SBATCH --ntasks-per-node=2"
+  WALLTIME = "#SBATCH --time=01:00:00"
+
+[submission.task_exceptions.C903.ENV]
+  KMP_AFFINITY = "granularity=core,scatter"
+  KMP_BLOCKTIME = "12"
+  KMP_STACKSIZE = "4G"
 
 [submission.task_exceptions.CreateGrib]
   binary = "gl"
@@ -61,8 +69,11 @@
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=16"
 
+[submission.task_exceptions.ExtractSQlite]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+
 [submission.task_exceptions.Forecast]
-  bindir = "@INSTALL_DIR@/@CYCLE@@PRECISION@/@IAL_VERSION@/bin"
+  bindir = "@INSTALL_DIR@/@CYCLE@/@COMPILER@/@PRECISION@/@IAL_VERSION@/bin"
   NPROC = 30
   NPROC_IO = 2
 
@@ -75,9 +86,6 @@
 [submission.task_exceptions.Forecast.ENV]
   RTTOV_COEFDIR = "/hpcperm/snh02/DEODE/satellite/rtcoef_rttov12/harm_coef/"
   UCX_LOG_LEVEL = "error"
-
-[submission.task_exceptions.Gmted.MODULES]
-  GDAL = ["load", "gdal/3.6.2"]
 
 [submission.task_exceptions.InterpolSstSic]
   binary = "gl"
@@ -119,6 +127,9 @@
 [submission.task_exceptions.Soil.MODULES]
   GDAL = ["load", "gdal/3.6.2"]
 
+[submission.task_exceptions.Topography.MODULES]
+  GDAL = ["load", "gdal/3.6.2"]
+
 [submission.types.background_hpc]
   SCHOST = "localhost"
   tasks = ["Background_hpc", "UnitTest"]
@@ -133,7 +144,7 @@
   NPROCX = 1
   NPROCY = 1
   SCHOST = "hpc"
-  tasks = ["ExtractSQLite"]
+  tasks = ["ExtractSQLite", "StartImpactModels"]
   WRAPPER = "srun"
 
 [submission.types.gnu.BATCH]
@@ -143,9 +154,6 @@
   QOS = "#SBATCH --qos=nf"
   WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:15:00"
-
-[submission.types.gnu.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
 
 [submission.types.parallel]
   NPROC = 32
@@ -183,7 +191,7 @@
   SCHOST = "hpc"
   tasks = [
     "CreateGrib",
-    "Gmted",
+    "Topography",
     "Soil",
     "Marsprep",
     "E923Update",

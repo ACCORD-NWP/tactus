@@ -253,9 +253,9 @@ def strip_off_mount_path(path: Union[str, Path]) -> Path:
     Assumptions:
         - the path contains the user name as a directory.
         - the parent of the user directory is of the format "<new-dir-name>" or
-          "*_<new-dir-name>_*", where "*" contains no underscore(s) and
-          where the <new-dir-name> will be used as the new parent directory name
-          relative to the user directory.
+          "%_<new-dir-name>_*", where "*" contains no underscore(s), "%" might
+          contain underscore(s)  and where the <new-dir-name> will be used as
+          the new parent directory name relative to the user directory.
 
     Args:
         path (Union[str, Path]): Path to strip off the mount path from.
@@ -264,31 +264,37 @@ def strip_off_mount_path(path: Union[str, Path]) -> Path:
         path: Path with the mount path stripped off.
 
     Raises:
-        ValueError: If the parent of the user directory does not contain 0
-                    or 2 underscores.
+        ValueError: If the parent of the user directory only contains 1 underscore.
 
     Example:
         >>> strip_off_mount_path("/etc/ecmwf/nfs/dh1_home_b/$USER/Deode-Workflow/deode")
         Path("/home/$USER/Deode-Workflow/deode")
+        >>> strip_off_mount_path("/etc/ecmwf/nfs/dh1_10_perm_b/$USER/Deode-Workflow")
+        Path("/perm/$USER/Deode-Workflow")
     """
     file_parts = Path(path).parts
     user = os.environ.get("USER")
     if user is None:
         return Path(path)
 
-    index_of_user = file_parts.index(user)
+    try:
+        index_of_user = file_parts.index(user)
+    except ValueError:
+        return Path(path)
     parent_of_user = file_parts[max(0, index_of_user - 1)]
     # Get number of underscores in parent_of_user
     n_underscores = parent_of_user.count("_")
-    if n_underscores not in [0, 2]:
+
+    if n_underscores == 1:
         raise ValueError(
-            "Parent of user directory must contain 0 or 2 underscores, "
-            + f"but found {n_underscores}. Path: {path}"
+            "Parent of user directory must contain zero, two, or more than two "
+            + f"underscores, but found {n_underscores}. Path: {path}"
         )
-    # Get middle part of parent_of_user if it contains 2 underscores
-    if n_underscores == 2:
+
+    # Get near the end part of parent_of_user if it contains > 1 underscores
+    if n_underscores > 1:
         parent_of_user_parts = parent_of_user.split("_")
-        parent_of_user = parent_of_user_parts[1]
+        parent_of_user = parent_of_user_parts[-2]
 
     return Path(pathlib.os.sep, parent_of_user, *file_parts[index_of_user:])
 
@@ -313,7 +319,7 @@ def resolve_path_relative_to_package(path: Path, ignore_errors: bool = False) ->
             package directory.
 
     """
-    path = path.resolve()
+    path = path.expanduser().resolve()
     # First check if path exists as is
     if not os.path.exists(path):
         # Get path relative to package. Needed when Deode-Workflow is installed as

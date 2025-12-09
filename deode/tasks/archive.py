@@ -1,5 +1,7 @@
 """ARCHIVEHOUR // ARCHIVESTATIC."""
 
+import os
+
 from deode.archive import Archive
 from deode.tasks.base import Task
 
@@ -63,6 +65,32 @@ class ArchiveFDB(ArchiveTask):
             config (deode.ParsedConfig): Configuration
         """
         ArchiveTask.__init__(self, config, "FDB", include=["fdb"])
+
+
+class ArchiveDataBridge(ArchiveTask):
+    """Archving task for time dependent data dedicated for the databridge."""
+
+    def __init__(self, config):
+        """Construct object.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+        """
+        ArchiveTask.__init__(self, config, "DataBridge", include=["fdb"])
+        self._check_user()
+
+    def _check_user(self):
+        """Check if we are allowed to archive to the databridge."""
+        user = os.environ.get("USER")
+        try:
+            databridge_user = self.platform.substitute(self.config["fdb.databridge_user"])
+        except KeyError as error:
+            raise KeyError("No databridge user defined") from error
+
+        if user != databridge_user:
+            raise ValueError(
+                f"Archiving to the databridge is only allowed for user {databridge_user}"
+            )
 
 
 class ArchiveMergedSQLites(ArchiveTask):

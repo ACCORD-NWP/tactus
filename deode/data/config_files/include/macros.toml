@@ -6,6 +6,7 @@
 [macros.select.default]
   gen_macros = [
     "boundaries.bdmodel",
+    "boundaries.bdmodel_sfx",
     "domain.name",
     "general.cnmexp",
     "general.cycle",
@@ -17,6 +18,7 @@
     {bdmember = "boundaries.ifs.bdmember"},
     {bdfile_template = "file_templates.bdfile.archive"},
     {case_prefix = "scheduler.ecfvars.case_prefix"},
+    {compiler = "submission.compiler"},
     {ecf_host_resolved = "scheduler.ecfvars.ecf_host_resolved"},
     {ecf_port_resolved = "scheduler.ecfvars.ecf_port_resolved"},
     {domain = "domain.name"},
@@ -31,6 +33,7 @@
     {ecfs_prefix = "archiving.prefix.ecfs"},
     {famodel = "general.famodel"},
     {forecast_range = "general.times.forecast_range"},
+    {cycle_length = "general.times.cycle_length"},
     {fpdomain = "fullpos.domain_name"},
     {fullpos_output_freq = "general.output_settings.fullpos"},
     {history_template = "file_templates.history.archive"},
@@ -38,6 +41,7 @@
     {pgd_archive = "file_templates.pgd.archive"},
     {pgd_model = "file_templates.pgd.model"},
     {member = "general.member"},
+    {members = "eps.general.members"},
     {member_str = "general.member_str"},
     {sqlite_path = "extractsqlite.sqlite_path"},
     {merged_sqlite_path = "extractsqlite.merged_sqlite_path"},

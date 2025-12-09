@@ -1,1 +1,80 @@
-aq_selection_AROME.yml
+# Do the selection of fields below. Note 
+# that xxtddddhh00 and xxtddddhhmm partly inherits from preceding selections
+selection:
+  xxt00000000:
+    NAMFPDY2:
+      CL2DF:
+      - SURFPRESSION
+      - MSLPRESSURE
+    NAMFPDYS: &id002
+     AQ_SELECTION:
+      CL3DF:
+      - GRAUPEL
+      - RAIN
+      - SNOW
+      - TEMPERATURE
+      - HUMI.SPECIFI
+      - WIND.U.PHYS
+      - WIND.V.PHYS
+      - ICE_CRYSTAL
+      - CLOUD_WATER
+      - CLOUD_FRACTI
+      - TKE
+      - AVG_U
+      - AVG_V
+      NRFP3S:
+      - ${namelist.nrfp3s}
+    NAMFPPHY:
+      CLCFU:
+      - SURFTENS.TURB.ZO
+      - SURFTENS.TURB.ME
+      CLPHY:
+      - SURFRESERV.NEIGE
+      - SURFTEMPERATURE
+      - INTSURFGEOPOTENT
+      - SURFIND.TERREMER
+      CLXFU:
+      - CLSTEMPERATURE
+      - CLSHUMI.SPECIFIQ
+      - CLSVENT.ZONAL
+      - CLSVENT.MERIDIEN
+      - SURFNEBUL.TOTALE
+      - CLPMHAUT.MOD.XFU
+  xxtddddhh00:
+    NAMFPDY2:
+      CL2DF:
+      - SURFPRESSION
+      - MSLPRESSURE
+    NAMFPDYS: *id002
+    NAMFPPHY: &id003
+      CLCFU:
+      - SURFFLU.RAY.SOLA
+      - SURFFLU.RAY.THER
+      - SURFFLU.LAT.MEVA
+      - SURFFLU.LAT.MSUB
+      - SURFFLU.MEVAP.EA
+      - SURFFLU.CHA.SENS
+      - SURFRAYT SOLA DE
+      - SURFRAYT THER DE
+      - SURFACCPLUIE
+      - SURFACCNEIGE
+      - SURFACCGRAUPEL
+      - SURFTENS.TURB.ZO
+      - SURFTENS.TURB.ME
+      CLPHY:
+      - SURFRESERV.NEIGE
+      - SURFTEMPERATURE
+      CLXFU:
+      - CLSTEMPERATURE
+      - CLSHUMI.SPECIFIQ
+      - CLSVENT.ZONAL
+      - CLSVENT.MERIDIEN
+      - SURFNEBUL.TOTALE
+      - CLPMHAUT.MOD.XFU
+  xxtddddhhmm:
+    NAMFPDY2:
+      CL2DF:
+      - SURFPRESSION
+      - MSLPRESSURE
+    NAMFPDYS: *id002
+    NAMFPPHY: *id003

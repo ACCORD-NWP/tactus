@@ -9,7 +9,7 @@ import sys
 import types
 
 from ..logs import LoggerHandlers, logger
-from ..plugin import DeodePluginRegistryFromConfig
+from ..plugin import DeodePluginRegistry, DeodePluginRegistryFromConfig
 from .base import Task, _get_name
 
 
@@ -62,7 +62,6 @@ def get_task(name, config) -> Task:
             handlers=LoggerHandlers(default_level=config["general.loglevel"])
         )
         logger.debug("Logger reset to level {}", config["general.loglevel"])
-
     reg = DeodePluginRegistryFromConfig(config)
     known_types = available_tasks(reg)
     try:
@@ -73,7 +72,7 @@ def get_task(name, config) -> Task:
     return cls(config)
 
 
-def available_tasks(reg):
+def available_tasks(reg: DeodePluginRegistry):
     """Create a list of available tasks.
 
     Args:
@@ -88,8 +87,8 @@ def available_tasks(reg):
     for plg in reg.plugins:
         if os.path.exists(plg.tasks_path):
             tasks = types.ModuleType(plg.name)
-            tasks.__path__ = [plg.tasks_path]
-            sys.path.insert(0, plg.path)
+            tasks.__path__ = [str(plg.tasks_path)]
+            sys.path.insert(0, str(plg.path))
             found_types = discover(tasks, Task)
             for ftype, cls in found_types.items():
                 if ftype not in abstract_classes:

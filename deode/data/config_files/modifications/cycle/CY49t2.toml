@@ -5,9 +5,6 @@
 [general.output_settings]
   surfex = "PT1H"
 
-[creategrib.CreateGrib]
-  conversions = ["surfex"]
-
 [pgd]
   npatch = 3
 
