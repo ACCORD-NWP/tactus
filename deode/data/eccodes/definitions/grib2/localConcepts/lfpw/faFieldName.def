@@ -1,3 +1,17 @@
+# "Total precipitation" (all types: rain, snow, graupel, convective + stratiform)
+"TOTAL.PRECIP." = {
+    discipline = 0 ;
+    parameterCategory = 1 ;
+    parameterNumber = 52 ;
+    tablesVersion = 15 ;
+    productDefinitionTemplateNumber = 8 ;
+    typeOfFirstFixedSurface = 1 ;
+    scaleFactorOfFirstFixedSurface = missing() ;
+    scaledValueOfFirstFixedSurface = missing() ;
+    typeOfStatisticalProcessing = 1 ;
+    LSTCUM = 1 ;
+}
+
 # Total Cloud Fraction
 "CLOUD_FRACTI" = {
     discipline = 0 ;

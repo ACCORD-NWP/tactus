@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add ecflow mirror support between a host and target LAM. [\#1425](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1425) (@uandrae)
+- Add total precipitation (tp) to all CSCs via fullpos, remove tp from gribmodify [\#1403](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1403) (@egregow)
 
 ### Fixed
 - Correct C903 input for CY46h1. [\#1436](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1436)(@uandrae)
