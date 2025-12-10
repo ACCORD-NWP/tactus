@@ -125,14 +125,15 @@ class TestCaseSetup:
     def test_eps_not_activated(
         self,
         epsexp_mock: Mock,
-        config: ParsedConfig,
+        default_config: ParsedConfig,
         output_file: Path,
         mock_exp_from_files: MagicMock,
     ):
         """Test that EPS setup is not activated."""
         mock_exp_from_files.config.get.return_value = None
 
-        case_setup(config=config, output_file=output_file, mod_files=[])
+        with patch("deode.config_parser.ParsedConfig.__new__"):
+            case_setup(config=default_config, output_file=output_file, mod_files=[])
 
         epsexp_mock.assert_not_called()
 
@@ -145,7 +146,9 @@ class TestCaseSetup:
         """Test that EPS setup is activated."""
         mock_exp_from_files.config = {"eps": {}}
 
-        with patch("deode.experiment.EPSExp.__new__") as epsexp_mock_new:
+        with patch("deode.config_parser.ParsedConfig.__new__"), patch(
+            "deode.experiment.EPSExp.__new__"
+        ) as epsexp_mock_new:
             epsexp_mock = MagicMock()
             epsexp_mock.config.get.return_value = None
             epsexp_mock_new.return_value = epsexp_mock

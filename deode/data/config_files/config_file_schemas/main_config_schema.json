@@ -870,7 +870,8 @@
         "case": {
           "description": "Experiment name",
           "default": "deode_case",
-          "type": "string"
+          "type": "string",
+	        "pattern": "^[^0-9][^.]*$"
         },
         "member_str": {
           "description": "String identifier of a member in the ensemble",
