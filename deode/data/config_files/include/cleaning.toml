@@ -24,14 +24,13 @@
   ncycles_delay = 1
 
 [cleaning.PostMortem.ecf_files]
+  active = false
   exclude = "(.*)PostMortem(.*)"
-  ncycles_delay = 0
   path = "@ECF_FILES@/@CASE@"
 
 [cleaning.PostMortem.ecf_out]
   active = false
   exclude = "(.*)PostMortem(.*)"
-  ncycles_delay = 0
   path = "@ECF_OUT@/@CASE@"
 
 [cleaning.PrepRun.ecf_out]

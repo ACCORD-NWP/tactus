@@ -15,9 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add total precipitation (tp) to all CSCs via fullpos, remove tp from gribmodify [\#1403](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1403) (@egregow)
 
 ### Changed
+- Remove average u and v from air quality fullpos output [\#1421](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1421)(@KristianHMoller)
+- Disable cleaning of ecf_files by PostMortem [\#1421](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1421)(@KristianHMoller)
 - Do not allow `.` or leading digit in case names as it breaks the sqlite extraction. [\#1244](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1244) (@uandrae)
 
 ### Fixed
+- Correct AQ archive path when running as a plugin [\#1421](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1421)(@KristianHMoller)
 - Correct C903 input for CY46h1. [\#1436](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1436)(@uandrae)
 - Increase nodes for PGD to prevent failures in ALARO when the domain is located too far east. [\#1434](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1434)(@kastelecn)
 - Fix paths for eps-upscaling impact model [\#1430](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1430) (@mafdmi)
