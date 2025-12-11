@@ -12,6 +12,12 @@
     "output_grib_id" : { "shortName":"tsnowp" }
     },
     {
+    "input_grib_id" : [ {"shortName":"tirf"}, {"shortName":"tsnowp"}, {"shortName":"tgrp"} ],
+    "operator" : "add",
+    "output_name" : "tp",
+    "output_grib_id" : { "shortName":"tp" }
+    },
+    {
     "input_grib_id" : [ {"shortName":"10u"}, {"shortName":"10v"} ],
     "operator" : "vectorLength",
     "output_name" : "10si",

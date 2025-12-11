@@ -67,16 +67,19 @@
   output_name = "tsnowp"
 
 [gribmodify.fullpos.3]
-  output_name = "10si"
+  output_name = "tp"
 
 [gribmodify.fullpos.4]
-  output_name = "100si"
+  output_name = "10si"
 
 [gribmodify.fullpos.5]
+  output_name = "100si"
+
+[gribmodify.fullpos.6]
   minimum_frequency = "PT1H"
   output_name = "10fg"
 
-[gribmodify.fullpos.6]
+[gribmodify.fullpos.7]
   output_name = "2d"
 
 [include]

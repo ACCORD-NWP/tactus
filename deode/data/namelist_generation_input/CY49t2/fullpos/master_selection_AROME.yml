@@ -242,7 +242,6 @@ selection:
       - SURFACCNEIGE
       - SURFACCGRAUPEL
       - SURFDIAG.FLASH
-      - TOTAL.PRECIP.
       CLPHY:
       - SURFTEMPERATURE
       - SURFRESERV.NEIGE

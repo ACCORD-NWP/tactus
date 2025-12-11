@@ -12,7 +12,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add ecflow mirror support between a host and target LAM. [\#1425](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1425) (@uandrae)
-- Add total precipitation (tp) to all CSCs via fullpos, remove tp from gribmodify [\#1403](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1403) (@egregow)
 
 ### Changed
 - Remove average u and v from air quality fullpos output [\#1421](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1421)(@KristianHMoller)
