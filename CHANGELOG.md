@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ecflow mirror support between a host and target LAM. [\#1425](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1425) (@uandrae)
 
 ### Changed
+- Update PR testing instructions. [\#1437](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1437) (@uandrae)
 - Remove average u and v from air quality fullpos output [\#1421](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1421)(@KristianHMoller)
 - Disable cleaning of ecf_files by PostMortem [\#1421](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1421)(@KristianHMoller)
 - Do not allow `.` or leading digit in case names as it breaks the sqlite extraction. [\#1244](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1244) (@uandrae)
