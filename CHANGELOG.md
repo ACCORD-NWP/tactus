@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Do not allow `.` or leading digit in case names as it breaks the sqlite extraction. [\#1244](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1244) (@uandrae)
 
 ### Fixed
+- Fixed small bug in datetime_utils when deciding which decadal PGDs to make [\#1442](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1442)(@adeckmyn)
 - Correct AQ archive path when running as a plugin [\#1421](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1421)(@KristianHMoller)
 - Correct C903 input for CY46h1. [\#1436](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1436)(@uandrae)
 - Increase nodes for PGD to prevent failures in ALARO when the domain is located too far east. [\#1434](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1434)(@kastelecn)
