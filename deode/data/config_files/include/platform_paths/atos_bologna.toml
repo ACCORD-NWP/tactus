@@ -4,7 +4,7 @@
   albvis_soil_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
   albvis_veg_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
   archive_root = "@SCRATCH@/deode/@CASE@/archive"
-  archive_types = ["copy", "ecfs", "fdb"]
+  archive_types = ["compress", "copy", "ecfs", "fdb"]
   climdata = "@STATIC_DATA@/climate"
   deode_fdb_home = "/home/fdbtest"
   deode_home = "set-by-the-system"

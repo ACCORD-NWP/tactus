@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Add DDH config example. [\#1433](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1433) (@uandrae)
 - Add ecflow mirror support between a host and target LAM. [\#1425](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1425) (@uandrae)
 
 ### Changed

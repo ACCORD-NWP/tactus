@@ -8,10 +8,10 @@
     "archive_types": {
       "description": "Methods available for archiving",
       "type": "array",
-      "default": ["copy", "move", "scp"],
+      "default": ["compress", "copy", "move", "scp"],
       "items": {
         "type": "string",
-        "enum": ["ecfs", "fdb", "scp", "copy", "move"]
+        "enum": ["compress", "copy", "ecfs", "fdb", "move", "scp"]
       }
     },
     "ecoclim_data_path": {

@@ -968,6 +968,18 @@
           "description": "Output settings. Specified as duration for any of interval, endtime:interval, starttime:endtime:interval or a list of these options",
           "type": "object",
           "properties": {
+            "ddh_dl": {
+              "description": "Output list for limited area DDH files",
+              "$ref": "#/$output_setting_rules"
+            },
+            "ddh_gl": {
+              "description": "Output list for global DDH files",
+              "$ref": "#/$output_setting_rules"
+            },
+            "ddh_zo": {
+              "description": "Output list for zonal DDH files",
+              "$ref": "#/$output_setting_rules"
+            },
             "history": {
               "description": "Output list for history files",
               "$ref": "#/$output_setting_rules"

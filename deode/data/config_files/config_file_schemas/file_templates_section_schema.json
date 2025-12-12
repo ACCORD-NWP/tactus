@@ -22,6 +22,66 @@
         }
       }
     },
+    "ddh_dl": {
+      "title": "DDH limited area or points",
+      "description": "File name templates for DDH DL files",
+      "type": "object",
+      "properties": {
+        "archive": {
+          "description": "File template as stored in the archive",
+          "type": "string"
+        },
+        "model": {
+          "description": "File template as used by the model",
+          "type": "string"
+        },
+        "io_server": {
+          "description": "This filetype is handled by the IO-server",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "ddh_gl": {
+      "title": "Global DDH",
+      "description": "File name templates for DDH GL files",
+      "type": "object",
+      "properties": {
+        "archive": {
+          "description": "File template as stored in the archive",
+          "type": "string"
+        },
+        "model": {
+          "description": "File template as used by the model",
+          "type": "string"
+        },
+        "io_server": {
+          "description": "This filetype is handled by the IO-server",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "ddh_zo": {
+      "title": "Zonal DDH",
+      "description": "File name templates for DDH ZO files",
+      "type": "object",
+      "properties": {
+        "archive": {
+          "description": "File template as stored in the archive",
+          "type": "string"
+        },
+        "model": {
+          "description": "File template as used by the model",
+          "type": "string"
+        },
+        "io_server": {
+          "description": "This filetype is handled by the IO-server",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
     "fullpos": {
       "title": "Fullpos",
       "description": "File name templates for fullpos files",
