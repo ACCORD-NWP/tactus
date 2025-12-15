@@ -10,6 +10,18 @@
   archive = "ECSFCSST@DOMAIN@_@BDMEMBER@+@LLL@"
   model = "ECSFCSST@DOMAIN@_@BDMEMBER@+@NNN@"
 
+[file_templates.ddh_dl]
+  archive = "DHFDL@CNMEXP@+@DURATION_ARCHIVE@"
+  model = "DHFDL@CNMEXP@+@DURATION_MODEL@"
+
+[file_templates.ddh_gl]
+  archive = "DHFGL@CNMEXP@+@DURATION_ARCHIVE@"
+  model = "DHFGL@CNMEXP@+@DURATION_MODEL@"
+
+[file_templates.ddh_zo]
+  archive = "DHFZO@CNMEXP@+@DURATION_ARCHIVE@"
+  model = "DHFZO@CNMEXP@+@DURATION_MODEL@"
+
 [file_templates.duration]
   archive = "@LLLH@h@LM@m@LS@s"
   model = "@LLLH@:@LM@:@LS@"

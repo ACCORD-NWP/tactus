@@ -48,7 +48,8 @@ def config_platform(tmp_directory):
 @pytest.fixture()
 def parsed_config_with_paths(config_platform):
     return ParsedConfig(
-        config_platform, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+        config_platform,
+        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
     )
 
 

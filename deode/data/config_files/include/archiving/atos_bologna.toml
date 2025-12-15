@@ -20,6 +20,12 @@
   outpath = "archive/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   pattern = "config.toml"
 
+[archiving.hour.ecfs.ddh]
+  active = false
+  inpath = "@ARCHIVE@"
+  outpath = "archive/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  pattern = "DHF*.tar.gz"
+
 [archiving.hour.ecfs.fa_files]
   active = true
   inpath = "@ARCHIVE@"

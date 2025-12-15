@@ -1,0 +1,42 @@
+[general.output_settings]
+  ddh_dl = "PT15M"
+
+[archiving.hour.compress.ddh]
+  active = true
+  inpath = "@ARCHIVE@"
+  outpath = "@ARCHIVE@"
+  pattern = "DHF*+*"
+  tarname = "DHF@CNMEXP@.tar.gz"
+
+[archiving.hour.ecfs.ddh]
+  active = true
+
+[macros.select.ddh]
+  gen_macros = [{xloncen = "domain.xloncen"}, {xlatcen = "domain.xlatcen"}]
+
+[namelist_update.master.forecast.NAMCT0]
+  NDHFDTS = '${steplist:${cfg:general.output_settings.ddh_dl}}'
+  NFRDHFD = 1
+  NFRDHFG = 1
+  NFRDHFZ = 1
+  NFRDHP = 1
+
+[namelist_update.master.forecast.NAMDDH]
+  "BDEDDH(1,1)" = 4.0
+  "BDEDDH(2,1)" = 1.0
+  "BDEDDH(3,1)" = "@XLONCEN@"
+  "BDEDDH(4,1)" = "@XLATCEN@"
+  LFLEXDIA = true
+  LHDDOP = true
+  LHDEFD = true
+  LHDEFG = false
+  LHDEFZ = false
+  LHDENT = false
+  LHDGLB = false
+  LHDHKS = true
+  LHDMCI = false
+  LHDPRD = false
+  LHDPRG = false
+  LHDPRZ = false
+  LHDZON = false
+  LRSLDDH = true

@@ -16,6 +16,7 @@ from ..namelist import NamelistGenerator
 from ..os_utils import deodemakedirs
 from .base import Task
 from .batch import BatchJob
+from .iomerge import IOMERGE_FILETYPES
 from .sfx import PySurfexBaseTask
 
 
@@ -284,12 +285,13 @@ class Forecast(PySurfexBaseTask):
         batch = BatchJob(os.environ, wrapper=self.platform.substitute(self.wrapper))
         batch.run(self.master)
 
+        # Merge files and move to archive
         if self.iomerge_is_external:
             atexit.unregister(self.rename_wdir)
         else:
             for filetype, oi in self.output_settings.items():
                 if filetype in self.file_templates:
-                    if self.io_server:
+                    if self.io_server and filetype in IOMERGE_FILETYPES:
                         self.merge_output(filetype, oi)
                     self.archive_output(self.file_templates[filetype], oi)
 
