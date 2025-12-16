@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Generator, Iterator, List, Tuple
+from typing import Dict, Generator, Iterator, List
 
 from ..datetime_utils import as_datetime, as_timedelta
 from ..logs import logger
@@ -109,7 +109,8 @@ def lbc_times_generator(
     mode: str = "start",
     is_first_cycle: bool = True,
     do_interpolsstsic: bool = False,
-) -> Generator[Tuple[int, datetime], None, None]:
+    lbc_per_task: int = 1,
+) -> Generator[Dict[int, str], None, None]:
     """Generate lbc times.
 
     For each of them there will be LBC[NN] family.
@@ -121,6 +122,7 @@ def lbc_times_generator(
         mode: The mode of the workflow.
         is_first_cycle: Whether this is the first cycle.
         do_interpolsstsic: Whether to do SST/SIC interpolation.
+        lbc_per_task: Number of LBC assigned to each task. Default 1.
 
     Yields:
             datetime: The time period for which the next LBC will be computed.
@@ -136,10 +138,16 @@ def lbc_times_generator(
         index = 1
 
     while basetime <= endtime:
-        # Yield the updated basetime
-        yield index, basetime
-        index += 1
-        basetime += step
+        batch: Dict[int, datetime] = {}
 
+        for _ in range(lbc_per_task):
+            if basetime > endtime:
+                break
+            batch[index] = basetime.isoformat("T")
+            index += 1
+            basetime += step
+
+        if batch:
+            yield batch
     # Return the last basetime
     return basetime

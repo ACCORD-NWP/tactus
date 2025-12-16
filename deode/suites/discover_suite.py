@@ -78,7 +78,7 @@ def available_suites(reg: DeodePluginRegistry):
         if plg.suites_path.exists():
             suites = types.ModuleType(plg.name)
             suites.__path__ = [str(plg.suites_path)]
-            sys.path.insert(0, plg.path)
+            sys.path.insert(0, str(plg.path))
             found_types = discover(suites, SuiteDefinition)
             for ftype, cls in found_types.items():
                 if ftype in known_types:

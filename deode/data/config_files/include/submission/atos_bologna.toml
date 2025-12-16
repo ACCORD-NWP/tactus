@@ -37,12 +37,20 @@
 
 [submission.task_exceptions.C903]
   NPROC = 36
+  OMP_NUM_THREADS = "4"
 
 [submission.task_exceptions.C903.BATCH]
-  MEM = "#SBATCH --mem=200GB"
-  NODE = "#SBATCH --nodes=12"
-  NTASKS = "#SBATCH --ntasks=36"
-  WALLTIME = "#SBATCH --time=00:30:00"
+  CPUSPERTASK = "#SBATCH --cpus-per-task=4"
+  HYPERTHREAD = "#SBATCH --hint=nomultithread"
+  MEM_CPU = "#SCATCH --mem-per-cpu=50G"
+  NODES = "#SBATCH --nodes=18"
+  NTASKS = "#SBATCH --ntasks-per-node=2"
+  WALLTIME = "#SBATCH --time=01:00:00"
+
+[submission.task_exceptions.C903.ENV]
+  KMP_AFFINITY = "granularity=core,scatter"
+  KMP_BLOCKTIME = "12"
+  KMP_STACKSIZE = "4G"
 
 [submission.task_exceptions.CreateGrib]
   binary = "gl"

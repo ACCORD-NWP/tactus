@@ -1,0 +1,22 @@
+[archiving]
+
+[archiving.DataBridge.fdb]
+
+[archiving.DataBridge.fdb.fpgrib_files]
+  active = false
+  inpath = "@ARCHIVE@"
+  pattern = "GRIBPF*"
+
+[archiving.FDB.fdb]
+
+[archiving.FDB.fdb.fpgrib_files]
+  active = false
+  inpath = "@ARCHIVE@"
+  pattern = "GRIBPF*"
+
+[archiving.hour.copy.config]
+  active = true
+  inpath = ""
+  newname = "config.toml"
+  outpath = "@ARCHIVE@"
+  pattern = "@CONFIG@"

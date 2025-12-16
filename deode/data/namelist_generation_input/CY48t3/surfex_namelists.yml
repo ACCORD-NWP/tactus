@@ -671,6 +671,9 @@ sfx_pgd_sea:
 
 sfx_pgd_zs_topo:
   NAM_ZS:
+    CSVF: MANNERS
+    LFSSOSVF: False
+    LORORAD: True
     YZS: "topo"
     YZSFILETYPE: "DIRECT"
 

@@ -219,10 +219,11 @@ def get_decadal_list(dt_start, dt_end) -> list:
     dt_end0 = dt_end.replace(hour=0, minute=0, second=0)
     start_decade = get_decade(dt_start0)
     end_decade = get_decade(dt_end0)
+    ndays = (dt_end0 - dt_start0).days
 
     decades = {}
     decades[start_decade] = dt_start0
-    if start_decade != end_decade:
+    if start_decade != end_decade or ndays > 350:
         # More than one decade is covered by period.
         for x in range(1, (dt_end0 - dt_start0).days + 1, 1):
             date = dt_start0 + as_timedelta(f"P{x}D")

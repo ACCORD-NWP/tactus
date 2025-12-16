@@ -6,7 +6,12 @@ import pytest
 import tomlkit
 
 from deode.derived_variables import derived_variables, set_times
-from deode.mars_utils import BaseRequest, compile_target, get_value_from_dict
+from deode.mars_utils import (
+    BaseRequest,
+    compile_target,
+    get_value_from_dict,
+    mars_selection,
+)
 from deode.tasks.marsprep import Marsprep
 
 
@@ -51,7 +56,7 @@ def fixture_marsprep_instance(parsed_config_and_selection):
 def test_mars_selection(parsed_config_and_selection):
     """Test the mars_selection method with the parsed config."""
     selection_str, config = parsed_config_and_selection
-    selection = Marsprep.mars_selection(selection=selection_str, config=config)
+    selection = mars_selection(selection=selection_str, config=config)
 
     assert "expver" in selection
 

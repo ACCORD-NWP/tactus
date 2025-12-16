@@ -682,7 +682,7 @@ sfx_pgd_zs_AROME:
 
 sfx_pgd_zs_filter:
   NAM_ZS_FILTER:
-    NZSFILTER: 0
+    NZSFILTER: ${cfg:domain.nzsfilter}
 
 sfx_pgd_teb_osm:
   NAM_TREEDRAG:

@@ -7,12 +7,11 @@ from functools import cached_property
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from deode.boundary_utils import Boundary
+from deode.datetime_utils import as_datetime, as_timedelta
 from deode.eps.eps_setup import get_member_config, infer_members
-
-from ..config_parser import ParsedConfig
-from ..datetime_utils import as_datetime, as_timedelta, cycle_offset
-from ..logs import logger
-from ..mars_utils import (
+from deode.logs import logger
+from deode.mars_utils import (
     BaseRequest,
     add_additional_data_to_all,
     add_additional_file_specific_data,
@@ -24,15 +23,16 @@ from ..mars_utils import (
     get_steplist,
     get_steps_and_members_to_retrieve,
     get_value_from_dict,
+    mars_selection,
     mars_write_method,
     move_files,
     write_compute_mars_req,
     write_retrieve_mars_req,
     write_write_mars_req,
 )
-from ..os_utils import deodemakedirs, join_files, list_files_join
-from ..tasks.batch import BatchJob
-from .base import Task
+from deode.os_utils import deodemakedirs, join_files, list_files_join
+from deode.tasks.base import Task
+from deode.tasks.batch import BatchJob
 
 
 class Marsprep(Task):
@@ -97,29 +97,13 @@ class Marsprep(Task):
         check_data_available(self.basetime, self.mars)
 
         # Get boundary informations
-        bdint = as_timedelta(self.config["boundaries.bdint"])
-        bdcycle = as_timedelta(self.mars["ifs_cycle_length"])
-        bdcycle_start = as_timedelta(self.mars["ifs_cycle_start"])
-        bdshift = as_timedelta(self.config["boundaries.bdshift"])
-
-        if bdshift.total_seconds() % bdcycle.total_seconds() != 0:
-            raise ValueError("bdshift needs to be a multiple of bdcycle!")
-
-        # Get date/time/steps info
-        bd_offset = cycle_offset(
-            self.basetime,
-            bdcycle,
-            bdcycle_start=bdcycle_start,
-            bdshift=bdshift,
+        self.boundary = Boundary(config)
+        self.steps = get_steplist(
+            self.boundary.bd_offset, forecast_range, self.boundary.bdint
         )
 
-        self.bd_basetime = self.basetime - bd_offset
-        self.steps = get_steplist(bd_offset, forecast_range, bdint)
-
-        logger.info("bd_basetime: {}", self.bd_basetime)
-
-        self.init_date_str = self.bd_basetime.strftime("%Y%m%d")
-        self.init_hour_str = self.bd_basetime.strftime("%H")
+        self.init_date_str = self.boundary.bd_basetime.strftime("%Y%m%d")
+        self.init_hour_str = self.boundary.bd_basetime.strftime("%H")
 
         exist_snow = False
         with contextlib.suppress(KeyError):
@@ -132,7 +116,7 @@ class Marsprep(Task):
         with contextlib.suppress(KeyError):
             start_snow_date = as_datetime(self.mars["start_snow_date"])
 
-        self.exist_snow = exist_snow and self.bd_basetime >= start_snow_date
+        self.exist_snow = exist_snow and self.boundary.bd_basetime >= start_snow_date
         # Split mars by bdint
         self.split_mars = self.config["suite_control.split_mars"]
         if self.split_mars:
@@ -141,7 +125,7 @@ class Marsprep(Task):
         self.prepdir = Path(
             self.platform.substitute(
                 self.config["system.bddir"],
-                basetime=self.bd_basetime,
+                basetime=self.boundary.bd_basetime,
                 validtime=self.basetime,
             )
         )
@@ -171,36 +155,11 @@ class Marsprep(Task):
             self.gg_oro_source = self.mars["gg_oro_source"]
             logger.info("Using static GG orography file {}", self.gg_oro_source)
 
-    @staticmethod
-    def mars_selection(selection: str, config: ParsedConfig) -> dict:
-        """Copy default settings if requested.
-
-        Args:
-            selection             (str): The selection to use.
-            config (deode.ParsedConfig): Configuration object
-
-        Returns:
-             mars                (dict): mars config section
-
-        """
-        mars = config[f"mars.{selection}"].dict()
-        if "expver" not in mars:
-            mars["expver"] = selection
-
-        # Copy default settings if requested
-        if "default" in mars:
-            default = config[f"mars.{mars['default']}"]
-            for k in default:
-                if k not in mars:
-                    mars[k] = default[k]
-
-        return mars
-
     @cached_property
     def mars(self) -> dict:
         """Get mars selection."""
         selection = self.platform.substitute(self.config["boundaries.ifs.selection"])
-        return self.mars_selection(selection, self.config)
+        return mars_selection(selection, self.config)
 
     def update_data_request(
         self,
@@ -377,7 +336,7 @@ class Marsprep(Task):
         prep_dir = Path(
             self.platform.substitute(
                 bddir,
-                basetime=self.bd_basetime,
+                basetime=self.boundary.bd_basetime,
                 validtime=self.basetime,
             )
         )
@@ -385,7 +344,7 @@ class Marsprep(Task):
         for member in self.bdmember:
             prep_filename = self.platform.substitute(
                 bdfile.replace("@BDMEMBER@", str(member or 0)),
-                basetime=self.bd_basetime,
+                basetime=self.boundary.bd_basetime,
                 validtime=self.basetime,
             )
 
@@ -446,7 +405,7 @@ class Marsprep(Task):
         prep_dir = Path(
             self.platform.substitute(
                 self.config["system.bddir_sst"],
-                basetime=self.bd_basetime,
+                basetime=self.boundary.bd_basetime,
                 validtime=self.basetime,
             )
         )
@@ -458,7 +417,7 @@ class Marsprep(Task):
             bdfile,
             self.bdmember,
             platform=self.platform,
-            basetime=self.bd_basetime,
+            basetime=self.boundary.bd_basetime,
             validtime=self.basetime,
         )
 
@@ -476,7 +435,7 @@ class Marsprep(Task):
                     filenames = list_files_join(self.wdir, merge_pattern)
                     sst_filename = self.platform.substitute(
                         bdfile.replace("@BDMEMBER@", str(member or 0)),
-                        basetime=self.bd_basetime,
+                        basetime=self.boundary.bd_basetime,
                         validtime=self.basetime,
                         bd_index=step,
                     )

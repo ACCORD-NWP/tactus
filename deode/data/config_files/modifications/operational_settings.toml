@@ -114,12 +114,12 @@
 [platform]
   reference_data = "@SCRATCH_OPER@"
 
-[platform.mirrorglobalDT]
-  remote_host = "ecflow-pifs-rd-v-1"
-  remote_path = "/pabv/iekm/fc/main/fcgroup/00/model"
-
 [scheduler.ecfvars]
   ecf_tries = 2
+
+[scheduler.mirror_globalDT]
+  remote_host = "ecflow-pifs-rd-v-1"
+  remote_path = "/pabv/iekm/fc/main/fcgroup/00/model"
 
 [submission.task_exceptions.ArchiveHour.BATCH]
   WALLTIME = "#SBATCH --time=06:00:00"

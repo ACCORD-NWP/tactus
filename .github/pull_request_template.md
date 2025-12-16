@@ -15,6 +15,16 @@ Please delete options that are not relevant.
 - [ ] This change requires a documentation update
 
 ## Checklist before requesting a review
+
+### Testing
+
+- [ ] I have tested this on ATOS using the `atos_bologna.toml` configuration in the latest version of [Tactus-test-runner](https://github.com/destination-earth-digital-twins/Tactus-test-runner) 
+- [ ] I have tested this on LUMI using the `lumi.toml` configuration in the latest version of [Tactus-test-runner](https://github.com/destination-earth-digital-twins/Tactus-test-runner) 
+
+For further information see the [dedelopment guide](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/docs/markdown_docs/development_guide.md)
+
+### Code quality
+
 - [ ] My change follows the [best practices for this project](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/docs/markdown_docs/development_guide.md#best-practices).
 - [ ] My local environment is correctly initialised as described in the [README](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md) file.
 - [ ] My branch is up-to-date with the target branch - if not update your fork with the changes from the target branch (use `pull` with `--rebase` option if possible).
@@ -23,8 +33,6 @@ Please delete options that are not relevant.
 - [ ] I have updated the documentation and docstrings to reflect the changes
 - [ ] I have added tests that prove my fix is effective or that my feature works
 - [ ] I have ensured that the code is still installable with `poetry` after the changes and runs
-- [ ] I have run this on ATOS ([instructions](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/docs/markdown_docs/development_guide.md#testing-on-atos))
-- [ ] I have run this on LUMI ([instructions](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/docs/markdown_docs/development_guide.md#run-on-lumi))
 - [ ] I have requested one or more reviewer(s) and an assignee (assignee is responsible for merging). At least one reviewer has accepted to review.
 
 ## Checklist for reviewers

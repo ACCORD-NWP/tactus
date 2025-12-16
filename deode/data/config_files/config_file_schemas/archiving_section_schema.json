@@ -55,6 +55,10 @@
             "newname": {
               "description": "Target name for renaming of files. Only works is pattern is a string and matches an existing file",
               "type": "string"
+            },
+            "tarname": {
+              "description": "Tar file name in case of compress method.",
+              "type": "string"
             }
           }
         }

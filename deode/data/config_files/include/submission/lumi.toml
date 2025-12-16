@@ -31,19 +31,43 @@
   PATH = "$PATH:/appl/local/destine/mars/versions/7.1.3.0/bin/"
 
 [submission.task_exceptions.C903]
-  NPROC = 24
+  NPROC = 36
+  OMP_NUM_THREADS = "4"
 
 [submission.task_exceptions.C903.BATCH]
-  MEM = "#SBATCH --mem=0"
-  NODE = "#SBATCH --nodes=12"
-  NTASKS = "#SBATCH --ntasks=24"
-  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=2"
-  WALLTIME = "#SBATCH --time=00:30:00"
+  CPUSPERTASK = "#SBATCH --cpus-per-task=4"
+  HYPERTHREAD = "#SBATCH --hint=nomultithread"
+  MEM_CPU = "#SCATCH --mem-per-cpu=50G"
+  NODES = "#SBATCH --nodes=18"
+  NTASKS = "#SBATCH --ntasks-per-node=2"
+  WALLTIME = "#SBATCH --time=01:00:00"
 
 [submission.task_exceptions.C903.ENV]
-  DR_HOOK_TRAPFPE_DIVBYZERO = 1
-  DR_HOOK_TRAPFPE_OVERFLOW = 1
-  OMP_NUM_THREADS = 1
+  DR_HOOK = 1
+  DR_HOOK_IGNORE_SIGNALS = -1
+  DR_HOOK_SHOW_PROCESS_OPTIONS = 0
+  DR_HOOK_SILENT = 0
+
+  I_MPI_LIBRARY_KIND = "release"
+  LIBSCI_ARCH_OVERRIDE = "broadwell"
+
+  MKL_CBWR = "AUTO,STRICT"
+  MKL_DEBUG_CPU_TYPE = 5
+  MKL_NUM_THREADS = 1
+  MPL_MBX_SIZE = 2048000000
+
+  EC_MEMINFO = 0
+  EC_MPI_ATEXIT = 0
+  EC_PROFILE_HEAP = 0
+  EC_PROFILE_MEM = 0
+  ECF_SSL = 1
+
+  KMP_MONITOR_STACKSIZE = "4G"
+  KMP_STACKSIZE = "4G"
+
+  OMP_NUM_THREADS = 4 # CPUS_PER_TASK
+  OMP_PLACES = "threads"
+  OMP_STACKSIZE = "4G"
 
 [submission.task_exceptions.CreateGrib]
   binary = "gl"

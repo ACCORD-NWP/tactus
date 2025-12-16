@@ -6,7 +6,7 @@
 
 [impact.aq.communicate.air_quality_general.common_api]
   archive_in = "@ARCHIVE@"
-  archive_out = "@ARCHIVE@/@AQ_MODEL@"
+  archive_out = "@AQ_ARCHIVE@/@AQ_MODEL@"
   basetime = "@BASETIME@"
   forecast_range = "@FORECAST_RANGE@"
   wrk = "@AQ_WRK@/@AQ_MODEL@"

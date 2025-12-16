@@ -36,8 +36,6 @@ selection:
   NAMFPDYS:
    AQ_SELECTION:
     CL3DF:
-     - 'AVG_U'
-     - 'AVG_V'
      - 'GRAUPEL'
      - 'RAIN'
      - 'SNOW'

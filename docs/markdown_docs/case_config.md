@@ -6,7 +6,7 @@ The Deode-workflow is designed to be highly configurable and driven from a singl
 
 Example usage would be:
 ```
-deode case ?deode/data/config_files/configurations/cy48t3_alaro_gpu_lumi -o test.toml
+deode case ?deode/data/config_files/configurations/cy49t2_alaro -o test.toml
 ```
 
 where ? is a file includer operator where all the arguments are defined line by line. I.e. `deode/data/config_files/configurations/cy48t3_alaro_gpu_lumi` contains a list of arguments to be evaluated. In this case we have
@@ -14,10 +14,10 @@ where ? is a file includer operator where all the arguments are defined line by 
 ```
 --config-file
 deode/data/config_files/config.toml
-deode/data/config_files/modifications/CY48t3.toml
-deode/data/config_files/modifications/alaro.toml
-deode/data/config_files/include/accelerator_device/lumi_gpu.toml
-deode/data/config_files/modifications/submission/lumi_CY48t3_gpu_large_domain.toml
+deode/data/config_files/modifications/csc/alaro.toml
+deode/data/config_files/include/vertical_levels/MF_87.toml
+deode/data/config_files/modifications/cycle/CY49t2.toml
+deode/data/config_files/modifications/@HOST@.toml
 ```
 
 When the first config file, `config.toml`, has been read the appropriate files for the current host is included for `scheduler` `platform`and `submission`.
@@ -33,18 +33,10 @@ deode start suite --config-file test.toml
 
 We can also do everything in one by adding the `--start-suite` flag
 ```
-deode case ?deode/data/config_files/configurations/cy48t3_alaro_gpu_lumi -o test.toml --start-suite
+deode case ?deode/data/config_files/configurations/cy49t2_alaro -o test.toml --start-suite
 ```
 
 To see all commands available for the case functionality run `deode case --help`.
-
-### Lumi exception
-
-To create a config file for the DEMO domain on LUMI, we suggest using the following command:
-```
-deode case `deode/data/config_files/configurations/cy48t3_arome deode/data/config_files/modifications/submission/lumi_debug.toml
-```
-This will ensure that tasks run on the debug partition, reducing queue time. Please note that the `lumi_debug` setting can only be used for small domains.
 
 ## Adding a new host
 
@@ -71,7 +63,7 @@ Any new host should be added in the same way and the names for the configuration
 
 A typical use case is to run the same configuration for a number of dates or a longer period. The example above could easily be modified to run for any arbitrary date by running
 ```
-deode case ?deode/data/config_files/configurations/cy48t3_alaro_gpu_lumi time.toml -o test.toml
+deode case ?deode/data/config_files/configurations/cy49t2_alaro time.toml -o test.toml
 ```
 where `time.toml` contains
 

@@ -20,8 +20,6 @@ selection:
       - CLOUD_WATER
       - CLOUD_FRACTI
       - TKE
-      - AVG_U
-      - AVG_V
       NRFP3S:
       - ${namelist.nrfp3s}
     NAMFPPHY:

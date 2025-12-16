@@ -1,4 +1,5 @@
 [platform]
+  archive_root = "@SCRATCH@/deode/@CASE@/archive"
   archive_types = ["copy"]
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef/"
   scratch = "@HOME@/deode_wrk"

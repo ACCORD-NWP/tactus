@@ -39,7 +39,7 @@
   WALLTIME = "#SBATCH --time=08:00:00"
 
 [submission.task_exceptions.Pgd.BATCH]
-  NODES = "#SBATCH --nodes=2"
+  NODES = "#SBATCH --nodes=4"
   NTASKS = "#SBATCH --ntasks=32"
   WALLTIME = "#SBATCH --time=03:00:00"
 

@@ -109,6 +109,9 @@
 [gribmodify.surfex.8]
   output_name = "canopy_water"
 
+[submission.task_exceptions.ArchiveFDB.BATCH]
+  WALLTIME = "#SBATCH --time=01:00:00"
+
 [suite_control]
   do_creategrib_static = true
   n_addcalculatedfields = 3
