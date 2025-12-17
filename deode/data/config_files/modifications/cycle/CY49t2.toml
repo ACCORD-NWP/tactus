@@ -1,6 +1,7 @@
 [general]
   cycle = "CY49t2"
   surfex = true
+  upd_sst_sic = true
 
 [general.output_settings]
   surfex = "PT1H"
