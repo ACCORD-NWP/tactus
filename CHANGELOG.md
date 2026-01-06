@@ -19,6 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed issue with configuration of multiple LBCs in the same task for CY50 [\#1450](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1450) (@pardallio)
 
+## [0.24.1] - 2025-12-19
+
+### Fixed
+- Fix for LUMI operational archiving. [\#1457](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1457)(@kastelecn)
+
 ## [0.24.0] - 2025-12-16
 
 ### Added
