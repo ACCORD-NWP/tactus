@@ -107,6 +107,7 @@ class TestMainShowCommands:
                     "config",
                     "--config-file",
                     ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix(),
+                    "-e",
                 ]
             )
 

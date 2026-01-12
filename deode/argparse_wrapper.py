@@ -169,14 +169,6 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         default=None,
     )
     parser_case.add_argument(
-        "--expand-config",
-        "-e",
-        action="store_true",
-        default=False,
-        help="Expand macros in config",
-        required=False,
-    )
-    parser_case.add_argument(
         "--start-suite",
         "-s",
         action="store_true",
@@ -187,6 +179,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     add_keep_def_file(
         parser_case, help_message="Keep suite definition file in case of submission"
     )
+    add_expand_config(parser_case)
     parser_case.set_defaults(run_command=create_exp)
 
     ############################################
@@ -251,6 +244,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         choices=["toml", "json", "yaml"],
         default="toml",
     )
+    add_expand_config(parser_show_config)
     parser_show_config.set_defaults(run_command=show_config)
 
     # show config-schema
@@ -513,5 +507,22 @@ def add_keep_def_file(
         help=help_message,
         action="store_true",
         default=False,
+        required=False,
+    )
+
+
+def add_expand_config(parser_object):
+    """Add object args.
+
+    Args:
+        parser_object (args oject): args object to update
+
+    """
+    parser_object.add_argument(
+        "--expand-config",
+        "-e",
+        action="store_true",
+        default=False,
+        help="Expand macros in config",
         required=False,
     )

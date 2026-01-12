@@ -361,6 +361,11 @@ def show_config(args, config):
         formatter_options=pkg_configs.get("tool.toml-formatter", {}),
     )
 
+    if args.expand_config:
+        deode_home = set_deode_home(config)
+        config = config.copy(update={"platform": {"deode_home": deode_home}})
+        config = config.expand_macros(True)
+
     try:
         dumps = config.dumps(
             section=args.section,
