@@ -12,7 +12,12 @@ from deode.toolbox import Platform
 @pytest.fixture(name="config", scope="module")
 def fixture_config(default_config):
     """Return a raw config common to all tasks."""
-    return default_config
+    config = default_config.copy(
+        update={
+            "general": {"foo": "@GENERAL.CSC@"},
+        }
+    )
+    return config
 
 
 @pytest.fixture(name="platform")
@@ -111,6 +116,10 @@ class TestPlatformSubstitute:
     def test_substitute(self, platform: Platform, config):
         case = platform.substitute(config["general.case"])
         assert case != config["general.case"]
+
+    def test_dot_substitute(self, platform: Platform, config):
+        foo = platform.substitute(config["general.foo"])
+        assert foo == config["general.csc"]
 
     def test_user_macro(self, config):
         os.environ["TEST"] = "from_os_macros"

@@ -301,21 +301,33 @@ class Platform:
         # create the list.
         logger.debug("Pattern: {}", pattern)
         logger.debug("key={} value={}", key, value)
+        micro_key = f"{micro}{key}{micro}"
 
-        if not isinstance(value, str):
-            value = str(value)
-            logger.debug(
-                "Input value {} for key={} is not a string, but {}!",
-                value,
-                key,
-                type(value),
-            )
-
-        if ci:
-            compiled = re.compile(re.escape(f"{micro}{key}{micro}"), re.IGNORECASE)
+        if micro_key == pattern:
+            # No pattern substitution, simply use the value
+            res = value
         else:
-            compiled = re.compile(re.escape(f"{micro}{key}{micro}"))
-        res = compiled.sub(value, pattern)
+            if not isinstance(value, str):
+                logger.debug(
+                    "Input value {} for key={} is not a string, but {}!",
+                    value,
+                    key,
+                    type(value),
+                )
+                value = str(value)
+            if not isinstance(pattern, str):
+                logger.debug(
+                    "Input pattern {} for key={} is not a string, but {}!",
+                    pattern,
+                    key,
+                    type(pattern),
+                )
+                pattern = str(pattern)
+            if ci:
+                compiled = re.compile(re.escape(micro_key), re.IGNORECASE)
+            else:
+                compiled = re.compile(re.escape(micro_key))
+            res = compiled.sub(value, pattern)
 
         logger.debug("Substituted string: {}", res)
         return res
@@ -458,7 +470,12 @@ class Platform:
 
         for sub_pattern in sub_patterns:
             with contextlib.suppress(KeyError):
-                val = self.macros[sub_pattern.upper()]
+                if "." in sub_pattern:
+                    val = self.config.get(sub_pattern.lower())
+                    if val is None:
+                        continue
+                else:
+                    val = self.macros[sub_pattern.upper()]
                 try:
                     if val.count("@") > 0:
                         val = self.substitute(val, basetime, validtime, bd_index, keyval)
