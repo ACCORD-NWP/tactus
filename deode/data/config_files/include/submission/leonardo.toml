@@ -33,7 +33,7 @@
   NODE = "#SBATCH --nodes=6"
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=6"
   #NTASKS = "#SBATCH --ntasks=36"
-  WALLTIME = "#SBATCH --time=00:30:00"
+  WALLTIME = "#SBATCH --time=03:00:00"
 
 [submission.task_exceptions.CreateGrib]
   binary = "gl"
@@ -76,9 +76,18 @@
   binary = "gl"
   bindir = "@BINDIR_GL@"
 
+[submission.task_exceptions.InterpolSstSic.MODULES]
+  FFTW3 = [
+    "load",
+    "fftw/3.3.10--intel-oneapi-mpi--2021.10.0--oneapi--2023.2.0-sremgts ",
+  ] 
+
 [submission.task_exceptions.Marsprep]
   bindir = "/leonardo_work/DestE_330_26/users/SAN/install/mars"
   mars_version = "7"
+
+[submission.task_exceptions.Marsprep.ENV]
+  PATH = "$PATH:/leonardo_work/DestE_330_26/users/SAN/install/eccodes-2.40.0-intel/bin/"
 
 [submission.task_exceptions.Marsprep.BATCH]
   MEM = "#SBATCH --exclusive"
