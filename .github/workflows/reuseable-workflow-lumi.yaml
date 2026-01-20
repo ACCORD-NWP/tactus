@@ -36,7 +36,7 @@ jobs:
                 export PATH=$POETRY_HOME/bin:$PATH
                 $POETRY_HOME/bin/poetry install --only main
                 $POETRY_HOME/bin/poetry run deode -h
-                
+
               template_data: |
                 repo: https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/${{ github.repository }}.git
                 ref: ${{ github.event.pull_request.head.sha || github.sha }}

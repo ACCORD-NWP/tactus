@@ -40,7 +40,7 @@ We **highly recommend** you to also put the statement listed above in your shell
   ml pyeccodes_23
   ml scl-ecflow_23
   ```
-  
+
 * On Belenos
   ```shell
   conda create -n <env_name> python=3.10.* gdal=3.6.2 ecflow -c conda-forge
@@ -60,7 +60,7 @@ See also [lumi doc](https://github.com/destination-earth-digital-twins/Deode-Wor
 
 ## Installation
 
-First checkout the `deode` source code from github: 
+First checkout the `deode` source code from github:
 ```shell
 git clone git@github.com:destination-earth-digital-twins/Deode-Workflow.git
 cd Deode-Workflow
@@ -86,8 +86,8 @@ Then install/reinstall [`poetry`](https://python-poetry.org) by runnning the fol
   poetry self add poetry-plugin-shell
   ```
 
-Finally, install [`pygdal`](https://pypi.org/project/pygdal/), which is required for climate generation. [`pygdal`](https://pypi.org/project/pygdal/) depends on [`gdal`](https://gdal.org/), which is notoriously troublesome as dependency when targeting many systems. The versions of `pygdal` and the system's `gdal`should match. 
-  
+Finally, install [`pygdal`](https://pypi.org/project/pygdal/), which is required for climate generation. [`pygdal`](https://pypi.org/project/pygdal/) depends on [`gdal`](https://gdal.org/), which is notoriously troublesome as dependency when targeting many systems. The versions of `pygdal` and the system's `gdal`should match.
+
   To install gdal and pygdal run the follow in commands in your shell:
 
   * On Atos (`hpc-login`)
@@ -96,12 +96,12 @@ Finally, install [`pygdal`](https://pypi.org/project/pygdal/), which is required
     poetry shell
     pip install pygdal==3.6.2.11
     ```
-  
+
   On Belenos, you should install the project in the conda environment that was created, directly with the `pip` command.
   ```shell
   pip install -e . --no-cache --prefer-binary
   ```
-  
+
   If installation is not succesful, please contact the IT support in your organisation or HPC facility.
 
 ### Important
@@ -117,7 +117,7 @@ Initially set up the environment by repeating the steps in [Set up environment](
 ```shell
 poetry shell
 ```
-   
+
 Alternatively, to activate a `deode` installation located in an arbitrary
 directory `MY_DEODE_SOURCE_DIRECTORY`, please run:
 ```shell
@@ -171,7 +171,7 @@ deode case ?deode/data/config_files/configurations/cy48t3_arome -o cy48t3_arome.
 
 The command below runs `deode`'s task `"Forecast"` for the member specified in the config file using the batch system rules defined in your `config.toml`:
 ```shell
-deode run --task Forecast --config-file cy48t3_arome.toml 
+deode run --task Forecast --config-file cy48t3_arome.toml
 ```
 
 Note that this requires a previous run of the [ecflow suite](#running-ecflow-suite-on-atos-or-lumi) for the given config file to have finished succesfully.
