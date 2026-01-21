@@ -30,6 +30,7 @@
   OMP_NUM_THREADS = "4"
 
 [submission.task_exceptions.C903.BATCH]
+  HYPERTHREAD = "#SBATCH --hint=nomultithread"
   CPUSPERTASK = "#SBATCH --cpus-per-task=4"
   MEM = "#SBATCH --mem=480GB"
   NODE = "#SBATCH --nodes=12"
