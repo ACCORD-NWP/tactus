@@ -8,78 +8,46 @@ on:
       inputs:
         configuration_name:
           required: true
-          type: string       
-              
+          type: string
+
 
 jobs:
   test-install-deode-workflow-atos:
     runs-on: [hpc]
     continue-on-error: false
     steps:
-    
+
+
       - name: Test installation phase on Atos
-        id: test-intstall-deode-workflow-atos
-        env:          
-          GITHUB_CONTEXT: ${{ toJson(github) }}
+        id: test-install-deode-workflow-atos
         uses: ecmwf-actions/reusable-workflows/ci-hpc-generic@main
         with:
           troika_user: ${{ secrets.HPC_CI_SSH_USER }}
           template: |
               pwd
-              ls -la
-              echo $GITHUB_CONTEXT
-              event_name={{ github_event_name }}
-              echo "event_name="$event_name
-              echo "pull_request_number="{{ pull_request_number }}  "pull_request_branch_name="{{ pull_request_branch_name }}
-             
-              #deode workflow installation is in the user home folder because the ecflow server does'n have  permssions to write on the scratch folder 
-              export workflow_folder=~/deode_workflow_github_test/'deode_workflow_'{{ ref }}
-              echo ${workflow_folder}
-              
-              mkdir -p ${workflow_folder} 
-              cd ${workflow_folder}
-              #deletion is needed if it is used the same folder for deode again, beacuse mkdir does not return an error if the folder already exist. This should not happen when the ref is unique
-              rm -rf ${workflow_folder}/*> /dev/null 2>&1
-              echo {{ repo }}
-              echo {{ ref }}
-              
-              #clone the main repository
               git clone {{ repo }}
-              
               cd Deode-Workflow
-              export DEODE_WORKFLOW_FOLDER=$(pwd)
-              
+
+              event_name={{ github_event_name }}
+
               #checkout the push branch, ref is github.sha. for workflow_dispatch github.sha is last commit on the GITHUB_REF branch or tag, that received dispatch
               if [[ $event_name == 'workflow_dispatch' ||  $event_name == 'push' ]]; then git checkout {{ ref }}; fi
 
               #fetch locally the pull request branch and switch the active brantch to it
-              if [[ $event_name == 'pull_request' ]]; then 
+              if [[ $event_name == 'pull_request' ]]; then
                 git fetch origin pull/{{ pull_request_number }}/head:{{ pull_request_branch_name }}; \
                 git switch {{ pull_request_branch_name }}; \
               fi
-              
 
-              export PATH="$HOME/.local/bin:$PATH"
               module load python3/3.10.10-01
-              module load ecflow
-
-              # Clean eventual previous install
-              curl -sSL https://install.python-poetry.org | python3 - --uninstall > install_deode.log 2>&1
-              rm -rf ${HOME}/.cache/pypoetry/ ${HOME}/.local/bin/poetry ${HOME}/.local/share/pypoetry  > install_deode.log 2>&1
-              # Download and install poetry
-              curl -sSL https://install.python-poetry.org | python3 -
-              poetry install
-              # Add the poetry shell command as a plugin (for poetry >= v2.0.0)
-              poetry self add poetry-plugin-shell
- 
-              source_command=$(poetry env activate)
-              $source_command
-
-              export POETRY_HOME=~/.local
-
-              poetry run deode -h
-              echo "POETRY_HOME=$POETRY_HOME" >> deode.sh
-              echo "DEODE_WORKFLOW_FOLDER=$DEODE_WORKFLOW_FOLDER" >> deode.sh
+              export POETRY_HOME=$PWD/opt/poetry
+              # Create a virtual environment to contain poetry
+              python3 -m venv $POETRY_HOME
+              $POETRY_HOME/bin/python -m pip install poetry==2.3.0
+              $POETRY_HOME/bin/poetry --version
+              export PATH=$POETRY_HOME/bin:$PATH
+              $POETRY_HOME/bin/poetry install --only main
+              $POETRY_HOME/bin/poetry run deode -h
           template_data: |
               repo: https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/${{ github.repository }}.git
               ref: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -87,85 +55,10 @@ jobs:
               pull_request_number: ${{ github.event.number }}
               pull_request_branch_name: ${{ github.head_ref }}
           sbatch_options: |
-              #SBATCH --job-name=test_deode_workflow_install_deode
-              #SBATCH --time=00:60:00
+              #SBATCH --job-name=test_deode_workflow
+              #SBATCH --time=00:15:00
 
-  run-forecast-deode-workflow-atos:
-    if:   github.event_name != 'push'   
-    runs-on: [hpc]
-    needs: test-install-deode-workflow-atos
-    #  default_configuration_name: cy48t3_arome
-    steps:
-    
-      - name: Run forecast on Atos
-        id: run-forecast-atos
-        uses: ecmwf-actions/reusable-workflows/ci-hpc-generic@main
-        with:
-          troika_user: ${{ secrets.HPC_CI_SSH_USER }}
-          template: |
-              
-              echo 'configuration_name='${{ inputs.configuration_name }}
-              echo "actor_username="{{ actor_username }}
-              
-              workflow_folder=~/deode_workflow_github_test/deode_workflow_{{ ref }}/Deode-Workflow
-              echo ${workflow_folder}
-              cd ${workflow_folder}
-              source deode.sh
-              echo $POETRY_HOME $DEODE_WORKFLOW_FOLDER
-              cd $DEODE_WORKFLOW_FOLDER
-             
-              #poetry uses its python
-              run_date=$(date +%Y%m%d_%H%M)
-              cat > github_mofications.toml<<EOF
-              [general]
-                case = "@CASE_PREFIX@@CYCLE@_@CSC@_@EVENT_TYPE@_@DOMAIN@_@YMD_START@_{{ actor_username }}_workflow_test_date_${run_date}"
-              EOF
-              cat github_mofications.toml
-              echo $(pwd)/github_mofications.toml  >> deode/data/config_files/configurations/${{ inputs.configuration_name }}
-              cat deode/data/config_files/configurations/${{ inputs.configuration_name }}
-             
-              $POETRY_HOME/bin/poetry run deode case ?deode/data/config_files/configurations/${{ inputs.configuration_name }} -o ${{ inputs.configuration_name }}.toml --start-suite
-              
-              #add execytable permission because of poetry
-              chmod u+x test_worfklow_scripts/export_case_variables.py
-              export_command=$($POETRY_HOME/bin/poetry run test_worfklow_scripts/export_case_variables.py $DEODE_WORKFLOW_FOLDER/${{ inputs.configuration_name }}.toml)
-              #  eval $export_command
-              echo $export_command > export_command.sh
-              source export_command.sh
-            
-              echo "ECF_HOST=$ECF_HOST" >> run_forecast_${{ inputs.configuration_name }}.sh
-              echo "ECF_PORT=$ECF_PORT" >> run_forecast_${{ inputs.configuration_name }}.sh
-              echo "SUITE_NAME=$SUITE_NAME" >> run_forecast_${{ inputs.configuration_name }}.sh
-          template_data: |
-              repo: https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/${{ github.repository }}.git
-              ref: ${{ github.event.pull_request.head.sha || github.sha }}
-              actor_username: ${{ github.actor }}
-          sbatch_options: |
-              #SBATCH --job-name=test_deode_workflow_run_forecast
-              #SBATCH --time=00:60:00
 
-      - name: Check if suite is completed on Atos
-        id: check-suite-status-deode-workflow-atos
-        uses: ecmwf-actions/reusable-workflows/ci-hpc-generic@main
-        with:
-          troika_user: ${{ secrets.HPC_CI_SSH_USER }}
-          template: |
-              workflow_folder=~/deode_workflow_github_test/deode_workflow_{{ ref }}/Deode-Workflow
-
-              echo ${workflow_folder}
-              cd ${workflow_folder}
-              source run_forecast_${{ inputs.configuration_name }}.sh
-              
-              module load python3/3.10.10-01
-              module load ecflow
-              python3  test_worfklow_scripts/get_suite_status.py $ECF_HOST $ECF_PORT $SUITE_NAME          
-          template_data: |
-              repo: https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/${{ github.repository }}.git
-              ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          sbatch_options: |
-              #SBATCH --job-name=test_deode_workflow_check_status
-              #SBATCH --time=00:60:00
-  
   build-deode-workflow-atos:
     if: ${{ github.event_name != 'pull_request' }}
     runs-on: [hpc]
@@ -186,7 +79,7 @@ jobs:
             export POETRY_HOME=$PWD/opt/poetry
             # Create a virtual environment to contain poetry
             python3 -m venv $POETRY_HOME
-            $POETRY_HOME/bin/python -m pip install poetry==1.8.3
+            $POETRY_HOME/bin/python -m pip install poetry==2.3.0
             $POETRY_HOME/bin/poetry --version
             export PATH=$POETRY_HOME/bin:$PATH
             $POETRY_HOME/bin/poetry build -f wheel
@@ -213,8 +106,6 @@ jobs:
             cp $SCRATCH/deode_workflow-${{ github.sha }}.tar.gz .
             tar -xf deode_workflow-${{ github.sha }}.tar.gz
             module load python3/3.10.10-01
-            #module load ecflow/5.11.4
-            #module load gdal/3.6.2
             python3 -m venv .venv
             source .venv/bin/activate
             export DEODEVERSION=$(grep -A 5 '\[tool.poetry\]' pyproject.toml | grep 'version =' | awk -F\" '{print $2}')
