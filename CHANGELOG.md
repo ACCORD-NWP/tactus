@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed issue with configuration of multiple LBCs in the same task for CY50 [\#1450](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1450) (@pardallio)
 
+- Fixed test of installation phase on Atos [\#1475](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1475) (@khintz)
+
 ## [0.24.1] - 2025-12-19
 
 ### Fixed
@@ -71,13 +73,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add .toml to enable use of new high-res ECOCLIMAPSG+ML data [\#1390](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1390)(@PanuMaaFMI)
 
 ### Changed
-- Optimized SPP settings for Harmonie-AROME [\#1417](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1417) (@pirkkao) 
-- Optimized SPP settings for AROME [\#1412](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1412) (@cwastl) 
+- Optimized SPP settings for Harmonie-AROME [\#1417](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1417) (@pirkkao)
+- Optimized SPP settings for AROME [\#1412](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1412) (@cwastl)
 - Change operational archive path.[\#1387](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1387)(@kastelecn)
-- Delete only finished suite in Clean\_old\_data. [\#1379](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1379) (@kastelecn) 
+- Delete only finished suite in Clean\_old\_data. [\#1379](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1379) (@kastelecn)
 - Switch off ecfs archiving of GRIB2 data in operations [\#1405](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1405)(@uandrae)
 - Use default binary for PREP when initializing from offline SURFEX [\#1401](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1401)(@trygveasp)
-  
+
 ### Fixed
 - Correct GMTED reading for longitudes > 120 deg. [\#1402](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1402)(@natalieth)
 - Do not coupled hydrometors for harmone-arome and arome. [\#1376](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1376)(@kastelecn)
