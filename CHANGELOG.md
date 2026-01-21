@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed test of installation phase on Atos [\#1475](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1475) (@khintz)
 
+- Fixed test for the forecast workflow run on Atos. [\#1477](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1477) (@elbdmi)
+
 ## [0.24.1] - 2025-12-19
 
 ### Fixed
