@@ -1,6 +1,5 @@
 [submission]
   account = "#SBATCH -A DestE_330_26_0"
-  bindir_gl = "@INSTALL_DIR@/gl/leonardo.cy49t2.intel/bin"
   default_submit_type = "serial"
   lfftw = false
   module_initpath = "/leonardo_work/DestE_330_26/users/SAN/install/lmod/lmod/init"
@@ -102,7 +101,7 @@
   WALLTIME = "#SBATCH --time=01:00:00"
 
 [submission.task_exceptions.Marsprep.ENV]
-  PATH = "$PATH:/leonardo_work/DestE_330_26/users/SAN/install/eccodes-2.40.0-intel/bin/"
+  PATH = "$PATH:/leonardo_work/DestE_330_26/users/SAN/install/eccodes-2.41.0-intel/bin/"
 
 [submission.task_exceptions.Pgd]
   NPROC = 32
@@ -178,7 +177,7 @@
   LLSIMPLE_DGEMM = 1
   OMP_NUM_THREADS = 1
   #OMP_STACKSIZE = "4G"
-  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/leonardo_work/DestE_330_26/users/SAN/install/eccodes-2.40.0-intel/lib64/"
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/leonardo_work/DestE_330_26/users/SAN/install/eccodes-2.41.0-intel/lib64/"
   OMPI_MCA_btl = "^vader"
   PARALLEL = 0
   PERSISTENT = 0
@@ -223,7 +222,7 @@
 
 [submission.types.serial.ENV]
   DR_HOOK_IGNORE_SIGNALS = -1
-  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/leonardo_work/DestE_330_26/users/SAN/install/eccodes-2.40.0-intel/lib64/"
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/leonardo_work/DestE_330_26/users/SAN/install/eccodes-2.41.0-intel/lib64/"
   OMP_NUM_THREADS = 1
   OMPI_MCA_btl = "^vader"
 
