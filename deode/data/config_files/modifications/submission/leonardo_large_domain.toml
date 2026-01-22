@@ -45,6 +45,7 @@
   NODES = "#SBATCH --nodes=2"
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=32"
   WALLTIME = "#SBATCH --time=03:00:00"
+  MEM = "#SBATCH --mem=0G"
 
 [submission.task_exceptions.Prep]
   NPROC = 64
