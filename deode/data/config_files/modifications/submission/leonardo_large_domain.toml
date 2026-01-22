@@ -19,7 +19,7 @@
   WRAPPER = "srun"
 
 [submission.task_exceptions.Forecast.BATCH]
-  CPUSPERTASK = "#SBATCH --cpus-per-task=4"
+  CPUSPERTASK = "#SBATCH --cpus-per-task=1"
   HYPERTHREAD = "#SBATCH --hint=nomultithread"
   NODES = "#SBATCH --nodes=20"
   QOS = "#SBATCH --qos=dcgp_qos_bprod"
