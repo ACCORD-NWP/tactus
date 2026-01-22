@@ -64,8 +64,8 @@
   NTASKS = "#SBATCH --ntasks=16"
 
 [submission.task_exceptions.Forecast]
-  NPROC = 32
-  NPROC_IO = 0
+  NPROC = 30
+  NPROC_IO = 2
   WRAPPER = "srun"
 
 [submission.task_exceptions.Forecast.BATCH]
