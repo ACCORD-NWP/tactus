@@ -77,7 +77,7 @@
 
 [submission.task_exceptions.Forecast.ENV]
   NOUTPUT = 2
-  RTTOV_COEFDIR = "/leonardo_work/DestE_330_26/users/SAN/static/DEODE/satellite/rtcoef_rttov12/harm_coef/"
+  RTTOV_COEFDIR = "/leonardo_work/DestE_330_26/users/SAN/static/DEODE/satellite/rtcoef_rttov13/coef/"
   UCX_LOG_LEVEL = "error"
 
 [submission.task_exceptions.InterpolSstSic]

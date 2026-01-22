@@ -23,7 +23,7 @@
   pgd_data_path = "@CLIMDATA@/PGD"
   reference_data = "/leonardo_work/DestE_330_26/users/SAN/reference_data"
   rrtm_dir = "@STATIC_DATA@/rrtm/@CYCLE@"
-  rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef/"
+  rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov13/coef/"
   scratch = "@CINECA_SCRATCH@"
   soilgrid_data_path = "@CLIMDATA@/SOILGRID"
   static_data = "/leonardo_work/DestE_330_26/users/SAN/static/DEODE"
