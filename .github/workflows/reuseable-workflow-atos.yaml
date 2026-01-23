@@ -37,6 +37,10 @@ jobs:
                 git switch {{ pull_request_branch_name }}; \
               fi
 
+              # Convert all ssh github dependency repos to https github dependency repos
+              sed -i 's#git@github.com#https://github.com#g' pyproject.toml
+              sed -i 's#https://github.com/destination-earth-digital-twins/#https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/destination-earth-digital-twins/#g' pyproject.toml
+
               module load python3/3.10.10-01
               export POETRY_HOME=$PWD/opt/poetry
               # Create a virtual environment to contain poetry.
@@ -45,6 +49,11 @@ jobs:
               $POETRY_HOME/bin/poetry --version
               export PATH=$POETRY_HOME/bin:$PATH
               $POETRY_HOME/bin/poetry install --only main
+
+
+              # Restore original pyproject.toml-file
+              git checkout pyproject.toml
+
               $POETRY_HOME/bin/poetry run deode -h
           template_data: |
               repo: https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/${{ github.repository }}.git

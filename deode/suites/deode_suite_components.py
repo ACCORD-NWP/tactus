@@ -428,6 +428,19 @@ class StaticDataTasks:
             )
             archive_static_member_trigger = pgd_filter_town_frac
 
+        if config["general.windfarm"] and config["json2tab.enabled"]:
+            generate_wfp_tabfile = EcflowSuiteTask(
+                "GenerateWfpTabFile",
+                parent,
+                config,
+                task_settings,
+                ecf_files,
+                input_template,
+                trigger=None,
+                ecf_files_remotely=ecf_files_remotely,
+            )
+            archive_static_member_trigger = generate_wfp_tabfile
+
         if (
             config["suite_control.do_archiving"]
             and config["suite_control.member_specific_static_data"]

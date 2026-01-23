@@ -22,6 +22,7 @@ from deode.tasks.creategrib import GlGrib
 from deode.tasks.discover_task import available_tasks, get_task
 from deode.tasks.e923 import E923
 from deode.tasks.forecast import FirstGuess, Forecast
+from deode.tasks.generatewfptabfile import GenerateWfpTabFile
 from deode.tasks.gribmodify import AddCalculatedFields
 from deode.tasks.interpolsstsic import InterpolSstSic
 from deode.tasks.iomerge import IOmerge
@@ -105,6 +106,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_task_iomerge_iomerge_execute_method = IOmerge.execute
     original_task_marsprep_run_method = Marsprep.run
     original_task_collectlogs_collectlogs_execute_method = CollectLogs.execute
+    original_task_generate_wfp_tab_file_execute_method = GenerateWfpTabFile.execute
 
     # Define the wrappers that will replace some key methods
     def new_batchjob_init_method(self, *args, **kwargs):
@@ -206,6 +208,10 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     def new_task_interpolsstsic_interpolsstsic_execute_method(*args, **kwargs):
         original_task_interpolsstsic_interpolsstsic_execute_method(*args, **kwargs)
 
+    def new_task_generate_wfp_tab_file_execute_method(*args, **kwargs):
+        with contextlib.suppress(FileNotFoundError):
+            original_task_generate_wfp_tab_file_execute_method(*args, **kwargs)
+
     def new_task_iomerge_iomerge_execute_method(self):
         """Create needed file `ECHIS` before running the original method."""
         file1 = self.wdir + "/../Forecast/io_serv.000001.d/ECHIS"
@@ -287,6 +293,10 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     session_mocker.patch(
         "deode.tasks.interpolsstsic.InterpolSstSic.execute",
         new=new_task_interpolsstsic_interpolsstsic_execute_method,
+    )
+    session_mocker.patch(
+        "deode.tasks.generatewfptabfile.GenerateWfpTabFile.execute",
+        new=new_task_generate_wfp_tab_file_execute_method,
     )
     session_mocker.patch(
         "deode.tasks.iomerge.IOmerge.execute",

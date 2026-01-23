@@ -23,21 +23,23 @@ jobs:
     if: github.repository_owner == 'destination-earth-digital-twins'
     name: Run Linters
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
     steps:
-      #----------------------------------------------
-      #       check-out repo and set-up python
-      #----------------------------------------------
       - name: Check out repository
         uses: actions/checkout@v3
+
+      - name: Set github credentials
+        uses: ./.github/actions/setup-github-credentials
+        with:
+          github_token: ${{ env.GITHUB_TOKEN }}
+
       - name: Set up python
         id: setup-python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      #----------------------------------------------
-      #  --- configure poetry & install project  ----
-      #----------------------------------------------
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
@@ -58,9 +60,6 @@ jobs:
       - name: Install the project itself
         run: poetry install --no-interaction --only-root
 
-      #----------------------------------------------
-      #         Run the linting checks
-      #----------------------------------------------
       - name: Run linters
         run: |
           poetry run poetry devtools lint

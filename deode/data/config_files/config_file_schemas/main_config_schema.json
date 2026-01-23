@@ -1000,9 +1000,14 @@
           "default": []
         },
         "windfarm": {
-          "description": "Switch on wind farm parameterisation",
+          "description": "Switch for enabeling wind farm parameterisation",
           "type": "boolean",
           "default": false
+        },
+        "fullpos_windpower": {
+          "description": "Switch for enabeling wind power production in fullpos output. Normally no need to provide but wind power output via full pos is not supported in CY48.",
+          "type": "boolean",
+          "default": true
         },
         "upd_sst_sic": {
           "description": "Switch to update SST/SIC during forecast",

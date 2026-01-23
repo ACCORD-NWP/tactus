@@ -32,6 +32,7 @@
   humanize = "^4.8.0"
   isodate = "^0.6.1"
   json-schema-for-humans = {git = "https://github.com/paulovcmedeiros/json-schema-for-humans.git", branch = "feature/choose-properties-table-columns"}
+  json2tab = {git = "git@github.com/destination-earth-digital-twins/json2tab.git", branch = "master"}
   jsonref = "^1.1.0"
   loguru = "^0.7.1"
   numexpr = "^2.8.4"

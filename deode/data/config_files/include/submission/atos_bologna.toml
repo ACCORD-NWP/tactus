@@ -198,6 +198,7 @@
     "E923Update",
     "IOmerge",
     "InterpolSstSic",
+    "GenerateWfpTabFile",
   ]
   WRAPPER = "srun"
 

@@ -92,6 +92,7 @@
   fdb = "include/fdb.toml"
   file_templates = "include/file_templates.toml"
   impact = "include/impact.toml"
+  json2tab = "include/json2tab.toml"
   macros = "include/macros.toml"
   mars = "include/mars_settings.toml"
   platform = "include/platform_paths/@HOST@.toml"

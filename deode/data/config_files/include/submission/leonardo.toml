@@ -194,6 +194,7 @@
     "Marsprep",
     "E923Update",
     "InterpolSstSic",
+    "GenerateWfpTabFile",
   ]
   WRAPPER = "srun"
 

@@ -10,6 +10,7 @@ from typing import Dict, List, Tuple
 
 from .config_parser import ParsedConfig
 from .datetime_utils import as_datetime
+from .domain_utils import get_domain
 from .geo_utils import Projection, Projstring
 from .logs import logger
 from .toolbox import Platform
@@ -249,15 +250,7 @@ def get_domain_data(config):
         String containing the domain info for MARS
     """
     # Get domain specs
-    domain_spec = {
-        "nlon": config["domain.nimax"],
-        "nlat": config["domain.njmax"],
-        "latc": config["domain.xlatcen"],
-        "lonc": config["domain.xloncen"],
-        "lat0": config["domain.xlat0"],
-        "lon0": config["domain.xlon0"],
-        "gsize": config["domain.xdx"],
-    }
+    domain_spec = get_domain(config)
 
     # Get domain properties
     projstring = Projstring()

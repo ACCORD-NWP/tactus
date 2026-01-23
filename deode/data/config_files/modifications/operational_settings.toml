@@ -104,6 +104,9 @@
   output_root = "@SCRATCH@/DE_Impact/EHYPE"
   output_subpath = "@SUB_CASEDIR@"
 
+[json2tab.output]
+  directory = "@CASEDIR@/../windfarm_data/"
+
 [macros.select.operational_settings]
   gen_macros = [
     {expver = "fdb.grib_set.expver"},
