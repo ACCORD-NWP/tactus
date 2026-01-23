@@ -3,12 +3,14 @@
 import json
 import os
 import platform
+import shutil
 import signal
 import sys
 import time
 import traceback
 from abc import ABC, abstractmethod
 from datetime import datetime
+from pathlib import Path
 
 from .host_actions import SelectHost
 from .logs import logger
@@ -236,27 +238,61 @@ class EcflowServer(Server):
             except RuntimeError as err:
                 raise RuntimeError("Could not replace suite " + suite_name) from err
 
-    def remove_suites(self, suite_list, check_if_complete):
+    def suite_is_complete(self, suite):
+        """Returns the true if a suite is complete.
+
+        Args:
+            suite(suite object): Suite
+
+        Returns:
+            suite_is_complte (boolean): Suite has complete status
+        """
+        self.ecf_client.sync_local()
+        suite_is_complete = suite.get_state() == ecflow.State.complete
+        return suite_is_complete
+
+    def remove_suites(self, suite_list, check_if_complete=True):
         """Remove suites selected from a list.
 
         Args:
             suite_list (list): Suite names.
-            check_if_complete (boolean): True if suite should be complete.
+            check_if_complete (boolean): True if suite has to be complete.
 
         """
         self.ecf_client.sync_local()
 
         suites = self.ecf_client.get_defs().suites
         for suite in suites:
-            if suite.name() in suite_list:
-                if check_if_complete:
-                    logger.info("State of {}: {}", suite.name(), suite.get_state())
-                    if suite.get_state() == ecflow.State.complete:
-                        logger.info("Removing complete suite {}", suite.name())
-                        self.ecf_client.delete(suite.name())
-                else:
-                    logger.info("Removing suite {}", suite.name())
-                    self.ecf_client.delete(suite.name())
+            suite_name = suite.name()
+            if suite_name in suite_list and (
+                not check_if_complete or self.suite_is_complete(suite)
+            ):
+                logger.info("Removing suite {}", suite_name)
+                self.ecf_client.delete(suite_name)
+                for directory in self.get_ecf_home_and_files(suite):
+                    if os.path.isdir(directory):
+                        shutil.rmtree(directory)
+                    else:
+                        logger.warning("{} does not exist", directory)
+
+    def get_ecf_home_and_files(self, suite):
+        """Get ECF_HOME and ECF_HOST of the suite.
+
+        Args:
+            suite (Ecflow suite): suite object.
+
+        Returns:
+            ecf_home (Path): Path to ECF_HOME.
+            ecf_files (Path): Path to ECF_FILES.
+        """
+        suite_name = suite.name()
+        ecf_home = Path(suite.find_variable("ECF_HOME").value())
+        ecf_files = Path(suite.find_variable("ECF_FILES").value())
+        if suite_name.startswith("DE_Impact_EHYPE"):
+            logger.info("ecf_files: {}", ecf_files.parents[2])
+            ecf_files = ecf_files.parents[2]
+
+        return Path(ecf_home / suite_name), Path(ecf_files / suite_name)
 
 
 class EcflowLogServer:

@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Introduce `deode remove` functionality. [\#1461](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1461) (@uandrae)
 - Introduce config macro expansion in `deode show` command. [\#1463](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1463) (@uandrae)
 
 ### Changed

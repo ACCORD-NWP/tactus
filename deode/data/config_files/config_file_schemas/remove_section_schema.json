@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "CleaningSection",
-    "description": "Model for validation of the cleaning configuration.",
+    "title": "RemoveSection",
+    "description": "Model for validation of the remove configuration.",
     "type": "object",
     "additionalProperties": true,
     "properties": {
@@ -49,24 +49,15 @@
                     "type": "boolean",
 		    "default": false
                 }
-            },
-            "oneOf": [
-                {
-                    "required": [
-                        "include",
-                        "ncycles_delay",
-                        "active"
-                    ]
-                },
-                {
-                    "required": [
-                        "include",
-                        "cleaning_delay",
-                        "cleaning_max_delay",
-                        "active"
-                    ]
-                }
-            ]
+            }
+        },
+        "remove_from_scheduler": {
+            "description": "Remove suite from the used scheduler.",
+            "type": "boolean"
+        },
+        "remove_not_completed_suites": {
+            "description": "Force removal of suites not completed",
+            "type": "boolean"
         },
         "Cleaning_example": {
             "type": "object",
@@ -78,9 +69,6 @@
             ]
         }
     },
-    "required": [
-        "defaults"
-    ],
     "$CLEANING_FOLDER_SETTINGS": {
         "path": {
             "description": "path to the folder where files will be cleaned",
@@ -120,7 +108,8 @@
         },
         "dry_run": {
             "description": "test cleaning without to  delete files",
-            "type": "boolean"
+            "type": "boolean",
+	    "default": true
         }
     }
 }
