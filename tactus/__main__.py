@@ -17,8 +17,8 @@ def main(argv=None):
     """Program's main routine."""
     args = get_parsed_args(argv=argv)
 
-    # Evaluate deode host and config paths
-    deode_host = DeodeHost().detect_deode_host()
+    # Evaluate tactus host and config paths
+    tactus_host = DeodeHost().detect_tactus_host()
     with contextlib.suppress(AttributeError):
         if args.config_data_dir is not None:
             for config_data_dir in args.config_data_dir[::-1]:
@@ -26,7 +26,7 @@ def main(argv=None):
     config = ParsedConfig.from_file(
         args.config_file,
         json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-        host=deode_host,
+        host=tactus_host,
     )
 
     with contextlib.suppress(KeyError):

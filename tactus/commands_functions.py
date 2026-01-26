@@ -19,7 +19,7 @@ from .cleaning import CleanDeode
 from .config_parser import BasicConfig, ConfigParserDefaults, ConfigPaths, ParsedConfig
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
 from .experiment import case_setup
-from .host_actions import DeodeHost, set_deode_home
+from .host_actions import DeodeHost, set_tactus_home
 from .logs import logger
 from .namelist import (
     NamelistComparator,
@@ -61,7 +61,7 @@ class RunTaskNamespace(argparse.Namespace):
     """Namespace for the 'run' command."""
 
     task: str
-    deode_home: str
+    tactus_home: str
     task_job: Path
     output: Path
     template_job: Path
@@ -79,7 +79,7 @@ def run_task(args: RunTaskNamespace, config: ParsedConfig):
     """
     logger.info("Prepare {}...", args.task)
 
-    deode_home = set_deode_home(config, args.deode_home)
+    tactus_home = set_tactus_home(config, args.tactus_home)
 
     cwd = Path.cwd()
 
@@ -90,7 +90,7 @@ def run_task(args: RunTaskNamespace, config: ParsedConfig):
     output = cwd / Path(f"{args.task}.log") if not args.output else args.output.resolve()
     template_job = args.template_job.resolve()
 
-    config = config.copy(update={"platform": {"deode_home": deode_home}})
+    config = config.copy(update={"platform": {"tactus_home": tactus_home}})
     config = config.copy(update=set_times(config))
 
     submission_defs = TaskSettings(config)
@@ -135,7 +135,7 @@ def create_exp(args, config):
     if known_hosts_file is None:
         known_hosts_file = ConfigPaths.path_from_subpath("known_hosts.yml")
 
-    host = DeodeHost(known_hosts_file=known_hosts_file).detect_deode_host()
+    host = DeodeHost(known_hosts_file=known_hosts_file).detect_tactus_host()
     output_file = args.output_file
     case = args.case
     mod_files = args.config_mods
@@ -171,8 +171,8 @@ def start_suite(args, config):
     Raises:
         SystemExit: If error occurs while transferring files.
     """
-    deode_home = set_deode_home(config, args.deode_home)
-    config = config.copy(update={"platform": {"deode_home": deode_home}})
+    tactus_home = set_tactus_home(config, args.tactus_home)
+    config = config.copy(update={"platform": {"tactus_home": tactus_home}})
     config = config.copy(update=set_times(config))
     platform = Platform(config)
     ecfvars = {
@@ -218,13 +218,13 @@ def start_suite(args, config):
     suite_name = Platform(config).substitute(suite_name)
     ecf_files_local = ecf_files
 
-    # Evaluate and update ecf_deode_home
-    ecf_deode_home = str(
+    # Evaluate and update ecf_tactus_home
+    ecf_tactus_home = str(
         Platform(config).evaluate(
-            config["scheduler.ecfvars.ecf_deode_home"], object_="tactus.os_utils"
+            config["scheduler.ecfvars.ecf_tactus_home"], object_="tactus.os_utils"
         )
     )
-    update = {"scheduler": {"ecfvars": {"ecf_deode_home": ecf_deode_home}}}
+    update = {"scheduler": {"ecfvars": {"ecf_tactus_home": ecf_tactus_home}}}
     config = config.copy(update=update)
 
     # Get the troika config file - in case defined in ecfvars, use that to allow
@@ -335,7 +335,7 @@ def doc_config(args, config: ParsedConfig):  # noqa ARG001
     now = datetime.datetime.now().isoformat(timespec="seconds")
     sys.stdout.write(
         f"""The following section was automatically generated running
-        `deode doc config` on {now}.\n\n"""
+        `tactus doc config` on {now}.\n\n"""
     )
     sys.stdout.write(config.json_schema.get_markdown_doc() + "\n")
 
@@ -401,7 +401,7 @@ def show_host(args, config):  # noqa ARG001
 
     """
     dh = DeodeHost()
-    logger.info("Current host: {}", dh.detect_deode_host())
+    logger.info("Current host: {}", dh.detect_tactus_host())
     logger.info("Known hosts (host, recognition method):")
     for host, pattern in dh.known_hosts.items():
         logger.info("{:>16}   {}", host, pattern)
@@ -513,8 +513,8 @@ def show_namelist(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
-    deode_home = set_deode_home(config, args.deode_home)
-    config = config.copy(update={"platform": {"deode_home": deode_home}})
+    tactus_home = set_tactus_home(config, args.tactus_home)
+    config = config.copy(update={"platform": {"tactus_home": tactus_home}})
     config = config.copy(update=set_times(config))
     config = config.copy(update=derived_variables(config))
 
@@ -535,7 +535,7 @@ def show_namelist(args, config):
 def show_paths(args, config):  # noqa ARG001
     """Implement the 'show_paths' command."""
     dh = DeodeHost()
-    ConfigPaths.print(args.config_file, dh.detect_deode_host())
+    ConfigPaths.print(args.config_file, dh.detect_tactus_host())
 
 
 def namelist_integrate(args, config):

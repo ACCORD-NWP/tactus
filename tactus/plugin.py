@@ -28,10 +28,10 @@ class DeodePluginRegistry:
         self.config_input = config
         self.config = self.get_registry_config()
         self.plugins: List[DeodePlugin] = []
-        self.deode_plugin()
+        self.tactus_plugin()
         self.load_plugins()
 
-    def deode_plugin(self):
+    def tactus_plugin(self):
         """Base DEODE plugin."""
         path = Path(tactus.__path__[0]).parent
         plugin = DeodePlugin("tactus", path)
@@ -117,10 +117,10 @@ class DeodePluginRegistryFromFile(DeodePluginRegistry):
 
 
 class DeodePluginRegistryFromConfig(DeodePluginRegistry):
-    """Create a registry from a deode config file."""
+    """Create a registry from a tactus config file."""
 
     def __init__(self, config):
-        """Construct a registry from a deode config.
+        """Construct a registry from a tactus config.
 
         Args:
             config (ParsedConfig): Deode config.

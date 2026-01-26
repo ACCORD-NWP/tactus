@@ -9,7 +9,7 @@ from tactus.host_actions import AmbigiousHostError, HostNotFoundError, SelectHos
 from tactus.logs import logger
 from tactus.scheduler import EcflowClient, EcflowServer, EcflowTask
 
-logger.enable("deode")
+logger.enable("tactus")
 
 
 def suite_name():

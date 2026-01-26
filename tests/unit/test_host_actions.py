@@ -6,23 +6,23 @@ import re
 
 import pytest
 
-from tactus.host_actions import DeodeHost, set_deode_home
+from tactus.host_actions import DeodeHost, set_tactus_home
 
 
-def test_set_deode_home(default_config):
-    deode_home = set_deode_home(default_config)
-    assert os.path.isdir(deode_home)
+def test_set_tactus_home(default_config):
+    tactus_home = set_tactus_home(default_config)
+    assert os.path.isdir(tactus_home)
 
 
-def test_set_deode_home_from_arg(default_config):
-    deode_home = set_deode_home(default_config, "foo")
-    assert deode_home == "foo"
+def test_set_tactus_home_from_arg(default_config):
+    tactus_home = set_tactus_home(default_config, "foo")
+    assert tactus_home == "foo"
 
 
 @pytest.fixture()
 def _module_mockers(module_mocker):
     def new_socket_gethostname():
-        return "deode-test"
+        return "tactus-test"
 
     module_mocker.patch("socket.gethostname", new=new_socket_gethostname)
 
@@ -38,47 +38,47 @@ def _module_mockers_yaml(module_mocker):
 @pytest.mark.usefixtures("_module_mockers")
 def test_by_host():
     dh = DeodeHost()
-    dh.known_hosts = {"by_host": {"hostname": "deode-test"}}
-    deode_host = dh.detect_deode_host()
-    assert deode_host == "by_host"
+    dh.known_hosts = {"by_host": {"hostname": "tactus-test"}}
+    tactus_host = dh.detect_tactus_host()
+    assert tactus_host == "by_host"
 
 
 def test_by_env():
     dh = DeodeHost()
     dh.known_hosts = {"by_env": {"env": {"DEODE_HOST_TESTENV": "foo"}}}
-    deode_host = dh.detect_deode_host()
-    assert deode_host == "by_env"
+    tactus_host = dh.detect_tactus_host()
+    assert tactus_host == "by_env"
 
 
-def test_from_env_deode_host():
+def test_from_env_tactus_host():
     os.environ["DEODE_HOST"] = "bar"
     dh = DeodeHost()
     dh.known_hosts = {}
-    deode_host = dh.detect_deode_host()
-    assert deode_host == "bar"
+    tactus_host = dh.detect_tactus_host()
+    assert tactus_host == "bar"
     del os.environ["DEODE_HOST"]
 
 
 def test_ambiguous_host():
     dh = DeodeHost()
-    dh.hostname = "deode-test"
+    dh.hostname = "tactus-test"
     dh.known_hosts = {
-        "by_host": {"hostname": "deode-test"},
+        "by_host": {"hostname": "tactus-test"},
         "by_env": {"env": {"DEODE_HOST_TESTENV": "foo"}},
     }
     os.environ["DEODE_HOST_TESTENV"] = "foo"
     with pytest.raises(
         RuntimeError, match=re.escape("Ambiguous matches: ['by_host', 'by_env']")
     ):
-        dh.detect_deode_host()
+        dh.detect_tactus_host()
     del os.environ["DEODE_HOST_TESTENV"]
 
 
 def test_non_existing_detect_method():
     dh = DeodeHost()
     dh.known_hosts = {"erroneous": {"foo": "bar"}}
-    with pytest.raises(RuntimeError, match="No deode-host detection using foo"):
-        dh.detect_deode_host()
+    with pytest.raises(RuntimeError, match="No tactus-host detection using foo"):
+        dh.detect_tactus_host()
 
 
 @pytest.mark.usefixtures("_module_mockers_yaml")

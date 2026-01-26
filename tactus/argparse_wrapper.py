@@ -47,9 +47,9 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     common_parser = argparse.ArgumentParser(add_help=False)
 
     common_parser.add_argument(
-        "--deode-home",
+        "--tactus-home",
         default=None,
-        help="Specify deode_home to override automatic detection",
+        help="Specify tactus_home to override automatic detection",
     )
     common_parser.add_argument(
         "--config-file",

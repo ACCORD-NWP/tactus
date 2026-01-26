@@ -8,7 +8,7 @@ import pytest
 from tactus.config_parser import ParsedConfig
 from tactus.derived_variables import set_times
 from tactus.submission import TaskSettings
-from tactus.suites.deode import DeodeSuiteDefinition
+from tactus.suites.tactus import DeodeSuiteDefinition
 
 
 @pytest.fixture(scope="module")
@@ -82,7 +82,7 @@ class TestSuite:
                     }
                 },
                 "platform": {
-                    "deode_home": f"{os.path.dirname(__file__)}/../..",
+                    "tactus_home": f"{os.path.dirname(__file__)}/../..",
                     "unix_group": "",
                     "mirrorglobalDT": {"remote_path": "@YYYY@/@HH@mm@"},
                 },

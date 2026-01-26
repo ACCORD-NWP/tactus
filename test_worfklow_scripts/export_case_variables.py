@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""This script takes one commnad line input parameter - deode configuration file.
+"""This script takes one commnad line input parameter - tactus configuration file.
 
 poetry run test_worfklow_scripts/export_case_variables.py config_file
 
@@ -16,10 +16,10 @@ from tactus.toolbox import Platform
 
 config_file = sys.argv[1]
 
-deode_host = DeodeHost().detect_deode_host()
+tactus_host = DeodeHost().detect_tactus_host()
 
 config = ParsedConfig.from_file(
-    config_file, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA, host=deode_host
+    config_file, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA, host=tactus_host
 )
 
 ecflow_port = Platform(config).substitute(config["scheduler.ecfvars.ecf_port"])
