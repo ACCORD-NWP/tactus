@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 from tactus.config_parser import ConfigParserDefaults, ParsedConfig
-from tactus.host_actions import DeodeHost
+from tactus.host_actions import TactusHost
 
 
 class MockObject(object):
@@ -102,7 +102,7 @@ def tmp_directory(tmp_path_factory):
 @pytest.fixture(scope="module")
 def default_config(tmp_directory):
     """Return a parsed config to be used for unit tests."""
-    deode_host = DeodeHost().detect_deode_host(use_default=False)
+    deode_host = TactusHost().detect_deode_host(use_default=False)
     if deode_host is None:
         deode_host = "pytest"
 

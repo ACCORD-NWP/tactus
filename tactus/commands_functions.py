@@ -19,7 +19,7 @@ from .cleaning import CleanDeode
 from .config_parser import BasicConfig, ConfigParserDefaults, ConfigPaths, ParsedConfig
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
 from .experiment import case_setup
-from .host_actions import DeodeHost, set_tactus_home
+from .host_actions import TactusHost, set_tactus_home
 from .logs import logger
 from .namelist import (
     NamelistComparator,
@@ -135,7 +135,7 @@ def create_exp(args, config):
     if known_hosts_file is None:
         known_hosts_file = ConfigPaths.path_from_subpath("known_hosts.yml")
 
-    host = DeodeHost(known_hosts_file=known_hosts_file).detect_tactus_host()
+    host = TactusHost(known_hosts_file=known_hosts_file).detect_tactus_host()
     output_file = args.output_file
     case = args.case
     mod_files = args.config_mods
@@ -400,7 +400,7 @@ def show_host(args, config):  # noqa ARG001
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
-    dh = DeodeHost()
+    dh = TactusHost()
     logger.info("Current host: {}", dh.detect_tactus_host())
     logger.info("Known hosts (host, recognition method):")
     for host, pattern in dh.known_hosts.items():
@@ -534,7 +534,7 @@ def show_namelist(args, config):
 
 def show_paths(args, config):  # noqa ARG001
     """Implement the 'show_paths' command."""
-    dh = DeodeHost()
+    dh = TactusHost()
     ConfigPaths.print(args.config_file, dh.detect_tactus_host())
 
 

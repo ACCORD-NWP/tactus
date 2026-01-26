@@ -7,7 +7,7 @@ import ecflow as ecf
 from tactus.config_parser import ConfigParserDefaults, GeneralConstants, ParsedConfig
 from tactus.derived_variables import derived_variables
 from tactus.eps.eps_setup import get_member_config
-from tactus.host_actions import DeodeHost
+from tactus.host_actions import TactusHost
 from tactus.logs import LogDefaults, LoggerHandlers, logger
 from tactus.scheduler import EcflowClient, EcflowServer, EcflowTask
 from tactus.submission import ProcessorLayout
@@ -63,7 +63,7 @@ def parse_ecflow_vars():
 def default_main(kwargs: dict):
     """Ecflow container default method."""
     config_file = kwargs.get("CONFIG")
-    deode_host = DeodeHost().detect_deode_host()
+    deode_host = TactusHost().detect_deode_host()
     config = ParsedConfig.from_file(
         config_file,
         json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
