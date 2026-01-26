@@ -10,7 +10,7 @@ from typing import Optional
 from tactus.config_parser import ParsedConfig
 from tactus.derived_variables import derived_variables
 from tactus.logs import logger
-from tactus.os_utils import deodemakedirs
+from tactus.os_utils import tactusmakedirs
 from tactus.plugin import DeodePluginRegistryFromConfig
 from tactus.tasks.discover_task import available_tasks
 from tactus.toolbox import FileManager, Platform
@@ -295,7 +295,7 @@ class TaskSettings(object):
         logger.debug(interpreter)
         dir_name = task_job.resolve().parent
 
-        deodemakedirs(dir_name, unixgroup=self.unix_group)
+        tactusmakedirs(dir_name, unixgroup=self.unix_group)
 
         with open(task_job, mode="w", encoding="utf-8") as file_handler:
             file_handler.write("#!/bin/bash\n")

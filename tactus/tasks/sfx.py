@@ -9,7 +9,7 @@ from tactus.config_parser import ConfigPaths
 from tactus.datetime_utils import as_datetime
 from tactus.logs import logger
 from tactus.namelist import NamelistGenerator
-from tactus.os_utils import deodemakedirs
+from tactus.os_utils import tactusmakedirs
 from tactus.tasks.base import Task
 from tactus.tasks.batch import BatchJob
 
@@ -74,7 +74,7 @@ class PySurfexBaseTask(Task):
 
         # Store in climdir for reference
         climdir = self.platform.get_system_value("climdir")
-        deodemakedirs(climdir)
+        tactusmakedirs(climdir)
         self._dump_config(f"{climdir}/system.json", exp_file_paths)
         self._dump_config(f"{climdir}/domain.json", conf_proj_dict)
 
@@ -182,7 +182,7 @@ class Prep(PySurfexBaseTask):
 
         if not os.path.exists(output) or self.force:
             binary = self.get_binary("PREP")
-            deodemakedirs(self.archive)
+            tactusmakedirs(self.archive)
 
             bd_has_surfex = self.config["boundaries.bd_has_surfex"]
             namelist_task = "prep"

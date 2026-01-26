@@ -6,7 +6,7 @@ import shutil
 
 from ..logs import logger
 from ..namelist import NamelistGenerator
-from ..os_utils import deodemakedirs
+from ..os_utils import tactusmakedirs
 from .base import Task
 from .batch import BatchJob
 
@@ -349,7 +349,7 @@ class E923Constant(E923):
         Define run sequence.
 
         """
-        deodemakedirs(self.climdir, unixgroup=self.unix_group)
+        tactusmakedirs(self.climdir, unixgroup=self.unix_group)
 
         logger.debug("Constant file:{}", self.constant_file)
 

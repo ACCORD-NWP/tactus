@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from ..datetime_utils import as_datetime
-from ..os_utils import deodemakedirs
+from ..os_utils import tactusmakedirs
 from .base import EcflowSuiteCron, EcflowSuiteFamily, EcflowSuiteTask, SuiteDefinition
 
 
@@ -62,7 +62,7 @@ class DeodeCleaningSuiteDefinition(SuiteDefinition):
             )
 
         unix_group = self.platform.get_platform_value("unix_group")
-        deodemakedirs(self.joboutdir, unixgroup=unix_group)
+        tactusmakedirs(self.joboutdir, unixgroup=unix_group)
 
         input_template = (
             Path(__file__).parent.resolve() / "../templates/ecflow/default.py"

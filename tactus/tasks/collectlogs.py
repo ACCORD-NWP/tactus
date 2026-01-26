@@ -6,7 +6,7 @@ import tarfile
 
 from tactus.archive import Archive
 from tactus.logs import logger
-from tactus.os_utils import Search, deodemakedirs
+from tactus.os_utils import Search, tactusmakedirs
 from tactus.tasks.base import Task
 
 
@@ -71,7 +71,7 @@ class CollectLogs(Task):
 
     def execute(self):
         """Execute collect logs ."""
-        deodemakedirs(self.logs, unixgroup=self.unix_group)
+        tactusmakedirs(self.logs, unixgroup=self.unix_group)
 
         # Create the tarfile
         logger.info("Create {}", self.tarfile)

@@ -13,7 +13,7 @@ from ..derived_variables import check_fullpos_namelist
 from ..initial_conditions import InitialConditions
 from ..logs import logger
 from ..namelist import NamelistGenerator
-from ..os_utils import deodemakedirs
+from ..os_utils import tactusmakedirs
 from .base import Task
 from .batch import BatchJob
 from .iomerge import IOMERGE_FILETYPES
@@ -292,7 +292,7 @@ class Forecast(PySurfexBaseTask):
         # Store the output
         # Must happen before the forecast starts, so the io_merge tasks
         #   can write to it.
-        deodemakedirs(self.archive, unixgroup=self.unix_group)
+        tactusmakedirs(self.archive, unixgroup=self.unix_group)
 
         # Run MASTERODB
         batch = BatchJob(os.environ, wrapper=self.platform.substitute(self.wrapper))
@@ -324,7 +324,7 @@ class PrepareCycle(Task):
         Task.__init__(self, config, self.__class__.__name__)
 
         self.archive = self.platform.get_system_value("archive")
-        deodemakedirs(
+        tactusmakedirs(
             self.archive, unixgroup=self.platform.get_platform_value("unix_group")
         )
 

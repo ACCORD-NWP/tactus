@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from tactus.os_utils import deodemakedirs
+from tactus.os_utils import tactusmakedirs
 from tactus.suites.base import EcflowSuiteTask, SuiteDefinition
 from tactus.suites.deode_suite_components import StaticDataFamily, TimeDependentFamily
 
@@ -29,7 +29,7 @@ class DeodeSuiteDefinition(SuiteDefinition):
         SuiteDefinition.__init__(self, config, dry_run=dry_run)
         # Construct directories
         unix_group = self.platform.get_platform_value("unix_group")
-        deodemakedirs(self.joboutdir, unixgroup=unix_group)
+        tactusmakedirs(self.joboutdir, unixgroup=unix_group)
 
         # Get the default input template path
         input_template = (

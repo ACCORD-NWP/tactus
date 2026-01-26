@@ -19,7 +19,7 @@ from tactus.datetime_utils import as_datetime, as_timedelta
 from tactus.general_utils import recursive_substitute
 from tactus.host_actions import HostNotFoundError, SelectHost
 from tactus.logs import logger
-from tactus.os_utils import deodemakedirs
+from tactus.os_utils import tactusmakedirs
 from tactus.scheduler import EcflowServer
 from tactus.tasks.base import Task
 from tactus.tasks.batch import BatchJob
@@ -159,7 +159,7 @@ class EPSUpscaling(ImpactModel):
                 prefix="eps_upscaling_", dir=path, delete=True
             ).name
         )
-        deodemakedirs(tmp_path, unixgroup=self.config.get("platform.unix_group"))
+        tactusmakedirs(tmp_path, unixgroup=self.config.get("platform.unix_group"))
 
         # Update communicate config with tmp_path
         config_ = self.load()
