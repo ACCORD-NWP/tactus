@@ -12,7 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, Path("..").resolve().as_posix())
 
-project = "Deode Workflow Docs"
+project = "tactus Docs"
 project_copyright = "2023, The WP5.1 dev group in the DE_330 project"
 author = "The WP5.1 development group in the DE_330 project"
 

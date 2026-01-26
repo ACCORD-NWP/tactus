@@ -267,10 +267,10 @@ def strip_off_mount_path(path: Union[str, Path]) -> Path:
         ValueError: If the parent of the user directory only contains 1 underscore.
 
     Example:
-        >>> strip_off_mount_path("/etc/ecmwf/nfs/dh1_home_b/$USER/Deode-Workflow/deode")
-        Path("/home/$USER/Deode-Workflow/deode")
-        >>> strip_off_mount_path("/etc/ecmwf/nfs/dh1_10_perm_b/$USER/Deode-Workflow")
-        Path("/perm/$USER/Deode-Workflow")
+        >>> strip_off_mount_path("/etc/ecmwf/nfs/dh1_home_b/$USER/tactus/deode")
+        Path("/home/$USER/tactus/deode")
+        >>> strip_off_mount_path("/etc/ecmwf/nfs/dh1_10_perm_b/$USER/tactus")
+        Path("/perm/$USER/tactus")
     """
     file_parts = Path(path).parts
     user = os.environ.get("USER")
@@ -322,7 +322,7 @@ def resolve_path_relative_to_package(path: Path, ignore_errors: bool = False) ->
     path = path.expanduser().resolve()
     # First check if path exists as is
     if not os.path.exists(path):
-        # Get path relative to package. Needed when Deode-Workflow is installed as
+        # Get path relative to package. Needed when tactus is installed as
         # a site-package e.g. when creating plugins.
         if GeneralConstants.PACKAGE_NAME in path.parts:
             # Find last occurence of package name in path
