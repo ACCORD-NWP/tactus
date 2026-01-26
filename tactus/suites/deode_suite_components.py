@@ -1246,7 +1246,7 @@ class PostCycleFamily(EcflowSuiteFamily):
 
 
 class TimeDependentFamily(EcflowSuiteFamily):
-    """Class for creating the time dependent part of a DW suite."""
+    """Class for creating the time dependent part of a tactus suite."""
 
     def __init__(
         self,
