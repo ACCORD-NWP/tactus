@@ -8,7 +8,7 @@ import socket
 
 from ..config_parser import ConfigParserDefaults
 from ..logs import logger
-from ..os_utils import deodemakedirs
+from ..os_utils import tactusmakedirs
 from ..toolbox import FileManager
 
 
@@ -129,7 +129,7 @@ class Task(object):
         if target is None:
             target = self.wrk
         logdir = os.path.join(target, "logs", self.name)
-        deodemakedirs(logdir, unixgroup=self.unix_group)
+        tactusmakedirs(logdir, unixgroup=self.unix_group)
 
         if isinstance(files, str):
             self.fmanager.output(files, logdir, provider_id="copy")
@@ -139,11 +139,11 @@ class Task(object):
 
     def create_wrkdir(self):
         """Create a cycle working directory."""
-        deodemakedirs(self.wrk, unixgroup=self.unix_group)
+        tactusmakedirs(self.wrk, unixgroup=self.unix_group)
 
     def create_wdir(self):
         """Create task working directory and check for unix group and set permissions."""
-        deodemakedirs(self.wdir, unixgroup=self.unix_group)
+        tactusmakedirs(self.wdir, unixgroup=self.unix_group)
 
     def change_to_wdir(self):
         """Change to task working dir."""

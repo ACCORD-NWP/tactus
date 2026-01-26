@@ -7,7 +7,7 @@ import sys
 from ..domain_utils import get_domain
 from ..geo_utils import Projection, Projstring
 from ..logs import logger
-from ..os_utils import Search, deodemakedirs
+from ..os_utils import Search, tactusmakedirs
 from .base import Task
 
 
@@ -192,7 +192,7 @@ class Topography(Task):
         """
         climdir = self.platform.get_system_value("climdir")
         unix_group = self.platform.get_platform_value("unix_group")
-        deodemakedirs(climdir, unixgroup=unix_group)
+        tactusmakedirs(climdir, unixgroup=unix_group)
 
         if self.topo_source == "gmted2010":
             # Process GMTED2010 geotif files
@@ -448,7 +448,7 @@ class Soil(Task):
 
         climdir = self.platform.get_system_value("climdir")
         unix_group = self.platform.get_platform_value("unix_group")
-        deodemakedirs(climdir, unixgroup=unix_group)
+        tactusmakedirs(climdir, unixgroup=unix_group)
         for subarea_file in soilgrid_tif_subarea_files:
             if subarea_file.startswith("SNDPPT"):
                 ds = gdal.Open(subarea_file)
