@@ -6,7 +6,7 @@ import re
 
 import pytest
 
-from tactus.host_actions import DeodeHost, set_tactus_home
+from tactus.host_actions import TactusHost, set_tactus_home
 
 
 def test_set_tactus_home(default_config):
@@ -37,14 +37,14 @@ def _module_mockers_yaml(module_mocker):
 
 @pytest.mark.usefixtures("_module_mockers")
 def test_by_host():
-    dh = DeodeHost()
+    dh = TactusHost()
     dh.known_hosts = {"by_host": {"hostname": "tactus-test"}}
     tactus_host = dh.detect_tactus_host()
     assert tactus_host == "by_host"
 
 
 def test_by_env():
-    dh = DeodeHost()
+    dh = TactusHost()
     dh.known_hosts = {"by_env": {"env": {"DEODE_HOST_TESTENV": "foo"}}}
     tactus_host = dh.detect_tactus_host()
     assert tactus_host == "by_env"
@@ -52,7 +52,7 @@ def test_by_env():
 
 def test_from_env_tactus_host():
     os.environ["DEODE_HOST"] = "bar"
-    dh = DeodeHost()
+    dh = TactusHost()
     dh.known_hosts = {}
     tactus_host = dh.detect_tactus_host()
     assert tactus_host == "bar"
@@ -60,7 +60,7 @@ def test_from_env_tactus_host():
 
 
 def test_ambiguous_host():
-    dh = DeodeHost()
+    dh = TactusHost()
     dh.hostname = "tactus-test"
     dh.known_hosts = {
         "by_host": {"hostname": "tactus-test"},
@@ -75,7 +75,7 @@ def test_ambiguous_host():
 
 
 def test_non_existing_detect_method():
-    dh = DeodeHost()
+    dh = TactusHost()
     dh.known_hosts = {"erroneous": {"foo": "bar"}}
     with pytest.raises(RuntimeError, match="No tactus-host detection using foo"):
         dh.detect_tactus_host()
@@ -84,4 +84,4 @@ def test_non_existing_detect_method():
 @pytest.mark.usefixtures("_module_mockers_yaml")
 def test_load_known_hosts_handles_none():
     with pytest.raises(RuntimeError, match="No hosts available in"):
-        DeodeHost()
+        TactusHost()

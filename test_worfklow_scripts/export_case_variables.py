@@ -11,12 +11,12 @@ import sys
 
 from tactus.config_parser import ConfigParserDefaults, ParsedConfig
 from tactus.derived_variables import set_times
-from tactus.host_actions import DeodeHost, SelectHost
+from tactus.host_actions import TactusHost, SelectHost
 from tactus.toolbox import Platform
 
 config_file = sys.argv[1]
 
-tactus_host = DeodeHost().detect_tactus_host()
+tactus_host = TactusHost().detect_tactus_host()
 
 config = ParsedConfig.from_file(
     config_file, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA, host=tactus_host

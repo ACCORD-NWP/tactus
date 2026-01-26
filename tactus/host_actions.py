@@ -14,11 +14,11 @@ from .logs import logger
 from .os_utils import ping
 
 
-class DeodeHost:
-    """DeodeHost object."""
+class TactusHost:
+    """TactusHost object."""
 
     def __init__(self, known_hosts=None, known_hosts_file=None):
-        """Constructs the DeodeHost object."""
+        """Constructs the TactusHost object."""
         self.known_hosts = self._load_known_hosts(
             known_hosts=known_hosts, known_hosts_file=known_hosts_file
         )

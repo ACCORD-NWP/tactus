@@ -5,7 +5,7 @@ import os
 from tactus.config_parser import ConfigParserDefaults, GeneralConstants, ParsedConfig
 from tactus.derived_variables import derived_variables, set_times
 from tactus.eps.eps_setup import get_member_config
-from tactus.host_actions import DeodeHost
+from tactus.host_actions import TactusHost
 from tactus.logs import logger  # Use tactus's own configs for logger
 from tactus.submission import ProcessorLayout, TaskSettings
 from tactus.tasks.discover_task import get_task
@@ -21,7 +21,7 @@ def default_main(task: str, config_file: str, tactus_home: str):
         config_file (str): Config file
         tactus_home(str): Deode home path
     """
-    tactus_host = DeodeHost().detect_tactus_host()
+    tactus_host = TactusHost().detect_tactus_host()
     logger.info("Read config from {}", config_file)
     config = ParsedConfig.from_file(
         config_file,

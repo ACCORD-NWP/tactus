@@ -5,7 +5,7 @@ import contextlib
 from . import GeneralConstants
 from .argparse_wrapper import get_parsed_args
 from .config_parser import ConfigParserDefaults, ConfigPaths, ParsedConfig
-from .host_actions import DeodeHost
+from .host_actions import TactusHost
 from .logs import LoggerHandlers, log_elapsed_time, logger
 
 # Enable logger if the project is being used as an application
@@ -18,7 +18,7 @@ def main(argv=None):
     args = get_parsed_args(argv=argv)
 
     # Evaluate tactus host and config paths
-    tactus_host = DeodeHost().detect_tactus_host()
+    tactus_host = TactusHost().detect_tactus_host()
     with contextlib.suppress(AttributeError):
         if args.config_data_dir is not None:
             for config_data_dir in args.config_data_dir[::-1]:
