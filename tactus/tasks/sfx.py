@@ -4,14 +4,14 @@ import os
 
 from pysurfex.cli import pgd, prep
 
-from deode.boundary_utils import Boundary
-from deode.config_parser import ConfigPaths
-from deode.datetime_utils import as_datetime
-from deode.logs import logger
-from deode.namelist import NamelistGenerator
-from deode.os_utils import deodemakedirs
-from deode.tasks.base import Task
-from deode.tasks.batch import BatchJob
+from tactus.boundary_utils import Boundary
+from tactus.config_parser import ConfigPaths
+from tactus.datetime_utils import as_datetime
+from tactus.logs import logger
+from tactus.namelist import NamelistGenerator
+from tactus.os_utils import deodemakedirs
+from tactus.tasks.base import Task
+from tactus.tasks.batch import BatchJob
 
 
 class PySurfexBaseTask(Task):

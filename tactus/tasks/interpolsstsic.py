@@ -3,7 +3,7 @@
 import ast
 import os
 
-from deode.boundary_utils import Boundary
+from tactus.boundary_utils import Boundary
 
 from ..datetime_utils import as_datetime
 from ..logs import logger

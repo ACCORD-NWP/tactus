@@ -35,8 +35,7 @@ from tactus.mars_utils import (
 from tactus.os_utils import deodemakedirs, join_files, list_files_join
 from tactus.tasks.base import Task
 from tactus.tasks.batch import BatchJob
-
-from ..scheduler import EcflowServer
+from tactus.scheduler import EcflowServer
 
 
 class Marsprep(Task):
