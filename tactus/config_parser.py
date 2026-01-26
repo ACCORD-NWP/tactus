@@ -41,7 +41,7 @@ class ConfigParserDefaults(QuasiConstant):
     PACKAGE_CONFIG_PATH = (CONFIG_DIRECTORY / "config.toml").resolve(strict=True)
     # Define the default path to the config file
     try:
-        CONFIG_PATH = Path(os.getenv("DEODE_CONFIG_PATH", "config.toml"))
+        CONFIG_PATH = Path(os.getenv("TACTUS_CONFIG_PATH", "config.toml"))
         CONFIG_PATH = CONFIG_PATH.resolve(strict=True)
     except FileNotFoundError:
         CONFIG_PATH = PACKAGE_CONFIG_PATH
@@ -54,7 +54,7 @@ class ConfigParserDefaults(QuasiConstant):
 class ConfigPaths:
     """Support multiple path search."""
 
-    _env_data_paths = os.getenv("DEODE_CONFIG_DATA_DIR")
+    _env_data_paths = os.getenv("TACTUS_CONFIG_DATA_DIR")
     CONFIG_DATA_SEARCHPATHS = (
         _env_data_paths.split(":") if _env_data_paths is not None else []
     )
@@ -62,7 +62,7 @@ class ConfigPaths:
         path for path in CONFIG_DATA_SEARCHPATHS if not os.path.isabs(path)
     ]
     if len(erroneous_paths) > 0:
-        raise RuntimeError(f"DEODE_CONFIG_DATA_DIR is not absolute: {erroneous_paths}")
+        raise RuntimeError(f"TACTUS_CONFIG_DATA_DIR is not absolute: {erroneous_paths}")
     CONFIG_DATA_SEARCHPATHS.append(ConfigParserDefaults.DATA_DIRECTORY)
 
     @staticmethod
@@ -126,7 +126,7 @@ class ConfigPaths:
         path_info_main = path_info(list_paths, dirmap)
         path_info_config = path_info(list_config_paths, dirmap)
 
-        logger.info("DEODE paths for host={}", host)
+        logger.info("tactus paths for host={}", host)
         logger.info(" Package directory: {}", GeneralConstants.PACKAGE_DIRECTORY)
         logger.info(
             " Searchpaths: {}", [str(x) for x in ConfigPaths.CONFIG_DATA_SEARCHPATHS]

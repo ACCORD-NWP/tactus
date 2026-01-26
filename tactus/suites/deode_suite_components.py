@@ -1,4 +1,4 @@
-"""Module to create the different parts of the DEODE ecFlow suite."""
+"""Module to create the different parts of the tactus ecFlow suite."""
 
 from datetime import datetime, timedelta
 from typing import Generator, List, Optional, Tuple
