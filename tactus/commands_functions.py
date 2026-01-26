@@ -196,7 +196,7 @@ def start_suite(args, config):
     ecf_user = config["scheduler.ecfvars.ecf_user"]
     ecf_remoteuser = config["scheduler.ecfvars.ecf_remoteuser"]
 
-    suite_def = config.get("suite_control.suite_definition", "DeodeSuiteDefinition")
+    suite_def = config.get("suite_control.suite_definition", "TactusSuiteDefinition")
 
     logger.info("ecf_host: {}", ecf_host)
     logger.info("ecf_jobout: {}", joboutdir)
