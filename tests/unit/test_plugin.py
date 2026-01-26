@@ -42,9 +42,9 @@ def test_plugin(tmp_directory, default_config):
 
     reg = DeodePluginRegistry()
     for plg in reg.plugins:
-        if plg.name == "deode":
-            assert Path(tactus.__path__[0]).parent / "deode/tasks" == plg.tasks_path
-            assert Path(tactus.__path__[0]).parent / "deode/suites" == plg.suites_path
+        if plg.name == "tactus":
+            assert Path(tactus.__path__[0]).parent / "tactus/tasks" == plg.tasks_path
+            assert Path(tactus.__path__[0]).parent / "tactus/suites" == plg.suites_path
         elif plg.name == "extension":
             assert tasks_dir == plg.tasks_path
             assert suites_dir == plg.suites_path
@@ -54,9 +54,9 @@ def test_plugin(tmp_directory, default_config):
     reg.save_registry(reg_config_file)
     reg = DeodePluginRegistryFromFile(reg_config_file)
     for plg in reg.plugins:
-        if plg.name == "deode":
-            assert Path(tactus.__path__[0]).parent / "deode/tasks" == plg.tasks_path
-            assert Path(tactus.__path__[0]).parent / "deode/suites" == plg.suites_path
+        if plg.name == "tactus":
+            assert Path(tactus.__path__[0]).parent / "tactus/tasks" == plg.tasks_path
+            assert Path(tactus.__path__[0]).parent / "tactus/suites" == plg.suites_path
         elif plg.name == "extension":
             assert tasks_dir == plg.tasks_path
             assert suites_dir == plg.suites_path
@@ -68,9 +68,9 @@ def test_plugin(tmp_directory, default_config):
     config = config.copy(update=update)
     reg = DeodePluginRegistryFromConfig(config)
     for plg in reg.plugins:
-        if plg.name == "deode":
-            assert Path(tactus.__path__[0]).parent / "deode/tasks" == plg.tasks_path
-            assert Path(tactus.__path__[0]).parent / "deode/suites" == plg.suites_path
+        if plg.name == "tactus":
+            assert Path(tactus.__path__[0]).parent / "tactus/tasks" == plg.tasks_path
+            assert Path(tactus.__path__[0]).parent / "tactus/suites" == plg.suites_path
         elif plg.name == "extension":
             assert tasks_dir == plg.tasks_path
             assert suites_dir == plg.suites_path
@@ -83,8 +83,8 @@ def test_empty_config():
     reg = DeodePluginRegistry()
 
     for plg in reg.plugins:
-        assert Path(tactus.__path__[0]).parent / "deode/tasks" == plg.tasks_path
-        assert Path(tactus.__path__[0]).parent / "deode/suites" == plg.suites_path
+        assert Path(tactus.__path__[0]).parent / "tactus/tasks" == plg.tasks_path
+        assert Path(tactus.__path__[0]).parent / "tactus/suites" == plg.suites_path
 
 
 def test_tasks(tmp_directory):
@@ -100,5 +100,5 @@ def test_tasks(tmp_directory):
     assert "myextension" in known_tasks
 
     known_suites = available_suites(reg)
-    assert "deodesuitedefinition" in known_suites
+    assert "tactussuitedefinition" in known_suites
     assert "myextension" in known_suites

@@ -1,4 +1,4 @@
-"""Clean deode file systems."""
+"""Clean tactus file systems."""
 
 import os
 import re

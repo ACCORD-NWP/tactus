@@ -1,4 +1,4 @@
-"""Clean deode file systems."""
+"""Clean tactus file systems."""
 
 
 from tactus.cleaning import CleanDeode

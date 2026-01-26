@@ -43,7 +43,7 @@ def test_domain():
 @pytest.fixture()
 def default_config_dir():
     rootdir = f"{os.path.dirname(__file__)}/../.."
-    return f"{rootdir}/deode/data/config_files"
+    return f"{rootdir}/tactus/data/config_files"
 
 
 def test_save_config(tmp_directory: Path, default_config):
