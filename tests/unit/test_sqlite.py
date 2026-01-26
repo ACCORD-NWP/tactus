@@ -22,7 +22,7 @@ class TestExtractSQLite:
     sqlite_template = "FCTABLE_{PP}_{YYYY}{MM}_{HH}.sqlite"
     fcdate = datetime.datetime.strptime("20230915T00", "%Y%m%dT%H")
 
-    model_name = "DEODE"
+    model_name = "tactus"
     weights = None
     basetime = datetime.datetime.strptime("20230915T00", "%Y%m%dT%H")
     infile_template = "mock_gribfile"

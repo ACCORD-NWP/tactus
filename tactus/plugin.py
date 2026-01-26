@@ -32,7 +32,7 @@ class DeodePluginRegistry:
         self.load_plugins()
 
     def tactus_plugin(self):
-        """Base DEODE plugin."""
+        """Base tactus plugin."""
         path = Path(tactus.__path__[0]).parent
         plugin = DeodePlugin("tactus", path)
         self.register_plugin(plugin)

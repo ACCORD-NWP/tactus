@@ -614,7 +614,7 @@ class Platform:
 class FileManager:
     """FileManager class.
 
-    Default DEODE provider.
+    Default tactus provider.
 
     Platform specific.
 
