@@ -105,6 +105,7 @@
   WALLTIME = "#SBATCH --time=06:00:00"
 
 [submission.task_exceptions.Pgd]
+  NPROC = 2
   WRAPPER = "srun -n @NPROC@"
 
 [submission.task_exceptions.Pgd.BATCH]
@@ -197,6 +198,7 @@
     "E923Update",
     "IOmerge",
     "InterpolSstSic",
+    "GenerateWfpTabFile",
   ]
   WRAPPER = "srun"
 

@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from tactus.cleaning import CleanDeode
+from tactus.cleaning import CleanDeode, wipe_ecfs
 from tactus.datetime_utils import as_datetime
 from tactus.derived_variables import set_times
 
@@ -23,6 +23,14 @@ def basic_config(default_config):
     config = default_config
     config = config.copy(update=set_times(config))
     return config
+
+
+@pytest.fixture()
+def _module_mockers(module_mocker):
+    def new_subprocess_check_output(infile, text):  # noqa ARG001
+        return "foo"
+
+    module_mocker.patch("subprocess.check_output", new=new_subprocess_check_output)
 
 
 def test_defaults(basic_config):
@@ -64,10 +72,18 @@ def test_basetime(basic_config):
     cleaner.prep_cleaning({}, basetime)
 
 
+@pytest.mark.usefixtures("_module_mockers")
+def test_wipe_ecfs():
+    with pytest.raises(RuntimeError, match="Error running command"):
+        wipe_ecfs("foo")
+
+
 def test_full_cleaning(tmpdir, basic_config):
     config = basic_config
     path = f"{tmpdir}/deode"
     os.makedirs(path, exist_ok=True)
+    path2 = f"{tmpdir}/deode_remove_dir"
+    os.makedirs(path2, exist_ok=True)
 
     for f in ["ELS", "ICMSHTEST"]:
         Path(f"{path}/{f}").touch()
@@ -80,6 +96,17 @@ def test_full_cleaning(tmpdir, basic_config):
             "exclude": "(.*)ELS(.*)",
             "include": "(.*)",
         },
+        "ecfs_test": {
+            "active": True,
+            "dry_run": True,
+            "ecfs_prefix": "ecfoo",
+            "wipe": True,
+        },
+        "ecflow_tests": {
+            "active": True,
+            "dry_run": True,
+            "remove_from_scheduler": True,
+        },
         "full_test": {
             "active": True,
             "dry_run": False,
@@ -87,13 +114,21 @@ def test_full_cleaning(tmpdir, basic_config):
             "exclude": "(.*)ELS(.*)",
             "include": "(.*)",
         },
+        "wipe_test": {
+            "active": True,
+            "dry_run": False,
+            "path": path2,
+            "wipe": True,
+        },
     }
 
     # Test the actual cleaning
     cleaner = CleanDeode(config, config.get("cleaning.defaults"))
+    cleaner.has_ecfs = True
     cleaner.prep_cleaning(choices)
     cleaner.clean()
     files_left = list(glob.glob(f"{path}/*"))
 
     assert len(files_left) == 1
     assert os.path.basename(files_left[0]) == "ELS"
+    assert not os.path.isdir(path2)

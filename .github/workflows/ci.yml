@@ -1,0 +1,40 @@
+name: ci-hpc
+
+on:
+  workflow_dispatch:
+    inputs:
+      configuration_name:
+        type: choice
+        description: Case configuration name
+        required: true
+        options:
+        - 'cy49t2_arome'
+        - 'cy49t2_alaro'
+        - 'cy49t2_harmonie_arome'
+        default: 'cy49t2_arome'
+
+  push:
+    branches:
+      - master
+      - develop
+
+  pull_request:
+    branches:
+      - master
+      - develop
+    paths:
+      - '.github/workflows/*.yml'
+      - '.github/workflows/*.yaml'
+      - 'test_worfklow_scripts/*.py'
+
+jobs:
+
+  call-workflow-atos:
+    uses: ./.github/workflows/reuseable-workflow-atos.yaml
+    secrets: inherit
+    with:
+      configuration_name:  ${{ inputs.configuration_name || 'cy49t2_arome' }}
+
+  call-workflow-lumi:
+    uses: ./.github/workflows/reuseable-workflow-lumi.yaml
+    secrets: inherit

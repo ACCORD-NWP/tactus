@@ -1,6 +1,6 @@
 --config-file
 tactus/data/config_files/config.toml
+tactus/data/config_files/modifications/cycle/CY50t1.toml
 tactus/data/config_files/modifications/csc/alaro.toml
 tactus/data/config_files/include/vertical_levels/MF_87.toml
-tactus/data/config_files/modifications/cycle/CY50t1.toml
 tactus/data/config_files/modifications/@HOST@.toml

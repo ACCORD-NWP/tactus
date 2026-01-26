@@ -9,8 +9,8 @@ from unittest.mock import patch
 
 import pytest
 import tomlkit
-from deode import GeneralConstants
 
+from tactus import GeneralConstants
 from tactus.derived_variables import derived_variables, set_times
 from tactus.plugin import DeodePluginRegistry
 from tactus.tasks.archive import ArchiveDataBridge, ArchiveHour, ArchiveStatic
@@ -22,6 +22,7 @@ from tactus.tasks.creategrib import GlGrib
 from tactus.tasks.discover_task import available_tasks, get_task
 from tactus.tasks.e923 import E923
 from tactus.tasks.forecast import FirstGuess, Forecast
+from tactus.tasks.generatewfptabfile import GenerateWfpTabFile
 from tactus.tasks.gribmodify import AddCalculatedFields
 from tactus.tasks.interpolsstsic import InterpolSstSic
 from tactus.tasks.iomerge import IOmerge
@@ -69,7 +70,8 @@ def task_name_and_configs(request, default_config, tmp_directory):
             joboutdir = "foo"
             tarname= "foo"
             task_logs = "foo"
-            bd_index = 1
+            bd_index_time_dict = "{{0: \\"{basetime}\\"}}"
+            bd_index = 0
             bd_time = "{basetime}"
             basetime = "{basetime}"
             config_label = "foo"
@@ -104,6 +106,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_task_iomerge_iomerge_execute_method = IOmerge.execute
     original_task_marsprep_run_method = Marsprep.run
     original_task_collectlogs_collectlogs_execute_method = CollectLogs.execute
+    original_task_generate_wfp_tab_file_execute_method = GenerateWfpTabFile.execute
 
     # Define the wrappers that will replace some key methods
     def new_batchjob_init_method(self, *args, **kwargs):
@@ -205,6 +208,10 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     def new_task_interpolsstsic_interpolsstsic_execute_method(*args, **kwargs):
         original_task_interpolsstsic_interpolsstsic_execute_method(*args, **kwargs)
 
+    def new_task_generate_wfp_tab_file_execute_method(*args, **kwargs):
+        with contextlib.suppress(FileNotFoundError):
+            original_task_generate_wfp_tab_file_execute_method(*args, **kwargs)
+
     def new_task_iomerge_iomerge_execute_method(self):
         """Create needed file `ECHIS` before running the original method."""
         file1 = self.wdir + "/../Forecast/io_serv.000001.d/ECHIS"
@@ -288,7 +295,11 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         new=new_task_interpolsstsic_interpolsstsic_execute_method,
     )
     session_mocker.patch(
-        "tactus.tasks.iomerge.IOmerge.execute",
+        "deode.tasks.generatewfptabfile.GenerateWfpTabFile.execute",
+        new=new_task_generate_wfp_tab_file_execute_method,
+    )
+    session_mocker.patch(
+        "deode.tasks.iomerge.IOmerge.execute",
         new=new_task_iomerge_iomerge_execute_method,
     )
     session_mocker.patch(

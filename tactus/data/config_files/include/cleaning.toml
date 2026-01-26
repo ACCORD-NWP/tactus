@@ -3,9 +3,11 @@
 [cleaning.CycleCleaning.archive]
   ncycles_delay = 4
   path = "@ARCHIVE@"
+  wipe = true
 
 [cleaning.CycleCleaning.ecf_out]
   path = "@ECF_OUT@/@CASE@/@YMD@/@HH@@mm@"
+  wipe = true
 
 [cleaning.CycleCleaning.ifs]
   active = false
@@ -16,6 +18,7 @@
 [cleaning.CycleCleaning.wrk]
   ncycles_delay = 1
   path = "@WRK@"
+  wipe = true
 
 [cleaning.defaults]
   active = true
@@ -24,14 +27,13 @@
   ncycles_delay = 1
 
 [cleaning.PostMortem.ecf_files]
+  active = false
   exclude = "(.*)PostMortem(.*)"
-  ncycles_delay = 0
   path = "@ECF_FILES@/@CASE@"
 
 [cleaning.PostMortem.ecf_out]
   active = false
   exclude = "(.*)PostMortem(.*)"
-  ncycles_delay = 0
   path = "@ECF_OUT@/@CASE@"
 
 [cleaning.PrepRun.ecf_out]

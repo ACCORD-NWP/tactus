@@ -8,10 +8,37 @@ from pathlib import Path
 from subprocess import run
 from typing import Dict, List, Tuple
 
+from .config_parser import ParsedConfig
 from .datetime_utils import as_datetime
+from .domain_utils import get_domain
 from .geo_utils import Projection, Projstring
 from .logs import logger
 from .toolbox import Platform
+
+
+def mars_selection(selection: str, config: ParsedConfig) -> dict:
+    """Copy default settings if requested.
+
+    Args:
+        selection             (str): The selection to use.
+        config (deode.ParsedConfig): Configuration object
+
+    Returns:
+         mars                (dict): mars config section
+
+    """
+    mars = config[f"mars.{selection}"].dict()
+    if "expver" not in mars:
+        mars["expver"] = selection
+
+    # Copy default settings if requested
+    if "default" in mars:
+        default = config[f"mars.{mars['default']}"]
+        for k in default:
+            if k not in mars:
+                mars[k] = default[k]
+
+    return mars
 
 
 def write_retrieve_mars_req(req, name: str, method: str, omode: str = "w"):
@@ -223,15 +250,7 @@ def get_domain_data(config):
         String containing the domain info for MARS
     """
     # Get domain specs
-    domain_spec = {
-        "nlon": config["domain.nimax"],
-        "nlat": config["domain.njmax"],
-        "latc": config["domain.xlatcen"],
-        "lonc": config["domain.xloncen"],
-        "lat0": config["domain.xlat0"],
-        "lon0": config["domain.xlon0"],
-        "gsize": config["domain.xdx"],
-    }
+    domain_spec = get_domain(config)
 
     # Get domain properties
     projstring = Projstring()

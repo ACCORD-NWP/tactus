@@ -650,7 +650,7 @@ class AddCalculatedFields(Task):
 
                 # Check if the rule is valid at basetime
                 if validtime == self.basetime:
-                    valid_at_basetime = rule.get("valid_at_basetime", False)
+                    valid_at_basetime = rule.get("valid_at_basetime", True)
                     static_field = rule.get("static_field", False)
                     if not (valid_at_basetime or static_field):
                         logger.info(

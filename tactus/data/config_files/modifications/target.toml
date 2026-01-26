@@ -34,6 +34,7 @@
 
 [suite_control]
   do_marsprep = false
+  mirror_host_case = false
 
 [system]
   bdclimdir = "@HOST_CASE_DIR@/climate/@HOST_DOMAIN@"

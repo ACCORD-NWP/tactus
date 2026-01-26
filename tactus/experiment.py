@@ -10,7 +10,12 @@ from typing import List, Optional
 
 import tomlkit
 
-from tactus.config_parser import BasicConfig, ConfigPaths, ParsedConfig
+from tactus.config_parser import (
+    BasicConfig,
+    ConfigParserDefaults,
+    ConfigPaths,
+    ParsedConfig,
+)
 from tactus.datetime_utils import evaluate_date
 from tactus.derived_variables import set_times
 from tactus.eps.eps_setup import EPSConfig, generate_member_settings
@@ -364,6 +369,12 @@ def case_setup(
             output_file = os.path.join(output_dir, output_file)
 
         logger.info("Save config to: {}", output_file)
+
+    # Validate the new config
+    ParsedConfig(
+        Platform(exp.config).resolve_macros(exp.config.dict()),
+        json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
+    )
 
     exp.config.save_as(output_file)
 

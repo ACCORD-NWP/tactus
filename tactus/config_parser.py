@@ -285,6 +285,15 @@ class JsonSchema(BaseMapping):
 class ParsedConfig(BasicConfig):
     """Object that holds parsed configs validated against a `json_schema`."""
 
+    def __new__(cls, *_, **__):
+        """Override `__new__` to prevent mocked calls from being used.
+
+        Not having this, cases the unittests running after
+        tests/unit/test_experiment.py::TestCaseSetup to fail as reported in
+        https://github.com/pytest-dev/pytest/discussions/8009
+        """
+        return super(ParsedConfig, cls).__new__(cls)
+
     def __init__(
         self,
         *args,

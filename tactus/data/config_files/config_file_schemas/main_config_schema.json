@@ -456,6 +456,11 @@
           "type": "boolean",
           "default": false
         },
+        "mirror_host_case": {
+          "description": "Mirror a host suite and trigger if available.",
+          "type": "boolean",
+          "default": false
+        },
         "mirror_offline": {
           "description": "Mirror offlineSFX suite and trigger if offline is available",
           "type": "boolean",
@@ -865,7 +870,8 @@
         "case": {
           "description": "Experiment name",
           "default": "deode_case",
-          "type": "string"
+          "type": "string",
+	        "pattern": "^[^0-9][^.]*$"
         },
         "member_str": {
           "description": "String identifier of a member in the ensemble",
@@ -962,6 +968,18 @@
           "description": "Output settings. Specified as duration for any of interval, endtime:interval, starttime:endtime:interval or a list of these options",
           "type": "object",
           "properties": {
+            "ddh_dl": {
+              "description": "Output list for limited area DDH files",
+              "$ref": "#/$output_setting_rules"
+            },
+            "ddh_gl": {
+              "description": "Output list for global DDH files",
+              "$ref": "#/$output_setting_rules"
+            },
+            "ddh_zo": {
+              "description": "Output list for zonal DDH files",
+              "$ref": "#/$output_setting_rules"
+            },
             "history": {
               "description": "Output list for history files",
               "$ref": "#/$output_setting_rules"
@@ -982,9 +1000,14 @@
           "default": []
         },
         "windfarm": {
-          "description": "Switch on wind farm parameterisation",
+          "description": "Switch for enabeling wind farm parameterisation",
           "type": "boolean",
           "default": false
+        },
+        "fullpos_windpower": {
+          "description": "Switch for enabeling wind power production in fullpos output. Normally no need to provide but wind power output via full pos is not supported in CY48.",
+          "type": "boolean",
+          "default": true
         },
         "upd_sst_sic": {
           "description": "Switch to update SST/SIC during forecast",

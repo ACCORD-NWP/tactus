@@ -10,6 +10,8 @@ from ..logs import logger
 from .base import Task
 from .batch import BatchJob
 
+IOMERGE_FILETYPES = ["fullpos", "history", "surfex"]
+
 
 class IOmerge(Task):
     """IO merge task."""
@@ -228,7 +230,10 @@ class IOmerge(Task):
         self.file_tracker = {}
         for filetype, oi in self.output_settings.items():
             self.file_tracker[filetype] = {}
-            if filetype in list(self.file_templates.keys()):
+            if (
+                filetype in list(self.file_templates.keys())
+                and filetype in IOMERGE_FILETYPES
+            ):
                 logger.debug("filetype: {}, oi: {}", filetype, oi)
                 for dt in oi2dt_list(oi, self.forecast_range):
                     if dt not in dt_list:

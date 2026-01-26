@@ -54,7 +54,11 @@
   domain_name = "DOMAIN"
 
 [fullpos.selection]
-  master = ["master_selection_@CSC@", "master_subhour_selection_@CSC@", "meteosat"]
+  master = [
+    "master_selection_@CSC@",
+    "master_subhour_selection_@CSC@",
+    "meteosat",
+  ]
 
 [gribmodify]
   conversions = ["fullpos"]
@@ -92,9 +96,11 @@
   fdb = "include/fdb.toml"
   file_templates = "include/file_templates.toml"
   impact = "include/impact.toml"
+  json2tab = "include/json2tab.toml"
   macros = "include/macros.toml"
   mars = "include/mars_settings.toml"
   platform = "include/platform_paths/@HOST@.toml"
+  remove = "include/remove.toml"
   scheduler = "include/scheduler/ecflow_@HOST@.toml"
   submission = "include/submission/@HOST@.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"
@@ -117,6 +123,7 @@
   do_soil = true
   interpolate_boundaries = true
   mirror_globalDT = false
+  mirror_host_case = false
   mirror_offline = false
   mode = "cold_start"
   n_addcalculatedfields = 2

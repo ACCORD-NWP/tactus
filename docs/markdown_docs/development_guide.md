@@ -93,52 +93,24 @@ or, combining them all:
 poetry devtools doc
 ```
 
-## Testing on Atos
+# Testing on Atos and LUMI
+For testing of a number of configurations we use https://github.com/destination-earth-digital-twins/Tactus-test-runner which launches a number of ecflow suites. Install the package and make yourself familiar with the environment. For individual PR testing the minimum should be:
+```
+ selection = [
+    "cy49t2_alaro",
+    "cy49t2_alaro_target",
+    "cy49t2_arome_R64",
+    "cy49t2_arome_target",
+    "cy49t2_harmonie_arome_R64",
+    "alaro",
+    "arome",
+    "harmonie_arome",
+  ]
+```
+I.e. run the standard toy domain with target coupling including the full sized domains. Add additional configurations as you find suitable.
 
-The testing procedure above does not test the full functionality together with the IAL code. While waiting for a automated CI/CD system to be in place a few manual steps are required on atos to check the functionality.
-
-- ✔️ Run the default config file, using CY49t2, under ecflow following the instructions in the [README](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md) file.
-- ✔️ Run the following sequence of case configurations, i.e. the three CSC's.
-```
-for case in \
-  cy48t3_arome \
-  cy48t3_alaro \
-  cy46h1_harmonie_arome \
-  cy49t2_arome \
-  cy49t2_alaro \
-  cy49t2_harmonie_arome \
-  cy49t2_arome \
-  cy49t2_alaro \
-  alaro \
-  arome \
-  harmonie_arome \
-  ; do
-  deode case ?deode/data/config_files/configurations/$case --start-suite
-done
-```
-Once this has completed test the coupling of AROME -> AROME and HARMONIE-AROME -> HARMONIE-AROME:
-```
-for case in \
-  cy49t2_arome_target \
-  cy49t2_harmonie_arome_target \
-  ; do
-  deode case ?deode/data/config_files/configurations/$case deode/data/config_files/modifications/test_settings.toml --start-suite
-done
-```
-- ✔️ Finally test the stand alone task for the forecast following the instructions in the [README](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md) file.
-
-## Testing on lumi
-
-On lumi we expect the following configurations to be tested in the same way as above:
-```
-  cy49t2_arome
-  cy49t2_alaro
-  cy49h2_harmonie_arome
-  alaro
-  arome
-  harmonie_arome
-```
-Note that due to the restrictions for the debug partition on lumi it's only possible to launch one suite at the time.
+## Testing before tagging
+For testing prior to tagging all the testing should be performed as defined by `atos_bologna.toml` and `lumi.toml` respectively. In addition operational like tests should be done from the development users (snh02, lrb_465000527_efdev) on atos and lumi using atos_bologna_operational.toml and lumi_operational.toml.
 
 ## Git Branching Structure and Workflow
 

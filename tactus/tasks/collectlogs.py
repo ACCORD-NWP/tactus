@@ -35,8 +35,10 @@ class CollectLogs(Task):
         if self.target == "":
             self.target = "."
         self.tarfile = f"{self.wrk}/{self.tarname}.tar.gz"
-        self.do_archiving = config["suite_control.do_archiving"]
-
+        self.do_archiving = (
+            config["suite_control.do_archiving"]
+            and self.config["archiving"].get(self.config_label, None) is not None
+        )
         self.archive = self.platform.get_system_value("archive")
         self.logs = self.platform.get_system_value("logs")
         self.wrk = self.platform.get_system_value("wrk")

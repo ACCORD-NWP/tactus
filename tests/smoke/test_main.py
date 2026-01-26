@@ -8,8 +8,8 @@ from io import StringIO
 from unittest import mock
 
 import pytest
-from deode import GeneralConstants
 
+from tactus import GeneralConstants
 from tactus.__main__ import main
 from tactus.argparse_wrapper import get_parsed_args
 from tactus.config_parser import ConfigFileValidationError, ConfigParserDefaults
@@ -21,12 +21,13 @@ from tactus.toolbox import Platform
 @pytest.fixture(name="config_path", scope="module")
 def fixture_config_path(tmp_path_factory: pytest.TempPathFactory):
     main_configs_test_dir = tmp_path_factory.getbasetemp() / "config_files"
-    main_configs_test_dir.mkdir()
+    main_configs_test_dir.mkdir(exist_ok=True)
     shutil.copy(ConfigParserDefaults.PACKAGE_CONFIG_PATH, main_configs_test_dir)
 
     config_includes_test_dir = (
         main_configs_test_dir / ConfigParserDefaults.PACKAGE_INCLUDE_DIR.name
     )
+    shutil.rmtree(config_includes_test_dir, ignore_errors=True)
     shutil.copytree(ConfigParserDefaults.PACKAGE_INCLUDE_DIR, config_includes_test_dir)
 
     return main_configs_test_dir / ConfigParserDefaults.PACKAGE_CONFIG_PATH.name
@@ -106,6 +107,7 @@ class TestMainShowCommands:
                     "config",
                     "--config-file",
                     ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix(),
+                    "-e",
                 ]
             )
 

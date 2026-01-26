@@ -3,19 +3,22 @@
     "input_grib_id" : [ {"shortName":"crr"}, {"shortName":"lsrr"} ],
     "operator" : "add",
     "output_name" : "tirf",
-    "output_grib_id" : { "shortName":"tirf" }
+    "output_grib_id" : { "shortName":"tirf" },
+    "valid_at_basetime" : false
     },
     {
     "input_grib_id" : [ {"shortName":"csfwe"}, {"shortName":"lsfwe"} ],
     "operator" : "add",
     "output_name" : "tsnowp",
-    "output_grib_id" : { "shortName":"tsnowp" }
+    "output_grib_id" : { "shortName":"tsnowp" },
+    "valid_at_basetime" : false
     },
     {
     "input_grib_id" : [ {"shortName":"tirf"}, {"shortName":"tsnowp"}, {"shortName":"tgrp"} ],
     "operator" : "add",
     "output_name" : "tp",
-    "output_grib_id" : { "shortName":"tp" }
+    "output_grib_id" : { "shortName":"tp" },
+    "valid_at_basetime" : false
     },
     {
     "input_grib_id" : [ {"shortName":"10u"}, {"shortName":"10v"} ],
@@ -33,7 +36,8 @@
     "input_grib_id" : [ {"shortName":"10efg"}, {"shortName":"10nfg"} ],
     "operator" : "vectorLength",
     "output_name" : "10fg",
-    "output_grib_id" : { "shortName":"10fg" }
+    "output_grib_id" : { "shortName":"10fg" },
+    "valid_at_basetime" : false
     },
     {
     "input_grib_id" : [ {"shortName":"lai", "tile":"GNATU"}, {"shortName":"tifr", "tile":"GNATU"}],
@@ -48,7 +52,8 @@
     "operator" : "albedo_calc",
     "output_name" : "al",
     "output_grib_id" : { "shortName":"al" },
-    "additional_files" : [ {"base":"file_templates.fullpos", "entry":"grib", "static":"False"} ]
+    "additional_files" : [ {"base":"file_templates.fullpos", "entry":"grib", "static":"False"} ],
+    "valid_at_basetime" : false
     },
     {
     "input_grib_id" : [ {"shortName":"liqvsm", "tile": ["GNOVE", "GLVEG", "GTREE"], "level":[1, 2, 3, 4]}, {"shortName":"tifr", "tile":["GNATU", "GNOVE", "GLVEG", "GTREE"]} ],
@@ -62,8 +67,7 @@
     "physical_range": [0, 1],
     "output_name" : "soil_moisture_top20cm",
     "output_grib_id" : { "productDefinitionTemplateNumber":0, "shortName":"vsw20" },
-    "additional_files" : [ {"base":"file_templates.tiles", "entry":"grib", "static":"False"}, {"base":"creategrib.CreateGribStatic.pgd_grib2", "entry":"files_out", "static":"True"} ],
-    "valid_at_basetime" : true
+    "additional_files" : [ {"base":"file_templates.tiles", "entry":"grib", "static":"False"}, {"base":"creategrib.CreateGribStatic.pgd_grib2", "entry":"files_out", "static":"True"} ]
     },
     {
     "input_grib_id" : [ {"shortName":"liqvsm", "tile": ["GNOVE", "GLVEG", "GTREE"], "level":[1, 2, 3, 4, 5, 6, 7, 8]}, {"shortName":"tifr", "tile":["GNATU", "GNOVE", "GLVEG", "GTREE"]} ],
@@ -81,8 +85,7 @@
     "physical_range": [0, 1],
     "output_name" : "soil_moisture_top100cm",
     "output_grib_id" : { "productDefinitionTemplateNumber": 0, "shortName":"vsw100" },
-    "additional_files" : [ {"base":"file_templates.tiles", "entry":"grib", "static":"False"}, {"base":"creategrib.CreateGribStatic.pgd_grib2", "entry":"files_out", "static":"True"} ],
-    "valid_at_basetime" : true
+    "additional_files" : [ {"base":"file_templates.tiles", "entry":"grib", "static":"False"}, {"base":"creategrib.CreateGribStatic.pgd_grib2", "entry":"files_out", "static":"True"} ]
     },
     {
     "input_grib_id" : [ {"shortName":"sot", "tile": ["GNOVE", "GLVEG", "GTREE"], "level":[1, 2, 3, 4]}, {"shortName":"tifr", "tile": ["GNATU", "GNOVE", "GLVEG", "GTREE"]} ],
@@ -96,8 +99,7 @@
     "physical_range": [100, 400],
     "output_name" : "soil_temperature_top20cm",
     "output_grib_id" : { "productDefinitionTemplateNumber":0, "shortName":"st20" },
-    "additional_files" : [ {"base":"file_templates.tiles", "entry":"grib", "static":"False"}, {"base":"creategrib.CreateGribStatic.pgd_grib2", "entry":"files_out", "static":"True"} ],
-    "valid_at_basetime" : true
+    "additional_files" : [ {"base":"file_templates.tiles", "entry":"grib", "static":"False"}, {"base":"creategrib.CreateGribStatic.pgd_grib2", "entry":"files_out", "static":"True"} ]
     },
     {
     "input_grib_id" : [ {"shortName":"sot", "tile": ["GNOVE", "GLVEG", "GTREE"], "level":[1, 2, 3, 4, 5, 6, 7, 8]}, {"shortName":"tifr", "tile": ["GNATU", "GNOVE", "GLVEG", "GTREE"]} ],
@@ -115,16 +117,14 @@
     "physical_range": [100, 400],
     "output_name" : "soil_temperature_top100cm",
     "output_grib_id" : { "productDefinitionTemplateNumber":0, "shortName":"st100" },
-    "additional_files" : [ {"base":"file_templates.tiles", "entry":"grib", "static":"False"}, {"base":"creategrib.CreateGribStatic.pgd_grib2", "entry":"files_out", "static":"True"} ],
-    "valid_at_basetime" : true
+    "additional_files" : [ {"base":"file_templates.tiles", "entry":"grib", "static":"False"}, {"base":"creategrib.CreateGribStatic.pgd_grib2", "entry":"files_out", "static":"True"} ]
     },
     {
     "input_grib_id" : [ {"shortName":"vsw", "tile":"GNATU"}, {"shortName":"tifr", "tile":"GNATU"} ],
     "operator" : "multiply",
     "output_name" : "root_depth_soil_moisture",
     "output_grib_id" : { "shortName":"vsw", "productDefinitionTemplateNumber": 0 },
-    "additional_files" : [ {"base":"file_templates.tiles", "entry":"grib", "static":"False"}, {"base":"creategrib.CreateGribStatic.pgd_grib2", "entry":"files_out", "static":"True"} ],
-    "valid_at_basetime" : true
+    "additional_files" : [ {"base":"file_templates.tiles", "entry":"grib", "static":"False"}, {"base":"creategrib.CreateGribStatic.pgd_grib2", "entry":"files_out", "static":"True"} ]
     },
     {
     "input_grib_id" : [ {"shortName":"cnwat", "tile": ["GNOVE", "GLVEG", "GTREE"], "level": [0]}, {"shortName":"tifr", "tile":["GNATU", "GNOVE", "GLVEG", "GTREE"]} ],
@@ -132,8 +132,7 @@
     "layer_weights": { "0": 1.0 },
     "output_name" : "canopy_water",
     "output_grib_id" : { "productDefinitionTemplateNumber":0, "shortName":"cnwat" },
-    "additional_files" : [ {"base":"file_templates.tiles", "entry":"grib", "static":"False"}, {"base":"creategrib.CreateGribStatic.pgd_grib2", "entry":"files_out", "static":"True"} ],
-    "valid_at_basetime" : true
+    "additional_files" : [ {"base":"file_templates.tiles", "entry":"grib", "static":"False"}, {"base":"creategrib.CreateGribStatic.pgd_grib2", "entry":"files_out", "static":"True"} ]
     },
     {
         "input_grib_id": [

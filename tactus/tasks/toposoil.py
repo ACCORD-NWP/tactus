@@ -4,6 +4,7 @@ import os
 import shutil
 import sys
 
+from ..domain_utils import get_domain
 from ..geo_utils import Projection, Projstring
 from ..logs import logger
 from ..os_utils import Search, deodemakedirs
@@ -35,7 +36,7 @@ class Topography(Task):
         Args:
             config (Config): Config object
         """
-        self.domain = self.get_domain_properties(config)
+        self.domain = get_domain(config)
 
         Task.__init__(self, config, __class__.__name__)
 
@@ -43,27 +44,6 @@ class Topography(Task):
             "topo_source", alt="gmted2010"
         )
         self.topo_data_path = self.fmanager.platform.get_platform_value("topo_data_path")
-
-    def get_domain_properties(self, config) -> dict:
-        """Get domain properties.
-
-        Args:
-            config (Config): Config object
-
-        Returns:
-            dict: Domain properties
-        """
-        domain = {
-            "nlon": config["domain.njmax"],
-            "nlat": config["domain.nimax"],
-            "latc": config["domain.xlatcen"],
-            "lonc": config["domain.xloncen"],
-            "lat0": config["domain.xlat0"],
-            "lon0": config["domain.xlon0"],
-            "gsize": config["domain.xdx"],
-        }
-
-        return domain
 
     def gmted_header_coordinates(
         self, east: float, west: float, south: float, north: float
@@ -300,31 +280,10 @@ class Soil(Task):
             config (tactus.ParsedConfig): Configuration
 
         """
-        self.domain = self.get_domain_properties(config)
+        self.domain = get_domain(config)
 
         Task.__init__(self, config, __class__.__name__)
         logger.debug("Constructed Soil task")
-
-    def get_domain_properties(self, config) -> dict:
-        """Get domain properties.
-
-        Args:
-            config (tactus.ParsedConfig): Configuration
-
-        Returns:
-            dict: Domain properties
-        """
-        domain = {
-            "nlon": config["domain.njmax"],
-            "nlat": config["domain.nimax"],
-            "latc": config["domain.xlatcen"],
-            "lonc": config["domain.xloncen"],
-            "lat0": config["domain.xlat0"],
-            "lon0": config["domain.xlon0"],
-            "gsize": config["domain.xdx"],
-        }
-
-        return domain
 
     @staticmethod
     def check_domain_validity(domain_properties: dict) -> None:

@@ -16,6 +16,7 @@ from ..namelist import NamelistGenerator
 from ..os_utils import deodemakedirs
 from .base import Task
 from .batch import BatchJob
+from .iomerge import IOMERGE_FILETYPES
 from .sfx import PySurfexBaseTask
 
 
@@ -95,15 +96,28 @@ class Forecast(PySurfexBaseTask):
 
     def wfp_input(self):
         """Add wind turbine files to forecast directory."""
-        self.wfp_dir = self.platform.get_platform_value("windfarm_path")
+        if self.config["json2tab.enabled"]:
+            # Use JSON-2-TAB generated output
+            wfp_dir = self.platform.substitute(self.config["json2tab.output.directory"])
 
-        yy = self.basetime.strftime("%Y")
-        self.fmanager.input(
-            f"{self.wfp_dir}/wind_turbine_coordinates_{self.domain}_{yy}.tab",
-            "wind_turbine_coordinates.tab",
-        )
+            turbine_loc_file = self.platform.substitute(
+                self.config["json2tab.output.files.location_tab"]
+            )
+            turbine_tab_prefix = self.platform.substitute(
+                self.config["json2tab.output.files.type_tab_prefix"]
+            )
 
-        turbine_list = glob.glob(f"{self.wfp_dir}/wind_turbine_[0-9][0-9][0-9].tab")
+            location_file = f"{wfp_dir}/{turbine_loc_file}"
+            turbine_list = glob.glob(f"{wfp_dir}/{turbine_tab_prefix}*.tab")
+        else:
+            # Use old static tab-files
+            wfp_dir = self.platform.get_platform_value("windfarm_path")
+
+            yy = self.basetime.strftime("%Y")
+            location_file = f"{wfp_dir}/wind_turbine_coordinates_{self.domain}_{yy}.tab"
+            turbine_list = glob.glob(f"{wfp_dir}/wind_turbine_[0-9][0-9][0-9].tab")
+
+        self.fmanager.input(location_file, "wind_turbine_coordinates.tab")
         for ifile in turbine_list:
             infile = os.path.basename(ifile)
             self.fmanager.input(ifile, infile)
@@ -284,12 +298,13 @@ class Forecast(PySurfexBaseTask):
         batch = BatchJob(os.environ, wrapper=self.platform.substitute(self.wrapper))
         batch.run(self.master)
 
+        # Merge files and move to archive
         if self.iomerge_is_external:
             atexit.unregister(self.rename_wdir)
         else:
             for filetype, oi in self.output_settings.items():
                 if filetype in self.file_templates:
-                    if self.io_server:
+                    if self.io_server and filetype in IOMERGE_FILETYPES:
                         self.merge_output(filetype, oi)
                     self.archive_output(self.file_templates[filetype], oi)
 
