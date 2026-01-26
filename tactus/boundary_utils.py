@@ -2,9 +2,9 @@
 
 import ast
 
-from deode.datetime_utils import as_datetime, as_timedelta, cycle_offset
-from deode.mars_utils import mars_selection
-from deode.toolbox import Platform
+from tactus.datetime_utils import as_datetime, as_timedelta, cycle_offset
+from tactus.mars_utils import mars_selection
+from tactus.toolbox import Platform
 
 
 class Boundary:

@@ -4,8 +4,8 @@ import os
 from json2tab import json2tab
 from json2tab.logs import logger as json2tab_logger
 
-from deode.datetime_utils import as_datetime
-from deode.logs import LogDefaults, logger
+from tactus.datetime_utils import as_datetime
+from tactus.logs import LogDefaults, logger
 
 from .base import Task
 

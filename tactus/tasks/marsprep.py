@@ -30,9 +30,9 @@ from tactus.mars_utils import (
     write_retrieve_mars_req,
     write_write_mars_req,
 )
-from deode.os_utils import deodemakedirs, join_files, list_files_join
-from deode.tasks.base import Task
-from deode.tasks.batch import BatchJob
+from tactus.os_utils import deodemakedirs, join_files, list_files_join
+from tactus.tasks.base import Task
+from tactus.tasks.batch import BatchJob
 
 
 class Marsprep(Task):

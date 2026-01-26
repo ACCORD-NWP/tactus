@@ -32,8 +32,7 @@
   humanize = "^4.8.0"
   isodate = "^0.6.1"
   json-schema-for-humans = { git = "https://github.com/paulovcmedeiros/json-schema-for-humans.git", branch = "feature/choose-properties-table-columns" }
-  json2tab = { git = "git@github.com/destination-earth-digital-twins/json2tab.git", branch = "master" }
-  json-schema-for-humans = { git = "https://github.com/paulovcmedeiros/json-schema-for-humans.git", branch = "feature/choose-properties-table-columns" }
+  json2tab = { git = "git@github.com:destination-earth-digital-twins/json2tab.git", branch = "master" }
   jsonref = "^1.1.0"
   loguru = "^0.7.1"
   numexpr = "^2.8.4"
@@ -50,6 +49,7 @@
   tomli = "^2.0.1"
   tomlkit = "^0.12.1"
   troika = { git = "https://github.com/ecmwf/troika.git" }
+  utci = { git = "git@github.com:destination-earth-digital-twins/utci.git" }
   xmltodict = "^0.14.2"
 
 [tool.poetry.group.dev.dependencies]
