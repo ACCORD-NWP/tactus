@@ -171,14 +171,8 @@
   1_INTEL_COMPILERS = ["load", "intel-oneapi-compilers/2023.2.1"]
   2_INTEL_MPI = ["load", "intel-oneapi-mpi/2021.10.0"]
   3_INTEL_MKL = ["load", "intel-oneapi-mkl/2023.2.0"]
-  4_HDF5 = [
-    "load",
-    "hdf5/1.14.3--intel-oneapi-mpi--2021.10.0--oneapi--2023.2.0 ",
-  ]
-  5_NETCDFC = [
-    "load",
-    "netcdf-c/4.9.2--intel-oneapi-mpi--2021.10.0--oneapi--2023.2.0",
-  ]
+  4_HDF5 = ["load", "hdf5/1.14.3--intel-oneapi-mpi--2021.10.0--oneapi--2023.2.0 "]
+  5_NETCDFC = ["load", "netcdf-c/4.9.2--intel-oneapi-mpi--2021.10.0--oneapi--2023.2.0"]
   6_NETCDFF = [
     "load",
     "netcdf-fortran/4.6.1--intel-oneapi-mpi--2021.10.0--oneapi--2023.2.0",
@@ -222,10 +216,7 @@
   1_INTEL_COMPILERS = ["load", "intel-oneapi-compilers/2023.2.1"]
   2_INTEL_MPI = ["load", "intel-oneapi-mpi/2021.10.0"]
   3_INTEL_MKL = ["load", "intel-oneapi-mkl/2023.2.0"]
-  4_NETCDFC = [
-    "load",
-    "netcdf-c/4.9.2--intel-oneapi-mpi--2021.10.0--oneapi--2023.2.0",
-  ]
+  4_NETCDFC = ["load", "netcdf-c/4.9.2--intel-oneapi-mpi--2021.10.0--oneapi--2023.2.0"]
   6_NETCDFF = [
     "load",
     "netcdf-fortran/4.6.1--intel-oneapi-mpi--2021.10.0--oneapi--2023.2.0",

@@ -489,7 +489,7 @@ class Platform:
                 bd_index = int(self.config["task.args.bd_index"])
             pattern = self.sub_value(pattern, "NNN", f"{bd_index:03d}")
 
-        # Time handling
+            # Time handling
             basetime = self.config.get("general.times.basetime", None)
         if validtime is None:
             validtime = self.config.get("general.times.validtime", None)
