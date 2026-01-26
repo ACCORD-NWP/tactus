@@ -8,7 +8,7 @@ import pytest
 from tactus.config_parser import ParsedConfig
 from tactus.derived_variables import set_times
 from tactus.submission import TaskSettings
-from tactus.suites.tactus import DeodeSuiteDefinition
+from tactus.suites.tactus import TactusSuiteDefinition
 
 
 @pytest.fixture(scope="module")
@@ -91,7 +91,7 @@ class TestSuite:
 
         config = config.copy(update=set_times(config))
         config = config.copy(update=param)
-        defs = DeodeSuiteDefinition(
+        defs = TactusSuiteDefinition(
             config,
             dry_run=True,
         )
