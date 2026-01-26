@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- UTCI is added in the Deode-Workflow. [\#1478](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1478) (@Ines-dhmz)
 - Add GenerateWfpTabFile-task to run json2tab preprocessor to enable Forecast with WFP on any domain. [#1306](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1306) (@jacobsnoeijer) 
 - Introduce `deode remove` functionality. [\#1461](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1461) (@uandrae)
 - Introduce config macro expansion in `deode show` command. [\#1463](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1463) (@uandrae)
