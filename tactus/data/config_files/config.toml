@@ -54,7 +54,11 @@
   domain_name = "DOMAIN"
 
 [fullpos.selection]
-  master = ["master_selection_@CSC@", "master_subhour_selection_@CSC@", "meteosat"]
+  master = [
+    "master_selection_@CSC@",
+    "master_subhour_selection_@CSC@",
+    "meteosat",
+  ]
 
 [gribmodify]
   conversions = ["fullpos"]
@@ -91,7 +95,6 @@
   extractsqlite = "include/sqlite.toml"
   fdb = "include/fdb.toml"
   file_templates = "include/file_templates.toml"
-  impact = "include/impact.toml"
   json2tab = "include/json2tab.toml"
   macros = "include/macros.toml"
   mars = "include/mars_settings.toml"

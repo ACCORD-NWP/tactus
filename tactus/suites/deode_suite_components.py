@@ -22,7 +22,6 @@ from tactus.suites.base import (
     EcflowSuiteTriggers,
 )
 from tactus.suites.suite_utils import Cycles, lbc_times_generator
-from tactus.tasks.impacts import get_impact
 from tactus.toolbox import Platform
 
 
@@ -1493,17 +1492,6 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     ecf_files_remotely=ecf_files_remotely,
                 )
 
-            if len(get_impact(config, "StartImpactModels")) > 0:
-                EcflowSuiteTask(
-                    "StartImpactModels",
-                    time_family,
-                    config,
-                    task_settings,
-                    ecf_files,
-                    input_template=input_template,
-                    trigger=member_cycle_families,
-                    ecf_files_remotely=ecf_files_remotely,
-                )
 
     @property
     def last_node(self):
