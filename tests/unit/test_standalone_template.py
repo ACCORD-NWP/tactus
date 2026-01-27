@@ -3,7 +3,7 @@
 import os
 
 from tactus import GeneralConstants
-from tactus.logs import logger  # Use deode's own configs for logger
+from tactus.logs import logger  # Use tactus's own configs for logger
 from tactus.templates.stand_alone import default_main
 
 logger.enable("tactus")

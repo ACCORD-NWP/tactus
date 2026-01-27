@@ -132,7 +132,7 @@ class TestCaseSetup:
         """Test that EPS setup is not activated."""
         mock_exp_from_files.config.get.return_value = None
 
-        with patch("deode.config_parser.ParsedConfig.__new__"):
+        with patch("tactus.config_parser.ParsedConfig.__new__"):
             case_setup(config=default_config, output_file=output_file, mod_files=[])
 
         epsexp_mock.assert_not_called()

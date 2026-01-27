@@ -150,6 +150,6 @@ sites:
     scancel_command: 'scancel -f'
 
   new_site:
-    type: deode
+    type: tactus
     connection: local
 

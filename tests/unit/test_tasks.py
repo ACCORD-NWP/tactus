@@ -57,7 +57,7 @@ def task_name_and_configs(request, default_config, tmp_directory):
             wrk = "{tmp_directory}"
             bindir = "{tmp_directory}/bin"
         [platform]
-            deode_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
+            tactus_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
             scratch = "{tmp_directory}"
             static_data = "{tmp_directory}"
             climdata = "{tmp_directory}"

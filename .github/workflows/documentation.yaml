@@ -67,11 +67,11 @@ jobs:
 
       - name: Generate config docs from default config & main schema
         run: |
-          poetry run deode doc config >| docs/markdown_docs/config.md
+          poetry run tactus doc config >| docs/markdown_docs/config.md
 
       - name: Sphinx apidoc
         run: |
-          poetry run sphinx-apidoc deode -o docs/ --force --no-toc --module-first
+          poetry run sphinx-apidoc tactus -o docs/ --force --no-toc --module-first
 
       - name: Sphinx build
         run: |

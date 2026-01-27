@@ -17,7 +17,7 @@ class GenerateWfpTabFile(Task):
         """Construct GenerateWfpTabFile object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         Task.__init__(self, config, __class__.__name__)
 
@@ -56,7 +56,7 @@ class GenerateWfpTabFile(Task):
 
                 loglevel = self.config.get("json2tab.loglevel", logger.level).upper()
                 if loglevel == "AUTO":
-                    # Set json-2-tab's logger to same level as deode log level
+                    # Set json-2-tab's logger to same level as tactus log level
                     loglevel = self.config.get(
                         "general.loglevel", LogDefaults.LEVEL
                     ).upper()
