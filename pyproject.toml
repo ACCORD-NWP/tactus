@@ -9,7 +9,7 @@
   include = [{path = "tactus/data/**/*", format = ["sdist", "wheel"]}]
   license = "MIT"
   readme = "README.md"
-  repository = "https://github.com/destination-earth-digital-twins/Deode-Workflow"
+  repository = "https://github.com/destination-earth-digital-twins/tactus"
 
 [tool.poetry.scripts]
   tactus = "tactus.__main__:main"
