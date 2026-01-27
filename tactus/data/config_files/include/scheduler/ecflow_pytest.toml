@@ -2,7 +2,7 @@
 
 [scheduler.ecfvars]
   case_prefix = ""
-  ecf_deode_home = ""
+  ecf_tactus_home = ""
   ecf_files = ""
   ecf_files_remotely = ""
   ecf_home = ""

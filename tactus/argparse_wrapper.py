@@ -59,7 +59,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         help=(
             "Path to the config file. The default is whichever of the "
             + "following is first encountered: "
-            + "(i) The value of the 'DEODE_CONFIG_PATH' envvar or "
+            + "(i) The value of the 'TACTUS_CONFIG_PATH' envvar or "
             + "(ii) './config.toml'. If both (i) and (ii) are missing, "
             + "then the default will become "
             + "'"

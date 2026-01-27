@@ -17,7 +17,7 @@ def load(default_config):
     config_patch = tomlkit.parse(
         f"""
         [platform]
-            deode_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
+            tactus_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
         """
     )
     config = config.copy(update=config_patch)

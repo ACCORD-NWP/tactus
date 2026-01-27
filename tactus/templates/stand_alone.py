@@ -57,5 +57,5 @@ if __name__ == "__main__":
     default_main(
         task=os.environ["STAND_ALONE_TASK_NAME"],
         config_file=os.environ["STAND_ALONE_TASK_CONFIG"],
-        tactus_home=os.environ["STAND_ALONE_DEODE_HOME"],
+        tactus_home=os.environ["STAND_ALONE_TACTUS_HOME"],
     )

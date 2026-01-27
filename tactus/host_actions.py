@@ -24,7 +24,7 @@ class TactusHost:
         )
         self.available_hosts = list(self.known_hosts)
         self.default_host = self.available_hosts[0]
-        self.tactus_host = os.getenv("DEODE_HOST")
+        self.tactus_host = os.getenv("TACTUS_HOST")
         self.hostname = socket.gethostname()
 
     def _load_known_hosts(self, known_hosts=None, known_hosts_file=None):
@@ -99,7 +99,7 @@ class TactusHost:
     def detect_tactus_host(self, use_default=True):
         """Detect tactus host by matching various properties.
 
-        First check self.tactus_host as set by os.getenv("DEODE_HOST"),
+        First check self.tactus_host as set by os.getenv("TACTUS_HOST"),
         second use the defined hosts in known_hosts.yml. If no matches
         are found return the first host defined in known_hosts.yml
 

@@ -331,7 +331,7 @@ class TaskSettings(object):
                     "NPROCX",
                     "NPROCY",
                     "CONFIG",
-                    "DEODE_HOME",
+                    "TACTUS_HOME",
                     "KEEP_WORKDIRS",
                     "MEMBER",
                 ]
@@ -378,9 +378,9 @@ class TaskSettings(object):
             if scheduler is None:
                 file_handler.write(f'export STAND_ALONE_TASK_NAME="{task}"\n')
 
-                deode_home = self.platform.get_platform_value("DEODE_HOME")
+                tactus_home = self.platform.get_platform_value("TACTUS_HOME")
 
-                file_handler.write(f'export STAND_ALONE_DEODE_HOME="{deode_home}"\n')
+                file_handler.write(f'export STAND_ALONE_TACTUS_HOME="{tactus_home}"\n')
                 config_file = config.metadata["source_file_path"]
 
                 file_handler.write(f'export STAND_ALONE_TASK_CONFIG="{config_file!s}"\n')

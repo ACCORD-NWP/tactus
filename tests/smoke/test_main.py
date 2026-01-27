@@ -151,10 +151,10 @@ def test_run_task_command(tmp_path):
 
 @pytest.mark.usefixtures("_module_mockers")
 def test_start_suite_command():
-    os.environ["DEODE_HOST"] = "atos_bologna"
+    os.environ["TACTUS_HOST"] = "atos_bologna"
     with suppress(FileNotFoundError, HostNotFoundError, ConfigFileValidationError):
         main(["start", "suite"])
-    del os.environ["DEODE_HOST"]
+    del os.environ["TACTUS_HOST"]
 
 
 @pytest.mark.usefixtures("_module_mockers")

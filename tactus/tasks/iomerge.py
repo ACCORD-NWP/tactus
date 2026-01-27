@@ -32,14 +32,14 @@ class IOmerge(Task):
         self.cycle_length = as_timedelta(self.config["general.times.cycle_length"])
         self.forecast_range = self.config["general.times.forecast_range"]
 
-        self.deode_home = self.config["platform.deode_home"]
+        self.tactus_home = self.config["platform.tactus_home"]
         self.output_settings = self.config["general.output_settings"]
         self.surfex = self.config["general.surfex"]
 
         self.n_io_merge = self.config["suite_control.n_io_merge"]
         self.ionr = int(config.get("task.args.tasknr", "0"))
         self.archive = self.platform.get_system_value("archive")
-        self.deode_home = self.config["platform.deode_home"]
+        self.tactus_home = self.config["platform.tactus_home"]
         self.file_templates = self.config["file_templates"]
         self.nproc_io = int(self.config.get("task.args.nproc_io", "0"))
         self.iomerge = self.config["submission.iomerge"]

@@ -12,7 +12,7 @@ from tactus.derived_variables import set_times
 from tactus.tasks.base import Task
 
 WORKING_DIR = Path.cwd()
-DEODE_DEFS = ConfigParserDefaults.DATA_DIRECTORY / "eccodes/definitions"
+TACTUS_DEFS = ConfigParserDefaults.DATA_DIRECTORY / "eccodes/definitions"
 
 
 @pytest.fixture(scope="module")
@@ -27,7 +27,7 @@ def task(tmp_directory, default_config):
         [system]
             wrk = "{tmp_directory}"
         [platform]
-            deode_home = "{WORKING_DIR}"
+            tactus_home = "{WORKING_DIR}"
         """
     )
 
@@ -58,7 +58,7 @@ class TestEccodesDefPath:
         # No preset path, no ECCODES_VERSION
         task._set_eccodes_environment()
         eccodes_definition_path = os.getenv("ECCODES_DEFINITION_PATH")
-        assert str(DEODE_DEFS) in eccodes_definition_path
+        assert str(TACTUS_DEFS) in eccodes_definition_path
 
     def test_no_preset_path_old_version(self, task):
         # No preset path, older ECCODES_VERSION
@@ -69,7 +69,7 @@ class TestEccodesDefPath:
         task._set_eccodes_environment()
         eccodes_definition_path = os.getenv("ECCODES_DEFINITION_PATH")
         assert eccodes_share in eccodes_definition_path
-        assert str(DEODE_DEFS) in eccodes_definition_path
+        assert str(TACTUS_DEFS) in eccodes_definition_path
 
     def test_no_preset_path_new_version(self, task):
         # No preset path, newer ECCODES_VERSION
@@ -79,5 +79,5 @@ class TestEccodesDefPath:
         task._set_eccodes_environment()
         eccodes_definition_path = os.getenv("ECCODES_DEFINITION_PATH")
         eccodes_share = f"{eccodes_dir}/share/eccodes/definitions"
-        assert str(DEODE_DEFS) in eccodes_definition_path
+        assert str(TACTUS_DEFS) in eccodes_definition_path
         assert eccodes_share not in eccodes_definition_path
