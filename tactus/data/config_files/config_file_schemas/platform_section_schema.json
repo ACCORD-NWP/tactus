@@ -135,6 +135,6 @@
       "type": "string",
       "description": "Default unix group for directories created by tactus, leave empty to use default group of user.",
       "default": ""
-    },
+    }
   }
 }

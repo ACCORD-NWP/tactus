@@ -11,7 +11,7 @@ from tactus.config_parser import ParsedConfig
 from tactus.derived_variables import derived_variables
 from tactus.logs import logger
 from tactus.os_utils import tactusmakedirs
-from tactus.plugin import DeodePluginRegistryFromConfig
+from tactus.plugin import TactusPluginRegistryFromConfig
 from tactus.tasks.discover_task import available_tasks
 from tactus.toolbox import FileManager, Platform
 
@@ -429,7 +429,7 @@ class NoSchedulerSubmission:
             RuntimeError: Submission failure.
         """
         name = task.lower()
-        if name not in available_tasks(DeodePluginRegistryFromConfig(config)):
+        if name not in available_tasks(TactusPluginRegistryFromConfig(config)):
             raise NotImplementedError(f"Task {name} not implemented")
 
         troika_config = Platform(config).get_value("troika.config_file")
