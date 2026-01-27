@@ -11,13 +11,13 @@ on:
         type: string
 
 jobs:
-  test-install-deode-workflow-atos:
+  test-install-tactus-atos:
     runs-on: [hpc]
     continue-on-error: false
     steps:
 
       - name: Test installation phase on Atos
-        id: test-install-deode-workflow-atos
+        id: test-install-tactus-atos
         uses: ecmwf-actions/reusable-workflows/ci-hpc-generic@main
         with:
           troika_user: ${{ secrets.HPC_CI_SSH_USER }}
@@ -65,10 +65,10 @@ jobs:
               #SBATCH --job-name=test_deode_workflow
               #SBATCH --time=00:15:00
 
-  run-forecast-deode-workflow-atos:
+  run-forecast-tactus-atos:
     if: github.event_name == 'workflow_dispatch'
     runs-on: [hpc]
-    needs: test-install-deode-workflow-atos
+    needs: test-install-tactus-atos
     steps:
 
       - name: Run forecast on Atos
@@ -114,9 +114,9 @@ jobs:
               echo "actor_username="{{ actor_username }}
 
               # Use the repo root as the workflow folder.
-              DEODE_WORKFLOW_FOLDER="$PWD"
-              echo $POETRY_HOME $DEODE_WORKFLOW_FOLDER
-              cd $DEODE_WORKFLOW_FOLDER
+              TACTUS_WORKFLOW_FOLDER="$PWD"
+              echo $POETRY_HOME $TACTUS_WORKFLOW_FOLDER
+              cd $TACTUS_WORKFLOW_FOLDER
 
               # Run deode via Poetry so it uses the venv dependencies.
               run_date=$(date +%Y%m%d_%H%M)
@@ -133,7 +133,7 @@ jobs:
 
               # Add executable permission because of poetry.
               chmod u+x test_worfklow_scripts/export_case_variables.py
-              export_command=$($POETRY_HOME/bin/poetry run test_worfklow_scripts/export_case_variables.py $DEODE_WORKFLOW_FOLDER/${{ inputs.configuration_name }}.toml)
+              export_command=$($POETRY_HOME/bin/poetry run test_worfklow_scripts/export_case_variables.py $TACTUS_WORKFLOW_FOLDER/${{ inputs.configuration_name }}.toml)
               echo $export_command > export_command.sh
               source export_command.sh
 
@@ -152,14 +152,14 @@ jobs:
               #SBATCH --job-name=test_deode_workflow_run_forecast
               #SBATCH --time=00:60:00
 
-  build-deode-workflow-atos:
+  build-tactus-atos:
     if: ${{ github.event_name != 'pull_request' }}
     runs-on: [hpc]
-    needs: test-install-deode-workflow-atos
+    needs: test-install-tactus-atos
     steps:
 
       - name: Build tactus wheel
-        id: build-deode-workflow-atos
+        id: build-tactus-atos
         uses: ecmwf-actions/reusable-workflows/ci-hpc-generic@main
         with:
           troika_user: ${{ secrets.HPC_CI_SSH_USER }}
@@ -185,13 +185,13 @@ jobs:
             #SBATCH --job-name=build_deode_workflow
             #SBATCH --time=00:20:00
 
-  install-deode-workflow-atos:
+  install-tactus-atos:
     runs-on: [hpc]
-    needs: build-deode-workflow-atos
+    needs: build-tactus-atos
     steps:
 
       - name: Install tactus wheel
-        id: install-deode-workflow-atos
+        id: install-tactus-atos
         uses: ecmwf-actions/reusable-workflows/ci-hpc-generic@main
         with:
           troika_user: ${{ secrets.HPC_CI_SSH_USER }}
@@ -201,8 +201,8 @@ jobs:
             module load python3/3.10.10-01
             python3 -m venv .venv
             source .venv/bin/activate
-            export DEODEVERSION=$(grep -A 5 '\[tool.poetry\]' pyproject.toml | grep 'version =' | awk -F\" '{print $2}')
-            python3 -m pip install dist/deode-$DEODEVERSION-py3-none-any.whl
+            export TACTUSVERSION=$(grep -A 5 '\[tool.poetry\]' pyproject.toml | grep 'version =' | awk -F\" '{print $2}')
+            python3 -m pip install dist/deode-$TACTUSVERSION-py3-none-any.whl
             deode -h
           sbatch_options: |
             #SBATCH --job-name=install_deode_workflow

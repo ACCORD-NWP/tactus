@@ -20,7 +20,7 @@
 
 [impact.aq.communicate.air_quality_general.nwp]
   archive_path = "@ARCHIVE@"
-  file_templates = ["GRIBPFDEOD+*s", "GRIBDEODE+*", "GRIBDEOD+*.sfx"]
+  file_templates = ["GRIBPFDEOD+*s", "GRIBTACTUS+*", "GRIBDEOD+*.sfx"]
   ifs_path = "/scratch/aut6432/DE_NWP/deode/IFS/atos_bologna_DT"
   nwp_cycle = "@CYCLE@"
   nwp_model = "@CSC@"

@@ -8,13 +8,13 @@ on:
 
 jobs:
 
-    test-install-deode-workflow-lumi:
+    test-install-tactus-lumi:
         if: ${{ github.event_name != 'pull_request' }}
         runs-on: [hpc]
         steps:
 
           - name: Test installation phase on LUMI
-            id: test-install-deode-workflow-lumi
+            id: test-install-tactus-lumi
             uses: ecmwf-actions/reusable-workflows/ci-hpc-generic@main
             with:
               troika_user: ${{ secrets.HPC_LUMI_CI_SSH_USER }}
@@ -56,13 +56,13 @@ jobs:
                 #SBATCH --partition=small
                 #SBATCH --mem=12G
 
-    build-install-deode-workflow-lumi:
+    build-install-tactus-lumi:
         runs-on: [hpc]
-        needs: test-install-deode-workflow-lumi
+        needs: test-install-tactus-lumi
         steps:
 
           - name: Build tactus on LUMI
-            id: build-deode-workflow-lumi
+            id: build-tactus-lumi
             uses: ecmwf-actions/reusable-workflows/ci-hpc-generic@main
             with:
               troika_user: ${{ secrets.HPC_LUMI_CI_SSH_USER }}
@@ -95,13 +95,13 @@ jobs:
                 #SBATCH --partition=small
                 #SBATCH --mem=12G
 
-    install-deode-workflow-lumi:
+    install-tactus-lumi:
         runs-on: [hpc]
-        needs: build-install-deode-workflow-lumi
+        needs: build-install-tactus-lumi
         steps:
 
           - name: Install tactus on LUMI
-            id: install-deode-workflow-lumi
+            id: install-tactus-lumi
             uses: ecmwf-actions/reusable-workflows/ci-hpc-generic@main
             with:
               troika_user: ${{ secrets.HPC_LUMI_CI_SSH_USER }}
@@ -117,8 +117,8 @@ jobs:
                 module load cray-python/3.10.10
                 python3 -m venv .venv
                 source .venv/bin/activate
-                export DEODEVERSION=$(grep -A 5 '\[tool.poetry\]' pyproject.toml | grep 'version =' | awk -F\" '{print $2}')
-                python3 -m pip install dist/deode-$DEODEVERSION-py3-none-any.whl
+                export TACTUSVERSION=$(grep -A 5 '\[tool.poetry\]' pyproject.toml | grep 'version =' | awk -F\" '{print $2}')
+                python3 -m pip install dist/deode-$TACTUSVERSION-py3-none-any.whl
                 deode -h
               sbatch_options: |
                 #SBATCH --job-name=build_deode_workflow

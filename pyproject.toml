@@ -5,7 +5,7 @@
   version = "0.24.1"
   # Other package info
   authors = ["The DE_330 project."]
-  documentation = "https://destination-earth-digital-twins.github.io/deode-workflow-docs"
+  documentation = "https://destination-earth-digital-twins.github.io/tactus-docs"
   include = [{path = "tactus/data/**/*", format = ["sdist", "wheel"]}]
   license = "MIT"
   readme = "README.md"

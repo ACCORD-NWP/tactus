@@ -1,6 +1,6 @@
 [impact.verification]
   active = true
-  path = "@DEODE_HOME@"
+  path = "@TACTUS_HOME@"
 
 [impact.verification.StartImpactModels]
   arguments = [

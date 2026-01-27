@@ -6,7 +6,7 @@
   archive_root = "@SCRATCH@/@CASE@/archive"
   climdata = "@STATIC_DATA@/climate"
   deode_home = "set-by-the-system"
-  e923_data = "@STATIC_DATA@/climate/E923_DATA_DEODE"
+  e923_data = "@STATIC_DATA@/climate/E923_DATA_TACTUS"
   ecoclim_data_path = "@CLIMDATA@/ecoclimap"
   ecoclimap_bin_dir = "@ecoclim_data_path@"
   ecosg_data_path = "@CLIMDATA@/ECOCLIMAP_SG"

@@ -58,7 +58,7 @@
 
 [gribmodify]
   conversions = ["fullpos"]
-  gribmodify_rules_file = "@DEODE_HOME@/data/gribmodify/gribmodify_rules.json"
+  gribmodify_rules_file = "@TACTUS_HOME@/data/gribmodify/gribmodify_rules.json"
 
 [gribmodify.fullpos.1]
   output_name = "tirf"

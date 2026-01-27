@@ -1,5 +1,5 @@
 [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/destination-earth-digital-twins/tactus)
-[![Github Pages](https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white)](https://destination-earth-digital-twins.github.io/deode-workflow-docs/)
+[![Github Pages](https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white)](https://destination-earth-digital-twins.github.io/tactus-docs/)
 
 
 [![Linting](https://github.com/destination-earth-digital-twins/tactus/actions/workflows/linting.yaml/badge.svg)](https://github.com/destination-earth-digital-twins/tactus/actions/workflows/linting.yaml)
@@ -7,13 +7,13 @@
 )](https://github.com/destination-earth-digital-twins/tactus/actions/workflows/tests.yaml)
 [![codecov](https://codecov.io/github/destination-earth-digital-twins/tactus/branch/develop/graph/badge.svg?token=4PRUK8DMZF)](https://codecov.io/github/destination-earth-digital-twins/tactus)
 
-# DEODE Scripting System
+# TACTUS Scripting System
 
 ## About
 
 The [tactus scripting system](https://github.com/destination-earth-digital-twins/tactus/) provides a `tactus` python package.
 
-See the [project's documentation page](https://destination-earth-digital-twins.github.io/deode-workflow-docs) for more information.
+See the [project's documentation page](https://destination-earth-digital-twins.github.io/tactus-docs) for more information.
 
 
 ## Set up environment
@@ -123,7 +123,7 @@ Before you can use `deode` (apart from the `-h` option), you will need a configu
 [TOML](https://en.wikipedia.org/wiki/TOML) format. Please take a look at
  the default
  [config.toml](https://github.com/destination-earth-digital-twins/tactus/blob/develop/deode/data/config_files/config.toml) file, as well as the
- [project's Doc Page](https://destination-earth-digital-twins.github.io/deode-workflow-docs),
+ [project's Doc Page](https://destination-earth-digital-twins.github.io/tactus-docs),
  for more information about this.
 
  To see all configs currently in place in your `deode` setup, please run
