@@ -18,7 +18,7 @@
   pgd_data_path = "@CLIMDATA@/PGD"
   rrtm_dir = "@STATIC_DATA@/rrtm/@CYCLE@"
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef/"
-  scratch = "/nobackup/smhid20/proj/accord/@USER@/tactus"
+  scratch = "/nobackup/smhid20/proj/accord/@USER@/deode"
   soilgrid_data_path = "@CLIMDATA@/SOILGRID"
   static_data = "/nobackup/smhid19/users/sm_uandr/HARMONIE/data"
   task_name = "@STAND_ALONE_TASK_NAME@"
