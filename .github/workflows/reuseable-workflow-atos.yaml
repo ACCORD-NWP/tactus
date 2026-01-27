@@ -54,7 +54,7 @@ jobs:
               # Restore original pyproject.toml-file
               git checkout pyproject.toml
 
-              $POETRY_HOME/bin/poetry run deode -h
+              $POETRY_HOME/bin/poetry run tactus -h
           template_data: |
               repo: https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/${{ github.repository }}.git
               ref: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -62,7 +62,7 @@ jobs:
               pull_request_number: ${{ github.event.number }}
               pull_request_branch_name: ${{ github.head_ref }}
           sbatch_options: |
-              #SBATCH --job-name=test_deode_workflow
+              #SBATCH --job-name=test_tactus_workflow
               #SBATCH --time=00:15:00
 
   run-forecast-tactus-atos:
@@ -118,7 +118,7 @@ jobs:
               echo $POETRY_HOME $TACTUS_WORKFLOW_FOLDER
               cd $TACTUS_WORKFLOW_FOLDER
 
-              # Run deode via Poetry so it uses the venv dependencies.
+              # Run tactus via Poetry so it uses the venv dependencies.
               run_date=$(date +%Y%m%d_%H%M)
               # Use a local modifications file to override the case name per run.
               cat > github_modifications.toml<<EOF
@@ -126,10 +126,10 @@ jobs:
                 case = "@CASE_PREFIX@@CYCLE@_@CSC@_@EVENT_TYPE@_@DOMAIN@_@YMD_START@_{{ actor_username }}_workflow_test_date_${run_date}"
               EOF
               cat github_modifications.toml
-              echo $(pwd)/github_modifications.toml  >> deode/data/config_files/configurations/${{ inputs.configuration_name }}
-              cat deode/data/config_files/configurations/${{ inputs.configuration_name }}
+              echo $(pwd)/github_modifications.toml  >> tactus/data/config_files/configurations/${{ inputs.configuration_name }}
+              cat tactus/data/config_files/configurations/${{ inputs.configuration_name }}
 
-              $POETRY_HOME/bin/poetry run deode case ?deode/data/config_files/configurations/${{ inputs.configuration_name }} -o ${{ inputs.configuration_name }}.toml --start-suite
+              $POETRY_HOME/bin/poetry run tactus case ?tactus/data/config_files/configurations/${{ inputs.configuration_name }} -o ${{ inputs.configuration_name }}.toml --start-suite
 
               # Add executable permission because of poetry.
               chmod u+x test_worfklow_scripts/export_case_variables.py
@@ -149,7 +149,7 @@ jobs:
               pull_request_branch_name: ${{ github.head_ref }}
               actor_username: ${{ github.actor }}
           sbatch_options: |
-              #SBATCH --job-name=test_deode_workflow_run_forecast
+              #SBATCH --job-name=test_tactus_workflow_run_forecast
               #SBATCH --time=00:60:00
 
   build-tactus-atos:
@@ -176,13 +176,13 @@ jobs:
             $POETRY_HOME/bin/poetry --version
             export PATH=$POETRY_HOME/bin:$PATH
             $POETRY_HOME/bin/poetry build -f wheel
-            tar -cf deode_workflow-${{ github.sha }}.tar.gz dist pyproject.toml
-            mv deode_workflow-${{ github.sha }}.tar.gz $SCRATCH/deode_workflow-${{ github.sha }}.tar.gz
+            tar -cf tactus_workflow-${{ github.sha }}.tar.gz dist pyproject.toml
+            mv tactus_workflow-${{ github.sha }}.tar.gz $SCRATCH/tactus_workflow-${{ github.sha }}.tar.gz
           template_data: |
             repo: https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/${{ github.repository }}.git
             ref: ${{ github.event.pull_request.head.sha || github.sha }}
           sbatch_options: |
-            #SBATCH --job-name=build_deode_workflow
+            #SBATCH --job-name=build_tactus_workflow
             #SBATCH --time=00:20:00
 
   install-tactus-atos:
@@ -196,14 +196,14 @@ jobs:
         with:
           troika_user: ${{ secrets.HPC_CI_SSH_USER }}
           template: |
-            cp $SCRATCH/deode_workflow-${{ github.sha }}.tar.gz .
-            tar -xf deode_workflow-${{ github.sha }}.tar.gz
+            cp $SCRATCH/tactus_workflow-${{ github.sha }}.tar.gz .
+            tar -xf tactus_workflow-${{ github.sha }}.tar.gz
             module load python3/3.10.10-01
             python3 -m venv .venv
             source .venv/bin/activate
             export TACTUSVERSION=$(grep -A 5 '\[tool.poetry\]' pyproject.toml | grep 'version =' | awk -F\" '{print $2}')
-            python3 -m pip install dist/deode-$TACTUSVERSION-py3-none-any.whl
-            deode -h
+            python3 -m pip install dist/tactus-$TACTUSVERSION-py3-none-any.whl
+            tactus -h
           sbatch_options: |
-            #SBATCH --job-name=install_deode_workflow
+            #SBATCH --job-name=install_tactus_workflow
             #SBATCH --time=00:05:00

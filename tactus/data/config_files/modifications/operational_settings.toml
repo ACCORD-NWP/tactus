@@ -55,7 +55,7 @@
   pattern = "*"
 
 [archiving.prefix]
-  ecfs = "ec:/@USER@/DE_NWP/deode/"
+  ecfs = "ec:/@USER@/DE_NWP/tactus/"
 
 [archiving.static.copy.config]
   active = true
@@ -141,5 +141,5 @@
   ecfs_static = "@ARCHIVE_TIMESTAMP_START@/@CASE_IDENTIFIER@/climate"
   logs = "@CASEDIR@"
   marsdir = "@SCRATCH_OPER@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
-  scratch_oper = "@SCRATCH@/DE_NWP/deode"
+  scratch_oper = "@SCRATCH@/DE_NWP/tactus"
   sub_casedir = "@ARCHIVE_TIMESTAMP@/@CASE_IDENTIFIER@/@MEMBER_STR@"

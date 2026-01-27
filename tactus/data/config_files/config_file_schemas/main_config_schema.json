@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Config",
-  "description": "Model for validation of `deode`'s main config file.",
+  "description": "Model for validation of `tactus`'s main config file.",
   "type": "object",
   "additionalProperties": true,
   "properties": {
@@ -298,7 +298,7 @@
         "scratch_ext": {
           "decription": "Extention of cratche for operational user.",
           "type": "string",
-          "default": "deode"
+          "default": "tactus"
         }
       }
     },
@@ -869,7 +869,7 @@
         },
         "case": {
           "description": "Experiment name",
-          "default": "deode_case",
+          "default": "tactus_case",
           "type": "string",
 	        "pattern": "^[^0-9][^.]*$"
         },

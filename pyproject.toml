@@ -223,7 +223,7 @@
 
 [[tool.poe.tasks.doc.switch]]
   case = "clean"
-  cmd = "rm -rf docs/_build/ docs/deode.rst docs/markdown_docs/config.md"
+  cmd = "rm -rf docs/_build/ docs/tactus.rst docs/markdown_docs/config.md"
 
 [[tool.poe.tasks.doc.switch]]
   case = "build"

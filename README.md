@@ -59,7 +59,7 @@ See also [lumi doc](https://github.com/destination-earth-digital-twins/tactus/bl
 
 ## Installation
 
-First checkout the `deode` source code from github:
+First checkout the `tactus` source code from github:
 ```shell
 git clone git@github.com:destination-earth-digital-twins/tactus.git
 cd tactus
@@ -111,39 +111,39 @@ Initially set up the environment by repeating the steps in [Set up environment](
 poetry shell
 ```
 
-Alternatively, to activate a `deode` installation located in an arbitrary
+Alternatively, to activate a `tactus` installation located in an arbitrary
 ```
 
-Test that `deode` works by running:
+Test that `tactus` works by running:
 ```shell
-deode -h
+tactus -h
 ```
 ### The Configuration File
-Before you can use `deode` (apart from the `-h` option), you will need a configuration file written in the
+Before you can use `tactus` (apart from the `-h` option), you will need a configuration file written in the
 [TOML](https://en.wikipedia.org/wiki/TOML) format. Please take a look at
  the default
- [config.toml](https://github.com/destination-earth-digital-twins/tactus/blob/develop/deode/data/config_files/config.toml) file, as well as the
+ [config.toml](https://github.com/destination-earth-digital-twins/tactus/blob/develop/tactus/data/config_files/config.toml) file, as well as the
  [project's Doc Page](https://destination-earth-digital-twins.github.io/tactus-docs),
  for more information about this.
 
- To see all configs currently in place in your `deode` setup, please run
+ To see all configs currently in place in your `tactus` setup, please run
  ```shell
- deode show config
+ tactus show config
  ```
 
 ### Command line options
 
 After completing the setup, you should be able to run
 ```shell
-deode [opts] SUBCOMMAND [subcommand_opts]
+tactus [opts] SUBCOMMAND [subcommand_opts]
 ```
 where `[opts]` and `[subcommand_opts]` denote optional command line arguments
-that apply, respectively, to `deode` in general and to `SUBCOMMAND`
+that apply, respectively, to `tactus` in general and to `SUBCOMMAND`
 specifically.
 
-**Please run `deode -h` for information** about the supported subcommands
-and general `deode` options. For info about specific subcommands and the
-options that apply to them only, **please run `deode SUBCOMMAND -h`** (note
+**Please run `tactus -h` for information** about the supported subcommands
+and general `tactus` options. For info about specific subcommands and the
+options that apply to them only, **please run `tactus SUBCOMMAND -h`** (note
 that the `-h` goes after the subcommand in this case).
 
 ## Examples
@@ -154,14 +154,14 @@ These examples assume that you have successfully [Set up environment](#set-up-en
 
 The following command will run  the full suite using the default experiment:
 ```shell
-deode case ?deode/data/config_files/configurations/cy48t3_arome -o cy48t3_arome.toml --start-suite
+tactus case ?tactus/data/config_files/configurations/cy48t3_arome -o cy48t3_arome.toml --start-suite
 ```
 
 ### Running the `"Forecast"` task from the `hpc-login`'s command line
 
-The command below runs `deode`'s task `"Forecast"` for the member specified in the config file using the batch system rules defined in your `config.toml`:
+The command below runs `tactus`'s task `"Forecast"` for the member specified in the config file using the batch system rules defined in your `config.toml`:
 ```shell
-deode run --task Forecast --config-file cy48t3_arome.toml
+tactus run --task Forecast --config-file cy48t3_arome.toml
 ```
 
 Note that this requires a previous run of the [ecflow suite](#running-ecflow-suite-on-atos-or-lumi) for the given config file to have finished succesfully.

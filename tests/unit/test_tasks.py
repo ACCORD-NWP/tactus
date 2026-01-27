@@ -60,7 +60,7 @@ def task_name_and_configs(request, default_config, tmp_directory):
             wrk = "{tmp_directory}"
             bindir = "{tmp_directory}/bin"
         [platform]
-            deode_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
+            tactus_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
             scratch = "{tmp_directory}"
             static_data = "{tmp_directory}"
             climdata = "{tmp_directory}"
@@ -295,11 +295,11 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         new=new_task_interpolsstsic_interpolsstsic_execute_method,
     )
     session_mocker.patch(
-        "deode.tasks.generatewfptabfile.GenerateWfpTabFile.execute",
+        "tactus.tasks.generatewfptabfile.GenerateWfpTabFile.execute",
         new=new_task_generate_wfp_tab_file_execute_method,
     )
     session_mocker.patch(
-        "deode.tasks.iomerge.IOmerge.execute",
+        "tactus.tasks.iomerge.IOmerge.execute",
         new=new_task_iomerge_iomerge_execute_method,
     )
     session_mocker.patch(

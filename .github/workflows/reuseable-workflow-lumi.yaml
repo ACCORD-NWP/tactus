@@ -44,13 +44,13 @@ jobs:
                 # Restore original pyproject.toml-file
                 git checkout pyproject.toml
 
-                $POETRY_HOME/bin/poetry run deode -h
+                $POETRY_HOME/bin/poetry run tactus -h
 
               template_data: |
                 repo: https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/${{ github.repository }}.git
                 ref: ${{ github.event.pull_request.head.sha || github.sha }}
               sbatch_options: |
-                #SBATCH --job-name=install_deode_workflow
+                #SBATCH --job-name=install_tactus_workflow
                 #SBATCH --time=00:30:00
                 #SBATCH --account=project_465000527
                 #SBATCH --partition=small
@@ -83,13 +83,13 @@ jobs:
                 $POETRY_HOME/bin/poetry --version
                 export PATH=$POETRY_HOME/bin:$PATH
                 $POETRY_HOME/bin/poetry build -f wheel
-                tar -cf deode_workflow-${{ github.sha }}.tar.gz dist pyproject.toml
-                mv deode_workflow-${{ github.sha }}.tar.gz /scratch/project_465000527/github-actions/deode_workflow-${{ github.sha }}.tar.gz
+                tar -cf tactus_workflow-${{ github.sha }}.tar.gz dist pyproject.toml
+                mv tactus_workflow-${{ github.sha }}.tar.gz /scratch/project_465000527/github-actions/tactus_workflow-${{ github.sha }}.tar.gz
               template_data: |
                 repo: https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/${{ github.repository }}.git
                 ref: ${{ github.event.pull_request.head.sha || github.sha }}
               sbatch_options: |
-                #SBATCH --job-name=build_deode_workflow
+                #SBATCH --job-name=build_tactus_workflow
                 #SBATCH --time=00:45:00
                 #SBATCH --account=project_465000527
                 #SBATCH --partition=small
@@ -111,17 +111,17 @@ jobs:
               template: |
                 mkdir -p tactus-${{ github.sha }}-install
                 cd tactus-${{ github.sha }}-install
-                cp /scratch/project_465000527/github-actions/deode_workflow-${{ github.sha }}.tar.gz .
-                tar -xf deode_workflow-${{ github.sha }}.tar.gz
+                cp /scratch/project_465000527/github-actions/tactus_workflow-${{ github.sha }}.tar.gz .
+                tar -xf tactus_workflow-${{ github.sha }}.tar.gz
                 module --force purge
                 module load cray-python/3.10.10
                 python3 -m venv .venv
                 source .venv/bin/activate
                 export TACTUSVERSION=$(grep -A 5 '\[tool.poetry\]' pyproject.toml | grep 'version =' | awk -F\" '{print $2}')
-                python3 -m pip install dist/deode-$TACTUSVERSION-py3-none-any.whl
-                deode -h
+                python3 -m pip install dist/tactus-$TACTUSVERSION-py3-none-any.whl
+                tactus -h
               sbatch_options: |
-                #SBATCH --job-name=build_deode_workflow
+                #SBATCH --job-name=build_tactus_workflow
                 #SBATCH --time=00:30:00
                 #SBATCH --account=project_465000527
                 #SBATCH --partition=small

@@ -21,7 +21,7 @@
 [impact.aq.communicate.air_quality_general.nwp]
   archive_path = "@ARCHIVE@"
   file_templates = ["GRIBPFDEOD+*s", "GRIBTACTUS+*", "GRIBDEOD+*.sfx"]
-  ifs_path = "/scratch/aut6432/DE_NWP/deode/IFS/atos_bologna_DT"
+  ifs_path = "/scratch/aut6432/DE_NWP/tactus/IFS/atos_bologna_DT"
   nwp_cycle = "@CYCLE@"
   nwp_model = "@CSC@"
   surfex_physiography = "@CLIMDIR@/Const.Clim@ONE_DECADE@.sfx"
@@ -40,7 +40,7 @@
 [impact.aq.StartImpactModels]
   arguments = [
     "dwaq case --config-file @ARCHIVE_ROOT@/config.toml ?@AQ_PATH@/dwaq/data/config_files/configurations/all_aq_plugin @WRK@/aq.toml -e -o @WRK@/aq_config.toml --case-name @CASE@_AQ",
-    "deode start suite --config-file @WRK@/aq_config.toml -f @WRK@/aq.def",
+    "tactus start suite --config-file @WRK@/aq_config.toml -f @WRK@/aq.def",
   ]
 
 [macros.select.aq_macros]
