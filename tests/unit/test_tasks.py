@@ -10,7 +10,7 @@ import tomlkit
 
 from tactus import GeneralConstants
 from tactus.derived_variables import derived_variables, set_times
-from tactus.plugin import DeodePluginRegistry
+from tactus.plugin import TactusPluginRegistry
 from tactus.tasks.archive import ArchiveDataBridge, ArchiveHour, ArchiveStatic
 from tactus.tasks.base import Task
 from tactus.tasks.batch import BatchJob
@@ -33,7 +33,7 @@ with contextlib.suppress(ModuleNotFoundError):
 
 def classes_to_be_tested():
     """Return the names of the task-related classes to be tested."""
-    reg = DeodePluginRegistry()
+    reg = TactusPluginRegistry()
     encountered_classes = available_tasks(reg)
     return encountered_classes.keys()
 

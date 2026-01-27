@@ -6,10 +6,10 @@ import yaml
 
 import tactus
 from tactus.plugin import (
-    DeodePlugin,
-    DeodePluginRegistry,
-    DeodePluginRegistryFromConfig,
-    DeodePluginRegistryFromFile,
+    TactusPlugin,
+    TactusPluginRegistry,
+    TactusPluginRegistryFromConfig,
+    TactusPluginRegistryFromFile,
 )
 from tactus.suites.discover_suite import available_suites
 from tactus.tasks.discover_task import available_tasks
@@ -40,7 +40,7 @@ def test_plugin(tmp_directory, default_config):
     with open(reg_config_file, mode="w", encoding="utf8") as fh:
         yaml.safe_dump(config, fh)
 
-    reg = DeodePluginRegistry()
+    reg = TactusPluginRegistry()
     for plg in reg.plugins:
         if plg.name == "tactus":
             assert Path(tactus.__path__[0]).parent / "tactus/tasks" == plg.tasks_path
@@ -52,7 +52,7 @@ def test_plugin(tmp_directory, default_config):
             raise NotImplementedError
 
     reg.save_registry(reg_config_file)
-    reg = DeodePluginRegistryFromFile(reg_config_file)
+    reg = TactusPluginRegistryFromFile(reg_config_file)
     for plg in reg.plugins:
         if plg.name == "tactus":
             assert Path(tactus.__path__[0]).parent / "tactus/tasks" == plg.tasks_path
@@ -66,7 +66,7 @@ def test_plugin(tmp_directory, default_config):
     update = {"general": {"plugin_registry": {"extension": tmp_directory}}}
     config = default_config
     config = config.copy(update=update)
-    reg = DeodePluginRegistryFromConfig(config)
+    reg = TactusPluginRegistryFromConfig(config)
     for plg in reg.plugins:
         if plg.name == "tactus":
             assert Path(tactus.__path__[0]).parent / "tactus/tasks" == plg.tasks_path
@@ -80,7 +80,7 @@ def test_plugin(tmp_directory, default_config):
 
 def test_empty_config():
     """Test empty plugins."""
-    reg = DeodePluginRegistry()
+    reg = TactusPluginRegistry()
 
     for plg in reg.plugins:
         assert Path(tactus.__path__[0]).parent / "tactus/tasks" == plg.tasks_path
@@ -88,12 +88,12 @@ def test_empty_config():
 
 
 def test_tasks(tmp_directory):
-    reg = DeodePluginRegistry()
+    reg = TactusPluginRegistry()
 
     create_task_class("MyExtension", f"{tmp_directory}/extension/tasks/mod_file.py")
     create_suite_class("MyExtension", f"{tmp_directory}/extension/suites/mod_suite.py")
 
-    plg = DeodePlugin("extension", Path(tmp_directory))
+    plg = TactusPlugin("extension", Path(tmp_directory))
     reg.register_plugin(plg)
     known_tasks = available_tasks(reg)
     assert "pgd" in known_tasks
