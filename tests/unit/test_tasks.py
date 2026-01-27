@@ -12,11 +12,10 @@ import tomlkit
 
 from tactus import GeneralConstants
 from tactus.derived_variables import derived_variables, set_times
-from tactus.plugin import DeodePluginRegistry
+from tactus.plugin import TactusPluginRegistry
 from tactus.tasks.archive import ArchiveDataBridge, ArchiveHour, ArchiveStatic
 from tactus.tasks.base import Task
 from tactus.tasks.batch import BatchJob
-from tactus.tasks.clean_old_data import CleanSuites
 from tactus.tasks.collectlogs import CollectLogs
 from tactus.tasks.creategrib import GlGrib
 from tactus.tasks.discover_task import available_tasks, get_task
@@ -36,7 +35,7 @@ with contextlib.suppress(ModuleNotFoundError):
 
 def classes_to_be_tested():
     """Return the names of the task-related classes to be tested."""
-    reg = DeodePluginRegistry()
+    reg = TactusPluginRegistry()
     encountered_classes = available_tasks(reg)
     return encountered_classes.keys()
 
@@ -95,7 +94,6 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_task_archive_archivedatabridge__check_user = ArchiveDataBridge._check_user
     original_task_archive_archivehour_execute_method = ArchiveHour.execute
     original_task_archive_archivestatic_execute_method = ArchiveStatic.execute
-    original_task_clean_old_data_cleansuites_execute_method = CleanSuites.execute
     original_task_creategrib_glgrib_execute_method = GlGrib.execute
     original_task_gribmodify_addtotalprec_execute_method = AddCalculatedFields.execute
     original_task_extractsqlite_extractsqlite_execute_method = ExtractSQLite.execute
