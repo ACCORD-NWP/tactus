@@ -365,7 +365,7 @@
         "suite_definition": {
           "description": "Suite definition to play in EcFlow",
           "type": "string",
-          "default": "DeodeSuiteDefinition"
+          "default": "TactusSuiteDefinition"
         },
         "do_creategrib_static": {
           "description": "Activate grib conversion for static files",
