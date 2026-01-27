@@ -130,7 +130,7 @@ def json_schema_for_iso_8601_time_specs_tests():
 
 @pytest.fixture()
 def tmp_test_data_dir(tmpdir_factory):
-    return Path(tmpdir_factory.mktemp("deode_test_rootdir"))
+    return Path(tmpdir_factory.mktemp("tactus_test_rootdir"))
 
 
 @pytest.fixture()

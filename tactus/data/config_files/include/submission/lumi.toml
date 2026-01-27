@@ -22,12 +22,12 @@
 
 [submission.task_exceptions.ArchiveDataBridge.ENV]
   FDB5_HOME = "/appl/local/destine/mars/versions/7.1.3.0/"
-  FDB_HOME = "@DEODE_DATABRIDGE_HOME@"
+  FDB_HOME = "@TACTUS_DATABRIDGE_HOME@"
   PATH = "$PATH:/appl/local/destine/mars/versions/7.1.3.0/bin/"
 
 [submission.task_exceptions.ArchiveFDB.ENV]
   FDB5_HOME = "/appl/local/destine/mars/versions/7.1.3.0/"
-  FDB_HOME = "@DEODE_FDB_HOME@"
+  FDB_HOME = "@TACTUS_FDB_HOME@"
   PATH = "$PATH:/appl/local/destine/mars/versions/7.1.3.0/bin/"
 
 [submission.task_exceptions.C903]

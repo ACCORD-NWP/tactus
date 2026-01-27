@@ -45,18 +45,18 @@ def test_by_host():
 
 def test_by_env():
     dh = TactusHost()
-    dh.known_hosts = {"by_env": {"env": {"DEODE_HOST_TESTENV": "foo"}}}
+    dh.known_hosts = {"by_env": {"env": {"TACTUS_HOST_TESTENV": "foo"}}}
     tactus_host = dh.detect_tactus_host()
     assert tactus_host == "by_env"
 
 
 def test_from_env_tactus_host():
-    os.environ["DEODE_HOST"] = "bar"
+    os.environ["TACTUS_HOST"] = "bar"
     dh = TactusHost()
     dh.known_hosts = {}
     tactus_host = dh.detect_tactus_host()
     assert tactus_host == "bar"
-    del os.environ["DEODE_HOST"]
+    del os.environ["TACTUS_HOST"]
 
 
 def test_ambiguous_host():
@@ -64,14 +64,14 @@ def test_ambiguous_host():
     dh.hostname = "tactus-test"
     dh.known_hosts = {
         "by_host": {"hostname": "tactus-test"},
-        "by_env": {"env": {"DEODE_HOST_TESTENV": "foo"}},
+        "by_env": {"env": {"TACTUS_HOST_TESTENV": "foo"}},
     }
-    os.environ["DEODE_HOST_TESTENV"] = "foo"
+    os.environ["TACTUS_HOST_TESTENV"] = "foo"
     with pytest.raises(
         RuntimeError, match=re.escape("Ambiguous matches: ['by_host', 'by_env']")
     ):
         dh.detect_tactus_host()
-    del os.environ["DEODE_HOST_TESTENV"]
+    del os.environ["TACTUS_HOST_TESTENV"]
 
 
 def test_non_existing_detect_method():

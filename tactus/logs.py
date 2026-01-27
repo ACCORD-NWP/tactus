@@ -21,7 +21,7 @@ from .aux_types import QuasiConstant
 class LogDefaults(QuasiConstant):
     """Defaults used for the logging system."""
 
-    LEVEL = os.environ.get("DEODE_LOGLEVEL", os.environ.get("LOGURU_LEVEL", "INFO"))
+    LEVEL = os.environ.get("TACTUS_LOGLEVEL", os.environ.get("LOGURU_LEVEL", "INFO"))
     DIRECTORY = Path().home() / ".logs" / GeneralConstants.PACKAGE_NAME
     RETENTION_TIME = "1 week"
     SINKS = {

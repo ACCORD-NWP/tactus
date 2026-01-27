@@ -82,15 +82,15 @@ class Task(object):
             return
 
         # Path to modelname definitions
-        deode_eccodes_modelname_path = os.path.join(
+        tactus_eccodes_modelname_path = os.path.join(
             self.platform.get_platform_value("archive_root"), "eccodes", "definitions"
         )
         # Path to local tables
-        deode_eccodes_definition_path = str(
+        tactus_eccodes_definition_path = str(
             ConfigParserDefaults.DATA_DIRECTORY / "eccodes/definitions"
         )
-        deode_eccodes_definition_path = ":".join(
-            [deode_eccodes_definition_path, deode_eccodes_modelname_path]
+        tactus_eccodes_definition_path = ":".join(
+            [tactus_eccodes_definition_path, tactus_eccodes_modelname_path]
         )
 
         try:
@@ -100,7 +100,7 @@ class Task(object):
         except AttributeError:
             eccodes_version = (2, 30, 0)
 
-        eccodes_definition_path = deode_eccodes_definition_path
+        eccodes_definition_path = tactus_eccodes_definition_path
         if eccodes_version < (2, 30, 0):
             try:
                 eccodes_dir = os.environ["ECCODES_DIR"]

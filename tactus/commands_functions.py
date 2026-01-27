@@ -364,8 +364,8 @@ def show_config(args, config):
     )
 
     if args.expand_config:
-        deode_home = set_deode_home(config)
-        config = config.copy(update={"platform": {"deode_home": deode_home}})
+        tactus_home = set_tactus_home(config)
+        config = config.copy(update={"platform": {"tactus_home": tactus_home}})
         config = config.expand_macros(True)
 
     try:

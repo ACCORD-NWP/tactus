@@ -94,4 +94,4 @@
   15_MODULE_PATH = ["use", "/scratch/project_465000527/jasinskas/scl/modules"]
   16_ECFLOW = ["load", "scl-ecflow_23"]
 
-#  RTTOV_COEFDIR = "/scratch/project_465000527/de_330_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
+#  RTTOV_COEFDIR = "/scratch/project_465000527/de_330_common_data/TACTUS/satellite/rtcoef_rttov12/harm_coef/"

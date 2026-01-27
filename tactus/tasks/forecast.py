@@ -44,7 +44,7 @@ class Forecast(PySurfexBaseTask):
         self.forecast_range = self.config["general.times.forecast_range"]
 
         self.archive = self.platform.get_system_value("archive")
-        self.deode_home = self.config["platform.deode_home"]
+        self.tactus_home = self.config["platform.tactus_home"]
         self.output_settings = self.config["general.output_settings"]
         self.surfex = self.config["general.surfex"]
 
