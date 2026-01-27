@@ -484,12 +484,14 @@ class Platform:
 
                 logger.debug("before replace macro={} pattern={}", sub_pattern, pattern)
                 pattern = self.sub_value(pattern, sub_pattern, val)
+                logger.debug("after replace macro={} pattern={}", sub_pattern, pattern)
         with contextlib.suppress(KeyError):
             if bd_index is None:
                 bd_index = int(self.config["task.args.bd_index"])
             pattern = self.sub_value(pattern, "NNN", f"{bd_index:03d}")
 
-            # Time handling
+        # Time handling
+        if basetime is None:
             basetime = self.config.get("general.times.basetime", None)
         if validtime is None:
             validtime = self.config.get("general.times.validtime", None)
