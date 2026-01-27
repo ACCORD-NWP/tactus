@@ -87,7 +87,7 @@
         },
         "ecf_deode_home": {
           "type": "string",
-          "description": "Deode home directory stripped for parts specific to where a node is mounted on a cluster"
+          "description": "tactus home directory stripped for parts specific to where a node is mounted on a cluster"
         }
       }
     },

@@ -9,7 +9,7 @@ import sys
 import types
 
 from ..logs import LoggerHandlers, logger
-from ..plugin import DeodePluginRegistry, DeodePluginRegistryFromConfig
+from ..plugin import TactusPluginRegistry, TactusPluginRegistryFromConfig
 from .base import Task, _get_name
 
 
@@ -62,7 +62,7 @@ def get_task(name, config) -> Task:
             handlers=LoggerHandlers(default_level=config["general.loglevel"])
         )
         logger.debug("Logger reset to level {}", config["general.loglevel"])
-    reg = DeodePluginRegistryFromConfig(config)
+    reg = TactusPluginRegistryFromConfig(config)
     known_types = available_tasks(reg)
     try:
         cls = known_types[name.lower()]
@@ -72,11 +72,11 @@ def get_task(name, config) -> Task:
     return cls(config)
 
 
-def available_tasks(reg: DeodePluginRegistry):
+def available_tasks(reg: TactusPluginRegistry):
     """Create a list of available tasks.
 
     Args:
-        reg (DeodePluginRegistry): Deode plugin registry
+        reg (TactusPluginRegistry): tactus plugin registry
 
     Returns:
         known_types (list): Task objects
