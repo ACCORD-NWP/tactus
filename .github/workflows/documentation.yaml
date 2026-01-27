@@ -91,5 +91,5 @@ jobs:
           destination-repository-name: 'destination-earth-digital-twins/deode-workflow-docs'
           target-branch: gh-pages
           target-directory: docs/
-          user-name: Deode Workflow API Doc Builder
-          user-email: Deode-Workflow@noreply.github.com
+          user-name: tactus API Doc Builder
+          user-email: tactus@noreply.github.com

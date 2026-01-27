@@ -23,8 +23,8 @@ jobs:
               workdir: /scratch/project_465000527/github-actions
               template: |
                 pwd
-                git clone {{ repo }} Deode-Workflow-${{ github.sha }}
-                cd Deode-Workflow-${{ github.sha }}
+                git clone {{ repo }} tactus-${{ github.sha }}
+                cd tactus-${{ github.sha }}
                 git checkout {{ ref }}
                 
                 # Convert all ssh github dependency repos to https github dependency repos
@@ -61,7 +61,7 @@ jobs:
         needs: test-install-deode-workflow-lumi
         steps:
 
-          - name: Build Deode-Workflow on LUMI
+          - name: Build tactus on LUMI
             id: build-deode-workflow-lumi
             uses: ecmwf-actions/reusable-workflows/ci-hpc-generic@main
             with:
@@ -71,8 +71,8 @@ jobs:
               workdir: /scratch/project_465000527/github-actions
               template: |
                 pwd
-                git clone {{ repo }} Deode-Workflow-${{ github.sha }}-build
-                cd Deode-Workflow-${{ github.sha }}-build
+                git clone {{ repo }} tactus-${{ github.sha }}-build
+                cd tactus-${{ github.sha }}-build
                 git checkout {{ ref }}
                 module --force purge
                 module load cray-python/3.10.10
@@ -100,7 +100,7 @@ jobs:
         needs: build-install-deode-workflow-lumi
         steps:
 
-          - name: Install Deode-Workflow on LUMI
+          - name: Install tactus on LUMI
             id: install-deode-workflow-lumi
             uses: ecmwf-actions/reusable-workflows/ci-hpc-generic@main
             with:
@@ -109,8 +109,8 @@ jobs:
               output_dir: /scratch/project_465000527/github-actions
               workdir: /scratch/project_465000527/github-actions
               template: |
-                mkdir -p Deode-Workflow-${{ github.sha }}-install
-                cd Deode-Workflow-${{ github.sha }}-install
+                mkdir -p tactus-${{ github.sha }}-install
+                cd tactus-${{ github.sha }}-install
                 cp /scratch/project_465000527/github-actions/deode_workflow-${{ github.sha }}.tar.gz .
                 tar -xf deode_workflow-${{ github.sha }}.tar.gz
                 module --force purge

@@ -1,17 +1,17 @@
-[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/destination-earth-digital-twins/Deode-Workflow)
+[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/destination-earth-digital-twins/tactus)
 [![Github Pages](https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white)](https://destination-earth-digital-twins.github.io/deode-workflow-docs/)
 
 
-[![Linting](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/linting.yaml/badge.svg)](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/linting.yaml)
-[![Tests](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/tests.yaml/badge.svg
-)](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/tests.yaml)
-[![codecov](https://codecov.io/github/destination-earth-digital-twins/Deode-Workflow/branch/develop/graph/badge.svg?token=4PRUK8DMZF)](https://codecov.io/github/destination-earth-digital-twins/Deode-Workflow)
+[![Linting](https://github.com/destination-earth-digital-twins/tactus/actions/workflows/linting.yaml/badge.svg)](https://github.com/destination-earth-digital-twins/tactus/actions/workflows/linting.yaml)
+[![Tests](https://github.com/destination-earth-digital-twins/tactus/actions/workflows/tests.yaml/badge.svg
+)](https://github.com/destination-earth-digital-twins/tactus/actions/workflows/tests.yaml)
+[![codecov](https://codecov.io/github/destination-earth-digital-twins/tactus/branch/develop/graph/badge.svg?token=4PRUK8DMZF)](https://codecov.io/github/destination-earth-digital-twins/tactus)
 
 # DEODE Scripting System
 
 ## About
 
-The [DEODE Scripting System](https://github.com/destination-earth-digital-twins/Deode-Workflow/) provides a `deode` python package that runs the [Destination Earth on Demand Extremes system](https://github.com/destination-earth-digital-twins).
+The [tactus scripting system](https://github.com/destination-earth-digital-twins/tactus/) provides a `tactus` python package.
 
 See the [project's documentation page](https://destination-earth-digital-twins.github.io/deode-workflow-docs) for more information.
 
@@ -46,7 +46,7 @@ We **highly recommend** you to also put the statement listed above in your shell
   conda activate <env_name>
   ```
 
-See also [lumi doc](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/docs/markdown_docs/lumi.md) for more details.
+See also [lumi doc](https://github.com/destination-earth-digital-twins/tactus/blob/develop/docs/markdown_docs/lumi.md) for more details.
 
 * On Macs (local install only)
   ```shell
@@ -61,15 +61,15 @@ See also [lumi doc](https://github.com/destination-earth-digital-twins/Deode-Wor
 
 First checkout the `deode` source code from github:
 ```shell
-git clone git@github.com:destination-earth-digital-twins/Deode-Workflow.git
-cd Deode-Workflow
+git clone git@github.com:destination-earth-digital-twins/tactus.git
+cd tactus
 ```
 
-For development, use forks as specified in the [Development guidelines](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/docs/markdown_docs/development_guide.md).
+For development, use forks as specified in the [Development guidelines](https://github.com/destination-earth-digital-twins/tactus/blob/develop/docs/markdown_docs/development_guide.md).
 To clone the forked repository, use the following command, replacing \<username\> with your GitHub username:
 ```shell
-git clone git@github.com:<username>/Deode-Workflow.git
-cd Deode-Workflow
+git clone git@github.com:<username>/tactus.git
+cd tactus
 ```
 
 
@@ -106,7 +106,7 @@ On Atos, it should be installed in your $HOME or $PERM directory.
 
 ## Usage
 
-Initially set up the environment by repeating the steps in [Set up environment](#set-up-environment), navigate to the root level of the `Deode-Workflow` install directory and activate python virtual environment:
+Initially set up the environment by repeating the steps in [Set up environment](#set-up-environment), navigate to the root level of the `tactus` install directory and activate python virtual environment:
 ```shell
 poetry shell
 ```
@@ -122,7 +122,7 @@ deode -h
 Before you can use `deode` (apart from the `-h` option), you will need a configuration file written in the
 [TOML](https://en.wikipedia.org/wiki/TOML) format. Please take a look at
  the default
- [config.toml](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/deode/data/config_files/config.toml) file, as well as the
+ [config.toml](https://github.com/destination-earth-digital-twins/tactus/blob/develop/deode/data/config_files/config.toml) file, as well as the
  [project's Doc Page](https://destination-earth-digital-twins.github.io/deode-workflow-docs),
  for more information about this.
 
@@ -148,7 +148,7 @@ that the `-h` goes after the subcommand in this case).
 
 ## Examples
 
-These examples assume that you have successfully [Set up environment](#set-up-environment) [installed](#installation) Deode-Workflow, navigated to the root level of your `deode` install directory and loaded the python environment. The examples also assume that the binaries and input data for the [ACCORD CSCs](https://www.umr-cnrm.fr/accord/?Canonical-System-Configurations-CSC) is in place. Please contact your local ACCORD members for advice if this is not the case.
+These examples assume that you have successfully [Set up environment](#set-up-environment) [installed](#installation) tactus, navigated to the root level of your `tactus` install directory and loaded the python environment. The examples also assume that the binaries and input data for the [ACCORD CSCs](https://www.umr-cnrm.fr/accord/?Canonical-System-Configurations-CSC) is in place. Please contact your local ACCORD members for advice if this is not the case.
 
 ### Running ecflow suite on ATOS or LUMI
 

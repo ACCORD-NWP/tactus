@@ -17,7 +17,7 @@
         },
         "config_file": {
             "type": "string",
-            "description": "Config file for some json-2-tab configurations not managed by Deode-Workflow.",
+            "description": "Config file for some json-2-tab configurations not managed by tactus.",
             "default": "@DEODE_HOME@/data/json2tab/json2tab-config.yaml"
         },
         "loglevel": {

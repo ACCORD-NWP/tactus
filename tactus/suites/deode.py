@@ -7,8 +7,8 @@ from tactus.suites.base import EcflowSuiteTask, SuiteDefinition
 from tactus.suites.deode_suite_components import StaticDataFamily, TimeDependentFamily
 
 
-class DeodeSuiteDefinition(SuiteDefinition):
-    """Definition of suite for the Deode Workflow."""
+class TactusSuiteDefinition(SuiteDefinition):
+    """Definition of suite for tactus."""
 
     def __init__(
         self,
