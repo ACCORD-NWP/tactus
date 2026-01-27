@@ -145,7 +145,7 @@
   NPROCX = 1
   NPROCY = 1
   SCHOST = "hpc"
-  tasks = ["ExtractSQLite", "StartImpactModels"]
+  tasks = ["ExtractSQLite"]
   WRAPPER = "srun"
 
 [submission.types.gnu.BATCH]
