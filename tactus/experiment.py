@@ -81,7 +81,7 @@ class ExpFromFiles(Exp):
             config (.config_parser.ParsedConfig): Parsed config file contents.
             exp_dependencies (dict): Exp dependencies
             mod_files (List[Path]): Case modifications
-            host (TactusHost, optional): Deode host. Defaults to None.
+            host (TactusHost, optional): tactus host. Defaults to None.
             merged_config (dict, optional): Possible merged input configuration.
                                             Defaults to None.
 

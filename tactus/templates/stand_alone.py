@@ -19,7 +19,7 @@ def default_main(task: str, config_file: str, tactus_home: str):
     Args:
         task (str): Task name
         config_file (str): Config file
-        tactus_home(str): Deode home path
+        tactus_home(str): tactus home path
     """
     tactus_host = TactusHost().detect_tactus_host()
     logger.info("Read config from {}", config_file)

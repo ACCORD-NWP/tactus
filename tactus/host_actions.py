@@ -69,7 +69,7 @@ class TactusHost:
         hh = [hostname_pattern] if isinstance(hostname_pattern, str) else hostname_pattern
         for x in hh:
             if re.match(x, self.hostname):
-                logger.debug("Deode-host detected by hostname {}", x)
+                logger.debug("tactus-host detected by hostname {}", x)
                 return True
 
         return False
@@ -90,7 +90,7 @@ class TactusHost:
                 for x in vv:
                     if re.match(x, os.environ[var]):
                         logger.debug(
-                            "Deode-host detected by environment variable {}={}", var, x
+                            "tactus-host detected by environment variable {}={}", var, x
                         )
                         return True
 
