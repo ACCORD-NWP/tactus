@@ -485,6 +485,8 @@ class Platform:
                 logger.debug("before replace macro={} pattern={}", sub_pattern, pattern)
                 pattern = self.sub_value(pattern, sub_pattern, val)
                 logger.debug("after replace macro={} pattern={}", sub_pattern, pattern)
+
+        # LBC number handling
         with contextlib.suppress(KeyError):
             if bd_index is None:
                 bd_index = int(self.config["task.args.bd_index"])

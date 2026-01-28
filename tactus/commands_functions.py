@@ -399,10 +399,10 @@ def show_host(args, config):  # noqa ARG001
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
-    dh = TactusHost()
-    logger.info("Current host: {}", dh.detect_tactus_host())
+    tactus_host = TactusHost()
+    logger.info("Current host: {}", tactus_host.detect_tactus_host())
     logger.info("Known hosts (host, recognition method):")
-    for host, pattern in dh.known_hosts.items():
+    for host, pattern in tactus_host.known_hosts.items():
         logger.info("{:>16}   {}", host, pattern)
 
 
@@ -439,8 +439,8 @@ def show_namelist(args, config):
 
 def show_paths(args, config):  # noqa ARG001
     """Implement the 'show_paths' command."""
-    dh = TactusHost()
-    ConfigPaths.print(args.config_file, dh.detect_tactus_host())
+    tactus_host = TactusHost()
+    ConfigPaths.print(args.config_file, tactus_host.detect_tactus_host())
 
 
 def namelist_integrate(args, config):

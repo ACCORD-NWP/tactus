@@ -62,7 +62,7 @@ jobs:
               pull_request_number: ${{ github.event.number }}
               pull_request_branch_name: ${{ github.head_ref }}
           sbatch_options: |
-              #SBATCH --job-name=test_tactus_workflow
+              #SBATCH --job-name=test_tactus
               #SBATCH --time=00:15:00
 
   run-forecast-tactus-atos:
@@ -149,7 +149,7 @@ jobs:
               pull_request_branch_name: ${{ github.head_ref }}
               actor_username: ${{ github.actor }}
           sbatch_options: |
-              #SBATCH --job-name=test_tactus_workflow_run_forecast
+              #SBATCH --job-name=test_tactus_run_forecast
               #SBATCH --time=00:60:00
 
   build-tactus-atos:
@@ -176,13 +176,13 @@ jobs:
             $POETRY_HOME/bin/poetry --version
             export PATH=$POETRY_HOME/bin:$PATH
             $POETRY_HOME/bin/poetry build -f wheel
-            tar -cf tactus_workflow-${{ github.sha }}.tar.gz dist pyproject.toml
-            mv tactus_workflow-${{ github.sha }}.tar.gz $SCRATCH/tactus_workflow-${{ github.sha }}.tar.gz
+            tar -cf tactus-${{ github.sha }}.tar.gz dist pyproject.toml
+            mv tactus-${{ github.sha }}.tar.gz $SCRATCH/tactus-${{ github.sha }}.tar.gz
           template_data: |
             repo: https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/${{ github.repository }}.git
             ref: ${{ github.event.pull_request.head.sha || github.sha }}
           sbatch_options: |
-            #SBATCH --job-name=build_tactus_workflow
+            #SBATCH --job-name=build_tactus
             #SBATCH --time=00:20:00
 
   install-tactus-atos:
@@ -196,8 +196,8 @@ jobs:
         with:
           troika_user: ${{ secrets.HPC_CI_SSH_USER }}
           template: |
-            cp $SCRATCH/tactus_workflow-${{ github.sha }}.tar.gz .
-            tar -xf tactus_workflow-${{ github.sha }}.tar.gz
+            cp $SCRATCH/tactus-${{ github.sha }}.tar.gz .
+            tar -xf tactus-${{ github.sha }}.tar.gz
             module load python3/3.10.10-01
             python3 -m venv .venv
             source .venv/bin/activate
@@ -205,5 +205,5 @@ jobs:
             python3 -m pip install dist/tactus-$TACTUSVERSION-py3-none-any.whl
             tactus -h
           sbatch_options: |
-            #SBATCH --job-name=install_tactus_workflow
+            #SBATCH --job-name=install_tactus
             #SBATCH --time=00:05:00

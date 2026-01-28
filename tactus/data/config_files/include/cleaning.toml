@@ -1,0 +1,42 @@
+[cleaning]
+
+[cleaning.CycleCleaning.archive]
+  ncycles_delay = 4
+  path = "@ARCHIVE@"
+  wipe = true
+
+[cleaning.CycleCleaning.ecf_out]
+  path = "@ECF_OUT@/@CASE@/@YMD@/@HH@@mm@"
+  wipe = true
+
+[cleaning.CycleCleaning.ifs]
+  active = false
+  ncycles_delay = 4
+  path = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@"
+  step = "PT1D"
+
+[cleaning.CycleCleaning.wrk]
+  ncycles_delay = 1
+  path = "@WRK@"
+  wipe = true
+
+[cleaning.defaults]
+  active = true
+  dry_run = false
+  include = "(.*)"
+  ncycles_delay = 1
+
+[cleaning.PostMortem.ecf_files]
+  active = false
+  exclude = "(.*)PostMortem(.*)"
+  path = "@ECF_FILES@/@CASE@"
+
+[cleaning.PostMortem.ecf_out]
+  active = false
+  exclude = "(.*)PostMortem(.*)"
+  path = "@ECF_OUT@/@CASE@"
+
+[cleaning.PrepRun.ecf_out]
+  exclude = "(.*)PrepRun(.*)"
+  ncycles_delay = 0
+  path = "@ECF_OUT@/@CASE@"
