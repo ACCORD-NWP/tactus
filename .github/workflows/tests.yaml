@@ -14,7 +14,7 @@ on:
 
 jobs:
   tests:
-    if: github.repository_owner == 'destination-earth-digital-twins'
+    if: github.repository_owner == 'ACCORD-NWP'
     strategy:
       fail-fast: true
       matrix:
