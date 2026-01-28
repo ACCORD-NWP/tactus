@@ -115,6 +115,7 @@
   ]
 
 [platform]
+  archive_root = "@CASEDIR@/.."
   reference_data = "@SCRATCH_OPER@"
 
 [scheduler.ecfvars]

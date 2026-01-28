@@ -251,26 +251,8 @@
       "decription": "Option for cleaning old data",
       "type": "object",
       "properties": {
-        "ehype_data_period": {
-          "description": "Age for old ehype data in days",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
-          "default": "P14D"
-        },
-        "scratch_data_period": {
-          "description": "Age for old data in days",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
-          "default": "P14D"
-        },
-        "suites_period": {
-          "description": "Age for old data in days",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
-          "default": "P14D"
-        },
-        "IFS_period": {
-          "description": "Age for old data in days",
+        "cases_period": {
+          "description": "Age for old cases in days",
           "type": "string",
           "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
           "default": "P7D"
@@ -280,26 +262,22 @@
           "type": "array",
           "default": []
         },
-        "suite_format": {
-          "decription": "Format of path to ecf files",
-          "type": "string",
-          "default": "/"
-        },
-        "scratch_format": {
-          "decription": "Format of path to scratch",
-          "type": "string",
-          "default": "/"
-        },
-        "ifs_format": {
-          "decription": "Format of path to IFS",
-          "type": "string",
-          "default": "/IFS/(\\d{4})/(0[1-9]|1[0-2])/(0[1-9]|[12]\\d|3[01])/([01]\\d|2[0-3])"
-        },
         "scratch_ext": {
           "decription": "Extention of cratche for operational user.",
           "type": "string",
           "default": "deode"
-        }
+        },
+	"force_delete_period": {
+          "decription": "ISO-8601 duration string used to determine the fallback age of a suite for deletion if its files are missing. Defaults to approximately one year ('P365D').",
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
+          "default": "P365D"
+	},
+	"dw_case_prefixes": {
+	  "decription": "List of prefixes of the daily runs",
+	  "type": "array",
+	  "default": ["AUTOMATED_RUN", "HARMONIE_AROME", "AROME", "ALARO"]
+	}
       }
     },
     "pgd": {
@@ -475,20 +453,9 @@
           "decription": "Settings for Cleaning Suite",
           "type": "object",
           "properties": {
-            "do_clean_scratch_data": {
-              "description": "Activate cleaning the scratch data",
-              "type": "boolean",
-              "default": true
-            },
-            "do_clean_suites": {
-              "description": "Activate cleaning the suites",
-              "type": "boolean",
-              "default": true
-            },
-            "do_clean_IFS": {
-              "description": "Activate cleaning IFS data",
-              "type": "boolean",
-              "default": true
+            "do_clean_cases": {
+              "description": "Activate cleaning of the cases",
+              "type": "boolean"
             },
             "days_in_week": {
               "description": "List of days when cleaning suite will run, 0-6 Sunday-Saturday",
