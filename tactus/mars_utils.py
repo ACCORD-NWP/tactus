@@ -21,7 +21,7 @@ def mars_selection(selection: str, config: ParsedConfig) -> dict:
 
     Args:
         selection             (str): The selection to use.
-        config (deode.ParsedConfig): Configuration object
+        config (tactus.ParsedConfig): Configuration object
 
     Returns:
          mars                (dict): mars config section

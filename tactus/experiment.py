@@ -20,7 +20,7 @@ from tactus.datetime_utils import evaluate_date
 from tactus.derived_variables import set_times
 from tactus.eps.eps_setup import EPSConfig, generate_member_settings
 from tactus.general_utils import modify_mappings, recursive_dict_deviation
-from tactus.host_actions import set_deode_home
+from tactus.host_actions import set_tactus_home
 from tactus.logs import logger
 from tactus.os_utils import resolve_path_relative_to_package
 from tactus.toolbox import Platform, compute_georef
@@ -81,7 +81,7 @@ class ExpFromFiles(Exp):
             config (.config_parser.ParsedConfig): Parsed config file contents.
             exp_dependencies (dict): Exp dependencies
             mod_files (List[Path]): Case modifications
-            host (DeodeHost, optional): Deode host. Defaults to None.
+            host (TactusHost, optional): tactus host. Defaults to None.
             merged_config (dict, optional): Possible merged input configuration.
                                             Defaults to None.
 
@@ -356,8 +356,8 @@ def case_setup(
         )
 
     if expand_config:
-        deode_home = set_deode_home(config)
-        exp.config = exp.config.copy(update={"platform": {"deode_home": deode_home}})
+        tactus_home = set_tactus_home(config)
+        exp.config = exp.config.copy(update={"platform": {"tactus_home": tactus_home}})
         exp.config = exp.config.expand_macros()
 
     if output_file is None or ".toml" not in str(output_file):

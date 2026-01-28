@@ -260,7 +260,7 @@ poetry install
 
 ### Running a complete suite
 
-The following commands prepare the environment (execute them one time before starting to use Deode Workflow)
+The following commands prepare the environment (execute them one time before starting to use tactus)
 
 ```shell
 # Do these steps only once

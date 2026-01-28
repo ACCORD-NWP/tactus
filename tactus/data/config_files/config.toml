@@ -54,11 +54,15 @@
   domain_name = "DOMAIN"
 
 [fullpos.selection]
-  master = ["master_selection_@CSC@", "master_subhour_selection_@CSC@", "meteosat"]
+  master = [
+    "master_selection_@CSC@",
+    "master_subhour_selection_@CSC@",
+    "meteosat",
+  ]
 
 [gribmodify]
   conversions = ["fullpos"]
-  gribmodify_rules_file = "@DEODE_HOME@/data/gribmodify/gribmodify_rules.json"
+  gribmodify_rules_file = "@TACTUS_HOME@/data/gribmodify/gribmodify_rules.json"
 
 [gribmodify.fullpos.1]
   output_name = "tirf"
@@ -91,12 +95,10 @@
   extractsqlite = "include/sqlite.toml"
   fdb = "include/fdb.toml"
   file_templates = "include/file_templates.toml"
-  impact = "include/impact.toml"
   json2tab = "include/json2tab.toml"
   macros = "include/macros.toml"
   mars = "include/mars_settings.toml"
   platform = "include/platform_paths/@HOST@.toml"
-  remove = "include/remove.toml"
   scheduler = "include/scheduler/ecflow_@HOST@.toml"
   submission = "include/submission/@HOST@.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"
@@ -110,7 +112,7 @@
   create_static_data = true
   create_time_dependent_suite = true
   do_archiving = true
-  do_cleaning = true
+  do_cleaning = false
   do_extractsqlite = true
   do_interpolsstsic = true
   do_marsprep = true
@@ -131,7 +133,7 @@
   bddir = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
   bddir_sfx = "@BDDIR@"
   bddir_sst = "@BDDIR@"
-  casedir = "@SCRATCH@/deode/@CASE@"
+  casedir = "@SCRATCH@/tactus/@CASE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@"
   logs = "@ARCHIVE_ROOT@/logs"
   prev_case = "@CASE@"

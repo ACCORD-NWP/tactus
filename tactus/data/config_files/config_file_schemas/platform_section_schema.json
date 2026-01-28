@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Platform Section, defined in files under include/platform_paths",
-  "description": "DEODE platform specific path settings",
+  "description": "TACTUS platform specific path settings",
   "type": "object",
   "additionalProperties": true,
   "properties": {
@@ -18,9 +18,9 @@
       "type": "string",
       "description": "Path to the ECOCLIMAP-II data"
     },
-    "deode_home": {
+    "tactus_home": {
       "type": "string",
-      "description": "Path to the deode code, normally no need to change",
+      "description": "Path to the tactus code, normally no need to change",
       "default": "set-by-the-system"
     },
     "pgd_data_path": {
@@ -133,21 +133,8 @@
     },
     "unix_group": {
       "type": "string",
-      "description": "Default unix group for directories created by deode, leave empty to use default group of user.",
+      "description": "Default unix group for directories created by tactus, leave empty to use default group of user.",
       "default": ""
-    },
-    "properties": {
-      "impact": {
-        "title": "Impact model paths (where applicable)",
-        "type": "object",
-        "properties": {
-           "ehype": {
-             "type": "string",
-             "description": "EHYPE model path",
-             "default": ""
-           }
-        }
-      }
     }
   }
 }

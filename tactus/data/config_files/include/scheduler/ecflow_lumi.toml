@@ -2,13 +2,13 @@
 
 [scheduler.ecfvars]
   case_prefix = "@USER@_"
-  ecf_deode_home = "@DEODE_HOME@"
-  ecf_files = "/users/@USER@/deode_ecflow/ecf_files"
-  ecf_files_remotely = "/home/ecflow-user/deode_ecflow/ecf_files"
-  ecf_home = "/home/ecflow/deode_ecflow/ecf_files"
+  ecf_tactus_home = "@TACTUS_HOME@"
+  ecf_files = "/users/@USER@/tactus_ecflow/ecf_files"
+  ecf_files_remotely = "/home/ecflow-user/tactus_ecflow/ecf_files"
+  ecf_home = "/home/ecflow/tactus_ecflow/ecf_files"
   ecf_host = "217.71.194.208"
-  ecf_jobout = "/users/@USER@/deode_ecflow/jobout"
-  ecf_out = "@SCRATCH@/deode_ecflow/jobout"
+  ecf_jobout = "/users/@USER@/tactus_ecflow/jobout"
+  ecf_out = "@SCRATCH@/tactus_ecflow/jobout"
   ecf_port = 8443
   ecf_remoteuser = "ecflow-user"
   ecf_ssl = "1"

@@ -6,7 +6,7 @@ import tempfile
 from pathlib import Path
 from unittest import mock
 
-from tactus.os_utils import Search, deodemakedirs, ping, strip_off_mount_path
+from tactus.os_utils import Search, tactusmakedirs, ping, strip_off_mount_path
 
 
 class TestSearch:
@@ -129,7 +129,7 @@ class TestSearch:
         assert isinstance(search, Search)
 
 
-def test_deodemakedirs():
+def test_tactusmakedirs():
     """Test that creation of directories and change of unix_group works."""
     path = tempfile.mkdtemp()
     if os.path.exists(path):
@@ -137,13 +137,13 @@ def test_deodemakedirs():
     grpids = os.getgroups()
     if len(grpids) > 1:
         newgrp = grpids[1]
-        deodemakedirs(f"{path}/wrkdir", unixgroup=newgrp)
+        tactusmakedirs(f"{path}/wrkdir", unixgroup=newgrp)
         assert os.stat(path).st_gid == newgrp
 
     path = tempfile.mkdtemp()
     if os.path.exists(path):
         shutil.rmtree(path)
-    deodemakedirs(f"{path}/wrkdir")
+    tactusmakedirs(f"{path}/wrkdir")
     assert os.stat(path).st_gid in grpids
 
 

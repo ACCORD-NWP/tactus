@@ -1,4 +1,4 @@
-"""Preparatory task for a deode suite."""
+"""Preparatory task for a tactus suite."""
 
 from pathlib import Path
 
@@ -7,7 +7,7 @@ import yaml
 from tactus.config_parser import ConfigParserDefaults, ParsedConfig
 from tactus.eps.eps_setup import get_member_config
 from tactus.logs import logger
-from tactus.os_utils import deodemakedirs
+from tactus.os_utils import tactusmakedirs
 from tactus.tasks.cleaning_tasks import Cleaning
 from tactus.toolbox import Platform
 
@@ -33,7 +33,7 @@ class PrepRun(Task):
             self.cleaner = None
         # Archive the used config file
         archive_root = Path(self.platform.get_platform_value("archive_root"))
-        deodemakedirs(
+        tactusmakedirs(
             archive_root, unixgroup=self.platform.get_platform_value("unix_group")
         )
         archive_config = archive_root / "config.toml"
@@ -51,17 +51,17 @@ class PrepRun(Task):
         expanded_config.save_as(archive_expanded_config)
         logger.info("Stored used expanded config as: {}", archive_expanded_config)
 
-        deode_modelname_definitions_path = (
+        tactus_modelname_definitions_path = (
             archive_root / "eccodes" / "definitions" / "grib2" / "localConcepts" / "lfpw"
         )
-        deodemakedirs(
-            deode_modelname_definitions_path,
+        tactusmakedirs(
+            tactus_modelname_definitions_path,
             unixgroup=self.platform.get_platform_value("unix_group"),
         )
-        self.create_famodeldefs(deode_modelname_definitions_path)
+        self.create_famodeldefs(tactus_modelname_definitions_path)
 
     def create_famodeldefs(self, target_eccodes_definition_path: str):
-        """Create faModelName.def in deode_eccodes_path.
+        """Create faModelName.def in tactus_eccodes_path.
 
         Args:
             target_eccodes_definition_path (str): Path to the where model name definitions
@@ -75,8 +75,8 @@ class PrepRun(Task):
         logger.info(
             "Create faModelName definitions in {}", target_eccodes_definition_path
         )
-        deode_eccodes_definition_path = ConfigParserDefaults.DATA_DIRECTORY / "eccodes"
-        fa_model_source_file = deode_eccodes_definition_path / "destineFaModelSource.yml"
+        tactus_eccodes_definition_path = ConfigParserDefaults.DATA_DIRECTORY / "eccodes"
+        fa_model_source_file = tactus_eccodes_definition_path / "destineFaModelSource.yml"
 
         if fa_model_source_file.is_file():
             with open(fa_model_source_file, "r") as f:

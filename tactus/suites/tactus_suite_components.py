@@ -1,11 +1,9 @@
-"""Module to create the different parts of the DEODE ecFlow suite."""
+"""Module to create the different parts of the tactus ecFlow suite."""
 
 from datetime import datetime, timedelta
 from typing import Generator, List, Optional, Tuple
 
 from tactus.boundary_utils import Boundary
-from tactus.suites.suite_utils import Cycles, lbc_times_generator
-
 from tactus.datetime_utils import (
     as_datetime,
     as_timedelta,
@@ -24,7 +22,6 @@ from tactus.suites.base import (
     EcflowSuiteTriggers,
 )
 from tactus.suites.suite_utils import Cycles, lbc_times_generator
-from tactus.tasks.impacts import get_impact
 from tactus.toolbox import Platform
 
 
@@ -1109,20 +1106,6 @@ class ForecastFamily(EcflowSuiteFamily):
                 ecf_files_remotely=ecf_files_remotely,
             )
 
-        databridge_sel = config.get("archiving.DataBridge.fdb", {})
-        databridge_archiving_active = [v["active"] for v in databridge_sel.values()]
-        if any(databridge_archiving_active):
-            EcflowSuiteTask(
-                "ArchiveDataBridge",
-                self,
-                config,
-                task_settings,
-                ecf_files,
-                input_template=input_template,
-                trigger=add_calc_fields_family,
-                ecf_files_remotely=ecf_files_remotely,
-            )
-
         if config["suite_control.do_extractsqlite"]:
             EcflowSuiteTask(
                 "ExtractSQLite",
@@ -1248,7 +1231,7 @@ class PostCycleFamily(EcflowSuiteFamily):
 
 
 class TimeDependentFamily(EcflowSuiteFamily):
-    """Class for creating the time dependent part of a DW suite."""
+    """Class for creating the time dependent part of a tactus suite."""
 
     def __init__(
         self,
@@ -1495,17 +1478,6 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     ecf_files_remotely=ecf_files_remotely,
                 )
 
-            if len(get_impact(config, "StartImpactModels")) > 0:
-                EcflowSuiteTask(
-                    "StartImpactModels",
-                    time_family,
-                    config,
-                    task_settings,
-                    ecf_files,
-                    input_template=input_template,
-                    trigger=member_cycle_families,
-                    ecf_files_remotely=ecf_files_remotely,
-                )
 
     @property
     def last_node(self):

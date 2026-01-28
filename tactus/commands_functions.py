@@ -15,11 +15,10 @@ from toml_formatter.formatter import FormattedToml
 from troika.connections.ssh import SSHConnection
 
 from . import GeneralConstants
-from .cleaning import CleanDeode
 from .config_parser import BasicConfig, ConfigParserDefaults, ConfigPaths, ParsedConfig
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
 from .experiment import case_setup
-from .host_actions import DeodeHost, set_deode_home
+from .host_actions import TactusHost, set_tactus_home
 from .logs import logger
 from .namelist import (
     NamelistComparator,
@@ -61,7 +60,7 @@ class RunTaskNamespace(argparse.Namespace):
     """Namespace for the 'run' command."""
 
     task: str
-    deode_home: str
+    tactus_home: str
     task_job: Path
     output: Path
     template_job: Path
@@ -79,7 +78,7 @@ def run_task(args: RunTaskNamespace, config: ParsedConfig):
     """
     logger.info("Prepare {}...", args.task)
 
-    deode_home = set_deode_home(config, args.deode_home)
+    tactus_home = set_tactus_home(config, args.tactus_home)
 
     cwd = Path.cwd()
 
@@ -90,7 +89,7 @@ def run_task(args: RunTaskNamespace, config: ParsedConfig):
     output = cwd / Path(f"{args.task}.log") if not args.output else args.output.resolve()
     template_job = args.template_job.resolve()
 
-    config = config.copy(update={"platform": {"deode_home": deode_home}})
+    config = config.copy(update={"platform": {"tactus_home": tactus_home}})
     config = config.copy(update=set_times(config))
 
     submission_defs = TaskSettings(config)
@@ -135,7 +134,7 @@ def create_exp(args, config):
     if known_hosts_file is None:
         known_hosts_file = ConfigPaths.path_from_subpath("known_hosts.yml")
 
-    host = DeodeHost(known_hosts_file=known_hosts_file).detect_deode_host()
+    host = TactusHost(known_hosts_file=known_hosts_file).detect_tactus_host()
     output_file = args.output_file
     case = args.case
     mod_files = args.config_mods
@@ -171,8 +170,8 @@ def start_suite(args, config):
     Raises:
         SystemExit: If error occurs while transferring files.
     """
-    deode_home = set_deode_home(config, args.deode_home)
-    config = config.copy(update={"platform": {"deode_home": deode_home}})
+    tactus_home = set_tactus_home(config, args.tactus_home)
+    config = config.copy(update={"platform": {"tactus_home": tactus_home}})
     config = config.copy(update=set_times(config))
     platform = Platform(config)
     ecfvars = {
@@ -196,7 +195,7 @@ def start_suite(args, config):
     ecf_user = config["scheduler.ecfvars.ecf_user"]
     ecf_remoteuser = config["scheduler.ecfvars.ecf_remoteuser"]
 
-    suite_def = config.get("suite_control.suite_definition", "DeodeSuiteDefinition")
+    suite_def = config.get("suite_control.suite_definition", "TactusSuiteDefinition")
 
     logger.info("ecf_host: {}", ecf_host)
     logger.info("ecf_jobout: {}", joboutdir)
@@ -218,13 +217,13 @@ def start_suite(args, config):
     suite_name = Platform(config).substitute(suite_name)
     ecf_files_local = ecf_files
 
-    # Evaluate and update ecf_deode_home
-    ecf_deode_home = str(
+    # Evaluate and update ecf_tactus_home
+    ecf_tactus_home = str(
         Platform(config).evaluate(
-            config["scheduler.ecfvars.ecf_deode_home"], object_="tactus.os_utils"
+            config["scheduler.ecfvars.ecf_tactus_home"], object_="tactus.os_utils"
         )
     )
-    update = {"scheduler": {"ecfvars": {"ecf_deode_home": ecf_deode_home}}}
+    update = {"scheduler": {"ecfvars": {"ecf_tactus_home": ecf_tactus_home}}}
     config = config.copy(update=update)
 
     # Get the troika config file - in case defined in ecfvars, use that to allow
@@ -335,7 +334,7 @@ def doc_config(args, config: ParsedConfig):  # noqa ARG001
     now = datetime.datetime.now().isoformat(timespec="seconds")
     sys.stdout.write(
         f"""The following section was automatically generated running
-        `deode doc config` on {now}.\n\n"""
+        `tactus doc config` on {now}.\n\n"""
     )
     sys.stdout.write(config.json_schema.get_markdown_doc() + "\n")
 
@@ -364,8 +363,8 @@ def show_config(args, config):
     )
 
     if args.expand_config:
-        deode_home = set_deode_home(config)
-        config = config.copy(update={"platform": {"deode_home": deode_home}})
+        tactus_home = set_tactus_home(config)
+        config = config.copy(update={"platform": {"tactus_home": tactus_home}})
         config = config.expand_macros(True)
 
     try:
@@ -400,105 +399,11 @@ def show_host(args, config):  # noqa ARG001
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
-    dh = DeodeHost()
-    logger.info("Current host: {}", dh.detect_deode_host())
+    tactus_host = TactusHost()
+    logger.info("Current host: {}", tactus_host.detect_tactus_host())
     logger.info("Known hosts (host, recognition method):")
-    for host, pattern in dh.known_hosts.items():
+    for host, pattern in tactus_host.known_hosts.items():
         logger.info("{:>16}   {}", host, pattern)
-
-
-def remove_cases(args, config):  # ARG001
-    """Remove output from cases."""
-    if len(args.config_files) == 0:
-        logger.info("No files no removal")
-        return False
-
-    # Fetch the remove config
-    cleaning_config = config.get("remove")
-    if not isinstance(cleaning_config, dict):
-        cleaning_config = cleaning_config.dict()
-    defaults = cleaning_config.get("defaults")
-    cleaning_config.pop("defaults")
-
-    # Loop over all given config files
-    for filename in args.config_files:
-        if not os.path.isfile(filename):
-            logger.warning("Cannot find {}", filename)
-            continue
-
-        logger.info("Read config from: {}", filename)
-        case_config = ParsedConfig.from_file(filename, json_schema={})
-        case_config = case_config.copy(update=set_times(case_config))
-        case_config = case_config.copy(update={"remove": cleaning_config})
-        platform = Platform(case_config)
-
-        # Loop over the different section in the remove config
-        for section, settings in cleaning_config.items():
-            logger.info(settings)
-            if section != "main" and not case_config.get(
-                f"impact.{section}.active", False
-            ):
-                continue
-
-            logger.info("Remove for section:{}", section)
-
-            suite_name = settings.get("suite_name", None)
-            remove_from_scheduler = settings.get("remove_from_scheduler", False)
-            remove_not_completed_suites = (
-                settings.get("remove_not_completed_suites", False) or args.force_remove
-            )
-
-            if suite_name is not None:
-                suite_name = platform.substitute(suite_name)
-
-                server = EcflowServer(case_config)
-                server.ecf_client.sync_local()
-
-                this_suite = None
-                for suite in server.ecf_client.get_defs().suites:
-                    if suite.name() == suite_name:
-                        this_suite = suite
-                        break
-
-                if not remove_not_completed_suites:
-                    if this_suite is None:
-                        logger.warning("No suite found for {}", suite_name)
-                        continue
-                    if not server.suite_is_complete(this_suite):
-                        logger.info(
-                            "Suite is not completed, do not remove anything from {}.",
-                            suite_name,
-                        )
-                        continue
-
-            for key in (
-                "suite_name",
-                "remove_from_scheduler",
-                "remove_not_completed_suites",
-            ):
-                with contextlib.suppress(KeyError):
-                    settings.pop(key)
-
-            cleaner = CleanDeode(case_config, defaults)
-            dry_run = not args.execute_removal
-            cleaner.prep_cleaning(settings, dry_run=dry_run)
-            cleaner.clean()
-
-            if suite_name is not None and remove_from_scheduler:
-                if dry_run:
-                    logger.info(" would have removed suite {}", suite_name)
-                else:
-                    try:
-                        EcflowServer(case_config).remove_suites(
-                            [suite_name], check_if_complete=False
-                        )
-                    except (ModuleNotFoundError, UnboundLocalError):
-                        logger.warning(
-                            "ecflow or config not found, suite {} not removed", suite_name
-                        )
-        logger.info("\n\nRerun with '--execute-removal' to do the actual removal\n")
-
-    return True
 
 
 #########################################
@@ -513,8 +418,8 @@ def show_namelist(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
-    deode_home = set_deode_home(config, args.deode_home)
-    config = config.copy(update={"platform": {"deode_home": deode_home}})
+    tactus_home = set_tactus_home(config, args.tactus_home)
+    config = config.copy(update={"platform": {"tactus_home": tactus_home}})
     config = config.copy(update=set_times(config))
     config = config.copy(update=derived_variables(config))
 
@@ -534,8 +439,8 @@ def show_namelist(args, config):
 
 def show_paths(args, config):  # noqa ARG001
     """Implement the 'show_paths' command."""
-    dh = DeodeHost()
-    ConfigPaths.print(args.config_file, dh.detect_deode_host())
+    tactus_host = TactusHost()
+    ConfigPaths.print(args.config_file, tactus_host.detect_tactus_host())
 
 
 def namelist_integrate(args, config):

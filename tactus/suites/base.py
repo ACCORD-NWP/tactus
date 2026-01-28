@@ -132,7 +132,7 @@ class SuiteDefinition(object):
             troika = "troika"
         troika_config = config["troika.config_file"]
         config_file = config.metadata["source_file_path"]
-        deode_home = platform.get_platform_value("DEODE_HOME")
+        tactus_home = platform.get_platform_value("TACTUS_HOME")
 
         keep_workdirs = "1" if config["general.keep_workdirs"] else "0"
         loglevel = config.get("general.loglevel", LogDefaults.LEVEL).upper()
@@ -160,7 +160,7 @@ class SuiteDefinition(object):
             "TROIKA_CONFIG": troika_config,
             "BASETIME": starttime,
             "VALIDTIME": starttime,
-            "DEODE_HOME": deode_home,
+            "TACTUS_HOME": tactus_home,
             "NPROC": "",
             "NPROC_IO": "",
             "NPROCX": "",

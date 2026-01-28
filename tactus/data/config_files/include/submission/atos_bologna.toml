@@ -23,8 +23,8 @@
 [submission.task_exceptions.ArchiveFDB.ENV]
   FDB5_HOME = "$ECMWF_TOOLBOX_DIR"
   FDB_ENABLE_GRIBJUMP = "1"
-  FDB_HOME = "@DEODE_FDB_HOME@"
-  GRIBJUMP_CONFIG_FILE = "@DEODE_FDB_HOME@/etc/gribjump/config_on-demand-extremes-dt.yaml"
+  FDB_HOME = "@TACTUS_FDB_HOME@"
+  GRIBJUMP_CONFIG_FILE = "@TACTUS_FDB_HOME@/etc/gribjump/config_on-demand-extremes-dt.yaml"
 
 [submission.task_exceptions.ArchiveFDB.MODULES]
   ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
@@ -145,7 +145,7 @@
   NPROCX = 1
   NPROCY = 1
   SCHOST = "hpc"
-  tasks = ["ExtractSQLite", "StartImpactModels"]
+  tasks = ["ExtractSQLite"]
   WRAPPER = "srun"
 
 [submission.types.gnu.BATCH]

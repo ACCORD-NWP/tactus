@@ -288,9 +288,6 @@ class EcflowServer(Server):
         suite_name = suite.name()
         ecf_home = Path(suite.find_variable("ECF_HOME").value())
         ecf_files = Path(suite.find_variable("ECF_FILES").value())
-        if suite_name.startswith("DE_Impact_EHYPE"):
-            logger.info("ecf_files: {}", ecf_files.parents[2])
-            ecf_files = ecf_files.parents[2]
 
         return Path(ecf_home / suite_name), Path(ecf_files / suite_name)
 

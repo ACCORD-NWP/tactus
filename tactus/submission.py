@@ -10,8 +10,8 @@ from typing import Optional
 from tactus.config_parser import ParsedConfig
 from tactus.derived_variables import derived_variables
 from tactus.logs import logger
-from tactus.os_utils import deodemakedirs
-from tactus.plugin import DeodePluginRegistryFromConfig
+from tactus.os_utils import tactusmakedirs
+from tactus.plugin import TactusPluginRegistryFromConfig
 from tactus.tasks.discover_task import available_tasks
 from tactus.toolbox import FileManager, Platform
 
@@ -295,7 +295,7 @@ class TaskSettings(object):
         logger.debug(interpreter)
         dir_name = task_job.resolve().parent
 
-        deodemakedirs(dir_name, unixgroup=self.unix_group)
+        tactusmakedirs(dir_name, unixgroup=self.unix_group)
 
         with open(task_job, mode="w", encoding="utf-8") as file_handler:
             file_handler.write("#!/bin/bash\n")
@@ -331,7 +331,7 @@ class TaskSettings(object):
                     "NPROCX",
                     "NPROCY",
                     "CONFIG",
-                    "DEODE_HOME",
+                    "TACTUS_HOME",
                     "KEEP_WORKDIRS",
                     "MEMBER",
                 ]
@@ -378,9 +378,9 @@ class TaskSettings(object):
             if scheduler is None:
                 file_handler.write(f'export STAND_ALONE_TASK_NAME="{task}"\n')
 
-                deode_home = self.platform.get_platform_value("DEODE_HOME")
+                tactus_home = self.platform.get_platform_value("TACTUS_HOME")
 
-                file_handler.write(f'export STAND_ALONE_DEODE_HOME="{deode_home}"\n')
+                file_handler.write(f'export STAND_ALONE_TACTUS_HOME="{tactus_home}"\n')
                 config_file = config.metadata["source_file_path"]
 
                 file_handler.write(f'export STAND_ALONE_TASK_CONFIG="{config_file!s}"\n')
@@ -429,7 +429,7 @@ class NoSchedulerSubmission:
             RuntimeError: Submission failure.
         """
         name = task.lower()
-        if name not in available_tasks(DeodePluginRegistryFromConfig(config)):
+        if name not in available_tasks(TactusPluginRegistryFromConfig(config)):
             raise NotImplementedError(f"Task {name} not implemented")
 
         troika_config = Platform(config).get_value("troika.config_file")

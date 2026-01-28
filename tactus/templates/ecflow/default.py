@@ -7,7 +7,7 @@ import ecflow as ecf
 from tactus.config_parser import ConfigParserDefaults, GeneralConstants, ParsedConfig
 from tactus.derived_variables import derived_variables
 from tactus.eps.eps_setup import get_member_config
-from tactus.host_actions import DeodeHost
+from tactus.host_actions import TactusHost
 from tactus.logs import LogDefaults, LoggerHandlers, logger
 from tactus.scheduler import EcflowClient, EcflowServer, EcflowTask
 from tactus.submission import ProcessorLayout
@@ -54,7 +54,7 @@ def parse_ecflow_vars():
         "NPROCX": os.environ["NPROCX"],
         "NPROCY": os.environ["NPROCY"],
         "CONFIG": os.environ["CONFIG"],
-        "DEODE_HOME": os.environ["DEODE_HOME"],
+        "TACTUS_HOME": os.environ["TACTUS_HOME"],
         "KEEP_WORKDIRS": os.environ["KEEP_WORKDIRS"],
         "MEMBER": os.environ["MEMBER"],
     }
@@ -63,11 +63,11 @@ def parse_ecflow_vars():
 def default_main(kwargs: dict):
     """Ecflow container default method."""
     config_file = kwargs.get("CONFIG")
-    deode_host = DeodeHost().detect_deode_host()
+    tactus_host = TactusHost().detect_tactus_host()
     config = ParsedConfig.from_file(
         config_file,
         json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-        host=deode_host,
+        host=tactus_host,
     )
 
     # Reset loglevel according to (in order of priority):
@@ -101,7 +101,7 @@ def default_main(kwargs: dict):
                 "keep_workdirs": bool(int(kwargs.get("KEEP_WORKDIRS"))),
                 "loglevel": loglevel,
             },
-            "platform": {"deode_home": kwargs.get("DEODE_HOME")},
+            "platform": {"tactus_home": kwargs.get("TACTUS_HOME")},
         }
     )
 

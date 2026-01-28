@@ -142,7 +142,7 @@ def filepath_iterator(paths, filename_pattern="*"):
             yield path
 
 
-def deodemakedirs(path: str | Path, unixgroup="", exist_ok=True, def_dir_mode=0o755):
+def tactusmakedirs(path: str | Path, unixgroup="", exist_ok=True, def_dir_mode=0o755):
     """Create directories and change unix group as required.
 
     For a given path the top directory that does not yet exist is searched for, created
@@ -267,10 +267,10 @@ def strip_off_mount_path(path: Union[str, Path]) -> Path:
         ValueError: If the parent of the user directory only contains 1 underscore.
 
     Example:
-        >>> strip_off_mount_path("/etc/ecmwf/nfs/dh1_home_b/$USER/Deode-Workflow/deode")
-        Path("/home/$USER/Deode-Workflow/deode")
-        >>> strip_off_mount_path("/etc/ecmwf/nfs/dh1_10_perm_b/$USER/Deode-Workflow")
-        Path("/perm/$USER/Deode-Workflow")
+        >>> strip_off_mount_path("/etc/ecmwf/nfs/dh1_home_b/$USER/tactus/tactus")
+        Path("/home/$USER/tactus/tactus")
+        >>> strip_off_mount_path("/etc/ecmwf/nfs/dh1_10_perm_b/$USER/tactus")
+        Path("/perm/$USER/tactus")
     """
     file_parts = Path(path).parts
     user = os.environ.get("USER")
@@ -322,7 +322,7 @@ def resolve_path_relative_to_package(path: Path, ignore_errors: bool = False) ->
     path = path.expanduser().resolve()
     # First check if path exists as is
     if not os.path.exists(path):
-        # Get path relative to package. Needed when Deode-Workflow is installed as
+        # Get path relative to package. Needed when tactus is installed as
         # a site-package e.g. when creating plugins.
         if GeneralConstants.PACKAGE_NAME in path.parts:
             # Find last occurence of package name in path
@@ -341,7 +341,7 @@ def resolve_path_relative_to_package(path: Path, ignore_errors: bool = False) ->
             )
 
         # If not, check if it exists in the package directory (used when
-        # deode is installed as package)
+        # tactus is installed as package)
         if not os.path.exists(path) and not ignore_errors:
             raise FileNotFoundError(
                 f"Config file {path} not found locally or in package directory"

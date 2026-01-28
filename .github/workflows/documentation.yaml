@@ -25,7 +25,7 @@ permissions:
 
 jobs:
   docs:
-    if: github.repository_owner == 'destination-earth-digital-twins'
+    if: github.repository_owner == 'ACCORD-NWP'
     name: Generate API Documentation
     runs-on: ubuntu-latest
     env:
@@ -67,11 +67,11 @@ jobs:
 
       - name: Generate config docs from default config & main schema
         run: |
-          poetry run deode doc config >| docs/markdown_docs/config.md
+          poetry run tactus doc config >| docs/markdown_docs/config.md
 
       - name: Sphinx apidoc
         run: |
-          poetry run sphinx-apidoc deode -o docs/ --force --no-toc --module-first
+          poetry run sphinx-apidoc tactus -o docs/ --force --no-toc --module-first
 
       - name: Sphinx build
         run: |
@@ -81,15 +81,15 @@ jobs:
         run: |
           touch docs/_build/.nojekyll
 
-      - name: Deploy to https://github.com/destination-earth-digital-twins/deode-workflow-docs
+      - name: Deploy to https://github.com/ACCORD-NWP/tactus-docs
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
         uses: cpina/github-action-push-to-another-repository@main
         env:
           SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
         with:
           source-directory: 'docs/_build/'
-          destination-repository-name: 'destination-earth-digital-twins/deode-workflow-docs'
+          destination-repository-name: 'ACCORD-NWP/tactus-docs'
           target-branch: gh-pages
           target-directory: docs/
-          user-name: Deode Workflow API Doc Builder
-          user-email: Deode-Workflow@noreply.github.com
+          user-name: tactus API Doc Builder
+          user-email: tactus@noreply.github.com

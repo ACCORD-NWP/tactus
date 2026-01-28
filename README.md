@@ -1,19 +1,19 @@
-[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/destination-earth-digital-twins/Deode-Workflow)
-[![Github Pages](https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white)](https://destination-earth-digital-twins.github.io/deode-workflow-docs/)
+[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ACCORD-NWP/tactus)
+[![Github Pages](https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white)](https://ACCORD-NWP.github.io/tactus-docs/)
 
 
-[![Linting](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/linting.yaml/badge.svg)](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/linting.yaml)
-[![Tests](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/tests.yaml/badge.svg
-)](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/tests.yaml)
-[![codecov](https://codecov.io/github/destination-earth-digital-twins/Deode-Workflow/branch/develop/graph/badge.svg?token=4PRUK8DMZF)](https://codecov.io/github/destination-earth-digital-twins/Deode-Workflow)
+[![Linting](https://github.com/ACCORD-NWP/tactus/actions/workflows/linting.yaml/badge.svg)](https://github.com/ACCORD-NWP/tactus/actions/workflows/linting.yaml)
+[![Tests](https://github.com/ACCORD-NWP/tactus/actions/workflows/tests.yaml/badge.svg
+)](https://github.com/ACCORD-NWP/tactus/actions/workflows/tests.yaml)
+[![codecov](https://codecov.io/github/ACCORD-NWP/tactus/branch/develop/graph/badge.svg?token=4PRUK8DMZF)](https://codecov.io/github/ACCORD-NWP/tactus)
 
-# DEODE Scripting System
+# TACTUS Scripting System
 
 ## About
 
-The [DEODE Scripting System](https://github.com/destination-earth-digital-twins/Deode-Workflow/) provides a `deode` python package that runs the [Destination Earth on Demand Extremes system](https://github.com/destination-earth-digital-twins).
+The [tactus scripting system](https://github.com/ACCORD-NWP/tactus/) provides a `tactus` python package.
 
-See the [project's documentation page](https://destination-earth-digital-twins.github.io/deode-workflow-docs) for more information.
+See the [project's documentation page](https://ACCORD-NWP.github.io/tactus-docs) for more information.
 
 
 ## Set up environment
@@ -40,14 +40,13 @@ We **highly recommend** you to also put the statement listed above in your shell
   ml pyeccodes_23
   ml scl-ecflow_23
   ```
-
 * On Belenos
   ```shell
   conda create -n <env_name> python=3.10.* gdal=3.6.2 ecflow -c conda-forge
   conda activate <env_name>
   ```
 
-See also [lumi doc](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/docs/markdown_docs/lumi.md) for more details.
+See also [lumi doc](https://github.com/ACCORD-NWP/tactus/blob/develop/docs/markdown_docs/lumi.md) for more details.
 
 * On Macs (local install only)
   ```shell
@@ -60,17 +59,17 @@ See also [lumi doc](https://github.com/destination-earth-digital-twins/Deode-Wor
 
 ## Installation
 
-First checkout the `deode` source code from github:
+First checkout the `tactus` source code from github:
 ```shell
-git clone git@github.com:destination-earth-digital-twins/Deode-Workflow.git
-cd Deode-Workflow
+git clone git@github.com:ACCORD-NWP/tactus.git
+cd tactus
 ```
 
-For development, use forks as specified in the [Development guidelines](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/docs/markdown_docs/development_guide.md).
+For development, use forks as specified in the [Development guidelines](https://github.com/ACCORD-NWP/tactus/blob/develop/docs/markdown_docs/development_guide.md).
 To clone the forked repository, use the following command, replacing \<username\> with your GitHub username:
 ```shell
-git clone git@github.com:<username>/Deode-Workflow.git
-cd Deode-Workflow
+git clone git@github.com:<username>/tactus.git
+cd tactus
 ```
 
 
@@ -96,82 +95,73 @@ Finally, install [`pygdal`](https://pypi.org/project/pygdal/), which is required
     poetry shell
     pip install pygdal==3.6.2.11
     ```
-
   On Belenos, you should install the project in the conda environment that was created, directly with the `pip` command.
   ```shell
   pip install -e . --no-cache --prefer-binary
   ```
-
-  If installation is not succesful, please contact the IT support in your organisation or HPC facility.
-
-### Important
-
-Deode-Workflow should be installed in a folder accessible by ecflow server.
+  
 
 On Atos, it should be installed in your $HOME or $PERM directory.
 
 
 ## Usage
 
-Initially set up the environment by repeating the steps in [Set up environment](#set-up-environment), navigate to the root level of the `Deode-Workflow` install directory and activate python virtual environment:
+Initially set up the environment by repeating the steps in [Set up environment](#set-up-environment), navigate to the root level of the `tactus` install directory and activate python virtual environment:
 ```shell
 poetry shell
 ```
 
-Alternatively, to activate a `deode` installation located in an arbitrary
-directory `MY_DEODE_SOURCE_DIRECTORY`, please run:
-```shell
-poetry shell --directory=MY_DEODE_SOURCE_DIRECTORY
+Alternatively, to activate a `tactus` installation located in an arbitrary
 ```
 
-Test that `deode` works by running:
+Test that `tactus` works by running:
 ```shell
-deode -h
+tactus -h
 ```
 ### The Configuration File
-Before you can use `deode` (apart from the `-h` option), you will need a configuration file written in the
+Before you can use `tactus` (apart from the `-h` option), you will need a configuration file written in the
 [TOML](https://en.wikipedia.org/wiki/TOML) format. Please take a look at
  the default
- [config.toml](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/deode/data/config_files/config.toml) file, as well as the
- [project's Doc Page](https://destination-earth-digital-twins.github.io/deode-workflow-docs),
+ [config.toml](https://github.com/ACCORD-NWP/tactus/blob/develop/tactus/data/config_files/config.toml) file, as well as the
+ [project's Doc Page](https://ACCORD-NWP.github.io/tactus-docs),
  for more information about this.
 
- To see all configs currently in place in your `deode` setup, please run
+ To see all configs currently in place in your `tactus` setup, please run
  ```shell
- deode show config
+ tactus show config
  ```
 
 ### Command line options
 
 After completing the setup, you should be able to run
 ```shell
-deode [opts] SUBCOMMAND [subcommand_opts]
+tactus [opts] SUBCOMMAND [subcommand_opts]
 ```
 where `[opts]` and `[subcommand_opts]` denote optional command line arguments
-that apply, respectively, to `deode` in general and to `SUBCOMMAND`
+that apply, respectively, to `tactus` in general and to `SUBCOMMAND`
 specifically.
 
-**Please run `deode -h` for information** about the supported subcommands
-and general `deode` options. For info about specific subcommands and the
-options that apply to them only, **please run `deode SUBCOMMAND -h`** (note
+**Please run `tactus -h` for information** about the supported subcommands
+and general `tactus` options. For info about specific subcommands and the
+options that apply to them only, **please run `tactus SUBCOMMAND -h`** (note
 that the `-h` goes after the subcommand in this case).
 
 ## Examples
 
-These examples assume that you have successfully [Set up environment](#set-up-environment) [installed](#installation) Deode-Workflow, navigated to the root level of your `deode` install directory and loaded the python environment. The examples also assume that the binaries and input data for the [ACCORD CSCs](https://www.umr-cnrm.fr/accord/?Canonical-System-Configurations-CSC) is in place. Please contact your local ACCORD members for advice if this is not the case.
+These examples assume that you have successfully [Set up environment](#set-up-environment) [installed](#installation) tactus, navigated to the root level of your `tactus` install directory and loaded the python environment. The examples also assume that the binaries and input data for the [ACCORD CSCs](https://www.umr-cnrm.fr/accord/?Canonical-System-Configurations-CSC) is in place. Please contact your local ACCORD members for advice if this is not the case.
 
 ### Running ecflow suite on ATOS or LUMI
 
 The following command will run  the full suite using the default experiment:
 ```shell
-deode case ?deode/data/config_files/configurations/cy48t3_arome -o cy48t3_arome.toml --start-suite
+tactus case ?tactus/data/config_files/configurations/cy48t3_arome -o cy48t3_arome.toml --start-suite
 ```
 
 ### Running the `"Forecast"` task from the `hpc-login`'s command line
 
-The command below runs `deode`'s task `"Forecast"` for the member specified in the config file using the batch system rules defined in your `config.toml`:
+The command below runs `tactus`'s task `"Forecast"` for the member specified in the config file using the batch system rules defined in your `config.toml`:
 ```shell
-deode run --task Forecast --config-file cy48t3_arome.toml
+tactus run --task Forecast --config-file cy48t3_arome.toml
 ```
 
 Note that this requires a previous run of the [ecflow suite](#running-ecflow-suite-on-atos-or-lumi) for the given config file to have finished succesfully.

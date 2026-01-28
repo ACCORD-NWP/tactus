@@ -9,7 +9,7 @@ from unittest import mock
 
 import pytest
 
-from deode import GeneralConstants
+from tactus import GeneralConstants
 from tactus.__main__ import main
 from tactus.argparse_wrapper import get_parsed_args
 from tactus.config_parser import ConfigFileValidationError, ConfigParserDefaults
@@ -140,7 +140,7 @@ def test_run_task_command(tmp_path):
             "--task",
             "Forecast",
             "--template",
-            str(GeneralConstants.PACKAGE_DIRECTORY / "deode/templates/stand_alone.py"),
+            str(GeneralConstants.PACKAGE_DIRECTORY / "tactus/templates/stand_alone.py"),
             "--job",
             f"{tmp_path.as_posix()}/forecast.job",
             "-o",
@@ -151,10 +151,10 @@ def test_run_task_command(tmp_path):
 
 @pytest.mark.usefixtures("_module_mockers")
 def test_start_suite_command():
-    os.environ["DEODE_HOST"] = "atos_bologna"
+    os.environ["TACTUS_HOST"] = "atos_bologna"
     with suppress(FileNotFoundError, HostNotFoundError, ConfigFileValidationError):
         main(["start", "suite"])
-    del os.environ["DEODE_HOST"]
+    del os.environ["TACTUS_HOST"]
 
 
 @pytest.mark.usefixtures("_module_mockers")
@@ -168,7 +168,7 @@ def test_integrate_namelists_command():
         "namelist",
         "integrate",
         "--namelist",
-        "deode/data/namelists/unit_testing/nl_master_base",
+        "tactus/data/namelists/unit_testing/nl_master_base",
         "--output",
         os.devnull,
     ]
@@ -183,7 +183,7 @@ def test_convert_namelists_command(tmp_path):
         "namelist",
         "convert",
         "--namelist",
-        "deode/data/namelists/unit_testing/nl_master_base.yml",
+        "tactus/data/namelists/unit_testing/nl_master_base.yml",
         "--output",
         output_yml,
         "--from-cycle",
@@ -204,7 +204,7 @@ def test_format_namelists_command(tmp_path):
         "namelist",
         "format",
         "--namelist",
-        "deode/data/namelists/unit_testing/nl_master_base.yml",
+        "tactus/data/namelists/unit_testing/nl_master_base.yml",
         "--output",
         output_yml,
         "--format",

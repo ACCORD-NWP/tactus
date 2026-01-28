@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Config",
-  "description": "Model for validation of `deode`'s main config file.",
+  "description": "Model for validation of `tactus`'s main config file.",
   "type": "object",
   "additionalProperties": true,
   "properties": {
@@ -49,13 +49,13 @@
     },
     "troika": {
       "title": "Troika",
-      "description": "DEODE system specific path settings",
+      "description": "TACTUS system specific path settings",
       "type": "object",
       "properties": {
         "config_file": {
           "type": "string",
           "description": "Troika config file",
-          "default": "@DEODE_HOME@/data/config_files/troika.yml"
+          "default": "@TACTUS_HOME@/data/config_files/troika.yml"
         },
         "troika": {
           "type": "string",
@@ -298,7 +298,7 @@
         "scratch_ext": {
           "decription": "Extention of cratche for operational user.",
           "type": "string",
-          "default": "deode"
+          "default": "tactus"
         }
       }
     },
@@ -332,7 +332,7 @@
         "config_path": {
           "title": "Path to fullpos config files",
           "type": "string",
-          "default": "@DEODE_HOME@/data/namelist_generation_input/@CYCLE@/fullpos"
+          "default": "@TACTUS_HOME@/data/namelist_generation_input/@CYCLE@/fullpos"
         },
         "main": {
           "description": "List of mandatory rules",
@@ -368,7 +368,7 @@
         "suite_definition": {
           "description": "Suite definition to play in EcFlow",
           "type": "string",
-          "default": "DeodeSuiteDefinition"
+          "default": "TactusSuiteDefinition"
         },
         "do_creategrib_static": {
           "description": "Activate grib conversion for static files",
@@ -508,7 +508,7 @@
     },
     "system": {
       "title": "System",
-      "description": "DEODE system specific path settings",
+      "description": "TACTUS system specific path settings",
       "type": "object",
       "properties": {
         "forecast_dir_link": {
@@ -588,7 +588,7 @@
         "namelists": {
           "type": "string",
           "description": "Path to static namelists",
-          "default": "@DEODE_HOME@/data/namelists/@CYCLE@"
+          "default": "@TACTUS_HOME@/data/namelists/@CYCLE@"
         },
         "global_sfcdir": {
           "type": "string",
@@ -869,7 +869,7 @@
         },
         "case": {
           "description": "Experiment name",
-          "default": "deode_case",
+          "default": "tactus_case",
           "type": "string",
 	        "pattern": "^[^0-9][^.]*$"
         },

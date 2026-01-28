@@ -10,13 +10,12 @@ from unittest.mock import patch
 import pytest
 import tomlkit
 
-from deode import GeneralConstants
+from tactus import GeneralConstants
 from tactus.derived_variables import derived_variables, set_times
-from tactus.plugin import DeodePluginRegistry
-from tactus.tasks.archive import ArchiveDataBridge, ArchiveHour, ArchiveStatic
+from tactus.plugin import TactusPluginRegistry
+from tactus.tasks.archive import ArchiveHour, ArchiveStatic
 from tactus.tasks.base import Task
 from tactus.tasks.batch import BatchJob
-from tactus.tasks.clean_old_data import CleanSuites
 from tactus.tasks.collectlogs import CollectLogs
 from tactus.tasks.creategrib import GlGrib
 from tactus.tasks.discover_task import available_tasks, get_task
@@ -36,7 +35,7 @@ with contextlib.suppress(ModuleNotFoundError):
 
 def classes_to_be_tested():
     """Return the names of the task-related classes to be tested."""
-    reg = DeodePluginRegistry()
+    reg = TactusPluginRegistry()
     encountered_classes = available_tasks(reg)
     return encountered_classes.keys()
 
@@ -60,7 +59,7 @@ def task_name_and_configs(request, default_config, tmp_directory):
             wrk = "{tmp_directory}"
             bindir = "{tmp_directory}/bin"
         [platform]
-            deode_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
+            tactus_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
             scratch = "{tmp_directory}"
             static_data = "{tmp_directory}"
             climdata = "{tmp_directory}"
@@ -92,10 +91,8 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_toolbox_filemanager_input_method = FileManager.input
     original_task_forecast_forecast_execute_method = Forecast.execute
     original_task_forecast_firstguess_execute_method = FirstGuess.execute
-    original_task_archive_archivedatabridge__check_user = ArchiveDataBridge._check_user
     original_task_archive_archivehour_execute_method = ArchiveHour.execute
     original_task_archive_archivestatic_execute_method = ArchiveStatic.execute
-    original_task_clean_old_data_cleansuites_execute_method = CleanSuites.execute
     original_task_creategrib_glgrib_execute_method = GlGrib.execute
     original_task_gribmodify_addtotalprec_execute_method = AddCalculatedFields.execute
     original_task_extractsqlite_extractsqlite_execute_method = ExtractSQLite.execute
@@ -128,15 +125,6 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         with contextlib.suppress(ArchiveError, ProviderError, NotImplementedError):
             original_toolbox_filemanager_input_method(*args, **kwargs)
 
-    def new_task_clean_old_data_cleansuites_execute_method(*args, **kwargs):
-        """Suppress some errors so that test continues if they happen."""
-        with contextlib.suppress(ModuleNotFoundError, NotImplementedError):
-            if "ecflow" in sys.modules:
-                with patch.object(ecflow.Client, "delete"):
-                    original_task_clean_old_data_cleansuites_execute_method(
-                        *args, **kwargs
-                    )
-
     def new_task_forecast_forecast_execute_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
         with contextlib.suppress(FileNotFoundError):
@@ -146,11 +134,6 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         """Suppress some errors so that test continues if they happen."""
         with contextlib.suppress(FileNotFoundError):
             original_task_forecast_firstguess_execute_method(*args, **kwargs)
-
-    def new_task_archive_archivedatabridge__check_user(*args, **kwargs):
-        """Suppress some errors so that test continues if they happen."""
-        with contextlib.suppress(ValueError):
-            original_task_archive_archivedatabridge__check_user(*args, **kwargs)
 
     def new_task_archive_archivehour_execute_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
@@ -241,20 +224,12 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         "tactus.toolbox.FileManager.input", new=new_toolbox_filemanager_input_method
     )
     session_mocker.patch(
-        "tactus.tasks.clean_old_data.CleanSuites.execute",
-        new=new_task_clean_old_data_cleansuites_execute_method,
-    )
-    session_mocker.patch(
         "tactus.tasks.forecast.Forecast.execute",
         new=new_task_forecast_forecast_execute_method,
     )
     session_mocker.patch(
         "tactus.tasks.forecast.FirstGuess.execute",
         new=new_task_forecast_firstguess_execute_method,
-    )
-    session_mocker.patch(
-        "tactus.tasks.archive.ArchiveDataBridge._check_user",
-        new=new_task_archive_archivedatabridge__check_user,
     )
     session_mocker.patch(
         "tactus.tasks.archive.ArchiveHour.execute",
@@ -295,11 +270,11 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         new=new_task_interpolsstsic_interpolsstsic_execute_method,
     )
     session_mocker.patch(
-        "deode.tasks.generatewfptabfile.GenerateWfpTabFile.execute",
+        "tactus.tasks.generatewfptabfile.GenerateWfpTabFile.execute",
         new=new_task_generate_wfp_tab_file_execute_method,
     )
     session_mocker.patch(
-        "deode.tasks.iomerge.IOmerge.execute",
+        "tactus.tasks.iomerge.IOmerge.execute",
         new=new_task_iomerge_iomerge_execute_method,
     )
     session_mocker.patch(

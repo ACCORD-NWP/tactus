@@ -8,9 +8,9 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 from tactus.boundary_utils import Boundary
+from tactus.datetime_utils import as_datetime, as_timedelta
 from tactus.eps.eps_setup import get_member_config, infer_members
 from tactus.logs import logger
-from tactus.datetime_utils import as_datetime, as_timedelta
 from tactus.mars_utils import (
     BaseRequest,
     add_additional_data_to_all,
@@ -30,7 +30,7 @@ from tactus.mars_utils import (
     write_retrieve_mars_req,
     write_write_mars_req,
 )
-from tactus.os_utils import deodemakedirs, join_files, list_files_join
+from tactus.os_utils import tactusmakedirs, join_files, list_files_join
 from tactus.tasks.base import Task
 from tactus.tasks.batch import BatchJob
 
@@ -235,7 +235,7 @@ class Marsprep(Task):
         """
         try:
             if not os.path.exists(self.prepdir):
-                deodemakedirs(
+                tactusmakedirs(
                     self.prepdir, unixgroup=self.platform.get_platform_value("unix_group")
                 )
         except OSError as e:

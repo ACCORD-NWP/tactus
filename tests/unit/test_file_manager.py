@@ -10,7 +10,7 @@ from tactus.config_parser import ConfigParserDefaults, ParsedConfig
 from tactus.logs import logger
 from tactus.toolbox import FileManager
 
-logger.enable("deode")
+logger.enable("tactus")
 
 
 @pytest.fixture()
