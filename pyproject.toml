@@ -5,11 +5,11 @@
   version = "0.24.1"
   # Other package info
   authors = ["The DE_330 project."]
-  documentation = "https://destination-earth-digital-twins.github.io/tactus-docs"
+  documentation = "https://ACCORD-NWP.github.io/tactus-docs"
   include = [{path = "tactus/data/**/*", format = ["sdist", "wheel"]}]
   license = "MIT"
   readme = "README.md"
-  repository = "https://github.com/destination-earth-digital-twins/tactus"
+  repository = "https://github.com/ACCORD-NWP/tactus"
 
 [tool.poetry.scripts]
   tactus = "tactus.__main__:main"
@@ -27,12 +27,12 @@
   eccodes = "2.41"
   f90nml = "^1.4.3"
   fastjsonschema = "2.18.1"
-  geohash = {git = "https://github.com/destination-earth-digital-twins/geohash.git", tag = "v1.1"}
-  grib2sqlite = {git = "https://github.com/destination-earth-digital-twins/grib2sqlite", tag = "v0.2.0"}
+  geohash = {git = "https://github.com/ACCORD-NWP/geohash.git", tag = "v1.1"}
+  grib2sqlite = {git = "https://github.com/ACCORD-NWP/grib2sqlite", tag = "v0.2.0"}
   humanize = "^4.8.0"
   isodate = "^0.6.1"
   json-schema-for-humans = {git = "https://github.com/paulovcmedeiros/json-schema-for-humans.git", branch = "feature/choose-properties-table-columns"}
-  json2tab = {git = "git@github.com:destination-earth-digital-twins/json2tab.git", branch = "master"}
+  json2tab = {git = "git@github.com:ACCORD-NWP/json2tab.git", branch = "master"}
   jsonref = "^1.1.0"
   loguru = "^0.7.1"
   numexpr = "^2.8.4"
@@ -49,7 +49,7 @@
   tomli = "^2.0.1"
   tomlkit = "^0.12.1"
   troika = {git = "https://github.com/ecmwf/troika.git"}
-  utci = {git = "git@github.com:destination-earth-digital-twins/utci.git"}
+  utci = {git = "git@github.com:ACCORD-NWP/utci.git"}
   xmltodict = "^0.14.2"
 
 [tool.poetry.group.dev.dependencies]

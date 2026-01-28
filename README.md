@@ -1,19 +1,19 @@
-[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/destination-earth-digital-twins/tactus)
-[![Github Pages](https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white)](https://destination-earth-digital-twins.github.io/tactus-docs/)
+[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ACCORD-NWP/tactus)
+[![Github Pages](https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white)](https://ACCORD-NWP.github.io/tactus-docs/)
 
 
-[![Linting](https://github.com/destination-earth-digital-twins/tactus/actions/workflows/linting.yaml/badge.svg)](https://github.com/destination-earth-digital-twins/tactus/actions/workflows/linting.yaml)
-[![Tests](https://github.com/destination-earth-digital-twins/tactus/actions/workflows/tests.yaml/badge.svg
-)](https://github.com/destination-earth-digital-twins/tactus/actions/workflows/tests.yaml)
-[![codecov](https://codecov.io/github/destination-earth-digital-twins/tactus/branch/develop/graph/badge.svg?token=4PRUK8DMZF)](https://codecov.io/github/destination-earth-digital-twins/tactus)
+[![Linting](https://github.com/ACCORD-NWP/tactus/actions/workflows/linting.yaml/badge.svg)](https://github.com/ACCORD-NWP/tactus/actions/workflows/linting.yaml)
+[![Tests](https://github.com/ACCORD-NWP/tactus/actions/workflows/tests.yaml/badge.svg
+)](https://github.com/ACCORD-NWP/tactus/actions/workflows/tests.yaml)
+[![codecov](https://codecov.io/github/ACCORD-NWP/tactus/branch/develop/graph/badge.svg?token=4PRUK8DMZF)](https://codecov.io/github/ACCORD-NWP/tactus)
 
 # TACTUS Scripting System
 
 ## About
 
-The [tactus scripting system](https://github.com/destination-earth-digital-twins/tactus/) provides a `tactus` python package.
+The [tactus scripting system](https://github.com/ACCORD-NWP/tactus/) provides a `tactus` python package.
 
-See the [project's documentation page](https://destination-earth-digital-twins.github.io/tactus-docs) for more information.
+See the [project's documentation page](https://ACCORD-NWP.github.io/tactus-docs) for more information.
 
 
 ## Set up environment
@@ -46,7 +46,7 @@ We **highly recommend** you to also put the statement listed above in your shell
   conda activate <env_name>
   ```
 
-See also [lumi doc](https://github.com/destination-earth-digital-twins/tactus/blob/develop/docs/markdown_docs/lumi.md) for more details.
+See also [lumi doc](https://github.com/ACCORD-NWP/tactus/blob/develop/docs/markdown_docs/lumi.md) for more details.
 
 * On Macs (local install only)
   ```shell
@@ -61,11 +61,11 @@ See also [lumi doc](https://github.com/destination-earth-digital-twins/tactus/bl
 
 First checkout the `tactus` source code from github:
 ```shell
-git clone git@github.com:destination-earth-digital-twins/tactus.git
+git clone git@github.com:ACCORD-NWP/tactus.git
 cd tactus
 ```
 
-For development, use forks as specified in the [Development guidelines](https://github.com/destination-earth-digital-twins/tactus/blob/develop/docs/markdown_docs/development_guide.md).
+For development, use forks as specified in the [Development guidelines](https://github.com/ACCORD-NWP/tactus/blob/develop/docs/markdown_docs/development_guide.md).
 To clone the forked repository, use the following command, replacing \<username\> with your GitHub username:
 ```shell
 git clone git@github.com:<username>/tactus.git
@@ -122,8 +122,8 @@ tactus -h
 Before you can use `tactus` (apart from the `-h` option), you will need a configuration file written in the
 [TOML](https://en.wikipedia.org/wiki/TOML) format. Please take a look at
  the default
- [config.toml](https://github.com/destination-earth-digital-twins/tactus/blob/develop/tactus/data/config_files/config.toml) file, as well as the
- [project's Doc Page](https://destination-earth-digital-twins.github.io/tactus-docs),
+ [config.toml](https://github.com/ACCORD-NWP/tactus/blob/develop/tactus/data/config_files/config.toml) file, as well as the
+ [project's Doc Page](https://ACCORD-NWP.github.io/tactus-docs),
  for more information about this.
 
  To see all configs currently in place in your `tactus` setup, please run
