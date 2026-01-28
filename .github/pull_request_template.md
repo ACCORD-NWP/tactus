@@ -18,15 +18,13 @@ Please delete options that are not relevant.
 
 ### Testing
 
-- [ ] I have tested this on ATOS using the `atos_bologna.toml` configuration in the latest version of [Tactus-test-runner](https://github.com/destination-earth-digital-twins/Tactus-test-runner) 
-- [ ] I have tested this on LUMI using the `lumi.toml` configuration in the latest version of [Tactus-test-runner](https://github.com/destination-earth-digital-twins/Tactus-test-runner) 
 
-For further information see the [development guide](https://github.com/destination-earth-digital-twins/tactus/blob/develop/docs/markdown_docs/development_guide.md)
+For further information see the [development guide](https://github.com/ACCORD-NWP/tactus/blob/develop/docs/markdown_docs/development_guide.md)
 
 ### Code quality
 
-- [ ] My change follows the [best practices for this project](https://github.com/destination-earth-digital-twins/tactus/blob/develop/docs/markdown_docs/development_guide.md#best-practices).
-- [ ] My local environment is correctly initialised as described in the [README](https://github.com/destination-earth-digital-twins/tactus/blob/develop/README.md) file.
+- [ ] My change follows the [best practices for this project](https://github.com/ACCORD-NWP/tactus/blob/develop/docs/markdown_docs/development_guide.md#best-practices).
+- [ ] My local environment is correctly initialised as described in the [README](https://github.com/ACCORD-NWP/tactus/blob/develop/README.md) file.
 - [ ] My branch is up-to-date with the target branch - if not update your fork with the changes from the target branch (use `pull` with `--rebase` option if possible).
 - [ ] I have performed a self-review of my code
 - [ ] I have commented my code, particularly in hard-to-understand areas
