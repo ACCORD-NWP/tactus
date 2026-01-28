@@ -20,7 +20,7 @@ on:
 
 jobs:
   linting:
-    if: github.repository_owner == 'destination-earth-digital-twins'
+    if: github.repository_owner == 'ACCORD-NWP'
     name: Run Linters
     runs-on: ubuntu-latest
     env:
