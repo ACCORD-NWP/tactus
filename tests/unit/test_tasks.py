@@ -11,7 +11,7 @@ import tomlkit
 from tactus import GeneralConstants
 from tactus.derived_variables import derived_variables, set_times
 from tactus.plugin import TactusPluginRegistry
-from tactus.tasks.archive import ArchiveDataBridge, ArchiveHour, ArchiveStatic
+from tactus.tasks.archive import ArchiveHour, ArchiveStatic
 from tactus.tasks.base import Task
 from tactus.tasks.batch import BatchJob
 from tactus.tasks.collectlogs import CollectLogs
@@ -89,7 +89,6 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_toolbox_filemanager_input_method = FileManager.input
     original_task_forecast_forecast_execute_method = Forecast.execute
     original_task_forecast_firstguess_execute_method = FirstGuess.execute
-    original_task_archive_archivedatabridge__check_user = ArchiveDataBridge._check_user
     original_task_archive_archivehour_execute_method = ArchiveHour.execute
     original_task_archive_archivestatic_execute_method = ArchiveStatic.execute
     original_task_creategrib_glgrib_execute_method = GlGrib.execute
@@ -133,11 +132,6 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         """Suppress some errors so that test continues if they happen."""
         with contextlib.suppress(FileNotFoundError):
             original_task_forecast_firstguess_execute_method(*args, **kwargs)
-
-    def new_task_archive_archivedatabridge__check_user(*args, **kwargs):
-        """Suppress some errors so that test continues if they happen."""
-        with contextlib.suppress(ValueError):
-            original_task_archive_archivedatabridge__check_user(*args, **kwargs)
 
     def new_task_archive_archivehour_execute_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
@@ -234,10 +228,6 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     session_mocker.patch(
         "tactus.tasks.forecast.FirstGuess.execute",
         new=new_task_forecast_firstguess_execute_method,
-    )
-    session_mocker.patch(
-        "tactus.tasks.archive.ArchiveDataBridge._check_user",
-        new=new_task_archive_archivedatabridge__check_user,
     )
     session_mocker.patch(
         "tactus.tasks.archive.ArchiveHour.execute",
