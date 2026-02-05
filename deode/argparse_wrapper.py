@@ -11,6 +11,7 @@ from .commands_functions import (
     namelist_convert,
     namelist_format,
     namelist_integrate,
+    remove_cases,
     run_task,
     show_config,
     show_config_schema,
@@ -138,6 +139,36 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     parser_run.add_argument("--members", nargs="+", type=int, default=None)
     parser_run.set_defaults(run_command=run_task)
 
+    ##########################################
+    # Configure parser for the "remove" command #
+    ##########################################
+    parser_remove = subparsers.add_parser(
+        "remove",
+        help="Remove a case from all locations",
+        parents=[common_parser],
+    )
+    parser_remove.add_argument(
+        "--execute-removal",
+        help="Execute the actual removal of data",
+        action="store_true",
+        default=False,
+    )
+    parser_remove.add_argument(
+        "--force-remove",
+        "-f",
+        help="Remove suites, and possibly their data, even if not completed",
+        action="store_true",
+        default=False,
+    )
+    parser_remove.add_argument(
+        "config_files",
+        help="Config files for cases to remove",
+        nargs="*",
+        type=Path,
+        default=None,
+    )
+
+    parser_remove.set_defaults(run_command=remove_cases)
     ##########################################
     # Configure parser for the "case" command #
     ##########################################

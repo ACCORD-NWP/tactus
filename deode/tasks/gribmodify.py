@@ -8,6 +8,7 @@ from contextlib import ExitStack
 from itertools import product
 
 import numpy as np
+from utci import utci_function
 
 from ..datetime_utils import as_datetime, as_timedelta
 from ..logs import logger
@@ -330,6 +331,12 @@ class AddCalculatedFields(Task):
                     physical_range,
                     nature_weighting=False,
                 )
+            elif operation == "utci":
+                if len(params) != 5:
+                    raise ValueError("Model must have 5 components!")
+                # Order of input parameters must be strictly: 2t, mrt, 2r, 10u, 10v
+                result_values = utci_function.utci(*values_list)
+
             else:
                 raise NotImplementedError(
                     "Operation {} not implemented yet.".format(operation)
@@ -650,7 +657,7 @@ class AddCalculatedFields(Task):
 
                 # Check if the rule is valid at basetime
                 if validtime == self.basetime:
-                    valid_at_basetime = rule.get("valid_at_basetime", False)
+                    valid_at_basetime = rule.get("valid_at_basetime", True)
                     static_field = rule.get("static_field", False)
                     if not (valid_at_basetime or static_field):
                         logger.info(

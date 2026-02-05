@@ -1,6 +1,6 @@
 (cleaning-of-experiment)=
 # Cleaning of experiment
- The forecast suite  produces a lot of files in the working and output folders. To avoid increased usage of file storage, it is needed to have a cleaning feature, which allows configurable options to delete files.
+ The forecast suite produces a lot of files in the working and output folders. To avoid increased usage of file storage, it is needed to have a cleaning feature, which allows configurable options to delete files.
 
 Each forecast experiment has a start and end dates and cycle length. These settings define the experiment timeline and used folders:
 
@@ -38,9 +38,12 @@ defaults
   active = true  - turn on or turn off the cleaning task
   dry_run = true  - testing mode - to see which files would be deleted without their actual deletion. This could be seen in the task log file.
   include  = "(.*)" - regular expression which specifies which files to delete. "(.*)" is regular expesion which matches all files
+  exclude  = "(.*)" - regular expression which specifies which files not to delete. Leave empty to deactivate
   cleaning_delay = "P1D" 
   cleaning_max_delay = "P2D"
   step = "PT6H"
+  wipe = false - Removes everything under "path". Disables the meaning of include or exclude
+  ecfs_prefix = None - Specifies path to ecfs if this is concerned
 ```
 cleaning_delay and cleanig_max_delay are period settings which define the cleaning time interval according to the expiriment start date
 
@@ -75,3 +78,14 @@ Example value of the archive folder path is `/ec/res4/scratch/bgmt/deode/CY48t3_
   step = "PT6H"
 ```
 The cleaning settings allow to define the cleaning time interval and step and which files to delete.
+
+# Removal of a complete case
+
+All files produced by a run case be removed by
+```
+deode remove [--config-file CONFIG_FILE_WITH_CLEANING_SETTINGS.toml] YOUR_CONFIG_FILE[S].toml [-d] [-f]
+```
+What to actually remove is defined in `deode/data/config_files/include/remove.toml`. The settings are the same as for the cleaning config apart from `remove_from_scheduler` which removes the suite from the scheduler. With the default `remove_not_completed_suites=True` the removal is only executed if the suite is actually completed. This check can be overrided by using `-f` on command line.
+
+
+

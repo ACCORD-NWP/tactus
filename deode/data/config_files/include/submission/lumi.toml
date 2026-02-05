@@ -258,6 +258,7 @@
     "E923Monthly",
     "E923Update",
     "InterpolSstSic",
+    "GenerateWfpTabFile",
   ]
   WRAPPER = "srun"
 

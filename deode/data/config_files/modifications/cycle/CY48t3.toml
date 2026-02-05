@@ -1,5 +1,6 @@
 [general]
   cycle = "CY48t3"
+  fullpos_windpower = false
   upd_sst_sic = false
 
 [platform]

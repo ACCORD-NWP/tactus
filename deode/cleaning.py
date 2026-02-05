@@ -2,11 +2,27 @@
 
 import os
 import re
+import shutil
+import subprocess
 
 from .datetime_utils import as_datetime, as_timedelta
 from .logs import logger
 from .os_utils import Search, remove_empty_dirs
 from .toolbox import Platform
+
+
+def wipe_ecfs(ecfs_path):
+    """Remove a full ecfs directory tree."""
+    command = ["erm", "-R", ecfs_path]
+    try:
+        result = subprocess.check_output(command, text=True)  # noqa S603
+        logger.info(result)
+
+        if result != "":
+            logger.error(result)
+            raise RuntimeError("Error running command: {}".format(command))
+    except subprocess.CalledProcessError as err:
+        logger.warning(err)
 
 
 class CleanDeode:
@@ -24,6 +40,8 @@ class CleanDeode:
             RuntimeError: If erroneous defaults
 
         """
+        self.CLEANING_DEFAULTS = {"path": "", "ecfs_prefix": None}
+
         if defaults is None:
             self.defaults = {}
         elif isinstance(defaults, dict):
@@ -39,6 +57,14 @@ class CleanDeode:
         self.cycle_length = as_timedelta(config["general.times.cycle_length"])
         self.platform = Platform(config)
         self._check_choice(self.defaults, "defaults")
+        archiving = config.get("archiving").dict()
+        archiving.pop("prefix")
+        self.has_ecfs = False
+        for values in archiving.values():
+            if "ecfs" in values:
+                self.has_ecfs = self.has_ecfs or any(
+                    x["active"] for x in values["ecfs"].values() if "active" in x
+                )
 
     def _set_defaults(self, choice):
         """Copy default settings.
@@ -58,6 +84,9 @@ class CleanDeode:
             y.pop("ncycles_delay")
         if "ncycles_delay" in x and "cleaning_delay" in y:
             y.pop("cleaning_delay")
+        for key, value in self.CLEANING_DEFAULTS.items():
+            if key not in y:
+                y[key] = value
 
         for k, v in y.items():
             if k not in choice:
@@ -91,12 +120,13 @@ class CleanDeode:
                 logger.error(f"cycle_length:{self.cycle_length}")
                 raise RuntimeError
 
-    def prep_cleaning(self, choices, basetime=None):
+    def prep_cleaning(self, choices, basetime=None, dry_run=None):
         """Prepare tasks for cleaning.
 
         Args:
             choices (dict): Dict with cleaning settings
             basetime (dateTime object): Reference time
+            dry_run (boolean): Flag for dry runs
 
         """
         if basetime is not None:
@@ -128,6 +158,9 @@ class CleanDeode:
                 else:
                     choice["step"] = as_timedelta(choice["step"])
 
+                if dry_run:
+                    choice["dry_run"] = dry_run
+
                 self._check_choice(choice, name)
                 self.clean_tasks[name] = choice
 
@@ -139,33 +172,53 @@ class CleanDeode:
             basetime = self.basetime - choice["cleaning_delay"]
             endtime = self.basetime - choice["cleaning_max_delay"]
             dry_run = choice["dry_run"]
+            wipe = choice["wipe"]
 
             while basetime >= endtime:
                 inp = self.platform.substitute(choice["path"], basetime=basetime)
-                pattern = (
-                    [choice["include"]]
-                    if isinstance(choice["include"], str)
-                    else choice["include"]
-                )
-
-                do_exclude = "exclude" in choice
-                if do_exclude:
-                    exclude = re.compile(choice["exclude"])
-
-                logger.info("Clean path:{}", inp)
-                for ptrn in pattern:
-                    files = Search.find_files(inp, recursive=True, pattern=ptrn)
-                    for filename in files:
-                        if do_exclude and exclude.match(filename):
-                            logger.info("Exclude:{}", filename)
-                            continue
+                if choice["path"]:
+                    logger.info("Clean path:{}", inp)
+                if wipe:
+                    if choice["ecfs_prefix"] is not None and self.has_ecfs:
+                        ecfs_path = self.platform.substitute(
+                            f"{choice['ecfs_prefix']}/{inp}", basetime=basetime
+                        )
                         if dry_run:
-                            logger.info("Would have removed:{}", filename)
+                            logger.info(" would have removed {}", ecfs_path)
                         else:
-                            logger.info("Remove :{}", filename)
-                            os.remove(filename)
+                            wipe_ecfs(ecfs_path)
+                    elif choice["ecfs_prefix"] is None:
+                        if os.path.isdir(inp):
+                            if dry_run:
+                                logger.info(" would have removed {}", inp)
+                            else:
+                                shutil.rmtree(inp)
+                        else:
+                            logger.warning("Path {} does not exist", inp)
+                else:
+                    pattern = (
+                        [choice["include"]]
+                        if isinstance(choice["include"], str)
+                        else choice["include"]
+                    )
 
-                # Remove possible empty directories
-                remove_empty_dirs(inp, dry_run=dry_run)
+                    do_exclude = "exclude" in choice
+                    if do_exclude:
+                        exclude = re.compile(choice["exclude"])
+
+                    for ptrn in pattern:
+                        files = Search.find_files(inp, recursive=True, pattern=ptrn)
+                        for filename in files:
+                            if do_exclude and exclude.match(filename):
+                                logger.info("Exclude:{}", filename)
+                                continue
+                            if dry_run:
+                                logger.info(" would have removed:{}", filename)
+                            else:
+                                logger.info("Remove :{}", filename)
+                                os.remove(filename)
+
+                    # Remove possible empty directories
+                    remove_empty_dirs(inp, dry_run=dry_run)
 
                 basetime -= choice["step"]

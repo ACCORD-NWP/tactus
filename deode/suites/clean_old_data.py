@@ -30,18 +30,13 @@ class DeodeCleaningSuiteDefinition(SuiteDefinition):
 
         self.suite_name = "Clean_old_data"
         self.config = config
-        self.clean_scratch = self.config[
-            "suite_control.DeodeCleaningSuiteDefinition.do_clean_scratch_data"
+        self.clean_cases = self.config[
+            "suite_control.DeodeCleaningSuiteDefinition.do_clean_cases"
         ]
-        self.clean_suites = self.config[
-            "suite_control.DeodeCleaningSuiteDefinition.do_clean_suites"
+        self.clean_empty_dirs = self.config[
+            "suite_control.DeodeCleaningSuiteDefinition.do_clean_empty_dirs"
         ]
-        self.clean_IFS_data = self.config[
-            "suite_control.DeodeCleaningSuiteDefinition.do_clean_IFS"
-        ]
-        self.clean_ehype_data = self.config[
-            "suite_control.DeodeCleaningSuiteDefinition.do_clean_ehype_data"
-        ]
+
         self.cron_days = self.config[
             "suite_control.DeodeCleaningSuiteDefinition.days_in_week"
         ]
@@ -78,42 +73,28 @@ class DeodeCleaningSuiteDefinition(SuiteDefinition):
             cron=cron_one_per_week,
             ecf_files_remotely=self.ecf_files_remotely,
         )
+        trigger_clean_empty_dirs = []
 
-        if self.clean_scratch:
-            EcflowSuiteTask(
-                "CleanScratchData",
+        if self.clean_cases:
+            clean_cases = EcflowSuiteTask(
+                "CleanCases",
                 clean_family,
                 config,
                 self.task_settings,
                 self.ecf_files,
                 input_template=input_template,
             )
-        if self.clean_suites:
-            EcflowSuiteTask(
-                "CleanSuites",
-                clean_family,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-            )
+            trigger_clean_empty_dirs.append(clean_cases)
 
-        if self.clean_IFS_data:
+        if self.clean_empty_dirs:
+            if not trigger_clean_empty_dirs:
+                trigger_clean_empty_dirs = None
             EcflowSuiteTask(
-                "CleanIFSData",
+                "CleanEmptyDirectories",
                 clean_family,
                 config,
                 self.task_settings,
                 self.ecf_files,
                 input_template=input_template,
-            )
-
-        if self.clean_ehype_data:
-            EcflowSuiteTask(
-                "CleanEhypeData",
-                clean_family,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
+                trigger=trigger_clean_empty_dirs,
             )

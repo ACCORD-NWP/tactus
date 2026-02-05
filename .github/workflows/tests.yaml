@@ -24,6 +24,8 @@ jobs:
 
     name: "Unit-tests ${{ matrix.os }}, python=${{ matrix.python-version }}"
     runs-on: ${{ matrix.os }}
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
 
     container:
       image: python:${{ matrix.python-version }}-bullseye
@@ -36,6 +38,11 @@ jobs:
       #----------------------------------------------
       - name: Check out repository
         uses: actions/checkout@v3
+
+      - name: Set github credentials
+        uses: ./.github/actions/setup-github-credentials
+        with:
+          github_token: ${{ env.GITHUB_TOKEN }}
 
       #----------------------------------------------
       #           add matrix specifics

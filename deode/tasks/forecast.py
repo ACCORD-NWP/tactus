@@ -96,15 +96,28 @@ class Forecast(PySurfexBaseTask):
 
     def wfp_input(self):
         """Add wind turbine files to forecast directory."""
-        self.wfp_dir = self.platform.get_platform_value("windfarm_path")
+        if self.config["json2tab.enabled"]:
+            # Use JSON-2-TAB generated output
+            wfp_dir = self.platform.substitute(self.config["json2tab.output.directory"])
 
-        yy = self.basetime.strftime("%Y")
-        self.fmanager.input(
-            f"{self.wfp_dir}/wind_turbine_coordinates_{self.domain}_{yy}.tab",
-            "wind_turbine_coordinates.tab",
-        )
+            turbine_loc_file = self.platform.substitute(
+                self.config["json2tab.output.files.location_tab"]
+            )
+            turbine_tab_prefix = self.platform.substitute(
+                self.config["json2tab.output.files.type_tab_prefix"]
+            )
 
-        turbine_list = glob.glob(f"{self.wfp_dir}/wind_turbine_[0-9][0-9][0-9].tab")
+            location_file = f"{wfp_dir}/{turbine_loc_file}"
+            turbine_list = glob.glob(f"{wfp_dir}/{turbine_tab_prefix}*.tab")
+        else:
+            # Use old static tab-files
+            wfp_dir = self.platform.get_platform_value("windfarm_path")
+
+            yy = self.basetime.strftime("%Y")
+            location_file = f"{wfp_dir}/wind_turbine_coordinates_{self.domain}_{yy}.tab"
+            turbine_list = glob.glob(f"{wfp_dir}/wind_turbine_[0-9][0-9][0-9].tab")
+
+        self.fmanager.input(location_file, "wind_turbine_coordinates.tab")
         for ifile in turbine_list:
             infile = os.path.basename(ifile)
             self.fmanager.input(ifile, infile)

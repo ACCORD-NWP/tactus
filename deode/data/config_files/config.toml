@@ -82,6 +82,9 @@
 [gribmodify.fullpos.7]
   output_name = "2d"
 
+[gribmodify.fullpos.8]
+  output_name = "utci"
+
 [include]
   archiving = "include/archiving/@HOST@.toml"
   cleaning = "include/cleaning.toml"
@@ -92,9 +95,11 @@
   fdb = "include/fdb.toml"
   file_templates = "include/file_templates.toml"
   impact = "include/impact.toml"
+  json2tab = "include/json2tab.toml"
   macros = "include/macros.toml"
   mars = "include/mars_settings.toml"
   platform = "include/platform_paths/@HOST@.toml"
+  remove = "include/remove.toml"
   scheduler = "include/scheduler/ecflow_@HOST@.toml"
   submission = "include/submission/@HOST@.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"

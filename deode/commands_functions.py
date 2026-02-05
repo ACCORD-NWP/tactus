@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Implement the package's commands."""
 import argparse
+import contextlib
 import datetime
 import os
 import subprocess
@@ -14,6 +15,7 @@ from toml_formatter.formatter import FormattedToml
 from troika.connections.ssh import SSHConnection
 
 from . import GeneralConstants
+from .cleaning import CleanDeode
 from .config_parser import BasicConfig, ConfigParserDefaults, ConfigPaths, ParsedConfig
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
 from .experiment import case_setup
@@ -403,6 +405,104 @@ def show_host(args, config):  # noqa ARG001
     logger.info("Known hosts (host, recognition method):")
     for host, pattern in dh.known_hosts.items():
         logger.info("{:>16}   {}", host, pattern)
+
+
+def remove_cases(args, config):  # ARG001
+    """Remove output from cases."""
+    if len(args.config_files) == 0:
+        logger.info("No files no removal")
+        return False
+
+    # Fetch the remove config
+    cleaning_config = config.get("remove")
+    if not isinstance(cleaning_config, dict):
+        cleaning_config = cleaning_config.dict()
+    defaults = cleaning_config.get("defaults")
+    cleaning_config.pop("defaults")
+
+    # Loop over all given config files
+    for filename in args.config_files:
+        if not os.path.isfile(filename):
+            logger.warning("Cannot find {}", filename)
+            continue
+
+        logger.info("Read config from: {}", filename)
+        case_config = ParsedConfig.from_file(filename, json_schema={})
+        case_config = case_config.copy(update=set_times(case_config))
+        case_config = case_config.copy(update={"remove": cleaning_config})
+        platform = Platform(case_config)
+
+        # Loop over the different section in the remove config
+        for section, settings in cleaning_config.items():
+            logger.info(settings)
+            if section != "main" and not case_config.get(
+                f"impact.{section}.active", False
+            ):
+                continue
+
+            logger.info("Remove for section:{}", section)
+
+            suite_name = settings.get("suite_name", None)
+            remove_from_scheduler = settings.get("remove_from_scheduler", False)
+            remove_not_completed_suites = (
+                settings.get("remove_not_completed_suites", False) or args.force_remove
+            )
+
+            if suite_name is not None:
+                suite_name = platform.substitute(suite_name)
+
+                server = EcflowServer(case_config)
+                server.ecf_client.sync_local()
+
+                this_suite = None
+                for suite in server.ecf_client.get_defs().suites:
+                    if suite.name() == suite_name:
+                        this_suite = suite
+                        break
+
+                if not remove_not_completed_suites:
+                    if this_suite is None:
+                        logger.warning("No suite found for {}", suite_name)
+                        continue
+                    if not server.suite_is_complete(this_suite):
+                        logger.info(
+                            "Suite is not completed, do not remove anything from {}.",
+                            suite_name,
+                        )
+                        continue
+
+            for key in (
+                "suite_name",
+                "remove_from_scheduler",
+                "remove_not_completed_suites",
+            ):
+                with contextlib.suppress(KeyError):
+                    settings.pop(key)
+
+            cleaner = CleanDeode(case_config, defaults)
+            dry_run = not args.execute_removal
+            cleaner.prep_cleaning(settings, dry_run=dry_run)
+            cleaner.clean()
+
+            if suite_name is not None and remove_from_scheduler:
+                if dry_run:
+                    logger.info(" would have removed suite {}", suite_name)
+                else:
+                    try:
+                        EcflowServer(case_config).remove_suites(
+                            [suite_name], check_if_complete=False
+                        )
+                    except (ModuleNotFoundError, UnboundLocalError):
+                        logger.warning(
+                            "ecflow or config not found, suite {} not removed", suite_name
+                        )
+        logger.info("\n\nRerun with '--execute-removal' to do the actual removal\n")
+
+    return True
+
+
+#########################################
+#########################################
 
 
 def show_namelist(args, config):
