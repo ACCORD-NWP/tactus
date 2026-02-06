@@ -896,6 +896,7 @@
           "default": "nwp",
           "enum": [
             "airquality",
+            "coldspell",
             "convection",
             "flooding",
             "heatwave",
