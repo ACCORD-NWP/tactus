@@ -159,7 +159,6 @@
   expver = "irok"
   GGZ_type = "CF"
   ifs_cycle_length = "PT12H"
-  ifs_cycle_start = "PT0H"
   SHZ_type = "CF"
   start_date = "2022-05-02T00:00:00Z"
   stream = "ENFO"
@@ -173,13 +172,18 @@
   GGZ_type = "CF"
   grid = "0.09/0.09"
   ifs_cycle_length = "PT12H"
-  ifs_cycle_start = "PT0H"
   resolution = "9"
   SHZ_type = "CF"
   start_date = "2022-05-02T00:00:00Z"
   stream = "ENFO"
   type_AN = "CF"
   type_FC = "PF"
+
+[mars.iyzp]
+  default = "RD_DEFAULT"
+  end_date = "2023-08-20T00:00:00Z"
+  expver = "iyzp"
+  start_date = "2023-08-20T00:00:00Z"
 
 [mars.lumi_DT]
   class = "D1"
@@ -207,6 +211,7 @@
   grid = "0.04/0.04"
   grid_ML = "AV"
   ifs_cycle_length = "PT24H"
+  ifs_cycle_start = "PT0H"
   levelist = "1/to/137"
   resolution = "4"
   SH = "152/138/155/130"
