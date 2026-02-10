@@ -2,6 +2,10 @@
 name: Unit Tests
 
 on:
+  workflow_call:
+    secrets:
+      GH_REPO_READ_TOKEN:
+        required: true
   push:
     branches:
       - master
@@ -76,6 +80,11 @@ jobs:
         with:
           path: .venv
           key: ${{ github.job }}-venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml', 'poetry.toml') }}
+
+      - name: Inject GitHub token for private repos
+        run: |
+          sed -i 's#git@github.com#https://github.com#g' pyproject.toml
+          git config --global url."https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/".insteadOf "https://github.com/"
 
       - name: Install dependencies (if venv cache is not found)
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'

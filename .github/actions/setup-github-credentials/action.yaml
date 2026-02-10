@@ -1,0 +1,14 @@
+name: Setup GitHub Credentials
+description: Sets up git config to use token for GitHub URLs
+
+inputs:
+  github_token:
+    description: GitHub token to use
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Set github credentials
+      run: git config --global url."https://${{ inputs.github_token }}@github.com/".insteadOf "git@github.com:"
+      shell: bash
