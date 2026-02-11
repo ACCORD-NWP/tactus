@@ -433,8 +433,8 @@ def remove_cases(args, config):  # ARG001
         platform = Platform(case_config)
 
         # Loop over the different section in the remove config
-        for section, settings in cleaning_config.items():
-            logger.info(settings)
+        for section, original_settings in cleaning_config.items():
+            settings = dict(original_settings)
             if section != "main" and not case_config.get(
                 f"impact.{section}.active", False
             ):
@@ -483,7 +483,6 @@ def remove_cases(args, config):  # ARG001
             dry_run = not args.execute_removal
             cleaner.prep_cleaning(settings, dry_run=dry_run)
             cleaner.clean()
-
             if suite_name is not None and remove_from_scheduler:
                 if dry_run:
                     logger.info(" would have removed suite {}", suite_name)

@@ -4,7 +4,7 @@ import ast
 import contextlib
 import os
 from functools import cached_property
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Dict, List, Optional
 
 from deode.boundary_utils import Boundary
@@ -33,6 +33,8 @@ from deode.mars_utils import (
 from deode.os_utils import deodemakedirs, join_files, list_files_join
 from deode.tasks.base import Task
 from deode.tasks.batch import BatchJob
+
+from ..scheduler import EcflowServer
 
 
 class Marsprep(Task):
@@ -240,6 +242,13 @@ class Marsprep(Task):
                 )
         except OSError as e:
             raise RuntimeError(f"Error while preparing the mars folder: {e}") from e
+
+        # Suspend the model task if there is a mirroring
+        if self.config["suite_control.mirror_globalDT"]:
+            current_path = PurePosixPath(os.environ["ECF_NAME"])
+            model_path = current_path.parents[1] / "Mirrors"
+            server = EcflowServer(self.config)
+            server.suspend(str(model_path))
 
         if self.split_mars and self.prep_step:
             logger.debug("*** Need only latlon data")

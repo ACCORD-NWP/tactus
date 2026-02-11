@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove unnecessary ssh token injections on atos [\#1492](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1492)(@observingClouds)
 
 ### Fixed
+- Set mirroring task to suspend in the Marsprep task. [#1514](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1514)(@kastelecn)
 - Fix RTTOV\_COEF path in submissions settings and add 'CLSMEAN.RAD.TEMP' to ALARO cy48t3 fullpos 00. [\#1517](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1517) (@kastelecn)
 - Fix authentification issue with private dependencies of dependencies (i.e. json2tab). [#1306](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1306) (@jacobsnoeijer)
 - Add ecflow mirror support between a host and target LAM. [\#1425](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1425) (@uandrae)

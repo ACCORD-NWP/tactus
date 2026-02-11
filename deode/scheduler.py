@@ -373,6 +373,20 @@ class EcflowServer(Server):
         """Get cinfig file of the suite."""
         return Path(suite.find_variable("CONFIG").value())
 
+    def suspend(self, task_or_path):
+        """Suspend a task, family, or suite.
+
+        Args:
+            task_or_path (EcflowTask | str): Task object or full ecFlow path
+        """
+        if isinstance(task_or_path, str):
+            ecf_path = task_or_path
+        else:
+            ecf_path = task_or_path.ecf_name
+
+        logger.info("Suspending {}", ecf_path)
+        self.ecf_client.suspend(ecf_path)
+
 
 class EcflowLogServer:
     """Ecflow log server."""
