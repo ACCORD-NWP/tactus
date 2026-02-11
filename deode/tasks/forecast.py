@@ -301,6 +301,9 @@ class Forecast(PySurfexBaseTask):
         # Merge files and move to archive
         if self.iomerge_is_external:
             atexit.unregister(self.rename_wdir)
+            for filetype, oi in self.output_settings.items():
+                if filetype not in IOMERGE_FILETYPES and filetype in self.file_templates:
+                    self.archive_output(self.file_templates[filetype], oi)
         else:
             for filetype, oi in self.output_settings.items():
                 if filetype in self.file_templates:
