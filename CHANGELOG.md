@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update development guidelines. [\#1456](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1456) (@uandrae)
 - Changed the order of the modifications in the case of the CY50 ALARO configuration to disable surfex. [\#1450](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1450) (@pardallio)
 - Changed post-processed variables to be output at basetime per default [\#1488](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1488)(@KristianHMoller)
+- Remove unnecessary ssh token injections on atos [\#1492](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1492)(@observingClouds)
 
 ### Fixed
 - Fix RTTOV\_COEF path in submissions settings and add 'CLSMEAN.RAD.TEMP' to ALARO cy48t3 fullpos 00. [\#1517](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1517) (@kastelecn)
