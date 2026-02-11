@@ -201,6 +201,24 @@
         "bd_has_surfex": {
           "description": "Set to true if the host model runs with surfex",
           "type": "boolean"
+        },
+        "do_slaf": {
+          "description": "Set to true if using the SLAF scheme for ensemble member boundary files",
+          "type": "boolean"
+        },
+        "slaflag": {
+          "description": "SLAF shift of boundary initial time. E.g. 'PT3H' would mean use 3H old(er) boundaries",
+          "type": "string",
+          "format": "duration"
+        },
+        "slafdiff": {
+          "description": "SLAF difference of boundary initial times. E.g. 'PT6H' would mean a 6H difference",
+          "type": "string",
+          "format": "duration"
+        },
+        "slafk": {
+          "description": "SLAF difference scaling factor",
+          "type": "number"
         }
       }
     },

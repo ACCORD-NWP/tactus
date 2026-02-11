@@ -51,6 +51,8 @@ class Boundary:
 
         # Boundary basetime
         self.bdshift = as_timedelta(config["boundaries.bdshift"])
+        extra_bdshift = config.get("task.args.extra_bdshift", "PT0H")
+        self.bdshift += as_timedelta(extra_bdshift)
         self.bdshift_sfx = as_timedelta(config["boundaries.bdshift_sfx"])
 
         if self.bdshift.total_seconds() % self.bdcycle.total_seconds() != 0:

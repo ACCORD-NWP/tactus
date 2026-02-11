@@ -6,6 +6,7 @@ import os
 import subprocess
 from dataclasses import asdict
 from pathlib import Path
+from time import time
 from typing import List, Optional
 
 import tomlkit
@@ -374,6 +375,14 @@ def case_setup(
     ParsedConfig(
         Platform(exp.config).resolve_macros(exp.config.dict()),
         json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
+    )
+    # Record when the run started
+    exp.config = exp.config.copy(
+        update={
+            "general": {
+                "start_etime": str(time()),
+            }
+        }
     )
 
     exp.config.save_as(output_file)

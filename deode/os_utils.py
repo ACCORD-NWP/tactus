@@ -381,3 +381,6 @@ def join_files(input_files: List[str], output_filepath: str):
                 output_file.write(input_file.read())
     shutil.move(output_filename, output_filepath)
     logger.info(f"Created {output_filepath} out of files '{input_files}'")
+    lockfile = f"{output_filepath}.lock"
+    if os.path.exists(lockfile):
+        os.remove(lockfile)

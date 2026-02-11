@@ -28,8 +28,12 @@
   bdmodel = "ifs"
   bdshift = "PT0H"
   bdshift_sfx = "PT0H"
+  do_slaf = false
   humi_gp = true
   max_interpolation_tasks = 10
+  slafdiff = "PT0H"
+  slafk = 1.0
+  slaflag = "PT0H"
   sst_is_lsm = "auto"
   sstmodels = ["IFS"]
 

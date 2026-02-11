@@ -7,12 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Full Changelog](https://github.com/destination-earth-digital-twins/Deode-Prototype/compare/...HEAD)
 
-### Added
-- Introduce direct addressing in macros. [\#1460](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1460) (@uandrae)
-
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Introduce the SLAF boundary perturbation method. [\#1228](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1228) (@ovignes)
+- Introduce direct addressing in macros. [\#1460](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1460) (@uandrae)
 - UTCI is added in the Deode-Workflow. [\#1478](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1478) (@Ines-dhmz)
 - Add GenerateWfpTabFile-task to run json2tab preprocessor to enable Forecast with WFP on any domain. [#1306](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1306) (@jacobsnoeijer) 
 - Introduce `deode remove` functionality. [\#1461](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1461) (@uandrae)

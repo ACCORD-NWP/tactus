@@ -140,11 +140,14 @@ class InterpolateBoundaries(Task):
                 + "/"
                 + f"{self.config['file_templates.interpolated_boundaries.archive']}"
             ).replace("@NNN@", f"{bd_index:03}")
+            if "target_suffix" in self.config["task.args"]:
+                self.target += self.config["task.args.target_suffix"]
 
             self.fmanager.output(
                 self.outfile.replace("@NNN@", f"{bd_index - self.boundary.min_index:04}"),
                 self.target,
             )
+
         self.archive_logs(self.logs)
 
 
