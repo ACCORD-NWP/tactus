@@ -84,7 +84,7 @@
   WALLTIME = "#SBATCH --time=01:00:00"
 
 [submission.task_exceptions.Forecast.ENV]
-  RTTOV_COEFDIR = "/hpcperm/snh02/DEODE/satellite/rtcoef_rttov13/coef/"
+  RTTOV_COEFDIR = "@RTTOV_COEFDIR@"
   UCX_LOG_LEVEL = "error"
 
 [submission.task_exceptions.InterpolSstSic]

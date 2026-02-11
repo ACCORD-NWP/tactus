@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed post-processed variables to be output at basetime per default [\#1488](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1488)(@KristianHMoller)
 
 ### Fixed
+- Fix RTTOV\_COEF path in submissions settings and add 'CLSMEAN.RAD.TEMP' to ALARO cy48t3 fullpos 00. [\#1517](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1517) (@kastelecn)
 - Fix authentification issue with private dependencies of dependencies (i.e. json2tab). [#1306](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1306) (@jacobsnoeijer)
 - Add ecflow mirror support between a host and target LAM. [\#1425](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1425) (@uandrae)
 - Fixed issue with configuration of multiple LBCs in the same task for CY50 [\#1450](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1450) (@pardallio)
