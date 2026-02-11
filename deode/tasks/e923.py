@@ -255,7 +255,12 @@ class E923(Task):
             self.myexec(self.master, 8)
 
             # PART 9
-            self.fmanager.input(f"@E923_DATA@/aero_tegen/aero.tegen.m{mm}_GL", "aero_GL")
+            self.fmanager.input(
+                f"@E923_DATA@/aero_tegen/aero.tegen.m{mm}_GL", "aero_GL_tegen"
+            )
+            self.fmanager.input(
+                f"@E923_DATA@/aero_camscms/aero.camscms.m{mm}_GL", "aero_GL_camscms"
+            )
 
             self.nlgen.generate_namelist("e923_part_9", "fort.4")
             shutil.copy("fort.4", "fort.4_9")
