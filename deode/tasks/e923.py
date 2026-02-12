@@ -1,8 +1,12 @@
 """E923."""
 
 import glob
+import json
 import os
 import shutil
+from typing import Dict
+
+from deode.config_parser import ConfigPaths
 
 from ..logs import logger
 from ..namelist import NamelistGenerator
@@ -160,6 +164,9 @@ class E923(Task):
         if not os.path.exists("Const.Clim"):
             self.fmanager.input(constant_file, "Const.Clim", provider_id="copy")
 
+        # Preload files for different parts
+        part9_files: Dict[str, str | Dict[str, str]] = self.input_data.pop("part9")
+
         for ifile in ["MCICA", "RADSRTM"]:
             self.fmanager.input(f"@RRTM_DIR@/{ifile}", ifile)
 
@@ -255,12 +262,14 @@ class E923(Task):
             self.myexec(self.master, 8)
 
             # PART 9
-            self.fmanager.input(
-                f"@E923_DATA@/aero_tegen/aero.tegen.m{mm}_GL", "aero_GL_tegen"
-            )
-            self.fmanager.input(
-                f"@E923_DATA@/aero_camscms/aero.camscms.m{mm}_GL", "aero_GL_camscms"
-            )
+            path9 = part9_files["path"]
+            logger.info("*** part9_files: {}", part9_files)
+            for dst, src in part9_files["files"].items():
+                src_local = src.replace("@MM@", mm)
+                self.fmanager.input(
+                    f"{path9}/{src_local}",
+                    dst,
+                )
 
             self.nlgen.generate_namelist("e923_part_9", "fort.4")
             shutil.copy("fort.4", "fort.4_9")
@@ -389,6 +398,16 @@ class E923Monthly(E923):
         Define run sequence.
 
         """
+        self.input_definition = "e923_input_definition"
+        # Fetch input data
+        input_definition = ConfigPaths.path_from_subpath(
+            self.platform.get_system_value(self.input_definition)
+        )
+
+        logger.info("Read input data spec from: {}", input_definition)
+        with open(input_definition, "r", encoding="utf-8") as f:
+            self.input_data = json.load(f)
+
         # Run the monthly part
         self.monthly_part(self.constant_file)
 

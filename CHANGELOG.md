@@ -20,10 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add some new or previously forgotten (mostly) spanish stations for sqlite extraction. [\#1513] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1513) (@svianaj)
 
 ### Changed
-
-### Changed
+- Make E923 part9 files cycle dependent [\#1521](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1521) (@jacobsnoeijer)
+- Introduce the SLAF boundary perturbation method. [\#1228](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1228) (@ovignes)
 - Makes runtime module environment consistent between gnu and intel compilers on atos. [#1467](https://github.com/destination-earth-digital-twins/IAL/pull/1467) (@pardallio)
-
 - Update development guidelines. [\#1456](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1456) (@uandrae)
 - Changed the order of the modifications in the case of the CY50 ALARO configuration to disable surfex. [\#1450](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1450) (@pardallio)
 - Changed post-processed variables to be output at basetime per default [\#1488](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1488)(@KristianHMoller)

@@ -600,6 +600,11 @@
           "description": "Path to the c903 json config file",
           "default": "@CYCLE@/c903.json"
         },
+        "e923_input_definition": {
+          "type": "string",
+          "description": "Path to the e923 json config file",
+          "default": "@CYCLE@/e923.json"
+        },
         "e927_input_definition": {
           "type": "string",
           "description": "Path to the e927 json config file",
