@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.25.0] - 2026-02-13
+
 ### Added
 - Introduce the SLAF boundary perturbation method. [\#1228](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1228) (@ovignes)
 - Introduce direct addressing in macros. [\#1460](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1460) (@uandrae)
