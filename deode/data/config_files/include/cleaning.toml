@@ -3,9 +3,11 @@
 [cleaning.CycleCleaning.archive]
   ncycles_delay = 4
   path = "@ARCHIVE@"
+  wipe = true
 
 [cleaning.CycleCleaning.ecf_out]
   path = "@ECF_OUT@/@CASE@/@YMD@/@HH@@mm@"
+  wipe = true
 
 [cleaning.CycleCleaning.ifs]
   active = false
@@ -16,6 +18,7 @@
 [cleaning.CycleCleaning.wrk]
   ncycles_delay = 1
   path = "@WRK@"
+  wipe = true
 
 [cleaning.defaults]
   active = true

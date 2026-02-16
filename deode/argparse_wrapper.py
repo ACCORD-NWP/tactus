@@ -11,6 +11,7 @@ from .commands_functions import (
     namelist_convert,
     namelist_format,
     namelist_integrate,
+    remove_cases,
     run_task,
     show_config,
     show_config_schema,
@@ -139,6 +140,36 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     parser_run.set_defaults(run_command=run_task)
 
     ##########################################
+    # Configure parser for the "remove" command #
+    ##########################################
+    parser_remove = subparsers.add_parser(
+        "remove",
+        help="Remove a case from all locations",
+        parents=[common_parser],
+    )
+    parser_remove.add_argument(
+        "--execute-removal",
+        help="Execute the actual removal of data",
+        action="store_true",
+        default=False,
+    )
+    parser_remove.add_argument(
+        "--force-remove",
+        "-f",
+        help="Remove suites, and possibly their data, even if not completed",
+        action="store_true",
+        default=False,
+    )
+    parser_remove.add_argument(
+        "config_files",
+        help="Config files for cases to remove",
+        nargs="*",
+        type=Path,
+        default=None,
+    )
+
+    parser_remove.set_defaults(run_command=remove_cases)
+    ##########################################
     # Configure parser for the "case" command #
     ##########################################
     parser_case = subparsers.add_parser(
@@ -169,14 +200,6 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         default=None,
     )
     parser_case.add_argument(
-        "--expand-config",
-        "-e",
-        action="store_true",
-        default=False,
-        help="Expand macros in config",
-        required=False,
-    )
-    parser_case.add_argument(
         "--start-suite",
         "-s",
         action="store_true",
@@ -187,6 +210,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     add_keep_def_file(
         parser_case, help_message="Keep suite definition file in case of submission"
     )
+    add_expand_config(parser_case)
     parser_case.set_defaults(run_command=create_exp)
 
     ############################################
@@ -251,6 +275,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         choices=["toml", "json", "yaml"],
         default="toml",
     )
+    add_expand_config(parser_show_config)
     parser_show_config.set_defaults(run_command=show_config)
 
     # show config-schema
@@ -513,5 +538,22 @@ def add_keep_def_file(
         help=help_message,
         action="store_true",
         default=False,
+        required=False,
+    )
+
+
+def add_expand_config(parser_object):
+    """Add object args.
+
+    Args:
+        parser_object (args oject): args object to update
+
+    """
+    parser_object.add_argument(
+        "--expand-config",
+        "-e",
+        action="store_true",
+        default=False,
+        help="Expand macros in config",
         required=False,
     )

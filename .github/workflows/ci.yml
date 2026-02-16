@@ -12,12 +12,12 @@ on:
         - 'cy49t2_alaro'
         - 'cy49t2_harmonie_arome'
         default: 'cy49t2_arome'
-    
+
   push:
     branches:
       - master
       - develop
-    
+
   pull_request:
     branches:
       - master
@@ -32,7 +32,7 @@ jobs:
   call-workflow-atos:
     uses: ./.github/workflows/reuseable-workflow-atos.yaml
     secrets: inherit
-    with: 
+    with:
       configuration_name:  ${{ inputs.configuration_name || 'cy49t2_arome' }}
 
   call-workflow-lumi:

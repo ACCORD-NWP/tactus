@@ -293,11 +293,16 @@ class IOmerge(Task):
             )
 
         if self.file_tracker["history"]:
+            # Remove t=0 as this might have a different set of files
+            self.file_tracker["history"].pop(as_timedelta("PT0H"), None)
             file_tracker = [len(x) for x in self.file_tracker["history"].values()]
             if len(set(file_tracker)) != 1:
+                file_tracker_summary = {
+                    t: file_tracker[i] for i, t in enumerate(self.file_tracker["history"])
+                }
                 raise RuntimeError(
                     "Some history files have missing io-server input\n"
-                    f" {self.file_tracker['history']}"
+                    f" {file_tracker_summary}"
                 )
 
         # signal completion of all merge tasks to the forecast task

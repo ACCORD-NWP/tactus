@@ -1,0 +1,55 @@
+# Configuration file for Wind Turbine Location Processing
+# All paths can be absolute or relative to the script location
+
+# Input data configuration
+input:
+  # Main GeoJSON file containing turbine locations
+  turbine_locations: "{TO BE SET BY DEODE-WORKFLOW}"
+  # Optional: Database with turbine specifications
+  turbine_database: "{TO BE SET BY DEODE-WORKFLOW}"
+
+
+
+# Subsetting configuration
+subsetting:
+  # Filter turbines in temporal domain with installation/decommissioning date; possible values: a valid date, "today" (default) or "all"
+  situation_date: "{TO BE SET BY DEODE-WORKFLOW}"
+
+  # Spatial cropping method; can be either "bbox" (bounding box) or "domain" (TOML-based domain)
+  method: "domain"
+  
+# Turbine matcher configuration
+matcher:
+  use_probabilistic_mapper: false
+  use_default_selector: false
+  forbidden_types: "999;9999" #"999" # List of forbidden tubine types, i.e. turbine types that should be treated as unknown turbine types and matching logic should be applied to find correct turbine type
+
+# Output configuration
+output:
+  # Directory for all output files
+  directory: "{TO BE SET BY DEODE-WORKFLOW}"
+  # Output files configuration
+  files:
+    # Output file to summarize installed capacity per country
+    installed_capacity: "installed_capacity.[csv,txt]"
+    # Output file to summarize matching summary
+    matching_summary: "matching_summary.[csv,txt]"
+    # Flag indicating if matching summary per country should be written
+    matching_summary_per_country: False
+    # Output file to write model designation statistics
+    model_designation_statistics: "model_designation_statistics.[csv,txt]"
+    # Filtered GeoJSON with selected turbines
+    filtered_geojson: "filtered_turbines.[geojson,csv]"
+    # Visualization output
+    regional_plot: "turbine_locations_regional.png"
+    domain_plot: "turbine_locations_domain.png"
+    # Tab file outputs
+    location_tab: "{TO BE SET BY DEODE-WORKFLOW}"
+    type_tab_prefix: "{TO BE SET BY DEODE-WORKFLOW}"  # Will be followed by type ID and .tab
+    
+  # Tab file formatting
+  tab_format:
+    type_spec:
+      windspeed_range: "cut-in:0.5:cut-out" # (Optional) range for subset selection of windspeeds in format start:[step:]stop to write to output, start \in [cut-in, Integers], stop \in [cut-out, Integers]
+      extend_to_35ms: false # (Optional) flag to extend all windspeed tables to 35 m/s
+      bypass_cutout: false # (Optional) flag to bypass cut-out windspeed in output table (i.e. it will generate cp and powers for windspeeds > cut-out-speed)

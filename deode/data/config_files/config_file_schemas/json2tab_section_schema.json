@@ -1,0 +1,83 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "json-2-tab Section, defined in include/json2tab.toml",
+    "description": "Model for validation of the data in the 'json2tab' section of the config file.",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+        "enabled": {
+            "type": "boolean",
+            "description": "Switch to use the Json-2-tab converter to generate domain specific tab-files for windfarm parameterization WFP.",
+            "default": true
+        },
+        "force_rewrite": {
+            "type": "boolean",
+            "description": "Switch to always run json2tab when WFP is on (and maybe override existing windturbine tab-files when they already exist)",
+            "default": false
+        },
+        "config_file": {
+            "type": "string",
+            "description": "Config file for some json-2-tab configurations not managed by Deode-Workflow.",
+            "default": "@DEODE_HOME@/data/json2tab/json2tab-config.yaml"
+        },
+        "loglevel": {
+          "description": "Loglevel as used for json-2-tab logging",
+          "type": "string",
+          "enum": ["auto", "debug", "info", "warning", "error"],
+          "default": "auto"
+        },
+        "input": {
+            "type": "object",
+            "description": "Input configuration section for json-2-tab.",
+            "properties": {
+                "turbine_locations": {
+                    "type": "string",
+                    "description": "Main file containing turbine locations (csv, tab or geojson).",
+                    "default": "@WINDFARM_PATH@/euromap.csv"
+                },
+                "turbine_database": {
+                    "type": "array",
+                    "description": "List of turbine type databases with turbine specifications.",
+                    "items": {
+                        "type": "string",
+                        "description": "Path to database with turbine specifications"
+                    },
+                    "default": [
+                        "@WINDFARM_PATH@/turbine_database+gened_ct_curves.json",
+                        "@WINDFARM_PATH@/turbine_database+knmi.json",
+                        "@WINDFARM_PATH@/turbine_database+wf101.json",
+                        "@WINDFARM_PATH@/turbine_specifications+belgian.csv",
+                        "@WINDFARM_PATH@/known_wf101_mapping.csv"
+                    ]
+                }
+            }
+        },
+        "output": {
+            "type": "object",
+            "description": "Output configuration section for json-2-tab.",
+            "properties": {
+                "directory": {
+                    "type": "string",
+                    "description": "Directory for all output files.",
+                    "default": "@ARCHIVE_ROOT@/windfarm_data/"
+                },
+                "files": {
+                    "type": "object",
+                    "description": "Specification for output files.",
+                    "properties": {
+                        "location_tab": {
+                            "type": "string",
+                            "description": "Tab file output with selected turbines.",
+                            "default": "turbine_locations.tab"
+                        },
+                        "type_tab_prefix": {
+                            "type": "string",
+                            "description": "Prefix of tab file output with type definitions (will be followed by type ID and .tab)",
+                            "default": "wind_turbine_"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -4,7 +4,8 @@ import ast
 import contextlib
 import os
 from functools import cached_property
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+from time import sleep
 from typing import Dict, List, Optional
 
 from deode.boundary_utils import Boundary
@@ -26,6 +27,7 @@ from deode.mars_utils import (
     mars_selection,
     mars_write_method,
     move_files,
+    waitfor_files,
     write_compute_mars_req,
     write_retrieve_mars_req,
     write_write_mars_req,
@@ -33,6 +35,8 @@ from deode.mars_utils import (
 from deode.os_utils import deodemakedirs, join_files, list_files_join
 from deode.tasks.base import Task
 from deode.tasks.batch import BatchJob
+
+from ..scheduler import EcflowServer
 
 
 class Marsprep(Task):
@@ -241,6 +245,13 @@ class Marsprep(Task):
         except OSError as e:
             raise RuntimeError(f"Error while preparing the mars folder: {e}") from e
 
+        # Suspend the model task if there is a mirroring
+        if self.config["suite_control.mirror_globalDT"]:
+            current_path = PurePosixPath(os.environ["ECF_NAME"])
+            model_path = current_path.parents[1] / "Mirrors"
+            server = EcflowServer(self.config)
+            server.suspend(str(model_path))
+
         if self.split_mars and self.prep_step:
             logger.debug("*** Need only latlon data")
         else:
@@ -261,8 +272,13 @@ class Marsprep(Task):
     def get_grid_point_surface_data(self):
         """Get grid point surface data."""
         tag = "ICMGG"
-        steps, members_dict, _ = get_steps_and_members_to_retrieve(
-            self.steps, self.prepdir, tag, self.bdmember
+        steps, waitfor_steps, members_dict, _, _ = get_steps_and_members_to_retrieve(
+            self.steps,
+            self.prepdir,
+            tag,
+            self.bdmember,
+            platform=self.platform,
+            use_lockfile=self.config["boundaries.do_slaf"],
         )
         if steps:
             self.get_gg_data(tag, steps, members_dict)
@@ -295,12 +311,19 @@ class Marsprep(Task):
                 add_additional_data_to_all(tag, steps, members_dict, additional_data)
 
             move_files(tag, steps, members_dict, self.prepdir)
+        if waitfor_steps:
+            waitfor_files(tag, waitfor_steps, members_dict, self.prepdir)
 
     def get_spectral_harmonic_data(self):
         """Get spectral harmonic data."""
         tag = "ICMSH"
-        steps, members_dict, _ = get_steps_and_members_to_retrieve(
-            self.steps, self.prepdir, tag, self.bdmember
+        steps, waitfor_steps, members_dict, _, _ = get_steps_and_members_to_retrieve(
+            self.steps,
+            self.prepdir,
+            tag,
+            self.bdmember,
+            platform=self.platform,
+            use_lockfile=self.config["boundaries.do_slaf"],
         )
 
         if steps:
@@ -314,12 +337,19 @@ class Marsprep(Task):
 
             add_additional_data_to_all(tag, steps, members_dict, additional_data)
             move_files(tag, steps, members_dict, self.prepdir)
+        if waitfor_steps:
+            waitfor_files(tag, waitfor_steps, members_dict, self.prepdir)
 
     def get_grid_point_upper_air_data(self):
         """Get gridpoint upper air data."""
         tag = "ICMUA"
-        steps, members_dict, _ = get_steps_and_members_to_retrieve(
-            self.steps, self.prepdir, tag, self.bdmember
+        steps, waitfor_steps, members_dict, _, _ = get_steps_and_members_to_retrieve(
+            self.steps,
+            self.prepdir,
+            tag,
+            self.bdmember,
+            platform=self.platform,
+            use_lockfile=self.config["boundaries.do_slaf"],
         )
         if steps:
             self.get_ua_data(tag, steps, members_dict)
@@ -329,6 +359,8 @@ class Marsprep(Task):
                 members_dict,
             )
             move_files(tag, steps, members_dict, self.prepdir)
+        if waitfor_steps:
+            waitfor_files(tag, waitfor_steps, members_dict, self.prepdir)
 
     def get_bdmember_fetch_list(self, bddir: str, bdfile: str):
         """Builds the list of missing files to fetch from MARS."""
@@ -411,7 +443,13 @@ class Marsprep(Task):
         )
         bdfile = self.config["file_templates.bdfile_sst.model"]
 
-        _, members_dict, missing_steps_per_member = get_steps_and_members_to_retrieve(
+        (
+            _,
+            _,
+            members_dict,
+            missing_steps_per_member,
+            waitfor_steps_per_member,
+        ) = get_steps_and_members_to_retrieve(
             self.steps,
             prep_dir,
             bdfile,
@@ -419,6 +457,7 @@ class Marsprep(Task):
             platform=self.platform,
             basetime=self.boundary.bd_basetime,
             validtime=self.basetime,
+            use_lockfile=self.config["boundaries.do_slaf"],
         )
 
         if not missing_steps_per_member:
@@ -441,6 +480,28 @@ class Marsprep(Task):
                     )
                     prep_filepath = prep_dir / sst_filename
                     join_files(filenames, prep_filepath)
+
+        if waitfor_steps_per_member:
+            # Wait for the relevant files
+            for member in waitfor_steps_per_member:
+                steps = waitfor_steps_per_member[member]
+                for step in steps:
+                    sst_filename = self.platform.substitute(
+                        bdfile.replace("@BDMEMBER@", str(member or 0)),
+                        basetime=self.boundary.bd_basetime,
+                        validtime=self.basetime,
+                        bd_index=step,
+                    )
+                    dest_file = prep_dir / sst_filename
+                    lockfile = f"{dest_file}.lock"
+                    while not os.path.exists(dest_file):
+                        if os.path.exists(lockfile):
+                            logger.info("Waiting 5 sec. for {}", dest_file)
+                            sleep(5)
+                        else:
+                            logger.info("No lockfile, stop waiting for {}", dest_file)
+                            sleep(30)
+                            raise SystemExit(f"Creation of {dest_file} must have failed")
 
     def get_lat_lon_data(self, bdmember_list: List[int]):
         """Get Lat/Lon data.

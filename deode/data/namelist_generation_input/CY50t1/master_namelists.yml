@@ -632,7 +632,7 @@ f4_ALARO:
     TFP_Z%IBITS: 16
   NAMARPHY:
     CCOUPLING: I
-    LMSE: false
+    LMSE: ${cfg:general.surfex}
   NAMCFU:
     CALFLASH1: 0.94
     LAMIP: false
@@ -924,7 +924,8 @@ f4_ALARO:
   NAMJFH:
     N_VMASS: 0
   NAMMCC:
-    LMCC01_MSE: false
+    LMCC01_MSE: ${cfg:general.upd_sst_sic}
+    LMCCECSST: ${cfg:general.upd_sst_sic}
   NAMOPH:
     CFNHWF: ECHIS
     LINC: true

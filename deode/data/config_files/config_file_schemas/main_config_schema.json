@@ -177,7 +177,8 @@
                 "iit7",
                 "ilv7",
                 "is6g",
-                "irok"
+                "irok",
+                "iyzp"
               ]
             },
             "bdmember": {
@@ -200,6 +201,24 @@
         "bd_has_surfex": {
           "description": "Set to true if the host model runs with surfex",
           "type": "boolean"
+        },
+        "do_slaf": {
+          "description": "Set to true if using the SLAF scheme for ensemble member boundary files",
+          "type": "boolean"
+        },
+        "slaflag": {
+          "description": "SLAF shift of boundary initial time. E.g. 'PT3H' would mean use 3H old(er) boundaries",
+          "type": "string",
+          "format": "duration"
+        },
+        "slafdiff": {
+          "description": "SLAF difference of boundary initial times. E.g. 'PT6H' would mean a 6H difference",
+          "type": "string",
+          "format": "duration"
+        },
+        "slafk": {
+          "description": "SLAF difference scaling factor",
+          "type": "number"
         }
       }
     },
@@ -251,26 +270,8 @@
       "decription": "Option for cleaning old data",
       "type": "object",
       "properties": {
-        "ehype_data_period": {
-          "description": "Age for old ehype data in days",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
-          "default": "P14D"
-        },
-        "scratch_data_period": {
-          "description": "Age for old data in days",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
-          "default": "P14D"
-        },
-        "suites_period": {
-          "description": "Age for old data in days",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
-          "default": "P14D"
-        },
-        "IFS_period": {
-          "description": "Age for old data in days",
+        "cases_period": {
+          "description": "Age for old cases in days",
           "type": "string",
           "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
           "default": "P7D"
@@ -280,26 +281,22 @@
           "type": "array",
           "default": []
         },
-        "suite_format": {
-          "decription": "Format of path to ecf files",
-          "type": "string",
-          "default": "/"
-        },
-        "scratch_format": {
-          "decription": "Format of path to scratch",
-          "type": "string",
-          "default": "/"
-        },
-        "ifs_format": {
-          "decription": "Format of path to IFS",
-          "type": "string",
-          "default": "/IFS/(\\d{4})/(0[1-9]|1[0-2])/(0[1-9]|[12]\\d|3[01])/([01]\\d|2[0-3])"
-        },
         "scratch_ext": {
           "decription": "Extention of cratche for operational user.",
           "type": "string",
           "default": "deode"
-        }
+        },
+	"force_delete_period": {
+          "decription": "ISO-8601 duration string used to determine the fallback age of a suite for deletion if its files are missing. Defaults to approximately one year ('P365D').",
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
+          "default": "P365D"
+	},
+	"dw_case_prefixes": {
+	  "decription": "List of prefixes of the daily runs",
+	  "type": "array",
+	  "default": ["AUTOMATED_RUN", "HARMONIE_AROME", "AROME", "ALARO"]
+	}
       }
     },
     "pgd": {
@@ -475,20 +472,9 @@
           "decription": "Settings for Cleaning Suite",
           "type": "object",
           "properties": {
-            "do_clean_scratch_data": {
-              "description": "Activate cleaning the scratch data",
-              "type": "boolean",
-              "default": true
-            },
-            "do_clean_suites": {
-              "description": "Activate cleaning the suites",
-              "type": "boolean",
-              "default": true
-            },
-            "do_clean_IFS": {
-              "description": "Activate cleaning IFS data",
-              "type": "boolean",
-              "default": true
+            "do_clean_cases": {
+              "description": "Activate cleaning of the cases",
+              "type": "boolean"
             },
             "days_in_week": {
               "description": "List of days when cleaning suite will run, 0-6 Sunday-Saturday",
@@ -613,6 +599,11 @@
           "type": "string",
           "description": "Path to the c903 json config file",
           "default": "@CYCLE@/c903.json"
+        },
+        "e923_input_definition": {
+          "type": "string",
+          "description": "Path to the e923 json config file",
+          "default": "@CYCLE@/e923.json"
         },
         "e927_input_definition": {
           "type": "string",
@@ -929,6 +920,7 @@
           "default": "nwp",
           "enum": [
             "airquality",
+            "coldspell",
             "convection",
             "flooding",
             "heatwave",
@@ -1000,9 +992,14 @@
           "default": []
         },
         "windfarm": {
-          "description": "Switch on wind farm parameterisation",
+          "description": "Switch for enabeling wind farm parameterisation",
           "type": "boolean",
           "default": false
+        },
+        "fullpos_windpower": {
+          "description": "Switch for enabeling wind power production in fullpos output. Normally no need to provide but wind power output via full pos is not supported in CY48.",
+          "type": "boolean",
+          "default": true
         },
         "upd_sst_sic": {
           "description": "Switch to update SST/SIC during forecast",

@@ -1,9 +1,8 @@
 [submission]
-  account = "#SBATCH -A DestE_330_25_0"
-  bindir_gl = "@INSTALL_DIR@/gl/leonardo.cy49t2.intel/bin"
+  account = "#SBATCH -A DestE_330_26_0"
   default_submit_type = "serial"
   lfftw = false
-  module_initpath = "/leonardo_work/DestE_330_25/users/SAN/install/lmod/lmod/init"
+  module_initpath = "/leonardo_work/DestE_330_26/users/SAN/install/lmod/lmod/init"
   nproma = -32
 
 [submission.iomerge.age_limit]
@@ -27,13 +26,21 @@
 
 [submission.task_exceptions.C903]
   NPROC = 36
+  OMP_NUM_THREADS = "4"
 
 [submission.task_exceptions.C903.BATCH]
+  CPUSPERTASK = "#SBATCH --cpus-per-task=4"
+  HYPERTHREAD = "#SBATCH --hint=nomultithread"
   MEM = "#SBATCH --mem=480GB"
-  NODE = "#SBATCH --nodes=6"
-  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=6"
+  NODE = "#SBATCH --nodes=12"
+  TASKS_PER_NODE = "#SBATCH --ntasks-per-node=3"
   #NTASKS = "#SBATCH --ntasks=36"
-  WALLTIME = "#SBATCH --time=00:30:00"
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[submission.task_exceptions.C903.ENV]
+  KMP_AFFINITY = "granularity=core,scatter"
+  KMP_BLOCKTIME = "12"
+  KMP_STACKSIZE = "4G"
 
 [submission.task_exceptions.CreateGrib]
   binary = "gl"
@@ -56,8 +63,8 @@
   NTASKS = "#SBATCH --ntasks=16"
 
 [submission.task_exceptions.Forecast]
-  NPROC = 32
-  NPROC_IO = 0
+  NPROC = 30
+  NPROC_IO = 2
   WRAPPER = "srun"
 
 [submission.task_exceptions.Forecast.BATCH]
@@ -69,15 +76,21 @@
 
 [submission.task_exceptions.Forecast.ENV]
   NOUTPUT = 2
-  RTTOV_COEFDIR = "/leonardo_work/DestE_330_25/users/SAN/static/DEODE/satellite/rtcoef_rttov12/harm_coef/"
+  RTTOV_COEFDIR = "/leonardo_work/DestE_330_26/users/SAN/static/DEODE/satellite/rtcoef_rttov13/coef/"
   UCX_LOG_LEVEL = "error"
 
 [submission.task_exceptions.InterpolSstSic]
   binary = "gl"
   bindir = "@BINDIR_GL@"
 
+[submission.task_exceptions.InterpolSstSic.MODULES]
+  FFTW3 = [
+    "load",
+    "fftw/3.3.10--intel-oneapi-mpi--2021.10.0--oneapi--2023.2.0-sremgts ",
+  ]
+
 [submission.task_exceptions.Marsprep]
-  bindir = "/leonardo_work/DestE_330_25/users/SAN/install/mars"
+  bindir = "/leonardo_work/DestE_330_26/users/SAN/install/mars"
   mars_version = "7"
 
 [submission.task_exceptions.Marsprep.BATCH]
@@ -86,6 +99,9 @@
   NTASKS = "#SBATCH --ntasks=1"
   PARTITION = "#SBATCH --partition=dcgp_usr_prod"
   WALLTIME = "#SBATCH --time=01:00:00"
+
+[submission.task_exceptions.Marsprep.ENV]
+  PATH = "$PATH:/leonardo_work/DestE_330_26/users/SAN/install/eccodes-2.41.0-intel/bin/"
 
 [submission.task_exceptions.Pgd]
   NPROC = 32
@@ -161,7 +177,7 @@
   LLSIMPLE_DGEMM = 1
   OMP_NUM_THREADS = 1
   #OMP_STACKSIZE = "4G"
-  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/leonardo_work/DestE_330_25/users/SAN/install/eccodes-2.40.0-intel/lib64/"
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/leonardo_work/DestE_330_26/users/SAN/install/eccodes-2.41.0-intel/lib64/"
   OMPI_MCA_btl = "^vader"
   PARALLEL = 0
   PERSISTENT = 0
@@ -194,6 +210,7 @@
     "Marsprep",
     "E923Update",
     "InterpolSstSic",
+    "GenerateWfpTabFile",
   ]
   WRAPPER = "srun"
 
@@ -206,7 +223,7 @@
 
 [submission.types.serial.ENV]
   DR_HOOK_IGNORE_SIGNALS = -1
-  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/leonardo_work/DestE_330_25/users/SAN/install/eccodes-2.40.0-intel/lib64/"
+  LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/leonardo_work/DestE_330_26/users/SAN/install/eccodes-2.41.0-intel/lib64/"
   OMP_NUM_THREADS = 1
   OMPI_MCA_btl = "^vader"
 

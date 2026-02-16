@@ -94,7 +94,7 @@ poetry devtools doc
 ```
 
 # Testing on Atos and LUMI
-For testing of a number of configurations we use https://github.com/uandrae/Tactus-test-runner which launches a number of ecflow suites. Install the package and make yourself familiar with the environment. For individual PR testing the minimum should be:
+For testing of a number of configurations we use https://github.com/destination-earth-digital-twins/Tactus-test-runner which launches a number of ecflow suites. Install the package and make yourself familiar with the environment. For individual PR testing the minimum should be:
 ```
  selection = [
     "cy49t2_alaro",
@@ -110,7 +110,7 @@ For testing of a number of configurations we use https://github.com/uandrae/Tact
 I.e. run the standard toy domain with target coupling including the full sized domains. Add additional configurations as you find suitable.
 
 ## Testing before tagging
-For testing prior to tagging all the testing should be performed as defined by `atos_bologna.toml` and `lumi.toml` respectively.
+For testing prior to tagging all the testing should be performed as defined by `atos_bologna.toml` and `lumi.toml` respectively. In addition operational like tests should be done from the development users (snh02, lrb_465000527_efdev) on atos and lumi using atos_bologna_operational.toml and lumi_operational.toml.
 
 ## Git Branching Structure and Workflow
 

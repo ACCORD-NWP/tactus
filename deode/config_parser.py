@@ -264,15 +264,18 @@ class JsonSchema(BaseMapping):
                     config=GenerationConfiguration(
                         template_name="md",
                         show_toc=False,
-                        template_md_options={"show_heading_numbers": False},
+                        template_md_options={
+                            "show_heading_numbers": False,
+                            "properties_table_columns": [
+                                "Property",
+                                "Pattern",
+                                "Type",
+                                "Definition",
+                                "Title/Description",
+                            ],
+                            "badge_as_image": True,
+                        },
                         with_footer=False,
-                        properties_table_columns=[
-                            "property",
-                            "type",
-                            "required",
-                            "default",
-                            "title/description",
-                        ],
                     ),
                 )
 

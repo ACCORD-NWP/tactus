@@ -38,6 +38,16 @@
                 "dry_run": {
                     "description": "test cleaning without to  delete files",
                     "type": "boolean"
+                },
+                "path": {
+                    "description": "Path to clean",
+                    "type": "string",
+		    "default": ""
+                },
+                "wipe": {
+                    "description": "Flag for cleaning everything in a path",
+                    "type": "boolean",
+		    "default": false
                 }
             },
             "oneOf": [

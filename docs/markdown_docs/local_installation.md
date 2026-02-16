@@ -87,7 +87,11 @@ Note that for the time being ( until the mamba/poetry usage is better understood
 LEONARDO is a EuroHPC cluster operated by CINECA. For more details see https://www.hpc.cineca.it/systems/hardware/leonardo/
 
 ### Preparations
- * As the ecflow server, see further down, will run on `login02` and can currently only be started on the node your on make sure you're login to `login02` before proceeding.
+ * As the ecflow server can be instantiated on any of the four login nodes available on Leonardo (login01, login02, login05, login07), we need to setup an environment variable to keep track of what node we are running on, in the current shell session.
+```
+export SUBMIT_HOST=$(hostname)
+```
+For convenience, it is suggested to add the above export line at the end of your own ~/.bashrc file.
  * Each DE330 user on LEONARDO is assigned a port number for their ecflow server. The mapping is defined in `/leonardo_work/DestE_330_25/users/SAN/leonardo_install/leonardo_users.json`. If your user is not defined here please get in contact with Matteo Ippoliti (m.ippoliti@cineca.it).
 
 ### Install and activate micromamba
@@ -138,9 +142,9 @@ deode case ?deode/data/config_files/configurations/cy49t2_arome --start-suite
 ```
 
 ### Access the ecflow server with port forwarding
-The ecflow_ui can be executed on the login node of leonardo but it's faster to run the gui locally. To open up tthe port for ecflow_ui do locally 
+The ecflow_ui can be executed on the login node of leonardo but it's faster to run the gui locally. To open up the port for ecflow_ui do locally 
 
 ```
-ssh YOUR_USER@login02-ext.leonardo.cineca.it -C -N -L PORT:login02:PORT
+ssh YOUR_USER@SUBMIT_HOST -C -N -L PORT:SUBMIT_HOST:PORT
 ```
-where YOUR_USER is your LEONARDOD user name and PORT is the assigned port number in the above mentioned file.
+where YOUR_USER is your LEONARDOD user name, PORT is the assigned port number in the above mentioned file and SUBMIT_HOST is the login node that the ecflow server is running on (eg. login02-ext.leonardo.cineca.it).
