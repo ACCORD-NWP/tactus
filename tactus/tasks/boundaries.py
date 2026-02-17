@@ -1,6 +1,5 @@
 """Boundary interpolation."""
 
-import ast
 import json
 import os
 from typing import Dict

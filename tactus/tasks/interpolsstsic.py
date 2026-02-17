@@ -1,6 +1,5 @@
 """InterpolSstSic."""
 
-import ast
 import os
 
 from tactus.boundary_utils import Boundary

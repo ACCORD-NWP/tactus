@@ -33,9 +33,9 @@ from tactus.mars_utils import (
     write_write_mars_req,
 )
 from tactus.os_utils import join_files, list_files_join, tactusmakedirs
+from tactus.scheduler import EcflowServer
 from tactus.tasks.base import Task
 from tactus.tasks.batch import BatchJob
-from tactus.scheduler import EcflowServer
 
 
 class Marsprep(Task):

@@ -8,6 +8,7 @@ from io import StringIO
 from unittest import mock
 
 import pytest
+
 from tactus import GeneralConstants
 from tactus.__main__ import main
 from tactus.argparse_wrapper import get_parsed_args
