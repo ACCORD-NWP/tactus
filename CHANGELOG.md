@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Changed
-- Encode member 0 of an ensemble as "cf" (control forecast). [\#1526](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1526)(@KristianHMoller)
+- Refactor E923 to make input data json-config driven. [\#1523](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1523) (@jacobsnoeijer)
+- Encode member 0 of an ensemble as "cf" (control forecast). [\#1526](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1526) (@KristianHMoller)
 
 ## [0.25.0] - 2026-02-13
 
