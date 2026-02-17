@@ -1478,7 +1478,6 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     ecf_files_remotely=ecf_files_remotely,
                 )
 
-
     @property
     def last_node(self):
         """Return the last family node of self."""

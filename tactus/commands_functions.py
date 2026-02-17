@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Implement the package's commands."""
 import argparse
-import contextlib
 import datetime
 import os
 import subprocess

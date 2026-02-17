@@ -11,7 +11,7 @@ import sys
 
 from tactus.config_parser import ConfigParserDefaults, ParsedConfig
 from tactus.derived_variables import set_times
-from tactus.host_actions import TactusHost, SelectHost
+from tactus.host_actions import SelectHost, TactusHost
 from tactus.toolbox import Platform
 
 config_file = sys.argv[1]
@@ -19,7 +19,9 @@ config_file = sys.argv[1]
 tactus_host = TactusHost().detect_tactus_host()
 
 config = ParsedConfig.from_file(
-    config_file, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA, host=tactus_host
+    config_file,
+    json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
+    host=tactus_host,
 )
 
 ecflow_port = Platform(config).substitute(config["scheduler.ecfvars.ecf_port"])

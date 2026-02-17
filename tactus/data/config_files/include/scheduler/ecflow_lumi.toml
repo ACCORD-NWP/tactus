@@ -2,7 +2,6 @@
 
 [scheduler.ecfvars]
   case_prefix = "@USER@_"
-  ecf_tactus_home = "@TACTUS_HOME@"
   ecf_files = "/users/@USER@/tactus_ecflow/ecf_files"
   ecf_files_remotely = "/home/ecflow-user/tactus_ecflow/ecf_files"
   ecf_home = "/home/ecflow/tactus_ecflow/ecf_files"
@@ -12,4 +11,5 @@
   ecf_port = 8443
   ecf_remoteuser = "ecflow-user"
   ecf_ssl = "1"
+  ecf_tactus_home = "@TACTUS_HOME@"
   ecf_user = "de_330"

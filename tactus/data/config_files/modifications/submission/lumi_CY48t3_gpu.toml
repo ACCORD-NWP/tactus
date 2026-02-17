@@ -31,7 +31,7 @@
 [submission.types.Forecast_gpu.ENV]
   ECF_SSL = 1
   # Nodes, MPI tasks etc
-  MPI_TASKS = 32      # $SLURM_NTASKS
+  MPI_TASKS = 32 # $SLURM_NTASKS
   OMP_NUM_THREADS = 4 # CPUS_PER_TASK
 
   # Open-MP business :
