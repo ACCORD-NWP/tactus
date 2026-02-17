@@ -6,7 +6,7 @@ import os
 import shutil
 from typing import Dict
 
-from deode.config_parser import ConfigPaths
+from tactus.config_parser import ConfigPaths
 
 from ..logs import logger
 from ..namelist import NamelistGenerator

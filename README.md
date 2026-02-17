@@ -103,7 +103,7 @@ Finally, install [`pygdal`](https://pypi.org/project/pygdal/), which is required
 
 ### Important
 
-Deode-Workflow should be installed in a folder accessible by ecflow server.
+Tactus should be installed in a folder accessible by ecflow server.
 
 On Atos, it should be installed in your $HOME or $PERM directory.
 

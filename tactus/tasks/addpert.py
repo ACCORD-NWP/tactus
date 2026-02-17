@@ -2,10 +2,10 @@
 
 import os
 
-from deode.boundary_utils import Boundary
-from deode.datetime_utils import as_datetime, cycle_offset
-from deode.tasks.base import Task
-from deode.tasks.batch import BatchJob
+from tactus.boundary_utils import Boundary
+from tactus.datetime_utils import as_datetime, cycle_offset
+from tactus.tasks.base import Task
+from tactus.tasks.batch import BatchJob
 
 
 class Addpert(Task):
@@ -15,7 +15,7 @@ class Addpert(Task):
         """Construct Addpert object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         Task.__init__(self, config, __class__.__name__)
 

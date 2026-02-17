@@ -1,10 +1,10 @@
 """C903Light."""
 
 
-from deode.boundary_utils import Boundary
-from deode.datetime_utils import as_datetime
-from deode.logs import logger
-from deode.tasks.base import Task
+from tactus.boundary_utils import Boundary
+from tactus.datetime_utils import as_datetime
+from tactus.logs import logger
+from tactus.tasks.base import Task
 
 
 class C903Light(Task):
@@ -14,7 +14,7 @@ class C903Light(Task):
         """Construct C903Light object.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         Task.__init__(self, config, __class__.__name__)
 
