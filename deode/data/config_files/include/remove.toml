@@ -33,3 +33,14 @@
 
 [remove.main.zz_case_dir]
   path = "@CASEDIR@"
+
+[remove.wildfire]
+  remove_from_scheduler = true
+  remove_not_completed_suites = false
+  suite_name = "WildFire_@CASE@"
+
+[remove.wildfire.wildfire_repo]
+  path = "@IMPACT.WILDFIRE.COMMUNICATE.REPO_HOME@"
+
+[remove.wildfire.wildfire_workdir]
+  path = "@IMPACT.WILDFIRE.COMMUNICATE.WORKDIR@"

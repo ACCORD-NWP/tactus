@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduce config macro expansion in `deode show` command. [\#1463](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1463) (@uandrae)
 - Add eventtype coldspell to main_config_schema. [\#1507](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1507)(@KristianHMoller)
 - Add some new or previously forgotten (mostly) spanish stations for sqlite extraction. [\#1513] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1513) (@svianaj)
+- Added wildfire impact model. [\#1487](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1487) (@pardallio)
 
 ### Changed
 - Make E923 part9 files cycle dependent [\#1521](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1521) (@jacobsnoeijer)
