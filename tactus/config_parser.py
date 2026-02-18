@@ -543,8 +543,8 @@ def _expand_config_include_section(
                 raise ConflictingValidationSchemasError(msg)
 
             schema_file = None
-            for sp in schemas_path:
-                candidate = Path(sp) / f"{section_name}_section_schema.json"
+            for spath in schemas_path:
+                candidate = Path(spath) / f"{section_name}_section_schema.json"
                 if candidate.is_file():
                     schema_file = candidate
                     break
@@ -553,7 +553,8 @@ def _expand_config_include_section(
                     'No validation schema for config section "{}". Using default.',
                     sections_traversed_str,
                 )
-                # default_section_schema.json lives in the tactus schemas dir (last in list)
+                # default_section_schema.json lives in the tactus schemas dir
+                # (assumed to be last in list)
                 schema_file = Path(schemas_path[-1]) / "default_section_schema.json"
 
             updated_config, updated_schema = _expand_config_include_section(
