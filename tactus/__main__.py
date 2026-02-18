@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Program's entry point."""
-import sys
 import contextlib
+import sys
 
 from . import GeneralConstants
 from .argparse_wrapper import get_args_parser

@@ -26,7 +26,8 @@ def get_common_parser():
     """Build and return the common argument parser shared by all subcommands.
 
     Returns:
-        argparse.ArgumentParser: Parser with common arguments (config-file, host-file, etc.).
+        argparse.ArgumentParser: Parser with common arguments (config-file, 
+            host-file, etc.).
 
     """
     common_parser = argparse.ArgumentParser(add_help=False)
