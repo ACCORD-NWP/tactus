@@ -11,7 +11,7 @@ import pytest
 
 from tactus import GeneralConstants
 from tactus.__main__ import main
-from tactus.argparse_wrapper import get_parsed_args
+from tactus.argparse_wrapper import get_args_parser
 from tactus.config_parser import ConfigFileValidationError, ConfigParserDefaults
 from tactus.host_actions import HostNotFoundError
 from tactus.submission import NoSchedulerSubmission, TaskSettings
@@ -91,7 +91,7 @@ def test_cannot_run_without_arguments(argv):
 @pytest.mark.usefixtures("_module_mockers")
 def test_correct_config_is_in_use(config_path, mocker):
     mocker.patch("sys.exit")
-    args = get_parsed_args(argv=["run"])
+    args = get_args_parser().parse_args(["run"])
     assert config_path.is_file()
     assert args.config_file == config_path
 
