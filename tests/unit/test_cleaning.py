@@ -80,9 +80,9 @@ def test_wipe_ecfs():
 
 def test_full_cleaning(tmpdir, basic_config):
     config = basic_config
-    path = f"{tmpdir}/deode"
+    path = f"{tmpdir}/tactus"
     os.makedirs(path, exist_ok=True)
-    path2 = f"{tmpdir}/deode_remove_dir"
+    path2 = f"{tmpdir}/tactus_remove_dir"
     os.makedirs(path2, exist_ok=True)
 
     for f in ["ELS", "ICMSHTEST"]:

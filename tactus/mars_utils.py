@@ -1,11 +1,14 @@
 """Utility for marsprep."""
 
+import atexit
 import contextlib
 import os
 import shutil
+import sys
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from subprocess import run
+from time import sleep
 from typing import Dict, List, Tuple
 
 from .config_parser import ParsedConfig
@@ -21,7 +24,7 @@ def mars_selection(selection: str, config: ParsedConfig) -> dict:
 
     Args:
         selection             (str): The selection to use.
-        config (deode.ParsedConfig): Configuration object
+        config (tactus.ParsedConfig): Configuration object
 
     Returns:
          mars                (dict): mars config section
@@ -138,6 +141,15 @@ def get_mars_keys(source, key_filter="-w shortName:s=z"):
     return result
 
 
+def remove_ifexists(file, etime=sys.float_info.max):
+    """Utility function to be used for lockfiles."""
+    if os.path.exists(file):
+        mtime = os.path.getmtime(file)
+        if mtime < etime:
+            logger.info("Removing: {}", file)
+            os.remove(file)
+
+
 def get_steps_and_members_to_retrieve(
     steps: List[int],
     path: Path,
@@ -146,7 +158,14 @@ def get_steps_and_members_to_retrieve(
     platform: Platform = None,
     basetime=None,
     validtime=None,
-) -> Tuple[List[int], Dict[str, List[int | None]], Dict[int, List[int]]]:
+    use_lockfile=False,
+) -> Tuple[
+    List[int],
+    List[int],
+    Dict[str, List[int | None]],
+    Dict[int, List[int]],
+    Dict[int, List[int]],
+]:
     """Check which mars file already exist and returns steps and members which missing.
 
     Args:
@@ -157,18 +176,27 @@ def get_steps_and_members_to_retrieve(
         platform (Platform, optional): Platform to process macro's in tag
         basetime (optional): Base time used in platform.substitute. Defaults to None.
         validtime (optional): Valid time used in platform.substitute. Defaults to None.
+        use_lockfile (optional): use a lockfile for each file fetched? Defaults to False.
 
     Returns:
         steps   (List[int]): steps to retrieve
+        waitfor_steps (List[int]): steps processed elsewhere
         members_dict (Dict[str, List[int | None]]): members to retrieve
         missing_member_steps (Dict[int, List[int]]): dict with missing steps per member
+        waitfor_member_steps (Dict[int, List[int]]): dict with steps to wait for
     """
     member_list = []
     step_list = []
+    waitfor_list = []
     missing_member_steps = {}
+    waitfor_member_steps = {}
+    etime = sys.float_info.max
+    if use_lockfile and platform:
+        etime = float(platform.config.get("general.start_etime", "0.0"))
 
     for member in members:
         missing_steps_current_member = []
+        waitfor_steps_current_member = []
         for step in steps:
             # Default to member 0 if member is None without adding member to
             # the member_list. This covers the deterministic case with no
@@ -185,19 +213,40 @@ def get_steps_and_members_to_retrieve(
                 filename = f"{tag}_{member or 0}+{step}"
 
             filename = path / filename
+            if use_lockfile:
+                lockfile = Path(f"{filename}.lock")
 
             if not os.path.exists(filename):
-                logger.info("Missing file:{}", filename)
-                member_list.append(member)
-                step_list.append(step)
-                missing_steps_current_member.append(step)
+                process_it = True
+                if use_lockfile:
+                    remove_ifexists(lockfile, etime)
+                    try:
+                        lockfile.touch(exist_ok=False)
+                    except FileExistsError:
+                        process_it = False
+                if process_it:
+                    logger.info("Missing file:{}", filename)
+                    member_list.append(member)
+                    step_list.append(step)
+                    missing_steps_current_member.append(step)
+                    if use_lockfile:
+                        atexit.register(remove_ifexists, lockfile)
+                        # quite primitive load balancing between members
+                        sleep(1)
+                else:
+                    logger.info("File:{} already in the making", filename)
+                    waitfor_list.append(step)
+                    waitfor_steps_current_member.append(step)
             else:
                 logger.info("Found file:{}", filename)
 
         if missing_steps_current_member:
             missing_member_steps[member] = sorted(set(missing_steps_current_member))
+        if waitfor_steps_current_member:
+            waitfor_member_steps[member] = sorted(set(waitfor_steps_current_member))
 
     steps = sorted(set(step_list))
+    waitfor_steps = sorted(set(waitfor_list))
     # Get perturbed members only
     perturbed_members = [member for member in sorted(set(member_list)) if member != 0]
     # Construct dictionary with perturbed members and control depending on the
@@ -215,7 +264,7 @@ def get_steps_and_members_to_retrieve(
     if perturbed_members:
         members_dict["perturbed_members"] = perturbed_members
 
-    return steps, members_dict, missing_member_steps
+    return steps, waitfor_steps, members_dict, missing_member_steps, waitfor_member_steps
 
 
 def check_data_available(basetime, mars):
@@ -444,8 +493,43 @@ def move_files(
             for member in members:
                 # Define target file name. Member defaults to 0 if member is None
                 file_name = f"{tag}_{member or 0}+{step}"
+                dest_file = target_dir / file_name
+                lockfile = f"{dest_file}.lock"
                 if os.path.exists(file_name):
-                    shutil.move(file_name, target_dir / file_name)
+                    shutil.move(file_name, dest_file)
+                if os.path.exists(lockfile):
+                    os.remove(lockfile)
+
+
+def waitfor_files(
+    tag: str, steps: List[int], members_dict: Dict[str, List[int]], target_dir: Path
+):
+    """Wait for file to appear in final location.
+
+    Args:
+        tag (str): Name of tag
+        steps (list): steps to wait for (processed elsewhere)
+        members_dict (Dict[str, List[int]]): dict with members
+        target_dir (Path): target directory where files should appear
+
+    Raises:
+        SystemExit: if lockfile disappears before file is created
+    """
+    for step in steps:
+        for members in members_dict.values():
+            for member in members:
+                # Define target file name. Member defaults to 0 if member is None
+                file_name = f"{tag}_{member or 0}+{step}"
+                dest_file = target_dir / file_name
+                lockfile = f"{dest_file}.lock"
+                while not os.path.exists(dest_file):
+                    if os.path.exists(lockfile):
+                        logger.info("Waiting 5 sec. for {}", dest_file)
+                        sleep(5)
+                    else:
+                        logger.info("No lockfile, stop waiting for {}", dest_file)
+                        sleep(30)
+                        raise SystemExit(f"Creation of {dest_file} must have failed")
 
 
 def compile_target(

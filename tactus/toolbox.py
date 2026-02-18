@@ -14,7 +14,7 @@ from troika.connections.ssh import SSHConnection
 from .csc_actions import SelectTstep
 from .datetime_utils import as_datetime, get_decade, oi2dt_list
 from .logs import logger
-from .os_utils import deodemakedirs
+from .os_utils import tactusmakedirs
 
 
 class ArchiveError(Exception):
@@ -54,7 +54,7 @@ class Provider:
         """
         target_dir = os.path.dirname(target)
         if not os.path.isdir(target_dir) and len(target_dir) > 0:
-            deodemakedirs(target_dir, unixgroup=self.unix_group)
+            tactusmakedirs(target_dir, unixgroup=self.unix_group)
 
     def create_resource(self, resource):
         """Create the resource.
@@ -614,7 +614,7 @@ class Platform:
 class FileManager:
     """FileManager class.
 
-    Default DEODE provider.
+    Default tactus provider.
 
     Platform specific.
 

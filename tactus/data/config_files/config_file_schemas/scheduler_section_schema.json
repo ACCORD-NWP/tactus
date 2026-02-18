@@ -7,7 +7,7 @@
   "properties": {
     "ecfvars": {
       "title": "Ecflow HPC scheduler Section, defined in files under include/scheduler",
-      "description": "DEODE HPC specific ecflow settings",
+      "description": "TACTUS HPC specific ecflow settings",
       "type": "object",
       "properties": {
         "ecf_ssl": {
@@ -85,9 +85,9 @@
           "description": "Ecflow remote user, only set when required",
           "default": ""
         },
-        "ecf_deode_home": {
+        "ecf_tactus_home": {
           "type": "string",
-          "description": "Deode home directory stripped for parts specific to where a node is mounted on a cluster"
+          "description": "tactus home directory stripped for parts specific to where a node is mounted on a cluster"
         }
       }
     },

@@ -1,13 +1,13 @@
 [accelerator_device]
   parallel_method = [
-    "@DEODE_HOME@/data/config_files/accelerator_device/lumi/lparallelmethod.txt.acraneb2_gpu",
+    "@TACTUS_HOME@/data/config_files/accelerator_device/lumi/lparallelmethod.txt.acraneb2_gpu",
     "lparallelmethod.txt",
   ]
   select_gpu = [
-    "@DEODE_HOME@/data/config_files/accelerator_device/lumi/select_gpu",
+    "@TACTUS_HOME@/data/config_files/accelerator_device/lumi/select_gpu",
     "select_gpu",
   ]
   sync_host = [
-    "@DEODE_HOME@/data/config_files/accelerator_device/lumi/lsynchost.txt",
+    "@TACTUS_HOME@/data/config_files/accelerator_device/lumi/lsynchost.txt",
     "lsynchost.txt",
   ]

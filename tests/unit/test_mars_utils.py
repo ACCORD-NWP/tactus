@@ -106,8 +106,10 @@ class TestGetStepsAndMembersToRetrieve:
         # Run the function
         (
             missing_steps,
+            _,
             members_dict,
             missing_member_steps,
+            _,
         ) = get_steps_and_members_to_retrieve(steps, tmp_path, file_name, members)
 
         # Assert results
@@ -131,8 +133,10 @@ class TestGetStepsAndMembersToRetrieve:
         # Run the function
         (
             missing_steps,
+            _,
             members_dict,
             missing_member_steps,
+            _,
         ) = get_steps_and_members_to_retrieve(steps, tmp_path, file_name, members)
 
         # Assert results
@@ -157,8 +161,10 @@ class TestGetStepsAndMembersToRetrieve:
         # Run the function
         (
             missing_steps,
+            _,
             members_dict,
             missing_member_steps,
+            _,
         ) = get_steps_and_members_to_retrieve(steps, tmp_path, file_name, members)
 
         # Assert results
@@ -182,8 +188,10 @@ class TestGetStepsAndMembersToRetrieve:
         # Run the function
         (
             missing_steps,
+            _,
             members_dict,
             missing_member_steps,
+            _,
         ) = get_steps_and_members_to_retrieve(steps, tmp_path, file_name, members)
 
         # Assert results

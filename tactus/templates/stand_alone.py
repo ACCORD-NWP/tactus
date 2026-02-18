@@ -5,28 +5,28 @@ import os
 from tactus.config_parser import ConfigParserDefaults, GeneralConstants, ParsedConfig
 from tactus.derived_variables import derived_variables, set_times
 from tactus.eps.eps_setup import get_member_config
-from tactus.host_actions import DeodeHost
-from tactus.logs import logger  # Use deode's own configs for logger
+from tactus.host_actions import TactusHost
+from tactus.logs import logger  # Use tactus's own configs for logger
 from tactus.submission import ProcessorLayout, TaskSettings
 from tactus.tasks.discover_task import get_task
 
-logger.enable("deode")
+logger.enable("tactus")
 
 
-def default_main(task: str, config_file: str, deode_home: str):
+def default_main(task: str, config_file: str, tactus_home: str):
     """Execute default main.
 
     Args:
         task (str): Task name
         config_file (str): Config file
-        deode_home(str): Deode home path
+        tactus_home(str): tactus home path
     """
-    deode_host = DeodeHost().detect_deode_host()
+    tactus_host = TactusHost().detect_tactus_host()
     logger.info("Read config from {}", config_file)
     config = ParsedConfig.from_file(
         config_file,
         json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-        host=deode_host,
+        host=tactus_host,
     )
     # Get eps member specific config if a member is specified
     try:
@@ -39,7 +39,7 @@ def default_main(task: str, config_file: str, deode_home: str):
         config = get_member_config(config, member=member)
 
     config = config.copy(update=set_times(config))
-    config = config.copy(update={"platform": {"deode_home": deode_home}})
+    config = config.copy(update={"platform": {"tactus_home": tactus_home}})
 
     task_settings = TaskSettings(config).get_task_settings(task)
     processor_layout = ProcessorLayout(task_settings)
@@ -57,5 +57,5 @@ if __name__ == "__main__":
     default_main(
         task=os.environ["STAND_ALONE_TASK_NAME"],
         config_file=os.environ["STAND_ALONE_TASK_CONFIG"],
-        deode_home=os.environ["STAND_ALONE_DEODE_HOME"],
+        tactus_home=os.environ["STAND_ALONE_TACTUS_HOME"],
     )

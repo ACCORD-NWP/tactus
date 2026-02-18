@@ -69,7 +69,7 @@
   pattern = "*"
 
 [archiving.prefix]
-  ecfs = "ec:/@USER@/deode/@CASE@"
+  ecfs = "ec:/@USER@/tactus/@CASE@"
 
 [archiving.static.ecfs]
 

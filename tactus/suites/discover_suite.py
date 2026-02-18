@@ -6,7 +6,7 @@ import sys
 import types
 
 from ..logs import logger
-from ..plugin import DeodePluginRegistry, DeodePluginRegistryFromConfig
+from ..plugin import TactusPluginRegistry, TactusPluginRegistryFromConfig
 from .base import SuiteDefinition, _get_name
 
 
@@ -53,7 +53,7 @@ def get_suite(name, config):
     Returns:
         _type_: _description_
     """
-    reg = DeodePluginRegistryFromConfig(config)
+    reg = TactusPluginRegistryFromConfig(config)
     known_types = available_suites(reg)
     try:
         cls = known_types[name.lower()]
@@ -63,11 +63,11 @@ def get_suite(name, config):
     return cls(config)
 
 
-def available_suites(reg: DeodePluginRegistry):
+def available_suites(reg: TactusPluginRegistry):
     """Create a list of available tasks.
 
     Args:
-        reg (DeodePluginRegistry): Deode plugin registry
+        reg (TactusPluginRegistry): tactus plugin registry
 
     Returns:
         known_types (list): Suite objects

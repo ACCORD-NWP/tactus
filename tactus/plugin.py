@@ -10,7 +10,7 @@ from tactus.os_utils import resolve_path_relative_to_package
 from .logs import logger
 
 
-class DeodePluginRegistry:
+class TactusPluginRegistry:
     """Registry of plugins."""
 
     def __init__(self, config=None):
@@ -27,21 +27,21 @@ class DeodePluginRegistry:
             config = {}
         self.config_input = config
         self.config = self.get_registry_config()
-        self.plugins: List[DeodePlugin] = []
-        self.deode_plugin()
+        self.plugins: List[TactusPlugin] = []
+        self.tactus_plugin()
         self.load_plugins()
 
-    def deode_plugin(self):
-        """Base DEODE plugin."""
+    def tactus_plugin(self):
+        """Base tactus plugin."""
         path = Path(tactus.__path__[0]).parent
-        plugin = DeodePlugin("tactus", path)
+        plugin = TactusPlugin("tactus", path)
         self.register_plugin(plugin)
 
-    def load_plugin(self, plugin: "DeodePlugin"):
+    def load_plugin(self, plugin: "TactusPlugin"):
         """Load plugin.
 
         Args:
-            plugin (DeodePlugin): Deode plugin
+            plugin (TactusPlugin): tactus plugin
 
         """
         self.plugins += [plugin]
@@ -53,14 +53,14 @@ class DeodePluginRegistry:
         for name, path in plugins.items():
             path_ = resolve_path_relative_to_package(Path(path))
             if name != "tactus":
-                plugin = DeodePlugin(name, path_)
+                plugin = TactusPlugin(name, path_)
                 self.load_plugin(plugin)
 
-    def plugin_exists(self, plugin: "DeodePlugin"):
+    def plugin_exists(self, plugin: "TactusPlugin"):
         """Check if plugin exists.
 
         Args:
-            plugin (DeodePlugin): Deode plugin
+            plugin (TactusPlugin): tactus plugin
 
         Returns:
             bool: True if already exists in registry.
@@ -68,11 +68,11 @@ class DeodePluginRegistry:
         """
         return any(plg.name == plugin.name for plg in self.plugins)
 
-    def register_plugin(self, plugin: "DeodePlugin"):
+    def register_plugin(self, plugin: "TactusPlugin"):
         """Register plugin.
 
         Args:
-            plugin (DeodePlugin): Deode plugin
+            plugin (TactusPlugin): tactus plugin
 
         """
         if not self.plugin_exists(plugin):
@@ -98,7 +98,7 @@ class DeodePluginRegistry:
             yaml.safe_dump(self.config, fh)
 
 
-class DeodePluginRegistryFromFile(DeodePluginRegistry):
+class TactusPluginRegistryFromFile(TactusPluginRegistry):
     """Registry file of plugins."""
 
     def __init__(self, config_file):
@@ -113,28 +113,28 @@ class DeodePluginRegistryFromFile(DeodePluginRegistry):
         """
         with open(config_file, mode="r", encoding="utf8") as fh:
             config = yaml.safe_load(fh)
-        DeodePluginRegistry.__init__(self, config)
+        TactusPluginRegistry.__init__(self, config)
 
 
-class DeodePluginRegistryFromConfig(DeodePluginRegistry):
-    """Create a registry from a deode config file."""
+class TactusPluginRegistryFromConfig(TactusPluginRegistry):
+    """Create a registry from a tactus config file."""
 
     def __init__(self, config):
-        """Construct a registry from a deode config.
+        """Construct a registry from a tactus config.
 
         Args:
-            config (ParsedConfig): Deode config.
+            config (ParsedConfig): tactus config.
 
         """
         try:
             plugin_registry = config["general.plugin_registry"].dict()
         except KeyError:
             plugin_registry = None
-        DeodePluginRegistry.__init__(self, plugin_registry)
+        TactusPluginRegistry.__init__(self, plugin_registry)
 
 
-class DeodePlugin:
-    """Deode plugin."""
+class TactusPlugin:
+    """Tactus plugin."""
 
     def __init__(self, name: str, path: Path):
         """Construct the plugin.
@@ -150,8 +150,8 @@ class DeodePlugin:
         self.suites_path = self.path / self.name / "suites"
 
 
-class DeodePluginFromConfigFile(DeodePlugin):
-    """Deode plugin."""
+class TactusPluginFromConfigFile(TactusPlugin):
+    """Tactus plugin."""
 
     def __init__(self, config_file):
         """Construct the plugin from a config file.
@@ -163,7 +163,7 @@ class DeodePluginFromConfigFile(DeodePlugin):
         config = self.get_plugin_config(config_file)
         name = config["name"]
         path = Path(config["path"])
-        DeodePlugin.__init__(self, name, path)
+        TactusPlugin.__init__(self, name, path)
 
     @staticmethod
     def get_plugin_config(config_file):

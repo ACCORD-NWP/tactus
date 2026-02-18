@@ -75,7 +75,7 @@ class TestSubmission:
         config = config.copy(update={"platform": {"scratch": tmp, "unix_group": ""}})
         config = config.copy(update=set_times(config))
         task = "UnitTest"
-        template_job = "deode/templates/stand_alone.py"
+        template_job = "tactus/templates/stand_alone.py"
         task_job = Path(tmp, f"{task}.job")
         output = Path(tmp, f"{task}.log")
 
@@ -130,7 +130,7 @@ class TestSubmission:
         config = default_config.copy()
         task = "not_existing"
         tmp = tmp_directory
-        template_job = "deode/templates/stand_alone.py"
+        template_job = "tactus/templates/stand_alone.py"
         task_job = Path(tmp, f"{task}.job")
         output = Path(tmp, f"{task}.log")
 

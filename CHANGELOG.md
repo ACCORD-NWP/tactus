@@ -7,22 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Full Changelog](https://github.com/destination-earth-digital-twins/Deode-Prototype/compare/...HEAD)
 
-### Added
-- Introduce direct addressing in macros. [\#1460](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1460) (@uandrae)
-
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+### Changed
+- Prepare tactus as a separate package from Deode-Workflow, which now belongs to ACCORD-NWP. [\#2](https://github.com/ACCORD-NWP/tactus/pull/2) (@mfroelund)
+
+## [0.25.0] - 2026-02-13
+
 ### Added
+- Introduce the SLAF boundary perturbation method. [\#1228](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1228) (@ovignes)
+- Introduce direct addressing in macros. [\#1460](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1460) (@uandrae)
+- UTCI is added in the Deode-Workflow. [\#1478](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1478) (@Ines-dhmz)
 - Add GenerateWfpTabFile-task to run json2tab preprocessor to enable Forecast with WFP on any domain. [#1306](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1306) (@jacobsnoeijer) 
 - Introduce `deode remove` functionality. [\#1461](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1461) (@uandrae)
 - Introduce config macro expansion in `deode show` command. [\#1463](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1463) (@uandrae)
+- Add eventtype coldspell to main_config_schema. [\#1507](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1507)(@KristianHMoller)
+- Add some new or previously forgotten (mostly) spanish stations for sqlite extraction. [\#1513] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1513) (@svianaj)
 
 ### Changed
+- Make E923 part9 files cycle dependent [\#1521](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1521) (@jacobsnoeijer)
+- Introduce the SLAF boundary perturbation method. [\#1228](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1228) (@ovignes)
+- Makes runtime module environment consistent between gnu and intel compilers on atos. [#1467](https://github.com/destination-earth-digital-twins/IAL/pull/1467) (@pardallio)
 - Update development guidelines. [\#1456](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1456) (@uandrae)
 - Changed the order of the modifications in the case of the CY50 ALARO configuration to disable surfex. [\#1450](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1450) (@pardallio)
 - Changed post-processed variables to be output at basetime per default [\#1488](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1488)(@KristianHMoller)
+- Remove unnecessary ssh token injections on atos [\#1492](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1492)(@observingClouds)
 
 ### Fixed
+- Fixes erroneous safety check on number of IO-server files. [#1518](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1518)(@uandrae)
+- Fixes archiving of DDH files for all combinations of IO-server on/off. [#1471](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1471)(@uandrae)
+- Fix RTTOV\_COEF path in submissions settings and add 'CLSMEAN.RAD.TEMP' to ALARO cy48t3 fullpos 00. [\#1517](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1517) (@kastelecn)
+- Set mirroring task to suspend in the Marsprep task. [#1514](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1514)(@kastelecn)
+- Fix RTTOV\_COEF path in submissions settings and add 'CLSMEAN.RAD.TEMP' to ALARO cy48t3 fullpos 00. [\#1517](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1517) (@kastelecn)
 - Fix authentification issue with private dependencies of dependencies (i.e. json2tab). [#1306](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1306) (@jacobsnoeijer)
 - Add ecflow mirror support between a host and target LAM. [\#1425](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1425) (@uandrae)
 - Fixed issue with configuration of multiple LBCs in the same task for CY50 [\#1450](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1450) (@pardallio)

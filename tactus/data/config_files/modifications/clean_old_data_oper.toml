@@ -1,6 +1,0 @@
-[general]
-  case = "Clean_Old_Data"
-
-[clean_old_data]
-  scratch_ext = "/DE_NWP/deode"
-  scratch_format = "/(\\d{4})/(0[1-9]|1[0-2])/(0[1-9]|[12]\\d|3[01])/([01]\\d|2[0-3])/(storm|convection|flooding|heatwave|nwp)/(\\d+)/([^/]+)_([^/]+)m$"

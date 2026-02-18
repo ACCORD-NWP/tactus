@@ -7,7 +7,7 @@ def get_domain(config) -> Dict[str, Any]:
     """Read and return domain data.
 
     Args:
-        config (deode.ParsedConfig): Configuration from which we get the domain data
+        config (tactus.ParsedConfig): Configuration from which we get the domain data
     Returns:
         Dictionary containing the domain
     """

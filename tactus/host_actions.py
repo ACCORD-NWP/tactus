@@ -14,17 +14,17 @@ from .logs import logger
 from .os_utils import ping
 
 
-class DeodeHost:
-    """DeodeHost object."""
+class TactusHost:
+    """TactusHost object."""
 
     def __init__(self, known_hosts=None, known_hosts_file=None):
-        """Constructs the DeodeHost object."""
+        """Constructs the TactusHost object."""
         self.known_hosts = self._load_known_hosts(
             known_hosts=known_hosts, known_hosts_file=known_hosts_file
         )
         self.available_hosts = list(self.known_hosts)
         self.default_host = self.available_hosts[0]
-        self.deode_host = os.getenv("DEODE_HOST")
+        self.tactus_host = os.getenv("TACTUS_HOST")
         self.hostname = socket.gethostname()
 
     def _load_known_hosts(self, known_hosts=None, known_hosts_file=None):
@@ -56,7 +56,7 @@ class DeodeHost:
         return known_hosts
 
     def _detect_by_hostname(self, hostname_pattern):
-        """Detect deode host by hostname regex.
+        """Detect tactus host by hostname regex.
 
         Args:
             hostname_pattern(list|str) : hostname regex to match
@@ -69,13 +69,13 @@ class DeodeHost:
         hh = [hostname_pattern] if isinstance(hostname_pattern, str) else hostname_pattern
         for x in hh:
             if re.match(x, self.hostname):
-                logger.debug("Deode-host detected by hostname {}", x)
+                logger.debug("tactus-host detected by hostname {}", x)
                 return True
 
         return False
 
     def _detect_by_env(self, env_variable):
-        """Detect deode host by environment variable regex.
+        """Detect tactus host by environment variable regex.
 
         Args:
             env_variable(dict) : Environment variables to search for
@@ -90,16 +90,16 @@ class DeodeHost:
                 for x in vv:
                     if re.match(x, os.environ[var]):
                         logger.debug(
-                            "Deode-host detected by environment variable {}={}", var, x
+                            "tactus-host detected by environment variable {}={}", var, x
                         )
                         return True
 
         return False
 
-    def detect_deode_host(self, use_default=True):
-        """Detect deode host by matching various properties.
+    def detect_tactus_host(self, use_default=True):
+        """Detect tactus host by matching various properties.
 
-        First check self.deode_host as set by os.getenv("DEODE_HOST"),
+        First check self.tactus_host as set by os.getenv("TACTUS_HOST"),
         second use the defined hosts in known_hosts.yml. If no matches
         are found return the first host defined in known_hosts.yml
 
@@ -110,61 +110,61 @@ class DeodeHost:
             RuntimeError: Ambiguous matches
 
         Returns:
-            deode_host (str): mapped hostname
+            tactus_host (str): mapped hostname
 
         """
-        if self.deode_host is not None:
-            return self.deode_host
+        if self.tactus_host is not None:
+            return self.tactus_host
 
         matches = []
-        for deode_host, detect_methods in self.known_hosts.items():
+        for tactus_host, detect_methods in self.known_hosts.items():
             for method, pattern in detect_methods.items():
                 fname = f"_detect_by_{method}"
                 if hasattr(self, fname):
                     function = getattr(self, fname)
                     if function(pattern):
-                        matches.append(deode_host)
+                        matches.append(tactus_host)
                         break
                 else:
-                    raise RuntimeError(f"No deode-host detection using {method}")
+                    raise RuntimeError(f"No tactus-host detection using {method}")
 
         if len(matches) == 0:
             if use_default:
                 matches = list(self.known_hosts)[0:1]
                 logger.info(
-                    f"No deode-host detected from {self.hostname}, "
+                    f"No tactus-host detected from {self.hostname}, "
                     + f"use {self.default_host}"
                 )
             else:
                 matches = [None]
-                logger.info(f"No deode-host detected from {self.hostname}, return None")
+                logger.info(f"No tactus-host detected from {self.hostname}, return None")
         if len(matches) > 1:
             raise RuntimeError(f"Ambiguous matches: {matches}")
 
         return matches[0]
 
 
-def set_deode_home(config, deode_home=None):
-    """Set deode_home in various ways.
+def set_tactus_home(config, tactus_home=None):
+    """Set tactus_home in various ways.
 
     Args:
         config (.config_parser.ParsedConfig): Parsed config file contents.
-        deode_home (str): Externally set deode_home
+        tactus_home (str): Externally set tactus_home
 
     Returns:
-        deode_home
+        tactus_home
     """
-    if deode_home is None:
+    if tactus_home is None:
         try:
-            deode_home_from_config = config["platform.deode_home"]
+            tactus_home_from_config = config["platform.tactus_home"]
         except KeyError:
-            deode_home_from_config = "set-by-the-system"
-        if deode_home_from_config != "set-by-the-system":
-            deode_home = deode_home_from_config
+            tactus_home_from_config = "set-by-the-system"
+        if tactus_home_from_config != "set-by-the-system":
+            tactus_home = tactus_home_from_config
         else:
-            deode_home = str(GeneralConstants.PACKAGE_DIRECTORY)
+            tactus_home = str(GeneralConstants.PACKAGE_DIRECTORY)
 
-    return deode_home
+    return tactus_home
 
 
 class HostNotFoundError(ValueError):

@@ -1,4 +1,4 @@
-"""Clean deode file systems."""
+"""Clean tactus file systems."""
 
 import os
 import re
@@ -58,7 +58,7 @@ class CleanDeode:
         self.platform = Platform(config)
         self._check_choice(self.defaults, "defaults")
         archiving = config.get("archiving").dict()
-        archiving.pop("prefix")
+        archiving.pop("prefix", None)
         self.has_ecfs = False
         for values in archiving.values():
             if "ecfs" in values:

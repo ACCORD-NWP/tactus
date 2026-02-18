@@ -142,5 +142,12 @@
         "operator": "dewpoint_calc",
         "output_name": "2d",
         "output_grib_id": { "shortName": "2d" }
+    },
+    {
+    "input_grib_id" : [ {"shortName":"2t"}, {"shortName":"mrt"}, {"shortName":"2r"},{"shortName":"10u"},{"shortName":"10v"} ],
+    "operator" : "utci",
+    "output_name" : "utci",
+    "output_grib_id" : { "shortName":"utci" },
+    "valid_at_basetime" : true
     }
 ]

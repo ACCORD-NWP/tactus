@@ -1,0 +1,10 @@
+{
+  "part9": {
+    "path": "@E923_DATA@",
+    "files": {
+      "aero_GL_tegen": "aero_tegen/aero.tegen.m@MM@_GL",
+      "aero_GL_camscms": "aero_camscms/aero.camscms.m@MM@_GL"
+    }
+  }
+
+}

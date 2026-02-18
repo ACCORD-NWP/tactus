@@ -67,7 +67,6 @@ e923_9:
 
 e923_9_HARMONIE_AROME:
   NAMCLI:
-    NAEROF: 0
     NDATX: 72
     NDATY: 45
 
@@ -1395,13 +1394,11 @@ f4_HARMONIE_AROME:
   NAMMCC:
     LMCC01_MSE: ${cfg:general.upd_sst_sic}
     LMCCECSST: ${cfg:general.upd_sst_sic}
-  NAMNRTAER:
+  NAMAERMIC:
     LAECCN2CLDR: false
     LAEIFN: false
     LAERDRDEP: false
     LAERSSEM: false
-    LCAMS_NRT: false
-    LMOCA_NRT: false
     RCCNMIN: 10.0E6
     RCLDROPMIN: 10.0E6
     RIFNMINSIZE: 0.01
@@ -1429,7 +1426,7 @@ f4_HARMONIE_AROME:
     LHISFWR: true
     LPGDFWR: false
   NAMPHY:
-    LAEROMMR: false
+    LAEROCMS: false
     LAERONRT: false
     LCLSATUR: true
     LHLRADUPD: true
@@ -1568,6 +1565,7 @@ f4_HARMONIE_AROME:
     LOCND2: true
     LRED: false
     LSEDIC: true
+    LEXCLDROP: false
     XFRMIN_NAM(1): 1.0e-5
     XFRMIN_NAM(12): 0.05
     XFRMIN_NAM(2): 1.0e-8
@@ -2198,7 +2196,7 @@ empty:
   NAMMWAVE: {}
   NAMNORGWD: {}
   NAMNPROF: {}
-  NAMNRTAER: {}
+  NAMAERMIC: {}
   NAMNUD: {}
   NAMNUDGLH: {}
   NAMOBS: {}

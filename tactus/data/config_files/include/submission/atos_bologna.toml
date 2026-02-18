@@ -23,8 +23,8 @@
 [submission.task_exceptions.ArchiveFDB.ENV]
   FDB5_HOME = "$ECMWF_TOOLBOX_DIR"
   FDB_ENABLE_GRIBJUMP = "1"
-  FDB_HOME = "@DEODE_FDB_HOME@"
-  GRIBJUMP_CONFIG_FILE = "@DEODE_FDB_HOME@/etc/gribjump/config_on-demand-extremes-dt.yaml"
+  FDB_HOME = "@TACTUS_FDB_HOME@"
+  GRIBJUMP_CONFIG_FILE = "@TACTUS_FDB_HOME@/etc/gribjump/config_on-demand-extremes-dt.yaml"
 
 [submission.task_exceptions.ArchiveFDB.MODULES]
   ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
@@ -84,7 +84,7 @@
   WALLTIME = "#SBATCH --time=01:00:00"
 
 [submission.task_exceptions.Forecast.ENV]
-  RTTOV_COEFDIR = "/hpcperm/snh02/DEODE/satellite/rtcoef_rttov12/harm_coef/"
+  RTTOV_COEFDIR = "@RTTOV_COEFDIR@"
   UCX_LOG_LEVEL = "error"
 
 [submission.task_exceptions.InterpolSstSic]
@@ -145,7 +145,7 @@
   NPROCX = 1
   NPROCY = 1
   SCHOST = "hpc"
-  tasks = ["ExtractSQLite", "StartImpactModels"]
+  tasks = ["ExtractSQLite"]
   WRAPPER = "srun"
 
 [submission.types.gnu.BATCH]
@@ -179,10 +179,10 @@
   00_PRGENV = ["load", "prgenv/intel"]
   # The rest
   ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
-  FFTW = ["load", "fftw/3.3.9"]
-  HDF5 = ["load", "hdf5/1.10.6"]
+  FFTW = ["load", "fftw/3.3.10"]
+  HDF5 = ["load", "hdf5/1.14.6"]
   MKL = ["load", "intel-mkl/19.0.5"]
-  NETCDF = ["load", "netcdf4/4.7.4"]
+  NETCDF = ["load", "netcdf4/4.9.3"]
   OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
 
 [submission.types.serial]
@@ -220,8 +220,8 @@
   00_PRGENV = ["load", "prgenv/intel"]
   # The rest
   ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
-  FFTW = ["load", "fftw/3.3.9"]
-  HDF5 = ["load", "hdf5/1.10.6"]
+  FFTW = ["load", "fftw/3.3.10"]
+  HDF5 = ["load", "hdf5/1.14.6"]
   MKL = ["load", "intel-mkl/19.0.5"]
-  NETCDF = ["load", "netcdf4/4.7.4"]
+  NETCDF = ["load", "netcdf4/4.9.3"]
   OPENMPI = ["load", "hpcx-openmpi/2.9.0"]

@@ -4,16 +4,16 @@
 # Input data configuration
 input:
   # Main GeoJSON file containing turbine locations
-  turbine_locations: "{TO BE SET BY DEODE-WORKFLOW}"
+  turbine_locations: "{TO BE SET BY TACTUS}"
   # Optional: Database with turbine specifications
-  turbine_database: "{TO BE SET BY DEODE-WORKFLOW}"
+  turbine_database: "{TO BE SET BY TACTUS}"
 
 
 
 # Subsetting configuration
 subsetting:
   # Filter turbines in temporal domain with installation/decommissioning date; possible values: a valid date, "today" (default) or "all"
-  situation_date: "{TO BE SET BY DEODE-WORKFLOW}"
+  situation_date: "{TO BE SET BY TACTUS}"
 
   # Spatial cropping method; can be either "bbox" (bounding box) or "domain" (TOML-based domain)
   method: "domain"
@@ -27,7 +27,7 @@ matcher:
 # Output configuration
 output:
   # Directory for all output files
-  directory: "{TO BE SET BY DEODE-WORKFLOW}"
+  directory: "{TO BE SET BY TACTUS}"
   # Output files configuration
   files:
     # Output file to summarize installed capacity per country
@@ -44,8 +44,8 @@ output:
     regional_plot: "turbine_locations_regional.png"
     domain_plot: "turbine_locations_domain.png"
     # Tab file outputs
-    location_tab: "{TO BE SET BY DEODE-WORKFLOW}"
-    type_tab_prefix: "{TO BE SET BY DEODE-WORKFLOW}"  # Will be followed by type ID and .tab
+    location_tab: "{TO BE SET BY TACTUS}"
+    type_tab_prefix: "{TO BE SET BY TACTUS}"  # Will be followed by type ID and .tab
     
   # Tab file formatting
   tab_format:

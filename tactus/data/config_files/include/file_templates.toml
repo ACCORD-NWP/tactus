@@ -37,10 +37,10 @@
   model = "ICMSH@CNMEXP@+@DURATION_MODEL@"
 
 [file_templates.initfile]
-  archive = "@SCRATCH@/deode/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@HISTORY_TEMPLATE@"
+  archive = "@SCRATCH@/tactus/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@HISTORY_TEMPLATE@"
 
 [file_templates.initfile_sfx]
-  archive = "@SCRATCH@/deode/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
+  archive = "@SCRATCH@/tactus/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@SURFEX_TEMPLATE@"
 
 [file_templates.interpolated_boundaries]
   archive = "ELSCF@CNMEXP@ALBC@NNN@"

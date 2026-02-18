@@ -78,7 +78,7 @@
   FI_CXI_RDZV_THRESHOLD = 128000
   FI_CXI_RX_MATCH_MODE = 'hybrid'
 
-  ECCODES_DEFINITION_PATH = "/scratch/project_465000527/ospaniel/opt/eccodes-2.34.1/share/eccodes:deode/data/eccodes/definitions/grib2/localConcepts/lfpw"
+  ECCODES_DEFINITION_PATH = "/scratch/project_465000527/ospaniel/opt/eccodes-2.34.1/share/eccodes:tactus/data/eccodes/definitions/grib2/localConcepts/lfpw"
   ECCODES_SAMPLES_PATH = "/users/ospaniel/opt/share/eccodes/ifs_samples/grib1_mlgrib2"
 
 [submission.types.Forecast_cpu.MODULES]
