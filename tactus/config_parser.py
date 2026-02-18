@@ -65,6 +65,19 @@ class ConfigPaths:
         raise RuntimeError(f"TACTUS_CONFIG_DATA_DIR is not absolute: {erroneous_paths}")
     CONFIG_DATA_SEARCHPATHS.append(ConfigParserDefaults.DATA_DIRECTORY)
 
+    _env_schemas_paths = os.getenv("TACTUS_SCHEMAS_DIR")
+    SCHEMAS_SEARCHPATHS = (
+        _env_schemas_paths.split(":") if _env_schemas_paths is not None else []
+    )
+    erroneous_schema_paths = [
+        path for path in SCHEMAS_SEARCHPATHS if not os.path.isabs(path)
+    ]
+    if len(erroneous_schema_paths) > 0:
+        raise RuntimeError(
+            f"TACTUS_SCHEMAS_DIR is not absolute: {erroneous_schema_paths}"
+        )
+    SCHEMAS_SEARCHPATHS.append(ConfigParserDefaults.SCHEMAS_DIRECTORY)
+
     @staticmethod
     def print(config_file=None, host=None):
         """Prints the available config directories.
@@ -437,12 +450,16 @@ def _get_config_include_definitions(raw_config):
     return config_includes
 
 
-def _get_all_json_schemas(json_schema, schemas_path):
-    """Load and add all json schema files in the schemas_path directory.
+def _get_all_json_schemas(json_schema, schemas_paths):
+    """Load and add all json schema files from a list of schema directories.
+
+    Directories are searched in order; the first directory that defines a schema for a
+    given section name wins (higher-priority paths should be placed at the front of the
+    list).
 
     Args:
         json_schema (dict): Input json schema
-        schemas_path (str): Path to json files
+        schemas_paths (list): Ordered list of paths to search for json schema files
 
     Returns:
         json_schema (dict): Updated json dict
@@ -450,12 +467,13 @@ def _get_all_json_schemas(json_schema, schemas_path):
     """
     exclude = ["main_config_schema.json", "default_config_schema.json"]
 
-    for filename in glob.glob(f"{schemas_path}/*.json"):
-        if os.path.basename(filename) in exclude:
-            continue
-        section_name = os.path.basename(filename).replace("_section_schema.json", "")
-        updated_schema = {"$ref": f"file:{filename}"}
-        json_schema["properties"].update({section_name: updated_schema})
+    for schemas_path in schemas_paths:
+        for filename in glob.glob(f"{schemas_path}/*.json"):
+            if os.path.basename(filename) in exclude:
+                continue
+            section_name = os.path.basename(filename).replace("_section_schema.json", "")
+            if section_name not in json_schema["properties"]:  # first found wins
+                json_schema["properties"][section_name] = {"$ref": f"file:{filename}"}
 
     return json_schema
 
@@ -464,11 +482,25 @@ def _expand_config_include_section(
     raw_config,
     json_schema,
     config_include_search_dir=ConfigParserDefaults.CONFIG_DIRECTORY,
-    schemas_path=ConfigParserDefaults.SCHEMAS_DIRECTORY,
+    schemas_path=None,
     _parent_sections=(),
     host=None,
 ):
-    """Merge config includes and return new config & corresponding validation schema."""
+    """Merge config includes and return new config & corresponding validation schema.
+
+    Args:
+        schemas_path: A single Path, a list of Paths, or None.  When None, defaults to
+            ``ConfigPaths.SCHEMAS_SEARCHPATHS`` (evaluated at call time so that callers
+            can insert extra directories into that list before invoking this function).
+            When a list is supplied, directories are searched in order and the first
+            directory that contains a matching schema file wins.
+    """
+    if schemas_path is None:
+        schemas_path = ConfigPaths.SCHEMAS_SEARCHPATHS
+    if not isinstance(schemas_path, list):
+        # Accept a single Path/str for backward compatibility
+        schemas_path = [schemas_path]
+
     # If the json schema is empty on arrival, keep it empty
     raw_config = modify_mappings(obj=raw_config, operator=dict)
     json_schema = modify_mappings(obj=json_schema, operator=dict)
@@ -480,7 +512,7 @@ def _expand_config_include_section(
     config_include_search_dir = Path(config_include_search_dir).resolve()
     config_include_sections = {}
     if len(config_include_defs) == 0:
-        json_schema = _get_all_json_schemas(json_schema, str(schemas_path))
+        json_schema = _get_all_json_schemas(json_schema, schemas_path)
     else:
         for section_name, include_path_ in config_include_defs.items():
             if isinstance(include_path_, str):
@@ -510,13 +542,19 @@ def _expand_config_include_section(
                 msg += "but rather in their own separate files."
                 raise ConflictingValidationSchemasError(msg)
 
-            schema_file = schemas_path / f"{section_name}_section_schema.json"
-            if not schema_file.is_file():
+            schema_file = None
+            for sp in schemas_path:
+                candidate = Path(sp) / f"{section_name}_section_schema.json"
+                if candidate.is_file():
+                    schema_file = candidate
+                    break
+            if schema_file is None:
                 logger.warning(
                     'No validation schema for config section "{}". Using default.',
                     sections_traversed_str,
                 )
-                schema_file = schemas_path / "default_section_schema.json"
+                # default_section_schema.json lives in the tactus schemas dir (last in list)
+                schema_file = Path(schemas_path[-1]) / "default_section_schema.json"
 
             updated_config, updated_schema = _expand_config_include_section(
                 raw_config=included_config_section,
