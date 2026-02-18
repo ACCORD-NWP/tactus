@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Program's entry point."""
 import contextlib
+import sys
 
 from . import GeneralConstants
-from .argparse_wrapper import get_parsed_args
+from .argparse_wrapper import get_args_parser
 from .config_parser import ConfigParserDefaults, ConfigPaths, ParsedConfig
 from .host_actions import TactusHost
 from .logs import LoggerHandlers, log_elapsed_time, logger
@@ -15,7 +16,10 @@ logger.enable(GeneralConstants.PACKAGE_NAME)
 @log_elapsed_time()
 def main(argv=None):
     """Program's main routine."""
-    args = get_parsed_args(argv=argv)
+    if argv is None:
+        argv = sys.argv[1:]
+
+    args = get_args_parser().parse_args(argv)
 
     # Evaluate tactus host and config paths
     tactus_host = TactusHost().detect_tactus_host()

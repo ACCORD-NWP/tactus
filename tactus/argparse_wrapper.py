@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Wrappers for argparse functionality."""
 import argparse
-import sys
 from pathlib import Path
 
 from . import GeneralConstants
@@ -23,26 +22,14 @@ from .config_parser import ConfigParserDefaults
 from .namelist import NamelistConverter
 
 
-def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
-    """Get parsed command line arguments.
-
-    Args:
-        program_name (str): The name of the program.
-        argv (list): A list of passed command line args.
+def get_common_parser():
+    """Build and return the common argument parser shared by all subcommands.
 
     Returns:
-        argparse.Namespace: Parsed command line arguments.
+        argparse.ArgumentParser: Parser with common arguments (config-file,
+            host-file, etc.).
 
     """
-    if argv is None:
-        argv = sys.argv[1:]
-
-    ######################################################################################
-    # Command line args that will be common to main_parser and possibly other subparsers.#
-    #                                                                                    #
-    # You should add `parents=[common_parser]` to your subparser definition if you want  #
-    # these options to apply there too.                                                  #
-    ######################################################################################
     common_parser = argparse.ArgumentParser(add_help=False)
 
     common_parser.add_argument(
@@ -82,6 +69,20 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         required=False,
         default=None,
     )
+    return common_parser
+
+
+def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
+    """Build and return the argument parser.
+
+    Args:
+        program_name (str): The name of the program.
+
+    Returns:
+        argparse.ArgumentParser: The configured argument parser.
+
+    """
+    common_parser = get_common_parser()
 
     ##########################################
     # Define main parser and general options #
@@ -437,7 +438,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     )
     parser_namelist_format.set_defaults(run_command=namelist_format)
 
-    return main_parser.parse_args(argv)
+    return main_parser
 
 
 def add_namelist_args(parser_object):
