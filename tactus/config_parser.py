@@ -8,6 +8,7 @@ import tempfile
 from datetime import datetime, timedelta
 from functools import reduce
 from pathlib import Path
+from typing import List, Optional, Tuple
 
 import fastjsonschema
 import jsonref
@@ -479,21 +480,44 @@ def _get_all_json_schemas(json_schema, schemas_paths):
 
 
 def _expand_config_include_section(
-    raw_config,
-    json_schema,
+    raw_config: dict,
+    json_schema: JsonSchema,
     config_include_search_dir=ConfigParserDefaults.CONFIG_DIRECTORY,
-    schemas_path=None,
-    _parent_sections=(),
-    host=None,
-):
+    schemas_path: Optional[List[Path] | Path] = None,
+    _parent_sections: Tuple = (),
+    host: Optional[str] = None,
+) -> Tuple[dict, JsonSchema]:
     """Merge config includes and return new config & corresponding validation schema.
 
     Args:
-        schemas_path: A single Path, a list of Paths, or None.  When None, defaults to
-            ``ConfigPaths.SCHEMAS_SEARCHPATHS`` (evaluated at call time so that callers
-            can insert extra directories into that list before invoking this function).
-            When a list is supplied, directories are searched in order and the first
-            directory that contains a matching schema file wins.
+        raw_config (dict): The raw configuration dictionary to process, potentially
+            containing include directives.
+        json_schema (JsonSchema): The JSON schema associated with ``raw_config``.
+        config_include_search_dir: Directory in which to search for included config
+            files. Defaults to ``ConfigParserDefaults.CONFIG_DIRECTORY``.
+        schemas_path (Path | list[Path] | None): A single Path, a list of Paths, or
+            None.  When None, defaults to ``ConfigPaths.SCHEMAS_SEARCHPATHS``
+            (evaluated at call time so that callers can insert extra directories into
+            that list before invoking this function). When a list is supplied,
+            directories are searched in order and the first directory that contains a
+            matching schema file wins.
+        _parent_sections (tuple): Tuple of ancestor section names used internally to
+            track nesting during recursive expansion. Should not be set by callers.
+        host (str | None): Optional host identifier passed down during recursive
+            expansion. Defaults to None.
+
+    Raises:
+        RunTimeError: If include path requires a host to be set, and no host
+            input argument is provided.
+        ConflictingValidationSchemasError: If a json schema for an include section
+            is found the parent json schema. Such schema must be added to a
+            separate file.
+
+
+    Returns:
+        tuple[dict, JsonSchema]: A 2-tuple of ``(merged_config, merged_schema)`` where
+            ``merged_config`` is the fully expanded configuration dictionary and
+            ``merged_schema`` is the corresponding merged JSON schema.
     """
     if schemas_path is None:
         schemas_path = ConfigPaths.SCHEMAS_SEARCHPATHS
