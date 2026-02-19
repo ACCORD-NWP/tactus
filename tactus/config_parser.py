@@ -333,7 +333,6 @@ class ParsedConfig(BasicConfig):
 
         """
         validate_json_schema = len(self.json_schema) > 0
-        __import__('ipdb').set_trace()
 
         new, json_schema = _expand_config_include_section(
             raw_config=new,

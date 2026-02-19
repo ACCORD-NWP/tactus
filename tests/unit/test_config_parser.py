@@ -648,7 +648,7 @@ class TestSchemasSearchPaths:
 
     @pytest.fixture()
     def plugin_schemas_dir(self, tmp_test_data_dir):
-        """Temporary schema directory containing a strict 'plugin_section' schema."""
+        """Temporary schema directory containing a strict 'plugin' schema."""
         schemas_dir = tmp_test_data_dir / "plugin_schemas"
         schemas_dir.mkdir()
         (schemas_dir / "plugin_section_schema.json").write_text(
@@ -673,13 +673,13 @@ class TestSchemasSearchPaths:
     ):
         """A section schema only present in an extra dir is applied to config validation."""
         raw_config = minimal_raw_config.copy()
-        raw_config["plugin_section"] = {"plugin_key": "hello"}
+        raw_config["plugin"] = {"plugin_key": "hello"}
 
-        # Without extra dir: plugin_section has no strict schema, so any content is allowed.
+        # Without extra dir: plugin has no strict schema, so any content is allowed.
         config = ParsedConfig(
             raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
         )
-        assert "plugin_section" in config
+        assert "plugin" in config
 
         ConfigPaths.SCHEMAS_SEARCHPATHS.insert(0, plugin_schemas_dir)
 
@@ -687,35 +687,38 @@ class TestSchemasSearchPaths:
         config = ParsedConfig(
             raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
         )
-        assert config["plugin_section.plugin_key"] == "hello"
+        assert config["plugin.plugin_key"] == "hello"
 
         # With extra dir: data that violates the strict schema is rejected.
-        raw_config["plugin_section"] = False #{"wrong_key": "oops"}
-        __import__('ipdb').set_trace()
+        raw_config["plugin"] = {"wrong_key": "oops"}
         with pytest.raises(ConfigFileValidationError):
-            ParsedConfig(raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA)
+            ParsedConfig(
+                raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+            )
 
     def test_schema_from_extra_dir_validates_include_section(
         self, plugin_schemas_dir, minimal_raw_config, tmp_test_data_dir
     ):
         """A schema from an extra dir is picked up and enforced for [include] sections."""
-        include_file = tmp_test_data_dir / "plugin_section.toml"
+        include_file = tmp_test_data_dir / "plugin.toml"
         raw_config = minimal_raw_config.copy()
-        raw_config["include"] = {"plugin_section": str(include_file)}
+        raw_config["include"] = {"plugin": str(include_file)}
 
         ConfigPaths.SCHEMAS_SEARCHPATHS.insert(0, plugin_schemas_dir)
 
         # Valid include file: passes strict schema from extra dir.
-        include_file.write_text("[plugin_section]\nplugin_key = \"hello\"\n")
+        include_file.write_text('[plugin]\nplugin_key = "hello"\n')
         config = ParsedConfig(
             raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
         )
-        assert config["plugin_section.plugin_key"] == "hello"
+        assert config["plugin.plugin_key"] == "hello"
 
         # Include file that violates the strict schema raises.
-        include_file.write_text("[plugin_section]\nwrong_key = \"oops\"\n")
+        include_file.write_text('[plugin]\nwrong_key = "oops"\n')
         with pytest.raises(ConfigFileValidationError):
-            ParsedConfig(raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA)
+            ParsedConfig(
+                raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
+            )
 
     def test_first_searchpath_wins_for_include_section(
         self, competing_schemas, minimal_raw_config, tmp_test_data_dir
@@ -724,11 +727,11 @@ class TestSchemasSearchPaths:
         dir_high, dir_low = competing_schemas
 
         # Include file satisfies the high-priority schema (has 'from_high').
-        include_file = tmp_test_data_dir / "competing_section.toml"
-        include_file.write_text("[competing_section]\nfrom_high = \"yes\"\n")
+        include_file = tmp_test_data_dir / "competing.toml"
+        include_file.write_text('[competing]\nfrom_high = "yes"\n')
 
         raw_config = minimal_raw_config.copy()
-        raw_config["include"] = {"competing_section": str(include_file)}
+        raw_config["include"] = {"competing": str(include_file)}
 
         # dir_high at index 0 -> its schema is applied -> config with 'from_high' is valid.
         ConfigPaths.SCHEMAS_SEARCHPATHS.insert(0, dir_low)
@@ -736,7 +739,7 @@ class TestSchemasSearchPaths:
         config = ParsedConfig(
             raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
         )
-        assert "competing_section" in config
+        assert "competing" in config
 
     def test_first_searchpath_wins_for_section_without_includes(
         self, competing_schemas, minimal_raw_config
@@ -746,7 +749,7 @@ class TestSchemasSearchPaths:
 
         raw_config = minimal_raw_config.copy()
         # Config satisfies the high-priority schema (has 'from_high', not 'from_low').
-        raw_config["competing_section"] = {"from_high": "yes"}
+        raw_config["competing"] = {"from_high": "yes"}
 
         # dir_high at index 0 -> its schema is applied -> config with 'from_high' is valid.
         ConfigPaths.SCHEMAS_SEARCHPATHS.insert(0, dir_low)
@@ -754,7 +757,7 @@ class TestSchemasSearchPaths:
         config = ParsedConfig(
             raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
         )
-        assert "competing_section" in config
+        assert "competing" in config
 
     def test_backward_compatible_with_single_path_as_schemas_path(
         self, minimal_raw_config
