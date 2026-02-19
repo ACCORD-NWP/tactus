@@ -467,14 +467,17 @@ def _get_all_json_schemas(json_schema, schemas_paths):
 
     """
     exclude = ["main_config_schema.json", "default_config_schema.json"]
+    # Revert schema_paths list to make first path win, since it then occurs last
+    # in below iteration.
+    schemas_paths = schemas_paths[::-1]
 
     for schemas_path in schemas_paths:
         for filename in glob.glob(f"{schemas_path}/*.json"):
             if os.path.basename(filename) in exclude:
                 continue
             section_name = os.path.basename(filename).replace("_section_schema.json", "")
-            if section_name not in json_schema["properties"]:  # first found wins
-                json_schema["properties"][section_name] = {"$ref": f"file:{filename}"}
+            updated_schema = {"$ref": f"file:{filename}"}
+            json_schema["properties"].update({section_name: updated_schema})
 
     return json_schema
 
