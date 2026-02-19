@@ -1,0 +1,6 @@
+[suite_control]
+  suite_definition = "CompilationSuiteDefinition"
+
+
+[compile]
+  ial_dir = "/perm/sbu/github/ACCORD-NWP/IAL_tags/CY50T2"
