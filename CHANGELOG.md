@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Encode member 0 of an ensemble as "cf" (control forecast). [\#1526](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1526) (@KristianHMoller)
 
 ### Fixed
+- Restore `mode=start` functionality. [\#1339](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1339) (@BolliPalmason, @kastelecn,@uandrae)
 - Add missing DR_HOOK setting for Addpert. [\#1530](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1530) (@uandrae)
 
 ## [0.25.0] - 2026-02-13
