@@ -1,0 +1,35 @@
+[remove.defaults]
+  active = true
+  dry_run = true
+  ncycles_delay = 0
+  wipe = true
+
+[remove.ehype]
+  remove_from_scheduler = true
+  remove_not_completed_suites = false
+  suite_name = "DE_Impact_EHYPE_forecast_@CASE@_@YMD_START@_@HH_START@"
+
+[remove.ehype.ehype_output]
+  path = "@IMPACT.EHYPE.COMMUNICATE.RUN_ROOT@/@CASE@_@YMD_START@_@HH_START@"
+
+[remove.ehype.ehype_run]
+  path = "@IMPACT.EHYPE.COMMUNICATE.RUN_ROOT@/run/@REMOVE.EHYPE.SUITE_NAME@"
+
+[remove.ehype.ehype_work]
+  path = "@IMPACT.EHYPE.COMMUNICATE.WORK_ROOT@/@REMOVE.EHYPE.SUITE_NAME@"
+
+[remove.main]
+  remove_from_scheduler = true
+  remove_not_completed_suites = false
+  suite_name = "@CASE@"
+
+[remove.main.ecfs]
+  ecfs_prefix = "@ECFS_PREFIX@"
+  path = ""
+
+[remove.main.ifs]
+  active = false
+  path = "@REFERENCE_DATA@/IFS"
+
+[remove.main.zz_case_dir]
+  path = "@CASEDIR@"

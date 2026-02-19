@@ -25,7 +25,7 @@ def wipe_ecfs(ecfs_path):
         logger.warning(err)
 
 
-class CleanDeode:
+class CleanTactus:
     """Clean data."""
 
     def __init__(self, config, defaults=None, basetime=None):
