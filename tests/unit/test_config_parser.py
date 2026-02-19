@@ -643,7 +643,7 @@ class TestSchemasSearchPaths:
     def restore_schemas_searchpaths(self):
         """Save and restore SCHEMAS_SEARCHPATHS around each test."""
         original = ConfigPaths.SCHEMAS_SEARCHPATHS[:]
-        yield
+        yield None
         ConfigPaths.SCHEMAS_SEARCHPATHS[:] = original
 
     @pytest.fixture()
