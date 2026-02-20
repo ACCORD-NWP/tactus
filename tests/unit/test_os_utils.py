@@ -288,7 +288,7 @@ class TestResolvePathRelativeToPackage:
                 str(tmp_path / "real_base_a"),
                 str(tmp_path / "real_base_b"),
             ],
-        ), pytest.raises(ValueError):
+        ), pytest.raises(ValueError, match="Ambiguous path resolution for"):
             resolve_path_relative_to_package(fake_path)
 
     def test_no_matching_sys_path_prefix_raises_file_not_found(self):
