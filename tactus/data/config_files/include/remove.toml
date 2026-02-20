@@ -3,6 +3,7 @@
   dry_run = true
   ncycles_delay = 0
   wipe = true
+  execute_removal = false
 
 [remove.ehype]
   remove_from_scheduler = true
