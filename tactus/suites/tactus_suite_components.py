@@ -699,6 +699,19 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
 
     def __iter__(self):
         for bd_index_time_dict in self.lbc_time_generator:
+            bd_index_time_dict_sst = bd_index_time_dict.copy()
+            interpolation_task_name = (
+                "C903" if self.config["suite_control.do_marsprep"] else "E927"
+            )
+            if (
+                self.config["suite_control.mode"] == "restart" and 0 in bd_index_time_dict
+            ) or (
+                self.config["suite_control.mode"] == "start"
+                and 0 in bd_index_time_dict
+                and not self.is_first_cycle
+            ):
+                del bd_index_time_dict[0]
+
             args = f"bd_index_time_dict={bd_index_time_dict};prep_step=False"
             variables = {"ARGS": args}
 
@@ -736,38 +749,41 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
                     ecf_files_remotely=self.ecf_files_remotely,
                 )
 
-            # do we need to run E927/C903 boundary interpolation, or just SST/SIC
-            if (
-                self.config["suite_control.mode"] == "restart"
-                or (
-                    self.config["suite_control.mode"] == "start"
-                    and not self.is_first_cycle
+            doit = True
+            task_name = interpolation_task_name
+            trigger = split_mars_task
+            if self.do_slaf:
+                doer, part, addpert_trigger = self.slaf_worker(
+                    interpolation_task_name, None, bdshift[0], bd_index_time_dict
                 )
-            ) and self.config["suite_control.do_interpolsstsic"]:
-                do_intp_task = False
-            else:
-                do_intp_task = True
-
-            interpolation_task_name = (
-                "C903" if self.config["suite_control.do_marsprep"] else "E927"
-            )
-            if do_intp_task:
+                addpert_args = args
+                doit = doer == self.member and part == 0
+                if not doit and self.member == 0:
+                    # Member 0 does not run Addpert, so must run C903Light
+                    task_name += "Light"
+                    args += f";duo={doer}:{part};me=0"
+                    trigger = addpert_trigger
+                    doit = True
+            if doit:
                 EcflowSuiteTask(
-                    interpolation_task_name,
+                    task_name,
                     self,
                     self.config,
                     self.task_settings,
                     self.ecf_files,
                     input_template=self.input_template,
-                    variables=variables,
-                    trigger=split_mars_task,
+                    variables={"ARGS": args},
+                    trigger=trigger,
                     ecf_files_remotely=self.ecf_files_remotely,
                 )
-
+            if self.do_slaf:
+                addpert_args += f";doer0={doer};part0={part};me={self.member}"
             if (
                 self.config["suite_control.do_interpolsstsic"]
                 and interpolation_task_name == "C903"
             ):
+                args = f"bd_index_time_dict={bd_index_time_dict_sst};prep_step=False"
+                variables = {"ARGS": args}
                 EcflowSuiteTask(
                     "InterpolSstSic",
                     self,
@@ -779,6 +795,58 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
                     trigger=split_mars_task,
                     ecf_files_remotely=self.ecf_files_remotely,
                 )
+
+            if self.do_slaf:
+                # For SLAF (Scaled Lagged Average Forecasting), we call C903 2 more times
+                #   with altered bdshift, and add it all up in the end (in Addpert)
+                slaflag = self.config.get(
+                    f"eps.members.{member}.boundaries.slaflag", "PT0H"
+                )
+                slafdiff = self.config.get(
+                    f"eps.members.{member}.boundaries.slafdiff", "PT0H"
+                )
+                if slaflag != "PT0H" and slafdiff != "PT0H":
+                    bdshift[1] = as_timedelta(slaflag) - as_timedelta(slafdiff)
+                    bdshift[2] = as_timedelta(slaflag)
+                    for i in (1, 2):
+                        bdsi = bdshift[i].isoformat()
+                        args = (
+                            variables["ARGS"]
+                            + f";extra_bdshift={bdsi};target_suffix='_slaf{i}'"
+                        )
+                        doer, part, addpert_trigger = self.slaf_worker(
+                            interpolation_task_name,
+                            addpert_trigger,
+                            bdshift[i],
+                            bd_index_time_dict,
+                        )
+                        if doer == self.member and part == i:
+                            SLAFpartFamily(
+                                f"SLAFpart{i}",
+                                interpolation_task_name,
+                                self,
+                                self.config,
+                                self.task_settings,
+                                self.input_template,
+                                self.ecf_files,
+                                trigger=split_mars_task,
+                                variables={"ARGS": args},
+                                ecf_files_remotely=self.ecf_files_remotely,
+                            )
+                        addpert_args += (
+                            f";doer{i}={doer};part{i}={part};bdshift{i}={bdsi}"
+                        )
+                    EcflowSuiteTask(
+                        "Addpert",
+                        self,
+                        self.config,
+                        self.task_settings,
+                        self.ecf_files,
+                        input_template=self.input_template,
+                        variables={"ARGS": addpert_args},
+                        trigger=addpert_trigger,
+                        ecf_files_remotely=self.ecf_files_remotely,
+                    )
 
             yield self
 
@@ -880,6 +948,12 @@ class InterpolationFamily(EcflowSuiteFamily):
         e923_update_task = None
         csc = config["general.csc"]
 
+        is_first_cycle = cycles.current_index == 0
+        mode = config["suite_control.mode"]
+
+        if mode == "restart" or (mode == "start" and not is_first_cycle):
+            do_prep = False
+
         if do_prep:
             prep_fam = PrepFamily(
                 self,
@@ -902,7 +976,7 @@ class InterpolationFamily(EcflowSuiteFamily):
                     ecf_files_remotely=ecf_files_remotely,
                 )
 
-            if config["suite_control.mode"] != "cold_start" or csc == "ALARO":
+            if csc == "ALARO":
                 do_prep = False
 
         if csc == "ALARO" and not config["general.surfex"] and cycles.end_of_month:
