@@ -268,11 +268,10 @@ class EcflowServer(Server):
             ):
                 logger.info("Removing suite {}", suite_name)
                 self.ecf_client.delete(suite_name)
-                for directory in self.get_ecf_home_and_files(suite):
+                for directory in self.get_ecf_vars(suite):
                     if os.path.isdir(directory):
+                        logger.info("Remove ecflow directory {}", directory)
                         shutil.rmtree(directory)
-                    else:
-                        logger.warning("{} does not exist", directory)
 
     def get_suites_from_server(self, ignore, complete=False):
         """Get all suites from ecflow server.
@@ -341,24 +340,26 @@ class EcflowServer(Server):
 
         return max(endtimes, default=force_delete_time.timestamp())
 
-    def get_ecf_home_and_files(self, suite):
-        """Get ECF_HOME and ECF_HOST of the suite.
+    def get_ecf_vars(self, suite):
+        """Get some ecf_vars from a ecflow suite.
 
         Args:
             suite (Ecflow suite): suite object.
 
         Returns:
-            ecf_home (Path): Path to ECF_HOME.
-            ecf_files (Path): Path to ECF_FILES.
+            ecf_vars (list): List of Paths
         """
         suite_name = suite.name()
-        ecf_home = Path(suite.find_variable("ECF_HOME").value())
-        ecf_files = Path(suite.find_variable("ECF_FILES").value())
-        if suite_name.startswith("DE_Impact_EHYPE"):
-            logger.info("ecf_files: {}", ecf_files.parents[2])
-            ecf_files = ecf_files.parents[2]
+        ecf_vars = []
+        for _ecf_var in ["ECF_OUT", "ECF_HOME", "ECF_FILES"]:
+            ecf_var = suite.find_variable(_ecf_var).value()
+            if len(ecf_var) == 0:
+                continue
+            ecf_var = Path(Path(ecf_var) / suite_name)
+            if ecf_var not in ecf_vars:
+                ecf_vars.append(ecf_var)
 
-        return Path(ecf_home / suite_name), Path(ecf_files / suite_name)
+        return ecf_vars
 
     def get_all_tasks(self, node):
         """Recursively yield all Task nodes under a Suite or Family node."""
