@@ -1,9 +1,9 @@
 [remove.defaults]
   active = true
   dry_run = true
+  execute_removal = false
   ncycles_delay = 0
   wipe = true
-  execute_removal = false
 
 [remove.ehype]
   remove_from_scheduler = true
