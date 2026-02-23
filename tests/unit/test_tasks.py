@@ -2,10 +2,8 @@
 """Unit tests for the config file parsing module."""
 import contextlib
 import subprocess
-import sys
 from os import chdir, makedirs
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 import tomlkit
@@ -30,7 +28,7 @@ from tactus.tasks.sqlite import ExtractSQLite, MergeSQLites
 from tactus.toolbox import ArchiveError, FileManager, ProviderError
 
 with contextlib.suppress(ModuleNotFoundError):
-    import ecflow
+    pass
 
 
 def classes_to_be_tested():
@@ -124,15 +122,6 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         """Suppress some errors so that test continues if they happen."""
         with contextlib.suppress(ArchiveError, ProviderError, NotImplementedError):
             original_toolbox_filemanager_input_method(*args, **kwargs)
-
-    def new_task_clean_old_data_cleancases_execute_method(*args, **kwargs):
-        """Suppress some errors so that test continues if they happen."""
-        with contextlib.suppress(ModuleNotFoundError, NotImplementedError):
-            if "ecflow" in sys.modules:
-                with patch.object(ecflow.Client, "delete"):
-                    original_task_clean_old_data_cleancases_execute_method(
-                        *args, **kwargs
-                    )
 
     def new_task_forecast_forecast_execute_method(*args, **kwargs):
         """Suppress some errors so that test continues if they happen."""
