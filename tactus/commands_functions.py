@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Implement the package's commands."""
 import argparse
+import contextlib
 import datetime
 import os
 import subprocess
@@ -14,6 +15,7 @@ from toml_formatter.formatter import FormattedToml
 from troika.connections.ssh import SSHConnection
 
 from . import GeneralConstants
+from .cleaning import CleanTactus
 from .config_parser import BasicConfig, ConfigParserDefaults, ConfigPaths, ParsedConfig
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
 from .experiment import case_setup
@@ -477,7 +479,7 @@ def remove_cases(args, config):  # ARG001
                 with contextlib.suppress(KeyError):
                     settings.pop(key)
 
-            cleaner = CleanDeode(case_config, defaults)
+            cleaner = CleanTactus(case_config, defaults)
             dry_run = not args.execute_removal
             cleaner.prep_cleaning(settings, dry_run=dry_run)
             cleaner.clean()

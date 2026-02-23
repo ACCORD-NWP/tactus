@@ -1,6 +1,7 @@
 """Module to create the different parts of the tactus ecFlow suite."""
 
 from datetime import datetime, timedelta
+from itertools import tee
 from typing import Generator, List, Optional, Tuple
 
 from tactus.boundary_utils import Boundary
@@ -21,7 +22,7 @@ from tactus.suites.base import (
     EcflowSuiteTrigger,
     EcflowSuiteTriggers,
 )
-from tactus.suites.suite_utils import Cycles, lbc_times_generator
+from tactus.suites.suite_utils import Cycles, lbc_times_generator, slaf_planner
 from tactus.toolbox import Platform
 
 
@@ -566,6 +567,7 @@ class InputDataFamily(EcflowSuiteFamily):
         external_marsprep_trigger_node=None,
         add_var_trigger=None,
         remote_path=None,
+        member=0,
     ):
         """Class initialization."""
         super().__init__(
@@ -607,6 +609,37 @@ class InputDataFamily(EcflowSuiteFamily):
                 add_var_trigger=add_var_trigger,
                 remote_path=remote_path,
             )
+            # For SLAF (Scaled Lagged Average Forecasting),
+            #   we call Marsprep 2 more times with altered bdshift
+            slaflag = config.get(f"eps.members.{member}.boundaries.slaflag", "PT0H")
+            slafdiff = config.get(f"eps.members.{member}.boundaries.slafdiff", "PT0H")
+            if slaflag != "PT0H" and slafdiff != "PT0H":
+                slafk = float(config.get(f"eps.members.{member}.boundaries.slafk", "1.0"))
+                logger.info(
+                    "member={}, slaflag={}, slafdiff={}, slafk={}",
+                    member,
+                    slaflag,
+                    slafdiff,
+                    slafk,
+                )
+                bdshift = ["PT0H"]
+                bdshift.append(
+                    (as_timedelta(slaflag) - as_timedelta(slafdiff)).isoformat()
+                )
+                bdshift.append(as_timedelta(slaflag).isoformat())
+                for i in 1, 2:
+                    SLAFpartFamily(
+                        f"SLAFpart{i}",
+                        "Marsprep",
+                        self,
+                        config,
+                        task_settings,
+                        input_template,
+                        ecf_files,
+                        trigger=marsprep_trigger_nodes,
+                        variables={"ARGS": f"extra_bdshift={bdshift[i]}"},
+                        ecf_files_remotely=ecf_files_remotely,
+                    )
 
 
 class PrepFamily(EcflowSuiteFamily):
@@ -683,6 +716,8 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
         ecf_files_remotely=None,
         is_first_cycle: bool = True,
         limit: Optional[EcflowSuiteLimit] = None,
+        member=0,
+        do_slaf=False,
     ):
         """Class initialization."""
         self.parent = parent
@@ -695,9 +730,20 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
         self.is_first_cycle = is_first_cycle
         self.limit = limit
         self.bdint = bdint
-        self.lbc_time_generator = lbc_time_generator
+        self.member = member
+        self.do_slaf = do_slaf
+        if do_slaf:
+            # Must not exhaust the generator in the planning
+            ltg1, ltg2 = tee(lbc_time_generator)
+            self.lbc_time_generator = ltg1
+            self.slaf_doer = slaf_planner(config, ltg2, member)
+        else:
+            self.lbc_time_generator = lbc_time_generator
+            self.slaf_doer = {}
 
     def __iter__(self):
+        if self.do_slaf:
+            bdshift = [as_timedelta("PT0H") for i in range(3)]
         for bd_index_time_dict in self.lbc_time_generator:
             bd_index_time_dict_sst = bd_index_time_dict.copy()
             interpolation_task_name = (
@@ -714,6 +760,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
 
             args = f"bd_index_time_dict={bd_index_time_dict};prep_step=False"
             variables = {"ARGS": args}
+            member = self.member
 
             min_time, max_time = (
                 bd_index_time_dict[k]
@@ -850,6 +897,64 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
 
             yield self
 
+    def slaf_worker(
+        self,
+        task_name,
+        old_trigger,
+        bdshift,
+        bd_index_time_dict,
+    ):
+        """Logic to determine worker and additional info for a boundary file batch.
+
+        Args:
+            task_name (str):     task name of real job
+            old_trigger:         possibly existing trigger
+            bdshift (timedelta): SLAF boundary shift for this file
+            bd_index_time_dict:  for this batch
+
+        Returns:
+            doer:                member that does the actual interpolation
+            part:                slaf part for doer
+            new_trigger:         (updated) trigger for dependant task (addpert)
+
+        Raises:
+            RuntimeError:        if SLAF planning gave inconsistent worker set
+        """
+        i = 0
+        prev_doer = -1
+        prev_part = -1
+        for bd_index, lbc_time in bd_index_time_dict.items():
+            bd_index_shifted = bd_index + bdshift // self.bdint
+            lbc_time_shifted = as_datetime(lbc_time) - bdshift
+            date_string_shifted = lbc_time_shifted.isoformat(sep="T").replace(
+                "+00:00", "Z"
+            )
+            key = f"{date_string_shifted};{bd_index_shifted}"
+            duo = self.slaf_doer[key]
+            doer, part = [int(j) for j in duo.split(":", 1)]
+            # Could break out here, but check same doer for whole batch
+            if i > 0 and (doer != prev_doer or part != prev_part):
+                raise RuntimeError("Internal error in SLAF planning")
+            prev_doer = doer
+            prev_part = part
+            i += 1
+
+        new_trigger = EcflowSuiteTriggers([EcflowSuiteTrigger(self)])
+        ts_work = new_trigger.trigger_string.replace(
+            f"mbr{self.member:03d}", f"mbr{doer:03d}", 1
+        )
+        if part == 0:
+            ts_work = ts_work.replace(" == ", f"/{task_name} == ", 1)
+        else:
+            ts_work = ts_work.replace(" == ", f"/SLAFpart{part}/{task_name} == ", 1)
+        new_trigger.trigger_string = ts_work
+        if old_trigger is not None and ts_work != old_trigger.trigger_string:
+            new_trigger.trigger_string = "{0} AND {1}".format(
+                old_trigger.trigger_string, new_trigger.trigger_string
+            )
+
+        return doer, part, new_trigger
+
 
 class LBCFamily(EcflowSuiteFamily):
     """Class for creating the ecFlow LBCFamily."""
@@ -866,6 +971,7 @@ class LBCFamily(EcflowSuiteFamily):
         lbc_family_trigger=None,
         ecf_files_remotely=None,
         dry_run: bool = False,
+        member=0,
     ):
         """Class initialization."""
         super().__init__(
@@ -909,6 +1015,8 @@ class LBCFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
             is_first_cycle=is_first_cycle,
             limit=lbc_limit if not dry_run else None,
+            member=member,
+            do_slaf=config["boundaries.do_slaf"],
         )
 
         # Iterate through the LBC family generator to create the next
@@ -934,6 +1042,7 @@ class InterpolationFamily(EcflowSuiteFamily):
         dry_run: bool = False,
         add_var_trigger=None,
         remote_path=None,
+        member=0,
     ):
         """Class initialization."""
         super().__init__(
@@ -992,6 +1101,7 @@ class InterpolationFamily(EcflowSuiteFamily):
             lbc_family_trigger=e923_update_task,
             ecf_files_remotely=ecf_files_remotely,
             dry_run=dry_run,
+            member=member,
         )
 
 
@@ -1485,6 +1595,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                         trigger=mbr_trigger,
                         ecf_files_remotely=ecf_files_remotely,
                         external_marsprep_trigger_node=external_marsprep_trigger_nodes,
+                        member=member,
                     )
                     ready_for_cycle = inputdata
 
@@ -1502,6 +1613,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                         dry_run=dry_run,
                         add_var_trigger=check_offline_date,
                         remote_path=path_offline,
+                        member=member,
                     )
 
                     ready_for_cycle = prev_interpolation_triggers[member] = int_family
@@ -1611,5 +1723,43 @@ class MergeSQLitesFamily(EcflowSuiteFamily):
             ecf_files,
             trigger=merge_sqlites,
             input_template=input_template,
+            ecf_files_remotely=ecf_files_remotely,
+        )
+
+
+class SLAFpartFamily(EcflowSuiteFamily):
+    """Helper class for constructing SLAF perturbations (for EPS)."""
+
+    def __init__(
+        self,
+        name,
+        subtask,
+        parent,
+        config,
+        task_settings: TaskSettings,
+        input_template,
+        ecf_files,
+        trigger=None,
+        variables=None,
+        ecf_files_remotely=None,
+    ):
+        """Class initialization."""
+        super().__init__(
+            name,
+            parent,
+            ecf_files,
+            trigger=trigger,
+            ecf_files_remotely=ecf_files_remotely,
+        )
+
+        EcflowSuiteTask(
+            subtask,
+            self,
+            config,
+            task_settings,
+            ecf_files,
+            input_template=input_template,
+            trigger=trigger,
+            variables=variables,
             ecf_files_remotely=ecf_files_remotely,
         )
