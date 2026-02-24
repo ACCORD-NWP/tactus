@@ -21,11 +21,12 @@ def wipe_ecfs(ecfs_path):
         if result != "":
             logger.error(result)
             raise RuntimeError("Error running command: {}".format(command))
+        logger.info("Clean ecfs_path:{}", ecfs_path)
     except subprocess.CalledProcessError as err:
         logger.warning(err)
 
 
-class CleanDeode:
+class CleanTactus:
     """Clean data."""
 
     def __init__(self, config, defaults=None, basetime=None):
@@ -158,7 +159,7 @@ class CleanDeode:
                 else:
                     choice["step"] = as_timedelta(choice["step"])
 
-                if dry_run:
+                if dry_run is not None:
                     choice["dry_run"] = dry_run
 
                 self._check_choice(choice, name)

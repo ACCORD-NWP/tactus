@@ -13,8 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support multiple search paths for json schemas. [\#5](https://github.com/ACCORD-NWP/tactus/pull/5) (@mfroelund)
 
 ### Changed
+- Refactor E923 to make input data json-config driven. [\#1523](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1523) (@jacobsnoeijer)
+- Encode member 0 of an ensemble as "cf" (control forecast). [\#1526](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1526) (@KristianHMoller)
 - Prepare tactus as a separate package from Deode-Workflow, which now belongs to ACCORD-NWP. [\#2](https://github.com/ACCORD-NWP/tactus/pull/2) (@mfroelund)
 - Make argparser be returned instead of parsed args to make it extendable. [\#3](https://github.com/ACCORD-NWP/tactus/pull/3) (@mfroelund)
+
+### Fixed
+- Correct logics in the remove command. [\#1528](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1528) (@uandrae)
+- Restore `mode=start` functionality. [\#1339](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1339) (@BolliPalmason, @kastelecn,@uandrae)
+- Add missing DR_HOOK setting for Addpert. [\#1530](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1530) (@uandrae)
 
 ## [0.25.0] - 2026-02-13
 
@@ -27,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduce config macro expansion in `deode show` command. [\#1463](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1463) (@uandrae)
 - Add eventtype coldspell to main_config_schema. [\#1507](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1507)(@KristianHMoller)
 - Add some new or previously forgotten (mostly) spanish stations for sqlite extraction. [\#1513] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1513) (@svianaj)
+- Added wildfire impact model. [\#1487](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1487) (@pardallio)
 
 ### Changed
 - Make E923 part9 files cycle dependent [\#1521](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1521) (@jacobsnoeijer)
