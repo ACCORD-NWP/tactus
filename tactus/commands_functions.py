@@ -486,16 +486,23 @@ def remove_cases(args, config):  # ARG001
             if suite_name is not None and remove_from_scheduler:
                 if dry_run:
                     logger.info(" would have removed suite {}", suite_name)
+                    for directory in server.get_ecf_vars(this_suite):
+                        if os.path.isdir(directory):
+                            logger.info(
+                                " would have removed ecflow directory {}", directory
+                            )
+
                 else:
                     try:
-                        EcflowServer(case_config).remove_suites(
-                            [suite_name], check_if_complete=False
-                        )
+                        server.remove_suites([suite_name], check_if_complete=False)
                     except (ModuleNotFoundError, UnboundLocalError):
                         logger.warning(
                             "ecflow or config not found, suite {} not removed", suite_name
                         )
-        logger.info("\n\nRerun with '--execute-removal' to do the actual removal\n")
+            if dry_run:
+                logger.info(
+                    "\n\nRerun with '--execute-removal' to do the actual removal\n"
+                )
 
     return True
 
