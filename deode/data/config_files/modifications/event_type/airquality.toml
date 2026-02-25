@@ -1,25 +1,13 @@
 [general]
   event_type = "airquality"
 
-[archiving.FDB.fdb.history_grib2]
-  active = false
-  inpath = "@ARCHIVE@"
-  pattern = "GRIB@CNMEXP@*s"
-
 [archiving.FDB.fdb.surfex_grib2]
   active = false
   inpath = "@ARCHIVE@"
   pattern = "GRIB@CNMEXP@*sfx"
 
 [creategrib.CreateGrib]
-  conversions = ["surfex", "history", "tiles"]
-
-[creategrib.CreateGrib.history]
-  output_format = "FA2GRIB2"
-
-[creategrib.CreateGrib.history.HARMONIE_AROME]
-  basetime_only = true
-  namelist = ["outgeo%center=85", "READKEY%FANAME='SPECSURFGEOPOTEN'"]
+  conversions = ["surfex", "tiles"]
 
 [creategrib.CreateGrib.surfex]
   output_format = "FA2GRIB2"
@@ -108,6 +96,57 @@
 
 [gribmodify.surfex.8]
   output_name = "canopy_water"
+
+[impact.aq]
+  active = true
+  config_name = "@WRK@/aq.toml"
+  path = "@AQ_PATH@"
+  poetry = "@AQ_POETRY@"
+
+[impact.aq.communicate.air_quality_general.common_api]
+  archive_in = "@ARCHIVE@"
+  archive_out = "@AQ_ARCHIVE@/@AQ_MODEL@"
+  basetime = "@BASETIME@"
+  forecast_range = "@FORECAST_RANGE@"
+  wrk = "@AQ_WRK@/@AQ_MODEL@"
+
+[impact.aq.communicate.air_quality_general.domain]
+  latitude_midpoint = "@DOMAIN.XLATCEN@"
+  longitude_midpoint = "@DOMAIN.XLONCEN@"
+  nwp_domain = "@DOMAIN@"
+  nx = 251
+  ny = 201
+
+[impact.aq.communicate.air_quality_general.nwp]
+  archive_path = "@ARCHIVE@"
+  file_templates = ["GRIBPFDEOD+*s", "GRIBDEOD+*.sfx"]
+  ifs_path = "/scratch/aut6432/DE_NWP/deode/IFS/atos_bologna_DT"
+  nwp_cycle = "@CYCLE@"
+  nwp_model = "@CSC@"
+  surfex_physiography = "@CLIMDIR@/Const.Clim@ONE_DECADE@.sfx"
+  surfex_physiography_grib1 = "@SURFEX_PHYSIOGRAPHY@.grib1"
+  surfex_physiography_grib2 = "@SURFEX_PHYSIOGRAPHY@.grib2"
+
+[impact.aq.communicate.domain]
+  tstep = 1
+
+[impact.aq.communicate.scheduler.ecfvars.troika]
+  config_file = "@AQ_PATH@/dwaq/data/config_files/troika.yml"
+
+[impact.aq.communicate.troika]
+  config_file = "@AQ_PATH@/dwaq/data/config_files/troika.yml"
+
+[impact.aq.StartImpactModels]
+  arguments = [
+    "dwaq case --config-file @ARCHIVE_ROOT@/config.toml ?@AQ_PATH@/dwaq/data/config_files/configurations/all_aq_plugin @WRK@/aq.toml -e -o @WRK@/aq_config.toml --case-name @CASE@_AQ",
+    "deode start suite --config-file @WRK@/aq_config.toml -f @WRK@/aq.def",
+  ]
+
+[macros.select.aq_macros]
+  gen_macros = [
+    {aq_path = "platform.impact.aq.path"},
+    {aq_poetry = "platform.impact.aq.poetry"},
+  ]
 
 [submission.task_exceptions.ArchiveFDB.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"

@@ -37,8 +37,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Makes runtime module environment consistent between gnu and intel compilers on atos. [#1467](https://github.com/destination-earth-digital-twins/IAL/pull/1467) (@pardallio)
 - Update development guidelines. [\#1456](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1456) (@uandrae)
 - Changed the order of the modifications in the case of the CY50 ALARO configuration to disable surfex. [\#1450](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1450) (@pardallio)
-- Changed post-processed variables to be output at basetime per default [\#1488](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1488)(@KristianHMoller)
+- Changed post-processed variables to be output at basetime per default. [\#1488](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1488)(@KristianHMoller)
+- Merge aq_plugin and airquality.toml and automate AQ domain. [\#1504](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1504)(@KristianHMoller)
+- Remove reference to obsolete history files for AQ. [\#1504](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1504)(@KristianHMoller)
 - Remove unnecessary ssh token injections on atos [\#1492](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1492)(@observingClouds)
+
 
 ### Fixed
 - Fixes erroneous safety check on number of IO-server files. [#1518](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1518)(@uandrae)
