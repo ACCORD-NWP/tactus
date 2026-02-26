@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Correct logics in the remove command. [\#1528](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1528) (@uandrae)
 - Restore `mode=start` functionality. [\#1339](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1339) (@BolliPalmason, @kastelecn,@uandrae)
 - Add missing DR_HOOK setting for Addpert. [\#1530](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1530) (@uandrae)
+- Added a 'if' statement to prevent Marsprep from fetching lat/lon geopotential when all data is already available [\#1534](https://github.com/destination-earth-digital-twins/Deode-Workflow/issues/1534) (@kastelecn, @uandrae, @nicolasCtd)
 
 ## [0.25.0] - 2026-02-13
 

@@ -422,8 +422,10 @@ class Marsprep(Task):
         )
 
         # Split the lat/lon part and perform it here
-        self.get_lat_lon_data(bdmember_fetch_list)
-        self.get_geopotential_latlon(self.bdmember[0], bdmember_fetch_list)
+        logger.debug("bdmember_fetch_list: {}", bdmember_fetch_list)
+        if bdmember_fetch_list:
+            self.get_lat_lon_data(bdmember_fetch_list)
+            self.get_geopotential_latlon(self.bdmember[0], bdmember_fetch_list)
 
         # Get the file list to join
         for bdmember in bdmember_fetch_list:
