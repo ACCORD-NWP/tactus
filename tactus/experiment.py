@@ -99,7 +99,10 @@ class ExpFromFiles(Exp):
             if _mod == Path():
                 continue
             mod = Path(str(_mod).replace("@HOST@", host)) if host is not None else _mod
-            mod = resolve_path_relative_to_package(mod, ignore_errors=True)
+            try:
+                mod = ConfigPaths.path_from_subpath(mod)
+            except RuntimeError:
+                mod = resolve_path_relative_to_package(mod, ignore_errors=True)
             # First check if mod exists as is
             if os.path.exists(mod):
                 try:
