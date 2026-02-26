@@ -38,7 +38,7 @@
             },
             {
               "type": "string",
-              "pattern": "_set_port_from_user\\((\\d+)\\)"
+              "pattern": "_set_port_from_user\\((.*),\\)"
             },
             {
               "type": "string",
