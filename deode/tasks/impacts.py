@@ -304,7 +304,7 @@ def get_impact(config, taskname):
 
     for name, impact_model in _impact.items():
         if (
-            impact_model["active"]
+            impact_model.get("active", False)
             and name in installed_impact
             and taskname in impact_model
         ):

@@ -104,6 +104,9 @@
   output_root = "@SCRATCH@/DE_Impact/EHYPE"
   output_subpath = "@SUB_CASEDIR@"
 
+[impact.wildfire]
+  active = false
+
 [impact.wildfire.communicate]
   archive = "@SCRATCH@/DE_Impact/WildFire/@SUB_CASEDIR@"
   archive_fdb = true
