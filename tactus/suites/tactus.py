@@ -4,7 +4,11 @@ from pathlib import Path
 
 from tactus.os_utils import tactusmakedirs
 from tactus.suites.base import EcflowSuiteTask, SuiteDefinition
-from tactus.suites.tactus_suite_components import StaticDataFamily, TimeDependentFamily
+from tactus.suites.tactus_suite_components import (
+    CompilationFamily,
+    StaticDataFamily,
+    TimeDependentFamily,
+)
 
 
 class TactusSuiteDefinition(SuiteDefinition):
@@ -63,6 +67,18 @@ class TactusSuiteDefinition(SuiteDefinition):
             input_template=input_template,
             ecf_files_remotely=self.ecf_files_remotely,
         )
+
+        if config["suite_control.compile"]:
+            compilation_fam = CompilationFamily(
+                self.suite,
+                config,
+                self.task_settings,
+                input_template,
+                self.ecf_files,
+                ecf_files_remotely=self.ecf_files_remotely,
+            )
+            prep_run = compilation_fam
+
         # Update triggers for final cleaning and time dependent nodes
         if config["suite_control.do_cleaning"]:
             final_cleaning_trigger = [prep_run]

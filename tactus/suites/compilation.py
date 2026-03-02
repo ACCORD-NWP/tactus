@@ -3,7 +3,8 @@
 from pathlib import Path
 
 from tactus.os_utils import tactusmakedirs
-from tactus.suites.base import EcflowSuiteTask, SuiteDefinition
+from tactus.suites.base import SuiteDefinition
+from tactus.suites.tactus_suite_components import CompilationFamily
 
 
 class CompilationSuiteDefinition(SuiteDefinition):
@@ -36,12 +37,12 @@ class CompilationSuiteDefinition(SuiteDefinition):
         )
         input_template = input_template.as_posix()
 
-        EcflowSuiteTask(
-            "IALBundle",
+        CompilationFamily(
             self.suite,
             config,
             self.task_settings,
             self.ecf_files,
+            trigger=None,
             input_template=input_template,
             ecf_files_remotely=self.ecf_files_remotely,
         )
