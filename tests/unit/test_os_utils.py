@@ -2,11 +2,20 @@
 
 import os
 import shutil
+import sys
 import tempfile
 from pathlib import Path
 from unittest import mock
 
-from tactus.os_utils import Search, ping, strip_off_mount_path, tactusmakedirs
+import pytest
+
+from tactus.os_utils import (
+    Search,
+    ping,
+    resolve_path_relative_to_package,
+    strip_off_mount_path,
+    tactusmakedirs,
+)
 
 
 class TestSearch:
@@ -213,3 +222,97 @@ class TestStripOffMountPath:
         expected_result = Path(f"/perm/{mock_user}/foo/bar")
 
         assert strip_off_mount_path(test_path) == expected_result
+
+
+class TestResolvePathRelativeToPackage:
+    """Test the resolve_path_relative_to_package function."""
+
+    def test_existing_path_returned_directly(self, tmp_path):
+        """A path that already exists on disk is returned as-is."""
+        f = tmp_path / "file.txt"
+        f.write_text("content")
+        assert resolve_path_relative_to_package(f) == f
+
+    def test_resolved_under_sys_path_entry(self, tmp_path):
+        """Path resolved to an existing file found under a different sys.path entry."""
+        real_base = tmp_path / "real_base"
+        (real_base / "pkg" / "data").mkdir(parents=True)
+        target = real_base / "pkg" / "data" / "file.txt"
+        target.write_text("content")
+
+        fake_base = tmp_path / "fake_base"
+        fake_path = fake_base / "pkg" / "data" / "file.txt"
+
+        with mock.patch.object(sys, "path", [str(fake_base), str(real_base)]):
+            result = resolve_path_relative_to_package(fake_path)
+
+        assert result == target
+
+    def test_not_found_raises_file_not_found(self, tmp_path):
+        """FileNotFoundError when the file is not found under any sys.path entry."""
+        fake_base = tmp_path / "fake_base"
+        real_base = tmp_path / "real_base"
+        real_base.mkdir()
+        fake_path = fake_base / "pkg" / "missing.txt"
+
+        with mock.patch.object(
+            sys, "path", [str(fake_base), str(real_base)]
+        ), pytest.raises(FileNotFoundError):
+            resolve_path_relative_to_package(fake_path)
+
+    def test_not_found_ignore_errors_returns_path(self, tmp_path):
+        """Returns the resolved path unchanged when not found and ignore_errors=True."""
+        fake_base = tmp_path / "fake_base"
+        fake_path = fake_base / "pkg" / "missing.txt"
+
+        with mock.patch.object(sys, "path", [str(fake_base)]):
+            result = resolve_path_relative_to_package(fake_path, ignore_errors=True)
+
+        assert result == fake_path.resolve()
+
+    def test_multiple_candidates_raises_value_error(self, tmp_path):
+        """ValueError when the relative path resolves under more than one sys.path entry."""
+        fake_base = tmp_path / "fake_base"
+        fake_path = fake_base / "pkg" / "data" / "file.txt"
+
+        for base_name in ("real_base_a", "real_base_b"):
+            base = tmp_path / base_name
+            (base / "pkg" / "data").mkdir(parents=True)
+            (base / "pkg" / "data" / "file.txt").write_text(base_name)
+
+        with mock.patch.object(
+            sys,
+            "path",
+            [
+                str(fake_base),
+                str(tmp_path / "real_base_a"),
+                str(tmp_path / "real_base_b"),
+            ],
+        ), pytest.raises(ValueError, match="Ambiguous path resolution for"):
+            resolve_path_relative_to_package(fake_path)
+
+    def test_no_matching_sys_path_prefix_raises_file_not_found(self):
+        """FileNotFoundError when no sys.path entry is a prefix of the given path."""
+        path = Path("/totally/nonexistent/path/file.txt")
+        with mock.patch.object(sys, "path", ["/some/unrelated/path"]), pytest.raises(
+            FileNotFoundError
+        ):
+            resolve_path_relative_to_package(path)
+
+    def test_no_matching_sys_path_prefix_ignore_errors(self):
+        """Returns the resolved path unchanged when no prefix matches and ignore_errors=True."""
+        path = Path("/totally/nonexistent/path/file.txt")
+        with mock.patch.object(sys, "path", ["/some/unrelated/path"]):
+            result = resolve_path_relative_to_package(path, ignore_errors=True)
+
+        assert result == path.resolve()
+
+    def test_empty_sys_path_entries_are_skipped(self, tmp_path):
+        """Empty strings in sys.path are safely skipped."""
+        fake_base = tmp_path / "fake_base"
+        fake_path = fake_base / "file.txt"
+
+        with mock.patch.object(sys, "path", ["", str(fake_base), ""]), pytest.raises(
+            FileNotFoundError
+        ):
+            resolve_path_relative_to_package(fake_path)

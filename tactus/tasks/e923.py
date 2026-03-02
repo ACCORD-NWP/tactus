@@ -4,7 +4,7 @@ import glob
 import json
 import os
 import shutil
-from typing import Dict
+from typing import List, Optional
 
 from tactus.config_parser import ConfigPaths
 
@@ -36,6 +36,14 @@ class E923(Task):
 
         self.nlgen = NamelistGenerator(self.config, "master")
 
+        input_definition = ConfigPaths.path_from_subpath(
+            self.platform.get_system_value("e923_input_definition")
+        )
+
+        logger.info("Read input data spec from: {}", input_definition)
+        with open(input_definition, "r", encoding="utf-8") as f:
+            self.input_data = json.load(f)
+
     def myexec(self, cmd, i):
         """Execute binary task.
 
@@ -65,18 +73,6 @@ class E923(Task):
             except FileNotFoundError:  # noqa: PERF203
                 logger.warning("Could not remove file '{}'.", x, exc_info=True)
 
-    def print_part(self, part, month=None):
-        """Run the constant part of e923.
-
-        Args:
-            part: which step
-            month: month
-        """
-        if month is None:
-            logger.info("Executing PART {}", part)
-        else:
-            logger.info("Executing PART {}, month {}", part, month)
-
     def constant_part(self, constant_file):
         """Run the constant part of e923.
 
@@ -85,68 +81,26 @@ class E923(Task):
         """
         logger.info("Create: {}", constant_file)
 
-        # RTTM input
-        for ifile in ["MCICA", "RADSRTM"]:
-            self.fmanager.input(f"@RRTM_DIR@/{ifile}", ifile)
+        # RRTM input
+        self.link_data_files(label="rrtm")
 
         # PGD input
-
         self.fmanager.input(f"{self.climdir}/{self.pgd_prel}", "Neworog")
         self.fmanager.input(f"{self.climdir}/{self.pgd_prel}", "Newsuborog")
 
-        # Part 0
-        i = 0
-        topo_files = [
-            "Water_Percentage",
-            "Oro_Mean",
-            "Sigma",
-            "Nb_Peaks",
-            "Urbanisation",
-            "Dh_over_Dx_Dh_over_Dy",
-            "Dh_over_Dx_square",
-            "Dh_over_Dy_square",
-            "Hmax-HxH-Hmin_ov4",
-        ]
-        for fname in topo_files:
-            self.fmanager.input(f"@E923_DATA@/GTOPT030/{fname}", fname)
+        for part_nr in [0, 1, 2]:
+            if part_nr != 1:
+                # Part 1 reuses files from part 0
+                remove_link_files = self.link_data_files(label=part_nr)
 
-        self.nlgen.generate_namelist(f"e923_part_{i}", "fort.4")
-        shutil.copy("fort.4", "fort.4_0")
-        self.print_part(0)
-        self.myexec(self.master, 0)
+            self.execute_part(part_nr)
 
-        # Cleanup
-        self.remove_links(["Neworog"])
-        os.rename("Const.Clim", "Neworog")
-
-        # Part 1
-        i = 1
-        self.nlgen.generate_namelist(f"e923_part_{i}", "fort.4")
-        shutil.copy("fort.4", "fort.4_1")
-        self.print_part(1)
-        self.myexec(self.master, 1)
-        self.remove_links(topo_files)
-
-        # Part 2
-        i = 2
-        self.nlgen.generate_namelist(f"e923_part_{i}", "fort.4")
-        shutil.copy("fort.4", f"fort.4_{i}")
-        ifiles = [
-            "itp_GL",
-            "alb_GL",
-            "emi_GL",
-            "dps_GL",
-            "arg_GL",
-            "sab_GL",
-            "vgx_GL",
-            "dpr_GL",
-        ]
-        for fname in ifiles:
-            self.fmanager.input(f"@E923_DATA@/SURFACE_G/{fname}", fname)
-
-        self.print_part(2)
-        self.myexec(self.master, 2)
-        self.remove_links(ifiles)
+            # Cleanup
+            if part_nr == 0:
+                self.remove_links(["Neworog"])
+                os.rename("Const.Clim", "Neworog")
+            elif len(remove_link_files) > 0:
+                self.remove_links(remove_link_files)
 
         # Archive namelists and NODE files
         self.archive_logs(glob.glob("NODE.*"), target=self.climdir)
@@ -164,120 +118,114 @@ class E923(Task):
         if not os.path.exists("Const.Clim"):
             self.fmanager.input(constant_file, "Const.Clim", provider_id="copy")
 
-        # Preload files for different parts
-        part9_files: Dict[str, str | Dict[str, str]] = self.input_data.pop("part9")
-
-        for ifile in ["MCICA", "RADSRTM"]:
-            self.fmanager.input(f"@RRTM_DIR@/{ifile}", ifile)
-
         # Part 3 expects 12 input files, silly...
-        i = 3
+        part_nr = 3
         for mm in range(1, 13):
             shutil.copy(constant_file, f"Const.Clim.{mm:02d}")
 
-        for ifile in ["N108_GL"]:
-            self.fmanager.input(f"@E923_DATA@/N108/{ifile}", ifile)
+        # RRTM input
+        self.link_data_files(label="rrtm")
+        self.link_data_files(label=part_nr)
+        self.execute_part(part_nr)
 
-        self.nlgen.generate_namelist(f"e923_part_{i}", "fort.4")
-        shutil.copy("fort.4", f"fort.4_{i}")
-        self.print_part(i)
-        self.myexec(self.master, i)
-
-        for ifile in ["z0v_GL", "alv_GL", "rsm_GL"]:
-            self.fmanager.input(f"@E923_DATA@/SURFACE_G/{ifile}", ifile)
-
-        for ifile in [
-            "msk_HR",
-            "itp_HR",
-            "dpr_HR",
-            "rsm_HR",
-            "vgx_HR",
-            "alv_HR",
-            "z0v_HR",
-        ]:
-            self.fmanager.input(f"@E923_DATA@/SURFACE_L/{ifile}", ifile)
-
-        for ifile in ["rel_GL.Z"]:
-            self.fmanager.input(
-                f"@E923_DATA@/CLIM_G/v2/{ifile}", ifile, provider_id="copy"
-            )
-        os.system("gunzip rel_GL.Z")  # noqa
+        # Link/copy the constant file groups
+        for group in ["constant", "constant_copy"]:
+            self.link_data_files(label=group)
 
         for mm in self.months:
             os.rename(f"Const.Clim.{mm}", "Const.Clim")
 
-            # PART 4
-            files = []
-            for vegtype in ["veg", "lai"]:
-                source = f"@E923_DATA@/SURFACE_G/{vegtype}_{mm}_GL"
-                target = f"{vegtype}_GL"
-                files.append(target)
-                self.fmanager.input(source, target)
-
-            self.nlgen.generate_namelist("e923_part_4", "fort.4")
-            shutil.copy("fort.4", "fort.4_4")
-            self.print_part(4, mm)
-            self.myexec(self.master, 4)
-            self.remove_links(files)
-
-            if 5 in self.optional_sections:
-                # PART 5
-                files = []
-                for vegtype in ["veg", "lai"]:
-                    source = f"@E923_DATA@/SURFACE_L/{vegtype}_{mm}_HR"
-                    target = f"{vegtype}_HR"
-                    files.append(target)
-                    self.fmanager.input(source, target)
-
-                self.nlgen.generate_namelist("e923_part_5", "fort.4")
-                shutil.copy("fort.4", "fort.4_5")
-                self.print_part(5, mm)
-                self.myexec(self.master, 5)
-                self.remove_links(files)
-
-            if 6 in self.optional_sections:
-                # PART 6
-                indata = ["tpl", "wpl", "snl"]
-                for x in indata:
-                    target = f"{x}_GL.Z"
-                    source = f"@E923_DATA@/CLIM_G/v2/{x}_{mm}_GL.Z"
-                    self.fmanager.input(source, target, provider_id="copy")
-
-                for x in indata:
-                    os.system(f"gunzip -f {x}_GL.Z")  # noqa
-
-                self.fmanager.input("tpl_GL", "tsl_GL", provider_id="copy")
-                self.fmanager.input("wpl_GL", "wsl_GL", provider_id="copy")
-
-                self.nlgen.generate_namelist("e923_part_6", "fort.4")
-                shutil.copy("fort.4", "fort.4_6")
-                self.print_part(6, mm)
-                self.myexec(self.master, 6)
-
-            # PART 8
-            self.fmanager.input(f"@E923_DATA@/abc_O3/abc_quadra_{mm}", "abc_coef")
-            self.nlgen.generate_namelist("e923_part_8", "fort.4")
-            shutil.copy("fort.4", "fort.4_8")
-            self.print_part(8, mm)
-            self.myexec(self.master, 8)
-
-            # PART 9
-            path9 = part9_files["path"]
-            logger.info("*** part9_files: {}", part9_files)
-            for dst, src in part9_files["files"].items():
-                src_local = src.replace("@MM@", mm)
-                self.fmanager.input(
-                    f"{path9}/{src_local}",
-                    dst,
+            for part_nr in [4, *list(set(self.optional_sections) & {5, 6}), 8, 9]:
+                remove_link_files = self.link_data_files(
+                    label=part_nr,
+                    month=mm,
+                    gunzip_flags="-f",
                 )
+                self.execute_part(part_nr, mm)
 
-            self.nlgen.generate_namelist("e923_part_9", "fort.4")
-            shutil.copy("fort.4", "fort.4_9")
-            self.print_part(9, mm)
-            self.myexec(self.master, 9)
+                if len(remove_link_files) > 0:
+                    self.remove_links(remove_link_files)
 
             # Finished. Archive output
             self.fmanager.output("Const.Clim", f"Const.Clim.{mm}")
+
+    def execute_part(self, part_nr: int, month: Optional[int] = None):
+        """Generates namelist for E923 part and execute binary.
+
+        Args:
+            part_nr: the number of the E923 part to execute
+            month: (optional) month number
+        """
+        self.nlgen.generate_namelist(f"e923_part_{part_nr}", "fort.4")
+        shutil.copy("fort.4", f"fort.4_{part_nr}")
+
+        if month is None:
+            logger.info("Executing PART {}", part_nr)
+        else:
+            logger.info("Executing PART {}, month {}", part_nr, month)
+
+        self.myexec(self.master, part_nr)
+
+    def link_data_files(
+        self,
+        label: int | str,
+        month: Optional[int] = None,
+        gunzip_flags: Optional[str] = "",
+    ) -> List[str]:
+        """Link/copy input files for E923 part.
+
+        Args:
+            label: dataset label in input_data (or integer to get related part)
+            month: month number
+            gunzip_flags: Flags used to unzip comppresed files (*.Z-files)
+
+        Returns:
+            List of files where links can be removed for cleanup
+        """
+        if isinstance(label, int):
+            label = f"part{label}"
+
+        data = self.input_data.get(label)
+
+        logger.info("*** {}: {}", label, data)
+
+        path = data.get("path", "")
+        sep = "/" if len(path) > 0 else ""
+        remove_link_files = []
+
+        remove_links = data.get("remove_links", False)
+        provider_id = data.get("provider_id", "symlink")
+        params = data.get("param", [])
+
+        apply_param = len(params) > 0
+        if not apply_param:
+            # Default use one unused param to handle non-parameterized parts
+            params = [None]
+
+        files = data["files"]
+        if isinstance(files, list):
+            files = dict(zip(files, files))
+
+        for x in params:
+            for dst, src in files.items():
+                src_local = src.replace("@PARAM@", x) if apply_param else src
+                dst_local = dst.replace("@PARAM@", x) if apply_param else dst
+
+                if month is not None:
+                    src_local = src_local.replace("@MM@", month)
+
+                self.fmanager.input(
+                    f"{path}{sep}{src_local}", dst_local, provider_id=provider_id
+                )
+
+                # Decompress compressed files
+                if dst_local.endswith(".Z"):
+                    os.system(f"gunzip {gunzip_flags} {dst_local}")  # noqa
+
+                if remove_links:
+                    remove_link_files.append(dst_local)
+
+        return remove_link_files
 
 
 class PgdUpdate(Task):
@@ -398,16 +346,6 @@ class E923Monthly(E923):
         Define run sequence.
 
         """
-        self.input_definition = "e923_input_definition"
-        # Fetch input data
-        input_definition = ConfigPaths.path_from_subpath(
-            self.platform.get_system_value(self.input_definition)
-        )
-
-        logger.info("Read input data spec from: {}", input_definition)
-        with open(input_definition, "r", encoding="utf-8") as f:
-            self.input_data = json.load(f)
-
         # Run the monthly part
         self.monthly_part(self.constant_file)
 

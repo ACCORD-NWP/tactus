@@ -171,12 +171,13 @@ class ConfigPaths:
         for searchpath in searchpaths:
             results = list(Path(searchpath).rglob(pattern))
             if len(results) > 1:
-                logger.error("Multiple matches found for subpath: {}", subpath)
-                logger.error("Results: {}", results)
-                raise RuntimeError("Multiple matches")
+                logger.warning("Multiple matches found for subpath: {}", subpath)
+                logger.warning("Selecting the first result: {}", results[0])
 
-            if len(results) == 1:
-                return results[0]
+            if len(results) == 0:
+                continue
+
+            return results[0]
 
         raise RuntimeError(f"Could not find {subpath}")
 

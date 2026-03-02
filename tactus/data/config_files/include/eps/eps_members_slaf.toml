@@ -23,6 +23,9 @@
 [eps.member_settings.system]
   wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
 
+[submission.task_exceptions.Addpert.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = "0"
+
 [suite_control]
   member_specific_mars_prep = true
   member_specific_static_data = false

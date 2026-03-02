@@ -959,7 +959,8 @@
             "flooding",
             "heatwave",
             "nwp",
-            "storm"
+            "storm",
+            "wildfire"
           ]
         },
 	"famodel": {

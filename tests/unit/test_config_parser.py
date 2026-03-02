@@ -577,8 +577,8 @@ class TestConfigPaths:
             ConfigParserDefaults.DATA_DIRECTORY,
         ]
 
-        with pytest.raises(RuntimeError, match="Multiple matches"):
-            ConfigPaths.path_from_subpath("config_files")
+        path = ConfigPaths.path_from_subpath("config_files")
+        assert path == test_path1
 
 
 class TestConfigExpand:

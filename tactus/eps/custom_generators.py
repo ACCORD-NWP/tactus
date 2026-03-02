@@ -67,12 +67,7 @@ class FDBTypeGenerator(BaseGenerator[dict]):
         if len(self.members) == 1:
             yield "fc"
         for member in self.members:
-            # For now, type="cf" does not have "number" in mars namespace
-            # and thus cannot be archived to FDB enfo stream
-            # The line below is the correct one to use when type="cf"
-            # is supported in mars namespace
-            # yield "cf" if member == 0 else "pf" pylint: disable=ERA001
-            yield "pf" if member == 0 else "pf"
+            yield "cf" if member == 0 else "pf"
 
 
 class CmodelGenerator(BaseGenerator[dict]):
