@@ -637,7 +637,7 @@
         "git_branch": {
             "type": "string",
             "description": "Branch/tag",
-            "default": "CY50T2"
+            "default": "develop"
         },
         "arch": {
           "type": "string",
