@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Encode member 0 of an ensemble as "cf" (control forecast). [\#1526](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1526) (@KristianHMoller)
 
 ### Fixed
+- Do not resolve time dependent macros for `deode case -e`, [\#1491](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1491)(@uandrae)
 - Fixes for Lumi after maintenance, [\#1540](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1540)(@kastelecn)
 - Correct logics in the remove command. [\#1528](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1528) (@uandrae)
 - Restore `mode=start` functionality. [\#1339](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1339) (@BolliPalmason, @kastelecn,@uandrae)

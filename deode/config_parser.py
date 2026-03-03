@@ -377,23 +377,38 @@ class ParsedConfig(BasicConfig):
         rtn += f", json_schema={self.json_schema.dumps(style='json')})"
         return rtn
 
-    def expand_macros(self, expand_all=False):
+    def expand_macros(self, expand_all=False, protect_time=False):
         """Expand macros in config recursively.
 
         Args:
             expand_all (boolean): Flag to expand all macros
+            protect_time (boolean): Flag to control expansion of time variables
 
         Returns:
             config (ParsedConfig): Parsed configuration
         """
+        protect_keys = ["basetime", "validtime"]
         config = self.dict()
+        if protect_time:
+            time_keys = {
+                key: config["general"]["times"].pop(key)
+                for key in protect_keys
+                if key in config["general"]["times"]
+            }
+
         macros = config["macros"]
         if "case" in macros and not expand_all:
             macros["select"] = {"case": self["macros.case"]}
         config["macros"] = macros
+
         macro_platform = Platform(BasicConfig(config))
         config = macro_platform.resolve_macros(self.dict())
         config = self.copy(update=config)
+        if protect_time:
+            updates = {
+                key: value for key, value in time_keys.items() if value is not None
+            }
+            config = config.copy(update=updates)
 
         return config
 

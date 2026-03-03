@@ -359,7 +359,7 @@ def case_setup(
     if expand_config:
         deode_home = set_deode_home(config)
         exp.config = exp.config.copy(update={"platform": {"deode_home": deode_home}})
-        exp.config = exp.config.expand_macros()
+        exp.config = exp.config.expand_macros(protect_time=True)
 
     if output_file is None or ".toml" not in str(output_file):
         output_dir = output_file
