@@ -632,7 +632,7 @@
         "git_repo": {
             "type": "string",
             "description": "Git repo for IAL source",
-            "default": "https://github.com/ACCORD-NWP/IAL"
+            "default": "git@github.com:ACCORD-NWP/IAL"
         },
         "git_branch": {
             "type": "string",
@@ -644,7 +644,7 @@
           "description": "Compiler configuration",
           "default": "ecmwf/hpc2020"
         }
-      }      
+      }
     },
     "gribmodify": {
       "title": "Section for modify grib",
