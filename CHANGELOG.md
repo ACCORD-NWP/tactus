@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Harmonise namelists for all CSCs. [\#1495](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1495) (@petrasmol, @kastelecn)
 - Refactor E923 to make input data json-config driven. [\#1523](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1523) (@jacobsnoeijer)
 - Encode member 0 of an ensemble as "cf" (control forecast). [\#1526](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1526) (@KristianHMoller)
+- Add omega to fullpos output. [\#1532](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1532) (@trygveasp)
 
 ### Fixed
 - Do not resolve time dependent macros for `deode case -e`, [\#1491](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1491)(@uandrae)
