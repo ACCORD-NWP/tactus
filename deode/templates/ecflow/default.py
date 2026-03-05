@@ -119,6 +119,7 @@ def default_main(kwargs: dict):
         member = int(member)
     except (TypeError, ValueError):
         logger.debug("MEMBER is not an integer, skipping eps setup for task {}", task)
+        config = config.copy(update={"general": {"use_member_stand_alone": False}})
     else:
         # Update config based on member
         config = get_member_config(config, member=member)

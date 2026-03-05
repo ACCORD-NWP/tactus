@@ -145,6 +145,7 @@ def test_run_task_command(tmp_path):
             f"{tmp_path.as_posix()}/forecast.job",
             "-o",
             f"{tmp_path.as_posix()}/forecast.log",
+            "--create-only",
         ]
     )
 

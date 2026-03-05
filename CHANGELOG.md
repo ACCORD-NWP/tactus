@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add omega to fullpos output. [\#1532](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1532) (@trygveasp)
 
 ### Fixed
+- Make sure NPROC_IO is exported in stand alone tasks. [\#1503](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1503) (@uandrae)
 - Do not resolve time dependent macros for `deode case -e`, [\#1491](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1491)(@uandrae)
 - Fixes for Lumi after maintenance, [\#1540](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1540)(@kastelecn)
 - Correct logics in the remove command. [\#1528](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1528) (@uandrae)

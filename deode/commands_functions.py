@@ -96,31 +96,16 @@ def run_task(args: RunTaskNamespace, config: ParsedConfig):
     submission_defs = TaskSettings(config)
     sub = NoSchedulerSubmission(submission_defs)
 
-    if args.members is None:
-        sub.submit(
-            task=args.task,
-            config=config,
-            template_job=template_job,
-            task_job=task_job,
-            output=output,
-            troika=args.troika,
-        )
-        logger.info("Task {} submitted.", args.task)
-    else:
-        for member in args.members:
-            # Change suffixes to include member string
-            output_ = output.with_suffix(f".mbr{member:03d}{output.suffix}")
-            task_job_ = task_job.with_suffix(f".mbr{member:03d}{task_job.suffix}")
-            sub.submit(
-                task=args.task,
-                config=config,
-                template_job=template_job,
-                task_job=task_job_,
-                output=output_,
-                member=member,
-                troika=args.troika,
-            )
-            logger.info("Task {} submitted for member {}.", args.task, member)
+    sub.submit(
+        task=args.task,
+        config=config,
+        template_job=template_job,
+        task_job=task_job,
+        output=output,
+        troika=args.troika,
+        create_only=args.create_only,
+    )
+    logger.info("Task {} submitted.", args.task)
 
 
 def create_exp(args, config):

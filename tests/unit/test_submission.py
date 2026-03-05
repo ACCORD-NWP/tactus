@@ -78,11 +78,25 @@ class TestSubmission:
         template_job = "deode/templates/stand_alone.py"
         task_job = Path(tmp, f"{task}.job")
         output = Path(tmp, f"{task}.log")
+        task_job_create_only = Path(tmp, f"{task}_create_only.job")
+        output_create_only = Path(tmp, f"{task}_create_only.log")
 
         assert config["submission.default_submit_type"] == "pytest"
         background = TaskSettings(config)
         sub = NoSchedulerSubmission(background)
         sub.submit(task, config, template_job, task_job, output)
+        sub.submit(
+            task,
+            config,
+            template_job,
+            task_job_create_only,
+            output_create_only,
+            create_only=True,
+        )
+        assert task_job.is_file()
+        assert output.is_file()
+        assert task_job_create_only.is_file()
+        assert not output_create_only.is_file()
 
     def test_get_batch_info(self, default_config):
         arg = "#SBATCH UNITTEST"

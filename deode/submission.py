@@ -312,6 +312,9 @@ class TaskSettings(object):
             for b_setting in batch_settings.values():
                 file_handler.write(f"{b_setting}\n")
 
+            if scheduler is None:
+                nproc_io = self.get_task_settings(task, "NPROC_IO")
+                file_handler.write(f'export NPROC_IO="{nproc_io}"\n')
             if scheduler is not None and scheduler == "ecflow":
                 ecf_vars = [
                     "ECF_HOST",
@@ -411,7 +414,8 @@ class NoSchedulerSubmission:
         task_job: Path,
         output: Path,
         member: Optional[int] = None,
-        troika: str = "troika",
+        troika: Optional[str] = "troika",
+        create_only: Optional[bool] = False,
     ):
         """Submit task.
 
@@ -424,6 +428,7 @@ class NoSchedulerSubmission:
             member      (int, optional): Member number for which to submit job.
                 Defaults to None.
             troika      (str, optional): troika binary. Defaults to "troika".
+            create_only: (bool, optional): Only create the job, do not submit it.
 
         Raises:
             RuntimeError: Submission failure.
@@ -449,11 +454,12 @@ class NoSchedulerSubmission:
             member=member,
             scheduler=None,
         )
-        cmd = (
-            f"{troika} -c {troika_config} submit {self.task_settings.job_type} "
-            f"{task_job} -o {output}"
-        )
-        try:
-            subprocess.check_call(cmd.split())  # noqa S603
-        except subprocess.CalledProcessError as exc:
-            raise RuntimeError(f"Submission failed with {exc!r}") from exc
+        if not create_only:
+            cmd = (
+                f"{troika} -c {troika_config} submit {self.task_settings.job_type} "
+                f"{task_job} -o {output}"
+            )
+            try:
+                subprocess.check_call(cmd.split())  # noqa S603
+            except subprocess.CalledProcessError as exc:
+                raise RuntimeError(f"Submission failed with {exc!r}") from exc

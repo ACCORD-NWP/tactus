@@ -136,7 +136,13 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     parser_run.add_argument(
         "--troika-config", type=str, default="/opt/troika/etc/troika.yml"
     )
-    parser_run.add_argument("--members", nargs="+", type=int, default=None)
+    parser_run.add_argument(
+        "--create-only",
+        action="store_true",
+        help="Just create the job, do not submit it.",
+        required=False,
+        default=False,
+    )
     parser_run.set_defaults(run_command=run_task)
 
     ##########################################
