@@ -108,6 +108,7 @@
   archive_out = "@AQ_ARCHIVE@/@AQ_MODEL@"
   basetime = "@BASETIME@"
   forecast_range = "@FORECAST_RANGE@"
+  host = "@HOST@"
   wrk = "@AQ_WRK@/@AQ_MODEL@"
 
 [impact.aq.communicate.air_quality_general.domain]
