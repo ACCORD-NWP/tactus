@@ -45,7 +45,7 @@
   pattern = "GRIB@CNMEXP@*"
 
 [archiving.hour.ecfs.sqlite]
-  active = "suite_control.do_extractsqlite"
+  active = "@SUITE_CONTROL.DO_EXTRACTSQLITE@"
   inpath = "@SQLITE_PATH@"
   outpath = "sqlite/@MEMBER_STR@"
   pattern = "*"
@@ -63,7 +63,7 @@
   pattern = "@YYYY@@MM@@DD@_@HH@@mm@.tar.gz"
 
 [archiving.merged_sqlite.ecfs.merged_sqlite]
-  active = "suite_control.do_mergesqlite"
+  active = "@SUITE_CONTROL.DO_MERGESQLITE@"
   inpath = "@MERGED_SQLITE_PATH@"
   outpath = "merged_sqlite"
   pattern = "*"

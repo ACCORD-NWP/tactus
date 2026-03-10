@@ -305,11 +305,60 @@ def recursive_delete_keys(mapping: Dict[str, Any], keys_dict: Dict[str, bool]):
                 del mapping[key]
 
 
-def recursive_substitute(value, platform):
-    """Recursively substitute variables in a nested dictionary."""
+def recursive_substitute(value, platform, pos: Optional[List[str]] = None):
+    """Recursively substitute variables in a nested dictionary.
+
+    Substitution is mainly done on value-level, but full configuration subtrees can be
+    copied using the magic keys COPY (copies only all the values at the specified key)
+    and COPYALL (copies all the values at the specified key, nestedly).
+
+    Args:
+        value: Value to substitute macros
+        platform: The platform used to substitute values
+        pos: current path-like position in the config tree (as used for COPYALL)
+
+    Returns:
+        subsituted value
+    """
+    key_basic_copy = "COPY"
+    key_deep_copy = "COPYALL"
+
+    if pos is None:
+        pos = []
+
     if isinstance(value, dict):
+        do_basic_copy = key_basic_copy in value
+        do_deep_copy = key_deep_copy in value
+
+        if do_deep_copy or do_basic_copy:
+            key = ".".join(pos)
+            config_dict = platform.get_value(key).dict()
+
+            if do_deep_copy:
+                logger.info(f"Found .{key_deep_copy} key at {key}; deep copy data.")
+                value.pop(key_deep_copy)
+            elif do_basic_copy:
+                logger.info(f"Found .{key_basic_copy} key at {key}; copy data.")
+                value.pop(key_basic_copy)
+                config_dict = {
+                    k: v for k, v in config_dict.items() if not isinstance(v, dict)
+                }
+
+            base_value = recursive_substitute(config_dict, platform)
+
+        else:
+            base_value = {}
+
+        if base_value:
+            value = merge_dicts(base_value, value)
+
         for key, val in value.items():
-            value[key] = recursive_substitute(val, platform)
+            value[key] = recursive_substitute(val, platform, pos=[*pos, key])
     else:
+        for type_name in [tuple, list]:
+            if isinstance(value, type_name):
+                value = type_name(map(platform.substitute, value))
+
         value = platform.substitute(value)
+
     return value

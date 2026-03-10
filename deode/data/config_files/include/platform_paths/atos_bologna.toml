@@ -36,16 +36,25 @@
   topo_source = "gmted2010"
   tree_height_dir = "@CLIMDATA@/ECOCLIMAP-SG/HT"
   unix_group = "msdeode"
+  uv_cache_dir = "/perm/@USER@/.cache/uv"
   windfarm_path = "@STATIC_DATA@/WFP_input_files/"
 
 [platform.impact]
-  ehype = "/home/snh02/DE_Impact/EHYPE/forecast/pyflow/utils"
   eps_upscaling = "/perm/@USER@/DE_Impact/eps_upscaling"
 
 [platform.impact.aq]
   path = "/perm/snh02/DE_Impact/AQ/Deode-AQ-Workflow"
   poetry = "/home/snh02/.local/bin/poetry"
 
+[platform.impact.ehype]
+  path = "/home/snh02/DE_Impact/EHYPE/forecast/pyflow/utils"
+
+[platform.impact.nwp2windpower]
+  path = "/perm/@USER@/DE_Impact/nwp2windpower"
+
 [platform.impact.verification]
   path = "/hpcperm/snh02/DE_Verification/plugins/harpverify"
   poetry = "/home/snh02/.local/bin/poetry"
+
+[platform.impact.wildfire]
+  path = "/perm/@USER@/DE_Impact/wildfire"

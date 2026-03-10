@@ -9,6 +9,8 @@ import sys
 from typing import Any, Union
 
 import geohash
+import tomlkit
+from isodate import parse_duration
 from troika.connections.ssh import SSHConnection
 
 from .csc_actions import SelectTstep
@@ -306,6 +308,10 @@ class Platform:
         if micro_key == pattern:
             # No pattern substitution, simply use the value
             res = value
+
+            # Unwrap tomlkit items
+            if isinstance(res, tomlkit.items.Item):
+                res = res.unwrap()
         else:
             if not isinstance(value, str):
                 logger.debug(
@@ -385,6 +391,36 @@ class Platform:
 
         return pattern
 
+    def substitute_duration(self, pattern, duration, prefix=""):
+        """Substitute duration related properties.
+
+        Args:
+            pattern (str): _description_
+            duration(duration object): duration to treat
+            prefix (str): Add before key
+
+        Returns:
+            str: Substituted string.
+
+        """
+        total_seconds = duration.total_seconds()
+
+        substitution_map = {
+            "IN_DAYS": int(total_seconds // (24 * 60 * 60)),
+            "IN_HOURS": int(total_seconds // (60 * 60)),
+            "IN_MINUTES": int(total_seconds // 60),
+            "IN_SECONDS": total_seconds,
+        }
+        for key, val in substitution_map.items():
+            _key = prefix + key
+            pattern = self.sub_value(pattern, _key, val)
+
+            # If this is no longer a string we've done the substitution
+            if not isinstance(pattern, str):
+                return pattern
+
+        return pattern
+
     def substitute_tstep(self, pattern):
         """Substitute tstep.
 
@@ -450,6 +486,22 @@ class Platform:
             RuntimeError: In case of erroneous macro
 
         """
+        # Unwrap tomlkit items
+        if isinstance(pattern, tomlkit.items.Item):
+            pattern = pattern.unwrap()
+
+        if isinstance(pattern, (list, tuple)):
+            return [
+                self.substitute(
+                    p,
+                    basetime=basetime,
+                    validtime=validtime,
+                    bd_index=bd_index,
+                    keyval=keyval,
+                )
+                for p in pattern
+            ]
+
         if not isinstance(pattern, str):
             return pattern
 
@@ -485,6 +537,10 @@ class Platform:
                 logger.debug("before replace macro={} pattern={}", sub_pattern, pattern)
                 pattern = self.sub_value(pattern, sub_pattern, val)
                 logger.debug("after replace macro={} pattern={}", sub_pattern, pattern)
+
+        # If this is no longer a string we've done the substitution
+        if not isinstance(pattern, str) or "@" not in pattern:
+            return pattern
 
         # LBC number handling
         with contextlib.suppress(KeyError):
@@ -532,10 +588,12 @@ class Platform:
             pattern = self.sub_value(pattern, "LM", f"{lm:02d}")
             pattern = self.sub_value(pattern, "LS", f"{ls:02d}")
 
-            tstep = self.config["domain.tstep"]
+            tstep = self.config.get("domain.tstep", None)
             tstep = self.substitute_tstep(tstep)
+
             try:
-                tstep = int(tstep)
+                if tstep is not None:
+                    tstep = int(tstep)
             except ValueError:
                 tstep = self.evaluate(tstep, SelectTstep)
 
@@ -551,6 +609,13 @@ class Platform:
             end = self.config.get("general.times.end", None)
             if end is not None:
                 pattern = self.substitute_datetime(pattern, as_datetime(end), "_END")
+
+        forecast_range = self.config.get("general.times.forecast_range", None)
+        if isinstance(forecast_range, str):
+            forecast_range = parse_duration(forecast_range)
+
+        if forecast_range is not None:
+            pattern = self.substitute_duration(pattern, forecast_range, "FORECAST_RANGE_")
 
         logger.debug("Return pattern={}", pattern)
         return pattern

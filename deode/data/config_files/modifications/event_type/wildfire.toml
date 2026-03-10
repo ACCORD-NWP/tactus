@@ -4,6 +4,8 @@
 [impact.wildfire]
   active = true
   config_name = "@ARCHIVE@/wildfire.toml"
+  plugin_dir_key = "repo_home"
+  task = "StartImpactModels"
   trigger = "@case@"
 
 [impact.wildfire.communicate]
@@ -11,9 +13,7 @@
   archive_fdb = false
   archive_root = "@SCRATCH@/DE_Impact/WildFire/@CASE@/archive"
   basetime = "@BASETIME@"
-  branch = "main"
   data_path = "@archive@"
-  deode_config_file = "@CONFIG@"
   ecfs_archive = "@WILDFIRE_ECFS_ARCHIVE_ROOT@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   ecfs_archive_root = "ec:/@USER@/DE_Impact/WildFire/@CASE@/archive"
   file_template = "GRIBPF*h00m00s"
@@ -21,9 +21,6 @@
   name = "@CASE@"
   nwp_model = "@CSC@"
   output_freq = "@FULLPOS_OUTPUT_FREQ@"
-  remote_url = "git@github.com:destination-earth-digital-twins/WP12-FT.git"
-  repo_home = "@HOME@/DE_Impact/WildFire"
-  repo_root = "@HOME@/DE_Impact/WildFire"
   unix_group = "@UNIX_GROUP@"
   workdir = "@SCRATCH@/DE_Impact/WildFire/@CASE@/@YYYY@@MM@@DD@_@HH@@mm@"
 
@@ -38,8 +35,10 @@
   TROIKA = "troika"
   TROIKA_CONFIG = "@ECF_DEODE_HOME@/data/config_files/troika.yml"
 
-[impact.wildfire.StartImpactModels]
-  arguments = ""
+[impact.wildfire.git]
+  active = true
+  branch = "main"
+  remote_url = "git@github.com:destination-earth-digital-twins/WP12-FT.git"
 
 [macros.select.wildfire]
   gen_macros = [
@@ -47,6 +46,3 @@
     {wildfire_archive_root = "impact.wildfire.communicate.archive_root"},
     {wildfire_ecfs_archive_root = "impact.wildfire.communicate.ecfs_archive_root"},
   ]
-
-[platform.impact]
-  wildfire = "/home/prt2342/Deode-WildFire/wildfires_workflow"

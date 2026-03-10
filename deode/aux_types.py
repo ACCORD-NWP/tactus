@@ -98,6 +98,13 @@ class BaseMapping(Mapping):
             new.data = modify_mappings(obj=self.dict(), operator=update)
         return new
 
+    def update(self, key: str, value):
+        """Return a copy of the instance, with updated key=value according to argument."""
+        key_tree = key.split(".")
+        key_tree[-1] = {key_tree[-1]: value}
+        update = reduce(lambda x, y: {y: x}, reversed(key_tree))
+        return self.copy(update=update)
+
     def dumps(
         self,
         section="",

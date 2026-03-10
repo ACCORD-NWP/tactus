@@ -1,14 +1,18 @@
 [impact.eps_upscaling]
   active = true
+  arguments = "-p @IMPACT.EPS_UPSCALING.CONFIG_NAME@ -f PT@FORECAST_RANGE_IN_HOURS@H"
   config_name = "@EPS_UPSCALING_PATH@/@ARCHIVE_TIMESTAMP@/eps_upscaling_communicate.toml"
   path = "@EPS_UPSCALING_PATH@/@ARCHIVE_TIMESTAMP@"
+  plugin_dir_key = "run_dir"
+  runner = "export UV_CACHE_DIR=@PLATFORM.UV_CACHE_DIR@; ./deploy_suite.sh"
+  task = "StartImpactModels"
 
 [impact.eps_upscaling.communicate]
-  branch = "main"
+  branch = "@IMPACT.EPS_UPSCALING.GIT.BRANCH@"
   members = "@MEMBERS@"
   output_freq = "@FULLPOS_OUTPUT_FREQ@"
-  remote_url = "git@github.com:destination-earth-digital-twins/Deode-EPS-Upscaling.git"
-  uv_cache_dir = "/perm/@USER@/.cache/uv"
+  remote_url = "@IMPACT.EPS_UPSCALING.GIT.REMOTE_URL@"
+  uv_cache_dir = "@PLATFORM.UV_CACHE_DIR@"
 
 [impact.eps_upscaling.communicate.archiving.eps_upscaling.ecfs.eps_upscaling]
   active = true
@@ -31,7 +35,11 @@
 [impact.eps_upscaling.communicate.macros.select.eps_upscaling]
   gen_macros = [{eps_upscaling_path = "platform.impact.eps_upscaling"}]
 
-[impact.eps_upscaling.StartImpactModels]
+[impact.eps_upscaling.git]
+  active = true
+  branch = "main"
+  remote_url = "git@github.com:destination-earth-digital-twins/Deode-EPS-Upscaling.git"
+  remove_dir = false
 
 [macros.select.eps_upscaling]
   gen_macros = [{eps_upscaling_path = "platform.impact.eps_upscaling"}]

@@ -13,7 +13,9 @@ import fastjsonschema
 import jsonref
 import tomli
 import tomlkit
+import xmltodict
 import yaml
+from dicttoxml import dicttoxml as dtx
 from fastjsonschema import JsonSchemaValueException
 from json_schema_for_humans.generate import (
     GenerationConfiguration,
@@ -204,12 +206,30 @@ class BasicConfig(BaseMapping):
 
         Args:
             config_file (str): Path to config file
+
+        Raises:
+            TypeError: when unknown filetype as config_file is given.
         """
-        with open(config_file, mode="w", encoding="utf8") as fh:
-            tomlkit.dump(self.dict(), fh)
-        formatted_toml = FormattedToml.from_file(path=config_file)
-        with open(config_file, mode="w", encoding="utf8") as f:
-            f.write(str(formatted_toml))
+        suffix = Path(config_file).suffix
+
+        if suffix == ".toml":
+            with open(config_file, mode="w", encoding="utf8") as fh:
+                tomlkit.dump(self.dict(), fh)
+            formatted_toml = FormattedToml.from_file(path=config_file)
+            with open(config_file, mode="w", encoding="utf8") as f:
+                f.write(str(formatted_toml))
+        elif suffix == ".xml":
+            with open(config_file, mode="wb") as fh:
+                fh.write(dtx(self.dict(), attr_type=False))
+        elif suffix in [".yml", ".yaml"]:
+            with open(config_file, mode="wb") as fh:
+                yaml.dump(self.dict(), fh, encoding="utf-8", default_flow_style=False)
+        elif suffix == ".json":
+            json_object = json.dumps(self.dict(), indent=4)
+            with open(config_file, "w", encoding="utf-8") as fh:
+                fh.write(json_object)
+        else:
+            raise TypeError(f"Unknown filetype: {config_file}")
 
     @BaseMapping.data.setter
     def data(self, new):
@@ -438,6 +458,9 @@ def _read_raw_config_file(config_path: Path):
 
         if config_path.suffix == ".json":
             return json.load(config_file)
+
+        if config_path.suffix == ".xml":
+            return xmltodict.parse(config_file.read())
 
     raise NotImplementedError(f'Unsupported config file format "{config_path.suffix}"')
 

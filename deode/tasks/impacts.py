@@ -1,18 +1,12 @@
 """Impact model classes."""
 
 import contextlib
-import json
 import os
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
-import tomlkit
-import xmltodict
-import yaml
-from dicttoxml import dicttoxml as dtx
-from isodate import parse_duration
+from git import GitCommandError, Repo
 
 from deode.config_parser import BasicConfig
 from deode.datetime_utils import as_datetime, as_timedelta
@@ -27,172 +21,206 @@ from deode.toolbox import Platform
 
 
 @dataclass()
-class ImpactModel:
+class BaseImpactModel:
     """Abstract class for impact models."""
 
     name: str
-    config: BasicConfig
+    config: dict
     platform: Platform
-    filename: Optional[Path] = None
 
     def __new__(cls, name: str, *_args, **_kwargs):
         """Create a new instance of a subclass based on the field_type."""
-        for subclass in ImpactModel.__subclasses__():
+        for subclass in BaseImpactModel.__subclasses__():
             if subclass.name == name:
-                instance = super(ImpactModel, subclass).__new__(subclass)
+                instance = super(BaseImpactModel, subclass).__new__(subclass)
                 return instance
-        raise ValueError(f"No valid ImpactModel subclass found for name: {name}")
+        raise ValueError(f"No valid BaseImpactModel subclass found for name: {name}")
 
     def run(self):
-        """Starts a plugin suite."""
-        poetry = self.platform.substitute(self.config["poetry"])
-        path = self.platform.substitute(self.config["path"])
-        args = self.platform.substitute(self.config["arguments"])
-        logger.info("Change directory to: {}", path)
-        os.chdir(path)
-        if isinstance(args, str):
-            args = [args]
-        for arg in args:
-            cmd = self.platform.substitute(f"{poetry} run {arg}")
-            logger.info(cmd)
-            BatchJob(os.environ, wrapper="").run(cmd)
-
-    def load(self) -> dict:
-        """Load the config from the file into memory.
-
-        Raises:
-            TypeError: Unknown input file type
+        """Starts a plugin suite.
 
         Returns:
-            dict: The loaded config.
-        """
-        if self.filename.suffix == ".toml":
-            return tomlkit.loads(self.filename.read_text())
-        if self.filename.suffix == ".xml":
-            return xmltodict.parse(self.filename.read_text())
-        if self.filename.suffix in [".yml", ".yaml"]:
-            return yaml.safe_load(self.filename.read_text())
-        if self.filename.suffix == ".json":
-            return json.loads(self.filename.read_text())
-        raise TypeError(f"Unknown input file type: {self.filename.suffix}")
-
-    def dump(self, to_dump):
-        """Write config to selected format.
-
-        Args:
-            to_dump (dict) : config dict to write
+            path where impact model can run
 
         Raises:
-            TypeError: Unknown output file type
+            KeyError: Didn't found a handle to run
         """
-        logger.info(" Dump config to: {}", self.filename)
-        if self.filename.suffix == ".toml":
-            with open(self.filename, mode="w", encoding="utf-8") as f_h:
-                f_h.write(tomlkit.dumps(to_dump))
-        elif self.filename.suffix == ".xml":
-            with open(self.filename, mode="wb") as f_h:
-                f_h.write(dtx(to_dump, attr_type=False))
-        elif self.filename.suffix in [".yml", ".yaml"]:
-            with open(self.filename, mode="wb") as f_h:
-                yaml.dump(to_dump, f_h, encoding="utf-8", default_flow_style=False)
-        elif self.filename.suffix == ".json":
-            json_object = json.dumps(to_dump, indent=4)
-            with open(self.filename, "w", encoding="utf-8") as f_h:
-                f_h.write(json_object)
+        # Fetch path from config
+        if self.config.get("git", {}).get("active", False):
+            path = self.process_git(self.config["git"])
         else:
-            raise TypeError(f"Unknown filetype: {self.filename}")
+            path = self.platform.substitute(self.config.get("path"))
+
+        if path:
+            logger.info("Change directory to: {}", path)
+            os.chdir(path)
+        else:
+            logger.debug("Path is empty or none; so don't change directory.")
+
+        # Get the runner to run this plugin
+        poetry = self.config.get("poetry")
+        runner = f"{poetry} run" if poetry is not None else self.config.get("runner")
+
+        args = self.config.get("arguments", [])
+        if isinstance(args, str):
+            args = [args] if args else []
+
+        if runner is not None:
+            logger.info("Run argument(s) via: {}", runner)
+            for arg in args:
+                cmd = self.platform.substitute(f"{runner} {arg}")
+                BatchJob(os.environ, wrapper="").run(cmd)
+        elif len(args) > 0:
+            raise KeyError(f"Didn't found a runner to run {self.name}")
+        # else: just return the path, let the impact model implement the actual run
+
+        return path
 
     def execute(self):
         """Prepares and runs the impact model commands."""
         logger.info("Impact model:{} ", str(self))
-        self.filename = Path(self.platform.substitute(self.config["config_name"]))
 
         # Recursively substitute variables in communicate config
         for key, value in self.config["communicate"].items():
             if isinstance(value, dict):
                 self.config["communicate"][key] = recursive_substitute(
-                    value, self.platform
+                    value, self.platform, pos=[key]
                 )
             else:
                 self.config["communicate"][key] = self.platform.substitute(value)
 
         # Write the config file
-        self.filename.parent.mkdir(exist_ok=True, parents=True)
         com = self.platform.resolve_macros(self.config["communicate"])
-        logger.info(" communication keys: {}", com)
-        # Write the config file
-        if len(com) > 0:
-            self.dump(com)
+        config_name = self.platform.substitute(self.config.get("config_name"))
+
+        if config_name is not None:
+            logger.info(" communication keys: {}", com)
+            # Write the config file
+            if len(com) > 0:
+                deodemakedirs(
+                    Path(config_name).parent,
+                    unixgroup=self.platform.get_value("platform.unix_group"),
+                    exist_ok=True,
+                )
+                BasicConfig(com).save_as(config_name)
+        elif len(com) > 0:
+            logger.warning("Found keys to communicate but config_name not set.")
+
         # Execute the impact model specific command
         self.run()
+
+    def process_git(self, git_config):
+        """Process git-configuration block where plugin should be located.
+
+        Args:
+            git_config: git config section for impact model
+
+        Returns:
+            plugin_dir: Path where plugin is located
+        """
+        logger.info(f"Git source is active for {self.name}")
+        plugin_dir = self.platform.substitute(git_config.get("dir"))
+        do_git_checkout = plugin_dir is None or not os.path.isdir(plugin_dir)
+        unixgroup = self.platform.get_value("platform.unix_group")
+
+        if do_git_checkout:
+            logger.info("No pre-stored git.dir found; checkout new repository...")
+
+            # Checkout new git repository
+            path = self.platform.substitute(self.config["path"])
+
+            # Create already path if it doesn't exist
+            deodemakedirs(path, unixgroup=unixgroup)
+
+            if plugin_dir is None:
+                plugin_dir = tempfile.NamedTemporaryFile(
+                    prefix=f"{self.name}_", dir=path, delete=True
+                ).name
+            deodemakedirs(plugin_dir, unixgroup=unixgroup)
+
+            # Check-out repo
+            remote_url = git_config["remote_url"]
+            branch = git_config["branch"]
+            logger.info(f"Clone {branch} from {remote_url} in {plugin_dir}")
+            try:
+                Repo.clone_from(remote_url, plugin_dir, branch=branch)
+            except GitCommandError as ex:
+                logger.info(
+                    f"Catched exception {ex} when checking out repo; "
+                    "retry using plain git command."
+                )
+                git_cmd = f"""
+                git clone --single-branch --branch {branch} {remote_url} {plugin_dir};
+                """
+                BatchJob(os.environ, wrapper="").run(git_cmd)
+        else:
+            logger.info(f"Found installed {self.name} in {plugin_dir}; use that.")
+
+        # Add plugin_dir to plugin's plugin_registry
+        config_name = self.platform.substitute(self.config.get("config_name"))
+        if config_name is not None:
+            plugin_comm = BasicConfig.from_file(config_name)
+            key = f"general.plugin_registry.plugins.{self.name}"
+            plugin_comm = plugin_comm.update(key, plugin_dir)
+
+            # Write plugin dir to appropriate key as specified by plugin_dir_key
+            plugin_dir_key = self.config.get("plugin_dir_key")
+            if plugin_dir_key is not None:
+                plugin_comm = plugin_comm.update(plugin_dir_key, plugin_dir)
+
+            plugin_comm.save_as(config_name)
+
+        if do_git_checkout:
+            # Inject checkout folder into main config file
+
+            deode_config_file = self.platform.substitute("@CONFIG@")
+            deode_cfg = BasicConfig.from_file(deode_config_file)
+
+            remove_prefix = f"impact.{self.name}.git"
+            deode_cfg = deode_cfg.update(f"{remove_prefix}.remove_dir", do_git_checkout)
+            deode_cfg = deode_cfg.update(f"{remove_prefix}.dir", plugin_dir)
+
+            logger.warning(
+                f"Updated config file {deode_config_file} to inject {remove_prefix} keys"
+            )
+            deode_cfg.save_as(deode_config_file)
+
+        return plugin_dir
 
     def __str__(self):
         return self.name
 
 
 @dataclass()
-class Ehype(ImpactModel):
+class Ehype(BaseImpactModel):
     """EHYPE specific methods."""
 
     name = "ehype"
 
-    def run(self):
-        """Starts the EHYPE suite."""
-        path = self.platform.substitute(self.config["path"])
-        args = self.platform.substitute(self.config["arguments"])
-        cmd = f"{path}/deploy_suite.sh {args}"
-        logger.info(cmd)
-        BatchJob(os.environ, wrapper="").run(cmd)
-
 
 @dataclass()
-class EPSUpscaling(ImpactModel):
-    """EHYPE specific methods."""
+class EPSUpscaling(BaseImpactModel):
+    """EPS upscaling specific methods."""
 
     name = "eps_upscaling"
 
-    def run(self):
-        """Starts the EPS upscaling suite."""
-        path = self.platform.substitute(self.config["path"])
-        tmp_path = Path(
-            tempfile.NamedTemporaryFile(
-                prefix="eps_upscaling_", dir=path, delete=True
-            ).name
-        )
-        deodemakedirs(tmp_path, unixgroup=self.config.get("platform.unix_group"))
 
-        # Update communicate config with tmp_path
-        config_ = self.load()
-        config_["run_dir"] = str(tmp_path)
-        config_["general"]["plugin_registry"] = {
-            "plugins": {"eps_upscaling": str(tmp_path)}
-        }
-        self.dump(config_)
+@dataclass()
+class Nwp2Windpower(BaseImpactModel):
+    """NWP2windpower specific methods."""
 
-        remote_url = config_["remote_url"]
-        branch = config_["branch"]
-        forecast_range = parse_duration(config_["general"]["times"]["forecast_range"])
-        total_hours = int(forecast_range.total_seconds() // 3600)
-        forecast_range_str = f"PT{total_hours}H"
-        cmd = f"""
-            git clone --single-branch --branch {branch} {remote_url} {tmp_path};
-            cd {tmp_path};
-            mv -f {self.filename} . ;
-            export UV_CACHE_DIR={config_["uv_cache_dir"]}
-            ./deploy_suite.sh -p {tmp_path / self.filename.name} \
-                -f {forecast_range_str};
-        """
-        BatchJob(os.environ, wrapper="").run(cmd)
+    name = "nwp2windpower"
 
 
-class Verification(ImpactModel):
+@dataclass()
+class Verification(BaseImpactModel):
     """Verification specific methods."""
 
     name = "verification"
 
 
 @dataclass()
-class AQModels(ImpactModel):
+class AQModels(BaseImpactModel):
     """Verification specific methods."""
 
     name = "aq"
@@ -206,7 +234,7 @@ class ImpactModels(Task):
 
         Args:
             config (deode.ParsedConfig): Configuration
-            taskname (str): Indicating taskname
+            taskname (str): Indicating name of task in suite
         """
         Task.__init__(self, config, __class__.__name__)
 
@@ -214,9 +242,12 @@ class ImpactModels(Task):
 
     def execute(self):
         """Start the impact model(s)."""
-        for name, impact_model in self.impact.items():
-            impact_model_ = impact_model
-            model = ImpactModel(name=name, config=impact_model_, platform=self.platform)
+        for name, impact_config in self.impact.items():
+            model = BaseImpactModel(
+                name=name,
+                config=impact_config,
+                platform=self.platform,
+            )
             model.execute()
 
 
@@ -269,13 +300,14 @@ def get_impact(config, taskname):
 
     Args:
         config (deode.ParsedConfig): Configuration
-        taskname (str): Indicating taskname
+        taskname (str): Indicating name of task in suite
 
     Returns:
         impact (dict): Impact model settings
     """
     _impact = config.get("impact", BasicConfig({})).dict()
     installed_impact = config.get("platform.impact", {})
+
     impact = {}
 
     fdb_keys = get_fdb_info(config)
@@ -306,16 +338,19 @@ def get_impact(config, taskname):
         if (
             impact_model.get("active", False)
             and name in installed_impact
-            and taskname in impact_model
+            and (taskname in impact_model or impact_model.get("task") == taskname)
         ):
-            impact[name] = impact_model[taskname]
-            for conf, alt in {
-                "communicate": {},
-                "poetry": "poetry",
-                "path": None,
-                "config_name": "",
-            }.items():
-                impact[name][conf] = impact_model.get(conf, alt)
+            impact[name] = impact_model.get(taskname, {})
+
+            # Fetch path, poetry etc from platform.impact and load config from impact.*
+            for source in [installed_impact.get(name, {}), impact_model]:
+                if isinstance(source, (BasicConfig, dict)):
+                    for conf, value in source.items():
+                        if conf not in impact[name]:
+                            impact[name][conf] = value
+
+            if "communicate" not in impact[name]:
+                impact[name]["communicate"] = {}
 
             if fdb_keys is not None:
                 impact[name]["communicate"]["fdb_request"] = fdb_keys

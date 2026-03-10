@@ -7,7 +7,7 @@
 [impact.ehype]
   active = true
   config_name = "@ARCHIVE@/ehype.json"
-  path = "@EHYPE_PATH@"
+  runner = "@EHYPE_PATH@/deploy_suite.sh"
 
 [impact.ehype.communicate]
   archive = "@ARCHIVE@"
@@ -28,7 +28,7 @@
   work_root = "/perm/@USER@/DE_Impact/EHYPE"
 
 [impact.ehype.StartImpactModels]
-  arguments = "@ARCHIVE@/ehype.json"
+  arguments = "@IMPACT.EHYPE.CONFIG_NAME@"
 
 [macros.select.ehype]
-  gen_macros = [{ehype_path = "platform.impact.ehype"}]
+  gen_macros = [{ehype_path = "platform.impact.ehype.path"}]

@@ -122,6 +122,10 @@
       "type": "string",
       "description": "Path to wind farm parameterisation input data."
     },
+    "uv_cache_dir": {
+      "type": "string",
+      "description": "Path to uv cache dir used to install some plug-ins."
+    },
     "eclipse_data_dir": {
       "type": "string",
       "description": "Path to sun/moon position as used for eclipses.",

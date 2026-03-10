@@ -43,13 +43,13 @@
   pattern = "@YYYY@@MM@@DD@_@HH@@mm@.tar.gz"
 
 [archiving.hour.ecfs.sqlite]
-  active = "suite_control.do_extractsqlite"
+  active = "@SUITE_CONTROL.DO_EXTRACTSQLITE@"
   inpath = "@SQLITE_PATH@"
   outpath = "@SUB_CASEDIR@"
   pattern = "*"
 
 [archiving.merged_sqlite.ecfs.merged_sqlite]
-  active = "suite_control.do_mergesqlite"
+  active = "@SUITE_CONTROL.DO_MERGESQLITE@"
   inpath = "@MERGED_SQLITE_PATH@"
   outpath = "@SUB_CASEDIR@/../merged_sqlite/FCTABLE"
   pattern = "*"

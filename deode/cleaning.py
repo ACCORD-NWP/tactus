@@ -41,6 +41,7 @@ class CleanDeode:
             RuntimeError: If erroneous defaults
 
         """
+        self.config = config
         self.CLEANING_DEFAULTS = {"path": "", "ecfs_prefix": None}
 
         if defaults is None:
@@ -136,7 +137,7 @@ class CleanDeode:
         self.clean_tasks = {}
         for name, _choice in choices.items():
             choice = self._set_defaults(_choice)
-            if choice["active"]:
+            if self.platform.substitute(choice["active"]):
                 choice.pop("active")
                 self.clean_tasks[name] = choice
                 # Check consistency of settings

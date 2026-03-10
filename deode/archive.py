@@ -54,7 +54,7 @@ class Archive:
                 d = {
                     name: choice
                     for name, choice in choices.items()
-                    if self.trigger(choice["active"])
+                    if self.platform.substitute(choice["active"])
                 }
                 if len(d) > 0:
                     if archive_type in archive_types:
@@ -69,12 +69,6 @@ class Archive:
                 logger.warning(
                     "Skipped archive types not defined for this host: {}", skipped_types
                 )
-
-    def trigger(self, trigger):
-        """Return trigger."""
-        if isinstance(trigger, bool):
-            return trigger
-        return self.config[trigger]
 
     def compress_files(self, pattern, inpath, outpath, tarname):
         """Create tarfile.

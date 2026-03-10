@@ -18,6 +18,15 @@
 [remove.ehype.ehype_work]
   path = "@IMPACT.EHYPE.COMMUNICATE.WORK_ROOT@/@REMOVE.EHYPE.SUITE_NAME@"
 
+[remove.eps_upscaling]
+  remove_from_scheduler = true
+  remove_not_completed_suites = false
+  suite_name = "@IMPACT.EPS_UPSCALING.COMMUNICATE.GENERAL.CASE@"
+
+[remove.eps_upscaling.temp_repo]
+  active = "@IMPACT.EPS_UPSCALING.GIT.REMOVE_DIR@"
+  path = "@IMPACT.EPS_UPSCALING.GIT.DIR@"
+
 [remove.main]
   remove_from_scheduler = true
   remove_not_completed_suites = false
@@ -34,13 +43,26 @@
 [remove.main.zz_case_dir]
   path = "@CASEDIR@"
 
+[remove.nwp2windpower]
+  remove_from_scheduler = true
+  remove_not_completed_suites = false
+  suite_name = "@IMPACT.NWP2WINDPOWER.COMMUNICATE.GENERAL.CASE@"
+
+[remove.nwp2windpower.output_dir]
+  path = "@IMPACT.NWP2WINDPOWER.COMMUNICATE.NWP2WINDPOWER.OUTPUT_DIR@"
+
+[remove.nwp2windpower.temp_repo]
+  active = "@IMPACT.NWP2WINDPOWER.GIT.REMOVE_DIR@"
+  path = "@IMPACT.NWP2WINDPOWER.GIT.DIR@"
+
 [remove.wildfire]
   remove_from_scheduler = true
   remove_not_completed_suites = false
   suite_name = "WildFire_@CASE@"
 
-[remove.wildfire.wildfire_repo]
-  path = "@IMPACT.WILDFIRE.COMMUNICATE.REPO_HOME@"
+[remove.wildfire.temp_repo]
+  active = "@IMPACT.WILDFIRE.GIT.REMOVE_DIR@"
+  path = "@IMPACT.WILDFIRE.GIT.DIR@"
 
 [remove.wildfire.wildfire_workdir]
   path = "@IMPACT.WILDFIRE.COMMUNICATE.WORKDIR@"
