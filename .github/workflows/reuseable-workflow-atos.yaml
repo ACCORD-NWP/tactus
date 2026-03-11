@@ -161,7 +161,7 @@ jobs:
               #SBATCH --time=00:60:00
 
   build-deode-workflow-atos:
-    if: ${{ github.event_name != 'pull_request' }}
+    if: ${{ github.event_name != 'pull_request' || github.event_name == 'workflow_dispatch'}}
     runs-on: [hpc]
     needs: test-install-deode-workflow-atos
     steps:
@@ -209,7 +209,7 @@ jobs:
             module load python3/3.10.10-01
             python3 -m venv .venv
             source .venv/bin/activate
-            export DEODEVERSION=$(grep -A 5 '\[tool.poetry\]' pyproject.toml | grep 'version =' | awk -F\" '{print $2}')
+            export DEODEVERSION=$(grep -A 2 '^\[project\]' pyproject.toml | grep 'version' | awk -F\" '{print $2}')
             python3 -m pip install dist/deode-$DEODEVERSION-py3-none-any.whl
             deode -h
           sbatch_options: |
