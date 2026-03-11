@@ -73,8 +73,9 @@ class TactusSuiteDefinition(SuiteDefinition):
                 self.suite,
                 config,
                 self.task_settings,
-                input_template,
                 self.ecf_files,
+                trigger=prep_run,
+                input_template=input_template,
                 ecf_files_remotely=self.ecf_files_remotely,
             )
             prep_run = compilation_fam
