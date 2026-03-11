@@ -17,7 +17,7 @@ Note: when a key is defined in multiple of these sections, the first defined val
 To launch a new impact model, let's call it `my_impact_model`, we'd first have to introduce a new `[impact]`-section:
 ```toml
 [impact.my_impact_model]
-  active = true                                   # activates the specific model 
+  active = true                                   # activates the specific model
   config_name = "@ARCHIVE@/my_impact_model.toml"  # config_name is a (potential) config file to give to the impact model
   task = "StartImpactModels"                      # the task in the workflow where the impact model should start from
 ```
@@ -81,7 +81,7 @@ Finally, the StartImpactModels needs a handle to run the impact model. A basic s
 So, the configuration to launch the EHYPE impact model on atos bologna is given by
 ```toml
 [impact.ehype]
-  active = true                            # activates the specific model 
+  active = true                            # activates the specific model
   config_name = "@ARCHIVE@/ehype.json"     # config_name is a (potential) config file to give to the impact model
   runner = "@EHYPE_PATH@/deploy_suite.sh"  # The handle to run the impact model
 
@@ -130,7 +130,7 @@ In addition a `communicate` section can be used to inform the impact model about
   ouput_freq = "@FULLPOS_OUTPUT_FREQ@"
 ```
 
-The communication section can include nested sections as well, depending on the needs of the impact model. 
+The communication section can include nested sections as well, depending on the needs of the impact model.
 
 To communicate full configuration sections to the impact model configuration file one can use the magic keys `.COPY` and `.COPYALL`. For example the following statement copies the `[domain]` section without its subsections and the `[json2tab]` with all its subsections to the configuration of the impact model:
 ```toml

@@ -84,9 +84,10 @@ class TestPlatformEvaluate:
         # otherwise return the original value (to avoid messing up other
         # usage of inspect.isfunction).
         # Mock os.path.join to check if it is called.
-        with mock.patch("inspect.isfunction", new=isfunction_patch), mock.patch(
-            "os.path.join"
-        ) as mock_command_function:
+        with (
+            mock.patch("inspect.isfunction", new=isfunction_patch),
+            mock.patch("os.path.join") as mock_command_function,
+        ):
             platform.evaluate("join(1, 2,)", "os.path")
             mock_command_function.assert_called_once()
 
@@ -101,9 +102,10 @@ class TestPlatformEvaluate:
         # otherwise return the original value (to avoid messing up other
         # usage of inspect.isfunction).
         # Mock OneMethodClass.method to check if it is called.
-        with mock.patch("inspect.isfunction", new=isfunction_patch), mock.patch.object(
-            OneMethodClass, "method"
-        ) as mock_command_function:
+        with (
+            mock.patch("inspect.isfunction", new=isfunction_patch),
+            mock.patch.object(OneMethodClass, "method") as mock_command_function,
+        ):
             platform.evaluate("method(1, 2,)", OneMethodClass)
             mock_command_function.assert_called_once()
 
@@ -175,7 +177,8 @@ class TestPlatformSubstitute:
         ref = platform.substitute(config[f"props.type_{value_type.__name__}"])
         val = platform.substitute(config[f"props_as_fullname.type_{value_type.__name__}"])
 
-        assert type(ref) == type(val) == value_type
+        assert isinstance(ref, value_type)
+        assert isinstance(val, value_type)
         assert ref == val
 
     @pytest.mark.parametrize("value_type", [bool, int, float, str])
@@ -209,7 +212,8 @@ class TestPlatformSubstitute:
         ref = platform.substitute(config[f"props.type_{value_type.__name__}"])
         val = platform.substitute(config[f"props_as_macro.type_{value_type.__name__}"])
 
-        assert type(ref) == type(val) == value_type
+        assert isinstance(ref, value_type)
+        assert isinstance(val, value_type)
         assert ref == val
 
     @pytest.mark.parametrize("value_type", [bool, int, float, str])

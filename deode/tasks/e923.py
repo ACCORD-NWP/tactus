@@ -220,7 +220,7 @@ class E923(Task):
 
                 # Decompress compressed files
                 if dst_local.endswith(".Z"):
-                    os.system(f"gunzip {gunzip_flags} {dst_local}")  # noqa
+                    os.system(f"gunzip {gunzip_flags} {dst_local}")
 
                 if remove_links:
                     remove_link_files.append(dst_local)

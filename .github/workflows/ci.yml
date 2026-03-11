@@ -29,12 +29,17 @@ on:
 
 jobs:
 
+  build-package:
+    uses: ./.github/workflows/build.yaml
+
   call-workflow-atos:
+    needs: build-package
     uses: ./.github/workflows/reuseable-workflow-atos.yaml
     secrets: inherit
     with:
       configuration_name:  ${{ inputs.configuration_name || 'cy49t2_arome' }}
 
   call-workflow-lumi:
+    needs: build-package
     uses: ./.github/workflows/reuseable-workflow-lumi.yaml
     secrets: inherit

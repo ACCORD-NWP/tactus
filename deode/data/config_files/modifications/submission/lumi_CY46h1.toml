@@ -30,30 +30,24 @@
   WALLTIME = "#SBATCH --time=00:30:00"
 
 [submission.types.Forecast_cpu.ENV]
-  MPI_TASKS = 32 # $SLURM_NTASKS
-
+  MPI_TASKS = 32  # $SLURM_NTASKS
   OMP_NUM_THREADS = 4
   OMP_PLACES = "threads"
   OMP_STACKSIZE = "4G"
-
   DR_HOOK = 1
   DR_HOOK_IGNORE_SIGNALS = 8
   DR_HOOK_SHOW_PROCESS_OPTIONS = 0
   DR_HOOK_SILENT = 1
-
   KMP_MONITOR_STACKSIZE = "4G"
   KMP_STACKSIZE = "4G"
-
   EC_MEMINFO = 0
   EC_MPI_ATEXIT = 0
   EC_PROFILE_HEAP = 0
   EC_PROFILE_MEM = 0
   ECF_SSL = 1
-
   FI_CXI_DEFAULT_TX_SIZE = 64000
   FI_CXI_RDZV_THRESHOLD = 128000
-  FI_CXI_RX_MATCH_MODE = 'hybrid'
-
+  FI_CXI_RX_MATCH_MODE = "hybrid"
   ECCODES_DEFINITION_PATH = "/scratch/project_465000527/ospaniel/opt/eccodes-2.34.1/share/eccodes:deode/data/eccodes/definitions/grib2/localConcepts/lfpw"
   ECCODES_SAMPLES_PATH = "/users/ospaniel/opt/share/eccodes/ifs_samples/grib1_mlgrib2"
 
@@ -73,8 +67,8 @@
 
 [submission.types.parallel.ENV]
   DR_HOOK_IGNORE_SIGNALS = 8
-  FI_CXI_RX_MATCH_MODE = 'hybrid'
-  OMP_NUM_THREADS = 1 # CPUS_PER_TASK # this should be 4, to be tried
+  FI_CXI_RX_MATCH_MODE = "hybrid"
+  OMP_NUM_THREADS = 1  # CPUS_PER_TASK # this should be 4, to be tried
 
 [submission.types.parallel.MODULES]
   00_PURGE = ["--force", "purge"]

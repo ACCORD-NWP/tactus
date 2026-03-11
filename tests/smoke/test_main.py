@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Smoke tests."""
+
 import itertools
 import os
 import shutil
@@ -101,15 +102,13 @@ class TestMainShowCommands:
     def test_show_config_command(self):
         with redirect_stdout(StringIO()):
             main(["show", "config"])
-            main(
-                [
-                    "show",
-                    "config",
-                    "--config-file",
-                    ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix(),
-                    "-e",
-                ]
-            )
+            main([
+                "show",
+                "config",
+                "--config-file",
+                ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix(),
+                "-e",
+            ])
 
     def test_show_config_schema_command(self):
         with redirect_stdout(StringIO()):
@@ -122,9 +121,10 @@ class TestMainShowCommands:
             for new in itertools.count():
                 yield 100 * new
 
-        with mock.patch(
-            "time.time", mock.MagicMock(side_effect=fake_time())
-        ), redirect_stdout(StringIO()):
+        with (
+            mock.patch("time.time", mock.MagicMock(side_effect=fake_time())),
+            redirect_stdout(StringIO()),
+        ):
             main(["show", "config"])
 
     def test_show_namelist_command(self, tmp_path_factory):
@@ -134,20 +134,18 @@ class TestMainShowCommands:
 
 @pytest.mark.usefixtures("_module_mockers")
 def test_run_task_command(tmp_path):
-    main(
-        [
-            "run",
-            "--task",
-            "Forecast",
-            "--template",
-            str(GeneralConstants.PACKAGE_DIRECTORY / "deode/templates/stand_alone.py"),
-            "--job",
-            f"{tmp_path.as_posix()}/forecast.job",
-            "-o",
-            f"{tmp_path.as_posix()}/forecast.log",
-            "--create-only",
-        ]
-    )
+    main([
+        "run",
+        "--task",
+        "Forecast",
+        "--template",
+        str(GeneralConstants.PACKAGE_DIRECTORY / "deode/templates/stand_alone.py"),
+        "--job",
+        f"{tmp_path.as_posix()}/forecast.job",
+        "-o",
+        f"{tmp_path.as_posix()}/forecast.log",
+        "--create-only",
+    ])
 
 
 @pytest.mark.usefixtures("_module_mockers")

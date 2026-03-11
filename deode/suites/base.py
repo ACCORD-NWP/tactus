@@ -31,8 +31,7 @@ def _get_name(cname, cls, attrname="__plugin_name__"):
     name = getattr(cls, "__dict__", {}).get(attrname, None)
     if name is not None:
         return name
-    name = cname.lower()
-    return name
+    return cname.lower()
 
 
 class SuiteDefinition(object):
@@ -232,10 +231,11 @@ class EcflowNode:
             ecf_files_remotely(str, optional): Remote file prefix
             cron (EcflowSuiteCron): Cron. Defauts to None
             limit (EcflowSuiteLimit): Limit. Defaults to None
+
         Raises:
-            NotImplementedError: Node type not implemented
-            TypeError: "Triggers must be an EcflowSuiteTriggers object"
-            TypeError: "defstatus must be either str or an ecflow.Defstatus object"
+            NotImplementedError: node type not implemented
+            TypeError: triggers must be an EcflowSuiteTriggers object
+            TypeError: defstatus must be either str or an ecflow.Defstatus object
 
         """
         self.name = name
@@ -302,9 +302,9 @@ class EcflowNode:
                 # Resolve the trigger list into an EcflowSuiteTriggers object,
                 # and add the trigger string to the node
                 elif all(isinstance(node, EcflowNode) for node in trigger):
-                    trigger = EcflowSuiteTriggers(
-                        [EcflowSuiteTrigger(node) for node in trigger]
-                    )
+                    trigger = EcflowSuiteTriggers([
+                        EcflowSuiteTrigger(node) for node in trigger
+                    ])
                     if trigger.trigger_string is not None and self.ecf_node is not None:
                         if add_var_trigger is not None:
                             for key, val in add_var_trigger.items():
@@ -603,6 +603,7 @@ class EcflowSuiteTask(EcflowNode):
                 Defaults to None
             remote_path(str): path to the mirror node on the remote ecflow suite.
                 Defaults to None
+
         Raises:
             ValueError: If input template is to be parsed but it is not passed.
             FileNotFoundError: If the task container is not found.
@@ -689,13 +690,12 @@ class EcflowSuiteTriggers:
             triggers (list): List of trigger objects
             mode (str): Concatenation type.
 
-        Raises:
-            ValueError: If there are no triggers to be processed
-            TypeError: If trigger is not an EcflowSuiteTrigger object
-
         Returns:
             str: The trigger string based on trigger objects.
 
+        Raises:
+            ValueError: If there are no triggers to be processed
+            TypeError: If trigger is not an EcflowSuiteTrigger object
         """
         if not isinstance(triggers, list):
             triggers = [triggers]

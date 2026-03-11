@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for datetime_utils.py."""
+
 import datetime
 from typing import List, Literal, Union
 

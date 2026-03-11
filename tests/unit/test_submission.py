@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
+
 from contextlib import suppress
 from pathlib import Path
 
@@ -11,7 +12,7 @@ from deode.derived_variables import derived_variables, set_times
 from deode.submission import NoSchedulerSubmission, ProcessorLayout, TaskSettings
 
 
-@pytest.fixture()
+@pytest.fixture
 def minimal_raw_config():
     return tomlkit.parse(
         """
@@ -23,21 +24,21 @@ def minimal_raw_config():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def raw_config_with_task(minimal_raw_config):
     rtn = minimal_raw_config.copy()
     rtn.update({"task": {}})
     return rtn
 
 
-@pytest.fixture()
+@pytest.fixture
 def parsed_config_with_task(raw_config_with_task):
     return ParsedConfig(
         raw_config_with_task, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def _module_mockers(module_mocker):
     # Patching ConfigParserDefaults.CONFIG_PATH so tests use the generated config
     original_submission_task_settings_parse_job = TaskSettings.parse_job

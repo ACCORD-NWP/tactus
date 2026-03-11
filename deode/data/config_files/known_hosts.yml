@@ -1,12 +1,12 @@
-atos_bologna: 
+atos_bologna:
   hostname: "ac\\d-\\d\\d\\d"
-lumi: 
+lumi:
   hostname: ["uan\\d\\d", "nid\\d+"]
-freja: 
+freja:
   env:
     SNIC_RESOURCE: "freja"
-linda: 
-  env: 
+linda:
+  env:
     SMHI_DIST: "linda\\d+"
-leonardo: 
+leonardo:
   hostname: ".*leonardo.*"

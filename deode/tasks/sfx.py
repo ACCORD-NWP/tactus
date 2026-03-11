@@ -1,4 +1,5 @@
 """Surfex tasks."""
+
 import json
 import os
 

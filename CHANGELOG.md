@@ -9,12 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
-### Added 
+### Added
 - Added nwp2windpower postprocessing impact model [\#1527](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1527)(@jacobsnoeijer)
 - Added host with macro to airquality.toml [\#1544](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1544)(@KristianHMoller)
 
 ### Changed
 - Refactor impact model plugin interface [\#1527](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1527)(@jacobsnoeijer)
+- Modernize environment: move linting to modern pre-commit hooks; generalize pyproject.toml; build and test wheels [\#1489](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1489) (@observingClouds)
 - Harmonise namelists for all CSCs. [\#1495](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1495) (@petrasmol, @kastelecn)
 - Refactor E923 to make input data json-config driven. [\#1523](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1523) (@jacobsnoeijer)
 - Encode member 0 of an ensemble as "cf" (control forecast). [\#1526](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1526) (@KristianHMoller)
@@ -37,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduce the SLAF boundary perturbation method. [\#1228](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1228) (@ovignes)
 - Introduce direct addressing in macros. [\#1460](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1460) (@uandrae)
 - UTCI is added in the Deode-Workflow. [\#1478](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1478) (@Ines-dhmz)
-- Add GenerateWfpTabFile-task to run json2tab preprocessor to enable Forecast with WFP on any domain. [#1306](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1306) (@jacobsnoeijer) 
+- Add GenerateWfpTabFile-task to run json2tab preprocessor to enable Forecast with WFP on any domain. [#1306](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1306) (@jacobsnoeijer)
 - Introduce `deode remove` functionality. [\#1461](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1461) (@uandrae)
 - Introduce config macro expansion in `deode show` command. [\#1463](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1463) (@uandrae)
 - Add eventtype coldspell to main_config_schema. [\#1507](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1507)(@KristianHMoller)
@@ -109,8 +110,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Split up archiving.toml into a lumi and atos specific file. [\#1399](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1399) (@mfroelund)
 - Produce more LBCs in one call of MASTERODB.[\#1414](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1414)(@kastelecn)
 - Replace all config symlinks by files to allow installation as a package. [\#1419](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1419) (@uandrae)
-- Optimized SPP settings for Harmonie-AROME [\#1417](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1417) (@pirkkao) 
-- Optimized SPP settings for AROME [\#1412](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1412) (@cwastl) 
+- Optimized SPP settings for Harmonie-AROME [\#1417](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1417) (@pirkkao)
+- Optimized SPP settings for AROME [\#1412](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1412) (@cwastl)
 - Change operational archive path.[\#1387](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1387)(@kastelecn)
 - Delete only finished suite in Clean\_old\_data. [\#1379](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1379) (@kastelecn)
 - Switch off ecfs archiving of GRIB2 data in operations [\#1405](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1405)(@uandrae)
@@ -118,7 +119,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fix broken pgd namelist for cy48t3. [\#1429](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1429) (@kastelecn)
-- Update outdated documentation (cy48t3 -> cy49t2 for the test cases). [\#1427](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1427)(@kastelecn) 
+- Update outdated documentation (cy48t3 -> cy49t2 for the test cases). [\#1427](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1427)(@kastelecn)
 - Fix IOmerge task missing output files [\#1411](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1411) (@uandrae)
 - Correct GMTED reading for longitudes > 120 deg. [\#1402](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1402)(@natalieth)
 - Do not coupled hydrometors for harmone-arome and arome. [\#1376](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1376)(@kastelecn)
@@ -150,8 +151,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Set correct LRED defaults for AROME (true) and HARMONIE-AROME (false) [\1329](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1329/)(@rolfhm)
 - Remove duplicate entries of FA field names in eccodes definitions [\1357](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1329/)(@sbnielsen)
 
-### Added 
- - Add different namelist switches for optional new physics [\#1326](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1326) (@jacobsnoeijer) 
+### Added
+ - Add different namelist switches for optional new physics [\#1326](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1326) (@jacobsnoeijer)
  - Support to use EU-scale Open street map data for urban parameters and surface fractions [\#1349](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1349) (@natalieth)
  - Use offline SURFEX EUR run for Prep [\#1233](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1233)(@BolliPalmason)
  - Introduce static files for ecrad and a namelist example [\#1355](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1355) (@uandrae)
@@ -242,10 +243,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fix cleaning for EHYPE data, add cleaning of empty directories. [\#1227](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1227) (@kastelecn)
-- Correct per member generation of input file for prep. [\#1214](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1214)(@uandrae) 
-- Specify tagged version 0.1.2 or above of pyfdb in pyproject.toml. [\#1205](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1205)(@KristianHMoller) 
+- Correct per member generation of input file for prep. [\#1214](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1214)(@uandrae)
+- Specify tagged version 0.1.2 or above of pyfdb in pyproject.toml. [\#1205](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1205)(@KristianHMoller)
 - Allow using duration notation for both general.times.start and end. [\#1209](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1209) (@uandrae)
-- Set ensemble member number in namelist by default. [\#1216](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1216)(@uandrae) 
+- Set ensemble member number in namelist by default. [\#1216](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1216)(@uandrae)
 - Fix grib2 encodings of radar product to allow ensemble production. [\#1219](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1219) (@sbnielsen)
 - Fixed issue with the user having to specify all members when using the dict syntax in eps configuration. [\#1220](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1220)(@mafdmi)
 - Fix bug in creation of merged sqlite files which contained member 0 in all data columns [\#1223](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1223])(@svianaj)
@@ -357,7 +358,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Update surfex namelist settings for CY49. [\#1050](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1050)(@uandrae)
 - Add support to configure simulations for eventtype eclipse [\#1063](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1063)(@jacobsnoeijer)
-- Change macro configuration to be more flexible [\#1032](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1032)(@uandrae) 
+- Change macro configuration to be more flexible [\#1032](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1032)(@uandrae)
 
 ### Fixed
 - Restore problematic deode_home and ecf_host changed in v0.13.0  [\#1068](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1068)(@uandrae)
@@ -384,7 +385,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Configure dependabot for frequent dependency updates. [\#989](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/989) (@observingClouds)
 ### Changed
 - Set lumi_DT as default ifs selection on LUMI, seperate option for running on debug partition. [\#1034](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1034)(@kastelen)
-- Name convention for LBC families [\#984](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/984)(@uandrae) 
+- Name convention for LBC families [\#984](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/984)(@uandrae)
 - Increase walltime for CreateGrib on atos_bologna [\#1009](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1009) (@uandrae)
 - Use bddir_sfx for MARS latlon file for more flexibilty on output location [\#1012](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1012) (@uandrae)
 - Sqlite extraction increased & limited to standard pressure levels for RH,S,T,D [\#1013] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1013) (@svianaj)
@@ -393,8 +394,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Remove BDMEMBER from all config files. [\#1024](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1024)(@kastelecn)
-- Restored lost bdcycle setting [\#984](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/984)(@uandrae) 
-- Fix json schema for impact models. [\#1020](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1020)(@kastelecn) 
+- Restored lost bdcycle setting [\#984](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/984)(@uandrae)
+- Fix json schema for impact models. [\#1020](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1020)(@kastelecn)
 
 ## [0.12.1] - 2025-02-21
 
@@ -474,7 +475,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Additional fixes for ALARO lightning, finall fixes for ALARO namelist, add graupel to total precipitation for all CSC. [\#915](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/915)(@kastelecn)
 - Add MF\_87 vertical levels for ALARO (instead of MF\_90). [\#914](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/914) (@kastelecn)
 - Updated docs with accept/decline procedure for reviewers; all accepting reviewers now have to approve before merge. [\#872](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/872) (@mafdmi)
-- Updated air quality event output in cy46h1 to use surfex parameters from tile 3 instead of 1 to fix issue since transition to 3 patches. [\#912](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/912) (@sbnielsen) 
+- Updated air quality event output in cy46h1 to use surfex parameters from tile 3 instead of 1 to fix issue since transition to 3 patches. [\#912](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/912) (@sbnielsen)
 
 - Added WOW's station lists and others for verification [\#860](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/918) (@svianaj)
 
@@ -515,7 +516,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Made it impossible to parse any string to output_settings. Only empty string, string of ISO8601 format, or list of strings of ISO8601 format are possible. [\#830](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/830) (@mafdmi)
 - Bug that made it impossible to merge namelists with more than one hybrid level with master selection in CY48t3 [\#818](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/818) (@sbnielsen)
 - Change the behaviour of `deode run` to only require the `--task` argument. The other arguments will default to names based on the task name. [\#836](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/836) (@uandrae)
- 
+
 ## [0.8.0] - 2024-10-31
 
 ### Added
@@ -630,11 +631,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed default DEODE_HOME to ./Deode-Workflow/deode [\#671](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/671)(@mafdmi)
 - Updates path to Cycle 48t3 binaries to comply with CI/CD [\#755](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/755) (@pardallio)
 - Documentation for binary seclection [\#736](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/736) (@uandrae)
-- Update HARMONIE-AROME to harmonie-46h1.1 binaries. [\#693](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/693) (@uandrae) 
+- Update HARMONIE-AROME to harmonie-46h1.1 binaries. [\#693](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/693) (@uandrae)
 - Always use the class name as the task name to be consistent with submission settings. [\#701](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/701) (@kastelecn, @uandrae)
-- Make io-merge processing more verbose and configurable w.r.t waiting times. [\#694](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/694) (@uandrae) 
+- Make io-merge processing more verbose and configurable w.r.t waiting times. [\#694](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/694) (@uandrae)
 - Geopotential z in latlon grid for surfex input retrieves from ICMSH global file instead of global\_sfcdir. [\#697](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/697) (@kastelecn)
-- Changed location of the binary fa\_sfx2clim. [\#672](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/672) (@kastelecn) 
+- Changed location of the binary fa\_sfx2clim. [\#672](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/672) (@kastelecn)
 - Update the default case name to include the domain name. [\#655](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/655) (@uandrae)
 - Adapt settings to binary /scratch/project_465000527/ospaniel/executable_cy48t3/ works. [\#618](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/618) (@kastelecn)
 - Externalise the selection of static input data to the forecast. [\#619](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/619) (@uandrae)
@@ -705,8 +706,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Implemented new de330-dev server (for more information see docs/markdown/lumi.md) [\#510](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/576)(@draelsaid) 
-- Implemented e923Update to improve the ALARO forecast (for more information see doc/markdown/e923\_update.md) [\#510](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/510)(@kastelecn) 
+- Implemented new de330-dev server (for more information see docs/markdown/lumi.md) [\#510](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/576)(@draelsaid)
+- Implemented e923Update to improve the ALARO forecast (for more information see doc/markdown/e923\_update.md) [\#510](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/510)(@kastelecn)
 - Add ALARO forecast [\#261](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/261) (@adeckmyn)
 - Sqlite improvements [\#413](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/413) (@adeckmyn)
 - Add namelists and config files for ALARO forecast [\#261](https://github.com/destination-earth-digital-twins/Deode-Prototype/pull/261) (@adeckmyn)
@@ -783,7 +784,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Configurable archiving on ecfs, default switched on
 - First sqlite extraction for verification. Default switched on but with a limited set of parameters
-- Support for reading IFSENS data 
+- Support for reading IFSENS data
 
 ### Changed
 

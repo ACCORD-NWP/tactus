@@ -20,14 +20,12 @@ def tmpdir(tmp_path_factory):
 
 @pytest.fixture(scope="module")
 def basic_config(default_config):
-    config = default_config
-    config = config.copy(update=set_times(config))
-    return config
+    return default_config.copy(update=set_times(default_config))
 
 
-@pytest.fixture()
+@pytest.fixture
 def _module_mockers(module_mocker):
-    def new_subprocess_check_output(infile, text):  # noqa ARG001
+    def new_subprocess_check_output(infile, text):
         return "foo"
 
     module_mocker.patch("subprocess.check_output", new=new_subprocess_check_output)

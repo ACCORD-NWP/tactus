@@ -15,10 +15,10 @@ def wipe_ecfs(ecfs_path):
     """Remove a full ecfs directory tree."""
     command = ["erm", "-R", ecfs_path]
     try:
-        result = subprocess.check_output(command, text=True)  # noqa S603
+        result = subprocess.check_output(command, text=True)
         logger.info(result)
 
-        if result != "":
+        if result:
             logger.error(result)
             raise RuntimeError("Error running command: {}".format(command))
         logger.info("Clean ecfs_path:{}", ecfs_path)

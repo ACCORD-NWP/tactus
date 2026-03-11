@@ -630,15 +630,15 @@ class Platform:
                 module. If a class, the command is assumed to be a method of
                 the class.
 
+        Returns:
+            any: Return original command string if it is not a function call,
+                otherwise return the result of the function call.
+
         Raises:
             ModuleNotFoundError: If module `object_` not found
             AttributeError: If module/class `object_` has no attribute named `func`
             TypeError: If object is not a class or a string
             TypeError: If the command to evaluate is not a function
-
-        Returns:
-            any: Return original command string if it is not a function call,
-                otherwise return the result of the function call.
         """
         # Check if command string is a function call
         if not isinstance(command_string, str):
@@ -715,13 +715,12 @@ class FileManager:
             check_archive (bool, optional): Also check archive. Defaults to False.
             provider_id (str, optional): Provider ID. Defaults to "symlink".
 
-        Raises:
-            ProviderError: "No provider found for {target}"
-            NotImplementedError: "Checking archive not implemented yet"
-
         Returns:
             tuple: provider, resource
 
+        Raises:
+            ProviderError: "No provider found for {target}"
+            NotImplementedError: "Checking archive not implemented yet"
         """
         destination = LocalFileOnDisk(
             self.config, destination, basetime=basetime, validtime=validtime
@@ -990,6 +989,7 @@ class FileManager:
             forecast_range (datetime.datetime): forecast range,
             input_template (str): Input template,
             output_settings (str): Output settings
+
         Returns:
             dict: dict of validates and grib fiels
         """
@@ -1032,7 +1032,7 @@ class LocalFileSystemSymlink(Provider):
         if self.fetch:
             if os.path.exists(self.identifier):
                 logger.info("ln -sf {} {} ", self.identifier, resource.identifier)
-                os.system(f"ln -sf {self.identifier} {resource.identifier}")  # noqa S605
+                os.system(f"ln -sf {self.identifier} {resource.identifier}")
                 return True
 
             logger.warning("File is missing {} ", self.identifier)
@@ -1040,7 +1040,7 @@ class LocalFileSystemSymlink(Provider):
 
         if os.path.exists(resource.identifier):
             logger.info("ln -sf {} {} ", resource.identifier, self.identifier)
-            os.system(f"ln -sf {resource.identifier} {self.identifier}")  # noqa S605
+            os.system(f"ln -sf {resource.identifier} {self.identifier}")
             return True
 
         logger.warning("File is missing {} ", resource.identifier)
@@ -1075,7 +1075,7 @@ class LocalFileSystemCopy(Provider):
             if os.path.exists(self.identifier):
                 self.create_missing_dir(resource.identifier)
                 logger.info("cp {} {} ", self.identifier, resource.identifier)
-                os.system(f"cp {self.identifier} {resource.identifier}")  # noqa S605
+                os.system(f"cp {self.identifier} {resource.identifier}")
                 return True
 
             logger.warning("File is missing {} ", self.identifier)
@@ -1084,7 +1084,7 @@ class LocalFileSystemCopy(Provider):
         if os.path.exists(resource.identifier):
             self.create_missing_dir(self.identifier)
             logger.info("cp {} {} ", resource.identifier, self.identifier)
-            os.system(f"cp {resource.identifier} {self.identifier}")  # noqa S605
+            os.system(f"cp {resource.identifier} {self.identifier}")
             return True
 
         logger.warning("File is missing {} ", resource.identifier)
@@ -1119,7 +1119,7 @@ class LocalFileSystemMove(Provider):
             if os.path.exists(self.identifier):
                 self.create_missing_dir(resource.identifier)
                 logger.info("mv {} {} ", self.identifier, resource.identifier)
-                os.system(f"mv {self.identifier} {resource.identifier}")  # noqa S605
+                os.system(f"mv {self.identifier} {resource.identifier}")
                 return True
 
             logger.warning("File is missing {} ", self.identifier)
@@ -1128,7 +1128,7 @@ class LocalFileSystemMove(Provider):
         if os.path.exists(resource.identifier):
             self.create_missing_dir(self.identifier)
             logger.info("mv {} {} ", resource.identifier, self.identifier)
-            os.system(f"mv {resource.identifier} {self.identifier}")  # noqa S605
+            os.system(f"mv {resource.identifier} {self.identifier}")
             return True
 
         logger.warning("File is missing {} ", resource.identifier)
@@ -1188,14 +1188,10 @@ class ECFS(ArchiveProvider):
         # TODO: Address the noqa check disablers
         if self.fetch:
             logger.info("ecp -pu {} {}", self.identifier, resource.identifier)
-            os.system(
-                f"ecp -pu {self.identifier} {resource.identifier}"  # noqa S605, E800
-            )
+            os.system(f"ecp -pu {self.identifier} {resource.identifier}")
         else:
             logger.info("ecp -pu {} {}", resource.identifier, self.identifier)
-            os.system(
-                f"ecp -pu {resource.identifier} {self.identifier}"  # noqa S605, E800
-            )
+            os.system(f"ecp -pu {resource.identifier} {self.identifier}")
         return True
 
 
@@ -1218,12 +1214,11 @@ class SCP(ArchiveProvider):
         Args:
             resource (Resource): Resource.
 
-        Raises:
-            RuntimeError: If directory is not created
-
         Returns:
             bool: True if success
 
+        Raises:
+            RuntimeError: If directory is not created
         """
         # Assumes self.identifier=host:full_file_path
         remote_host, remote_file = str(self.identifier).split(":")
@@ -1351,15 +1346,13 @@ class FDB(ArchiveProvider):
             temp2 = f"{filename}_temp2.grib"
             rules_file = "temp_rules"
             self._write_rules_file(rules_file, rules, neg="!")
-            os.system(
-                f"grib_filter {rules_file} {resource.identifier} -o {temp1}"  # noqa S605
-            )
-            set_values = ",".join(
-                [f"{key}={value}" for key, value in grib_set.items() if value != ""]
-            )
+            os.system(f"grib_filter {rules_file} {resource.identifier} -o {temp1}")
+            set_values = ",".join([
+                f"{key}={value}" for key, value in grib_set.items() if value
+            ])
             cmd_for_grib = "grib_set -s " + set_values + f" {temp1} {temp2}"
             logger.debug(cmd_for_grib)
-            os.system(cmd_for_grib)  # noqa S605
+            os.system(cmd_for_grib)
             with open(temp2, "rb") as infile:
                 self.fdb.archive(infile.read())
             self.fdb.flush()
@@ -1371,7 +1364,7 @@ class FDB(ArchiveProvider):
                 inv_rules_file = "inv_temp_rules"
                 self._write_rules_file(inv_rules_file, rules, oper=" || ")
                 os.system(
-                    f"grib_filter {inv_rules_file} {resource.identifier} -o {inv_temp1}"  # noqa S605
+                    f"grib_filter {inv_rules_file} {resource.identifier} -o {inv_temp1}"
                 )
                 if os.path.isfile(inv_temp1):
                     logger.info("Created file with non archived fields as {}", inv_temp1)
@@ -1416,7 +1409,7 @@ class Resource:
         """Construct resource.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            _config (deode.ParsedConfig): Configuration
             identifier (str): Resource identifier
 
         """

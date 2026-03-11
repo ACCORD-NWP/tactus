@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
+
 import os
 from pathlib import Path
 
@@ -13,10 +14,10 @@ from deode.toolbox import FileManager
 logger.enable("deode")
 
 
-@pytest.fixture()
+@pytest.fixture
 def config_platform(tmp_directory):
     """Set the platform specific configuration."""
-    task_configs = tomlkit.parse(
+    return tomlkit.parse(
         """
         [general]
             case = "mytest"
@@ -42,10 +43,9 @@ def config_platform(tmp_directory):
         [platform]
         """
     )
-    return task_configs
 
 
-@pytest.fixture()
+@pytest.fixture
 def parsed_config_with_paths(config_platform):
     return ParsedConfig(
         config_platform,
@@ -61,7 +61,7 @@ class TestFileManager:
         tmp = tmp_directory
         os.makedirs(tmp, exist_ok=True)
         os.makedirs(tmp + "/archive/2000/01/01/00/", exist_ok=True)
-        os.system("touch " + tmp + "/archive/2000/01/01/00/ICMSHDEOD+0024")  # noqa S108
+        os.system("touch " + tmp + "/archive/2000/01/01/00/ICMSHDEOD+0024")
         fmanager = FileManager(parsed_config_with_paths)
         provider, resource = fmanager.get_input(
             "@ARCHIVE@/ICMSH@CNMEXP@+@LLLL@",
@@ -74,9 +74,10 @@ class TestFileManager:
         assert resource.identifier == tmp + "/ICMSHDEODINIT"  # S108
 
         os.makedirs(tmp + "/bindir", exist_ok=True)  # S108
-        os.system("touch " + tmp + "/bindir/MASTERODB")  # noqa S108, S605, S607
+        os.system("touch " + tmp + "/bindir/MASTERODB")
         provider, resource = fmanager.get_input(
-            "@BINDIR@/MASTERODB", tmp + "/MASTERODB"  # S108, E501
+            "@BINDIR@/MASTERODB",
+            tmp + "/MASTERODB",  # S108, E501
         )
         assert provider.identifier == tmp + "/bindir/MASTERODB"  # S108
         assert resource.identifier == tmp + "/MASTERODB"  # S108
@@ -102,7 +103,7 @@ class TestFileManager:
         os.makedirs(tmp, exist_ok=True)
         fmanager = FileManager(parsed_config_with_paths)
         os.makedirs(tmp + "/archive/2000/01/01/00/", exist_ok=True)  # S108
-        os.system("touch " + tmp + "/ICMSHDEOD+0024")  # noqa S108
+        os.system("touch " + tmp + "/ICMSHDEOD+0024")
         provider, aprovider, resource = fmanager.get_output(
             tmp + "/ICMSH@CNMEXP@+@LLLL@",  # S108
             "@ARCHIVE@/OUT_ICMSH@CNMEXP@+@LLLL@",
@@ -174,7 +175,7 @@ class TestFileManager:
 
         os.makedirs(input_dir, exist_ok=True)  # S108
         os.makedirs(output_dir, exist_ok=True)  # S108
-        os.system(f"touch {input_dir}/test")  # noqa S108
+        os.system(f"touch {input_dir}/test")
         os.chdir(output_dir)
 
         truth = {

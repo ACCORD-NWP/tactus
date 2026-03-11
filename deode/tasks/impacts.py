@@ -32,8 +32,7 @@ class BaseImpactModel:
         """Create a new instance of a subclass based on the field_type."""
         for subclass in BaseImpactModel.__subclasses__():
             if subclass.name == name:
-                instance = super(BaseImpactModel, subclass).__new__(subclass)
-                return instance
+                return super(BaseImpactModel, subclass).__new__(subclass)
         raise ValueError(f"No valid BaseImpactModel subclass found for name: {name}")
 
     def run(self):

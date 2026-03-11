@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Program's entry point."""
+
 import contextlib
 
 from . import GeneralConstants

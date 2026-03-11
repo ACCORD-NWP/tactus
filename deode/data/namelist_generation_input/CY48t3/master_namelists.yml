@@ -702,7 +702,7 @@ f4_ALARO:
   NAMCVER:
     LVERTFE: false
   NAMDPRECIPS:
-    RDHAIL1: 2.8 
+    RDHAIL1: 2.8
     RDHAIL2: 7.5
   NAMDYN:
     LADVF: true

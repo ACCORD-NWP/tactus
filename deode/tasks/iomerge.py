@@ -1,4 +1,5 @@
 """IO merge task."""
+
 import datetime
 import glob
 import os
@@ -109,11 +110,11 @@ class IOmerge(Task):
             ntries += 1
             file_list = []
             # Force a sync of the file system
-            os.system(f"sync {self.fc_path}")  # noqa S605
+            os.system(f"sync {self.fc_path}")
             if filetype == "history":
                 files_expected = files_expected if files_expected != 0 else -1
                 for io in range(self.nproc_io):
-                    iopath = f"io_serv.{io+1:06}.d"
+                    iopath = f"io_serv.{io + 1:06}.d"
                     file_list += glob.glob(f"{self.fc_path}/{iopath}/{filename}.speca.*")
                     file_list += glob.glob(f"{self.fc_path}/{iopath}/{filename}.gridall")
             elif filetype == "surfex":
@@ -122,13 +123,13 @@ class IOmerge(Task):
                 )
                 file_list += [f"{self.fc_path}/{filename}"]
                 for io in range(self.nproc_io):
-                    iopath = f"io_serv.{io+1:06}.d"
+                    iopath = f"io_serv.{io + 1:06}.d"
                     file_list += glob.glob(f"{self.fc_path}/{iopath}/{filename}")
             elif filetype == "fullpos":
                 files_expected = files_expected if files_expected != 0 else self.nproc_io
                 # FIXME: what if we have fullpos output in FA format?
                 for io in range(self.nproc_io):
-                    iopath = f"io_serv.{io+1:06}.d"
+                    iopath = f"io_serv.{io + 1:06}.d"
                     file_list += glob.glob(f"{self.fc_path}/{iopath}/{filename}.hfp")
             else:
                 files_expected = 0

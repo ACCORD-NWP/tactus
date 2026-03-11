@@ -1,5 +1,4 @@
 [scheduler]
-
 [scheduler.ecfvars]
   case_prefix = ""
   ecf_deode_home = "strip_off_mount_path('@DEODE_HOME@',)"

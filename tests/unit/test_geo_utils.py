@@ -1,4 +1,5 @@
 """Unit tests for geo_utils."""
+
 import pytest
 
 from deode.geo_utils import Projection, Projstring

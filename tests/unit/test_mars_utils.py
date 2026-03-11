@@ -245,18 +245,12 @@ class TestCompileSplitTarget:
                             pytest.fail(f"ERROR: given tag={tag} results in tag={tag2}")
 
                         if member2 != member and not (
-                            member is None
-                            and member2 == "0"
-                            or member == [None]
-                            and member2 == "0"
-                            or isinstance(member, int)
-                            and str(member) == member2
-                            or member_type == "control_member"
-                            and member2 == "0"
-                            or len(member) > 1
-                            and member2 == "[NUMBER]"
-                            or len(member) == 1
-                            and member2 == str(member[0])
+                            (member is None and member2 == "0")
+                            or (member == [None] and member2 == "0")
+                            or (isinstance(member, int) and str(member) == member2)
+                            or (member_type == "control_member" and member2 == "0")
+                            or (len(member) > 1 and member2 == "[NUMBER]")
+                            or (len(member) == 1 and member2 == str(member[0]))
                         ):
                             pytest.fail(
                                 f"ERROR: given member={member} results in member={member2}"

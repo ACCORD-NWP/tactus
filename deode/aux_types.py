@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Aux types used in the package."""
+
 import copy
 import json
 from collections.abc import Mapping, MutableMapping, MutableSequence, MutableSet

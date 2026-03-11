@@ -7,20 +7,20 @@ In  the following we have gathered instructions for all known platforms. If a pl
 In  the following we have gathered instructions for all known platforms. In the standard case a host/platform can be recognized either through the host name or by identifying a specific environment variable. This is configured in `deode/data/config_files/known_hosts.yml`. In the example below we see how `atos_bologna` and `lumi` are regonized via a hostname regular expression whereas `freja` is recognized from a specific environment variable. A hostname can also be forced by setting the DEODE_HOST environment variable which overrides all settings in the known_hosts.yml file.
 
 ```
-atos_bologna : 
+atos_bologna :
   hostname : "ac\\d-\\d\\d\\d"
-lumi : 
+lumi :
   hostname : "uan\\d\\d"
-freja: 
+freja:
   env:
    SNIC_RESOURCE: "freja"
 ```
 
 Any new host should be added in the same way and the names for the configuration files for `platform`, `scheduler` and submission should be named using the given hostname.
 
-## Setup ecflow 
+## Setup ecflow
 
-The ecflow server setup is defined in `deode/data/config_files/include/scheduler/ecflow_@HOST@.toml`. For your local installation you might add the proper configurations, e.g. `ecflow_freja.toml`: 
+The ecflow server setup is defined in `deode/data/config_files/include/scheduler/ecflow_@HOST@.toml`. For your local installation you might add the proper configurations, e.g. `ecflow_freja.toml`:
 ```toml
 [scheduler.ecfvars]
   ecf_files = "/nobackup/smhid20/users/@USER@/deode_ecflow/ecf_files"
@@ -36,7 +36,7 @@ The ecflow server setup is defined in `deode/data/config_files/include/scheduler
 
 Note there are two functions available for the detection of `ecf_port` and `ecf_host` that might help to detect correct values for these two variables. `_set_port_from_user()` sets a user-id related ecf_port while `_select_host_from_list()` finds the active ecf_host from a list of possible hostnames (used in `ecflow_atos_bologna.toml`). Both functions are defined in `deode/scheduler.py`
 
-## freja 
+## freja
 
 Freja is the SMHI research cluster operated by NSC. For more details see https://nsc.liu.se/systems/freja
 
@@ -44,7 +44,7 @@ Freja is the SMHI research cluster operated by NSC. For more details see https:/
 
 Get the code
 ```
-git clone git@github.com:destination-earth-digital-twins/Deode-Workflow.git 
+git clone git@github.com:destination-earth-digital-twins/Deode-Workflow.git
 cd Deode-Workflow
 ```
 
@@ -74,15 +74,15 @@ mamba deactivate
 
 To load your new environment do
 
-``` 
+```
 $ cd Deode-Workflow
 $ mamba activate .conda/
-``` 
+```
 
 Note that for the time being ( until the mamba/poetry usage is better understood ) it's recommended to make this procedure, with a new mamba name, for each new deode clone.
 
 
-## LEONARDO 
+## LEONARDO
 
 LEONARDO is a EuroHPC cluster operated by CINECA. For more details see https://www.hpc.cineca.it/systems/hardware/leonardo/
 
@@ -112,7 +112,7 @@ source $HOME/micromamba-wf/bin/activate
 ### Get and install the Deode-Workflow
 Get the code
 ```
-git clone git@github.com:destination-earth-digital-twins/Deode-Workflow.git 
+git clone git@github.com:destination-earth-digital-twins/Deode-Workflow.git
 cd Deode-Workflow
 ```
 
@@ -120,7 +120,7 @@ Activate your micromamba environment as above then install deode and all it's de
 
 ```
 poetry install
-poetry self update 
+poetry self update
 ```
 Acitvate poetry by
 ```
@@ -142,7 +142,7 @@ deode case ?deode/data/config_files/configurations/cy49t2_arome --start-suite
 ```
 
 ### Access the ecflow server with port forwarding
-The ecflow_ui can be executed on the login node of leonardo but it's faster to run the gui locally. To open up the port for ecflow_ui do locally 
+The ecflow_ui can be executed on the login node of leonardo but it's faster to run the gui locally. To open up the port for ecflow_ui do locally
 
 ```
 ssh YOUR_USER@SUBMIT_HOST -C -N -L PORT:SUBMIT_HOST:PORT

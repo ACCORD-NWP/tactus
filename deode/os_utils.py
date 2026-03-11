@@ -64,9 +64,11 @@ class Search:
             fullpath = False
             files = []
             for r, _d, f in os.walk(directory):  # r=root, d=directories, f=files
-                for file in f:
-                    if file.startswith(prefix) and file.endswith(postfix):
-                        files.append(os.path.join(r, file))  # noqa: PERF401
+                files.extend(
+                    os.path.join(r, file)
+                    for file in f
+                    if file.startswith(prefix) and file.endswith(postfix)
+                )
 
         elif not recursive:
             if onlyfiles:
@@ -85,7 +87,7 @@ class Search:
                     if f.endswith(postfix) and f.startswith(prefix)
                 ]
 
-        if pattern != "":
+        if pattern:
             files = [f for f in files if re.search(pattern, f)]
 
         if fullpath:
@@ -164,7 +166,7 @@ def deodemakedirs(path: str | Path, unixgroup="", exist_ok=True, def_dir_mode=0o
     p = Path(path).resolve()
 
     dir_mode = def_dir_mode
-    if unixgroup != "":
+    if unixgroup:
         dir_mode = 0o2750
 
     if p.parents[0].is_dir():
@@ -241,7 +243,7 @@ def ping(host):
     """
     cmd = ["ping", "-c", "1", host]
     try:
-        subprocess.check_output(cmd, stderr=subprocess.STDOUT)  # noqa S603
+        subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         return True
     except subprocess.CalledProcessError:
         return False
@@ -310,14 +312,13 @@ def resolve_path_relative_to_package(path: Path, ignore_errors: bool = False) ->
         ignore_errors (bool, optional): Option to ignore errors.
             Defaults to False.
 
-    Raises:
-        FileNotFoundError: If it was impossible to determine path relative to package.
-        FileNotFoundError: If file does not exist locally or in the package directory.
-
     Returns:
         Path: Original path (if exists locally), or resolved path relative to
             package directory.
 
+    Raises:
+        FileNotFoundError: If it was impossible to determine path relative to package.
+        FileNotFoundError: If file does not exist locally or in the package directory.
     """
     path = path.expanduser().resolve()
     # First check if path exists as is
@@ -362,9 +363,7 @@ def list_files_join(folder, f_pattern):
         list of files that should be joined
     """
     pattern_list = os.path.join(folder, f_pattern)
-    filenames = glob.glob(pattern_list)
-
-    return filenames
+    return glob.glob(pattern_list)
 
 
 def join_files(input_files: List[str], output_filepath: str):

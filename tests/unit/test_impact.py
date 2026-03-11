@@ -90,9 +90,7 @@ def basic_config_installed_test2(basic_config_installed):
             arguments = "hello world, from task test2"
         """
     )
-    config = basic_config_installed.copy(update=config_patch)
-
-    return config
+    return basic_config_installed.copy(update=config_patch)
 
 
 def test_impact_inactive_not_installed(basic_config):

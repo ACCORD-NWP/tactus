@@ -14,9 +14,9 @@ Basically any configuration setting can be "perturbed", i.e. configured differen
 ## Running a minimal ensemble
 
 To get hands-on running an ensemble, the Deode-Workflow ships with a bunch of example eps include files. To enable one of them, one has to include the file in the configuration or on the commandline. The example eps include files are available in the
-`deode/data/config_files/include/eps/` directory. 
+`deode/data/config_files/include/eps/` directory.
 E.g. to run a 1 control + 2 perturbed members (using IFSENS boundary data) ensemble, one can use the `deode/data/config_files/include/eps/eps_3members_IFSENS_common_mars_prep` and do
-    
+
 ```bash
 deode case --config-file deode/data/config_files/config.toml deode/data/config_files/include/eps/eps_3members_IFSENS_common_mars_prep.toml --start-suite
 ```
@@ -264,26 +264,26 @@ then the three modification files will be merged into the resulting config file 
 
 [eps.members.0.boundaries.ifs]
   bdmember = 0
-  
+
 [eps.members.1.general.output_settings]
   fullpos = "PT2H"
 
 [eps.members.1.boundaries.ifs]
   bdmember = 1
-  
+
 [eps.members.2.general.output_settings]
   fullpos = "PT3H"
 
 [eps.members.2.boundaries.ifs]
   bdmember = 2
-  
+
 ```
 > **_NOTE:_**:
 > - It's not important what the keys in the modification section are called. They are just used to label the different modification files.
-> - The settings in the modification files will overwrite any existing value for that setting. 
+> - The settings in the modification files will overwrite any existing value for that setting.
 > - The general.times.start setting is set to "-P1D" by default, to make the example able to run out-of-the-box, since IFSENS data is only available in mars for the past two weeks.
 
-Now to the 3 CSC ensemble example. To set this up, one needs to have the following in the eps config file (NOTE: the exact modification file paths may change with the Deode-Workflow version): 
+Now to the 3 CSC ensemble example. To set this up, one needs to have the following in the eps config file (NOTE: the exact modification file paths may change with the Deode-Workflow version):
 
 ```toml
 [suite_control]
@@ -304,7 +304,7 @@ The `member_specific_static_data = true` setting is needed since the static data
 
 ## Configuring EPS in general terms
 
-This section describes how to configure an ensemble in Deode-Workflow in general terms. All configuration described below should be applied to a `.toml` file, that is included when running the `deode case` command, as described in [Running a minimal ensemble](#running-a-minimal-ensemble). 
+This section describes how to configure an ensemble in Deode-Workflow in general terms. All configuration described below should be applied to a `.toml` file, that is included when running the `deode case` command, as described in [Running a minimal ensemble](#running-a-minimal-ensemble).
 
 In the `[eps.general]` section, one can set the members that should be part of the ensemble. The `members` setting can either be
 
@@ -312,7 +312,7 @@ In the `[eps.general]` section, one can set the members that should be part of t
 2. a list of integers or
 3. a string sequence of integers or slices separated by commas
 
-E.g. `members = [1, 3, 5]` will include members 1, 3, and 5 in the ensemble, 
+E.g. `members = [1, 3, 5]` will include members 1, 3, and 5 in the ensemble,
 whereas `members = "0, 1, 2, 4:10:2"` will include members 0, 1, 2, 4, 6, and 8. Setting `members = 1` will include only member 1.
 The format of the string slices follows the Python slice notation, i.e. `start:stop:step`.
 The default value for `step` is 1, so `start:stop` is equivalent to `start:stop:1`.
@@ -398,7 +398,7 @@ parameter = {0 = "value1", 1 = "value2", "2:5:2" = "value3", ...}
 >     [eps.member_settings]
 >     parameter = {"6:16" = "value1"}
 >   ```
->   will set `parameter = "value1"` only for members 6, 7, 8, and 9. 
+>   will set `parameter = "value1"` only for members 6, 7, 8, and 9.
 > - For members with no mbr/value pair, the default is used. I.e. in the above example, members 0-5 will get the default value.
 > - In cases, where a mbr key is duplicated in the dictionary (including string slices), the last value is used. E.g. in
 >  ```toml
@@ -418,7 +418,7 @@ class BoolGenerator(BaseGenerator[bool]):
 
     def __iter__(self):
         for _ in self.members:
-            yield random.choice([True, False]) 
+            yield random.choice([True, False])
 ```
 
 and set the parameter to a string that points to the given class object like
@@ -435,6 +435,6 @@ parameter = "deode.eps.custom_generators.BoolGenerator"
 [eps.members.1]
   parameter = false
 [eps.members.2]
-  parameter = false  
+  parameter = false
 ...
 ```

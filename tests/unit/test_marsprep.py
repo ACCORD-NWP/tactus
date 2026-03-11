@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for the marsprep."""
 
-
 import pytest
 import tomlkit
 
@@ -18,11 +17,8 @@ from deode.tasks.marsprep import Marsprep
 @pytest.fixture(scope="module")
 def base_parsed_config(default_config):
     """Return a parsed config common to all tasks."""
-    config = default_config
-    config = config.copy(update=set_times(config))
-    config = config.copy(update=derived_variables(config))
-
-    return config
+    config = default_config.copy(update=set_times(default_config))
+    return config.copy(update=derived_variables(config))
 
 
 @pytest.fixture(
@@ -49,8 +45,7 @@ def fixture_parsed_config_and_selection(request, base_parsed_config, tmp_directo
 def fixture_marsprep_instance(parsed_config_and_selection):
     """Create a Marsprep instance using the parsed config."""
     _, config = parsed_config_and_selection
-    instance = Marsprep(config)
-    return instance
+    return Marsprep(config)
 
 
 def test_mars_selection(parsed_config_and_selection):

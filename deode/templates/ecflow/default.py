@@ -80,7 +80,7 @@ def default_main(kwargs: dict):
 
     args = kwargs.get("ARGS")
     args_dict = {}
-    if args != "":
+    if args:
         for arg in args.split(";"):
             parts = arg.split("=")
             if len(parts) == 2:

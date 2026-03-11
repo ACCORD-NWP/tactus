@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Wrappers for argparse functionality."""
+
 import argparse
 import sys
 from pathlib import Path

@@ -49,12 +49,12 @@ def get_task(name, config) -> Task:
         name (_type_): _description_
         config (_type_): _description_
 
-    Raises:
-        NotImplementedError: If task `name` is not amongst the known task names.
-
     Returns:
         Task: The task object with name `name`. The task object has to be a subclass
         of Task to be retrievable.
+
+    Raises:
+        NotImplementedError: If task `name` is not amongst the known task names.
     """
     with contextlib.suppress(KeyError):
         # loglevel may have been overridden, e.g., via ECFLOW UI

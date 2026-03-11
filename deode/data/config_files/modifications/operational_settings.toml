@@ -65,7 +65,6 @@
   pattern = "@CONFIG@"
 
 [archiving.static.ecfs]
-
 [archiving.static.ecfs.climate_files]
   active = true
   inpath = "@CLIMDIR@"

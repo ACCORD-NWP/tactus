@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Registration and validation of options passed in the config file."""
+
 import contextlib
 import glob
 import json
@@ -83,12 +84,11 @@ class ConfigPaths:
                 list_paths (list): directories to search for
                 dirmap (dict): Mapping between display name and actual path
 
-            Raises:
-                RuntimeError: In case of multiple conflicting paths detected
-
             Returns:
                 mapping (dict): Dict of search result
 
+            Raises:
+                RuntimeError: In case of multiple conflicting paths detected
             """
             mapping = {}
             for dir_ in list_paths:
@@ -275,9 +275,10 @@ class JsonSchema(BaseMapping):
             with open(Path(tmpdir) / "schema.json", "w") as schema_file:
                 schema_file.write(json.dumps(self.dict()))
 
-            with open(
-                Path(tmpdir) / "schema_doc.md", "w"
-            ) as doc_file, contextlib.redirect_stdout(None):
+            with (
+                open(Path(tmpdir) / "schema_doc.md", "w") as doc_file,
+                contextlib.redirect_stdout(None),
+            ):
                 generate_from_file_object(
                     schema_file=schema_file,
                     result_file=doc_file,
@@ -439,11 +440,11 @@ def _read_raw_config_file(config_path: Path):
     Args:
         config_path (Path): Path to the config file.
 
-    Raises:
-        NotImplementedError: If the config file format is not supported.
-
     Returns:
         dict: Configs read from the specified path.
+
+    Raises:
+        NotImplementedError: If the config file format is not supported.
     """
     config_path = resolve_path_relative_to_package(config_path)
 

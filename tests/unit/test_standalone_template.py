@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for the standalone template script."""
+
 import os
 
 from deode import GeneralConstants

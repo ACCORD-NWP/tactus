@@ -30,22 +30,22 @@ class ProcessorLayout:
         """
         self.wrapper = kwargs.get("WRAPPER")
         self.nproc = kwargs.get("NPROC")
-        if self.nproc == "":
+        if not self.nproc:
             self.nproc = None
         if isinstance(self.nproc, str):
             self.nproc = int(self.nproc)
         self.nproc_io = kwargs.get("NPROC_IO")
-        if self.nproc_io == "":
+        if not self.nproc_io:
             self.nproc_io = None
         if isinstance(self.nproc_io, str):
             self.nproc_io = int(self.nproc_io)
         self.nprocx = kwargs.get("NPROCX")
-        if self.nprocx == "":
+        if not self.nprocx:
             self.nprocx = None
         if isinstance(self.nprocx, str):
             self.nprocx = int(self.nprocx)
         self.nprocy = kwargs.get("NPROCY")
-        if self.nprocy == "":
+        if not self.nprocy:
             self.nprocy = None
         if isinstance(self.nprocy, str):
             self.nprocy = int(self.nprocy)
@@ -57,9 +57,12 @@ class ProcessorLayout:
         nproc_io = self.nproc_io
         nprocx = self.nprocx
         nprocy = self.nprocy
-        procs.update(
-            {"nproc": nproc, "nproc_io": nproc_io, "nprocx": nprocx, "nprocy": nprocy}
-        )
+        procs.update({
+            "nproc": nproc,
+            "nproc_io": nproc_io,
+            "nprocx": nprocx,
+            "nprocy": nprocy,
+        })
         return procs
 
     def get_wrapper(self):
@@ -460,6 +463,6 @@ class NoSchedulerSubmission:
                 f"{task_job} -o {output}"
             )
             try:
-                subprocess.check_call(cmd.split())  # noqa S603
+                subprocess.check_call(cmd.split())
             except subprocess.CalledProcessError as exc:
                 raise RuntimeError(f"Submission failed with {exc!r}") from exc

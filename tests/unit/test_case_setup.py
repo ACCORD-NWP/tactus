@@ -21,10 +21,10 @@ def fixture_tmp_directory(tmp_path_factory: pytest.TempPathFactory) -> Path:
     return tmp_path_factory.getbasetemp()
 
 
-@pytest.fixture()
+@pytest.fixture
 def test_domain():
     """Return a test domain."""
-    domain = {
+    return {
         "gridtype": "linear",
         "name": "TEST_DOMAIN",
         "nimax": 50,
@@ -37,10 +37,9 @@ def test_domain():
         "xlon0": 10.0,
         "xloncen": 10.0,
     }
-    return domain
 
 
-@pytest.fixture()
+@pytest.fixture
 def default_config_dir():
     rootdir = f"{os.path.dirname(__file__)}/../.."
     return f"{rootdir}/deode/data/config_files"
@@ -55,7 +54,7 @@ def test_save_config(tmp_directory: Path, default_config):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def _module_mockers_atos_bologna(module_mocker):
     def new_socket_gethostname():
         return "ac6-102.bullx"

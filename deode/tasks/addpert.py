@@ -28,7 +28,7 @@ class Addpert(Task):
         )
         self.binary = self.get_binary("ADDPERT")
         self.name = (
-            f"{self.name}_" f"{self.boundary.min_index}-" f"{self.boundary.max_index}"
+            f"{self.name}_{self.boundary.min_index}-{self.boundary.max_index}"
         ).upper()
 
     def execute(self):
@@ -84,7 +84,7 @@ class Addpert(Task):
                             basetime=bd_basetime,
                             validtime=validtime,
                         )
-                tmp_file = f"FILE{i+1}"
+                tmp_file = f"FILE{i + 1}"
                 if os.path.exists(tmp_file):
                     os.remove(tmp_file)
                 self.fmanager.input(

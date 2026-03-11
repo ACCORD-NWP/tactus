@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for commands_functions.py."""
+
 import filecmp
 import os
 from argparse import ArgumentParser
@@ -16,7 +17,7 @@ from deode.commands_functions import (
 from deode.os_utils import resolve_path_relative_to_package
 
 
-@pytest.fixture()
+@pytest.fixture
 def set_arg():
     arg = ArgumentParser()
     arg.deode_home = None
@@ -28,7 +29,7 @@ def set_arg():
     return arg
 
 
-@pytest.fixture()
+@pytest.fixture
 def nlint_arg(tmp_directory):
     arg = ArgumentParser()
     arg.deode_home = None
@@ -103,7 +104,7 @@ def test_namelist_integrate(nlint_arg, default_config):
     assert os.path.isfile(nlint_arg.output)
 
 
-@pytest.fixture()
+@pytest.fixture
 def nlconyml_arg(tmp_directory):
     arg = ArgumentParser()
     arg.namelist = resolve_path_relative_to_package(
@@ -129,7 +130,7 @@ def test_namelist_convert_yml(nlconyml_arg, default_config):
     assert filecmp.cmp(nlconyml_arg.output_reference, nlconyml_arg.output)
 
 
-@pytest.fixture()
+@pytest.fixture
 def nlconftn_arg(tmp_directory):
     arg = ArgumentParser()
     arg.namelist = str(
@@ -156,7 +157,7 @@ def test_namelist_convert_ftn(nlconftn_arg, default_config):
     assert filecmp.cmp(nlconftn_arg.output_reference, nlconftn_arg.output)
 
 
-@pytest.fixture()
+@pytest.fixture
 def nlformatyml_arg(tmp_directory):
     arg = ArgumentParser()
     arg.namelist = resolve_path_relative_to_package(
@@ -180,7 +181,7 @@ def test_namelist_format_yml(nlformatyml_arg, default_config):
     assert filecmp.cmp(nlformatyml_arg.output_reference, nlformatyml_arg.output)
 
 
-@pytest.fixture()
+@pytest.fixture
 def nlformatftn_arg(tmp_directory):
     arg = ArgumentParser()
     arg.namelist = str(

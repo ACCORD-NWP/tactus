@@ -1,5 +1,4 @@
 [file_templates]
-
 [file_templates.bdfile]
   archive = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@"
 

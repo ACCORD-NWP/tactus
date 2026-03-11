@@ -9,7 +9,7 @@ Welcome to the Deode Workflow Doc Page!
    :caption: Contents:
    :maxdepth: 1
 
-   DEODE <readme_link>  
+   DEODE <readme_link>
    LUMI  <lumi_link>
    Development Guidelines <development_guidelines_link.rst>
    API Documentation <deode>

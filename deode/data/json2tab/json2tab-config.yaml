@@ -17,7 +17,7 @@ subsetting:
 
   # Spatial cropping method; can be either "bbox" (bounding box) or "domain" (TOML-based domain)
   method: "domain"
-  
+
 # Turbine matcher configuration
 matcher:
   use_probabilistic_mapper: false
@@ -46,7 +46,7 @@ output:
     # Tab file outputs
     location_tab: "{TO BE SET BY DEODE-WORKFLOW}"
     type_tab_prefix: "{TO BE SET BY DEODE-WORKFLOW}"  # Will be followed by type ID and .tab
-    
+
   # Tab file formatting
   tab_format:
     type_spec:

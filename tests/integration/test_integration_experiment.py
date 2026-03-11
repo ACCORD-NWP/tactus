@@ -48,8 +48,7 @@ def fixture_eps_config(default_config: ParsedConfig):
 def fixture_module_scope_tmp_path(tmp_path_factory):
     """Fixture that provides a temporary path with module scope."""
     # Create a temporary directory with module scope
-    tmp_path = tmp_path_factory.mktemp("module_scope_tmp")
-    return tmp_path
+    return tmp_path_factory.mktemp("module_scope_tmp")
 
 
 @pytest.fixture(name="modifications")

@@ -47,6 +47,7 @@ class Marsprep(Task):
 
         Args:
             config (deode.ParsedConfig): Configuration
+
         Raises:
             ValueError: No data for this date.
         """
@@ -219,12 +220,10 @@ class Marsprep(Task):
         request.add_database_options()
 
         if specify_domain:
-            request.update_request(
-                {
-                    "GRID": get_value_from_dict(self.mars["grid"], request.date),
-                    "AREA": get_domain_data(self.config),
-                }
-            )
+            request.update_request({
+                "GRID": get_value_from_dict(self.mars["grid"], request.date),
+                "AREA": get_domain_data(self.config),
+            })
 
         if fieldset:
             request.update_request({"FIELDSET": fieldset})

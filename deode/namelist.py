@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Namelist handling for MASTERODB w/SURFEX."""
+
 import ast
 import copy
 import os
@@ -216,10 +217,11 @@ class NamelistComparator:
                     dout[key] = dcomp[key]
             # Remove empty namelists in diffs
             if action == "diff":
-                todel = []
-                for key in dout:
-                    if isinstance(dout[key], dict) and len(dout[key]) == 0:
-                        todel.append(key)  # noqa: PERF401
+                todel = [
+                    key
+                    for key in dout
+                    if isinstance(dout[key], dict) and len(dout[key]) == 0
+                ]
                 # Delayed deletion to avoid "dictionary changed size during iteration"
                 for key in todel:
                     del dout[key]
@@ -436,12 +438,11 @@ class NamelistGenerator:
         Args:
             target (str): task to generate namelists for
 
-        Raises:
-            InvalidNamelistTargetError   # noqa: DAR401
-
         Returns:
             nlres (dict): Assembled namelist
 
+        Raises:
+            InvalidNamelistTargetError   # noqa: DAR401
         """
         self.target = target
         # define OmegaConf resolvers
@@ -665,8 +666,7 @@ class NamelistIntegrator:
     def yml2dict(ymlfile):
         """Read yaml namelist file and return as dict."""
         with open(ymlfile, mode="rt", encoding="utf-8") as file:
-            ynml = yaml.safe_load(file)
-        return ynml
+            return yaml.safe_load(file)
 
     @staticmethod
     def dict2yml(nmldict, ymlfile, ordered_sections=None):
@@ -961,6 +961,6 @@ class NamelistConverter:
         ]
 
         try:
-            subprocess.check_call(command)  # noqa S603
+            subprocess.check_call(command)
         except subprocess.CalledProcessError as exception:
             raise SystemExit(f"tnt failed with {exception!r}") from exception

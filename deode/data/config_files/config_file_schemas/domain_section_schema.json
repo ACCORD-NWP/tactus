@@ -8,18 +8,34 @@
     "gridtype": {
       "type": "string",
       "description": "Select truncation type",
-      "enum": ["linear", "quadratic", "cubic", "custom"]
+      "enum": [
+        "linear",
+        "quadratic",
+        "cubic",
+        "custom"
+      ]
     },
     "gridtype_oro": {
       "type": "string",
       "description": "Select truncation type for orographic_smoothing",
-      "enum": ["linear", "quadratic", "cubic", "custom", ""],
+      "enum": [
+        "linear",
+        "quadratic",
+        "cubic",
+        "custom",
+        ""
+      ],
       "default": ""
     },
     "orographic_smoothing_method": {
       "type": "string",
       "description": "Orographic smoothing method",
-      "enum": ["spectral", "truncation","nzsfilter","raw"],
+      "enum": [
+        "spectral",
+        "truncation",
+        "nzsfilter",
+        "raw"
+      ],
       "default": "truncation"
     },
     "name": {
@@ -43,7 +59,10 @@
     "nzsfilter": {
       "type": "number",
       "description": "Activate the PGD orographic filtering",
-      "enum": [0,1]
+      "enum": [
+        0,
+        1
+      ]
     },
     "nimax": {
       "type": "number",
@@ -169,8 +188,11 @@
       "description": "Lead time of DTF, which trigger the domain",
       "default": "",
       "type": "string",
-      "enum": ["", "01", "02"]
+      "enum": [
+        "",
+        "01",
+        "02"
+      ]
     }
-
   }
 }

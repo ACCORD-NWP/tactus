@@ -1,5 +1,4 @@
 [scheduler]
-
 [scheduler.ecfvars]
   case_prefix = "@USER@_"
   ecf_deode_home = "@DEODE_HOME@"

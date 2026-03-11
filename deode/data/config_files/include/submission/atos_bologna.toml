@@ -78,7 +78,7 @@
   NPROC_IO = 2
 
 [submission.task_exceptions.Forecast.BATCH]
-  #  MEM = "#SBATCH --mem=200GB"
+  # MEM = "#SBATCH --mem=200GB"
   NODES = "#SBATCH --nodes=2"
   NTASKS = "#SBATCH --ntasks=32"
   WALLTIME = "#SBATCH --time=01:00:00"

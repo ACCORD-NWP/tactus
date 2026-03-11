@@ -39,10 +39,8 @@ class Archive:
 
             for archive_type, choices in choices_for_type.items():
                 abort = (
-                    archive_type not in include
-                    and len(include) > 0
-                    or archive_type in exclude
-                )
+                    archive_type not in include and len(include) > 0
+                ) or archive_type in exclude
                 if abort:
                     msg = f"Archive method {archive_type} is not allowed for this task\n"
                     if len(exclude) > 0:

@@ -1256,7 +1256,7 @@
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
     scaleFactorOfSecondFixedSurface = missing() ;
-    scaledValueOfSecondFixedSurface = missing() ;    
+    scaledValueOfSecondFixedSurface = missing() ;
     LSTCUM = 0 ;
 }
 
@@ -2871,7 +2871,7 @@
     typeOfFirstFixedSurface = 19 ;
     scaledValueOfFirstFixedSurface = 50 ;
     scaleFactorOfFirstFixedSurface = 0 ;
-     
+
 }
 "ATMOCLD.CEIL.H" = {
     discipline = 0 ;
@@ -3199,7 +3199,7 @@
     scaledValueOfFirstFixedSurface = 69680 ;
     scaledValueOfSecondFixedSurface = 46560 ;
     scaleFactorOfFirstFixedSurface = 0 ;
-    scaleFactorOfSecondFixedSurface = 0 ; 
+    scaleFactorOfSecondFixedSurface = 0 ;
     statisticalProcess = 2 ;
     spatialProcessing = 0 ;
     tablesVersion = 15 ;
@@ -3215,7 +3215,7 @@
     scaledValueOfFirstFixedSurface = 46560  ;
     scaledValueOfSecondFixedSurface = 7170 ;
     scaleFactorOfFirstFixedSurface = 0 ;
-    scaleFactorOfSecondFixedSurface = 0 ; 
+    scaleFactorOfSecondFixedSurface = 0 ;
     statisticalProcess = 2 ;
     spatialProcessing = 0 ;
     tablesVersion = 15 ;
@@ -3231,7 +3231,7 @@
     scaledValueOfFirstFixedSurface = 69680 ;
     scaledValueOfSecondFixedSurface = 46560 ;
     scaleFactorOfFirstFixedSurface = 0 ;
-    scaleFactorOfSecondFixedSurface = 0 ; 
+    scaleFactorOfSecondFixedSurface = 0 ;
     tablesVersion = 15 ;
 }
 # High-levels Ellrod1 for ensemble forecast
@@ -3245,7 +3245,7 @@
     scaledValueOfFirstFixedSurface = 46560  ;
     scaledValueOfSecondFixedSurface = 7170 ;
     scaleFactorOfFirstFixedSurface = 0 ;
-    scaleFactorOfSecondFixedSurface = 0 ; 
+    scaleFactorOfSecondFixedSurface = 0 ;
     tablesVersion = 15 ;
 }
 
@@ -5500,7 +5500,7 @@
     productDefinitionTemplateNumber = 113 ;
     tablesVersion = 32 ;
 }
-# Skin temperature for AQ 
+# Skin temperature for AQ
 "SFX.TS"= {
     discipline = 0 ;
     parameterCategory = 0 ;
@@ -5508,14 +5508,14 @@
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
 }
-# Sea surface temperature for AQ 
+# Sea surface temperature for AQ
 "SFX.SST"= {
     discipline = 10 ;
     parameterCategory = 3 ;
     parameterNumber = 0 ;
     typeOfFirstFixedSurface = 1 ;
 }
-# Sea ice cover for AQ 
+# Sea ice cover for AQ
 "SFX.SIC"= {
     discipline = 10 ;
     parameterCategory = 2 ;
@@ -5549,7 +5549,7 @@
     typeOfFirstFixedSurface = 1 ;
     tablesVersion = 15 ;
 }
-# Roughness Length for AQ 
+# Roughness Length for AQ
 "SFX.Z0"= {
     discipline = 2 ;
     parameterCategory = 0 ;
@@ -5557,7 +5557,7 @@
     typeOfFirstFixedSurface = 1 ;
     tablesVersion = 15 ;
 }
-# 2-m specific humidity for AQ 
+# 2-m specific humidity for AQ
 "SFX.Q2M"= {
     discipline = 0 ;
     parameterCategory = 1 ;
@@ -5566,7 +5566,7 @@
     scaledValueOfFirstFixedSurface = 2 ;
     tablesVersion = 15 ;
 }
-# 2-m specific humidity for AQ 
+# 2-m specific humidity for AQ
 "SFX.QS"= {
     discipline = 0 ;
     parameterCategory = 1 ;

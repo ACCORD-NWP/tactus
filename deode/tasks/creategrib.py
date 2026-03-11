@@ -153,9 +153,11 @@ class GlGrib(Task):
                     )
                     if validtime not in convert_dict:
                         convert_dict[validtime] = []
-                    convert_dict[validtime].append(
-                        {"fname": fname, "output": output, "filetype": filetype}
-                    )
+                    convert_dict[validtime].append({
+                        "fname": fname,
+                        "output": output,
+                        "filetype": filetype,
+                    })
 
             convert_list = [x for t in sorted(convert_dict) for x in convert_dict[t]]
             for items in convert_list[self.tasknr :: self.ntasks]:
