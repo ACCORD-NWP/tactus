@@ -27,6 +27,9 @@ from tactus.tasks.marsprep import Marsprep
 from tactus.tasks.sqlite import ExtractSQLite, MergeSQLites
 from tactus.toolbox import ArchiveError, FileManager, ProviderError
 
+with contextlib.suppress(ModuleNotFoundError):
+    pass
+
 
 def classes_to_be_tested():
     """Return the names of the task-related classes to be tested."""

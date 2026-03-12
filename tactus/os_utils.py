@@ -7,11 +7,11 @@ import pathlib
 import re
 import shutil
 import subprocess
+import sys
 import time
 from pathlib import Path
 from typing import List, Union
 
-from . import GeneralConstants
 from .logs import logger
 
 
@@ -300,10 +300,12 @@ def strip_off_mount_path(path: Union[str, Path]) -> Path:
 
 
 def resolve_path_relative_to_package(path: Path, ignore_errors: bool = False) -> Path:
-    """Resolve path relative to package directory.
+    """Resolve path relative to any sys.path entry.
 
-    If the path exists as is, return it. If not, check if it exists in the
-    package directory and return path relative to package
+    If the path exists as is, return it. If not, derive a relative path by
+    stripping known sys.path prefixes, then search every sys.path entry for
+    that relative path. Raises an error if more than one candidate is found
+    to avoid silent ambiguity.
 
     Args:
         path (Path): Path to resolve.
@@ -311,43 +313,49 @@ def resolve_path_relative_to_package(path: Path, ignore_errors: bool = False) ->
             Defaults to False.
 
     Raises:
-        FileNotFoundError: If it was impossible to determine path relative to package.
-        FileNotFoundError: If file does not exist locally or in the package directory.
+        FileNotFoundError: If the file is not found under any sys.path entry
+            and ignore_errors is False.
+        ValueError: If more than one candidate is found across sys.path entries.
 
     Returns:
         Path: Original path (if exists locally), or resolved path relative to
-            package directory.
+            a sys.path entry.
 
     """
     path = path.expanduser().resolve()
-    # First check if path exists as is
-    if not os.path.exists(path):
-        # Get path relative to package. Needed when tactus is installed as
-        # a site-package e.g. when creating plugins.
-        if GeneralConstants.PACKAGE_NAME in path.parts:
-            # Find last occurence of package name in path
-            package_index_in_path = (
-                len(path.parts)
-                - path.parts[::-1].index(GeneralConstants.PACKAGE_NAME)
-                - 1
-            )
-            # Stick together the path in the package directory
-            config_parts = path.parts[package_index_in_path:]
-            path = GeneralConstants.PACKAGE_DIRECTORY.parent / Path(*config_parts)
-        elif not ignore_errors:
-            raise FileNotFoundError(
-                f"Could not determine path {path} relative to the "
-                + f"{GeneralConstants.PACKAGE_NAME} package."
-            )
-
-        # If not, check if it exists in the package directory (used when
-        # tactus is installed as package)
-        if not os.path.exists(path) and not ignore_errors:
-            raise FileNotFoundError(
-                f"Config file {path} not found locally or in package directory"
-            )
+    if os.path.exists(path):
         return path
 
+    # For each sys.path entry that is a prefix of the given path, derive the
+    # relative portion and search all sys.path entries for it.
+    candidates = set()
+    for sys_path_str in sys.path:
+        if not sys_path_str:
+            continue
+        try:
+            rel_path = path.relative_to(sys_path_str)
+        except ValueError:
+            continue
+
+        for search_path_str in sys.path:
+            if not search_path_str:
+                continue
+            candidate = Path(search_path_str) / rel_path
+            if candidate.exists():
+                candidates.add(candidate)
+
+    if len(candidates) > 1:
+        raise ValueError(
+            f"Ambiguous path resolution for {path}. "
+            "Multiple candidates found across sys.path entries:\n"
+            + "\n".join(f"  {c}" for c in sorted(candidates))
+        )
+    if len(candidates) == 1:
+        return next(iter(candidates))
+    if not ignore_errors:
+        raise FileNotFoundError(
+            f"File {path} not found locally or relative to any sys.path entry"
+        )
     return path
 
 
