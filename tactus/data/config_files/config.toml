@@ -3,7 +3,7 @@
   case = "@CASE_PREFIX@@CYCLE@_@CSC@_@EVENT_TYPE@_@DOMAIN@_@YMD_START@"
   cnmexp = "DEOD"
   csc = "AROME"
-  cycle = "CY49t2"
+  cycle = "CY50t2"
   famodel = "destine-@CYCLE@-@CSC@-oper"
   keep_workdirs = true
   surfex = true
