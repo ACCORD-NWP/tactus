@@ -130,7 +130,8 @@ class MergeSQLites(Task):
     def execute(self):
         """Execute MergeSQLite on all member FC files."""
         sqlite_template = (
-            self.platform.substitute(self.config["extractsqlite.sqlite_template"])
+            self.platform
+            .substitute(self.config["extractsqlite.sqlite_template"])
             .replace("{", "@")
             .replace("}", "@")
         )

@@ -39,7 +39,9 @@ class TestImportFromString:
 
     def test_with_empty_string(self):
         """Test import_from_string with an empty string."""
-        with pytest.raises(ImportError), patch(
-            "deode.custom_validators.importlib.import_module"
-        ), patch("deode.custom_validators.sys.modules"):
+        with (
+            pytest.raises(ImportError),
+            patch("deode.custom_validators.importlib.import_module"),
+            patch("deode.custom_validators.sys.modules"),
+        ):
             import_from_string("")

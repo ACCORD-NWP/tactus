@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
+
 import datetime
 import itertools
 import json
@@ -25,7 +26,7 @@ from deode.config_parser import (
 from deode.datetime_utils import DatetimeConstants, as_datetime
 
 
-@pytest.fixture()
+@pytest.fixture
 def minimal_raw_config():
     return tomlkit.parse(
         """
@@ -35,7 +36,7 @@ def minimal_raw_config():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def raw_config_with_task(minimal_raw_config):
     rtn = minimal_raw_config.copy()
     task_configs = tomlkit.parse(
@@ -52,7 +53,7 @@ def raw_config_with_task(minimal_raw_config):
     return rtn
 
 
-@pytest.fixture()
+@pytest.fixture
 def raw_config_with_non_recognised_options(minimal_raw_config):
     raw_config = minimal_raw_config.copy()
 
@@ -76,14 +77,14 @@ def raw_config_with_non_recognised_options(minimal_raw_config):
     return raw_config
 
 
-@pytest.fixture()
+@pytest.fixture
 def minimal_parsed_config(minimal_raw_config):
     return ParsedConfig(
         minimal_raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def parsed_config_with_task(raw_config_with_task):
     return ParsedConfig(
         raw_config_with_task,
@@ -91,9 +92,9 @@ def parsed_config_with_task(raw_config_with_task):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def json_schema_for_iso_8601_time_specs_tests():
-    schema = {
+    return {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "title": "Test Schema",
         "type": "object",
@@ -125,15 +126,13 @@ def json_schema_for_iso_8601_time_specs_tests():
         },
     }
 
-    return schema
 
-
-@pytest.fixture()
+@pytest.fixture
 def tmp_test_data_dir(tmpdir_factory):
     return Path(tmpdir_factory.mktemp("deode_test_rootdir"))
 
 
-@pytest.fixture()
+@pytest.fixture
 def config_path(minimal_raw_config, tmp_test_data_dir):
     config_path = tmp_test_data_dir / "config.toml"
     with open(config_path, "w") as config_file:
@@ -141,7 +140,7 @@ def config_path(minimal_raw_config, tmp_test_data_dir):
     return config_path
 
 
-@pytest.fixture()
+@pytest.fixture
 def package_main_config_without_validation():
     return ParsedConfig.from_file(
         ConfigParserDefaults.PACKAGE_CONFIG_PATH, json_schema={}, host="atos_bologna"
@@ -479,7 +478,7 @@ class TestPossibilityOfISO8601ComplianceEnforcement:
         )
 
 
-@pytest.fixture()
+@pytest.fixture
 def valid_config_include_section():
     files_under_include_dir = list(ConfigParserDefaults.PACKAGE_INCLUDE_DIR.glob("*"))
 
@@ -493,7 +492,7 @@ def valid_config_include_section():
     return include_section
 
 
-@pytest.fixture()
+@pytest.fixture
 def raw_config_with_include_section(minimal_raw_config, valid_config_include_section):
     raw_config = minimal_raw_config.copy()
     include_section = valid_config_include_section.copy()
@@ -501,7 +500,7 @@ def raw_config_with_include_section(minimal_raw_config, valid_config_include_sec
     return raw_config
 
 
-@pytest.fixture()
+@pytest.fixture
 def parsed_config_with_included_sections(raw_config_with_include_section):
     return ParsedConfig(
         raw_config_with_include_section,

@@ -89,13 +89,14 @@ class Task(object):
         deode_eccodes_definition_path = str(
             ConfigParserDefaults.DATA_DIRECTORY / "eccodes/definitions"
         )
-        deode_eccodes_definition_path = ":".join(
-            [deode_eccodes_definition_path, deode_eccodes_modelname_path]
-        )
+        deode_eccodes_definition_path = ":".join([
+            deode_eccodes_definition_path,
+            deode_eccodes_modelname_path,
+        ])
 
         try:
             eccodes_version = tuple(
-                [int(x) for x in os.getenv("ECCODES_VERSION").split(".")]
+                int(x) for x in os.getenv("ECCODES_VERSION").split(".")
             )
         except AttributeError:
             eccodes_version = (2, 30, 0)
@@ -104,12 +105,10 @@ class Task(object):
         if eccodes_version < (2, 30, 0):
             try:
                 eccodes_dir = os.environ["ECCODES_DIR"]
-                eccodes_definition_path = ":".join(
-                    [
-                        eccodes_definition_path,
-                        f"{eccodes_dir}/share/eccodes/definitions",
-                    ]
-                )
+                eccodes_definition_path = ":".join([
+                    eccodes_definition_path,
+                    f"{eccodes_dir}/share/eccodes/definitions",
+                ])
             except KeyError:
                 pass
 

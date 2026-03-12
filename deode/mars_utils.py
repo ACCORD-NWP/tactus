@@ -131,7 +131,7 @@ def get_mars_keys(source, key_filter="-w shortName:s=z"):
             run(
                 grib_command + f"-p {param_list[prm]}:s {source}",
                 check=True,
-                shell=True,  # noqa
+                shell=True,
                 capture_output=True,
             )
             .stdout.decode()
@@ -273,8 +273,9 @@ def check_data_available(basetime, mars):
     Args:
         basetime (str): basetime
         mars    (dict): mars config section
+
     Raises:
-        ValueError: No data for this date.
+        ValueError: if the basetime falls outside the available range
     """
     start_date = as_datetime(mars["start_date"])
     with contextlib.suppress(KeyError):
@@ -307,16 +308,12 @@ def get_domain_data(config):
         projstring.get_projstring(lon0=domain_spec["lon0"], lat0=domain_spec["lat0"])
     )
     domain_properties = projection.get_domain_properties(domain_spec)
-    fdomainstr = "/".join(
-        [
-            str(domain_properties["maxlat"]),
-            str(domain_properties["minlon"]),
-            str(domain_properties["minlat"]),
-            str(domain_properties["maxlon"]),
-        ]
-    )
-
-    return fdomainstr
+    return "/".join([
+        str(domain_properties["maxlat"]),
+        str(domain_properties["minlon"]),
+        str(domain_properties["minlat"]),
+        str(domain_properties["maxlon"]),
+    ])
 
 
 def get_value_from_dict(dict_, key_orig):
@@ -367,8 +364,7 @@ def get_steplist(bd_offset, fc_range, bdint):
     first_step = int(bd_offset.total_seconds() // 3600)
     fc_range_int = int(fc_range.total_seconds() // 3600)
 
-    steps = list(range(first_step, first_step + fc_range_int + step_int, step_int))
-    return steps
+    return list(range(first_step, first_step + fc_range_int + step_int, step_int))
 
 
 def get_and_remove_data(file_name: str) -> bytes:
@@ -563,9 +559,7 @@ def compile_target(
     member_part = f"_{member}" if member is not None else ""
     step_part = f"+{step}" if step is not None else ""
 
-    target = f'"{tag}{member_part}{step_part}"'
-
-    return target
+    return f'"{tag}{member_part}{step_part}"'
 
 
 def mars_write_method(mars_version: int) -> str:
@@ -664,17 +658,13 @@ class BaseRequest:
     def add_database_options(self):
         """Add database options."""
         if self.request["CLASS"] == "D1":
-            self.request.update(
-                {
-                    "DATASET": "extremes-dt",
-                }
-            )
+            self.request.update({
+                "DATASET": "extremes-dt",
+            })
             if "latlon" not in self.target:
-                self.request.update(
-                    {
-                        "DATABASE": "fdb",
-                    }
-                )
+                self.request.update({
+                    "DATABASE": "fdb",
+                })
 
     def replace(self, **kwargs):
         """Return new instance with updated values."""

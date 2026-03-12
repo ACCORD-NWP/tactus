@@ -240,9 +240,9 @@ class TestInstantiateGenerators:
 
         assert "field1" in result, "field1 not in result"
         assert "nested_field" in result["field1"], "nested_field not in result"
-        assert isinstance(
-            result["field1"]["nested_field"], GeneratorType
-        ), "nested_field is not a generator"
+        assert isinstance(result["field1"]["nested_field"], GeneratorType), (
+            "nested_field is not a generator"
+        )
 
     def test_instantiate_generators_with_mixed_keys(
         self,
@@ -292,9 +292,9 @@ class TestInstantiateGenerators:
 
         # Test that generator returns the expected value
         generated_values = [next(result["field1"]) for _ in range(10)]
-        assert np.all(
-            np.array(generated_values) == test_string
-        ), "Generated values are not equal to the test string"
+        assert np.all(np.array(generated_values) == test_string), (
+            "Generated values are not equal to the test string"
+        )
 
 
 @pytest.fixture(name="none_value_generators", scope="class")
@@ -346,19 +346,19 @@ class TestGenerateValues:
         """Test generate_values with a nested config."""
         config = {"nested_field": {"subfield1": 0, "subfield2": 0}}
         result = generate_values(config, generators)
-        assert result == {
-            "nested_field": {"subfield1": 7, "subfield2": 10}
-        }, "Wrong value for nested_field for member 0"
+        assert result == {"nested_field": {"subfield1": 7, "subfield2": 10}}, (
+            "Wrong value for nested_field for member 0"
+        )
 
         result = generate_values(config, generators)
-        assert result == {
-            "nested_field": {"subfield1": 8, "subfield2": 11}
-        }, "Wrong value for nested_field for member 1"
+        assert result == {"nested_field": {"subfield1": 8, "subfield2": 11}}, (
+            "Wrong value for nested_field for member 1"
+        )
 
         result = generate_values(config, generators)
-        assert result == {
-            "nested_field": {"subfield1": 9, "subfield2": 12}
-        }, "Wrong value for nested_field for member 2"
+        assert result == {"nested_field": {"subfield1": 9, "subfield2": 12}}, (
+            "Wrong value for nested_field for member 2"
+        )
 
     def test_with_mixed_config(self, generators: dict):
         """Test generate_values with a mixed config."""
@@ -407,9 +407,9 @@ class TestGenerateValues:
         """Test generate_values with a generator that returns None."""
         config = {"field1": 0, "field2": 0}
         result = generate_values(config, none_value_generators)
-        assert (
-            result == expected_result
-        ), f"Wrong value for field1 or field2 for member {member}"
+        assert result == expected_result, (
+            f"Wrong value for field1 or field2 for member {member}"
+        )
 
 
 class TestCheckExpandableKeys:
@@ -457,7 +457,7 @@ class TestGetExpandableKeys:
                 queue += ((id(v), v, level + 1) for v in o.values())
         return level
 
-    @pytest.fixture()
+    @pytest.fixture
     def mock_check_expandable_keys(self, mocker):
         return mocker.patch("deode.eps.eps_setup.check_expandable_keys")
 

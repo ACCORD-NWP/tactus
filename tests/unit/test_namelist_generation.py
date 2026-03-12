@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for the namelist generation module."""
+
 import os
 
 import pytest
@@ -15,10 +16,10 @@ from deode.namelist import (
 )
 
 
-@pytest.fixture()
+@pytest.fixture
 def config_platform():
     """Set the platform specific configuration."""
-    task_configs = tomli.loads(
+    return tomli.loads(
         """
         [boundaries]
             bdmodel = "ifs"
@@ -55,10 +56,9 @@ def config_platform():
             namct0 = { foo = "bar" }
         """
     )
-    return task_configs
 
 
-@pytest.fixture()
+@pytest.fixture
 def parsed_config(config_platform):
     return ParsedConfig(
         config_platform, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA

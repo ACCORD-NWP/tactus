@@ -1,6 +1,5 @@
 """Clean deode file systems."""
 
-
 from deode.cleaning import CleanDeode
 from deode.tasks.base import Task
 
@@ -13,7 +12,6 @@ class Cleaning(Task):
 
         Args:
             config (deode.ParsedConfig): Configuration
-            name (str): Name of task
         """
         Task.__init__(self, config, __class__.__name__)
 

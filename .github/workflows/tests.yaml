@@ -84,12 +84,8 @@ jobs:
       - name: Install the project itself
         run: poetry install --no-interaction --only-root
 
-      #----------------------------------------------
-      #      run test suite and report coverage
-      #----------------------------------------------
       - name: Run tests
-        run: |
-          poetry run pytest -n auto
+        run: make test
 
 
       # Disable upload to codecov until/if codecov is enabled

@@ -47,6 +47,7 @@ class Marsprep(Task):
 
         Args:
             config (deode.ParsedConfig): Configuration
+
         Raises:
             ValueError: No data for this date.
         """
@@ -219,12 +220,10 @@ class Marsprep(Task):
         request.add_database_options()
 
         if specify_domain:
-            request.update_request(
-                {
-                    "GRID": get_value_from_dict(self.mars["grid"], request.date),
-                    "AREA": get_domain_data(self.config),
-                }
-            )
+            request.update_request({
+                "GRID": get_value_from_dict(self.mars["grid"], request.date),
+                "AREA": get_domain_data(self.config),
+            })
 
         if fieldset:
             request.update_request({"FIELDSET": fieldset})
@@ -422,8 +421,10 @@ class Marsprep(Task):
         )
 
         # Split the lat/lon part and perform it here
-        self.get_lat_lon_data(bdmember_fetch_list)
-        self.get_geopotential_latlon(self.bdmember[0], bdmember_fetch_list)
+        logger.debug("bdmember_fetch_list: {}", bdmember_fetch_list)
+        if bdmember_fetch_list:
+            self.get_lat_lon_data(bdmember_fetch_list)
+            self.get_geopotential_latlon(self.bdmember[0], bdmember_fetch_list)
 
         # Get the file list to join
         for bdmember in bdmember_fetch_list:

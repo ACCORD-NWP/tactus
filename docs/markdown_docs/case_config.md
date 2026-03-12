@@ -24,7 +24,7 @@ When the first config file, `config.toml`, has been read the appropriate files f
 
 The following configuration files will be read and added in order of appearence. If we check the various files we find that e.g. `alaro.toml` only contains the bare minimum changes on top of the default configuration file required to run the ALARO CSC.
 
-The processed configuration output file, here `test.toml`, is self contained from a config point of view. All configuration settings (also defaults from json schema) are in the generated configuration file. 
+The processed configuration output file, here `test.toml`, is self contained from a config point of view. All configuration settings (also defaults from json schema) are in the generated configuration file.
 
 The produced config file, `test.toml` is now used to start a run the usual way.
 ```
@@ -43,17 +43,17 @@ To see all commands available for the case functionality run `deode case --help`
 The host you're running on can be recognized either through the host name or by identifying a specific environment variable. This is configured in `deode/data/config_files/known_hosts.yml`. In the example below we see how `atos_bologna` and `lumi` are regonized via a hostname regular expression whereas `freja` is recognized from a specific environment variable.
 
 ```
-atos_bologna: 
+atos_bologna:
   hostname: "ac\\d-\\d\\d\\d"
-lumi: 
+lumi:
   hostname: "uan\\d\\d"
-freja: 
+freja:
   env:
     SNIC_RESOURCE: "freja"
-linda: 
-  env: 
+linda:
+  env:
     SMHI_DIST: "linda\\d+"
-leonardo: 
+leonardo:
   hostname: ".*leonardo.*"
 ```
 
@@ -73,5 +73,3 @@ where `time.toml` contains
   start = "YYYY-MM-DD:HH:mm:ssZ"
 ```
 or any additional extra information.
-
-

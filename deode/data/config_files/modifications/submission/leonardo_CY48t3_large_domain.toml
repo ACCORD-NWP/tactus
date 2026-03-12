@@ -11,8 +11,8 @@
   WRAPPER = "mpirun"
 
 [submission.task_exceptions.Forecast.BATCH]
-  #CPUSPERTASK = "#SBATCH --cpus-per-task=4"
-  #HYPERTHREAD = "#SBATCH --hint=nomultithread"
+  # CPUSPERTASK = "#SBATCH --cpus-per-task=4"
+  # HYPERTHREAD = "#SBATCH --hint=nomultithread"
   NODES = "#SBATCH --nodes=20"
   QOS = "#SBATCH --qos=dcgp_qos_bprod"
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=110"

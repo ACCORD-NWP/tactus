@@ -18,9 +18,9 @@ def test_set_times(default_config):
 
 @pytest.fixture(scope="module")
 def test_config(default_config):
-    config = default_config.copy(update=set_times(default_config))
-    config = config.copy(update={"domain": {"nimax": 49, "njmax": 69}})
-    return config
+    return default_config.copy(update=set_times(default_config)).copy(
+        update={"domain": {"nimax": 49, "njmax": 69}}
+    )
 
 
 @pytest.fixture(params=["linear", "quadratic", "cubic"])

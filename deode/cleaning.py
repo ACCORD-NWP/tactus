@@ -15,12 +15,13 @@ def wipe_ecfs(ecfs_path):
     """Remove a full ecfs directory tree."""
     command = ["erm", "-R", ecfs_path]
     try:
-        result = subprocess.check_output(command, text=True)  # noqa S603
+        result = subprocess.check_output(command, text=True)
         logger.info(result)
 
-        if result != "":
+        if result:
             logger.error(result)
             raise RuntimeError("Error running command: {}".format(command))
+        logger.info("Clean ecfs_path:{}", ecfs_path)
     except subprocess.CalledProcessError as err:
         logger.warning(err)
 
@@ -40,6 +41,7 @@ class CleanDeode:
             RuntimeError: If erroneous defaults
 
         """
+        self.config = config
         self.CLEANING_DEFAULTS = {"path": "", "ecfs_prefix": None}
 
         if defaults is None:
@@ -135,7 +137,7 @@ class CleanDeode:
         self.clean_tasks = {}
         for name, _choice in choices.items():
             choice = self._set_defaults(_choice)
-            if choice["active"]:
+            if self.platform.substitute(choice["active"]):
                 choice.pop("active")
                 self.clean_tasks[name] = choice
                 # Check consistency of settings
@@ -158,7 +160,7 @@ class CleanDeode:
                 else:
                     choice["step"] = as_timedelta(choice["step"])
 
-                if dry_run:
+                if dry_run is not None:
                     choice["dry_run"] = dry_run
 
                 self._check_choice(choice, name)

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Implement helper routines to deal with dates and times."""
+
 from datetime import datetime, timezone
 from typing import List, Tuple, Union
 
@@ -38,8 +39,7 @@ def as_julian(yyyymmdd):
         int: Julian Day Number corresponding to the given date at midnight.
     """
     date = datetime.strptime(str(yyyymmdd), "%Y%m%d").date()
-    julian_day = date.toordinal() + 1721425  # Julian Day Number at midnight
-    return julian_day
+    return date.toordinal() + 1721425  # Julian Day Number at midnight
 
 
 def as_timedelta(obj):
@@ -62,8 +62,7 @@ def dt2str(dt):
     m = int((dt.seconds % 3600 - dt.seconds % 60) / 60)
     s = int(dt.seconds % 60)
 
-    duration = f"{h:04d}:{m:02d}:{s:02d}"
-    return duration
+    return f"{h:04d}:{m:02d}:{s:02d}"
 
 
 def check_syntax(output_settings: Union[Tuple[str], List[str]], length: int):
@@ -96,19 +95,18 @@ def expand_output_settings(
             Specifies the output steps
         forecast_range (str): Forecast range in duration syntax
 
-    Raises:
-        RuntimeError: Handle erroneous time increment
-
     Returns:
         sections (List[List[pd.Timedelta]]) : List of output subsections.
             Can be empty in case of empty output_settings
 
+    Raises:
+        RuntimeError: Handle erroneous time increment
     """
     output_intervals = []
     if isinstance(output_settings, str):
         check_syntax([output_settings], 0)
         # Infer the output intervals from the forecast range and output settings
-        if output_settings != "":
+        if output_settings:
             output_intervals = [":".join(["PT0H", forecast_range, output_settings])]
         else:
             return output_intervals
@@ -123,12 +121,10 @@ def expand_output_settings(
             raise RuntimeError(f"Zero size time increments not allowed:{interval}")
 
     # Convert the output intervals to a list of lists of timedelta objects
-    sections = [
+    return [
         [as_timedelta(item) for item in interval.split(":")]
         for interval in output_intervals
     ]
-
-    return sections
 
 
 def oi2dt_list(

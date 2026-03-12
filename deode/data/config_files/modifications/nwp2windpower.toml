@@ -1,0 +1,41 @@
+[impact.nwp2windpower]
+  active = true
+  arguments = "-f @IMPACT.NWP2WINDPOWER.CONFIG_NAME@ -d @DEODE_HOME@/.."
+  config_name = "@ARCHIVE@/nwp2windpower.toml"
+  plugin_dir_key = "nwp2windpower.plugin_dir"
+  runner = "export UV_CACHE_DIR=@PLATFORM.UV_CACHE_DIR@; ./deploy_suite.sh"
+  task = "StartImpactModels"
+
+[impact.nwp2windpower.communicate.domain.COPY]
+
+[impact.nwp2windpower.communicate.general]
+  case = "DE_Impact_WIND_@CASE@"
+
+[impact.nwp2windpower.communicate.general.times.COPY]
+
+[impact.nwp2windpower.communicate.json2tab.COPYALL]
+
+[impact.nwp2windpower.communicate.macros.select.nwp2windpower]
+  gen_macros = [{start = "general.times.start"}]
+  group_macros = ["nwp2windpower", "nwp2windpower.nwp"]
+
+[impact.nwp2windpower.communicate.nwp2windpower]
+  output_dir = "@SCRATCH@/DE_Impact/Wind/@CASE@"
+
+[impact.nwp2windpower.communicate.nwp2windpower.nwp]
+  base_dir = "@ARCHIVE@"
+  j2t_enabled = "@JSON2TAB.ENABLED@"
+  total_hours = "@FORECAST_RANGE_IN_HOURS@"
+  wfp_enabled = "@GENERAL.WINDFARM@"
+  windfarm_data = "@JSON2TAB.OUTPUT.DIRECTORY@"
+
+[impact.nwp2windpower.git]
+  active = true
+  branch = "main"
+  remote_url = "git@github.com:destination-earth-digital-twins/nwp2windpower.git"
+  remove_dir = false
+
+[macros.select.nwp2windpower]
+  gen_macros = [
+    {output_dir = "impact.nwp2windpower.communicate.nwp2windpower.output_dir"},
+  ]

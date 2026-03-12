@@ -9,7 +9,7 @@
   selection = "HRES"
 
 [eps.general]
-  members = "0:7" # Comma separated sequence of sequences "M:N" or integers
+  members = "0:7"  # Comma separated sequence of sequences "M:N" or integers
 
 [eps.member_settings.boundaries]
   slafdiff = ["PT6H"]
@@ -18,10 +18,13 @@
 
 [eps.member_settings.namelist_update.master.forecast.namspp]
   iezdiag_pos = {0 = 1, "1:" = -1}
-  lspp = {0 = false, "1:" = false} # Boolean
+  lspp = {0 = false, "1:" = false}  # Boolean
 
 [eps.member_settings.system]
   wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
+
+[submission.task_exceptions.Addpert.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = "0"
 
 [suite_control]
   member_specific_mars_prep = true

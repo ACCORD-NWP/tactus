@@ -35,7 +35,8 @@ suppress_warnings = ["myst.xref_missing"]
 
 html_theme = "sphinx_rtd_theme"
 html_last_updated_fmt = (
-    datetime.datetime.now(datetime.timezone.utc)
+    datetime.datetime
+    .now(datetime.timezone.utc)
     .isoformat(timespec="seconds")
     .replace("+00:00", "Z")
 )

@@ -14,15 +14,15 @@
     }
   },
   "$default_impact_properties": {
-      "active": {
-        "description": "Activates this impact model",
-        "type": "boolean",
-        "default": false
-      },
-      "path": {
-        "type": "string",
-        "description": "Path to the impact model start command. Preferably defined in the platform section and used as a macro here",
-        "default": ""
-      }
+    "active": {
+      "description": "Activates this impact model",
+      "type": "boolean",
+      "default": false
+    },
+    "path": {
+      "type": "string",
+      "description": "Path to the impact model start command. Preferably defined in the platform section and used as a macro here",
+      "default": ""
+    }
   }
 }

@@ -45,8 +45,7 @@ def parsed_config(request, tmp_directory, default_config):
         """
     )
 
-    config = config.copy(update=config_patch)
-    return config
+    return config.copy(update=config_patch)
 
 
 @pytest.fixture(params=[True, False])

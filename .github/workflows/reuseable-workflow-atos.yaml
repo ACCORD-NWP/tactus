@@ -5,6 +5,8 @@ on:
         required: true
       GH_REPO_READ_TOKEN:
         required: true
+      GH_RELEASE_PAT_TEST:
+        required: true
     inputs:
       configuration_name:
         required: true
@@ -18,24 +20,36 @@ jobs:
 
       - name: Test installation phase on Atos
         id: test-install-deode-workflow-atos
-        uses: ecmwf-actions/reusable-workflows/ci-hpc-generic@main
+        uses: ecmwf/reusable-workflows/ci-hpc-generic@main
         with:
           troika_user: ${{ secrets.HPC_CI_SSH_USER }}
           template: |
               pwd
-              git clone {{ repo }}
-              cd Deode-Workflow
 
-              event_name={{ github_event_name }}
+              # Download artifact from GitHub
+              echo "Downloading artifact from GitHub..."
+              curl -L \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer {{ gh_token }}" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                "https://api.github.com/repos/{{ repo_name }}/actions/artifacts" \
+                -o artifacts.json
 
-              # Check out the right ref for the current event type.
-              if [[ $event_name == 'workflow_dispatch' ||  $event_name == 'push' ]]; then git checkout {{ ref }}; fi
+              # Get the artifact ID for 'Packages'
+              artifact_id=$(python3 -c "import json; data=json.load(open('artifacts.json')); print(next((a['id'] for a in data['artifacts'] if a['name']=='Packages' and a['workflow_run']['id']=={{ run_id }}), None))")
+              echo "Artifact ID: $artifact_id"
 
-              # Fetch locally the pull request branch and switch to it.
-              if [[ $event_name == 'pull_request' ]]; then
-                git fetch origin pull/{{ pull_request_number }}/head:{{ pull_request_branch_name }}; \
-                git switch {{ pull_request_branch_name }}; \
-              fi
+              # Download the artifact
+              mkdir -p dist
+              curl -L \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer {{ gh_token }}" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                "https://api.github.com/repos/{{ repo_name }}/actions/artifacts/$artifact_id/zip" \
+                -o packages.zip
+
+              unzip -o packages.zip -d dist
+              ls -la dist/
 
               module load python3/3.10.10-01
               export POETRY_HOME=$PWD/opt/poetry
@@ -44,10 +58,13 @@ jobs:
               $POETRY_HOME/bin/python -m pip install poetry==2.3.0
               $POETRY_HOME/bin/poetry --version
               export PATH=$POETRY_HOME/bin:$PATH
-              $POETRY_HOME/bin/poetry install --only main
-              $POETRY_HOME/bin/poetry run deode -h
+              $POETRY_HOME/bin/python -m pip install dist/deode-*.whl
+              deode -h
           template_data: |
               repo: https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/${{ github.repository }}.git
+              repo_name: ${{ github.repository }}
+              gh_token: ${{ secrets.GH_RELEASE_PAT_TEST }}
+              run_id: ${{ github.run_id }}
               ref: ${{ github.event.pull_request.head.sha || github.sha }}
               github_event_name: ${{ github.event_name }}
               pull_request_number: ${{ github.event.number }}
@@ -64,7 +81,7 @@ jobs:
 
       - name: Run forecast on Atos
         id: run-forecast-atos
-        uses: ecmwf-actions/reusable-workflows/ci-hpc-generic@main
+        uses: ecmwf/reusable-workflows/ci-hpc-generic@main
         with:
           troika_user: ${{ secrets.HPC_CI_SSH_USER }}
           template: |
@@ -144,14 +161,14 @@ jobs:
               #SBATCH --time=00:60:00
 
   build-deode-workflow-atos:
-    if: ${{ github.event_name != 'pull_request' }}
+    if: ${{ github.event_name != 'pull_request' || github.event_name == 'workflow_dispatch'}}
     runs-on: [hpc]
     needs: test-install-deode-workflow-atos
     steps:
 
       - name: Build Deode-Workflow Wheel
         id: build-deode-workflow-atos
-        uses: ecmwf-actions/reusable-workflows/ci-hpc-generic@main
+        uses: ecmwf/reusable-workflows/ci-hpc-generic@main
         with:
           troika_user: ${{ secrets.HPC_CI_SSH_USER }}
           template: |
@@ -183,7 +200,7 @@ jobs:
 
       - name: Install Deode-Workflow Wheel
         id: install-deode-workflow-atos
-        uses: ecmwf-actions/reusable-workflows/ci-hpc-generic@main
+        uses: ecmwf/reusable-workflows/ci-hpc-generic@main
         with:
           troika_user: ${{ secrets.HPC_CI_SSH_USER }}
           template: |
@@ -192,7 +209,7 @@ jobs:
             module load python3/3.10.10-01
             python3 -m venv .venv
             source .venv/bin/activate
-            export DEODEVERSION=$(grep -A 5 '\[tool.poetry\]' pyproject.toml | grep 'version =' | awk -F\" '{print $2}')
+            export DEODEVERSION=$(grep -A 2 '^\[project\]' pyproject.toml | grep 'version' | awk -F\" '{print $2}')
             python3 -m pip install dist/deode-$DEODEVERSION-py3-none-any.whl
             deode -h
           sbatch_options: |

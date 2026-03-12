@@ -1,0 +1,48 @@
+[general]
+  event_type = "wildfire"
+
+[impact.wildfire]
+  active = true
+  config_name = "@ARCHIVE@/wildfire.toml"
+  plugin_dir_key = "repo_home"
+  task = "StartImpactModels"
+  trigger = "@case@"
+
+[impact.wildfire.communicate]
+  archive = "@WILDFIRE_ARCHIVE_ROOT@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  archive_fdb = false
+  archive_root = "@SCRATCH@/DE_Impact/WildFire/@CASE@/archive"
+  basetime = "@BASETIME@"
+  data_path = "@archive@"
+  ecfs_archive = "@WILDFIRE_ECFS_ARCHIVE_ROOT@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  ecfs_archive_root = "ec:/@USER@/DE_Impact/WildFire/@CASE@/archive"
+  file_template = "GRIBPF*h00m00s"
+  forecast_range = "@FORECAST_RANGE@"
+  name = "@CASE@"
+  nwp_model = "@CSC@"
+  output_freq = "@FULLPOS_OUTPUT_FREQ@"
+  unix_group = "@UNIX_GROUP@"
+  workdir = "@SCRATCH@/DE_Impact/WildFire/@CASE@/@YYYY@@MM@@DD@_@HH@@mm@"
+
+[impact.wildfire.communicate.ecfvars]
+  ECF_HOME = "@HOME@/deode_ecflow/jobout"
+  ECF_HOST = "_select_host_from_list(['ecfg-@USER@-1', 'ecflow-gen-@USER@-001'],)"
+  ECF_JOB_CMD = "%TROIKA% -c %TROIKA_CONFIG% submit -o %ECF_JOBOUT% %SCHOST% %ECF_JOB%"
+  ECF_KILL_CMD = "%TROIKA% -vv -c %TROIKA_CONFIG% kill %SCHOST% %ECF_JOB%"
+  ECF_PORT = 3141
+  ECF_STATUS_CMD = "%TROIKA% -c %TROIKA_CONFIG% monitor %SCHOST% %ECF_JOB%"
+  SCHOST = "hpc"
+  TROIKA = "troika"
+  TROIKA_CONFIG = "@ECF_DEODE_HOME@/data/config_files/troika.yml"
+
+[impact.wildfire.git]
+  active = true
+  branch = "main"
+  remote_url = "git@github.com:destination-earth-digital-twins/WP12-FT.git"
+
+[macros.select.wildfire]
+  gen_macros = [
+    {wildfire_repo_home = "impact.wildfire.communicate.repo_home"},
+    {wildfire_archive_root = "impact.wildfire.communicate.archive_root"},
+    {wildfire_ecfs_archive_root = "impact.wildfire.communicate.ecfs_archive_root"},
+  ]

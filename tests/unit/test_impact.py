@@ -14,13 +14,13 @@ import yaml
 
 from deode.derived_variables import set_times
 from deode.tasks.batch import BatchJob
-from deode.tasks.impacts import ImpactModel, ImpactModels, get_fdb_info
+from deode.tasks.impacts import BaseImpactModel, ImpactModels, get_fdb_info
 
 WORKING_DIR = Path.cwd()
 
 
 @dataclass()
-class UnitTest(ImpactModel):
+class UnitTest(BaseImpactModel):
     """Test method."""
 
     name = "unittest"
@@ -56,26 +56,41 @@ def basic_config(tmp_directory, default_config):
         [impact.unittest.communicate]
             user_ecf_port = "bar"
             user_ecf_host = "bar"
-        [impact.unittest.test]
-            arguments = "hello world"
         """
     )
-    config = config.copy(update=config_patch)
-
-    return config
+    return config.copy(update=config_patch)
 
 
 @pytest.fixture(scope="module")
 def basic_config_installed(basic_config, tmp_directory):
+    return basic_config.update("platform.impact.unittest", tmp_directory)
+
+
+@pytest.fixture(scope="module")
+def basic_config_installed_extended(basic_config_installed):
     config_patch = tomlkit.parse(
-        f"""
-        [platform.impact]
-            unittest = "{tmp_directory}"
+        """
+        [topsection]
+            key1 = "value1"
+            key2 = 2
+            key3 = 3.1415
+
+        [topsection.subsection]
+            use_me = "maybe"
         """
     )
-    config = basic_config.copy(update=config_patch)
+    return basic_config_installed.copy(update=config_patch)
 
-    return config
+
+@pytest.fixture(scope="module")
+def basic_config_installed_test2(basic_config_installed):
+    config_patch = tomlkit.parse(
+        """
+        [impact.unittest.test2]
+            arguments = "hello world, from task test2"
+        """
+    )
+    return basic_config_installed.copy(update=config_patch)
 
 
 def test_impact_inactive_not_installed(basic_config):
@@ -84,10 +99,8 @@ def test_impact_inactive_not_installed(basic_config):
 
 
 def test_impact_inactive_active_false(basic_config_installed):
-    basic_config = basic_config_installed.copy(
-        update={"impact": {"unittest": {"active": False}}}
-    )
-    model = ImpactModels(basic_config, "test")
+    config = basic_config_installed.update("impact.unittest.active", False)
+    model = ImpactModels(config, "test")
     assert len(model.impact) == 0
 
 
@@ -107,13 +120,23 @@ def test_impact_run_cmd(basic_config_installed, tmp_directory):
     assert line.strip() == "hello world"
 
 
+def test_impact_run_cmd_second_task(basic_config_installed_test2, tmp_directory):
+    model = ImpactModels(basic_config_installed_test2, "test2")
+    assert len(model.impact) > 0
+    model.execute()
+
+    txtfile = f"{tmp_directory}/txtfile"
+    with open(txtfile, "r", encoding="utf-8") as f:
+        line = f.read()
+    assert line.strip() == "hello world, from task test2"
+
+
 @pytest.mark.parametrize("filetype", ["yml", "json", "toml", "xml"])
 def test_impact_different_configs(basic_config_installed, tmp_directory, filetype):
     filename = f"{tmp_directory}/unittest.{filetype}"
-    basic_config = basic_config_installed.copy(
-        update={"impact": {"unittest": {"config_name": filename}}}
-    )
-    model = ImpactModels(basic_config, "test")
+    config = basic_config_installed.update("impact.unittest.config_name", filename)
+
+    model = ImpactModels(config, "test")
     model.execute()
 
     with open(filename, "rb") as f:
@@ -127,6 +150,54 @@ def test_impact_different_configs(basic_config_installed, tmp_directory, filetyp
             config_data = xmltodict.parse(f.read())["root"]
 
     assert config_data == basic_config_installed.get("impact.unittest.communicate").dict()
+
+
+def test_impact_communicate_copy(basic_config_installed_extended, tmp_directory):
+    filename = f"{tmp_directory}/unittest.json"
+    config_patch = tomlkit.parse(
+        f"""
+        [impact.unittest]
+            config_name = "{filename}"
+
+        [impact.unittest.communicate.topsection.COPY]
+        """
+    )
+    config = basic_config_installed_extended.copy(update=config_patch)
+
+    model = ImpactModels(config, "test")
+    model.execute()
+
+    with open(filename, "rb") as f:
+        config_data = json.load(f)
+
+    ref_data = basic_config_installed_extended.get("topsection").dict()
+    del ref_data["subsection"]
+
+    assert config_data["topsection"] == ref_data
+
+
+def test_impact_communicate_copyall(basic_config_installed_extended, tmp_directory):
+    filename = f"{tmp_directory}/unittest.json"
+    config_patch = tomlkit.parse(
+        f"""
+        [impact.unittest]
+            config_name = "{filename}"
+
+        [impact.unittest.communicate.topsection.COPYALL]
+        """
+    )
+    config = basic_config_installed_extended.copy(update=config_patch)
+
+    model = ImpactModels(config, "test")
+    model.execute()
+
+    with open(filename, "rb") as f:
+        config_data = json.load(f)
+
+    assert (
+        config_data["topsection"]
+        == basic_config_installed_extended.get("topsection").dict()
+    )
 
 
 @pytest.mark.parametrize("members", [[0], [0, 1]])

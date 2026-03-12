@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for the eccodes_path settings."""
+
 import contextlib
 import os
 from pathlib import Path
@@ -32,12 +33,10 @@ def task(tmp_directory, default_config):
     )
 
     config = config.copy(update=config_patch)
-    task = Task(config, "test")
-
-    return task
+    return Task(config, "test")
 
 
-@pytest.fixture()
+@pytest.fixture
 def _clean_env():
     # Control environment
     with contextlib.suppress(KeyError):

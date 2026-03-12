@@ -20,7 +20,6 @@ class CleanOldData(Task):
 
         Args:
             config (deode.ParsedConfig): Configuration
-            name (str): Name of task
         """
         Task.__init__(self, config, __class__.__name__)
         self.now = datetime.now()

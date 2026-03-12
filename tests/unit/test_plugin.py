@@ -1,4 +1,5 @@
 """Test plugin fuctionality."""
+
 import os
 from pathlib import Path
 

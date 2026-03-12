@@ -2,7 +2,7 @@
   windfarm = true
 
 [archiving.static.ecfs.json2tab_output]
-  active = "json2tab.enabled"
+  active = "@JSON2TAB.ENABLED@"
   inpath = "@J2T_OUTPUT_DIR@"
   outpath = "windfarm_data"
   pattern = ["turbine_locations.tab", "wind_turbine_*.tab"]

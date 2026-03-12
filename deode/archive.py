@@ -39,10 +39,8 @@ class Archive:
 
             for archive_type, choices in choices_for_type.items():
                 abort = (
-                    archive_type not in include
-                    and len(include) > 0
-                    or archive_type in exclude
-                )
+                    archive_type not in include and len(include) > 0
+                ) or archive_type in exclude
                 if abort:
                     msg = f"Archive method {archive_type} is not allowed for this task\n"
                     if len(exclude) > 0:
@@ -54,7 +52,7 @@ class Archive:
                 d = {
                     name: choice
                     for name, choice in choices.items()
-                    if self.trigger(choice["active"])
+                    if self.platform.substitute(choice["active"])
                 }
                 if len(d) > 0:
                     if archive_type in archive_types:
@@ -69,12 +67,6 @@ class Archive:
                 logger.warning(
                     "Skipped archive types not defined for this host: {}", skipped_types
                 )
-
-    def trigger(self, trigger):
-        """Return trigger."""
-        if isinstance(trigger, bool):
-            return trigger
-        return self.config[trigger]
 
     def compress_files(self, pattern, inpath, outpath, tarname):
         """Create tarfile.

@@ -89,4 +89,3 @@ deode --config-file deode/data/config_files/config.toml show namelist -t master 
 ```
 
 This will produce the namelist for the forecast and as many xxt* files as has been defined in the fullpos yaml file.
-

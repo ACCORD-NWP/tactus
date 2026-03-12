@@ -1,6 +1,5 @@
 """C903Light."""
 
-
 from deode.boundary_utils import Boundary
 from deode.datetime_utils import as_datetime
 from deode.logs import logger
@@ -26,7 +25,7 @@ class C903Light(Task):
             + f"{self.config['file_templates.interpolated_boundaries.archive']}"
         )
         self.name = (
-            f"{self.name}_" f"{self.boundary.min_index}-" f"{self.boundary.max_index}"
+            f"{self.name}_{self.boundary.min_index}-{self.boundary.max_index}"
         ).upper()
 
     def execute(self):

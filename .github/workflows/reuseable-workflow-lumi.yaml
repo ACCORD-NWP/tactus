@@ -9,13 +9,13 @@ on:
 jobs:
 
     test-install-deode-workflow-lumi:
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ github.event_name != 'pull_request' || github.event_name == 'workflow_dispatch'}}
         runs-on: [hpc]
         steps:
 
           - name: Test installation phase on LUMI
             id: test-install-deode-workflow-lumi
-            uses: ecmwf-actions/reusable-workflows/ci-hpc-generic@main
+            uses: ecmwf/reusable-workflows/ci-hpc-generic@main
             with:
               troika_user: ${{ secrets.HPC_LUMI_CI_SSH_USER }}
               site: lumi
@@ -26,9 +26,9 @@ jobs:
                 git clone {{ repo }} Deode-Workflow-${{ github.sha }}
                 cd Deode-Workflow-${{ github.sha }}
                 git checkout {{ ref }}
-                
+
                 # Convert all ssh github dependency repos to https github dependency repos
-                sed -i 's#git@github.com#https://github.com#g' pyproject.toml
+                sed -i 's#ssh://git@github.com:#https://github.com/#g' pyproject.toml
                 sed -i 's#https://github.com/destination-earth-digital-twins/#https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/destination-earth-digital-twins/#g' pyproject.toml
 
                 module --force purge
@@ -36,7 +36,7 @@ jobs:
                 export POETRY_HOME=$PWD/opt/poetry
                 # Create a virtual environment to contain poetry
                 python3 -m venv $POETRY_HOME
-                $POETRY_HOME/bin/python -m pip install poetry==1.8.3
+                $POETRY_HOME/bin/python -m pip install poetry==2.3.0
                 $POETRY_HOME/bin/poetry --version
                 export PATH=$POETRY_HOME/bin:$PATH
                 $POETRY_HOME/bin/poetry install --only main
@@ -63,7 +63,7 @@ jobs:
 
           - name: Build Deode-Workflow on LUMI
             id: build-deode-workflow-lumi
-            uses: ecmwf-actions/reusable-workflows/ci-hpc-generic@main
+            uses: ecmwf/reusable-workflows/ci-hpc-generic@main
             with:
               troika_user: ${{ secrets.HPC_LUMI_CI_SSH_USER }}
               site: lumi
@@ -76,13 +76,13 @@ jobs:
                 git checkout {{ ref }}
                 module --force purge
                 # Convert all ssh github dependency repos to https github dependency repos
-                sed -i 's#git@github.com:#https://github.com/#g' pyproject.toml
+                sed -i 's#ssh://git@github.com:#https://github.com/#g' pyproject.toml
                 sed -i 's#https://github.com/destination-earth-digital-twins/#https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/destination-earth-digital-twins/#g' pyproject.toml
                 module load cray-python/3.10.10
                 export POETRY_HOME=$PWD/opt/poetry
                 # Create a virtual environment to contain poetry
                 python3 -m venv $POETRY_HOME
-                $POETRY_HOME/bin/python -m pip install poetry==1.8.3
+                $POETRY_HOME/bin/python -m pip install poetry==2.3.0
                 $POETRY_HOME/bin/poetry --version
                 export PATH=$POETRY_HOME/bin:$PATH
                 $POETRY_HOME/bin/poetry build -f wheel
@@ -107,7 +107,7 @@ jobs:
 
           - name: Install Deode-Workflow on LUMI
             id: install-deode-workflow-lumi
-            uses: ecmwf-actions/reusable-workflows/ci-hpc-generic@main
+            uses: ecmwf/reusable-workflows/ci-hpc-generic@main
             with:
               troika_user: ${{ secrets.HPC_LUMI_CI_SSH_USER }}
               site: lumi
@@ -122,7 +122,7 @@ jobs:
                 module load cray-python/3.10.10
                 python3 -m venv .venv
                 source .venv/bin/activate
-                export DEODEVERSION=$(grep -A 5 '\[tool.poetry\]' pyproject.toml | grep 'version =' | awk -F\" '{print $2}')
+                export DEODEVERSION=$(grep -A 2 '^\[project\]' pyproject.toml | grep 'version' | awk -F\" '{print $2}')
                 python3 -m pip install dist/deode-$DEODEVERSION-py3-none-any.whl
                 deode -h
               sbatch_options: |

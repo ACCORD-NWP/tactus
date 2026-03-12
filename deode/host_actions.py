@@ -34,12 +34,11 @@ class DeodeHost:
             known_hosts (dict, optional): Known hosts dict. Defaults to None
             known_hosts_file (str, optional): Known hosts file. Defaults to None
 
-        Raises:
-            RuntimeError: No host identifiers loaded
-
         Returns:
             known_host (dict): Known hosts config
 
+        Raises:
+            RuntimeError: No host identifiers loaded
         """
         if known_hosts is not None:
             return known_hosts
@@ -106,12 +105,11 @@ class DeodeHost:
         Args:
             use_default (boolean, optional): Flag to return default host if host not found
 
-        Raises:
-            RuntimeError: Ambiguous matches
-
         Returns:
             deode_host (str): mapped hostname
 
+        Raises:
+            RuntimeError: Ambiguous matches
         """
         if self.deode_host is not None:
             return self.deode_host

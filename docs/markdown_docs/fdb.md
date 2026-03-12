@@ -63,14 +63,14 @@ retrieve,
 	param = 151
 ```
 
-## Archive data in FDB 
+## Archive data in FDB
 To archive data in FDB, three changes have to be made in the configuration. First we have to get an experiment identifier or `expver`. On the ECMWF HPC ATOS, run the following commands (requires the user to be in the unix group `ifs`):
 
 ```bash
 module load pifsenv
 getNewId -g d1.on-demand-extremes-dt
 ```
-Note, expver is case-sensitive, so the expver `aaaa` and e.g. `Aaaa` is not the same. Numerical experiment identifiers are to be used for operations only. 
+Note, expver is case-sensitive, so the expver `aaaa` and e.g. `Aaaa` is not the same. Numerical experiment identifiers are to be used for operations only.
 
 The next step is to add this `expver` to the config and attach it to your user on the HPC. This is done by adding a rule to `expver_restrictions` as shown below. Finally we activate the archiving itself as also shown below.
 ```

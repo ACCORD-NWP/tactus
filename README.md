@@ -80,7 +80,7 @@ Then install/reinstall [`poetry`](https://python-poetry.org) by runnning the fol
   curl -sSL https://install.python-poetry.org | python3 - --uninstall
   rm -rf ${HOME}/.cache/pypoetry/ ${HOME}/.local/bin/poetry ${HOME}/.local/share/pypoetry
   # Download and install poetry
-  curl -sSL https://install.python-poetry.org | python3 -  
+  curl -sSL https://install.python-poetry.org | python3 -
   poetry install
   # Add the poetry shell command as a plugin (for poetry >= v2.0.0)
   poetry self add poetry-plugin-shell
@@ -183,5 +183,3 @@ NOTE: the config file used by a given task, is always saved to the working direc
 This way, the stand alone forecast will pick the input data from the existing run and output the result in the same directories (as defined by the config file).
 
 For other platforms a new config file would have to be created first. Please consult the [configure cases](misc_section_in_doc_page.rst#configure-cases) section in the documentation for more information.
-
-
