@@ -17,6 +17,9 @@
     "system": {
       "$ref": "#/definitions/system"
     },
+    "compile": {
+      "$ref": "#/definitions/compile"
+    },
     "boundaries": {
       "$ref": "#/definitions/boundaries"
     },
@@ -367,6 +370,11 @@
           "type": "string",
           "default": "TactusSuiteDefinition"
         },
+        "compile": {
+          "description": "Compile IAL source code",
+          "type": "boolean",
+          "default": false
+        },
         "do_creategrib_static": {
           "description": "Activate grib conversion for static files",
           "type": "boolean",
@@ -609,6 +617,32 @@
           "type": "string",
           "description": "Path to the e927 json config file",
           "default": "@CYCLE@/e927.json"
+        }
+      }
+    },
+    "compile": {
+      "title": "Compilation configuration",
+      "type": "object",
+      "properties": {
+        "ial_dir": {
+            "type": "string",
+            "description": "Local path to IAL source dir",
+            "default": "@CASEDIR@/IAL"
+        },
+        "git_repo": {
+            "type": "string",
+            "description": "Git repo for IAL source",
+            "default": "git@github.com:ACCORD-NWP/IAL"
+        },
+        "git_branch": {
+            "type": "string",
+            "description": "Branch/tag",
+            "default": "develop"
+        },
+        "arch": {
+          "type": "string",
+          "description": "Compiler configuration",
+          "default": "ecmwf/hpc2020"
         }
       }
     },
