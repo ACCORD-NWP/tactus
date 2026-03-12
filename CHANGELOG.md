@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+
+## [0.26.0] - 2026-03-11
+
 ### Added
 - Added nwp2windpower postprocessing impact model [\#1527](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1527)(@jacobsnoeijer)
 - Added host with macro to airquality.toml [\#1544](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1544)(@KristianHMoller)
