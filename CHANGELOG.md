@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+### Changed
+- Deploy documentation only on tagged releases rather than when pushing to develop [\#1554] (@sbnielsen, @observingClouds, @mfroelund)
 
 ## [0.26.0] - 2026-03-11
 
