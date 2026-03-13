@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Overview of output fields and their intepretation added to documentation [\#1237](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1527)(@sbnielsen)
+- Test that all fullpos namelist entries have eccodes fieldName definitions [\#1563](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1563)(@sbnielsen)
 
 ### Changed
 - Deploy documentation only on tagged releases rather than when pushing to develop [\#1554] (@sbnielsen, @observingClouds, @mfroelund)
