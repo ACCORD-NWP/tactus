@@ -1,13 +1,29 @@
 version: 2
 updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    cooldown:
+      default-days: 7
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    schedule:
+      interval: "monthly"
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "monthly"
+    cooldown:
+      default-days: 7
     ignore:
+      - dependency-name: "json2tab"
+      - dependency-name: "toml-formatter"
+      - dependency-name: "utci"
       - dependency-name: "*"
         update-types: ["version-update:semver-minor", "version-update:semver-patch"]
     groups:
       all-dependencies:
         patterns:
           - "*"
+    open-pull-requests-limit: 5

@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added nwp2windpower postprocessing impact model [\#1527](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1527)(@jacobsnoeijer)
 - Added host with macro to airquality.toml [\#1544](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1544)(@KristianHMoller)
+- Added dependabot updates for pre-commit and github-actions [\#1553](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1553)(@observingClouds)
 
 ### Changed
 - Refactor impact model plugin interface [\#1527](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1527)(@jacobsnoeijer)
