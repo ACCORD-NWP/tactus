@@ -1465,6 +1465,7 @@
     scaledValueOfFirstFixedSurface = 2 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
+    scaleFactorOfFirstFixedSurface = 0 ;
     FMULTE = 2 ;
 }
 
@@ -1705,6 +1706,7 @@
     scaledValueOfFirstFixedSurface = 2 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
+    scaleFactorOfFirstFixedSurface = 0 ;
 }
 
 # Water vapour specific content
@@ -1811,6 +1813,7 @@
     scaledValueOfFirstFixedSurface = 2 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
+    scaleFactorOfFirstFixedSurface = 0 ;
 }
 
 # Mean Radiant Temperature
@@ -1852,6 +1855,7 @@
     scaledValueOfFirstFixedSurface = 2 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
+    scaleFactorOfFirstFixedSurface = 0 ;
     typeOfStatisticalProcessing = 2 ;
     LSTCUM = 0;
 }
@@ -1865,6 +1869,7 @@
     scaledValueOfFirstFixedSurface = 2 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
+    scaleFactorOfFirstFixedSurface = 0 ;
     typeOfStatisticalProcessing = 3 ;
     LSTCUM = 0;
 }
@@ -1893,6 +1898,7 @@
     scaledValueOfFirstFixedSurface = 10 ;
     tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
+    scaleFactorOfFirstFixedSurface = 0 ;
 }
 
 # "Zonal component of 10 m gust wind (maximum between two outputs)"
