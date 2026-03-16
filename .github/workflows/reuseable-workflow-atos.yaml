@@ -62,7 +62,7 @@ jobs:
               curl -fsSL https://pixi.sh/install.sh | bash
               export PATH="$HOME/.pixi/bin:$PATH"
               pixi install
-              pixi run pip install dist/deode-*.whl
+              pixi run pip install deode-*.whl
               pixi run deode -h
           template_data: |
               repo: https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/${{ github.repository }}.git
