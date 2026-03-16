@@ -54,7 +54,6 @@ jobs:
               # Extract pyproject.toml from the sdist so pixi can install
               tar -xzf dist/deode-*.tar.gz -C dist
               cp dist/*/pyproject.toml dist/ 2>/dev/null || true
-              cp dist/*/README.md dist/ 2>/dev/null || true
               ls -la dist/
 
               cd dist
@@ -63,7 +62,6 @@ jobs:
               curl -fsSL https://pixi.sh/install.sh | bash
               export PATH="$HOME/.pixi/bin:$PATH"
               pixi install
-              pixi run bootstrap
               pixi run pip install dist/deode-*.whl
               pixi run deode -h
           template_data: |
