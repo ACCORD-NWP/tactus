@@ -50,6 +50,12 @@ jobs:
 
               unzip -o packages.zip -d dist
               ls -la dist/
+
+              # Extract pyproject.toml from the sdist so pixi can install
+              tar -xzf dist/deode-*.tar.gz -C dist
+              cp dist/*/pyproject.toml dist/ 2>/dev/null || true
+              ls -la dist/
+
               cd dist
               pwd
 
