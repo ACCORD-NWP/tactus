@@ -634,6 +634,11 @@
             "description": "Git repo for IAL source",
             "default": "git@github.com:ACCORD-NWP/IAL"
         },
+        "git_token": {
+            "type": "string",
+            "description": "Git token for IAL source access",
+            "default": ""
+        },
         "git_branch": {
             "type": "string",
             "description": "Branch/tag",

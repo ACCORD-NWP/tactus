@@ -20,6 +20,8 @@ class IALClone(Task):
 
         self.git_ial_repo = self.config["compile.git_repo"]
         self.git_ial_branch = self.config["compile.git_branch"]
+        git_token = self.config["compile.git_token"]
+        self.git_token = git_token
         ial_dir = self.config["compile.ial_dir"]
         self.ial_dir = self.platform.substitute(ial_dir)
 
@@ -29,7 +31,9 @@ class IALClone(Task):
             logger.info("IAL dir {} alreadys exists", self.ial_dir)
         else:
             batch_job = BatchJob(os.environ)
-            batch_job.run(f"git clone {self.git_ial_repo} {self.ial_dir}")
+            cmd = f"git clone {self.git_ial_repo} {self.ial_dir}"
+            cmd = cmd.replace("[TOKEN]", self.git_token)
+            batch_job.run(cmd)
             batch_job.run(f"cd {self.ial_dir}; git checkout {self.git_ial_branch}")
 
 
@@ -45,13 +49,21 @@ class IALBundleCreate(Task):
         Task.__init__(self, config, __class__.__name__)
 
         ial_dir = self.config["compile.ial_dir"]
+        git_token = self.config["compile.git_token"]
+        git_token_str = ""
+        if git_token != "":
+            git_token_str = f"--github-token {git_token}"
+        self.git_token_str = git_token_str
         self.ial_dir = self.platform.substitute(ial_dir)
 
     def execute(self):
         """Execute task."""
-        os.environ["GITHUB"] = "git@github.com:"
         batch_job = BatchJob(os.environ)
-        batch_job.run(f"cd {self.ial_dir}/bundle; ./ial-bundle create")
+        # Assume git ssh access unless token is set
+        if self.git_token_str == "":
+            os.environ["GITHUB"] = "git@github.com:"
+        cmd = f"cd {self.ial_dir}/bundle; ./ial-bundle create {self.git_token_str}"
+        batch_job.run(cmd)
 
 
 class IALBundleBuild(Task):
