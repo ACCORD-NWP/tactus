@@ -79,7 +79,7 @@
   numpy = ">=1.22.4,<2.0.0"
 
 [tool.pixi.tasks]
-  bootstrap = "pip install -e . --dependency-groups dev,test,doc"
+  bootstrap = "pip install -e . --group dev --group test --group doc"
 
 [dependency-groups]
   dev = [
