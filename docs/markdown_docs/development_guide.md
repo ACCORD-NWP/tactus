@@ -42,30 +42,30 @@ Each PR comes with its own improvements and flaws. The reviewer should check the
 ## Local testing
 No-one likes to wait for the CI to run tests. It is therefore recommended to run tests locally before pushing to the remote repository, and before creating a PR, but no one will force you to do this: how you work locally is entirely up to you.
 
-For convenience, however, we have added a few commands you can use to check that the code is linted, the tests pass, etc. Some of these are exemplified in the next subsections. Please run **inside of your poetry shell**:
+For convenience, however, we have added a few commands you can use to check that the code is linted, the tests pass, etc. Some of these are exemplified in the next subsections. Please run using `pixi run` or activate the Pixi shell:
 ```shell
 make
 ```
-for more information. To run the commands, extra dependency groups need to be installed, which can be achieved by running
+for more information. To activate the Pixi environment with all dependency groups:
 ```shell
-poetry install --all-groups
+pixi shell
 ```
 
 ### Run and fix toml formatting in place
 ```shell
-pre-commit run tombi-format --files /PATH/TO/FILE
+pixi run pre-commit run tombi-format --files /PATH/TO/FILE
 ```
 
 
 ### Run linters and **attempt** to fix eventually encountered errors
 ```shell
-make lint
+pixi run make lint
 ```
 This will stop with an error if the encountered issues cannot be fixed.
 
 ### Run the typical checks for things you need to fix prior to a push
 ```shell
-make pre-push-checks
+pixi run make pre-push-checks
 ```
 
 ### Run tests

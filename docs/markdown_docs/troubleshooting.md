@@ -2,34 +2,42 @@
 
 Welcome to our troubleshooting tips. Before proceeding, please make sure you have carefully read the [README](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md) file and, if applicable, the [development guide](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/docs/markdown_docs/development_guide.md).
 
-## Cannot run poetry
-Make sure your system fulfills all [system requirements](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md#system-requirements).
-If you cannot execute `poetry` even so, you may need to reinstall and reconfigure it as instructed in the [README](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md) file.
+## Cannot run pixi
+Make sure your system fulfills all [system requirements](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md#set-up-environment).
+If you cannot execute `pixi`, reinstall it following the instructions in the [README](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/README.md).
 
 ## *Command not found* when trying to run *deode* or some related command
 
-Try running `poetry update`
+Try running:
+
+`pixi install`
+
+`pixi run bootstrap`
 
 
 ## *ImportError* or *ModuleNotFoundError* when running the package's executable
 
-Try running `poetry update`
+Try running:
 
-## *poetry update* or *poetry update* fail
+`pixi install`
 
-Try removing the package's `.venv` directory and run the command again. If it still doesn't work, see [Cannot run poetry](#cannot-run-poetry) and try once more.
+`pixi run bootstrap`
+
+## *pixi install* or *pixi run bootstrap* fail
+
+Try running `pixi clean` and then re-run `pixi install`. If it still doesn't work, see [Cannot run pixi](#cannot-run-pixi) and try once more.
 
 ## Failing linting checks
 
-You can run `poetry devtools lint --fix` locally to fix some of the linting issues. You will need to solve the remaining issues manually, but the output of the linting tools usually tell you what is wrong and which place in the code you should look.
+You can run `pixi run make lint` locally to fix some of the linting issues. You will need to solve the remaining issues manually, but the output of the linting tools usually tells you what is wrong and where to look.
 
-Note: devtools lint does not currently work for Python >=3.12 (as it depends on flakeheaven)
+Note: keep your local Python/Pixi environment aligned with the supported project Python range in `pyproject.toml`.
 
 ## Failing tests
 It is always recommended to run the test suite locally address any encountered issue *before* pushing to you pull request.
 
 ## Failing CI checks on github
-Please run `poetry devtools pre-push-checks` and fix any eventually encountered error *before* you push your commits to update the pull request.
+Please run `pixi run make pre-push-checks` and fix any encountered error *before* you push your commits to update the pull request.
 
 ### Failing coverage checks on CI
 You ned to add unit tests covering reasonably well the changes you are making to the code.

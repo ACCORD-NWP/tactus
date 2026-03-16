@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """This script takes one commnad line input parameter - deode configuration file.
 
-poetry run test_worfklow_scripts/export_case_variables.py config_file
+pixi run python test_worfklow_scripts/export_case_variables.py config_file
 
 Takes ECF_HOST, ECF_PORT and SUITE_NAME values  from the configuration file
 and prepares export bash commnad, which is printed as a string output

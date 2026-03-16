@@ -56,9 +56,8 @@ class BaseImpactModel:
         else:
             logger.debug("Path is empty or none; so don't change directory.")
 
-        # Get the runner to run this plugin
-        poetry = self.config.get("poetry")
-        runner = f"{poetry} run" if poetry is not None else self.config.get("runner")
+        # Get the runner to execute impact model commands
+        runner = self.config.get("runner")
 
         args = self.config.get("arguments", [])
         if isinstance(args, str):
@@ -341,7 +340,7 @@ def get_impact(config, taskname):
         ):
             impact[name] = impact_model.get(taskname, {})
 
-            # Fetch path, poetry etc from platform.impact and load config from impact.*
+            # Fetch path/runner config from platform.impact and load config from impact.*
             for source in [installed_impact.get(name, {}), impact_model]:
                 if isinstance(source, (BasicConfig, dict)):
                     for conf, value in source.items():

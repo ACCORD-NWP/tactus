@@ -48,11 +48,11 @@ git clone git@github.com:destination-earth-digital-twins/Deode-Workflow.git
 cd Deode-Workflow
 ```
 
-Create a conda environment and install ecflow, gdal and poetry.
+Create a conda environment and install ecflow and gdal.
 ```
 $ module purge
 $ module load Mambaforge/23.3.1-1-hpc1
-$ mamba create -p .conda ecflow gdal=3.5.0 poetry python=3.10.4
+$ mamba create -p .conda ecflow gdal=3.5.0 python=3.10.4
 ...
 $ mamba activate .conda/
 ```
@@ -60,7 +60,7 @@ $ mamba activate .conda/
 Install deode and all it's dependencies
 
 ```
-(deode-py3.10) $ poetry install
+(deode-py3.10) $ pixi install
 ```
 
 Now we're ready to go!
@@ -79,7 +79,7 @@ $ cd Deode-Workflow
 $ mamba activate .conda/
 ```
 
-Note that for the time being ( until the mamba/poetry usage is better understood ) it's recommended to make this procedure, with a new mamba name, for each new deode clone.
+Note that for the time being it's recommended to make this procedure, with a new mamba name, for each new deode clone.
 
 
 ## LEONARDO
@@ -100,7 +100,7 @@ On LEONARDO we install the Deode-Workflow using micromamba. Install micromamba a
 ```
 "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
 micromamba self-update
-micromamba create -y -p ${HOME}/micromamba-wf conda python=3.10.10 gdal=3.6.2 ecflow poetry
+micromamba create -y -p ${HOME}/micromamba-wf conda python=3.10.10 gdal=3.6.2 ecflow
 ```
 when prompted during the installation, you can confirm all the default directories and answer yes to all entries.
 
@@ -119,13 +119,11 @@ cd Deode-Workflow
 Activate your micromamba environment as above then install deode and all it's dependencies
 
 ```
-poetry install
-poetry self update
+pixi install
 ```
-Acitvate poetry by
+Activate the Pixi environment by
 ```
-poetry env activate
-poetry shell
+pixi shell
 ```
 and execute the source command given.
 

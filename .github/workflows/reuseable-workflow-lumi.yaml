@@ -28,24 +28,19 @@ jobs:
                 git checkout {{ ref }}
 
                 # Convert all ssh github dependency repos to https github dependency repos
-                sed -i 's#ssh://git@github.com:#https://github.com/#g' pyproject.toml
-                sed -i 's#https://github.com/destination-earth-digital-twins/#https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/destination-earth-digital-twins/#g' pyproject.toml
+                sed -i 's#ssh://git@github.com:#https://github.com/#g' pixi.toml pyproject.toml
+                sed -i 's#https://github.com/destination-earth-digital-twins/#https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/destination-earth-digital-twins/#g' pixi.toml pyproject.toml
 
                 module --force purge
                 module load cray-python/3.10.10
-                export POETRY_HOME=$PWD/opt/poetry
-                # Create a virtual environment to contain poetry
-                python3 -m venv $POETRY_HOME
-                $POETRY_HOME/bin/python -m pip install poetry==2.3.0
-                $POETRY_HOME/bin/poetry --version
-                export PATH=$POETRY_HOME/bin:$PATH
-                $POETRY_HOME/bin/poetry install --only main
+                curl -fsSL https://pixi.sh/install.sh | bash
+                export PATH="$HOME/.pixi/bin:$PATH"
+                pixi install
+                pixi run bootstrap
+                pixi run deode -h
 
-                # Restore original pyproject.toml-file
-                git checkout pyproject.toml
-
-                $POETRY_HOME/bin/poetry run deode -h
-
+                # Restore original files
+                git checkout pyproject.toml pixi.toml
               template_data: |
                 repo: https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/${{ github.repository }}.git
                 ref: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -76,18 +71,17 @@ jobs:
                 git checkout {{ ref }}
                 module --force purge
                 # Convert all ssh github dependency repos to https github dependency repos
-                sed -i 's#ssh://git@github.com:#https://github.com/#g' pyproject.toml
-                sed -i 's#https://github.com/destination-earth-digital-twins/#https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/destination-earth-digital-twins/#g' pyproject.toml
+                sed -i 's#ssh://git@github.com:#https://github.com/#g' pixi.toml pyproject.toml
+                sed -i 's#https://github.com/destination-earth-digital-twins/#https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/destination-earth-digital-twins/#g' pixi.toml pyproject.toml
                 module load cray-python/3.10.10
-                export POETRY_HOME=$PWD/opt/poetry
-                # Create a virtual environment to contain poetry
-                python3 -m venv $POETRY_HOME
-                $POETRY_HOME/bin/python -m pip install poetry==2.3.0
-                $POETRY_HOME/bin/poetry --version
-                export PATH=$POETRY_HOME/bin:$PATH
-                $POETRY_HOME/bin/poetry build -f wheel
-                # Restore original pyproject.toml-file
-                git checkout pyproject.toml
+                curl -fsSL https://pixi.sh/install.sh | bash
+                export PATH="$HOME/.pixi/bin:$PATH"
+                pixi install
+                pixi run bootstrap
+                pixi run pip install build
+                pixi run python -m build --wheel
+                # Restore original files
+                git checkout pyproject.toml pixi.toml
                 tar -cf deode_workflow-${{ github.sha }}.tar.gz dist pyproject.toml
                 mv deode_workflow-${{ github.sha }}.tar.gz /scratch/project_465000527/github-actions/deode_workflow-${{ github.sha }}.tar.gz
               template_data: |

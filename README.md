@@ -19,14 +19,9 @@ See the [project's documentation page](https://destination-earth-digital-twins.g
 ## Set up environment
 
 **Make sure you have python>=3.10**
+Ensure you have Pixi installed (see Installation section), then set up your development environment according to your platform:
 
-<a name="#put-poetry-in-path"></a> Start by adding the `$HOME/.local/bin`
-directory in your `PATH`:
-```shell
-export PATH="$HOME/.local/bin:$PATH"
-```
-
-We **highly recommend** you to also put the statement listed above in your shell configuration file, so you don't need to do this the next time you log in. Then, run:
+Then run:
 
 * On Atos (`hpc-login`)
   ```shell
@@ -74,33 +69,41 @@ cd Deode-Workflow
 ```
 
 
-Then install/reinstall [`poetry`](https://python-poetry.org) by runnning the following commands in your shell:
+Then install [`Pixi`](https://pixi.sh) by following the installation instructions at https://pixi.sh/latest/#installation, or use your system package manager:
+
+```shell
+# On macOS with Homebrew
+brew install pixi
+
+# On Linux (after following Pixi docs)
+curl -fsSL https://pixi.sh/install.sh | bash
+```
+
+After installing Pixi, set up Pixi environment from the root of the cloned repository:
   ```shell
-  # Clean eventual previous install
-  curl -sSL https://install.python-poetry.org | python3 - --uninstall
-  rm -rf ${HOME}/.cache/pypoetry/ ${HOME}/.local/bin/poetry ${HOME}/.local/share/pypoetry
-  # Download and install poetry
-  curl -sSL https://install.python-poetry.org | python3 -
-  poetry install
-  # Add the poetry shell command as a plugin (for poetry >= v2.0.0)
-  poetry self add poetry-plugin-shell
+  pixi install
   ```
 
-Finally, install [`pygdal`](https://pypi.org/project/pygdal/), which is required for climate generation. [`pygdal`](https://pypi.org/project/pygdal/) depends on [`gdal`](https://gdal.org/), which is notoriously troublesome as dependency when targeting many systems. The versions of `pygdal` and the system's `gdal`should match.
-
-  To install gdal and pygdal run the follow in commands in your shell:
+Finally, note that system `gdal` must be available on your system. The Pixi environment will install `pygdal` matching your system GDAL version automatically. If you need to specify the GDAL version, ensure it's installed via your system package manager:
 
   * On Atos (`hpc-login`)
     ```shell
     module load gdal/3.6.2
-    poetry shell
-    pip install pygdal==3.6.2.11
+    pixi install
     ```
 
-  On Belenos, you should install the project in the conda environment that was created, directly with the `pip` command.
-  ```shell
-  pip install -e . --no-cache --prefer-binary
-  ```
+  * On Belenos (conda environment)
+    ```shell
+    conda create -n deode_env python=3.10 gdal ecflow
+    conda activate deode_env
+    pixi install
+    ```
+
+  * On LUMI
+    ```shell
+    module load crayPython
+    pixi install
+    ```
 
   If installation is not succesful, please contact the IT support in your organisation or HPC facility.
 
@@ -112,21 +115,20 @@ On Atos, it should be installed in your $HOME or $PERM directory.
 
 
 ## Usage
-
-Initially set up the environment by repeating the steps in [Set up environment](#set-up-environment), navigate to the root level of the `Deode-Workflow` install directory and activate python virtual environment:
+To run `deode` commands, use Pixi to activate the environment and execute:
 ```shell
-poetry shell
+pixi run deode -h
 ```
 
-Alternatively, to activate a `deode` installation located in an arbitrary
-directory `MY_DEODE_SOURCE_DIRECTORY`, please run:
+Alternatively, to activate the environment and work interactively:
 ```shell
-poetry shell --directory=MY_DEODE_SOURCE_DIRECTORY
-```
-
-Test that `deode` works by running:
-```shell
+pixi shell
 deode -h
+```
+
+Initially set up the environment by repeating the steps in [Set up environment](#set-up-environment), navigate to the root level of the `Deode-Workflow` install directory and test that `deode` works by running:
+```shell
+pixi run deode -h
 ```
 ### The Configuration File
 Before you can use `deode` (apart from the `-h` option), you will need a configuration file written in the

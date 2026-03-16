@@ -95,12 +95,12 @@ So, the configuration to launch the EHYPE impact model on atos bologna is given 
   path = "/home/snh02/DE_Impact/EHYPE/forecast/pyflow/utils"
 ```
 
-### Using poetry
-As plugin's might want to use `poetry` again as package manager in stead of a generic `runner` one can also specify a path to a poetry instance via the `poetry` tag and that poetry will be used to launch the arguments. For example the verification plug-in is configured in this way:
+### Using a custom runner
+If a plugin should be launched via a specific command wrapper, provide a `runner` key. For example, the verification plug-in can be configured like this:
 ```toml
 [platform.impact.verification]
   path = "/hpcperm/snh02/DE_Verification/plugins/harpverify"
-  poetry = "/home/snh02/.local/bin/poetry"
+  runner = "pixi run"
 
 [impact.verification.StartImpactModels]
   arguments = [
@@ -109,10 +109,10 @@ As plugin's might want to use `poetry` again as package manager in stead of a ge
   ]
 
 ```
-Note: in stead of a single arguments string one can also specify a list of arguments strings. In that case StartImpactModel will use `poerty` (or `runner`) to run all arguments in sequence.
+Note: instead of a single `arguments` string, one can also specify a list of argument strings. In that case `StartImpactModel` uses `runner` to execute all arguments in sequence.
 
 ### Using a Deode-Workflow task
-Finally, one can also skip providing a `poerty` or `runner`. In that case it is also not allowed to provide `arguments`. This enables plugin's to re-used the git on-demand installation logic but want's to handle there own interaction with the plugin in a specific implementation of `BaseImpactModel.run`. An example of this is the wildfire plugin, that implements its own run logic in `deode/tasks/wildfires.py`.
+Finally, one can also skip providing a `runner`. In that case it is also not allowed to provide `arguments`. This enables plugins to reuse the git on-demand installation logic while handling their own interaction in a specific implementation of `BaseImpactModel.run`. An example is the wildfire plugin, which implements its own run logic in `deode/tasks/wildfires.py`.
 
 
 ## Communication

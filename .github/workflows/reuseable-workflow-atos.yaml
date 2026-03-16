@@ -52,14 +52,12 @@ jobs:
               ls -la dist/
 
               module load python3/3.10.10-01
-              export POETRY_HOME=$PWD/opt/poetry
-              # Create a virtual environment to contain poetry.
-              python3 -m venv $POETRY_HOME
-              $POETRY_HOME/bin/python -m pip install poetry==2.3.0
-              $POETRY_HOME/bin/poetry --version
-              export PATH=$POETRY_HOME/bin:$PATH
-              $POETRY_HOME/bin/python -m pip install dist/deode-*.whl
-              deode -h
+              curl -fsSL https://pixi.sh/install.sh | bash
+              export PATH="$HOME/.pixi/bin:$PATH"
+              pixi install
+              pixi run bootstrap
+              pixi run pip install dist/deode-*.whl
+              pixi run deode -h
           template_data: |
               repo: https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/${{ github.repository }}.git
               repo_name: ${{ github.repository }}
@@ -109,13 +107,10 @@ jobs:
               fi
 
               module load python3/3.10.10-01
-              export POETRY_HOME=$PWD/opt/poetry
-              # Create a virtual environment to contain poetry.
-              python3 -m venv $POETRY_HOME
-              $POETRY_HOME/bin/python -m pip install poetry==2.3.0
-              $POETRY_HOME/bin/poetry --version
-              export PATH=$POETRY_HOME/bin:$PATH
-              $POETRY_HOME/bin/poetry install --only main
+              curl -fsSL https://pixi.sh/install.sh | bash
+              export PATH="$HOME/.pixi/bin:$PATH"
+              pixi install
+              pixi run bootstrap
 
               echo 'configuration_name='${{ inputs.configuration_name }}
               # actor_username is the GitHub user who triggered the workflow.
@@ -123,10 +118,10 @@ jobs:
 
               # Use the repo root as the workflow folder.
               DEODE_WORKFLOW_FOLDER="$PWD"
-              echo $POETRY_HOME $DEODE_WORKFLOW_FOLDER
+              echo $DEODE_WORKFLOW_FOLDER
               cd $DEODE_WORKFLOW_FOLDER
 
-              # Run deode via Poetry so it uses the venv dependencies.
+              # Run deode via pixi environment.
               run_date=$(date +%Y%m%d_%H%M)
               # Use a local modifications file to override the case name per run.
               cat > github_modifications.toml<<EOF
@@ -137,11 +132,11 @@ jobs:
               echo $(pwd)/github_modifications.toml  >> deode/data/config_files/configurations/${{ inputs.configuration_name }}
               cat deode/data/config_files/configurations/${{ inputs.configuration_name }}
 
-              $POETRY_HOME/bin/poetry run deode case ?deode/data/config_files/configurations/${{ inputs.configuration_name }} -o ${{ inputs.configuration_name }}.toml --start-suite
+              pixi run deode case ?deode/data/config_files/configurations/${{ inputs.configuration_name }} -o ${{ inputs.configuration_name }}.toml --start-suite
 
-              # Add executable permission because of poetry.
+              # Add executable permission.
               chmod u+x test_worfklow_scripts/export_case_variables.py
-              export_command=$($POETRY_HOME/bin/poetry run test_worfklow_scripts/export_case_variables.py $DEODE_WORKFLOW_FOLDER/${{ inputs.configuration_name }}.toml)
+              export_command=$(pixi run python test_worfklow_scripts/export_case_variables.py $DEODE_WORKFLOW_FOLDER/${{ inputs.configuration_name }}.toml)
               echo $export_command > export_command.sh
               source export_command.sh
 
@@ -177,13 +172,12 @@ jobs:
             cd Deode-Workflow
             git checkout {{ ref }}
             module load python3/3.10.10-01
-            export POETRY_HOME=$PWD/opt/poetry
-            # Create a virtual environment to contain poetry
-            python3 -m venv $POETRY_HOME
-            $POETRY_HOME/bin/python -m pip install poetry==2.3.0
-            $POETRY_HOME/bin/poetry --version
-            export PATH=$POETRY_HOME/bin:$PATH
-            $POETRY_HOME/bin/poetry build -f wheel
+            curl -fsSL https://pixi.sh/install.sh | bash
+            export PATH="$HOME/.pixi/bin:$PATH"
+            pixi install
+            pixi run bootstrap
+            pixi run pip install build
+            pixi run python -m build --wheel
             tar -cf deode_workflow-${{ github.sha }}.tar.gz dist pyproject.toml
             mv deode_workflow-${{ github.sha }}.tar.gz $SCRATCH/deode_workflow-${{ github.sha }}.tar.gz
           template_data: |

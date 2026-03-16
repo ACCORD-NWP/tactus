@@ -1,9 +1,10 @@
-.PHONY: help lint lint test doc doc-clean doc-build doc-view pre-push-checks clean
+.PHONY: help bootstrap lint lint test doc doc-clean doc-build doc-view pre-push-checks clean
 
 help:
 	@echo "Available commands:"
 	@echo "  make lint            - Run all linters and auto-fix issues"
 	@echo "  make test            - Run pytest"
+	@echo "  make bootstrap       - Install git deps and editable project in Pixi env"
 	@echo "  make doc             - Build and view documentation"
 	@echo "  make doc-clean       - Clean documentation build artifacts"
 	@echo "  make doc-build       - Build documentation"
@@ -11,30 +12,34 @@ help:
 	@echo "  make pre-push-checks - Run all checks before pushing"
 	@echo "  make clean           - Clean build artifacts"
 
+bootstrap:
+	pixi install
+	pixi run bootstrap
+
 # Linting
-lint:
+lint: bootstrap
 	@echo "Running linters..."
-	poetry run pre-commit run --all-files
+	pixi run pre-commit run --all-files
 
 # Testing
-test:
-	poetry run pytest -n auto --maxprocesses 16
+test: bootstrap
+	pixi run pytest -n auto --maxprocesses 16
 
 # Documentation
 doc-clean:
 	rm -rf docs/_build/ docs/deode.rst docs/markdown_docs/config.md
 
-doc-build: doc-clean
-	poetry run deode doc config >| docs/markdown_docs/config.md
-	poetry run sphinx-apidoc deode -o docs/ --force --no-toc --module-first
-	poetry run sphinx-build docs docs/_build/
+doc-build: bootstrap doc-clean
+	pixi run python -m deode doc config >| docs/markdown_docs/config.md
+	pixi run sphinx-apidoc deode -o docs/ --force --no-toc --module-first
+	pixi run sphinx-build docs docs/_build/
 	touch docs/_build/.nojekyll
 
 doc-view:
 	@if [ ! -f docs/_build/index.html ]; then \
 		$(MAKE) doc-build; \
 	fi
-	@poetry run python -c "import webbrowser; webbrowser.open('docs/_build/index.html')"
+	@pixi run python -c "import webbrowser; webbrowser.open('docs/_build/index.html')"
 
 doc: doc-build doc-view
 

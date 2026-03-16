@@ -41,30 +41,20 @@ jobs:
         id: setup-python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.13'
+          python-version: '3.10'
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
+      - name: Install Pixi
+        uses: prefix-dev/setup-pixi@v0
         with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
+          pixi-version: latest
 
-      - name: Load cached venv (if cache exists)
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: ${{ github.job }}-venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml', '**/poetry.toml') }}
-
-      - name: Install dependencies (if venv cache is not found)
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root --only main,doc
-
-      - name: Install the project itself
-        run: poetry install --no-interaction --only-root
+      - name: Install dependencies with Pixi
+        run: |
+          pixi install
+          pixi run bootstrap
 
       - name: Build documentation
-        run: make doc-build
+        run: pixi run make doc-build
 
       - name: Deploy to https://github.com/destination-earth-digital-twins/deode-workflow-docs
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}

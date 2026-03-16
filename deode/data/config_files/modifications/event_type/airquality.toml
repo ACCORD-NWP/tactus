@@ -101,7 +101,6 @@
   active = true
   config_name = "@WRK@/aq.toml"
   path = "@AQ_PATH@"
-  poetry = "@AQ_POETRY@"
 
 [impact.aq.communicate.air_quality_general.common_api]
   archive_in = "@ARCHIVE@"
@@ -146,7 +145,6 @@
 [macros.select.aq_macros]
   gen_macros = [
     {aq_path = "platform.impact.aq.path"},
-    {aq_poetry = "platform.impact.aq.poetry"},
   ]
 
 [submission.task_exceptions.ArchiveFDB.BATCH]

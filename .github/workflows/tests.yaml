@@ -47,45 +47,23 @@ jobs:
       #----------------------------------------------
       #           add matrix specifics
       #----------------------------------------------
-      - name: Install ping
+      - name: Install system dependencies
         run: |
           apt-get update
-          apt-get install -y inetutils-ping
+          apt-get install -y inetutils-ping gdal-bin libgdal-dev
 
-      - name: Install system gdal libs
-        run: |
-          apt-get update
-          apt-get install -y gdal-bin libgdal-dev
-
-      - name: Install pygdal
-        run: |
-          pip install pygdal=="`gdal-config --version`.*"
-
-      #----------------------------------------------
-      #  --- configure poetry & install project  ----
-      #----------------------------------------------
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
+      - name: Install Pixi
+        uses: prefix-dev/setup-pixi@v0
         with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
+          pixi-version: latest
 
-      - name: Load cached venv (if cache exists)
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: ${{ github.job }}-venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml', 'poetry.toml') }}
-
-      - name: Install dependencies (if venv cache is not found)
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root --only main,test
-
-      - name: Install the project itself
-        run: poetry install --no-interaction --only-root
+      - name: Install dependencies with Pixi
+        run: |
+          pixi install
+          pixi run bootstrap
 
       - name: Run tests
-        run: make test
+        run: pixi run pytest -n auto --maxprocesses 16
 
 
       # Disable upload to codecov until/if codecov is enabled

@@ -44,7 +44,6 @@
 
 [platform.impact.aq]
   path = "/perm/snh02/DE_Impact/AQ/Deode-AQ-Workflow"
-  poetry = "/home/snh02/.local/bin/poetry"
 
 [platform.impact.ehype]
   path = "/home/snh02/DE_Impact/EHYPE/forecast/pyflow/utils"
@@ -54,7 +53,6 @@
 
 [platform.impact.verification]
   path = "/hpcperm/snh02/DE_Verification/plugins/harpverify"
-  poetry = "/home/snh02/.local/bin/poetry"
 
 [platform.impact.wildfire]
   path = "/perm/@USER@/DE_Impact/wildfire"

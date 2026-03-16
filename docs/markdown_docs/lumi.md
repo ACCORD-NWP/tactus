@@ -241,18 +241,17 @@ Please follow the download, install and usage instructions provided in the [Deod
 
 In short:
 ```
-# Reinstall poetry (optional)
-curl -sSL https://install.python-poetry.org | python3 - --uninstall
-rm -rf ${HOME}/.cache/pypoetry/ ${HOME}/.local/bin/poetry ${HOME}/.local/share/pypoetry
-# Download and install poetry
-curl -sSL https://install.python-poetry.org | python3 -
+# Install pixi
+curl -fsSL https://pixi.sh/install.sh | bash
+export PATH="$HOME/.pixi/bin:$PATH"
 
 
 # Checkout Deode
 git clone git@github.com:destination-earth-digital-twins/Deode-Workflow.git
 cd Deode-Workflow
 # install dependencies
-poetry install
+pixi install
+pixi run bootstrap
 ```
 
 ## Step 6. Running Deode
@@ -264,7 +263,7 @@ The following commands prepare the environment (execute them one time before sta
 
 ```shell
 # Do these steps only once
-poetry shell
+pixi shell
 ml use /scratch/project_465000527/jasinskas/scl/modules/
 ml pyeccodes_23
 ml scl-ecflow_23
@@ -375,7 +374,7 @@ ssh lrb_465000527_efprd@lumi.csc.fi
 5. To get started, as you would on your own user:
 ```shell
  cd $DEODE
- poetry shell
+ pixi shell
  deode case ?deode/data/config_files/configurations/cy49t2_arome -o cy49t2_arome.toml --start-suite
 ```
 
@@ -477,9 +476,9 @@ Please check that:
 
 1. You are inside the $DEODE folder, in which you cloned the Deode repository
 
-2. You did `poetry install` inside your $DEODE folder.
+2. You did `pixi install` inside your $DEODE folder.
 
-3. You spawned `poetry shell` inside your $DEODE folder.
+3. You spawned `pixi shell` inside your $DEODE folder.
 
 
 
