@@ -37,7 +37,7 @@
     "pandas>=1.4.0,<3.0.0",
     "pydantic>=2.9.2",
     "pyfdb>=0.1.2",
-    "pygdal>=3.6.4,<3.6.5",
+    "gdal>=3.7",
     "pyproj>=3.3.0,!=3.5.0",
     "pysurfex>=0.1.2",
     "pyyaml>=6.0",
@@ -76,7 +76,6 @@
   pip = "*"
   eccodes = "==2.41"
   ecflow = ">=5.15.0"
-  libgdal = "==3.6.4"
   inetutils = "*"
   numpy = ">=1.22.4,<2.0.0"
 
