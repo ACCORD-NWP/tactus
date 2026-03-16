@@ -55,8 +55,10 @@ class Task(object):
         self.name = name
         self.fmanager = FileManager(self.config)
         self.platform = self.fmanager.platform
-        self.wrapper = self.config["submission.task.wrapper"]
-
+        wrapper = ""
+        with contextlib.suppress(KeyError):
+            self.wrapper = self.config["submission.task.wrapper"]
+        self.wrapper = wrapper
         self.wrk = self.platform.get_system_value("wrk")
         if self.wrk is None:
             raise ValueError("You must set wrk", self.wrk)
@@ -236,10 +238,7 @@ class Task(object):
         if os.path.exists(general_binary):
             logger.debug("Found general binary: {}", sys_binary)
             return general_binary
-
-        raise FileNotFoundError(
-            f"No binary found for {binary} in system or general bindir"
-        )
+        return None
 
     def execute(self):
         """Do nothing for base execute task."""
