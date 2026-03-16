@@ -65,6 +65,30 @@
 [tool.poetry]
   include = [{path = "deode/data/**/*", format = ["sdist", "wheel"]}]
 
+[tool.pixi.project]
+  channels = ["conda-forge"]
+  platforms = ["linux-64", "osx-64", "osx-arm64"]
+
+[tool.pixi.dependencies]
+  # conda-forge provides C libraries that pip wheels don't bundle
+  python = ">=3.10,<3.13"
+  pip = "*"
+  eccodes = "2.41"
+  gdal = ">=3.5.0"
+
+[tool.pixi.tasks]
+  bootstrap = """
+    pip install \\
+      'geohash @ git+https://github.com/destination-earth-digital-twins/geohash.git@v1.1' \\
+      'grib2sqlite @ git+https://github.com/destination-earth-digital-twins/grib2sqlite@v0.2.0' \\
+      'json2tab @ git+ssh://git@github.com:destination-earth-digital-twins/json2tab.git@master' \\
+      'thenamelisttool @ git+https://github.com/UMR-CNRM/thenamelisttool.git' \\
+      'toml-formatter @ git+ssh://git@github.com:destination-earth-digital-twins/toml-formatter.git' \\
+      'troika @ git+https://github.com/ecmwf/troika.git' \\
+      'utci @ git+ssh://git@github.com:destination-earth-digital-twins/utci.git' && \\
+    pip install -e . --dependency-groups dev,test,doc
+    """
+
 [dependency-groups]
   dev = [
     "pre-commit>=3.0.4",
