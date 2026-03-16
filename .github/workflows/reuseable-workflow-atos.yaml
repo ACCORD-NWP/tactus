@@ -53,7 +53,6 @@ jobs:
               cd dist
               pwd
 
-              module load python3/3.10.10-01
               curl -fsSL https://pixi.sh/install.sh | bash
               export PATH="$HOME/.pixi/bin:$PATH"
               pixi install
@@ -108,7 +107,6 @@ jobs:
                 git switch {{ pull_request_branch_name }}; \
               fi
 
-              module load python3/3.10.10-01
               curl -fsSL https://pixi.sh/install.sh | bash
               export PATH="$HOME/.pixi/bin:$PATH"
               pixi install
@@ -142,9 +140,6 @@ jobs:
               echo $export_command > export_command.sh
               source export_command.sh
 
-              module load ecflow
-              # Ensure ecflow Python bindings are visible to system python.
-              export PYTHONPATH="$ECFLOW_DIR/lib/python3.10/site-packages:$ECFLOW_DIR/lib64/python3.10/site-packages:${PYTHONPATH:-}"
               python3  test_worfklow_scripts/get_suite_status.py $ECF_HOST $ECF_PORT $SUITE_NAME
           template_data: |
               repo: https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/${{ github.repository }}.git
