@@ -114,7 +114,7 @@ jobs:
 
               curl -fsSL https://pixi.sh/install.sh | bash
               export PATH="$HOME/.pixi/bin:$PATH"
-              pixi install
+              pixi install -v
               pixi run bootstrap
 
               echo 'configuration_name='${{ inputs.configuration_name }}
