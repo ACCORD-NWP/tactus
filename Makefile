@@ -31,6 +31,7 @@ doc-clean:
 
 doc-build: bootstrap doc-clean
 	pixi run python -m deode doc config >| docs/markdown_docs/config.md
+  pixi run python docs/write_output_overview.py docs/markdown_docs/output_overview.md
 	pixi run sphinx-apidoc deode -o docs/ --force --no-toc --module-first
 	pixi run sphinx-build docs docs/_build/
 	touch docs/_build/.nojekyll
@@ -49,7 +50,7 @@ pre-push-checks: lint doc-clean doc-build test
 
 # Clean
 clean:
-	rm -rf docs/_build/ docs/deode.rst docs/markdown_docs/config.md
+	rm -rf docs/_build/ docs/deode.rst docs/markdown_docs/config.md docs/markdown_docs/output_overview.md
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name "*.pyc" -delete

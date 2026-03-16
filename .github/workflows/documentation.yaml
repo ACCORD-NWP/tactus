@@ -16,6 +16,8 @@ on:
       - '**.py'
       - '*.rst'
       - '*.md'
+  release:
+    types: [published]
   workflow_dispatch:
 
 permissions:
@@ -57,7 +59,7 @@ jobs:
         run: pixi run make doc-build
 
       - name: Deploy to https://github.com/destination-earth-digital-twins/deode-workflow-docs
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
+        if: ${{ github.event_name == 'published' }}
         uses: cpina/github-action-push-to-another-repository@main
         env:
           SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
