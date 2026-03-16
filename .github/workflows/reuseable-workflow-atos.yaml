@@ -145,7 +145,7 @@ jobs:
               echo $export_command > export_command.sh
               source export_command.sh
 
-              python3  test_worfklow_scripts/get_suite_status.py $ECF_HOST $ECF_PORT $SUITE_NAME
+              pixi run python test_worfklow_scripts/get_suite_status.py $ECF_HOST $ECF_PORT $SUITE_NAME
           template_data: |
               repo: https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/${{ github.repository }}.git
               ref: ${{ github.event.pull_request.head.sha || github.sha }}
