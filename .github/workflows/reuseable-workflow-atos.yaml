@@ -50,6 +50,8 @@ jobs:
 
               unzip -o packages.zip -d dist
               ls -la dist/
+              cd dist
+              pwd
 
               module load python3/3.10.10-01
               curl -fsSL https://pixi.sh/install.sh | bash
