@@ -41,11 +41,11 @@
     "pysurfex>=0.1.2",
     "pyyaml>=6.0",
     "thenamelisttool @ git+ssh://git@github.com/UMR-CNRM/thenamelisttool.git",
-    "toml-formatter @ git+ssh://git@github.com/destination-earth-digital-twins/toml-formatter.git",
+    "toml-formatter @ git+https://git@github.com/destination-earth-digital-twins/toml-formatter.git",
     "tomli>=2.0.1",
     "tomlkit>=0.12.1",
     "troika @ git+ssh://git@github.com/ecmwf/troika.git",
-    "utci @ git+ssh://git@github.com/destination-earth-digital-twins/utci.git",
+    "utci @ git+https://git@github.com/destination-earth-digital-twins/utci.git",
     "xmltodict>=0.14.2",
   ]
 
