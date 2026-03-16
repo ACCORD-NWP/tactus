@@ -47,11 +47,6 @@ jobs:
       #----------------------------------------------
       #           add matrix specifics
       #----------------------------------------------
-      - name: Install system dependencies
-        run: |
-          apt-get update
-          apt-get install -y inetutils-ping gdal-bin libgdal-dev
-
       - name: Install Pixi
         uses: prefix-dev/setup-pixi@v0
         with:
