@@ -185,11 +185,17 @@ class Task(object):
         """
         binary = binary_name
         task = task_name if task_name is not None else self.name
+        sys_bindir = "@CASEDIR@/install/bin"
+        sys_bindir = self.platform.substitute(sys_bindir)
+        sys_bindir = os.path.realpath(sys_bindir)
+
         with contextlib.suppress(KeyError):
             binary = self.config[f"submission.task_exceptions.{task}.binary"]
 
+        task_bindir = None
+        general_bindir = None
         try:
-            bindir = self.config[f"submission.task_exceptions.{task}.bindir"]
+            task_bindir = self.config[f"submission.task_exceptions.{task}.bindir"]
         except KeyError:
             try:
                 binaries = self.config[
@@ -200,17 +206,40 @@ class Task(object):
                 with contextlib.suppress(KeyError):
                     binary = binaries["binary"]
                 with contextlib.suppress(KeyError):
-                    bindir = binaries["bindir"]
+                    task_bindir = binaries["bindir"]
             except KeyError:
-                bindir = self.config["submission.bindir"]
+                with contextlib.suppress(KeyError):
+                    general_bindir = self.config["submission.bindir"]
 
-        bindir = self.platform.substitute(bindir)
-        bindir = os.path.realpath(bindir)
-
+        # Look for binary
         logger.debug("binary:{}", binary)
-        logger.debug("bindir:{}", bindir)
+        logger.debug("system bindir:{}", sys_bindir)
+        logger.debug("general bindir:{}", general_bindir)
+        logger.debug("task bindir:{}", task_bindir)
+        # 1. Task specific binary
+        if task_bindir is not None:
+            logger.debug("Using task specific binary")
+            bindir = self.platform.substitute(task_bindir)
+            bindir = os.path.realpath(bindir)
+            task_binary = f"{bindir}/{binary}"
+            logger.debug("Using task specific binary: {}", task_binary)
+            return task_binary
+        # 2. System binary
+        sys_binary = f"{sys_bindir}/{binary}"
+        if os.path.exists(sys_binary):
+            logger.debug("Found system binary: {}", sys_binary)
+            return sys_binary
+        # 3. General binary
+        bindir = self.platform.substitute(general_bindir)
+        bindir = os.path.realpath(bindir)
+        general_binary = f"{bindir}/{binary}"
+        if os.path.exists(general_binary):
+            logger.debug("Found general binary: {}", sys_binary)
+            return general_binary
 
-        return f"{bindir}/{binary}"
+        raise FileNotFoundError(
+            f"No binary found for {binary} in system or general bindir"
+        )
 
     def execute(self):
         """Do nothing for base execute task."""
