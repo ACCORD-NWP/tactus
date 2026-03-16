@@ -28,8 +28,8 @@ jobs:
                 git checkout {{ ref }}
 
                 # Convert all ssh github dependency repos to https github dependency repos
-                sed -i 's#ssh://git@github.com:#https://github.com/#g' pixi.toml pyproject.toml
-                sed -i 's#https://github.com/destination-earth-digital-twins/#https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/destination-earth-digital-twins/#g' pixi.toml pyproject.toml
+                sed -i 's#ssh://git@github.com:#https://github.com/#g' pyproject.toml
+                sed -i 's#https://github.com/destination-earth-digital-twins/#https://${{ secrets.GH_REPO_READ_TOKEN }}@github.com/destination-earth-digital-twins/#g' pyproject.toml
 
                 module --force purge
                 module load cray-python/3.10.10
