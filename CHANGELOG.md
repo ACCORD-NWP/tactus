@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Add compilation and use of binaries from IAL code built with IAL-bundle [\#11](https://github.com/ACCORD-NWP/tactus/pull/11) (@trygveasp)
 - Support multiple search paths for json schemas. [\#5](https://github.com/ACCORD-NWP/tactus/pull/5) (@mfroelund)
 - Reintroduce remove functionality. [\#7](https://github.com/ACCORD-NWP/tactus/pull/7) (@mfroelund)
 - Support for specifying modification files with subpaths. [\#10](https://github.com/ACCORD-NWP/tactus/pull/10) (@mfroelund)

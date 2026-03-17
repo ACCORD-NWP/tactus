@@ -87,6 +87,12 @@
   RTTOV_COEFDIR = "@RTTOV_COEFDIR@"
   UCX_LOG_LEVEL = "error"
 
+[submission.task_exceptions.IALBundleBuild.BATCH]
+  MEM = "#SBATCH --mem=0GB"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=32"
+  WALLTIME = "#SBATCH --time=02:00:00"
+
 [submission.task_exceptions.InterpolSstSic]
   binary = "gl"
   bindir = "@BINDIR_GL@"
@@ -159,7 +165,7 @@
 [submission.types.parallel]
   NPROC = 32
   SCHOST = "hpc"
-  tasks = ["Forecast", "E927", "Pgd", "Prep", "C903"]
+  tasks = ["Forecast", "E927", "Pgd", "Prep", "C903", "IALBundleBuild"]
   WRAPPER = "srun"
 
 [submission.types.parallel.BATCH]
