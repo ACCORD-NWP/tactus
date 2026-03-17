@@ -37,7 +37,7 @@ jobs:
       #           check-out repo
       #----------------------------------------------
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Set github credentials
         uses: ./.github/actions/setup-github-credentials
