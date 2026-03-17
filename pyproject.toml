@@ -19,7 +19,8 @@
   dependencies = [
     "dateutils>=0.6.12",
     "dicttoxml>=1.0.0",
-    "eccodes==2.41",
+    "eccodes==2.45",
+    "eccodeslib==2.45.4.11",
     "f90nml>=1.4.3",
     "fastjsonschema==2.18.1",
     "geohash @ git+https://github.com/destination-earth-digital-twins/geohash.git@v1.1",

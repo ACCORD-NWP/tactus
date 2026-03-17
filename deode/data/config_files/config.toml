@@ -77,11 +77,11 @@
   output_name = "10si"
 
 [gribmodify.fullpos.5]
-  output_name = "100si"
+  output_name = "ws"
 
 [gribmodify.fullpos.6]
   minimum_frequency = "PT1H"
-  output_name = "10fg"
+  output_name = "max_i10fg"
 
 [gribmodify.fullpos.7]
   output_name = "2d"

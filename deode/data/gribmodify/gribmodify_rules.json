@@ -68,31 +68,37 @@
   {
     "input_grib_id": [
       {
-        "shortName": "100u"
+        "shortName": "u",
+        "level": 100,
+        "typeOfLevel": "heightAboveGround"
       },
       {
-        "shortName": "100v"
+        "shortName": "v",
+        "level": 100,
+        "typeOfLevel": "heightAboveGround"
       }
     ],
     "operator": "vectorLength",
-    "output_name": "100si",
+    "output_name": "ws",
     "output_grib_id": {
-      "shortName": "100si"
+      "shortName": "ws",
+      "level": 100,
+      "typeOfLevel": "heightAboveGround"
     }
   },
   {
     "input_grib_id": [
       {
-        "shortName": "10efg"
+        "shortName": "max_10efg"
       },
       {
-        "shortName": "10nfg"
+        "shortName": "max_10nfg"
       }
     ],
     "operator": "vectorLength",
-    "output_name": "10fg",
+    "output_name": "max_i10fg",
     "output_grib_id": {
-      "shortName": "10fg"
+      "shortName": "max_i10fg"
     },
     "valid_at_basetime": false
   },
