@@ -208,12 +208,11 @@ class Topography(Task):
 
             # Output merged GMTED file to working directory as file gmted_mea075.tif
             gdal = _import_gdal()
-            gd = gdal.Warp(
-                "gmted_mea075.tif",
-                tif_files,
+            warp_options = gdal.WarpOptions(
                 format="GTiff",
-                options=["COMPRESS=LZW", "TILED=YES"],
+                creationOptions=["COMPRESS=LZW", "TILED=YES"],
             )
+            gd = gdal.Warp("gmted_mea075.tif", tif_files, options=warp_options)
 
             Topography.tif2bin(gd, "gmted_mea075.bin")
             shutil.move("gmted_mea075.bin", f"{climdir}/gmted2010.dir")
