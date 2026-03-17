@@ -47,7 +47,7 @@ We **highly recommend** you to also put the statement listed above in your shell
   conda activate <env_name>
   ```
 
-See also [lumi doc](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/docs/markdown_docs/lumi.md) for more details.
+See also [lumi doc](https://destination-earth-digital-twins.github.io/deode-workflow-docs/lumi_link.html) for more details.
 
 * On Macs (local install only)
   ```shell
@@ -66,7 +66,7 @@ git clone git@github.com:destination-earth-digital-twins/Deode-Workflow.git
 cd Deode-Workflow
 ```
 
-For development, use forks as specified in the [Development guidelines](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/docs/markdown_docs/development_guide.md).
+For development, use forks as specified in the [Development guidelines](https://destination-earth-digital-twins.github.io/deode-workflow-docs/development_guidelines_link.html).
 To clone the forked repository, use the following command, replacing \<username\> with your GitHub username:
 ```shell
 git clone git@github.com:<username>/Deode-Workflow.git
@@ -182,4 +182,4 @@ NOTE: the config file used by a given task, is always saved to the working direc
 
 This way, the stand alone forecast will pick the input data from the existing run and output the result in the same directories (as defined by the config file).
 
-For other platforms a new config file would have to be created first. Please consult the [configure cases](misc_section_in_doc_page.rst#configure-cases) section in the documentation for more information.
+For other platforms a new config file would have to be created first. Please consult the [configure cases](https://destination-earth-digital-twins.github.io/deode-workflow-docs/misc_section_in_doc_page.html#configure-cases) section in the documentation for more information.

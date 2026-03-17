@@ -177,7 +177,8 @@ class E923(Task):
         Args:
             label: dataset label in input_data (or integer to get related part)
             month: month number
-            gunzip_flags: Flags used to unzip comppresed files (*.Z-files)
+            gunzip_flags: Flags passed to gunzip when decompressing compressed
+                (``*.Z``) files
 
         Returns:
             List of files where links can be removed for cleanup

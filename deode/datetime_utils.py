@@ -248,7 +248,7 @@ def evaluate_date(date: str) -> str:
     - If the input includes a duration (e.g., "2025-03-19T00:00:00Z/-P1D"), it applies
       the duration to the datetime.
     - If the input is only a duration (e.g., "-P1D"), it applies it to today's midnight
-    (UTC).
+      (UTC).
 
     Args:
         date (str): An ISO 8601 datetime, duration, or both.

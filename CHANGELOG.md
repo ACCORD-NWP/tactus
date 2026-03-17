@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Deploy documentation only on tagged releases rather than when pushing to develop [\#1554] (@sbnielsen, @observingClouds, @mfroelund)
 - Bump actions/cache from 3 to 5 [\#1562](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1562)(@dependabot)
 
+### Fixed
+- Minor docstring fixes and broken link in README [#1569](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1569)(@sbnielsen)
+
 ## [0.26.0] - 2026-03-11
 
 ### Added
