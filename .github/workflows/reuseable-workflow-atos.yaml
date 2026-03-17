@@ -173,7 +173,7 @@ jobs:
             git clone {{ repo }}
             cd Deode-Workflow
             git checkout {{ ref }}
-            module load python3/3.10.10-01
+
             curl -fsSL https://pixi.sh/install.sh | bash
             export PATH="$HOME/.pixi/bin:$PATH"
             pixi install
@@ -202,12 +202,10 @@ jobs:
           template: |
             cp $SCRATCH/deode_workflow-${{ github.sha }}.tar.gz .
             tar -xf deode_workflow-${{ github.sha }}.tar.gz
-            module load python3/3.10.10-01
-            python3 -m venv .venv
-            source .venv/bin/activate
+
             export DEODEVERSION=$(grep -A 2 '^\[project\]' pyproject.toml | grep 'version' | awk -F\" '{print $2}')
-            python3 -m pip install dist/deode-$DEODEVERSION-py3-none-any.whl
-            deode -h
+            pixi run pip install dist/deode-$DEODEVERSION-py3-none-any.whl
+            pixi run deode -h
           sbatch_options: |
             #SBATCH --job-name=install_deode_workflow
             #SBATCH --time=00:05:00
