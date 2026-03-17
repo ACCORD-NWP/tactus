@@ -10,3 +10,5 @@ linda:
     SMHI_DIST: "linda\\d+"
 leonardo: 
   hostname: ".*leonardo.*"
+fahrenheit:
+  hostname: "fahrenheit\\d+"
