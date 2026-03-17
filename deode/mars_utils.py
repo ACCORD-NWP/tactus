@@ -389,13 +389,14 @@ def add_additional_file_specific_data(
     """Add additional file specific data.
 
     The additional_data dict is expected to have the following structure, where
-    the "common_data" key is optional:
-    {
-        "common_data": b"Common data to add to all files",
-        "file1": b"Data to add to file1",
-        "file2": b"Data to add to file2",
-        ...
-    }
+    the "common_data" key is optional::
+
+        {
+            "common_data": b"Common data to add to all files",
+            "file1": b"Data to add to file1",
+            "file2": b"Data to add to file2",
+            ...
+        }
 
     If the "common_data" key is present, the data will be added to a file before
     the file-specific data is added.
@@ -435,12 +436,13 @@ def add_additional_data_to_all(
 ):
     """Add additional common data to all files defined by tag, step and member.
 
-    The additional_data dict is expected to have the following structure:
-    {
-        "data_key1": b"Data to add to all files",
-        "data_key2": b"Data to add to all files",
-        ...
-    }
+    The additional_data dict is expected to have the following structure::
+
+        {
+            "data_key1": b"Data to add to all files",
+            "data_key2": b"Data to add to all files",
+            ...
+        }
 
     Args:
         tag (str): Name of tag

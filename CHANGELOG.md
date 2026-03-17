@@ -15,6 +15,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Deploy documentation only on tagged releases rather than when pushing to develop [\#1554] (@sbnielsen, @observingClouds, @mfroelund)
+<<<<<<< dependabot/pre_commit/https-/github.com/astral-sh/ruff-pre-commit-0.15.6
+- Bump ruff-pre-commit from v0.15.5 to 0.15.6 [\#1561](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1561) (@dependabot)
+=======
+- Bump actions/setup-python from 4 to 6 [\#1559](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1559) (@dependabot)
+>>>>>>> develop
+- Bump actions/cache from 3 to 5 [\#1562](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1562)(@dependabot)
+- Bump actions/checkout from 3 to 6 [\#1558](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1558)(@dependabot)
+
+### Fixed
+- Minor docstring fixes and broken link in README [#1569](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1569)(@sbnielsen)
 
 ## [0.26.0] - 2026-03-11
 
