@@ -57,7 +57,7 @@ class Task(object):
         self.platform = self.fmanager.platform
         wrapper = ""
         with contextlib.suppress(KeyError):
-            self.wrapper = self.config["submission.task.wrapper"]
+            wrapper = self.config["submission.task.wrapper"]
         self.wrapper = wrapper
         self.wrk = self.platform.get_system_value("wrk")
         if self.wrk is None:
