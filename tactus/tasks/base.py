@@ -55,10 +55,7 @@ class Task(object):
         self.name = name
         self.fmanager = FileManager(self.config)
         self.platform = self.fmanager.platform
-        wrapper = ""
-        with contextlib.suppress(KeyError):
-            wrapper = self.config["submission.task.wrapper"]
-        self.wrapper = wrapper
+        self.wrapper = self.config.get("submission.task.wrapper", "")
         self.wrk = self.platform.get_system_value("wrk")
         if self.wrk is None:
             raise ValueError("You must set wrk", self.wrk)
