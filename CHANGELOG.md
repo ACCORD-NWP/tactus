@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Minor docstring fixes and broken link in README [#1569](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1569)(@sbnielsen)
+- Remove SURFDIR.NORM.IRR and SURF.RAYT.DIR from CY49t2 master namelist [#1574](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1574) (@ealerskans)
+
 
 ## [0.26.0] - 2026-03-11
 
