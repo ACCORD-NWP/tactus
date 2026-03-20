@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump actions/checkout from 3 to 6 [\#1558](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1558)(@dependabot)
 
 ### Fixed
+- Use OMP_STACKSIZE instead of KMP_STACKSIZE on ATOS [#1578](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1578)(@FlorianW-ZAMG)
 - Minor docstring fixes and broken link in README [#1569](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1569)(@sbnielsen)
 - Remove SURFDIR.NORM.IRR and SURF.RAYT.DIR from CY49t2 master namelist [#1574](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1574) (@ealerskans)
 
