@@ -76,6 +76,11 @@ def task_name_and_configs(request, default_config, tmp_directory):
             bd_time = "{basetime}"
             basetime = "{basetime}"
             config_label = "foo"
+        [archiving.DataBridge.fdb]
+        [archiving.DataBridge.fdb.fpgrib_files]
+            active = false
+            inpath = "@ARCHIVE@"
+            pattern = "GRIBPF*"
         """
     )
     task_config = task_config.copy(update=config_patch)
