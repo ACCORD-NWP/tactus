@@ -395,7 +395,7 @@
   {
     "input_grib_id": [
       {
-        "shortName": "vsw",
+        "shortName": "vswrz",
         "tile": "GNATU"
       },
       {
