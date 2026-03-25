@@ -49,6 +49,8 @@ jobs:
           post-cleanup: true
           frozen: true
           cache: true
+          auth-host: github.com
+          auth-token: ${{ secrets.GH_REPO_READ_TOKEN }}
 
       - name: Install additional dependency groups
         run: |
