@@ -4,8 +4,8 @@
 import datetime
 from typing import List, Literal, Union
 
-import pandas as pd
 import pytest
+from isodate.duration import Duration
 from pytest_mock import MockFixture
 
 from deode.datetime_utils import (
@@ -27,8 +27,19 @@ def test_as_datetime():
     assert dt == datetime.datetime(2018, 10, 10, 21, tzinfo=datetime.timezone.utc)
 
 
-def test_as_timedelta():
-    assert as_timedelta("PT3H") == datetime.timedelta(hours=3)
+@pytest.mark.parametrize(
+    ("param", "ref"),
+    [
+        ("PT3H", datetime.timedelta(hours=3)),
+        ("PT144H", datetime.timedelta(hours=144)),
+        ("P4M", Duration(months=4)),
+        ("P5D", datetime.timedelta(days=5)),
+        ("PT6M", datetime.timedelta(minutes=6)),
+        (datetime.timedelta(hours=3), datetime.timedelta(hours=3)),
+    ],
+)
+def test_timedelta(param, ref):
+    assert as_timedelta(param) == ref
 
 
 def test_as_dt2str():
@@ -65,23 +76,38 @@ def test_offsetparam(param: Union[Literal["PT3H"], Literal["PT0H"]]):
 @pytest.mark.parametrize(
     ("output_settings", "expanded_output_settings"),
     [
-        ("PT3H", [[pd.Timedelta(hours=0), pd.Timedelta(hours=6), pd.Timedelta(hours=3)]]),
+        (
+            "PT3H",
+            [
+                [
+                    datetime.timedelta(hours=0),
+                    datetime.timedelta(hours=6),
+                    datetime.timedelta(hours=3),
+                ]
+            ],
+        ),
         (
             ["PT0H:PT6H:PT3H"],
-            [[pd.Timedelta(hours=0), pd.Timedelta(hours=6), pd.Timedelta(hours=3)]],
+            [
+                [
+                    datetime.timedelta(hours=0),
+                    datetime.timedelta(hours=6),
+                    datetime.timedelta(hours=3),
+                ]
+            ],
         ),
     ],
 )
 def test_oi2dt_list(
     output_settings: Union[str, List[str]],
-    expanded_output_settings: List[List[pd.Timedelta]],
+    expanded_output_settings: List[List[datetime.timedelta]],
     mocker: MockFixture,
 ):
     """The that oi2dt_list returns the expected list of timedelta objects.
 
     Args:
         output_settings (Union[str, List[str]]): The output settings.
-        expanded_output_settings (List[List[pd.Timedelta]]):
+        expanded_output_settings (List[List[datetime.timedelta]]):
             The expanded output settings to be return by expand_output_settings.
         mocker (MockFixture): The mocker object used to mock functions.
     """
@@ -92,9 +118,9 @@ def test_oi2dt_list(
     )
 
     assert oi2dt_list(output_settings, forecast_range) == [
-        pd.Timedelta(hours=0),
-        pd.Timedelta(hours=3),
-        pd.Timedelta(hours=6),
+        datetime.timedelta(hours=0),
+        datetime.timedelta(hours=3),
+        datetime.timedelta(hours=6),
     ]
 
 
@@ -118,34 +144,71 @@ def test_get_decadal_list(param: Union[Literal["05"], Literal["30"]]):
     )
 
 
-@pytest.mark.parametrize("param", ["2024-02-03T00:00:00Z", "2023-10-10T00:00:00Z"])
-def test_get_month_list(
-    param: Union[Literal["2024-02-03T00:00:00Z"], Literal["2023-10-10T00:00:00Z"]],
-):
-    truth = {"2024-02-03T00:00:00Z": [10, 11, 12, 1, 2], "2023-10-10T00:00:00Z": [10]}
-
-    assert get_month_list("2023-10-02T00:00:00Z", param) == truth[param]
+@pytest.mark.parametrize(
+    ("start", "end", "ref"),
+    [
+        (
+            "2023-10-05T00:00:00Z",
+            "2024-12-31T00:00:00Z",
+            [10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        ),
+        ("2023-10-05T00:00:00Z", "2024-03-02T00:00:00Z", [10, 11, 12, 1, 2, 3]),
+        ("2023-10-05T00:00:00Z", "2024-03-01T00:00:00Z", [10, 11, 12, 1, 2, 3]),
+        ("2023-10-05T00:00:00Z", "2024-02-03T00:00:00Z", [10, 11, 12, 1, 2]),
+        ("2023-10-05T00:00:00Z", "2023-10-10T00:00:00Z", [10]),
+        ("2023-10-05T00:00:00Z", "2023-10-05T00:00:00Z", [10]),
+        ("2023-10-01T00:00:00Z", "2023-10-31T23:59:59Z", [10]),
+    ],
+)
+def test_get_month_list(end: str, start: str, ref: List[int]):
+    assert get_month_list(start, end) == ref
 
 
 @pytest.mark.parametrize(
     ("output_settings", "forecast_range", "expected"),
     [
         ("", "PT6H", []),
-        ("PT1H", "PT6H", [[pd.Timedelta("0h"), pd.Timedelta("6h"), pd.Timedelta("1h")]]),
+        (
+            "PT1H",
+            "PT6H",
+            [
+                [
+                    datetime.timedelta(hours=0),
+                    datetime.timedelta(hours=6),
+                    datetime.timedelta(hours=1),
+                ]
+            ],
+        ),
         (
             ["PT0H:PT6H:PT1H", "PT6H:PT12H:PT2H"],
             "PT12H",
             [
-                [pd.Timedelta("0h"), pd.Timedelta("6h"), pd.Timedelta("1h")],
-                [pd.Timedelta("6h"), pd.Timedelta("12h"), pd.Timedelta("2h")],
+                [
+                    datetime.timedelta(hours=0),
+                    datetime.timedelta(hours=6),
+                    datetime.timedelta(hours=1),
+                ],
+                [
+                    datetime.timedelta(hours=6),
+                    datetime.timedelta(hours=12),
+                    datetime.timedelta(hours=2),
+                ],
             ],
         ),
         (
             ("PT0H:PT6H:PT1H", "PT6H:PT12H:PT2H"),
             "PT12H",
             [
-                [pd.Timedelta("0h"), pd.Timedelta("6h"), pd.Timedelta("1h")],
-                [pd.Timedelta("6h"), pd.Timedelta("12h"), pd.Timedelta("2h")],
+                [
+                    datetime.timedelta(hours=0),
+                    datetime.timedelta(hours=6),
+                    datetime.timedelta(hours=1),
+                ],
+                [
+                    datetime.timedelta(hours=6),
+                    datetime.timedelta(hours=12),
+                    datetime.timedelta(hours=2),
+                ],
             ],
         ),
     ],
@@ -153,7 +216,7 @@ def test_get_month_list(
 def test_expand_output_settings(
     output_settings: Union[str, List[str], Union[str]],
     forecast_range: str,
-    expected: List[List[pd.Timedelta]],
+    expected: List[List[datetime.timedelta]],
     mocker: MockFixture,
 ):
     """Test that expand_output_settings expands the output settings correctly.
@@ -161,7 +224,7 @@ def test_expand_output_settings(
     Args:
         output_settings (Union[str, List[str], Union[str]]): The output settings.
         forecast_range (str): The forecast range.
-        expected (List[List[pd.Timedelta]]): The expected expanded output settings.
+        expected (List[List[datetime.timedelta]]): The expected expanded output settings.
         mocker (MockFixture): The mocker object used to mock functions.
     """
     mocker.patch("deode.datetime_utils.check_syntax")

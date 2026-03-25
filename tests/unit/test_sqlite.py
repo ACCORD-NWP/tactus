@@ -4,7 +4,7 @@ import datetime
 import os
 
 import grib2sqlite as sqlite
-import pandas
+import pandas as pd
 import pytest
 
 
@@ -64,7 +64,7 @@ class TestExtractSQLite:
             },
         },
     ]
-    station_list = pandas.DataFrame({"lat": [0], "lon": [0], "SID": ["OK"]})
+    station_list = pd.DataFrame({"lat": [0], "lon": [0], "SID": ["OK"]})
 
     mockgrib = {
         "shortName": "t",
