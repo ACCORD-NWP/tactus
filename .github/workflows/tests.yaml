@@ -27,11 +27,6 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
 
-    container:
-      image: python:${{ matrix.python-version }}-bullseye
-      env:
-        COVERAGE_FILE: ".coverage.${{ matrix.env }}.${{ matrix.python-version }}"
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
