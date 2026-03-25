@@ -46,6 +46,7 @@ jobs:
         with:
           pixi-version: latest
           run-install: true
+          manifest-path: pyproject.toml
           post-cleanup: true
           frozen: true
           cache: true
