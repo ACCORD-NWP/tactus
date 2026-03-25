@@ -33,9 +33,6 @@ jobs:
         COVERAGE_FILE: ".coverage.${{ matrix.env }}.${{ matrix.python-version }}"
 
     steps:
-      #----------------------------------------------
-      #           check-out repo
-      #----------------------------------------------
       - name: Check out repository
         uses: actions/checkout@v6
 
@@ -44,17 +41,17 @@ jobs:
         with:
           github_token: ${{ env.GITHUB_TOKEN }}
 
-      #----------------------------------------------
-      #           add matrix specifics
-      #----------------------------------------------
-      - name: Install Pixi
-        uses: prefix-dev/setup-pixi@v0
+      - name: Install Pixi and dependencies
+        uses: prefix-dev/setup-pixi@v0.9.4
         with:
           pixi-version: latest
+          run-install: true
+          post-cleanup: true
+          frozen: true
+          cache: true
 
-      - name: Install dependencies with Pixi
+      - name: Install additional dependency groups
         run: |
-          pixi install
           pixi run bootstrap
 
       - name: Run tests
