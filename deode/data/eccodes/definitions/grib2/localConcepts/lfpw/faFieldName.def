@@ -2471,15 +2471,19 @@
     tablesVersion = 15 ;
 }
 
-# Maximum of Radar Reflectivity
+# Total column vertical-maximum radar precipitation rate
+# Units in FA file are mm/h
+# Units in GRIB file are mm/s to match eccodes parameter.
+# Conversion via FMULTM (factor) and FMULTE (exponent).
 "SURFREFLECT.MAX" = {
     discipline = 0 ;
     parameterCategory = 16 ;
-    parameterNumber = 4 ;
-    tablesVersion = 15 ;
+    parameterNumber = 7 ;
+    tablesVersion = 36 ;
     typeOfFirstFixedSurface = 1 ;
-    scaleFactorOfFirstFixedSurface = missing() ;
-    scaledValueOfFirstFixedSurface = missing() ;
+    typeOfSecondFixedSurface = 8 ;
+    FMULTM = 27778 ;
+    FMULTE = -8 ;
 }
 
 # Temperature
@@ -2910,16 +2914,16 @@
     tablesVersion = 15 ;
 }
 
-# Maximum of Radar Reflectivity
+# Total column vertical-maximum radar reflectivity in dB
 "REFLECT_DBZ.MAX" = {
     discipline = 0 ;
     parameterCategory = 16 ;
-    parameterNumber = 4 ;
-    tablesVersion = 15 ;
+    parameterNumber = 8 ;
+    tablesVersion = 36 ;
     typeOfFirstFixedSurface = 1 ;
-    scaleFactorOfFirstFixedSurface = missing() ;
-    scaledValueOfFirstFixedSurface = missing() ;
+    typeOfSecondFixedSurface = 8;
 }
+
 # Maximum of Radar Reflectivity ensemble forecast
 "REFL_DBZ.MAX.ENS" = {
     discipline = 0 ;

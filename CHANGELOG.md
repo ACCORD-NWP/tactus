@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump ruff-pre-commit from v0.15.5 to 0.15.6 [\#1561](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1561) (@dependabot)
 - Bump actions/setup-python from 4 to 6 [\#1559](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1559) (@dependabot)
 - Bump actions/cache from 3 to 5 [\#1562](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1562)(@dependabot)
+- Updated GRIB2 encoding of radar parameters [\#1556](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1556)(@KristianHMoller)
 - Bump actions/checkout from 3 to 6 [\#1558](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1558)(@dependabot)
 
 ### Fixed
