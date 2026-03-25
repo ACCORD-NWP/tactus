@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Use GDAL options object [\#15](https://github.com/ACCORD-NWP/tactus/pull/15) (@trygveasp)
+- Get wrapper with an empty default value. [\#17](https://github.com/ACCORD-NWP/tactus/pull/17) (@trygveasp)
 - Correct logics in the remove command. [\#1528](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1528) (@uandrae)
 - Restore `mode=start` functionality. [\#1339](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1339) (@BolliPalmason, @kastelecn,@uandrae)
 - Add missing DR_HOOK setting for Addpert. [\#1530](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1530) (@uandrae)
