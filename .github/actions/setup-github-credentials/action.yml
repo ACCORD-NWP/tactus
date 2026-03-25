@@ -12,5 +12,6 @@ runs:
     - name: Set github credentials
       run: |
         sed -i 's#ssh://git@github.com:#https://github.com/#g' pyproject.toml
+        sed -i 's#ssh://git@github.com:#https://github.com/#g' pixi.lock
         git config --global url."https://${{ inputs.github_token }}@github.com/".insteadOf "https://github.com/"
       shell: bash
