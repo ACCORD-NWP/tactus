@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Make resolving path relative to package search across all paths in sys.path. [\#4](https://github.com/ACCORD-NWP/tactus/pull/4) (@mfroelund)
 
 ### Fixed
+- Return binary name as default. [\#19](https://github.com/ACCORD-NWP/tactus/pull/19) (@trygveasp)
 - Use GDAL options object [\#15](https://github.com/ACCORD-NWP/tactus/pull/15) (@trygveasp)
 - Get wrapper with an empty default value. [\#17](https://github.com/ACCORD-NWP/tactus/pull/17) (@trygveasp)
 - Correct logics in the remove command. [\#1528](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1528) (@uandrae)
