@@ -440,7 +440,7 @@ f4_AROME:
     CFRAC_ICE_SHALLOW_MF: S
     LSIGMAS: true
     LSUBG_COND: true
-    VSIGQSAT: 0.02
+    VSIGQSAT: ${vsigqsat_by_gridsize:0.02, ${cfg:domain.xdx}}
   NAM_PARAM_ICEN:
     CSEDIM: STAT
     CSNOWRIMING: M90
@@ -1113,7 +1113,7 @@ f4_HARMONIE_AROME:
     LSIGMAS: true
     LSTATNW: true
     LSUBG_COND: true
-    VSIGQSAT: 0.02
+    VSIGQSAT: ${vsigqsat_by_gridsize:0.02, ${cfg:domain.xdx}}
   NAM_PARAM_ICEN:
     LKOGAN: true
     LOCND2: true
@@ -1157,7 +1157,6 @@ f4_common:
     NRAZTS: ${steplist:${cfg:general.namelist.nrazts}}
   NAM_NEBN:
     LTAUCONV: false
-    LVARRESDEP: false
   NAMCT0:
     CFPNCF: ECHFP
     CNPPATH: .

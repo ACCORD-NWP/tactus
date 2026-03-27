@@ -372,6 +372,25 @@ class NamelistGenerator:
         result = int(freq.seconds / tstep)
         return f"{result}"
 
+    def fn_vsigqsat_by_gridsize(self, arg1, arg2):
+        """Resolve namelist function vsigqsat_by_gridsize.
+
+        Args:
+            arg1: VSIGQSAT reference value
+            arg2: Reference gridsize
+
+        Returns:
+            result: Scaled VSIGQSAT
+
+        """
+        xdx = self.config["domain.xdx"]
+        xdy = self.config["domain.xdy"]
+        gridsize = 0.5 * (xdx + xdy)
+
+        scaled_vsigqsat = arg1 * gridsize / float(arg2)
+        result = min(0.1, scaled_vsigqsat)
+        return f"{result}"
+
     def fn_tstep(self, arg):
         """Resolve namelist function tstep."""
         try:
@@ -447,6 +466,10 @@ class NamelistGenerator:
         self.target = target
         # define OmegaConf resolvers
         OmegaConf.clear_resolvers()
+        OmegaConf.register_new_resolver(
+            "vsigqsat_by_gridsize",
+            lambda arg1, arg2: self.fn_vsigqsat_by_gridsize(arg1, arg2),
+        )
         OmegaConf.register_new_resolver("stepfreq", lambda arg: self.fn_stepfreq(arg))
         OmegaConf.register_new_resolver("steplist", lambda arg: self.fn_steplist(arg))
         OmegaConf.register_new_resolver(
