@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.26.1] - 2026-03-30
+
+### Fixed
+- Keep pyfdb at v0.1.3, since v5 doesn't support python 3.10 [\#1592](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1592)
 
 ## [0.26.0] - 2026-03-11
 
