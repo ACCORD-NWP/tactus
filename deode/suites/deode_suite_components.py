@@ -398,7 +398,7 @@ class StaticDataTasks:
             limit=limit,
         )
 
-        archive_static_member_trigger = e923_monthly_family
+        archive_static_member_trigger = [e923_monthly_family]
 
         pgd_update = None
         if config["suite_control.do_pgd"]:
@@ -413,7 +413,7 @@ class StaticDataTasks:
                 ecf_files_remotely=ecf_files_remotely,
                 limit=limit,
             )
-            archive_static_member_trigger = pgd_update
+            archive_static_member_trigger.append(pgd_update)
 
         if config["general.csc"] == "ALARO" and config["general.surfex"]:
             pgd_filter_town_frac = PgdNode(
@@ -427,7 +427,7 @@ class StaticDataTasks:
                 ecf_files_remotely=ecf_files_remotely,
                 limit=limit,
             )
-            archive_static_member_trigger = pgd_filter_town_frac
+            archive_static_member_trigger.append(pgd_filter_town_frac)
 
         if config["general.windfarm"] and config["json2tab.enabled"]:
             generate_wfp_tabfile = EcflowSuiteTask(
@@ -440,7 +440,7 @@ class StaticDataTasks:
                 trigger=None,
                 ecf_files_remotely=ecf_files_remotely,
             )
-            archive_static_member_trigger = generate_wfp_tabfile
+            archive_static_member_trigger.append(generate_wfp_tabfile)
 
         if (
             config["suite_control.do_archiving"]
