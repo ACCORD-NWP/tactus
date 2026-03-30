@@ -327,6 +327,19 @@ class NamelistGenerator:
         self.domain_name = self.config["domain.name"]
         self.accept_static_namelist = self.config["general.accept_static_namelists"]
 
+    def uppercase_keys(self, d):
+        """Convert the keys in a dict to uppercase.
+
+        Arguments:
+            d (dict): Dict to be parsed
+
+        Returns:
+            d (dict): The parsed dict
+        """
+        if isinstance(d, dict):
+            return {k.upper(): self.uppercase_keys(v) for k, v in d.items()}
+        return d
+
     def load_user_namelist(self):
         """Read user provided namelist.
 
@@ -343,11 +356,12 @@ class NamelistGenerator:
         if os.path.isfile(ref_namelist):
             logger.info("Use reference namelist {}", ref_namelist)
             nl = f90nml.read(ref_namelist)
+            nldict = to_dict(nl.todict())
             target = "user_namelist"
             # NOTE: f90nml.todict() returns OrderedDict
             #       which makes OmegaConf fail.
             #       but maybe we should consider to_dict(nl.todict()) ???
-            nldict = {target: to_dict(nl.todict())}
+            nldict = {target: self.uppercase_keys(nldict)}
             cndict = {self.target: [target]}
             found = False
         else:

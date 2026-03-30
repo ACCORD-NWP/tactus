@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adjust git branch structure to make PRs from release/vX.Y.Z branches merge to master. [\#1585](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1585)
 
 ### Fixed
+- Correct config update of static namelists [#1587](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1587)(@uandrae)
 - Correct the archive_static_member_trigger in ecflow [#1591](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1591)(@uandrae)
 - Correct SLAF race conditions [#1557](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1557)(@ovignes)
 - Correct iomerge file checker for the case of output at t=0 only [#1590](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1590)(@uandrae)
