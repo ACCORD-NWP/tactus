@@ -5,7 +5,6 @@ import contextlib
 import os
 from functools import cached_property
 from pathlib import Path, PurePosixPath
-from time import sleep
 from typing import Dict, List, Optional
 
 from deode.boundary_utils import Boundary
@@ -27,6 +26,7 @@ from deode.mars_utils import (
     mars_selection,
     mars_write_method,
     move_files,
+    wait4_file,
     waitfor_files,
     write_compute_mars_req,
     write_retrieve_mars_req,
@@ -494,15 +494,8 @@ class Marsprep(Task):
                         bd_index=step,
                     )
                     dest_file = prep_dir / sst_filename
-                    lockfile = f"{dest_file}.lock"
-                    while not os.path.exists(dest_file):
-                        if os.path.exists(lockfile):
-                            logger.info("Waiting 5 sec. for {}", dest_file)
-                            sleep(5)
-                        else:
-                            logger.info("No lockfile, stop waiting for {}", dest_file)
-                            sleep(30)
-                            raise SystemExit(f"Creation of {dest_file} must have failed")
+                    wait4_file(dest_file)
+                    logger.info(f"Waitfor_steps found: {dest_file}")
 
     def get_lat_lon_data(self, bdmember_list: List[int]):
         """Get Lat/Lon data.
@@ -521,6 +514,10 @@ class Marsprep(Task):
 
         for member in bdmember_list:
             data_type = self.mars["type_AN"] if member == 0 else self.mars["type_FC"]
+            # Default to ICMGG_0+* if member is None
+            source = f'"{self.prepdir}/ICMGG_{member or 0}+{self.steps[0]}"'
+            if self.config["boundaries.do_slaf"]:
+                wait4_file(ast.literal_eval(source))
             self._build_and_run_retrieve_request(
                 req_file_name="latlonGG.req",
                 data_type=data_type,
@@ -531,8 +528,7 @@ class Marsprep(Task):
                 target=f"mars_latlonGG_{member or 0}",
                 prefetch=prefetch,
                 specify_domain=True,
-                # Default to ICMGG_0+* if member is None
-                source=f'"{self.prepdir}/ICMGG_{member or 0}+{self.steps[0]}"',
+                source=source,
                 write_method=mars_write_method(self.mars_version),
             )
 
@@ -582,6 +578,8 @@ class Marsprep(Task):
                         f"{self.prepdir}/ICMGG", member_type, member, step
                     )
                     target = compile_target(tag_mask, member_type, member, step)
+                    if self.config["boundaries.do_slaf"]:
+                        wait4_file(ast.literal_eval(source))
 
                     if use_verbose_mode:
                         # Make an verbose formula
@@ -671,6 +669,8 @@ class Marsprep(Task):
         else:
             # Default to ICMSH_0+* if member is None
             z_source = f'"{self.prepdir}/ICMSH_{first_member or 0}+{self.steps[0]}"'
+            if self.config["boundaries.do_slaf"]:
+                wait4_file(ast.literal_eval(z_source))
         # NOTE: for z, the step is always 0, while steps[0] may be shifted!
 
         target = f"mars_latlonZ_{first_member or 0}"
