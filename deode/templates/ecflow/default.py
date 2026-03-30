@@ -2,7 +2,10 @@
 
 import os
 
-import ecflow as ecf
+try:
+    import ecflow as ecf
+except ModuleNotFoundError:
+    ecf = None
 
 from deode.config_parser import ConfigParserDefaults, GeneralConstants, ParsedConfig
 from deode.derived_variables import derived_variables
@@ -16,7 +19,7 @@ from deode.tasks.discover_task import get_task
 logger.enable(GeneralConstants.PACKAGE_NAME)
 
 
-def query_ecflow_variable(client: ecf.Client, ecf_name: str, variable: str):
+def query_ecflow_variable(client, ecf_name: str, variable: str):
     """Query ecflow variable from client.
 
     Args:
