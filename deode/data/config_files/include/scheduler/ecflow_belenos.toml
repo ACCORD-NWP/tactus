@@ -1,0 +1,15 @@
+[scheduler]
+[scheduler.ecfvars]
+  case_prefix = ""
+  ecf_deode_home = "@DEODE_HOME@"
+  ecf_files = "@HOME@/deode_ecflow/ecf_files"
+  ecf_files_remotely = "@HOME@/deode_ecflow/ecf_files"
+  ecf_home = "@HOME@/deode_ecflow/jobout"
+  ecf_host = "belenoslogin0.belenoshpc.meteo.fr"
+  ecf_jobout = "@HOME@/deode_ecflow/jobout"
+  ecf_out = "@HOME@/deode_ecflow/jobout"
+  ecf_port = "_set_port_from_user('0',)"
+  ecf_ssl = "0"
+
+[scheduler.ecfvars.troika]
+  config_file = "@ECF_DEODE_HOME@/data/config_files/troika.yml"
