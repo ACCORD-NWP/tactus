@@ -40,14 +40,7 @@ We **highly recommend** you to also put the statement listed above in your shell
   ml pyeccodes_23
   ml scl-ecflow_23
   ```
-
-* On Belenos
-  ```shell
-  conda create -n <env_name> python=3.10.* gdal=3.6.2 ecflow -c conda-forge
-  conda activate <env_name>
-  ```
-
-See also [lumi doc](https://destination-earth-digital-twins.github.io/deode-workflow-docs/lumi_link.html) for more details.
+See also [lumi doc](https://github.com/destination-earth-digital-twins/Deode-Workflow/blob/develop/docs/markdown_docs/lumi.md) for more details.
 
 * On Macs (local install only)
   ```shell
@@ -96,11 +89,6 @@ Finally, install [`pygdal`](https://pypi.org/project/pygdal/), which is required
     poetry shell
     pip install pygdal==3.6.2.11
     ```
-
-  On Belenos, you should install the project in the conda environment that was created, directly with the `pip` command.
-  ```shell
-  pip install -e . --no-cache --prefer-binary
-  ```
 
   If installation is not succesful, please contact the IT support in your organisation or HPC facility.
 
