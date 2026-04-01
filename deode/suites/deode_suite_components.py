@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 from itertools import tee
 from typing import Generator, List, Optional, Tuple
 
+from isodate import duration_isoformat
+
 from deode.boundary_utils import Boundary
 from deode.datetime_utils import (
     as_datetime,
@@ -625,9 +627,9 @@ class InputDataFamily(EcflowSuiteFamily):
                 )
                 bdshift = ["PT0H"]
                 bdshift.append(
-                    (as_timedelta(slaflag) - as_timedelta(slafdiff)).isoformat()
+                    duration_isoformat(as_timedelta(slaflag) - as_timedelta(slafdiff))
                 )
-                bdshift.append(as_timedelta(slaflag).isoformat())
+                bdshift.append(duration_isoformat(as_timedelta(slaflag)))
                 for i in 1, 2:
                     SLAFpartFamily(
                         f"SLAFpart{i}",
@@ -857,7 +859,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
                     bdshift[1] = as_timedelta(slaflag) - as_timedelta(slafdiff)
                     bdshift[2] = as_timedelta(slaflag)
                     for i in (1, 2):
-                        bdsi = bdshift[i].isoformat()
+                        bdsi = duration_isoformat(bdshift[i])
                         args = (
                             variables["ARGS"]
                             + f";extra_bdshift={bdsi};target_suffix='_slaf{i}'"
