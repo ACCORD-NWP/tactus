@@ -415,6 +415,15 @@ class Marsprep(Task):
     def get_sfx_data(self):
         """Get SFX data."""
         bddir = self.config["system.bddir_sfx"]
+
+        try:
+            if not os.path.exists(bddir):
+                deodemakedirs(
+                    bddir, unixgroup=self.platform.get_platform_value("unix_group")
+                )
+        except OSError as e:
+            raise RuntimeError(f"Error while preparing the bddir_sfx folder: {e}") from e
+
         bdfile = self.config["file_templates.bdfile_sfx.archive"]
         mars_file_check_list, bdmember_fetch_list = self.get_bdmember_fetch_list(
             bddir, bdfile
@@ -435,13 +444,22 @@ class Marsprep(Task):
 
     def get_sst_data(self):
         """Get SST data."""
-        prep_dir = Path(
+        bddir_sst = Path(
             self.platform.substitute(
                 self.config["system.bddir_sst"],
                 basetime=self.boundary.bd_basetime,
                 validtime=self.basetime,
             )
         )
+
+        try:
+            if not os.path.exists(bddir_sst):
+                deodemakedirs(
+                    bddir_sst, unixgroup=self.platform.get_platform_value("unix_group")
+                )
+        except OSError as e:
+            raise RuntimeError(f"Error while preparing the bddir_sst folder: {e}") from e
+
         bdfile = self.config["file_templates.bdfile_sst.model"]
 
         (
@@ -452,7 +470,7 @@ class Marsprep(Task):
             waitfor_steps_per_member,
         ) = get_steps_and_members_to_retrieve(
             self.steps,
-            prep_dir,
+            bddir_sst,
             bdfile,
             self.bdmember,
             platform=self.platform,
@@ -470,6 +488,7 @@ class Marsprep(Task):
             # Get the file list to join
             for member in missing_steps_per_member:
                 steps = missing_steps_per_member[member]
+                logger.info(f"Missing steps for member {member}: {steps}")
                 for step in steps:
                     merge_pattern = f"mars_latlonGG*_{member or 0}+{step}"
                     filenames = list_files_join(self.wdir, merge_pattern)
@@ -479,8 +498,8 @@ class Marsprep(Task):
                         validtime=self.basetime,
                         bd_index=step,
                     )
-                    prep_filepath = prep_dir / sst_filename
-                    join_files(filenames, prep_filepath)
+                    sst_filepath = bddir_sst / sst_filename
+                    join_files(filenames, sst_filepath)
 
         if waitfor_steps_per_member:
             # Wait for the relevant files
@@ -493,7 +512,7 @@ class Marsprep(Task):
                         validtime=self.basetime,
                         bd_index=step,
                     )
-                    dest_file = prep_dir / sst_filename
+                    dest_file = bddir_sst / sst_filename
                     wait4_file(dest_file)
                     logger.info(f"Waitfor_steps found: {dest_file}")
 
