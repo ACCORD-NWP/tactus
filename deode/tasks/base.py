@@ -9,6 +9,7 @@ import socket
 from ..config_parser import ConfigParserDefaults
 from ..logs import logger
 from ..os_utils import deodemakedirs
+from ..reference_checker import ReferenceCheckManager
 from ..toolbox import FileManager
 
 
@@ -56,7 +57,6 @@ class Task(object):
         self.fmanager = FileManager(self.config)
         self.platform = self.fmanager.platform
         self.wrapper = self.config["submission.task.wrapper"]
-
         self.wrk = self.platform.get_system_value("wrk")
         if self.wrk is None:
             raise ValueError("You must set wrk", self.wrk)
@@ -68,6 +68,20 @@ class Task(object):
         logger.info("Task {} running in {}", self.name, self.wdir)
 
         self._set_eccodes_environment()
+
+        self._init_reference_checker_manager()
+
+    def _init_reference_checker_manager(self):
+        self.rcm = ReferenceCheckManager.create_reference_check_manager(
+            self.config, self.name
+        )
+        if self.rcm:
+            logger.info(
+                f"Initialize ReferenceChecker for {self.name}:"
+                + f"check={self.rcm.check}; generate={self.rcm.generate}"
+            )
+        else:
+            logger.info(f"No ReferenceChecker for {self.name}")
 
     def _set_eccodes_environment(self):
         """Set correct path for ECCODES tables.
@@ -252,6 +266,8 @@ class Task(object):
         """
         self.prep()
         self.execute()
+        if self.rcm:
+            self.rcm.execute(self.fmanager)
         self.post()
 
     def get_task_setting(self, setting):
@@ -290,6 +306,18 @@ class UnitTest(Task):
 
     def __init__(self, config):
         """Construct test task.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+        """
+        Task.__init__(self, config, __class__.__name__)
+
+
+class ReferenceCheck(Task):
+    """ReferenceCheck class."""
+
+    def __init__(self, config):
+        """Construct ReferenceCheck task.
 
         Args:
             config (deode.ParsedConfig): Configuration

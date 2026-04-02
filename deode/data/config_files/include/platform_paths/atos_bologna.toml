@@ -26,6 +26,8 @@
   pgd_data_path = "@CLIMDATA@/PGD"
   prod_user = "aut6432"
   reference_data = "@SCRATCH@/deode"
+  references_folder = "@SCRATCH@/deode_references"
+  references_generation_folder = "@SCRATCH@/deode_generated_references"
   rrtm_dir = "@STATIC_DATA@/rrtm/@CYCLE@"
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov13/coef/"
   scratch = "/scratch/@USER@"

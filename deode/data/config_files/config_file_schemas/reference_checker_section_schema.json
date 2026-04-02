@@ -1,0 +1,139 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Reference Checker Configuration",
+  "description": "Reference checker settings",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "check": {
+      "type": "boolean",
+      "description": "Activate the check comparison against reference files",
+      "defaut": false
+    },
+    "generate": {
+      "type": "boolean",
+      "description": "Activate the generation of reference files",
+      "defaut": false
+    },
+    "summary_active": {
+      "type": "array",
+      "description": "List of summaries to produce",
+      "items": {
+        "type": "string",
+        "description": "Name of a summary generation rule"
+      }
+    },
+    "rules_active": {
+      "type": "array",
+      "description": "List of comparisons to perform",
+      "items": {
+        "type": "string",
+        "description": "Name of a comparison rule"
+      }
+    },
+    "methods": {
+      "type": "object",
+      "description": "Define a comparison method",
+      "properties": {
+        "tool": {
+          "type": "string",
+          "description": "Name of the tool used for comparison",
+          "enum": [
+            "normschecker",
+            "xtool"
+          ]
+        },
+        "binary": {
+          "type": "string",
+          "description": "Path to the binary of the tool"
+        },
+        "args_template": {
+          "type": "string",
+          "description": "Templated arguments to provide to the tool"
+        },
+        "file_format": {
+          "type": "string",
+          "description": "Format of the file that is expected",
+          "enum": [
+            "FA",
+            "GRIB",
+            "LOG"
+          ]
+        },
+        "tolerance": {
+          "type": "number",
+          "description": "Tolerance value used for comparison"
+        },
+        "mode": {
+          "type": "string",
+          "description": "Mode used for comparison",
+          "default": "get_worst"
+        },
+        "which": {
+          "type": "string",
+          "description": "Which value to use for comparison",
+          "default": "first_and_last_spectral"
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "description": "Summary generation settings",
+      "properties": {
+        "file": {
+          "type": "string",
+          "description": "Name of the summary file",
+          "default": "@WRK@/checks/summary.txt"
+        },
+        "format": {
+          "type": "string",
+          "description": "Format of the summary file",
+          "enum": [
+            "json",
+            "txt"
+          ],
+          "default": "txt"
+        }
+      }
+    },
+    "tasks": {
+      "type": "object",
+      "description": "Comparison settings for a task",
+      "properties": {
+        "rules": {
+          "type": "object",
+          "description": "Comparison rule settings",
+          "properties": {
+            "inpath": {
+              "type": "string",
+              "description": "Name of the input folder where input file are located"
+            },
+            "pattern": {
+              "type": "string",
+              "description": "Regex Pattern to select the input files to compare"
+            },
+            "generate_folder": {
+              "type": "string",
+              "description": "Folder into which the generated files will be stored",
+              "default": "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+            },
+            "method": {
+              "type": "string",
+              "description": "Name of a comparison method"
+            },
+            "reference_folder": {
+              "type": "string",
+              "description": "Folder containing the reference files",
+              "default": "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+            },
+            "result_folder": {
+              "type": "string",
+              "description": "Folder into which the results of the comparison will be stored",
+              "default": "@WRK@/checks"
+            }
+          }
+        }
+      }
+    }
+  }
+}

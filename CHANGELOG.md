@@ -15,7 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Test that all fullpos namelist entries have eccodes fieldName definitions [\#1563](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1563)(@sbnielsen)
 - Test for ecflow template task [\#1548](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1548)(@pardallio)
 - Enable VTERM perturbations in SPP scheme [\#1593](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1593)(@pirkkao)
-
+- Introduction of ReferenceChecker [\#1524](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1524)(@dhaumont)
+-
 ### Changed
 - Use FFTW consistenly in all tasks [\#1589](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1589) (@uandrae)
 - Calculate gridsize scaled VISGQSAT when creating the namelist instead of using LVARRESDEP [\#1584](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1584)
