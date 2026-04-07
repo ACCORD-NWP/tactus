@@ -71,22 +71,19 @@
   output_name = "tsnowp"
 
 [gribmodify.fullpos.3]
-  output_name = "tp"
-
-[gribmodify.fullpos.4]
   output_name = "10si"
 
-[gribmodify.fullpos.5]
+[gribmodify.fullpos.4]
   output_name = "ws"
 
-[gribmodify.fullpos.6]
+[gribmodify.fullpos.5]
   minimum_frequency = "PT1H"
   output_name = "max_i10fg"
 
-[gribmodify.fullpos.7]
+[gribmodify.fullpos.6]
   output_name = "2d"
 
-[gribmodify.fullpos.8]
+[gribmodify.fullpos.7]
   output_name = "utci"
 
 [include]

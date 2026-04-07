@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Add total precipitation to Fullpos GRIB output [\#1499](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1499) (@egregow)
 - Add config files for belenos [\#1458](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1458) (@nicolasCtd)
 - Overview of output fields and their intepretation added to documentation [\#1237](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1527)(@sbnielsen)
 - Test that all fullpos namelist entries have eccodes fieldName definitions [\#1563](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1563)(@sbnielsen)

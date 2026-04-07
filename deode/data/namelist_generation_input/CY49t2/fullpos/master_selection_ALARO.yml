@@ -249,6 +249,7 @@ selection:
       - SURFPREC.NEI.GEC
       - SURFPREC.NEI.CON
       - SURFPREC.GRA.GEC
+      - TOTAL.PRECIP.
       CLPHY:
       - SURFTEMPERATURE
       - SURFRESERV.NEIGE
