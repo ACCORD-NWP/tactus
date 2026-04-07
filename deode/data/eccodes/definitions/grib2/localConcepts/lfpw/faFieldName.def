@@ -3,14 +3,12 @@
     discipline = 0 ;
     parameterCategory = 6 ;
     parameterNumber = 32 ;
-    tablesVersion = 15 ;
 }
 # Lifting condensation level
 "SURFLIFTCONDLEV" = {
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 34 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 5 ;
 }
 # Level of neutral buoyancy
@@ -18,7 +16,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 34 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 16 ;
 }
 # Level of free convection
@@ -26,7 +23,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 34 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 14 ;
 }
 
@@ -35,7 +31,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 83 ;
-    tablesVersion = 15 ;
 }
 
 # "Zonal component of 180 min gust wind (maximum between two outputs)"
@@ -46,7 +41,6 @@
     productDefinitionTemplateNumber = 8 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaledValueOfFirstFixedSurface = 10 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
     typeOfStatisticalProcessing = 2 ;
     indicatorOfUnitForTimeRange = 1 ;
@@ -62,7 +56,6 @@
     productDefinitionTemplateNumber = 8 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaledValueOfFirstFixedSurface = 10 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
     typeOfStatisticalProcessing = 2 ;
     indicatorOfUnitForTimeRange = 1 ;
@@ -78,7 +71,6 @@
     productDefinitionTemplateNumber = 8 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaledValueOfFirstFixedSurface = 10 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
     typeOfStatisticalProcessing = 2 ;
     indicatorOfUnitForTimeRange = 1 ;
@@ -94,7 +86,6 @@
     productDefinitionTemplateNumber = 8 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaledValueOfFirstFixedSurface = 10 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
     typeOfStatisticalProcessing = 2 ;
     indicatorOfUnitForTimeRange = 1 ;
@@ -109,7 +100,6 @@
     productDefinitionTemplateNumber = 8 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaledValueOfFirstFixedSurface = 10 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
     typeOfStatisticalProcessing = 2 ;
     indicatorOfUnitForTimeRange = 1 ;
@@ -121,7 +111,6 @@
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 4 ;
-    tablesVersion = 15 ;
 }
 
 # Velocity potential
@@ -129,7 +118,6 @@
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 5 ;
-    tablesVersion = 15 ;
 }
 
 # TOA Short-wave radiation flux
@@ -137,7 +125,6 @@
     discipline = 0 ;
     parameterCategory = 4 ;
     parameterNumber = 9 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 8 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -149,7 +136,6 @@
     discipline = 0 ;
     parameterCategory = 5 ;
     parameterNumber = 5 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 8 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -162,7 +148,6 @@
     parameterCategory = 2 ;
     parameterNumber = 17 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     typeOfSecondFixedSurface = missing() ;
     typeOfStatisticalProcessing = 1 ;
@@ -174,7 +159,6 @@
     parameterCategory = 2 ;
     parameterNumber = 18 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     typeOfSecondFixedSurface = missing() ;
     typeOfStatisticalProcessing = 1 ;
@@ -185,7 +169,6 @@
     discipline = 0 ;
     parameterCategory = 4 ;
     parameterNumber = 11 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -198,7 +181,6 @@
     parameterNumber = 1 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaledValueOfFirstFixedSurface = 10 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
 }
 
@@ -207,7 +189,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 2 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = 255 ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -218,7 +199,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 3 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = 255 ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -230,7 +210,6 @@
     parameterCategory = 1 ;
     parameterNumber = 52 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfStatisticalProcessing = 1 ;
     LSTCUM = 1 ;
 }
@@ -240,7 +219,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 4 ;
-    tablesVersion = 15 ;
 }
 
 # Climatology relative deep soil wetness
@@ -248,7 +226,6 @@
     discipline = 2 ;
     parameterCategory = 193 ;
     parameterNumber = 0 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 177 ;
     scaledValueOfFirstFixedSurface = 0 ;
 }
@@ -259,7 +236,6 @@
     parameterCategory = 0 ;
     parameterNumber = 5 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 177 ;
     typeOfStatisticalProcessing = 1 ;
     scaledValueOfFirstFixedSurface = 0 ;
@@ -271,7 +247,6 @@
     discipline = 2 ;
     parameterCategory = 193 ;
     parameterNumber = 1 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 177 ;
     scaledValueOfFirstFixedSurface = 0 ;
 }
@@ -281,7 +256,6 @@
     discipline = 0 ;
     parameterCategory = 5 ;
     parameterNumber = 6 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = 255 ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -292,7 +266,6 @@
     discipline = 2 ;
     parameterCategory = 193 ;
     parameterNumber = 2 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 177 ;
     scaledValueOfFirstFixedSurface = 0 ;
 }
@@ -302,7 +275,6 @@
     discipline = 2 ;
     parameterCategory = 193 ;
     parameterNumber = 3 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 177 ;
     scaledValueOfFirstFixedSurface = 0 ;
 }
@@ -313,7 +285,6 @@
     parameterCategory = 4 ;
     parameterNumber = 9 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 8 ;
     typeOfStatisticalProcessing = 1 ;
     LSTCUM = 1 ;
@@ -325,7 +296,6 @@
     parameterCategory = 5 ;
     parameterNumber = 5 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 8 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -338,7 +308,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 4 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = 255 ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -350,7 +319,6 @@
     parameterCategory = 6 ;
     parameterNumber = 24 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = 255 ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -363,7 +331,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 6 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -374,7 +341,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 9 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -385,7 +351,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 10 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -396,7 +361,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 11 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -407,7 +371,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 12 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -418,7 +381,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 13 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -429,7 +391,6 @@
     discipline = 0 ;
     parameterCategory = 19 ;
     parameterNumber = 19 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -440,7 +401,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 14 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -451,7 +411,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 15 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -462,7 +421,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 16 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -473,7 +431,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 7 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -484,7 +441,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -496,7 +452,6 @@
     parameterCategory = 193 ;
     parameterNumber = 17 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -510,7 +465,6 @@
     parameterCategory = 193 ;
     parameterNumber = 18 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -524,7 +478,6 @@
     parameterCategory = 193 ;
     parameterNumber = 4 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 177 ;
     typeOfStatisticalProcessing = 1 ;
     scaledValueOfFirstFixedSurface = 0 ;
@@ -536,7 +489,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 61 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 177 ;
     scaledValueOfFirstFixedSurface = 0 ;
 }
@@ -546,7 +498,6 @@
     discipline = 0 ;
     parameterCategory = 4 ;
     parameterNumber = 54 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -560,7 +511,6 @@
     parameterCategory = 193 ;
     parameterNumber = 5 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 177 ;
     typeOfStatisticalProcessing = 1 ;
     scaledValueOfFirstFixedSurface = 0 ;
@@ -572,7 +522,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 19 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -583,7 +532,6 @@
     discipline = 2 ;
     parameterCategory = 3 ;
     parameterNumber = 194 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 177 ;
     scaledValueOfFirstFixedSurface = 0 ;
 }
@@ -593,7 +541,6 @@
     discipline = 2 ;
     parameterCategory = 3 ;
     parameterNumber = 27 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 177 ;
     scaledValueOfFirstFixedSurface = 0 ;
 }
@@ -603,7 +550,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 20 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -614,7 +560,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 21 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -625,7 +570,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 22 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -639,7 +583,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 23 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -650,7 +593,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 24 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -662,7 +604,6 @@
     parameterCategory = 1 ;
     parameterNumber = 16 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -675,7 +616,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 4 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -686,7 +626,6 @@
     discipline = 2 ;
     parameterCategory = 193 ;
     parameterNumber = 6 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -697,7 +636,6 @@
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 28 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -708,7 +646,6 @@
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 0 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -719,7 +656,6 @@
     discipline = 2 ;
     parameterCategory = 193 ;
     parameterNumber = 7 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -730,7 +666,6 @@
     discipline = 2 ;
     parameterCategory = 193 ;
     parameterNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -741,7 +676,6 @@
     discipline = 2 ;
     parameterCategory = 193 ;
     parameterNumber = 0 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -752,7 +686,6 @@
     discipline = 2 ;
     parameterCategory = 193 ;
     parameterNumber = 9 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -763,7 +696,6 @@
     discipline = 2 ;
     parameterCategory = 193 ;
     parameterNumber = 10 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -774,7 +706,6 @@
     discipline = 2 ;
     parameterCategory = 193 ;
     parameterNumber = 11 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -786,7 +717,6 @@
     parameterCategory = 193 ;
     parameterNumber = 13 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -798,7 +728,6 @@
     discipline = 2 ;
     parameterCategory = 193 ;
     parameterNumber = 12 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -810,7 +739,6 @@
     parameterCategory = 4 ;
     parameterNumber = 9 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -824,7 +752,6 @@
     parameterCategory = 5 ;
     parameterNumber = 5 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -837,7 +764,6 @@
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 6 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -849,7 +775,6 @@
     parameterCategory = 0 ;
     parameterNumber = 13 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -862,7 +787,6 @@
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 16 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -874,7 +798,6 @@
     parameterCategory = 0 ;
     parameterNumber = 5 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -887,7 +810,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 17 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -898,7 +820,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 16 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -909,7 +830,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 25 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -920,7 +840,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 24 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -931,7 +850,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 26 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -942,7 +860,6 @@
     discipline = 2 ;
     parameterCategory = 193 ;
     parameterNumber = 4 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 177 ;
     scaledValueOfFirstFixedSurface = 0 ;
 }
@@ -952,7 +869,6 @@
     discipline = 2 ;
     parameterCategory = 193 ;
     parameterNumber = 5 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 177 ;
     scaledValueOfFirstFixedSurface = 0 ;
 }
@@ -962,7 +878,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 27 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -974,7 +889,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 16 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -985,7 +899,6 @@
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 5 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -996,7 +909,6 @@
     discipline = 2 ;
     parameterCategory = 193 ;
     parameterNumber = 15 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1007,7 +919,6 @@
     discipline = 2 ;
     parameterCategory = 193 ;
     parameterNumber = 16 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1018,7 +929,6 @@
     discipline = 2 ;
     parameterCategory = 193 ;
     parameterNumber = 17 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1029,7 +939,6 @@
     discipline = 0 ;
     parameterCategory = 4 ;
     parameterNumber = 4 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 8 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1040,7 +949,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 28 ;
-    tablesVersion = 15 ;
 }
 
 # "Convective rain (integrated since the start of the run)"
@@ -1049,7 +957,6 @@
     parameterCategory = 1 ;
     parameterNumber = 76 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1063,7 +970,6 @@
     parameterCategory = 1 ;
     parameterNumber = 77 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1077,7 +983,6 @@
     parameterCategory = 0 ;
     parameterNumber = 30 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1091,7 +996,6 @@
     parameterCategory = 0 ;
     parameterNumber = 31 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1105,7 +1009,6 @@
     parameterCategory = 1 ;
     parameterNumber = 55 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1119,7 +1022,6 @@
     parameterCategory = 1 ;
     parameterNumber = 56 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1132,7 +1034,6 @@
     discipline = 0 ;
     parameterCategory = 19 ;
     parameterNumber = 1 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1143,7 +1044,6 @@
     discipline = 0 ;
     parameterCategory = 7 ;
     parameterNumber = 199 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 10 ;
     typeOfSecondFixedSurface = 255 ;
     scaledValueOfFirstFixedSurface = 0 ;
@@ -1155,7 +1055,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 84 ;
-    tablesVersion = 15 ;
 }
 
 # "Ice cloud specific content Seen by the radiation scheme"
@@ -1163,33 +1062,28 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 84 ;
-    tablesVersion = 15 ;
 }
 
 "SOLID_WATER" = {
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 84 ;
-    tablesVersion = 15 ;
 }
 "SOLID_WATE" = {
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 84 ;
-    tablesVersion = 15 ;
 }
 
 "LIQUID_WATER" = {
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 83 ;
-    tablesVersion = 15 ;
 }
 "LIQUID_WAT" = {
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 83 ;
-    tablesVersion = 15 ;
 }
 
 
@@ -1199,7 +1093,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 84 ;
-    tablesVersion = 15 ;
 }
 
 # Graupel specific content (precip) in cloud
@@ -1207,7 +1100,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 32 ;
-    tablesVersion = 15 ;
 }
 
 # Rain specific content (precip) in cloud
@@ -1215,7 +1107,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 85 ;
-    tablesVersion = 15 ;
 }
 
 # Snow specific content (precip) in cloud
@@ -1223,7 +1114,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 86 ;
-    tablesVersion = 15 ;
 }
 
 # "Liquid water cloud specific content Seen by the radiation scheme"
@@ -1231,7 +1121,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 83 ;
-    tablesVersion = 15 ;
 }
 
 
@@ -1240,7 +1129,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 83 ;
-    tablesVersion = 15 ;
 }
 
 # "Diagnostic of hail content (for the given time step)"
@@ -1248,7 +1136,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 74 ;
-    tablesVersion = 15 ;
     productDefinitionTemplateNumber = 8 ;
     typeOfStatisticalProcessing = 2 ;
     typeOfFirstFixedSurface = 1 ;
@@ -1265,7 +1152,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 65 ;
-    tablesVersion = 15 ;
     productDefinitionTemplateNumber = 8 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
@@ -1279,7 +1165,6 @@
     discipline = 0 ;
     parameterCategory = 19 ;
     parameterNumber = 199 ;
-    tablesVersion = 15 ;
 }
 
 # Flux d’évaporation en surface sur eau liquide
@@ -1287,7 +1172,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 79 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1301,7 +1185,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 32 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1316,7 +1199,6 @@
     parameterCategory = 4 ;
     parameterNumber = 197 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1330,7 +1212,6 @@
     parameterCategory = 0 ;
     parameterNumber = 11 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1344,7 +1225,6 @@
     parameterCategory = 4 ;
     parameterNumber = 9 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1358,7 +1238,6 @@
     parameterCategory = 4 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1372,7 +1251,6 @@
     parameterCategory = 4 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1386,7 +1264,6 @@
     parameterCategory = 4 ;
     parameterNumber = 13 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1399,7 +1276,6 @@
     parameterCategory = 5 ;
     parameterNumber = 5 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1413,7 +1289,6 @@
     parameterCategory = 5 ;
     parameterNumber = 3 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1427,7 +1302,6 @@
     parameterCategory = 1 ;
     parameterNumber = 75 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1440,7 +1314,6 @@
     parameterCategory = 1 ;
     parameterNumber = 75 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     typeOfStatisticalProcessing = 1 ;
     LSTCUM = 1 ;
@@ -1451,7 +1324,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 18 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1463,7 +1335,6 @@
     parameterCategory = 1 ;
     parameterNumber = 1 ;
     scaledValueOfFirstFixedSurface = 2 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     FMULTE = 2 ;
@@ -1476,7 +1347,6 @@
     parameterNumber = 1 ;
     productDefinitionTemplateNumber = 8 ;
     scaledValueOfFirstFixedSurface = 2 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
     typeOfStatisticalProcessing = 2 ;
     LSTCUM = 0;
@@ -1489,7 +1359,6 @@
     parameterNumber = 1 ;
     productDefinitionTemplateNumber = 8 ;
     scaledValueOfFirstFixedSurface = 2 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
     typeOfStatisticalProcessing = 3 ;
 }
@@ -1499,7 +1368,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 26 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1511,7 +1379,6 @@
     parameterCategory = 6 ;
     parameterNumber = 3 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1528,7 +1395,6 @@
     discipline = 0 ;
     parameterCategory = 6 ;
     parameterNumber = 3 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1544,7 +1410,6 @@
     parameterCategory = 6 ;
     parameterNumber = 2 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1559,7 +1424,6 @@
     discipline = 0 ;
     parameterCategory = 6 ;
     parameterNumber = 2 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1573,7 +1437,6 @@
     parameterCategory = 6 ;
     parameterNumber = 5 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 100 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaledValueOfFirstFixedSurface = 45000 ;
@@ -1590,7 +1453,6 @@
     discipline = 0 ;
     parameterCategory = 6 ;
     parameterNumber = 5 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 100 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaledValueOfFirstFixedSurface = 45000 ;
@@ -1606,7 +1468,6 @@
     parameterCategory = 6 ;
     parameterNumber = 4 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfStatisticalProcessing = 1 ;
     typeOfFirstFixedSurface = 100 ;
     scaleFactorOfFirstFixedSurface = 0 ;
@@ -1623,7 +1484,6 @@
     discipline = 0 ;
     parameterCategory = 6 ;
     parameterNumber = 4 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 100 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaledValueOfFirstFixedSurface = 80000 ;
@@ -1639,7 +1499,6 @@
     parameterCategory = 6 ;
     parameterNumber = 1 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1654,7 +1513,6 @@
     discipline = 0 ;
     parameterCategory = 6 ;
     parameterNumber = 1 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1668,7 +1526,6 @@
     parameterCategory = 1 ;
     parameterNumber = 66 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1681,7 +1538,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 0 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1694,7 +1550,6 @@
     parameterNumber = 0 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaledValueOfFirstFixedSurface = 10 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
 }
 
@@ -1704,7 +1559,6 @@
     parameterCategory = 1 ;
     parameterNumber = 0 ;
     scaledValueOfFirstFixedSurface = 2 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
     scaleFactorOfFirstFixedSurface = 0 ;
 }
@@ -1714,13 +1568,11 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 0 ;
-    tablesVersion = 15 ;
 }
 "HUMI.SPECI" = {
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 0 ;
-    tablesVersion = 15 ;
 }
 
 # Surface ice content in soil
@@ -1728,7 +1580,6 @@
     discipline = 2 ;
     parameterCategory = 3 ;
     parameterNumber = 192 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1739,7 +1590,6 @@
     discipline = 2 ;
     parameterCategory = 3 ;
     parameterNumber = 192 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 106 ;
     scaledValueOfFirstFixedSurface = 250 ;
     scaleFactorOfFirstFixedSurface = 2 ;
@@ -1750,7 +1600,6 @@
     discipline = 2 ;
     parameterCategory = 3 ;
     parameterNumber = 193 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1761,7 +1610,6 @@
     discipline = 2 ;
     parameterCategory = 3 ;
     parameterNumber = 193 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 106 ;
     scaledValueOfFirstFixedSurface = 250 ;
     scaleFactorOfFirstFixedSurface = 2 ;
@@ -1772,7 +1620,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 60 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1783,7 +1630,6 @@
     discipline = 0 ;
     parameterCategory = 0 ;
     parameterNumber = 0 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1794,7 +1640,6 @@
     discipline = 0 ;
     parameterCategory = 0 ;
     parameterNumber = 0 ;
-    tablesVersion = 15 ;
 }
 
 # Potential temperature
@@ -1802,7 +1647,6 @@
     discipline = 0 ;
     parameterCategory = 0 ;
     parameterNumber = 2 ;
-    tablesVersion = 15 ;
 }
 
 # Diagnostic value at 2 m of Temperature
@@ -1811,7 +1655,6 @@
     parameterCategory = 0 ;
     parameterNumber = 0 ;
     scaledValueOfFirstFixedSurface = 2 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
     scaleFactorOfFirstFixedSurface = 0 ;
 }
@@ -1822,7 +1665,6 @@
     parameterCategory = 0 ;
     parameterNumber = 1 ;
     scaledValueOfFirstFixedSurface = 2 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
 }
 
@@ -1831,7 +1673,6 @@
     discipline = 2 ;
     parameterCategory = 3 ;
     parameterNumber = 18 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 106 ;
     scaledValueOfFirstFixedSurface = 10 ;
     scaleFactorOfFirstFixedSurface = 2 ;
@@ -1843,7 +1684,6 @@
     discipline = 0 ;
     parameterCategory = 19 ;
     parameterNumber = 11 ;
-    tablesVersion = 15 ;
 }
 
 # "Maximum value of the 2-m-diagnostic Temperature"
@@ -1853,7 +1693,6 @@
     parameterNumber = 0 ;
     productDefinitionTemplateNumber = 8 ;
     scaledValueOfFirstFixedSurface = 2 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     typeOfStatisticalProcessing = 2 ;
@@ -1867,7 +1706,6 @@
     parameterNumber = 0 ;
     productDefinitionTemplateNumber = 8 ;
     scaledValueOfFirstFixedSurface = 2 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     typeOfStatisticalProcessing = 3 ;
@@ -1879,7 +1717,6 @@
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 2 ;
-    tablesVersion = 15 ;
 }
 
 # U component of wind
@@ -1887,7 +1724,6 @@
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 2 ;
-    tablesVersion = 15 ;
 }
 
 # "zonal component of the horizontal wind At 10 m"
@@ -1896,7 +1732,6 @@
     parameterCategory = 2 ;
     parameterNumber = 2 ;
     scaledValueOfFirstFixedSurface = 10 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
     scaleFactorOfFirstFixedSurface = 0 ;
 }
@@ -1909,7 +1744,6 @@
     productDefinitionTemplateNumber = 8 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaledValueOfFirstFixedSurface = 10 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
     typeOfStatisticalProcessing = 2 ;
     indicatorOfUnitForTimeRange = 1 ;
@@ -1922,7 +1756,6 @@
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 3 ;
-    tablesVersion = 15 ;
 }
 
 # V component of wind
@@ -1930,7 +1763,6 @@
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 3 ;
-    tablesVersion = 15 ;
 }
 
 # "meridional component of the horizontal wind At 10 m"
@@ -1940,7 +1772,6 @@
     parameterNumber = 3 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaledValueOfFirstFixedSurface = 10 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
 }
 
@@ -1952,7 +1783,6 @@
     productDefinitionTemplateNumber = 8 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaledValueOfFirstFixedSurface = 10 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
     typeOfStatisticalProcessing = 2 ;
     indicatorOfUnitForTimeRange = 1 ;
@@ -1965,7 +1795,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 75 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1976,7 +1805,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 66 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1987,7 +1815,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 65 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -1998,7 +1825,6 @@
     discipline = 0 ;
     parameterCategory = 193 ;
     parameterNumber = 33 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -2007,7 +1833,6 @@
     discipline = 255 ;
     parameterCategory = 255 ;
     parameterNumber = 255 ;
-    tablesVersion = 15 ;
     scaledValueOfFirstFixedSurface = 0 ;
 }
 
@@ -2016,7 +1841,6 @@
     discipline = 0 ;
     parameterCategory = 6 ;
     parameterNumber = 32 ;
-    tablesVersion = 15 ;
 }
 
 # Liquid water cloud specific content
@@ -2024,7 +1848,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 83 ;
-    tablesVersion = 15 ;
 }
 
 # Altitude
@@ -2033,7 +1856,6 @@
     parameterCategory = 3 ;
     parameterNumber = 34 ;
     scaleFactorOfFirstFixedSurface = 2 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 20 ;
 }
 
@@ -2044,7 +1866,6 @@
     parameterNumber = 34 ;
     scaleFactorOfFirstFixedSurface = 2 ;
     scaledValueOfFirstFixedSurface = 27315 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 107 ;
 }
 
@@ -2055,7 +1876,6 @@
     parameterNumber = 34 ;
     scaleFactorOfFirstFixedSurface = 2 ;
     scaledValueOfFirstFixedSurface = 27415 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 107 ;
 }
 
@@ -2066,7 +1886,6 @@
     parameterNumber = 34 ;
     scaleFactorOfFirstFixedSurface = 2 ;
     scaledValueOfFirstFixedSurface = 27465 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 107 ;
 }
 
@@ -2077,7 +1896,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     typeOfGeneratingProcess = 2 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=156250 ;
@@ -2091,7 +1909,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=14925373 ;
     scaleFactorOfCentralWaveNumber=2 ;
@@ -2104,7 +1921,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=14925373 ;
     scaleFactorOfCentralWaveNumber=2 ;
@@ -2117,7 +1933,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     typeOfGeneratingProcess = 2 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=14925373 ;
@@ -2131,7 +1946,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     typeOfGeneratingProcess = 2 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=8695652 ;
@@ -2145,7 +1959,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     typeOfGeneratingProcess = 2 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=16129032 ;
@@ -2159,7 +1972,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     typeOfGeneratingProcess = 2 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=9345794 ;
@@ -2173,7 +1985,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     typeOfGeneratingProcess = 2 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=9345794 ;
@@ -2187,7 +1998,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     typeOfGeneratingProcess = 2 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=9345794 ;
@@ -2201,7 +2011,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     typeOfGeneratingProcess = 2 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=9345794 ;
@@ -2215,7 +2024,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     typeOfGeneratingProcess = 2 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=14925373 ;
@@ -2229,7 +2037,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     typeOfGeneratingProcess = 2 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=9259259 ;
@@ -2241,7 +2048,6 @@
     discipline = 0 ;
     parameterCategory = 7 ;
     parameterNumber = 6 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 17 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -2250,7 +2056,6 @@
     discipline = 0 ;
     parameterCategory = 7 ;
     parameterNumber = 200 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     typeOfSecondFixedSurface = 103 ;
     scaledValueOfFirstFixedSurface = 0 ;
@@ -2262,7 +2067,6 @@
     discipline = 0 ;
     parameterCategory = 7 ;
     parameterNumber = 7 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 17 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -2272,7 +2076,6 @@
     parameterCategory = 17 ;
     parameterNumber = 4 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -2288,7 +2091,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 84 ;
-    tablesVersion = 15 ;
 }
 
 # Integrated water vapour
@@ -2296,7 +2098,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 64 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -2308,7 +2109,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 10 ;
-    tablesVersion = 15 ;
 }
 
 # Density of moist air
@@ -2316,7 +2116,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 10 ;
-    tablesVersion = 15 ;
 }
 
 # Relative divergence
@@ -2324,7 +2123,6 @@
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 13 ;
-    tablesVersion = 15 ;
 }
 
 # "Evaporation flux at surface (integrated since the start of the run)"
@@ -2333,7 +2131,6 @@
     parameterCategory = 1 ;
     parameterNumber = 6 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -2347,7 +2144,6 @@
     parameterCategory = 0 ;
     parameterNumber = 10 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -2361,7 +2157,6 @@
     parameterCategory = 4 ;
     parameterNumber = 11 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -2374,7 +2169,6 @@
     parameterCategory = 5 ;
     parameterNumber = 6 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -2387,7 +2181,6 @@
     parameterCategory = 1 ;
     parameterNumber = 73 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -2400,7 +2193,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 1 ;
-    tablesVersion = 15 ;
     FMULTE = 2 ;
 }
 
@@ -2409,7 +2201,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 1 ;
-    tablesVersion = 15 ;
     FMULTE = 2 ;
 }
 
@@ -2420,7 +2211,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 6 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -2431,7 +2221,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 0 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 101 ;
 }
 
@@ -2440,7 +2229,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 0 ;
-    tablesVersion = 15 ;
 }
 
 # "Mean Sea Level Pressure (non-hydrostatic value)"
@@ -2448,7 +2236,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 1 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 101 ;
     scaledValueOfFirstFixedSurface = 0 ;
 }
@@ -2458,7 +2245,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 11 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 101 ;
     scaledValueOfFirstFixedSurface = 0 ;
 }
@@ -2468,7 +2254,6 @@
     discipline = 0 ;
     parameterCategory = 16 ;
     parameterNumber = 192 ;
-    tablesVersion = 15 ;
 }
 
 # Total column vertical-maximum radar precipitation rate
@@ -2491,7 +2276,6 @@
     discipline = 0 ;
     parameterCategory = 0 ;
     parameterNumber = 0 ;
-    tablesVersion = 15 ;
 }
 
 # Absolute Vorticity
@@ -2499,7 +2283,6 @@
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 10 ;
-    tablesVersion = 15 ;
 }
 
 # Absolute Vorticity
@@ -2507,7 +2290,6 @@
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 10 ;
-    tablesVersion = 15 ;
 }
 
 # Virtual potential temperature
@@ -2515,7 +2297,6 @@
     discipline = 0 ;
     parameterCategory = 0 ;
     parameterNumber = 15 ;
-    tablesVersion = 15 ;
 }
 
 # Potential vorticity
@@ -2523,7 +2304,6 @@
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 14 ;
-    tablesVersion = 15 ;
 }
 
 # Wet-bulb potential temperature
@@ -2531,7 +2311,6 @@
     discipline = 0 ;
     parameterCategory = 0 ;
     parameterNumber = 3 ;
-    tablesVersion = 15 ;
 }
 
 # zonal component of the horizontal wind
@@ -2539,7 +2318,6 @@
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 2 ;
-    tablesVersion = 15 ;
 }
 
 # "Zonal component of 15 mn gust wind (maximum between two outputs)"
@@ -2550,7 +2328,6 @@
     productDefinitionTemplateNumber = 8 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaledValueOfFirstFixedSurface = 10 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
     typeOfStatisticalProcessing = 2 ;
     indicatorOfUnitForTimeRange = 0 ;
@@ -2566,7 +2343,6 @@
     productDefinitionTemplateNumber = 8 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaledValueOfFirstFixedSurface = 10 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
     typeOfStatisticalProcessing = 2 ;
     indicatorOfUnitForTimeRange = 1 ;
@@ -2580,7 +2356,6 @@
     parameterCategory = 2 ;
     parameterNumber = 38 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -2593,7 +2368,6 @@
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 3 ;
-    tablesVersion = 15 ;
 }
 
 # meridional component of the horizontal wind
@@ -2601,7 +2375,6 @@
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 3 ;
-    tablesVersion = 15 ;
 }
 
 # meridional component of the horizontal wind
@@ -2609,7 +2382,6 @@
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 3 ;
-    tablesVersion = 15 ;
 }
 
 # "Meridional component of 15 mn gust wind (maximum between two outputs)"
@@ -2620,7 +2392,6 @@
     productDefinitionTemplateNumber = 8 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaledValueOfFirstFixedSurface = 10 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
     typeOfStatisticalProcessing = 2 ;
     indicatorOfUnitForTimeRange = 0 ;
@@ -2636,7 +2407,6 @@
     productDefinitionTemplateNumber = 8 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaledValueOfFirstFixedSurface = 10 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
     typeOfStatisticalProcessing = 2 ;
     indicatorOfUnitForTimeRange = 1 ;
@@ -2650,7 +2420,6 @@
     parameterCategory = 2 ;
     parameterNumber = 37 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -2663,7 +2432,6 @@
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 8 ;
-    tablesVersion = 15 ;
 }
 
 # vertical component of the wind
@@ -2671,14 +2439,12 @@
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 9 ;
-    tablesVersion = 15 ;
 }
 
 "VERT.VELOCIT" = {
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 9 ;
-    tablesVersion = 15 ;
 }
 
 # Geopotential (g z)
@@ -2686,7 +2452,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 4 ;
-    tablesVersion = 15 ;
 }
 
 # Geopotential (g z)
@@ -2694,7 +2459,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 4 ;
-    tablesVersion = 15 ;
 }
 
 # The vertical mean (over the boundary Layer) of the moisture convergence
@@ -2702,7 +2466,6 @@
     discipline = 0 ;
     parameterCategory = 1 ;
     parameterNumber = 26 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -2714,7 +2477,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     typeOfGeneratingProcess = 2 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=16129032 ;
@@ -2728,7 +2490,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     typeOfGeneratingProcess = 2 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=16129032 ;
@@ -2742,7 +2503,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     typeOfGeneratingProcess = 2 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=16129032 ;
@@ -2756,7 +2516,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     typeOfGeneratingProcess = 2 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=16129032 ;
@@ -2770,7 +2529,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     typeOfGeneratingProcess = 2 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=16129032 ;
@@ -2784,7 +2542,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     typeOfGeneratingProcess = 2 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=9259259 ;
@@ -2798,7 +2555,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     typeOfGeneratingProcess = 2 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=9259259 ;
@@ -2812,7 +2568,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     typeOfGeneratingProcess = 2 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=96153846 ;
@@ -2826,7 +2581,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     typeOfGeneratingProcess = 2 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=96153846 ;
@@ -2840,7 +2594,6 @@
     parameterCategory = 5 ;
     parameterNumber = 7 ;
     productDefinitionTemplateNumber = 32 ;
-    tablesVersion = 15 ;
     typeOfGeneratingProcess = 2 ;
     NB=1 ;
     scaledValueOfCentralWaveNumber=96153846 ;
@@ -2852,7 +2605,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 0 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 12 ;
     scaledValueOfFirstFixedSurface = 0;
 }
@@ -2861,7 +2613,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 0 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 12 ;
     scaledValueOfFirstFixedSurface = 0;
 }
@@ -2869,7 +2620,6 @@
     discipline = 0 ;
     parameterCategory = 3;
     parameterNumber = 0 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 3 ;
     scaledValueOfFirstFixedSurface = 0 ;
 }
@@ -2877,7 +2627,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 0 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 19 ;
     scaledValueOfFirstFixedSurface = 50 ;
     scaleFactorOfFirstFixedSurface = 0 ;
@@ -2887,7 +2636,6 @@
     discipline = 0 ;
     parameterCategory = 6 ;
     parameterNumber = 13 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -2896,14 +2644,12 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 0 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 2 ;
 }
 "ATMOCLD.BASE.H" = {
     discipline = 0 ;
     parameterCategory = 6 ;
     parameterNumber = 11 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 2 ;
 }
 # Radar reflectivity in dbZ
@@ -2911,7 +2657,6 @@
     discipline = 0 ;
     parameterCategory = 16 ;
     parameterNumber = 4 ;
-    tablesVersion = 15 ;
 }
 
 # Total column vertical-maximum radar reflectivity in dB
@@ -2930,7 +2675,6 @@
     parameterCategory = 16 ;
     parameterNumber = 195;
     productDefinitionTemplateNumber = 1 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -2941,7 +2685,6 @@
     discipline = 0 ;
     parameterCategory = 3 ;
     parameterNumber = 0 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 25;
     scaledValueOfFirstFixedSurface = 18;
     level = 18;
@@ -2953,7 +2696,6 @@
     parameterCategory = 19 ;
     parameterNumber = 0 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -2969,7 +2711,6 @@
     parameterCategory = 19 ;
     parameterNumber = 51 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -2985,7 +2726,6 @@
     parameterCategory = 1 ;
     parameterNumber = 83 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfStatisticalProcessing = 2 ;
     indicatorOfUnitForTimeRange = 1 ;
     lengthOfTimeRange = 3 ;
@@ -3001,7 +2741,6 @@
     parameterCategory = 19 ;
     parameterNumber = 0 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -3016,7 +2755,6 @@
     parameterCategory = 19 ;
     parameterNumber = 51 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -3031,7 +2769,6 @@
     parameterCategory = 1 ;
     parameterNumber = 83 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfStatisticalProcessing = 2 ;
     indicatorOfUnitForTimeRange = 1 ;
     lengthOfTimeRange = 1 ;
@@ -3045,7 +2782,6 @@
     parameterCategory = 19 ;
     parameterNumber = 0 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -3061,7 +2797,6 @@
     parameterCategory = 19 ;
     parameterNumber = 51 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -3077,7 +2812,6 @@
     parameterCategory = 1 ;
     parameterNumber = 83 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfStatisticalProcessing = 2 ;
     indicatorOfUnitForTimeRange = 0 ;
     lengthOfTimeRange = 15 ;
@@ -3091,7 +2825,6 @@
     parameterCategory = 1 ;
     parameterNumber = 19 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -3106,7 +2839,6 @@
     parameterCategory = 1 ;
     parameterNumber = 19 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -3121,7 +2853,6 @@
     parameterCategory = 1 ;
     parameterNumber = 19 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -3136,7 +2867,6 @@
     parameterCategory = 1 ;
     parameterNumber = 19 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -3151,7 +2881,6 @@
     parameterCategory = 1 ;
     parameterNumber = 19 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -3166,7 +2895,6 @@
     parameterCategory = 1 ;
     parameterNumber = 19 ;
     productDefinitionTemplateNumber = 8 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     scaleFactorOfFirstFixedSurface = missing() ;
     scaledValueOfFirstFixedSurface = missing() ;
@@ -3180,7 +2908,6 @@
     discipline = 0 ;
     parameterCategory = 0 ;
     parameterNumber = 27 ;
-    tablesVersion = 15 ;
 }
 #WETBT at 2m
 "CLSTPRIM_W"= {
@@ -3188,7 +2915,6 @@
     parameterCategory = 0 ;
     parameterNumber = 27 ;
     scaledValueOfFirstFixedSurface = 2 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 103 ;
 }
 # Turbulence CAT indice Ellrod1
@@ -3196,7 +2922,6 @@
     discipline = 0 ;
     parameterCategory = 19 ;
     parameterNumber = 204 ;
-    tablesVersion = 15 ;
 }
 # Medium-levels Ellrod1
 "CAT.TI1.M"= {
@@ -3212,7 +2937,6 @@
     scaleFactorOfSecondFixedSurface = 0 ;
     statisticalProcess = 2 ;
     spatialProcessing = 0 ;
-    tablesVersion = 15 ;
 }
 # High-levels Ellrod1
 "CAT.TI1.H"= {
@@ -3228,7 +2952,6 @@
     scaleFactorOfSecondFixedSurface = 0 ;
     statisticalProcess = 2 ;
     spatialProcessing = 0 ;
-    tablesVersion = 15 ;
 }
 # Medium-levels Ellrod1 for ensemble forecast
 "CAT.TI1.M.ENS"= {
@@ -3242,7 +2965,6 @@
     scaledValueOfSecondFixedSurface = 46560 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaleFactorOfSecondFixedSurface = 0 ;
-    tablesVersion = 15 ;
 }
 # High-levels Ellrod1 for ensemble forecast
 "CAT.TI1.H.ENS"= {
@@ -3256,7 +2978,6 @@
     scaledValueOfSecondFixedSurface = 7170 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaleFactorOfSecondFixedSurface = 0 ;
-    tablesVersion = 15 ;
 }
 
 # Turbulence CAT indice EDR diagnostic
@@ -3267,7 +2988,6 @@
     typeOfFirstFixedSurface = 100 ;
     typeOfSecondFixedSurface = 255 ;
     scaleFactorOfFirstFixedSurface = 0 ;
-    tablesVersion = 15 ;
 }
 # High_levels EDR diagnostic
 "EDRDCH"= {
@@ -3283,7 +3003,6 @@
     scaleFactorOfSecondFixedSurface = 0 ;
     statisticalProcess = 2 ;
     spatialProcessing = 0 ;
-    tablesVersion = 15 ;
 }
 # Medium-levels EDR diagnostic
 "EDRDCM"= {
@@ -3299,7 +3018,6 @@
     scaleFactorOfSecondFixedSurface = 0 ;
     statisticalProcess = 2 ;
     spatialProcessing = 0 ;
-    tablesVersion = 15 ;
 }
 # Low-levels EDR diagnostic
 "EDRDCL"= {
@@ -3315,7 +3033,6 @@
     scaleFactorOfSecondFixedSurface = 0 ;
     statisticalProcess = 2 ;
     spatialProcessing = 0 ;
-    tablesVersion = 15 ;
 }
 # High_levels EDR diagnostic for ensemble forecast
 "EDRDCH.ENS"= {
@@ -3329,7 +3046,6 @@
     scaledValueOfSecondFixedSurface = 7170 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaleFactorOfSecondFixedSurface = 0 ;
-    tablesVersion = 15 ;
 }
 # Medium-levels EDR diagnostic for ensemle forecast
 "EDRDCM.ENS"= {
@@ -3343,7 +3059,6 @@
     scaledValueOfSecondFixedSurface = 46560 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaleFactorOfSecondFixedSurface = 0 ;
-    tablesVersion = 15 ;
 }
 # Low-levels EDR diagnostica for ensemble forecast
 "EDRDCL.ENS"= {
@@ -3357,14 +3072,12 @@
     scaledValueOfSecondFixedSurface = 69680 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaleFactorOfSecondFixedSurface = 0 ;
-    tablesVersion = 15 ;
 }
 # Icing for Aviation
 "ICING.AERO"= {
     discipline = 0 ;
     parameterNumber = 20 ;
     parameterCategory = 19 ;
-    tablesVersion = 15 ;
 }
 # Maximum of icing for Aviation
 "ICINGX.AERO"= {
@@ -3380,7 +3093,6 @@
     scaleFactorOfSecondFixedSurface = 0 ;
     statisticalProcess = 2 ;
     spatialProcessing = 0 ;
-    tablesVersion = 15 ;
 }
 # Maximum of icing for Aviation for ensemble forecast
 "ICINGX.AERO.ENS"= {
@@ -3394,14 +3106,12 @@
     scaledValueOfSecondFixedSurface = 30090 ;
     scaleFactorOfFirstFixedSurface = 0 ;
     scaleFactorOfSecondFixedSurface = 0 ;
-    tablesVersion = 15 ;
 }
 # Sea Ice Fraction
 "SEA.ICE.COVER"= {
     discipline = 10 ;
     parameterNumber = 0 ;
     parameterCategory = 2 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 101 ;
     scaledValueOfFirstFixedSurface = 0 ;
 }
@@ -3411,7 +3121,6 @@
     discipline = 20 ;
     parameterCategory = 3 ;
     parameterNumber = 3 ;
-    tablesVersion = 32 ;
     typeOfFirstFixedSurface = 1 ;
     typeOfSecondFixedSurface = 8 ;
     scaleFactorOfFirstFixedSurface = missing() ;
@@ -3422,7 +3131,6 @@
     discipline = 20 ;
     parameterCategory = 3 ;
     parameterNumber = 3 ;
-    tablesVersion = 32 ;
     productDefinitionTemplateNumber = 8 ;
     typeOfFirstFixedSurface = 1 ;
     typeOfSecondFixedSurface = 8 ;
@@ -3435,7 +3143,6 @@
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 3 ;
-    tablesVersion = 15 ;
     productDefinitionTemplateNumber = 8 ;
     typeOfStatisticalProcessing = 0 ;
 }
@@ -3444,7 +3151,6 @@
     discipline = 0 ;
     parameterCategory = 2 ;
     parameterNumber = 2 ;
-    tablesVersion = 15 ;
     productDefinitionTemplateNumber = 8 ;
     typeOfStatisticalProcessing = 0 ;
 }
@@ -3933,15 +3639,14 @@
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 28 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
+    tablesVersion = 32 ;
 }
 # Leaf Area Index, nature tile
 "SFX.LAI_ISBA"= {
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 28 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     tileIndex = 1 ;
     tileClassification = 4 ;
@@ -3959,7 +3664,6 @@
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 13 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     tileIndex = 5 ;
     tileClassification = 4 ;
@@ -3977,7 +3681,6 @@
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 13 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     tileIndex = 6 ;
     tileClassification = 4 ;
@@ -3995,7 +3698,6 @@
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 13 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     tileIndex = 7 ;
     tileClassification = 4 ;
@@ -5453,7 +5155,6 @@
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 28 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
 }
 # Intercepted Water for AQ CY46h1
@@ -5461,7 +5162,6 @@
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 13 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     tileIndex = 5 ;
     tileClassification = 4 ;
@@ -5479,7 +5179,6 @@
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 13 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     tileIndex = 6 ;
     tileClassification = 4 ;
@@ -5497,7 +5196,6 @@
     discipline = 2 ;
     parameterCategory = 0 ;
     parameterNumber = 13 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
     tileIndex = 7 ;
     tileClassification = 4 ;
@@ -5515,8 +5213,8 @@
     discipline = 0 ;
     parameterCategory = 0 ;
     parameterNumber = 17 ;
-    tablesVersion = 15 ;
     typeOfFirstFixedSurface = 1 ;
+    tablesVersion = 32 ;
 }
 # Sea surface temperature for AQ
 "SFX.SST"= {
@@ -5524,6 +5222,7 @@
     parameterCategory = 3 ;
     parameterNumber = 0 ;
     typeOfFirstFixedSurface = 1 ;
+    tablesVersion = 32 ;
 }
 # Sea ice cover for AQ
 "SFX.SIC"= {
@@ -5531,7 +5230,7 @@
     parameterCategory = 2 ;
     parameterNumber = 0 ;
     typeOfFirstFixedSurface = 1 ;
-    tablesVersion = 15 ;
+    tablesVersion = 32 ;
 }
 # Accumulated surface sensible heat flux for AQ
 "SURFFLU.CHA.SENS"= {
@@ -5539,7 +5238,6 @@
     parameterCategory = 0 ;
     parameterNumber = 11 ;
     typeOfFirstFixedSurface = 1 ;
-    tablesVersion = 15 ;
     statisticalProcess = 1 ;
 }
 # Accumulated surface latent evaporation flux for AQ
@@ -5548,7 +5246,6 @@
     parameterCategory = 0 ;
     parameterNumber = 30 ;
     typeOfFirstFixedSurface = 1 ;
-    tablesVersion = 15 ;
     typeOfStatisticalProcessing = 1 ;
 }
 # Lowest model level drag coefficient for AQ
@@ -5557,7 +5254,7 @@
     parameterCategory = 2 ;
     parameterNumber = 29 ;
     typeOfFirstFixedSurface = 1 ;
-    tablesVersion = 15 ;
+    tablesVersion = 32 ;
 }
 # Roughness Length for AQ
 "SFX.Z0"= {
@@ -5565,7 +5262,7 @@
     parameterCategory = 0 ;
     parameterNumber = 1 ;
     typeOfFirstFixedSurface = 1 ;
-    tablesVersion = 15 ;
+    tablesVersion = 32 ;
 }
 # 2-m specific humidity for AQ
 "SFX.Q2M"= {
@@ -5574,7 +5271,7 @@
     parameterNumber = 0 ;
     typeOfFirstFixedSurface = 103 ;
     scaledValueOfFirstFixedSurface = 2 ;
-    tablesVersion = 15 ;
+    tablesVersion = 32 ;
 }
 # 2-m specific humidity for AQ
 "SFX.QS"= {
@@ -5582,7 +5279,7 @@
     parameterCategory = 1 ;
     parameterNumber = 0 ;
     typeOfFirstFixedSurface = 1 ;
-    tablesVersion = 15 ;
+    tablesVersion = 32 ;
 }
 "SFX.TALB_ISBA" = {
     discipline = 0 ;

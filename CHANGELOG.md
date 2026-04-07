@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated GRIB2 encoding of radar parameters [\#1556](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1556)(@KristianHMoller)
 - Bump actions/checkout from 3 to 6 [\#1558](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1558)(@dependabot)
 - Adjust git branch structure to make PRs from release/vX.Y.Z branches merge to master. [\#1585](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1585)
+- Move definition of tablesVersion to faModelName for easier integration with updates to ecCodes [\#1564](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1564)(@sbnielsen)
 
 ### Fixed
 - Fix crash in Marsprep due to non-existing bddir_sfx / bddir_sst folder [#1594](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1594)(@jacobsnoeijer)
