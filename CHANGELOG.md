@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Test for ecflow template task [\#1548](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1548)(@pardallio)
 - Enable VTERM perturbations in SPP scheme [\#1593](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1593)(@pirkkao)
 - Introduction of ReferenceChecker [\#1524](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1524)(@dhaumont)
--
+
 ### Changed
 - Use FFTW consistenly in all tasks [\#1589](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1589) (@uandrae)
 - Calculate gridsize scaled VISGQSAT when creating the namelist instead of using LVARRESDEP [\#1584](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1584)
@@ -43,6 +43,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove SURFDIR.NORM.IRR and SURF.RAYT.DIR from CY49t2 master namelist [#1574](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1574) (@ealerskans)
 - Update shortname of root-depth soil moisture to match ecCodes 2.45 [\#1582](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1582) (@KristianHMoller)
 - Fix unit tests on ATOS [#1579](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1579) (@dhaumont)
+
+## [0.26.1] - 2026-03-30
+
+### Fixed
+- Keep pyfdb at v0.1.3, since v5 doesn't support python 3.10 [\#1592](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1592)
 
 ## [0.26.0] - 2026-03-11
 
