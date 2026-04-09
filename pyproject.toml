@@ -4,7 +4,7 @@
   name = "tactus"
   version = "0.25.0"
   # Other package info
-  authors = ["The DE_330 project."]
+  authors = ["ACCORD"]
   documentation = "https://ACCORD-NWP.github.io/tactus-docs"
   include = [{path = "tactus/data/**/*", format = ["sdist", "wheel"]}]
   license = "MIT"

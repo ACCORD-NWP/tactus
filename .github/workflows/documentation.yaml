@@ -86,7 +86,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: "docs/_build/html"
+          path: "docs/_build/"
 
         # uses: cpina/github-action-push-to-another-repository@main
         # env:
@@ -109,9 +109,9 @@ jobs:
       id-token: write
 
     # Deploy to the github-pages environment
-    # environment:
-    #   name: github-pages
-    #   url: ${{ steps.deployment.outputs.page_url }}
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Deploy to GitHub Pages
