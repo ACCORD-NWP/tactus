@@ -294,6 +294,7 @@ class CheckDefinition:
         self,
         taskname,
         rulename,
+        label_suffix,
         method,
         inpath_pattern,
         files_pattern,
@@ -307,6 +308,7 @@ class CheckDefinition:
         Args:
                 taskname: the name of the task
                 rulename: the name of the rule
+                label_suffix: the suffix for the label
                 method: the method to perform the comparison
                 inpath_pattern:  path to the files to be tested
                 files_pattern: pattern defining the files to be tested
@@ -318,6 +320,7 @@ class CheckDefinition:
         """
         self.taskname = taskname
         self.rulename = rulename
+        self.label_suffix = label_suffix
         self.method = method
         self.inpath_pattern = inpath_pattern
         self.files_pattern = files_pattern
@@ -328,13 +331,14 @@ class CheckDefinition:
 
     @staticmethod
     def create_list_of_check_definitions(
-        config, taskname, rules_active, check, generate
+        config, taskname, label_suffix, rules_active, check, generate
     ) -> list[CheckDefinition]:
         """Create the list of items to be checked.
 
         Args:
             config (deode.ParsedConfig): Configuration
             taskname: the name of the task
+            label_suffix: the suffix for the label
             rules_active: list of rules that are active
             check: boolean indicating if the check should be performed
             generate: boolean indicating if the reference generation should be performed
@@ -361,10 +365,10 @@ class CheckDefinition:
                         references_pattern = config["task"][taskname][rulename][
                             "reference_folder"
                         ]
-
                     check_definition = CheckDefinition(
                         taskname,
                         rulename,
+                        label_suffix,
                         method,
                         inpath,
                         pattern,
@@ -385,6 +389,10 @@ class CheckDefinition:
         self.files = platform.substitute(self.files_pattern)
         self.inpath = platform.substitute(self.inpath_pattern)
         result_dir = platform.substitute(self.results_dir_pattern)
+
+        suffix = platform.substitute(self.label_suffix)
+        self.uniquename = f"{self.taskname}.{suffix}"
+
         reference_dir = (
             platform.substitute(self.references_pattern)
             if self.references_pattern
@@ -605,6 +613,7 @@ class CheckSummaryTxt(CheckSummary):
             item: the check item being processed
         """
         summary_file.write("-\n")
+        summary_file.write(f"Name: {check_definition.uniquename}\n")
         summary_file.write(f"Task: {check_definition.taskname}\n")
         summary_file.write(f"Rule: {check_definition.rulename}\n")
         summary_file.write(f"Method: {check_definition.method}\n")
@@ -793,22 +802,27 @@ class CheckSummaryJson(CheckSummary):
             check_definition: the check definition being processed
             item: the check item being processed
         """
-        if check_definition.taskname not in summary_dict:
-            summary_dict[check_definition.taskname] = {}
+        if check_definition.uniquename not in summary_dict:
+            summary_dict[check_definition.uniquename] = {}
 
-        if check_definition.rulename not in summary_dict[check_definition.taskname]:
-            summary_dict[check_definition.taskname][check_definition.rulename] = {}
+        if check_definition.rulename not in summary_dict[check_definition.uniquename]:
+            summary_dict[check_definition.uniquename][check_definition.rulename] = {}
 
-            summary_dict[check_definition.taskname][check_definition.rulename]["rule"] = (
-                check_definition.rulename
-            )
-            summary_dict[check_definition.taskname][check_definition.rulename][
+            summary_dict[check_definition.uniquename][check_definition.rulename][
+                "rule"
+            ] = check_definition.rulename
+            summary_dict[check_definition.uniquename][check_definition.rulename][
                 "method"
             ] = check_definition.method
-            summary_dict[check_definition.taskname][check_definition.rulename]["tool"] = (
-                check_definition.tool
-            )
-            summary_dict[check_definition.taskname][check_definition.rulename][
+
+            summary_dict[check_definition.uniquename][check_definition.rulename][
+                "task"
+            ] = check_definition.taskname
+
+            summary_dict[check_definition.uniquename][check_definition.rulename][
+                "tool"
+            ] = check_definition.tool
+            summary_dict[check_definition.uniquename][check_definition.rulename][
                 "items"
             ] = []
 
@@ -826,7 +840,7 @@ class CheckSummaryJson(CheckSummary):
                 + f" at {check_definition.inpath}\n"
             }
 
-        summary_dict[check_definition.taskname][check_definition.rulename][
+        summary_dict[check_definition.uniquename][check_definition.rulename][
             "items"
         ].append(content)
 
@@ -838,6 +852,7 @@ class ReferenceCheckManager:
         self,
         config,
         taskname,
+        label_suffix,
         rules_active,
         check,
         generate,
@@ -850,6 +865,7 @@ class ReferenceCheckManager:
         Args:
             config: configuration dictionary
             taskname: the name of the task
+            label_suffix: the suffix for the label
             rules_active: list of rules that are active
             check: boolean indicating if the check should be performed
             generate: boolean indicating if the reference generation should be performed
@@ -859,6 +875,7 @@ class ReferenceCheckManager:
                                 checking references or analyzing summaries
         """
         self.taskname = taskname
+        self.label_suffix = label_suffix
         self.check = check
         self.generate = generate
         self.rules_active = rules_active
@@ -867,7 +884,12 @@ class ReferenceCheckManager:
         self.suppress_exception = suppress_exception
 
         self.check_definitions = CheckDefinition.create_list_of_check_definitions(
-            config, self.taskname, self.rules_active, self.check, self.generate
+            config,
+            self.taskname,
+            self.label_suffix,
+            self.rules_active,
+            self.check,
+            self.generate,
         )
         self.summary_list = CheckSummary.create_summary_list(config)
         self.reference_checkers = {}
@@ -884,7 +906,7 @@ class ReferenceCheckManager:
                     self.reference_checkers[check_definition.method] = reference_checker
 
     @staticmethod
-    def create_reference_check_manager(config, taskname):
+    def create_reference_check_manager(config, taskname) -> "ReferenceCheckManager":
         """Static method to create a ReferenceCheckManager.
 
         Args:
@@ -911,9 +933,11 @@ class ReferenceCheckManager:
         analyze_summary = taskname in summary_analysis_tasks
         task_is_active = len(task_rules_active) > 0
         suppress_exception = config_rc["suppress_exception"]
+        label_suffix = config_rc["label_suffix"]
 
         logger.debug(
             f"ReferenceChecker configuration for task {taskname}:\n\
+                       label_suffix={label_suffix}\n\
                        task_is_active={task_is_active}\
                        task_rules_active={task_rules_active}\n\
                        check={check}\n\
@@ -927,6 +951,7 @@ class ReferenceCheckManager:
             return ReferenceCheckManager(
                 config_rc,
                 taskname,
+                label_suffix,
                 task_rules_active,
                 check,
                 generate,
