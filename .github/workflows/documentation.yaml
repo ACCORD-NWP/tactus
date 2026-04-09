@@ -78,26 +78,12 @@ jobs:
         run: |
           poetry run sphinx-build docs docs/_build/
 
-      - name: Allow publishing the `_static` directory
-        run: |
-          touch docs/_build/.nojekyll
-
       # Upload the book's HTML as an artifact
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
           path: "docs/_build/"
 
-        # uses: cpina/github-action-push-to-another-repository@main
-        # env:
-        #   SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
-        # with:
-        #   source-directory: 'docs/_build/'
-        #   destination-repository-name: 'ACCORD-NWP/tactus-docs'
-        #   target-branch: gh-pages
-        #   target-directory: docs/
-        #   user-name: tactus API Doc Builder
-        #   user-email: tactus@noreply.github.com
   deploy-docs:
     # if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
     if: ${{ github.ref == 'refs/heads/feature/fix-deploy-docs-workflow' }}
@@ -116,4 +102,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
