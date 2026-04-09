@@ -18,9 +18,7 @@ on:
       - '*.rst'
       - '*.md'
   workflow_dispatch:
-    branches:
-      - master
-      - develop
+
 permissions:
     contents: write
 
