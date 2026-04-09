@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Prepare tactus as a separate package from Deode-Workflow, which now belongs to ACCORD-NWP. [\#2](https://github.com/ACCORD-NWP/tactus/pull/2) (@mfroelund)
 - Make argparser be returned instead of parsed args to make it extendable. [\#3](https://github.com/ACCORD-NWP/tactus/pull/3) (@mfroelund)
 - Make resolving path relative to package search across all paths in sys.path. [\#4](https://github.com/ACCORD-NWP/tactus/pull/4) (@mfroelund)
+- Change deployment of documentation to not need github secrets to work. [\#22](https://github.com/ACCORD-NWP/tactus/pull/22) (@mfroelund)
 
 ### Fixed
 - Return binary name as default. [\#19](https://github.com/ACCORD-NWP/tactus/pull/19) (@trygveasp)
