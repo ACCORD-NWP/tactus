@@ -24,7 +24,7 @@ permissions:
     contents: write
 
 jobs:
-  docs:
+  build-docs:
     if: github.repository_owner == 'ACCORD-NWP'
     name: Generate API Documentation
     runs-on: ubuntu-latest
@@ -81,15 +81,32 @@ jobs:
         run: |
           touch docs/_build/.nojekyll
 
-      - name: Deploy to https://github.com/ACCORD-NWP/tactus-docs
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
-        uses: cpina/github-action-push-to-another-repository@main
-        env:
-          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
-        with:
-          source-directory: 'docs/_build/'
-          destination-repository-name: 'ACCORD-NWP/tactus-docs'
-          target-branch: gh-pages
-          target-directory: docs/
-          user-name: tactus API Doc Builder
-          user-email: tactus@noreply.github.com
+        # uses: cpina/github-action-push-to-another-repository@main
+        # env:
+        #   SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+        # with:
+        #   source-directory: 'docs/_build/'
+        #   destination-repository-name: 'ACCORD-NWP/tactus-docs'
+        #   target-branch: gh-pages
+        #   target-directory: docs/
+        #   user-name: tactus API Doc Builder
+        #   user-email: tactus@noreply.github.com
+  deploy-docs:
+    # if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/feature/fix-deploy-docs-workflow' }}
+    name: "Deploy docs"
+    needs: build-docs
+    runs-on: "ubuntu-latest"
+    permissions:
+      pages: write
+      id-token: write
+
+    # Deploy to the github-pages environment
+    # environment:
+    #   name: github-pages
+    #   url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
