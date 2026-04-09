@@ -4,7 +4,6 @@ on:
     branches:
       - master
       - develop
-      - feature/fix-deploy-docs-workflow
     paths:
       - '**.py'
       - '*.rst'
@@ -83,8 +82,7 @@ jobs:
           path: "docs/_build/"
 
   deploy-docs:
-    # if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
-    if: ${{ github.ref == 'refs/heads/feature/fix-deploy-docs-workflow' }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
     name: "Deploy docs"
     needs: build-docs
     runs-on: "ubuntu-latest"
