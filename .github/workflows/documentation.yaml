@@ -93,7 +93,7 @@ jobs:
         #   user-email: tactus@noreply.github.com
   deploy-docs:
     # if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/feature/fix-deploy-docs-workflow' }}
+    if: ${{ github.ref == 'refs/heads/feature/fix-deploy-docs-workflow' }}
     name: "Deploy docs"
     needs: build-docs
     runs-on: "ubuntu-latest"
