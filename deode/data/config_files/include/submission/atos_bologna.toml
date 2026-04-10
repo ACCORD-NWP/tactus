@@ -18,7 +18,7 @@
   wrapper = ""
 
 [submission.task_exceptions.AddCalculatedFields.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2026.01.0.0"]
 
 [submission.task_exceptions.ArchiveFDB.ENV]
   FDB5_HOME = "$ECMWF_TOOLBOX_DIR"
@@ -27,7 +27,7 @@
   GRIBJUMP_CONFIG_FILE = "@DEODE_FDB_HOME@/etc/gribjump/config_on-demand-extremes-dt.yaml"
 
 [submission.task_exceptions.ArchiveFDB.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2026.01.0.0"]
 
 [submission.task_exceptions.ArchiveHour.BATCH]
   WALLTIME = "#SBATCH --time=03:00:00"
@@ -50,7 +50,7 @@
 [submission.task_exceptions.C903.ENV]
   KMP_AFFINITY = "granularity=core,scatter"
   KMP_BLOCKTIME = "12"
-  KMP_STACKSIZE = "4G"
+  OMP_STACKSIZE = "4G"
 
 [submission.task_exceptions.CreateGrib]
   binary = "gl"
@@ -70,7 +70,7 @@
   NTASKS = "#SBATCH --ntasks=16"
 
 [submission.task_exceptions.ExtractSQlite]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2026.01.0.0"]
 
 [submission.task_exceptions.Forecast]
   bindir = "@INSTALL_DIR@/@CYCLE@/@COMPILER@/@PRECISION@/@IAL_VERSION@/bin"
@@ -178,7 +178,7 @@
   # First load the prgenv
   00_PRGENV = ["load", "prgenv/intel"]
   # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2026.01.0.0"]
   FFTW = ["load", "fftw/3.3.10"]
   HDF5 = ["load", "hdf5/1.14.6"]
   MKL = ["load", "intel-mkl/19.0.5"]
@@ -219,7 +219,7 @@
   # First load the prgenv
   00_PRGENV = ["load", "prgenv/intel"]
   # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2026.01.0.0"]
   FFTW = ["load", "fftw/3.3.10"]
   HDF5 = ["load", "hdf5/1.14.6"]
   MKL = ["load", "intel-mkl/19.0.5"]

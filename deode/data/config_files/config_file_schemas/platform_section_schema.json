@@ -83,6 +83,14 @@
       "type": "string",
       "description": "Path to ECrad NetCDF data"
     },
+    "references_folder": {
+      "type": "string",
+      "description": "Path to references checker input"
+    },
+    "references_generation_folder": {
+      "type": "string",
+      "description": "Path to references checker generation folder"
+    },
     "rrtm_dir": {
       "type": "string",
       "description": "Path to RRTM input data"

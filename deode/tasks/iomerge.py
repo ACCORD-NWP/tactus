@@ -250,7 +250,7 @@ class IOmerge(Task):
 
         # We must wait for the io_server output to appear
         # BUT: how long should we wait before aborting?
-        logger.info("Waiting for forecast output.")
+        logger.info("Waiting for forecast output as indicated by {}", echis)
         start = time()
         waiting_time = 0
         while not os.path.exists(echis):
@@ -296,15 +296,17 @@ class IOmerge(Task):
         if self.file_tracker["history"]:
             # Remove t=0 as this might have a different set of files
             self.file_tracker["history"].pop(as_timedelta("PT0H"), None)
-            file_tracker = [len(x) for x in self.file_tracker["history"].values()]
-            if len(set(file_tracker)) != 1:
-                file_tracker_summary = {
-                    t: file_tracker[i] for i, t in enumerate(self.file_tracker["history"])
-                }
-                raise RuntimeError(
-                    "Some history files have missing io-server input\n"
-                    f" {file_tracker_summary}"
-                )
+            if len(self.file_tracker["history"]) > 0:
+                file_tracker = [len(x) for x in self.file_tracker["history"].values()]
+                if len(set(file_tracker)) != 1:
+                    file_tracker_summary = {
+                        t: file_tracker[i]
+                        for i, t in enumerate(self.file_tracker["history"])
+                    }
+                    raise RuntimeError(
+                        "Some history files have missing io-server input\n"
+                        f" {file_tracker_summary}"
+                    )
 
         # signal completion of all merge tasks to the forecast task
         BatchJob(os.environ, wrapper="").run(

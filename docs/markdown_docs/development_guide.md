@@ -152,11 +152,11 @@ These branches are created and reside in developers' personal forks of the upstr
 **`release/vX.Y.Z` branches**:
    - Created to prepare a new release.
    - Based on the `develop` branch.
-   - Merged back into the upstream's `develop` branch upon completion.
+   - Merged back into the upstream's `master` and `develop` branch upon completion.
 
 **`binary-update/vX.Y.Z` branches**:
    - Created to update the binary versions used by the specific version (`vX.Y.Z`) of Deode-Workflow .
-   - Based on the `develop` branch.
+   - Based on the `master` branch.
    - Merged back into `master` in the upstream repository.
 
 <br>
@@ -233,18 +233,13 @@ This is e.g. relevant, when tagging a new release on the upstream's `master` bra
     ```bash
     git push origin release/vX.Y.Z
     ```
-7. Create a pull request to merge the `release/vX.Y.Z` branch into the upstream's `develop` branch. Follow the instructions in the PR.
-8. When the PR to develop has been merged, determine if the release requires updates of binary versions
+7. Create two new pull requests to merge the `release/vX.Y.Z` branch into the upstream's `master` and `develop` branch, respectively. Follow the instructions in the PRs.
+8. When the PR to master has been merged, determine if the release requires updates of binary versions. If this is the case:
+   1. Create a `binary-update/vX.Y.Z` branch in your fork based on the upstream's `master` branch.
+   2. Implement the necessary changes and push the branch to your fork.
+   3. Create a pull request to merge the `binary-update/vX.Y.Z` branch back into the upstream's `master` branch. Follow the instructions in the PR.
 
-   a. If yes:
-      1. Create a `binary-update/vX.Y.Z` branch in your fork based on the upstream's `develop` branch.
-      2. Implement the necessary changes and push the branch to your fork.
-      3. Create a pull request to merge the `binary-update/vX.Y.Z` branch into the upstream's `master` branch. Follow the instructions in the PR.
-
-   b. If no:
-
-      1. Create a pull request to merge the upstream's `develop` branch into the upstream's `master` branch. Follow the instructions in the PR.
-9. Once the pull request is approved and merged, create a new tag on the `master` branch, while still in your own fork:
+9. Once the above pull requests have been approved and merged, create a new tag on the `master` branch, while still in your own fork:
     ```bash
     git checkout master
     git pull upstream master
@@ -278,4 +273,4 @@ This is e.g. relevant, when tagging a new release on the upstream's `master` bra
 | `bugfix/<name>`              | Developers' Fork           | For resolving bugs found during development. Based on `develop`.                                  |
 | `hotfix/<name>`              | Developers' Fork           | For critical fixes to released versions. Based on `master`.|
 | `release/vX.Y.Z`          | Developers' Fork           | To prepare a new release. Based on `develop`.|
-| `binary-update/vX.Y.Z`    | Developers' Fork           | To update binary versions, when releasing a new release to master. Based on `develop`.|
+| `binary-update/vX.Y.Z`    | Developers' Fork           | To update binary versions, when releasing a new release to master. Based on `master`.|

@@ -124,6 +124,8 @@ e923_base:
     LVGSN: true
   NAMPHY0:
     GCVPSI: 0.0
+  NAMTRANS:
+    LFFTW: ${cfg:submission.lfftw,"true"}
   NEMDIM:
     NBZONG: ${cfg:domain.nbzong}
     NBZONL: ${cfg:domain.nbzonl}
@@ -140,9 +142,7 @@ namgfl_ifs:
 
 fa_names:
   NAMAFN:
-    GFP_CDNI%CLNAME: SURFDIR.NORM.IRR
     GFP_CSLH%CLNAME: SURFFLU.LAT.TOTA
-    GFP_CSOP%CLNAME: SURF.RAYT.DIR
     GFP_CTOP%CLNAME: TOP.RAYT.DIR
     GFP_MXCLWC%CLNAME: CLS.MXCLWC
     TFP_HCLP%CLNAME: CLPMHAUT.MOD.XFU
@@ -442,7 +442,7 @@ f4_AROME:
     CFRAC_ICE_SHALLOW_MF: S
     LSIGMAS: true
     LSUBG_COND: true
-    VSIGQSAT: 0.02
+    VSIGQSAT: ${vsigqsat_by_gridsize:0.02, ${cfg:domain.xdx}}
   NAM_PARAM_ICEN:
     CSEDIM: STAT
     CSNOWRIMING: M90
@@ -1115,7 +1115,7 @@ f4_HARMONIE_AROME:
     LSIGMAS: true
     LSTATNW: true
     LSUBG_COND: true
-    VSIGQSAT: 0.02
+    VSIGQSAT: ${vsigqsat_by_gridsize:0.02, ${cfg:domain.xdx}}
   NAM_PARAM_ICEN:
     LKOGAN: true
     LOCND2: true
@@ -1159,7 +1159,6 @@ f4_common:
     NRAZTS: ${steplist:${cfg:general.namelist.nrazts}}
   NAM_NEBN:
     LTAUCONV: false
-    LVARRESDEP: false
   NAMCT0:
     CFPNCF: ECHFP
     CNPPATH: .
@@ -1663,6 +1662,8 @@ f4_e927:
   NAMRIP:
     CSTOP: t0
     TSTEP: 1.0
+  NAMTRANS:
+    LFFTW: ${cfg:submission.lfftw,"true"}
   NAMXFU:
     LXWFPIN: ${cfg:general.windfarm}
 

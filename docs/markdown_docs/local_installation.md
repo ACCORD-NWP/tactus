@@ -147,4 +147,56 @@ The ecflow_ui can be executed on the login node of leonardo but it's faster to r
 ```
 ssh YOUR_USER@SUBMIT_HOST -C -N -L PORT:SUBMIT_HOST:PORT
 ```
-where YOUR_USER is your LEONARDOD user name, PORT is the assigned port number in the above mentioned file and SUBMIT_HOST is the login node that the ecflow server is running on (eg. login02-ext.leonardo.cineca.it).
+where YOUR_USER is your LEONARDOD user name and PORT is the assigned port number in the above mentioned file.
+
+## Belenos
+Belenos is the Météo-France computing cluster for research. On this platform, the Deode-Workflow can be installed using Micromamba.
+
+### Installing under micromamba
+Get the code
+```
+git clone git@github.com:destination-earth-digital-twins/Deode-Workflow.git
+cd Deode-Workflow
+```
+Create a micromamba environment and install python, ecflow and gdal.
+```
+"${SHELL}" <(curl -L micro.mamba.pm/install.sh)
+source ~/.bashrc
+micromamba self-update
+micromamba create -y -p ${HOME}/micromamba-wf conda python=3.10.* gdal=3.6.2 ecflow
+```
+Install deode and all its dependencies.
+```
+cd deode/Deode-Workflow/
+source $HOME/micromamba-wf/bin/activate
+pip install -e . --no-cache --prefer-binary
+```
+Then we have a setup:
+```
+(base) [coutandn@belenoslogin1 ~]$ deode --version
+2026-03-03 14:15:47 | INFO     | Start deode v0.24.0 --> "deode --version"
+deode v0.24.0
+```
+
+### Ecflow server
+The ecflow server can run on any login node `belenosloginN`, where N ranges from 0 to 3. The port number is computed by `_set_port_from_user`, which adds the user's UID to an offset (default=0).
+Edit the configuration file : `deode/data/config_files/include/scheduler/ecflow_belenos.toml` and set `ecf_host` to the name of your server.
+
+```
+[scheduler]
+
+[scheduler.ecfvars]
+  case_prefix = ""
+  ecf_deode_home = "@DEODE_HOME@"
+  ecf_files = "@HOME@/deode_ecflow/ecf_files"
+  ecf_files_remotely = "@HOME@/deode_ecflow/ecf_files"
+  ecf_home = "@HOME@/deode_ecflow/jobout"
+  ecf_host = "belenoslogin0.belenoshpc.meteo.fr"
+  ecf_jobout = "@HOME@/deode_ecflow/jobout"
+  ecf_out = "@HOME@/deode_ecflow/jobout"
+  ecf_port = "_set_port_from_user('0',)"
+  ecf_ssl = "0"
+
+[scheduler.ecfvars.troika]
+  config_file = "@ECF_DEODE_HOME@/data/config_files/troika.yml"
+```

@@ -3,7 +3,7 @@
 import os
 
 from deode.boundary_utils import Boundary
-from deode.datetime_utils import as_datetime, cycle_offset
+from deode.datetime_utils import as_datetime, as_timedelta, cycle_offset
 from deode.tasks.base import Task
 from deode.tasks.batch import BatchJob
 
@@ -60,7 +60,9 @@ class Addpert(Task):
                 bdshift = self.boundary.bdshift
                 bd_basetime = self.boundary.bd_basetime
                 if i > 0:
-                    bdshift += self.config.get(f"task.args.bdshift{i}", "PT0H")
+                    bdshift += as_timedelta(
+                        self.config.get(f"task.args.bdshift{i}", "PT0H")
+                    )
                     bd_basetime = self.basetime - cycle_offset(
                         self.basetime,
                         self.boundary.bdcycle,

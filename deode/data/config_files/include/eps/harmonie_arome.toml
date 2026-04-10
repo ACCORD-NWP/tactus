@@ -15,7 +15,8 @@
     "RZNUC",
     "RZMFDRY",
     "RZMBCLOSURE",
-    "SLWIND"
+    "SLWIND",
+    "VTERM"
   ]}
 
 [eps.member_settings.namelist_update.master.forecast.nam_spp_modif]
@@ -110,6 +111,12 @@
   "pnx(16)%xclipmin" = -0.1
   "pnx(16)%xmag(1)" = 0.05
   "pnx(16)%xuniform_offset" = 0.5
+  "pnx(17)%idistr" = 2
+  "pnx(17)%label" = "VTERM"
+  "pnx(17)%xclipmax" = 1000000.0
+  "pnx(17)%xclipmin" = 0.0
+  "pnx(17)%xmag(1)" = 1.4
+  "pnx(17)%xuniform_offset" = 0.41
 
 [eps.member_settings.namelist_update.master.forecast.namgfl]
   ngfl_ezdiag = {0 = 3, "1:" = 4}

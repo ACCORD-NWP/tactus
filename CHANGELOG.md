@@ -9,6 +9,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [0.27.0] - 2026-04-10
+
+### Added
+- Add total precipitation to Fullpos GRIB output [\#1499](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1499) (@egregow)
+- Add config files for belenos [\#1458](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1458) (@nicolasCtd)
+- Overview of output fields and their intepretation added to documentation [\#1237](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1527)(@sbnielsen)
+- Test that all fullpos namelist entries have eccodes fieldName definitions [\#1563](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1563)(@sbnielsen)
+- Test for ecflow template task [\#1548](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1548)(@pardallio)
+- Enable VTERM perturbations in SPP scheme [\#1593](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1593)(@pirkkao)
+- Introduction of ReferenceChecker [\#1524](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1524)(@dhaumont)
+
+### Changed
+- Use FFTW consistenly in all tasks [\#1589](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1589) (@uandrae)
+- Calculate gridsize scaled VISGQSAT when creating the namelist instead of using LVARRESDEP [\#1584](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1584)
+- Phaseout parsing time durations using pandas.Timedelta and prefer a way more stable and reliable isodate.parse_duration. [\#1577](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1577) (@jacobsnoeijer)
+- Deploy documentation only on tagged releases rather than when pushing to develop [\#1554] (@sbnielsen, @observingClouds, @mfroelund)
+- Adds changes related to eccodes version 2.45, namely module load and gribmodify field name. [\#1529](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1529) (@pardallio)
+- Bump ruff-pre-commit from v0.15.5 to 0.15.6 [\#1561](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1561) (@dependabot)
+- Bump actions/setup-python from 4 to 6 [\#1559](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1559) (@dependabot)
+- Bump actions/cache from 3 to 5 [\#1562](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1562)(@dependabot)
+- Updated GRIB2 encoding of radar parameters [\#1556](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1556)(@KristianHMoller)
+- Bump actions/checkout from 3 to 6 [\#1558](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1558)(@dependabot)
+- Adjust git branch structure to make PRs from release/vX.Y.Z branches merge to master. [\#1585](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1585)
+- Move definition of tablesVersion to faModelName for easier integration with updates to ecCodes [\#1564](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1564)(@sbnielsen)
+
+### Fixed
+- Fix crash in Marsprep due to non-existing bddir_sfx / bddir_sst folder [#1594](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1594)(@jacobsnoeijer)
+- Use proper function call to generate isoformat string of duration [#1599](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1599)(@jacobsnoeijer)
+- Correct config update of static namelists [#1587](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1587)(@uandrae)
+- Correct the archive_static_member_trigger in ecflow [#1591](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1591)(@uandrae)
+- Correct SLAF race conditions [#1557](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1557)(@ovignes)
+- Correct iomerge file checker for the case of output at t=0 only [#1590](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1590)(@uandrae)
+- Use OMP_STACKSIZE instead of KMP_STACKSIZE on ATOS [#1578](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1578)(@FlorianW-ZAMG)
+- Minor docstring fixes and broken link in README [#1569](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1569)(@sbnielsen)
+- Remove SURFDIR.NORM.IRR and SURF.RAYT.DIR from CY49t2 master namelist [#1574](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1574) (@ealerskans)
+- Update shortname of root-depth soil moisture to match ecCodes 2.45 [\#1582](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1582) (@KristianHMoller)
+- Fix unit tests on ATOS [#1579](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1579) (@dhaumont)
+
 ## [0.26.1] - 2026-03-30
 
 ### Fixed
@@ -19,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added nwp2windpower postprocessing impact model [\#1527](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1527)(@jacobsnoeijer)
 - Added host with macro to airquality.toml [\#1544](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1544)(@KristianHMoller)
+- Added dependabot updates for pre-commit and github-actions [\#1553](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1553)(@observingClouds)
 
 ### Changed
 - Refactor impact model plugin interface [\#1527](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1527)(@jacobsnoeijer)
@@ -35,7 +74,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Correct logics in the remove command. [\#1528](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1528) (@uandrae)
 - Restore `mode=start` functionality. [\#1339](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1339) (@BolliPalmason, @kastelecn,@uandrae)
 - Add missing DR_HOOK setting for Addpert. [\#1530](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1530) (@uandrae)
-- Allow string values in `_set_port_from_user()` [\#1458](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1458) (@uandrae, @nicolasCtd)
+- Allow string values in `_set_port_from_user()` [\#1537](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1537) (@uandrae, @nicolasCtd)
 - Added a 'if' statement to prevent Marsprep from fetching lat/lon geopotential when all data is already available [\#1534](https://github.com/destination-earth-digital-twins/Deode-Workflow/issues/1534) (@kastelecn, @uandrae, @nicolasCtd)
 - Add active=false to wildfire impact model. [\#1538](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1538) (@mfroelund)
 - Fix bug in version parsing introduced in [\#1489](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1489). [\#1551](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1551) (@observingClouds)

@@ -48,6 +48,11 @@
           "description": "Flag for cleaning everything in a path",
           "type": "boolean",
           "default": false
+        },
+        "execute_removal": {
+          "description": "Execute the actual removal",
+          "type": "boolean",
+          "default": false
         }
       }
     },

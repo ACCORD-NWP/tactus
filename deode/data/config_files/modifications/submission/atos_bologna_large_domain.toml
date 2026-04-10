@@ -33,7 +33,7 @@
 [submission.task_exceptions.Forecast.ENV]
   KMP_AFFINITY = "granularity=core,scatter"
   KMP_BLOCKTIME = "12"
-  KMP_STACKSIZE = "4G"
+  OMP_STACKSIZE = "4G"
 
 [submission.task_exceptions.IOmerge.BATCH]
   WALLTIME = "#SBATCH --time=08:00:00"
