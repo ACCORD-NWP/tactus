@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Full Changelog](https://github.com/destination-earth-digital-twins/Deode-Prototype/compare/...HEAD)
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
+- Reference checker task name unique [\#1611](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1611)(@dhaumont)
+- Reference checker summary lock [\#1609](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1609)(@dhaumont)
+
+## [0.27.0] - 2026-04-10
 
 ### Added
 - Add total precipitation to Fullpos GRIB output [\#1499](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1499) (@egregow)
@@ -17,8 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Test for ecflow template task [\#1548](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1548)(@pardallio)
 - Enable VTERM perturbations in SPP scheme [\#1593](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1593)(@pirkkao)
 - Introduction of ReferenceChecker [\#1524](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1524)(@dhaumont)
-- Reference checker task name unique [\#1611](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1611)(@dhaumont)
-- Reference checker summary lock [\#1609](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1609)(@dhaumont)
 
 ### Changed
 - Use FFTW consistenly in all tasks [\#1589](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1589) (@uandrae)
