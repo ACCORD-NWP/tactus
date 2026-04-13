@@ -392,9 +392,6 @@ f4_AROME:
     NMSG_LEVEL_SERVER: 0
     NPROCESS_LEVEL: 5
     NPROC_IO: ${cfg:namelist.nproc_io,0}
-  NAMMCC:
-    LMCC01_MSE: ${cfg:general.upd_sst_sic}
-    LMCCECSST: ${cfg:general.upd_sst_sic}
   NAMOPH:
     CFNHWF: ECHIS
     LINC: true
@@ -923,9 +920,6 @@ f4_ALARO:
     NPROC_IO: ${cfg:namelist.nproc_io,0}
   NAMJFH:
     N_VMASS: 0
-  NAMMCC:
-    LMCC01_MSE: ${cfg:general.upd_sst_sic}
-    LMCCECSST: ${cfg:general.upd_sst_sic}
   NAMOPH:
     CFNHWF: ECHIS
     LINC: true
@@ -1357,9 +1351,6 @@ f4_HARMONIE_AROME:
     NMSG_LEVEL_SERVER: 0
     NPROCESS_LEVEL: 5
     NPROC_IO: ${cfg:namelist.nproc_io,0}
-  NAMMCC:
-    LMCC01_MSE: ${cfg:general.upd_sst_sic}
-    LMCCECSST: ${cfg:general.upd_sst_sic}
   NAMNRTAER:
     LAECCN2CLDR: false
     LAEIFN: false
