@@ -1763,3 +1763,56 @@ class SLAFpartFamily(EcflowSuiteFamily):
             variables=variables,
             ecf_files_remotely=ecf_files_remotely,
         )
+
+
+class CompilationFamily(EcflowSuiteFamily):
+    """Class for compilation family."""
+
+    def __init__(
+        self,
+        parent,
+        config,
+        task_settings: TaskSettings,
+        ecf_files,
+        trigger=None,
+        input_template=None,
+        ecf_files_remotely=None,
+    ):
+        """Class initialization."""
+        super().__init__(
+            "Compilation",
+            parent,
+            ecf_files,
+            trigger=trigger,
+            ecf_files_remotely=ecf_files_remotely,
+        )
+
+        clone_ial = EcflowSuiteTask(
+            "IALClone",
+            self,
+            config,
+            task_settings,
+            ecf_files,
+            input_template=input_template,
+            ecf_files_remotely=ecf_files_remotely,
+        )
+        create_bundle = EcflowSuiteTask(
+            "IALBundleCreate",
+            self,
+            config,
+            task_settings,
+            ecf_files,
+            input_template=input_template,
+            ecf_files_remotely=ecf_files_remotely,
+            trigger=EcflowSuiteTriggers(EcflowSuiteTrigger(clone_ial)),
+        )
+        EcflowSuiteTask(
+            "IALBundleBuild",
+            self,
+            config,
+            task_settings,
+            ecf_files,
+            input_template=input_template,
+            ecf_files_remotely=ecf_files_remotely,
+            trigger=EcflowSuiteTriggers(EcflowSuiteTrigger(create_bundle)),
+        )
