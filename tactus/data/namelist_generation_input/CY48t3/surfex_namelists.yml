@@ -18,7 +18,7 @@ sfx_pgd_isba_dif:
   NAM_ISBA:
     CISBA: "DIF"
     NGROUND_LAYER: 14
-    NPATCH: ${cfg:pgd.npatch} 
+    NPATCH: ${cfg:pgd.npatch}
     CPEDO_FUNCTION: "CO84"
     XUNIF_RUNOFFB: 0.2
     YSOC_TOP: "soc_top"
@@ -62,7 +62,7 @@ sfx_pgd:
     YSANDFILETYPE: "DIRECT"
     CISBA: "DIF"
     NGROUND_LAYER: 14
-    NPATCH: ${cfg:pgd.npatch} 
+    NPATCH: ${cfg:pgd.npatch}
   NAM_PGD_GRID:
     CGRID: "CONF PROJ "
   NAM_ZS:
@@ -451,7 +451,7 @@ sfx_pgd_ecoclimap_sg_all_decade:
     - - DIRTYP
     - - DIRTYP
     - - DIRTYP
-    - - DIRTYP    
+    - - DIRTYP
     CFTYP_ALBVIS_VEG:
     - - DIRTYP
     - - DIRTYP
@@ -488,7 +488,7 @@ sfx_pgd_ecoclimap_sg_all_decade:
     - - DIRTYP
     - - DIRTYP
     - - DIRTYP
-    - - DIRTYP    
+    - - DIRTYP
     CFTYP_H_TREE:
     - DIRTYP
     CFTYP_LAI:
@@ -527,7 +527,7 @@ sfx_pgd_ecoclimap_sg_all_decade:
     - - DIRTYP
     - - DIRTYP
     - - DIRTYP
-    - - DIRTYP   
+    - - DIRTYP
 
 sfx_pgd_ecoclimap_sg_one_decade:
   NAM_DATA_ISBA:
@@ -565,21 +565,21 @@ sfx_pgd_dice:
     - 0.2
     - 1.0
     - 1.5
-    - 2.0 
+    - 2.0
     - 1.5
     - 3.0
     - 1.0
     - 2.0
-    - 1.0 
-    - 1.0 
-    - 1.0 
-    - 2.0 
-    - 3.0 
-    - 1.2 
-    - 1.5 
-    - 1.5 
-    - 2.0 
-    - 1.5 
+    - 1.0
+    - 1.0
+    - 1.0
+    - 2.0
+    - 3.0
+    - 1.2
+    - 1.5
+    - 1.5
+    - 2.0
+    - 1.5
 
 sfx_pgd_rootdepth:
   NAM_DATA_ISBA:
@@ -589,21 +589,21 @@ sfx_pgd_rootdepth:
     - 0.2
     - 1.0
     - 1.5
-    - 2.0 
+    - 2.0
     - 1.5
     - 3.0
     - 1.0
     - 2.0
-    - 1.0 
-    - 1.0 
-    - 1.0 
-    - 2.0 
-    - 3.0 
-    - 1.2 
-    - 1.5 
-    - 1.5 
-    - 2.0 
-    - 1.5 
+    - 1.0
+    - 1.0
+    - 1.0
+    - 2.0
+    - 3.0
+    - 1.2
+    - 1.5
+    - 1.5
+    - 2.0
+    - 1.5
 
 sfx_pgd_grounddepth:
   NAM_DATA_ISBA:
@@ -613,21 +613,21 @@ sfx_pgd_grounddepth:
     - 0.2
     - 2.0
     - 3.0
-    - 4.0 
+    - 4.0
     - 3.0
     - 6.0
     - 2.0
     - 3.0
-    - 2.0 
-    - 2.0 
-    - 2.0 
-    - 1.2 
-    - 4.0 
-    - 2.2 
-    - 2.5 
-    - 2.5 
-    - 3.0 
-    - 2.5 
+    - 2.0
+    - 2.0
+    - 2.0
+    - 1.2
+    - 4.0
+    - 2.2
+    - 2.5
+    - 2.5
+    - 3.0
+    - 2.5
 
 sfx_pgd_rsmin:
   NAM_DATA_ISBA: {}
@@ -696,7 +696,7 @@ sfx_pgd_teb_osm:
     CFTYP_WATER: "ASCLLV"
     CFNAM_TOWN: "OSM_TOWN_FRACTION"
     CFTYP_TOWN: "ASCLLV"
-    LECOSG: True 
+    LECOSG: True
   NAM_DATA_TEB:
     CFNAM_GARDEN: "OSM_GARDEN_FRACTION"
     CFTYP_GARDEN: "ASCLLV"
@@ -708,11 +708,11 @@ sfx_pgd_teb_osm:
     CFTYP_BLD: "ASCLLV"
     CFNAM_Z0_TOWN: "OSM_Z0_TOWN"
     CFTYP_Z0_TOWN: "ASCLLV"
-  NAM_DATA_TEB_GARDEN: 
+  NAM_DATA_TEB_GARDEN:
     NTIME_GD: 12
     CTYP_GARDEN_HVEG: "TREE"
     CTYP_GARDEN_LVEG: "PARK"
-    CTYP_GARDEN_NVEG: "NO" 
+    CTYP_GARDEN_NVEG: "NO"
     CFNAM_FRAC_HVEG: "OSM_HIGH_VEGETATION_FRACTION"
     CFTYP_FRAC_HVEG: "ASCLLV"
     CFNAM_FRAC_LVEG: "OSM_LOW_VEGETATION_FRACTION"
@@ -720,7 +720,7 @@ sfx_pgd_teb_osm:
     CFNAM_FRAC_NVEG: "OSM_NO_VEGETATION_FRACTION"
     CFTYP_FRAC_NVEG: "ASCLLV"
     XUNIF_H_HVEG: 10.0
-    XUNIF_LAI_HVEG: 
+    XUNIF_LAI_HVEG:
       - 1.0
       - 1.0
       - 1.0
@@ -733,7 +733,7 @@ sfx_pgd_teb_osm:
       - 2.1
       - 1.8
       - 1.5
-    XUNIF_LAI_LVEG: 
+    XUNIF_LAI_LVEG:
       - 1.5
       - 1.5
       - 1.5

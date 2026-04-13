@@ -71,6 +71,7 @@ selection:
       - WIND.U.PHYS
       - WIND.V.PHYS
       - VERT.VELOCIT
+      - VITESSE_VERT
       - ICE_CRYSTAL
       - CLOUD_WATER
       - TKE
@@ -190,6 +191,7 @@ selection:
       - WIND.U.PHYS
       - WIND.V.PHYS
       - VERT.VELOCIT
+      - VITESSE_VERT
       - ICE_CRYSTAL
       - CLOUD_WATER
       - TKE
@@ -242,6 +244,7 @@ selection:
       - SURFACCNEIGE
       - SURFACCGRAUPEL
       - SURFDIAG.FLASH
+      - TOTAL.PRECIP.
       CLPHY:
       - SURFTEMPERATURE
       - SURFRESERV.NEIGE

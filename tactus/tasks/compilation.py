@@ -1,4 +1,5 @@
 """Compialtion tasks."""
+
 import os
 
 from ..logs import logger
@@ -51,7 +52,7 @@ class IALBundleCreate(Task):
         ial_dir = self.config["compile.ial_dir"]
         git_token = self.config["compile.git_token"]
         git_token_str = ""
-        if git_token != "":
+        if git_token:
             git_token_str = f"--github-token {git_token}"
         self.git_token_str = git_token_str
         self.ial_dir = self.platform.substitute(ial_dir)
@@ -60,7 +61,7 @@ class IALBundleCreate(Task):
         """Execute task."""
         batch_job = BatchJob(os.environ)
         # Assume git ssh access unless token is set
-        if self.git_token_str == "":
+        if not self.git_token_str:
             os.environ["GITHUB"] = "git@github.com:"
         cmd = f"cd {self.ial_dir}/bundle; ./ial-bundle create {self.git_token_str}"
         batch_job.run(cmd)

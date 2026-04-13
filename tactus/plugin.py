@@ -1,4 +1,5 @@
 """Plug-in functionality."""
+
 from pathlib import Path
 from typing import List
 
@@ -169,5 +170,4 @@ class TactusPluginFromConfigFile(TactusPlugin):
     def get_plugin_config(config_file):
         """Get the registry config."""
         with open(config_file, mode="r", encoding="utf8") as fh:
-            config = yaml.safe_load(fh)
-        return config
+            return yaml.safe_load(fh)

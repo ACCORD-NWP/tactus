@@ -1,4 +1,5 @@
 """Task to generate location/turbine tab-files as input for windfarm parameterization."""
+
 import os
 
 from json2tab import json2tab

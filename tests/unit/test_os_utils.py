@@ -255,9 +255,10 @@ class TestResolvePathRelativeToPackage:
         real_base.mkdir()
         fake_path = fake_base / "pkg" / "missing.txt"
 
-        with mock.patch.object(
-            sys, "path", [str(fake_base), str(real_base)]
-        ), pytest.raises(FileNotFoundError):
+        with (
+            mock.patch.object(sys, "path", [str(fake_base), str(real_base)]),
+            pytest.raises(FileNotFoundError),
+        ):
             resolve_path_relative_to_package(fake_path)
 
     def test_not_found_ignore_errors_returns_path(self, tmp_path):
@@ -280,22 +281,26 @@ class TestResolvePathRelativeToPackage:
             (base / "pkg" / "data").mkdir(parents=True)
             (base / "pkg" / "data" / "file.txt").write_text(base_name)
 
-        with mock.patch.object(
-            sys,
-            "path",
-            [
-                str(fake_base),
-                str(tmp_path / "real_base_a"),
-                str(tmp_path / "real_base_b"),
-            ],
-        ), pytest.raises(ValueError, match="Ambiguous path resolution for"):
+        with (
+            mock.patch.object(
+                sys,
+                "path",
+                [
+                    str(fake_base),
+                    str(tmp_path / "real_base_a"),
+                    str(tmp_path / "real_base_b"),
+                ],
+            ),
+            pytest.raises(ValueError, match="Ambiguous path resolution for"),
+        ):
             resolve_path_relative_to_package(fake_path)
 
     def test_no_matching_sys_path_prefix_raises_file_not_found(self):
         """FileNotFoundError when no sys.path entry is a prefix of the given path."""
         path = Path("/totally/nonexistent/path/file.txt")
-        with mock.patch.object(sys, "path", ["/some/unrelated/path"]), pytest.raises(
-            FileNotFoundError
+        with (
+            mock.patch.object(sys, "path", ["/some/unrelated/path"]),
+            pytest.raises(FileNotFoundError),
         ):
             resolve_path_relative_to_package(path)
 
@@ -312,7 +317,8 @@ class TestResolvePathRelativeToPackage:
         fake_base = tmp_path / "fake_base"
         fake_path = fake_base / "file.txt"
 
-        with mock.patch.object(sys, "path", ["", str(fake_base), ""]), pytest.raises(
-            FileNotFoundError
+        with (
+            mock.patch.object(sys, "path", ["", str(fake_base), ""]),
+            pytest.raises(FileNotFoundError),
         ):
             resolve_path_relative_to_package(fake_path)

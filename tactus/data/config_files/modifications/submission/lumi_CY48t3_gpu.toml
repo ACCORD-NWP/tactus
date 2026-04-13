@@ -31,48 +31,39 @@
 [submission.types.Forecast_gpu.ENV]
   ECF_SSL = 1
   # Nodes, MPI tasks etc
-  MPI_TASKS = 32 # $SLURM_NTASKS
-  OMP_NUM_THREADS = 4 # CPUS_PER_TASK
-
+  MPI_TASKS = 32  # $SLURM_NTASKS
+  OMP_NUM_THREADS = 4  # CPUS_PER_TASK
   # Open-MP business :
   # OMP_PLACES looks important for the binding by srun :
   KMP_MONITOR_STACKSIZE = "4G"
   KMP_STACKSIZE = "4G"
   OMP_PLACES = "threads"
   OMP_STACKSIZE = "4G"
-
   # DR_HOOK
   DR_HOOK = 1
   DR_HOOK_IGNORE_SIGNALS = 8
   DR_HOOK_SHOW_PROCESS_OPTIONS = 0
   DR_HOOK_SILENT = 1
-
   # EC PROFILE
   EC_MEMINFO = 0
   EC_MPI_ATEXIT = 0
   EC_PROFILE_HEAP = 0
   EC_PROFILE_MEM = 0
-
   FI_CXI_RX_MATCH_MODE = "hybrid"
-
-  #Environment variables for ALARO PARALLEL
+  # Environment variables for ALARO PARALLEL
   APL_ALARO = 1
   INPART = 1
   PARALLEL = 1
-
-  #Environment for LUMI GPU
-  #Allocate 8Gb of heap size on the GPU
+  # Environment for LUMI GPU
+  # Allocate 8Gb of heap size on the GPU
   CRAY_ACC_MALLOC_HEAPSIZE = 8000000000
-
-  #Allow direct GPU to GPU MPI connection
+  # Allow direct GPU to GPU MPI connection
   MPICH_GPU_SUPPORT_ENABLED = 1
-
   # GPU: bind 8 MPI tasks to certain CPU cores (so that GPUs 0-7 are connected to tasks 0-7)
   CPU_BIND = "mask_cpu:7e000000000000,7e00000000000000,7e0000,7e000000,7e,7e00,7e00000000,7e0000000000"
-
-  #AMD_LOG_LEVEL=3
-  #CRAY_ACC_DEBUG=3
-  #ACC_NOTIFY=3
+  # AMD_LOG_LEVEL=3
+  # CRAY_ACC_DEBUG=3
+  # ACC_NOTIFY=3
   NOUTPUT = 2
 
 [submission.types.Forecast_gpu.MODULES]
@@ -94,4 +85,4 @@
   15_MODULE_PATH = ["use", "/scratch/project_465000527/jasinskas/scl/modules"]
   16_ECFLOW = ["load", "scl-ecflow_23"]
 
-  #  RTTOV_COEFDIR = "/scratch/project_465000527/de_330_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"
+  # RTTOV_COEFDIR = "/scratch/project_465000527/de_330_common_data/DEODE/satellite/rtcoef_rttov12/harm_coef/"

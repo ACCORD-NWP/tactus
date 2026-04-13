@@ -97,22 +97,22 @@ class InterpolSstSic(Task):
                     f"""&naminterp
       MERGE_OCEAN_MODELS={merge_ocean_models}
       MERGE_OCEAN_FILES={
-          self.platform.substitute(
-              merge_ocean_files,
-              basetime=self.boundary.bd_basetime,
-              validtime=as_datetime(bd_time)
-          )
-      }
+                        self.platform.substitute(
+                            merge_ocean_files,
+                            basetime=self.boundary.bd_basetime,
+                            validtime=as_datetime(bd_time),
+                        )
+                    }
       CLIMATE_FILE='{climfile}',
       OUTKEY%DATE={self.basetime.strftime("%Y%m%d")},
       OUTKEY%TIME={self.basetime.strftime("%H%M%S")},
       OUTKEY%ENDSTEP={
-          self.platform.substitute(
-              "@LL@",
-              basetime=self.boundary.bd_basetime,
-              validtime=as_datetime(bd_time)
-          )
-      },
+                        self.platform.substitute(
+                            "@LL@",
+                            basetime=self.boundary.bd_basetime,
+                            validtime=as_datetime(bd_time),
+                        )
+                    },
       ADJUST_SST_UNDER_ICE={adjust_sst_under_ice},
       SST_IS_LSM='{sst_is_lsm}'
     /

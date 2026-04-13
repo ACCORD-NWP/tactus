@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Registration and validation of options passed in the config file."""
+
 import contextlib
 import glob
 import json
@@ -14,7 +15,9 @@ import fastjsonschema
 import jsonref
 import tomli
 import tomlkit
+import xmltodict
 import yaml
+from dicttoxml import dicttoxml as dtx
 from fastjsonschema import JsonSchemaValueException
 from json_schema_for_humans.generate import (
     GenerationConfiguration,
@@ -95,12 +98,11 @@ class ConfigPaths:
                 list_paths (list): directories to search for
                 dirmap (dict): Mapping between display name and actual path
 
-            Raises:
-                RuntimeError: In case of multiple conflicting paths detected
-
             Returns:
                 mapping (dict): Dict of search result
 
+            Raises:
+                RuntimeError: In case of multiple conflicting paths detected
             """
             mapping = {}
             for dir_ in list_paths:
@@ -219,12 +221,30 @@ class BasicConfig(BaseMapping):
 
         Args:
             config_file (str): Path to config file
+
+        Raises:
+            TypeError: when unknown filetype as config_file is given.
         """
-        with open(config_file, mode="w", encoding="utf8") as fh:
-            tomlkit.dump(self.dict(), fh)
-        formatted_toml = FormattedToml.from_file(path=config_file)
-        with open(config_file, mode="w", encoding="utf8") as f:
-            f.write(str(formatted_toml))
+        suffix = Path(config_file).suffix
+
+        if suffix == ".toml":
+            with open(config_file, mode="w", encoding="utf8") as fh:
+                tomlkit.dump(self.dict(), fh)
+            formatted_toml = FormattedToml.from_file(path=config_file)
+            with open(config_file, mode="w", encoding="utf8") as f:
+                f.write(str(formatted_toml))
+        elif suffix == ".xml":
+            with open(config_file, mode="wb") as fh:
+                fh.write(dtx(self.dict(), attr_type=False))
+        elif suffix in [".yml", ".yaml"]:
+            with open(config_file, mode="wb") as fh:
+                yaml.dump(self.dict(), fh, encoding="utf-8", default_flow_style=False)
+        elif suffix == ".json":
+            json_object = json.dumps(self.dict(), indent=4)
+            with open(config_file, "w", encoding="utf-8") as fh:
+                fh.write(json_object)
+        else:
+            raise TypeError(f"Unknown filetype: {config_file}")
 
     @BaseMapping.data.setter
     def data(self, new):
@@ -270,9 +290,10 @@ class JsonSchema(BaseMapping):
             with open(Path(tmpdir) / "schema.json", "w") as schema_file:
                 schema_file.write(json.dumps(self.dict()))
 
-            with open(
-                Path(tmpdir) / "schema_doc.md", "w"
-            ) as doc_file, contextlib.redirect_stdout(None):
+            with (
+                open(Path(tmpdir) / "schema_doc.md", "w") as doc_file,
+                contextlib.redirect_stdout(None),
+            ):
                 generate_from_file_object(
                     schema_file=schema_file,
                     result_file=doc_file,
@@ -392,23 +413,38 @@ class ParsedConfig(BasicConfig):
         rtn += f", json_schema={self.json_schema.dumps(style='json')})"
         return rtn
 
-    def expand_macros(self, expand_all=False):
+    def expand_macros(self, expand_all=False, protect_time=False):
         """Expand macros in config recursively.
 
         Args:
             expand_all (boolean): Flag to expand all macros
+            protect_time (boolean): Flag to control expansion of time variables
 
         Returns:
             config (ParsedConfig): Parsed configuration
         """
+        protect_keys = ["basetime", "validtime"]
         config = self.dict()
+        if protect_time:
+            time_keys = {
+                key: config["general"]["times"].pop(key)
+                for key in protect_keys
+                if key in config["general"]["times"]
+            }
+
         macros = config["macros"]
         if "case" in macros and not expand_all:
             macros["select"] = {"case": self["macros.case"]}
         config["macros"] = macros
+
         macro_platform = Platform(BasicConfig(config))
         config = macro_platform.resolve_macros(self.dict())
         config = self.copy(update=config)
+        if protect_time:
+            updates = {
+                key: value for key, value in time_keys.items() if value is not None
+            }
+            config = config.copy(update=updates)
 
         return config
 
@@ -419,11 +455,11 @@ def _read_raw_config_file(config_path: Path):
     Args:
         config_path (Path): Path to the config file.
 
-    Raises:
-        NotImplementedError: If the config file format is not supported.
-
     Returns:
         dict: Configs read from the specified path.
+
+    Raises:
+        NotImplementedError: If the config file format is not supported.
     """
     config_path = resolve_path_relative_to_package(config_path)
 
@@ -438,6 +474,9 @@ def _read_raw_config_file(config_path: Path):
 
         if config_path.suffix == ".json":
             return json.load(config_file)
+
+        if config_path.suffix == ".xml":
+            return xmltodict.parse(config_file.read())
 
     raise NotImplementedError(f'Unsupported config file format "{config_path.suffix}"')
 
@@ -510,18 +549,17 @@ def _expand_config_include_section(
         host (str | None): Optional host identifier passed down during recursive
             expansion. Defaults to None.
 
+    Returns:
+        tuple[dict, JsonSchema]: A 2-tuple of ``(merged_config, merged_schema)`` where
+            ``merged_config`` is the fully expanded configuration dictionary and
+            ``merged_schema`` is the corresponding merged JSON schema.
+
     Raises:
         RunTimeError: If include path requires a host to be set, and no host
             input argument is provided.
         ConflictingValidationSchemasError: If a json schema for an include section
             is found the parent json schema. Such schema must be added to a
             separate file.
-
-
-    Returns:
-        tuple[dict, JsonSchema]: A 2-tuple of ``(merged_config, merged_schema)`` where
-            ``merged_config`` is the fully expanded configuration dictionary and
-            ``merged_schema`` is the corresponding merged JSON schema.
     """
     if schemas_path is None:
         schemas_path = ConfigPaths.SCHEMAS_SEARCHPATHS

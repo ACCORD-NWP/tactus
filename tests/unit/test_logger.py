@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Test eventual aspects from logger that are not touched in other parts of the code."""
+
 from tactus import GeneralConstants
 from tactus.logs import InterceptHandler, LoggerHandlers, builtin_logging, logger
 
@@ -14,7 +15,7 @@ def test_add_logger_handlers(tmpdir_factory):
     )
     logger.configure(handlers=logger_handlers)
     logger.info("foo")
-    assert str(logger_handlers) == logger_handlers.__repr__()
+    assert str(logger_handlers) == repr(logger_handlers)
     assert "retention" in logger_handlers.handlers["logfile"]
     assert len(logger_handlers) == 2
 

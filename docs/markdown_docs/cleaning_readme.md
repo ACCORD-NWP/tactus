@@ -39,7 +39,7 @@ defaults
   dry_run = true  - testing mode - to see which files would be deleted without their actual deletion. This could be seen in the task log file.
   include  = "(.*)" - regular expression which specifies which files to delete. "(.*)" is regular expesion which matches all files
   exclude  = "(.*)" - regular expression which specifies which files not to delete. Leave empty to deactivate
-  cleaning_delay = "P1D" 
+  cleaning_delay = "P1D"
   cleaning_max_delay = "P2D"
   step = "PT6H"
   wipe = false - Removes everything under "path". Disables the meaning of include or exclude
@@ -53,7 +53,7 @@ All of the default settings are required. But these values could be changed in t
 
 ## Settings for the working folder
 
-Required settings are `active` and `path`. `path` defines the working folder path - the root folder which contains all working files and folders. 
+Required settings are `active` and `path`. `path` defines the working folder path - the root folder which contains all working files and folders.
 
 Example value of the working path: `/ec/res4/scratch/bgmt/deode/CY48t3_AROME/20230916_0000/`
 ```shell
@@ -86,6 +86,3 @@ All files produced by a run case be removed by
 deode remove [--config-file CONFIG_FILE_WITH_CLEANING_SETTINGS.toml] YOUR_CONFIG_FILE[S].toml [-d] [-f]
 ```
 What to actually remove is defined in `deode/data/config_files/include/remove.toml`. The settings are the same as for the cleaning config apart from `remove_from_scheduler` which removes the suite from the scheduler. With the default `remove_not_completed_suites=True` the removal is only executed if the suite is actually completed. This check can be overrided by using `-f` on command line. The latter also forces data to be removed even if a suite does not exist.
-
-
-

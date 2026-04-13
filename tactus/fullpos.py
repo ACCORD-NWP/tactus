@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Fullpos namelist generation."""
 
-
 import yaml
 
 from .config_parser import ConfigPaths
@@ -131,12 +130,11 @@ class Fullpos:
         Args:
             vin (str|list): Input values
 
-        Raises:
-            RuntimeError: Invalid type
-
         Returns:
             v (str|list): possibly replaced strings
 
+        Raises:
+            RuntimeError: Invalid type
         """
         v = vin if isinstance(vin, str) else vin.copy()
         for rp, rv in self.rules.items():
@@ -165,7 +163,7 @@ class Fullpos:
         level_map = self.nldict["LEVEL_MAP"]
         param_map = self.nldict["PARAM_MAP"]
 
-        namfpc = {v: [] for k, v in level_map.items()}
+        namfpc = {v: [] for v in level_map.values()}
         for v in param_map.values():
             for vv in v.values():
                 namfpc[vv] = []

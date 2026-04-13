@@ -1,8 +1,8 @@
-# e923 Update 
+# e923 Update
 This utility copies the roughness length fields from sfx files to FA climate file, written by Jan Mašek.
 
 It is necessary for ALARO at high resolutions (<5 km). See Jan's original instructions below.
-NB: 
+NB:
 * intially this tool was meant for ECOCLIMAPII first generation (within DEODE workflow we use ECOCLIMAPII SG).
 
 

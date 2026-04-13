@@ -143,18 +143,30 @@ class TactusSuiteDefinition(SuiteDefinition):
             # Update trigger for next time dependent node
             last_time_dependent_part = time_dependent_family.last_node
 
-        if config["suite_control.do_cleaning"]:
-            if last_time_dependent_part is not None:
-                # Update triggers for final cleaning node
-                final_cleaning_trigger.append(last_time_dependent_part)
+        if last_time_dependent_part is not None:
+            # Update triggers for final cleaning node
+            final_cleaning_trigger.append(last_time_dependent_part)
 
-            EcflowSuiteTask(
-                "PostMortem",
-                self.suite,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                trigger=final_cleaning_trigger,
-                ecf_files_remotely=self.ecf_files_remotely,
-            )
+            if config["reference_checker.check"] or config["reference_checker.generate"]:
+                EcflowSuiteTask(
+                    "ReferenceCheck",
+                    self.suite,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    trigger=final_cleaning_trigger,
+                    ecf_files_remotely=self.ecf_files_remotely,
+                )
+
+            if config["suite_control.do_cleaning"]:
+                EcflowSuiteTask(
+                    "PostMortem",
+                    self.suite,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    input_template=input_template,
+                    trigger=final_cleaning_trigger,
+                    ecf_files_remotely=self.ecf_files_remotely,
+                )
