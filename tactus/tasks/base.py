@@ -346,6 +346,6 @@ class ReferenceCheck(Task):
         """Construct ReferenceCheck task.
 
         Args:
-            config (deode.ParsedConfig): Configuration
+            config (tactus.ParsedConfig): Configuration
         """
         Task.__init__(self, config, __class__.__name__)

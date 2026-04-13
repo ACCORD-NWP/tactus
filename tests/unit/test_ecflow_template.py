@@ -5,23 +5,24 @@ import os
 from unittest.mock import patch
 
 import pytest
-from deode import GeneralConstants
-from deode.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
-from deode.host_actions import DeodeHost
-from deode.logs import logger
-from deode.scheduler import EcflowServer
-from deode.templates.ecflow.default import default_main
 
-logger.enable("deode")
+from tactus import GeneralConstants
+from tactus.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
+from tactus.host_actions import TactusHost
+from tactus.logs import logger
+from tactus.scheduler import EcflowServer
+from tactus.templates.ecflow.default import default_main
+
+logger.enable("tactus")
 
 
 # TODO: The mocked ecflow module is treated as the config, but it is not a config
 @pytest.fixture
-@patch("deode.scheduler.ecflow")
+@patch("tactus.scheduler.ecflow")
 def ecflow_server(parsed_config):
     config = parsed_config
     start_command = "start"
-    with patch("deode.scheduler.Platform"):
+    with patch("tactus.scheduler.Platform"):
         return EcflowServer(config, start_command)
 
 
@@ -32,9 +33,9 @@ class FakeTask:
 
 
 class TestScheduler:
-    @patch("deode.templates.ecflow.default.EcflowClient")
-    @patch("deode.templates.ecflow.default.EcflowServer")
-    @patch("deode.templates.ecflow.default.EcflowTask", FakeTask)
+    @patch("tactus.templates.ecflow.default.EcflowClient")
+    @patch("tactus.templates.ecflow.default.EcflowServer")
+    @patch("tactus.templates.ecflow.default.EcflowTask", FakeTask)
     def test_ecf_port_setting(
         self, mock_client, mock_server, ecflow_server: EcflowServer, tmp_path_factory
     ):
@@ -57,18 +58,18 @@ class TestScheduler:
             "ARGS": "",
             "WRAPPER": "",
             "CONFIG": output_file,
-            "DEODE_HOME": str(GeneralConstants.PACKAGE_DIRECTORY),
+            "TACTUS_HOME": str(GeneralConstants.PACKAGE_DIRECTORY),
             "KEEP_WORKDIRS": False,
         }
 
         config = BasicConfig.from_file(
             ConfigParserDefaults.CONFIG_DIRECTORY / "config.toml"
         )
-        deode_host = DeodeHost().detect_deode_host()
+        tactus_host = TactusHost().detect_tactus_host()
         task_config = ParsedConfig(
             config,
             json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-            host=deode_host,
+            host=tactus_host,
         )
 
         task_config = task_config.copy(

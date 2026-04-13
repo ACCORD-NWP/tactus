@@ -298,9 +298,9 @@
           "default": []
         },
         "scratch_ext": {
-          "decription": "Extention of cratche for operational user.",
+          "decription": "Extention of scratch for operational user.",
           "type": "string",
-          "default": "deode"
+          "default": "tactus"
         },
         "force_delete_period": {
           "decription": "ISO-8601 duration string used to determine the fallback age of a suite for deletion if its files are missing. Defaults to approximately one year ('P365D').",
@@ -500,28 +500,6 @@
           "description": "Limit for max number of monthly tasks, run at same time",
           "type": "integer",
           "default": 10
-        },
-        "DeodeCleaningSuiteDefinition": {
-          "decription": "Settings for Cleaning Suite",
-          "type": "object",
-          "properties": {
-            "do_clean_cases": {
-              "description": "Activate cleaning of the cases",
-              "type": "boolean"
-            },
-            "days_in_week": {
-              "description": "List of days when cleaning suite will run, 0-6 Sunday-Saturday",
-              "type": "array",
-              "items": {
-                "type": "integer"
-              }
-            },
-            "time_to_run": {
-              "description": "Time to run",
-              "type": "string",
-              "pattern": "^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$"
-            }
-          }
         }
       }
     },

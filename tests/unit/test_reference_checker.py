@@ -8,8 +8,9 @@ from pathlib import Path
 
 import pytest
 import tomlkit
-from deode.derived_variables import set_times
-from deode.reference_checker import (
+
+from tactus.derived_variables import set_times
+from tactus.reference_checker import (
     CheckSummary,
     CheckSummaryJson,
     CheckSummaryTxt,
@@ -18,7 +19,7 @@ from deode.reference_checker import (
     ReferenceCheckManager,
     XToolChecker,
 )
-from deode.toolbox import FileManager
+from tactus.toolbox import FileManager
 
 
 @pytest.fixture(scope="module")
@@ -36,9 +37,9 @@ def configure_for_check_and_generate(
     tolerance_normschecker,
     suppress_exception,
 ):
-    deode_home = os.path.dirname(__file__)
-    binary_path = f"{deode_home}/data/reference_checker/xtool_mockup.sh"
-    patch_file = f"{deode_home}/data/reference_checker/test_reference_checker.toml"
+    tactus_home = os.path.dirname(__file__)
+    binary_path = f"{tactus_home}/data/reference_checker/xtool_mockup.sh"
+    patch_file = f"{tactus_home}/data/reference_checker/test_reference_checker.toml"
     patch = tomlkit.loads(Path(patch_file).read_text())
     patch["reference_checker"]["check"] = check
     patch["reference_checker"]["generate"] = generate
@@ -55,7 +56,7 @@ def configure_for_check_and_generate(
     )
     patch["reference_checker"]["methods"]["utHistoryFields"]["binary"] = binary_path
     patch["platform"]["references_folder"] = (
-        f"{deode_home}/data/reference_checker/reference"
+        f"{tactus_home}/data/reference_checker/reference"
     )
     patch["domain"]["name"] = domain_name
 
@@ -112,7 +113,7 @@ class TestReferenceChecker:
         assert isinstance(checker, NormsChecker)
         checker = ReferenceChecker.create_reference_checker("xtool_method", config)
         assert isinstance(checker, XToolChecker)
-        mock_logger = mocker.patch("deode.reference_checker.logger")
+        mock_logger = mocker.patch("tactus.reference_checker.logger")
         checker = ReferenceChecker.create_reference_checker("unknown_method", config)
         assert checker is None
         mock_logger.warning.assert_called_once()

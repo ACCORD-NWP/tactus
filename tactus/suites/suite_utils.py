@@ -119,7 +119,7 @@ def lbc_times_generator(
         basetime: The base time.
         endtime: The end time.
         step: The step size.
-        mode: The mode of the workflow.
+        mode: The mode of tactus.
         is_first_cycle: Whether this is the first cycle.
         do_interpolsstsic: Whether to do SST/SIC interpolation.
         lbc_per_task: Number of LBC assigned to each task. Default 1.

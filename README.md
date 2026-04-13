@@ -168,4 +168,4 @@ NOTE: the config file used by a given task, is always saved to the working direc
 
 This way, the stand alone forecast will pick the input data from the existing run and output the result in the same directories (as defined by the config file).
 
-For other platforms a new config file would have to be created first. Please consult the [configure cases](https://destination-earth-digital-twins.github.io/deode-workflow-docs/misc_section_in_doc_page.html#configure-cases) section in the documentation for more information.
+For other platforms a new config file would have to be created first. Please consult the [configure cases](https://ACCORD-NWP.github.io/tactus-docs/misc_section_in_doc_page.html#configure-cases) section in the documentation for more information.
