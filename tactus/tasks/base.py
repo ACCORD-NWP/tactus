@@ -235,7 +235,7 @@ class Task(object):
         if os.path.exists(general_binary):
             logger.debug("Found general binary: {}", sys_binary)
             return general_binary
-        return None
+        return binary
 
     def execute(self):
         """Do nothing for base execute task."""

@@ -1,4 +1,5 @@
 """Configuration file for the Sphinx documentation builder."""
+
 #
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
@@ -13,8 +14,8 @@ from pathlib import Path
 sys.path.insert(0, Path("..").resolve().as_posix())
 
 project = "tactus docs"
-project_copyright = "2023, The WP5.1 dev group in the DE_330 project"
-author = "The WP5.1 development group in the DE_330 project"
+project_copyright = "2026, ACCORD"
+author = "ACCORD"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
