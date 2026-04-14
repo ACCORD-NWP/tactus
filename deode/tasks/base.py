@@ -204,18 +204,18 @@ class Task(object):
         try:
             bindir = self.config[f"submission.task_exceptions.{task}.bindir"]
         except KeyError:
-            try:
-                binaries = self.config[
-                    f"submission.task_exceptions.{self.name}.binaries.{binary_name}"
-                ]
-                logger.debug("binaries:{}", binaries)
-
-                with contextlib.suppress(KeyError):
-                    binary = binaries["binary"]
-                with contextlib.suppress(KeyError):
-                    bindir = binaries["bindir"]
-            except KeyError:
-                bindir = self.config["submission.bindir"]
+            bindir = self.config["submission.bindir"]
+        try:
+            binaries = self.config[
+                f"submission.task_exceptions.{task}.binaries.{binary_name}"
+            ]
+            logger.debug("binaries:{}", binaries)
+            with contextlib.suppress(KeyError):
+                binary = binaries["binary"]
+            with contextlib.suppress(KeyError):
+                bindir = binaries["bindir"]
+        except KeyError:
+            pass
 
         bindir = self.platform.substitute(bindir)
         bindir = os.path.realpath(bindir)
