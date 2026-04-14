@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduction of ReferenceChecker [\#1524](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1524)(@dhaumont)
 
 ### Changed
+- Adds explicit name of task in get_binary function call of IOmerge [\#1605](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1605) (@pardallio)
 - Use FFTW consistenly in all tasks [\#1589](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1589) (@uandrae)
 - Calculate gridsize scaled VISGQSAT when creating the namelist instead of using LVARRESDEP [\#1584](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1584)
 - Phaseout parsing time durations using pandas.Timedelta and prefer a way more stable and reliable isodate.parse_duration. [\#1577](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1577) (@jacobsnoeijer)
