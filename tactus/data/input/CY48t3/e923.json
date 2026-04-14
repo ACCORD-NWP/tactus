@@ -1,20 +1,23 @@
 {
   "rrtm": {
     "path": "@RRTM_DIR@",
-    "files": ["MCICA", "RADSRTM"]
+    "files": [
+      "MCICA",
+      "RADSRTM"
+    ]
   },
   "part0": {
     "path": "@E923_DATA@/GTOPT030/",
     "remove_links": true,
     "files": [
-      "Water_Percentage", 
-      "Oro_Mean", 
-      "Sigma", 
-      "Nb_Peaks", 
-      "Urbanisation", 
-      "Dh_over_Dx_Dh_over_Dy", 
-      "Dh_over_Dx_square", 
-      "Dh_over_Dy_square", 
+      "Water_Percentage",
+      "Oro_Mean",
+      "Sigma",
+      "Nb_Peaks",
+      "Urbanisation",
+      "Dh_over_Dx_Dh_over_Dy",
+      "Dh_over_Dx_square",
+      "Dh_over_Dy_square",
       "Hmax-HxH-Hmin_ov4"
     ]
   },
@@ -56,11 +59,16 @@
   "constant_copy": {
     "path": "@E923_DATA@/CLIM_G/v2/",
     "provider_id": "copy",
-    "files": ["rel_GL.Z"]
+    "files": [
+      "rel_GL.Z"
+    ]
   },
   "part4": {
     "path": "@E923_DATA@",
-    "param": ["veg", "lai"],
+    "param": [
+      "veg",
+      "lai"
+    ],
     "remove_links": true,
     "files": {
       "@PARAM@_GL": "SURFACE_G/@PARAM@_@MM@_GL"
@@ -68,7 +76,10 @@
   },
   "part5": {
     "path": "@E923_DATA@",
-    "param": ["veg", "lai"],
+    "param": [
+      "veg",
+      "lai"
+    ],
     "remove_links": true,
     "files": {
       "@PARAM@_HR": "SURFACE_L/@PARAM@_@MM@_HR"
@@ -76,7 +87,11 @@
   },
   "part6": {
     "path": "",
-    "param": ["tpl", "wpl", "snl"],
+    "param": [
+      "tpl",
+      "wpl",
+      "snl"
+    ],
     "provider_id": "copy",
     "files": {
       "@PARAM@_GL.Z": "@E923_DATA@/CLIM_G/v2/@PARAM@_@MM@_GL.Z",

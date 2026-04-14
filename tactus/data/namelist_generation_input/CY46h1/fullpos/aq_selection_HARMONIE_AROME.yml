@@ -1,4 +1,4 @@
-# Do the selection of fields below. Note 
+# Do the selection of fields below. Note
 # that xxt00000000 partly inherits from xxtddddhh00
 selection:
  xxtddddhhmm: &default
@@ -47,7 +47,7 @@ selection:
      - 'TKE'
     NRFP3S:
      - ${namelist.nrfp3s}
- 
+
  xxtddddhh00:
    <<: *default
 

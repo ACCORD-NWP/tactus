@@ -32,7 +32,7 @@ class PrepRun(Task):
         else:
             self.cleaner = None
         # Archive the used config file
-        archive_root = Path(self.platform.get_platform_value("archive_root"))
+        archive_root = Path(self.platform.get_platform_value("archive_root")).resolve()
         tactusmakedirs(
             archive_root, unixgroup=self.platform.get_platform_value("unix_group")
         )

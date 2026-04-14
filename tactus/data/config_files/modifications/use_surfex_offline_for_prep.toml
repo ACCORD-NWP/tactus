@@ -10,7 +10,7 @@
   archive = "PGD_@ONE_DECADE@.nc"
 
 [namelist_update.surfex.prep.nam_prep_seaflux]
-  cseaice_scheme = 'NONE'
+  cseaice_scheme = "NONE"
 
 [namelist_update.surfex.prep.nam_prep_surf_atm]
   lkdtree = true

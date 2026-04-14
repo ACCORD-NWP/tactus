@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Namelist handling for MASTERODB w/SURFEX."""
+
 import ast
 import copy
 import os
@@ -216,10 +217,11 @@ class NamelistComparator:
                     dout[key] = dcomp[key]
             # Remove empty namelists in diffs
             if action == "diff":
-                todel = []
-                for key in dout:
-                    if isinstance(dout[key], dict) and len(dout[key]) == 0:
-                        todel.append(key)  # noqa: PERF401
+                todel = [
+                    key
+                    for key in dout
+                    if isinstance(dout[key], dict) and len(dout[key]) == 0
+                ]
                 # Delayed deletion to avoid "dictionary changed size during iteration"
                 for key in todel:
                     del dout[key]
@@ -325,6 +327,19 @@ class NamelistGenerator:
         self.domain_name = self.config["domain.name"]
         self.accept_static_namelist = self.config["general.accept_static_namelists"]
 
+    def uppercase_keys(self, d):
+        """Convert the keys in a dict to uppercase.
+
+        Arguments:
+            d (dict): Dict to be parsed
+
+        Returns:
+            d (dict): The parsed dict
+        """
+        if isinstance(d, dict):
+            return {k.upper(): self.uppercase_keys(v) for k, v in d.items()}
+        return d
+
     def load_user_namelist(self):
         """Read user provided namelist.
 
@@ -341,11 +356,12 @@ class NamelistGenerator:
         if os.path.isfile(ref_namelist):
             logger.info("Use reference namelist {}", ref_namelist)
             nl = f90nml.read(ref_namelist)
+            nldict = to_dict(nl.todict())
             target = "user_namelist"
             # NOTE: f90nml.todict() returns OrderedDict
             #       which makes OmegaConf fail.
             #       but maybe we should consider to_dict(nl.todict()) ???
-            nldict = {target: to_dict(nl.todict())}
+            nldict = {target: self.uppercase_keys(nldict)}
             cndict = {self.target: [target]}
             found = False
         else:
@@ -368,6 +384,25 @@ class NamelistGenerator:
 
         freq = as_timedelta(arg)
         result = int(freq.seconds / tstep)
+        return f"{result}"
+
+    def fn_vsigqsat_by_gridsize(self, arg1, arg2):
+        """Resolve namelist function vsigqsat_by_gridsize.
+
+        Args:
+            arg1: VSIGQSAT reference value
+            arg2: Reference gridsize
+
+        Returns:
+            result: Scaled VSIGQSAT
+
+        """
+        xdx = self.config["domain.xdx"]
+        xdy = self.config["domain.xdy"]
+        gridsize = 0.5 * (xdx + xdy)
+
+        scaled_vsigqsat = arg1 * gridsize / float(arg2)
+        result = min(0.1, scaled_vsigqsat)
         return f"{result}"
 
     def fn_tstep(self, arg):
@@ -436,16 +471,19 @@ class NamelistGenerator:
         Args:
             target (str): task to generate namelists for
 
-        Raises:
-            InvalidNamelistTargetError   # noqa: DAR401
-
         Returns:
             nlres (dict): Assembled namelist
 
+        Raises:
+            InvalidNamelistTargetError   # noqa: DAR401
         """
         self.target = target
         # define OmegaConf resolvers
         OmegaConf.clear_resolvers()
+        OmegaConf.register_new_resolver(
+            "vsigqsat_by_gridsize",
+            lambda arg1, arg2: self.fn_vsigqsat_by_gridsize(arg1, arg2),
+        )
         OmegaConf.register_new_resolver("stepfreq", lambda arg: self.fn_stepfreq(arg))
         OmegaConf.register_new_resolver("steplist", lambda arg: self.fn_steplist(arg))
         OmegaConf.register_new_resolver(
@@ -665,8 +703,7 @@ class NamelistIntegrator:
     def yml2dict(ymlfile):
         """Read yaml namelist file and return as dict."""
         with open(ymlfile, mode="rt", encoding="utf-8") as file:
-            ynml = yaml.safe_load(file)
-        return ynml
+            return yaml.safe_load(file)
 
     @staticmethod
     def dict2yml(nmldict, ymlfile, ordered_sections=None):
@@ -961,6 +998,6 @@ class NamelistConverter:
         ]
 
         try:
-            subprocess.check_call(command)  # noqa S603
+            subprocess.check_call(command)
         except subprocess.CalledProcessError as exception:
             raise SystemExit(f"tnt failed with {exception!r}") from exception

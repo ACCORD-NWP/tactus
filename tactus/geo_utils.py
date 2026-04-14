@@ -1,4 +1,5 @@
 """Utilities for simple geographic tasks."""
+
 import numpy as np
 import pyproj
 
@@ -21,9 +22,7 @@ class Projstring:
             str: Proj4 string
         """
         if lat0 == -90.0:
-            proj_string = (
-                f"+proj=stere +lat_0={lat0!s} +lon_0={lon0!s} " f"+lat_ts={lat0!s}"
-            )
+            proj_string = f"+proj=stere +lat_0={lat0!s} +lon_0={lon0!s} +lat_ts={lat0!s}"
         else:
             proj_string = (
                 f"+proj=lcc +lat_0={lat0!s} +lon_0={lon0!s} "
@@ -114,11 +113,9 @@ class Projection:
         maxlat = np.min([maxlat, 90])
         maxlon = np.min([maxlon, 180])
 
-        domain_properties = {
+        return {
             "minlat": minlat,
             "minlon": minlon,
             "maxlat": maxlat,
             "maxlon": maxlon,
         }
-
-        return domain_properties

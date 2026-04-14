@@ -119,16 +119,16 @@ def lbc_times_generator(
         basetime: The base time.
         endtime: The end time.
         step: The step size.
-        mode: The mode of the workflow.
+        mode: The mode of tactus.
         is_first_cycle: Whether this is the first cycle.
         do_interpolsstsic: Whether to do SST/SIC interpolation.
         lbc_per_task: Number of LBC assigned to each task. Default 1.
 
-    Yields:
-            datetime: The time period for which the next LBC will be computed.
-
     Returns:
             datetime: The time period for which the last LBC will be computed.
+
+    Yields:
+            datetime: The time period for which the next LBC will be computed.
     """
     index = 0
     if (
@@ -164,13 +164,13 @@ def slaf_planner(config, lbc_time_generator, me) -> dict:
         lbc_time_generator (Generator):  as above
         me (int):                        my EPS member number
 
-    Raises:
-        RuntimeError:                    If the planning logic fails.
-
     Returns:
         doer (dict):                     Holds, for each unique boundary file, information
                                          about which member will do the actual work
                                          and in which SLAF part (0, 1 or 2).
+
+    Raises:
+        RuntimeError:                    If the planning logic fails.
     """
     bdint = as_timedelta(config["boundaries.bdint"])
     bdshift = [as_timedelta("PT0H") for i in range(3)]
@@ -220,8 +220,8 @@ def slaf_planner(config, lbc_time_generator, me) -> dict:
         raise RuntimeError("Suspect SLAF configuration!")
     # Now distribute the files as evenly as possible, picking one duo for each batch
     n_uniq = len(cand)
-    taken = {key: False for key in cand}
-    n_taken = {member: 0 for member in config["eps.general.members"]}
+    taken = dict.fromkeys(cand, False)
+    n_taken = dict.fromkeys(config["eps.general.members"], 0)
     doer = {}
     for key in cand:
         if not taken[key]:

@@ -46,10 +46,13 @@ e923_part_9:
 master_common:
   - empty
   - fa_names
+  - fa_packing
   - f4_common
 
 e927:
-  - ${master_common}
+  - empty
+  - fa_names
+  - fa_packing
   - f4_e927
   - f4_e927_@BDMODEL@
   - f4_e927_@BDMODEL@_@CSC@
@@ -62,6 +65,7 @@ forecast:
 c903_main:
   - empty
   - fa_names
+  - fa_packing
   - f4_c903_main
 
 c903_domain:

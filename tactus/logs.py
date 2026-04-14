@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Logging-related classes, functions and definitions."""
+
 import inspect
 import logging as builtin_logging
 import os
