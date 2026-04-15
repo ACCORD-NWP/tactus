@@ -21,10 +21,9 @@
   ]
   WRAPPER = "mpprun"
 
-
 [submission.types.serial.BATCH]
-  NAME = "#SBATCH --job-name=@TASK_NAME@"
   ACCOUNT = "#SBATCH --account=promo_suv"
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
   WALLTIME = "#SBATCH --time=00:30:00"

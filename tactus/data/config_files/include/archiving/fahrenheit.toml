@@ -8,5 +8,3 @@
   newname = "config.toml"
   outpath = "@ARCHIVE@"
   pattern = "@CONFIG@"
-
-[archiving.static]
