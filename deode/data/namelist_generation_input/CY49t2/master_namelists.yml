@@ -1255,7 +1255,7 @@ f4_common:
     MBX_SIZE: 2048000000
     MP_TYPE: 2
     NOUTPUT: 1
-    NPRINTLEV: 2
+    NPRINTLEV: 1
     NPROC: ${cfg:namelist.nproc}
   NAMPAR1:
     L_GATHERV_WRGP: false

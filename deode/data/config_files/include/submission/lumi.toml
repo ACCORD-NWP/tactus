@@ -81,9 +81,6 @@
 [submission.task_exceptions.Forecast]
   bindir = "@INSTALL_DIR@/@CYCLE@/@COMPILER@/@PRECISION@/@IAL_VERSION@/bin"
 
-[submission.task_exceptions.Forecast.ENV]
-  LD_LIBRARY_PATH = "$CRAY_LD_LIBRARY_PATH:$LD_LIBRARY_PATH"
-
 [submission.task_exceptions.InterpolSstSic]
   binary = "gl"
   bindir = "@BINDIR_GL@"
