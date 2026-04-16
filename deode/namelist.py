@@ -446,7 +446,7 @@ class NamelistGenerator:
             result = self.platform.substitute(_result)
             logger.debug("CFG INSERT: {} -> {}", arg, result)
         except KeyError:
-            result = default if default is not None else arg
+            result = default
             logger.debug("CFG UNKNOWN: {} default {}", arg, default)
         # NOTE: all values are returned as STRINGS
         #       which means you must re-interpret with find_val()

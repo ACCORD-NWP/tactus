@@ -42,8 +42,7 @@
     },
     "selection": {
       "type": "string",
-      "description": "Temporal selection. Same syntax as for output_settings. Leave empty to inherit the fullpos settings.",
-      "default": "PT1H"
+      "description": "Temporal selection. Same syntax as for output_settings. Leave empty to inherit the fullpos settings."
     }
   }
 }

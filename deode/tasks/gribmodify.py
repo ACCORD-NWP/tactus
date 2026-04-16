@@ -600,6 +600,11 @@ class AddCalculatedFields(Task):
                     self.csc,
                 )
                 continue
+            if self.output_settings.get(filetype) is None:
+                logger.info(
+                    "Skipping as output_settings for filtype={} is not defined", filetype
+                )
+                continue
             file_handle = FileManager.create_list(
                 self,
                 self.basetime,

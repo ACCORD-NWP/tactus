@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+### Fixed
+- Allow to run without output[\#1595](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1595)(@uandrae)
+- Reference checker task name unique [\#1611](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1611)(@dhaumont)
+- Reference checker summary lock [\#1609](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1609)(@dhaumont)
+
+## [0.27.0] - 2026-04-10
+
 ### Added
 - Add total precipitation to Fullpos GRIB output [\#1499](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1499) (@egregow)
 - Add config files for belenos [\#1458](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1458) (@nicolasCtd)
@@ -17,10 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Test for ecflow template task [\#1548](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1548)(@pardallio)
 - Enable VTERM perturbations in SPP scheme [\#1593](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1593)(@pirkkao)
 - Introduction of ReferenceChecker [\#1524](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1524)(@dhaumont)
-- Reference checker task name unique [\#1611](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1611)(@dhaumont)
-- Reference checker summary lock [\#1609](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1609)(@dhaumont)
 
 ### Changed
+- Adds explicit name of task in get_binary function call of IOmerge [\#1605](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1605) (@pardallio)
 - Use FFTW consistenly in all tasks [\#1589](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1589) (@uandrae)
 - Calculate gridsize scaled VISGQSAT when creating the namelist instead of using LVARRESDEP [\#1584](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1584)
 - Phaseout parsing time durations using pandas.Timedelta and prefer a way more stable and reliable isodate.parse_duration. [\#1577](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1577) (@jacobsnoeijer)
@@ -35,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Move definition of tablesVersion to faModelName for easier integration with updates to ecCodes [\#1564](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1564)(@sbnielsen)
 
 ### Fixed
+- Fixed oorder of binary exception logic [#1606](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1606)(@pardallio)
 - Fix crash in Marsprep due to non-existing bddir_sfx / bddir_sst folder [#1594](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1594)(@jacobsnoeijer)
 - Use proper function call to generate isoformat string of duration [#1599](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1599)(@jacobsnoeijer)
 - Correct config update of static namelists [#1587](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1587)(@uandrae)

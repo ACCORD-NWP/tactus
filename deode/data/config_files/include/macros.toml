@@ -35,7 +35,6 @@
     {forecast_range = "general.times.forecast_range"},
     {cycle_length = "general.times.cycle_length"},
     {fpdomain = "fullpos.domain_name"},
-    {fullpos_output_freq = "general.output_settings.fullpos"},
     {history_template = "file_templates.history.archive"},
     {mars_selection = "boundaries.ifs.selection"},
     {pgd_archive = "file_templates.pgd.archive"},
