@@ -673,6 +673,10 @@ class BaseRequest:
                 self.request.update({
                     "DATABASE": "fdb",
                 })
+            if self.request["PARAM"] == "130":
+                self.request.update({
+                    "EXPVER": "0002",
+                })
 
     def replace(self, **kwargs):
         """Return new instance with updated values."""

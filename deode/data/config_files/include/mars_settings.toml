@@ -197,6 +197,8 @@
   start_date = "2024-04-06T00:00:00Z"
   use_static_sh = true
   Zlev_type = "SFC"
+  SH = "152/138/155"
+  SH_temperature = "130"
 
 [mars.RD_DEFAULT]
   class = "RD"
