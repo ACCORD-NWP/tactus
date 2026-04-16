@@ -16,5 +16,36 @@
 [submission.task_exceptions.Pgd]
   binary = "PGD-offline"
 
+[submission.types.parallel.MODULES]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+
+[submission.types.serial.MODULES]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+
+[submission.types.gnu.MODULES]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+
+[submission.task_exceptions.ExtractSQlite]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+
+[submission.task_exceptions.AddCalculatedFields.MODULES]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+
+[submission.task_exceptions.ArchiveFDB.MODULES]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
+
 [submission.task_exceptions.Prep]
   binary = "PREP-offline"
+
+[gribmodify.fullpos.3]
+  output_name = "tp"
+
+[gribmodify.fullpos.4]
+  output_name = "10si"
+
+[gribmodify.fullpos.5]
+  output_name = "100si"
+
+[gribmodify.fullpos.6]
+  minimum_frequency = "PT1H"
+  output_name = "10fg"
