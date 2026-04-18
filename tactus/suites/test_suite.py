@@ -47,24 +47,36 @@ class TestSuiteDefinition(SuiteDefinition):
         )
 
         collect_logs = EcflowSuiteTask(
-                "CollectLogsTest",
-                self.suite,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                input_template=input_template,
-                trigger=prep_run,
-                variables=None,
-                ecf_files_remotely=self.ecf_files_remotely,
-            )
+            "CollectLogsTest",
+            self.suite,
+            config,
+            self.task_settings,
+            self.ecf_files,
+            input_template=input_template,
+            trigger=prep_run,
+            variables=None,
+            ecf_files_remotely=self.ecf_files_remotely,
+        )
+
+        archiving = EcflowSuiteTask(
+            "ArchiveTest",
+            self.suite,
+            config,
+            self.task_settings,
+            self.ecf_files,
+            input_template=input_template,
+            trigger=collect_logs,
+            variables=None,
+            ecf_files_remotely=self.ecf_files_remotely,
+        )
 
         EcflowSuiteTask(
-                    "PostMortem",
-                    self.suite,
-                    config,
-                    self.task_settings,
-                    self.ecf_files,
-                    input_template=input_template,
-                    trigger=collect_logs,
-                    ecf_files_remotely=self.ecf_files_remotely,
+            "PostMortem",
+            self.suite,
+            config,
+            self.task_settings,
+            self.ecf_files,
+            input_template=input_template,
+            trigger=archiving,
+            ecf_files_remotely=self.ecf_files_remotely,
         )

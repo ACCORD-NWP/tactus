@@ -120,6 +120,7 @@ class CollectLogsHour(CollectLogs):
         """
         CollectLogs.__init__(self, config, "hourlogs")
 
+
 class CollectLogsTest(CollectLogs):
     """Collectlog task for the test suite."""
 

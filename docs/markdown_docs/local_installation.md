@@ -40,30 +40,96 @@ Note there are two functions available for the detection of `ecf_port` and `ecf_
 
 Linda is the SMHI RedHat linux environment. In the following it's described how to install tactus to run the simple test suite with ecflow.
 
-### Installing under micromamba
-
-
 ### Fetch and install the micromamba environment
 
 "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
 micromamba self-update
 micromamba create -n tactus_3.10 python=3.10 ecflow poetry
 micromamba activate tactus_3.10
+git clone git@github.com:ACCORD-NWP/tactus.git
+cd tactus
+poetry install
+
+### Platform dependent config files
+
+* Rules for archiving: tactus/data/config_files/include/archiving/linda.toml
+* Platform dependent paths: tactus/data/config_files/include/platform_paths/linda.toml
+* Ecflow settings: tactus/data/config_files/include/scheduler/ecflow_linda.toml
+* Job submission rules: tactus/data/config_files/include/submission/linda.toml
+
+We also have to make sure the host is recognized by adding a rule in `tactus/config/known_host.yaml`
 
 ### Hack ecflow_start.sh
 
-Here we want to resolve hostname to localhost and to force ecflow to use this we change the ecflow server start script, located by `which ecflow_start.sh` so that 
+Here we want to resolve hostname to localhost and to force ecflow to use this we change the ecflow server start script, located by `which ecflow_start.sh` so that
 ```
 hostname="localhost"
 ```
 
+### Explaining the config
+
+For this example we use a simple config file `tactus/data/config_files/modifications/test_ecflow.toml`. First we select a simplfied ecflow suite definition and call it `test_ecflow`
+
+```
+[general]
+  case = "test_ecflow"
+[suite_control]
+  suite_definition = "TestSuiteDefinition"
+```
+
+This suite has four tasks
+ * PrepRun: The usual preparatory work
+
+ * CollectLogsTest: Collect the log output of PrepRun
+
+```
+[collectlogs.test]
+  joboutdir = "@ECF_OUT@/@CASE@"
+  tarname = "Test"
+  task_logs = "@WRK@"
+```
+
+ * ArchivTest: "Archives" the result of the log collection in a new folder called duplicate
+
+
+```
+[archiving.test.copy.logs]
+  active = true
+  inpath = "@LOGS@"
+  outpath = "@LOGS@/duplicate"
+  pattern = "*.tar.gz"
+  exclude = "*duplicate*"
+```
+
+ * PostMortem: Cleans up after the run. Here we have configured the cleaning to remove the duplicated log
+
+```
+[cleaning.PostMortem.test]
+  active = true
+  dry_run = false
+  path = "@LOGS@/duplicate"
+```
+
 ### Start the run
 
+Now we're ready to launch the run
+
 ```
-tactus case tactus/data/config_files/modifications/test_ecflow.toml --start-suite 
+tactus case tactus/data/config_files/modifications/test_ecflow.toml --start-suite
 ```
 
+Output will be written to 
+* ~/deode_wrk
+* ~/deode_ecflow
+* ~/ecflow_server
 
+### Remove all results
+
+All traces of the run can be removed by
+
+```
+tactus remove -c test_ecflow.toml test_ecflow.toml --execute-removal
+```
 
 
 ## freja

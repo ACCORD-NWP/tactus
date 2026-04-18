@@ -75,3 +75,15 @@ class ArchiveMergedSQLites(ArchiveTask):
             config (tactus.ParsedConfig): Configuration
         """
         ArchiveTask.__init__(self, config, "merged_sqlite", exclude=["fdb"])
+
+
+class ArchiveTest(ArchiveTask):
+    """Archving task for the test suite."""
+
+    def __init__(self, config):
+        """Construct object.
+
+        Args:
+            config (tactus.ParsedConfig): Configuration
+        """
+        ArchiveTask.__init__(self, config, "test")
