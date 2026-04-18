@@ -1,0 +1,10 @@
+[collectlogs.test]
+  joboutdir = "@ECF_OUT@/@CASE@"
+  tarname = "Test"
+  task_logs = "@WRK@"
+
+[general]
+   case = "test_ecflow"
+
+[suite_control]
+   suite_definition = "TestSuiteDefinition"

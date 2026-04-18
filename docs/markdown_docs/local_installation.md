@@ -36,6 +36,36 @@ The ecflow server setup is defined in `deode/data/config_files/include/scheduler
 
 Note there are two functions available for the detection of `ecf_port` and `ecf_host` that might help to detect correct values for these two variables. `_set_port_from_user()` sets a user-id related ecf_port while `_select_host_from_list()` finds the active ecf_host from a list of possible hostnames (used in `ecflow_atos_bologna.toml`). Both functions are defined in `deode/scheduler.py`
 
+## linda
+
+Linda is the SMHI RedHat linux environment. In the following it's described how to install tactus to run the simple test suite with ecflow.
+
+### Installing under micromamba
+
+
+### Fetch and install the micromamba environment
+
+"${SHELL}" <(curl -L micro.mamba.pm/install.sh)
+micromamba self-update
+micromamba create -n tactus_3.10 python=3.10 ecflow poetry
+micromamba activate tactus_3.10
+
+### Hack ecflow_start.sh
+
+Here we want to resolve hostname to localhost and to force ecflow to use this we change the ecflow server start script, located by `which ecflow_start.sh` so that 
+```
+hostname="localhost"
+```
+
+### Start the run
+
+```
+tactus case tactus/data/config_files/modifications/test_ecflow.toml --start-suite 
+```
+
+
+
+
 ## freja
 
 Freja is the SMHI research cluster operated by NSC. For more details see https://nsc.liu.se/systems/freja

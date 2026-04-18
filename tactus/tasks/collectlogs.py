@@ -119,3 +119,14 @@ class CollectLogsHour(CollectLogs):
             config (tactus.ParsedConfig): Configuration
         """
         CollectLogs.__init__(self, config, "hourlogs")
+
+class CollectLogsTest(CollectLogs):
+    """Collectlog task for the test suite."""
+
+    def __init__(self, config):
+        """Construct object.
+
+        Args:
+            config (tactus.ParsedConfig): Configuration
+        """
+        CollectLogs.__init__(self, config, "test")
