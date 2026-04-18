@@ -118,7 +118,7 @@ Now we're ready to launch the run
 tactus case tactus/data/config_files/modifications/test_ecflow.toml --start-suite
 ```
 
-Output will be written to 
+Output will be written to
 * ~/deode_wrk
 * ~/deode_ecflow
 * ~/ecflow_server
