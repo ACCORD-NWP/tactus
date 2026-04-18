@@ -40,8 +40,9 @@ Note there are two functions available for the detection of `ecf_port` and `ecf_
 
 Linda is the SMHI RedHat linux environment. In the following it's described how to install tactus to run the simple test suite with ecflow.
 
-### Fetch and install the micromamba environment
+### Fetch and install the micromamba environment, and tactus
 
+```
 "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
 micromamba self-update
 micromamba create -n tactus_3.10 python=3.10 ecflow poetry
@@ -49,6 +50,7 @@ micromamba activate tactus_3.10
 git clone git@github.com:ACCORD-NWP/tactus.git
 cd tactus
 poetry install
+```
 
 ### Platform dependent config files
 
@@ -118,6 +120,12 @@ Now we're ready to launch the run
 tactus case tactus/data/config_files/modifications/test_ecflow.toml --start-suite
 ```
 
+Launch the ecflow viewer by
+
+```
+ecflow_ui &
+```
+
 Output will be written to
 * ~/deode_wrk
 * ~/deode_ecflow
@@ -128,7 +136,7 @@ Output will be written to
 All traces of the run can be removed by
 
 ```
-tactus remove -c test_ecflow.toml test_ecflow.toml --execute-removal
+tactus remove test_ecflow.toml --execute-removal
 ```
 
 
