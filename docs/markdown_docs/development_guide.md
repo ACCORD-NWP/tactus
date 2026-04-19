@@ -90,7 +90,7 @@ or, combining them all:
 make doc
 ```
 
-# Testing on Atos 
+# Testing on Atos
 For testing of a number of configurations we use https://github.com/ACCORD-NWP/tactus-test-runner which launches a number of ecflow suites. Install the package and make yourself familiar with the environment. For individual PR testing the minimum should be:
 ```
  selection = [
@@ -107,7 +107,7 @@ For testing of a number of configurations we use https://github.com/ACCORD-NWP/t
 I.e. run the standard toy domain with target coupling including the full sized domains. Add additional configurations as you find suitable.
 
 ## Testing before tagging
-For testing prior to tagging all the testing should be performed as defined by `atos_bologna.toml`. 
+For testing prior to tagging all the testing should be performed as defined by `atos_bologna.toml`.
 
 ## Git Branching Structure and Workflow
 

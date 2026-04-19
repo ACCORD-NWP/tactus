@@ -61,9 +61,7 @@ def transform_readme_links(app, doctree, docname):
     """
     from docutils import nodes
 
-    doc_base_url = (
-        "https://ACCORD-NWP.github.io/tactus/"
-    )
+    doc_base_url = "https://ACCORD-NWP.github.io/tactus/"
 
     # Iterate through all reference nodes in the document tree
     for node in doctree.traverse(nodes.reference):
