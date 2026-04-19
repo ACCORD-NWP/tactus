@@ -62,7 +62,7 @@ def transform_readme_links(app, doctree, docname):
     from docutils import nodes
 
     doc_base_url = (
-        "https://destination-earth-digital-twins.github.io/deode-workflow-docs/"
+        "https://ACCORD-NWP.github.io/tactus/"
     )
 
     # Iterate through all reference nodes in the document tree

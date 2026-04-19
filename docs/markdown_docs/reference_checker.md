@@ -13,7 +13,7 @@ A typical usage is the following:
 These phase are triggered by configuring the variables `[reference_checker.check]` and `[reference_checker.generate]` before starting the suite.
 These options are not mutually exclusive and can be used together, for instance to compare the results against itself, making sure that the system is setup as expected.
 
-In practice, the two flags can be activated by including the configuration file `deode/data/config_files/modifications/use_reference_checker.toml`.
+In practice, the two flags can be activated by including the configuration file `tactus/data/config_files/modifications/use_reference_checker.toml`.
 
 If both `[reference_checker.check]` and `reference_checker.generate]` are false, the reference_checker is deactivated. Otherwise, `reference_checker` is activated and a task `ReferenceCheck` task is added at the end of the suite.
 
@@ -38,9 +38,9 @@ The available formats for the summary files are `json` or `txt`.
 
 ### General configuration
 
-The `reference_checker` section is defined in `deode/data/config_files/include/reference_checker.toml`.
+The `reference_checker` section is defined in `tactus/data/config_files/include/reference_checker.toml`.
 
-For instance, the following code defines the configuration of a reference checker that will be used in deode.
+For instance, the following code defines the configuration of a reference checker that will be used in tactus.
 
 ```toml
 [reference_checker]
