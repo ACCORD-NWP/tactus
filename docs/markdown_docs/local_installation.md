@@ -57,7 +57,7 @@ poetry install
 * Rules for archiving: tactus/data/config_files/include/archiving/linda.toml
 * Platform dependent paths: tactus/data/config_files/include/platform_paths/linda.toml
 * Ecflow settings: tactus/data/config_files/include/scheduler/ecflow_linda.toml
-* Job submission rules: tactus/data/config_files/include/submission/linda.toml
+* Job submission rules: tactus/data/config_files/include/submission/linda.toml. Here all jobs are running in the background.
 
 We also have to make sure the host is recognized by adding a rule in `tactus/config/known_host.yaml`
 
