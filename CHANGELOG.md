@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Changed
+- Make ecFlow triggers relative instead of absolute [\#1479](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1479)(@ovignes)
 - Allow to run without output [\#1595](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1595)(@uandrae)
 
 ### Fixed
