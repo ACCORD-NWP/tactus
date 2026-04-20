@@ -1847,27 +1847,17 @@ class CompilationFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
-        clone_ial = EcflowSuiteTask(
-            "IALClone",
-            self,
-            config,
-            task_settings,
-            ecf_files,
-            input_template=input_template,
-            ecf_files_remotely=ecf_files_remotely,
-        )
         create_bundle = EcflowSuiteTask(
-            "IALBundleCreate",
+            "TactusBundleCreate",
             self,
             config,
             task_settings,
             ecf_files,
             input_template=input_template,
             ecf_files_remotely=ecf_files_remotely,
-            trigger=EcflowSuiteTriggers(EcflowSuiteTrigger(clone_ial)),
         )
         EcflowSuiteTask(
-            "IALBundleBuild",
+            "TactusBundleBuild",
             self,
             config,
             task_settings,

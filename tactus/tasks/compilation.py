@@ -2,44 +2,15 @@
 
 import os
 
-from ..logs import logger
 from ..os_utils import tactusmakedirs
 from .base import Task
 from .batch import BatchJob
 
-
-class IALClone(Task):
-    """IAL clone task."""
-
-    def __init__(self, config):
-        """Construct object.
-
-        Args:
-            config (tactus.ParsedConfig): Configuration
-        """
-        Task.__init__(self, config, __class__.__name__)
-
-        self.git_ial_repo = self.config["compile.git_repo"]
-        self.git_ial_branch = self.config["compile.git_branch"]
-        git_token = self.config["compile.git_token"]
-        self.git_token = git_token
-        ial_dir = self.config["compile.ial_dir"]
-        self.ial_dir = self.platform.substitute(ial_dir)
-
-    def execute(self):
-        """Execute task."""
-        if os.path.exists(self.ial_dir):
-            logger.info("IAL dir {} alreadys exists", self.ial_dir)
-        else:
-            batch_job = BatchJob(os.environ)
-            cmd = f"git clone {self.git_ial_repo} {self.ial_dir}"
-            cmd = cmd.replace("[TOKEN]", self.git_token)
-            batch_job.run(cmd)
-            batch_job.run(f"cd {self.ial_dir}; git checkout {self.git_ial_branch}")
+import yaml
 
 
-class IALBundleCreate(Task):
-    """IAL create bundle."""
+class TactusBundleCreate(Task):
+    """tactus create bundle."""
 
     def __init__(self, config):
         """Construct object.
@@ -49,13 +20,46 @@ class IALBundleCreate(Task):
         """
         Task.__init__(self, config, __class__.__name__)
 
-        ial_dir = self.config["compile.ial_dir"]
+        compile_dir = self.config["compile.dir"]
+        self.compile_dir = self.platform.substitute(compile_dir)
+        tactusmakedirs(self.compile_dir)
+
         git_token = self.config["compile.git_token"]
         git_token_str = ""
         if git_token:
             git_token_str = f"--github-token {git_token}"
         self.git_token_str = git_token_str
-        self.ial_dir = self.platform.substitute(ial_dir)
+
+        bundle_file = self.config["compile.bundle_file"]
+        bundle_file = self.platform.substitute(bundle_file)
+
+        if self.config["compile.ial_dir"] != "" :
+
+
+            with open(bundle_file, "r") as f:
+                data = yaml.safe_load(f)
+            
+            bundle_file = "@CASEDIR@/bundle-local-ial.yaml"
+            bundle_file = self.platform.substitute(bundle_file)
+
+            for item in data["projects"]:
+                if isinstance(item, dict) and "ial-source" in item:
+                    ial = item["ial-source"]
+
+                    if isinstance(ial, dict):
+                        # Remove unwanted keys if they exist
+                        ial.pop("git", None)
+                        ial.pop("version", None)
+
+                        # Add the new key
+                        ial["dir"] = self.platform.substitute(self.config["compile.ial_dir"])
+            
+            with open(bundle_file, "w") as f:
+                yaml.safe_dump(data, f, sort_keys=False)
+
+        self.bundle_file_str = f"--bundle {bundle_file}"
+
+        self.compile_dir = self.platform.substitute(compile_dir)
 
     def execute(self):
         """Execute task."""
@@ -63,12 +67,12 @@ class IALBundleCreate(Task):
         # Assume git ssh access unless token is set
         if not self.git_token_str:
             os.environ["GITHUB"] = "git@github.com:"
-        cmd = f"cd {self.ial_dir}/bundle; ./ial-bundle create {self.git_token_str}"
+        cmd = f"cd {self.compile_dir}; ecbundle create {self.git_token_str} {self.bundle_file_str} --update "
         batch_job.run(cmd)
 
 
-class IALBundleBuild(Task):
-    """IAL bundle build."""
+class TactusBundleBuild(Task):
+    """tactus bundle build."""
 
     def __init__(self, config):
         """Construct object.
@@ -78,8 +82,8 @@ class IALBundleBuild(Task):
         """
         Task.__init__(self, config, __class__.__name__)
 
-        ial_dir = self.config["compile.ial_dir"]
-        self.ial_dir = self.platform.substitute(ial_dir)
+        compile_dir = self.config["compile.dir"]
+        self.compile_dir = self.platform.substitute(compile_dir)
         self.arch = self.config["compile.arch"]
         bindir = "@CASEDIR@/install"
         builddir = "@CASEDIR@/build"
@@ -96,8 +100,8 @@ class IALBundleBuild(Task):
         """Execute task."""
         batch_job = BatchJob(os.environ)
         batch_job.run(
-            f"cd {self.ial_dir}/bundle; ./ial-bundle build "
-            + f"--arch arch/{self.arch} --ninja --forecast-only "
+            f"cd {self.compile_dir}; ecbundle build "
+            + f"--arch {self.arch} --ninja --forecast-only "
             + f"--install-dir={self.exp_bindir} --install "
             + f"--build-dir={self.exp_builddir}"
         )

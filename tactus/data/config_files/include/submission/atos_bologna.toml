@@ -86,10 +86,11 @@
   RTTOV_COEFDIR = "@RTTOV_COEFDIR@"
   UCX_LOG_LEVEL = "error"
 
-[submission.task_exceptions.IALBundleBuild.BATCH]
+[submission.task_exceptions.TactusBundleBuild.BATCH]
   MEM = "#SBATCH --mem=0GB"
+  QOS = "#SBATCH --qos=np"
   NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=32"
+  NTASKS = "#SBATCH --ntasks=64"
   WALLTIME = "#SBATCH --time=02:00:00"
 
 [submission.task_exceptions.GlBd]
