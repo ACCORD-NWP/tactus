@@ -1744,16 +1744,17 @@ class MergeSQLitesFamily(EcflowSuiteFamily):
             trigger=trigger,
             ecf_files_remotely=ecf_files_remotely,
         )
-        EcflowSuiteTask(
-            "ArchiveMergedSQLites",
-            self,
-            config,
-            task_settings,
-            ecf_files,
-            trigger=merge_sqlites,
-            input_template=input_template,
-            ecf_files_remotely=ecf_files_remotely,
-        )
+        if config["suite_control.do_archiving"]:
+            EcflowSuiteTask(
+                "ArchiveMergedSQLites",
+                self,
+                config,
+                task_settings,
+                ecf_files,
+                trigger=merge_sqlites,
+                input_template=input_template,
+                ecf_files_remotely=ecf_files_remotely,
+            )
 
 
 class SLAFpartFamily(EcflowSuiteFamily):

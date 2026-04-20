@@ -9,8 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+### Changed
+- Allow to run without output [\#1595](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1595)(@uandrae)
+
 ### Fixed
-- Allow to run without output[\#1595](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1595)(@uandrae)
+- Add missing archive control in suite definition [\#1612](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1612)(@uandrae)
 - Reference checker task name unique [\#1611](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1611)(@dhaumont)
 - Reference checker summary lock [\#1609](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1609)(@dhaumont)
 
