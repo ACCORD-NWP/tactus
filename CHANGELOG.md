@@ -44,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Move definition of tablesVersion to faModelName for easier integration with updates to ecCodes [\#1564](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1564)(@sbnielsen)
 
 ### Fixed
+- Fixed wildfire app for oper user: adds uv env and refines template [#1630](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1630)(@pardallio)
 - Fixed oorder of binary exception logic [#1606](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1606)(@pardallio)
 - Fix crash in Marsprep due to non-existing bddir_sfx / bddir_sst folder [#1594](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1594)(@jacobsnoeijer)
 - Use proper function call to generate isoformat string of duration [#1599](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1599)(@jacobsnoeijer)
