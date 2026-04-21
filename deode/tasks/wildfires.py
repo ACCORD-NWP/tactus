@@ -1,6 +1,8 @@
 """Impact model classes."""
 
 import os
+import shutil
+import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -64,6 +66,14 @@ class WildFire(BaseImpactModel):
         logger.info(" Dump modified config to: {}", config_name)
         with open(config_name, mode="w", encoding="utf-8") as f_h:
             f_h.write(tomlkit.dumps(config_))
+
+        os.chdir(suite_path + "/wf-suite/pytools")
+        uv_path = shutil.which("uv")
+        if uv_path is None:
+            raise RuntimeError("uv not found in PATH")
+
+        subprocess.run([uv_path, "venv", "--clear"], check=True)
+        subprocess.run([uv_path, "sync"], check=True)
 
         # creates and loads wildfire applications suite
         import wf_suite

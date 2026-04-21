@@ -9,14 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+
+### Added
+- Output land-sea mask at time step zero per default [\#1634](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1634)(@KristianHMoller)
+
 ### Changed
 - Split request for spectral fields on LUMI. [\#1628](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1628) (@kastelecn)
+- Make ecFlow triggers relative instead of absolute [\#1479](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1479)(@ovignes)
 - Allow to run without output [\#1595](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1595)(@uandrae)
 
 ### Fixed
+- Remove usage of the msdeode compute account on atos [\#1639](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1639)(@uandrae)
+- Fix timedelta typo in cleaning.CycleCleaning.ifs.step [\#1637](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1637)(@jacobsnoeijer)
 - Add missing archive control in suite definition [\#1612](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1612)(@uandrae)
 - Reference checker task name unique [\#1611](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1611)(@dhaumont)
 - Reference checker summary lock [\#1609](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1609)(@dhaumont)
+- Refactor the internal of ParsedConfig to use frozendict [\#1586](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1586) (@dhaumont)
 
 ## [0.27.0] - 2026-04-10
 
@@ -45,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Move definition of tablesVersion to faModelName for easier integration with updates to ecCodes [\#1564](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1564)(@sbnielsen)
 
 ### Fixed
+- Fixed wildfire app for oper user: adds uv env and refines template [#1630](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1630)(@pardallio)
 - Fixed oorder of binary exception logic [#1606](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1606)(@pardallio)
 - Fix crash in Marsprep due to non-existing bddir_sfx / bddir_sst folder [#1594](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1594)(@jacobsnoeijer)
 - Use proper function call to generate isoformat string of duration [#1599](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1599)(@jacobsnoeijer)

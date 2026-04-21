@@ -22,8 +22,8 @@ class Cleaning(Task):
             cleaning_type (str): Cleaning config section identifier
 
         """
-        defaults = self.config.get("cleaning.defaults")
-        choices = self.config.get(f"cleaning.{cleaning_type}").dict()
+        defaults = self.config.get_as_dict("cleaning.defaults")
+        choices = self.config.get_as_dict(f"cleaning.{cleaning_type}")
         self.cleaner = CleanDeode(self.config, defaults)
         self.cleaner.prep_cleaning(choices)
 

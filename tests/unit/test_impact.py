@@ -149,7 +149,9 @@ def test_impact_different_configs(basic_config_installed, tmp_directory, filetyp
         if filename.endswith((".xml")):
             config_data = xmltodict.parse(f.read())["root"]
 
-    assert config_data == basic_config_installed.get("impact.unittest.communicate").dict()
+    assert config_data == basic_config_installed.get_as_dict(
+        "impact.unittest.communicate"
+    )
 
 
 def test_impact_communicate_copy(basic_config_installed_extended, tmp_directory):
@@ -170,7 +172,7 @@ def test_impact_communicate_copy(basic_config_installed_extended, tmp_directory)
     with open(filename, "rb") as f:
         config_data = json.load(f)
 
-    ref_data = basic_config_installed_extended.get("topsection").dict()
+    ref_data = basic_config_installed_extended.get_as_dict("topsection")
     del ref_data["subsection"]
 
     assert config_data["topsection"] == ref_data
@@ -194,9 +196,8 @@ def test_impact_communicate_copyall(basic_config_installed_extended, tmp_directo
     with open(filename, "rb") as f:
         config_data = json.load(f)
 
-    assert (
-        config_data["topsection"]
-        == basic_config_installed_extended.get("topsection").dict()
+    assert config_data["topsection"] == basic_config_installed_extended.get_as_dict(
+        "topsection"
     )
 
 

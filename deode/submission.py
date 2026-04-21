@@ -86,7 +86,7 @@ class TaskSettings(object):
              config(deode.ParserdConfig): Configuration
         """
         self.config = config
-        self.submission_defs = self.config["submission"].dict()
+        self.submission_defs = self.config.get_as_dict("submission")
         self.job_type = None
         self.processor_layout = None
 

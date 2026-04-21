@@ -304,16 +304,16 @@ def get_impact(config, taskname):
     Returns:
         impact (dict): Impact model settings
     """
-    _impact = config.get("impact", BasicConfig({})).dict()
-    installed_impact = config.get("platform.impact", {})
+    _impact = config.get_as_dict("impact", {})
+    installed_impact = config.get_as_dict("platform.impact", {})
 
     impact = {}
 
     fdb_keys = get_fdb_info(config)
     # Resolve ecf_host/ecf_port if used
     with contextlib.suppress(HostNotFoundError):
-        ecf_host = config.get("scheduler.ecfvars.ecf_host")
-        ecf_port = config.get("scheduler.ecfvars.ecf_port")
+        ecf_host = config.get_as_dict("scheduler.ecfvars.ecf_host")
+        ecf_port = config.get_as_dict("scheduler.ecfvars.ecf_port")
 
         if ecf_host is not None and ecf_port is not None:
             pl = Platform(config)

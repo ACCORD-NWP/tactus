@@ -16,7 +16,7 @@
   data_path = "@archive@"
   ecfs_archive = "@WILDFIRE_ECFS_ARCHIVE_ROOT@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   ecfs_archive_root = "ec:/@USER@/DE_Impact/WildFire/@CASE@/archive"
-  file_template = "GRIBPF*h00m00s"
+  file_template = "@FILE_TEMPLATES.FULLPOS.GRIB@"
   forecast_range = "@FORECAST_RANGE@"
   name = "@CASE@"
   nwp_model = "@CSC@"
@@ -42,7 +42,6 @@
 
 [macros.select.wildfire]
   gen_macros = [
-    {wildfire_repo_home = "impact.wildfire.communicate.repo_home"},
     {wildfire_archive_root = "impact.wildfire.communicate.archive_root"},
     {wildfire_ecfs_archive_root = "impact.wildfire.communicate.ecfs_archive_root"},
   ]

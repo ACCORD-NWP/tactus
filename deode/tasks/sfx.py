@@ -54,8 +54,8 @@ class PySurfexBaseTask(Task):
         )
         self.pysurfex_input_definition = self.pysurfex_input_definition.as_posix()
         # Create PySurfex system paths
-        system_paths = self.config["system"].dict()
-        platform_paths = self.config["platform"].dict()
+        system_paths = self.config.get_as_dict("system")
+        platform_paths = self.config.get_as_dict("platform")
         exp_file_paths = {}
         for key, val in system_paths.items():
             lkey = self.platform.substitute(key)

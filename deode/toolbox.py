@@ -148,7 +148,7 @@ class Platform:
         """Fill each of the macros."""
         group_macros = f"{macro_config}.group_macros"
         for source in self.config.get(group_macros, []):
-            for macro, val in self.config[source].dict().items():
+            for macro, val in self.config.get_as_dict(source).items():
                 self.store_macro(macro.upper(), val)
 
         os_macros = f"{macro_config}.os_macros"
@@ -173,7 +173,7 @@ class Platform:
             dict: Macros to define.
 
         """
-        return list(self.config["system"].dict().keys())
+        return list(self.config.get_as_dict("system").keys())
 
     def get_os_macros(self):
         """Get the environment macros.
@@ -523,7 +523,7 @@ class Platform:
         for sub_pattern in sub_patterns:
             with contextlib.suppress(KeyError):
                 if "." in sub_pattern:
-                    val = self.config.get(sub_pattern.lower())
+                    val = self.config.get(sub_pattern.lower(), None)
                     if val is None:
                         continue
                 else:
@@ -1276,11 +1276,7 @@ class FDB(ArchiveProvider):
             RuntimeError: If user is not allowed to archive for this expver
         """
         user = os.environ["USER"]
-        expver_restrictions = self.config["fdb.expver_restrictions"]
-
-        # Convert to dictionary if necessary
-        if hasattr(expver_restrictions, "dict"):
-            expver_restrictions = expver_restrictions.dict()
+        expver_restrictions = self.config.get_as_dict("fdb.expver_restrictions")
 
         # Iterate over items in expver_restrictions
         for key, value in expver_restrictions.items():
@@ -1325,7 +1321,7 @@ class FDB(ArchiveProvider):
 
         """
         rules = self.config.get("fdb.negative_rules", {})
-        grib_set = dict(self.config["fdb.grib_set"])
+        grib_set = self.config.get("fdb.grib_set")
         if "expver" not in grib_set:
             msg = """
             Please set expver in the config section fdb.grib_set before archiving to FDB

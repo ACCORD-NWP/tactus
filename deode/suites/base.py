@@ -1,6 +1,7 @@
 """Ecflow suites base class."""
 
 import os
+import re
 from pathlib import Path
 from typing import List, Optional, Union
 
@@ -293,7 +294,9 @@ class EcflowNode:
             if isinstance(trigger, EcflowSuiteTriggers):
                 if trigger.trigger_string is not None:
                     if self.ecf_node is not None:
-                        self.ecf_node.add_trigger(trigger.trigger_string)
+                        self.ecf_node.add_trigger(
+                            self.make_relative(trigger.trigger_string)
+                        )
                 else:
                     logger.warning("Empty trigger")
             elif isinstance(trigger, list):
@@ -322,7 +325,9 @@ class EcflowNode:
                                 trigger.trigger_string, remote_path
                             )
 
-                        self.ecf_node.add_trigger(trigger.trigger_string)
+                        self.ecf_node.add_trigger(
+                            self.make_relative(trigger.trigger_string)
+                        )
                 else:
                     raise TypeError(
                         "When parsing a list of trigger, the "
@@ -349,7 +354,7 @@ class EcflowNode:
                         trigger.trigger_string = "{0} AND {1} == complete".format(
                             trigger.trigger_string, remote_path
                         )
-                    self.ecf_node.add_trigger(trigger.trigger_string)
+                    self.ecf_node.add_trigger(self.make_relative(trigger.trigger_string))
             else:
                 raise TypeError(
                     "Triggers must be an EcflowSuiteTriggers, List[EcflowNode]"
@@ -395,6 +400,17 @@ class EcflowNode:
                     mirror_config["remote_auth"],
                 )
             )
+
+    def make_relative(self, trigger_string):
+        """Convert trigger paths from absolute to relative using regex."""
+        # Regex explanation:
+        # /  — literal slash, anchors the match to absolute paths only
+        # \S+ — one or more non-whitespace characters (the path segments)
+        return re.sub(
+            r"/\S+",
+            lambda m: os.path.relpath(m.group(), os.path.dirname(self.path)),
+            trigger_string,
+        )
 
 
 class EcflowNodeContainer(EcflowNode):
