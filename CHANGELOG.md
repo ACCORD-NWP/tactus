@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Output land-sea mask at time step zero per default [\#1634](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1634)(@KristianHMoller)
 
 ### Changed
+- Split request for spectral fields on LUMI. [\#1628](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1628) (@kastelecn)
 - Make ecFlow triggers relative instead of absolute [\#1479](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1479)(@ovignes)
 - Allow to run without output [\#1595](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1595)(@uandrae)
 
