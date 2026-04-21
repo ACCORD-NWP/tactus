@@ -46,10 +46,8 @@ class CleanDeode:
 
         if defaults is None:
             self.defaults = {}
-        elif isinstance(defaults, dict):
-            self.defaults = defaults
         else:
-            self.defaults = defaults.dict()
+            self.defaults = defaults
 
         self.basetime = (
             as_datetime(config["general.times.basetime"])
@@ -59,7 +57,7 @@ class CleanDeode:
         self.cycle_length = as_timedelta(config["general.times.cycle_length"])
         self.platform = Platform(config)
         self._check_choice(self.defaults, "defaults")
-        archiving = config.get("archiving").dict()
+        archiving = config.get_as_dict("archiving")
         archiving.pop("prefix", None)
         self.has_ecfs = False
         for values in archiving.values():
@@ -78,8 +76,8 @@ class CleanDeode:
             x (dict): Updated cleaning dict including default settings
 
         """
-        x = choice.copy()
-        y = self.defaults.copy()
+        x = choice
+        y = self.defaults
 
         # Do not copy competing settings
         if "ncycles_delay" in y and "cleaning_delay" in x:

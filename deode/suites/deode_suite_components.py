@@ -512,7 +512,7 @@ class MirrorFamily(EcflowSuiteFamily):
             )
 
         if config["suite_control.mirror_host_case"]:
-            mirror_config = config["scheduler.mirror_host_case"].dict()
+            mirror_config = config.get_as_dict("scheduler.mirror_host_case")
             remote_host = mirror_config["remote_host"]
             remote_host = platform.substitute(remote_host)
             mirror_config["remote_host"] = platform.evaluate(
@@ -537,7 +537,7 @@ class MirrorFamily(EcflowSuiteFamily):
             )
 
         if config["suite_control.mirror_offline"]:
-            mirror_config = config["scheduler.mirror_offline"].dict()
+            mirror_config = config.get_as_dict("scheduler.mirror_offline")
             mirror_config["remote_path"] = platform.substitute(
                 mirror_config["remote_path"], validtime=cycle_valid
             )
