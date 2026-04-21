@@ -31,7 +31,7 @@ def mars_selection(selection: str, config: ParsedConfig) -> dict:
          mars                (dict): mars config section
 
     """
-    mars = config[f"mars.{selection}"].dict()
+    mars = config.get_as_dict(f"mars.{selection}")
     if "expver" not in mars:
         mars["expver"] = selection
 

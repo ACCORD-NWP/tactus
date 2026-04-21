@@ -602,7 +602,7 @@ class NamelistGenerator:
             self.update_from_config("all_targets")
 
         try:
-            _update = self.config["namelist_update"][self.kind][target].dict()
+            _update = self.config["namelist_update"][self.kind][target]
             # Make sure everything is in upper case
             update = {}
             for namelist, keyval in _update.items():

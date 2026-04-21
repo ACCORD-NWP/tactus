@@ -156,4 +156,5 @@ selection:
    CLPHY:
     - 'SURFTEMPERATURE'
     - 'SURFRESERV.NEIGE'
+    - 'SURFIND.TERREMER'
   <<: *default

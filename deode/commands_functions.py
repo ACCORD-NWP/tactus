@@ -162,8 +162,7 @@ def start_suite(args, config):
     config = config.copy(update=set_times(config))
     platform = Platform(config)
     ecfvars = {
-        key: platform.substitute(val)
-        for key, val in config["scheduler.ecfvars"].dict().items()
+        key: platform.substitute(val) for key, val in config["scheduler.ecfvars"].items()
     }
     update = {"scheduler": {"ecfvars": ecfvars}}
     config = config.copy(update=update)
@@ -401,9 +400,7 @@ def remove_cases(args, config):  # ARG001
 
     # Fetch the remove config
     cleaning_config = config.get("remove")
-    if not isinstance(cleaning_config, dict):
-        cleaning_config = cleaning_config.dict()
-    defaults = cleaning_config.get("defaults")
+    defaults = cleaning_config.get_as_dict("defaults")
     cleaning_config.pop("defaults")
 
     # Loop over all given config files
