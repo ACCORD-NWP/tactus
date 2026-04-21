@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow to run without output [\#1595](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1595)(@uandrae)
 
 ### Fixed
+- Remove usage of the msdeode compute account on atos [\#1639](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1639)(@uandrae)
 - Fix timedelta typo in cleaning.CycleCleaning.ifs.step [\#1637](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1637)(@jacobsnoeijer)
 - Add missing archive control in suite definition [\#1612](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1612)(@uandrae)
 - Reference checker task name unique [\#1611](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1611)(@dhaumont)
