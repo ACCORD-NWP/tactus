@@ -11,24 +11,6 @@
   compiler = ""
   precision = ""
 
-[submission.types.parallel.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
-
-[submission.types.serial.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
-
-[submission.types.gnu.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
-
-[submission.task_exceptions.ExtractSQlite]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
-
-[submission.task_exceptions.AddCalculatedFields.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
-
-[submission.task_exceptions.ArchiveFDB.MODULES]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2025.04.0.0"]
-
 [suite_control]
   do_interpolsstsic = false
 
@@ -39,8 +21,8 @@
   output_name = "10si"
 
 [gribmodify.fullpos.5]
-  output_name = "100si"
+  output_name = "ws"
 
 [gribmodify.fullpos.6]
   minimum_frequency = "PT1H"
-  output_name = "10fg"
+  output_name = "max_i10fg"
