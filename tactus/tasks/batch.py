@@ -1,4 +1,5 @@
 """Batch process."""
+
 import subprocess
 import sys
 
@@ -40,7 +41,7 @@ class BatchJob(object):
 
         process = subprocess.Popen(
             cmd,
-            shell=True,  # noqa
+            shell=True,
             env=self.rte,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -51,7 +52,7 @@ class BatchJob(object):
         # Poll process for new output until finished
         while True:
             nextline = process.stdout.readline()
-            if nextline == "" and process.poll() is not None:
+            if not nextline and process.poll() is not None:
                 break
             sys.stdout.write(nextline)
             sys.stdout.flush()

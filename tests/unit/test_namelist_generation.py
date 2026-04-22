@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for the namelist generation module."""
+
 import os
 from pathlib import Path
 from unittest.mock import patch
@@ -18,10 +19,10 @@ from tactus.namelist import (
 )
 
 
-@pytest.fixture()
+@pytest.fixture
 def config_platform():
     """Set the platform specific configuration."""
-    task_configs = tomli.loads(
+    return tomli.loads(
         """
         [boundaries]
             bdmodel = "ifs"
@@ -52,16 +53,11 @@ def config_platform():
             gen_macros = ["boundaries.bdmodel"]
             group_macros = ["platform", "system"]
             os_macros = ["USER", "HOME", "PWD"]
-        [namelist_update.master.all_targets]
-            namct0 = { bar = "foo" }
-        [namelist_update.master.forecast]
-            namct0 = { foo = "bar" }
         """
     )
-    return task_configs
 
 
-@pytest.fixture()
+@pytest.fixture
 def parsed_config(config_platform):
     return ParsedConfig(
         config_platform, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
@@ -69,11 +65,11 @@ def parsed_config(config_platform):
 
 
 @pytest.fixture(params=["pgd", "prep", "forecast"])
-def _nlgen_surfex(parsed_config, tmp_path_factory, request):
+def _nlgen_surfex(parsed_config, tmp_directory, request):
     """Test namelist generation for surfex."""
     nam_type = request.param
     nlgen = NamelistGenerator(parsed_config, "surfex")
-    output_file = f"{tmp_path_factory.getbasetemp().as_posix()}/EXSEG1.nam"
+    output_file = f"{tmp_directory}/EXSEG1.nam"
     if os.path.exists(output_file):
         os.remove(output_file)
     nlgen.load(nam_type)
@@ -86,17 +82,59 @@ def _nlgen_surfex(parsed_config, tmp_path_factory, request):
 class TestNamelistGenerator:
     """Test NamelistGenerator."""
 
-    def test_nlgen_master(self, parsed_config, tmp_path_factory):
+    def test_nlgen_master(self, parsed_config, tmp_directory):
         """Test namelist generation for master."""
-        nlgen = NamelistGenerator(parsed_config, "master")
-        output_file = f"{tmp_path_factory.getbasetemp().as_posix()}/fort.4"
-        if os.path.exists(output_file):
-            os.remove(output_file)
+        config_patch = tomlkit.parse(
+            """
+        [namelist_update.master.all_targets]
+            namct0 = { bar = "foo" }
+        [namelist_update.master.forecast]
+            namct0 = { foo = "bar" }
+        """
+        )
+        config = parsed_config.copy(update=config_patch)
+        nlgen = NamelistGenerator(config, "master")
+        output_file = f"{tmp_directory}/fort.4"
         nlgen.generate_namelist("forecast", output_file)
         assert os.path.exists(output_file)
-        nl = NamelistIntegrator(parsed_config).ftn2dict(output_file)
+        nl = NamelistIntegrator(config).ftn2dict(output_file)
         assert nl["NAMCT0"]["FOO"] == "bar"
         assert nl["NAMCT0"]["BAR"] == "foo"
+
+    def test_nlgen_master_from_static(self, parsed_config, tmp_directory):
+
+        # Create the static namelist
+        config_patch = tomlkit.parse(
+            """
+        [general]
+            accept_static_namelists = false
+        [namelist_update.master.forecast.namct0]
+            larome = false
+        """
+        )
+        config = parsed_config.copy(update=config_patch)
+        nlgen = NamelistGenerator(config, "master")
+        output_file = f"{tmp_directory}/namelist_master_forecast"
+        nlgen.generate_namelist("forecast", output_file)
+
+        # Create the new namelist from the static namelist
+        # and modify larome
+        config_patch = tomlkit.parse(
+            f"""
+        [general]
+            accept_static_namelists = true
+        [namelist_update.master.forecast.namct0]
+            larome = true
+        [system]
+          namelists = "{tmp_directory}"
+        """
+        )
+        config = parsed_config.copy(update=config_patch)
+        nlgen = NamelistGenerator(config, "master")
+        output_file = f"{tmp_directory}/output_from_static_namelist"
+        nlgen.generate_namelist("forecast", output_file)
+        nl = NamelistIntegrator(config).ftn2dict(output_file)
+        assert nl["NAMCT0"]["LAROME"]
 
     @pytest.mark.usefixtures("_nlgen_surfex")
     def test_nlgen_surfex(self):
@@ -107,14 +145,14 @@ class TestNamelistGenerator:
         with pytest.raises(InvalidNamelistKindError):
             _ = NamelistGenerator(parsed_config, "slave")
 
-    def test_nlgen_invalid_target(self, parsed_config, tmp_path_factory):
+    def test_nlgen_invalid_target(self, parsed_config, tmp_directory):
         """Test namelist generation for non-existing target."""
         nlgen = NamelistGenerator(parsed_config, "master")
-        output_file = f"{tmp_path_factory.getbasetemp().as_posix()}/fort.4"
+        output_file = f"{tmp_directory}/fort.4"
         with pytest.raises(InvalidNamelistTargetError):
             nlgen.generate_namelist("analysis", output_file)
 
-    def test_nlgen_timesteps(self, tmp_path_factory, default_config):
+    def test_nlgen_timesteps(self, tmp_directory, default_config):
         # basic config file from config.toml
         task_config = default_config
 
@@ -130,7 +168,7 @@ class TestNamelistGenerator:
 
         # generate and write namelist
         nlgen = NamelistGenerator(task_config, "master")
-        output_file = f"{tmp_path_factory.getbasetemp().as_posix()}/fort.4"
+        output_file = f"{tmp_directory}/fort.4"
         if os.path.exists(output_file):
             os.remove(output_file)
         nlgen.generate_namelist("forecast", output_file)

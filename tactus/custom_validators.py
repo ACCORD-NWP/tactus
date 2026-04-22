@@ -21,12 +21,12 @@ def import_from_string(value: str) -> Union[ModuleType, Type]:
     Args:
         value: The string to import.
 
+    Returns:
+        The imported object.
+
     Raises:
         ImportError: If the module or object cannot be imported.
         TypeError: If the input is not a string.
-
-    Returns:
-        The imported object.
     """
     if not isinstance(value, str):
         raise TypeError("string required")

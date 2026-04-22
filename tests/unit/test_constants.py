@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Tests for the QuasiConstant class and related elements."""
+
 import uuid
 
 import pytest
@@ -7,7 +8,7 @@ import pytest
 from tactus.aux_types import QuasiConstant
 
 
-@pytest.fixture()
+@pytest.fixture
 def constants():
     class ConstantDefinitions(QuasiConstant):
         FOO = "foo"

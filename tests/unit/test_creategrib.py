@@ -1,4 +1,5 @@
 """unit tests for creategrib."""
+
 import os
 from pathlib import Path
 
@@ -11,15 +12,13 @@ from tactus.toolbox import Platform
 
 @pytest.fixture(scope="module")
 def basic_config(tmp_directory, default_config):
-    config = default_config
     scratch = str(tmp_directory)
-    config = config.copy(update=set_times(config))
+    config = default_config.copy(update=set_times(default_config))
     update = {
         "platform": {"scratch": scratch},
         "task": {"CreateGrib": {"conversions": ["surfex", "history"]}},
     }
-    config = config.copy(update=update)
-    return config
+    return config.copy(update=update)
 
 
 def test_create_list(basic_config):

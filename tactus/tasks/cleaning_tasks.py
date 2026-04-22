@@ -12,7 +12,6 @@ class Cleaning(Task):
 
         Args:
             config (tactus.ParsedConfig): Configuration
-            name (str): Name of task
         """
         Task.__init__(self, config, __class__.__name__)
 

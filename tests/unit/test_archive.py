@@ -34,12 +34,12 @@ def basic_config(tmpdir, default_config):
     tmp1 = Path(tmpdir, "inpath")
     tmp2 = Path(tmpdir, "outpath")
     os.makedirs(tmp1, exist_ok=True)
-    os.system("touch " + str(tmp1) + "/copy")  # noqa S108
-    os.system("touch " + str(tmp1) + "/xtra")  # noqa S108
-    os.system("touch " + str(tmp1) + "/move")  # noqa S108
+    os.system("touch " + str(tmp1) + "/copy")
+    os.system("touch " + str(tmp1) + "/xtra")
+    os.system("touch " + str(tmp1) + "/move")
     config = default_config
     config = config.copy(update=set_times(config))
-    config = config.copy(
+    return config.copy(
         update={
             "archiving": {
                 "test": {
@@ -72,7 +72,6 @@ def basic_config(tmpdir, default_config):
             "platform": {"archive_types": ["copy", "move", "fdb"], "unix_group": ""},
         }
     )
-    return config
 
 
 def test_defaults(basic_config):
@@ -144,7 +143,6 @@ def test_fdb(monkeypatch, basic_config):
 
 
 def test_fdb_user_restriction(monkeypatch, basic_config):
-    user = os.environ["USER"] if "USER" in os.environ else "foo"
     user = os.environ.get("USER", "foo")
     nouser = "no" + user
     config = basic_config.copy(

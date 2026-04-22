@@ -29,14 +29,17 @@ def default_main(task: str, config_file: str, tactus_home: str):
         host=tactus_host,
     )
     # Get eps member specific config if a member is specified
-    try:
-        member = int(config["general.member"])
-    except (TypeError, ValueError):
-        logger.debug("MEMBER is not an integer, skipping eps setup for task {}", task)
-    else:
-        # Update config based on member
-        logger.info("Setup EPS")
-        config = get_member_config(config, member=member)
+    member_info = ""
+    if config.get("general.use_member_stand_alone", True):
+        try:
+            member = int(config["general.member"])
+        except (TypeError, ValueError):
+            logger.debug("MEMBER is not an integer, skipping eps setup for task {}", task)
+        else:
+            # Update config based on member
+            logger.info("Setup EPS")
+            config = get_member_config(config, member=member)
+            member_info = f" for member {member}"
 
     config = config.copy(update=set_times(config))
     config = config.copy(update={"platform": {"tactus_home": tactus_home}})
@@ -46,10 +49,9 @@ def default_main(task: str, config_file: str, tactus_home: str):
     update = derived_variables(config, processor_layout=processor_layout)
     config = config.copy(update=update)
 
-    common_log_string = f"task {task}" + f" for member {member}" if member else ""
-    logger.info("Running {}", common_log_string)
+    logger.info("Running {}{}", task, member_info)
     get_task(task, config).run()
-    logger.info("Finished {}", common_log_string)
+    logger.info("Finished {}{}", task, member_info)
 
 
 if __name__ == "__main__":

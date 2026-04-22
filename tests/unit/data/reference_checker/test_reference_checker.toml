@@ -1,0 +1,97 @@
+[domain]
+  name = "set-by-unit-test"
+
+[platform]
+  references_folder = "set-by-unit-test"
+
+[reference_checker]
+  analyze_summary = ["PostMortem"]
+  check = "set-by-unit-test"
+  create_summary = ["Prep"]
+  generate = "set-by-unit-test"
+  rules_active = [
+    "Forecast.utfullpos",
+    "Forecast.uthistory",
+    "Forecast.utlog",
+    "Interpol.uthistory",
+    "Marsprep.utlog",
+    "Creategrib.utfullpos",
+  ]
+  summary_active = ["uttxt", "utjson"]
+  suppress_exception = false
+
+[reference_checker.methods.utForecastNorms]
+  mode = "get_worst"
+  tolerance = "set-by-unit-test"
+  tool = "norms_checker"
+  which = "first_and_last_spectral"
+
+[reference_checker.methods.utFullPosFields]
+  args_template = "-f1 {test_file} -f2 {reference_file} {file_format} -s -of SCREEN -de -to {tolerance}"
+  binary = "set-by-unit-test"
+  file_format = "GRIB"
+  tolerance = "set-by-unit-test"
+  tool = "xtool"
+
+[reference_checker.methods.utHistoryFields]
+  args_template = "-f1 {test_file} -f2 {reference_file} {file_format} -s -of SCREEN -de -to {tolerance}"
+  binary = "set-by-unit-test"
+  file_format = "FA"
+  tolerance = "set-by-unit-test"
+  tool = "xtool"
+
+[reference_checker.summary.utjson]
+  file = "@WRK@/checks/summary.json"
+  format = "json"
+
+[reference_checker.summary.uttxt]
+  file = "@WRK@/checks/summary.txt"
+  format = "txt"
+
+[reference_checker.task.Creategrib.utfullpos]
+  inpath = "@WRK@/forecast_results/"
+  pattern = "GRIB*"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  method = "utFullPosFields"
+  reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/CreateGrib"
+
+[reference_checker.task.Forecast.utfullpos]
+  inpath = "@WRK@/forecast_results"
+  pattern = "GRIB*"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  method = "utFullPosFields"
+  reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/Forecast"
+
+[reference_checker.task.Forecast.uthistory]
+  inpath = "@WRK@/forecast_results"
+  pattern = "ICMSH*"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  method = "utHistoryFields"
+  reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/Forecast"
+
+[reference_checker.task.Forecast.utlog]
+  inpath = "@WRK@/logs/Forecast"
+  pattern = "NODE.001_01"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  method = "utForecastNorms"
+  reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/Forecast"
+
+[reference_checker.task.Interpol.uthistory]
+  inpath = "@WRK@/forecast_results"
+  pattern = "ICMSH*"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  method = "utHistoryFields"
+  reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/Interpol"
+
+[reference_checker.task.Marsprep.utlog]
+  inpath = "@WRK@/logs/Forecast"
+  pattern = "NODE.001_01"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  method = "utForecastNorms"
+  reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/Marsprep"
