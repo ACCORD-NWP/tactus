@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Unit tests for the namelist generation module."""
 import os
+from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 import tomli
@@ -12,6 +14,7 @@ from tactus.namelist import (
     InvalidNamelistTargetError,
     NamelistGenerator,
     NamelistIntegrator,
+    _resolve_namelist_path,
 )
 
 
@@ -138,6 +141,70 @@ class TestNamelistGenerator:
 
         assert nl["NAMCT0"]["NHISTS"] == [5, 0, 96, 192, 240, 288]
         assert nl["NAMCT0"]["NPOSTS"] == [7, 0, 48, 96, 144, 192, 240, 288]
+
+
+class TestResolveNamelistPath:
+    """Tests for _resolve_namelist_path."""
+
+    def test_returns_config_path_when_found(self, tmp_path):
+        """ConfigPaths.path_from_subpath succeeds — its result is returned directly."""
+        expected = tmp_path / "namelists" / "master.yml"
+        expected.parent.mkdir(parents=True)
+        expected.touch()
+
+        with patch(
+            "tactus.namelist.ConfigPaths.path_from_subpath", return_value=expected
+        ):
+            result = _resolve_namelist_path("master.yml")
+
+        assert result == expected
+
+    def test_falls_back_to_package_path_when_config_raises(self, tmp_path):
+        """RuntimeError from ConfigPaths triggers fallback to resolve_path_relative_to_package."""
+        fallback = tmp_path / "package" / "master.yml"
+        fallback.parent.mkdir(parents=True)
+        fallback.touch()
+
+        with (
+            patch(
+                "tactus.namelist.ConfigPaths.path_from_subpath",
+                side_effect=RuntimeError("not found"),
+            ),
+            patch(
+                "tactus.namelist.resolve_path_relative_to_package",
+                return_value=fallback,
+            ),
+        ):
+            result = _resolve_namelist_path("master.yml")
+
+        assert result == fallback
+
+    def test_accepts_path_object_as_input(self, tmp_path):
+        """A Path object is accepted in addition to a plain string."""
+        expected = tmp_path / "x.yml"
+        expected.touch()
+
+        with patch(
+            "tactus.namelist.ConfigPaths.path_from_subpath", return_value=expected
+        ):
+            result = _resolve_namelist_path(Path("x.yml"))
+
+        assert result == expected
+
+    def test_propagates_error_when_fallback_also_fails(self):
+        """FileNotFoundError from the fallback is not swallowed."""
+        with (
+            patch(
+                "tactus.namelist.ConfigPaths.path_from_subpath",
+                side_effect=RuntimeError("not found"),
+            ),
+            patch(
+                "tactus.namelist.resolve_path_relative_to_package",
+                side_effect=FileNotFoundError("not in package either"),
+            ),
+            pytest.raises(FileNotFoundError),
+        ):
+            _resolve_namelist_path("nonexistent.yml")
 
 
 if __name__ == "__main__":
