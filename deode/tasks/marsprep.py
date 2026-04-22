@@ -335,9 +335,12 @@ class Marsprep(Task):
             additional_data = {}
             additional_data["common_data"] = self.get_shz_data(tag)
 
-            param_spectral_temperature = get_value_from_dict(
-                self.mars["SH_temperature"], self.init_date_str
-            )
+            param_spectral_temperature = None
+            with contextlib.suppress(KeyError):
+                param_spectral_temperature = get_value_from_dict(
+                    self.mars["SH_temperature"], self.init_date_str
+                )
+
             if param_spectral_temperature:
                 additional_data |= self.get_sh_temperature_data(
                     tag, steps, members_dict, param_spectral_temperature
