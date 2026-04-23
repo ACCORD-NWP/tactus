@@ -401,8 +401,19 @@ class EcflowNode:
                 )
             )
 
-    def make_relative(self, trigger_string):
-        """Convert trigger paths from absolute to relative using regex."""
+    def make_relative(self, trigger_string: str) -> str:
+        """Convert absolute ecflow node paths in a trigger string to relative paths.
+
+        Args:
+            trigger_string (str): A plain trigger expression string containing
+                absolute ecflow node paths (e.g. ``/suite/family/task == complete``).
+                Must be a ``str`` — passing a non-string (e.g. a mock object) will
+                raise a ``TypeError`` inside ``re.sub``.
+
+        Returns:
+            str: The trigger expression with all absolute paths replaced by paths
+                relative to the directory of this node's own path.
+        """
         # Regex explanation:
         # /  — literal slash, anchors the match to absolute paths only
         # \S+ — one or more non-whitespace characters (the path segments)

@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reference checker task name unique [\#1611](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1611)(@dhaumont)
 - Reference checker summary lock [\#1609](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1609)(@dhaumont)
 - Refactor the internal of ParsedConfig to use frozendict [\#1586](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1586) (@dhaumont)
+- Fix unit test 1641 [\#1642] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1642) (@mfroelund)
 
 ## [0.27.0] - 2026-04-10
 
