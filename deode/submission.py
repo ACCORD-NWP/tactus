@@ -11,8 +11,7 @@ from deode.config_parser import ParsedConfig
 from deode.derived_variables import derived_variables
 from deode.logs import logger
 from deode.os_utils import deodemakedirs
-from deode.plugin import DeodePluginRegistryFromConfig
-from deode.tasks.discover_task import available_tasks
+from deode.tasks.discover_task import load_task_index
 from deode.toolbox import FileManager, Platform
 
 
@@ -437,7 +436,7 @@ class NoSchedulerSubmission:
             RuntimeError: Submission failure.
         """
         name = task.lower()
-        if name not in available_tasks(DeodePluginRegistryFromConfig(config)):
+        if name not in load_task_index(config):
             raise NotImplementedError(f"Task {name} not implemented")
 
         troika_config = Platform(config).get_value("troika.config_file")
