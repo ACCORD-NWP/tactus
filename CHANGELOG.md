@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support multiple search paths for json schemas. [\#5](https://github.com/ACCORD-NWP/tactus/pull/5) (@mfroelund)
 - Reintroduce remove functionality. [\#7](https://github.com/ACCORD-NWP/tactus/pull/7) (@mfroelund)
 - Support for specifying modification files with subpaths. [\#10](https://github.com/ACCORD-NWP/tactus/pull/10) (@mfroelund)
+- Support multiple searchpaths for namelist files through TACTUS_CONFIG_DATA_DIR. [\#20](https://github.com/ACCORD-NWP/tactus/pull/20) (@mfroelund)
 
 ### Changed
 - Prepare tactus as a separate package from Deode-Workflow, which now belongs to ACCORD-NWP. [\#2](https://github.com/ACCORD-NWP/tactus/pull/2) (@mfroelund)
