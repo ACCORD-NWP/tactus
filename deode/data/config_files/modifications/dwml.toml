@@ -1,0 +1,20 @@
+[impact.dwml]
+  active = true
+  config_name = "@ARCHIVE@/dwml.toml"
+  runner = "@DWML_PATH@/deploy.sh"
+  task = "StartImpactModels"
+
+[impact.dwml.communicate]
+  case = "DWML_@CASE@"
+
+[impact.dwml.communicate.domain.COPY]
+
+[impact.dwml.communicate.general.times.COPY]
+
+[impact.dwml.communicate.fdb.grib_set.COPY]
+
+[impact.dwml.StartImpactModels]
+  arguments = ["start @IMPACT.DWML.CONFIG_NAME@"]
+
+[macros.select.dwml]
+  gen_macros = [{dwml_path = "platform.impact.dwml.path"}]

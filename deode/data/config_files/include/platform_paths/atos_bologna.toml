@@ -51,6 +51,9 @@
 [platform.impact.ehype]
   path = "/home/snh02/DE_Impact/EHYPE/forecast/pyflow/utils"
 
+[platform.impact.dwml]
+  path = "/perm/snh02/DE_Impact/DWML/Deode-ML-Workflow"
+
 [platform.impact.nwp2windpower]
   path = "/perm/@USER@/DE_Impact/nwp2windpower"
 

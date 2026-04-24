@@ -225,6 +225,13 @@ class AQModels(BaseImpactModel):
     name = "aq"
 
 
+@dataclass()
+class Dwml(BaseImpactModel):
+    """DWML Multi-domain specific methods."""
+
+    name = "dwml"
+
+
 class ImpactModels(Task):
     """Create info to and start impact models."""
 
