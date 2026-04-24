@@ -404,8 +404,8 @@ def remove_cases(args, config):  # ARG001
         return False
 
     # Fetch the remove config
-    cleaning_config = config.get("remove")
-    defaults = cleaning_config.get_as_dict("defaults")
+    cleaning_config = config.get_as_dict("remove")
+    defaults = cleaning_config.get("defaults")
     cleaning_config.pop("defaults")
 
     # Loop over all given config files

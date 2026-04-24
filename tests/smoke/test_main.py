@@ -160,6 +160,14 @@ def test_run_task_command(tmp_path):
 
 
 @pytest.mark.usefixtures("_module_mockers")
+def test_remove_command(tmp_path):
+    main([
+        "remove",
+        "unexisting_file",
+    ])
+
+
+@pytest.mark.usefixtures("_module_mockers")
 def test_start_suite_command():
     os.environ["DEODE_HOST"] = "atos_bologna"
     with suppress(FileNotFoundError, HostNotFoundError, ConfigFileValidationError):
