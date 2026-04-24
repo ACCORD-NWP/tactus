@@ -98,12 +98,14 @@ def test_full_cleaning(tmpdir, basic_config):
             "active": True,
             "dry_run": True,
             "ecfs_prefix": "ecfoo",
+            "cleaning_delay": "P0D",
             "wipe": True,
         },
         "ecflow_tests": {
             "active": True,
             "dry_run": True,
             "remove_from_scheduler": True,
+            "ncycles_delay": 0,
         },
         "full_test": {
             "active": True,

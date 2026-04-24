@@ -1,5 +1,6 @@
 """Clean deode file systems."""
 
+import copy
 import os
 import re
 import shutil
@@ -77,7 +78,7 @@ class CleanDeode:
 
         """
         x = choice
-        y = self.defaults
+        y = copy.deepcopy(self.defaults)
 
         # Do not copy competing settings
         if "ncycles_delay" in y and "cleaning_delay" in x:

@@ -19,7 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow to run without output [\#1595](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1595)(@uandrae)
 
 ### Fixed
-- Correct usage of get_as_dict() \#1647. [\#1645](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1647) (@uandrae)
+- Protect default cleaning settings [\#1648](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1648) (@uandrae)
+- Correct usage of get_as_dict() [\#1647](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1647) (@uandrae)
 - Bugfix for \#1628. [\#1645](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1645) (@kastelecn)
 - Remove usage of the msdeode compute account on atos [\#1639](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1639)(@uandrae)
 - Fix timedelta typo in cleaning.CycleCleaning.ifs.step [\#1637](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1637)(@jacobsnoeijer)
