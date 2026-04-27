@@ -18,6 +18,7 @@
   ]
   dependencies = [
     "arpifs_listings @ git+ssh://git@github.com:UMR-CNRM/arpifs_listings.git@master",
+    "boto3>=1.42.15",
     "dateutils>=0.6.12",
     "dicttoxml>=1.0.0",
     "eccodes==2.45",
@@ -48,6 +49,7 @@
     "tomli>=2.0.1",
     "tomlkit>=0.12.1",
     "troika @ git+https://github.com/ecmwf/troika.git",
+    "urllib3<2",
     "utci @ git+ssh://git@github.com:destination-earth-digital-twins/utci.git",
     "xmltodict>=0.14.2",
   ]

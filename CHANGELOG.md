@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Introduce gl boundary interpolation and support for s3 protocol in toolbox [\#1449](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1449)(@ovignes)
 - Introduce task index to reduce excessive module loading and unexpected module conflicts [\#1629](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1629)(@uandrae)
 - Output land-sea mask at time step zero per default [\#1634](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1634)(@KristianHMoller)
 - Added impact model DWML (uses Deode-ML-Workflow plugin) [\#1635](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1635)(@einrone)

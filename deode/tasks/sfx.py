@@ -205,6 +205,20 @@ class Prep(PySurfexBaseTask):
                 validtime=basetime,
             )
 
+            # Try to extract it from S3 if configured so
+            if (
+                not os.path.isfile(prep_input_file)
+                and "s3_path_sfx_template" in self.config["system"]
+            ):
+                s3_path_sfx_template = self.config["system.s3_path_sfx_template"]
+                self.fmanager.input(
+                    s3_path_sfx_template,
+                    prep_input_file,
+                    basetime=self.boundary.bd_basetime_sfx,
+                    validtime=basetime,
+                    provider_id="s3",
+                )
+
             # PGD file input update
             const_clim = self.config["file_templates.pgd.archive"]
             pgdfile_source = self.platform.substitute(f"@CLIMDIR@/{const_clim}")
