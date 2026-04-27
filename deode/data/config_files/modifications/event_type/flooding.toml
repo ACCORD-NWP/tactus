@@ -1,22 +1,25 @@
 [general]
   event_type = "flooding"
 
+[fdb.expver_restrictions]
+  2002 = "@PROD_USER@"
+  9002 = "@DEV_USER@"
+
 [fullpos.selection]
   flooding = ["hyd_selection_@CSC@"]
 
 [impact.ehype]
   active = true
   config_name = "@ARCHIVE@/ehype.json"
-  runner = "@EHYPE_PATH@/deploy_suite.sh"
+  runner = "@PLATFORM.IMPACT.EHYPE.PATH@/deploy_suite.sh"
 
 [impact.ehype.communicate]
-  archive = "@ARCHIVE@"
-  archive_1 = "@ARCHIVE@"
-  archive_2 = "@ECFS_PREFIX@/archive/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  archive = "@ARCHIVE@/.."
   basetime = "@BASETIME@"
   ecfs_archive_root = "ec:/@USER@/DE_Impact"
   file_template = "GRIBPF*h00m00s"
   forecast_range = "@FORECAST_RANGE@"
+  members = "@EPS.GENERAL.MEMBERS@"
   name = "@CASE@_@YMD@_@HH@"
   nwp_model = "@CSC@"
   output_freq = "@FULLPOS_OUTPUT_FREQ@"
@@ -25,10 +28,10 @@
   run_root = "@SCRATCH@/DE_Impact/EHYPE"
   user_ecf_host = "@ECF_HOST_RESOLVED@"
   user_ecf_port = "@ECF_PORT_RESOLVED@"
+  suite_name = "DE_Impact_EHYPE_@CASE@"
   work_root = "/perm/@USER@/DE_Impact/EHYPE"
+
+[impact.ehype.communicate.fdb.grib_set.COPY]
 
 [impact.ehype.StartImpactModels]
   arguments = "@IMPACT.EHYPE.CONFIG_NAME@"
-
-[macros.select.ehype]
-  gen_macros = [{ehype_path = "platform.impact.ehype.path"}]

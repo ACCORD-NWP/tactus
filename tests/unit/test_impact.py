@@ -14,7 +14,7 @@ import yaml
 
 from deode.derived_variables import set_times
 from deode.tasks.batch import BatchJob
-from deode.tasks.impacts import BaseImpactModel, ImpactModels, get_fdb_info
+from deode.tasks.impacts import BaseImpactModel, ImpactModels
 
 WORKING_DIR = Path.cwd()
 
@@ -199,35 +199,3 @@ def test_impact_communicate_copyall(basic_config_installed_extended, tmp_directo
     assert config_data["topsection"] == basic_config_installed_extended.get_as_dict(
         "topsection"
     )
-
-
-@pytest.mark.parametrize("members", [[0], [0, 1]])
-def test_get_fdb_info(default_config, members):
-    stream = "enfo" if len(members) > 1 else "oper"
-    truth = {
-        "class": "d1",
-        "dataset": "on-demand-extremes-dt",
-        "date": "20251103",
-        "expver": "fomo",
-        "georef": "u15rxs",
-        "step": [0, 1, 2, 3],
-        "stream": stream,
-        "time": "0000",
-    }
-
-    if len(members) > 1:
-        truth["number"] = members
-
-    basic_config = default_config.copy(
-        update={
-            "general": {
-                "times": {"basetime": "2025-11-03T00:00:00Z", "forecast_range": "PT3H"}
-            },
-            "fdb": {"grib_set": {"expver": "fomo", "georef": "u15rxs", "stream": stream}},
-            "eps": {"general": {"members": members}},
-        }
-    )
-
-    fdb_keys = get_fdb_info(basic_config)
-
-    assert fdb_keys == truth

@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added impact model DWML (uses Deode-ML-Workflow plugin) [\#1635](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1635)(@einrone)
 
 ### Changed
+- Update EHYPE interface and version [\#1646](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1646) (@uandrae)
 - Use specific FDB version on atos to solve missing gribscan [\#1633](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1633) (@uandrae)
 - Split request for spectral fields on LUMI. [\#1628](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1628) (@kastelecn)
 - Make ecFlow triggers relative instead of absolute [\#1479](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1479)(@ovignes)

@@ -7,7 +7,7 @@
 [remove.ehype]
   remove_from_scheduler = true
   remove_not_completed_suites = false
-  suite_name = "DE_Impact_EHYPE_forecast_@CASE@_@YMD_START@_@HH_START@"
+  suite_name = "@IMPACT.EHYPE.COMMUNICATE.SUITE_NAME@"
 
 [remove.ehype.ehype_output]
   path = "@IMPACT.EHYPE.COMMUNICATE.RUN_ROOT@/@CASE@_@YMD_START@_@HH_START@"

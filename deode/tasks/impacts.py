@@ -1,6 +1,7 @@
 """Impact model classes."""
 
 import contextlib
+import copy
 import os
 import tempfile
 from dataclasses import dataclass
@@ -34,6 +35,10 @@ class BaseImpactModel:
             if subclass.name == name:
                 return super(BaseImpactModel, subclass).__new__(subclass)
         raise ValueError(f"No valid BaseImpactModel subclass found for name: {name}")
+
+    def adjust(self, com):
+        """Basic dummy method."""
+        return com
 
     def run(self):
         """Starts a plugin suite.
@@ -93,7 +98,8 @@ class BaseImpactModel:
         config_name = self.platform.substitute(self.config.get("config_name"))
 
         if config_name is not None:
-            logger.info(" communication keys: {}", com)
+            com = self.adjust(com)
+            logger.debug(" communication keys: {}", com)
             # Write the config file
             if len(com) > 0:
                 deodemakedirs(
@@ -101,6 +107,7 @@ class BaseImpactModel:
                     unixgroup=self.platform.get_value("platform.unix_group"),
                     exist_ok=True,
                 )
+                logger.info("Save impact model config as {}", config_name)
                 BasicConfig(com).save_as(config_name)
         elif len(com) > 0:
             logger.warning("Found keys to communicate but config_name not set.")
@@ -189,12 +196,51 @@ class BaseImpactModel:
     def __str__(self):
         return self.name
 
+    def get_fdb_output_info(self):
+        """Build a dict of fdb keys for output.
+
+        Returns:
+            fdb_out (dict): Dict with appropriate grib keys to set
+        """
+        fdb_out = None
+        expver = self.config.get("communicate").get("output_expver")
+        if expver is not None:
+            fdb_out = self.config.get("communicate").get("fdb")
+            fdb_out = fdb_out["grib_set"]
+            fdb_out["expver"] = expver
+
+        return fdb_out
+
 
 @dataclass()
 class Ehype(BaseImpactModel):
     """EHYPE specific methods."""
 
     name = "ehype"
+
+    def adjust(self, com):
+        """Adjust keys to fit EHYPE needs."""
+        new_com = copy.deepcopy(com)
+
+        new_com["fdb_output"] = self.get_fdb_output_info()
+
+        # Remove EHYPE hostile keys
+        if "fdb_request" in new_com:
+            for key in ["number", "step"]:
+                new_com["fdb_request"].pop(key, None)
+
+        for key in ["fdb", "output_expver"]:
+            new_com.pop(key, None)
+
+        _members = (
+            new_com["members"]
+            if isinstance(new_com["members"], list)
+            else list(new_com["members"])
+        )
+        members = ",".join([f"mbr{x:03}" for x in _members])
+        new_com["members"] = members
+
+        return new_com
 
 
 @dataclass()
