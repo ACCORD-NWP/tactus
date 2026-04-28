@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow to run without output [\#1595](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1595)(@uandrae)
 
 ### Fixed
+- Fixed wildfire app issue: moves wildfire class into impacts.py [#1665](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1654)(@pardallio)
 - Protect default cleaning settings [\#1648](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1648) (@uandrae)
 - Correct usage of get_as_dict() [\#1647](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1647) (@uandrae)
 - Bugfix for \#1628. [\#1645](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1645) (@kastelecn)
