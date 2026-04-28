@@ -63,3 +63,6 @@
 
 [platform.impact.wildfire]
   path = "/perm/@USER@/DE_Impact/wildfire"
+
+[platform.impact.nowcasting]
+  path = "/perm/@USER@/DE_Impact/Deode-Nowcasting"

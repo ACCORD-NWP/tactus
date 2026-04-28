@@ -272,6 +272,12 @@ class AQModels(BaseImpactModel):
 
 
 @dataclass()
+class Nowcasting(BaseImpactModel):
+    """Nowcasting specific methods."""
+
+    name = "nowcasting"
+
+
 class Dwml(BaseImpactModel):
     """DWML Multi-domain specific methods."""
 

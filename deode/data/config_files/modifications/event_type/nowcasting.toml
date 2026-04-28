@@ -1,0 +1,23 @@
+[general]
+  event_type = "nowcasting"
+
+[impact.nowcasting]
+  active = true
+  plugin_dir_key = "repo_home"
+  config_name = "@ARCHIVE_ROOT@/nowcasting.toml"
+  task = "StartImpactModels"
+  trigger = "@case@"
+  arguments = "-p @IMPACT.NOWCASTING.CONFIG_NAME@"
+  runner = "./deploy_suite.sh"
+
+[impact.nowcasting.git]
+  active = true
+  branch = "main"
+  remote_url = "git@github.com:destination-earth-digital-twins/Deode-Nowcasting.git"
+
+[impact.nowcasting.communicate.domain.COPY]
+
+[impact.nowcasting.communicate.general]
+  case = "DE_Impact_@CASE@"
+
+[impact.nowcasting.communicate.general.times.COPY]
