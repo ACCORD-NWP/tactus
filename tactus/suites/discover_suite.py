@@ -1,4 +1,5 @@
 """Discover suites."""
+
 import importlib
 import inspect
 import pkgutil
@@ -46,12 +47,12 @@ def get_suite(name, config):
         name (_type_): _description_
         config (_type_): _description_
 
+    Returns:
+        _type_: _description_
+
     Raises:
         NotImplementedError: If SuiteDefinition `name` is not amongst
                              the known SuiteDefinition names.
-
-    Returns:
-        _type_: _description_
     """
     reg = TactusPluginRegistryFromConfig(config)
     known_types = available_suites(reg)

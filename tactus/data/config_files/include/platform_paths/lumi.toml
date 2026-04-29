@@ -37,4 +37,5 @@
   topo_source = "gmted2010"
   tree_height_dir = "@CLIMDATA@/ECOCLIMAP-SG/HT"
   unix_group = "project_465000527"
+  uv_cache_dir = "/scratch/@UNIX_GROUP@/@USER@/.cache/uv"
   windfarm_path = "@STATIC_DATA@/WFP_input_files/"

@@ -32,7 +32,7 @@ deode show namelist -t master -n forecast
 ```
 If you are uncertain about the name of the namelist you're searching for just type any name to get a list
 ```
-deode show namelist -t master -n showme 
+deode show namelist -t master -n showme
 ```
 By default none of the namelist values are substituted with config settings, like e.g. output frequency. If you'd like have the namelist with the substituted values from the config file add a `-s` to the command. For more information about namelist extraction use the help command.
 ```

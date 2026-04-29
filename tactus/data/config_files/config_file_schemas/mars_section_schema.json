@@ -82,7 +82,7 @@
           "type": "string",
           "description": "Type for geopotential in gridpoint"
         },
-	"resolution": {
+        "resolution": {
           "type": "string",
           "description": "Resolution of global model"
         },
@@ -165,7 +165,7 @@
           "type": "string",
           "description": "Type for geopotential"
         },
-	"resolution": {
+        "resolution": {
           "type": "string",
           "description": "Resolution of global model"
         },
@@ -179,50 +179,65 @@
       "title": "Global DT near real-time runs on ATOS based on CY48r1",
       "description": "Parameters for global DT data",
       "type": "object",
-      "properties": { "$ref": "#/$RD_DEFAULT" }
+      "properties": {
+        "$ref": "#/$RD_DEFAULT"
+      }
     },
     "atos_bologna_DT": {
       "title": "Global DT near real-time runs on ATOS based on CY49r1",
       "description": "Parameters for global DT data",
       "type": "object",
-      "properties": { "$ref": "#/$RD_DEFAULT" }
+      "properties": {
+        "$ref": "#/$RD_DEFAULT"
+      }
     },
     "DT12": {
       "title": "Global DT runs on ATOS but starting at 12Z",
       "description": "Parameters for global DT data",
       "type": "object",
-      "properties": { "$ref": "#/$RD_DEFAULT" }
+      "properties": {
+        "$ref": "#/$RD_DEFAULT"
+      }
     },
     "i5qp": {
       "title": "Paris RDP case Tco2559",
       "description": "Parameters for global DT data",
       "type": "object",
-      "properties": { "$ref": "#/$RD_DEFAULT" }
+      "properties": {
+        "$ref": "#/$RD_DEFAULT"
+      }
     },
     "i7u4": {
       "title": "Paris RDP case Tco3999 with Urban scheme",
       "description": "Parameters for global DT data",
       "type": "object",
-      "properties": { "$ref": "#/$RD_DEFAULT" }
+      "properties": {
+        "$ref": "#/$RD_DEFAULT"
+      }
     },
     "i7ye": {
-      "title": "Global DT near real-time runs on ATOS",
       "title": "Paris RDP case Tco3999 without Urban scheme",
       "description": "Parameters for global DT data",
       "type": "object",
-      "properties": { "$ref": "#/$RD_DEFAULT" }
+      "properties": {
+        "$ref": "#/$RD_DEFAULT"
+      }
     },
     "i8hy": {
       "title": "AQ winter case over central Europe",
       "description": "Parameters for global DT data",
       "type": "object",
-      "properties": { "$ref": "#/$RD_DEFAULT" }
+      "properties": {
+        "$ref": "#/$RD_DEFAULT"
+      }
     },
     "lumi_DT": {
       "title": "Global DT near real-time runs on LUMI",
       "description": "Parameters for global DT data",
       "type": "object",
-      "properties": { "$ref": "#/$RD_DEFAULT" }
+      "properties": {
+        "$ref": "#/$RD_DEFAULT"
+      }
     }
   },
   "$RD_DEFAULT": {
@@ -269,7 +284,10 @@
     "tco": {
       "type": "string",
       "description": "Truncation for static RD data",
-      "enum": ["255", "399"]
+      "enum": [
+        "255",
+        "399"
+      ]
     },
     "grid_ML": {
       "type": "string",
@@ -296,8 +314,8 @@
       "description": "Type for geopotential in gridpoint"
     },
     "resolution": {
-          "type": "string",
-          "description": "Resolution of global model"
+      "type": "string",
+      "description": "Resolution of global model"
     },
     "stream": {
       "description": "MARS stream or dictionary (run:stream) to use the right stream for a given run.",

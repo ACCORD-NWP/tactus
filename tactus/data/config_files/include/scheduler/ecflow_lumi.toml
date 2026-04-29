@@ -1,5 +1,4 @@
 [scheduler]
-
 [scheduler.ecfvars]
   case_prefix = "@USER@_"
   ecf_files = "/users/@USER@/tactus_ecflow/ecf_files"

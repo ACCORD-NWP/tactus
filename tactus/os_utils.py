@@ -64,9 +64,11 @@ class Search:
             fullpath = False
             files = []
             for r, _d, f in os.walk(directory):  # r=root, d=directories, f=files
-                for file in f:
-                    if file.startswith(prefix) and file.endswith(postfix):
-                        files.append(os.path.join(r, file))  # noqa: PERF401
+                files.extend(
+                    os.path.join(r, file)
+                    for file in f
+                    if file.startswith(prefix) and file.endswith(postfix)
+                )
 
         elif not recursive:
             if onlyfiles:
@@ -85,7 +87,7 @@ class Search:
                     if f.endswith(postfix) and f.startswith(prefix)
                 ]
 
-        if pattern != "":
+        if pattern:
             files = [f for f in files if re.search(pattern, f)]
 
         if fullpath:
@@ -164,7 +166,7 @@ def tactusmakedirs(path: str | Path, unixgroup="", exist_ok=True, def_dir_mode=0
     p = Path(path).resolve()
 
     dir_mode = def_dir_mode
-    if unixgroup != "":
+    if unixgroup:
         dir_mode = 0o2750
 
     if p.parents[0].is_dir():
@@ -241,7 +243,7 @@ def ping(host):
     """
     cmd = ["ping", "-c", "1", host]
     try:
-        subprocess.check_output(cmd, stderr=subprocess.STDOUT)  # noqa S603
+        subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         return True
     except subprocess.CalledProcessError:
         return False
@@ -312,15 +314,14 @@ def resolve_path_relative_to_package(path: Path, ignore_errors: bool = False) ->
         ignore_errors (bool, optional): Option to ignore errors.
             Defaults to False.
 
-    Raises:
-        FileNotFoundError: If the file is not found under any sys.path entry
-            and ignore_errors is False.
-        ValueError: If more than one candidate is found across sys.path entries.
-
     Returns:
         Path: Original path (if exists locally), or resolved path relative to
             a sys.path entry.
 
+    Raises:
+        ValueError: If more than one candidate is found across sys.path entries.
+        FileNotFoundError: If the file is not found under any sys.path entry
+            and ignore_errors is False.
     """
     path = path.expanduser().resolve()
     if os.path.exists(path):
@@ -370,9 +371,7 @@ def list_files_join(folder, f_pattern):
         list of files that should be joined
     """
     pattern_list = os.path.join(folder, f_pattern)
-    filenames = glob.glob(pattern_list)
-
-    return filenames
+    return glob.glob(pattern_list)
 
 
 def join_files(input_files: List[str], output_filepath: str):
@@ -390,5 +389,6 @@ def join_files(input_files: List[str], output_filepath: str):
     shutil.move(output_filename, output_filepath)
     logger.info(f"Created {output_filepath} out of files '{input_files}'")
     lockfile = f"{output_filepath}.lock"
-    if os.path.exists(lockfile):
+    if os.path.exists(output_filepath) and os.path.exists(lockfile):
         os.remove(lockfile)
+        logger.info(f"Removed lockfile: {lockfile}")

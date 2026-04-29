@@ -10,7 +10,7 @@ The parameters you can put into your domain configuration can be found in [the c
 
 Some of the parameters are optional and derived automatically if not provided:
 
-- **ilone** / **ilate**: If not provided will default to 11 gridpoints. 
+- **ilone** / **ilate**: If not provided will default to 11 gridpoints.
 - **nbzonl** / **nbzong**: If not provided will be derived automatically from resolution (xdx/xdy) but if domain very small, i.e. less than 250 gridpoints in either direction, then the parameter defaults to 8 gridpoints.
 
 Finally you'll need to update _domain_ under section [include] in your main config file and point it to your new domain toml file.

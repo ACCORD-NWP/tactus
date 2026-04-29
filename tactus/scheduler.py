@@ -161,8 +161,7 @@ class EcflowServer(Server):
             port (int): Derived port number
 
         """
-        port = os.getuid() + int(offset)
-        return port
+        return os.getuid() + int(offset)
 
     def start_server(self):
         """Start the server.
@@ -186,7 +185,7 @@ class EcflowServer(Server):
 
                 logger.info(start_command)
                 # TODO
-                ret = os.system(start_command)  # noqa
+                ret = os.system(start_command)
                 if ret != 0:
                     raise RuntimeError from RuntimeError
             except RuntimeError as error:
@@ -248,8 +247,7 @@ class EcflowServer(Server):
             suite_is_complte (boolean): Suite has complete status
         """
         self.ecf_client.sync_local()
-        suite_is_complete = suite.get_state() == ecflow.State.complete
-        return suite_is_complete
+        return suite.get_state() == ecflow.State.complete
 
     def remove_suites(self, suite_list, check_if_complete=True):
         """Remove suites selected from a list.
@@ -420,7 +418,7 @@ class EcflowTask:
         self.ecf_name = ecf_name
         self.ecf_tryno = int(ecf_tryno)
         self.ecf_pass = ecf_pass
-        if ecf_rid == "" or ecf_rid is None:
+        if not ecf_rid:
             ecf_rid = os.getpid()
         self.ecf_rid = int(ecf_rid)
         self.ecf_timeout = int(ecf_timeout)

@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 from itertools import tee
 from typing import Generator, List, Optional, Tuple
 
+from isodate import duration_isoformat
+
 from tactus.boundary_utils import Boundary
 from tactus.datetime_utils import (
     as_datetime,
@@ -397,7 +399,7 @@ class StaticDataTasks:
             limit=limit,
         )
 
-        archive_static_member_trigger = e923_monthly_family
+        archive_static_member_trigger = [e923_monthly_family]
 
         pgd_update = None
         if config["suite_control.do_pgd"]:
@@ -412,7 +414,7 @@ class StaticDataTasks:
                 ecf_files_remotely=ecf_files_remotely,
                 limit=limit,
             )
-            archive_static_member_trigger = pgd_update
+            archive_static_member_trigger.append(pgd_update)
 
         if config["general.csc"] == "ALARO" and config["general.surfex"]:
             pgd_filter_town_frac = PgdNode(
@@ -426,7 +428,7 @@ class StaticDataTasks:
                 ecf_files_remotely=ecf_files_remotely,
                 limit=limit,
             )
-            archive_static_member_trigger = pgd_filter_town_frac
+            archive_static_member_trigger.append(pgd_filter_town_frac)
 
         if config["general.windfarm"] and config["json2tab.enabled"]:
             generate_wfp_tabfile = EcflowSuiteTask(
@@ -439,7 +441,7 @@ class StaticDataTasks:
                 trigger=None,
                 ecf_files_remotely=ecf_files_remotely,
             )
-            archive_static_member_trigger = generate_wfp_tabfile
+            archive_static_member_trigger.append(generate_wfp_tabfile)
 
         if (
             config["suite_control.do_archiving"]
@@ -624,9 +626,9 @@ class InputDataFamily(EcflowSuiteFamily):
                 )
                 bdshift = ["PT0H"]
                 bdshift.append(
-                    (as_timedelta(slaflag) - as_timedelta(slafdiff)).isoformat()
+                    duration_isoformat(as_timedelta(slaflag) - as_timedelta(slafdiff))
                 )
-                bdshift.append(as_timedelta(slaflag).isoformat())
+                bdshift.append(duration_isoformat(as_timedelta(slaflag)))
                 for i in 1, 2:
                     SLAFpartFamily(
                         f"SLAFpart{i}",
@@ -856,7 +858,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
                     bdshift[1] = as_timedelta(slaflag) - as_timedelta(slafdiff)
                     bdshift[2] = as_timedelta(slaflag)
                     for i in (1, 2):
-                        bdsi = bdshift[i].isoformat()
+                        bdsi = duration_isoformat(bdshift[i])
                         args = (
                             variables["ARGS"]
                             + f";extra_bdshift={bdsi};target_suffix='_slaf{i}'"

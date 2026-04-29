@@ -34,7 +34,7 @@
   MEM = "#SBATCH --mem=480GB"
   NODE = "#SBATCH --nodes=12"
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=3"
-  #NTASKS = "#SBATCH --ntasks=36"
+  # NTASKS = "#SBATCH --ntasks=36"
   WALLTIME = "#SBATCH --time=03:00:00"
 
 [submission.task_exceptions.C903.ENV]
@@ -126,7 +126,7 @@
   TASKS_PER_NODE = "#SBATCH --ntasks-per-node=8"
   WALLTIME = "#SBATCH --time=00:10:00"
 
-  #FIXME: This path seems to be a path on ATOS and not on LEONARDO
+  # FIXME: This path seems to be a path on ATOS and not on LEONARDO
 
 [submission.types.background_hpc]
   SCHOST = "localhost"
@@ -172,18 +172,18 @@
   EC_MPI_ATEXIT = 0
   EC_PROFILE_HEAP = 0
   INPART = 0
-  #KMP_MONITOR_STACKSIZE = "1G"
-  #KMP_STACKSIZE = "4G"
+  # KMP_MONITOR_STACKSIZE = "1G"
+  # KMP_STACKSIZE = "4G"
   LLSIMPLE_DGEMM = 1
   OMP_NUM_THREADS = 1
-  #OMP_STACKSIZE = "4G"
+  # OMP_STACKSIZE = "4G"
   LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/leonardo_work/DestE_330_26/users/SAN/install/eccodes-2.41.0-intel/lib64/"
   OMPI_MCA_btl = "^vader"
   PARALLEL = 0
   PERSISTENT = 0
 
 [submission.types.parallel.MODULES]
-  #0_PURGE = ["--force", "purge"]
+  # 0_PURGE = ["--force", "purge"]
   1_INTEL_COMPILERS = ["load", "intel-oneapi-compilers/2023.2.1"]
   2_INTEL_MPI = ["load", "intel-oneapi-mpi/2021.10.0"]
   3_INTEL_MKL = ["load", "intel-oneapi-mkl/2023.2.0"]
@@ -228,7 +228,7 @@
   OMPI_MCA_btl = "^vader"
 
 [submission.types.serial.MODULES]
-  #0_PURGE = ["--force", "purge"]
+  # 0_PURGE = ["--force", "purge"]
   1_INTEL_COMPILERS = ["load", "intel-oneapi-compilers/2023.2.1"]
   2_INTEL_MPI = ["load", "intel-oneapi-mpi/2021.10.0"]
   3_INTEL_MKL = ["load", "intel-oneapi-mkl/2023.2.0"]

@@ -2,6 +2,7 @@ frameworks:
   destine:
     subCentre: 84
     indicatorOfUnitOfTimeRange: 13
+    tablesVersion: 34
 
 cycles:
   CY46h1:

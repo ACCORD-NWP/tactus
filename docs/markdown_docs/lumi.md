@@ -7,14 +7,14 @@
 )](https://github.com/destination-earth-digital-twins/Deode-Workflow/actions/workflows/tests.yaml)
 [![codecov](https://codecov.io/github/destination-earth-digital-twins/Deode-Workflow/branch/develop/graph/badge.svg?token=4PRUK8DMZF)](https://codecov.io/github/destination-earth-digital-twins/Deode-Workflow)
 
-# LUMI 
+# LUMI
 
 ## Introduction
 
 Two ecflow servers are provided on LUMI:
 
-1. de330-dev: development server at 217.71.194.208 (**normal use**) 
-2. de330-prod : production server at 217.71.194.199 (**production, authorized users only**) 
+1. de330-dev: development server at 217.71.194.208 (**normal use**)
+2. de330-prod : production server at 217.71.194.199 (**production, authorized users only**)
 
 We provide on this page a step-by-step instructions guide for installing Deode-Workflow and communicate with these ecflow servers on LUMI.
 
@@ -22,8 +22,8 @@ We provide on this page a step-by-step instructions guide for installing Deode-W
 ## Step 1. Getting on LUMI
 
 ### 1.1 SSH to LUMI
-To access LUMI, you need to have a LUMI account, and login via SSH. 
-Please follow the [online instructions from lumi](https://docs.lumi-supercomputer.eu/firststeps/SSH-keys/). 
+To access LUMI, you need to have a LUMI account, and login via SSH.
+Please follow the [online instructions from lumi](https://docs.lumi-supercomputer.eu/firststeps/SSH-keys/).
 Once you have your SSH key added, you can login to LUMI by running:
 
 ```
@@ -44,7 +44,7 @@ Please follow the [online instructions from Github](https://docs.github.com/en/a
 We will create a key with default name for RSA by using the following command:
 
 ```shell
- ssh-keygen -t rsa 
+ ssh-keygen -t rsa
  ```
 Hit Enter when a password is requested to creeate a key without passphrase.
 
@@ -52,7 +52,7 @@ Hit Enter when a password is requested to creeate a key without passphrase.
 
 ### 2.2 Send the public key to ECMWF
 
-Send an email to <cristina.duma@ecmwf.int> (with <samet.demir@ecmwf.int>, <bojan.kasic@ecmwf.int> and <ulf.andrae@smhi.se> in cc), providing them with: 
+Send an email to <cristina.duma@ecmwf.int> (with <samet.demir@ecmwf.int>, <bojan.kasic@ecmwf.int> and <ulf.andrae@smhi.se> in cc), providing them with:
 
 -  Your **LUMI username** (<user name> in the rest of this document).
 
@@ -96,11 +96,11 @@ ssh ecflow-user@217.71.194.199
     - 217.71.194.199.8443.crt.gpg (dev server)
 
 - ecf custom password file (for prod and dev servers)
-    - ecf.custom_passwd.gpg 
+    - ecf.custom_passwd.gpg
 
 -  troika public keys (for both servers, both are needed)
-    - id_rsa_troika_DEV.pub.gpg 
-    - id_rsa_troika_PROD.pub.gpg 
+    - id_rsa_troika_DEV.pub.gpg
+    - id_rsa_troika_PROD.pub.gpg
 
 ```shell
 mkdir tmp; cd tmp
@@ -119,11 +119,11 @@ cp /pfs/lustrep4/projappl/project_465000527/shared_dev/LUMI_ECFLOW/id_rsa_troika
 Use the gpg command using the **password: peterpiper**.
 ```shell
 cd tmp
-gpg 217.71.194.208.8443.crt.gpg 
+gpg 217.71.194.208.8443.crt.gpg
 gpg 217.71.194.199.8443.crt.gpg
 gpg ecf.custom_passwd.gpg
 gpg id_rsa_troika_DEV.pub.gpg
-gpg id_rsa_troika_PROD.pub.gpg 
+gpg id_rsa_troika_PROD.pub.gpg
 ```
 
 ### 3.3 Copy decrypted files to their current location:
@@ -264,7 +264,7 @@ The following commands prepare the environment (execute them one time before sta
 
 ```shell
 # Do these steps only once
-poetry shell 
+poetry shell
 ml use /scratch/project_465000527/jasinskas/scl/modules/
 ml pyeccodes_23
 ml scl-ecflow_23
@@ -297,7 +297,7 @@ deode run --config-file config_CY48t3_lumi.toml --task Forecast
 ```
 
 
-## Configuration 
+## Configuration
 
 ### Ecflow server selection
 
@@ -310,8 +310,8 @@ Every user can choose to run on the de330-dev or de330-prod ecflow servers. To d
   ecf_host = "217.71.194.208"
 ```
 
-As of today, two ecflow servers are integrated with LUMI: 
-- Development Server: 217.71.194.208 (**normal use**) 
+As of today, two ecflow servers are integrated with LUMI:
+- Development Server: 217.71.194.208 (**normal use**)
 - Production Server: 217.71.194.199 (**production only**)
 
 **Note: Please do not use the production server unless authorised to do so**
@@ -321,7 +321,7 @@ As of today, two ecflow servers are integrated with LUMI:
 
 ### Ecflow scheduler
 
- The ecflow scheduler variables live inside: 
+ The ecflow scheduler variables live inside:
 ```shell
 deode/data/config_files/include/scheduler/ecflow_lumi.toml
 ```
@@ -344,7 +344,7 @@ At the time of writing this, there is no streamlined way to obtain data from sou
 ```shell
 /scratch/project_465000527/de_33050_common_data/
 ```
-spend a few minutes just familiarising yourself with what's there. 
+spend a few minutes just familiarising yourself with what's there.
 
 IFS data for the boundaries (HRES and ATOS_DT) is currently stored here:
 ```shell
@@ -365,10 +365,10 @@ If you foresee that the data you download will be needed in the long term, conta
 
 There is a dedicated production user on LUMI. To access this, follow the steps below:
 
-1. Email ulf.andrae@smhi.se to ask for access to the production user. Without this step, you cannot gain access to the production user. 
-2. You need to **add** your public RSA (or otherwise) key to my.csc.fi 
+1. Email ulf.andrae@smhi.se to ask for access to the production user. Without this step, you cannot gain access to the production user.
+2. You need to **add** your public RSA (or otherwise) key to my.csc.fi
 3. At KNMI we also use **myaccessid** : https://mms.myaccessid.org/fed-apps/profile/settings_sshkeys - if you have another equivalent to this please also ensure your ssh public key is added there and that your my.csc.fi account is linked to it (separate step).
-4. Wait an hour or two before attempting to connect: 
+4. Wait an hour or two before attempting to connect:
 ```shell
 ssh lrb_465000527_efprd@lumi.csc.fi
 ```
@@ -411,13 +411,13 @@ Make sure that you used the -X (or -A option) to ssh to LUMI
 ```shell
 ssh -i <your-private-key> -X <username>@lumi.csc.fi
 ```
-(use the -A flag if you have any problems with the -X flag above). 
+(use the -A flag if you have any problems with the -X flag above).
 
 
 ### 3. If you can not connect to your ecflow servers
 
 Once Ecflow UI is loaded, if your server (de330) is gray in colour, that means something has failed. To get an idea of the problem, click on 'Panel' then 'Add info panel' which will divide the ecflow ui screen and give you a message.
-   
+
 
 Please check that:
 1. You have a correct environment:
@@ -434,8 +434,8 @@ Please check that:
     ```
 
 
-2. You have correct ECF variables 
-    
+2. You have correct ECF variables
+
     ```shell
     $  env | grep ECF
 
@@ -447,7 +447,7 @@ Please check that:
     ```
 
 3. You have a correct password file:
-    
+
     The password file **must look exactly like this**
 
     ```shell
@@ -485,7 +485,6 @@ Please check that:
 
 ## Contacts
 
-support@lumi-supercomputer.eu 
+support@lumi-supercomputer.eu
 
 henrik.nortamo@csc.fi
-

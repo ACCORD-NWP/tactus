@@ -49,9 +49,7 @@ class InterpolateBoundaries(Task):
         self.nlgen = NamelistGenerator(self.config, "master")
         self.master = self.get_binary("MASTERODB", task_name=self.boundary.method.upper())
         self.name = (
-            f"{self.boundary.method}_"
-            f"{self.boundary.min_index}-"
-            f"{self.boundary.max_index}"
+            f"{self.boundary.method}_{self.boundary.min_index}-{self.boundary.max_index}"
         ).upper()
 
     def execute(self):

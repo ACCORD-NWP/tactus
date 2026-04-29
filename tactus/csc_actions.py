@@ -13,11 +13,11 @@ class SelectTstep:
             csc (str): The csc to use
             resolution (str): The resolution to use
 
-        Raises:
-            ValueError: CSC and/or resolution not supported.
-
         Returns:
             int: The tstep
+
+        Raises:
+            ValueError: CSC and/or resolution not supported.
         """
         if round(float(resolution)) == 500:
             if csc == "HARMONIE_AROME":

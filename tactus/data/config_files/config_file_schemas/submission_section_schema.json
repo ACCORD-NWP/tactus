@@ -22,13 +22,21 @@
     "compiler": {
       "description": "Compiler used to build IAL",
       "type": "string",
-      "enum": ["intel", "gnu",""],
+      "enum": [
+        "intel",
+        "gnu",
+        ""
+      ],
       "default": "intel"
     },
     "precision": {
       "description": "Floating point precision as used in the Forecast task",
       "type": "string",
-      "enum": ["R32", "R64",""],
+      "enum": [
+        "R32",
+        "R64",
+        ""
+      ],
       "default": "R32"
     },
     "ial_version": {
@@ -234,6 +242,8 @@
         }
       }
     },
-    "required": ["SCHOST"]
+    "required": [
+      "SCHOST"
+    ]
   }
 }

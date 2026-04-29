@@ -1,5 +1,5 @@
 # Normally no need to change the MAP sections
-LEVEL_MAP: 
+LEVEL_MAP:
     NAMFPDYI: "RFP3I"
     NAMFPDYV: "RFP3PV"
     NAMFPDYH: "RFP3H"
@@ -46,4 +46,3 @@ NON_INSTANT_FIELDS:
     - 'SURFDIAG.FLASH'
     - 'AVG_U'
     - 'AVG_V'
-

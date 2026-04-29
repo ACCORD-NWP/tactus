@@ -1,5 +1,4 @@
 [cleaning]
-
 [cleaning.CycleCleaning.archive]
   ncycles_delay = 4
   path = "@ARCHIVE@"
