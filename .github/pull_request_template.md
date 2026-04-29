@@ -18,6 +18,8 @@ Please delete options that are not relevant.
 
 ### Testing
 
+- [ ] I have tested this on ATOS using the `atos_bologna.toml` configuration in the latest version of [Tactus-test-runner](https://github.com/destination-earth-digital-twins/Tactus-test-runner)
+- [ ] I have tested this on LUMI using the `lumi.toml` configuration in the latest version of [Tactus-test-runner](https://github.com/destination-earth-digital-twins/Tactus-test-runner)
 
 For further information see the [development guide](https://github.com/ACCORD-NWP/tactus/blob/develop/docs/markdown_docs/development_guide.md)
 

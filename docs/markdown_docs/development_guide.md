@@ -44,31 +44,28 @@ No-one likes to wait for the CI to run tests. It is therefore recommended to run
 
 For convenience, however, we have added a few commands you can use to check that the code is linted, the tests pass, etc. Some of these are exemplified in the next subsections. Please run **inside of your poetry shell**:
 ```shell
-poetry devtools -h
+make
 ```
-for more information.
-
-Note: devtools lint does not currently work for Python >=3.12 (as it depends on flakeheaven)
-
-### Run and fix toml-formatter errors in place
+for more information. To run the commands, extra dependency groups need to be installed, which can be achieved by running
 ```shell
-toml-formatter check --fix-inplace /PATH/TO/FILE
+poetry install --all-groups
 ```
 
-### Run linters and exit with an error if non-linted code is detected
+### Run and fix toml formatting in place
 ```shell
-poetry devtools lint
+pre-commit run tombi-format --files /PATH/TO/FILE
 ```
+
 
 ### Run linters and **attempt** to fix eventually encountered errors
 ```shell
-poetry devtools lint --fix
+make lint
 ```
 This will stop with an error if the encountered issues cannot be fixed.
 
-### Runthe typical checks for things you need to fix prior to a push
+### Run the typical checks for things you need to fix prior to a push
 ```shell
-poetry devtools pre-push-checks
+make pre-push-checks
 ```
 
 ### Run tests
@@ -78,19 +75,19 @@ pytest
 ```
 or
 ```shell
-poetry devtools pytest
+make test
 ```
 
 ### Generate and view the documentation to be published to our [docpages](https://destination-earth-digital-twins.github.io/deode-workflow-docs/)
 
 ```shell
-poetry devtools doc clean
-poetry devtools doc build
-poetry devtools doc view
+make doc-clean
+make doc-build
+make doc-view
   ```
 or, combining them all:
 ```shell
-poetry devtools doc
+make doc
 ```
 
 # Testing on Atos and LUMI
@@ -155,11 +152,11 @@ These branches are created and reside in developers' personal forks of the upstr
 **`release/vX.Y.Z` branches**:
    - Created to prepare a new release.
    - Based on the `develop` branch.
-   - Merged back into the upstream's `develop` branch upon completion.
+   - Merged back into the upstream's `master` and `develop` branch upon completion.
 
 **`binary-update/vX.Y.Z` branches**:
    - Created to update the binary versions used by the specific version (`vX.Y.Z`) of Deode-Workflow .
-   - Based on the `develop` branch.
+   - Based on the `master` branch.
    - Merged back into `master` in the upstream repository.
 
 <br>
@@ -208,7 +205,7 @@ This is e.g. relevant, when tagging a new release on the upstream's `master` bra
       ```
  3. Implement the fix and push the branch to your fork.
  4. Follow step 3-5 from the section "Creating a New Release" to adjust version numbers and changelog.
- 5. 
+ 5.
     a. Most likely scenario: If the issue affects the latest release (even if created by a previous release):
 
      1. Create a pull request to merge the hotfix into the upstream's `master` branch. Follow the best practices on creating a PR, requesting review and merging as outlined in the PR instructions.
@@ -236,18 +233,13 @@ This is e.g. relevant, when tagging a new release on the upstream's `master` bra
     ```bash
     git push origin release/vX.Y.Z
     ```
-7. Create a pull request to merge the `release/vX.Y.Z` branch into the upstream's `develop` branch. Follow the instructions in the PR.
-8. When the PR to develop has been merged, determine if the release requires updates of binary versions
+7. Create two new pull requests to merge the `release/vX.Y.Z` branch into the upstream's `master` and `develop` branch, respectively. Follow the instructions in the PRs.
+8. When the PR to master has been merged, determine if the release requires updates of binary versions. If this is the case:
+   1. Create a `binary-update/vX.Y.Z` branch in your fork based on the upstream's `master` branch.
+   2. Implement the necessary changes and push the branch to your fork.
+   3. Create a pull request to merge the `binary-update/vX.Y.Z` branch back into the upstream's `master` branch. Follow the instructions in the PR.
 
-   a. If yes:
-      1. Create a `binary-update/vX.Y.Z` branch in your fork based on the upstream's `develop` branch.
-      2. Implement the necessary changes and push the branch to your fork.
-      3. Create a pull request to merge the `binary-update/vX.Y.Z` branch into the upstream's `master` branch. Follow the instructions in the PR.
-
-   b. If no:
-
-      1. Create a pull request to merge the upstream's `develop` branch into the upstream's `master` branch. Follow the instructions in the PR.
-9. Once the pull request is approved and merged, create a new tag on the `master` branch, while still in your own fork:
+9. Once the above pull requests have been approved and merged, create a new tag on the `master` branch, while still in your own fork:
     ```bash
     git checkout master
     git pull upstream master
@@ -266,7 +258,7 @@ This is e.g. relevant, when tagging a new release on the upstream's `master` bra
 
 11. If the release is not a legacy-support hotfix release
     1.  Create a pull request to merge the master branch back into the develop branch. Follow the instructions in the PR.
-    
+
     > :warning: **IMPORTANT**: When merging, revert the binary updates implemented in 8.a above, as the develop branch should always refer to the `latest` tag of binaries.
 
 
@@ -281,4 +273,4 @@ This is e.g. relevant, when tagging a new release on the upstream's `master` bra
 | `bugfix/<name>`              | Developers' Fork           | For resolving bugs found during development. Based on `develop`.                                  |
 | `hotfix/<name>`              | Developers' Fork           | For critical fixes to released versions. Based on `master`.|
 | `release/vX.Y.Z`          | Developers' Fork           | To prepare a new release. Based on `develop`.|
-| `binary-update/vX.Y.Z`    | Developers' Fork           | To update binary versions, when releasing a new release to master. Based on `develop`.|
+| `binary-update/vX.Y.Z`    | Developers' Fork           | To update binary versions, when releasing a new release to master. Based on `master`.|

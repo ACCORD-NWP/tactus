@@ -18,7 +18,7 @@ If `files` are given as dictionary then one can specify a different target file 
   "group_name": {
     "path": "source_folder_path",
     "files": {
-        "target_file_name" : "source_file_name", 
+        "target_file_name" : "source_file_name",
     }
   }
 ```
@@ -34,7 +34,7 @@ E923 monthly might iterate over one or more months, a build-in macro `@MM@` will
 
 
 ### Copy files in stead of linking
-By default the files will be linked. By specifying the optional key `provider_id` one can specify any supported provider_id that can be handled by the filemanager, for example 
+By default the files will be linked. By specifying the optional key `provider_id` one can specify any supported provider_id that can be handled by the filemanager, for example
 ```
   "group_name": {
     "path": "source_folder_path",
@@ -56,7 +56,7 @@ To keep the workdir clean between different parts one can specify that links sho
 will link file1 and file2 into the workdir and when `part2` is finished the linked will be removed.
 
 ### Parameterized files
-Optionally it is possible to specify parameterized filenames. The values for the parameter can be specified as a list with the key `param`. Iterating over this `param` list the the macro `@PARAM@` in the target/source filename will be replaced by the value. So 
+Optionally it is possible to specify parameterized filenames. The values for the parameter can be specified as a list with the key `param`. Iterating over this `param` list the the macro `@PARAM@` in the target/source filename will be replaced by the value. So
 ```
   "group_name": {
     "param": ["a", "b", "c"],

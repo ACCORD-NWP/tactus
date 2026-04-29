@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
+
 import os
 from unittest.mock import patch
 
@@ -16,7 +17,7 @@ def suite_name():
     return "test_suite"
 
 
-@pytest.fixture()
+@pytest.fixture
 @patch("tactus.scheduler.ecflow")
 def ecflow_task(__):
     ecf_name = f"/{suite_name}/family/Task"
@@ -28,7 +29,7 @@ def ecflow_task(__):
 
 
 # TODO: The mocked ecflow module is treated as the config, but it is not a config
-@pytest.fixture()
+@pytest.fixture
 @patch("tactus.scheduler.ecflow")
 def ecflow_server(parsed_config):
     config = parsed_config

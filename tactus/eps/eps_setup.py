@@ -57,7 +57,7 @@ class EPSGeneralConfigs:
     members: List[int]
 
     @field_validator("members", mode="before")
-    def validate_members(cls, value: str | int | List[int]) -> List[int]:  # noqa: N805
+    def validate_members(cls, value: str | int | List[int]) -> List[int]:
         """Validate and infer members from the members string.
 
         Accepts ints or list of ints too.
@@ -103,7 +103,9 @@ class EPSConfig:
 
     @field_validator("member_settings", mode="before")
     def validate_expandables(
-        cls, value: Any | Dict[str, Any], previous_key: Any = None  # noqa: N805
+        cls,
+        value: Any | Dict[str, Any],
+        previous_key: Any = None,
     ):
         """Validate expected format of expandable fields."""
         # If the value is a dictionary, check if it contains expandable keys.
@@ -314,19 +316,17 @@ def check_expandable_keys(mapping: Mapping[str, Any]) -> List[bool]:
     Args:
         mapping: The mapping to check.
 
-    Raises:
-        TypeError: If the keys of the mapping are not strings.
-
     Returns:
         A list of booleans indicating if the keys are expandable.
+
+    Raises:
+        TypeError: If the keys of the mapping are not strings.
     """
     current_keys = mapping.keys()
     if not all(isinstance(key, str) for key in current_keys):
         raise TypeError("Keys in mapping must be strings.")
 
-    expandable_keys = [is_expandable(key_) for key_ in current_keys]
-
-    return expandable_keys
+    return [is_expandable(key_) for key_ in current_keys]
 
 
 def get_expandable_keys(
@@ -371,13 +371,12 @@ def get_member_config(config: ParsedConfig, member: int) -> ParsedConfig:
         config: The parsed config.
         member: The member index.
 
-    Raises:
-        KeyError: If the members list is not present in the config.
-        ValueError: If the member is not in the members list.
-
     Returns:
         The new instance of the dataclass.
 
+    Raises:
+        KeyError: If the members list is not present in the config.
+        ValueError: If the member is not in the members list.
     """
     # Get a clean dict of the default member settings. Needed to be able
     # to merge the default settings with the specific member settings.
@@ -444,11 +443,11 @@ def infer_members(members: str | int | List[int]) -> List[int]:
     Args:
         members: The members string, integer or list to infer members from.
 
-    Raises:
-        TypeError: If members is not an int, str or Sequence of ints.
-
     Returns:
         List[int]: The inferred members.
+
+    Raises:
+        TypeError: If members is not an int, str or Sequence of ints.
     """
     if isinstance(members, int):
         members_inferred = [members]

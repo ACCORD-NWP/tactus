@@ -179,7 +179,7 @@ class ExpFromFiles(Exp):
                 returned = ExpFromFiles.deep_update(source.get(key, {}), value)
                 source[key] = returned
             else:
-                override = overrides[key]
+                override = value
                 source[key] = override
 
         return source
@@ -199,11 +199,10 @@ class ExpFromFiles(Exp):
             exp_dependencies(dict): Experiment dependencies from setup.
 
         """
-        exp_dependencies = {
+        return {
             "tmp_outfile": f"{output_file}.tmp.{os.getpid()}.toml",
             "case": case,
         }
-        return exp_dependencies
 
 
 class EPSExp(Exp):
@@ -362,7 +361,7 @@ def case_setup(
     if expand_config:
         tactus_home = set_tactus_home(config)
         exp.config = exp.config.copy(update={"platform": {"tactus_home": tactus_home}})
-        exp.config = exp.config.expand_macros()
+        exp.config = exp.config.expand_macros(protect_time=True)
 
     if output_file is None or ".toml" not in str(output_file):
         output_dir = output_file
@@ -406,7 +405,8 @@ def get_git_info():
     for label, cmd in gitcmds.items():
         with contextlib.suppress(subprocess.CalledProcessError):
             git_info[label] = (
-                subprocess.check_output(cmd, stderr=subprocess.DEVNULL)  # noqa S603
+                subprocess
+                .check_output(cmd, stderr=subprocess.DEVNULL)
                 .strip()
                 .decode("utf-8")
             )
@@ -414,7 +414,8 @@ def get_git_info():
         remote = git_info["remote"].split("/")[0]
         cmd = ["git", "remote", "get-url", remote]
         git_info["remote_url"] = (
-            subprocess.check_output(cmd, stderr=subprocess.DEVNULL)  # noqa S603
+            subprocess
+            .check_output(cmd, stderr=subprocess.DEVNULL)
             .strip()
             .decode("utf-8")
         )

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """General utils for use throughout the package."""
+
 import copy
 from collections import defaultdict
 from collections.abc import Mapping, Sequence
@@ -34,9 +35,9 @@ def _modify_mappings_via_callable(obj, operator: Callable[[Mapping], Any]):
             return copy.deepcopy(obj)
         except TypeError:
             return obj
-    return operator(
-        {k: _modify_mappings_via_callable(v, operator=operator) for k, v in obj.items()}
-    )
+    return operator({
+        k: _modify_mappings_via_callable(v, operator=operator) for k, v in obj.items()
+    })
 
 
 def _update_mapping(obj, updates: Mapping):
@@ -81,7 +82,7 @@ def recursive_dict_deviation(base_dict: dict, deviating_dict: dict) -> dict:
         # If value is not dict, we have reached the end of the current branch
         # of deviating_dict. Update deviation if the value is different from
         # the base_dict value, or if the key does not exist in base_dict.
-        elif key in base_dict and base_dict[key] != value or key not in base_dict:
+        elif (key in base_dict and base_dict[key] != value) or key not in base_dict:
             deviation[key] = value
 
     return deviation
@@ -160,13 +161,13 @@ def expand_string_slice(
         string (int | str): The string to expand
         indices (List[int]): Indices to respect, i.e. for max/min bounds
 
-    Raises:
-        ValueError: If string, that is not a slice string, cannot be converted
-            to int
-
     Yields:
         Generator[int | List[int], None, None]: The expanded string returned as
             a generator.
+
+    Raises:
+        ValueError: If string, that is not a slice string, cannot be converted
+            to int
     """
     # Check if key is a slice
     if ":" in str(string):
@@ -228,18 +229,13 @@ def expand_dict_key_slice(
     Returns:
         dict: New dict with expanded keys.
     """
-    expanded_dict = {}
 
     def generate_key_value_pairs() -> Generator[Tuple[int, Any], None, None]:
         for key, value in dict_.items():
             for expanded_key in expand_string_slice(key, indices):
                 yield expanded_key, value
 
-    for key, value in generate_key_value_pairs():
-        if key in indices:
-            expanded_dict[key] = value
-
-    return expanded_dict
+    return {key: value for key, value in generate_key_value_pairs() if key in indices}
 
 
 def merge_dicts(dict1: dict, dict2: dict, overwrite: bool = False) -> dict:
@@ -270,9 +266,9 @@ def merge_dicts(dict1: dict, dict2: dict, overwrite: bool = False) -> dict:
                 new_dict[key2] = merge_dicts(new_dict[key2], val2, overwrite=overwrite)
             elif isinstance(val2, list):
                 if isinstance(new_dict[key2], list):
-                    new_dict[key2].extend(
-                        [val for val in val2 if val not in new_dict[key2]]
-                    )
+                    new_dict[key2].extend([
+                        val for val in val2 if val not in new_dict[key2]
+                    ])
                 else:
                     new_dict[key2] = val2
             elif overwrite:
@@ -305,11 +301,60 @@ def recursive_delete_keys(mapping: Dict[str, Any], keys_dict: Dict[str, bool]):
                 del mapping[key]
 
 
-def recursive_substitute(value, platform):
-    """Recursively substitute variables in a nested dictionary."""
+def recursive_substitute(value, platform, pos: Optional[List[str]] = None):
+    """Recursively substitute variables in a nested dictionary.
+
+    Substitution is mainly done on value-level, but full configuration subtrees can be
+    copied using the magic keys COPY (copies only all the values at the specified key)
+    and COPYALL (copies all the values at the specified key, nestedly).
+
+    Args:
+        value: Value to substitute macros
+        platform: The platform used to substitute values
+        pos: current path-like position in the config tree (as used for COPYALL)
+
+    Returns:
+        subsituted value
+    """
+    key_basic_copy = "COPY"
+    key_deep_copy = "COPYALL"
+
+    if pos is None:
+        pos = []
+
     if isinstance(value, dict):
+        do_basic_copy = key_basic_copy in value
+        do_deep_copy = key_deep_copy in value
+
+        if do_deep_copy or do_basic_copy:
+            key = ".".join(pos)
+            config_dict = platform.get_value(key).dict()
+
+            if do_deep_copy:
+                logger.info(f"Found .{key_deep_copy} key at {key}; deep copy data.")
+                value.pop(key_deep_copy)
+            elif do_basic_copy:
+                logger.info(f"Found .{key_basic_copy} key at {key}; copy data.")
+                value.pop(key_basic_copy)
+                config_dict = {
+                    k: v for k, v in config_dict.items() if not isinstance(v, dict)
+                }
+
+            base_value = recursive_substitute(config_dict, platform)
+
+        else:
+            base_value = {}
+
+        if base_value:
+            value = merge_dicts(base_value, value)
+
         for key, val in value.items():
-            value[key] = recursive_substitute(val, platform)
+            value[key] = recursive_substitute(val, platform, pos=[*pos, key])
     else:
+        for type_name in [tuple, list]:
+            if isinstance(value, type_name):
+                value = type_name(map(platform.substitute, value))
+
         value = platform.substitute(value)
+
     return value

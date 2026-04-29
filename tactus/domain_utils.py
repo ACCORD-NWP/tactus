@@ -12,7 +12,7 @@ def get_domain(config) -> Dict[str, Any]:
         Dictionary containing the domain
     """
     # Get domain specs
-    domain = {
+    return {
         "nlon": config["domain.nimax"],
         "nlat": config["domain.njmax"],
         "latc": config["domain.xlatcen"],
@@ -23,5 +23,3 @@ def get_domain(config) -> Dict[str, Any]:
         "xdy": config["domain.xdy"],
         "gsize": config["domain.xdx"],
     }
-
-    return domain

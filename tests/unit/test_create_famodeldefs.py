@@ -36,9 +36,9 @@ def test_create_famodeldefs_output_format(tmp_path, default_config):
     line_re = re.compile(r"^'.+'\s*=\s*\{.*;\s*\}$")
     for line in lines:
         if line.startswith("'default'"):
-            assert line.startswith(
-                "'default' = {"
-            ), f"Line does not start with expected prefix: {line}"
+            assert line.startswith("'default' = {"), (
+                f"Line does not start with expected prefix: {line}"
+            )
             assert line.endswith("}"), f"Line does not end with expected suffix: {line}"
         else:
             assert line_re.match(line), f"Line does not match format: {line}"

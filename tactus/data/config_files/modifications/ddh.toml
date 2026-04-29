@@ -15,7 +15,7 @@
   gen_macros = [{xloncen = "domain.xloncen"}, {xlatcen = "domain.xlatcen"}]
 
 [namelist_update.master.forecast.NAMCT0]
-  NDHFDTS = '${steplist:${cfg:general.output_settings.ddh_dl}}'
+  NDHFDTS = "${steplist:${cfg:general.output_settings.ddh_dl}}"
   NFRDHFD = 1
   NFRDHFG = 1
   NFRDHFZ = 1
