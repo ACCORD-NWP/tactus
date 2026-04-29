@@ -54,8 +54,8 @@ projects :
             ECCODES_ENABLE_JPG_LIBOPENJPEG=OFF
 
     - ial-source :
-        git     : ${GITHUB}/ACCORD-NWP/IAL
-        version : develop
+        git     : ${GITHUB}/pardallio/ACCORD-IAL
+        version : feature/toolchain-flags
         bundle  : false
         gmkpack : 'src/local'
         gmkpack_filter_file : '.gmkpack_ignored'
@@ -153,6 +153,11 @@ projects :
         version : ial_bundle
         bundle  : false
         gmkpack : 'None'
+
+    - gribex :
+         dir     : auxlibs/gribex_370
+         require : auxlibs
+         gmkpack : 'None'
 
     - bufr :
          dir     : auxlibs/bufr_405
