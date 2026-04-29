@@ -90,7 +90,7 @@ or, combining them all:
 make doc
 ```
 
-# Testing on Atos
+## Testing on Atos
 For testing of a number of configurations we use https://github.com/ACCORD-NWP/tactus-test-runner which launches a number of ecflow suites. Install the package and make yourself familiar with the environment. For individual PR testing the minimum should be:
 ```
  selection = [
@@ -166,6 +166,7 @@ These branches are created and reside in developers' personal forks of the upstr
 ![git_branch_structure](/figs/git_branch_structure.svg)
 
 *Git branching structure with hotfix to an older release:*
+
 ![git_branch_structure](/figs/git_branch_structure_legacy_support.svg)
 
 ### Workflow

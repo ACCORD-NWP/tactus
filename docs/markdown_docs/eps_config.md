@@ -1,6 +1,6 @@
 # EPS Configuration by design
 
-The  treats every run as an ensemble run. A deterministic run is thus just a special case of an ensemble with only one member. Furthermore, an ensemble in tactus is not limited to consist of a control member and a number of perturbed members. Instead, think of it as an ensemble of configurations, where each member "perturb" the default configuration. One can e.g. think of running an ensemble of
+Tactus treats every run as an ensemble run. A deterministic run is thus just a special case of an ensemble with only one member. Furthermore, an ensemble in tactus is not limited to consist of a control member and a number of perturbed members. Instead, think of it as an ensemble of configurations, where each member "perturb" the default configuration. One can e.g. think of running an ensemble of
 - a set of different model configurations (e.g. different physics options, different
   initial conditions, different boundary conditions, etc.)
 - a set of different CSCs
@@ -13,7 +13,7 @@ Basically any configuration setting can be "perturbed", i.e. configured differen
 
 ## Running a minimal ensemble
 
-To get hands-on running an ensemble, the  ships with a bunch of example eps include files. To enable one of them, one has to include the file in the configuration or on the commandline. The example eps include files are available in the
+To get hands-on running an ensemble, tactus ships with a bunch of example eps include files. To enable one of them, one has to include the file in the configuration or on the commandline. The example eps include files are available in the
 `tactus/data/config_files/include/eps/` directory.
 E.g. to run a 1 control + 2 perturbed members (using IFSENS boundary data) ensemble, one can use the `tactus/data/config_files/include/eps/eps_3members_IFSENS_common_mars_prep` and do
 
@@ -283,7 +283,7 @@ then the three modification files will be merged into the resulting config file 
 > - The settings in the modification files will overwrite any existing value for that setting.
 > - The general.times.start setting is set to "-P1D" by default, to make the example able to run out-of-the-box, since IFSENS data is only available in mars for the past two weeks.
 
-Now to the 3 CSC ensemble example. To set this up, one needs to have the following in the eps config file (NOTE: the exact modification file paths may change with the  version):
+Now to the 3 CSC ensemble example. To set this up, one needs to have the following in the eps config file (NOTE: the exact modification file paths may change with the tactus version):
 
 ```toml
 [suite_control]
@@ -304,7 +304,7 @@ The `member_specific_static_data = true` setting is needed since the static data
 
 ## Configuring EPS in general terms
 
-This section describes how to configure an ensemble in  in general terms. All configuration described below should be applied to a `.toml` file, that is included when running the `tactus case` command, as described in [Running a minimal ensemble](#running-a-minimal-ensemble).
+This section describes how to configure an ensemble in tactus in general terms. All configuration described below should be applied to a `.toml` file, that is included when running the `tactus case` command, as described in [Running a minimal ensemble](#running-a-minimal-ensemble).
 
 In the `[eps.general]` section, one can set the members that should be part of the ensemble. The `members` setting can either be
 
@@ -319,7 +319,7 @@ The default value for `step` is 1, so `start:stop` is equivalent to `start:stop:
 The above rules also apply for the `bdmember` setting.
 
 To adjust the default member settings to ones needs, one can set member specific settings
-for basically any existing settings of the  config file. There are various
+for basically any existing settings of the tactus config file. There are various
 ways to do this, but in any case the settings shall be placed under the
 `[eps.member_settings]` section in the eps include file with the full original
 config section string appended to "`eps.member_settings`". E.g. to adjust the

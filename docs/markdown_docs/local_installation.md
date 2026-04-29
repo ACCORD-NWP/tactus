@@ -122,7 +122,7 @@ Activate your micromamba environment as above then install tactus and all it's d
 poetry install
 poetry self update
 ```
-Acitvate poetry by
+Activate poetry by
 ```
 poetry env activate
 poetry shell
