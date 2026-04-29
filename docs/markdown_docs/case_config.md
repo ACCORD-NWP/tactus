@@ -40,27 +40,6 @@ tactus case ?tactus/data/config_files/configurations/cy49t2_alaro -o test.toml -
 
 To see all commands available for the case functionality run `tactus case --help`.
 
-## Adding a new host
-
-The host you're running on can be recognized either through the host name or by identifying a specific environment variable. This is configured in `tactus/data/config_files/known_hosts.yml`. In the example below we see how `atos_bologna` and `lumi` are regonized via a hostname regular expression whereas `freja` is recognized from a specific environment variable.
-
-```
-atos_bologna:
-  hostname: "ac\\d-\\d\\d\\d"
-lumi:
-  hostname: "uan\\d\\d"
-freja:
-  env:
-    SNIC_RESOURCE: "freja"
-linda:
-  env:
-    SMHI_DIST: "linda\\d+"
-leonardo:
-  hostname: ".*leonardo.*"
-```
-
-Any new host should be added in the same way and the names for the configuration files for `platform`, `scheduler` and submission should be named using the given hostname.
-
 ## Time handling
 
 A typical use case is to run the same configuration for a number of dates or a longer period. The example above could easily be modified to run for any arbitrary date by running
