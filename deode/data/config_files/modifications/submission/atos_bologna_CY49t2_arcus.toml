@@ -1,0 +1,5 @@
+[submission.task_exceptions.GlBd]
+  bindir = "@BINDIR_GL@"
+
+[submission.task_exceptions.GlBd.BATCH]
+  MEM = "#SBATCH --mem=24GB"

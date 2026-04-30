@@ -31,8 +31,6 @@ selection:
    CL2DF:
     - 'SURFPRESSION'
     - 'MSLPRESSURE'
-    - 'SURFREFLECT.MAX'
-    - 'REFLECT_DBZ.MAX'
   NAMFPDYH:
    CL3DF:
     - 'HUMI_RELATIVE'

@@ -49,7 +49,10 @@
   poetry = "/home/snh02/.local/bin/poetry"
 
 [platform.impact.ehype]
-  path = "/home/snh02/DE_Impact/EHYPE/forecast/pyflow/utils"
+  path = "/home/snh02/DE_Impact/EHYPE_v1.3.2/forecast/pyflow/utils"
+
+[platform.impact.dwml]
+  path = "/perm/snh02/DE_Impact/DWML/Deode-ML-Workflow"
 
 [platform.impact.nwp2windpower]
   path = "/perm/@USER@/DE_Impact/nwp2windpower"
@@ -60,3 +63,6 @@
 
 [platform.impact.wildfire]
   path = "/perm/@USER@/DE_Impact/wildfire"
+
+[platform.impact.nowcasting]
+  path = "/perm/@USER@/DE_Impact/Deode-Nowcasting"

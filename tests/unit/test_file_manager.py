@@ -56,6 +56,13 @@ def parsed_config_with_paths(config_platform):
 class TestFileManager:
     """Test FileManager."""
 
+    def test_non_existing_provider(self, parsed_config_with_paths):
+        fmanager = FileManager(parsed_config_with_paths)
+        with pytest.raises(NotImplementedError):
+            provider, resource = fmanager.get_input(
+                "foo", "bar", provider_id="does_not_exist"
+            )
+
     def test_input_files(self, tmp_directory, parsed_config_with_paths):
         """Test input files."""
         tmp = tmp_directory

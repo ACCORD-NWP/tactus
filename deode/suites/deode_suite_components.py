@@ -512,7 +512,7 @@ class MirrorFamily(EcflowSuiteFamily):
             )
 
         if config["suite_control.mirror_host_case"]:
-            mirror_config = config["scheduler.mirror_host_case"].dict()
+            mirror_config = config.get_as_dict("scheduler.mirror_host_case")
             remote_host = mirror_config["remote_host"]
             remote_host = platform.substitute(remote_host)
             mirror_config["remote_host"] = platform.evaluate(
@@ -537,7 +537,7 @@ class MirrorFamily(EcflowSuiteFamily):
             )
 
         if config["suite_control.mirror_offline"]:
-            mirror_config = config["scheduler.mirror_offline"].dict()
+            mirror_config = config.get_as_dict("scheduler.mirror_offline")
             mirror_config["remote_path"] = platform.substitute(
                 mirror_config["remote_path"], validtime=cycle_valid
             )
@@ -734,8 +734,9 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
         self.limit = limit
         self.bdint = bdint
         self.member = member
-        self.do_slaf = do_slaf
-        if do_slaf:
+        self.do_glprep = self.config.get("suite_control.do_glprep", False)
+        self.do_slaf = do_slaf and not self.do_glprep
+        if self.do_slaf:
             # Must not exhaust the generator in the planning
             ltg1, ltg2 = tee(lbc_time_generator)
             self.lbc_time_generator = ltg1
@@ -747,11 +748,14 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
     def __iter__(self):
         if self.do_slaf:
             bdshift = [as_timedelta("PT0H") for i in range(3)]
+        if self.config["suite_control.do_marsprep"]:
+            interpolation_task_name = "C903"
+        elif self.do_glprep:
+            interpolation_task_name = "GlBd"
+        else:
+            interpolation_task_name = "E927"
         for bd_index_time_dict in self.lbc_time_generator:
             bd_index_time_dict_sst = bd_index_time_dict.copy()
-            interpolation_task_name = (
-                "C903" if self.config["suite_control.do_marsprep"] else "E927"
-            )
             if (
                 self.config["suite_control.mode"] == "restart" and 0 in bd_index_time_dict
             ) or (
@@ -1744,16 +1748,17 @@ class MergeSQLitesFamily(EcflowSuiteFamily):
             trigger=trigger,
             ecf_files_remotely=ecf_files_remotely,
         )
-        EcflowSuiteTask(
-            "ArchiveMergedSQLites",
-            self,
-            config,
-            task_settings,
-            ecf_files,
-            trigger=merge_sqlites,
-            input_template=input_template,
-            ecf_files_remotely=ecf_files_remotely,
-        )
+        if config["suite_control.do_archiving"]:
+            EcflowSuiteTask(
+                "ArchiveMergedSQLites",
+                self,
+                config,
+                task_settings,
+                ecf_files,
+                trigger=merge_sqlites,
+                input_template=input_template,
+                ecf_files_remotely=ecf_files_remotely,
+            )
 
 
 class SLAFpartFamily(EcflowSuiteFamily):

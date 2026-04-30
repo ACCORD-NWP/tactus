@@ -8,8 +8,10 @@ import re
 import sys
 from typing import Any, Union
 
+import boto3
 import geohash
 import tomlkit
+from botocore.exceptions import ClientError
 from isodate import parse_duration
 from troika.connections.ssh import SSHConnection
 
@@ -148,7 +150,7 @@ class Platform:
         """Fill each of the macros."""
         group_macros = f"{macro_config}.group_macros"
         for source in self.config.get(group_macros, []):
-            for macro, val in self.config[source].dict().items():
+            for macro, val in self.config.get_as_dict(source).items():
                 self.store_macro(macro.upper(), val)
 
         os_macros = f"{macro_config}.os_macros"
@@ -173,7 +175,7 @@ class Platform:
             dict: Macros to define.
 
         """
-        return list(self.config["system"].dict().keys())
+        return list(self.config.get_as_dict("system").keys())
 
     def get_os_macros(self):
         """Get the environment macros.
@@ -266,26 +268,24 @@ class Platform:
             NotImplementedError: If provider not defined.
 
         """
-        # TODO handle platform differently archive etc
-        if provider_id == "symlink":
-            return LocalFileSystemSymlink(self.config, target, fetch=fetch)
+        providers = {
+            "symlink": LocalFileSystemSymlink,
+            "copy": LocalFileSystemCopy,
+            "move": LocalFileSystemMove,
+            "ecfs": ECFS,
+            "fdb": FDB,
+            "scp": SCP,
+            "s3": S3,
+        }
 
-        if provider_id == "copy":
-            return LocalFileSystemCopy(self.config, target, fetch=fetch)
+        try:
+            provider_cls = providers[provider_id]
+        except KeyError:
+            raise NotImplementedError(
+                f"Provider for {provider_id} not implemented"
+            ) from None
 
-        if provider_id == "move":
-            return LocalFileSystemMove(self.config, target, fetch=fetch)
-
-        if provider_id == "ecfs":
-            return ECFS(self.config, target, fetch=fetch)
-
-        if provider_id == "fdb":
-            return FDB(self.config, target, fetch=fetch)
-
-        if provider_id == "scp":
-            return SCP(self.config, target, fetch=fetch)
-
-        raise NotImplementedError(f"Provider for {provider_id} not implemented")
+        return provider_cls(self.config, target, fetch=fetch)
 
     def sub_value(self, pattern, key, value, micro="@", ci=True):
         """Substitute the value case-insensitively.
@@ -523,7 +523,7 @@ class Platform:
         for sub_pattern in sub_patterns:
             with contextlib.suppress(KeyError):
                 if "." in sub_pattern:
-                    val = self.config.get(sub_pattern.lower())
+                    val = self.config.get(sub_pattern.lower(), None)
                     if val is None:
                         continue
                 else:
@@ -903,7 +903,9 @@ class FileManager:
             )
 
             logger.debug(
-                "Set output for target={} to destination={}", sub_target, sub_destination
+                "Set output for target={} to destination={}",
+                sub_target,
+                sub_destination,
             )
 
             logger.info("Checking archive provider_id {}", provider_id)
@@ -1276,11 +1278,7 @@ class FDB(ArchiveProvider):
             RuntimeError: If user is not allowed to archive for this expver
         """
         user = os.environ["USER"]
-        expver_restrictions = self.config["fdb.expver_restrictions"]
-
-        # Convert to dictionary if necessary
-        if hasattr(expver_restrictions, "dict"):
-            expver_restrictions = expver_restrictions.dict()
+        expver_restrictions = self.config.get_as_dict("fdb.expver_restrictions")
 
         # Iterate over items in expver_restrictions
         for key, value in expver_restrictions.items():
@@ -1325,7 +1323,7 @@ class FDB(ArchiveProvider):
 
         """
         rules = self.config.get("fdb.negative_rules", {})
-        grib_set = dict(self.config["fdb.grib_set"])
+        grib_set = self.config.get("fdb.grib_set")
         if "expver" not in grib_set:
             msg = """
             Please set expver in the config section fdb.grib_set before archiving to FDB
@@ -1400,6 +1398,74 @@ def compute_georef(domain_config):
     lon_center = domain_config["xloncen"]
 
     return geohash.encode(longitude=lon_center, latitude=lat_center, precision=6)
+
+
+class S3(ArchiveProvider):
+    """Transfer data with S3."""
+
+    def __init__(self, config, pattern, fetch=True):
+        """Construct S3 provider.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+            pattern (str): Filepattern
+            fetch (bool, optional): Fetch the data. Defaults to True.
+        """
+        ArchiveProvider.__init__(self, config, pattern, fetch=fetch)
+
+    def create_resource(self, resource):
+        """Create the resource.
+
+        Args:
+            resource (Resource): Resource.
+
+        Returns:
+            bool: True if success
+
+        Raises:
+            RuntimeError: If resource is not created
+
+        """
+        if "s3_endpoint_url" in self.config["system"]:
+            s3_endpoint_url = self.config["system.s3_endpoint_url"]
+        else:
+            raise RuntimeError(
+                "Error creating S3 provider, system.s3_endpoint_url missing in config"
+            )
+
+        try:
+            s3 = boto3.client("s3", endpoint_url=s3_endpoint_url)
+        except ClientError as e:
+            raise RuntimeError(
+                f"Error '{e}' creating S3 client for s3_endpoint_url={s3_endpoint_url}"
+            ) from None
+
+        if self.fetch:
+            logger.debug("s3 src={} to dst={}", self.identifier, resource.identifier)
+            parts = self.identifier.split("/")
+            s3_bucket_name = parts[0]
+            file_name = "/".join(parts[1:])
+            local_dir = os.path.dirname(resource.identifier)
+            if not os.path.isdir(local_dir):
+                os.makedirs(local_dir, mode=0o755, exist_ok=True)
+                logger.info("Created local directory {}", local_dir)
+            logger.debug(
+                "s3 download, s3_bucket_name={}, file_name={}, resource.identifier={}",
+                s3_bucket_name,
+                file_name,
+                resource.identifier,
+            )
+            s3.download_file(s3_bucket_name, file_name, resource.identifier)
+        else:
+            logger.debug("s3 src={} to dst={}", resource.identifier, self.identifier)
+            parts = self.identifier.split("/")
+            s3_bucket_name = parts[0]
+            file_name = "/".join(parts[1:])
+            # This is untested (Arcus is read only)
+            response = s3.upload_file(resource.identifier, s3_bucket_name, file_name)
+            logger.debug("s3 upload, response={}", response)
+
+        return True
 
 
 class Resource:

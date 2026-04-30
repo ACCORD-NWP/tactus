@@ -112,6 +112,7 @@ selection:
       CLPHY:
       - SURFTEMPERATURE
       - SURFRESERV.NEIGE
+      - SURFIND.TERREMER
       CLXFU:
       - SURFINSPLUIE
       - CLSTEMPERATURE

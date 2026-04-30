@@ -115,6 +115,7 @@ selection:
       CLPHY:
       - SURFTEMPERATURE
       - SURFRESERV.NEIGE
+      - SURFIND.TERREMER
       CLXFU:
       - CLSTEMPERATURE
       - CLSHUMI.RELATIVE

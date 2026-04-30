@@ -1,11 +1,16 @@
 """Impact model classes."""
 
 import contextlib
+import copy
 import os
+import shutil
+import subprocess
+import sys
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
+import tomlkit
 from git import GitCommandError, Repo
 
 from deode.config_parser import BasicConfig
@@ -34,6 +39,10 @@ class BaseImpactModel:
             if subclass.name == name:
                 return super(BaseImpactModel, subclass).__new__(subclass)
         raise ValueError(f"No valid BaseImpactModel subclass found for name: {name}")
+
+    def adjust(self, com):
+        """Basic dummy method."""
+        return com
 
     def run(self):
         """Starts a plugin suite.
@@ -93,7 +102,8 @@ class BaseImpactModel:
         config_name = self.platform.substitute(self.config.get("config_name"))
 
         if config_name is not None:
-            logger.info(" communication keys: {}", com)
+            com = self.adjust(com)
+            logger.debug(" communication keys: {}", com)
             # Write the config file
             if len(com) > 0:
                 deodemakedirs(
@@ -101,6 +111,7 @@ class BaseImpactModel:
                     unixgroup=self.platform.get_value("platform.unix_group"),
                     exist_ok=True,
                 )
+                logger.info("Save impact model config as {}", config_name)
                 BasicConfig(com).save_as(config_name)
         elif len(com) > 0:
             logger.warning("Found keys to communicate but config_name not set.")
@@ -189,12 +200,51 @@ class BaseImpactModel:
     def __str__(self):
         return self.name
 
+    def get_fdb_output_info(self):
+        """Build a dict of fdb keys for output.
+
+        Returns:
+            fdb_out (dict): Dict with appropriate grib keys to set
+        """
+        fdb_out = None
+        expver = self.config.get("communicate").get("output_expver")
+        if expver is not None:
+            fdb_out = self.config.get("communicate").get("fdb")
+            fdb_out = fdb_out["grib_set"]
+            fdb_out["expver"] = expver
+
+        return fdb_out
+
 
 @dataclass()
 class Ehype(BaseImpactModel):
     """EHYPE specific methods."""
 
     name = "ehype"
+
+    def adjust(self, com):
+        """Adjust keys to fit EHYPE needs."""
+        new_com = copy.deepcopy(com)
+
+        new_com["fdb_output"] = self.get_fdb_output_info()
+
+        # Remove EHYPE hostile keys
+        if "fdb_request" in new_com:
+            for key in ["number", "step"]:
+                new_com["fdb_request"].pop(key, None)
+
+        for key in ["fdb", "output_expver"]:
+            new_com.pop(key, None)
+
+        _members = (
+            new_com["members"]
+            if isinstance(new_com["members"], list)
+            else list(new_com["members"])
+        )
+        members = ",".join([f"mbr{x:03}" for x in _members])
+        new_com["members"] = members
+
+        return new_com
 
 
 @dataclass()
@@ -223,6 +273,85 @@ class AQModels(BaseImpactModel):
     """Verification specific methods."""
 
     name = "aq"
+
+
+@dataclass()
+class Nowcasting(BaseImpactModel):
+    """Nowcasting specific methods."""
+
+    name = "nowcasting"
+
+
+class Dwml(BaseImpactModel):
+    """DWML Multi-domain specific methods."""
+
+    name = "dwml"
+
+
+@dataclass()
+class WildFire(BaseImpactModel):
+    """Wildfire specific methods."""
+
+    name = "wildfire"
+
+    def run(self):
+        """Starts the WildFire suite."""
+        # Let BaseImpactModel handle the path preparation
+        tmp_path = super().run()
+
+        config_name = self.platform.substitute(self.config.get("config_name"))
+
+        logger.info(" Load config from: {}", config_name)
+        config_ = tomlkit.loads(Path(config_name).read_text())
+
+        # expands ecf variables
+        ecf_host = config_["ecfvars"]["ECF_HOST"]
+        ecf_host = self.platform.substitute(ecf_host)
+        ecf_host = self.platform.evaluate(ecf_host, object_=SelectHost)
+        config_["ecfvars"]["ECF_HOST"] = ecf_host
+
+        troika_config_file = config_["ecfvars"]["TROIKA_CONFIG"]
+        endpart = troika_config_file.split(")", 2)[-1]
+        path = str(self.platform.evaluate(troika_config_file, object_="deode.os_utils"))
+        config_["ecfvars"]["TROIKA_CONFIG"] = path + endpart
+
+        path = self.platform.substitute(config_["workdir"])
+        deodemakedirs(path, unixgroup=config_["unix_group"])
+
+        path = self.platform.substitute(config_["archive"])
+        deodemakedirs(path, unixgroup=config_["unix_group"])
+
+        # adds path to wf suite
+        suite_path = os.path.join(str(tmp_path), "IPMA-FIRE")
+        sys.path.append(suite_path)
+
+        # updates path to cloned repo in the original deode config file
+        config_["repo_home"] = str(tmp_path)
+
+        # updates ecflow server variables
+        ecf_files = os.path.join(suite_path, "wf-suite/ecf_files")
+        config_["ecfvars"]["ECF_FILES"] = ecf_files
+
+        ecf_include = os.path.join(suite_path, "wf-suite/include")
+        config_["ecfvars"]["ECF_INCLUDE"] = ecf_include
+
+        # writes wildfire config file to disk
+        logger.info(" Dump modified config to: {}", config_name)
+        with open(config_name, mode="w", encoding="utf-8") as f_h:
+            f_h.write(tomlkit.dumps(config_))
+
+        os.chdir(suite_path + "/wf-suite/pytools")
+        uv_path = shutil.which("uv")
+        if uv_path is None:
+            raise RuntimeError("uv not found in PATH")
+
+        subprocess.run([uv_path, "venv", "--clear"], check=True)
+        subprocess.run([uv_path, "sync"], check=True)
+
+        # creates and loads wildfire applications suite
+        import wf_suite
+
+        wf_suite.load_suite(config_)
 
 
 class ImpactModels(Task):
@@ -304,16 +433,16 @@ def get_impact(config, taskname):
     Returns:
         impact (dict): Impact model settings
     """
-    _impact = config.get("impact", BasicConfig({})).dict()
-    installed_impact = config.get("platform.impact", {})
+    _impact = config.get_as_dict("impact", {})
+    installed_impact = config.get_as_dict("platform.impact", {})
 
     impact = {}
 
     fdb_keys = get_fdb_info(config)
     # Resolve ecf_host/ecf_port if used
     with contextlib.suppress(HostNotFoundError):
-        ecf_host = config.get("scheduler.ecfvars.ecf_host")
-        ecf_port = config.get("scheduler.ecfvars.ecf_port")
+        ecf_host = config.get_as_dict("scheduler.ecfvars.ecf_host")
+        ecf_port = config.get_as_dict("scheduler.ecfvars.ecf_port")
 
         if ecf_host is not None and ecf_port is not None:
             pl = Platform(config)

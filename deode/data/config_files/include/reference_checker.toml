@@ -6,6 +6,7 @@
   analyze_summary = ["ReferenceCheck"]
   summary_active = ["txt", "json"]
   suppress_exception = false
+  label_suffix = "@MEMBER_STR@"
 
 [reference_checker.methods.ForecastNorms]
   mode = "get_worst"
