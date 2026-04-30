@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [1.0.0] - 2026-04-30
+
 ### Added
 - Add nowcasting impact model [\#1622](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1622)(@nicolasCtd)
 - Introduce gl boundary interpolation and support for s3 protocol in toolbox [\#1449](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1449)(@ovignes)
