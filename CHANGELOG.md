@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Split request for spectral fields on LUMI. [\#1628](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1628) (@kastelecn)
 - Make ecFlow triggers relative instead of absolute [\#1479](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1479)(@ovignes)
 - Allow to run without output [\#1595](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1595)(@uandrae)
+- Adds explicit name of task in get_binary function call of IOmerge [\#1605](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1605) (@pardallio)
 
 ### Fixed
 - Fixed wildfire app issue: moves wildfire class into impacts.py [#1665](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1654)(@pardallio)
@@ -38,6 +39,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactor the internal of ParsedConfig to use frozendict [\#1586](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1586) (@dhaumont)
 - Fix unit test 1641 [\#1642] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1642) (@mfroelund)
 - Fix extraction of Gmax sqlites [\#1656] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1656) (@svianaj)
+- Fixed wildfire app for oper user: adds uv env and refines template [#1630](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1630)(@pardallio)
+- Fixed oorder of binary exception logic [#1606](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1606)(@pardallio)
+
 
 ## [0.27.0] - 2026-04-10
 
@@ -51,7 +55,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduction of ReferenceChecker [\#1524](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1524)(@dhaumont)
 
 ### Changed
-- Adds explicit name of task in get_binary function call of IOmerge [\#1605](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1605) (@pardallio)
 - Use FFTW consistenly in all tasks [\#1589](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1589) (@uandrae)
 - Calculate gridsize scaled VISGQSAT when creating the namelist instead of using LVARRESDEP [\#1584](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1584)
 - Phaseout parsing time durations using pandas.Timedelta and prefer a way more stable and reliable isodate.parse_duration. [\#1577](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1577) (@jacobsnoeijer)
@@ -66,8 +69,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Move definition of tablesVersion to faModelName for easier integration with updates to ecCodes [\#1564](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1564)(@sbnielsen)
 
 ### Fixed
-- Fixed wildfire app for oper user: adds uv env and refines template [#1630](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1630)(@pardallio)
-- Fixed oorder of binary exception logic [#1606](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1606)(@pardallio)
 - Fix crash in Marsprep due to non-existing bddir_sfx / bddir_sst folder [#1594](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1594)(@jacobsnoeijer)
 - Use proper function call to generate isoformat string of duration [#1599](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1599)(@jacobsnoeijer)
 - Correct config update of static namelists [#1587](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1587)(@uandrae)
