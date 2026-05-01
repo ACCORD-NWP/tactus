@@ -74,6 +74,7 @@ Then install/reinstall [`poetry`](https://python-poetry.org) by runnning the fol
   rm -rf ${HOME}/.cache/pypoetry/ ${HOME}/.local/bin/poetry ${HOME}/.local/share/pypoetry
   # Download and install poetry
   curl -sSL https://install.python-poetry.org | python3 -
+  curl -sSL https://install.python-poetry.org | python3 -
   poetry install
   # Add the poetry shell command as a plugin (for poetry >= v2.0.0)
   poetry self add poetry-plugin-shell

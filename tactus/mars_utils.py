@@ -16,6 +16,7 @@ from .datetime_utils import as_datetime
 from .domain_utils import get_domain
 from .geo_utils import Projection, Projstring
 from .logs import logger
+from .os_utils import remove_ifexists
 from .toolbox import Platform
 
 
@@ -30,7 +31,7 @@ def mars_selection(selection: str, config: ParsedConfig) -> dict:
          mars                (dict): mars config section
 
     """
-    mars = config[f"mars.{selection}"].dict()
+    mars = config.get_as_dict(f"mars.{selection}")
     if "expver" not in mars:
         mars["expver"] = selection
 
@@ -139,15 +140,6 @@ def get_mars_keys(source, key_filter="-w shortName:s=z"):
         )
         logger.info("Mars config - {} = {}", prm, result[prm])
     return result
-
-
-def remove_ifexists(file, etime=sys.float_info.max):
-    """Utility function to be used for lockfiles."""
-    if os.path.exists(file):
-        mtime = os.path.getmtime(file)
-        if mtime < etime:
-            logger.info(f"Removing: {file}")
-            os.remove(file)
 
 
 def get_steps_and_members_to_retrieve(
@@ -265,7 +257,13 @@ def get_steps_and_members_to_retrieve(
     if perturbed_members:
         members_dict["perturbed_members"] = perturbed_members
 
-    return steps, waitfor_steps, members_dict, missing_member_steps, waitfor_member_steps
+    return (
+        steps,
+        waitfor_steps,
+        members_dict,
+        missing_member_steps,
+        waitfor_member_steps,
+    )
 
 
 def check_data_available(basetime, mars):
@@ -680,6 +678,10 @@ class BaseRequest:
             if "latlon" not in self.target:
                 self.request.update({
                     "DATABASE": "fdb",
+                })
+            if self.request["PARAM"] == "130":
+                self.request.update({
+                    "EXPVER": "0002",
                 })
 
     def replace(self, **kwargs):

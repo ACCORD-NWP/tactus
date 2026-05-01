@@ -11,7 +11,7 @@
 
 [submission]
   gl_version = "gl-v1.9.2"
-  ial_version = "CY49t2-v1.16.0"
+  ial_version = "CY49t2-v1.18.0"
 
 [submission.task_exceptions.E923Update.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0

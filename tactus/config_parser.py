@@ -2,16 +2,17 @@
 """Registration and validation of options passed in the config file."""
 
 import contextlib
+import copy
 import glob
 import json
 import os
 import tempfile
 from datetime import datetime, timedelta
-from functools import reduce
 from pathlib import Path
 from typing import List, Optional, Tuple
 
 import fastjsonschema
+import frozendict
 import jsonref
 import tomli
 import tomlkit
@@ -29,7 +30,7 @@ from . import GeneralConstants
 from .aux_types import BaseMapping, QuasiConstant
 from .datetime_utils import DatetimeConstants
 from .formatters import duration_format_validator, duration_slice_format_validator
-from .general_utils import modify_mappings
+from .general_utils import recursive_unfreeze
 from .logs import logger
 from .os_utils import resolve_path_relative_to_package
 from .toolbox import Platform
@@ -225,22 +226,35 @@ class BasicConfig(BaseMapping):
         Raises:
             TypeError: when unknown filetype as config_file is given.
         """
+        BasicConfig.save_dictionary_as(self.dict(), config_file)
+
+    @staticmethod
+    def save_dictionary_as(dictionary, config_file):
+        """Save config file.
+
+        Args:
+            dictionary: dictionary to save
+            config_file (str): Path to config file
+
+        Raises:
+            TypeError: when unknown filetype as config_file is given.
+        """
         suffix = Path(config_file).suffix
 
         if suffix == ".toml":
             with open(config_file, mode="w", encoding="utf8") as fh:
-                tomlkit.dump(self.dict(), fh)
+                tomlkit.dump(dictionary, fh)
             formatted_toml = FormattedToml.from_file(path=config_file)
             with open(config_file, mode="w", encoding="utf8") as f:
                 f.write(str(formatted_toml))
         elif suffix == ".xml":
             with open(config_file, mode="wb") as fh:
-                fh.write(dtx(self.dict(), attr_type=False))
+                fh.write(dtx(dictionary, attr_type=False))
         elif suffix in [".yml", ".yaml"]:
             with open(config_file, mode="wb") as fh:
-                yaml.dump(self.dict(), fh, encoding="utf-8", default_flow_style=False)
+                yaml.dump(dictionary, fh, encoding="utf-8", default_flow_style=False)
         elif suffix == ".json":
-            json_object = json.dumps(self.dict(), indent=4)
+            json_object = json.dumps(dictionary, indent=4)
             with open(config_file, "w", encoding="utf-8") as fh:
                 fh.write(json_object)
         else:
@@ -249,12 +263,38 @@ class BasicConfig(BaseMapping):
     @BaseMapping.data.setter
     def data(self, new):
         """Set the underlying data stored by the instance."""
-        input_sanitation_ops = [
-            lambda x: {k: v for k, v in x.items() if v is not None},
-            lambda x: {k: tuple(v) if isinstance(v, list) else v for k, v in x.items()},
-        ]
-        new = reduce(modify_mappings, input_sanitation_ops, new)
-        BaseMapping.data.fset(self, new, nested_maps_type=BasicConfig)
+
+        def needs_cleaning(obj):
+            if obj is None or isinstance(obj, list):
+                return True
+            if isinstance(obj, dict):
+                for v in obj.values():
+                    if needs_cleaning(v):
+                        return True
+            return False
+
+        def remove_none(obj):
+            return {
+                k: remove_none(v) if isinstance(v, dict) else v
+                for k, v in obj.items()
+                if v is not None
+            }
+
+        def lists_to_tuples(obj):
+            return {
+                k: (
+                    lists_to_tuples(v)
+                    if isinstance(v, dict)
+                    else (tuple(v) if isinstance(v, list) else v)
+                )
+                for k, v in obj.items()
+            }
+
+        if needs_cleaning(new):
+            new = remove_none(new)
+            new = lists_to_tuples(new)
+
+        BaseMapping.data.fset(self, new)
 
     @property
     def metadata(self):
@@ -265,7 +305,43 @@ class BasicConfig(BaseMapping):
     def metadata(self, new):
         """Set the metadata associated with the instance."""
         if new is not None:
-            self._metadata = modify_mappings(obj=new, operator=dict)
+            self._metadata = recursive_unfreeze(new)
+
+    def get(self, item, default=None):
+        """Get dictionary stored at key as a BasicConfig.
+
+        Args:
+            item (str): Key to retrieve (can be nested, e.g. "general.times")
+            default: Value to return if key is not found
+
+        Returns:
+            BasicConfig: data stored at key as a BasicConfig, or default if key not found
+        """
+        try:
+            result = self[item]
+        except KeyError:
+            return default
+
+        if type(result) is frozendict.frozendict:
+            return BasicConfig(result)
+        return result
+
+    def get_as_dict(self, item, default=None):
+        """Get dictionary stored at key as a dict.
+
+        Args:
+            item (str): Key to retrieve (can be nested, e.g. "general.times")
+            default: Value to return if key is not found
+
+        Returns:
+            dict: data stored at key as a dict, or default if key ot found
+        """
+        try:
+            result = self[item]
+        except KeyError:
+            return default
+
+        return recursive_unfreeze(result)
 
 
 class JsonSchema(BaseMapping):
@@ -274,7 +350,11 @@ class JsonSchema(BaseMapping):
     def __init__(self, *args, **kwargs):
         """Initialise instance."""
         super().__init__(*args, **kwargs)
-        self.data = jsonref.replace_refs(self.data)
+        new_data = jsonref.replace_refs(self.data)
+
+        # deepcopy to get rid of the jsonref.JsonRef when storing to data
+        new_data = copy.deepcopy(new_data)
+        BaseMapping.data.fset(self, new_data)
 
     @property
     def _validation_function(self):
@@ -288,7 +368,8 @@ class JsonSchema(BaseMapping):
         """Return human-readable doc for the schema in markdown format."""
         with tempfile.TemporaryDirectory() as tmpdir:
             with open(Path(tmpdir) / "schema.json", "w") as schema_file:
-                schema_file.write(json.dumps(self.dict()))
+                data_copy = self.dict()
+                schema_file.write(json.dumps(data_copy))
 
             with (
                 open(Path(tmpdir) / "schema_doc.md", "w") as doc_file,
@@ -568,8 +649,8 @@ def _expand_config_include_section(
         schemas_path = [schemas_path]
 
     # If the json schema is empty on arrival, keep it empty
-    raw_config = modify_mappings(obj=raw_config, operator=dict)
-    json_schema = modify_mappings(obj=json_schema, operator=dict)
+    raw_config = recursive_unfreeze(raw_config)
+    json_schema = recursive_unfreeze(json_schema)
 
     config_include_defs = _get_config_include_definitions(raw_config)
 
@@ -644,7 +725,7 @@ def _get_json_validation_function(json_schema):
     """Return a validation function compiled with schema `json_schema`."""
     if not json_schema:
         # Validation will just convert everything to dict in this case
-        return lambda obj: modify_mappings(obj=obj, operator=dict)
+        return lambda obj: recursive_unfreeze(obj)
     validation_func = fastjsonschema.compile(
         json_schema.dict(),
         formats={
@@ -655,7 +736,7 @@ def _get_json_validation_function(json_schema):
 
     def validate(obj):
         try:
-            return validation_func(modify_mappings(obj=obj, operator=dict))
+            return validation_func(recursive_unfreeze(obj))
         except JsonSchemaValueException as err:
             error_path = " -> ".join(err.path[1:])
             human_readable_msg = err.message.replace(err.name, "").strip()

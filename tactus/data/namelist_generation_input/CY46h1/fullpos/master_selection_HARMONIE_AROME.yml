@@ -47,8 +47,6 @@ selection:
     - 'SURFLIFTCONDLEV'
     - 'SURFFREECONVLEV'
     - 'SURFEQUILIBRLEV'
-    - 'SURFREFLECT.MAX'
-    - 'REFLECT_DBZ.MAX'
   NAMFPDYI:
    CL3DF:
     - 'ISOT_ALTIT'
@@ -158,4 +156,5 @@ selection:
    CLPHY:
     - 'SURFTEMPERATURE'
     - 'SURFRESERV.NEIGE'
+    - 'SURFIND.TERREMER'
   <<: *default

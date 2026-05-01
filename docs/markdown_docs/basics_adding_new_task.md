@@ -60,7 +60,6 @@ CORES = "#SBATCH --cpus-per-task=4"
 MULTITHREAD = "#SBATCH --hint=nomultithread"
 NODES = "#SBATCH -N 4"
 NAME = "#SBATCH --job-name=fcast_task"
-ACCOUNT = "#SBATCH -A msdeode"
 
 ```
 To add environment variables, run modules or arbitrary commands, they need to be added to the `submission.submissiontype.ENV` directive
@@ -79,7 +78,6 @@ CORES = "#SBATCH --cpus-per-task=4"
 MULTITHREAD = "#SBATCH --hint=nomultithread"
 NODES = "#SBATCH -N 4"
 NAME = "#SBATCH --job-name=fcast_task"
-ACCOUNT = "#SBATCH -A msdeode"
 
 [submission.task_exceptions.Newtask.ENV]
 MODULE = "print('My beautiful module')"

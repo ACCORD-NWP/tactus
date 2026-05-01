@@ -11,8 +11,7 @@ from tactus.config_parser import ParsedConfig
 from tactus.derived_variables import derived_variables
 from tactus.logs import logger
 from tactus.os_utils import tactusmakedirs
-from tactus.plugin import TactusPluginRegistryFromConfig
-from tactus.tasks.discover_task import available_tasks
+from tactus.tasks.discover_task import load_task_index
 from tactus.toolbox import FileManager, Platform
 
 
@@ -86,7 +85,7 @@ class TaskSettings(object):
              config(tactus.ParserdConfig): Configuration
         """
         self.config = config
-        self.submission_defs = self.config["submission"].dict()
+        self.submission_defs = self.config.get_as_dict("submission")
         self.job_type = None
         self.processor_layout = None
 
@@ -437,7 +436,7 @@ class NoSchedulerSubmission:
             RuntimeError: Submission failure.
         """
         name = task.lower()
-        if name not in available_tasks(TactusPluginRegistryFromConfig(config)):
+        if name not in load_task_index(config):
             raise NotImplementedError(f"Task {name} not implemented")
 
         troika_config = Platform(config).get_value("troika.config_file")

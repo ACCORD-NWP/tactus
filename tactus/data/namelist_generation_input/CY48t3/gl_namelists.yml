@@ -1,0 +1,70 @@
+gl_bd_base:
+  NAMINTERP:
+    AHALF: ${cfg:vertical_levels.ahalf}
+    ATMKEY:
+    - FANAME: CLOUD_WATER
+      INTPM: 1
+      NNN: 0
+      PID: -1
+      SHORTNAME: clwc
+    - FANAME: ICE_CRYSTAL
+      INTPM: 1
+      NNN: 0
+      PID: -1
+      SHORTNAME: ciwc
+    - FANAME: SNOW
+      INTPM: 1
+      NNN: 0
+      PID: -1
+      SHORTNAME: cswc
+    - FANAME: RAIN
+      INTPM: 1
+      NNN: 0
+      PID: -1
+      SHORTNAME: crwc
+    - FANAME: TKE
+      INTPM: 0
+      NNN: 0
+      PID: -1
+      SHORTNAME: tke
+    - FANAME: GRAUPEL
+      INTPM: 1
+      NNN: 0
+      PID: -1
+      SHORTNAME: graupel
+    - FANAME: CLOUD_FRACTI
+      INTPM: 1
+      NNN: 0
+      PID: -1
+      SHORTNAME: tcc
+    BDMEMBER: -1
+    BHALF: ${cfg:vertical_levels.bhalf}
+    INPUT_FORMAT: GRIB
+    LDEMAND_ALL_LEVELS: false
+    LOLDTESSEL: false
+    LPERT: false
+    LQGP: true
+    LSKIP_SURFACE: false
+    LSWICONV: true
+    NE2EALG: 2
+    ORDER: 3
+    OUTGEO:
+      NLEV: ${cfg:vertical_levels.nlev}
+    _start_index:
+      ahalf:
+      - 1
+      atmkey:
+      - 1
+      bhalf:
+      - 1
+
+gl_bd_ens:
+  NAMINTERP:
+    BDMEMBER: ${cfg:boundaries.ifs.bdmember}
+    EXT_BD_ORO: true
+    EXT_BD_ORO_FILE: oro_file
+
+gl_bd_slaf:
+  NAMINTERP:
+    LPERT: true
+    SLAFK: ${cfg:boundaries.slafk}

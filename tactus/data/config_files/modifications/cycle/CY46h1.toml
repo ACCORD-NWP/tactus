@@ -18,3 +18,16 @@
 
 [submission.task_exceptions.Prep]
   binary = "PREP-offline"
+
+[gribmodify.fullpos.3]
+  output_name = "tp"
+
+[gribmodify.fullpos.4]
+  output_name = "10si"
+
+[gribmodify.fullpos.5]
+  output_name = "ws"
+
+[gribmodify.fullpos.6]
+  minimum_frequency = "PT1H"
+  output_name = "max_i10fg"

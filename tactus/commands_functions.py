@@ -31,6 +31,7 @@ from .namelist import (
 from .scheduler import EcflowServer
 from .submission import NoSchedulerSubmission, TaskSettings
 from .suites.discover_suite import get_suite
+from .tasks.discover_task import create_task_index
 from .toolbox import Platform
 
 
@@ -97,6 +98,9 @@ def run_task(args: RunTaskNamespace, config: ParsedConfig):
     submission_defs = TaskSettings(config)
     sub = NoSchedulerSubmission(submission_defs)
 
+    if not args.create_only:
+        create_task_index(config)
+
     sub.submit(
         task=args.task,
         config=config,
@@ -162,8 +166,7 @@ def start_suite(args, config):
     config = config.copy(update=set_times(config))
     platform = Platform(config)
     ecfvars = {
-        key: platform.substitute(val)
-        for key, val in config["scheduler.ecfvars"].dict().items()
+        key: platform.substitute(val) for key, val in config["scheduler.ecfvars"].items()
     }
     update = {"scheduler": {"ecfvars": ecfvars}}
     config = config.copy(update=update)
@@ -300,6 +303,7 @@ def start_suite(args, config):
             raise SystemExit(f"Copying {temp_troika_config_file} FAILED.") from e
         logger.info("--- File copying to Ecflow server DONE ---")
 
+    create_task_index(config)
     server.start_suite(suite_name, def_file)
     logger.info("Done with suite.")
 
@@ -319,10 +323,8 @@ def doc_config(args, config: ParsedConfig):
 
     """
     now = datetime.datetime.now().isoformat(timespec="seconds")
-    sys.stdout.write(
-        f"""The following section was automatically generated running
-        `tactus doc config` on {now}.\n\n"""
-    )
+    sys.stdout.write(f"""The following section was automatically generated running
+        `tactus doc config` on {now}.\n\n""")
     sys.stdout.write(config.json_schema.get_markdown_doc() + "\n")
 
 
@@ -400,9 +402,7 @@ def remove_cases(args, config):  # ARG001
         return False
 
     # Fetch the remove config
-    cleaning_config = config.get("remove")
-    if not isinstance(cleaning_config, dict):
-        cleaning_config = cleaning_config.dict()
+    cleaning_config = config.get_as_dict("remove")
     defaults = cleaning_config.get("defaults")
     cleaning_config.pop("defaults")
 
@@ -483,7 +483,8 @@ def remove_cases(args, config):  # ARG001
                         server.remove_suites([suite_name], check_if_complete=False)
                     except (ModuleNotFoundError, UnboundLocalError):
                         logger.warning(
-                            "ecflow or config not found, suite {} not removed", suite_name
+                            "ecflow or config not found, suite {} not removed",
+                            suite_name,
                         )
             if dry_run:
                 logger.info(

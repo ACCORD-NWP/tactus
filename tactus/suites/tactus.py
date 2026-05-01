@@ -145,10 +145,7 @@ class TactusSuiteDefinition(SuiteDefinition):
 
         if last_time_dependent_part is not None:
             # Update triggers for final cleaning node
-            if final_cleaning_trigger is None:
-                final_cleaning_trigger = [last_time_dependent_part]
-            else:
-                final_cleaning_trigger.append(last_time_dependent_part)
+            final_cleaning_trigger.append(last_time_dependent_part)
 
             if config["reference_checker.check"] or config["reference_checker.generate"]:
                 EcflowSuiteTask(
