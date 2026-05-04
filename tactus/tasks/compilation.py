@@ -1,6 +1,7 @@
 """Compialtion tasks."""
 
 import os
+import sys
 
 from ..os_utils import tactusmakedirs
 from .base import Task
@@ -58,7 +59,9 @@ class TactusBundleCreate(Task):
                 yaml.safe_dump(data, f, sort_keys=False)
 
         self.bundle_file_str = f"--bundle {bundle_file}"
-
+        
+        self.ecbundle_bin = f"{os.path.dirname(sys.executable)}/ecbundle"
+        
         self.compile_dir = self.platform.substitute(compile_dir)
 
     def execute(self):
@@ -67,7 +70,8 @@ class TactusBundleCreate(Task):
         # Assume git ssh access unless token is set
         if not self.git_token_str:
             os.environ["GITHUB"] = "git@github.com:"
-        cmd = f"cd {self.compile_dir}; ecbundle create {self.git_token_str} {self.bundle_file_str} --update "
+
+        cmd = f"cd {self.compile_dir}; {self.ecbundle_bin} create {self.git_token_str} {self.bundle_file_str} --update "
         batch_job.run(cmd)
 
 
@@ -100,7 +104,7 @@ class TactusBundleBuild(Task):
         """Execute task."""
         batch_job = BatchJob(os.environ)
         batch_job.run(
-            f"cd {self.compile_dir}; ecbundle build "
+            f"cd {self.compile_dir};  {self.ecbundle_bin} build "
             + f"--arch {self.arch} --ninja --forecast-only "
             + f"--install-dir={self.exp_bindir} --install "
             + f"--build-dir={self.exp_builddir}"
