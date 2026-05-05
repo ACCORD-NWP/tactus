@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Make CY50T2 default [\#14](https://github.com/ACCORD-NWP/tactus/pull/14) (@uandrae)
+- Change to https github access for all dependencies [\#32](https://github.com/ACCORD-NWP/tactus/pull/32) (@uandrae)
 - Change default group on atos to accord [\#26](https://github.com/ACCORD-NWP/tactus/pull/26) (@uandrae)
 - Prepare tactus as a separate package from Deode-Workflow, which now belongs to ACCORD-NWP. [\#2](https://github.com/ACCORD-NWP/tactus/pull/2) (@mfroelund)
 - Make argparser be returned instead of parsed args to make it extendable. [\#3](https://github.com/ACCORD-NWP/tactus/pull/3) (@mfroelund)

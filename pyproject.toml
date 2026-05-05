@@ -17,7 +17,7 @@
     "Programming Language :: Python :: 3.12",
   ]
   dependencies = [
-    "arpifs_listings @ git+ssh://git@github.com:UMR-CNRM/arpifs_listings.git@master",
+    "arpifs_listings @ git+https://git@github.com/UMR-CNRM/arpifs_listings.git@master",
     "dateutils>=0.6.12",
     "dicttoxml>=1.0.0",
     "eccodes==2.45",
