@@ -18,6 +18,7 @@ from .config_parser import ConfigPaths
 from .csc_actions import SelectTstep
 from .datetime_utils import as_timedelta, oi2dt_list
 from .logs import logger
+from .os_utils import resolve_path_relative_to_package
 from .toolbox import Platform
 
 
@@ -117,6 +118,15 @@ def write_namelist(nml, output_file):
     nml.write(output_file, force=True)
 
     logger.debug("Wrote: {}", output_file)
+
+
+def _resolve_namelist_path(subpath) -> Path:
+    """Resolve a config path, falling back to package-relative lookup."""
+    path = Path(subpath)
+    try:
+        return ConfigPaths.path_from_subpath(path)
+    except RuntimeError:
+        return resolve_path_relative_to_package(path)
 
 
 class InvalidNamelistKindError(ValueError):
@@ -322,8 +332,8 @@ class NamelistGenerator:
         self.substitute = substitute
         self.nlcomp = NamelistComparator(config)
         self.cycle = self.config["general.cycle"]
-        self.cnfile = ConfigPaths.path_from_subpath(f"{self.cycle}/assemble_{kind}.yml")
-        self.nlfile = ConfigPaths.path_from_subpath(f"{self.cycle}/{kind}_namelists.yml")
+        self.cnfile = _resolve_namelist_path(f"{self.cycle}/assemble_{kind}.yml")
+        self.nlfile = _resolve_namelist_path(f"{self.cycle}/{kind}_namelists.yml")
         self.domain_name = self.config["domain.name"]
         self.accept_static_namelist = self.config["general.accept_static_namelists"]
 
@@ -744,7 +754,7 @@ class NamelistConverter:
     def get_tnt_files_list(from_cycle, to_cycle):
         """Return the list of tnt directive files required for the conversion."""
         # definitions of the conversion to apply between cycles
-        tnt_directives_folder = ConfigPaths.path_from_subpath("tnt_directives")
+        tnt_directives_folder = _resolve_namelist_path("tnt_directives")
 
         if from_cycle and to_cycle:
             known_cycles = NamelistConverter.get_known_cycles()
@@ -987,9 +997,7 @@ class NamelistConverter:
            SystemExit: when conversion failed
         """
         logger.info(f"Apply {tnt_directive_filename}")
-        tnt_directives_folder = ConfigPaths.path_from_subpath(
-            "tnt_directives",
-        )
+        tnt_directives_folder = _resolve_namelist_path("tnt_directives")
         command = [
             "tnt.py",
             "-d",

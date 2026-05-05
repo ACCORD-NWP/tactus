@@ -11,9 +11,3 @@
 
 [submission.task_exceptions.Addpert.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
-
-[submission.types.parallel.BATCH]
-  ACCOUNT = "#SBATCH -A msdeode"
-
-[submission.types.serial.BATCH]
-  ACCOUNT = "#SBATCH -A msdeode"
