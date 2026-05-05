@@ -1,6 +1,6 @@
 [compile]
- git_repo = "git@github.com:ACCORD-NWP/IAL"
- git_branch = "develop"
+  git_repo = "git@github.com:ACCORD-NWP/IAL"
+  git_branch = "develop"
 
 [suite_control]
   compile = true
