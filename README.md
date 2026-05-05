@@ -131,9 +131,19 @@ These examples assume that you have successfully [Set up environment](#set-up-en
 
 ### Running ecflow suite on ATOS
 
-The following command will run  the full suite using the default experiment:
+The following command will run the full suite using the default experiment:
 ```shell
-tactus case ?tactus/data/config_files/configurations/cy49t2_arome --start-suite
+tactus case ?tactus/data/config_files/configurations/cy49t2_arome --case-name my_first_test --start-suite
 ```
+This will generate a new config file `my_first_test.toml` that is used to launch the suite. The working directories and final results can be found under `$SCRATCH/tactus/my_first_test'.
+
+### Running a single task from command line
+From the example above we can rerun e.g. the `Forecast` task from command line by
+
+```
+tactus run --task Forecast -c my_first_test.toml
+```
+This will create `Forecast.job` in the current directory and submit the job. The log from the job will appear as `Forecast.log` and the result will be found in the same directories as above.
+
 
 For other platforms a new config file would have to be created first. Please consult the [configure cases](https://ACCORD-NWP.github.io/tactus-docs/misc_section_in_doc_page.html#configure-cases) section in the documentation for more information.
