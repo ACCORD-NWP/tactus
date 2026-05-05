@@ -3,11 +3,11 @@
 import os
 import sys
 
+import yaml
+
 from ..os_utils import tactusmakedirs
 from .base import Task
 from .batch import BatchJob
-
-import yaml
 
 
 class TactusBundleCreate(Task):
@@ -34,12 +34,10 @@ class TactusBundleCreate(Task):
         bundle_file = self.config["compile.bundle_file"]
         bundle_file = self.platform.substitute(bundle_file)
 
-        if self.config["compile.ial_dir"] != "" :
-
-
+        if self.config["compile.ial_dir"] != "":
             with open(bundle_file, "r") as f:
                 data = yaml.safe_load(f)
-            
+
             bundle_file = "@CASEDIR@/bundle-local-ial.yaml"
             bundle_file = self.platform.substitute(bundle_file)
 
@@ -53,15 +51,17 @@ class TactusBundleCreate(Task):
                         ial.pop("version", None)
 
                         # Add the new key
-                        ial["dir"] = self.platform.substitute(self.config["compile.ial_dir"])
-            
+                        ial["dir"] = self.platform.substitute(
+                            self.config["compile.ial_dir"]
+                        )
+
             with open(bundle_file, "w") as f:
                 yaml.safe_dump(data, f, sort_keys=False)
 
         self.bundle_file_str = f"--bundle {bundle_file}"
-        
+
         self.ecbundle_bin = f"{os.path.dirname(sys.executable)}/ecbundle"
-        
+
         self.compile_dir = self.platform.substitute(compile_dir)
 
     def execute(self):
@@ -88,6 +88,8 @@ class TactusBundleBuild(Task):
 
         compile_dir = self.config["compile.dir"]
         self.compile_dir = self.platform.substitute(compile_dir)
+        self.ecbundle_bin = f"{os.path.dirname(sys.executable)}/ecbundle"
+
         self.arch = self.config["compile.arch"]
         bindir = "@CASEDIR@/install"
         builddir = "@CASEDIR@/build"
