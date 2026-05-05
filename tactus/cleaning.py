@@ -1,12 +1,12 @@
 """Clean tactus file systems."""
 
-import copy
 import os
 import re
 import shutil
 import subprocess
 
 from .datetime_utils import as_datetime, as_timedelta
+from .general_utils import recursive_unfreeze
 from .logs import logger
 from .os_utils import Search, remove_empty_dirs
 from .toolbox import Platform
@@ -78,7 +78,7 @@ class CleanTactus:
 
         """
         x = choice
-        y = copy.deepcopy(self.defaults).dict()
+        y = recursive_unfreeze(self.defaults)
 
         # Do not copy competing settings
         if "ncycles_delay" in y and "cleaning_delay" in x:
