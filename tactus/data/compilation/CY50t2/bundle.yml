@@ -221,8 +221,8 @@ options:
     - without-double-precision :
         help  : Remove double precision & add a single precision build
         cmake : >
-            BUILD_ial_sp=ON 
-            BUILD_ial_dp=OFF 
+            BUILD_ial_sp=ON
+            BUILD_ial_dp=OFF
             ENABLE_SINGLE_PRECISION=ON
             ENABLE_DOUBLE_PRECISION=OFF
             ENABLE_HIRLAM_SP_HACKS=ON
@@ -240,4 +240,3 @@ options:
         cmake : >
             ENABLE_CUDA=ON
             ENABLE_ACC=ON
-
