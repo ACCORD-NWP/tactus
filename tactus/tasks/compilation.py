@@ -34,7 +34,7 @@ class TactusBundleCreate(Task):
         bundle_file = self.config["compile.bundle_file"]
         bundle_file = self.platform.substitute(bundle_file)
 
-        if self.config["compile.ial_dir"] != "":
+        if self.config["compile.ial_dir"]:
             with open(bundle_file, "r") as f:
                 data = yaml.safe_load(f)
 
@@ -71,8 +71,10 @@ class TactusBundleCreate(Task):
         if not self.git_token_str:
             os.environ["GITHUB"] = "git@github.com:"
 
-        cmd = f"cd {self.compile_dir}; {self.ecbundle_bin} create {self.git_token_str} {self.bundle_file_str} --update "
-        batch_job.run(cmd)
+        batch_job.run(
+            f"cd {self.compile_dir}; {self.ecbundle_bin} create "
+            + f"{self.git_token_str} {self.bundle_file_str} --update"
+        )
 
 
 class TactusBundleBuild(Task):
