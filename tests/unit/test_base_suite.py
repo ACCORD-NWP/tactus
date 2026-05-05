@@ -1,8 +1,8 @@
-"""Unit tests for deode.suites.base."""
+"""Unit tests for tactus.suites.base."""
 
 from types import SimpleNamespace
 
-from deode.suites.base import EcflowNode
+from tactus.suites.base import EcflowNode
 
 
 def _node(path):

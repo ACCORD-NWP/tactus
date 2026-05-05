@@ -79,7 +79,7 @@ def _module_mockers(module_mocker, config_path, tmp_path_factory: pytest.TempPat
         node.add_task.side_effect = lambda n: _make_ecflow_node(f"{path}/{n}")
         return node
 
-    ecflow_base_mock = module_mocker.patch("deode.suites.base.ecflow")
+    ecflow_base_mock = module_mocker.patch("tactus.suites.base.ecflow")
     defs_mock = mock.MagicMock()
     defs_mock.add_suite.side_effect = lambda n: _make_ecflow_node(f"/{n}")
     ecflow_base_mock.Defs.return_value = defs_mock

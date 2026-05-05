@@ -158,7 +158,7 @@ def test_tactusmakedirs():
 
 def test_lockfile_basic():
     """Test the FileLock class."""
-    from deode.os_utils import FileLock
+    from tactus.os_utils import FileLock
 
     path = tempfile.mkdtemp()
     filepath = f"{path}/testfile"
@@ -181,7 +181,7 @@ def test_lockfile_basic():
 
 def test_lockfile_timeout():
     """Test the FileLock class."""
-    from deode.os_utils import FileLock
+    from tactus.os_utils import FileLock
 
     path = tempfile.mkdtemp()
     filepath = f"{path}/testfile"
@@ -204,7 +204,7 @@ def test_lockfile_thread():
     from threading import Thread
     from time import sleep
 
-    from deode.os_utils import FileLock
+    from tactus.os_utils import FileLock
 
     def get_lock(filepath):
         with FileLock(filepath):
