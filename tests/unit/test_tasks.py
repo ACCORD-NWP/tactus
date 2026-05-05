@@ -78,11 +78,6 @@ def task_name_and_configs(request, default_config, tmp_directory):
             active = false
             inpath = "@ARCHIVE@"
             pattern = "GRIBPF*"
-        [archiving.test]
-        [collectlogs.test]
-            joboutdir = "foo"
-            tarname = "foo"
-            task_logs = "foo"
         """
     )
     task_config = task_config.copy(update=config_patch)

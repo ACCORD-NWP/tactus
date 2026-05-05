@@ -30,6 +30,7 @@
     {ecf_tactus_home = "scheduler.ecfvars.ecf_tactus_home"},
     {ecf_files = "scheduler.ecfvars.ecf_files"},
     {ecf_out = "scheduler.ecfvars.ecf_out"},
+    {ecfs_prefix = "archiving.prefix.ecfs"},
     {famodel = "general.famodel"},
     {forecast_range = "general.times.forecast_range"},
     {cycle_length = "general.times.cycle_length"},
