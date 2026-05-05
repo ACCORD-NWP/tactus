@@ -78,7 +78,7 @@ class CleanTactus:
 
         """
         x = choice
-        y = copy.deepcopy(self.defaults)
+        y = copy.deepcopy(self.defaults).dict()
 
         # Do not copy competing settings
         if "ncycles_delay" in y and "cleaning_delay" in x:
