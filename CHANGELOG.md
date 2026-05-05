@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Introduce config files for CY50T2 [\#14](https://github.com/ACCORD-NWP/tactus/pull/14) (@uandrae)
 - Add compilation and use of binaries from IAL code built with IAL-bundle [\#11](https://github.com/ACCORD-NWP/tactus/pull/11) (@trygveasp)
 - Support multiple search paths for json schemas. [\#5](https://github.com/ACCORD-NWP/tactus/pull/5) (@mfroelund)
 - Reintroduce remove functionality. [\#7](https://github.com/ACCORD-NWP/tactus/pull/7) (@mfroelund)
@@ -17,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support multiple searchpaths for namelist files through TACTUS_CONFIG_DATA_DIR. [\#20](https://github.com/ACCORD-NWP/tactus/pull/20) (@mfroelund)
 
 ### Changed
+- Make CY50T2 default [\#14](https://github.com/ACCORD-NWP/tactus/pull/14) (@uandrae)
 - Change default group on atos to accord [\#26](https://github.com/ACCORD-NWP/tactus/pull/26) (@uandrae)
 - Prepare tactus as a separate package from Deode-Workflow, which now belongs to ACCORD-NWP. [\#2](https://github.com/ACCORD-NWP/tactus/pull/2) (@mfroelund)
 - Make argparser be returned instead of parsed args to make it extendable. [\#3](https://github.com/ACCORD-NWP/tactus/pull/3) (@mfroelund)
@@ -94,7 +96,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Correct logics in the remove command. [\#1528](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1528) (@uandrae)
 - Restore `mode=start` functionality. [\#1339](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1339) (@BolliPalmason, @kastelecn,@uandrae)
 - Add missing DR_HOOK setting for Addpert. [\#1530](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1530) (@uandrae)
-- Remove deode files. [\#4](https://github.com/ACCORD-NWP/tactus/pull/4) (@mfroelund)
 - Allow string values in `_set_port_from_user()` [\#1537](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1537) (@uandrae, @nicolasCtd)
 - Added a 'if' statement to prevent Marsprep from fetching lat/lon geopotential when all data is already available [\#1534](https://github.com/destination-earth-digital-twins/Deode-Workflow/issues/1534) (@kastelecn, @uandrae, @nicolasCtd)
 - Add active=false to wildfire impact model. [\#1538](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1538) (@mfroelund)
