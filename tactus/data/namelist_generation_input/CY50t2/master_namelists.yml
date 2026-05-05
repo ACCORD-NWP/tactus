@@ -109,8 +109,6 @@ e923_base:
     LVGSN: true
   NAMPHY0:
     GCVPSI: 0.0
-  NAMTRANS:
-    LFFTW: ${cfg:submission.lfftw,"true"}
   NEMDIM:
     NBZONG: ${cfg:domain.nbzong}
     NBZONL: ${cfg:domain.nbzonl}
@@ -1611,8 +1609,6 @@ f4_common:
     LAEROSOO: true
     LO3ABC: true
     LWINDFARM: ${cfg:general.windfarm}
-  NAMTRANS:
-    LFFTW: ${cfg:submission.lfftw,"true"}
   NAMXFU:
     LXWFPIN: ${cfg:general.windfarm}
 f4_c903_main:

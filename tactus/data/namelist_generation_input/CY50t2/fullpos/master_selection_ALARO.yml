@@ -1,3 +1,5 @@
+# Do the selection of fields below. Note
+# that xxt00000000 inherits from xxtddddhh00
 selection:
   xxt00000000:
     NAMFPDY2:
@@ -5,7 +7,6 @@ selection:
       - SURFPRESSION
       - SPECSURFGEOPOTEN
       - MSLPRESSURE
-      - SURFTOT.WAT.VAPO
       - SURFISOTPW1.MALT
       - SURFCAPE.POS.F00
       - SURFCIEN.POS.F00
@@ -18,6 +19,7 @@ selection:
       - ATMOCLD.CEIL.H
       - ATMOCLD.BASE.P
       - ATMOCLD.BASE.H
+      - SURFTOT.WAT.VAPO
     NAMFPDYH:
       CL3DF:
       - VERT.VELOCIT
@@ -108,12 +110,12 @@ selection:
       - TKE
       NRFP3S:
       - ${vertical_levels.nlev}
+    NAMFPDYV: &id002 {}
     NAMFPPHY:
       CLPHY:
       - SURFTEMPERATURE
       - SURFRESERV.NEIGE
       CLXFU:
-      - SURFINSPLUIE
       - CLSTEMPERATURE
       - CLSHUMI.RELATIVE
       - CLSHUMI.SPECIFIQ
@@ -227,6 +229,7 @@ selection:
       - TKE
       NRFP3S:
       - ${vertical_levels.nlev}
+    NAMFPDYV: *id002
     NAMFPPHY:
       CLCFU:
       - SOMMFLU.RAY.SOLA
@@ -238,16 +241,17 @@ selection:
       - SURFFLU.CHA.SENS
       - SURFRAYT SOLA DE
       - SURFRAYT THER DE
-      - SURFACCPLUIE
-      - SURFACCNEIGE
-      - SURFACCGRAUPEL
       - SURFDIAG.FLASH
+      - SURFPREC.EAU.GEC
+      - SURFPREC.EAU.CON
+      - SURFPREC.NEI.GEC
+      - SURFPREC.NEI.CON
+      - SURFPREC.GRA.GEC
       CLPHY:
       - SURFTEMPERATURE
       - SURFRESERV.NEIGE
       CLXFU:
       - SURFDIAGHAIL
-      - SURFINSPLUIE
       - CLSTEMPERATURE
       - CLSHUMI.RELATIVE
       - CLSHUMI.SPECIFIQ
@@ -262,4 +266,8 @@ selection:
       - SURFNEBUL.BASSE
       - SURFNEBUL.TOTALE
       - CLPMHAUT.MOD.XFU
+      - CLSVISIN_60
+      - CLSVISIHYDN60
+      - CLSPTYPE_60M
+      - CLSPTYPESEV_60M
       - CLSMEAN.RAD.TEMP

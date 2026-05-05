@@ -1,0 +1,114 @@
+{
+  "rrtm": {
+    "path": "@RRTM_DIR@",
+    "files": [
+      "MCICA",
+      "RADSRTM"
+    ]
+  },
+  "part0": {
+    "path": "@E923_DATA@/GTOPT030/",
+    "remove_links": true,
+    "files": [
+      "Water_Percentage",
+      "Oro_Mean",
+      "Sigma",
+      "Nb_Peaks",
+      "Urbanisation",
+      "Dh_over_Dx_Dh_over_Dy",
+      "Dh_over_Dx_square",
+      "Dh_over_Dy_square",
+      "Hmax-HxH-Hmin_ov4"
+    ]
+  },
+  "part2": {
+    "path": "@E923_DATA@/SURFACE_G",
+    "remove_links": true,
+    "files": [
+      "itp_GL",
+      "alb_GL",
+      "emi_GL",
+      "dps_GL",
+      "arg_GL",
+      "sab_GL",
+      "vgx_GL",
+      "dpr_GL"
+    ]
+  },
+  "part3": {
+    "path": "@E923_DATA@",
+    "files": {
+      "N108_GL": "N108/N108_GL"
+    }
+  },
+  "constant": {
+    "path": "@E923_DATA@",
+    "files": {
+      "z0v_GL": "SURFACE_G/z0v_GL",
+      "alv_GL": "SURFACE_G/alv_GL",
+      "rsm_GL": "SURFACE_G/rsm_GL",
+      "msk_HR": "SURFACE_L/msk_HR",
+      "itp_HR": "SURFACE_L/itp_HR",
+      "dpr_HR": "SURFACE_L/dpr_HR",
+      "rsm_HR": "SURFACE_L/rsm_HR",
+      "vgx_HR": "SURFACE_L/vgx_HR",
+      "alv_HR": "SURFACE_L/alv_HR",
+      "z0v_HR": "SURFACE_L/z0v_HR"
+    }
+  },
+  "constant_copy": {
+    "path": "@E923_DATA@/CLIM_G/v2/",
+    "provider_id": "copy",
+    "files": [
+      "rel_GL.Z"
+    ]
+  },
+  "part4": {
+    "path": "@E923_DATA@",
+    "param": [
+      "veg",
+      "lai"
+    ],
+    "remove_links": true,
+    "files": {
+      "@PARAM@_GL": "SURFACE_G/@PARAM@_@MM@_GL"
+    }
+  },
+  "part5": {
+    "path": "@E923_DATA@",
+    "param": [
+      "veg",
+      "lai"
+    ],
+    "remove_links": true,
+    "files": {
+      "@PARAM@_HR": "SURFACE_L/@PARAM@_@MM@_HR"
+    }
+  },
+  "part6": {
+    "path": "",
+    "param": [
+      "tpl",
+      "wpl",
+      "snl"
+    ],
+    "provider_id": "copy",
+    "files": {
+      "@PARAM@_GL.Z": "@E923_DATA@/CLIM_G/v2/@PARAM@_@MM@_GL.Z",
+      "tpl_GL": "tsl_GL",
+      "wpl_GL": "wsl_GL"
+    }
+  },
+  "part8": {
+    "path": "@E923_DATA@",
+    "files": {
+      "abc_coef": "abc_O3/abc_quadra_@MM@"
+    }
+  },
+  "part9": {
+    "path": "@E923_DATA@",
+    "files": {
+      "aero_GL": "aero_tegen/aero.tegen.m@MM@_GL"
+    }
+  }
+}

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Introduce config files for CY50T2 [\#14](https://github.com/ACCORD-NWP/tactus/pull/14) (@uandrae)
 - Add compilation and use of binaries from IAL code built with IAL-bundle [\#11](https://github.com/ACCORD-NWP/tactus/pull/11) (@trygveasp)
 - Support multiple search paths for json schemas. [\#5](https://github.com/ACCORD-NWP/tactus/pull/5) (@mfroelund)
 - Reintroduce remove functionality. [\#7](https://github.com/ACCORD-NWP/tactus/pull/7) (@mfroelund)
@@ -17,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support multiple searchpaths for namelist files through TACTUS_CONFIG_DATA_DIR. [\#20](https://github.com/ACCORD-NWP/tactus/pull/20) (@mfroelund)
 
 ### Changed
+- Make CY50T2 default [\#14](https://github.com/ACCORD-NWP/tactus/pull/14) (@uandrae)
 - Change to https github access for all dependencies [\#32](https://github.com/ACCORD-NWP/tactus/pull/32) (@uandrae)
 - Change default group on atos to accord [\#26](https://github.com/ACCORD-NWP/tactus/pull/26) (@uandrae)
 - Prepare tactus as a separate package from Deode-Workflow, which now belongs to ACCORD-NWP. [\#2](https://github.com/ACCORD-NWP/tactus/pull/2) (@mfroelund)
