@@ -12,4 +12,7 @@
   bindir = "@CASEDIR@/install/bin"
 
 [submission.task_exceptions.Pgd]
-  binary = "pgd_dp"
+   binary = "pgd_dp"
+   
+ [submission.task_exceptions.Prep]
+   binary = "prep_dp"
