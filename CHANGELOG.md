@@ -32,6 +32,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Get wrapper with an empty default value. [\#17](https://github.com/ACCORD-NWP/tactus/pull/17) (@trygveasp)
 - Remove deode files. [\#4](https://github.com/ACCORD-NWP/tactus/pull/4) (@mfroelund)
 
+## [1.0.0] - 2026-04-30
+
+### Added
+- Add nowcasting impact model [\#1622](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1622)(@nicolasCtd)
+- Introduce gl boundary interpolation and support for s3 protocol in toolbox [\#1449](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1449)(@ovignes)
+- Introduce task index to reduce excessive module loading and unexpected module conflicts [\#1629](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1629)(@uandrae)
+- Output land-sea mask at time step zero per default [\#1634](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1634)(@KristianHMoller)
+- Added impact model DWML (uses Deode-ML-Workflow plugin) [\#1635](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1635)(@einrone)
+
+### Changed
+- Update EHYPE interface and version [\#1646](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1646) (@uandrae)
+- Use specific FDB version on atos to solve missing gribscan [\#1633](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1633) (@uandrae)
+- Split request for spectral fields on LUMI. [\#1628](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1628) (@kastelecn)
+- Make ecFlow triggers relative instead of absolute [\#1479](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1479)(@ovignes)
+- Allow to run without output [\#1595](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1595)(@uandrae)
+- Adds explicit name of task in get_binary function call of IOmerge [\#1605](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1605) (@pardallio)
+
+### Fixed
+- Fixed wildfire app issue: moves wildfire class into impacts.py [#1665](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1654)(@pardallio)
+- Protect default cleaning settings [\#1648](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1648) (@uandrae)
+- Correct usage of get_as_dict() [\#1647](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1647) (@uandrae)
+- Bugfix for \#1628. [\#1645](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1645) (@kastelecn)
+- Remove usage of the msdeode compute account on atos [\#1639](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1639)(@uandrae)
+- Fix timedelta typo in cleaning.CycleCleaning.ifs.step [\#1637](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1637)(@jacobsnoeijer)
+- Add missing archive control in suite definition [\#1612](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1612)(@uandrae)
+- Reference checker task name unique [\#1611](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1611)(@dhaumont)
+- Reference checker summary lock [\#1609](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1609)(@dhaumont)
+- Refactor the internal of ParsedConfig to use frozendict [\#1586](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1586) (@dhaumont)
+- Fix unit test 1641 [\#1642] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1642) (@mfroelund)
+- Fix extraction of Gmax sqlites [\#1656] (https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1656) (@svianaj)
+- Fixed wildfire app for oper user: adds uv env and refines template [#1630](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1630)(@pardallio)
+- Fixed oorder of binary exception logic [#1606](https://github.com/destination-earth-digital-twins/Deode-Workflow/pull/1606)(@pardallio)
+
+
 ## [0.27.0] - 2026-04-10
 
 ### Added

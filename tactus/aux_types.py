@@ -6,13 +6,17 @@ import json
 from collections.abc import Mapping, MutableMapping, MutableSequence, MutableSet
 from functools import reduce
 from operator import getitem
-from types import MappingProxyType
 from typing import Any, Callable, Iterator, Literal, Optional, Union
 
 import tomlkit
 import yaml
 
-from .general_utils import get_empty_nested_defaultdict, modify_mappings
+from .general_utils import (
+    get_empty_nested_defaultdict,
+    merge_dicts,
+    recursive_freeze,
+    recursive_unfreeze,
+)
 
 
 class QuasiConstantMetaclass(type):
@@ -30,7 +34,7 @@ class QuasiConstantMetaclass(type):
     def type_conversions(cls):
         """Type conversions to be performed on the attributes."""
         return {
-            MutableMapping: lambda x: modify_mappings(obj=x, operator=MappingProxyType),
+            MutableMapping: lambda x: recursive_freeze(obj=x),
             MutableSequence: tuple,
             MutableSet: frozenset,
         }
@@ -76,27 +80,36 @@ class BaseMapping(Mapping):
         return getattr(self, "_data", None)
 
     @data.setter
-    def data(self, new, nested_maps_type=None):
+    def data(self, new):
         """Set the value of the `data` property."""
-        if nested_maps_type is None:
-            nested_maps_type = BaseMapping
-        self._data = modify_mappings(
-            obj=new,
-            operator=lambda x: {
-                k: nested_maps_type(v) if isinstance(v, Mapping) else v
-                for k, v in x.items()
-            },
-        )
+        self._data = recursive_freeze(new)
 
     def dict(self):
-        """Return a `dict` representation, converting also nested `Mapping`-type items."""
-        return modify_mappings(obj=self, operator=dict)
+        """Returns a dict deepcopy of the internal data.
 
-    def copy(self, update: Optional[Union[Mapping, Callable[[Mapping], Any]]] = None):
+        Returns:
+            The dictionary representation
+        """
+        return recursive_unfreeze(self._data)
+
+    def copy(
+        self,
+        update: Optional[Union[Mapping, Callable[[Mapping], Any]]] = None,
+        validate=True,
+    ):
         """Return a copy of the instance, optionally updated according to `update`."""
+        if not update:
+            return copy.deepcopy(self)
+        data = self._data
+        self._data = None
         new = copy.deepcopy(self)
-        if update:
-            new.data = modify_mappings(obj=self.dict(), operator=update)
+        self._data = data
+        new_data = merge_dicts(data, update, overwrite=True, remove_none=True)
+        new.validated = False
+        if validate:
+            new.data = new_data
+        else:
+            BaseMapping.data.fset(new, new_data)
         return new
 
     def update(self, key: str, value):
@@ -148,7 +161,7 @@ class BaseMapping(Mapping):
                 item in one go.
 
         Returns:
-            Any: Value of the item.
+            Any: Value of the item. Dictionaries are returned as 'frozendict'
         """
         try:
             # Try regular getitem first in case "A.B. ... C" is actually a single key

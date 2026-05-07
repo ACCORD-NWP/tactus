@@ -71,10 +71,10 @@
     "method": "bilin",
     "grib_id": [
       {
-        "shortName": "10efg"
+        "shortName": "max_10efg"
       },
       {
-        "shortName": "10nfg"
+        "shortName": "max_10nfg"
       }
     ],
     "common": {

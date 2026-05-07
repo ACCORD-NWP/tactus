@@ -128,7 +128,7 @@ class TactusPluginRegistryFromConfig(TactusPluginRegistry):
 
         """
         try:
-            plugin_registry = config["general.plugin_registry"].dict()
+            plugin_registry = config.get_as_dict("general.plugin_registry")
         except KeyError:
             plugin_registry = None
         TactusPluginRegistry.__init__(self, plugin_registry)

@@ -26,7 +26,7 @@ class InitialConditions(object):
         self.cycle_length = as_timedelta(self.config["general.times.cycle_length"])
         self.archive = self.config["system.archive"]
         self.intp_bddir_sfx = self.config.get("system.intp_bddir_sfx", self.archive)
-        self.file_templates = self.config["file_templates"].dict()
+        self.file_templates = self.config.get_as_dict("file_templates")
         self.surfex = self.config["general.surfex"]
         self.mode = self.config["suite_control.mode"]
 

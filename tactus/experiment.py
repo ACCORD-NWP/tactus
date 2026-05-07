@@ -20,7 +20,7 @@ from tactus.config_parser import (
 from tactus.datetime_utils import evaluate_date
 from tactus.derived_variables import set_times
 from tactus.eps.eps_setup import EPSConfig, generate_member_settings
-from tactus.general_utils import modify_mappings, recursive_dict_deviation
+from tactus.general_utils import merge_dicts, recursive_dict_deviation
 from tactus.host_actions import set_tactus_home
 from tactus.logs import logger
 from tactus.os_utils import resolve_path_relative_to_package
@@ -227,7 +227,7 @@ class EPSExp(Exp):
         """
         # First convert self.config["eps"] to a plain dict. This is needed before
         # we turn config objects into pydantic dataclasses.
-        eps_plain_dict = modify_mappings(self.config["eps"], operator=dict)
+        eps_plain_dict = self.config.get_as_dict("eps")
         # Then convert the general EPS settings to a dataclass
         epsconfig = EPSConfig(**eps_plain_dict)
 
@@ -281,9 +281,11 @@ class EPSExp(Exp):
 
                         # Merge modifications with remainder member settings.
                         # Modifications take precendence over any existing settings.
-                        member_settings_deviation = modify_mappings(
+
+                        member_settings_deviation = merge_dicts(
                             member_settings_deviation, lmod
                         )
+
                     else:
                         logger.warning("Skip missing modification file {}", mod)
 

@@ -998,6 +998,7 @@
             "coldspell",
             "convection",
             "flooding",
+            "nowcasting",
             "heatwave",
             "nwp",
             "storm",

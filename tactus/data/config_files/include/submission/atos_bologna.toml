@@ -21,7 +21,7 @@
   ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2026.01.0.0"]
 
 [submission.task_exceptions.ArchiveFDB.ENV]
-  FDB5_HOME = "$ECMWF_TOOLBOX_DIR"
+  FDB5_HOME = "/home/fdbtest/versions/7.30.6.0/"
   FDB_ENABLE_GRIBJUMP = "1"
   FDB_HOME = "@TACTUS_FDB_HOME@"
   GRIBJUMP_CONFIG_FILE = "@TACTUS_FDB_HOME@/etc/gribjump/config_on-demand-extremes-dt.yaml"
@@ -92,6 +92,10 @@
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=32"
   WALLTIME = "#SBATCH --time=02:00:00"
+
+[submission.task_exceptions.GlBd]
+  binary = "gl"
+  bindir = "/perm/deployde330/github-actions/install/gl/latest/bin"
 
 [submission.task_exceptions.InterpolSstSic]
   binary = "gl"

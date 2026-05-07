@@ -26,7 +26,6 @@ from tactus.general_utils import (
     expand_dict_key_slice,
     expand_string_slice,
     merge_dicts,
-    modify_mappings,
     recursive_delete_keys,
     value_from_any_generator,
 )
@@ -380,9 +379,8 @@ def get_member_config(config: ParsedConfig, member: int) -> ParsedConfig:
     """
     # Get a clean dict of the default member settings. Needed to be able
     # to merge the default settings with the specific member settings.
-    default_member_settings: dict = modify_mappings(
-        config["eps.member_settings"], operator=dict
-    )
+    default_member_settings: dict = config.get_as_dict("eps.member_settings")
+
     # Determine which keys are expandable and delete them to avoid that a member
     # specific setting defaults to an expandable dict if no member specific
     # setting is present.
@@ -409,7 +407,7 @@ def get_member_config(config: ParsedConfig, member: int) -> ParsedConfig:
 
     # Check if there are specific settings for the member
     if member_key in config:
-        specific_member_settings = modify_mappings(config[member_key], operator=dict)
+        specific_member_settings = config.get_as_dict(member_key)
     else:
         logger.debug(f"No settings found for member {member}. Using defaults.")
 

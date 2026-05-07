@@ -238,7 +238,8 @@ class Marsprep(Task):
         try:
             if not os.path.exists(self.prepdir):
                 tactusmakedirs(
-                    self.prepdir, unixgroup=self.platform.get_platform_value("unix_group")
+                    self.prepdir,
+                    unixgroup=self.platform.get_platform_value("unix_group"),
                 )
         except OSError as e:
             raise RuntimeError(f"Error while preparing the mars folder: {e}") from e
@@ -331,9 +332,23 @@ class Marsprep(Task):
                 members_dict,
             )
 
-            additional_data = {"z": self.get_shz_data(tag)}
+            additional_data = {}
+            additional_data["common_data"] = self.get_shz_data(tag)
 
-            add_additional_data_to_all(tag, steps, members_dict, additional_data)
+            param_spectral_temperature = None
+            with contextlib.suppress(KeyError):
+                param_spectral_temperature = get_value_from_dict(
+                    self.mars["SH_temperature"], self.init_date_str
+                )
+
+            if param_spectral_temperature:
+                additional_data |= self.get_sh_temperature_data(
+                    tag, steps, members_dict, param_spectral_temperature
+                )
+                add_additional_file_specific_data(additional_data=additional_data)
+
+            else:
+                add_additional_data_to_all(tag, steps, members_dict, additional_data)
             move_files(tag, steps, members_dict, self.prepdir)
         if waitfor_steps:
             waitfor_files(tag, waitfor_steps, members_dict, self.prepdir)
@@ -731,6 +746,36 @@ class Marsprep(Task):
                 target=compile_target(tag, member_type, members),
                 grid=self.mars["grid_ML"],
             )
+
+    def get_sh_temperature_data(
+        self, tag: str, steps: List[int], members_dict: Dict[str, List[int]], param
+    ):
+        """Get soil gridpoint data."""
+        additional_data: Dict[str, bytes] = {}
+        for member_type, members in members_dict.items():
+            data_type = (
+                self.mars["type_AN"]
+                if member_type == "control_member"
+                else self.mars["type_FC"]
+            )
+            self._build_and_run_retrieve_request(
+                req_file_name=f"{member_type}_{tag}.temp.req",
+                data_type=data_type,
+                levtype="ML",
+                param=param,
+                steps=steps,
+                members=members,
+                target=compile_target(f"{tag}.temperature", member_type, members),
+            )
+
+            for step in steps:
+                for member in members:
+                    # Default to "*_0+{step}" if member is None
+                    key = f"{tag}_{member or 0}+{step}"
+                    file_temperature = f"{tag}.temperature_{member or 0}+{step}"
+                    additional_data[key] = get_and_remove_data(file_temperature)
+
+        return additional_data
 
     def get_shz_data(self, tag: str):
         """Get geopotential in spherical harmonics."""
