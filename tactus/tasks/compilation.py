@@ -35,7 +35,7 @@ class TactusBundleCreate(Task):
         bundle_file = self.platform.substitute(bundle_file)
 
         if self.config["compile.ial_dir"]:
-            with open(bundle_file, "r") as f:
+            with open(bundle_file, "r", encoding="utf-8") as f:
                 data = yaml.safe_load(f)
 
             bundle_file = "@CASEDIR@/bundle-local-ial.yaml"
@@ -55,7 +55,7 @@ class TactusBundleCreate(Task):
                             self.config["compile.ial_dir"]
                         )
 
-            with open(bundle_file, "w") as f:
+            with open(bundle_file, "w", encoding="utf-8") as f:
                 yaml.safe_dump(data, f, sort_keys=False)
 
         self.bundle_file_str = f"--bundle {bundle_file}"
