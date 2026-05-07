@@ -103,9 +103,9 @@ class TactusBundleBuild(Task):
         self.exp_builddir = builddir
         tactusmakedirs(self.exp_bindir)
         tactusmakedirs(self.exp_builddir)
-        self.ninja_arg=""
+        self.ninja_arg = ""
         if self.config["compile"].get("ninja"):
-            self.ninja_arg="--ninja "
+            self.ninja_arg = "--ninja "
 
     def execute(self):
         """Execute task."""
