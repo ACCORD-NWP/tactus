@@ -118,7 +118,8 @@
   create_static_data = true
   create_time_dependent_suite = true
   do_archiving = true
-  do_cleaning = true
+  compile = true
+  do_cleaning = false
   do_extractsqlite = true
   do_interpolsstsic = true
   do_marsprep = true
