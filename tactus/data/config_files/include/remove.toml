@@ -11,7 +11,7 @@
   suite_name = "@CASE@"
 
 [remove.main.ecfs]
-  ecfs_prefix = "@ECFS_PREFIX@"
+  ecfs_prefix = "@ARCHIVING.PREFIX.ECFS@"
   path = ""
 
 [remove.main.ifs]
