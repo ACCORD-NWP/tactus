@@ -9,7 +9,7 @@
       "type": "object",
       "properties": {
         "include": {
-          "description": "regular experssion according to it which files to clean",
+          "description": "regular expression according to it which files to clean",
           "type": "string"
         },
         "ncycles_delay": {

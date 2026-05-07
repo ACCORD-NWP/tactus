@@ -156,6 +156,69 @@ def test_tactusmakedirs():
     assert os.stat(path).st_gid in grpids
 
 
+def test_lockfile_basic():
+    """Test the FileLock class."""
+    from tactus.os_utils import FileLock
+
+    path = tempfile.mkdtemp()
+    filepath = f"{path}/testfile"
+    lockfile_path = f"{filepath}.lock"
+
+    lockfile = Path(lockfile_path)
+    lockfile.touch(exist_ok=True)
+
+    assert os.path.exists(lockfile_path)
+    with (
+        pytest.raises(TimeoutError),
+        FileLock(filepath, timeout=0.1, check_interval=0.1, delete_existing=False),
+    ):
+        assert os.path.exists(lockfile_path)
+    assert os.path.exists(lockfile_path)
+    with FileLock(filepath, delete_existing=True):
+        assert os.path.exists(lockfile_path)
+    assert not os.path.exists(lockfile_path)
+
+
+def test_lockfile_timeout():
+    """Test the FileLock class."""
+    from tactus.os_utils import FileLock
+
+    path = tempfile.mkdtemp()
+    filepath = f"{path}/testfile"
+    lockfile_path = f"{filepath}.lock"
+
+    lockfile = Path(lockfile_path)
+    lockfile.touch(exist_ok=True)
+
+    assert os.path.exists(lockfile_path)
+    with (
+        pytest.raises(TimeoutError),
+        FileLock(filepath, timeout=0.1, check_interval=0.1, delete_existing=False),
+    ):
+        assert os.path.exists(lockfile_path)
+    assert os.path.exists(lockfile_path)
+
+
+def test_lockfile_thread():
+    """Test the FileLock class."""
+    from threading import Thread
+    from time import sleep
+
+    from tactus.os_utils import FileLock
+
+    def get_lock(filepath):
+        with FileLock(filepath):
+            sleep(0.5)
+
+    path = tempfile.mkdtemp()
+    filepath = f"{path}/testfile"
+    thread = Thread(target=get_lock, args=(filepath,))
+    thread2 = Thread(target=get_lock, args=(filepath,))
+    thread.start()
+    thread2.start()
+    thread.join()
+
+
 def test_ping():
     """Test the ping function."""
     hostname = "localhost"

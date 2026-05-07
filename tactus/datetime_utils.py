@@ -105,12 +105,16 @@ def expand_output_settings(
     Raises:
         RuntimeError: Handle erroneous time increment
     """
+    zero_increment = as_timedelta("PT0H")
     output_intervals = []
     if isinstance(output_settings, str):
         check_syntax([output_settings], 0)
         # Infer the output intervals from the forecast range and output settings
         if output_settings:
-            output_intervals = [":".join(["PT0H", forecast_range, output_settings])]
+            if as_timedelta(output_settings) == zero_increment:
+                output_intervals = [":".join(["PT0H", "PT0H", "PT1H"])]
+            else:
+                output_intervals = [":".join(["PT0H", forecast_range, output_settings])]
         else:
             return output_intervals
     elif isinstance(output_settings, (tuple, list)):
@@ -118,7 +122,6 @@ def expand_output_settings(
         output_intervals = output_settings
 
     # Check for zero size time increments
-    zero_increment = as_timedelta("PT0H")
     for interval in output_intervals:
         if as_timedelta(interval.split(":")[2]) == zero_increment:
             raise RuntimeError(f"Zero size time increments not allowed:{interval}")

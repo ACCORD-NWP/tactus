@@ -51,7 +51,7 @@ For instance, the following code defines the configuration of a reference checke
   analyze_summary = ["ReferenceCheck"]
   summary_active = ["MainSummary"]
   suppress_exception = false
-
+  label_suffix = "@MEMBER_STR@"
 ```
 In this configuration file:
 - `generate` will activate the generation phase
@@ -61,7 +61,7 @@ In this configuration file:
 - `analyze_summary` defines in which task the summary will be checked for error
 - `summary_active` defines which summary should be created.
 - `suppress_exception`: by default, an exception is raised when an exception is found during `analyze_summary`. This can be deactivated if `suppress_exception = true`, if you don't want that your tests fails in case of difference.
-
+- `label_suffix` : a suffix to append to the task name in the summary
 ### Comparison methods
 
 The comparison methods that can be used to compare files are defined as methods `[reference_checker.methods.{MethodName}]` where `{MethodName}` is the name of the method.

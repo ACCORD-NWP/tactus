@@ -25,7 +25,8 @@ from tactus.toolbox import FileManager
 @pytest.fixture(scope="module")
 def basic_config(default_config):
     config = default_config
-    return config.copy(update=set_times(config))
+    config = config.copy(update=set_times(config))
+    return config.copy(update={"general": {"cycle": "CY49t2"}})
 
 
 def configure_for_check_and_generate(

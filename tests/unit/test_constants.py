@@ -47,7 +47,9 @@ def test_sets_become_frozen(constants):
 
 
 def test_mappings_become_locked(constants):
-    with pytest.raises(TypeError, match="object does not support item assignment"):
+    with pytest.raises(
+        TypeError, match=".*frozendict.*object do.*t support item assignment"
+    ):
         constants.MAPPING["foo"]["bar"]["baz"] = "fred"
 
 

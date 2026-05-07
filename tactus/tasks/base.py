@@ -212,7 +212,7 @@ class Task(object):
         except KeyError:
             try:
                 binaries = self.config[
-                    f"submission.task_exceptions.{self.name}.binaries.{binary_name}"
+                    f"submission.task_exceptions.{task}.binaries.{binary_name}"
                 ]
                 logger.debug("binaries:{}", binaries)
 
