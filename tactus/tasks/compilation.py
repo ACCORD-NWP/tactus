@@ -103,13 +103,16 @@ class TactusBundleBuild(Task):
         self.exp_builddir = builddir
         tactusmakedirs(self.exp_bindir)
         tactusmakedirs(self.exp_builddir)
+        self.ninja_arg=""
+        if self.config["compile"].get("ninja"):
+            self.ninja_arg="--ninja "
 
     def execute(self):
         """Execute task."""
         batch_job = BatchJob(os.environ)
         batch_job.run(
             f"cd {self.compile_dir};  {self.ecbundle_bin} build "
-            + f"--arch {self.arch} --ninja --forecast-only "
+            + f"--arch {self.arch} {self.ninja_arg} --forecast-only "
             + f"--install-dir={self.exp_bindir} --install "
             + f"--build-dir={self.exp_builddir}"
         )

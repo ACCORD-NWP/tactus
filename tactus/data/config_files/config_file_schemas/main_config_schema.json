@@ -671,6 +671,11 @@
           "type": "string",
           "description": "bundle used for compiling binaries",
           "default": "@TACTUS_HOME@/data/compilation/@CYCLE@/bundle.yml"
+        },
+        "ninja": {
+          "type": "boolean",
+          "description": "whether to use ninja for compilation",
+          "default": false
         }
       }
     },
