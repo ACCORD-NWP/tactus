@@ -676,6 +676,16 @@
           "type": "boolean",
           "description": "whether to use ninja for compilation",
           "default": false
+        },
+        "cache": {
+          "type": "boolean",
+          "description": "whether to use chache build/install folders",
+          "default": true
+        },
+        "cache_dir": {
+          "type": "string",
+          "description": "whether to use chache build/install folders",
+          "default": "@REFERENCE_DATA@/bundle_cache"
         }
       }
     },
