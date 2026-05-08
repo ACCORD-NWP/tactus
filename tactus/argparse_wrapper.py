@@ -12,6 +12,7 @@ from .commands_functions import (
     namelist_format,
     namelist_integrate,
     remove_cases,
+    replace_node,
     run_task,
     show_config,
     show_config_schema,
@@ -19,7 +20,6 @@ from .commands_functions import (
     show_namelist,
     show_paths,
     start_suite,
-    replace_node,
 )
 from .config_parser import ConfigParserDefaults
 from .namelist import NamelistConverter
@@ -478,15 +478,19 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
     )
     parser_namelist_format.set_defaults(run_command=namelist_format)
 
-
     ##########################################
     # Configure parser for the "replace" command #
     ##########################################
     parser_replace = subparsers.add_parser(
         "replace", help="Replaces a task/family/suite.", parents=[common_parser]
     )
-    parser_replace.add_argument("--ecf-node", type=str, help="Ecflow node name (ECF_NAME)",
-                               dest="node_path", required=True)
+    parser_replace.add_argument(
+        "--ecf-node",
+        type=str,
+        help="Ecflow node name (ECF_NAME)",
+        dest="node_path",
+        required=True,
+    )
     parser_replace.add_argument(
         "--def-file",
         "-f",
