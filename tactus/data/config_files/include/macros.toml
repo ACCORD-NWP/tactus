@@ -12,7 +12,6 @@
     "general.cycle",
     "general.csc",
     "general.case",
-    "general.event_type",
     "general.surfex_sea_ice",
     "domain.orographic_smoothing_method",
     {bdmember = "boundaries.ifs.bdmember"},

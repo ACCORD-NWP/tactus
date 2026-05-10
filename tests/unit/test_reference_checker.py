@@ -26,7 +26,14 @@ from tactus.toolbox import FileManager
 def basic_config(default_config):
     config = default_config
     config = config.copy(update=set_times(config))
-    return config.copy(update={"general": {"cycle": "CY49t2"}})
+    return config.copy(
+        update={
+            "general": {
+                "cycle": "CY49t2",
+                "case": "@CASE_PREFIX@@CYCLE@_@CSC@_nwp_@DOMAIN@_@YMD_START@",
+            }
+        }
+    )
 
 
 def configure_for_check_and_generate(

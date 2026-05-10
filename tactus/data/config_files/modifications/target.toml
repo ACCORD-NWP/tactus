@@ -41,6 +41,6 @@
   bddir = "@HOST_CASE_DIR@/archive/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
   bddir_sfx = "@HOST_CASE_DIR@/archive/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
   climdir = "@CASEDIR@/climate/@DOMAIN@"
-  host_case = "@CYCLE@_@CSC@_@EVENT_TYPE@_@HOST_DOMAIN@_@YMD_START@"
+  host_case = "@CYCLE@_@CSC@_@HOST_DOMAIN@_@YMD_START@"
   host_case_dir = "@CASEDIR@/../@HOST_CASE@"
   host_domain = "DEMO_60x80_2500m"
