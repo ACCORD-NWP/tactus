@@ -22,7 +22,8 @@ def set_times(config):
     Returns:
         update (dict): Dict of corrected basetime/validtime
     """
-    times = config["general.times"].dict()
+    times = config.get_as_dict("general.times")
+
     if "start" in times:
         times.update({"start": evaluate_date(times["start"])})
     if "basetime" not in times:
@@ -230,10 +231,10 @@ def derived_variables(config, processor_layout=None):
         selection.append("windfarm")
 
     # Turn boolean to strings and macros
-    default_macros = config.get(
+    default_macros = config.get_as_dict(
         "macros.select.default",
         {"gen_macros": [], "group_macros": [], "os_macros": []},
-    ).dict()
+    )
     gen_macros = list(default_macros["gen_macros"])
 
     decades = "one_decade" if config["pgd.one_decade"] else "all_decade"

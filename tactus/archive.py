@@ -29,7 +29,7 @@ class Archive:
             if exclude is None:
                 exclude = []
             try:
-                choices_for_type = self.config[f"archiving.{datatype}"].dict()
+                choices_for_type = self.config.get_as_dict(f"archiving.{datatype}")
                 logger.info("Setup archiving for type:{}", datatype)
             except KeyError as error:
                 logger.error("Could not find archiving.{}", datatype)

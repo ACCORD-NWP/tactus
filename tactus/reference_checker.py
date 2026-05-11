@@ -11,7 +11,7 @@ from arpifs_listings import norms
 
 from tactus.experiment import get_git_info
 from tactus.logs import logger
-from tactus.os_utils import Search, tactusmakedirs
+from tactus.os_utils import FileLock, Search, tactusmakedirs
 from tactus.toolbox import FileManager, Platform
 
 
@@ -294,6 +294,7 @@ class CheckDefinition:
         self,
         taskname,
         rulename,
+        label_suffix,
         method,
         inpath_pattern,
         files_pattern,
@@ -307,6 +308,7 @@ class CheckDefinition:
         Args:
                 taskname: the name of the task
                 rulename: the name of the rule
+                label_suffix: the suffix for the label
                 method: the method to perform the comparison
                 inpath_pattern:  path to the files to be tested
                 files_pattern: pattern defining the files to be tested
@@ -318,6 +320,7 @@ class CheckDefinition:
         """
         self.taskname = taskname
         self.rulename = rulename
+        self.label_suffix = label_suffix
         self.method = method
         self.inpath_pattern = inpath_pattern
         self.files_pattern = files_pattern
@@ -328,13 +331,14 @@ class CheckDefinition:
 
     @staticmethod
     def create_list_of_check_definitions(
-        config, taskname, rules_active, check, generate
+        config, taskname, label_suffix, rules_active, check, generate
     ) -> list[CheckDefinition]:
         """Create the list of items to be checked.
 
         Args:
             config (tactus.ParsedConfig): Configuration
             taskname: the name of the task
+            label_suffix: the suffix for the label
             rules_active: list of rules that are active
             check: boolean indicating if the check should be performed
             generate: boolean indicating if the reference generation should be performed
@@ -361,10 +365,10 @@ class CheckDefinition:
                         references_pattern = config["task"][taskname][rulename][
                             "reference_folder"
                         ]
-
                     check_definition = CheckDefinition(
                         taskname,
                         rulename,
+                        label_suffix,
                         method,
                         inpath,
                         pattern,
@@ -385,6 +389,10 @@ class CheckDefinition:
         self.files = platform.substitute(self.files_pattern)
         self.inpath = platform.substitute(self.inpath_pattern)
         result_dir = platform.substitute(self.results_dir_pattern)
+
+        suffix = platform.substitute(self.label_suffix)
+        self.uniquename = f"{self.taskname}.{suffix}"
+
         reference_dir = (
             platform.substitute(self.references_pattern)
             if self.references_pattern
@@ -559,7 +567,10 @@ class CheckSummaryTxt(CheckSummary):
         self.init_full_path(platform)
         self.delete()
 
-        with open(self.fullpath, "w") as summary_file:
+        with (
+            FileLock(self.fullpath, delete_existing=True),
+            open(self.fullpath, "w") as summary_file,
+        ):
             summary_file.write(f"# ReferenceChecker Summary File {self.version}\n")
             git_info = get_git_info()
             summary_file.write("# Git:\n")
@@ -586,7 +597,7 @@ class CheckSummaryTxt(CheckSummary):
                 f"First call CheckSummaryTxt.create to generate {self.fullpath}"
             )
 
-        with open(self.fullpath, "a") as summary_file:
+        with FileLock(self.fullpath), open(self.fullpath, "a") as summary_file:
             for check_definition in check_definitions:
                 for item in check_definition.items:
                     CheckSummaryTxt._to_txt(summary_file, check_definition, item)
@@ -605,6 +616,7 @@ class CheckSummaryTxt(CheckSummary):
             item: the check item being processed
         """
         summary_file.write("-\n")
+        summary_file.write(f"Name: {check_definition.uniquename}\n")
         summary_file.write(f"Task: {check_definition.taskname}\n")
         summary_file.write(f"Rule: {check_definition.rulename}\n")
         summary_file.write(f"Method: {check_definition.method}\n")
@@ -625,31 +637,33 @@ class CheckSummaryTxt(CheckSummary):
     def compute_and_append_analysis(self, check):
         """Perform an analysis of the txt summary and append it at the end."""
         analysis = CheckSummaryAnalysis(check)
-        with open(self.fullpath, "r") as file:
-            for line in file.readlines():
-                clean_line = line.replace("\n", "")
-                if clean_line.startswith("Result:"):
-                    result = clean_line.split(":")[1].strip()
-                    if check:
-                        if "SUCCESS" not in result:
-                            analysis.increment_error_count()
-                        else:
-                            analysis.increment_success_count()
-                if clean_line.startswith("Warning: No file found using"):
-                    analysis.increment_missing_count()
-                if clean_line.startswith("Generated Reference File:"):
-                    generated = line.split(":")[1].strip()
-                    if generated != "N/A":
-                        analysis.increment_generated_count()
 
-        with open(self.fullpath, mode="a", encoding="utf8") as outfile:
-            outfile.write(f"# Generated files: {analysis.generated_count}\n")
-            outfile.write(f"# Successful tests: {analysis.success_count}\n")
-            outfile.write(f"# Failure tests: {analysis.error_count}\n")
-            outfile.write(f"# Missing files: {analysis.missing_count}\n")
-            outfile.write(f"# Total files: {analysis.total_count()}\n")
-            outfile.write(f"# Success: {analysis.success()}\n")
-            outfile.write(f"# Result: {analysis.message()}\n")
+        with FileLock(self.fullpath):
+            with open(self.fullpath, "r") as file:
+                for line in file.readlines():
+                    clean_line = line.replace("\n", "")
+                    if clean_line.startswith("Result:"):
+                        result = clean_line.split(":")[1].strip()
+                        if check:
+                            if "SUCCESS" not in result:
+                                analysis.increment_error_count()
+                            else:
+                                analysis.increment_success_count()
+                    if clean_line.startswith("Warning: No file found using"):
+                        analysis.increment_missing_count()
+                    if clean_line.startswith("Generated Reference File:"):
+                        generated = line.split(":")[1].strip()
+                        if generated != "N/A":
+                            analysis.increment_generated_count()
+
+            with open(self.fullpath, mode="a", encoding="utf8") as outfile:
+                outfile.write(f"# Generated files: {analysis.generated_count}\n")
+                outfile.write(f"# Successful tests: {analysis.success_count}\n")
+                outfile.write(f"# Failure tests: {analysis.error_count}\n")
+                outfile.write(f"# Missing files: {analysis.missing_count}\n")
+                outfile.write(f"# Total files: {analysis.total_count()}\n")
+                outfile.write(f"# Success: {analysis.success()}\n")
+                outfile.write(f"# Result: {analysis.message()}\n")
 
         return analysis
 
@@ -685,8 +699,10 @@ class CheckSummaryJson(CheckSummary):
         complete_dict["tasks"]["Prep"]["Create"]["description"] = (
             f"Creation of {self.fullpath}"
         )
-
-        with open(self.fullpath, mode="w", encoding="utf8") as outfile:
+        with (
+            FileLock(self.fullpath, delete_existing=True),
+            open(self.fullpath, mode="w", encoding="utf8") as outfile,
+        ):
             json.dump(complete_dict, outfile, indent=True)
             outfile.write("\n")
 
@@ -716,20 +732,21 @@ class CheckSummaryJson(CheckSummary):
             complete_dict["tasks"] = results_dict
 
         lines = json.dumps(complete_dict, indent=True)
-        if os.path.exists(self.fullpath):
-            # Avoid to re-read the full summary.
-            # We make the assumption that the json file ends with a list of tasks
-            # and remove the closing braces to append new tasks
-            with open(self.fullpath, "rb+") as f:
-                f.seek(-6, os.SEEK_END)
-                f.truncate()
-            # To merge correctly into existing "tasks" section, remove
-            # the first line and add a comma
-            header_length = len("""{\n "tasks": { """)
-            lines = f",\n{lines[header_length:]}"
-        with open(self.fullpath, "a") as outfile:
-            outfile.write(lines)
-            outfile.write("\n")
+        with FileLock(self.fullpath):
+            if os.path.exists(self.fullpath):
+                # Avoid to re-read the full summary.
+                # We make the assumption that the json file ends with a list of tasks
+                # and remove the closing braces to append new tasks
+                with open(self.fullpath, "rb+") as f:
+                    f.seek(-6, os.SEEK_END)
+                    f.truncate()
+                # To merge correctly into existing "tasks" section, remove
+                # the first line and add a comma
+                header_length = len("""{\n "tasks": { """)
+                lines = f",\n{lines[header_length:]}"
+            with open(self.fullpath, "a") as outfile:
+                outfile.write(lines)
+                outfile.write("\n")
         logger.info(f"Appended results to reference checking summary: {self.fullpath}")
 
     def _header_to_dict(self):
@@ -744,44 +761,45 @@ class CheckSummaryJson(CheckSummary):
         """Perform an analysis of the json summary and append it at the end."""
         analysis = CheckSummaryAnalysis(check)
         data = {}
-        with open(self.fullpath, "r") as file:
-            data = json.load(file)
-        for task in data["tasks"]:
-            for rule in data["tasks"][task]:
-                if "items" in data["tasks"][task][rule]:
-                    for item in data["tasks"][task][rule]["items"]:
-                        if "result" in item:
-                            result = item["result"]
-                            if check:
-                                if "SUCCESS" not in result:
-                                    analysis.increment_error_count()
-                                else:
-                                    analysis.increment_success_count()
-                        elif "warning" in item:
-                            result = item["warning"]
-                            if "No file found" in result:
-                                analysis.increment_missing_count()
-                        if "generate_file" in item:
-                            generated = item["generate_file"]
-                            if generated != "N/A":
-                                analysis.increment_generated_count()
+        with FileLock(self.fullpath):
+            with open(self.fullpath, "r") as file:
+                data = json.load(file)
+            for task in data["tasks"]:
+                for rule in data["tasks"][task]:
+                    if "items" in data["tasks"][task][rule]:
+                        for item in data["tasks"][task][rule]["items"]:
+                            if "result" in item:
+                                result = item["result"]
+                                if check:
+                                    if "SUCCESS" not in result:
+                                        analysis.increment_error_count()
+                                    else:
+                                        analysis.increment_success_count()
+                            elif "warning" in item:
+                                result = item["warning"]
+                                if "No file found" in result:
+                                    analysis.increment_missing_count()
+                            if "generate_file" in item:
+                                generated = item["generate_file"]
+                                if generated != "N/A":
+                                    analysis.increment_generated_count()
 
-        analysis_dict = {}
-        analysis_dict["generated_count"] = analysis.generated_count
-        analysis_dict["success_count"] = analysis.success_count
-        analysis_dict["error_count"] = analysis.error_count
-        analysis_dict["missing_count"] = analysis.missing_count
-        analysis_dict["total_count"] = analysis.total_count()
-        analysis_dict["success"] = analysis.success()
-        analysis_dict["result"] = analysis.message()
+            analysis_dict = {}
+            analysis_dict["generated_count"] = analysis.generated_count
+            analysis_dict["success_count"] = analysis.success_count
+            analysis_dict["error_count"] = analysis.error_count
+            analysis_dict["missing_count"] = analysis.missing_count
+            analysis_dict["total_count"] = analysis.total_count()
+            analysis_dict["success"] = analysis.success()
+            analysis_dict["result"] = analysis.message()
 
-        # Since we had to parse the json to perform the analysis,
-        # We just append the analysis to data, and rewrite the complete summary
+            # Since we had to parse the json to perform the analysis,
+            # We just append the analysis to data, and rewrite the complete summary
 
-        data["analysis"] = analysis_dict
-        with open(self.fullpath, mode="w", encoding="utf8") as outfile:
-            json.dump(data, outfile, indent=True)
-            outfile.write("\n")
+            data["analysis"] = analysis_dict
+            with open(self.fullpath, mode="w", encoding="utf8") as outfile:
+                json.dump(data, outfile, indent=True)
+                outfile.write("\n")
         return analysis
 
     @staticmethod
@@ -793,22 +811,27 @@ class CheckSummaryJson(CheckSummary):
             check_definition: the check definition being processed
             item: the check item being processed
         """
-        if check_definition.taskname not in summary_dict:
-            summary_dict[check_definition.taskname] = {}
+        if check_definition.uniquename not in summary_dict:
+            summary_dict[check_definition.uniquename] = {}
 
-        if check_definition.rulename not in summary_dict[check_definition.taskname]:
-            summary_dict[check_definition.taskname][check_definition.rulename] = {}
+        if check_definition.rulename not in summary_dict[check_definition.uniquename]:
+            summary_dict[check_definition.uniquename][check_definition.rulename] = {}
 
-            summary_dict[check_definition.taskname][check_definition.rulename]["rule"] = (
-                check_definition.rulename
-            )
-            summary_dict[check_definition.taskname][check_definition.rulename][
+            summary_dict[check_definition.uniquename][check_definition.rulename][
+                "rule"
+            ] = check_definition.rulename
+            summary_dict[check_definition.uniquename][check_definition.rulename][
                 "method"
             ] = check_definition.method
-            summary_dict[check_definition.taskname][check_definition.rulename]["tool"] = (
-                check_definition.tool
-            )
-            summary_dict[check_definition.taskname][check_definition.rulename][
+
+            summary_dict[check_definition.uniquename][check_definition.rulename][
+                "task"
+            ] = check_definition.taskname
+
+            summary_dict[check_definition.uniquename][check_definition.rulename][
+                "tool"
+            ] = check_definition.tool
+            summary_dict[check_definition.uniquename][check_definition.rulename][
                 "items"
             ] = []
 
@@ -826,7 +849,7 @@ class CheckSummaryJson(CheckSummary):
                 + f" at {check_definition.inpath}\n"
             }
 
-        summary_dict[check_definition.taskname][check_definition.rulename][
+        summary_dict[check_definition.uniquename][check_definition.rulename][
             "items"
         ].append(content)
 
@@ -838,6 +861,7 @@ class ReferenceCheckManager:
         self,
         config,
         taskname,
+        label_suffix,
         rules_active,
         check,
         generate,
@@ -850,6 +874,7 @@ class ReferenceCheckManager:
         Args:
             config: configuration dictionary
             taskname: the name of the task
+            label_suffix: the suffix for the label
             rules_active: list of rules that are active
             check: boolean indicating if the check should be performed
             generate: boolean indicating if the reference generation should be performed
@@ -859,6 +884,7 @@ class ReferenceCheckManager:
                                 checking references or analyzing summaries
         """
         self.taskname = taskname
+        self.label_suffix = label_suffix
         self.check = check
         self.generate = generate
         self.rules_active = rules_active
@@ -867,7 +893,12 @@ class ReferenceCheckManager:
         self.suppress_exception = suppress_exception
 
         self.check_definitions = CheckDefinition.create_list_of_check_definitions(
-            config, self.taskname, self.rules_active, self.check, self.generate
+            config,
+            self.taskname,
+            self.label_suffix,
+            self.rules_active,
+            self.check,
+            self.generate,
         )
         self.summary_list = CheckSummary.create_summary_list(config)
         self.reference_checkers = {}
@@ -884,7 +915,7 @@ class ReferenceCheckManager:
                     self.reference_checkers[check_definition.method] = reference_checker
 
     @staticmethod
-    def create_reference_check_manager(config, taskname):
+    def create_reference_check_manager(config, taskname) -> "ReferenceCheckManager":
         """Static method to create a ReferenceCheckManager.
 
         Args:
@@ -911,9 +942,11 @@ class ReferenceCheckManager:
         analyze_summary = taskname in summary_analysis_tasks
         task_is_active = len(task_rules_active) > 0
         suppress_exception = config_rc["suppress_exception"]
+        label_suffix = config_rc["label_suffix"]
 
         logger.debug(
             f"ReferenceChecker configuration for task {taskname}:\n\
+                       label_suffix={label_suffix}\n\
                        task_is_active={task_is_active}\
                        task_rules_active={task_rules_active}\n\
                        check={check}\n\
@@ -927,6 +960,7 @@ class ReferenceCheckManager:
             return ReferenceCheckManager(
                 config_rc,
                 taskname,
+                label_suffix,
                 task_rules_active,
                 check,
                 generate,

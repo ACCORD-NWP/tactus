@@ -10,10 +10,12 @@ import uuid
 from collections import namedtuple
 from pathlib import Path
 
+import frozendict
 import pytest
 import tomli
 import tomlkit
 
+from tactus.aux_types import BaseMapping, recursive_freeze
 from tactus.config_parser import (
     BasicConfig,
     ConfigFileValidationError,
@@ -24,30 +26,28 @@ from tactus.config_parser import (
     ParsedConfig,
 )
 from tactus.datetime_utils import DatetimeConstants, as_datetime
+from tactus.derived_variables import set_times
+from tactus.general_utils import recursive_unfreeze
 
 
 @pytest.fixture
 def minimal_raw_config():
-    return tomlkit.parse(
-        """
+    return tomlkit.parse("""
         [general]
             times.list = ["2000-01-01T00:00:00Z"]
-        """
-    )
+        """)
 
 
 @pytest.fixture
 def raw_config_with_task(minimal_raw_config):
     rtn = minimal_raw_config.copy()
-    task_configs = tomlkit.parse(
-        """
+    task_configs = tomlkit.parse("""
         [task.forecast]
             wrapper = "time"
             command = "echo Hello world && touch output"
             input_data.input_file = "/dev/null"
             output_data.output = "archived_file"
-        """
-    )
+        """)
     rtn.update(task_configs)
 
     return rtn
@@ -57,21 +57,17 @@ def raw_config_with_task(minimal_raw_config):
 def raw_config_with_non_recognised_options(minimal_raw_config):
     raw_config = minimal_raw_config.copy()
 
-    new_section = tomlkit.parse(
-        """
+    new_section = tomlkit.parse("""
         [unrecognised_section_name]
             foo = "bar"
-        """
-    )
+        """)
     raw_config.update(new_section)
 
     raw_config["general"].update(
-        tomlkit.parse(
-            """
+        tomlkit.parse("""
             baz = "qux"
             unknown_field = ["A", "B"]
-            """
-        )
+            """)
     )
 
     return raw_config
@@ -147,6 +143,122 @@ def package_main_config_without_validation():
     )
 
 
+class TestFrozenDict:
+    @staticmethod
+    def _nested_mappings_type_count(obj, count_dict, count_frozendict):
+        if not hasattr(obj, "items"):
+            return count_dict, count_frozendict
+
+        inc_dict = 1 if type(obj) is dict else 0
+        inc_frozendict = 1 if type(obj) is frozendict.frozendict else 0
+
+        if inc_dict + inc_frozendict != 1:
+            raise Exception(f"{type(obj)}")
+
+        total_count_dict = count_dict + inc_dict
+        total_count_frozendict = count_frozendict + inc_frozendict
+
+        for v in obj.values():
+            if not hasattr(v, "items"):
+                continue
+            v_count_dict, v_frozendict = TestFrozenDict._nested_mappings_type_count(
+                v, 0, 0
+            )
+            total_count_dict += v_count_dict
+            total_count_frozendict += v_frozendict
+
+        return total_count_dict, total_count_frozendict
+
+    @staticmethod
+    def _nested_mappings_are_dict(obj):
+        count_dict, count_frozendict = TestFrozenDict._nested_mappings_type_count(
+            obj, 0, 0
+        )
+        return count_dict > 0 and count_frozendict == 0
+
+    @staticmethod
+    def _nested_mappings_are_frozendict(obj):
+        count_dict, count_frozendict = TestFrozenDict._nested_mappings_type_count(
+            obj, 0, 0
+        )
+        return count_frozendict > 0 and count_dict == 0
+
+    @staticmethod
+    def is_dict(obj):
+        return TestFrozenDict._nested_mappings_are_dict(
+            obj
+        ) and not TestFrozenDict._nested_mappings_are_frozendict(obj)
+
+    @staticmethod
+    def is_frozen(obj):
+        return not TestFrozenDict._nested_mappings_are_dict(
+            obj
+        ) and TestFrozenDict._nested_mappings_are_frozendict(obj)
+
+    def test_nested_dictionary_freeze(self):
+
+        data = {
+            "user": {"id": 1, "name": "Alice", "roles": ["admin", "user"]},
+            "settings": {
+                "theme": "dark",
+                "notifications": {"email": True, "sms": False},
+            },
+        }
+        # initial check
+        assert TestFrozenDict.is_dict(data)
+
+        # Freeze data
+        frozen_data = recursive_freeze(data)
+        assert TestFrozenDict.is_frozen(frozen_data)
+
+        # Unfreeze data
+        unfrozen_data = recursive_unfreeze(frozen_data)
+        assert TestFrozenDict.is_dict(unfrozen_data)
+
+        # Check initial data were not touched
+        assert TestFrozenDict.is_dict(data)
+        assert TestFrozenDict.is_frozen(frozen_data)
+        assert TestFrozenDict.is_dict(unfrozen_data)
+
+    def test_configuration_freeze(
+        self, default_config, package_main_config_without_validation
+    ):
+
+        for config in [default_config, package_main_config_without_validation]:
+            assert TestFrozenDict.is_dict(config.dict())
+            assert TestFrozenDict.is_frozen(config.data)
+
+            new_config = config.copy()
+            assert type(new_config) is type(config)
+            assert TestFrozenDict.is_dict(new_config.dict())
+            assert TestFrozenDict.is_frozen(new_config.data)
+
+            new_config = config.copy(update={})
+            assert type(new_config) is type(config)
+            assert TestFrozenDict.is_dict(new_config.dict())
+            assert TestFrozenDict.is_frozen(new_config.data)
+
+            new_config = config.copy(update=set_times(config))
+            assert type(new_config) is type(config)
+            assert TestFrozenDict.is_dict(new_config.dict())
+            assert TestFrozenDict.is_frozen(new_config.data)
+
+            new_config = config.copy(update=set_times(config))
+            assert TestFrozenDict.is_dict(new_config.dict())
+            assert TestFrozenDict.is_frozen(new_config.data)
+
+            general_config = config.get("general")
+            assert type(general_config) is BasicConfig
+
+            general_config_dict = config.get_as_dict("general")
+            assert type(general_config_dict) is dict
+
+            assert general_config_dict == general_config.dict()
+
+            frozen = config["general"]
+            assert type(frozen) is frozendict.frozendict
+
+
 class TestGeneralBehaviour:
     def test_config_model_can_be_instantiated(self, minimal_parsed_config):
         assert isinstance(minimal_parsed_config, ParsedConfig)
@@ -154,17 +266,36 @@ class TestGeneralBehaviour:
     def test_nested_mappings_become_basic_config(
         self, package_main_config_without_validation
     ):
-        def nested_mappings_are_basic_config(obj):
-            rtn = isinstance(obj, BasicConfig)
+        def nested_mappings_are_basic_config(obj, custom_type):
+            rtn = isinstance(obj, custom_type)
+            if not rtn:
+                raise RuntimeError(f"{type(obj)}")
             for v in obj.values():
                 if not rtn:
                     break
                 if not hasattr(v, "items"):
                     continue
-                rtn = rtn and nested_mappings_are_basic_config(v)
+                rtn = rtn and nested_mappings_are_basic_config(v, custom_type)
             return rtn
 
-        assert nested_mappings_are_basic_config(package_main_config_without_validation)
+        assert nested_mappings_are_basic_config(
+            package_main_config_without_validation, (BasicConfig, frozendict.frozendict)
+        )
+        assert nested_mappings_are_basic_config(
+            package_main_config_without_validation.dict(), dict
+        )
+        assert nested_mappings_are_basic_config(
+            package_main_config_without_validation.copy(),
+            (BasicConfig, frozendict.frozendict),
+        )
+        assert nested_mappings_are_basic_config(
+            package_main_config_without_validation.get("general"),
+            (BasicConfig, frozendict.frozendict),
+        )
+
+        assert nested_mappings_are_basic_config(
+            package_main_config_without_validation.get_as_dict("general"), dict
+        )
 
     def test_no_lists_are_present(self):
         def mapping_contains_lists(obj):
@@ -370,6 +501,38 @@ class TestGeneralBehaviour:
         assert new_parsed_config["general.case"] == "foo"
         assert parsed_config["general.times"] == original_value
         assert new_parsed_config["general.times.list"] == tuple(new_value)
+
+    def test_partly_resolved_keys_are_basic_config(self, parsed_config_with_task):
+
+        assert isinstance(parsed_config_with_task, BasicConfig)
+        assert isinstance(parsed_config_with_task["task"], frozendict.frozendict)
+        assert isinstance(parsed_config_with_task["task"]["forecast"]["wrapper"], str)
+
+        assert isinstance(parsed_config_with_task.get("task"), BaseMapping)
+        assert isinstance(parsed_config_with_task.get_as_dict("task"), dict)
+
+        assert isinstance(parsed_config_with_task.get("task.forecast.wrapper"), str)
+
+        task_cfg = parsed_config_with_task["task"]
+        assert isinstance(task_cfg, frozendict.frozendict)
+
+        # access read-only should work
+        assert task_cfg["forecast"]["wrapper"] == "time"
+
+        # modify readonly should return an error
+        with pytest.raises(TypeError):
+            task_cfg["forecast"]["wrapper"] = "new_time_wont_work"
+
+        assert parsed_config_with_task.get("task.forecast.wrapper") == "time"
+
+        config = parsed_config_with_task.get("task")
+        task_dict = config.dict()
+        assert task_dict["forecast"]["wrapper"] == "time"
+
+        assert parsed_config_with_task.get("task.forecast.wrapper") == "time"
+        assert parsed_config_with_task.get_as_dict("task.forecast.wrapper") == "time"
+        assert parsed_config_with_task.get("task").get("forecast.wrapper") == "time"
+        assert parsed_config_with_task.get("task.forecast").get("wrapper") == "time"
 
 
 class TestValidators:

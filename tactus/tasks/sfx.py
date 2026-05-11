@@ -54,8 +54,8 @@ class PySurfexBaseTask(Task):
         )
         self.pysurfex_input_definition = self.pysurfex_input_definition.as_posix()
         # Create PySurfex system paths
-        system_paths = self.config["system"].dict()
-        platform_paths = self.config["platform"].dict()
+        system_paths = self.config.get_as_dict("system")
+        platform_paths = self.config.get_as_dict("platform")
         exp_file_paths = {}
         for key, val in system_paths.items():
             lkey = self.platform.substitute(key)
@@ -204,6 +204,20 @@ class Prep(PySurfexBaseTask):
                 basetime=self.boundary.bd_basetime_sfx,
                 validtime=basetime,
             )
+
+            # Try to extract it from S3 if configured so
+            if (
+                not os.path.isfile(prep_input_file)
+                and "s3_path_sfx_template" in self.config["system"]
+            ):
+                s3_path_sfx_template = self.config["system.s3_path_sfx_template"]
+                self.fmanager.input(
+                    s3_path_sfx_template,
+                    prep_input_file,
+                    basetime=self.boundary.bd_basetime_sfx,
+                    validtime=basetime,
+                    provider_id="s3",
+                )
 
             # PGD file input update
             const_clim = self.config["file_templates.pgd.archive"]

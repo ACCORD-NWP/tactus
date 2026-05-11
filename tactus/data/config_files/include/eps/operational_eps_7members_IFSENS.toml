@@ -1,7 +1,7 @@
 [general.output_settings]
   fullpos = "PT1H"
-  history = "PT49H"
-  surfex = "PT49H"
+  history = ""
+  surfex = ""
 
 [boundaries.ifs]
   selection = "IFSENS"

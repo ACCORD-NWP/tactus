@@ -323,7 +323,7 @@ class NamelistGenerator:
             InvalidNamelistKindError   # noqa: DAR401
 
         """
-        if kind not in ("master", "surfex"):
+        if kind not in ("master", "surfex", "gl"):
             raise InvalidNamelistKindError(kind)
 
         self.config = config
@@ -456,7 +456,7 @@ class NamelistGenerator:
             result = self.platform.substitute(_result)
             logger.debug("CFG INSERT: {} -> {}", arg, result)
         except KeyError:
-            result = default if default is not None else arg
+            result = default
             logger.debug("CFG UNKNOWN: {} default {}", arg, default)
         # NOTE: all values are returned as STRINGS
         #       which means you must re-interpret with find_val()
@@ -612,7 +612,7 @@ class NamelistGenerator:
             self.update_from_config("all_targets")
 
         try:
-            _update = self.config["namelist_update"][self.kind][target].dict()
+            _update = self.config["namelist_update"][self.kind][target]
             # Make sure everything is in upper case
             update = {}
             for namelist, keyval in _update.items():
