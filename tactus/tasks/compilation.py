@@ -102,18 +102,20 @@ class TactusBundleBuild(Task):
 
         self.arch = self.config["compile.arch"]
 
+        # check for existing builds in cache_dir
         if self.config["compile.cache"]:
             self.bundle_hash = self.get_bundle_hash(f"{self.bundle_dir}/source")
-            # get arch
+            
+            # get arch to build install path
             arch_dir=Path(f"{self.bundle_dir}/{self.arch}")
             default_link = arch_dir / "default"
             if default_link.exists() and default_link.is_symlink():
                 arch=str(default_link.resolve())
             else:
                 arch=str(arch_dir)
-
+            arch = arch.split("arch")[-1]
             compile_dir=f"{self.config['compile.cache_dir']}/{arch}/{self.bundle_hash}"
-    
+
         else:
             compile_dir="@CASEDIR@"
 
@@ -125,6 +127,9 @@ class TactusBundleBuild(Task):
         builddir = os.path.realpath(builddir)
         self.exp_bindir = bindir
         self.exp_builddir = builddir
+        self.do_build = self.config["compile.force_rebuild"] \
+                        or not os.path.exists(f"{self.exp_bindir}/MASTERODB")
+
         tactusmakedirs(self.exp_bindir)
         tactusmakedirs(self.exp_builddir)
 
@@ -132,16 +137,23 @@ class TactusBundleBuild(Task):
         if self.config["compile"].get("ninja"):
             self.ninja_arg = "--ninja "
 
+        self.rebuild_args = ""
+        if self.config["compile.force_rebuild"]:
+            self.rebuild_args = "--clean"
+
     def get_bundle_hash(self,source_dir):
-        
+        """build a unique hash for the bundle source combination."""
+
         logger.debug("Build a hash for the source bundle")
 
         manifest = {
             "repositories": {},
             "dirty": False,
         }
+
         source_path = Path(source_dir)
-        # Iterate through immediate subfolders
+        
+        # Iterate through source folders
         for folder in sorted(source_path.iterdir()):
             if not folder.is_dir():
                 continue
@@ -151,7 +163,7 @@ class TactusBundleBuild(Task):
             except InvalidGitRepositoryError:
                 logger.info("[SKIP] Not a git repo: {}", folder.name)
                 continue
-                
+            
             logger.info("[CHECK] {}", folder.name)
 
             # test for modified/staged/untracked files:
@@ -192,9 +204,21 @@ class TactusBundleBuild(Task):
     def execute(self):
         """Execute task."""
         batch_job = BatchJob(os.environ)
-        batch_job.run(
-            f"cd {self.bundle_dir};  {self.ecbundle_bin} build "
-            + f"--arch {self.arch} {self.ninja_arg} --forecast-only "
-            + f"--install-dir={self.exp_bindir} --install "
-            + f"--build-dir={self.exp_builddir}"
-        )
+        if self.do_build:
+            logger.info(
+                "Building bundle sources at {}",
+                self.exp_builddir
+            )
+
+            batch_job.run(
+                f"cd {self.bundle_dir};  {self.ecbundle_bin} build "
+                + f"--arch {self.arch} {self.ninja_arg} --forecast-only "
+                + f" {self.rebuild_args} "
+                + f"--install-dir={self.exp_bindir} --install "
+                + f"--build-dir={self.exp_builddir}"
+            )
+        else:
+            logger.info(
+                "found existing install for this bundle at {}",
+                self.exp_bindir
+            )
