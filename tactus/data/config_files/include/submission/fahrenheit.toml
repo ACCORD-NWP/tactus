@@ -37,15 +37,9 @@
   # First load the prgenv
   00_PRGENV = ["-q", "purge"]
 
-[submission.task_exceptions.Marsprep.ENV]
-  PATH = "/home/harmonie/mars/bin:$PATH"
-  PYTHONPATH = "/home/harmonie/mars/lib/python3.9/site-packages/:$PYTHONPATH"
-
 [submission.types.parallel]
   SCHOST = "fahrenheit"
-  tasks = [
-    "IALBundleBuild", "Forecast", "TactusBuild", "C903"
-  ]
+  tasks = ["IALBundleBuild", "Forecast", "TactusBuild", "C903"]
   WRAPPER = "mpprun"
 
 [submission.types.parallel.BATCH]
@@ -64,3 +58,6 @@
   # First load the prgenv
   00_PRGENV = ["-q", "purge"]
 
+[submission.task_exceptions.Marsprep.ENV]
+  PATH = "/home/harmonie/mars/bin:$PATH"
+  PYTHONPATH = "/home/harmonie/mars/lib/python3.9/site-packages/:$PYTHONPATH"
