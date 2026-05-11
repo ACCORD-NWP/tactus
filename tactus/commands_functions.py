@@ -668,8 +668,7 @@ def replace_node(args, config):
     config = config.copy(update=set_times(config))
     platform = Platform(config)
     ecfvars = {
-        key: platform.substitute(val)
-        for key, val in config["scheduler.ecfvars"].dict().items()
+        key: platform.substitute(val) for key, val in config["scheduler.ecfvars"].items()
     }
     update = {"scheduler": {"ecfvars": ecfvars}}
     config = config.copy(update=update)
