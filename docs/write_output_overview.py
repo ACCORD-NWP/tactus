@@ -56,7 +56,7 @@ def _parse_grib2_definitions(fa_name):
     """
     pwd = os.getcwd()
     def_path = (
-        pwd + "/deode/data/eccodes/definitions/grib2/localConcepts/lfpw/faFieldName.def"
+        pwd + "/tactus/data/eccodes/definitions/grib2/localConcepts/lfpw/faFieldName.def"
     )
     result = {}
     with open(def_path, "r") as f:
@@ -121,7 +121,7 @@ def main(cycle, csc, output_md):
         output_md: Path to the output Markdown file
     """
     pwd = os.getcwd()
-    namelist_dir = f"{pwd}/deode/data/namelist_generation_input/{cycle}/fullpos"
+    namelist_dir = f"{pwd}/tactus/data/namelist_generation_input/{cycle}/fullpos"
     namelist_path = f"{namelist_dir}/master_selection_{csc}.yml"
     if not os.path.exists(namelist_path):
         return
