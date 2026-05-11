@@ -9,16 +9,14 @@ Example usage would be:
 tactus case ?tactus/data/config_files/configurations/cy49t2_alaro -o test.toml
 ```
 
-where ? is a file includer operator where all the arguments are defined line by line. I.e. `tactus/data/config_files/configurations/cy49t2_alaro_large_domain` contains a list of arguments to be evaluated. In this case we have
+where ? is a file includer operator where all the arguments are defined line by line. I.e. `tactus/data/config_files/configurations/cy49t2_alaro` contains a list of arguments to be evaluated. In this case we have
 
 ```
 --config-file
 tactus/data/config_files/config.toml
-tactus/data/config_files/include/domains/500m_template.toml
 tactus/data/config_files/modifications/csc/alaro.toml
 tactus/data/config_files/include/vertical_levels/MF_87.toml
 tactus/data/config_files/modifications/cycle/CY49t2.toml
-tactus/data/config_files/modifications/submission/@HOST@_large_domain.toml
 tactus/data/config_files/modifications/@HOST@.toml
 ```
 
