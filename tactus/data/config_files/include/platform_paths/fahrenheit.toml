@@ -11,7 +11,6 @@
   ecosg_data_path = "@CLIMDATA@/ECOCLIMAP_SG"
   flake_dir = "@STATIC_DATA@/climate/PGD"
   global_sfcdir = "@STATIC_DATA@/climate_fields_mir/climate.v020_MIR_orog/4km/02"
-  host = "fahrenheit"
   lai_dir = "@CLIMDATA@/ECOCLIMAP_SG/LAI_SAT"
   ncdir = "@STATIC_DATA@/ncdir"
   osm_data_eu = "@CLIMDATA@/OSM_SFX8_1/GARDEN/"

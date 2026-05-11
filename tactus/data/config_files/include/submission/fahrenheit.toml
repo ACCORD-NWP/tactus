@@ -32,10 +32,35 @@
   DR_HOOK_IGNORE_SIGNALS = -1
   OMP_NUM_THREADS = 1
   OMPI_MCA_btl = "^vader"
-  PATH = "/home/harmonie/mars/bin:$PATH"
-  PYTHONPATH = "/home/harmonie/mars/lib/python3.9/site-packages/:$PYTHONPATH"
 
 [submission.types.serial.MODULES]
   # First load the prgenv
   00_PRGENV = ["-q", "purge"]
-  01_ECCODES = ["load", "eccodes-utils/2.32.0-ENABLE-AEC-hpc1-intel-2023.1.0-hpc1"]
+
+[submission.task_exceptions.Marsprep.ENV]
+  PATH = "/home/harmonie/mars/bin:$PATH"
+  PYTHONPATH = "/home/harmonie/mars/lib/python3.9/site-packages/:$PYTHONPATH"
+
+[submission.types.parallel]
+  SCHOST = "fahrenheit"
+  tasks = [
+    "IALBundleBuild", "Forecast", "TactusBuild", "C903"
+  ]
+  WRAPPER = "mpprun"
+
+[submission.types.parallel.BATCH]
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  ACCOUNT = "#SBATCH --account=promo_suv"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=144"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[submission.types.parallel.ENV]
+  DR_HOOK_IGNORE_SIGNALS = -1
+  OMP_NUM_THREADS = 1
+  OMPI_MCA_btl = "^vader"
+
+[submission.types.parallel.MODULES]
+  # First load the prgenv
+  00_PRGENV = ["-q", "purge"]
+
