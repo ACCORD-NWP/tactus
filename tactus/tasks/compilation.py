@@ -119,12 +119,14 @@ class TactusBundleBuild(Task):
         else:
             compile_dir="@CASEDIR@"
 
-        bindir = f"{compile_dir}/install"    
-        builddir = f"{compile_dir}/build"
+        bindir = f"{compile_dir}/install/@PRECISION@"    
+        builddir = f"{compile_dir}/build/@PRECISION@"
+        local_bindir = f"@CASEDIR@/install/@PRECISION@"
         bindir = self.platform.substitute(bindir)
         bindir = os.path.realpath(bindir)
         builddir = self.platform.substitute(builddir)
         builddir = os.path.realpath(builddir)
+        self.local_bindir = self.platform.substitute(local_bindir)
         self.exp_bindir = bindir
         self.exp_builddir = builddir
         self.do_build = self.config["compile.force_rebuild"] \
@@ -132,7 +134,7 @@ class TactusBundleBuild(Task):
 
         tactusmakedirs(self.exp_bindir)
         tactusmakedirs(self.exp_builddir)
-
+        tactusmakedirs(os.path.dirname(self.local_bindir))
         self.ninja_arg = ""
         if self.config["compile"].get("ninja"):
             self.ninja_arg = "--ninja "
@@ -217,6 +219,12 @@ class TactusBundleBuild(Task):
                 + f"--install-dir={self.exp_bindir} --install "
                 + f"--build-dir={self.exp_builddir}"
             )
+        if self.config["compile.cache"]:
+            if os.path.islink(self.local_bindir):
+                logger.debug("Removing old link.")
+                os.unlink(self.local_bindir)
+            os.symlink(self.exp_bindir, self.local_bindir)
+
         else:
             logger.info(
                 "found existing install for this bundle at {}",

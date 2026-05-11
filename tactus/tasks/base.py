@@ -198,7 +198,7 @@ class Task(object):
         """
         binary = binary_name
         task = task_name if task_name is not None else self.name
-        sys_bindir = "@CASEDIR@/install/bin"
+        sys_bindir = "@CASEDIR@/install/@PRECISION@/bin"
         sys_bindir = self.platform.substitute(sys_bindir)
         sys_bindir = os.path.realpath(sys_bindir)
 
@@ -207,22 +207,22 @@ class Task(object):
 
         task_bindir = None
         general_bindir = None
-        try:
+        with contextlib.suppress(KeyError):
             task_bindir = self.config[f"submission.task_exceptions.{task}.bindir"]
-        except KeyError:
-            try:
-                binaries = self.config[
-                    f"submission.task_exceptions.{task}.binaries.{binary_name}"
-                ]
-                logger.debug("binaries:{}", binaries)
 
-                with contextlib.suppress(KeyError):
-                    binary = binaries["binary"]
-                with contextlib.suppress(KeyError):
-                    task_bindir = binaries["bindir"]
-            except KeyError:
-                with contextlib.suppress(KeyError):
-                    general_bindir = self.config["submission.bindir"]
+        try:
+            binaries = self.config[
+                f"submission.task_exceptions.{task}.binaries.{binary_name}"
+            ]
+            logger.debug("binaries:{}", binaries)
+
+            with contextlib.suppress(KeyError):
+                binary = binaries["binary"]
+            with contextlib.suppress(KeyError):
+                task_bindir = binaries["bindir"]
+        except KeyError:
+            with contextlib.suppress(KeyError):
+                general_bindir = self.config["submission.bindir"]
 
         # Look for binary
         logger.debug("binary:{}", binary)
