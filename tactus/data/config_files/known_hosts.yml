@@ -12,3 +12,5 @@ leonardo:
   hostname: ".*leonardo.*"
 belenos:
   hostname: "belenos"
+fahrenheit:
+  hostname: "fahrenheit\\d+"

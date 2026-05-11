@@ -1,0 +1,63 @@
+[submission]
+  account = "#SBATCH -A promo_suv"
+  default_submit_type = "serial"
+  lfftw = false
+  module_initfile = "/software/sse2/init/nsc_lmod_init.sh"
+  nproma = -32
+
+[submission.types.serial]
+  NPROC = 1
+  NPROCX = 1
+  NPROCY = 1
+  SCHOST = "fahrenheit"
+  tasks = [
+    "CreateGrib",
+    "Topography",
+    "Soil",
+    "Pgd",
+    "Prep",
+    "Marsprep",
+    "InterpolSstSic",
+  ]
+  WRAPPER = "mpprun"
+
+[submission.types.serial.BATCH]
+  ACCOUNT = "#SBATCH --account=promo_suv"
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[submission.types.serial.ENV]
+  DR_HOOK_IGNORE_SIGNALS = -1
+  OMP_NUM_THREADS = 1
+  OMPI_MCA_btl = "^vader"
+
+[submission.types.serial.MODULES]
+  # First load the prgenv
+  00_PRGENV = ["-q", "purge"]
+
+[submission.types.parallel]
+  SCHOST = "fahrenheit"
+  tasks = ["IALBundleBuild", "Forecast", "TactusBuild", "C903"]
+  WRAPPER = "mpprun"
+
+[submission.types.parallel.BATCH]
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  ACCOUNT = "#SBATCH --account=promo_suv"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=144"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[submission.types.parallel.ENV]
+  DR_HOOK_IGNORE_SIGNALS = -1
+  OMP_NUM_THREADS = 1
+  OMPI_MCA_btl = "^vader"
+
+[submission.types.parallel.MODULES]
+  # First load the prgenv
+  00_PRGENV = ["-q", "purge"]
+
+[submission.task_exceptions.Marsprep.ENV]
+  PATH = "/home/harmonie/mars/bin:$PATH"
+  PYTHONPATH = "/home/harmonie/mars/lib/python3.9/site-packages/:$PYTHONPATH"
