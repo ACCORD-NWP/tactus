@@ -5,12 +5,13 @@
       "@FPDOMAIN@_@MM@": "Const.Clim.@MM@"
     }
   },
-
   "rrtm": {
     "path": "@RRTM_DIR@",
-    "files": ["ECOZC"]
+    "files": [
+      "ECOZC"
+    ]
   },
-"host_model_static_files": {
+  "host_model_static_files": {
     "path": "@BDDIR@",
     "files": {
       "ICMSHMARSINIT": "ICMSH_@BDMEMBER@+@L@",
@@ -21,13 +22,12 @@
       "ICMUAMARS": "ICMUA_@BDMEMBER@+@L@"
     }
   },
-    "host_model_files": {
+  "host_model_files": {
     "path": "@BDDIR@",
     "files": {
       "ICMSHMARS+00000@NNN@": "ICMSH_@BDMEMBER@+@L@",
       "ICMGGMARS+00000@NNN@": "ICMGG_@BDMEMBER@+@L@",
       "ICMUAMARS+00000@NNN@": "ICMUA_@BDMEMBER@+@L@"
     }
-
   }
 }

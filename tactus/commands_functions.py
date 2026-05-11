@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Implement the package's commands."""
+
 import argparse
 import contextlib
 import datetime
@@ -30,6 +31,7 @@ from .namelist import (
 from .scheduler import EcflowServer
 from .submission import NoSchedulerSubmission, TaskSettings
 from .suites.discover_suite import get_suite
+from .tasks.discover_task import create_task_index
 from .toolbox import Platform
 
 
@@ -46,7 +48,7 @@ def ssh_cmd(host, user, cmd):
     """
     try:
         ssh_command = f'ssh {user}@{host} "{cmd}"'
-        subprocess.run(ssh_command, shell=True, check=True)  # noqa
+        subprocess.run(ssh_command, shell=True, check=True)
         logger.info("SSH command executed succesfully.")
         return True
     except subprocess.CalledProcessError as e:
@@ -96,31 +98,19 @@ def run_task(args: RunTaskNamespace, config: ParsedConfig):
     submission_defs = TaskSettings(config)
     sub = NoSchedulerSubmission(submission_defs)
 
-    if args.members is None:
-        sub.submit(
-            task=args.task,
-            config=config,
-            template_job=template_job,
-            task_job=task_job,
-            output=output,
-            troika=args.troika,
-        )
-        logger.info("Task {} submitted.", args.task)
-    else:
-        for member in args.members:
-            # Change suffixes to include member string
-            output_ = output.with_suffix(f".mbr{member:03d}{output.suffix}")
-            task_job_ = task_job.with_suffix(f".mbr{member:03d}{task_job.suffix}")
-            sub.submit(
-                task=args.task,
-                config=config,
-                template_job=template_job,
-                task_job=task_job_,
-                output=output_,
-                member=member,
-                troika=args.troika,
-            )
-            logger.info("Task {} submitted for member {}.", args.task, member)
+    if not args.create_only:
+        create_task_index(config)
+
+    sub.submit(
+        task=args.task,
+        config=config,
+        template_job=template_job,
+        task_job=task_job,
+        output=output,
+        troika=args.troika,
+        create_only=args.create_only,
+    )
+    logger.info("Task {} submitted.", args.task)
 
 
 def create_exp(args, config):
@@ -176,8 +166,7 @@ def start_suite(args, config):
     config = config.copy(update=set_times(config))
     platform = Platform(config)
     ecfvars = {
-        key: platform.substitute(val)
-        for key, val in config["scheduler.ecfvars"].dict().items()
+        key: platform.substitute(val) for key, val in config["scheduler.ecfvars"].items()
     }
     update = {"scheduler": {"ecfvars": ecfvars}}
     config = config.copy(update=update)
@@ -247,7 +236,7 @@ def start_suite(args, config):
     )
 
     server = EcflowServer(config, start_command=args.start_command)
-    if args.def_file == "":
+    if not args.def_file:
         defs = get_suite(suite_def, config)
         def_file = f"{suite_name}.def"
         defs.save_as_defs(def_file)
@@ -288,7 +277,7 @@ def start_suite(args, config):
             logger.info("Failed to execute SSH command.")
 
         try:
-            subprocess.run(copy_cmd, check=True)  # noqa
+            subprocess.run(copy_cmd, check=True)
             logger.info("Files transferred successfully.")
         except subprocess.CalledProcessError as e:
             logger.info(f"Error occurred: {e}")
@@ -311,9 +300,10 @@ def start_suite(args, config):
             logger.info("Troika file transferred successfully.")
         except subprocess.CalledProcessError as e:
             logger.info(f"Error occurred transferring Troika: {e}")
-            raise SystemExit("Copying {temp_troika_config_file} FAILED.") from e
+            raise SystemExit(f"Copying {temp_troika_config_file} FAILED.") from e
         logger.info("--- File copying to Ecflow server DONE ---")
 
+    create_task_index(config)
     server.start_suite(suite_name, def_file)
     logger.info("Done with suite.")
 
@@ -324,7 +314,7 @@ def start_suite(args, config):
 #########################################
 # Code related to the "show *" commands #
 #########################################
-def doc_config(args, config: ParsedConfig):  # noqa ARG001
+def doc_config(args, config: ParsedConfig):
     """Implement the 'doc_config' command.
 
     Args:
@@ -333,10 +323,8 @@ def doc_config(args, config: ParsedConfig):  # noqa ARG001
 
     """
     now = datetime.datetime.now().isoformat(timespec="seconds")
-    sys.stdout.write(
-        f"""The following section was automatically generated running
-        `tactus doc config` on {now}.\n\n"""
-    )
+    sys.stdout.write(f"""The following section was automatically generated running
+        `tactus doc config` on {now}.\n\n""")
     sys.stdout.write(config.json_schema.get_markdown_doc() + "\n")
 
 
@@ -380,7 +368,7 @@ def show_config(args, config):
         sys.stdout.write(str(dumps) + "\n")
 
 
-def show_config_schema(args, config):  # noqa ARG001
+def show_config_schema(args, config):
     """Implement the `show config-schema` command.
 
     Args:
@@ -392,7 +380,7 @@ def show_config_schema(args, config):  # noqa ARG001
     sys.stdout.write(str(config.json_schema) + "\n")
 
 
-def show_host(args, config):  # noqa ARG001
+def show_host(args, config):
     """Implement the `show host` command.
 
     Args:
@@ -414,9 +402,7 @@ def remove_cases(args, config):  # ARG001
         return False
 
     # Fetch the remove config
-    cleaning_config = config.get("remove")
-    if not isinstance(cleaning_config, dict):
-        cleaning_config = cleaning_config.dict()
+    cleaning_config = config.get_as_dict("remove")
     defaults = cleaning_config.get("defaults")
     cleaning_config.pop("defaults")
 
@@ -442,7 +428,7 @@ def remove_cases(args, config):  # ARG001
 
             logger.info("Remove for section:{}", section)
 
-            suite_name = settings.get("suite_name", None)
+            suite_name = settings.get("suite_name")
             remove_from_scheduler = settings.get("remove_from_scheduler", False)
             remove_not_completed_suites = (
                 settings.get("remove_not_completed_suites", False) or args.force_remove
@@ -497,7 +483,8 @@ def remove_cases(args, config):  # ARG001
                         server.remove_suites([suite_name], check_if_complete=False)
                     except (ModuleNotFoundError, UnboundLocalError):
                         logger.warning(
-                            "ecflow or config not found, suite {} not removed", suite_name
+                            "ecflow or config not found, suite {} not removed",
+                            suite_name,
                         )
             if dry_run:
                 logger.info(
@@ -538,7 +525,7 @@ def show_namelist(args, config):
     logger.info("Printing namelist in use to file {}", namelist_name)
 
 
-def show_paths(args, config):  # noqa ARG001
+def show_paths(args, config):
     """Implement the 'show_paths' command."""
     tactus_host = TactusHost()
     ConfigPaths.print(args.config_file, tactus_host.detect_tactus_host())
@@ -609,7 +596,7 @@ def namelist_integrate(args, config):
     NamelistIntegrator.dict2yml(nml, Path(args.output))
 
 
-def namelist_convert(args, config: ParsedConfig):  # noqa ARG001
+def namelist_convert(args, config: ParsedConfig):
     """Implement the 'namelist convert' command.
 
     Args:
@@ -641,7 +628,7 @@ def namelist_convert(args, config: ParsedConfig):  # noqa ARG001
         raise SystemExit(f"Format {args.format} not handled")
 
 
-def namelist_format(args, config: ParsedConfig):  # noqa ARG001
+def namelist_format(args, config: ParsedConfig):
     """Implement the 'namelist format' command.
 
     Args:

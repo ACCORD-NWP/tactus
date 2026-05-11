@@ -75,9 +75,7 @@ def fixture_config(default_config):
             }
         }
     }
-    config = default_config
-    config = config.copy(update=update)
-    return config
+    return default_config.copy(update=update)
 
 
 @pytest.fixture(name="mock_exp_from_files")
@@ -146,9 +144,10 @@ class TestCaseSetup:
         """Test that EPS setup is activated."""
         mock_exp_from_files.config = {"eps": {}}
 
-        with patch("tactus.config_parser.ParsedConfig.__new__"), patch(
-            "tactus.experiment.EPSExp.__new__"
-        ) as epsexp_mock_new:
+        with (
+            patch("tactus.config_parser.ParsedConfig.__new__"),
+            patch("tactus.experiment.EPSExp.__new__") as epsexp_mock_new,
+        ):
             epsexp_mock = MagicMock()
             epsexp_mock.config.get.return_value = None
             epsexp_mock_new.return_value = epsexp_mock

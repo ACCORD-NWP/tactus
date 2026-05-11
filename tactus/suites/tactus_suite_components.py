@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 from itertools import tee
 from typing import Generator, List, Optional, Tuple
 
+from isodate import duration_isoformat
+
 from tactus.boundary_utils import Boundary
 from tactus.datetime_utils import (
     as_datetime,
@@ -397,7 +399,7 @@ class StaticDataTasks:
             limit=limit,
         )
 
-        archive_static_member_trigger = e923_monthly_family
+        archive_static_member_trigger = [e923_monthly_family]
 
         pgd_update = None
         if config["suite_control.do_pgd"]:
@@ -412,7 +414,7 @@ class StaticDataTasks:
                 ecf_files_remotely=ecf_files_remotely,
                 limit=limit,
             )
-            archive_static_member_trigger = pgd_update
+            archive_static_member_trigger.append(pgd_update)
 
         if config["general.csc"] == "ALARO" and config["general.surfex"]:
             pgd_filter_town_frac = PgdNode(
@@ -426,7 +428,7 @@ class StaticDataTasks:
                 ecf_files_remotely=ecf_files_remotely,
                 limit=limit,
             )
-            archive_static_member_trigger = pgd_filter_town_frac
+            archive_static_member_trigger.append(pgd_filter_town_frac)
 
         if config["general.windfarm"] and config["json2tab.enabled"]:
             generate_wfp_tabfile = EcflowSuiteTask(
@@ -439,7 +441,7 @@ class StaticDataTasks:
                 trigger=None,
                 ecf_files_remotely=ecf_files_remotely,
             )
-            archive_static_member_trigger = generate_wfp_tabfile
+            archive_static_member_trigger.append(generate_wfp_tabfile)
 
         if (
             config["suite_control.do_archiving"]
@@ -509,7 +511,7 @@ class MirrorFamily(EcflowSuiteFamily):
             )
 
         if config["suite_control.mirror_host_case"]:
-            mirror_config = config["scheduler.mirror_host_case"].dict()
+            mirror_config = config.get_as_dict("scheduler.mirror_host_case")
             remote_host = mirror_config["remote_host"]
             remote_host = platform.substitute(remote_host)
             mirror_config["remote_host"] = platform.evaluate(
@@ -518,7 +520,9 @@ class MirrorFamily(EcflowSuiteFamily):
 
             bd_basetime = Boundary(config).bd_basetime
             mirror_config["remote_path"] = platform.substitute(
-                mirror_config["remote_path"], basetime=bd_basetime, validtime=cycle_valid
+                mirror_config["remote_path"],
+                basetime=bd_basetime,
+                validtime=cycle_valid,
             )
             EcflowSuiteTask(
                 config["scheduler.mirror_host_case"]["remote_path"].split("/")[-1],
@@ -534,7 +538,7 @@ class MirrorFamily(EcflowSuiteFamily):
             )
 
         if config["suite_control.mirror_offline"]:
-            mirror_config = config["scheduler.mirror_offline"].dict()
+            mirror_config = config.get_as_dict("scheduler.mirror_offline")
             mirror_config["remote_path"] = platform.substitute(
                 mirror_config["remote_path"], validtime=cycle_valid
             )
@@ -624,9 +628,9 @@ class InputDataFamily(EcflowSuiteFamily):
                 )
                 bdshift = ["PT0H"]
                 bdshift.append(
-                    (as_timedelta(slaflag) - as_timedelta(slafdiff)).isoformat()
+                    duration_isoformat(as_timedelta(slaflag) - as_timedelta(slafdiff))
                 )
-                bdshift.append(as_timedelta(slaflag).isoformat())
+                bdshift.append(duration_isoformat(as_timedelta(slaflag)))
                 for i in 1, 2:
                     SLAFpartFamily(
                         f"SLAFpart{i}",
@@ -731,8 +735,9 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
         self.limit = limit
         self.bdint = bdint
         self.member = member
-        self.do_slaf = do_slaf
-        if do_slaf:
+        self.do_glprep = self.config.get("suite_control.do_glprep", False)
+        self.do_slaf = do_slaf and not self.do_glprep
+        if self.do_slaf:
             # Must not exhaust the generator in the planning
             ltg1, ltg2 = tee(lbc_time_generator)
             self.lbc_time_generator = ltg1
@@ -744,11 +749,14 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
     def __iter__(self):
         if self.do_slaf:
             bdshift = [as_timedelta("PT0H") for i in range(3)]
+        if self.config["suite_control.do_marsprep"]:
+            interpolation_task_name = "C903"
+        elif self.do_glprep:
+            interpolation_task_name = "GlBd"
+        else:
+            interpolation_task_name = "E927"
         for bd_index_time_dict in self.lbc_time_generator:
             bd_index_time_dict_sst = bd_index_time_dict.copy()
-            interpolation_task_name = (
-                "C903" if self.config["suite_control.do_marsprep"] else "E927"
-            )
             if (
                 self.config["suite_control.mode"] == "restart" and 0 in bd_index_time_dict
             ) or (
@@ -856,7 +864,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
                     bdshift[1] = as_timedelta(slaflag) - as_timedelta(slafdiff)
                     bdshift[2] = as_timedelta(slaflag)
                     for i in (1, 2):
-                        bdsi = bdshift[i].isoformat()
+                        bdsi = duration_isoformat(bdshift[i])
                         args = (
                             variables["ARGS"]
                             + f";extra_bdshift={bdsi};target_suffix='_slaf{i}'"
@@ -1715,16 +1723,17 @@ class MergeSQLitesFamily(EcflowSuiteFamily):
             trigger=trigger,
             ecf_files_remotely=ecf_files_remotely,
         )
-        EcflowSuiteTask(
-            "ArchiveMergedSQLites",
-            self,
-            config,
-            task_settings,
-            ecf_files,
-            trigger=merge_sqlites,
-            input_template=input_template,
-            ecf_files_remotely=ecf_files_remotely,
-        )
+        if config["suite_control.do_archiving"]:
+            EcflowSuiteTask(
+                "ArchiveMergedSQLites",
+                self,
+                config,
+                task_settings,
+                ecf_files,
+                trigger=merge_sqlites,
+                input_template=input_template,
+                ecf_files_remotely=ecf_files_remotely,
+            )
 
 
 class SLAFpartFamily(EcflowSuiteFamily):

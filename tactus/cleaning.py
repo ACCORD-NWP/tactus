@@ -6,6 +6,7 @@ import shutil
 import subprocess
 
 from .datetime_utils import as_datetime, as_timedelta
+from .general_utils import recursive_unfreeze
 from .logs import logger
 from .os_utils import Search, remove_empty_dirs
 from .toolbox import Platform
@@ -15,10 +16,10 @@ def wipe_ecfs(ecfs_path):
     """Remove a full ecfs directory tree."""
     command = ["erm", "-R", ecfs_path]
     try:
-        result = subprocess.check_output(command, text=True)  # noqa S603
+        result = subprocess.check_output(command, text=True)
         logger.info(result)
 
-        if result != "":
+        if result:
             logger.error(result)
             raise RuntimeError("Error running command: {}".format(command))
         logger.info("Clean ecfs_path:{}", ecfs_path)
@@ -41,14 +42,13 @@ class CleanTactus:
             RuntimeError: If erroneous defaults
 
         """
+        self.config = config
         self.CLEANING_DEFAULTS = {"path": "", "ecfs_prefix": None}
 
         if defaults is None:
             self.defaults = {}
-        elif isinstance(defaults, dict):
-            self.defaults = defaults
         else:
-            self.defaults = defaults.dict()
+            self.defaults = defaults
 
         self.basetime = (
             as_datetime(config["general.times.basetime"])
@@ -58,7 +58,7 @@ class CleanTactus:
         self.cycle_length = as_timedelta(config["general.times.cycle_length"])
         self.platform = Platform(config)
         self._check_choice(self.defaults, "defaults")
-        archiving = config.get("archiving").dict()
+        archiving = config.get_as_dict("archiving")
         archiving.pop("prefix", None)
         self.has_ecfs = False
         for values in archiving.values():
@@ -77,8 +77,8 @@ class CleanTactus:
             x (dict): Updated cleaning dict including default settings
 
         """
-        x = choice.copy()
-        y = self.defaults.copy()
+        x = choice
+        y = recursive_unfreeze(self.defaults)
 
         # Do not copy competing settings
         if "ncycles_delay" in y and "cleaning_delay" in x:
@@ -136,7 +136,7 @@ class CleanTactus:
         self.clean_tasks = {}
         for name, _choice in choices.items():
             choice = self._set_defaults(_choice)
-            if choice["active"]:
+            if self.platform.substitute(choice["active"]):
                 choice.pop("active")
                 self.clean_tasks[name] = choice
                 # Check consistency of settings

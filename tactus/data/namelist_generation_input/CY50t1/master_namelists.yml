@@ -109,6 +109,8 @@ e923_base:
     LVGSN: true
   NAMPHY0:
     GCVPSI: 0.0
+  NAMTRANS:
+    LFFTW: ${cfg:submission.lfftw,"true"}
   NEMDIM:
     NBZONG: ${cfg:domain.nbzong}
     NBZONL: ${cfg:domain.nbzonl}
@@ -392,9 +394,6 @@ f4_AROME:
     NMSG_LEVEL_SERVER: 0
     NPROCESS_LEVEL: 5
     NPROC_IO: ${cfg:namelist.nproc_io,0}
-  NAMMCC:
-    LMCC01_MSE: ${cfg:general.upd_sst_sic}
-    LMCCECSST: ${cfg:general.upd_sst_sic}
   NAMOPH:
     CFNHWF: ECHIS
     LINC: true
@@ -923,9 +922,6 @@ f4_ALARO:
     NPROC_IO: ${cfg:namelist.nproc_io,0}
   NAMJFH:
     N_VMASS: 0
-  NAMMCC:
-    LMCC01_MSE: ${cfg:general.upd_sst_sic}
-    LMCCECSST: ${cfg:general.upd_sst_sic}
   NAMOPH:
     CFNHWF: ECHIS
     LINC: true
@@ -1357,9 +1353,6 @@ f4_HARMONIE_AROME:
     NMSG_LEVEL_SERVER: 0
     NPROCESS_LEVEL: 5
     NPROC_IO: ${cfg:namelist.nproc_io,0}
-  NAMMCC:
-    LMCC01_MSE: ${cfg:general.upd_sst_sic}
-    LMCCECSST: ${cfg:general.upd_sst_sic}
   NAMNRTAER:
     LAECCN2CLDR: false
     LAEIFN: false
@@ -1618,6 +1611,8 @@ f4_common:
     LAEROSOO: true
     LO3ABC: true
     LWINDFARM: ${cfg:general.windfarm}
+  NAMTRANS:
+    LFFTW: ${cfg:submission.lfftw,"true"}
   NAMXFU:
     LXWFPIN: ${cfg:general.windfarm}
 f4_c903_main:

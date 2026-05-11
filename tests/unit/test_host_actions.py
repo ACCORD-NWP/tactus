@@ -19,7 +19,7 @@ def test_set_tactus_home_from_arg(default_config):
     assert tactus_home == "foo"
 
 
-@pytest.fixture()
+@pytest.fixture
 def _module_mockers(module_mocker):
     def new_socket_gethostname():
         return "tactus-test"
@@ -27,9 +27,9 @@ def _module_mockers(module_mocker):
     module_mocker.patch("socket.gethostname", new=new_socket_gethostname)
 
 
-@pytest.fixture()
+@pytest.fixture
 def _module_mockers_yaml(module_mocker):
-    def new_yaml_safe_load(infile):  # noqa ARG001
+    def new_yaml_safe_load(infile):
         return None
 
     module_mocker.patch("yaml.safe_load", new=new_yaml_safe_load)

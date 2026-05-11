@@ -20,9 +20,9 @@ if __name__ == "__main__":
 
     # read the template file, removing comments and empty lines asap
     with open("faModelName.source") as fp:
-        contents = "".join(
-            [s.strip(" \t") for s in fp.readlines() if not re_comment.match(s)]
-        )
+        contents = "".join([
+            s.strip(" \t") for s in fp.readlines() if not re_comment.match(s)
+        ])
 
     # define the template object, asking for no empty lines generation
     t = Template(

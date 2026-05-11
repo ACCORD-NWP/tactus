@@ -9,6 +9,7 @@ import socket
 from ..config_parser import ConfigParserDefaults
 from ..logs import logger
 from ..os_utils import tactusmakedirs
+from ..reference_checker import ReferenceCheckManager
 from ..toolbox import FileManager
 
 
@@ -55,7 +56,7 @@ class Task(object):
         self.name = name
         self.fmanager = FileManager(self.config)
         self.platform = self.fmanager.platform
-        self.wrapper = self.config.get("submission.task.wrapper", "")
+        self.wrapper = self.config["submission.task.wrapper"]
         self.wrk = self.platform.get_system_value("wrk")
         if self.wrk is None:
             raise ValueError("You must set wrk", self.wrk)
@@ -67,6 +68,20 @@ class Task(object):
         logger.info("Task {} running in {}", self.name, self.wdir)
 
         self._set_eccodes_environment()
+
+        self._init_reference_checker_manager()
+
+    def _init_reference_checker_manager(self):
+        self.rcm = ReferenceCheckManager.create_reference_check_manager(
+            self.config, self.name
+        )
+        if self.rcm:
+            logger.info(
+                f"Initialize ReferenceChecker for {self.name}:"
+                + f"check={self.rcm.check}; generate={self.rcm.generate}"
+            )
+        else:
+            logger.info(f"No ReferenceChecker for {self.name}")
 
     def _set_eccodes_environment(self):
         """Set correct path for ECCODES tables.
@@ -88,13 +103,14 @@ class Task(object):
         tactus_eccodes_definition_path = str(
             ConfigParserDefaults.DATA_DIRECTORY / "eccodes/definitions"
         )
-        tactus_eccodes_definition_path = ":".join(
-            [tactus_eccodes_definition_path, tactus_eccodes_modelname_path]
-        )
+        tactus_eccodes_definition_path = ":".join([
+            tactus_eccodes_definition_path,
+            tactus_eccodes_modelname_path,
+        ])
 
         try:
             eccodes_version = tuple(
-                [int(x) for x in os.getenv("ECCODES_VERSION").split(".")]
+                int(x) for x in os.getenv("ECCODES_VERSION").split(".")
             )
         except AttributeError:
             eccodes_version = (2, 30, 0)
@@ -103,12 +119,10 @@ class Task(object):
         if eccodes_version < (2, 30, 0):
             try:
                 eccodes_dir = os.environ["ECCODES_DIR"]
-                eccodes_definition_path = ":".join(
-                    [
-                        eccodes_definition_path,
-                        f"{eccodes_dir}/share/eccodes/definitions",
-                    ]
-                )
+                eccodes_definition_path = ":".join([
+                    eccodes_definition_path,
+                    f"{eccodes_dir}/share/eccodes/definitions",
+                ])
             except KeyError:
                 pass
 
@@ -198,7 +212,7 @@ class Task(object):
         except KeyError:
             try:
                 binaries = self.config[
-                    f"submission.task_exceptions.{self.name}.binaries.{binary_name}"
+                    f"submission.task_exceptions.{task}.binaries.{binary_name}"
                 ]
                 logger.debug("binaries:{}", binaries)
 
@@ -278,6 +292,8 @@ class Task(object):
         """
         self.prep()
         self.execute()
+        if self.rcm:
+            self.rcm.execute(self.fmanager)
         self.post()
 
     def get_task_setting(self, setting):
@@ -316,6 +332,18 @@ class UnitTest(Task):
 
     def __init__(self, config):
         """Construct test task.
+
+        Args:
+            config (tactus.ParsedConfig): Configuration
+        """
+        Task.__init__(self, config, __class__.__name__)
+
+
+class ReferenceCheck(Task):
+    """ReferenceCheck class."""
+
+    def __init__(self, config):
+        """Construct ReferenceCheck task.
 
         Args:
             config (tactus.ParsedConfig): Configuration

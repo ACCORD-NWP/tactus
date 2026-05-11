@@ -23,7 +23,7 @@ sfx_pgd_isba_dif:
     CPHOTO: "NON"
     LMEB: True
     NGROUND_LAYER: 14
-    NPATCH: ${cfg:pgd.npatch} 
+    NPATCH: ${cfg:pgd.npatch}
     XUNIF_RUNOFFB: 0.2
     YSOC_TOP: "soc_top"
     YSOC_SUB: "soc_sub"
@@ -157,7 +157,7 @@ sfx_forecast_AROME:
 sfx_forecast_ALARO:
   NAM_DIAG_SURFN:
     N2M: 0
-    LSURF_VARS: True 
+    LSURF_VARS: True
   NAM_SEAFLUXN:
     CSEA_FLUX: "ECUME"
   NAM_SURF_ATM:
@@ -524,7 +524,7 @@ sfx_pgd_ecoclimap_sg_all_decade:
     - - DIRTYP
     - - DIRTYP
     - - DIRTYP
-    - - DIRTYP    
+    - - DIRTYP
     CFTYP_ALBVIS_VEG:
     - - DIRTYP
     - - DIRTYP
@@ -561,7 +561,7 @@ sfx_pgd_ecoclimap_sg_all_decade:
     - - DIRTYP
     - - DIRTYP
     - - DIRTYP
-    - - DIRTYP    
+    - - DIRTYP
     CFTYP_H_TREE:
     - DIRTYP
     CFTYP_LAI:
@@ -600,7 +600,7 @@ sfx_pgd_ecoclimap_sg_all_decade:
     - - DIRTYP
     - - DIRTYP
     - - DIRTYP
-    - - DIRTYP   
+    - - DIRTYP
 
 sfx_pgd_ecoclimap_sg_one_decade:
   NAM_DATA_ISBA:
@@ -686,7 +686,7 @@ sfx_pgd_zs_filter:
 
 sfx_pgd_teb_osm:
   NAM_TREEDRAG:
-    LFAKETREE: 
+    LFAKETREE:
       - False
       - False
       - False
@@ -708,7 +708,7 @@ sfx_pgd_teb_osm:
     CFTYP_WATER: "DIRECT"
     CFNAM_TOWN: "OSM_TOWN_FRACTION"
     CFTYP_TOWN: "DIRECT"
-    LECOSG: True 
+    LECOSG: True
   NAM_DATA_TEB:
     CFNAM_GARDEN: "OSM_GARDEN_FRACTION"
     CFTYP_GARDEN: "DIRECT"
@@ -720,11 +720,11 @@ sfx_pgd_teb_osm:
     CFTYP_BLD: "DIRECT"
     CFNAM_Z0_TOWN: "OSM_Z0_TOWN"
     CFTYP_Z0_TOWN: "DIRECT"
-  NAM_DATA_TEB_GARDEN: 
+  NAM_DATA_TEB_GARDEN:
     NTIME_GD: 12
     CTYP_GARDEN_HVEG: "TREE"
     CTYP_GARDEN_LVEG: "PARK"
-    CTYP_GARDEN_NVEG: "NO" 
+    CTYP_GARDEN_NVEG: "NO"
     CFNAM_FRAC_HVEG: "OSM_VEGH_FRACTION"
     CFTYP_FRAC_HVEG: "DIRECT"
     CFNAM_FRAC_LVEG: "OSM_VEGL_FRACTION"
@@ -732,7 +732,7 @@ sfx_pgd_teb_osm:
     CFNAM_FRAC_NVEG: "OSM_NVEG_FRACTION"
     CFTYP_FRAC_NVEG: "DIRECT"
     XUNIF_H_HVEG: 10.0
-    XUNIF_LAI_HVEG: 
+    XUNIF_LAI_HVEG:
       - 1.0
       - 1.0
       - 1.0
@@ -745,7 +745,7 @@ sfx_pgd_teb_osm:
       - 2.1
       - 1.8
       - 1.5
-    XUNIF_LAI_LVEG: 
+    XUNIF_LAI_LVEG:
       - 1.5
       - 1.5
       - 1.5

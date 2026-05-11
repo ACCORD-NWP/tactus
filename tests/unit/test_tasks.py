@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
+
 import contextlib
 import subprocess
 from os import chdir, makedirs
@@ -72,6 +73,11 @@ def task_name_and_configs(request, default_config, tmp_directory):
             bd_time = "{basetime}"
             basetime = "{basetime}"
             config_label = "foo"
+        [archiving.DataBridge.fdb]
+        [archiving.DataBridge.fdb.fpgrib_files]
+            active = false
+            inpath = "@ARCHIVE@"
+            pattern = "GRIBPF*"
         """
     )
     task_config = task_config.copy(update=config_patch)
@@ -143,7 +149,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         with contextlib.suppress(FileNotFoundError):
             original_task_archive_archivestatic_execute_method(*args, **kwargs)
 
-    def new_task_cleaning_tasks_cleaner_execute_method(*args, **kwargs):  # noqa: ARG001
+    def new_task_cleaning_tasks_cleaner_execute_method(*args, **kwargs):
         """Skip any work."""
 
     def new_task_creategrib_glgrib_execute_method(*args, **kwargs):
@@ -166,7 +172,7 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         with contextlib.suppress(FileNotFoundError):
             original_task_mergesqlites_mergesqlites_execute_method(*args, **kwargs)
 
-    def new_task_mars_batchjob_run_method(*args, **kwargs):  # noqa: ARG001
+    def new_task_mars_batchjob_run_method(*args, **kwargs):
         """Skip any work."""
 
     def new_task_marsprep_run_method(*args, **kwargs):

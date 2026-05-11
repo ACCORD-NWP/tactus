@@ -156,6 +156,69 @@ def test_tactusmakedirs():
     assert os.stat(path).st_gid in grpids
 
 
+def test_lockfile_basic():
+    """Test the FileLock class."""
+    from tactus.os_utils import FileLock
+
+    path = tempfile.mkdtemp()
+    filepath = f"{path}/testfile"
+    lockfile_path = f"{filepath}.lock"
+
+    lockfile = Path(lockfile_path)
+    lockfile.touch(exist_ok=True)
+
+    assert os.path.exists(lockfile_path)
+    with (
+        pytest.raises(TimeoutError),
+        FileLock(filepath, timeout=0.1, check_interval=0.1, delete_existing=False),
+    ):
+        assert os.path.exists(lockfile_path)
+    assert os.path.exists(lockfile_path)
+    with FileLock(filepath, delete_existing=True):
+        assert os.path.exists(lockfile_path)
+    assert not os.path.exists(lockfile_path)
+
+
+def test_lockfile_timeout():
+    """Test the FileLock class."""
+    from tactus.os_utils import FileLock
+
+    path = tempfile.mkdtemp()
+    filepath = f"{path}/testfile"
+    lockfile_path = f"{filepath}.lock"
+
+    lockfile = Path(lockfile_path)
+    lockfile.touch(exist_ok=True)
+
+    assert os.path.exists(lockfile_path)
+    with (
+        pytest.raises(TimeoutError),
+        FileLock(filepath, timeout=0.1, check_interval=0.1, delete_existing=False),
+    ):
+        assert os.path.exists(lockfile_path)
+    assert os.path.exists(lockfile_path)
+
+
+def test_lockfile_thread():
+    """Test the FileLock class."""
+    from threading import Thread
+    from time import sleep
+
+    from tactus.os_utils import FileLock
+
+    def get_lock(filepath):
+        with FileLock(filepath):
+            sleep(0.5)
+
+    path = tempfile.mkdtemp()
+    filepath = f"{path}/testfile"
+    thread = Thread(target=get_lock, args=(filepath,))
+    thread2 = Thread(target=get_lock, args=(filepath,))
+    thread.start()
+    thread2.start()
+    thread.join()
+
+
 def test_ping():
     """Test the ping function."""
     hostname = "localhost"
@@ -255,9 +318,10 @@ class TestResolvePathRelativeToPackage:
         real_base.mkdir()
         fake_path = fake_base / "pkg" / "missing.txt"
 
-        with mock.patch.object(
-            sys, "path", [str(fake_base), str(real_base)]
-        ), pytest.raises(FileNotFoundError):
+        with (
+            mock.patch.object(sys, "path", [str(fake_base), str(real_base)]),
+            pytest.raises(FileNotFoundError),
+        ):
             resolve_path_relative_to_package(fake_path)
 
     def test_not_found_ignore_errors_returns_path(self, tmp_path):
@@ -280,22 +344,26 @@ class TestResolvePathRelativeToPackage:
             (base / "pkg" / "data").mkdir(parents=True)
             (base / "pkg" / "data" / "file.txt").write_text(base_name)
 
-        with mock.patch.object(
-            sys,
-            "path",
-            [
-                str(fake_base),
-                str(tmp_path / "real_base_a"),
-                str(tmp_path / "real_base_b"),
-            ],
-        ), pytest.raises(ValueError, match="Ambiguous path resolution for"):
+        with (
+            mock.patch.object(
+                sys,
+                "path",
+                [
+                    str(fake_base),
+                    str(tmp_path / "real_base_a"),
+                    str(tmp_path / "real_base_b"),
+                ],
+            ),
+            pytest.raises(ValueError, match="Ambiguous path resolution for"),
+        ):
             resolve_path_relative_to_package(fake_path)
 
     def test_no_matching_sys_path_prefix_raises_file_not_found(self):
         """FileNotFoundError when no sys.path entry is a prefix of the given path."""
         path = Path("/totally/nonexistent/path/file.txt")
-        with mock.patch.object(sys, "path", ["/some/unrelated/path"]), pytest.raises(
-            FileNotFoundError
+        with (
+            mock.patch.object(sys, "path", ["/some/unrelated/path"]),
+            pytest.raises(FileNotFoundError),
         ):
             resolve_path_relative_to_package(path)
 
@@ -312,7 +380,8 @@ class TestResolvePathRelativeToPackage:
         fake_base = tmp_path / "fake_base"
         fake_path = fake_base / "file.txt"
 
-        with mock.patch.object(sys, "path", ["", str(fake_base), ""]), pytest.raises(
-            FileNotFoundError
+        with (
+            mock.patch.object(sys, "path", ["", str(fake_base), ""]),
+            pytest.raises(FileNotFoundError),
         ):
             resolve_path_relative_to_package(fake_path)

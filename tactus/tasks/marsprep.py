@@ -5,7 +5,6 @@ import contextlib
 import os
 from functools import cached_property
 from pathlib import Path, PurePosixPath
-from time import sleep
 from typing import Dict, List, Optional
 
 from tactus.boundary_utils import Boundary
@@ -27,6 +26,7 @@ from tactus.mars_utils import (
     mars_selection,
     mars_write_method,
     move_files,
+    wait4_file,
     waitfor_files,
     write_compute_mars_req,
     write_retrieve_mars_req,
@@ -46,6 +46,7 @@ class Marsprep(Task):
 
         Args:
             config (tactus.ParsedConfig): Configuration
+
         Raises:
             ValueError: No data for this date.
         """
@@ -218,12 +219,10 @@ class Marsprep(Task):
         request.add_database_options()
 
         if specify_domain:
-            request.update_request(
-                {
-                    "GRID": get_value_from_dict(self.mars["grid"], request.date),
-                    "AREA": get_domain_data(self.config),
-                }
-            )
+            request.update_request({
+                "GRID": get_value_from_dict(self.mars["grid"], request.date),
+                "AREA": get_domain_data(self.config),
+            })
 
         if fieldset:
             request.update_request({"FIELDSET": fieldset})
@@ -239,7 +238,8 @@ class Marsprep(Task):
         try:
             if not os.path.exists(self.prepdir):
                 tactusmakedirs(
-                    self.prepdir, unixgroup=self.platform.get_platform_value("unix_group")
+                    self.prepdir,
+                    unixgroup=self.platform.get_platform_value("unix_group"),
                 )
         except OSError as e:
             raise RuntimeError(f"Error while preparing the mars folder: {e}") from e
@@ -332,9 +332,23 @@ class Marsprep(Task):
                 members_dict,
             )
 
-            additional_data = {"z": self.get_shz_data(tag)}
+            additional_data = {}
+            additional_data["common_data"] = self.get_shz_data(tag)
 
-            add_additional_data_to_all(tag, steps, members_dict, additional_data)
+            param_spectral_temperature = None
+            with contextlib.suppress(KeyError):
+                param_spectral_temperature = get_value_from_dict(
+                    self.mars["SH_temperature"], self.init_date_str
+                )
+
+            if param_spectral_temperature:
+                additional_data |= self.get_sh_temperature_data(
+                    tag, steps, members_dict, param_spectral_temperature
+                )
+                add_additional_file_specific_data(additional_data=additional_data)
+
+            else:
+                add_additional_data_to_all(tag, steps, members_dict, additional_data)
             move_files(tag, steps, members_dict, self.prepdir)
         if waitfor_steps:
             waitfor_files(tag, waitfor_steps, members_dict, self.prepdir)
@@ -415,14 +429,25 @@ class Marsprep(Task):
     def get_sfx_data(self):
         """Get SFX data."""
         bddir = self.config["system.bddir_sfx"]
+
+        try:
+            if not os.path.exists(bddir):
+                tactusmakedirs(
+                    bddir, unixgroup=self.platform.get_platform_value("unix_group")
+                )
+        except OSError as e:
+            raise RuntimeError(f"Error while preparing the bddir_sfx folder: {e}") from e
+
         bdfile = self.config["file_templates.bdfile_sfx.archive"]
         mars_file_check_list, bdmember_fetch_list = self.get_bdmember_fetch_list(
             bddir, bdfile
         )
 
         # Split the lat/lon part and perform it here
-        self.get_lat_lon_data(bdmember_fetch_list)
-        self.get_geopotential_latlon(self.bdmember[0], bdmember_fetch_list)
+        logger.debug("bdmember_fetch_list: {}", bdmember_fetch_list)
+        if bdmember_fetch_list:
+            self.get_lat_lon_data(bdmember_fetch_list)
+            self.get_geopotential_latlon(self.bdmember[0], bdmember_fetch_list)
 
         # Get the file list to join
         for bdmember in bdmember_fetch_list:
@@ -433,13 +458,22 @@ class Marsprep(Task):
 
     def get_sst_data(self):
         """Get SST data."""
-        prep_dir = Path(
+        bddir_sst = Path(
             self.platform.substitute(
                 self.config["system.bddir_sst"],
                 basetime=self.boundary.bd_basetime,
                 validtime=self.basetime,
             )
         )
+
+        try:
+            if not os.path.exists(bddir_sst):
+                tactusmakedirs(
+                    bddir_sst, unixgroup=self.platform.get_platform_value("unix_group")
+                )
+        except OSError as e:
+            raise RuntimeError(f"Error while preparing the bddir_sst folder: {e}") from e
+
         bdfile = self.config["file_templates.bdfile_sst.model"]
 
         (
@@ -450,7 +484,7 @@ class Marsprep(Task):
             waitfor_steps_per_member,
         ) = get_steps_and_members_to_retrieve(
             self.steps,
-            prep_dir,
+            bddir_sst,
             bdfile,
             self.bdmember,
             platform=self.platform,
@@ -468,6 +502,7 @@ class Marsprep(Task):
             # Get the file list to join
             for member in missing_steps_per_member:
                 steps = missing_steps_per_member[member]
+                logger.info(f"Missing steps for member {member}: {steps}")
                 for step in steps:
                     merge_pattern = f"mars_latlonGG*_{member or 0}+{step}"
                     filenames = list_files_join(self.wdir, merge_pattern)
@@ -477,8 +512,8 @@ class Marsprep(Task):
                         validtime=self.basetime,
                         bd_index=step,
                     )
-                    prep_filepath = prep_dir / sst_filename
-                    join_files(filenames, prep_filepath)
+                    sst_filepath = bddir_sst / sst_filename
+                    join_files(filenames, sst_filepath)
 
         if waitfor_steps_per_member:
             # Wait for the relevant files
@@ -491,16 +526,9 @@ class Marsprep(Task):
                         validtime=self.basetime,
                         bd_index=step,
                     )
-                    dest_file = prep_dir / sst_filename
-                    lockfile = f"{dest_file}.lock"
-                    while not os.path.exists(dest_file):
-                        if os.path.exists(lockfile):
-                            logger.info("Waiting 5 sec. for {}", dest_file)
-                            sleep(5)
-                        else:
-                            logger.info("No lockfile, stop waiting for {}", dest_file)
-                            sleep(30)
-                            raise SystemExit(f"Creation of {dest_file} must have failed")
+                    dest_file = bddir_sst / sst_filename
+                    wait4_file(dest_file)
+                    logger.info(f"Waitfor_steps found: {dest_file}")
 
     def get_lat_lon_data(self, bdmember_list: List[int]):
         """Get Lat/Lon data.
@@ -519,6 +547,10 @@ class Marsprep(Task):
 
         for member in bdmember_list:
             data_type = self.mars["type_AN"] if member == 0 else self.mars["type_FC"]
+            # Default to ICMGG_0+* if member is None
+            source = f'"{self.prepdir}/ICMGG_{member or 0}+{self.steps[0]}"'
+            if self.config["boundaries.do_slaf"]:
+                wait4_file(ast.literal_eval(source))
             self._build_and_run_retrieve_request(
                 req_file_name="latlonGG.req",
                 data_type=data_type,
@@ -529,8 +561,7 @@ class Marsprep(Task):
                 target=f"mars_latlonGG_{member or 0}",
                 prefetch=prefetch,
                 specify_domain=True,
-                # Default to ICMGG_0+* if member is None
-                source=f'"{self.prepdir}/ICMGG_{member or 0}+{self.steps[0]}"',
+                source=source,
                 write_method=mars_write_method(self.mars_version),
             )
 
@@ -580,6 +611,8 @@ class Marsprep(Task):
                         f"{self.prepdir}/ICMGG", member_type, member, step
                     )
                     target = compile_target(tag_mask, member_type, member, step)
+                    if self.config["boundaries.do_slaf"]:
+                        wait4_file(ast.literal_eval(source))
 
                     if use_verbose_mode:
                         # Make an verbose formula
@@ -669,6 +702,8 @@ class Marsprep(Task):
         else:
             # Default to ICMSH_0+* if member is None
             z_source = f'"{self.prepdir}/ICMSH_{first_member or 0}+{self.steps[0]}"'
+            if self.config["boundaries.do_slaf"]:
+                wait4_file(ast.literal_eval(z_source))
         # NOTE: for z, the step is always 0, while steps[0] may be shifted!
 
         target = f"mars_latlonZ_{first_member or 0}"
@@ -711,6 +746,36 @@ class Marsprep(Task):
                 target=compile_target(tag, member_type, members),
                 grid=self.mars["grid_ML"],
             )
+
+    def get_sh_temperature_data(
+        self, tag: str, steps: List[int], members_dict: Dict[str, List[int]], param
+    ):
+        """Get soil gridpoint data."""
+        additional_data: Dict[str, bytes] = {}
+        for member_type, members in members_dict.items():
+            data_type = (
+                self.mars["type_AN"]
+                if member_type == "control_member"
+                else self.mars["type_FC"]
+            )
+            self._build_and_run_retrieve_request(
+                req_file_name=f"{member_type}_{tag}.temp.req",
+                data_type=data_type,
+                levtype="ML",
+                param=param,
+                steps=steps,
+                members=members,
+                target=compile_target(f"{tag}.temperature", member_type, members),
+            )
+
+            for step in steps:
+                for member in members:
+                    # Default to "*_0+{step}" if member is None
+                    key = f"{tag}_{member or 0}+{step}"
+                    file_temperature = f"{tag}.temperature_{member or 0}+{step}"
+                    additional_data[key] = get_and_remove_data(file_temperature)
+
+        return additional_data
 
     def get_shz_data(self, tag: str):
         """Get geopotential in spherical harmonics."""

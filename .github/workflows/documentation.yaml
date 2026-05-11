@@ -16,6 +16,8 @@ on:
       - '**.py'
       - '*.rst'
       - '*.md'
+  release:
+    types: [published]
   workflow_dispatch:
 
 permissions:
@@ -63,17 +65,8 @@ jobs:
       - name: Install the project itself
         run: poetry install --no-interaction --only-root
 
-      - name: Generate config docs from default config & main schema
-        run: |
-          poetry run tactus doc config >| docs/markdown_docs/config.md
-
-      - name: Sphinx apidoc
-        run: |
-          poetry run sphinx-apidoc tactus -o docs/ --force --no-toc --module-first
-
-      - name: Sphinx build
-        run: |
-          poetry run sphinx-build docs docs/_build/
+      - name: Build documentation
+        run: make doc-build
 
       # Upload the book's HTML as an artifact
       - name: Upload artifact
@@ -82,7 +75,7 @@ jobs:
           path: "docs/_build/"
 
   deploy-docs:
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
+    if: ${{ github.event_name == 'published' }}
     name: "Deploy docs"
     needs: build-docs
     runs-on: "ubuntu-latest"

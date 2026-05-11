@@ -38,7 +38,7 @@ selection:
     - 'CLSVISIN_60'
     - 'CLSVISIHYDN60'
     - 'CLSPTYPE_60M'
-    - 'CLSPTYPESEV_60M'   
+    - 'CLSPTYPESEV_60M'
     - 'CLSMEAN.RAD.TEMP'
    CLPHY:
     - 'SURFTEMPERATURE'
@@ -53,8 +53,6 @@ selection:
     - 'SURFLIFTCONDLEV'
     - 'SURFFREECONVLEV'
     - 'SURFEQUILIBRLEV'
-    - 'SURFREFLECT.MAX'
-    - 'REFLECT_DBZ.MAX'
     - 'ATMOCLD.CEIL.P'
     - 'ATMOCLD.CEIL.H'
     - 'ATMOCLD.BASE.P'
@@ -64,7 +62,7 @@ selection:
     - 'ISOT_ALTIT'
    RFP3I:
     - -273.15
-    - -276.15  
+    - -276.15
   NAMFPDYV: {}
   NAMFPDYH:
    CL3DF:
@@ -77,9 +75,9 @@ selection:
     - 'WIND.V.PHYS'
     - 'ICE_CRYSTAL'
     - 'CLOUD_WATER'
-    - 'GRAUPEL'  
+    - 'GRAUPEL'
     - 'RAIN'
-    - 'SNOW'  
+    - 'SNOW'
     - 'TKE'
    RFP3H:
     - 15.
@@ -168,6 +166,7 @@ selection:
    CLPHY:
     - 'SURFTEMPERATURE'
     - 'SURFRESERV.NEIGE'
+    - 'SURFIND.TERREMER'
   NAMFPDY2:
    CL2DF:
     - 'SURFPRESSION'
@@ -179,8 +178,6 @@ selection:
     - 'SURFLIFTCONDLEV'
     - 'SURFFREECONVLEV'
     - 'SURFEQUILIBRLEV'
-    - 'SURFREFLECT.MAX'
-    - 'REFLECT_DBZ.MAX'
     - 'ATMOCLD.CEIL.P'
     - 'ATMOCLD.CEIL.H'
     - 'ATMOCLD.BASE.P'
@@ -196,9 +193,9 @@ selection:
     - 'WIND.V.PHYS'
     - 'ICE_CRYSTAL'
     - 'CLOUD_WATER'
-    - 'GRAUPEL'  
+    - 'GRAUPEL'
     - 'RAIN'
-    - 'SNOW'  
+    - 'SNOW'
     - 'TKE'
    RFP3H:
     - 15.
@@ -254,7 +251,7 @@ selection:
      - 95000.
      - 97500.
      - 100000.
-  NAMFPDYS: 
+  NAMFPDYS:
     MASTER:
      CL3DF:
       - 'GRAUPEL'
@@ -268,5 +265,5 @@ selection:
       - 'CLOUD_WATER'
       - 'TKE'
      NRFP3S:
-      - ${vertical_levels.nlev} 
+      - ${vertical_levels.nlev}
   <<: *default
