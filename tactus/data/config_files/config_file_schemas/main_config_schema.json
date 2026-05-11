@@ -677,6 +677,11 @@
           "description": "whether to use ninja for compilation",
           "default": false
         },
+        "force_rebuild": {
+          "type": "boolean",
+          "description": "whether to force rebuild",
+          "default": false
+        },
         "cache": {
           "type": "boolean",
           "description": "whether to use chache build/install folders",
