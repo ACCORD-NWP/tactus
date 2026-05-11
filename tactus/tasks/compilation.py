@@ -1,19 +1,16 @@
 """Compialtion tasks."""
 
-import os
-import sys
-
-import yaml
-
 import hashlib
 import json
+import os
+import sys
 from pathlib import Path
 
-from git import Repo, InvalidGitRepositoryError
+import yaml
+from git import InvalidGitRepositoryError, Repo
 
-
-from ..os_utils import tactusmakedirs
 from ..logs import logger
+from ..os_utils import tactusmakedirs
 from .base import Task
 from .batch import BatchJob
 
@@ -105,23 +102,23 @@ class TactusBundleBuild(Task):
         # check for existing builds in cache_dir
         if self.config["compile.cache"]:
             self.bundle_hash = self.get_bundle_hash(f"{self.bundle_dir}/source")
-            
+
             # get arch to build install path
-            arch_dir=Path(f"{self.bundle_dir}/{self.arch}")
+            arch_dir = Path(f"{self.bundle_dir}/{self.arch}")
             default_link = arch_dir / "default"
             if default_link.exists() and default_link.is_symlink():
-                arch=str(default_link.resolve())
+                arch = str(default_link.resolve())
             else:
-                arch=str(arch_dir)
+                arch = str(arch_dir)
             arch = arch.split("arch")[-1]
-            compile_dir=f"{self.config['compile.cache_dir']}/{arch}/{self.bundle_hash}"
+            compile_dir = f"{self.config['compile.cache_dir']}/{arch}/{self.bundle_hash}"
 
         else:
-            compile_dir="@CASEDIR@"
+            compile_dir = "@CASEDIR@"
 
-        bindir = f"{compile_dir}/install/@PRECISION@"    
+        bindir = f"{compile_dir}/install/@PRECISION@"
         builddir = f"{compile_dir}/build/@PRECISION@"
-        local_bindir = f"@CASEDIR@/install/@PRECISION@"
+        local_bindir = "@CASEDIR@/install/@PRECISION@"
         bindir = self.platform.substitute(bindir)
         bindir = os.path.realpath(bindir)
         builddir = self.platform.substitute(builddir)
@@ -129,8 +126,9 @@ class TactusBundleBuild(Task):
         self.local_bindir = self.platform.substitute(local_bindir)
         self.exp_bindir = bindir
         self.exp_builddir = builddir
-        self.do_build = self.config["compile.force_rebuild"] \
-                        or not os.path.exists(f"{self.exp_bindir}/MASTERODB")
+        self.do_build = self.config["compile.force_rebuild"] or not os.path.exists(
+            f"{self.exp_bindir}/MASTERODB"
+        )
 
         tactusmakedirs(self.exp_bindir)
         tactusmakedirs(self.exp_builddir)
@@ -143,9 +141,8 @@ class TactusBundleBuild(Task):
         if self.config["compile.force_rebuild"]:
             self.rebuild_args = "--clean"
 
-    def get_bundle_hash(self,source_dir):
-        """build a unique hash for the bundle source combination."""
-
+    def get_bundle_hash(self, source_dir):
+        """Build a unique hash for the bundle source combination."""
         logger.debug("Build a hash for the source bundle")
 
         manifest = {
@@ -154,7 +151,7 @@ class TactusBundleBuild(Task):
         }
 
         source_path = Path(source_dir)
-        
+
         # Iterate through source folders
         for folder in sorted(source_path.iterdir()):
             if not folder.is_dir():
@@ -165,7 +162,7 @@ class TactusBundleBuild(Task):
             except InvalidGitRepositoryError:
                 logger.info("[SKIP] Not a git repo: {}", folder.name)
                 continue
-            
+
             logger.info("[CHECK] {}", folder.name)
 
             # test for modified/staged/untracked files:
@@ -174,7 +171,7 @@ class TactusBundleBuild(Task):
             repo_info = {
                 "commit": repo.head.commit.hexsha,
                 "dirty": dirty,
-            }   
+            }
 
             manifest["repositories"][folder.name] = repo_info
 
@@ -189,9 +186,7 @@ class TactusBundleBuild(Task):
         )
 
         # Combined deterministic hash
-        build_hash = hashlib.sha256(
-            serialized.encode("utf-8")
-        ).hexdigest()
+        build_hash = hashlib.sha256(serialized.encode("utf-8")).hexdigest()
 
         # Mark hash as dirty if any repo is dirty
         if manifest["dirty"]:
@@ -201,16 +196,11 @@ class TactusBundleBuild(Task):
 
         return build_hash
 
-
-
     def execute(self):
         """Execute task."""
         batch_job = BatchJob(os.environ)
         if self.do_build:
-            logger.info(
-                "Building bundle sources at {}",
-                self.exp_builddir
-            )
+            logger.info("Building bundle sources at {}", self.exp_builddir)
 
             batch_job.run(
                 f"cd {self.bundle_dir};  {self.ecbundle_bin} build "
@@ -226,7 +216,4 @@ class TactusBundleBuild(Task):
             os.symlink(self.exp_bindir, self.local_bindir)
 
         else:
-            logger.info(
-                "found existing install for this bundle at {}",
-                self.exp_bindir
-            )
+            logger.info("found existing install for this bundle at {}", self.exp_bindir)
