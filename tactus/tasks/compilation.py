@@ -126,9 +126,8 @@ class TactusBundleBuild(Task):
         self.local_bindir = self.platform.substitute(local_bindir)
         self.exp_bindir = bindir
         self.exp_builddir = builddir
-        self.do_build = self.config["compile.force_rebuild"] or not os.path.exists(
-            f"{self.exp_bindir}/MASTERODB"
-        )
+        self.skip_build = self.config["compile.skip_build"] and \
+            os.path.exists(f"{self.exp_bindir}/MASTERODB")
 
         tactusmakedirs(self.exp_bindir)
         tactusmakedirs(self.exp_builddir)
@@ -199,7 +198,7 @@ class TactusBundleBuild(Task):
     def execute(self):
         """Execute task."""
         batch_job = BatchJob(os.environ)
-        if self.do_build:
+        if not self.skip_build:
             logger.info("Building bundle sources at {}", self.exp_builddir)
 
             batch_job.run(

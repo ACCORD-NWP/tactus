@@ -677,9 +677,9 @@
           "description": "whether to use ninja for compilation",
           "default": false
         },
-        "force_rebuild": {
+        "skip_build": {
           "type": "boolean",
-          "description": "whether to force rebuild",
+          "description": "whether to skip build step",
           "default": false
         },
         "cache": {
