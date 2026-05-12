@@ -105,7 +105,7 @@ class TactusBundleBuild(Task):
                 self.bundle_hash = self.get_bundle_hash(f"{self.bundle_dir}/source")
             except FileNotFoundError:
                 self.bundle_hash = "unknown"
-            
+
             # get arch to build install path
             arch_dir = Path(f"{self.bundle_dir}/{self.arch}")
             default_link = arch_dir / "default"

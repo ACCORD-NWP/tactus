@@ -687,7 +687,6 @@
           "description": "whether to clean build folder before compilation",
           "default": false
         },
-
         "cache": {
           "type": "boolean",
           "description": "whether to use chache build/install folders",
