@@ -682,6 +682,12 @@
           "description": "whether to skip build step",
           "default": false
         },
+        "clean_build": {
+          "type": "boolean",
+          "description": "whether to clean build folder before compilation",
+          "default": false
+        },
+
         "cache": {
           "type": "boolean",
           "description": "whether to use chache build/install folders",

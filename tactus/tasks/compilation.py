@@ -101,8 +101,11 @@ class TactusBundleBuild(Task):
 
         # check for existing builds in cache_dir
         if self.config["compile.cache"]:
-            self.bundle_hash = self.get_bundle_hash(f"{self.bundle_dir}/source")
-
+            try:
+                self.bundle_hash = self.get_bundle_hash(f"{self.bundle_dir}/source")
+            except FileNotFoundError:
+                self.bundle_hash = "unknown"
+            
             # get arch to build install path
             arch_dir = Path(f"{self.bundle_dir}/{self.arch}")
             default_link = arch_dir / "default"
@@ -126,8 +129,9 @@ class TactusBundleBuild(Task):
         self.local_bindir = self.platform.substitute(local_bindir)
         self.exp_bindir = bindir
         self.exp_builddir = builddir
-        self.skip_build = self.config["compile.skip_build"] and \
-            os.path.exists(f"{self.exp_bindir}/MASTERODB")
+        self.skip_build = self.config["compile.skip_build"] and os.path.exists(
+            f"{self.exp_bindir}/MASTERODB"
+        )
 
         tactusmakedirs(self.exp_bindir)
         tactusmakedirs(self.exp_builddir)
@@ -137,7 +141,7 @@ class TactusBundleBuild(Task):
             self.ninja_arg = "--ninja "
 
         self.rebuild_args = ""
-        if self.config["compile.force_rebuild"]:
+        if self.config["compile.clean_build"]:
             self.rebuild_args = "--clean"
 
     def get_bundle_hash(self, source_dir):
