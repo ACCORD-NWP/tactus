@@ -4,9 +4,9 @@ Follow the instructions below to add a new task to the system.
 
 ## Code requirements
 
-In order to start adding a new task to the deode workflow, a *file* containing your task needs to be created in the `$DEODE_WORKFLOW/deode/tasks` folder, where **$DEODE_WORKFLOW** points to the full name to the folder in which the deode workflow is installed.
+In order to start adding a new task to tactus, a *file* containing your task needs to be created in the `$TACTUS_HOME/tactus/tasks` folder, where **$TACTUS_HOME** points to the full name to the folder in which tactus is installed.
 
-In the `tasks` folder, the `discover_task.py` file looks for the task specified in the ```deode run``` command. The task name should be the name of the **class** of your task, as it's in the class names that discover_task.py gets the tasks available. For ease of use, the *file* name containing your class can also be named the same as the class.
+In the `tasks` folder, the `discover_task.py` file looks for the task specified in the ```tactus run``` command. The task name should be the name of the **class** of your task, as it's in the class names that discover_task.py gets the tasks available. For ease of use, the *file* name containing your class can also be named the same as the class.
 
 A created task **class** usually inherits the **Task** class from the `base.py` file inside the `tasks` folder The new tasks inherit the **Task** class, one can define their own `execute` , `prep` , `post`  and `run` functions and possibly define new ones.
 
@@ -26,7 +26,7 @@ cmd = self.wrapper + " " + cmd
 
 ## Handling output
 
-In order to copy files, inside the `task.py` file, the `fmanager` directive from the `deode/toolbox.py` file needs to be used. To create the input for the task, the `fmanager.input` function needs to be called.
+In order to copy files, inside the `task.py` file, the `fmanager` directive from the `tactus/toolbox.py` file needs to be used. To create the input for the task, the `fmanager.input` function needs to be called.
 ```
 def input(
     self,
@@ -87,7 +87,7 @@ OS = "import os"
 
 After that is all done, the new task can be ran with:
 ```
-deode --config-file=/your/config.toml run --task yourtask  --template $PWD/deode/templates/stand_alone.py  --job $PWD/yourtask.job  --troika-config $PWD/config.yml  -o $PWD/yourtask.log
+tactus --config-file=/your/config.toml run --task yourtask  --template $PWD/tactus/templates/stand_alone.py  --job $PWD/yourtask.job  --troika-config $PWD/config.yml  -o $PWD/yourtask.log
 ```
 
 If `config_file` is specified under `[troika]` in config.yml, one can skip the `--troika-config` argument.

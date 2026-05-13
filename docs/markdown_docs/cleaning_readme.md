@@ -55,7 +55,7 @@ All of the default settings are required. But these values could be changed in t
 
 Required settings are `active` and `path`. `path` defines the working folder path - the root folder which contains all working files and folders.
 
-Example value of the working path: `/ec/res4/scratch/bgmt/deode/CY48t3_AROME/20230916_0000/`
+Example value of the working path: `/ec/res4/scratch/bgmt/tactus/CY48t3_AROME/20230916_0000/`
 ```shell
 [wrk]
   active = true
@@ -66,7 +66,7 @@ Example value of the working path: `/ec/res4/scratch/bgmt/deode/CY48t3_AROME/202
 ## Settings for the archive folder
 
 Required settings are `active` and `path`.
-Example value of the archive folder path is `/ec/res4/scratch/bgmt/deode/CY48t3_AROME/archive/2023/09/16/00/`
+Example value of the archive folder path is `/ec/res4/scratch/bgmt/tactus/CY48t3_AROME/archive/2023/09/16/00/`
 
 ```shell
 [archive]
@@ -83,6 +83,6 @@ The cleaning settings allow to define the cleaning time interval and step and wh
 
 All files produced by a run case be removed by
 ```
-deode remove [--config-file CONFIG_FILE_WITH_CLEANING_SETTINGS.toml] YOUR_CONFIG_FILE[S].toml [-d] [-f]
+tactus remove [--config-file CONFIG_FILE_WITH_CLEANING_SETTINGS.toml] YOUR_CONFIG_FILE[S].toml [-d] [-f]
 ```
-What to actually remove is defined in `deode/data/config_files/include/remove.toml`. The settings are the same as for the cleaning config apart from `remove_from_scheduler` which removes the suite from the scheduler. With the default `remove_not_completed_suites=True` the removal is only executed if the suite is actually completed. This check can be overrided by using `-f` on command line. The latter also forces data to be removed even if a suite does not exist.
+What to actually remove is defined in `tactus/data/config_files/include/remove.toml`. The settings are the same as for the cleaning config apart from `remove_from_scheduler` which removes the suite from the scheduler. With the default `remove_not_completed_suites=True` the removal is only executed if the suite is actually completed. This check can be overrided by using `-f` on command line. The latter also forces data to be removed even if a suite does not exist.
