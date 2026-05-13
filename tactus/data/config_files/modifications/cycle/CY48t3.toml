@@ -8,6 +8,7 @@
 
 [submission]
   bindir = "@INSTALL_DIR@/@CYCLE@/@IAL_VERSION@/bin"
+  bindir_gl = "@INSTALL_DIR@/gl/@COMPILER@/@GL_VERSION@/bin/"
   compiler = ""
   precision = ""
 
@@ -26,3 +27,23 @@
 [gribmodify.fullpos.6]
   minimum_frequency = "PT1H"
   output_name = "max_i10fg"
+
+
+[submission.task_exceptions.GlBd]
+  binary = "gl"
+  bindir = "@BINDIR_GL@"
+
+[submission.task_exceptions.InterpolSstSic]
+  binary = "gl"
+  bindir = "@BINDIR_GL@"
+
+[submission.task_exceptions.PgdUpdate]
+  binary = "gl"
+  bindir = "@BINDIR_GL@"
+
+[submission.task_exceptions.CreateGrib]
+  binary = "gl"
+  bindir = "@BINDIR_GL@"
+
+[submission.task_exceptions.CreateGribStatic]
+  bindir = "@BINDIR_GL@"
