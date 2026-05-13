@@ -1856,13 +1856,31 @@ class CompilationFamily(EcflowSuiteFamily):
             input_template=input_template,
             ecf_files_remotely=ecf_files_remotely,
         )
-        EcflowSuiteTask(
+        build_familiy = EcflowSuiteFamily(
             "TactusBundleBuild",
             self,
-            config,
-            task_settings,
             ecf_files,
-            input_template=input_template,
             ecf_files_remotely=ecf_files_remotely,
-            trigger=EcflowSuiteTriggers(EcflowSuiteTrigger(create_bundle)),
         )
+        precision_list=["R64"]
+        if config["submission"]["precision"] == "R32": 
+            precision_list.append("R32")
+
+        for precision in precision_list:
+            prec_familiy = EcflowSuiteFamily(
+                precision,
+                build_familiy,
+                ecf_files,
+                ecf_files_remotely=ecf_files_remotely,
+            )
+            EcflowSuiteTask(
+                "TactusBundleBuild",
+                prec_familiy,
+                config,
+                task_settings,
+                ecf_files,
+                input_template=input_template,
+                ecf_files_remotely=ecf_files_remotely,
+                variables={"ARGS": f"prec={precision }"},
+                trigger=EcflowSuiteTriggers(EcflowSuiteTrigger(create_bundle)),
+            )

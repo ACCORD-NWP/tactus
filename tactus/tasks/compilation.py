@@ -97,6 +97,8 @@ class TactusBundleBuild(Task):
         self.bundle_dir = self.platform.substitute(bundle_dir)
         self.ecbundle_bin = f"{os.path.dirname(sys.executable)}/ecbundle"
 
+        self.precision = self.config["task.args.prec"]
+
         self.arch = self.config["compile.arch"]
 
         # check for existing builds in cache_dir
@@ -119,9 +121,9 @@ class TactusBundleBuild(Task):
         else:
             compile_dir = "@CASEDIR@"
 
-        bindir = f"{compile_dir}/install/@PRECISION@"
-        builddir = f"{compile_dir}/build/@PRECISION@"
-        local_bindir = "@CASEDIR@/install/@PRECISION@"
+        bindir = f"{compile_dir}/install/{self.precision}"
+        builddir = f"{compile_dir}/build/{self.precision}"
+        local_bindir = f"@CASEDIR@/install/{self.precision}"
         bindir = self.platform.substitute(bindir)
         bindir = os.path.realpath(bindir)
         builddir = self.platform.substitute(builddir)
@@ -143,6 +145,10 @@ class TactusBundleBuild(Task):
         self.rebuild_args = ""
         if self.config["compile.clean_build"]:
             self.rebuild_args = "--clean"
+
+        self.prec_arg = ""
+        if self.precision =="R32":
+            self.prec_arg = "--without-double-precision"
 
     def get_bundle_hash(self, source_dir):
         """Build a unique hash for the bundle source combination."""
@@ -208,7 +214,7 @@ class TactusBundleBuild(Task):
             batch_job.run(
                 f"cd {self.bundle_dir};  {self.ecbundle_bin} build "
                 + f"--arch {self.arch} {self.ninja_arg} --forecast-only "
-                + f" {self.rebuild_args} "
+                + f" {self.rebuild_args} {self.prec_arg} "
                 + f"--install-dir={self.exp_bindir} --install "
                 + f"--build-dir={self.exp_builddir}"
             )
