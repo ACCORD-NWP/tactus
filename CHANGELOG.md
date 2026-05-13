@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Configuration files for NSC HPC Fahrenheit [\#16](https://github.com/ACCORD-NWP/tactus/pull/16) (@trygveasp)
 - Introduce gl namelist files for CY50T2 [\#35](https://github.com/ACCORD-NWP/tactus/pull/35) (@uandrae)
 - Introduce config files for CY50T2 [\#14](https://github.com/ACCORD-NWP/tactus/pull/14) (@uandrae)
 - Add compilation and use of binaries from IAL code built with IAL-bundle [\#11](https://github.com/ACCORD-NWP/tactus/pull/11) (@trygveasp)
@@ -19,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support multiple searchpaths for namelist files through TACTUS_CONFIG_DATA_DIR. [\#20](https://github.com/ACCORD-NWP/tactus/pull/20) (@mfroelund)
 
 ### Changed
+- Update documentation and remove DEODE specific references. [\#27](https://github.com/ACCORD-NWP/tactus/pull/27) (@uandrae)
 - Make CY50T2 default [\#14](https://github.com/ACCORD-NWP/tactus/pull/14) (@uandrae)
 - Change to https github access for all dependencies [\#32](https://github.com/ACCORD-NWP/tactus/pull/32) (@uandrae)
 - Change default group on atos to accord [\#26](https://github.com/ACCORD-NWP/tactus/pull/26) (@uandrae)
