@@ -1,6 +1,6 @@
 [submission]
   bindir = "@SCRATCH@/tactus/binaries/cy49t2/v2"
-  bindir_gl ="@SUBMISSION.BINDIR@"
+  bindir_gl = "@SUBMISSION.BINDIR@"
   default_submit_type = "serial"
   lfftw = true
   module_initpath = "/home/gmap/mrpa/coutandn/DEODE"
