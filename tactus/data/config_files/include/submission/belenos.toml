@@ -1,5 +1,6 @@
 [submission]
-  bindir = "@SCRATCH@/deode/binaries/cy49t2/v2"
+  bindir = "@SCRATCH@/tactus/binaries/cy49t2/v2"
+  bindir_gl ="@SUBMISSION.BINDIR@"
   default_submit_type = "serial"
   lfftw = true
   module_initpath = "/home/gmap/mrpa/coutandn/DEODE"
@@ -37,13 +38,9 @@
 
 [submission.task_exceptions.CreateGrib]
   binary = "gl"
-  bindir = "@SCRATCH@/deode/binaries/cy49t2/v2"
 
 [submission.task_exceptions.CreateGrib.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
-
-[submission.task_exceptions.CreateGribStatic]
-  bindir = "@SCRATCH@/deode/binaries/cy49t2/v2"
 
 [submission.task_exceptions.E927]
   NPROC = 16
@@ -53,7 +50,6 @@
   NTASKS = "#SBATCH --ntasks=16"
 
 [submission.task_exceptions.Forecast]
-  bindir = "@SCRATCH@/deode/binaries/cy49t2/v2"
   NPROC = 16
   NPROC_IO = 0
   WRAPPER = "srun -n @NPROC@ -N @NPROC@"
@@ -65,7 +61,7 @@
   WALLTIME = "#SBATCH --time=01:00:00"
 
 [submission.task_exceptions.Forecast.ENV]
-  RTTOV_COEFDIR = "@SCRATCH@/deode/DATA/satellite/rtcoef_rttov12/harm_coef"
+  RTTOV_COEFDIR = "@SCRATCH@/tactus/DATA/satellite/rtcoef_rttov12/harm_coef"
   UCX_LOG_LEVEL = "error"
 
 [submission.task_exceptions.Gmted.MODULES]
@@ -73,7 +69,6 @@
 
 [submission.task_exceptions.InterpolSstSic]
   binary = "gl"
-  bindir = "@SCRATCH@/deode/binaries/cy49t2/v2"
 
 [submission.task_exceptions.IOmerge.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
@@ -90,7 +85,6 @@
 
 [submission.task_exceptions.Pgd]
   WRAPPER = "srun -n @NPROC@"
-  bindir = "@SCRATCH@/deode/binaries/cy49t2/v2"
 
 [submission.task_exceptions.Pgd.BATCH]
   NODES = "#SBATCH --nodes=1"
@@ -102,7 +96,6 @@
 
 [submission.task_exceptions.PgdUpdate]
   binary = "gl"
-  bindir = "@SCRATCH@/deode/binaries/cy49t2/v2"
 
 [submission.task_exceptions.Prep]
   WRAPPER = "srun -n @NPROC@"
