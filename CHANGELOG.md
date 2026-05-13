@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change deployment of documentation to not need github secrets to work. [\#22](https://github.com/ACCORD-NWP/tactus/pull/22) (@mfroelund)
 
 ### Fixed
+- Remove macro definition causing erroneous warnings. [\#33](https://github.com/ACCORD-NWP/tactus/pull/33) (@uandrae)
 - Return binary name as default. [\#19](https://github.com/ACCORD-NWP/tactus/pull/19) (@trygveasp)
 - Use GDAL options object [\#15](https://github.com/ACCORD-NWP/tactus/pull/15) (@trygveasp)
 - Get wrapper with an empty default value. [\#17](https://github.com/ACCORD-NWP/tactus/pull/17) (@trygveasp)
