@@ -97,7 +97,7 @@ class TactusBundleBuild(Task):
         self.bundle_dir = self.platform.substitute(bundle_dir)
         self.ecbundle_bin = f"{os.path.dirname(sys.executable)}/ecbundle"
 
-        self.precision = self.config["task.args.prec"]
+        self.precision = self.config.get("task.args.prec","prec")
 
         self.arch = self.config["compile.arch"]
 
@@ -147,7 +147,7 @@ class TactusBundleBuild(Task):
             self.rebuild_args = "--clean"
 
         self.prec_arg = ""
-        if self.precision =="R32":
+        if self.precision == "R32":
             self.prec_arg = "--without-double-precision"
 
     def get_bundle_hash(self, source_dir):
@@ -207,10 +207,10 @@ class TactusBundleBuild(Task):
 
     def execute(self):
         """Execute task."""
-        batch_job = BatchJob(os.environ)
+        
         if not self.skip_build:
             logger.info("Building bundle sources at {}", self.exp_builddir)
-
+            batch_job = BatchJob(os.environ)
             batch_job.run(
                 f"cd {self.bundle_dir};  {self.ecbundle_bin} build "
                 + f"--arch {self.arch} {self.ninja_arg} --forecast-only "

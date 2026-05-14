@@ -1862,11 +1862,11 @@ class CompilationFamily(EcflowSuiteFamily):
             ecf_files,
             ecf_files_remotely=ecf_files_remotely,
         )
-        precision_list=["R64"]
-        if config["submission"]["precision"] == "R32": 
-            precision_list.append("R32")
+        precision_dict = {"R64":"double"}
+        if config["submission"]["precision"] == "R32":
+            precision_dict["R32"] = "single"
 
-        for precision in precision_list:
+        for precision in precision_dict.keys():
             prec_familiy = EcflowSuiteFamily(
                 precision,
                 build_familiy,
@@ -1881,6 +1881,7 @@ class CompilationFamily(EcflowSuiteFamily):
                 ecf_files,
                 input_template=input_template,
                 ecf_files_remotely=ecf_files_remotely,
-                variables={"ARGS": f"prec={precision }"},
+                variables={"ARGS": f"prec={precision}",
+                "FP_PRECISON":precision_dict[precision]},
                 trigger=EcflowSuiteTriggers(EcflowSuiteTrigger(create_bundle)),
             )

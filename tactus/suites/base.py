@@ -154,6 +154,7 @@ class SuiteDefinition(object):
             "ECF_TIMEOUT": 20,
             "ECF_LOGHOST": self.ecf_host,
             "ARGS": "",
+            "FP_PRECISION": "",
             "LOGLEVEL": loglevel,
             "CONFIG": str(config_file),
             "TROIKA": troika,
