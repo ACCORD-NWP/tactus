@@ -1883,7 +1883,7 @@ class CompilationFamily(EcflowSuiteFamily):
                 ecf_files_remotely=ecf_files_remotely,
                 variables={
                     "ARGS": f"prec={precision}",
-                    "FP_PRECISON": precision_dict[precision],
+                    "FP_PRECISION": precision_dict[precision],
                 },
                 trigger=EcflowSuiteTriggers(EcflowSuiteTrigger(create_bundle)),
             )
