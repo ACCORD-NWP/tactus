@@ -139,5 +139,4 @@
   climdir = "@CASEDIR@/climate/@DOMAIN@"
   logs = "@ARCHIVE_ROOT@/logs"
   prev_case = "@CASE@"
-  ecflow_prefix = "tactus_ecflow"
   sys_name = "tactus"
