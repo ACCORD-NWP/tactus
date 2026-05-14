@@ -132,10 +132,11 @@
 
 [system]
   bdclimdir = "@FIXED_BDCLIMDIR@"
-  bddir = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
+  bddir = "@SCRATCH@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
   bddir_sfx = "@BDDIR@"
   bddir_sst = "@BDDIR@"
-  casedir = "@SCRATCH@/tactus/@CASE@"
+  casedir = "@SCRATCH@/@CASE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@"
   logs = "@ARCHIVE_ROOT@/logs"
   prev_case = "@CASE@"
+  ecflow_prefix = "tactus_ecflow"
