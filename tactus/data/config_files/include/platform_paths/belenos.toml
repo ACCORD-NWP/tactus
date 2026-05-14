@@ -24,7 +24,7 @@
   reference_data = "@SCRATCH@"
   rrtm_dir = "@STATIC_DATA@/rrtm/@CYCLE@"
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov13/coef/"
-  scratch = "/scratch/work/@USER@"
+  scratch = "/scratch/work/@USER@/@SYS_NAME@"
   soilgrid_data_path = "@CLIMDATA@/SOILGRID"
   static_data = "@SCRATCH@/DATA"
   task_name = "@STAND_ALONE_TASK_NAME@"

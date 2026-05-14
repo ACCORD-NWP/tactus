@@ -2,4 +2,4 @@
   archive_root = "@SCRATCH@/@CASE@/archive"
   references_folder = "set-in-unittest"
   references_generation_folder = "@SCRATCH@/generated_references"
-  scratch = "tactus"
+  scratch = "@SYS_NAME@"

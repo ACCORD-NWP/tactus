@@ -24,7 +24,7 @@
   references_generation_folder = "@SCRATCH@/generated_references"
   rrtm_dir = "@STATIC_DATA@/rrtm/@CYCLE@"
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov13/coef/"
-  scratch = "/scratch/@USER@/tactus"
+  scratch = "/scratch/@USER@/@SYS_NAME@"
   soilgrid_data_path = "@CLIMDATA@/SOILGRID"
   static_data = "/hpcperm/snh02/DEODE"
   tactus_fdb_home = "/home/fdbtest"

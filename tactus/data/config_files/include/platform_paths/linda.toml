@@ -2,4 +2,4 @@
   archive_root = "@SCRATCH@/@CASE@/archive"
   archive_types = ["copy"]
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef/"
-  scratch = "@HOME@/tactus_wrk/tactus"
+  scratch = "@HOME@/tactus_wrk/@SYS_NAME@"

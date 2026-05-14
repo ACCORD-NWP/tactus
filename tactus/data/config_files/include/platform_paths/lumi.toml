@@ -23,7 +23,7 @@
   reference_data = "@SCRATCH@"
   rrtm_dir = "@STATIC_DATA@/rrtm/@CYCLE@"
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov13/coef/"
-  scratch = "/scratch/@UNIX_GROUP@/@USER@/tactus"
+  scratch = "/scratch/@UNIX_GROUP@/@USER@/@SYS_NAME@"
   soilgrid_data_path = "@CLIMDATA@/SOILGRID"
   static_data = "/scratch/@UNIX_GROUP@/de_330_common_data/DEODE/"
   tactus_databridge_home = "/appl/local/destine/databridge"

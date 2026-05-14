@@ -18,7 +18,7 @@
   reference_data = "@SCRATCH@"
   rrtm_dir = "@STATIC_DATA@/rrtm/@CYCLE@"
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef/"
-  scratch = "/nobackup/forsk/@USER@/tactus"
+  scratch = "/nobackup/forsk/@USER@/@SYS_NAME@"
   soilgrid_data_path = "@CLIMDATA@/SOILGRID"
   static_data = "/home/harmonie/tactus/"
   tactus_home = "set-by-the-system"
