@@ -132,7 +132,7 @@
 
 [system]
   bdclimdir = "@FIXED_BDCLIMDIR@"
-  bddir = "@SCRATCH@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
+  bddir = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
   bddir_sfx = "@BDDIR@"
   bddir_sst = "@BDDIR@"
   casedir = "@SCRATCH@/@CASE@"
