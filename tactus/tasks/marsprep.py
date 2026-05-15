@@ -282,7 +282,7 @@ class Marsprep(Task):
         )
         if steps:
             self.get_gg_data(tag, steps, members_dict)
-            if "CY50" in self.config["general.cycle"]: 
+            if "CY50" in self.config["general.cycle"]:
                 fix_snow_layer(tag, steps, members_dict)
             exist_soil = False
             with contextlib.suppress(KeyError):

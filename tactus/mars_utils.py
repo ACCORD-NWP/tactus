@@ -710,8 +710,8 @@ def fix_snow_layer(tag: str, steps: List[int], members_dict: Dict[str, List[int]
                         if gid is None:
                             break
                         try:
-                            shortName = str(codes_get(gid, "shortName"))
-                            if shortName == "asn":
+                            short_name = str(codes_get(gid, "shortName"))
+                            if short_name == "asn":
                                 logger.info(
                                     "Fixing snow layer for snow albedo in file: {}",
                                     filename,
