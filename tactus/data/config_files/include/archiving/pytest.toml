@@ -48,12 +48,6 @@
   outpath = "sqlite/@MEMBER_STR@"
   pattern = "*"
 
-[archiving.hour.scp.lumi_grib2]
-  active = false
-  inpath = "@ARCHIVE@"
-  outpath = "lumi_transfer:@SCRATCH@/@USER@_atos_@CASE@/archive/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
-  pattern = "GRIBPF*"
-
 [archiving.hourlogs.ecfs.logs]
   active = true
   inpath = "@LOGS@"

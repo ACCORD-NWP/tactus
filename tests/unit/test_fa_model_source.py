@@ -3,7 +3,7 @@ import yaml
 from tactus.config_parser import ConfigParserDefaults
 
 FA_MODEL_SOURCE_YML = (
-    ConfigParserDefaults.DATA_DIRECTORY / "eccodes" / "destineFaModelSource.yml"
+    ConfigParserDefaults.DATA_DIRECTORY / "eccodes" / "FaModelSource.yml"
 )
 
 
@@ -15,7 +15,7 @@ def get_allowed_cycles_and_cscs():
     return cycles, cscs
 
 
-def test_destine_fa_model_source_required_entries():
+def test_fa_model_source_required_entries():
     cycles, cscs = get_allowed_cycles_and_cscs()
 
     with open(FA_MODEL_SOURCE_YML) as f:
