@@ -11,6 +11,14 @@ from subprocess import run
 from time import sleep
 from typing import Dict, List, Tuple
 
+from eccodes import (
+    codes_get,
+    codes_grib_new_from_file,
+    codes_release,
+    codes_set,
+    codes_write,
+)
+
 from .config_parser import ParsedConfig
 from .datetime_utils import as_datetime
 from .domain_utils import get_domain
@@ -687,3 +695,33 @@ class BaseRequest:
     def replace(self, **kwargs):
         """Return new instance with updated values."""
         return replace(self, **kwargs)
+
+
+def fix_snow_layer(tag: str, steps: List[int], members_dict: Dict[str, List[int]]):
+    """Fix snow layer for snow albedo."""
+    for step in steps:
+        for members in members_dict.values():
+            for member in members:
+                filename = f"{tag}_{member or 0}+{step}"
+
+                with open(filename, "rb") as fin, open("ICMGGtmp", "wb") as fout:
+                    while True:
+                        gid = codes_grib_new_from_file(fin)
+                        if gid is None:
+                            break
+                        try:
+                            shortName = str(codes_get(gid, "shortName"))
+                            if shortName == "asn":
+                                logger.info(
+                                    "Fixing snow layer for snow albedo in file: {}",
+                                    filename,
+                                )
+                                codes_set(gid, "edition", 2)
+                                codes_set(gid, "typeOfLevel", "snowLayer")
+                                codes_set(gid, "level", 1)
+
+                            codes_write(gid, fout)
+                        finally:
+                            codes_release(gid)
+
+                shutil.move("ICMGGtmp", filename)

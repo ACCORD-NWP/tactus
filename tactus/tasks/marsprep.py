@@ -17,6 +17,7 @@ from tactus.mars_utils import (
     add_additional_file_specific_data,
     check_data_available,
     compile_target,
+    fix_snow_layer,
     get_and_remove_data,
     get_domain_data,
     get_mars_keys,
@@ -281,7 +282,10 @@ class Marsprep(Task):
         )
         if steps:
             self.get_gg_data(tag, steps, members_dict)
-
+            if (
+                "CY50" in self.config["general.cycle"] or True
+            ):  # Temporary until we have snow data for all cycles
+                fix_snow_layer(tag, steps, members_dict)
             exist_soil = False
             with contextlib.suppress(KeyError):
                 gg_soil_param = get_value_from_dict(
