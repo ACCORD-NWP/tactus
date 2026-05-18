@@ -272,7 +272,6 @@ class Marsprep(Task):
         if not self.config["boundaries.bd_has_surfex"]:
             self.get_sfx_data()
 
-
     def get_grid_point_surface_data(self):
         """Get grid point surface data."""
         tag = "ICMGG"
