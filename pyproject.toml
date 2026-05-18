@@ -87,6 +87,9 @@
     "pytest-xdist>=3.2.0",
   ]
 
+[project.optional-dependencies]
+  deode-data = ["deode-data @ git+https://github.com/mfroelund/deode-data.git"]
+
 # Linter configs
 [tool.check-wheel-contents]
   ignore = ["W002"]
