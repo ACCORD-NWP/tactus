@@ -1,6 +1,6 @@
 [general]
   accept_static_namelists = false
-  case = "@CASE_PREFIX@@CYCLE@_@CSC@_@EVENT_TYPE@_@DOMAIN@_@YMD_START@"
+  case = "@CASE_PREFIX@@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@"
   cnmexp = "DEOD"
   csc = "AROME"
   cycle = "CY50t2"
@@ -39,7 +39,7 @@
 
 [boundaries.ifs]
   bdmember = []
-  selection = "@HOST@_DT"
+  selection = "HRES"
 
 [boundaries.lam]
 
@@ -114,7 +114,7 @@
   create_static_data = true
   create_time_dependent_suite = true
   do_archiving = true
-  do_cleaning = false
+  do_cleaning = true
   do_extractsqlite = true
   do_interpolsstsic = true
   do_marsprep = true

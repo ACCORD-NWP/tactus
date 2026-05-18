@@ -1,7 +1,0 @@
---config-file
-tactus/data/config_files/config.toml
-tactus/data/config_files/modifications/CY48t3.toml
-tactus/data/config_files/modifications/alaro.toml
-tactus/data/config_files/include/vertical_levels/MF_87.toml
-tactus/data/config_files/include/accelerator_device/lumi_gpu.toml
-tactus/data/config_files/modifications/submission/lumi_CY48t3_gpu.toml
