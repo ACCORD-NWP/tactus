@@ -32,7 +32,7 @@ class PrepRun(Task):
         else:
             self.cleaner = None
         # Archive the used config file
-        archive_root = Path(self.platform.get_platform_value("archive_root"))
+        archive_root = Path(self.platform.get_platform_value("archive_root")).resolve()
         tactusmakedirs(
             archive_root, unixgroup=self.platform.get_platform_value("unix_group")
         )
@@ -76,7 +76,7 @@ class PrepRun(Task):
             "Create faModelName definitions in {}", target_eccodes_definition_path
         )
         tactus_eccodes_definition_path = ConfigParserDefaults.DATA_DIRECTORY / "eccodes"
-        fa_model_source_file = tactus_eccodes_definition_path / "destineFaModelSource.yml"
+        fa_model_source_file = tactus_eccodes_definition_path / "FaModelSource.yml"
 
         if fa_model_source_file.is_file():
             with open(fa_model_source_file, "r") as f:

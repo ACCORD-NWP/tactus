@@ -1,14 +1,11 @@
 [archiving]
-
 [archiving.DataBridge.fdb]
-
 [archiving.DataBridge.fdb.fpgrib_files]
   active = false
   inpath = "@ARCHIVE@"
   pattern = "GRIBPF*"
 
 [archiving.FDB.fdb]
-
 [archiving.FDB.fdb.fpgrib_files]
   active = false
   inpath = "@ARCHIVE@"

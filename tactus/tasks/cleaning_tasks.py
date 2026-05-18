@@ -1,7 +1,6 @@
 """Clean tactus file systems."""
 
-
-from tactus.cleaning import CleanDeode
+from tactus.cleaning import CleanTactus
 from tactus.tasks.base import Task
 
 
@@ -13,7 +12,6 @@ class Cleaning(Task):
 
         Args:
             config (tactus.ParsedConfig): Configuration
-            name (str): Name of task
         """
         Task.__init__(self, config, __class__.__name__)
 
@@ -26,7 +24,7 @@ class Cleaning(Task):
         """
         defaults = self.config.get("cleaning.defaults")
         choices = self.config.get(f"cleaning.{cleaning_type}").dict()
-        self.cleaner = CleanDeode(self.config, defaults)
+        self.cleaner = CleanTactus(self.config, defaults)
         self.cleaner.prep_cleaning(choices)
 
     def execute(self):

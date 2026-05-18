@@ -1,4 +1,4 @@
-.. deode documentation master file, created by
+.. tactus documentation master file, created by
    sphinx-quickstart on Wed May 24 14:49:29 2023.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
@@ -9,10 +9,9 @@ Welcome to the tactus doc page!
    :caption: Contents:
    :maxdepth: 1
 
-   DEODE <readme_link>  
-   LUMI  <lumi_link>
+   Tactus <readme_link>
    Development Guidelines <development_guidelines_link.rst>
-   API Documentation <deode>
+   API Documentation <tactus>
    Misc <misc_section_in_doc_page>
    CHANGELOG <changelog_link.rst>
 

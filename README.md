@@ -26,36 +26,13 @@ directory in your `PATH`:
 export PATH="$HOME/.local/bin:$PATH"
 ```
 
-We **highly recommend** you to also put the statement listed above in your shell configuration file, so you don't need to do this the next time you log in. Then, run:
+Then, run:
 
 * On Atos (`hpc-login`)
   ```shell
   module load python3/3.10.10-01
   module load ecflow
   ```
-
-* On LUMI
-  ```shell
-  ml use /scratch/project_465000527/jasinskas/scl/modules/
-  ml pyeccodes_23
-  ml scl-ecflow_23
-  ```
-* On Belenos
-  ```shell
-  conda create -n <env_name> python=3.10.* gdal=3.6.2 ecflow -c conda-forge
-  conda activate <env_name>
-  ```
-
-See also [lumi doc](https://github.com/ACCORD-NWP/tactus/blob/develop/docs/markdown_docs/lumi.md) for more details.
-
-* On Macs (local install only)
-  ```shell
-  brew install pyenv
-  pyenv install 3.10.10
-  # (or which ever version you want to universalise)
-  pyenv global 3.10.10
-   ```
-  Add eval "$(pyenv init --path)" to ~/.zprofile (or ~/.bash_profile or ~/.zshrc, whichever you need). Relaunch the shell and check that Python works, or run $ source ~/.zprofile
 
 ## Installation
 
@@ -65,7 +42,7 @@ git clone git@github.com:ACCORD-NWP/tactus.git
 cd tactus
 ```
 
-For development, use forks as specified in the [Development guidelines](https://github.com/ACCORD-NWP/tactus/blob/develop/docs/markdown_docs/development_guide.md).
+For development, use forks as specified in the [Development guidelines](https://ACCORD-NWP.github.io/tactus-docs/development_guidelines_link.html).
 To clone the forked repository, use the following command, replacing \<username\> with your GitHub username:
 ```shell
 git clone git@github.com:<username>/tactus.git
@@ -79,7 +56,7 @@ Then install/reinstall [`poetry`](https://python-poetry.org) by runnning the fol
   curl -sSL https://install.python-poetry.org | python3 - --uninstall
   rm -rf ${HOME}/.cache/pypoetry/ ${HOME}/.local/bin/poetry ${HOME}/.local/share/pypoetry
   # Download and install poetry
-  curl -sSL https://install.python-poetry.org | python3 -  
+  curl -sSL https://install.python-poetry.org | python3 -
   poetry install
   # Add the poetry shell command as a plugin (for poetry >= v2.0.0)
   poetry self add poetry-plugin-shell
@@ -95,10 +72,6 @@ Finally, install [`pygdal`](https://pypi.org/project/pygdal/), which is required
     poetry shell
     pip install pygdal==3.6.2.11
     ```
-  On Belenos, you should install the project in the conda environment that was created, directly with the `pip` command.
-  ```shell
-  pip install -e . --no-cache --prefer-binary
-  ```
   If installation is not succesful, please contact the IT support in your organisation or HPC facility.
 
 ### Important
@@ -156,28 +129,21 @@ that the `-h` goes after the subcommand in this case).
 
 These examples assume that you have successfully [Set up environment](#set-up-environment) [installed](#installation) tactus, navigated to the root level of your `tactus` install directory and loaded the python environment. The examples also assume that the binaries and input data for the [ACCORD CSCs](https://www.umr-cnrm.fr/accord/?Canonical-System-Configurations-CSC) is in place. Please contact your local ACCORD members for advice if this is not the case.
 
-### Running ecflow suite on ATOS or LUMI
+### Running ecflow suite on ATOS
 
-The following command will run  the full suite using the default experiment:
+The following command will run the full suite using the default experiment:
 ```shell
-tactus case ?tactus/data/config_files/configurations/cy48t3_arome -o cy48t3_arome.toml --start-suite
+tactus case ?tactus/data/config_files/configurations/cy49t2_arome --case-name my_first_test --start-suite
 ```
+This will generate a new config file `my_first_test.toml` that is used to launch the suite. The working directories and final results can be found under `$SCRATCH/tactus/my_first_test'.
 
-### Running the `"Forecast"` task from the `hpc-login`'s command line
+### Running a single task from command line
+From the example above we can rerun e.g. the `Forecast` task from command line by
 
-The command below runs `tactus`'s task `"Forecast"` for the member specified in the config file using the batch system rules defined in your `config.toml`:
-```shell
-tactus run --task Forecast --config-file cy48t3_arome.toml
 ```
-
-Note that this requires a previous run of the [ecflow suite](#running-ecflow-suite-on-atos-or-lumi) for the given config file to have finished succesfully.
-
-To run the Forecast task for a different member, simply point to the config file with the desired member number specified.
-
-NOTE: the config file used by a given task, is always saved to the working directory, when the task is run. Thus one can e.g. point to the config file used by the mbr001/Cycle/Forecasting/Forecast task to rerun the Forecast task for member 1):
-
-This way, the stand alone forecast will pick the input data from the existing run and output the result in the same directories (as defined by the config file).
-
-For other platforms a new config file would have to be created first. Please consult the [configure cases](misc_section_in_doc_page.rst#configure-cases) section in the documentation for more information.
+tactus run --task Forecast -c my_first_test.toml
+```
+This will create `Forecast.job` in the current directory and submit the job. The log from the job will appear as `Forecast.log` and the result will be found in the same directories as above.
 
 
+For other platforms a new config file would have to be created first. Please consult the [configure cases](https://ACCORD-NWP.github.io/tactus-docs/misc_section_in_doc_page.html#configure-cases) section in the documentation for more information.

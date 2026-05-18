@@ -1,9 +1,9 @@
 [general]
   accept_static_namelists = false
-  case = "@CASE_PREFIX@@CYCLE@_@CSC@_@EVENT_TYPE@_@DOMAIN@_@YMD_START@"
+  case = "@CASE_PREFIX@@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@"
   cnmexp = "DEOD"
   csc = "AROME"
-  cycle = "CY49t2"
+  cycle = "CY50t2"
   famodel = "destine-@CYCLE@-@CSC@-oper"
   keep_workdirs = true
   surfex = true
@@ -39,7 +39,7 @@
 
 [boundaries.ifs]
   bdmember = []
-  selection = "@HOST@_DT"
+  selection = "HRES"
 
 [boundaries.lam]
 
@@ -71,22 +71,19 @@
   output_name = "tsnowp"
 
 [gribmodify.fullpos.3]
-  output_name = "tp"
-
-[gribmodify.fullpos.4]
   output_name = "10si"
 
+[gribmodify.fullpos.4]
+  output_name = "ws"
+
 [gribmodify.fullpos.5]
-  output_name = "100si"
+  minimum_frequency = "PT1H"
+  output_name = "max_i10fg"
 
 [gribmodify.fullpos.6]
-  minimum_frequency = "PT1H"
-  output_name = "10fg"
-
-[gribmodify.fullpos.7]
   output_name = "2d"
 
-[gribmodify.fullpos.8]
+[gribmodify.fullpos.7]
   output_name = "utci"
 
 [include]
@@ -102,6 +99,8 @@
   macros = "include/macros.toml"
   mars = "include/mars_settings.toml"
   platform = "include/platform_paths/@HOST@.toml"
+  reference_checker = "include/reference_checker.toml"
+  remove = "include/remove.toml"
   scheduler = "include/scheduler/ecflow_@HOST@.toml"
   submission = "include/submission/@HOST@.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"
@@ -115,7 +114,7 @@
   create_static_data = true
   create_time_dependent_suite = true
   do_archiving = true
-  do_cleaning = false
+  do_cleaning = true
   do_extractsqlite = true
   do_interpolsstsic = true
   do_marsprep = true

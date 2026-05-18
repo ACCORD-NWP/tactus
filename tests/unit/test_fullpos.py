@@ -10,7 +10,7 @@ from tactus.fullpos import Fullpos, InvalidSelectionCombinationError, flatten_li
 from tactus.toolbox import Platform
 
 
-@pytest.fixture()
+@pytest.fixture
 def load(default_config):
     """Test load of the yml files."""
     config = default_config
@@ -34,9 +34,7 @@ def load(default_config):
         "${vertical_levels.nlev}": config["vertical_levels.nlev"],
         "${namelist.nrfp3s}": nrfp3s,
     }
-    fullpos = Fullpos("test", fpdir=fpdir, fpfiles=fpfiles, rules=rules)
-
-    return fullpos
+    return Fullpos("test", fpdir=fpdir, fpfiles=fpfiles, rules=rules)
 
 
 class TestFullpos:

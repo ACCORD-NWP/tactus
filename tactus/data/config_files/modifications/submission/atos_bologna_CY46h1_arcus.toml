@@ -1,0 +1,22 @@
+[submission]
+  bindir = "/perm/deployde330/github-actions/install/cy46h1/latest/bin"
+
+[submission.task_exceptions.C903]
+  bindir = "/perm/deployde330/github-actions/install/cy48t3/latest/bin"
+
+[submission.task_exceptions.GlBd]
+  bindir = "@INSTALL_DIR@/gl/latest/bin"
+
+[submission.task_exceptions.Pgd]
+  binary = "PGD-offline"
+
+[submission.task_exceptions.Prep]
+  binary = "PREP"
+  bindir = "/perm/deployde330/github-actions/install/cy46h1/latest/bin"
+  WRAPPER = "srun"
+
+[submission.task_exceptions.Prep.BATCH]
+  CPUS = "#SBATCH --cpus-per-task=1"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  WALLTIME = "#SBATCH --time=00:30:00"

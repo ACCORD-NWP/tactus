@@ -8,7 +8,9 @@
       "properties": {
         "members": {
           "oneOf": [
-            { "type": "integer" },
+            {
+              "type": "integer"
+            },
             {
               "type": "string"
             },
@@ -20,7 +22,9 @@
             }
           ],
           "description": "The members of the ensemble",
-          "default": [0]
+          "default": [
+            0
+          ]
         }
       },
       "default": {}

@@ -1,4 +1,5 @@
 """Forecast."""
+
 import atexit
 import glob
 import json
@@ -92,7 +93,8 @@ class Forecast(PySurfexBaseTask):
             filename_out = self.platform.substitute(
                 filetype["archive"], validtime=self.basetime + dt
             )
-            self.fmanager.output(filename_in, f"{self.archive}/{filename_out}")
+            output = f"{self.archive}/{filename_out}"
+            self.fmanager.output(filename_in, output)
 
     def wfp_input(self):
         """Add wind turbine files to forecast directory."""

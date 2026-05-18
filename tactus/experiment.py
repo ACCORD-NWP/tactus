@@ -20,7 +20,7 @@ from tactus.config_parser import (
 from tactus.datetime_utils import evaluate_date
 from tactus.derived_variables import set_times
 from tactus.eps.eps_setup import EPSConfig, generate_member_settings
-from tactus.general_utils import modify_mappings, recursive_dict_deviation
+from tactus.general_utils import merge_dicts, recursive_dict_deviation
 from tactus.host_actions import set_tactus_home
 from tactus.logs import logger
 from tactus.os_utils import resolve_path_relative_to_package
@@ -99,7 +99,10 @@ class ExpFromFiles(Exp):
             if _mod == Path():
                 continue
             mod = Path(str(_mod).replace("@HOST@", host)) if host is not None else _mod
-            mod = resolve_path_relative_to_package(mod, ignore_errors=True)
+            try:
+                mod = ConfigPaths.path_from_subpath(mod)
+            except RuntimeError:
+                mod = resolve_path_relative_to_package(mod, ignore_errors=True)
             # First check if mod exists as is
             if os.path.exists(mod):
                 try:
@@ -176,7 +179,7 @@ class ExpFromFiles(Exp):
                 returned = ExpFromFiles.deep_update(source.get(key, {}), value)
                 source[key] = returned
             else:
-                override = overrides[key]
+                override = value
                 source[key] = override
 
         return source
@@ -196,11 +199,10 @@ class ExpFromFiles(Exp):
             exp_dependencies(dict): Experiment dependencies from setup.
 
         """
-        exp_dependencies = {
+        return {
             "tmp_outfile": f"{output_file}.tmp.{os.getpid()}.toml",
             "case": case,
         }
-        return exp_dependencies
 
 
 class EPSExp(Exp):
@@ -225,7 +227,7 @@ class EPSExp(Exp):
         """
         # First convert self.config["eps"] to a plain dict. This is needed before
         # we turn config objects into pydantic dataclasses.
-        eps_plain_dict = modify_mappings(self.config["eps"], operator=dict)
+        eps_plain_dict = self.config.get_as_dict("eps")
         # Then convert the general EPS settings to a dataclass
         epsconfig = EPSConfig(**eps_plain_dict)
 
@@ -279,9 +281,11 @@ class EPSExp(Exp):
 
                         # Merge modifications with remainder member settings.
                         # Modifications take precendence over any existing settings.
-                        member_settings_deviation = modify_mappings(
+
+                        member_settings_deviation = merge_dicts(
                             member_settings_deviation, lmod
                         )
+
                     else:
                         logger.warning("Skip missing modification file {}", mod)
 
@@ -359,7 +363,7 @@ def case_setup(
     if expand_config:
         tactus_home = set_tactus_home(config)
         exp.config = exp.config.copy(update={"platform": {"tactus_home": tactus_home}})
-        exp.config = exp.config.expand_macros()
+        exp.config = exp.config.expand_macros(protect_time=True)
 
     if output_file is None or ".toml" not in str(output_file):
         output_dir = output_file
@@ -403,7 +407,8 @@ def get_git_info():
     for label, cmd in gitcmds.items():
         with contextlib.suppress(subprocess.CalledProcessError):
             git_info[label] = (
-                subprocess.check_output(cmd, stderr=subprocess.DEVNULL)  # noqa S603
+                subprocess
+                .check_output(cmd, stderr=subprocess.DEVNULL)
                 .strip()
                 .decode("utf-8")
             )
@@ -411,7 +416,8 @@ def get_git_info():
         remote = git_info["remote"].split("/")[0]
         cmd = ["git", "remote", "get-url", remote]
         git_info["remote_url"] = (
-            subprocess.check_output(cmd, stderr=subprocess.DEVNULL)  # noqa S603
+            subprocess
+            .check_output(cmd, stderr=subprocess.DEVNULL)
             .strip()
             .decode("utf-8")
         )

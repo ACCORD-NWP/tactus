@@ -1,5 +1,6 @@
 """Utilities for simple tasks on OS level."""
 
+import atexit
 import contextlib
 import glob
 import os
@@ -7,11 +8,11 @@ import pathlib
 import re
 import shutil
 import subprocess
+import sys
 import time
 from pathlib import Path
 from typing import List, Union
 
-from . import GeneralConstants
 from .logs import logger
 
 
@@ -64,9 +65,11 @@ class Search:
             fullpath = False
             files = []
             for r, _d, f in os.walk(directory):  # r=root, d=directories, f=files
-                for file in f:
-                    if file.startswith(prefix) and file.endswith(postfix):
-                        files.append(os.path.join(r, file))  # noqa: PERF401
+                files.extend(
+                    os.path.join(r, file)
+                    for file in f
+                    if file.startswith(prefix) and file.endswith(postfix)
+                )
 
         elif not recursive:
             if onlyfiles:
@@ -85,7 +88,7 @@ class Search:
                     if f.endswith(postfix) and f.startswith(prefix)
                 ]
 
-        if pattern != "":
+        if pattern:
             files = [f for f in files if re.search(pattern, f)]
 
         if fullpath:
@@ -164,7 +167,7 @@ def tactusmakedirs(path: str | Path, unixgroup="", exist_ok=True, def_dir_mode=0
     p = Path(path).resolve()
 
     dir_mode = def_dir_mode
-    if unixgroup != "":
+    if unixgroup:
         dir_mode = 0o2750
 
     if p.parents[0].is_dir():
@@ -241,7 +244,7 @@ def ping(host):
     """
     cmd = ["ping", "-c", "1", host]
     try:
-        subprocess.check_output(cmd, stderr=subprocess.STDOUT)  # noqa S603
+        subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         return True
     except subprocess.CalledProcessError:
         return False
@@ -300,54 +303,60 @@ def strip_off_mount_path(path: Union[str, Path]) -> Path:
 
 
 def resolve_path_relative_to_package(path: Path, ignore_errors: bool = False) -> Path:
-    """Resolve path relative to package directory.
+    """Resolve path relative to any sys.path entry.
 
-    If the path exists as is, return it. If not, check if it exists in the
-    package directory and return path relative to package
+    If the path exists as is, return it. If not, derive a relative path by
+    stripping known sys.path prefixes, then search every sys.path entry for
+    that relative path. Raises an error if more than one candidate is found
+    to avoid silent ambiguity.
 
     Args:
         path (Path): Path to resolve.
         ignore_errors (bool, optional): Option to ignore errors.
             Defaults to False.
 
+    Returns:
+        Path: Original path (if exists locally), or resolved path relative to
+            a sys.path entry.
+
     Raises:
         FileNotFoundError: If it was impossible to determine path relative to package.
         FileNotFoundError: If file does not exist locally or in the package directory.
-
-    Returns:
-        Path: Original path (if exists locally), or resolved path relative to
-            package directory.
-
     """
     path = path.expanduser().resolve()
-    # First check if path exists as is
-    if not os.path.exists(path):
-        # Get path relative to package. Needed when tactus is installed as
-        # a site-package e.g. when creating plugins.
-        if GeneralConstants.PACKAGE_NAME in path.parts:
-            # Find last occurence of package name in path
-            package_index_in_path = (
-                len(path.parts)
-                - path.parts[::-1].index(GeneralConstants.PACKAGE_NAME)
-                - 1
-            )
-            # Stick together the path in the package directory
-            config_parts = path.parts[package_index_in_path:]
-            path = GeneralConstants.PACKAGE_DIRECTORY.parent / Path(*config_parts)
-        elif not ignore_errors:
-            raise FileNotFoundError(
-                f"Could not determine path {path} relative to the "
-                + f"{GeneralConstants.PACKAGE_NAME} package."
-            )
-
-        # If not, check if it exists in the package directory (used when
-        # tactus is installed as package)
-        if not os.path.exists(path) and not ignore_errors:
-            raise FileNotFoundError(
-                f"Config file {path} not found locally or in package directory"
-            )
+    if os.path.exists(path):
         return path
 
+    # For each sys.path entry that is a prefix of the given path, derive the
+    # relative portion and search all sys.path entries for it.
+    candidates = set()
+    for sys_path_str in sys.path:
+        if not sys_path_str:
+            continue
+        try:
+            rel_path = path.relative_to(sys_path_str)
+        except ValueError:
+            continue
+
+        for search_path_str in sys.path:
+            if not search_path_str:
+                continue
+            candidate = Path(search_path_str) / rel_path
+            if candidate.exists():
+                candidates.add(candidate)
+
+    if len(candidates) > 1:
+        raise ValueError(
+            f"Ambiguous path resolution for {path}. "
+            "Multiple candidates found across sys.path entries:\n"
+            + "\n".join(f"  {c}" for c in sorted(candidates))
+        )
+    if len(candidates) == 1:
+        return next(iter(candidates))
+    if not ignore_errors:
+        raise FileNotFoundError(
+            f"File {path} not found locally or relative to any sys.path entry"
+        )
     return path
 
 
@@ -362,9 +371,7 @@ def list_files_join(folder, f_pattern):
         list of files that should be joined
     """
     pattern_list = os.path.join(folder, f_pattern)
-    filenames = glob.glob(pattern_list)
-
-    return filenames
+    return glob.glob(pattern_list)
 
 
 def join_files(input_files: List[str], output_filepath: str):
@@ -382,5 +389,95 @@ def join_files(input_files: List[str], output_filepath: str):
     shutil.move(output_filename, output_filepath)
     logger.info(f"Created {output_filepath} out of files '{input_files}'")
     lockfile = f"{output_filepath}.lock"
-    if os.path.exists(lockfile):
+    if os.path.exists(output_filepath) and os.path.exists(lockfile):
         os.remove(lockfile)
+        logger.info(f"Removed lockfile: {lockfile}")
+
+
+def remove_ifexists(file, etime=sys.float_info.max):
+    """Utility function to be used for lockfiles."""
+    if os.path.exists(file):
+        mtime = os.path.getmtime(file) if etime != sys.float_info.max else 0
+        if mtime < etime:
+            logger.info(f"Removing: {file}")
+            os.remove(file)
+
+
+class FileLock:
+    """Context manager for file locking using lockfiles."""
+
+    def _create_lockfile(self):
+        """Create lockfile for a given file.
+
+        Raises:
+            FileExistsError: If the lockfile already exists.
+        """
+        if os.path.exists(self.lockfile):
+            raise FileExistsError(
+                f"Lockfile {self.lockfile} already exists. Cannot create"
+                + f"lockfile for {self.filepath}."
+            )
+
+        with open(self.lockfile, "w") as f:
+            f.write(f"Lockfile for {self.filepath} created at {time.ctime()}")
+        atexit.register(remove_ifexists, self.lockfile)
+
+    def _delete_lockfile(self):
+        """Delete lockfile for a given file."""
+        remove_ifexists(self.lockfile)
+
+    def _wait_for_lockfile(self):
+        """Wait for lockfile to be removed.
+
+        Raises:
+            TimeoutError: If the lockfile still exists after the specified timeout.
+        """
+        start_time = time.time()
+        while os.path.exists(self.lockfile):
+            elapsed_time = time.time() - start_time
+            if elapsed_time > self.timeout:
+                raise TimeoutError(
+                    f"Timeout: Lockfile {self.lockfile} still exists"
+                    + f" after {self.timeout} seconds."
+                )
+            logger.info(
+                f"Lockfile {self.lockfile} exists. Waiting for it to be removed..."
+            )
+            time.sleep(self.check_interval)
+
+    def __init__(
+        self,
+        filepath: str,
+        timeout: int = 600,
+        check_interval: int = 10,
+        delete_existing: bool = False,
+    ):
+        """Initialize FileLock.
+
+        Args:
+            filepath (str): Path to the file that is being created/modified.
+                            The lockfile will be named as {filepath}.lock.
+            timeout (int, optional): Maximum time to wait for the lockfile to be removed,
+                in seconds. Defaults to 600 (10 minutes).
+            check_interval (int, optional): Time interval between checks for the lockfile,
+                in seconds. Defaults to 10.
+            delete_existing (bool, optional): Whether to  delete an existing lockfile.
+        """
+        self.filepath = filepath
+        self.lockfile = f"{filepath}.lock"
+        self.timeout = timeout
+        self.check_interval = check_interval
+        self.delete_existing = delete_existing
+
+    def __enter__(self):
+        """Enter the runtime context related to this object."""
+        if self.delete_existing:
+            remove_ifexists(self.lockfile)
+        else:
+            self._wait_for_lockfile()
+
+        self._create_lockfile()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """Exit the runtime context related to this object."""
+        self._delete_lockfile()

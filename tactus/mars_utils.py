@@ -11,11 +11,20 @@ from subprocess import run
 from time import sleep
 from typing import Dict, List, Tuple
 
+from eccodes import (
+    codes_get,
+    codes_grib_new_from_file,
+    codes_release,
+    codes_set,
+    codes_write,
+)
+
 from .config_parser import ParsedConfig
 from .datetime_utils import as_datetime
 from .domain_utils import get_domain
 from .geo_utils import Projection, Projstring
 from .logs import logger
+from .os_utils import remove_ifexists
 from .toolbox import Platform
 
 
@@ -30,7 +39,7 @@ def mars_selection(selection: str, config: ParsedConfig) -> dict:
          mars                (dict): mars config section
 
     """
-    mars = config[f"mars.{selection}"].dict()
+    mars = config.get_as_dict(f"mars.{selection}")
     if "expver" not in mars:
         mars["expver"] = selection
 
@@ -131,7 +140,7 @@ def get_mars_keys(source, key_filter="-w shortName:s=z"):
             run(
                 grib_command + f"-p {param_list[prm]}:s {source}",
                 check=True,
-                shell=True,  # noqa
+                shell=True,
                 capture_output=True,
             )
             .stdout.decode()
@@ -139,15 +148,6 @@ def get_mars_keys(source, key_filter="-w shortName:s=z"):
         )
         logger.info("Mars config - {} = {}", prm, result[prm])
     return result
-
-
-def remove_ifexists(file, etime=sys.float_info.max):
-    """Utility function to be used for lockfiles."""
-    if os.path.exists(file):
-        mtime = os.path.getmtime(file)
-        if mtime < etime:
-            logger.info("Removing: {}", file)
-            os.remove(file)
 
 
 def get_steps_and_members_to_retrieve(
@@ -247,6 +247,7 @@ def get_steps_and_members_to_retrieve(
 
     steps = sorted(set(step_list))
     waitfor_steps = sorted(set(waitfor_list))
+    logger.debug("waitfor_steps: {}", waitfor_steps)
     # Get perturbed members only
     perturbed_members = [member for member in sorted(set(member_list)) if member != 0]
     # Construct dictionary with perturbed members and control depending on the
@@ -264,7 +265,13 @@ def get_steps_and_members_to_retrieve(
     if perturbed_members:
         members_dict["perturbed_members"] = perturbed_members
 
-    return steps, waitfor_steps, members_dict, missing_member_steps, waitfor_member_steps
+    return (
+        steps,
+        waitfor_steps,
+        members_dict,
+        missing_member_steps,
+        waitfor_member_steps,
+    )
 
 
 def check_data_available(basetime, mars):
@@ -273,8 +280,9 @@ def check_data_available(basetime, mars):
     Args:
         basetime (str): basetime
         mars    (dict): mars config section
+
     Raises:
-        ValueError: No data for this date.
+        ValueError: if the basetime falls outside the available range
     """
     start_date = as_datetime(mars["start_date"])
     with contextlib.suppress(KeyError):
@@ -307,16 +315,12 @@ def get_domain_data(config):
         projstring.get_projstring(lon0=domain_spec["lon0"], lat0=domain_spec["lat0"])
     )
     domain_properties = projection.get_domain_properties(domain_spec)
-    fdomainstr = "/".join(
-        [
-            str(domain_properties["maxlat"]),
-            str(domain_properties["minlon"]),
-            str(domain_properties["minlat"]),
-            str(domain_properties["maxlon"]),
-        ]
-    )
-
-    return fdomainstr
+    return "/".join([
+        str(domain_properties["maxlat"]),
+        str(domain_properties["minlon"]),
+        str(domain_properties["minlat"]),
+        str(domain_properties["maxlon"]),
+    ])
 
 
 def get_value_from_dict(dict_, key_orig):
@@ -367,8 +371,7 @@ def get_steplist(bd_offset, fc_range, bdint):
     first_step = int(bd_offset.total_seconds() // 3600)
     fc_range_int = int(fc_range.total_seconds() // 3600)
 
-    steps = list(range(first_step, first_step + fc_range_int + step_int, step_int))
-    return steps
+    return list(range(first_step, first_step + fc_range_int + step_int, step_int))
 
 
 def get_and_remove_data(file_name: str) -> bytes:
@@ -393,13 +396,14 @@ def add_additional_file_specific_data(
     """Add additional file specific data.
 
     The additional_data dict is expected to have the following structure, where
-    the "common_data" key is optional:
-    {
-        "common_data": b"Common data to add to all files",
-        "file1": b"Data to add to file1",
-        "file2": b"Data to add to file2",
-        ...
-    }
+    the "common_data" key is optional::
+
+        {
+            "common_data": b"Common data to add to all files",
+            "file1": b"Data to add to file1",
+            "file2": b"Data to add to file2",
+            ...
+        }
 
     If the "common_data" key is present, the data will be added to a file before
     the file-specific data is added.
@@ -439,12 +443,13 @@ def add_additional_data_to_all(
 ):
     """Add additional common data to all files defined by tag, step and member.
 
-    The additional_data dict is expected to have the following structure:
-    {
-        "data_key1": b"Data to add to all files",
-        "data_key2": b"Data to add to all files",
-        ...
-    }
+    The additional_data dict is expected to have the following structure::
+
+        {
+            "data_key1": b"Data to add to all files",
+            "data_key2": b"Data to add to all files",
+            ...
+        }
 
     Args:
         tag (str): Name of tag
@@ -497,23 +502,43 @@ def move_files(
                 lockfile = f"{dest_file}.lock"
                 if os.path.exists(file_name):
                     shutil.move(file_name, dest_file)
-                if os.path.exists(lockfile):
+                if os.path.exists(dest_file) and os.path.exists(lockfile):
                     os.remove(lockfile)
+                    logger.info(f"Removed lockfile: {lockfile}")
+
+
+def wait4_file(file: str):
+    """Wait for a single file to appear in final location.
+
+    Args:
+        file (str): Path to file
+
+    Raises:
+        SystemExit: if lockfile disappears before file is created
+    """
+    lockfile = f"{file}.lock"
+    logger.info(f"Wait4 checking {file}")
+    while not os.path.exists(file):
+        if os.path.exists(lockfile):
+            logger.info(f"Waiting 10 sec. for {file}")
+            sleep(10)
+        else:
+            logger.info(f"No lockfile, stop waiting for {file}")
+            sleep(20)
+            if not os.path.exists(file):
+                raise SystemExit(f"Creation of {file} must have failed")
 
 
 def waitfor_files(
     tag: str, steps: List[int], members_dict: Dict[str, List[int]], target_dir: Path
 ):
-    """Wait for file to appear in final location.
+    """Wait for files to appear in final location.
 
     Args:
         tag (str): Name of tag
         steps (list): steps to wait for (processed elsewhere)
         members_dict (Dict[str, List[int]]): dict with members
         target_dir (Path): target directory where files should appear
-
-    Raises:
-        SystemExit: if lockfile disappears before file is created
     """
     for step in steps:
         for members in members_dict.values():
@@ -521,15 +546,8 @@ def waitfor_files(
                 # Define target file name. Member defaults to 0 if member is None
                 file_name = f"{tag}_{member or 0}+{step}"
                 dest_file = target_dir / file_name
-                lockfile = f"{dest_file}.lock"
-                while not os.path.exists(dest_file):
-                    if os.path.exists(lockfile):
-                        logger.info("Waiting 5 sec. for {}", dest_file)
-                        sleep(5)
-                    else:
-                        logger.info("No lockfile, stop waiting for {}", dest_file)
-                        sleep(30)
-                        raise SystemExit(f"Creation of {dest_file} must have failed")
+                wait4_file(dest_file)
+                logger.info(f"Waitfor, found: {dest_file}")
 
 
 def compile_target(
@@ -563,9 +581,7 @@ def compile_target(
     member_part = f"_{member}" if member is not None else ""
     step_part = f"+{step}" if step is not None else ""
 
-    target = f'"{tag}{member_part}{step_part}"'
-
-    return target
+    return f'"{tag}{member_part}{step_part}"'
 
 
 def mars_write_method(mars_version: int) -> str:
@@ -664,18 +680,48 @@ class BaseRequest:
     def add_database_options(self):
         """Add database options."""
         if self.request["CLASS"] == "D1":
-            self.request.update(
-                {
-                    "DATASET": "extremes-dt",
-                }
-            )
+            self.request.update({
+                "DATASET": "extremes-dt",
+            })
             if "latlon" not in self.target:
-                self.request.update(
-                    {
-                        "DATABASE": "fdb",
-                    }
-                )
+                self.request.update({
+                    "DATABASE": "fdb",
+                })
+            if self.request["PARAM"] == "130":
+                self.request.update({
+                    "EXPVER": "0002",
+                })
 
     def replace(self, **kwargs):
         """Return new instance with updated values."""
         return replace(self, **kwargs)
+
+
+def fix_snow_layer(tag: str, steps: List[int], members_dict: Dict[str, List[int]]):
+    """Fix snow layer for snow albedo."""
+    for step in steps:
+        for members in members_dict.values():
+            for member in members:
+                filename = f"{tag}_{member or 0}+{step}"
+
+                with open(filename, "rb") as fin, open("ICMGGtmp", "wb") as fout:
+                    while True:
+                        gid = codes_grib_new_from_file(fin)
+                        if gid is None:
+                            break
+                        try:
+                            short_name = str(codes_get(gid, "shortName"))
+                            if short_name == "asn":
+                                logger.info(
+                                    "Fixing snow layer for snow albedo in file: {}",
+                                    filename,
+                                )
+                                codes_set(gid, "edition", 2)
+                                codes_set(gid, "typeOfLevel", "snowLayer")
+                                codes_set(gid, "level", 1)
+
+                            codes_write(gid, fout)
+                        finally:
+                            codes_release(gid)
+
+                shutil.move("ICMGGtmp", filename)

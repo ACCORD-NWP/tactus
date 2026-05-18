@@ -17,6 +17,9 @@
     "system": {
       "$ref": "#/definitions/system"
     },
+    "compile": {
+      "$ref": "#/definitions/compile"
+    },
     "boundaries": {
       "$ref": "#/definitions/boundaries"
     },
@@ -42,7 +45,9 @@
       "$ref": "#/da"
     }
   },
-  "required": ["general"],
+  "required": [
+    "general"
+  ],
   "definitions": {
     "include": {
       "title": "Include Section",
@@ -97,11 +102,11 @@
           "type": "string",
           "format": "duration"
         },
-	"lbc_per_task": {
-	  "description": "Number of LBCs processed in a single task",
-	  "type": "number",
-	  "default": 7
-	},
+        "lbc_per_task": {
+          "description": "Number of LBCs processed in a single task",
+          "type": "number",
+          "default": 7
+        },
         "max_interpolation_tasks": {
           "description": "Number of interpolate tasks run in parallel",
           "type": "number"
@@ -109,13 +114,20 @@
         "bdmodel": {
           "description": "Coupling model",
           "default": "ifs",
-          "enum": ["lam", "ifs"],
+          "enum": [
+            "lam",
+            "ifs"
+          ],
           "type": "string"
         },
         "bdmodel_sfx": {
           "description": "SURFEX prep input file",
           "default": "from_grib",
-          "enum": ["from_grib", "from_fa", "from_nc"],
+          "enum": [
+            "from_grib",
+            "from_fa",
+            "from_nc"
+          ],
           "type": "string"
         },
         "sstmodels": {
@@ -131,7 +143,11 @@
         "sst_is_lsm": {
           "description": "Switch for using SST as LSM",
           "default": "auto",
-          "enum": ["lsm", "sst", "auto"],
+          "enum": [
+            "lsm",
+            "sst",
+            "auto"
+          ],
           "type": "string"
         },
         "humi_gp": {
@@ -286,21 +302,26 @@
           "default": []
         },
         "scratch_ext": {
-          "decription": "Extention of cratche for operational user.",
+          "decription": "Extention of scratch for operational user.",
           "type": "string",
-          "default": "deode"
+          "default": "tactus"
         },
-	"force_delete_period": {
+        "force_delete_period": {
           "decription": "ISO-8601 duration string used to determine the fallback age of a suite for deletion if its files are missing. Defaults to approximately one year ('P365D').",
           "type": "string",
           "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
           "default": "P365D"
-	},
-	"dw_case_prefixes": {
-	  "decription": "List of prefixes of the daily runs",
-	  "type": "array",
-	  "default": ["AUTOMATED_RUN", "HARMONIE_AROME", "AROME", "ALARO"]
-	}
+        },
+        "dw_case_prefixes": {
+          "decription": "List of prefixes of the daily runs",
+          "type": "array",
+          "default": [
+            "AUTOMATED_RUN",
+            "HARMONIE_AROME",
+            "AROME",
+            "ALARO"
+          ]
+        }
       }
     },
     "pgd": {
@@ -341,7 +362,10 @@
           "items": {
             "type": "string"
           },
-          "default": ["rules", "namfpc_header"]
+          "default": [
+            "rules",
+            "namfpc_header"
+          ]
         },
         "selection": {
           "description": "List of selections to include",
@@ -371,6 +395,11 @@
           "type": "string",
           "default": "TactusSuiteDefinition"
         },
+        "compile": {
+          "description": "Compile IAL source code",
+          "type": "boolean",
+          "default": false
+        },
         "do_creategrib_static": {
           "description": "Activate grib conversion for static files",
           "type": "boolean",
@@ -387,7 +416,11 @@
         "mode": {
           "description": "Choose a strategy to achieve initial/initial_sfx files (start:  start from interpolated files and then propagate the FG between cycles, restart: start from a previous run and then propagate the FG between cycles, cold_start: always start from interpolated files).",
           "type": "string",
-          "enum": ["start", "restart", "cold_start"]
+          "enum": [
+            "start",
+            "restart",
+            "cold_start"
+          ]
         },
         "interpolate_boundaries": {
           "description": "Activates the boundary interpolation",
@@ -476,28 +509,6 @@
           "description": "Limit for max number of monthly tasks, run at same time",
           "type": "integer",
           "default": 10
-        },
-        "DeodeCleaningSuiteDefinition": {
-          "decription": "Settings for Cleaning Suite",
-          "type": "object",
-          "properties": {
-            "do_clean_cases": {
-              "description": "Activate cleaning of the cases",
-              "type": "boolean"
-            },
-            "days_in_week": {
-              "description": "List of days when cleaning suite will run, 0-6 Sunday-Saturday",
-              "type": "array",
-              "items": {
-                "type": "integer"
-              }
-            },
-            "time_to_run": {
-              "description": "Time to run",
-              "type": "string",
-              "pattern": "^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$"
-            }
-          }
         }
       }
     },
@@ -618,6 +629,37 @@
           "type": "string",
           "description": "Path to the e927 json config file",
           "default": "@CYCLE@/e927.json"
+        }
+      }
+    },
+    "compile": {
+      "title": "Compilation configuration",
+      "type": "object",
+      "properties": {
+        "ial_dir": {
+          "type": "string",
+          "description": "Local path to IAL source dir",
+          "default": "@CASEDIR@/IAL"
+        },
+        "git_repo": {
+          "type": "string",
+          "description": "Git repo for IAL source",
+          "default": "git@github.com:ACCORD-NWP/IAL"
+        },
+        "git_token": {
+          "type": "string",
+          "description": "Git token for IAL source access",
+          "default": ""
+        },
+        "git_branch": {
+          "type": "string",
+          "description": "Branch/tag",
+          "default": "develop"
+        },
+        "arch": {
+          "type": "string",
+          "description": "Compiler configuration",
+          "default": "ecmwf/hpc2020"
         }
       }
     },
@@ -825,23 +867,35 @@
             {
               "anyOf": [
                 {
-                  "required": ["start"],
+                  "required": [
+                    "start"
+                  ],
                   "not": {
-                    "required": ["list"]
+                    "required": [
+                      "list"
+                    ]
                   }
                 },
                 {
-                  "required": ["basetime"],
+                  "required": [
+                    "basetime"
+                  ],
                   "not": {
                     "anyOf": [
                       {
-                        "required": ["end"]
+                        "required": [
+                          "end"
+                        ]
                       },
                       {
-                        "required": ["list"]
+                        "required": [
+                          "list"
+                        ]
                       },
                       {
-                        "required": ["start"]
+                        "required": [
+                          "start"
+                        ]
                       }
                     ]
                   }
@@ -849,14 +903,20 @@
               ]
             },
             {
-              "required": ["list"],
+              "required": [
+                "list"
+              ],
               "not": {
                 "anyOf": [
                   {
-                    "required": ["start"]
+                    "required": [
+                      "start"
+                    ]
                   },
                   {
-                    "required": ["end"]
+                    "required": [
+                      "end"
+                    ]
                   }
                 ]
               }
@@ -871,7 +931,7 @@
           "description": "Experiment name",
           "default": "tactus_case",
           "type": "string",
-	        "pattern": "^[^0-9][^.]*$"
+          "pattern": "^[^0-9][^.]*$"
         },
         "member_str": {
           "description": "String identifier of a member in the ensemble",
@@ -894,14 +954,20 @@
         "loglevel": {
           "description": "Logger output level",
           "type": "string",
-          "enum": ["CRITICAL", "ERROR", "DEBUG", "INFO", "WARNING"]
+          "enum": [
+            "CRITICAL",
+            "ERROR",
+            "DEBUG",
+            "INFO",
+            "WARNING"
+          ]
         },
         "e923_optional_sections": {
           "description": "Option to include/exclude part 5 and 6 of e923. Set to '[5,6]' to retain traditional climate files.",
           "type": "array",
-	  "default": [],
+          "default": [],
           "items": {
-                "type": "integer"
+            "type": "integer"
           }
         },
         "surfex": {
@@ -916,31 +982,26 @@
           "description": "CSC",
           "default": "AROME",
           "type": "string",
-          "enum": ["AROME", "ALARO", "HARMONIE_AROME"]
+          "enum": [
+            "AROME",
+            "ALARO",
+            "HARMONIE_AROME"
+          ]
         },
         "cycle": {
           "description": "IAL cycle",
           "type": "string",
-          "enum": ["CY50t1", "CY49t2", "CY48t3", "CY46h1"]
-        },
-        "event_type": {
-          "description": "Type of extreme event",
-          "type": "string",
-          "default": "nwp",
           "enum": [
-            "airquality",
-            "coldspell",
-            "convection",
-            "flooding",
-            "heatwave",
-            "nwp",
-            "storm"
+            "CY50t2",
+            "CY49t2",
+            "CY48t3",
+            "CY46h1"
           ]
         },
-	"famodel": {
-	  "description": "faModelName for handling grib output settings. Needed to specify encodings of ensemble members as well as sub-hourly outputs. Do not replace default name.",
-	  "type": "string"
-	},
+        "famodel": {
+          "description": "faModelName for handling grib output settings. Needed to specify encodings of ensemble members as well as sub-hourly outputs. Do not replace default name.",
+          "type": "string"
+        },
         "initfile": {
           "description": "Initial file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",
           "type": "string"
@@ -1018,11 +1079,16 @@
         "surfex_sea_ice": {
           "description": "Treatment of sea ice in surfex",
           "type": "string",
-          "enum": ["sice", "none"],
+          "enum": [
+            "sice",
+            "none"
+          ],
           "default": "sice"
         }
       },
-      "required": ["times"]
+      "required": [
+        "times"
+      ]
     }
   },
   "$output_setting_rules": {

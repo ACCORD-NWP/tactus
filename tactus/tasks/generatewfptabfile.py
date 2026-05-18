@@ -1,4 +1,5 @@
 """Task to generate location/turbine tab-files as input for windfarm parameterization."""
+
 import os
 
 from json2tab import json2tab
@@ -71,7 +72,7 @@ class GenerateWfpTabFile(Task):
                     self.config["json2tab.input.turbine_locations"]
                 )
 
-                domain = self.config["domain"].dict()
+                domain = self.config.get_as_dict("domain")
 
                 situation_date = as_datetime(self.config["general.times.start"]).date()
 

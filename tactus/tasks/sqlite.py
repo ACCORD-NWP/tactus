@@ -37,7 +37,7 @@ class ExtractSQLite(Task):
         try:
             self.infile_dt = self.config["extractsqlite.selection"]
         except KeyError:
-            self.infile_dt = self.config["general.output_settings.fullpos"]
+            self.infile_dt = self.config.get("general.output_settings.fullpos")
         self.infile_template = self.config["file_templates.fullpos.archive"]
 
         self.sqlite_path = self.platform.substitute(
@@ -130,7 +130,8 @@ class MergeSQLites(Task):
     def execute(self):
         """Execute MergeSQLite on all member FC files."""
         sqlite_template = (
-            self.platform.substitute(self.config["extractsqlite.sqlite_template"])
+            self.platform
+            .substitute(self.config["extractsqlite.sqlite_template"])
             .replace("{", "@")
             .replace("}", "@")
         )

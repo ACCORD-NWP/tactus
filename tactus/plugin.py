@@ -1,4 +1,5 @@
 """Plug-in functionality."""
+
 from pathlib import Path
 from typing import List
 
@@ -127,7 +128,7 @@ class TactusPluginRegistryFromConfig(TactusPluginRegistry):
 
         """
         try:
-            plugin_registry = config["general.plugin_registry"].dict()
+            plugin_registry = config.get_as_dict("general.plugin_registry")
         except KeyError:
             plugin_registry = None
         TactusPluginRegistry.__init__(self, plugin_registry)
@@ -169,5 +170,4 @@ class TactusPluginFromConfigFile(TactusPlugin):
     def get_plugin_config(config_file):
         """Get the registry config."""
         with open(config_file, mode="r", encoding="utf8") as fh:
-            config = yaml.safe_load(fh)
-        return config
+            return yaml.safe_load(fh)

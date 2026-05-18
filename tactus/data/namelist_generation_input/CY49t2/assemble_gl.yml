@@ -1,0 +1,10 @@
+gl_bd_HRES:
+  - gl_bd_base
+
+gl_bd_IFSENS:
+  - gl_bd_base
+  - gl_bd_ens
+
+gl_bd_SLAF:
+  - gl_bd_base
+  - gl_bd_slaf

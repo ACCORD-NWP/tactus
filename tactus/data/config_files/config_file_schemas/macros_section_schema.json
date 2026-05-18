@@ -6,10 +6,10 @@
   "additionalProperties": true,
   "properties": {
     "select": {
-       "title": "Macro subsection",
-       "type": "object",
-       "properties": {
-         "default": {
+      "title": "Macro subsection",
+      "type": "object",
+      "properties": {
+        "default": {
           "title": "Default macros",
           "type": "object",
           "properties": {
@@ -41,9 +41,9 @@
                 "type": "string"
               }
             }
-	  }
-         }
-       }
+          }
+        }
+      }
     }
   }
 }

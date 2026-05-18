@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
+
 import datetime
 import itertools
 import json
@@ -9,10 +10,12 @@ import uuid
 from collections import namedtuple
 from pathlib import Path
 
+import frozendict
 import pytest
 import tomli
 import tomlkit
 
+from tactus.aux_types import BaseMapping, recursive_freeze
 from tactus.config_parser import (
     BasicConfig,
     ConfigFileValidationError,
@@ -23,67 +26,61 @@ from tactus.config_parser import (
     ParsedConfig,
 )
 from tactus.datetime_utils import DatetimeConstants, as_datetime
+from tactus.derived_variables import set_times
+from tactus.general_utils import recursive_unfreeze
 
 
-@pytest.fixture()
+@pytest.fixture
 def minimal_raw_config():
-    return tomlkit.parse(
-        """
+    return tomlkit.parse("""
         [general]
             times.list = ["2000-01-01T00:00:00Z"]
-        """
-    )
+        """)
 
 
-@pytest.fixture()
+@pytest.fixture
 def raw_config_with_task(minimal_raw_config):
     rtn = minimal_raw_config.copy()
-    task_configs = tomlkit.parse(
-        """
+    task_configs = tomlkit.parse("""
         [task.forecast]
             wrapper = "time"
             command = "echo Hello world && touch output"
             input_data.input_file = "/dev/null"
             output_data.output = "archived_file"
-        """
-    )
+        """)
     rtn.update(task_configs)
 
     return rtn
 
 
-@pytest.fixture()
+@pytest.fixture
 def raw_config_with_non_recognised_options(minimal_raw_config):
     raw_config = minimal_raw_config.copy()
 
-    new_section = tomlkit.parse(
-        """
+    new_section = tomlkit.parse("""
         [unrecognised_section_name]
             foo = "bar"
-        """
-    )
+        """)
     raw_config.update(new_section)
 
     raw_config["general"].update(
-        tomlkit.parse(
-            """
+        tomlkit.parse("""
             baz = "qux"
             unknown_field = ["A", "B"]
-            """
-        )
+            """)
     )
 
     return raw_config
 
 
-@pytest.fixture()
+@pytest.fixture
 def minimal_parsed_config(minimal_raw_config):
     return ParsedConfig(
         minimal_raw_config, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def parsed_config_with_task(raw_config_with_task):
     return ParsedConfig(
         raw_config_with_task,
@@ -91,9 +88,9 @@ def parsed_config_with_task(raw_config_with_task):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def json_schema_for_iso_8601_time_specs_tests():
-    schema = {
+    return {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "title": "Test Schema",
         "type": "object",
@@ -125,15 +122,13 @@ def json_schema_for_iso_8601_time_specs_tests():
         },
     }
 
-    return schema
 
-
-@pytest.fixture()
+@pytest.fixture
 def tmp_test_data_dir(tmpdir_factory):
     return Path(tmpdir_factory.mktemp("tactus_test_rootdir"))
 
 
-@pytest.fixture()
+@pytest.fixture
 def config_path(minimal_raw_config, tmp_test_data_dir):
     config_path = tmp_test_data_dir / "config.toml"
     with open(config_path, "w") as config_file:
@@ -141,11 +136,127 @@ def config_path(minimal_raw_config, tmp_test_data_dir):
     return config_path
 
 
-@pytest.fixture()
+@pytest.fixture
 def package_main_config_without_validation():
     return ParsedConfig.from_file(
         ConfigParserDefaults.PACKAGE_CONFIG_PATH, json_schema={}, host="atos_bologna"
     )
+
+
+class TestFrozenDict:
+    @staticmethod
+    def _nested_mappings_type_count(obj, count_dict, count_frozendict):
+        if not hasattr(obj, "items"):
+            return count_dict, count_frozendict
+
+        inc_dict = 1 if type(obj) is dict else 0
+        inc_frozendict = 1 if type(obj) is frozendict.frozendict else 0
+
+        if inc_dict + inc_frozendict != 1:
+            raise Exception(f"{type(obj)}")
+
+        total_count_dict = count_dict + inc_dict
+        total_count_frozendict = count_frozendict + inc_frozendict
+
+        for v in obj.values():
+            if not hasattr(v, "items"):
+                continue
+            v_count_dict, v_frozendict = TestFrozenDict._nested_mappings_type_count(
+                v, 0, 0
+            )
+            total_count_dict += v_count_dict
+            total_count_frozendict += v_frozendict
+
+        return total_count_dict, total_count_frozendict
+
+    @staticmethod
+    def _nested_mappings_are_dict(obj):
+        count_dict, count_frozendict = TestFrozenDict._nested_mappings_type_count(
+            obj, 0, 0
+        )
+        return count_dict > 0 and count_frozendict == 0
+
+    @staticmethod
+    def _nested_mappings_are_frozendict(obj):
+        count_dict, count_frozendict = TestFrozenDict._nested_mappings_type_count(
+            obj, 0, 0
+        )
+        return count_frozendict > 0 and count_dict == 0
+
+    @staticmethod
+    def is_dict(obj):
+        return TestFrozenDict._nested_mappings_are_dict(
+            obj
+        ) and not TestFrozenDict._nested_mappings_are_frozendict(obj)
+
+    @staticmethod
+    def is_frozen(obj):
+        return not TestFrozenDict._nested_mappings_are_dict(
+            obj
+        ) and TestFrozenDict._nested_mappings_are_frozendict(obj)
+
+    def test_nested_dictionary_freeze(self):
+
+        data = {
+            "user": {"id": 1, "name": "Alice", "roles": ["admin", "user"]},
+            "settings": {
+                "theme": "dark",
+                "notifications": {"email": True, "sms": False},
+            },
+        }
+        # initial check
+        assert TestFrozenDict.is_dict(data)
+
+        # Freeze data
+        frozen_data = recursive_freeze(data)
+        assert TestFrozenDict.is_frozen(frozen_data)
+
+        # Unfreeze data
+        unfrozen_data = recursive_unfreeze(frozen_data)
+        assert TestFrozenDict.is_dict(unfrozen_data)
+
+        # Check initial data were not touched
+        assert TestFrozenDict.is_dict(data)
+        assert TestFrozenDict.is_frozen(frozen_data)
+        assert TestFrozenDict.is_dict(unfrozen_data)
+
+    def test_configuration_freeze(
+        self, default_config, package_main_config_without_validation
+    ):
+
+        for config in [default_config, package_main_config_without_validation]:
+            assert TestFrozenDict.is_dict(config.dict())
+            assert TestFrozenDict.is_frozen(config.data)
+
+            new_config = config.copy()
+            assert type(new_config) is type(config)
+            assert TestFrozenDict.is_dict(new_config.dict())
+            assert TestFrozenDict.is_frozen(new_config.data)
+
+            new_config = config.copy(update={})
+            assert type(new_config) is type(config)
+            assert TestFrozenDict.is_dict(new_config.dict())
+            assert TestFrozenDict.is_frozen(new_config.data)
+
+            new_config = config.copy(update=set_times(config))
+            assert type(new_config) is type(config)
+            assert TestFrozenDict.is_dict(new_config.dict())
+            assert TestFrozenDict.is_frozen(new_config.data)
+
+            new_config = config.copy(update=set_times(config))
+            assert TestFrozenDict.is_dict(new_config.dict())
+            assert TestFrozenDict.is_frozen(new_config.data)
+
+            general_config = config.get("general")
+            assert type(general_config) is BasicConfig
+
+            general_config_dict = config.get_as_dict("general")
+            assert type(general_config_dict) is dict
+
+            assert general_config_dict == general_config.dict()
+
+            frozen = config["general"]
+            assert type(frozen) is frozendict.frozendict
 
 
 class TestGeneralBehaviour:
@@ -155,17 +266,36 @@ class TestGeneralBehaviour:
     def test_nested_mappings_become_basic_config(
         self, package_main_config_without_validation
     ):
-        def nested_mappings_are_basic_config(obj):
-            rtn = isinstance(obj, BasicConfig)
+        def nested_mappings_are_basic_config(obj, custom_type):
+            rtn = isinstance(obj, custom_type)
+            if not rtn:
+                raise RuntimeError(f"{type(obj)}")
             for v in obj.values():
                 if not rtn:
                     break
                 if not hasattr(v, "items"):
                     continue
-                rtn = rtn and nested_mappings_are_basic_config(v)
+                rtn = rtn and nested_mappings_are_basic_config(v, custom_type)
             return rtn
 
-        assert nested_mappings_are_basic_config(package_main_config_without_validation)
+        assert nested_mappings_are_basic_config(
+            package_main_config_without_validation, (BasicConfig, frozendict.frozendict)
+        )
+        assert nested_mappings_are_basic_config(
+            package_main_config_without_validation.dict(), dict
+        )
+        assert nested_mappings_are_basic_config(
+            package_main_config_without_validation.copy(),
+            (BasicConfig, frozendict.frozendict),
+        )
+        assert nested_mappings_are_basic_config(
+            package_main_config_without_validation.get("general"),
+            (BasicConfig, frozendict.frozendict),
+        )
+
+        assert nested_mappings_are_basic_config(
+            package_main_config_without_validation.get_as_dict("general"), dict
+        )
 
     def test_no_lists_are_present(self):
         def mapping_contains_lists(obj):
@@ -372,6 +502,38 @@ class TestGeneralBehaviour:
         assert parsed_config["general.times"] == original_value
         assert new_parsed_config["general.times.list"] == tuple(new_value)
 
+    def test_partly_resolved_keys_are_basic_config(self, parsed_config_with_task):
+
+        assert isinstance(parsed_config_with_task, BasicConfig)
+        assert isinstance(parsed_config_with_task["task"], frozendict.frozendict)
+        assert isinstance(parsed_config_with_task["task"]["forecast"]["wrapper"], str)
+
+        assert isinstance(parsed_config_with_task.get("task"), BaseMapping)
+        assert isinstance(parsed_config_with_task.get_as_dict("task"), dict)
+
+        assert isinstance(parsed_config_with_task.get("task.forecast.wrapper"), str)
+
+        task_cfg = parsed_config_with_task["task"]
+        assert isinstance(task_cfg, frozendict.frozendict)
+
+        # access read-only should work
+        assert task_cfg["forecast"]["wrapper"] == "time"
+
+        # modify readonly should return an error
+        with pytest.raises(TypeError):
+            task_cfg["forecast"]["wrapper"] = "new_time_wont_work"
+
+        assert parsed_config_with_task.get("task.forecast.wrapper") == "time"
+
+        config = parsed_config_with_task.get("task")
+        task_dict = config.dict()
+        assert task_dict["forecast"]["wrapper"] == "time"
+
+        assert parsed_config_with_task.get("task.forecast.wrapper") == "time"
+        assert parsed_config_with_task.get_as_dict("task.forecast.wrapper") == "time"
+        assert parsed_config_with_task.get("task").get("forecast.wrapper") == "time"
+        assert parsed_config_with_task.get("task.forecast").get("wrapper") == "time"
+
 
 class TestValidators:
     @pytest.mark.parametrize(
@@ -479,7 +641,7 @@ class TestPossibilityOfISO8601ComplianceEnforcement:
         )
 
 
-@pytest.fixture()
+@pytest.fixture
 def valid_config_include_section():
     files_under_include_dir = list(ConfigParserDefaults.PACKAGE_INCLUDE_DIR.glob("*"))
 
@@ -493,7 +655,7 @@ def valid_config_include_section():
     return include_section
 
 
-@pytest.fixture()
+@pytest.fixture
 def raw_config_with_include_section(minimal_raw_config, valid_config_include_section):
     raw_config = minimal_raw_config.copy()
     include_section = valid_config_include_section.copy()
@@ -501,7 +663,7 @@ def raw_config_with_include_section(minimal_raw_config, valid_config_include_sec
     return raw_config
 
 
-@pytest.fixture()
+@pytest.fixture
 def parsed_config_with_included_sections(raw_config_with_include_section):
     return ParsedConfig(
         raw_config_with_include_section,
@@ -577,8 +739,8 @@ class TestConfigPaths:
             ConfigParserDefaults.DATA_DIRECTORY,
         ]
 
-        with pytest.raises(RuntimeError, match="Multiple matches"):
-            ConfigPaths.path_from_subpath("config_files")
+        path = ConfigPaths.path_from_subpath("config_files")
+        assert path == test_path1
 
 
 class TestConfigExpand:
@@ -595,7 +757,7 @@ class TestConfigExpand:
         assert _config["general.case"] == "AROME"
 
 
-@pytest.fixture()
+@pytest.fixture
 def competing_schemas(tmp_test_data_dir):
     """Two schema directories that both define 'competing_section_schema.json'.
 
@@ -646,7 +808,7 @@ class TestSchemasSearchPaths:
         yield None
         ConfigPaths.SCHEMAS_SEARCHPATHS[:] = original
 
-    @pytest.fixture()
+    @pytest.fixture
     def plugin_schemas_dir(self, tmp_test_data_dir):
         """Temporary schema directory containing a strict 'plugin' schema."""
         schemas_dir = tmp_test_data_dir / "plugin_schemas"

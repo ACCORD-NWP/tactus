@@ -1,0 +1,22 @@
+[remove.defaults]
+  active = true
+  dry_run = true
+  execute_removal = false
+  ncycles_delay = 0
+  wipe = true
+
+[remove.main]
+  remove_from_scheduler = true
+  remove_not_completed_suites = false
+  suite_name = "@CASE@"
+
+[remove.main.ecfs]
+  ecfs_prefix = "@ARCHIVING.PREFIX.ECFS@"
+  path = ""
+
+[remove.main.ifs]
+  active = false
+  path = "@REFERENCE_DATA@/IFS"
+
+[remove.main.zz_case_dir]
+  path = "@CASEDIR@"

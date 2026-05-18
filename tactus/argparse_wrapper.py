@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Wrappers for argparse functionality."""
+
 import argparse
 from pathlib import Path
 
@@ -10,6 +11,7 @@ from .commands_functions import (
     namelist_convert,
     namelist_format,
     namelist_integrate,
+    remove_cases,
     run_task,
     show_config,
     show_config_schema,
@@ -136,8 +138,45 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
     parser_run.add_argument(
         "--troika-config", type=str, default="/opt/troika/etc/troika.yml"
     )
-    parser_run.add_argument("--members", nargs="+", type=int, default=None)
+    parser_run.add_argument(
+        "--create-only",
+        action="store_true",
+        help="Just create the job, do not submit it.",
+        required=False,
+        default=False,
+    )
     parser_run.set_defaults(run_command=run_task)
+
+    ##########################################
+    # Configure parser for the "remove" command #
+    ##########################################
+    parser_remove = subparsers.add_parser(
+        "remove",
+        help="Remove a case from all locations",
+        parents=[common_parser],
+    )
+    parser_remove.add_argument(
+        "--execute-removal",
+        help="Execute the actual removal of data",
+        action="store_true",
+        default=False,
+    )
+    parser_remove.add_argument(
+        "--force-remove",
+        "-f",
+        help="Remove suites, and possibly their data, even if not completed",
+        action="store_true",
+        default=False,
+    )
+    parser_remove.add_argument(
+        "config_files",
+        help="Config files for cases to remove",
+        nargs="*",
+        type=Path,
+        default=None,
+    )
+
+    parser_remove.set_defaults(run_command=remove_cases)
 
     ##########################################
     # Configure parser for the "case" command #
@@ -455,8 +494,8 @@ def add_namelist_args(parser_object):
         "--namelist-type",
         "-t",
         type=str,
-        help="Namelist target, master or surfex",
-        choices=["master", "surfex"],
+        help="Namelist target: master, surfex or gl",
+        choices=["master", "surfex", "gl"],
         required=True,
         default=None,
     )
