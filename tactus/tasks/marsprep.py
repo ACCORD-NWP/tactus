@@ -17,6 +17,7 @@ from tactus.mars_utils import (
     add_additional_file_specific_data,
     check_data_available,
     compile_target,
+    fix_snow_layer,
     get_and_remove_data,
     get_domain_data,
     get_mars_keys,
@@ -202,6 +203,9 @@ class Marsprep(Task):
             request.update_request({"PROCESS": "LOCAL"})
         request.add_levelist(self.mars["levelist"])
 
+        if request.param == "32":
+            request.update_request({"LEVELIST": "1"})
+
         # Set stream
         stream = get_value_from_dict(self.mars["stream"], request.time)
         request.update_request({"STREAM": stream})
@@ -281,7 +285,8 @@ class Marsprep(Task):
         )
         if steps:
             self.get_gg_data(tag, steps, members_dict)
-
+            if "CY50" in self.config["general.cycle"]:
+                fix_snow_layer(tag, steps, members_dict)
             exist_soil = False
             with contextlib.suppress(KeyError):
                 gg_soil_param = get_value_from_dict(
@@ -544,6 +549,8 @@ class Marsprep(Task):
             + "/"
             + get_value_from_dict(self.mars["GG_sea"], self.init_date_str)
         )
+        if "CY50" in self.config["general.cycle"]:
+            param = "/".join(x for x in param.split("/") if x != "32")
 
         for member in bdmember_list:
             data_type = self.mars["type_AN"] if member == 0 else self.mars["type_FC"]
@@ -564,6 +571,20 @@ class Marsprep(Task):
                 source=source,
                 write_method=mars_write_method(self.mars_version),
             )
+            if "CY50" in self.config["general.cycle"]:
+                self._build_and_run_retrieve_request(
+                    req_file_name="latlonGG.req",
+                    data_type=data_type,
+                    levtype="SOL",
+                    param="32",
+                    steps=[self.steps[0]],
+                    members=[member],
+                    target=f"mars_latlonGG_32_{member or 0}",
+                    prefetch=prefetch,
+                    specify_domain=True,
+                    source=source,
+                    write_method=mars_write_method(self.mars_version),
+                )
 
     def get_lat_lon_sst_data(
         self,
