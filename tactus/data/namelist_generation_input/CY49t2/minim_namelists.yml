@@ -1,0 +1,48 @@
+minim_base:
+  NAMCT0:
+    NCONF: 131
+    LECMWF: false
+    LARPEGEF: false
+    LSLAG: false
+    LTWOTL: false
+  NAMDIM:
+    NPROMA: -1
+  NAMARG:
+    LFPOS: false
+  NAMNMI:
+    LASSI: false
+
+# ---- parallel I/O settings ----
+  NAMPAR0:
+    NPROC: ${cfg:submission.task_exceptions.Minim.NPROC,128}
+    NSTRIN: 1
+    NSTROUT: 1
+  NAMPAR1:
+    NFLAGS:
+      - 0   # 1
+      - 0   # 2
+      - 0   # 3
+      - 0   # 4
+      - 0   # 5
+      - 0   # 6
+      - 0   # 7
+      - 0   # 8
+      - 0   # 9
+      - 0   # 10
+      - 0   # 11
+      - 0   # 12
+      - 0   # 13
+      - 0   # 14
+
+  NAMVAR:
+    LVARBC: true
+    LAEROBS: false
+    LOBSREF: false
+    # Number of outer/inner loop iterations — tune for your domain size
+    NMINIM: 110
+    NITERMAX: 50
+    NPCVEC: 0
+    LMODERR: false
+  # Jo-table output control
+  NAMJOT:
+    LJOT: true

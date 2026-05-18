@@ -37,6 +37,9 @@
     },
     "gribmodify": {
       "$ref": "#/definitions/gribmodify"
+    },
+    "da": {
+      "$ref": "#/da"
     }
   },
   "required": ["general"],
@@ -160,6 +163,7 @@
           "type": "object",
           "properties": {
             "selection": {
+
               "type": "string",
               "description": "Selection",
               "enum": [
@@ -445,6 +449,11 @@
         },
         "member_specific_mars_prep": {
           "description": "Whether to do member specific marsprep (true) or common marsprep",
+          "type": "boolean",
+          "default": false
+        },
+        "do_assimilation": {
+          "description": "Activate the data assimilation chain (CANARI surface OI + 3D-Var) between FirstGuess and Forecast.",
           "type": "boolean",
           "default": false
         },
@@ -1038,6 +1047,172 @@
         }
       }
     ]
+  },
+  "da": {
+    "title": "Data assimilation section",
+    "description": "Configuration for the surface OI and upper-air assimilation chain.",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+      "obs_dir": {
+        "description": "Root directory of pre-processed observation files.",
+        "type": "string"
+      },
+      "obs_types_surface": {
+        "description": "Observation types used for the surface analysis.",
+        "type": "array",
+        "items": { "type": "string" },
+        "default": ["synop"]
+      },
+      "obs_types_3dvar": {
+        "description": "Observation types used for the 3D-Var upper-air analysis.",
+        "type": "array",
+        "items": { "type": "string" },
+        "default": ["synop","gpssol","amdr","geowind","hrwind","temp","wp","seviri","amsua","amsub","iasi","ascat","radar"]
+      },
+      "obs_sources": {
+        "description": "Per-obstype source definitions. Keys are obstype names.",
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "candidates": {
+              "description": "List of filename templates to try. Supports {ymdrr}, {yyyy}, {mm}, {dd}, {rr} placeholders.",
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "local_name": {
+              "description": "Filename BATOR/OBSCONVERT expects in the working directory. Same placeholders as candidates.",
+              "type": "string"
+            },
+            "source_dir": {
+              "description": "Directory to search for files (overrides da.obs_dir for this obstype).",
+              "type": "string"
+            },
+            "format": {
+              "description": "File format string passed to BATOR (e.g. OBSOUL, BUFR, NETCDF, GRIB).",
+              "type": "string"
+            },
+            "bator_name": {
+              "description": "Internal BATOR obs-type identifier written to refdata/batormap. Defaults to the obstype key.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "scratch": {
+        "description": "Scratch directory for in-cycle DA intermediate files (ODB, analyses, VARBC).",
+        "type": "string"
+      },
+      "const_dir": {
+        "description": "Directory containing DA constant files (B-matrix, RTTOV coefficients, blacklists, etc.).",
+        "type": "string"
+      },
+      "guess_dir": {
+        "description": "Directory where the short-range background (first guess) is stored. Expected files: <guess_dir>/YYYY/MM/DD/guess.YYYYMMDDRR[.gz]",
+        "type": "string"
+      },
+      "analysis_dir": {
+        "description": "Archive directory for the final DA analysis fields. Used by the Forecast when do_assimilation is true.",
+        "type": "string"
+      },
+      "varbc_dir": {
+        "description": "Directory for variational bias-correction (VARBC) files. Expected: <varbc_dir>/YYYY/MM/DD/VARBC.cycle_<RR>",
+        "type": "string"
+      },
+      "rttov_coef_dir": {
+        "description": "Directory containing RTTOV satellite channel coefficient files.",
+        "type": "string"
+      },
+      "nbpool": {
+        "description": "Number of ODB pools (NBPOOL) used by BATOR / SHUFFLE.",
+        "type": "integer",
+        "default": 12
+      },
+      "openmp": {
+        "description": "Enable OpenMP threading in MASTERODB screening step.",
+        "type": "boolean",
+        "default": true
+      },
+      "obsoul_merge_script": {
+        "description": "Path to the obsoul_merge.pl script (used by ObsPrep to merge obsoul files).",
+        "type": "string",
+        "default": ""
+      },
+      "obs_provider": {
+        "description": "Selects the active observation provider block from da.providers. 'UWC' (default) and 'LACE' are the typical values; any string matching a key under da.providers is valid.",
+        "type": "string",
+        "default": "UWC"
+      },
+      "bator_window_len": {
+        "description": "BATOR assimilation window length in minutes (BATOR_WINDOW_LEN / param.cfg WINDOW_LENGTH).",
+        "type": "integer",
+        "default": 180
+      },
+      "bator_window_shift": {
+        "description": "BATOR assimilation window shift in minutes (BATOR_WINDOW_SHIFT / param.cfg WINDOW_SHIFT). Typically negative (window starts before analysis time).",
+        "type": "integer",
+        "default": -90
+      },
+      "bator_slot_len": {
+        "description": "BATOR slot length in minutes (BATOR_SLOT_LEN). 0 (default) activates single-slot mode.",
+        "type": "integer",
+        "default": 0
+      },
+      "bator_nbslot": {
+        "description": "Number of BATOR time slots (BATOR_NBSLOT / param.cfg NSLOT).",
+        "type": "integer",
+        "default": 1
+      },
+      "obs_step": {
+        "description": "Time step of observation files in the archive (minutes). When > 0, ObsPrep collects files from all archive slots that fall within the assimilation window [basetime+window_shift, basetime+window_shift+window_len] and merges them. Set to 60 for hourly archives (LACE convention). Set to 0 (default) to search only the basetime slot.",
+        "type": "integer",
+        "default": 0
+      },
+      "gpssol_stations": {
+        "description": "List of GPS station IDs to include in list_gpssol (BATOR GPS-ZTD input). When set, Bator writes list_gpssol from this list. When absent, the file is linked from da.namelist_dir if available.",
+        "type": "array",
+        "items": { "type": "string" },
+        "default": []
+      },
+      "do_upper_air": {
+        "description": "If true (default), the upper-air 3D-Var chain (UpperAir family with OopsVar) is added after the surface OI chain. Set to false to run surface DA only (CANARI chain without 3D-Var), which is useful for refining the surface analysis independently or for surface-only experiments.",
+        "type": "boolean",
+        "default": true
+      },
+      "oops": {
+        "description": "Settings for the OOPS-based 3D-Var (OopsVar task). Used when da.do_upper_air = true.",
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "namelist_dir": {
+            "description": "Directory containing OOPS namelist templates (namelist_oopsminim, oops_3dvar.json, namelist_bmatrix_3dvar, namelist_observations*, namelist_*_model, namelist_gom_setup*, namelist_oops_write_spec, namelist_write_analysis, namelist_standard_geometry, namelist_geometry_tENS, iasichannels).",
+            "type": "string"
+          },
+          "niter": {
+            "description": "Number of minimization inner-loop iterations ({niter} placeholder in namelist_oopsminim).",
+            "type": "integer",
+            "default": 66
+          },
+          "nsimu": {
+            "description": "Number of simulations in the minimization ({nsimu}).",
+            "type": "integer",
+            "default": 69
+          },
+          "rednmc": {
+            "description": "Background error normalization factor ({rednmc}).",
+            "type": "number",
+            "default": 0.5
+          },
+          "nproma": {
+            "description": "NPROMA block size for OOPS geometry ({NPROMA}, {nproma}). Negative values mean auto-sizing.",
+            "type": "integer",
+            "default": -32
+          }
+        }
+      }
+    }
   },
   "$gribmodify_rules": {
     "csc_specific": {

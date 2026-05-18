@@ -1,0 +1,352 @@
+canari_base:
+  NAMCT0:
+    LFDBOP: false
+    NSPPR: 0
+  NAMDIM:
+    NPROMA: -1
+  NAMARG:
+    LELAM: true
+    NCONF: 701
+    LECMWF: false
+    CNMEXP: CYCL
+    NSUPERSEDE: 1
+  NAMCT1:
+    LRFILAF: false
+  NAMCVER:
+    LVERTFE: true
+    CVFE_ETAH: CHORDAL
+    NVFE_TYPE: 3
+  NAMDYNA: {}
+  NAMDYNCORE: {}
+  NAMRIP:
+    CSTOP: h0
+    TSTEP: ${cfg:domain.tstep,75}
+  NAMFA:
+    NBITCS: 30
+    NBITPG: 30
+    NSTRON: -1
+  NAMFAINIT:
+    JPXTRO: 2000
+  NAMGRIB:
+    NCYCLE: 47
+  NAMOPH: {}
+  NAM_DISTRIBUTED_VECTORS: {}
+  # ELAM namelists — required by suect0_/suarg_ even if empty
+  NEMCT0: {}
+  NEMDIM: {}
+  NEMDYN: {}
+  NEMELBC0A: {}
+  NEMELBC0B: {}
+  NEMFPEZO: {}
+  NEMGEO: {}
+  NEMJK: {}
+  NEMVAR: {}
+  NEMWAVELET: {}
+  # CANARI surface OI options
+  NAM901:
+    LSTOPHY: false
+    LSPLITHOI: false
+    LOBSC1: true
+    LOBSC2: true
+    LOBC1: true
+    LOBC2: true
+    NSTPOBER: 100
+
+  # ---- CANARI surface OI analysis namelists ----
+  NACIETEO: {}
+  NACOBS:
+    OROLIM: 10000.
+    ORODIF: 10000.
+  NACTAN: {}
+  NACTEX:
+    LAECDS: false
+    LAECHK: false
+    LAEH2M: true
+    LAEHUM: false
+    LAEICS: false
+    LAEICS_SX: true
+    LAEINC: false
+    LAEOMF: true
+    LAEOMN: true
+    LAEPDS: false
+    LAERFO: true
+    LAESNM: false
+    LAESST: true
+    LAESTA: false
+    LAESTU: false
+    LAET2M: true
+    LAEUPFLG: false
+    LAEUVT: false
+    LAEV1M: false
+    LAEWIO: true
+    NAEINC: 0
+    NSSTLIS: 15
+    RCLIMCA: 0.
+    RCLISST: 0.05
+    NSEAICE: 0
+    RWPIB: 2.
+  NACVEG:
+    ANEBUL: 0.75
+    LHUMID: true
+    LIMVEG: true
+    LISSEW: false
+    MINDJ: 6
+    NNEBUL: 1
+    NNEIGT: 0
+    NNEIGW: 1
+    RCLIMN: 0.
+    RCLIMTP: 1.
+    RCLIMTS: 0.
+    RCLIMV: 1.
+    RCLIMWP: 0.1
+    RCLIMWS: 0.
+    SCOEFH: 0.
+    SCOEFT: 0.
+    SEVAP: 0.
+    SICE: 5.
+    SIGH2MO: 0.1
+    SIGT2MO: 1.
+    SNEIGT: 1.
+    SNEIGW: 0.
+    SPRECIP: 0.3
+    SWFC: 1.
+    V10MX: 10.
+    L_SM_WP: false
+    NR_SM_WP: 1
+    RA_SM_WP: 5000.
+    SMU0: 7.
+  NADOCK:
+    NMXGQA:
+      - 100
+      - 30
+      - 10
+      - 10
+      - 6
+      - 6
+      - 5
+      - 0
+      - 0
+      - 0
+    QCORMIN:
+      - 0.05
+      - 0.05
+      - 0.05
+      - 0.05
+      - 0.05
+      - 0.05
+      - 0.05
+      - 0.05
+      - 0.01
+      - 0.
+  NALORI:
+    RCALPH: 0.
+    LCORRF: true
+    LMESCAN: true
+  NAMOBS:
+    LCORGRADT: true
+    LSLREJ: true
+    LMKCMARPL: false
+    L_F_SCR_WORK_TS: false
+  # ---- radiation ----
+  NAERAD:
+    LSRTM: false
+    NOZOCL: 0
+  # ---- aerosol / chemistry (empty, read by init) ----
+  NAEAEM7: {}
+  NAEAER: {}
+  NAECOAPHY: {}
+  NAEPHLI: {}
+  NAEPHY: {}
+  NAERCLI: {}
+  NAETLDIAG: {}
+  NAEVOL: {}
+  NAIMPO: {}
+  # ---- dynamics (empty for conf 701) ----
+  NAMDYN: {}
+  NAMDYNA_STATIC: {}
+  NAMDIMO: {}
+  NAMDIM_TRAJ: {}
+  NAMDFI: {}
+  NAMDPHY: {}
+  NAMDVISI: {}
+  NAMDWET: {}
+  # ---- full-pos / output (must be present, empty for CANARI) ----
+  NAMFPC: {}
+  NAMFPD: {}
+  NAMFPDY2: {}
+  NAMFPDYF: {}
+  NAMFPDYH: {}
+  NAMFPDYI: {}
+  NAMFPDYP: {}
+  NAMFPDYS: {}
+  NAMFPDYT: {}
+  NAMFPDYV: {}
+  NAMFPF: {}
+  NAMFPG: {}
+  NAMFPIOS: {}
+  NAMFPMOVE: {}
+  NAMFPOBJ: {}
+  NAMFPPHY: {}
+  NAMFPSC2: {}
+  NAMFPSC2_DEP: {}
+  # ---- GFL tracers ----
+  NAMGFL:
+    YQ_NL%CNAME: HUMI.SPECIFI
+    YQ_NL%LGP: true
+    YQ_NL%LREQOUT: false
+    YQ_NL%LSP: false
+    YQ_NL%NREQIN: 1
+  # ---- gravity wave drag ----
+  NAMGWD: {}
+  NAMGWDIAG: {}
+  NAMGWWMS: {}
+  NAMNORGWD: {}
+  # ---- IAU, ensemble, variational (empty for conf 701) ----
+  NAMIAU: {}
+  NAMENKF: {}
+  NAMENSCOV: {}
+  NAMVAR: {}
+  NAMVARBC: {}
+  NAMVARBC_AIREP: {}
+  NAMVARBC_ALLSKY: {}
+  NAMVARBC_GBRAD: {}
+  NAMVARBC_MODES: {}
+  NAMVARBC_RAD: {}
+  NAMVARBC_SFCOBS: {}
+  NAMVARBC_TCWV: {}
+  NAMVARBC_TO3: {}
+  NAMVAREPS: {}
+  # ---- cloud radar/lidar (empty for conf 701) ----
+  NAMCLRADLID: {}
+  # ---- IO / service (empty) ----
+  NAMIOS: {}
+  NAMIO_SERV: {}
+  NAMIOMI: {}
+  NAMINTFLEX: {}
+  # ---- physics (empty for conf 701) ----
+  NAMAFN: {}
+  NAMARPHY: {}
+  NAMCA: {}
+  NAMCAPE: {}
+  NAMCFU: {}
+  NAMCHEM: {}
+  NAMCHET: {}
+  NAMCHK: {}
+  NAMCLA: {}
+  NAMCLDP: {}
+  NAMCLI: {}
+  NAMCLOP15: {}
+  NAMCLTC: {}
+  NAMCOK: {}
+  NAMCOM: {}
+  NAMCOMPO: {}
+  NAMCOSJO: {}
+  NAMCOUPLO4: {}
+  NAMCUMF: {}
+  NAMCUMFS: {}
+  NAMCVMNH: {}
+  NAMDDH: {}
+  NAMEMIS_CONF: {}
+  NAMGEM: {}
+  NAMICE: {}
+  NAMINI: {}
+  NAMJBCODES: {}
+  NAMJG: {}
+  NAMLCZ: {}
+  NAMLIMA: {}
+  NAMLSFORC: {}
+  NAMMARS: {}
+  NAMMCC: {}
+  NAMMCUF: {}
+  NAMMETHOX: {}
+  NAMMKODB: {}
+  NAMMODERR: {}
+  NAMMTS: {}
+  NAMMWAVE: {}
+  NAMNPROF: {}
+  NAMNRTAER: {}
+  NAMNUD: {}
+  NAMNUDGLH: {}
+  NAMOOPS: {}
+  NAMOPTCMEM: {}
+  NAMPARAR: {}
+  NAMPERTOBS: {}
+  NAMPERTPAR: {}
+  NAMPHMSE: {}
+  NAMPHY: {}
+  NAMPHY0: {}
+  NAMPHY1: {}
+  NAMPHY2: {}
+  NAMPHY3: {}
+  NAMPHYDS: {}
+  NAMPPC: {}
+  NAMPPVI: {}
+  NAMPRE: {}
+  NAMRAD15: {}
+  NAMRADCMEM: {}
+  NAMRCF: {}
+  NAMRCOEF: {}
+  NAMRES: {}
+  NAMRGRI: {}
+  NAMRINC: {}
+  NAMRIP0: {}
+  NAMRLX: {}
+  NAMRPP: {}
+  NAMSATS: {}
+  NAMSATSIM: {}
+  NAMSCC: {}
+  NAMSCEN: {}
+  NAMSCM: {}
+  NAMSEKF: {}
+  NAMSENS: {}
+  NAMSFXCMP: {}
+  NAMSIMPHL: {}
+  NAMSPNG: {}
+  NAMSPP: {}
+  NAMSPSDT: {}
+  NAMSTA: {}
+  NAMSTOPH: {}
+  NAMSWE: {}
+  NAMTESTVAR: {}
+  NAMTHLIM: {}
+  NAMTOPH: {}
+  NAMTRAJ: {}
+  NAMTRAJP: {}
+  NAMTRANS: {}
+  NAMTRANS0: {}
+  NAMVDF: {}
+  NAMVDOZ: {}
+  NAMVOLCANO: {}
+  NAMVRTL: {}
+  NAMVV0: {}
+  NAMVV1: {}
+  NAMVWRK: {}
+  NAMWAVELETJB: {}
+  NAMXFU: {}
+  NAMACV: {}
+  NAMAERDET: {}
+  NAMAERO: {}
+  # ---- AROME-specific (empty for conf 701) ----
+  NAM_CANAPE: {}
+  NAM_NEBN: {}
+  NAM_PARAM_ICEN: {}
+  NAM_PARAM_MFSHALLN: {}
+  NAM_TURBN: {}
+  NAPHLC: {}
+
+  NAMPAR0:
+    NOUTPUT: 1
+    NPROC: ${cfg:submission.task_exceptions.Canari.NPROC,16}
+    NPRTRW: ${cfg:submission.task_exceptions.Canari.NPROC,16}
+    NPRGPNS: ${cfg:submission.task_exceptions.Canari.NPROC,16}
+    NPRGPEW: 1
+    NPRTRV: 1
+    MP_TYPE: 2
+    MBX_SIZE: 2048000000
+  NAMPAR1:
+    LSPLIT: false
+    NSTRIN: ${cfg:submission.task_exceptions.Canari.NPROC,16}
+    NSTROUT: ${cfg:submission.task_exceptions.Canari.NPROC,16}
+    NCOMBFLEN: 1800000
+    LSLONDEM: false
+    LEQ_REGIONS: false

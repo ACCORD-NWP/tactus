@@ -1,0 +1,8 @@
+{
+  "canari_const": {
+    "path": "@TACTUS_HOME@/data/namelist_generation_input/CY49t2",
+    "files": [
+      "amv_p_and_tracking_error"
+    ]
+  }
+}

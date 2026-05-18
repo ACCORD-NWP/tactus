@@ -21,6 +21,7 @@ from tactus.suites.base import (
     EcflowSuiteTrigger,
     EcflowSuiteTriggers,
 )
+from tactus.suites.da_components import AssimilationFamily
 from tactus.suites.suite_utils import Cycles, lbc_times_generator
 from tactus.toolbox import Platform
 
@@ -267,6 +268,7 @@ class StaticDataFamily(EcflowSuiteFamily):
                 ecf_files_remotely=ecf_files_remotely,
                 limit=static_data_limit,
             )
+
 
 
 class StaticDataMemberGenerator:
@@ -1149,13 +1151,27 @@ class CycleFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
+        if config["suite_control.do_assimilation"]:
+            assimilation_family = AssimilationFamily(
+                self,
+                config,
+                task_settings,
+                input_template,
+                ecf_files,
+                trigger=initialization_family,
+                ecf_files_remotely=ecf_files_remotely,
+            )
+            forecast_trigger = assimilation_family
+        else:
+            forecast_trigger = initialization_family
+
         ForecastFamily(
             self,
             config,
             task_settings,
             input_template,
             ecf_files,
-            trigger=initialization_family,
+            trigger=forecast_trigger,
             ecf_files_remotely=ecf_files_remotely,
         )
 

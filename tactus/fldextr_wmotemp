@@ -1,0 +1,1043 @@
+  1001                 70933 351333  JAN MAYEN 
+  1004                 78916  11933  NY-ALESUND II 
+  1028                 74516  19016  BJORNOYA 
+  1152                 67250  14400  BODO 
+  1241                 63700   9599  ORLAND III 
+  1384                 60200  11100  OSLO/GARDERMOEN     
+  1400                 56500   3200  EKOFISK 
+  1415                 58866   5666  STAVANGER/SOLA 
+  1492                 59950  10716  OSLO-BLINDERN 
+  2185                 65543  22114  LULEA-KALLAX 
+  2365                 62531  17436  SUNDSVALL HARNOSAND 
+  2527                 57657  12291  GOTEBORG/LANDVETTER 
+  2591                 57650  18350  VISBY AEROLOGISKA STATION 
+  2836                 67366  26633  SODANKYLA 
+  2935                 62400  25683  JYVASKYLA 
+  2963                 60816  23500  JOKIOINEN 
+  3005                 60139 358815  LERWICK 
+  3023                 57357 352615  SOUTH UIST RANGE 
+  3026                 58220 353690  STORNOWAY AIRPORT   
+  3066                 57645 356436  KINLOSS 
+  3171                 56376 357137  LEUCHARS 
+  3238                 55019 358118  ALBEMARLE 
+  3240                 55420 358400  BOULMER             
+  3257                 54296 358466  LEEMING 
+  3322                 53550 357090  Aughton             
+  3354                 53005 358748  NOTTINGHAM, WATNALL 
+  3377                 53175 359476  WADDINGTON 
+  3414                 52794 357335  SHAWBURY 
+  3496                 52680   1680  Hemsby              
+  3502                 52139 355428  ABERPORTH 
+  3590                 52123    957  WATTISHAM 
+  3649                 51758 358421  BRIZE NORTON 
+  3743                 51201 358194  LARKHILL 
+  3774                 51080 359790  Crawley             
+  3808                 50218 354672  CAMBORNE 
+  3882                 50890    316  HERSTMONCEUX, WEST END 
+  3920                 54480 353910  HILLSBOROUGH        
+  3953                 51933 349750  VALENTIA OBSERVATORY 
+  4018                 63980 337405  KEFLAVIKURFLUGVOLLUR 
+  4202                 76533 291250  PITUFFIK (THULE AIR BASE)
+  4220                 68708 307148  AASIAAT (EGEDESMINDE) 
+  4270                 61166 314583  MITTARFIK NARSARSUAQ 
+  4320                 76769 341331  DANMARKSHAVN 
+  4339                 70484 338048  ITTOQQORTOORMIIT (SCORESBYSUND) 
+  4360                 65611 322363  TASIILAQ (AMMASSALIK) 
+  6011                 62023 353235  TORSHAVN 
+  6060                 56293   9113  FLYVESTATION KARUP 
+  6181                 55770  12530  JAEGERSBORG         
+  6235                 52926   4781  DE KOOIJ VK 
+  6260                 52098   5179  DE BILT AWS 
+  6447                 50800   4350  UCCLE               
+  6458                 50750   4766  BEAUVECHAIN 
+  6610                 46811   6942  PAYERNE 
+  6842                 47509   9261  SITTERDORF 
+  6843                 45859   8948  LIGORNETTO 
+  6845                 47434   7879  RUENENBERG MIL 
+  6849                 47233   9493  SALEZ 
+  7110                 48444 355588  BREST-GUIPAVAS 
+  7145                 48773   2009  TRAPPES 
+  7180                 48687   6221  NANCY-ESSEY 
+  7481                 45726   5077  LYON-ST EXUPERY 
+  7510                 44830 359308  BORDEAUX MERIGNAC 
+  7645                 43856   4406  NIMES-COURBESSAC 
+  7761                 41930   8792  AJACCIO 
+  8001                 43367 351580  LA CORUNA 
+  8023                 43491 356200  SANTANDER 
+  8160                 41661 358991  ZARAGOZA/AEROPUERTO 
+  8190                 41384   2118  BARCELONA SERVEI 
+  8221                 40466 356423  MADRID/BARAJAS RS 
+  8301                 39550   2620  PALMA DE MALLORCA   
+  8302                 39610   2710  MALLORCA-SON BONET 
+  8430                 38002 358830  MURCIA 
+  8495                 36150 354650  GIBRALTAR 
+  8507                 39100 331966  GRACIOSA/AERODROME 
+  8508                 38767 332914  LAJES (ACORES) 
+  8522                 32633 343100  FUNCHAL 
+  8579                 38766 350866  LISBOA/GAGO COUTINHO 
+  8594                 16741 337051  SAL 
+ 10035                 54533   9550  SCHLESWIG 
+ 10113                 53713   7152  NORDERNEY 
+ 10184                 54097  13407  GREIFSWALD 
+ 10238                 52816   9933  BERGEN 
+ 10304                 52733   7333  MEPPEN 
+ 10338                 52470   9700  HANNOVER            
+ 10393                 52216  14116  LINDENBERG 
+ 10410                 51405   6968  ESSEN-BREDENEY 
+ 10468                 51549  12066  OPPIN               
+ 10486                 51120  13680  Dresden-Wahnsdorf   
+ 10548                 50562  10377  MEININGEN 
+ 10618                 49700   7333  IDAR-OBERSTEIN 
+ 10739                 48833   9200  STUTTGART/SCHNARRENBERG 
+ 10771                 49428  11902  KUEMMERSBRUCK 
+ 10868                 48250  11550  MUENCHEN-OBERSCHLEIBSHEIM 
+ 10954                 47836  10872  ALTENSTADT 
+ 10962                 47801  11011  HOHENPEISSENBERG 
+ 11010                 48240  14191  LINZ/HOERSCHING-FLUGHAFEN 
+ 11035                 48248  16356  WIEN/HOHE WARTE 
+ 11120                 47257  11353  INNSBRUCK-FLUGHAFEN 
+ 11240                 46988  15441  GRAZ-THALERHOF-FLUGHAFEN 
+ 11520                 50008  14446  PRAHA-LIBUS 
+ 11747                 49450  17133  PROSTEJOV           
+ 11952                 49033  20316  POPRAD-GANOVCE 
+ 12120                 54753  17534  LEBA 
+ 12374                 52407  20956  LEGIONOWO 
+ 12425                 51113  16881  WROCLAW I 
+ 12843                 47433  19183  BUDAPEST/PESTSZENTLORINC 
+ 12982                 46250  20100  SZEGED 
+ 13275                 44766  20416  BEOGRAD/KOSUTNJAK 
+ 13586                 41966  21650  SKOPJE PETROVEC 
+ 14015                 46065  14512  LJUBLJANA/BEZIGRAD 
+ 14240                 45821  16033  ZAGREB/MAKSIMIR 
+ 14430                 44096  15340  ZADAR RS 
+ 15120                 46777  23571  CLUJ-NAPOCA 
+ 15420                 44500  26130  BANEASAt            
+ 15421                 44500  26212  BUCURESTI AFUMATI 
+ 15614                 42650  23383  SOFIA (OBSERV.) 
+ 16044                 46037  13188  UDINE/CAMPOFORMIDO 
+ 16080                 45461   9283  MILANO LINATE RDS 
+ 16113                 44539   7612  CUNEO-LEVALDIGI RDS 
+ 16144                 44653  11622  S. PIETRO CAPOFIUME RDS 
+ 16245                 41669  12450  PRATICA DI MARE RDS 
+ 16320                 40660  17956  BRINDISI RDS 
+ 16429                 37914  12491  TRAPANI BIRGI RDS 
+ 16560                 39243   9060  CAGLIARI ELMAS RDS 
+ 16622                 40516  22966  THESSALONIKI (AIRPORT) 
+ 16716                 37733  23733  ATHINAI AP HELLINIKON 
+ 16754                 35333  25183  HERAKLION (AIRPORT) 
+ 17030                 41283  36300  SAMSUN 
+ 17062                 40900  29150  ISTANBUL/GOZTEPE 
+ 17095                 39900  41283  ERZURUM BOLGE 
+ 17130                 39950  32883  ANKARA/CENTRAL 
+ 17220                 38433  27166  IZMIR/GUZELYALI 
+ 17240                 37750  30550  ISPARTA 
+ 17281                 37900  40200  DIYARBAKIR-BOLGE 
+ 17351                 36983  35350  ADANA/BOLGE 
+ 17607                 35140  33396  ATHALASSA 
+ 20046                 80626  58058  POLARGMO IM. E.T. KRENKELJA 
+ 20292                 77713 104291  GMO IM.E.K. FEDOROVA 
+ 20674                 73513  80406  OSTROV DIKSON 
+ 20744                 72366  52700  MALYE KARMAKULY 
+ 20891                 72000 102566  HATANGA 
+ 21432                 76000 137866  OSTROV KOTEL'NYJ 
+ 21824                 71583 128916  TIKSI 
+ 21946                 70616 147883  CHOKURDAH 
+ 21982                 70983 181350  OSTROV VRANGELJA 
+ 22113                 68983  33116  MURMANSK 
+ 22217                 67169  32354  KANDALAKSHA 
+ 22271                 67876  44174  SHOJNA 
+ 22522                 64950  34650  KEM' 
+ 22543                 64624  40511  ARHANGEL'SK 
+ 22550                 64550  40583  ARHANGEL'SK         
+ 22820                 61816  34266  PETROZAVODSK 
+ 22845                 61506  38934  KARGOPOL' 
+ 23078                 69347  88263  NORIL'SK 
+ 23205                 67625  53017  NAR'JAN-MAR 
+ 23330                 66531  66674  SALEHARD 
+ 23418                 65116  57100  PECHORA 
+ 23472                 65794  87988  TURUHANSK 
+ 23804                 61677  50784  SYKTYVKAR 
+ 23884                 61580  90030  BOR 
+ 23921                 60683  60450  IVDEL' 
+ 23933                 61027  69118  HANTY-MANSIJSK 
+ 23955                 60433  77866  ALEKSANDROVSKOE 
+ 24125                 68500 112433  OLENEK 
+ 24266                 67566 133400  VERHOJANSK 
+ 24343                 66766 123400  ZHIGANSK 
+ 24507                 64269 100216  TURA 
+ 24641                 63783 121616  VILJUJSK 
+ 24688                 63250 143150  OJMJAKON 
+ 24726                 62533 113866  MIRNVY 
+ 24908                 60336 102294  VANAVARA 
+ 24944                 60366 120416  OLEKMINSK 
+ 24959                 62016 129716  JAKUTSK 
+ 25123                 68750 161283  CHERSKIJ 
+ 25400                 65733 150900  ZYRYANKA 
+ 25428                 65233 160533  OMOLON 
+ 25563                 64733 177533  ANADYR' 
+ 25703                 62916 152416  SEJMCHAN 
+ 25913                 59550 150783  MAGADAN 
+ 25954                 60349 166000  KORF                
+ 26038                 59398  24602  TALLINN-HARKU 
+ 26063                 59950  30700  ST.PETERSBURG (VOEJKOVO) 
+ 26298                 57883  34033  BOLOGOE 
+ 26435                 56642  25128  SKRIVERI 
+ 26477                 56350  30616  VELIKIE LUKI 
+ 26629                 54883  23834  KAUNAS 
+ 26702                 54726  20558  KALININGRAD 
+ 26781                 54750  32066  SMOLENSK 
+ 26850                 53930  27630  MINSK               
+ 27037                 59316  39916  VOLOGDA             
+ 27038                 59318  39925  VOLOGDA 
+ 27199                 58566  49566  KIROV 
+ 27459                 56266  44000  NIZHNIJ NOVGOROD 
+ 27595                 55607  49294  KAZAN' 
+ 27612                 55930  37518  MOSKVA (DOLGOPRUDNYJ) 
+ 27707                 54100  35350  SUHINICHI 
+ 27730                 54633  39700  RYAZAN' 
+ 27962                 53116  45016  PENZA 
+ 27995                 52983  49433  SAMARA (BEZENCHUK) 
+ 28225                 57958  56197  PERM' 
+ 28275                 58150  68250  TOBOL'SK 
+ 28445                 56733  61066  EKATERINBURG (VERHNEE DUBROVO) 
+ 28661                 55456  65401  KURGAN 
+ 28698                 54933  73400  OMSK 
+ 28722                 54710  54815  UFA-DIOMA 
+ 28952                 53216  63616  KOSTANAY 
+ 29231                 58316  82950  KOLPASEVO 
+ 29263                 58452  92202  ENISEJSK 
+ 29282                 58383  97450  BOGUCANY 
+ 29572                 56183  92616  EMEL'JANOVO 
+ 29612                 55354  78308  BARABINSK 
+ 29634                 54970  82953  NOVOSIBIRSK 
+ 29698                 54883  99033  NIZHNEUDINSK 
+ 29839                 53500  83833  BARNAUL 
+ 29862                 53766  91316  ABAKAN 
+ 30054                 59450 112583  VITIM 
+ 30230                 57766 108066  KIRENSK 
+ 30309                 56283 101750  BRATSK 
+ 30372                 56900 118266  CHARA 
+ 30554                 54466 113583  BAGDARIN 
+ 30635                 53416 109016  UST'-BARGUZIN 
+ 30673                 53750 119733  MOGOCHA 
+ 30715                 52483 103850  ANGARSK 
+ 30758                 52083 113483  CHITA 
+ 30935                 50366 108750  KRASNYJ CHIKOJ 
+ 30965                 50400 116516  BORZYA 
+ 31004                 58616 125366  ALDAN 
+ 31088                 59366 143200  OHOTSK 
+ 31168                 56450 138150  AYAN 
+ 31300                 53741 127276  ZEJA 
+ 31369                 53150 140700  NIKOLAEVSK-NA-AMURE 
+ 31510                 50283 127483  BLAGOVESCENSK 
+ 31538                 50066 132133  SUTUR 
+ 31736                 48533 135233  HABAROVSK 
+ 31770                 49000 140300  SOVETSKAYA GAVAN' 
+ 31873                 45866 133733  DAL'NERECHENSK 
+ 31977                 43266 132050  VLADIVOSTOK (SAD GOROD) 
+ 32061                 50900 142166  ALEKSANDROVSK-SAHALINSKIJ 
+ 32098                 49216 143100  PORONAJSK 
+ 32150                 46950 142716  JUZHNO-SAHALINSK 
+ 32215                 50683 156133  SEVERO-KURIL'SK 
+ 32389                 56316 160833  KLJUCHI 
+ 32477                 54300 155916  SOBOLEVO 
+ 32540                 53083 158583  PETROPAVLOVSK-KAMCHATSKIJ 
+ 33008                 52116  23685  BREST 
+ 33041                 52401  30963  GOMEL 
+ 33317                 50166  27033  SHEPETIVKA 
+ 33345                 50400  30566  KIEV 
+ 33393                 49816  23950  L'VIV 
+ 33631                 48633  22266  UZHHOROD 
+ 33658                 48366  25900  CHERNIVTSI 
+ 33791                 48033  33216  KRYVYI RIH 
+ 33815                 47016  28983  CHISINAU 
+ 33837                 46433  30766  ODESA 
+ 33946                 44683  34133  SIMFEROPOL'         
+ 33966                 45046  34598  KRYMSKA 
+ 34009                 51766  36166  KURSK 
+ 34122                 51650  39250  VORONEZ 
+ 34172                 51556  46039  SARATOV 
+ 34247                 50416  41050  KALACH 
+ 34300                 49966  36133  KHARKIV 
+ 34560                 48783  44350  VOLGOGRAD 
+ 34731                 47250  39816  ROSTOV-NA-DONU 
+ 34858                 45916  43350  DIVNOE 
+ 34880                 46283  47983  ASTRAHAN' 
+ 35121                 51683  55100  ORENBURG 
+ 35229                 50283  57150  AKTOBE 
+ 35394                 49800  73150  KARAGANDA 
+ 35671                 47800  67716  ZHEZKAZGAN 
+ 35700                 47116  51916  ATYRAU 
+ 36003                 52300  76933  PAVLODAR 
+ 36096                 51710  94491  KYZYL 
+ 36870                 43233  76933  ALMATY 
+ 37018                 44100  39033  TUAPSE 
+ 37054                 44216  43100  MINERAL'NYE VODY 
+ 37259                 43016  47483  MAHACHKALA 
+ 37789                 40216  44501  YEREVAN AERO 
+ 37860                 40533  50000  MASHTAGA 
+ 37985                 38733  48833  LANKARAN 
+ 38341                 42850  71383  TARAZ 
+ 38353                 42850  74533  BISHKEK 
+ 38457                 41333  69300  TASHKENT 
+ 38507                 40033  52983  TURKMENBASHI 
+ 38606                 40550  70950  KOKAND 
+ 38836                 38583  68733  DUSHANBE 
+ 38880                 37966  58383  ASHGABAT 
+ 38927                 37233  67266  TERMEZ              
+ 38954                 37500  71500  KHOROG 
+ 38989                 35950  62916  TAGTABAZAR 
+ 40007                 36333  37216  ALEPPO MESELME 
+ 40080                 33416  36516  DAMASCUS INT. AIRPORT 
+ 40100                 33816  35483  BEYROUTH (AEROPORT) 
+ 40179                 32000  34816  BET DAGAN 
+ 40186                 31866  34683  ASHDOD NORTH 
+ 40265                 32366  36250  MAFRAQ 
+ 40373                 28316  46133  AL-QAISUMAH 
+ 40375                 28383  36600  TABUK 
+ 40394                 27433  41683  HAIL 
+ 40417                 26450  49816  K.F.I.A. (KING FAHAD INT. AIRPORT) DAMMAM 
+ 40430                 24550  39700  AL-MADINAH 
+ 40437                 24933  46716  KING KHALED INT. AIRPORT 
+ 40582                 29366  47983  KUWAIT INTERNATIONAL AIRPORT 
+ 40650                 33300  44400  BAGHDAD INT. AIRPORT 
+ 40690                 30516  47783  BASRAH INT. AIRPORT 
+ 40706                 38083  46283  TABRIZ 
+ 40745                 36266  59633  MASHHAD 
+ 40754                 35683  51316  TEHRAN-MEHRABAD 
+ 40766                 34350  47150  KERMANSHAH 
+ 40800                 32466  51666  ESFAHAN 
+ 40809                 32866  59200  BIRJAND 
+ 40811                 31333  48666  AHWAZ 
+ 40821                 31900  54283  YAZD 
+ 40841                 30250  56966  KERMAN 
+ 40848                 29533  52600  SHIRAZ 
+ 40856                 29466  60883  ZAHEDAN 
+ 40875                 27216  56366  BANDARABBASS 
+ 40938                 34216  62216  HERAT 
+ 40948                 34550  69216  KABUL AIRPORT 
+ 40990                 31500  65850  KANDAHAR AIRPORT 
+ 41024                 21700  39183  JEDDAH (KING ABDUL AZIZ INT. AIRPORT) 
+ 41112                 18233  42650  ABHA 
+ 41170                 25250  51566  DOHA INTERNATIONAL AIRPORT 
+ 41217                 24433  54650  ABU DHABI INTER. AIRPORT 
+ 41256                 23583  58283  SEEB, INT'L AIRPORT 
+ 41316                 17033  54083  SALALAH 
+ 41404                 15516  44183  SANA'A 
+ 41480                 12833  45033  ADEN 
+ 41529                 34033  71933  PESHAWAR 
+ 41530                 34016  71583  PESHAWAR            
+ 41594                 32049  72666  SARGODHA 
+ 41640                 31550  74333  LAHORE CITY 
+ 41661                 30266  66916  QUETTA (SHEIKH MANDA) 
+ 41672                 30783  72200  RAFIQUI 
+ 41675                 30200  71433  MULTAN 
+ 41715                 28300  68466  JACOBABAD 
+ 41756                 25066  61800  JIWANI 
+ 41780                 24900  67133  KARACHI AIRPORT 
+ 41883                 24850  89366  BOGRA 
+ 41923                 23766  90383  DHAKA 
+ 41977                 22350  91816  CHITTAGONG (AMBAGAN) 
+ 42027                 34083  74833  SRINAGAR 
+ 42101                 30333  76466  PATIALA 
+ 42182                 28583  77200  NEW DELHI/SAFDARJUNG 
+ 42314                 27483  95016  DIBRUGARH /MOHANBARI 
+ 42339                 26300  73016  JODHPUR 
+ 42348                 26816  75800  JAIPUR / SANGANER 
+ 42361                 26233  78250  GWALIOR 
+ 42369                 26750  80883  LUCKNOW/AMAUSI 
+ 42379                 26750  83366  GORAKHPUR 
+ 42397                 26666  88366  SILIGURI 
+ 42410                 26100  91583  GUWAHATI 
+ 42492                 25600  85166  PATNA 
+ 42647                 23066  72633  AHMADABAD 
+ 42667                 23283  77350  BHOPAL/BAIRAGHAR 
+ 42701                 23316  85316  M.O. RANCHI 
+ 42724                 23883  91250  AGARTALA 
+ 42809                 22650  88450  KOLKATA/DUM DUM 
+ 42867                 21100  79050  NAGPUR SONEGAON 
+ 42874                 21233  81650  PBO RAIPUR 
+ 42971                 20250  85833  BHUBANESHWAR 
+ 43003                 19116  72850  BOMBAY / SANTACRUZ 
+ 43014                 19850  75400  AURANGABAD CHIKALTHANA AERODROME 
+ 43041                 19083  82033  JAGDALPUR 
+ 43128                 17450  78466  HYDERABAD AIRPORT 
+ 43150                 17683  83300  VISHAKHAPATNAM/WALTAIR 
+ 43185                 16200  81150  MACHILIPATNAM/FRANCHPET 
+ 43192                 15483  73816  GOA/PANJIM 
+ 43279                 13000  80183  CHENNAI/MINAMBAKKAM 
+ 43285                 12950  74833  MANGALORE/PANAMBUR 
+ 43295                 12966  77583  BANGALORE 
+ 43311                 11116  72733  AMINIDIVI 
+ 43333                 11666  92716  PORT BLAIR 
+ 43346                 10916  79833  KARAIKAL 
+ 43369                  8300  73150  MINICOY 
+ 43371                  8483  76950  THIRUVANANTHAPURAM 
+ 43466                  6900  79866  COLOMBO 
+ 43599                  -693  73155  GAN 
+ 44212                 49800  92083  ULAANGOM 
+ 44231                 49633 100166  MUREN 
+ 44259                 48083 114550  CHOIBALSAN 
+ 44277                 46400  96250  ALTAI 
+ 44288                 46266 102783  ARVAIHEER 
+ 44292                 47916 106866  ULAANBAATAR 
+ 44373                 43583 104416  DALANZADGAD 
+ 45004                 22311 114172  KOWLOON 
+ 47041                 39933 127550  HAMHEUNG 
+ 47090                 38250 128564  SOKCHO 
+ 47102                 37966 124630  BAENGNYEONGDO 
+ 47122                 37083 127033  OSAN AB 
+ 47138                 36032 129379  POHANG 
+ 47158                 35116 126800  GWANGJU AB 
+ 47169                 34687 125451  HEUKSANDO 
+ 47185                 33293 126162  GOSAN 
+ 47401                 45416 141683  WAKKANAI 
+ 47412                 43066 141333  SAPPORO 
+ 47418                 42953 144437  KUSHIRO 
+ 47420                 43333 145583  NEMURO              
+ 47580                 40700 141366  MISAWA AB 
+ 47582                 39716 140098  AKITA 
+ 47590                 38266 140899  SENDAI              
+ 47600                 37400 136900  WAJIMA 
+ 47646                 36050 140133  TATENO 
+ 47678                 33116 139783  HACHIJOJIMA 
+ 47681                 34750 137703  HAMAMATSU AB 
+ 47741                 35450 133066  MATSUE 
+ 47744                 35433 133333  YONAGO              
+ 47778                 33450 135757  SHIONOMISAKI 
+ 47807                 33583 130383  FUKUOKA 
+ 47827                 31550 130550  KAGOSHIMA 
+ 47881                 34132 134609  TOKUSHIMA AB 
+ 47909                 28394 129552  NAZE/FUNCHATOGE 
+ 47918                 24333 124166  ISHIGAKIJIMA 
+ 47936                 26200 127683  NAHA                
+ 47945                 25833 131233  MINAMIDAITOJIMA 
+ 47971                 27100 142183  CHICHIJIMA 
+ 47981                 24783 141316  IWOTO 
+ 47991                 24283 153983  MINAMITORISHIMA 
+ 48327                 18770  98968  CHIANG MAI 
+ 48407                 15250 104866  UBON RATCHATHANI 
+ 48453                 13666 100606  BANGNA AGROMET 
+ 48455                 13733 100566  BANGKOK METROPOLIS  
+ 48480                 12609 102103  CHANTHA BURI 
+ 48551                  9134  99151  SURAT THANI 
+ 48565                  8145  98314  PHUKET AIRPORT 
+ 48568                  7181 100607  SONGKHLA 
+ 48601                  5300 100266  PENANG/BAYAN LEPAS 
+ 48615                  6166 102283  KOTA BHARU 
+ 48650                  2716 101700  KUALA LUMPUR INTERNATIONAL AIRPORT (KLIA) 
+ 48657                  3783 103216  KUANTAN 
+ 48698                  1366 103983  SINGAPORE/CHANGI AIRPORT 
+ 48820                 21033 105800  HA NOI 
+ 48855                 16066 108350  DA NANG 
+ 48900                 10816 106666  TAN SON HOA 
+ 50527                 49250 119700  HAILAR 
+ 50557                 49166 125233  NENJIANG 
+ 50774                 47716 128900  YICHUN 
+ 50953                 45750 126766  HARBIN 
+ 51076                 47733  88083  ALTAY 
+ 51431                 43950  81333  YINING 
+ 51463                 43783  87616  WU LU MU QI 
+ 51644                 41716  82950  KUQA 
+ 51709                 39466  75983  KASHI 
+ 51777                 39033  88166  RUOQIANG 
+ 51828                 37133  79933  HOTAN 
+ 51839                 37066  82716  MINFENG 
+ 52203                 42816  93516  HAMI 
+ 52267                 41950 101066  EJIN QI 
+ 52323                 41800  97033  MAZONG SHAN 
+ 52418                 40150  94683  DUNHUANG 
+ 52533                 39766  98483  JIUQUAN 
+ 52681                 38633 103083  MINQIN 
+ 52818                 36416  94900  GOLMUD 
+ 52836                 36300  98100  DOULAN 
+ 52866                 36716 101750  XINING 
+ 52983                 35866 104150  YU ZHONG 
+ 53068                 43650 112000  ERENHOT 
+ 53463                 40816 111683  HOHHOT 
+ 53513                 40733 107366  LINHE 
+ 53614                 38466 106200  YINCHUAN 
+ 53772                 37783 112550  TAIYUAN 
+ 53845                 36600 109500  YAN AN 
+ 53915                 35550 106666  PINGLIANG 
+ 54102                 43950 116116  XILIN HOT 
+ 54135                 43600 122266  TONGLIAO 
+ 54161                 43900 125216  CHANGCHUN 
+ 54218                 42300 118833  CHIFENG 
+ 54292                 42866 129500  YANJI 
+ 54342                 41733 123516  SHENYANG 
+ 54374                 41800 126883  LINJIANG 
+ 54511                 39933 116283  BEIJING 
+ 54662                 38900 121633  DALIAN 
+ 54727                 36700 117550  ZHANGQIU 
+ 54857                 36066 120333  QINGDAO 
+ 55299                 31483  92066  NAGQU 
+ 55591                 29666  91133  LHASA 
+ 56029                 33000  96950  YUSHU 
+ 56080                 35000 102900  HEZUO 
+ 56137                 31150  97166  QAMDO 
+ 56146                 31616 100000  GARZE 
+ 56187                 30700 103833  WENJIANG 
+ 56294                 30666 104016  CHENGDU             
+ 56571                 27900 102266  XICHANG 
+ 56691                 26866 104283  WEINING 
+ 56739                 25116  98483  TENGCHONG 
+ 56778                 25016 102683  KUNMING 
+ 56964                 22766 100983  SIMAO 
+ 56985                 23383 103383  MENGZI 
+ 57036                 34300 108933  XI'AN 
+ 57083                 34716 113650  ZHENGZHOU 
+ 57127                 33066 107033  HANZHONG 
+ 57131                 34433 108966  JINGHE 
+ 57178                 33033 112583  NANYANG 
+ 57447                 30283 109466  ENSHI 
+ 57461                 30700 111300  YICHANG 
+ 57494                 30600 114050  WUHAN 
+ 57516                 29600 106400  CHONGQING 
+ 57679                 28200 113083  CHANGSHA 
+ 57749                 27566 110000  HUAIHUA 
+ 57816                 26483 106650  GUIYANG 
+ 57957                 25333 110300  GUILIN 
+ 57972                 25800 113033  CHENZHOU 
+ 57993                 25866 115000  GANZHOU 
+ 58027                 34283 117150  XUZHOU 
+ 58150                 33766 120250  SHEYANG 
+ 58203                 32866 115733  FUYANG 
+ 58238                 31933 118900  NANJING 
+ 58362                 31416 121450  SHANGHAI (BAOSHAN) 
+ 58424                 30533 117050  ANQING 
+ 58457                 30233 120166  HANGZHOU 
+ 58606                 28600 115916  NANCHANG 
+ 58633                 28966 118866  QU XIAN 
+ 58665                 28616 121416  HONGJIA 
+ 58725                 27333 117466  SHAOWU 
+ 58847                 26083 119283  FUZHOU 
+ 58968                 25033 121516  TAIBEI 
+ 59134                 24483 118083  XIAMEN 
+ 59211                 23900 106600  BAISE 
+ 59265                 23483 111300  WUZHOU 
+ 59280                 23700 113083  QINGYUAN 
+ 59316                 23350 116666  SHANTOU 
+ 59431                 22633 108216  NANNING 
+ 59758                 20000 110250  HAIKOU 
+ 59981                 16833 112333  XISHA DAO 
+ 60018                 28318 343617  TENERIFE-GUIMAR 
+ 60096                 23716 344066  DAKHLA 
+ 60155                 33566 352333  CASABLANCA 
+ 60191                 32366 353600  BENI-MELLAL 
+ 60252                 30328 350600  AGADIR AL MASSIRA 
+ 60360                 36833   7816  ANNABA 
+ 60390                 36683   3216  DAR-EL-BEIDA 
+ 60490                 35633 359400  ORAN-SENIA 
+ 60571                 31500 357750  BECHAR 
+ 60630                 27233   2500  IN-SALAH 
+ 60656                 27700 351833  TINDOUF 
+ 60680                 22800   5433  TAMANRASSET 
+ 60715                 36833  10233  TUNIS-CARTHAGE 
+ 60760                 33916   8166  TOZEUR 
+ 61024                 16966   7983  AGADEZ 
+ 61052                 13483   2166  NIAMEY-AERO 
+ 61202                 20200    983  TESSALIT 
+ 61223                 16716 357000  TOMBOUCTOU 
+ 61291                 12533 352050  BAMAKO/SENOU 
+ 61415                 20933 342966  NOUADHIBOU 
+ 61641                 14730 342500  DAKAR/YOFF 
+ 61687                 13769 346320  TAMBACOUNDA 
+ 61831                  9566 346383  CONAKRY 
+ 61901                -15941 354332  ST. HELENA IS. 
+ 61902                 -7970 345594  WIDE AWAKE FIELD (ASCENSION IS.) 
+ 61931                   383   6716  S. TOME 
+ 61967                 -7300  72400  DIEGO GARCIA 
+ 61980                -20892  55528  SAINT-DENIS/GILLOT (REUNION) 
+ 61988                -19683  63416  RODRIGUES (POINT CANON) 
+ 61995                -20297  57494  VACOAS (MAURITIUS) 
+ 61996                -37795  77569  MARTIN DE VIVIES (ILE AMSTERDAM) 
+ 61998                -49352  70243  PORT-AUX-FRANCAIS (ILES KERGUELEN) 
+ 62010                 32740  13081  SWANI 
+ 62053                 32100  20266  BENINA 
+ 62103                 30133   9500  GHADAMES 
+ 62124                 27016  14450  SEBHA 
+ 62306                 31325  27221  MERSA MATRUH 
+ 62337                 31073  33835  EL ARISH 
+ 62378                 29862  31349  HELWAN 
+ 62387                 28083  30733  MINYA               
+ 62403                 26200  32746  SOUTH OF VALLEY UNIVERSITY 
+ 62414                 23964  32820  ASSWAN 
+ 62423                 27058  27989  FARAFRA 
+ 62641                 19583  37216  PORT SUDAN 
+ 62650                 19166  30483  DONGOLA 
+ 62721                 15600  32549  KHARTOUM 
+ 62760                 13616  25333  EL FASHER 
+ 62840                  9550  31650  MALKAL 
+ 63021                 15283  38916  ASMARA 
+ 63450                  9033  38750  ADDIS ABABA-BOLE 
+ 63741                 -1303  36759  DAGORETTI CORNER 
+ 63801                 -4883  29633  KIGOMA 
+ 63832                 -5083  32833  TABORA AIRPORT 
+ 63894                 -6866  39200  DAR ES SALAAM INT 
+ 63971                -10266  40183  MTWARA 
+ 63985                 -4683  55516  SEYCHELLES INTER. AIRPORT (RAWINSONDE STATION) 
+ 64400                 -4816  11900  POINTE-NOIRE 
+ 64458                  1616  16050  OUESSO 
+ 64650                  4400  18516  BANGUI 
+ 64750                  9150  18383  SARH 
+ 64910                  4016   9700  DOUALA R.S. 
+ 65046                 12050   8200  KANO 
+ 65082                 11850  13083  MAIDUGURI 
+ 65125                  9250   7000  ABUJA 
+ 65167                  9233  12466  YOLA 
+ 65202                  6500   3383  LAGOS/OSHODI 
+ 65257                  6466   7550  ENUGU 
+ 65418                  9550 359150  TAMALE 
+ 65472                  5600 359833  ACCRA 
+ 65503                 12350 358483  OUAGADOUGOU 
+ 65548                  7383 352483  MAN 
+ 65578                  5250 356066  ABIDJAN 
+ 66160                 -8850  13233  LUANDA 
+ 67083                -18800  47483  ANTANANARIVO/IVATO 
+ 67197                -25033  46950  TAOLAGNARO 
+ 67237                -15100  39283  NAMPULA 
+ 67341                -25916  32566  MAPUTO/MAVALANE 
+ 67586                -13783  33766  LILONGWE INT'L AIRPORT 
+ 67666                -15416  28466  LUSAKA CITY AIRPORT 
+ 67774                -17833  31016  HARARE (BELVEDERE) 
+ 67843                -18100  25850  VICTORIA FALLS 
+ 67964                -20150  28616  BULAWAYO (GOETZ OBSY.) 
+ 67977                -21016  31583  BUFFALO RANGE 
+ 68110                -22566  17100  WINDHOEK 
+ 68240                -24550  25916  SERETSE KHAMA INTERNATIONAL AIRPORT 
+ 68263                -25910  28211  PRETORIA (IRENE) 
+ 68442                -29100  26300  BLOEMFONTEIN AIRPORT 
+ 68538                -30674  23999  DE AAR 
+ 68592                -29601  31130  KING SHAKA INT'L AIRPORT 
+ 68816                -33970  18600  CAPE TOWN INTNL. AIRPORT 
+ 68842                -33984  25610  PORT ELIZABETH 
+ 68906                -40350 350120  GOUGH ISLAND 
+ 68994                -46883  37866  MARION ISLAND 
+ 70026                 71288 203216  BARROW/W. POST W. ROGERS 
+ 70133                 66886 197386  KOTZEBUE, RALPH WIEN 
+ 70200                 64511 194563  NOME, AK 
+ 70219                 60777 198156  BETHEL/BETHEL AIRPORT, AK 
+ 70231                 62958 204402  MCGRATH, AK 
+ 70261                 64816 212123  FAIRBANKS/INT., AK 
+ 70266                 63966 214300  FORT GREELY, AK 
+ 70270                 61266 210350  FT. RICHARDSON/BRYANT AHP, AK 
+ 70273                 61156 210015  ANCHORAGE/INT., AK 
+ 70308                 57150 189783  ST. PAUL ISLANDS, AK 
+ 70316                 55201 197283  COLD BAY, AK 
+ 70326                 58681 203348  KING SALMON, AK 
+ 70350                 57746 207506  KODIAK, AK 
+ 70361                 59516 220333  YAKUTAT, AK 
+ 70398                 55038 228422  ANNETTE ISLAND, AK 
+ 70414                 52716 174100  SHEMYA AFB 
+ 71043                 65283 233250  NORMAN WELLS UA, NWT 
+ 71081                 68766 278783  HALL BEACH UA, NU 
+ 71082                 82500 297666  ALERT UA, NU 
+ 71086                 61666 242750  FT. PROVIDENCE, NWT 
+ 71109                 50684 232625  PORT HARDY UA, BC 
+ 71119                 53547 245891  EDMONTON STONY PLAIN, ALTA 
+ 71203                 49940 240599  KELOWNA UA, BC 
+ 71600                 43932 299990  SABLE ISLAND, NS 
+ 71603                 43866 293900  YARMOUTH UA, NS 
+ 71625                 45950 282683  PETAWAWA A, ONT 
+ 71701                 45833 293566  GAGETOWN A, NB 
+ 71716                 46900 288500  VALCARTIER A, QUE 
+ 71722                 46301 283993  MANIWAKI UA, QUE 
+ 71801                 47616 307250  ST.JOHN'S UA        
+ 71802                 47516 307216  ST JOHN'S WEST UA, NFLD 
+ 71811                 50216 293750  SEPT-ILES UA, QUE 
+ 71815                 48566 301433  STEPHENVILLE UA, NFLD 
+ 71816                 53300 299633  GOOSE UA, NFLD 
+ 71823                 53757 286320  LA GRANDE IV UA, QUE 
+ 71836                 51266 279350  MOOSONEE UA, ONT 
+ 71845                 51450 269800  PICKLE LAKE UA, ONT 
+ 71853                 49782 260356  SHILO, MAN 
+ 71867                 53966 258900  THE PAS UA, MAN 
+ 71906                 58116 291583  KUUJJUAQ, UA, QUE 
+ 71907                 58466 281916  INUKJUAK UA, QUE 
+ 71908                 53900 237210  PRINCE GEORGE UA, BC 
+ 71909                 63750 291450  IQALUIT UA, NU 
+ 71913                 58733 265933  CHURCHILL A UA, MAN 
+ 71915                 64200 276633  CORAL HARBOUR UA, NU 
+ 71917                 79983 274066  EUREKA UA, NU 
+ 71924                 74704 265031  RESOLUTE UA, NU 
+ 71925                 69133 254933  CAMBRIDGE BAY UA, NU 
+ 71926                 64316 264000  BAKER LAKE UA, NU 
+ 71934                 60026 248070  FORT SMITH UA, NWT 
+ 71945                 58833 237400  FORT NELSON UA, BC 
+ 71957                 68316 226483  INUVIK UA, NWT 
+ 71964                 60733 224925  WHITEHORSE UA, YT 
+ 72201                 24552 278242  KEY WEST/INT., FL 
+ 72202                 25754 279616  MIAMI, FL 
+ 72206                 30483 278298  JACKSONVILLE/INTNL.,  FL. 
+ 72208                 32894 279972  CHARLESTON/MUN., SC. 
+ 72209                 31883 278433  FT. STEWART, GA 
+ 72210                 27705 277599  TAMPA BAY AREA, FL. 
+ 72214                 30446 275700  TALLAHASSEE/MUN.,  FL. 
+ 72215                 33526 275432  PEACHTREE CITY, GA. 
+ 72221                 30483 273483  VALPARAISO/EGLIN AFB, FL. 
+ 72224                 29683 274633  CAPE SAN BLAS, FL. 
+ 72225                 32333 275166  FORT BENNING, GA (ARMY) 
+ 72230                 33178 273217  BIRMINGHAM, AL 
+ 72233                 30336 270175  SLIDELL/MUN. LA 
+ 72235                 32318 269920  JACKSON/ALLEN C. THOMPSON FIELD, MS. 
+ 72239                 31033 266966  FORT POLK, LA. (ARMY) 
+ 72240                 30125 266783  LAKE CHARLES/MUN.,  LA. 
+ 72248                 32451 266158  SHREVEPORT/REG., LA. 
+ 72249                 32835 262701  FORT WORTH, TX. 
+ 72250                 25916 262580  BROWNSVILLE/INT., TX 
+ 72251                 27778 262494  CORPUS CHRISTI/INT.,  TX. 
+ 72257                 31100 262666  FORT HOOD, TX. (ARMY) 
+ 72261                 29374 259081  DEL RIO/INT., TX. 
+ 72265                 31942 257810  MIDLAND/MIDLAND REG. AIR TERM., TX. 
+ 72269                 32383 253516  WHITE SANDS, NM. 
+ 72274                 32227 249044  TUCSON/INT., AZ. 
+ 72281                 32816 244316  EL CENTRO NAF, CA. 
+ 72291                 33250 240550  SAN NICOLAS IS./NF,  CA. 
+ 72293                 32833 242883  SAN DIEGO/MIRAMAR,  NAS, CA. 
+ 72303                 35166 280966  POPE AFB, NC. 
+ 72305                 34776 283123  NEWPORT, NC. 
+ 72317                 36098 280057  GREENSBORO/G.-HIGH PT., NC. 
+ 72318                 37203 279585  BLACKSBURG, VA. 
+ 72327                 36247 273436  NASHVILLE/OLD HICKORY, TN. 
+ 72340                 34835 267740  LITTLE ROCK/ADAMS FLD,  AR. 
+ 72355                 34600 261600  FORT SILL, OK. (ARMY) 
+ 72357                 35180 262562  NORMAN/MAX WESTHEIMER A, OK. 
+ 72363                 35233 258290  AMARILLO/INTL., TX. 
+ 72364                 31872 253301  SANTA TERESA, NM. 
+ 72365                 35037 253378  ALBUQUERQUE/INT., NM. 
+ 72376                 35230 248178  FLAGSTAFF, AZ 
+ 72381                 34916 242100  EDWARDS AFB, CA. 
+ 72387                 36616 243983  MERCURY/DESERT ROCK,  NV. 
+ 72393                 34750 239433  VANDENBERG AFB, CA. 
+ 72402                 37933 284516  WALLOPS ISLAND, VA. 
+ 72403                 38976 282513  STERLING, VA. 
+ 72424                 37900 274033  FT.KNOX, KY. (ARMY) 
+ 72426                 39421 276178  WILMINGTON, OH. 
+ 72440                 37234 266598  SPRINGFIELD/MUN., MO. 
+ 72451                 37761 260031  DODGE CITY/MUN., KS. 
+ 72455                 39100 263233  FORT RILEY, KS. (ARMY) 
+ 72456                 39072 264369  TOPEKA/MUN., KS. 
+ 72469                 39767 255130  DENVER/STAPLETON INT., CO. 
+ 72476                 39120 251475  GRAND JUNCTION/WALKER FIELD, CO. 
+ 72489                 39568 240203  RENO, NV. 
+ 72493                 37744 237776  OAKLAND/METROP. OAKLAND INT., CA. 
+ 72501                 40865 287135  UPTON, NY. 
+ 72518                 42692 286167  ALBANY, NY. 
+ 72520                 40531 279782  PITTSBURGH, PA. 
+ 72528                 42941 281281  BUFFALO/GREATER BUFFALO INT., NY. 
+ 72558                 41320 263633  VALLEY, NE. 
+ 72562                 41132 259300  NORTH PLATTE/LEE BIRD, NE. 
+ 72572                 40772 248044  SALT LAKE CITY/INTNL UT. 
+ 72582                 40860 244257  ELKO, NV. 
+ 72597                 42376 237117  MEDFORD/MEDFORD-JACKSON COUNTY, OR. 
+ 72632                 42697 276528  WHITE LAKE, MI. 
+ 72634                 44907 275281  GAYLORD, MI. 
+ 72645                 44498 271888  GREEN BAY/A.-STRAUBEL, WI. 
+ 72649                 44849 266435  CHANHASSEN, MN. 
+ 72659                 45455 261586  ABERDEEN/REG., SD. 
+ 72662                 44072 256789  RAPID CITY WFO, SD. 
+ 72672                 43065 251522  RIVERTON, WY. 
+ 72681                 43567 243788  BOISE/MUN., ID. 
+ 72694                 44909 236991  SALEM/MCNARY, OR. 
+ 72712                 46868 291986  CARIBOU/MUN., ME. 
+ 72747                 48564 266602  INT.FALLS/FALLS INT. MN. 
+ 72764                 46771 259240  BISMARCK/MUN., ND. 
+ 72768                 48206 253374  GLASGOW/INT., MT. 
+ 72776                 47461 248615  GREAT FALLS, MT. 
+ 72786                 47680 242373  SPOKANE, WA. 
+ 72797                 47933 235439  QUILLAYUTE, WA. 
+ 74001                 34600 273366  REDSTONE ARSENAL, AL. 
+ 74002                 39500 283833  ABERDEEN PROVING GROUNDS, MD. 
+ 74003                 40166 247066  DUGWAY PROVING GROUNDS, UT. 
+ 74004                 32500 246000  YUMA PROVING GROUNDS AZ. 
+ 74230                 46433 254133  MILES CITY, MT 
+ 74341                 44666 264550  WOOD LAKE, MN. 
+ 74357                 43216 269466  BLUE RIVER, WI. 
+ 74389                 43892 289745  GRAY, ME. 
+ 74420                 40300 250016  ROOSEVELT, UT 
+ 74421                 40500 252483  CRAIG, CO 
+ 74431                 41900 253816  MEDICINE BOW, WY. 
+ 74433                 40083 259350  MCCOOK, NE. 
+ 74437                 42900 258300  MERRIMAN, NE. 
+ 74440                 40100 262666  FAIRBURY, NE. 
+ 74445                 42200 262200  NELIGH, NE. 
+ 74449                 41900 266300  SLATER, IA. 
+ 74455                 41611 269418  QUAD CITY, IA. 
+ 74466                 40816 272950  WOLCOTT, IN. 
+ 74468                 38833 274583  JEFFERSON PROVING GROUND MADISON, IN. 
+ 74494                 41656 290041  CHATHAM, MA. 
+ 74500                 39000 238666  SHERIDAN, CA 
+ 74501                 38750 239483  FRESHPOND, CA 
+ 74504                 37500 237500  PILAR POINT AFS, CA. 
+ 74521                 37200 252183  DURANGO, CO 
+ 74530                 37766 257816  GRANADA, CO. 
+ 74533                 40183 255283  PLATTEVILLE, CO. 
+ 74541                 37650 260916  HAVILAND, KS. 
+ 74542                 37366 264366  NEODESHA, KS. 
+ 74546                 38316 262700  HILLSBORO, KS. 
+ 74550                 37516 267300  CONWAY, MO. 
+ 74551                 39583 265816  LATHROP, MO. 
+ 74556                 39650 269516  WINCHESTER, IL. 
+ 74560                 40151 270661  LINCOLN, IL. 
+ 74604                 34783 239466  VANDENBERG AFB, CA. 
+ 74606                 34650 239433  SOUTH VANDENBERG AFB CA. 
+ 74611                 35283 243383  BICYCLE LAKE AAF, CA 
+ 74612                 35683 242316  CHINA LAKE, NAF, CA. 
+ 74629                 32400 253666  WHITE SANDS, NM. 
+ 74630                 33816 253333  STALLION AAF, NM 
+ 74631                 33166 253516  WHITE SANDS MISSILE RANGE SITE NO.32, NM 
+ 74635                 36833 252100  AZTEC, NM. 
+ 74640                 36066 260783  VICI, OK. 
+ 74647                 36683 262533  LAMONT, OK. 
+ 74648                 35800 264216  HASKELL, OK. 
+ 74649                 34983 262483  PURCELL, OK. 
+ 74662                 36883 270033  BLOOMFIELD, MO. 
+ 74702                 36333 240050  LEMOORE, CA. (NAS) 
+ 74718                 33216 244133  SALTON SEA, CA. (AFS) 
+ 74731                 35083 256383  TUCUMCARI, NM. 
+ 74733                 33900 253600  NORTHRUP LANDING STRIP, NM 
+ 74734                 32633 253600  WHITE SANDS MISSILE RANGE SITE NO.39 
+ 74735                 33016 259016  JAYTON, TX. 
+ 74750                 31783 264283  PALESTINE, TX. 
+ 74752                 34116 265716  DEQUEEN, AR. 
+ 74753                 31900 267216  WINNFIELD, LA. 
+ 74755                 31133 267433  CLAIBORNE RANGE, LA. (AFS) 
+ 74769                 34083 271133  OKOLONA, MS. 
+ 74780                 31900 278366  FORT STEWART RESERVATION, GA 
+ 74794                 28466 279450  CAPE KENNEDY, FL. 
+ 74796                 27650 278666  AVON PARK GUNNERY RANGE, FL. 
+ 76225                 28666 253966  CHIHUAHUA, CHIH. 
+ 76394                 25866 259766  AEROP.INTERNACIONAL MONTERREY, N.L. 
+ 76405                 24116 249683  LA PAZ, BCS 
+ 76458                 23216 253600  COLONIA JUAN CARRASCO MAZATLAN, SIN. 
+ 76595                 21016 273150  CANCUN 
+ 76612                 20700 256616  GUADALAJARA, JAL. 
+ 76644                 20950 270350  AEROP.INTERNACIONAL MERIDA, YUC 
+ 76654                 19066 255666  MANZANILLO, COL. 
+ 76679                 19433 260866  AEROP. INTERNACIONAL MEXICO, D.F. 
+ 76692                 19150 263866  HACIENDA YLANG YLANG VERACRUZ, VER. 
+ 76723                 18716 249050  ISLA SOCORRO, COL. 
+ 76743                 17983 267066  VILLAHERMOSA, TAB. 
+ 76805                 16750 260250  ACAPULCO, GRO. 
+ 78016                 32366 295333  BERMUDA INTERNATIONAL AIRPORT 
+ 78073                 25050 282533  NASSAU AIRPORT NEW PROVIDENCE 
+ 78118                 21450 288850  TURKS ISLAND 
+ 78367                 19900 284866  GUANTANAMO, ORIENTE 
+ 78384                 19283 278650  OWEN ROBERTS AIRPORT GRAND CAYMAN 
+ 78397                 17933 283216  KINGSTON/NORMAN MANLEY 
+ 78486                 18433 290116  SANTO DOMINGO 
+ 78526                 18431 294008  SAN JUAN/INT.,  PUERTO RICO 
+ 78583                 17533 271700  BELIZE/PHILLIP GOLDSTON INTL. AIRPORT 
+ 78641                 14583 269483  GUATEMALA (AEROPUERTO LA AURORA) 
+ 78720                 14050 272783  TEGUCIGALPA         
+ 78721                 14366 272383  SOTO CANO AB 
+ 78730                 14066 276366  PUERTO CABEZAS 
+ 78762                  9983 275816  JUAN SANTAMARIA INT. AIRPORT 
+ 78807                  8966 280433  COROZAL OESTE 
+ 78861                 17116 298216  COOLIDGE FIELD,  ANTIGUA (AUX.AFB)
+ 78866                 18033 296883  JULIANA AIRPORT,  ST. MAARTEN 
+ 78897                 16263 298483  LE RAIZET AERO 
+ 78954                 13066 300516  GRANTLEY ADAMS 
+ 78970                 10616 298650  PIARCO INT. AIRPORT,  TRINIDAD 
+ 78988                 12200 291033  HATO AIRPORT, CURACAO 
+ 80001                 12583 278283  SAN ANDRES (ISLA)/SESQUICENTENARIO 
+ 80035                 11533 287066  RIOHACHA/ALMIRANTE PADILLA 
+ 80222                  4700 285850  BOGOTA/ELDORADO 
+ 80241                  4550 289083  LAS GAVIOTAS 
+ 80398                 -4166 290050  LETICIA/VASQUEZ COBO 
+ 80413                 10250 292350  MARACAY - B.A. SUCRE 
+ 80422                 10666 296750  CARUPANO, SUCRE 
+ 80444                  8150 296450  CIUDAD BOLIVAR 
+ 80447                  7850 287550  SAN ANTONIO DEL TACHIRA 
+ 80450                  7900 292583  SAN FERNANDO DE APURE 
+ 80462                  4600 298883  SANTA ELENA DE UAIREN 
+ 80476                 10516 288350  LA CANADA 
+ 81405                  4822 307634  ROCHAMBEAU 
+ 82022                  2833 299300  BOA VISTA (AERO) 
+ 82026                  2223 304052  TIRIOS 
+ 82099                    50 308933  MACAPA (AERO) 
+ 82107                  -116 293033  SAO GABRIEL DA CACHOEIRA (AERO) 
+ 82193                 -1383 311516  BELEM (AERO) 
+ 82244                 -2433 305283  SANTAREM (AERO) 
+ 82281                 -2600 315766  SAO LUIZ (AERO) 
+ 82332                 -3150 300016  MANAUS (AERO) 
+ 82397                 -3766 321400  FORTALEZA 
+ 82400                 -3850 327583  FERNANDO DE NORONHA 
+ 82411                 -4250 290066  TABATINGA (AERO) 
+ 82532                 -5816 298716  MANICORE (AERO) 
+ 82599                 -5916 324750  NATAL (AERO) 
+ 82678                 -6766 316983  FLORIANO 
+ 82705                 -7583 287233  CRUZEIRO DO SUL (AERO) 
+ 82765                 -7333 312533  CAROLINA 
+ 82824                 -8766 296083  PORTO VELHO (AERO) 
+ 82900                 -8050 325083  RECIFE 
+ 82917                -10000 292200  RIO BRANCO (AERO) 
+ 82965                 -9866 303900  ALTA FLORESTA (AERO) 
+ 82983                 -9383 319516  PETROLINA 
+ 83208                -12700 299900  VILHENA (AERO) 
+ 83229                -13016 321483  SALVADOR 
+ 83288                -13266 316583  BOM JESUS DA LAPA 
+ 83362                -15650 303900  CUIABA (AERO) 
+ 83378                -15866 312066  BRASILIA (AERO) 
+ 83498                -17733 320750  CARAVELAS 
+ 83525                -18883 311783  UBERLANDIA (AERO) 
+ 83554                -19000 302333  CORUMBA (AERO) 
+ 83566                -19616 316033  CONFINS (AERO) 
+ 83612                -20466 305333  CAMPO GRANDE (AERO) 
+ 83649                -20266 319716  VITORIA (AERO) 
+ 83650                -20500 330683  TRINDADE (ILHA) 
+ 83746                -22816 316750  GALEAO 
+ 83768                -23333 308866  LONDRINA (AERO) 
+ 83779                -23500 313366  MARTE (AERO) 
+ 83827                -25516 305416  FOZ DO IGUACU (AERO) 
+ 83840                -25516 310833  CURITIBA (AERO) 
+ 83899                -27666 311450  FLORIANOPOLIS (AERO) 
+ 83928                -29783 302966  URUGUAIANA (AERO) 
+ 83937                -29716 306300  SANTA MARIA (AERO) 
+ 83971                -30000 308816  PORTO ALEGRE (AERO) 
+ 84008                  -900 270400  SAN CRISTOBAL RADIOSONDA (GALAPAGOS) 
+ 84378                 -3733 286750  MORONA 
+ 84416                 -5183 279400  PIURA GRUP7 
+ 84628                -12016 282883  LIMA/CALLAO 
+ 84629                -12150 283000  LAS PALMAS 
+ 84659                -12633 290766  PUERTO MALDONADO BAMAL 
+ 85201                -16516 291816  LA PAZ/ALTO 
+ 85442                -23450 289559  ANTOFAGASTA 
+ 85469                -27160 250572  ISLA DE PASCUA 
+ 85586                -33654 288385  SANTO DOMINGO 
+ 85799                -41434 286902  PUERTO MONTT 
+ 85934                -53005 289161  PUNTA ARENAS 
+ 87047                -24850 294516  SALTA AERO 
+ 87155                -27450 300950  RESISTENCIA AERO 
+ 87344                -31316 295783  CORDOBA AERO 
+ 87418                -32833 291216  MENDOZA AERO 
+ 87576                -34816 301466  EZEIZA AERO 
+ 87623                -36566 295733  SANTA ROSA AERO 
+ 87715                -38950 291866  NEUQUEN AERO 
+ 87860                -45783 292500  COMODORO RIVADAVIA AERO 
+ 88889                -51820 301551  MOUNT PLEASANT AIRPORT 
+ 89002                -70666 351750  NEUMAYER 
+ 89022                -75583 333300  HALLEY 
+ 89055                -64233 303283  BASE MARAMBIO (CENTRO MET. ANTARTICO) 
+ 89062                -67566 291866  ROTHERA 
+ 89512                -70767  11831  NOVOLAZAREVSKAJA 
+ 89532                -69005  39581  SYOWA 
+ 89564                -67601  62875  MAWSON 
+ 89571                -68574  77967  DAVIS 
+ 89592                -66551  93014  MIRNYJ 
+ 89611                -66282 110523  CASEY 
+ 89625                -75101 123411  CONCORDIA 
+ 89642                -66663 140001  DUMONT D'URVILLE 
+ 89662                -74695 164092  MARIO ZUCHELLI STATION (BAIA TERRA NOVA) 
+ 89664                -77850 166666  MCMURDO 
+ 91162                 22066 200216  BARKING SANDS (BONHAM AUX.LDNG.FLD), KAUAI HAWAII 
+ 91165                 21993 200653  LIHUE, KAUAI, HAWAII 
+ 91212                 13476 144794  WEATHER FORECAST OFFICE, GUAM, MARIANA IS. 
+ 91285                 19718 204941  HILO HI, HAWAII 
+ 91334                  7453 151842  WEATHER SERVICE OFFICE, CHUUK, ECI 
+ 91348                  6961 158206  WEATHER SERVICE OFFICE, POHNPEI, CAROLINE IS. 
+ 91366                  8733 167733  KWAJALEIN/BUCHOLZ AAF, MARSHALL IS. 
+ 91376                  7086 171390  MAJURO/MARSHALL IS. INTNL. 
+ 91408                  7339 134488  WEATHER SERVICE OFFICE, KOROR, PALAU WCI. 
+ 91413                  9497 138081  WEATHER SERVICE OFFICE, YAP, CAROLINE IS. 
+ 91492                  2000 202600  CHRISTMAS ISLAND 
+ 91517                 -9416 159966  HONIARA 
+ 91557                -17700 168300  BAUERFIELD (EFATE) 
+ 91592                -22276 166452  NOUMEA (NLLE-CALEDONIE) 
+ 91610                  1350 172916  TARAWA 
+ 91643                 -8516 179216  FUNAFUTI 
+ 91680                -17750 177450  NADI AIRPORT 
+ 91701                 -2766 188283  KANTON ISLAND 
+ 91762                -13800 188216  APIA 
+ 91765                -14338 189280  PAGO PAGO/INT.AIRP. AMERICAN SAMOA 
+ 91801                 -9033 201950  PENRHYN 
+ 91843                -21200 200183  RAROTONGA 
+ 91925                 -9806 220964  HIVA-OA 
+ 91938                -17555 210385  TAHITI-FAAA 
+ 91943                -14474 214961  TAKAROA 
+ 91948                -23130 225034  MANGAREVA 
+ 91954                -23344 210522  TUBUAI 
+ 91958                -27618 215665  RAPA 
+ 91997                -29250 182083  RAOUL ISLAND,  KERMADEC IS. 
+ 92035                 -9383 147216  PORT MORESBY W.O. 
+ 92044                 -2050 147416  MOMOTE W.O. 
+ 93112                -36792 174621  WHENUAPAI 
+ 93291                -38658 177985  GISBORNE AERODROME 
+ 93308                -39010 174176  NEW PLYMOUTH AERODROME 
+ 93417                -40904 174983  PARAPARAUMU AERODROME 
+ 93614                -42714 170983  HOKITIKA AERODROME 
+ 93844                -46417 168330  INVERCARGILL AIRPORT 
+ 93986                -43956 183433  CHATHAM ISLAND 
+ 93997                -29243 182071  RAOUL ISLAND, KERMADEC IS. 
+ 94120                -12423 130892  DARWIN AIRPORT 
+ 94150                -12274 136820  GOVE AIRPORT 
+ 94170                -12677 141920  WEIPA AERO 
+ 94203                -17947 122235  BROOME AIRPORT 
+ 94212                -18229 127663  HALLS CREEK AIRPORT 
+ 94238                -19642 134183  TENNANT CREEK AIRPORT 
+ 94287                -16873 145745  CAIRNS AERO 
+ 94294                -19248 146766  TOWNSVILLE AERO 
+ 94299                -16287 149965  WILLIS ISLAND 
+ 94300                -24887 113670  CARNARVON AIRPORT 
+ 94302                -22240 114096  LEARMONTH AIRPORT 
+ 94312                -20372 118631  PORT HEDLAND AIRPORT 
+ 94326                -23795 133888  ALICE SPRINGS AIRPORT 
+ 94332                -20677 139487  MOUNT ISA AERO 
+ 94346                -23437 144276  LONGREACH AERO 
+ 94367                -21117 149216  MACKAY M.O 
+ 94374                -23375 150477  ROCKHAMPTON AERO 
+ 94403                -28795 114697  GERALDTON AIRPORT 
+ 94430                -26613 118537  MEEKATHARRA AIRPORT 
+ 94461                -25034 128301  GILES METEOROLOGICAL OFFICE 
+ 94510                -26413 146255  CHARLEVILLE AERO 
+ 94578                -27391 153129  BRISBANE AERO 
+ 94610                -31927 115976  PERTH AIRPORT 
+ 94637                -30784 121453  KALGOORLIE-BOULDER AIRPORT 
+ 94638                -33830 121892  ESPERANCE 
+ 94647                -31679 128879  EUCLA 
+ 94653                -32129 133697  CEDUNA AMO 
+ 94659                -31155 136805  WOOMERA AERODROME 
+ 94672                -34952 138520  ADELAIDE AIRPORT 
+ 94693                -34235 142086  MILDURA AIRPORT 
+ 94711                -31483 145829  COBAR MO 
+ 94750                -34946 150535  NOWRA RAN AIR STATION AWS 
+ 94767                -33946 151173  SYDNEY AIRPORT AMO 
+ 94776                -32793 151835  WILLIAMTOWN RAAF 
+ 94791                -30310 153118  COFFS HARBOUR MO 
+ 94802                -34941 117802  ALBANY AIRPORT 
+ 94821                -37747 140773  MOUNT GAMBIER AERO 
+ 94866                -37665 144832  MELBOURNE AIRPORT 
+ 94910                -35158 147457  WAGGA WAGGA AMO 
+ 94975                -42833 147503  HOBART AIRPORT 
+ 94995                -31542 159078  LORD HOWE ISLAND AERO 
+ 94996                -29038 167940  NORFOLK ISLAND AERO 
+ 94998                -54499 158936  MACQUARIE ISLAND 
+ 95527                -29489 149847  MOREE AERO 
+ 96035                  3566  98683  MEDAN/POLONIA 
+ 96147                  3950 108383  RANAI 
+ 96163                  -883 100350  PADANG/TABING 
+ 96237                 -2166 106133  PANGKAL PINANG 
+ 96315                  4933 114933  BRUNEI AIRPORT 
+ 96413                  1483 110333  KUCHING 
+ 96441                  3200 113033  BINTULU 
+ 96471                  5933 116050  KOTA KINABALU 
+ 96481                  4266 117883  TAWAU 
+ 96749                 -6116 106650  JAKARTA/SOEKARNO-HATTA 
+ 96781                 -6900 107583  BANDUNG/HUSEIN 
+ 96935                 -7366 112766  SURABAYA/JUANDA 
+ 96996                -12183  96833  COCOS ISLAND AERO 
+ 97014                  1533 124916  MENADO/ SAM RATULANGI 
+ 97072                  -683 119733  PALU/MUTIARA 
+ 97180                 -5066 119550  UJUNG PANDANG/HASANUDDIN 
+ 97372                -10166 123666  KUPANG/ELTARI 
+ 97560                 -1183 136116  BIAK/FRANS KAISIEPO 
+ 97724                 -3700 128083  AMBON/PATTIMURA 
+ 97980                 -8466 140383  MERAUKE/MOPAH 
+ 98223                 18183 120533  LAOAG 
+ 98433                 14566 121366  TANAY 
+ 98444                 13133 123733  LEGASPI 
+ 98618                  9750 118733  PUERTO PRINCESA 
+ 98646                 10300 123966  MACTAN 
+ 98753                  7116 125650  DAVAO AIRPORT 
+ 99090                 66000   2000  FORMER MIKE 

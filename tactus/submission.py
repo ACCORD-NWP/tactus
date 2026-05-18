@@ -334,6 +334,8 @@ class TaskSettings(object):
                     "TACTUS_HOME",
                     "KEEP_WORKDIRS",
                     "MEMBER",
+                    "OBSTYPE",
+                    "DA_STREAM",
                 ]
                 for ecf_var in ecf_vars:
                     file_handler.write(f'export {ecf_var}="%{ecf_var}%"\n')

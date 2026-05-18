@@ -67,7 +67,14 @@ def get_task(name, config) -> Task:
     try:
         cls = known_types[name.lower()]
     except KeyError as error:
-        raise NotImplementedError(f'Task "{name}" not implemented') from error
+        # Tasks like Bator_synop are named <Class>_<obstype> in the suite but
+        # the class is registered as the base name only.  Try stripping the
+        # last underscore-delimited suffix before giving up.
+        base = name.rsplit("_", 1)[0].lower()
+        if base != name.lower() and base in known_types:
+            cls = known_types[base]
+        else:
+            raise NotImplementedError(f'Task "{name}" not implemented') from error
 
     return cls(config)
 
