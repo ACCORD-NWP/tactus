@@ -135,11 +135,11 @@ class Bator(Task):
                 "BATOR_BASE": os.path.dirname(bator_bin),
                 "BATOR_LAMFLAG": bator_lamflag,
                 "SWAPP_ODB_IOASSIGN": os.path.join(self.wdir, "ioassign"),
-                "ODB_SRCPATH_ECMA": os.path.join(self.wdir, "ECMA"),
-                "ODB_DATAPATH_ECMA": os.path.join(self.wdir, "ECMA"),
+                "ODB_SRCPATH_ECMA": os.path.join(self.wdir, f"ECMA.{self.obstype}"),
+                "ODB_DATAPATH_ECMA": os.path.join(self.wdir, f"ECMA.{self.obstype}"),
                 "ODB_ECMA_CREATE_POOLMASK": "1",
                 "ODB_ECMA_POOLMASK_FILE": os.path.join(
-                    self.wdir, "ECMA", "ECMA.poolmask"
+                    self.wdir, f"ECMA.{self.obstype}", "ECMA.poolmask"
                 ),
                 "DR_HOOK_ASSERT_MPI_INITIALIZED": "0",
             }

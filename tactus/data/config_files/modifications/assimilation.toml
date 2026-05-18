@@ -126,7 +126,7 @@ obs_step = 60
 [da.providers.LACE.synop]
 
 candidates = [
-  "obsoul_1_xxxxxx_hu_{ymdrr}"
+  "obsoul_1_xxxxxx_hu_{ymdrr}",
   "obsoul_1_xxxxxy_hu_{ymdrr}",
   "obsoul_1_xxxxxy_at_{ymdrr}",
   "obsoul_1_xxxxxy_cz_{ymdrr}",
@@ -158,10 +158,6 @@ local_name  = "OBSOUL.temp"
 [da.providers.LACE.wp]
 candidates = ["obsoul_6_xxxxxx_xx_{ymdrr}"]
 local_name  = "OBSOUL.wp"
-
-[da.providers.LACE.gpssol]
-candidates = ["bufr_1_ztd_egvap_{ymdrr}"]
-local_name  = "BUFR.gpssol"
 
 [da.providers.LACE.amsua]
 candidates = [
@@ -300,7 +296,7 @@ obs_step = 60
 # Point to the directory that contains BATOR, BLENDSUR,
 # shuffle, create_ioassign, ioassign, and merge_ioassign.
 [submission.task_exceptions.Bator]
-  bindir = "/perm/sis/tactus_bin/@CYCLE@/@COMPILER@/@PRECISION@/bin"
+  bindir = "/perm/sis/tactus_bin/CY50t2/@COMPILER@/R64/bin"
   NPROC  = 1
 
 [submission.task_exceptions.Bator.BATCH]
@@ -312,7 +308,7 @@ obs_step = 60
 
 # ---- OdbMerge (shuffle + merge_ioassign) ----
 [submission.task_exceptions.OdbMerge]
-  bindir = "/perm/sis/tactus_bin/@CYCLE@/@COMPILER@/@PRECISION@/bin"
+  bindir = "/perm/sis/tactus_bin/CY50t2/@COMPILER@/R64/bin"
   NPROC  = 1
 
 [submission.task_exceptions.OdbMerge.BATCH]
@@ -321,7 +317,7 @@ obs_step = 60
 
 # ---- Canari (MASTERODB conf 701, surface OI) ----
 [submission.task_exceptions.Canari]
-  bindir = "/perm/sis/tactus_bin/@CYCLE@/@COMPILER@/@PRECISION@/bin"
+  bindir = "/perm/sis/tactus_bin/CY50t2/@COMPILER@/R64/bin"
   NPROC  = 16
 
 [submission.task_exceptions.Canari.BATCH]
@@ -331,7 +327,7 @@ obs_step = 60
 
 # ---- BlendSur (serial BLENDSUR utility) ----
 [submission.task_exceptions.BlendSur]
-  bindir = "/perm/sis/tactus_bin/@CYCLE@/@COMPILER@/@PRECISION@/bin"
+  bindir = "/perm/sis/tactus_bin/CY50t2/@COMPILER@/R64/bin"
   binary = "BLENDSUR"
   NPROC  = 1
 
