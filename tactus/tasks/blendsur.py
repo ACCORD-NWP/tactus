@@ -31,6 +31,7 @@ class BlendSur(Task):
         Task.__init__(self, config, __class__.__name__)
         self.basetime = as_datetime(config["general.times.basetime"])
         self.domain = config["domain.name"]
+        self.cnmexp = config["general.cnmexp"]
         self.da_scratch = self.platform.substitute(config["da.scratch"])
         # Location of the +0000 LBC file (from InterpolationFamily)
         self.intp_bddir = self.platform.substitute(
@@ -51,7 +52,7 @@ class BlendSur(Task):
         # --- inputs ---
         # LBC +000 file
         lbc_file = os.path.join(
-            self.intp_bddir, f"ELSCF{self.domain}ALBC000"
+            self.intp_bddir, f"ELSCF{self.cnmexp}ALBC000"
         )
         if not os.path.isfile(lbc_file):
             raise FileNotFoundError(

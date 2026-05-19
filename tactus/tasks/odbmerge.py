@@ -73,7 +73,14 @@ class OdbMerge(Task):
                     continue
                 ecma_src = os.path.join(bator_base_dir, obstype, f"ECMA.{obstype}")
                 if os.path.isdir(ecma_src):
-                    if not os.path.isdir(f"ECMA.{obstype}"):
+                    # Skip subbases with no observations inside the domain —
+                    # ECMA.dd is absent when BATOR produced an empty ODB.
+                    if not os.path.isfile(os.path.join(ecma_src, "ECMA.dd")):
+                        logger.info(
+                            "OdbMerge: skipping empty subbase {} (no ECMA.dd)", obstype
+                        )
+                        continue
+                    if not os.path.lexists(f"ECMA.{obstype}"):
                         os.symlink(ecma_src, f"ECMA.{obstype}")
                     bases_to_merge.append(obstype)
 

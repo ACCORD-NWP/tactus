@@ -237,9 +237,29 @@ class Bator(Task):
             return None
 
         if not os.path.lexists(local_name):
-            os.symlink(src, local_name)
-        logger.debug("Bator: linked {} -> {}", src, local_name)
+            if local_name.startswith("OBSOUL."):
+                self._copy_obsoul_fixed_header(src, local_name)
+            else:
+                os.symlink(src, local_name)
+        logger.debug("Bator: staged {} -> {}", src, local_name)
         return local_name
+
+    def _copy_obsoul_fixed_header(self, src, local_name):
+        """Copy OBSOUL file rewriting the header time to 6-digit HHMMSS format.
+
+        BATOR requires the header line to be "    YYYYMMDD<TAB>HHMMSS".
+        Some providers write only a 2-digit HH (e.g. "    20250209          00")
+        which causes BATOR to abort with "OBsoul incorrect".
+        """
+        hhmmss = self.basetime.strftime("%H") + "0000"
+        yyyymmdd = self.basetime.strftime("%Y%m%d")
+        correct_header = f"    {yyyymmdd}\t{hhmmss}\n"
+        with open(src) as fin, open(local_name, "w") as fout:
+            fin.readline()  # discard original header
+            fout.write(correct_header)
+            for line in fin:
+                fout.write(line)
+        logger.debug("Bator: copied {} with fixed OBSOUL header", local_name)
 
     def _write_refdata_and_batormap(self, yyyy, mm, dd, rr, local_name):
         """Write refdata and batormap files.

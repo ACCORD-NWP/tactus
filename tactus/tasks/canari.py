@@ -2,13 +2,13 @@
 
 Ported from: seemhews/scripts/assim/analysis/surface/canari.ecf
 """
-import datetime
 import json
 import os
 import shutil
 
 from ..config_parser import ConfigPaths
 from ..datetime_utils import as_datetime
+from ..initial_conditions import InitialConditions
 from ..logs import logger
 from ..namelist import NamelistGenerator
 from ..os_utils import tactusmakedirs
@@ -39,7 +39,6 @@ class Canari(Task):
         self.da_scratch = self.platform.substitute(config["da.scratch"])
         # climate files (Const.Clim.MM) live in system.climdir
         self.clim_dir = self.platform.get_system_value("climdir")
-        self.guess_dir = self.platform.substitute(config["da.guess_dir"])
         self.nbpool = config.get("da.nbpool", 12)
         self.nlgen = NamelistGenerator(config, "canari")
         logger.debug("Constructed Canari task")
@@ -71,7 +70,16 @@ class Canari(Task):
             os.symlink(masterodb_bin, "MASTERODB_canari")
 
         # --- namelist ---
-        self.nlgen.generate_namelist("canari", "fort.4")
+        # In cold_start mode the atmospheric first-guess is an LBC file that
+        # does not contain near-surface diagnostics (T2M, HU2M) required by
+        # the SURFEX OI (CANARI_SFX). Disable it so the atmospheric OI still
+        # runs and produces ICMSHCYCL+0000.
+        mode = self.config.get("suite_control.mode", "cycling")
+        self.nlgen.load("canari")
+        if mode == "cold_start":
+            self.nlgen.update({"NACTEX": {"LAEICS_SX": False}}, "cold_start_sfx_disable")
+        nml = self.nlgen.assemble_namelist("canari")
+        self.nlgen.write_namelist(nml, "fort.4")
 
         # --- static input files ---
         input_definition = ConfigPaths.path_from_subpath(
@@ -81,10 +89,11 @@ class Canari(Task):
             input_data = json.load(f)
         self.fmanager.input_data_iterator(input_data)
 
-        # --- climate files (Const.Clim.MM → ICMSHCYCLCLIM/ICMSHCYCLCLI2) ---
+        # --- climate files (Const.Clim.MM → ICMSHANALCLIM/ICMSHANALCLI2) ---
+        # Names must match CNMEXP set in canari_namelists.yml (currently ANAL).
         for clim_month, clim_link in [
-            (mm, "ICMSHCYCLCLIM"),
-            (mm2, "ICMSHCYCLCLI2"),
+            (mm, "ICMSHANALCLIM"),
+            (mm2, "ICMSHANALCLI2"),
         ]:
             clim_src = os.path.join(self.clim_dir, f"Const.Clim.{clim_month}")
             if os.path.isfile(clim_src):
@@ -99,52 +108,20 @@ class Canari(Task):
         else:
             logger.warning("Canari: PGD sfx file not found: {}", pgd_sfx_src)
 
-        # --- first guess (atmosphere FA file) ---
-        guess_file = os.path.join(self.guess_dir, yyyy, mm, dd, f"guess.{ymdrr}")
-        guess_gz = guess_file + ".gz"
-        if os.path.isfile(guess_file):
-            shutil.copy2(guess_file, "guess")
-        elif os.path.isfile(guess_gz):
-            import gzip
-
-            with gzip.open(guess_gz, "rb") as fgz, open("guess", "wb") as fo:
-                shutil.copyfileobj(fgz, fo)
-        else:
-            raise FileNotFoundError(
-                f"Canari: first guess not found at {guess_file}[.gz]"
-            )
+        # --- first guess (atmosphere FA + surface sfx) ---
+        # Delegate to the same logic used by Initialization/FirstGuess so
+        # that cold-start, restart, and cycling modes are all handled correctly.
+        fg_atm, fg_sfx = InitialConditions(self.config).find_initial_files()
         for link in ["ICMSHCYCLINIT", "ICMGGCYCLINIT", "ELSCFCYCLALBC000", "ELSCFANALALBC000", "ICMSHANALINIT"]:
             if not os.path.lexists(link):
-                os.symlink("guess", link)
+                os.symlink(fg_atm, link)
+        logger.info("Canari: atmospheric first guess {}", fg_atm)
 
-        # --- soil first guess (.sfx) ---
-        # For cycling: previous cycle's 3h forecast sfx.
-        # For cold start: current cycle's init sfx.
-        archive_root = self.platform.get_platform_value("archive_root")
-        prev_bt = self.basetime - datetime.timedelta(hours=3)
-        soil_fg = None
-        for candidate in [
-            os.path.join(
-                archive_root,
-                prev_bt.strftime("%Y"), prev_bt.strftime("%m"),
-                prev_bt.strftime("%d"), prev_bt.strftime("%H"),
-                self.member_str, f"ICMSH{self.cnmexp}+0003h00m00s.sfx",
-            ),
-            os.path.join(
-                archive_root, yyyy, mm, dd, rr,
-                self.member_str, f"ICMSH{self.cnmexp}INIT.sfx",
-            ),
-        ]:
-            if os.path.isfile(candidate):
-                soil_fg = candidate
-                break
-        if soil_fg is None:
-            raise FileNotFoundError(
-                f"Canari: no soil first guess (.sfx) found in {archive_root}"
-            )
-        shutil.copy2(soil_fg, "ICMSHCYCLINIT.sfx")
-        shutil.copy2(soil_fg, "ICMSHCYCL+0000.sfx")
-        logger.info("Canari: using soil first guess {}", soil_fg)
+        if not os.path.lexists("ICMSHCYCLINIT.sfx"):
+            os.symlink(fg_sfx, "ICMSHCYCLINIT.sfx")
+        if not os.path.lexists("ICMSHANAL+0000.sfx"):
+            os.symlink(fg_sfx, "ICMSHANAL+0000.sfx")
+        logger.info("Canari: soil first guess {}", fg_sfx)
 
         # --- ODB ---
         # Copy all ODB dirs from the archive (ECMA + ECMA.synop etc.).
@@ -207,8 +184,8 @@ class Canari(Task):
             "./MASTERODB_canari"
         )
 
-        # CANARI with CNMEXPB=CYCL produces ICMSHCYCL+0000
-        output_file = "ICMSHCYCL+0000"
+        # CANARI with CNMEXP=ANAL produces ICMSHANAL+0000
+        output_file = "ICMSHANAL+0000"
         if not os.path.isfile(output_file) or os.path.getsize(output_file) == 0:
             raise RuntimeError(f"Canari: {output_file} not produced or empty.")
 
@@ -216,9 +193,9 @@ class Canari(Task):
         out_dir = os.path.join(self.da_scratch, yyyy, mm, dd, rr, "canari")
         tactusmakedirs(out_dir)
         shutil.copy2(output_file, os.path.join(out_dir, output_file))
-        if os.path.isfile("ICMSHCYCL+0000.sfx"):
+        if os.path.isfile("ICMSHANAL+0000.sfx"):
             shutil.copy2(
-                "ICMSHCYCL+0000.sfx", os.path.join(out_dir, "ICMSHCYCL+0000.sfx")
+                "ICMSHANAL+0000.sfx", os.path.join(out_dir, "ICMSHANAL+0000.sfx")
             )
         logger.info("Canari: analysis archived to {}", out_dir)
         self.archive_logs(["NODE.001_01", "fort.4"])
