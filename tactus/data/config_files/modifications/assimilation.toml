@@ -9,6 +9,14 @@
 # Required: fill in [da] paths below for your site / experiment.
 # ------------------------------------------------------------------
 
+# submission
+[submission]
+bindir = "/perm/sis/tactus_bin/@CYCLE@/@COMPILER@/@PRECISION@/bin"
+precision = "R64"
+
+[system]
+assimilation_input_definition = "@CYCLE@/assimilation.json"
+
 [suite_control]
   do_assimilation = true
 
@@ -49,7 +57,7 @@
   rttov_coef_dir = "@RTTOV_COEFDIR@"
 
   # Number of ODB pools used by BATOR / SHUFFLE
-  nbpool = 12
+  nbpool = 16
 
   # Cold-start basetime (YYYYMMDDRR): skips VARBC / first-guess checks.
   # Set to the first cycle of a new experiment.
@@ -64,7 +72,7 @@
   # Observation types for 3D-Var upper-air analysis
   obs_types_3dvar = [
     "synop", "gpssol",
-    "amdr", "geowind", "hrwind", "temp", "wp",
+    "amdr", "geowind", "temp", "wp",
     "seviri", "amsua", "amsub", "iasi", "ascat",
   ]
 
@@ -219,10 +227,6 @@ local_name  = "OBSOUL.amdr"
 candidates = ["obsoul_3_xxxxxx_xx_{ymdrr}"]
 local_name  = "OBSOUL.geowind"
 
-[da.providers.UWC.hrwind]
-candidates = ["obsoul_3_xxxxxx_hr_{ymdrr}"]
-local_name  = "OBSOUL.hrwind"
-
 [da.providers.UWC.temp]
 candidates = ["obsoul_5_xxxxxx_xx_{ymdrr}"]
 local_name  = "OBSOUL.temp"
@@ -296,7 +300,7 @@ obs_step = 60
 # Point to the directory that contains BATOR, BLENDSUR,
 # shuffle, create_ioassign, ioassign, and merge_ioassign.
 [submission.task_exceptions.Bator]
-  bindir = "/perm/sis/tactus_bin/CY50t2/@COMPILER@/R64/bin"
+  bindir = "/perm/sis/tactus_bin/@CYCLE@/@COMPILER@/@PRECISION@/bin_gmkpack"
   NPROC  = 1
 
 [submission.task_exceptions.Bator.BATCH]
@@ -311,7 +315,7 @@ obs_step = 60
 
 # ---- OdbMerge (shuffle + merge_ioassign) ----
 [submission.task_exceptions.OdbMerge]
-  bindir = "/perm/sis/tactus_bin/CY50t2/@COMPILER@/R64/bin"
+  bindir = "/perm/sis/tactus_bin/@CYCLE@/@COMPILER@/@PRECISION@/bin_gmkpack"  
   NPROC  = 1
 
 [submission.task_exceptions.OdbMerge.BATCH]
@@ -323,7 +327,7 @@ obs_step = 60
 
 # ---- Canari (MASTERODB conf 701, surface OI) ----
 [submission.task_exceptions.Canari]
-  bindir = "/perm/sis/tactus_bin/CY50t2/@COMPILER@/R64/bin"
+  bindir = "/perm/sis/tactus_bin/@CYCLE@/@COMPILER@/@PRECISION@/bin_gmkpack"
   NPROC  = 16
 
 [submission.task_exceptions.Canari.BATCH]
@@ -336,7 +340,7 @@ obs_step = 60
 
 # ---- BlendSur (serial BLENDSUR utility) ----
 [submission.task_exceptions.BlendSur]
-  bindir = "/perm/sis/tactus_bin/CY50t2/@COMPILER@/R64/bin"
+  bindir = "/perm/sis/tactus_bin/@CYCLE@/@COMPILER@/@PRECISION@/bin_gmkpack"
   binary = "BLENDSUR"
   NPROC  = 1
 
@@ -361,38 +365,18 @@ obs_step = 60
 # OOPS-based 3D-Var (upper-air analysis via OOVAR)
 # ------------------------------------------------------------------
 
-# [da.oops]
-#   namelist_dir = "@SCRATCH@/da/oops_namelists"
+ [da.oops]
+   namelist_dir = "@SCRATCH@/da/oops_namelists"
 #
 #   # Minimization inner-loop settings
 #   niter    = 66
 #   nsimu    = 69
 #   rednmc   = 0.5
 #
-#   # Geometry / MPI decomposition — must match submission.task_exceptions.OopsVar
-#   nproma   = -32
-#   nprgpns  = 128
-#   nprgpew  = 1
-#   nprtrv   = 1
-#   nprtrw   = 128
-#   nstrin   = 2
-#   nstrout  = 2
-#
-#   # JK spectral transform parameters
-#   lejk       = false
-#   nsmaxjk    = 215
-#   alphakt    = 0.70
-#   alphakvor  = 0.80
-#   alphakdiv  = 0.10
-#   alphakq    = 0.04
-#   alphakp    = 0.0
-#   presinfjk  = 100500.0
-#   presupjk   = 98000.0
-#   ntruncjk   = 8
 
 # ---- OopsVar (OOPS-based 3D-Var, single OOVAR call) ----
 [submission.task_exceptions.OopsVar]
-  bindir = "/perm/sis/tactus_bin/@CYCLE@/@COMPILER@/@PRECISION@/bin"
+  bindir = "/perm/sis/tactus_bin/@CYCLE@/@COMPILER@/@PRECISION@/bin_gmkpack"
   NPROC  = 128
 
 [submission.task_exceptions.OopsVar.BATCH]
@@ -400,6 +384,11 @@ obs_step = 60
   NTASKS      = "#SBATCH --ntasks=128"
   HINT        = "#SBATCH --hint=nomultithread"
   WALLTIME    = "#SBATCH --time=01:00:00"
+
+[submission.task_exceptions.OopsVar.MODULES]
+  01_INTEL = ["load", "intel/2023.2.0"]
+  MPIPACKAGE1 = ["unload", "hpcx-openmpi/2.9.0"]
+  MPIPACKAGE2 = ["load", "openmpi/4.1.1.1"]
 
 # ---- Screen (MASTERODB observational screening, OpenMP) ----
 [submission.task_exceptions.Screen]
