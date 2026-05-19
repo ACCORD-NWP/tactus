@@ -169,6 +169,7 @@ class SuiteDefinition(object):
             "MEMBER": "",
             "OBSTYPE": "",
             "DA_STREAM": "",
+            "TACTUS_TASK": "",
         }
 
         self.suite = EcflowSuite(

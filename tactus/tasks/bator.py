@@ -6,6 +6,8 @@ variable) to produce an ``ECMA.<obstype>`` ODB subbase.
 """
 import os
 import shutil
+import subprocess
+from collections.abc import Mapping
 
 import pyproj
 
@@ -45,7 +47,8 @@ class Bator(Task):
         self.bator_nbslot = config.get("da.bator_nbslot", 1)
         self.bator_slot_len = config.get("da.bator_slot_len", 0)
         self.bator_center_len = config.get("da.bator_center_len", 0)
-        self.obs_sources = config.get("da.obs_sources", {})
+        obs_provider = config.get("da.obs_provider", "UWC")
+        self._provider = config.get("da.providers", {}).get(obs_provider, {})
         self.nlgen = NamelistGenerator(config, "bator")
         logger.debug("Constructed Bator task for obstype={}", self.obstype)
 
@@ -83,10 +86,8 @@ class Bator(Task):
         nam_lamflag = os.path.join(
             self.da_nam_dir, f"aldnml_lamflag_{self.domain}"
         )
-        if os.path.isfile(nam_lamflag):
-            os.symlink(nam_lamflag, "NAM_lamflag")
-        else:
-            self._write_nam_lamflag()
+        # lamflag
+        self._write_nam_lamflag()
         bator_lamflag = "1"
 
         for extra_nl in ["aldnml_rgb", "aldnml_gpssol_list"]:
@@ -134,7 +135,8 @@ class Bator(Task):
                 "BATOR_NBSLOT": str(self.bator_nbslot),
                 "BATOR_BASE": os.path.dirname(bator_bin),
                 "BATOR_LAMFLAG": bator_lamflag,
-                "SWAPP_ODB_IOASSIGN": os.path.join(self.wdir, "ioassign"),
+                "IOASSIGN": os.path.join(self.wdir, "IOASSIGN"),
+                "SWAPP_ODB_IOASSIGN": os.path.join(self.wdir, "IOASSIGN"),
                 "ODB_SRCPATH_ECMA": os.path.join(self.wdir, f"ECMA.{self.obstype}"),
                 "ODB_DATAPATH_ECMA": os.path.join(self.wdir, f"ECMA.{self.obstype}"),
                 "ODB_ECMA_CREATE_POOLMASK": "1",
@@ -146,9 +148,9 @@ class Bator(Task):
         )
 
         # --- stage obs file(s) from ObsPrep output ---
-        matched_spec = self._stage_obs(obsprep_dir)
+        local_name = self._stage_obs(obsprep_dir)
 
-        if not matched_spec:
+        if not local_name:
             logger.info(
                 "Bator: no obs file for obstype '{}' — skipping BATOR run.",
                 self.obstype,
@@ -156,7 +158,30 @@ class Bator(Task):
             return
 
         # --- create refdata and batormap ---
-        self._write_refdata_and_batormap(yyyy, mm, dd, rr, matched_spec)
+        self._write_refdata_and_batormap(yyyy, mm, dd, rr, local_name)
+
+        # --- create ECMA output directory ---
+        os.makedirs(f"ECMA.{self.obstype}", exist_ok=True)
+
+        # --- create IOASSIGN file ---
+        # create_ioassign internally calls the `ioassign` binary so `.` must be on PATH.
+        ioassign_env = dict(rte)
+        ioassign_env["PATH"] = "." + os.pathsep + ioassign_env.get("PATH", "")
+        result = subprocess.run(
+            f"./create_ioassign -l{rte['ODB_CMA']} -n{self.nbpool}",
+            shell=True,
+            env=ioassign_env,
+        )
+        if result.returncode != 0:
+            raise RuntimeError(
+                f"create_ioassign failed with return code {result.returncode}"
+            )
+        ioassign_file = os.path.join(self.wdir, "IOASSIGN")
+        if not os.path.isfile(ioassign_file):
+            raise RuntimeError(
+                f"create_ioassign returned 0 but IOASSIGN file not found at {ioassign_file}"
+            )
+        logger.info("Bator: IOASSIGN created at {}", ioassign_file)
 
         # --- run BATOR ---
         # The platform wrapper (srun) acts as the MPI launcher on SLURM systems;
@@ -191,29 +216,22 @@ class Bator(Task):
     def _stage_obs(self, obsprep_dir):
         """Link the obs file produced by ObsPrep into the work dir.
 
-        ObsPrep already merged all candidates into a single file named
-        ``local_name``.  We just need to symlink that file here.
+        Returns the local_name string on success, None if no file is available.
         """
-        spec = self.obs_sources.get(self.obstype)
-        if not spec:
-            logger.warning(
-                "Bator: no obs_sources entry for obstype '{}' — skipping file staging",
+        spec = self._provider.get(self.obstype)
+        if not isinstance(spec, Mapping):
+            logger.info(
+                "Bator: no provider entry for obstype '{}' — skipping.",
                 self.obstype,
             )
             return None
 
-        local_name = spec.get("local_name", "")
-        if not local_name:
-            logger.warning(
-                "Bator: obs_sources entry for '{}' has no local_name", self.obstype
-            )
-            return None
-
+        local_name = spec.get("local_name", self.obstype)
         src = os.path.join(obsprep_dir, local_name)
         if not os.path.isfile(src):
-            logger.warning(
-                "Bator: no obs file found in {} for obstype '{}'",
-                obsprep_dir,
+            logger.info(
+                "Bator: no obs file '{}' in obsprep dir for obstype '{}' — skipping.",
+                local_name,
                 self.obstype,
             )
             return None
@@ -221,31 +239,22 @@ class Bator(Task):
         if not os.path.lexists(local_name):
             os.symlink(src, local_name)
         logger.debug("Bator: linked {} -> {}", src, local_name)
-        return spec
+        return local_name
 
-    def _write_refdata_and_batormap(self, yyyy, mm, dd, rr, spec):
-        """Write refdata and batormap files from the matched obs-source spec.
+    def _write_refdata_and_batormap(self, yyyy, mm, dd, rr, local_name):
+        """Write refdata and batormap files.
 
-        ``spec`` is the dict returned by ``_stage_obs`` and must carry:
-          ``format``     — file format string passed to BATOR (OBSOUL, BUFR, NETCDF, …)
-          ``bator_name`` — internal BATOR obs-type identifier (defaults to obstype)
+        Format is derived from the local_name prefix (e.g. "OBSOUL.synop" → "OBSOUL").
         """
-        if not spec:
-            logger.warning(
-                "Bator: no matched spec for obstype '{}' — skipping refdata/batormap",
-                self.obstype,
-            )
-            return
-
-        fmt = spec.get("format", "")
+        fmt = local_name.split(".")[0].upper() if "." in local_name else ""
         if not fmt:
             logger.warning(
-                "Bator: spec for obstype '{}' has no 'format' — skipping refdata/batormap",
-                self.obstype,
+                "Bator: cannot derive format from local_name '{}' — skipping refdata/batormap",
+                local_name,
             )
             return
 
-        bator_name = spec.get("bator_name", self.obstype)
+        bator_name = self.obstype
         with open("refdata", "w") as fh:
             fh.write(
                 f"{self.obstype:<8} {fmt:<8} {bator_name:<16} {yyyy}{mm}{dd} {rr}\n"

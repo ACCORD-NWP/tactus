@@ -166,10 +166,19 @@ class TaskSettings(object):
                 )
                 break
 
-        if "task_exceptions" in all_defs and task in all_defs["task_exceptions"]:
-            logger.debug("Task task_exceptions for task {}", task)
+        task_exc_key = None
+        if "task_exceptions" in all_defs:
+            if task in all_defs["task_exceptions"]:
+                task_exc_key = task
+            else:
+                for exc_key in all_defs["task_exceptions"]:
+                    if task.startswith(exc_key + "_"):
+                        task_exc_key = exc_key
+                        break
+        if task_exc_key is not None:
+            logger.debug("Task task_exceptions for task {} (key={})", task, task_exc_key)
             task_settings = self.update_task_setting(
-                task_settings, all_defs["task_exceptions"][task]
+                task_settings, all_defs["task_exceptions"][task_exc_key]
             )
 
         if "SCHOST" in task_settings:
@@ -341,6 +350,7 @@ class TaskSettings(object):
                     "MEMBER",
                     "OBSTYPE",
                     "DA_STREAM",
+                    "TACTUS_TASK",
                 ]
                 for ecf_var in ecf_vars:
                     file_handler.write(f'export {ecf_var}="%{ecf_var}%"\n')

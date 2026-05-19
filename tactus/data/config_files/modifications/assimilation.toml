@@ -303,6 +303,9 @@ obs_step = 60
   NTASKS   = "#SBATCH --ntasks=1"
   WALLTIME = "#SBATCH --time=00:10:00"
 
+[submission.task_exceptions.Bator.MODULES]
+  01_INTEL = ["load", "intel/2023.2.0"]
+
 [submission.task_exceptions.Bator.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = "0"
 
@@ -315,6 +318,9 @@ obs_step = 60
   NTASKS   = "#SBATCH --ntasks=1"
   WALLTIME = "#SBATCH --time=00:15:00"
 
+[submission.task_exceptions.OdbMerge.MODULES]
+  01_INTEL = ["load", "intel/2023.2.0"]
+
 # ---- Canari (MASTERODB conf 701, surface OI) ----
 [submission.task_exceptions.Canari]
   bindir = "/perm/sis/tactus_bin/CY50t2/@COMPILER@/R64/bin"
@@ -325,6 +331,9 @@ obs_step = 60
   NTASKS   = "#SBATCH --ntasks=16"
   WALLTIME = "#SBATCH --time=00:30:00"
 
+[submission.task_exceptions.Canari.MODULES]
+  01_INTEL = ["load", "intel/2023.2.0"]
+
 # ---- BlendSur (serial BLENDSUR utility) ----
 [submission.task_exceptions.BlendSur]
   bindir = "/perm/sis/tactus_bin/CY50t2/@COMPILER@/R64/bin"
@@ -334,6 +343,9 @@ obs_step = 60
 [submission.task_exceptions.BlendSur.BATCH]
   NTASKS   = "#SBATCH --ntasks=1"
   WALLTIME = "#SBATCH --time=00:10:00"
+
+[submission.task_exceptions.BlendSur.MODULES]
+  01_INTEL = ["load", "intel/2023.2.0"]
 
 # ------------------------------------------------------------------
 # Surface-only DA mode

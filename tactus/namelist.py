@@ -324,9 +324,6 @@ class NamelistGenerator:
             substitute (boolean): flag for substitution
 
         """
-        if kind not in ("master", "surfex", "gl"):
-            raise InvalidNamelistKindError(kind)
-
         self.config = config
         self.platform = Platform(config)
         self.kind = kind

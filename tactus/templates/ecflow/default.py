@@ -60,6 +60,7 @@ def parse_ecflow_vars():
         "TACTUS_HOME": os.environ["TACTUS_HOME"],
         "KEEP_WORKDIRS": os.environ["KEEP_WORKDIRS"],
         "MEMBER": os.environ["MEMBER"],
+        "TACTUS_TASK": os.environ.get("TACTUS_TASK", ""),
     }
 
 
