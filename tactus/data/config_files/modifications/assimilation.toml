@@ -334,9 +334,14 @@ obs_step = 60
   NODES    = "#SBATCH --nodes=1"
   NTASKS   = "#SBATCH --ntasks=16"
   WALLTIME = "#SBATCH --time=00:30:00"
+  MEM = "#SBATCH --mem=16000MB"
 
 [submission.task_exceptions.Canari.MODULES]
   01_INTEL = ["load", "intel/2023.2.0"]
+  OPENMPI = ["load", "openmpi/4.1.1.1"]
+
+
+
 
 # ---- BlendSur (serial BLENDSUR utility) ----
 [submission.task_exceptions.BlendSur]
