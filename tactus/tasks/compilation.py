@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import shutil
 import sys
 from pathlib import Path
 
@@ -138,6 +139,13 @@ class TactusBundleBuild(Task):
         tactusmakedirs(self.exp_bindir)
         tactusmakedirs(self.exp_builddir)
         tactusmakedirs(os.path.dirname(self.local_bindir))
+        try:
+            logger.info("Backing up bundle from {}", f"{self.bundle_dir}/source/bundle.yml")
+            shutil.copyfile(f"{self.bundle_dir}/source/bundle.yml", f"{self.platform.substitute(compile_dir)}/bundle.yml")
+        except FileNotFoundError:
+            logger.info("Unable to finde {}", self.platform.substitute(compile_dir))
+            pass
+            
         self.ninja_arg = ""
         if self.config["compile"].get("ninja"):
             self.ninja_arg = "--ninja "
