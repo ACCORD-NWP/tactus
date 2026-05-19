@@ -1,6 +1,7 @@
 [general]
   cycle = "CY50t2"
   surfex = true
+  surfex_sea_ice = "none"
   upd_sst_sic = true
 
 [general.output_settings]
