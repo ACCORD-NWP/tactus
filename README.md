@@ -1,5 +1,5 @@
 [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ACCORD-NWP/tactus)
-[![Github Pages](https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white)](https://ACCORD-NWP.github.io/tactus-docs/)
+[![Github Pages](https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white)](https://ACCORD-NWP.github.io/tactus/)
 
 
 [![Linting](https://github.com/ACCORD-NWP/tactus/actions/workflows/linting.yaml/badge.svg)](https://github.com/ACCORD-NWP/tactus/actions/workflows/linting.yaml)
@@ -13,7 +13,7 @@
 
 The [tactus scripting system](https://github.com/ACCORD-NWP/tactus/) provides a `tactus` python package.
 
-See the [project's documentation page](https://ACCORD-NWP.github.io/tactus-docs) for more information.
+See the [project's documentation page](https://ACCORD-NWP.github.io/tactus) for more information.
 
 
 ## Set up environment
@@ -42,7 +42,7 @@ git clone git@github.com:ACCORD-NWP/tactus.git
 cd tactus
 ```
 
-For development, use forks as specified in the [Development guidelines](https://ACCORD-NWP.github.io/tactus-docs/development_guidelines_link.html).
+For development, use forks as specified in the [Development guidelines](https://ACCORD-NWP.github.io/tactus/development_guidelines_link.html).
 To clone the forked repository, use the following command, replacing \<username\> with your GitHub username:
 ```shell
 git clone git@github.com:<username>/tactus.git
@@ -102,7 +102,7 @@ Before you can use `tactus` (apart from the `-h` option), you will need a config
 [TOML](https://en.wikipedia.org/wiki/TOML) format. Please take a look at
  the default
  [config.toml](https://github.com/ACCORD-NWP/tactus/blob/develop/tactus/data/config_files/config.toml) file, as well as the
- [project's Doc Page](https://ACCORD-NWP.github.io/tactus-docs),
+ [project's Doc Page](https://ACCORD-NWP.github.io/tactus),
  for more information about this.
 
  To see all configs currently in place in your `tactus` setup, please run
@@ -146,4 +146,4 @@ tactus run --task Forecast -c my_first_test.toml
 This will create `Forecast.job` in the current directory and submit the job. The log from the job will appear as `Forecast.log` and the result will be found in the same directories as above.
 
 
-For other platforms a new config file would have to be created first. Please consult the [configure cases](https://ACCORD-NWP.github.io/tactus-docs/misc_section_in_doc_page.html#configure-cases) section in the documentation for more information.
+For other platforms a new config file would have to be created first. Please consult the [configure cases](https://ACCORD-NWP.github.io/tactus/misc_section_in_doc_page.html#configure-cases) section in the documentation for more information.
