@@ -20,6 +20,7 @@ from .commands_functions import (
     show_paths,
     start_suite,
 )
+from .test_runner import run_test
 from .config_parser import ConfigParserDefaults
 from .namelist import NamelistConverter
 
@@ -476,6 +477,79 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         "--format", "-fmt", help="Input format", choices=["yaml", "ftn"], default="yaml"
     )
     parser_namelist_format.set_defaults(run_command=namelist_format)
+
+    ##########################################
+    # Configure parser for the "test" command #
+    ##########################################
+    parser_test = subparsers.add_parser(
+        "test",
+        help="Run integration test cases via the test runner",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser_test.add_argument(
+        "--config-file",
+        "-c",
+        dest="config_file",
+        help="Test runner config file",
+        required=False,
+        default=None,
+    )
+    parser_test.add_argument(
+        "--list",
+        "-l",
+        action="store_true",
+        default=False,
+        help="List selected cases",
+    )
+    parser_test.add_argument(
+        "--remove",
+        "-r",
+        action="store_true",
+        default=False,
+        help="Remove cases from ecflow, disks and archive",
+    )
+    parser_test.add_argument(
+        "--dry",
+        "-d",
+        action="store_true",
+        default=False,
+        help="Prepare only, do not execute actions",
+    )
+    parser_test.add_argument(
+        "--execute-removal",
+        action="store_true",
+        default=False,
+        help="Execute cleaning (only with --remove, overrides --dry)",
+    )
+    parser_test.add_argument(
+        "--verbose",
+        "-v",
+        action="store_true",
+        default=False,
+        help="Increase verbosity",
+    )
+    parser_test.add_argument(
+        "--prepare-binaries",
+        "-p",
+        action="store_true",
+        default=False,
+        help="Prepare binaries from an IAL hash",
+    )
+    parser_test.add_argument(
+        "-m",
+        action="store_false",
+        dest="run",
+        default=True,
+        help="Only run the modify generation step, do not start suites",
+    )
+    parser_test.add_argument(
+        "--config-files-to-remove",
+        "-q",
+        dest="remove_search_path",
+        nargs="*",
+        help="Config files for cases to remove",
+    )
+    parser_test.set_defaults(run_command=run_test, standalone_command=True)
 
     return main_parser
 
