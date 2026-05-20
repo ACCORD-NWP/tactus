@@ -10,7 +10,8 @@
   npatch = 3
 
 [submission.task_exceptions.E923Update]
-  binary = "FA_SFX2CLIM"
+  bindir = "/perm/deployde330/github-actions/install/CY49t2/intel/R64/latest/bin"
+  binary = "fa_sfx2clim"
 
 [submission.task_exceptions.E923Update.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
