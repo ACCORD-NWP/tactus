@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Switch off SICE until IAL problem resolved. [\#51](https://github.com/ACCORD-NWP/tactus/pull/51) (@uandrae)
+- Remove precipitation type output until resolved properly. [\#50](https://github.com/ACCORD-NWP/tactus/pull/50) (@uandrae)
 - Remove deode specific configurations and settings. [\#34](https://github.com/ACCORD-NWP/tactus/pull/34) (@uandrae)
 - Update documentation and remove DEODE specific references. [\#27](https://github.com/ACCORD-NWP/tactus/pull/27) (@uandrae)
 - Make CY50T2 default [\#14](https://github.com/ACCORD-NWP/tactus/pull/14) (@uandrae)
@@ -32,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change deployment of documentation to not need github secrets to work. [\#22](https://github.com/ACCORD-NWP/tactus/pull/22) (@mfroelund)
 
 ### Fixed
+- Temporary bindir setting for fa\_sfx2clim on deode\_49t2. [\#48](https://github.com/ACCORD-NWP/tactus/pull/55) (@kastelecn)
 - Correct documentation links. [\#49](https://github.com/ACCORD-NWP/tactus/pull/49) (@uandrae)
 - Remove CY49t2 binary for the C903 task left over from \#46. [\#48](https://github.com/ACCORD-NWP/tactus/pull/48) (@kastelecn)
 - Fix snow albedo global data so C903 works(Temporary fix). [\#46](https://github.com/ACCORD-NWP/tactus/pull/46) (@kastelecn)
