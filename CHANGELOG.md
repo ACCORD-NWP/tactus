@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change deployment of documentation to not need github secrets to work. [\#22](https://github.com/ACCORD-NWP/tactus/pull/22) (@mfroelund)
 
 ### Fixed
+- Remove CY49t2 binary for the C903 task left over from \#46. [\#48](https://github.com/ACCORD-NWP/tactus/pull/48) (@kastelecn)
 - Fix snow albedo global data so C903 works(Temporary fix). [\#46](https://github.com/ACCORD-NWP/tactus/pull/46) (@kastelecn)
 - Remove macro definition causing erroneous warnings. [\#33](https://github.com/ACCORD-NWP/tactus/pull/33) (@uandrae)
 - Return binary name as default. [\#19](https://github.com/ACCORD-NWP/tactus/pull/19) (@trygveasp)
