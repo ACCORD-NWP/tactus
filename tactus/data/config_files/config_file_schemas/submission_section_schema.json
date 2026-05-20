@@ -12,7 +12,7 @@
     "bindir": {
       "type": "string",
       "description": "Location of IAL binaries",
-      "default": "@INSTALL_DIR@/@CYCLE@/@COMPILER@/R64/@IAL_VERSION@/bin"
+      "default": "@CASEDIR@/install/bin"
     },
     "bindir_gl": {
       "type": "string",
@@ -37,7 +37,7 @@
         "R64",
         ""
       ],
-      "default": "R32"
+      "default": "R64"
     },
     "ial_version": {
       "description": "Version of IAL binary to use",
