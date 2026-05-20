@@ -10,6 +10,7 @@
   npatch = 3
 
 [submission.task_exceptions.E923Update]
+  bindir = "/perm/deployde330/github-actions/install/CY49t2/intel/R64/latest/bin"
   binary = "FA_SFX2CLIM"
 
 [submission.task_exceptions.E923Update.ENV]
