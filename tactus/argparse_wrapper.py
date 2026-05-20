@@ -20,9 +20,9 @@ from .commands_functions import (
     show_paths,
     start_suite,
 )
-from .test_runner import run_test
 from .config_parser import ConfigParserDefaults
 from .namelist import NamelistConverter
+from .test_runner import run_test
 
 
 def get_common_parser():

@@ -1,0 +1,20 @@
+[cleaning]
+
+[cleaning.defaults]
+  active = true
+  dry_run = false
+  include = "(.*)"
+  ncycles_delay = 0
+
+[cleaning.ttr.case_dir]
+  path = "@CASEDIR@"
+
+[cleaning.ttr.ecf_files]
+  path = "@ECF_FILES@/@CASE@"
+
+[cleaning.ttr.ecf_out]
+  path = "@ECF_OUT@/@CASE@/@YMD@/@HH@@mm@"
+
+[cleaning.ttr.ifs]
+  active = false
+  path = "@REFERENCE_DATA@/IFS"

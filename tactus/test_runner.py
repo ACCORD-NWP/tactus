@@ -87,7 +87,8 @@ class TestCases:
         self.tag = definitions["general"].get("tag")
 
         if self.tag[0].isdigit():
-            raise ValueError(f"The tag cannot start with an integer. tag={self.tag}")
+            self.tag = "v" + self.tag
+            #raise ValueError(f"The tag cannot start with an integer. tag={self.tag}")
 
     def resolve_selection(self, definitions):
         """Resolve the selections.
@@ -159,8 +160,7 @@ class TestCases:
             ]
         except KeyError as err:
             raise KeyError(
-                f"The case is not available\n"
-                f" Available cases are {list(self.cases)}"
+                f"The case is not available\n Available cases are {list(self.cases)}"
             ) from err
 
         return host_cases
@@ -343,7 +343,8 @@ class TestCases:
                 compiler = "gnu"
             cptag = ff.replace(ial_hash, "").replace("ial", "")
             bindir = (
-                _bindir.replace("@CPTAG@", cptag)
+                _bindir
+                .replace("@CPTAG@", cptag)
                 .replace("@IAL_HASH@", ial_hash)
                 .replace("@COMPILER@", compiler)
                 .replace("@PRECISION@", precision)
@@ -353,7 +354,7 @@ class TestCases:
             os.chdir(bindir)
             logger.info("Untar {} into {}", f, bindir)
             if not self.dry:
-                os.system(f"tar xf {f}")  # noqa S605
+                os.system(f"tar xf {f}")
 
         os.chdir(basedir)
 
@@ -374,7 +375,8 @@ class TestCases:
                     compiler = "gnu"
                 cptag = ff.replace(gl_hash, "").replace("gl", "")
                 bindir = (
-                    _bindir.replace("@CPTAG@", cptag)
+                    _bindir
+                    .replace("@CPTAG@", cptag)
                     .replace("@IAL_HASH@", gl_hash)
                     .replace("@COMPILER@", compiler)
                     .replace("/bin", "")
@@ -383,7 +385,7 @@ class TestCases:
                 os.chdir(bindir)
                 logger.info("Untar {} into {}", f, bindir)
                 if not self.dry:
-                    os.system(f"tar xf {f}")  # noqa S605
+                    os.system(f"tar xf {f}")
 
         logger.info("All binaries copied. Rerun without '-p' to launch tests")
 

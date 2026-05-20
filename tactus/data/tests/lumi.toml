@@ -1,0 +1,20 @@
+[general]
+  selection = [
+    "alaro",
+    "arome",
+    "cy49t2_alaro",
+    "cy49t2_alaro_target",
+    "cy49t2_arome_R64",
+    "cy49t2_arome_target",
+    "cy49t2_harmonie_arome_R64",
+    "cy49t2_harmonie_arome_target",
+    "harmonie_arome",
+  ]
+
+[general.compiler.gnu_]
+  active = true
+
+[include]
+  cases = "case_definitions.toml"
+  macros = "macros.toml"
+  modifs = "modifs_lumi.toml"
