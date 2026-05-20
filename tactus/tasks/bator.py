@@ -205,8 +205,8 @@ class Bator(Task):
         if os.path.isdir(ecma_out):
             dst = os.path.join(out_dir, ecma_out)
             if os.path.exists(dst):
-                shutil.rmtree(dst)
-            shutil.copytree(ecma_out, dst)
+                shutil.rmtree(dst, ignore_errors=True)
+            shutil.copytree(ecma_out, dst, symlinks=True)
             logger.info("Bator: archived {} to {}", ecma_out, out_dir)
 
     # ------------------------------------------------------------------

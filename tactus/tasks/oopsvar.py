@@ -298,9 +298,12 @@ class OopsVar(Task):
         """Generate / link all OOPS namelist files from da.oops.namelist_dir."""
         nd = self.oops_namelist_dir
 
-        # Substitution dict for the main minimization namelist template
+        # Substitution dict for the main minimization namelist template.
+        # "NBPROC" (no braces) handles the namelist_oops_leftovers style where
+        # all parallelism settings are written as bare NBPROC.
         subst = {
             "{NBPROC}":    str(nproc),
+            "NBPROC":      str(nproc),
             "{NPRTRV}":    str(self.nprtrv),
             "{NPRTRW}":    str(self.nprtrw),
             "{NSTRIN}":    str(self.nstrin),
@@ -326,25 +329,27 @@ class OopsVar(Task):
             "{NTRUNCJK}":  str(self.ntruncjk),
         }
 
-        # fort.4 from namelist_oopsminim template
+        # fort.4 from namelist_oops_leftovers template
         self._fill_template(
-            os.path.join(nd, "namelist_oopsminim"), "fort.4", subst
+            os.path.join(nd, "namelist_oops_leftovers"), "fort.4", subst
         )
 
-        # Geometry namelists with NPROMA substitution
+        # Geometry namelists — NPROMA may be hardcoded in the file; substitution
+        # is a no-op in that case but harmless.
         geom_subst = {"{nproma}": str(self.nproma)}
         self._fill_template(
-            os.path.join(nd, "namelist_standard_geometry"),
+            os.path.join(nd, "naml_standard_geometry"),
             "naml_standard_geometry",
             geom_subst,
         )
-        self._fill_template(
-            os.path.join(nd, "namelist_geometry_tENS"),
-            "naml_standard_geometry_tENS",
-            geom_subst,
-        )
+        # geometry_tENS is only needed for 3D-EnVar; skip with a warning if absent
+        tENS_src = os.path.join(nd, "naml_geometry_tENS")
+        if os.path.isfile(tENS_src):
+            self._fill_template(tENS_src, "naml_standard_geometry_tENS", geom_subst)
+        else:
+            logger.warning("OopsVar: namelist_geometry_tENS not found, skipping (3D-Var only)")
 
-        # OOPS JSON from oops_3dvar.json template (date substitution)
+        # OOPS JSON — written as oops.json; date placeholders substituted if present
         json_subst = {
             "{yyyy}": yyyy,
             "{mm}":   mm,
@@ -352,21 +357,21 @@ class OopsVar(Task):
             "{hh}":   rr,
         }
         self._fill_template(
-            os.path.join(nd, "oops_3dvar.json"), "oops.json", json_subst
+            os.path.join(nd, "3dvar.json"), "oops.json", json_subst
         )
 
         # Namelists linked as-is (no substitution)
         link_map = {
-            "namelist_bmatrix_3dvar":     "naml_bmatrix",
-            "namelist_observations_tlad": "naml_observations_tlad",
-            "namelist_observations":      "naml_observations",
-            "namelist_traj_model":        "naml_traj_model",
-            "namelist_linear_model":      "naml_linear_model",
-            "namelist_nonlinear_model":   "naml_nonlinear_model",
-            "namelist_oops_write_spec":   "naml_oops_write_spec",
-            "namelist_write_analysis":    "naml_write_analysis",
-            "namelist_gom_setup_hres":    "namelist_gom_setup_hres",
-            "namelist_gom_setup":         "namelist_gom_setup",
+            "naml_bmatrix":           "naml_bmatrix",
+            "naml_observations_tlad": "naml_observations_tlad",
+            "naml_observations":      "naml_observations",
+            "naml_traj_model":        "naml_traj_model",
+            "naml_linear_model":      "naml_linear_model",
+            "naml_nonlinear_model":   "naml_nonlinear_model",
+            "naml_oops_write_spec":   "naml_oops_write_spec",
+            "naml_write_analysis":    "naml_write_analysis",
+            "namelist_gom_setup_hres": "namelist_gom_setup_hres",
+            "namelist_gom_setup":      "namelist_gom_setup",
         }
         for src_name, link_name in link_map.items():
             src = os.path.join(nd, src_name)
