@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support multiple searchpaths for namelist files through TACTUS_CONFIG_DATA_DIR. [\#20](https://github.com/ACCORD-NWP/tactus/pull/20) (@mfroelund)
 
 ### Changed
+- Remove CY50T1 references as it will not be supported. [\#57](https://github.com/ACCORD-NWP/tactus/pull/57) (@uandrae)
 - Remove precipitation type output until resolved properly. [\#50](https://github.com/ACCORD-NWP/tactus/pull/50) (@uandrae)
 - Remove deode specific configurations and settings. [\#34](https://github.com/ACCORD-NWP/tactus/pull/34) (@uandrae)
 - Update documentation and remove DEODE specific references. [\#27](https://github.com/ACCORD-NWP/tactus/pull/27) (@uandrae)
