@@ -15,7 +15,6 @@ from botocore.exceptions import ClientError
 from isodate import parse_duration
 from troika.connections.ssh import SSHConnection
 
-from . import GeneralConstants
 from .csc_actions import SelectTstep
 from .datetime_utils import as_datetime, get_decade, oi2dt_list
 from .logs import logger
@@ -166,9 +165,6 @@ class Platform:
     def fill_macros(self):
         """Fill the macros."""
         self.macros = {}
-
-        # Set package name as a default macro
-        self.store_macro("SYS_NAME", GeneralConstants.PACKAGE_NAME)
 
         for macro in self.config["macros.select"]:
             self.fill_each_macro(f"macros.select.{macro}")

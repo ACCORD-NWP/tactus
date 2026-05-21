@@ -620,6 +620,11 @@
           "type": "string",
           "description": "Path to the e927 json config file",
           "default": "@CYCLE@/e927.json"
+        },
+        "sys_name": {
+          "type": "string",
+          "description": "System/package name (typically matching PACKAGE_NAME) used when resolving paths.",
+          "default": "tactus"
         }
       }
     },
