@@ -1,7 +1,5 @@
 [general]
   selection = [
-    "alaro",
-    "arome",
     "cy49t2_alaro",
     "cy49t2_alaro_ddh",
     "cy49t2_alaro_eps",
