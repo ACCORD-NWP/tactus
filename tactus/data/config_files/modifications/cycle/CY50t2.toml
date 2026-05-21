@@ -16,11 +16,24 @@
 [submission.task_exceptions.E923Update.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
 
+[submission.task_exceptions.Forecast.binaries.lfitools]
+  binary = "lfitools_dp"
+  bindir = "@SUBMISSION.BINDIR@"
+
+[submission.task_exceptions.Pgd]
+  binary = "pgd_dp"
+
 [submission.task_exceptions.Pgd.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
 
 [submission.task_exceptions.PgdFilterTownFrac]
   binary = "PGD_FRAC"
 
+[submission.task_exceptions.Prep]
+  binary = "prep_dp"
+
 [submission.task_exceptions.Prep.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
+
+[suite_control]
+  compile = true
