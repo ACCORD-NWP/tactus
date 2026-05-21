@@ -35,3 +35,146 @@ class TestBaseTask:
 
         # Clean up
         os.remove(config_file)
+
+
+class TestGetBinary:
+    """Unit tests for Task.get_binary."""
+
+    def test_task_specific_bindir(self, tmp_path: Path, default_config: ParsedConfig):
+        """Task-specific bindir from task_exceptions is returned."""
+        task_bindir = str(tmp_path / "task_bin")
+        task_config = default_config.copy(
+            update={
+                "platform": {"scratch": str(tmp_path), "unix_group": ""},
+                "submission": {
+                    "task_exceptions": {"GetBinaryTest": {"bindir": task_bindir}}
+                },
+            }
+        )
+        task = Task(task_config, "GetBinaryTest")
+        assert task.get_binary("MASTERODB") == f"{task_bindir}/MASTERODB"
+
+    def test_general_bindir(self, tmp_path: Path, default_config: ParsedConfig):
+        """submission.bindir is used when the binary file exists there."""
+        gen_bindir = tmp_path / "gen_bin"
+        gen_bindir.mkdir()
+        (gen_bindir / "MASTERODB").touch()
+        task_config = default_config.copy(
+            update={
+                "platform": {"scratch": str(tmp_path), "unix_group": ""},
+                "submission": {"bindir": str(gen_bindir)},
+            }
+        )
+        task = Task(task_config, "GetBinaryTest")
+        assert task.get_binary("MASTERODB") == str(gen_bindir / "MASTERODB")
+
+    def test_fallback_returns_binary_name(
+        self, tmp_path: Path, default_config: ParsedConfig
+    ):
+        """Binary name is returned unchanged when no bindir is configured."""
+        task_config = default_config.copy(
+            update={"platform": {"scratch": str(tmp_path), "unix_group": ""}},
+        )
+        task = Task(task_config, "GetBinaryTest")
+        assert task.get_binary("MASTERODB") == "MASTERODB"
+
+    def test_binary_name_override(self, tmp_path: Path, default_config: ParsedConfig):
+        """Binary name set in task_exceptions overrides the requested binary name."""
+        task_bindir = str(tmp_path / "task_bin")
+        task_config = default_config.copy(
+            update={
+                "platform": {"scratch": str(tmp_path), "unix_group": ""},
+                "submission": {
+                    "task_exceptions": {
+                        "GetBinaryTest": {
+                            "bindir": task_bindir,
+                            "binary": "ALTERNATE_BIN",
+                        }
+                    }
+                },
+            }
+        )
+        task = Task(task_config, "GetBinaryTest")
+        assert task.get_binary("MASTERODB") == f"{task_bindir}/ALTERNATE_BIN"
+
+    def test_binaries_section_bindir_only(
+        self, tmp_path: Path, default_config: ParsedConfig
+    ):
+        """Only bindir under binaries is used; binary name stays unchanged."""
+        binaries_bindir = str(tmp_path / "binaries_bin")
+        task_config = default_config.copy(
+            update={
+                "platform": {"scratch": str(tmp_path), "unix_group": ""},
+                "submission": {
+                    "task_exceptions": {
+                        "GetBinaryTest": {
+                            "binaries": {"MASTERODB": {"bindir": binaries_bindir}}
+                        }
+                    }
+                },
+            }
+        )
+        task = Task(task_config, "GetBinaryTest")
+        assert task.get_binary("MASTERODB") == f"{binaries_bindir}/MASTERODB"
+
+    def test_binaries_section_bindir(self, tmp_path: Path, default_config: ParsedConfig):
+        """bindir under task_exceptions.binaries.{binary} takes precedence."""
+        binaries_bindir = str(tmp_path / "binaries_bin")
+        task_config = default_config.copy(
+            update={
+                "platform": {"scratch": str(tmp_path), "unix_group": ""},
+                "submission": {
+                    "task_exceptions": {
+                        "GetBinaryTest": {
+                            "binaries": {"MASTERODB": {"bindir": binaries_bindir}}
+                        }
+                    }
+                },
+            }
+        )
+        task = Task(task_config, "GetBinaryTest")
+        assert task.get_binary("MASTERODB") == f"{binaries_bindir}/MASTERODB"
+
+    def test_binaries_section_binary_name(
+        self, tmp_path: Path, default_config: ParsedConfig
+    ):
+        """binary under task_exceptions.binaries.{binary} overrides the binary name."""
+        binaries_bindir = str(tmp_path / "binaries_bin")
+        task_config = default_config.copy(
+            update={
+                "platform": {"scratch": str(tmp_path), "unix_group": ""},
+                "submission": {
+                    "task_exceptions": {
+                        "GetBinaryTest": {
+                            "binaries": {
+                                "MASTERODB": {
+                                    "bindir": binaries_bindir,
+                                    "binary": "MASTERODB_DBG",
+                                }
+                            }
+                        }
+                    }
+                },
+            }
+        )
+        task = Task(task_config, "GetBinaryTest")
+        assert task.get_binary("MASTERODB") == f"{binaries_bindir}/MASTERODB_DBG"
+
+    def test_binaries_section_binary_name_only(
+        self, tmp_path: Path, default_config: ParsedConfig
+    ):
+        """Only binary under binaries overrides the name; fallback returns the new name."""
+        task_config = default_config.copy(
+            update={
+                "platform": {"scratch": str(tmp_path), "unix_group": ""},
+                "submission": {
+                    "task_exceptions": {
+                        "GetBinaryTest": {
+                            "binaries": {"MASTERODB": {"binary": "MASTERODB_DBG"}}
+                        }
+                    }
+                },
+            }
+        )
+        task = Task(task_config, "GetBinaryTest")
+        assert task.get_binary("MASTERODB") == "MASTERODB_DBG"

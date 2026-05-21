@@ -207,19 +207,19 @@ class Task(object):
 
         task_bindir = None
         general_bindir = None
-        try:
-            task_bindir = self.config[f"submission.task_exceptions.{task}.bindir"]
-        except KeyError:
-            try:
-                binaries = self.config[
-                    f"submission.task_exceptions.{task}.binaries.{binary_name}"
-                ]
-                logger.debug("binaries:{}", binaries)
+        with contextlib.suppress(KeyError):
+            binaries = self.config[
+                f"submission.task_exceptions.{task}.binaries.{binary_name}"
+            ]
+            logger.debug("binaries:{}", binaries)
 
-                with contextlib.suppress(KeyError):
-                    binary = binaries["binary"]
-                with contextlib.suppress(KeyError):
-                    task_bindir = binaries["bindir"]
+            with contextlib.suppress(KeyError):
+                binary = binaries["binary"]
+            with contextlib.suppress(KeyError):
+                task_bindir = binaries["bindir"]
+        if task_bindir is None:
+            try:
+                task_bindir = self.config[f"submission.task_exceptions.{task}.bindir"]
             except KeyError:
                 with contextlib.suppress(KeyError):
                     general_bindir = self.config["submission.bindir"]
@@ -247,7 +247,7 @@ class Task(object):
         bindir = os.path.realpath(bindir)
         general_binary = f"{bindir}/{binary}"
         if os.path.exists(general_binary):
-            logger.debug("Found general binary: {}", sys_binary)
+            logger.debug("Found general binary: {}", general_binary)
             return general_binary
         return binary
 
