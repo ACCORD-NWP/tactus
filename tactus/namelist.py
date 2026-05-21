@@ -737,7 +737,7 @@ class NamelistConverter:
     @staticmethod
     def get_known_cycles():
         """Return the cycles handled by the converter."""
-        return ["CY48t2", "CY48t3", "CY49", "CY49t1", "CY49t2", "CY50t1"]
+        return ["CY48t2", "CY48t3", "CY49", "CY49t1", "CY49t2", "CY50t2"]
 
     @staticmethod
     def get_to_next_version_tnt_filenames():
@@ -747,7 +747,7 @@ class NamelistConverter:
             "cy48t2_to_cy49.yaml",  # CY48t3 to CY49
             "cy49_to_cy49t1.yaml",  # CY49   to CY49t1
             None,  # CY49t1 to CY49t2,
-            "cy50_to_cy50t1.yaml",  # CY49t2 to CY5051
+            "cy50_to_cy50t2.yaml",  # CY49t2 to CY50t2
         ]
 
     @staticmethod
