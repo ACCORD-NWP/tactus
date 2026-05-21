@@ -15,7 +15,6 @@ from botocore.exceptions import ClientError
 from isodate import parse_duration
 from troika.connections.ssh import SSHConnection
 
-from . import GeneralConstants
 from .csc_actions import SelectTstep
 from .datetime_utils import as_datetime, get_decade, oi2dt_list
 from .logs import logger
