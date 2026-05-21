@@ -1,5 +1,4 @@
 [cleaning]
-
 [cleaning.defaults]
   active = true
   dry_run = false

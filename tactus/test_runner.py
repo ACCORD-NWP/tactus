@@ -88,7 +88,7 @@ class TestCases:
 
         if self.tag[0].isdigit():
             self.tag = "v" + self.tag
-            #raise ValueError(f"The tag cannot start with an integer. tag={self.tag}")
+            # raise ValueError(f"The tag cannot start with an integer. tag={self.tag}")
 
     def resolve_selection(self, definitions):
         """Resolve the selections.
