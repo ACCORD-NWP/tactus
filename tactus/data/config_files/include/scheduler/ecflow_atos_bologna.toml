@@ -1,12 +1,12 @@
 [scheduler]
 [scheduler.ecfvars]
   case_prefix = ""
-  ecf_files = "@HOME@/tactus_ecflow/ecf_files"
-  ecf_files_remotely = "@HOME@/tactus_ecflow/ecf_files"
-  ecf_home = "@HOME@/tactus_ecflow/jobout"
+  ecf_files = "@HOME@/@SYS_NAME@_ecflow/ecf_files"
+  ecf_files_remotely = "@HOME@/@SYS_NAME@_ecflow/ecf_files"
+  ecf_home = "@HOME@/@SYS_NAME@_ecflow/jobout"
   ecf_host = "_select_host_from_list(['ecfg-@USER@-1', 'ecflow-gen-@USER@-001'],)"
-  ecf_jobout = "@HOME@/tactus_ecflow/jobout"
-  ecf_out = "@HOME@/tactus_ecflow/jobout"
+  ecf_jobout = "@HOME@/@SYS_NAME@_ecflow/jobout"
+  ecf_out = "@HOME@/@SYS_NAME@_ecflow/jobout"
   ecf_port = 3141
   ecf_tactus_home = "strip_off_mount_path('@TACTUS_HOME@',)"
 

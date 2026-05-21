@@ -1,5 +1,5 @@
 [submission]
-  bindir = "@SCRATCH@/tactus/binaries/cy49t2/v2"
+  bindir = "@SCRATCH@/@SYS_NAME@/binaries/cy49t2/v2"
   bindir_gl = "@SUBMISSION.BINDIR@"
   default_submit_type = "serial"
   lfftw = true
@@ -61,7 +61,7 @@
   WALLTIME = "#SBATCH --time=01:00:00"
 
 [submission.task_exceptions.Forecast.ENV]
-  RTTOV_COEFDIR = "@SCRATCH@/tactus/DATA/satellite/rtcoef_rttov12/harm_coef"
+  RTTOV_COEFDIR = "@SCRATCH@/@SYS_NAME@/DATA/satellite/rtcoef_rttov12/harm_coef"
   UCX_LOG_LEVEL = "error"
 
 [submission.task_exceptions.Gmted.MODULES]
