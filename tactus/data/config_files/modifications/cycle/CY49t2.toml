@@ -10,8 +10,12 @@
   npatch = 3
 
 [submission]
+  bindir = "@INSTALL_DIR@/@CYCLE@/@COMPILER@/R64/@IAL_VERSION@/bin"
   gl_version = "gl-v1.9.2"
   ial_version = "CY49t2-v1.18.0"
 
 [submission.task_exceptions.E923Update.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
+
+[submission.task_exceptions.Forecast]
+  bindir = "@INSTALL_DIR@/@CYCLE@/@COMPILER@/@PRECISION@/@IAL_VERSION@/bin"

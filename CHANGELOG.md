@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support multiple searchpaths for namelist files through TACTUS_CONFIG_DATA_DIR. [\#20](https://github.com/ACCORD-NWP/tactus/pull/20) (@mfroelund)
 
 ### Changed
+- Switch on compilation by default. [\#60](https://github.com/ACCORD-NWP/tactus/pull/60) (@uandrae)
 - Use sys\_name in path generation templates. [\#45](https://github.com/ACCORD-NWP/tactus/pull/45) (@kastelecn)
 - Remove CY50T1 references as it will not be supported. [\#57](https://github.com/ACCORD-NWP/tactus/pull/57) (@uandrae)
 - Switch off SICE until IAL problem resolved. [\#51](https://github.com/ACCORD-NWP/tactus/pull/51) (@uandrae)
