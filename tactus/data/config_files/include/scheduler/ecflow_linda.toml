@@ -2,12 +2,12 @@
 [scheduler.ecfvars]
   case_prefix = ""
   ecf_tactus_home = "strip_off_mount_path('@TACTUS_HOME@',)"
-  ecf_files = "@HOME@/tactus_ecflow/ecf_files"
-  ecf_files_remotely = "@HOME@/tactus_ecflow/ecf_files"
-  ecf_home = "@HOME@/tactus_ecflow/jobout"
+  ecf_files = "@HOME@/@SYS_NAME@_ecflow/ecf_files"
+  ecf_files_remotely = "@HOME@/@SYS_NAME@_ecflow/ecf_files"
+  ecf_home = "@HOME@/@SYS_NAME@_ecflow/jobout"
   ecf_host = "localhost"
-  ecf_jobout = "@HOME@/tactus_ecflow/jobout"
-  ecf_out = "@HOME@/tactus_ecflow/jobout"
+  ecf_jobout = "@HOME@/@SYS_NAME@_ecflow/jobout"
+  ecf_out = "@HOME@/@SYS_NAME@_ecflow/jobout"
   ecf_port = 3142
 
 [scheduler.ecfvars.troika]

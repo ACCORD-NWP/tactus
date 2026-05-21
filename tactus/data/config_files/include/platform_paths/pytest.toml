@@ -1,5 +1,5 @@
 [platform]
-  archive_root = "@SCRATCH@/tactus/@CASE@/archive"
+  archive_root = "@SCRATCH@/@SYS_NAME@/@CASE@/archive"
   references_folder = "set-in-unittest"
-  references_generation_folder = "@SCRATCH@/generated_references"
-  scratch = ""
+  references_generation_folder = "@SCRATCH@/@SYS_NAME@/generated_references"
+  scratch = "@HOME@/@USER@"
