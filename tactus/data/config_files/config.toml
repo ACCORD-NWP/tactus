@@ -53,6 +53,10 @@
   tarname = "StaticData"
   task_logs = "@CLIMDIR@"
 
+[compile]
+  git_repo = "git@github.com:ACCORD-NWP/IAL"
+  git_branch = "develop"
+
 [fullpos]
   config_path = "@CYCLE@/fullpos"
   domain_name = "DOMAIN"
@@ -135,7 +139,7 @@
   bddir = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
   bddir_sfx = "@BDDIR@"
   bddir_sst = "@BDDIR@"
-  casedir = "@SCRATCH@/tactus/@CASE@"
+  casedir = "@SCRATCH@/@SYS_NAME@/@CASE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@"
   logs = "@ARCHIVE_ROOT@/logs"
   prev_case = "@CASE@"
