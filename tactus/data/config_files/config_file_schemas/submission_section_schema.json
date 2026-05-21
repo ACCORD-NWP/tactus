@@ -37,7 +37,7 @@
         "R64",
         ""
       ],
-      "default": "R64"
+      "default": "R32"
     },
     "ial_version": {
       "description": "Version of IAL binary to use",
