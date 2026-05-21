@@ -19,6 +19,9 @@
 [modifs.macros.select.release_test]
   os_macros = ["PERM"]
 
+[modifs.platform]
+  reference_data = "@SCRATCH@/@SYS_NAME@/@CYCLE@"
+
 [modifs.platform.mirrorglobalDT]
   remote_host = "ecflow-gen-snh02-001"
   remote_path = "/mirror_globalDT_iekm/pabv/iekm/fc/main/fcgroup/00/model"

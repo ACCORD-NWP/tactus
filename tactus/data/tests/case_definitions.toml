@@ -12,7 +12,6 @@
 [cases.cy48t3_arome]
 
 [cases.cy49t2_alaro]
-
 [cases.cy49t2_alaro.modifs.general.times]
   end = "2025-09-02T00:00:00Z"
   start = "2025-09-02T00:00:00Z"
@@ -31,15 +30,15 @@
     "tactus/data/config_files/include/eps/alaro.toml",
   ]
 
-[cases.cy49t2_alaro_eps.modifs.eps.general]
-  members = "0:3"
-
 [cases.cy49t2_alaro_eps.modifs.general.times]
-  end = "-P1D"
-  start = "-P1D"
+  end = "-P6D"
+  start = "-P6D"
 
 [cases.cy49t2_alaro_eps.modifs.system]
   case_suffix = "_eps"
+
+[cases.cy49t2_alaro_6ps.modifs.eps.general]
+  members = "0:3"
 
 [cases.cy49t2_alaro_mode_start]
   base = "cy49t2_alaro"
@@ -93,8 +92,8 @@
   members = "0:3"
 
 [cases.cy49t2_arome_eps.modifs.general.times]
-  end = "-P1D"
-  start = "-P1D"
+  end = "-P6D"
+  start = "-P6D"
 
 [cases.cy49t2_arome_eps.modifs.system]
   case_suffix = "_eps"
@@ -172,8 +171,8 @@
   members = "0:3"
 
 [cases.cy49t2_harmonie_arome_eps.modifs.general.times]
-  end = "-P2D"
-  start = "-P2D"
+  end = "-P6D"
+  start = "-P6D"
 
 [cases.cy49t2_harmonie_arome_eps.modifs.system]
   case_suffix = "_eps"
