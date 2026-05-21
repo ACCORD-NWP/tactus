@@ -30,7 +30,7 @@ tactus test -c config_files/atos_bologna.toml -d
 
 After successful runs and assessment the tested cases can be cleaned from disks and ecflow with the standard tactus `remove` functionality
 ```
-tactus remove /scratch/$USER/tactus/your_test_tag_\*/archive/config.toml --execute-removal -f 
+tactus remove /scratch/$USER/tactus/your_test_tag_\*/archive/config.toml --execute-removal -f
 
 ```
 Read more about the remove command in the cleaning documentation section.
