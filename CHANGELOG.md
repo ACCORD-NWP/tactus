@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Switch on compilation by default. [\#60](https://github.com/ACCORD-NWP/tactus/pull/60) (@uandrae)
+- Use sys\_name in path generation templates. [\#45](https://github.com/ACCORD-NWP/tactus/pull/45) (@kastelecn)
+- Remove CY50T1 references as it will not be supported. [\#57](https://github.com/ACCORD-NWP/tactus/pull/57) (@uandrae)
 - Switch off SICE until IAL problem resolved. [\#51](https://github.com/ACCORD-NWP/tactus/pull/51) (@uandrae)
 - Remove precipitation type output until resolved properly. [\#50](https://github.com/ACCORD-NWP/tactus/pull/50) (@uandrae)
 - Remove deode specific configurations and settings. [\#34](https://github.com/ACCORD-NWP/tactus/pull/34) (@uandrae)

@@ -1,12 +1,12 @@
 [scheduler]
 [scheduler.ecfvars]
   case_prefix = ""
-  ecf_files = "@HOME@/tactus_ecflow/ecf_files"
-  ecf_files_remotely = "@HOME@/tactus_ecflow/ecf_files"
-  ecf_home = "@HOME@/tactus_ecflow/jobout"
+  ecf_files = "@HOME@/@SYS_NAME@_ecflow/ecf_files"
+  ecf_files_remotely = "@HOME@/@SYS_NAME@_ecflow/ecf_files"
+  ecf_home = "@HOME@/@SYS_NAME@_ecflow/jobout"
   ecf_host = "@SUBMIT_HOST@"
-  ecf_jobout = "@HOME@/tactus_ecflow/jobout"
-  ecf_out = "@HOME@/tactus_ecflow/jobout"
+  ecf_jobout = "@HOME@/@SYS_NAME@_ecflow/jobout"
+  ecf_out = "@HOME@/@SYS_NAME@_ecflow/jobout"
   ecf_port = "_set_port_from_json('/leonardo_work/DestE_330_25/users/SAN/leonardo_install/leonardo_users.json',)"
   ecf_remoteuser = ""
   ecf_tactus_home = "@TACTUS_HOME@"
