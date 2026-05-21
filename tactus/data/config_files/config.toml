@@ -143,3 +143,4 @@
   climdir = "@CASEDIR@/climate/@DOMAIN@"
   logs = "@ARCHIVE_ROOT@/logs"
   prev_case = "@CASE@"
+  sys_name = "tactus"

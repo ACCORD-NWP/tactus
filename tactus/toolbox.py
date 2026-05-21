@@ -167,9 +167,6 @@ class Platform:
         """Fill the macros."""
         self.macros = {}
 
-        # Set package name as a default macro
-        self.store_macro("SYS_NAME", GeneralConstants.PACKAGE_NAME)
-
         for macro in self.config["macros.select"]:
             self.fill_each_macro(f"macros.select.{macro}")
 
