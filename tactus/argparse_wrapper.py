@@ -502,24 +502,11 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         help="List selected cases",
     )
     parser_test.add_argument(
-        "--remove",
-        "-r",
-        action="store_true",
-        default=False,
-        help="Remove cases from ecflow, disks and archive",
-    )
-    parser_test.add_argument(
         "--dry",
         "-d",
         action="store_true",
         default=False,
         help="Prepare only, do not execute actions",
-    )
-    parser_test.add_argument(
-        "--execute-removal",
-        action="store_true",
-        default=False,
-        help="Execute cleaning (only with --remove, overrides --dry)",
     )
     parser_test.add_argument(
         "--verbose",
@@ -541,13 +528,6 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         dest="run",
         default=True,
         help="Only run the modify generation step, do not start suites",
-    )
-    parser_test.add_argument(
-        "--config-files-to-remove",
-        "-q",
-        dest="remove_search_path",
-        nargs="*",
-        help="Config files for cases to remove",
     )
     parser_test.set_defaults(run_command=run_test, standalone_command=True)
 

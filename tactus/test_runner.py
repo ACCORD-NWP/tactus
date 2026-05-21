@@ -87,8 +87,7 @@ class TestCases:
         self.tag = definitions["general"].get("tag")
 
         if self.tag[0].isdigit():
-            self.tag = "v" + self.tag
-            # raise ValueError(f"The tag cannot start with an integer. tag={self.tag}")
+            raise ValueError(f"The tag cannot start with an integer. tag={self.tag}")
 
     def resolve_selection(self, definitions):
         """Resolve the selections.
@@ -145,11 +144,11 @@ class TestCases:
     def prepare(self):
         """Prepare the host cases.
 
-        Raises:
-            KeyError: If case is not found
-
         Returns:
             host_cases: List of host cases
+
+        Raises:
+            KeyError: If case is not found
 
         """
         try:
@@ -191,11 +190,11 @@ class TestCases:
                 continue
 
             counter = assigned[item["host"]] if "host" in item else assigned[case]
-            base = item["base"] if "base" in item else case
-            subtag = item["subtag"] if "subtag" in item else ""
-            host_case = item["hostname"] if "hostname" in item else ""
-            host_domain = item["hostdomain"] if "hostdomain" in item else ""
-            extra = list(self.extra) + (list(item["extra"]) if "extra" in item else [])
+            base = item.get("base", case)
+            subtag = item.get("subtag", "")
+            host_case = item.get("hostname", "")
+            host_domain = item.get("hostdomain", "")
+            extra = list(self.extra) + list(item.get("extra", []))
 
             modifs = merge_dicts(self.modifs, self.cases[case].get("modifs", {}), True)
             config = self.config.copy(
@@ -435,24 +434,22 @@ class TestCases:
                 self.cases[case]["hostname"] = hostnames[item["host"]]["config_name"]
                 self.cases[case]["hostdomain"] = hostnames[item["host"]]["domain_name"]
 
+    def execute(self, args):
+        """Execute test cases.
 
-def execute(t, args):
-    """Execute test cases.
+        Arguments:
+            args: Command line arguments
 
-    Arguments:
-        t (TestCases): Object with test cases to execute
-        args: Command line arguments
+        """
+        host_cases = self.prepare()
+        self.create(host_cases)
+        hostnames = self.configure(config_hosts=True)
+        self.update_hostnames(hostnames)
+        self.create()
 
-    """
-    host_cases = t.prepare()
-    t.create(host_cases)
-    hostnames = t.configure(config_hosts=True)
-    t.update_hostnames(hostnames)
-    t.create()
-
-    if args.run:
-        t.configure()
-        t.start()
+        if args.run:
+            self.configure()
+            self.start()
 
 
 def run_test(args, config=None):
@@ -468,27 +465,8 @@ def run_test(args, config=None):
     if args.prepare_binaries:
         t.get_binaries()
 
-    elif args.remove:
-        if args.remove_search_path is not None:
-            files = args.remove_search_path
-        elif t.test_dir is not None:
-            files = [
-                p
-                for p in Path(".").glob(f"{t.test_dir}/*.toml")
-                if "modifs_" not in p.name
-            ]
-        else:
-            files = []
-        args.config_files = files
-        args.dry_run = args.dry
-        remove_config_file = "config_files/remove.toml"
-        with open(remove_config_file, "rb") as f:
-            remove_config = tomli.load(f)
-        logger.info("Read cleaning rules from {}", remove_config_file)
-        args.force_remove = remove_config["remove"].pop("force_remove", False)
-
     elif args.list:
         t.list()
 
     elif args.config_file is not None:
-        execute(t, args)
+        t.execute(args)
