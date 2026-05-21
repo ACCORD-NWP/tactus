@@ -56,7 +56,7 @@
 
 [project.urls]
   "Bug Tracker" = "https://github.com/ACCORD-NWP/tactus/issues"
-  Documentation = "https://ACCORD-NWP.github.io/tactus-docs"
+  Documentation = "https://ACCORD-NWP.github.io/tactus"
   Homepage = "https://github.com/ACCORD-NWP/tactus"
   Repository = "https://github.com/ACCORD-NWP/tactus"
 
