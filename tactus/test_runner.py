@@ -13,6 +13,7 @@ import tomli
 from . import GeneralConstants
 from .config_parser import BasicConfig, ConfigPaths, ParsedConfig
 from .datetime_utils import as_datetime
+from .experiment import get_git_info
 from .fullpos import flatten_list
 from .general_utils import merge_dicts
 from .host_actions import TactusHost
@@ -81,13 +82,12 @@ class TestCases:
 
         """
         if "tag" not in definitions["general"]:
-            tag = GeneralConstants.VERSION.replace(".", "_").replace("-", "_") + "_"
-            definitions["general"]["tag"] = tag
-            logger.info("tag not given, derived from tactus version")
+            definitions["general"]["tag"] = self.get_tactus_version()
+            logger.info("tag not given but derived from git information")
         self.tag = definitions["general"].get("tag")
 
         if self.tag[0].isdigit():
-            self.tag = "v" + self.tag
+            raise ValueError(f"The tag cannot start with an integer. tag={self.tag}")
 
     def resolve_selection(self, definitions):
         """Resolve the selections.
@@ -104,6 +104,7 @@ class TestCases:
             logger.info("Selection is empty, include all cases")
             selection = list(self.cases)
 
+        # Handle subtags and update selection accordingly
         with contextlib.suppress(KeyError):
             subtags = definitions["general"]["compiler"]
             subtag_selection = []
@@ -141,6 +142,16 @@ class TestCases:
             if self.verbose:
                 logger.info("      {}", self.cases[x])
 
+    def get_tactus_version(self):
+        """Get tactus version info."""
+        tactus_git = get_git_info()
+        logger.info(tactus_git)
+        tag = tactus_git["branch"] + "_" + tactus_git["commit"][0:7]
+        for character in ["/", ".", "-"]:
+            tag = tag.replace(character, "_")
+        tag += "_"
+        return tag
+
     def prepare(self):
         """Prepare the host cases.
 
@@ -149,7 +160,6 @@ class TestCases:
 
         Raises:
             KeyError: If case is not found
-
         """
         try:
             host_cases = [
@@ -196,6 +206,7 @@ class TestCases:
             host_domain = item.get("hostdomain", "")
             extra = list(self.extra) + list(item.get("extra", []))
 
+            # Merge and replace macros
             modifs = merge_dicts(self.modifs, self.cases[case].get("modifs", {}), True)
             config = self.config.copy(
                 update={
@@ -212,10 +223,12 @@ class TestCases:
             with contextlib.suppress(KeyError):
                 config = config.expand_macros(True)
 
+            # Save the modifications
             outfile = f"{self.test_dir}/modifs_{case}.toml"
             logger.info(" create: {}", outfile)
             BasicConfig(config["modifs"]).save_as(outfile)
 
+            # Build the command to execute
             cmd = [
                 "case",
                 f"?{GeneralConstants.PACKAGE_DIRECTORY}/data/config_files/configurations/{base}",
@@ -236,7 +249,6 @@ class TestCases:
 
         Returns:
             cases (dict): Dict of cases to run
-
         """
         # Local import to avoid circular dependency (__main__ -> argparse_wrapper -> here)
         from .__main__ import main as tactus_main
@@ -254,8 +266,10 @@ class TestCases:
             cmd_txt = " ".join(cmd)
             logger.info("Use cmd:\n\n{}\n\n", cmd_txt)
 
+            # Call tactus main to create new config, and possibly start suite
             tactus_main(cmd)
 
+            # Update the case settings
             directory = Path(self.test_dir)
             config_file = max(directory.glob("*.toml"), key=lambda f: f.stat().st_mtime)
             with open(config_file, "rb") as f:
