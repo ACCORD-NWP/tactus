@@ -174,8 +174,8 @@
           "description": "MARS stream"
         },
         "stream_control": {
-            "type": "string",
-            "description": "MARS stream for control member. Required to be set if stream is not the same as for the other members."
+          "type": "string",
+          "description": "MARS stream for control member. Required to be set if stream is not the same as for the other members."
         }
       }
     },
