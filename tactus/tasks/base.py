@@ -199,6 +199,8 @@ class Task(object):
         binary = binary_name
         task = task_name if task_name is not None else self.name
         sys_bindir = "@CASEDIR@/install/bin"
+        #with contextlib.suppress(KeyError):
+            #sys_bindir = self.config["submission.sys_bindir"]
         sys_bindir = self.platform.substitute(sys_bindir)
         sys_bindir = os.path.realpath(sys_bindir)
 
@@ -222,7 +224,11 @@ class Task(object):
                 task_bindir = self.config[f"submission.task_exceptions.{task}.bindir"]
             except KeyError:
                 with contextlib.suppress(KeyError):
-                    general_bindir = self.config["submission.bindir"]
+                    task_bindir = self.config["submission.task_exceptions.bindir"]
+
+        if task_bindir is None:
+            with contextlib.suppress(KeyError):
+                general_bindir = self.config["submission.bindir"]
 
         # Look for binary
         logger.debug("binary:{}", binary)
@@ -242,13 +248,14 @@ class Task(object):
         if os.path.exists(sys_binary):
             logger.debug("Found system binary: {}", sys_binary)
             return sys_binary
-        # 3. General binary
-        bindir = self.platform.substitute(general_bindir)
-        bindir = os.path.realpath(bindir)
-        general_binary = f"{bindir}/{binary}"
-        if os.path.exists(general_binary):
-            logger.debug("Found general binary: {}", general_binary)
-            return general_binary
+        # 3. General binary — skip if the substituted path still has unresolved macros
+        if general_bindir is not None:
+            bindir = self.platform.substitute(general_bindir)
+            if "@" not in bindir:
+                bindir = os.path.realpath(bindir)
+                general_binary = f"{bindir}/{binary}"
+                logger.debug("Using general binary: {}", general_binary)
+                return general_binary
         return binary
 
     def execute(self):
