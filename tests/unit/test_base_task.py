@@ -1,11 +1,12 @@
 """Module with tests for the base Task class."""
 
 import os
-import pytest
 from pathlib import Path
 
+import pytest
+
 from tactus.config_parser import ParsedConfig
-from tactus.derived_variables import derived_variables, set_times
+from tactus.derived_variables import set_times
 from tactus.tasks.base import Task
 
 
@@ -107,9 +108,7 @@ class TestGetBinary:
         task = Task(task_config, "GetBinaryTest")
         assert task.get_binary("MASTERODB") == str(sys_bindir / "MASTERODB")
 
-    def test_fallback_returns_binary_name(
-        self, tmp_path: Path, basic_config: ParsedConfig
-    ):
+    def test_fallback_returns_binary_name(self, basic_config: ParsedConfig):
         """Binary name is returned unchanged when no bindir is configured."""
         task = Task(basic_config, "GetBinaryTest")
         assert task.get_binary("MASTERODB") == "MASTERODB"
@@ -131,7 +130,6 @@ class TestGetBinary:
         task = Task(task_config, "GetBinaryTest")
         assert task.get_binary("MASTERODB") == f"{task_bindir}/ALTERNATE_BIN"
 
-
     def test_binaries_section_binary_name_and_bindir(
         self,
         task_bindir: Path,
@@ -139,7 +137,7 @@ class TestGetBinary:
         binaries_bindir: Path,
         basic_config: ParsedConfig,
     ):
-        """binary under task_exceptions.binaries.{binary} overrides the binary name."""
+        """Binary under task_exceptions.binaries.{binary} overrides the binary name."""
         task_config = basic_config.copy(
             update={
                 "submission": {
@@ -161,11 +159,10 @@ class TestGetBinary:
         task = Task(task_config, "GetBinaryTest")
         assert task.get_binary("MASTERODB") == f"{binaries_bindir}/MASTERODB_DBG"
 
-
     def test_binaries_section_bindir_only(
         self, binaries_bindir: Path, basic_config: ParsedConfig
     ):
-        """bindir under task_exceptions.binaries.{binary} takes precedence."""
+        """Bindir under task_exceptions.binaries.{binary} takes precedence."""
         task_config = basic_config.copy(
             update={
                 "submission": {
@@ -180,10 +177,7 @@ class TestGetBinary:
         task = Task(task_config, "GetBinaryTest")
         assert task.get_binary("MASTERODB") == f"{binaries_bindir}/MASTERODB"
 
-
-    def test_binaries_section_binary_name_only(
-        self, tmp_path: Path, basic_config: ParsedConfig
-    ):
+    def test_binaries_section_binary_name_only(self, basic_config: ParsedConfig):
         """Only binary under binaries overrides the name; fallback returns the new name."""
         task_config = basic_config.copy(
             update={
@@ -201,12 +195,11 @@ class TestGetBinary:
 
     def test_binaries_section_binary_name_and_task_bindir(
         self,
-        tmp_path: Path,
         task_bindir: Path,
         gen_bindir: str,
         basic_config: ParsedConfig,
     ):
-        """binary under task_exceptions.binaries.{binary} overrides the binary name."""
+        """Binary under task_exceptions.binaries.{binary} overrides the binary name."""
         task_config = basic_config.copy(
             update={
                 "submission": {
@@ -228,9 +221,9 @@ class TestGetBinary:
         assert task.get_binary("MASTERODB") == f"{task_bindir}/MASTERODB_DBG"
 
     def test_binaries_section_binary_name_and_gen_bindir(
-        self, tmp_path: Path, gen_bindir: str, basic_config: ParsedConfig
+        self, gen_bindir: str, basic_config: ParsedConfig
     ):
-        """binary under task_exceptions.binaries.{binary} overrides the binary name."""
+        """Binary under task_exceptions.binaries.{binary} overrides the binary name."""
         task_config = basic_config.copy(
             update={
                 "submission": {
@@ -253,7 +246,7 @@ class TestGetBinary:
     def test_binaries_section_binary_name_and_sys_bindir(
         self, tmp_path: Path, sys_bindir: Path, basic_config: ParsedConfig
     ):
-        """binary under binaries overrides the name; sys_bindir is checked with the new name."""
+        """Binary under binaries overrides the name; sys_bindir is checked with the new name."""
         (sys_bindir / "MASTERODB_DBG").touch()
         task_config = basic_config.copy(
             update={
