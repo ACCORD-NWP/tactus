@@ -199,8 +199,6 @@ class Task(object):
         binary = binary_name
         task = task_name if task_name is not None else self.name
         sys_bindir = "@CASEDIR@/install/bin"
-        #with contextlib.suppress(KeyError):
-            #sys_bindir = self.config["submission.sys_bindir"]
         sys_bindir = self.platform.substitute(sys_bindir)
         sys_bindir = os.path.realpath(sys_bindir)
 
