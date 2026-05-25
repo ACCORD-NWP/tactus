@@ -263,7 +263,7 @@ class EcflowNode:
             elif self.node_type == "suite":
                 self.ecf_node = parent.add_suite(self.name)
             elif self.node_type == "mirror":
-                if mirror_config["check_var"]:
+                if mirror_config.get("check_var", None):
                     variables = {mirror_config["check_var"]: "placeholder"}
                 self.ecf_node = parent.ecf_node.add_task(self.name)
             else:
@@ -396,8 +396,8 @@ class EcflowNode:
                     mirror_config["remote_host"],
                     mirror_config["remote_port"],
                     mirror_config["remote_polling"],
-                    mirror_config["remote_ssl"],
-                    mirror_config["remote_auth"],
+                    mirror_config.get("remote_ssl", False),
+                    mirror_config.get("remote_auth", ""),
                 )
             )
 
