@@ -1,6 +1,7 @@
 """Module with tests for the base Task class."""
 
 import os
+import shutil
 from pathlib import Path
 
 import pytest
@@ -106,8 +107,11 @@ class TestGetBinary:
         task = Task(task_config, "GetBinaryTest")
         assert task.get_binary("MASTERODB") == str(sys_bindir / "MASTERODB")
 
-    def test_fallback_returns_binary_name(self, basic_config: ParsedConfig):
+    def test_fallback_returns_binary_name(
+        self, sys_bindir: Path, basic_config: ParsedConfig
+    ):
         """Binary name is returned unchanged when no bindir is configured."""
+        shutil.rmtree((sys_bindir / "MASTERODB"), ignore_errors=True)
         task = Task(basic_config, "GetBinaryTest")
         assert task.get_binary("MASTERODB") == "MASTERODB"
 
