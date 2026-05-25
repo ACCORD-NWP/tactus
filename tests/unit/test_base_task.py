@@ -186,6 +186,7 @@ class TestGetBinary:
                         }
                     }
                 },
+                "system": {"casedir": str(sys_bindir).replace("install/bin", "")},
             }
         )
         task = Task(task_config, "GetBinaryTest")
