@@ -3,9 +3,15 @@
 from pathlib import Path
 
 from tactus.os_utils import tactusmakedirs
-from tactus.suites.base import EcflowSuiteTask, SuiteDefinition
+from tactus.suites.base import (
+    EcflowSuiteTask,
+    EcflowSuiteTrigger,
+    EcflowSuiteTriggers,
+    SuiteDefinition,
+)
 from tactus.suites.tactus_suite_components import (
     CompilationFamily,
+    MirrorPostMortem,
     StaticDataFamily,
     TimeDependentFamily,
 )
@@ -58,12 +64,28 @@ class TactusSuiteDefinition(SuiteDefinition):
         # Construct the suite from individual ecFlow components
         final_cleaning_trigger = []
         time_dependent_trigger_node = None
+
+        mirror = None
+        if config["suite_control"].get("do_mirror_suite", False):
+            mirror = MirrorPostMortem(
+                self.suite,
+                config,
+                self.task_settings,
+                input_template,
+                self.ecf_files,
+                ecf_files_remotely=self.ecf_files_remotely,
+            )
+            mirror = EcflowSuiteTriggers([EcflowSuiteTrigger(mirror)])
+            mirror_path = config["scheduler.mirror_suite"]["remote_path"].split("/")[-1]
+            mirror.trigger_string = f"( /{self.name}/Mirrors/{mirror_path} == complete )"
+
         prep_run = EcflowSuiteTask(
             "PrepRun",
             self.suite,
             config,
             self.task_settings,
             self.ecf_files,
+            trigger=mirror,
             input_template=input_template,
             ecf_files_remotely=self.ecf_files_remotely,
         )

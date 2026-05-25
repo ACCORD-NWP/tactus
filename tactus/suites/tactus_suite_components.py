@@ -556,6 +556,42 @@ class MirrorFamily(EcflowSuiteFamily):
             )
 
 
+class MirrorPostMortem(EcflowSuiteFamily):
+    """Class for waiting for a suite."""
+
+    def __init__(
+        self,
+        parent,
+        config,
+        task_settings: TaskSettings,
+        input_template,
+        ecf_files,
+        trigger=None,
+        ecf_files_remotely=None,
+    ):
+        """Class initialization."""
+        super().__init__(
+            "Mirrors",
+            parent,
+            ecf_files,
+            trigger=trigger,
+            ecf_files_remotely=ecf_files_remotely,
+        )
+
+        EcflowSuiteTask(
+            config["scheduler.mirror_suite"]["remote_path"].split("/")[-1],
+            self,
+            config,
+            task_settings,
+            ecf_files,
+            input_template=input_template,
+            trigger=[trigger],
+            mirror=True,
+            mirror_config=config["scheduler.mirror_suite"],
+            ecf_files_remotely=ecf_files_remotely,
+        )
+
+
 class InputDataFamily(EcflowSuiteFamily):
     """Class for creating the InputDataFamily ecFlow family."""
 
