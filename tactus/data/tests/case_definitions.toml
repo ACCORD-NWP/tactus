@@ -31,8 +31,8 @@
   ]
 
 [cases.cy49t2_alaro_eps.modifs.general.times]
-  end = "-P6D"
-  start = "-P6D"
+  end = "-P1D"
+  start = "-P1D"
 
 [cases.cy49t2_alaro_eps.modifs.system]
   case_suffix = "_eps"
@@ -92,8 +92,8 @@
   members = "0:3"
 
 [cases.cy49t2_arome_eps.modifs.general.times]
-  end = "-P6D"
-  start = "-P6D"
+  end = "-P1D"
+  start = "-P1D"
 
 [cases.cy49t2_arome_eps.modifs.system]
   case_suffix = "_eps"
@@ -171,8 +171,8 @@
   members = "0:3"
 
 [cases.cy49t2_harmonie_arome_eps.modifs.general.times]
-  end = "-P6D"
-  start = "-P6D"
+  end = "-P1D"
+  start = "-P1D"
 
 [cases.cy49t2_harmonie_arome_eps.modifs.system]
   case_suffix = "_eps"
