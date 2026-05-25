@@ -104,7 +104,7 @@
   GG_skt = "235"
   GG_snow = "33/238/228038/228141"
   GG_soil = "234/173/174/43/30/29/28/27"
-  GGZ_type = "CF"
+  GGZ_type = "FC"
   grid_ML = "AV"
   ifs_cycle_length = "PT6H"
   levelist = "1/to/137"
