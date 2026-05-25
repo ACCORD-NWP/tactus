@@ -1,6 +1,5 @@
 """Module with tests for the base Task class."""
 
-import contextlib
 import os
 from pathlib import Path
 
@@ -32,14 +31,7 @@ def binaries_bindir(tmp_path: Path):
 
 
 @pytest.fixture(scope="module")
-def sys_bindir(tmp_path: Path):
-    sys_bindir = tmp_path / "get_binary_tests" / "install" / "bin"
-    sys_bindir.mkdir(parents=True, exist_ok=True)
-    return sys_bindir
-
-
-@pytest.fixture(scope="module")
-def basic_config(tmp_directory: str, sys_bindir: Path, default_config: ParsedConfig):
+def basic_config(tmp_directory: str, default_config: ParsedConfig):
     config = default_config.copy(update=set_times(default_config))
     return config.copy(
         update={
@@ -47,7 +39,6 @@ def basic_config(tmp_directory: str, sys_bindir: Path, default_config: ParsedCon
                 "scratch": tmp_directory,
                 "unix_group": "",
             },
-            "system": {"casedir": str(sys_bindir).replace("install/bin", "")},
         }
     )
 
@@ -97,19 +88,27 @@ class TestGetBinary:
         task = Task(task_config, "GetBinaryTest")
         assert task.get_binary("MASTERODB") == f"{gen_bindir}/MASTERODB"
 
-    def test_sys_bindir(self, sys_bindir: Path, basic_config: ParsedConfig):
+    def test_sys_bindir(self, tmp_path: Path, basic_config: ParsedConfig):
         """submission.sys_bindir is used when the binary file exists there."""
+        sys_bindir = tmp_path / "get_binary_tests_sys_bindir" / "install" / "bin"
+        sys_bindir.mkdir(parents=True, exist_ok=True)
         (sys_bindir / "MASTERODB").touch()
-        task = Task(basic_config, "GetBinaryTest")
+        task_config = basic_config.copy(
+            update={
+                "system": {"casedir": str(sys_bindir).replace("install/bin", "")},
+            }
+        )
+        task = Task(task_config, "GetBinaryTest")
         assert task.get_binary("MASTERODB") == str(sys_bindir / "MASTERODB")
 
     def test_fallback_returns_binary_name(
-        self, sys_bindir: Path, basic_config: ParsedConfig
+        self, tmp_path: Path, basic_config: ParsedConfig
     ):
         """Binary name is returned unchanged when no bindir is configured."""
-        with contextlib.suppress(FileNotFoundError):
-            os.remove(sys_bindir / "MASTERODB")
-        task = Task(basic_config, "GetBinaryTest")
+        task_config = basic_config.copy(
+            update={"system": {"casedir": tmp_path / "get_binary_tests_binary_name_only"}}
+        )
+        task = Task(task_config, "GetBinaryTest")
         assert task.get_binary("MASTERODB") == "MASTERODB"
 
     def test_binary_name_override(self, task_bindir: Path, basic_config: ParsedConfig):
@@ -177,11 +176,9 @@ class TestGetBinary:
         assert task.get_binary("MASTERODB") == f"{binaries_bindir}/MASTERODB"
 
     def test_binaries_section_binary_name_only(
-        self, sys_bindir: Path, basic_config: ParsedConfig
+        self, tmp_path: Path, basic_config: ParsedConfig
     ):
         """Only binary under binaries overrides the name; fallback returns the new name."""
-        with contextlib.suppress(FileNotFoundError):
-            os.remove(sys_bindir / "MASTERODB_DBG")
         task_config = basic_config.copy(
             update={
                 "submission": {
@@ -191,6 +188,7 @@ class TestGetBinary:
                         }
                     }
                 },
+                "system": {"casedir": tmp_path / "get_binary_tests_binary_name_only"},
             }
         )
         task = Task(task_config, "GetBinaryTest")
@@ -247,9 +245,13 @@ class TestGetBinary:
         assert task.get_binary("MASTERODB") == f"{gen_bindir}/MASTERODB_DBG"
 
     def test_binaries_section_binary_name_and_sys_bindir(
-        self, sys_bindir: Path, basic_config: ParsedConfig
+        self, tmp_path: Path, basic_config: ParsedConfig
     ):
         """Binary under binaries overrides the name; sys_bindir is checked with the new name."""
+        sys_bindir = (
+            tmp_path / "get_binary_tests_binary_name_and_sys_bindir" / "install" / "bin"
+        )
+        sys_bindir.mkdir(parents=True, exist_ok=True)
         (sys_bindir / "MASTERODB_DBG").touch()
         task_config = basic_config.copy(
             update={
@@ -264,6 +266,7 @@ class TestGetBinary:
                         }
                     }
                 },
+                "system": {"casedir": str(sys_bindir).replace("install/bin", "")},
             }
         )
         task = Task(task_config, "GetBinaryTest")
