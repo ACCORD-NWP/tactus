@@ -1,6 +1,7 @@
 """Module with tests for the base Task class."""
 
 import os
+import shutil
 from pathlib import Path
 
 import pytest
@@ -105,9 +106,9 @@ class TestGetBinary:
         self, tmp_path: Path, basic_config: ParsedConfig
     ):
         """Binary name is returned unchanged when no bindir is configured."""
-        task_config = basic_config.copy(
-            update={"system": {"casedir": tmp_path / "get_binary_tests_binary_name_only"}}
-        )
+        casedir = tmp_path / "get_binary_tests_binary_name_only"
+        shutil.rmtree(casedir / "install", ignore_errors=True)
+        task_config = basic_config.copy(update={"system": {"casedir": casedir}})
         task = Task(task_config, "GetBinaryTest")
         assert task.get_binary("MASTERODB") == "MASTERODB"
 
@@ -179,6 +180,8 @@ class TestGetBinary:
         self, tmp_path: Path, basic_config: ParsedConfig
     ):
         """Only binary under binaries overrides the name; fallback returns the new name."""
+        casedir = tmp_path / "get_binary_tests_binaries_section_binary_name_only"
+        shutil.rmtree(casedir / "install", ignore_errors=True)
         task_config = basic_config.copy(
             update={
                 "submission": {
@@ -188,7 +191,7 @@ class TestGetBinary:
                         }
                     }
                 },
-                "system": {"casedir": tmp_path / "get_binary_tests_binary_name_only"},
+                "system": {"casedir": casedir},
             }
         )
         task = Task(task_config, "GetBinaryTest")
