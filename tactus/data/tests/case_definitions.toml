@@ -70,6 +70,13 @@
 [cases.cy49t2_alaro_target.modifs.suite_control]
   mirror_host_case = true
 
+[cases.cy50t2_compile]
+[cases.cy50t2_compile.modifs.general]
+  case = "@CYCLE@_compile"
+
+[cases.cy50t2_compile.modifs.suite_control]
+  suite = "CompilationSuiteDefinition"
+
 [cases.cy50t2_alaro]
 
 [cases.cy49t2_arome]

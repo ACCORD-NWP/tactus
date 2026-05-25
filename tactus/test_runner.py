@@ -228,10 +228,17 @@ class TestCases:
             logger.info(" create: {}", outfile)
             BasicConfig(config["modifs"]).save_as(outfile)
 
+            base_file = (
+                GeneralConstants.PACKAGE_DIRECTORY
+                + "/data/config_files/configurations/"
+                + base
+            )
+            base_file = f"?{base_file}" if os.path.exists(base_file) else ""
+
             # Build the command to execute
             cmd = [
                 "case",
-                f"?{GeneralConstants.PACKAGE_DIRECTORY}/data/config_files/configurations/{base}",
+                base_file,
                 extra,
                 outfile,
                 "-o",
