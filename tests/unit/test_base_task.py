@@ -1,7 +1,7 @@
 """Module with tests for the base Task class."""
 
+import contextlib
 import os
-import shutil
 from pathlib import Path
 
 import pytest
@@ -39,7 +39,7 @@ def sys_bindir(tmp_path: Path):
 
 
 @pytest.fixture(scope="module")
-def basic_config(tmp_directory: str, default_config: ParsedConfig):
+def basic_config(tmp_directory: str, sys_bindir: Path, default_config: ParsedConfig):
     config = default_config.copy(update=set_times(default_config))
     return config.copy(
         update={
@@ -47,6 +47,7 @@ def basic_config(tmp_directory: str, default_config: ParsedConfig):
                 "scratch": tmp_directory,
                 "unix_group": "",
             },
+            "system": {"casedir": str(sys_bindir).replace("install/bin", "")},
         }
     )
 
@@ -99,19 +100,15 @@ class TestGetBinary:
     def test_sys_bindir(self, sys_bindir: Path, basic_config: ParsedConfig):
         """submission.sys_bindir is used when the binary file exists there."""
         (sys_bindir / "MASTERODB").touch()
-        task_config = basic_config.copy(
-            update={
-                "system": {"casedir": str(sys_bindir).replace("install/bin", "")},
-            },
-        )
-        task = Task(task_config, "GetBinaryTest")
+        task = Task(basic_config, "GetBinaryTest")
         assert task.get_binary("MASTERODB") == str(sys_bindir / "MASTERODB")
 
     def test_fallback_returns_binary_name(
         self, sys_bindir: Path, basic_config: ParsedConfig
     ):
         """Binary name is returned unchanged when no bindir is configured."""
-        shutil.rmtree((sys_bindir / "MASTERODB"), ignore_errors=True)
+        with contextlib.suppress(FileNotFoundError):
+            os.remove(sys_bindir / "MASTERODB")
         task = Task(basic_config, "GetBinaryTest")
         assert task.get_binary("MASTERODB") == "MASTERODB"
 
@@ -183,7 +180,8 @@ class TestGetBinary:
         self, sys_bindir: Path, basic_config: ParsedConfig
     ):
         """Only binary under binaries overrides the name; fallback returns the new name."""
-        shutil.rmtree((sys_bindir / "MASTERODB_DBG"), ignore_errors=True)
+        with contextlib.suppress(FileNotFoundError):
+            os.remove(sys_bindir / "MASTERODB_DBG")
         task_config = basic_config.copy(
             update={
                 "submission": {
@@ -193,7 +191,6 @@ class TestGetBinary:
                         }
                     }
                 },
-                "system": {"casedir": str(sys_bindir).replace("install/bin", "")},
             }
         )
         task = Task(task_config, "GetBinaryTest")
@@ -267,7 +264,6 @@ class TestGetBinary:
                         }
                     }
                 },
-                "system": {"casedir": str(sys_bindir).replace("install/bin", "")},
             }
         )
         task = Task(task_config, "GetBinaryTest")
