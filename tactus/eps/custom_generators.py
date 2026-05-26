@@ -77,4 +77,4 @@ class CmodelGenerator(BaseGenerator[dict]):
         if len(self.members) == 1:
             yield "@CYCLE@-@CSC@-oper"
         for member in self.members:
-            yield "@CYCLE@-@CSC@-oper"
+            yield f"@CYCLE@-@CSC@-enfo-{member}"
