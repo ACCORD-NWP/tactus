@@ -1,0 +1,12 @@
+[domain]
+  gridtype = "linear"
+  name = "DKCOEXP"
+  nimax = 639
+  njmax = 639
+  tstep = 75
+  xdx = 2500
+  xdy = 2500
+  xlatcen = 56.3
+  xloncen = 9.9
+  xlat0 = 56.3
+  xlon0 = 0.0
