@@ -126,7 +126,7 @@
 [eps.member_settings.namelist_update.master.forecast.namspp]
   iezdiag_pos = {0 = -1, "1:" = 4}
   lspg_spp = {0 = false, "1:" = true}
-  lspp = {0 = false, "1:" = true}
+  lspp = {0 = false, "1:" = false}
 
 [namelist_update.master.forecast.namspp]
   cspp_model_name = "lam"
