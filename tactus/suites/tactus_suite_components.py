@@ -578,8 +578,15 @@ class MirrorPostMortem(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
+        # Resolve macros
+        platform = Platform(config)
+        self.mirror_suite = {
+            x: platform.substitute(y) for x, y in config["scheduler.mirror_suite"].items()
+        }
+        self.mirror_path = self.mirror_suite["remote_path"].split("/")[-1]
+
         EcflowSuiteTask(
-            config["scheduler.mirror_suite"]["remote_path"].split("/")[-1],
+            self.mirror_path,
             self,
             config,
             task_settings,
@@ -587,9 +594,11 @@ class MirrorPostMortem(EcflowSuiteFamily):
             input_template=input_template,
             trigger=[trigger],
             mirror=True,
-            mirror_config=config["scheduler.mirror_suite"],
+            mirror_config=self.mirror_suite,
             ecf_files_remotely=ecf_files_remotely,
         )
+
+        #self.trigger_string = f"( /{parent.name}/Mirrors/{mirror_path} == complete )"
 
 
 class InputDataFamily(EcflowSuiteFamily):
