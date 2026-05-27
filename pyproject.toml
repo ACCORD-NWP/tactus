@@ -36,7 +36,7 @@
     "jsonref>=1.1.0",
     "loguru>=0.7.1",
     "numexpr>=2.8.4",
-    "numpy>=2.2.0, <2.3.0",
+    "numpy>=2.4.0",
     "omegaconf>=2.3",
     "pandas>=1.4.0,<3.0.0",
     "pydantic>=2.9.2",
@@ -50,7 +50,7 @@
     "tomlkit>=0.12.1",
     "troika @ git+https://github.com/ecmwf/troika.git",
     "urllib3<2",
-    # "utci @ git+https://github.com/ACCORD-NWP/utci.git",
+    "utci @ git+https://github.com/mfroelund/utci.git@feature/bump-python-to-3.12",
     "xmltodict>=0.14.2",
   ]
 

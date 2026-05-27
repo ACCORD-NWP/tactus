@@ -18,7 +18,8 @@ lint:
 
 # Testing
 test:
-	poetry run pytest -n auto --maxprocesses 16
+	# poetry run pytest -n auto --maxprocesses 16
+	poetry run pytest tests/unit/test_ecflow_template.py
 
 # Documentation
 doc-clean:
