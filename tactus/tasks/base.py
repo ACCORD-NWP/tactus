@@ -218,8 +218,9 @@ class Task(object):
             with contextlib.suppress(KeyError):
                 task_bindir = binaries["bindir"]
         except KeyError:
-            with contextlib.suppress(KeyError):
-                general_bindir = self.config["submission.bindir"]
+            pass
+        with contextlib.suppress(KeyError):
+            general_bindir = self.config["submission.bindir"]
 
         # Look for binary
         logger.debug("binary:{}", binary)
@@ -239,9 +240,8 @@ class Task(object):
             if "@" not in bindir:
                 bindir = os.path.realpath(bindir)
                 general_binary = f"{bindir}/{binary}"
-                if os.path.exists(general_binary):
-                    logger.debug("Found general binary: {}", general_binary)
-                    return general_binary
+                logger.debug("Using general binary: {}", general_binary)
+                return general_binary
         return binary
 
     def execute(self):

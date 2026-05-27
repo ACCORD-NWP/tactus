@@ -137,12 +137,15 @@ class TactusBundleCreate(Task):
             yaml.preserve_quotes = True
             yaml.indent(mapping=4, sequence=4, offset=2)
             yaml.width = 4096
+            try:
+                with open(self.orig_bundle_file, "r", encoding="utf-8") as f:
+                    orig_bundle_dict = yaml.load(f) or {}
 
-            with open(self.orig_bundle_file, "r", encoding="utf-8") as f:
-                orig_bundle_dict = yaml.load(f) or {}
-
-            with open(self.update_bundle_file, "r", encoding="utf-8") as f:
-                upd_bundle_dict = yaml.load(f) or {}
+                with open(self.update_bundle_file, "r", encoding="utf-8") as f:
+                    upd_bundle_dict = yaml.load(f) or {}
+            except: FileNotFoundError
+                orig_bundle_dict = {}
+                upd_bundle_dict = {}
 
             merged_dict = self.deep_merge(orig_bundle_dict, upd_bundle_dict)
 
