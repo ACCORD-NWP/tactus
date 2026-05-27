@@ -13,6 +13,16 @@
 [scheduler.ecfvars.troika]
   config_file = "@ECF_TACTUS_HOME@/data/config_files/troika.yml"
 
+[scheduler.mirror_host_case]
+  check_var = ""
+  mirror_name = "host_case"
+  remote_auth = ""
+  remote_host = "_select_host_from_list(['ecfg-@USER@-1', 'ecflow-gen-@USER@-001'],)"
+  remote_path = "/@HOST_CASE@/@YYYY@@MM@@DD@/@HH@@mm@/mbr000/Cycle/Forecasting"
+  remote_polling = "300"
+  remote_port = "3141"
+  remote_ssl = false
+
 [scheduler.mirror_suite]
   check_var = ""
   mirror_name = "@HOST_SUITE@"
