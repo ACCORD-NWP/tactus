@@ -12,18 +12,18 @@ We currently have the following config files under the directory `tactus/data/te
 ## Check
 
 ```
-tactus test -c config_files/atos_bologna.toml -l
+tactus test -c tactus/data/tests/atos_bologna.toml -l
 ```
 
 ## Run
 ```
-tactus test -c config_files/atos_bologna.toml
+tactus test -c tactus/data/tests/atos_bologna.toml
 ```
 
 This will create a directory according to the tag and create all config files in this directory. For each config a tactus ecflow run will be launched. To only prepare config files without running tactus do:
 
 ```
-tactus test -c config_files/atos_bologna.toml -d
+tactus test -c tactus/data/tests/atos_bologna.toml -d
 ```
 
 ## Clean
