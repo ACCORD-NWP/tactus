@@ -127,7 +127,11 @@ class PrepRun(Task):
                         dicts.append(eps_key)
                     line = (
                         f"'{model_name}' = {{"
-                        + "".join(f"{k} = {v}; " for d in dicts for k, v in d.items())
+                        + "".join(
+                            f"{k} = '{v}'; " if isinstance(v, str) else f"{k} = {v}; "
+                            for d in dicts
+                            for k, v in d.items()
+                        )
                         + "}\n"
                     )
                     f.write(line)

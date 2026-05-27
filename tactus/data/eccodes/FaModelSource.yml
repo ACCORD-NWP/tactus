@@ -1,7 +1,7 @@
 frameworks:
   accord:
     subCentre: 84
-    indicatorOfUnitOfTimeRange: 13
+    indicatorOfUnitOfTimeRange: "s"
     tablesVersion: 34
 
 cycles:
