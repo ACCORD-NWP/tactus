@@ -229,7 +229,7 @@ class TestCases:
             BasicConfig(config["modifs"]).save_as(outfile)
 
             base_file = (
-                GeneralConstants.PACKAGE_DIRECTORY
+                str(GeneralConstants.PACKAGE_DIRECTORY)
                 + "/data/config_files/configurations/"
                 + base
             )
