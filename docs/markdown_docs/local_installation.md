@@ -73,11 +73,11 @@ git clone git@github.com:ACCORD-NWP/tactus.git
 cd tactus
 ```
 
-Create a conda environment and install ecflow, gdal and poetry.
+Create a conda environment and install ecflow and gdal.
 ```
 $ module purge
 $ module load Mambaforge/23.3.1-1-hpc1
-$ mamba create -p .conda ecflow gdal=3.5.0 poetry python=3.10.4
+$ mamba create -p .conda ecflow gdal=3.5.0 python=3.10.4
 ...
 $ mamba activate .conda/
 ```
@@ -85,7 +85,7 @@ $ mamba activate .conda/
 Install tactus and all it's dependencies
 
 ```
-(tactus-py3.10) $ poetry install
+(tactus-py3.10) $ pixi install
 ```
 
 Now we're ready to go!
@@ -104,7 +104,7 @@ $ cd tactus
 $ mamba activate .conda/
 ```
 
-Note that for the time being ( until the mamba/poetry usage is better understood ) it's recommended to make this procedure, with a new mamba name, for each new tactus clone.
+Note that for the time being it's recommended to make this procedure, with a new mamba name, for each new tactus clone.
 
 
 ## Belenos
