@@ -264,6 +264,4 @@ selection:
       - CLPMHAUT.MOD.XFU
       - CLSVISIN_60
       - CLSVISIHYDN60
-      - CLSPTYPE_60M
-      - CLSPTYPESEV_60M
       - CLSMEAN.RAD.TEMP

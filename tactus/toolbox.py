@@ -165,6 +165,7 @@ class Platform:
     def fill_macros(self):
         """Fill the macros."""
         self.macros = {}
+
         for macro in self.config["macros.select"]:
             self.fill_each_macro(f"macros.select.{macro}")
 

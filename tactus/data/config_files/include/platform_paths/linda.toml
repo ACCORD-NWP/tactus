@@ -1,5 +1,5 @@
 [platform]
-  archive_root = "@SCRATCH@/tactus/@CASE@/archive"
+  archive_root = "@SCRATCH@/@SYS_NAME@/@CASE@/archive"
   archive_types = ["copy"]
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef/"
   scratch = "@HOME@/tactus_wrk"

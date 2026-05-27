@@ -54,21 +54,14 @@
     "xmltodict>=0.14.2",
   ]
 
-[project.scripts]
-  tactus = "tactus.__main__:main"
-
 [project.urls]
   "Bug Tracker" = "https://github.com/ACCORD-NWP/tactus/issues"
-  Documentation = "https://ACCORD-NWP.github.io/tactus-docs"
+  Documentation = "https://ACCORD-NWP.github.io/tactus"
   Homepage = "https://github.com/ACCORD-NWP/tactus"
   Repository = "https://github.com/ACCORD-NWP/tactus"
 
-[build-system]
-  requires = ["poetry-core >= 1.0.0"]
-  build-backend = "poetry.core.masonry.api"
-
-[tool.poetry]
-  include = [{path = "tactus/data/**/*", format = ["sdist", "wheel"]}]
+[project.scripts]
+  tactus = "tactus.__main__:main"
 
 [dependency-groups]
   dev = ["pre-commit>=3.0.4", "ruff (>=0.15.10,<0.16.0)"]
@@ -87,9 +80,22 @@
     "pytest-xdist>=3.2.0",
   ]
 
+[build-system]
+  requires = ["poetry-core >= 1.0.0"]
+  build-backend = "poetry.core.masonry.api"
+
 # Linter configs
 [tool.check-wheel-contents]
   ignore = ["W002"]
+
+[tool.poetry]
+  include = [{path = "tactus/data/**/*", format = ["sdist", "wheel"]}]
+
+# pytest configs
+[tool.pytest.ini_options]
+  addopts = "-v --failed-first --cov-report=term-missing --cov-report=term:skip-covered --cov-report=xml:.coverage.xml --cov=./"
+  log_cli_level = "INFO"
+  testpaths = ["tests/smoke", "tests/unit"]
 
 [tool.ruff]
   line-length = 90
@@ -219,9 +225,3 @@
     "^tool.poetry$",
     "tool.poetry.*",
   ]
-
-# pytest configs
-[tool.pytest.ini_options]
-  addopts = "-v --failed-first --cov-report=term-missing --cov-report=term:skip-covered --cov-report=xml:.coverage.xml --cov=./"
-  log_cli_level = "INFO"
-  testpaths = ["tests/smoke", "tests/unit"]

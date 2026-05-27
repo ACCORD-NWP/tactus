@@ -1,6 +1,6 @@
 [general]
   accept_static_namelists = false
-  case = "@CASE_PREFIX@@CYCLE@_@CSC@_@EVENT_TYPE@_@DOMAIN@_@YMD_START@"
+  case = "@CASE_PREFIX@@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@"
   cnmexp = "DEOD"
   csc = "AROME"
   cycle = "CY50t2"
@@ -39,7 +39,7 @@
 
 [boundaries.ifs]
   bdmember = []
-  selection = "@HOST@_DT"
+  selection = "HRES"
 
 [boundaries.lam]
 
@@ -52,6 +52,10 @@
   joboutdir = "@ECF_OUT@/@CASE@/StaticData"
   tarname = "StaticData"
   task_logs = "@CLIMDIR@"
+
+[compile]
+  git_repo = "git@github.com:ACCORD-NWP/IAL"
+  git_branch = "develop"
 
 [fullpos]
   config_path = "@CYCLE@/fullpos"
@@ -114,7 +118,7 @@
   create_static_data = true
   create_time_dependent_suite = true
   do_archiving = true
-  do_cleaning = false
+  do_cleaning = true
   do_extractsqlite = true
   do_interpolsstsic = true
   do_marsprep = true
@@ -135,7 +139,7 @@
   bddir = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
   bddir_sfx = "@BDDIR@"
   bddir_sst = "@BDDIR@"
-  casedir = "@SCRATCH@/tactus/@CASE@"
+  casedir = "@SCRATCH@/@SYS_NAME@/@CASE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@"
   logs = "@ARCHIVE_ROOT@/logs"
   prev_case = "@CASE@"

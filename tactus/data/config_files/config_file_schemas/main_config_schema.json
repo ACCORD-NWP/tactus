@@ -496,6 +496,11 @@
           "type": "boolean",
           "default": false
         },
+        "mirror_suite": {
+          "description": "Mirror system.host_suite and trigger when the PostMortem task is completed",
+          "type": "boolean",
+          "default": false
+        },
         "max_static_data_tasks": {
           "description": "Limit for max number of monthly tasks, run at same time",
           "type": "integer",
@@ -620,6 +625,11 @@
           "type": "string",
           "description": "Path to the e927 json config file",
           "default": "@CYCLE@/e927.json"
+        },
+        "sys_name": {
+          "type": "string",
+          "description": "System/package name (typically matching PACKAGE_NAME) used when resolving paths.",
+          "default": "tactus"
         }
       }
     },
@@ -987,22 +997,6 @@
             "CY49t2",
             "CY48t3",
             "CY46h1"
-          ]
-        },
-        "event_type": {
-          "description": "Type of extreme event",
-          "type": "string",
-          "default": "nwp",
-          "enum": [
-            "airquality",
-            "coldspell",
-            "convection",
-            "flooding",
-            "nowcasting",
-            "heatwave",
-            "nwp",
-            "storm",
-            "wildfire"
           ]
         },
         "famodel": {

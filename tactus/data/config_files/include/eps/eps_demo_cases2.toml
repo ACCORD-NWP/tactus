@@ -1,5 +1,5 @@
 [general]
-  case = "EPS_DEMO_CASES2_@EVENT_TYPE@_@DOMAIN@_@YMD_START@"
+  case = "EPS_DEMO_CASES2_@DOMAIN@_@YMD_START@"
 
 [eps.general]
   members = "1:3"
