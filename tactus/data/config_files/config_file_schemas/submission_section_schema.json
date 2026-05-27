@@ -97,6 +97,24 @@
               "default": {}
             }
           }
+        },
+        "TactusBundleBuild": {
+          "type": "object",
+          "description": "Settings specific toTactusBundleBuild tasks",
+          "properties": {
+            "ENV": {
+              "type": "object",
+              "description": "Sets environment variables",
+              "properties": {
+                "IAL_DIR": {
+                  "type": "string",
+                  "description": "path to IAL_DIR",
+                  "default": "@CASEDIR@/IAL"
+                }
+              },
+              "default": {}
+            }
+          }
         }
       }
     },
