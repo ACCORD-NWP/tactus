@@ -18,12 +18,10 @@
     "cy49t2_harmonie_arome_mode_start",
     "cy49t2_harmonie_arome_R64",
     "cy49t2_harmonie_arome_target",
-    "harmonie_arome",
   ]
 
 [general.compiler.gnu_]
-  active = true
-  exclude = ["airquality"]
+  active = false
   extra = ["tactus/data/config_files/modifications/submission/atos_bologna_gnu.toml"]
 
 [general.compiler.intel_]

@@ -37,7 +37,7 @@
 [cases.cy49t2_alaro_eps.modifs.system]
   case_suffix = "_eps"
 
-[cases.cy49t2_alaro_6ps.modifs.eps.general]
+[cases.cy49t2_alaro_eps.modifs.eps.general]
   members = "0:3"
 
 [cases.cy49t2_alaro_mode_start]
@@ -78,6 +78,23 @@
   suite = "CompilationSuiteDefinition"
 
 [cases.cy50t2_alaro]
+
+[cases.cy50t2_alaro_eps]
+  base = "cy50t2_alaro"
+  extra = [
+    "tactus/data/config_files/include/eps/eps_7members.toml",
+    "tactus/data/config_files/include/eps/alaro.toml",
+  ]
+
+[cases.cy50t2_alaro_eps.modifs.general.times]
+  end = "-P1D"
+  start = "-P1D"
+
+[cases.cy50t2_alaro_eps.modifs.eps.general]
+  members = "0:3"
+
+[cases.cy50t2_alaro_eps.modifs.system]
+  case_suffix = "_eps"
 
 [cases.cy49t2_arome]
 
@@ -158,6 +175,19 @@
 
 [cases.cy50t2_arome]
 
+[cases.cy50t2_arome_slaf]
+  base = "cy50t2_arome"
+  extra = [
+    "tactus/data/config_files/include/eps/eps_members_slaf.toml",
+    "tactus/data/config_files/include/eps/arome.toml",
+  ]
+
+[cases.cy50t2_arome_slaf.modifs.eps.general]
+  members = "0:3"
+
+[cases.cy50t2_arome_slaf.modifs.system]
+  case_suffix = "_slaf"
+
 [cases.cy49t2_harmonie_arome]
 
 [cases.cy49t2_harmonie_arome_ddh]
@@ -223,6 +253,24 @@
   mirror_host_case = true
 
 [cases.cy50t2_harmonie_arome]
+
+[cases.cy50t2_harmonie_arome_eps]
+  base = "cy50t2_harmonie_arome"
+  extra = [
+    "tactus/data/config_files/include/eps/eps_7members.toml",
+    "tactus/data/config_files/include/eps/harmonie_arome.toml",
+  ]
+
+[cases.cy50t2_harmonie_arome_eps.modifs.eps.general]
+  members = "0:3"
+
+[cases.cy50t2_harmonie_arome_eps.modifs.general.times]
+  end = "-P1D"
+  start = "-P1D"
+
+[cases.cy50t2_harmonie_arome_eps.modifs.system]
+  case_suffix = "_eps"
+
 
 [cases.harmonie_arome]
   base = "harmonie_arome"
