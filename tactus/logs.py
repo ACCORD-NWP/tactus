@@ -90,16 +90,16 @@ class LoggerHandlers(Sequence):
         return len(self.handlers)
 
 
-def log_elapsed_time(package_name=GeneralConstants.PACKAGE_NAME, version=GeneralConstants.VERSION, **kwargs):
+def log_elapsed_time(
+    package_name=GeneralConstants.PACKAGE_NAME, version=GeneralConstants.VERSION, **kwargs
+):
     """Return a decorator that logs beginning, exit and elapsed time of function."""
 
     def log_elapsed_time_decorator(function):
         """Wrap `function` and log beginning, exit and elapsed time."""
         name = kwargs.get("name", function.__name__)
-        logger.info("not main:{}", name)
         if function.__name__ == "main":
             name = f"{package_name} v{version}"
-            logger.info("if main:{}", name)
             cmd = f"{' '.join([package_name, *sys.argv[1:]])}"
             name = f'{name} --> "{cmd}"'
 

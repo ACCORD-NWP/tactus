@@ -623,7 +623,8 @@
         },
         "sys_name": {
           "type": "string",
-          "description": "System/package name (typically matching PACKAGE_NAME) used when resolving paths."
+          "description": "System/package name (typically matching PACKAGE_NAME) used when resolving paths.",
+          "default": "tactus"
         }
       }
     },
