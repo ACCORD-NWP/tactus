@@ -271,6 +271,5 @@
 [cases.cy50t2_harmonie_arome_eps.modifs.system]
   case_suffix = "_eps"
 
-
 [cases.harmonie_arome]
   base = "harmonie_arome"
