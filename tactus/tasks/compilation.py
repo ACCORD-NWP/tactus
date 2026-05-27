@@ -1,4 +1,5 @@
 """Compialtion tasks."""
+
 import copy
 import hashlib
 import json
@@ -6,21 +7,22 @@ import os
 import shutil
 import sys
 from pathlib import Path
-from ruamel.yaml import YAML
 
 from git import InvalidGitRepositoryError, Repo
+from ruamel.yaml import YAML
 
 from ..logs import logger
 from ..os_utils import tactusmakedirs
 from .base import Task
 from .batch import BatchJob
-from ..general_utils import merge_dicts
+
 
 class IALClone(Task):
     """Bundle Fetch task."""
-    
+
     def __init__(self, config):
         """Construct object.
+
         Args:
             config (tactus.ParsedConfig): Configuration
         """
@@ -33,7 +35,6 @@ class IALClone(Task):
         ial_dir = self.config["compile.ial_dir"]
         self.ial_dir = self.platform.substitute(ial_dir)
 
-
     def execute(self):
         """Execute task."""
         if os.path.exists(self.ial_dir):
@@ -44,6 +45,7 @@ class IALClone(Task):
             cmd = cmd.replace("[TOKEN]", self.git_token)
             batch_job.run(cmd)
             batch_job.run(f"cd {self.ial_dir}; git checkout {self.git_ial_branch}")
+
 
 class TactusBundleCreate(Task):
     """tactus create bundle."""
@@ -66,7 +68,6 @@ class TactusBundleCreate(Task):
             git_token_str = f"--github-token {git_token}"
         self.git_token_str = git_token_str
 
-        
         orig_bundle_file = self.config["compile.bundle_file"]
         self.orig_bundle_file = self.platform.substitute(orig_bundle_file)
 
@@ -83,10 +84,9 @@ class TactusBundleCreate(Task):
         self.ecbundle_bin = f"{os.path.dirname(sys.executable)}/ecbundle"
 
         self.compile_dir = self.platform.substitute(compile_dir)
-    
-    def deep_merge(self,original, updates):
-        """
-        Recursively merge `updates` into `original`.
+
+    def deep_merge(self, original, updates):
+        """Recursively merge `updates` into `original`.
 
         Rules:
         - Dictionaries and lists of dictionaries are merged recursively.
@@ -96,11 +96,11 @@ class TactusBundleCreate(Task):
         if isinstance(original, dict) and isinstance(updates, dict):
             merged = copy.deepcopy(original)
             for key, value in updates.items():
-                if (key in merged):                    
-                    if (isinstance(merged[key], dict) and isinstance(value, dict)):
+                if key in merged:
+                    if isinstance(merged[key], dict) and isinstance(value, dict):
                         merged[key] = self.deep_merge(merged[key], value)
 
-                    elif (isinstance(merged[key], list) and isinstance(value, list)):
+                    elif isinstance(merged[key], list) and isinstance(value, list):
                         merged[key] = {k: v for d in merged[key] for k, v in d.items()}
                         new_val = {k: v for d in value for k, v in d.items()}
                         merged[key] = self.deep_merge(merged[key], new_val)
@@ -110,15 +110,15 @@ class TactusBundleCreate(Task):
                 else:
                     merged[key] = copy.deepcopy(value)
 
-
         else:
             return copy.deepcopy(updates)
 
         if "projects" in merged:
-            merged ["projects"] = [{key:value} for key,value in merged["projects"].items()]
+            merged["projects"] = [
+                {key: value} for key, value in merged["projects"].items()
+            ]
 
         return merged
-
 
     def execute(self):
         """Execute task."""
@@ -129,7 +129,6 @@ class TactusBundleCreate(Task):
 
         ial_dir = self.config["compile.ial_dir"]
         os.environ["IAL_DIR"] = self.platform.substitute(ial_dir)
-        
 
         if self.config["compile.bundle_update"]:
             yaml = YAML()
@@ -139,19 +138,16 @@ class TactusBundleCreate(Task):
             yaml.indent(mapping=4, sequence=4, offset=2)
             yaml.width = 4096
 
-            
             with open(self.orig_bundle_file, "r", encoding="utf-8") as f:
-                orig_bundle_dict =  yaml.load(f) or {} 
-            
-            with open(self.update_bundle_file, "r", encoding="utf-8") as f:
-                upd_bundle_dict =  yaml.load(f) or {} 
+                orig_bundle_dict = yaml.load(f) or {}
 
-            merged_dict = self.deep_merge(
-                orig_bundle_dict,
-                upd_bundle_dict)            
-            
+            with open(self.update_bundle_file, "r", encoding="utf-8") as f:
+                upd_bundle_dict = yaml.load(f) or {}
+
+            merged_dict = self.deep_merge(orig_bundle_dict, upd_bundle_dict)
+
             with open(self.bundle_file, "w", encoding="utf-8") as f:
-                yaml.dump(merged_dict,f)
+                yaml.dump(merged_dict, f)
 
         batch_job.run(
             f"cd {self.compile_dir}; {self.ecbundle_bin} create "
@@ -216,12 +212,16 @@ class TactusBundleBuild(Task):
         tactusmakedirs(self.exp_builddir)
         tactusmakedirs(os.path.dirname(self.local_bindir))
         try:
-            logger.info("Backing up bundle from {}", f"{self.bundle_dir}/source/bundle.yml")
-            shutil.copyfile(f"{self.bundle_dir}/source/bundle.yml", f"{self.platform.substitute(compile_dir)}/bundle.yml")
+            logger.info(
+                "Backing up bundle from {}", f"{self.bundle_dir}/source/bundle.yml"
+            )
+            shutil.copyfile(
+                f"{self.bundle_dir}/source/bundle.yml",
+                f"{self.platform.substitute(compile_dir)}/bundle.yml",
+            )
         except FileNotFoundError:
             logger.info("Unable to finde {}", self.platform.substitute(compile_dir))
-            pass
-            
+
         self.ninja_arg = ""
         if self.config["compile"].get("ninja"):
             self.ninja_arg = "--ninja "

@@ -4,7 +4,6 @@
 # to connect to Github, e.g. GITHUB="https://github.com" to use https and tokens.
 projects :
     - gl :
-        dir: /scratch/prt2342/ACCORD-IAL/gl
-        #git     : ${GITHUB}/pardallio/gl-acrd
-        #version : feature/cy50
+        git     : ${GITHUB}/pardallio/gl-acrd
+        version : feature/cy50
         gmkpack : 'None'

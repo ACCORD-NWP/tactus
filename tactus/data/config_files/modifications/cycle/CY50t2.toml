@@ -38,9 +38,6 @@
 [submission.task_exceptions.Prep]
   binary = "prep_dp"
 
-[submission.task_exceptions.Prep]
-  binary = "prep_dp"
-
 [submission.task_exceptions.Prep.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
 

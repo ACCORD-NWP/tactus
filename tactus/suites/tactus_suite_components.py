@@ -1847,7 +1847,7 @@ class CompilationFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
-        clone_IAL = EcflowSuiteTask(
+        clone_ial = EcflowSuiteTask(
             "IALClone",
             self,
             config,
@@ -1865,7 +1865,7 @@ class CompilationFamily(EcflowSuiteFamily):
             ecf_files,
             input_template=input_template,
             ecf_files_remotely=ecf_files_remotely,
-            trigger=EcflowSuiteTriggers(EcflowSuiteTrigger(clone_IAL))
+            trigger=EcflowSuiteTriggers(EcflowSuiteTrigger(clone_ial)),
         )
 
         build_familiy = EcflowSuiteFamily(
