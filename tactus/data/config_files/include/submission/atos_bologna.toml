@@ -87,9 +87,13 @@
   MEM = "#SBATCH --mem=0GB"
   QOS = "#SBATCH --qos=np"
   NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=64"
+  NTASKS = "#SBATCH --ntasks=1"
+  CPUSPERTASK = "#SBATCH --cpus-per-task=128"
   WALLTIME = "#SBATCH --time=02:00:00"
 
+[submission.task_exceptions.TactusBundleBuild.ENV]
+  OMP_NUM_THREADS = 128
+  
 [submission.task_exceptions.GlBd]
   binary = "gl_DP"
 
