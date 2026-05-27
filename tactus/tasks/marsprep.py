@@ -186,7 +186,6 @@ class Marsprep(Task):
             grid:               Specific grid for some request. Default None.
             source:             Sorce for retrieve data from disk. Defaults None.
             fieldset:           Name of fieldset. Defaults None.
-
         """
         if grid is not None and self.mars_version == 6:
             request.update_request({"GRID": grid})
@@ -207,7 +206,11 @@ class Marsprep(Task):
             request.update_request({"LEVELIST": "1"})
 
         # Set stream
-        stream = get_value_from_dict(self.mars["stream"], request.time)
+        base_stream = get_value_from_dict(self.mars["stream"], request.time)
+        if bdmember == [0]:
+            stream = self.mars.get("stream_control", base_stream)
+        else:
+            stream = base_stream
         request.update_request({"STREAM": stream})
 
         # Retrieve from already fetched data
@@ -813,6 +816,7 @@ class Marsprep(Task):
                 steps=[0],
                 target=f'"{tag}.Z"',
                 grid=self.mars["grid_ML"],
+                members=[0],
             )
 
         return get_and_remove_data(f"{tag}.Z")
@@ -876,6 +880,7 @@ class Marsprep(Task):
                 param=param,
                 steps=[0],
                 target=target,
+                members=[0],
             )
         # Collect and return the data from target files
         # (Read the single-step MARS files first, hence the reversed order)
