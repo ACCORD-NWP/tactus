@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Package to run the Destination Earth on Demand Extremes system."""
 
-import os
-import sys
 from importlib.metadata import version
 from pathlib import Path
 
