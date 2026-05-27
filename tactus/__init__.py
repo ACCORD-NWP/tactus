@@ -13,3 +13,5 @@ class GeneralConstants(QuasiConstant):
     PACKAGE_NAME = __name__
     VERSION = version(__name__)
     PACKAGE_DIRECTORY = Path(__file__).parent
+    PACKAGE_FILE = __file__
+
