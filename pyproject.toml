@@ -3,9 +3,9 @@
   version = "1.0.0"
   description = "The Tactus scripting system."
   readme = "README.md"
-  requires-python = ">=3.10,<3.13"
-  license = { text = "MIT" }
-  authors = [{ name = "ACCORD" }]
+  requires-python = ">=3.12,<3.13"
+  license = {text = "MIT"}
+  authors = [{name = "ACCORD"}]
   keywords = ["forecasting", "tactus", "weather"]
   classifiers = [
     "Development Status :: 4 - Beta",
@@ -17,7 +17,7 @@
     "Programming Language :: Python :: 3.12",
   ]
   dependencies = [
-    # "arpifs_listings @ git+https://git@github.com/UMR-CNRM/arpifs_listings.git@master",
+    "arpifs_listings @ git+https://git@github.com/UMR-CNRM/arpifs_listings.git@master",
     "boto3>=1.42.15",
     "dateutils>=0.6.12",
     "dicttoxml>=1.0.0",
@@ -26,14 +26,14 @@
     "f90nml>=1.4.3",
     "fastjsonschema==2.18.1",
     "frozendict>=2.4.7",
-    # "geohash @ git+https://github.com/ACCORD-NWP/geohash.git@v1.1",
     "gdal>=3.7",
+    "geohash @ git+https://github.com/ACCORD-NWP/geohash.git@v1.1",
     "gitpython>=3.1.30",
-    # "grib2sqlite @ git+https://github.com/ACCORD-NWP/grib2sqlite.git@v0.2.0",
+    "grib2sqlite @ git+https://github.com/ACCORD-NWP/grib2sqlite.git@v0.2.0",
     "humanize>=4.8.0",
     "isodate>=0.6.1",
     "json-schema-for-humans>=1.5.1",
-    # "json2tab @ git+https://github.com/ACCORD-NWP/json2tab.git@master",
+    "json2tab @ git+https://github.com/ACCORD-NWP/json2tab.git@master",
     "jsonref>=1.1.0",
     "loguru>=0.7.1",
     "numexpr>=2.8.4",
@@ -45,13 +45,13 @@
     "pyproj>=3.3.0,!=3.5.0",
     "pysurfex>=0.1.2",
     "pyyaml>=6.0",
-    # "thenamelisttool @ git+https://github.com/UMR-CNRM/thenamelisttool.git",
-    # "toml-formatter @ git+https://github.com/ACCORD-NWP/toml-formatter.git",
+    "thenamelisttool @ git+https://github.com/UMR-CNRM/thenamelisttool.git",
+    "toml-formatter @ git+https://github.com/ACCORD-NWP/toml-formatter.git",
     "tomli>=2.0.1",
     "tomlkit>=0.12.1",
-    # "troika @ git+https://github.com/ecmwf/troika.git",
+    "troika @ git+https://github.com/ecmwf/troika.git",
     "urllib3<2",
-    # "utci @ git+https://github.com/ACCORD-NWP/utci.git",
+    "utci @ git+https://github.com/ACCORD-NWP/utci.git",
     "xmltodict>=0.14.2",
   ]
 
@@ -60,27 +60,6 @@
   Documentation = "https://ACCORD-NWP.github.io/tactus"
   Homepage = "https://github.com/ACCORD-NWP/tactus"
   Repository = "https://github.com/ACCORD-NWP/tactus"
-
-[project.scripts]
-  tactus = "tactus.__main__:main"
-
-[tool.pixi.workspace]
-  channels = ["conda-forge"]
-  platforms = ["linux-64"]
-
-[tool.pixi.dependencies]
-  # conda-forge provides C libraries that pip wheels don't bundle
-  python = ">=3.10,<3.13"
-  pip = "*"
-  eccodes = "==2.41"
-  ecflow = ">=5.15.0"
-  gdal = "*"
-  libgdal = "*"
-  inetutils = "*"
-  numpy = ">=1.22.4,<2.0.0"
-
-[tool.pixi.tasks]
-  bootstrap = "pip install -e . --group dev --group test --group doc"
 
 [dependency-groups]
   dev = ["pre-commit>=3.0.4", "ruff (>=0.15.10,<0.16.0)"]
@@ -100,15 +79,46 @@
   ]
 
 [build-system]
-  requires = ["poetry-core >= 1.0.0"]
-  build-backend = "poetry.core.masonry.api"
+  requires = ["hatchling"]
+  build-backend = "hatchling.build"
 
 # Linter configs
 [tool.check-wheel-contents]
   ignore = ["W002"]
 
+[tool.hatch.metadata]
+  allow-direct-references = true
+
+[tool.pixi.workspace]
+  channels = ["conda-forge"]
+  platforms = ["linux-64"]
+
+[tool.pixi.pypi-dependencies]
+  tactus = {path = ".", editable = true}
+
+[tool.pixi.dependencies]
+  # conda-forge provides C libraries that pip wheels don't bundle
+  python = ">=3.10,<3.13"
+  pip = "*"
+  eccodes = "==2.41"
+  ecflow = ">=5.15.0"
+  gdal = "*"
+  libgdal = "*"
+  inetutils = "*"
+  numpy = ">=1.22.4,<2.0.0"
+
+[tool.pixi.environments]
+  default = {features = [], solve-group = "default"}
+  test = {features = ["test"], solve-group = "default"}
+  doc = {features = ["doc"], solve-group = "default"}
+  dev = {features = ["dev"], solve-group = "default"}
+
+[tool.pixi.tasks]
+  tactus = "python -m tactus"
+  lint = {cmd = "pre-commit run --all-files", default-environment = "dev"}
+
 [tool.poetry]
-  include = [{ path = "tactus/data/**/*", format = ["sdist", "wheel"] }]
+  include = [{path = "tactus/data/**/*", format = ["sdist", "wheel"]}]
 
 # pytest configs
 [tool.pytest.ini_options]

@@ -43,9 +43,7 @@ class Topography(Task):
         self.topo_source = self.fmanager.platform.get_platform_value(
             "topo_source", alt="gmted2010"
         )
-        self.topo_data_path = self.fmanager.platform.get_platform_value(
-            "topo_data_path"
-        )
+        self.topo_data_path = self.fmanager.platform.get_platform_value("topo_data_path")
 
     def gmted_header_coordinates(
         self, east: float, west: float, south: float, north: float
@@ -204,8 +202,8 @@ class Topography(Task):
             proj = Projection(projstr)
             domain_properties = proj.get_domain_properties(self.domain)
 
-            tif_files, hdr_east, hdr_west, hdr_south, hdr_north = (
-                self.define_gmted_input(domain_properties)
+            tif_files, hdr_east, hdr_west, hdr_south, hdr_north = self.define_gmted_input(
+                domain_properties
             )
 
             # Output merged GMTED file to working directory as file gmted_mea075.tif
@@ -248,15 +246,11 @@ class Topography(Task):
             topo_hdr_target = f"{self.topo_data_path}/{self.topo_source}.hdr"
 
             if not os.path.isfile(topo_dir_target):
-                logger.error(
-                    "Custom topography .dir file not found: {}", topo_dir_target
-                )
+                logger.error("Custom topography .dir file not found: {}", topo_dir_target)
                 sys.exit(1)
 
             if not os.path.isfile(topo_hdr_target):
-                logger.error(
-                    "Custom topography .hdr file not found: {}", topo_hdr_target
-                )
+                logger.error("Custom topography .hdr file not found: {}", topo_hdr_target)
                 sys.exit(1)
 
             logger.info(
