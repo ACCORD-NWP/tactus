@@ -70,7 +70,7 @@ class E923(Task):
         for x in link:
             try:
                 os.unlink(x)
-            except FileNotFoundError:  # noqa: PERF203
+            except FileNotFoundError:
                 logger.warning("Could not remove file '{}'.", x, exc_info=True)
 
     def constant_part(self, constant_file):
@@ -205,7 +205,7 @@ class E923(Task):
 
         files = data["files"]
         if isinstance(files, list):
-            files = dict(zip(files, files))
+            files = dict(zip(files, files, strict=True))
 
         for x in params:
             for dst, src in files.items():
@@ -267,8 +267,7 @@ class PgdUpdate(Task):
         )
 
         with open("namgl", "w") as namelist:
-            namelist.write(
-                f"""&naminterp
+            namelist.write(f"""&naminterp
  INPUT_FORMAT='FA',
  OUTPUT_FORMAT='memory',
  INFILE='Const.Clim.const',
@@ -283,8 +282,7 @@ class PgdUpdate(Task):
  USE_SAVED_CADRE=T,
  READKEY%FANAME='SFX.ZS',
 /
-                  """
-            )
+                  """)
             namelist.close()
 
         # Run gl
