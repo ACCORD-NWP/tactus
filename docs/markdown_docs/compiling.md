@@ -1,7 +1,8 @@
 # Bundle Compilation Tasks
 
-This module provides two compilation-related task classes:
+This module provides three compilation-related task classes:
 
+* `IALClone` — clones the IAL (IFS/Arpege Library) Git repository
 * `TactusBundleCreate` — creates or updates an ECBundle source bundle
 * `TactusBundleBuild` — builds the bundle and optionally caches compiled artifacts
 
@@ -13,10 +14,14 @@ These tasks are designed to work within the Tactus framework and use `ecbundle` 
 
 The workflow is typically:
 
-1. **Create/update the bundle**
+1. **Clone IAL repository** (optional)
+
+   * Fetch IAL sources from a Git repository onto a local directory
+2. **Create/update the bundle**
 
    * Clone/update repositories defined in a bundle YAML
-2. **Build the bundle**
+   * Optionally merge in local bundle overrides
+3. **Build the bundle**
 
    * Configure and compile all sources
    * Install binaries into the configured install directory
@@ -26,6 +31,51 @@ The workflow is typically:
 
 # Tasks
 
+## `IALClone`
+
+Clones the IAL Git repository into a local directory and checks out the configured branch.
+
+### Purpose
+
+* Clones the IAL source repository
+* Checks out the configured branch
+* Skips cloning if the target directory already exists
+
+### Configuration Keys
+
+| Key                       | Description                                            |
+| ------------------------- | ------------------------------------------------------ |
+| `compile.ial_git_repo`    | URL of the IAL Git repository (supports `[TOKEN]` placeholder) |
+| `compile.ial_git_branch`  | Branch to check out after cloning                      |
+| `compile.git_token`       | Git token substituted into `[TOKEN]` placeholder       |
+| `compile.ial_dir`         | Local destination directory for the IAL clone          |
+
+### Token Substitution
+
+If the repository URL contains the placeholder `[TOKEN]`, it is replaced with the value of `compile.git_token` before cloning. This allows the token to be embedded into HTTPS Git URLs, e.g.:
+
+```text
+https://[TOKEN]@github.com/ecmwf/ial.git
+```
+
+becomes:
+
+```text
+https://<actual-token>@github.com/ecmwf/ial.git
+```
+
+### Behavior
+
+* If `compile.ial_dir` already exists: the clone step is skipped and an info message is logged.
+* Otherwise the task executes:
+
+```bash
+git clone <ial_git_repo> <ial_dir>
+cd <ial_dir>; git checkout <ial_git_branch>
+```
+
+---
+
 ## `TactusBundleCreate`
 
 Creates or updates an ECBundle source tree.
@@ -33,7 +83,7 @@ Creates or updates an ECBundle source tree.
 ### Purpose
 
 * Reads the configured bundle YAML
-* Optionally rewrites IAL source entries to use a local directory
+* Optionally merges in an update bundle YAML (for local IAL overrides or other customizations)
 * Executes:
 
 ```bash
@@ -44,29 +94,42 @@ ecbundle create
 
 ### Configuration Keys
 
-| Key                   | Description                                |
-| --------------------- | ------------------------------------------ |
-| `compile.dir`         | Directory where bundle sources are created (defaults to `@CASEDIR@/bundle`)|
-| `compile.git_token`   | Optional GitHub token                      |
-| `compile.bundle_file` | ecbundle YAML file    (defaults to `@TACTUS_HOME@/data/compilation/@CYCLE@/bundle.yml`)                     |
-| `compile.ial_dir`     | Optional local IAL source override         |
+| Key                          | Description                                                                                  |
+| ---------------------------- | -------------------------------------------------------------------------------------------- |
+| `compile.dir`                | Directory where bundle sources are created (defaults to `@CASEDIR@/bundle`)                  |
+| `compile.git_token`          | Optional GitHub token                                                                        |
+| `compile.bundle_file`        | ECBundle YAML file (defaults to `@TACTUS_HOME@/data/compilation/@CYCLE@/bundle.yml`)         |
+| `compile.bundle_update`      | If `True`, merges an additional update YAML on top of the base bundle file                   |
+| `compile.update_bundle_file` | YAML file used to override/extend the base bundle when `compile.bundle_update` is enabled    |
+| `compile.ial_dir`            | Optional local IAL source override (exported as `IAL_DIR` environment variable)              |
 
 ---
 
-### Local IAL Override
+### Bundle Update Mechanism
 
-If `compile.ial_dir` is configured:
+When `compile.bundle_update` is enabled, the task:
 
-* The bundle YAML is rewritten
-* Any `ial-source` entries:
+1. Loads the original bundle YAML
+2. Loads the update bundle YAML
+3. Merges them via `merge_dicts(..., overwrite=True, remove_none=True)`:
 
-  * remove `git`
-  * remove `version`
-  * add `dir`
+   * `overwrite=True` — values in the update file override values in the original
+   * `remove_none=True` — keys explicitly set to `None` in the update file are removed from the merged result
+4. Writes the merged result to:
+
+```text
+@CASEDIR@/bundle-local-ial.yaml
+```
+
+YAML formatting is preserved using `ruamel.yaml` with:
+
+* `preserve_quotes = True`
+* indentation: mapping=4, sequence=4, offset=2
+* line width: 4096
 
 Example transformation:
 
-#### Before
+#### Before (original)
 
 ```yaml
 ial-source:
@@ -74,18 +137,33 @@ ial-source:
   version: 1.2.0
 ```
 
-#### After
+#### Update YAML
+
+```yaml
+ial-source:
+  git: ~
+  version: ~
+  dir: /path/to/local/ial
+```
+
+#### After (merged)
 
 ```yaml
 ial-source:
   dir: /path/to/local/ial
 ```
 
-A temporary bundle file is written to:
+---
 
-```text
-@CASEDIR@/bundle-local-ial.yaml
+### IAL_DIR Environment Variable
+
+Before invoking `ecbundle`, the task exports:
+
+```bash
+IAL_DIR=<substituted compile.ial_dir>
 ```
+
+This allows the bundle YAML to reference `${IAL_DIR}` for local IAL source overrides.
 
 ---
 
@@ -125,40 +203,58 @@ is passed to `ecbundle`.
 > This happens because Git refuses to change the upstream tracking configuration automatically when the branch already tracks another remote.
 >
 > In this case, remove the existing source directory or manually reconfigure the branch tracking before rerunning the bundle creation step.
+
 ---
 
-# `TactusBundleBuild`
+### Generated Command
+
+```bash
+cd <compile_dir>; ecbundle create [--github-token <TOKEN>] --bundle <bundle_file> --update
+```
+
+---
+
+## `TactusBundleBuild`
 
 Builds an ECBundle source tree.
 
----
+### Purpose
 
-## Purpose
-
-* Builds source repositories
-* Supports cached builds
+* Builds source repositories produced by `TactusBundleCreate`
+* Supports cached builds keyed by a deterministic source hash
 * Supports multiple architectures
-* Supports precision selection
+* Supports precision selection (`prec` / `R32`)
 * Supports Ninja builds
 * Supports clean rebuilds
-
+* Backs up the resolved `bundle.yml` next to the build output
 
 ---
 
-# Configuration Keys
+### Configuration Keys
 
 | Key                   | Description                                                                                  |
 | --------------------- | -------------------------------------------------------------------------------------------- |
+| `compile.dir`         | Bundle source directory (output of `TactusBundleCreate`)                                     |
 | `compile.arch`        | Build architecture configuration (defaults to `source/ial-source/bundle/arch/ecmwf/hpc2020`) |
 | `compile.ninja`       | Enable Ninja builds (defaults to `false`)                                                    |
 | `compile.skip_build`  | Skip build if install already exists (defaults to `false`)                                   |
 | `compile.clean_build` | Clean build directory before compiling (defaults to `false`)                                 |
 | `compile.cache`       | Enable cached builds (defaults to `true`)                                                    |
 | `compile.cache_dir`   | Cache storage directory (defaults to `@REFERENCE_DATA@/bundle_cache`)                        |
+| `task.args.prec`      | Precision selector: `prec` (double) or `R32` (single). Defaults to `prec`.                   |
 
 ---
 
-# Build Directories
+### Precision Modes
+
+| Precision | Effect                                            |
+| --------- | ------------------------------------------------- |
+| `prec`    | Default double-precision build                    |
+| `R32`     | Adds `--without-double-precision` to ecbundle    |
+
+---
+
+### Build Directories
 
 The builder creates:
 
@@ -183,18 +279,38 @@ install/R32
 
 ---
 
-# Cached Builds
+### Bundle Backup
 
-If caching is enabled, a deterministic hash is generated from:
+Before building, the task attempts to copy:
+
+```text
+<bundle_dir>/source/bundle.yml
+```
+
+to the resolved compile/cache directory as `bundle.yml`. This preserves a snapshot of what was actually built. If the source file is missing, the failure is logged and execution continues.
+
+---
+
+### Cached Builds
+
+If `compile.cache` is enabled, a deterministic hash is generated from:
 
 * repository commit hashes
 * repository dirty state
 
-This allows reuse of identical builds.
+This allows identical sources to reuse a previously installed build.
+
+The architecture component of the cache path is derived from the symlink:
+
+```text
+<bundle_dir>/<arch>/default
+```
+
+If present, it is resolved and the portion after `arch` is used as the cache subpath. Otherwise the raw arch directory is used.
 
 ---
 
-# Bundle Hashing
+### Bundle Hashing
 
 The method:
 
@@ -202,7 +318,7 @@ The method:
 get_bundle_hash(source_dir)
 ```
 
-creates a SHA256 hash from:
+creates a SHA256 hash from a deterministic JSON manifest:
 
 ```json
 {
@@ -216,70 +332,84 @@ creates a SHA256 hash from:
 }
 ```
 
+The JSON is serialized with `sort_keys=True` and compact separators to guarantee reproducibility.
+
 ---
 
-## Dirty Repositories
+#### Dirty Repositories
 
-If any repository contains:
+A repository is considered dirty if it contains:
 
 * modified files
 * staged changes
 * untracked files
 
-then:
+When any repository is dirty, the hash is suffixed:
 
 ```text
 <hash>-dirty
 ```
 
-is generated.
+Non-Git directories inside `source/` are skipped (logged as `[SKIP]`).
+
+If the `source` directory itself is missing, the hash falls back to:
+
+```text
+unknown
+```
 
 ---
 
-# Cache Layout
+### Cache Layout
 
 Cached builds are stored as:
 
 ```text
 <cache_dir>/<arch>/<bundle_hash>/
+├── bundle.yml
+├── install/<precision>/
+└── build/<precision>/
 ```
 
 Example:
 
 ```text
-/cache/linux-gnu/4bc1b3.../
+/cache/linux-gnu/4bc1b3.../install/prec
 ```
 
 ---
 
-# Symlink Management
+### Symlink Management
 
-When cache mode is enabled:
+When cache mode is enabled, the local install path:
 
 ```text
 @CASEDIR@/install/<precision>
 ```
 
-becomes a symlink to the cached install directory.
+becomes a symlink to the cached install directory. Existing symlinks at this location are removed and recreated on each run.
 
 Example:
 
 ```text
-install/prec -> /cache/linux/hash/install/prec
+install/prec -> /cache/linux/<hash>/install/prec
 ```
 
 ---
 
-# Build Command
+### Build Command
 
 The generated build command is:
 
 ```bash
-ecbundle build \
+cd <bundle_dir>; ecbundle build \
   --arch <arch> \
+  [--ninja] \
   --forecast-only \
-  --install \
+  [--clean] \
+  [--without-double-precision] \
   --install-dir=<install_dir> \
+  --install \
   --build-dir=<build_dir>
 ```
 
@@ -293,7 +423,7 @@ Optional flags:
 
 ---
 
-# Skip Build Logic
+### Skip Build Logic
 
 If:
 
@@ -307,13 +437,14 @@ and:
 <install_dir>/MASTERODB
 ```
 
-exists, compilation is skipped.
+exists, compilation is skipped. The cache symlink is still (re)created so the local install path points to the existing cached binaries.
 
 ---
 
 # Notes
 
-* Only Git repositories contribute to the bundle hash
-* Non-Git directories are skipped
-* Cached builds are architecture-specific
-* Symlinks are recreated when switching cache targets
+* Only Git repositories contribute to the bundle hash; non-Git directories are silently skipped
+* Cached builds are architecture-specific and precision-specific
+* Symlinks at `@CASEDIR@/install/<precision>` are recreated on every run when caching is enabled
+* The `ecbundle` binary is resolved as `<python-bin-dir>/ecbundle`, i.e. it must be installed in the same environment as Tactus
+* `IAL_DIR` is always exported from `compile.ial_dir`, regardless of whether `bundle_update` is enabled, so bundle YAMLs can rely on it being set
