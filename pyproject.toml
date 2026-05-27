@@ -3,9 +3,9 @@
   version = "1.0.0"
   description = "The Tactus scripting system."
   readme = "README.md"
-  requires-python = ">=3.10,<3.13"
-  license = {text = "MIT"}
-  authors = [{name = "ACCORD"}]
+  requires-python = ">=3.13,<3.14"
+  license = { text = "MIT" }
+  authors = [{ name = "ACCORD" }]
   keywords = ["forecasting", "tactus", "weather"]
   classifiers = [
     "Development Status :: 4 - Beta",
@@ -89,7 +89,7 @@
   ignore = ["W002"]
 
 [tool.poetry]
-  include = [{path = "tactus/data/**/*", format = ["sdist", "wheel"]}]
+  include = [{ path = "tactus/data/**/*", format = ["sdist", "wheel"] }]
 
 # pytest configs
 [tool.pytest.ini_options]
@@ -100,7 +100,7 @@
 [tool.ruff]
   line-length = 90
   preview = true
-  target-version = "py39"
+  target-version = "py313"
 
 [tool.ruff.lint]
   select = [
