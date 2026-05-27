@@ -52,16 +52,16 @@ jobs:
           apt-get update
           apt-get install -y inetutils-ping
 
-      - name: Install system gdal libs
-        run: |
-          apt-get update
-          apt-get install -y gdal-bin libgdal-dev
+      # - name: Install system gdal libs
+      #   run: |
+      #     apt-get update
+      #     apt-get install -y gdal-bin libgdal-dev
 
-      - name: Install pygdal
-        run: |
-          gdal-config --version
-          echo "hello"
-          pip install pygdal=="`gdal-config --version`.*"
+      # - name: Install pygdal
+      #   run: |
+      #     gdal-config --version
+      #     echo "hello"
+      #     pip install pygdal=="`gdal-config --version`.*"
 
       #----------------------------------------------
       #  --- configure poetry & install project  ----
