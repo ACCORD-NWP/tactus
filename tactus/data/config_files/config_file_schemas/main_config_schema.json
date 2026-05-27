@@ -640,9 +640,9 @@
         "ial_dir": {
           "type": "string",
           "description": "Local path to IAL source dir",
-          "default": ""
+          "default": "@CASEDIR@/IAL"
         },
-        "git_repo": {
+        "ial_git_repo": {
           "type": "string",
           "description": "Git repo for IAL source",
           "default": "git@github.com:ACCORD-NWP/IAL"
@@ -652,7 +652,7 @@
           "description": "Git token for IAL source access",
           "default": ""
         },
-        "git_branch": {
+        "ial_git_branch": {
           "type": "string",
           "description": "Branch/tag",
           "default": "develop"
@@ -667,10 +667,20 @@
           "description": "Directory where compilation will occur",
           "default": "@CASEDIR@/bundle"
         },
-        "bundle_file": {
+        "bundle_update": {
+          "type": "boolean",
+          "description": "whether to update bundle_file with another bundle",
+          "default": true
+        },
+        "update_bundle_file": {
           "type": "string",
           "description": "bundle used for compiling binaries",
           "default": "@TACTUS_HOME@/data/compilation/@CYCLE@/bundle.yml"
+        },
+        "bundle_file": {
+          "type": "string",
+          "description": "bundle used for compiling binaries",
+          "default": "@CASEDIR@/IAL/bundle/bundle.yml"
         },
         "ninja": {
           "type": "boolean",
