@@ -51,16 +51,16 @@ jobs:
           post-cleanup: true
           frozen: true
           cache: true
-          auth-host: github.com
+          # auth-host: github.com
           auth-token: ${{ secrets.GH_REPO_READ_TOKEN }}
           activate-environment: true
 
-      - name: Install additional dependency groups
-        run: |
-          pixi run bootstrap
+      # - name: Install additional dependency groups
+      #   run: |
+      #     pixi run bootstrap
 
       - name: Run tests
-        run: pixi run pytest -n auto --maxprocesses 16
+        run: pixi run test
 
 
       # Disable upload to codecov until/if codecov is enabled
