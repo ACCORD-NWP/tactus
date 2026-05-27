@@ -59,6 +59,8 @@ jobs:
 
       - name: Install pygdal
         run: |
+          gdal-config --version
+          echo "hello"
           pip install pygdal=="`gdal-config --version`.*"
 
       #----------------------------------------------
