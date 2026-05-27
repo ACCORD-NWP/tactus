@@ -94,7 +94,7 @@ On Atos, it should be installed in your $HOME or $PERM directory.
 
 Initially set up the environment by repeating the steps in [Set up environment](#set-up-environment), navigate to the root level of the `tactus` install directory and use Pixi to run:
 ```shell
-pixi run deode -h
+pixi run tactus -h
 ```
 
 Alternatively, to activate the environment and work interactively:
@@ -103,9 +103,9 @@ pixi shell
 tactus -h
 ```
 
-Initially set up the environment by repeating the steps in [Set up environment](#set-up-environment), navigate to the root level of the `Deode-Workflow` install directory and test that `deode` works by running:
+Initially set up the environment by repeating the steps in [Set up environment](#set-up-environment), navigate to the root level of the `tactus` install directory and test that `tactus` works by running:
 ```shell
-pixi run deode -h
+pixi run tactus -h
 ```
 ### The Configuration File
 Before you can use `tactus` (apart from the `-h` option), you will need a configuration file written in the

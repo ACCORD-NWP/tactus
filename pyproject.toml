@@ -116,6 +116,7 @@
 [tool.pixi.tasks]
   tactus = "python -m tactus"
   lint = {cmd = "pre-commit run --all-files", default-environment = "dev"}
+  test = {cmd = "pytest -n auto --maxprocesses 16", default-environment = "test"}
 
 [tool.poetry]
   include = [{path = "tactus/data/**/*", format = ["sdist", "wheel"]}]
