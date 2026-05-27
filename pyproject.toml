@@ -4,8 +4,8 @@
   description = "The Tactus scripting system."
   readme = "README.md"
   requires-python = ">=3.13,<3.14"
-  license = { text = "MIT" }
-  authors = [{ name = "ACCORD" }]
+  license = {text = "MIT"}
+  authors = [{name = "ACCORD"}]
   keywords = ["forecasting", "tactus", "weather"]
   classifiers = [
     "Development Status :: 4 - Beta",
@@ -36,7 +36,7 @@
     "jsonref>=1.1.0",
     "loguru>=0.7.1",
     "numexpr>=2.8.4",
-    "numpy>=1.22.4",
+    "numpy>=2.4.0",
     "omegaconf>=2.3",
     "pandas>=1.4.0,<3.0.0",
     "pydantic>=2.9.2",
@@ -50,7 +50,7 @@
     "tomlkit>=0.12.1",
     "troika @ git+https://github.com/ecmwf/troika.git",
     "urllib3<2",
-    "utci @ git+https://github.com/ACCORD-NWP/utci.git",
+    # "utci @ git+https://github.com/ACCORD-NWP/utci.git",
     "xmltodict>=0.14.2",
   ]
 
@@ -89,7 +89,7 @@
   ignore = ["W002"]
 
 [tool.poetry]
-  include = [{ path = "tactus/data/**/*", format = ["sdist", "wheel"] }]
+  include = [{path = "tactus/data/**/*", format = ["sdist", "wheel"]}]
 
 # pytest configs
 [tool.pytest.ini_options]
