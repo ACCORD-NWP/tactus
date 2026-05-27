@@ -31,7 +31,7 @@ from .namelist import (
 from .scheduler import EcflowServer
 from .submission import NoSchedulerSubmission, TaskSettings
 from .suites.discover_suite import get_suite
-from .tasks.discover_task import create_task_index
+from .tasks.discover_task import load_task_index
 from .toolbox import Platform
 
 
@@ -98,9 +98,6 @@ def run_task(args: RunTaskNamespace, config: ParsedConfig):
     submission_defs = TaskSettings(config)
     sub = NoSchedulerSubmission(submission_defs)
 
-    if not args.create_only:
-        create_task_index(config)
-
     sub.submit(
         task=args.task,
         config=config,
@@ -109,6 +106,7 @@ def run_task(args: RunTaskNamespace, config: ParsedConfig):
         output=output,
         troika=args.troika,
         create_only=args.create_only,
+        force_tasklist_generation=args.generate_tasklist,
     )
     logger.info("Task {} submitted.", args.task)
 
@@ -303,7 +301,7 @@ def start_suite(args, config):
             raise SystemExit(f"Copying {temp_troika_config_file} FAILED.") from e
         logger.info("--- File copying to Ecflow server DONE ---")
 
-    create_task_index(config)
+    load_task_index(config, force=args.generate_tasklist)
     server.start_suite(suite_name, def_file)
     logger.info("Done with suite.")
 
