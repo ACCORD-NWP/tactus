@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Add suite mirror option [\#69](https://github.com/ACCORD-NWP/tactus/pull/69) (@uandrae)
 - Configuration files for NSC HPC Fahrenheit [\#16](https://github.com/ACCORD-NWP/tactus/pull/16) (@trygveasp)
 - Introduce gl namelist files for CY50T2 [\#35](https://github.com/ACCORD-NWP/tactus/pull/35) (@uandrae)
 - Introduce config files for CY50T2 [\#14](https://github.com/ACCORD-NWP/tactus/pull/14) (@uandrae)
