@@ -16,6 +16,7 @@ from tactus.datetime_utils import (
 )
 from tactus.host_actions import SelectHost
 from tactus.logs import logger
+from tactus.scheduler import EcflowServer
 from tactus.submission import ProcessorLayout, TaskSettings
 from tactus.suites.base import (
     EcflowSuiteFamily,
@@ -556,7 +557,7 @@ class MirrorFamily(EcflowSuiteFamily):
             )
 
 
-class MirrorPostMortem(EcflowSuiteFamily):
+class MirrorSuite(EcflowSuiteFamily):
     """Class for waiting for a suite."""
 
     def __init__(
@@ -578,11 +579,18 @@ class MirrorPostMortem(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
-        # Resolve macros
+        # Resolve macros, host and port
         platform = Platform(config)
         self.mirror_suite = {
-            x: platform.substitute(y) for x, y in config["scheduler.mirror_suite"].items()
+            x: v if isinstance(v := platform.substitute(y), (str, bool)) else str(v)
+            for x, y in config["scheduler.mirror_suite"].items()
         }
+        self.mirror_suite["remote_host"] = platform.evaluate(
+            self.mirror_suite["remote_host"], object_=SelectHost
+        )
+        self.mirror_suite["remote_port"] = platform.evaluate(
+            self.mirror_suite["remote_port"], object_=EcflowServer
+        )
         self.mirror_path = self.mirror_suite["remote_path"].split("/")[-1]
 
         EcflowSuiteTask(
@@ -597,8 +605,6 @@ class MirrorPostMortem(EcflowSuiteFamily):
             mirror_config=self.mirror_suite,
             ecf_files_remotely=ecf_files_remotely,
         )
-
-        #self.trigger_string = f"( /{parent.name}/Mirrors/{mirror_path} == complete )"
 
 
 class InputDataFamily(EcflowSuiteFamily):

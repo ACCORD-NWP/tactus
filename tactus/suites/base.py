@@ -396,8 +396,8 @@ class EcflowNode:
                     mirror_config["remote_host"],
                     mirror_config["remote_port"],
                     mirror_config["remote_polling"],
-                    mirror_config.get("remote_ssl", False),
-                    mirror_config.get("remote_auth", ""),
+                    mirror_config["remote_ssl"],
+                    mirror_config["remote_auth"],
                 )
             )
 

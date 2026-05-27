@@ -11,7 +11,7 @@ from tactus.suites.base import (
 )
 from tactus.suites.tactus_suite_components import (
     CompilationFamily,
-    MirrorPostMortem,
+    MirrorSuite,
     StaticDataFamily,
     TimeDependentFamily,
 )
@@ -66,8 +66,8 @@ class TactusSuiteDefinition(SuiteDefinition):
         time_dependent_trigger_node = None
 
         mirror = None
-        if config["suite_control"].get("do_mirror_suite", False):
-            mirror = MirrorPostMortem(
+        if config["suite_control"].get("mirror_suite", False):
+            _mirror = MirrorSuite(
                 self.suite,
                 config,
                 self.task_settings,
@@ -75,9 +75,10 @@ class TactusSuiteDefinition(SuiteDefinition):
                 self.ecf_files,
                 ecf_files_remotely=self.ecf_files_remotely,
             )
-            mirror = EcflowSuiteTriggers([EcflowSuiteTrigger(mirror)])
-            mirror_path = config["scheduler.mirror_suite"]["remote_path"].split("/")[-1]
-            mirror.trigger_string = f"( /{self.name}/Mirrors/{mirror_path} == complete )"
+            mirror = EcflowSuiteTriggers([EcflowSuiteTrigger(_mirror)])
+            mirror.trigger_string = (
+                f"( /{self.name}/Mirrors/{_mirror.mirror_path} == complete )"
+            )
 
         prep_run = EcflowSuiteTask(
             "PrepRun",
