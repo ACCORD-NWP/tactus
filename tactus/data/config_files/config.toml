@@ -118,6 +118,7 @@
   do_extractsqlite = true
   do_interpolsstsic = true
   do_marsprep = true
+  do_marsobs = true
   do_mergesqlite = true
   do_pgd = true
   do_soil = true
