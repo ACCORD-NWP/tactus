@@ -154,7 +154,7 @@ class TestGetBinary:
         assert task.get_binary("MASTERODB") == f"{binaries_bindir}/MASTERODB"
 
     def test_binaries_section_binary_name_only(
-        self, gen_bindir: str, basic_config: ParsedConfig
+        self,  basic_config: ParsedConfig
     ):
         """Only binary under binaries overrides the name; fallback returns the new name."""
         task_config = basic_config.copy(
