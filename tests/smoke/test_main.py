@@ -91,6 +91,7 @@ def _module_mockers(module_mocker, config_path, tmp_path_factory: pytest.TempPat
 
 
 def test_package_executable_is_in_path():
+    __import__("ipdb").set_trace()
     assert shutil.which(GeneralConstants.PACKAGE_NAME)
 
 

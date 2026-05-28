@@ -3,7 +3,7 @@
   version = "1.0.0"
   description = "The Tactus scripting system."
   readme = "README.md"
-  requires-python = ">=3.12,<3.13"
+  requires-python = ">=3.13,<3.14"
   license = { text = "MIT" }
   authors = [{ name = "ACCORD" }]
   keywords = ["forecasting", "tactus", "weather"]
@@ -37,7 +37,8 @@
     "jsonref>=1.1.0",
     "loguru>=0.7.1",
     "numexpr>=2.8.4",
-    "numpy>=1.22.4,<2.0.0",
+    "numpy>=1.22.4",
+    # "numpy>=1.22.4,<2.0.0",
     "omegaconf>=2.3",
     "pandas>=1.4.0,<3.0.0",
     "pydantic>=2.9.2",
@@ -51,7 +52,7 @@
     "tomlkit>=0.12.1",
     "troika @ git+https://github.com/ecmwf/troika.git",
     "urllib3<2",
-    "utci @ git+https://github.com/ACCORD-NWP/utci.git",
+    "utci @ git+https://github.com/mfroelund/utci.git@feature/bump-python-to-3.12",
     "xmltodict>=0.14.2",
   ]
 
@@ -101,14 +102,13 @@
 
 [tool.pixi.dependencies]
   # conda-forge provides C libraries that pip wheels don't bundle
-  python = ">=3.10,<3.13"
+  python = ">=3.13,<3.14"
   pip = "*"
   eccodes = "==2.41"
   ecflow = ">=5.15.0"
   gdal = "*"
   libgdal = "*"
   inetutils = "*"
-  numpy = ">=1.22.4,<2.0.0"
 
 [tool.pixi.environments]
   default = { features = [], solve-group = "default" }

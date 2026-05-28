@@ -299,7 +299,7 @@ def strip_off_mount_path(path: Union[str, Path]) -> Path:
         parent_of_user_parts = parent_of_user.split("_")
         parent_of_user = parent_of_user_parts[-2]
 
-    return Path(pathlib.os.sep, parent_of_user, *file_parts[index_of_user:])
+    return Path(os.sep, parent_of_user, *file_parts[index_of_user:])
 
 
 def resolve_path_relative_to_package(path: Path, ignore_errors: bool = False) -> Path:
