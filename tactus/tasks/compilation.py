@@ -224,7 +224,7 @@ class TactusBundleBuild(Task):
                 f"{self.platform.substitute(compile_dir)}/bundle.yml",
             )
         except FileNotFoundError:
-            logger.info("Unable to finde {}", self.platform.substitute(compile_dir))
+            logger.info("Unable to find {}", self.platform.substitute(compile_dir))
 
         self.ninja_arg = ""
         if self.config["compile"].get("ninja"):

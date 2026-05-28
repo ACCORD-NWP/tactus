@@ -17,14 +17,13 @@
   bindir = "@INSTALL_DIR@/CY49t2/intel/R64/CY49t2-v1.13.1/bin"
 
 [submission.task_exceptions.E923Update]
-  bindir = "/perm/deployde330/github-actions/install/CY49t2/intel/R64/latest/bin"
-  binary = "fa_sfx2clim"
+  binary = "fa_sfx2clim_dp"
 
 [submission.task_exceptions.E923Update.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
 
 [submission.task_exceptions.Forecast.binaries.lfitools]
-  binary = "lfitools_sp"
+  binary = "lfitools_dp"
 
 [submission.task_exceptions.Pgd]
   binary = "pgd_dp"
