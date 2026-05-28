@@ -620,6 +620,7 @@ class InputDataFamily(EcflowSuiteFamily):
         trigger=None,
         ecf_files_remotely=None,
         external_marsprep_trigger_node=None,
+        external_marsobs_trigger_node=None,
         add_var_trigger=None,
         remote_path=None,
         member=0,
@@ -696,6 +697,27 @@ class InputDataFamily(EcflowSuiteFamily):
                         ecf_files_remotely=ecf_files_remotely,
                     )
 
+        marsobs_trigger_nodes = [prepare_cycle]
+
+        if external_marsobs_trigger_node is not None:
+            marsobs_trigger_nodes.extend(external_marsobs_trigger_node)
+
+        if (
+            config["suite_control.do_marsobs"]
+            #and not config["suite_control.split_mars"]
+        ):
+            EcflowSuiteTask(
+                "Marsobs",
+                self,
+                config,
+                task_settings,
+                ecf_files,
+                input_template=input_template,
+                trigger=marsobs_trigger_nodes,
+                ecf_files_remotely=ecf_files_remotely,
+                add_var_trigger=add_var_trigger,
+                remote_path=remote_path,
+            )
 
 class PrepFamily(EcflowSuiteFamily):
     """Class for creating the PrepFamily ecFlow family."""
