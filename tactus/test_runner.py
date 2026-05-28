@@ -145,8 +145,7 @@ class TestCases:
     def get_tactus_version(self):
         """Get tactus version info."""
         tactus_git = get_git_info()
-        logger.info(tactus_git)
-        tag = tactus_git["branch"] + "_" + tactus_git["commit"][0:7]
+        tag = tactus_git["branch"]
         for character in ["/", ".", "-"]:
             tag = tag.replace(character, "_")
         tag += "_"
