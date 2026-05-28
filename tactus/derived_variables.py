@@ -197,9 +197,9 @@ def derived_variables(config, processor_layout=None):
 
     xlat0 = config.get("domain.xlat0", "")
     xlon0 = config.get("domain.xlon0", "")
-    if xlat0 == "" :
+    if isinstance(xlat0, str) and not xlat0:
         xlat0 = config.get("domain.xlatcen")
-    if xlon0 == "":
+    if isinstance(xlon0, str) and not xlon0:
         xlon0 = config.get("domain.xloncen")
 
     pi = 4.0 * atan(1.0)
