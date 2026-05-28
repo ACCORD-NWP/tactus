@@ -4,8 +4,8 @@
   description = "The Tactus scripting system."
   readme = "README.md"
   requires-python = ">=3.12,<3.13"
-  license = {text = "MIT"}
-  authors = [{name = "ACCORD"}]
+  license = { text = "MIT" }
+  authors = [{ name = "ACCORD" }]
   keywords = ["forecasting", "tactus", "weather"]
   classifiers = [
     "Development Status :: 4 - Beta",
@@ -61,8 +61,11 @@
   Homepage = "https://github.com/ACCORD-NWP/tactus"
   Repository = "https://github.com/ACCORD-NWP/tactus"
 
+[project.scripts]
+  tactus = "tactus.__main__:main"
+
 [dependency-groups]
-  dev = ["pre-commit>=3.0.4", "ruff (>=0.15.10,<0.16.0)"]
+  dev = ["ipdb", "pre-commit>=3.0.4", "ruff (>=0.15.10,<0.16.0)"]
   doc = [
     "jsonref>=1.1.0",
     "myst-parser>=2.0.0",
@@ -94,7 +97,7 @@
   platforms = ["linux-64"]
 
 [tool.pixi.pypi-dependencies]
-  tactus = {path = ".", editable = true}
+  tactus = { path = ".", editable = true }
 
 [tool.pixi.dependencies]
   # conda-forge provides C libraries that pip wheels don't bundle
@@ -108,18 +111,38 @@
   numpy = ">=1.22.4,<2.0.0"
 
 [tool.pixi.environments]
-  default = {features = [], solve-group = "default"}
-  test = {features = ["test"], solve-group = "default"}
-  doc = {features = ["doc"], solve-group = "default"}
-  dev = {features = ["dev"], solve-group = "default"}
+  default = { features = [], solve-group = "default" }
+  test = { features = ["test", "dev"], solve-group = "default" }
+  doc = { features = ["doc"], solve-group = "default" }
+  dev = { features = ["dev"], solve-group = "default" }
 
 [tool.pixi.tasks]
-  tactus = "python -m tactus"
-  lint = {cmd = "pre-commit run --all-files", default-environment = "dev"}
-  test = {cmd = "pytest -n auto --maxprocesses 16", default-environment = "test"}
+  lint = { cmd = "pre-commit run --all-files", default-environment = "dev", description = "Run all linters on all files." }
+  doc-build = { depends-on = [
+    "doc-clean",
+  ], cmd = """python -m tactus doc config > docs/markdown_docs/config.md
+    python docs/write_output_overview.py docs/markdown_docs/output_overview.md
+    sphinx-apidoc tactus -o docs/ --force --no-toc --module-first
+    sphinx-build docs docs/_build/
+    touch docs/_build/.nojekyll""", default-environment = "doc", description = "Build the documentation. Before the build, the task cleans up existing builds." }
+  doc-clean = { cmd = "rm -rf docs/_build/ docs/tactus.rst docs/markdown_docs/config.md docs/markdown_docs/output_overview.md", description = "Clean up documentation build artifacts." }
+  doc-view = { cmd = "test ! -f docs/_build/index.html && doc-build || true && python -m webbrowser docs/_build/index.html", description = "View the built documentation in the default web browser. If the documentation hasn't been built yet, it will be built first." }
+  test = { cmd = "pytest -n auto --maxprocesses 16", default-environment = "test", description = "Run all tests in parallel using pytest." }
+  pre-push-checks = { depends-on = [
+    "lint",
+    "doc-build",
+    "test",
+  ], cmd = "echo 'All pre-push checks passed!'", description = "Run all checks before pushing. This includes linting, building the documentation, and running tests." }
+  clean = { cmd = """
+    rm -rf docs/_build/ docs/tactus.rst docs/markdown_docs/config.md docs/markdown_docs/output_overview.md
+    find . -type d -name "__pycache__" -exec rm -rf '{}' + 2>/dev/null || true
+    find . -type d -name "*.egg-info" -exec rm -rf '{}' + 2>/dev/null || true
+    find . -type f -name "*.pyc" -delete
+    rm -rf .pytest_cache .coverage .coverage.xml
+    """, description = "Clean build artifacts and caches." }
 
 [tool.poetry]
-  include = [{path = "tactus/data/**/*", format = ["sdist", "wheel"]}]
+  include = [{ path = "tactus/data/**/*", format = ["sdist", "wheel"] }]
 
 # pytest configs
 [tool.pytest.ini_options]

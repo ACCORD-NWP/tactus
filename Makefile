@@ -1,4 +1,4 @@
-.PHONY: help bootstrap lint lint test doc doc-clean doc-build doc-view pre-push-checks clean
+.PHONY: help lint lint test doc doc-clean doc-build doc-view pre-push-checks clean
 
 help:
 	@echo "Available commands:"
@@ -11,17 +11,14 @@ help:
 	@echo "  make pre-push-checks - Run all checks before pushing"
 	@echo "  make clean           - Clean build artifacts"
 
-bootstrap:
-	pixi install
-
 # Linting
-lint: bootstrap
+lint:
 	@echo "Running linters..."
-	pixi run pre-commit run --all-files
+	pixi run -e dev pre-commit run --all-files
 
 # Testing
-test: bootstrap
-	pixi run pytest -n auto --maxprocesses 16
+test: 
+	pixi run -e test pytest -n auto --maxprocesses 16
 
 # Documentation
 doc-clean:
