@@ -17,7 +17,7 @@ lint:
 	pixi run -e dev pre-commit run --all-files
 
 # Testing
-test: 
+test:
 	pixi run -e test pytest -n auto --maxprocesses 16
 
 # Documentation

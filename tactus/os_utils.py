@@ -4,7 +4,6 @@ import atexit
 import contextlib
 import glob
 import os
-import pathlib
 import re
 import shutil
 import subprocess
