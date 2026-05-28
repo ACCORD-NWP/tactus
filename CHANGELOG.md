@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Replace functionality of ecflow containers and nodes [\#37](https://github.com/ACCORD-NWP/tactus/pull/37) (@trygveasp)
+- Add suite mirror option [\#69](https://github.com/ACCORD-NWP/tactus/pull/69) (@uandrae)
 - Configuration files for NSC HPC Fahrenheit [\#16](https://github.com/ACCORD-NWP/tactus/pull/16) (@trygveasp)
 - Introduce gl namelist files for CY50T2 [\#35](https://github.com/ACCORD-NWP/tactus/pull/35) (@uandrae)
 - Introduce config files for CY50T2 [\#14](https://github.com/ACCORD-NWP/tactus/pull/14) (@uandrae)
@@ -20,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support multiple searchpaths for namelist files through TACTUS_CONFIG_DATA_DIR. [\#20](https://github.com/ACCORD-NWP/tactus/pull/20) (@mfroelund)
 
 ### Changed
+- Switch off SPP until fixed in IAL. [\#71](https://github.com/ACCORD-NWP/tactus/pull/71) (@uandrae)
 - Switch on compilation by default. [\#60](https://github.com/ACCORD-NWP/tactus/pull/60) (@uandrae)
 - Use sys\_name in path generation templates. [\#45](https://github.com/ACCORD-NWP/tactus/pull/45) (@kastelecn)
 - Remove CY50T1 references as it will not be supported. [\#57](https://github.com/ACCORD-NWP/tactus/pull/57) (@uandrae)

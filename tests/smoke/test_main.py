@@ -176,6 +176,14 @@ def test_start_suite_command():
 
 
 @pytest.mark.usefixtures("_module_mockers")
+def test_replace_node_command():
+    os.environ["TACTUS_HOST"] = "atos_bologna"
+    with suppress(FileNotFoundError, HostNotFoundError, ConfigFileValidationError):
+        main(["replace", "--ecf-node", "/"])
+    del os.environ["TACTUS_HOST"]
+
+
+@pytest.mark.usefixtures("_module_mockers")
 def test_doc_config_command():
     with redirect_stdout(StringIO()):
         main(["doc", "config"])
