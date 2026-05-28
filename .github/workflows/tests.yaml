@@ -19,7 +19,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [ "ubuntu-latest" ]
-        python-version: [ "3.10" ]
+        python-version: [ "3.14" ]
 
     name: "Unit-tests ${{ matrix.os }}, python=${{ matrix.python-version }}"
     runs-on: ${{ matrix.os }}
@@ -52,13 +52,12 @@ jobs:
           cache: true
           auth-token: ${{ secrets.GH_REPO_READ_TOKEN }}
           activate-environment: true
-
-      # - name: Install additional dependency groups
-      #   run: |
-      #     pixi run bootstrap
+          environments: test
 
       - name: Run tests
-        run: pixi run test
+        run: |
+          pixi run python --version
+          pixi run test
 
 
       # Disable upload to codecov until/if codecov is enabled

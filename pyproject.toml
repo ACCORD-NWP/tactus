@@ -3,7 +3,7 @@
   version = "1.0.0"
   description = "The Tactus scripting system."
   readme = "README.md"
-  requires-python = ">=3.13,<3.14"
+  requires-python = ">=3.14,<4.0"
   license = { text = "MIT" }
   authors = [{ name = "ACCORD" }]
   keywords = ["forecasting", "tactus", "weather"]
@@ -102,7 +102,6 @@
 
 [tool.pixi.dependencies]
   # conda-forge provides C libraries that pip wheels don't bundle
-  python = ">=3.13,<3.14"
   pip = "*"
   eccodes = "==2.41"
   ecflow = ">=5.15.0"
