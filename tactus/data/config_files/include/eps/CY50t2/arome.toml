@@ -1,5 +1,16 @@
 [eps.member_settings.namelist_update.master.forecast.nam_spp_active]
-  requested_perts = {"1:" = ["XCTP", "XCEP", "XCED", "XCMF", "RCRIAUTI", "RCRIAUTC", "ZRDEPRED", "PSIGQSAT", "RLWINHF", "RSWINHF"]}
+  requested_perts = {"1:" = [
+    "XCTP",
+    "XCEP",
+    "XCED",
+    "XCMF",
+    "RCRIAUTI",
+    "RCRIAUTC",
+    "ZRDEPRED",
+    "PSIGQSAT",
+    "RLWINHF",
+    "RSWINHF"
+  ]}
 
 [eps.member_settings.namelist_update.master.forecast.nam_spp_modif]
   "pnx(1)%idistr" = 1
