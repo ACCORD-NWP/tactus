@@ -11,10 +11,7 @@
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.14",
   ]
   dependencies = [
     "arpifs_listings @ git+https://git@github.com/UMR-CNRM/arpifs_listings.git@master",
@@ -38,7 +35,6 @@
     "loguru>=0.7.1",
     "numexpr>=2.8.4",
     "numpy>=1.22.4",
-    # "numpy>=1.22.4,<2.0.0",
     "omegaconf>=2.3",
     "pandas>=1.4.0,<3.0.0",
     "pydantic>=2.9.2",
@@ -103,7 +99,7 @@
 [tool.pixi.dependencies]
   # conda-forge provides C libraries that pip wheels don't bundle
   pip = "*"
-  eccodes = "==2.41"
+  eccodes = "==2.45"
   ecflow = ">=5.15.0"
   gdal = "*"
   libgdal = "*"
