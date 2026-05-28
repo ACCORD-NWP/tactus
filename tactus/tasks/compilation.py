@@ -143,7 +143,7 @@ class TactusBundleCreate(Task):
 
                 with open(self.update_bundle_file, "r", encoding="utf-8") as f:
                     upd_bundle_dict = yaml.load(f) or {}
-            
+
             except FileNotFoundError:
                 orig_bundle_dict = {}
                 upd_bundle_dict = {}

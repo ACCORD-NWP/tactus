@@ -1,7 +1,6 @@
 """Module with tests for the base Task class."""
 
 import os
-import shutil
 from pathlib import Path
 
 import pytest
@@ -170,7 +169,9 @@ class TestGetBinary:
             }
         )
         task = Task(task_config, "GetBinaryTest")
-        default_bindir = Platform(basic_config).substitute(basic_config.get("submission.bindir"))
+        default_bindir = Platform(basic_config).substitute(
+            basic_config.get("submission.bindir")
+        )
         assert task.get_binary("MASTERODB") == f"{default_bindir}/MASTERODB_DBG"
 
     def test_binaries_section_binary_name_and_task_bindir(
@@ -191,7 +192,7 @@ class TestGetBinary:
                                 "MASTERODB": {
                                     "binary": "MASTERODB_DBG",
                                 }
-                            }
+                            },
                         },
                     },
                 },
@@ -223,5 +224,3 @@ class TestGetBinary:
         task = Task(task_config, "GetBinaryTest")
         print(task.get_binary("MASTERODB"))
         assert task.get_binary("MASTERODB") == f"{gen_bindir}/MASTERODB_DBG"
-
-    
