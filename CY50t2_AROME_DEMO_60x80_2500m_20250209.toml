@@ -216,14 +216,12 @@
   bator_window_shift = -90
   bgcycle = ""
   const_dir = "@SCRATCH@/da/const"
-  do_upper_air = true
   gpssol_stations = []
   guess_dir = "@SCRATCH@/da/@CASE@/guess"
   namelist_dir = "@SCRATCH@/da/namelists"
   nbpool = 16
   obs_dir = "@SCRATCH@/da/@CASE@/obs"
   obs_provider = "LACE"
-  obs_step = 0
   obs_types_3dvar = [
     "synop",
     "gpssol",
@@ -246,10 +244,6 @@
 
 [da.oops]
   namelist_dir = "@SCRATCH@/da/oops_namelists"
-  niter = 66
-  nproma = -32
-  nsimu = 69
-  rednmc = 0.5
 
 [da.providers]
 
@@ -390,21 +384,21 @@
   gridtype_oro = ""
   ilate = 11
   ilone = 11
-  name = "DKCOEXP"
+  name = "DEMO_60x80_2500m"
   nbzong = -1
   nbzonl = -1
-  nimax = 637
-  njmax = 637
+  nimax = 49
+  njmax = 69
   number = ""
   orographic_smoothing_method = "truncation"
   tstep = 75
   xbeta = 0.0
   xdx = 2500
   xdy = 2500
-  xlat0 = 56.3
-  xlatcen = 56.3
-  xlon0 = 0.0
-  xloncen = 9.9
+  xlat0 = ""
+  xlatcen = 51.967
+  xlon0 = ""
+  xloncen = 4.9
 
 [domain.spectral_smoothing_by_gridtype]
   cubic = false
@@ -474,7 +468,7 @@
   databridge_user = "@PROD_USER@"
 
 [fdb.grib_set]
-  georef = "u4p033"
+  georef = "u15rxs"
   stream = "oper"
 
 [file_templates]
@@ -516,10 +510,10 @@
   model = "ICMSH@CNMEXP@+@DURATION_MODEL@"
 
 [file_templates.initfile]
-  archive = "@SCRATCH@/tactus/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@/@HISTORY_TEMPLATE@"
+  archive = "@SCRATCH@/@SYS_NAME@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@/@HISTORY_TEMPLATE@"
 
 [file_templates.initfile_sfx]
-  archive = "@SCRATCH@/tactus/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@/@SURFEX_TEMPLATE@"
+  archive = "@SCRATCH@/@SYS_NAME@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@/@SURFEX_TEMPLATE@"
 
 [file_templates.interpolated_boundaries]
   archive = "ELSCF@CNMEXP@ALBC@NNN@"
@@ -571,7 +565,7 @@
   member = 0
   member_str = "mbr000"
   remove_sections = []
-  start_etime = "1779962197.158219"
+  start_etime = "1779982388.1289935"
   surfex = true
   surfex_sea_ice = "sice"
   upd_sst_sic = true
@@ -592,11 +586,9 @@
   start = "2025-02-09T00:00:00Z"
 
 [git_info]
-  branch = "bstrajnar_develop_pau"
-  commit = "7fe2f45ed3285b8fff2e4ca132ffc75d50f2f3d1"
-  describe = "7fe2f45e-dirty"
-  remote = "bstrajnar/bstrajnar_develop"
-  remote_url = "git@github.com:bstrajnar/tactus.git"
+  branch = "feture_marsobs"
+  commit = "2eb049e66b7cd038f450216f54ce4aee48cd83f6"
+  describe = "2eb049e6-dirty"
 
 [gribmodify]
   conversions = ["fullpos"]
@@ -824,7 +816,7 @@
   GG_skt = "235"
   GG_snow = "33/238/228038/228141"
   GG_soil = "234/173/174/43/30/29/28/27"
-  GGZ_type = "CF"
+  GGZ_type = "AN"
   grid_ML = "AV"
   ifs_cycle_length = "PT6H"
   ifs_cycle_start = "PT0H"
@@ -832,11 +824,12 @@
   resolution = "9"
   SH = "152/138/155/130"
   SHZ = "129.128"
-  SHZ_type = "CF"
+  SHZ_type = "AN"
   start_date = "1900-01-01T00:00:00Z"
   start_snow_date = "2023-06-27T00:00:00Z"
   stream = "ENFO"
-  type_AN = "CF"
+  stream_control = "OPER"
+  type_AN = "FC"
   type_FC = "PF"
   UA = "133/75/76/246/247/248"
   Zlev_type = "ML"
@@ -969,7 +962,7 @@
   albnir_veg_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
   albvis_soil_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
   albvis_veg_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
-  archive_root = "@SCRATCH@/tactus/@CASE@/archive"
+  archive_root = "@SCRATCH@/@SYS_NAME@/@CASE@/archive"
   archive_types = ["compress", "copy", "ecfs", "fdb"]
   climdata = "@STATIC_DATA@/climate"
   e923_data = "@STATIC_DATA@/climate/E923_DATA"
@@ -986,9 +979,9 @@
   ncdir = "@STATIC_DATA@/ncdir"
   osm_data_eu = "@CLIMDATA@/OSM_SFX8_1_EU/GARDEN/"
   pgd_data_path = "@CLIMDATA@/PGD"
-  reference_data = "@SCRATCH@/tactus"
-  references_folder = "@SCRATCH@/tactus_references"
-  references_generation_folder = "@SCRATCH@/tactus_generated_references"
+  reference_data = "@SCRATCH@/@SYS_NAME@"
+  references_folder = "@SCRATCH@/@SYS_NAME@/references"
+  references_generation_folder = "@SCRATCH@/@SYS_NAME@/generated_references"
   rrtm_dir = "@STATIC_DATA@/rrtm/@CYCLE@"
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov13/coef/"
   scratch = "/scratch/@USER@"
@@ -1106,13 +1099,13 @@
 
 [scheduler.ecfvars]
   case_prefix = ""
-  ecf_files = "@HOME@/tactus_ecflow/ecf_files"
-  ecf_files_remotely = "@HOME@/tactus_ecflow/ecf_files"
-  ecf_home = "@HOME@/tactus_ecflow/jobout"
+  ecf_files = "@HOME@/@SYS_NAME@_ecflow/ecf_files"
+  ecf_files_remotely = "@HOME@/@SYS_NAME@_ecflow/ecf_files"
+  ecf_home = "@HOME@/@SYS_NAME@_ecflow/jobout"
   ecf_host = "_select_host_from_list(['ecfg-@USER@-1', 'ecflow-gen-@USER@-001'],)"
   ecf_host_resolved = ""
-  ecf_jobout = "@HOME@/tactus_ecflow/jobout"
-  ecf_out = "@HOME@/tactus_ecflow/jobout"
+  ecf_jobout = "@HOME@/@SYS_NAME@_ecflow/jobout"
+  ecf_out = "@HOME@/@SYS_NAME@_ecflow/jobout"
   ecf_port = 3141
   ecf_port_resolved = ""
   ecf_remoteuser = ""
@@ -1132,6 +1125,16 @@
   remote_path = "/@HOST_CASE@/@YYYY@@MM@@DD@/@HH@@mm@/mbr000/Cycle/Forecasting"
   remote_polling = "300"
   remote_port = "3141"
+  remote_ssl = false
+
+[scheduler.mirror_suite]
+  check_var = ""
+  mirror_name = "@HOST_SUITE@"
+  remote_auth = ""
+  remote_host = "@SCHEDULER.ECFVARS.ECF_HOST@"
+  remote_path = "/@HOST_SUITE@/Compilation/IalBundleBuild"
+  remote_polling = "120"
+  remote_port = "@SCHEDULER.ECFVARS.ECF_PORT@"
   remote_ssl = false
 
 [submission]
@@ -1262,7 +1265,6 @@
   ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2026.01.0.0"]
 
 [submission.task_exceptions.Forecast]
-  bindir = "@INSTALL_DIR@/@CYCLE@/@COMPILER@/@PRECISION@/@IAL_VERSION@/bin"
   NPROC = 30
   NPROC_IO = 2
 
@@ -1424,51 +1426,6 @@
   tasks = ["Background_vm"]
   WRAPPER = ""
 
-[submission.types.GMKPACK_EXECUTABLES]
-  NPROC = 1
-  NPROC_IO = 0
-  NPROCX = 1
-  NPROCY = 1
-  SCHOST = "hpc"
-  tasks = [
-    "Bator_synop",
-    "Bator_gpssol",
-    "Bator_amdr",
-    "Bator_geowind",
-    "Bator_temp",
-    "Bator_wp",
-    "Bator_seviri",
-    "Bator_amsua",
-    "Bator_amsub",
-    "Bator_iasi",
-    "Bator_ascat",
-    "OdbMerge",
-  ]
-  WRAPPER = "srun"
-
-[submission.types.GMKPACK_EXECUTABLES.BATCH]
-  NAME = "#SBATCH --job-name=@TASK_NAME@"
-  NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=1"
-  QOS = "#SBATCH --qos=nf"
-  WALLSIGNAL = "#SBATCH --signal=USR1@30"
-  WALLTIME = "#SBATCH --time=00:15:00"
-
-[submission.types.GMKPACK_EXECUTABLES.ENV]
-  DR_HOOK_IGNORE_SIGNALS = -1
-  OMP_NUM_THREADS = 1
-  OMPI_MCA_btl = "^vader"
-
-[submission.types.GMKPACK_EXECUTABLES.MODULES]
-  00_PRGENV = ["load", "prgenv/intel"]
-  01_INTEL = ["load", "intel/2023.2.0"]
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2026.01.0.0"]
-  FFTW = ["load", "fftw/3.3.10"]
-  HDF5 = ["load", "hdf5/1.14.6"]
-  MKL = ["load", "intel-mkl/19.0.5"]
-  NETCDF = ["load", "netcdf4/4.9.3"]
-  OPENMPI = ["load", "openmpi/4.1.1.1"]
-
 [submission.types.gnu]
   NPROC = 1
   NPROC_IO = 0
@@ -1577,6 +1534,7 @@
   mirror_globalDT = false
   mirror_host_case = false
   mirror_offline = false
+  mirror_suite = false
   mode = "cold_start"
   n_addcalculatedfields = 2
   n_creategrib = 2
@@ -1593,7 +1551,7 @@
   bddir_sfx = "@BDDIR@"
   bddir_sst = "@BDDIR@"
   c903_input_definition = "@CYCLE@/c903.json"
-  casedir = "@SCRATCH@/tactus/@CASE@"
+  casedir = "@SCRATCH@/@SYS_NAME@/@CASE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@"
   e923_input_definition = "@CYCLE@/e923.json"
   e927_input_definition = "@CYCLE@/e927.json"
@@ -1605,6 +1563,7 @@
   namelists = "@TACTUS_HOME@/data/namelists/@CYCLE@"
   prev_case = "@CASE@"
   sfx_input_definition = "@CYCLE@/sfx.json"
+  sys_name = "tactus"
   wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@"
 
 [troika]
