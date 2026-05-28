@@ -45,13 +45,11 @@ jobs:
       - name: Install Pixi and dependencies
         uses: prefix-dev/setup-pixi@v0.9.4
         with:
-          pixi-version: latest
           run-install: true
           manifest-path: pyproject.toml
           post-cleanup: true
           frozen: true
           cache: true
-          # auth-host: github.com
           auth-token: ${{ secrets.GH_REPO_READ_TOKEN }}
           activate-environment: true
 

@@ -39,21 +39,16 @@ jobs:
         with:
           github_token: ${{ env.GITHUB_TOKEN }}
 
-      - name: Set up python
-        id: setup-python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.10'
-
       - name: Install Pixi
-        uses: prefix-dev/setup-pixi@v0
+        uses: prefix-dev/setup-pixi@v0.9.4
         with:
-          pixi-version: latest
-
-      - name: Install dependencies with Pixi
-        run: |
-          pixi install
-          pixi run bootstrap
+          run-install: false
+          manifest-path: pyproject.toml
+          post-cleanup: true
+          frozen: true
+          cache: true
+          auth-token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          activate-environment: false
 
       - name: Build documentation
         run: pixi run make doc-build

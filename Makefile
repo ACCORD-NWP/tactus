@@ -4,7 +4,6 @@ help:
 	@echo "Available commands:"
 	@echo "  make lint            - Run all linters and auto-fix issues"
 	@echo "  make test            - Run pytest"
-	@echo "  make bootstrap       - Install git deps and editable project in Pixi env"
 	@echo "  make doc             - Build and view documentation"
 	@echo "  make doc-clean       - Clean documentation build artifacts"
 	@echo "  make doc-build       - Build documentation"
@@ -14,7 +13,6 @@ help:
 
 bootstrap:
 	pixi install
-	pixi run bootstrap
 
 # Linting
 lint: bootstrap
@@ -29,11 +27,11 @@ test: bootstrap
 doc-clean:
 	rm -rf docs/_build/ docs/tactus.rst docs/markdown_docs/config.md
 
-doc-build: bootstrap doc-clean
-	pixi run python -m tactus doc config >| docs/markdown_docs/config.md
-	pixi run python docs/write_output_overview.py docs/markdown_docs/output_overview.md
-	pixi run sphinx-apidoc tactus -o docs/ --force --no-toc --module-first
-	pixi run sphinx-build docs docs/_build/
+doc-build: doc-clean
+	pixi run -e doc python -m tactus doc config >| docs/markdown_docs/config.md
+	pixi run -e doc python docs/write_output_overview.py docs/markdown_docs/output_overview.md
+	pixi run -e doc sphinx-apidoc tactus -o docs/ --force --no-toc --module-first
+	pixi run -e doc sphinx-build docs docs/_build/
 	touch docs/_build/.nojekyll
 
 doc-view:
