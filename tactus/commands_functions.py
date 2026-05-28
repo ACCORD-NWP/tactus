@@ -710,11 +710,7 @@ def replace_node(args, config):
     suite_name = Platform(config).substitute(suite_name)
     ecf_files_local = ecf_files
 
-    config = config.copy(
-        update={
-            "general": {"case": suite_name}
-        }
-    )
+    config = config.copy(update={"general": {"case": suite_name}})
     server = EcflowServer(config)
     if not args.def_file:
         defs = get_suite(suite_def, config)
