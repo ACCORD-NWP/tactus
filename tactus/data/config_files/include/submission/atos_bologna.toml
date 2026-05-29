@@ -53,14 +53,10 @@
   OMP_STACKSIZE = "4G"
 
 [submission.task_exceptions.CreateGrib]
-  binary = "gl"
-  bindir = "@BINDIR_GL@"
+  binary = "gl_DP"
 
 [submission.task_exceptions.CreateGrib.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
-
-[submission.task_exceptions.CreateGribStatic]
-  bindir = "@BINDIR_GL@"
 
 [submission.task_exceptions.E927]
   NPROC = 16
@@ -73,6 +69,7 @@
   ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2026.01.0.0"]
 
 [submission.task_exceptions.Forecast]
+  bindir = "@CASEDIR@/install/@PRECISION@/bin"
   NPROC = 30
   NPROC_IO = 2
 
@@ -86,19 +83,22 @@
   RTTOV_COEFDIR = "@RTTOV_COEFDIR@"
   UCX_LOG_LEVEL = "error"
 
-[submission.task_exceptions.IALBundleBuild.BATCH]
+[submission.task_exceptions.TactusBundleBuild.BATCH]
   MEM = "#SBATCH --mem=0GB"
+  QOS = "#SBATCH --qos=np"
   NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=32"
+  NTASKS = "#SBATCH --ntasks=1"
+  CPUSPERTASK = "#SBATCH --cpus-per-task=128"
   WALLTIME = "#SBATCH --time=02:00:00"
 
+[submission.task_exceptions.TactusBundleBuild.ENV]
+  OMP_NUM_THREADS = 128
+
 [submission.task_exceptions.GlBd]
-  binary = "gl"
-  bindir = "/perm/deployde330/github-actions/install/gl/latest/bin"
+  binary = "gl_DP"
 
 [submission.task_exceptions.InterpolSstSic]
-  binary = "gl"
-  bindir = "@BINDIR_GL@"
+  binary = "gl_DP"
 
 [submission.task_exceptions.IOmerge.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
@@ -123,8 +123,7 @@
   WALLTIME = "#SBATCH --time=00:30:00"
 
 [submission.task_exceptions.PgdUpdate]
-  binary = "gl"
-  bindir = "@BINDIR_GL@"
+  binary = "gl_DP"
 
 [submission.task_exceptions.Prep]
   WRAPPER = "srun -n @NPROC@"

@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Add gl bundle for compilation with IAL [\#28](https://github.com/ACCORD-NWP/tactus/pull/28) (@pardallio)
+- Add caching feature to avoid recompilation between cases [\#28](https://github.com/ACCORD-NWP/tactus/pull/28) (@pardallio)
+- Add possbility to compile in single precision [\#28](https://github.com/ACCORD-NWP/tactus/pull/28) (@pardallio)
 - Integrate tactus test-runner as command line argument. [\#56](https://github.com/ACCORD-NWP/tactus/pull/56) (@uandrae)
 - Add new Danish testing domain for DA [\#84](https://github.com/ACCORD-NWP/tactus/pull/84) (@romick-knmi)
 - Replace functionality of ecflow containers and nodes [\#37](https://github.com/ACCORD-NWP/tactus/pull/37) (@trygveasp)
@@ -24,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support multiple searchpaths for namelist files through TACTUS_CONFIG_DATA_DIR. [\#20](https://github.com/ACCORD-NWP/tactus/pull/20) (@mfroelund)
 
 ### Changed
+- Changed default submission settings to cy50 and added exceptions for previous config files [\#28](https://github.com/ACCORD-NWP/tactus/pull/28) (@pardallio)
 - Make CSC EPS config files cycle specific. [\#80](https://github.com/ACCORD-NWP/tactus/pull/80) (@uandrae)
 - Make package\_name and version as a arguments for a logger. [\#77](https://github.com/ACCORD-NWP/tactus/pull/77) (@kastelecn)
 - Shortcut EPS GRIB templates until [\#68](https://github.com/ACCORD-NWP/tactus/issues/68) is fixed. [\#72](https://github.com/ACCORD-NWP/tactus/pull/72) (@uandrae)
@@ -44,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change deployment of documentation to not need github secrets to work. [\#22](https://github.com/ACCORD-NWP/tactus/pull/22) (@mfroelund)
 
 ### Fixed
+- Changed binary fetching logic [\#28](https://github.com/ACCORD-NWP/tactus/pull/28) (@pardallio)
 - Bugfix for ecflow replacing in #37 [\#79](https://github.com/ACCORD-NWP/tactus/pull/79) (@trygveasp)
 - Fix IFSEPS control member MARS stream via new optional `stream_control` config key. [\#64](https://github.com/ACCORD-NWP/tactus/pull/64) (@kastelecn)
 - Set sys\_name in config file. [\#61](https://github.com/ACCORD-NWP/tactus/pull/61)(@kastelecn)
