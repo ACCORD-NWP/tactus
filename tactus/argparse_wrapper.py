@@ -23,6 +23,7 @@ from .commands_functions import (
 )
 from .config_parser import ConfigParserDefaults
 from .namelist import NamelistConverter
+from .test_runner import run_test
 
 
 def get_common_parser():
@@ -479,6 +480,58 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
     parser_namelist_format.set_defaults(run_command=namelist_format)
 
     ##########################################
+    # Configure parser for the "test" command #
+    ##########################################
+    parser_test = subparsers.add_parser(
+        "test",
+        help="Run integration test cases via the test runner",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser_test.add_argument(
+        "--config-file",
+        "-c",
+        dest="config_file",
+        help="Test runner config file",
+        required=False,
+        default=None,
+    )
+    parser_test.add_argument(
+        "--list",
+        "-l",
+        action="store_true",
+        default=False,
+        help="List selected cases",
+    )
+    parser_test.add_argument(
+        "--dry",
+        "-d",
+        action="store_true",
+        default=False,
+        help="Prepare only, do not execute actions",
+    )
+    parser_test.add_argument(
+        "--verbose",
+        "-v",
+        action="store_true",
+        default=False,
+        help="Increase verbosity",
+    )
+    parser_test.add_argument(
+        "--prepare-binaries",
+        "-p",
+        action="store_true",
+        default=False,
+        help="Prepare binaries from an IAL hash",
+    )
+    parser_test.add_argument(
+        "-m",
+        action="store_false",
+        dest="run",
+        default=True,
+        help="Only run the modify generation step, do not start suites",
+    )
+    parser_test.set_defaults(run_command=run_test, standalone_command=True)
+
     # Configure parser for the "replace" command #
     ##########################################
     parser_replace = subparsers.add_parser(
