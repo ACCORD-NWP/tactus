@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Integrate tactus test-runner as command line argument. [\#56](https://github.com/ACCORD-NWP/tactus/pull/56) (@uandrae)
+- Add new Danish testing domain for DA [\#84](https://github.com/ACCORD-NWP/tactus/pull/84) (@romick-knmi)
 - Replace functionality of ecflow containers and nodes [\#37](https://github.com/ACCORD-NWP/tactus/pull/37) (@trygveasp)
 - Add suite mirror option [\#69](https://github.com/ACCORD-NWP/tactus/pull/69) (@uandrae)
 - Configuration files for NSC HPC Fahrenheit [\#16](https://github.com/ACCORD-NWP/tactus/pull/16) (@trygveasp)
