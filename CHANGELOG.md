@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support multiple searchpaths for namelist files through TACTUS_CONFIG_DATA_DIR. [\#20](https://github.com/ACCORD-NWP/tactus/pull/20) (@mfroelund)
 
 ### Changed
+- Make CSC EPS config files cycle specific. [\#80](https://github.com/ACCORD-NWP/tactus/pull/80) (@uandrae)
+- Make package\_name and version as a arguments for a logger. [\#77](https://github.com/ACCORD-NWP/tactus/pull/77) (@kastelecn)
 - Shortcut EPS GRIB templates until [\#68](https://github.com/ACCORD-NWP/tactus/issues/68) is fixed. [\#72](https://github.com/ACCORD-NWP/tactus/pull/72) (@uandrae)
 - Switch off SPP until fixed in IAL. [\#71](https://github.com/ACCORD-NWP/tactus/pull/71) (@uandrae)
 - Switch on compilation by default. [\#60](https://github.com/ACCORD-NWP/tactus/pull/60) (@uandrae)
@@ -41,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change deployment of documentation to not need github secrets to work. [\#22](https://github.com/ACCORD-NWP/tactus/pull/22) (@mfroelund)
 
 ### Fixed
+- Bugfix for ecflow replacing in #37 [\#79](https://github.com/ACCORD-NWP/tactus/pull/79) (@trygveasp)
 - Fix IFSEPS control member MARS stream via new optional `stream_control` config key. [\#64](https://github.com/ACCORD-NWP/tactus/pull/64) (@kastelecn)
 - Set sys\_name in config file. [\#61](https://github.com/ACCORD-NWP/tactus/pull/61)(@kastelecn)
 - Temporary bindir setting for fa\_sfx2clim on deode\_49t2. [\#48](https://github.com/ACCORD-NWP/tactus/pull/55) (@kastelecn)
@@ -52,6 +55,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use GDAL options object [\#15](https://github.com/ACCORD-NWP/tactus/pull/15) (@trygveasp)
 - Get wrapper with an empty default value. [\#17](https://github.com/ACCORD-NWP/tactus/pull/17) (@trygveasp)
 - Remove deode files. [\#4](https://github.com/ACCORD-NWP/tactus/pull/4) (@mfroelund)
+
+### Removed
+- Obsolete EPS config files. [\#80](https://github.com/ACCORD-NWP/tactus/pull/80) (@uandrae)
 
 ## [1.0.0] - 2026-04-30
 
