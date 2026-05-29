@@ -13,11 +13,9 @@
 [submission]
   precision = "R64"
 
-[submission.task_exceptions.C903]
-  bindir = "@INSTALL_DIR@/CY49t2/intel/R64/CY49t2-v1.13.1/bin"
-
 [submission.task_exceptions.E923Update]
-  binary = "fa_sfx2clim_dp"
+  bindir = "/perm/deployde330/github-actions/install/CY49t2/intel/R64/latest/bin"
+  binary = "fa_sfx2clim"
 
 [submission.task_exceptions.E923Update.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
@@ -32,7 +30,8 @@
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
 
 [submission.task_exceptions.PgdFilterTownFrac]
-  binary = "pgd_frac_dp"
+  bindir = "/perm/deployde330/github-actions/install/CY49t2/intel/R64/latest/bin"
+  binary = "pgd_frac"
 
 [submission.task_exceptions.Prep]
   binary = "prep_dp"
