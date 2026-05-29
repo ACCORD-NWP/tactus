@@ -227,3 +227,13 @@
   UA = "133/75/76/246/247/248"
   use_static_gg = true
   Zlev_type = "ML"
+
+[mars.obs]
+  expver = "0001"
+  class = "OD"
+  stream = "OPER"
+  repres = "BUFR"
+  type_OB = "OB"
+  start_date = "1900-07-09T00:00:00Z"
+  range = "180"
+  obstype = "LSD/SSD/SLNS/VSNS"

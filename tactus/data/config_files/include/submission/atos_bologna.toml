@@ -106,7 +106,17 @@
 [submission.task_exceptions.Marsprep]
   bindir = "/usr/local/bin/"
 
+[submission.task_exceptions.Marsobs]
+  bindir = "/usr/local/bin/"
+
 [submission.task_exceptions.Marsprep.BATCH]
+  MEM = "#SBATCH --mem=128GB"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  QOS = "#SBATCH --qos=np"
+  WALLTIME = "#SBATCH --time=06:00:00"
+
+[submission.task_exceptions.Marsobs.BATCH]
   MEM = "#SBATCH --mem=128GB"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=1"
@@ -204,6 +214,7 @@
     "Topography",
     "Soil",
     "Marsprep",
+    "Marsobs",
     "E923Update",
     "IOmerge",
     "InterpolSstSic",

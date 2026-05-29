@@ -618,6 +618,9 @@ class BaseRequest:
         target (str): Target file or identifier for the output.
         request (dict): A dictionary representation of the request, initialized
             automatically upon object creation.
+        range (str): time range in minutes for the obs window
+        repres (str): format of observations
+        obstype (str list): observation types
     """
 
     class_: str
@@ -630,6 +633,9 @@ class BaseRequest:
     param: str
     target: str
     request: dict = field(init=False)
+    range: str
+    repres: str
+    obstype: List[str]
 
     def __post_init__(self):
         self.request = {
@@ -639,9 +645,12 @@ class BaseRequest:
             "LEVTYPE": self.levtype,
             "DATE": self.date,
             "TIME": self.time,
-            "STEP": "/".join(map(str, self.steps)),
+            "STEP": "/".join(map(str, self.steps or [] )),
             "PARAM": self.param,
             "TARGET": self.target,
+            "RANGE": self.range,
+            "REPRES": self.repres,
+            "OBSTYPE": self.obstype,
         }
 
     def update_request(self, upd: dict):
