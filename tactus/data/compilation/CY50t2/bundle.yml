@@ -20,6 +20,6 @@ projects :
                 ECTRANS_ENABLE_PROGRAMS=OFF
 
     - gl :
-        git     : ${GITHUB}/pardallio/gl-acrd
-        version : feature/cy50
+        git     : ${GITHUB}/ACCORD-NWP/gl
+        version : 1.0.0
         gmkpack : 'None'
