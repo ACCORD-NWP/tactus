@@ -5,6 +5,7 @@ import contextlib
 import copy
 import glob
 import os
+import sys
 from datetime import date
 from pathlib import Path
 
@@ -63,6 +64,7 @@ class TestCases:
         self.ial = definitions.get("ial", {})
         self.gl = definitions.get("gl", {})
         self.selection = self.resolve_selection(definitions)
+        self.assigned = {}
 
         if args.config_file is not None:
             with contextlib.suppress(KeyError):
@@ -190,28 +192,45 @@ class TestCases:
 
         logger.info("Create {}config files in {}", label, self.test_dir)
 
-        assigned = {}
         days_difference = (date.today() - self.reference_date).days
         for i, (case, item) in enumerate(self.cases.items()):
-            assigned[case] = i + 1 + days_difference
+            if case not in self.assigned:
+                self.assigned[case] = i + 1 + days_difference
 
-            if case not in cases or "config_name" in self.cases[case]:
+            if case not in cases: # or "config_name" in self.cases[case]:
+                logger.info(" Skip case:{}", case)
                 continue
 
-            counter = assigned[item["host"]] if "host" in item else assigned[case]
+            logger.info(" Deal with case:{}", case)
+
+            if "host" in item:
+              self.assigned[case] = self.assigned[item["host"]] 
+
             base = item.get("base", case)
             subtag = item.get("subtag", "")
             host_case = item.get("hostname", "")
+            logger.info("{} has host_case: {}", case, host_case)
             host_domain = item.get("hostdomain", "")
             extra = list(self.extra) + list(item.get("extra", []))
 
             # Merge and replace macros
             modifs = merge_dicts(self.modifs, self.cases[case].get("modifs", {}), True)
+            modif_macros = {        "modif_macros": {
+                        "counter": self.assigned[case],
+                        "host_case": host_case,
+                        "host_domain": host_domain,
+                        "tag": self.tag,
+                        "subtag": subtag,
+                    },
+                    }
+            logger.info("modif_macros: {}", modif_macros)
+            logger.info("modifs: {}", modifs)
+
             config = self.config.copy(
                 update={
                     "modifs": modifs,
                     "modif_macros": {
-                        "counter": counter,
+                        "counter": self.assigned[case],
                         "host_case": host_case,
                         "host_domain": host_domain,
                         "tag": self.tag,
@@ -219,8 +238,14 @@ class TestCases:
                     },
                 }
             )
+            system = config["modifs"]["system"]
+            if "host_suite" in system:
+                logger.info("  MODIFS:{}", system["host_suite"])
+            logger.info("  MACROS host_case:{}", config["modif_macros"]["host_case"])
             with contextlib.suppress(KeyError):
                 config = config.expand_macros(True)
+            if "host_suite" in system:
+                logger.info("  MODIFS EXPANDED:{}", system["host_suite"])
 
             # Save the modifications
             outfile = f"{self.test_dir}/modifs_{case}.toml"
@@ -443,8 +468,10 @@ class TestCases:
             hostnames (dict): Dict of host cases with properties
 
         """
+        logger.info("hostnames:{}", list(hostnames))
         for case, item in self.cases.items():
             if "host" in item and item["host"] in hostnames:
+                logger.info("Check host for {}:{}", case, item["host"])
                 logger.info(
                     "Add {} and {} to {}",
                     hostnames[item["host"]]["config_name"],
@@ -464,7 +491,9 @@ class TestCases:
         host_cases = self.prepare()
         self.create(host_cases)
         hostnames = self.configure(config_hosts=True)
+        logger.info("hostnames:{}", hostnames)
         self.update_hostnames(hostnames)
+        logger.info("hostnames:{}", hostnames)
         self.create()
 
         if args.run:
