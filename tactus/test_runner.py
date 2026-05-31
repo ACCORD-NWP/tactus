@@ -198,10 +198,7 @@ class TestCases:
                 self.assigned[case] = i + 1 + days_difference
 
             if case not in cases: # or "config_name" in self.cases[case]:
-                logger.info(" Skip case:{}", case)
                 continue
-
-            logger.info(" Deal with case:{}", case)
 
             if "host" in item:
               self.assigned[case] = self.assigned[item["host"]] 
@@ -209,23 +206,11 @@ class TestCases:
             base = item.get("base", case)
             subtag = item.get("subtag", "")
             host_case = item.get("hostname", "")
-            logger.info("{} has host_case: {}", case, host_case)
             host_domain = item.get("hostdomain", "")
             extra = list(self.extra) + list(item.get("extra", []))
 
             # Merge and replace macros
             modifs = merge_dicts(self.modifs, self.cases[case].get("modifs", {}), True)
-            modif_macros = {        "modif_macros": {
-                        "counter": self.assigned[case],
-                        "host_case": host_case,
-                        "host_domain": host_domain,
-                        "tag": self.tag,
-                        "subtag": subtag,
-                    },
-                    }
-            logger.info("modif_macros: {}", modif_macros)
-            logger.info("modifs: {}", modifs)
-
             config = self.config.copy(
                 update={
                     "modifs": modifs,
@@ -238,19 +223,57 @@ class TestCases:
                     },
                 }
             )
-            system = config["modifs"]["system"]
-            if "host_suite" in system:
-                logger.info("  MODIFS:{}", system["host_suite"])
-            logger.info("  MACROS host_case:{}", config["modif_macros"]["host_case"])
             with contextlib.suppress(KeyError):
                 config = config.expand_macros(True)
-            if "host_suite" in system:
-                logger.info("  MODIFS EXPANDED:{}", system["host_suite"])
 
             # Save the modifications
             outfile = f"{self.test_dir}/modifs_{case}.toml"
             logger.info(" create: {}", outfile)
             BasicConfig(config["modifs"]).save_as(outfile)
+
+            base_file = (
+                str(GeneralConstants.PACKAGE_DIRECTORY)
+                + "/data/config_files/configurations/"
+                + base
+            )
+            base_file = f"?{base_file}" if os.path.exists(base_file) else ""
+
+            # Build the command to execute
+            cmd = [
+                "case",
+                base_file,
+                extra,
+                outfile,
+                "-o",
+                self.test_dir,
+            ]
+            self.cmds[case] = flatten_list(cmd)
+
+    def populate_cmds(self, host_cases=None):
+        """Create the tests.
+
+        Arguments:
+            host_cases (list, optional): List of host cases
+
+        """
+        days_difference = (date.today() - self.reference_date).days
+        for i, (case, item) in enumerate(self.cases.items()):
+            if case not in self.assigned:
+                self.assigned[case] = i + 1 + days_difference
+
+            if case not in self.selection:
+                continue
+
+            if "host" in item:
+              self.assigned[case] = self.assigned[item["host"]] 
+
+            base = item.get("base", case)
+            subtag = item.get("subtag", "")
+            host_case = item.get("hostname", "")
+            host_domain = item.get("hostdomain", "")
+            extra = list(self.extra) + list(item.get("extra", []))
+
+            outfile = f"{self.test_dir}/modifs_{case}.toml"
 
             base_file = (
                 str(GeneralConstants.PACKAGE_DIRECTORY)
@@ -314,6 +337,9 @@ class TestCases:
                     "config_name": os.path.basename(config_file.stem),
                     "domain_name": definitions["domain"]["name"],
                 }
+            else:
+                config_names = {case: item["config_name"] for case, item in self.cases.items() if "config_name" in item}
+                BasicConfig({"config_names": config_names}).save_as(f"{directory}/config_names.toml")
 
         return cases
 
@@ -322,8 +348,11 @@ class TestCases:
         # Local import to avoid circular dependency (__main__ -> argparse_wrapper -> here)
         from .__main__ import main as tactus_main
 
+        with open(f"{self.test_dir}/config_names.toml", "rb") as f:
+                config_names = tomli.load(f)
+
         for case in self.cmds:
-            config_name = self.cases[case]["config_name"]
+            config_name = config_names["config_names"][case]
             if self.mode == "task":
                 cmds = [
                     [
@@ -468,7 +497,6 @@ class TestCases:
             hostnames (dict): Dict of host cases with properties
 
         """
-        logger.info("hostnames:{}", list(hostnames))
         for case, item in self.cases.items():
             if "host" in item and item["host"] in hostnames:
                 logger.info("Check host for {}:{}", case, item["host"])
@@ -488,17 +516,20 @@ class TestCases:
             args: Command line arguments
 
         """
-        host_cases = self.prepare()
-        self.create(host_cases)
-        hostnames = self.configure(config_hosts=True)
-        logger.info("hostnames:{}", hostnames)
-        self.update_hostnames(hostnames)
-        logger.info("hostnames:{}", hostnames)
-        self.create()
+        if args.prep:
+          host_cases = self.prepare()
+          self.create(host_cases)
+          hostnames = self.configure(config_hosts=True)
+          self.update_hostnames(hostnames)
+          self.create()
+
+        if args.configure:
+          self.populate_cmds()
+          self.configure()
 
         if args.run:
-            self.configure()
-            self.start()
+          self.populate_cmds()
+          self.start()
 
 
 def run_test(args, config=None):
