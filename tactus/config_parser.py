@@ -675,7 +675,7 @@ def _expand_config_include_section(
                 include_path = Path(include_path)
                 if not include_path.is_absolute():
                     include_path = ConfigPaths.path_from_subpath(include_path)
-                #logger.info("Include: {}", include_path)
+                logger.info("Include: {}", include_path)
                 included_config_section = _read_raw_config_file(include_path)
             else:
                 included_config_section = include_path_

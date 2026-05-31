@@ -528,21 +528,21 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         action="store_true",
         dest="prep",
         default=False,
-        help="Skip prep step."
+        help="Run the first prep step",
     )
     parser_test.add_argument(
         "-m",
         action="store_true",
         dest="configure",
         default=False,
-        help="Only run the modify generation step, do not start suites",
+        help="Run the second prep step",
     )
     parser_test.add_argument(
         "-r",
         action="store_true",
         dest="run",
         default=False,
-        help="Only run the modify generation step, do not start suites",
+        help="Launch the tests",
     )
     parser_test.set_defaults(run_command=run_test, standalone_command=True)
 
