@@ -124,7 +124,7 @@ class PrepRun(Task):
                             "productDefinitionTemplateNumber": 11,
                             "typeOfEnsembleForecast": 6,
                         }
-                        dicts.append(eps_key)
+                        dicts.insert(0, eps_key)
                     line = (
                         f"'{model_name}' = {{"
                         + "".join(
