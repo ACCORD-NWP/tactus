@@ -48,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change deployment of documentation to not need github secrets to work. [\#22](https://github.com/ACCORD-NWP/tactus/pull/22) (@mfroelund)
 
 ### Fixed
+- Disable default compilation for older cycles [\#90](https://github.com/ACCORD-NWP/tactus/pull/90) (@pardallio)
 - Changed binary fetching logic [\#28](https://github.com/ACCORD-NWP/tactus/pull/28) (@pardallio)
 - Bugfix for ecflow replacing in #37 [\#79](https://github.com/ACCORD-NWP/tactus/pull/79) (@trygveasp)
 - Fix IFSEPS control member MARS stream via new optional `stream_control` config key. [\#64](https://github.com/ACCORD-NWP/tactus/pull/64) (@kastelecn)

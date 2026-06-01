@@ -33,6 +33,7 @@
 
 [suite_control]
   do_interpolsstsic = false
+  compile = false
 
 [gribmodify.fullpos.3]
   output_name = "tp"
