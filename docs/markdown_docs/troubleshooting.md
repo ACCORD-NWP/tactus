@@ -12,16 +12,11 @@ Try running:
 
 `pixi install`
 
-`pixi run bootstrap`
-
-
 ## *ImportError* or *ModuleNotFoundError* when running the package's executable
 
 Try running:
 
 `pixi install`
-
-`pixi run bootstrap`
 
 ## *pixi install* or *pixi run bootstrap* fail
 
