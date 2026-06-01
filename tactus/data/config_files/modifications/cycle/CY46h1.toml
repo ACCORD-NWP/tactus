@@ -2,7 +2,6 @@
   cycle = "CY46h1"
   windfarm = false
 
-
 [suite_control]
   compile = false
 

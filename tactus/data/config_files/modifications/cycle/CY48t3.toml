@@ -6,9 +6,6 @@
 [platform]
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef/"
 
-[suite_control]
-  compile = false
-
 [submission]
   bindir = "@INSTALL_DIR@/@CYCLE@/@IAL_VERSION@/bin"
   bindir_gl = "@INSTALL_DIR@/gl/@COMPILER@/@GL_VERSION@/bin/"
@@ -36,6 +33,7 @@
 
 [suite_control]
   do_interpolsstsic = false
+  compile = false
 
 [gribmodify.fullpos.3]
   output_name = "tp"
