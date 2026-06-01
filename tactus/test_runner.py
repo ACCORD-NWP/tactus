@@ -515,6 +515,11 @@ class TestCases:
             hostnames = self.configure(config_hosts=True)
             self.update_hostnames(hostnames)
             self.create()
+            # Cases with hostname were configured before mirror info was available;
+            # clear config_name so they are reconfigured with the updated modifs.
+            for case in self.cases.values():
+                if "hostname" in case:
+                    case.pop("config_name", None)
 
         if args.configure:
             self.populate_cmds()
