@@ -18,8 +18,7 @@ lint:
 
 # Testing
 test:
-	# uv run --group test pytest -n auto --maxprocesses 16
-	uv run --group test pytest tests/unit/test_scheduler.py::TestScheduler::test_successfully_select_host_from_list
+	uv run --group test pytest -n auto --maxprocesses 16
 
 # Documentation
 doc-clean:
