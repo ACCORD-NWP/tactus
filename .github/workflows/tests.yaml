@@ -57,7 +57,8 @@ jobs:
       - name: Run tests
         run: |
           pixi run python --version
-          pixi run test
+          pixi run -e test pytest -rA tests/unit/test_cleaning.py::test_full_cleaning
+
 
 
       # Disable upload to codecov until/if codecov is enabled

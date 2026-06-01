@@ -123,11 +123,14 @@ def test_full_cleaning(tmpdir, basic_config):
     }
 
     # Test the actual cleaning
+    files_left = list(glob.glob(f"{path}/*"))
+    print("files_left before", files_left)
     cleaner = CleanTactus(config, config.get_as_dict("cleaning.defaults"))
     cleaner.has_ecfs = True
     cleaner.prep_cleaning(choices)
     cleaner.clean()
     files_left = list(glob.glob(f"{path}/*"))
+    print("files_left after", files_left)
 
     assert len(files_left) == 1
     assert os.path.basename(files_left[0]) == "ELS"
