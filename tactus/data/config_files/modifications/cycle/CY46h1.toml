@@ -2,6 +2,10 @@
   cycle = "CY46h1"
   windfarm = false
 
+
+[suite_control]
+  compile = false
+
 [platform]
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef/"
 
