@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """Test runner functionality for running integration test cases."""
 
+import concurrent.futures
 import contextlib
 import copy
 import glob
 import os
+import shutil
+import tempfile
 from datetime import date
 from pathlib import Path
 
@@ -152,45 +155,18 @@ class TestCases:
         tag += "_"
         return tag
 
-    def prepare(self):
-        """Prepare the host cases.
-
-        Returns:
-            host_cases: List of host cases
-
-        Raises:
-            KeyError: If case is not found
-        """
-        try:
-            host_cases = [
-                self.cases[case]["host"]
-                for case in self.selection
-                if "host" in self.cases[case]
-            ]
-        except KeyError as err:
-            logger.error(
-                f"The case is not available. Available cases are {list(self.cases)}"
-            )
-            raise KeyError from err
-
-        return host_cases
-
-    def create(self, host_cases=None):
-        """Create the tests.
+    def create(self, cases=None):
+        """Create the modif files and populate self.cmds for the given cases.
 
         Arguments:
-            host_cases (list, optional): List of host cases
+            cases (list, optional): Cases to process; defaults to self.selection
 
         """
         os.makedirs(self.test_dir, exist_ok=True)
-        if host_cases is None:
+        if cases is None:
             cases = self.selection
-            label = ""
-        else:
-            label = "host "
-            cases = host_cases
 
-        logger.info("Create {}config files in {}", label, self.test_dir)
+        logger.info("Create config files in {}", self.test_dir)
 
         days_difference = (date.today() - self.reference_date).days
         for i, (case, item) in enumerate(self.cases.items()):
@@ -246,65 +222,57 @@ class TestCases:
             ]
             self.cmds[case] = flatten_list(cmd)
 
-        for case in self.cases.values():
-            if "hostname" in case:
-                case.pop("config_name", None)
-
-    def configure(self, config_hosts=False, cmds=None):
-        """Configure tests.
-
-        Arguments:
-            config_hosts (bool, optional): Flag for updating the case settings
-                                           with host information
-            cmds (list, optional): List of commands (str)
+    def _build_levels(self):
+        """Return cases grouped into dependency levels for topological processing.
 
         Returns:
-            cases (dict): Dict of cases to run
+            levels (list[list]): Cases at each level, roots first.
+
+        Raises:
+            ValueError: If a circular host dependency is detected.
         """
-        # Local import to avoid circular dependency (__main__ -> argparse_wrapper -> here)
+        levels = []
+        remaining = list(self.selection)
+        resolved = set()
+        while remaining:
+            level = [
+                case for case in remaining
+                if "host" not in self.cases[case] or self.cases[case]["host"] in resolved
+            ]
+            if not level:
+                raise ValueError(f"Circular dependency in host cases: {remaining}")
+            levels.append(level)
+            resolved.update(level)
+            remaining = [case for case in remaining if case not in resolved]
+        return levels
+
+    def _run_case(self, case):
+        """Run the tactus case command for one case and return its output metadata.
+
+        Uses a per-case temporary directory so that concurrent calls never
+        race on the output file.
+
+        Arguments:
+            case (str): Case name (must already have an entry in self.cmds)
+
+        Returns:
+            (config_name, domain_name): stem of the generated config file and
+                                        the domain name read from it.
+        """
         from .__main__ import main as tactus_main
 
-        if cmds is None:
-            cmds = []
-        cases = {}
-        for case, cmd in self.cmds.items():
-            if "config_name" in self.cases[case]:
-                continue
-
+        cmd = list(self.cmds[case])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cmd[-1] = tmpdir
             logger.info("Configure case {} with\n", case)
-            for c in cmds:
-                cmd.append(c)
-            cmd_txt = " ".join(cmd)
-            logger.info("Use cmd:\n\n{}\n\n", cmd_txt)
-
-            # Call tactus main to create new config, and possibly start suite
+            logger.info("Use cmd:\n\n{}\n\n", " ".join(cmd))
             tactus_main(cmd)
-
-            # Update the case settings
-            directory = Path(self.test_dir)
-            config_file = max(directory.glob("*.toml"), key=lambda f: f.stat().st_mtime)
+            (config_file,) = Path(tmpdir).glob("*.toml")
             with open(config_file, "rb") as f:
-                definitions = tomli.load(f)
-
-            self.cases[case]["config_name"] = os.path.basename(config_file.stem)
-            self.cases[case]["domain_name"] = definitions["domain"]["name"]
-
-            if config_hosts:
-                cases[case] = {
-                    "config_name": os.path.basename(config_file.stem),
-                    "domain_name": definitions["domain"]["name"],
-                }
-            else:
-                config_names = {
-                    case: item["config_name"]
-                    for case, item in self.cases.items()
-                    if "config_name" in item
-                }
-                BasicConfig({"config_names": config_names}).save_as(
-                    f"{directory}/config_names.toml"
-                )
-
-        return cases
+                defs = tomli.load(f)
+            dest = Path(self.test_dir) / config_file.name
+            shutil.move(str(config_file), str(dest))
+        return dest.stem, defs["domain"]["name"]
 
     def start(self):
         """Start the run."""
@@ -480,12 +448,26 @@ class TestCases:
 
         """
         if args.configure:
-            host_cases = self.prepare()
-            self.create(host_cases)
-            hostnames = self.configure(config_hosts=True)
-            self.update_hostnames(hostnames)
-            self.create()
-            self.configure()
+            directory = Path(self.test_dir)
+            for level in self._build_levels():
+                self.create(level)
+                with concurrent.futures.ThreadPoolExecutor() as executor:
+                    futures = {executor.submit(self._run_case, case): case for case in level}
+                    for future in concurrent.futures.as_completed(futures):
+                        case = futures[future]
+                        config_name, domain_name = future.result()
+                        self.cases[case]["config_name"] = config_name
+                        self.cases[case]["domain_name"] = domain_name
+                self.update_hostnames({
+                    case: self.cases[case] for case in level
+                })
+                BasicConfig({
+                    "config_names": {
+                        c: item["config_name"]
+                        for c, item in self.cases.items()
+                        if "config_name" in item
+                    }
+                }).save_as(f"{directory}/config_names.toml")
 
         if args.run:
             self.create()
