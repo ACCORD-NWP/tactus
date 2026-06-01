@@ -33,6 +33,9 @@ def set_arg():
 def nlint_arg(tmp_directory):
     arg = ArgumentParser()
     arg.tactus_home = None
+    import sys
+
+    print("sys.path", sys.path)  # debug print to check sys.path
     arg.namelist = [
         resolve_path_relative_to_package(
             Path("tactus/data/namelists/unit_testing/nl_master_integrate")
@@ -184,9 +187,6 @@ def test_namelist_format_yml(nlformatyml_arg, default_config):
 @pytest.fixture
 def nlformatftn_arg(tmp_directory):
     arg = ArgumentParser()
-    import sys
-
-    print("sys.path", sys.path)  # Debug print to check sys.path
     arg.namelist = str(
         resolve_path_relative_to_package(
             Path("tactus/data/namelists/unit_testing/nl_master_base")
