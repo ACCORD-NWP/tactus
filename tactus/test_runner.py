@@ -168,8 +168,10 @@ class TestCases:
                 if "host" in self.cases[case]
             ]
         except KeyError as err:
-            logger.error(f"The case is not available\n Available cases are {list(self.cases)}")
-            raise KeyError() from err
+            logger.error(
+                f"The case is not available. Available cases are {list(self.cases)}"
+            )
+            raise KeyError from err
 
         return host_cases
 
