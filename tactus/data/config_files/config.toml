@@ -54,8 +54,8 @@
   task_logs = "@CLIMDIR@"
 
 [compile]
-  ial_git_repo = "git@github.com:ACCORD-NWP/IAL"
-  ial_git_branch = "develop"
+  git_repo = "git@github.com:dhaumont/IAL"
+  git_branch = "feature/lmccecsst"
 
 [fullpos]
   config_path = "@CYCLE@/fullpos"
