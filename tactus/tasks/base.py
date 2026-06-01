@@ -198,35 +198,32 @@ class Task(object):
         """
         binary = binary_name
         task = task_name if task_name is not None else self.name
-        sys_bindir = "@CASEDIR@/install/bin"
-        sys_bindir = self.platform.substitute(sys_bindir)
-        sys_bindir = os.path.realpath(sys_bindir)
 
         with contextlib.suppress(KeyError):
             binary = self.config[f"submission.task_exceptions.{task}.binary"]
 
         task_bindir = None
         general_bindir = None
-        try:
+        with contextlib.suppress(KeyError):
             task_bindir = self.config[f"submission.task_exceptions.{task}.bindir"]
-        except KeyError:
-            try:
-                binaries = self.config[
-                    f"submission.task_exceptions.{task}.binaries.{binary_name}"
-                ]
-                logger.debug("binaries:{}", binaries)
 
-                with contextlib.suppress(KeyError):
-                    binary = binaries["binary"]
-                with contextlib.suppress(KeyError):
-                    task_bindir = binaries["bindir"]
-            except KeyError:
-                with contextlib.suppress(KeyError):
-                    general_bindir = self.config["submission.bindir"]
+        try:
+            binaries = self.config[
+                f"submission.task_exceptions.{task}.binaries.{binary_name}"
+            ]
+            logger.debug("binaries:{}", binaries)
+
+            with contextlib.suppress(KeyError):
+                binary = binaries["binary"]
+            with contextlib.suppress(KeyError):
+                task_bindir = binaries["bindir"]
+        except KeyError:
+            pass
+        with contextlib.suppress(KeyError):
+            general_bindir = self.config["submission.bindir"]
 
         # Look for binary
         logger.debug("binary:{}", binary)
-        logger.debug("system bindir:{}", sys_bindir)
         logger.debug("general bindir:{}", general_bindir)
         logger.debug("task bindir:{}", task_bindir)
         # 1. Task specific binary
@@ -237,18 +234,14 @@ class Task(object):
             task_binary = f"{bindir}/{binary}"
             logger.debug("Using task specific binary: {}", task_binary)
             return task_binary
-        # 2. System binary
-        sys_binary = f"{sys_bindir}/{binary}"
-        if os.path.exists(sys_binary):
-            logger.debug("Found system binary: {}", sys_binary)
-            return sys_binary
-        # 3. General binary
-        bindir = self.platform.substitute(general_bindir)
-        bindir = os.path.realpath(bindir)
-        general_binary = f"{bindir}/{binary}"
-        if os.path.exists(general_binary):
-            logger.debug("Found general binary: {}", sys_binary)
-            return general_binary
+        # 2. General binary
+        if general_bindir is not None:
+            bindir = self.platform.substitute(general_bindir)
+            if "@" not in bindir:
+                bindir = os.path.realpath(bindir)
+                general_binary = f"{bindir}/{binary}"
+                logger.debug("Using general binary: {}", general_binary)
+                return general_binary
         return binary
 
     def execute(self):

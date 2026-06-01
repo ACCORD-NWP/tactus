@@ -10,6 +10,9 @@
 [pgd]
   npatch = 3
 
+[submission]
+  precision = "R64"
+
 [submission.task_exceptions.E923Update]
   bindir = "/perm/deployde330/github-actions/install/CY49t2/intel/R64/latest/bin"
   binary = "fa_sfx2clim"
@@ -17,11 +20,24 @@
 [submission.task_exceptions.E923Update.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
 
+[submission.task_exceptions.Forecast.binaries.lfitools]
+  binary = "lfitools_dp"
+
+[submission.task_exceptions.Pgd]
+  binary = "pgd_dp"
+
 [submission.task_exceptions.Pgd.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
 
 [submission.task_exceptions.PgdFilterTownFrac]
-  binary = "PGD_FRAC"
+  bindir = "/perm/deployde330/github-actions/install/CY49t2/intel/R64/latest/bin"
+  binary = "pgd_frac"
+
+[submission.task_exceptions.Prep]
+  binary = "prep_dp"
 
 [submission.task_exceptions.Prep.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
+
+[suite_control]
+  compile = true
