@@ -57,7 +57,7 @@ jobs:
       - name: Run tests
         run: |
           pixi run python --version
-          pixi run pytest -rA tests/unit/test_commands_functions.py::test_namelist_integrate
+          pixi run pytest -rA tests/unit/test_commands_functions.py
 
 
 
