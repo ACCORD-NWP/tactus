@@ -524,18 +524,11 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         help="Prepare binaries from an IAL hash",
     )
     parser_test.add_argument(
-        "-n",
-        action="store_true",
-        dest="prep",
-        default=False,
-        help="Run the first prep step",
-    )
-    parser_test.add_argument(
         "-m",
         action="store_true",
         dest="configure",
         default=False,
-        help="Run the second prep step",
+        help="Create config files",
     )
     parser_test.add_argument(
         "-r",

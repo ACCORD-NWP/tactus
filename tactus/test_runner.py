@@ -244,41 +244,9 @@ class TestCases:
             ]
             self.cmds[case] = flatten_list(cmd)
 
-    def populate_cmds(self):
-        """Create the tests."""
-        days_difference = (date.today() - self.reference_date).days
-        for i, (case, item) in enumerate(self.cases.items()):
-            if case not in self.assigned:
-                self.assigned[case] = i + 1 + days_difference
-
-            if case not in self.selection:
-                continue
-
-            if "host" in item:
-                self.assigned[case] = self.assigned[item["host"]]
-
-            base = item.get("base", case)
-            extra = list(self.extra) + list(item.get("extra", []))
-
-            outfile = f"{self.test_dir}/modifs_{case}.toml"
-
-            base_file = (
-                str(GeneralConstants.PACKAGE_DIRECTORY)
-                + "/data/config_files/configurations/"
-                + base
-            )
-            base_file = f"?{base_file}" if os.path.exists(base_file) else ""
-
-            # Build the command to execute
-            cmd = [
-                "case",
-                base_file,
-                extra,
-                outfile,
-                "-o",
-                self.test_dir,
-            ]
-            self.cmds[case] = flatten_list(cmd)
+        for case in self.cases.values():
+            if "hostname" in case:
+                case.pop("config_name", None)
 
     def configure(self, config_hosts=False, cmds=None):
         """Configure tests.
@@ -509,24 +477,16 @@ class TestCases:
             args: Command line arguments
 
         """
-        if args.prep:
+        if args.configure:
             host_cases = self.prepare()
             self.create(host_cases)
             hostnames = self.configure(config_hosts=True)
             self.update_hostnames(hostnames)
             self.create()
-            # Cases with hostname were configured before mirror info was available;
-            # clear config_name so they are reconfigured with the updated modifs.
-            for case in self.cases.values():
-                if "hostname" in case:
-                    case.pop("config_name", None)
-
-        if args.configure:
-            self.populate_cmds()
             self.configure()
 
         if args.run:
-            self.populate_cmds()
+            self.create()
             self.start()
 
 
