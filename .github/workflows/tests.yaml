@@ -55,10 +55,7 @@ jobs:
           environments: test
 
       - name: Run tests
-        run: |
-          pixi run python --version
-          pixi run -e test pytest -rA tests/unit/
-          # pixi run -e test pytest -rA tests/unit/test_commands_functions.py
+        run: pixi run test
 
 
       # Disable upload to codecov until/if codecov is enabled
