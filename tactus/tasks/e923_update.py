@@ -45,7 +45,9 @@ class E923Update(Task):
         )
         self.fmanager.input(f"{self.climdir}/{pgd_file}", "pgd_file")
         # sfx init
-        sfx_init = self.platform.substitute(f"{self.intp_bddir_sfx}/ICMSH@CNMEXP@INIT.sfx")
+        sfx_init = self.platform.substitute(
+            f"{self.intp_bddir_sfx}/ICMSH@CNMEXP@INIT.sfx"
+        )
         self.fmanager.input(sfx_init, "input_sfx")
         # Old climfile
         climfile = f"{self.climdir}/Const.Clim.{self.month}"

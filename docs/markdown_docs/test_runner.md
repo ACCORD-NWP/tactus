@@ -23,7 +23,7 @@ tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -m
 ```
 ## Launch the suites
 ```
-tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -r 
+tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -r
 ```
 
 This will create a directory according to the tag and create all config files in this directory. For each config a tactus ecflow run will be launched.
