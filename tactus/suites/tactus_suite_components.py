@@ -1856,8 +1856,9 @@ class CompilationFamily(EcflowSuiteFamily):
             input_template=input_template,
             ecf_files_remotely=ecf_files_remotely,
         )
+
         create_bundle = EcflowSuiteTask(
-            "IALBundleCreate",
+            "TactusBundleCreate",
             self,
             config,
             task_settings,
@@ -1866,13 +1867,35 @@ class CompilationFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
             trigger=EcflowSuiteTriggers(EcflowSuiteTrigger(clone_ial)),
         )
-        EcflowSuiteTask(
-            "IALBundleBuild",
+
+        build_familiy = EcflowSuiteFamily(
+            "TactusBundleBuild",
             self,
-            config,
-            task_settings,
             ecf_files,
-            input_template=input_template,
             ecf_files_remotely=ecf_files_remotely,
-            trigger=EcflowSuiteTriggers(EcflowSuiteTrigger(create_bundle)),
         )
+        precision_dict = {"R64": "double"}
+        if config["submission"]["precision"] == "R32":
+            precision_dict["R32"] = "single"
+
+        for precision in precision_dict:
+            prec_familiy = EcflowSuiteFamily(
+                precision,
+                build_familiy,
+                ecf_files,
+                ecf_files_remotely=ecf_files_remotely,
+            )
+            EcflowSuiteTask(
+                "TactusBundleBuild",
+                prec_familiy,
+                config,
+                task_settings,
+                ecf_files,
+                input_template=input_template,
+                ecf_files_remotely=ecf_files_remotely,
+                variables={
+                    "ARGS": f"prec={precision}",
+                    "FP_PRECISION": precision_dict[precision],
+                },
+                trigger=EcflowSuiteTriggers(EcflowSuiteTrigger(create_bundle)),
+            )

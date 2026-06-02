@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Add gl bundle for compilation with IAL [\#28](https://github.com/ACCORD-NWP/tactus/pull/28) (@pardallio)
+- Add caching feature to avoid recompilation between cases [\#28](https://github.com/ACCORD-NWP/tactus/pull/28) (@pardallio)
+- Add possbility to compile in single precision [\#28](https://github.com/ACCORD-NWP/tactus/pull/28) (@pardallio)
+- Integrate tactus test-runner as command line argument. [\#56](https://github.com/ACCORD-NWP/tactus/pull/56) (@uandrae)
+- Add new Danish testing domain for DA [\#84](https://github.com/ACCORD-NWP/tactus/pull/84) (@romick-knmi)
 - Replace functionality of ecflow containers and nodes [\#37](https://github.com/ACCORD-NWP/tactus/pull/37) (@trygveasp)
 - Add suite mirror option [\#69](https://github.com/ACCORD-NWP/tactus/pull/69) (@uandrae)
 - Configuration files for NSC HPC Fahrenheit [\#16](https://github.com/ACCORD-NWP/tactus/pull/16) (@trygveasp)
@@ -22,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support multiple searchpaths for namelist files through TACTUS_CONFIG_DATA_DIR. [\#20](https://github.com/ACCORD-NWP/tactus/pull/20) (@mfroelund)
 
 ### Changed
+- Changed default submission settings to cy50 and added exceptions for previous config files [\#28](https://github.com/ACCORD-NWP/tactus/pull/28) (@pardallio)
+- Make CSC EPS config files cycle specific. [\#80](https://github.com/ACCORD-NWP/tactus/pull/80) (@uandrae)
+- Make package\_name and version as a arguments for a logger. [\#77](https://github.com/ACCORD-NWP/tactus/pull/77) (@kastelecn)
+- Shortcut EPS GRIB templates until [\#68](https://github.com/ACCORD-NWP/tactus/issues/68) is fixed. [\#72](https://github.com/ACCORD-NWP/tactus/pull/72) (@uandrae)
 - Switch off SPP until fixed in IAL. [\#71](https://github.com/ACCORD-NWP/tactus/pull/71) (@uandrae)
 - Switch on compilation by default. [\#60](https://github.com/ACCORD-NWP/tactus/pull/60) (@uandrae)
 - Use sys\_name in path generation templates. [\#45](https://github.com/ACCORD-NWP/tactus/pull/45) (@kastelecn)
@@ -39,7 +48,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change deployment of documentation to not need github secrets to work. [\#22](https://github.com/ACCORD-NWP/tactus/pull/22) (@mfroelund)
 
 ### Fixed
+
 - Fix xlon0 and xlat0 replacement process in derived variables [\#78](https://github.com/ACCORD-NWP/tactus/pull/78) (@romick-knmi)
+- Disable default compilation for older cycles [\#90](https://github.com/ACCORD-NWP/tactus/pull/90) (@pardallio)
+- Changed binary fetching logic [\#28](https://github.com/ACCORD-NWP/tactus/pull/28) (@pardallio)
+- Bugfix for ecflow replacing in #37 [\#79](https://github.com/ACCORD-NWP/tactus/pull/79) (@trygveasp)
 - Fix IFSEPS control member MARS stream via new optional `stream_control` config key. [\#64](https://github.com/ACCORD-NWP/tactus/pull/64) (@kastelecn)
 - Set sys\_name in config file. [\#61](https://github.com/ACCORD-NWP/tactus/pull/61)(@kastelecn)
 - Temporary bindir setting for fa\_sfx2clim on deode\_49t2. [\#48](https://github.com/ACCORD-NWP/tactus/pull/55) (@kastelecn)
@@ -51,6 +64,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use GDAL options object [\#15](https://github.com/ACCORD-NWP/tactus/pull/15) (@trygveasp)
 - Get wrapper with an empty default value. [\#17](https://github.com/ACCORD-NWP/tactus/pull/17) (@trygveasp)
 - Remove deode files. [\#4](https://github.com/ACCORD-NWP/tactus/pull/4) (@mfroelund)
+
+### Removed
+- Obsolete EPS config files. [\#80](https://github.com/ACCORD-NWP/tactus/pull/80) (@uandrae)
 
 ## [1.0.0] - 2026-04-30
 

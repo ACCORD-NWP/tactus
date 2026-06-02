@@ -61,6 +61,10 @@ Miscellaneous Documentation
    :parser: myst_parser.sphinx_
 
 .. include::
+    markdown_docs/test_runner.md
+   :parser: myst_parser.sphinx_
+
+.. include::
     markdown_docs/impact_models.md
    :parser: myst_parser.sphinx_
 

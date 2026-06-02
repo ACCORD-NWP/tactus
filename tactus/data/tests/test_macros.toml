@@ -1,0 +1,9 @@
+[macros.case]
+  gen_macros = []
+  group_macros = []
+  os_macros = ["USER"]
+
+[macros.select.default]
+  gen_macros = []
+  group_macros = ["modif_macros"]
+  os_macros = ["USER"]

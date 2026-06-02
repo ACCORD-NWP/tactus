@@ -12,12 +12,12 @@
     "bindir": {
       "type": "string",
       "description": "Location of IAL binaries",
-      "default": "@CASEDIR@/install/bin"
+      "default": "@CASEDIR@/install/R64/bin"
     },
     "bindir_gl": {
       "type": "string",
       "description": "Location of GL binary",
-      "default": "@INSTALL_DIR@/gl/@COMPILER@/@GL_VERSION@/bin/"
+      "default": "@CASEDIR@/install/R64/bin/"
     },
     "compiler": {
       "description": "Compiler used to build IAL",
@@ -92,6 +92,24 @@
                   "type": "number",
                   "description": "Reandomly buffer size in mars",
                   "default": 17893020000
+                }
+              },
+              "default": {}
+            }
+          }
+        },
+        "TactusBundleBuild": {
+          "type": "object",
+          "description": "Settings specific toTactusBundleBuild tasks",
+          "properties": {
+            "ENV": {
+              "type": "object",
+              "description": "Sets environment variables",
+              "properties": {
+                "IAL_DIR": {
+                  "type": "string",
+                  "description": "path to IAL_DIR",
+                  "default": "@CASEDIR@/IAL"
                 }
               },
               "default": {}
