@@ -2,11 +2,15 @@
   cycle = "CY46h1"
   windfarm = false
 
+[suite_control]
+  compile = false
+
 [platform]
   rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov12/harm_coef/"
 
 [submission]
   bindir = "@INSTALL_DIR@/@CYCLE@/@IAL_VERSION@/bin"
+  bindir_gl = "@INSTALL_DIR@/gl/@COMPILER@/@GL_VERSION@/bin/"
   compiler = ""
   precision = ""
 
@@ -18,6 +22,25 @@
 
 [submission.task_exceptions.Prep]
   binary = "PREP-offline"
+
+[submission.task_exceptions.GlBd]
+  binary = "gl"
+  bindir = "@BINDIR_GL@"
+
+[submission.task_exceptions.InterpolSstSic]
+  binary = "gl"
+  bindir = "@BINDIR_GL@"
+
+[submission.task_exceptions.PgdUpdate]
+  binary = "gl"
+  bindir = "@BINDIR_GL@"
+
+[submission.task_exceptions.CreateGrib]
+  binary = "gl"
+  bindir = "@BINDIR_GL@"
+
+[submission.task_exceptions.CreateGribStatic]
+  bindir = "@BINDIR_GL@"
 
 [gribmodify.fullpos.3]
   output_name = "tp"

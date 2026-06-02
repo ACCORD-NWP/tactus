@@ -22,3 +22,13 @@
   remote_polling = "300"
   remote_port = "3141"
   remote_ssl = false
+
+[scheduler.mirror_suite]
+  check_var = ""
+  mirror_name = "@HOST_SUITE@"
+  remote_auth = ""
+  remote_host = "@SCHEDULER.ECFVARS.ECF_HOST@"
+  remote_path = "/@HOST_SUITE@/Compilation/IalBundleBuild"
+  remote_polling = "120"
+  remote_port = "@SCHEDULER.ECFVARS.ECF_PORT@"
+  remote_ssl = false
