@@ -342,6 +342,7 @@ def resolve_path_relative_to_package(path: Path, ignore_errors: bool = False) ->
             if not search_path_str:
                 continue
             candidate = Path(search_path_str) / rel_path
+            print("candidate", candidate)
             if candidate.exists():
                 candidates.add(candidate)
 

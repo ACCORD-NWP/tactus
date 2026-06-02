@@ -33,7 +33,6 @@ def set_arg():
 def nlint_arg(tmp_directory):
     arg = ArgumentParser()
     arg.tactus_home = None
-    import sys
 
     arg.namelist = [
         resolve_path_relative_to_package(

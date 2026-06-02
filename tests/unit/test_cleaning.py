@@ -26,7 +26,6 @@ def _module_mockers(module_mocker):
     module_mocker.patch("subprocess.check_output", new=new_subprocess_check_output)
 
 
-@pytest.mark.skip()
 def test_defaults(basic_config):
     config = basic_config.copy(
         update={"cleaning": {"defaults": {"ncycle_delay": 0, "cleaning_delay": "P1D"}}}
@@ -37,7 +36,6 @@ def test_defaults(basic_config):
         CleanTactus(config, config.get_as_dict("cleaning.defaults"))
 
 
-@pytest.mark.skip()
 def test_check_choice1(basic_config):
     defaults = {"active": True, "cleaning_delay": "P1D"}
     cleaner = CleanTactus(basic_config, defaults)
@@ -45,7 +43,6 @@ def test_check_choice1(basic_config):
     cleaner.prep_cleaning(choices)
 
 
-@pytest.mark.skip()
 def test_check_choice2(basic_config):
     defaults = {"active": True, "ncycles_delay": 0}
     cleaner = CleanTactus(basic_config, defaults)
@@ -53,7 +50,6 @@ def test_check_choice2(basic_config):
     cleaner.prep_cleaning(choices)
 
 
-@pytest.mark.skip()
 def test_cycle_length_exception(basic_config):
     config = basic_config
     cleaner = CleanTactus(config, config.get_as_dict("cleaning.defaults"))
@@ -62,7 +58,6 @@ def test_cycle_length_exception(basic_config):
         cleaner.prep_cleaning(choices)
 
 
-@pytest.mark.skip()
 def test_basetime(basic_config):
     config = basic_config
     basetime = as_datetime("2024-06-13T00:00:00Z")
@@ -70,14 +65,12 @@ def test_basetime(basic_config):
     cleaner.prep_cleaning({}, basetime)
 
 
-@pytest.mark.skip()
 @pytest.mark.usefixtures("_module_mockers")
 def test_wipe_ecfs():
     with pytest.raises(RuntimeError, match="Error running command"):
         wipe_ecfs("foo")
 
 
-@pytest.mark.skip()
 def test_full_cleaning(tmp_directory, basic_config):
     config = basic_config
     path = f"{tmp_directory}/tactus"
