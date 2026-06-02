@@ -56,7 +56,7 @@
   do_marsprep = false
   interpolate_boundaries = false
   do_extractsqlite = false
-  addcalculatedfields = false
+  do_addcalculatedfields = false
 
 [cases.cy50t2_alaro_eps]
   base = "cy50t2_alaro"
@@ -147,7 +147,7 @@
   do_marsprep = false
   interpolate_boundaries = false
   do_extractsqlite = false
-  addcalculatedfields = false
+  do_addcalculatedfields = false
 
 [cases.cy50t2_arome_eps]
   base = "cy50t2_arome"
@@ -220,7 +220,7 @@
   do_marsprep = false
   interpolate_boundaries = false
   do_extractsqlite = false
-  addcalculatedfields = false
+  do_addcalculatedfields = false
 
 [cases.cy50t2_arome_target]
   base = "cy50t2_arome"
@@ -274,7 +274,7 @@
   do_marsprep = false
   interpolate_boundaries = false
   do_extractsqlite = false
-  addcalculatedfields = false
+  do_addcalculatedfields = false
 
 [cases.cy50t2_harmonie_arome_eps]
   base = "cy50t2_harmonie_arome"
@@ -326,7 +326,7 @@
   do_marsprep = false
   interpolate_boundaries = false
   do_extractsqlite = false
-  addcalculatedfields = false
+  do_addcalculatedfields = false
 
 [cases.cy50t2_harmonie_arome_R64.modifs.system]
   case_suffix = "_R64"
