@@ -95,6 +95,9 @@
 [cases.cy49t2_alaro_target.modifs.suite_control]
   mirror_host_case = true
 
+[cases.cy49t2_alaro_target.modifs.system]
+  bdclimdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_alaro/climate/@HOST_DOMAIN@"
+
 [cases.cy49t2_arome_climate_files]
   base = "cy49t2_arome"
 
@@ -190,7 +193,7 @@
 
 [cases.cy49t2_arome_R64]
   base = "cy49t2_arome"
-  host = "cy49t2_arome_climate_files"
+  host = "cy49t2_arome"
 
 [cases.cy49t2_arome_R64.modifs.submission]
   precision = "R64"
@@ -215,6 +218,9 @@
 [cases.cy49t2_arome_target.modifs.suite_control]
   mirror_host_case = true
 
+[cases.cy49t2_arome_target.modifs.system]
+  bdclimdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_arome/climate/@HOST_DOMAIN@"
+
 [cases.cy49t2_harmonie_arome_climate_files]
   base = "cy49t2_harmonie_arome"
 
@@ -230,6 +236,8 @@
 
 [cases.cy49t2_harmonie_arome.modifs.system]
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/climate/@DOMAIN@"
+  intp_bddir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+  intp_bddir_sfx = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
 
 [cases.cy49t2_harmonie_arome.modifs.suite_control]
   create_static_data = false
@@ -293,7 +301,7 @@
 
 [cases.cy49t2_harmonie_arome_R64]
   base = "cy49t2_harmonie_arome"
-  host = "cy49t2_harmonie_arome_climate_files"
+  host = "cy49t2_harmonie_arome"
 
 [cases.cy49t2_harmonie_arome_R64.modifs.submission]
   precision = "R64"
@@ -317,6 +325,9 @@
 
 [cases.cy49t2_harmonie_arome_target.modifs.suite_control]
   mirror_host_case = true
+
+[cases.cy49t2_harmonie_arome_target.modifs.system]
+  bdclimdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/climate/@HOST_DOMAIN@"
 
 [cases.harmonie_arome]
   base = "harmonie_arome"
