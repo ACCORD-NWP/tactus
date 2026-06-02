@@ -329,6 +329,7 @@ def resolve_path_relative_to_package(path: Path, ignore_errors: bool = False) ->
     # For each sys.path entry that is a prefix of the given path, derive the
     # relative portion and search all sys.path entries for it.
     candidates = set()
+    print("sys.path", sys.path)
     for sys_path_str in sys.path:
         if not sys_path_str:
             continue
