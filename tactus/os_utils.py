@@ -339,10 +339,10 @@ def resolve_path_relative_to_package(path: Path, ignore_errors: bool = False) ->
             continue
 
         for search_path_str in sys.path:
+            print("search_path_str", search_path_str, "rel_path", rel_path)
             if not search_path_str:
                 continue
             candidate = Path(search_path_str) / rel_path
-            print("candidate", candidate)
             if candidate.exists():
                 candidates.add(candidate)
 
