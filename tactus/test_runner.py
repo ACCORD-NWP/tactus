@@ -274,10 +274,16 @@ class TestCases:
         # Local import to avoid circular dependency (__main__ -> argparse_wrapper -> here)
         from .__main__ import main as tactus_main
 
-        with open(f"{self.test_dir}/config_names.toml", "rb") as f:
-            config_names = tomli.load(f)
+        try:
+            with open(f"{self.test_dir}/config_names.toml", "rb") as f:
+                config_names = tomli.load(f)
+        except FileNotFoundError as err:
+            msg = "No case mapping available. Run again without '-r'"
+            logger.error(msg)
+            raise FileNotFoundError(msg) from err
 
-        for case in self.cmds:
+        cases = flatten_list(self._build_levels())
+        for case in cases:
             config_name = config_names["config_names"][case]
             if self.mode == "task":
                 cmds = [
@@ -466,8 +472,9 @@ class TestCases:
                     }
                 }).save_as(f"{directory}/config_names.toml")
 
+            logger.info("Rerun with '-r' to start the suites")
+
         if args.run:
-            self.create()
             self.start()
 
 
