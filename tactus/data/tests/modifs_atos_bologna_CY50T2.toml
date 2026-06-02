@@ -42,6 +42,9 @@
   bindir_gl = "@SUBMISSION.BINDIR@"
   max_ecf_tasks = 5
 
+[modifs.submission.task_exceptions.Forecast]
+  bindir = "@SUBMISSION.BINDIR@"
+
 [modifs.submission.task_exceptions.PgdFilterTownFrac.ENV]
   ECF_TRIES = 15
 
