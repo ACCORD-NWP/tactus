@@ -283,7 +283,6 @@ class TestCases:
             raise FileNotFoundError(msg) from err
 
         cases = flatten_list(self._build_levels())
-        suites = {}
         for case in cases:
             config_name = config_names["config_names"][case]
             if self.mode == "task":
@@ -302,7 +301,7 @@ class TestCases:
                     for task in self.cases[case]["tasks"]
                 ]
             else:
-                suites[case] = f"{self.test_dir}/{config_name}.def"
+                suitefile = f"{self.test_dir}/{config_name}.def"
                 cmds = [
                     [
                         "start",
@@ -310,7 +309,7 @@ class TestCases:
                         "--config-file",
                         f"{self.test_dir}/{config_name}.toml",
                         "-f",
-                        f"{self.test_dir}/{config_name}.def",
+                        suitefile,
                         "-k",
                     ]
                 ]
@@ -320,9 +319,8 @@ class TestCases:
                 logger.info("Use cmd:\n\n{}\n\n", cmd_txt)
 
                 if not self.dry:
-                    for case, suitename in suites.items():
-                        if os.path.exists(suitename):
-                            os.remove(suitename)
+                    if self.mode != "task" and os.path.exists(suitefile):
+                        os.remove(suitefile)
                     tactus_main(cmd)
 
     def get_binaries(self):
