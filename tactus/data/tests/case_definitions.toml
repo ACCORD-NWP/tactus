@@ -179,7 +179,7 @@
 
 [cases.cy49t2_arome_mode_start.modifs.general.times]
   cycle_length = "PT3H"
-  end = "-PT21H"
+  end = "relative_to_start.PT3H"
   forecast_range = "PT3H"
 
 [cases.cy49t2_arome_mode_start.modifs.suite_control]
