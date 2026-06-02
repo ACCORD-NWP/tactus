@@ -434,6 +434,10 @@
           "description": "Activates extraction of selected points to SQLite files for verification.",
           "type": "boolean"
         },
+        "do_addcalculatedfields": {
+          "description": "Activates additional GRIB postprocessing",
+          "type": "boolean"
+        },
         "do_mergesqlite": {
           "description": "Activates merging of extracted sqlite files. Requires do_extractsqlite to be true, and number of ensemble members to be greater than 1, to have an effect.",
           "type": "boolean"
@@ -881,6 +885,9 @@
                 },
                 {
                   "format": "duration"
+                },
+                {
+                  "pattern": "^relative_to_start(.*)"
                 }
               ]
             },

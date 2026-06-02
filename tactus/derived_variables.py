@@ -38,6 +38,12 @@ def set_times(config):
     if "start" not in times:
         times.update({"start": times["basetime"]})
         logger.debug("Set start to {}", times["start"])
+
+    if "end" in times and times["end"].startswith("relative_to_start."):
+        end = times["end"].replace("relative_to_start.","")
+        end = as_datetime(times["start"]) + as_timedelta(end)
+        times["end"] = end.strftime("%Y-%m-%dT%H:%M:%SZ")
+
     if "end" not in times:
         times.update({"end": times["basetime"]})
         logger.debug("Set end to {}", times["end"])

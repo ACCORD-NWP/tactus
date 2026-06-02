@@ -15,7 +15,7 @@ import tomli
 
 from . import GeneralConstants
 from .config_parser import BasicConfig, ConfigPaths, ParsedConfig
-from .datetime_utils import as_datetime
+from .datetime_utils import as_datetime, evaluate_date
 from .experiment import get_git_info
 from .fullpos import flatten_list
 from .general_utils import merge_dicts
@@ -50,12 +50,8 @@ class TestCases:
 
         self.verbose = args.verbose
         self.cases = definitions.get("cases", {})
-        try:
-            self.reference_date = as_datetime(
-                f"{definitions['general']['reference_date']}T00:00:00Z"
-            ).date()
-        except KeyError:
-            self.reference_date = date.today()
+        self.reference_date = evaluate_date(f"{definitions['general']['reference_date']}")
+        self.max_workers = definitions["general"].get("max_workers", None)
         self.cmds = {}
         self.mode = definitions["general"].get("mode", "suite")
         self.extra = definitions["general"].get("extra", [])
@@ -168,10 +164,9 @@ class TestCases:
 
         logger.info("Create config files in {}", self.test_dir)
 
-        days_difference = (date.today() - self.reference_date).days
-        for i, (case, item) in enumerate(self.cases.items()):
+        for case, item in self.cases.items():
             if case not in self.assigned:
-                self.assigned[case] = i + 1 + days_difference
+                self.assigned[case] = self.reference_date
 
             if case not in cases:  # or "config_name" in self.cases[case]:
                 continue
@@ -188,7 +183,7 @@ class TestCases:
                 update={
                     "modifs": modifs,
                     "modif_macros": {
-                        "counter": self.assigned[case],
+                        "reference_date": self.assigned[case],
                         "host_case": item.get("hostname", ""),
                         "host_domain": item.get("hostdomain", ""),
                         "tag": self.tag,
@@ -236,8 +231,10 @@ class TestCases:
         resolved = set()
         while remaining:
             level = [
-                case for case in remaining
-                if "host" not in self.cases[case] or self.cases[case]["host"] in resolved
+                case
+                for case in remaining
+                if "host" not in self.cases[case]
+                or self.cases[case]["host"] in resolved
             ]
             if not level:
                 raise ValueError(f"Circular dependency in host cases: {remaining}")
@@ -347,8 +344,7 @@ class TestCases:
                 compiler = "gnu"
             cptag = ff.replace(ial_hash, "").replace("ial", "")
             bindir = (
-                _bindir
-                .replace("@CPTAG@", cptag)
+                _bindir.replace("@CPTAG@", cptag)
                 .replace("@IAL_HASH@", ial_hash)
                 .replace("@COMPILER@", compiler)
                 .replace("@PRECISION@", precision)
@@ -379,8 +375,7 @@ class TestCases:
                     compiler = "gnu"
                 cptag = ff.replace(gl_hash, "").replace("gl", "")
                 bindir = (
-                    _bindir
-                    .replace("@CPTAG@", cptag)
+                    _bindir.replace("@CPTAG@", cptag)
                     .replace("@IAL_HASH@", gl_hash)
                     .replace("@COMPILER@", compiler)
                     .replace("/bin", "")
@@ -416,9 +411,9 @@ class TestCases:
             }
         }
         if self.gl.get("active", False):
-            bin_modifs["submission"]["bindir_gl"] = (
-                f"{self.gl['user_binary_path']}/{gl_hash}/@COMPILER@/bin"
-            )
+            bin_modifs["submission"][
+                "bindir_gl"
+            ] = f"{self.gl['user_binary_path']}/{gl_hash}/@COMPILER@/bin"
         self.modifs = merge_dicts(bin_modifs, self.modifs, True)
 
     def update_hostnames(self, hostnames):
@@ -451,23 +446,25 @@ class TestCases:
             directory = Path(self.test_dir)
             for level in self._build_levels():
                 self.create(level)
-                with concurrent.futures.ThreadPoolExecutor() as executor:
-                    futures = {executor.submit(self._run_case, case): case for case in level}
+                with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+                    futures = {
+                        executor.submit(self._run_case, case): case for case in level
+                    }
                     for future in concurrent.futures.as_completed(futures):
                         case = futures[future]
                         config_name, domain_name = future.result()
                         self.cases[case]["config_name"] = config_name
                         self.cases[case]["domain_name"] = domain_name
-                self.update_hostnames({
-                    case: self.cases[case] for case in level
-                })
-                BasicConfig({
-                    "config_names": {
-                        c: item["config_name"]
-                        for c, item in self.cases.items()
-                        if "config_name" in item
+                self.update_hostnames({case: self.cases[case] for case in level})
+                BasicConfig(
+                    {
+                        "config_names": {
+                            c: item["config_name"]
+                            for c, item in self.cases.items()
+                            if "config_name" in item
+                        }
                     }
-                }).save_as(f"{directory}/config_names.toml")
+                ).save_as(f"{directory}/config_names.toml")
 
         if args.run:
             self.create()

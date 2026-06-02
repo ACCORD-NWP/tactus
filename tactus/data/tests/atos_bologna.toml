@@ -1,4 +1,5 @@
 [general]
+  reference_date = "-P1D"
   selection = [
     "cy49t2_alaro_climate_files",
     "cy49t2_alaro",
