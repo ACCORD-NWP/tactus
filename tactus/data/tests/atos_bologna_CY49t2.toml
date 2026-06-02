@@ -30,6 +30,6 @@
   active = true
 
 [include]
-  cases = "case_definitions.toml"
+  cases = "case_definitions_CY49t2.toml"
   macros = "test_macros.toml"
-  modifs = "modifs_atos_bologna.toml"
+  modifs = "modifs_atos_bologna_CY49t2.toml"
