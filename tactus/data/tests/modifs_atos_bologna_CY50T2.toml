@@ -47,6 +47,7 @@
 
 [modifs.suite_control]
   do_archiving = false
+  compile = false
 
 [modifs.system]
   # Picks up the case name and domain from the host run
