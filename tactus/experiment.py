@@ -128,9 +128,7 @@ class ExpFromFiles(Exp):
         with contextlib.suppress(KeyError):
             remove_sections = merged_config["general"].get("remove_sections", [])
             if len(remove_sections) > 0:
-                logger.info(
-                    "Remove sections from background config:{}", remove_sections
-                )
+                logger.info("Remove sections from background config:{}", remove_sections)
                 reduced_config = config.dict()
                 for key in remove_sections:
                     reduced_config.pop(key)
@@ -404,7 +402,8 @@ def get_git_info():
     for label, cmd in gitcmds.items():
         with contextlib.suppress(subprocess.CalledProcessError):
             git_info[label] = (
-                subprocess.check_output(cmd, stderr=subprocess.DEVNULL)
+                subprocess
+                .check_output(cmd, stderr=subprocess.DEVNULL)
                 .strip()
                 .decode("utf-8")
             )
@@ -412,7 +411,8 @@ def get_git_info():
         remote = git_info["remote"].split("/")[0]
         cmd = ["git", "remote", "get-url", remote]
         git_info["remote_url"] = (
-            subprocess.check_output(cmd, stderr=subprocess.DEVNULL)
+            subprocess
+            .check_output(cmd, stderr=subprocess.DEVNULL)
             .strip()
             .decode("utf-8")
         )

@@ -1326,17 +1326,17 @@ class ForecastFamily(EcflowSuiteFamily):
             fdb_sqlite_trigger = create_grib_family
 
         if config["suite_control.do_addcalculatedfields"]:
-         fdb_sqlite_trigger = SubTaskFamily(
-            self,
-            config,
-            task_settings,
-            input_template,
-            ecf_files,
-            "AddCalculatedFields",
-            config.get("suite_control.n_addcalculatedfields", 1),
-            trigger=add_calc_fields_trigger,
-            ecf_files_remotely=ecf_files_remotely,
-         )
+            fdb_sqlite_trigger = SubTaskFamily(
+                self,
+                config,
+                task_settings,
+                input_template,
+                ecf_files,
+                "AddCalculatedFields",
+                config.get("suite_control.n_addcalculatedfields", 1),
+                trigger=add_calc_fields_trigger,
+                ecf_files_remotely=ecf_files_remotely,
+            )
 
         fdb_sel = config.get("archiving.FDB.fdb", {})
         fdb_archiving_active = [v["active"] for v in fdb_sel.values()]
