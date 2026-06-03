@@ -881,6 +881,9 @@
                 },
                 {
                   "format": "duration"
+                },
+                {
+                  "pattern": "^relative_to_start(.*)"
                 }
               ]
             },
