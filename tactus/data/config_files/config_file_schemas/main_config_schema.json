@@ -720,7 +720,7 @@
         "cache": {
           "type": "boolean",
           "description": "whether to use chache build/install folders",
-          "default": true
+          "default": false
         },
         "cache_dir": {
           "type": "string",
