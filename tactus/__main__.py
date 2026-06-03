@@ -22,6 +22,11 @@ def main(argv=None):
 
     args = get_args_parser().parse_args(argv)
 
+    # Commands that manage their own config (e.g. "test") skip standard config loading
+    if getattr(args, "standalone_command", False):
+        args.run_command(args=args)
+        return
+
     # Evaluate tactus host and config paths
     tactus_host = TactusHost().detect_tactus_host()
     with contextlib.suppress(AttributeError):
