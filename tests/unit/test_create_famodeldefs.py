@@ -42,3 +42,37 @@ def test_create_famodeldefs_output_format(tmp_path, default_config):
             assert line.endswith("}"), f"Line does not end with expected suffix: {line}"
         else:
             assert line_re.match(line), f"Line does not match format: {line}"
+
+
+def test_create_famodeldefs_productDefinitionTemplateNumber_first(
+    tmp_path, default_config
+):
+    config = default_config.copy(
+        update={
+            "suite_control": {"do_cleaning": False},
+            "general": {
+                "times": {
+                    "basetime": "2023-01-01T00:00:00Z",
+                    "validtime": "2023-01-01T01:00:00Z",
+                }
+            },
+            "eps": {"general": {"members": [0, 1]}},
+        }
+    )
+    eccodes_dir = tmp_path / "eccodes"
+    eccodes_dir.mkdir()
+    yaml_path = eccodes_dir / "FaModelSource.yml"
+    yaml_path.write_text(FA_MODEL_SOURCE_YML.read_text())
+    output_dir = tmp_path / "output"
+    output_dir.mkdir()
+    prep = PrepRun(config)
+    prep.create_famodeldefs(output_dir)
+    output_file = output_dir / "faModelName.def"
+    assert output_file.exists()
+    lines = output_file.read_text().splitlines()
+    assert lines, "Output file is empty"
+    for line in lines:
+        if "productDefinitionTemplateNumber" in line:
+            content = line.split("{", 1)[1].strip()
+            first_key = content.split("=", 1)[0].strip()
+            assert first_key == "productDefinitionTemplateNumber"
