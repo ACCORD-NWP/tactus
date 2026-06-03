@@ -106,7 +106,7 @@ def run_task(args: RunTaskNamespace, config: ParsedConfig):
         output=output,
         troika=args.troika,
         create_only=args.create_only,
-        force_tasklist_generation=args.generate_tasklist,
+        force_tasklist_generation=args.force_generation,
     )
     logger.info("Task {} submitted.", args.task)
 
@@ -301,7 +301,7 @@ def start_suite(args, config):
             raise SystemExit(f"Copying {temp_troika_config_file} FAILED.") from e
         logger.info("--- File copying to Ecflow server DONE ---")
 
-    load_task_index(config, force=args.generate_tasklist)
+    load_task_index(config, force=args.force_generation)
     server.start_suite(suite_name, def_file)
     logger.info("Done with suite.")
 
