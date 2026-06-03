@@ -52,7 +52,7 @@ jobs:
           environments: doc
 
       - name: Build documentation
-        run: pixi run make doc-build
+        run: pixi run doc-build
 
       # Upload the book's HTML as an artifact
       - name: Upload artifact
