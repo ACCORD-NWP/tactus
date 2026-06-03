@@ -60,6 +60,15 @@ After installing Pixi, set up Pixi environment from the root of the cloned repos
   pixi install
   ```
 
+If you want to install the environment in another directory than the default (`<project-root>/.pixi/envs/`) add `detached-environments = "/path/to/env-location/"` to a pixi config file. Supported locations of the pixi config is outlined in https://pixi.prefix.dev/latest/reference/pixi_configuration/.
+
+Pixi caches the downloaded packages and share them between projects to speed up environment installation. To change the cache directory, add the following to the pixi config:
+```toml
+[cache]
+  root = "/path/to/cache"
+  netfs-redirect = "never"
+```
+
 Finally, note that system `gdal` must be available on your system. The Pixi environment will install `pygdal` matching your system GDAL version automatically. If you need to specify the GDAL version, ensure it's installed via your system package manager:
 
   * On Atos (`hpc-login`)
