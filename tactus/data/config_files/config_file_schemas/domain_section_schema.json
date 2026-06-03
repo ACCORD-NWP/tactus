@@ -133,7 +133,6 @@
     },
     "xlon0": {
       "description": "Longitude of center of projection",
-      "default": "",
       "oneOf": [
         {
           "type": "string",
@@ -148,7 +147,6 @@
     },
     "xlat0": {
       "description": "Latitude of center of projection",
-      "default": "",
       "oneOf": [
         {
           "type": "string",

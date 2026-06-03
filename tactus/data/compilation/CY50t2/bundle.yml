@@ -1,0 +1,25 @@
+---
+### Bundle
+# Variable $GITHUB shall be set by the user according to the protocol to be used
+# to connect to Github, e.g. GITHUB="https://github.com" to use https and tokens.
+projects :
+    - ecbuild:
+        git: ${GITHUB}/ecmwf/ecbuild
+        version: 3.14.2
+        bundle: false
+        gmkpack: 'hub/local/src/ecSDK'
+        incremental_pack: false
+
+    - ectrans :
+        git     : ${GITHUB}/ecmwf-ifs/ectrans
+        version : 9d9cf90
+        gmkpack : 'hub/local/src/Ectrans'
+        incremental_pack : False
+        cmake   : >
+                ECTRANS_ENABLE_ETRANS=ON
+                ECTRANS_ENABLE_PROGRAMS=OFF
+
+    - gl :
+        git     : ${GITHUB}/ACCORD-NWP/gl
+        version : 1.0.0
+        gmkpack : 'None'

@@ -1,0 +1,9 @@
+[general]
+  mode = "task"
+  selection = ["cy49t2_alaro"]
+  tag = "task_test_"
+
+[include]
+  cases = "task_definitions.toml"
+  macros = "macros.toml"
+  modifs = "modifs_atos_bologna.toml"

@@ -6,16 +6,39 @@
 [general.output_settings]
   surfex = "PT1H"
 
+[suite_control]
+  compile = false
+
 [pgd]
   npatch = 3
 
 [submission]
-  bindir = "@INSTALL_DIR@/@CYCLE@/@COMPILER@/R64/@IAL_VERSION@/bin"
   gl_version = "gl-v1.9.2"
   ial_version = "CY49t2-v1.18.0"
+  bindir = "@INSTALL_DIR@/@CYCLE@/@COMPILER@/R64/@IAL_VERSION@/bin"
+  bindir_gl = "@INSTALL_DIR@/gl/@COMPILER@/@GL_VERSION@/bin/"
 
 [submission.task_exceptions.E923Update.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
 
 [submission.task_exceptions.Forecast]
   bindir = "@INSTALL_DIR@/@CYCLE@/@COMPILER@/@PRECISION@/@IAL_VERSION@/bin"
+
+[submission.task_exceptions.GlBd]
+  binary = "gl"
+  bindir = "@BINDIR_GL@"
+
+[submission.task_exceptions.InterpolSstSic]
+  binary = "gl"
+  bindir = "@BINDIR_GL@"
+
+[submission.task_exceptions.PgdUpdate]
+  binary = "gl"
+  bindir = "@BINDIR_GL@"
+
+[submission.task_exceptions.CreateGrib]
+  binary = "gl"
+  bindir = "@BINDIR_GL@"
+
+[submission.task_exceptions.CreateGribStatic]
+  bindir = "@BINDIR_GL@"

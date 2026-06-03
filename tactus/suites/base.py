@@ -154,6 +154,7 @@ class SuiteDefinition(object):
             "ECF_TIMEOUT": 20,
             "ECF_LOGHOST": self.ecf_host,
             "ARGS": "",
+            "FP_PRECISION": "",
             "LOGLEVEL": loglevel,
             "CONFIG": str(config_file),
             "TROIKA": troika,
@@ -263,7 +264,7 @@ class EcflowNode:
             elif self.node_type == "suite":
                 self.ecf_node = parent.add_suite(self.name)
             elif self.node_type == "mirror":
-                if mirror_config["check_var"]:
+                if mirror_config.get("check_var", None):
                     variables = {mirror_config["check_var"]: "placeholder"}
                 self.ecf_node = parent.ecf_node.add_task(self.name)
             else:
