@@ -119,9 +119,9 @@ class PrepRun(Task):
                             "Adding EPS member {} to model name definitions", member
                         )
                         eps_key = {
+                            "productDefinitionTemplateNumber": 11,
                             "numberOfForecastsInEnsemble": n_eps_members,
                             "perturbationNumber": member,
-                            "productDefinitionTemplateNumber": 11,
                             "typeOfEnsembleForecast": 6,
                         }
                         dicts.insert(0, eps_key)
