@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [1.1.0] - 2026-06-03
+
 ### Added
 - Deactivate the cache for compilation by default[#95](https://github.com/ACCORD-NWP/tactus/pull/95) (@dhaumont)
 - Add gl bundle for compilation with IAL [\#28](https://github.com/ACCORD-NWP/tactus/pull/28) (@pardallio)
