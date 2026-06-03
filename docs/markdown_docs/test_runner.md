@@ -21,14 +21,15 @@ tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -l
 ```
 tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -m
 ```
+This will create a directory according to the tag and create all config files in this directory.
+
 ## Launch the suites
 ```
 tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -r
 ```
+Failures in suites can be treated like any failure. I.e. by changing the relevant code or config and replace/relaunch the suite in full or parts as appropriate. The config files can be regenerated while suites are running if required.
 
-This will create a directory according to the tag and create all config files in this directory. For each config a tactus ecflow run will be launched.
-
-## Clean
+## Remove the tests from disk and ecflow
 
 After successful runs and assessment the tested cases can be cleaned from disks and ecflow with the standard tactus `remove` functionality
 ```
