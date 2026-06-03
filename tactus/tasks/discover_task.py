@@ -133,9 +133,7 @@ def get_task(name, config) -> Task:
     try:
         cls = known_types[name.lower()]
     except KeyError:
-        logger.info(
-            "Task {} not found in index, recreate task index file", name.lower()
-        )
+        logger.info("Task {} not found in index, recreate task index file", name.lower())
         known_types = create_task_index(config)
         try:
             cls = known_types[name.lower()]

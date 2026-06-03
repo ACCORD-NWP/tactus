@@ -638,12 +638,13 @@ def add_generate_tasklist(parser_object):
 
     """
     parser_object.add_argument(
-        "--generate-tasklist",
+        "--generate-tasklist-off",
         "-g",
-        help="Force generation of tasklist",
-        action="store_true",
-        default=False,
+        help="Do not force generation of tasklist",
+        action="store_false",
+        default=True,
         required=False,
+        dest="force_generation",
     )
 
 
