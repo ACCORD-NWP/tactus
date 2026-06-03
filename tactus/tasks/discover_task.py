@@ -56,7 +56,7 @@ def _task_index_file(config):
         task_index_file (str): Full path to task index_file
 
     """
-    task_index_file_path = Platform(config).get_system_value("casedir")
+    task_index_file_path = Platform(config).get_system_value("task_index_file_path")
     return Path(task_index_file_path) / "tasks_index.json"
 
 
