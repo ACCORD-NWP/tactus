@@ -42,13 +42,15 @@ def test_convert2grib(basic_config, filetype, tmp_directory):
     cg.gl = "gl"
 
     prev_cwd = Path.cwd()
-    os.chdir(tmp_directory)
-    output_list = cg.create_list(
-        cg.file_templates[filetype]["archive"], cg.output_settings[filetype]
-    )
-    infile = output_list[cg.basetime]
-    inpath = os.path.dirname(infile)
-    os.makedirs(inpath, exist_ok=True)
-    Path(infile).touch()
-    cg.convert2grib(infile, "foo", filetype)
-    os.chdir(prev_cwd)
+    try:
+        os.chdir(tmp_directory)
+        output_list = cg.create_list(
+            cg.file_templates[filetype]["archive"], cg.output_settings[filetype]
+        )
+        infile = output_list[cg.basetime]
+        inpath = os.path.dirname(infile)
+        os.makedirs(inpath, exist_ok=True)
+        Path(infile).touch()
+        cg.convert2grib(infile, "foo", filetype)
+    finally:
+        os.chdir(prev_cwd)

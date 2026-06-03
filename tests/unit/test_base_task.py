@@ -22,16 +22,20 @@ class TestBaseTask:
             }
         )
 
-        with open(tmp_path / "config.toml", "w", encoding="utf8"):
-            task = Task(task_config, "TestPrep")
-            task.prep()
+        prev_cwd = Path.cwd()
+        try:
+            with open(tmp_path / "config.toml", "w", encoding="utf8"):
+                task = Task(task_config, "TestPrep")
+                task.prep()
 
-            # Check that the working directory was created
-            assert os.path.exists(task.wdir)
+                # Check that the working directory was created
+                assert os.path.exists(task.wdir)
 
-            # Check that the config file was saved in the working directory
-            config_file = f"{task.wdir}/config.toml"
-            assert os.path.exists(config_file)
+                # Check that the config file was saved in the working directory
+                config_file = f"{task.wdir}/config.toml"
+                assert os.path.exists(config_file)
 
-        # Clean up
-        os.remove(config_file)
+            # Clean up
+            os.remove(config_file)
+        finally:
+            os.chdir(prev_cwd)

@@ -72,15 +72,16 @@ class TestSubmission:
                 },
             }
         )
-        tmp = tmp_directory
-        config = config.copy(update={"platform": {"scratch": tmp, "unix_group": ""}})
+        config = config.copy(
+            update={"platform": {"scratch": str(tmp_directory), "unix_group": ""}}
+        )
         config = config.copy(update=set_times(config))
         task = "UnitTest"
         template_job = "tactus/templates/stand_alone.py"
-        task_job = Path(tmp, f"{task}.job")
-        output = Path(tmp, f"{task}.log")
-        task_job_create_only = Path(tmp, f"{task}_create_only.job")
-        output_create_only = Path(tmp, f"{task}_create_only.log")
+        task_job = tmp_directory / f"{task}.job"
+        output = tmp_directory / f"{task}.log"
+        task_job_create_only = tmp_directory / f"{task}_create_only.job"
+        output_create_only = tmp_directory / f"{task}_create_only.log"
 
         assert config["submission.default_submit_type"] == "pytest"
         background = TaskSettings(config)
