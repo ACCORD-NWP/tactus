@@ -15,12 +15,6 @@ from tactus.experiment import case_setup
 from tactus.toolbox import Platform
 
 
-@pytest.fixture(scope="module", name="tmp_directory")
-def fixture_tmp_directory(tmp_path_factory: pytest.TempPathFactory) -> Path:
-    """Return a temp directory valid for this module."""
-    return tmp_path_factory.getbasetemp()
-
-
 @pytest.fixture
 def test_domain():
     """Return a test domain."""
