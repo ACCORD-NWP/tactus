@@ -109,6 +109,10 @@
   submission = "include/submission/@HOST@.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"
 
+[perturbations]
+  pertana = false
+  pertsurf = false
+
 [pgd]
   npatch = 3
   one_decade = true
