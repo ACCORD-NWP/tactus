@@ -61,7 +61,6 @@ class TestBaseTask:
                 # Check that the config file was saved in the working directory
                 config_file = f"{task.wdir}/config.toml"
                 assert os.path.exists(config_file)
-
                 # Clean up
                 os.remove(config_file)
         finally:

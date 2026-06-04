@@ -14,14 +14,12 @@ from tactus.submission import NoSchedulerSubmission, ProcessorLayout, TaskSettin
 
 @pytest.fixture
 def minimal_raw_config():
-    return tomlkit.parse(
-        """
+    return tomlkit.parse("""
         [general]
             times.list = ["2000-01-01T00:00:00Z"]
         [system]
             wrk = "/tmp/@YYYY@@MM@@DD@_@HH@"
-        """
-    )
+        """)
 
 
 @pytest.fixture
@@ -59,6 +57,7 @@ class TestSubmission:
         assert isinstance(parsed_config_with_task, ParsedConfig)
 
     def test_submit(self, default_config, tmp_directory):
+        tmp_directory = Path(tmp_directory)
         config = default_config.copy(
             update={
                 "submission": {
