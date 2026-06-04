@@ -22,7 +22,8 @@ def set_times(config):
     Returns:
         update (dict): Dict of corrected basetime/validtime
     """
-    times = config["general.times"].dict()
+    times = config.get_as_dict("general.times")
+
     if "start" in times:
         times.update({"start": evaluate_date(times["start"])})
     if "basetime" not in times:
@@ -52,8 +53,7 @@ def set_times(config):
                 + f"general.times.end ({times['end']})"
             )
         )
-    update = {"general": {"times": times}}
-    return update
+    return {"general": {"times": times}}
 
 
 def check_fullpos_namelist(config, nlgen):
@@ -165,7 +165,7 @@ def derived_variables(config, processor_layout=None):
     elif orographic_smoothing_method == "truncation":
         lspsmoro = False
         gridtype_oro = config["domain.gridtype_oro"]
-        if gridtype_oro == "":
+        if not gridtype_oro:
             gridtype_oro_map = config["domain.truncation_by_gridtype"]
             gridtype_oro = gridtype_oro_map[gridtype]
             logger.info("gridtype_oro set to {}", gridtype_oro)
@@ -195,12 +195,8 @@ def derived_variables(config, processor_layout=None):
         )
         raise NotImplementedError(msg)
 
-    xlat0 = config.get("domain.xlat0", "")
-    xlon0 = config.get("domain.xlon0", "")
-    if xlat0 == "":
-        xlat0 = config.get("domain.xlatcen")
-    if xlon0 == "":
-        xlon0 = config.get("domain.xloncen")
+    xlat0 = config.get("domain.xlat0", config.get("domain.xlatcen"))
+    xlon0 = config.get("domain.xlon0", config.get("domain.xloncen"))
 
     pi = 4.0 * atan(1.0)
     xrpk = sin(float(xlat0) * pi / 180.0)
@@ -231,10 +227,10 @@ def derived_variables(config, processor_layout=None):
         selection.append("windfarm")
 
     # Turn boolean to strings and macros
-    default_macros = config.get(
+    default_macros = config.get_as_dict(
         "macros.select.default",
         {"gen_macros": [], "group_macros": [], "os_macros": []},
-    ).dict()
+    )
     gen_macros = list(default_macros["gen_macros"])
 
     decades = "one_decade" if config["pgd.one_decade"] else "all_decade"
@@ -286,8 +282,8 @@ def derived_variables(config, processor_layout=None):
         # Update namelist dicts
         if procs:
             update["namelist"].update(procs)
-        update.update(
-            {"submission": {"task": {"wrapper": processor_layout.get_wrapper()}}}
-        )
+        update.update({
+            "submission": {"task": {"wrapper": processor_layout.get_wrapper()}}
+        })
 
     return update

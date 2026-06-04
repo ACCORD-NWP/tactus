@@ -1,4 +1,5 @@
 """IO merge task."""
+
 import datetime
 import glob
 import os
@@ -32,14 +33,14 @@ class IOmerge(Task):
         self.cycle_length = as_timedelta(self.config["general.times.cycle_length"])
         self.forecast_range = self.config["general.times.forecast_range"]
 
-        self.deode_home = self.config["platform.deode_home"]
+        self.tactus_home = self.config["platform.tactus_home"]
         self.output_settings = self.config["general.output_settings"]
         self.surfex = self.config["general.surfex"]
 
         self.n_io_merge = self.config["suite_control.n_io_merge"]
         self.ionr = int(config.get("task.args.tasknr", "0"))
         self.archive = self.platform.get_system_value("archive")
-        self.deode_home = self.config["platform.deode_home"]
+        self.tactus_home = self.config["platform.tactus_home"]
         self.file_templates = self.config["file_templates"]
         self.nproc_io = int(self.config.get("task.args.nproc_io", "0"))
         self.iomerge = self.config["submission.iomerge"]
@@ -109,11 +110,11 @@ class IOmerge(Task):
             ntries += 1
             file_list = []
             # Force a sync of the file system
-            os.system(f"sync {self.fc_path}")  # noqa S605
+            os.system(f"sync {self.fc_path}")
             if filetype == "history":
                 files_expected = files_expected if files_expected != 0 else -1
                 for io in range(self.nproc_io):
-                    iopath = f"io_serv.{io+1:06}.d"
+                    iopath = f"io_serv.{io + 1:06}.d"
                     file_list += glob.glob(f"{self.fc_path}/{iopath}/{filename}.speca.*")
                     file_list += glob.glob(f"{self.fc_path}/{iopath}/{filename}.gridall")
             elif filetype == "surfex":
@@ -122,13 +123,13 @@ class IOmerge(Task):
                 )
                 file_list += [f"{self.fc_path}/{filename}"]
                 for io in range(self.nproc_io):
-                    iopath = f"io_serv.{io+1:06}.d"
+                    iopath = f"io_serv.{io + 1:06}.d"
                     file_list += glob.glob(f"{self.fc_path}/{iopath}/{filename}")
             elif filetype == "fullpos":
                 files_expected = files_expected if files_expected != 0 else self.nproc_io
                 # FIXME: what if we have fullpos output in FA format?
                 for io in range(self.nproc_io):
-                    iopath = f"io_serv.{io+1:06}.d"
+                    iopath = f"io_serv.{io + 1:06}.d"
                     file_list += glob.glob(f"{self.fc_path}/{iopath}/{filename}.hfp")
             else:
                 files_expected = 0
@@ -180,7 +181,7 @@ class IOmerge(Task):
             logger.debug("  {}", x)
 
         if filetype in ("history", "surfex"):
-            lfitools = self.get_binary("lfitools")
+            lfitools = self.get_binary("lfitools", "IOmerge")
 
             # NOTE: .sfx also has a part in the working directory,
             #        so you *must* change the name
@@ -249,7 +250,7 @@ class IOmerge(Task):
 
         # We must wait for the io_server output to appear
         # BUT: how long should we wait before aborting?
-        logger.info("Waiting for forecast output.")
+        logger.info("Waiting for forecast output as indicated by {}", echis)
         start = time()
         waiting_time = 0
         while not os.path.exists(echis):
@@ -293,12 +294,19 @@ class IOmerge(Task):
             )
 
         if self.file_tracker["history"]:
-            file_tracker = [len(x) for x in self.file_tracker["history"].values()]
-            if len(set(file_tracker)) != 1:
-                raise RuntimeError(
-                    "Some history files have missing io-server input\n"
-                    f" {self.file_tracker['history']}"
-                )
+            # Remove t=0 as this might have a different set of files
+            self.file_tracker["history"].pop(as_timedelta("PT0H"), None)
+            if len(self.file_tracker["history"]) > 0:
+                file_tracker = [len(x) for x in self.file_tracker["history"].values()]
+                if len(set(file_tracker)) != 1:
+                    file_tracker_summary = {
+                        t: file_tracker[i]
+                        for i, t in enumerate(self.file_tracker["history"])
+                    }
+                    raise RuntimeError(
+                        "Some history files have missing io-server input\n"
+                        f" {file_tracker_summary}"
+                    )
 
         # signal completion of all merge tasks to the forecast task
         BatchJob(os.environ, wrapper="").run(

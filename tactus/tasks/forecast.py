@@ -1,4 +1,5 @@
 """Forecast."""
+
 import atexit
 import glob
 import json
@@ -13,7 +14,7 @@ from ..derived_variables import check_fullpos_namelist
 from ..initial_conditions import InitialConditions
 from ..logs import logger
 from ..namelist import NamelistGenerator
-from ..os_utils import deodemakedirs
+from ..os_utils import tactusmakedirs
 from .base import Task
 from .batch import BatchJob
 from .iomerge import IOMERGE_FILETYPES
@@ -44,7 +45,7 @@ class Forecast(PySurfexBaseTask):
         self.forecast_range = self.config["general.times.forecast_range"]
 
         self.archive = self.platform.get_system_value("archive")
-        self.deode_home = self.config["platform.deode_home"]
+        self.tactus_home = self.config["platform.tactus_home"]
         self.output_settings = self.config["general.output_settings"]
         self.surfex = self.config["general.surfex"]
 
@@ -92,7 +93,8 @@ class Forecast(PySurfexBaseTask):
             filename_out = self.platform.substitute(
                 filetype["archive"], validtime=self.basetime + dt
             )
-            self.fmanager.output(filename_in, f"{self.archive}/{filename_out}")
+            output = f"{self.archive}/{filename_out}"
+            self.fmanager.output(filename_in, output)
 
     def wfp_input(self):
         """Add wind turbine files to forecast directory."""
@@ -292,7 +294,7 @@ class Forecast(PySurfexBaseTask):
         # Store the output
         # Must happen before the forecast starts, so the io_merge tasks
         #   can write to it.
-        deodemakedirs(self.archive, unixgroup=self.unix_group)
+        tactusmakedirs(self.archive, unixgroup=self.unix_group)
 
         # Run MASTERODB
         batch = BatchJob(os.environ, wrapper=self.platform.substitute(self.wrapper))
@@ -301,6 +303,9 @@ class Forecast(PySurfexBaseTask):
         # Merge files and move to archive
         if self.iomerge_is_external:
             atexit.unregister(self.rename_wdir)
+            for filetype, oi in self.output_settings.items():
+                if filetype not in IOMERGE_FILETYPES and filetype in self.file_templates:
+                    self.archive_output(self.file_templates[filetype], oi)
         else:
             for filetype, oi in self.output_settings.items():
                 if filetype in self.file_templates:
@@ -324,7 +329,7 @@ class PrepareCycle(Task):
         Task.__init__(self, config, self.__class__.__name__)
 
         self.archive = self.platform.get_system_value("archive")
-        deodemakedirs(
+        tactusmakedirs(
             self.archive, unixgroup=self.platform.get_platform_value("unix_group")
         )
 

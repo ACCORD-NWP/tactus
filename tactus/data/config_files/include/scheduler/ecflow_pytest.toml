@@ -1,8 +1,6 @@
 [scheduler]
-
 [scheduler.ecfvars]
   case_prefix = ""
-  ecf_deode_home = ""
   ecf_files = ""
   ecf_files_remotely = ""
   ecf_home = ""
@@ -10,3 +8,4 @@
   ecf_jobout = ""
   ecf_out = ""
   ecf_port = -1
+  ecf_tactus_home = ""

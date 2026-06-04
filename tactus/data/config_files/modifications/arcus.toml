@@ -1,0 +1,31 @@
+[general]
+  upd_sst_sic = false
+
+[boundaries]
+  bd_has_surfex = false
+  bdmodel = "ifs"
+
+[boundaries.lam]
+  bdcycle = "PT6H"
+  bdcycle_start = "PT0H"
+
+[file_templates.bdfile]
+  archive = "fc@YYYY@@MM@@DD@_@HH@+@LLL@"
+
+[file_templates.bdfile_sfx]
+  archive = "fc@YYYY@@MM@@DD@_@HH@+@LLL@"
+
+[suite_control]
+  do_glprep = true
+  do_interpolsstsic = false
+  do_marsprep = false
+
+[system]
+  # bdtype = "IFSENS"
+  bddir = "@REFERENCE_DATA@/@BDTYPE@/@YYYY@/@MM@/@DD@/@HH@"
+  bddir_sfx = "@REFERENCE_DATA@/HRES/@YYYY@/@MM@/@DD@/@HH@"
+  bdtype = "HRES"
+  climdir = "@CASEDIR@/climate/@DOMAIN@"
+  s3_endpoint_url = "https://arcus-s3.nsc.liu.se"
+  s3_path_sfx_template = "ECMWF_BD/HRES/@YYYY@/@MM@/@DD@/@HH@/@BDFILE_TEMPLATE@"
+  s3_path_template = "ECMWF_BD/@BDTYPE@/@YYYY@/@MM@/@DD@/@HH@/@BDFILE_TEMPLATE@"

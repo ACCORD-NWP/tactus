@@ -16,23 +16,23 @@ on:
       - '**.py'
       - '*.rst'
       - '*.md'
+  release:
+    types: [published]
   workflow_dispatch:
-    branches:
-      - master
-      - develop
+
 permissions:
     contents: write
 
 jobs:
-  docs:
-    if: github.repository_owner == 'destination-earth-digital-twins'
+  build-docs:
+    if: github.repository_owner == 'ACCORD-NWP'
     name: Generate API Documentation
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Set github credentials
         uses: ./.github/actions/setup-github-credentials
@@ -41,7 +41,7 @@ jobs:
 
       - name: Set up python
         id: setup-python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: '3.13'
 
@@ -53,7 +53,7 @@ jobs:
 
       - name: Load cached venv (if cache exists)
         id: cached-poetry-dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: .venv
           key: ${{ github.job }}-venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml', '**/poetry.toml') }}
@@ -65,31 +65,30 @@ jobs:
       - name: Install the project itself
         run: poetry install --no-interaction --only-root
 
-      - name: Generate config docs from default config & main schema
-        run: |
-          poetry run deode doc config >| docs/markdown_docs/config.md
+      - name: Build documentation
+        run: make doc-build
 
-      - name: Sphinx apidoc
-        run: |
-          poetry run sphinx-apidoc deode -o docs/ --force --no-toc --module-first
-
-      - name: Sphinx build
-        run: |
-          poetry run sphinx-build docs docs/_build/
-
-      - name: Allow publishing the `_static` directory
-        run: |
-          touch docs/_build/.nojekyll
-
-      - name: Deploy to https://github.com/destination-earth-digital-twins/deode-workflow-docs
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
-        uses: cpina/github-action-push-to-another-repository@main
-        env:
-          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+      # Upload the book's HTML as an artifact
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
         with:
-          source-directory: 'docs/_build/'
-          destination-repository-name: 'destination-earth-digital-twins/deode-workflow-docs'
-          target-branch: gh-pages
-          target-directory: docs/
-          user-name: Deode Workflow API Doc Builder
-          user-email: Deode-Workflow@noreply.github.com
+          path: "docs/_build/"
+
+  deploy-docs:
+    if: ${{ github.event_name == 'published' }}
+    name: "Deploy docs"
+    needs: build-docs
+    runs-on: "ubuntu-latest"
+    permissions:
+      pages: write
+      id-token: write
+
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

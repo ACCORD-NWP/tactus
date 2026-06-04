@@ -1,0 +1,11 @@
+[archiving]
+[archiving.FDB.fdb]
+
+[archiving.hour.copy.config]
+  active = true
+  inpath = ""
+  newname = "config.toml"
+  outpath = "@ARCHIVE@"
+  pattern = "@CONFIG@"
+
+[archiving.static]

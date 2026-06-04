@@ -8,7 +8,8 @@ import socket
 
 from ..config_parser import ConfigParserDefaults
 from ..logs import logger
-from ..os_utils import deodemakedirs
+from ..os_utils import tactusmakedirs
+from ..reference_checker import ReferenceCheckManager
 from ..toolbox import FileManager
 
 
@@ -56,7 +57,6 @@ class Task(object):
         self.fmanager = FileManager(self.config)
         self.platform = self.fmanager.platform
         self.wrapper = self.config["submission.task.wrapper"]
-
         self.wrk = self.platform.get_system_value("wrk")
         if self.wrk is None:
             raise ValueError("You must set wrk", self.wrk)
@@ -68,6 +68,20 @@ class Task(object):
         logger.info("Task {} running in {}", self.name, self.wdir)
 
         self._set_eccodes_environment()
+
+        self._init_reference_checker_manager()
+
+    def _init_reference_checker_manager(self):
+        self.rcm = ReferenceCheckManager.create_reference_check_manager(
+            self.config, self.name
+        )
+        if self.rcm:
+            logger.info(
+                f"Initialize ReferenceChecker for {self.name}:"
+                + f"check={self.rcm.check}; generate={self.rcm.generate}"
+            )
+        else:
+            logger.info(f"No ReferenceChecker for {self.name}")
 
     def _set_eccodes_environment(self):
         """Set correct path for ECCODES tables.
@@ -82,34 +96,33 @@ class Task(object):
             return
 
         # Path to modelname definitions
-        deode_eccodes_modelname_path = os.path.join(
+        tactus_eccodes_modelname_path = os.path.join(
             self.platform.get_platform_value("archive_root"), "eccodes", "definitions"
         )
         # Path to local tables
-        deode_eccodes_definition_path = str(
+        tactus_eccodes_definition_path = str(
             ConfigParserDefaults.DATA_DIRECTORY / "eccodes/definitions"
         )
-        deode_eccodes_definition_path = ":".join(
-            [deode_eccodes_definition_path, deode_eccodes_modelname_path]
-        )
+        tactus_eccodes_definition_path = ":".join([
+            tactus_eccodes_definition_path,
+            tactus_eccodes_modelname_path,
+        ])
 
         try:
             eccodes_version = tuple(
-                [int(x) for x in os.getenv("ECCODES_VERSION").split(".")]
+                int(x) for x in os.getenv("ECCODES_VERSION").split(".")
             )
         except AttributeError:
             eccodes_version = (2, 30, 0)
 
-        eccodes_definition_path = deode_eccodes_definition_path
+        eccodes_definition_path = tactus_eccodes_definition_path
         if eccodes_version < (2, 30, 0):
             try:
                 eccodes_dir = os.environ["ECCODES_DIR"]
-                eccodes_definition_path = ":".join(
-                    [
-                        eccodes_definition_path,
-                        f"{eccodes_dir}/share/eccodes/definitions",
-                    ]
-                )
+                eccodes_definition_path = ":".join([
+                    eccodes_definition_path,
+                    f"{eccodes_dir}/share/eccodes/definitions",
+                ])
             except KeyError:
                 pass
 
@@ -129,7 +142,7 @@ class Task(object):
         if target is None:
             target = self.wrk
         logdir = os.path.join(target, "logs", self.name)
-        deodemakedirs(logdir, unixgroup=self.unix_group)
+        tactusmakedirs(logdir, unixgroup=self.unix_group)
 
         if isinstance(files, str):
             self.fmanager.output(files, logdir, provider_id="copy")
@@ -139,11 +152,11 @@ class Task(object):
 
     def create_wrkdir(self):
         """Create a cycle working directory."""
-        deodemakedirs(self.wrk, unixgroup=self.unix_group)
+        tactusmakedirs(self.wrk, unixgroup=self.unix_group)
 
     def create_wdir(self):
         """Create task working directory and check for unix group and set permissions."""
-        deodemakedirs(self.wdir, unixgroup=self.unix_group)
+        tactusmakedirs(self.wdir, unixgroup=self.unix_group)
 
     def change_to_wdir(self):
         """Change to task working dir."""
@@ -185,32 +198,51 @@ class Task(object):
         """
         binary = binary_name
         task = task_name if task_name is not None else self.name
+
         with contextlib.suppress(KeyError):
             binary = self.config[f"submission.task_exceptions.{task}.binary"]
 
+        task_bindir = None
+        general_bindir = None
+        with contextlib.suppress(KeyError):
+            task_bindir = self.config[f"submission.task_exceptions.{task}.bindir"]
+
         try:
-            bindir = self.config[f"submission.task_exceptions.{task}.bindir"]
+            binaries = self.config[
+                f"submission.task_exceptions.{task}.binaries.{binary_name}"
+            ]
+            logger.debug("binaries:{}", binaries)
+
+            with contextlib.suppress(KeyError):
+                binary = binaries["binary"]
+            with contextlib.suppress(KeyError):
+                task_bindir = binaries["bindir"]
         except KeyError:
-            try:
-                binaries = self.config[
-                    f"submission.task_exceptions.{self.name}.binaries.{binary_name}"
-                ]
-                logger.debug("binaries:{}", binaries)
+            pass
+        with contextlib.suppress(KeyError):
+            general_bindir = self.config["submission.bindir"]
 
-                with contextlib.suppress(KeyError):
-                    binary = binaries["binary"]
-                with contextlib.suppress(KeyError):
-                    bindir = binaries["bindir"]
-            except KeyError:
-                bindir = self.config["submission.bindir"]
-
-        bindir = self.platform.substitute(bindir)
-        bindir = os.path.realpath(bindir)
-
+        # Look for binary
         logger.debug("binary:{}", binary)
-        logger.debug("bindir:{}", bindir)
-
-        return f"{bindir}/{binary}"
+        logger.debug("general bindir:{}", general_bindir)
+        logger.debug("task bindir:{}", task_bindir)
+        # 1. Task specific binary
+        if task_bindir is not None:
+            logger.debug("Using task specific binary")
+            bindir = self.platform.substitute(task_bindir)
+            bindir = os.path.realpath(bindir)
+            task_binary = f"{bindir}/{binary}"
+            logger.debug("Using task specific binary: {}", task_binary)
+            return task_binary
+        # 2. General binary
+        if general_bindir is not None:
+            bindir = self.platform.substitute(general_bindir)
+            if "@" not in bindir:
+                bindir = os.path.realpath(bindir)
+                general_binary = f"{bindir}/{binary}"
+                logger.debug("Using general binary: {}", general_binary)
+                return general_binary
+        return binary
 
     def execute(self):
         """Do nothing for base execute task."""
@@ -253,6 +285,8 @@ class Task(object):
         """
         self.prep()
         self.execute()
+        if self.rcm:
+            self.rcm.execute(self.fmanager)
         self.post()
 
     def get_task_setting(self, setting):
@@ -291,6 +325,18 @@ class UnitTest(Task):
 
     def __init__(self, config):
         """Construct test task.
+
+        Args:
+            config (tactus.ParsedConfig): Configuration
+        """
+        Task.__init__(self, config, __class__.__name__)
+
+
+class ReferenceCheck(Task):
+    """ReferenceCheck class."""
+
+    def __init__(self, config):
+        """Construct ReferenceCheck task.
 
         Args:
             config (tactus.ParsedConfig): Configuration

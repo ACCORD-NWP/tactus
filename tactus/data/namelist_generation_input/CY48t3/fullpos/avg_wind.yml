@@ -1,8 +1,8 @@
-# Do the selection of fields below. Note 
+# Do the selection of fields below. Note
 # that xxt00000000 inherits from xxtddddhh00
 selection:
  xxtddddhh00: &default
-  NAMFPDYS: 
+  NAMFPDYS:
     AVERAGE_WIND:
      CL3DF:
       - 'AVG_U'

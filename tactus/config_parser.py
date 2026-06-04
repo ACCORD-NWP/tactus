@@ -1,19 +1,24 @@
 #!/usr/bin/env python3
 """Registration and validation of options passed in the config file."""
+
 import contextlib
+import copy
 import glob
 import json
 import os
 import tempfile
 from datetime import datetime, timedelta
-from functools import reduce
 from pathlib import Path
+from typing import List, Optional, Tuple
 
 import fastjsonschema
+import frozendict
 import jsonref
 import tomli
 import tomlkit
+import xmltodict
 import yaml
+from dicttoxml import dicttoxml as dtx
 from fastjsonschema import JsonSchemaValueException
 from json_schema_for_humans.generate import (
     GenerationConfiguration,
@@ -25,7 +30,7 @@ from . import GeneralConstants
 from .aux_types import BaseMapping, QuasiConstant
 from .datetime_utils import DatetimeConstants
 from .formatters import duration_format_validator, duration_slice_format_validator
-from .general_utils import modify_mappings
+from .general_utils import recursive_unfreeze
 from .logs import logger
 from .os_utils import resolve_path_relative_to_package
 from .toolbox import Platform
@@ -41,7 +46,7 @@ class ConfigParserDefaults(QuasiConstant):
     PACKAGE_CONFIG_PATH = (CONFIG_DIRECTORY / "config.toml").resolve(strict=True)
     # Define the default path to the config file
     try:
-        CONFIG_PATH = Path(os.getenv("DEODE_CONFIG_PATH", "config.toml"))
+        CONFIG_PATH = Path(os.getenv("TACTUS_CONFIG_PATH", "config.toml"))
         CONFIG_PATH = CONFIG_PATH.resolve(strict=True)
     except FileNotFoundError:
         CONFIG_PATH = PACKAGE_CONFIG_PATH
@@ -54,7 +59,7 @@ class ConfigParserDefaults(QuasiConstant):
 class ConfigPaths:
     """Support multiple path search."""
 
-    _env_data_paths = os.getenv("DEODE_CONFIG_DATA_DIR")
+    _env_data_paths = os.getenv("TACTUS_CONFIG_DATA_DIR")
     CONFIG_DATA_SEARCHPATHS = (
         _env_data_paths.split(":") if _env_data_paths is not None else []
     )
@@ -62,8 +67,21 @@ class ConfigPaths:
         path for path in CONFIG_DATA_SEARCHPATHS if not os.path.isabs(path)
     ]
     if len(erroneous_paths) > 0:
-        raise RuntimeError(f"DEODE_CONFIG_DATA_DIR is not absolute: {erroneous_paths}")
+        raise RuntimeError(f"TACTUS_CONFIG_DATA_DIR is not absolute: {erroneous_paths}")
     CONFIG_DATA_SEARCHPATHS.append(ConfigParserDefaults.DATA_DIRECTORY)
+
+    _env_schemas_paths = os.getenv("TACTUS_SCHEMAS_DIR")
+    SCHEMAS_SEARCHPATHS = (
+        _env_schemas_paths.split(":") if _env_schemas_paths is not None else []
+    )
+    erroneous_schema_paths = [
+        path for path in SCHEMAS_SEARCHPATHS if not os.path.isabs(path)
+    ]
+    if len(erroneous_schema_paths) > 0:
+        raise RuntimeError(
+            f"TACTUS_SCHEMAS_DIR is not absolute: {erroneous_schema_paths}"
+        )
+    SCHEMAS_SEARCHPATHS.append(ConfigParserDefaults.SCHEMAS_DIRECTORY)
 
     @staticmethod
     def print(config_file=None, host=None):
@@ -81,12 +99,11 @@ class ConfigPaths:
                 list_paths (list): directories to search for
                 dirmap (dict): Mapping between display name and actual path
 
-            Raises:
-                RuntimeError: In case of multiple conflicting paths detected
-
             Returns:
                 mapping (dict): Dict of search result
 
+            Raises:
+                RuntimeError: In case of multiple conflicting paths detected
             """
             mapping = {}
             for dir_ in list_paths:
@@ -126,7 +143,7 @@ class ConfigPaths:
         path_info_main = path_info(list_paths, dirmap)
         path_info_config = path_info(list_config_paths, dirmap)
 
-        logger.info("DEODE paths for host={}", host)
+        logger.info("tactus paths for host={}", host)
         logger.info(" Package directory: {}", GeneralConstants.PACKAGE_DIRECTORY)
         logger.info(
             " Searchpaths: {}", [str(x) for x in ConfigPaths.CONFIG_DATA_SEARCHPATHS]
@@ -157,12 +174,13 @@ class ConfigPaths:
         for searchpath in searchpaths:
             results = list(Path(searchpath).rglob(pattern))
             if len(results) > 1:
-                logger.error("Multiple matches found for subpath: {}", subpath)
-                logger.error("Results: {}", results)
-                raise RuntimeError("Multiple matches")
+                logger.warning("Multiple matches found for subpath: {}", subpath)
+                logger.warning("Selecting the first result: {}", results[0])
 
-            if len(results) == 1:
-                return results[0]
+            if len(results) == 0:
+                continue
+
+            return results[0]
 
         raise RuntimeError(f"Could not find {subpath}")
 
@@ -204,22 +222,79 @@ class BasicConfig(BaseMapping):
 
         Args:
             config_file (str): Path to config file
+
+        Raises:
+            TypeError: when unknown filetype as config_file is given.
         """
-        with open(config_file, mode="w", encoding="utf8") as fh:
-            tomlkit.dump(self.dict(), fh)
-        formatted_toml = FormattedToml.from_file(path=config_file)
-        with open(config_file, mode="w", encoding="utf8") as f:
-            f.write(str(formatted_toml))
+        BasicConfig.save_dictionary_as(self.dict(), config_file)
+
+    @staticmethod
+    def save_dictionary_as(dictionary, config_file):
+        """Save config file.
+
+        Args:
+            dictionary: dictionary to save
+            config_file (str): Path to config file
+
+        Raises:
+            TypeError: when unknown filetype as config_file is given.
+        """
+        suffix = Path(config_file).suffix
+
+        if suffix == ".toml":
+            with open(config_file, mode="w", encoding="utf8") as fh:
+                tomlkit.dump(dictionary, fh)
+            formatted_toml = FormattedToml.from_file(path=config_file)
+            with open(config_file, mode="w", encoding="utf8") as f:
+                f.write(str(formatted_toml))
+        elif suffix == ".xml":
+            with open(config_file, mode="wb") as fh:
+                fh.write(dtx(dictionary, attr_type=False))
+        elif suffix in [".yml", ".yaml"]:
+            with open(config_file, mode="wb") as fh:
+                yaml.dump(dictionary, fh, encoding="utf-8", default_flow_style=False)
+        elif suffix == ".json":
+            json_object = json.dumps(dictionary, indent=4)
+            with open(config_file, "w", encoding="utf-8") as fh:
+                fh.write(json_object)
+        else:
+            raise TypeError(f"Unknown filetype: {config_file}")
 
     @BaseMapping.data.setter
     def data(self, new):
         """Set the underlying data stored by the instance."""
-        input_sanitation_ops = [
-            lambda x: {k: v for k, v in x.items() if v is not None},
-            lambda x: {k: tuple(v) if isinstance(v, list) else v for k, v in x.items()},
-        ]
-        new = reduce(modify_mappings, input_sanitation_ops, new)
-        BaseMapping.data.fset(self, new, nested_maps_type=BasicConfig)
+
+        def needs_cleaning(obj):
+            if obj is None or isinstance(obj, list):
+                return True
+            if isinstance(obj, dict):
+                for v in obj.values():
+                    if needs_cleaning(v):
+                        return True
+            return False
+
+        def remove_none(obj):
+            return {
+                k: remove_none(v) if isinstance(v, dict) else v
+                for k, v in obj.items()
+                if v is not None
+            }
+
+        def lists_to_tuples(obj):
+            return {
+                k: (
+                    lists_to_tuples(v)
+                    if isinstance(v, dict)
+                    else (tuple(v) if isinstance(v, list) else v)
+                )
+                for k, v in obj.items()
+            }
+
+        if needs_cleaning(new):
+            new = remove_none(new)
+            new = lists_to_tuples(new)
+
+        BaseMapping.data.fset(self, new)
 
     @property
     def metadata(self):
@@ -230,7 +305,43 @@ class BasicConfig(BaseMapping):
     def metadata(self, new):
         """Set the metadata associated with the instance."""
         if new is not None:
-            self._metadata = modify_mappings(obj=new, operator=dict)
+            self._metadata = recursive_unfreeze(new)
+
+    def get(self, item, default=None):
+        """Get dictionary stored at key as a BasicConfig.
+
+        Args:
+            item (str): Key to retrieve (can be nested, e.g. "general.times")
+            default: Value to return if key is not found
+
+        Returns:
+            BasicConfig: data stored at key as a BasicConfig, or default if key not found
+        """
+        try:
+            result = self[item]
+        except KeyError:
+            return default
+
+        if type(result) is frozendict.frozendict:
+            return BasicConfig(result)
+        return result
+
+    def get_as_dict(self, item, default=None):
+        """Get dictionary stored at key as a dict.
+
+        Args:
+            item (str): Key to retrieve (can be nested, e.g. "general.times")
+            default: Value to return if key is not found
+
+        Returns:
+            dict: data stored at key as a dict, or default if key ot found
+        """
+        try:
+            result = self[item]
+        except KeyError:
+            return default
+
+        return recursive_unfreeze(result)
 
 
 class JsonSchema(BaseMapping):
@@ -239,7 +350,11 @@ class JsonSchema(BaseMapping):
     def __init__(self, *args, **kwargs):
         """Initialise instance."""
         super().__init__(*args, **kwargs)
-        self.data = jsonref.replace_refs(self.data)
+        new_data = jsonref.replace_refs(self.data)
+
+        # deepcopy to get rid of the jsonref.JsonRef when storing to data
+        new_data = copy.deepcopy(new_data)
+        BaseMapping.data.fset(self, new_data)
 
     @property
     def _validation_function(self):
@@ -253,26 +368,31 @@ class JsonSchema(BaseMapping):
         """Return human-readable doc for the schema in markdown format."""
         with tempfile.TemporaryDirectory() as tmpdir:
             with open(Path(tmpdir) / "schema.json", "w") as schema_file:
-                schema_file.write(json.dumps(self.dict()))
+                data_copy = self.dict()
+                schema_file.write(json.dumps(data_copy))
 
-            with open(
-                Path(tmpdir) / "schema_doc.md", "w"
-            ) as doc_file, contextlib.redirect_stdout(None):
+            with (
+                open(Path(tmpdir) / "schema_doc.md", "w") as doc_file,
+                contextlib.redirect_stdout(None),
+            ):
                 generate_from_file_object(
                     schema_file=schema_file,
                     result_file=doc_file,
                     config=GenerationConfiguration(
                         template_name="md",
                         show_toc=False,
-                        template_md_options={"show_heading_numbers": False},
+                        template_md_options={
+                            "show_heading_numbers": False,
+                            "properties_table_columns": [
+                                "Property",
+                                "Pattern",
+                                "Type",
+                                "Definition",
+                                "Title/Description",
+                            ],
+                            "badge_as_image": True,
+                        },
                         with_footer=False,
-                        properties_table_columns=[
-                            "property",
-                            "type",
-                            "required",
-                            "default",
-                            "title/description",
-                        ],
                     ),
                 )
 
@@ -374,23 +494,38 @@ class ParsedConfig(BasicConfig):
         rtn += f", json_schema={self.json_schema.dumps(style='json')})"
         return rtn
 
-    def expand_macros(self, expand_all=False):
+    def expand_macros(self, expand_all=False, protect_time=False):
         """Expand macros in config recursively.
 
         Args:
             expand_all (boolean): Flag to expand all macros
+            protect_time (boolean): Flag to control expansion of time variables
 
         Returns:
             config (ParsedConfig): Parsed configuration
         """
+        protect_keys = ["basetime", "validtime"]
         config = self.dict()
+        if protect_time:
+            time_keys = {
+                key: config["general"]["times"].pop(key)
+                for key in protect_keys
+                if key in config["general"]["times"]
+            }
+
         macros = config["macros"]
         if "case" in macros and not expand_all:
             macros["select"] = {"case": self["macros.case"]}
         config["macros"] = macros
+
         macro_platform = Platform(BasicConfig(config))
         config = macro_platform.resolve_macros(self.dict())
         config = self.copy(update=config)
+        if protect_time:
+            updates = {
+                key: value for key, value in time_keys.items() if value is not None
+            }
+            config = config.copy(update=updates)
 
         return config
 
@@ -401,11 +536,11 @@ def _read_raw_config_file(config_path: Path):
     Args:
         config_path (Path): Path to the config file.
 
-    Raises:
-        NotImplementedError: If the config file format is not supported.
-
     Returns:
         dict: Configs read from the specified path.
+
+    Raises:
+        NotImplementedError: If the config file format is not supported.
     """
     config_path = resolve_path_relative_to_package(config_path)
 
@@ -421,6 +556,9 @@ def _read_raw_config_file(config_path: Path):
         if config_path.suffix == ".json":
             return json.load(config_file)
 
+        if config_path.suffix == ".xml":
+            return xmltodict.parse(config_file.read())
+
     raise NotImplementedError(f'Unsupported config file format "{config_path.suffix}"')
 
 
@@ -434,41 +572,85 @@ def _get_config_include_definitions(raw_config):
     return config_includes
 
 
-def _get_all_json_schemas(json_schema, schemas_path):
-    """Load and add all json schema files in the schemas_path directory.
+def _get_all_json_schemas(json_schema, schemas_paths):
+    """Load and add all json schema files from a list of schema directories.
+
+    Directories are searched in order; the first directory that defines a schema for a
+    given section name wins (higher-priority paths should be placed at the front of the
+    list).
 
     Args:
         json_schema (dict): Input json schema
-        schemas_path (str): Path to json files
+        schemas_paths (list): Ordered list of paths to search for json schema files
 
     Returns:
         json_schema (dict): Updated json dict
 
     """
     exclude = ["main_config_schema.json", "default_config_schema.json"]
+    # Revert schema_paths list to make first path win, since it then occurs last
+    # in below iteration.
+    schemas_paths = schemas_paths[::-1]
 
-    for filename in glob.glob(f"{schemas_path}/*.json"):
-        if os.path.basename(filename) in exclude:
-            continue
-        section_name = os.path.basename(filename).replace("_section_schema.json", "")
-        updated_schema = {"$ref": f"file:{filename}"}
-        json_schema["properties"].update({section_name: updated_schema})
+    for schemas_path in schemas_paths:
+        for filename in glob.glob(f"{schemas_path}/*.json"):
+            if os.path.basename(filename) in exclude:
+                continue
+            section_name = os.path.basename(filename).replace("_section_schema.json", "")
+            updated_schema = {"$ref": f"file:{filename}"}
+            json_schema["properties"].update({section_name: updated_schema})
 
     return json_schema
 
 
 def _expand_config_include_section(
-    raw_config,
-    json_schema,
+    raw_config: dict,
+    json_schema: JsonSchema,
     config_include_search_dir=ConfigParserDefaults.CONFIG_DIRECTORY,
-    schemas_path=ConfigParserDefaults.SCHEMAS_DIRECTORY,
-    _parent_sections=(),
-    host=None,
-):
-    """Merge config includes and return new config & corresponding validation schema."""
+    schemas_path: Optional[List[Path] | Path] = None,
+    _parent_sections: Tuple = (),
+    host: Optional[str] = None,
+) -> Tuple[dict, JsonSchema]:
+    """Merge config includes and return new config & corresponding validation schema.
+
+    Args:
+        raw_config (dict): The raw configuration dictionary to process, potentially
+            containing include directives.
+        json_schema (JsonSchema): The JSON schema associated with ``raw_config``.
+        config_include_search_dir: Directory in which to search for included config
+            files. Defaults to ``ConfigParserDefaults.CONFIG_DIRECTORY``.
+        schemas_path (Path | list[Path] | None): A single Path, a list of Paths, or
+            None.  When None, defaults to ``ConfigPaths.SCHEMAS_SEARCHPATHS``
+            (evaluated at call time so that callers can insert extra directories into
+            that list before invoking this function). When a list is supplied,
+            directories are searched in order and the first directory that contains a
+            matching schema file wins.
+        _parent_sections (tuple): Tuple of ancestor section names used internally to
+            track nesting during recursive expansion. Should not be set by callers.
+        host (str | None): Optional host identifier passed down during recursive
+            expansion. Defaults to None.
+
+    Returns:
+        tuple[dict, JsonSchema]: A 2-tuple of ``(merged_config, merged_schema)`` where
+            ``merged_config`` is the fully expanded configuration dictionary and
+            ``merged_schema`` is the corresponding merged JSON schema.
+
+    Raises:
+        RunTimeError: If include path requires a host to be set, and no host
+            input argument is provided.
+        ConflictingValidationSchemasError: If a json schema for an include section
+            is found the parent json schema. Such schema must be added to a
+            separate file.
+    """
+    if schemas_path is None:
+        schemas_path = ConfigPaths.SCHEMAS_SEARCHPATHS
+    if not isinstance(schemas_path, list):
+        # Accept a single Path/str for backward compatibility
+        schemas_path = [schemas_path]
+
     # If the json schema is empty on arrival, keep it empty
-    raw_config = modify_mappings(obj=raw_config, operator=dict)
-    json_schema = modify_mappings(obj=json_schema, operator=dict)
+    raw_config = recursive_unfreeze(raw_config)
+    json_schema = recursive_unfreeze(json_schema)
 
     config_include_defs = _get_config_include_definitions(raw_config)
 
@@ -477,7 +659,7 @@ def _expand_config_include_section(
     config_include_search_dir = Path(config_include_search_dir).resolve()
     config_include_sections = {}
     if len(config_include_defs) == 0:
-        json_schema = _get_all_json_schemas(json_schema, str(schemas_path))
+        json_schema = _get_all_json_schemas(json_schema, schemas_path)
     else:
         for section_name, include_path_ in config_include_defs.items():
             if isinstance(include_path_, str):
@@ -507,13 +689,20 @@ def _expand_config_include_section(
                 msg += "but rather in their own separate files."
                 raise ConflictingValidationSchemasError(msg)
 
-            schema_file = schemas_path / f"{section_name}_section_schema.json"
-            if not schema_file.is_file():
+            schema_file = None
+            for spath in schemas_path:
+                candidate = Path(spath) / f"{section_name}_section_schema.json"
+                if candidate.is_file():
+                    schema_file = candidate
+                    break
+            if schema_file is None:
                 logger.warning(
                     'No validation schema for config section "{}". Using default.',
                     sections_traversed_str,
                 )
-                schema_file = schemas_path / "default_section_schema.json"
+                # default_section_schema.json lives in the tactus schemas dir
+                # (assumed to be last in list)
+                schema_file = Path(schemas_path[-1]) / "default_section_schema.json"
 
             updated_config, updated_schema = _expand_config_include_section(
                 raw_config=included_config_section,
@@ -536,7 +725,7 @@ def _get_json_validation_function(json_schema):
     """Return a validation function compiled with schema `json_schema`."""
     if not json_schema:
         # Validation will just convert everything to dict in this case
-        return lambda obj: modify_mappings(obj=obj, operator=dict)
+        return lambda obj: recursive_unfreeze(obj)
     validation_func = fastjsonschema.compile(
         json_schema.dict(),
         formats={
@@ -547,7 +736,7 @@ def _get_json_validation_function(json_schema):
 
     def validate(obj):
         try:
-            return validation_func(modify_mappings(obj=obj, operator=dict))
+            return validation_func(recursive_unfreeze(obj))
         except JsonSchemaValueException as err:
             error_path = " -> ".join(err.path[1:])
             human_readable_msg = err.message.replace(err.name, "").strip()

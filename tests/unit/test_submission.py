@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
+
 from contextlib import suppress
 from pathlib import Path
 
@@ -11,7 +12,7 @@ from tactus.derived_variables import derived_variables, set_times
 from tactus.submission import NoSchedulerSubmission, ProcessorLayout, TaskSettings
 
 
-@pytest.fixture()
+@pytest.fixture
 def minimal_raw_config():
     return tomlkit.parse(
         """
@@ -23,21 +24,21 @@ def minimal_raw_config():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def raw_config_with_task(minimal_raw_config):
     rtn = minimal_raw_config.copy()
     rtn.update({"task": {}})
     return rtn
 
 
-@pytest.fixture()
+@pytest.fixture
 def parsed_config_with_task(raw_config_with_task):
     return ParsedConfig(
         raw_config_with_task, json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def _module_mockers(module_mocker):
     # Patching ConfigParserDefaults.CONFIG_PATH so tests use the generated config
     original_submission_task_settings_parse_job = TaskSettings.parse_job
@@ -75,14 +76,28 @@ class TestSubmission:
         config = config.copy(update={"platform": {"scratch": tmp, "unix_group": ""}})
         config = config.copy(update=set_times(config))
         task = "UnitTest"
-        template_job = "deode/templates/stand_alone.py"
+        template_job = "tactus/templates/stand_alone.py"
         task_job = Path(tmp, f"{task}.job")
         output = Path(tmp, f"{task}.log")
+        task_job_create_only = Path(tmp, f"{task}_create_only.job")
+        output_create_only = Path(tmp, f"{task}_create_only.log")
 
         assert config["submission.default_submit_type"] == "pytest"
         background = TaskSettings(config)
         sub = NoSchedulerSubmission(background)
         sub.submit(task, config, template_job, task_job, output)
+        sub.submit(
+            task,
+            config,
+            template_job,
+            task_job_create_only,
+            output_create_only,
+            create_only=True,
+        )
+        assert task_job.is_file()
+        assert output.is_file()
+        assert task_job_create_only.is_file()
+        assert not output_create_only.is_file()
 
     def test_get_batch_info(self, default_config):
         arg = "#SBATCH UNITTEST"
@@ -130,7 +145,7 @@ class TestSubmission:
         config = default_config.copy()
         task = "not_existing"
         tmp = tmp_directory
-        template_job = "deode/templates/stand_alone.py"
+        template_job = "tactus/templates/stand_alone.py"
         task_job = Path(tmp, f"{task}.job")
         output = Path(tmp, f"{task}.log")
 

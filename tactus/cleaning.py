@@ -1,4 +1,4 @@
-"""Clean deode file systems."""
+"""Clean tactus file systems."""
 
 import os
 import re
@@ -6,6 +6,7 @@ import shutil
 import subprocess
 
 from .datetime_utils import as_datetime, as_timedelta
+from .general_utils import recursive_unfreeze
 from .logs import logger
 from .os_utils import Search, remove_empty_dirs
 from .toolbox import Platform
@@ -15,17 +16,18 @@ def wipe_ecfs(ecfs_path):
     """Remove a full ecfs directory tree."""
     command = ["erm", "-R", ecfs_path]
     try:
-        result = subprocess.check_output(command, text=True)  # noqa S603
+        result = subprocess.check_output(command, text=True)
         logger.info(result)
 
-        if result != "":
+        if result:
             logger.error(result)
             raise RuntimeError("Error running command: {}".format(command))
+        logger.info("Clean ecfs_path:{}", ecfs_path)
     except subprocess.CalledProcessError as err:
         logger.warning(err)
 
 
-class CleanDeode:
+class CleanTactus:
     """Clean data."""
 
     def __init__(self, config, defaults=None, basetime=None):
@@ -40,14 +42,13 @@ class CleanDeode:
             RuntimeError: If erroneous defaults
 
         """
+        self.config = config
         self.CLEANING_DEFAULTS = {"path": "", "ecfs_prefix": None}
 
         if defaults is None:
             self.defaults = {}
-        elif isinstance(defaults, dict):
-            self.defaults = defaults
         else:
-            self.defaults = defaults.dict()
+            self.defaults = defaults
 
         self.basetime = (
             as_datetime(config["general.times.basetime"])
@@ -57,8 +58,8 @@ class CleanDeode:
         self.cycle_length = as_timedelta(config["general.times.cycle_length"])
         self.platform = Platform(config)
         self._check_choice(self.defaults, "defaults")
-        archiving = config.get("archiving").dict()
-        archiving.pop("prefix")
+        archiving = config.get_as_dict("archiving")
+        archiving.pop("prefix", None)
         self.has_ecfs = False
         for values in archiving.values():
             if "ecfs" in values:
@@ -76,8 +77,8 @@ class CleanDeode:
             x (dict): Updated cleaning dict including default settings
 
         """
-        x = choice.copy()
-        y = self.defaults.copy()
+        x = choice
+        y = recursive_unfreeze(self.defaults)
 
         # Do not copy competing settings
         if "ncycles_delay" in y and "cleaning_delay" in x:
@@ -135,7 +136,7 @@ class CleanDeode:
         self.clean_tasks = {}
         for name, _choice in choices.items():
             choice = self._set_defaults(_choice)
-            if choice["active"]:
+            if self.platform.substitute(choice["active"]):
                 choice.pop("active")
                 self.clean_tasks[name] = choice
                 # Check consistency of settings
@@ -158,7 +159,7 @@ class CleanDeode:
                 else:
                     choice["step"] = as_timedelta(choice["step"])
 
-                if dry_run:
+                if dry_run is not None:
                     choice["dry_run"] = dry_run
 
                 self._check_choice(choice, name)

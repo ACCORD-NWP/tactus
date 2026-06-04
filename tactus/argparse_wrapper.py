@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Wrappers for argparse functionality."""
+
 import argparse
-import sys
 from pathlib import Path
 
 from . import GeneralConstants
@@ -12,6 +12,7 @@ from .commands_functions import (
     namelist_format,
     namelist_integrate,
     remove_cases,
+    replace_node,
     run_task,
     show_config,
     show_config_schema,
@@ -22,34 +23,23 @@ from .commands_functions import (
 )
 from .config_parser import ConfigParserDefaults
 from .namelist import NamelistConverter
+from .test_runner import run_test
 
 
-def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
-    """Get parsed command line arguments.
-
-    Args:
-        program_name (str): The name of the program.
-        argv (list): A list of passed command line args.
+def get_common_parser():
+    """Build and return the common argument parser shared by all subcommands.
 
     Returns:
-        argparse.Namespace: Parsed command line arguments.
+        argparse.ArgumentParser: Parser with common arguments (config-file,
+            host-file, etc.).
 
     """
-    if argv is None:
-        argv = sys.argv[1:]
-
-    ######################################################################################
-    # Command line args that will be common to main_parser and possibly other subparsers.#
-    #                                                                                    #
-    # You should add `parents=[common_parser]` to your subparser definition if you want  #
-    # these options to apply there too.                                                  #
-    ######################################################################################
     common_parser = argparse.ArgumentParser(add_help=False)
 
     common_parser.add_argument(
-        "--deode-home",
+        "--tactus-home",
         default=None,
-        help="Specify deode_home to override automatic detection",
+        help="Specify tactus_home to override automatic detection",
     )
     common_parser.add_argument(
         "--config-file",
@@ -60,7 +50,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         help=(
             "Path to the config file. The default is whichever of the "
             + "following is first encountered: "
-            + "(i) The value of the 'DEODE_CONFIG_PATH' envvar or "
+            + "(i) The value of the 'TACTUS_CONFIG_PATH' envvar or "
             + "(ii) './config.toml'. If both (i) and (ii) are missing, "
             + "then the default will become "
             + "'"
@@ -83,6 +73,20 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
         required=False,
         default=None,
     )
+    return common_parser
+
+
+def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
+    """Build and return the argument parser.
+
+    Args:
+        program_name (str): The name of the program.
+
+    Returns:
+        argparse.ArgumentParser: The configured argument parser.
+
+    """
+    common_parser = get_common_parser()
 
     ##########################################
     # Define main parser and general options #
@@ -136,7 +140,13 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     parser_run.add_argument(
         "--troika-config", type=str, default="/opt/troika/etc/troika.yml"
     )
-    parser_run.add_argument("--members", nargs="+", type=int, default=None)
+    parser_run.add_argument(
+        "--create-only",
+        action="store_true",
+        help="Just create the job, do not submit it.",
+        required=False,
+        default=False,
+    )
     parser_run.set_defaults(run_command=run_task)
 
     ##########################################
@@ -169,6 +179,7 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     )
 
     parser_remove.set_defaults(run_command=remove_cases)
+
     ##########################################
     # Configure parser for the "case" command #
     ##########################################
@@ -468,7 +479,81 @@ def get_parsed_args(program_name=GeneralConstants.PACKAGE_NAME, argv=None):
     )
     parser_namelist_format.set_defaults(run_command=namelist_format)
 
-    return main_parser.parse_args(argv)
+    ##########################################
+    # Configure parser for the "test" command #
+    ##########################################
+    parser_test = subparsers.add_parser(
+        "test",
+        help="Run integration test cases via the test runner",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser_test.add_argument(
+        "--config-file",
+        "-c",
+        dest="config_file",
+        help="Test runner config file",
+        required=False,
+        default=None,
+    )
+    parser_test.add_argument(
+        "--list",
+        "-l",
+        action="store_true",
+        default=False,
+        help="List selected cases",
+    )
+    parser_test.add_argument(
+        "--dry",
+        "-d",
+        action="store_true",
+        default=False,
+        help="Prepare only, do not execute actions",
+    )
+    parser_test.add_argument(
+        "--verbose",
+        "-v",
+        action="store_true",
+        default=False,
+        help="Increase verbosity",
+    )
+    parser_test.add_argument(
+        "--prepare-binaries",
+        "-p",
+        action="store_true",
+        default=False,
+        help="Prepare binaries from an IAL hash",
+    )
+    parser_test.add_argument(
+        "-m",
+        action="store_false",
+        dest="run",
+        default=True,
+        help="Only run the modify generation step, do not start suites",
+    )
+    parser_test.set_defaults(run_command=run_test, standalone_command=True)
+
+    # Configure parser for the "replace" command #
+    ##########################################
+    parser_replace = subparsers.add_parser(
+        "replace", help="Replaces a task/family/suite.", parents=[common_parser]
+    )
+    parser_replace.add_argument(
+        "--ecf-node",
+        type=str,
+        help="Ecflow node name (ECF_NAME)",
+        dest="node_path",
+        required=True,
+    )
+    parser_replace.add_argument(
+        "--def-file",
+        "-f",
+        help="Suite definition file",
+        default="",
+    )
+    add_keep_def_file(parser_replace)
+    parser_replace.set_defaults(run_command=replace_node)
+
+    return main_parser
 
 
 def add_namelist_args(parser_object):
@@ -485,8 +570,8 @@ def add_namelist_args(parser_object):
         "--namelist-type",
         "-t",
         type=str,
-        help="Namelist target, master or surfex",
-        choices=["master", "surfex"],
+        help="Namelist target: master, surfex or gl",
+        choices=["master", "surfex", "gl"],
         required=True,
         default=None,
     )

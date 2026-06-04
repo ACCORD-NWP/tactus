@@ -1,4 +1,5 @@
 """Discover suites."""
+
 import importlib
 import inspect
 import pkgutil
@@ -6,7 +7,7 @@ import sys
 import types
 
 from ..logs import logger
-from ..plugin import DeodePluginRegistry, DeodePluginRegistryFromConfig
+from ..plugin import TactusPluginRegistry, TactusPluginRegistryFromConfig
 from .base import SuiteDefinition, _get_name
 
 
@@ -46,14 +47,14 @@ def get_suite(name, config):
         name (_type_): _description_
         config (_type_): _description_
 
+    Returns:
+        _type_: _description_
+
     Raises:
         NotImplementedError: If SuiteDefinition `name` is not amongst
                              the known SuiteDefinition names.
-
-    Returns:
-        _type_: _description_
     """
-    reg = DeodePluginRegistryFromConfig(config)
+    reg = TactusPluginRegistryFromConfig(config)
     known_types = available_suites(reg)
     try:
         cls = known_types[name.lower()]
@@ -63,11 +64,11 @@ def get_suite(name, config):
     return cls(config)
 
 
-def available_suites(reg: DeodePluginRegistry):
+def available_suites(reg: TactusPluginRegistry):
     """Create a list of available tasks.
 
     Args:
-        reg (DeodePluginRegistry): Deode plugin registry
+        reg (TactusPluginRegistry): tactus plugin registry
 
     Returns:
         known_types (list): Suite objects

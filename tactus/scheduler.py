@@ -82,6 +82,17 @@ class Server(ABC):
         if begin:
             self.begin_suite(suite_name)
 
+    def replace_node(self, node_path, def_file):
+        """Start the suite.
+
+        Replace a node.
+
+        Args:
+            node_path (str): Path of the node
+            def_file (str): Name of the definition file.
+        """
+        self.replace(node_path, def_file)
+
 
 class EcflowServer(Server):
     """Ecflow server."""
@@ -161,8 +172,7 @@ class EcflowServer(Server):
             port (int): Derived port number
 
         """
-        port = os.getuid() + int(offset)
-        return port
+        return os.getuid() + int(offset)
 
     def start_server(self):
         """Start the server.
@@ -186,7 +196,7 @@ class EcflowServer(Server):
 
                 logger.info(start_command)
                 # TODO
-                ret = os.system(start_command)  # noqa
+                ret = os.system(start_command)
                 if ret != 0:
                     raise RuntimeError from RuntimeError
             except RuntimeError as error:
@@ -248,8 +258,7 @@ class EcflowServer(Server):
             suite_is_complte (boolean): Suite has complete status
         """
         self.ecf_client.sync_local()
-        suite_is_complete = suite.get_state() == ecflow.State.complete
-        return suite_is_complete
+        return suite.get_state() == ecflow.State.complete
 
     def remove_suites(self, suite_list, check_if_complete=True):
         """Remove suites selected from a list.
@@ -260,7 +269,6 @@ class EcflowServer(Server):
 
         """
         self.ecf_client.sync_local()
-
         suites = self.ecf_client.get_defs().suites
         for suite in suites:
             suite_name = suite.name()
@@ -269,30 +277,125 @@ class EcflowServer(Server):
             ):
                 logger.info("Removing suite {}", suite_name)
                 self.ecf_client.delete(suite_name)
-                for directory in self.get_ecf_home_and_files(suite):
+                for directory in self.get_ecf_vars(suite):
                     if os.path.isdir(directory):
+                        logger.info("Remove ecflow directory {}", directory)
                         shutil.rmtree(directory)
-                    else:
-                        logger.warning("{} does not exist", directory)
 
-    def get_ecf_home_and_files(self, suite):
-        """Get ECF_HOME and ECF_HOST of the suite.
+    def get_suites_from_server(self, ignore, complete=False):
+        """Get all suites from ecflow server.
+
+        Args:
+            ignore (list): List of suites which should be ignore.
+            complete (boolean): True if suite should be complete.
+                Defaults: Fasle.
+
+        Returns:
+            list: List of ecflow Suite objects on server.
+        """
+        self.ecf_client.sync_local()
+        suites = self.ecf_client.get_defs().suites
+        suites = [suite for suite in suites if suite.name() not in ignore]
+        if complete:
+            return [
+                suite for suite in suites if suite.get_state() == ecflow.State.complete
+            ]
+        return suites
+
+    def suite_finish_time(self, suite, force_delete_time, last_task_name=None):
+        """Get time when suite finished.
+
+        Args:
+            suite (ecflow.Suite): suite object
+            force_delete_time (datetime): return this time, if files don't exists.
+            last_task_name (str): name of the last task in the suite
+
+        Returns:
+            float: timestamp when suite finished
+        """
+
+        def task_mtime(task):
+            jobout = next(
+                (
+                    var.value()
+                    for var in task.get_generated_variables()
+                    if var.name() == "ECF_JOBOUT"
+                ),
+                None,
+            )
+
+            if jobout and os.path.exists(jobout):
+                return os.path.getmtime(jobout)
+
+            return force_delete_time.timestamp()
+
+        tasks = list(self.get_all_tasks(suite))
+
+        if last_task_name:
+            last_task = next(
+                (t for t in tasks if t.name() == last_task_name),
+                None,
+            )
+
+            if last_task and last_task.get_state() == ecflow.State.complete:
+                logger.info(
+                    "Last task %s, time %s",
+                    last_task.name(),
+                    task_mtime(last_task),
+                )
+                return task_mtime(last_task)
+
+        endtimes = [task_mtime(task) for task in tasks]
+
+        return max(endtimes, default=force_delete_time.timestamp())
+
+    def get_ecf_vars(self, suite):
+        """Get some ecf_vars from a ecflow suite.
 
         Args:
             suite (Ecflow suite): suite object.
 
         Returns:
-            ecf_home (Path): Path to ECF_HOME.
-            ecf_files (Path): Path to ECF_FILES.
+            ecf_vars (list): List of Paths
         """
         suite_name = suite.name()
-        ecf_home = Path(suite.find_variable("ECF_HOME").value())
-        ecf_files = Path(suite.find_variable("ECF_FILES").value())
-        if suite_name.startswith("DE_Impact_EHYPE"):
-            logger.info("ecf_files: {}", ecf_files.parents[2])
-            ecf_files = ecf_files.parents[2]
+        ecf_vars = []
+        for _ecf_var in ["ECF_OUT", "ECF_HOME", "ECF_FILES"]:
+            ecf_var = suite.find_variable(_ecf_var).value()
+            if len(ecf_var) == 0:
+                continue
+            ecf_var = Path(Path(ecf_var) / suite_name)
+            if ecf_var not in ecf_vars:
+                ecf_vars.append(ecf_var)
 
-        return Path(ecf_home / suite_name), Path(ecf_files / suite_name)
+        return ecf_vars
+
+    def get_all_tasks(self, node):
+        """Recursively yield all Task nodes under a Suite or Family node."""
+        for child in node.nodes:
+            if isinstance(child, ecflow.Task):
+                yield child
+            elif isinstance(child, ecflow.Family):
+                # recurse into the family
+                yield from self.get_all_tasks(child)
+
+    def get_config_of_suite(self, suite):
+        """Get cinfig file of the suite."""
+        return Path(suite.find_variable("CONFIG").value())
+
+    def suspend(self, task_or_path):
+        """Suspend a task, family, or suite.
+
+        Args:
+            task_or_path (EcflowTask | str): Task object or full ecFlow path
+        """
+        if isinstance(task_or_path, str):
+            ecf_path = task_or_path
+        else:
+            ecf_path = task_or_path.ecf_name
+
+        logger.info("Suspending {}", ecf_path)
+        self.ecf_client.suspend(ecf_path)
 
 
 class EcflowLogServer:
@@ -326,7 +429,7 @@ class EcflowTask:
         self.ecf_name = ecf_name
         self.ecf_tryno = int(ecf_tryno)
         self.ecf_pass = ecf_pass
-        if ecf_rid == "" or ecf_rid is None:
+        if not ecf_rid:
             ecf_rid = os.getpid()
         self.ecf_rid = int(ecf_rid)
         self.ecf_timeout = int(ecf_timeout)

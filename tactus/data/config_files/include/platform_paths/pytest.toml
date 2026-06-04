@@ -1,3 +1,5 @@
 [platform]
-  archive_root = "@SCRATCH@/deode/@CASE@/archive"
-  scratch = ""
+  archive_root = "@SCRATCH@/@SYS_NAME@/@CASE@/archive"
+  references_folder = "set-in-unittest"
+  references_generation_folder = "@SCRATCH@/@SYS_NAME@/generated_references"
+  scratch = "@HOME@/@USER@"

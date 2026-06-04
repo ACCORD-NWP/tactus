@@ -4,20 +4,20 @@
 import pytest
 import tomlkit
 
-from deode import GeneralConstants
+from tactus import GeneralConstants
 from tactus.derived_variables import set_times
 from tactus.fullpos import Fullpos, InvalidSelectionCombinationError, flatten_list
 from tactus.toolbox import Platform
 
 
-@pytest.fixture()
+@pytest.fixture
 def load(default_config):
     """Test load of the yml files."""
     config = default_config
     config_patch = tomlkit.parse(
         f"""
         [platform]
-            deode_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
+            tactus_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
         """
     )
     config = config.copy(update=config_patch)
@@ -34,9 +34,7 @@ def load(default_config):
         "${vertical_levels.nlev}": config["vertical_levels.nlev"],
         "${namelist.nrfp3s}": nrfp3s,
     }
-    fullpos = Fullpos("test", fpdir=fpdir, fpfiles=fpfiles, rules=rules)
-
-    return fullpos
+    return Fullpos("test", fpdir=fpdir, fpfiles=fpfiles, rules=rules)
 
 
 class TestFullpos:

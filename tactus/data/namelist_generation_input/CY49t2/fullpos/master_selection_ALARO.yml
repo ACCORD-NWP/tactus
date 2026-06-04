@@ -73,6 +73,7 @@ selection:
       - WIND.U.PHYS
       - WIND.V.PHYS
       - VERT.VELOCIT
+      - VITESSE_VERT
       - ICE_CRYSTAL
       - CLOUD_WATER
       - TKE
@@ -115,6 +116,7 @@ selection:
       CLPHY:
       - SURFTEMPERATURE
       - SURFRESERV.NEIGE
+      - SURFIND.TERREMER
       CLXFU:
       - CLSTEMPERATURE
       - CLSHUMI.RELATIVE
@@ -192,6 +194,7 @@ selection:
       - WIND.U.PHYS
       - WIND.V.PHYS
       - VERT.VELOCIT
+      - VITESSE_VERT
       - ICE_CRYSTAL
       - CLOUD_WATER
       - TKE
@@ -247,6 +250,7 @@ selection:
       - SURFPREC.NEI.GEC
       - SURFPREC.NEI.CON
       - SURFPREC.GRA.GEC
+      - TOTAL.PRECIP.
       CLPHY:
       - SURFTEMPERATURE
       - SURFRESERV.NEIGE

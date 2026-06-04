@@ -34,11 +34,6 @@
         "model": {
           "description": "File template as used by the model",
           "type": "string"
-        },
-        "io_server": {
-          "description": "This filetype is handled by the IO-server",
-          "type": "boolean",
-          "default": false
         }
       }
     },
@@ -54,11 +49,6 @@
         "model": {
           "description": "File template as used by the model",
           "type": "string"
-        },
-        "io_server": {
-          "description": "This filetype is handled by the IO-server",
-          "type": "boolean",
-          "default": false
         }
       }
     },
@@ -74,11 +64,6 @@
         "model": {
           "description": "File template as used by the model",
           "type": "string"
-        },
-        "io_server": {
-          "description": "This filetype is handled by the IO-server",
-          "type": "boolean",
-          "default": false
         }
       }
     },

@@ -1,26 +1,38 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Platform Section, defined in files under include/platform_paths",
-  "description": "DEODE platform specific path settings",
+  "description": "TACTUS platform specific path settings",
   "type": "object",
   "additionalProperties": true,
   "properties": {
     "archive_types": {
       "description": "Methods available for archiving",
       "type": "array",
-      "default": ["compress", "copy", "move", "scp"],
+      "default": [
+        "compress",
+        "copy",
+        "move",
+        "scp"
+      ],
       "items": {
         "type": "string",
-        "enum": ["compress", "copy", "ecfs", "fdb", "move", "scp"]
+        "enum": [
+          "compress",
+          "copy",
+          "ecfs",
+          "fdb",
+          "move",
+          "scp"
+        ]
       }
     },
     "ecoclim_data_path": {
       "type": "string",
       "description": "Path to the ECOCLIMAP-II data"
     },
-    "deode_home": {
+    "tactus_home": {
       "type": "string",
-      "description": "Path to the deode code, normally no need to change",
+      "description": "Path to the tactus code, normally no need to change",
       "default": "set-by-the-system"
     },
     "pgd_data_path": {
@@ -34,7 +46,7 @@
     "global_sfcdir": {
       "type": "string",
       "description": "Path to global IFS surface data",
-      "default" : ""
+      "default": ""
     },
     "topo_data_path": {
       "type": "string",
@@ -44,7 +56,12 @@
       "type": "string",
       "description": "Topography data source type",
       "default": "gmted2010",
-      "enum": ["gmted2010", "gmted_eur", "gtopo30", "glo90"]
+      "enum": [
+        "gmted2010",
+        "gmted_eur",
+        "gtopo30",
+        "glo90"
+      ]
     },
     "ecosg_data_path": {
       "type": "string",
@@ -65,6 +82,14 @@
     "ncdir": {
       "type": "string",
       "description": "Path to ECrad NetCDF data"
+    },
+    "references_folder": {
+      "type": "string",
+      "description": "Path to references checker input"
+    },
+    "references_generation_folder": {
+      "type": "string",
+      "description": "Path to references checker generation folder"
     },
     "rrtm_dir": {
       "type": "string",
@@ -122,6 +147,10 @@
       "type": "string",
       "description": "Path to wind farm parameterisation input data."
     },
+    "uv_cache_dir": {
+      "type": "string",
+      "description": "Path to uv cache dir used to install some plug-ins."
+    },
     "eclipse_data_dir": {
       "type": "string",
       "description": "Path to sun/moon position as used for eclipses.",
@@ -133,21 +162,8 @@
     },
     "unix_group": {
       "type": "string",
-      "description": "Default unix group for directories created by deode, leave empty to use default group of user.",
+      "description": "Default unix group for directories created by tactus, leave empty to use default group of user.",
       "default": ""
-    },
-    "properties": {
-      "impact": {
-        "title": "Impact model paths (where applicable)",
-        "type": "object",
-        "properties": {
-           "ehype": {
-             "type": "string",
-             "description": "EHYPE model path",
-             "default": ""
-           }
-        }
-      }
     }
   }
 }

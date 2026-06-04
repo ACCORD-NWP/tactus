@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Logging-related classes, functions and definitions."""
+
 import inspect
 import logging as builtin_logging
 import os
@@ -21,7 +22,7 @@ from .aux_types import QuasiConstant
 class LogDefaults(QuasiConstant):
     """Defaults used for the logging system."""
 
-    LEVEL = os.environ.get("DEODE_LOGLEVEL", os.environ.get("LOGURU_LEVEL", "INFO"))
+    LEVEL = os.environ.get("TACTUS_LOGLEVEL", os.environ.get("LOGURU_LEVEL", "INFO"))
     DIRECTORY = Path().home() / ".logs" / GeneralConstants.PACKAGE_NAME
     RETENTION_TIME = "1 week"
     SINKS = {
@@ -89,15 +90,17 @@ class LoggerHandlers(Sequence):
         return len(self.handlers)
 
 
-def log_elapsed_time(**kwargs):
+def log_elapsed_time(
+    package_name=GeneralConstants.PACKAGE_NAME, version=GeneralConstants.VERSION, **kwargs
+):
     """Return a decorator that logs beginning, exit and elapsed time of function."""
 
     def log_elapsed_time_decorator(function):
         """Wrap `function` and log beginning, exit and elapsed time."""
         name = kwargs.get("name", function.__name__)
         if function.__name__ == "main":
-            name = f"{GeneralConstants.PACKAGE_NAME} v{GeneralConstants.VERSION}"
-            cmd = f"{' '.join([GeneralConstants.PACKAGE_NAME, *sys.argv[1:]])}"
+            name = f"{package_name} v{version}"
+            cmd = f"{' '.join([package_name, *sys.argv[1:]])}"
             name = f'{name} --> "{cmd}"'
 
         @wraps(function)

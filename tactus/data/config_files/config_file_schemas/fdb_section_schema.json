@@ -22,37 +22,37 @@
         "0001": {
           "description": "Operational expver",
           "anyOf": [
-             {
-                "type": "string",
-                "default": "@PROD_USER@"
-             },
-             {
-                "type": "array"
-             }
+            {
+              "type": "string",
+              "default": "@PROD_USER@"
+            },
+            {
+              "type": "array"
+            }
           ]
         },
         "0099": {
           "description": "Pre-operational expver",
           "anyOf": [
-             {
-                "type": "string",
-                "default": "@PROD_USER@"
-             },
-             {
-                "type": "array"
-             }
+            {
+              "type": "string",
+              "default": "@PROD_USER@"
+            },
+            {
+              "type": "array"
+            }
           ]
         },
         "0098": {
           "description": "Development expver",
           "anyOf": [
-             {
-                "type": "string",
-                "default": "@DEV_USER@"
-             },
-             {
-                "type": "array"
-             }
+            {
+              "type": "string",
+              "default": "@DEV_USER@"
+            },
+            {
+              "type": "array"
+            }
           ]
         }
       }

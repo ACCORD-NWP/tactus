@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for commands_functions.py."""
+
 import filecmp
 import os
 from argparse import ArgumentParser
@@ -16,10 +17,10 @@ from tactus.commands_functions import (
 from tactus.os_utils import resolve_path_relative_to_package
 
 
-@pytest.fixture()
+@pytest.fixture
 def set_arg():
     arg = ArgumentParser()
-    arg.deode_home = None
+    arg.tactus_home = None
     arg.namelist_type = "master"
     arg.namelist = "forecast"
     arg.namelist_name = None
@@ -28,17 +29,17 @@ def set_arg():
     return arg
 
 
-@pytest.fixture()
+@pytest.fixture
 def nlint_arg(tmp_directory):
     arg = ArgumentParser()
-    arg.deode_home = None
+    arg.tactus_home = None
     arg.namelist = [
         resolve_path_relative_to_package(
-            Path("deode/data/namelists/unit_testing/nl_master_integrate")
+            Path("tactus/data/namelists/unit_testing/nl_master_integrate")
         )
     ]
     arg.yaml = resolve_path_relative_to_package(
-        Path("deode/data/namelists/unit_testing/nl_master_base.yml")
+        Path("tactus/data/namelists/unit_testing/nl_master_base.yml")
     )
     arg.tag = "nl_master_base"
     arg.output = f"{tmp_directory}/nl_master_integrated.yml"
@@ -103,18 +104,18 @@ def test_namelist_integrate(nlint_arg, default_config):
     assert os.path.isfile(nlint_arg.output)
 
 
-@pytest.fixture()
+@pytest.fixture
 def nlconyml_arg(tmp_directory):
     arg = ArgumentParser()
     arg.namelist = resolve_path_relative_to_package(
-        Path("deode/data/namelists/unit_testing/nl_master_base.yml")
+        Path("tactus/data/namelists/unit_testing/nl_master_base.yml")
     )
     arg.output = f"{tmp_directory}/nl_master_base.49t2.yml"
     arg.from_cycle = "CY48t2"
     arg.to_cycle = "CY49t2"
     arg.format = "yaml"
     arg.output_reference = resolve_path_relative_to_package(
-        Path("deode/data/namelists/unit_testing/reference/nl_master_base.49t2.yml")
+        Path("tactus/data/namelists/unit_testing/reference/nl_master_base.49t2.yml")
     )
     return arg
 
@@ -129,12 +130,12 @@ def test_namelist_convert_yml(nlconyml_arg, default_config):
     assert filecmp.cmp(nlconyml_arg.output_reference, nlconyml_arg.output)
 
 
-@pytest.fixture()
+@pytest.fixture
 def nlconftn_arg(tmp_directory):
     arg = ArgumentParser()
     arg.namelist = str(
         resolve_path_relative_to_package(
-            Path("deode/data/namelists/unit_testing/nl_master_base")
+            Path("tactus/data/namelists/unit_testing/nl_master_base")
         )
     )
     arg.output = f"{tmp_directory}/nl_master_base.49t2"
@@ -142,7 +143,7 @@ def nlconftn_arg(tmp_directory):
     arg.to_cycle = "CY49t2"
     arg.format = "ftn"
     arg.output_reference = resolve_path_relative_to_package(
-        Path("deode/data/namelists/unit_testing/reference/nl_master_base.49t2")
+        Path("tactus/data/namelists/unit_testing/reference/nl_master_base.49t2")
     )
     return arg
 
@@ -156,16 +157,16 @@ def test_namelist_convert_ftn(nlconftn_arg, default_config):
     assert filecmp.cmp(nlconftn_arg.output_reference, nlconftn_arg.output)
 
 
-@pytest.fixture()
+@pytest.fixture
 def nlformatyml_arg(tmp_directory):
     arg = ArgumentParser()
     arg.namelist = resolve_path_relative_to_package(
-        Path("deode/data/namelists/unit_testing/nl_master_base.yml")
+        Path("tactus/data/namelists/unit_testing/nl_master_base.yml")
     )
     arg.output = f"{tmp_directory}/nl_master_base.format.yml"
     arg.format = "yaml"
     arg.output_reference = resolve_path_relative_to_package(
-        Path("deode/data/namelists/unit_testing/reference/nl_master_base.format.yml")
+        Path("tactus/data/namelists/unit_testing/reference/nl_master_base.format.yml")
     )
     return arg
 
@@ -180,18 +181,18 @@ def test_namelist_format_yml(nlformatyml_arg, default_config):
     assert filecmp.cmp(nlformatyml_arg.output_reference, nlformatyml_arg.output)
 
 
-@pytest.fixture()
+@pytest.fixture
 def nlformatftn_arg(tmp_directory):
     arg = ArgumentParser()
     arg.namelist = str(
         resolve_path_relative_to_package(
-            Path("deode/data/namelists/unit_testing/nl_master_base")
+            Path("tactus/data/namelists/unit_testing/nl_master_base")
         )
     )
     arg.output = f"{tmp_directory}/nl_master_base.format"
     arg.format = "ftn"
     arg.output_reference = resolve_path_relative_to_package(
-        Path("deode/data/namelists/unit_testing/reference/nl_master_base.format")
+        Path("tactus/data/namelists/unit_testing/reference/nl_master_base.format")
     )
     return arg
 

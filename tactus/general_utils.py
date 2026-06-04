@@ -1,57 +1,18 @@
 #!/usr/bin/env python3
 """General utils for use throughout the package."""
+
 import copy
 from collections import defaultdict
 from collections.abc import Mapping, Sequence
-from typing import Any, Callable, Dict, Generator, List, Optional, Tuple, Union, cast
+from typing import Any, Dict, Generator, List, Optional, Tuple, Union, cast
 
+from frozendict import frozendict
 from loguru import logger
 
 
 def get_empty_nested_defaultdict():
     """Return an empty nested (recursive) defaultdict object."""
     return defaultdict(get_empty_nested_defaultdict)
-
-
-def modify_mappings(obj: Mapping, operator: Union[Mapping, Callable[[Mapping], Any]]):
-    """Descend recursively into `obj` and modify encountered mappings using `operator`."""
-    if not isinstance(obj, Mapping):
-        raise TypeError("`obj` must be a Mapping (`dict`-like object).")
-
-    if callable(operator):
-        return _modify_mappings_via_callable(obj=obj, operator=operator)
-
-    if isinstance(operator, Mapping):
-        return _update_mapping(obj=obj, updates=operator)
-
-    raise TypeError("`operator` must either be callable or implement an `items` method.")
-
-
-def _modify_mappings_via_callable(obj, operator: Callable[[Mapping], Any]):
-    """Descend recursively into `obj` and modify encountered mappings using `operator`."""
-    if not isinstance(obj, Mapping):
-        try:
-            return copy.deepcopy(obj)
-        except TypeError:
-            return obj
-    return operator(
-        {k: _modify_mappings_via_callable(v, operator=operator) for k, v in obj.items()}
-    )
-
-
-def _update_mapping(obj, updates: Mapping):
-    """Descend recursively into `obj` and update nested mappings using `updates`."""
-    new_obj = copy.deepcopy(obj)
-
-    if not isinstance(new_obj, Mapping):
-        return new_obj
-
-    for key, updated_value in updates.items():
-        if isinstance(updated_value, Mapping):
-            new_obj[key] = _update_mapping(new_obj.get(key, {}), updated_value)
-        else:
-            new_obj[key] = updated_value
-    return new_obj
 
 
 def recursive_dict_deviation(base_dict: dict, deviating_dict: dict) -> dict:
@@ -81,13 +42,15 @@ def recursive_dict_deviation(base_dict: dict, deviating_dict: dict) -> dict:
         # If value is not dict, we have reached the end of the current branch
         # of deviating_dict. Update deviation if the value is different from
         # the base_dict value, or if the key does not exist in base_dict.
-        elif key in base_dict and base_dict[key] != value or key not in base_dict:
+        elif (key in base_dict and base_dict[key] != value) or key not in base_dict:
             deviation[key] = value
 
     return deviation
 
 
-def value_from_sequence_generator(sequence: Sequence[Any]) -> Generator[Any, None, None]:
+def value_from_sequence_generator(
+    sequence: Sequence[Any],
+) -> Generator[Any, None, None]:
     """Yield alternately one of the values from a sequence of values.
 
     The order of the yielded values is determined by the order of the sequence.
@@ -160,13 +123,13 @@ def expand_string_slice(
         string (int | str): The string to expand
         indices (List[int]): Indices to respect, i.e. for max/min bounds
 
-    Raises:
-        ValueError: If string, that is not a slice string, cannot be converted
-            to int
-
     Yields:
         Generator[int | List[int], None, None]: The expanded string returned as
             a generator.
+
+    Raises:
+        ValueError: If string, that is not a slice string, cannot be converted
+            to int
     """
     # Check if key is a slice
     if ":" in str(string):
@@ -228,21 +191,18 @@ def expand_dict_key_slice(
     Returns:
         dict: New dict with expanded keys.
     """
-    expanded_dict = {}
 
     def generate_key_value_pairs() -> Generator[Tuple[int, Any], None, None]:
         for key, value in dict_.items():
             for expanded_key in expand_string_slice(key, indices):
                 yield expanded_key, value
 
-    for key, value in generate_key_value_pairs():
-        if key in indices:
-            expanded_dict[key] = value
-
-    return expanded_dict
+    return {key: value for key, value in generate_key_value_pairs() if key in indices}
 
 
-def merge_dicts(dict1: dict, dict2: dict, overwrite: bool = False) -> dict:
+def merge_dicts(
+    dict1: dict, dict2: dict, overwrite: bool = False, remove_none: bool = False
+) -> dict:
     """Merge two dictionaries with values from dict2 taking precedence.
 
     If values are lists, they are concatenated.
@@ -253,7 +213,8 @@ def merge_dicts(dict1: dict, dict2: dict, overwrite: bool = False) -> dict:
         overwrite (bool): Whether to overwrite values in dict1 with values from dict2
                         if the keys are the same, but the types of the values
                         are not lists or dicts.
-
+        remove_none(bool): Whether to delete value in dict1 when
+                          the value in dict2 is None
     Returns:
         (dict): Merged dict
 
@@ -261,27 +222,36 @@ def merge_dicts(dict1: dict, dict2: dict, overwrite: bool = False) -> dict:
         RuntimeError: Invalid type
 
     """
-    new_dict = copy.deepcopy(dict1)
+    new_dict = dict(dict1.items())
+
     for key2, val2 in dict2.items():
-        if key2 in new_dict:
-            if val2 is None:
-                continue
+        key2_exist = key2 in new_dict
+        if val2 is None:
+            if key2_exist:
+                if remove_none:
+                    new_dict.pop(key2)
+                else:
+                    continue
+        else:
+            if not key2_exist:
+                new_dict[key2] = {}
             if isinstance(val2, dict):
-                new_dict[key2] = merge_dicts(new_dict[key2], val2, overwrite=overwrite)
+                new_dict[key2] = merge_dicts(
+                    new_dict[key2], val2, overwrite=overwrite, remove_none=remove_none
+                )
             elif isinstance(val2, list):
                 if isinstance(new_dict[key2], list):
-                    new_dict[key2].extend(
-                        [val for val in val2 if val not in new_dict[key2]]
-                    )
+                    new_dict[key2].extend([
+                        val
+                        for val in val2
+                        if val not in new_dict[key2] and val is not None
+                    ])
                 else:
                     new_dict[key2] = val2
-            elif overwrite:
+            elif overwrite or not key2_exist:
                 new_dict[key2] = val2
             else:
                 raise RuntimeError("Invalid type:", type(val2), val2)
-        else:
-            new_dict[key2] = val2
-
     return new_dict
 
 
@@ -305,11 +275,110 @@ def recursive_delete_keys(mapping: Dict[str, Any], keys_dict: Dict[str, bool]):
                 del mapping[key]
 
 
-def recursive_substitute(value, platform):
-    """Recursively substitute variables in a nested dictionary."""
+def recursive_unfreeze(obj, return_type=dict):
+    """Transform recursively a frozendict into a type that is mutable (e.g. dict).
+
+    Args:
+        obj: the input dict
+        return_type: the type to return (default = dict)
+
+    Returns:
+        The frozendict converted to return_type
+    """
+    if hasattr(obj, "items"):
+        new_dict = dict(obj)
+
+        for key, value in obj.items():
+            new_obj = recursive_unfreeze(value, return_type)
+            new_dict[key] = new_obj
+
+        if return_type is dict:
+            return new_dict
+        return return_type(new_dict)
+
+    return obj
+
+
+def recursive_freeze(obj):
+    """Transform recursively a dict into a immutable frozendict.
+
+    Args:
+        obj: the input dict
+    Returns:
+        The converted frozendict
+    """
+    if type(obj) is frozendict:
+        return copy.deepcopy(obj)
+
+    if hasattr(obj, "items"):
+        is_dict = type(obj) is dict
+        if is_dict:
+            new_dict = dict(obj)
+        for key, value in obj.items():
+            new_obj = recursive_freeze(value)
+            if is_dict:
+                new_dict[key] = new_obj
+
+        if is_dict:
+            return frozendict(new_dict)
+
+    return obj
+
+
+def recursive_substitute(value, platform, pos: Optional[List[str]] = None):
+    """Recursively substitute variables in a nested dictionary.
+
+    Substitution is mainly done on value-level, but full configuration subtrees can be
+    copied using the magic keys COPY (copies only all the values at the specified key)
+    and COPYALL (copies all the values at the specified key, nestedly).
+
+    Args:
+        value: Value to substitute macros
+        platform: The platform used to substitute values
+        pos: current path-like position in the config tree (as used for COPYALL)
+
+    Returns:
+        subsituted value
+    """
+    key_basic_copy = "COPY"
+    key_deep_copy = "COPYALL"
+
+    if pos is None:
+        pos = []
+
     if isinstance(value, dict):
+        do_basic_copy = key_basic_copy in value
+        do_deep_copy = key_deep_copy in value
+
+        if do_deep_copy or do_basic_copy:
+            key = ".".join(pos)
+            config_dict = recursive_unfreeze(platform.get_value(key))
+
+            if do_deep_copy:
+                logger.info(f"Found .{key_deep_copy} key at {key}; deep copy data.")
+                value.pop(key_deep_copy)
+            elif do_basic_copy:
+                logger.info(f"Found .{key_basic_copy} key at {key}; copy data.")
+                value.pop(key_basic_copy)
+                config_dict = {
+                    k: v for k, v in config_dict.items() if not isinstance(v, dict)
+                }
+
+            base_value = recursive_substitute(config_dict, platform)
+
+        else:
+            base_value = {}
+
+        if base_value:
+            value = merge_dicts(base_value, value)
+
         for key, val in value.items():
-            value[key] = recursive_substitute(val, platform)
+            value[key] = recursive_substitute(val, platform, pos=[*pos, key])
     else:
+        for type_name in [tuple, list]:
+            if isinstance(value, type_name):
+                value = type_name(map(platform.substitute, value))
+
         value = platform.substitute(value)
+
     return value

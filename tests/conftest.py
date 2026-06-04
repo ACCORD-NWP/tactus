@@ -1,12 +1,13 @@
 # create a mock "eccodes" module
 # this must be in conftest.py to make sure it is read first
 import sys
+from unittest.mock import Mock
 
 import numpy as np
 import pytest
 
 from tactus.config_parser import ConfigParserDefaults, ParsedConfig
-from tactus.host_actions import DeodeHost
+from tactus.host_actions import TactusHost
 
 
 class MockObject(object):
@@ -77,6 +78,13 @@ def mock_codes_release(msgid):
         del msgid[kk]
 
 
+def mock_codes_count_in_file(fileobj):
+    if fileobj.read(1):
+        return 1
+
+    return 0
+
+
 class MockKeyValueNotFoundError(Exception):
     pass
 
@@ -90,6 +98,39 @@ mock_eccodes.codes_get_values = mock_codes_get_values
 mock_eccodes.codes_release = mock_codes_release
 mock_eccodes.KeyValueNotFoundError = MockKeyValueNotFoundError
 
+# mocked functions for epygram
+mock_eccodes.codes_count_in_file = Mock(name="codes_count_in_file")
+mock_eccodes.codes_any_new_from_file = Mock(name="codes_any_new_from_file")
+mock_eccodes.codes_set = Mock(name="codes_set")
+mock_eccodes.codes_set_missing = Mock(name="codes_set_missing")
+mock_eccodes.codes_clone = Mock(name="codes_clone")
+mock_eccodes.codes_get = Mock(name="codes_get")
+mock_eccodes.codes_get_double_array = Mock(name="codes_get_double_array")
+mock_eccodes.codes_grib_new_from_samples = Mock(name="codes_grib_new_from_samples")
+mock_eccodes.codes_set_array = Mock(name="codes_set_array")
+mock_eccodes.codes_set_values = Mock(name="codes_set_values")
+mock_eccodes.codes_keys_iterator_new = Mock(name="codes_keys_iterator_new")
+mock_eccodes.codes_keys_iterator_next = Mock(name="codes_keys_iterator_next")
+mock_eccodes.codes_keys_iterator_get_name = Mock(name="codes_keys_iterator_get_name")
+mock_eccodes.codes_keys_iterator_delete = Mock(name="codes_keys_iterator_delete")
+mock_eccodes.codes_write = Mock(name="codes_write")
+mock_eccodes.codes_index_new_from_file = Mock(name="codes_index_new_from_file")
+mock_eccodes.codes_index_select = Mock(name="codes_index_select")
+mock_eccodes.codes_new_from_index = Mock(name="codes_new_from_index")
+mock_eccodes.codes_index_release = Mock(name="codes_index_release")
+
+
+# mocked exception class
+class MockCodesInternalError(Exception):
+    pass
+
+
+mock_eccodes.CodesInternalError = MockCodesInternalError
+
+
+# version attribute
+mock_eccodes.__version__ = "mock-0.0.0"
+
 sys.modules["eccodes"] = mock_eccodes
 
 
@@ -102,16 +143,16 @@ def tmp_directory(tmp_path_factory):
 @pytest.fixture(scope="module")
 def default_config(tmp_directory):
     """Return a parsed config to be used for unit tests."""
-    deode_host = DeodeHost().detect_deode_host(use_default=False)
-    if deode_host is None:
-        deode_host = "pytest"
+    tactus_host = TactusHost().detect_tactus_host(use_default=False)
+    if tactus_host is None:
+        tactus_host = "pytest"
 
     config = ParsedConfig.from_file(
         ConfigParserDefaults.PACKAGE_CONFIG_PATH,
         json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-        host=deode_host,
+        host=tactus_host,
     )
-    if deode_host == "pytest":
+    if tactus_host == "pytest":
         config = config.copy(update={"platform": {"scratch": str(tmp_directory)}})
 
     return config

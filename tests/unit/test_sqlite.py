@@ -1,9 +1,10 @@
 """unit tests for extractsqlite."""
+
 import datetime
 import os
 
 import grib2sqlite as sqlite
-import pandas
+import pandas as pd
 import pytest
 
 
@@ -22,7 +23,7 @@ class TestExtractSQLite:
     sqlite_template = "FCTABLE_{PP}_{YYYY}{MM}_{HH}.sqlite"
     fcdate = datetime.datetime.strptime("20230915T00", "%Y%m%dT%H")
 
-    model_name = "DEODE"
+    model_name = "tactus"
     weights = None
     basetime = datetime.datetime.strptime("20230915T00", "%Y%m%dT%H")
     infile_template = "mock_gribfile"
@@ -63,7 +64,7 @@ class TestExtractSQLite:
             },
         },
     ]
-    station_list = pandas.DataFrame({"lat": [0], "lon": [0], "SID": ["OK"]})
+    station_list = pd.DataFrame({"lat": [0], "lon": [0], "SID": ["OK"]})
 
     mockgrib = {
         "shortName": "t",

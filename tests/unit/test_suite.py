@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for the config file parsing module."""
+
 import os
 from contextlib import suppress
 
@@ -8,7 +9,7 @@ import pytest
 from tactus.config_parser import ParsedConfig
 from tactus.derived_variables import set_times
 from tactus.submission import TaskSettings
-from tactus.suites.deode import DeodeSuiteDefinition
+from tactus.suites.tactus import TactusSuiteDefinition
 
 
 @pytest.fixture(scope="module")
@@ -82,7 +83,7 @@ class TestSuite:
                     }
                 },
                 "platform": {
-                    "deode_home": f"{os.path.dirname(__file__)}/../..",
+                    "tactus_home": f"{os.path.dirname(__file__)}/../..",
                     "unix_group": "",
                     "mirrorglobalDT": {"remote_path": "@YYYY@/@HH@mm@"},
                 },
@@ -91,7 +92,7 @@ class TestSuite:
 
         config = config.copy(update=set_times(config))
         config = config.copy(update=param)
-        defs = DeodeSuiteDefinition(
+        defs = TactusSuiteDefinition(
             config,
             dry_run=True,
         )

@@ -1,8 +1,8 @@
 [eps.member_settings.fdb.grib_set]
-  type = "deode.eps.custom_generators.FDBTypeGenerator"
+  type = "tactus.eps.custom_generators.FDBTypeGenerator"
 
 [eps.member_settings.general]
-  famodel = "deode.eps.custom_generators.CmodelGenerator"
+  famodel = "tactus.eps.custom_generators.CmodelGenerator"
 
 [eps.member_settings.namelist_update.master.forecast.namfa]
   cmodel = "@FAMODEL@"

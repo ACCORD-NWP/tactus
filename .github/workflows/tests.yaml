@@ -14,7 +14,7 @@ on:
 
 jobs:
   tests:
-    if: github.repository_owner == 'destination-earth-digital-twins'
+    if: github.repository_owner == 'ACCORD-NWP'
     strategy:
       fail-fast: true
       matrix:
@@ -37,7 +37,7 @@ jobs:
       #           check-out repo
       #----------------------------------------------
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Set github credentials
         uses: ./.github/actions/setup-github-credentials
@@ -72,7 +72,7 @@ jobs:
 
       - name: Load cached venv (if cache exists)
         id: cached-poetry-dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: .venv
           key: ${{ github.job }}-venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml', 'poetry.toml') }}
@@ -84,12 +84,8 @@ jobs:
       - name: Install the project itself
         run: poetry install --no-interaction --only-root
 
-      #----------------------------------------------
-      #      run test suite and report coverage
-      #----------------------------------------------
       - name: Run tests
-        run: |
-          poetry run pytest -n auto
+        run: make test
 
 
       # Disable upload to codecov until/if codecov is enabled

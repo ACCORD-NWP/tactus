@@ -1,5 +1,4 @@
 [mars]
-
 [mars.atos_bologna_DT]
   default = "RD_DEFAULT"
   expver = "iekm"
@@ -105,18 +104,19 @@
   GG_skt = "235"
   GG_snow = "33/238/228038/228141"
   GG_soil = "234/173/174/43/30/29/28/27"
-  GGZ_type = "CF"
+  GGZ_type = "AN"
   grid_ML = "AV"
   ifs_cycle_length = "PT6H"
   levelist = "1/to/137"
   resolution = "9"
   SH = "152/138/155/130"
   SHZ = "129.128"
-  SHZ_type = "CF"
+  SHZ_type = "AN"
   start_date = "1900-01-01T00:00:00Z"
   start_snow_date = "2023-06-27T00:00:00Z"
   stream = "ENFO"
-  type_AN = "CF"
+  stream_control = "OPER"
+  type_AN = "FC"
   type_FC = "PF"
   UA = "133/75/76/246/247/248"
   Zlev_type = "ML"
@@ -159,7 +159,6 @@
   expver = "irok"
   GGZ_type = "CF"
   ifs_cycle_length = "PT12H"
-  ifs_cycle_start = "PT0H"
   SHZ_type = "CF"
   start_date = "2022-05-02T00:00:00Z"
   stream = "ENFO"
@@ -173,13 +172,18 @@
   GGZ_type = "CF"
   grid = "0.09/0.09"
   ifs_cycle_length = "PT12H"
-  ifs_cycle_start = "PT0H"
   resolution = "9"
   SHZ_type = "CF"
   start_date = "2022-05-02T00:00:00Z"
   stream = "ENFO"
   type_AN = "CF"
   type_FC = "PF"
+
+[mars.iyzp]
+  default = "RD_DEFAULT"
+  end_date = "2023-08-20T00:00:00Z"
+  expver = "iyzp"
+  start_date = "2023-08-20T00:00:00Z"
 
 [mars.lumi_DT]
   class = "D1"
@@ -194,6 +198,8 @@
   start_date = "2024-04-06T00:00:00Z"
   use_static_sh = true
   Zlev_type = "SFC"
+  SH = "152/138/155"
+  SH_temperature = "130"
 
 [mars.RD_DEFAULT]
   class = "RD"
@@ -207,6 +213,7 @@
   grid = "0.04/0.04"
   grid_ML = "AV"
   ifs_cycle_length = "PT24H"
+  ifs_cycle_start = "PT0H"
   levelist = "1/to/137"
   resolution = "4"
   SH = "152/138/155/130"

@@ -5,12 +5,12 @@ Describes how to select fields and output settings for fullpos. The scripting al
 The fullpos output is controlled by the following settings
 - Output interval, see [output settings](#configure-selection-of-timings-in-output-settings)
 
-- Field selection and settings for different output times is done in the fullpos main selection, `deode/namelist_generation/CYCLE/master_selection.yml`
+- Field selection and settings for different output times is done in the fullpos main selection, `tactus/namelist_generation/CYCLE/master_selection.yml`
 
 Currently it's only implemented support for a single domain using the native geometry of the domain used for the model run.
 
 ## The fullpos config files
-There are a number of  fullpos config file types under `deode/namelist_generation/fullpos/CYCLE/`
+There are a number of  fullpos config file types under `tactus/namelist_generation/fullpos/CYCLE/`
 - rules.yml sets `LEVEL_MAP` and `PARAM_MAP` and tells how settings in the selection part should be translated to settings in `NAMFPC`. Normally this does not have to be changed.
 - namfpc_header.yml where we specify the non-field related settings in NAMFPC
 - master_selection.yml where all fields and levels are specified per output type as defined by fullpos. This config file is for hourly output
@@ -85,8 +85,7 @@ The name `AROME` here is just a label. This allows to define different combinati
 The fullpos namelists can be generated from command line using
 
 ```
-deode --config-file deode/data/config_files/config.toml show namelist -t master -n forecast_bdmodel_ifs
+tactus --config-file tactus/data/config_files/config.toml show namelist -t master -n forecast_bdmodel_ifs
 ```
 
 This will produce the namelist for the forecast and as many xxt* files as has been defined in the fullpos yaml file.
-

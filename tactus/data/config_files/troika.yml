@@ -57,6 +57,16 @@ sites:
     sbatch_command: "sbatch"
     scancel_command: 'scancel -f'
 
+  fahrenheit:
+    type: slurm
+    connection: local
+    host: localhost
+    kill_sequence: [[5, 2], [10, 9]]
+    pre_submit: ["create_output_dir"]
+    preprocess: ["remove_top_blank_lines", "slurm_add_output", "slurm_bubble"]
+    sbatch_command: "sbatch"
+    scancel_command: 'scancel -f'
+
   lumi:
     type: slurm
     connection: local
@@ -86,7 +96,7 @@ sites:
     host: localhost
     kill_sequence: [[5, 2], [10, 9]]
     pre_submit: ["create_output_dir"]
-    preprocess: ["remove_top_blank_lines", "slurm_add_output", "slurm_bubble"]    
+    preprocess: ["remove_top_blank_lines", "slurm_add_output", "slurm_bubble"]
     sbatch_command: "sbatch"
     scancel_command: 'scancel -f'
 
@@ -150,6 +160,5 @@ sites:
     scancel_command: 'scancel -f'
 
   new_site:
-    type: deode
+    type: tactus
     connection: local
-

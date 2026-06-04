@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Namelist handling for MASTERODB w/SURFEX."""
+
 import ast
 import copy
 import os
@@ -17,6 +18,7 @@ from .config_parser import ConfigPaths
 from .csc_actions import SelectTstep
 from .datetime_utils import as_timedelta, oi2dt_list
 from .logs import logger
+from .os_utils import resolve_path_relative_to_package
 from .toolbox import Platform
 
 
@@ -118,6 +120,15 @@ def write_namelist(nml, output_file):
     logger.debug("Wrote: {}", output_file)
 
 
+def _resolve_namelist_path(subpath) -> Path:
+    """Resolve a config path, falling back to package-relative lookup."""
+    path = Path(subpath)
+    try:
+        return ConfigPaths.path_from_subpath(path)
+    except RuntimeError:
+        return resolve_path_relative_to_package(path)
+
+
 class InvalidNamelistKindError(ValueError):
     """Custom exception."""
 
@@ -216,10 +227,11 @@ class NamelistComparator:
                     dout[key] = dcomp[key]
             # Remove empty namelists in diffs
             if action == "diff":
-                todel = []
-                for key in dout:
-                    if isinstance(dout[key], dict) and len(dout[key]) == 0:
-                        todel.append(key)  # noqa: PERF401
+                todel = [
+                    key
+                    for key in dout
+                    if isinstance(dout[key], dict) and len(dout[key]) == 0
+                ]
                 # Delayed deletion to avoid "dictionary changed size during iteration"
                 for key in todel:
                     del dout[key]
@@ -311,7 +323,7 @@ class NamelistGenerator:
             InvalidNamelistKindError   # noqa: DAR401
 
         """
-        if kind not in ("master", "surfex"):
+        if kind not in ("master", "surfex", "gl"):
             raise InvalidNamelistKindError(kind)
 
         self.config = config
@@ -320,10 +332,23 @@ class NamelistGenerator:
         self.substitute = substitute
         self.nlcomp = NamelistComparator(config)
         self.cycle = self.config["general.cycle"]
-        self.cnfile = ConfigPaths.path_from_subpath(f"{self.cycle}/assemble_{kind}.yml")
-        self.nlfile = ConfigPaths.path_from_subpath(f"{self.cycle}/{kind}_namelists.yml")
+        self.cnfile = _resolve_namelist_path(f"{self.cycle}/assemble_{kind}.yml")
+        self.nlfile = _resolve_namelist_path(f"{self.cycle}/{kind}_namelists.yml")
         self.domain_name = self.config["domain.name"]
         self.accept_static_namelist = self.config["general.accept_static_namelists"]
+
+    def uppercase_keys(self, d):
+        """Convert the keys in a dict to uppercase.
+
+        Arguments:
+            d (dict): Dict to be parsed
+
+        Returns:
+            d (dict): The parsed dict
+        """
+        if isinstance(d, dict):
+            return {k.upper(): self.uppercase_keys(v) for k, v in d.items()}
+        return d
 
     def load_user_namelist(self):
         """Read user provided namelist.
@@ -341,11 +366,12 @@ class NamelistGenerator:
         if os.path.isfile(ref_namelist):
             logger.info("Use reference namelist {}", ref_namelist)
             nl = f90nml.read(ref_namelist)
+            nldict = to_dict(nl.todict())
             target = "user_namelist"
             # NOTE: f90nml.todict() returns OrderedDict
             #       which makes OmegaConf fail.
             #       but maybe we should consider to_dict(nl.todict()) ???
-            nldict = {target: to_dict(nl.todict())}
+            nldict = {target: self.uppercase_keys(nldict)}
             cndict = {self.target: [target]}
             found = False
         else:
@@ -368,6 +394,25 @@ class NamelistGenerator:
 
         freq = as_timedelta(arg)
         result = int(freq.seconds / tstep)
+        return f"{result}"
+
+    def fn_vsigqsat_by_gridsize(self, arg1, arg2):
+        """Resolve namelist function vsigqsat_by_gridsize.
+
+        Args:
+            arg1: VSIGQSAT reference value
+            arg2: Reference gridsize
+
+        Returns:
+            result: Scaled VSIGQSAT
+
+        """
+        xdx = self.config["domain.xdx"]
+        xdy = self.config["domain.xdy"]
+        gridsize = 0.5 * (xdx + xdy)
+
+        scaled_vsigqsat = arg1 * gridsize / float(arg2)
+        result = min(0.1, scaled_vsigqsat)
         return f"{result}"
 
     def fn_tstep(self, arg):
@@ -411,7 +456,7 @@ class NamelistGenerator:
             result = self.platform.substitute(_result)
             logger.debug("CFG INSERT: {} -> {}", arg, result)
         except KeyError:
-            result = default if default is not None else arg
+            result = default
             logger.debug("CFG UNKNOWN: {} default {}", arg, default)
         # NOTE: all values are returned as STRINGS
         #       which means you must re-interpret with find_val()
@@ -436,16 +481,19 @@ class NamelistGenerator:
         Args:
             target (str): task to generate namelists for
 
-        Raises:
-            InvalidNamelistTargetError   # noqa: DAR401
-
         Returns:
             nlres (dict): Assembled namelist
 
+        Raises:
+            InvalidNamelistTargetError   # noqa: DAR401
         """
         self.target = target
         # define OmegaConf resolvers
         OmegaConf.clear_resolvers()
+        OmegaConf.register_new_resolver(
+            "vsigqsat_by_gridsize",
+            lambda arg1, arg2: self.fn_vsigqsat_by_gridsize(arg1, arg2),
+        )
         OmegaConf.register_new_resolver("stepfreq", lambda arg: self.fn_stepfreq(arg))
         OmegaConf.register_new_resolver("steplist", lambda arg: self.fn_steplist(arg))
         OmegaConf.register_new_resolver(
@@ -564,7 +612,7 @@ class NamelistGenerator:
             self.update_from_config("all_targets")
 
         try:
-            _update = self.config["namelist_update"][self.kind][target].dict()
+            _update = self.config["namelist_update"][self.kind][target]
             # Make sure everything is in upper case
             update = {}
             for namelist, keyval in _update.items():
@@ -665,8 +713,7 @@ class NamelistIntegrator:
     def yml2dict(ymlfile):
         """Read yaml namelist file and return as dict."""
         with open(ymlfile, mode="rt", encoding="utf-8") as file:
-            ynml = yaml.safe_load(file)
-        return ynml
+            return yaml.safe_load(file)
 
     @staticmethod
     def dict2yml(nmldict, ymlfile, ordered_sections=None):
@@ -690,7 +737,7 @@ class NamelistConverter:
     @staticmethod
     def get_known_cycles():
         """Return the cycles handled by the converter."""
-        return ["CY48t2", "CY48t3", "CY49", "CY49t1", "CY49t2", "CY50t1"]
+        return ["CY48t2", "CY48t3", "CY49", "CY49t1", "CY49t2", "CY50t2"]
 
     @staticmethod
     def get_to_next_version_tnt_filenames():
@@ -700,14 +747,14 @@ class NamelistConverter:
             "cy48t2_to_cy49.yaml",  # CY48t3 to CY49
             "cy49_to_cy49t1.yaml",  # CY49   to CY49t1
             None,  # CY49t1 to CY49t2,
-            "cy50_to_cy50t1.yaml",  # CY49t2 to CY5051
+            "cy50_to_cy50t2.yaml",  # CY49t2 to CY50t2
         ]
 
     @staticmethod
     def get_tnt_files_list(from_cycle, to_cycle):
         """Return the list of tnt directive files required for the conversion."""
         # definitions of the conversion to apply between cycles
-        tnt_directives_folder = ConfigPaths.path_from_subpath("tnt_directives")
+        tnt_directives_folder = _resolve_namelist_path("tnt_directives")
 
         if from_cycle and to_cycle:
             known_cycles = NamelistConverter.get_known_cycles()
@@ -950,9 +997,7 @@ class NamelistConverter:
            SystemExit: when conversion failed
         """
         logger.info(f"Apply {tnt_directive_filename}")
-        tnt_directives_folder = ConfigPaths.path_from_subpath(
-            "tnt_directives",
-        )
+        tnt_directives_folder = _resolve_namelist_path("tnt_directives")
         command = [
             "tnt.py",
             "-d",
@@ -961,6 +1006,6 @@ class NamelistConverter:
         ]
 
         try:
-            subprocess.check_call(command)  # noqa S603
+            subprocess.check_call(command)
         except subprocess.CalledProcessError as exception:
             raise SystemExit(f"tnt failed with {exception!r}") from exception

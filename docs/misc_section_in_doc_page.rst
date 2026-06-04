@@ -45,6 +45,10 @@ Miscellaneous Documentation
    :parser: myst_parser.sphinx_
 
 .. include::
+    markdown_docs/output_overview.md
+   :parser: myst_parser.sphinx_
+
+.. include::
     markdown_docs/e923_update.md
    :parser: myst_parser.sphinx_
 
@@ -54,6 +58,10 @@ Miscellaneous Documentation
 
 .. include::
     markdown_docs/plugins.md
+   :parser: myst_parser.sphinx_
+
+.. include::
+    markdown_docs/test_runner.md
    :parser: myst_parser.sphinx_
 
 .. include::

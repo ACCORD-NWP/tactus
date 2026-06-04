@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Smoke tests."""
+
 import itertools
 import os
 import shutil
@@ -9,9 +10,9 @@ from unittest import mock
 
 import pytest
 
-from deode import GeneralConstants
+from tactus import GeneralConstants
 from tactus.__main__ import main
-from tactus.argparse_wrapper import get_parsed_args
+from tactus.argparse_wrapper import get_args_parser
 from tactus.config_parser import ConfigFileValidationError, ConfigParserDefaults
 from tactus.host_actions import HostNotFoundError
 from tactus.submission import NoSchedulerSubmission, TaskSettings
@@ -70,7 +71,18 @@ def _module_mockers(module_mocker, config_path, tmp_path_factory: pytest.TempPat
     module_mocker.patch(
         "tactus.toolbox.Platform.evaluate", new=new_platform_evaluate_function
     )
-    module_mocker.patch("tactus.suites.base.ecflow")
+
+    def _make_ecflow_node(path="/mock"):
+        node = mock.MagicMock()
+        node.get_abs_node_path.return_value = path
+        node.add_family.side_effect = lambda n: _make_ecflow_node(f"{path}/{n}")
+        node.add_task.side_effect = lambda n: _make_ecflow_node(f"{path}/{n}")
+        return node
+
+    ecflow_base_mock = module_mocker.patch("tactus.suites.base.ecflow")
+    defs_mock = mock.MagicMock()
+    defs_mock.add_suite.side_effect = lambda n: _make_ecflow_node(f"/{n}")
+    ecflow_base_mock.Defs.return_value = defs_mock
     module_mocker.patch(
         "tactus.submission.TaskSettings.parse_job",
         new=new_submission_task_settings_parse_job,
@@ -91,7 +103,7 @@ def test_cannot_run_without_arguments(argv):
 @pytest.mark.usefixtures("_module_mockers")
 def test_correct_config_is_in_use(config_path, mocker):
     mocker.patch("sys.exit")
-    args = get_parsed_args(argv=["run"])
+    args = get_args_parser().parse_args(["run"])
     assert config_path.is_file()
     assert args.config_file == config_path
 
@@ -101,15 +113,13 @@ class TestMainShowCommands:
     def test_show_config_command(self):
         with redirect_stdout(StringIO()):
             main(["show", "config"])
-            main(
-                [
-                    "show",
-                    "config",
-                    "--config-file",
-                    ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix(),
-                    "-e",
-                ]
-            )
+            main([
+                "show",
+                "config",
+                "--config-file",
+                ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix(),
+                "-e",
+            ])
 
     def test_show_config_schema_command(self):
         with redirect_stdout(StringIO()):
@@ -122,9 +132,10 @@ class TestMainShowCommands:
             for new in itertools.count():
                 yield 100 * new
 
-        with mock.patch(
-            "time.time", mock.MagicMock(side_effect=fake_time())
-        ), redirect_stdout(StringIO()):
+        with (
+            mock.patch("time.time", mock.MagicMock(side_effect=fake_time())),
+            redirect_stdout(StringIO()),
+        ):
             main(["show", "config"])
 
     def test_show_namelist_command(self, tmp_path_factory):
@@ -134,27 +145,42 @@ class TestMainShowCommands:
 
 @pytest.mark.usefixtures("_module_mockers")
 def test_run_task_command(tmp_path):
-    main(
-        [
-            "run",
-            "--task",
-            "Forecast",
-            "--template",
-            str(GeneralConstants.PACKAGE_DIRECTORY / "deode/templates/stand_alone.py"),
-            "--job",
-            f"{tmp_path.as_posix()}/forecast.job",
-            "-o",
-            f"{tmp_path.as_posix()}/forecast.log",
-        ]
-    )
+    main([
+        "run",
+        "--task",
+        "Forecast",
+        "--template",
+        str(GeneralConstants.PACKAGE_DIRECTORY / "tactus/templates/stand_alone.py"),
+        "--job",
+        f"{tmp_path.as_posix()}/forecast.job",
+        "-o",
+        f"{tmp_path.as_posix()}/forecast.log",
+        "--create-only",
+    ])
+
+
+@pytest.mark.usefixtures("_module_mockers")
+def test_remove_command(tmp_path):
+    main([
+        "remove",
+        "unexisting_file",
+    ])
 
 
 @pytest.mark.usefixtures("_module_mockers")
 def test_start_suite_command():
-    os.environ["DEODE_HOST"] = "atos_bologna"
+    os.environ["TACTUS_HOST"] = "atos_bologna"
     with suppress(FileNotFoundError, HostNotFoundError, ConfigFileValidationError):
         main(["start", "suite"])
-    del os.environ["DEODE_HOST"]
+    del os.environ["TACTUS_HOST"]
+
+
+@pytest.mark.usefixtures("_module_mockers")
+def test_replace_node_command():
+    os.environ["TACTUS_HOST"] = "atos_bologna"
+    with suppress(FileNotFoundError, HostNotFoundError, ConfigFileValidationError):
+        main(["replace", "--ecf-node", "/"])
+    del os.environ["TACTUS_HOST"]
 
 
 @pytest.mark.usefixtures("_module_mockers")
@@ -168,7 +194,7 @@ def test_integrate_namelists_command():
         "namelist",
         "integrate",
         "--namelist",
-        "deode/data/namelists/unit_testing/nl_master_base",
+        "tactus/data/namelists/unit_testing/nl_master_base",
         "--output",
         os.devnull,
     ]
@@ -183,7 +209,7 @@ def test_convert_namelists_command(tmp_path):
         "namelist",
         "convert",
         "--namelist",
-        "deode/data/namelists/unit_testing/nl_master_base.yml",
+        "tactus/data/namelists/unit_testing/nl_master_base.yml",
         "--output",
         output_yml,
         "--from-cycle",
@@ -204,7 +230,7 @@ def test_format_namelists_command(tmp_path):
         "namelist",
         "format",
         "--namelist",
-        "deode/data/namelists/unit_testing/nl_master_base.yml",
+        "tactus/data/namelists/unit_testing/nl_master_base.yml",
         "--output",
         output_yml,
         "--format",

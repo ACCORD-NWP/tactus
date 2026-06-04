@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Implement the package's commands."""
+
 import argparse
 import contextlib
 import datetime
@@ -15,11 +16,11 @@ from toml_formatter.formatter import FormattedToml
 from troika.connections.ssh import SSHConnection
 
 from . import GeneralConstants
-from .cleaning import CleanDeode
+from .cleaning import CleanTactus
 from .config_parser import BasicConfig, ConfigParserDefaults, ConfigPaths, ParsedConfig
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
 from .experiment import case_setup
-from .host_actions import DeodeHost, set_deode_home
+from .host_actions import TactusHost, set_tactus_home
 from .logs import logger
 from .namelist import (
     NamelistComparator,
@@ -30,6 +31,7 @@ from .namelist import (
 from .scheduler import EcflowServer
 from .submission import NoSchedulerSubmission, TaskSettings
 from .suites.discover_suite import get_suite
+from .tasks.discover_task import create_task_index
 from .toolbox import Platform
 
 
@@ -46,7 +48,7 @@ def ssh_cmd(host, user, cmd):
     """
     try:
         ssh_command = f'ssh {user}@{host} "{cmd}"'
-        subprocess.run(ssh_command, shell=True, check=True)  # noqa
+        subprocess.run(ssh_command, shell=True, check=True)
         logger.info("SSH command executed succesfully.")
         return True
     except subprocess.CalledProcessError as e:
@@ -61,7 +63,7 @@ class RunTaskNamespace(argparse.Namespace):
     """Namespace for the 'run' command."""
 
     task: str
-    deode_home: str
+    tactus_home: str
     task_job: Path
     output: Path
     template_job: Path
@@ -79,7 +81,7 @@ def run_task(args: RunTaskNamespace, config: ParsedConfig):
     """
     logger.info("Prepare {}...", args.task)
 
-    deode_home = set_deode_home(config, args.deode_home)
+    tactus_home = set_tactus_home(config, args.tactus_home)
 
     cwd = Path.cwd()
 
@@ -90,37 +92,25 @@ def run_task(args: RunTaskNamespace, config: ParsedConfig):
     output = cwd / Path(f"{args.task}.log") if not args.output else args.output.resolve()
     template_job = args.template_job.resolve()
 
-    config = config.copy(update={"platform": {"deode_home": deode_home}})
+    config = config.copy(update={"platform": {"tactus_home": tactus_home}})
     config = config.copy(update=set_times(config))
 
     submission_defs = TaskSettings(config)
     sub = NoSchedulerSubmission(submission_defs)
 
-    if args.members is None:
-        sub.submit(
-            task=args.task,
-            config=config,
-            template_job=template_job,
-            task_job=task_job,
-            output=output,
-            troika=args.troika,
-        )
-        logger.info("Task {} submitted.", args.task)
-    else:
-        for member in args.members:
-            # Change suffixes to include member string
-            output_ = output.with_suffix(f".mbr{member:03d}{output.suffix}")
-            task_job_ = task_job.with_suffix(f".mbr{member:03d}{task_job.suffix}")
-            sub.submit(
-                task=args.task,
-                config=config,
-                template_job=template_job,
-                task_job=task_job_,
-                output=output_,
-                member=member,
-                troika=args.troika,
-            )
-            logger.info("Task {} submitted for member {}.", args.task, member)
+    if not args.create_only:
+        create_task_index(config)
+
+    sub.submit(
+        task=args.task,
+        config=config,
+        template_job=template_job,
+        task_job=task_job,
+        output=output,
+        troika=args.troika,
+        create_only=args.create_only,
+    )
+    logger.info("Task {} submitted.", args.task)
 
 
 def create_exp(args, config):
@@ -135,7 +125,7 @@ def create_exp(args, config):
     if known_hosts_file is None:
         known_hosts_file = ConfigPaths.path_from_subpath("known_hosts.yml")
 
-    host = DeodeHost(known_hosts_file=known_hosts_file).detect_deode_host()
+    host = TactusHost(known_hosts_file=known_hosts_file).detect_tactus_host()
     output_file = args.output_file
     case = args.case
     mod_files = args.config_mods
@@ -171,13 +161,12 @@ def start_suite(args, config):
     Raises:
         SystemExit: If error occurs while transferring files.
     """
-    deode_home = set_deode_home(config, args.deode_home)
-    config = config.copy(update={"platform": {"deode_home": deode_home}})
+    tactus_home = set_tactus_home(config, args.tactus_home)
+    config = config.copy(update={"platform": {"tactus_home": tactus_home}})
     config = config.copy(update=set_times(config))
     platform = Platform(config)
     ecfvars = {
-        key: platform.substitute(val)
-        for key, val in config["scheduler.ecfvars"].dict().items()
+        key: platform.substitute(val) for key, val in config["scheduler.ecfvars"].items()
     }
     update = {"scheduler": {"ecfvars": ecfvars}}
     config = config.copy(update=update)
@@ -196,7 +185,7 @@ def start_suite(args, config):
     ecf_user = config["scheduler.ecfvars.ecf_user"]
     ecf_remoteuser = config["scheduler.ecfvars.ecf_remoteuser"]
 
-    suite_def = config.get("suite_control.suite_definition", "DeodeSuiteDefinition")
+    suite_def = config.get("suite_control.suite_definition", "TactusSuiteDefinition")
 
     logger.info("ecf_host: {}", ecf_host)
     logger.info("ecf_jobout: {}", joboutdir)
@@ -218,13 +207,13 @@ def start_suite(args, config):
     suite_name = Platform(config).substitute(suite_name)
     ecf_files_local = ecf_files
 
-    # Evaluate and update ecf_deode_home
-    ecf_deode_home = str(
+    # Evaluate and update ecf_tactus_home
+    ecf_tactus_home = str(
         Platform(config).evaluate(
-            config["scheduler.ecfvars.ecf_deode_home"], object_="tactus.os_utils"
+            config["scheduler.ecfvars.ecf_tactus_home"], object_="tactus.os_utils"
         )
     )
-    update = {"scheduler": {"ecfvars": {"ecf_deode_home": ecf_deode_home}}}
+    update = {"scheduler": {"ecfvars": {"ecf_tactus_home": ecf_tactus_home}}}
     config = config.copy(update=update)
 
     # Get the troika config file - in case defined in ecfvars, use that to allow
@@ -247,7 +236,7 @@ def start_suite(args, config):
     )
 
     server = EcflowServer(config, start_command=args.start_command)
-    if args.def_file == "":
+    if not args.def_file:
         defs = get_suite(suite_def, config)
         def_file = f"{suite_name}.def"
         defs.save_as_defs(def_file)
@@ -288,7 +277,7 @@ def start_suite(args, config):
             logger.info("Failed to execute SSH command.")
 
         try:
-            subprocess.run(copy_cmd, check=True)  # noqa
+            subprocess.run(copy_cmd, check=True)
             logger.info("Files transferred successfully.")
         except subprocess.CalledProcessError as e:
             logger.info(f"Error occurred: {e}")
@@ -311,9 +300,10 @@ def start_suite(args, config):
             logger.info("Troika file transferred successfully.")
         except subprocess.CalledProcessError as e:
             logger.info(f"Error occurred transferring Troika: {e}")
-            raise SystemExit("Copying {temp_troika_config_file} FAILED.") from e
+            raise SystemExit(f"Copying {temp_troika_config_file} FAILED.") from e
         logger.info("--- File copying to Ecflow server DONE ---")
 
+    create_task_index(config)
     server.start_suite(suite_name, def_file)
     logger.info("Done with suite.")
 
@@ -324,7 +314,7 @@ def start_suite(args, config):
 #########################################
 # Code related to the "show *" commands #
 #########################################
-def doc_config(args, config: ParsedConfig):  # noqa ARG001
+def doc_config(args, config: ParsedConfig):
     """Implement the 'doc_config' command.
 
     Args:
@@ -333,10 +323,8 @@ def doc_config(args, config: ParsedConfig):  # noqa ARG001
 
     """
     now = datetime.datetime.now().isoformat(timespec="seconds")
-    sys.stdout.write(
-        f"""The following section was automatically generated running
-        `deode doc config` on {now}.\n\n"""
-    )
+    sys.stdout.write(f"""The following section was automatically generated running
+        `tactus doc config` on {now}.\n\n""")
     sys.stdout.write(config.json_schema.get_markdown_doc() + "\n")
 
 
@@ -364,8 +352,8 @@ def show_config(args, config):
     )
 
     if args.expand_config:
-        deode_home = set_deode_home(config)
-        config = config.copy(update={"platform": {"deode_home": deode_home}})
+        tactus_home = set_tactus_home(config)
+        config = config.copy(update={"platform": {"tactus_home": tactus_home}})
         config = config.expand_macros(True)
 
     try:
@@ -380,7 +368,7 @@ def show_config(args, config):
         sys.stdout.write(str(dumps) + "\n")
 
 
-def show_config_schema(args, config):  # noqa ARG001
+def show_config_schema(args, config):
     """Implement the `show config-schema` command.
 
     Args:
@@ -392,7 +380,7 @@ def show_config_schema(args, config):  # noqa ARG001
     sys.stdout.write(str(config.json_schema) + "\n")
 
 
-def show_host(args, config):  # noqa ARG001
+def show_host(args, config):
     """Implement the `show host` command.
 
     Args:
@@ -400,10 +388,10 @@ def show_host(args, config):  # noqa ARG001
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
-    dh = DeodeHost()
-    logger.info("Current host: {}", dh.detect_deode_host())
+    tactus_host = TactusHost()
+    logger.info("Current host: {}", tactus_host.detect_tactus_host())
     logger.info("Known hosts (host, recognition method):")
-    for host, pattern in dh.known_hosts.items():
+    for host, pattern in tactus_host.known_hosts.items():
         logger.info("{:>16}   {}", host, pattern)
 
 
@@ -414,9 +402,7 @@ def remove_cases(args, config):  # ARG001
         return False
 
     # Fetch the remove config
-    cleaning_config = config.get("remove")
-    if not isinstance(cleaning_config, dict):
-        cleaning_config = cleaning_config.dict()
+    cleaning_config = config.get_as_dict("remove")
     defaults = cleaning_config.get("defaults")
     cleaning_config.pop("defaults")
 
@@ -433,8 +419,8 @@ def remove_cases(args, config):  # ARG001
         platform = Platform(case_config)
 
         # Loop over the different section in the remove config
-        for section, settings in cleaning_config.items():
-            logger.info(settings)
+        for section, original_settings in cleaning_config.items():
+            settings = dict(original_settings)
             if section != "main" and not case_config.get(
                 f"impact.{section}.active", False
             ):
@@ -442,7 +428,7 @@ def remove_cases(args, config):  # ARG001
 
             logger.info("Remove for section:{}", section)
 
-            suite_name = settings.get("suite_name", None)
+            suite_name = settings.get("suite_name")
             remove_from_scheduler = settings.get("remove_from_scheduler", False)
             remove_not_completed_suites = (
                 settings.get("remove_not_completed_suites", False) or args.force_remove
@@ -479,24 +465,31 @@ def remove_cases(args, config):  # ARG001
                 with contextlib.suppress(KeyError):
                     settings.pop(key)
 
-            cleaner = CleanDeode(case_config, defaults)
+            cleaner = CleanTactus(case_config, defaults)
             dry_run = not args.execute_removal
             cleaner.prep_cleaning(settings, dry_run=dry_run)
             cleaner.clean()
-
             if suite_name is not None and remove_from_scheduler:
                 if dry_run:
                     logger.info(" would have removed suite {}", suite_name)
+                    for directory in server.get_ecf_vars(this_suite):
+                        if os.path.isdir(directory):
+                            logger.info(
+                                " would have removed ecflow directory {}", directory
+                            )
+
                 else:
                     try:
-                        EcflowServer(case_config).remove_suites(
-                            [suite_name], check_if_complete=False
-                        )
+                        server.remove_suites([suite_name], check_if_complete=False)
                     except (ModuleNotFoundError, UnboundLocalError):
                         logger.warning(
-                            "ecflow or config not found, suite {} not removed", suite_name
+                            "ecflow or config not found, suite {} not removed",
+                            suite_name,
                         )
-        logger.info("\n\nRerun with '--execute-removal' to do the actual removal\n")
+            if dry_run:
+                logger.info(
+                    "\n\nRerun with '--execute-removal' to do the actual removal\n"
+                )
 
     return True
 
@@ -513,8 +506,8 @@ def show_namelist(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
-    deode_home = set_deode_home(config, args.deode_home)
-    config = config.copy(update={"platform": {"deode_home": deode_home}})
+    tactus_home = set_tactus_home(config, args.tactus_home)
+    config = config.copy(update={"platform": {"tactus_home": tactus_home}})
     config = config.copy(update=set_times(config))
     config = config.copy(update=derived_variables(config))
 
@@ -532,10 +525,10 @@ def show_namelist(args, config):
     logger.info("Printing namelist in use to file {}", namelist_name)
 
 
-def show_paths(args, config):  # noqa ARG001
+def show_paths(args, config):
     """Implement the 'show_paths' command."""
-    dh = DeodeHost()
-    ConfigPaths.print(args.config_file, dh.detect_deode_host())
+    tactus_host = TactusHost()
+    ConfigPaths.print(args.config_file, tactus_host.detect_tactus_host())
 
 
 def namelist_integrate(args, config):
@@ -603,7 +596,7 @@ def namelist_integrate(args, config):
     NamelistIntegrator.dict2yml(nml, Path(args.output))
 
 
-def namelist_convert(args, config: ParsedConfig):  # noqa ARG001
+def namelist_convert(args, config: ParsedConfig):
     """Implement the 'namelist convert' command.
 
     Args:
@@ -635,7 +628,7 @@ def namelist_convert(args, config: ParsedConfig):  # noqa ARG001
         raise SystemExit(f"Format {args.format} not handled")
 
 
-def namelist_format(args, config: ParsedConfig):  # noqa ARG001
+def namelist_format(args, config: ParsedConfig):
     """Implement the 'namelist format' command.
 
     Args:
@@ -660,3 +653,116 @@ def namelist_format(args, config: ParsedConfig):  # noqa ARG001
         NamelistConverter.convert_ftn(args.namelist, args.output, None, None)
     else:
         raise SystemExit(f"Format {args.format} not handled")
+
+
+def replace_node(args, config):
+    """Implement the 'replace' command.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+        config (.config_parser.ParsedConfig): Parsed config file contents.
+
+    """
+    tactus_home = set_tactus_home(config, args.tactus_home)
+    config = config.copy(update={"platform": {"tactus_home": tactus_home}})
+    config = config.copy(update=set_times(config))
+    platform = Platform(config)
+    ecfvars = {
+        key: platform.substitute(val) for key, val in config["scheduler.ecfvars"].items()
+    }
+    update = {"scheduler": {"ecfvars": ecfvars}}
+    config = config.copy(update=update)
+
+    logger.info("Starting suite...")
+    logger.info("Config file: {}", args.config_file)
+    logger.info("Ecflow settings: ")
+
+    # Assign Ecfvars
+    joboutdir = config["scheduler.ecfvars.ecf_jobout"]
+    ecf_files = config["scheduler.ecfvars.ecf_files"]
+    ecf_files_remotely = config["scheduler.ecfvars.ecf_files_remotely"]
+    ecf_home = config["scheduler.ecfvars.ecf_home"]
+    ecf_host = config["scheduler.ecfvars.ecf_host"]
+    ecf_port = config["scheduler.ecfvars.ecf_port"]
+    ecf_user = config["scheduler.ecfvars.ecf_user"]
+    ecf_remoteuser = config["scheduler.ecfvars.ecf_remoteuser"]
+
+    suite_def = config.get("suite_control.suite_definition", "TactusSuiteDefinition")
+
+    logger.info("ecf_host: {}", ecf_host)
+    logger.info("ecf_jobout: {}", joboutdir)
+    logger.info("ecf_files: {}", ecf_files)
+    logger.info("ecf_files_remotely: {}", ecf_files_remotely)
+    logger.info("ecf_home: {}", ecf_home)
+    logger.info("ecf_user: {}", ecf_user)
+    logger.info("ecf_remoteuser: {}", ecf_remoteuser)
+    logger.info("suite definition: {}", suite_def)
+
+    os.environ["ECF_HOST"] = ecf_host
+    os.environ["ECF_PORT"] = str(ecf_port)
+    if ecf_user:
+        os.environ["ECF_USER"] = ecf_user
+
+    server = EcflowServer(config)
+
+    suite_name = config["general.case"]
+    node_path = args.node_path
+    suite_name = Platform(config).substitute(suite_name)
+    ecf_files_local = ecf_files
+
+    config = config.copy(update={"general": {"case": suite_name}})
+    server = EcflowServer(config)
+    if not args.def_file:
+        defs = get_suite(suite_def, config)
+        def_file = f"{suite_name}.def"
+        defs.save_as_defs(def_file)
+    else:
+        def_file = args.def_file
+        if os.path.exists(def_file):
+            args.keep_def_file = True
+        else:
+            defs = get_suite(suite_def, config)
+            defs.save_as_defs(def_file)
+        logger.info("Replace node {} from def file: {}", node_path, def_file)
+
+    # Clean, then copy troika and containers
+    srv = f"{ecf_remoteuser}@{ecf_host}"
+    src = f"{ecf_files_local}/{suite_name}"
+    dst = f"{srv}:{ecf_files_remotely}/"
+
+    if ecf_files_local != ecf_files_remotely:
+        logger.info("--- SSL protocol for remote Ecflow server detected ---")
+        logger.info("--- Copying job files to remote server ---")
+        logger.info("Copy ecflow files from : {} to: {}", src, dst)
+
+        # Clean command
+        del_cmd = f"rm -rf {ecf_files_remotely}/{suite_name}"
+
+        # Copy command
+        copy_cmd = [
+            "rsync",
+            "-az",
+            src,
+            dst,
+        ]
+
+        # Try cleaning and copying commands. If it fails, then stop with message
+        if ssh_cmd(ecf_host, ecf_remoteuser, del_cmd):
+            logger.info("SSH command successful.")
+        else:
+            logger.info("Failed to execute SSH command.")
+
+        try:
+            subprocess.run(copy_cmd, check=True)
+            logger.info("Files transferred successfully.")
+        except subprocess.CalledProcessError as e:
+            logger.info(f"Error occurred: {e}")
+            raise SystemExit("Copying ecf files to ecflow server FAILED.") from e
+
+        logger.info("--- File copying to Ecflow server DONE ---")
+
+    server.replace_node(node_path, def_file)
+    logger.info("Replaced node {}", node_path)
+
+    if not args.keep_def_file:
+        os.remove(def_file)

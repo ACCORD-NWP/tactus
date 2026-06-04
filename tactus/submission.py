@@ -10,9 +10,8 @@ from typing import Optional
 from tactus.config_parser import ParsedConfig
 from tactus.derived_variables import derived_variables
 from tactus.logs import logger
-from tactus.os_utils import deodemakedirs
-from tactus.plugin import DeodePluginRegistryFromConfig
-from tactus.tasks.discover_task import available_tasks
+from tactus.os_utils import tactusmakedirs
+from tactus.tasks.discover_task import load_task_index
 from tactus.toolbox import FileManager, Platform
 
 
@@ -30,22 +29,22 @@ class ProcessorLayout:
         """
         self.wrapper = kwargs.get("WRAPPER")
         self.nproc = kwargs.get("NPROC")
-        if self.nproc == "":
+        if not self.nproc:
             self.nproc = None
         if isinstance(self.nproc, str):
             self.nproc = int(self.nproc)
         self.nproc_io = kwargs.get("NPROC_IO")
-        if self.nproc_io == "":
+        if not self.nproc_io:
             self.nproc_io = None
         if isinstance(self.nproc_io, str):
             self.nproc_io = int(self.nproc_io)
         self.nprocx = kwargs.get("NPROCX")
-        if self.nprocx == "":
+        if not self.nprocx:
             self.nprocx = None
         if isinstance(self.nprocx, str):
             self.nprocx = int(self.nprocx)
         self.nprocy = kwargs.get("NPROCY")
-        if self.nprocy == "":
+        if not self.nprocy:
             self.nprocy = None
         if isinstance(self.nprocy, str):
             self.nprocy = int(self.nprocy)
@@ -57,9 +56,12 @@ class ProcessorLayout:
         nproc_io = self.nproc_io
         nprocx = self.nprocx
         nprocy = self.nprocy
-        procs.update(
-            {"nproc": nproc, "nproc_io": nproc_io, "nprocx": nprocx, "nprocy": nprocy}
-        )
+        procs.update({
+            "nproc": nproc,
+            "nproc_io": nproc_io,
+            "nprocx": nprocx,
+            "nprocy": nprocy,
+        })
         return procs
 
     def get_wrapper(self):
@@ -83,7 +85,7 @@ class TaskSettings(object):
              config(tactus.ParserdConfig): Configuration
         """
         self.config = config
-        self.submission_defs = self.config["submission"].dict()
+        self.submission_defs = self.config.get_as_dict("submission")
         self.job_type = None
         self.processor_layout = None
 
@@ -295,7 +297,7 @@ class TaskSettings(object):
         logger.debug(interpreter)
         dir_name = task_job.resolve().parent
 
-        deodemakedirs(dir_name, unixgroup=self.unix_group)
+        tactusmakedirs(dir_name, unixgroup=self.unix_group)
 
         with open(task_job, mode="w", encoding="utf-8") as file_handler:
             file_handler.write("#!/bin/bash\n")
@@ -312,6 +314,9 @@ class TaskSettings(object):
             for b_setting in batch_settings.values():
                 file_handler.write(f"{b_setting}\n")
 
+            if scheduler is None:
+                nproc_io = self.get_task_settings(task, "NPROC_IO")
+                file_handler.write(f'export NPROC_IO="{nproc_io}"\n')
             if scheduler is not None and scheduler == "ecflow":
                 ecf_vars = [
                     "ECF_HOST",
@@ -325,13 +330,14 @@ class TaskSettings(object):
                     "VALIDTIME",
                     "LOGLEVEL",
                     "ARGS",
+                    "FP_PRECISION",
                     "WRAPPER",
                     "NPROC",
                     "NPROC_IO",
                     "NPROCX",
                     "NPROCY",
                     "CONFIG",
-                    "DEODE_HOME",
+                    "TACTUS_HOME",
                     "KEEP_WORKDIRS",
                     "MEMBER",
                 ]
@@ -378,9 +384,9 @@ class TaskSettings(object):
             if scheduler is None:
                 file_handler.write(f'export STAND_ALONE_TASK_NAME="{task}"\n')
 
-                deode_home = self.platform.get_platform_value("DEODE_HOME")
+                tactus_home = self.platform.get_platform_value("TACTUS_HOME")
 
-                file_handler.write(f'export STAND_ALONE_DEODE_HOME="{deode_home}"\n')
+                file_handler.write(f'export STAND_ALONE_TACTUS_HOME="{tactus_home}"\n')
                 config_file = config.metadata["source_file_path"]
 
                 file_handler.write(f'export STAND_ALONE_TASK_CONFIG="{config_file!s}"\n')
@@ -411,7 +417,8 @@ class NoSchedulerSubmission:
         task_job: Path,
         output: Path,
         member: Optional[int] = None,
-        troika: str = "troika",
+        troika: Optional[str] = "troika",
+        create_only: Optional[bool] = False,
     ):
         """Submit task.
 
@@ -424,12 +431,13 @@ class NoSchedulerSubmission:
             member      (int, optional): Member number for which to submit job.
                 Defaults to None.
             troika      (str, optional): troika binary. Defaults to "troika".
+            create_only: (bool, optional): Only create the job, do not submit it.
 
         Raises:
             RuntimeError: Submission failure.
         """
         name = task.lower()
-        if name not in available_tasks(DeodePluginRegistryFromConfig(config)):
+        if name not in load_task_index(config):
             raise NotImplementedError(f"Task {name} not implemented")
 
         troika_config = Platform(config).get_value("troika.config_file")
@@ -449,11 +457,12 @@ class NoSchedulerSubmission:
             member=member,
             scheduler=None,
         )
-        cmd = (
-            f"{troika} -c {troika_config} submit {self.task_settings.job_type} "
-            f"{task_job} -o {output}"
-        )
-        try:
-            subprocess.check_call(cmd.split())  # noqa S603
-        except subprocess.CalledProcessError as exc:
-            raise RuntimeError(f"Submission failed with {exc!r}") from exc
+        if not create_only:
+            cmd = (
+                f"{troika} -c {troika_config} submit {self.task_settings.job_type} "
+                f"{task_job} -o {output}"
+            )
+            try:
+                subprocess.check_call(cmd.split())
+            except subprocess.CalledProcessError as exc:
+                raise RuntimeError(f"Submission failed with {exc!r}") from exc

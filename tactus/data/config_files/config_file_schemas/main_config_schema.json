@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Config",
-  "description": "Model for validation of `deode`'s main config file.",
+  "description": "Model for validation of `tactus`'s main config file.",
   "type": "object",
   "additionalProperties": true,
   "properties": {
@@ -16,6 +16,9 @@
     },
     "system": {
       "$ref": "#/definitions/system"
+    },
+    "compile": {
+      "$ref": "#/definitions/compile"
     },
     "boundaries": {
       "$ref": "#/definitions/boundaries"
@@ -39,7 +42,9 @@
       "$ref": "#/definitions/gribmodify"
     }
   },
-  "required": ["general"],
+  "required": [
+    "general"
+  ],
   "definitions": {
     "include": {
       "title": "Include Section",
@@ -49,13 +54,13 @@
     },
     "troika": {
       "title": "Troika",
-      "description": "DEODE system specific path settings",
+      "description": "TACTUS system specific path settings",
       "type": "object",
       "properties": {
         "config_file": {
           "type": "string",
           "description": "Troika config file",
-          "default": "@DEODE_HOME@/data/config_files/troika.yml"
+          "default": "@TACTUS_HOME@/data/config_files/troika.yml"
         },
         "troika": {
           "type": "string",
@@ -94,11 +99,11 @@
           "type": "string",
           "format": "duration"
         },
-	"lbc_per_task": {
-	  "description": "Number of LBCs processed in a single task",
-	  "type": "number",
-	  "default": 7
-	},
+        "lbc_per_task": {
+          "description": "Number of LBCs processed in a single task",
+          "type": "number",
+          "default": 7
+        },
         "max_interpolation_tasks": {
           "description": "Number of interpolate tasks run in parallel",
           "type": "number"
@@ -106,13 +111,20 @@
         "bdmodel": {
           "description": "Coupling model",
           "default": "ifs",
-          "enum": ["lam", "ifs"],
+          "enum": [
+            "lam",
+            "ifs"
+          ],
           "type": "string"
         },
         "bdmodel_sfx": {
           "description": "SURFEX prep input file",
           "default": "from_grib",
-          "enum": ["from_grib", "from_fa", "from_nc"],
+          "enum": [
+            "from_grib",
+            "from_fa",
+            "from_nc"
+          ],
           "type": "string"
         },
         "sstmodels": {
@@ -128,7 +140,11 @@
         "sst_is_lsm": {
           "description": "Switch for using SST as LSM",
           "default": "auto",
-          "enum": ["lsm", "sst", "auto"],
+          "enum": [
+            "lsm",
+            "sst",
+            "auto"
+          ],
           "type": "string"
         },
         "humi_gp": {
@@ -177,7 +193,8 @@
                 "iit7",
                 "ilv7",
                 "is6g",
-                "irok"
+                "irok",
+                "iyzp"
               ]
             },
             "bdmember": {
@@ -200,6 +217,24 @@
         "bd_has_surfex": {
           "description": "Set to true if the host model runs with surfex",
           "type": "boolean"
+        },
+        "do_slaf": {
+          "description": "Set to true if using the SLAF scheme for ensemble member boundary files",
+          "type": "boolean"
+        },
+        "slaflag": {
+          "description": "SLAF shift of boundary initial time. E.g. 'PT3H' would mean use 3H old(er) boundaries",
+          "type": "string",
+          "format": "duration"
+        },
+        "slafdiff": {
+          "description": "SLAF difference of boundary initial times. E.g. 'PT6H' would mean a 6H difference",
+          "type": "string",
+          "format": "duration"
+        },
+        "slafk": {
+          "description": "SLAF difference scaling factor",
+          "type": "number"
         }
       }
     },
@@ -251,26 +286,8 @@
       "decription": "Option for cleaning old data",
       "type": "object",
       "properties": {
-        "ehype_data_period": {
-          "description": "Age for old ehype data in days",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
-          "default": "P14D"
-        },
-        "scratch_data_period": {
-          "description": "Age for old data in days",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
-          "default": "P14D"
-        },
-        "suites_period": {
-          "description": "Age for old data in days",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
-          "default": "P14D"
-        },
-        "IFS_period": {
-          "description": "Age for old data in days",
+        "cases_period": {
+          "description": "Age for old cases in days",
           "type": "string",
           "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
           "default": "P7D"
@@ -280,25 +297,26 @@
           "type": "array",
           "default": []
         },
-        "suite_format": {
-          "decription": "Format of path to ecf files",
-          "type": "string",
-          "default": "/"
-        },
-        "scratch_format": {
-          "decription": "Format of path to scratch",
-          "type": "string",
-          "default": "/"
-        },
-        "ifs_format": {
-          "decription": "Format of path to IFS",
-          "type": "string",
-          "default": "/IFS/(\\d{4})/(0[1-9]|1[0-2])/(0[1-9]|[12]\\d|3[01])/([01]\\d|2[0-3])"
-        },
         "scratch_ext": {
-          "decription": "Extention of cratche for operational user.",
+          "decription": "Extention of scratch for operational user.",
           "type": "string",
-          "default": "deode"
+          "default": "tactus"
+        },
+        "force_delete_period": {
+          "decription": "ISO-8601 duration string used to determine the fallback age of a suite for deletion if its files are missing. Defaults to approximately one year ('P365D').",
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
+          "default": "P365D"
+        },
+        "dw_case_prefixes": {
+          "decription": "List of prefixes of the daily runs",
+          "type": "array",
+          "default": [
+            "AUTOMATED_RUN",
+            "HARMONIE_AROME",
+            "AROME",
+            "ALARO"
+          ]
         }
       }
     },
@@ -332,7 +350,7 @@
         "config_path": {
           "title": "Path to fullpos config files",
           "type": "string",
-          "default": "@DEODE_HOME@/data/namelist_generation_input/@CYCLE@/fullpos"
+          "default": "@TACTUS_HOME@/data/namelist_generation_input/@CYCLE@/fullpos"
         },
         "main": {
           "description": "List of mandatory rules",
@@ -340,7 +358,10 @@
           "items": {
             "type": "string"
           },
-          "default": ["rules", "namfpc_header"]
+          "default": [
+            "rules",
+            "namfpc_header"
+          ]
         },
         "selection": {
           "description": "List of selections to include",
@@ -368,7 +389,12 @@
         "suite_definition": {
           "description": "Suite definition to play in EcFlow",
           "type": "string",
-          "default": "DeodeSuiteDefinition"
+          "default": "TactusSuiteDefinition"
+        },
+        "compile": {
+          "description": "Compile IAL source code",
+          "type": "boolean",
+          "default": false
         },
         "do_creategrib_static": {
           "description": "Activate grib conversion for static files",
@@ -386,7 +412,11 @@
         "mode": {
           "description": "Choose a strategy to achieve initial/initial_sfx files (start:  start from interpolated files and then propagate the FG between cycles, restart: start from a previous run and then propagate the FG between cycles, cold_start: always start from interpolated files).",
           "type": "string",
-          "enum": ["start", "restart", "cold_start"]
+          "enum": [
+            "start",
+            "restart",
+            "cold_start"
+          ]
         },
         "interpolate_boundaries": {
           "description": "Activates the boundary interpolation",
@@ -466,49 +496,21 @@
           "type": "boolean",
           "default": false
         },
+        "mirror_suite": {
+          "description": "Mirror system.host_suite and trigger when the PostMortem task is completed",
+          "type": "boolean",
+          "default": false
+        },
         "max_static_data_tasks": {
           "description": "Limit for max number of monthly tasks, run at same time",
           "type": "integer",
           "default": 10
-        },
-        "DeodeCleaningSuiteDefinition": {
-          "decription": "Settings for Cleaning Suite",
-          "type": "object",
-          "properties": {
-            "do_clean_scratch_data": {
-              "description": "Activate cleaning the scratch data",
-              "type": "boolean",
-              "default": true
-            },
-            "do_clean_suites": {
-              "description": "Activate cleaning the suites",
-              "type": "boolean",
-              "default": true
-            },
-            "do_clean_IFS": {
-              "description": "Activate cleaning IFS data",
-              "type": "boolean",
-              "default": true
-            },
-            "days_in_week": {
-              "description": "List of days when cleaning suite will run, 0-6 Sunday-Saturday",
-              "type": "array",
-              "items": {
-                "type": "integer"
-              }
-            },
-            "time_to_run": {
-              "description": "Time to run",
-              "type": "string",
-              "pattern": "^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$"
-            }
-          }
         }
       }
     },
     "system": {
       "title": "System",
-      "description": "DEODE system specific path settings",
+      "description": "TACTUS system specific path settings",
       "type": "object",
       "properties": {
         "forecast_dir_link": {
@@ -588,7 +590,7 @@
         "namelists": {
           "type": "string",
           "description": "Path to static namelists",
-          "default": "@DEODE_HOME@/data/namelists/@CYCLE@"
+          "default": "@TACTUS_HOME@/data/namelists/@CYCLE@"
         },
         "global_sfcdir": {
           "type": "string",
@@ -614,10 +616,96 @@
           "description": "Path to the c903 json config file",
           "default": "@CYCLE@/c903.json"
         },
+        "e923_input_definition": {
+          "type": "string",
+          "description": "Path to the e923 json config file",
+          "default": "@CYCLE@/e923.json"
+        },
         "e927_input_definition": {
           "type": "string",
           "description": "Path to the e927 json config file",
           "default": "@CYCLE@/e927.json"
+        },
+        "sys_name": {
+          "type": "string",
+          "description": "System/package name (typically matching PACKAGE_NAME) used when resolving paths.",
+          "default": "tactus"
+        }
+      }
+    },
+    "compile": {
+      "title": "Compilation configuration",
+      "type": "object",
+      "properties": {
+        "ial_dir": {
+          "type": "string",
+          "description": "Local path to IAL source dir",
+          "default": "@CASEDIR@/IAL"
+        },
+        "ial_git_repo": {
+          "type": "string",
+          "description": "Git repo for IAL source",
+          "default": "git@github.com:ACCORD-NWP/IAL"
+        },
+        "git_token": {
+          "type": "string",
+          "description": "Git token for IAL source access",
+          "default": ""
+        },
+        "ial_git_branch": {
+          "type": "string",
+          "description": "Branch/tag",
+          "default": "develop"
+        },
+        "arch": {
+          "type": "string",
+          "description": "Compiler configuration",
+          "default": "source/ial-source/bundle/arch/ecmwf/hpc2020"
+        },
+        "dir": {
+          "type": "string",
+          "description": "Directory where compilation will occur",
+          "default": "@CASEDIR@/bundle"
+        },
+        "bundle_update": {
+          "type": "boolean",
+          "description": "whether to update bundle_file with another bundle",
+          "default": true
+        },
+        "update_bundle_file": {
+          "type": "string",
+          "description": "bundle used for compiling binaries",
+          "default": "@TACTUS_HOME@/data/compilation/@CYCLE@/bundle.yml"
+        },
+        "bundle_file": {
+          "type": "string",
+          "description": "bundle used for compiling binaries",
+          "default": "@CASEDIR@/IAL/bundle/bundle.yml"
+        },
+        "ninja": {
+          "type": "boolean",
+          "description": "whether to use ninja for compilation",
+          "default": false
+        },
+        "skip_build": {
+          "type": "boolean",
+          "description": "whether to skip build step",
+          "default": false
+        },
+        "clean_build": {
+          "type": "boolean",
+          "description": "whether to clean build folder before compilation",
+          "default": false
+        },
+        "cache": {
+          "type": "boolean",
+          "description": "whether to use chache build/install folders",
+          "default": false
+        },
+        "cache_dir": {
+          "type": "string",
+          "description": "whether to use chache build/install folders",
+          "default": "@REFERENCE_DATA@/bundle_cache"
         }
       }
     },
@@ -825,23 +913,35 @@
             {
               "anyOf": [
                 {
-                  "required": ["start"],
+                  "required": [
+                    "start"
+                  ],
                   "not": {
-                    "required": ["list"]
+                    "required": [
+                      "list"
+                    ]
                   }
                 },
                 {
-                  "required": ["basetime"],
+                  "required": [
+                    "basetime"
+                  ],
                   "not": {
                     "anyOf": [
                       {
-                        "required": ["end"]
+                        "required": [
+                          "end"
+                        ]
                       },
                       {
-                        "required": ["list"]
+                        "required": [
+                          "list"
+                        ]
                       },
                       {
-                        "required": ["start"]
+                        "required": [
+                          "start"
+                        ]
                       }
                     ]
                   }
@@ -849,14 +949,20 @@
               ]
             },
             {
-              "required": ["list"],
+              "required": [
+                "list"
+              ],
               "not": {
                 "anyOf": [
                   {
-                    "required": ["start"]
+                    "required": [
+                      "start"
+                    ]
                   },
                   {
-                    "required": ["end"]
+                    "required": [
+                      "end"
+                    ]
                   }
                 ]
               }
@@ -869,9 +975,9 @@
         },
         "case": {
           "description": "Experiment name",
-          "default": "deode_case",
+          "default": "tactus_case",
           "type": "string",
-	        "pattern": "^[^0-9][^.]*$"
+          "pattern": "^[^0-9][^.]*$"
         },
         "member_str": {
           "description": "String identifier of a member in the ensemble",
@@ -894,14 +1000,20 @@
         "loglevel": {
           "description": "Logger output level",
           "type": "string",
-          "enum": ["CRITICAL", "ERROR", "DEBUG", "INFO", "WARNING"]
+          "enum": [
+            "CRITICAL",
+            "ERROR",
+            "DEBUG",
+            "INFO",
+            "WARNING"
+          ]
         },
         "e923_optional_sections": {
           "description": "Option to include/exclude part 5 and 6 of e923. Set to '[5,6]' to retain traditional climate files.",
           "type": "array",
-	  "default": [],
+          "default": [],
           "items": {
-                "type": "integer"
+            "type": "integer"
           }
         },
         "surfex": {
@@ -916,30 +1028,26 @@
           "description": "CSC",
           "default": "AROME",
           "type": "string",
-          "enum": ["AROME", "ALARO", "HARMONIE_AROME"]
+          "enum": [
+            "AROME",
+            "ALARO",
+            "HARMONIE_AROME"
+          ]
         },
         "cycle": {
           "description": "IAL cycle",
           "type": "string",
-          "enum": ["CY50t1", "CY49t2", "CY48t3", "CY46h1"]
-        },
-        "event_type": {
-          "description": "Type of extreme event",
-          "type": "string",
-          "default": "nwp",
           "enum": [
-            "airquality",
-            "convection",
-            "flooding",
-            "heatwave",
-            "nwp",
-            "storm"
+            "CY50t2",
+            "CY49t2",
+            "CY48t3",
+            "CY46h1"
           ]
         },
-	"famodel": {
-	  "description": "faModelName for handling grib output settings. Needed to specify encodings of ensemble members as well as sub-hourly outputs. Do not replace default name.",
-	  "type": "string"
-	},
+        "famodel": {
+          "description": "faModelName for handling grib output settings. Needed to specify encodings of ensemble members as well as sub-hourly outputs. Do not replace default name.",
+          "type": "string"
+        },
         "initfile": {
           "description": "Initial file for the forecast object. Normally no need to provide unless there are special requirements or the forecast object is used in stand alone mode.",
           "type": "string"
@@ -1017,11 +1125,16 @@
         "surfex_sea_ice": {
           "description": "Treatment of sea ice in surfex",
           "type": "string",
-          "enum": ["sice", "none"],
+          "enum": [
+            "sice",
+            "none"
+          ],
           "default": "sice"
         }
       },
-      "required": ["times"]
+      "required": [
+        "times"
+      ]
     }
   },
   "$output_setting_rules": {

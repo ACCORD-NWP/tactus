@@ -7,12 +7,12 @@ def get_domain(config) -> Dict[str, Any]:
     """Read and return domain data.
 
     Args:
-        config (deode.ParsedConfig): Configuration from which we get the domain data
+        config (tactus.ParsedConfig): Configuration from which we get the domain data
     Returns:
         Dictionary containing the domain
     """
     # Get domain specs
-    domain = {
+    return {
         "nlon": config["domain.nimax"],
         "nlat": config["domain.njmax"],
         "latc": config["domain.xlatcen"],
@@ -23,5 +23,3 @@ def get_domain(config) -> Dict[str, Any]:
         "xdy": config["domain.xdy"],
         "gsize": config["domain.xdx"],
     }
-
-    return domain

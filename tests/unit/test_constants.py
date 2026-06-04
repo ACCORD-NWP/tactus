@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Tests for the QuasiConstant class and related elements."""
+
 import uuid
 
 import pytest
@@ -7,7 +8,7 @@ import pytest
 from tactus.aux_types import QuasiConstant
 
 
-@pytest.fixture()
+@pytest.fixture
 def constants():
     class ConstantDefinitions(QuasiConstant):
         FOO = "foo"
@@ -46,7 +47,9 @@ def test_sets_become_frozen(constants):
 
 
 def test_mappings_become_locked(constants):
-    with pytest.raises(TypeError, match="object does not support item assignment"):
+    with pytest.raises(
+        TypeError, match=".*frozendict.*object do.*t support item assignment"
+    ):
         constants.MAPPING["foo"]["bar"]["baz"] = "fred"
 
 

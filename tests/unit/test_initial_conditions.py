@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 import tomlkit
 
-from deode import GeneralConstants
+from tactus import GeneralConstants
 from tactus.derived_variables import set_times
 from tactus.initial_conditions import InitialConditions
 
@@ -41,12 +41,11 @@ def parsed_config(request, tmp_directory, default_config):
             intp_bddir = "{tmp_directory}"
             archive = "{tmp_directory}"
         [platform]
-            deode_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
+            tactus_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
         """
     )
 
-    config = config.copy(update=config_patch)
-    return config
+    return config.copy(update=config_patch)
 
 
 @pytest.fixture(params=[True, False])
@@ -62,7 +61,7 @@ def set_mode(request):
 @pytest.mark.parametrize(
     "param",
     [
-        {"general": {"deode_home": str(GeneralConstants.PACKAGE_DIRECTORY)}},
+        {"general": {"tactus_home": str(GeneralConstants.PACKAGE_DIRECTORY)}},
         {
             "file_templates": {
                 "initfile": {"archive": "@INTP_BDDIR@/@HISTORY_TEMPLATE@"},

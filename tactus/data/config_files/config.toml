@@ -1,9 +1,9 @@
 [general]
   accept_static_namelists = false
-  case = "@CASE_PREFIX@@CYCLE@_@CSC@_@EVENT_TYPE@_@DOMAIN@_@YMD_START@"
+  case = "@CASE_PREFIX@@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@"
   cnmexp = "DEOD"
   csc = "AROME"
-  cycle = "CY49t2"
+  cycle = "CY50t2"
   famodel = "destine-@CYCLE@-@CSC@-oper"
   keep_workdirs = true
   surfex = true
@@ -28,14 +28,18 @@
   bdmodel = "ifs"
   bdshift = "PT0H"
   bdshift_sfx = "PT0H"
+  do_slaf = false
   humi_gp = true
   max_interpolation_tasks = 10
+  slafdiff = "PT0H"
+  slafk = 1.0
+  slaflag = "PT0H"
   sst_is_lsm = "auto"
   sstmodels = ["IFS"]
 
 [boundaries.ifs]
   bdmember = []
-  selection = "@HOST@_DT"
+  selection = "HRES"
 
 [boundaries.lam]
 
@@ -49,6 +53,10 @@
   tarname = "StaticData"
   task_logs = "@CLIMDIR@"
 
+[compile]
+  ial_git_repo = "git@github.com:ACCORD-NWP/IAL"
+  ial_git_branch = "develop"
+
 [fullpos]
   config_path = "@CYCLE@/fullpos"
   domain_name = "DOMAIN"
@@ -58,7 +66,7 @@
 
 [gribmodify]
   conversions = ["fullpos"]
-  gribmodify_rules_file = "@DEODE_HOME@/data/gribmodify/gribmodify_rules.json"
+  gribmodify_rules_file = "@TACTUS_HOME@/data/gribmodify/gribmodify_rules.json"
 
 [gribmodify.fullpos.1]
   output_name = "tirf"
@@ -67,20 +75,20 @@
   output_name = "tsnowp"
 
 [gribmodify.fullpos.3]
-  output_name = "tp"
-
-[gribmodify.fullpos.4]
   output_name = "10si"
 
+[gribmodify.fullpos.4]
+  output_name = "ws"
+
 [gribmodify.fullpos.5]
-  output_name = "100si"
+  minimum_frequency = "PT1H"
+  output_name = "max_i10fg"
 
 [gribmodify.fullpos.6]
-  minimum_frequency = "PT1H"
-  output_name = "10fg"
+  output_name = "2d"
 
 [gribmodify.fullpos.7]
-  output_name = "2d"
+  output_name = "utci"
 
 [include]
   archiving = "include/archiving/@HOST@.toml"
@@ -91,11 +99,11 @@
   extractsqlite = "include/sqlite.toml"
   fdb = "include/fdb.toml"
   file_templates = "include/file_templates.toml"
-  impact = "include/impact.toml"
   json2tab = "include/json2tab.toml"
   macros = "include/macros.toml"
   mars = "include/mars_settings.toml"
   platform = "include/platform_paths/@HOST@.toml"
+  reference_checker = "include/reference_checker.toml"
   remove = "include/remove.toml"
   scheduler = "include/scheduler/ecflow_@HOST@.toml"
   submission = "include/submission/@HOST@.toml"
@@ -110,6 +118,7 @@
   create_static_data = true
   create_time_dependent_suite = true
   do_archiving = true
+  compile = true
   do_cleaning = true
   do_extractsqlite = true
   do_interpolsstsic = true
@@ -131,7 +140,7 @@
   bddir = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
   bddir_sfx = "@BDDIR@"
   bddir_sst = "@BDDIR@"
-  casedir = "@SCRATCH@/deode/@CASE@"
+  casedir = "@SCRATCH@/@SYS_NAME@/@CASE@"
   climdir = "@CASEDIR@/climate/@DOMAIN@"
   logs = "@ARCHIVE_ROOT@/logs"
   prev_case = "@CASE@"

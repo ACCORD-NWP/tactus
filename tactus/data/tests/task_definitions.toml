@@ -1,0 +1,12 @@
+[cases.cy49t2_alaro]
+  tasks = ["Forecast", "Pgd", "C903"]
+
+[cases.cy49t2_alaro.modifs.general.times]
+  end = "2025-11-27T00:00:00Z"
+  start = "2025-11-27T00:00:00Z"
+
+[cases.cy49t2_alaro.modifs.system]
+  case_data = "@TEST_DATA_PATH@/cy49t2_alaro"
+  climdir = "@CASE_DATA@"
+  intp_bddir = "@CASE_DATA@"
+  intp_bddir_sfx = "@CASE_DATA@"

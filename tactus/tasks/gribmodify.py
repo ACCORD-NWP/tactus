@@ -8,6 +8,7 @@ from contextlib import ExitStack
 from itertools import product
 
 import numpy as np
+from utci import utci_function
 
 from ..datetime_utils import as_datetime, as_timedelta
 from ..logs import logger
@@ -119,6 +120,7 @@ class AddCalculatedFields(Task):
         Args:
             param: parameter dictionary,
             fname: grib file
+
         Returns:
             bool: True if field exists
         """
@@ -141,9 +143,7 @@ class AddCalculatedFields(Task):
                 gid = eccodes.codes_grib_new_from_file(f_in)
                 if gid is None:
                     break
-                keys = {
-                    key: self.safe_codes_get(gid, key) for key, value in param.items()
-                }
+                keys = {key: self.safe_codes_get(gid, key) for key in param}
                 keys_sorted = dict(sorted(keys.items()))
                 grib_vals_hash = hash(str(keys_sorted.values()))
                 if grib_vals_hash not in self.toc[fname][keys_hash]:
@@ -174,6 +174,7 @@ class AddCalculatedFields(Task):
             param: parameter dictionary,
             fname: main grib file
             additional_files: list of additional grib files
+
         Returns:
             bool: True if field exists in any file
         """
@@ -330,6 +331,12 @@ class AddCalculatedFields(Task):
                     physical_range,
                     nature_weighting=False,
                 )
+            elif operation == "utci":
+                if len(params) != 5:
+                    raise ValueError("Model must have 5 components!")
+                # Order of input parameters must be strictly: 2t, mrt, 2r, 10u, 10v
+                result_values = utci_function.utci(*values_list)
+
             else:
                 raise NotImplementedError(
                     "Operation {} not implemented yet.".format(operation)
@@ -448,9 +455,11 @@ class AddCalculatedFields(Task):
         tile_fraction_values = np.zeros((num_tiles, len(values_list[0])))
         tile_fraction_bitmaps = np.zeros((num_tiles, len(values_list[0])), dtype=bool)
         physical_parameter_values = np.zeros((num_tiles, num_layers, len(values_list[0])))
-        physical_parameter_bitmaps = np.zeros(
-            (num_tiles, num_layers, len(values_list[0]))
-        )
+        physical_parameter_bitmaps = np.zeros((
+            num_tiles,
+            num_layers,
+            len(values_list[0]),
+        ))
 
         # Populate arrays with values and bitmaps
         for tile_index, tile in enumerate(tiles):
@@ -503,12 +512,12 @@ class AddCalculatedFields(Task):
                         physical_parameter_value,
                         0,
                     )
-                physical_parameter_values[
-                    tile_index, layer_index
-                ] = physical_parameter_value
-                physical_parameter_bitmaps[
-                    tile_index, layer_index
-                ] = physical_parameter_bitmap
+                physical_parameter_values[tile_index, layer_index] = (
+                    physical_parameter_value
+                )
+                physical_parameter_bitmaps[tile_index, layer_index] = (
+                    physical_parameter_bitmap
+                )
                 layer_weight_array[tile_index, layer_index] = np.where(
                     tile_fraction_bitmap != physical_parameter_bitmap, 0, layer_weight
                 )  # Sets the layer weight to 0 if the tile fraction
@@ -591,6 +600,11 @@ class AddCalculatedFields(Task):
                     self.csc,
                 )
                 continue
+            if self.output_settings.get(filetype) is None:
+                logger.info(
+                    "Skipping as output_settings for filtype={} is not defined", filetype
+                )
+                continue
             file_handle = FileManager.create_list(
                 self,
                 self.basetime,
@@ -612,14 +626,12 @@ class AddCalculatedFields(Task):
             config_modify_rules = self.config["gribmodify"][filetype]
 
             for validtime, fname in file_handle.items():
-                compute_list.append(
-                    {
-                        "validtime": validtime,
-                        "fname": fname,
-                        "modify_rules": modify_rules,
-                        "config_modify_rules": config_modify_rules,
-                    }
-                )
+                compute_list.append({
+                    "validtime": validtime,
+                    "fname": fname,
+                    "modify_rules": modify_rules,
+                    "config_modify_rules": config_modify_rules,
+                })
 
         # Loop over computations to be executed for this task
         for items in compute_list[self.tasknr :: self.ntasks]:

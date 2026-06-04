@@ -8,13 +8,17 @@ import re
 import sys
 from typing import Any, Union
 
+import boto3
 import geohash
+import tomlkit
+from botocore.exceptions import ClientError
+from isodate import parse_duration
 from troika.connections.ssh import SSHConnection
 
 from .csc_actions import SelectTstep
 from .datetime_utils import as_datetime, get_decade, oi2dt_list
 from .logs import logger
-from .os_utils import deodemakedirs
+from .os_utils import tactusmakedirs
 
 
 class ArchiveError(Exception):
@@ -54,7 +58,7 @@ class Provider:
         """
         target_dir = os.path.dirname(target)
         if not os.path.isdir(target_dir) and len(target_dir) > 0:
-            deodemakedirs(target_dir, unixgroup=self.unix_group)
+            tactusmakedirs(target_dir, unixgroup=self.unix_group)
 
     def create_resource(self, resource):
         """Create the resource.
@@ -146,7 +150,7 @@ class Platform:
         """Fill each of the macros."""
         group_macros = f"{macro_config}.group_macros"
         for source in self.config.get(group_macros, []):
-            for macro, val in self.config[source].dict().items():
+            for macro, val in self.config.get_as_dict(source).items():
                 self.store_macro(macro.upper(), val)
 
         os_macros = f"{macro_config}.os_macros"
@@ -161,6 +165,7 @@ class Platform:
     def fill_macros(self):
         """Fill the macros."""
         self.macros = {}
+
         for macro in self.config["macros.select"]:
             self.fill_each_macro(f"macros.select.{macro}")
 
@@ -171,7 +176,7 @@ class Platform:
             dict: Macros to define.
 
         """
-        return list(self.config["system"].dict().keys())
+        return list(self.config.get_as_dict("system").keys())
 
     def get_os_macros(self):
         """Get the environment macros.
@@ -264,26 +269,24 @@ class Platform:
             NotImplementedError: If provider not defined.
 
         """
-        # TODO handle platform differently archive etc
-        if provider_id == "symlink":
-            return LocalFileSystemSymlink(self.config, target, fetch=fetch)
+        providers = {
+            "symlink": LocalFileSystemSymlink,
+            "copy": LocalFileSystemCopy,
+            "move": LocalFileSystemMove,
+            "ecfs": ECFS,
+            "fdb": FDB,
+            "scp": SCP,
+            "s3": S3,
+        }
 
-        if provider_id == "copy":
-            return LocalFileSystemCopy(self.config, target, fetch=fetch)
+        try:
+            provider_cls = providers[provider_id]
+        except KeyError:
+            raise NotImplementedError(
+                f"Provider for {provider_id} not implemented"
+            ) from None
 
-        if provider_id == "move":
-            return LocalFileSystemMove(self.config, target, fetch=fetch)
-
-        if provider_id == "ecfs":
-            return ECFS(self.config, target, fetch=fetch)
-
-        if provider_id == "fdb":
-            return FDB(self.config, target, fetch=fetch)
-
-        if provider_id == "scp":
-            return SCP(self.config, target, fetch=fetch)
-
-        raise NotImplementedError(f"Provider for {provider_id} not implemented")
+        return provider_cls(self.config, target, fetch=fetch)
 
     def sub_value(self, pattern, key, value, micro="@", ci=True):
         """Substitute the value case-insensitively.
@@ -306,6 +309,10 @@ class Platform:
         if micro_key == pattern:
             # No pattern substitution, simply use the value
             res = value
+
+            # Unwrap tomlkit items
+            if isinstance(res, tomlkit.items.Item):
+                res = res.unwrap()
         else:
             if not isinstance(value, str):
                 logger.debug(
@@ -385,6 +392,36 @@ class Platform:
 
         return pattern
 
+    def substitute_duration(self, pattern, duration, prefix=""):
+        """Substitute duration related properties.
+
+        Args:
+            pattern (str): _description_
+            duration(duration object): duration to treat
+            prefix (str): Add before key
+
+        Returns:
+            str: Substituted string.
+
+        """
+        total_seconds = duration.total_seconds()
+
+        substitution_map = {
+            "IN_DAYS": int(total_seconds // (24 * 60 * 60)),
+            "IN_HOURS": int(total_seconds // (60 * 60)),
+            "IN_MINUTES": int(total_seconds // 60),
+            "IN_SECONDS": total_seconds,
+        }
+        for key, val in substitution_map.items():
+            _key = prefix + key
+            pattern = self.sub_value(pattern, _key, val)
+
+            # If this is no longer a string we've done the substitution
+            if not isinstance(pattern, str):
+                return pattern
+
+        return pattern
+
     def substitute_tstep(self, pattern):
         """Substitute tstep.
 
@@ -450,6 +487,22 @@ class Platform:
             RuntimeError: In case of erroneous macro
 
         """
+        # Unwrap tomlkit items
+        if isinstance(pattern, tomlkit.items.Item):
+            pattern = pattern.unwrap()
+
+        if isinstance(pattern, (list, tuple)):
+            return [
+                self.substitute(
+                    p,
+                    basetime=basetime,
+                    validtime=validtime,
+                    bd_index=bd_index,
+                    keyval=keyval,
+                )
+                for p in pattern
+            ]
+
         if not isinstance(pattern, str):
             return pattern
 
@@ -471,7 +524,7 @@ class Platform:
         for sub_pattern in sub_patterns:
             with contextlib.suppress(KeyError):
                 if "." in sub_pattern:
-                    val = self.config.get(sub_pattern.lower())
+                    val = self.config.get(sub_pattern.lower(), None)
                     if val is None:
                         continue
                 else:
@@ -485,6 +538,10 @@ class Platform:
                 logger.debug("before replace macro={} pattern={}", sub_pattern, pattern)
                 pattern = self.sub_value(pattern, sub_pattern, val)
                 logger.debug("after replace macro={} pattern={}", sub_pattern, pattern)
+
+        # If this is no longer a string we've done the substitution
+        if not isinstance(pattern, str) or "@" not in pattern:
+            return pattern
 
         # LBC number handling
         with contextlib.suppress(KeyError):
@@ -532,10 +589,12 @@ class Platform:
             pattern = self.sub_value(pattern, "LM", f"{lm:02d}")
             pattern = self.sub_value(pattern, "LS", f"{ls:02d}")
 
-            tstep = self.config["domain.tstep"]
+            tstep = self.config.get("domain.tstep", None)
             tstep = self.substitute_tstep(tstep)
+
             try:
-                tstep = int(tstep)
+                if tstep is not None:
+                    tstep = int(tstep)
             except ValueError:
                 tstep = self.evaluate(tstep, SelectTstep)
 
@@ -552,6 +611,13 @@ class Platform:
             if end is not None:
                 pattern = self.substitute_datetime(pattern, as_datetime(end), "_END")
 
+        forecast_range = self.config.get("general.times.forecast_range", None)
+        if isinstance(forecast_range, str):
+            forecast_range = parse_duration(forecast_range)
+
+        if forecast_range is not None:
+            pattern = self.substitute_duration(pattern, forecast_range, "FORECAST_RANGE_")
+
         logger.debug("Return pattern={}", pattern)
         return pattern
 
@@ -565,15 +631,15 @@ class Platform:
                 module. If a class, the command is assumed to be a method of
                 the class.
 
+        Returns:
+            any: Return original command string if it is not a function call,
+                otherwise return the result of the function call.
+
         Raises:
             ModuleNotFoundError: If module `object_` not found
             AttributeError: If module/class `object_` has no attribute named `func`
             TypeError: If object is not a class or a string
             TypeError: If the command to evaluate is not a function
-
-        Returns:
-            any: Return original command string if it is not a function call,
-                otherwise return the result of the function call.
         """
         # Check if command string is a function call
         if not isinstance(command_string, str):
@@ -614,7 +680,7 @@ class Platform:
 class FileManager:
     """FileManager class.
 
-    Default DEODE provider.
+    Default tactus provider.
 
     Platform specific.
 
@@ -650,13 +716,12 @@ class FileManager:
             check_archive (bool, optional): Also check archive. Defaults to False.
             provider_id (str, optional): Provider ID. Defaults to "symlink".
 
-        Raises:
-            ProviderError: "No provider found for {target}"
-            NotImplementedError: "Checking archive not implemented yet"
-
         Returns:
             tuple: provider, resource
 
+        Raises:
+            ProviderError: "No provider found for {target}"
+            NotImplementedError: "Checking archive not implemented yet"
         """
         destination = LocalFileOnDisk(
             self.config, destination, basetime=basetime, validtime=validtime
@@ -839,7 +904,9 @@ class FileManager:
             )
 
             logger.debug(
-                "Set output for target={} to destination={}", sub_target, sub_destination
+                "Set output for target={} to destination={}",
+                sub_target,
+                sub_destination,
             )
 
             logger.info("Checking archive provider_id {}", provider_id)
@@ -925,6 +992,7 @@ class FileManager:
             forecast_range (datetime.datetime): forecast range,
             input_template (str): Input template,
             output_settings (str): Output settings
+
         Returns:
             dict: dict of validates and grib fiels
         """
@@ -967,7 +1035,7 @@ class LocalFileSystemSymlink(Provider):
         if self.fetch:
             if os.path.exists(self.identifier):
                 logger.info("ln -sf {} {} ", self.identifier, resource.identifier)
-                os.system(f"ln -sf {self.identifier} {resource.identifier}")  # noqa S605
+                os.system(f"ln -sf {self.identifier} {resource.identifier}")
                 return True
 
             logger.warning("File is missing {} ", self.identifier)
@@ -975,7 +1043,7 @@ class LocalFileSystemSymlink(Provider):
 
         if os.path.exists(resource.identifier):
             logger.info("ln -sf {} {} ", resource.identifier, self.identifier)
-            os.system(f"ln -sf {resource.identifier} {self.identifier}")  # noqa S605
+            os.system(f"ln -sf {resource.identifier} {self.identifier}")
             return True
 
         logger.warning("File is missing {} ", resource.identifier)
@@ -1010,7 +1078,7 @@ class LocalFileSystemCopy(Provider):
             if os.path.exists(self.identifier):
                 self.create_missing_dir(resource.identifier)
                 logger.info("cp {} {} ", self.identifier, resource.identifier)
-                os.system(f"cp {self.identifier} {resource.identifier}")  # noqa S605
+                os.system(f"cp {self.identifier} {resource.identifier}")
                 return True
 
             logger.warning("File is missing {} ", self.identifier)
@@ -1019,7 +1087,7 @@ class LocalFileSystemCopy(Provider):
         if os.path.exists(resource.identifier):
             self.create_missing_dir(self.identifier)
             logger.info("cp {} {} ", resource.identifier, self.identifier)
-            os.system(f"cp {resource.identifier} {self.identifier}")  # noqa S605
+            os.system(f"cp {resource.identifier} {self.identifier}")
             return True
 
         logger.warning("File is missing {} ", resource.identifier)
@@ -1054,7 +1122,7 @@ class LocalFileSystemMove(Provider):
             if os.path.exists(self.identifier):
                 self.create_missing_dir(resource.identifier)
                 logger.info("mv {} {} ", self.identifier, resource.identifier)
-                os.system(f"mv {self.identifier} {resource.identifier}")  # noqa S605
+                os.system(f"mv {self.identifier} {resource.identifier}")
                 return True
 
             logger.warning("File is missing {} ", self.identifier)
@@ -1063,7 +1131,7 @@ class LocalFileSystemMove(Provider):
         if os.path.exists(resource.identifier):
             self.create_missing_dir(self.identifier)
             logger.info("mv {} {} ", resource.identifier, self.identifier)
-            os.system(f"mv {resource.identifier} {self.identifier}")  # noqa S605
+            os.system(f"mv {resource.identifier} {self.identifier}")
             return True
 
         logger.warning("File is missing {} ", resource.identifier)
@@ -1123,14 +1191,10 @@ class ECFS(ArchiveProvider):
         # TODO: Address the noqa check disablers
         if self.fetch:
             logger.info("ecp -pu {} {}", self.identifier, resource.identifier)
-            os.system(
-                f"ecp -pu {self.identifier} {resource.identifier}"  # noqa S605, E800
-            )
+            os.system(f"ecp -pu {self.identifier} {resource.identifier}")
         else:
             logger.info("ecp -pu {} {}", resource.identifier, self.identifier)
-            os.system(
-                f"ecp -pu {resource.identifier} {self.identifier}"  # noqa S605, E800
-            )
+            os.system(f"ecp -pu {resource.identifier} {self.identifier}")
         return True
 
 
@@ -1153,12 +1217,11 @@ class SCP(ArchiveProvider):
         Args:
             resource (Resource): Resource.
 
-        Raises:
-            RuntimeError: If directory is not created
-
         Returns:
             bool: True if success
 
+        Raises:
+            RuntimeError: If directory is not created
         """
         # Assumes self.identifier=host:full_file_path
         remote_host, remote_file = str(self.identifier).split(":")
@@ -1216,11 +1279,7 @@ class FDB(ArchiveProvider):
             RuntimeError: If user is not allowed to archive for this expver
         """
         user = os.environ["USER"]
-        expver_restrictions = self.config["fdb.expver_restrictions"]
-
-        # Convert to dictionary if necessary
-        if hasattr(expver_restrictions, "dict"):
-            expver_restrictions = expver_restrictions.dict()
+        expver_restrictions = self.config.get_as_dict("fdb.expver_restrictions")
 
         # Iterate over items in expver_restrictions
         for key, value in expver_restrictions.items():
@@ -1265,7 +1324,7 @@ class FDB(ArchiveProvider):
 
         """
         rules = self.config.get("fdb.negative_rules", {})
-        grib_set = dict(self.config["fdb.grib_set"])
+        grib_set = self.config.get("fdb.grib_set")
         if "expver" not in grib_set:
             msg = """
             Please set expver in the config section fdb.grib_set before archiving to FDB
@@ -1286,15 +1345,13 @@ class FDB(ArchiveProvider):
             temp2 = f"{filename}_temp2.grib"
             rules_file = "temp_rules"
             self._write_rules_file(rules_file, rules, neg="!")
-            os.system(
-                f"grib_filter {rules_file} {resource.identifier} -o {temp1}"  # noqa S605
-            )
-            set_values = ",".join(
-                [f"{key}={value}" for key, value in grib_set.items() if value != ""]
-            )
+            os.system(f"grib_filter {rules_file} {resource.identifier} -o {temp1}")
+            set_values = ",".join([
+                f"{key}={value}" for key, value in grib_set.items() if value
+            ])
             cmd_for_grib = "grib_set -s " + set_values + f" {temp1} {temp2}"
             logger.debug(cmd_for_grib)
-            os.system(cmd_for_grib)  # noqa S605
+            os.system(cmd_for_grib)
             with open(temp2, "rb") as infile:
                 self.fdb.archive(infile.read())
             self.fdb.flush()
@@ -1306,7 +1363,7 @@ class FDB(ArchiveProvider):
                 inv_rules_file = "inv_temp_rules"
                 self._write_rules_file(inv_rules_file, rules, oper=" || ")
                 os.system(
-                    f"grib_filter {inv_rules_file} {resource.identifier} -o {inv_temp1}"  # noqa S605
+                    f"grib_filter {inv_rules_file} {resource.identifier} -o {inv_temp1}"
                 )
                 if os.path.isfile(inv_temp1):
                     logger.info("Created file with non archived fields as {}", inv_temp1)
@@ -1344,6 +1401,74 @@ def compute_georef(domain_config):
     return geohash.encode(longitude=lon_center, latitude=lat_center, precision=6)
 
 
+class S3(ArchiveProvider):
+    """Transfer data with S3."""
+
+    def __init__(self, config, pattern, fetch=True):
+        """Construct S3 provider.
+
+        Args:
+            config (deode.ParsedConfig): Configuration
+            pattern (str): Filepattern
+            fetch (bool, optional): Fetch the data. Defaults to True.
+        """
+        ArchiveProvider.__init__(self, config, pattern, fetch=fetch)
+
+    def create_resource(self, resource):
+        """Create the resource.
+
+        Args:
+            resource (Resource): Resource.
+
+        Returns:
+            bool: True if success
+
+        Raises:
+            RuntimeError: If resource is not created
+
+        """
+        if "s3_endpoint_url" in self.config["system"]:
+            s3_endpoint_url = self.config["system.s3_endpoint_url"]
+        else:
+            raise RuntimeError(
+                "Error creating S3 provider, system.s3_endpoint_url missing in config"
+            )
+
+        try:
+            s3 = boto3.client("s3", endpoint_url=s3_endpoint_url)
+        except ClientError as e:
+            raise RuntimeError(
+                f"Error '{e}' creating S3 client for s3_endpoint_url={s3_endpoint_url}"
+            ) from None
+
+        if self.fetch:
+            logger.debug("s3 src={} to dst={}", self.identifier, resource.identifier)
+            parts = self.identifier.split("/")
+            s3_bucket_name = parts[0]
+            file_name = "/".join(parts[1:])
+            local_dir = os.path.dirname(resource.identifier)
+            if not os.path.isdir(local_dir):
+                os.makedirs(local_dir, mode=0o755, exist_ok=True)
+                logger.info("Created local directory {}", local_dir)
+            logger.debug(
+                "s3 download, s3_bucket_name={}, file_name={}, resource.identifier={}",
+                s3_bucket_name,
+                file_name,
+                resource.identifier,
+            )
+            s3.download_file(s3_bucket_name, file_name, resource.identifier)
+        else:
+            logger.debug("s3 src={} to dst={}", resource.identifier, self.identifier)
+            parts = self.identifier.split("/")
+            s3_bucket_name = parts[0]
+            file_name = "/".join(parts[1:])
+            # This is untested (Arcus is read only)
+            response = s3.upload_file(resource.identifier, s3_bucket_name, file_name)
+            logger.debug("s3 upload, response={}", response)
+
+        return True
+
+
 class Resource:
     """Resource container."""
 
@@ -1351,7 +1476,7 @@ class Resource:
         """Construct resource.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            _config (tactus.ParsedConfig): Configuration
             identifier (str): Resource identifier
 
         """

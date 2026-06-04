@@ -1,12 +1,11 @@
 """CollectLogs."""
 
-
 import os
 import tarfile
 
 from tactus.archive import Archive
 from tactus.logs import logger
-from tactus.os_utils import Search, deodemakedirs
+from tactus.os_utils import Search, tactusmakedirs
 from tactus.tasks.base import Task
 
 
@@ -32,7 +31,7 @@ class CollectLogs(Task):
         self.task_logs = collectlogs["task_logs"]
         self.parent = os.path.dirname(self.joboutdir)
         self.target = os.path.basename(self.joboutdir)
-        if self.target == "":
+        if not self.target:
             self.target = "."
         self.tarfile = f"{self.wrk}/{self.tarname}.tar.gz"
         self.do_archiving = (
@@ -61,7 +60,7 @@ class CollectLogs(Task):
         if os.path.exists(parent):
             os.chdir(parent)
             files = Search.find_files(target, pattern=pattern, fullpath=True)
-            if exclude != "":
+            if exclude:
                 files = [x for x in files if exclude not in x]
             for f in files:
                 tarlog.add(f)
@@ -71,7 +70,7 @@ class CollectLogs(Task):
 
     def execute(self):
         """Execute collect logs ."""
-        deodemakedirs(self.logs, unixgroup=self.unix_group)
+        tactusmakedirs(self.logs, unixgroup=self.unix_group)
 
         # Create the tarfile
         logger.info("Create {}", self.tarfile)

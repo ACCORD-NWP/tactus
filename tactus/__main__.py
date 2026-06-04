@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Program's entry point."""
+
 import contextlib
+import sys
 
 from . import GeneralConstants
-from .argparse_wrapper import get_parsed_args
+from .argparse_wrapper import get_args_parser
 from .config_parser import ConfigParserDefaults, ConfigPaths, ParsedConfig
-from .host_actions import DeodeHost
+from .host_actions import TactusHost
 from .logs import LoggerHandlers, log_elapsed_time, logger
 
 # Enable logger if the project is being used as an application
@@ -15,10 +17,18 @@ logger.enable(GeneralConstants.PACKAGE_NAME)
 @log_elapsed_time()
 def main(argv=None):
     """Program's main routine."""
-    args = get_parsed_args(argv=argv)
+    if argv is None:
+        argv = sys.argv[1:]
 
-    # Evaluate deode host and config paths
-    deode_host = DeodeHost().detect_deode_host()
+    args = get_args_parser().parse_args(argv)
+
+    # Commands that manage their own config (e.g. "test") skip standard config loading
+    if getattr(args, "standalone_command", False):
+        args.run_command(args=args)
+        return
+
+    # Evaluate tactus host and config paths
+    tactus_host = TactusHost().detect_tactus_host()
     with contextlib.suppress(AttributeError):
         if args.config_data_dir is not None:
             for config_data_dir in args.config_data_dir[::-1]:
@@ -26,7 +36,7 @@ def main(argv=None):
     config = ParsedConfig.from_file(
         args.config_file,
         json_schema=ConfigParserDefaults.MAIN_CONFIG_JSON_SCHEMA,
-        host=deode_host,
+        host=tactus_host,
     )
 
     with contextlib.suppress(KeyError):
