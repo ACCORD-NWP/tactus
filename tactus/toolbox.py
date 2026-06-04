@@ -11,6 +11,7 @@ from typing import Any, Union
 import boto3
 import geohash
 import tomlkit
+import subprocess
 from botocore.exceptions import ClientError
 from isodate import parse_duration
 from troika.connections.ssh import SSHConnection
@@ -1500,3 +1501,72 @@ class LocalFileOnDisk(Resource):
         platform = Platform(config)
         identifier = platform.substitute(pattern, basetime=basetime, validtime=validtime)
         Resource.__init__(self, config, identifier)
+
+
+class RemoteHost():
+    """Remote host."""
+
+    def __init__(self, host_name, remote_user=None):
+        self.host_name = host_name
+        self.remote_user = remote_user
+
+    def send_file_to_with_ssh(self, local_file, remote_file):
+        """Send a file to remote host via SSH.
+
+        Args:
+            local_file (str): Path to local file
+            remote_file (str): Path to remote file
+
+        Raises:
+            RuntimeError: If an error occurs during file transfer
+        """
+        cfg = {"host": self.host_name}
+        ssh = SSHConnection(cfg, self.remote_user)
+        # Use ssh for single files (troika)
+        try:
+            ssh.sendfile(local_file, remote_file)
+            logger.info("local file transferred successfully.")
+        except subprocess.CalledProcessError as e:
+            raise RuntimeError("Error occurred transferring local file") from e
+
+    def rsync_directory_with_ssh(self, local_directory, remote_directory):
+        """Rsync a directory to remote host via SSH.
+
+        Args:
+            local_directory (str): Path to local directory
+            remote_directory (str): Path to remote directory
+        """
+        rsync_command = f"rsync -az {local_directory} " + \
+                        f"{self.remote_user}    @{self.host_name}:{remote_directory}"
+        self._ssh_cmd(rsync_command, shell=True, check=True)
+        logger.info("Directory transferred successfully with rsync.")
+
+    def _ssh_cmd(self, cmd, shell=True, check=True):
+        """SSH to remote server and execute basic commands.
+
+        Args:
+            cmd: Command to be executed
+            shell: Whether to execute the command through the shell
+            check: Whether to check the command's return code
+
+        Raises:
+            RuntimeError: If an error occurs when executing the command
+        """
+        try:
+            ssh_command = f'ssh {self.remote_user}@{self.host_name} "{cmd}"'
+            subprocess.run(ssh_command, shell=shell, check=check)  # noqa: S602
+            logger.info("SSH command executed successfully.")
+        except subprocess.CalledProcessError as e:
+            raise RuntimeError("Error occurred when executing command") from e
+
+    def clean_remote_directory_with_ssh(self, remote_directory):
+        """Clean a remote directory via SSH.
+
+        Args:
+            remote_directory (str): Path to remote directory to be cleaned
+        """
+        # Clean command
+        del_cmd = f"rm -rf {remote_directory}"
+
+        # Remove directory
+        self._ssh_cmd(del_cmd)

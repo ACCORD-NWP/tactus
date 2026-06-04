@@ -5,7 +5,6 @@ import argparse
 import contextlib
 import datetime
 import os
-import subprocess
 import sys
 from functools import partial
 from pathlib import Path
@@ -13,7 +12,6 @@ from typing import List, Optional
 
 import yaml
 from toml_formatter.formatter import FormattedToml
-from troika.connections.ssh import SSHConnection
 
 from . import GeneralConstants
 from .cleaning import CleanTactus
@@ -28,35 +26,10 @@ from .namelist import (
     NamelistGenerator,
     NamelistIntegrator,
 )
-from .scheduler import EcflowServer
+from .scheduler import EcflowServerFromConfig, EcflowEnvironmentFromConfig, TroikaConfigurationFromConfig
 from .submission import NoSchedulerSubmission, TaskSettings
-from .suites.discover_suite import get_suite
 from .tasks.discover_task import create_task_index
 from .toolbox import Platform
-
-
-def ssh_cmd(host, user, cmd):
-    """SSH to remote server and execute basic commands.
-
-    Args:
-        host: Host name or server IP address
-        user: Username (string) to login to server with
-        cmd: Command to be executed
-
-    Returns:
-        Message to notify if failed and why or successfully completed.
-    """
-    try:
-        ssh_command = f'ssh {user}@{host} "{cmd}"'
-        subprocess.run(ssh_command, shell=True, check=True)
-        logger.info("SSH command executed succesfully.")
-        return True
-    except subprocess.CalledProcessError as e:
-        logger.info(f"Error executing SSH command: {e}")
-        return False
-    except Exception as e:  # noqa
-        logger.info(f"Error: {e}")
-        return False
 
 
 class RunTaskNamespace(argparse.Namespace):
@@ -161,150 +134,44 @@ def start_suite(args, config):
     Raises:
         SystemExit: If error occurs while transferring files.
     """
+
+    # Is this needed???
     tactus_home = set_tactus_home(config, args.tactus_home)
     config = config.copy(update={"platform": {"tactus_home": tactus_home}})
     config = config.copy(update=set_times(config))
-    platform = Platform(config)
-    ecfvars = {
-        key: platform.substitute(val) for key, val in config["scheduler.ecfvars"].items()
-    }
-    update = {"scheduler": {"ecfvars": ecfvars}}
-    config = config.copy(update=update)
 
-    logger.info("Starting suite...")
-    logger.info("Config file: {}", args.config_file)
-    logger.info("Ecflow settings: ")
+    # Setup ecflow server and environment from config
+    server = EcflowServerFromConfig(config, start_command=args.start_command)
+    ecflow_env = EcflowEnvironmentFromConfig(config)
 
-    # Assign Ecfvars
-    joboutdir = config["scheduler.ecfvars.ecf_jobout"]
-    ecf_files = config["scheduler.ecfvars.ecf_files"]
-    ecf_files_remotely = config["scheduler.ecfvars.ecf_files_remotely"]
-    ecf_home = config["scheduler.ecfvars.ecf_home"]
-    ecf_host = config["scheduler.ecfvars.ecf_host"]
-    ecf_port = config["scheduler.ecfvars.ecf_port"]
-    ecf_user = config["scheduler.ecfvars.ecf_user"]
-    ecf_remoteuser = config["scheduler.ecfvars.ecf_remoteuser"]
+    # Display settings
+    ecflow_env.display_properties()
 
-    suite_def = config.get("suite_control.suite_definition", "TactusSuiteDefinition")
+    # Create a troika object and possibly substitute
+    troika = TroikaConfigurationFromConfig(config)
+    platf = Platform(config)
+    troika.substitute_troika_config(platf)
 
-    logger.info("ecf_host: {}", ecf_host)
-    logger.info("ecf_jobout: {}", joboutdir)
-    logger.info("ecf_files: {}", ecf_files)
-    logger.info("ecf_files_remotely: {}", ecf_files_remotely)
-    logger.info("ecf_home: {}", ecf_home)
-    logger.info("ecf_user: {}", ecf_user)
-    logger.info("ecf_remoteuser: {}", ecf_remoteuser)
-    logger.info("suite definition: {}", suite_def)
+    # Copy files to remote server if needed
+    ecflow_env.copy_to_remote(server, troika=troika)
 
-    os.environ["ECF_HOST"] = ecf_host
-    os.environ["ECF_PORT"] = str(ecf_port)
-    if ecf_user:
-        os.environ["ECF_USER"] = ecf_user
-
-    server = EcflowServer(config, start_command=args.start_command)
-
-    suite_name = config["general.case"]
-    suite_name = Platform(config).substitute(suite_name)
-    ecf_files_local = ecf_files
-
-    # Evaluate and update ecf_tactus_home
-    ecf_tactus_home = str(
-        Platform(config).evaluate(
-            config["scheduler.ecfvars.ecf_tactus_home"], object_="tactus.os_utils"
-        )
-    )
-    update = {"scheduler": {"ecfvars": {"ecf_tactus_home": ecf_tactus_home}}}
-    config = config.copy(update=update)
-
-    # Get the troika config file - in case defined in ecfvars, use that to allow
-    # for scheduler specific troika config file
-    troika_config_file = Platform(config).substitute(
-        config.get("scheduler.ecfvars.troika.config_file", config["troika.config_file"])
-    )
-    if ecf_home != joboutdir:
-        remote_troika_config_file = os.path.join(
-            ecf_files_remotely, suite_name, os.path.basename(troika_config_file)
-        )
+    # Check arguments
+    def_file = args.def_file
+    if args.def_file is None:
+        def_file = f"{ecflow_env.suite_name}.def"
     else:
-        remote_troika_config_file = troika_config_file
-
-    config = config.copy(
-        update={
-            "general": {"case": suite_name},
-            "troika": {"config_file": remote_troika_config_file},
-        }
-    )
-
-    server = EcflowServer(config, start_command=args.start_command)
-    if not args.def_file:
-        defs = get_suite(suite_def, config)
-        def_file = f"{suite_name}.def"
-        defs.save_as_defs(def_file)
-    else:
-        def_file = args.def_file
         if os.path.exists(def_file):
             args.keep_def_file = True
         else:
-            defs = get_suite(suite_def, config)
-            defs.save_as_defs(def_file)
-        logger.info("Start suite from: {}", def_file)
+            def_file = args.def_file
+    # Save definition file
+    if def_file is not None:
+        ecflow_env.suite_def_obj.save_as_defs(def_file)
 
-    # Clean, then copy troika and containers
-    srv = f"{ecf_remoteuser}@{ecf_host}"
-    src = f"{ecf_files_local}/{suite_name}"
-    dst = f"{srv}:{ecf_files_remotely}/"
-
-    if ecf_files_local != ecf_files_remotely:
-        logger.info("--- SSL protocol for remote Ecflow server detected ---")
-        logger.info("--- Copying job files to remote server ---")
-        logger.info("Copy ecflow files from : {} to: {}", src, dst)
-
-        # Clean command
-        del_cmd = f"rm -rf {ecf_files_remotely}/{suite_name}"
-
-        # Copy command
-        copy_cmd = [
-            "rsync",
-            "-az",
-            src,
-            dst,
-        ]
-
-        # Try cleaning and copying commands. If it fails, then stop with message
-        if ssh_cmd(ecf_host, ecf_remoteuser, del_cmd):
-            logger.info("SSH command successful.")
-        else:
-            logger.info("Failed to execute SSH command.")
-
-        try:
-            subprocess.run(copy_cmd, check=True)
-            logger.info("Files transferred successfully.")
-        except subprocess.CalledProcessError as e:
-            logger.info(f"Error occurred: {e}")
-            raise SystemExit("Copying ecf files to ecflow server FAILED.") from e
-
-        # Read and parse the troika config file
-        cfg = {"host": ecf_host}
-        ssh = SSHConnection(cfg, ecf_remoteuser)
-
-        temp_troika_config_file = f"parsed_{os.path.basename(troika_config_file)}"
-        with open(troika_config_file, "rb") as infile:
-            troika_input = yaml.safe_load(infile)
-        troika_output = platform.sub_str_dict(troika_input)
-        with open(temp_troika_config_file, mode="w", encoding="utf8") as outfile:
-            yaml.dump(troika_output, outfile, encoding="utf-8")
-
-        # Use ssh for single files (troika)
-        try:
-            ssh.sendfile(temp_troika_config_file, remote_troika_config_file)
-            logger.info("Troika file transferred successfully.")
-        except subprocess.CalledProcessError as e:
-            logger.info(f"Error occurred transferring Troika: {e}")
-            raise SystemExit(f"Copying {temp_troika_config_file} FAILED.") from e
-        logger.info("--- File copying to Ecflow server DONE ---")
-
+    # Create the task index to ensure all tasks are registered before starting the suite
     create_task_index(config)
-    server.start_suite(suite_name, def_file)
+    # Start the suite (and server if needed)
+    server.start_suite(ecflow_env.suite_name, def_file)
     logger.info("Done with suite.")
 
     if not args.keep_def_file:
@@ -437,7 +304,7 @@ def remove_cases(args, config):  # ARG001
             if suite_name is not None:
                 suite_name = platform.substitute(suite_name)
 
-                server = EcflowServer(case_config)
+                server = EcflowServerFromConfig(case_config)
                 server.ecf_client.sync_local()
 
                 this_suite = None
@@ -663,104 +530,41 @@ def replace_node(args, config):
         config (.config_parser.ParsedConfig): Parsed config file contents.
 
     """
+    # Is this needed???
     tactus_home = set_tactus_home(config, args.tactus_home)
     config = config.copy(update={"platform": {"tactus_home": tactus_home}})
     config = config.copy(update=set_times(config))
-    platform = Platform(config)
-    ecfvars = {
-        key: platform.substitute(val) for key, val in config["scheduler.ecfvars"].items()
-    }
-    update = {"scheduler": {"ecfvars": ecfvars}}
-    config = config.copy(update=update)
 
-    logger.info("Starting suite...")
-    logger.info("Config file: {}", args.config_file)
-    logger.info("Ecflow settings: ")
+    # Setup ecflow server and environment from config
+    server = EcflowServerFromConfig(config, start_command=args.start_command)
+    ecflow_env = EcflowEnvironmentFromConfig(config)
+    # Display settings
+    ecflow_env.display_properties()
 
-    # Assign Ecfvars
-    joboutdir = config["scheduler.ecfvars.ecf_jobout"]
-    ecf_files = config["scheduler.ecfvars.ecf_files"]
-    ecf_files_remotely = config["scheduler.ecfvars.ecf_files_remotely"]
-    ecf_home = config["scheduler.ecfvars.ecf_home"]
-    ecf_host = config["scheduler.ecfvars.ecf_host"]
-    ecf_port = config["scheduler.ecfvars.ecf_port"]
-    ecf_user = config["scheduler.ecfvars.ecf_user"]
-    ecf_remoteuser = config["scheduler.ecfvars.ecf_remoteuser"]
+    # Create a troika object and possibly substitute
+    troika = TroikaConfigurationFromConfig(config)
+    platf = Platform(config)
+    troika.substitute_troika_config(platf)
 
-    suite_def = config.get("suite_control.suite_definition", "TactusSuiteDefinition")
+    # Copy files to remote server if needed
+    ecflow_env.copy_to_remote(server, troika=troika)
 
-    logger.info("ecf_host: {}", ecf_host)
-    logger.info("ecf_jobout: {}", joboutdir)
-    logger.info("ecf_files: {}", ecf_files)
-    logger.info("ecf_files_remotely: {}", ecf_files_remotely)
-    logger.info("ecf_home: {}", ecf_home)
-    logger.info("ecf_user: {}", ecf_user)
-    logger.info("ecf_remoteuser: {}", ecf_remoteuser)
-    logger.info("suite definition: {}", suite_def)
-
-    os.environ["ECF_HOST"] = ecf_host
-    os.environ["ECF_PORT"] = str(ecf_port)
-    if ecf_user:
-        os.environ["ECF_USER"] = ecf_user
-
-    server = EcflowServer(config)
-
-    suite_name = config["general.case"]
+    # Check arguments
+    def_file = args.def_file
     node_path = args.node_path
-    suite_name = Platform(config).substitute(suite_name)
-    ecf_files_local = ecf_files
-
-    config = config.copy(update={"general": {"case": suite_name}})
-    server = EcflowServer(config)
-    if not args.def_file:
-        defs = get_suite(suite_def, config)
-        def_file = f"{suite_name}.def"
-        defs.save_as_defs(def_file)
+    if args.def_file is None:
+        def_file = f"{ecflow_env.suite_name}.def"
     else:
-        def_file = args.def_file
         if os.path.exists(def_file):
             args.keep_def_file = True
         else:
-            defs = get_suite(suite_def, config)
-            defs.save_as_defs(def_file)
-        logger.info("Replace node {} from def file: {}", node_path, def_file)
+            def_file = args.def_file
+    # Save definition file
+    if def_file is not None:
+        ecflow_env.suite_def_obj.save_as_defs(def_file)
 
-    # Clean, then copy troika and containers
-    srv = f"{ecf_remoteuser}@{ecf_host}"
-    src = f"{ecf_files_local}/{suite_name}"
-    dst = f"{srv}:{ecf_files_remotely}/"
-
-    if ecf_files_local != ecf_files_remotely:
-        logger.info("--- SSL protocol for remote Ecflow server detected ---")
-        logger.info("--- Copying job files to remote server ---")
-        logger.info("Copy ecflow files from : {} to: {}", src, dst)
-
-        # Clean command
-        del_cmd = f"rm -rf {ecf_files_remotely}/{suite_name}"
-
-        # Copy command
-        copy_cmd = [
-            "rsync",
-            "-az",
-            src,
-            dst,
-        ]
-
-        # Try cleaning and copying commands. If it fails, then stop with message
-        if ssh_cmd(ecf_host, ecf_remoteuser, del_cmd):
-            logger.info("SSH command successful.")
-        else:
-            logger.info("Failed to execute SSH command.")
-
-        try:
-            subprocess.run(copy_cmd, check=True)
-            logger.info("Files transferred successfully.")
-        except subprocess.CalledProcessError as e:
-            logger.info(f"Error occurred: {e}")
-            raise SystemExit("Copying ecf files to ecflow server FAILED.") from e
-
-        logger.info("--- File copying to Ecflow server DONE ---")
-
+    # Replace node
+    logger.info("Replace node {} from def file: {}", node_path, def_file)
     server.replace_node(node_path, def_file)
     logger.info("Replaced node {}", node_path)
 

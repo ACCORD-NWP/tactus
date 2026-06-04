@@ -7,7 +7,7 @@ from tactus.suites.base import (
     EcflowSuiteTask,
     EcflowSuiteTrigger,
     EcflowSuiteTriggers,
-    SuiteDefinition,
+    SuiteDefinitionFromConfig,
 )
 from tactus.suites.tactus_suite_components import (
     CompilationFamily,
@@ -15,9 +15,10 @@ from tactus.suites.tactus_suite_components import (
     StaticDataFamily,
     TimeDependentFamily,
 )
+from tactus.submission import TaskSettings
 
 
-class TactusSuiteDefinition(SuiteDefinition):
+class TactusSuiteDefinition(SuiteDefinitionFromConfig):
     """Definition of suite for tactus."""
 
     def __init__(
@@ -36,10 +37,15 @@ class TactusSuiteDefinition(SuiteDefinition):
 
         """
         # Call the base class constructor
-        SuiteDefinition.__init__(self, config, dry_run=dry_run)
+        SuiteDefinitionFromConfig.__init__(self, config, dry_run=dry_run)
+
+        self.task_settings = TaskSettings(config)
+        self.ecf_files = self.ecflow_env.ecf_files
+        self.ecf_files_remotely = self.ecflow_env.ecf_files_remotely
+
         # Construct directories
         unix_group = self.platform.get_platform_value("unix_group")
-        tactusmakedirs(self.joboutdir, unixgroup=unix_group)
+        tactusmakedirs(self.ecflow_env.ecf_out, unixgroup=unix_group)
 
         # Get the default input template path
         input_template = (
