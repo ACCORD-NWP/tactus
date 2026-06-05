@@ -54,8 +54,13 @@ class Exp:
                     }
                 }
             )
-            general = set_times(config)
-            config = config.copy(update={"general": {"times": general["times"]["end"]}})
+            config = config.copy(
+                update={
+                    "general": {
+                        "times": {"end": evaluate_date(config["general.times.end"])}
+                    }
+                }
+            )
 
         self.config = config
 
