@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Introduce CY50t2 test cases in the test-runner. [\#88](https://github.com/ACCORD-NWP/tactus/pull/88) (@uandrae)
+- Introduce perturbation family and config section. [#87](https://github.com/ACCORD-NWP/tactus/pull/87) (@uandrae)
+
+## [1.1.0] - 2026-06-03
+
+### Added
+- Deactivate the cache for compilation by default[#95](https://github.com/ACCORD-NWP/tactus/pull/95) (@dhaumont)
 - Add gl bundle for compilation with IAL [\#28](https://github.com/ACCORD-NWP/tactus/pull/28) (@pardallio)
 - Add caching feature to avoid recompilation between cases [\#28](https://github.com/ACCORD-NWP/tactus/pull/28) (@pardallio)
 - Add possbility to compile in single precision [\#28](https://github.com/ACCORD-NWP/tactus/pull/28) (@pardallio)
@@ -50,6 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change deployment of documentation to not need github secrets to work. [\#22](https://github.com/ACCORD-NWP/tactus/pull/22) (@mfroelund)
 
 ### Fixed
+
+- Fix xlon0 and xlat0 replacement process in derived variables [\#78](https://github.com/ACCORD-NWP/tactus/pull/78) (@romick-knmi)
 - Disable default compilation for older cycles [\#90](https://github.com/ACCORD-NWP/tactus/pull/90) (@pardallio)
 - Changed binary fetching logic [\#28](https://github.com/ACCORD-NWP/tactus/pull/28) (@pardallio)
 - Bugfix for ecflow replacing in #37 [\#79](https://github.com/ACCORD-NWP/tactus/pull/79) (@trygveasp)
