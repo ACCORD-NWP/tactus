@@ -538,12 +538,13 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         help="Launch the tests",
     )    
     parser_test.add_argument(
-        "--generate-reference",
+        "--generate-references",
         "-g",
-        dest="reference_folder",
-        help="Generate reference outputs in the specified folder.",
+        action="store_true",
+        dest="generate_refs",
+        help="Generate references outputs.",
         required=False,
-        default=None,
+        default=False,
     )
     
     parser_test.set_defaults(run_command=run_test, standalone_command=True)
