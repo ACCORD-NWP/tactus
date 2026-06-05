@@ -608,7 +608,7 @@ class Platform:
                 pattern = self.substitute_datetime(pattern, as_datetime(start), "_START")
 
             end = self.config.get("general.times.end", None)
-            if end is not None and not end.startswith("relative_to_start"):
+            if end is not None:
                 pattern = self.substitute_datetime(pattern, as_datetime(end), "_END")
 
         forecast_range = self.config.get("general.times.forecast_range", None)
