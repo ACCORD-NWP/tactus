@@ -901,7 +901,7 @@
                 },
                 {
                   "format": "duration",
-		  "pattern": "^P"
+                  "pattern": "^P"
                 }
               ]
             },
