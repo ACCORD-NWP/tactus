@@ -65,7 +65,10 @@ class TestCases:
         self.selection = self.resolve_selection(definitions)
         self.assigned = {}
         self.generate_refs=args.generate_refs if args.generate_refs else False
-        
+        if self.generate_refs:
+            logger.warning("**************************************************")
+            logger.warning("*   Reference checker: generate reference mode   *")
+            logger.warning("**************************************************")
         if args.config_file is not None:
             with contextlib.suppress(KeyError):
                 if definitions["ial"].get("active", False):
