@@ -17,5 +17,5 @@
   cases = "case_definitions_CY50t2.toml"
   macros = "test_macros.toml"
   modifs = "modifs_atos_bologna_CY50t2.toml"
-  refchecks = "modifs_references_check.toml"
-  genchecks = "modifs_references_generate.toml"
+  refchecks = "modifs_reference_checker.toml"
+  genchecks = "modifs_reference_generate.toml"
