@@ -8,10 +8,11 @@ import signal
 import sys
 import time
 import traceback
-import yaml
 from abc import ABC, abstractmethod
 from datetime import datetime
 from pathlib import Path
+
+import yaml
 
 from .host_actions import SelectHost
 from .logs import logger
@@ -105,12 +106,13 @@ class EcflowServer(Server):
         or _set_port_from_user() defined below.
 
         Args:
-            config (str): configuration settings.
+            ecf_host (str): Ecflow host
+            ecf_port (int): Ecflow port
+            ecf_lists (str): Ecflow lists to use, if any
             start_command (str): Ecflow start server command.
 
         Raises:
             ModuleNotFoundError: If ecflow is not found.
-            RuntimeError: If ecf_port is not set
 
         """
         if ecflow is None:
@@ -122,7 +124,7 @@ class EcflowServer(Server):
         self.ecf_lists = ecf_lists
         if self.ecf_lists is not None:
             os.environ["ECF_LISTS"] = self.ecf_lists
-    
+
         self.start_command = start_command
         logger.debug("self.ecf_host={} self.ecf_port={}", self.ecf_host, self.ecf_port)
         self.ecf_client = ecflow.Client(self.ecf_host, self.ecf_port)
@@ -394,37 +396,65 @@ class EcflowServer(Server):
 
 
 class EcflowEnvironment(object):
-    """
-    A class to manage ECFLOW-related variables.
-    """
+    """A class to manage ECFLOW-related variables."""
 
-    def __init__(self,
-                 suite_name,
-                 suite_def_obj,
-                 ecf_out,
-                 ecf_home=None,
-                 ecf_user=None,
-                 ecf_files=None,
-                 ecf_include=None,
-                 ecf_job=None,
-                 ecf_job_cmd=None,
-                 ecf_lists=None,
-                 ecf_micro="%",
-                 ecf_extn=".bash",
-                 ecf_ssl=1,
-                 ecf_tries=1,
-                 ecf_timeout=20,
-                 troika_config_file=None,
-                 remote_troika_file=None,
-                 ecf_remote_files=None,
-                 ecf_remote_user=None,
-                 ):
-        """
-        Initialize the EcflowEnvironment instance.
+    def __init__(
+        self,
+        suite_name,
+        suite_def_obj,
+        ecf_out,
+        ecf_home=None,
+        ecf_user=None,
+        ecf_files=None,
+        ecf_include=None,
+        ecf_job=None,
+        ecf_job_cmd=None,
+        ecf_lists=None,
+        ecf_micro="%",
+        ecf_extn=".bash",
+        ecf_ssl=1,
+        ecf_tries=1,
+        ecf_timeout=20,
+        troika_config_file=None,
+        remote_troika_file=None,
+        ecf_remote_files=None,
+        ecf_remote_user=None,
+    ):
+        """Initialize the EcflowEnvironment instance.
 
         Args:
+            suite_name (str): Name of the suite.
+            suite_def_obj (object): Suite definition object.
+            ecf_out (str): Path to the ECF_OUT directory.
+            ecf_home (str, optional): Path to the ECF_HOME directory.
+                                      Defaults to None.
+            ecf_user (str, optional): Ecflow user. Defaults to None.
+            ecf_files (str, optional): Path to the ECF_FILES directory.
+                                       Defaults to None.
+            ecf_include (str, optional): Path to the ECF_INCLUDE directory.
+                                         Defaults to None.
+            ecf_job (str, optional): Ecflow job template.
+                                     Defaults to None
+                                     (should be set in config).
+            ecf_job_cmd (str, optional): Ecflow job command template.
+                                         Defaults to None
+                                         (should be set in config).
+            ecf_lists (str, optional): Ecflow lists to use, if any.
+                                       Defaults to None.
+            ecf_micro (str, optional): Ecflow micro character. Defaults to "%".
+            ecf_extn (str, optional): Ecflow job file extension.
+                                      Defaults to ".bash".
+            ecf_ssl (int, optional): Ecflow ssl setting. Defaults to 1.
+            ecf_tries (int, optional): Number of tries
             ecf_home: Path to the ECF_HOME directory (default: None)
             ecf_files: Path to the ECF_FILES directory (default: None)
+            ecf_remote_files: Path to the ECF_FILES directory on the
+                              remote server (default: None)
+            ecf_timeout: Timeout for ecflow client (default: 20)
+            ecf_remote_user: Remote user for ecflow server (default: None)
+            remote_troika_file: Path to the troika config file on the
+                                remote server (default: None)
+            troika_config_file: Path to the troika config file (default: None)
         """
         self.suite_name = suite_name
         self.suite_def_obj = suite_def_obj
@@ -466,8 +496,7 @@ class EcflowEnvironment(object):
         """
         if hasattr(self, property_name):
             return getattr(self, property_name)
-        else:
-            raise AttributeError(f"Property '{property_name}' does not exist.")
+        raise AttributeError(f"Property '{property_name}' does not exist.")
 
     def set_property(self, property_name, value):
         """Sets the value of a property dynamically.
@@ -483,18 +512,18 @@ class EcflowEnvironment(object):
         for key, value in self.__dict__.items():
             logger.info("{}: {}", key, value)
 
-
     def copy_to_remote(self, server, troika=None):
         """Copy a file from local to remote location.
 
         Args:
-            server (str): The remote server object.
+            server (EcflowServer): The remote server object.
+            troika (TroikaConfig, optional): Troika configuration object.
+                                             Defaults to None.
         """
         # Implement the logic to copy the file from local to remote
         # Clean, then copy troika and containers
 
         if self.ecf_files != self.ecf_remote_files:
-
             srv = f"{self.ecf_remote_user}@{server.ecf_host}"
             src = f"{self.ecf_files}/{self.suite_name}"
             dst = f"{srv}:{self.ecf_remote_files}/"
@@ -505,7 +534,8 @@ class EcflowEnvironment(object):
 
             # Set up remote host
             remote_host = RemoteHost(server.ecf_host, remote_user=self.ecf_remote_user)
-            # Try cleaning and copying commands. If it fails, then stop with message
+            # Try cleaning and copying commands. If it fails,
+            # then stop with message
             joboutdir = f"{dst}/{self.suite_name}"
             remote_host.clean_remote_directory_with_ssh(joboutdir)
             # Rsync jobs
@@ -519,19 +549,20 @@ class EcflowEnvironment(object):
 
                 # send troika config
                 remote_host.send_file_to_with_ssh(
-                    temp_troika_config_file,
-                    self.remote_troika_file
+                    temp_troika_config_file, self.remote_troika_file
                 )
             logger.info("--- File copying to Ecflow server DONE ---")
 
 
 class EcflowEnvironmentFromConfig(EcflowEnvironment):
-    """
-    A class to manage ECFLOW-related variables.
-    """
+    """A class to manage ECFLOW-related variables."""
 
     def __init__(self, config):
+        """Initialize the EcflowEnvironmentFromConfig instance.
 
+        Args:
+            config (TactusConfig): Tactus configuration object.
+        """
         platf = Platform(config)
         ecfvars = {
             key: platf.substitute(val) for key, val in config["scheduler.ecfvars"].items()
@@ -566,7 +597,9 @@ class EcflowEnvironmentFromConfig(EcflowEnvironment):
         # Get the troika config file - in case defined in ecfvars, use that to allow
         # for scheduler specific troika config file
         troika_config_file = Platform(config).substitute(
-            config.get("scheduler.ecfvars.troika.config_file", config["troika.config_file"])
+            config.get(
+                "scheduler.ecfvars.troika.config_file", config["troika.config_file"]
+            )
         )
         if ecf_home != ecf_out:
             remote_troika_config_file = os.path.join(
@@ -575,28 +608,34 @@ class EcflowEnvironmentFromConfig(EcflowEnvironment):
         else:
             remote_troika_config_file = troika_config_file
 
-        super().__init__(suite_name,
-                         suite_def,
-                         ecf_out,
-                         ecf_home=ecf_home,
-                         ecf_user=ecf_user,
-                         troika_config_file=troika_config_file,
-                         remote_troika_file=remote_troika_config_file,
-                         ecf_remote_files=ecf_remote_files,
-                         ecf_remote_user=ecf_remote_user,
-                         ecf_files=ecf_files,
-                         ecf_remote_files=ecf_remote_files,
-                         ecf_include=ecf_include,
-                         ecf_micro=ecf_micro,
-                         ecf_extn=ecf_extn
-                    )   
+        super().__init__(
+            suite_name,
+            suite_def,
+            ecf_out,
+            ecf_home=ecf_home,
+            ecf_user=ecf_user,
+            troika_config_file=troika_config_file,
+            remote_troika_file=remote_troika_config_file,
+            ecf_remote_files=ecf_remote_files,
+            ecf_remote_user=ecf_remote_user,
+            ecf_files=ecf_files,
+            ecf_include=ecf_include,
+            ecf_micro=ecf_micro,
+            ecf_extn=ecf_extn,
+        )
 
 
 class EcflowServerFromConfig(EcflowServer):
     """Create an ecflow server object from a tactus configuration file."""
 
     def __init__(self, config, start_command=None):
+        """Initialize the EcflowServerFromConfig instance.
 
+        Args:
+            config (TactusConfig): Tactus configuration object.
+            start_command (str, optional): Command to start the ecflow server.
+                                           Defaults to None.
+        """
         platf = Platform(config)
         ecfvars = {
             key: platf.substitute(val) for key, val in config["scheduler.ecfvars"].items()
@@ -620,7 +659,6 @@ class EcflowServerFromConfig(EcflowServer):
 
         # Create server object (possibly start it)
         super().__init__(ecf_host, ecf_port, start_command=start_command)
-
 
 
 class EcflowLogServer:
@@ -799,11 +837,16 @@ class EcflowClient(object):
         return False
 
 
-class TroikaConfiguration():
+class TroikaConfiguration:
+    """Troika configuration."""
 
     def __init__(self, troika_config):
-        self.config = troika_config
+        """Initialize the TroikaConfiguration instance.
 
+        Args:
+            troika_config (dict): Troika configuration settings
+        """
+        self.config = troika_config
 
     def save_as(self, filename):
         """Save the troika config to a file.
@@ -818,18 +861,25 @@ class TroikaConfiguration():
         """Parse the troika config file and return a dictionary of the values.
 
         Args:
-            config_file (str): Path to the troika config file.
+            platf (Platform): Platform object to use for substitution.
         """
         subbed_config = platf.sub_str_dict(self.config)
         self.config = subbed_config
 
 
 class TroikaConfigurationFromConfig(TroikaConfiguration):
+    """Troika configuration from Tactus Configuration object."""
 
     def __init__(self, config):
+        """Initialize the TroikaConfigurationFromConfig instance.
+
+        Args:
+            config (dict): Tactus configuration object.
+        """
         troika_config_file = Platform(config).substitute(
-            config.get("scheduler.ecfvars.troika.config_file",
-                       config["troika.config_file"])
+            config.get(
+                "scheduler.ecfvars.troika.config_file", config["troika.config_file"]
+            )
         )
         troika_config = yaml.safe_load(open(troika_config_file, "r", encoding="utf-8"))
         super().__init__(troika_config)

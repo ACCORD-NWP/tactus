@@ -3,11 +3,12 @@
 from pathlib import Path
 
 from tactus.os_utils import tactusmakedirs
+from tactus.submission import TaskSettings
 from tactus.suites.base import (
     EcflowSuiteTask,
     EcflowSuiteTrigger,
     EcflowSuiteTriggers,
-    SuiteDefinitionFromConfig,
+    SuiteDefinition,
 )
 from tactus.suites.tactus_suite_components import (
     CompilationFamily,
@@ -15,10 +16,9 @@ from tactus.suites.tactus_suite_components import (
     StaticDataFamily,
     TimeDependentFamily,
 )
-from tactus.submission import TaskSettings
 
 
-class TactusSuiteDefinition(SuiteDefinitionFromConfig):
+class TactusSuiteDefinition(SuiteDefinition):
     """Definition of suite for tactus."""
 
     def __init__(
@@ -37,11 +37,11 @@ class TactusSuiteDefinition(SuiteDefinitionFromConfig):
 
         """
         # Call the base class constructor
-        SuiteDefinitionFromConfig.__init__(self, config, dry_run=dry_run)
+        SuiteDefinition.__init__(self, config, dry_run=dry_run)
 
         self.task_settings = TaskSettings(config)
         self.ecf_files = self.ecflow_env.ecf_files
-        self.ecf_files_remotely = self.ecflow_env.ecf_files_remotely
+        self.ecf_remote_files = self.ecflow_env.get_property("ecf_remote_files")
 
         # Construct directories
         unix_group = self.platform.get_platform_value("unix_group")
@@ -79,7 +79,7 @@ class TactusSuiteDefinition(SuiteDefinitionFromConfig):
                 self.task_settings,
                 input_template,
                 self.ecf_files,
-                ecf_files_remotely=self.ecf_files_remotely,
+                ecf_files_remotely=self.ecf_remote_files,
             )
             mirror = EcflowSuiteTriggers([EcflowSuiteTrigger(_mirror)])
             mirror.trigger_string = (
@@ -94,7 +94,7 @@ class TactusSuiteDefinition(SuiteDefinitionFromConfig):
             self.ecf_files,
             trigger=mirror,
             input_template=input_template,
-            ecf_files_remotely=self.ecf_files_remotely,
+            ecf_remote_files=self.ecf_remote_files,
         )
 
         if config["suite_control.compile"]:
@@ -105,7 +105,7 @@ class TactusSuiteDefinition(SuiteDefinitionFromConfig):
                 self.ecf_files,
                 trigger=prep_run,
                 input_template=input_template,
-                ecf_files_remotely=self.ecf_files_remotely,
+                ecf_remote_files=self.ecf_remote_files,
             )
             prep_run = compilation_fam
 
@@ -122,7 +122,7 @@ class TactusSuiteDefinition(SuiteDefinitionFromConfig):
                 input_template,
                 self.ecf_files,
                 trigger=prep_run,
-                ecf_files_remotely=self.ecf_files_remotely,
+                ecf_remote_files=self.ecf_remote_files,
                 dry_run=dry_run,
             )
             # Update trigger for time dependent node
@@ -151,7 +151,7 @@ class TactusSuiteDefinition(SuiteDefinitionFromConfig):
                 input_template=input_template,
                 trigger=collect_logs_trigger,
                 variables=None,
-                ecf_files_remotely=self.ecf_files_remotely,
+                ecf_remote_files=self.ecf_remote_files,
             )
             # Update triggers for final cleaning node
             final_cleaning_trigger.append(collect_logs)
@@ -165,7 +165,7 @@ class TactusSuiteDefinition(SuiteDefinitionFromConfig):
                 input_template,
                 self.ecf_files,
                 time_dependent_trigger_node,
-                ecf_files_remotely=self.ecf_files_remotely,
+                ecf_remote_files=self.ecf_remote_files,
                 do_prep=self.do_prep,
                 dry_run=dry_run,
             )
@@ -185,7 +185,7 @@ class TactusSuiteDefinition(SuiteDefinitionFromConfig):
                     self.ecf_files,
                     input_template=input_template,
                     trigger=final_cleaning_trigger,
-                    ecf_files_remotely=self.ecf_files_remotely,
+                    ecf_remote_files=self.ecf_remote_files,
                 )
 
             if config["suite_control.do_cleaning"]:
@@ -197,5 +197,5 @@ class TactusSuiteDefinition(SuiteDefinitionFromConfig):
                     self.ecf_files,
                     input_template=input_template,
                     trigger=final_cleaning_trigger,
-                    ecf_files_remotely=self.ecf_files_remotely,
+                    ecf_remote_files=self.ecf_remote_files,
                 )

@@ -10,7 +10,6 @@ from functools import partial
 from pathlib import Path
 from typing import List, Optional
 
-import yaml
 from toml_formatter.formatter import FormattedToml
 
 from . import GeneralConstants
@@ -26,7 +25,11 @@ from .namelist import (
     NamelistGenerator,
     NamelistIntegrator,
 )
-from .scheduler import EcflowServerFromConfig, EcflowEnvironmentFromConfig, TroikaConfigurationFromConfig
+from .scheduler import (
+    EcflowEnvironmentFromConfig,
+    EcflowServerFromConfig,
+    TroikaConfigurationFromConfig,
+)
 from .submission import NoSchedulerSubmission, TaskSettings
 from .tasks.discover_task import create_task_index
 from .toolbox import Platform
@@ -134,7 +137,6 @@ def start_suite(args, config):
     Raises:
         SystemExit: If error occurs while transferring files.
     """
-
     # Is this needed???
     tactus_home = set_tactus_home(config, args.tactus_home)
     config = config.copy(update={"platform": {"tactus_home": tactus_home}})
@@ -159,11 +161,10 @@ def start_suite(args, config):
     def_file = args.def_file
     if args.def_file is None:
         def_file = f"{ecflow_env.suite_name}.def"
+    elif os.path.exists(def_file):
+        args.keep_def_file = True
     else:
-        if os.path.exists(def_file):
-            args.keep_def_file = True
-        else:
-            def_file = args.def_file
+        def_file = args.def_file
     # Save definition file
     if def_file is not None:
         ecflow_env.suite_def_obj.save_as_defs(def_file)
@@ -536,7 +537,7 @@ def replace_node(args, config):
     config = config.copy(update=set_times(config))
 
     # Setup ecflow server and environment from config
-    server = EcflowServerFromConfig(config, start_command=args.start_command)
+    server = EcflowServerFromConfig(config)
     ecflow_env = EcflowEnvironmentFromConfig(config)
     # Display settings
     ecflow_env.display_properties()
@@ -554,11 +555,10 @@ def replace_node(args, config):
     node_path = args.node_path
     if args.def_file is None:
         def_file = f"{ecflow_env.suite_name}.def"
+    elif os.path.exists(def_file):
+        args.keep_def_file = True
     else:
-        if os.path.exists(def_file):
-            args.keep_def_file = True
-        else:
-            def_file = args.def_file
+        def_file = args.def_file
     # Save definition file
     if def_file is not None:
         ecflow_env.suite_def_obj.save_as_defs(def_file)

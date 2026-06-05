@@ -7,9 +7,9 @@ from typing import List, Optional, Union
 
 from ..datetime_utils import as_datetime
 from ..logs import LogDefaults, logger
+from ..scheduler import EcflowEnvironmentFromConfig
 from ..submission import TaskSettings
 from ..toolbox import Platform
-from ..scheduler import EcflowEnvironmentFromConfig
 
 try:
     import ecflow
@@ -44,6 +44,7 @@ class BaseSuiteDefinition(object):
 
         Args:
             ecflow_env (EcflowEnvironmentFromConfig): Ecflow environment
+            suite_vars (dict): Variables to map in the suite
             dry_run (bool, optional): Dry run not using ecflow. Defaults to False.
 
         Raises:
@@ -53,8 +54,8 @@ class BaseSuiteDefinition(object):
         if ecflow is None and not dry_run:
             raise ModuleNotFoundError("Ecflow not found")
 
-        ecf_micro = ecflow_env.get_property("ecf_micro"),
-        ecf_out = ecflow_env.get_property("ecf_out"),
+        ecf_micro = ecflow_env.get_property("ecf_micro")
+        ecf_out = ecflow_env.get_property("ecf_out")
         ecf_jobout = (
             ecf_out
             + f"/{ecf_micro}ECF_NAME{ecf_micro}."
@@ -101,12 +102,13 @@ class BaseSuiteDefinition(object):
         }
         variables.update(suite_vars)
 
+        self.name = ecflow_env.get_property("suite_name")
         self.suite = EcflowSuite(
-            ecflow_env.suite_name,
-            ecflow_env.ecf_files,
+            ecflow_env.get_property("suite_name"),
+            ecflow_env.get_property("ecf_files"),
             variables=variables,
             dry_run=dry_run,
-            ecf_files_remotely=ecflow_env.ecf_files_remotely,
+            ecf_remote_files=ecflow_env.get_property("ecf_remote_files"),
         )
         self.ecflow_env = ecflow_env
 
@@ -170,8 +172,9 @@ class SuiteDefinition(BaseSuiteDefinition):
             "MEMBER": "",
         }
         super().__init__(ecflow_env, suite_vars, dry_run=dry_run)
-        self.name = self.ecflow_env.suite.name
+        self.ecf_remote_files = self.ecflow_env.get_property("ecf_remote_files")
         self.config = config
+        self.task_settings = TaskSettings(config)
         self.platform = platform
 
 
@@ -197,7 +200,7 @@ class EcflowNode:
         add_var_trigger=None,
         remote_path=None,
         def_status=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
         cron=None,
         limit=None,
     ):
@@ -217,7 +220,7 @@ class EcflowNode:
             remote_path(str): path to the mirror node on the remote ecflow suite.
                 Defaults to None
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
-            ecf_files_remotely(str, optional): Remote file prefix
+            ecf_remote_files(str, optional): Remote file prefix
             cron (EcflowSuiteCron): Cron. Defauts to None
             limit (EcflowSuiteLimit): Limit. Defaults to None
 
@@ -260,11 +263,11 @@ class EcflowNode:
             path = self.ecf_node.get_abs_node_path()
 
         self.path = path
-        logger.debug("path={} ecf_files_remotely={}", self.path, ecf_files_remotely)
-        if ecf_files_remotely is None:
-            ecf_files_remotely = ecf_files
+        logger.debug("path={} ecf_remote_files={}", self.path, ecf_remote_files)
+        if ecf_remote_files is None:
+            ecf_remote_files = ecf_files
         self.ecf_local_container_path = ecf_files + self.path
-        self.ecf_remote_container_path = ecf_files_remotely + self.path
+        self.ecf_remote_container_path = ecf_remote_files + self.path
         logger.debug(
             "path={} local_container={} remote_container={}",
             self.path,
@@ -424,7 +427,7 @@ class EcflowNodeContainer(EcflowNode):
         variables=None,
         trigger=None,
         def_status=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
         cron=None,
         limit=None,
         add_var_trigger=None,
@@ -440,7 +443,7 @@ class EcflowNodeContainer(EcflowNode):
             variables (dict, optional): Variables to map. Defaults to None
             trigger (EcflowSuiteTriggers): Trigger. Defaults to None
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
-            ecf_files_remotely(str, optional): ECF_FILES on ecflow server
+            ecf_remote_files(str, optional): ECF_FILES on ecflow server
             cron (EcflowSuiteCron): Cron. Defauts to None
             limit (EcflowSuiteLimit): Limit. Default None
             add_var_trigger(dict): Dictionary to add trigger based on ECF-variable.
@@ -458,7 +461,7 @@ class EcflowNodeContainer(EcflowNode):
             ecf_files=ecf_files,
             trigger=trigger,
             def_status=def_status,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
             cron=cron,
             limit=limit,
             add_var_trigger=add_var_trigger,
@@ -476,7 +479,7 @@ class EcflowSuite(EcflowNodeContainer):
         variables=None,
         dry_run=False,
         def_status=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
     ):
         """Construct the Ecflow suite.
 
@@ -486,7 +489,7 @@ class EcflowSuite(EcflowNodeContainer):
             variables (dict, optional): Variables to map. Defaults to None
             dry_run (bool, optional): Dry run not using ecflow. Defaults to False.
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
-            ecf_files_remotely(str, optional): ECF_FILES on ecflow server
+            ecf_remote_files(str, optional): ECF_FILES on ecflow server
 
         """
         if dry_run:
@@ -502,7 +505,7 @@ class EcflowSuite(EcflowNodeContainer):
             ecf_files,
             variables=variables,
             def_status=def_status,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
     def save_as_defs(self, def_file):
@@ -527,7 +530,7 @@ class EcflowSuiteFamily(EcflowNodeContainer):
         variables=None,
         trigger=None,
         def_status=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
         cron=None,
         limit=None,
         add_var_trigger=None,
@@ -542,7 +545,7 @@ class EcflowSuiteFamily(EcflowNodeContainer):
                     variables (dict, optional): Variables to map. Defaults to None
                     trigger (EcflowSuiteTriggers): Trigger. Defaults to None
                     def_status (str, ecflow.Defstatus): Def status. Defaults to None
-                    ecf_files_remotely(str, optional): ECF_FILES on ecflow server
+                    ecf_remote_files(str, optional): ECF_FILES on ecflow server
                     cron (EcflowSuiteCron): Cron. Defaut None
                     limit (EcflowSuiteLimit): Limit. Default None
                     add_var_trigger(dict): dict to add trigger based on ECF-variable.
@@ -559,7 +562,7 @@ class EcflowSuiteFamily(EcflowNodeContainer):
             variables=variables,
             trigger=trigger,
             def_status=def_status,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
             cron=cron,
             limit=limit,
             add_var_trigger=add_var_trigger,
@@ -588,7 +591,7 @@ class EcflowSuiteTask(EcflowNode):
         mirror=None,
         mirror_config=None,
         def_status=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
         cron=None,
         add_var_trigger=None,
         remote_path=None,
@@ -612,7 +615,7 @@ class EcflowSuiteTask(EcflowNode):
             mirror_config (dict, optional): dictionary with remote mirror settings,
                 Defaults to None
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
-            ecf_files_remotely(str, optional): ECF_FILES on ecflow server
+            ecf_remote_files(str, optional): ECF_FILES on ecflow server
             cron (EcflowSuiteCron): Cron. Defaut None
             add_var_trigger(dict): dict to add trigger based on ECF-variable.
                 Defaults to None
@@ -647,7 +650,7 @@ class EcflowSuiteTask(EcflowNode):
                 variables=variables,
                 trigger=trigger,
                 def_status=def_status,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
                 cron=cron,
                 add_var_trigger=add_var_trigger,
                 remote_path=remote_path,

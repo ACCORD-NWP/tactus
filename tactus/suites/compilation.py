@@ -37,12 +37,14 @@ class CompilationSuiteDefinition(SuiteDefinition):
         )
         input_template = input_template.as_posix()
 
+        ecf_remote_files = self.ecflow_env.get_property("ecf_remote_files")
+        ecf_files = self.ecflow_env.get_property("ecf_files")
         CompilationFamily(
             self.suite,
             config,
             self.task_settings,
-            self.ecf_files,
+            ecf_files,
             trigger=None,
             input_template=input_template,
-            ecf_files_remotely=self.ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )

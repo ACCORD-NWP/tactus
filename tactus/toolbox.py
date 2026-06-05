@@ -5,13 +5,13 @@ import contextlib
 import inspect
 import os
 import re
+import subprocess
 import sys
 from typing import Any, Union
 
 import boto3
 import geohash
 import tomlkit
-import subprocess
 from botocore.exceptions import ClientError
 from isodate import parse_duration
 from troika.connections.ssh import SSHConnection
@@ -1503,10 +1503,16 @@ class LocalFileOnDisk(Resource):
         Resource.__init__(self, config, identifier)
 
 
-class RemoteHost():
+class RemoteHost:
     """Remote host."""
 
     def __init__(self, host_name, remote_user=None):
+        """Construct remote host.
+
+        Args:
+            host_name (str): Host name
+            remote_user (str, optional): Remote user. Defaults to None.
+        """
         self.host_name = host_name
         self.remote_user = remote_user
 
@@ -1536,9 +1542,11 @@ class RemoteHost():
             local_directory (str): Path to local directory
             remote_directory (str): Path to remote directory
         """
-        rsync_command = f"rsync -az {local_directory} " + \
-                        f"{self.remote_user}    @{self.host_name}:{remote_directory}"
-        self._ssh_cmd(rsync_command, shell=True, check=True)
+        rsync_command = (
+            f"rsync -az {local_directory} "
+            + f"{self.remote_user}    @{self.host_name}:{remote_directory}"
+        )
+        self._ssh_cmd(rsync_command, shell=True, check=True)  # noqa: S604
         logger.info("Directory transferred successfully with rsync.")
 
     def _ssh_cmd(self, cmd, shell=True, check=True):
@@ -1554,7 +1562,7 @@ class RemoteHost():
         """
         try:
             ssh_command = f'ssh {self.remote_user}@{self.host_name} "{cmd}"'
-            subprocess.run(ssh_command, shell=shell, check=check)  # noqa: S602
+            subprocess.run(ssh_command, shell=shell, check=check)
             logger.info("SSH command executed successfully.")
         except subprocess.CalledProcessError as e:
             raise RuntimeError("Error occurred when executing command") from e
