@@ -26,6 +26,9 @@
     "collectlogs": {
       "$ref": "#/definitions/collectlogs"
     },
+    "perturbations": {
+      "$ref": "#/definitions/perturbations"
+    },
     "pgd": {
       "$ref": "#/definitions/pgd"
     },
@@ -317,6 +320,23 @@
             "AROME",
             "ALARO"
           ]
+        }
+      }
+    },
+    "perturbations": {
+      "title": "Perturbation Section",
+      "description": "Settings for control of perturbations.",
+      "type": "object",
+      "properties": {
+        "pertana": {
+          "title": "Perturbation of initial atmospheric conditions with boundary data.",
+          "type": "boolean",
+          "default": false
+        },
+        "pertsurf": {
+          "title": "Perturbation of initial surfex conditions",
+          "type": "boolean",
+          "default": false
         }
       }
     },
@@ -700,7 +720,7 @@
         "cache": {
           "type": "boolean",
           "description": "whether to use chache build/install folders",
-          "default": true
+          "default": false
         },
         "cache_dir": {
           "type": "string",
