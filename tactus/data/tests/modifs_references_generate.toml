@@ -4,4 +4,5 @@
   suppress_exception = true
 
 [genchecks.platform]  
-    references_generation_folder = "@SCRATCH@/tactus_generated_references/@TAG@"
+    references_folder = "N/A"
+    references_generation_folder = "@SCRATCH@/tactus_references/@TAG@"
