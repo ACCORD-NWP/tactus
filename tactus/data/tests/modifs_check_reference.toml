@@ -1,0 +1,33 @@
+[modifs.platform]
+  archive_root = "@CASEDIR@/archive"
+  references_folder = "@SCRATCH@/tactus_references/@TAG@"
+  references_generation_folder = "@SCRATCH@/tactus_generated_references/@TAG@"
+
+[modifs.reference_checker]
+  check = true
+  generate = false
+  rules_active = ["Forecast.fullpos", "Forecast.history", "Forecast.log", "Forecast.surfex"]
+  suppress_exception = true
+  analyze_summary = ["Forecast"]
+  create_summary = ["Forecast"]
+  
+[modifs.reference_checker.task.Forecast.fullpos]
+  files = "@ARCHIVE@/GRIBPF*0006h00m00s"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+
+[modifs.reference_checker.task.Forecast.history]
+  files = "@ARCHIVE@/ICMSH*00060h00m00s"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+
+[modifs.reference_checker.task.Forecast.log]
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+
+[modifs.reference_checker.task.Forecast.surfex]
+  files = "@ARCHIVE@/ICMSH*0006h00m00s.sfx"
+  method = "HistoryFields"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCE_FOLDER@"
+  result_folder = "@WRK@/checks/Forecast"
