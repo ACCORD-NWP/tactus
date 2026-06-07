@@ -49,7 +49,7 @@ class TestCases:
 
         self.verbose = args.verbose
         self.cases = definitions.get("cases", {})
-        self.reference_date = evaluate_date(f"{definitions['general']['reference_date']}")
+        self.reference_date = evaluate_date(f"{definitions['general'].get('reference_date', '-P1D')}")
         self.max_workers = definitions["general"].get("max_workers", None)
         self.cmds = {}
         self.mode = definitions["general"].get("mode", "suite")
