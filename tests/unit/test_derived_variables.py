@@ -5,15 +5,28 @@ import re
 
 import pytest
 
+from tactus.config_parser import ConfigFileValidationError
 from tactus.derived_variables import derived_variables, set_times
 
 
-def test_set_times(default_config):
+def test_set_end_less_than_start(default_config):
     config = default_config.copy(
-        update={"general": {"times": {"end": "P1D", "start": "P2D"}}}
+        update={
+            "general": {
+                "times": {"end": "2026-06-06T00:00:00Z", "start": "2026-06-07T00:00:00Z"}
+            }
+        }
     )
     with pytest.raises(ValueError, match=re.escape("cannot be larger than")):
         config = set_times(config)
+
+
+def test_set_negative_end(default_config):
+    with pytest.raises(
+        ConfigFileValidationError,
+        match=re.escape("must be valid exactly by one definition"),
+    ):
+        default_config.copy(update={"general": {"times": {"end": "-P1D"}}})
 
 
 @pytest.fixture(scope="module")
