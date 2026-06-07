@@ -83,7 +83,7 @@
 
 [cases.cy50t2_alaro_mode_start.modifs.general.times]
   cycle_length = "PT3H"
-  end = "relative_to_start.PT3H"
+  end = "PT3H"
   forecast_range = "PT3H"
 
 [cases.cy50t2_alaro_mode_start.modifs.suite_control]
@@ -189,7 +189,7 @@
 
 [cases.cy50t2_arome_mode_start.modifs.general.times]
   cycle_length = "PT3H"
-  end = "relative_to_start.PT3H"
+  end = "PT3H"
   forecast_range = "PT3H"
 
 [cases.cy50t2_arome_mode_start.modifs.suite_control]
@@ -301,7 +301,7 @@
 
 [cases.cy50t2_harmonie_arome_mode_start.modifs.general.times]
   cycle_length = "PT3H"
-  end = "relative_to_start.PT3H"
+  end = "PT3H"
   forecast_range = "PT3H"
 
 [cases.cy50t2_harmonie_arome_mode_start.modifs.suite_control]

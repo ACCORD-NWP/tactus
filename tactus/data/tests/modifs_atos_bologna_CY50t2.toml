@@ -12,7 +12,6 @@
   case = "@CASE_PREFIX@@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@@CASE_SUFFIX@"
 
 [modifs.general.times]
-  end = "@REFERENCE_DATE@"
   start = "@REFERENCE_DATE@"
 
 [modifs.macros.select.release_test]
