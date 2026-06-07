@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduce CY50t2 test cases in the test-runner. [\#88](https://github.com/ACCORD-NWP/tactus/pull/88) (@uandrae)
 - Introduce perturbation family and config section. [#87](https://github.com/ACCORD-NWP/tactus/pull/87) (@uandrae)
 
+### Fixed
+- Correct input data path in E923Update. [#100](https://github.com/ACCORD-NWP/tactus/pull/100) (@uandrae)
+
 ## [1.1.0] - 2026-06-03
 
 ### Added
@@ -56,7 +59,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change deployment of documentation to not need github secrets to work. [\#22](https://github.com/ACCORD-NWP/tactus/pull/22) (@mfroelund)
 
 ### Fixed
-
 - Fix xlon0 and xlat0 replacement process in derived variables [\#78](https://github.com/ACCORD-NWP/tactus/pull/78) (@romick-knmi)
 - Disable default compilation for older cycles [\#90](https://github.com/ACCORD-NWP/tactus/pull/90) (@pardallio)
 - Changed binary fetching logic [\#28](https://github.com/ACCORD-NWP/tactus/pull/28) (@pardallio)
