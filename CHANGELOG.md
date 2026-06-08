@@ -36,7 +36,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change deployment of documentation to not need github secrets to work. [\#22](https://github.com/ACCORD-NWP/tactus/pull/22) (@mfroelund)
 
 ### Fixed
-- Fix ordering of setting `productDefinitionTemplateNumber` for EPS runs in `FaModelSource.yml`[\#91] (https://github.com/ACCORD-NWP/tactus/pull/91) (@sbnielsen)
 - Fix IFSEPS control member MARS stream via new optional `stream_control` config key. [\#64](https://github.com/ACCORD-NWP/tactus/pull/64) (@kastelecn)
 - Set sys\_name in config file. [\#61](https://github.com/ACCORD-NWP/tactus/pull/61)(@kastelecn)
 - Temporary bindir setting for fa\_sfx2clim on deode\_49t2. [\#48](https://github.com/ACCORD-NWP/tactus/pull/55) (@kastelecn)
