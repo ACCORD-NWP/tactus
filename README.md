@@ -16,19 +16,6 @@ The [tactus scripting system](https://github.com/ACCORD-NWP/tactus/) provides a 
 See the [project's documentation page](https://ACCORD-NWP.github.io/tactus) for more information.
 
 
-## Set up environment
-
-**Make sure you have python>=3.10**
-Ensure you have Pixi installed (see Installation section), then set up your development environment according to your platform:
-
-Then run:
-
-* On Atos (`hpc-login`)
-  ```shell
-  module load python3/3.10.10-01
-  module load ecflow
-  ```
-
 ## Installation
 
 First checkout the `tactus` source code from github:
@@ -44,6 +31,8 @@ git clone git@github.com:<username>/tactus.git
 cd tactus
 ```
 
+> [!IMPORTANT]
+> Tactus should be installed in a folder accessible by ecflow server. On Atos, it should be installed in your $HOME or $PERM directory.
 
 Then install [`Pixi`](https://pixi.sh) by following the installation instructions at https://pixi.sh/latest/#installation, or use your system package manager:
 
@@ -56,52 +45,21 @@ curl -fsSL https://pixi.sh/install.sh | bash
 ```
 
 After installing Pixi, set up Pixi environment from the root of the cloned repository:
-  ```shell
-  pixi install
-  ```
+```shell
+pixi install
+```
 
 If you want to install the environment in another directory than the default (`<project-root>/.pixi/envs/`) add `detached-environments = "/path/to/env-location/"` to a pixi config file. Supported locations of the pixi config is outlined in https://pixi.prefix.dev/latest/reference/pixi_configuration/.
 
-Pixi caches the downloaded packages and share them between projects to speed up environment installation. To change the cache directory, add the following to the pixi config:
+Pixi caches the downloaded packages and shares them between projects to speed up environment installation. To change the cache directory, add the following to the pixi config:
 ```toml
 [cache]
   root = "/path/to/cache"
   netfs-redirect = "never"
 ```
-
-Finally, note that system `gdal` must be available on your system. The Pixi environment will install `pygdal` matching your system GDAL version automatically. If you need to specify the GDAL version, ensure it's installed via your system package manager:
-
-  * On Atos (`hpc-login`)
-    ```shell
-    module load gdal/3.6.2
-    pixi install
-    ```
-
-  * On Belenos (conda environment)
-    ```shell
-    conda create -n deode_env python=3.10 gdal ecflow
-    conda activate deode_env
-    pixi install
-    ```
-
-  * On LUMI
-    ```shell
-    module load crayPython
-    pixi install
-    ```
-
-  If installation is not succesful, please contact the IT support in your organisation or HPC facility.
-
-### Important
-
-Tactus should be installed in a folder accessible by ecflow server.
-
-On Atos, it should be installed in your $HOME or $PERM directory.
-
-
 ## Usage
 
-Initially set up the environment by repeating the steps in [Set up environment](#set-up-environment), navigate to the root level of the `tactus` install directory and use Pixi to run:
+Navigate to the root level of the `tactus` install directory and use Pixi to run:
 ```shell
 pixi run tactus -h
 ```
@@ -112,10 +70,6 @@ pixi shell
 tactus -h
 ```
 
-Initially set up the environment by repeating the steps in [Set up environment](#set-up-environment), navigate to the root level of the `tactus` install directory and test that `tactus` works by running:
-```shell
-pixi run tactus -h
-```
 ### The Configuration File
 Before you can use `tactus` (apart from the `-h` option), you will need a configuration file written in the
 [TOML](https://en.wikipedia.org/wiki/TOML) format. Please take a look at
@@ -146,7 +100,7 @@ that the `-h` goes after the subcommand in this case).
 
 ## Examples
 
-These examples assume that you have successfully [Set up environment](#set-up-environment) [installed](#installation) tactus, navigated to the root level of your `tactus` install directory and loaded the python environment. The examples also assume that the binaries and input data for the [ACCORD CSCs](https://www.umr-cnrm.fr/accord/?Canonical-System-Configurations-CSC) is in place. Please contact your local ACCORD members for advice if this is not the case.
+These examples assume that you have successfully [installed](#installation) tactus, navigated to the root level of your `tactus` install directory, and entered into a shell by running `pixi shell`. The examples also assume that the binaries and input data for the [ACCORD CSCs](https://www.umr-cnrm.fr/accord/?Canonical-System-Configurations-CSC) is in place. Please contact your local ACCORD members for advice if this is not the case.
 
 ### Running ecflow suite on ATOS
 
