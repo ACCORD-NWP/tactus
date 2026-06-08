@@ -99,7 +99,7 @@ class Marsprep(Task):
         forecast_range = as_timedelta(self.config["general.times.forecast_range"])
 
         # Check if there are data for specific date in mars
-        check_data_available(self.basetime, self.mars)
+        check_data_available(self.boundary.bd_basetime, self.mars)
 
         # Get boundary informations
         self.boundary = Boundary(config)
