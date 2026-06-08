@@ -11,14 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Introduce perturbation family and config section. [#87](https://github.com/ACCORD-NWP/tactus/pull/87) (@uandrae)
-- Add unit test testing FA model name key ordering [\#91](https://github.com/ACCORD-NWP/tactus/pull/91) (@sbnielsen)
 
 ### Changed
 - Switch to accord owned path for static data on atos_bologna. [#106](https://github.com/ACCORD-NWP/tactus/pull/106) (@uandrae)
 
 ### Fixed
 - Correct input data path in E923Update. [#100](https://github.com/ACCORD-NWP/tactus/pull/100) (@uandrae)
-- Fix ordering of setting `productDefinitionTemplateNumber` for EPS runs in `FaModelSource.yml`[\#91](https://github.com/ACCORD-NWP/tactus/pull/91) (@sbnielsen)
 
 ## [1.1.0] - 2026-06-03
 
