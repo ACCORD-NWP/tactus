@@ -1,32 +1,32 @@
-[refchecks.platform]  
+[refchecks.platform]
   reference_tag="V1.0.1"
   references_folder = "@SCRATCH@/tactus_references/@REFERENCE_TAG@"
   references_generation_folder = "N/A"
 
 [refchecks.reference_checker]
   check = true
-  generate = false  
+  generate = false
   rules_active = ["Forecast.fullpos", "Forecast.history", "Forecast.log", "Forecast.surfex"]
   suppress_exception = true
-  
+
 [refchecks.reference_checker.task.Forecast.fullpos]
   files = "@ARCHIVE@/GRIBPF*0006h00m00s"
-  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
-  reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
 
 [refchecks.reference_checker.task.Forecast.history]
   files = "@ARCHIVE@/ICMSH*00060h00m00s"
-  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
-  reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
 
 [refchecks.reference_checker.task.Forecast.log]
-  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
-  reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
 
 [refchecks.reference_checker.task.Forecast.surfex]
   inpath = "@ARCHIVE@"
   pattern = "ICMSH*0006h00m00s.sfx"
   method = "HistoryFields"
-  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
-  reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   result_folder = "@WRK@/checks/Forecast"

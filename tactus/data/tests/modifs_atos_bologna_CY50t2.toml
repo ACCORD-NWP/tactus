@@ -10,6 +10,7 @@
 
 [modifs.general]
   case = "@CASE_PREFIX@@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@@CASE_SUFFIX@"
+  ref_case = "@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@@CASE_SUFFIX@"
 
 [modifs.general.times]
   start = "@REFERENCE_DATE@"
