@@ -44,7 +44,7 @@ def test_create_famodeldefs_output_format(tmp_path, default_config):
             assert line_re.match(line), f"Line does not match format: {line}"
 
 
-def test_create_famodeldefs_productDefinitionTemplateNumber_first(
+def test_create_famodeldefs_productdefinitiontemplatenumber_first(
     tmp_path, default_config
 ):
     config = default_config.copy(
