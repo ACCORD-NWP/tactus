@@ -7,6 +7,7 @@ from typing import List, Optional, Union
 
 from ..datetime_utils import as_datetime
 from ..logs import LogDefaults, logger
+from ..scheduler import EcflowEnvironmentFromConfig
 from ..submission import TaskSettings
 from ..toolbox import Platform
 
@@ -35,7 +36,93 @@ def _get_name(cname, cls, attrname="__plugin_name__"):
     return cname.lower()
 
 
-class SuiteDefinition(object):
+class BaseSuiteDefinition(object):
+    """Definition of suite."""
+
+    def __init__(self, ecflow_env, suite_vars, dry_run=False):
+        """Construct the definition.
+
+        Args:
+            ecflow_env (EcflowEnvironmentFromConfig): Ecflow environment
+            suite_vars (dict): Variables to map in the suite
+            dry_run (bool, optional): Dry run not using ecflow. Defaults to False.
+
+        Raises:
+            ModuleNotFoundError: If ecflow is not loaded and not dry_run
+
+        """
+        if ecflow is None and not dry_run:
+            raise ModuleNotFoundError("Ecflow not found")
+
+        ecf_micro = ecflow_env.get_property("ecf_micro")
+        ecf_out = ecflow_env.get_property("ecf_out")
+        ecf_jobout = (
+            ecf_out
+            + f"/{ecf_micro}ECF_NAME{ecf_micro}."
+            + f"{ecf_micro}ECF_TRYNO{ecf_micro}"
+        )
+
+        # Commands started from the scheduler does not have full environment
+        ecf_job_cmd = (
+            f"{ecf_micro}TROIKA{ecf_micro} "
+            f"-c {ecf_micro}TROIKA_CONFIG{ecf_micro} submit "
+            f"-o {ecf_micro}ECF_JOBOUT{ecf_micro} "
+            f"{ecf_micro}SCHOST{ecf_micro} "
+            f"{ecf_micro}ECF_JOB{ecf_micro}"
+        )
+
+        ecf_status_cmd = (
+            f"{ecf_micro}TROIKA{ecf_micro} "
+            f"-c {ecf_micro}TROIKA_CONFIG{ecf_micro} monitor "
+            f"{ecf_micro}SCHOST{ecf_micro} "
+            f"{ecf_micro}ECF_JOB{ecf_micro}"
+        )
+
+        ecf_kill_cmd = (
+            f"{ecf_micro}TROIKA{ecf_micro} "
+            f"-vv -c {ecf_micro}TROIKA_CONFIG{ecf_micro} kill "
+            f"{ecf_micro}SCHOST{ecf_micro} "
+            f"{ecf_micro}ECF_JOB{ecf_micro}"
+        )
+
+        variables = {
+            "ECF_USER": ecflow_env.get_property("ecf_user"),
+            "ECF_EXTN": ecflow_env.get_property("ecf_extn"),
+            "ECF_TRIES": ecflow_env.get_property("ecf_tries"),
+            "ECF_FILES": ecflow_env.get_property("ecf_remote_files"),
+            "ECF_INCLUDE": ecflow_env.get_property("ecf_include"),
+            "ECF_SSL": ecflow_env.get_property("ecf_ssl"),
+            "ECF_HOME": ecflow_env.get_property("ecf_home"),
+            "ECF_OUT": ecflow_env.get_property("ecf_out"),
+            "ECF_TIMEOUT": ecflow_env.get_property("ecf_timeout"),
+            "ECF_JOBOUT": ecf_jobout,
+            "ECF_KILL_CMD": ecf_kill_cmd,
+            "ECF_JOB_CMD": ecf_job_cmd,
+            "ECF_STATUS_CMD": ecf_status_cmd,
+        }
+        variables.update(suite_vars)
+
+        self.name = ecflow_env.get_property("suite_name")
+        self.suite = EcflowSuite(
+            ecflow_env.get_property("suite_name"),
+            ecflow_env.get_property("ecf_files"),
+            variables=variables,
+            dry_run=dry_run,
+            ecf_remote_files=ecflow_env.get_property("ecf_remote_files"),
+        )
+        self.ecflow_env = ecflow_env
+
+    def save_as_defs(self, def_file):
+        """Save definition file.
+
+        Args:
+            def_file (str): Name of definition file
+        """
+        logger.debug("Saving def file {}", def_file)
+        self.suite.save_as_defs(def_file)
+
+
+class SuiteDefinition(BaseSuiteDefinition):
     """Definition of suite."""
 
     def __init__(self, config, dry_run=False):
@@ -52,77 +139,7 @@ class SuiteDefinition(object):
         if ecflow is None and not dry_run:
             raise ModuleNotFoundError("Ecflow not found")
 
-        self.task_settings = TaskSettings(config)
-
-        self.name = config["general.case"]
-        self.config = config
-
-        self.platform = Platform(config)
-        self.config = config
-
-        ecf_out = self.config["scheduler.ecfvars.ecf_out"]
-        ecf_files = self.config["scheduler.ecfvars.ecf_files"]
-        ecf_user = self.config["scheduler.ecfvars.ecf_user"]
-        joboutdir = self.config["scheduler.ecfvars.ecf_jobout"]
-        ecf_files_remotely = self.config["scheduler.ecfvars.ecf_files_remotely"]
-        ecf_home = self.config["scheduler.ecfvars.ecf_home"]
-        ecf_ssl = self.config["scheduler.ecfvars.ecf_ssl"]
-        ecf_host = self.config["scheduler.ecfvars.ecf_host"]
-        ecf_tries = self.config["scheduler.ecfvars.ecf_tries"]
-
-        self.ecf_user = ecf_user
-        self.ecf_host = ecf_host
-        self.ecf_ssl = ecf_ssl
-        self.joboutdir = joboutdir
-
-        try:
-            ecf_include = self.config["scheduler.ecfvars.ecf_include"]
-        except KeyError:
-            ecf_include = ecf_files
-        self.ecf_include = ecf_include
-        self.ecf_files = ecf_files
-        if ecf_home is None:
-            ecf_home = joboutdir
-        self.ecf_home = ecf_home
-        if ecf_out is None:
-            ecf_out = joboutdir
-        self.ecf_out = ecf_out
-        self.ecf_micro = "%"
-        ecf_jobout = (
-            joboutdir
-            + f"/{self.ecf_micro}ECF_NAME{self.ecf_micro}."
-            + f"{self.ecf_micro}ECF_TRYNO{self.ecf_micro}"
-        )
-        self.ecf_jobout = ecf_jobout
-        self.ecf_files_remotely = ecf_files_remotely
-        if ecf_files_remotely is None:
-            self.ecf_files_remotely = self.ecf_files
-
-        # Commands started from the scheduler does not have full environment
-        ecf_job_cmd = (
-            f"{self.ecf_micro}TROIKA{self.ecf_micro} "
-            f"-c {self.ecf_micro}TROIKA_CONFIG{self.ecf_micro} submit "
-            f"-o {self.ecf_micro}ECF_JOBOUT{self.ecf_micro} "
-            f"{self.ecf_micro}SCHOST{self.ecf_micro} "
-            f"{self.ecf_micro}ECF_JOB{self.ecf_micro}"
-        )
-        # %ECF_JOB%"
-        self.ecf_job_cmd = ecf_job_cmd
-        ecf_status_cmd = (
-            f"{self.ecf_micro}TROIKA{self.ecf_micro} "
-            f"-c {self.ecf_micro}TROIKA_CONFIG{self.ecf_micro} monitor "
-            f"{self.ecf_micro}SCHOST{self.ecf_micro} "
-            f"{self.ecf_micro}ECF_JOB{self.ecf_micro}"
-        )
-        self.ecf_status_cmd = ecf_status_cmd
-        ecf_kill_cmd = (
-            f"{self.ecf_micro}TROIKA{self.ecf_micro} "
-            f"-vv -c {self.ecf_micro}TROIKA_CONFIG{self.ecf_micro} kill "
-            f"{self.ecf_micro}SCHOST{self.ecf_micro} "
-            f"{self.ecf_micro}ECF_JOB{self.ecf_micro}"
-        )
-        self.ecf_kill_cmd = ecf_kill_cmd
-
+        ecflow_env = EcflowEnvironmentFromConfig(config)
         platform = Platform(config)
         try:
             troika = platform.substitute(config["troika.troika"])
@@ -137,22 +154,7 @@ class SuiteDefinition(object):
         keep_workdirs = "1" if config["general.keep_workdirs"] else "0"
         loglevel = config.get("general.loglevel", LogDefaults.LEVEL).upper()
         starttime = config.get("general.times.start")
-        variables = {
-            "ECF_USER": self.ecf_user,
-            "ECFTYPES": "fc",
-            "ECF_EXTN": ".bash",
-            "ECF_TRIES": ecf_tries,
-            "ECF_FILES": self.ecf_files_remotely,
-            "ECF_INCLUDE": self.ecf_include,
-            "ECF_SSL": self.ecf_ssl,
-            "ECF_HOME": self.ecf_home,
-            "ECF_KILL_CMD": self.ecf_kill_cmd,
-            "ECF_JOB_CMD": self.ecf_job_cmd,
-            "ECF_STATUS_CMD": self.ecf_status_cmd,
-            "ECF_OUT": self.ecf_out,
-            "ECF_JOBOUT": self.ecf_jobout,
-            "ECF_TIMEOUT": 20,
-            "ECF_LOGHOST": self.ecf_host,
+        suite_vars = {
             "ARGS": "",
             "FP_PRECISION": "",
             "LOGLEVEL": loglevel,
@@ -169,23 +171,11 @@ class SuiteDefinition(object):
             "KEEP_WORKDIRS": keep_workdirs,
             "MEMBER": "",
         }
-
-        self.suite = EcflowSuite(
-            self.name,
-            ecf_files,
-            variables=variables,
-            dry_run=dry_run,
-            ecf_files_remotely=self.ecf_files_remotely,
-        )
-
-    def save_as_defs(self, def_file):
-        """Save definition file.
-
-        Args:
-            def_file (str): Name of definition file
-        """
-        logger.debug("Saving def file {}", def_file)
-        self.suite.save_as_defs(def_file)
+        super().__init__(ecflow_env, suite_vars, dry_run=dry_run)
+        self.ecf_remote_files = self.ecflow_env.get_property("ecf_remote_files")
+        self.config = config
+        self.task_settings = TaskSettings(config)
+        self.platform = platform
 
 
 class EcflowNode:
@@ -210,7 +200,7 @@ class EcflowNode:
         add_var_trigger=None,
         remote_path=None,
         def_status=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
         cron=None,
         limit=None,
     ):
@@ -230,7 +220,7 @@ class EcflowNode:
             remote_path(str): path to the mirror node on the remote ecflow suite.
                 Defaults to None
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
-            ecf_files_remotely(str, optional): Remote file prefix
+            ecf_remote_files(str, optional): Remote file prefix
             cron (EcflowSuiteCron): Cron. Defauts to None
             limit (EcflowSuiteLimit): Limit. Defaults to None
 
@@ -273,11 +263,11 @@ class EcflowNode:
             path = self.ecf_node.get_abs_node_path()
 
         self.path = path
-        logger.debug("path={} ecf_files_remotely={}", self.path, ecf_files_remotely)
-        if ecf_files_remotely is None:
-            ecf_files_remotely = ecf_files
+        logger.debug("path={} ecf_remote_files={}", self.path, ecf_remote_files)
+        if ecf_remote_files is None:
+            ecf_remote_files = ecf_files
         self.ecf_local_container_path = ecf_files + self.path
-        self.ecf_remote_container_path = ecf_files_remotely + self.path
+        self.ecf_remote_container_path = ecf_remote_files + self.path
         logger.debug(
             "path={} local_container={} remote_container={}",
             self.path,
@@ -437,7 +427,7 @@ class EcflowNodeContainer(EcflowNode):
         variables=None,
         trigger=None,
         def_status=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
         cron=None,
         limit=None,
         add_var_trigger=None,
@@ -453,7 +443,7 @@ class EcflowNodeContainer(EcflowNode):
             variables (dict, optional): Variables to map. Defaults to None
             trigger (EcflowSuiteTriggers): Trigger. Defaults to None
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
-            ecf_files_remotely(str, optional): ECF_FILES on ecflow server
+            ecf_remote_files(str, optional): ECF_FILES on ecflow server
             cron (EcflowSuiteCron): Cron. Defauts to None
             limit (EcflowSuiteLimit): Limit. Default None
             add_var_trigger(dict): Dictionary to add trigger based on ECF-variable.
@@ -471,7 +461,7 @@ class EcflowNodeContainer(EcflowNode):
             ecf_files=ecf_files,
             trigger=trigger,
             def_status=def_status,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
             cron=cron,
             limit=limit,
             add_var_trigger=add_var_trigger,
@@ -489,7 +479,7 @@ class EcflowSuite(EcflowNodeContainer):
         variables=None,
         dry_run=False,
         def_status=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
     ):
         """Construct the Ecflow suite.
 
@@ -499,7 +489,7 @@ class EcflowSuite(EcflowNodeContainer):
             variables (dict, optional): Variables to map. Defaults to None
             dry_run (bool, optional): Dry run not using ecflow. Defaults to False.
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
-            ecf_files_remotely(str, optional): ECF_FILES on ecflow server
+            ecf_remote_files(str, optional): ECF_FILES on ecflow server
 
         """
         if dry_run:
@@ -515,7 +505,7 @@ class EcflowSuite(EcflowNodeContainer):
             ecf_files,
             variables=variables,
             def_status=def_status,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
     def save_as_defs(self, def_file):
@@ -540,7 +530,7 @@ class EcflowSuiteFamily(EcflowNodeContainer):
         variables=None,
         trigger=None,
         def_status=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
         cron=None,
         limit=None,
         add_var_trigger=None,
@@ -555,7 +545,7 @@ class EcflowSuiteFamily(EcflowNodeContainer):
                     variables (dict, optional): Variables to map. Defaults to None
                     trigger (EcflowSuiteTriggers): Trigger. Defaults to None
                     def_status (str, ecflow.Defstatus): Def status. Defaults to None
-                    ecf_files_remotely(str, optional): ECF_FILES on ecflow server
+                    ecf_remote_files(str, optional): ECF_FILES on ecflow server
                     cron (EcflowSuiteCron): Cron. Defaut None
                     limit (EcflowSuiteLimit): Limit. Default None
                     add_var_trigger(dict): dict to add trigger based on ECF-variable.
@@ -572,7 +562,7 @@ class EcflowSuiteFamily(EcflowNodeContainer):
             variables=variables,
             trigger=trigger,
             def_status=def_status,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
             cron=cron,
             limit=limit,
             add_var_trigger=add_var_trigger,
@@ -601,7 +591,7 @@ class EcflowSuiteTask(EcflowNode):
         mirror=None,
         mirror_config=None,
         def_status=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
         cron=None,
         add_var_trigger=None,
         remote_path=None,
@@ -625,7 +615,7 @@ class EcflowSuiteTask(EcflowNode):
             mirror_config (dict, optional): dictionary with remote mirror settings,
                 Defaults to None
             def_status (str, ecflow.Defstatus): Def status. Defaults to None
-            ecf_files_remotely(str, optional): ECF_FILES on ecflow server
+            ecf_remote_files(str, optional): ECF_FILES on ecflow server
             cron (EcflowSuiteCron): Cron. Defaut None
             add_var_trigger(dict): dict to add trigger based on ECF-variable.
                 Defaults to None
@@ -660,7 +650,7 @@ class EcflowSuiteTask(EcflowNode):
                 variables=variables,
                 trigger=trigger,
                 def_status=def_status,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
                 cron=cron,
                 add_var_trigger=add_var_trigger,
                 remote_path=remote_path,
