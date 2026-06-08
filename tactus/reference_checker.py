@@ -351,6 +351,14 @@ class CheckDefinition:
         if taskname in config["task"]:
             for rulename in rules_active:
                 if rulename in config["task"][taskname]:
+
+                    for parameter in ["method", "inpath", "pattern", "result_folder"]:
+                        if parameter not in config["task"][taskname][rulename]:
+                            logger.error(
+                                f"Reference Checker - {parameter} not defined for task {taskname} and rule {rulename}. Skipping this rule."
+                            )
+                            continue
+
                     method = config["task"][taskname][rulename]["method"]
                     inpath = config["task"][taskname][rulename]["inpath"]
                     pattern = config["task"][taskname][rulename]["pattern"]
