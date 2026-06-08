@@ -11,22 +11,22 @@
   
 [refchecks.reference_checker.task.Forecast.fullpos]
   files = "@ARCHIVE@/GRIBPF*0006h00m00s"
-  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
-  reference_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
 
 [refchecks.reference_checker.task.Forecast.history]
   files = "@ARCHIVE@/ICMSH*00060h00m00s"
-  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
-  reference_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
 
 [refchecks.reference_checker.task.Forecast.log]
-  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
-  reference_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
 
 [refchecks.reference_checker.task.Forecast.surfex]
   inpath = "@ARCHIVE@"
   pattern = "ICMSH*0006h00m00s.sfx"
   method = "HistoryFields"
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
-  reference_folder = "@REFERENCE_FOLDER@"
+  reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   result_folder = "@WRK@/checks/Forecast"
