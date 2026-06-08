@@ -351,13 +351,24 @@ class CheckDefinition:
         if taskname in config["task"]:
             for rulename in rules_active:
                 if rulename in config["task"][taskname]:
+                    parameters = ["method", "inpath", "pattern", "result_folder"]
+                    if generate:
+                        parameters.append("generate_folder")
+                    if check:
+                        parameters.append("reference_folder")
 
-                    for parameter in ["method", "inpath", "pattern", "result_folder"]:
+                    have_all_parameters = True
+                    for parameter in parameters:
                         if parameter not in config["task"][taskname][rulename]:
-                            logger.error(
-                                f"Reference Checker - {parameter} not defined for task {taskname} and rule {rulename}. Skipping this rule."
+                            logger.warning(
+                                f"Reference Checker - {parameter} not defined for task {taskname} and rule {rulename}."
                             )
-                            continue
+                            have_all_parameters = False
+                    if not have_all_parameters:
+                        logger.warning(
+                               f"Skipping reference check definition for task {taskname} and rule {rulename}"
+                            )
+                        continue
 
                     method = config["task"][taskname][rulename]["method"]
                     inpath = config["task"][taskname][rulename]["inpath"]
