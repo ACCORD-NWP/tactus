@@ -16,6 +16,7 @@ from tactus.datetime_utils import (
 )
 from tactus.host_actions import SelectHost
 from tactus.logs import logger
+from tactus.scheduler import EcflowServer
 from tactus.submission import ProcessorLayout, TaskSettings
 from tactus.suites.base import (
     EcflowSuiteFamily,
@@ -554,6 +555,56 @@ class MirrorFamily(EcflowSuiteFamily):
                 mirror_config=mirror_config,
                 ecf_files_remotely=ecf_files_remotely,
             )
+
+
+class MirrorSuite(EcflowSuiteFamily):
+    """Class for waiting for a suite."""
+
+    def __init__(
+        self,
+        parent,
+        config,
+        task_settings: TaskSettings,
+        input_template,
+        ecf_files,
+        trigger=None,
+        ecf_files_remotely=None,
+    ):
+        """Class initialization."""
+        super().__init__(
+            "Mirrors",
+            parent,
+            ecf_files,
+            trigger=trigger,
+            ecf_files_remotely=ecf_files_remotely,
+        )
+
+        # Resolve macros, host and port
+        platform = Platform(config)
+        self.mirror_suite = {
+            x: v if isinstance(v := platform.substitute(y), (str, bool)) else str(v)
+            for x, y in config["scheduler.mirror_suite"].items()
+        }
+        self.mirror_suite["remote_host"] = platform.evaluate(
+            self.mirror_suite["remote_host"], object_=SelectHost
+        )
+        self.mirror_suite["remote_port"] = platform.evaluate(
+            self.mirror_suite["remote_port"], object_=EcflowServer
+        )
+        self.mirror_path = self.mirror_suite["remote_path"].split("/")[-1]
+
+        EcflowSuiteTask(
+            self.mirror_path,
+            self,
+            config,
+            task_settings,
+            ecf_files,
+            input_template=input_template,
+            trigger=[trigger],
+            mirror=True,
+            mirror_config=self.mirror_suite,
+            ecf_files_remotely=ecf_files_remotely,
+        )
 
 
 class InputDataFamily(EcflowSuiteFamily):
@@ -1322,6 +1373,7 @@ class CycleFamily(EcflowSuiteFamily):
         ecf_files,
         trigger=None,
         ecf_files_remotely=None,
+        member=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -1340,6 +1392,20 @@ class CycleFamily(EcflowSuiteFamily):
             ecf_files,
             ecf_files_remotely=ecf_files_remotely,
         )
+        if member > 0 and (
+            config["perturbations.pertana"] or config["perturbations.pertsurf"]
+        ):
+            perturbation_family = PerturbationFamily(
+                self,
+                config,
+                task_settings,
+                input_template,
+                ecf_files,
+                trigger=initialization_family,
+                ecf_files_remotely=ecf_files_remotely,
+            )
+        else:
+            perturbation_family = initialization_family
 
         ForecastFamily(
             self,
@@ -1347,7 +1413,7 @@ class CycleFamily(EcflowSuiteFamily):
             task_settings,
             input_template,
             ecf_files,
-            trigger=initialization_family,
+            trigger=perturbation_family,
             ecf_files_remotely=ecf_files_remotely,
         )
 
@@ -1420,6 +1486,51 @@ class PostCycleFamily(EcflowSuiteFamily):
             trigger=collectlogs_triggers,
             ecf_files_remotely=ecf_files_remotely,
         )
+
+
+class PerturbationFamily(EcflowSuiteFamily):
+    """Class for creating the Perturbation ecFlow family."""
+
+    def __init__(
+        self,
+        parent,
+        config,
+        task_settings: TaskSettings,
+        input_template,
+        ecf_files,
+        trigger=None,
+        ecf_files_remotely=None,
+    ):
+        """Class initialization."""
+        super().__init__(
+            "Perturbations",
+            parent,
+            ecf_files,
+            trigger=trigger,
+            ecf_files_remotely=ecf_files_remotely,
+        )
+
+        if config["perturbations.pertana"]:
+            EcflowSuiteTask(
+                "Pertana",
+                self,
+                config,
+                task_settings,
+                ecf_files,
+                input_template=input_template,
+                ecf_files_remotely=ecf_files_remotely,
+            )
+
+        if config["perturbations.pertsurf"]:
+            EcflowSuiteTask(
+                "Pertsurf",
+                self,
+                config,
+                task_settings,
+                ecf_files,
+                input_template=input_template,
+                ecf_files_remotely=ecf_files_remotely,
+            )
 
 
 class TimeDependentFamily(EcflowSuiteFamily):
@@ -1642,6 +1753,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     ecf_files,
                     trigger=ready_for_cycle,
                     ecf_files_remotely=ecf_files_remotely,
+                    member=member,
                 )
                 member_cycle_families.append(cycle_family)
                 prev_cycle_triggers[member] = [cycle_family]
@@ -1805,8 +1917,9 @@ class CompilationFamily(EcflowSuiteFamily):
             input_template=input_template,
             ecf_files_remotely=ecf_files_remotely,
         )
+
         create_bundle = EcflowSuiteTask(
-            "IALBundleCreate",
+            "TactusBundleCreate",
             self,
             config,
             task_settings,
@@ -1815,13 +1928,35 @@ class CompilationFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
             trigger=EcflowSuiteTriggers(EcflowSuiteTrigger(clone_ial)),
         )
-        EcflowSuiteTask(
-            "IALBundleBuild",
+
+        build_familiy = EcflowSuiteFamily(
+            "TactusBundleBuild",
             self,
-            config,
-            task_settings,
             ecf_files,
-            input_template=input_template,
             ecf_files_remotely=ecf_files_remotely,
-            trigger=EcflowSuiteTriggers(EcflowSuiteTrigger(create_bundle)),
         )
+        precision_dict = {"R64": "double"}
+        if config["submission"]["precision"] == "R32":
+            precision_dict["R32"] = "single"
+
+        for precision in precision_dict:
+            prec_familiy = EcflowSuiteFamily(
+                precision,
+                build_familiy,
+                ecf_files,
+                ecf_files_remotely=ecf_files_remotely,
+            )
+            EcflowSuiteTask(
+                "TactusBundleBuild",
+                prec_familiy,
+                config,
+                task_settings,
+                ecf_files,
+                input_template=input_template,
+                ecf_files_remotely=ecf_files_remotely,
+                variables={
+                    "ARGS": f"prec={precision}",
+                    "FP_PRECISION": precision_dict[precision],
+                },
+                trigger=EcflowSuiteTriggers(EcflowSuiteTrigger(create_bundle)),
+            )

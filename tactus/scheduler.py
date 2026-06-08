@@ -82,6 +82,17 @@ class Server(ABC):
         if begin:
             self.begin_suite(suite_name)
 
+    def replace_node(self, node_path, def_file):
+        """Start the suite.
+
+        Replace a node.
+
+        Args:
+            node_path (str): Path of the node
+            def_file (str): Name of the definition file.
+        """
+        self.replace(node_path, def_file)
+
 
 class EcflowServer(Server):
     """Ecflow server."""

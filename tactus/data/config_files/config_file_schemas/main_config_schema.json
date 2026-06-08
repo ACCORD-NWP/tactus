@@ -26,6 +26,9 @@
     "collectlogs": {
       "$ref": "#/definitions/collectlogs"
     },
+    "perturbations": {
+      "$ref": "#/definitions/perturbations"
+    },
     "pgd": {
       "$ref": "#/definitions/pgd"
     },
@@ -320,6 +323,23 @@
         }
       }
     },
+    "perturbations": {
+      "title": "Perturbation Section",
+      "description": "Settings for control of perturbations.",
+      "type": "object",
+      "properties": {
+        "pertana": {
+          "title": "Perturbation of initial atmospheric conditions with boundary data.",
+          "type": "boolean",
+          "default": false
+        },
+        "pertsurf": {
+          "title": "Perturbation of initial surfex conditions",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
     "pgd": {
       "title": "Pgd Section",
       "description": "Settings for control of Pgd selection.",
@@ -496,6 +516,11 @@
           "type": "boolean",
           "default": false
         },
+        "mirror_suite": {
+          "description": "Mirror system.host_suite and trigger when the PostMortem task is completed",
+          "type": "boolean",
+          "default": false
+        },
         "max_static_data_tasks": {
           "description": "Limit for max number of monthly tasks, run at same time",
           "type": "integer",
@@ -637,7 +662,7 @@
           "description": "Local path to IAL source dir",
           "default": "@CASEDIR@/IAL"
         },
-        "git_repo": {
+        "ial_git_repo": {
           "type": "string",
           "description": "Git repo for IAL source",
           "default": "git@github.com:ACCORD-NWP/IAL"
@@ -647,7 +672,7 @@
           "description": "Git token for IAL source access",
           "default": ""
         },
-        "git_branch": {
+        "ial_git_branch": {
           "type": "string",
           "description": "Branch/tag",
           "default": "develop"
@@ -655,7 +680,52 @@
         "arch": {
           "type": "string",
           "description": "Compiler configuration",
-          "default": "ecmwf/hpc2020"
+          "default": "source/ial-source/bundle/arch/ecmwf/hpc2020"
+        },
+        "dir": {
+          "type": "string",
+          "description": "Directory where compilation will occur",
+          "default": "@CASEDIR@/bundle"
+        },
+        "bundle_update": {
+          "type": "boolean",
+          "description": "whether to update bundle_file with another bundle",
+          "default": true
+        },
+        "update_bundle_file": {
+          "type": "string",
+          "description": "bundle used for compiling binaries",
+          "default": "@TACTUS_HOME@/data/compilation/@CYCLE@/bundle.yml"
+        },
+        "bundle_file": {
+          "type": "string",
+          "description": "bundle used for compiling binaries",
+          "default": "@CASEDIR@/IAL/bundle/bundle.yml"
+        },
+        "ninja": {
+          "type": "boolean",
+          "description": "whether to use ninja for compilation",
+          "default": false
+        },
+        "skip_build": {
+          "type": "boolean",
+          "description": "whether to skip build step",
+          "default": false
+        },
+        "clean_build": {
+          "type": "boolean",
+          "description": "whether to clean build folder before compilation",
+          "default": false
+        },
+        "cache": {
+          "type": "boolean",
+          "description": "whether to use chache build/install folders",
+          "default": false
+        },
+        "cache_dir": {
+          "type": "string",
+          "description": "whether to use chache build/install folders",
+          "default": "@REFERENCE_DATA@/bundle_cache"
         }
       }
     },
