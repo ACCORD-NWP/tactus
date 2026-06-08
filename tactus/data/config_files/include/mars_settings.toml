@@ -76,13 +76,13 @@
 
 [mars.i7u4]
   default = "RD_DEFAULT"
-  gg_oro_source = "@STATIC_DATA@/IFS_gridpoint_orography/oro_T3999_F3214"
+  gg_oro_source = "@STATIC_DATA@/climate_fields_mir/IFS_gridpoint_orography/oro_T3999_F3214"
   grid = "0.028/0.028"
   stream.00 = "LWDA"
 
 [mars.i7ye]
   default = "RD_DEFAULT"
-  gg_oro_source = "@STATIC_DATA@/IFS_gridpoint_orography/oro_T3999_F3214"
+  gg_oro_source = "@STATIC_DATA@/climate_fields_mir/IFS_gridpoint_orography/oro_T3999_F3214"
   grid = "0.028/0.028"
   stream.00 = "LWDA"
 
@@ -205,7 +205,7 @@
   class = "RD"
   GG = "32/33/39/40/41/42/139/141/170/172/183/198/235/236/35/36/37/38/238/243/244/245"
   GG_lsm = "172"
-  gg_oro_source = "@STATIC_DATA@/IFS_gridpoint_orography/oro_T2559_F2250"
+  gg_oro_source = "@STATIC_DATA@/climate_fields_mir/IFS_gridpoint_orography/oro_T2559_F2250"
   GG_sea = "31/34"
   GG_skt = "235"
   GG_snow = "33/238/228038/228141"
