@@ -12,7 +12,7 @@
   case = "@CASE_PREFIX@@CYCLE@_compile"
 
 [cases.cy50t2_compile.modifs.suite_control]
-  compile = true
+  compile = false
   suite_definition = "CompilationSuiteDefinition"
 
 [cases.cy50t2_alaro_climate_files]
