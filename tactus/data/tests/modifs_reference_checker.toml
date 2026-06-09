@@ -10,16 +10,23 @@
   suppress_exception = false
 
 [refchecks.reference_checker.task.Forecast.fullpos]
-  files = "@ARCHIVE@/GRIBPF*0006h00m00s"
+  inpath = "@ARCHIVE@"
+  pattern = "GRIBPF.*0006h00m00s"
+  method = "FullPosFields"
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
 
-[refchecks.reference_checker.task.Forecast.history]
-  files = "@ARCHIVE@/ICMSH*00060h00m00s"
+[refchecks.reference_checker.task.Forecast.history]  
+  inpath = "@ARCHIVE@"
+  pattern = "ICMSH.*0006h00m00s"
+  method = "HistoryFields"
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
 
 [refchecks.reference_checker.task.Forecast.log]
+  inpath = "@WRK@/logs/Forecast"
+  pattern = "NODE.001_01"
+  method = "ForecastNorms"
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
 
