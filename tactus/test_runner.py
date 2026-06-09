@@ -49,9 +49,10 @@ class TestCases:
 
         self.verbose = args.verbose
         self.cases = definitions.get("cases", {})
-        self.reference_date = evaluate_date(
-            f"{definitions['general'].get('reference_date', '-P1D')}"
-        )
+#        self.reference_date = evaluate_date(
+#            f"{definitions['general'].get('reference_date', '-P1D')}"
+#        )
+        self.reference_date = "2025-02-09T00:00:00Z"
         self.max_workers = definitions["general"].get("max_workers", None)
         self.cmds = {}
         self.mode = definitions["general"].get("mode", "suite")
@@ -187,9 +188,9 @@ class TestCases:
             # Merge and replace macros
             modifs = merge_dicts(self.modifs, self.cases[case].get("modifs", {}), True)
             modifs = merge_dicts(modifs,self.refchecks, True)
-            if self.generate_refs:                
+            if self.generate_refs:
                 modifs = merge_dicts(modifs,self.genchecks, True)
-            
+
             config = self.config.copy(
                 update={
                     "modifs": modifs,
