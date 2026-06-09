@@ -14,7 +14,6 @@ import tomli
 
 from . import GeneralConstants
 from .config_parser import BasicConfig, ConfigPaths, ParsedConfig
-from .datetime_utils import evaluate_date
 from .experiment import get_git_info
 from .fullpos import flatten_list
 from .general_utils import merge_dicts
@@ -49,9 +48,9 @@ class TestCases:
 
         self.verbose = args.verbose
         self.cases = definitions.get("cases", {})
-#        self.reference_date = evaluate_date(
-#            f"{definitions['general'].get('reference_date', '-P1D')}"
-#        )
+        #        self.reference_date = evaluate_date(
+        #            f"{definitions['general'].get('reference_date', '-P1D')}"
+        #        )
         self.reference_date = "2025-02-09T00:00:00Z"
         self.max_workers = definitions["general"].get("max_workers", None)
         self.cmds = {}
@@ -67,7 +66,7 @@ class TestCases:
         self.gl = definitions.get("gl", {})
         self.selection = self.resolve_selection(definitions)
         self.assigned = {}
-        self.generate_refs=args.generate_refs if args.generate_refs else False
+        self.generate_refs = args.generate_refs if args.generate_refs else False
         if self.generate_refs:
             logger.warning("**************************************************")
             logger.warning("*   Reference checker: generate reference mode   *")
@@ -187,9 +186,9 @@ class TestCases:
 
             # Merge and replace macros
             modifs = merge_dicts(self.modifs, self.cases[case].get("modifs", {}), True)
-            modifs = merge_dicts(modifs,self.refchecks, True)
+            modifs = merge_dicts(modifs, self.refchecks, True)
             if self.generate_refs:
-                modifs = merge_dicts(modifs,self.genchecks, True)
+                modifs = merge_dicts(modifs, self.genchecks, True)
 
             config = self.config.copy(
                 update={
