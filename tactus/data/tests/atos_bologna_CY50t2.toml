@@ -7,7 +7,6 @@
     "cy50t2_arome",
     "cy50t2_harmonie_arome_climate_files",
     "cy50t2_harmonie_arome"
-
   ]
 
 [general.compiler.gnu_]

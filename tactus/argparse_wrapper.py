@@ -536,7 +536,7 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         dest="run",
         default=False,
         help="Launch the tests",
-    )    
+    )
     parser_test.add_argument(
         "--generate-references",
         "-g",
@@ -546,7 +546,7 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         required=False,
         default=False,
     )
-    
+
     parser_test.set_defaults(run_command=run_test, standalone_command=True)
 
     # Configure parser for the "replace" command #

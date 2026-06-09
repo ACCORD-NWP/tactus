@@ -361,13 +361,15 @@ class CheckDefinition:
                     for parameter in parameters:
                         if parameter not in config["task"][taskname][rulename]:
                             logger.warning(
-                                f"Reference Checker - {parameter} not defined for task {taskname} and rule {rulename}."
+                                f"Reference Checker - {parameter} not defined for"
+                                + f"task {taskname} and rule {rulename}."
                             )
                             have_all_parameters = False
                     if not have_all_parameters:
                         logger.warning(
-                               f"Skipping reference check definition for task {taskname} and rule {rulename}"
-                            )
+                            f"Skipping reference check definition for {taskname}"
+                            + f" and rule {rulename}"
+                        )
                         continue
 
                     method = config["task"][taskname][rulename]["method"]
@@ -539,7 +541,7 @@ class CheckSummaryAnalysis:
     def append_error_message(self, error_message):
         """Append an error message."""
         if len(self.error_message) == 0:
-           self.error_message = error_message
+            self.error_message = error_message
         else:
             self.error_message = f"{self.error_message}\n{error_message}"
 
@@ -551,9 +553,7 @@ class CheckSummaryAnalysis:
         if not self.check:
             return True
 
-        return (
-            self.error_count == 0 and self.missing_count == 0
-        )
+        return self.error_count == 0 and self.missing_count == 0
 
     def total_count(self):
         """Retern total number of files tested and missing."""
@@ -591,13 +591,7 @@ class CheckSummaryTxt(CheckSummary):
         self.version = "1.0.0"
 
     def create(self):
-        """Create a summary file with header.
-
-        Args:
-            platform: the platform
-
-        """
-
+        """Create a summary file with header."""
         with (
             FileLock(self.fullpath, delete_existing=True),
             open(self.fullpath, "w") as summary_file,
@@ -688,7 +682,9 @@ class CheckSummaryTxt(CheckSummary):
                             analysis.increment_generated_count()
                     if clean_line.startswith("Task: ReferenceChecker"):
                         analysis = CheckSummaryAnalysis(check)
-                        analysis.append_error_message(f"Summary analysis already present in {self.fullpath}")
+                        analysis.append_error_message(
+                            f"Summary analysis already present in {self.fullpath}"
+                        )
                         return analysis
 
             with open(self.fullpath, mode="a", encoding="utf8") as outfile:
@@ -708,12 +704,12 @@ class CheckSummaryTxt(CheckSummary):
         return analysis
 
     def contains_summary_analysis(self):
-        with FileLock(self.fullpath):
-            with open(self.fullpath, "r") as file:
-                for line in file.readlines():
-                    clean_line = line.replace("\n", "")
-                    if clean_line.startswith("Task: ReferenceChecker"):
-                        return True
+        """Return True if the summary file contains an analysis."""
+        with FileLock(self.fullpath), open(self.fullpath, "r") as file:
+            for line in file.readlines():
+                clean_line = line.replace("\n", "")
+                if clean_line.startswith("Task: ReferenceChecker"):
+                    return True
         return False
 
 
@@ -731,13 +727,7 @@ class CheckSummaryJson(CheckSummary):
         self.version = "1.0.0"
 
     def create(self):
-        """Create a summary file with header.
-
-        Args:
-            platform: the platform
-
-        """
-
+        """Create a summary file with header."""
         complete_dict = {}
         complete_dict["header"] = self._header_to_dict()
         complete_dict["tasks"] = {}
@@ -812,7 +802,9 @@ class CheckSummaryJson(CheckSummary):
             with open(self.fullpath, "r") as file:
                 data = json.load(file)
             if "analysis" in data:
-                analysis.append_error_message(f"Summary analysis already present in {self.fullpath}.")
+                analysis.append_error_message(
+                    f"Summary analysis already present in {self.fullpath}."
+                )
                 return analysis
             for task in data["tasks"]:
                 for rule in data["tasks"][task]:
@@ -853,10 +845,11 @@ class CheckSummaryJson(CheckSummary):
         return analysis
 
     def contains_summary_analysis(self):
+        """Return True if the summary file contains an analysis."""
         with open(self.fullpath, "r") as file:
-           data = json.load(file)
-           if "analysis" in data:
-              return True
+            data = json.load(file)
+            if "analysis" in data:
+                return True
         return False
 
     @staticmethod
@@ -1071,7 +1064,6 @@ class ReferenceCheckManager:
             if not os.path.exists(summary.fullpath):
                 summary.create()
 
-
     def analyze_summaries(self):
         """Analyze the summaries."""
         failed_messages = ""
@@ -1140,14 +1132,14 @@ class ReferenceCheckManager:
         force_deletion = self.create_summary
 
         for summary in self.summary_list:
-           if os.path.exists(summary.fullpath):
-              delete = force_deletion
-              if not delete:
-                  has_summary = summary.contains_summary_analysis()
-                  if has_summary:
-                      delete = not self.analyze_summary
-              if delete:
-                 summary.delete()
+            if os.path.exists(summary.fullpath):
+                delete = force_deletion
+                if not delete:
+                    has_summary = summary.contains_summary_analysis()
+                    if has_summary:
+                        delete = not self.analyze_summary
+                if delete:
+                    summary.delete()
 
         self.create_summaries_with_header_if_empty()
 
