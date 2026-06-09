@@ -14,6 +14,7 @@ import tomli
 
 from . import GeneralConstants
 from .config_parser import BasicConfig, ConfigPaths, ParsedConfig
+from .datetime_utils import evaluate_date
 from .experiment import get_git_info
 from .fullpos import flatten_list
 from .general_utils import merge_dicts
@@ -48,10 +49,9 @@ class TestCases:
 
         self.verbose = args.verbose
         self.cases = definitions.get("cases", {})
-        #        self.reference_date = evaluate_date(
-        #            f"{definitions['general'].get('reference_date', '-P1D')}"
-        #        )
-        self.reference_date = "2025-02-09T00:00:00Z"
+        self.reference_date = evaluate_date(
+            f"{definitions['general'].get('reference_date', '-P1D')}"
+        )
         self.max_workers = definitions["general"].get("max_workers", None)
         self.cmds = {}
         self.mode = definitions["general"].get("mode", "suite")
