@@ -47,7 +47,7 @@
     "pyyaml>=6.0",
     "thenamelisttool @ git+https://github.com/UMR-CNRM/thenamelisttool.git",
     # "toml-formatter @ git+https://github.com/ACCORD-NWP/toml-formatter.git",
-    # "toml-formatter @ git+https://github.com/mfroelund/toml-formatter.git@feature/adjust-python-version",
+    "toml-formatter @ git+https://github.com/mfroelund/toml-formatter.git@feature/adjust-python-version",
     "tomli>=2.0.1",
     "tomlkit>=0.12.1",
     "troika @ git+https://github.com/ecmwf/troika.git",
