@@ -1,4 +1,7 @@
 import re
+from unittest.mock import patch
+
+import yaml
 
 from tactus.config_parser import ConfigParserDefaults
 from tactus.tasks.prep_run import PrepRun
@@ -79,7 +82,6 @@ def test_create_famodeldefs_productdefinitiontemplatenumber_first(
 
 
 def test_create_famodeldefs_strings_vs_integers(tmp_path, default_config):
-    from unittest.mock import patch
 
     config = default_config.copy(
         update={
@@ -120,8 +122,6 @@ cscs:
     output_dir = tmp_path / "output"
     output_dir.mkdir(exist_ok=True)
     prep = PrepRun(config)
-
-    import yaml
 
     with patch(
         "tactus.tasks.prep_run.yaml.safe_load",
