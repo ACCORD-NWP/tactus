@@ -11,10 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Introduce CY50t2 test cases in the test-runner. [\#88](https://github.com/ACCORD-NWP/tactus/pull/88) (@uandrae)
+- Added suite control switch for grib calculations. [#102](https://github.com/ACCORD-NWP/tactus/pull/102) (@uandrae)
 - Introduce perturbation family and config section. [#87](https://github.com/ACCORD-NWP/tactus/pull/87) (@uandrae)
 
+### Changed
+- Switch to accord owned path for static data on atos_bologna. [#106](https://github.com/ACCORD-NWP/tactus/pull/106) (@uandrae)
+
 ### Fixed
+- Correct basetime used for MARS data availability. [#108](https://github.com/ACCORD-NWP/tactus/pull/108) (@uandrae)
 - Correct input data path in E923Update. [#100](https://github.com/ACCORD-NWP/tactus/pull/100) (@uandrae)
+- Fix documentation deployment trigger on new releases. [#107](https://github.com/ACCORD-NWP/tactus/pull/107) (@mfroelund)
+- Fix ordering of setting `productDefinitionTemplateNumber` for EPS runs in `FaModelSource.yml`[\#91](https://github.com/ACCORD-NWP/tactus/pull/91) (@sbnielsen)
 
 ## [1.1.0] - 2026-06-03
 
