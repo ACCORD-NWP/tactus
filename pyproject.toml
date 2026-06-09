@@ -3,8 +3,8 @@
   version = "1.1.0"
   description = "The Tactus scripting system."
   readme = "README.md"
-  license = { text = "MIT" }
-  authors = [{ name = "ACCORD" }]
+  license = {text = "MIT"}
+  authors = [{name = "ACCORD"}]
   keywords = ["forecasting", "tactus", "weather"]
   requires-python = ">=3.12,<4.0.0"
   classifiers = [
@@ -47,7 +47,7 @@
     "pyyaml>=6.0",
     "thenamelisttool @ git+https://github.com/UMR-CNRM/thenamelisttool.git",
     # "toml-formatter @ git+https://github.com/ACCORD-NWP/toml-formatter.git",
-    "toml-formatter @ git+https://github.com/mfroelund/toml-formatter.git@feature/adjust-python-version",
+    # "toml-formatter @ git+https://github.com/mfroelund/toml-formatter.git@feature/adjust-python-version",
     "tomli>=2.0.1",
     "tomlkit>=0.12.1",
     "troika @ git+https://github.com/ecmwf/troika.git",
@@ -98,7 +98,7 @@
   platforms = ["linux-64"]
 
 [tool.pixi.pypi-dependencies]
-  tactus = { path = ".", editable = true }
+  tactus = {path = ".", editable = true}
 
 [tool.pixi.dependencies]
   # conda-forge provides C libraries that pip wheels don't bundle
@@ -119,48 +119,48 @@
   python = "3.14.*"
 
 [tool.pixi.environments]
-  default = { features = ["py314"], solve-group = "py314" }
-  dev = { features = ["dev", "py314"], solve-group = "py314" }
-  doc = { features = ["doc", "py314"], solve-group = "py314" }
-  test = { features = ["test", "dev", "py314"], solve-group = "py314" }
-  py312 = { features = ["py312"], solve-group = "py312" }
-  py312-test = { features = ["test", "dev", "py312"], solve-group = "py312" }
-  py313 = { features = ["py313"], solve-group = "py313" }
-  py313-test = { features = ["test", "dev", "py313"], solve-group = "py313" }
-  py314 = { features = ["py314"], solve-group = "py314" }
-  py314-test = { features = ["test", "dev", "py314"], solve-group = "py314" }
+  default = {features = ["py314"], solve-group = "py314"}
+  dev = {features = ["dev", "py314"], solve-group = "py314"}
+  doc = {features = ["doc", "py314"], solve-group = "py314"}
+  test = {features = ["test", "dev", "py314"], solve-group = "py314"}
+  py312 = {features = ["py312"], solve-group = "py312"}
+  py312-test = {features = ["test", "dev", "py312"], solve-group = "py312"}
+  py313 = {features = ["py313"], solve-group = "py313"}
+  py313-test = {features = ["test", "dev", "py313"], solve-group = "py313"}
+  py314 = {features = ["py314"], solve-group = "py314"}
+  py314-test = {features = ["test", "dev", "py314"], solve-group = "py314"}
 
 [tool.pixi.tasks]
-  lint = { cmd = "pre-commit run --all-files", default-environment = "dev", description = "Run all linters on all files." }
-  doc-build = { depends-on = [
+  lint = {cmd = "pre-commit run --all-files", default-environment = "dev", description = "Run all linters on all files."}
+  doc-build = {depends-on = [
     "doc-clean",
   ], cmd = """python -m tactus doc config > docs/markdown_docs/config.md
     python docs/write_output_overview.py docs/markdown_docs/output_overview.md
     sphinx-apidoc tactus -o docs/ --force --no-toc --module-first
     sphinx-build docs docs/_build/
-    touch docs/_build/.nojekyll""", default-environment = "doc", description = "Build the documentation. Before the build, the task cleans up existing builds." }
-  doc-clean = { cmd = "rm -rf docs/_build/ docs/tactus.rst docs/markdown_docs/config.md docs/markdown_docs/output_overview.md", description = "Clean up documentation build artifacts." }
-  doc-view = { cmd = "test ! -f docs/_build/index.html && doc-build || true && python -m webbrowser docs/_build/index.html", description = "View the built documentation in the default web browser. If the documentation hasn't been built yet, it will be built first." }
-  doc = { depends-on = [
+    touch docs/_build/.nojekyll""", default-environment = "doc", description = "Build the documentation. Before the build, the task cleans up existing builds."}
+  doc-clean = {cmd = "rm -rf docs/_build/ docs/tactus.rst docs/markdown_docs/config.md docs/markdown_docs/output_overview.md", description = "Clean up documentation build artifacts."}
+  doc-view = {cmd = "test ! -f docs/_build/index.html && doc-build || true && python -m webbrowser docs/_build/index.html", description = "View the built documentation in the default web browser. If the documentation hasn't been built yet, it will be built first."}
+  doc = {depends-on = [
     "doc-build",
     "doc-view",
-  ], cmd = "echo 'Documentation built and opened in browser!'", description = "Build the documentation and open it in the default web browser." }
-  test = { cmd = "pytest -n auto --maxprocesses 1", default-environment = "test", description = "Run all tests in parallel using pytest." }
-  pre-push-checks = { depends-on = [
+  ], cmd = "echo 'Documentation built and opened in browser!'", description = "Build the documentation and open it in the default web browser."}
+  test = {cmd = "pytest -n auto --maxprocesses 1", default-environment = "test", description = "Run all tests in parallel using pytest."}
+  pre-push-checks = {depends-on = [
     "lint",
     "doc-build",
     "test",
-  ], cmd = "echo 'All pre-push checks passed!'", description = "Run all checks before pushing. This includes linting, building the documentation, and running tests." }
-  clean = { cmd = """
+  ], cmd = "echo 'All pre-push checks passed!'", description = "Run all checks before pushing. This includes linting, building the documentation, and running tests."}
+  clean = {cmd = """
     rm -rf docs/_build/ docs/tactus.rst docs/markdown_docs/config.md docs/markdown_docs/output_overview.md
     find . -type d -name "__pycache__" -exec rm -rf '{}' + 2>/dev/null || true
     find . -type d -name "*.egg-info" -exec rm -rf '{}' + 2>/dev/null || true
     find . -type f -name "*.pyc" -delete
     rm -rf .pytest_cache .coverage .coverage.xml
-    """, description = "Clean build artifacts and caches." }
+    """, description = "Clean build artifacts and caches."}
 
 [tool.poetry]
-  include = [{ path = "tactus/data/**/*", format = ["sdist", "wheel"] }]
+  include = [{path = "tactus/data/**/*", format = ["sdist", "wheel"]}]
 
 # pytest configs
 [tool.pytest.ini_options]
