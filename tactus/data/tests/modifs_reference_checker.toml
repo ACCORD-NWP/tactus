@@ -1,5 +1,5 @@
 [refchecks.platform]
-  reference_tag = "V1.0.1"
+  reference_tag = "v1.0.1"
   references_folder = "@SCRATCH@/tactus_references/@REFERENCE_TAG@"
   references_generation_folder = "N/A"
 
@@ -16,14 +16,14 @@
 
 [refchecks.reference_checker.task.Forecast.fullpos]
   inpath = "@ARCHIVE@"
-  pattern = "GRIBPF.*0006h00m00s"
+  pattern = "GRIBPF.*0003h00m00s"
   method = "FullPosFields"
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
 
 [refchecks.reference_checker.task.Forecast.history]
   inpath = "@ARCHIVE@"
-  pattern = "ICMSH.*0006h00m00s"
+  pattern = "ICMSH.*0003h00m00s"
   method = "HistoryFields"
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
@@ -37,7 +37,7 @@
 
 [refchecks.reference_checker.task.Forecast.surfex]
   inpath = "@ARCHIVE@"
-  pattern = "ICMSH*0006h00m00s.sfx"
+  pattern = "ICMSH*0003h00m00s.sfx"
   method = "HistoryFields"
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
