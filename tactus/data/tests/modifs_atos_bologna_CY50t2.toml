@@ -19,7 +19,7 @@
 
 [modifs.platform]
   reference_data = "@SCRATCH@/@SYS_NAME@/@CYCLE@"
-  ref_case = "@SUBTAG@@PRECISION@_@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@"
+  ref_case = "@SUBTAG@@PRECISION@_@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@@CASE_SUFFIX@"
 
 [modifs.platform.mirrorglobalDT]
   remote_host = "ecflow-gen-snh02-001"
