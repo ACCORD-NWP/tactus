@@ -492,8 +492,6 @@ class TestCases:
             try:
                 with open(json_file, "r", encoding="utf-8") as f:
                     summary = json.load(f)
-                    if not 'analysis' in summary:
-                        summary = None
             except FileNotFoundError:
                 summary = None
 
@@ -511,21 +509,24 @@ class TestCases:
                 if not summary:
                     logger.opt(colors=True).info(f"{case_name:<{width}} |<cyan> MISSING </cyan> - no summary found")
                 else:
-                    color = 'green'
-                    if summary['analysis']['missing_count'] > 0: color = 'red'
-                    if summary['analysis']['error_count'] > 0: color = 'red'
-                    message = summary['analysis']['result'].split('-')
-                    logger.opt(colors=True).info(f"{case_name:<{width}} | <{color}>{message[0]} </{color}>- {message[1]}")
-                    if self.verbose:
-                        logger.info(f"{'from':>10} | {case_files[case_name]}\n")
-                        for task_name, results in summary["tasks"].items():
-                            for test_type, result in results.items():
-                                if test_type == "Create":
-                                    continue
-                                try:
-                                    logger.info(f"{test_type:>10} | {result['items'][0]['result']}")
-                                except KeyError:
-                                    logger.info(f"{test_type:>10} | {result['items'][0]['warning']}")
+                    if not 'analysis' in summary:
+                        logger.opt(colors=True).info(f"{case_name:<{width}} |<yellow> RUNNING </yellow> ")
+                    else: 
+                        color = 'green'
+                        if summary['analysis']['missing_count'] > 0: color = 'red'
+                        if summary['analysis']['error_count'] > 0: color = 'red'
+                        message = summary['analysis']['result'].split('-')
+                        logger.opt(colors=True).info(f"{case_name:<{width}} | <{color}>{message[0]} </{color}>- {message[1]}")
+                        if self.verbose:
+                            logger.info(f"{'from':>10} | {case_files[case_name]}\n")
+                            for task_name, results in summary["tasks"].items():
+                                for test_type, result in results.items():
+                                    if test_type == "Create":
+                                        continue
+                                    try:
+                                        logger.info(f"{test_type:>10} | {result['items'][0]['result']}")
+                                    except KeyError:
+                                        logger.info(f"{test_type:>10} | {result['items'][0]['warning']}")
 
                         logger.info("\n")
             if not self.verbose:
