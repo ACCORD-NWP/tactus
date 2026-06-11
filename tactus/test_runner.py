@@ -462,8 +462,9 @@ class TestCases:
     def collect_summaries(self):
         """Collect summaries from the runs."""
         directory = Path(self.test_dir)
+        tag = self.get_tactus_version()
         config_files = [
-            f for f in directory.glob("*.toml") if not f.stem.startswith("modifs")
+            f for f in directory.glob("*.toml") if f.stem.startswith(tag)
         ]
         summaries = {}
         case_files = {}
@@ -472,7 +473,7 @@ class TestCases:
             case_config = ParsedConfig.from_file(config_file, json_schema={})
             platform = Platform(case_config)
             case_name = platform.substitute(
-                case_config.get("platform.ref_case"),
+                case_config.get("general.case"),
                 basetime=case_config["general.times.start"],
                 validtime=case_config["general.times.start"],
             )
@@ -485,13 +486,13 @@ class TestCases:
             try:
                 with open(json_file, "r", encoding="utf-8") as f:
                     summary = json.load(f)
+                    if not 'analysis' in summary:
+                        summary = None
             except FileNotFoundError:
-                summaries[case_name] = "MISSING - no summary found"
-                continue
+                summary = None
 
-            with contextlib.suppress(KeyError):
-                summaries[case_name] = summary
-                width = max(width, len(case_name))
+            summaries[case_name] = summary
+            width = max(width, len(case_name))
 
         reference = platform.get_platform_value("references_folder")
         if len(summaries) > 0:
@@ -501,10 +502,14 @@ class TestCases:
                 logger.info(" from {}", self.ial["pr"])
             logger.info("Comparison against {}", reference)
             for case_name, summary in sorted(summaries.items()):
-                if isinstance(summary, str):
-                    logger.info(f" {case_name:<{width}} | {summary}")
+                if not summary:
+                    logger.opt(colors=True).info(f"{case_name:<{width}} |<cyan> MISSING </cyan> - no summary found")
                 else:
-                    logger.info(f" {case_name:<{width}} | {summary['analysis']['result']}")
+                    color = 'green'
+                    if summary['analysis']['missing_count'] > 0: color = 'red'
+                    if summary['analysis']['error_count'] > 0: color = 'red'
+                    message = summary['analysis']['result'].split('-')
+                    logger.opt(colors=True).info(f"{case_name:<{width}} | <{color}>{message[0]} </{color}>- {message[1]}")
                     if self.verbose:
                         logger.info(f"{'from':>10} | {case_files[case_name]}\n")
                         for task_name, results in summary["tasks"].items():
