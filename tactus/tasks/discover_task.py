@@ -96,7 +96,9 @@ def create_task_index(config):
     task_index_file = _task_index_file(config)
 
     reg = TactusPluginRegistryFromConfig(config)
-    known_types = {k: f"{v.__module__}.{v.__qualname__}" for k, v in available_tasks(reg).items()}
+    known_types = {
+        k: f"{v.__module__}.{v.__qualname__}" for k, v in available_tasks(reg).items()
+    }
 
     task_index_file_dir = os.path.dirname(task_index_file)
     unix_group = config.get("platform.unix_group")
