@@ -5,6 +5,7 @@ import concurrent.futures
 import contextlib
 import copy
 import glob
+import json
 import os
 import shutil
 import tempfile
@@ -20,6 +21,7 @@ from .fullpos import flatten_list
 from .general_utils import merge_dicts
 from .host_actions import TactusHost
 from .logs import logger
+from .toolbox import Platform
 
 
 class TestCases:
@@ -455,6 +457,68 @@ class TestCases:
                 )
                 self.cases[case]["hostname"] = hostnames[item["host"]]["config_name"]
                 self.cases[case]["hostdomain"] = hostnames[item["host"]]["domain_name"]
+
+    
+    def collect_summaries(self):
+        """Collect summaries from the runs."""
+        directory = Path(self.test_dir)
+        config_files = [
+            f for f in directory.glob("*.toml") if not f.stem.startswith("modifs")
+        ]
+        summaries = {}
+        case_files = {}
+        width = 0
+        for config_file in config_files:
+            case_config = ParsedConfig.from_file(config_file, json_schema={})
+            platform = Platform(case_config)
+            case_name = platform.substitute(
+                case_config.get("system.ref_case"),
+                basetime=case_config["general.times.start"],
+                validtime=case_config["general.times.start"],
+            )
+            json_file = platform.substitute(
+                case_config.get("reference_checker.summary.json.file"),
+                basetime=case_config["general.times.start"],
+                validtime=case_config["general.times.start"],
+            )
+            case_files[case_name] = json_file
+            try:
+                with open(json_file, "r", encoding="utf-8") as f:
+                    summary = json.load(f)
+            except FileNotFoundError:
+                summaries[case_name] = "MISSING - no summary found"
+                continue
+
+            with contextlib.suppress(KeyError):
+                summaries[case_name] = summary
+                width = max(width, len(case_name))
+
+        reference = platform.get_platform_value("references_folder")
+        if len(summaries) > 0:
+            with contextlib.suppress(KeyError):
+                logger.info("Our version {}", self.ial["ial_hash"])
+            with contextlib.suppress(KeyError):
+                logger.info(" from {}", self.ial["pr"])
+            logger.info("Comparison against {}", reference)
+            for case_name, summary in sorted(summaries.items()):
+                if isinstance(summary, str):
+                    logger.info(f" {case_name:<{width}} | {summary}")
+                else:
+                    logger.info(f" {case_name:<{width}} | {summary['analysis']['result']}")
+                    if self.verbose:
+                        logger.info(f"{'from':>10} | {case_files[case_name]}\n")
+                        for task_name, results in summary["tasks"].items():
+                            for test_type, result in results.items():
+                                if test_type == "Create":
+                                    continue
+                                try:
+                                    logger.info(f"{test_type:>10} | {result['items'][0]['result']}")
+                                except KeyError:
+                                    logger.info(f"{test_type:>10} | {result['items'][0]['warning']}")
+
+                        logger.info("\n")
+            if not self.verbose:
+                logger.info(" add '-v' for more info")
 
     def execute(self, args):
         """Execute test cases.
