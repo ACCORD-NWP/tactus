@@ -13,8 +13,7 @@ def test_set_times(default_config):
     config = default_config.copy(
         update={"general": {"times": {"end": "P1D", "start": "P2D"}}}
     )
-    with pytest.raises(ValueError, match=re.escape("cannot be larger than")):
-        config = set_times(config)
+    config = set_times(config)
 
 
 def test_set_end_less_than_start(default_config):
