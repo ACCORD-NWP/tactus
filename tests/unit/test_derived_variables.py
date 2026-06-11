@@ -5,7 +5,6 @@ import re
 
 import pytest
 
-from tactus.config_parser import ConfigFileValidationError
 from tactus.derived_variables import derived_variables, set_times
 
 
