@@ -278,9 +278,10 @@ def evaluate_date(date: str, reference_date=None) -> str:
 
     if date.startswith(("P", "-P")):
         if reference_date is None:
-            _reference_date = datetime.now(timezone.utc).replace(
+            today_midnight = datetime.now(timezone.utc).replace(
                 hour=0, minute=0, second=0, microsecond=0
             )
+            _reference_date = today_midnight
         else:
             _reference_date = as_datetime(evaluate_date(reference_date))
         return (
