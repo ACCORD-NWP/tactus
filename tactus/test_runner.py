@@ -293,7 +293,7 @@ class TestCases:
             with open(f"{self.test_dir}/{self.config_name}_config_names.toml", "rb") as f:
                 config_names = tomli.load(f)
         except FileNotFoundError as err:
-            msg = "No case mapping available. Run again without '-r'"
+            msg = "No case mapping available. Run again with '-m'"
             logger.error(msg)
             raise FileNotFoundError(msg) from err
 
@@ -462,16 +462,20 @@ class TestCases:
 
     def collect_summaries(self):
         """Collect summaries from the runs."""
-        directory = Path(self.test_dir)
-        tag = self.get_tactus_version()
-        config_files = [
-            f for f in directory.glob("*.toml") if f.stem.startswith(tag)
-        ]
+        try:
+            with open(f"{self.test_dir}/{self.config_name}_config_names.toml", "rb") as f:
+                config_names = tomli.load(f)
+        except FileNotFoundError as err:
+            msg = "No case mapping available. Run again with '-m'"
+            logger.error(msg)
+            raise FileNotFoundError(msg) from err
+
+        config_files=[ f"{self.test_dir}/{config_name}.toml" for config_name in config_names["config_names"].values() ]
+
         summaries = {}
         case_files = {}
         width = 0
         for config_file in config_files:
-            print(f"Reading {config_file}")
             case_config = ParsedConfig.from_file(config_file, json_schema={})
             platform = Platform(case_config)
             case_name = platform.substitute(
