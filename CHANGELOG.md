@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduce perturbation family and config section. [#87](https://github.com/ACCORD-NWP/tactus/pull/87) (@uandrae)
 
 ### Changed
+- Make general.times.end relative to general.times.start when defined as duration. [#101](https://github.com/ACCORD-NWP/tactus/pull/101) (@uandrae)
+- Update CY50t2 surfex namelists to make LAM -> LAM work. [#99](https://github.com/ACCORD-NWP/tactus/pull/99) (@uandrae)
 - Switch to accord owned path for static data on atos_bologna. [#106](https://github.com/ACCORD-NWP/tactus/pull/106) (@uandrae)
 
 ### Fixed
