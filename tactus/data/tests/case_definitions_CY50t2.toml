@@ -15,6 +15,10 @@
   compile = true
   suite_definition = "CompilationSuiteDefinition"
 
+[cases.cy50t2_compile.modifs.reference_checker]
+  check = false
+  generate = false
+
 [cases.cy50t2_alaro_climate_files]
   base = "cy50t2_alaro"
   host = "cy50t2_compile"
@@ -34,6 +38,9 @@
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_alaro/climate/@DOMAIN@"
   intp_bddir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_alaro/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
   intp_bddir_sfx = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_alaro/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+
+[cases.cy50t2_alaro.modifs.reference_checker]
+  rules_active = ["Forecast.fullpos", "Forecast.history", "Forecast.log"]
 
 [cases.cy50t2_alaro.modifs.suite_control]
   create_static_data = false
