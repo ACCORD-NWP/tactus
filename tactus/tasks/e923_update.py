@@ -26,7 +26,7 @@ class E923Update(Task):
         self.climdir = self.platform.get_system_value("climdir")
         self.fa_sfx2clim = self.get_binary("fa_sfx2clim")
 
-        self.archive = self.config["system.archive"]
+        self.intp_bddir_sfx = self.config["system.intp_bddir_sfx"]
         self.basetime = as_datetime(self.config["general.times.basetime"])
         self.month = self.basetime.strftime("%m")
 
@@ -45,7 +45,9 @@ class E923Update(Task):
         )
         self.fmanager.input(f"{self.climdir}/{pgd_file}", "pgd_file")
         # sfx init
-        sfx_init = self.platform.substitute(f"{self.archive}/ICMSH@CNMEXP@INIT.sfx")
+        sfx_init = self.platform.substitute(
+            f"{self.intp_bddir_sfx}/ICMSH@CNMEXP@INIT.sfx"
+        )
         self.fmanager.input(sfx_init, "input_sfx")
         # Old climfile
         climfile = f"{self.climdir}/Const.Clim.{self.month}"
