@@ -170,18 +170,6 @@ class TactusSuiteDefinition(SuiteDefinition):
             # Update triggers for final cleaning node
             final_cleaning_trigger.append(last_time_dependent_part)
 
-            if config["reference_checker.check"] or config["reference_checker.generate"]:
-                EcflowSuiteTask(
-                    "ReferenceCheck",
-                    self.suite,
-                    config,
-                    self.task_settings,
-                    self.ecf_files,
-                    input_template=input_template,
-                    trigger=final_cleaning_trigger,
-                    ecf_files_remotely=self.ecf_files_remotely,
-                )
-
             if config["suite_control.do_cleaning"]:
                 EcflowSuiteTask(
                     "PostMortem",
@@ -193,3 +181,17 @@ class TactusSuiteDefinition(SuiteDefinition):
                     trigger=final_cleaning_trigger,
                     ecf_files_remotely=self.ecf_files_remotely,
                 )
+
+        if config["reference_checker.check"] or config["reference_checker.generate"]:
+            EcflowSuiteTask(
+                "ReferenceCheck",
+                self.suite,
+                config,
+                self.task_settings,
+                self.ecf_files,
+                input_template=input_template,
+                trigger=final_cleaning_trigger,
+                ecf_files_remotely=self.ecf_files_remotely,
+            )
+
+
