@@ -139,6 +139,11 @@ def get_task(name, config) -> Task:
             raise NotImplementedError(f'Task "{name}" not implemented') from error
 
     if isinstance(cls, str):
+        reg = TactusPluginRegistryFromConfig(config)
+        for plg in reg.plugins:
+            plugin_path = str(plg.path)
+            if plugin_path not in sys.path:
+                sys.path.insert(0, plugin_path)
         module_path, class_name = cls.rsplit(".", 1)
         module = importlib.import_module(module_path)
         cls = getattr(module, class_name)
