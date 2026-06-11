@@ -458,7 +458,7 @@ class TestCases:
                 self.cases[case]["hostname"] = hostnames[item["host"]]["config_name"]
                 self.cases[case]["hostdomain"] = hostnames[item["host"]]["domain_name"]
 
-    
+
     def collect_summaries(self):
         """Collect summaries from the runs."""
         directory = Path(self.test_dir)
@@ -472,7 +472,7 @@ class TestCases:
             case_config = ParsedConfig.from_file(config_file, json_schema={})
             platform = Platform(case_config)
             case_name = platform.substitute(
-                case_config.get("system.ref_case"),
+                case_config.get("platform.ref_case"),
                 basetime=case_config["general.times.start"],
                 validtime=case_config["general.times.start"],
             )
