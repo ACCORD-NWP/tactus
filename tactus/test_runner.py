@@ -575,4 +575,7 @@ def run_test(args, config=None):
         t.list()
 
     elif args.config_file is not None:
-        t.execute(args)
+        if args.configure or args.run:
+            t.execute(args)
+        else:
+            t.collect_summaries()
