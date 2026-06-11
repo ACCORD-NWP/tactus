@@ -37,7 +37,7 @@
 
 [refchecks.reference_checker.task.Forecast.surfex]
   inpath = "@ARCHIVE@"
-  pattern = "ICMSH*0003h00m00s.sfx"
+  pattern = "ICMSH.*0003h00m00s.sfx"
   method = "HistoryFields"
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
