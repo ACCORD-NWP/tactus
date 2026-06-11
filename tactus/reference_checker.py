@@ -565,7 +565,7 @@ class CheckSummaryAnalysis:
             return f"ERROR : {self.error_message}"
 
         if not self.check:
-            result_message = "N/A - check is disabled"
+            result_message = "MISSING - check is disabled"
             if self.missing_count > 0:
                 result_message = f"{result_message}. {self.missing_count} missing(s)"
             return result_message
