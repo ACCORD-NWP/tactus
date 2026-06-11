@@ -196,12 +196,8 @@ def derived_variables(config, processor_layout=None):
         )
         raise NotImplementedError(msg)
 
-    xlat0 = config.get("domain.xlat0", "")
-    xlon0 = config.get("domain.xlon0", "")
-    if not xlat0:
-        xlat0 = config.get("domain.xlatcen")
-    if not xlon0:
-        xlon0 = config.get("domain.xloncen")
+    xlat0 = config.get("domain.xlat0", config.get("domain.xlatcen"))
+    xlon0 = config.get("domain.xlon0", config.get("domain.xloncen"))
 
     pi = 4.0 * atan(1.0)
     xrpk = sin(float(xlat0) * pi / 180.0)
