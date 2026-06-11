@@ -188,11 +188,10 @@ class TestCases:
             extra = list(self.extra) + list(item.get("extra", []))
 
             # Merge and replace macros
-            modifs = merge_dicts(self.modifs, self.cases[case].get("modifs", {}), True)
-            modifs = merge_dicts(modifs, self.refchecks, True)
+            modifs = merge_dicts(self.modifs, self.refchecks, True)
             if self.generate_refs:
                 modifs = merge_dicts(modifs, self.genchecks, True)
-
+            modifs = merge_dicts(modifs, self.cases[case].get("modifs", {}), True)
             config = self.config.copy(
                 update={
                     "modifs": modifs,
