@@ -10,7 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Added suite control switch for grib calculations. [#102](https://github.com/ACCORD-NWP/tactus/pull/102) (@uandrae)
 - Introduce perturbation family and config section. [#87](https://github.com/ACCORD-NWP/tactus/pull/87) (@uandrae)
+
+### Changed
+- Update CY50t2 surfex namelists to make LAM -> LAM work. [#99](https://github.com/ACCORD-NWP/tactus/pull/99) (@uandrae)
+- Switch to accord owned path for static data on atos_bologna. [#106](https://github.com/ACCORD-NWP/tactus/pull/106) (@uandrae)
+
+### Fixed
+- Correct basetime used for MARS data availability. [#108](https://github.com/ACCORD-NWP/tactus/pull/108) (@uandrae)
+- Correct input data path in E923Update. [#100](https://github.com/ACCORD-NWP/tactus/pull/100) (@uandrae)
+- Fix documentation deployment trigger on new releases. [#107](https://github.com/ACCORD-NWP/tactus/pull/107) (@mfroelund)
+- Fix ordering of setting `productDefinitionTemplateNumber` for EPS runs in `FaModelSource.yml`[\#91](https://github.com/ACCORD-NWP/tactus/pull/91) (@sbnielsen)
 
 ## [1.1.0] - 2026-06-03
 
@@ -54,7 +65,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change deployment of documentation to not need github secrets to work. [\#22](https://github.com/ACCORD-NWP/tactus/pull/22) (@mfroelund)
 
 ### Fixed
-
 - Fix xlon0 and xlat0 replacement process in derived variables [\#78](https://github.com/ACCORD-NWP/tactus/pull/78) (@romick-knmi)
 - Disable default compilation for older cycles [\#90](https://github.com/ACCORD-NWP/tactus/pull/90) (@pardallio)
 - Changed binary fetching logic [\#28](https://github.com/ACCORD-NWP/tactus/pull/28) (@pardallio)

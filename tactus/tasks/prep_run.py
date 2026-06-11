@@ -119,15 +119,19 @@ class PrepRun(Task):
                             "Adding EPS member {} to model name definitions", member
                         )
                         eps_key = {
+                            "productDefinitionTemplateNumber": 11,
                             "numberOfForecastsInEnsemble": n_eps_members,
                             "perturbationNumber": member,
-                            "productDefinitionTemplateNumber": 11,
                             "typeOfEnsembleForecast": 6,
                         }
-                        dicts.append(eps_key)
+                        dicts.insert(0, eps_key)
                     line = (
                         f"'{model_name}' = {{"
-                        + "".join(f"{k} = {v}; " for d in dicts for k, v in d.items())
+                        + "".join(
+                            f"{k} = '{v}'; " if isinstance(v, str) else f"{k} = {v}; "
+                            for d in dicts
+                            for k, v in d.items()
+                        )
                         + "}\n"
                     )
                     f.write(line)
