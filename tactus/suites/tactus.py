@@ -183,13 +183,13 @@ class TactusSuiteDefinition(SuiteDefinition):
                 )
 
         if config["suite_control.do_cleaning"]:
-                EcflowSuiteTask(
-                    "PostMortem",
-                    self.suite,
-                    config,
-                    self.task_settings,
-                    self.ecf_files,
-                    input_template=input_template,
-                    trigger=final_cleaning_trigger,
-                    ecf_files_remotely=self.ecf_files_remotely,
-                )
+            EcflowSuiteTask(
+                "PostMortem",
+                self.suite,
+                config,
+                self.task_settings,
+                self.ecf_files,
+                input_template=input_template,
+                trigger=final_cleaning_trigger,
+                ecf_files_remotely=self.ecf_files_remotely,
+            )
