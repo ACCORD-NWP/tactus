@@ -462,9 +462,13 @@ class TestCases:
         if time < 60:
             return "Now"
         elif time < 3600:
-            return f"{int(time/60)} minutes ago"
+            return f"{int(time/60)} min ago"
         elif time < 3600 * 24:
-            return f"{int(time/3600)} hours ago"
+            hours = int(time/3600)
+            if hours == 1:
+                return f"1 hour ago"
+            else:
+                return f"{hours} hours ago"
         else:
             return f"updated on {datetime.fromtimestamp(time)} "
 
