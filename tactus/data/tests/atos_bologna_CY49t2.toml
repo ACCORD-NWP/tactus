@@ -1,16 +1,19 @@
 [general]
+  reference_date = "-P1D"
   selection = [
+    "cy49t2_alaro_climate_files",
     "cy49t2_alaro",
     "cy49t2_alaro_ddh",
     "cy49t2_alaro_eps",
-    "cy49t2_alaro_mode_start",
     "cy49t2_alaro_target",
+    "cy49t2_arome_climate_files",
     "cy49t2_arome",
     "cy49t2_arome_ddh",
     "cy49t2_arome_eps",
     "cy49t2_arome_mode_start",
     "cy49t2_arome_R64",
     "cy49t2_arome_target",
+    "cy49t2_harmonie_arome_climate_files",
     "cy49t2_harmonie_arome",
     "cy49t2_harmonie_arome_ddh",
     "cy49t2_harmonie_arome_eps",
@@ -27,6 +30,6 @@
   active = true
 
 [include]
-  cases = "case_definitions.toml"
+  cases = "case_definitions_CY49t2.toml"
   macros = "test_macros.toml"
-  modifs = "modifs_atos_bologna.toml"
+  modifs = "modifs_atos_bologna_CY49t2.toml"
