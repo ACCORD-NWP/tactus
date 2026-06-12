@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from tactus.os_utils import tactusmakedirs
-from tactus.suites.base import SuiteDefinition, EcflowSuiteTask
+from tactus.suites.base import EcflowSuiteTask, SuiteDefinition
 from tactus.suites.tactus_suite_components import CompilationFamily
 
 
@@ -48,13 +48,13 @@ class CompilationSuiteDefinition(SuiteDefinition):
         )
 
         if config["suite_control.do_cleaning"]:
-          EcflowSuiteTask(
-            "PostMortem",
-            self.suite,
-            config,
-            self.task_settings,
-            self.ecf_files,
-            input_template=input_template,
-            trigger=compilation,
-            ecf_files_remotely=self.ecf_files_remotely,
-          )
+            EcflowSuiteTask(
+                "PostMortem",
+                self.suite,
+                config,
+                self.task_settings,
+                self.ecf_files,
+                input_template=input_template,
+                trigger=compilation,
+                ecf_files_remotely=self.ecf_files_remotely,
+            )
