@@ -458,7 +458,6 @@ class TestCases:
                 self.cases[case]["hostname"] = hostnames[item["host"]]["config_name"]
                 self.cases[case]["hostdomain"] = hostnames[item["host"]]["domain_name"]
 
-
     def collect_summaries(self):
         """Collect summaries from the runs."""
         try:
@@ -469,7 +468,10 @@ class TestCases:
             logger.error(msg)
             raise FileNotFoundError(msg) from err
 
-        config_files=[ f"{self.test_dir}/{config_name}.toml" for config_name in config_names["config_names"].values() ]
+        config_files = [
+            f"{self.test_dir}/{config_name}.toml"
+            for config_name in config_names["config_names"].values()
+        ]
 
         summaries = {}
         case_files = {}
@@ -506,28 +508,42 @@ class TestCases:
             logger.info("Comparison against {}", reference)
             for case_name, summary in sorted(summaries.items()):
                 if not summary:
-                    logger.opt(colors=True).info(f"{case_name:<{width}} |<cyan> MISSING </cyan> - no summary found")
+                    logger.opt(colors=True).info(
+                        f"{case_name:<{width}} |<cyan> MISSING </cyan> - no summary found"
+                    )
+                elif "analysis" not in summary:
+                    logger.opt(colors=True).info(
+                        f"{case_name:<{width}} |<yellow> RUNNING </yellow> "
+                    )
                 else:
-                    if not 'analysis' in summary:
-                        logger.opt(colors=True).info(f"{case_name:<{width}} |<yellow> RUNNING </yellow> ")
-                    else:
-                        color = 'green'
-                        if summary['analysis']['missing_count'] > 0: color = 'red'
-                        if summary['analysis']['error_count'] > 0: color = 'red'
-                        message = summary['analysis']['result'].split('-')
-                        logger.opt(colors=True).info(f"{case_name:<{width}} | <{color}>{message[0]} </{color}>- {message[1]}")
-                        if self.verbose:
-                            logger.info(f"{'from':>10} | {case_files[case_name]}\n")
-                            for task_name, results in summary["tasks"].items():
-                                for test_type, result in results.items():
-                                    if test_type == "Create":
-                                        continue
-                                    try:
-                                        logger.info(f"{test_type:>10} | {result['items'][0]['result']}")
-                                    except KeyError:
-                                        logger.info(f"{test_type:>10} | {result['items'][0]['warning']}")
+                    color = "green"
+                    if summary["analysis"]["missing_count"] > 0:
+                        color = "red"
+                    if summary["analysis"]["error_count"] > 0:
+                        color = "red"
+                    message = summary["analysis"]["result"].split("-")
+                    logger.opt(colors=True).info(
+                        f"{case_name:<{width}} | <{color}>{message[0]}\
+                         </{color}>- {message[1]}"
+                    )
+                    if self.verbose:
+                        logger.info(f"{'from':>10} | {case_files[case_name]}\n")
+                        for results in summary["tasks"].values():
+                            for test_type, result in results.items():
+                                if test_type == "Create":
+                                    continue
+                                try:
+                                    logger.info(
+                                        f"{test_type:>10} |\
+                                        {result['items'][0]['result']}"
+                                    )
+                                except KeyError:
+                                    logger.info(
+                                        f"{test_type:>10} |\
+                                        {result['items'][0]['warning']}"
+                                    )
 
-                            logger.info("\n")
+                        logger.info("\n")
             if not self.verbose:
                 logger.info(" add '-v' for more info")
 

@@ -193,5 +193,3 @@ class TactusSuiteDefinition(SuiteDefinition):
                 trigger=final_cleaning_trigger,
                 ecf_files_remotely=self.ecf_files_remotely,
             )
-
-
