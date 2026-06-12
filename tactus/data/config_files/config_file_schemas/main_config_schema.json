@@ -904,8 +904,7 @@
                   "format": "date-time"
                 },
                 {
-                  "format": "duration",
-                  "pattern": "^P"
+                  "format": "duration"
                 }
               ]
             },

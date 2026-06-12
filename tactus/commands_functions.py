@@ -323,10 +323,8 @@ def doc_config(args, config: ParsedConfig):
 
     """
     now = datetime.datetime.now().isoformat(timespec="seconds")
-    sys.stdout.write(
-        f"""The following section was automatically generated running
-        `tactus doc config` on {now}.\n\n"""
-    )
+    sys.stdout.write(f"""The following section was automatically generated running
+        `tactus doc config` on {now}.\n\n""")
     sys.stdout.write(config.json_schema.get_markdown_doc() + "\n")
 
 
