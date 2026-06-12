@@ -239,7 +239,7 @@ Builds an ECBundle source tree.
 | `compile.ninja`       | Enable Ninja builds (defaults to `false`)                                                    |
 | `compile.skip_build`  | Skip build if install already exists (defaults to `false`)                                   |
 | `compile.clean_build` | Clean build directory before compiling (defaults to `false`)                                 |
-| `compile.cache`       | Enable cached builds (defaults to `true`)                                                    |
+| `compile.cache`       | Enable cached builds (defaults to `false`)                                                    |
 | `compile.cache_dir`   | Cache storage directory (defaults to `@REFERENCE_DATA@/bundle_cache`)                        |
 | `task.args.prec`      | Precision selector: `prec` (double) or `R32` (single). Defaults to `prec`.                   |
 

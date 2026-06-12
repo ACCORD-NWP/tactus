@@ -109,6 +109,10 @@
   submission = "include/submission/@HOST@.toml"
   vertical_levels = "include/vertical_levels/MF_90.toml"
 
+[perturbations]
+  pertana = false
+  pertsurf = false
+
 [pgd]
   npatch = 3
   one_decade = true
@@ -119,6 +123,7 @@
   create_time_dependent_suite = true
   do_archiving = true
   compile = true
+  do_addcalculatedfields = true
   do_cleaning = true
   do_extractsqlite = true
   do_interpolsstsic = true

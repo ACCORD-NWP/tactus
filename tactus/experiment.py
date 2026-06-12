@@ -57,7 +57,12 @@ class Exp:
             config = config.copy(
                 update={
                     "general": {
-                        "times": {"end": evaluate_date(config["general.times.end"])}
+                        "times": {
+                            "end": evaluate_date(
+                                config["general.times.end"],
+                                reference_date=config["general.times.start"],
+                            )
+                        }
                     }
                 }
             )
