@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Switch to accord owned path for static data on atos_bologna. [#106](https://github.com/ACCORD-NWP/tactus/pull/106) (@uandrae)
 
 ### Fixed
+- Fix plugin task imports by ensuring plugin paths are added to `sys.path` before dynamic import. [#110](https://github.com/ACCORD-NWP/tactus/pull/110) (@kastelecn)
 - Correct basetime used for MARS data availability. [#108](https://github.com/ACCORD-NWP/tactus/pull/108) (@uandrae)
 - Correct input data path in E923Update. [#100](https://github.com/ACCORD-NWP/tactus/pull/100) (@uandrae)
 - Fix documentation deployment trigger on new releases. [#107](https://github.com/ACCORD-NWP/tactus/pull/107) (@mfroelund)
