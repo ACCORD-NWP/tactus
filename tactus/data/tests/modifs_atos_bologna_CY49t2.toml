@@ -34,7 +34,7 @@
 
 [modifs.scheduler.mirror_suite]
   mirror_name = "@HOST_CASE@"
-  remote_path = "/@HOST_CASE@"
+  remote_path = "/@HOST_CASE@/PostMortem"
 
 [modifs.submission]
   max_ecf_tasks = 5
