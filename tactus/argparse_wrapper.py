@@ -525,10 +525,17 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
     )
     parser_test.add_argument(
         "-m",
-        action="store_false",
+        action="store_true",
+        dest="configure",
+        default=False,
+        help="Create config files",
+    )
+    parser_test.add_argument(
+        "-r",
+        action="store_true",
         dest="run",
-        default=True,
-        help="Only run the modify generation step, do not start suites",
+        default=False,
+        help="Launch the tests",
     )
     parser_test.set_defaults(run_command=run_test, standalone_command=True)
 
