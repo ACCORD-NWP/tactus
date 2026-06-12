@@ -10,7 +10,7 @@
 
 [reference_checker.methods.ForecastNorms]
   mode = "get_worst"
-  tolerance = "12"
+  tolerance = "0"
   tool = "norms_checker"
   which = "first_and_last_spectral"
 
