@@ -510,7 +510,7 @@ class TestCases:
                 else:
                     if not 'analysis' in summary:
                         logger.opt(colors=True).info(f"{case_name:<{width}} |<yellow> RUNNING </yellow> ")
-                    else: 
+                    else:
                         color = 'green'
                         if summary['analysis']['missing_count'] > 0: color = 'red'
                         if summary['analysis']['error_count'] > 0: color = 'red'
@@ -527,7 +527,7 @@ class TestCases:
                                     except KeyError:
                                         logger.info(f"{test_type:>10} | {result['items'][0]['warning']}")
 
-                        logger.info("\n")
+                            logger.info("\n")
             if not self.verbose:
                 logger.info(" add '-v' for more info")
 
