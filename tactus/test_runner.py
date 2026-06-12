@@ -10,7 +10,7 @@ import os
 import shutil
 import tempfile
 from pathlib import Path
-
+import datetime
 import tomli
 
 from . import GeneralConstants
@@ -458,6 +458,16 @@ class TestCases:
                 self.cases[case]["hostname"] = hostnames[item["host"]]["config_name"]
                 self.cases[case]["hostdomain"] = hostnames[item["host"]]["domain_name"]
 
+    def nice_duration(self,time):
+        if time < 60:
+            return "Now"
+        elif time < 3600:
+            return f"{int(time/60)} minutes ago"
+        elif time < 3600 * 24:
+            return f"{int(time/3600)} hours ago"
+        else:
+            return f"updated on {datetime.fromtimestamp(time)} "
+
     def collect_summaries(self):
         """Collect summaries from the runs."""
         try:
@@ -493,6 +503,7 @@ class TestCases:
             try:
                 with open(json_file, "r", encoding="utf-8") as f:
                     summary = json.load(f)
+                    summary["mtime"] = os.path.getmtime(json_file)
             except FileNotFoundError:
                 summary = None
 
@@ -509,24 +520,28 @@ class TestCases:
             for case_name, summary in sorted(summaries.items()):
                 if not summary:
                     logger.opt(colors=True).info(
-                        f"{case_name:<{width}} |<cyan> MISSING </cyan> - no summary found"
-                    )
-                elif "analysis" not in summary:
-                    logger.opt(colors=True).info(
-                        f"{case_name:<{width}} |<yellow> RUNNING </yellow> "
+                        f"{case_name:<{width}} |<cyan> MISSING</cyan>"
                     )
                 else:
-                    color = "green"
-                    if summary["analysis"]["missing_count"] > 0:
-                        color = "red"
-                    if summary["analysis"]["error_count"] > 0:
-                        color = "red"
-                    message = summary["analysis"]["result"].split("-")
-                    logger.opt(colors=True).info(
-                        f"{case_name:<{width}} | <{color}>{message[0]}\
-                         </{color}>- {message[1]}"
-                    )
-                    if self.verbose:
+                    duration = datetime.datetime.now().timestamp() - summary["mtime"]
+                    since = self.nice_duration(duration)
+                    if "analysis" not in summary:
+                       logger.opt(colors=True).info(
+                           f"{case_name:<{width}} |<yellow> RUNNING</yellow> ({since})"
+                       )
+                    else:
+                      color = "green"
+                      if summary["analysis"]["missing_count"] > 0:
+                          color = "red"
+                      if summary["analysis"]["error_count"] > 0:
+                          color = "red"
+                      message = summary["analysis"]["result"].split("-")
+                      message[1] = message[1].strip()
+                      logger.opt(colors=True).info(
+                          f"{case_name:<{width}} | <{color}>{message[0]}</{color}>({since}) <white>[{message[1]}]</white>"
+                         )
+
+                      if self.verbose:
                         logger.info(f"{'from':>10} | {case_files[case_name]}\n")
                         for results in summary["tasks"].values():
                             for test_type, result in results.items():
