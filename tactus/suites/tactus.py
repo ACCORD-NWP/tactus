@@ -77,7 +77,9 @@ class TactusSuiteDefinition(SuiteDefinition):
             )
             mirror = EcflowSuiteTriggers([EcflowSuiteTrigger(_mirror)])
             mirror.trigger_string = (
-                f"( /{self.name}/Mirrors/{_mirror.mirror_path} == complete )"
+                f"( /{self.name}/"
+                f"Mirror_{config['scheduler.mirror_suite.mirror_name']}/"
+                f"{_mirror.mirror_path} == complete )"
             )
 
         prep_run = EcflowSuiteTask(
