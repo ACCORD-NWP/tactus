@@ -21,11 +21,12 @@ pgd_AROME:
 
 pgd_HARMONIE_AROME:
   - sfx_pgd_ecoclimap_sg_@DECADES@
-  - sfx_pgd_isba_dif
+  - sfx_pgd_isba_3l
   - sfx_pgd_cv
   - sfx_pgd_rsmin
   - sfx_pgd_sea
-  - sfx_pgd_@CSC@
+  - sfx_pgd_flake
+  - sfx_@CSC@
   - sfx_treedrag
 
 pgd:
@@ -50,6 +51,8 @@ prep_AROME:
 
 prep_HARMONIE_AROME:
   - sfx_prep_sea_@SURFEX_SEA_ICE@
+  - sfx_prep_flake
+  - sfx_@CSC@
   - sfx_treedrag
   - sfx_surf_constants
 
@@ -71,4 +74,5 @@ forecast_ALARO:
 forecast_AROME:
 
 forecast_HARMONIE_AROME:
+  - sfx_@CSC@
   - sfx_treedrag

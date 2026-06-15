@@ -11,6 +11,16 @@ sfx_io:
     LNOWRITE_TEXFILE: True
     LSPLIT_PATCH: True
 
+sfx_pgd_isba_3l:
+  NAM_ISBA:
+    CISBA: "3-L"
+    NGROUND_LAYER: 3
+    NPATCH: ${cfg:pgd.npatch}
+
+sfx_pgd_HARMONIE_AROME:
+  NAM_WRITE_SURF_ATM:
+    LSPLIT_PATCH: False
+
 sfx_pgd_isba_dif:
   NAM_SGH_ISBAN:
    CHORT: "DEF"
@@ -45,7 +55,6 @@ sfx_pgd_isba_dif_ALARO:
     YCLAYFILETYPE: "DIRECT"
     YSAND: "sand"
     YSANDFILETYPE: "DIRECT"
-
 
 sfx_treedrag:
   NAM_TREEDRAG:
@@ -82,15 +91,24 @@ sfx_forecast:
     N2M: 2
   NAM_FRAC:
     LECOSG: True
-  NAM_ISBAN:
-    CSCOND: PL98
   NAM_SEAFLUXN:
     LPWEBB: False
     LPWG: False
   NAM_SURF_ATM:
     XRIMAX: 0.2
 
+sfx_forecast_AROME:
+  NAM_ISBAN:
+    CSCOND: PL98
+
+sfx_forecast_ALARO:
+  NAM_ISBAN:
+    CSCOND: PL98
+
 sfx_forecast_HARMONIE_AROME:
+  NAM_IO_OFFLINE:
+    XTSTEP_OUTPUT: 3600
+    XTSTEP_SURF: "${cfg:domain.tstep}"
   NAM_DIAG_ISBAN:
     LPATCH_BUDGET: True
     LSURF_MISC_DIF: True
@@ -103,12 +121,14 @@ sfx_forecast_HARMONIE_AROME:
     LSURF_VARS: True
   NAM_ISBAN:
     LCANOPY_DRAG: True
+    LPERTSURF: False
     XCDRAG: 0.01
     XCGMAX: 2.e-05
     XCSMAX: 0.0002
   NAM_SEAFLUXN:
     CSEA_FLUX: "ECUME"
     LPRECIP: False
+    LPERTFLUX: False
   NAM_SEAICEN:
     LVOLATILE_SIC: ${cfg:general.upd_sst_sic}
     XSIC_EFOLDING_TIME: 1.0
@@ -637,6 +657,8 @@ sfx_pgd_flake:
     YWATER_DEPTH_STATUS: "GlobalLakeStatus"
   NAM_FLAKEN:
     LSEDIMENTS: False
+  NAM_PGD_SCHEMES:
+    CWATER: "FLAKE"
 
 sfx_pgd_schemes:
   NAM_PGD_SCHEMES:
@@ -682,7 +704,7 @@ sfx_pgd_zs_AROME:
 
 sfx_pgd_zs_filter:
   NAM_ZS_FILTER:
-    NZSFILTER: ${cfg:domain.nzsfilter}
+    NZSFILTER: 0
 
 sfx_pgd_teb_osm:
   NAM_TREEDRAG:
@@ -827,6 +849,10 @@ sfx_ALARO:
  NAM_FRAC:
     LECOSG: False
 
+sfx_HARMONIE_AROME:
+  NAM_WRITE_SURF_ATM:
+    LSPLIT_PATCH: False
+
 sfx_prep_atm:
   NAM_PREP_SURF_ATM:
     NYEAR: "@PREP_NYEAR@"
@@ -862,10 +888,8 @@ sfx_prep_watflx:
     LWAT_SBL: False
 
 sfx_prep_isba_HARMONIE_AROME:
-  NAM_FRAC:
-    LECOSG: True
   NAM_PREP_ISBA_SNOW:
-    CSNOW: "3-L"
+    CSNOW: "D95"
     LSWEMAX: True
   NAM_DIAG_ISBAN:
     LPATCH_BUDGET: True
@@ -914,10 +938,3 @@ sfx_prep_isba_from_fa:
     CFILETYPE: "FA"
     CFILEPGD: "PGD_HOST"
     CFILEPGDTYPE: "FA"
-
-sfx_prep_isba_from_nc:
-  NAM_PREP_SURF_ATM:
-    CFILE: "INFILE"
-    CFILETYPE: "NC"
-    CFILEPGD: "PGD_HOST"
-    CFILEPGDTYPE: "NC"
