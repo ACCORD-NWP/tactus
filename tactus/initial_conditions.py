@@ -65,8 +65,8 @@ class InitialConditions(object):
 
         return found
 
-    def find_initial_files(self):
-        """Find initial file."""
+    def forecast(self, fail=True):
+        """Find initial files for the Forecast task."""
         # Find data explicitly defined
         if self.mode == "restart" and self.starttime == self.basetime:
             pdtg = self.basetime - self.cycle_length
@@ -89,6 +89,7 @@ class InitialConditions(object):
                 f"{self.intp_bddir}/{self.file_templates['interpolated_boundaries']['model']}",
                 bd_index=0,
             )
+
             self.source_sfx = self.platform.substitute(
                 f"{self.intp_bddir_sfx}/ICMSH@CNMEXP@INIT.sfx"
             )
@@ -108,10 +109,33 @@ class InitialConditions(object):
                 validtime=self.basetime,
             )
 
-        if not self.check_if_found():
+        if self.config["perturbations.pertana"]:
+            self.source = self.platform.substitute("@ARCHIVE@/PertAna")
+        if self.config["perturbations.pertsurf"]:
+            self.source = self.platform.substitute("@ARCHIVE@/PertSurf")
+
+        found_files = self.check_if_found()
+        if fail and not found_files:
             raise FileNotFoundError(
                 "Could not find initial files for "
                 f"mode={self.mode}, {self.source}, {self.source_sfx}"
             )
 
-        return self.source, self.source_sfx
+        return self.source, self.source_sfx, found_files
+
+    def find_initial_files(self, task, fail=True):
+        """Find input files to various tasks.
+
+        Args:
+             task (str): Task name
+             fail (boolean): Flag for raising exception
+
+        Returns:
+             task (object): Task specific result
+
+        Raises:
+             NotImplementedError: For unknown tasks
+        """
+        if task == "Forecast":
+            return self.forecast(fail)
+        raise NotImplementedError(f"Task {task} is not implemented")

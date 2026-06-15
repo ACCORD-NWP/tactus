@@ -1387,14 +1387,6 @@ class CycleFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
-        initialization_family = InitializationFamily(
-            self,
-            config,
-            task_settings,
-            input_template,
-            ecf_files,
-            ecf_files_remotely=ecf_files_remotely,
-        )
         if member > 0 and (
             config["perturbations.pertana"] or config["perturbations.pertsurf"]
         ):
@@ -1404,11 +1396,10 @@ class CycleFamily(EcflowSuiteFamily):
                 task_settings,
                 input_template,
                 ecf_files,
-                trigger=initialization_family,
                 ecf_files_remotely=ecf_files_remotely,
             )
         else:
-            perturbation_family = initialization_family
+            perturbation_family = trigger
 
         ForecastFamily(
             self,

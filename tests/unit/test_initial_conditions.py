@@ -17,6 +17,8 @@ def parsed_config(request, tmp_directory, default_config):
     """Return a raw config common to all tasks."""
     if request.param:
         for f in [
+            "PertAna",
+            "PertSurf",
             "foo",
             "ELSCFTESTALBC000",
             "ICMSHTEST+0003h00m00s",
@@ -28,8 +30,7 @@ def parsed_config(request, tmp_directory, default_config):
     config = default_config
     config = config.copy(update=set_times(config))
 
-    config_patch = tomlkit.parse(
-        f"""
+    config_patch = tomlkit.parse(f"""
         [file_templates.initfile]
             archive = "@INTP_BDDIR@/@HISTORY_TEMPLATE@"
         [file_templates.initfile_sfx]
@@ -42,8 +43,7 @@ def parsed_config(request, tmp_directory, default_config):
             archive = "{tmp_directory}"
         [platform]
             tactus_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
-        """
-    )
+        """)
 
     return config.copy(update=config_patch)
 
@@ -68,7 +68,7 @@ def set_mode(request):
                 "initfile_sfx": {"archive": "@INTP_BDDIR@/@SURFEX_TEMPLATE@"},
             }
         },
-        {"general": {"times": {"start": "2023-10-15T15:32:24Z"}}},
+        {"perturbations": {"pertana": True}},
     ],
 )
 def test_find_initial_files(tmp_directory, parsed_config, set_surfex, set_mode, param):
@@ -91,6 +91,12 @@ def test_find_initial_files(tmp_directory, parsed_config, set_surfex, set_mode, 
                 truth = f"{tmp_directory}/foo"
                 truth_sfx = f"{tmp_directory}/foo"
 
+    with contextlib.suppress(KeyError):
+        if "pertana" in param["perturbations"]:
+            truth = f"{tmp_directory}/PertAna"
+        if "pertsurf" in param["perturbations"]:
+            truth = f"{tmp_directory}/PertSurf"
+
     for key in ["initfile", "initfile_sfx"]:
         with contextlib.suppress(KeyError):
             param["file_templates"][key]["archive"] = f"{tmp_directory}/foo"
@@ -99,15 +105,15 @@ def test_find_initial_files(tmp_directory, parsed_config, set_surfex, set_mode, 
     config = config.copy(update=set_surfex)
     config = config.copy(update=set_mode)
     config = config.copy(update=param)
+    initfile, initfile_sfx, status = InitialConditions(config).find_initial_files(
+        "Forecast", False
+    )
+    assert initfile == truth
+    assert initfile_sfx == truth_sfx
     if parsed_config["general"]["bogus"] == "True":
-        initfile, initfile_sfx = InitialConditions(config).find_initial_files()
-        assert initfile == truth
-        assert initfile_sfx == truth_sfx
+        assert status
     else:
-        with contextlib.suppress(FileNotFoundError):
-            initfile, initfile_sfx = InitialConditions(config).find_initial_files()
-            assert initfile == truth
-            assert initfile_sfx == truth_sfx
+        assert not status
 
 
 if __name__ == "__main__":
