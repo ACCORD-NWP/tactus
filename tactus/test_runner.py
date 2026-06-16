@@ -506,6 +506,7 @@ class TestCases:
         summaries = {}
         case_files = {}
         width = 0
+        now = datetime.datetime.now().timestamp()
         for config_file in config_files:
             case_name, json_file, references_folder = TestCases.get_case_information(
                 config_file
@@ -514,9 +515,7 @@ class TestCases:
             try:
                 with open(json_file, "r", encoding="utf-8") as f:
                     summary = json.load(f)
-                    summary["since_timestamp"] = (
-                        datetime.datetime.now().timestamp() - os.path.getmtime(json_file)
-                    )
+                    summary["creation_date"] = os.path.getmtime(json_file)                    
             except FileNotFoundError:
                 summary = None
 
@@ -530,14 +529,15 @@ class TestCases:
                 logger.info(" from {}", self.ial["pr"])
             logger.info("Comparison against {}", references_folder)
             for case_name, summary in sorted(summaries.items()):
-                since_timestamp = summary["since_timestamp"] if summary else None
+                creation_date = summary["creation_date"] if summary else None
                 colored_message = CheckSummaryAnalysis.colored_result_message(
                     summary,
                     self.verbose,
                     case_name,
                     case_files[case_name],
                     width,
-                    since_timestamp,
+                    creation_date,
+                    now
                 )
                 logger.opt(colors=True).info(colored_message)
 

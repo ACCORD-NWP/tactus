@@ -6,6 +6,7 @@ import os
 import shutil
 from pathlib import Path
 
+import datetime
 import pytest
 import tomlkit
 
@@ -707,8 +708,10 @@ class TestReferenceCheckManager:
         """
         with open(summary_json_path, "r") as file:
             summary = json.load(file)
-
-        since_timestamp = 120
+        
+        time = 120  # seconds
+        now =datetime.datetime.now()
+        creation_date = datetime.datetime.now() + datetime.timedelta(seconds=time)
         assert summary
         colored_message = CheckSummaryAnalysis.colored_result_message(
             summary,
@@ -716,7 +719,8 @@ class TestReferenceCheckManager:
             case_name,
             summary_json_path,
             len(case_name),
-            since_timestamp,
+            creation_date,
+            now
         )
         expected = {}
         for test in [

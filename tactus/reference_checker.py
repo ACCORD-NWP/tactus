@@ -14,7 +14,7 @@ from tactus.logs import logger
 from tactus.os_utils import FileLock, Search, tactusmakedirs
 from tactus.toolbox import FileManager, Platform
 
-from .datetime_utils import to_since_str
+from .datetime_utils import since_str
 
 
 class ReferenceChecker:
@@ -579,7 +579,7 @@ class CheckSummaryAnalysis:
 
     @staticmethod
     def colored_result_message(
-        summary, verbose, case_name, filename, width, since_timestamp
+        summary, verbose, case_name, filename, width, datetime, now
     ):
         """Return a colored message summarizing the result of the analysis.
 
@@ -589,19 +589,21 @@ class CheckSummaryAnalysis:
             case_name: the name of the case being analyzed
             filename: the name of the summary file being analyzed
             width: the width to be used for the case name in the message
-            since_timestamp: the timestamp since when the analysis is performed
+            datetime: the datetime of the summary file being analyzed
+            now: the current datetime
 
         Returns:
             A colored message summarizing the result of the analysis
         """
         message = ""
         color = "cyan"
+        
         if not summary:
             return f"{case_name:<{width}} |<{color}> MISSING</{color}>"
-        since_str = to_since_str(since_timestamp)
+        since = since_str(datetime, now)
         if "analysis" not in summary:
             color = "yellow"
-            message = f"{case_name:<{width}} |<{color}> RUNNING</{color}> ({since_str})"
+            message = f"{case_name:<{width}} |<{color}> RUNNING</{color}> ({since})"
 
         else:
             color = "green"
@@ -612,7 +614,7 @@ class CheckSummaryAnalysis:
             result = summary["analysis"]["result"].split("-")
             result[1] = result[1].strip()
             message = (
-                f"{case_name:<{width}} | <{color}>{result[0]}</{color}>({since_str})"
+                f"{case_name:<{width}} | <{color}>{result[0]}</{color}>({since})"
                 + f" <white>[{result[1]}]</white>"
             )
 
