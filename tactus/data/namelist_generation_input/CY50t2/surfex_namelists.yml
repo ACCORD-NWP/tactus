@@ -97,10 +97,6 @@ sfx_forecast:
   NAM_SURF_ATM:
     XRIMAX: 0.2
 
-sfx_forecast_AROME:
-  NAM_ISBAN:
-    CSCOND: PL98
-
 sfx_forecast_ALARO:
   NAM_ISBAN:
     CSCOND: PL98
@@ -153,6 +149,8 @@ sfx_forecast_HARMONIE_AROME:
     XZ0SN: 0.003
 
 sfx_forecast_AROME:
+  NAM_ISBAN:
+    CSCOND: PL98
   NAM_REPROD_OPER:
     LREPROD_OPER: True
   NAM_SEAFLUXN:
