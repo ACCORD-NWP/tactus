@@ -33,3 +33,5 @@
   cases = "case_definitions_CY49t2.toml"
   macros = "test_macros.toml"
   modifs = "modifs_atos_bologna_CY49t2.toml"
+  refchecks = "modifs_reference_checker.toml"
+  genchecks = "modifs_reference_generate.toml"
