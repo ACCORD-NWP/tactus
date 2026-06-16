@@ -207,7 +207,6 @@ f4_AROME:
     NLIQOPT: 3
     NOVLP: 6
     NOZOCL: 2
-    NRADFR: ${stepfreq:${cfg:general.namelist.radiation_frequency}}
     NRADIP: 3
     NRADLP: 2
     NSW: 6
@@ -319,14 +318,12 @@ f4_AROME:
     YG_NL%LSLHD: false
     YG_NL%NCOUPLING: -1
     YG_NL%REFVALC: 0.0
-    YIRAD_NL%LGP: true
     YI_NL%LCOMAD: true
     YI_NL%LINTLIN: true
     YI_NL%LQM: true
     YI_NL%LSLHD: false
     YI_NL%NCOUPLING: -1
     YI_NL%REFVALC: 0.0
-    YLRAD_NL%LGP: true
     YL_NL%LCOMAD: true
     YL_NL%LINTLIN: true
     YL_NL%LQM: true
@@ -349,7 +346,6 @@ f4_AROME:
     YS_NL%LSLHD: false
     YS_NL%NCOUPLING: -1
     YS_NL%REFVALC: 0.0
-    YTKE_NL%NCOUPLING: 0
     YTKE_NL%NREQIN: -1
   NAMOPH:
     CFNHWF: ECHIS
@@ -359,7 +355,6 @@ f4_AROME:
   NAMPHMSE:
     LPGDFWR: false
   NAMPHY:
-    LDPRECIPS: true
     LEDR: true
     LMPHYS: true
     LRAYFM: true
@@ -475,8 +470,6 @@ f4_AROME:
     NBICOP: 2
     NBICOT: 2
     NBICOU: 2
-    NBICPD: 2
-    NBICVD: 2
     NECRIPL: 1
   NEMELBC0B:
     NEFRSPCPL: 1
@@ -492,7 +485,6 @@ f4_ALARO:
   NAERAD:
     LRRTM: false
     NOZOCL: 0
-    NRADFR: ${stepfreq:${cfg:general.namelist.radiation_frequency}}
     NSW: 1
     STBKG: 0.045
     TRBKG: 0.03
@@ -667,7 +659,6 @@ f4_ALARO:
     YG_NL%NCOUPLING: 0
     YG_NL%NREQIN: 0
     YIRAD_NL%LADV: false
-    YIRAD_NL%LGP: true
     YIRAD_NL%LREQOUT: false
     YIRAD_NL%NREQIN: 0
     YI_NL%LADV: true
@@ -682,7 +673,6 @@ f4_ALARO:
     YI_NL%NCOUPLING: 0
     YI_NL%NREQIN: 0
     YLRAD_NL%LADV: false
-    YLRAD_NL%LGP: true
     YLRAD_NL%LREQOUT: false
     YLRAD_NL%NREQIN: 0
     YL_NL%LADV: true
@@ -747,7 +737,6 @@ f4_ALARO:
     YTKE_NL%LSP: false
     YTKE_NL%LT5: false
     YTKE_NL%LVSPLIP: false
-    YTKE_NL%NCOUPLING: 0
     YTKE_NL%NREQIN: 0
     YTTE_NL%LADV: true
     YTTE_NL%LGP: true
@@ -815,7 +804,6 @@ f4_ALARO:
     LCVPRO: true
     LCVRA: false
     LDIFCONS: true
-    LDPRECIPS: true
     LDPRECIPS2: true
     LENTCH: true
     LEVAPLOP: true
@@ -972,8 +960,6 @@ f4_ALARO:
     NBICOP: 2
     NBICOT: 2
     NBICOU: 2
-    NBICPD: 2
-    NBICVD: 2
     NECRIPL: 1
 f4_HARMONIE_AROME:
   NAERAD:
@@ -982,7 +968,6 @@ f4_HARMONIE_AROME:
     NAER: 1
     NOVLP: 6
     NOZOCL: 2
-    NRADFR: ${stepfreq:${cfg:general.namelist.radiation_frequency}}
     NRADLP: 2
     NSW: 6
   NAMAFN:
@@ -1090,7 +1075,6 @@ f4_HARMONIE_AROME:
     YG_NL%NREQIN: -1
     YG_NL%REFVALC: 0.0
     YG_NL%REFVALI: 0.0
-    YIRAD_NL%LGP: true
     YI_NL%CNAME: ICE_CRYSTAL
     YI_NL%LPT: false
     YI_NL%LQM: true
@@ -1098,7 +1082,6 @@ f4_HARMONIE_AROME:
     YI_NL%NCOUPLING: -1
     YI_NL%NREQIN: 1
     YI_NL%REFVALC: 0.0
-    YLRAD_NL%LGP: true
     YL_NL%CNAME: CLOUD_WATER
     YL_NL%LPT: false
     YL_NL%LQM: true
@@ -1131,7 +1114,6 @@ f4_HARMONIE_AROME:
     YS_NL%REFVALC: 0.0
     YS_NL%REFVALI: 0.0
     YTKE_NL%LPT: false
-    YTKE_NL%NCOUPLING: 0
     YTKE_NL%NREQIN: -1
   NAMINI:
     LDFI: false
@@ -1170,7 +1152,6 @@ f4_HARMONIE_AROME:
     LAEROMMR: false
     LAERONRT: false
     LCLSATUR: true
-    LDPRECIPS: true
     LHLRADUPD: true
     LMPHYS: true
     LRAY: false
@@ -1307,11 +1288,10 @@ f4_HARMONIE_AROME:
   NEMELBC0A:
     LESPCPL: false
     LUNBC: true
-    NBICPD: 2
-    NBICVD: 2
 f4_common:
   NAERAD:
     LSRTM: false
+    NRADFR: ${stepfreq:${cfg:general.namelist.radiation_frequency}}
   NAMARG:
     CNMEXP: ${cfg:general.cnmexp}
     LECMWF: false
@@ -1386,9 +1366,12 @@ f4_common:
   NAMGFL:
     YG_NL%NREQIN: 0
     YI_NL%NREQIN: 0
+    YIRAD_NL%LGP: true
     YL_NL%NREQIN: 0
+    YLRAD_NL%LGP: true
     YR_NL%NREQIN: 0
     YS_NL%NREQIN: 0
+    YTKE_NL%NCOUPLING: 0
   NAMGRIB:
     NCYCLE: 49
     NENSFNB: ${cfg:general.member}
@@ -1425,6 +1408,7 @@ f4_common:
     LAEROLAN: true
     LAEROSEA: true
     LAEROSOO: true
+    LDPRECIPS: true
     LO3ABC: true
     LWINDFARM: ${cfg:general.windfarm}
   NAMRIP:
@@ -1450,6 +1434,9 @@ f4_common:
     LXXDIAGH: true
     LXXGST: true
     NRAZTS: ${steplist:${cfg:general.namelist.nrazts}}
+  NEMELBC0A:
+    NBICPD: 2
+    NBICVD: 2
   NEMELBC0B:
     TEFRCL: ${cfg:namelist.tefrcl}
 f4_c903_main:
