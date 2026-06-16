@@ -1,5 +1,6 @@
 [general]
   csc = "HARMONIE_AROME"
+  surfex_sea_ice = "sice"
   windfarm = false
 
 [domain]
