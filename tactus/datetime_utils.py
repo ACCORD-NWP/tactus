@@ -67,19 +67,19 @@ def dt2str(dt):
 
     return f"{h:04d}:{m:02d}:{s:02d}"
 
+
 def to_since_str(timestamp):
     if timestamp < 60:
         return "Now"
-    elif timestamp < 3600:
-        return f"{int(timestamp/60)} min ago"
-    elif timestamp < 3600 * 24:
-        hours = int(timestamp/3600)
+    if timestamp < 3600:
+        return f"{int(timestamp / 60)} min ago"
+    if timestamp < 3600 * 24:
+        hours = int(timestamp / 3600)
         if hours == 1:
-            return f"1 hour ago"
-        else:
-            return f"{hours} hours ago"
-    else:
-        return f"updated on {datetime.datetime.fromtimestamp(timestamp)} "
+            return "1 hour ago"
+        return f"{hours} hours ago"
+    return f"updated on {datetime.datetime.fromtimestamp(timestamp)} "
+
 
 def check_syntax(output_settings: Union[Tuple[str], List[str]], length: int):
     """Check syntax of output_settings.

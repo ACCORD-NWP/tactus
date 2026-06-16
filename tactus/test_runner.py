@@ -4,18 +4,19 @@
 import concurrent.futures
 import contextlib
 import copy
+import datetime
 import glob
 import json
 import os
 import shutil
 import tempfile
 from pathlib import Path
-import datetime
+
 import tomli
 
 from . import GeneralConstants
 from .config_parser import BasicConfig, ConfigPaths, ParsedConfig
-from .datetime_utils import evaluate_date, to_since_str
+from .datetime_utils import evaluate_date
 from .experiment import get_git_info
 from .fullpos import flatten_list
 from .general_utils import merge_dicts
@@ -497,12 +498,16 @@ class TestCases:
         case_files = {}
         width = 0
         for config_file in config_files:
-            case_name, json_file, references_folder = TestCases.get_case_information(config_file)
+            case_name, json_file, references_folder = TestCases.get_case_information(
+                config_file
+            )
             case_files[case_name] = json_file
             try:
                 with open(json_file, "r", encoding="utf-8") as f:
                     summary = json.load(f)
-                    summary["since_timestamp"] = datetime.datetime.now().timestamp() - os.path.getmtime(json_file)
+                    summary["since_timestamp"] = (
+                        datetime.datetime.now().timestamp() - os.path.getmtime(json_file)
+                    )
             except FileNotFoundError:
                 summary = None
 
@@ -517,11 +522,19 @@ class TestCases:
             logger.info("Comparison against {}", references_folder)
             for case_name, summary in sorted(summaries.items()):
                 since_timestamp = summary["since_timestamp"] if summary else None
-                colored_message = CheckSummaryAnalysis.colored_result_message(summary, self.verbose, case_name, case_files[case_name],width, since_timestamp)
+                colored_message = CheckSummaryAnalysis.colored_result_message(
+                    summary,
+                    self.verbose,
+                    case_name,
+                    case_files[case_name],
+                    width,
+                    since_timestamp,
+                )
                 logger.opt(colors=True).info(colored_message)
 
             if not self.verbose:
                 logger.opt(colors=True).info("<blue>Add '-v' for more info</blue>")
+
     def execute(self, args):
         """Execute test cases.
 

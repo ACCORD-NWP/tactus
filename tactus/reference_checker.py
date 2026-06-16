@@ -6,7 +6,6 @@ import filecmp
 import json
 import os
 import subprocess
-import datetime
 
 from arpifs_listings import norms
 
@@ -14,7 +13,9 @@ from tactus.experiment import get_git_info
 from tactus.logs import logger
 from tactus.os_utils import FileLock, Search, tactusmakedirs
 from tactus.toolbox import FileManager, Platform
+
 from .datetime_utils import to_since_str
+
 
 class ReferenceChecker:
     """Base class for comparison against a reference."""
@@ -577,26 +578,27 @@ class CheckSummaryAnalysis:
         )
 
     @staticmethod
-    def colored_result_message(summary, verbose, case_name, filename, width, since_timestamp):
+    def colored_result_message(
+        summary, verbose, case_name, filename, width, since_timestamp
+    ):
         message = ""
         color = "cyan"
         if not summary:
             return f"{case_name:<{width}} |<{color}> MISSING</{color}>"
-        else:
-            since_str = to_since_str(since_timestamp)
-            if "analysis" not in summary:
-                color = "yellow"
-                message = f"{case_name:<{width}} |<{color}> RUNNING</{color}> ({since_str})"
+        since_str = to_since_str(since_timestamp)
+        if "analysis" not in summary:
+            color = "yellow"
+            message = f"{case_name:<{width}} |<{color}> RUNNING</{color}> ({since_str})"
 
-            else:
-                color = "green"
-                if summary["analysis"]["missing_count"] > 0:
-                    color = "red"
-                if summary["analysis"]["error_count"] > 0:
-                    color = "red"
-                result = summary["analysis"]["result"].split("-")
-                result[1] = result[1].strip()
-                message = f"{case_name:<{width}} | <{color}>{result[0]}</{color}>({since_str}) <white>[{result[1]}]</white>"
+        else:
+            color = "green"
+            if summary["analysis"]["missing_count"] > 0:
+                color = "red"
+            if summary["analysis"]["error_count"] > 0:
+                color = "red"
+            result = summary["analysis"]["result"].split("-")
+            result[1] = result[1].strip()
+            message = f"{case_name:<{width}} | <{color}>{result[0]}</{color}>({since_str}) <white>[{result[1]}]</white>"
 
         if verbose:
             message += "\n"
@@ -604,13 +606,13 @@ class CheckSummaryAnalysis:
             if "analysis" not in summary:
                 message += f"{'Unknown':>10} | <{color}>Test is still running or has failed. </{color}> \n"
             else:
-               for results in summary["tasks"].values():
+                for results in summary["tasks"].values():
                     for test_type, result in results.items():
                         if test_type == "Create":
                             continue
                         try:
                             result = f"{test_type:>10} | {result['items'][0]['result']}"
-                            result = result.replace("\n","")
+                            result = result.replace("\n", "")
                             result = result.replace("SUCCESS", "<green>SUCCESS</green>")
                             result = result.replace("FAILURE", "<red>FAILURE</red>")
 
@@ -620,6 +622,8 @@ class CheckSummaryAnalysis:
                                 {result['items'][0]['warning']}"
 
         return message
+
+
 class CheckSummaryTxt(CheckSummary):
     """Class to generate summary File in txt format."""
 
