@@ -552,7 +552,7 @@ class TestReferenceCheckManager:
                 self.total_failure_count + self.count[method]["failure"]
             )
         if not self.check:
-            result_message = "N/A - check is disabled"
+            result_message = "MISSING - check is disabled"
             if self.missing_file_count > 0:
                 result_message = f"{result_message}. {self.missing_file_count} missing(s)"
             self.analysis_result = result_message
@@ -658,7 +658,7 @@ class TestReferenceCheckManager:
             lines = file.readlines()
 
         # the number of lines written in the last part of the summary
-        lines_in_analysis = 7
+        lines_in_analysis = 8
         assert len(lines) > lines_in_analysis
 
         for key, expected in expecteds.items():
