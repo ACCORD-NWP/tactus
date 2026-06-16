@@ -470,7 +470,7 @@ class TestCases:
             else:
                 return f"{hours} hours ago"
         else:
-            return f"updated on {datetime.fromtimestamp(time)} "
+            return f"updated on {datetime.datetime.fromtimestamp(time)} "
 
     def collect_summaries(self):
         """Collect summaries from the runs."""
