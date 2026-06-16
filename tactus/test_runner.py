@@ -461,10 +461,10 @@ class TestCases:
 
     @staticmethod
     def get_case_information(config_file):
-        
+
         case_config = ParsedConfig.from_file(config_file, json_schema={})
         platform = Platform(case_config)
-            
+
         case_name = platform.substitute(
             case_config.get("general.case"),
             basetime=case_config["general.times.start"],
@@ -477,7 +477,7 @@ class TestCases:
         )
         references_folder = platform.get_platform_value("references_folder")
         return case_name, json_file, references_folder
-    
+
     def collect_summaries(self):
         """Collect summaries from the runs."""
         try:
@@ -519,10 +519,9 @@ class TestCases:
                 since_timestamp = summary["since_timestamp"] if summary else None
                 colored_message = CheckSummaryAnalysis.colored_result_message(summary, self.verbose, case_name, case_files[case_name],width, since_timestamp)
                 logger.opt(colors=True).info(colored_message)
-                
-            if not self.verbose:
-                logger.info(" add '-v' for more info")
 
+            if not self.verbose:
+                logger.opt(colors=True).info("<blue>Add '-v' for more info</blue>")
     def execute(self, args):
         """Execute test cases.
 

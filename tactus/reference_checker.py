@@ -577,17 +577,17 @@ class CheckSummaryAnalysis:
         )
 
     @staticmethod
-    def colored_result_message(summary, verbose, case_name, filename, width, since_timestamp):        
+    def colored_result_message(summary, verbose, case_name, filename, width, since_timestamp):
         message = ""
         color = "cyan"
         if not summary:
             return f"{case_name:<{width}} |<{color}> MISSING</{color}>"
-        else:    
+        else:
             since_str = to_since_str(since_timestamp)
             if "analysis" not in summary:
                 color = "yellow"
                 message = f"{case_name:<{width}} |<{color}> RUNNING</{color}> ({since_str})"
-                
+
             else:
                 color = "green"
                 if summary["analysis"]["missing_count"] > 0:
@@ -596,22 +596,29 @@ class CheckSummaryAnalysis:
                     color = "red"
                 result = summary["analysis"]["result"].split("-")
                 result[1] = result[1].strip()
-                message = f"{case_name:<{width}} | <{color}>{result[0]}</{color}>({since_str}) <white>[{result[1]}]</white>"                    
-                
-        if summary and verbose:
+                message = f"{case_name:<{width}} | <{color}>{result[0]}</{color}>({since_str}) <white>[{result[1]}]</white>"
+
+        if verbose:
             message += "\n"
-            messsage += f"{'from':>10} | {filename}\n"
-            for results in summary["tasks"].values():
-                for test_type, result in results.items():
-                    if test_type == "Create":
-                        continue
-                    try:
-                        messsage += f"{test_type:>10} |{result['items'][0]['result']}\n"
-                    except KeyError:
-                        message += f"{test_type:>10} |\
-                            {result['items'][0]['warning']}\n"
-                        
-                    message += "\n"
+            message += f"{'from':>10} | {filename}\n"
+            if "analysis" not in summary:
+                message += f"{'Unknown':>10} | <{color}>Test is still running or has failed. </{color}> \n"
+            else:
+               for results in summary["tasks"].values():
+                    for test_type, result in results.items():
+                        if test_type == "Create":
+                            continue
+                        try:
+                            result = f"{test_type:>10} | {result['items'][0]['result']}"
+                            result = result.replace("\n","")
+                            result = result.replace("SUCCESS", "<green>SUCCESS</green>")
+                            result = result.replace("FAILURE", "<red>FAILURE</red>")
+
+                            message = f"{message}{result}\n"
+                        except KeyError:
+                            message += f"{test_type:>10} |\
+                                {result['items'][0]['warning']}"
+
         return message
 class CheckSummaryTxt(CheckSummary):
     """Class to generate summary File in txt format."""
