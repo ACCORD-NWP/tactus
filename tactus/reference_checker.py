@@ -581,6 +581,19 @@ class CheckSummaryAnalysis:
     def colored_result_message(
         summary, verbose, case_name, filename, width, since_timestamp
     ):
+        """Return a colored message summarizing the result of the analysis.
+
+        Args:
+            summary: the summary analysis containing the result of the analysis
+            verbose: boolean indicating if the message should contain details
+            case_name: the name of the case being analyzed
+            filename: the name of the summary file being analyzed
+            width: the width to be used for the case name in the message
+            since_timestamp: the timestamp since when the analysis is performed
+
+        Returns:
+            A colored message summarizing the result of the analysis
+        """
         message = ""
         color = "cyan"
         if not summary:
@@ -598,25 +611,35 @@ class CheckSummaryAnalysis:
                 color = "red"
             result = summary["analysis"]["result"].split("-")
             result[1] = result[1].strip()
-            message = f"{case_name:<{width}} | <{color}>{result[0]}</{color}>({since_str}) <white>[{result[1]}]</white>"
+            message = (
+                f"{case_name:<{width}} | <{color}>{result[0]}</{color}>({since_str})\
+                <white>[{result[1]}]</white>"
+            )
 
         if verbose:
             message += "\n"
             message += f"{'from':>10} | {filename}\n"
             if "analysis" not in summary:
-                message += f"{'Unknown':>10} | <{color}>Test is still running or has failed. </{color}> \n"
+                message += f"{'Unknown':>10} | <{color}>Test is still running \
+                    or has failed. </{color}> \n"
             else:
                 for results in summary["tasks"].values():
                     for test_type, result in results.items():
                         if test_type == "Create":
                             continue
                         try:
-                            result = f"{test_type:>10} | {result['items'][0]['result']}"
-                            result = result.replace("\n", "")
-                            result = result.replace("SUCCESS", "<green>SUCCESS</green>")
-                            result = result.replace("FAILURE", "<red>FAILURE</red>")
+                            result_message = (
+                                f"{test_type:>10} | {result['items'][0]['result']}"
+                            )
+                            result_message = result_message.replace("\n", "")
+                            result_message = result_message.replace(
+                                "SUCCESS", "<green>SUCCESS</green>"
+                            )
+                            result_message = result_message.replace(
+                                "FAILURE", "<red>FAILURE</red>"
+                            )
 
-                            message = f"{message}{result}\n"
+                            message = f"{message}{result_message}\n"
                         except KeyError:
                             message += f"{test_type:>10} |\
                                 {result['items'][0]['warning']}"

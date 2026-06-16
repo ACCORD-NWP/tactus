@@ -69,6 +69,14 @@ def dt2str(dt):
 
 
 def to_since_str(timestamp):
+    """Convert a timestamp to a human-readable string indicating how long ago it was.
+
+    Args:
+        timestamp (int): The timestamp in seconds since the epoch.
+
+    Returns:
+        str: A human-readable string indicating how long ago the timestamp was
+    """
     if timestamp < 60:
         return "Now"
     if timestamp < 3600:

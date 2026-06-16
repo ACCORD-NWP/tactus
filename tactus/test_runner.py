@@ -462,7 +462,16 @@ class TestCases:
 
     @staticmethod
     def get_case_information(config_file):
+        """Get case name, json file and reference folder from the config file.
 
+        Arguments:
+            config_file (str): Path to the config file
+
+        Returns:
+            case_name name: the name of the case.
+            json_file: the json file path
+            references_folder: the references folder path.
+        """
         case_config = ParsedConfig.from_file(config_file, json_schema={})
         platform = Platform(case_config)
 
