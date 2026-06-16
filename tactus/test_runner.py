@@ -515,7 +515,7 @@ class TestCases:
             try:
                 with open(json_file, "r", encoding="utf-8") as f:
                     summary = json.load(f)
-                    summary["creation_date"] = os.path.getmtime(json_file)                    
+                    summary["creation_date"] = os.path.getmtime(json_file)
             except FileNotFoundError:
                 summary = None
 
@@ -537,7 +537,7 @@ class TestCases:
                     case_files[case_name],
                     width,
                     creation_date,
-                    now
+                    now,
                 )
                 logger.opt(colors=True).info(colored_message)
 

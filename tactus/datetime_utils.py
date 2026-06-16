@@ -67,7 +67,8 @@ def dt2str(dt):
 
     return f"{h:04d}:{m:02d}:{s:02d}"
 
-def since_str(datetime : datetime, now : datetime) -> str:
+
+def since_str(datetime: datetime, now: datetime) -> str:
     """Convert a datetime to a human-readable string indicating how long ago it was.
 
     Args:
@@ -88,6 +89,7 @@ def since_str(datetime : datetime, now : datetime) -> str:
             return "1 hour ago"
         return f"{hours} hours ago"
     return f"updated on {datetime}"
+
 
 def check_syntax(output_settings: Union[Tuple[str], List[str]], length: int):
     """Check syntax of output_settings.

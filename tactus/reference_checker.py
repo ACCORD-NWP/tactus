@@ -597,7 +597,7 @@ class CheckSummaryAnalysis:
         """
         message = ""
         color = "cyan"
-        
+
         if not summary:
             return f"{case_name:<{width}} |<{color}> MISSING</{color}>"
         since = since_str(datetime, now)
