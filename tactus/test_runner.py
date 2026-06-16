@@ -478,7 +478,7 @@ class TestCases:
                 }).save_as(f"{directory}/config_names.toml")
 
             if not args.run:
-                logger.info("Rerun with '-r' to start the suites")
+                logger.info("\n\nRerun with '-r' to start the suites\n\n")
 
         if args.run:
             self.start()
