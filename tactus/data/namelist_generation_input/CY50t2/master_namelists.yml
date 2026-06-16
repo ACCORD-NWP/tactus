@@ -136,10 +136,17 @@ namgfl_AROME:
     YTKE_NL%NREQIN: 1
 fa_names:
   NAMAFN:
+    TFP_HU%CLNAME: HUMI_RELATIVE
     TFP_I%CLNAME: ICE_CRYSTAL
     TFP_L%CLNAME: CLOUD_WATER
+    TFP_MSL%CLNAME: MSLPRESSURE
+    TFP_RR%CLNAME: RAIN
+    TFP_SN%CLNAME: SNOW
+    TFP_T%CLNAME: TEMPERATURE
+    TFP_TKE%CLNAME: TKE
     TFP_U%CLNAME: WIND.U.PHYS
     TFP_V%CLNAME: WIND.V.PHYS
+    TFP_Z%CLNAME: GEOPOTENTIEL
   NAMFA:
     YFAI%CLNAME: ICE_CRYSTAL
     YFAL%CLNAME: CLOUD_WATER
@@ -152,6 +159,46 @@ fa_names:
     YFA_XPTYPESEV%CLNAME: CLSPTYPESEV_60M
     YFA_XUGST%CLNAME: CLSU.RAF60M.XFU
     YFA_XVGST%CLNAME: CLSV.RAF60M.XFU
+fa_packing:
+  NAMAFN:
+    GFP_SFIS%IBITS: 16
+    GFP_ST%IBITS: 12
+    GFP_X10U%IBITS: 12
+    GFP_X10V%IBITS: 12
+    GFP_X2RH%IBITS: 12
+    GFP_XCCC%IBITS: 8
+    GFP_XHCC%IBITS: 8
+    GFP_XLCC%IBITS: 8
+    GFP_XMCC%IBITS: 8
+    GFP_XN2T%IBITS: 12
+    GFP_XTCC%IBITS: 8
+    GFP_XUGST%IBITS: 12
+    GFP_XVGST%IBITS: 12
+    GFP_XX2T%IBITS: 12
+    GFP_XXDIAGH%IBITS: 12
+    TFP_CLF%IBITS: 6
+    TFP_EDR%IBITS: 16
+    TFP_GR%IBITS: 12
+    TFP_HL%IBITS: 12
+    TFP_HTB%IBITS: 16
+    TFP_HU%IBITS: 12
+    TFP_MSAT9C2%IBITS: 12
+    TFP_MSAT9C6%IBITS: 12
+    TFP_MSL%IBITS: 12
+    TFP_MSLNH%IBITS: 12
+    TFP_RCLS%IBITS: 12
+    TFP_RR%IBITS: 12
+    TFP_SN%IBITS: 12
+    TFP_T%IBITS: 12
+    TFP_TCLS%IBITS: 12
+    TFP_TH%IBITS: 12
+    TFP_THPW%IBITS: 12
+    TFP_THV%IBITS: 12
+    TFP_TN%IBITS: 12
+    TFP_TWV%IBITS: 12
+    TFP_TX%IBITS: 12
+    TFP_U%IBITS: 12
+    TFP_V%IBITS: 12
 f4_AROME:
   NAERAD:
     LRRTM: true
@@ -168,54 +215,16 @@ f4_AROME:
     RRE2DE: 0.64952
     RSWINHF: 1
   NAMAFN:
-    GFP_SFIS%IBITS: 16
     GFP_ST%IANO: 0
-    GFP_ST%IBITS: 12
     GFP_X10U%IANO: 0
-    GFP_X10U%IBITS: 12
     GFP_X10V%IANO: 0
-    GFP_X10V%IBITS: 12
     GFP_X2RH%IANO: 0
-    GFP_X2RH%IBITS: 12
     GFP_X2T%IANO: 1
-    GFP_XCCC%IBITS: 8
-    GFP_XHCC%IBITS: 8
-    GFP_XLCC%IBITS: 8
-    GFP_XMCC%IBITS: 8
-    GFP_XN2T%IBITS: 12
-    GFP_XTCC%IBITS: 8
     GFP_XUGST%IANO: 0
-    GFP_XUGST%IBITS: 12
     GFP_XVGST%IANO: 0
-    GFP_XVGST%IBITS: 12
-    GFP_XX2T%IBITS: 12
-    GFP_XXDIAGH%IBITS: 12
     TFP_ABS%ZFK: 32.0
-    TFP_CLF%IBITS: 6
-    TFP_EDR%IBITS: 16
-    TFP_GR%IBITS: 12
-    TFP_HL%IBITS: 12
-    TFP_HTB%IBITS: 16
     TFP_HTB%LLGP: true
-    TFP_HU%IBITS: 12
-    TFP_MSAT9C2%IBITS: 12
-    TFP_MSAT9C6%IBITS: 12
-    TFP_MSL%IBITS: 12
-    TFP_MSLNH%IBITS: 12
     TFP_PV%ZFK: 64.0
-    TFP_RCLS%IBITS: 12
-    TFP_RR%IBITS: 12
-    TFP_SN%IBITS: 12
-    TFP_T%IBITS: 12
-    TFP_TCLS%IBITS: 12
-    TFP_TH%IBITS: 12
-    TFP_THPW%IBITS: 12
-    TFP_THV%IBITS: 12
-    TFP_TN%IBITS: 12
-    TFP_TWV%IBITS: 12
-    TFP_TX%IBITS: 12
-    TFP_U%IBITS: 12
-    TFP_V%IBITS: 12
     TFP_VOR%ZFK: 32.0
     TFP_VV%ZFK: 32.0
   NAMARPHY:
@@ -229,71 +238,36 @@ f4_AROME:
     LTURB: true
   NAMCFU:
     CALFLASH1: 0.018
-    LCUMFU: true
-    LFLASH: true
-    LFPLS: true
-    LFPLSG: true
-    LFR: true
     LFRRC: true
-    LFSF: true
     LNEBPAR: true
     LNEBTT: true
-    LRAYD: true
-    LRAYS: true
-    NMTFLASH: 1
   NAMCT0:
     CFPNCF: ECHFP
-    CNPPATH: .
     LSCREEN_OPENMP: false
-    NFPOS: 1
-    NFRHIS: 1
     NFRPOS: 1
     NFRSDI: 1
-    NHISTS: ${steplist:${cfg:general.output_settings.history}}
-    NPOSTS: ${steplist:${cfg:general.output_settings.fullpos}}
-    NSFXHISTS: ${steplist:${cfg:general.output_settings.surfex}}
   NAMCT1:
     N1HIS: 1
-    N1POS: 1
-    N1RES: 0
     N1SDI: 1
-    N1SFXHIS: 1
   NAMDVISI:
     HVISI: 5.0
   NAMDYN:
-    LADVF: true
     LQMPD: false
     LQMT: false
     LQMVD: false
     LRHDI_LASTITERPC: true
     NITMP: 4
     NSITER: 1
-    NSPDLAG: 3
-    NSVDLAG: 3
-    NTLAG: 3
-    NVLAG: 3
-    NWLAG: 3
     RDAMPDIV: 20.0
     RDAMPPD: 20.0
     RDAMPQ: 0.0
     RDAMPT: 20.0
     RDAMPVD: 20.0
     RDAMPVOR: 20.0
-    REPS1: 0.0
-    REPS2: 0.0
-    REPSM1: 0.0
-    REPSM2: 0.0
-    REPSP1: 0.0
     SDRED: 1.0
-    SIPR: 90000.0
-    SITR: 350.0
     SITRA: 100.0
-    SLHDA0: 0.25
-    SLHDD00: 6.5e-05
     VESL: 0.05
     XIDT: 0.0
-    ZSLHDP1: 1.7
-    ZSLHDP3: 0.6
   NAMDYNA:
     LCOMADH: true
     LCOMADV: false
@@ -303,25 +277,17 @@ f4_AROME:
     LCOMAD_SVD: true
     LCOMAD_T: true
     LCOMAD_W: true
-    LGWADV: true
     LNESC: true
-    LNHEE: true
     LPC_CHEAP: true
     LPC_FULL: true
-    LRDBBC: false
     LSETTLS: false
-    LSETTLST: true
     LSLHD_GFL: false
     LSLHD_OLD: false
     LSLHD_SPD: false
     LSLHD_SVD: false
     LSLHD_T: false
     LSLHD_W: false
-    LSPRT: true
-    LTWOTL: true
     ND4SYS: 2
-    NPDVAR: 2
-    NVDVAR: 4
     SLHDEPSH: 0.08
     SLHDKMAX: 6
   NAMFPF:
@@ -385,17 +351,8 @@ f4_AROME:
     YS_NL%REFVALC: 0.0
     YTKE_NL%NCOUPLING: 0
     YTKE_NL%NREQIN: -1
-  NAMIO_SERV:
-    NIO_SERV_BUF_MAXSIZE: 20
-    NIO_SERV_METHOD: 2
-    NMSG_LEVEL_CLIENT: 0
-    NMSG_LEVEL_SERVER: 0
-    NPROCESS_LEVEL: 5
-    NPROC_IO: ${cfg:namelist.nproc_io,0}
   NAMOPH:
     CFNHWF: ECHIS
-    LINC: true
-    NTIMEFMT: 2
   NAMPARAR:
     CMICRO: ${cfg:submission.cmicro,ICE3}
     LOLSMC: true
@@ -467,9 +424,6 @@ f4_AROME:
     LRAFTUR: true
     XDAMP: 1.0
     XMULAF: -1.85
-  NAMRIP:
-    CSTOP: ${cfg:namelist.cstop}
-    TSTEP: ${timestep:${cfg:domain.tstep}}
   NAMSATS:
     LPARTIAL_COEF_FILES: true
   NAMTOPH:
@@ -477,31 +431,14 @@ f4_AROME:
     ETNEBU: 5000.0
     ETPLUI: 5000.0
     XDRMTK: 6.0e-07
-    XDRMTP: 800.0
-    XDRMUK: 3.0e-07
-    XDRMUP: 800.0
-  NAMTRANS:
-    LFFTW: ${cfg:submission.lfftw,"true"}
   NAMXFU:
-    LXCLP: true
-    LXCLS: true
-    LXFU: true
-    LXMRT: true
-    LXNEBPA: true
-    LXNEBTT: true
     LXNUVCLS: true
     LXPLS: true
     LXPLSG: true
-    LXQCLS: true
     LXR: true
     LXSOIL: false
     LXTHW: true
     LXTRT: true
-    LXTTCLS: true
-    LXVISI: true
-    LXXDIAGH: true
-    LXXGST: true
-    NRAZTS: ${steplist:${cfg:general.namelist.nrazts}}
     NXGSTPERIOD: 3600
   NAM_NEBN:
     CFRAC_ICE_ADJUST: S
@@ -551,7 +488,6 @@ f4_AROME:
     SPNUDQ: 0.0
     SPNUDT: 0.01
     SPNUDVOR: 0.01
-    TEFRCL: ${cfg:namelist.tefrcl}
 f4_ALARO:
   NAERAD:
     LRRTM: false
@@ -579,53 +515,29 @@ f4_ALARO:
     GFP_TCC%IBITS: 8
     GFP_VISICLD%IBITS: 12
     GFP_VISIHYD%IBITS: 12
-    GFP_X10U%IBITS: 12
-    GFP_X10V%IBITS: 12
-    GFP_X2RH%IBITS: 12
     GFP_X2T%IBITS: 12
     GFP_X2TPW%IBITS: 12
     GFP_XCAPE%IBITS: 16
     GFP_XCCC%IBITS: 16
     GFP_XCLPH%IBITS: 12
-    GFP_XHCC%IBITS: 8
-    GFP_XLCC%IBITS: 8
-    GFP_XMCC%IBITS: 8
     GFP_XMOCO%IBITS: 16
     GFP_XMRT%IBITS: 12
-    GFP_XN2T%IBITS: 12
     GFP_XPTYPE%IBITS: 12
     GFP_XPTYPE2%IBITS: 12
     GFP_XPTYPESEV%IBITS: 12
     GFP_XPTYPESEV2%IBITS: 12
-    GFP_XTCC%IBITS: 8
-    GFP_XUGST%IBITS: 12
-    GFP_XVGST%IBITS: 12
-    GFP_XX2T%IBITS: 12
     TFP_ETH%IBITS: 12
     TFP_FGST%IBITS: 12
-    TFP_HU%CLNAME: HUMI_RELATIVE
-    TFP_HU%IBITS: 12
     TFP_I%IBITS: 16
     TFP_L%IBITS: 16
-    TFP_MSL%CLNAME: MSLPRESSURE
-    TFP_MSL%IBITS: 12
     TFP_P%IBITS: 16
     TFP_PV%IBITS: 16
     TFP_Q%LLGP: false
-    TFP_RR%CLNAME: RAIN
     TFP_RR%IBITS: 16
-    TFP_SN%CLNAME: SNOW
     TFP_SN%IBITS: 16
-    TFP_T%CLNAME: TEMPERATURE
-    TFP_T%IBITS: 12
-    TFP_THPW%IBITS: 12
-    TFP_TKE%CLNAME: TKE
     TFP_TKE%IBITS: 16
-    TFP_U%IBITS: 12
-    TFP_V%IBITS: 12
     TFP_VV%CLNAME: VITESSE_VERTICALE
     TFP_VV%IBITS: 16
-    TFP_Z%CLNAME: GEOPOTENTIEL
     TFP_Z%IBITS: 16
   NAMARPHY:
     CCOUPLING: I
@@ -633,42 +545,24 @@ f4_ALARO:
   NAMCFU:
     CALFLASH1: 0.94
     LAMIP: false
-    LCUMFU: true
-    LFLASH: true
     LFPLC: true
-    LFPLS: true
-    LFPLSG: true
-    LFR: true
-    LFSF: true
     LFSOIL: true
-    LRAYD: true
-    LRAYS: true
     LSTRD: true
     LSTRT: true
-    NMTFLASH: 1
     RBASEMAX: -1.0
   NAMCT0:
     CFPNCF: ECHFP
-    CNPPATH: .
     LAROME: false
     LFBDAP: true
     LFDBOP: false
     LRPLANE: true
     LSCREEN_OPENMP: false
-    NFPOS: 1
-    NFRHIS: 1
     NFRPOS: 1
     NFRSDI: 1
-    NHISTS: ${steplist:${cfg:general.output_settings.history}}
-    NPOSTS: ${steplist:${cfg:general.output_settings.fullpos}}
-    NSFXHISTS: ${steplist:${cfg:general.output_settings.surfex}}
     NSPPR: 0
   NAMCT1:
     N1HIS: 1
-    N1POS: 1
-    N1RES: 0
     N1SDI: 1
-    N1SFXHIS: 1
   NAMCVER:
     LREGETA: false
     LVERTFE: false
@@ -677,17 +571,11 @@ f4_ALARO:
     RDHAIL1: 2.4
     RDHAIL2: 6.5
   NAMDYN:
-    LADVF: true
     LQMHT: false
     LQMHW: false
     LQMP: false
     NITMP: 4
     NSITER: 1
-    NSPDLAG: 3
-    NSVDLAG: 3
-    NTLAG: 3
-    NVLAG: 3
-    NWLAG: 3
     RDAMPDIV: 5.0
     RDAMPDIVS: 10.0
     RDAMPPD: 5.0
@@ -697,37 +585,22 @@ f4_ALARO:
     RDAMPVDS: 15.0
     RDAMPVOR: 5.0
     RDAMPVORS: 10.0
-    REPS1: 0.0
-    REPS2: 0.0
-    REPSM1: 0.0
-    REPSM2: 0.0
-    REPSP1: 0.0
     REXPDH: 2.0
     SDRED: 1.0
-    SIPR: 90000.0
-    SITR: 350.0
     SITRA: 100.0
     SLEVDH: 0.5
     SLEVDHS: 1.0
-    SLHDA0: 0.25
     SLHDB: 4.0
-    SLHDD00: 6.5e-05
     VESL: 0.0
     VMAX2: 280.0
     XIDT: 0.0
-    ZSLHDP1: 1.7
-    ZSLHDP3: 0.6
   NAMDYNA:
-    LGWADV: true
     LNESC: true
     LNESCT: false
     LNESCV: false
-    LNHEE: true
     LPC_CHEAP: true
     LPC_FULL: true
-    LRDBBC: false
     LSETTLS: false
-    LSETTLST: true
     LSETTLSV: true
     LSLHD_GFL: true
     LSLHD_OLD: false
@@ -735,11 +608,7 @@ f4_ALARO:
     LSLHD_SVD: true
     LSLHD_T: true
     LSLHD_W: true
-    LSPRT: true
-    LTWOTL: true
     ND4SYS: 2
-    NPDVAR: 2
-    NVDVAR: 4
     SLHDEPSH: 0.016
     SLHDEPSV: 0.0
     SLHDKMAX: 6.0
@@ -911,19 +780,10 @@ f4_ALARO:
     YUOM_NL%LREQOUT: false
     YUOM_NL%LSLHD: false
     YUOM_NL%NREQIN: 0
-  NAMIO_SERV:
-    NIO_SERV_BUF_MAXSIZE: 20
-    NIO_SERV_METHOD: 2
-    NMSG_LEVEL_CLIENT: 0
-    NMSG_LEVEL_SERVER: 0
-    NPROCESS_LEVEL: 5
-    NPROC_IO: ${cfg:namelist.nproc_io,0}
   NAMJFH:
     N_VMASS: 0
   NAMOPH:
     CFNHWF: ECHIS
-    LINC: true
-    NTIMEFMT: 2
   NAMPARAR:
     NSWB_MNH: 1
   NAMPHY:
@@ -1095,37 +955,17 @@ f4_ALARO:
     FCM_NU_DI: 0.0
     FCM_NU_DL: 0.0
     RLAMB_SOLID: 0.6
-  NAMRIP:
-    CSTOP: ${cfg:namelist.cstop}
-    TSTEP: ${timestep:${cfg:domain.tstep}}
   NAMTOPH:
     ETCVIM: 0.0
     ETNEBU: 0.0
     ETPLUI: 0.0
     XDRMTK: 6.0e-08
-    XDRMTP: 800.0
-    XDRMUK: 3.0e-07
-    XDRMUP: 800.0
-  NAMTRANS:
-    LFFTW: ${cfg:submission.lfftw,"true"}
   NAMXFU:
-    LXCLP: true
-    LXCLS: true
     LXCTOP: true
-    LXFU: true
     LXICV: true
-    LXMRT: true
-    LXNEBPA: true
-    LXNEBTT: true
-    LXQCLS: true
     LXTPWCLS: true
-    LXTTCLS: true
     LXVEIN: true
-    LXVISI: true
-    LXXDIAGH: true
-    LXXGST: true
     NFRRAZ: 1
-    NRAZTS: ${steplist:${cfg:general.namelist.nrazts}}
   NEMELBC0A:
     LQCPL: true
     NBICNHX: 2
@@ -1135,8 +975,6 @@ f4_ALARO:
     NBICPD: 2
     NBICVD: 2
     NECRIPL: 1
-  NEMELBC0B:
-    TEFRCL: ${cfg:namelist.tefrcl}
 f4_HARMONIE_AROME:
   NAERAD:
     LRRTM: true
@@ -1172,68 +1010,32 @@ f4_HARMONIE_AROME:
     LTURB: true
   NAMCFU:
     CALFLASH1: 0.018
-    LCUMFU: true
-    LFLASH: true
-    LFPLS: true
-    LFPLSG: true
-    LFR: true
     LFRRC: true
-    LFSF: true
     LNEBPAR: true
     LNEBTT: true
-    LRAYD: true
-    LRAYS: true
-    NMTFLASH: 1
   NAMCHK:
     LECHKEVO: false
     LECHKPS: false
     LECHKTND: false
   NAMCT0:
-    CNPPATH: .
-    NFPOS: 1
     NFRDHFD: 1
     NFRGDI: 15
-    NFRHIS: 1
     NFRSDI: 15
-    NHISTS: ${steplist:${cfg:general.output_settings.history}}
-    NPOSTS: ${steplist:${cfg:general.output_settings.fullpos}}
-    NSFXHISTS: ${steplist:${cfg:general.output_settings.surfex}}
-  NAMCT1:
-    N1POS: 1
-    N1RES: 0
-    N1SFXHIS: 1
   NAMDYN:
-    LADVF: true
     LBOUND_D3: false
     LQMPD: false
     LQMT: false
     LQMVD: false
     NSITER: 0
-    NSPDLAG: 3
-    NSVDLAG: 3
-    NTLAG: 3
-    NVLAG: 3
-    NWLAG: 3
     RDAMPDIV: 10.0
     RDAMPPD: 100000.0
     RDAMPQ: 10.0
     RDAMPT: 10.0
     RDAMPVD: 10.0
     RDAMPVOR: 10.0
-    REPS1: 0.0
-    REPS2: 0.0
-    REPSM1: 0.0
-    REPSM2: 0.0
-    REPSP1: 0.0
-    SIPR: 90000.0
-    SITR: 350.0
     SITRA: 70.0
-    SLHDA0: 0.25
-    SLHDD00: 6.5e-05
     VESL: 0.0
     XIDT: 0.15
-    ZSLHDP1: 1.7
-    ZSLHDP3: 0.6
   NAMDYNA:
     LCOMADH: true
     LCOMADV: false
@@ -1244,23 +1046,15 @@ f4_HARMONIE_AROME:
     LCOMAD_T: true
     LCOMAD_W: true
     LGRADSP: true
-    LGWADV: true
     LNESC: false
-    LNHEE: true
     LPC_FULL: false
-    LRDBBC: false
     LSETTLS: true
-    LSETTLST: true
     LSLHD_GFL: true
     LSLHD_OLD: true
     LSLHD_SPD: false
     LSLHD_SVD: false
     LSLHD_T: false
     LSLHD_W: false
-    LSPRT: true
-    LTWOTL: true
-    NPDVAR: 2
-    NVDVAR: 4
     SLHDEPSH: 0.0025
   NAMFA:
     LEXTERN: true
@@ -1344,13 +1138,6 @@ f4_HARMONIE_AROME:
   NAMINTFLEX:
     LINTFLEX: false
     LRADFLEX: false
-  NAMIO_SERV:
-    NIO_SERV_BUF_MAXSIZE: 20
-    NIO_SERV_METHOD: 2
-    NMSG_LEVEL_CLIENT: 0
-    NMSG_LEVEL_SERVER: 0
-    NPROCESS_LEVEL: 5
-    NPROC_IO: ${cfg:namelist.nproc_io,0}
   NAMNRTAER:
     LAECCN2CLDR: false
     LAEIFN: false
@@ -1363,9 +1150,6 @@ f4_HARMONIE_AROME:
     RIFNMINSIZE: 0.01
     SSMINLO: 0.0005
     SSMINUP: 0.0008
-  NAMOPH:
-    LINC: true
-    NTIMEFMT: 2
   NAMPARAR:
     LDUALMF: true
     LICERAD: true
@@ -1468,9 +1252,6 @@ f4_HARMONIE_AROME:
     FCM_NU_DI: 0.0
     FCM_NU_DL: 0.0
     RLAMB_SOLID: 0.6
-  NAMRIP:
-    CSTOP: ${cfg:namelist.cstop}
-    TSTEP: ${timestep:${cfg:domain.tstep}}
   NAMSPBD:
     LSPBDC: false
   NAMSTOPH:
@@ -1482,34 +1263,19 @@ f4_HARMONIE_AROME:
     ETNEBU: 5000.0
     ETPLUI: 5000.0
     XDRMTK: 6.0e-07
-    XDRMTP: 800.0
     XDRMTX: 4.0e-07
-    XDRMUK: 3.0e-07
-    XDRMUP: 800.0
     XDRMUX: 2.0e-06
   NAMTRANS0:
     RDISTR_E: 1.0
   NAMXFU:
-    LXCLP: true
-    LXCLS: true
-    LXFU: true
-    LXMRT: true
-    LXNEBPA: true
-    LXNEBTT: true
     LXNUVCLS: true
     LXPLS: true
     LXPLSG: true
-    LXQCLS: true
     LXR: true
     LXSOIL: false
     LXTHW: true
     LXTRT: true
-    LXTTCLS: true
-    LXVISI: true
-    LXXDIAGH: true
-    LXXGST: true
     NFRRAZ: 1
-    NRAZTS: ${steplist:${cfg:general.namelist.nrazts}}
     NXGSTPERIOD: 3600
   NAM_NEBN:
     LHGT_QS: true
@@ -1543,8 +1309,6 @@ f4_HARMONIE_AROME:
     LUNBC: true
     NBICPD: 2
     NBICVD: 2
-  NEMELBC0B:
-    TEFRCL: ${cfg:namelist.tefrcl}
 f4_common:
   NAERAD:
     LSRTM: false
@@ -1555,17 +1319,61 @@ f4_common:
     NCONF: 1
     NSUPERSEDE: 1
   NAMCFU:
+    LCUMFU: true
+    LFLASH: true
+    LFPLS: true
+    LFPLSG: true
+    LFR: true
+    LFSF: true
+    LRAYD: true
+    LRAYS: true
     LWFPAC: ${cfg:general.windfarm}
+    NMTFLASH: 1
   NAMCT0:
+    CNPPATH: .
     LAROME: true
+    NFPOS: 1
+    NFRHIS: 1
+    NHISTS: ${steplist:${cfg:general.output_settings.history}}
+    NPOSTS: ${steplist:${cfg:general.output_settings.fullpos}}
+    NSFXHISTS: ${steplist:${cfg:general.output_settings.surfex}}
   NAMCT1:
     LRFILAF: false
+    N1POS: 1
+    N1RES: 0
+    N1SFXHIS: 1
+  NAMDYN:
+    LADVF: true
+    NSPDLAG: 3
+    NSVDLAG: 3
+    NTLAG: 3
+    NVLAG: 3
+    NWLAG: 3
+    REPS1: 0.0
+    REPS2: 0.0
+    REPSM1: 0.0
+    REPSM2: 0.0
+    REPSP1: 0.0
+    SIPR: 90000.0
+    SITR: 350.0
+    SLHDA0: 0.25
+    SLHDD00: 6.5e-05
+    ZSLHDP1: 1.7
+    ZSLHDP3: 0.6
   NAMCVER:
     NDLNPR: 1
   NAMDIM:
     NPROMA: ${cfg:submission.nproma}
   NAMDYNA:
+    LGWADV: true
+    LNHEE: true
+    LRDBBC: false
+    LSETTLST: true
     LSLAG: true
+    LSPRT: true
+    LTWOTL: true
+    NPDVAR: 2
+    NVDVAR: 4
   NAMFA:
     CMODEL: ${cfg:general.cmodel}
     LEXTERN: true
@@ -1584,8 +1392,18 @@ f4_common:
   NAMGRIB:
     NCYCLE: 49
     NENSFNB: ${cfg:general.member}
+  NAMIO_SERV:
+    NIO_SERV_BUF_MAXSIZE: 20
+    NIO_SERV_METHOD: 2
+    NMSG_LEVEL_CLIENT: 0
+    NMSG_LEVEL_SERVER: 0
+    NPROCESS_LEVEL: 5
+    NPROC_IO: ${cfg:namelist.nproc_io,0}
   NAMINI:
     LDFI: false
+  NAMOPH:
+    LINC: true
+    NTIMEFMT: 2
   NAMPAR0:
     LMPOFF: false
     MBX_SIZE: 2048000000
@@ -1609,8 +1427,31 @@ f4_common:
     LAEROSOO: true
     LO3ABC: true
     LWINDFARM: ${cfg:general.windfarm}
+  NAMRIP:
+    CSTOP: ${cfg:namelist.cstop}
+    TSTEP: ${timestep:${cfg:domain.tstep}}
+  NAMTOPH:
+    XDRMTP: 800.0
+    XDRMUK: 3.0e-07
+    XDRMUP: 800.0
+  NAMTRANS:
+    LFFTW: ${cfg:submission.lfftw,"true"}
   NAMXFU:
+    LXCLP: true
+    LXCLS: true
+    LXFU: true
+    LXMRT: true
+    LXNEBPA: true
+    LXNEBTT: true
+    LXQCLS: true
+    LXTTCLS: true
+    LXVISI: true
     LXWFPIN: ${cfg:general.windfarm}
+    LXXDIAGH: true
+    LXXGST: true
+    NRAZTS: ${steplist:${cfg:general.namelist.nrazts}}
+  NEMELBC0B:
+    TEFRCL: ${cfg:namelist.tefrcl}
 f4_c903_main:
   NAEPHY:
     LEC4MAP: false
