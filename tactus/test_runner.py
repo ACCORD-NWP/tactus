@@ -4,12 +4,12 @@
 import concurrent.futures
 import contextlib
 import copy
-import datetime
 import glob
 import json
 import os
 import shutil
 import tempfile
+from datetime import datetime
 from pathlib import Path
 
 import tomli
@@ -506,7 +506,7 @@ class TestCases:
         summaries = {}
         case_files = {}
         width = 0
-        now = datetime.datetime.now().timestamp()
+        now = datetime.now()
         for config_file in config_files:
             case_name, json_file, references_folder = TestCases.get_case_information(
                 config_file
@@ -515,7 +515,9 @@ class TestCases:
             try:
                 with open(json_file, "r", encoding="utf-8") as f:
                     summary = json.load(f)
-                    summary["creation_date"] = os.path.getmtime(json_file)
+                    summary["creation_date"] = datetime.fromtimestamp(
+                        os.path.getmtime(json_file)
+                    )
             except FileNotFoundError:
                 summary = None
 

@@ -709,9 +709,9 @@ class TestReferenceCheckManager:
         with open(summary_json_path, "r") as file:
             summary = json.load(file)
 
-        time = 120  # seconds
+        time = 130  # seconds
         now = datetime.datetime.now()
-        creation_date = datetime.datetime.now() + datetime.timedelta(seconds=time)
+        creation_date = datetime.datetime.now() - datetime.timedelta(seconds=time)
         assert summary
         colored_message = CheckSummaryAnalysis.colored_result_message(
             summary,

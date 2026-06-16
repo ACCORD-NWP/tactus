@@ -78,7 +78,7 @@ def since_str(datetime: datetime, now: datetime) -> str:
     Returns:
         str: A human-readable string indicating how long ago datetime now was
     """
-    timestamp = int((datetime - now).total_seconds())
+    timestamp = int((now - datetime).total_seconds())
     if timestamp < 60:
         return "Now"
     if timestamp < 3600:
