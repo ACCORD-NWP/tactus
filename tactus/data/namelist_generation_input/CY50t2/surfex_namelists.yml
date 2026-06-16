@@ -97,10 +97,6 @@ sfx_forecast:
   NAM_SURF_ATM:
     XRIMAX: 0.2
 
-sfx_forecast_ALARO:
-  NAM_ISBAN:
-    CSCOND: PL98
-
 sfx_forecast_HARMONIE_AROME:
   NAM_IO_OFFLINE:
     XTSTEP_OUTPUT: 3600
@@ -173,6 +169,8 @@ sfx_forecast_AROME:
     XZ0SN: 0.01
 
 sfx_forecast_ALARO:
+  NAM_ISBAN:
+    CSCOND: PL98
   NAM_DIAG_SURFN:
     N2M: 0
     LSURF_VARS: True
