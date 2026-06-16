@@ -321,5 +321,5 @@ def test_since_str():
         now_date = datetime.datetime(2026, 6, 1, 0, 0, 0)
         creation_date = now_date + datetime.timedelta(seconds=time)
         if expected_results[time] == "set_dynamically":
-            expected_results[time] = f"updated on {creation_date} "
+            expected_results[time] = f"updated on {creation_date}"
         assert since_str(creation_date, now_date) == expected_results[time]
