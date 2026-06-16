@@ -233,7 +233,6 @@ f4_AROME:
     LMFSHAL: true
     LMICRO: true
     LMPA: true
-    LMSE: true
     LTURB: true
   NAMCFU:
     CALFLASH1: 0.018
@@ -533,7 +532,6 @@ f4_ALARO:
     TFP_Z%IBITS: 16
   NAMARPHY:
     CCOUPLING: I
-    LMSE: ${cfg:general.surfex}
   NAMCFU:
     CALFLASH1: 0.94
     LAMIP: false
@@ -991,7 +989,6 @@ f4_HARMONIE_AROME:
     LMFSHAL: true
     LMICRO: true
     LMPA: true
-    LMSE: true
     LTURB: true
   NAMCFU:
     CALFLASH1: 0.018
@@ -1298,6 +1295,8 @@ f4_common:
     LELAM: true
     NCONF: 1
     NSUPERSEDE: 1
+  NAMARPHY:
+    LMSE: ${cfg:general.surfex}
   NAMCFU:
     LCUMFU: true
     LFLASH: true
