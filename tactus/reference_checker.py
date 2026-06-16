@@ -6,6 +6,7 @@ import filecmp
 import json
 import os
 import subprocess
+import datetime
 
 from arpifs_listings import norms
 
@@ -13,7 +14,7 @@ from tactus.experiment import get_git_info
 from tactus.logs import logger
 from tactus.os_utils import FileLock, Search, tactusmakedirs
 from tactus.toolbox import FileManager, Platform
-
+from .datetime_utils import to_since_str
 
 class ReferenceChecker:
     """Base class for comparison against a reference."""
@@ -569,14 +570,49 @@ class CheckSummaryAnalysis:
             if self.missing_count > 0:
                 result_message = f"{result_message}. {self.missing_count} missing(s)"
             return result_message
-
         result_message = "SUCCESS" if self.success() else "FAILURE"
         return (
             f"{result_message} - {self.error_count} error(s),"
             + f" {self.success_count} success(es), {self.missing_count} missing(s)"
         )
 
-
+    @staticmethod
+    def colored_result_message(summary, verbose, case_name, filename, width, since_timestamp):        
+        message = ""
+        color = "cyan"
+        if not summary:
+            return f"{case_name:<{width}} |<{color}> MISSING</{color}>"
+        else:    
+            since_str = to_since_str(since_timestamp)
+            if "analysis" not in summary:
+                color = "yellow"
+                message = f"{case_name:<{width}} |<{color}> RUNNING</{color}> ({since_str})"
+                
+            else:
+                color = "green"
+                if summary["analysis"]["missing_count"] > 0:
+                    color = "red"
+                if summary["analysis"]["error_count"] > 0:
+                    color = "red"
+                result = summary["analysis"]["result"].split("-")
+                result[1] = result[1].strip()
+                message = f"{case_name:<{width}} | <{color}>{result[0]}</{color}>({since_str}) <white>[{result[1]}]</white>"                    
+                
+        if summary and verbose:
+            message += "\n"
+            messsage += f"{'from':>10} | {filename}\n"
+            for results in summary["tasks"].values():
+                for test_type, result in results.items():
+                    if test_type == "Create":
+                        continue
+                    try:
+                        messsage += f"{test_type:>10} |{result['items'][0]['result']}\n"
+                    except KeyError:
+                        message += f"{test_type:>10} |\
+                            {result['items'][0]['warning']}\n"
+                        
+                    message += "\n"
+        return message
 class CheckSummaryTxt(CheckSummary):
     """Class to generate summary File in txt format."""
 

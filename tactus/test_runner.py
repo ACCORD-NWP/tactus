@@ -15,12 +15,13 @@ import tomli
 
 from . import GeneralConstants
 from .config_parser import BasicConfig, ConfigPaths, ParsedConfig
-from .datetime_utils import evaluate_date
+from .datetime_utils import evaluate_date, to_since_str
 from .experiment import get_git_info
 from .fullpos import flatten_list
 from .general_utils import merge_dicts
 from .host_actions import TactusHost
 from .logs import logger
+from .reference_checker import CheckSummaryAnalysis
 from .toolbox import Platform
 
 
@@ -458,20 +459,25 @@ class TestCases:
                 self.cases[case]["hostname"] = hostnames[item["host"]]["config_name"]
                 self.cases[case]["hostdomain"] = hostnames[item["host"]]["domain_name"]
 
-    def nice_duration(self,time):
-        if time < 60:
-            return "Now"
-        elif time < 3600:
-            return f"{int(time/60)} min ago"
-        elif time < 3600 * 24:
-            hours = int(time/3600)
-            if hours == 1:
-                return f"1 hour ago"
-            else:
-                return f"{hours} hours ago"
-        else:
-            return f"updated on {datetime.datetime.fromtimestamp(time)} "
-
+    @staticmethod
+    def get_case_information(config_file):
+        
+        case_config = ParsedConfig.from_file(config_file, json_schema={})
+        platform = Platform(case_config)
+            
+        case_name = platform.substitute(
+            case_config.get("general.case"),
+            basetime=case_config["general.times.start"],
+            validtime=case_config["general.times.start"],
+        )
+        json_file = platform.substitute(
+            case_config.get("reference_checker.summary.json.file"),
+            basetime=case_config["general.times.start"],
+            validtime=case_config["general.times.start"],
+        )
+        references_folder = platform.get_platform_value("references_folder")
+        return case_name, json_file, references_folder
+    
     def collect_summaries(self):
         """Collect summaries from the runs."""
         try:
@@ -491,78 +497,29 @@ class TestCases:
         case_files = {}
         width = 0
         for config_file in config_files:
-            case_config = ParsedConfig.from_file(config_file, json_schema={})
-            platform = Platform(case_config)
-            case_name = platform.substitute(
-                case_config.get("general.case"),
-                basetime=case_config["general.times.start"],
-                validtime=case_config["general.times.start"],
-            )
-            json_file = platform.substitute(
-                case_config.get("reference_checker.summary.json.file"),
-                basetime=case_config["general.times.start"],
-                validtime=case_config["general.times.start"],
-            )
+            case_name, json_file, references_folder = TestCases.get_case_information(config_file)
             case_files[case_name] = json_file
             try:
                 with open(json_file, "r", encoding="utf-8") as f:
                     summary = json.load(f)
-                    summary["mtime"] = os.path.getmtime(json_file)
+                    summary["since_timestamp"] = datetime.datetime.now().timestamp() - os.path.getmtime(json_file)
             except FileNotFoundError:
                 summary = None
 
             summaries[case_name] = summary
             width = max(width, len(case_name))
 
-        reference = platform.get_platform_value("references_folder")
         if len(summaries) > 0:
             with contextlib.suppress(KeyError):
                 logger.info("Our version {}", self.ial["ial_hash"])
             with contextlib.suppress(KeyError):
                 logger.info(" from {}", self.ial["pr"])
-            logger.info("Comparison against {}", reference)
+            logger.info("Comparison against {}", references_folder)
             for case_name, summary in sorted(summaries.items()):
-                if not summary:
-                    logger.opt(colors=True).info(
-                        f"{case_name:<{width}} |<cyan> MISSING</cyan>"
-                    )
-                else:
-                    duration = datetime.datetime.now().timestamp() - summary["mtime"]
-                    since = self.nice_duration(duration)
-                    if "analysis" not in summary:
-                       logger.opt(colors=True).info(
-                           f"{case_name:<{width}} |<yellow> RUNNING</yellow> ({since})"
-                       )
-                    else:
-                      color = "green"
-                      if summary["analysis"]["missing_count"] > 0:
-                          color = "red"
-                      if summary["analysis"]["error_count"] > 0:
-                          color = "red"
-                      message = summary["analysis"]["result"].split("-")
-                      message[1] = message[1].strip()
-                      logger.opt(colors=True).info(
-                          f"{case_name:<{width}} | <{color}>{message[0]}</{color}>({since}) <white>[{message[1]}]</white>"
-                         )
-
-                      if self.verbose:
-                        logger.info(f"{'from':>10} | {case_files[case_name]}\n")
-                        for results in summary["tasks"].values():
-                            for test_type, result in results.items():
-                                if test_type == "Create":
-                                    continue
-                                try:
-                                    logger.info(
-                                        f"{test_type:>10} |\
-                                        {result['items'][0]['result']}"
-                                    )
-                                except KeyError:
-                                    logger.info(
-                                        f"{test_type:>10} |\
-                                        {result['items'][0]['warning']}"
-                                    )
-
-                        logger.info("\n")
+                since_timestamp = summary["since_timestamp"] if summary else None
+                colored_message = CheckSummaryAnalysis.colored_result_message(summary, self.verbose, case_name, case_files[case_name],width, since_timestamp)
+                logger.opt(colors=True).info(colored_message)
+                
             if not self.verbose:
                 logger.info(" add '-v' for more info")
 
