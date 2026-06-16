@@ -38,12 +38,13 @@ def set_times(config):
     if "start" not in times:
         times.update({"start": times["basetime"]})
         logger.debug("Set start to {}", times["start"])
+
     if "end" not in times:
         times.update({"end": times["basetime"]})
         logger.debug("Set end to {}", times["end"])
 
     times.update({"start": evaluate_date(times["start"])})
-    times.update({"end": evaluate_date(times["end"])})
+    times.update({"end": evaluate_date(times["end"], reference_date=times["start"])})
 
     if as_datetime(times["start"]) > as_datetime(times["end"]):
         raise ValueError(

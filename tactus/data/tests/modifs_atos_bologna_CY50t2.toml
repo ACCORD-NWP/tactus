@@ -1,0 +1,60 @@
+# Global modifications
+[modifs.archiving.FDB.fdb.fpgrib_files]
+  active = false
+
+[modifs.cleaning.PostMortem.ecf_files]
+  active = false
+
+[modifs.fdb.expver_restrictions]
+  test = ["snh02", "lrb_465000527_efdev"]
+
+[modifs.general]
+  case = "@CASE_PREFIX@@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@@CASE_SUFFIX@"
+
+[modifs.general.times]
+  start = "@REFERENCE_DATE@"
+
+[modifs.macros.select.release_test]
+  os_macros = ["PERM"]
+
+[modifs.platform]
+  reference_data = "@SCRATCH@/@SYS_NAME@/@CYCLE@"
+
+[modifs.platform.mirrorglobalDT]
+  remote_host = "ecflow-gen-snh02-001"
+  remote_path = "/mirror_globalDT_iekm/pabv/iekm/fc/main/fcgroup/00/model"
+
+[modifs.scheduler.ecfvars]
+  case_prefix = "@TAG@@SUBTAG@"
+  ecf_files = "@PERM@/tactus_ecflow/ecf_files"
+  ecf_files_remotely = "@PERM@/tactus_ecflow/ecf_files"
+  ecf_home = "@PERM@/tactus_ecflow/jobout"
+  ecf_jobout = "@PERM@/tactus_ecflow/jobout"
+  ecf_out = "@PERM@/tactus_ecflow/jobout"
+
+[modifs.scheduler.mirror_suite]
+  mirror_name = "@HOST_CASE@"
+  remote_path = "/@HOST_CASE@/PostMortem"
+
+[modifs.submission]
+  bindir = "@SCRATCH@/@SYS_NAME@/@CASE_PREFIX@@CYCLE@_compile/install/R64/bin"
+  bindir_gl = "@SUBMISSION.BINDIR@"
+  max_ecf_tasks = 5
+
+[modifs.submission.task_exceptions.Forecast]
+  bindir = "@SUBMISSION.BINDIR@"
+
+[modifs.submission.task_exceptions.PgdFilterTownFrac.ENV]
+  ECF_TRIES = 15
+
+[modifs.suite_control]
+  do_archiving = false
+  compile = false
+
+[modifs.system]
+  # Picks up the case name and domain from the host run
+  case_suffix = ""
+  host_case = "@HOST_CASE@"
+  host_domain = "@HOST_DOMAIN@"
+  host_suite = "@HOST_CASE@"
+  test_data_path = "/perm/snh/ttr/data"

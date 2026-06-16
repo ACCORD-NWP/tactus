@@ -897,7 +897,7 @@
               ]
             },
             "end": {
-              "description": "End time if the run covers several cycles. Same format as start",
+              "description": "End time if the run covers several cycles. Date time format or duration relative start.",
               "type": "string",
               "oneOf": [
                 {

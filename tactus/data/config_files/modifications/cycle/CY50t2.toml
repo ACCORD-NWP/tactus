@@ -23,6 +23,9 @@
 [submission.task_exceptions.Forecast.binaries.lfitools]
   binary = "lfitools_dp"
 
+[submission.task_exceptions.IOmerge]
+  binary = "lfitools_dp"
+
 [submission.task_exceptions.Pgd]
   binary = "pgd_dp"
 
