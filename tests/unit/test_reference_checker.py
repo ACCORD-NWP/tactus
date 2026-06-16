@@ -20,7 +20,6 @@ from tactus.reference_checker import (
     ReferenceCheckManager,
     XToolChecker,
 )
-
 from tactus.toolbox import FileManager
 
 
@@ -647,14 +646,14 @@ class TestReferenceCheckManager:
         total_count = (
             self.total_success_count + self.missing_file_count + self.total_failure_count
         )
-        expected = {}
-        expected["# Generated files:"] = str(self.generated_file_count)
-        expected["# Successful tests:"] = str(self.total_success_count)
-        expected["# Failure tests:"] = str(self.total_failure_count)
-        expected["# Missing files:"] = str(self.missing_file_count)
-        expected["# Total files:"] = str(total_count)
-        expected["# Success:"] = str(self.expected_success)
-        expected["# Result:"] = str(self.analysis_result)
+        expected_list = {}
+        expected_list["# Generated files:"] = str(self.generated_file_count)
+        expected_list["# Successful tests:"] = str(self.total_success_count)
+        expected_list["# Failure tests:"] = str(self.total_failure_count)
+        expected_list["# Missing files:"] = str(self.missing_file_count)
+        expected_list["# Total files:"] = str(total_count)
+        expected_list["# Success:"] = str(self.expected_success)
+        expected_list["# Result:"] = str(self.analysis_result)
 
         with open(summary_txt_path, "r") as file:
             lines = file.readlines()
@@ -663,7 +662,7 @@ class TestReferenceCheckManager:
         lines_in_analysis = 8
         assert len(lines) > lines_in_analysis
 
-        for key, expected in expected.items():
+        for key, expected in expected_list.items():
             found = False
             for line in lines[-lines_in_analysis:]:
                 if line.startswith(key):
@@ -705,11 +704,10 @@ class TestReferenceCheckManager:
         Args:
             summary_json_path: the file path to the json summary
             case_name: the name of the test case
-            case_files: the files associated with the test case
         """
         with open(summary_json_path, "r") as file:
             summary = json.load(file)
-                        
+
         since_timestamp = 120
         assert summary
         colored_message = CheckSummaryAnalysis.colored_result_message(
@@ -726,23 +724,25 @@ class TestReferenceCheckManager:
             "check_smalldiff",
             "check_diff",
             "check_diff_suppress_exception",
-            "check_identical_generate",            
-            "check_generate_nofile"
-        ]:            
-        
+            "check_identical_generate",
+            "check_generate_nofile",
+        ]:
             expected[test] = f"{test} | "
             if self.expected_success:
-                expected[test] += f"<green>SUCCESS </green>"
+                expected[test] += "<green>SUCCESS </green>"
             else:
-                expected[test] += f"<red>FAILURE </red>"
-            expected[test] += f"(2 min ago) "
-            expected[test] += f"<white>[{self.total_failure_count} error(s), {self.total_success_count} success(es), {self.missing_file_count} missing(s)]</white>"
-            
-            
-        expected["generate"] = "generate | <green>MISSING </green>(2 min ago) <white>[check is disabled]</white>"
-        
+                expected[test] += "<red>FAILURE </red>"
+            expected[test] += "(2 min ago) "
+            expected[test] += (
+                f"<white>[{self.total_failure_count} error(s), {self.total_success_count} success(es), {self.missing_file_count} missing(s)]</white>"
+            )
+
+        expected["generate"] = (
+            "generate | <green>MISSING </green>(2 min ago) <white>[check is disabled]</white>"
+        )
+
         assert colored_message == expected[case_name]
-           
+
     def _simulate_suite_execution(self, basic_config, test_combination):
         """Simulate the execution of a suite.
 
@@ -821,9 +821,9 @@ class TestReferenceCheckManager:
 
             self._validate_txt_analysis_content(summary_txt_path)
             self._validate_json_analysis_content(summary_json_path)
-            
+
             self._validate_colored_result_message(summary_json_path, test_combination)
-            
+
             return True
 
         assert not os.path.exists(summary_txt_path)
