@@ -612,8 +612,8 @@ class CheckSummaryAnalysis:
             result = summary["analysis"]["result"].split("-")
             result[1] = result[1].strip()
             message = (
-                f"{case_name:<{width}} | <{color}>{result[0]}</{color}>({since_str})\
-                <white>[{result[1]}]</white>"
+                f"{case_name:<{width}} | <{color}>{result[0]}</{color}>({since_str})"\
+                +f"<white>[{result[1]}]</white>"
             )
 
         if verbose:
