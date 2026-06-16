@@ -612,16 +612,18 @@ class CheckSummaryAnalysis:
             result = summary["analysis"]["result"].split("-")
             result[1] = result[1].strip()
             message = (
-                f"{case_name:<{width}} | <{color}>{result[0]}</{color}>({since_str})"\
-                +f"<white>[{result[1]}]</white>"
+                f"{case_name:<{width}} | <{color}>{result[0]}</{color}>({since_str})"
+                + f" <white>[{result[1]}]</white>"
             )
 
         if verbose:
             message += "\n"
             message += f"{'from':>10} | {filename}\n"
             if "analysis" not in summary:
-                message += f"{'Unknown':>10} | <{color}>Test is still running \
-                    or has failed. </{color}> \n"
+                message += (
+                    f"{'Unknown':>10} | <{color}>Test is still running"
+                    + f" or has failed. </{color}> \n"
+                )
             else:
                 for results in summary["tasks"].values():
                     for test_type, result in results.items():
