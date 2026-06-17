@@ -6,15 +6,19 @@ on:
     branches:
       - master
       - develop
-
   pull_request:
     branches:
       - master
       - develop
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Build HPC Image"]
+    types:
+      - completed
 
 jobs:
   tests:
-    if: github.repository_owner == 'ACCORD-NWP'
+    if: github.repository_owner == 'ACCORD-NWP' && github.event_name != 'workflow_run'
     strategy:
       fail-fast: true
       matrix:
@@ -64,3 +68,34 @@ jobs:
       #   with:
       #     token: ${{ secrets.CODECOV_TOKEN }}
       #     files: ./.coverage.xml
+
+  test-squashfs:
+    if: >
+      github.repository_owner == 'ACCORD-NWP' &&
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    env:
+      ENV_PREFIX: /dev/shm/tactus_env
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Download SquashFS Image
+        uses: actions/download-artifact@v4
+        with:
+          name: hpc-squashfs
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run unit tests from SquashFS
+        run: |
+          sudo apt-get update && sudo apt-get install -y squashfuse
+          mkdir -p $ENV_PREFIX
+          squashfuse tactus_env.squashfs $ENV_PREFIX
+          export PATH="$ENV_PREFIX/bin:$PATH"
+          pytest -n auto --maxprocesses 1
+          fusermount -u $ENV_PREFIX
