@@ -572,7 +572,7 @@ class MirrorSuite(EcflowSuiteFamily):
     ):
         """Class initialization."""
         super().__init__(
-            "Mirrors",
+            f"Mirror_{config['scheduler.mirror_suite.mirror_name']}",
             parent,
             ecf_files,
             trigger=trigger,
