@@ -301,7 +301,7 @@ class TactusBundleBuild(Task):
             nthreads = os.environ.get("OMP_NUM_THREADS")
             batch_job.run(
                 f"cd {self.bundle_dir};  {self.ecbundle_bin} build "
-                + f"--arch {self.arch} {self.ninja_arg} --forecast-only "
+                + f"--arch {self.arch} {self.ninja_arg} "
                 + f" {self.rebuild_args} {self.prec_arg} -j{nthreads} "
                 + f"--install-dir={self.exp_bindir} --install "
                 + f"--build-dir={self.exp_builddir}"

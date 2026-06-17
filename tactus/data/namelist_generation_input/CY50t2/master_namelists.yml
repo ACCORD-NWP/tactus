@@ -239,14 +239,6 @@ f4_AROME:
     LFRRC: true
     LNEBPAR: true
     LNEBTT: true
-  NAMCT0:
-    CFPNCF: ECHFP
-    LSCREEN_OPENMP: false
-    NFRPOS: 1
-    NFRSDI: 1
-  NAMCT1:
-    N1HIS: 1
-    N1SDI: 1
   NAMDVISI:
     HVISI: 5.0
   NAMDYN:
@@ -541,18 +533,11 @@ f4_ALARO:
     LSTRT: true
     RBASEMAX: -1.0
   NAMCT0:
-    CFPNCF: ECHFP
     LAROME: false
     LFBDAP: true
     LFDBOP: false
     LRPLANE: true
-    LSCREEN_OPENMP: false
-    NFRPOS: 1
-    NFRSDI: 1
     NSPPR: 0
-  NAMCT1:
-    N1HIS: 1
-    N1SDI: 1
   NAMCVER:
     LREGETA: false
     LVERTFE: false
@@ -1002,7 +987,6 @@ f4_HARMONIE_AROME:
   NAMCT0:
     NFRDHFD: 1
     NFRGDI: 15
-    NFRSDI: 15
   NAMDYN:
     LBOUND_D3: false
     LQMPD: false
@@ -1309,17 +1293,23 @@ f4_common:
     LWFPAC: ${cfg:general.windfarm}
     NMTFLASH: 1
   NAMCT0:
+    CFPNCF: ECHFP
     CNPPATH: .
     LAROME: true
+    LSCREEN_OPENMP: false
     NFPOS: 1
     NFRHIS: 1
+    NFRPOS: 1
+    NFRSDI: 1
     NHISTS: ${steplist:${cfg:general.output_settings.history}}
     NPOSTS: ${steplist:${cfg:general.output_settings.fullpos}}
     NSFXHISTS: ${steplist:${cfg:general.output_settings.surfex}}
   NAMCT1:
     LRFILAF: false
+    N1HIS: 1
     N1POS: 1
     N1RES: 0
+    N1SDI: 1
     N1SFXHIS: 1
   NAMDYN:
     LADVF: true
