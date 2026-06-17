@@ -47,10 +47,29 @@ jobs:
 
       - name: Create environment in fixed prefix
         run: |
-          # Use pixi to install the 'test' environment into the fixed prefix.
-          # This ensures we have pytest and other test dependencies.
-          # We use --prefix to ensure all hardcoded paths point to $ENV_PREFIX.
-          pixi install --frozen --prefix $ENV_PREFIX --environment test
+          # 1. Make tactus non-editable so it's self-contained in the environment.
+          # We do this by modifying pyproject.toml before installation.
+          sed -i 's/editable = true/editable = false/' pyproject.toml
+          
+          # 2. Install the 'test' environment.
+          # We don't use --frozen because we modified pyproject.toml.
+          pixi install --environment test
+          
+          # 3. Identify the build prefix
+          BUILD_PREFIX=$(pwd)/.pixi/envs/test
+          echo "BUILD_PREFIX: $BUILD_PREFIX"
+          echo "TARGET_PREFIX: $ENV_PREFIX"
+          
+          # 4. Relocate content to the target prefix.
+          # We use sudo as $ENV_PREFIX might be in a protected area like /dev/shm.
+          sudo mkdir -p $ENV_PREFIX
+          sudo chown $USER $ENV_PREFIX
+          cp -a $BUILD_PREFIX/. $ENV_PREFIX/
+          
+          # 5. Fix absolute paths in text files.
+          # We use grep -I to identify text files and skip binaries.
+          # xargs -r ensures we don't fail if no files match.
+          grep -rIl "$BUILD_PREFIX" $ENV_PREFIX | xargs -r sed -i "s|$BUILD_PREFIX|$ENV_PREFIX|g"
 
       - name: Verify prefix content
         run: |
