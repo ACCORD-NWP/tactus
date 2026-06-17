@@ -487,11 +487,13 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         help="Run integration test cases via the test runner",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
+
     parser_test.add_argument(
         "--config-file",
         "-c",
         dest="config_file",
-        help="Test runner config file",
+        help="Test runner config file. A summary of tests results will be displayed "
+        + "if only this option is given",
         required=False,
         default=None,
     )

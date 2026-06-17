@@ -160,7 +160,6 @@ class TestCases:
         tag = tactus_git["branch"]
         for character in ["/", ".", "-"]:
             tag = tag.replace(character, "_")
-        tag += "_"
         return tag
 
     def create(self, cases=None):
@@ -594,6 +593,9 @@ def run_test(args, config=None):
     """
     t = TestCases(args=args)
 
+    if not args.config_file and not args.prepare_binaries and not args.list:
+        logger.warning("Nothing to do. Use `tactus test -h` for help.")
+        return False
     if args.prepare_binaries:
         t.get_binaries()
 
@@ -605,3 +607,5 @@ def run_test(args, config=None):
             t.execute(args)
         else:
             t.collect_summaries()
+
+    return True
