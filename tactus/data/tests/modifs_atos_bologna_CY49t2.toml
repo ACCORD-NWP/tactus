@@ -26,7 +26,7 @@
   remote_path = "/mirror_globalDT_iekm/pabv/iekm/fc/main/fcgroup/00/model"
 
 [modifs.scheduler.ecfvars]
-  case_prefix = "@TAG@@SUBTAG@"
+  case_prefix = "@TAG@_@SUBTAG@"
   ecf_files = "@PERM@/tactus_ecflow/ecf_files"
   ecf_files_remotely = "@PERM@/tactus_ecflow/ecf_files"
   ecf_home = "@PERM@/tactus_ecflow/jobout"

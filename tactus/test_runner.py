@@ -66,7 +66,7 @@ class TestCases:
         self.modifs = definitions["modifs"]
         self.refchecks = definitions.get("refchecks", {})
         self.genchecks = definitions.get("genchecks", {})
-        self.test_dir = definitions.get("test_dir", f"{self.tag}configs")
+        self.test_dir = definitions.get("test_dir", f"{self.tag}_configs")
         self.ial = definitions.get("ial", {})
         self.gl = definitions.get("gl", {})
         self.selection = self.resolve_selection(definitions)
