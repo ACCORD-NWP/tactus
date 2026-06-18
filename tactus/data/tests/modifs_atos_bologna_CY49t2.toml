@@ -9,7 +9,7 @@
   test = ["snh02", "lrb_465000527_efdev"]
 
 [modifs.general]
-  case = "@CASE_PREFIX@@PRECISION@_@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@@CASE_SUFFIX@"
+  case = "@CASE_PREFIX@_@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@@CASE_SUFFIX@"
 
 [modifs.general.times]
   start = "@REFERENCE_DATE@"
@@ -19,7 +19,7 @@
 
 [modifs.platform]
   reference_data = "@SCRATCH@/@SYS_NAME@/@CYCLE@"
-  ref_case = "@SUBTAG@@PRECISION@_@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@@CASE_SUFFIX@"
+  ref_case = "@SUBTAG@_@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@@CASE_SUFFIX@"
 
 [modifs.platform.mirrorglobalDT]
   remote_host = "ecflow-gen-snh02-001"
