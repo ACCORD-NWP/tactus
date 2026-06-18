@@ -249,7 +249,7 @@ def get_month_list(start, end) -> list:
     ]
 
 
-def evaluate_date(date: str) -> str:
+def evaluate_date(date: str, reference_date=None) -> str:
     """Parses an ISO 8601 datetime and/or duration and returns the computed datetime.
 
     - If the input is a datetime (e.g., "2025-03-19T00:00:00Z"), it returns it as-is.
@@ -260,6 +260,7 @@ def evaluate_date(date: str) -> str:
 
     Args:
         date (str): An ISO 8601 datetime, duration, or both.
+        reference_date (str): An ISO 8601 datetime, duration, or both.
 
     Returns:
         str: The computed datetime in ISO format.
@@ -276,11 +277,15 @@ def evaluate_date(date: str) -> str:
         )
 
     if date.startswith(("P", "-P")):
-        today_midnight = datetime.now(timezone.utc).replace(
-            hour=0, minute=0, second=0, microsecond=0
-        )
+        if reference_date is None:
+            today_midnight = datetime.now(timezone.utc).replace(
+                hour=0, minute=0, second=0, microsecond=0
+            )
+            _reference_date = today_midnight
+        else:
+            _reference_date = as_datetime(evaluate_date(reference_date))
         return (
-            (today_midnight + isodate.parse_duration(date))
+            (_reference_date + isodate.parse_duration(date))
             .isoformat(timespec="seconds")
             .replace("+00:00", "Z")
         )

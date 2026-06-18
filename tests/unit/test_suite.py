@@ -66,7 +66,12 @@ class TestSuite:
                     "cold_start": False,
                 }
             },
-            {"suite_control": {"interpolate_boundaries": False}},
+            {
+                "suite_control": {
+                    "interpolate_boundaries": False,
+                    "do_addcalculatedfields": False,
+                }
+            },
             {"submission": {"max_ecf_tasks": 2}},
         ],
     )

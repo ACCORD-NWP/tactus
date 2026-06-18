@@ -16,7 +16,7 @@ from isodate import parse_duration
 from troika.connections.ssh import SSHConnection
 
 from .csc_actions import SelectTstep
-from .datetime_utils import as_datetime, get_decade, oi2dt_list
+from .datetime_utils import as_datetime, evaluate_date, get_decade, oi2dt_list
 from .logs import logger
 from .os_utils import tactusmakedirs
 
@@ -609,7 +609,8 @@ class Platform:
 
             end = self.config.get("general.times.end", None)
             if end is not None:
-                pattern = self.substitute_datetime(pattern, as_datetime(end), "_END")
+                _end = evaluate_date(end, reference_date=start)
+                pattern = self.substitute_datetime(pattern, as_datetime(_end), "_END")
 
         forecast_range = self.config.get("general.times.forecast_range", None)
         if isinstance(forecast_range, str):

@@ -26,6 +26,9 @@
     "collectlogs": {
       "$ref": "#/definitions/collectlogs"
     },
+    "perturbations": {
+      "$ref": "#/definitions/perturbations"
+    },
     "pgd": {
       "$ref": "#/definitions/pgd"
     },
@@ -320,6 +323,23 @@
         }
       }
     },
+    "perturbations": {
+      "title": "Perturbation Section",
+      "description": "Settings for control of perturbations.",
+      "type": "object",
+      "properties": {
+        "pertana": {
+          "title": "Perturbation of initial atmospheric conditions with boundary data.",
+          "type": "boolean",
+          "default": false
+        },
+        "pertsurf": {
+          "title": "Perturbation of initial surfex conditions",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
     "pgd": {
       "title": "Pgd Section",
       "description": "Settings for control of Pgd selection.",
@@ -432,6 +452,10 @@
         },
         "do_extractsqlite": {
           "description": "Activates extraction of selected points to SQLite files for verification.",
+          "type": "boolean"
+        },
+        "do_addcalculatedfields": {
+          "description": "Activates additional GRIB postprocessing",
           "type": "boolean"
         },
         "do_mergesqlite": {
@@ -873,7 +897,7 @@
               ]
             },
             "end": {
-              "description": "End time if the run covers several cycles. Same format as start",
+              "description": "End time if the run covers several cycles. Date time format or duration relative start.",
               "type": "string",
               "oneOf": [
                 {

@@ -2,31 +2,34 @@
 
 The tactus test-runner runs a number of configurations as defined in the config file atos_bologna.toml
 
-We currently have the following config files under the directory `tactus/data/test`
+We currently have the following cycle specific config files under the directory `tactus/data/test`
 
- - atos_bologna.toml : Complete set of tests for atos_bologna
- - case_definitions.toml : Definition of all test cases
+ - atos_bologna_[CY49t2,CY50t2].toml : Complete set of tests for atos_bologna
+ - case_definitions_[CY49t2,CY50t2].toml : Definition of all test cases
  - test_macros.toml : Some macro definitions
- - modifs_atos_bologna.toml : Platform dependent config modifications
+ - modifs_atos_bologna_[CY49t2,CY50t2].toml : Platform dependent config modifications
+
+The main difference between CY49t2 and CY50t2 tests is that the latter includes a compilation step whereas the former uses DEODE binaries on ATOS.
 
 ## Check
 
 ```
-tactus test -c tactus/data/tests/atos_bologna.toml -l
+tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -l
 ```
 
-## Run
+## Create config files
 ```
-tactus test -c tactus/data/tests/atos_bologna.toml
+tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -m
 ```
+This will create a directory according to the tag and create all config files in this directory.
 
-This will create a directory according to the tag and create all config files in this directory. For each config a tactus ecflow run will be launched. To only prepare config files without running tactus do:
-
+## Launch the suites
 ```
-tactus test -c tactus/data/tests/atos_bologna.toml -d
+tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -r
 ```
+Failures in suites can be treated like any failure. I.e. by changing the relevant code or config and replace/relaunch the suite in full or parts as appropriate. The config files can be regenerated while suites are running if required.
 
-## Clean
+## Remove the tests from disk and ecflow
 
 After successful runs and assessment the tested cases can be cleaned from disks and ecflow with the standard tactus `remove` functionality
 ```
@@ -46,6 +49,7 @@ The general section defines the selection of cases and possible compiler extensi
 
 ```
 [general]
+  reference_date  = "-P1D"
   tag = "my_label_"
   extra = []
   selection = [
@@ -63,25 +67,18 @@ To test different compilers we can add the compiler section. Here we define the 
 
 ```
 
-To rerun the tests with the same dates as those used when testing prior to tagging set the reference date as
+In the configuration step the generation of new files are done in parallel. The maximum number of threads can be controlled by setting  e.g.
 ```
 [general]
-   reference_date  = "YYYY-MM-DD"
+  max_workers = 1
 ```
-on atos and
-```
-[modifs.general.times]
-   end = "YYYY-MM-DDT00:00:00Z"
-   start = "YYYY-MM-DDT00:00:00Z"
-```
-on in `config_files/modifs_lumi.toml` on lumi. Note though that fdb on lumi only stores data for the most recent weeks.
 
 ### Case
 
 Here we define the config settings per case.
 
 - base gives the config to start from
-- host defines the forcing run for a target run
+- host defines the ecflow mirror dependency
 - extra is extra config files to add for this specific case
 - case.X.modifs.Y allows to modify abitrary config settings for this case only
 
