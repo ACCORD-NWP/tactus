@@ -1,5 +1,5 @@
 [general]
-  reference_date = "-P1D"
+  reference_date = "2025-02-09T00:00:00Z"
   selection = [
     "cy49t2_alaro_climate_files",
     "cy49t2_alaro",
