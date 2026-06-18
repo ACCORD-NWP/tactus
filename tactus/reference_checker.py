@@ -351,6 +351,27 @@ class CheckDefinition:
         if taskname in config["task"]:
             for rulename in rules_active:
                 if rulename in config["task"][taskname]:
+                    parameters = ["method", "inpath", "pattern", "result_folder"]
+                    if generate:
+                        parameters.append("generate_folder")
+                    if check:
+                        parameters.append("reference_folder")
+
+                    have_all_parameters = True
+                    for parameter in parameters:
+                        if parameter not in config["task"][taskname][rulename]:
+                            logger.warning(
+                                f"Reference Checker - {parameter} not defined for"
+                                + f"task {taskname} and rule {rulename}."
+                            )
+                            have_all_parameters = False
+                    if not have_all_parameters:
+                        logger.warning(
+                            f"Skipping reference check definition for {taskname}"
+                            + f" and rule {rulename}"
+                        )
+                        continue
+
                     method = config["task"][taskname][rulename]["method"]
                     inpath = config["task"][taskname][rulename]["inpath"]
                     pattern = config["task"][taskname][rulename]["pattern"]
@@ -499,6 +520,7 @@ class CheckSummaryAnalysis:
         self.missing_count = 0
         self.generated_count = 0
         self.check = check
+        self.error_message = ""
 
     def increment_error_count(self):
         """Increment error_count."""
@@ -516,14 +538,22 @@ class CheckSummaryAnalysis:
         """Increment generated_count."""
         self.generated_count = self.generated_count + 1
 
+    def append_error_message(self, error_message):
+        """Append an error message."""
+        if len(self.error_message) == 0:
+            self.error_message = error_message
+        else:
+            self.error_message = f"{self.error_message}\n{error_message}"
+
     def success(self):
         """Return true iff all the tests are successful."""
+        if len(self.error_message) > 0:
+            return False
+
         if not self.check:
             return True
 
-        return (
-            self.error_count == 0 and self.missing_count == 0 and self.success_count > 0
-        )
+        return self.error_count == 0 and self.missing_count == 0
 
     def total_count(self):
         """Retern total number of files tested and missing."""
@@ -557,16 +587,8 @@ class CheckSummaryTxt(CheckSummary):
         CheckSummary.__init__(self, fileformat, filename)
         self.version = "1.0.0"
 
-    def create(self, platform):
-        """Create a summary file with header.
-
-        Args:
-            platform: the platform
-
-        """
-        self.init_full_path(platform)
-        self.delete()
-
+    def create(self):
+        """Create a summary file with header."""
         with (
             FileLock(self.fullpath, delete_existing=True),
             open(self.fullpath, "w") as summary_file,
@@ -578,7 +600,7 @@ class CheckSummaryTxt(CheckSummary):
                 summary_file.write(f"#   {label}:{git_info[label]}\n")
             summary_file.write("\n")
             summary_file.write("-\n")
-            summary_file.write("Task: Prep\n")
+            summary_file.write("Task: Preparation\n")
             summary_file.write("Rule: Create\n")
             summary_file.write(f"Description: Creation of {self.fullpath}\n")
             summary_file.write("\n")
@@ -655,6 +677,12 @@ class CheckSummaryTxt(CheckSummary):
                         generated = line.split(":")[1].strip()
                         if generated != "N/A":
                             analysis.increment_generated_count()
+                    if clean_line.startswith("Task: ReferenceChecker"):
+                        analysis = CheckSummaryAnalysis(check)
+                        analysis.append_error_message(
+                            f"Summary analysis already present in {self.fullpath}"
+                        )
+                        return analysis
 
             with open(self.fullpath, mode="a", encoding="utf8") as outfile:
                 outfile.write(f"# Generated files: {analysis.generated_count}\n")
@@ -666,6 +694,15 @@ class CheckSummaryTxt(CheckSummary):
                 outfile.write(f"# Result: {analysis.message()}\n")
 
         return analysis
+
+    def contains_summary_analysis(self):
+        """Return True if the summary file contains an analysis."""
+        with FileLock(self.fullpath), open(self.fullpath, "r") as file:
+            for line in file.readlines():
+                clean_line = line.replace("\n", "")
+                if clean_line.startswith("Task: ReferenceChecker"):
+                    return True
+        return False
 
 
 class CheckSummaryJson(CheckSummary):
@@ -681,16 +718,8 @@ class CheckSummaryJson(CheckSummary):
         CheckSummary.__init__(self, fileformat, filename)
         self.version = "1.0.0"
 
-    def create(self, platform):
-        """Create a summary file with header.
-
-        Args:
-            platform: the platform
-
-        """
-        self.init_full_path(platform)
-        self.delete()
-
+    def create(self):
+        """Create a summary file with header."""
         complete_dict = {}
         complete_dict["header"] = self._header_to_dict()
         complete_dict["tasks"] = {}
@@ -764,6 +793,11 @@ class CheckSummaryJson(CheckSummary):
         with FileLock(self.fullpath):
             with open(self.fullpath, "r") as file:
                 data = json.load(file)
+            if "analysis" in data:
+                analysis.append_error_message(
+                    f"Summary analysis already present in {self.fullpath}."
+                )
+                return analysis
             for task in data["tasks"]:
                 for rule in data["tasks"][task]:
                     if "items" in data["tasks"][task][rule]:
@@ -801,6 +835,14 @@ class CheckSummaryJson(CheckSummary):
                 json.dump(data, outfile, indent=True)
                 outfile.write("\n")
         return analysis
+
+    def contains_summary_analysis(self):
+        """Return True if the summary file contains an analysis."""
+        with open(self.fullpath, "r") as file:
+            data = json.load(file)
+            if "analysis" in data:
+                return True
+        return False
 
     @staticmethod
     def _to_dict(summary_dict, check_definition: CheckDefinition, item: CheckItem = None):
@@ -1008,10 +1050,11 @@ class ReferenceCheckManager:
         for reference_checker in self.reference_checkers.values():
             reference_checker.prepare(platform)
 
-    def create_summaries_with_header(self, platform):
+    def create_summaries_with_header_if_empty(self):
         """Create summary_list file on disk with the correct output format."""
         for summary in self.summary_list:
-            summary.create(platform)
+            if not os.path.exists(summary.fullpath):
+                summary.create()
 
     def analyze_summaries(self):
         """Analyze the summaries."""
@@ -1078,8 +1121,19 @@ class ReferenceCheckManager:
            fmanager: a file manager
         """
         self.prepare(fmanager.platform)
-        if self.create_summary:
-            self.create_summaries_with_header(fmanager.platform)
+        force_deletion = self.create_summary
+
+        for summary in self.summary_list:
+            if os.path.exists(summary.fullpath):
+                delete = force_deletion
+                if not delete:
+                    has_summary = summary.contains_summary_analysis()
+                    if has_summary:
+                        delete = not self.analyze_summary
+                if delete:
+                    summary.delete()
+
+        self.create_summaries_with_header_if_empty()
 
         if self.generate:
             self.generate_references(fmanager)
