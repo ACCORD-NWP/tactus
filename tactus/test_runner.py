@@ -59,7 +59,7 @@ class TestCases:
         self.get_tag(definitions)
         self.dry = args.dry if args.dry else definitions["general"].get("dry", False)
         self.modifs = definitions["modifs"]
-        self.test_dir = definitions.get("test_dir", f"{self.tag}configs")
+        self.test_dir = definitions.get("test_dir", f"{self.tag}_configs")
         self.ial = definitions.get("ial", {})
         self.gl = definitions.get("gl", {})
         self.selection = self.resolve_selection(definitions)
@@ -115,12 +115,12 @@ class TestCases:
                 for sel in selection:
                     if any(x in sel for x in value.get("exclude", "")):
                         continue
-                    subtag = f"{tag}{sel}"
+                    subtag = f"{tag}_{sel}"
                     x = copy.deepcopy(self.cases[sel])
                     if "base" not in x:
                         x["base"] = sel
                     if "host" in x:
-                        x["host"] = f"{tag}{x['host']}"
+                        x["host"] = f"{tag}_{x['host']}"
                     x["subtag"] = tag
                     x["extra"] = [] if "extra" not in x else list(x["extra"])
                     for k in value.get("extra", []):
@@ -149,7 +149,6 @@ class TestCases:
         tag = tactus_git["branch"]
         for character in ["/", ".", "-"]:
             tag = tag.replace(character, "_")
-        tag += "_"
         return tag
 
     def create(self, cases=None):
@@ -237,7 +236,8 @@ class TestCases:
                 if "host" not in self.cases[case] or self.cases[case]["host"] in resolved
             ]
             if not level:
-                raise ValueError(f"Circular dependency in host cases: {remaining}")
+                message = f"Circular dependency detected in host cases: {remaining}"
+                raise ValueError(message)
             levels.append(level)
             resolved.update(level)
             remaining = [case for case in remaining if case not in resolved]
