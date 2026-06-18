@@ -55,7 +55,7 @@
 
 [compile]
   ial_git_repo = "git@github.com:ACCORD-NWP/IAL"
-  ial_git_branch = "CY50T2_toT3.04"
+  ial_git_branch = "fa11853312534ef23d48a47260ed5d72f6e48532"
 
 [fullpos]
   config_path = "@CYCLE@/fullpos"
