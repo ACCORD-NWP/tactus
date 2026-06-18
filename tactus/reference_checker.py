@@ -14,6 +14,8 @@ from tactus.logs import logger
 from tactus.os_utils import FileLock, Search, tactusmakedirs
 from tactus.toolbox import FileManager, Platform
 
+from .datetime_utils import since_str
+
 
 class ReferenceChecker:
     """Base class for comparison against a reference."""
@@ -516,23 +518,34 @@ class CheckSummaryAnalysis:
         """Increment generated_count."""
         self.generated_count = self.generated_count + 1
 
+    def append_error_message(self, error_message):
+        """Append an error message."""
+        if len(self.error_message) == 0:
+            self.error_message = error_message
+        else:
+            self.error_message = f"{self.error_message}\n{error_message}"
+
     def success(self):
         """Return true iff all the tests are successful."""
+        if len(self.error_message) > 0:
+            return False
+
         if not self.check:
             return True
 
-        return (
-            self.error_count == 0 and self.missing_count == 0 and self.success_count > 0
-        )
+        return self.error_count == 0 and self.missing_count == 0
 
     def total_count(self):
         """Retern total number of files tested and missing."""
         return self.error_count + self.success_count + self.missing_count
 
     def message(self):
-        """Retern a summary message."""
+        """Return a summary message."""
+        if len(self.error_message) > 0:
+            return f"ERROR : {self.error_message}"
+
         if not self.check:
-            result_message = "N/A - check is disabled"
+            result_message = "MISSING - check is disabled"
             if self.missing_count > 0:
                 result_message = f"{result_message}. {self.missing_count} missing(s)"
             return result_message
@@ -542,6 +555,79 @@ class CheckSummaryAnalysis:
             f"{result_message} - {self.error_count} error(s),"
             + f" {self.success_count} success(es), {self.missing_count} missing(s)"
         )
+
+    @staticmethod
+    def colored_result_message(
+        summary, verbose, case_name, filename, width, datetime, now
+    ):
+        """Return a colored message summarizing the result of the analysis.
+
+        Args:
+            summary: the summary analysis containing the result of the analysis
+            verbose: boolean indicating if the message should contain details
+            case_name: the name of the case being analyzed
+            filename: the name of the summary file being analyzed
+            width: the width to be used for the case name in the message
+            datetime: the datetime of the summary file being analyzed
+            now: the current datetime
+
+        Returns:
+            A colored message summarizing the result of the analysis
+        """
+        message = ""
+        color = "cyan"
+
+        if not summary:
+            return f"{case_name:<{width}} |<{color}> MISSING</{color}>"
+        since = since_str(datetime, now)
+        if "analysis" not in summary:
+            color = "yellow"
+            message = f"{case_name:<{width}} |<{color}> RUNNING</{color}> ({since})"
+
+        else:
+            color = "green"
+            if summary["analysis"]["missing_count"] > 0:
+                color = "red"
+            if summary["analysis"]["error_count"] > 0:
+                color = "red"
+            result = summary["analysis"]["result"].split("-")
+            result[1] = result[1].strip()
+            message = (
+                f"{case_name:<{width}} | <{color}>{result[0]}</{color}>({since})"
+                + f" <white>[{result[1]}]</white>"
+            )
+
+        if verbose:
+            message += "\n"
+            message += f"{'from':>10} | {filename}\n"
+            if "analysis" not in summary:
+                message += (
+                    f"{'Unknown':>10} | <{color}>Test is still running"
+                    + f" or has failed. </{color}> \n"
+                )
+            else:
+                for results in summary["tasks"].values():
+                    for test_type, result in results.items():
+                        if test_type == "Create":
+                            continue
+                        try:
+                            result_message = (
+                                f"{test_type:>10} | {result['items'][0]['result']}"
+                            )
+                            result_message = result_message.replace("\n", "")
+                            result_message = result_message.replace(
+                                "SUCCESS", "<green>SUCCESS</green>"
+                            )
+                            result_message = result_message.replace(
+                                "FAILURE", "<red>FAILURE</red>"
+                            )
+
+                            message = f"{message}{result_message}\n"
+                        except KeyError:
+                            message += f"{test_type:>10} |\
+                                {result['items'][0]['warning']}"
+
+        return message
 
 
 class CheckSummaryTxt(CheckSummary):
@@ -578,7 +664,7 @@ class CheckSummaryTxt(CheckSummary):
                 summary_file.write(f"#   {label}:{git_info[label]}\n")
             summary_file.write("\n")
             summary_file.write("-\n")
-            summary_file.write("Task: Prep\n")
+            summary_file.write("Task: Preparation\n")
             summary_file.write("Rule: Create\n")
             summary_file.write(f"Description: Creation of {self.fullpath}\n")
             summary_file.write("\n")
@@ -657,6 +743,10 @@ class CheckSummaryTxt(CheckSummary):
                             analysis.increment_generated_count()
 
             with open(self.fullpath, mode="a", encoding="utf8") as outfile:
+                outfile.write("\n")
+                outfile.write("-\n")
+                outfile.write("Task: ReferenceChecker\n")
+                outfile.write("Rule: Create Summary\n")
                 outfile.write(f"# Generated files: {analysis.generated_count}\n")
                 outfile.write(f"# Successful tests: {analysis.success_count}\n")
                 outfile.write(f"# Failure tests: {analysis.error_count}\n")
@@ -664,6 +754,7 @@ class CheckSummaryTxt(CheckSummary):
                 outfile.write(f"# Total files: {analysis.total_count()}\n")
                 outfile.write(f"# Success: {analysis.success()}\n")
                 outfile.write(f"# Result: {analysis.message()}\n")
+                outfile.write("\n")
 
         return analysis
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Unit tests for reference_checker.py."""
 
+import datetime
 import json
 import os
 import shutil
@@ -12,6 +13,7 @@ import tomlkit
 from tactus.derived_variables import set_times
 from tactus.reference_checker import (
     CheckSummary,
+    CheckSummaryAnalysis,
     CheckSummaryJson,
     CheckSummaryTxt,
     NormsChecker,
@@ -552,7 +554,7 @@ class TestReferenceCheckManager:
                 self.total_failure_count + self.count[method]["failure"]
             )
         if not self.check:
-            result_message = "N/A - check is disabled"
+            result_message = "MISSING - check is disabled"
             if self.missing_file_count > 0:
                 result_message = f"{result_message}. {self.missing_file_count} missing(s)"
             self.analysis_result = result_message
@@ -645,23 +647,23 @@ class TestReferenceCheckManager:
         total_count = (
             self.total_success_count + self.missing_file_count + self.total_failure_count
         )
-        expecteds = {}
-        expecteds["# Generated files:"] = str(self.generated_file_count)
-        expecteds["# Successful tests:"] = str(self.total_success_count)
-        expecteds["# Failure tests:"] = str(self.total_failure_count)
-        expecteds["# Missing files:"] = str(self.missing_file_count)
-        expecteds["# Total files:"] = str(total_count)
-        expecteds["# Success:"] = str(self.expected_success)
-        expecteds["# Result:"] = str(self.analysis_result)
+        expected_list = {}
+        expected_list["# Generated files:"] = str(self.generated_file_count)
+        expected_list["# Successful tests:"] = str(self.total_success_count)
+        expected_list["# Failure tests:"] = str(self.total_failure_count)
+        expected_list["# Missing files:"] = str(self.missing_file_count)
+        expected_list["# Total files:"] = str(total_count)
+        expected_list["# Success:"] = str(self.expected_success)
+        expected_list["# Result:"] = str(self.analysis_result)
 
         with open(summary_txt_path, "r") as file:
             lines = file.readlines()
 
         # the number of lines written in the last part of the summary
-        lines_in_analysis = 7
+        lines_in_analysis = 8
         assert len(lines) > lines_in_analysis
 
-        for key, expected in expecteds.items():
+        for key, expected in expected_list.items():
             found = False
             for line in lines[-lines_in_analysis:]:
                 if line.startswith(key):
@@ -696,6 +698,54 @@ class TestReferenceCheckManager:
             assert data["analysis"]["generated_count"] == self.generated_file_count
             assert data["analysis"]["total_count"] == total_count
             assert data["analysis"]["result"] == self.analysis_result
+
+    def _validate_colored_result_message(self, summary_json_path, case_name):
+        """Validation of the colored results message in the summary.
+
+        Args:
+            summary_json_path: the file path to the json summary
+            case_name: the name of the test case
+        """
+        with open(summary_json_path, "r") as file:
+            summary = json.load(file)
+
+        time = 130  # seconds
+        now = datetime.datetime.now()
+        creation_date = datetime.datetime.now() - datetime.timedelta(seconds=time)
+        assert summary
+        colored_message = CheckSummaryAnalysis.colored_result_message(
+            summary,
+            False,
+            case_name,
+            summary_json_path,
+            len(case_name),
+            creation_date,
+            now,
+        )
+        expected = {}
+        for test in [
+            "check_identical",
+            "check_smalldiff",
+            "check_diff",
+            "check_diff_suppress_exception",
+            "check_identical_generate",
+            "check_generate_nofile",
+        ]:
+            expected[test] = f"{test} | "
+            if self.expected_success:
+                expected[test] += "<green>SUCCESS </green>"
+            else:
+                expected[test] += "<red>FAILURE </red>"
+            expected[test] += "(2 min ago) "
+            expected[test] += (
+                f"<white>[{self.total_failure_count} error(s), {self.total_success_count} success(es), {self.missing_file_count} missing(s)]</white>"
+            )
+
+        expected["generate"] = (
+            "generate | <green>MISSING </green>(2 min ago) <white>[check is disabled]</white>"
+        )
+
+        assert colored_message == expected[case_name]
 
     def _simulate_suite_execution(self, basic_config, test_combination):
         """Simulate the execution of a suite.
@@ -775,6 +825,9 @@ class TestReferenceCheckManager:
 
             self._validate_txt_analysis_content(summary_txt_path)
             self._validate_json_analysis_content(summary_json_path)
+
+            self._validate_colored_result_message(summary_json_path, test_combination)
+
             return True
 
         assert not os.path.exists(summary_txt_path)
