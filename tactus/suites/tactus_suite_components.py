@@ -1312,6 +1312,7 @@ class ForecastFamily(EcflowSuiteFamily):
             add_calc_fields_trigger = io_merge
             creategrib_trigger = io_merge
 
+        fdb_sqlite_trigger = creategrib_trigger
         if len(config.get("creategrib.CreateGrib.conversions", [])) > 0:
             create_grib_family = SubTaskFamily(
                 self,
@@ -1325,18 +1326,20 @@ class ForecastFamily(EcflowSuiteFamily):
                 ecf_files_remotely=ecf_files_remotely,
             )
             add_calc_fields_trigger = create_grib_family
+            fdb_sqlite_trigger = create_grib_family
 
-        add_calc_fields_family = SubTaskFamily(
-            self,
-            config,
-            task_settings,
-            input_template,
-            ecf_files,
-            "AddCalculatedFields",
-            config.get("suite_control.n_addcalculatedfields", 1),
-            trigger=add_calc_fields_trigger,
-            ecf_files_remotely=ecf_files_remotely,
-        )
+        if config["suite_control.do_addcalculatedfields"]:
+            fdb_sqlite_trigger = SubTaskFamily(
+                self,
+                config,
+                task_settings,
+                input_template,
+                ecf_files,
+                "AddCalculatedFields",
+                config.get("suite_control.n_addcalculatedfields", 1),
+                trigger=add_calc_fields_trigger,
+                ecf_files_remotely=ecf_files_remotely,
+            )
 
         fdb_sel = config.get("archiving.FDB.fdb", {})
         fdb_archiving_active = [v["active"] for v in fdb_sel.values()]
@@ -1348,7 +1351,7 @@ class ForecastFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
-                trigger=add_calc_fields_family,
+                trigger=fdb_sqlite_trigger,
                 ecf_files_remotely=ecf_files_remotely,
             )
 
@@ -1360,7 +1363,7 @@ class ForecastFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
-                trigger=add_calc_fields_family,
+                trigger=fdb_sqlite_trigger,
             )
 
 
@@ -1396,11 +1399,9 @@ class CycleFamily(EcflowSuiteFamily):
             ecf_files,
             ecf_files_remotely=ecf_files_remotely,
         )
-        
         if member > 0 and (
             config["perturbations.pertana.active"] or config["perturbations.pertsurf"]
         ):
-
             perturbation_family = PerturbationFamily(
                 self,
                 config,
