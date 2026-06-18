@@ -29,7 +29,7 @@ class InitialConditions(object):
         self.file_templates = self.config.get_as_dict("file_templates")
         self.surfex = self.config["general.surfex"]
         self.mode = self.config["suite_control.mode"]
-
+        self.member = self.config["general.member"]
         self.source = ""
         self.source_sfx = ""
 
@@ -65,7 +65,7 @@ class InitialConditions(object):
 
         return found
 
-    def find_initial_files(self):
+    def find_initial_files(self, taskname=None):
         """Find initial file."""
         # Find data explicitly defined
         if self.mode == "restart" and self.starttime == self.basetime:
@@ -108,6 +108,9 @@ class InitialConditions(object):
                 validtime=self.basetime,
             )
 
+        if self.member > 0 and taskname=="Forecast":
+            self.source = self.source +"_perturbed"
+            
         if not self.check_if_found():
             raise FileNotFoundError(
                 "Could not find initial files for "

@@ -237,7 +237,7 @@ class Forecast(PySurfexBaseTask):
             self.fmanager.input(target, dest)
 
         # Initial files
-        initfile, initfile_sfx = InitialConditions(self.config).find_initial_files()
+        initfile, initfile_sfx = InitialConditions(self.config).find_initial_files("Forecast")
         self.fmanager.input(initfile, f"ICMSH{self.cnmexp}INIT")
         if not self.surfex:
             initfile_sfx = None

@@ -329,9 +329,20 @@
       "type": "object",
       "properties": {
         "pertana": {
+          "type": "object",
           "title": "Perturbation of initial atmospheric conditions with boundary data.",
-          "type": "boolean",
-          "default": false
+          "properties": {
+            "active": {
+              "title": "Activates pertana",
+              "type": "boolean",
+              "default": false
+	    },
+            "z_mult": {
+              "title": "Perturbation scaling",
+              "type": "number",
+              "default": 0.25
+	    }
+          }
         },
         "pertsurf": {
           "title": "Perturbation of initial surfex conditions",

@@ -110,8 +110,10 @@
   vertical_levels = "include/vertical_levels/MF_90.toml"
 
 [perturbations]
-  pertana = false
   pertsurf = false
+
+[perturbations.pertana]
+  active = false
 
 [pgd]
   npatch = 3

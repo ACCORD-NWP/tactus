@@ -1102,6 +1102,7 @@ class InterpolationFamily(EcflowSuiteFamily):
         add_var_trigger=None,
         remote_path=None,
         member=0,
+        interpolation_families=None, #ILF     
     ):
         """Class initialization."""
         super().__init__(
@@ -1163,7 +1164,9 @@ class InterpolationFamily(EcflowSuiteFamily):
             member=member,
         )
 
-
+        if interpolation_families is not None:                                                                        
+            interpolation_families[member] = interpolation_family 
+        
 class InitializationFamily(EcflowSuiteFamily):
     """Class for creating the Initialization ecFlow family."""
 
@@ -1309,7 +1312,6 @@ class ForecastFamily(EcflowSuiteFamily):
             add_calc_fields_trigger = io_merge
             creategrib_trigger = io_merge
 
-        fdb_sqlite_trigger = creategrib_trigger
         if len(config.get("creategrib.CreateGrib.conversions", [])) > 0:
             create_grib_family = SubTaskFamily(
                 self,
@@ -1323,20 +1325,18 @@ class ForecastFamily(EcflowSuiteFamily):
                 ecf_files_remotely=ecf_files_remotely,
             )
             add_calc_fields_trigger = create_grib_family
-            fdb_sqlite_trigger = create_grib_family
 
-        if config["suite_control.do_addcalculatedfields"]:
-            fdb_sqlite_trigger = SubTaskFamily(
-                self,
-                config,
-                task_settings,
-                input_template,
-                ecf_files,
-                "AddCalculatedFields",
-                config.get("suite_control.n_addcalculatedfields", 1),
-                trigger=add_calc_fields_trigger,
-                ecf_files_remotely=ecf_files_remotely,
-            )
+        add_calc_fields_family = SubTaskFamily(
+            self,
+            config,
+            task_settings,
+            input_template,
+            ecf_files,
+            "AddCalculatedFields",
+            config.get("suite_control.n_addcalculatedfields", 1),
+            trigger=add_calc_fields_trigger,
+            ecf_files_remotely=ecf_files_remotely,
+        )
 
         fdb_sel = config.get("archiving.FDB.fdb", {})
         fdb_archiving_active = [v["active"] for v in fdb_sel.values()]
@@ -1348,7 +1348,7 @@ class ForecastFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
-                trigger=fdb_sqlite_trigger,
+                trigger=add_calc_fields_family,
                 ecf_files_remotely=ecf_files_remotely,
             )
 
@@ -1360,7 +1360,7 @@ class ForecastFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
-                trigger=fdb_sqlite_trigger,
+                trigger=add_calc_fields_family,
             )
 
 
@@ -1377,6 +1377,7 @@ class CycleFamily(EcflowSuiteFamily):
         trigger=None,
         ecf_files_remotely=None,
         member=None,
+        interpolation_families=None,     
     ):
         """Class initialization."""
         super().__init__(
@@ -1395,9 +1396,11 @@ class CycleFamily(EcflowSuiteFamily):
             ecf_files,
             ecf_files_remotely=ecf_files_remotely,
         )
+        
         if member > 0 and (
-            config["perturbations.pertana"] or config["perturbations.pertsurf"]
+            config["perturbations.pertana.active"] or config["perturbations.pertsurf"]
         ):
+
             perturbation_family = PerturbationFamily(
                 self,
                 config,
@@ -1405,6 +1408,7 @@ class CycleFamily(EcflowSuiteFamily):
                 input_template,
                 ecf_files,
                 trigger=initialization_family,
+                pertana_trigger=interpolation_families,  # ILF
                 ecf_files_remotely=ecf_files_remotely,
             )
         else:
@@ -1502,6 +1506,7 @@ class PerturbationFamily(EcflowSuiteFamily):
         input_template,
         ecf_files,
         trigger=None,
+        pertana_trigger=None,  # ILF
         ecf_files_remotely=None,
     ):
         """Class initialization."""
@@ -1513,7 +1518,14 @@ class PerturbationFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
-        if config["perturbations.pertana"]:
+        if config["perturbations.pertana.active"]:
+
+            _pertana_trigger = ( 
+                pertana_trigger.get(0)
+                if pertana_trigger
+                else None
+            )
+            
             EcflowSuiteTask(
                 "Pertana",
                 self,
@@ -1521,6 +1533,7 @@ class PerturbationFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
+                trigger=_pertana_trigger,  # ILF Trigger on arbitrary member's Initialization
                 ecf_files_remotely=ecf_files_remotely,
             )
 
@@ -1532,6 +1545,7 @@ class PerturbationFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
+                trigger=trigger, #ILF
                 ecf_files_remotely=ecf_files_remotely,
             )
 
@@ -1757,6 +1771,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     trigger=ready_for_cycle,
                     ecf_files_remotely=ecf_files_remotely,
                     member=member,
+                    interpolation_families=prev_interpolation_triggers,
                 )
                 member_cycle_families.append(cycle_family)
                 prev_cycle_triggers[member] = [cycle_family]
