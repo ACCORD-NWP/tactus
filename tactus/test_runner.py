@@ -5,6 +5,7 @@ import concurrent.futures
 import contextlib
 import copy
 import glob
+import json
 import os
 import shutil
 import tempfile
@@ -22,6 +23,7 @@ from .general_utils import merge_dicts
 from .host_actions import TactusHost
 from .logs import logger
 from .reference_checker import CheckSummaryAnalysis
+from .toolbox import Platform
 
 
 class TestCases:
@@ -593,7 +595,7 @@ def run_test(args, config=None):
 
     elif args.config_file is not None:
         if args.configure or args.run:
-        t.execute(args)
+            t.execute(args)
         else:
             t.collect_summaries()
 
