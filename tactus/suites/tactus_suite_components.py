@@ -1102,7 +1102,7 @@ class InterpolationFamily(EcflowSuiteFamily):
         add_var_trigger=None,
         remote_path=None,
         member=0,
-        interpolation_families=None, #ILF     
+        interpolation_families=None,     
     ):
         """Class initialization."""
         super().__init__(
@@ -1408,7 +1408,7 @@ class CycleFamily(EcflowSuiteFamily):
                 input_template,
                 ecf_files,
                 trigger=initialization_family,
-                pertana_trigger=interpolation_families,  # ILF
+                pertana_trigger=interpolation_families,
                 ecf_files_remotely=ecf_files_remotely,
             )
         else:
@@ -1506,7 +1506,7 @@ class PerturbationFamily(EcflowSuiteFamily):
         input_template,
         ecf_files,
         trigger=None,
-        pertana_trigger=None,  # ILF
+        pertana_trigger=None,
         ecf_files_remotely=None,
     ):
         """Class initialization."""
@@ -1533,7 +1533,7 @@ class PerturbationFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
-                trigger=_pertana_trigger,  # ILF Trigger on arbitrary member's Initialization
+                trigger=_pertana_trigger,
                 ecf_files_remotely=ecf_files_remotely,
             )
 
@@ -1545,7 +1545,7 @@ class PerturbationFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
-                trigger=trigger, #ILF
+                trigger=trigger,
                 ecf_files_remotely=ecf_files_remotely,
             )
 
