@@ -1,0 +1,1542 @@
+[archiving]
+
+[archiving.FDB.fdb.fpgrib_files]
+  active = false
+  inpath = "@ARCHIVE@"
+  pattern = "GRIBPF*"
+
+[archiving.hour]
+
+[archiving.hour.copy.config]
+  active = true
+  inpath = ""
+  newname = "config.toml"
+  outpath = "@ARCHIVE@"
+  pattern = "@CONFIG@"
+
+[archiving.hour.ecfs]
+
+[archiving.hour.ecfs.config]
+  active = true
+  inpath = "@ARCHIVE@"
+  outpath = "archive/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  pattern = "config.toml"
+
+[archiving.hour.ecfs.ddh]
+  active = false
+  inpath = "@ARCHIVE@"
+  outpath = "archive/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  pattern = "DHF*.tar.gz"
+
+[archiving.hour.ecfs.fa_files]
+  active = true
+  inpath = "@ARCHIVE@"
+  outpath = "archive/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  pattern = "ICMSH*"
+
+[archiving.hour.ecfs.fpgrib_files]
+  active = true
+  inpath = "@ARCHIVE@"
+  outpath = "archive/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  pattern = "GRIBPF*"
+
+[archiving.hour.ecfs.glgrib_files]
+  active = true
+  inpath = "@ARCHIVE@"
+  outpath = "archive/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  pattern = "GRIB@CNMEXP@*"
+
+[archiving.hour.ecfs.sqlite]
+  active = "@SUITE_CONTROL.DO_EXTRACTSQLITE@"
+  inpath = "@SQLITE_PATH@"
+  outpath = "sqlite/@MEMBER_STR@"
+  pattern = "*"
+
+[archiving.hourlogs.ecfs.logs]
+  active = true
+  inpath = "@LOGS@"
+  outpath = "logs/@MEMBER_STR@"
+  pattern = "@YYYY@@MM@@DD@_@HH@@mm@.tar.gz"
+
+[archiving.merged_sqlite.ecfs.merged_sqlite]
+  active = "@SUITE_CONTROL.DO_MERGESQLITE@"
+  inpath = "@MERGED_SQLITE_PATH@"
+  outpath = "merged_sqlite"
+  pattern = "*"
+
+[archiving.prefix]
+  ecfs = "ec:/@USER@/tactus/@CASE@"
+
+[archiving.static.ecfs]
+
+[archiving.static.ecfs.climate_files]
+  active = true
+  inpath = "@CLIMDIR@"
+  outpath = "climate/@DOMAIN@/@MEMBER_STR@"
+  pattern = ["Const.Clim*", "PGD*"]
+
+[archiving.static.ecfs.config]
+  active = true
+  inpath = "@ARCHIVE_ROOT@"
+  outpath = ""
+  pattern = ["config.toml", "expanded_config.toml"]
+
+[archiving.staticlogs.ecfs.logs]
+  active = true
+  inpath = "@LOGS@"
+  outpath = "logs"
+  pattern = "StaticData.tar.gz"
+
+[archiving.staticmember.ecfs.climate_files]
+  active = true
+  inpath = "@CLIMDIR@"
+  outpath = "climate/@DOMAIN@/@MEMBER_STR@"
+  pattern = ["Const.Clim*", "PGD*"]
+
+[boundaries]
+  bd_has_surfex = false
+  bdint = "PT1H"
+  bdmodel = "ifs"
+  bdmodel_sfx = "from_grib"
+  bdshift = "PT0H"
+  bdshift_sfx = "PT0H"
+  do_slaf = false
+  humi_gp = false
+  lbc_per_task = 7
+  max_interpolation_tasks = 10
+  slafdiff = "PT0H"
+  slafk = 1.0
+  slaflag = "PT0H"
+  sst_is_lsm = "auto"
+  sstmodels = ["IFS"]
+
+[boundaries.ifs]
+  bdmember = []
+  selection = "HRES"
+
+[boundaries.lam]
+  bdcycle = "PT24H"
+  bdcycle_start = "PT0H"
+
+[clean_old_data]
+  cases_period = "P7D"
+  dw_case_prefixes = ["AUTOMATED_RUN", "HARMONIE_AROME", "AROME", "ALARO"]
+  force_delete_period = "P365D"
+  ignore = []
+  scratch_ext = "tactus"
+
+[cleaning]
+
+[cleaning.CycleCleaning]
+
+[cleaning.CycleCleaning.archive]
+  ncycles_delay = 4
+  path = "@ARCHIVE@"
+  wipe = true
+
+[cleaning.CycleCleaning.ecf_out]
+  path = "@ECF_OUT@/@CASE@/@YMD@/@HH@@mm@"
+  wipe = true
+
+[cleaning.CycleCleaning.ifs]
+  active = false
+  ncycles_delay = 4
+  path = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@"
+  step = "P1D"
+
+[cleaning.CycleCleaning.wrk]
+  ncycles_delay = 1
+  path = "@WRK@"
+  wipe = true
+
+[cleaning.defaults]
+  active = true
+  dry_run = false
+  include = "(.*)"
+  ncycles_delay = 1
+  path = ""
+  wipe = false
+
+[cleaning.PostMortem]
+
+[cleaning.PostMortem.ecf_files]
+  active = false
+  exclude = "(.*)PostMortem(.*)"
+  path = "@ECF_FILES@/@CASE@"
+
+[cleaning.PostMortem.ecf_out]
+  active = false
+  exclude = "(.*)PostMortem(.*)"
+  path = "@ECF_OUT@/@CASE@"
+
+[cleaning.PrepRun.ecf_out]
+  exclude = "(.*)PrepRun(.*)"
+  ncycles_delay = 0
+  path = "@ECF_OUT@/@CASE@"
+
+[collectlogs]
+
+[collectlogs.hourlogs]
+  joboutdir = "@ECF_OUT@/@CASE@/@YYYY@@MM@@DD@/@HH@@mm@"
+  tarname = "@YYYY@@MM@@DD@_@HH@@mm@"
+  task_logs = "@WRK@"
+
+[collectlogs.staticlogs]
+  joboutdir = "@ECF_OUT@/@CASE@/StaticData"
+  tarname = "StaticData"
+  task_logs = "@CLIMDIR@"
+
+[compile]
+  arch = "source/ial-source/bundle/arch/ecmwf/hpc2020"
+  bundle_file = "@CASEDIR@/IAL/bundle/bundle.yml"
+  bundle_update = true
+  cache = false
+  cache_dir = "@REFERENCE_DATA@/bundle_cache"
+  clean_build = false
+  dir = "@CASEDIR@/bundle"
+  git_token = ""
+  ial_dir = "@CASEDIR@/IAL"
+  ial_git_branch = "develop"
+  ial_git_repo = "git@github.com:ACCORD-NWP/IAL"
+  ninja = false
+  skip_build = false
+  update_bundle_file = "@TACTUS_HOME@/data/compilation/@CYCLE@/bundle.yml"
+
+[creategrib]
+
+[creategrib.CreateGrib]
+  conversions = []
+
+[creategrib.CreateGrib.surfex]
+  namelist = ["stepunits='h'"]
+  output_format = "GRIB"
+
+[creategrib.CreateGribStatic.pgd]
+  files_in = ["@CLIMDIR@/@PGD_ARCHIVE@"]
+  files_out = ["@CLIMDIR@/@PGD_ARCHIVE@.grib1"]
+  namelist = []
+  output_format = "GRIB"
+
+[domain]
+  dtf_lead_time = ""
+  gridtype = "linear"
+  gridtype_oro = ""
+  ilate = 11
+  ilone = 11
+  name = "DEMO_60x80_2500m"
+  nbzong = -1
+  nbzonl = -1
+  nimax = 49
+  njmax = 69
+  number = ""
+  orographic_smoothing_method = "truncation"
+  tstep = 75
+  xbeta = 0.0
+  xdx = 2500
+  xdy = 2500
+  xlatcen = 51.967
+  xloncen = 4.9
+
+[domain.spectral_smoothing_by_gridtype]
+  cubic = false
+  custom = true
+  linear = true
+  quadratic = false
+
+[domain.truncation_by_gridtype]
+  cubic = "cubic"
+  custom = "custom"
+  linear = "quadratic"
+  quadratic = "quadratic"
+
+[eps]
+
+[eps.general]
+  members = [0]
+
+[eps.member_settings]
+
+[eps.member_settings.fdb.grib_set]
+  type = "tactus.eps.custom_generators.FDBTypeGenerator"
+
+[eps.member_settings.general]
+  famodel = "tactus.eps.custom_generators.CmodelGenerator"
+
+[eps.member_settings.namelist_update.master.forecast.namfa]
+  cmodel = "@FAMODEL@"
+
+[eps.member_settings.system]
+  logs = "@ARCHIVE_ROOT@/logs/@MEMBER_STR@"
+  wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
+
+[eps.members.0]
+
+[eps.members.0.fdb.grib_set]
+  type = "fc"
+
+[eps.members.0.general]
+  famodel = "@CYCLE@-@CSC@-oper"
+
+[extractsqlite]
+  merged_sqlite_path = "@ARCHIVE_ROOT@/merged_sqlite/FCTABLE/@SQLITE_MODEL_NAME@/@YYYY@/@MM@"
+  parameter_list = []
+  selection = "PT1H"
+  sqlite_model_name = "@CASE@"
+  sqlite_path = "@ARCHIVE_ROOT@/sqlite/FCTABLE/@SQLITE_MODEL_NAME@/@YYYY@/@MM@/@MEMBER_STR@"
+  sqlite_template = "FCTABLE_{PP}_{YYYY}{MM}_{HH}.sqlite"
+
+[[extractsqlite.parameter_list_default_det]]
+  location_file = "@TACTUS_HOME@/data/sqlite/station_list_default.csv"
+  param_file = "@TACTUS_HOME@/data/sqlite/param_list_sfc_@CSC@_det.json"
+
+[[extractsqlite.parameter_list_default_det]]
+  location_file = "@TACTUS_HOME@/data/sqlite/temp_list_default.csv"
+  param_file = "@TACTUS_HOME@/data/sqlite/param_list_ua_det.json"
+
+[[extractsqlite.parameter_list_default_eps]]
+  location_file = "@TACTUS_HOME@/data/sqlite/station_list_default.csv"
+  param_file = "@TACTUS_HOME@/data/sqlite/param_list_sfc_@CSC@_eps.json"
+
+[[extractsqlite.parameter_list_default_eps]]
+  location_file = "@TACTUS_HOME@/data/sqlite/temp_list_default.csv"
+  param_file = "@TACTUS_HOME@/data/sqlite/param_list_ua_eps.json"
+
+[fdb]
+  databridge_user = "@PROD_USER@"
+
+[fdb.expver_restrictions]
+  test = ["snh02", "lrb_465000527_efdev"]
+
+[fdb.grib_set]
+  georef = "u15rxs"
+  stream = "oper"
+
+[file_templates]
+
+[file_templates.bdfile]
+  archive = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@"
+
+[file_templates.bdfile_sfx]
+  archive = "ECSFCSFX@DOMAIN@_@BDMEMBER@+@LLL@"
+
+[file_templates.bdfile_sst]
+  archive = "ECSFCSST@DOMAIN@_@BDMEMBER@+@LLL@"
+  model = "ECSFCSST@DOMAIN@_@BDMEMBER@+@NNN@"
+
+[file_templates.ddh_dl]
+  archive = "DHFDL@CNMEXP@+@DURATION_ARCHIVE@"
+  model = "DHFDL@CNMEXP@+@DURATION_MODEL@"
+
+[file_templates.ddh_gl]
+  archive = "DHFGL@CNMEXP@+@DURATION_ARCHIVE@"
+  model = "DHFGL@CNMEXP@+@DURATION_MODEL@"
+
+[file_templates.ddh_zo]
+  archive = "DHFZO@CNMEXP@+@DURATION_ARCHIVE@"
+  model = "DHFZO@CNMEXP@+@DURATION_MODEL@"
+
+[file_templates.duration]
+  archive = "@LLLH@h@LM@m@LS@s"
+  model = "@LLLH@:@LM@:@LS@"
+
+[file_templates.fullpos]
+  archive = "GRIBPF@CNMEXP@+@DURATION_ARCHIVE@"
+  grib = "GRIBPF@CNMEXP@+@DURATION_ARCHIVE@"
+  model = "GRIBPF@CNMEXP@@FPDOMAIN@+@DURATION_MODEL@"
+
+[file_templates.history]
+  archive = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@"
+  grib = "GRIB@CNMEXP@+@DURATION_ARCHIVE@"
+  model = "ICMSH@CNMEXP@+@DURATION_MODEL@"
+
+[file_templates.initfile]
+  archive = "@SCRATCH@/@SYS_NAME@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@/@HISTORY_TEMPLATE@"
+
+[file_templates.initfile_sfx]
+  archive = "@SCRATCH@/@SYS_NAME@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@/@SURFEX_TEMPLATE@"
+
+[file_templates.interpolated_boundaries]
+  archive = "ELSCF@CNMEXP@ALBC@NNN@"
+  model = "ELSCF@CNMEXP@ALBC@NNN@"
+
+[file_templates.pgd]
+  archive = "Const.Clim@ONE_DECADE@.sfx"
+  model = "Const.Clim.sfx"
+
+[file_templates.pgd_host]
+  archive = "Const.Clim@ONE_DECADE@.sfx"
+  model = "Const.Clim.sfx"
+
+[file_templates.pgd_prel]
+  archive = "PGD_prel@ONE_DECADE@.fa"
+  model = "PGD_prel.fa"
+
+[file_templates.sstfile]
+  archive = "EXT_SST_SIC@NNN@"
+
+[file_templates.surfex]
+  archive = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@.sfx"
+  grib = "GRIB@CNMEXP@+@DURATION_ARCHIVE@.sfx"
+  model = "ICMSH@CNMEXP@+@DURATION_MODEL@.sfx"
+
+[file_templates.tiles]
+  archive = "ICMSH@CNMEXP@+@DURATION_ARCHIVE@.sfx"
+  grib = "GRIBTILE@CNMEXP@+@DURATION_ARCHIVE@.sfx"
+  model = "ICMSH@CNMEXP@+@DURATION_MODEL@.sfx"
+
+[fullpos]
+  config_path = "@CYCLE@/fullpos"
+  domain_name = "DOMAIN"
+  main = ["rules", "namfpc_header"]
+
+[fullpos.selection]
+  master = ["master_selection_@CSC@", "master_subhour_selection_@CSC@", "meteosat"]
+
+[general]
+  accept_static_namelists = false
+  case = "@CASE_PREFIX@_@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@@CASE_SUFFIX@"
+  cnmexp = "DEOD"
+  csc = "ALARO"
+  cycle = "CY50t2"
+  e923_optional_sections = []
+  famodel = "destine-@CYCLE@-@CSC@-oper"
+  fullpos_windpower = true
+  keep_workdirs = true
+  member = 0
+  member_str = "mbr000"
+  remove_sections = []
+  start_etime = "1781790853.6487217"
+  surfex = false
+  surfex_sea_ice = "none"
+  upd_sst_sic = false
+  windfarm = false
+
+[general.namelist]
+  nrazts = "PT1H"
+  radiation_frequency = "PT5M"
+
+[general.output_settings]
+  fullpos = "PT1H"
+  history = "PT1H"
+  surfex = ""
+
+[general.times]
+  cycle_length = "PT3H"
+  forecast_range = "PT6H"
+  start = "2025-02-09T00:00:00Z"
+
+[git_info]
+  branch = "feature/activate_reference_checker"
+  commit = "ff651b395b93e5b901636565e5b273e86f395809"
+  describe = "ff651b39-dirty"
+  remote = "dhaumont/feature/activate_reference_checker"
+  remote_url = "git@github.com:dhaumont/tactus.git"
+
+[gribmodify]
+  conversions = ["fullpos"]
+  gribmodify_rules_file = "@TACTUS_HOME@/data/gribmodify/gribmodify_rules.json"
+
+[gribmodify.fullpos]
+
+[gribmodify.fullpos.1]
+  output_name = "tirf"
+
+[gribmodify.fullpos.2]
+  output_name = "tsnowp"
+
+[gribmodify.fullpos.3]
+  output_name = "10si"
+
+[gribmodify.fullpos.4]
+  output_name = "ws"
+
+[gribmodify.fullpos.5]
+  minimum_frequency = "PT1H"
+  output_name = "max_i10fg"
+
+[gribmodify.fullpos.6]
+  output_name = "2d"
+
+[gribmodify.fullpos.7]
+  output_name = "utci"
+
+[json2tab]
+  config_file = "@TACTUS_HOME@/data/json2tab/json2tab-config.yaml"
+  enabled = true
+  force_rewrite = false
+  loglevel = "auto"
+
+[json2tab.input]
+  turbine_database = [
+    "@WINDFARM_PATH@/turbine_database+gened_ct_curves.json",
+    "@WINDFARM_PATH@/turbine_database+knmi.json",
+    "@WINDFARM_PATH@/turbine_database+wf101.json",
+    "@WINDFARM_PATH@/turbine_specifications+belgian.csv",
+    "@WINDFARM_PATH@/known_wf101_mapping.csv",
+  ]
+  turbine_locations = "@WINDFARM_PATH@/euromap.csv"
+
+[json2tab.output]
+  directory = "@ARCHIVE_ROOT@/windfarm_data/"
+
+[json2tab.output.files]
+  location_tab = "turbine_locations.tab"
+  type_tab_prefix = "wind_turbine_"
+
+[macros]
+
+[macros.case]
+  gen_macros = []
+  group_macros = []
+  os_macros = ["USER"]
+
+[macros.select]
+
+[macros.select.default]
+  gen_macros = [
+    "boundaries.bdmodel",
+    "boundaries.bdmodel_sfx",
+    "domain.name",
+    "general.cnmexp",
+    "general.cycle",
+    "general.csc",
+    "general.case",
+    "general.surfex_sea_ice",
+    "domain.orographic_smoothing_method",
+    {bdmember = "boundaries.ifs.bdmember"},
+    {bdfile_template = "file_templates.bdfile.archive"},
+    {case_prefix = "scheduler.ecfvars.case_prefix"},
+    {compiler = "submission.compiler"},
+    {ecf_host_resolved = "scheduler.ecfvars.ecf_host_resolved"},
+    {ecf_port_resolved = "scheduler.ecfvars.ecf_port_resolved"},
+    {domain = "domain.name"},
+    {xdx = "domain.xdx"},
+    {domain_number = "domain.number"},
+    {precision = "submission.precision"},
+    {duration_archive = "file_templates.duration.archive"},
+    {duration_model = "file_templates.duration.model"},
+    {ecf_tactus_home = "scheduler.ecfvars.ecf_tactus_home"},
+    {ecf_files = "scheduler.ecfvars.ecf_files"},
+    {ecf_out = "scheduler.ecfvars.ecf_out"},
+    {famodel = "general.famodel"},
+    {forecast_range = "general.times.forecast_range"},
+    {cycle_length = "general.times.cycle_length"},
+    {fpdomain = "fullpos.domain_name"},
+    {history_template = "file_templates.history.archive"},
+    {mars_selection = "boundaries.ifs.selection"},
+    {pgd_archive = "file_templates.pgd.archive"},
+    {pgd_model = "file_templates.pgd.model"},
+    {member = "general.member"},
+    {members = "eps.general.members"},
+    {member_str = "general.member_str"},
+    {sqlite_path = "extractsqlite.sqlite_path"},
+    {merged_sqlite_path = "extractsqlite.merged_sqlite_path"},
+    {sqlite_model_name = "extractsqlite.sqlite_model_name"},
+    {surfex_template = "file_templates.surfex.archive"},
+    {bindir_gl = "submission.bindir_gl"},
+    {gl_version = "submission.gl_version"},
+    {ial_version = "submission.ial_version"},
+  ]
+  group_macros = ["platform", "system"]
+  os_macros = ["USER", "HOME", "PWD", "CONFIG"]
+
+[macros.select.release_test]
+  os_macros = ["PERM"]
+
+[mars]
+
+[mars.atos_bologna_DT]
+  default = "RD_DEFAULT"
+  expver = "iekm"
+  ifs_cycle_start = "PT0H"
+  start_date = "2024-07-21T00:00:00Z"
+
+[mars.ATOS_DT]
+  default = "RD_DEFAULT"
+  end_date = "2024-11-11T00:00:00Z"
+  expver = "i4ql"
+  ifs_cycle_start = "PT0H"
+  start_date = "2023-09-09T00:00:00Z"
+
+[mars.ATOS_DT.stream]
+  00 = "OPER"
+
+[mars.DT12]
+  default = "RD_DEFAULT"
+  expver = "i8a8"
+  ifs_cycle_start = "PT12H"
+  start_date = "2023-10-29T00:00:00Z"
+
+[mars.DT12.stream]
+  12 = "OPER"
+
+[mars.HRES]
+  class = "OD"
+  expver = "0001"
+  GG = "32/33/39/40/41/42/139/141/170/172/183/198/235/236/35/36/37/38/238/243/244/245"
+  GG1 = "74/163/160/161/162/15/16/17/18/66/67"
+  GG_lsm = "172"
+  GG_sea = "31/34"
+  GG_skt = "235"
+  GG_snow = "33/238/228038/228141"
+  GG_soil = "234/173/174/43/30/29/28/27"
+  GGZ_type = "analysis"
+  grid_ML = "AV"
+  ifs_cycle_length = "PT6H"
+  ifs_cycle_start = "PT0H"
+  resolution = "9"
+  SH = "152/138/155/130"
+  SHZ = "129"
+  SHZ_type = "AN"
+  SHZdate = "20131129"
+  start_date = "2015-05-13T00:00:00Z"
+  start_snow_date = "2023-06-27T00:00:00Z"
+  type_AN = "AN"
+  type_FC = "FC"
+  UA = "133/75/76/246/247/248"
+  Zlev_type = "ML"
+
+[mars.HRES.grid]
+  "2006-02-01T06:00:00Z" = "0.25/0.25"
+  "2010-01-26T06:00:00Z" = "0.15/0.15"
+  "2016-03-08T00:00:00Z" = "0.09/0.09"
+
+[mars.HRES.grid_GG1]
+  "2006-02-01T06:00:00Z" = "AV"
+  "2016-03-08T00:00:00Z" = "O640"
+
+[mars.HRES.levelist]
+  "2006-02-01T06:00:00Z" = "1/to/91"
+  "2013-06-26T00:00:00Z" = "1/to/137"
+
+[mars.HRES.stream]
+  00 = "OPER"
+  06 = "SCDA"
+  12 = "OPER"
+  18 = "SCDA"
+
+[mars.HRES_CY49t2]
+  default = "HRES"
+  GG = "32/33/39/40/41/42/139/141/170/172/183/198/199/235/236/35/36/37/38/238/243/244/245"
+
+[mars.i5qp]
+  default = "RD_DEFAULT"
+  ifs_cycle_start = "PT0H"
+
+[mars.i5qp.stream]
+  00 = "OPER"
+
+[mars.i7u4]
+  default = "RD_DEFAULT"
+  gg_oro_source = "@STATIC_DATA@/climate_fields_mir/IFS_gridpoint_orography/oro_T3999_F3214"
+  grid = "0.028/0.028"
+  ifs_cycle_start = "PT0H"
+
+[mars.i7u4.stream]
+  00 = "LWDA"
+
+[mars.i7ye]
+  default = "RD_DEFAULT"
+  gg_oro_source = "@STATIC_DATA@/climate_fields_mir/IFS_gridpoint_orography/oro_T3999_F3214"
+  grid = "0.028/0.028"
+  ifs_cycle_start = "PT0H"
+
+[mars.i7ye.stream]
+  00 = "LWDA"
+
+[mars.i8hy]
+  default = "RD_DEFAULT"
+  expver = "i8hy"
+  ifs_cycle_start = "PT0H"
+  start_date = "2017-01-20T00:00:00Z"
+
+[mars.i8hy.stream]
+  00 = "OPER"
+
+[mars.IFSENS]
+  class = "OD"
+  expver = "0001"
+  GG = "32/33/39/40/41/42/139/141/170/172/183/198/235/236/35/36/37/38/238/243/244/245"
+  GG1 = "74/163/160/161/162/66/67"
+  GG_lsm = "172"
+  GG_sea = "31/34"
+  GG_skt = "235"
+  GG_snow = "33/238/228038/228141"
+  GG_soil = "234/173/174/43/30/29/28/27"
+  GGZ_type = "AN"
+  grid_ML = "AV"
+  ifs_cycle_length = "PT6H"
+  ifs_cycle_start = "PT0H"
+  levelist = "1/to/137"
+  resolution = "9"
+  SH = "152/138/155/130"
+  SHZ = "129.128"
+  SHZ_type = "AN"
+  start_date = "1900-01-01T00:00:00Z"
+  start_snow_date = "2023-06-27T00:00:00Z"
+  stream = "ENFO"
+  stream_control = "OPER"
+  type_AN = "FC"
+  type_FC = "PF"
+  UA = "133/75/76/246/247/248"
+  Zlev_type = "ML"
+
+[mars.IFSENS.grid]
+  "2023-07-01T00:00:00Z" = "0.09/0.09"
+
+[mars.IFSENS.grid_GG1]
+  "2006-02-01T06:00:00Z" = "AV"
+  "2016-03-08T00:00:00Z" = "O640"
+
+[mars.iit7]
+  default = "RD_DEFAULT"
+  end_date = "2024-07-09T00:00:00Z"
+  expver = "iit7"
+  GGZ_type = "CF"
+  ifs_cycle_start = "PT0H"
+  SHZ_type = "CF"
+  start_date = "2024-07-09T00:00:00Z"
+  stream = "ENFO"
+  type_AN = "CF"
+  type_FC = "PF"
+
+[mars.ilv7]
+  default = "RD_DEFAULT"
+  end_date = "2021-08-17T00:00:00Z"
+  expver = "ilv7"
+  GGZ_type = "CF"
+  ifs_cycle_length = "PT12H"
+  ifs_cycle_start = "PT12H"
+  SHZ_type = "CF"
+  start_date = "2021-08-16T12:00:00Z"
+  stream = "ENFO"
+  type_AN = "CF"
+  type_FC = "PF"
+
+[mars.irok]
+  default = "RD_DEFAULT"
+  end_date = "2022-05-03T00:00:00Z"
+  expver = "irok"
+  GGZ_type = "CF"
+  ifs_cycle_length = "PT12H"
+  SHZ_type = "CF"
+  start_date = "2022-05-02T00:00:00Z"
+  stream = "ENFO"
+  type_AN = "CF"
+  type_FC = "PF"
+
+[mars.is6g]
+  default = "RD_DEFAULT"
+  end_date = "2022-05-03T00:00:00Z"
+  expver = "is6g"
+  GGZ_type = "CF"
+  grid = "0.09/0.09"
+  ifs_cycle_length = "PT12H"
+  resolution = "9"
+  SHZ_type = "CF"
+  start_date = "2022-05-02T00:00:00Z"
+  stream = "ENFO"
+  type_AN = "CF"
+  type_FC = "PF"
+
+[mars.iyzp]
+  default = "RD_DEFAULT"
+  end_date = "2023-08-20T00:00:00Z"
+  expver = "iyzp"
+  start_date = "2023-08-20T00:00:00Z"
+
+[mars.lumi_DT]
+  class = "D1"
+  default = "RD_DEFAULT"
+  expver = "0001"
+  GG_snow = "33/238"
+  GGZ_type = "AN"
+  ifs_cycle_start = "PT0H"
+  SH = "152/138/155"
+  sh_oro_source = "/projappl/project_465000527/models/ifs/static-data/rdx/data/climate/climate.v020/2559_4/sporog"
+  SH_temperature = "130"
+  SHZ_type = "AN"
+  SHZclass = "OD"
+  SHZdate = "20131129"
+  start_date = "2024-04-06T00:00:00Z"
+  use_static_sh = true
+  Zlev_type = "SFC"
+
+[mars.RD_DEFAULT]
+  class = "RD"
+  GG = "32/33/39/40/41/42/139/141/170/172/183/198/235/236/35/36/37/38/238/243/244/245"
+  GG_lsm = "172"
+  gg_oro_source = "@STATIC_DATA@/climate_fields_mir/IFS_gridpoint_orography/oro_T2559_F2250"
+  GG_sea = "31/34"
+  GG_skt = "235"
+  GG_snow = "33/238/228038/228141"
+  GGZ_type = "FC"
+  grid = "0.04/0.04"
+  grid_ML = "AV"
+  ifs_cycle_length = "PT24H"
+  ifs_cycle_start = "PT0H"
+  levelist = "1/to/137"
+  resolution = "4"
+  SH = "152/138/155/130"
+  SHZ = "129"
+  SHZ_type = "FC"
+  SHZdate = "20131129"
+  start_date = "1900-01-01T00:00:00Z"
+  stream = "OPER"
+  type_AN = "AN"
+  type_FC = "FC"
+  UA = "133/75/76/246/247/248"
+  use_static_gg = true
+  Zlev_type = "ML"
+
+[perturbations]
+  pertana = false
+  pertsurf = false
+
+[pgd]
+  npatch = 1
+  one_decade = true
+  use_osm = false
+
+[platform]
+  albnir_soil_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
+  albnir_veg_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
+  albvis_soil_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
+  albvis_veg_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
+  archive_root = "@SCRATCH@/@SYS_NAME@/@CASE@/archive"
+  archive_types = ["compress", "copy", "ecfs", "fdb"]
+  climdata = "@STATIC_DATA@/climate"
+  e923_data = "@STATIC_DATA@/climate/E923_DATA"
+  eclipse_data_dir = "@STATIC_DATA@/climate/eclipse"
+  ecoclim_data_path = "@CLIMDATA@/ecoclimap"
+  ecoclimap_bin_dir = "@ecoclim_data_path@"
+  ecosg_data_path = "@CLIMDATA@/ECOCLIMAP-SG"
+  fixed_bddir = "/scratch/sism/DEOL/@YYYY@/@MM@/@DD@/@HH@"
+  flake_dir = "@STATIC_DATA@/climate/PGD"
+  global_sfcdir = "@STATIC_DATA@/climate_fields_mir/climate.v020_MIR_orog/@RESOLUTION@km/@MM@"
+  host = "atos_bologna"
+  install_dir = "/perm/deployde330/github-actions/install/"
+  lai_dir = "@CLIMDATA@/ECOCLIMAP-SG/LAI_SAT"
+  ncdir = "@STATIC_DATA@/ncdir"
+  osm_data_eu = "@CLIMDATA@/OSM_SFX8_1_EU/GARDEN/"
+  pgd_data_path = "@CLIMDATA@/PGD"
+  ref_case = "intel_@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@@CASE_SUFFIX@"
+  reference_data = "@SCRATCH@/@SYS_NAME@/@CYCLE@"
+  reference_tag = "v1.1.0"
+  references_folder = "@SCRATCH@/tactus_references/@REFERENCE_TAG@"
+  references_generation_folder = "N/A"
+  rrtm_dir = "@STATIC_DATA@/rrtm/@CYCLE@"
+  rttov_coefdir = "@STATIC_DATA@/satellite/rtcoef_rttov13/coef/"
+  scratch = "/scratch/@USER@"
+  soilgrid_data_path = "@CLIMDATA@/SOILGRID"
+  static_data = "/ec/project/accord/tactus"
+  tactus_fdb_home = "/home/fdbtest"
+  tactus_home = "set-by-the-system"
+  task_name = "@STAND_ALONE_TASK_NAME@"
+  topo_data_path = "@CLIMDATA@/GMTED2010"
+  topo_source = "gmted2010"
+  tree_height_dir = "@CLIMDATA@/ECOCLIMAP-SG/HT"
+  unix_group = "accord"
+  uv_cache_dir = "/perm/@USER@/.cache/uv"
+  windfarm_path = "@STATIC_DATA@/WFP_input_files/"
+
+[platform.mirrorglobalDT]
+  remote_host = "ecflow-gen-snh02-001"
+  remote_path = "/mirror_globalDT_iekm/pabv/iekm/fc/main/fcgroup/00/model"
+
+[reference_checker]
+  analyze_summary = ["ReferenceCheck"]
+  check = true
+  create_summary = ["PrepRun"]
+  generate = false
+  label_suffix = "@MEMBER_STR@"
+  rules_active = ["Forecast.fullpos", "Forecast.history", "Forecast.log"]
+  summary_active = ["txt", "json"]
+  suppress_exception = false
+
+[reference_checker.methods]
+  mode = "get_worst"
+  which = "first_and_last_spectral"
+
+[reference_checker.methods.ForecastNorms]
+  mode = "get_worst"
+  tolerance = "0"
+  tool = "norms_checker"
+  which = "first_and_last_spectral"
+
+[reference_checker.methods.FullPosFields]
+  args_template = "-f1 {test_file} -f2 {reference_file} {file_format} -s -of SCREEN -de -to {tolerance}"
+  binary = "@INSTALL_DIR@/gl/@COMPILER@/latest/bin/xtool"
+  file_format = "GRIB"
+  tolerance = "10"
+  tool = "xtool"
+
+[reference_checker.methods.HistoryFields]
+  args_template = "-f1 {test_file} -f2 {reference_file} {file_format} -s -of SCREEN -de -to {tolerance}"
+  binary = "@INSTALL_DIR@/gl/@COMPILER@/latest/bin/xtool"
+  file_format = "FA"
+  tolerance = "10"
+  tool = "xtool"
+
+[reference_checker.summary]
+  file = "@WRK@/checks/summary.txt"
+  format = "txt"
+
+[reference_checker.summary.json]
+  file = "@CASEDIR@/checks/summary.json"
+  format = "json"
+
+[reference_checker.summary.txt]
+  file = "@CASEDIR@/checks/summary.txt"
+  format = "txt"
+
+[reference_checker.task.Forecast]
+
+[reference_checker.task.Forecast.fullpos]
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  inpath = "@ARCHIVE@"
+  method = "FullPosFields"
+  pattern = "GRIBPF.*0003h00m00s"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/Forecast"
+
+[reference_checker.task.Forecast.history]
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  inpath = "@ARCHIVE@"
+  method = "HistoryFields"
+  pattern = "ICMSH.*0003h00m00s"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/Forecast"
+
+[reference_checker.task.Forecast.log]
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  inpath = "@WRK@/logs/Forecast"
+  method = "ForecastNorms"
+  pattern = "NODE.001_01"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/Forecast"
+
+[reference_checker.task.Forecast.surfex]
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  inpath = "@ARCHIVE@"
+  method = "HistoryFields"
+  pattern = "ICMSH.*0003h00m00s.sfx"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/Forecast"
+
+[remove]
+
+[remove.defaults]
+  active = true
+  dry_run = true
+  execute_removal = false
+  ncycles_delay = 0
+  path = ""
+  wipe = true
+
+[remove.main]
+  remove_from_scheduler = true
+  remove_not_completed_suites = false
+  suite_name = "@CASE@"
+
+[remove.main.ecfs]
+  ecfs_prefix = "@ARCHIVING.PREFIX.ECFS@"
+  path = ""
+
+[remove.main.ifs]
+  active = false
+  path = "@REFERENCE_DATA@/IFS"
+
+[remove.main.zz_case_dir]
+  path = "@CASEDIR@"
+
+[scheduler]
+
+[scheduler.ecfvars]
+  case_prefix = "feature_activate_reference_checker_intel"
+  ecf_files = "@PERM@/tactus_ecflow/ecf_files"
+  ecf_files_remotely = "@PERM@/tactus_ecflow/ecf_files"
+  ecf_home = "@PERM@/tactus_ecflow/jobout"
+  ecf_host = "_select_host_from_list(['ecfg-@USER@-1', 'ecflow-gen-@USER@-001'],)"
+  ecf_host_resolved = ""
+  ecf_jobout = "@PERM@/tactus_ecflow/jobout"
+  ecf_out = "@PERM@/tactus_ecflow/jobout"
+  ecf_port = 3141
+  ecf_port_resolved = ""
+  ecf_remoteuser = ""
+  ecf_ssl = "0"
+  ecf_tactus_home = "strip_off_mount_path('@TACTUS_HOME@',)"
+  ecf_tries = 1
+  ecf_user = ""
+
+[scheduler.ecfvars.troika]
+  config_file = "@ECF_TACTUS_HOME@/data/config_files/troika.yml"
+
+[scheduler.mirror_host_case]
+  check_var = ""
+  mirror_name = "host_case"
+  remote_auth = ""
+  remote_host = "_select_host_from_list(['ecfg-@USER@-1', 'ecflow-gen-@USER@-001'],)"
+  remote_path = "/@HOST_CASE@/@YYYY@@MM@@DD@/@HH@@mm@/mbr000/Cycle/Forecasting"
+  remote_polling = "300"
+  remote_port = "3141"
+  remote_ssl = false
+
+[scheduler.mirror_suite]
+  check_var = ""
+  mirror_name = "feature_activate_reference_checker_intel_CY50t2_ALARO_DEMO_60x80_2500m_20250209_climate_files"
+  remote_auth = ""
+  remote_host = "@SCHEDULER.ECFVARS.ECF_HOST@"
+  remote_path = "/feature_activate_reference_checker_intel_CY50t2_ALARO_DEMO_60x80_2500m_20250209_climate_files/PostMortem"
+  remote_polling = "120"
+  remote_port = "@SCHEDULER.ECFVARS.ECF_PORT@"
+  remote_ssl = false
+
+[submission]
+  bindir = "@SCRATCH@/@SYS_NAME@/@CASE_PREFIX@@CYCLE@_compile/install/R64/bin"
+  bindir_gl = "@SUBMISSION.BINDIR@"
+  compiler = "intel"
+  default_submit_type = "serial"
+  gl_version = "latest"
+  ial_version = "latest"
+  lfftw = true
+  max_ecf_tasks = 5
+  module_initpath = "/usr/local/apps/lmod/8.6.8/init"
+  nproma = -32
+  precision = "R64"
+
+[submission.iomerge]
+
+[submission.iomerge.age_limit]
+  forecast_directory = 300
+  fullpos = 15
+  history = 20
+  surfex = 15
+
+[submission.iomerge.files_expected]
+  fullpos = 0
+  history = -1
+  surfex = 0
+
+[submission.task]
+  wrapper = ""
+
+[submission.task_exceptions]
+
+[submission.task_exceptions.AddCalculatedFields.MODULES]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2026.01.0.0"]
+
+[submission.task_exceptions.Addpert]
+  binary = "ADDPERT"
+  WRAPPER = "srun"
+
+[submission.task_exceptions.Addpert.BATCH]
+  CPUS = "#SBATCH --cpus-per-task=1"
+  MEM = "#SBATCH --mem=32GB"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[submission.task_exceptions.Addpert.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = 0
+
+[submission.task_exceptions.ArchiveFDB]
+
+[submission.task_exceptions.ArchiveFDB.ENV]
+  FDB5_HOME = "/home/fdbtest/versions/7.30.6.0/"
+  FDB_ENABLE_GRIBJUMP = "1"
+  FDB_HOME = "@TACTUS_FDB_HOME@"
+  GRIBJUMP_CONFIG_FILE = "@TACTUS_FDB_HOME@/etc/gribjump/config_on-demand-extremes-dt.yaml"
+
+[submission.task_exceptions.ArchiveFDB.MODULES]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2026.01.0.0"]
+
+[submission.task_exceptions.ArchiveHour.BATCH]
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[submission.task_exceptions.ArchiveStatic.BATCH]
+  WALLTIME = "#SBATCH --time=03:00:00"
+
+[submission.task_exceptions.C903]
+  NPROC = 36
+  OMP_NUM_THREADS = "4"
+
+[submission.task_exceptions.C903.BATCH]
+  CPUSPERTASK = "#SBATCH --cpus-per-task=4"
+  HYPERTHREAD = "#SBATCH --hint=nomultithread"
+  MEM_CPU = "#SCATCH --mem-per-cpu=50G"
+  NODES = "#SBATCH --nodes=18"
+  NTASKS = "#SBATCH --ntasks-per-node=2"
+  WALLTIME = "#SBATCH --time=01:00:00"
+
+[submission.task_exceptions.C903.ENV]
+  KMP_AFFINITY = "granularity=core,scatter"
+  KMP_BLOCKTIME = "12"
+  OMP_STACKSIZE = "4G"
+
+[submission.task_exceptions.CreateGrib]
+  binary = "gl_DP"
+
+[submission.task_exceptions.CreateGrib.BATCH]
+  WALLTIME = "#SBATCH --time=01:00:00"
+
+[submission.task_exceptions.E923Update]
+  binary = "fa_sfx2clim"
+  bindir = "/perm/deployde330/github-actions/install/CY49t2/intel/R64/latest/bin"
+
+[submission.task_exceptions.E923Update.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = 0
+
+[submission.task_exceptions.E927]
+  NPROC = 16
+
+[submission.task_exceptions.E927.BATCH]
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=16"
+
+[submission.task_exceptions.ExtractSQlite]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2026.01.0.0"]
+
+[submission.task_exceptions.Forecast]
+  bindir = "@SUBMISSION.BINDIR@"
+  NPROC = 30
+  NPROC_IO = 2
+
+[submission.task_exceptions.Forecast.BATCH]
+  NODES = "#SBATCH --nodes=2"
+  NTASKS = "#SBATCH --ntasks=32"
+  WALLTIME = "#SBATCH --time=01:00:00"
+
+[submission.task_exceptions.Forecast.binaries.lfitools]
+  binary = "lfitools_dp"
+
+[submission.task_exceptions.Forecast.ENV]
+  APL_ALARO = "1"
+  RTTOV_COEFDIR = "@RTTOV_COEFDIR@"
+  UCX_LOG_LEVEL = "error"
+
+[submission.task_exceptions.GlBd]
+  binary = "gl_DP"
+
+[submission.task_exceptions.InterpolSstSic]
+  binary = "gl_DP"
+
+[submission.task_exceptions.IOmerge]
+  binary = "lfitools_dp"
+
+[submission.task_exceptions.IOmerge.BATCH]
+  WALLTIME = "#SBATCH --time=01:00:00"
+
+[submission.task_exceptions.Marsprep]
+  bindir = "/usr/local/bin/"
+
+[submission.task_exceptions.Marsprep.BATCH]
+  MEM = "#SBATCH --mem=128GB"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  QOS = "#SBATCH --qos=np"
+  WALLTIME = "#SBATCH --time=06:00:00"
+
+[submission.task_exceptions.Marsprep.ENV]
+  MARS_MULTITARGET_STRICT_FORMAT = 1
+  MARS_READANY_BUFFER_SIZE = 17893020000
+
+[submission.task_exceptions.Pgd]
+  binary = "pgd_dp"
+  NPROC = 2
+  WRAPPER = "srun -n @NPROC@"
+
+[submission.task_exceptions.Pgd.BATCH]
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=2"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[submission.task_exceptions.Pgd.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = 0
+
+[submission.task_exceptions.PgdFilterTownFrac]
+  binary = "pgd_frac"
+  bindir = "/perm/deployde330/github-actions/install/CY49t2/intel/R64/latest/bin"
+
+[submission.task_exceptions.PgdFilterTownFrac.ENV]
+  DR_HOOK_NOT_MPI = 1
+  ECF_TRIES = 15
+
+[submission.task_exceptions.PgdUpdate]
+  binary = "gl_DP"
+
+[submission.task_exceptions.Prep]
+  binary = "prep_dp"
+  WRAPPER = "srun -n @NPROC@"
+
+[submission.task_exceptions.Prep.BATCH]
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  WALLTIME = "#SBATCH --time=00:10:00"
+
+[submission.task_exceptions.Prep.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = 0
+
+[submission.task_exceptions.Soil.MODULES]
+  GDAL = ["load", "gdal/3.6.2"]
+
+[submission.task_exceptions.TactusBundleBuild]
+
+[submission.task_exceptions.TactusBundleBuild.BATCH]
+  CPUSPERTASK = "#SBATCH --cpus-per-task=128"
+  MEM = "#SBATCH --mem=0GB"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  QOS = "#SBATCH --qos=np"
+  WALLTIME = "#SBATCH --time=02:00:00"
+
+[submission.task_exceptions.TactusBundleBuild.ENV]
+  IAL_DIR = "@CASEDIR@/IAL"
+  OMP_NUM_THREADS = 128
+
+[submission.task_exceptions.Topography.MODULES]
+  GDAL = ["load", "gdal/3.6.2"]
+
+[submission.types]
+
+[submission.types.background_hpc]
+  NPROC_IO = 0
+  SCHOST = "localhost"
+  tasks = ["Background_hpc", "UnitTest"]
+  WRAPPER = ""
+
+[submission.types.background_vm]
+  INTERPRETER = "#!/usr/bin/python3"
+  NPROC_IO = 0
+  SCHOST = "localhost"
+  tasks = ["Background_vm"]
+  WRAPPER = ""
+
+[submission.types.gnu]
+  NPROC = 1
+  NPROC_IO = 0
+  NPROCX = 1
+  NPROCY = 1
+  SCHOST = "hpc"
+  tasks = ["ExtractSQLite"]
+  WRAPPER = "srun"
+
+[submission.types.gnu.BATCH]
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  QOS = "#SBATCH --qos=nf"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
+  WALLTIME = "#SBATCH --time=00:15:00"
+
+[submission.types.parallel]
+  NPROC = 32
+  NPROC_IO = 0
+  SCHOST = "hpc"
+  tasks = ["Forecast", "E927", "Pgd", "Prep", "C903", "IALBundleBuild"]
+  WRAPPER = "srun"
+
+[submission.types.parallel.BATCH]
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  QOS = "#SBATCH --qos=np"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
+  WALLTIME = "#SBATCH --time=00:10:00"
+
+[submission.types.parallel.ENV]
+  DR_HOOK = 1
+  DR_HOOK_IGNORE_SIGNALS = -1
+  OMP_NUM_THREADS = 1
+  OMPI_MCA_btl = "^vader"
+
+[submission.types.parallel.MODULES]
+  00_PRGENV = ["load", "prgenv/intel"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2026.01.0.0"]
+  FFTW = ["load", "fftw/3.3.10"]
+  HDF5 = ["load", "hdf5/1.14.6"]
+  MKL = ["load", "intel-mkl/19.0.5"]
+  NETCDF = ["load", "netcdf4/4.9.3"]
+  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
+
+[submission.types.serial]
+  NPROC = 1
+  NPROC_IO = 0
+  NPROCX = 1
+  NPROCY = 1
+  SCHOST = "hpc"
+  tasks = [
+    "CreateGrib",
+    "Topography",
+    "Soil",
+    "Marsprep",
+    "E923Update",
+    "IOmerge",
+    "InterpolSstSic",
+    "GenerateWfpTabFile",
+  ]
+  WRAPPER = "srun"
+
+[submission.types.serial.BATCH]
+  NAME = "#SBATCH --job-name=@TASK_NAME@"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  QOS = "#SBATCH --qos=nf"
+  WALLSIGNAL = "#SBATCH --signal=USR1@30"
+  WALLTIME = "#SBATCH --time=00:15:00"
+
+[submission.types.serial.ENV]
+  DR_HOOK_IGNORE_SIGNALS = -1
+  OMP_NUM_THREADS = 1
+  OMPI_MCA_btl = "^vader"
+
+[submission.types.serial.MODULES]
+  00_PRGENV = ["load", "prgenv/intel"]
+  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2026.01.0.0"]
+  FFTW = ["load", "fftw/3.3.10"]
+  HDF5 = ["load", "hdf5/1.14.6"]
+  MKL = ["load", "intel-mkl/19.0.5"]
+  NETCDF = ["load", "netcdf4/4.9.3"]
+  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
+
+[suite_control]
+  compile = false
+  create_static_data = false
+  create_time_dependent_suite = true
+  do_addcalculatedfields = true
+  do_archiving = false
+  do_cleaning = true
+  do_creategrib_static = false
+  do_extractsqlite = true
+  do_interpolsstsic = true
+  do_marsprep = true
+  do_mergesqlite = true
+  do_pgd = true
+  do_soil = true
+  interpolate_boundaries = true
+  max_static_data_tasks = 10
+  member_specific_mars_prep = false
+  member_specific_static_data = false
+  mirror_globalDT = false
+  mirror_host_case = false
+  mirror_offline = false
+  mirror_suite = true
+  mode = "cold_start"
+  n_addcalculatedfields = 2
+  n_creategrib = 2
+  n_io_merge = 0
+  split_mars = false
+  suite_definition = "TactusSuiteDefinition"
+
+[system]
+  archive = "@ARCHIVE_ROOT@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  archive_timestamp = "@YYYY@/@MM@/@DD@/@HH@/"
+  bdclimdir = "@FIXED_BDCLIMDIR@"
+  bddir = "@REFERENCE_DATA@/IFS/@MARS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
+  bddir_sfx = "@BDDIR@"
+  bddir_sst = "@BDDIR@"
+  c903_input_definition = "@CYCLE@/c903.json"
+  case_suffix = ""
+  casedir = "@SCRATCH@/@SYS_NAME@/@CASE@"
+  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_alaro/climate/@DOMAIN@"
+  e923_input_definition = "@CYCLE@/e923.json"
+  e927_input_definition = "@CYCLE@/e927.json"
+  forecast_dir_link = "../Forecast"
+  forecast_input_definition = "@CYCLE@/forecast.json"
+  host_case = "feature_activate_reference_checker_intel_CY50t2_ALARO_DEMO_60x80_2500m_20250209_climate_files"
+  host_domain = "DEMO_60x80_2500m"
+  host_suite = "feature_activate_reference_checker_intel_CY50t2_ALARO_DEMO_60x80_2500m_20250209_climate_files"
+  intp_bddir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_alaro/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+  intp_bddir_sfx = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_alaro/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+  logs = "@ARCHIVE_ROOT@/logs"
+  namelists = "@TACTUS_HOME@/data/namelists/@CYCLE@"
+  prev_case = "@CASE@"
+  sfx_input_definition = "@CYCLE@/sfx.json"
+  sys_name = "tactus"
+  test_data_path = "/perm/snh/ttr/data"
+  wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@"
+
+[troika]
+  config_file = "@TACTUS_HOME@/data/config_files/troika.yml"
+  troika = "troika"
+
+[vertical_levels]
+  ahalf = [
+    0.0,
+    217.462546,
+    669.692883,
+    1316.411225,
+    2089.739408,
+    2965.455054,
+    3929.558969,
+    4972.605591,
+    6079.017081,
+    7223.812907,
+    8390.174674,
+    9563.073159,
+    10728.256866,
+    11871.994333,
+    12981.001277,
+    14042.451725,
+    15044.03844,
+    15974.06625,
+    16821.568339,
+    17576.438094,
+    18229.570033,
+    18773.003602,
+    19200.063674,
+    19505.491556,
+    19685.560441,
+    19738.169546,
+    19662.911769,
+    19467.954829,
+    19174.215145,
+    18799.867516,
+    18360.633771,
+    17869.920057,
+    17339.023393,
+    16777.373724,
+    16192.786905,
+    15591.711743,
+    14979.460274,
+    14360.414981,
+    13738.209982,
+    13115.885448,
+    12496.016032,
+    11880.815048,
+    11272.216634,
+    10671.93844,
+    10081.527465,
+    9502.391621,
+    8935.819551,
+    8382.991025,
+    7844.98013,
+    7322.753245,
+    6817.163589,
+    6328.943956,
+    5858.698998,
+    5406.898248,
+    4973.870847,
+    4559.80278,
+    4164.737242,
+    3788.578664,
+    3431.100787,
+    3091.959202,
+    2770.708733,
+    2466.826169,
+    2179.739004,
+    1908.86111,
+    1658.43452,
+    1432.241233,
+    1228.900149,
+    1047.020478,
+    885.21294,
+    742.099309,
+    616.320523,
+    506.543526,
+    411.467009,
+    329.82621,
+    260.396895,
+    201.998639,
+    153.497529,
+    113.808364,
+    81.896451,
+    56.77906,
+    37.526602,
+    23.26359,
+    13.169379,
+    6.478701,
+    2.481824,
+    0.523811,
+    0.0,
+    0.0,
+  ]
+  bhalf = [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    8.53058e-05,
+    0.000449432,
+    0.0012157032,
+    0.0024971551,
+    0.0044046099,
+    0.0070479403,
+    0.0105358929,
+    0.0149753307,
+    0.0204701548,
+    0.027120016,
+    0.0350188823,
+    0.0442535121,
+    0.0549018829,
+    0.067031625,
+    0.0806985139,
+    0.0959450775,
+    0.1127993721,
+    0.1312739822,
+    0.1513652922,
+    0.1724677859,
+    0.1938794495,
+    0.2154561806,
+    0.2370811471,
+    0.2586622343,
+    0.2801289663,
+    0.3014292262,
+    0.3225260049,
+    0.3433943361,
+    0.3640185136,
+    0.3843896442,
+    0.4045035564,
+    0.4243590641,
+    0.4439565704,
+    0.4632969856,
+    0.482380932,
+    0.5012082037,
+    0.5197774489,
+    0.5380860456,
+    0.5561301398,
+    0.5739048188,
+    0.5914043953,
+    0.608622778,
+    0.6255539091,
+    0.6421922501,
+    0.6585333012,
+    0.6745741403,
+    0.6903139733,
+    0.7057546845,
+    0.7209013844,
+    0.7357629483,
+    0.7503525439,
+    0.7646881455,
+    0.7787930335,
+    0.7926962759,
+    0.8064331909,
+    0.8200457823,
+    0.8333213105,
+    0.8460198864,
+    0.8581535648,
+    0.8697344112,
+    0.8807743822,
+    0.8912852204,
+    0.901278362,
+    0.9107648541,
+    0.91975528,
+    0.9282596898,
+    0.9362875344,
+    0.9438475989,
+    0.9509479333,
+    0.9575957744,
+    0.9637974544,
+    0.9695582842,
+    0.9748823965,
+    0.9797725203,
+    0.9842296313,
+    0.9882523549,
+    0.991835807,
+    0.9949687797,
+    0.9976215149,
+    1.0,
+  ]
+  nlev = 87

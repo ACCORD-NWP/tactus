@@ -21,7 +21,6 @@ from .general_utils import merge_dicts
 from .host_actions import TactusHost
 from .logs import logger
 
-
 class TestCases:
     """Class to orchestrate the tests."""
 
@@ -42,6 +41,7 @@ class TestCases:
         if args.config_file is not None:
             logger.info("Using config file: {}", args.config_file)
             self.config = ParsedConfig.from_file(args.config_file, json_schema={})
+            self.config_name = Path(args.config_file).resolve().stem
             try:
                 definitions = self.config.expand_macros().dict()
             except KeyError:
@@ -59,12 +59,18 @@ class TestCases:
         self.get_tag(definitions)
         self.dry = args.dry if args.dry else definitions["general"].get("dry", False)
         self.modifs = definitions["modifs"]
-        self.test_dir = definitions.get("test_dir", f"{self.tag}configs")
+        self.refchecks = definitions.get("refchecks", {})
+        self.genchecks = definitions.get("genchecks", {})
+        self.test_dir = definitions.get("test_dir", f"{self.tag}_configs")
         self.ial = definitions.get("ial", {})
         self.gl = definitions.get("gl", {})
         self.selection = self.resolve_selection(definitions)
         self.assigned = {}
-
+        self.generate_refs = args.generate_refs if args.generate_refs else False
+        if self.generate_refs:
+            logger.warning("**************************************************")
+            logger.warning("*   Reference checker: generate reference mode   *")
+            logger.warning("**************************************************")
         if args.config_file is not None:
             with contextlib.suppress(KeyError):
                 if definitions["ial"].get("active", False):
@@ -179,7 +185,10 @@ class TestCases:
             extra = list(self.extra) + list(item.get("extra", []))
 
             # Merge and replace macros
-            modifs = merge_dicts(self.modifs, self.cases[case].get("modifs", {}), True)
+            modifs = merge_dicts(self.modifs, self.refchecks, True)
+            if self.generate_refs:
+                modifs = merge_dicts(modifs, self.genchecks, True)
+            modifs = merge_dicts(modifs, self.cases[case].get("modifs", {}), True)
             config = self.config.copy(
                 update={
                     "modifs": modifs,
@@ -277,10 +286,10 @@ class TestCases:
         from .__main__ import main as tactus_main
 
         try:
-            with open(f"{self.test_dir}/config_names.toml", "rb") as f:
+            with open(f"{self.test_dir}/{self.config_name}_config_names.toml", "rb") as f:
                 config_names = tomli.load(f)
         except FileNotFoundError as err:
-            msg = "No case mapping available. Run again without '-r'"
+            msg = "No case mapping available. Run again with '-m'"
             logger.error(msg)
             raise FileNotFoundError(msg) from err
 
@@ -475,7 +484,7 @@ class TestCases:
                         for c, item in self.cases.items()
                         if "config_name" in item
                     }
-                }).save_as(f"{directory}/config_names.toml")
+                }).save_as(f"{directory}/{self.config_name}_config_names.toml")
 
             if not args.run:
                 logger.info("\n\nRerun with '-r' to start the suites\n\n")
@@ -494,6 +503,9 @@ def run_test(args, config=None):
     """
     t = TestCases(args=args)
 
+    if not args.config_file and not args.prepare_binaries and not args.list:
+        logger.warning("Nothing to do. Use `tactus test -h` for help.")
+        return False
     if args.prepare_binaries:
         t.get_binaries()
 
