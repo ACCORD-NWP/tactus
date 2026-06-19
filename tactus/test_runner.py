@@ -42,6 +42,7 @@ class TestCases:
         if args.config_file is not None:
             logger.info("Using config file: {}", args.config_file)
             self.config = ParsedConfig.from_file(args.config_file, json_schema={})
+            self.config_name = Path(args.config_file).resolve().stem
             try:
                 definitions = self.config.expand_macros().dict()
             except KeyError:
