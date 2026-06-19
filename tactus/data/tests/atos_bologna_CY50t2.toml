@@ -1,22 +1,19 @@
 [general]
-  reference_date = "-P1D"
+  reference_date = "2026-06-18T00:00:00Z"
   selection = [
     "cy50t2_compile",
     "cy50t2_alaro_climate_files",
     "cy50t2_alaro",
     "cy50t2_alaro_ddh",
-    "cy50t2_alaro_eps",
     "cy50t2_alaro_mode_start",
     "cy50t2_arome_climate_files",
     "cy50t2_arome",
     "cy50t2_arome_ddh",
-    "cy50t2_arome_eps",
     "cy50t2_arome_mode_start",
     "cy50t2_arome_target",
     "cy50t2_harmonie_arome_climate_files",
     "cy50t2_harmonie_arome",
     "cy50t2_harmonie_arome_ddh",
-    "cy50t2_harmonie_arome_eps",
     "cy50t2_harmonie_arome_mode_start",
     "cy50t2_harmonie_arome_target",
   ]
@@ -32,3 +29,5 @@
   cases = "case_definitions_CY50t2.toml"
   macros = "test_macros.toml"
   modifs = "modifs_atos_bologna_CY50t2.toml"
+  refchecks = "modifs_reference_checker.toml"
+  genchecks = "modifs_reference_generate.toml"
