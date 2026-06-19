@@ -1,17 +1,16 @@
-"""PertSurf"""
+"""PertSurf."""
 
 import os
 
-from tactus.logs import logger
 from tactus.datetime_utils import as_datetime
-
 from tactus.initial_conditions import InitialConditions
+from tactus.logs import logger
 from tactus.tasks.base import Task
 from tactus.tasks.batch import BatchJob
 
 
 class PertSurf(Task):
-    """Perturb surface parameters in SURFEX initial file"""
+    """Perturb surface parameters in SURFEX initial file."""
 
     def __init__(self, config):
         """Construct PertSurf object.
@@ -19,7 +18,6 @@ class PertSurf(Task):
         Args:
             config (tactus.ParseConfig): Configuration object.
         """
-
         Task.__init__(self, config, __class__.__name__)
 
         self.npatch = self.config["pgd.npatch"]
@@ -31,16 +29,15 @@ class PertSurf(Task):
 
     @staticmethod
     def fmt_fortran_val(value):
+        """Format a Python value for Fortran namelist."""
         if isinstance(value, bool):
             return ".true." if value else ".false."
         if isinstance(value, str):
-            return f"'{value}'" 
+            return f"'{value}'"
         if isinstance(value, (list, tuple)):
-            return ", ".join(
-                f"'{v}'" if isinstance(v, str) else str(v) for v in value
-                )
+            return ", ".join(f"'{v}'" if isinstance(v, str) else str(v) for v in value)
         return str(value)
-    
+
     def build_namelist(self, param_dict, iseed, output):
         """Build namelist string for PERTSURF."""
         param_dict["ISEED"] = iseed
@@ -53,9 +50,9 @@ class PertSurf(Task):
             namelist_str += f"{key.upper()} = {formatted_value},\n"
         namelist_str += "/\n"
         return namelist_str
-    
-    def execute(self):
 
+    def execute(self):
+        """Execute the PertSurf task."""
         ensmbr = int(os.environ.get("MEMBER"))
 
         # Surface initial file
@@ -64,15 +61,15 @@ class PertSurf(Task):
         initfile_sfx_name = os.path.basename(initfile_sfx)
         output = f"{initfile_sfx_name}_perturbed"
         self.fmanager.input(
-            initfile_sfx, 
+            initfile_sfx,
             output,
             provider_id="copy",
-            )
+        )
 
         # Seed
-        M = 100000
+        m = 100000
         dtg = int(self.basetime.strftime("%Y%m%d%H"))
-        iseed = M * ensmbr + (dtg % M)
+        iseed = m * ensmbr + (dtg % m)
         logger.info(f"Generated seed (ISEED): {iseed}")
 
         # Build namelist
@@ -83,7 +80,7 @@ class PertSurf(Task):
 
         logger.info("Created namelist: {}", "nampert")
 
-        # Run PERTSURF 
+        # Run PERTSURF
         batch = BatchJob(os.environ, wrapper=self.wrapper)
         batch.run(self.binary)
 
@@ -92,4 +89,4 @@ class PertSurf(Task):
             output,
             f"{self.archive}/{output}",
             provider_id="move",
-            )
+        )
