@@ -21,6 +21,7 @@ from .general_utils import merge_dicts
 from .host_actions import TactusHost
 from .logs import logger
 
+
 class TestCases:
     """Class to orchestrate the tests."""
 
@@ -514,3 +515,5 @@ def run_test(args, config=None):
 
     elif args.config_file is not None:
         t.execute(args)
+
+    return True
