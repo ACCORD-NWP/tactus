@@ -501,6 +501,7 @@ class CheckSummaryAnalysis:
         self.missing_count = 0
         self.generated_count = 0
         self.check = check
+        self.error_message = ""
 
     def increment_error_count(self):
         """Increment error_count."""
