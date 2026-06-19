@@ -227,6 +227,7 @@ f4_AROME:
     TFP_VOR%ZFK: 32.0
     TFP_VV%ZFK: 32.0
   NAMARPHY:
+    LMSE: ${cfg:general.surfex}
     LKFBCONV: false
     LKFBD: false
     LKFBS: false
@@ -346,6 +347,7 @@ f4_AROME:
   NAMPHMSE:
     LPGDFWR: false
   NAMPHY:
+    LMSE: ${cfg:general.surfex}
     LEDR: true
     LMPHYS: true
     LRAYFM: true
@@ -523,6 +525,7 @@ f4_ALARO:
     TFP_VV%IBITS: 16
     TFP_Z%IBITS: 16
   NAMARPHY:
+    LMSE: ${cfg:general.surfex}
     CCOUPLING: I
   NAMCFU:
     CALFLASH1: 0.94
@@ -759,6 +762,7 @@ f4_ALARO:
   NAMPARAR:
     NSWB_MNH: 1
   NAMPHY:
+    LMSE: ${cfg:general.surfex}
     CGMIXLEN: EL0
     CGTURS: MD2
     L3MT: true
@@ -968,6 +972,7 @@ f4_HARMONIE_AROME:
     GFP_XUGST%IANO: 0
     GFP_XVGST%IANO: 0
   NAMARPHY:
+    LMSE: ${cfg:general.surfex}
     LKFBCONV: false
     LKFBD: false
     LKFBS: false
@@ -1130,6 +1135,7 @@ f4_HARMONIE_AROME:
     LHISFWR: true
     LPGDFWR: false
   NAMPHY:
+    LMSE: ${cfg:general.surfex}
     LAEROMMR: false
     LAERONRT: false
     LCLSATUR: true
@@ -1279,8 +1285,6 @@ f4_common:
     LELAM: true
     NCONF: 1
     NSUPERSEDE: 1
-  NAMARPHY:
-    LMSE: ${cfg:general.surfex}
   NAMCFU:
     LCUMFU: true
     LFLASH: true
