@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduce CY50t2 test cases in the test-runner. [\#88](https://github.com/ACCORD-NWP/tactus/pull/88) (@uandrae)
 - Added suite control switch for grib calculations. [#102](https://github.com/ACCORD-NWP/tactus/pull/102) (@uandrae)
 - Introduce perturbation family and config section. [#87](https://github.com/ACCORD-NWP/tactus/pull/87) (@uandrae)
+- Tactus test runner - Fix underscore in test definition. [#127](https://github.com/ACCORD-NWP/tactus/pull/127) (@dhaumont)
 - Test runner - display summary of all tests. [#129](https://github.com/ACCORD-NWP/tactus/pull/129/)(@dhaumont)
 
 ### Changed
