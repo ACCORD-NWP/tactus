@@ -91,10 +91,6 @@
   create_static_data = false
   mirror_suite = true
 
-[cases.cy50t2_alaro_eps.modifs.reference_checker]
-  check = false
-  generate = false
-
 [cases.cy50t2_alaro_mode_start]
   base = "cy50t2_alaro"
   host = "cy50t2_alaro_climate_files"
@@ -195,10 +191,6 @@
 [cases.cy50t2_arome_eps.modifs.suite_control]
   create_static_data = false
   mirror_suite = true
-
-[cases.cy50t2_arome_eps.modifs.reference_checker]
-  check = false
-  generate = false
 
 [cases.cy50t2_arome_slaf]
   base = "cy50t2_arome"
@@ -330,10 +322,6 @@
 [cases.cy50t2_harmonie_arome_eps.modifs.suite_control]
   create_static_data = false
   mirror_suite = true
-
-[cases.cy50t2_harmonie_arome_eps.modifs.reference_checker]
-  check = false
-  generate = false
 
 [cases.cy50t2_harmonie_arome_mode_start]
   base = "cy50t2_harmonie_arome"
