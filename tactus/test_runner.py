@@ -20,7 +20,6 @@ from .fullpos import flatten_list
 from .general_utils import merge_dicts
 from .host_actions import TactusHost
 from .logs import logger
-from .toolbox import Platform
 
 
 class TestCases:
