@@ -46,6 +46,7 @@ class TestCases:
         if args.config_file is not None:
             logger.info("Using config file: {}", args.config_file)
             self.config = ParsedConfig.from_file(args.config_file, json_schema={})
+            self.config_name = Path(args.config_file).resolve().stem
             try:
                 definitions = self.config.expand_macros().dict()
             except KeyError:
@@ -281,7 +282,7 @@ class TestCases:
         from .__main__ import main as tactus_main
 
         try:
-            with open(f"{self.test_dir}/config_names.toml", "rb") as f:
+            with open(f"{self.test_dir}/{self.config_name}_config_names.toml", "rb") as f:
                 config_names = tomli.load(f)
         except FileNotFoundError as err:
             msg = "No case mapping available. Run again without '-r'"
@@ -565,7 +566,7 @@ class TestCases:
                         for c, item in self.cases.items()
                         if "config_name" in item
                     }
-                }).save_as(f"{directory}/config_names.toml")
+                }).save_as(f"{directory}/{self.config_name}_config_names.toml")
 
             if not args.run:
                 logger.info("\n\nRerun with '-r' to start the suites\n\n")
