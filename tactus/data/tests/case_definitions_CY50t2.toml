@@ -85,6 +85,9 @@
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_alaro/climate/@DOMAIN@"
   intp_bddir = "@REFCHECK_ROOT@/@REFERENCE_TAG@/interpolated_bnd/@REF_CASE@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
 
+[cases.cy50t2_alaro_eps.modifs.reference_checker]
+  rules_active = ["Forecast.fullpos", "Forecast.history", "Forecast.log"]
+
 [cases.cy50t2_alaro_eps.modifs.eps.general]
   members = "0:3"
 
