@@ -67,6 +67,7 @@
 [cases.cy49t2_alaro_eps.modifs.system]
   case_suffix = "_eps"
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_alaro/climate/@DOMAIN@"
+  intp_bddir = "@REFCHECK_ROOT@/@REFERENCE_TAG@/interpolated_bnd/@REF_CASE@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
 
 [cases.cy49t2_alaro_eps.modifs.eps.general]
   members = "0:3"
@@ -74,10 +75,6 @@
 [cases.cy49t2_alaro_eps.modifs.suite_control]
   create_static_data = false
   mirror_suite = true
-
-[cases.cy49t2_alaro_eps.modifs.reference_checker]
-  check = false
-  generate = false
 
 [cases.cy49t2_alaro_mode_start]
   base = "cy49t2_alaro"
@@ -165,14 +162,11 @@
 [cases.cy49t2_arome_eps.modifs.system]
   case_suffix = "_eps"
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_arome/climate/@DOMAIN@"
+  intp_bddir = "@REFCHECK_ROOT@/@REFERENCE_TAG@/interpolated_bnd/@REF_CASE@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
 
 [cases.cy49t2_arome_eps.modifs.suite_control]
   create_static_data = false
   mirror_suite = true
-
-[cases.cy49t2_arome_eps.modifs.reference_checker]
-  check = false
-  generate = false
 
 [cases.cy49t2_arome_slaf]
   base = "cy49t2_arome"
@@ -296,14 +290,11 @@
 [cases.cy49t2_harmonie_arome_eps.modifs.system]
   case_suffix = "_eps"
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/climate/@DOMAIN@"
+  intp_bddir = "@REFCHECK_ROOT@/@REFERENCE_TAG@/interpolated_bnd/@REF_CASE@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
 
 [cases.cy49t2_harmonie_arome_eps.modifs.suite_control]
   create_static_data = false
   mirror_suite = true
-
-[cases.cy49t2_harmonie_arome_eps.modifs.reference_checker]
-  check = false
-  generate = false
 
 [cases.cy49t2_harmonie_arome_mode_start]
   base = "cy49t2_harmonie_arome"
