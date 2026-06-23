@@ -150,6 +150,7 @@ def create_exp(args, config):
         args.def_file = ""
         start_suite(args, config)
 
+
 def create_compile_exp(args, config):
     """Implement the 'compile' command.
 
@@ -159,16 +160,13 @@ def create_compile_exp(args, config):
 
     """
     config = config.copy(update={"compile": {"ial_git_branch": args.ial_tag}})
-    
-    
-    
+
     args.config_mods = [
         "tactus/data/config_files/modifications/@HOST@.toml",
-        "tactus/data/config_files/modifications/compile_suite.toml"
-        ]
+        "tactus/data/config_files/modifications/compile_suite.toml",
+    ]
 
-    create_exp(args,config)
-
+    create_exp(args, config)
 
 
 def start_suite(args, config):

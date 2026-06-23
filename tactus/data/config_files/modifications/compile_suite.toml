@@ -4,4 +4,3 @@
 [suite_control]
   compile = true
   suite_definition = "CompilationSuiteDefinition"
-
