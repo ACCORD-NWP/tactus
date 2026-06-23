@@ -494,14 +494,3 @@ exists, compilation is skipped. The cache symlink is still (re)created so the lo
 * The `ecbundle` binary is resolved as `<python-bin-dir>/ecbundle`, i.e. it must be installed in the same environment as Tactus
 * `IAL_DIR` is always exported from `compile.ial_dir`, regardless of whether `bundle_update` is enabled, so bundle YAMLs can rely on it being set
 
-
-
-```
-
----
-
-A couple of things worth flagging honestly:
-
-- I inferred the `cy50t2_compile` cycle file name from your patch's `CY50t2.toml` modification and the `cy49t2_alaro` naming convention already used in `case_config.md`. If your actual filename is different (e.g. `cy50_compile`), adjust the examples.
-- The `--ial-tag` value `feature/my-branch` contains a `/`, which would produce a case name with a slash. If your suite framework sanitizes that, you may want to mention it; I did not document sanitization because there's nothing about it in the diff.
-- I did not document `add_expand_config` separately since it's referenced from existing code and not introduced by this change — but if `case_config.md` doesn't already cover it elsewhere, you may want a short note.
