@@ -69,7 +69,7 @@ In addition to `tactus case` and `tactus start suite`, Tactus provides a dedicat
 tactus compile --ial-tag develop --start-suite
 ```
 
-produces a nd launches case named `IAL_develop_compile`.
+produces and launches case named `IAL_develop_compile`.
 
 `compile_suite.toml` defines the case name as:
 
