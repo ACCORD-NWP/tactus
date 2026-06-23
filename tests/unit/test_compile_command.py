@@ -1,9 +1,6 @@
 """Tests for the tactus compile command."""
 
 import argparse
-from pathlib import Path
-
-import tomlkit
 
 from tactus.argparse_wrapper import get_args_parser
 from tactus.commands_functions import create_compile_exp
@@ -24,20 +21,18 @@ def test_compile_parser_defaults():
 def test_compile_parser_accepts_expected_options():
     """Check explicitly provided compile command options."""
     parser = get_args_parser()
-    args = parser.parse_args(
-        [
-            "compile",
-            "--ial-tag",
-            "CY50T2",
-            "--output",
-            "compile_config.toml",
-            "--case-name",
-            "my_compile_case",
-            "--start-suite",
-            "--keep-def-file",
-            "--expand-config",
-        ]
-    )
+    args = parser.parse_args([
+        "compile",
+        "--ial-tag",
+        "CY50T2",
+        "--output",
+        "compile_config.toml",
+        "--case-name",
+        "my_compile_case",
+        "--start-suite",
+        "--keep-def-file",
+        "--expand-config",
+    ])
 
     assert args.ial_tag == "CY50T2"
     assert args.output_file == "compile_config.toml"
@@ -50,14 +45,12 @@ def test_compile_parser_accepts_expected_options():
 def test_compile_parser_short_options():
     """Check short aliases for compile command options."""
     parser = get_args_parser()
-    args = parser.parse_args(
-        [
-            "compile",
-            "-o",
-            "compile_config.toml",
-            "-s",
-        ]
-    )
+    args = parser.parse_args([
+        "compile",
+        "-o",
+        "compile_config.toml",
+        "-s",
+    ])
 
     assert args.output_file == "compile_config.toml"
     assert args.start_suite is True
