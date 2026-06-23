@@ -7,6 +7,7 @@ from pathlib import Path
 from . import GeneralConstants
 from .commands_functions import (
     create_exp,
+    create_compile_exp,
     doc_config,
     namelist_convert,
     namelist_format,
@@ -254,6 +255,47 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
     )
     add_keep_def_file(parser_start_suite)
     parser_start_suite.set_defaults(run_command=start_suite)
+
+
+    ###########################################
+    # Configure parser for the "compile" command #
+    ###########################################
+    parser_compile = subparsers.add_parser(
+        "compile", help="Start a compilation suite",
+        parents=[common_parser],
+    )
+    parser_compile.add_argument(
+        "--output",
+        "-o",
+        dest="output_file",
+        help=(
+            "Output config file, if not given the name will be the same as the case. "
+            + "If the name does not end with '.toml' it's assumed to be a directory "
+            + "and the file name will be the same as the case."
+        ),
+        default=None,
+        required=False,
+    )
+    
+    parser_compile.add_argument(
+        "--start-suite",
+        "-s",
+        action="store_true",
+        default=False,
+        help="Start suite as well",
+        required=False,
+    )
+    parser_compile.add_argument(
+        "--case-name", dest="case", help="Case name", required=False, default=None
+    )
+    parser_compile.add_argument(
+        "--ial-tag", dest="ial_tag", help="IAL git tag/branch", required=False, default="develop"
+    )
+    add_keep_def_file(
+        parser_compile, help_message="Keep suite definition file in case of submission"
+    )
+    add_expand_config(parser_compile)
+    parser_compile.set_defaults(run_command=create_compile_exp)
 
     ###########################################
     # Configure parser for the "show" command #

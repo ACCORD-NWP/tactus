@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+### Added
+- Add `tactus compile` subcommand for IAL compilation configurations, including the `cy50t2_compile` preset, `@IAL_TAG@` macro, and supporting documentation.
+
 ## [1.2.0] - 2026-06-18
 
 ### Added

@@ -1,3 +1,48 @@
+# Running a Compilation
+
+Tactus exposes a dedicated `compile` subcommand that builds a configuration aimed at compiling IAL and starts (optionally) the compilation suite.
+
+## Quick start
+
+```
+tactus compile --ial-tag develop -s
+```
+
+This will:
+
+1. Build a config from `config.toml` +  host-specific overrides + `compile_suite.toml`
+2. Set `compile.ial_git_branch` to `develop`
+3. Generate a case named `IAL_develop_compile`
+4. Start the compilation suite (`CompilationSuiteDefinition`) because of `-s` (equivalent to `--start-suite`)
+
+## What the command does
+
+The `compile` subcommand is a specialization of `tactus case`. It:
+
+* Sets `compile.ial_git_branch` from `--ial-tag` (default: `develop`)
+* Always merges the following modification files on top of the user-supplied config:
+  * `tactus/data/config_files/modifications/@HOST@.toml`
+  * `tactus/data/config_files/modifications/compile_suite.toml`
+* Forwards everything else (output path, start-suite flag, keep-def-file, expand-config) to `tactus case`
+
+## Required configuration
+
+For the compilation suite to run end-to-end, the following keys are read by the task classes documented below:
+
+| Key | Used by | Notes |
+| --- | --- | --- |
+| `compile.ial_git_repo` | `IALClone` | Required if cloning IAL |
+| `compile.ial_git_branch` | `IALClone`, macro `@IAL_TAG@` | Set via `--ial-tag` |
+| `compile.git_token` | `IALClone`, `TactusBundleCreate` | Optional; enables HTTPS token auth |
+| `compile.ial_dir` | `IALClone`, `TactusBundleCreate` | Local IAL checkout path |
+| `compile.bundle_file` | `TactusBundleCreate` | ECBundle YAML |
+| `compile.dir` | `TactusBundleCreate`, `TactusBundleBuild` | Bundle working directory |
+| `compile.arch` | `TactusBundleBuild` | Build architecture |
+
+See the sections below for the full configuration surface of each task.
+
+---
+
 # Bundle Compilation Tasks
 
 This module provides three compilation-related task classes:
@@ -448,3 +493,15 @@ exists, compilation is skipped. The cache symlink is still (re)created so the lo
 * Symlinks at `@CASEDIR@/install/<precision>` are recreated on every run when caching is enabled
 * The `ecbundle` binary is resolved as `<python-bin-dir>/ecbundle`, i.e. it must be installed in the same environment as Tactus
 * `IAL_DIR` is always exported from `compile.ial_dir`, regardless of whether `bundle_update` is enabled, so bundle YAMLs can rely on it being set
+
+
+
+```
+
+---
+
+A couple of things worth flagging honestly:
+
+- I inferred the `cy50t2_compile` cycle file name from your patch's `CY50t2.toml` modification and the `cy49t2_alaro` naming convention already used in `case_config.md`. If your actual filename is different (e.g. `cy50_compile`), adjust the examples.
+- The `--ial-tag` value `feature/my-branch` contains a `/`, which would produce a case name with a slash. If your suite framework sanitizes that, you may want to mention it; I did not document sanitization because there's nothing about it in the diff.
+- I did not document `add_expand_config` separately since it's referenced from existing code and not introduced by this change — but if `case_config.md` doesn't already cover it elsewhere, you may want a short note.

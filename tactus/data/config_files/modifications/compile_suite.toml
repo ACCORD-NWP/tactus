@@ -1,2 +1,7 @@
+[general]
+  case = "IAL_@IAL_TAG@_compile"
+
 [suite_control]
+  compile = true
   suite_definition = "CompilationSuiteDefinition"
+
