@@ -493,4 +493,3 @@ exists, compilation is skipped. The cache symlink is still (re)created so the lo
 * Symlinks at `@CASEDIR@/install/<precision>` are recreated on every run when caching is enabled
 * The `ecbundle` binary is resolved as `<python-bin-dir>/ecbundle`, i.e. it must be installed in the same environment as Tactus
 * `IAL_DIR` is always exported from `compile.ial_dir`, regardless of whether `bundle_update` is enabled, so bundle YAMLs can rely on it being set
-
