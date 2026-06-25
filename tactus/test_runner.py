@@ -533,12 +533,14 @@ class TestCases:
             case_names.extend(sorted([x for x in summaries if x not in skipped]))
             for case_name in case_names:
                 summary = summaries[case_name]
-                creation_date = summary["creation_date"] if not isinstance(summary,str) else None
+                creation_date = (
+                    summary["creation_date"] if not isinstance(summary, str) else None
+                )
                 colored_message = CheckSummaryAnalysis.colored_result_message(
                     summary,
                     self.verbose,
                     case_name,
-                    case_files[case_name] if case_name in case_files else None,
+                    case_files.get(case_name) if case_name in case_files else None,
                     width,
                     creation_date,
                     now,

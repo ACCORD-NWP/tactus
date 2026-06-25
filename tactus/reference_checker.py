@@ -578,7 +578,7 @@ class CheckSummaryAnalysis:
         message = ""
         color = "cyan"
 
-        if isinstance(summary,str):
+        if isinstance(summary, str):
             return f"{case_name:<{width}} |<{color}> {summary}</{color}>"
 
         since = since_str(datetime, now)
