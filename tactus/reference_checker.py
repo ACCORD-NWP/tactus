@@ -578,8 +578,9 @@ class CheckSummaryAnalysis:
         message = ""
         color = "cyan"
 
-        if not summary:
-            return f"{case_name:<{width}} |<{color}> MISSING</{color}>"
+        if isinstance(summary,str):
+            return f"{case_name:<{width}} |<{color}> {summary}</{color}>"
+
         since = since_str(datetime, now)
         if "analysis" not in summary:
             color = "yellow"

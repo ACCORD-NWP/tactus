@@ -477,7 +477,9 @@ class TestCases:
             validtime=case_config["general.times.start"],
         )
         references_folder = platform.get_platform_value("references_folder")
-        return case_name, json_file, references_folder
+        check = case_config["reference_checker"]["check"]
+
+        return check, case_name, json_file, references_folder
 
     def collect_summaries(self):
         """Collect summaries from the runs."""
@@ -498,21 +500,26 @@ class TestCases:
         case_files = {}
         width = 0
         now = datetime.now()
+        skipped = set()
         for config_file in config_files:
-            case_name, json_file, references_folder = TestCases.get_case_information(
-                config_file
+            check, case_name, json_file, references_folder = (
+                TestCases.get_case_information(config_file)
             )
-            case_files[case_name] = json_file
-            try:
-                with open(json_file, "r", encoding="utf-8") as f:
-                    summary = json.load(f)
-                    summary["creation_date"] = datetime.fromtimestamp(
-                        os.path.getmtime(json_file)
-                    )
-            except FileNotFoundError:
-                summary = None
+            if check:
+                case_files[case_name] = json_file
+                try:
+                    with open(json_file, "r", encoding="utf-8") as f:
+                        summary = json.load(f)
+                        summary["creation_date"] = datetime.fromtimestamp(
+                            os.path.getmtime(json_file)
+                        )
+                except FileNotFoundError:
+                    summary = "MISSING"
 
-            summaries[case_name] = summary
+                summaries[case_name] = summary
+            else:
+                summaries[case_name] = "SKIPPED"
+                skipped.add(case_name)
             width = max(width, len(case_name))
 
         if len(summaries) > 0:
@@ -521,13 +528,17 @@ class TestCases:
             with contextlib.suppress(KeyError):
                 logger.info(" from {}", self.ial["pr"])
             logger.info("Comparison against {}", references_folder)
-            for case_name, summary in sorted(summaries.items()):
-                creation_date = summary["creation_date"] if summary else None
+
+            case_names = sorted([x for x in summaries if x in skipped])
+            case_names.extend(sorted([x for x in summaries if x not in skipped]))
+            for case_name in case_names:
+                summary = summaries[case_name]
+                creation_date = summary["creation_date"] if not isinstance(summary,str) else None
                 colored_message = CheckSummaryAnalysis.colored_result_message(
                     summary,
                     self.verbose,
                     case_name,
-                    case_files[case_name],
+                    case_files[case_name] if case_name in case_files else None,
                     width,
                     creation_date,
                     now,
