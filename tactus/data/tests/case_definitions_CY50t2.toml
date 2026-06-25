@@ -24,7 +24,6 @@
 
 [cases.cy50t2_alaro_climate_files.modifs.suite_control]
   create_time_dependent_suite = false
-  mirror_suite = true
 
 [cases.cy50t2_alaro]
   host = "cy50t2_alaro_climate_files"
@@ -114,7 +113,6 @@
 
 [cases.cy50t2_arome_climate_files.modifs.suite_control]
   create_time_dependent_suite = false
-  mirror_suite = true
 
 [cases.cy50t2_arome]
   host = "cy50t2_arome_climate_files"
@@ -240,7 +238,6 @@
 
 [cases.cy50t2_harmonie_arome_climate_files.modifs.suite_control]
   create_time_dependent_suite = false
-  mirror_suite = true
 
 [cases.cy50t2_harmonie_arome]
   host = "cy50t2_harmonie_arome_climate_files"
