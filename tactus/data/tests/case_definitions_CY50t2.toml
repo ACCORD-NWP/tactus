@@ -9,7 +9,7 @@
   base = "cy50t2_arome"
 
 [cases.cy50t2_compile.modifs.general]
-  case = "@CASE_PREFIX@@CYCLE@_compile"
+  case = "@CASE_PREFIX@_@CYCLE@_compile"
 
 [cases.cy50t2_compile.modifs.suite_control]
   compile = true
