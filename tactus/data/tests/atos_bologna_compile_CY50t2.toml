@@ -1,8 +1,6 @@
 [general]
   reference_date = "2026-06-18T00:00:00Z"
-  selection = [
-    "cy50t2_compile"
-  ]
+  selection = ["cy50t2_compile"]
 
 [general.compiler.gnu]
   active = false
