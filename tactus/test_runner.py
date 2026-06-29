@@ -618,7 +618,7 @@ def run_test(args, config=None):
 
     elif args.config_file is not None:
         if args.configure or args.run:
-        t.execute(args)
+            t.execute(args)
         else:
             t.collect_summaries()
 
