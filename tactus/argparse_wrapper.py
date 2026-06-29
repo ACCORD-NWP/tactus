@@ -491,7 +491,8 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         "--config-file",
         "-c",
         dest="config_file",
-        help="Test runner config file",
+        help="Test runner config file. A summary of tests results will be displayed "
+        + "if only this option is given",
         required=False,
         default=None,
     )
