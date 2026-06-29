@@ -932,6 +932,7 @@ f4_ALARO:
     L3MT: true
     LA0MPS: true
     LAB12: true
+    LAPL_ALARO: true
     LAERODES: true
     LAEROLAN: true
     LAEROSEA: true
