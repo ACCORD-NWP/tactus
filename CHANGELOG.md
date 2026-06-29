@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduce perturbation family and config section. [#87](https://github.com/ACCORD-NWP/tactus/pull/87) (@uandrae)
 - Tactus test runner - Fix underscore in test definition. [#127](https://github.com/ACCORD-NWP/tactus/pull/127) (@dhaumont)
 - ALARO: Use APL_ALARO routines instead of APLPAR. [#135](https://github.com/ACCORD-NWP/tactus/pull/135) (@dhaumont)
+- CY50: activate LMCCECSST. [#112] (https://github.com/ACCORD-NWP/tactus/pull/112) (@dhaumont)
 
 ### Changed
 - Let the DKCOEXP be the default large domain. [\#116](https://github.com/ACCORD-NWP/tactus/pull/116)(@uandrae)
