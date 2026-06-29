@@ -1590,6 +1590,9 @@ f4_common:
     NENSFNB: ${cfg:general.member}
   NAMINI:
     LDFI: false
+  NAMMCC:
+    LMCC01_MSE: ${cfg:general.upd_sst_sic}
+    LMCCECSST: ${cfg:general.upd_sst_sic}
   NAMPAR0:
     LMPOFF: false
     MBX_SIZE: 2048000000
