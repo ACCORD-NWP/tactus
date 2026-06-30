@@ -94,6 +94,9 @@
 [cases.cy50t2_alaro_eps.modifs.suite_control]
   create_static_data = false
   mirror_suite = true
+  do_interpolsstsic = false
+  do_marsprep = false
+  interpolate_boundaries = false
 
 [cases.cy50t2_alaro_mode_start]
   base = "cy50t2_alaro"
@@ -196,6 +199,9 @@
 [cases.cy50t2_arome_eps.modifs.suite_control]
   create_static_data = false
   mirror_suite = true
+  do_interpolsstsic = false
+  do_marsprep = false
+  interpolate_boundaries = false
 
 [cases.cy50t2_arome_slaf]
   base = "cy50t2_arome"
@@ -328,6 +334,9 @@
 [cases.cy50t2_harmonie_arome_eps.modifs.suite_control]
   create_static_data = false
   mirror_suite = true
+  do_interpolsstsic = false
+  do_marsprep = false
+  interpolate_boundaries = false
 
 [cases.cy50t2_harmonie_arome_mode_start]
   base = "cy50t2_harmonie_arome"
