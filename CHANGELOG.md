@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tactus test runner - Fix underscore in test definition. [#127](https://github.com/ACCORD-NWP/tactus/pull/127) (@dhaumont)
 - ALARO: Use APL_ALARO routines instead of APLPAR. [#135](https://github.com/ACCORD-NWP/tactus/pull/135) (@dhaumont)
 - Test runner - display summary of all tests. [#129](https://github.com/ACCORD-NWP/tactus/pull/129/)(@dhaumont)
+- ReferenceChecker: Improve the way the summary are created. [#128](https://github.com/ACCORD-NWP/tactus/pull/128/)(@dhaumont)
 
 ### Changed
 - Let the DKCOEXP be the default large domain. [\#116](https://github.com/ACCORD-NWP/tactus/pull/116)(@uandrae)
