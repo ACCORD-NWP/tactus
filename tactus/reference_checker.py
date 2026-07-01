@@ -1144,6 +1144,7 @@ class ReferenceCheckManager:
         """Analyze the summaries."""
         failed_messages = ""
         for summary in self.summary_list:
+            logger.info(f"ReferenceChecker summary: {summary.fullpath}")
             analysis = summary.compute_and_append_analysis(self.check)
             message = analysis.message()
             if not analysis.success():

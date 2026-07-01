@@ -64,12 +64,18 @@ class TestCases:
         self.get_tag(definitions)
         self.dry = args.dry if args.dry else definitions["general"].get("dry", False)
         self.modifs = definitions["modifs"]
+        self.refchecks = definitions.get("refchecks", {})
+        self.genchecks = definitions.get("genchecks", {})
         self.test_dir = definitions.get("test_dir", f"{self.tag}_configs")
         self.ial = definitions.get("ial", {})
         self.gl = definitions.get("gl", {})
         self.selection = self.resolve_selection(definitions)
         self.assigned = {}
-
+        self.generate_refs = args.generate_refs if args.generate_refs else False
+        if self.generate_refs:
+            logger.warning("**************************************************")
+            logger.warning("*   Reference checker: generate reference mode   *")
+            logger.warning("**************************************************")
         if args.config_file is not None:
             with contextlib.suppress(KeyError):
                 if definitions["ial"].get("active", False):
@@ -183,7 +189,10 @@ class TestCases:
             extra = list(self.extra) + list(item.get("extra", []))
 
             # Merge and replace macros
-            modifs = merge_dicts(self.modifs, self.cases[case].get("modifs", {}), True)
+            modifs = merge_dicts(self.modifs, self.refchecks, True)
+            if self.generate_refs:
+                modifs = merge_dicts(modifs, self.genchecks, True)
+            modifs = merge_dicts(modifs, self.cases[case].get("modifs", {}), True)
             config = self.config.copy(
                 update={
                     "modifs": modifs,
@@ -285,7 +294,7 @@ class TestCases:
             with open(f"{self.test_dir}/{self.config_name}_config_names.toml", "rb") as f:
                 config_names = tomli.load(f)
         except FileNotFoundError as err:
-            msg = "No case mapping available. Run again without '-r'"
+            msg = "No case mapping available. Run again with '-m'"
             logger.error(msg)
             raise FileNotFoundError(msg) from err
 
