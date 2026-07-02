@@ -1,7 +1,7 @@
 [general]
   csc = "HARMONIE_AROME"
   windfarm = false
-
+  upd_sst_sic = true
 [domain]
   orographic_smoothing_method = "spectral"
 
