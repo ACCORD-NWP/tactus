@@ -491,7 +491,8 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         "--config-file",
         "-c",
         dest="config_file",
-        help="Test runner config file",
+        help="Test runner config file. A summary of tests results will be displayed "
+        + "if only this option is given",
         required=False,
         default=None,
     )
@@ -537,6 +538,16 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         default=False,
         help="Launch the tests",
     )
+    parser_test.add_argument(
+        "--generate-references",
+        "-g",
+        action="store_true",
+        dest="generate_refs",
+        help="Generate references outputs.",
+        required=False,
+        default=False,
+    )
+
     parser_test.set_defaults(run_command=run_test, standalone_command=True)
 
     # Configure parser for the "replace" command #

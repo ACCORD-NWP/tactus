@@ -15,6 +15,10 @@
   compile = true
   suite_definition = "CompilationSuiteDefinition"
 
+[cases.cy50t2_compile.modifs.reference_checker]
+  check = false
+  generate = false
+
 [cases.cy50t2_alaro_climate_files]
   base = "cy50t2_alaro"
   host = "cy50t2_compile"
@@ -27,6 +31,10 @@
   create_time_dependent_suite = false
   mirror_suite = true
 
+[cases.cy50t2_alaro_climate_files.modifs.reference_checker]
+  check = false
+  generate = false
+
 [cases.cy50t2_alaro]
   host = "cy50t2_alaro_climate_files"
 
@@ -34,6 +42,9 @@
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_alaro/climate/@DOMAIN@"
   intp_bddir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_alaro/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
   intp_bddir_sfx = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_alaro/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+
+[cases.cy50t2_alaro.modifs.reference_checker]
+  rules_active = ["Forecast.fullpos", "Forecast.history", "Forecast.log"]
 
 [cases.cy50t2_alaro.modifs.suite_control]
   create_static_data = false
@@ -58,6 +69,9 @@
   do_extractsqlite = false
   do_addcalculatedfields = false
 
+[cases.cy50t2_alaro_ddh.modifs.reference_checker]
+  rules_active = ["Forecast.fullpos", "Forecast.history", "Forecast.log"]
+
 [cases.cy50t2_alaro_eps]
   base = "cy50t2_alaro"
   extra = [
@@ -69,6 +83,10 @@
 [cases.cy50t2_alaro_eps.modifs.system]
   case_suffix = "_eps"
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_alaro/climate/@DOMAIN@"
+  intp_bddir = "@REFCHECK_ROOT@/@REFERENCE_TAG@/interpolated_bnd/@REF_CASE@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
+
+[cases.cy50t2_alaro_eps.modifs.reference_checker]
+  rules_active = ["Forecast.fullpos", "Forecast.history", "Forecast.log"]
 
 [cases.cy50t2_alaro_eps.modifs.eps.general]
   members = "0:3"
@@ -76,6 +94,9 @@
 [cases.cy50t2_alaro_eps.modifs.suite_control]
   create_static_data = false
   mirror_suite = true
+  do_interpolsstsic = false
+  do_marsprep = false
+  interpolate_boundaries = false
 
 [cases.cy50t2_alaro_mode_start]
   base = "cy50t2_alaro"
@@ -95,6 +116,9 @@
   case_suffix = "_mode_start"
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_alaro/climate/@DOMAIN@"
 
+[cases.cy50t2_alaro_mode_start.modifs.reference_checker]
+  rules_active = ["Forecast.fullpos", "Forecast.history", "Forecast.log"]
+
 [cases.cy50t2_alaro_target]
   base = "cy50t2_alaro"
   host = "cy50t2_alaro"
@@ -105,6 +129,9 @@
 
 [cases.cy50t2_alaro_target.modifs.system]
   bdclimdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_alaro/climate/@HOST_DOMAIN@"
+
+[cases.cy50t2_alaro_target.modifs.reference_checker]
+  rules_active = ["Forecast.fullpos", "Forecast.history", "Forecast.log"]
 
 [cases.cy50t2_arome_climate_files]
   base = "cy50t2_arome"
@@ -117,6 +144,10 @@
 [cases.cy50t2_arome_climate_files.modifs.suite_control]
   create_time_dependent_suite = false
   mirror_suite = true
+
+[cases.cy50t2_arome_climate_files.modifs.reference_checker]
+  check = false
+  generate = false
 
 [cases.cy50t2_arome]
   host = "cy50t2_arome_climate_files"
@@ -163,10 +194,14 @@
 [cases.cy50t2_arome_eps.modifs.system]
   case_suffix = "_eps"
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_arome/climate/@DOMAIN@"
+  intp_bddir = "@REFCHECK_ROOT@/@REFERENCE_TAG@/interpolated_bnd/@REF_CASE@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
 
 [cases.cy50t2_arome_eps.modifs.suite_control]
   create_static_data = false
   mirror_suite = true
+  do_interpolsstsic = false
+  do_marsprep = false
+  interpolate_boundaries = false
 
 [cases.cy50t2_arome_slaf]
   base = "cy50t2_arome"
@@ -245,6 +280,10 @@
   create_time_dependent_suite = false
   mirror_suite = true
 
+[cases.cy50t2_harmonie_arome_climate_files.modifs.reference_checker]
+  check = false
+  generate = false
+
 [cases.cy50t2_harmonie_arome]
   host = "cy50t2_harmonie_arome_climate_files"
 
@@ -290,10 +329,14 @@
 [cases.cy50t2_harmonie_arome_eps.modifs.system]
   case_suffix = "_eps"
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_harmonie_arome/climate/@DOMAIN@"
+  intp_bddir = "@REFCHECK_ROOT@/@REFERENCE_TAG@/interpolated_bnd/@REF_CASE@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
 
 [cases.cy50t2_harmonie_arome_eps.modifs.suite_control]
   create_static_data = false
   mirror_suite = true
+  do_interpolsstsic = false
+  do_marsprep = false
+  interpolate_boundaries = false
 
 [cases.cy50t2_harmonie_arome_mode_start]
   base = "cy50t2_harmonie_arome"

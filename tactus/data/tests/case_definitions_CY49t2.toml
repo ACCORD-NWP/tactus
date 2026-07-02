@@ -21,6 +21,10 @@
 [cases.cy49t2_alaro_climate_files.modifs.suite_control]
   create_time_dependent_suite = false
 
+[cases.cy49t2_alaro_climate_files.modifs.reference_checker]
+  check = false
+  generate = false
+
 [cases.cy49t2_alaro]
   host = "cy49t2_alaro_climate_files"
 
@@ -63,6 +67,7 @@
 [cases.cy49t2_alaro_eps.modifs.system]
   case_suffix = "_eps"
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_alaro/climate/@DOMAIN@"
+  intp_bddir = "@REFCHECK_ROOT@/@REFERENCE_TAG@/interpolated_bnd/@REF_CASE@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
 
 [cases.cy49t2_alaro_eps.modifs.eps.general]
   members = "0:3"
@@ -107,6 +112,10 @@
 
 [cases.cy49t2_arome_climate_files.modifs.suite_control]
   create_time_dependent_suite = false
+
+[cases.cy49t2_arome_climate_files.modifs.reference_checker]
+  check = false
+  generate = false
 
 [cases.cy49t2_arome]
   host = "cy49t2_arome_climate_files"
@@ -153,6 +162,7 @@
 [cases.cy49t2_arome_eps.modifs.system]
   case_suffix = "_eps"
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_arome/climate/@DOMAIN@"
+  intp_bddir = "@REFCHECK_ROOT@/@REFERENCE_TAG@/interpolated_bnd/@REF_CASE@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
 
 [cases.cy49t2_arome_eps.modifs.suite_control]
   create_static_data = false
@@ -228,8 +238,12 @@
   case_suffix = "_climate_files"
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/climate/@DOMAIN@"
 
-[cases.cy49t2_arome_harmonie_climate_files.modifs.suite_control]
+[cases.cy49t2_harmonie_arome_climate_files.modifs.suite_control]
   create_time_dependent_suite = false
+
+[cases.cy49t2_harmonie_arome_climate_files.modifs.reference_checker]
+  check = false
+  generate = false
 
 [cases.cy49t2_harmonie_arome]
   host = "cy49t2_arome_climate_files"
@@ -276,6 +290,7 @@
 [cases.cy49t2_harmonie_arome_eps.modifs.system]
   case_suffix = "_eps"
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/climate/@DOMAIN@"
+  intp_bddir = "@REFCHECK_ROOT@/@REFERENCE_TAG@/interpolated_bnd/@REF_CASE@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
 
 [cases.cy49t2_harmonie_arome_eps.modifs.suite_control]
   create_static_data = false

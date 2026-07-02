@@ -1,0 +1,8 @@
+[genchecks.reference_checker]
+  check = false
+  generate = true
+  suppress_exception = true
+
+[genchecks.platform]
+  references_folder = "N/A"
+  references_generation_folder = "@SCRATCH@/tactus_references/@TAG@_@SUBTAG@"

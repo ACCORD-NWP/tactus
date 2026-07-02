@@ -399,7 +399,7 @@ def remove_ifexists(file, etime=sys.float_info.max):
     if os.path.exists(file):
         mtime = os.path.getmtime(file) if etime != sys.float_info.max else 0
         if mtime < etime:
-            logger.info(f"Removing: {file}")
+            logger.debug(f"Removing: {file}")
             os.remove(file)
 
 
