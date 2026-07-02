@@ -884,10 +884,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
                 )
             if self.do_slaf:
                 addpert_args += f";doer0={doer};part0={part};me={self.member}"
-            if (
-                self.config["general.upd_sst_sic"]
-                and interpolation_task_name == "C903"
-            ):
+            if self.config["general.upd_sst_sic"] and interpolation_task_name == "C903":
                 args = f"bd_index_time_dict={bd_index_time_dict_sst};prep_step=False"
                 variables = {"ARGS": args}
                 EcflowSuiteTask(
