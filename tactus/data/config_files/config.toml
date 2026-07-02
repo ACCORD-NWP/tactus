@@ -7,7 +7,7 @@
   famodel = "destine-@CYCLE@-@CSC@-oper"
   keep_workdirs = true
   surfex = true
-  upd_sst_sic = false 
+  upd_sst_sic = false
 
 [general.namelist]
   nrazts = "PT1H"
