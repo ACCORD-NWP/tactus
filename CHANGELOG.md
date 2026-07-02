@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tactus test runner - activate reference checker. [#130](https://github.com/ACCORD-NWP/tactus/pull/130) (@dhaumont)
 
 ### Changed
+- Activate SST/SIC for HARMONIE\_AROME cy50t2. [\#137](https://github.com/ACCORD-NWP/tactus/pull/137)(@kastelecn)
 - Let the DKCOEXP be the default large domain. [\#116](https://github.com/ACCORD-NWP/tactus/pull/116)(@uandrae)
 - Change suite mirror trigger to a task instead of the full suite as a ecflow bug workaround. [#113](https://github.com/ACCORD-NWP/tactus/pull/113) (@uandrae)
 - Make general.times.end relative to general.times.start when defined as duration. [#101](https://github.com/ACCORD-NWP/tactus/pull/101) (@uandrae)
