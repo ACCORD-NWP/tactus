@@ -442,10 +442,6 @@
           "description": "Activates the boundary interpolation",
           "type": "boolean"
         },
-        "do_interpolsstsic": {
-          "description": "Activates the SST & SIC boundary interpolation",
-          "type": "boolean"
-        },
         "do_marsprep": {
           "description": "Run marsprep or skip extraction",
           "type": "boolean"
@@ -1142,7 +1138,7 @@
           "default": true
         },
         "upd_sst_sic": {
-          "description": "Switch to update SST/SIC during forecast",
+          "description": "Activates the SST & SIC boundary interpolation and update during forecast",
           "type": "boolean",
           "default": false
         },

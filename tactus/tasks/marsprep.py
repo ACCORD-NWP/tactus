@@ -270,7 +270,7 @@ class Marsprep(Task):
             self.get_spectral_harmonic_data()
             self.get_grid_point_upper_air_data()
 
-            if self.config["suite_control.do_interpolsstsic"]:
+            if self.config["general.upd_sst_sic"]:
                 self.get_sst_data()
 
         if not self.config["boundaries.bd_has_surfex"]:
