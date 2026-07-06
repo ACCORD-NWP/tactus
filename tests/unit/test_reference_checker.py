@@ -25,7 +25,7 @@ from tactus.toolbox import FileManager
 
 
 @pytest.fixture(scope="module")
-def basic_config(tmp_directory,default_config):
+def basic_config(tmp_directory, default_config):
     scratch = tmp_directory
     config = default_config
     config = config.copy(update=set_times(config))
@@ -35,9 +35,7 @@ def basic_config(tmp_directory,default_config):
                 "cycle": "CY49t2",
                 "case": "@CASE_PREFIX@@CYCLE@_@CSC@_nwp_@DOMAIN@_@YMD_START@",
             },
-            "platform":{
-                "scratch" : scratch
-            }
+            "platform": {"scratch": scratch},
         }
     )
 
