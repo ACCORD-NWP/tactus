@@ -1,5 +1,5 @@
 [general]
-  reference_date = "-P1D"
+  reference_date = "2026-06-18T00:00:00Z"
   selection = [
     "cy49t2_alaro_climate_files",
     "cy49t2_alaro",
@@ -22,14 +22,16 @@
     "cy49t2_harmonie_arome_target",
   ]
 
-[general.compiler.gnu_]
+[general.compiler.gnu]
   active = false
   extra = ["tactus/data/config_files/modifications/submission/atos_bologna_gnu.toml"]
 
-[general.compiler.intel_]
+[general.compiler.intel]
   active = true
 
 [include]
   cases = "case_definitions_CY49t2.toml"
   macros = "test_macros.toml"
   modifs = "modifs_atos_bologna_CY49t2.toml"
+  refchecks = "modifs_reference_checker.toml"
+  genchecks = "modifs_reference_generate.toml"
