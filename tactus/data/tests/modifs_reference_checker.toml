@@ -1,0 +1,44 @@
+[refchecks.platform]
+  reference_tag = "v1.1.0"
+  references_folder = "@REFCHECK_ROOT@/@REFERENCE_TAG@"
+  references_generation_folder = "N/A"
+
+[refchecks.reference_checker]
+  check = true
+  generate = false
+  rules_active = [
+    "Forecast.fullpos",
+    "Forecast.history",
+    "Forecast.log",
+    "Forecast.surfex"
+  ]
+  suppress_exception = false
+
+[refchecks.reference_checker.task.Forecast.fullpos]
+  inpath = "@ARCHIVE@"
+  pattern = "GRIBPF.*0003h00m00s"
+  method = "FullPosFields"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+
+[refchecks.reference_checker.task.Forecast.history]
+  inpath = "@ARCHIVE@"
+  pattern = "ICMSH.*0003h00m00s"
+  method = "HistoryFields"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+
+[refchecks.reference_checker.task.Forecast.log]
+  inpath = "@WRK@/logs/Forecast"
+  pattern = "NODE.001_01"
+  method = "ForecastNorms"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+
+[refchecks.reference_checker.task.Forecast.surfex]
+  inpath = "@ARCHIVE@"
+  pattern = "ICMSH.*0003h00m00s.sfx"
+  method = "HistoryFields"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/Forecast"
