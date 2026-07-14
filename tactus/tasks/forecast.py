@@ -350,6 +350,6 @@ class FirstGuess(Task):
 
     def execute(self):
         """Find initial file."""
-        initfile, initfile_sfx = InitialConditions(self.config).find_initial_files(
+        initfile, initfile_sfx, _ = InitialConditions(self.config).find_initial_files(
             "Forecast"
         )
