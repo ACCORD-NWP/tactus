@@ -1149,7 +1149,7 @@
             "sice",
             "none"
           ],
-          "default": "sice"
+          "default": "none"
         }
       },
       "required": [
