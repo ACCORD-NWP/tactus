@@ -16,13 +16,13 @@
   gl_version = "gl-v1.9.2"
   ial_version = "CY49t2-v1.18.0"
   bindir = "@INSTALL_DIR@/@CYCLE@/@COMPILER@/R64/@IAL_VERSION@/bin"
-  bindir_gl = "@INSTALL_DIR@/gl/@COMPILER@/@GL_VERSION@/bin/"
+  bindir_gl = "@INSTALL_DIR_DEODE@/gl/@COMPILER@/@GL_VERSION@/bin/"
 
 [submission.task_exceptions.E923Update.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
 
 [submission.task_exceptions.Forecast]
-  bindir = "@INSTALL_DIR@/@CYCLE@/@COMPILER@/@PRECISION@/@IAL_VERSION@/bin"
+  bindir = "@INSTALL_DIR@/@COMPILER@/@PRECISION@/@IAL_VERSION@/bin"
 
 [submission.task_exceptions.GlBd]
   binary = "gl"

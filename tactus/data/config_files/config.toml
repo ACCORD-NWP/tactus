@@ -122,7 +122,7 @@
   create_static_data = true
   create_time_dependent_suite = true
   do_archiving = true
-  compile = true
+  compile = false
   do_addcalculatedfields = true
   do_cleaning = true
   do_extractsqlite = true
