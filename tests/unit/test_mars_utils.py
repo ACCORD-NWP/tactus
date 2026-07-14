@@ -243,7 +243,7 @@ class TestGetValueFromDict:
         dict_ = {
             "06": {"2015-05-13T00:00:00Z": "SCDA", "2026-05-12T00:00:00Z": "OPER"},
         }
-        stream = get_value_from_dict(dict_, "20260413", "06")
+        stream = get_value_from_dict(dict_, "20250413", "06")
         assert stream == "SCDA"
 
     def test_get_nested_dict_mid(self):
