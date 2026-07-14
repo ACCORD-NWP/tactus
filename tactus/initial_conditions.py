@@ -65,8 +65,8 @@ class InitialConditions(object):
 
         return found
 
-    def forecast(self, fail=True):
-        """Find initial files for the Forecast task."""
+    def very_first_guess(self):
+        """Find the very _first initial files."""
         # Find data explicitly defined
         if self.mode == "restart" and self.starttime == self.basetime:
             pdtg = self.basetime - self.cycle_length
@@ -95,7 +95,7 @@ class InitialConditions(object):
             )
 
         else:
-            # Find data from previous forecast
+            # Find data from previous cycle
             pdtg = self.basetime - self.cycle_length
 
             self.source = self.platform.substitute(
@@ -109,21 +109,28 @@ class InitialConditions(object):
                 validtime=self.basetime,
             )
 
-        if self.config["perturbations.pertana"]:
-            self.source = self.platform.substitute("@ARCHIVE@/PertAna")
-        if self.config["perturbations.pertsurf"]:
-            self.source = self.platform.substitute("@ARCHIVE@/PertSurf")
-
-        found_files = self.check_if_found()
-        if fail and not found_files:
-            raise FileNotFoundError(
-                "Could not find initial files for "
-                f"mode={self.mode}, {self.source}, {self.source_sfx}"
+    def forecast(self):
+        """Find initial files for the Forecast task."""
+        if self.config["perturbations.pertana.active"]:
+            self.source = self.platform.substitute(
+                f"@ARCHIVE@/{self.config['file_templates.pertana.archive']}"
+            )
+        if self.config["perturbations.pertsurf.active"]:
+            self.source_sfx = self.platform.substitute(
+                f"@ARCHIVE@/{self.config['file_templates.pertsurf.archive']}"
             )
 
-        return self.source, self.source_sfx, found_files
+        return self.source, self.source_sfx
 
-    def find_initial_files(self, task, fail=True):
+    def pertana(self):
+        """Find initial files for the Pertana task."""
+        return self.source
+
+    def pertsurf(self):
+        """Find initial files for the Pertsurf task."""
+        return self.source_sfx
+
+    def find_initial_files(self, task, fail=False):
         """Find input files to various tasks.
 
         Args:
@@ -136,6 +143,24 @@ class InitialConditions(object):
         Raises:
              NotImplementedError: For unknown tasks
         """
+        # General initial conditions
+        self.very_first_guess()
+
+        # Task specific initial conditions
         if task == "Forecast":
-            return self.forecast(fail)
-        raise NotImplementedError(f"Task {task} is not implemented")
+            self.forecast()
+        elif task == "Pertana":
+            self.pertana()
+        elif task == "Pertsurf":
+            self.pertsurf()
+        else:
+            raise NotImplementedError(f"Task {task} is not implemented")
+
+        found_files = self.check_if_found()
+        if fail and not found_files:
+            raise FileNotFoundError(
+                "Could not find initial files for "
+                f"mode={self.mode}, {self.source}, {self.source_sfx}"
+            )
+
+        return self.source, self.source_sfx, found_files
