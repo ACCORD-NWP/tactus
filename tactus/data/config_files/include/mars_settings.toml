@@ -62,9 +62,15 @@
 
 [mars.HRES.stream]
   00 = "OPER"
-  06 = "SCDA"
   12 = "OPER"
-  18 = "SCDA"
+
+[mars.HRES.stream.06]
+  "2015-05-13T00:00:00Z" = "SCDA"
+  "2026-05-12T00:00:00Z" = "OPER"
+
+[mars.HRES.stream.18]
+  "2015-05-13T00:00:00Z" = "SCDA"
+  "2026-05-12T00:00:00Z" = "OPER"
 
 [mars.HRES_CY49t2]
   default = "HRES"
