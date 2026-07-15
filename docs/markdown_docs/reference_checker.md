@@ -71,7 +71,7 @@ For instance, the following code defines a new `FullPosFields` method using `xto
 ```toml
 [reference_checker.methods.FullPosFields]
   args_template = "-f1 {test_file} -f2 {reference_file} {file_format} -s -of SCREEN -de -to {tolerance}"
-  binary = "@INSTALL_DIR@/gl/@COMPILER@/latest/bin/xtool"
+  binary = "@BINDIR_GL@/xtool"
   file_format = "GRIB"
   tolerance = "10"
   tool = "xtool"
