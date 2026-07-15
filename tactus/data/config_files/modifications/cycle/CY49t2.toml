@@ -15,7 +15,7 @@
 [submission]
   gl_version = "gl-v1.9.2"
   ial_version = "CY49t2-v1.18.0"
-  bindir = "@INSTALL_DIR@/@CYCLE@/@COMPILER@/R64/@IAL_VERSION@/bin"
+  bindir = "@INSTALL_DIR_DEODE@/@CYCLE@/@COMPILER@/R64/@IAL_VERSION@/bin"
   bindir_gl = "@INSTALL_DIR_DEODE@/gl/@COMPILER@/@GL_VERSION@/bin/"
 
 [submission.task_exceptions.E923Update.ENV]
