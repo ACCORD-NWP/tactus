@@ -278,10 +278,10 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
     )
 
     parser_compile.add_argument(
-        "--start-suite",
-        "-s",
-        action="store_true",
-        default=False,
+        "--dry-run",
+        "-d",
+        action="store_false",
+        dest="start_suite",
         help="Start suite as well",
         required=False,
     )
