@@ -29,7 +29,6 @@ def test_compile_parser_accepts_expected_options():
         "compile_config.toml",
         "--case-name",
         "my_compile_case",
-        "--start-suite",
         "--keep-def-file",
         "--expand-config",
     ])
@@ -49,7 +48,6 @@ def test_compile_parser_short_options():
         "compile",
         "-o",
         "compile_config.toml",
-        "-s",
     ])
 
     assert args.output_file == "compile_config.toml"
