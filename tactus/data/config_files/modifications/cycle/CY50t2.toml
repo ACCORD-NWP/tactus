@@ -16,7 +16,6 @@
   bindir = "@INSTALL_DIR@/@IAL_VERSION@/R64/bin"
   bindir_gl = "@SUBMISSION.BINDIR@"
 
-
 [submission.task_exceptions.E923Update]
   bindir = "@INSTALL_DIR@/CY49t2/intel/R64/latest/bin"
   binary = "fa_sfx2clim"
