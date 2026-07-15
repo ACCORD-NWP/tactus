@@ -22,7 +22,7 @@
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
 
 [submission.task_exceptions.Forecast]
-  bindir = "@INSTALL_DIR@/@COMPILER@/@PRECISION@/@IAL_VERSION@/bin"
+  bindir = "@INSTALL_DIR_DEODE@/@CYCLE@/@COMPILER@/@PRECISION@/@IAL_VERSION@/bin"
 
 [submission.task_exceptions.GlBd]
   binary = "gl"
