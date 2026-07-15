@@ -265,6 +265,10 @@ def get_steps_and_members_to_retrieve(
     if perturbed_members:
         members_dict["perturbed_members"] = perturbed_members
 
+    # Populate members_dict to make sure we wait for missing files
+    if len(waitfor_steps) > 0 and len(members_dict) == 0:
+        members_dict["no_member_info"] = [None]
+
     return (
         steps,
         waitfor_steps,
