@@ -1,3 +1,48 @@
+# Running a Compilation
+
+Tactus exposes a dedicated `compile` subcommand that builds a configuration aimed at compiling IAL and starts (optionally) the compilation suite.
+
+## Quick start
+
+```
+tactus compile --ial-tag develop
+```
+
+This will:
+
+1. Build a config from `config.toml` +  host-specific overrides + `compile_suite.toml`
+2. Set `compile.ial_git_branch` to `develop`
+3. Generate a case named `IAL_develop_compile`
+4. Start the compilation suite (`CompilationSuiteDefinition`) because `-d` (equivalent to `--dry-run` is not passed as an argument)
+
+## What the command does
+
+The `compile` subcommand is a specialization of `tactus case`. It:
+
+* Sets `compile.ial_git_branch` from `--ial-tag` (default: `develop`)
+* Always merges the following modification files on top of the user-supplied config:
+  * `tactus/data/config_files/modifications/@HOST@.toml`
+  * `tactus/data/config_files/modifications/compile_suite.toml`
+* Forwards everything else (output path, start-suite flag, keep-def-file, expand-config) to `tactus case`
+
+## Required configuration
+
+For the compilation suite to run end-to-end, the following keys are read by the task classes documented below:
+
+| Key | Used by | Notes |
+| --- | --- | --- |
+| `compile.ial_git_repo` | `IALClone` | Required if cloning IAL |
+| `compile.ial_git_branch` | `IALClone`, macro `@IAL_TAG@` | Set via `--ial-tag` |
+| `compile.git_token` | `IALClone`, `TactusBundleCreate` | Optional; enables HTTPS token auth |
+| `compile.ial_dir` | `IALClone`, `TactusBundleCreate` | Local IAL checkout path |
+| `compile.bundle_file` | `TactusBundleCreate` | ECBundle YAML |
+| `compile.dir` | `TactusBundleCreate`, `TactusBundleBuild` | Bundle working directory |
+| `compile.arch` | `TactusBundleBuild` | Build architecture |
+
+See the sections below for the full configuration surface of each task.
+
+---
+
 # Bundle Compilation Tasks
 
 This module provides three compilation-related task classes:
