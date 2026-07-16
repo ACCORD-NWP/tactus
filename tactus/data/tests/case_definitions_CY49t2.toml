@@ -222,7 +222,6 @@
   create_static_data = false
   mirror_suite = true
 
-
 [cases.cy49t2_arome_mode_start]
   base = "cy49t2_arome"
   host = "cy49t2_arome_climate_files"
