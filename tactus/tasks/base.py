@@ -81,7 +81,7 @@ class Task(object):
                 + f"check={self.rcm.check}; generate={self.rcm.generate}"
             )
         else:
-            logger.info(f"No ReferenceChecker for {self.name}")
+            logger.debug(f"No ReferenceChecker for {self.name}")
 
     def _set_eccodes_environment(self):
         """Set correct path for ECCODES tables.
