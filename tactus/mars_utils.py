@@ -265,6 +265,10 @@ def get_steps_and_members_to_retrieve(
     if perturbed_members:
         members_dict["perturbed_members"] = perturbed_members
 
+    # Populate members_dict to make sure we wait for missing files
+    if len(waitfor_steps) > 0 and len(members_dict) == 0:
+        members_dict["no_member_info"] = [None]
+
     return (
         steps,
         waitfor_steps,
@@ -323,15 +327,18 @@ def get_domain_data(config):
     ])
 
 
-def get_value_from_dict(dict_, key_orig):
+def get_value_from_dict(dict_, reference_date, key_orig=None):
     """Check value according to key.
 
     - If a string returns the value itself
-    - If key is a date search for the most suitable match in value
-    - Else return the value matching the key.
+    - If key_orig is given call recursively with dict[key_orig]
+    - If a dict check most suitable reference_date > date.
+      If the reference_date < any date pick the first one
+    - If no date exists return the value matching the key.
 
     Args:
         dict_ (str, BaseConfig object): Values to select
+        reference_date (str): Date to check against
         key_orig (str): key for value checking
 
     Returns:
@@ -343,8 +350,11 @@ def get_value_from_dict(dict_, key_orig):
     if isinstance(dict_, str):
         return dict_
 
+    if key_orig is not None:
+        return get_value_from_dict(dict_[key_orig], reference_date)
+
     try:
-        ref_date = as_datetime(key_orig)
+        ref_date = as_datetime(reference_date)
         for key, val in sorted(dict_.items(), reverse=True):
             if ref_date >= as_datetime(key):
                 return val

@@ -207,7 +207,9 @@ class Marsprep(Task):
             request.update_request({"LEVELIST": "1"})
 
         # Set stream
-        base_stream = get_value_from_dict(self.mars["stream"], request.time)
+        base_stream = get_value_from_dict(
+            self.mars["stream"], self.init_date_str, request.time
+        )
         if bdmember == [0]:
             stream = self.mars.get("stream_control", base_stream)
         else:
