@@ -1,7 +1,14 @@
 [reference_checker]
   check = false
   generate = false
-  rules_active = ["Forecast.fullpos", "Forecast.history", "Forecast.log"]
+  rules_active = [
+    "PgdUpdate.pgd",
+    "E923Monthly.e923",
+    "Forecast.fullpos",
+    "Forecast.history",
+    "Forecast.log",
+    "Forecast.surfex"
+  ]
   create_summary = ["PrepRun"]
   analyze_summary = ["ReferenceCheck"]
   summary_active = ["txt", "json"]
@@ -36,6 +43,22 @@
   file = "@CASEDIR@/checks/summary.txt"
   format = "txt"
 
+[reference_checker.task.PgdUpdate.pgd]
+  inpath = "@CLIMDIR@"
+  pattern = "Const.Clim*.sfx"
+  method = "HistoryFields"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/climate/@DOMAIN@"
+  reference_folder = "@REFERENCES_FOLDER@/@CASE@/climate/@DOMAIN@"
+  result_folder = "@WRK@/checks/PgdUpdate"
+
+[reference_checker.task.E923Monthly.e923]
+  inpath = "@CLIMDIR@"
+  pattern = "Const.Clim.@MM@"
+  method = "HistoryFields"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/climate/@DOMAIN@"
+  reference_folder = "@REFERENCES_FOLDER@/@CASE@/climate/@DOMAIN@"
+  result_folder = "@WRK@/checks/PgdUpdate"
+
 [reference_checker.task.Forecast.fullpos]
   inpath = "@ARCHIVE@"
   pattern = "GRIBPF.*0006h00m00s"
@@ -56,6 +79,14 @@
   inpath = "@WRK@/logs/Forecast"
   pattern = "NODE.001_01"
   method = "ForecastNorms"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/Forecast"
+
+[refchecks.reference_checker.task.Forecast.surfex]
+  inpath = "@ARCHIVE@"
+  pattern = "ICMSH.*0006h00m00s.sfx"
+  method = "HistoryFields"
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   result_folder = "@WRK@/checks/Forecast"

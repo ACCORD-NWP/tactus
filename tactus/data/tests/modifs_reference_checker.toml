@@ -7,6 +7,8 @@
   check = true
   generate = false
   rules_active = [
+    "PgdUpdate.pgd",
+    "E923Monthly_06.e923",
     "Forecast.fullpos",
     "Forecast.history",
     "Forecast.log",
@@ -14,17 +16,28 @@
   ]
   suppress_exception = false
 
+[refchecks.reference_checker.task.PgdUpdate.pgd]
+  inpath = "@CLIMDIR@"
+  pattern = "Const.Clim*.sfx"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
+
+[refchecks.reference_checker.task.E923Monthly_06.e923]
+  inpath = "@CLIMDIR@"
+  pattern = "Const.Clim.06"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
+  result_folder = "@WRK@/checks/PgdUpdate"
+
 [refchecks.reference_checker.task.Forecast.fullpos]
   inpath = "@ARCHIVE@"
   pattern = "GRIBPF.*0003h00m00s"
-  method = "FullPosFields"
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
 
 [refchecks.reference_checker.task.Forecast.history]
   inpath = "@ARCHIVE@"
   pattern = "ICMSH.*0003h00m00s"
-  method = "HistoryFields"
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
 
@@ -38,7 +51,5 @@
 [refchecks.reference_checker.task.Forecast.surfex]
   inpath = "@ARCHIVE@"
   pattern = "ICMSH.*0003h00m00s.sfx"
-  method = "HistoryFields"
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
-  result_folder = "@WRK@/checks/Forecast"

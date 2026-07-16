@@ -172,7 +172,7 @@ class TactusSuiteDefinition(SuiteDefinition):
             # Update triggers for final cleaning node
             final_cleaning_trigger.append(last_time_dependent_part)
 
-            if config["reference_checker.check"] or config["reference_checker.generate"]:
+        if config["reference_checker.check"] or config["reference_checker.generate"]:
                 EcflowSuiteTask(
                     "ReferenceCheck",
                     self.suite,
