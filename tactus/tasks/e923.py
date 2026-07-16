@@ -23,6 +23,7 @@ class E923(Task):
 
         Args:
             config (tactus.ParsedConfig): Configuration
+            taskname (str): Enforced task name
         """
         name = __class__.__name__ if taskname is None else taskname
         Task.__init__(self, config, name)
