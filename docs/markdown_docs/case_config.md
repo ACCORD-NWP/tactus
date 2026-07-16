@@ -66,7 +66,7 @@ In addition to `tactus case` and `tactus start suite`, Tactus provides a dedicat
 ### Basic usage
 
 ```
-tactus compile --ial-tag develop --start-suite
+tactus compile --ial-tag develop
 ```
 
 produces and launches case named `IAL_develop_compile`.
@@ -78,4 +78,4 @@ produces and launches case named `IAL_develop_compile`.
   case = "IAL_@IAL_TAG@_compile"
 ```
 
-The `@IAL_TAG@` macro is resolved from `compile.ial_git_branch` (see `tactus/data/config_files/include/macros.toml`), which is set from the `--ial-tag` argument. For example:
+The `@IAL_TAG@` macro is resolved from `compile.ial_git_branch` (see `tactus/data/config_files/include/macros.toml`), which is set from the `--ial-tag` argument.

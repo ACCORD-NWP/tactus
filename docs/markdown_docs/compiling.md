@@ -5,7 +5,7 @@ Tactus exposes a dedicated `compile` subcommand that builds a configuration aime
 ## Quick start
 
 ```
-tactus compile --ial-tag develop -s
+tactus compile --ial-tag develop
 ```
 
 This will:
@@ -13,7 +13,7 @@ This will:
 1. Build a config from `config.toml` +  host-specific overrides + `compile_suite.toml`
 2. Set `compile.ial_git_branch` to `develop`
 3. Generate a case named `IAL_develop_compile`
-4. Start the compilation suite (`CompilationSuiteDefinition`) because of `-s` (equivalent to `--start-suite`)
+4. Start the compilation suite (`CompilationSuiteDefinition`) because `-d` (equivalent to `--dry-run` is not passed as an argument)
 
 ## What the command does
 
