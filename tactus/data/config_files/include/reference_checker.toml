@@ -10,7 +10,7 @@
 
 [reference_checker.methods.ForecastNorms]
   mode = "get_worst"
-  tolerance = "12"
+  tolerance = "0"
   tool = "norms_checker"
   which = "first_and_last_spectral"
 
@@ -39,23 +39,23 @@
 [reference_checker.task.Forecast.fullpos]
   inpath = "@ARCHIVE@"
   pattern = "GRIBPF.*0006h00m00s"
-  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   method = "FullPosFields"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   result_folder = "@WRK@/checks/Forecast"
 
 [reference_checker.task.Forecast.history]
   inpath = "@ARCHIVE@"
   pattern = "ICMSH.*0006h00m00s"
-  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   method = "HistoryFields"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   result_folder = "@WRK@/checks/Forecast"
 
 [reference_checker.task.Forecast.log]
   inpath = "@WRK@/logs/Forecast"
   pattern = "NODE.001_01"
-  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   method = "ForecastNorms"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   result_folder = "@WRK@/checks/Forecast"
