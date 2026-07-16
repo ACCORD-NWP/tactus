@@ -13,7 +13,7 @@ def test_compile_parser_defaults():
 
     assert args.run_command is create_compile_exp
     assert args.output_file is None
-    assert args.start_suite is False
+    assert args.start_suite is True
     assert args.case is None
     assert args.ial_tag == "develop"
 
