@@ -19,8 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tactus test runner - Fix underscore in test definition. [#127](https://github.com/ACCORD-NWP/tactus/pull/127) (@dhaumont)
 
 ### Fixed
+- Correct Marsprep bug for the SLAF case where the waitfor_files function was not working as expected. [#148](https://github.com/ACCORD-NWP/tactus/pull/148)(@uandrae)
 - Correct usage of STREAM=SCDA following ECMWF update to CY50r1 on 2026-05-12. [#142](https://github.com/ACCORD-NWP/tactus/pull/142)(@uandrae)
 - Fix empty steplist writing output every timestep instead of not at all. [#141](https://github.com/ACCORD-NWP/tactus/pull/141)(@kastelecn)
+
 ## [1.2.0] - 2026-06-18
 
 ### Added
