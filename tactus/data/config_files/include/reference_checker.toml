@@ -3,7 +3,6 @@
   generate = false
   rules_active = [
     "PgdUpdate.pgd",
-    "E923Monthly.e923",
     "Forecast.fullpos",
     "Forecast.history",
     "Forecast.log",
@@ -45,19 +44,11 @@
 
 [reference_checker.task.PgdUpdate.pgd]
   inpath = "@CLIMDIR@"
-  pattern = "Const.Clim*.sfx"
+  pattern = "Const.Clim.*.sfx"
   method = "HistoryFields"
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/climate/@DOMAIN@"
   reference_folder = "@REFERENCES_FOLDER@/@CASE@/climate/@DOMAIN@"
-  result_folder = "@WRK@/checks/PgdUpdate"
-
-[reference_checker.task.E923Monthly.e923]
-  inpath = "@CLIMDIR@"
-  pattern = "Const.Clim.@MM@"
-  method = "HistoryFields"
-  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/climate/@DOMAIN@"
-  reference_folder = "@REFERENCES_FOLDER@/@CASE@/climate/@DOMAIN@"
-  result_folder = "@WRK@/checks/PgdUpdate"
+  result_folder = "@WRK@/checks/static_data"
 
 [reference_checker.task.Forecast.fullpos]
   inpath = "@ARCHIVE@"

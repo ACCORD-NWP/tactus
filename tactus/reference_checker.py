@@ -364,7 +364,7 @@ class CheckDefinition:
                         if parameter not in config["task"][taskname][rulename]:
                             logger.warning(
                                 f"Reference Checker - {parameter} not defined for"
-                                + f"task {taskname} and rule {rulename}."
+                                + f" task {taskname} and rule {rulename}."
                             )
                             have_all_parameters = False
                     if not have_all_parameters:
