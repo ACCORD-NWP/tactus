@@ -606,6 +606,7 @@ class MirrorSuite(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
+
 class MarsprepFamily(EcflowSuiteFamily):
     """Class for creating the Marsprep ecFlow family with per-marstype sub-families."""
 
@@ -632,11 +633,9 @@ class MarsprepFamily(EcflowSuiteFamily):
             trigger=marsprep_trigger_nodes,
             remote_path=remote_path,
         )
-        #if config["suite_control.split_mars"]:
-        latlon_deps = ["GG","SH"]
+        latlon_deps = ["GG", "SH"]
         latlon_triggers = []
         for marstype in marstype_list:
-
             mars_sub_fam = EcflowSuiteFamily(
                 f"Marsprep_{marstype}",
                 self,
@@ -646,9 +645,9 @@ class MarsprepFamily(EcflowSuiteFamily):
             )
             if marstype in latlon_deps:
                 latlon_triggers.append(mars_sub_fam)
-            
-            args=variables.get("ARGS","")   
-            variables["ARGS"]=args+f";type={marstype}"
+
+            args = variables.get("ARGS", "")
+            variables["ARGS"] = args + f";type={marstype}"
 
             EcflowSuiteTask(
                 "Marsprep",
@@ -657,12 +656,13 @@ class MarsprepFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
-                trigger = latlon_triggers if marstype == "latlon" else None,
+                trigger=latlon_triggers if marstype == "latlon" else None,
                 ecf_files_remotely=ecf_files_remotely,
                 add_var_trigger=add_var_trigger,
                 variables=variables,
                 remote_path=remote_path,
-            )              
+            )
+
 
 class InputDataFamily(EcflowSuiteFamily):
     """Class for creating the InputDataFamily ecFlow family."""
@@ -698,9 +698,9 @@ class InputDataFamily(EcflowSuiteFamily):
             ecf_files,
             input_template=input_template,
         )
-        marstype_list=["all"]
+        marstype_list = ["all"]
         if config["suite_control.split_mars"]:
-            marstype_list = ["GG","SH","UA","latlon"]
+            marstype_list = ["GG", "SH", "UA", "latlon"]
         marsprep_trigger_nodes = [prepare_cycle]
 
         if external_marsprep_trigger_node is not None:
@@ -712,17 +712,17 @@ class InputDataFamily(EcflowSuiteFamily):
             and not config["suite_control.split_mars_by_step"]
         ):
             marsFam = MarsprepFamily(
-                    self,
-                    config,
-                    task_settings,
-                    input_template,
-                    ecf_files,
-                    marstype_list,
-                    marsprep_trigger_nodes=marsprep_trigger_nodes,
-                    ecf_files_remotely=ecf_files_remotely,
-                    add_var_trigger=add_var_trigger,
-                    remote_path=remote_path,
-                )
+                self,
+                config,
+                task_settings,
+                input_template,
+                ecf_files,
+                marstype_list,
+                marsprep_trigger_nodes=marsprep_trigger_nodes,
+                ecf_files_remotely=ecf_files_remotely,
+                add_var_trigger=add_var_trigger,
+                remote_path=remote_path,
+            )
             # For SLAF (Scaled Lagged Average Forecasting),
             #   we call Marsprep 2 more times with altered bdshift
             slaflag = config.get(f"eps.members.{member}.boundaries.slaflag", "PT0H")
@@ -844,7 +844,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
         self.limit = limit
         self.bdint = bdint
         self.member = member
-        self.lbc_trigger=trigger
+        self.lbc_trigger = trigger
         self.split_mars_by_step_fam = None
         self.do_glprep = self.config.get("suite_control.do_glprep", False)
         self.do_slaf = do_slaf and not self.do_glprep
@@ -903,9 +903,9 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
 
             self.split_mars_by_step_fam = None
             if self.config["suite_control.split_mars_by_step"]:
-                marsType_list=["all"]
+                marsType_list = ["all"]
                 if self.config["suite_control.split_mars"]:
-                    marsType_list = ["GG","SH","UA"]
+                    marsType_list = ["GG", "SH", "UA"]
                 self.split_mars_by_step_fam = MarsprepFamily(
                     self,
                     self.config,
@@ -941,7 +941,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
                     self.ecf_files,
                     input_template=self.input_template,
                     variables={"ARGS": args},
-                    trigger=[trig  for trig in trigger if trig is not None],
+                    trigger=[trig for trig in trigger if trig is not None],
                     ecf_files_remotely=self.ecf_files_remotely,
                 )
             if self.do_slaf:
@@ -1141,13 +1141,12 @@ class LBCFamily(EcflowSuiteFamily):
         )
         # Iterate through the LBC family generator to create the next
         # LBC families
-        is_first_LBC_fam=True
+        is_first_LBC_fam = True
         for _ in lbc_family_generator_instance:
             if is_first_LBC_fam and config["suite_control.split_mars_by_step"]:
                 LBC_mars_fam = lbc_family_generator_instance.split_mars_by_step_fam
                 self.split_mars_by_step_fam = LBC_mars_fam
-                is_first_LBC_fam=False
-            pass
+                is_first_LBC_fam = False
 
 
 class InterpolationFamily(EcflowSuiteFamily):
@@ -1233,6 +1232,7 @@ class InterpolationFamily(EcflowSuiteFamily):
             LBC_mars_fam = lbc_fam.split_mars_by_step_fam
             LBC_mars_fam_path = prep_fam.make_relative(LBC_mars_fam.path)
             prep_fam.ecf_node.add_trigger(f"{LBC_mars_fam_path}==complete")
+
 
 class InitializationFamily(EcflowSuiteFamily):
     """Class for creating the Initialization ecFlow family."""

@@ -52,7 +52,7 @@ class Marsprep(Task):
             ValueError: No data for this date.
         """
         Task.__init__(self, config, __class__.__name__)
-        
+
         self.type = config.get("task.args.type", "all")
 
         # Get bdmember(s) from member specific eps setting if member specific
@@ -267,21 +267,26 @@ class Marsprep(Task):
             logger.debug("*** Need only latlon data")
         else:
             if self.split_mars_by_step:
-                self.steps =[int(step) for step in self.boundary.bd_index_time_dict.keys()]
+                self.steps = [
+                    int(step) for step in self.boundary.bd_index_time_dict.keys()
+                ]
 
             logger.info("Need steps:{}", self.steps)
-            
-            if self.type in ("GG","all"):
+
+            if self.type in ("GG", "all"):
                 self.get_grid_point_surface_data()
-            if self.type in ("SH","all"):
+            if self.type in ("SH", "all"):
                 self.get_spectral_harmonic_data()
-            if self.type in ("UA","all"):
+            if self.type in ("UA", "all"):
                 self.get_grid_point_upper_air_data()
 
-            if self.config["suite_control.do_interpolsstsic"] and self.type in ("GG","all"):
+            if self.config["suite_control.do_interpolsstsic"] and self.type in (
+                "GG",
+                "all",
+            ):
                 self.get_sst_data()
 
-        if not self.config["boundaries.bd_has_surfex"] and self.type in ("latlon","all"):
+        if not self.config["boundaries.bd_has_surfex"] and self.type in ("latlon", "all"):
             self.get_sfx_data()
 
     def get_grid_point_surface_data(self):
