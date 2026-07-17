@@ -52,7 +52,7 @@ class Marsprep(Task):
             ValueError: No data for this date.
         """
         Task.__init__(self, config, __class__.__name__)
-
+        
         self.type = config.get("task.args.type", "all")
 
         # Get bdmember(s) from member specific eps setting if member specific
@@ -267,8 +267,7 @@ class Marsprep(Task):
             logger.debug("*** Need only latlon data")
         else:
             if self.split_mars_by_step:
-                print(self.config["task.args.bd_index_time_dict"])
-                self.steps = [self.steps[int(self.config["task.args.bd_index_time_dict"].keys())]]
+                self.steps =[int(step) for step in self.boundary.bd_index_time_dict.keys()]
 
             logger.info("Need steps:{}", self.steps)
             
