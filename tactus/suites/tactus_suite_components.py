@@ -617,8 +617,8 @@ class MarsprepFamily(EcflowSuiteFamily):
         task_settings: TaskSettings,
         input_template,
         ecf_files,
-        marstype_list=["all"],
-        variables={},
+        marstype_list=("all"),
+        variables=None,
         marsprep_trigger_nodes=None,
         ecf_files_remotely=None,
         add_var_trigger=None,
@@ -646,8 +646,9 @@ class MarsprepFamily(EcflowSuiteFamily):
             if marstype in latlon_deps:
                 latlon_triggers.append(mars_sub_fam)
 
-            args = variables.get("ARGS", "")
-            variables["ARGS"] = args + f";type={marstype}"
+            if variables is not None:
+                args = variables.get("ARGS", "")
+                variables["ARGS"] = args + f";type={marstype}"
 
             EcflowSuiteTask(
                 "Marsprep",
@@ -711,7 +712,7 @@ class InputDataFamily(EcflowSuiteFamily):
             and config["suite_control.interpolate_boundaries"]
             and not config["suite_control.split_mars_by_step"]
         ):
-            marsFam = MarsprepFamily(
+            MarsprepFamily(
                 self,
                 config,
                 task_settings,
@@ -903,16 +904,16 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
 
             self.split_mars_by_step_fam = None
             if self.config["suite_control.split_mars_by_step"]:
-                marsType_list = ["all"]
+                marstype_list = ["all"]
                 if self.config["suite_control.split_mars"]:
-                    marsType_list = ["GG", "SH", "UA"]
+                    marstype_list = ["GG", "SH", "UA"]
                 self.split_mars_by_step_fam = MarsprepFamily(
                     self,
                     self.config,
                     self.task_settings,
                     self.input_template,
                     self.ecf_files,
-                    marsType_list,
+                    marstype_list,
                     variables=variables,
                     ecf_files_remotely=self.ecf_files_remotely,
                 )
@@ -1141,12 +1142,12 @@ class LBCFamily(EcflowSuiteFamily):
         )
         # Iterate through the LBC family generator to create the next
         # LBC families
-        is_first_LBC_fam = True
+        is_first_lbc_fam = True
         for _ in lbc_family_generator_instance:
-            if is_first_LBC_fam and config["suite_control.split_mars_by_step"]:
-                LBC_mars_fam = lbc_family_generator_instance.split_mars_by_step_fam
-                self.split_mars_by_step_fam = LBC_mars_fam
-                is_first_LBC_fam = False
+            if is_first_lbc_fam and config["suite_control.split_mars_by_step"]:
+                lbc_mars_fam = lbc_family_generator_instance.split_mars_by_step_fam
+                self.split_mars_by_step_fam = lbc_mars_fam
+                is_first_lbc_fam = False
 
 
 class InterpolationFamily(EcflowSuiteFamily):
@@ -1229,9 +1230,9 @@ class InterpolationFamily(EcflowSuiteFamily):
         )
 
         if config["suite_control.split_mars_by_step"]:
-            LBC_mars_fam = lbc_fam.split_mars_by_step_fam
-            LBC_mars_fam_path = prep_fam.make_relative(LBC_mars_fam.path)
-            prep_fam.ecf_node.add_trigger(f"{LBC_mars_fam_path}==complete")
+            lbc_mars_fam = lbc_fam.split_mars_by_step_fam
+            lbc_mars_fam_path = prep_fam.make_relative(lbc_mars_fam.path)
+            prep_fam.ecf_node.add_trigger(f"{lbc_mars_fam_path}==complete")
 
 
 class InitializationFamily(EcflowSuiteFamily):

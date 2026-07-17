@@ -267,9 +267,7 @@ class Marsprep(Task):
             logger.debug("*** Need only latlon data")
         else:
             if self.split_mars_by_step:
-                self.steps = [
-                    int(step) for step in self.boundary.bd_index_time_dict.keys()
-                ]
+                self.steps = [int(step) for step in self.boundary.bd_index_time_dict]
 
             logger.info("Need steps:{}", self.steps)
 
