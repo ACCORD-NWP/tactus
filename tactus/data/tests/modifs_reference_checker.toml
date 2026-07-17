@@ -1,6 +1,6 @@
 [refchecks.platform]
   reference_tag = "v1.1.0"
-  references_folder = "@SCRATCH@/tactus_references/@REFERENCE_TAG@"
+  references_folder = "@REFCHECK_ROOT@/@REFERENCE_TAG@"
   references_generation_folder = "N/A"
 
 [refchecks.reference_checker]

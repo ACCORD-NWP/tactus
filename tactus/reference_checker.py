@@ -599,8 +599,9 @@ class CheckSummaryAnalysis:
         message = ""
         color = "cyan"
 
-        if not summary:
-            return f"{case_name:<{width}} |<{color}> MISSING</{color}>"
+        if isinstance(summary, str):
+            return f"{case_name:<{width}} |<{color}> {summary}</{color}>"
+
         since = since_str(datetime, now)
         if "analysis" not in summary:
             color = "yellow"
@@ -921,7 +922,11 @@ class CheckSummaryJson(CheckSummary):
 
     def contains_summary_analysis(self):
         """Return True if the summary file contains an analysis."""
+<<<<<<< HEAD
         with open(self.fullpath, "r") as file:
+=======
+        with FileLock(self.fullpath), open(self.fullpath, "r") as file:
+>>>>>>> develop
             data = json.load(file)
             if "analysis" in data:
                 return True
@@ -1143,6 +1148,7 @@ class ReferenceCheckManager:
         """Analyze the summaries."""
         failed_messages = ""
         for summary in self.summary_list:
+            logger.info(f"ReferenceChecker summary: {summary.fullpath}")
             analysis = summary.compute_and_append_analysis(self.check)
             message = analysis.message()
             if not analysis.success():
