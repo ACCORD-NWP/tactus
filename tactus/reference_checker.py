@@ -922,11 +922,7 @@ class CheckSummaryJson(CheckSummary):
 
     def contains_summary_analysis(self):
         """Return True if the summary file contains an analysis."""
-<<<<<<< HEAD
-        with open(self.fullpath, "r") as file:
-=======
         with FileLock(self.fullpath), open(self.fullpath, "r") as file:
->>>>>>> develop
             data = json.load(file)
             if "analysis" in data:
                 return True
