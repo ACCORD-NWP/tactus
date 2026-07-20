@@ -28,7 +28,6 @@ class InterpolateBoundaries(Task):
         ).upper()
         Task.__init__(self, config, name)
 
-
         if self.boundary.method == "e927":
             self.namelists = {self.boundary.method: "fort.4"}
             self.logs = ["fort.4", "NODE.001_01"]

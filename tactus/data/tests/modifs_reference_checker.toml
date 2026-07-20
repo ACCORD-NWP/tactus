@@ -35,22 +35,6 @@
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
   result_folder = "@WRK@/checks/static_data"
 
-[reference_checker.task.E927_0-0.default]
-  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
-  inpath = "@INTP_BDDIR@"
-  method = "HistoryFields"
-  pattern = "ELS(.*)000"
-  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
-  result_folder = "@WRK@/checks/initial_files"
-
-[reference_checker.task.E927_3-3.default]
-  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
-  inpath = "@INTP_BDDIR@"
-  method = "HistoryFields"
-  pattern = "ELS(.*)003"
-  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
-  result_folder = "@WRK@/checks/initial_files"
-
 [refchecks.reference_checker.task.C903_0-6.default]
   inpath = "@INTP_BDDIR@"
   pattern = "ELS(.*)(000|003)"
@@ -99,3 +83,19 @@
   pattern = "ICMSH.*0003h00m00s.sfx"
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+
+[reference_checker.task.E927_0-0.default]
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  inpath = "@INTP_BDDIR@"
+  method = "HistoryFields"
+  pattern = "ELS(.*)000"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/initial_files"
+
+[reference_checker.task.E927_3-3.default]
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  inpath = "@INTP_BDDIR@"
+  method = "HistoryFields"
+  pattern = "ELS(.*)003"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/initial_files"
