@@ -1276,13 +1276,77 @@ f4_HARMONIE_AROME:
 f4_common:
   NAERAD:
     LSRTM: false
-    NRADFR: ${stepfreq:${cfg:general.namelist.radiation_frequency}}
   NAMARG:
     CNMEXP: ${cfg:general.cnmexp}
     LECMWF: false
     LELAM: true
     NCONF: 1
     NSUPERSEDE: 1
+  NAMCFU:
+    LWFPAC: ${cfg:general.windfarm}
+  NAMCT0:
+    LAROME: true
+    NFPOS: 1
+  NAMCT1:
+    LRFILAF: false
+    N1HIS: 1
+  NAMCVER:
+    NDLNPR: 1
+  NAMDIM:
+    NPROMA: ${cfg:submission.nproma}
+  NAMDYNA:
+    LNHEE: true
+    LSLAG: true
+    LSPRT: true
+  NAMFA:
+    CMODEL: ${cfg:general.cmodel}
+    LEXTERN: true
+    NBITCS: -1
+    NBITPG: -1
+    NSTRON: -1
+  NAMGEM:
+    LNHX_GEOM: true
+    LNONHYD_GEOM: true
+  NAMGFL:
+    YG_NL%NREQIN: 0
+    YI_NL%NREQIN: 0
+    YL_NL%NREQIN: 0
+    YR_NL%NREQIN: 0
+    YS_NL%NREQIN: 0
+  NAMGRIB:
+    NCYCLE: 49
+    NENSFNB: ${cfg:general.member}
+  NAMINI:
+    LDFI: false
+  NAMPAR0:
+    LMPOFF: false
+    MBX_SIZE: 2048000000
+    MP_TYPE: 2
+    NOUTPUT: 1
+    NPRINTLEV: 1
+    NPROC: ${cfg:namelist.nproc}
+  NAMPAR1:
+    LEQ_REGIONS: false
+    LSLONDEM: true
+    LSPLIT: true
+    LSYNC_SLCOM: false
+    LSYNC_TRANS: false
+    NCOMBFLEN: 1800000
+    NSTRIN: ${cfg:namelist.nproc}
+    NSTROUT: ${cfg:namelist.nproc}
+  NAMPHY:
+    LAERODES: true
+    LAEROLAN: true
+    LAEROSEA: true
+    LAEROSOO: true
+    LO3ABC: true
+    LWINDFARM: ${cfg:general.windfarm}
+  NAMRIP:
+    CSTOP: ${cfg:namelist.cstop}
+    TSTEP: ${timestep:${cfg:domain.tstep}}
+f4_common_forecast:
+  NAERAD:
+    NRADFR: ${stepfreq:${cfg:general.namelist.radiation_frequency}}
   NAMCFU:
     LCUMFU: true
     LFLASH: true
@@ -1292,14 +1356,11 @@ f4_common:
     LFSF: true
     LRAYD: true
     LRAYS: true
-    LWFPAC: ${cfg:general.windfarm}
     NMTFLASH: 1
   NAMCT0:
     CFPNCF: ECHFP
     CNPPATH: .
-    LAROME: true
     LSCREEN_OPENMP: false
-    NFPOS: 1
     NFRHIS: 1
     NFRPOS: 1
     NFRSDI: 1
@@ -1307,8 +1368,6 @@ f4_common:
     NPOSTS: ${steplist:${cfg:general.output_settings.fullpos}}
     NSFXHISTS: ${steplist:${cfg:general.output_settings.surfex}}
   NAMCT1:
-    LRFILAF: false
-    N1HIS: 1
     N1POS: 1
     N1RES: 0
     N1SDI: 1
@@ -1331,41 +1390,17 @@ f4_common:
     SLHDD00: 6.5e-05
     ZSLHDP1: 1.7
     ZSLHDP3: 0.6
-  NAMCVER:
-    NDLNPR: 1
-  NAMDIM:
-    NPROMA: ${cfg:submission.nproma}
   NAMDYNA:
     LGWADV: true
-    LNHEE: true
     LRDBBC: false
     LSETTLST: true
-    LSLAG: true
-    LSPRT: true
     LTWOTL: true
     NPDVAR: 2
     NVDVAR: 4
-  NAMFA:
-    CMODEL: ${cfg:general.cmodel}
-    LEXTERN: true
-    NBITCS: -1
-    NBITPG: -1
-    NSTRON: -1
-  NAMGEM:
-    LNHX_GEOM: true
-    LNONHYD_GEOM: true
   NAMGFL:
-    YG_NL%NREQIN: 0
-    YI_NL%NREQIN: 0
     YIRAD_NL%LGP: true
-    YL_NL%NREQIN: 0
     YLRAD_NL%LGP: true
-    YR_NL%NREQIN: 0
-    YS_NL%NREQIN: 0
     YTKE_NL%NCOUPLING: 0
-  NAMGRIB:
-    NCYCLE: 49
-    NENSFNB: ${cfg:general.member}
   NAMIO_SERV:
     NIO_SERV_BUF_MAXSIZE: 20
     NIO_SERV_METHOD: 2
@@ -1373,38 +1408,11 @@ f4_common:
     NMSG_LEVEL_SERVER: 0
     NPROCESS_LEVEL: 5
     NPROC_IO: ${cfg:namelist.nproc_io,0}
-  NAMINI:
-    LDFI: false
   NAMOPH:
     LINC: true
     NTIMEFMT: 2
-  NAMPAR0:
-    LMPOFF: false
-    MBX_SIZE: 2048000000
-    MP_TYPE: 2
-    NOUTPUT: 1
-    NPRINTLEV: 1
-    NPROC: ${cfg:namelist.nproc}
-  NAMPAR1:
-    LEQ_REGIONS: false
-    LSLONDEM: true
-    LSPLIT: true
-    LSYNC_SLCOM: false
-    LSYNC_TRANS: false
-    NCOMBFLEN: 1800000
-    NSTRIN: ${cfg:namelist.nproc}
-    NSTROUT: ${cfg:namelist.nproc}
   NAMPHY:
-    LAERODES: true
-    LAEROLAN: true
-    LAEROSEA: true
-    LAEROSOO: true
     LDPRECIPS: true
-    LO3ABC: true
-    LWINDFARM: ${cfg:general.windfarm}
-  NAMRIP:
-    CSTOP: ${cfg:namelist.cstop}
-    TSTEP: ${timestep:${cfg:domain.tstep}}
   NAMTOPH:
     XDRMTP: 800.0
     XDRMUK: 3.0e-07
