@@ -2,7 +2,7 @@
   check = false
   generate = false
   rules_active = [
-    "PgdUpdate.pgd",
+    "PgdUpdate.default",
     "Forecast.fullpos",
     "Forecast.history",
     "Forecast.log",
@@ -42,7 +42,7 @@
   file = "@CASEDIR@/checks/summary.txt"
   format = "txt"
 
-[reference_checker.task.PgdUpdate.pgd]
+[reference_checker.task.PgdUpdate.default]
   inpath = "@CLIMDIR@"
   pattern = "Const.Clim.*.sfx"
   method = "HistoryFields"
