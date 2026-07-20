@@ -134,6 +134,9 @@
   host = "cy50t2_alaro"
   extra = ["tactus/data/config_files/modifications/target.toml"]
 
+[cases.cy50t2_alaro_target.modifs.general.times]
+  end = "PT0H"
+
 [cases.cy50t2_alaro_target.modifs.suite_control]
   mirror_suite = true
 
@@ -276,6 +279,9 @@
   host = "cy50t2_arome"
   extra = ["tactus/data/config_files/modifications/target.toml"]
 
+[cases.cy50t2_arome_target.modifs.general.times]
+  end = "PT0H"
+
 [cases.cy50t2_arome_target.modifs.suite_control]
   mirror_suite = true
 
@@ -417,6 +423,9 @@
   base = "cy50t2_harmonie_arome"
   host = "cy50t2_harmonie_arome"
   extra = ["tactus/data/config_files/modifications/target.toml"]
+
+[cases.cy50t2_harmonie_arome_target.modifs.general.times]
+  end = "PT0H"
 
 [cases.cy50t2_harmonie_arome_target.modifs.suite_control]
   mirror_suite = true

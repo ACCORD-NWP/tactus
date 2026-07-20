@@ -84,7 +84,7 @@
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
 
-[reference_checker.task.E927_0-0.default]
+[refchecks.reference_checker.task.E927_0-0.default]
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   inpath = "@INTP_BDDIR@"
   method = "HistoryFields"
@@ -92,7 +92,7 @@
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   result_folder = "@WRK@/checks/initial_files"
 
-[reference_checker.task.E927_3-3.default]
+[refchecks.reference_checker.task.E927_3-3.default]
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   inpath = "@INTP_BDDIR@"
   method = "HistoryFields"
