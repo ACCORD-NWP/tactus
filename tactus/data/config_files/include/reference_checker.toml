@@ -34,6 +34,13 @@
   tolerance = "10"
   tool = "xtool"
 
+[reference_checker.methods.E923Files]
+  args_template = "-f1 {test_file} -f2 {reference_file} {file_format} -s -of SCREEN -de -to {tolerance} -igd"
+  binary = "@INSTALL_DIR@/gl/@COMPILER@/latest/bin/xtool"
+  file_format = "FA"
+  tolerance = "10"
+  tool = "xtool"
+
 [reference_checker.summary.json]
   file = "@CASEDIR@/checks/summary.json"
   format = "json"

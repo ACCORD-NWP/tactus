@@ -9,13 +9,15 @@
   rules_active = [
     "C903_0-6.default",
     "E923Monthly_06.default",
+    "E927_0-0.default",
+    "E927_3-3.default",
     "InterpolSstSic.default",
     "Forecast.fullpos",
     "Forecast.history",
     "Forecast.log",
     "Forecast.surfex",
     "PgdUpdate.default",
-    "Prep.default"
+    "Prep.default",
   ]
   suppress_exception = false
 
@@ -28,10 +30,26 @@
 [refchecks.reference_checker.task.E923Monthly_06.default]
   inpath = "@CLIMDIR@"
   pattern = "Const.Clim.06"
-  method = "HistoryFields"
+  method = "E923Files"
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
   result_folder = "@WRK@/checks/static_data"
+
+[reference_checker.task.E927_0-0.default]
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  inpath = "@INTP_BDDIR@"
+  method = "HistoryFields"
+  pattern = "ELS(.*)000"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/initial_files"
+
+[reference_checker.task.E927_3-3.default]
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  inpath = "@INTP_BDDIR@"
+  method = "HistoryFields"
+  pattern = "ELS(.*)003"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/initial_files"
 
 [refchecks.reference_checker.task.C903_0-6.default]
   inpath = "@INTP_BDDIR@"

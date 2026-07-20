@@ -629,13 +629,14 @@ class CheckSummaryAnalysis:
                     + f" or has failed. </{color}> \n"
                 )
             else:
-                for results in summary["tasks"].values():
+                for task_name, results in summary["tasks"].items():
                     for test_type, result in results.items():
                         if test_type == "Create":
                             continue
                         try:
+                            label = f"{task_name}.{test_type}"
                             result_message = (
-                                f"{test_type:>10} | {result['items'][0]['result']}"
+                                f"{label:>30} | {result['items'][0]['result']}"
                             )
                             result_message = result_message.replace("\n", "")
                             result_message = result_message.replace(
