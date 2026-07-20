@@ -347,7 +347,6 @@ f4_AROME:
   NAMPHMSE:
     LPGDFWR: false
   NAMPHY:
-    LMSE: ${cfg:general.surfex}
     LEDR: true
     LMPHYS: true
     LRAYFM: true
@@ -762,7 +761,6 @@ f4_ALARO:
   NAMPARAR:
     NSWB_MNH: 1
   NAMPHY:
-    LMSE: ${cfg:general.surfex}
     CGMIXLEN: EL0
     CGTURS: MD2
     L3MT: true
@@ -1136,7 +1134,6 @@ f4_HARMONIE_AROME:
     LHISFWR: true
     LPGDFWR: false
   NAMPHY:
-    LMSE: ${cfg:general.surfex}
     LAEROMMR: false
     LAERONRT: false
     LCLSATUR: true
