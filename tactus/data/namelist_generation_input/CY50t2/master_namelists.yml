@@ -1344,6 +1344,8 @@ f4_common:
   NAMRIP:
     CSTOP: ${cfg:namelist.cstop}
     TSTEP: ${timestep:${cfg:domain.tstep}}
+  NAMXFU:
+    LXWFPIN: ${cfg:general.windfarm}
 f4_common_forecast:
   NAERAD:
     NRADFR: ${stepfreq:${cfg:general.namelist.radiation_frequency}}
@@ -1429,7 +1431,6 @@ f4_common_forecast:
     LXQCLS: true
     LXTTCLS: true
     LXVISI: true
-    LXWFPIN: ${cfg:general.windfarm}
     LXXDIAGH: true
     LXXGST: true
     NRAZTS: ${steplist:${cfg:general.namelist.nrazts}}
