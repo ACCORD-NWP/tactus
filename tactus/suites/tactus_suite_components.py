@@ -635,7 +635,10 @@ class MarsprepFamily(EcflowSuiteFamily):
         )
         latlon_deps = ["GG", "SH"]
         latlon_triggers = []
-        variables = {}
+
+        if variables is not None:
+            args = variables.get("ARGS", "")
+
         for marstype in marstype_list:
             mars_sub_fam = EcflowSuiteFamily(
                 f"Marsprep_{marstype}",
@@ -647,9 +650,7 @@ class MarsprepFamily(EcflowSuiteFamily):
             if marstype in latlon_deps:
                 latlon_triggers.append(mars_sub_fam)
 
-            if variables is not None:
-                args = variables.get("ARGS", "")
-                variables["ARGS"] = args + f";type={marstype}"
+            variables = {"ARGS": args + f";type={marstype}"}
 
             EcflowSuiteTask(
                 "Marsprep",
