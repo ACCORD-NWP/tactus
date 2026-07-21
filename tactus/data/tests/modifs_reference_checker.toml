@@ -1,5 +1,5 @@
 [refchecks.platform]
-  reference_tag = "v1.1.0"
+  reference_tag = "v1.3.0"
   references_folder = "@REFCHECK_ROOT@/@REFERENCE_TAG@"
   references_generation_folder = "N/A"
 
@@ -7,24 +7,67 @@
   check = true
   generate = false
   rules_active = [
+    "C903_0-6.default",
+    "E923Monthly_06.default",
+    "E927_0-0.default",
+    "E927_3-3.default",
+    "InterpolSstSic.default",
     "Forecast.fullpos",
     "Forecast.history",
     "Forecast.log",
-    "Forecast.surfex"
+    "Forecast.surfex",
+    "PgdUpdate.default",
+    "Prep.default",
   ]
   suppress_exception = false
+
+[refchecks.reference_checker.task.PgdUpdate.default]
+  inpath = "@CLIMDIR@"
+  pattern = "Const.Clim.*.sfx"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
+
+[refchecks.reference_checker.task.E923Monthly_06.default]
+  inpath = "@CLIMDIR@"
+  pattern = "Const.Clim.06"
+  method = "E923Files"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
+  result_folder = "@WRK@/checks/static_data"
+
+[refchecks.reference_checker.task.C903_0-6.default]
+  inpath = "@INTP_BDDIR@"
+  pattern = "ELS(.*)(000|003)"
+  method = "HistoryFields"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/initial_files"
+
+[refchecks.reference_checker.task.Prep.default]
+  inpath = "@INTP_BDDIR_SFX@"
+  pattern = "ICM(.*)INIT.sfx"
+  method = "HistoryFields"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/initial_files"
+
+[refchecks.reference_checker.task.InterpolSstSic.default]
+  inpath = "@INTP_BDDIR@"
+  pattern = "EXT_SST_SIC003"
+  method = "HistoryFields"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/initial_files"
 
 [refchecks.reference_checker.task.Forecast.fullpos]
   inpath = "@ARCHIVE@"
   pattern = "GRIBPF.*0003h00m00s"
-  method = "FullPosFields"
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
 
 [refchecks.reference_checker.task.Forecast.history]
   inpath = "@ARCHIVE@"
   pattern = "ICMSH.*0003h00m00s"
-  method = "HistoryFields"
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
 
@@ -38,7 +81,21 @@
 [refchecks.reference_checker.task.Forecast.surfex]
   inpath = "@ARCHIVE@"
   pattern = "ICMSH.*0003h00m00s.sfx"
-  method = "HistoryFields"
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
-  result_folder = "@WRK@/checks/Forecast"
+
+[refchecks.reference_checker.task.E927_0-0.default]
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  inpath = "@INTP_BDDIR@"
+  method = "HistoryFields"
+  pattern = "ELS(.*)000"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/initial_files"
+
+[refchecks.reference_checker.task.E927_3-3.default]
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  inpath = "@INTP_BDDIR@"
+  method = "HistoryFields"
+  pattern = "ELS(.*)003"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/initial_files"
