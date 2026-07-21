@@ -635,7 +635,7 @@ class MarsprepFamily(EcflowSuiteFamily):
         )
         latlon_deps = ["GG", "SH"]
         latlon_triggers = []
-        variables={}
+        variables = {}
         for marstype in marstype_list:
             mars_sub_fam = EcflowSuiteFamily(
                 f"Marsprep_{marstype}",
