@@ -3,6 +3,9 @@
   surfex_sea_ice = "sice"
   windfarm = false
 
+[general.namelist]
+  radiation_frequency = "PT15M"
+
 [domain]
   orographic_smoothing_method = "spectral"
 

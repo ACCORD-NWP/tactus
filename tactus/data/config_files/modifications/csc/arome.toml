@@ -1,2 +1,5 @@
 [general]
   csc = "AROME"
+
+[pgd]
+  npatch = 3

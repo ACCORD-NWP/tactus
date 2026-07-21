@@ -17,10 +17,6 @@ sfx_pgd_isba_3l:
     NGROUND_LAYER: 3
     NPATCH: ${cfg:pgd.npatch}
 
-sfx_pgd_HARMONIE_AROME:
-  NAM_WRITE_SURF_ATM:
-    LSPLIT_PATCH: False
-
 sfx_pgd_isba_dif:
   NAM_SGH_ISBAN:
    CHORT: "DEF"
@@ -72,7 +68,6 @@ sfx_treedrag:
     XFORLAT1: 1.0
     XFORLAT2: 0.0
     XGRASS_H_DNM: 3.0
-    XSCALE_H_TREE_ECOSG: 1.0
     XZ0_MAX_LIMIT: 1.6
     XZ0_MIN_LIMIT: 0.0
 
@@ -98,9 +93,6 @@ sfx_forecast:
     XRIMAX: 0.2
 
 sfx_forecast_HARMONIE_AROME:
-  NAM_IO_OFFLINE:
-    XTSTEP_OUTPUT: 3600
-    XTSTEP_SURF: "${cfg:domain.tstep}"
   NAM_DIAG_ISBAN:
     LPATCH_BUDGET: True
     LSURF_MISC_DIF: True
@@ -113,14 +105,12 @@ sfx_forecast_HARMONIE_AROME:
     LSURF_VARS: True
   NAM_ISBAN:
     LCANOPY_DRAG: True
-    LPERTSURF: False
     XCDRAG: 0.01
     XCGMAX: 2.e-05
     XCSMAX: 0.0002
   NAM_SEAFLUXN:
     CSEA_FLUX: "ECUME"
     LPRECIP: False
-    LPERTFLUX: False
   NAM_SEAICEN:
     LVOLATILE_SIC: ${cfg:general.upd_sst_sic}
     XSIC_EFOLDING_TIME: 1.0
@@ -700,7 +690,7 @@ sfx_pgd_zs_AROME:
 
 sfx_pgd_zs_filter:
   NAM_ZS_FILTER:
-    NZSFILTER: 0
+    NZSFILTER: ${cfg:domain.nzsfilter}
 
 sfx_pgd_teb_osm:
   NAM_TREEDRAG:
@@ -845,10 +835,6 @@ sfx_ALARO:
  NAM_FRAC:
     LECOSG: False
 
-sfx_HARMONIE_AROME:
-  NAM_WRITE_SURF_ATM:
-    LSPLIT_PATCH: False
-
 sfx_prep_atm:
   NAM_PREP_SURF_ATM:
     NYEAR: "@PREP_NYEAR@"
@@ -884,9 +870,13 @@ sfx_prep_watflx:
     LWAT_SBL: False
 
 sfx_prep_isba_HARMONIE_AROME:
+  NAM_FRAC:
+    LECOSG: True
   NAM_PREP_ISBA_SNOW:
     CSNOW: "D95"
+    LSNOW_FRAC_ECMWF: False
     LSWEMAX: True
+    XRM_LITTLE_SNOW: 0.0
   NAM_DIAG_ISBAN:
     LPATCH_BUDGET: True
     LSURF_MISC_DIF: True
@@ -896,6 +886,9 @@ sfx_prep_isba_HARMONIE_AROME:
     LEXTRAP_WG: True
     LEXTRAP_WGI: True
     LISBA_CANOPY: False
+    LISBA_FRAC_ECMWF: False
+    XRM_WM_ECMWF: 0.0
+
 
 sfx_prep_isba_AROME:
   NAM_FRAC:
