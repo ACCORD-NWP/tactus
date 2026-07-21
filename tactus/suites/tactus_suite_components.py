@@ -635,7 +635,7 @@ class MarsprepFamily(EcflowSuiteFamily):
         )
         latlon_deps = ["GG", "SH"]
         latlon_triggers = []
-
+        args = ""
         if variables is not None:
             args = variables.get("ARGS", "")
 
