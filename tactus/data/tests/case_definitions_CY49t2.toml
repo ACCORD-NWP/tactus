@@ -50,7 +50,7 @@
   do_marsprep = false
   interpolate_boundaries = false
   do_extractsqlite = false
-  addcalculatedfields = false
+  do_addcalculatedfields = false
 
 [cases.cy49t2_alaro_slaf]
   base = "cy49t2_alaro"
@@ -78,9 +78,6 @@
     "tactus/data/config_files/include/eps/CY49t2/alaro.toml",
   ]
 
-[cases.cy49t2_alaro_eps.modifs.system]
-  case_suffix = "_eps"
-
 [cases.cy49t2_alaro_eps.modifs.eps.general]
   members = "0:3"
 
@@ -98,6 +95,9 @@
 [cases.cy49t2_alaro_eps.modifs.reference_checker]
   check = false
   generate = false
+
+[cases.cy49t2_alaro_eps.modifs.system]
+  case_suffix = "_eps"
 
 [cases.cy49t2_alaro_mode_start]
   base = "cy49t2_alaro"
@@ -119,6 +119,9 @@
 
 [cases.cy49t2_alaro_target]
   host = "cy49t2_alaro"
+
+[cases.cy49t2_alaro_target.modifs.general.times]
+  end = "PT0H"
 
 [cases.cy49t2_alaro_target.modifs.suite_control]
   mirror_host_case = true
@@ -165,7 +168,7 @@
   do_marsprep = false
   interpolate_boundaries = false
   do_extractsqlite = false
-  addcalculatedfields = false
+  do_addcalculatedfields = false
 
 [cases.cy49t2_arome_eps]
   base = "cy49t2_arome"
@@ -251,10 +254,13 @@
   do_marsprep = false
   interpolate_boundaries = false
   do_extractsqlite = false
-  addcalculatedfields = false
+  do_addcalculatedfields = false
 
 [cases.cy49t2_arome_target]
   host = "cy49t2_arome_R64"
+
+[cases.cy49t2_arome_target.modifs.general.times]
+  end = "PT0H"
 
 [cases.cy49t2_arome_target.modifs.suite_control]
   mirror_host_case = true
@@ -301,7 +307,7 @@
   do_marsprep = false
   interpolate_boundaries = false
   do_extractsqlite = false
-  addcalculatedfields = false
+  do_addcalculatedfields = false
 
 [cases.cy49t2_harmonie_arome_slaf]
   base = "cy49t2_harmonie_arome"
@@ -381,7 +387,7 @@
   do_marsprep = false
   interpolate_boundaries = false
   do_extractsqlite = false
-  addcalculatedfields = false
+  do_addcalculatedfields = false
 
 [cases.cy49t2_harmonie_arome_R64.modifs.system]
   case_suffix = "_R64"
@@ -391,6 +397,9 @@
 
 [cases.cy49t2_harmonie_arome_target]
   host = "cy49t2_harmonie_arome_R64"
+
+[cases.cy49t2_harmonie_arome_target.modifs.general.times]
+  end = "PT0H"
 
 [cases.cy49t2_harmonie_arome_target.modifs.suite_control]
   mirror_host_case = true

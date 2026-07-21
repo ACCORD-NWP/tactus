@@ -89,13 +89,6 @@
   ]
   host = "cy50t2_compile"
 
-[cases.cy50t2_alaro_eps.modifs.reference_checker]
-  check = false
-  generate = false
-
-[cases.cy50t2_alaro_eps.modifs.system]
-  case_suffix = "_eps"
-
 [cases.cy50t2_alaro_eps.modifs.eps.general]
   members = "0:3"
 
@@ -110,6 +103,13 @@
 
 [cases.cy50t2_alaro_eps.modifs.general.times]
   start = "-P2D"
+
+[cases.cy50t2_alaro_eps.modifs.reference_checker]
+  check = false
+  generate = false
+
+[cases.cy50t2_alaro_eps.modifs.system]
+  case_suffix = "_eps"
 
 [cases.cy50t2_alaro_mode_start]
   base = "cy50t2_alaro"
@@ -131,14 +131,14 @@
 
 [cases.cy50t2_alaro_target]
   base = "cy50t2_alaro"
-  host = "cy50t2_alaro"
   extra = ["tactus/data/config_files/modifications/target.toml"]
+  host = "cy50t2_alaro"
 
 [cases.cy50t2_alaro_target.modifs.general.times]
   end = "PT0H"
 
 [cases.cy50t2_alaro_target.modifs.suite_control]
-  mirror_suite = true
+  mirror_host_case = true
 
 [cases.cy50t2_alaro_target.modifs.system]
   bdclimdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_alaro/climate/@HOST_DOMAIN@"
@@ -283,7 +283,7 @@
   end = "PT0H"
 
 [cases.cy50t2_arome_target.modifs.suite_control]
-  mirror_suite = true
+  mirror_host_case = true
 
 [cases.cy50t2_arome_target.modifs.system]
   bdclimdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_arome/climate/@HOST_DOMAIN@"
@@ -428,7 +428,7 @@
   end = "PT0H"
 
 [cases.cy50t2_harmonie_arome_target.modifs.suite_control]
-  mirror_suite = true
+  mirror_host_case = true
 
 [cases.cy50t2_harmonie_arome_target.modifs.system]
   bdclimdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_harmonie_arome/climate/@HOST_DOMAIN@"
