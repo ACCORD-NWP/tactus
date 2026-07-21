@@ -81,7 +81,7 @@
   reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   result_folder = "@WRK@/checks/Forecast"
 
-[refchecks.reference_checker.task.Forecast.surfex]
+[reference_checker.task.Forecast.surfex]
   inpath = "@ARCHIVE@"
   pattern = "ICMSH.*0006h00m00s.sfx"
   method = "HistoryFields"
