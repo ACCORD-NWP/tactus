@@ -138,7 +138,7 @@
   end = "PT0H"
 
 [cases.cy50t2_alaro_target.modifs.suite_control]
-  mirror_host_case = true
+  mirror_suite = true
 
 [cases.cy50t2_alaro_target.modifs.system]
   bdclimdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_alaro/climate/@HOST_DOMAIN@"
@@ -283,7 +283,7 @@
   end = "PT0H"
 
 [cases.cy50t2_arome_target.modifs.suite_control]
-  mirror_host_case = true
+  mirror_suite = true
 
 [cases.cy50t2_arome_target.modifs.system]
   bdclimdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_arome/climate/@HOST_DOMAIN@"
@@ -428,7 +428,7 @@
   end = "PT0H"
 
 [cases.cy50t2_harmonie_arome_target.modifs.suite_control]
-  mirror_host_case = true
+  mirror_suite = true
 
 [cases.cy50t2_harmonie_arome_target.modifs.system]
   bdclimdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_harmonie_arome/climate/@HOST_DOMAIN@"
