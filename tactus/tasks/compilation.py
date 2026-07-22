@@ -197,9 +197,7 @@ class TactusBundleBuild(Task):
             else:
                 arch = str(arch_dir)
             arch = arch.split("arch")[-1]
-            compile_dir = (
-                f"{self.config['compile.cache_dir']}/{arch}/{self.bundle_hash}"
-            )
+            compile_dir = f"{self.config['compile.cache_dir']}/{arch}/{self.bundle_hash}"
 
         else:
             compile_dir = "@CASEDIR@"
@@ -247,7 +245,6 @@ class TactusBundleBuild(Task):
 
     def get_install_subpath(self):
         """Build install subpath by using the location of the env.sh file."""
-
         arch_dir = Path(f"{self.bundle_dir}/{self.arch}")
         default_link = arch_dir / "default"
         if default_link.exists() and default_link.is_symlink():
