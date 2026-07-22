@@ -709,7 +709,9 @@ class CheckSummaryTxt(CheckSummary):
         logger.info(f"Appended results to reference checking summary: {self.fullpath}")
 
     @staticmethod
-    def _to_txt(summary_file, check_definition: CheckDefinition, item: CheckItem = None):
+    def _to_txt(
+        summary_file, check_definition: CheckDefinition, item: CheckItem = None
+    ):
         """Append the content of the SummaryItem to a file in txt format.
 
         Args:
@@ -810,9 +812,9 @@ class CheckSummaryJson(CheckSummary):
         complete_dict["tasks"] = {}
         complete_dict["tasks"]["Prep"] = {}
         complete_dict["tasks"]["Prep"]["Create"] = {}
-        complete_dict["tasks"]["Prep"]["Create"]["description"] = (
-            f"Creation of {self.fullpath}"
-        )
+        complete_dict["tasks"]["Prep"]["Create"][
+            "description"
+        ] = f"Creation of {self.fullpath}"
         with (
             FileLock(self.fullpath, delete_existing=True),
             open(self.fullpath, mode="w", encoding="utf8") as outfile,
@@ -930,7 +932,9 @@ class CheckSummaryJson(CheckSummary):
         return False
 
     @staticmethod
-    def _to_dict(summary_dict, check_definition: CheckDefinition, item: CheckItem = None):
+    def _to_dict(
+        summary_dict, check_definition: CheckDefinition, item: CheckItem = None
+    ):
         """Append the SummaryItem to an existing dictionary.
 
         Args:
@@ -1054,7 +1058,8 @@ class ReferenceCheckManager:
         config_rc = config["reference_checker"]
         check = config_rc["check"]
         generate = config_rc["generate"]
-        rules_active = config_rc["rules_active"]
+        rules_excluded = config_rc.get("rules_excluded", [])
+        rules_active = list(set(config_rc["rules_active"]) - set(rules_excluded))
         task_rules_active = []
         for rules in rules_active:
             rule_array = rules.split(".")
@@ -1083,7 +1088,9 @@ class ReferenceCheckManager:
                        suppress_exception={suppress_exception}"
         )
 
-        if (check or generate) and (task_is_active or create_summary or analyze_summary):
+        if (check or generate) and (
+            task_is_active or create_summary or analyze_summary
+        ):
             return ReferenceCheckManager(
                 config_rc,
                 taskname,
@@ -1125,9 +1132,9 @@ class ReferenceCheckManager:
         workdirs = [os.path.dirname(summary.fullpath) for summary in self.summary_list]
 
         for check_definition in self.check_definitions:
-            workdirs.extend([
-                os.path.dirname(item.result_file) for item in check_definition.items
-            ])
+            workdirs.extend(
+                [os.path.dirname(item.result_file) for item in check_definition.items]
+            )
 
         for workdir in workdirs:
             if not os.path.exists(workdir):
