@@ -76,7 +76,7 @@ def run_task(args: RunTaskNamespace, config: ParsedConfig):
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     """
     logger.info("Prepare {}...", args.task)
@@ -118,7 +118,7 @@ def create_exp(args, config):
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     """
     known_hosts_file = args.host_file
@@ -156,7 +156,7 @@ def create_compile_exp(args, config):
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     """
     config = config.copy(update={"compile": {"ial_git_branch": args.ial_tag}})
@@ -174,7 +174,7 @@ def start_suite(args, config):
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     Raises:
         SystemExit: If error occurs while transferring files.
@@ -351,7 +351,7 @@ def show_config(args, config):
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     """
     logger.info("Printing requested configs...")
@@ -391,7 +391,7 @@ def show_config_schema(args, config):
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     """
     logger.info("Printing JSON schema used in the validation of the configs...")
@@ -403,7 +403,7 @@ def show_host(args, config):
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     """
     tactus_host = TactusHost()
@@ -521,7 +521,7 @@ def show_namelist(args, config):
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     """
     tactus_home = set_tactus_home(config, args.tactus_home)
@@ -554,7 +554,7 @@ def namelist_integrate(args, config):
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     Raises:
         SystemExit   # noqa: DAR401
@@ -619,7 +619,7 @@ def namelist_convert(args, config: ParsedConfig):
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     """
     # Configuration
@@ -651,7 +651,7 @@ def namelist_format(args, config: ParsedConfig):
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     """
     # Configuration
@@ -678,7 +678,7 @@ def replace_node(args, config):
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     """
     tactus_home = set_tactus_home(config, args.tactus_home)
