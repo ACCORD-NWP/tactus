@@ -21,10 +21,6 @@
 [cases.cy49t2_alaro_climate_files.modifs.suite_control]
   create_time_dependent_suite = false
 
-[cases.cy49t2_alaro_climate_files.modifs.reference_checker]
-  check = false
-  generate = false
-
 [cases.cy49t2_alaro]
   host = "cy49t2_alaro_climate_files"
 
@@ -54,7 +50,26 @@
   do_marsprep = false
   interpolate_boundaries = false
   do_extractsqlite = false
-  addcalculatedfields = false
+  do_addcalculatedfields = false
+
+[cases.cy49t2_alaro_slaf]
+  base = "cy49t2_alaro"
+  extra = [
+    "tactus/data/config_files/include/eps/eps_members_slaf.toml",
+    "tactus/data/config_files/include/eps/CY49t2/alaro.toml",
+  ]
+  host = "cy49t2_alaro"
+
+[cases.cy49t2_alaro_slaf.modifs.eps.general]
+  members = "0:3"
+
+[cases.cy49t2_alaro_slaf.modifs.system]
+  case_suffix = "_slaf"
+  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_alaro/climate/@DOMAIN@"
+
+[cases.cy49t2_alaro_slaf.modifs.suite_control]
+  create_static_data = false
+  mirror_suite = true
 
 [cases.cy49t2_alaro_eps]
   base = "cy49t2_alaro"
@@ -62,19 +77,27 @@
     "tactus/data/config_files/include/eps/eps_7members.toml",
     "tactus/data/config_files/include/eps/CY49t2/alaro.toml",
   ]
-  host = "cy49t2_alaro"
-
-[cases.cy49t2_alaro_eps.modifs.system]
-  case_suffix = "_eps"
-  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_alaro/climate/@DOMAIN@"
-  intp_bddir = "@REFCHECK_ROOT@/@REFERENCE_TAG@/interpolated_bnd/@REF_CASE@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
 
 [cases.cy49t2_alaro_eps.modifs.eps.general]
   members = "0:3"
 
+[cases.cy49t2_alaro_eps.modifs.eps.member_settings.boundaries.ifs]
+  bdmember = "0:3"
+
 [cases.cy49t2_alaro_eps.modifs.suite_control]
-  create_static_data = false
-  mirror_suite = true
+  do_addcalculatedfields = false
+  do_extractsqlite = false
+  do_mergesqlite = false
+
+[cases.cy49t2_alaro_eps.modifs.general.times]
+  start = "-P2D"
+
+[cases.cy49t2_alaro_eps.modifs.reference_checker]
+  check = false
+  generate = false
+
+[cases.cy49t2_alaro_eps.modifs.system]
+  case_suffix = "_eps"
 
 [cases.cy49t2_alaro_mode_start]
   base = "cy49t2_alaro"
@@ -97,6 +120,9 @@
 [cases.cy49t2_alaro_target]
   host = "cy49t2_alaro"
 
+[cases.cy49t2_alaro_target.modifs.general.times]
+  end = "PT0H"
+
 [cases.cy49t2_alaro_target.modifs.suite_control]
   mirror_host_case = true
 
@@ -112,10 +138,6 @@
 
 [cases.cy49t2_arome_climate_files.modifs.suite_control]
   create_time_dependent_suite = false
-
-[cases.cy49t2_arome_climate_files.modifs.reference_checker]
-  check = false
-  generate = false
 
 [cases.cy49t2_arome]
   host = "cy49t2_arome_climate_files"
@@ -146,27 +168,35 @@
   do_marsprep = false
   interpolate_boundaries = false
   do_extractsqlite = false
-  addcalculatedfields = false
+  do_addcalculatedfields = false
 
 [cases.cy49t2_arome_eps]
   base = "cy49t2_arome"
-  host = "cy49t2_arome_climate_files"
   extra = [
     "tactus/data/config_files/include/eps/eps_7members.toml",
     "tactus/data/config_files/include/eps/CY49t2/arome.toml",
   ]
 
+[cases.cy49t2_arome_eps.modifs.reference_checker]
+  check = false
+  generate = false
+
 [cases.cy49t2_arome_eps.modifs.eps.general]
   members = "0:3"
 
+[cases.cy49t2_arome_eps.modifs.eps.member_settings.boundaries.ifs]
+  bdmember = "0:3"
+
 [cases.cy49t2_arome_eps.modifs.system]
   case_suffix = "_eps"
-  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_arome/climate/@DOMAIN@"
-  intp_bddir = "@REFCHECK_ROOT@/@REFERENCE_TAG@/interpolated_bnd/@REF_CASE@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
 
 [cases.cy49t2_arome_eps.modifs.suite_control]
-  create_static_data = false
-  mirror_suite = true
+  do_addcalculatedfields = false
+  do_extractsqlite = false
+  do_mergesqlite = false
+
+[cases.cy49t2_arome_eps.modifs.general.times]
+  start = "-P2D"
 
 [cases.cy49t2_arome_slaf]
   base = "cy49t2_arome"
@@ -174,7 +204,7 @@
     "tactus/data/config_files/include/eps/eps_members_slaf.toml",
     "tactus/data/config_files/include/eps/CY49t2/arome.toml",
   ]
-  host = "cy49t2_arome_climate_files"
+  host = "cy49t2_arome"
 
 [cases.cy49t2_arome_slaf.modifs.eps.general]
   members = "0:3"
@@ -182,6 +212,10 @@
 [cases.cy49t2_arome_slaf.modifs.system]
   case_suffix = "_slaf"
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_arome/climate/@DOMAIN@"
+
+[cases.cy49t2_arome_slaf.modifs.suite_control]
+  create_static_data = false
+  mirror_suite = true
 
 [cases.cy49t2_arome_mode_start]
   base = "cy49t2_arome"
@@ -220,10 +254,13 @@
   do_marsprep = false
   interpolate_boundaries = false
   do_extractsqlite = false
-  addcalculatedfields = false
+  do_addcalculatedfields = false
 
 [cases.cy49t2_arome_target]
   host = "cy49t2_arome_R64"
+
+[cases.cy49t2_arome_target.modifs.general.times]
+  end = "PT0H"
 
 [cases.cy49t2_arome_target.modifs.suite_control]
   mirror_host_case = true
@@ -241,12 +278,8 @@
 [cases.cy49t2_harmonie_arome_climate_files.modifs.suite_control]
   create_time_dependent_suite = false
 
-[cases.cy49t2_harmonie_arome_climate_files.modifs.reference_checker]
-  check = false
-  generate = false
-
 [cases.cy49t2_harmonie_arome]
-  host = "cy49t2_arome_climate_files"
+  host = "cy49t2_harmonie_arome_climate_files"
 
 [cases.cy49t2_harmonie_arome.modifs.system]
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/climate/@DOMAIN@"
@@ -274,7 +307,26 @@
   do_marsprep = false
   interpolate_boundaries = false
   do_extractsqlite = false
-  addcalculatedfields = false
+  do_addcalculatedfields = false
+
+[cases.cy49t2_harmonie_arome_slaf]
+  base = "cy49t2_harmonie_arome"
+  extra = [
+    "tactus/data/config_files/include/eps/eps_members_slaf.toml",
+    "tactus/data/config_files/include/eps/CY49t2/harmonie_arome.toml",
+  ]
+  host = "cy49t2_harmonie_arome"
+
+[cases.cy49t2_harmonie_arome_slaf.modifs.eps.general]
+  members = "0:3"
+
+[cases.cy49t2_harmonie_arome_slaf.modifs.system]
+  case_suffix = "_slaf"
+  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/climate/@DOMAIN@"
+
+[cases.cy49t2_harmonie_arome_slaf.modifs.suite_control]
+  create_static_data = false
+  mirror_suite = true
 
 [cases.cy49t2_harmonie_arome_eps]
   base = "cy49t2_harmonie_arome"
@@ -282,19 +334,27 @@
     "tactus/data/config_files/include/eps/eps_7members.toml",
     "tactus/data/config_files/include/eps/CY49t2/harmonie_arome.toml",
   ]
-  host = "cy49t2_harmonie_arome_climate_files"
 
 [cases.cy49t2_harmonie_arome_eps.modifs.eps.general]
   members = "0:3"
 
+[cases.cy49t2_harmonie_arome_eps.modifs.eps.member_settings.boundaries.ifs]
+  bdmember = "0:3"
+
 [cases.cy49t2_harmonie_arome_eps.modifs.system]
   case_suffix = "_eps"
-  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/climate/@DOMAIN@"
-  intp_bddir = "@REFCHECK_ROOT@/@REFERENCE_TAG@/interpolated_bnd/@REF_CASE@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
 
 [cases.cy49t2_harmonie_arome_eps.modifs.suite_control]
-  create_static_data = false
-  mirror_suite = true
+  do_addcalculatedfields = false
+  do_extractsqlite = false
+  do_mergesqlite = false
+
+[cases.cy49t2_harmonie_arome_eps.modifs.general.times]
+  start = "-P2D"
+
+[cases.cy49t2_harmonie_arome_eps.modifs.reference_checker]
+  check = false
+  generate = false
 
 [cases.cy49t2_harmonie_arome_mode_start]
   base = "cy49t2_harmonie_arome"
@@ -327,7 +387,7 @@
   do_marsprep = false
   interpolate_boundaries = false
   do_extractsqlite = false
-  addcalculatedfields = false
+  do_addcalculatedfields = false
 
 [cases.cy49t2_harmonie_arome_R64.modifs.system]
   case_suffix = "_R64"
@@ -337,6 +397,9 @@
 
 [cases.cy49t2_harmonie_arome_target]
   host = "cy49t2_harmonie_arome_R64"
+
+[cases.cy49t2_harmonie_arome_target.modifs.general.times]
+  end = "PT0H"
 
 [cases.cy49t2_harmonie_arome_target.modifs.suite_control]
   mirror_host_case = true

@@ -46,6 +46,9 @@
 [modifs.submission.task_exceptions.Forecast]
   bindir = "@SUBMISSION.BINDIR@"
 
+[modifs.submission.task_exceptions.Marsprep.BATCH]
+  WALLTIME = "#SBATCH --time=12:00:00"
+
 [modifs.submission.task_exceptions.PgdFilterTownFrac.ENV]
   ECF_TRIES = 15
 
