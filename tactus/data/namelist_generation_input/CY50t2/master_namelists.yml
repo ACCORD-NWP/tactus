@@ -969,15 +969,16 @@ f4_HARMONIE_AROME:
     LQMT: false
     LQMVD: false
     NSITER: 0
-    RDAMPDIV: 10.0
-    RDAMPPD: 100000.0
-    RDAMPQ: 10.0
-    RDAMPT: 10.0
-    RDAMPVD: 10.0
-    RDAMPVOR: 10.0
+    RDAMPDIV: 20.0
+    RDAMPPD: 200000.0
+    RDAMPQ: 20.0
+    RDAMPT: 20.0
+    RDAMPVD: 20.0
+    RDAMPVOR: 20.0
+    RW2TLFF: 1.0
     SITRA: 70.0
     VESL: 0.0
-    XIDT: 0.15
+    XIDT: 0.0
   NAMDYNA:
     LCOMADH: true
     LCOMADV: false
@@ -1012,7 +1013,6 @@ f4_HARMONIE_AROME:
     YFATKE%NBITS: 16
   NAMFPC:
     LCRITSNOWTEMP: false
-    NFPCLI: 2
   NAMGFL:
     NGFL_EZDIAG: 3
     YA_NL%LPT: false
@@ -1078,10 +1078,10 @@ f4_HARMONIE_AROME:
     LLCRIT: true
     LOLSMC: true
     LOTOWNC: true
-    LSCAWAREMF: true
+    LSCAWAREMF: false
     LTOTPREC: false
-    LWTHRESH: true
-    LWTHRESHMOIST: true
+    LWTHRESH: false
+    LWTHRESHMOIST: false
     NSWB_MNH: 6
     RADGR: 0.5
     RADSN: 1.0
@@ -1089,7 +1089,6 @@ f4_HARMONIE_AROME:
     LHISFWR: true
     LPGDFWR: false
   NAMPHY:
-    LAEROMMR: false
     LAERONRT: false
     LCLSATUR: true
     LHLRADUPD: true
@@ -1205,20 +1204,20 @@ f4_HARMONIE_AROME:
     LSUBG_COND: true
     VSIGQSAT: 0.02
   NAM_PARAM_ICEN:
+    LEXCLDROP: false
     LKOGAN: true
     LOCND2: true
-    LRED: false
     LSEDIC: true
     XFRMIN_NAM(1): 1.0e-05
-    XFRMIN_NAM(12): 0.05
     XFRMIN_NAM(2): 1.0e-08
+    XFRMIN_NAM(3): 3.0e-09
+    XFRMIN_NAM(4): 3.0e-09
+    XFRMIN_NAM(7): 0.0
+    XFRMIN_NAM(12): 0.05
     XFRMIN_NAM(22): 0.25
     XFRMIN_NAM(24): 1.0
     XFRMIN_NAM(26): 250000000.0
     XFRMIN_NAM(29): 1000.0
-    XFRMIN_NAM(3): 3.0e-09
-    XFRMIN_NAM(4): 3.0e-09
-    XFRMIN_NAM(7): 0.0
   NAM_PARAM_MFSHALLN:
     CMF_CLOUD: STAT
     CMF_UPDRAFT: DUAL
@@ -1269,7 +1268,7 @@ f4_common:
     YR_NL%NREQIN: 0
     YS_NL%NREQIN: 0
   NAMGRIB:
-    NCYCLE: 49
+    NCYCLE: 50
     NENSFNB: ${cfg:general.member}
   NAMINI:
     LDFI: false

@@ -11,6 +11,12 @@ sfx_io:
     LNOWRITE_TEXFILE: True
     LSPLIT_PATCH: True
 
+sfx_pgd_isba_3l:
+  NAM_ISBA:
+    CISBA: "3-L"
+    NGROUND_LAYER: 3
+    NPATCH: ${cfg:pgd.npatch}
+
 sfx_pgd_isba_dif:
   NAM_SGH_ISBAN:
    CHORT: "DEF"
@@ -46,7 +52,6 @@ sfx_pgd_isba_dif_ALARO:
     YSAND: "sand"
     YSANDFILETYPE: "DIRECT"
 
-
 sfx_treedrag:
   NAM_TREEDRAG:
     LFAKETREE:
@@ -63,7 +68,6 @@ sfx_treedrag:
     XFORLAT1: 1.0
     XFORLAT2: 0.0
     XGRASS_H_DNM: 3.0
-    XSCALE_H_TREE_ECOSG: 1.0
     XZ0_MAX_LIMIT: 1.6
     XZ0_MIN_LIMIT: 0.0
 
@@ -82,8 +86,6 @@ sfx_forecast:
     N2M: 2
   NAM_FRAC:
     LECOSG: True
-  NAM_ISBAN:
-    CSCOND: PL98
   NAM_SEAFLUXN:
     LPWEBB: False
     LPWG: False
@@ -133,6 +135,8 @@ sfx_forecast_HARMONIE_AROME:
     XZ0SN: 0.003
 
 sfx_forecast_AROME:
+  NAM_ISBAN:
+    CSCOND: PL98
   NAM_REPROD_OPER:
     LREPROD_OPER: True
   NAM_SEAFLUXN:
@@ -155,6 +159,8 @@ sfx_forecast_AROME:
     XZ0SN: 0.01
 
 sfx_forecast_ALARO:
+  NAM_ISBAN:
+    CSCOND: PL98
   NAM_DIAG_SURFN:
     N2M: 0
     LSURF_VARS: True
@@ -637,6 +643,8 @@ sfx_pgd_flake:
     YWATER_DEPTH_STATUS: "GlobalLakeStatus"
   NAM_FLAKEN:
     LSEDIMENTS: False
+  NAM_PGD_SCHEMES:
+    CWATER: "FLAKE"
 
 sfx_pgd_schemes:
   NAM_PGD_SCHEMES:
@@ -865,8 +873,10 @@ sfx_prep_isba_HARMONIE_AROME:
   NAM_FRAC:
     LECOSG: True
   NAM_PREP_ISBA_SNOW:
-    CSNOW: "3-L"
+    CSNOW: "D95"
+    LSNOW_FRAC_ECMWF: False
     LSWEMAX: True
+    XRM_LITTLE_SNOW: 0.0
   NAM_DIAG_ISBAN:
     LPATCH_BUDGET: True
     LSURF_MISC_DIF: True
@@ -876,6 +886,9 @@ sfx_prep_isba_HARMONIE_AROME:
     LEXTRAP_WG: True
     LEXTRAP_WGI: True
     LISBA_CANOPY: False
+    LISBA_FRAC_ECMWF: False
+    XRM_WM_ECMWF: 0.0
+
 
 sfx_prep_isba_AROME:
   NAM_FRAC:
@@ -914,10 +927,3 @@ sfx_prep_isba_from_fa:
     CFILETYPE: "FA"
     CFILEPGD: "PGD_HOST"
     CFILEPGDTYPE: "FA"
-
-sfx_prep_isba_from_nc:
-  NAM_PREP_SURF_ATM:
-    CFILE: "INFILE"
-    CFILETYPE: "NC"
-    CFILEPGD: "PGD_HOST"
-    CFILEPGDTYPE: "NC"
