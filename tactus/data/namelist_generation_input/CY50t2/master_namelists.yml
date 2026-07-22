@@ -1028,7 +1028,6 @@ f4_HARMONIE_AROME:
     YG_NL%LPT: false
     YG_NL%LQM: true
     YG_NL%LSLHD: true
-    YG_NL%NREQIN: -1
     YI_NL%CNAME: ICE_CRYSTAL
     YI_NL%LPT: false
     YI_NL%LQM: true
@@ -1050,15 +1049,12 @@ f4_HARMONIE_AROME:
     YR_NL%LPT: false
     YR_NL%LQM: true
     YR_NL%LSLHD: true
-    YR_NL%NREQIN: -1
     YSRC_NL%LPT: false
     YS_NL%CNAME: SNOW
     YS_NL%LPT: false
     YS_NL%LQM: true
     YS_NL%LSLHD: true
-    YS_NL%NREQIN: -1
     YTKE_NL%LPT: false
-    YTKE_NL%NREQIN: -1
   NAMINI:
     LDFI: false
   NAMINTFLEX:
@@ -1360,13 +1356,19 @@ f4_common_forecast:
     NVDVAR: 4
   NAMGFL:
     YG_NL%NCOUPLING: 0
+    YG_NL%NREQIN: 0
     YIRAD_NL%LGP: true
     YI_NL%NCOUPLING: 0
+    YI_NL%NREQIN: 0
     YLRAD_NL%LGP: true
     YL_NL%NCOUPLING: 0
+    YL_NL%NREQIN: 0
     YR_NL%NCOUPLING: 0
+    YR_NL%NREQIN: 0
     YS_NL%NCOUPLING: 0
+    YS_NL%NREQIN: 0
     YTKE_NL%NCOUPLING: 0
+    YTKE_NL%NREQIN: 0
   NAMIO_SERV:
     NIO_SERV_BUF_MAXSIZE: 20
     NIO_SERV_METHOD: 2
