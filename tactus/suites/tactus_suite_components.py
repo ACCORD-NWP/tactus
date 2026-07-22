@@ -1190,6 +1190,7 @@ class InterpolationFamily(EcflowSuiteFamily):
         if mode == "restart" or (mode == "start" and not is_first_cycle):
             do_prep = False
 
+        prep_fam = None
         if do_prep:
             prep_fam = PrepFamily(
                 self,
@@ -1231,7 +1232,7 @@ class InterpolationFamily(EcflowSuiteFamily):
             member=member,
         )
 
-        if config["suite_control.split_mars_by_step"]:
+        if config["suite_control.split_mars_by_step"] and prep_fam is not None:
             lbc_mars_fam = lbc_fam.split_mars_by_step_fam
             lbc_mars_fam_path = prep_fam.make_relative(lbc_mars_fam.path)
             prep_fam.ecf_node.add_trigger(f"{lbc_mars_fam_path}==complete")
