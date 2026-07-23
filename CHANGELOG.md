@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Not coupling hydrometeors for all CSC. [\#160](https://github.com/ACCORD-NWP/tactus/pull/160) (@kastelecn)
 - Update CY50t2 namelists for Harmonie-Arome CSC. [#115](https://github.com/ACCORD-NWP/tactus/pull/115) (@romick-knmi, @uandrae)
+- Set surfex_sea_ice to default none to be consistent for all CSCs. [#164](https://github.com/ACCORD-NWP/tactus/pull/164)(@uandrae)
 
 ### Fixed
 - Correct sign of the xtool error tolerance used in the referenceChecker. [#162](https://github.com/ACCORD-NWP/tactus/pull/162)(@uandrae)
