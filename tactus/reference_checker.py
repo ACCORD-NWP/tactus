@@ -1054,7 +1054,8 @@ class ReferenceCheckManager:
         config_rc = config["reference_checker"]
         check = config_rc["check"]
         generate = config_rc["generate"]
-        rules_active = config_rc["rules_active"]
+        rules_excluded = config_rc.get("rules_excluded", [])
+        rules_active = list(set(config_rc["rules_active"]) - set(rules_excluded))
         task_rules_active = []
         for rules in rules_active:
             rule_array = rules.split(".")

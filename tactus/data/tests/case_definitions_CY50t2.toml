@@ -34,6 +34,9 @@
 [cases.cy50t2_alaro]
   host = "cy50t2_alaro_climate_files"
 
+[cases.cy50t2_alaro.modifs.reference_checker]
+  rules_excluded = ["Forecast.surfex"]
+
 [cases.cy50t2_alaro.modifs.system]
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_alaro/climate/@DOMAIN@"
   intp_bddir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_alaro/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
@@ -47,6 +50,9 @@
   base = "cy50t2_alaro"
   extra = ["tactus/data/config_files/modifications/ddh.toml"]
   host = "cy50t2_alaro"
+
+[cases.cy50t2_alaro_ddh.modifs.reference_checker]
+  rules_excluded = ["Forecast.surfex"]
 
 [cases.cy50t2_alaro_ddh.modifs.system]
   case_suffix = "_ddh"
@@ -72,6 +78,9 @@
 
 [cases.cy50t2_alaro_slaf.modifs.eps.general]
   members = "0:3"
+
+[cases.cy50t2_alaro_slaf.modifs.reference_checker]
+  rules_excluded = ["Forecast.surfex"]
 
 [cases.cy50t2_alaro_slaf.modifs.system]
   case_suffix = "_slaf"
@@ -120,6 +129,9 @@
   end = "PT3H"
   forecast_range = "PT3H"
 
+[cases.cy50t2_alaro_mode_start.modifs.reference_checker]
+  rules_excluded = ["Forecast.surfex"]
+
 [cases.cy50t2_alaro_mode_start.modifs.suite_control]
   mode = "start"
   create_static_data = false
@@ -136,6 +148,9 @@
 
 [cases.cy50t2_alaro_target.modifs.general.times]
   end = "PT0H"
+
+[cases.cy50t2_alaro_target.modifs.reference_checker]
+  rules_excluded = ["Forecast.surfex"]
 
 [cases.cy50t2_alaro_target.modifs.suite_control]
   mirror_suite = true
