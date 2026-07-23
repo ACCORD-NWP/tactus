@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tactus test runner - Fix underscore in test definition. [#127](https://github.com/ACCORD-NWP/tactus/pull/127) (@dhaumont)
 
 ### Changed
+- Not coupling hydrometeors for all CSC. [\#160](https://github.com/ACCORD-NWP/tactus/pull/160) (@kastelecn)
 - Update CY50t2 namelists for Harmonie-Arome CSC. [#115](https://github.com/ACCORD-NWP/tactus/pull/115) (@romick-knmi, @uandrae)
 
 ### Fixed
