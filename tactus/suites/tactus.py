@@ -28,7 +28,7 @@ class TactusSuiteDefinition(SuiteDefinition):
         """Construct the definition.
 
         Args:
-            config (tactus.ParsedConfig): Configuration file
+            config (ParsedConfig): Configuration file
             dry_run (bool, optional): Dry run not using ecflow. Defaults to False.
 
         Raises:

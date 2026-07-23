@@ -836,6 +836,19 @@ class TestReferenceCheckManager:
         assert not os.path.exists(summary_json_path)
         return False
 
+    def test_reference_check_manager_exclude_rules(self, basic_config):
+        update = {
+            "reference_checker": {
+                "rules_active": ["Foo.foo", "Foo.bar"],
+                "rules_excluded": ["Foo.bar"],
+                "check": True,
+                "generate": False,
+            }
+        }
+        config = basic_config.copy(update=update)
+        manager = ReferenceCheckManager.create_reference_check_manager(config, "Foo")
+        assert manager.rules_active == ["foo"]
+
     def test_reference_check_manager_execute_nocheck_nogenerate(self, basic_config):
         """Run suite without check and without generate. Nothing should happen."""
         assert not self._simulate_suite_execution(basic_config, "")
