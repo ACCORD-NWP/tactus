@@ -20,7 +20,7 @@ class InterpolateBoundaries(Task):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         self.boundary = Boundary(config)
         name = (
@@ -155,7 +155,7 @@ class E927(InterpolateBoundaries):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         InterpolateBoundaries.__init__(self, config)
 
@@ -167,6 +167,6 @@ class C903(InterpolateBoundaries):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         InterpolateBoundaries.__init__(self, config)

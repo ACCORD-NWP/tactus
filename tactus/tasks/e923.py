@@ -22,7 +22,7 @@ class E923(Task):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
             taskname (str): Enforced task name
         """
         name = __class__.__name__ if taskname is None else taskname
@@ -243,7 +243,7 @@ class PgdUpdate(Task):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
 
         """
         Task.__init__(self, config, __class__.__name__)
@@ -303,7 +303,7 @@ class E923Constant(E923):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         E923.__init__(self, config, "E923Constant")
 
@@ -328,7 +328,7 @@ class E923Monthly(E923):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         try:
             months = config["task.args.months"].split(",")

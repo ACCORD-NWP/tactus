@@ -46,7 +46,7 @@ class Marsprep(Task):
         """Construct forecast object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
 
         Raises:
             ValueError: No data for this date.
