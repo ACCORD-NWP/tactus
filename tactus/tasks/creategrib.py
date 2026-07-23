@@ -16,7 +16,7 @@ class GlGrib(Task):
         """Construct create grib object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
             name (str): Task name
         """
         Task.__init__(self, config, name)
@@ -181,7 +181,7 @@ class CreateGrib(GlGrib):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         GlGrib.__init__(self, config, __class__.__name__)
 
@@ -193,6 +193,6 @@ class CreateGribStatic(GlGrib):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         GlGrib.__init__(self, config, __class__.__name__)

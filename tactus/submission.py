@@ -424,7 +424,7 @@ class NoSchedulerSubmission:
 
         Args:
             task                  (str): Task name
-            config (tactus.ParsedConfig): Config
+            config (ParsedConfig): Config
             template_job          (str): Task template job file
             task_job             (Path): Task job file
             output               (Path): Output file

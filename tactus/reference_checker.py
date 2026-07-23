@@ -48,7 +48,7 @@ class ReferenceChecker:
 
         Args:
            method: str defining the method
-           config (tactus.ParsedConfig): Configuration
+           config (ParsedConfig): Configuration
         Returns:
             A ReferenceChecker
         """
@@ -338,7 +338,7 @@ class CheckDefinition:
         """Create the list of items to be checked.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
             taskname: the name of the task
             label_suffix: the suffix for the label
             rules_active: list of rules that are active
@@ -364,7 +364,7 @@ class CheckDefinition:
                         if parameter not in config["task"][taskname][rulename]:
                             logger.warning(
                                 f"Reference Checker - {parameter} not defined for"
-                                + f"task {taskname} and rule {rulename}."
+                                + f" task {taskname} and rule {rulename}."
                             )
                             have_all_parameters = False
                     if not have_all_parameters:
@@ -475,7 +475,7 @@ class CheckSummary:
         """Create the list of summary_list from the configuration.
 
         Args:
-           config (tactus.ParsedConfig): Configuration
+           config (ParsedConfig): Configuration
         Returns:
            list of CheckSummary
 
@@ -629,13 +629,14 @@ class CheckSummaryAnalysis:
                     + f" or has failed. </{color}> \n"
                 )
             else:
-                for results in summary["tasks"].values():
+                for task_name, results in summary["tasks"].items():
                     for test_type, result in results.items():
                         if test_type == "Create":
                             continue
                         try:
+                            label = f"{task_name}.{test_type}"
                             result_message = (
-                                f"{test_type:>10} | {result['items'][0]['result']}"
+                                f"{label:>30} | {result['items'][0]['result']}"
                             )
                             result_message = result_message.replace("\n", "")
                             result_message = result_message.replace(
@@ -1053,7 +1054,8 @@ class ReferenceCheckManager:
         config_rc = config["reference_checker"]
         check = config_rc["check"]
         generate = config_rc["generate"]
-        rules_active = config_rc["rules_active"]
+        rules_excluded = config_rc.get("rules_excluded", [])
+        rules_active = list(set(config_rc["rules_active"]) - set(rules_excluded))
         task_rules_active = []
         for rules in rules_active:
             rule_array = rules.split(".")
