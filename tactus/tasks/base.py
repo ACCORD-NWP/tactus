@@ -43,7 +43,7 @@ class Task(object):
         """Construct base task.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
             name (str): Task name
 
         Raises:
@@ -327,7 +327,7 @@ class UnitTest(Task):
         """Construct test task.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         Task.__init__(self, config, __class__.__name__)
 
@@ -339,6 +339,6 @@ class ReferenceCheck(Task):
         """Construct ReferenceCheck task.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         Task.__init__(self, config, __class__.__name__)

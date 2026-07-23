@@ -21,7 +21,7 @@ class PrepRun(Task):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         self.name = "PrepRun"
         Task.__init__(self, config, __class__.__name__)

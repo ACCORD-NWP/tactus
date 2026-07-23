@@ -48,7 +48,7 @@ class ReferenceChecker:
 
         Args:
            method: str defining the method
-           config (tactus.ParsedConfig): Configuration
+           config (ParsedConfig): Configuration
         Returns:
             A ReferenceChecker
         """
@@ -338,7 +338,7 @@ class CheckDefinition:
         """Create the list of items to be checked.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
             taskname: the name of the task
             label_suffix: the suffix for the label
             rules_active: list of rules that are active
@@ -475,7 +475,7 @@ class CheckSummary:
         """Create the list of summary_list from the configuration.
 
         Args:
-           config (tactus.ParsedConfig): Configuration
+           config (ParsedConfig): Configuration
         Returns:
            list of CheckSummary
 
@@ -1054,7 +1054,8 @@ class ReferenceCheckManager:
         config_rc = config["reference_checker"]
         check = config_rc["check"]
         generate = config_rc["generate"]
-        rules_active = config_rc["rules_active"]
+        rules_excluded = config_rc.get("rules_excluded", [])
+        rules_active = list(set(config_rc["rules_active"]) - set(rules_excluded))
         task_rules_active = []
         for rules in rules_active:
             rule_array = rules.split(".")

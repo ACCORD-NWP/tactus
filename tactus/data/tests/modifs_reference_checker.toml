@@ -37,7 +37,7 @@
 
 [refchecks.reference_checker.task.C903_0-6.default]
   inpath = "@INTP_BDDIR@"
-  pattern = "ELS(.*)(000|003)"
+  pattern = "ELS(.*)(000|003)(_slaf2)?$"
   method = "HistoryFields"
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
