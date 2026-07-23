@@ -24,21 +24,21 @@
   args_template = "-f1 {test_file} -f2 {reference_file} {file_format} -s -of SCREEN -de -to {tolerance}"
   binary = "@INSTALL_DIR@/gl/@COMPILER@/latest/bin/xtool"
   file_format = "GRIB"
-  tolerance = "10"
+  tolerance = "-10"
   tool = "xtool"
 
 [reference_checker.methods.HistoryFields]
   args_template = "-f1 {test_file} -f2 {reference_file} {file_format} -s -of SCREEN -de -to {tolerance}"
   binary = "@INSTALL_DIR@/gl/@COMPILER@/latest/bin/xtool"
   file_format = "FA"
-  tolerance = "10"
+  tolerance = "-10"
   tool = "xtool"
 
 [reference_checker.methods.E923Files]
   args_template = "-f1 {test_file} -f2 {reference_file} {file_format} -s -of SCREEN -de -to {tolerance} -igd"
   binary = "@INSTALL_DIR@/gl/@COMPILER@/latest/bin/xtool"
   file_format = "FA"
-  tolerance = "10"
+  tolerance = "-10"
   tool = "xtool"
 
 [reference_checker.summary.json]
