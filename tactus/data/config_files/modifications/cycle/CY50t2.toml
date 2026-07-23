@@ -7,7 +7,7 @@
   surfex = "PT1H"
 
 [submission]
-  precision = "R64"
+  precision = "R32"
 
 [submission.task_exceptions.E923Update]
   bindir = "/perm/deployde330/github-actions/install/CY49t2/intel/R64/latest/bin"

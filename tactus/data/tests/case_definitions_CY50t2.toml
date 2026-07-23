@@ -7,15 +7,7 @@
 #
 
 [cases.cy50t2_compile]
-  base = "cy50t2_arome"
-  clean = false
-
-[cases.cy50t2_compile.modifs.general]
-  case = "@CASE_PREFIX@@CYCLE@_compile"
-
-[cases.cy50t2_compile.modifs.suite_control]
-  compile = true
-  suite_definition = "CompilationSuiteDefinition"
+  base = "cy50t2_compile"
 
 [cases.cy50t2_compile.modifs.reference_checker]
   check = false
