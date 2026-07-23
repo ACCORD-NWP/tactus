@@ -7,7 +7,9 @@
 #
 
 [cases.cy50t2_compile]
-  base = "cy50t2_compile"
+
+[cases.cy50t2_compile.modifs.general]
+  case = "@CASE_PREFIX@_@CYCLE@_compile"
 
 [cases.cy50t2_compile.modifs.reference_checker]
   check = false
