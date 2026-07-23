@@ -33,7 +33,7 @@ def mars_selection(selection: str, config: ParsedConfig) -> dict:
 
     Args:
         selection             (str): The selection to use.
-        config (tactus.ParsedConfig): Configuration object
+        config (ParsedConfig): Configuration object
 
     Returns:
          mars                (dict): mars config section
@@ -306,7 +306,7 @@ def get_domain_data(config):
     """Read and return domain data.
 
     Args:
-        config (tactus.ParsedConfig): Configuration from which we get the domain data
+        config (ParsedConfig): Configuration from which we get the domain data
     Returns:
         String containing the domain info for MARS
     """

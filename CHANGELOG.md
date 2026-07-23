@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Tactus test runner - allow to exclude rules. [#155](https://github.com/ACCORD-NWP/tactus/pull/155) (@uandrae)
+- Make ParsedConfig uniform in docstring. [#161](https://github.com/ACCORD-NWP/tactus/pull/161)(@dhaumont)
 - Tactus test runner - introduce several new reference checks. [#150](https://github.com/ACCORD-NWP/tactus/pull/150) (@uandrae)
 - Add `tactus compile` subcommand for IAL compilation configurations, including the `cy50t2_compile` preset, `@IAL_TAG@` macro, and supporting documentation. [#132](https://github.com/ACCORD-NWP/tactus/pull/132) (@pardallio)
 - Unit test: reference_checker: create test data in tmp instead of scratch [#140](https://github.com/ACCORD-NWP/tactus/pull/140) (@dhaumont)
