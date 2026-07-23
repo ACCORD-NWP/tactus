@@ -11,7 +11,7 @@ class Cleaning(Task):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         Task.__init__(self, config, __class__.__name__)
 
@@ -39,7 +39,7 @@ class CycleCleaning(Cleaning):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         Cleaning.__init__(self, config)
         self.name = "CycleCleaning"
@@ -53,7 +53,7 @@ class PostMortem(Cleaning):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         Cleaning.__init__(self, config)
         self.name = "PostMortem"

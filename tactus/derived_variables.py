@@ -15,7 +15,7 @@ def set_times(config):
     """Set basetime/validtime if not present.
 
     Args:
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     Raises:
         ValueError: If start > end
@@ -61,7 +61,7 @@ def check_fullpos_namelist(config, nlgen):
     """Find existing fullpos select files or generate them.
 
     Args:
-        config (tactus.ParsedConfig): Configuration
+        config (ParsedConfig): Configuration
         nlgen (dict): master forecast namelist
 
     Returns:
@@ -113,7 +113,7 @@ def derived_variables(config, processor_layout=None):
     """Derive some variables required in the namelists.
 
     Args:
-        config (tactus.ParsedConfig): Configuration
+        config (ParsedConfig): Configuration
         processor_layout (ProcessorLayout, optional): Processor layout object
 
     Returns:
