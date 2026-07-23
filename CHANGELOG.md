@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Update CY50t2 namelists for Harmonie-Arome CSC. [#115](https://github.com/ACCORD-NWP/tactus/pull/115) (@romick-knmi, @uandrae)
+- Set surfex_sea_ice to default none to be consistent for all CSCs. [#164](https://github.com/ACCORD-NWP/tactus/pull/164)(@uandrae)
 
 ### Fixed
 - Correct LBC file search pattern in the referenceChecker. [#163](https://github.com/ACCORD-NWP/tactus/pull/163)(@uandrae)
