@@ -121,19 +121,6 @@ e923_base:
     ELONC: ${cfg:domain.xloncen}
 namgfl_ifs:
   NAMGFL: {}
-namgfl_AROME:
-  NAMGFL:
-    YG_NL%NCOUPLING: 1
-    YG_NL%NREQIN: 1
-    YI_NL%NCOUPLING: 1
-    YI_NL%NREQIN: 1
-    YL_NL%NCOUPLING: 1
-    YL_NL%NREQIN: 1
-    YR_NL%NCOUPLING: 1
-    YR_NL%NREQIN: 1
-    YS_NL%NCOUPLING: 1
-    YS_NL%NREQIN: 1
-    YTKE_NL%NREQIN: 1
 fa_names:
   NAMAFN:
     TFP_HU%CLNAME: HUMI_RELATIVE
@@ -308,20 +295,14 @@ f4_AROME:
     YG_NL%LINTLIN: true
     YG_NL%LQM: true
     YG_NL%LSLHD: false
-    YG_NL%NCOUPLING: -1
-    YG_NL%REFVALC: 0.0
     YI_NL%LCOMAD: true
     YI_NL%LINTLIN: true
     YI_NL%LQM: true
     YI_NL%LSLHD: false
-    YI_NL%NCOUPLING: -1
-    YI_NL%REFVALC: 0.0
     YL_NL%LCOMAD: true
     YL_NL%LINTLIN: true
     YL_NL%LQM: true
     YL_NL%LSLHD: false
-    YL_NL%NCOUPLING: -1
-    YL_NL%REFVALC: 0.0
     YQ_NL%LCOMAD: true
     YQ_NL%LQM: true
     YQ_NL%LSLHD: false
@@ -330,14 +311,10 @@ f4_AROME:
     YR_NL%LINTLIN: true
     YR_NL%LQM: true
     YR_NL%LSLHD: false
-    YR_NL%NCOUPLING: -1
-    YR_NL%REFVALC: 0.0
     YS_NL%LCOMAD: true
     YS_NL%LINTLIN: true
     YS_NL%LQM: true
     YS_NL%LSLHD: false
-    YS_NL%NCOUPLING: -1
-    YS_NL%REFVALC: 0.0
     YTKE_NL%NREQIN: -1
   NAMOPH:
     CFNHWF: ECHIS
@@ -641,7 +618,6 @@ f4_ALARO:
     YG_NL%LREQOUT: false
     YG_NL%LSLHD: false
     YG_NL%LSP: false
-    YG_NL%NCOUPLING: 0
     YG_NL%NREQIN: 0
     YIRAD_NL%LADV: false
     YIRAD_NL%LREQOUT: false
@@ -655,7 +631,6 @@ f4_ALARO:
     YI_NL%LREQOUT: false
     YI_NL%LSLHD: true
     YI_NL%LSP: false
-    YI_NL%NCOUPLING: 0
     YI_NL%NREQIN: 0
     YLRAD_NL%LADV: false
     YLRAD_NL%LREQOUT: false
@@ -669,7 +644,6 @@ f4_ALARO:
     YL_NL%LREQOUT: false
     YL_NL%LSLHD: true
     YL_NL%LSP: false
-    YL_NL%NCOUPLING: 0
     YL_NL%NREQIN: 0
     YQ_NL%LADV: true
     YQ_NL%LGP: false
@@ -691,7 +665,6 @@ f4_ALARO:
     YR_NL%LREQOUT: false
     YR_NL%LSLHD: false
     YR_NL%LSP: false
-    YR_NL%NCOUPLING: 0
     YR_NL%NREQIN: 0
     YSHTUR_NL%LADV: false
     YSHTUR_NL%LGP: true
@@ -707,7 +680,6 @@ f4_ALARO:
     YS_NL%LREQOUT: false
     YS_NL%LSLHD: false
     YS_NL%LSP: false
-    YS_NL%NCOUPLING: 0
     YS_NL%NREQIN: 0
     YTKE_NL%LADV: true
     YTKE_NL%LCDERS: false
@@ -1056,24 +1028,16 @@ f4_HARMONIE_AROME:
     YG_NL%LPT: false
     YG_NL%LQM: true
     YG_NL%LSLHD: true
-    YG_NL%NCOUPLING: -1
-    YG_NL%NREQIN: -1
-    YG_NL%REFVALC: 0.0
-    YG_NL%REFVALI: 0.0
     YI_NL%CNAME: ICE_CRYSTAL
     YI_NL%LPT: false
     YI_NL%LQM: true
     YI_NL%LSLHD: true
-    YI_NL%NCOUPLING: -1
     YI_NL%NREQIN: 1
-    YI_NL%REFVALC: 0.0
     YL_NL%CNAME: CLOUD_WATER
     YL_NL%LPT: false
     YL_NL%LQM: true
     YL_NL%LSLHD: true
-    YL_NL%NCOUPLING: -1
     YL_NL%NREQIN: 1
-    YL_NL%REFVALC: 0.0
     YQ_NL%CNAME: HUMI.SPECIFI
     YQ_NL%LCOMAD: true
     YQ_NL%LPT: false
@@ -1085,21 +1049,12 @@ f4_HARMONIE_AROME:
     YR_NL%LPT: false
     YR_NL%LQM: true
     YR_NL%LSLHD: true
-    YR_NL%NCOUPLING: -1
-    YR_NL%NREQIN: -1
-    YR_NL%REFVALC: 0.0
-    YR_NL%REFVALI: 0.0
     YSRC_NL%LPT: false
     YS_NL%CNAME: SNOW
     YS_NL%LPT: false
     YS_NL%LQM: true
     YS_NL%LSLHD: true
-    YS_NL%NCOUPLING: -1
-    YS_NL%NREQIN: -1
-    YS_NL%REFVALC: 0.0
-    YS_NL%REFVALI: 0.0
     YTKE_NL%LPT: false
-    YTKE_NL%NREQIN: -1
   NAMINI:
     LDFI: false
   NAMINTFLEX:
@@ -1399,9 +1354,20 @@ f4_common_forecast:
     NPDVAR: 2
     NVDVAR: 4
   NAMGFL:
+    YG_NL%NCOUPLING: 0
+    YG_NL%NREQIN: 0
     YIRAD_NL%LGP: true
+    YI_NL%NCOUPLING: 0
+    YI_NL%NREQIN: 0
     YLRAD_NL%LGP: true
+    YL_NL%NCOUPLING: 0
+    YL_NL%NREQIN: 0
+    YR_NL%NCOUPLING: 0
+    YR_NL%NREQIN: 0
+    YS_NL%NCOUPLING: 0
+    YS_NL%NREQIN: 0
     YTKE_NL%NCOUPLING: 0
+    YTKE_NL%NREQIN: 0
   NAMIO_SERV:
     NIO_SERV_BUF_MAXSIZE: 20
     NIO_SERV_METHOD: 2
