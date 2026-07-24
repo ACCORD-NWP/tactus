@@ -1,7 +1,13 @@
 [reference_checker]
   check = false
   generate = false
-  rules_active = ["Forecast.fullpos", "Forecast.history", "Forecast.log"]
+  rules_active = [
+    "PgdUpdate.default",
+    "Forecast.fullpos",
+    "Forecast.history",
+    "Forecast.log",
+    "Forecast.surfex"
+  ]
   create_summary = ["PrepRun"]
   analyze_summary = ["ReferenceCheck"]
   summary_active = ["txt", "json"]
@@ -10,7 +16,7 @@
 
 [reference_checker.methods.ForecastNorms]
   mode = "get_worst"
-  tolerance = "12"
+  tolerance = "0"
   tool = "norms_checker"
   which = "first_and_last_spectral"
 
@@ -18,14 +24,21 @@
   args_template = "-f1 {test_file} -f2 {reference_file} {file_format} -s -of SCREEN -de -to {tolerance}"
   binary = "@INSTALL_DIR@/gl/@COMPILER@/latest/bin/xtool"
   file_format = "GRIB"
-  tolerance = "10"
+  tolerance = "-10"
   tool = "xtool"
 
 [reference_checker.methods.HistoryFields]
   args_template = "-f1 {test_file} -f2 {reference_file} {file_format} -s -of SCREEN -de -to {tolerance}"
   binary = "@INSTALL_DIR@/gl/@COMPILER@/latest/bin/xtool"
   file_format = "FA"
-  tolerance = "10"
+  tolerance = "-10"
+  tool = "xtool"
+
+[reference_checker.methods.E923Files]
+  args_template = "-f1 {test_file} -f2 {reference_file} {file_format} -s -of SCREEN -de -to {tolerance} -igd"
+  binary = "@INSTALL_DIR@/gl/@COMPILER@/latest/bin/xtool"
+  file_format = "FA"
+  tolerance = "-10"
   tool = "xtool"
 
 [reference_checker.summary.json]
@@ -36,26 +49,42 @@
   file = "@CASEDIR@/checks/summary.txt"
   format = "txt"
 
+[reference_checker.task.PgdUpdate.default]
+  inpath = "@CLIMDIR@"
+  pattern = "Const.Clim.*.sfx"
+  method = "HistoryFields"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/climate/@DOMAIN@"
+  reference_folder = "@REFERENCES_FOLDER@/@CASE@/climate/@DOMAIN@"
+  result_folder = "@WRK@/checks/static_data"
+
 [reference_checker.task.Forecast.fullpos]
   inpath = "@ARCHIVE@"
   pattern = "GRIBPF.*0006h00m00s"
-  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   method = "FullPosFields"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   result_folder = "@WRK@/checks/Forecast"
 
 [reference_checker.task.Forecast.history]
   inpath = "@ARCHIVE@"
   pattern = "ICMSH.*0006h00m00s"
-  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   method = "HistoryFields"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   result_folder = "@WRK@/checks/Forecast"
 
 [reference_checker.task.Forecast.log]
   inpath = "@WRK@/logs/Forecast"
   pattern = "NODE.001_01"
-  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   method = "ForecastNorms"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/Forecast"
+
+[reference_checker.task.Forecast.surfex]
+  inpath = "@ARCHIVE@"
+  pattern = "ICMSH.*0006h00m00s.sfx"
+  method = "HistoryFields"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   result_folder = "@WRK@/checks/Forecast"

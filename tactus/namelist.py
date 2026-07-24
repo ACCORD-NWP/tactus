@@ -144,7 +144,7 @@ class NamelistComparator:
         """Construct the comparator.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
 
         Raises:
             SystemExit
@@ -315,7 +315,7 @@ class NamelistGenerator:
         """Construct the generator.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
             kind (str): one of 'master' or 'surfex'
             substitute (boolean): flag for substitution
 
@@ -432,18 +432,19 @@ class NamelistGenerator:
             tstep = int(tstep)
         except ValueError:
             tstep = self.platform.evaluate(tstep, SelectTstep)
-        # default value:
-        output_timesteps = [1, -1]
         # decode string into list
         time_intervals = find_value(time_intervals)
 
         dtlist = oi2dt_list(time_intervals, forecast_range)
         logger.debug("steplist: {} // {}", time_intervals, forecast_range)
         logger.debug("dtlist: {}", dtlist)
-        output_timesteps = [
-            int((dt.days * 24 * 3600 + dt.seconds) / tstep) for dt in dtlist
-        ]
-        output_timesteps.insert(0, len(output_timesteps))
+        if dtlist:
+            output_timesteps = [
+                int((dt.days * 24 * 3600 + dt.seconds) / tstep) for dt in dtlist
+            ]
+            output_timesteps.insert(0, len(output_timesteps))
+        else:
+            output_timesteps = [1, -1]
         logger.debug("result: {}", output_timesteps)
         # NOTE: a resolver can not return a list
         # so turn into a string
@@ -663,7 +664,7 @@ class NamelistIntegrator:
         """Construct the integrator.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
 
         Raises:
             SystemExit   # noqa: DAR401

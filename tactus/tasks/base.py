@@ -43,7 +43,7 @@ class Task(object):
         """Construct base task.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
             name (str): Task name
 
         Raises:
@@ -81,7 +81,7 @@ class Task(object):
                 + f"check={self.rcm.check}; generate={self.rcm.generate}"
             )
         else:
-            logger.info(f"No ReferenceChecker for {self.name}")
+            logger.debug(f"No ReferenceChecker for {self.name}")
 
     def _set_eccodes_environment(self):
         """Set correct path for ECCODES tables.
@@ -327,7 +327,7 @@ class UnitTest(Task):
         """Construct test task.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         Task.__init__(self, config, __class__.__name__)
 
@@ -339,6 +339,6 @@ class ReferenceCheck(Task):
         """Construct ReferenceCheck task.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         Task.__init__(self, config, __class__.__name__)
