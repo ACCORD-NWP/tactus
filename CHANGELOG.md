@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+
+### Changed
+- Mandatory config file. [#171](https://github.com/ACCORD-NWP/tactus/pull/171) (@dhaumont)
+
 ## [1.3.0] - 2026-07-24
 
 ### Added
