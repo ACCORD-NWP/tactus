@@ -48,15 +48,9 @@ def get_common_parser():
         metavar="CONFIG_FILE_PATH",
         default=ConfigParserDefaults.CONFIG_PATH,
         type=Path,
+        required=True,
         help=(
-            "Path to the config file. The default is whichever of the "
-            + "following is first encountered: "
-            + "(i) The value of the 'TACTUS_CONFIG_PATH' envvar or "
-            + "(ii) './config.toml'. If both (i) and (ii) are missing, "
-            + "then the default will become "
-            + "'"
-            + f"{ConfigParserDefaults.PACKAGE_CONFIG_PATH}"
-            + "'"
+            "Path to the config file."
         ),
     )
     common_parser.add_argument(
