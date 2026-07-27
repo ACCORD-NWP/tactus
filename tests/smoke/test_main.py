@@ -111,8 +111,10 @@ def test_correct_config_is_in_use(config_path, mocker):
 @pytest.mark.usefixtures("_module_mockers")
 class TestMainShowCommands:
     def test_show_config_command(self):
-        with redirect_stdout(StringIO()):
+        with pytest.raises(SystemExit), redirect_stdout(StringIO()):
             main(["show", "config"])
+
+        with redirect_stdout(StringIO()):
             main([
                 "show",
                 "config",
@@ -122,8 +124,15 @@ class TestMainShowCommands:
             ])
 
     def test_show_config_schema_command(self):
-        with redirect_stdout(StringIO()):
+        with pytest.raises(SystemExit), redirect_stdout(StringIO()):
             main(["show", "config-schema"])
+        with redirect_stdout(StringIO()):
+            main([
+                "show",
+                "config-schema",
+                "--config-file",
+                ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix(),
+            ])
 
     def test_show_config_command_stretched_time(self):
         """Test again, mocking time.time so the total elapsed time is greater than 60s."""
@@ -136,11 +145,27 @@ class TestMainShowCommands:
             mock.patch("time.time", mock.MagicMock(side_effect=fake_time())),
             redirect_stdout(StringIO()),
         ):
-            main(["show", "config"])
+            main([
+                "show",
+                "config",
+                "--config-file",
+                ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix(),
+            ])
 
     def test_show_namelist_command(self, tmp_path_factory):
         output_file = f"{tmp_path_factory.getbasetemp().as_posix()}/fort.4"
-        main(["show", "namelist", "-t", "surfex", "-n", "forecast", "-o", output_file])
+        main([
+            "show",
+            "namelist",
+            "-t",
+            "surfex",
+            "-n",
+            "forecast",
+            "-o",
+            output_file,
+            "--config-file",
+            ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix(),
+        ])
 
 
 @pytest.mark.usefixtures("_module_mockers")
