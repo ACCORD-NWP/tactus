@@ -182,7 +182,7 @@ def test_run_task_command(tmp_path):
         f"{tmp_path.as_posix()}/forecast.log",
         "--create-only",
         "--config-file",
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix()
+        ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix(),
     ])
 
 
@@ -192,7 +192,7 @@ def test_remove_command(tmp_path):
         "remove",
         "unexisting_file",
         "--config-file",
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix()
+        ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix(),
     ])
 
 
@@ -200,7 +200,12 @@ def test_remove_command(tmp_path):
 def test_start_suite_command():
     os.environ["TACTUS_HOST"] = "atos_bologna"
     with suppress(FileNotFoundError, HostNotFoundError, ConfigFileValidationError):
-        main(["start", "suite", "--config-file", ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix()])
+        main([
+            "start",
+            "suite",
+            "--config-file",
+            ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix(),
+        ])
     del os.environ["TACTUS_HOST"]
 
 
@@ -208,14 +213,25 @@ def test_start_suite_command():
 def test_replace_node_command():
     os.environ["TACTUS_HOST"] = "atos_bologna"
     with suppress(FileNotFoundError, HostNotFoundError, ConfigFileValidationError):
-        main(["replace", "--ecf-node", "/", "--config-file", ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix()])
+        main([
+            "replace",
+            "--ecf-node",
+            "/",
+            "--config-file",
+            ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix(),
+        ])
     del os.environ["TACTUS_HOST"]
 
 
 @pytest.mark.usefixtures("_module_mockers")
 def test_doc_config_command():
     with redirect_stdout(StringIO()):
-        main(["doc", "config", "--config-file", ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix()])
+        main([
+            "doc",
+            "config",
+            "--config-file",
+            ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix(),
+        ])
 
 
 def test_integrate_namelists_command():
@@ -227,7 +243,7 @@ def test_integrate_namelists_command():
         "--output",
         os.devnull,
         "--config-file",
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix()
+        ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix(),
     ]
     main(args)
 
@@ -250,7 +266,7 @@ def test_convert_namelists_command(tmp_path):
         "--format",
         "yaml",
         "--config-file",
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix()
+        ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix(),
     ]
     main(args)
 
@@ -269,6 +285,6 @@ def test_format_namelists_command(tmp_path):
         "--format",
         "yaml",
         "--config-file",
-        ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix()
+        ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix(),
     ]
     main(args)
