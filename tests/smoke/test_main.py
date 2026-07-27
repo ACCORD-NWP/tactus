@@ -171,7 +171,12 @@ def test_remove_command(tmp_path):
 def test_start_suite_command():
     os.environ["TACTUS_HOST"] = "atos_bologna"
     with suppress(FileNotFoundError, HostNotFoundError, ConfigFileValidationError):
-        main(["start", "suite"])
+        main([
+            "start",
+            "suite",
+            "--config-file",
+            ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix(),
+        ])
     del os.environ["TACTUS_HOST"]
 
 
