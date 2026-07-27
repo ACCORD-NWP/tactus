@@ -131,6 +131,7 @@ class TestReferenceChecker:
         assert checker is None
         mock_logger.warning.assert_called_once()
 
+
 class TestNamelistChecker:
     """Tests for the NamelistChecker class."""
 
@@ -185,10 +186,13 @@ class TestNamelistChecker:
         path.write_text(content)
         return str(path)
 
-
     def test_identical_files_bit_identical(tmp_path):
-        test = _write(tmp_path, "test.nam", NAMELIST_A)
-        ref = _write(tmp_path, "ref.nam", NAMELIST_A)
+        test = TestNamelistChecker._write(
+            tmp_path, "test.nam", TestNamelistChecker.NAMELIST_A
+        )
+        ref = TestNamelistChecker._write(
+            tmp_path, "ref.nam", TestNamelistChecker.NAMELIST_A
+        )
         out = str(tmp_path / "diff.out")
 
         checker = NamelistChecker()
@@ -198,10 +202,13 @@ class TestNamelistChecker:
         assert "bit identical" in result
         assert os.path.exists(out)
 
-
     def test_whitespace_differences_ignored(tmp_path):
-        test = _write(tmp_path, "test.nam", NAMELIST_A)
-        ref = _write(tmp_path, "ref.nam", NAMELIST_A_WHITESPACE)
+        test = TestNamelistChecker._write(
+            tmp_path, "test.nam", TestNamelistChecker.NAMELIST_A
+        )
+        ref = TestNamelistChecker._write(
+            tmp_path, "ref.nam", TestNamelistChecker.NAMELIST_A_WHITESPACE
+        )
         out = str(tmp_path / "diff.out")
 
         checker = NamelistChecker(
@@ -211,10 +218,13 @@ class TestNamelistChecker:
 
         assert "SUCCESS" in result
 
-
     def test_case_differences_ignored(tmp_path):
-        test = _write(tmp_path, "test.nam", NAMELIST_A)
-        ref = _write(tmp_path, "ref.nam", NAMELIST_A_CASE)
+        test = TestNamelistChecker._write(
+            tmp_path, "test.nam", TestNamelistChecker.NAMELIST_A
+        )
+        ref = TestNamelistChecker._write(
+            tmp_path, "ref.nam", TestNamelistChecker.NAMELIST_A_CASE
+        )
         out = str(tmp_path / "diff.out")
 
         checker = NamelistChecker(ignore_case=True)
@@ -222,10 +232,13 @@ class TestNamelistChecker:
 
         assert "SUCCESS" in result
 
-
     def test_case_differences_detected_when_not_ignored(tmp_path):
-        test = _write(tmp_path, "test.nam", NAMELIST_A)
-        ref = _write(tmp_path, "ref.nam", NAMELIST_A_CASE)
+        test = TestNamelistChecker._write(
+            tmp_path, "test.nam", TestNamelistChecker.NAMELIST_A
+        )
+        ref = TestNamelistChecker._write(
+            tmp_path, "ref.nam", TestNamelistChecker.NAMELIST_A_CASE
+        )
         out = str(tmp_path / "diff.out")
 
         checker = NamelistChecker(
@@ -235,10 +248,13 @@ class TestNamelistChecker:
 
         assert "FAILURE" in result
 
-
     def test_real_differences_detected(tmp_path):
-        test = _write(tmp_path, "test.nam", NAMELIST_A)
-        ref = _write(tmp_path, "ref.nam", NAMELIST_B)
+        test = TestNamelistChecker._write(
+            tmp_path, "test.nam", TestNamelistChecker.NAMELIST_A
+        )
+        ref = TestNamelistChecker._write(
+            tmp_path, "ref.nam", TestNamelistChecker.NAMELIST_B
+        )
         out = str(tmp_path / "diff.out")
 
         checker = NamelistChecker()
@@ -249,9 +265,10 @@ class TestNamelistChecker:
         content = Path(out).read_text()
         assert "NFLEVG" in content
 
-
     def test_missing_test_file(tmp_path):
-        ref = _write(tmp_path, "ref.nam", NAMELIST_A)
+        ref = TestNamelistChecker._write(
+            tmp_path, "ref.nam", TestNamelistChecker.NAMELIST_A
+        )
         out = str(tmp_path / "diff.out")
 
         checker = NamelistChecker()
@@ -260,9 +277,10 @@ class TestNamelistChecker:
         assert "ERROR" in result
         assert "Test file" in result
 
-
     def test_missing_reference_file(tmp_path):
-        test = _write(tmp_path, "test.nam", NAMELIST_A)
+        test = TestNamelistChecker._write(
+            tmp_path, "test.nam", TestNamelistChecker.NAMELIST_A
+        )
         out = str(tmp_path / "diff.out")
 
         checker = NamelistChecker()
@@ -271,10 +289,13 @@ class TestNamelistChecker:
         assert "ERROR" in result
         assert "Reference file" in result
 
-
     def test_out_file_contains_summary(tmp_path):
-        test = _write(tmp_path, "test.nam", NAMELIST_A)
-        ref = _write(tmp_path, "ref.nam", NAMELIST_B)
+        test = TestNamelistChecker._write(
+            tmp_path, "test.nam", TestNamelistChecker.NAMELIST_A
+        )
+        ref = TestNamelistChecker._write(
+            tmp_path, "ref.nam", TestNamelistChecker.NAMELIST_B
+        )
         out = str(tmp_path / "diff.out")
 
         checker = NamelistChecker()
