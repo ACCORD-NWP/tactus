@@ -131,8 +131,8 @@ class TestReferenceChecker:
         assert checker is None
         mock_logger.warning.assert_called_once()
 
-class TestNormsChecker:
-    """Tests for the NNamelistChecker class."""
+class TestNamelistChecker:
+    """Tests for the NamelistChecker class."""
 
     NAMELIST_A = """\
     &NAMDIM
