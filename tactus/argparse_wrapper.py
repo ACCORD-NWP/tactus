@@ -49,9 +49,7 @@ def get_common_parser():
         default=ConfigParserDefaults.CONFIG_PATH,
         type=Path,
         required=True,
-        help=(
-            "Path to the config file."
-        ),
+        help=("Path to the config file."),
     )
     common_parser.add_argument(
         "--host-file",
