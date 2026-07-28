@@ -82,6 +82,7 @@ class ReferenceChecker:
         logger.warning(f"Reference Checker: Comparison {method} not found")
         return None
 
+
 class NamelistChecker(ReferenceChecker):
     """Compare Fortran NAMELIST files against a reference using diff."""
 
@@ -144,9 +145,7 @@ class NamelistChecker(ReferenceChecker):
             cmd = ["diff", *self._build_diff_args(), test_file, reference_file]
             try:
                 with open(out_file, "w") as out:
-                    completed = subprocess.run(
-                        cmd, check=False, stdout=out, stderr=out
-                    )
+                    completed = subprocess.run(cmd, check=False, stdout=out, stderr=out)
                 # diff exit code: 0 = identical, 1 = differences, >1 = error
                 if completed.returncode == 0:
                     results.append(
@@ -167,7 +166,7 @@ class NamelistChecker(ReferenceChecker):
             except Exception as e:  # noqa: BLE001
                 results.append(
                     "ERROR - executing NamelistChecker\n"
-                    + f"Command 'diff' failed\n"
+                    + "Command 'diff' failed\n"
                     + str(e)
                 )
                 unhandled_exception = e
@@ -183,6 +182,7 @@ class NamelistChecker(ReferenceChecker):
             raise unhandled_exception
 
         return result
+
 
 class NormsChecker(ReferenceChecker):
     """Compare the norms in Node files against a reference."""
