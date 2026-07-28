@@ -757,6 +757,14 @@
         "version": {
           "description": "The version of the package used to generate the configuration file",
           "type": "string"
+        },
+        "user": {
+          "description": "The user who generated the configuration file",
+          "type": "string"
+        },
+        "time": {
+          "description": "The time when the configuration file was generated",
+          "type": "string"
         }
       }
     },

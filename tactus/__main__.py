@@ -2,6 +2,8 @@
 """Program's entry point."""
 
 import contextlib
+import datetime
+import os
 import sys
 
 from . import GeneralConstants
@@ -51,6 +53,8 @@ def main(argv=None):
                 "command": GeneralConstants.PACKAGE_NAME + " " + " ".join(argv),
                 "package": GeneralConstants.PACKAGE_NAME,
                 "version": GeneralConstants.VERSION,
+                "time": datetime.datetime.now().isoformat(timespec="seconds"),
+                "user": os.environ.get("USER"),
             }
         }
     )
