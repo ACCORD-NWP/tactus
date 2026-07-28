@@ -27,7 +27,7 @@ from .namelist import NamelistConverter
 from .test_runner import run_test
 
 
-def get_common_parser(add_config_file=True):
+def get_common_parser(config_file_required=False):
     """Build and return the common argument parser shared by all subcommands.
 
     Returns:
@@ -42,7 +42,16 @@ def get_common_parser(add_config_file=True):
         default=None,
         help="Specify tactus_home to override automatic detection",
     )
-    if add_config_file:
+    if config_file_required:
+        common_parser.add_argument(
+            "--config-file",
+            "-c",
+            metavar="CONFIG_FILE_PATH",
+            required=True,
+            type=Path,
+            help=("Path to the config file."),
+        )
+    else:
         common_parser.add_argument(
             "--config-file",
             "-c",
@@ -88,8 +97,8 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         argparse.ArgumentParser: The configured argument parser.
 
     """
-    common_parser = get_common_parser()
-    common_parser_no_config_file = get_common_parser(add_config_file=False)
+    common_parser = get_common_parser(config_file_required=False)
+    common_parser_config_file_required = get_common_parser(config_file_required=True)
 
     ##########################################
     # Define main parser and general options #
@@ -189,16 +198,9 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
     parser_case = subparsers.add_parser(
         "case",
         help="Create a config file to run an experiment case",
-        parents=[common_parser_no_config_file],
+        parents=[common_parser_config_file_required],
     )
-    parser_case.add_argument(
-        "--config-file",
-        "-c",
-        metavar="CONFIG_FILE_PATH",
-        required=True,
-        type=Path,
-        help="Path to the config file.",
-    )
+
     parser_case.add_argument(
         "--output",
         "-o",
@@ -252,18 +254,10 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
 
     # suite
     parser_start_suite = start_command_subparsers.add_parser(
-        "suite", help="Start the suite", parents=[common_parser_no_config_file]
+        "suite", help="Start the suite", parents=[common_parser_config_file_required]
     )
     parser_start_suite.add_argument(
         "--start-command", type=str, help="Start command for server", default=None
-    )
-    parser_start_suite.add_argument(
-        "--config-file",
-        "-c",
-        metavar="CONFIG_FILE_PATH",
-        required=True,
-        type=Path,
-        help="Path to the config file.",
     )
 
     parser_start_suite.add_argument(
