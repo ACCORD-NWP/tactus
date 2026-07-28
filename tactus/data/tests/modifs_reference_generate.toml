@@ -1,5 +1,5 @@
 [genchecks.reference_checker]
-  check = true
+  check = false
   generate = true
   suppress_exception = true
 
