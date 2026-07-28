@@ -43,6 +43,9 @@
     },
     "gribmodify": {
       "$ref": "#/definitions/gribmodify"
+    },
+    "genesis": {
+      "$ref": "#/definitions/genesis"
     }
   },
   "required": [
@@ -735,6 +738,25 @@
           "type": "string",
           "description": "whether to use chache build/install folders",
           "default": "@REFERENCE_DATA@/bundle_cache"
+        }
+      }
+    },
+    "genesis": {
+      "title": "Genesis information",
+      "description": "Genesis information of the configuration file",
+      "type": "object",
+      "properties": {
+        "command": {
+          "description": "The command used to generate the configuration file",
+          "type": "string"
+        },
+        "package": {
+          "description": "The package used to generate the configuration file",
+          "type": "string"
+        },
+        "version": {
+          "description": "The version of the package used to generate the configuration file",
+          "type": "string"
         }
       }
     },

@@ -45,6 +45,15 @@ def main(argv=None):
             handlers=LoggerHandlers(default_level=config["general.loglevel"])
         )
 
+    config = config.copy(
+        update={
+            "genesis": {
+                "command": GeneralConstants.PACKAGE_NAME + " " + " ".join(argv),
+                "package": GeneralConstants.PACKAGE_NAME,
+                "version": GeneralConstants.VERSION,
+            }
+        }
+    )
     args.run_command(args=args, config=config)
 
 
