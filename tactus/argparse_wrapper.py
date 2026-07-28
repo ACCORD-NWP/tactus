@@ -32,6 +32,7 @@ def get_common_parser(config_file_required=False):
 
     Args:
         config_file_required (bool): Whether the config file argument is required.
+
     Returns:
         argparse.ArgumentParser: Parser with common arguments (config-file,
             host-file, etc.).
