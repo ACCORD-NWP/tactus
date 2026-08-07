@@ -14,7 +14,7 @@ class InitialConditions(object):
         """Construct FirstGuess object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
 
         """
         self.config = config

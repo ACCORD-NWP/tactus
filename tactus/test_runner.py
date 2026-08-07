@@ -5,9 +5,11 @@ import concurrent.futures
 import contextlib
 import copy
 import glob
+import json
 import os
 import shutil
 import tempfile
+from datetime import datetime
 from pathlib import Path
 
 import tomli
@@ -20,6 +22,8 @@ from .fullpos import flatten_list
 from .general_utils import merge_dicts
 from .host_actions import TactusHost
 from .logs import logger
+from .reference_checker import CheckSummaryAnalysis
+from .toolbox import Platform
 
 
 class TestCases:
@@ -42,6 +46,7 @@ class TestCases:
         if args.config_file is not None:
             logger.info("Using config file: {}", args.config_file)
             self.config = ParsedConfig.from_file(args.config_file, json_schema={})
+            self.config_name = Path(args.config_file).resolve().stem
             try:
                 definitions = self.config.expand_macros().dict()
             except KeyError:
@@ -59,12 +64,18 @@ class TestCases:
         self.get_tag(definitions)
         self.dry = args.dry if args.dry else definitions["general"].get("dry", False)
         self.modifs = definitions["modifs"]
-        self.test_dir = definitions.get("test_dir", f"{self.tag}configs")
+        self.refchecks = definitions.get("refchecks", {})
+        self.genchecks = definitions.get("genchecks", {})
+        self.test_dir = definitions.get("test_dir", f"{self.tag}_configs")
         self.ial = definitions.get("ial", {})
         self.gl = definitions.get("gl", {})
         self.selection = self.resolve_selection(definitions)
         self.assigned = {}
-
+        self.generate_refs = args.generate_refs if args.generate_refs else False
+        if self.generate_refs:
+            logger.warning("**************************************************")
+            logger.warning("*   Reference checker: generate reference mode   *")
+            logger.warning("**************************************************")
         if args.config_file is not None:
             with contextlib.suppress(KeyError):
                 if definitions["ial"].get("active", False):
@@ -115,12 +126,12 @@ class TestCases:
                 for sel in selection:
                     if any(x in sel for x in value.get("exclude", "")):
                         continue
-                    subtag = f"{tag}{sel}"
+                    subtag = f"{tag}_{sel}"
                     x = copy.deepcopy(self.cases[sel])
                     if "base" not in x:
                         x["base"] = sel
                     if "host" in x:
-                        x["host"] = f"{tag}{x['host']}"
+                        x["host"] = f"{tag}_{x['host']}"
                     x["subtag"] = tag
                     x["extra"] = [] if "extra" not in x else list(x["extra"])
                     for k in value.get("extra", []):
@@ -149,7 +160,6 @@ class TestCases:
         tag = tactus_git["branch"]
         for character in ["/", ".", "-"]:
             tag = tag.replace(character, "_")
-        tag += "_"
         return tag
 
     def create(self, cases=None):
@@ -179,7 +189,10 @@ class TestCases:
             extra = list(self.extra) + list(item.get("extra", []))
 
             # Merge and replace macros
-            modifs = merge_dicts(self.modifs, self.cases[case].get("modifs", {}), True)
+            modifs = merge_dicts(self.modifs, self.refchecks, True)
+            if self.generate_refs:
+                modifs = merge_dicts(modifs, self.genchecks, True)
+            modifs = merge_dicts(modifs, self.cases[case].get("modifs", {}), True)
             config = self.config.copy(
                 update={
                     "modifs": modifs,
@@ -237,7 +250,8 @@ class TestCases:
                 if "host" not in self.cases[case] or self.cases[case]["host"] in resolved
             ]
             if not level:
-                raise ValueError(f"Circular dependency in host cases: {remaining}")
+                message = f"Circular dependency detected in host cases: {remaining}"
+                raise ValueError(message)
             levels.append(level)
             resolved.update(level)
             remaining = [case for case in remaining if case not in resolved]
@@ -277,10 +291,10 @@ class TestCases:
         from .__main__ import main as tactus_main
 
         try:
-            with open(f"{self.test_dir}/config_names.toml", "rb") as f:
+            with open(f"{self.test_dir}/{self.config_name}_config_names.toml", "rb") as f:
                 config_names = tomli.load(f)
         except FileNotFoundError as err:
-            msg = "No case mapping available. Run again without '-r'"
+            msg = "No case mapping available. Run again with '-m'"
             logger.error(msg)
             raise FileNotFoundError(msg) from err
 
@@ -446,6 +460,105 @@ class TestCases:
                 self.cases[case]["hostname"] = hostnames[item["host"]]["config_name"]
                 self.cases[case]["hostdomain"] = hostnames[item["host"]]["domain_name"]
 
+    @staticmethod
+    def get_case_information(config_file):
+        """Get case name, json file and reference folder from the config file.
+
+        Arguments:
+            config_file (str): Path to the config file
+
+        Returns:
+            case_name name: the name of the case.
+            json_file: the json file path
+            references_folder: the references folder path.
+        """
+        case_config = ParsedConfig.from_file(config_file, json_schema={})
+        platform = Platform(case_config)
+
+        case_name = platform.substitute(
+            case_config.get("general.case"),
+            basetime=case_config["general.times.start"],
+            validtime=case_config["general.times.start"],
+        )
+        json_file = platform.substitute(
+            case_config.get("reference_checker.summary.json.file"),
+            basetime=case_config["general.times.start"],
+            validtime=case_config["general.times.start"],
+        )
+        references_folder = platform.get_platform_value("references_folder")
+        check = case_config["reference_checker"]["check"]
+
+        return check, case_name, json_file, references_folder
+
+    def collect_summaries(self):
+        """Collect summaries from the runs."""
+        try:
+            with open(f"{self.test_dir}/{self.config_name}_config_names.toml", "rb") as f:
+                config_names = tomli.load(f)
+        except FileNotFoundError as err:
+            msg = "No case mapping available. Run again with '-m'"
+            logger.error(msg)
+            raise FileNotFoundError(msg) from err
+
+        config_files = [
+            f"{self.test_dir}/{config_name}.toml"
+            for config_name in config_names["config_names"].values()
+        ]
+
+        summaries = {}
+        case_files = {}
+        width = 0
+        now = datetime.now()
+        skipped = set()
+        for config_file in config_files:
+            check, case_name, json_file, references_folder = (
+                TestCases.get_case_information(config_file)
+            )
+            if check:
+                case_files[case_name] = json_file
+                try:
+                    with open(json_file, "r", encoding="utf-8") as f:
+                        summary = json.load(f)
+                        summary["creation_date"] = datetime.fromtimestamp(
+                            os.path.getmtime(json_file)
+                        )
+                except FileNotFoundError:
+                    summary = "MISSING"
+
+                summaries[case_name] = summary
+            else:
+                summaries[case_name] = "SKIPPED"
+                skipped.add(case_name)
+            width = max(width, len(case_name))
+
+        if len(summaries) > 0:
+            with contextlib.suppress(KeyError):
+                logger.info("Our version {}", self.ial["ial_hash"])
+            with contextlib.suppress(KeyError):
+                logger.info(" from {}", self.ial["pr"])
+            logger.info("Comparison against {}", references_folder)
+
+            case_names = sorted([x for x in summaries if x in skipped])
+            case_names.extend(sorted([x for x in summaries if x not in skipped]))
+            for case_name in case_names:
+                summary = summaries[case_name]
+                creation_date = (
+                    summary["creation_date"] if not isinstance(summary, str) else None
+                )
+                colored_message = CheckSummaryAnalysis.colored_result_message(
+                    summary,
+                    self.verbose,
+                    case_name,
+                    case_files.get(case_name) if case_name in case_files else None,
+                    width,
+                    creation_date,
+                    now,
+                )
+                logger.opt(colors=True).info(colored_message)
+
+            if not self.verbose:
+                logger.opt(colors=True).info("<blue>Add '-v' for more info</blue>")
+
     def execute(self, args):
         """Execute test cases.
 
@@ -475,7 +588,7 @@ class TestCases:
                         for c, item in self.cases.items()
                         if "config_name" in item
                     }
-                }).save_as(f"{directory}/config_names.toml")
+                }).save_as(f"{directory}/{self.config_name}_config_names.toml")
 
             if not args.run:
                 logger.info("\n\nRerun with '-r' to start the suites\n\n")
@@ -494,6 +607,9 @@ def run_test(args, config=None):
     """
     t = TestCases(args=args)
 
+    if not args.config_file and not args.prepare_binaries and not args.list:
+        logger.warning("Nothing to do. Use `tactus test -h` for help.")
+        return False
     if args.prepare_binaries:
         t.get_binaries()
 
@@ -501,4 +617,9 @@ def run_test(args, config=None):
         t.list()
 
     elif args.config_file is not None:
-        t.execute(args)
+        if args.configure or args.run:
+            t.execute(args)
+        else:
+            t.collect_summaries()
+
+    return True

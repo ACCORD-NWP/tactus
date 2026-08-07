@@ -24,7 +24,7 @@ class ExtractSQLite(Task):
         """Construct ExtractSQLite object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
 
         Raises:
             FileNotFoundError: Required file not fount
@@ -120,7 +120,7 @@ class MergeSQLites(Task):
         """Construct ExtractSQLite object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
 
         Raises:
             FileNotFoundError: Required file not found

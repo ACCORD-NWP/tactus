@@ -18,13 +18,15 @@ from .batch import BatchJob
 class E923(Task):
     """Methods for the e923 work."""
 
-    def __init__(self, config):
+    def __init__(self, config, taskname=None):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
+            taskname (str): Enforced task name
         """
-        Task.__init__(self, config, __class__.__name__)
+        name = __class__.__name__ if taskname is None else taskname
+        Task.__init__(self, config, name)
 
         self.climdir = self.platform.get_system_value("climdir")
         self.constant_file = f"{self.climdir}/Const.Clim.const"
@@ -241,7 +243,7 @@ class PgdUpdate(Task):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
 
         """
         Task.__init__(self, config, __class__.__name__)
@@ -301,10 +303,9 @@ class E923Constant(E923):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
-        E923.__init__(self, config)
-        self.name = "E923Constant"
+        E923.__init__(self, config, "E923Constant")
 
     def execute(self):
         """Run task.
@@ -327,7 +328,7 @@ class E923Monthly(E923):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         try:
             months = config["task.args.months"].split(",")
@@ -336,8 +337,7 @@ class E923Monthly(E923):
             months = [f"{mm:02d}" for mm in range(1, 13)]
             tag = ""
 
-        E923.__init__(self, config)
-        self.name = f"E923Monthly{tag}"
+        E923.__init__(self, config, f"E923Monthly{tag}")
         self.months = months
         logger.debug("Create files for month:{}", self.months)
 

@@ -68,6 +68,29 @@ def dt2str(dt):
     return f"{h:04d}:{m:02d}:{s:02d}"
 
 
+def since_str(datetime: datetime, now: datetime) -> str:
+    """Convert a datetime to a human-readable string indicating how long ago it was.
+
+    Args:
+        datetime (datetime): The datetime object.
+        now (datetime): The current datetime object.
+
+    Returns:
+        str: A human-readable string indicating how long ago datetime now was
+    """
+    timestamp = int((now - datetime).total_seconds())
+    if timestamp < 60:
+        return "Now"
+    if timestamp < 3600:
+        return f"{int(timestamp / 60)} min ago"
+    if timestamp < 3600 * 24:
+        hours = int(timestamp / 3600)
+        if hours == 1:
+            return "1 hour ago"
+        return f"{hours} hours ago"
+    return f"updated on {datetime}"
+
+
 def check_syntax(output_settings: Union[Tuple[str], List[str]], length: int):
     """Check syntax of output_settings.
 
