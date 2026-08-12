@@ -89,9 +89,8 @@
   npatfr = -1
 
 [perturbations]
-  pertsurf = true
-
-[perturbations.pertsurf_param]
+[perturbations.pertsurf]
+  active = true
   iradius = 12
   inbiter = 10
   zclip = 2.0
