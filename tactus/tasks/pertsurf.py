@@ -23,7 +23,8 @@ class PertSurf(Task):
         self.npatch = self.config["pgd.npatch"]
         self.archive = self.platform.get_system_value("archive")
         self.basetime = as_datetime(self.config["general.times.basetime"])
-        self.pertsurf_param = self.config.get_as_dict("perturbations.pertsurf_param")
+        self.pertsurf_param = self.config.get_as_dict("perturbations.pertsurf")
+        self.file_templates = self.config.get_as_dict("file_templates")
 
         self.binary = self.get_binary("PERTSURF")
 
@@ -40,6 +41,7 @@ class PertSurf(Task):
 
     def build_namelist(self, param_dict, iseed, output):
         """Build namelist string for PERTSURF."""
+        param_dict.pop("active", None)
         param_dict["ISEED"] = iseed
         param_dict["CFSFC"] = output
         param_dict["IPATCH"] = self.npatch
@@ -56,10 +58,12 @@ class PertSurf(Task):
         ensmbr = int(os.environ.get("MEMBER"))
 
         # Surface initial file
-        _, initfile_sfx = InitialConditions(self.config).find_initial_files()
+        _, initfile_sfx, _ = InitialConditions(self.config).find_initial_files("Pertsurf")
 
-        initfile_sfx_name = os.path.basename(initfile_sfx)
-        output = f"{initfile_sfx_name}_perturbed"
+        output = self.platform.substitute(
+            f"{self.config['file_templates.pertsurf.archive']}"
+        )
+
         self.fmanager.input(
             initfile_sfx,
             output,
@@ -84,7 +88,7 @@ class PertSurf(Task):
         batch = BatchJob(os.environ, wrapper=self.wrapper)
         batch.run(self.binary)
 
-        # Move output to archive
+        # Move PERTSURF output to archive
         self.fmanager.output(
             output,
             f"{self.archive}/{output}",
