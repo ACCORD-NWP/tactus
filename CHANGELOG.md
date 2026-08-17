@@ -9,9 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+### Fixed
+- Don't check references when generating them [#175](https://github.com/ACCORD-NWP/tactus/pull/175)(@dhaumont)
+
 ## [1.3.0] - 2026-07-24
 
 ### Added
+- Adds Namelist check to reference checker. [#172](https://github.com/ACCORD-NWP/tactus/pull/172) (@pardallio)
 - Add `mars_split_by_step` option in config file to replace the current `mars_split` option which now splits mars by data_type. [#151](https://github.com/ACCORD-NWP/tactus/pull/151) (@pardallio)
 - Tactus test runner - allow to exclude rules. [#155](https://github.com/ACCORD-NWP/tactus/pull/155) (@uandrae)
 - Make ParsedConfig uniform in docstring. [#161](https://github.com/ACCORD-NWP/tactus/pull/161)(@dhaumont)

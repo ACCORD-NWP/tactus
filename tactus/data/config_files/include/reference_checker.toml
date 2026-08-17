@@ -14,6 +14,12 @@
   suppress_exception = false
   label_suffix = "@MEMBER_STR@"
 
+[reference_checker.methods.NamelistDiff]
+  tool = "namelist_checker"
+  ignore_case = true
+  ignore_blank_lines = true
+  ignore_whitespace = true
+
 [reference_checker.methods.ForecastNorms]
   mode = "get_worst"
   tolerance = "0"
@@ -56,6 +62,14 @@
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/climate/@DOMAIN@"
   reference_folder = "@REFERENCES_FOLDER@/@CASE@/climate/@DOMAIN@"
   result_folder = "@WRK@/checks/static_data"
+
+[reference_checker.task.Forecast.namelist]
+  inpath = "@WRK@/logs/Forecast"
+  pattern = "(fort\\.4|EXSEG1\\.nam)"
+  method = "NamelistDiff"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_FOLDER@/@CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/namelists/Forecast"
 
 [reference_checker.task.Forecast.fullpos]
   inpath = "@ARCHIVE@"

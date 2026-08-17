@@ -8,16 +8,22 @@
   generate = false
   rules_active = [
     "C903_0-6.default",
+    "C903_0-6.namelist",
     "E923Monthly_06.default",
+    "E923Monthly_06.namelist",
     "E927_0-0.default",
     "E927_3-3.default",
+    "E927_3-3.namelist",
     "InterpolSstSic.default",
     "Forecast.fullpos",
     "Forecast.history",
     "Forecast.log",
+    "Forecast.namelist",
     "Forecast.surfex",
     "PgdUpdate.default",
+    "Pgd.namelist",
     "Prep.default",
+    "Prep.namelist",
   ]
   suppress_exception = false
 
@@ -27,6 +33,14 @@
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
 
+[refchecks.reference_checker.task.Pgd.namelist]
+  inpath = "@CLIMDIR@/logs/Pgd"
+  pattern = "OPTIONS.nam"
+  method = "NamelistDiff"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/climate/@DOMAIN@/namelists/Pgd"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/climate/@DOMAIN@/namelists/Pgd"
+  result_folder = "@WRK@/checks/namelists/Pgd"
+
 [refchecks.reference_checker.task.E923Monthly_06.default]
   inpath = "@CLIMDIR@"
   pattern = "Const.Clim.06"
@@ -34,6 +48,14 @@
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
   result_folder = "@WRK@/checks/static_data"
+
+[refchecks.reference_checker.task.E923Monthly_06.namelist]
+  inpath = "@CLIMDIR@/logs/E923Monthly_06"
+  pattern = "fort.4(.*)"
+  method = "NamelistDiff"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/climate/@DOMAIN@/namelists/E923Monthly_06"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/climate/@DOMAIN@/namelists/E923Monthly_06"
+  result_folder = "@WRK@/checks/namelists/E923Monthly_06"
 
 [refchecks.reference_checker.task.C903_0-6.default]
   inpath = "@INTP_BDDIR@"
@@ -43,6 +65,14 @@
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   result_folder = "@WRK@/checks/initial_files"
 
+[refchecks.reference_checker.task.C903_0-6.namelist]
+  inpath = "@WRK@/logs/C903/"
+  pattern = "fort.4"
+  method = "NamelistDiff"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@/namelists/C903_0-6"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@/namelists/C903_0-6"
+  result_folder = "@WRK@/checks/namelists/C903_0-6"
+
 [refchecks.reference_checker.task.Prep.default]
   inpath = "@INTP_BDDIR_SFX@"
   pattern = "ICM(.*)INIT.sfx"
@@ -50,6 +80,14 @@
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   result_folder = "@WRK@/checks/initial_files"
+
+[refchecks.reference_checker.task.Prep.namelist]
+  inpath = "@WRK@/logs/Prep/"
+  pattern = "OPTIONS.nam"
+  method = "NamelistDiff"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@/namelists/Prep"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@/namelists/Prep"
+  result_folder = "@WRK@/checks/namelists/Prep"
 
 [refchecks.reference_checker.task.InterpolSstSic.default]
   inpath = "@INTP_BDDIR@"
@@ -78,6 +116,14 @@
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
 
+[refchecks.reference_checker.task.Forecast.namelist]
+  inpath = "@WRK@/logs/Forecast"
+  pattern = "(fort\\.4|EXSEG1\\.nam)"
+  method = "NamelistDiff"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@/namelists/Forecast"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@/namelists/Forecast"
+  result_folder = "@WRK@/checks/namelists"
+
 [refchecks.reference_checker.task.Forecast.surfex]
   inpath = "@ARCHIVE@"
   pattern = "ICMSH.*0003h00m00s.sfx"
@@ -98,4 +144,12 @@
   method = "HistoryFields"
   pattern = "ELS(.*)003"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/initial_files"
+
+[refchecks.reference_checker.task.E927_3-3.namelist]
+  inpath = "@WRK@/logs/E927_3-3/"
+  method = "NamelistDiff"
+  pattern = "fort.4"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@/namelists/E927_3-3"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@/namelist/E927_3-3"
   result_folder = "@WRK@/checks/initial_files"
