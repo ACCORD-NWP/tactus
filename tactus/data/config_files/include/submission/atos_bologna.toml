@@ -94,6 +94,9 @@
 [submission.task_exceptions.TactusBundleBuild.ENV]
   OMP_NUM_THREADS = 128
 
+[submission.task_exceptions.TactusBundleCreate.BATCH]
+  WALLTIME = "#SBATCH --time=00:45:00"
+
 [submission.task_exceptions.GlBd]
   binary = "gl_DP"
 

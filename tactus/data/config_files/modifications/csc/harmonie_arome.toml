@@ -1,6 +1,10 @@
 [general]
   csc = "HARMONIE_AROME"
+  surfex_sea_ice = "sice"
   windfarm = false
+
+[general.namelist]
+  radiation_frequency = "PT15M"
 
 [domain]
   orographic_smoothing_method = "spectral"
@@ -9,4 +13,4 @@
   master = ["master_selection_@CSC@", "master_subhour_selection_@CSC@"]
 
 [pgd]
-  npatch = 3
+  npatch = 2

@@ -20,6 +20,7 @@
 [modifs.platform]
   reference_data = "@SCRATCH@/@SYS_NAME@/@CYCLE@"
   ref_case = "@SUBTAG@_@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@@CASE_SUFFIX@"
+  refcheck_root = "/ec/project/accord/tactus/tactus_references"
 
 [modifs.platform.mirrorglobalDT]
   remote_host = "ecflow-gen-snh02-001"
@@ -44,6 +45,9 @@
 
 [modifs.submission.task_exceptions.Forecast]
   bindir = "@SUBMISSION.BINDIR@"
+
+[modifs.submission.task_exceptions.Marsprep.BATCH]
+  WALLTIME = "#SBATCH --time=12:00:00"
 
 [modifs.submission.task_exceptions.PgdFilterTownFrac.ENV]
   ECF_TRIES = 15
