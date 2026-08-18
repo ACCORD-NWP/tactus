@@ -29,9 +29,16 @@ class InitialConditions(object):
         self.file_templates = self.config.get_as_dict("file_templates")
         self.surfex = self.config["general.surfex"]
         self.mode = self.config["suite_control.mode"]
+        self.member = self.config["general.member"]
 
         self.source = ""
         self.source_sfx = ""
+
+        self.function_map = {
+            "Forecast": self.forecast,
+            "Pertana": self.pertana,
+            "Pertsurf": self.pertsurf,
+        }
 
     def success(self):
         """Report of success."""
@@ -120,8 +127,6 @@ class InitialConditions(object):
                 f"@ARCHIVE@/{self.config['file_templates.pertsurf.archive']}"
             )
 
-        return self.source, self.source_sfx
-
     def pertana(self):
         """Find initial files for the Pertana task."""
         return self.source
@@ -147,14 +152,13 @@ class InitialConditions(object):
         self.very_first_guess()
 
         # Task specific initial conditions
-        if task == "Forecast":
-            self.forecast()
-        elif task == "Pertana":
-            self.pertana()
-        elif task == "Pertsurf":
-            self.pertsurf()
-        else:
-            raise NotImplementedError(f"Task {task} is not implemented")
+        try:
+            self.function_map[task]
+        except KeyError as err:
+            raise NotImplementedError(
+                f"Could not resolve function call for task={task}"
+            ) from err
+        self.forecast()
 
         found_files = self.check_if_found()
         if fail and not found_files:

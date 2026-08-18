@@ -12,6 +12,8 @@ from tactus.derived_variables import set_times
 from tactus.initial_conditions import InitialConditions
 from tactus.toolbox import Platform
 
+CNMEXP = "TEST"
+
 
 @pytest.fixture
 def parsed_config(tmp_directory, default_config):
@@ -25,7 +27,7 @@ def parsed_config(tmp_directory, default_config):
         [file_templates.initfile_sfx]
             archive = "@INTP_BDDIR@/@SURFEX_TEMPLATE@"
         [general]
-            cnmexp = "TEST"
+            cnmexp = "{CNMEXP}"
         [system]
             intp_bddir = "{tmp_directory}"
             archive = "{tmp_directory}"
@@ -39,14 +41,22 @@ def parsed_config(tmp_directory, default_config):
         platform.substitute(config["file_templates"]["pertana"]["archive"]),
         platform.substitute(config["file_templates"]["pertsurf"]["archive"]),
         "foo",
-        "ELSCFTESTALBC000",
-        "ICMSHTEST+0003h00m00s",
-        "ICMSHTEST+0003h00m00s.sfx",
-        "ICMSHTESTINIT.sfx",
+        f"ELSCF{CNMEXP}ALBC000",
+        f"ICMSH{CNMEXP}+0003h00m00s",
+        f"ICMSH{CNMEXP}+0003h00m00s.sfx",
+        f"ICMSH{CNMEXP}INIT.sfx",
     ]:
         Path(f"{tmp_directory}/{f}").touch()
 
     return config
+
+
+def test_not_implemented_tasks(parsed_config):
+
+    with pytest.raises(NotImplementedError, match="NonExistingTask"):
+        _, _, _ = InitialConditions(parsed_config).find_initial_files(
+            "NonExistingTask", False
+        )
 
 
 @pytest.fixture(params=["start", "cold_start", "restart"])
@@ -72,11 +82,11 @@ def truth_from_set_mode(set_mode, tmp_directory, request):
         set_mode["suite_control"]["mode"] == "start"
         or set_mode["suite_control"]["mode"] == "cold_start"
     ):
-        truth = f"{tmp_directory}/ELSCFTESTALBC000"
-        truth_sfx = f"{tmp_directory}/ICMSHTESTINIT.sfx"
+        truth = f"{tmp_directory}/ELSCF{CNMEXP}ALBC000"
+        truth_sfx = f"{tmp_directory}/ICMSH{CNMEXP}INIT.sfx"
     elif set_mode["suite_control"]["mode"] == "restart":
-        truth = f"{tmp_directory}/ICMSHTEST+0003h00m00s"
-        truth_sfx = f"{tmp_directory}/ICMSHTEST+0003h00m00s.sfx"
+        truth = f"{tmp_directory}/ICMSH{CNMEXP}+0003h00m00s"
+        truth_sfx = f"{tmp_directory}/ICMSH{CNMEXP}+0003h00m00s.sfx"
         with contextlib.suppress(KeyError):
             if "initfile" in request.param["file_templates"]:
                 truth = f"{tmp_directory}/foo"
@@ -143,7 +153,9 @@ def test_find_initial_files_forecast(
     tmp_directory, parsed_config, set_mode, truth_from_set_mode, param
 ):
     """Test input to the Forecast task."""
-    platform = Platform(parsed_config)
+    config = parsed_config.copy(update=set_mode)
+    config = config.copy(update=param)
+    platform = Platform(config)
 
     truth = truth_from_set_mode[0]
     truth_sfx = truth_from_set_mode[1]
@@ -157,6 +169,9 @@ def test_find_initial_files_forecast(
             truth_sfx = platform.substitute(
                 f"{tmp_directory}/{parsed_config['file_templates']['pertsurf']['archive']}"
             )
+    truth = platform.substitute(
+        f"{tmp_directory}/{parsed_config['file_templates']['pertana']['archive']}"
+    )
 
     for key in ["initfile", "initfile_sfx"]:
         with contextlib.suppress(KeyError):
@@ -164,14 +179,12 @@ def test_find_initial_files_forecast(
                 f"{tmp_directory}/foo"
             )
 
-    config = parsed_config.copy(update=set_mode)
     config = config.copy(update=truth_from_set_mode[2])
-    config = config.copy(update=param)
     initfile, initfile_sfx, status = InitialConditions(config).find_initial_files(
         "Forecast", False
     )
-    assert initfile == truth
     assert initfile_sfx == truth_sfx
+    assert initfile == truth
     assert status
 
 
