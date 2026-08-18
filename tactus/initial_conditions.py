@@ -40,25 +40,24 @@ class InitialConditions(object):
             "Pertsurf": self.pertsurf,
         }
 
-    def success(self):
+    def success(self, task, types):
         """Report of success."""
-        if self.surfex:
-            logger.info(
-                "Found initial files for mode={}\n  {}\n  {}",
-                self.mode,
-                self.source,
-                self.source_sfx,
-            )
-        else:
-            logger.info("Found initial file for mode={}\n  {}", self.mode, self.source)
+        msg = f"Found input files for mode={self.mode}, task={task}"
+        if "atm" in types:
+            msg += f"\n  {self.source}"
+        if "surfex" in types:
+            msg += f"\n  {self.source_sfx}"
+        logger.info(msg)
 
-    def check_if_found(self):
+    def check_if_found(self, task, types):
         """Check if files are present."""
-        found = os.path.isfile(self.source)
-        if not found:
-            logger.warning("Could not find:\n  {}", self.source)
+        found = True
+        if "atm" in types:
+            found = os.path.isfile(self.source)
+            if not found:
+                logger.warning("Could not find:\n  {}", self.source)
 
-        if self.surfex:
+        if "surfex" in types:
             if not os.path.isfile(self.source_sfx):
                 logger.warning("Could not find:\n  {}", self.source_sfx)
                 found = False
@@ -66,9 +65,11 @@ class InitialConditions(object):
                 found = found and True
 
         if found:
-            self.success()
+            self.success(task, types)
         else:
-            logger.warning("Failed to find files for mode={}", self.mode)
+            logger.warning(
+                "Failed to find input files for mode={}, task={}", self.mode, task
+            )
 
         return found
 
@@ -126,21 +127,23 @@ class InitialConditions(object):
             self.source_sfx = self.platform.substitute(
                 f"@ARCHIVE@/{self.config['file_templates.pertsurf.archive']}"
             )
+        return self.source, self.source_sfx
 
     def pertana(self):
         """Find initial files for the Pertana task."""
-        return self.source
+        return self.source, self.source_sfx
 
     def pertsurf(self):
         """Find initial files for the Pertsurf task."""
-        return self.source_sfx
+        return self.source, self.source_sfx
 
-    def find_initial_files(self, task, fail=False):
+    def find_initial_files(self, task, fail=False, types=("atm", "surfex")):
         """Find input files to various tasks.
 
         Args:
              task (str): Task name
              fail (boolean): Flag for raising exception
+             types (list of str): List of file types to search for
 
         Returns:
              task (object): Task specific result
@@ -153,18 +156,19 @@ class InitialConditions(object):
 
         # Task specific initial conditions
         try:
-            self.function_map[task]
+            self.function_map[task]()
         except KeyError as err:
             raise NotImplementedError(
                 f"Could not resolve function call for task={task}"
             ) from err
-        self.forecast()
 
-        found_files = self.check_if_found()
+        found_files = self.check_if_found(task, types)
         if fail and not found_files:
-            raise FileNotFoundError(
-                "Could not find initial files for "
-                f"mode={self.mode}, {self.source}, {self.source_sfx}"
-            )
+            msg = f"Could not find input files for task={task}"
+            if "atm" in types:
+                msg += f"\n missing {self.source}"
+            if "surfex" in types:
+                msg += f"\n missing {self.source_sfx}"
+            raise FileNotFoundError(msg)
 
         return self.source, self.source_sfx, found_files

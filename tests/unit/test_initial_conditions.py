@@ -110,7 +110,9 @@ def test_find_initial_files_pertana(
     config = parsed_config
     config = config.copy(update=set_mode)
     config = config.copy(update=truth_from_set_mode[2])
-    initfile, _, status = InitialConditions(config).find_initial_files("Pertana", False)
+    initfile, _, status = InitialConditions(config).find_initial_files(
+        "Pertana", fail=False, types=["atm"]
+    )
     assert initfile == truth
 
 
@@ -130,7 +132,7 @@ def test_find_initial_files_pertsurf(
     config = config.copy(update=set_mode)
     config = config.copy(update=truth_from_set_mode[2])
     _, initfile_sfx, status = InitialConditions(config).find_initial_files(
-        "Pertsurf", False
+        "Pertsurf", fail=False, types=["surfex"]
     )
     assert initfile_sfx == truth_sfx
 
@@ -169,9 +171,6 @@ def test_find_initial_files_forecast(
             truth_sfx = platform.substitute(
                 f"{tmp_directory}/{parsed_config['file_templates']['pertsurf']['archive']}"
             )
-    truth = platform.substitute(
-        f"{tmp_directory}/{parsed_config['file_templates']['pertana']['archive']}"
-    )
 
     for key in ["initfile", "initfile_sfx"]:
         with contextlib.suppress(KeyError):
@@ -181,10 +180,10 @@ def test_find_initial_files_forecast(
 
     config = config.copy(update=truth_from_set_mode[2])
     initfile, initfile_sfx, status = InitialConditions(config).find_initial_files(
-        "Forecast", False
+        "Forecast", fail=False
     )
-    assert initfile_sfx == truth_sfx
     assert initfile == truth
+    assert initfile_sfx == truth_sfx
     assert status
 
 

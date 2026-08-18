@@ -1824,7 +1824,6 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     ecf_files,
                     trigger=ready_for_cycle,
                     ecf_files_remotely=ecf_files_remotely,
-                    member=member,
                 )
                 member_cycle_families.append(cycle_family)
                 prev_cycle_triggers[member] = [cycle_family]
