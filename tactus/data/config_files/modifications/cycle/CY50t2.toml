@@ -2,12 +2,10 @@
   cycle = "CY50t2"
   surfex = true
   surfex_sea_ice = "none"
+  upd_sst_sic = false
 
 [general.output_settings]
   surfex = "PT1H"
-
-[pgd]
-  npatch = 3
 
 [submission]
   precision = "R64"

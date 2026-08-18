@@ -467,6 +467,11 @@
           "type": "boolean"
         },
         "split_mars": {
+          "description": "Split Marsprep in multiple tasks for each data type",
+          "type": "boolean",
+          "default": true
+        },
+        "split_mars_by_step": {
           "description": "Do marsprep only for one step before c903",
           "type": "boolean",
           "default": false
@@ -1149,7 +1154,7 @@
             "sice",
             "none"
           ],
-          "default": "sice"
+          "default": "none"
         }
       },
       "required": [
