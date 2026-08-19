@@ -11,8 +11,8 @@
     "C903_0-6.namelist",
     "E923Monthly_06.fafiles",
     "E923Monthly_06.namelist",
-    "E927_0-0.history",
-    "E927_3-3.history",
+    "E927_0-0.fafiles",
+    "E927_3-3.fafiles",
     "E927_3-3.namelist",
     "InterpolSstSic.fafiles",
     "Forecast.fullpos",
@@ -130,7 +130,7 @@
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
 
-[refchecks.reference_checker.task.E927_0-0.history]
+[refchecks.reference_checker.task.E927_0-0.fafiles]
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   inpath = "@INTP_BDDIR@"
   method = "HistoryFields"
@@ -138,7 +138,7 @@
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   result_folder = "@WRK@/checks/initial_files"
 
-[refchecks.reference_checker.task.E927_3-3.history]
+[refchecks.reference_checker.task.E927_3-3.fafiles]
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
   inpath = "@INTP_BDDIR@"
   method = "HistoryFields"
