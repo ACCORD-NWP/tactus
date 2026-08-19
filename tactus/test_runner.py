@@ -320,6 +320,13 @@ class TestCases:
                 suitefile = f"{self.test_dir}/{config_name}.def"
                 cmds = [
                     [
+                        "remove",
+                        "--config-file",
+                        f"{self.test_dir}/{config_name}.toml",
+                        "-f",
+                        "--execute-removal",
+                    ],
+                    [
                         "start",
                         "suite",
                         "--config-file",
@@ -329,6 +336,9 @@ class TestCases:
                         "-k",
                     ]
                 ]
+
+                if "compile" in case:
+                    cmds.pop[0]
 
             for cmd in cmds:
                 cmd_txt = " ".join(cmd)
