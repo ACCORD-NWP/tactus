@@ -55,10 +55,12 @@ class PertSurf(Task):
 
     def execute(self):
         """Execute the PertSurf task."""
-        ensmbr = int(os.environ.get("MEMBER"))
+        ensmbr = self.config["general.member"]
 
         # Surface initial file
-        _, initfile_sfx, _ = InitialConditions(self.config).find_initial_files("Pertsurf")
+        _, initfile_sfx, _ = InitialConditions(self.config).find_initial_files(
+            "Pertsurf", "surfex"
+        )
 
         output = self.platform.substitute(
             f"{self.config['file_templates.pertsurf.archive']}"
