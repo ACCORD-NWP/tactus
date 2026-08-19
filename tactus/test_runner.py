@@ -334,7 +334,7 @@ class TestCases:
                         "-f",
                         suitefile,
                         "-k",
-                    ]
+                    ],
                 ]
 
                 if "compile" in case:
