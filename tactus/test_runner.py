@@ -321,10 +321,9 @@ class TestCases:
                 cmds = [
                     [
                         "remove",
-                        "--config-file",
-                        f"{self.test_dir}/{config_name}.toml",
                         "-f",
                         "--execute-removal",
+                        f"{self.test_dir}/{config_name}.toml",
                     ],
                     [
                         "start",
@@ -338,7 +337,7 @@ class TestCases:
                 ]
 
                 if "compile" in case:
-                    cmds.pop[0]
+                    cmds.pop(0)
 
             for cmd in cmds:
                 cmd_txt = " ".join(cmd)

@@ -21,6 +21,7 @@
     "Forecast.namelist",
     "Forecast.surfex",
     "PgdUpdate.fafiles",
+    "Pgd.fafiles",
     "Pgd.namelist",
     "Prep.fafiles",
     "Prep.namelist",
@@ -30,6 +31,12 @@
 [refchecks.reference_checker.task.PgdUpdate.fafiles]
   inpath = "@CLIMDIR@"
   pattern = "Const.Clim.*.sfx"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
+
+[refchecks.reference_checker.task.Pgd.fafiles]
+  inpath = "@CLIMDIR@"
+  pattern = "PGD_prel*.fa"
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
 
