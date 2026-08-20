@@ -73,7 +73,7 @@ class PertSurf(Task):
         )
 
         # Seed
-        m = 100000
+        m = 1000000
         dtg = int(self.basetime.strftime("%Y%m%d%H"))
         iseed = m * ensmbr + (dtg % m)
         logger.info(f"Generated seed (ISEED): {iseed}")
