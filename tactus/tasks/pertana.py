@@ -3,7 +3,7 @@
 import os
 
 from tactus.initial_conditions import InitialConditions
-#from tactus.logs import logger
+from tactus.logs import logger
 from tactus.tasks.base import Task
 from tactus.tasks.batch import BatchJob
 
@@ -26,6 +26,8 @@ class Pertana(Task):
         self.intp_bddir = self.config["system.intp_bddir"]
         self.mbr_str = self.config["general.member_str"]
         self.intp_start_mbr = self.config["file_templates.interpolated_boundaries.archive"]
+        self.archive = self.platform.get_system_value("archive")
+        logger.info("archive:",self.archive)
         
     def execute(self):
         """Run task."""
@@ -38,9 +40,9 @@ class Pertana(Task):
             nl.write(f"  Z_MULT={self.z_mult}\n")
             nl.write("/\n")
             nl.close()
-
+            
         """Find initial file"""
-        initfile, initfile_sfx = InitialConditions(self.config).find_initial_files()
+        initfile, initfile_sfx, status = InitialConditions(self.config).find_initial_files("Pertana", False)
         self.fmanager.input(initfile, "FILE1")
 
         """Find bd1(mbr)"""
@@ -61,13 +63,22 @@ class Pertana(Task):
         
         """Prepare the perturbed file"""
         self.fmanager.input("FILE1", "FILE4", provider_id="copy")
-        initfile_perturbed = initfile + "_perturbed"
+        ##initfile_perturbed = initfile + "_perturbed"
 
         # Run binary
         batch = BatchJob(os.environ, wrapper=self.wrapper)
         batch.run(self.binary)
 
+        ##self.fmanager.output(
+        ##    "FILE4",
+        ##    initfile_perturbed,
+        ##)
+        ## f"@ARCHIVE@/{self.config['file_templates.pertana.archive']}"
+        perturbed_file = self.config["file_templates.pertana.archive"]
+        perturbed_filewpath = os.path.join("../../../archive/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@", perturbed_file)
         self.fmanager.output(
             "FILE4",
-            initfile_perturbed,
-        )
+            perturbed_filewpath,
+            )
+        
+        

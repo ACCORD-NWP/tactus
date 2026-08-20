@@ -132,8 +132,8 @@
   cspp_model_name = "lam"
   npatfr = -1
 
-[perturbations]
-  pertsurf = false
+[perturbations.pertsurf]
+  active = false
 
 [perturbations.pertana]
   active = true
