@@ -69,17 +69,28 @@ class Marsprep(Task):
                 member_config = get_member_config(self.config, member_)
                 bdmember_config_value = member_config["boundaries.ifs.bdmember"]
 
-        # Get bdmember(s) from eps members settings (attempted first) or
-        # boundaries.ifs.bdmember.
-        else:
-            try:
-                bdmember_config_value = self.config[
-                    "eps.member_settings.boundaries.ifs.bdmember"
-                ]
-            except KeyError:
-                bdmember_config_value = self.config["boundaries.ifs.bdmember"]
+            self.bdmember = infer_members(
+                self.platform.substitute(bdmember_config_value)
+            )
 
-        self.bdmember = infer_members(self.platform.substitute(bdmember_config_value))
+        # Not member specific: a single Marsprep task retrieves boundary data
+        # for the whole ensemble, so resolve the bdmember mapped to each
+        # requested eps.general.members member individually instead of
+        # expanding the raw boundaries.ifs.bdmember slice (e.g. "0:7"), which
+        # would otherwise retrieve boundary members that are not needed.
+        else:
+            bdmembers = set()
+            for member in self.config["eps.general.members"]:
+                member_config = get_member_config(self.config, member)
+                try:
+                    member_bdmember_value = member_config["boundaries.ifs.bdmember"]
+                except KeyError:
+                    member_bdmember_value = self.config["boundaries.ifs.bdmember"]
+                bdmembers.update(
+                    infer_members(self.platform.substitute(member_bdmember_value))
+                )
+            self.bdmember = sorted(bdmembers)
+
         # Default to [None] if self.bdmember is empty to cover the deterministic
         # case with no boundary member nesting.
         if not self.bdmember:

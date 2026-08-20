@@ -1,3 +1,6 @@
+[eps.member_settings.boundaries.ifs]
+  bdmember = "tactus.eps.custom_generators.MemberGenerator"
+
 [eps.member_settings.fdb.grib_set]
   type = "tactus.eps.custom_generators.FDBTypeGenerator"
 
