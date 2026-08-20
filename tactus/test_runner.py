@@ -336,7 +336,7 @@ class TestCases:
                     ],
                 ]
 
-                if "compile" in case:
+                if not self.cases[case].get("clean", True):
                     cmds.pop(0)
 
             for cmd in cmds:
