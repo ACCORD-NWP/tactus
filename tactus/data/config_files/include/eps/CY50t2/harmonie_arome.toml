@@ -130,7 +130,7 @@
 
 [eps.member_settings.perturbations.pertana.active]
   0 = false
-  "1:" = true
+  "1:" = false
 
 [eps.member_settings.perturbations.pertsurf.active]
   0 = false
