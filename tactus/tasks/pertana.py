@@ -74,8 +74,9 @@ class Pertana(Task):
         ##    initfile_perturbed,
         ##)
         ## f"@ARCHIVE@/{self.config['file_templates.pertana.archive']}"
-        perturbed_file = self.config["file_templates.pertana.archive"]
-        perturbed_filewpath = os.path.join("../../../archive/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@", perturbed_file)
+       # perturbed_file = self.config["file_templates.pertana.archive"]
+       # perturbed_filewpath = os.path.join("../../../archive/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@", perturbed_file)
+        perturbed_filewpath = f"@ARCHIVE@/{self.config['file_templates.pertana.archive']}" 
         self.fmanager.output(
             "FILE4",
             perturbed_filewpath,

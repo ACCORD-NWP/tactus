@@ -1474,7 +1474,6 @@ class CycleFamily(EcflowSuiteFamily):
                 task_settings,
                 input_template,
                 ecf_files,
-                trigger=initialization_family,
                 pertana_trigger=interpolation_families,
                 ecf_files_remotely=ecf_files_remotely,
             )
