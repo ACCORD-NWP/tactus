@@ -128,17 +128,17 @@
   lspg_spp = {0 = false, "1:" = true}
   lspp = {0 = false, "1:" = false}
 
-[namelist_update.master.forecast.namspp]
-  cspp_model_name = "lam"
-  npatfr = -1
-
 [eps.member_settings.perturbations.pertana.active]
   0 = false
   "1:" = true
 
-[eps.member_settings.perturbations.pertana.z_mult]
- "1:" = 0.25
-
 [eps.member_settings.perturbations.pertsurf.active]
   0 = false
   "1:" = false
+
+[perturbations.pertana]
+  z_mult = 0.25
+
+[namelist_update.master.forecast.namspp]
+  cspp_model_name = "lam"
+  npatfr = -1

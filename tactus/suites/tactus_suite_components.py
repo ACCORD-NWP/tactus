@@ -1171,7 +1171,6 @@ class InterpolationFamily(EcflowSuiteFamily):
         add_var_trigger=None,
         remote_path=None,
         member=0,
-        interpolation_families=None,     
     ):
         """Class initialization."""
         super().__init__(
@@ -1452,8 +1451,7 @@ class CycleFamily(EcflowSuiteFamily):
         ecf_files,
         trigger=None,
         ecf_files_remotely=None,
-        member=None,
-        interpolation_families=None,     
+        interpolation_families=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -1585,13 +1583,8 @@ class PerturbationFamily(EcflowSuiteFamily):
         )
 
         if config["perturbations.pertana.active"]:
+            _pertana_trigger = pertana_trigger.get(0) if pertana_trigger else None
 
-            _pertana_trigger = ( 
-                pertana_trigger.get(0)
-                if pertana_trigger
-                else None
-            )
-            
             EcflowSuiteTask(
                 "Pertana",
                 self,
@@ -1838,7 +1831,6 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     ecf_files,
                     trigger=ready_for_cycle,
                     ecf_files_remotely=ecf_files_remotely,
-                    member=member,
                     interpolation_families=prev_interpolation_triggers,
                 )
                 member_cycle_families.append(cycle_family)
