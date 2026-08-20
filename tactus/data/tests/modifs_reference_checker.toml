@@ -37,7 +37,7 @@
 [refchecks.reference_checker.task.Pgd.fafiles]
   inpath = "@CLIMDIR@"
   method = "HistoryFields"
-  pattern = "PGD_prel*.fa"
+  pattern = "PGD_prel.*.fa"
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
   result_folder = "@WRK@/checks/static_data"
