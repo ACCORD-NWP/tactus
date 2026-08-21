@@ -46,12 +46,14 @@ class Marsprep(Task):
         """Construct forecast object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
 
         Raises:
             ValueError: No data for this date.
         """
         Task.__init__(self, config, __class__.__name__)
+
+        self.type = config.get("task.args.type", "all")
 
         # Get bdmember(s) from member specific eps setting if member specific
         # mars prep is enabled
@@ -124,8 +126,8 @@ class Marsprep(Task):
 
         self.exist_snow = exist_snow and self.boundary.bd_basetime >= start_snow_date
         # Split mars by bdint
-        self.split_mars = self.config["suite_control.split_mars"]
-        if self.split_mars:
+        self.split_mars_by_step = self.config["suite_control.split_mars_by_step"]
+        if self.split_mars_by_step:
             self.prep_step = ast.literal_eval(self.config["task.args.prep_step"])
 
         self.prepdir = Path(
@@ -261,21 +263,28 @@ class Marsprep(Task):
             server = EcflowServer(self.config)
             server.suspend(str(model_path))
 
-        if self.split_mars and self.prep_step:
+        if self.split_mars_by_step and self.prep_step:
             logger.debug("*** Need only latlon data")
         else:
-            if self.split_mars:
-                self.steps = [self.steps[int(self.config["task.args.bd_index"])]]
+            if self.split_mars_by_step:
+                self.steps = [int(step) for step in self.boundary.bd_index_time_dict]
 
             logger.info("Need steps:{}", self.steps)
-            self.get_grid_point_surface_data()
-            self.get_spectral_harmonic_data()
-            self.get_grid_point_upper_air_data()
 
-            if self.config["suite_control.do_interpolsstsic"]:
+            if self.type in ("GG", "all"):
+                self.get_grid_point_surface_data()
+            if self.type in ("SH", "all"):
+                self.get_spectral_harmonic_data()
+            if self.type in ("UA", "all"):
+                self.get_grid_point_upper_air_data()
+
+            if self.config["suite_control.do_interpolsstsic"] and self.type in (
+                "GG",
+                "all",
+            ):
                 self.get_sst_data()
 
-        if not self.config["boundaries.bd_has_surfex"]:
+        if not self.config["boundaries.bd_has_surfex"] and self.type in ("latlon", "all"):
             self.get_sfx_data()
 
     def get_grid_point_surface_data(self):
@@ -417,7 +426,7 @@ class Marsprep(Task):
             for bdmember, filename in mars_file_check_list.items():
                 logger.info(f" {bdmember}: {filename}")
 
-        elif self.split_mars and not self.prep_step:
+        elif self.split_mars_by_step and not self.prep_step:
             logger.debug("No need Prep file")
             bdmember_fetch_list = []
         else:

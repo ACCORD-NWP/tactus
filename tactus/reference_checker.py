@@ -48,11 +48,20 @@ class ReferenceChecker:
 
         Args:
            method: str defining the method
-           config (tactus.ParsedConfig): Configuration
+           config (ParsedConfig): Configuration
         Returns:
             A ReferenceChecker
         """
         tool = config["methods"][method]["tool"]
+        if tool == "namelist_checker":
+            ignore_case = config["methods"][method].get("ignore_case", True)
+            ignore_blank_lines = config["methods"][method].get("ignore_blank_lines", True)
+            ignore_whitespace = config["methods"][method].get("ignore_whitespace", True)
+            return NamelistChecker(
+                ignore_case=ignore_case,
+                ignore_blank_lines=ignore_blank_lines,
+                ignore_whitespace=ignore_whitespace,
+            )
         if tool == "norms_checker":
             which = config["methods"][method]["which"]
             mode = config["methods"][method]["mode"]
@@ -72,6 +81,107 @@ class ReferenceChecker:
 
         logger.warning(f"Reference Checker: Comparison {method} not found")
         return None
+
+
+class NamelistChecker(ReferenceChecker):
+    """Compare Fortran NAMELIST files against a reference using diff."""
+
+    def __init__(self, ignore_case=True, ignore_blank_lines=True, ignore_whitespace=True):
+        """Construct NamelistChecker object.
+
+        Args:
+            ignore_case: if True, ignore case differences (diff -i)
+            ignore_blank_lines: if True, ignore blank lines (diff -B)
+            ignore_whitespace: if True, ignore whitespace differences (diff -w)
+        """
+        ReferenceChecker.__init__(self, tool="namelist_checker")
+        self.ignore_case = ignore_case
+        self.ignore_blank_lines = ignore_blank_lines
+        self.ignore_whitespace = ignore_whitespace
+
+    def _build_diff_args(self) -> list[str]:
+        """Build the list of options to pass to diff."""
+        args = []
+        if self.ignore_case:
+            args.append("-i")
+        if self.ignore_blank_lines:
+            args.append("-B")
+        if self.ignore_whitespace:
+            args.append("-w")
+        return args
+
+    def compare(self, test_file, reference_file, out_file) -> str:
+        """Compare a NAMELIST file against a reference using diff.
+
+        Args:
+            test_file: name of the namelist file to compare
+            reference_file: name of the reference namelist file
+            out_file: name of the file produced by the comparison
+
+        Returns:
+            str giving the result of the comparison
+
+        Raises:
+            Exception: Any exception occurring during diff that is not a
+                       CalledProcessError with returncode in (0, 1)
+        """
+        results = []
+        unhandled_exception = None
+
+        if not os.path.exists(test_file):
+            results.append(f"ERROR - Test file {test_file} not found")
+        if not os.path.exists(reference_file):
+            results.append(f"ERROR - Reference file {reference_file} not found")
+
+        if os.path.exists(out_file):
+            os.remove(out_file)
+
+        if len(results) == 0:
+            bit_identical = filecmp.cmp(test_file, reference_file, shallow=False)
+            if bit_identical:
+                results.append("SUCCESS - Files are bit identical")
+
+        if len(results) == 0:
+            cmd = ["diff", *self._build_diff_args(), test_file, reference_file]
+            try:
+                with open(out_file, "w") as out:
+                    completed = subprocess.run(cmd, check=False, stdout=out, stderr=out)
+                # diff exit code: 0 = identical, 1 = differences, >1 = error
+                if completed.returncode == 0:
+                    results.append(
+                        "SUCCESS - Namelists are identical (modulo ignored options)"
+                    )
+                elif completed.returncode == 1:
+                    results.append(
+                        "FAILURE - Differences found between namelist and reference"
+                    )
+                else:
+                    results.append(
+                        "ERROR - executing NamelistChecker\n"
+                        + f"Command '{cmd}' failed with exit code: "
+                        + f"{completed.returncode}\n"
+                    )
+            # catching blind exception to make sure we don't miss any error.
+            # The exception is stored in unhandled_exception and raised at the end
+            except Exception as e:  # noqa: BLE001
+                results.append(
+                    "ERROR - executing NamelistChecker\n"
+                    + "Command 'diff' failed\n"
+                    + str(e)
+                )
+                unhandled_exception = e
+
+        result = "\n".join(results)
+        logger.info(f"NamelistChecker result: {result}")
+
+        with open(out_file, "a") as out:
+            out.write("\n")
+            out.write(result)
+
+        if unhandled_exception:
+            raise unhandled_exception
+
+        return result
 
 
 class NormsChecker(ReferenceChecker):
@@ -338,7 +448,7 @@ class CheckDefinition:
         """Create the list of items to be checked.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
             taskname: the name of the task
             label_suffix: the suffix for the label
             rules_active: list of rules that are active
@@ -364,7 +474,7 @@ class CheckDefinition:
                         if parameter not in config["task"][taskname][rulename]:
                             logger.warning(
                                 f"Reference Checker - {parameter} not defined for"
-                                + f"task {taskname} and rule {rulename}."
+                                + f" task {taskname} and rule {rulename}."
                             )
                             have_all_parameters = False
                     if not have_all_parameters:
@@ -475,7 +585,7 @@ class CheckSummary:
         """Create the list of summary_list from the configuration.
 
         Args:
-           config (tactus.ParsedConfig): Configuration
+           config (ParsedConfig): Configuration
         Returns:
            list of CheckSummary
 
@@ -629,13 +739,14 @@ class CheckSummaryAnalysis:
                     + f" or has failed. </{color}> \n"
                 )
             else:
-                for results in summary["tasks"].values():
+                for task_name, results in summary["tasks"].items():
                     for test_type, result in results.items():
                         if test_type == "Create":
                             continue
                         try:
+                            label = f"{task_name}.{test_type}"
                             result_message = (
-                                f"{test_type:>10} | {result['items'][0]['result']}"
+                                f"{label:>30} | {result['items'][0]['result']}"
                             )
                             result_message = result_message.replace("\n", "")
                             result_message = result_message.replace(
@@ -1053,7 +1164,8 @@ class ReferenceCheckManager:
         config_rc = config["reference_checker"]
         check = config_rc["check"]
         generate = config_rc["generate"]
-        rules_active = config_rc["rules_active"]
+        rules_excluded = config_rc.get("rules_excluded", [])
+        rules_active = list(set(config_rc["rules_active"]) - set(rules_excluded))
         task_rules_active = []
         for rules in rules_active:
             rule_array = rules.split(".")

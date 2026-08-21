@@ -144,7 +144,7 @@ class NamelistComparator:
         """Construct the comparator.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
 
         Raises:
             SystemExit
@@ -315,7 +315,7 @@ class NamelistGenerator:
         """Construct the generator.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
             kind (str): one of 'master' or 'surfex'
             substitute (boolean): flag for substitution
 
@@ -664,7 +664,7 @@ class NamelistIntegrator:
         """Construct the integrator.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
 
         Raises:
             SystemExit   # noqa: DAR401

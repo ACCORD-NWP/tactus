@@ -24,7 +24,7 @@ class IALClone(Task):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         Task.__init__(self, config, __class__.__name__)
 
@@ -54,7 +54,7 @@ class TactusBundleCreate(Task):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         Task.__init__(self, config, __class__.__name__)
 
@@ -166,7 +166,7 @@ class TactusBundleBuild(Task):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         Task.__init__(self, config, __class__.__name__)
 

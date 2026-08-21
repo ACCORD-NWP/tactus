@@ -9,7 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+### Fixed
+- Don't check references when generating them [#175](https://github.com/ACCORD-NWP/tactus/pull/175)(@dhaumont)
+
+## [1.3.0] - 2026-07-24
+
 ### Added
+- Adds Namelist check to reference checker. [#172](https://github.com/ACCORD-NWP/tactus/pull/172) (@pardallio)
+- Add `mars_split_by_step` option in config file to replace the current `mars_split` option which now splits mars by data_type. [#151](https://github.com/ACCORD-NWP/tactus/pull/151) (@pardallio)
+- Tactus test runner - allow to exclude rules. [#155](https://github.com/ACCORD-NWP/tactus/pull/155) (@uandrae)
+- Make ParsedConfig uniform in docstring. [#161](https://github.com/ACCORD-NWP/tactus/pull/161)(@dhaumont)
+- Tactus test runner - introduce several new reference checks. [#150](https://github.com/ACCORD-NWP/tactus/pull/150) (@uandrae)
 - Add `tactus compile` subcommand for IAL compilation configurations, including the `cy50t2_compile` preset, `@IAL_TAG@` macro, and supporting documentation. [#132](https://github.com/ACCORD-NWP/tactus/pull/132) (@pardallio)
 - Unit test: reference_checker: create test data in tmp instead of scratch [#140](https://github.com/ACCORD-NWP/tactus/pull/140) (@dhaumont)
 - Tactus test runner - activate reference checker. [#130](https://github.com/ACCORD-NWP/tactus/pull/130) (@dhaumont)
@@ -18,7 +28,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ALARO: Use APL_ALARO routines instead of APLPAR. [#135](https://github.com/ACCORD-NWP/tactus/pull/135) (@dhaumont)
 - Tactus test runner - Fix underscore in test definition. [#127](https://github.com/ACCORD-NWP/tactus/pull/127) (@dhaumont)
 
+### Changed
+- Not coupling hydrometeors for all CSC. [\#160](https://github.com/ACCORD-NWP/tactus/pull/160) (@kastelecn)
+- Update CY50t2 namelists for Harmonie-Arome CSC. [#115](https://github.com/ACCORD-NWP/tactus/pull/115) (@romick-knmi, @uandrae)
+- Set surfex_sea_ice to default none to be consistent for all CSCs. [#164](https://github.com/ACCORD-NWP/tactus/pull/164)(@uandrae)
+
 ### Fixed
+- Correct sign of the xtool error tolerance used in the referenceChecker. [#162](https://github.com/ACCORD-NWP/tactus/pull/162)(@uandrae)
+- Correct LBC file search pattern in the referenceChecker. [#163](https://github.com/ACCORD-NWP/tactus/pull/163)(@uandrae)
 - Correct Marsprep bug for the SLAF case where the waitfor_files function was not working as expected. [#148](https://github.com/ACCORD-NWP/tactus/pull/148)(@uandrae)
 - Correct usage of STREAM=SCDA following ECMWF update to CY50r1 on 2026-05-12. [#142](https://github.com/ACCORD-NWP/tactus/pull/142)(@uandrae)
 - Fix empty steplist writing output every timestep instead of not at all. [#141](https://github.com/ACCORD-NWP/tactus/pull/141)(@kastelecn)
