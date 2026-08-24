@@ -252,8 +252,6 @@ def test_lockfile_stress():
     """
     import multiprocessing as mp
 
-    from tactus.os_utils import FileLock
-
     n_workers = 8
     n_iters = 15
     path = tempfile.mkdtemp()
