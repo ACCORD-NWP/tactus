@@ -146,4 +146,4 @@
   "zlow(1:5)" = [0.05, 272.0, 240.0, 0.001, 0.5]
   "zhigh(1:5)" = [4.0, 350.0, 350.0, 0.6, 1.5]
   "zclip_arr(1)" = 3.0
-  flg_smartpert = true 
+  flg_smartpert = true
