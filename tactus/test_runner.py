@@ -327,8 +327,20 @@ class TestCases:
                         "-f",
                         suitefile,
                         "-k",
-                    ]
+                    ],
                 ]
+
+                # Make sure we remove the case before launching, if requested
+                if self.cases[case].get("clean", True):
+                    cmds.insert(
+                        0,
+                        [
+                            "remove",
+                            "-f",
+                            "--execute-removal",
+                            f"{self.test_dir}/{config_name}.toml",
+                        ],
+                    )
 
             for cmd in cmds:
                 cmd_txt = " ".join(cmd)
