@@ -291,9 +291,14 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
     parser_compile.add_argument(
         "--ial-tag",
         dest="ial_tag",
-        help="IAL git tag/branch",
+        help="IAL git tag/branch, if not given default in config will be used",
         required=False,
-        default="develop",
+    )
+    parser_compile.add_argument(
+        "--ial-repo",
+        dest="ial_repo",
+        help="IAL repository to use, if not given default in config will be used",
+        required=False,
     )
     add_keep_def_file(
         parser_compile, help_message="Keep suite definition file in case of submission"
