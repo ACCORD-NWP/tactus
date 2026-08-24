@@ -189,6 +189,32 @@ def test_replace_node_command():
 
 
 @pytest.mark.usefixtures("_module_mockers")
+def test_case_command(tmp_path):
+    output_file = f"{tmp_path.as_posix()}/case_config.toml"
+    os.environ["TACTUS_HOST"] = "atos_bologna"
+    with suppress(FileNotFoundError, HostNotFoundError, ConfigFileValidationError):
+        main([
+            "case",
+            "--config-file",
+            ConfigParserDefaults.PACKAGE_CONFIG_PATH.as_posix(),
+            "--output",
+            output_file,
+            "--case-name",
+            "smoke_test_case",
+            "-e",
+        ])
+    del os.environ["TACTUS_HOST"]
+
+
+def test_case_command_missing_config_file_errors():
+    """`tactus case` should error out when --config-file is not provided."""
+    stderr = StringIO()
+    with redirect_stderr(stderr), pytest.raises(SystemExit, match="2"):
+        main(["case"])
+    assert "--config-file" in stderr.getvalue()
+
+
+@pytest.mark.usefixtures("_module_mockers")
 def test_doc_config_command():
     with redirect_stdout(StringIO()):
         main(["doc", "config"])
