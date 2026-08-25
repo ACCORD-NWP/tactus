@@ -684,6 +684,11 @@
           "description": "Git token for IAL source access",
           "default": ""
         },
+        "ial_git_tag_case": {
+          "type": "string",
+          "description": "Placeholder for parsed branch name",
+          "default": ""
+        },
         "ial_git_branch": {
           "type": "string",
           "description": "Branch/tag",

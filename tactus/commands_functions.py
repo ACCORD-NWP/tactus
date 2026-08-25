@@ -160,7 +160,18 @@ def create_compile_exp(args, config):
 
     """
     if args.ial_tag is not None:
-        config = config.copy(update={"compile": {"ial_git_branch": args.ial_tag}})
+        platform = Platform(config)
+        ial_tag_case= platform.substitute(args.ial_tag)
+        for character in ["/", ".", "-"]:
+            ial_tag_case= ial_tag_case.replace(character, "_")
+        config = config.copy(
+            update={
+                "compile": {
+                    "ial_git_branch": args.ial_tag,
+                    "ial_git_tag_case": ial_tag_case,
+                },
+            }
+        )
     if args.ial_repo is not None:
         config = config.copy(update={"compile": {"ial_git_repo": args.ial_repo}})
 
