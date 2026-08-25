@@ -69,7 +69,6 @@
   ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2026.01.0.0"]
 
 [submission.task_exceptions.Forecast]
-  bindir = "@CASEDIR@/install/@PRECISION@/bin"
   NPROC = 30
   NPROC_IO = 2
 

@@ -16,6 +16,9 @@
 [submission.task_exceptions.E923Update.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
 
+[submission.task_exceptions.Forecast.binaries.MASTERODB]
+    bindir = "@CASEDIR@/install/@PRECISION@/bin"
+    
 [submission.task_exceptions.Forecast.binaries.lfitools]
   binary = "lfitools_dp"
 

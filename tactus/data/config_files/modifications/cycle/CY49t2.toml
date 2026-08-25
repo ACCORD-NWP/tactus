@@ -21,7 +21,7 @@
 [submission.task_exceptions.E923Update.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
 
-[submission.task_exceptions.Forecast]
+[submission.task_exceptions.Forecast.binaries.MASTERODB]
   bindir = "@INSTALL_DIR@/@CYCLE@/@COMPILER@/@PRECISION@/@IAL_VERSION@/bin"
 
 [submission.task_exceptions.GlBd]
