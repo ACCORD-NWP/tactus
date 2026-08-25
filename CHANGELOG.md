@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+### Added
+- Introduced perturbation tasks in the initial data selection procedure [#117](https://github.com/ACCORD-NWP/tactus/pull/117)(@uandrae)
+
 ### Changed
 - Updated reference checker with more tests and bugfixes [#179](https://github.com/ACCORD-NWP/tactus/pull/179)(@uandrae)
 
