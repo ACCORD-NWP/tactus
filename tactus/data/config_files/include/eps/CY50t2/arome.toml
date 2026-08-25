@@ -93,13 +93,11 @@
   npatfr = -1
 
 [perturbations.pertsurf]
-  iradius = 12
+  iradius = 10
   inbiter = 10
-  zclip = 2.0
-  npar = 5
-  cparname = ["LAI", "Z0", "SST", "TS", "WG", "ALB"]
-  zpertstd = [0.1, 0.2, -0.25, -1.5, 0.2, 0.1]
-  "zlow(2:6)" = [0.05, 272.0, 240.0, 0.001, 0.5]
-  "zhigh(2:6)" = [4.0, 350.0, 350.0, 0.6, 1.5]
-  "zclip_arr(2)" = 3.0
-  flg_smartpert = false
+  zclip = 3.0
+  npar = 8
+  cparname = ["VEG", "CV", "LAI", "ALB", "Z0", "SNOW", "TS", "SST"]
+  zpertstd = [0.1, 0.1, 0.2, 0.1, 0.2, 0.2, -1.5, -1.5]
+  "zlow(1:8)" = [-0.3, -0.3, -0.6, -0.3, -0.6, 0.0, 240.0, 272.0]
+  "zhigh(1:8)" = [0.3, 0.3, 0.6, 0.3, 0.6, 1000.0, 350.0, 315.0]
