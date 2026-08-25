@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated reference checker with more tests and bugfixes [#179](https://github.com/ACCORD-NWP/tactus/pull/179)(@uandrae)
 
 ### Fixed
+- Make the tactus compile command respect config file settings [#183](https://github.com/ACCORD-NWP/tactus/pull/183)(@uandrae)
 - Add metadata information to generated config files [#177](https://github.com/ACCORD-NWP/tactus/pull/177)(@dhaumont)
 - Fix FileLock race condition [#182](https://github.com/ACCORD-NWP/tactus/pull/182)(@dhaumont)
 - Don't check references when generating them [#175](https://github.com/ACCORD-NWP/tactus/pull/175)(@dhaumont)
