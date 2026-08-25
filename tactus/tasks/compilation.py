@@ -41,10 +41,9 @@ class IALClone(Task):
             logger.info("IAL dir {} alreadys exists", self.ial_dir)
         else:
             batch_job = BatchJob(os.environ)
-            cmd = f"git clone {self.git_ial_repo} {self.ial_dir}"
+            cmd = f"git clone -b {self.git_ial_branch} {self.git_ial_repo} {self.ial_dir}"
             cmd = cmd.replace("[TOKEN]", self.git_token)
             batch_job.run(cmd)
-            batch_job.run(f"cd {self.ial_dir}; git checkout {self.git_ial_branch}")
 
 
 class TactusBundleCreate(Task):
@@ -199,9 +198,9 @@ class TactusBundleBuild(Task):
             compile_dir = "@CASEDIR@"
 
         install_subpath = self.get_install_subpath()
-        bindir = f"{compile_dir}/install/{self.precision}/{install_subpath}"
+        bindir = f"{compile_dir}/install/latest/{self.precision}/{install_subpath}"
         builddir = f"{compile_dir}/build/{self.precision}/{install_subpath}"
-        local_bindir = f"@CASEDIR@/install/{self.precision}/{install_subpath}"
+        local_bindir = f"@CASEDIR@/install/latest/{self.precision}/{install_subpath}"
         bindir = self.platform.substitute(bindir)
         bindir = os.path.realpath(bindir)
         builddir = self.platform.substitute(builddir)
