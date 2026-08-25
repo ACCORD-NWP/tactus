@@ -44,9 +44,9 @@ class Pertana(Task):
             nl.close()
 
         """Find initial file"""
-        initfile, initfile_sfx, status = InitialConditions(
-            self.config
-        ).find_initial_files("Pertana", False)
+        initfile, _, _ = InitialConditions(self.config).find_initial_files(
+            "Pertana", types=["atm"]
+        )
         self.fmanager.input(initfile, "FILE1")
 
         """Find bd1(mbr)"""
