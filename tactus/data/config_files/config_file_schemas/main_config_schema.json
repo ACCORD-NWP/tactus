@@ -1041,7 +1041,7 @@
           "description": "Experiment name",
           "default": "tactus_case",
           "type": "string",
-          "pattern": "^([a-zA-Z0-9_][a-zA-Z0-9_.]*)?$"
+          "pattern": "^([a-zA-Z0-9_@][a-zA-Z0-9_@.]*)?$"
         },
         "member_str": {
           "description": "String identifier of a member in the ensemble",
