@@ -20,6 +20,7 @@ from .cleaning import CleanTactus
 from .config_parser import BasicConfig, ConfigParserDefaults, ConfigPaths, ParsedConfig
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
 from .experiment import case_setup
+from .general_utils import sanitize_case_name
 from .host_actions import TactusHost, set_tactus_home
 from .logs import logger
 from .namelist import (
@@ -161,9 +162,7 @@ def create_compile_exp(args, config):
     """
     if args.ial_tag is not None:
         platform = Platform(config)
-        ial_tag_case = platform.substitute(args.ial_tag)
-        for character in ["/", ".", "-"]:
-            ial_tag_case = ial_tag_case.replace(character, "_")
+        ial_tag_case = sanitize_case_name(platform.substitute(args.ial_tag))
         config = config.copy(
             update={
                 "compile": {
