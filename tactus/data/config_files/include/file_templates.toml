@@ -45,6 +45,14 @@
   archive = "ELSCF@CNMEXP@ALBC@NNN@"
   model = "ELSCF@CNMEXP@ALBC@NNN@"
 
+[file_templates.pertsurf]
+  archive = "PERTSURF@CNMEXP@"
+  model = "PERTSURF@CNMEXP@"
+
+[file_templates.pertana]
+  archive = "PERTANA@CNMEXP@"
+  model = "PERTANA@CNMEXP@"
+
 [file_templates.pgd]
   archive = "Const.Clim@ONE_DECADE@.sfx"
   model = "Const.Clim.sfx"
