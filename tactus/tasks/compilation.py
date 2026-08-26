@@ -239,7 +239,22 @@ class TactusBundleBuild(Task):
             self.prec_arg = "--without-double-precision"
 
     def get_install_subpath(self):
-        """Build install subpath by using the location of the env.sh file."""
+        """Build install subpath by using the location of the env.sh file.
+
+        The `arch` build directory (``<bundle_dir>/<arch>``) may contain a
+        ``default`` symlink pointing at the actual build used, e.g. one
+        selected by ecbundle based on compiler/toolchain. When that symlink
+        exists, it is resolved and the path components coming after the
+        `arch` directory name are returned, giving the subpath under which
+        the build was actually installed (e.g. ``<toolchain>/<build_type>``).
+        When there is no such symlink, the subpath is empty (`.`), meaning
+        installs go directly under the `arch` directory.
+
+        Returns:
+            Path: Subpath (relative to the `arch` directory) to append to
+                the install/build directories.
+
+        """
         arch_dir = Path(f"{self.bundle_dir}/{self.arch}")
         default_link = arch_dir / "default"
         if default_link.exists() and default_link.is_symlink():
