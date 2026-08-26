@@ -15,7 +15,8 @@ def test_compile_parser_defaults():
     assert args.output_file is None
     assert args.start_suite is True
     assert args.case is None
-    assert args.ial_tag == "develop"
+    assert args.ial_tag is None
+    assert args.ial_repo is None
 
 
 def test_compile_parser_accepts_expected_options():
@@ -25,6 +26,8 @@ def test_compile_parser_accepts_expected_options():
         "compile",
         "--ial-tag",
         "CY50T2",
+        "--ial-repo",
+        "foo",
         "--output",
         "compile_config.toml",
         "--case-name",
@@ -34,6 +37,7 @@ def test_compile_parser_accepts_expected_options():
     ])
 
     assert args.ial_tag == "CY50T2"
+    assert args.ial_repo == "foo"
     assert args.output_file == "compile_config.toml"
     assert args.case == "my_compile_case"
     assert args.start_suite is True
@@ -67,6 +71,7 @@ def test_create_compile_exp_sets_ial_tag_and_forced_modifications(
     monkeypatch.setattr("tactus.commands_functions.create_exp", fake_create_exp)
 
     args = argparse.Namespace(
+        ial_repo="foo",
         ial_tag="feature/test-branch",
         config_mods=["user_supplied_modification.toml"],
         output_file=None,
@@ -87,8 +92,8 @@ def test_create_compile_exp_sets_ial_tag_and_forced_modifications(
     ]
 
 
-def test_create_compile_exp_uses_default_ial_tag_from_parser(default_config, monkeypatch):
-    """Check compile command uses the parser default IAL tag when none is provided."""
+def test_create_compile_exp_uses_default_ial_tag_from_config(default_config, monkeypatch):
+    """Check compile command uses the config default IAL tag when none is provided."""
     captured = {}
 
     def fake_create_exp(args, config):
