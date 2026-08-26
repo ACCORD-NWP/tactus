@@ -135,6 +135,45 @@ class TestValidateExpandables:
             EPSConfig(eps_general_config, invalid_non_dict_data)
 
 
+class TestValidateBdmember:
+    """Unit tests of the validate_bdmember method of the EPSConfig class."""
+
+    @pytest.fixture(name="eps_general_config", scope="class")
+    def fixture_eps_general_config(self) -> EPSGeneralConfigs:
+        """Fixture for defining a test EPSGeneralConfigs class with 3 members."""
+        return EPSGeneralConfigs(members=[0, 1, 2])
+
+    @pytest.mark.parametrize(
+        "bdmember",
+        [
+            [],  # No bdmembers, e.g. SLAF nesting into a single control forecast
+            [5],  # A single bdmember, used for all members
+            [0, 1, 2],  # As many bdmembers as members
+            [0, 1, 2, 3, 4],  # More bdmembers than members, e.g. for clustering
+        ],
+    )
+    def test_with_valid_bdmember(
+        self, bdmember: list, eps_general_config: EPSGeneralConfigs
+    ):
+        """Test with a valid number of bdmembers."""
+        EPSConfig(
+            eps_general_config, {"boundaries": {"ifs": {"bdmember": bdmember}}}
+        )
+
+    def test_with_ambiguous_bdmember(self, eps_general_config: EPSGeneralConfigs):
+        """Test with more than one, but fewer bdmembers than members.
+
+        Should raise, as it is ambiguous which member should nest into which
+        bdmember.
+        """
+        with pytest.raises(
+            ValueError,
+            match=r".*must be empty, a single bdmember, or contain at least"
+            r" as many bdmembers as members.*",
+        ):
+            EPSConfig(eps_general_config, {"boundaries": {"ifs": {"bdmember": [0, 1]}}})
+
+
 @pytest.fixture(name="eps_config", scope="class")
 def fixture_eps_config() -> EPSConfig:
     """Fixture for defining a test EPSConfig class."""

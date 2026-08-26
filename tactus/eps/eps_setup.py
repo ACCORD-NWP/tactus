@@ -16,7 +16,7 @@ from collections.abc import Mapping
 from itertools import chain
 from typing import Any, Dict, Generator, List, Sequence, Tuple
 
-from pydantic import RootModel, field_validator
+from pydantic import RootModel, field_validator, model_validator
 from pydantic.dataclasses import dataclass as pydantic_dataclass
 
 from tactus.config_parser import ParsedConfig
@@ -130,6 +130,36 @@ class EPSConfig:
             # to validate format.
             Expandable(root=value)
         return value
+
+    @model_validator(mode="after")
+    def validate_bdmember(self) -> "EPSConfig":
+        """Validate boundaries.ifs.bdmember against the members list.
+
+        A bdmember list must either be empty (no boundary member nesting,
+        e.g. SLAF nesting all members into the same control forecast), a
+        single bdmember (used for all members) or contain at least as many
+        bdmembers as there are members (bdmember i nests member i; extra
+        bdmembers are allowed to cover future clustering needs). Any other
+        length is ambiguous.
+
+        Raises:
+            ValueError: If bdmember has more than one but fewer bdmembers
+                than there are members.
+        """
+        bdmember = self.member_settings.get("boundaries", {}).get("ifs", {}).get(
+            "bdmember"
+        )
+        if isinstance(bdmember, list):
+            n_members = len(self.general.members)
+            if 1 < len(bdmember) < n_members:
+                raise ValueError(
+                    "eps.member_settings.boundaries.ifs.bdmember must be "
+                    "empty, a single bdmember, or contain at least as many "
+                    f"bdmembers as members (={n_members}) to nest each "
+                    f"member into its own bdmember. Got {len(bdmember)} "
+                    f"bdmembers for {n_members} members."
+                )
+        return self
 
 
 def generate_member_settings(
