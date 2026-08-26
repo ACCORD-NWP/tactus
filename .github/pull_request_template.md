@@ -18,8 +18,12 @@ Please delete options that are not relevant.
 
 ### Testing
 
-- [ ] I have tested this on ATOS using the `atos_bologna.toml` configuration in the latest version of [Tactus-test-runner](https://github.com/destination-earth-digital-twins/Tactus-test-runner)
-- [ ] I have tested this on LUMI using the `lumi.toml` configuration in the latest version of [Tactus-test-runner](https://github.com/destination-earth-digital-twins/Tactus-test-runner)
+- [ ] I have tested this on ATOS for CY49 and CY50 using
+```
+tactus test tactus/data/tests/atos_bologna_CY49t2.toml -m -r
+tactus test tactus/data/tests/atos_bologna_CY50t2.toml -m -r
+```
+and added the corresponding lable 'bit-reproducible' or 'non-bit-reproducible' depending on the outcome of the tests.
 
 For further information see the [development guide](https://github.com/ACCORD-NWP/tactus/blob/develop/docs/markdown_docs/development_guide.md)
 

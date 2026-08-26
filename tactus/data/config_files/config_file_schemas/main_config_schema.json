@@ -291,13 +291,25 @@
       "properties": {
         "pertana": {
           "title": "Perturbation of initial atmospheric conditions with boundary data.",
-          "type": "boolean",
-          "default": false
+          "type": "object",
+          "properties": {
+            "active": {
+              "title": "Activate pertana perturbations",
+              "type": "boolean",
+              "default": false
+            }
+          }
         },
         "pertsurf": {
           "title": "Perturbation of initial surfex conditions",
-          "type": "boolean",
-          "default": false
+          "type": "object",
+          "properties": {
+            "active": {
+              "title": "Activate pertsurf perturbations",
+              "type": "boolean",
+              "default": false
+            }
+          }
         }
       }
     },
