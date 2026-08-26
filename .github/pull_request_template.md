@@ -20,9 +20,10 @@ Please delete options that are not relevant.
 
 - [ ] I have tested this on ATOS for CY49 and CY50 using
 ```
-tactus test tactus/data/tests/atos_bologna_CY49t2.toml -m -r ; tactus test tactus/data/tests/atos_bologna_CY50t2.toml -m -r
+tactus test tactus/data/tests/atos_bologna_CY49t2.toml -m -r
+tactus test tactus/data/tests/atos_bologna_CY50t2.toml -m -r
 ```
-and reported possible numerical differences in this PR.
+and added the corresponding lable 'bit-reproducible' or 'non-bit-reproducible' depending on the outcome of the tests.
 
 For further information see the [development guide](https://github.com/ACCORD-NWP/tactus/blob/develop/docs/markdown_docs/development_guide.md)
 
