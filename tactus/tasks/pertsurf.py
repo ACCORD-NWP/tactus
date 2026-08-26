@@ -59,7 +59,7 @@ class PertSurf(Task):
 
         # Surface initial file
         _, initfile_sfx, _ = InitialConditions(self.config).find_initial_files(
-            "Pertsurf", "surfex"
+            "Pertsurf", types=["surfex"]
         )
 
         output = self.platform.substitute(
