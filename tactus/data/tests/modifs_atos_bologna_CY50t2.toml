@@ -44,7 +44,7 @@
   max_ecf_tasks = 5
 
 [modifs.submission.task_exceptions.Forecast.binaries.MASTERODB]
-  bindir = "@SCRATCH@/@SYS_NAME@/@CASE_PREFIX@@CYCLE@_compile/install/R32/bin"
+  bindir = "@SCRATCH@/@SYS_NAME@/@CASE_PREFIX@@CYCLE@_compile/install/R64/bin"
 
 [modifs.submission.task_exceptions.Marsprep.BATCH]
   WALLTIME = "#SBATCH --time=12:00:00"
