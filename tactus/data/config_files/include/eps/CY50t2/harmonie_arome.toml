@@ -130,11 +130,7 @@
 
 [eps.member_settings.perturbations.pertana.active]
   0 = false
-  "1:" = false
-
-[eps.member_settings.perturbations.pertsurf.active]
-  0 = false
-  "1:" = false
+  "1:" = true
 
 [perturbations.pertana]
   z_mult = 0.25
