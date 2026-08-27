@@ -32,7 +32,7 @@ tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -r
 Failures in suites can be treated like any failure. I.e. by changing the relevant code or config and replace/relaunch the suite in full or parts as appropriate. The config files can be regenerated while suites are running if required. The config file generation and launch can be combined by running with `-m -r` in one go.
 
 ## Check the outcome of the reference checker
-For each suite namelists, logs and results are checked for a number of selected tasks using the 
+For each suite namelists, logs and results are checked for a number of selected tasks using the
 [reference checker](#reference-checker). The status and progress of this can be checked by running
 ```
 tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml
