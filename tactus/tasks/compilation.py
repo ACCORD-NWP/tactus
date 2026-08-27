@@ -41,10 +41,9 @@ class IALClone(Task):
             logger.info("IAL dir {} alreadys exists", self.ial_dir)
         else:
             batch_job = BatchJob(os.environ)
-            cmd = f"git clone {self.git_ial_repo} {self.ial_dir}"
+            cmd = f"git clone -b {self.git_ial_branch} {self.git_ial_repo} {self.ial_dir}"
             cmd = cmd.replace("[TOKEN]", self.git_token)
             batch_job.run(cmd)
-            batch_job.run(f"cd {self.ial_dir}; git checkout {self.git_ial_branch}")
 
 
 class TactusBundleCreate(Task):
@@ -198,9 +197,10 @@ class TactusBundleBuild(Task):
         else:
             compile_dir = "@CASEDIR@"
 
-        bindir = f"{compile_dir}/install/{self.precision}"
-        builddir = f"{compile_dir}/build/{self.precision}"
-        local_bindir = f"@CASEDIR@/install/{self.precision}"
+        install_subpath = self.get_install_subpath()
+        bindir = f"{compile_dir}/install/latest/{self.precision}/{install_subpath}"
+        builddir = f"{compile_dir}/build/{self.precision}/{install_subpath}"
+        local_bindir = f"@CASEDIR@/install/latest/{self.precision}/{install_subpath}"
         bindir = self.platform.substitute(bindir)
         bindir = os.path.realpath(bindir)
         builddir = self.platform.substitute(builddir)
@@ -237,6 +237,34 @@ class TactusBundleBuild(Task):
         self.prec_arg = ""
         if self.precision == "R32":
             self.prec_arg = "--without-double-precision"
+
+    def get_install_subpath(self):
+        """Build install subpath by using the location of the env.sh file.
+
+        The `arch` build directory (``<bundle_dir>/<arch>``) may contain a
+        ``default`` symlink pointing at the actual build used, e.g. one
+        selected by ecbundle based on compiler/toolchain. When that symlink
+        exists, it is resolved and the path components coming after the
+        `arch` directory name are returned, giving the subpath under which
+        the build was actually installed (e.g. ``<toolchain>/<build_type>``).
+        When there is no such symlink, the subpath is empty (`.`), meaning
+        installs go directly under the `arch` directory.
+
+        Returns:
+            Path: Subpath (relative to the `arch` directory) to append to
+                the install/build directories.
+
+        """
+        arch_dir = Path(f"{self.bundle_dir}/{self.arch}")
+        default_link = arch_dir / "default"
+        if default_link.exists() and default_link.is_symlink():
+            arch = default_link.resolve()
+        else:
+            arch = arch_dir
+        top = arch_dir.parts[-1]
+        parts = arch.parts
+        i = parts.index(top)
+        return Path(*parts[i + 1 :])
 
     def get_bundle_hash(self, source_dir):
         """Build a unique hash for the bundle source combination."""

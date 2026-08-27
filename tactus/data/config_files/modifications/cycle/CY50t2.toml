@@ -8,13 +8,20 @@
 
 [submission]
   precision = "R64"
+  ial_version = "latest"
+  bindir = "@INSTALL_DIR@/@IAL_VERSION@/R64/intel/2021.4.0/hpcx-openmpi/2.9.0/bin"
+
+  bindir_gl = "@SUBMISSION.BINDIR@"
 
 [submission.task_exceptions.E923Update]
-  bindir = "/perm/deployde330/github-actions/install/CY49t2/intel/R64/latest/bin"
+  bindir = "@INSTALL_DIR_CY49T2@/CY49t2/intel/R64/latest/bin"
   binary = "fa_sfx2clim"
 
 [submission.task_exceptions.E923Update.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
+
+[submission.task_exceptions.Forecast]
+  bindir = "@INSTALL_DIR@/@IAL_VERSION@/@PRECISION@/intel/2021.4.0/hpcx-openmpi/2.9.0/bin"
 
 [submission.task_exceptions.Forecast.binaries.lfitools]
   binary = "lfitools_dp"
@@ -29,7 +36,7 @@
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
 
 [submission.task_exceptions.PgdFilterTownFrac]
-  bindir = "/perm/deployde330/github-actions/install/CY49t2/intel/R64/latest/bin"
+  bindir = "@INSTALL_DIR_CY49T2@/CY49t2/intel/R64/latest/bin"
   binary = "pgd_frac"
 
 [submission.task_exceptions.Prep]
@@ -37,6 +44,3 @@
 
 [submission.task_exceptions.Prep.ENV]
   DR_HOOK_ASSERT_MPI_INITIALIZED = 0
-
-[suite_control]
-  compile = true

@@ -69,7 +69,7 @@
   ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2026.01.0.0"]
 
 [submission.task_exceptions.Forecast]
-  bindir = "@CASEDIR@/install/@PRECISION@/bin"
+  bindir = "@INSTALL_DIR@/latest/@PRECISION@/intel/2021.4.0/hpcx-openmpi/2.9.0/bin"
   NPROC = 30
   NPROC_IO = 2
 
