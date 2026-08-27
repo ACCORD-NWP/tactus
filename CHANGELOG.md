@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Introduced perturbation tasks in the initial data selection procedure [#117](https://github.com/ACCORD-NWP/tactus/pull/117)(@uandrae)
-- Introduced possibility to comile with GNU in CY50t2 [#188](https://github.com/ACCORD-NWP/tactus/pull/188)(@pardallio) 
+- Introduced possibility to comile with GNU in CY50t2 [#188](https://github.com/ACCORD-NWP/tactus/pull/188)(@pardallio)
 
 ### Changed
 - Update test instructions. [#185](https://github.com/ACCORD-NWP/tactus/pull/185)(@uandrae)
