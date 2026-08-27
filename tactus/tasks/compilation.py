@@ -176,7 +176,7 @@ class TactusBundleBuild(Task):
 
         self.precision = self.config.get("task.args.prec", "prec")
 
-        self.arch = self.config["compile.arch"]
+        self.arch = self.platform.substitute(self.config["compile.arch"])
 
         # check for existing builds in cache_dir
         if self.config["compile.cache"]:

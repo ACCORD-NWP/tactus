@@ -163,6 +163,8 @@ def create_compile_exp(args, config):
         config = config.copy(update={"compile": {"ial_git_branch": args.ial_tag}})
     if args.ial_repo is not None:
         config = config.copy(update={"compile": {"ial_git_repo": args.ial_repo}})
+    if args.compiler is not None:
+        config = config.copy(update={"submission": {"compiler": args.compiler}})
 
     args.config_mods = [
         "tactus/data/config_files/modifications/@HOST@.toml",

@@ -704,7 +704,7 @@
         "arch": {
           "type": "string",
           "description": "Compiler configuration",
-          "default": "source/ial-source/bundle/arch/ecmwf/hpc2020"
+          "default": "source/ial-source/bundle/arch/ecmwf/hpc2020/@COMPILER@"
         },
         "dir": {
           "type": "string",
