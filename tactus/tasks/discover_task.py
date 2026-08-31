@@ -56,15 +56,16 @@ def _task_index_file(config):
         task_index_file (str): Full path to task index_file
 
     """
-    task_index_file_path = Platform(config).get_system_value("casedir")
+    task_index_file_path = Platform(config).get_system_value("task_index_file_path")
     return Path(task_index_file_path) / "tasks_index.json"
 
 
-def load_task_index(config):
+def load_task_index(config, force=False):
     """Load a task index file.
 
     Args:
         config (ConfigParse): Config
+        force (boolean): Control of forced tasklist generation
 
     Returns:
         known_types(dict): Dict of known tasks, and their location
@@ -72,7 +73,7 @@ def load_task_index(config):
     """
     task_index_file = _task_index_file(config)
 
-    if os.path.isfile(task_index_file):
+    if os.path.isfile(task_index_file) and not force:
         logger.info("Read task index from {}", task_index_file)
         with open(task_index_file, "r", encoding="utf-8") as infile:
             known_types = json.load(infile)
@@ -152,6 +153,7 @@ def get_task(name, config) -> Task:
     try:
         cls = known_types[name.lower()]
     except KeyError:
+        logger.info("Task {} not found in index, recreate task index file", name.lower())
         known_types = create_task_index(config)
         try:
             cls = known_types[name.lower()]

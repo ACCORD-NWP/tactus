@@ -419,6 +419,7 @@ class NoSchedulerSubmission:
         member: Optional[int] = None,
         troika: Optional[str] = "troika",
         create_only: Optional[bool] = False,
+        force_tasklist_generation: Optional[bool] = False,
     ):
         """Submit task.
 
@@ -432,12 +433,13 @@ class NoSchedulerSubmission:
                 Defaults to None.
             troika      (str, optional): troika binary. Defaults to "troika".
             create_only: (bool, optional): Only create the job, do not submit it.
+            force_tasklist_generation: (bool, optional): Switch for tasklist generation
 
         Raises:
             RuntimeError: Submission failure.
         """
         name = task.lower()
-        if name not in load_task_index(config):
+        if name not in load_task_index(config, force=force_tasklist_generation):
             raise NotImplementedError(f"Task {name} not implemented")
 
         troika_config = Platform(config).get_value("troika.config_file")

@@ -162,6 +162,7 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         required=False,
         default=False,
     )
+    add_generate_tasklist(parser_run)
     parser_run.set_defaults(run_command=run_task)
 
     ##########################################
@@ -237,6 +238,7 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
     add_keep_def_file(
         parser_case, help_message="Keep suite definition file in case of submission"
     )
+    add_generate_tasklist(parser_case)
     add_expand_config(parser_case)
     parser_case.set_defaults(run_command=create_exp)
 
@@ -269,6 +271,7 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         help="Suite definition file",
         default="",
     )
+    add_generate_tasklist(parser_start_suite)
     add_keep_def_file(parser_start_suite)
     parser_start_suite.set_defaults(run_command=start_suite)
 
@@ -709,6 +712,24 @@ def add_keep_def_file(
         action="store_true",
         default=False,
         required=False,
+    )
+
+
+def add_generate_tasklist(parser_object):
+    """Add object args.
+
+    Args:
+        parser_object (args oject): args object to update
+
+    """
+    parser_object.add_argument(
+        "--generate-tasklist-off",
+        "-g",
+        help="Do not force generation of tasklist",
+        action="store_false",
+        default=True,
+        required=False,
+        dest="force_generation",
     )
 
 
