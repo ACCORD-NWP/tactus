@@ -11,7 +11,6 @@ import tomlkit
 
 from tactus.config_parser import ConfigParserDefaults, ParsedConfig
 from tactus.namelist import (
-    InvalidNamelistKindError,
     InvalidNamelistTargetError,
     NamelistGenerator,
     NamelistIntegrator,
