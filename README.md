@@ -16,24 +16,6 @@ The [tactus scripting system](https://github.com/ACCORD-NWP/tactus/) provides a 
 See the [project's documentation page](https://ACCORD-NWP.github.io/tactus) for more information.
 
 
-## Set up environment
-
-**Make sure you have python>=3.10**
-
-<a name="#put-poetry-in-path"></a> Start by adding the `$HOME/.local/bin`
-directory in your `PATH`:
-```shell
-export PATH="$HOME/.local/bin:$PATH"
-```
-
-Then, run:
-
-* On Atos (`hpc-login`)
-  ```shell
-  module load python3/3.10.10-01
-  module load ecflow
-  ```
-
 ## Installation
 
 First checkout the `tactus` source code from github:
@@ -49,54 +31,45 @@ git clone git@github.com:<username>/tactus.git
 cd tactus
 ```
 
+> [!IMPORTANT]
+> Tactus should be installed in a folder accessible by ecflow server. On Atos, it should be installed in your $HOME or $PERM directory.
 
-Then install/reinstall [`poetry`](https://python-poetry.org) by runnning the following commands in your shell:
-  ```shell
-  # Clean eventual previous install
-  curl -sSL https://install.python-poetry.org | python3 - --uninstall
-  rm -rf ${HOME}/.cache/pypoetry/ ${HOME}/.local/bin/poetry ${HOME}/.local/share/pypoetry
-  # Download and install poetry
-  curl -sSL https://install.python-poetry.org | python3 -
-  poetry install
-  # Add the poetry shell command as a plugin (for poetry >= v2.0.0)
-  poetry self add poetry-plugin-shell
-  ```
+Then install [`Pixi`](https://pixi.sh) by following the installation instructions at https://pixi.sh/latest/#installation, or use your system package manager:
 
-Finally, install [`pygdal`](https://pypi.org/project/pygdal/), which is required for climate generation. [`pygdal`](https://pypi.org/project/pygdal/) depends on [`gdal`](https://gdal.org/), which is notoriously troublesome as dependency when targeting many systems. The versions of `pygdal` and the system's `gdal`should match.
+```shell
+# On macOS with Homebrew
+brew install pixi
 
-  To install gdal and pygdal run the follow in commands in your shell:
+# On Linux (after following Pixi docs)
+curl -fsSL https://pixi.sh/install.sh | bash
+```
 
-  * On Atos (`hpc-login`)
-    ```shell
-    module load gdal/3.6.2
-    poetry shell
-    pip install pygdal==3.6.2.11
-    ```
-  If installation is not succesful, please contact the IT support in your organisation or HPC facility.
+After installing Pixi, set up Pixi environment from the root of the cloned repository:
+```shell
+pixi install
+```
 
-### Important
+If you want to install the environment in another directory than the default (`<project-root>/.pixi/envs/`) add `detached-environments = "/path/to/env-location/"` to a pixi config file. Supported locations of the pixi config is outlined in https://pixi.prefix.dev/latest/reference/pixi_configuration/.
 
-Tactus should be installed in a folder accessible by ecflow server.
-
-On Atos, it should be installed in your $HOME or $PERM directory.
-
-
+Pixi caches the downloaded packages and shares them between projects to speed up environment installation. To change the cache directory, add the following to the pixi config:
+```toml
+[cache]
+  root = "/path/to/cache"
+  netfs-redirect = "never"
+```
 ## Usage
 
-Initially set up the environment by repeating the steps in [Set up environment](#set-up-environment), navigate to the root level of the `tactus` install directory and activate python virtual environment:
+Navigate to the root level of the `tactus` install directory and use Pixi to run:
 ```shell
-poetry shell
-```
-Alternatively, to activate a `tactus` installation located in an arbitrary
-directory `MY_TACTUS_SOURCE_DIRECTORY`, please run:
-```shell
-poetry shell --directory=MY_TACTUS_SOURCE_DIRECTORY
+pixi run tactus -h
 ```
 
-Test that `tactus` works by running:
+Alternatively, to activate the environment and work interactively:
 ```shell
+pixi shell
 tactus -h
 ```
+
 ### The Configuration File
 Before you can use `tactus` (apart from the `-h` option), you will need a configuration file written in the
 [TOML](https://en.wikipedia.org/wiki/TOML) format. Please take a look at
@@ -127,7 +100,7 @@ that the `-h` goes after the subcommand in this case).
 
 ## Examples
 
-These examples assume that you have successfully [Set up environment](#set-up-environment) [installed](#installation) tactus, navigated to the root level of your `tactus` install directory and loaded the python environment. The examples also assume that the binaries and input data for the [ACCORD CSCs](https://www.umr-cnrm.fr/accord/?Canonical-System-Configurations-CSC) is in place. Please contact your local ACCORD members for advice if this is not the case.
+These examples assume that you have successfully [installed](#installation) tactus, navigated to the root level of your `tactus` install directory, and entered into a shell by running `pixi shell`. The examples also assume that the binaries and input data for the [ACCORD CSCs](https://www.umr-cnrm.fr/accord/?Canonical-System-Configurations-CSC) is in place. Please contact your local ACCORD members for advice if this is not the case.
 
 ### Running ecflow suite on ATOS
 

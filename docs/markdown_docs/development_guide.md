@@ -42,52 +42,47 @@ Each PR comes with its own improvements and flaws. The reviewer should check the
 ## Local testing
 No-one likes to wait for the CI to run tests. It is therefore recommended to run tests locally before pushing to the remote repository, and before creating a PR, but no one will force you to do this: how you work locally is entirely up to you.
 
-For convenience, however, we have added a few commands you can use to check that the code is linted, the tests pass, etc. Some of these are exemplified in the next subsections. Please run **inside of your poetry shell**:
+For convenience, however, we have added a few commands you can use to check that the code is linted, the tests pass, etc. Some of these are exemplified in the next subsections. To show a list of available commands run
 ```shell
-make
+pixi task list
 ```
-for more information. To run the commands, extra dependency groups need to be installed, which can be achieved by running
+for more information. To activate the Pixi environment with all dependency groups:
 ```shell
-poetry install --all-groups
+pixi shell
 ```
 
 ### Run and fix toml formatting in place
 ```shell
-pre-commit run tombi-format --files /PATH/TO/FILE
+pixi run pre-commit run tombi-format --files /PATH/TO/FILE
 ```
 
 
 ### Run linters and **attempt** to fix eventually encountered errors
 ```shell
-make lint
+pixi run lint
 ```
 This will stop with an error if the encountered issues cannot be fixed.
 
 ### Run the typical checks for things you need to fix prior to a push
 ```shell
-make pre-push-checks
+pixi run pre-push-checks
 ```
 
 ### Run tests
 Tests will run as if they were on current platform, if recognized. If the platform is not recognized a bogus plaform `pytest` is used as defined under `tests/include`. To force the tests to run as on the `pytest` platform export `TACTUS_HOST=pytest` before running pytest. Run the tests with
 ```shell
-pytest
-```
-or
-```shell
-make test
+pixi run test
 ```
 
 ### Generate and view the documentation to be published to our [docpages](https://ACCORD-NWP.github.io/tactus/)
 
 ```shell
-make doc-clean
-make doc-build
-make doc-view
+pixi run doc-build
+pixi run doc-view
   ```
 or, combining them all:
 ```shell
-make doc
+pixi run doc
 ```
 
 ## Testing on Atos

@@ -15,12 +15,6 @@ from tactus.experiment import case_setup
 from tactus.toolbox import Platform
 
 
-@pytest.fixture(scope="module", name="tmp_directory")
-def fixture_tmp_directory(tmp_path_factory: pytest.TempPathFactory) -> Path:
-    """Return a temp directory valid for this module."""
-    return tmp_path_factory.getbasetemp()
-
-
 @pytest.fixture
 def test_domain():
     """Return a test domain."""
@@ -45,8 +39,8 @@ def default_config_dir():
     return f"{rootdir}/tactus/data/config_files"
 
 
-def test_save_config(tmp_directory: Path, default_config):
-    saved_config = tmp_directory / "saved_config.toml"
+def test_save_config(tmp_directory: str, default_config):
+    saved_config = tmp_directory + "/saved_config.toml"
     config = default_config
     config.save_as(saved_config)
     config = ParsedConfig.from_file(
@@ -64,8 +58,9 @@ def _module_mockers_atos_bologna(module_mocker):
 
 @pytest.mark.usefixtures("_module_mockers_atos_bologna")
 def test_set_domain_from_file(
-    tmp_directory: Path, test_domain, default_config, default_config_dir
+    tmp_directory: str, test_domain, default_config, default_config_dir
 ):
+    tmp_directory = Path(tmp_directory)
     config_dir = tmp_directory / "data/config/"
     output_file = f"{default_config_dir}/test_set_domain_from_file.toml"
     domains_dir = config_dir / "include/domains"

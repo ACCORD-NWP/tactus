@@ -14,14 +14,12 @@ from tactus.submission import NoSchedulerSubmission, ProcessorLayout, TaskSettin
 
 @pytest.fixture
 def minimal_raw_config():
-    return tomlkit.parse(
-        """
+    return tomlkit.parse("""
         [general]
             times.list = ["2000-01-01T00:00:00Z"]
         [system]
             wrk = "/tmp/@YYYY@@MM@@DD@_@HH@"
-        """
-    )
+        """)
 
 
 @pytest.fixture
@@ -59,6 +57,7 @@ class TestSubmission:
         assert isinstance(parsed_config_with_task, ParsedConfig)
 
     def test_submit(self, default_config, tmp_directory):
+        tmp_directory = Path(tmp_directory)
         config = default_config.copy(
             update={
                 "submission": {
@@ -72,15 +71,16 @@ class TestSubmission:
                 },
             }
         )
-        tmp = tmp_directory
-        config = config.copy(update={"platform": {"scratch": tmp, "unix_group": ""}})
+        config = config.copy(
+            update={"platform": {"scratch": str(tmp_directory), "unix_group": ""}}
+        )
         config = config.copy(update=set_times(config))
         task = "UnitTest"
         template_job = "tactus/templates/stand_alone.py"
-        task_job = Path(tmp, f"{task}.job")
-        output = Path(tmp, f"{task}.log")
-        task_job_create_only = Path(tmp, f"{task}_create_only.job")
-        output_create_only = Path(tmp, f"{task}_create_only.log")
+        task_job = tmp_directory / f"{task}.job"
+        output = tmp_directory / f"{task}.log"
+        task_job_create_only = tmp_directory / f"{task}_create_only.job"
+        output_create_only = tmp_directory / f"{task}_create_only.log"
 
         assert config["submission.default_submit_type"] == "pytest"
         background = TaskSettings(config)

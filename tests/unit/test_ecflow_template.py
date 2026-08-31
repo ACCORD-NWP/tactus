@@ -90,5 +90,7 @@ class TestScheduler:
         mock_client.return_value.__exit__.return_value = None
         assert mock_server is not None
         prev_dir = os.getcwd()
-        default_main(kwargs)
-        os.chdir(prev_dir)
+        try:
+            default_main(kwargs)
+        finally:
+            os.chdir(prev_dir)

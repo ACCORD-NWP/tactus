@@ -37,5 +37,7 @@ class TestStandalone:
 
         task_config.save_as(output_file)
         prev_dir = os.getcwd()
-        default_main("UnitTest", output_file, tactus_home)
-        os.chdir(prev_dir)
+        try:
+            default_main("UnitTest", output_file, tactus_home)
+        finally:
+            os.chdir(prev_dir)

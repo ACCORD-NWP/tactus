@@ -6,36 +6,33 @@ on:
     branches:
       - master
       - develop
-
   pull_request:
     branches:
       - master
       - develop
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Build HPC Image"]
+    types:
+      - completed
 
 jobs:
   tests:
-    if: github.repository_owner == 'ACCORD-NWP'
+    if: github.repository_owner == 'ACCORD-NWP' && github.event_name != 'workflow_run'
     strategy:
       fail-fast: true
       matrix:
         os: [ "ubuntu-latest" ]
-        env: [ "pytest" ]
-        python-version: [ "3.10" ]
+        python-version: [ "3.14" ]
 
     name: "Unit-tests ${{ matrix.os }}, python=${{ matrix.python-version }}"
     runs-on: ${{ matrix.os }}
     env:
       GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
-
     container:
-      image: python:${{ matrix.python-version }}-bullseye
-      env:
-        COVERAGE_FILE: ".coverage.${{ matrix.env }}.${{ matrix.python-version }}"
+      image: python:${{ matrix.python-version }}
 
     steps:
-      #----------------------------------------------
-      #           check-out repo
-      #----------------------------------------------
       - name: Check out repository
         uses: actions/checkout@v6
 
@@ -44,48 +41,25 @@ jobs:
         with:
           github_token: ${{ env.GITHUB_TOKEN }}
 
-      #----------------------------------------------
-      #           add matrix specifics
-      #----------------------------------------------
       - name: Install ping
         run: |
           apt-get update
           apt-get install -y inetutils-ping
 
-      - name: Install system gdal libs
-        run: |
-          apt-get update
-          apt-get install -y gdal-bin libgdal-dev
-
-      - name: Install pygdal
-        run: |
-          pip install pygdal=="`gdal-config --version`.*"
-
-      #----------------------------------------------
-      #  --- configure poetry & install project  ----
-      #----------------------------------------------
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
+      - name: Install Pixi and dependencies
+        uses: prefix-dev/setup-pixi@v0.9.4
         with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-
-      - name: Load cached venv (if cache exists)
-        id: cached-poetry-dependencies
-        uses: actions/cache@v5
-        with:
-          path: .venv
-          key: ${{ github.job }}-venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml', 'poetry.toml') }}
-
-      - name: Install dependencies (if venv cache is not found)
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root --only main,test
-
-      - name: Install the project itself
-        run: poetry install --no-interaction --only-root
+          run-install: true
+          manifest-path: pyproject.toml
+          post-cleanup: true
+          frozen: true
+          cache: true
+          auth-token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          activate-environment: true
+          environments: test
 
       - name: Run tests
-        run: make test
+        run: pixi run test
 
 
       # Disable upload to codecov until/if codecov is enabled
@@ -94,3 +68,34 @@ jobs:
       #   with:
       #     token: ${{ secrets.CODECOV_TOKEN }}
       #     files: ./.coverage.xml
+
+  test-squashfs:
+    if: >
+      github.repository_owner == 'ACCORD-NWP' &&
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    env:
+      ENV_PREFIX: /dev/shm/tactus_env
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Download SquashFS Image
+        uses: actions/download-artifact@v4
+        with:
+          name: hpc-squashfs
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run unit tests from SquashFS
+        run: |
+          sudo apt-get update && sudo apt-get install -y squashfuse
+          mkdir -p $ENV_PREFIX
+          squashfuse tactus_env.squashfs $ENV_PREFIX
+          export PATH="$ENV_PREFIX/bin:$PATH"
+          pytest -n auto --maxprocesses 1
+          fusermount -u $ENV_PREFIX

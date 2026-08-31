@@ -3,18 +3,17 @@
   version = "1.3.0"
   description = "The Tactus scripting system."
   readme = "README.md"
-  requires-python = ">=3.10,<3.13"
   license = {text = "MIT"}
   authors = [{name = "ACCORD"}]
   keywords = ["forecasting", "tactus", "weather"]
+  requires-python = ">=3.12,<4.0.0"
   classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
   ]
   dependencies = [
     "arpifs_listings @ git+https://git@github.com/UMR-CNRM/arpifs_listings.git@master",
@@ -27,13 +26,14 @@
     "f90nml>=1.4.3",
     "fastjsonschema==2.18.1",
     "frozendict>=2.4.7",
+    "gdal>=3.7",
     "geohash @ git+https://github.com/ACCORD-NWP/geohash.git@v1.1",
     "gitpython>=3.1.30",
     "grib2sqlite @ git+https://github.com/ACCORD-NWP/grib2sqlite.git@v0.2.0",
     "humanize>=4.8.0",
     "isodate>=0.6.1",
     "json-schema-for-humans>=1.5.1",
-    "json2tab @ git+https://github.com/ACCORD-NWP/json2tab.git@master",
+    "json2tab @ git+https://github.com/mfroelund/json2tab.git@feature/adjust-python-version",
     "jsonref>=1.1.0",
     "loguru>=0.7.1",
     "numexpr>=2.8.4",
@@ -46,12 +46,13 @@
     "pysurfex>=0.1.2",
     "pyyaml>=6.0",
     "thenamelisttool @ git+https://github.com/UMR-CNRM/thenamelisttool.git",
-    "toml-formatter @ git+https://github.com/ACCORD-NWP/toml-formatter.git",
+    # "toml-formatter @ git+https://github.com/ACCORD-NWP/toml-formatter.git",
+    "toml-formatter @ git+https://github.com/mfroelund/toml-formatter.git@feature/adjust-python-version",
     "tomli>=2.0.1",
     "tomlkit>=0.12.1",
     "troika @ git+https://github.com/ecmwf/troika.git",
     "urllib3<2",
-    "utci @ git+https://github.com/ACCORD-NWP/utci.git",
+    "utci @ git+https://github.com/mfroelund/utci.git@feature/bump-to-python-3.12",
     "xmltodict>=0.14.2",
   ]
 
@@ -65,7 +66,7 @@
   tactus = "tactus.__main__:main"
 
 [dependency-groups]
-  dev = ["pre-commit>=3.0.4", "ruff (>=0.15.10,<0.16.0)"]
+  dev = ["ipdb", "pre-commit>=3.0.4", "ruff (>=0.15.10,<0.16.0)"]
   doc = [
     "jsonref>=1.1.0",
     "myst-parser>=2.0.0",
@@ -82,12 +83,81 @@
   ]
 
 [build-system]
-  requires = ["poetry-core >= 1.0.0"]
-  build-backend = "poetry.core.masonry.api"
+  requires = ["hatchling"]
+  build-backend = "hatchling.build"
 
 # Linter configs
 [tool.check-wheel-contents]
   ignore = ["W002"]
+
+[tool.hatch.metadata]
+  allow-direct-references = true
+
+[tool.pixi.workspace]
+  channels = ["conda-forge"]
+  platforms = ["linux-64"]
+
+[tool.pixi.pypi-dependencies]
+  tactus = {path = ".", editable = true}
+
+[tool.pixi.dependencies]
+  # conda-forge provides C libraries that pip wheels don't bundle
+  pip = "*"
+  eccodes = "==2.45"
+  ecflow = ">=5.15.0"
+  gdal = "*"
+  libgdal = "*"
+  inetutils = "*"
+
+[tool.pixi.feature.py312.dependencies]
+  python = "3.12.*"
+
+[tool.pixi.feature.py313.dependencies]
+  python = "3.13.*"
+
+[tool.pixi.feature.py314.dependencies]
+  python = "3.14.*"
+
+[tool.pixi.environments]
+  default = {features = ["py314"], solve-group = "py314"}
+  dev = {features = ["dev", "py314"], solve-group = "py314"}
+  doc = {features = ["doc", "py314"], solve-group = "py314"}
+  test = {features = ["test", "dev", "py314"], solve-group = "py314"}
+  py312 = {features = ["py312"], solve-group = "py312"}
+  py312-test = {features = ["test", "dev", "py312"], solve-group = "py312"}
+  py313 = {features = ["py313"], solve-group = "py313"}
+  py313-test = {features = ["test", "dev", "py313"], solve-group = "py313"}
+  py314 = {features = ["py314"], solve-group = "py314"}
+  py314-test = {features = ["test", "dev", "py314"], solve-group = "py314"}
+
+[tool.pixi.tasks]
+  lint = {cmd = "pre-commit run --all-files", default-environment = "dev", description = "Run all linters on all files."}
+  doc-build = {depends-on = [
+    "doc-clean",
+  ], cmd = """python -m tactus doc config > docs/markdown_docs/config.md
+    python docs/write_output_overview.py docs/markdown_docs/output_overview.md
+    sphinx-apidoc tactus -o docs/ --force --no-toc --module-first
+    sphinx-build docs docs/_build/
+    touch docs/_build/.nojekyll""", default-environment = "doc", description = "Build the documentation. Before the build, the task cleans up existing builds."}
+  doc-clean = {cmd = "rm -rf docs/_build/ docs/tactus.rst docs/markdown_docs/config.md docs/markdown_docs/output_overview.md", description = "Clean up documentation build artifacts."}
+  doc-view = {cmd = "test ! -f docs/_build/index.html && doc-build || true && python -m webbrowser docs/_build/index.html", description = "View the built documentation in the default web browser. If the documentation hasn't been built yet, it will be built first."}
+  doc = {depends-on = [
+    "doc-build",
+    "doc-view",
+  ], cmd = "echo 'Documentation built and opened in browser!'", description = "Build the documentation and open it in the default web browser."}
+  test = {cmd = "pytest -n auto --maxprocesses 1", default-environment = "test", description = "Run all tests in parallel using pytest."}
+  pre-push-checks = {depends-on = [
+    "lint",
+    "doc-build",
+    "test",
+  ], cmd = "echo 'All pre-push checks passed!'", description = "Run all checks before pushing. This includes linting, building the documentation, and running tests."}
+  clean = {cmd = """
+    rm -rf docs/_build/ docs/tactus.rst docs/markdown_docs/config.md docs/markdown_docs/output_overview.md
+    find . -type d -name "__pycache__" -exec rm -rf '{}' + 2>/dev/null || true
+    find . -type d -name "*.egg-info" -exec rm -rf '{}' + 2>/dev/null || true
+    find . -type f -name "*.pyc" -delete
+    rm -rf .pytest_cache .coverage .coverage.xml
+    """, description = "Clean build artifacts and caches."}
 
 [tool.poetry]
   include = [{path = "tactus/data/**/*", format = ["sdist", "wheel"]}]

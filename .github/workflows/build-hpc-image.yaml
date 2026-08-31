@@ -1,0 +1,90 @@
+name: Build HPC Image
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
+    branches:
+      - master
+      - develop
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      env_prefix:
+        required: false
+        type: string
+        default: '/dev/shm/tactus_env'
+
+jobs:
+  build-squashfs:
+    if: github.repository_owner == 'ACCORD-NWP'
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
+      ENV_PREFIX: ${{ inputs.env_prefix || '/dev/shm/tactus_env' }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set github credentials
+        uses: ./.github/actions/setup-github-credentials
+        with:
+          github_token: ${{ env.GITHUB_TOKEN }}
+
+      - name: Install SquashFS Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y squashfs-tools
+
+      - name: Install Pixi
+        uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          run-install: false # We will install manually into the fixed prefix
+          auth-token: ${{ env.GITHUB_TOKEN }}
+
+      - name: Create environment in fixed prefix
+        run: |
+          # 1. Make tactus non-editable so it's self-contained in the environment.
+          # We do this by modifying pyproject.toml before installation.
+          sed -i 's/editable = true/editable = false/' pyproject.toml
+          
+          # 2. Install the 'test' environment.
+          # We don't use --frozen because we modified pyproject.toml.
+          pixi install --environment test
+          
+          # 3. Identify the build prefix
+          BUILD_PREFIX=$(pwd)/.pixi/envs/test
+          echo "BUILD_PREFIX: $BUILD_PREFIX"
+          echo "TARGET_PREFIX: $ENV_PREFIX"
+          
+          # 4. Relocate content to the target prefix.
+          # We use sudo as $ENV_PREFIX might be in a protected area like /dev/shm.
+          sudo mkdir -p $ENV_PREFIX
+          sudo chown $USER $ENV_PREFIX
+          cp -a $BUILD_PREFIX/. $ENV_PREFIX/
+          
+          # 5. Fix absolute paths in text files.
+          # We use grep -I to identify text files and skip binaries.
+          # xargs -r ensures we don't fail if no files match.
+          grep -rIl "$BUILD_PREFIX" $ENV_PREFIX | xargs -r sed -i "s|$BUILD_PREFIX|$ENV_PREFIX|g"
+
+      - name: Verify prefix content
+        run: |
+          ls -R $ENV_PREFIX | head -n 20
+          du -sh $ENV_PREFIX
+
+      - name: Build SquashFS Image
+        run: |
+          # Create the SquashFS file from the environment folder.
+          # -comp xz is recommended for high compression and compatibility on HPC.
+          # -noappend ensures a fresh image.
+          mksquashfs $ENV_PREFIX tactus_env.squashfs -comp xz -noappend
+
+      - name: Upload Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: hpc-squashfs
+          path: tactus_env.squashfs

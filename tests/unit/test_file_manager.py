@@ -63,69 +63,66 @@ class TestFileManager:
                 "foo", "bar", provider_id="does_not_exist"
             )
 
-    def test_input_files(self, tmp_directory, parsed_config_with_paths):
+    def test_input_files(self, tmp_directory: str, parsed_config_with_paths):
         """Test input files."""
-        tmp = tmp_directory
-        os.makedirs(tmp, exist_ok=True)
-        os.makedirs(tmp + "/archive/2000/01/01/00/", exist_ok=True)
-        os.system("touch " + tmp + "/archive/2000/01/01/00/ICMSHDEOD+0024")
+        tmp_directory = Path(tmp_directory)
+        (tmp_directory / "archive/2000/01/01/00").mkdir(parents=True, exist_ok=True)
+        (tmp_directory / "archive/2000/01/01/00/ICMSHDEOD+0024").touch()
         fmanager = FileManager(parsed_config_with_paths)
         provider, resource = fmanager.get_input(
             "@ARCHIVE@/ICMSH@CNMEXP@+@LLLL@",
-            tmp + "/ICMSH@CNMEXP@INIT",  # S108
+            str(tmp_directory / "ICMSH@CNMEXP@INIT"),
             check_archive=False,
         )
         logger.debug("identifier={}", provider.identifier)
         logger.info(provider.identifier)
-        assert provider.identifier == tmp + "/archive/2000/01/01/00/ICMSHDEOD+0024"
-        assert resource.identifier == tmp + "/ICMSHDEODINIT"  # S108
+        assert provider.identifier == str(
+            tmp_directory / "archive/2000/01/01/00/ICMSHDEOD+0024"
+        )
+        assert resource.identifier == str(tmp_directory / "ICMSHDEODINIT")
 
-        os.makedirs(tmp + "/bindir", exist_ok=True)  # S108
-        os.system("touch " + tmp + "/bindir/MASTERODB")
+        (tmp_directory / "bindir").mkdir(parents=True, exist_ok=True)
+        (tmp_directory / "bindir/MASTERODB").touch()
         provider, resource = fmanager.get_input(
             "@BINDIR@/MASTERODB",
-            tmp + "/MASTERODB",  # S108, E501
+            str(tmp_directory / "MASTERODB"),
         )
-        assert provider.identifier == tmp + "/bindir/MASTERODB"  # S108
-        assert resource.identifier == tmp + "/MASTERODB"  # S108
-        assert os.path.exists(tmp + "/MASTERODB")  # S108
-        os.remove(tmp + "/MASTERODB")  # S108
-        os.remove(tmp + "/bindir/MASTERODB")  # S108
-        os.remove(tmp + "/archive/2000/01/01/00/ICMSHDEOD+0024")
-        os.rmdir(tmp + "/bindir")  # S108
+        assert provider.identifier == str(tmp_directory / "bindir/MASTERODB")
+        assert resource.identifier == str(tmp_directory / "MASTERODB")
+        assert (tmp_directory / "MASTERODB").exists()
+        (tmp_directory / "MASTERODB").unlink()
+        (tmp_directory / "bindir/MASTERODB").unlink()
+        (tmp_directory / "archive/2000/01/01/00/ICMSHDEOD+0024").unlink()
+        (tmp_directory / "bindir").rmdir()
 
         res_dict = {
             "input": {
                 "/dev/null": {
-                    "destination": tmp + "/test",  # S108, E501
+                    "destination": str(tmp_directory / "test"),
                     "provider_id": "symlink",
                 }
             }
         }
         fmanager.set_resources_from_dict(res_dict)
 
-    def test_output_files(self, tmp_directory, parsed_config_with_paths):
-        """Test input files."""
-        tmp = tmp_directory
-        os.makedirs(tmp, exist_ok=True)
+    def test_output_files(self, tmp_directory: str, parsed_config_with_paths):
+        """Test output files."""
+        tmp_directory = Path(tmp_directory)
         fmanager = FileManager(parsed_config_with_paths)
-        os.makedirs(tmp + "/archive/2000/01/01/00/", exist_ok=True)  # S108
-        os.system("touch " + tmp + "/ICMSHDEOD+0024")
+        (tmp_directory / "archive/2000/01/01/00").mkdir(parents=True, exist_ok=True)
+        (tmp_directory / "ICMSHDEOD+0024").touch()
         provider, aprovider, resource = fmanager.get_output(
-            tmp + "/ICMSH@CNMEXP@+@LLLL@",  # S108
+            str(tmp_directory / "ICMSH@CNMEXP@+@LLLL@"),
             "@ARCHIVE@/OUT_ICMSH@CNMEXP@+@LLLL@",
             archive=False,
         )
-        assert resource.identifier == tmp + "/ICMSHDEOD+0024"  # S108
-        assert (
-            provider.identifier
-            == tmp + "/archive/2000/01/01/00/OUT_ICMSHDEOD+0024"  # S108, E501
+        assert resource.identifier == str(tmp_directory / "ICMSHDEOD+0024")
+        assert provider.identifier == str(
+            tmp_directory / "archive/2000/01/01/00/OUT_ICMSHDEOD+0024"
         )
-        assert os.path.exists(
-            tmp + "/archive/2000/01/01/00/OUT_ICMSHDEOD+0024"  # S108, E501
-        )
+        assert (tmp_directory / "archive/2000/01/01/00/OUT_ICMSHDEOD+0024").exists()
         assert aprovider is None
-        os.remove(tmp + "/archive/2000/01/01/00/OUT_ICMSHDEOD+0024")  # S108
+        (tmp_directory / "archive/2000/01/01/00/OUT_ICMSHDEOD+0024").unlink()
 
     def test_case_insensitive(self, parsed_config_with_paths):
         """Test input files."""
@@ -176,24 +173,26 @@ class TestFileManager:
         prev_cwd = Path.cwd()
         config = parsed_config_with_paths
         fmanager = FileManager(config)
-        input_dir = "/tmp/test_in"  # noqa S108
-        output_dir = "/tmp/test_out"  # noqa S108
-        infile = f"{input_dir}/test"
+        input_dir = Path("/tmp/test_in")  # noqa S108
+        output_dir = Path("/tmp/test_out")  # noqa S108
+        infile = str(input_dir / "test")
 
-        os.makedirs(input_dir, exist_ok=True)  # S108
-        os.makedirs(output_dir, exist_ok=True)  # S108
-        os.system(f"touch {input_dir}/test")
-        os.chdir(output_dir)
+        input_dir.mkdir(parents=True, exist_ok=True)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        (input_dir / "test").touch()
+        try:
+            os.chdir(output_dir)
 
-        truth = {
-            "test_list": {"path": input_dir, "files": ["test"]},
-            "test_dict": {"path": input_dir, "files": {"test_out": "test"}},
-        }
+            truth = {
+                "test_list": {"path": str(input_dir), "files": ["test"]},
+                "test_dict": {"path": str(input_dir), "files": {"test_out": "test"}},
+            }
 
-        fmanager.input_data_iterator(truth)
-        os.chdir(prev_cwd)
+            fmanager.input_data_iterator(truth)
+        finally:
+            os.chdir(prev_cwd)
 
-        for outfile in [f"{output_dir}/test", f"{output_dir}/test_out"]:
-            assert os.path.exists(outfile)
+        for outfile in [str(output_dir / "test"), str(output_dir / "test_out")]:
+            assert Path(outfile).exists()
             link = os.readlink(outfile)
             assert link == infile

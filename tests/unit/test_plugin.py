@@ -34,6 +34,7 @@ def create_suite_class(name, path):
 
 def test_plugin(tmp_directory, default_config):
     """Simple plugin test."""
+    tmp_directory = str(tmp_directory)
     tasks_dir = f"{tmp_directory}/extension/tasks"
     suites_dir = f"{tmp_directory}/extension/suites"
     reg_config_file = f"{tmp_directory}/plugins.yml"
