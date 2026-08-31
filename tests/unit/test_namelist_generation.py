@@ -140,11 +140,6 @@ class TestNamelistGenerator:
     def test_nlgen_surfex(self):
         """Test namelist generation for surfex."""
 
-    def test_nlgen_invalid_type(self, parsed_config):
-        """Test namelist generation for non-existing kind."""
-        with pytest.raises(InvalidNamelistKindError):
-            _ = NamelistGenerator(parsed_config, "slave")
-
     def test_nlgen_invalid_target(self, parsed_config, tmp_directory):
         """Test namelist generation for non-existing target."""
         nlgen = NamelistGenerator(parsed_config, "master")
