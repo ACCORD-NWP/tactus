@@ -11,9 +11,6 @@
     "suite_control": {
       "$ref": "#/definitions/suite_control"
     },
-    "clean_old_data": {
-      "$ref": "#/definitions/clean_old_data"
-    },
     "system": {
       "$ref": "#/definitions/system"
     },
@@ -284,45 +281,6 @@
               "type": "string"
             }
           }
-        }
-      }
-    },
-    "clean_old_data": {
-      "title": "Cleaning old data",
-      "decription": "Option for cleaning old data",
-      "type": "object",
-      "properties": {
-        "cases_period": {
-          "description": "Age for old cases in days",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
-          "default": "P7D"
-        },
-        "ignore": {
-          "decription": "File not to remove",
-          "type": "array",
-          "default": []
-        },
-        "scratch_ext": {
-          "decription": "Extention of scratch for operational user.",
-          "type": "string",
-          "default": "tactus"
-        },
-        "force_delete_period": {
-          "decription": "ISO-8601 duration string used to determine the fallback age of a suite for deletion if its files are missing. Defaults to approximately one year ('P365D').",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
-          "default": "P365D"
-        },
-        "dw_case_prefixes": {
-          "decription": "List of prefixes of the daily runs",
-          "type": "array",
-          "default": [
-            "AUTOMATED_RUN",
-            "HARMONIE_AROME",
-            "AROME",
-            "ALARO"
-          ]
         }
       }
     },
