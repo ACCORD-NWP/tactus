@@ -751,6 +751,11 @@
           "description": "whether to use chache build/install folders",
           "default": "@REFERENCE_DATA@/bundle_cache"
         }
+        "forecast_only": {
+          "type": "boolean",
+          "description": "Do not compile assimilation related binaries",
+          "default": false
+        }
       }
     },
     "genesis": {

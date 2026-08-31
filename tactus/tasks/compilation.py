@@ -178,7 +178,11 @@ class TactusBundleBuild(Task):
 
         self.arch = self.config["compile.arch"]
 
-        # check for existing builds in cache_dir
+        # Get flag for compilation scope
+        forecast_only = self.config.get("compile.forecast_only", False)
+        self.forecast_only_flag = "--forecast-only " if forecast_only else ""
+        
+# check for existing builds in cache_dir
         if self.config["compile.cache"]:
             try:
                 self.bundle_hash = self.get_bundle_hash(f"{self.bundle_dir}/source")
@@ -301,7 +305,7 @@ class TactusBundleBuild(Task):
             nthreads = os.environ.get("OMP_NUM_THREADS")
             batch_job.run(
                 f"cd {self.bundle_dir};  {self.ecbundle_bin} build "
-                + f"--arch {self.arch} {self.ninja_arg} --forecast-only "
+                + f"--arch {self.arch} {self.ninja_arg} {self.forecast_only_flag}"
                 + f" {self.rebuild_args} {self.prec_arg} -j{nthreads} "
                 + f"--install-dir={self.exp_bindir} --install "
                 + f"--build-dir={self.exp_builddir}"
