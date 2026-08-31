@@ -181,8 +181,8 @@ class TactusBundleBuild(Task):
         # Get flag for compilation scope
         forecast_only = self.config.get("compile.forecast_only", False)
         self.forecast_only_flag = "--forecast-only " if forecast_only else ""
-        
-# check for existing builds in cache_dir
+
+        # check for existing builds in cache_dir
         if self.config["compile.cache"]:
             try:
                 self.bundle_hash = self.get_bundle_hash(f"{self.bundle_dir}/source")
