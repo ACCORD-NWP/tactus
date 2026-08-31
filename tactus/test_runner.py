@@ -19,7 +19,7 @@ from .config_parser import BasicConfig, ConfigPaths, ParsedConfig
 from .datetime_utils import evaluate_date
 from .experiment import get_git_info
 from .fullpos import flatten_list
-from .general_utils import merge_dicts
+from .general_utils import merge_dicts, sanitize_case_name
 from .host_actions import TactusHost
 from .logs import logger
 from .reference_checker import CheckSummaryAnalysis
@@ -157,10 +157,7 @@ class TestCases:
     def get_tactus_version(self):
         """Get tactus version info."""
         tactus_git = get_git_info()
-        tag = tactus_git["branch"]
-        for character in ["/", ".", "-"]:
-            tag = tag.replace(character, "_")
-        return tag
+        return sanitize_case_name(tactus_git["branch"])
 
     def create(self, cases=None):
         """Create the modif files and populate self.cmds for the given cases.
