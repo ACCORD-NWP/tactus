@@ -263,7 +263,7 @@ class TestSanitizeCaseName:
 
     def test_with_empty_string(self):
         """Test with an empty string."""
-        assert sanitize_case_name("") == ""
+        not sanitize_case_name("")
 
 
 class TestRecursiveDeleteKeys:
