@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Add support to compile assimilation related binaries. [#192](https://github.com/ACCORD-NWP/tactus/pull/192)(@bstrajnar, @uandrae)
 - Introduced perturbation tasks in the initial data selection procedure [#117](https://github.com/ACCORD-NWP/tactus/pull/117)(@uandrae)
 
 ### Changed
