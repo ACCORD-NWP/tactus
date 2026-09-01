@@ -323,7 +323,7 @@ class NamelistGenerator:
             InvalidNamelistKindError   # noqa: DAR401
 
         """
-        if kind not in ("master", "surfex", "gl"):
+        if kind not in ("master", "surfex", "gl", "pertsurf"):
             raise InvalidNamelistKindError(kind)
 
         self.config = config
