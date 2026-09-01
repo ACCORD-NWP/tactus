@@ -950,10 +950,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
                 )
             if self.do_slaf:
                 addpert_args += f";doer0={doer};part0={part};me={self.member}"
-            if (
-                self.config["suite_control.do_interpolsstsic"]
-                and interpolation_task_name == "C903"
-            ):
+            if self.config["general.upd_sst_sic"] and interpolation_task_name == "C903":
                 args = f"bd_index_time_dict={bd_index_time_dict_sst};prep_step=False"
                 variables = {"ARGS": args}
                 EcflowSuiteTask(
@@ -1125,7 +1122,7 @@ class LBCFamily(EcflowSuiteFamily):
             bdint,
             mode=config["suite_control.mode"],
             is_first_cycle=is_first_cycle,
-            do_interpolsstsic=config["suite_control.do_interpolsstsic"],
+            upd_sst_sic=config["general.upd_sst_sic"],
             lbc_per_task=int(config["boundaries.lbc_per_task"]),
         )
         lbc_family_generator_instance = LBCSubFamilyGenerator(

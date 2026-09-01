@@ -278,7 +278,7 @@ class Marsprep(Task):
             if self.type in ("UA", "all"):
                 self.get_grid_point_upper_air_data()
 
-            if self.config["suite_control.do_interpolsstsic"] and self.type in (
+            if self.config["general.upd_sst_sic"] and self.type in (
                 "GG",
                 "all",
             ):
