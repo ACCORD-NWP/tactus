@@ -52,8 +52,7 @@ After successful runs and assessment the tested cases can be cleaned from disks 
 ```
 tactus remove your_test_tag_configs/your_test_tag*.toml --execute-removal -f
 ```
-Where `your_test_tag` is the name derived from your current branch. Read more about the remove command in the [cleaning documentation section](#cleaning-of-experiment).
-
+where `your_test_tag_configs` is the directory with test config files created in your current directory. Read more about the remove command in the [cleaning documentation section](#cleaning-of-experiment).
 
 
 ## About the config files
