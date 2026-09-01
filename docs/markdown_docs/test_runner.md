@@ -1,6 +1,6 @@
 # Tactus test-runner
 
-The tactus test-runner runs a number of configurations as defined in the config file atos_bologna.toml
+The tactus test-runner runs a number of configurations as defined by a config file.
 
 We currently have the following cycle specific config files under the directory `tactus/data/test`
 
@@ -8,10 +8,12 @@ We currently have the following cycle specific config files under the directory 
  - case_definitions_[CY49t2,CY50t2].toml : Definition of all test cases
  - test_macros.toml : Some macro definitions
  - modifs_atos_bologna_[CY49t2,CY50t2].toml : Platform dependent config modifications
+ - modifs_reference_[checker,generator].toml : Setting for the reference checker
 
 The main difference between CY49t2 and CY50t2 tests is that the latter includes a compilation step whereas the former uses DEODE binaries on ATOS.
 
 ## Check
+To list available and activated cases do
 
 ```
 tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -l
@@ -21,26 +23,39 @@ tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -l
 ```
 tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -m
 ```
-This will create a directory according to the tag and create all config files in this directory.
+This will create a directory according to the tag or branched used and create all config files in this directory.
 
 ## Launch the suites
 ```
 tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -r
 ```
-Failures in suites can be treated like any failure. I.e. by changing the relevant code or config and replace/relaunch the suite in full or parts as appropriate. The config files can be regenerated while suites are running if required.
+Failures in suites can be treated like any failure. I.e. by changing the relevant code or config and replace/relaunch the suite in full or parts as appropriate. The config files can be regenerated while suites are running if required. The config file generation and launch can be combined by running with `-m -r` in one go.
+
+## Check the outcome of the reference checker
+For each suite namelists, logs and results are checked for a number of selected tasks using the
+[reference checker](#reference-checker). The status and progress of this can be checked by running
+```
+tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml
+```
+For more information per suite add a `-v`
+
+## Generate new reference files
+To generate new reference files run the full test setup with and additional `-g`, i.e.
+```
+tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -m -r -g
+```
+This will create new reference files in the `references_generation_folder` directory, currently defined as `@SCRATCH@/tactus_references/@TAG@_@SUBTAG@` in `tactus/data/tests/modifs_reference_generate.toml`. Ask the local tactus administrator to copy this to the correct location. Note that the checking performed with `-g` is against the newly generated references. I.e. it's a technical test of the new data and does compare with the default reference.
+
 
 ## Remove the tests from disk and ecflow
-
 After successful runs and assessment the tested cases can be cleaned from disks and ecflow with the standard tactus `remove` functionality
 ```
-tactus remove /scratch/$USER/tactus/your_test_tag_\*/archive/config.toml --execute-removal -f
-
+tactus remove your_test_tag_configs/your_test_tag*.toml --execute-removal -f
 ```
-Read more about the remove command in the cleaning documentation section.
+where `your_test_tag_configs` is the directory with test config files created in your current directory. Read more about the remove command in the [cleaning documentation section](#cleaning-of-experiment).
 
 
 ## About the config files
-
 The config file has a four main sections: general, case, modifs and ial. Here we explain the usage of each
 
 ### General
