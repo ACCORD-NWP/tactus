@@ -701,6 +701,11 @@
           "description": "Git token for IAL source access",
           "default": ""
         },
+        "ial_git_tag_case": {
+          "type": "string",
+          "description": "Placeholder for parsed branch name",
+          "default": ""
+        },
         "ial_git_branch": {
           "type": "string",
           "description": "Branch/tag",
@@ -755,6 +760,11 @@
           "type": "string",
           "description": "whether to use chache build/install folders",
           "default": "@REFERENCE_DATA@/bundle_cache"
+        },
+        "forecast_only": {
+          "type": "boolean",
+          "description": "Do not compile assimilation related binaries",
+          "default": false
         }
       }
     },
@@ -1053,7 +1063,7 @@
           "description": "Experiment name",
           "default": "tactus_case",
           "type": "string",
-          "pattern": "^[^0-9][^.]*$"
+          "pattern": "^([a-zA-Z0-9_@][a-zA-Z0-9_@.]*)?$"
         },
         "member_str": {
           "description": "String identifier of a member in the ensemble",
