@@ -162,3 +162,11 @@
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@/namelists/E927_3-3"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@/namelists/E927_3-3"
   result_folder = "@WRK@/checks/initial_files"
+
+[refchecks.reference_checker.task.PertSurf.fafiles]
+  inpath = "@ARCHIVE@"
+  method = "HistoryFields"
+  pattern = "PERTSURF.*"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/perturbations"
