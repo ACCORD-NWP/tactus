@@ -208,15 +208,11 @@ class Topography(Task):
 
             # Output merged GMTED file to working directory as file gmted_mea075.tif
             gdal = _import_gdal()
-            options = gdal.WarpOptions(
-                format="GTiff", creationOptions=["COMPRESS=LZW", "TILED=YES"]
-            )
-            gd = gdal.Warp(
-                "gmted_mea075.tif",
-                tif_files,
+            warp_options = gdal.WarpOptions(
                 format="GTiff",
-                options=options,
+                creationOptions=["COMPRESS=LZW", "TILED=YES"],
             )
+            gd = gdal.Warp("gmted_mea075.tif", tif_files, options=warp_options)
 
             Topography.tif2bin(gd, "gmted_mea075.bin")
             shutil.move("gmted_mea075.bin", f"{climdir}/gmted2010.dir")
@@ -231,7 +227,13 @@ class Topography(Task):
             header_file = f"{climdir}/gmted2010.hdr"
             logger.debug("Write header file {}", header_file)
             Topography.write_gmted_header_file(
-                header_file, hdr_north, hdr_south, hdr_west, hdr_east, hdr_rows, hdr_cols
+                header_file,
+                hdr_north,
+                hdr_south,
+                hdr_west,
+                hdr_east,
+                hdr_rows,
+                hdr_cols,
             )
 
             # Create symlinks to generic topo files
@@ -474,13 +476,19 @@ class Soil(Task):
             elif subarea_file.startswith("SOC_TOP"):
                 ds = gdal.Open(subarea_file)
                 ds = gdal.Translate(
-                    climdir + "/soc_top.dir", ds, format="EHdr", outputType=gdal.GDT_Int16
+                    climdir + "/soc_top.dir",
+                    ds,
+                    format="EHdr",
+                    outputType=gdal.GDT_Int16,
                 )
                 ds = None
             elif subarea_file.startswith("SOC_SUB"):
                 ds = gdal.Open(subarea_file)
                 ds = gdal.Translate(
-                    climdir + "/soc_sub.dir", ds, format="EHdr", outputType=gdal.GDT_Int16
+                    climdir + "/soc_sub.dir",
+                    ds,
+                    format="EHdr",
+                    outputType=gdal.GDT_Int16,
                 )
                 ds = None
             else:

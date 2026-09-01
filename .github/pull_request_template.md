@@ -36,7 +36,7 @@ For further information see the [development guide](https://github.com/ACCORD-NW
 - [ ] I have commented my code, particularly in hard-to-understand areas
 - [ ] I have updated the documentation and docstrings to reflect the changes
 - [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] I have ensured that the code is still installable with `poetry` after the changes and runs
+- [ ] I have ensured that the code is still installable with `pixi` after the changes and runs
 - [ ] I have requested one or more reviewer(s) and an assignee (assignee is responsible for merging). At least one reviewer has accepted to review.
 
 ## Checklist for reviewers

@@ -135,7 +135,7 @@ sys.modules["eccodes"] = mock_eccodes
 
 
 @pytest.fixture(scope="module")
-def tmp_directory(tmp_path_factory):
+def tmp_directory(tmp_path_factory, request):
     """Return a temp directory valid for this module."""
     return tmp_path_factory.getbasetemp().as_posix()
 

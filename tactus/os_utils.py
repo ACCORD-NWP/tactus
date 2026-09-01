@@ -4,7 +4,6 @@ import atexit
 import contextlib
 import glob
 import os
-import pathlib
 import re
 import shutil
 import subprocess
@@ -299,7 +298,7 @@ def strip_off_mount_path(path: Union[str, Path]) -> Path:
         parent_of_user_parts = parent_of_user.split("_")
         parent_of_user = parent_of_user_parts[-2]
 
-    return Path(pathlib.os.sep, parent_of_user, *file_parts[index_of_user:])
+    return Path(os.sep, parent_of_user, *file_parts[index_of_user:])
 
 
 def resolve_path_relative_to_package(path: Path, ignore_errors: bool = False) -> Path:
@@ -330,6 +329,7 @@ def resolve_path_relative_to_package(path: Path, ignore_errors: bool = False) ->
     # For each sys.path entry that is a prefix of the given path, derive the
     # relative portion and search all sys.path entries for it.
     candidates = set()
+
     for sys_path_str in sys.path:
         if not sys_path_str:
             continue

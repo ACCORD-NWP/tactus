@@ -33,6 +33,7 @@ def set_arg():
 def nlint_arg(tmp_directory):
     arg = ArgumentParser()
     arg.tactus_home = None
+
     arg.namelist = [
         resolve_path_relative_to_package(
             Path("tactus/data/namelists/unit_testing/nl_master_integrate")
@@ -86,9 +87,11 @@ def test_show_namelist(set_arg, default_config, param, tmp_directory):
 
     prev_cwd = Path.cwd()
     os.makedirs(outpath, mode=0o1777, exist_ok=True)
-    os.chdir(outpath)
-    show_namelist(set_arg, config)
-    os.chdir(prev_cwd)
+    try:
+        os.chdir(outpath)
+        show_namelist(set_arg, config)
+    finally:
+        os.chdir(prev_cwd)
     assert os.path.isfile(f"{outpath}/namelist_master_forecast")
     assert os.path.isfile(f"{outpath}/xxt00000000")
     assert os.path.isfile(f"{outpath}/xxtddddhh00")

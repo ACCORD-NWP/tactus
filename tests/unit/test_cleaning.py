@@ -14,11 +14,6 @@ from tactus.derived_variables import set_times
 
 
 @pytest.fixture(scope="module")
-def tmpdir(tmp_path_factory):
-    return tmp_path_factory.getbasetemp().as_posix()
-
-
-@pytest.fixture(scope="module")
 def basic_config(default_config):
     return default_config.copy(update=set_times(default_config))
 
@@ -76,11 +71,11 @@ def test_wipe_ecfs():
         wipe_ecfs("foo")
 
 
-def test_full_cleaning(tmpdir, basic_config):
+def test_full_cleaning(tmp_directory, basic_config):
     config = basic_config
-    path = f"{tmpdir}/tactus"
+    path = f"{tmp_directory}/tactus"
     os.makedirs(path, exist_ok=True)
-    path2 = f"{tmpdir}/tactus_remove_dir"
+    path2 = f"{tmp_directory}/tactus_remove_dir"
     os.makedirs(path2, exist_ok=True)
 
     for f in ["ELS", "ICMSHTEST"]:
@@ -127,8 +122,8 @@ def test_full_cleaning(tmpdir, basic_config):
     cleaner.has_ecfs = True
     cleaner.prep_cleaning(choices)
     cleaner.clean()
-    files_left = list(glob.glob(f"{path}/*"))
+    num_files_left = [f for f in glob.glob(f"{path}/*") if os.path.isfile(f)]
 
-    assert len(files_left) == 1
-    assert os.path.basename(files_left[0]) == "ELS"
+    assert len(num_files_left) == 1
+    assert os.path.basename(num_files_left[0]) == "ELS"
     assert not os.path.isdir(path2)

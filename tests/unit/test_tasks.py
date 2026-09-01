@@ -323,5 +323,7 @@ class TestTasks:
         class_name, task_config = task_name_and_configs
         my_task_class = get_task(class_name, task_config)
         org_cwd = Path.cwd()
-        my_task_class.run()
-        chdir(org_cwd)
+        try:
+            my_task_class.run()
+        finally:
+            chdir(org_cwd)
