@@ -31,7 +31,7 @@ coverage.xml
 archived_file
 input_file
 ecf/[A-Z]*.py
-/*.toml 
+/*.toml
 /*.def
 /ttr-configs
 
