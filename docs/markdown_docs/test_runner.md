@@ -44,7 +44,7 @@ To generate new reference files run the full test setup with and additional `-g`
 ```
 tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -m -r -g
 ```
-This will create new reference files in the `generated_references` directory. Ask the local tactus administrator to copy this to the correct location. Note that the checking performed with `-g` is against the newly generated references. I.e. it's a technical test of the new data and does compare with the default reference.
+This will create new reference files in the `references_generation_folder` directory, currently defined as `@SCRATCH@/tactus_references/@TAG@_@SUBTAG@` in `tactus/data/tests/modifs_reference_generate.toml`. Ask the local tactus administrator to copy this to the correct location. Note that the checking performed with `-g` is against the newly generated references. I.e. it's a technical test of the new data and does compare with the default reference.
 
 
 ## Remove the tests from disk and ecflow
