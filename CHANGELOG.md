@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduced perturbation tasks in the initial data selection procedure [#117](https://github.com/ACCORD-NWP/tactus/pull/117)(@uandrae)
 
 ### Changed
+- Updates .gitignore to exclude toml files in tactus folder and moves ttr config files to ttr-configs directory which is also in .gitignore [#194](https://github.com/ACCORD-NWP/tactus/pull/194)(@pardallio)
 - Relax input yaml file name check in namelist generator. [#190](https://github.com/ACCORD-NWP/tactus/pull/190)(@bstrajnar, @uandrae)
 - Update test instructions. [#185](https://github.com/ACCORD-NWP/tactus/pull/185)(@uandrae)
 - Make config-file mandatory for some commands. [#174](https://github.com/ACCORD-NWP/tactus/pull/174)(@dhaumont)
