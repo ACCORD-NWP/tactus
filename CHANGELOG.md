@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Add option to BatchJob.run() to capture STDOUT in file. [#191](https://github.com/ACCORD-NWP/tactus/pull/191)(@bstrajnar, @uandrae)
 - Relax input yaml file name check in namelist generator. [#190](https://github.com/ACCORD-NWP/tactus/pull/190)(@bstrajnar, @uandrae)
-- Update test instructions. [#185](https://github.com/ACCORD-NWP/tactus/pull/185)(@uandrae)
+- Update test instructions. [#185](https://github.com/ACCORD-NWP/tactus/pull/185), [#187](https://github.com/ACCORD-NWP/tactus/pull/187)(@uandrae)
 - Make config-file mandatory for some commands. [#174](https://github.com/ACCORD-NWP/tactus/pull/174)(@dhaumont)
 - Updated reference checker with more tests and bugfixes [#179](https://github.com/ACCORD-NWP/tactus/pull/179)(@uandrae)
 
