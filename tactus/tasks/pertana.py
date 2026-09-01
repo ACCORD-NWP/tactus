@@ -3,7 +3,6 @@
 import os
 
 from tactus.initial_conditions import InitialConditions
-from tactus.logs import logger
 from tactus.tasks.base import Task
 from tactus.tasks.batch import BatchJob
 
