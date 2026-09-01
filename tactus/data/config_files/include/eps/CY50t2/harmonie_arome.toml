@@ -135,14 +135,3 @@
 [namelist_update.master.forecast.namspp]
   cspp_model_name = "lam"
   npatfr = -1
-
-[perturbations.pertsurf]
-  iradius = 12
-  inbiter = 10
-  zclip = 2.0
-  npar = 3
-  cparname = ["Z0", "SST", "TS"]
-  zpertstd = [0.2, -0.25, -1.5]
-  "zlow(1:3)" = [0.05, 272.0, 240.0]
-  "zhigh(1:3)" = [4.0, 350.0, 350.0]
-  "zclip_arr(1)" = 3.0
