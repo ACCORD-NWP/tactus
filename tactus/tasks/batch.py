@@ -27,9 +27,9 @@ class BatchJob(object):
 
         Args:
             cmd (str): Command to run.
-            logfile, Optional (io.IOBase, str): Object to tee stdout into in addition
-                     to sys.stdout (e.g. open("oops.log", "a")). If a string is given it will be 
-                     used as a file name.
+            logfile (io.IOBase, str, optional): Object to tee stdout into in addition
+                     to sys.stdout (e.g. open("oops.log", "a")). If a string is given
+                     it will be used as a file name.
 
         Raises:
             TypeError: Checks if cmd is of type str
