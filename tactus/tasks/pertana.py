@@ -30,7 +30,6 @@ class Pertana(Task):
             "file_templates.interpolated_boundaries.archive"
         ]
         self.archive = self.platform.get_system_value("archive")
-        logger.info("archive:", self.archive)
 
     def execute(self):
         """Run task."""
