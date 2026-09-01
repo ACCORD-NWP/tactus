@@ -13,27 +13,28 @@ def test_run():
     BatchJob(os.environ, wrapper="").run("echo 'foo'")
 
 
-def test_run_with_logfile_as_str():
+def test_run_with_logfile_as_str(tmp_directory):
     # Test failure if logfile is str
-    with pytest.raises(TypeError, match="logfile must be a io.IOBase file object"):
-        BatchJob(os.environ, wrapper="").run("echo 'foo'", logfile="test.log")
+    logfile = f"{tmp_directory}/test_as_str.log"
+    BatchJob(os.environ, wrapper="").run("echo 'foo'", logfile=logfile)
+    assert os.path.isfile(logfile)
 
 
-def test_run_with_logfile_not_open():
+def test_run_with_logfile_not_open(tmp_directory):
     # Test failure if logfile is not open
-    logfile = open("test.log", "w")
-    logfile.close()
-    with pytest.raises(ValueError, match=f"{logfile.name} is not open"):
-        BatchJob(os.environ, wrapper="").run("echo 'foo'", logfile=logfile)
+    logfile = f"{tmp_directory}/test_not_open.log"
+    log_handle = open(logfile, "w")
+    log_handle.close()
+    with pytest.raises(ValueError, match=f"{log_handle.name} is not open"):
+        BatchJob(os.environ, wrapper="").run("echo 'foo'", logfile=log_handle)
 
 
-def test_run_with_logfile():
+def test_run_with_logfile(tmp_directory):
     # Test that we capture the STDOUT output
-    logfile = open("test.log", "w")
+    logfile = f"{tmp_directory}/test_check_msg.log"
     msg = "foo"
     BatchJob(os.environ, wrapper="").run(f"echo {msg}", logfile=logfile)
-    logfile.close()
-    with open("test.log", "r") as logfile:
-        first_line = logfile.readline().strip()
+    with open(logfile, "r") as f:
+        first_line = f.readline().strip()
 
     assert first_line == msg

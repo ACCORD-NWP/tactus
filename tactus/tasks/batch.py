@@ -27,24 +27,27 @@ class BatchJob(object):
 
         Args:
             cmd (str): Command to run.
-            logfile: Optional (io.IOBase): Object to tee stdout into in addition
-                to sys.stdout (e.g. open("oops.log", "a")).
+            logfile, Optional (io.IOBase, str): Object to tee stdout into in addition
+                     to sys.stdout (e.g. open("oops.log", "a")). If a string is given it will be 
+                     used as a file name.
 
         Raises:
-            TypeError: Checks if cmd/logfile is/isnot of type str
+            TypeError: Checks if cmd is of type str
             ValueError: If logfile is not a open file handle
             CalledProcessError: Execution error
         """
         if not isinstance(cmd, str):
             raise TypeError(f"Command must be a string. Got {type(cmd)} instead.")
 
-        if logfile is not None and not isinstance(logfile, io.IOBase):
-            raise TypeError(
-                "logfile must be a io.IOBase file object.Got {type(logfile)} instead."
-            )
-
-        if isinstance(logfile, io.IOBase) and logfile.closed:
-            raise ValueError(f"{logfile.name} is not open")
+        close_log = False
+        log_handle = None
+        if isinstance(logfile, io.IOBase):
+            log_handle = logfile
+            if log_handle.closed:
+                raise ValueError(f"{log_handle.name} is not open")
+        elif isinstance(logfile, str):
+            log_handle = open(logfile, "a")
+            close_log = True
 
         cmd = self.wrapper + " " + cmd
 
@@ -69,10 +72,13 @@ class BatchJob(object):
                 break
             sys.stdout.write(nextline)
             sys.stdout.flush()
-            if logfile is not None:
-                logfile.write(nextline)
-                logfile.flush()
+            if log_handle is not None:
+                log_handle.write(nextline)
+                log_handle.flush()
 
         return_code = process.wait()
         if return_code != 0:
             raise subprocess.CalledProcessError(return_code, cmd)
+
+        if close_log:
+            log_handle.close()
