@@ -10,7 +10,7 @@
   precision = "R64"
 
 [submission.task_exceptions.E923Update]
-  bindir = "/perm/deployde330/github-actions/install/CY49t2/intel/R64/latest/bin"
+  bindir = "/perm/deployde330/github-actions/install/CY49t2/@COMPILER@/R64/latest/bin"
   binary = "fa_sfx2clim"
 
 [submission.task_exceptions.E923Update.ENV]
