@@ -99,6 +99,24 @@ class TestSubmission:
         assert task_job_create_only.is_file()
         assert not output_create_only.is_file()
 
+    def test_get_env_file_info(self, default_config):
+        arg = "/path/to/env/file"
+        config = default_config.copy(
+            update={
+                "submission": {
+                    "default_submit_type": "unittest",
+                    "types": {
+                        "unittest": {"ENV_FILE": {"env_file_path": arg}},
+                    },
+                }
+            }
+        )
+        task = TaskSettings(config)
+
+        settings = task.get_task_settings("unittest")
+
+        assert settings["ENV_FILE"]["env_file_path"] == arg
+
     def test_get_batch_info(self, default_config):
         arg = "#SBATCH UNITTEST"
         argname = "job-name=@TASK_NAME@"
