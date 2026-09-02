@@ -434,7 +434,7 @@ class EcflowTask:
         self.ecf_rid = int(ecf_rid)
         self.ecf_timeout = int(ecf_timeout)
         ecf_name_parts = self.ecf_name.split("/")
-        self.ecf_task = ecf_name_parts[-1]
+        self.ecf_task = os.environ.get("TACTUS_TASK") or ecf_name_parts[-1]
         ecf_families = None
         if len(ecf_name_parts) > 2:
             ecf_families = ecf_name_parts[1:-1]
