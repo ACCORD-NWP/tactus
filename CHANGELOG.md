@@ -50,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Set surfex_sea_ice to default none to be consistent for all CSCs. [#164](https://github.com/ACCORD-NWP/tactus/pull/164)(@uandrae)
 
 ### Fixed
+- Fixed default precision for CY50T2 runs to add SP compilation to tactus test runner. [#168](https://github.com/ACCORD-NWP/tactus/pull/168)(@pardallio)
 - Correct sign of the xtool error tolerance used in the referenceChecker. [#162](https://github.com/ACCORD-NWP/tactus/pull/162)(@uandrae)
 - Correct LBC file search pattern in the referenceChecker. [#163](https://github.com/ACCORD-NWP/tactus/pull/163)(@uandrae)
 - Correct Marsprep bug for the SLAF case where the waitfor_files function was not working as expected. [#148](https://github.com/ACCORD-NWP/tactus/pull/148)(@uandrae)
