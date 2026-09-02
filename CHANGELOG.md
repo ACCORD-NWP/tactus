@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add metadata information to generated config files [#177](https://github.com/ACCORD-NWP/tactus/pull/177)(@dhaumont)
 - Fix FileLock race condition [#182](https://github.com/ACCORD-NWP/tactus/pull/182)(@dhaumont)
 - Don't check references when generating them [#175](https://github.com/ACCORD-NWP/tactus/pull/175)(@dhaumont)
+- Fix potential NoneType error when adding trigger in InterpolationFamily  [#189](https://github.com/ACCORD-NWP/tactus/pull/189)(@pardallio)
 
 
 ## [1.3.0] - 2026-07-24
