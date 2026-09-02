@@ -873,16 +873,16 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
             interpolation_task_name = "E927"
         for bd_index_time_dict in self.lbc_time_generator:
             bd_index_time_dict_sst = bd_index_time_dict.copy()
+
+            mode = self.config["suite_control.mode"]
+            has_bd_index_zero = 0 in bd_index_time_dict
+            is_restart_with_bd_zero = mode == "restart" and has_bd_index_zero
+            is_start_with_bd_zero = (
+                mode == "start" and has_bd_index_zero and not self.is_first_cycle
+            )
+
             if not self.config["suite_control.do_assimilation"] and (
-                (
-                    self.config["suite_control.mode"] == "restart"
-                    and 0 in bd_index_time_dict
-                )
-                or (
-                    self.config["suite_control.mode"] == "start"
-                    and 0 in bd_index_time_dict
-                    and not self.is_first_cycle
-                )
+                is_restart_with_bd_zero or is_start_with_bd_zero
             ):
                 del bd_index_time_dict[0]
 
@@ -1457,7 +1457,6 @@ class CycleFamily(EcflowSuiteFamily):
         trigger=None,
         ecf_files_remotely=None,
         cycle_basetime=None,
-        member=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -1504,7 +1503,7 @@ class CycleFamily(EcflowSuiteFamily):
             task_settings,
             input_template,
             ecf_files,
-            trigger=perturbation_family,
+            trigger=forecast_trigger,
             ecf_files_remotely=ecf_files_remotely,
         )
 
