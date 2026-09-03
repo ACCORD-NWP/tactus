@@ -316,16 +316,14 @@ class NamelistGenerator:
 
         Args:
             config (ParsedConfig): Configuration
-            kind (str): one of 'master' or 'surfex'
+            kind (str): namelist kind, e.g. 'master', 'surfex', or any DA task
+                such as 'bator'.  The corresponding files
+                ``<cycle>/assemble_<kind>.yml`` and
+                ``<cycle>/<kind>_namelists.yml`` must exist under the
+                namelist generation input path.
             substitute (boolean): flag for substitution
 
-        Raises:
-            InvalidNamelistKindError   # noqa: DAR401
-
         """
-        if kind not in ("master", "surfex", "gl"):
-            raise InvalidNamelistKindError(kind)
-
         self.config = config
         self.platform = Platform(config)
         self.kind = kind
