@@ -33,6 +33,8 @@ def fixture_parsed_config_and_selection(request, base_parsed_config, tmp_directo
             ifs.selection = "{selection}"
         [system]
             wrk = "{tmp_directory}"
+        [eps.member_settings.boundaries.ifs]
+            bdmember = 0
 
         """
     )

@@ -16,7 +16,7 @@ from collections.abc import Mapping
 from itertools import chain
 from typing import Any, Dict, Generator, List, Sequence, Tuple
 
-from pydantic import RootModel, field_validator
+from pydantic import RootModel, field_validator, model_validator
 from pydantic.dataclasses import dataclass as pydantic_dataclass
 
 from tactus.config_parser import ParsedConfig
@@ -130,6 +130,35 @@ class EPSConfig:
             # to validate format.
             Expandable(root=value)
         return value
+
+    @model_validator(mode="after")
+    def validate_bdmember(self) -> "EPSConfig":
+        """Validate boundaries.ifs.bdmember against the members list.
+
+        Must be empty, a single bdmember (used for all members), or contain
+        exactly one bdmember per member. Other lengths are rejected: fewer
+        is ambiguous, and more (e.g. for future clustering) needs a proper
+        selection mechanism first.
+
+        Checks tuples too, since ParsedConfig turns toml arrays into tuples.
+
+        Raises:
+            ValueError: If bdmember's length is not one of 0, 1 or the
+                number of members.
+        """
+        bdmember = (
+            self.member_settings.get("boundaries", {}).get("ifs", {}).get("bdmember")
+        )
+        if isinstance(bdmember, (list, tuple)):
+            n_members = len(self.general.members)
+            if len(bdmember) not in (0, 1, n_members):
+                raise ValueError(
+                    "eps.member_settings.boundaries.ifs.bdmember must be "
+                    "empty, a single bdmember, or contain exactly as many "
+                    f"bdmembers as members (={n_members}), one per member. "
+                    f"Got {len(bdmember)} bdmembers for {n_members} members."
+                )
+        return self
 
 
 def generate_member_settings(

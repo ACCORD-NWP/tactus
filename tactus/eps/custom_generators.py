@@ -78,3 +78,16 @@ class CmodelGenerator(BaseGenerator[dict]):
             yield "@CYCLE@-@CSC@-oper"
         for member in self.members:
             yield f"@CYCLE@-@CSC@-enfo-{member}"
+
+
+@pydantic_dataclass
+class MemberGenerator(BaseGenerator[int]):
+    """Generator class to yield each member's own index.
+
+    Used to give member specific settings an identity mapping to the member
+    index itself, e.g. to let ensemble member N nest into IFS-ENS member N,
+    regardless of which members are actually requested.
+    """
+
+    def __iter__(self):
+        yield from self.members
