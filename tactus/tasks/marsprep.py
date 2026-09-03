@@ -69,15 +69,8 @@ class Marsprep(Task):
                 member_config = get_member_config(self.config, member_)
                 bdmember_config_value = member_config["boundaries.ifs.bdmember"]
 
-            self.bdmember = infer_members(
-                self.platform.substitute(bdmember_config_value)
-            )
+            self.bdmember = infer_members(self.platform.substitute(bdmember_config_value))
 
-        # Not member specific: a single Marsprep task retrieves boundary data
-        # for the whole ensemble, so resolve the bdmember mapped to each
-        # requested eps.general.members member individually instead of
-        # expanding the raw boundaries.ifs.bdmember slice (e.g. "0:7"), which
-        # would otherwise retrieve boundary members that are not needed.
         else:
             bdmembers = set()
             for member in self.config["eps.general.members"]:

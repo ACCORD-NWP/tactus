@@ -135,29 +135,28 @@ class EPSConfig:
     def validate_bdmember(self) -> "EPSConfig":
         """Validate boundaries.ifs.bdmember against the members list.
 
-        A bdmember list must either be empty (no boundary member nesting,
-        e.g. SLAF nesting all members into the same control forecast), a
-        single bdmember (used for all members) or contain at least as many
-        bdmembers as there are members (bdmember i nests member i; extra
-        bdmembers are allowed to cover future clustering needs). Any other
-        length is ambiguous.
+        Must be empty, a single bdmember (used for all members), or contain
+        exactly one bdmember per member. Other lengths are rejected: fewer
+        is ambiguous, and more (e.g. for future clustering) needs a proper
+        selection mechanism first.
+
+        Checks tuples too, since ParsedConfig turns toml arrays into tuples.
 
         Raises:
-            ValueError: If bdmember has more than one but fewer bdmembers
-                than there are members.
+            ValueError: If bdmember's length is not one of 0, 1 or the
+                number of members.
         """
-        bdmember = self.member_settings.get("boundaries", {}).get("ifs", {}).get(
-            "bdmember"
+        bdmember = (
+            self.member_settings.get("boundaries", {}).get("ifs", {}).get("bdmember")
         )
-        if isinstance(bdmember, list):
+        if isinstance(bdmember, (list, tuple)):
             n_members = len(self.general.members)
-            if 1 < len(bdmember) < n_members:
+            if len(bdmember) not in (0, 1, n_members):
                 raise ValueError(
                     "eps.member_settings.boundaries.ifs.bdmember must be "
-                    "empty, a single bdmember, or contain at least as many "
-                    f"bdmembers as members (={n_members}) to nest each "
-                    f"member into its own bdmember. Got {len(bdmember)} "
-                    f"bdmembers for {n_members} members."
+                    "empty, a single bdmember, or contain exactly as many "
+                    f"bdmembers as members (={n_members}), one per member. "
+                    f"Got {len(bdmember)} bdmembers for {n_members} members."
                 )
         return self
 

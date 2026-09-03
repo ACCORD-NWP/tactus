@@ -14,8 +14,6 @@
   slaflag = {1 = "PT6H", 2 = "PT6H", 3 = "PT12H", 4 = "PT12H", 5 = "PT18H", 6 = "PT18H"}
 
 [eps.member_settings.boundaries.ifs]
-  # Override the eps_default.toml identity mapping: SLAFF nests every member
-  # into the same control member data, so no per-member bdmember is needed.
   bdmember = []
 
 [suite_control]
