@@ -392,13 +392,6 @@ class TaskSettings(object):
                 file_handler.write(f'export {key}="{val}"\n')
 
             if scheduler is None:
-                dastream = config.get("da.dastream", "")
-                if dastream:
-                    file_handler.write(f'export DASTREAM="{dastream}"\n')
-                obstype = config.get("da.obstype", "")
-                if obstype:
-                    file_handler.write(f'export OBSTYPE="{obstype}"\n')
-
                 tactus_task = config.get("general.tactus_task", task)
                 file_handler.write(f'export STAND_ALONE_TASK_NAME="{tactus_task}"\n')
 
