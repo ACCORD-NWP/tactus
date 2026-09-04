@@ -1084,6 +1084,7 @@ f4_HARMONIE_AROME:
     LWTHRESHMOIST: false
     LDRYMFREDUC: false
     LSUBEVAP: false
+#    LVARRESDEP: false
     NSWB_MNH: 6
     RADGR: 0.5
     RADSN: 1.0
