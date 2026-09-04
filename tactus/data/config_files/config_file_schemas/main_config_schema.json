@@ -525,11 +525,6 @@
           "type": "boolean",
           "default": false
         },
-        "do_assimilation": {
-          "description": "Activate the data assimilation chain (CANARI surface OI + 3D-Var) between FirstGuess and Forecast.",
-          "type": "boolean",
-          "default": false
-        },
         "mirror_globalDT": {
           "description": "Mirror globalDT suite (true) and trigger if globalDT is available",
           "type": "boolean",

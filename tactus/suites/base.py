@@ -168,8 +168,6 @@ class SuiteDefinition(object):
             "NPROCY": "",
             "KEEP_WORKDIRS": keep_workdirs,
             "MEMBER": "",
-            "OBSTYPE": "",
-            "DA_STREAM": "",
             "TACTUS_TASK": "",
         }
 
