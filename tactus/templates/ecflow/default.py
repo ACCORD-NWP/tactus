@@ -151,9 +151,7 @@ def default_main(kwargs: dict):
 
 
 if __name__ == "__main__":
-    logger.info(
-        "Running {} v{}", GeneralConstants.PACKAGE_NAME, GeneralConstants.VERSION
-    )
+    logger.info("Running {} v{}", GeneralConstants.PACKAGE_NAME, GeneralConstants.VERSION)
     # Get ecflow variables
     kwargs_main = parse_ecflow_vars()
     default_main(kwargs_main)
