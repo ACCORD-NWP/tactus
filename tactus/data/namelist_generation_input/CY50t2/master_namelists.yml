@@ -951,6 +951,8 @@ f4_HARMONIE_AROME:
     LMICRO: true
     LMPA: true
     LTURB: true
+  NAMRIP:
+   NFOST: 6
   NAMCFU:
     CALFLASH1: 0.018
     LFRRC: true
