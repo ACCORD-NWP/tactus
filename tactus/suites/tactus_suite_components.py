@@ -26,6 +26,7 @@ from tactus.suites.base import (
     EcflowSuiteTrigger,
     EcflowSuiteTriggers,
 )
+from tactus.suites.da_components import AssimilationFamily
 from tactus.suites.suite_utils import Cycles, lbc_times_generator, slaf_planner
 from tactus.toolbox import Platform
 
@@ -872,12 +873,16 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
             interpolation_task_name = "E927"
         for bd_index_time_dict in self.lbc_time_generator:
             bd_index_time_dict_sst = bd_index_time_dict.copy()
-            if (
-                self.config["suite_control.mode"] == "restart" and 0 in bd_index_time_dict
-            ) or (
-                self.config["suite_control.mode"] == "start"
-                and 0 in bd_index_time_dict
-                and not self.is_first_cycle
+
+            mode = self.config["suite_control.mode"]
+            has_bd_index_zero = 0 in bd_index_time_dict
+            is_restart_with_bd_zero = mode == "restart" and has_bd_index_zero
+            is_start_with_bd_zero = (
+                mode == "start" and has_bd_index_zero and not self.is_first_cycle
+            )
+
+            if not self.config["suite_control.do_assimilation"] and (
+                is_restart_with_bd_zero or is_start_with_bd_zero
             ):
                 del bd_index_time_dict[0]
 
@@ -1451,6 +1456,7 @@ class CycleFamily(EcflowSuiteFamily):
         ecf_files,
         trigger=None,
         ecf_files_remotely=None,
+        cycle_basetime=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -1476,13 +1482,28 @@ class CycleFamily(EcflowSuiteFamily):
         else:
             perturbation_family = trigger
 
+        if config["suite_control.do_assimilation"]:
+            assimilation_family = AssimilationFamily(
+                self,
+                config,
+                task_settings,
+                input_template,
+                ecf_files,
+                trigger=perturbation_family,
+                ecf_files_remotely=ecf_files_remotely,
+                cycle_basetime=cycle_basetime,
+            )
+            forecast_trigger = assimilation_family
+        else:
+            forecast_trigger = perturbation_family
+
         ForecastFamily(
             self,
             config,
             task_settings,
             input_template,
             ecf_files,
-            trigger=perturbation_family,
+            trigger=forecast_trigger,
             ecf_files_remotely=ecf_files_remotely,
         )
 
@@ -1824,6 +1845,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     ecf_files,
                     trigger=ready_for_cycle,
                     ecf_files_remotely=ecf_files_remotely,
+                    cycle_basetime=cycle.basetime,
                 )
                 member_cycle_families.append(cycle_family)
                 prev_cycle_triggers[member] = [cycle_family]
