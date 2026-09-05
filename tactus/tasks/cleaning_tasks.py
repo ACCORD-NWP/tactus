@@ -23,31 +23,3 @@ class Cleaning(Task):
     def execute(self):
         """Run the cleaning."""
         self.cleaner.clean()
-
-
-class XCycleCleaning(Cleaning):
-    """Cycle cleaning task."""
-
-    def __init__(self, config):
-        """Construct object.
-
-        Args:
-            config (ParsedConfig): Configuration
-        """
-        Cleaning.__init__(self, config)
-        self.name = "CycleCleaning"
-        self.prep_clean_task(self.name)
-
-
-class XPostMortem(Cleaning):
-    """Final cleaning task."""
-
-    def __init__(self, config):
-        """Construct object.
-
-        Args:
-            config (ParsedConfig): Configuration
-        """
-        Cleaning.__init__(self, config)
-        self.name = "PostMortem"
-        self.prep_clean_task(self.name)
