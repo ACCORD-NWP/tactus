@@ -60,6 +60,7 @@ def parse_ecflow_vars():
         "TACTUS_HOME": os.environ["TACTUS_HOME"],
         "KEEP_WORKDIRS": os.environ["KEEP_WORKDIRS"],
         "MEMBER": os.environ["MEMBER"],
+        "TACTUS_TASK": os.environ.get("TACTUS_TASK", ""),
     }
 
 
@@ -126,6 +127,14 @@ def default_main(kwargs: dict):
     else:
         # Update config based on member
         config = get_member_config(config, member=member)
+
+    # Handle generic tasks
+    tactus_task = os.environ.get("TACTUS_TASK", task.ecf_task)
+    config = config.copy(
+        update={
+            "general": {"tactus_task": tactus_task},
+        }
+    )
 
     # TODO Add wrapper
     server = EcflowServer(config)

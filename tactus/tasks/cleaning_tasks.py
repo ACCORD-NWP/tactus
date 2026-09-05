@@ -14,15 +14,8 @@ class Cleaning(Task):
             config (ParsedConfig): Configuration
         """
         Task.__init__(self, config, __class__.__name__)
-
-    def prep_clean_task(self, cleaning_type):
-        """Setup clean task.
-
-        Args:
-            cleaning_type (str): Cleaning config section identifier
-
-        """
         defaults = self.config.get("cleaning.defaults")
+        cleaning_type = config["task.args.cleaning_type"]
         choices = self.config.get(f"cleaning.{cleaning_type}").dict()
         self.cleaner = CleanTactus(self.config, defaults)
         self.cleaner.prep_cleaning(choices)
@@ -30,31 +23,3 @@ class Cleaning(Task):
     def execute(self):
         """Run the cleaning."""
         self.cleaner.clean()
-
-
-class CycleCleaning(Cleaning):
-    """Cycle cleaning task."""
-
-    def __init__(self, config):
-        """Construct object.
-
-        Args:
-            config (ParsedConfig): Configuration
-        """
-        Cleaning.__init__(self, config)
-        self.name = "CycleCleaning"
-        self.prep_clean_task(self.name)
-
-
-class PostMortem(Cleaning):
-    """Final cleaning task."""
-
-    def __init__(self, config):
-        """Construct object.
-
-        Args:
-            config (ParsedConfig): Configuration
-        """
-        Cleaning.__init__(self, config)
-        self.name = "PostMortem"
-        self.prep_clean_task(self.name)

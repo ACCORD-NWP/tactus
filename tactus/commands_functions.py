@@ -111,7 +111,11 @@ def run_task(args: RunTaskNamespace, config: ParsedConfig):
         troika=args.troika,
         create_only=args.create_only,
     )
-    logger.info("Task {} submitted.", args.task)
+
+    msg = "created"
+    if not args.create_only:
+        msg += " and submitted"
+    logger.info("Task {} {}.", args.task, msg)
 
 
 def create_exp(args, config):
