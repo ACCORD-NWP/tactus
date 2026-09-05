@@ -102,8 +102,6 @@ def run_task(args: RunTaskNamespace, config: ParsedConfig):
     if not args.create_only:
         create_task_index(config)
 
-    tactus_task = config.get("general.tactus_task", None)
-
     sub.submit(
         task=args.task,
         config=config,
@@ -112,7 +110,6 @@ def run_task(args: RunTaskNamespace, config: ParsedConfig):
         output=output,
         troika=args.troika,
         create_only=args.create_only,
-        tactus_task=tactus_task,
     )
     logger.info("Task {} submitted.", args.task)
 

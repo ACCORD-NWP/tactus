@@ -166,19 +166,10 @@ class TaskSettings(object):
                 )
                 break
 
-        task_exc_key = None
-        if "task_exceptions" in all_defs:
-            if task in all_defs["task_exceptions"]:
-                task_exc_key = task
-            else:
-                for exc_key in all_defs["task_exceptions"]:
-                    if task.startswith(exc_key + "_"):
-                        task_exc_key = exc_key
-                        break
-        if task_exc_key is not None:
-            logger.debug("Task task_exceptions for task {} (key={})", task, task_exc_key)
+        if "task_exceptions" in all_defs and task in all_defs["task_exceptions"]:
+            logger.debug("Task task_exceptions for task {}", task)
             task_settings = self.update_task_setting(
-                task_settings, all_defs["task_exceptions"][task_exc_key]
+                task_settings, all_defs["task_exceptions"][task]
             )
 
         if "SCHOST" in task_settings:
@@ -349,9 +340,6 @@ class TaskSettings(object):
                     "TACTUS_HOME",
                     "KEEP_WORKDIRS",
                     "MEMBER",
-                    "OBSTYPE",
-                    "DA_STREAM",
-                    "TACTUS_TASK",
                 ]
                 for ecf_var in ecf_vars:
                     file_handler.write(f'export {ecf_var}="%{ecf_var}%"\n')
@@ -394,15 +382,7 @@ class TaskSettings(object):
                 file_handler.write(f'export {key}="{val}"\n')
 
             if scheduler is None:
-                dastream = config.get("da.dastream", "")
-                if dastream:
-                    file_handler.write(f'export DASTREAM="{dastream}"\n')
-                obstype = config.get("da.obstype", "")
-                if obstype:
-                    file_handler.write(f'export OBSTYPE="{obstype}"\n')
-
-                tactus_task = config.get("general.tactus_task", task)
-                file_handler.write(f'export STAND_ALONE_TASK_NAME="{tactus_task}"\n')
+                file_handler.write(f'export STAND_ALONE_TASK_NAME="{task}"\n')
 
                 tactus_home = self.platform.get_platform_value("TACTUS_HOME")
 
@@ -439,7 +419,6 @@ class NoSchedulerSubmission:
         member: Optional[int] = None,
         troika: Optional[str] = "troika",
         create_only: Optional[bool] = False,
-        tactus_task: Optional[str] = None,
     ):
         """Submit task.
 
@@ -453,12 +432,11 @@ class NoSchedulerSubmission:
                 Defaults to None.
             troika      (str, optional): troika binary. Defaults to "troika".
             create_only: (bool, optional): Only create the job, do not submit it.
-            tactus_task: (str, optional): Different task name for class recognition
 
         Raises:
             RuntimeError: Submission failure.
         """
-        name = tactus_task.lower() if tactus_task is not None else task.lower()
+        name = task.lower()
         if name not in load_task_index(config):
             raise NotImplementedError(f"Task {name} not implemented")
 
