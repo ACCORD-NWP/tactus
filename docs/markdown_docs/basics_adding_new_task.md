@@ -1,6 +1,6 @@
 # Adding a New Task
 
-There are two ways to add a new tasks to the system. First we describe the standard case where a task name is directly mapped to a class name. In the second part we describe how to map a task to a more generic task and the associated requirements.
+There are two ways to add a new tasks to the system. First we describe the standard case where a task name is directly mapped to a class name. In the second part we describe how to map a task to a more generic class.
 
 ## Code requirements
 
