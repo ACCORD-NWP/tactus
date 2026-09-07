@@ -259,7 +259,11 @@ class Marsprep(Task):
         # Suspend the model task if there is a mirroring
         if self.config["suite_control.mirror_globalDT"]:
             current_path = PurePosixPath(os.environ["ECF_NAME"])
-            model_path = current_path.parents[1] / "Mirrors"
+            day_str = self.basetime.strftime("%Y%m%d")
+            time_str = self.basetime.strftime("%H%M")
+            parts = current_path.parts
+            time_index = parts.index(time_str, parts.index(day_str))
+            model_path = PurePosixPath(*parts[: time_index + 1]) / "Mirrors"
             server = EcflowServer(self.config)
             server.suspend(str(model_path))
 
