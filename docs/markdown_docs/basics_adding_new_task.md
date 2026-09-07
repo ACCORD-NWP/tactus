@@ -94,13 +94,13 @@ If `config_file` is specified under `[troika]` in config.yml, one can skip the `
 
 ## Map a task name to a generic class
 A class can be resued for several tasks with different names. This can be useful when we want to contstruct very similar tasks with minor differences. One example could be processing of different observation types. Another example is the cleaning task which we will use as an example in the following.
-When constructing the task in e.g. Ecflow we define the EcflowTask as 
+When constructing the task in e.g. Ecflow we define the EcflowTask as
 
 ```
 EcflowSuiteTask(
   "CycleCleaning",
   ...
-  variables={ "TACTUS_TASK": "Cleaning", 
+  variables={ "TACTUS_TASK": "Cleaning",
               "ARGS": "cleaning_type=CycleCleaning",
             },
   ...
