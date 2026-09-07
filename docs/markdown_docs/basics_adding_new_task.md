@@ -1,6 +1,6 @@
 # Adding a New Task
 
-Follow the instructions below to add a new task to the system.
+There are two ways to add a new tasks to the system. First we describe the standard case where a task name is directly mapped to a class name. In the second part we describe how to map a task to a more generic task and the associated requirements.
 
 ## Code requirements
 
@@ -91,3 +91,21 @@ tactus --config-file=/your/config.toml run --task yourtask  --template $PWD/tac
 ```
 
 If `config_file` is specified under `[troika]` in config.yml, one can skip the `--troika-config` argument.
+
+## Map a task name to a generic class
+A class can be resued for several tasks with different names. This can be useful when we want to contstruct very similar tasks with minor differences. One example could be processing of different observation types. Another example is the cleaning task which we will use as an example in the following.
+When constructing the task in e.g. Ecflow we define the EcflowTask as 
+
+```
+EcflowSuiteTask(
+  "CycleCleaning",
+  ...
+  variables={ "TACTUS_TASK": "Cleaning", 
+              "ARGS": "cleaning_type=CycleCleaning",
+            },
+  ...
+)
+```
+where `TACTUS_TASK` defines the class we map to, `Cleaning` in this case. In `ARGS` we defined the class specific arguments that defines the specific behaviour for this task.
+
+The same rules applies for submission of tasks as in the standard case.
