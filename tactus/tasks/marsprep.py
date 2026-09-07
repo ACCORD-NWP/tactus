@@ -1121,7 +1121,9 @@ class Marsprep(Task):
                 fieldset_name_list = [fieldset]
 
             for single_param, single_fieldset in zip(
-                fieldset_param_list, fieldset_name_list
+                fieldset_param_list,
+                fieldset_name_list,
+                strict=True,
             ):
                 request = self._build_retrieve_request(
                     data_type,

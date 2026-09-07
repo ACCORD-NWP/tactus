@@ -640,6 +640,7 @@ def namelist_convert(args, config: ParsedConfig):
     for parameter, parameter_name in zip(
         [args.from_cycle, args.to_cycle, args.namelist, args.output],
         ["from_cycle", "to_cycle", "namelist", "output"],
+        strict=True,
     ):
         if not parameter:
             raise SystemExit(f"Please provide parameter {parameter_name}")
@@ -672,6 +673,7 @@ def namelist_format(args, config: ParsedConfig):
     for parameter, parameter_name in zip(
         [args.namelist, args.output],
         ["namelist", "output"],
+        strict=True,
     ):
         if not parameter:
             raise SystemExit(f"Please provide parameter {parameter_name}")

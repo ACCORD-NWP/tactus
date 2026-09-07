@@ -137,10 +137,10 @@
   WALLTIME = "#SBATCH --time=00:10:00"
 
 [submission.task_exceptions.Soil.MODULES]
-  GDAL = ["load", "gdal/3.6.2"]
+  GDAL = ["load", "gdal/3.10.2"]
 
 [submission.task_exceptions.Topography.MODULES]
-  GDAL = ["load", "gdal/3.6.2"]
+  GDAL = ["load", "gdal/3.10.2"]
 
 [submission.task_exceptions.Addpert]
   binary = "ADDPERT"

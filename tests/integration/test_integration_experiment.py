@@ -142,6 +142,8 @@ class TestEPSExp:
         eps_exp.setup_exp()
 
         # Assert that the modifications are correctly resolved
-        for mod, member in zip(modifications, eps_exp.config["eps.general.members"]):
+        for mod, member in zip(
+            modifications, eps_exp.config["eps.general.members"], strict=True
+        ):
             case_name = f"test_case_{Path(mod).stem}"
             assert case_name == eps_exp.config[f"eps.members.{member}.general.case"]

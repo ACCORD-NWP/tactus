@@ -64,10 +64,10 @@ class AddCalculatedFields(Task):
                     key: value for key, value in entry.items() if isinstance(value, list)
                 }
                 if keys_with_lists:
-                    keys, lists = zip(*keys_with_lists.items())
+                    keys, lists = zip(*keys_with_lists.items(), strict=True)
                     for values in product(*lists):
                         new_entry = copy.deepcopy(entry)
-                        for key, value in zip(keys, values):
+                        for key, value in zip(keys, values, strict=True):
                             new_entry[key] = value
                         expanded_input_grib_id.append(new_entry)
                 else:
@@ -216,7 +216,7 @@ class AddCalculatedFields(Task):
             f_out = stack.enter_context(open(fnames[0], "ab"))
 
             while None in gids:
-                for f_in, fname in zip(files, fnames):
+                for f_in, fname in zip(files, fnames, strict=True):
                     gid = eccodes.codes_grib_new_from_file(f_in)
                     if gid is None:
                         continue
@@ -239,23 +239,25 @@ class AddCalculatedFields(Task):
                     bitmap_list[i] = eccodes.codes_get_array(gid, "bitmap", int)
 
             if operation == "add":
-                result_values = [sum(values) for values in zip(*values_list)]
+                result_values = [sum(values) for values in zip(*values_list, strict=True)]
             elif operation == "vectorLength":
                 if len(params) != 2:
                     raise ValueError("Vector must have 2 components!")
                 result_values = [
                     math.sqrt(values[0] * values[0] + values[1] * values[1])
-                    for values in zip(*values_list)
+                    for values in zip(*values_list, strict=True)
                 ]
             elif operation == "vectorDirection":
                 if len(params) != 2:
                     raise ValueError("Vector must have 2 components!")
                 result_values = [
                     (math.atan2(values[0], values[1]) * 180 / math.pi) % 360
-                    for values in zip(*values_list)
+                    for values in zip(*values_list, strict=True)
                 ]
             elif operation == "multiply":
-                result_values = [math.prod(values) for values in zip(*values_list)]
+                result_values = [
+                    math.prod(values) for values in zip(*values_list, strict=True)
+                ]
             elif operation == "albedo_calc":
                 radiation_threshold = 1  # J/m^2. Below this value, albedo is set to 0.1
                 default_albedo = 0.1
@@ -602,7 +604,8 @@ class AddCalculatedFields(Task):
                 continue
             if self.output_settings.get(filetype) is None:
                 logger.info(
-                    "Skipping as output_settings for filtype={} is not defined", filetype
+                    "Skipping as output_settings for filtype={} is not defined",
+                    filetype,
                 )
                 continue
             file_handle = FileManager.create_list(
