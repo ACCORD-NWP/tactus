@@ -22,10 +22,6 @@
   ref_case = "@SUBTAG@_@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@@CASE_SUFFIX@"
   refcheck_root = "/ec/project/accord/tactus/tactus_references"
 
-[modifs.platform.mirrorglobalDT]
-  remote_host = "ecflow-gen-snh02-001"
-  remote_path = "/mirror_globalDT_iekm/pabv/iekm/fc/main/fcgroup/00/model"
-
 [modifs.scheduler.ecfvars]
   case_prefix = "@TAG@_@SUBTAG@"
   ecf_files = "@PERM@/tactus_ecflow/ecf_files"
