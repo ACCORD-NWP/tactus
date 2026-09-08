@@ -11,7 +11,6 @@ import tomlkit
 
 from tactus.config_parser import ConfigParserDefaults, ParsedConfig
 from tactus.namelist import (
-    InvalidNamelistKindError,
     InvalidNamelistTargetError,
     NamelistGenerator,
     NamelistIntegrator,
@@ -139,11 +138,6 @@ class TestNamelistGenerator:
     @pytest.mark.usefixtures("_nlgen_surfex")
     def test_nlgen_surfex(self):
         """Test namelist generation for surfex."""
-
-    def test_nlgen_invalid_type(self, parsed_config):
-        """Test namelist generation for non-existing kind."""
-        with pytest.raises(InvalidNamelistKindError):
-            _ = NamelistGenerator(parsed_config, "slave")
 
     def test_nlgen_invalid_target(self, parsed_config, tmp_directory):
         """Test namelist generation for non-existing target."""

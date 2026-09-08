@@ -1,3 +1,4 @@
+(reference-checker)=
 # Validation of results against reference files
 
 ## Introduction

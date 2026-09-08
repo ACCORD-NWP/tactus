@@ -232,6 +232,11 @@ class TactusBundleBuild(Task):
         if self.precision == "R32":
             self.prec_arg = "--without-double-precision"
 
+        # Get flag for compilation scope
+        forecast_only = self.config.get("compile.forecast_only", False)
+        self.forecast_only_flag = "--forecast-only " if forecast_only else ""
+
+
     def get_install_subpath(self):
         """Build install subpath by using the location of the env.sh file.
 
@@ -298,7 +303,7 @@ class TactusBundleBuild(Task):
             nthreads = os.environ.get("OMP_NUM_THREADS")
             batch_job.run(
                 f"cd {self.bundle_dir};  {self.ecbundle_bin} build "
-                + f"--arch {self.arch} {self.ninja_arg} --forecast-only "
+                + f"--arch {self.arch} {self.ninja_arg} {self.forecast_only_flag}"
                 + f" {self.rebuild_args} {self.prec_arg} -j{nthreads} "
                 + f"--install-dir={self.install_dir} --install "
                 + f"--build-dir={self.exp_builddir}"
