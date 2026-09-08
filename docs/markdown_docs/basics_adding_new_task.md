@@ -94,7 +94,23 @@ If `config_file` is specified under `[troika]` in config.yml, one can skip the `
 
 ## Map a task name to a generic class
 A class can be resued for several tasks with different names. This can be useful when we want to contstruct very similar tasks with minor differences. One example could be processing of different observation types. Another example is the cleaning task which we will use as an example in the following.
-When constructing the task in e.g. Ecflow we define the EcflowTask as
+
+To run the task in stand alone mode we define the class mapping and extra arguments as
+```
+[general]
+  tactus_task = "Cleaning"
+[task.args]
+  cleaning_type = "CycleCleaning"
+```
+where `tactus_task` defines the class we map to, `Cleaning` in this case. In `ARGS` we defined the class specific arguments that defines the behaviour for this task. In the corresponding class `Cleaning` we pick up this setting using
+
+```
+cleaning_type = config["task.args.cleaning_type"]
+```
+
+The same rules applies for controlling the submission of tasks as in the standard case.
+
+When constructing the task in e.g. Ecflow we define the EcflowSuiteTask as
 
 ```
 EcflowSuiteTask(
@@ -106,6 +122,4 @@ EcflowSuiteTask(
   ...
 )
 ```
-where `TACTUS_TASK` defines the class we map to, `Cleaning` in this case. In `ARGS` we defined the class specific arguments that defines the specific behaviour for this task.
-
-The same rules applies for submission of tasks as in the standard case.
+Note that here `TACTUS_TASK` has to be in upper case as it's communicated as an environment variable.
