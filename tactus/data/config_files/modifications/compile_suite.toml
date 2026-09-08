@@ -1,5 +1,5 @@
 [general]
-  case = "IAL_@IAL_TAG@_compile"
+  case = "IAL_@IAL_GIT_TAG@_compile"
 
 [suite_control]
   compile = true

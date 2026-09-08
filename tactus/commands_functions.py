@@ -171,7 +171,7 @@ def create_compile_exp(args, config):
         config = config.copy(
             update={
                 "compile": {
-                    "ial_git_branch": args.ial_tag,
+                    "ial_git_version": args.ial_tag,
                     "ial_git_tag_case": ial_tag_case,
                 },
             }
