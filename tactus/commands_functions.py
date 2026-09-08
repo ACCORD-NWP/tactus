@@ -160,7 +160,7 @@ def create_compile_exp(args, config):
 
     """
     if args.ial_tag is not None:
-        config = config.copy(update={"compile": {"ial_git_branch": args.ial_tag}})
+        config = config.copy(update={"compile": {"ial_git_version": args.ial_tag}})
     if args.ial_repo is not None:
         config = config.copy(update={"compile": {"ial_git_repo": args.ial_repo}})
 

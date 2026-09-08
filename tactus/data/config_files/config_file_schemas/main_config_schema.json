@@ -678,7 +678,7 @@
       }
     },
     "compile": {
-      "title": "Compilation configuration",
+      "title": "IAL compilation configuration",
       "type": "object",
       "properties": {
         "ial_dir": {
@@ -691,20 +691,19 @@
           "description": "Git repo for IAL source",
           "default": "git@github.com:ACCORD-NWP/IAL"
         },
+        "ial_git_version": {
+          "type": "string",
+          "description": "Git version for IAL source (branch/tag/commit hash)",
+          "default": "develop"
+        },
         "git_token": {
           "type": "string",
           "description": "Git token for IAL source access",
           "default": ""
         },
-        "ial_git_branch": {
+        "arch_dir": {
           "type": "string",
-          "description": "Branch/tag",
-          "default": "develop"
-        },
-        "arch": {
-          "type": "string",
-          "description": "Compiler configuration",
-          "default": "source/ial-source/bundle/arch/ecmwf/hpc2020"
+          "description": "Directory where arch files can be found"
         },
         "dir": {
           "type": "string",
@@ -741,15 +740,10 @@
           "description": "whether to clean build folder before compilation",
           "default": false
         },
-        "cache": {
+        "install": {
           "type": "boolean",
-          "description": "whether to use chache build/install folders",
+          "description": "whether to install in @INSTALL_DIR@",
           "default": false
-        },
-        "cache_dir": {
-          "type": "string",
-          "description": "whether to use chache build/install folders",
-          "default": "@REFERENCE_DATA@/bundle_cache"
         }
       }
     },
