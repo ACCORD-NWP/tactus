@@ -28,7 +28,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
 
     container:
-      image: python:${{ matrix.python-version }}-bullseye
+      image: python:${{ matrix.python-version }}-bookworm
       env:
         COVERAGE_FILE: ".coverage.${{ matrix.env }}.${{ matrix.python-version }}"
 
