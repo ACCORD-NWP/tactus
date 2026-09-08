@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix FileLock race condition [#182](https://github.com/ACCORD-NWP/tactus/pull/182)(@dhaumont)
 - Don't check references when generating them [#175](https://github.com/ACCORD-NWP/tactus/pull/175)(@dhaumont)
 
+## [1.3.1] - 2026-09-07
+
+### Fixed
+- Remove mirror-suspend in Marsprep. [\#200](https://github.com/ACCORD-NWP/tactus/pull/200) (@kastelecn)
 
 ## [1.3.0] - 2026-07-24
 
