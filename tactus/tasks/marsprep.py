@@ -4,7 +4,7 @@ import ast
 import contextlib
 import os
 from functools import cached_property
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 from typing import Dict, List, Optional
 
 from tactus.boundary_utils import Boundary
@@ -34,7 +34,6 @@ from tactus.mars_utils import (
     write_write_mars_req,
 )
 from tactus.os_utils import join_files, list_files_join, tactusmakedirs
-from tactus.scheduler import EcflowServer
 from tactus.tasks.base import Task
 from tactus.tasks.batch import BatchJob
 
@@ -255,13 +254,6 @@ class Marsprep(Task):
                 )
         except OSError as e:
             raise RuntimeError(f"Error while preparing the mars folder: {e}") from e
-
-        # Suspend the model task if there is a mirroring
-        if self.config["suite_control.mirror_globalDT"]:
-            current_path = PurePosixPath(os.environ["ECF_NAME"])
-            model_path = current_path.parents[1] / "Mirrors"
-            server = EcflowServer(self.config)
-            server.suspend(str(model_path))
 
         if self.split_mars_by_step and self.prep_step:
             logger.debug("*** Need only latlon data")
