@@ -91,23 +91,15 @@ make doc
 ```
 
 ## Testing on Atos
-For testing of a number of configurations we use https://github.com/ACCORD-NWP/tactus-test-runner which launches a number of ecflow suites. Install the package and make yourself familiar with the environment. For individual PR testing the minimum should be:
+For testing of a number of configurations we use `tactus test` which launches a number of ecflow suites. The required testing for a PR is the following
 ```
- selection = [
-    "cy49t2_alaro",
-    "cy49t2_alaro_target",
-    "cy49t2_arome_R64",
-    "cy49t2_arome_target",
-    "cy49t2_harmonie_arome_R64",
-    "alaro",
-    "arome",
-    "harmonie_arome",
-  ]
+tactus test tactus/data/tests/atos_bologna_CY49t2.toml -m -r
+tactus test tactus/data/tests/atos_bologna_CY50t2.toml -m -r
 ```
-I.e. run the standard toy domain with target coupling including the full sized domains. Add additional configurations as you find suitable.
+The tests includes a check against a reference based on the latest tag and the outcome shall be reported with the label `bit-reproducible` or `non-bit-reproducible` in the PR.
 
 ## Testing before tagging
-For testing prior to tagging all the testing should be performed as defined by `atos_bologna.toml`.
+For testing prior to tagging a test for all CSCs with the full sized domain, DKCOEXP, for a recent date shall be executed.
 
 ## Git Branching Structure and Workflow
 

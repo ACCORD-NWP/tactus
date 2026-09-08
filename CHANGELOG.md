@@ -17,6 +17,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.3.0] - 2026-07-24
 
 ### Added
+- Add support to compile assimilation related binaries. [#192](https://github.com/ACCORD-NWP/tactus/pull/192)(@bstrajnar, @uandrae)
+- Introduced perturbation tasks in the initial data selection procedure [#117](https://github.com/ACCORD-NWP/tactus/pull/117)(@uandrae)
+
+### Changed
+- Add option to BatchJob.run() to capture STDOUT in file. [#191](https://github.com/ACCORD-NWP/tactus/pull/191)(@bstrajnar, @uandrae)
+- Relax input yaml file name check in namelist generator. [#190](https://github.com/ACCORD-NWP/tactus/pull/190)(@bstrajnar, @uandrae)
+- Update test instructions. [#185](https://github.com/ACCORD-NWP/tactus/pull/185), [#187](https://github.com/ACCORD-NWP/tactus/pull/187)(@uandrae)
+- Make config-file mandatory for some commands. [#174](https://github.com/ACCORD-NWP/tactus/pull/174)(@dhaumont)
+- Updated reference checker with more tests and bugfixes [#179](https://github.com/ACCORD-NWP/tactus/pull/179)(@uandrae)
+
+### Fixed
+- Correct usage of branch names for ecflow suites. [#184](https://github.com/ACCORD-NWP/tactus/pull/184)(@uandrae)
+- Make the tactus compile command respect config file settings [#183](https://github.com/ACCORD-NWP/tactus/pull/183)(@uandrae)
+- Add metadata information to generated config files [#177](https://github.com/ACCORD-NWP/tactus/pull/177)(@dhaumont)
+- Fix FileLock race condition [#182](https://github.com/ACCORD-NWP/tactus/pull/182)(@dhaumont)
+- Don't check references when generating them [#175](https://github.com/ACCORD-NWP/tactus/pull/175)(@dhaumont)
+
+
+## [1.3.0] - 2026-07-24
+
+### Added
+- Adds Namelist check to reference checker. [#172](https://github.com/ACCORD-NWP/tactus/pull/172) (@pardallio)
 - Add `mars_split_by_step` option in config file to replace the current `mars_split` option which now splits mars by data_type. [#151](https://github.com/ACCORD-NWP/tactus/pull/151) (@pardallio)
 - Tactus test runner - allow to exclude rules. [#155](https://github.com/ACCORD-NWP/tactus/pull/155) (@uandrae)
 - Make ParsedConfig uniform in docstring. [#161](https://github.com/ACCORD-NWP/tactus/pull/161)(@dhaumont)

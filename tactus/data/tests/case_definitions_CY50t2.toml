@@ -2,11 +2,13 @@
 #  base gives the config to start from
 #  host defines the forcing run for a target run
 #  extra is extra config files to add
+#  clean controls cleaning prior to launch
 # Place local tactus config changes under [cases.x.modifs...]
 #
 
 [cases.cy50t2_compile]
   base = "cy50t2_arome"
+  clean = false
 
 [cases.cy50t2_compile.modifs.general]
   case = "@CASE_PREFIX@@CYCLE@_compile"

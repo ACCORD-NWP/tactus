@@ -20,6 +20,7 @@ from .cleaning import CleanTactus
 from .config_parser import BasicConfig, ConfigParserDefaults, ConfigPaths, ParsedConfig
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
 from .experiment import case_setup
+from .general_utils import sanitize_case_name
 from .host_actions import TactusHost, set_tactus_home
 from .logs import logger
 from .namelist import (
@@ -159,7 +160,19 @@ def create_compile_exp(args, config):
         config (ParsedConfig): Parsed config file contents.
 
     """
-    config = config.copy(update={"compile": {"ial_git_branch": args.ial_tag}})
+    if args.ial_tag is not None:
+        platform = Platform(config)
+        ial_tag_case = sanitize_case_name(platform.substitute(args.ial_tag))
+        config = config.copy(
+            update={
+                "compile": {
+                    "ial_git_branch": args.ial_tag,
+                    "ial_git_tag_case": ial_tag_case,
+                },
+            }
+        )
+    if args.ial_repo is not None:
+        config = config.copy(update={"compile": {"ial_git_repo": args.ial_repo}})
 
     args.config_mods = [
         "tactus/data/config_files/modifications/@HOST@.toml",

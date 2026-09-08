@@ -27,8 +27,11 @@ from .namelist import NamelistConverter
 from .test_runner import run_test
 
 
-def get_common_parser():
+def get_common_parser(config_file_required=False):
     """Build and return the common argument parser shared by all subcommands.
+
+    Args:
+        config_file_required (bool): Whether the config file argument is required.
 
     Returns:
         argparse.ArgumentParser: Parser with common arguments (config-file,
@@ -42,23 +45,33 @@ def get_common_parser():
         default=None,
         help="Specify tactus_home to override automatic detection",
     )
-    common_parser.add_argument(
-        "--config-file",
-        "-c",
-        metavar="CONFIG_FILE_PATH",
-        default=ConfigParserDefaults.CONFIG_PATH,
-        type=Path,
-        help=(
-            "Path to the config file. The default is whichever of the "
-            + "following is first encountered: "
-            + "(i) The value of the 'TACTUS_CONFIG_PATH' envvar or "
-            + "(ii) './config.toml'. If both (i) and (ii) are missing, "
-            + "then the default will become "
-            + "'"
-            + f"{ConfigParserDefaults.PACKAGE_CONFIG_PATH}"
-            + "'"
-        ),
-    )
+    if config_file_required:
+        common_parser.add_argument(
+            "--config-file",
+            "-c",
+            metavar="CONFIG_FILE_PATH",
+            required=True,
+            type=Path,
+            help=("Path to the config file."),
+        )
+    else:
+        common_parser.add_argument(
+            "--config-file",
+            "-c",
+            metavar="CONFIG_FILE_PATH",
+            default=ConfigParserDefaults.CONFIG_PATH,
+            type=Path,
+            help=(
+                "Path to the config file. The default is whichever of the "
+                + "following is first encountered: "
+                + "(i) The value of the 'TACTUS_CONFIG_PATH' envvar or "
+                + "(ii) './config.toml'. If both (i) and (ii) are missing, "
+                + "then the default will become "
+                + "'"
+                + f"{ConfigParserDefaults.PACKAGE_CONFIG_PATH}"
+                + "'"
+            ),
+        )
     common_parser.add_argument(
         "--host-file",
         dest="host_file",
@@ -87,7 +100,8 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         argparse.ArgumentParser: The configured argument parser.
 
     """
-    common_parser = get_common_parser()
+    common_parser = get_common_parser(config_file_required=False)
+    common_parser_config_file_required = get_common_parser(config_file_required=True)
 
     ##########################################
     # Define main parser and general options #
@@ -187,8 +201,9 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
     parser_case = subparsers.add_parser(
         "case",
         help="Create a config file to run an experiment case",
-        parents=[common_parser],
+        parents=[common_parser_config_file_required],
     )
+
     parser_case.add_argument(
         "--output",
         "-o",
@@ -242,11 +257,12 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
 
     # suite
     parser_start_suite = start_command_subparsers.add_parser(
-        "suite", help="Start the suite", parents=[common_parser]
+        "suite", help="Start the suite", parents=[common_parser_config_file_required]
     )
     parser_start_suite.add_argument(
         "--start-command", type=str, help="Start command for server", default=None
     )
+
     parser_start_suite.add_argument(
         "--def-file",
         "-f",
@@ -291,9 +307,14 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
     parser_compile.add_argument(
         "--ial-tag",
         dest="ial_tag",
-        help="IAL git tag/branch",
+        help="IAL git tag/branch, if not given default in config will be used",
         required=False,
-        default="develop",
+    )
+    parser_compile.add_argument(
+        "--ial-repo",
+        dest="ial_repo",
+        help="IAL repository to use, if not given default in config will be used",
+        required=False,
     )
     add_keep_def_file(
         parser_compile, help_message="Keep suite definition file in case of submission"
