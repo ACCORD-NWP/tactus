@@ -18,7 +18,7 @@
     "path": "@NCDIR@",
     "files": [
       "aerosol_cams_climatology_43R3a.nc",
-      "aerosol_cams_climatology_43R3_3D.nc",
+      "aerosol_cams_climatology_43r3_v2_3D.nc",
       "aerosol_ifs_rrtm_49R1_20230119.nc",
       "fu_ice_scattering_rrtm.nc",
       "greenhouse_gas_climatology_48r1.nc",
