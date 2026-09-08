@@ -339,6 +339,11 @@
               "title": "Activate pertana perturbations",
               "type": "boolean",
               "default": false
+            },
+            "z_mult": {
+              "title": "Perturbation scaling",
+              "type": "number",
+              "default": 0.25
             }
           }
         },
