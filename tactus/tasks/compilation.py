@@ -181,6 +181,10 @@ class TactusBundleBuild(Task):
         local_install_dir = f"{self.case_dir}/install/{self.precision}"
         self.local_install_dir = self.platform.substitute(local_install_dir)
 
+        # Get flag for compilation scope
+        forecast_only = self.config.get("compile.forecast_only", False)
+        self.forecast_only_flag = "--forecast-only " if forecast_only else ""
+
         if self.config["compile.install"]:
             self.git_ial_branch = self.config["compile.ial_git_version"]
 
@@ -235,7 +239,6 @@ class TactusBundleBuild(Task):
         # Get flag for compilation scope
         forecast_only = self.config.get("compile.forecast_only", False)
         self.forecast_only_flag = "--forecast-only " if forecast_only else ""
-
 
     def get_install_subpath(self):
         """Build install subpath by using the location of the env.sh file.
