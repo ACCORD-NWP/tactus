@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add back suport to suspend ecflow node. [#205](https://github.com/ACCORD-NWP/tactus/pull/205)(@kastelecn)
 - Add support to compile assimilation related binaries. [#192](https://github.com/ACCORD-NWP/tactus/pull/192)(@bstrajnar, @uandrae)
 - Introduced perturbation tasks in the initial data selection procedure [#117](https://github.com/ACCORD-NWP/tactus/pull/117)(@uandrae)
+- Introduced possibility to comile with GNU in CY50t2 [#188](https://github.com/ACCORD-NWP/tactus/pull/188)(@pardallio)
 
 ### Changed
 - Update the unit-test CI container to Python 3.10 on Debian Bookworm so apt-based system dependency installation works again. [\#201](https://github.com/ACCORD-NWP/tactus/pull/201) (@uandrae)
