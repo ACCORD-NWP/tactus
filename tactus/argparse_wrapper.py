@@ -655,8 +655,7 @@ def add_namelist_args(parser_object):
         "--namelist-type",
         "-t",
         type=str,
-        help="Namelist target: master, surfex or gl",
-        choices=["master", "surfex", "gl"],
+        help="Namelist target, see namelist_generation_input directory for options",
         required=True,
         default=None,
     )
