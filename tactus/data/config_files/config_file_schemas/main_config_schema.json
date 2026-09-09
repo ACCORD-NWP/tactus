@@ -708,7 +708,8 @@
         },
         "arch_dir": {
           "type": "string",
-          "description": "Directory where arch files can be found"
+          "description": "Directory where arch files can be found",
+          "default": "@CASEDIR@/IAL/bundle/arch"
         },
         "dir": {
           "type": "string",
