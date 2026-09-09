@@ -3,6 +3,7 @@
 
 import ast
 import copy
+import glob
 import os
 import re
 import subprocess
@@ -18,7 +19,6 @@ from .config_parser import ConfigPaths
 from .csc_actions import SelectTstep
 from .datetime_utils import as_timedelta, oi2dt_list
 from .logs import logger
-from .os_utils import resolve_path_relative_to_package
 from .toolbox import Platform
 
 
@@ -126,7 +126,14 @@ def _resolve_namelist_path(subpath) -> Path:
     try:
         return ConfigPaths.path_from_subpath(path)
     except RuntimeError:
-        return resolve_path_relative_to_package(path)
+        logger.error("File not found: {}", path.name)
+        search_path = ConfigPaths.path_from_subpath(path.parent / "assemble_master.yml")
+        logger.error(
+            "Available assemble files in {}: {}",
+            search_path.parent,
+            [Path(x).name for x in glob.glob(f"{search_path.parent}/assemble_*.yml")],
+        )
+        raise FileNotFoundError from None
 
 
 class InvalidNamelistKindError(ValueError):
