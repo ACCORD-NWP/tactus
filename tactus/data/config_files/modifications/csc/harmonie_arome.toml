@@ -2,6 +2,7 @@
   csc = "HARMONIE_AROME"
   surfex_sea_ice = "sice"
   windfarm = false
+  upd_sst_sic = true
 
 [general.namelist]
   radiation_frequency = "PT15M"

@@ -32,7 +32,6 @@
   bindir = "@BINDIR_GL@"
 
 [suite_control]
-  do_interpolsstsic = false
   compile = false
 
 [gribmodify.fullpos.3]

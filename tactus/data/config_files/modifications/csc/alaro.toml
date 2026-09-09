@@ -1,7 +1,6 @@
 [general]
   csc = "ALARO"
   surfex = false
-  upd_sst_sic = false
 
 [general.output_settings]
   surfex = ""
