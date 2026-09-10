@@ -60,7 +60,7 @@ def parse_ecflow_vars():
         "TACTUS_HOME": os.environ["TACTUS_HOME"],
         "KEEP_WORKDIRS": os.environ["KEEP_WORKDIRS"],
         "MEMBER": os.environ["MEMBER"],
-        "TACTUS_TASK": os.environ.get("TACTUS_TASK", ""),
+        "TACTUS_TASK": os.environ.get("TACTUS_TASK", None),
     }
 
 
@@ -114,7 +114,7 @@ def default_main(kwargs: dict):
     ecf_tryno = kwargs.get("ECF_TRYNO")
     ecf_rid = kwargs.get("ECF_RID")
     ecf_timeout = kwargs.get("ECF_TIMEOUT")
-    ecf_task = os.environ.get("TACTUS_TASK")
+    ecf_task = kwargs.get("TACTUS_TASK")
     task = EcflowTask(
         ecf_name, ecf_tryno, ecf_pass, ecf_rid, ecf_timeout=ecf_timeout, ecf_task=ecf_task
     )
