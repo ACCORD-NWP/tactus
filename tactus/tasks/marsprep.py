@@ -745,7 +745,7 @@ class Marsprep(Task):
             levtype=lev_type,
             param=param,
             steps=[0],
-            members=[first_member],
+            members=[0],
             target=target,
             prefetch=prefetch,
             specify_domain=True,

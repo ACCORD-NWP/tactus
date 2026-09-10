@@ -193,9 +193,6 @@ def start_suite(args, config):
     Raises:
         SystemExit: If error occurs while transferring files.
     """
-    # Validate EPS settings (e.g. boundaries.ifs.bdmember vs eps.general.members)
-    # before starting the suite, rather than letting a misconfiguration surface
-    # later as a task failure once the suite is already running.
     if "eps" in config:
         EPSConfig(**config.get_as_dict("eps"))
 

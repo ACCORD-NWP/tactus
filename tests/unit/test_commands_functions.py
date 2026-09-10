@@ -216,13 +216,7 @@ class TestStartSuiteValidatesEps:
         """Test that an invalid EPS config is rejected before starting the suite.
 
         Regression test: `tactus start suite` used to skip EPS validation
-        entirely (only `tactus case` constructed an EPSConfig), so a
-        misconfigured eps section (e.g. a bdmember slice string that doesn't
-        match the number of members) would only surface later as a task
-        failure once the suite was already running. start_suite must
-        validate the EPS config up front, the same way case_setup does, and
-        raise before doing anything else (e.g. before touching `args`, which
-        this test deliberately leaves as None).
+        entirely, unlike `tactus case`.
         """
         config = default_config.copy(
             update={
@@ -241,16 +235,8 @@ class TestStartSuiteValidatesEps:
     def test_start_suite_without_eps_section_does_not_validate(self):
         """Test that start_suite skips EPS validation when eps isn't configured.
 
-        A deterministic (non-EPS) run's final config has no "eps" section at
-        all (it's stripped via general.remove_sections during case_setup),
-        unlike the package's default config, which always carries a stub
-        eps.member_settings template - so a minimal config without "eps" is
-        used here rather than default_config, to genuinely exercise the "eps"
-        not in config branch.
-
-        Uses args=None to confirm no EPS-related error is raised; start_suite
-        continues on to use `args`, which correctly raises AttributeError
-        since args=None here - proving the EPS check itself did not fire.
+        args=None here, so reaching the AttributeError on `args.tactus_home`
+        proves the EPS check itself did not fire.
         """
         config = BasicConfig({"general": {"case": "testcase"}})
         assert "eps" not in config
