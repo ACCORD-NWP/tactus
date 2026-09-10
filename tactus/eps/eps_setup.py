@@ -412,20 +412,6 @@ def get_member_config(config: ParsedConfig, member: int) -> ParsedConfig:
         KeyError: If the members list is not present in the config.
         ValueError: If the member is not in the members list.
     """
-    # Get a clean dict of the default member settings. Needed to be able
-    # to merge the default settings with the specific member settings.
-    default_member_settings: dict = config.get_as_dict("eps.member_settings")
-
-    # Determine which keys are expandable and delete them to avoid that a member
-    # specific setting defaults to an expandable dict if no member specific
-    # setting is present.
-    expandable_keys = get_expandable_keys(default_member_settings)
-    recursive_delete_keys(default_member_settings, expandable_keys)
-
-    # Get a clean dict of the member settings for the specific member.
-    specific_member_settings = {}
-    member_key = f"eps.members.{member}"
-
     # Check that the members list is present
     if "eps.general.members" not in config:
         raise KeyError(
@@ -440,13 +426,38 @@ def get_member_config(config: ParsedConfig, member: int) -> ParsedConfig:
             + " Cannot get member settings."
         )
 
+    # Get a dict of the default member settings, with any expandable field
+    # (list, dict, slice string, or custom generator) actually generated/
+    # resolved to its value for this specific member. This is needed rather
+    # than just taking eps.member_settings as-is, since e.g. an
+    # `eps.members.<member>` override may not exist yet for every expandable
+    # field (if the config hasn't been through case_setup, or if a field's
+    # generated value happened to equal its un-expanded default so no
+    # deviation was recorded) - in which case the raw, un-expanded template
+    # value must not be used as-is (e.g. a bdmember slice spanning all
+    # members would incorrectly apply to every member's config).
+    epsconfig = EPSConfig(
+        general={"members": config["eps.general.members"]},
+        member_settings=config.get_as_dict("eps.member_settings"),
+    )
+    default_member_settings = next(
+        generated_settings
+        for candidate_member, generated_settings in generate_member_settings(epsconfig)
+        if candidate_member == member
+    )
+
+    # Get a clean dict of the member settings for the specific member.
+    specific_member_settings = {}
+    member_key = f"eps.members.{member}"
+
     # Check if there are specific settings for the member
     if member_key in config:
         specific_member_settings = config.get_as_dict(member_key)
     else:
         logger.debug(f"No settings found for member {member}. Using defaults.")
 
-    # Merge the default member settings with the specific member settings
+    # Merge the generated default member settings with the specific member
+    # settings/overrides, which still take precedence.
     merged_settings = merge_dicts(
         default_member_settings, specific_member_settings, overwrite=True
     )

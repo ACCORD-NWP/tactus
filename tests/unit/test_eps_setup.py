@@ -636,6 +636,52 @@ class TestGetMemberConfig:
         )
         assert updated_config["system"]["climdir"] == climdir_value
 
+    def test_get_member_config_resolves_expandable_field_without_override(
+        self, default_config: ParsedConfig
+    ):
+        """Test that an expandable field resolves correctly with no explicit override.
+
+        Regression test: get_member_config used to just delete an expandable
+        field (e.g. a bdmember slice string) from the defaults when no
+        `eps.members.<member>` override was present for it, silently falling
+        back to whatever that field's top-level (non-eps) value was - the
+        same single value for every member, rather than the value specific
+        to that member. It must instead actually generate the field's
+        correct value for the given member, the same way case_setup does.
+        """
+        default_config = default_config.copy(
+            update={
+                "boundaries": {"ifs": {"bdmember": [0, 1]}},
+                "eps": {
+                    "general": {"members": [0, 1, 2]},
+                    "members": {},
+                    "member_settings": {"boundaries": {"ifs": {"bdmember": "0:3"}}},
+                },
+            }
+        )
+
+        for member, expected_bdmember in enumerate([0, 1, 2]):
+            updated_config = get_member_config(default_config, member)
+            assert updated_config["boundaries.ifs.bdmember"] == expected_bdmember
+
+    def test_get_member_config_explicit_override_takes_precedence(
+        self, default_config: ParsedConfig
+    ):
+        """Test that an explicit eps.members.<N> override wins over the generated value."""
+        default_config = default_config.copy(
+            update={
+                "boundaries": {"ifs": {"bdmember": [0, 1]}},
+                "eps": {
+                    "general": {"members": [0, 1, 2]},
+                    "members": {"1": {"boundaries": {"ifs": {"bdmember": 99}}}},
+                    "member_settings": {"boundaries": {"ifs": {"bdmember": "0:3"}}},
+                },
+            }
+        )
+
+        updated_config = get_member_config(default_config, 1)
+        assert updated_config["boundaries.ifs.bdmember"] == 99
+
     @pytest.mark.parametrize(
         "member",
         [-1, 3, 100],

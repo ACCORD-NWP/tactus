@@ -7,13 +7,16 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 
 from tactus.commands_functions import (
     namelist_convert,
     namelist_format,
     namelist_integrate,
     show_namelist,
+    start_suite,
 )
+from tactus.config_parser import BasicConfig
 from tactus.os_utils import resolve_path_relative_to_package
 
 
@@ -204,6 +207,56 @@ def test_namelist_format_ftn(nlformatftn_arg, default_config):
     namelist_format(nlformatftn_arg, default_config)
     assert os.path.isfile(nlformatftn_arg.output)
     assert filecmp.cmp(nlformatftn_arg.output_reference, nlformatftn_arg.output)
+
+
+class TestStartSuiteValidatesEps:
+    """Unit tests for start_suite's EPS config validation."""
+
+    def test_start_suite_with_invalid_eps_config_raises(self, default_config):
+        """Test that an invalid EPS config is rejected before starting the suite.
+
+        Regression test: `tactus start suite` used to skip EPS validation
+        entirely (only `tactus case` constructed an EPSConfig), so a
+        misconfigured eps section (e.g. a bdmember slice string that doesn't
+        match the number of members) would only surface later as a task
+        failure once the suite was already running. start_suite must
+        validate the EPS config up front, the same way case_setup does, and
+        raise before doing anything else (e.g. before touching `args`, which
+        this test deliberately leaves as None).
+        """
+        config = default_config.copy(
+            update={
+                "eps": {
+                    "general": {"members": "0:7"},
+                    "member_settings": {
+                        "boundaries": {"ifs": {"bdmember": "0:5"}}
+                    },
+                }
+            }
+        )
+
+        with pytest.raises(ValidationError, match=r".*must be empty, a single bdmember.*"):
+            start_suite(args=None, config=config)
+
+    def test_start_suite_without_eps_section_does_not_validate(self):
+        """Test that start_suite skips EPS validation when eps isn't configured.
+
+        A deterministic (non-EPS) run's final config has no "eps" section at
+        all (it's stripped via general.remove_sections during case_setup),
+        unlike the package's default config, which always carries a stub
+        eps.member_settings template - so a minimal config without "eps" is
+        used here rather than default_config, to genuinely exercise the "eps"
+        not in config branch.
+
+        Uses args=None to confirm no EPS-related error is raised; start_suite
+        continues on to use `args`, which correctly raises AttributeError
+        since args=None here - proving the EPS check itself did not fire.
+        """
+        config = BasicConfig({"general": {"case": "testcase"}})
+        assert "eps" not in config
+
+        with pytest.raises(AttributeError):
+            start_suite(args=None, config=config)
 
 
 if __name__ == "__main__":
