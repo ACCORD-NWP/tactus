@@ -149,15 +149,21 @@ class EPSConfig:
         bdmember = (
             self.member_settings.get("boundaries", {}).get("ifs", {}).get("bdmember")
         )
+        n_members = len(self.general.members)
         if isinstance(bdmember, (list, tuple)):
-            n_members = len(self.general.members)
-            if len(bdmember) not in (0, 1, n_members):
-                raise ValueError(
-                    "eps.member_settings.boundaries.ifs.bdmember must be "
-                    "empty, a single bdmember, or contain exactly as many "
-                    f"bdmembers as members (={n_members}), one per member. "
-                    f"Got {len(bdmember)} bdmembers for {n_members} members."
-                )
+            n_bdmembers = len(bdmember)
+        elif isinstance(bdmember, str) and ":" in bdmember:
+            n_bdmembers = len(list(expand_string_slice(bdmember, self.general.members)))
+        else:
+            return self
+
+        if n_bdmembers not in (0, 1, n_members):
+            raise ValueError(
+                "eps.member_settings.boundaries.ifs.bdmember must be "
+                "empty, a single bdmember, or contain exactly as many "
+                f"bdmembers as members (={n_members}), one per member. "
+                f"Got {n_bdmembers} bdmembers for {n_members} members."
+            )
         return self
 
 
