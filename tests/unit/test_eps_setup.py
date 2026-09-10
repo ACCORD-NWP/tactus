@@ -181,9 +181,7 @@ class TestValidateBdmember:
                 {"boundaries": {"ifs": {"bdmember": container(bdmember)}}},
             )
 
-    @pytest.mark.parametrize(
-        "bdmember", [{}, {"0:3": 5}, {"0": 1, "1": 2, "2": 3}]
-    )
+    @pytest.mark.parametrize("bdmember", [{}, {"0:3": 5}, {"0": 1, "1": 2, "2": 3}])
     def test_with_valid_bdmember_dict(
         self, bdmember: dict, eps_general_config: EPSGeneralConfigs
     ):

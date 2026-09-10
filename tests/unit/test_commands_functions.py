@@ -222,14 +222,14 @@ class TestStartSuiteValidatesEps:
             update={
                 "eps": {
                     "general": {"members": "0:7"},
-                    "member_settings": {
-                        "boundaries": {"ifs": {"bdmember": "0:5"}}
-                    },
+                    "member_settings": {"boundaries": {"ifs": {"bdmember": "0:5"}}},
                 }
             }
         )
 
-        with pytest.raises(ValidationError, match=r".*must be empty, a single bdmember.*"):
+        with pytest.raises(
+            ValidationError, match=r".*must be empty, a single bdmember.*"
+        ):
             start_suite(args=None, config=config)
 
     def test_start_suite_without_eps_section_does_not_validate(self):
