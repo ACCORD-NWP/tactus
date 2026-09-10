@@ -26,7 +26,6 @@ from tactus.general_utils import (
     expand_dict_key_slice,
     expand_string_slice,
     merge_dicts,
-    recursive_delete_keys,
     value_from_any_generator,
 )
 from tactus.logs import logger
@@ -154,6 +153,18 @@ class EPSConfig:
             n_bdmembers = len(bdmember)
         elif isinstance(bdmember, str) and ":" in bdmember:
             n_bdmembers = len(list(expand_string_slice(bdmember, self.general.members)))
+        elif isinstance(bdmember, Mapping):
+            if not bdmember:
+                return self
+            missing = set(self.general.members) - set(
+                expand_dict_key_slice(bdmember, self.general.members)
+            )
+            if missing:
+                raise ValueError(
+                    "eps.member_settings.boundaries.ifs.bdmember is missing a "
+                    f"bdmember for member(s) {sorted(missing)}."
+                )
+            return self
         else:
             return self
 

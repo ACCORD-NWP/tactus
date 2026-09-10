@@ -181,6 +181,32 @@ class TestValidateBdmember:
                 {"boundaries": {"ifs": {"bdmember": container(bdmember)}}},
             )
 
+    @pytest.mark.parametrize(
+        "bdmember", [{}, {"0:3": 5}, {"0": 1, "1": 2, "2": 3}]
+    )
+    def test_with_valid_bdmember_dict(
+        self, bdmember: dict, eps_general_config: EPSGeneralConfigs
+    ):
+        """Test with a dict-shaped bdmember that covers every member (or is empty)."""
+        EPSConfig(
+            eps_general_config,
+            {"boundaries": {"ifs": {"bdmember": bdmember}}},
+        )
+
+    def test_with_invalid_bdmember_dict(self, eps_general_config: EPSGeneralConfigs):
+        """Test with a dict-shaped bdmember that doesn't cover every member.
+
+        Regression test: a dict is a legitimate expandable shape for
+        bdmember (like slafk/slaflag elsewhere), but validate_bdmember used
+        to only check list/tuple/slice-string forms, silently letting an
+        incomplete dict (missing a bdmember for some member) through.
+        """
+        with pytest.raises(ValueError, match=r".*missing a bdmember.*"):
+            EPSConfig(
+                eps_general_config,
+                {"boundaries": {"ifs": {"bdmember": {"0:2": 5}}}},
+            )
+
     def test_with_ambiguous_bdmember_through_config_parser(self, default_config):
         """Regression test: bdmember coming from a real parsed config is a tuple.
 
