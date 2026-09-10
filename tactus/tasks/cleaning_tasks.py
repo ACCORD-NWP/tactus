@@ -14,8 +14,9 @@ class Cleaning(Task):
             config (ParsedConfig): Configuration
         """
         Task.__init__(self, config, __class__.__name__)
-        defaults = self.config.get("cleaning.defaults")
         cleaning_type = config["task.args.cleaning_type"]
+        self.name = cleaning_type
+        defaults = self.config.get("cleaning.defaults")
         choices = self.config.get(f"cleaning.{cleaning_type}").dict()
         self.cleaner = CleanTactus(self.config, defaults)
         self.cleaner.prep_cleaning(choices)

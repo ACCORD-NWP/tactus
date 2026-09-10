@@ -114,7 +114,10 @@ def default_main(kwargs: dict):
     ecf_tryno = kwargs.get("ECF_TRYNO")
     ecf_rid = kwargs.get("ECF_RID")
     ecf_timeout = kwargs.get("ECF_TIMEOUT")
-    task = EcflowTask(ecf_name, ecf_tryno, ecf_pass, ecf_rid, ecf_timeout=ecf_timeout)
+    ecf_task = os.environ.get("TACTUS_TASK")
+    task = EcflowTask(
+        ecf_name, ecf_tryno, ecf_pass, ecf_rid, ecf_timeout=ecf_timeout, ecf_task=ecf_task
+    )
 
     # Get member number
     member = kwargs.get("MEMBER")
@@ -128,13 +131,13 @@ def default_main(kwargs: dict):
         # Update config based on member
         config = get_member_config(config, member=member)
 
-    # Handle generic tasks
-    tactus_task = os.environ.get("TACTUS_TASK", task.ecf_task)
-    config = config.copy(
-        update={
-            "general": {"tactus_task": tactus_task},
-        }
-    )
+    # Handle possible generic tasks
+    if ecf_name != task.ecf_task:
+        config = config.copy(
+            update={
+                "general": {"tactus_task": task.ecf_task},
+            }
+        )
 
     # TODO Add wrapper
     server = EcflowServer(config)
