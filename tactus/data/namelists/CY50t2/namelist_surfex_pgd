@@ -1,100 +1,44 @@
-&nam_conf_proj
-    xbeta = 0
-    xlat0 = 51.967
-    xlon0 = 4.9
-    xrpk = 0.7876560273694391
-/
-
-&nam_conf_proj_grid
-    nimax = 49
-    njmax = 69
-    xdx = 2500
-    xdy = 2500
-    xlatcen = 51.967
-    xloncen = 4.9
-    ilone = 11
-    ilate = 11
-/
-
-&nam_cover
-    ycover = 'ecoclimap'
-    ycoverfiletype = 'DIRECT'
-/
-
-&nam_data_isba
-  ntime = 1
-/
-
-&nam_frac
-    lecosg = .false.
-/
-
-&nam_io_offline
-    cpgdfile = 'PGD'
-    cprepfile = 'PREP'
-    csurffile = 'SURFOUT'
-    csurf_filetype = 'FA'
-    lfagmap = .true.
-    lrestart = .true.
-/
-
-&nam_isba
-    cisba = 'DIF'
-    cpedo_function = 'CO84'
-    cphoto = 'NON'
-    lmeb = .true.
-    nground_layer = 14
-    npatch = 3
-    xunif_runoffb = 0.2
-    yclay = 'CLAY_SOILGRID'
-    yclayfiletype = 'DIRECT'
-    ysand = 'SAND_SOILGRID'
-    ysandfiletype = 'DIRECT'
-    ysocfiletype = 'DIRECT'
-    ysoc_sub = 'soc_sub'
-    ysoc_top = 'soc_top'
-/
-
-&nam_isban
-    cscond = 'PL98'
-/
-
-&nam_meb_isba
-    lmeb_litter = .true.
-    lmeb_patch = .false., .true., .true.
-/
-
-&nam_pgd_grid
-    cgrid = 'CONF PROJ'
-/
-
-&nam_pgd_schemes
-    cnature = 'ISBA '
-    csea = 'SEAFLX'
-    ctown = 'TEB '
-    cwater = 'WATFLX'
-/
-
-&nam_sgh_isban
-    chort = 'DEF'
-    crain = 'DEF'
-    crunoff = 'DT92'
-    lsoc = .true.
-/
-
-&nam_write_surf_atm
-    lnowrite_texfile = .true.
-    lsplit_patch = .true.
-/
-
-&nam_zs
-    csvf = 'MANNERS'
-    lfssosvf = .false.
-    lororad = .true.
-    yzs = 'orography'
-    yzsfiletype = 'DIRECT'
-/
-
-&nam_zs_filter
-    nzsfilter = 0
-/
+ &NAMFA
+   NVGRIB=123,
+ /
+ &NAMSFXCMP
+   NVGRIBSFX=123,
+ /
+ &NAM_COVER
+   YCOVER='ecoclimap',
+   YCOVERFILETYPE='DIRECT',
+ /
+ &NAM_IO_OFFLINE
+   CSURF_FILETYPE='FA',
+   CPGDFILE='PGD',
+   LFAGMAP=.TRUE.,
+   NHALO=0,
+   cprepfile = 'PREP',
+   csurffile = 'SURFOUT',
+   lrestart = .true.
+ /
+ &NAM_ISBA
+   YCLAY='clay',
+   YCLAYFILETYPE='DIRECT',
+   YSAND='sand',
+   YSANDFILETYPE='DIRECT',
+ /
+ &NAM_FRAC
+   LECOSG = .FALSE.,
+ /
+ &NAM_DATA_ISBA
+   NTIME = 1,
+ /
+ &NAM_PGD_GRID
+   CGRID = 'CONF PROJ',
+ /
+ &NAM_ZS
+   YZS='orography',
+   YZSFILETYPE='DIRECT',
+   LORORAD=.TRUE.,
+   CSVF='MANNERS',
+   LFSSOSVF=.FALSE.,
+ /
+ &NAM_ZS_FILTER
+   NZSFILTER=0,
+ /
