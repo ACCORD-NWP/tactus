@@ -62,12 +62,30 @@ NODES = "#SBATCH -N 4"
 NAME = "#SBATCH --job-name=fcast_task"
 
 ```
-To add environment variables, run modules or arbitrary commands, they need to be added to the `submission.submissiontype.ENV` directive
+
+To add environment variables, set them in the `submission.submissiontype.ENV` directive, and they will be exported in the job file
 ```
 [submission.parallel.ENV]
-MODULE = "print('My beautiful module')"
-OS = "import os"
+DR_HOOK = "1"
+OMP_NUM_THREAD = "2"
 ```
+
+Modules are loaded with a spefic category in `submission.submissiontype.MODULES`:
+
+```
+[submission.parallel.MODULES]
+ECFLOW = ["load","ecflow"]
+```
+which will perform a `module load` of `ecflow`
+
+Environment files can also be sourced with the `submission.submissiontype.ENV_FILE` section:
+
+```
+[submission.parallel.ENV_FILE]
+env_file_path = "/path/to/your/env/file"
+```
+
+
 One can also specify these in a task.exceptions directive:
 ```
 [submission.task_exceptions.Newtask.BATCH]
