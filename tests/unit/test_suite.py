@@ -64,6 +64,7 @@ class TestSuite:
                     "do_soil": False,
                     "interpolate_boundaries": False,
                     "cold_start": False,
+                    "split_mars_by_step": True,
                 }
             },
             {
