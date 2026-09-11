@@ -67,7 +67,7 @@ To add environment variables, set them in the `submission.submissiontype.ENV` di
 ```
 [submission.parallel.ENV]
 DR_HOOK = "1"
-OMP_NUM_THREAD = "2"
+OMP_NUM_THREADS = "2"
 ```
 
 Modules are loaded with a spefic category in `submission.submissiontype.MODULES`:
@@ -76,7 +76,7 @@ Modules are loaded with a spefic category in `submission.submissiontype.MODULES`
 [submission.parallel.MODULES]
 ECFLOW = ["load","ecflow"]
 ```
-which will perform a `module load` of `ecflow`
+which will perform a `module load` of `ecflow`. other module options are also possible. 
 
 Environment files can also be sourced with the `submission.submissiontype.ENV_FILE` section:
 
