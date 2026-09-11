@@ -26,6 +26,15 @@
   remote_host = "ecflow-gen-snh02-001"
   remote_path = "/mirror_globalDT_iekm/pabv/iekm/fc/main/fcgroup/00/model"
 
+[modifs.reference_checker.methods.FullPosFields]
+  binary = "@BINDIR_GL@/xtool"
+
+[modifs.reference_checker.methods.HistoryFields]
+  binary = "@BINDIR_GL@/xtool"
+
+[modifs.reference_checker.methods.E923Files]
+  binary = "@BINDIR_GL@/xtool"
+
 [modifs.scheduler.ecfvars]
   case_prefix = "@TAG@_@SUBTAG@"
   ecf_files = "@PERM@/tactus_ecflow/ecf_files"
