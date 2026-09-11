@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated reference checker with more tests and bugfixes [#179](https://github.com/ACCORD-NWP/tactus/pull/179)(@uandrae)
 
 ### Fixed
+- Fix for fetching global data for EPS. [#197](https://github.com/ACCORD-NWP/tactus/pull/197)(@kastelecn)
 - Add YMD variable to Marsprep tasks to allow globalDT mirror. [#202](https://github.com/ACCORD-NWP/tactus/pull/202)(@kastelecn)
 - Correct usage of branch names for ecflow suites. [#184](https://github.com/ACCORD-NWP/tactus/pull/184)(@uandrae)
 - Make the tactus compile command respect config file settings [#183](https://github.com/ACCORD-NWP/tactus/pull/183)(@uandrae)
