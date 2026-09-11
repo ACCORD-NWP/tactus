@@ -344,6 +344,17 @@ class TaskSettings(object):
                 for ecf_var in ecf_vars:
                     file_handler.write(f'export {ecf_var}="%{ecf_var}%"\n')
 
+            # Environment settings from a file
+            env_file_settings = self.get_task_settings(
+                task, "ENV_FILE", variables=variables, ecf_micro=ecf_micro
+            )
+            logger.debug("environment file settings {}", env_file_settings)
+            if env_file_settings is not None and len(env_file_settings) > 0:
+                env_file_path = env_file_settings.get("env_file_path")
+                if env_file_path:
+                    cmd = "source " + env_file_path
+                    file_handler.write(f"{cmd}\n")
+
             # Module settings
             module_settings = self.get_task_settings(
                 task, "MODULES", variables=variables, ecf_micro=ecf_micro
