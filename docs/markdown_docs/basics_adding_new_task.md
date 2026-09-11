@@ -76,7 +76,7 @@ Modules are loaded with a spefic category in `submission.submissiontype.MODULES`
 [submission.parallel.MODULES]
 ECFLOW = ["load","ecflow"]
 ```
-which will perform a `module load` of `ecflow`. other module options are also possible. 
+which will perform a `module load` of `ecflow`. other module options are also possible.
 
 Environment files can also be sourced with the `submission.submissiontype.ENV_FILE` section:
 
