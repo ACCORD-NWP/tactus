@@ -36,13 +36,6 @@
     lisba_canopy = .false.
 /
 
-&nam_prep_isba_snow
-    csnow = '3-L'
-    lsnow_ideal = .false.
-    nsnow_layer = 12
-    xwsnow = 0.0
-/
-
 &nam_prep_seaflux
     lsea_sbl = .false.
 /
