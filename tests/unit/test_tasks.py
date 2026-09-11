@@ -73,6 +73,7 @@ def task_name_and_configs(request, default_config, tmp_directory):
             bd_time = "{basetime}"
             basetime = "{basetime}"
             config_label = "foo"
+            cleaning_type = "PostMortem"
         [archiving.DataBridge.fdb]
         [archiving.DataBridge.fdb.fpgrib_files]
             active = false

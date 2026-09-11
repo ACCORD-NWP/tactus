@@ -340,6 +340,7 @@ class TaskSettings(object):
                     "TACTUS_HOME",
                     "KEEP_WORKDIRS",
                     "MEMBER",
+                    "TACTUS_TASK",
                 ]
                 for ecf_var in ecf_vars:
                     file_handler.write(f'export {ecf_var}="%{ecf_var}%"\n')
@@ -382,7 +383,8 @@ class TaskSettings(object):
                 file_handler.write(f'export {key}="{val}"\n')
 
             if scheduler is None:
-                file_handler.write(f'export STAND_ALONE_TASK_NAME="{task}"\n')
+                tactus_task = config.get("general.tactus_task", task)
+                file_handler.write(f'export STAND_ALONE_TASK_NAME="{tactus_task}"\n')
 
                 tactus_home = self.platform.get_platform_value("TACTUS_HOME")
 
@@ -436,7 +438,7 @@ class NoSchedulerSubmission:
         Raises:
             RuntimeError: Submission failure.
         """
-        name = task.lower()
+        name = config.get("general.tactus_task", task).lower()
         if name not in load_task_index(config):
             raise NotImplementedError(f"Task {name} not implemented")
 

@@ -1540,6 +1540,10 @@ class PostCycleFamily(EcflowSuiteFamily):
                 ecf_files,
                 input_template=input_template,
                 trigger=cleaning_triggers,
+                variables={
+                    "TACTUS_TASK": "Cleaning",
+                    "ARGS": "cleaning_type=CycleCleaning",
+                },
                 ecf_files_remotely=ecf_files_remotely,
             )
             cleaning_triggers.append(cleaning_task)

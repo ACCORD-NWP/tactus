@@ -415,7 +415,9 @@ class EcflowLogServer:
 class EcflowTask:
     """Ecflow scheduler task."""
 
-    def __init__(self, ecf_name, ecf_tryno, ecf_pass, ecf_rid, ecf_timeout=20):
+    def __init__(
+        self, ecf_name, ecf_tryno, ecf_pass, ecf_rid, ecf_timeout=20, ecf_task=None
+    ):
         """Construct a task running and communicating with ecflow server.
 
         Args:
@@ -424,6 +426,7 @@ class EcflowTask:
             ecf_pass (str): Ecflow task password
             ecf_rid (int): Ecflow runtime ID
             ecf_timeout (int, optional): _description_. Defaults to 20.
+            ecf_task (str, optional): Task name if different from ecf_name
 
         """
         self.ecf_name = ecf_name
@@ -434,7 +437,7 @@ class EcflowTask:
         self.ecf_rid = int(ecf_rid)
         self.ecf_timeout = int(ecf_timeout)
         ecf_name_parts = self.ecf_name.split("/")
-        self.ecf_task = ecf_name_parts[-1]
+        self.ecf_task = ecf_task or ecf_name_parts[-1]
         ecf_families = None
         if len(ecf_name_parts) > 2:
             ecf_families = ecf_name_parts[1:-1]
