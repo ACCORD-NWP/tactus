@@ -51,7 +51,7 @@
    CGRID = 'CONF PROJ',
  /
  &NAM_ZS
-   YZS='orography',
+   YZS='topo',
    YZSFILETYPE='DIRECT',
    LORORAD=.TRUE.,
    CSVF='MANNERS',

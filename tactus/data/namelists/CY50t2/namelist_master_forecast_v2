@@ -29,7 +29,7 @@
    NMCICA=1,
    NAER=0,
    NOZOCL=4,
-   NRADFR=18,
+   NRADFR='${stepfreq:${cfg:general.namelist.radiation_frequency}}',
    NSW=6,
    NOVLP=1,
    NRADLP=2,
@@ -54,7 +54,7 @@
  &NAMACV
  /
  &NAMAFN
-    GFP_CLSG%CLNAME='SURFACCGRAUPEL',
+   GFP_CLSG%CLNAME='SURFACCGRAUPEL',
    GFP_CLSP%CLNAME='SURFACCPLUIE',
    GFP_CLSS%CLNAME='SURFACCNEIGE',
    GFP_SFIS%IBITS=16,
@@ -130,7 +130,7 @@
    TFP_HU%CLNAME = 'HUMI_RELATIVE',
  /
  &NAMARG
-   CNMEXP='DEOD',
+   CNMEXP='${cfg:general.cnmexp}',
    LECMWF=.FALSE.,
    LELAM=.TRUE.,
    LSLAG=.TRUE.,
@@ -144,7 +144,7 @@
    LMFSHAL=.TRUE.,
    LMICRO=.TRUE.,
    LMPA=.TRUE.,
-   LMSE=.TRUE.,
+   LMSE='${cfg:general.surfex}',
    LTURB=.TRUE.,
  /
  &NAMCA
@@ -207,9 +207,9 @@
    NFRHIS = 1,
    NFRPOS = 1,
    NFRSDI = 1,
-   NHISTS = 7, 0, 48, 96, 144, 192, 240, 288,
-   NPOSTS = 7, 0, 48, 96, 144, 192, 240, 288,
-   NSFXHISTS = 7, 0, 48, 96, 144, 192, 240, 288,
+   NHISTS = '${steplist:${cfg:general.output_settings.history}}',
+   NPOSTS = '${steplist:${cfg:general.output_settings.fullpos}}',
+   NSFXHISTS = '${steplist:${cfg:general.output_settings.surfex}}',
  /
  &NAMCT1
    LRFILAF=.FALSE.,
@@ -218,7 +218,6 @@
    N1RES=0,
    N1SDI=1,
    N1SFXHIS=1,
-
  /
  &NAMCUMF
  /
@@ -233,7 +232,7 @@
  &NAMDFI
  /
  &NAMDIM
-   NPROMA=-16,
+   NPROMA='${cfg:submission.nproma}',
  /
  &NAMDIMO
  /
@@ -320,7 +319,7 @@
  &NAMENSCOV
  /
  &NAMFA
-   CMODEL='OUTPUTID',
+   CMODEL='${cfg:general.cmodel}',
    LEXTERN=.TRUE.,
    LSUPPDATE=.FALSE.,
    NBITCS=-1,
@@ -336,7 +335,7 @@
    YFA_XVGST%CLNAME='CLSV.RAF60M.XFU',
  /
  &NAMFPC
-       CFP2DF = 'ATMOCLD.BASE.H', 'ATMOCLD.BASE.P', 'ATMOCLD.CEIL.H', 'ATMOCLD.CEIL.P',
+    CFP2DF = 'ATMOCLD.BASE.H', 'ATMOCLD.BASE.P', 'ATMOCLD.CEIL.H', 'ATMOCLD.CEIL.P',
              'C002_METEOSAT_09_SEVIRI.POS', 'C006_METEOSAT_09_SEVIRI.POS',
              'MSLPRESSURE', 'REFLECT_DBZ.MAX', 'SPECSURFGEOPOTEN', 'SURFCAPE.POS.F00',
              'SURFCIEN.POS.F00', 'SURFEQUILIBRLEV', 'SURFFREECONVLEV', 'SURFISOTPW1.MALT',
@@ -349,7 +348,7 @@
              'SURFACCPLUIE', 'SURFDIAG.FLASH', 'SURFFLU.CHA.SENS', 'SURFFLU.LAT.MEVA',
              'SURFFLU.MEVAP.EA', 'SURFFLU.RAY.SOLA', 'SURFFLU.RAY.THER',
              'SURFRAYT SOLA DE', 'SURFRAYT THER DE',
-    CFPDOM = 'DOMAIN',
+    CFPDOM = '${cfg:fullpos.domain_name}',
     CFPFMT = 'LELAM',
     CFPPHY = 'SURFRESERV.NEIGE', 'SURFTEMPERATURE',
     CFPXFU = 'CLPMHAUT.MOD.XFU', 'CLSHUMI.RELATIVE', 'CLSHUMI.SPECIFIQ',
@@ -363,7 +362,7 @@
     LISOT_ABOVEG = .TRUE.,
     L_READ_MODEL_DATE = .TRUE.,
     NFPCAPE = 5,
-    NFPGRIB = 224,
+    NFPGRIB = '${cfg:submission.nfpgrib,224}',
     NRFP3S = 90,
     RENTRA = 0.0001,
     RFP3H = 15.0, 30.0, 50.0, 75.0, 100.0, 130.0, 150.0, 200.0, 250.0, 300.0,
@@ -488,7 +487,8 @@
    NACTAERO=12,
  /
  &NAMGRIB
-   NCYCLE=48,
+   NCYCLE=50,
+   NENSFNB = '${cfg:general.member}',
  /
  &NAMGWD
  /
@@ -520,7 +520,7 @@
    NMSG_LEVEL_CLIENT=0,
    NMSG_LEVEL_SERVER=0,
    NPROCESS_LEVEL=5,
-   NPROC_IO=2,
+   NPROC_IO = '${cfg:namelist.nproc_io,0}',
  /
  &NAMJBCODES
  /
@@ -574,7 +574,7 @@
    MBX_SIZE=2048000000,
    MP_TYPE=2,
    NOUTPUT=1,
-   NPROC=30,
+   NPROC = '${cfg:namelist.nproc}',
  /
  &NAMPAR1
    LEQ_REGIONS=.FALSE.,
@@ -585,13 +585,13 @@
    L_GATHERV_WRGP=.FALSE.,
    NCOMBFLEN=1800000,
    NDISTIO(12)=1,
-   NSTRIN=30,
-   NSTROUT=30,
+   NSTRIN = '${cfg:namelist.nproc}',
+   NSTROUT = '${cfg:namelist.nproc}',
  /
  &NAMPARAR
    CFRAC_ICE_ADJUST='S',
    CFRAC_ICE_SHALLOW_MF='S',
-   CMICRO='ICE3',
+   CMICRO='${cfg:submission.cmicro,ICE3}',
    CSEDIM='STAT',
    CSNOWRIMING='M90',
    LCONVHG=.TRUE.,
@@ -733,8 +733,8 @@
  &NAMRINC
  /
  &NAMRIP
-   CSTOP='h6',
-   TSTEP=75,
+   CSTOP = '${cfg:namelist.cstop}',
+   TSTEP = '${timestep:${cfg:domain.tstep}}',
  /
  &NAMRIP0
  /
@@ -803,7 +803,7 @@
  &NAMTRAJP
  /
  &NAMTRANS
-   LFFTW=.TRUE.,
+   LFFTW='${cfg:submission.lfftw,"true"}',
  /
  &NAMTRANS0
  /
@@ -864,7 +864,7 @@
    LXSNOWDEPTH=.TRUE.,
    LXXDIAGH=.TRUE.,
    LXXGST=.TRUE.,
-   NRAZTS = 7, 0, 48, 96, 144, 192, 240, 288,
+   NRAZTS = '${steplist:${cfg:general.namelist.nrazts}}',
  /
  &NAM_CANAPE
  /
@@ -899,7 +899,7 @@
    SPNUDQ=0.,
    SPNUDT=0.01,
    SPNUDVOR=0.01,
-   TEFRCL=3600.,
+   TEFRCL='${cfg:namelist.tefrcl}',
  /
  &NEMFPEZO
  /
