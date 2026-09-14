@@ -1,19 +1,19 @@
-&nam_conf_proj
-    xbeta = 0
-    xlat0 = 51.967
-    xlon0 = 4.9
-    xrpk = 0.7876560273694391
+&nam_confg_proj
+    xbeta = '${cfg:domain.xbeta}',
+    xlat0 = '${cfg:domain.xlat0}',
+    xlon0 = '${cfg:domain.xlon0}',
+    xrpk = '${cfg:domain.xrpk}',
 /
 
-&nam_conf_proj_grid
-    nimax = 49
-    njmax = 69
-    xdx = 2500
-    xdy = 2500
-    xlatcen = 51.967
-    xloncen = 4.9
-    ilone = 11
-    ilate = 11
+&nam_confg_proj_grid
+    nimax = '${cfg:domain.nimax}',
+    mjmax = '${cfg:domain.njmax}',
+    xdx = '${cfg:domain.xdx}',
+    xdy = '${cfg:domain.xdy}',
+    xlatcen = '${cfg:domain.xlatcen}',
+    xloncen = '${cfg:domain.xloncen}',
+    ilone = '${cfg:domain.ilone}',
+    ilate = '${cfg:domain.ilate}',
 /
 
  &NAMFA
