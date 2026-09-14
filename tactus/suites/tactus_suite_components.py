@@ -1452,6 +1452,7 @@ class CycleFamily(EcflowSuiteFamily):
         ecf_files,
         trigger=None,
         ecf_files_remotely=None,
+        interpolation_families=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -1472,6 +1473,7 @@ class CycleFamily(EcflowSuiteFamily):
                 task_settings,
                 input_template,
                 ecf_files,
+                pertana_trigger=interpolation_families,
                 ecf_files_remotely=ecf_files_remotely,
             )
         else:
@@ -1569,6 +1571,7 @@ class PerturbationFamily(EcflowSuiteFamily):
         input_template,
         ecf_files,
         trigger=None,
+        pertana_trigger=None,
         ecf_files_remotely=None,
     ):
         """Class initialization."""
@@ -1581,6 +1584,8 @@ class PerturbationFamily(EcflowSuiteFamily):
         )
 
         if config["perturbations.pertana.active"]:
+            _pertana_trigger = pertana_trigger.get(0) if pertana_trigger else None
+
             EcflowSuiteTask(
                 "Pertana",
                 self,
@@ -1588,6 +1593,7 @@ class PerturbationFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
+                trigger=_pertana_trigger,
                 ecf_files_remotely=ecf_files_remotely,
             )
 
@@ -1599,6 +1605,7 @@ class PerturbationFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
+                trigger=trigger,
                 ecf_files_remotely=ecf_files_remotely,
             )
 
@@ -1825,6 +1832,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     ecf_files,
                     trigger=ready_for_cycle,
                     ecf_files_remotely=ecf_files_remotely,
+                    interpolation_families=prev_interpolation_triggers,
                 )
                 member_cycle_families.append(cycle_family)
                 prev_cycle_triggers[member] = [cycle_family]
