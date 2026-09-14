@@ -21,21 +21,25 @@
  &NAEPHY
  /
  &NAERAD
-     LRRTM = .TRUE.,
-    LSRTM = .FALSE.,
-    NAER = 1,
-    NICEOPT = 3,
-    NLIQOPT = 3,
-    NOVLP = 6,
-    NOZOCL = 2,
-    NRADFR = 15,
-    NRADIP = 3,
-    NRADLP = 2,
-    NSW = 6,
-    RLWINHF = 1,
-    RRE2DE = 0.64952,
-    RSWINHF = 1,
-
+   NICEOPT=3,
+   NRADIP=3,
+   LUSEPRE2017RAD=.FALSE.,
+   LRRTM=.TRUE.,
+   LSRTM=.TRUE.,
+   NMCICA=1,
+   NAER=0,
+   NOZOCL=4,
+   NRADFR=18,
+   NSW=6,
+   NOVLP=1,
+   NRADLP=2,
+   RLWINHF=1,
+   RRE2DE=0.64952,
+   RSWINHF=1,
+   NLIQOPT=2,
+   NAERMACC=1,
+   LAER3D=.TRUE.,
+   NDUMPBADINPUTS=0,
  /
  &NAERCLI
  /
@@ -49,12 +53,8 @@
  /
  &NAMACV
  /
- &NAMAERO
- /
- &NAMAERMIC
- /
  &NAMAFN
-   GFP_CLSG%CLNAME='SURFACCGRAUPEL',
+    GFP_CLSG%CLNAME='SURFACCGRAUPEL',
    GFP_CLSP%CLNAME='SURFACCPLUIE',
    GFP_CLSS%CLNAME='SURFACCNEIGE',
    GFP_SFIS%IBITS=16,
@@ -133,6 +133,7 @@
    CNMEXP='DEOD',
    LECMWF=.FALSE.,
    LELAM=.TRUE.,
+   LSLAG=.TRUE.,
    NCONF=1,
    NSUPERSEDE=1,
  /
@@ -198,7 +199,10 @@
    CNPPATH='.',
    CSCRIPT_LAMRTC='./atcp.alad',
    LAROME=.TRUE.,
+   LNHEE=.TRUE.,
    LSCREEN_OPENMP=.FALSE.,
+   LSPRT=.TRUE.,
+   LTWOTL=.TRUE.,
    NFPOS = 1,
    NFRHIS = 1,
    NFRPOS = 1,
@@ -206,7 +210,6 @@
    NHISTS = 7, 0, 48, 96, 144, 192, 240, 288,
    NPOSTS = 7, 0, 48, 96, 144, 192, 240, 288,
    NSFXHISTS = 7, 0, 48, 96, 144, 192, 240, 288,
-
  /
  &NAMCT1
    LRFILAF=.FALSE.,
@@ -222,7 +225,6 @@
  &NAMCUMFS
  /
  &NAMCVER
-   NDLNPR=1,
  /
  &NAMCVMNH
  /
@@ -245,8 +247,6 @@
  &NAMDVISI
    HVISI=5.,
  /
-&NAMDWET
-/
  &NAMDYN
    LADVF=.TRUE.,
    LQMPD=.FALSE.,
@@ -305,17 +305,12 @@
    LSLHD_T=.FALSE.,
    LSLHD_W=.FALSE.,
    ND4SYS=2,
+   NDLNPR=1,
    NPDVAR=2,
    NVDVAR=4,
    SLHDEPSH=0.08,
    SLHDKMAX=6,
-   LNHEE=.TRUE.,
-   LSPRT=.TRUE.,
-   LTWOTL=.TRUE.,
-   LSLAG=.TRUE.,
  /
- &NAMDYNA_STATIC
-/
  &NAMDYNCORE
  /
  &NAMEMIS_CONF
@@ -325,7 +320,7 @@
  &NAMENSCOV
  /
  &NAMFA
-   CMODEL='CY50t2-AROME-oper',
+   CMODEL='OUTPUTID',
    LEXTERN=.TRUE.,
    LSUPPDATE=.FALSE.,
    NBITCS=-1,
@@ -341,7 +336,7 @@
    YFA_XVGST%CLNAME='CLSV.RAF60M.XFU',
  /
  &NAMFPC
-      CFP2DF = 'ATMOCLD.BASE.H', 'ATMOCLD.BASE.P', 'ATMOCLD.CEIL.H', 'ATMOCLD.CEIL.P',
+       CFP2DF = 'ATMOCLD.BASE.H', 'ATMOCLD.BASE.P', 'ATMOCLD.CEIL.H', 'ATMOCLD.CEIL.P',
              'C002_METEOSAT_09_SEVIRI.POS', 'C006_METEOSAT_09_SEVIRI.POS',
              'MSLPRESSURE', 'REFLECT_DBZ.MAX', 'SPECSURFGEOPOTEN', 'SURFCAPE.POS.F00',
              'SURFCIEN.POS.F00', 'SURFEQUILIBRLEV', 'SURFFREECONVLEV', 'SURFISOTPW1.MALT',
@@ -420,7 +415,6 @@
  &NAMFPDYV
  /
  &NAMFPF
-   NFMAX(1)=60,
  /
  &NAMFPG
  /
@@ -437,11 +431,9 @@
  &NAMFPSC2_DEP
  /
  &NAMGEM
-    LNHX_GEOM = .TRUE.,
-    LNONHYD_GEOM = .TRUE.,
  /
  &NAMGFL
-   NGFL_EZDIAG=3,
+   NGFL_EZDIAG=4,
    YEZDIAG_NL(1)%CNAME='EZDIAG01',
    YEZDIAG_NL(1)%LREQOUT=.FALSE.,
    YEZDIAG_NL(2)%CNAME='EZDIAG02',
@@ -455,7 +447,7 @@
    YG_NL%LQM=.TRUE.,
    YG_NL%LSLHD=.FALSE.,
    YG_NL%NCOUPLING=-1,
-   YG_NL%NREQIN=0,
+   YG_NL%NREQIN=1,
    YG_NL%REFVALC=0.,
    YIRAD_NL%LGP=.TRUE.,
    YI_NL%LCOMAD=.TRUE.,
@@ -463,7 +455,7 @@
    YI_NL%LQM=.TRUE.,
    YI_NL%LSLHD=.FALSE.,
    YI_NL%NCOUPLING=-1,
-   YI_NL%NREQIN=0,
+   YI_NL%NREQIN=1,
    YI_NL%REFVALC=0.,
    YLRAD_NL%LGP=.TRUE.,
    YL_NL%LCOMAD=.TRUE.,
@@ -471,7 +463,7 @@
    YL_NL%LQM=.TRUE.,
    YL_NL%LSLHD=.FALSE.,
    YL_NL%NCOUPLING=-1,
-   YL_NL%NREQIN=0,
+   YL_NL%NREQIN=1,
    YL_NL%REFVALC=0.,
    YQ_NL%LCOMAD=.TRUE.,
    YQ_NL%LQM=.TRUE.,
@@ -482,21 +474,21 @@
    YR_NL%LQM=.TRUE.,
    YR_NL%LSLHD=.FALSE.,
    YR_NL%NCOUPLING=-1,
-   YR_NL%NREQIN=0,
+   YR_NL%NREQIN=1,
    YR_NL%REFVALC=0.,
    YS_NL%LCOMAD=.TRUE.,
    YS_NL%LINTLIN=.TRUE.,
    YS_NL%LQM=.TRUE.,
    YS_NL%LSLHD=.FALSE.,
    YS_NL%NCOUPLING=-1,
-   YS_NL%NREQIN=0,
+   YS_NL%NREQIN=1,
    YS_NL%REFVALC=0.,
    YTKE_NL%NCOUPLING=0,
-   YTKE_NL%NREQIN=-1,
+   YTKE_NL%NREQIN=1,
    NACTAERO=12,
  /
  &NAMGRIB
-   NCYCLE=50,
+   NCYCLE=48,
  /
  &NAMGWD
  /
@@ -505,7 +497,7 @@
  &NAMGWWMS
  /
  &NAMIAU
-   LIAU=.FALSE.,
+   LIAU=.TRUE.,
    NIAU=1,
    ALPHAIAU(1)=1.0,
    TSTARTIAU(1)=0,
@@ -560,8 +552,6 @@
  /
  &NAMNPROF
  /
- &NAMNRTAER
- /
  &NAMNUD
  /
  &NAMNUDGLH
@@ -575,7 +565,7 @@
  &NAMOPH
    CFNHWF='ECHIS',
    LINC=.TRUE.,
-   NTIMEFMT=2,
+   NTIMEFMT=1,
  /
  &NAMOPTCMEM
  /
@@ -592,13 +582,48 @@
    LSPLIT=.TRUE.,
    LSYNC_SLCOM=.FALSE.,
    LSYNC_TRANS=.FALSE.,
+   L_GATHERV_WRGP=.FALSE.,
    NCOMBFLEN=1800000,
+   NDISTIO(12)=1,
    NSTRIN=30,
    NSTROUT=30,
  /
  &NAMPARAR
+   CFRAC_ICE_ADJUST='S',
+   CFRAC_ICE_SHALLOW_MF='S',
    CMICRO='ICE3',
+   CSEDIM='STAT',
+   CSNOWRIMING='M90',
+   LCONVHG=.TRUE.,
+   LCRFLIMIT=.TRUE.,
+   LCRIAUTI=.TRUE.,
+   LEVLIMIT=.TRUE.,
+   LFEEDBACKT=.TRUE.,
+   LFPREC3D=.TRUE.,
+   LNULLWETG=.TRUE.,
+   LNULLWETH=.TRUE.,
    LOLSMC=.TRUE.,
+   LOSEDIC=.TRUE.,
+   LOSIGMAS=.TRUE.,
+   LOSUBG_COND=.TRUE.,
+   LSEDIM_AFTER=.FALSE.,
+   LWETGPOST=.TRUE.,
+   LWETHPOST=.TRUE.,
+   NMAXITER_MICRO=1,
+   NPRINTFR=10000,
+   NPTP=1,
+   RCRIAUTC=0.001,
+   RCRIAUTI=0.0002,
+   RT0CRIAUTI=-5.,
+   VSIGQSAT=0.02,
+   XFRACM90=0.1,
+   XMRSTEP=0.00005,
+   XSPLIT_MAXCFL=0.8,
+   XTSTEP_TS=0.,
+   LPROJQITURB=.FALSE.,
+   LBL89EXP=.FALSE.,
+   LBL89ARPEGE=.TRUE.,
+   LIMIT_TENDQ=.TRUE.,
  /
  &NAMPERTPAR
  /
@@ -606,15 +631,16 @@
    LPGDFWR=.FALSE.,
  /
  &NAMPHY
-    LAERODES=.TRUE.,
-   LAEROLAN=.TRUE.,
-   LAEROSEA=.TRUE.,
-   LAEROSOO=.TRUE.,
+   LAERODES=.FALSE.,
+   LAEROLAN=.FALSE.,
+   LAEROSEA=.FALSE.,
+   LAEROSOO=.FALSE.,
    LDPRECIPS=.TRUE.,
    LEDR=.TRUE.,
    LMPHYS=.TRUE.,
    LO3ABC=.TRUE.,
    LRAYFM=.TRUE.,
+   NSOLE=1,
  /
  &NAMPHY0
    ALMAV=300.,
@@ -839,56 +865,11 @@
    LXXDIAGH=.TRUE.,
    LXXGST=.TRUE.,
    NRAZTS = 7, 0, 48, 96, 144, 192, 240, 288,
-   NXGSTPERIOD = 3600,
  /
  &NAM_CANAPE
  /
  &NAM_DISTRIBUTED_VECTORS
  /
- &NAM_NEBN
-    CFRAC_ICE_ADJUST = 'S',
-    CFRAC_ICE_SHALLOW_MF = 'S',
-    LSIGMAS = .TRUE.,
-    LSUBG_COND = .TRUE.,
-    VSIGQSAT = 0.02,
-/
-
-&NAM_PARAM_ICEN
-    CSEDIM = 'STAT',
-    CSNOWRIMING = 'M90',
-    LCONVHG = .TRUE.,
-    LCRFLIMIT = .TRUE.,
-    LCRIAUTI = .TRUE.,
-    LEVLIMIT = .TRUE.,
-    LFEEDBACKT = .TRUE.,
-    LNULLWETG = .TRUE.,
-    LNULLWETH = .TRUE.,
-    LRED = .TRUE.,
-    LSEDIC = .TRUE.,
-    LSEDIM_AFTER = .FALSE.,
-    LWETGPOST = .TRUE.,
-    LWETHPOST = .TRUE.,
-    NMAXITER_MICRO = 1,
-    XCRIAUTC_NAM = 0.001,
-    XCRIAUTI_NAM = 0.0002,
-    XFRACM90 = 0.1,
-    XMRSTEP = 5e-05,
-    XSPLIT_MAXCFL = 0.8,
-    XT0CRIAUTI_NAM = -5.0,
-    XTSTEP_TS = 0.0,
-/
-
-&NAM_PARAM_MFSHALLN
-/
-
-&NAM_SPP_ACTIVE
-/
-
-&NAM_SPP_MODIF
-/
-
-&NAM_TURBN
-/
  &NAPHLC
  /
  &NEMCT0
@@ -910,8 +891,8 @@
  /
  &NEMELBC0B
    NEFRSPCPL=1,
-   NEK0=34,
-   NEK1=52,
+   NEK0=20,
+   NEK1=30,
    NEN1=4,
    NEN2=8,
    SPNUDDIV=0.01,
@@ -930,3 +911,29 @@
  /
  &NEMWAVELET
  /
+ &RADIATION
+   iverbose=1,
+   iverbosesetup=3,
+   directory_name=".",
+   do_clear=.TRUE.,
+   do_save_radiative_properties =.FALSE.,
+   do_save_spectral_flux =.FALSE.,
+   do_save_gpoint_flux=.FALSE.,
+   do_surface_sw_spectral_flux =.TRUE.,
+   use_aerosols=.TRUE.,
+   do_lw_derivatives=.TRUE.,
+   gas_model_name='RRTMG-IFS',
+   cloud_mixing_ratio_threshold=.100E-08,
+   cloud_inhom_decorr_scaling= 1.00,
+   cloud_fraction_threshold= .100E-05,
+   use_beta_overlap= .FALSE.,
+   liquid_model_name='Nielsen',
+   ice_model_name='Fu-IFS',
+   do_fu_lw_ice_optics_bug=.FALSE.,
+   overlap_scheme_name='Exp-Ran',
+   sw_solver_name='McICA',
+   do_sw_delta_scaling_with_gases=.FALSE.,
+   lw_solver_name='McICA',
+   do_lw_cloud_scattering=.FALSE.,
+   do_lw_aerosol_scattering=.FALSE.,
+/
