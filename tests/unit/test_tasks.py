@@ -78,6 +78,8 @@ def task_name_and_configs(request, default_config, tmp_directory):
             active = false
             inpath = "@ARCHIVE@"
             pattern = "GRIBPF*"
+        [eps.member_settings.boundaries.ifs]
+            bdmember = 0
         """
     )
     task_config = task_config.copy(update=config_patch)
