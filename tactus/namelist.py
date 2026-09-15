@@ -3,7 +3,6 @@
 
 import ast
 import copy
-import glob
 import os
 import re
 import subprocess
@@ -120,6 +119,26 @@ def write_namelist(nml, output_file):
     logger.debug("Wrote: {}", output_file)
 
 
+def get_namelist_type_options():
+    """Find available namelist type options.
+
+    Returns:
+        tuple[list[str], Path | None]: Sorted list of available namelist
+            type names, and the directory they were found in (None if no
+            directory was found).
+
+    """
+    master_file = ConfigPaths.path_from_subpath("assemble_master.yml", last=True)
+    if not master_file:
+        return [], None
+    search_dir = master_file.parent
+    options = sorted(
+        p.name.replace("assemble_", "").replace(".yml", "")
+        for p in search_dir.glob("assemble_*.yml")
+    )
+    return options, search_dir
+
+
 def _resolve_namelist_path(subpath) -> Path:
     """Resolve a config path, falling back to package-relative lookup."""
     path = Path(subpath)
@@ -127,12 +146,8 @@ def _resolve_namelist_path(subpath) -> Path:
         return ConfigPaths.path_from_subpath(path)
     except RuntimeError:
         logger.error("File not found: {}", path.name)
-        search_path = ConfigPaths.path_from_subpath(path.parent / "assemble_master.yml")
-        logger.error(
-            "Available assemble files in {}: {}",
-            search_path.parent,
-            [Path(x).name for x in glob.glob(f"{search_path.parent}/assemble_*.yml")],
-        )
+        options, search_path = get_namelist_type_options()
+        logger.error("Available assemble files in {}: {}", search_path, options)
         raise FileNotFoundError from None
 
 

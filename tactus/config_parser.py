@@ -157,11 +157,12 @@ class ConfigPaths:
         )
 
     @staticmethod
-    def path_from_subpath(subpath) -> Path:
+    def path_from_subpath(subpath, last=False) -> Path:
         """Interface to find full path given any subpath, by searching 'searchpaths'.
 
         Arguments:
             subpath (str): Subpath to search for
+            last(boolan): Return last match
 
         Returns:
             (Path): Full path to target
@@ -169,18 +170,19 @@ class ConfigPaths:
         Raises:
             RuntimeRerror: Various errors
         """
+        return_index = -1 if last else 0
         pattern = f"**/{subpath}"
         searchpaths = ConfigPaths.CONFIG_DATA_SEARCHPATHS.copy()
         for searchpath in searchpaths:
             results = list(Path(searchpath).rglob(pattern))
-            if len(results) > 1:
+            if len(results) > 1 and not last:
                 logger.warning("Multiple matches found for subpath: {}", subpath)
                 logger.warning("Selecting the first result: {}", results[0])
 
             if len(results) == 0:
                 continue
 
-            return results[0]
+            return results[return_index]
 
         raise RuntimeError(f"Could not find {subpath}")
 
