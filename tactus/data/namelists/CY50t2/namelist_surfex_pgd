@@ -16,12 +16,6 @@
     ilate = '${cfg:domain.ilate}',
 /
 
- &NAMFA
-   NVGRIB=123,
- /
- &NAMSFXCMP
-   NVGRIBSFX=123,
- /
  &NAM_COVER
    YCOVER='ecoclimap',
    YCOVERFILETYPE='DIRECT',
