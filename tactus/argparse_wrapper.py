@@ -22,8 +22,8 @@ from .commands_functions import (
     show_paths,
     start_suite,
 )
-from .config_parser import ConfigParserDefaults
-from .namelist import NamelistConverter
+from .config_parser import ConfigParserDefaults, ConfigPaths
+from .namelist import NamelistConverter, _resolve_namelist_path
 from .test_runner import run_test
 
 
@@ -641,6 +641,36 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
     return main_parser
 
 
+def _get_namelist_type_options():
+    """List available -t/--namelist-type options and their source directory.
+
+    The cycle used is the last (sorted) CY* directory found under the
+    namelist_generation_input path. Options are extracted from the
+    assemble_*.yml files found alongside that cycle's assemble_master.yml,
+    stripping "assemble" and ".yml" from each filename.
+
+    Returns:
+        tuple[list[str], Path | None]: Sorted list of available namelist
+            type names, and the directory they were found in (None if no
+            CY* directory was found).
+
+    """
+    namelist_generation_input_dir = ConfigPaths.path_from_subpath("namelist_generation_input")
+    cycle_dirs = sorted(
+        p.name for p in namelist_generation_input_dir.glob("CY*") if p.is_dir()
+    )
+    if not cycle_dirs:
+        return [], None
+    cycle = cycle_dirs[-1]
+    master_file = _resolve_namelist_path(f"{cycle}/assemble_master.yml")
+    search_dir = master_file.parent
+    options = sorted(
+        p.name.replace("assemble", "").replace(".yml", "").strip("_")
+        for p in search_dir.glob("assemble_*.yml")
+    )
+    return options, search_dir
+
+
 def add_namelist_args(parser_object):
     """Add namelist args.
 
@@ -651,11 +681,13 @@ def add_namelist_args(parser_object):
         parser_object (args oject): updated args object
 
     """
+    namelist_type_options, namelist_type_dir = _get_namelist_type_options()
     parser_object.add_argument(
         "--namelist-type",
         "-t",
         type=str,
-        help="Namelist target, see namelist_generation_input directory for options",
+        choices=namelist_type_options or None,
+        help=f"Namelist target, available options found in {namelist_type_dir}",
         required=True,
         default=None,
     )
