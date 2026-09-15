@@ -655,7 +655,9 @@ def _get_namelist_type_options():
             CY* directory was found).
 
     """
-    namelist_generation_input_dir = ConfigPaths.path_from_subpath("namelist_generation_input")
+    namelist_generation_input_dir = ConfigPaths.path_from_subpath(
+        "namelist_generation_input"
+    )
     cycle_dirs = sorted(
         p.name for p in namelist_generation_input_dir.glob("CY*") if p.is_dir()
     )
