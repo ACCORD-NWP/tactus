@@ -21,7 +21,7 @@ tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -l
 ```
 tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -m
 ```
-This will create a directory according to the tag and create all config files in this directory.
+This will create a directory under ttr-configs according to the tag and create all config files in this directory.
 
 ## Launch the suites
 ```
