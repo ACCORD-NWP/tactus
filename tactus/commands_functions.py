@@ -19,6 +19,7 @@ from . import GeneralConstants
 from .cleaning import CleanTactus
 from .config_parser import BasicConfig, ConfigParserDefaults, ConfigPaths, ParsedConfig
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
+from .eps.eps_setup import EPSConfig
 from .experiment import case_setup
 from .general_utils import sanitize_case_name
 from .host_actions import TactusHost, set_tactus_home
@@ -192,6 +193,9 @@ def start_suite(args, config):
     Raises:
         SystemExit: If error occurs while transferring files.
     """
+    if "eps" in config:
+        EPSConfig(**config.get_as_dict("eps"))
+
     tactus_home = set_tactus_home(config, args.tactus_home)
     config = config.copy(update={"platform": {"tactus_home": tactus_home}})
     config = config.copy(update=set_times(config))

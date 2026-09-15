@@ -632,6 +632,7 @@ class MarsprepFamily(EcflowSuiteFamily):
             ecf_files,
             ecf_files_remotely=ecf_files_remotely,
             trigger=marsprep_trigger_nodes,
+            add_var_trigger=add_var_trigger,
             remote_path=remote_path,
         )
         latlon_deps = ["GG", "SH"]

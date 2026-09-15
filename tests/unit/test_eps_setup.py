@@ -135,6 +135,101 @@ class TestValidateExpandables:
             EPSConfig(eps_general_config, invalid_non_dict_data)
 
 
+class TestValidateBdmember:
+    """Unit tests of the validate_bdmember method of the EPSConfig class."""
+
+    @pytest.fixture(name="eps_general_config", scope="class")
+    def fixture_eps_general_config(self) -> EPSGeneralConfigs:
+        """Fixture for defining a test EPSGeneralConfigs class with 3 members."""
+        return EPSGeneralConfigs(members=[0, 1, 2])
+
+    @pytest.mark.parametrize("container", [list, tuple])
+    @pytest.mark.parametrize("bdmember", [[], [5], [0, 1, 2]])
+    def test_with_valid_bdmember(
+        self, bdmember: list, container: type, eps_general_config: EPSGeneralConfigs
+    ):
+        """Test with a valid number of bdmembers, as both a list and a tuple.
+
+        Config values coming from a parsed toml file are tuples rather than
+        plain lists (see ParsedConfig's list-to-tuple conversion), so both
+        container types must validate identically.
+        """
+        EPSConfig(
+            eps_general_config,
+            {"boundaries": {"ifs": {"bdmember": container(bdmember)}}},
+        )
+
+    @pytest.mark.parametrize("container", [list, tuple])
+    @pytest.mark.parametrize("bdmember", [[0, 1], [0, 1, 2, 3, 4]])
+    def test_with_invalid_bdmember(
+        self, bdmember: list, container: type, eps_general_config: EPSGeneralConfigs
+    ):
+        """Test with an invalid number of bdmembers, as both a list and a tuple.
+
+        Only 0, 1, or exactly as many bdmembers as members is supported.
+        More bdmembers than members (e.g. to later pick the best one per
+        member for clustering) is intentionally rejected until a dedicated
+        selection mechanism exists to resolve the mapping.
+        """
+        with pytest.raises(
+            ValueError,
+            match=r".*must be empty, a single bdmember, or contain exactly"
+            r" as many bdmembers as members.*",
+        ):
+            EPSConfig(
+                eps_general_config,
+                {"boundaries": {"ifs": {"bdmember": container(bdmember)}}},
+            )
+
+    @pytest.mark.parametrize("bdmember", [{}, {"0:3": 5}, {"0": 1, "1": 2, "2": 3}])
+    def test_with_valid_bdmember_dict(
+        self, bdmember: dict, eps_general_config: EPSGeneralConfigs
+    ):
+        """Test with a dict-shaped bdmember that covers every member (or is empty)."""
+        EPSConfig(
+            eps_general_config,
+            {"boundaries": {"ifs": {"bdmember": bdmember}}},
+        )
+
+    def test_with_invalid_bdmember_dict(self, eps_general_config: EPSGeneralConfigs):
+        """Test with a dict-shaped bdmember that doesn't cover every member.
+
+        Regression test: a dict is a legitimate expandable shape for
+        bdmember (like slafk/slaflag elsewhere), but validate_bdmember used
+        to only check list/tuple/slice-string forms, silently letting an
+        incomplete dict (missing a bdmember for some member) through.
+        """
+        with pytest.raises(ValueError, match=r".*missing a bdmember.*"):
+            EPSConfig(
+                eps_general_config,
+                {"boundaries": {"ifs": {"bdmember": {"0:2": 5}}}},
+            )
+
+    def test_with_ambiguous_bdmember_through_config_parser(self, default_config):
+        """Regression test: bdmember coming from a real parsed config is a tuple.
+
+        ParsedConfig converts toml arrays to tuples (see
+        config_parser.py's `lists_to_tuples`), so validate_bdmember must
+        check for tuples, not just lists, or the validation silently never
+        fires on real configs even though it passes when tested directly
+        against a Python list.
+        """
+        config = default_config.copy(
+            update={
+                "eps": {
+                    "general": {"members": "0:3"},
+                    "member_settings": {"boundaries": {"ifs": {"bdmember": [0, 1]}}},
+                }
+            }
+        )
+        eps_plain_dict = config.get_as_dict("eps")
+        assert isinstance(
+            eps_plain_dict["member_settings"]["boundaries"]["ifs"]["bdmember"], tuple
+        )
+        with pytest.raises(ValueError, match=r".*must be empty, a single bdmember.*"):
+            EPSConfig(**eps_plain_dict)
+
+
 @pytest.fixture(name="eps_config", scope="class")
 def fixture_eps_config() -> EPSConfig:
     """Fixture for defining a test EPSConfig class."""
@@ -564,6 +659,47 @@ class TestGetMemberConfig:
             updated_config["general"]["times"]["forecast_range"] == forecast_range_value
         )
         assert updated_config["system"]["climdir"] == climdir_value
+
+    def test_get_member_config_resolves_expandable_field_without_override(
+        self, default_config: ParsedConfig
+    ):
+        """Test that an expandable field resolves correctly with no explicit override.
+
+        Regression test: get_member_config used to silently fall back to the
+        top-level default instead of generating the field's per-member value.
+        """
+        default_config = default_config.copy(
+            update={
+                "boundaries": {"ifs": {"bdmember": [0, 1]}},
+                "eps": {
+                    "general": {"members": [0, 1, 2]},
+                    "members": {},
+                    "member_settings": {"boundaries": {"ifs": {"bdmember": "0:3"}}},
+                },
+            }
+        )
+
+        for member, expected_bdmember in enumerate([0, 1, 2]):
+            updated_config = get_member_config(default_config, member)
+            assert updated_config["boundaries.ifs.bdmember"] == expected_bdmember
+
+    def test_get_member_config_explicit_override_takes_precedence(
+        self, default_config: ParsedConfig
+    ):
+        """Test that an explicit eps.members.<N> override wins over the generated value."""
+        default_config = default_config.copy(
+            update={
+                "boundaries": {"ifs": {"bdmember": [0, 1]}},
+                "eps": {
+                    "general": {"members": [0, 1, 2]},
+                    "members": {"1": {"boundaries": {"ifs": {"bdmember": 99}}}},
+                    "member_settings": {"boundaries": {"ifs": {"bdmember": "0:3"}}},
+                },
+            }
+        )
+
+        updated_config = get_member_config(default_config, 1)
+        assert updated_config["boundaries.ifs.bdmember"] == 99
 
     @pytest.mark.parametrize(
         "member",
