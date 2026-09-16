@@ -9,6 +9,7 @@ import pytest
 from tactus.config_parser import ParsedConfig
 from tactus.derived_variables import set_times
 from tactus.submission import TaskSettings
+from tactus.suites.suite_utils import combine_triggers
 from tactus.suites.tactus import TactusSuiteDefinition
 
 
@@ -104,3 +105,26 @@ class TestSuite:
         )
         def_file = f"{tmp_directory}/{suite_name}.def"
         defs.save_as_defs(def_file)
+
+
+class TestCombineTriggers:
+    def test_empty_list(self):
+        assert combine_triggers([]) == []
+
+    def test_flat_list_no_none(self):
+        assert combine_triggers(["a", "b", "c"]) == ["a", "b", "c"]
+
+    def test_flat_list_with_none(self):
+        assert combine_triggers(["a", None, "b"]) == ["a", "b"]
+
+    def test_nested_list_flattened(self):
+        assert combine_triggers([["a", "b"], "c"]) == ["a", "b", "c"]
+
+    def test_nested_tuple_flattened(self):
+        assert combine_triggers([("a", "b"), "c"]) == ["a", "b", "c"]
+
+    def test_nested_list_with_none_removed(self):
+        assert combine_triggers([["a", None, "b"], None, "c"]) == ["a", "b", "c"]
+
+    def test_all_none(self):
+        assert combine_triggers([None, None]) == []
