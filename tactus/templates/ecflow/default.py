@@ -116,7 +116,12 @@ def default_main(kwargs: dict):
     ecf_timeout = kwargs.get("ECF_TIMEOUT")
     ecf_task = kwargs.get("TACTUS_TASK")
     task = EcflowTask(
-        ecf_name, ecf_tryno, ecf_pass, ecf_rid, ecf_timeout=ecf_timeout, ecf_task=ecf_task
+        ecf_name,
+        ecf_tryno,
+        ecf_pass,
+        ecf_rid,
+        ecf_timeout=ecf_timeout,
+        ecf_task=ecf_task,
     )
 
     # Get member number
@@ -126,7 +131,7 @@ def default_main(kwargs: dict):
         member = int(member)
     except (TypeError, ValueError):
         logger.debug("MEMBER is not an integer, skipping eps setup for task {}", task)
-        config = config.copy(update={"general": {"use_member_stand_alone": False}})
+        config = config.copy(update={"task": {"args": {"use_member_stand_alone": False}}})
     else:
         # Update config based on member
         config = get_member_config(config, member=member)
@@ -135,7 +140,9 @@ def default_main(kwargs: dict):
     if ecf_name != task.ecf_task:
         config = config.copy(
             update={
-                "general": {"tactus_task": task.ecf_task},
+                "task": {
+                    "args": {"tactus_task": task.ecf_task},
+                }
             }
         )
 

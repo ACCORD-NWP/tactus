@@ -383,7 +383,7 @@ class TaskSettings(object):
                 file_handler.write(f'export {key}="{val}"\n')
 
             if scheduler is None:
-                tactus_task = config.get("general.tactus_task", task)
+                tactus_task = config.get("task.args.tactus_task", task)
                 file_handler.write(f'export STAND_ALONE_TASK_NAME="{tactus_task}"\n')
 
                 tactus_home = self.platform.get_platform_value("TACTUS_HOME")
@@ -438,7 +438,7 @@ class NoSchedulerSubmission:
         Raises:
             RuntimeError: Submission failure.
         """
-        name = config.get("general.tactus_task", task).lower()
+        name = config.get("task.args.tactus_task", task).lower()
         if name not in load_task_index(config):
             raise NotImplementedError(f"Task {name} not implemented")
 
