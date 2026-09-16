@@ -23,7 +23,7 @@ from .commands_functions import (
     start_suite,
 )
 from .config_parser import ConfigParserDefaults
-from .namelist import NamelistConverter
+from .namelist import NamelistConverter, get_namelist_type_options
 from .test_runner import run_test
 
 
@@ -651,12 +651,13 @@ def add_namelist_args(parser_object):
         parser_object (args oject): updated args object
 
     """
+    namelist_type_options, namelist_type_dir = get_namelist_type_options()
     parser_object.add_argument(
         "--namelist-type",
         "-t",
         type=str,
-        help="Namelist target: master, surfex or gl",
-        choices=["master", "surfex", "gl"],
+        choices=namelist_type_options,
+        help=f"Namelist target, available options found in {namelist_type_dir}",
         required=True,
         default=None,
     )
