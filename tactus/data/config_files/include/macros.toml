@@ -47,6 +47,8 @@
     {bindir_gl = "submission.bindir_gl"},
     {gl_version = "submission.gl_version"},
     {ial_version = "submission.ial_version"},
+    {ial_git_tag = "compile.ial_git_version"},
+    {arch = "submission.arch"},
     {ial_tag = "compile.ial_git_tag_case"},
   ]
   group_macros = ["platform", "system"]

@@ -1,9 +1,11 @@
 """Tests for the tactus compile command."""
 
 import argparse
+from pathlib import Path
 
 from tactus.argparse_wrapper import get_args_parser
 from tactus.commands_functions import create_compile_exp
+from tactus.tasks.compilation import TactusBundleBuild
 
 
 def test_compile_parser_defaults():
@@ -84,11 +86,12 @@ def test_create_compile_exp_sets_ial_tag_and_forced_modifications(
     create_compile_exp(args, default_config)
 
     assert captured["args"] is args
-    assert captured["config"]["compile.ial_git_branch"] == "feature/test-branch"
+    assert captured["config"]["compile.ial_git_version"] == "feature/test-branch"
 
     assert args.config_mods == [
         "tactus/data/config_files/modifications/@HOST@.toml",
         "tactus/data/config_files/modifications/compile_suite.toml",
+        "tactus/data/config_files/modifications/compile_@HOST@.toml",
     ]
 
 
@@ -107,4 +110,39 @@ def test_create_compile_exp_uses_default_ial_tag_from_config(default_config, mon
 
     create_compile_exp(args, default_config)
 
-    assert captured["config"]["compile.ial_git_branch"] == "develop"
+    assert captured["config"]["compile.ial_git_version"] == "develop"
+
+
+def _make_bundle_build_task(bundle_dir, arch, compiler="intel"):
+    """Build a TactusBundleBuild instance without running its __init__."""
+    task = TactusBundleBuild.__new__(TactusBundleBuild)
+    task.bundle_dir = str(bundle_dir)
+    task.arch = arch
+    task.compiler = compiler
+    return task
+
+
+def test_get_install_subpath_without_default_symlink(tmp_path):
+    """Check subpath is empty when no `default` symlink exists under arch dir."""
+    task = _make_bundle_build_task(tmp_path, "intel/myarch")
+
+    assert task.get_install_subpath() == Path("myarch")
+
+
+def test_get_install_subpath_invalid_compiler(tmp_path):
+    """Check subpath is empty when no `default` symlink exists under arch dir."""
+    task = _make_bundle_build_task(tmp_path, "myarch")
+
+    assert task.get_install_subpath() is None
+
+
+def test_get_install_subpath_resolves_default_symlink(tmp_path):
+    """Check subpath is derived from the resolved `default` symlink target."""
+    arch_dir = tmp_path / "source" / "arch" / "myarch"
+    build_target = arch_dir / "gnu" / "opt"
+    build_target.mkdir(parents=True)
+    (arch_dir / "default").symlink_to(build_target, target_is_directory=True)
+
+    task = _make_bundle_build_task(tmp_path, "myarch/default", "gnu")
+
+    assert task.get_install_subpath() == Path("opt")

@@ -1,14 +1,11 @@
 """Compialtion tasks."""
 
 import copy
-import hashlib
-import json
 import os
 import shutil
 import sys
 from pathlib import Path
 
-from git import InvalidGitRepositoryError, Repo
 from ruamel.yaml import YAML
 
 from ..logs import logger
@@ -29,7 +26,7 @@ class IALClone(Task):
         Task.__init__(self, config, __class__.__name__)
 
         self.git_ial_repo = self.config["compile.ial_git_repo"]
-        self.git_ial_branch = self.config["compile.ial_git_branch"]
+        self.git_ial_version = self.config["compile.ial_git_version"]
         git_token = self.config["compile.git_token"]
         self.git_token = git_token
         ial_dir = self.config["compile.ial_dir"]
@@ -37,14 +34,14 @@ class IALClone(Task):
 
     def execute(self):
         """Execute task."""
+        batch_job = BatchJob(os.environ)
         if os.path.exists(self.ial_dir):
-            logger.info("IAL dir {} alreadys exists", self.ial_dir)
+            logger.info("IAL dir {} already exists", self.ial_dir)
         else:
-            batch_job = BatchJob(os.environ)
             cmd = f"git clone {self.git_ial_repo} {self.ial_dir}"
             cmd = cmd.replace("[TOKEN]", self.git_token)
             batch_job.run(cmd)
-            batch_job.run(f"cd {self.ial_dir}; git checkout {self.git_ial_branch}")
+        batch_job.run(f"cd {self.ial_dir}; git checkout {self.git_ial_version}")
 
 
 class TactusBundleCreate(Task):
@@ -61,6 +58,8 @@ class TactusBundleCreate(Task):
         compile_dir = self.config["compile.dir"]
         self.compile_dir = self.platform.substitute(compile_dir)
         tactusmakedirs(self.compile_dir)
+
+        self.arch_dir = self.platform.substitute(self.config["compile.arch_dir"])
 
         git_token = self.config["compile.git_token"]
         git_token_str = ""
@@ -155,7 +154,8 @@ class TactusBundleCreate(Task):
 
         batch_job.run(
             f"cd {self.compile_dir}; {self.ecbundle_bin} create "
-            + f"{self.git_token_str} {self.bundle_file_str} --update"
+            + f"{self.git_token_str} {self.bundle_file_str} --update "
+            + f"--arch-dir {self.arch_dir}"
         )
 
 
@@ -173,62 +173,56 @@ class TactusBundleBuild(Task):
         bundle_dir = self.config["compile.dir"]
         self.bundle_dir = self.platform.substitute(bundle_dir)
         self.ecbundle_bin = f"{os.path.dirname(sys.executable)}/ecbundle"
-
+        self.compiler = self.platform.substitute("@COMPILER@")
         self.precision = self.config.get("task.args.prec", "prec")
+        self.case_dir = self.platform.substitute("@CASEDIR@")
+        self.arch = self.platform.substitute(self.config["submission.arch"])
 
-        self.arch = self.config["compile.arch"]
+        local_install_dir = f"{self.case_dir}/install/{self.precision}"
+        self.local_install_dir = self.platform.substitute(local_install_dir)
 
         # Get flag for compilation scope
         forecast_only = self.config.get("compile.forecast_only", False)
         self.forecast_only_flag = "--forecast-only " if forecast_only else ""
 
-        # check for existing builds in cache_dir
-        if self.config["compile.cache"]:
-            try:
-                self.bundle_hash = self.get_bundle_hash(f"{self.bundle_dir}/source")
-            except FileNotFoundError:
-                self.bundle_hash = "unknown"
+        if self.config["compile.install"]:
+            self.git_ial_branch = self.config["compile.ial_git_version"]
 
-            # get arch to build install path
-            arch_dir = Path(f"{self.bundle_dir}/{self.arch}")
-            default_link = arch_dir / "default"
-            if default_link.exists() and default_link.is_symlink():
-                arch = str(default_link.resolve())
-            else:
-                arch = str(arch_dir)
-            arch = arch.split("arch")[-1]
-            compile_dir = f"{self.config['compile.cache_dir']}/{arch}/{self.bundle_hash}"
+            install_subpath = self.get_install_subpath()
+
+            install_dir_root = (
+                f"@INSTALL_DIR@/{self.git_ial_branch}/{self.precision}/{self.compiler}"
+            )
+            self.install_dir_root = self.platform.substitute(install_dir_root)
+
+            install_dir = f"{self.install_dir_root}/{install_subpath}"
+            self.install_dir = self.platform.substitute(install_dir)
+
+            install_dir_latest = "@INSTALL_DIR@/latest"
+            self.install_dir_latest = self.platform.substitute(install_dir_latest)
 
         else:
-            compile_dir = "@CASEDIR@"
+            self.install_dir = self.local_install_dir
 
-        bindir = f"{compile_dir}/install/{self.precision}"
-        builddir = f"{compile_dir}/build/{self.precision}"
-        local_bindir = f"@CASEDIR@/install/{self.precision}"
-        bindir = self.platform.substitute(bindir)
-        bindir = os.path.realpath(bindir)
-        builddir = self.platform.substitute(builddir)
-        builddir = os.path.realpath(builddir)
-        self.local_bindir = self.platform.substitute(local_bindir)
-        self.exp_bindir = bindir
+        builddir = f"{self.case_dir}/build/{self.precision}"
+        self.exp_bindir = f"{self.install_dir}"
         self.exp_builddir = builddir
         self.skip_build = self.config["compile.skip_build"] and os.path.exists(
-            f"{self.exp_bindir}/MASTERODB"
+            f"{self.exp_bindir}/bin/MASTERODB"
         )
 
         tactusmakedirs(self.exp_bindir)
         tactusmakedirs(self.exp_builddir)
-        tactusmakedirs(os.path.dirname(self.local_bindir))
         try:
             logger.info(
                 "Backing up bundle from {}", f"{self.bundle_dir}/source/bundle.yml"
             )
             shutil.copyfile(
                 f"{self.bundle_dir}/source/bundle.yml",
-                f"{self.platform.substitute(compile_dir)}/bundle.yml",
+                f"{self.platform.substitute(self.case_dir)}/bundle.yml",
             )
         except FileNotFoundError:
-            logger.info("Unable to find {}", self.platform.substitute(compile_dir))
+            logger.info("Unable to find {}", self.platform.substitute(self.case_dir))
 
         self.ninja_arg = ""
         if self.config["compile"].get("ninja"):
@@ -242,64 +236,71 @@ class TactusBundleBuild(Task):
         if self.precision == "R32":
             self.prec_arg = "--without-double-precision"
 
-    def get_bundle_hash(self, source_dir):
-        """Build a unique hash for the bundle source combination."""
-        logger.debug("Build a hash for the source bundle")
+        # Get flag for compilation scope
+        forecast_only = self.config.get("compile.forecast_only", False)
+        self.forecast_only_flag = "--forecast-only " if forecast_only else ""
 
-        manifest = {
-            "repositories": {},
-            "dirty": False,
-        }
+    def get_install_subpath(self):
+        """Build install subpath by using the location of the env.sh file.
 
-        source_path = Path(source_dir)
+        The `arch` build directory (``<bundle_dir>/source/arch/<arch>``) may
+        contain a ``default`` symlink pointing at the actual build used, e.g.
+        one selected by ecbundle based on compiler/toolchain. When that symlink
+        exists, it is resolved and the path components coming after the
+        `arch` directory name are returned, giving the subpath under which
+        the build was actually installed (e.g. ``<toolchain>/<build_type>``).
+        When there is no such symlink, the subpath is empty (`.`), meaning
+        installs go directly under the `arch` directory.
 
-        # Iterate through source folders
-        for folder in sorted(source_path.iterdir()):
-            if not folder.is_dir():
-                continue
+        Returns:
+            Path: Subpath (relative to the `arch` directory) to append to
+                the install/build directories.
 
-            try:
-                repo = Repo(folder)
-            except InvalidGitRepositoryError:
-                logger.info("[SKIP] Not a git repo: {}", folder.name)
-                continue
+        """
+        arch_dir = Path(f"{self.bundle_dir}/source/arch/{self.arch}")
+        default_link = arch_dir
+        if default_link.exists() and default_link.is_symlink():
+            arch = default_link.resolve()
+        else:
+            arch = arch_dir
 
-            logger.info("[CHECK] {}", folder.name)
+        parts = arch.parts
 
-            # test for modified/staged/untracked files:
-            dirty = repo.is_dirty(untracked_files=True)
+        if self.compiler in parts:
+            compiler_idx = parts.index(self.compiler)
+            return Path(*parts[compiler_idx + 1 :])
+        return None
 
-            repo_info = {
-                "commit": repo.head.commit.hexsha,
-                "dirty": dirty,
-            }
+    def make_install_arch_symlink(self):
+        """Creates a "default" symlink in the install tree.
 
-            manifest["repositories"][folder.name] = repo_info
+        Creates a symlink named default in the compilers installation folder
+        to point to the full path of the compiler's default architecture if
+        the architecture provided was a symlink.
 
-            if repo_info["dirty"]:
-                manifest["dirty"] = True
+        """
+        arch_dir = Path(f"{self.bundle_dir}/source/arch/{self.arch}")
+        default_link = arch_dir
 
-        # Deterministic serialization
-        serialized = json.dumps(
-            manifest,
-            sort_keys=True,
-            separators=(",", ":"),
-        )
+        install_root = Path(self.install_dir_root)
+        default_root_link = install_root / "default"
 
-        # Combined deterministic hash
-        build_hash = hashlib.sha256(serialized.encode("utf-8")).hexdigest()
-
-        # Mark hash as dirty if any repo is dirty
-        if manifest["dirty"]:
-            build_hash += "-dirty"
-
-        logger.info(f"hash for {source_path}: {build_hash}")
-
-        return build_hash
+        if default_link.exists() and default_link.is_symlink():
+            if default_root_link.exists() and default_root_link.is_symlink:
+                logger.debug("Removing old link.")
+                os.unlink(default_root_link)
+            shutil.copy(str(default_link), str(default_root_link), follow_symlinks=False)
 
     def execute(self):
         """Execute task."""
         if not self.skip_build:
+            if os.path.exists(self.local_install_dir):
+                if os.path.islink(self.local_install_dir):
+                    logger.debug("Removing old link.")
+                    os.unlink(self.local_install_dir)
+                else:
+                    shutil.rmtree(self.local_install_dir)
+
             logger.info("Building bundle sources at {}", self.exp_builddir)
             batch_job = BatchJob(os.environ)
             nthreads = os.environ.get("OMP_NUM_THREADS")
@@ -307,14 +308,31 @@ class TactusBundleBuild(Task):
                 f"cd {self.bundle_dir};  {self.ecbundle_bin} build "
                 + f"--arch {self.arch} {self.ninja_arg} {self.forecast_only_flag}"
                 + f" {self.rebuild_args} {self.prec_arg} -j{nthreads} "
-                + f"--install-dir={self.exp_bindir} --install "
+                + f"--install-dir={self.install_dir} --install "
                 + f"--build-dir={self.exp_builddir}"
             )
-        if self.config["compile.cache"]:
-            if os.path.islink(self.local_bindir):
-                logger.debug("Removing old link.")
-                os.unlink(self.local_bindir)
-            os.symlink(self.exp_bindir, self.local_bindir)
+            logger.info("Installed bundle at  {}", {self.install_dir})
 
-        else:
-            logger.info("found existing install for this bundle at {}", self.exp_bindir)
+        if self.config["compile.install"]:
+            self.make_install_arch_symlink()
+            if os.path.exists(self.install_dir_latest) and os.path.islink(
+                self.install_dir_latest
+            ):
+                logger.debug("Removing old link.")
+                os.unlink(self.install_dir_latest)
+
+            latest_install = f"@INSTALL_DIR@/{self.git_ial_branch}"
+            latest_install = self.platform.substitute(latest_install)
+            os.symlink(latest_install, self.install_dir_latest)
+            logger.info(
+                "Symlinked installtion from {} to {}",
+                self.install_dir,
+                self.install_dir_latest,
+            )
+
+            os.symlink(self.install_dir, self.local_install_dir)
+            logger.info(
+                "Symlinked installtion from {} to {}",
+                self.install_dir,
+                self.local_install_dir,
+            )
