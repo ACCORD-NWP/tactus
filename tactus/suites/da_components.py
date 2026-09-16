@@ -9,6 +9,7 @@ from typing import List
 
 from ..submission import TaskSettings
 from .base import EcflowSuiteFamily, EcflowSuiteTask
+from .suite_utils import combine_triggers
 
 # ---------------------------------------------------------------------------
 # Default obs-type lists
@@ -281,9 +282,7 @@ class VariationalFamily(EcflowSuiteFamily):
             trigger=obsprep,
             ecf_files_remotely=ecf_files_remotely,
         )
-        oopsvar_trigger = [odb_family, blendsur_node]
-        if trigger is not None:
-            oopsvar_trigger.append(trigger)
+        oopsvar_trigger = combine_triggers([odb_family, blendsur_node, trigger])
 
         # OOPS Var: a single OOVAR call handles screening + minimization.
         EcflowSuiteTask(
