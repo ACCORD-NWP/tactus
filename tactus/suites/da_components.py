@@ -372,6 +372,6 @@ class AssimilationFamily(EcflowSuiteFamily):
                 task_settings,
                 input_template,
                 ecf_files,
-                trigger=surface_family,
+                trigger=surface_family.blendsur,
                 ecf_files_remotely=ecf_files_remotely,
             )
