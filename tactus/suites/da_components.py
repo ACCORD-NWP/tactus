@@ -52,6 +52,7 @@ class OdbFamily(EcflowSuiteFamily):
         ecf_files,
         obs_types: List[str],
         task_class: str = "Bator",
+        da_stream: str = "surface",
         family_name: str = "Odb",
         trigger=None,
         ecf_files_remotely=None,
@@ -68,6 +69,7 @@ class OdbFamily(EcflowSuiteFamily):
             task_class: Task class to use for each obs type (``"Bator"`` or
                 ``"Obsconvert"``).  Both archive their output to the same
                 ``odb/`` directory so OdbMerge works with either.
+            da_stream (str) : Assimilation part identifier.
             family_name: Name of this family node (default ``Odb``).
             trigger: Optional trigger for the whole family.
             ecf_files_remotely: Remote path prefix for ecf scripts.
@@ -89,7 +91,10 @@ class OdbFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
-                variables={"OBSTYPE": obstype, "TACTUS_TASK": task_class},
+                variables={
+                    "TACTUS_TASK": task_class,
+                    "ARGS": f"obstype={obstype};da_stream={da_stream}",
+                },
                 ecf_files_remotely=ecf_files_remotely,
             )
             bator_tasks.append(task)
@@ -102,6 +107,7 @@ class OdbFamily(EcflowSuiteFamily):
             ecf_files,
             input_template=input_template,
             trigger=bator_tasks,
+            variables={"ARGS": f"da_stream={da_stream}"},
             ecf_files_remotely=ecf_files_remotely,
         )
 
@@ -147,7 +153,6 @@ class SurfaceAnalysisFamily(EcflowSuiteFamily):
             parent,
             ecf_files,
             trigger=trigger,
-            variables={"DA_STREAM": "surface"},
             ecf_files_remotely=ecf_files_remotely,
         )
 
@@ -161,6 +166,7 @@ class SurfaceAnalysisFamily(EcflowSuiteFamily):
             task_settings,
             ecf_files,
             input_template=input_template,
+            variables={"ARGS": "da_stream=surface"},
             ecf_files_remotely=ecf_files_remotely,
         )
 
@@ -172,6 +178,7 @@ class SurfaceAnalysisFamily(EcflowSuiteFamily):
             ecf_files,
             obs_types=obs_types_surface,
             task_class=odb_task_surface,
+            da_stream="surface",
             family_name="Odb",
             trigger=obsprep,
             ecf_files_remotely=ecf_files_remotely,
@@ -241,7 +248,6 @@ class VariationalFamily(EcflowSuiteFamily):
             parent,
             ecf_files,
             trigger=trigger,
-            variables={"DA_STREAM": "3dvar"},
             ecf_files_remotely=ecf_files_remotely,
         )
 
@@ -255,6 +261,7 @@ class VariationalFamily(EcflowSuiteFamily):
             task_settings,
             ecf_files,
             input_template=input_template,
+            variables={"ARGS": "da_stream=3dvar"},
             ecf_files_remotely=ecf_files_remotely,
         )
 
@@ -266,6 +273,7 @@ class VariationalFamily(EcflowSuiteFamily):
             ecf_files,
             obs_types=obs_types_3dvar,
             task_class=odb_task_3dvar,
+            da_stream="3dvar",
             family_name="Odb",
             trigger=obsprep,
             ecf_files_remotely=ecf_files_remotely,
