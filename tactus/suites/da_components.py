@@ -36,7 +36,7 @@ _DEFAULT_OBS_3DVAR: List[str] = [
 
 
 class OdbFamily(EcflowSuiteFamily):
-    """ecFlow family that runs BATOR per obs type.
+    """ecFlow family that runs Obsconvert or BATOR per obs type.
 
     Each obs type gets its own sub-family (``Bator_<obstype>``) containing a
     single ``Bator`` task.  The ``OdbMerge`` task triggers when all Bator
@@ -51,7 +51,7 @@ class OdbFamily(EcflowSuiteFamily):
         input_template,
         ecf_files,
         obs_types: List[str],
-        task_class: str = "Bator",
+        task_class: str = "Obsconvert",
         da_stream: str = "surface",
         family_name: str = "Odb",
         trigger=None,
@@ -252,7 +252,7 @@ class VariationalFamily(EcflowSuiteFamily):
         )
 
         obs_types_3dvar = config.get("da.obs_types_3dvar", _DEFAULT_OBS_3DVAR)
-        odb_task_3dvar = config.get("da.odb_task_3dvar", "Bator")
+        odb_task_3dvar = config.get("da.odb_task_3dvar", "Obsconvert")
 
         obsprep = EcflowSuiteTask(
             "ObsPrep",
