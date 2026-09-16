@@ -237,6 +237,9 @@ def derived_variables(config, processor_layout=None):
     decades = "one_decade" if config["pgd.one_decade"] else "all_decade"
     gen_macros.append("namelist.decades")
 
+    ecoclimap_version = "ecoclimap_sg" if config["pgd.ecoclimap_sg"] else "ecoclimap"
+    gen_macros.append("namelist.ecoclimap_version")
+
     sg_input = "osm" if config["pgd.use_osm"] else ""
     gen_macros.append("namelist.sg_input")
     default_macros["gen_macros"] = gen_macros
@@ -271,6 +274,7 @@ def derived_variables(config, processor_layout=None):
             "time": int(time),
             "sg_input": sg_input,
             "decades": decades,
+            "ecoclimap_version": ecoclimap_version,
         },
     }
 

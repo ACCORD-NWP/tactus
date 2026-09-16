@@ -223,6 +223,21 @@ sfx_pgd_domain:
     XLONCEN: "${cfg:domain.xloncen}"
     XTRUNC: "${cfg:domain.xtrunc}"
 
+sfx_pgd_ecoclimap_base:
+   NAM_COVER:
+     YCOVER: ecoclimap
+     YCOVERFILETYPE: DIRECT
+   NAM_FRAC:
+     LECOSG: False
+ 
+sfx_pgd_ecoclimap_all_decade:
+   NAM_DATA_ISBA:
+     NTIME: 36
+
+sfx_pgd_ecoclimap_one_decade:
+ NAM_DATA_ISBA:
+     NTIME: 1
+
 sfx_pgd_ecoclimap_sg_base:
   NAM_COVER:
     YCOVER: ecosg_final_map

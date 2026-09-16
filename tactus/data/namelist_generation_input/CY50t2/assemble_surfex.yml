@@ -5,7 +5,7 @@ pgd_common:
   - sfx_pgd_zs_topo
   - sfx_pgd_soilgrid_sand
   - sfx_pgd_soilgrid_clay
-  - sfx_pgd_ecoclimap_sg_base
+  - sfx_pgd_@ECOCLIMAP_VERSION@_base
 
 pgd_ALARO:
   - sfx_pgd_isba_dif_@CSC@
@@ -14,13 +14,13 @@ pgd_ALARO:
   - sfx_@CSC@
 
 pgd_AROME:
-  - sfx_pgd_ecoclimap_sg_@DECADES@
+  - sfx_pgd_@ECOCLIMAP_VERSION@_@DECADES@
   - sfx_pgd_isba_dif
   - sfx_pgd_zs_filter
   - sfx_pgd_zs_@CSC@
 
 pgd_HARMONIE_AROME:
-  - sfx_pgd_ecoclimap_sg_@DECADES@
+  - sfx_pgd_@ECOCLIMAP_VERSION@_@DECADES@
   - sfx_pgd_isba_3l
   - sfx_pgd_cv
   - sfx_pgd_rsmin
