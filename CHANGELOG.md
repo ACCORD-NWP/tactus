@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add back suport to suspend ecflow node. [#205](https://github.com/ACCORD-NWP/tactus/pull/205)(@kastelecn)
 - Add support to compile assimilation related binaries. [#192](https://github.com/ACCORD-NWP/tactus/pull/192)(@bstrajnar, @uandrae)
 - Introduced perturbation tasks in the initial data selection procedure [#117](https://github.com/ACCORD-NWP/tactus/pull/117)(@uandrae)
+- Introduced possibility to comile with GNU in CY50t2 [#188](https://github.com/ACCORD-NWP/tactus/pull/188)(@pardallio)
 
 ### Changed
 - Updates .gitignore to exclude toml files in tactus folder and moves ttr config files to ttr-configs directory which is also in .gitignore [#194](https://github.com/ACCORD-NWP/tactus/pull/194)(@pardallio)
