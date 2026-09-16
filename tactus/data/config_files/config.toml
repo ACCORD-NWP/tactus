@@ -7,7 +7,7 @@
   famodel = "destine-@CYCLE@-@CSC@-oper"
   keep_workdirs = true
   surfex = true
-  upd_sst_sic = true
+  upd_sst_sic = false
 
 [general.namelist]
   nrazts = "PT1H"
@@ -128,7 +128,6 @@
   do_addcalculatedfields = true
   do_cleaning = true
   do_extractsqlite = true
-  do_interpolsstsic = true
   do_marsprep = true
   do_mergesqlite = true
   do_pgd = true

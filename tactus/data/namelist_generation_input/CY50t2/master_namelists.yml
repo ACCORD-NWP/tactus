@@ -1236,6 +1236,9 @@ f4_common:
     LELAM: true
     NCONF: 1
     NSUPERSEDE: 1
+  NAMMCC:
+    LMCC01_MSE: ${cfg:general.upd_sst_sic}
+    LMCCECSST: ${cfg:general.upd_sst_sic}
   NAMCFU:
     LWFPAC: ${cfg:general.windfarm}
   NAMCT0:
