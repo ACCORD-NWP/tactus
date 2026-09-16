@@ -229,6 +229,7 @@ class VariationalFamily(EcflowSuiteFamily):
         task_settings: TaskSettings,
         input_template,
         ecf_files,
+        blendsur_node,
         trigger=None,
         ecf_files_remotely=None,
     ):
@@ -240,6 +241,8 @@ class VariationalFamily(EcflowSuiteFamily):
             task_settings: Submission configuration.
             input_template: ecFlow job template.
             ecf_files: Local ecf script path prefix.
+            blendsur_node: The ``BlendSur`` EcflowSuiteTask from the sibling
+                ``SurfaceAnalysisFamily``.  OopsVar will wait for it.
             trigger: Optional trigger for the whole UpperAir family.
             ecf_files_remotely: Remote ecf script path prefix.
         """
@@ -278,7 +281,7 @@ class VariationalFamily(EcflowSuiteFamily):
             trigger=obsprep,
             ecf_files_remotely=ecf_files_remotely,
         )
-        oopsvar_trigger = [odb_family]
+        oopsvar_trigger = [odb_family, blendsur_node]
         if trigger is not None:
             oopsvar_trigger.append(trigger)
 
@@ -372,6 +375,7 @@ class AssimilationFamily(EcflowSuiteFamily):
                 task_settings,
                 input_template,
                 ecf_files,
-                trigger=surface_family.blendsur,
+                blendsur_node=surface_family.blendsur,
+                trigger=trigger,
                 ecf_files_remotely=ecf_files_remotely,
             )
