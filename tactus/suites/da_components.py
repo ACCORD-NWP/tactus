@@ -361,8 +361,8 @@ class AssimilationFamily(EcflowSuiteFamily):
                 ecf_files_remotely=ecf_files_remotely,
             )
 
-        # Upper-air 3D-Var chain — optional (da.do_upper_air, default false)
-        if config.get("da.do_upper_air", False):
+        # Upper-air 3D-Var chain — optional (da.upper_air, default false)
+        if config.get("da.upper_air", False):
             VariationalFamily(
                 self,
                 config,
