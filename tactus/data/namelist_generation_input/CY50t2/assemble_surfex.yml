@@ -8,14 +8,14 @@ pgd_common:
   - sfx_pgd_@ECOCLIMAP_VERSION@_base
 
 pgd_ALARO:
-  - sfx_pgd_isba_dif_@CSC@
+  - sfx_pgd_isba_dif_ecoclimap
   - sfx_pgd_zs_filter
   - sfx_pgd_@CSC@
   - sfx_@CSC@
 
 pgd_AROME:
   - sfx_pgd_@ECOCLIMAP_VERSION@_@DECADES@
-  - sfx_pgd_isba_dif
+  - sfx_pgd_isba_dif_@ECOCLIMAP_VERSION@
   - sfx_pgd_zs_filter
   - sfx_pgd_zs_@CSC@
 

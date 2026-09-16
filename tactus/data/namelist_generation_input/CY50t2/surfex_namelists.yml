@@ -17,7 +17,9 @@ sfx_pgd_isba_3l:
     NGROUND_LAYER: 3
     NPATCH: ${cfg:pgd.npatch}
 
-sfx_pgd_isba_dif:
+sfx_pgd_isba_dif_ecoclimap:
+
+sfx_pgd_isba_dif_ecoclimap_sg:
   NAM_SGH_ISBAN:
    CHORT: "DEF"
    CRAIN: "DEF"
@@ -43,7 +45,7 @@ sfx_pgd_isba_dif:
       - True
       - True
 
-sfx_pgd_isba_dif_ALARO:
+sfx_pgd_isba_dif_ecoclimap:
   NAM_ISBA:
     CISBA: "DIF"
     NPATCH: ${cfg:pgd.npatch}
