@@ -278,6 +278,9 @@ class VariationalFamily(EcflowSuiteFamily):
             trigger=obsprep,
             ecf_files_remotely=ecf_files_remotely,
         )
+        oopsvar_trigger = [odb_family]
+        if trigger is not None:
+            oopsvar_trigger.append(trigger)
 
         # OOPS Var: a single OOVAR call handles screening + minimization.
         EcflowSuiteTask(
@@ -287,7 +290,7 @@ class VariationalFamily(EcflowSuiteFamily):
             task_settings,
             ecf_files,
             input_template=input_template,
-            trigger=[odb_family, trigger],
+            trigger=oopsvar_trigger,
             ecf_files_remotely=ecf_files_remotely,
         )
 
