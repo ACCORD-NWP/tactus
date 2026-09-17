@@ -356,6 +356,7 @@ class AssimilationFamily(EcflowSuiteFamily):
 
         # Surface OI chain
         surface_family = None
+        variational_trigger = None
         if config.get("da.surface", True):
             surface_family = SurfaceAnalysisFamily(
                 self,
@@ -365,6 +366,7 @@ class AssimilationFamily(EcflowSuiteFamily):
                 ecf_files,
                 ecf_files_remotely=ecf_files_remotely,
             )
+            variational_trigger = surface_family.blendsur
 
         # Upper-air 3D-Var chain — optional (da.upper_air, default false)
         if config.get("da.upper_air", False):
@@ -374,7 +376,7 @@ class AssimilationFamily(EcflowSuiteFamily):
                 task_settings,
                 input_template,
                 ecf_files,
-                blendsur_node=surface_family.blendsur,
+                blendsur_node=variational_trigger,
                 trigger=trigger,
                 ecf_files_remotely=ecf_files_remotely,
             )
