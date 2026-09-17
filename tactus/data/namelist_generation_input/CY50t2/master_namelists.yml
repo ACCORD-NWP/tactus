@@ -951,6 +951,8 @@ f4_HARMONIE_AROME:
     LMICRO: true
     LMPA: true
     LTURB: true
+  NAMRIP:
+   NFOST: 6
   NAMCFU:
     CALFLASH1: 0.018
     LFRRC: true
@@ -1013,6 +1015,7 @@ f4_HARMONIE_AROME:
     YFATKE%NBITS: 16
   NAMFPC:
     LCRITSNOWTEMP: false
+    NFPCLI: 1
   NAMGFL:
     NGFL_EZDIAG: 3
     YA_NL%LPT: false
@@ -1082,6 +1085,9 @@ f4_HARMONIE_AROME:
     LTOTPREC: false
     LWTHRESH: false
     LWTHRESHMOIST: false
+    LDRYMFREDUC: false
+    LSUBEVAP: false
+#    LVARRESDEP: false
     NSWB_MNH: 6
     RADGR: 0.5
     RADSN: 1.0
