@@ -10,7 +10,6 @@
   ecoclim_data_path = "@CLIMDATA@/ecoclimap"
   ecoclimap_bin_dir = "@ecoclim_data_path@"
   ecosg_data_path = "@CLIMDATA@/ECOCLIMAP-SG"
-  fixed_bddir = "/scratch/sism/DEOL/@YYYY@/@MM@/@DD@/@HH@"
   flake_dir = "@STATIC_DATA@/climate/PGD"
   global_sfcdir = "@STATIC_DATA@/climate_fields_mir/climate.v020_MIR_orog/@RESOLUTION@km/@MM@"
   host = "atos_bologna"
