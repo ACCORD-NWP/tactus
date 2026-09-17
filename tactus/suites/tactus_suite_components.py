@@ -632,6 +632,7 @@ class MarsprepFamily(EcflowSuiteFamily):
             ecf_files,
             ecf_files_remotely=ecf_files_remotely,
             trigger=marsprep_trigger_nodes,
+            add_var_trigger=add_var_trigger,
             remote_path=remote_path,
         )
         latlon_deps = ["GG", "SH"]
@@ -1236,7 +1237,8 @@ class InterpolationFamily(EcflowSuiteFamily):
         if config["suite_control.split_mars_by_step"] and prep_fam is not None:
             lbc_mars_fam = lbc_fam.split_mars_by_step_fam
             lbc_mars_fam_path = prep_fam.make_relative(lbc_mars_fam.path)
-            prep_fam.ecf_node.add_trigger(f"{lbc_mars_fam_path}==complete")
+            if prep_fam.ecf_node is not None:
+                prep_fam.ecf_node.add_trigger(f"{lbc_mars_fam_path}==complete")
 
 
 class InitializationFamily(EcflowSuiteFamily):
@@ -1539,6 +1541,10 @@ class PostCycleFamily(EcflowSuiteFamily):
                 ecf_files,
                 input_template=input_template,
                 trigger=cleaning_triggers,
+                variables={
+                    "TACTUS_TASK": "Cleaning",
+                    "ARGS": "cleaning_type=CycleCleaning",
+                },
                 ecf_files_remotely=ecf_files_remotely,
             )
             cleaning_triggers.append(cleaning_task)
