@@ -716,9 +716,7 @@ class TestGetSuite:
         config = default_config.copy(
             update={
                 "general": {
-                    "plugin_registry": {
-                        "plugins": {"get_suite_success": plugin_root}
-                    },
+                    "plugin_registry": {"plugins": {"get_suite_success": plugin_root}},
                 }
             }
         )
@@ -837,7 +835,9 @@ class TestSuiteWithEcflowNode:
         def_file = f"{tmp_directory}/{suite_name}_fake.def"
         defs.save_as_defs(def_file)
 
-    def test_mirror_globaldt_and_offline(self, default_config, tmp_directory, fake_ecflow):
+    def test_mirror_globaldt_and_offline(
+        self, default_config, tmp_directory, fake_ecflow
+    ):
         """Exercise MirrorFamily/MirrorSuite and the member-specific static data limit.
 
         Neither is reached by a plain dry_run=True build (the former needs a
@@ -1008,7 +1008,12 @@ class TestMirrorFamilyDirect:
         root = EcflowSuite("MirrorRoot", ecf_files, dry_run=False)
 
         fam = MirrorFamily(
-            root, config, task_settings, _INPUT_TEMPLATE, ecf_files, cycle_valid="2022-01-01T00:00:00Z"
+            root,
+            config,
+            task_settings,
+            _INPUT_TEMPLATE,
+            ecf_files,
+            cycle_valid="2022-01-01T00:00:00Z",
         )
 
         assert fam.ecf_node is not None
