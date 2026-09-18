@@ -66,7 +66,8 @@ class ReferenceChecker:
             which = config["methods"][method]["which"]
             mode = config["methods"][method]["mode"]
             tolerance = int(config["methods"][method]["tolerance"])
-            return NormsChecker(which, tolerance, mode)
+            invert_comparison = config["methods"][method].get("invert_comparison", False)
+            return NormsChecker(which, tolerance, mode, invert_comparison)
         if tool == "xtool":
             binary_pattern = config["methods"][method]["binary"]
             file_format = config["methods"][method]["file_format"]
@@ -187,18 +188,33 @@ class NamelistChecker(ReferenceChecker):
 class NormsChecker(ReferenceChecker):
     """Compare the norms in Node files against a reference."""
 
-    def __init__(self, which, tolerance, mode):
+    def __init__(self, which, tolerance, mode, invert_comparison=False):
         """Construct NormsChecker object.
 
         Args:
            which: first_and_last_spectral or all (from arpifs_listing)
            tolerance: integer giving the worstdigit
            mode: get_worst or get_worst_by_step (from arpifs_listings)
+           invert_comparison: Inverts the logics
         """
         ReferenceChecker.__init__(self, tool="norms_checker")
         self.which = which
         self.tolerance = tolerance
         self.mode = mode
+        self.invert = invert_comparison
+
+    def _success_message(self, worstdigit, comp_string):
+        """Return success message with correct comparision."""
+        return (
+            f"SUCCESS - Worst digit is {worstdigit} {comp_string} tol = "
+            + f"{self.tolerance} (mode={self.mode}, which={self.which})"
+        )
+
+    def _failure_message(self, worstdigit, comp_string):
+        """Return failure message with correct comparision."""
+        return (
+            f"FAILURE - Worst digit is {worstdigit} {comp_string} tol = {self.tolerance}"
+        )
 
     def compare(self, test_log, reference_log, out_file) -> str:
         """Compare the norms against a reference.
@@ -248,14 +264,15 @@ class NormsChecker(ReferenceChecker):
                     out=out,
                 )
                 if worstdigit <= self.tolerance:
-                    results.append(
-                        f"SUCCESS - Worst digit is {worstdigit} <= tol = "
-                        + f"{self.tolerance} (mode={self.mode}, which={self.which})"
-                    )
+                    if self.invert:
+                        results.append(self._failure_message(worstdigit, "<="))
+                    else:
+                        results.append(self._success_message(worstdigit, "<="))
+
+                elif self.invert:
+                    results.append(self._success_message(worstdigit, ">"))
                 else:
-                    results.append(
-                        f"FAILURE - Worst digit is {worstdigit} > tol = {self.tolerance}"
-                    )
+                    results.append(self._failure_message(worstdigit, ">"))
 
             result = "\n".join(results)
             out.write(result)
