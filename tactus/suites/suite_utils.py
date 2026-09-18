@@ -153,6 +153,26 @@ def lbc_times_generator(
     return basetime
 
 
+def combine_triggers(triggers):
+    """Combines a list of (list of) triggers.
+
+    Args:
+       triggers (list): List of triggers
+
+    Returns:
+       combined_triggers (list): A cleaned flattened list of valid triggers
+
+    """
+    combined_triggers = []
+    for trigger in triggers:
+        if isinstance(trigger, (list, tuple)):
+            combined_triggers.extend([tri for tri in trigger if tri is not None])
+        elif trigger is not None:
+            combined_triggers.append(trigger)
+
+    return combined_triggers
+
+
 def slaf_planner(config, lbc_time_generator, me) -> dict:
     """Distribution of work in case several EPS members need the same boundary files.
 
@@ -214,7 +234,8 @@ def slaf_planner(config, lbc_time_generator, me) -> dict:
     # Abort if the setup requires boundary files for "future" cycles
     if nfuture > 0:
         logger.error(
-            "SLAF planner: detected need for {} 'future' boundary files, ABORT!", nfuture
+            "SLAF planner: detected need for {} 'future' boundary files, ABORT!",
+            nfuture,
         )
         logger.error("Please review your settings of slaflag and slafdiff!")
         raise RuntimeError("Suspect SLAF configuration!")
