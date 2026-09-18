@@ -1,0 +1,54 @@
+&nam_diag_isban
+    lpgd = .true.
+    lsurf_diag_albedo = .true.
+/
+
+&nam_frac
+    lecosg = .false.
+/
+
+&nam_io_offline
+    cpgdfile = 'PGD'
+    cprepfile = 'PREP'
+    csurffile = 'SURFOUT'
+    csurf_filetype = 'FA'
+    lfagmap = .true.
+    lrestart = .true.
+/
+&NAM_ISBA
+   XUNIF_RUNOFFB=0.5,
+   CISBA='3-L',
+   CPHOTO='NON',
+   NPATCH=1,
+   NGROUND_LAYER=3,
+/
+ &NAM_PGD_GRID
+   CGRID='CONF PROJ',
+ /
+ &NAM_PGD_SCHEMES
+   CNATURE='ISBA  ',
+   CSEA='SEAFLX',
+   CTOWN='TEB',
+   CWATER='FLAKE',
+ /
+
+&nam_prep_isba
+    lisba_canopy = .false.
+/
+
+&nam_prep_seaflux
+    lsea_sbl = .false.
+/
+
+&nam_prep_surf_atm
+    cfile = 'INFILE'
+    cfiletype = 'GRIB'
+/
+&NAM_SURF_ATM
+   LVERTSHIFT=.TRUE.,
+ /
+
+&nam_write_surf_atm
+    lnowrite_texfile = .true.
+    lsplit_patch = .false.
+/

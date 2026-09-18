@@ -17,9 +17,7 @@ sfx_pgd_isba_3l:
     NGROUND_LAYER: 3
     NPATCH: ${cfg:pgd.npatch}
 
-sfx_pgd_isba_dif_ecoclimap:
-
-sfx_pgd_isba_dif_ecoclimap_sg:
+sfx_pgd_isba_dif:
   NAM_SGH_ISBAN:
    CHORT: "DEF"
    CRAIN: "DEF"
@@ -45,7 +43,7 @@ sfx_pgd_isba_dif_ecoclimap_sg:
       - True
       - True
 
-sfx_pgd_isba_dif_ecoclimap:
+sfx_pgd_isba_dif_ALARO:
   NAM_ISBA:
     CISBA: "DIF"
     NPATCH: ${cfg:pgd.npatch}
@@ -225,20 +223,12 @@ sfx_pgd_domain:
     XLONCEN: "${cfg:domain.xloncen}"
     XTRUNC: "${cfg:domain.xtrunc}"
 
-sfx_pgd_ecoclimap_base:
-   NAM_COVER:
-     YCOVER: ecoclimap
-     YCOVERFILETYPE: DIRECT
-   NAM_FRAC:
-     LECOSG: False
- 
-sfx_pgd_ecoclimap_all_decade:
-   NAM_DATA_ISBA:
-     NTIME: 36
-
-sfx_pgd_ecoclimap_one_decade:
- NAM_DATA_ISBA:
-     NTIME: 1
+sfx_pgd_ecoclimap_fg_base:
+  NAM_COVER:
+    YCOVER: ecoclimap
+    YCOVERFILETYPE: DIRECT
+  NAM_FRAC:
+    LECOSG: False
 
 sfx_pgd_ecoclimap_sg_base:
   NAM_COVER:
@@ -246,6 +236,10 @@ sfx_pgd_ecoclimap_sg_base:
     YCOVERFILETYPE: DIRECT
   NAM_FRAC:
     LECOSG: True
+
+sfx_pgd_ecoclimap_fg_all_decade:
+  NAM_DATA_ISBA:
+    NTIME: 36
 
 sfx_pgd_ecoclimap_sg_all_decade:
   NAM_DATA_ISBA:
@@ -624,6 +618,10 @@ sfx_pgd_ecoclimap_sg_all_decade:
     - - DIRTYP
     - - DIRTYP
     - - DIRTYP
+
+sfx_pgd_ecoclimap_fg_one_decade:
+NAM_DATA_ISBA:
+    NTIME: 1
 
 sfx_pgd_ecoclimap_sg_one_decade:
   NAM_DATA_ISBA:

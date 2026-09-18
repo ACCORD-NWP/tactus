@@ -98,7 +98,7 @@ e923_base:
   NAMFAINIT:
     JPXTRO: 2000
   NAMGRIB:
-    NCYCLE: 49
+    NCYCLE: 50
   NAMPAR0:
     NPROC: 1
   NAMPAR1:

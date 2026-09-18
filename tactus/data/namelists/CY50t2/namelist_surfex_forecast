@@ -1,0 +1,61 @@
+&NAM_DIAG_ISBAN
+    LPGD = .TRUE.,
+    LSURF_MISC_BUDGET = .TRUE.,
+/
+
+&NAM_DIAG_SURFN
+    LSURF_BUDGET = .TRUE.,
+    N2M = 2,
+/
+
+&NAM_FRAC
+    LECOSG = .FALSE.,
+/
+
+&NAM_IO_OFFLINE
+    CPGDFILE = 'PGD',
+    CPREPFILE = 'PREP',
+    CSURFFILE = 'SURFOUT',
+    CSURF_FILETYPE = 'FA',
+    LFAGMAP = .TRUE.,
+    LRESTART = .TRUE.,
+/
+
+&NAM_ISBAN
+   CSCOND='NP89',
+/
+
+&NAM_REPROD_OPER
+    LREPROD_OPER = .TRUE.,
+/
+
+&NAM_SEAFLUXN
+    CSEA_FLUX = 'ECUME6',
+    LPRECIP = .FALSE.,
+    LPWEBB = .FALSE.,
+    LPWG = .FALSE.,
+/
+
+&NAM_SSON
+    CROUGH = 'Z01D',
+    LDSH = .TRUE.,
+    LDSL = .TRUE.,
+    LDSV = .FALSE.,
+    XFRACZ0 = 5.0,
+/
+
+&NAM_SURF_ATM
+    LNOSOF = .TRUE.,
+    XRIMAX = 0.2,
+/
+
+&NAM_SURF_CSTS
+    XEMISSN = 0.99,
+    XZ0HSN = 0.001,
+    XZ0SN = 0.01,
+/
+
+&NAM_WRITE_SURF_ATM
+    LNOWRITE_TEXFILE = .TRUE.,
+    LSPLIT_PATCH = .TRUE.,
+/
