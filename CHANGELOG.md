@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated reference checker with more tests and bugfixes [#179](https://github.com/ACCORD-NWP/tactus/pull/179)(@uandrae)
 
 ### Fixed
+- Fixed bug in compilation by bumping gl version to 1.0.1. [#212](https://github.com/ACCORD-NWP/tactus/pull/212)(@pardallio)
 - Correct help for `show namelist` command. [#206](https://github.com/ACCORD-NWP/tactus/pull/206)(@uandrae)
 - Correct treatment of missing namelist directory in case of static namelists. [#209](https://github.com/ACCORD-NWP/tactus/pull/209)(@uandrae)
 - Fix for fetching global data for EPS. [#197](https://github.com/ACCORD-NWP/tactus/pull/197)(@kastelecn)
