@@ -48,6 +48,7 @@ prep_ALARO:
   - sfx_@CSC@
 
 prep_AROME:
+  - sfx_prep_isba_AROME_@ECOCLIMAP_VERSION@
 
 prep_HARMONIE_AROME:
   - sfx_prep_sea_@SURFEX_SEA_ICE@

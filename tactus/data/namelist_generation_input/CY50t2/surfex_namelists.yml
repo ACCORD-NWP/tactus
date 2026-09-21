@@ -47,8 +47,6 @@ sfx_pgd_isba_dif_ecoclimap_sg:
 
 sfx_pgd_isba_dif_ecoclimap:
   NAM_ISBA:
-    CISBA: "DIF"
-    NPATCH: ${cfg:pgd.npatch}
     YCLAY: "clay"
     YCLAYFILETYPE: "DIRECT"
     YSAND: "sand"
@@ -908,18 +906,33 @@ sfx_prep_isba_HARMONIE_AROME:
 
 
 sfx_prep_isba_AROME:
-  NAM_FRAC:
-    LECOSG: True
   NAM_DIAG_ISBAN:
     LPGD: True
     LSURF_DIAG_ALBEDO: True
   NAM_PREP_ISBA:
     LISBA_CANOPY: False
+
+sfx_prep_isba_AROME_ecoclimap_sg:
+  NAM_FRAC:
+    LECOSG: True
   NAM_PREP_ISBA_SNOW:
     CSNOW: "3-L"
     LSNOW_IDEAL: False
     NSNOW_LAYER: 12
     XWSNOW: 0.0
+  
+sfx_prep_isba_AROME_ecoclimap:
+  NAM_FRAC:
+    LECOSG: False
+  NAM_SURF_ATM:
+    LVERTSHIFT: True
+  NAM_ISBA:
+    XUNIF_RUNOFFB: 0.5
+    CISBA: '3-L'
+    CPHOTO: 'NON'
+    NPATCH: 1
+    NGROUND_LAYER: 3
+
 
 sfx_prep_isba_ALARO:
   NAM_DIAG_ISBAN:
