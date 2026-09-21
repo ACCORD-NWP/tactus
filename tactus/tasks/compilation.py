@@ -330,7 +330,10 @@ class TactusBundleBuild(Task):
                 self.install_dir,
                 self.install_dir_latest,
             )
-
+            
+            local_install_path = Path("self.local_install_dir")
+            tactusmakedirs(local_install_path.parent)
+            
             os.symlink(self.install_dir, self.local_install_dir)
             logger.info(
                 "Symlinked installtion from {} to {}",
