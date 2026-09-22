@@ -79,6 +79,7 @@ def test_create_compile_exp_sets_ial_tag_and_forced_modifications(
         case=None,
         keep_def_file=False,
         expand_config=False,
+        compiler=None,
     )
 
     create_compile_exp(args, default_config)
