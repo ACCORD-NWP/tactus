@@ -108,7 +108,7 @@ def lbc_times_generator(
     step: timedelta,
     mode: str = "start",
     is_first_cycle: bool = True,
-    do_interpolsstsic: bool = False,
+    upd_sst_sic: bool = False,
     lbc_per_task: int = 1,
 ) -> Generator[Dict[int, str], None, None]:
     """Generate lbc times.
@@ -121,7 +121,7 @@ def lbc_times_generator(
         step: The step size.
         mode: The mode of tactus.
         is_first_cycle: Whether this is the first cycle.
-        do_interpolsstsic: Whether to do SST/SIC interpolation.
+        upd_sst_sic: Whether to update SST/SIC.
         lbc_per_task: Number of LBC assigned to each task. Default 1.
 
     Returns:
@@ -133,7 +133,7 @@ def lbc_times_generator(
     index = 0
     if (
         mode == "restart" or (mode == "start" and not is_first_cycle)
-    ) and not do_interpolsstsic:
+    ) and not upd_sst_sic:
         basetime += step
         index = 1
 
