@@ -185,7 +185,6 @@ class TactusBundleBuild(Task):
         forecast_only = self.config.get("compile.forecast_only", False)
         self.forecast_only_flag = "--forecast-only " if forecast_only else ""
 
-
         if self.config["compile.install"]:
             self.git_ial_branch = self.config["compile.ial_git_version"]
 
@@ -331,7 +330,7 @@ class TactusBundleBuild(Task):
                 self.install_dir_latest,
             )
 
-            local_install_path = Path("self.local_install_dir")
+            local_install_path = Path(self.local_install_dir)
             tactusmakedirs(local_install_path.parent)
 
             os.symlink(self.install_dir, self.local_install_dir)
