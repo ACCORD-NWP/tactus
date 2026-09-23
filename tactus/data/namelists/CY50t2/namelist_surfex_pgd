@@ -1,21 +1,3 @@
-&nam_confg_proj
-    xbeta = '${cfg:domain.xbeta}',
-    xlat0 = '${cfg:domain.xlat0}',
-    xlon0 = '${cfg:domain.xlon0}',
-    xrpk = '${cfg:domain.xrpk}',
-/
-
-&nam_confg_proj_grid
-    nimax = '${cfg:domain.nimax}',
-    mjmax = '${cfg:domain.njmax}',
-    xdx = '${cfg:domain.xdx}',
-    xdy = '${cfg:domain.xdy}',
-    xlatcen = '${cfg:domain.xlatcen}',
-    xloncen = '${cfg:domain.xloncen}',
-    ilone = '${cfg:domain.ilone}',
-    ilate = '${cfg:domain.ilate}',
-/
-
  &NAM_COVER
    YCOVER='ecoclimap',
    YCOVERFILETYPE='DIRECT',
