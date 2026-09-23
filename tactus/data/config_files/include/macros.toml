@@ -50,6 +50,9 @@
     {ial_git_tag = "compile.ial_git_version"},
     {arch = "submission.arch"},
     {ial_tag = "compile.ial_git_tag_case"},
+    {ial_git_tag = "compile.ial_git_version"},
+    {arch = "submission.arch"},
+    {ial_tag = "compile.ial_git_tag_case"},
   ]
   group_macros = ["platform", "system"]
   os_macros = ["USER", "HOME", "PWD", "CONFIG"]

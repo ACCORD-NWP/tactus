@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Add assimilation suite skeleton. [#195](https://github.com/ACCORD-NWP/tactus/pull/195)(@bstrajnar, @uandrae)
 - Add support for generic task detection. [#199](https://github.com/ACCORD-NWP/tactus/pull/199)(@bstrajnar, @uandrae)
 - Add back suport to suspend ecflow node. [#205](https://github.com/ACCORD-NWP/tactus/pull/205)(@kastelecn)
 - Add support to compile assimilation related binaries. [#192](https://github.com/ACCORD-NWP/tactus/pull/192)(@bstrajnar, @uandrae)
@@ -18,14 +19,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Change default to use latest tagged precompiled binaries on atos. [#145](https://github.com/ACCORD-NWP/tactus/pull/145)(@uandrae)
 - Updates .gitignore to exclude toml files in tactus folder and moves ttr config files to ttr-configs directory which is also in .gitignore [#194](https://github.com/ACCORD-NWP/tactus/pull/194)(@pardallio)
+- Change default to use latest tagged precompiled binaries on atos. [#145](https://github.com/ACCORD-NWP/tactus/pull/145)(@uandrae)
+- Relax input yaml file name check in namelist generator. [#190](https://github.com/ACCORD-NWP/tactus/pull/190)(@bstrajnar, @uandrae)
+- Update test instructions. [#185](https://github.com/ACCORD-NWP/tactus/pull/185)(@uandrae)
 - Update the unit-test CI container to Python 3.10 on Debian Bookworm so apt-based system dependency installation works again. [\#201](https://github.com/ACCORD-NWP/tactus/pull/201) (@uandrae)
 - Add option to BatchJob.run() to capture STDOUT in file. [#191](https://github.com/ACCORD-NWP/tactus/pull/191)(@bstrajnar, @uandrae)
 - Relax input yaml file name check in namelist generator. [#190](https://github.com/ACCORD-NWP/tactus/pull/190)(@bstrajnar, @uandrae)
 - Update test instructions. [#185](https://github.com/ACCORD-NWP/tactus/pull/185), [#187](https://github.com/ACCORD-NWP/tactus/pull/187)(@uandrae)
+- Change default to use latest tagged precompiled binaries on atos. [#145](https://github.com/ACCORD-NWP/tactus/pull/145)(@uandrae)
+- Update test instructions. [#185](https://github.com/ACCORD-NWP/tactus/pull/185)(@uandrae)
 - Make config-file mandatory for some commands. [#174](https://github.com/ACCORD-NWP/tactus/pull/174)(@dhaumont)
 - Updated reference checker with more tests and bugfixes [#179](https://github.com/ACCORD-NWP/tactus/pull/179)(@uandrae)
 
 ### Fixed
+- Fixed bug in compilation by bumping gl version to 1.0.1. [#212](https://github.com/ACCORD-NWP/tactus/pull/212)(@pardallio)
 - Correct help for `show namelist` command. [#206](https://github.com/ACCORD-NWP/tactus/pull/206)(@uandrae)
 - Correct treatment of missing namelist directory in case of static namelists. [#209](https://github.com/ACCORD-NWP/tactus/pull/209)(@uandrae)
 - Fix for fetching global data for EPS. [#197](https://github.com/ACCORD-NWP/tactus/pull/197)(@kastelecn)
