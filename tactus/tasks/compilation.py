@@ -325,7 +325,7 @@ class TactusBundleBuild(Task):
             latest_install = self.platform.substitute(latest_install)
             os.symlink(latest_install, self.install_dir_latest)
             logger.info(
-                "Symlinked installtion from {} to {}",
+                "Symlinked installation from {} to {}",
                 self.install_dir,
                 self.install_dir_latest,
             )
@@ -334,7 +334,7 @@ class TactusBundleBuild(Task):
             tactusmakedirs(local_install_path.parent)
             os.symlink(self.install_dir, self.local_install_dir)
             logger.info(
-                "Symlinked installtion from {} to {}",
+                "Symlinked installation from {} to {}",
                 self.install_dir,
                 self.local_install_dir,
             )
