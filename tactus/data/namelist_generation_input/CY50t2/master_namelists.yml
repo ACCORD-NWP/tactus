@@ -1020,7 +1020,7 @@ f4_HARMONIE_AROME:
     NGFL_EZDIAG: 3
     YA_NL%LPT: false
     YA_NL%LREQOUT: true
-    YA_NL%NREQIN: 1
+    YA_NL%NREQIN: -1
     YEZDIAG_NL(1)%CNAME: EZDIAG01
     YEZDIAG_NL(1)%LREQOUT: false
     YEZDIAG_NL(2)%CNAME: EZDIAG02
@@ -1031,15 +1031,22 @@ f4_HARMONIE_AROME:
     YG_NL%LPT: false
     YG_NL%LQM: true
     YG_NL%LSLHD: true
+    YG_NL%NCOUPLING: 0
+    YG_NL%REFVALC: 0
+    YG_NL%NREQIN: 0
     YI_NL%CNAME: ICE_CRYSTAL
     YI_NL%LPT: false
     YI_NL%LQM: true
     YI_NL%LSLHD: true
+    YI_NL%NCOUPLING: -1
+    YI_NL%REFVALC: 0
     YI_NL%NREQIN: 1
     YL_NL%CNAME: CLOUD_WATER
     YL_NL%LPT: false
     YL_NL%LQM: true
     YL_NL%LSLHD: true
+    YL_NL%NCOUPLING: -1
+    YL_NL%REFVALC: 0
     YL_NL%NREQIN: 1
     YQ_NL%CNAME: HUMI.SPECIFI
     YQ_NL%LCOMAD: true
@@ -1052,12 +1059,20 @@ f4_HARMONIE_AROME:
     YR_NL%LPT: false
     YR_NL%LQM: true
     YR_NL%LSLHD: true
+    YR_NL%NCOUPLING: -1
+    YR_NL%REFVALC: 0
+    YR_NL%NREQIN: 1
     YSRC_NL%LPT: false
     YS_NL%CNAME: SNOW
     YS_NL%LPT: false
     YS_NL%LQM: true
     YS_NL%LSLHD: true
+    YS_NL%NCOUPLING: -1
+    YS_NL%REFVALC: 0
+    YS_NL%NREQIN: 1
     YTKE_NL%LPT: false
+    YTKE_NL%NCOUPLING: 0
+    YTKE_NL%NREQIN: -1
   NAMINI:
     LDFI: false
   NAMINTFLEX:
@@ -1474,8 +1489,10 @@ f4_c903_main:
     YQ_NL%LGP: true
     YQ_NL%LGPINGP: true
     YQ_NL%LSP: false
-    YR_NL%NREQIN: -1
-    YS_NL%NREQIN: -1
+    YR_NL%NREQIN: 1
+    YS_NL%NREQIN: 1
+    YI_NL%NREQIN: 1
+    YL_NL%NREQIN: 1
   NAMOPH:
     CCLIMINC: _
   NAMPAR0:
@@ -1526,6 +1543,8 @@ f4_c903_domain:
     - CLOUD_FRACTI
     - PRESS.DEPART
     - VERTIC.DIVER
+    - RAIN
+    - SNOW
     CFPDIR: ELSCF
     CFPDOM: ${cfg:fullpos.domain_name}
     CFPFMT: LELAM
