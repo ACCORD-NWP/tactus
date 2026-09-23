@@ -15,7 +15,12 @@ This will:
 3. Generate a compilation case (named from `submission.ial_version`, see callout below)
 4. Start the compilation suite (`CompilationSuiteDefinition`) because `-d` (equivalent to `--dry-run`) is not passed as an argument
 
-## What the command does
+To run the compilation as a part of a run amend the `compile_@HOST@.toml` to your case command. E.g. on ECMWF ATOS it may look like
+```
+tactus case ?tactus/data/config_files/configurations/cy50t2_arome tactus/data/config_files/configurations/modifications/compile_atos_bologna.toml [...]
+```
+
+### What the command does
 
 The `compile` subcommand is a specialization of `tactus case`. It:
 
@@ -49,7 +54,7 @@ See the sections below for the full configuration surface of each task.
 
 ---
 
-# Bundle Compilation Tasks
+## Bundle Compilation Tasks
 
 This module provides three compilation-related task classes:
 
@@ -61,7 +66,7 @@ These tasks are designed to work within the Tactus framework and use `ecbundle` 
 
 ---
 
-# Overview
+### Overview
 
 The workflow is typically:
 
@@ -80,19 +85,19 @@ The workflow is typically:
 
 ---
 
-# Tasks
+## Tasks
 
-## `IALClone`
+### `IALClone`
 
 Clones the IAL Git repository into a local directory and checks out the configured version.
 
-### Purpose
+#### Purpose
 
 * Clones the IAL source repository
 * Checks out the configured version/branch/commit
 * Skips cloning if the target directory already exists
 
-### Configuration Keys
+#### Configuration Keys
 
 | Key                        | Description                                            |
 | --------------------------- | ------------------------------------------------------ |
@@ -115,7 +120,7 @@ becomes:
 https://<actual-token>@github.com/ecmwf/ial.git
 ```
 
-### Behavior
+#### Behavior
 
 * If `compile.ial_dir` already exists: the clone step is skipped and an info message is logged.
 * Otherwise the task clones the repository:
@@ -134,11 +139,11 @@ cd <ial_dir>; git checkout <ial_git_version>
 
 ---
 
-## `TactusBundleCreate`
+### `TactusBundleCreate`
 
 Creates or updates an ECBundle source tree.
 
-### Purpose
+#### Purpose
 
 * Reads the configured bundle YAML
 * Optionally merges in an update bundle YAML (for local IAL overrides or other customizations)
@@ -150,7 +155,7 @@ ecbundle create
 
 ---
 
-### Configuration Keys
+#### Configuration Keys
 
 | Key                          | Description                                                                                  |
 | ---------------------------- | -------------------------------------------------------------------------------------------- |
@@ -164,7 +169,7 @@ ecbundle create
 
 ---
 
-### Bundle Update Mechanism
+#### Bundle Update Mechanism
 
 When `compile.bundle_update` is enabled, the task:
 
@@ -188,7 +193,7 @@ YAML formatting is preserved using `ruamel.yaml` with:
 
 Example transformation:
 
-#### Before (original)
+##### Before (original)
 
 ```yaml
 ial-source:
@@ -205,7 +210,7 @@ ial-source:
   dir: /path/to/local/ial
 ```
 
-#### After (merged)
+##### After (merged)
 
 ```yaml
 ial-source:
@@ -214,7 +219,7 @@ ial-source:
 
 ---
 
-### IAL_DIR Environment Variable
+#### IAL_DIR Environment Variable
 
 Before invoking `ecbundle`, the task exports:
 
@@ -226,9 +231,9 @@ This allows the bundle YAML to reference `${IAL_DIR}` for local IAL source overr
 
 ---
 
-### Git Authentication
+#### Git Authentication
 
-#### SSH Mode (default)
+##### SSH Mode (default)
 
 If no Git token is provided:
 
@@ -238,7 +243,7 @@ os.environ["GITHUB"] = "git@github.com:"
 
 Repositories are cloned using SSH access.
 
-#### Token Mode
+##### Token Mode
 
 If `compile.git_token` is set:
 
@@ -265,7 +270,7 @@ is passed to `ecbundle`.
 
 ---
 
-### Generated Command
+#### Generated Command
 
 ```bash
 cd <compile_dir>; ecbundle create [--github-token <TOKEN>] --bundle <bundle_file> --update --arch-dir <arch_dir>
@@ -273,11 +278,11 @@ cd <compile_dir>; ecbundle create [--github-token <TOKEN>] --bundle <bundle_file
 
 ---
 
-## `TactusBundleBuild`
+### `TactusBundleBuild`
 
 Builds an ECBundle source tree, either as a local per-experiment install or into a shared, versioned install tree.
 
-### Purpose
+#### Purpose
 
 * Builds source repositories produced by `TactusBundleCreate`
 * Supports multiple architectures and compilers
@@ -289,7 +294,7 @@ Builds an ECBundle source tree, either as a local per-experiment install or into
 
 ---
 
-### Configuration Keys
+#### Configuration Keys
 
 | Key                      | Description                                                                                    |
 | ------------------------ | ------------------------------------------------------------------------------------------------ |
@@ -305,7 +310,7 @@ Builds an ECBundle source tree, either as a local per-experiment install or into
 
 ---
 
-### Precision Modes
+#### Precision Modes
 
 | Precision | Effect                                            |
 | --------- | ------------------------------------------------- |
@@ -314,7 +319,7 @@ Builds an ECBundle source tree, either as a local per-experiment install or into
 
 ---
 
-### Install Modes
+#### Install Modes
 
 `TactusBundleBuild` supports two install layouts, controlled by `compile.install`:
 
@@ -343,7 +348,7 @@ A `latest` pointer is also maintained, pointing at the version root (not the ful
 
 ---
 
-### Install Subpath
+#### Install Subpath
 
 `get_install_subpath()` computes an additional path segment appended to the shared install root, so that different architecture/compiler combinations under the same bundle don't collide:
 
@@ -354,7 +359,7 @@ A `latest` pointer is also maintained, pointing at the version root (not the ful
 
 ---
 
-### Build Directories
+#### Build Directories
 
 The builder creates:
 
@@ -371,7 +376,7 @@ under `@CASEDIR@`, regardless of install mode. The install directory (`exp_bindi
 
 ---
 
-### Bundle Backup
+#### Bundle Backup
 
 Before building, the task attempts to copy:
 
@@ -383,13 +388,13 @@ to `@CASEDIR@/bundle.yml`. This preserves a snapshot of what was actually built.
 
 ---
 
-### Pre-build Cleanup
+#### Pre-build Cleanup
 
 If the build is not being skipped, any existing content at `@CASEDIR@/install/<precision>` is removed before building: it is unlinked if it's a symlink, or fully removed with `shutil.rmtree` if it's a real directory. This runs regardless of install mode, and prevents a fresh build from silently mixing with a stale local install or a stale symlink from a previous run.
 
 ---
 
-### Build Command
+#### Build Command
 
 The build now actually runs (the invocation is no longer commented out). The command assembled and executed is:
 
@@ -415,7 +420,7 @@ Optional flags:
 
 ---
 
-### Shared Install Symlinks (`make_install_arch_symlink`)
+#### Shared Install Symlinks (`make_install_arch_symlink`)
 
 When `compile.install` is enabled, after building the task:
 
@@ -427,7 +432,7 @@ When `compile.install` is disabled, none of this runs — the local install path
 
 ---
 
-### Skip Build Logic
+#### Skip Build Logic
 
 If:
 
@@ -445,7 +450,7 @@ exists, the build step is skipped. The shared-install symlink bookkeeping (when 
 
 ---
 
-# Notes
+## Notes
 
 * This build path targets `ecbundle==2.5.0` (pinned in `pyproject.toml`)
 * All compilation-related configuration lives under the flat `[compile]` section again — the nested `[ial]` / `[ial.compile]` schema explored at one point has been reverted; update any config files or macro references using `ial.*` keys back to `compile.*`
