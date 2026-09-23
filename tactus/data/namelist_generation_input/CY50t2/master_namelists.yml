@@ -450,6 +450,64 @@ f4_AROME:
     SPNUDQ: 0.0
     SPNUDT: 0.01
     SPNUDVOR: 0.01
+f4_AROME_ecrad:
+  NAERAD:
+    LSRTM: true
+    LAER3D: true
+    LUSEPRE2017RAD: false
+    NAER: 0
+    NAERMACC: 1
+    NLIQOPT: 2
+    NOZOCL: 4
+    NOVLP: 1
+    NDUMPBADINPUTS: 0
+  RADIATION:
+    iverbose: 1
+    iverbosesetup: 3
+    directory_name: .
+    do_clear: true
+    do_save_radiative_properties: false
+    do_save_spectral_flux: false
+    do_save_gpoint_flux: false
+    do_surface_sw_spectral_flux: true
+    use_aerosols: true
+    do_lw_derivatives: true
+    gas_model_name: RRTMG-IFS
+    cloud_mixing_ratio_threshold: .100E-08
+    cloud_inhom_decorr_scaling:  1.00
+    cloud_fraction_threshold:  .100E-05
+    use_beta_overlap:  false
+    liquid_model_name: Nielsen
+    ice_model_name: Fu-IFS
+    do_fu_lw_ice_optics_bug: false
+    overlap_scheme_name: Exp-Ran
+    sw_solver_name: McICA
+    do_sw_delta_scaling_with_gases: false
+    lw_solver_name: McICA
+    do_lw_cloud_scattering: false
+    do_lw_aerosol_scattering: false
+  NAMPHY:
+    LAERODES: false
+    LAEROLAN: false
+    LAEROSEA: false
+    LAEROSOO: false
+    NSOLE: 1
+  NAMGFL:
+    NACTAERO: 12
+  NAMSPSDT:
+    LSPSDT: true
+    LTAPER_ST0: true
+    LWRITE_ARP: false
+    NCLIP_KIND_SDT: 0
+    NQSAT_SDT: 0
+    NSEED_SDT: $MEMBER
+    SDEV_SDT(1): 0.3
+    TAU_SDT(1): 21600.
+    XCLIP_RATIO_SDT(1): 2.
+    XLCOR_SDT(1): 4000000.
+    XSIGMABOT: 0.97
+    XSIGMATOP: 0.87
+
 f4_ALARO:
   NAERAD:
     LRRTM: false

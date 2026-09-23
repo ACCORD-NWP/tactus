@@ -73,6 +73,7 @@ forecast:
 forecast_ALARO:
 
 forecast_AROME:
+  - sfx_forecast_@CSC@_@ecoclimap_version@
 
 forecast_HARMONIE_AROME:
   - sfx_@CSC@

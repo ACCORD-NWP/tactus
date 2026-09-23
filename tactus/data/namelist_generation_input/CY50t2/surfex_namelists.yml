@@ -158,6 +158,19 @@ sfx_forecast_AROME:
     XZ0HSN: 0.001
     XZ0SN: 0.01
 
+sfx_forecast_AROME_ecoclimap:
+  NAM_FRAC:
+    LECOSG: False
+  NAM_ISBAN:
+    CSCOND: NP89
+  NAM_SEAFLUXN:
+    LPRECIP: True
+  NAM_SSON:
+    LDSH: False
+    LDSV: True
+
+
+
 sfx_forecast_ALARO:
   NAM_ISBAN:
     CSCOND: PL98
