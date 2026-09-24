@@ -18,6 +18,11 @@ sfx_pgd_isba_3l:
     NPATCH: ${cfg:pgd.npatch}
 
 sfx_pgd_isba_dif_ecoclimap:
+  NAM_ISBA:
+    YCLAY: "clay"
+    YCLAYFILETYPE: "DIRECT"
+    YSAND: "sand"
+    YSANDFILETYPE: "DIRECT"
 
 sfx_pgd_isba_dif_ecoclimap_sg:
   NAM_SGH_ISBAN:
@@ -44,13 +49,6 @@ sfx_pgd_isba_dif_ecoclimap_sg:
       - False
       - True
       - True
-
-sfx_pgd_isba_dif_ecoclimap:
-  NAM_ISBA:
-    YCLAY: "clay"
-    YCLAYFILETYPE: "DIRECT"
-    YSAND: "sand"
-    YSANDFILETYPE: "DIRECT"
 
 sfx_treedrag:
   NAM_TREEDRAG:
@@ -165,7 +163,7 @@ sfx_forecast_AROME_ecoclimap:
     CSCOND: NP89
   NAM_SEAFLUXN:
     LPRECIP: False
-    XICHCE: 
+    XICHCE:
   NAM_SSON:
     LDSH: True
     LDSV: False
@@ -241,7 +239,7 @@ sfx_pgd_ecoclimap_base:
      YCOVERFILETYPE: DIRECT
    NAM_FRAC:
      LECOSG: False
- 
+
 sfx_pgd_ecoclimap_all_decade:
    NAM_DATA_ISBA:
      NTIME: 36
@@ -932,7 +930,7 @@ sfx_prep_isba_AROME_ecoclimap_sg:
     LSNOW_IDEAL: False
     NSNOW_LAYER: 12
     XWSNOW: 0.0
-  
+
 sfx_prep_isba_AROME_ecoclimap:
   NAM_FRAC:
     LECOSG: False
