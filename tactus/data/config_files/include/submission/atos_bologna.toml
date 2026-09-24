@@ -42,7 +42,7 @@
 [submission.task_exceptions.C903.BATCH]
   CPUSPERTASK = "#SBATCH --cpus-per-task=4"
   HYPERTHREAD = "#SBATCH --hint=nomultithread"
-  MEM_CPU = "#SCATCH --mem-per-cpu=50G"
+  MEM_CPU = "#SBATCH --mem=0G"
   NODES = "#SBATCH --nodes=18"
   NTASKS = "#SBATCH --ntasks-per-node=2"
   WALLTIME = "#SBATCH --time=01:00:00"
