@@ -1,0 +1,11 @@
+[suite_control]
+  compile = true
+
+[submission]
+  bindir = "@CASEDIR@/install/R64/bin"
+
+[submission.task_exceptions.Forecast.binaries.MASTERODB]
+  bindir = "@CASEDIR@/install/@PRECISION@/bin"
+
+[compile]
+  arch_dir = "@CASEDIR@/IAL/bundle/arch/ecmwf/hpc2020"
