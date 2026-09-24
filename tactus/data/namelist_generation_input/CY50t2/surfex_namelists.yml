@@ -105,12 +105,14 @@ sfx_forecast_HARMONIE_AROME:
     LSURF_VARS: True
   NAM_ISBAN:
     LCANOPY_DRAG: True
+    LPERTSURF: False
     XCDRAG: 0.01
     XCGMAX: 2.e-05
     XCSMAX: 0.0002
   NAM_SEAFLUXN:
     CSEA_FLUX: "ECUME"
     LPRECIP: False
+    LPERTFLUX: ${cfg:perturbations.pertsurf.active}
   NAM_SEAICEN:
     LVOLATILE_SIC: ${cfg:general.upd_sst_sic}
     XSIC_EFOLDING_TIME: 1.0
@@ -136,12 +138,14 @@ sfx_forecast_HARMONIE_AROME:
 
 sfx_forecast_AROME:
   NAM_ISBAN:
+    LPERTSURF: False
     CSCOND: PL98
   NAM_REPROD_OPER:
     LREPROD_OPER: True
   NAM_SEAFLUXN:
     CSEA_FLUX: "ECUME6"
     LPRECIP: True
+    LPERTFLUX: ${cfg:perturbations.pertsurf.active}
     XICHCE: 0.0
   NAM_SSON:
     CROUGH: Z01D
