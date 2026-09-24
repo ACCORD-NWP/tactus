@@ -1220,7 +1220,6 @@ f4_HARMONIE_AROME:
     LSIGMAS: true
     LSTATNW: true
     LSUBG_COND: true
-    LVARRESDEP: false
     VSIGQSAT: 0.02
   NAM_PARAM_ICEN:
     LEXCLDROP: false
