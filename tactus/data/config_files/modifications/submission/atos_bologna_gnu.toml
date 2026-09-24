@@ -1,4 +1,4 @@
-[submission]
+[ial]
   compiler = "gnu"
 
 [submission.types.parallel.MODULES]
