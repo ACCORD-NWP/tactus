@@ -49,12 +49,12 @@
   remote_path = "/@HOST_CASE@/PostMortem"
 
 [modifs.submission]
-  bindir = "@SCRATCH@/@SYS_NAME@/@CASE_PREFIX@@CYCLE@_compile/install/R64/bin"
+  bindir = "@SCRATCH@/@SYS_NAME@/@CASE_PREFIX@_@CYCLE@_compile/install/R64/bin"
   bindir_gl = "@SUBMISSION.BINDIR@"
   max_ecf_tasks = 5
 
 [modifs.submission.task_exceptions.Forecast.binaries.MASTERODB]
-  bindir = "@SCRATCH@/@SYS_NAME@/@CASE_PREFIX@@CYCLE@_compile/install/R64/bin"
+  bindir = "@SCRATCH@/@SYS_NAME@/@CASE_PREFIX@_@CYCLE@_compile/install/R64/bin"
 
 [modifs.submission.task_exceptions.Marsprep.BATCH]
   WALLTIME = "#SBATCH --time=12:00:00"
