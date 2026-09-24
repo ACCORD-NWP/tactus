@@ -164,12 +164,11 @@ sfx_forecast_AROME_ecoclimap:
   NAM_ISBAN:
     CSCOND: NP89
   NAM_SEAFLUXN:
-    LPRECIP: True
+    LPRECIP: False
+    XICHCE: 
   NAM_SSON:
-    LDSH: False
-    LDSV: True
-
-
+    LDSH: True
+    LDSV: False
 
 sfx_forecast_ALARO:
   NAM_ISBAN:

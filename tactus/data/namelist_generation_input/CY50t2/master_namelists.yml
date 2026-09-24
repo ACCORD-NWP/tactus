@@ -227,6 +227,8 @@ f4_AROME:
     LFRRC: true
     LNEBPAR: true
     LNEBTT: true
+  NAMDPHY:
+    NCSNEC: 1
   NAMDVISI:
     HVISI: 5.0
   NAMDYN:
@@ -239,7 +241,7 @@ f4_AROME:
     RDAMPDIV: 20.0
     RDAMPPD: 20.0
     RDAMPQ: 0.0
-    RDAMPT: 20.0
+    RDAMPT: 0.0
     RDAMPVD: 20.0
     RDAMPVOR: 20.0
     SDRED: 1.0
@@ -281,7 +283,8 @@ f4_AROME:
     LNHX_GEOM: true
     LNONHYD_GEOM: true
   NAMGFL:
-    NGFL_EZDIAG: 4
+    NACTAERO: 12
+    NGFL_EZDIAG: 3
     YA_NL%NREQIN: 1
     YEZDIAG_NL(1)%CNAME: EZDIAG01
     YEZDIAG_NL(1)%LREQOUT: false
@@ -299,6 +302,7 @@ f4_AROME:
     YI_NL%LINTLIN: true
     YI_NL%LQM: true
     YI_NL%LSLHD: false
+    YI_NL%REFVALC: 0.0
     YL_NL%LCOMAD: true
     YL_NL%LINTLIN: true
     YL_NL%LQM: true
@@ -315,6 +319,7 @@ f4_AROME:
     YS_NL%LINTLIN: true
     YS_NL%LQM: true
     YS_NL%LSLHD: false
+    YS_NL%REFVALC: 0.0
     YTKE_NL%NREQIN: -1
   NAMOPH:
     CFNHWF: ECHIS
@@ -400,6 +405,7 @@ f4_AROME:
     LXPLS: true
     LXPLSG: true
     LXR: true
+    LXSNOWDEPTH: true
     LXSOIL: false
     LXTHW: true
     LXTRT: true
@@ -433,6 +439,8 @@ f4_AROME:
     XSPLIT_MAXCFL: 0.8
     XT0CRIAUTI_NAM: -5.0
     XTSTEP_TS: 0.0
+  NEMCT0:
+    LEQLIMSAT: true
   NEMELBC0A:
     LESPCPL: true
     NBICNHX: 2
@@ -442,8 +450,8 @@ f4_AROME:
     NECRIPL: 1
   NEMELBC0B:
     NEFRSPCPL: 1
-    NEK0: 20
-    NEK1: 30
+    NEK0: 34
+    NEK1: 52
     NEN1: 4
     NEN2: 8
     SPNUDDIV: 0.01
