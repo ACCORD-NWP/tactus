@@ -242,7 +242,7 @@ def derived_variables(config, processor_layout=None):
     ecoclimap_version = "ecoclimap_sg" if config["pgd.ecoclimap_sg"] else "ecoclimap"
     gen_macros.append("namelist.ecoclimap_version")
 
-    use_ecrad = "_ecrad" if config["general.ecrad"] else ""
+    use_ecrad = "ecrad" if config["general.ecrad"] else ""
     gen_macros.append("namelist.use_ecrad")
 
     sg_input = "osm" if config["pgd.use_osm"] else ""
