@@ -222,6 +222,9 @@ f4_AROME:
     LMICRO: true
     LMPA: true
     LTURB: true
+  NAMCAPE:
+    GCAPEPSD: 0.5
+    LADAE: True
   NAMCFU:
     CALFLASH1: 0.018
     LFRRC: true
@@ -502,19 +505,6 @@ f4_AROME_ecrad:
     NSOLE: 1
   NAMGFL:
     NACTAERO: 12
-  NAMSPSDT:
-    LSPSDT: true
-    LTAPER_ST0: true
-    LWRITE_ARP: false
-    NCLIP_KIND_SDT: 0
-    NQSAT_SDT: 0
-    NSEED_SDT: $MEMBER
-    SDEV_SDT(1): 0.3
-    TAU_SDT(1): 21600.
-    XCLIP_RATIO_SDT(1): 2.
-    XLCOR_SDT(1): 4000000.
-    XSIGMABOT: 0.97
-    XSIGMATOP: 0.87
 
 f4_ALARO:
   NAERAD:

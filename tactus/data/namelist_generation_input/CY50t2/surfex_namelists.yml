@@ -19,6 +19,7 @@ sfx_pgd_isba_3l:
 
 sfx_pgd_isba_dif_ecoclimap:
   NAM_ISBA:
+    NPATCH: ${cfg:pgd.npatch}
     YCLAY: "clay"
     YCLAYFILETYPE: "DIRECT"
     YSAND: "sand"
@@ -149,7 +150,6 @@ sfx_forecast_AROME:
     XFRACZ0: 5.0
   NAM_SURF_ATM:
     LNOSOF: True
-  NAM_SURF_ATMN:
     LVERTSHIFT: True
   NAM_SURF_CSTS:
     XEMISSN: 0.99
@@ -159,14 +159,17 @@ sfx_forecast_AROME:
 sfx_forecast_AROME_ecoclimap:
   NAM_FRAC:
     LECOSG: False
+  NAM_ISBA:
+    XUNIF_RUNOFFB: 0.2
   NAM_ISBAN:
     CSCOND: NP89
   NAM_SEAFLUXN:
     LPRECIP: False
-    XICHCE:
   NAM_SSON:
     LDSH: True
     LDSV: False
+  NAM_SURF_ATM:
+    LVERTSHIFT: False
 
 sfx_forecast_ALARO:
   NAM_ISBAN:
@@ -855,9 +858,9 @@ sfx_pgd_ALARO:
   NAM_ISBA_DATA: {}
 
 sfx_ALARO:
- NAM_IO_OFFLINE:
+  NAM_IO_OFFLINE:
     LRESTART: False
- NAM_FRAC:
+  NAM_FRAC:
     LECOSG: False
 
 sfx_prep_atm:
@@ -921,6 +924,8 @@ sfx_prep_isba_AROME:
     LSURF_DIAG_ALBEDO: True
   NAM_PREP_ISBA:
     LISBA_CANOPY: False
+  NAM_WRITE_SURF_ATM:
+    LSPLIT_PATCH: False
 
 sfx_prep_isba_AROME_ecoclimap_sg:
   NAM_FRAC:
@@ -940,9 +945,11 @@ sfx_prep_isba_AROME_ecoclimap:
     XUNIF_RUNOFFB: 0.5
     CISBA: '3-L'
     CPHOTO: 'NON'
-    NPATCH: 1
     NGROUND_LAYER: 3
-
+  NAM_PREP_SEAFLUX:
+    LSEA_SBL: False
+  NAM_PREP_WATFLUX:
+    LWAT_SBL: False
 
 sfx_prep_isba_ALARO:
   NAM_DIAG_ISBAN:

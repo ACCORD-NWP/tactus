@@ -1102,6 +1102,11 @@
             "type": "integer"
           }
         },
+        "ecrad": {
+          "description": "ECRAD switch",
+          "type": "boolean",
+          "default": false
+        },
         "surfex": {
           "description": "SURFEX switch",
           "type": "boolean"

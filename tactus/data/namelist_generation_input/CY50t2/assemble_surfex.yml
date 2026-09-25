@@ -15,6 +15,7 @@ pgd_ALARO:
 
 pgd_AROME:
   - sfx_pgd_@ECOCLIMAP_VERSION@_@DECADES@
+  - sfx_pgd_isba_3l
   - sfx_pgd_isba_dif_@ECOCLIMAP_VERSION@
   - sfx_pgd_zs_filter
   - sfx_pgd_zs_@CSC@
