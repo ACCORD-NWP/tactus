@@ -1,0 +1,6 @@
+bator:
+  - bator_base
+  - bator_@CSC@
+
+bator_lamflag:
+  - bator_lamflag_base
