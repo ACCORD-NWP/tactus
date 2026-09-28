@@ -1,12 +1,9 @@
 """Compialtion tasks."""
 
-import copy
 import os
 import shutil
 import sys
 from pathlib import Path
-
-from ruamel.yaml import YAML
 
 from ..logs import logger
 from ..os_utils import tactusmakedirs
@@ -84,7 +81,6 @@ class TactusBundleCreate(Task):
 
         self.compile_dir = self.platform.substitute(compile_dir)
 
-
     def execute(self):
         """Execute task."""
         batch_job = BatchJob(os.environ)
@@ -97,9 +93,9 @@ class TactusBundleCreate(Task):
 
         if self.config["compile.bundle_update"]:
             batch_job.run(
-            f"cd {self.compile_dir}; {self.ecbundle_bin} merge "
-            + f"{self.orig_bundle_file} {self.update_bundle_file} "
-            + f"-o {self.bundle_file}"
+                f"cd {self.compile_dir}; {self.ecbundle_bin} merge "
+                + f"{self.orig_bundle_file} {self.update_bundle_file} "
+                + f"-o {self.bundle_file}"
             )
 
         batch_job.run(
