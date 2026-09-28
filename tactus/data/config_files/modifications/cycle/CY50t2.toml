@@ -7,10 +7,9 @@
   surfex = "PT1H"
 
 [submission]
-  precision = "R64"
+  precision = "R32"
   ial_version = "latest"
   bindir = "@INSTALL_DIR@/@IAL_VERSION@/R64/@ARCH@/bin"
-
   bindir_gl = "@SUBMISSION.BINDIR@"
 
 [submission.task_exceptions.E923Update]
