@@ -79,7 +79,7 @@ class ObsPrep(Task):
         """
         Task.__init__(self, config, __class__.__name__)
         self.basetime = as_datetime(config["general.times.basetime"])
-        self.obs_dir = self.platform.substitute(config["da.obs_dir"])
+        self.obs_dir = self.platform.substitute(config["system.obs_dir"])
         self.da_scratch = self.platform.substitute(config["da.scratch"])
         self.family = config.get("task.args.da_stream,", "surface")
 

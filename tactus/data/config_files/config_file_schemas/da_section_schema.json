@@ -6,14 +6,24 @@
   "additionalProperties": true,
   "properties": {
     "surface": {
-      "description": "If true (default), Run surface OI chain.",
-      "type": "boolean",
-      "default": true
+      "type": "object",
+      "properties": {
+        "active": {
+          "description": "If true (default), Run surface OI chain.",
+          "type": "boolean",
+          "default": true
+	}
+      }
     },
     "upper_air": {
-      "description": "If true, the upper-air 3D-Var chain (UpperAir family with OopsVar) is added after the surface OI chain. Set to false to run surface DA only (CANARI chain without 3D-Var), which is useful for refining the surface analysis independently or for surface-only experiments.",
-      "type": "boolean",
-      "default": false
+      "type": "object",
+      "properties": {
+        "active": {
+          "description": "If true, the upper-air 3D-Var chain (UpperAir family with OopsVar) is added after the surface OI chain. Set to false to run surface DA only (CANARI chain without 3D-Var), which is useful for refining the surface analysis independently or for surface-only experiments.",
+          "type": "boolean",
+          "default": true
+	}
+      }
     }
   }
 }

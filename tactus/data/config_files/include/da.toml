@@ -1,16 +1,17 @@
 [da]
-  surface = true
-  upper_air = false
+  scratch = "@SCRATCH@/@CASE@/da"
   # Path to the obsoul_merge.pl script used to merge multiple OBSOUL files.
   # Supports @CYCLE@, @COMPILER@, @PRECISION@ substitutions.
   obsoul_merge_script = "/perm/sis/tactus_bin/@CYCLE@/@COMPILER@/@PRECISION@/bin/obsoul_merge.pl"
   obs_provider = "LACE"
 
 [da.surface]
+  active = true
   odbconverter = "Obsconvert"   # default, can be "Bator"
   obs_types = ["synop"]
 
-[da.3dvar]
+[da.upper_air]
+  active = false
   odbconvert   = "Obsconvert"        # default, can be "Obsconvert"
   # Observation types for 3D-Var upper-air analysis
   obs_types= [

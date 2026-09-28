@@ -30,7 +30,7 @@ class OdbIngestionTask(Task):
         Task.__init__(self, config, self.__class__.__name__)
         self.basetime = as_datetime(config["general.times.basetime"])
         self.da_scratch = self.platform.substitute(config["da.scratch"])
-        self.da_const_dir = self.platform.substitute(config["da.const_dir"])
+        self.da_const_dir = self.platform.get_platform_value("da_const_dir")
         self.domain = config["domain.name"]
         self.obstype = config.get("task.args.obstype", "")
         if not self.obstype:
@@ -85,11 +85,9 @@ class OdbIngestionTask(Task):
 
         for static_file, link_name in [
             (self._PARAM_CFG_NAME, "param.cfg"),
-            ("param_rgb", "namelist_rgb"),
         ]:
             src = os.path.join(self.da_const_dir, static_file)
-            if os.path.isfile(src):
-                os.symlink(src, link_name)
+            self.fmanager.input(src, link_name)
 
         self._write_gpssol_list()
         self._write_nam_lamflag()
@@ -97,8 +95,7 @@ class OdbIngestionTask(Task):
 
         for const in ["LISTE_NOIRE_DIAP", "LISTE_LOC"]:
             src = os.path.join(self.da_const_dir, const)
-            if os.path.isfile(src):
-                os.symlink(src, const)
+            self.fmanager.input(src, const)
 
         # --- ODB environment ---
         rte = dict(os.environ)

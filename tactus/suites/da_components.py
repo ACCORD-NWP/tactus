@@ -357,7 +357,7 @@ class AssimilationFamily(EcflowSuiteFamily):
         # Surface OI chain
         surface_family = None
         variational_trigger = None
-        if config.get("da.surface", True):
+        if config.get("da.surface.active", True):
             surface_family = SurfaceAnalysisFamily(
                 self,
                 config,
@@ -369,7 +369,7 @@ class AssimilationFamily(EcflowSuiteFamily):
             variational_trigger = surface_family.blendsur
 
         # Upper-air 3D-Var chain — optional (da.upper_air, default false)
-        if config.get("da.upper_air", False):
+        if config.get("da.upper_air.active", False):
             VariationalFamily(
                 self,
                 config,
