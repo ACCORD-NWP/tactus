@@ -32,6 +32,7 @@ slots 23, 00, 01 should be searched (three different hours, possibly across
 two calendar dates).
 """
 
+import contextlib
 import datetime as dt
 import os
 import shutil
@@ -39,7 +40,7 @@ import subprocess
 import tempfile
 from collections.abc import Mapping
 
-from ..datetime_utils import as_datetime
+from ..datetime_utils import as_datetime, split_date
 from ..logs import logger
 from ..os_utils import tactusmakedirs
 from .base import Task
@@ -79,8 +80,8 @@ class ObsPrep(Task):
         """
         Task.__init__(self, config, __class__.__name__)
         self.basetime = as_datetime(config["general.times.basetime"])
-        self.obs_dir = self.platform.substitute(config["system.obs_dir"])
-        self.da_scratch = self.platform.substitute(config["da.scratch"])
+        self.obs_dir = config["platform.obs_dir"]
+        self.da_scratch = self.config["da.scratch"]
         self.family = config.get("task.args.da_stream,", "surface")
 
         self.obs_types = (
@@ -131,16 +132,12 @@ class ObsPrep(Task):
         into the working directory. Writes ``obstypes_YYYYMMDDRR`` with the
         list of successfully staged types — used by the Bator tasks.
         """
-        yyyy = self.basetime.strftime("%Y")
-        mm = self.basetime.strftime("%m")
-        dd = self.basetime.strftime("%d")
-        rr = self.basetime.strftime("%H")
-        ymdrr = f"{yyyy}{mm}{dd}{rr}"
+        ymdrr = self.basetime.strftime("%Y%m%d%H")
 
         available_types = []
 
         for obstype in self.obs_types:
-            staged = self._stage_obstype(obstype, ymdrr)
+            staged = self._stage_obstype(obstype)
             if staged:
                 available_types.append(obstype)
             else:
@@ -161,10 +158,10 @@ class ObsPrep(Task):
             "ObsPrep: available obs types for {}: {} in {}",
             ymdrr,
             available_types,
-            self.obs_dir,
+            self.platform.get_platform_value(self.obs_dir),
         )
 
-        out_dir = os.path.join(self.da_scratch, yyyy, mm, dd, rr, "obsprep")
+        out_dir = os.path.join(self.platform.substitute(self.da_scratch), "obsprep")
         tactusmakedirs(out_dir)
         for f in os.listdir("."):
             src = os.path.join(self.wdir, f)
@@ -219,7 +216,7 @@ class ObsPrep(Task):
         "synop": "1",  # OBSOUL type 1 = synop/ship
     }
 
-    def _stage_obstype(self, obstype, ymdrr):
+    def _stage_obstype(self, obstype):
         """Collect and merge all obs files for *obstype* across window slots.
 
         Returns True when at least one file was found and merged, False
@@ -242,10 +239,7 @@ class ObsPrep(Task):
 
         collected = []
         for slot in self._window_slots(obs_step):
-            syyyy = slot.strftime("%Y")
-            smm = slot.strftime("%m")
-            sdd = slot.strftime("%d")
-            srr = slot.strftime("%H")
+            (syyyy, smm, sdd, srr) = split_date(slot)
             slot_ymdrr = f"{syyyy}{smm}{sdd}{srr}"
             subst = {
                 "ymdrr": slot_ymdrr,
@@ -254,8 +248,10 @@ class ObsPrep(Task):
                 "dd": sdd,
                 "rr": srr,
             }
-            slot_date_dir = os.path.join(self.obs_dir, syyyy, smm, sdd)
-            src_dir = self.platform.substitute(spec.get("source_dir", slot_date_dir))
+            src_dir = self.platform.substitute(
+                spec.get("source_dir", self.obs_dir),
+                basetime=slot,
+            )
             for cand_tpl in candidates:
                 fname = cand_tpl.format(**subst)
                 path, is_tmp = self._collect_file(os.path.join(src_dir, fname), obstype)
@@ -277,10 +273,8 @@ class ObsPrep(Task):
         finally:
             for path, is_tmp in collected:
                 if is_tmp:
-                    try:
+                    with contextlib.suppress(OSError):
                         os.unlink(path)
-                    except OSError:
-                        pass
 
         return True
 
@@ -336,9 +330,7 @@ class ObsPrep(Task):
                 for p in paths:
                     with open(p, "rb") as inp:
                         shutil.copyfileobj(inp, out)
-            logger.info(
-                "ObsPrep: merged {} {} files -> {}", len(paths), fmt, local_name
-            )
+            logger.info("ObsPrep: merged {} {} files -> {}", len(paths), fmt, local_name)
 
         elif fmt == "OBSOUL":
             merge_ok = self.obsoul_merge_script and os.path.isfile(
@@ -351,7 +343,7 @@ class ObsPrep(Task):
                 try:
                     list_tmp.write("\n".join(paths) + "\n")
                     list_tmp.close()
-                    subprocess.run(
+                    cmd = (
                         [
                             "perl",
                             self.obsoul_merge_script,
@@ -360,13 +352,11 @@ class ObsPrep(Task):
                             "-f",
                             list_tmp.name,
                         ],
-                        check=True,
                     )
+                    subprocess.run(cmd, check=True)
                 finally:
-                    try:
+                    with contextlib.suppress(OSError):
                         os.unlink(list_tmp.name)
-                    except OSError:
-                        pass
                 logger.info(
                     "ObsPrep: merged {} OBSOUL files -> {} via obsoul_merge.pl",
                     len(paths),

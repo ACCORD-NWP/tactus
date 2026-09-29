@@ -276,19 +276,26 @@ class TestSuite:
             # Data assimilation: surface OI chain + 3D-Var upper-air chain.
             {
                 "suite_control": {"do_assimilation": True},
-                "da": {"upper_air": { "active": True}, },
+                "da": {
+                    "upper_air": {"active": True},
+                },
             },
             # Data assimilation: 3D-Var upper-air chain only, no surface OI chain.
             {
                 "suite_control": {"do_assimilation": True},
-                "da": {"surface": { "active": True}, "upper_air": { "active": True}, },
+                "da": {
+                    "surface": {"active": True},
+                    "upper_air": {"active": True},
+                },
             },
             # Data assimilation across multiple cycles (end > start), so the
             # AssimilationFamily chain is built repeatedly with cross-cycle
             # triggers (prev_cycle_triggers, prev_interpolation_triggers).
             {
                 "suite_control": {"do_assimilation": True},
-                "da": {"upper_air": { "active": True},},
+                "da": {
+                    "upper_air": {"active": True},
+                },
                 "general": {
                     "times": {
                         "start": "2022-05-02T00:00:00Z",
