@@ -1,12 +1,14 @@
 """Shared base for ODB observation-ingestion tasks (Bator, Obsconvert)."""
 
 import os
+import json
 import shutil
 import subprocess
 from collections.abc import Mapping
 
 import pyproj
 
+from ..config_parser import ConfigPaths
 from ..datetime_utils import as_datetime
 from ..logs import logger
 from ..namelist import NamelistGenerator
@@ -60,42 +62,29 @@ class OdbIngestionTask(Task):
         dd = self.basetime.strftime("%d")
         rr = self.basetime.strftime("%H")
 
+        # Do not construct catalogue structures in here
         obsprep_dir = os.path.join(self.da_scratch, yyyy, mm, dd, rr, "obsprep")
 
-        # --- binary ---
-        # Allow a per-obstype override (e.g. "Bator_synop") so a single
-        # obstype can point at a different build than the rest of this task.
-        specific_task = f"{self.name}_{self.obstype}"
-        task_name = (
-            specific_task
-            if self.config.get(f"submission.task_exceptions.{specific_task}")
-            is not None
-            else None
-        )
-        bin_path = self.get_binary(self._BINARY_NAME, task_name=task_name)
+        bin_path = self.get_binary(self._BINARY_NAME)
+        self.fmanager.input(bin_path, self._BINARY_NAME)
         bindir = os.path.dirname(bin_path)
         for tool in ["create_ioassign", "ioassign"]:
             src = os.path.join(bindir, tool)
-            if os.path.isfile(src):
-                os.symlink(src, tool)
-        os.symlink(bin_path, self._BINARY_NAME)
+            os.symlink(src, tool)
 
         # --- namelists and constants ---
         self.nlgen.generate_namelist(self._NLGEN_KEY, "NAMELIST")
 
-        for static_file, link_name in [
-            (self._PARAM_CFG_NAME, "param.cfg"),
-        ]:
-            src = os.path.join(self.da_const_dir, static_file)
-            self.fmanager.input(src, link_name)
+        # Fetch static input data
+        input_definition = ConfigPaths.path_from_subpath(self.platform.substitute("@CYCLE@/obs_process.json"))
+        logger.info("Read data spec from: {}", input_definition)
+        with open(input_definition, "r", encoding="utf-8") as f:
+            input_data = json.load(f)
+        self.fmanager.input_data_iterator(input_data)
 
         self._write_gpssol_list()
         self._write_nam_lamflag()
         bator_lamflag = "1"
-
-        for const in ["LISTE_NOIRE_DIAP", "LISTE_LOC"]:
-            src = os.path.join(self.da_const_dir, const)
-            self.fmanager.input(src, const)
 
         # --- ODB environment ---
         rte = dict(os.environ)
@@ -155,7 +144,7 @@ class OdbIngestionTask(Task):
         self._write_refdata_and_batormap(yyyy, mm, dd, rr, local_name)
 
         # --- create ECMA output directory ---
-        os.makedirs(f"ECMA.{self.obstype}", exist_ok=True)
+        tactusmakedirs(f"ECMA.{self.obstype}")
 
         # --- create IOASSIGN file ---
         # create_ioassign internally calls the `ioassign` binary so `.` must be on PATH.
@@ -194,6 +183,7 @@ class OdbIngestionTask(Task):
         # --- archive output ---
         # Use stream-specific subdirectory so surface (16-pool) and upper-air (128-pool)
         # archives don't overwrite each other when both streams process the same obstype.
+        # Define this in config!
         out_dir = os.path.join(
             self.da_scratch, yyyy, mm, dd, rr, "odb", self.family1, self.obstype
         )

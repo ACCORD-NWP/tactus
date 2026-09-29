@@ -180,6 +180,21 @@
   WALLSIGNAL = "#SBATCH --signal=USR1@30"
   WALLTIME = "#SBATCH --time=00:15:00"
 
+[submission.types.Obsconvert]
+  NPROC = 1
+  tasks = ["Obsconvert_synop"]
+
+[submission.types.Obsconvert.BATCH]
+  NTASKS = "#SBATCH --ntasks=1"
+  WALLTIME = "#SBATCH --time=00:10:00"
+
+[submission.types.Obsconvert.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = "0"
+
+[submission.types.Obsconvert.MODULES]
+  01_INTEL = ["load", "intel/2023.2.0"]
+  OPENMPI = ["load", "openmpi/4.1.1.1"]
+
 [submission.types.parallel]
   NPROC = 32
   SCHOST = "hpc"
