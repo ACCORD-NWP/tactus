@@ -198,16 +198,13 @@
   OMP_NUM_THREADS = 1
   OMPI_MCA_btl = "^vader"
 
+[submission.types.parallel.ENV_FILE]
+  env_file_path = "@SUBMISSION.BINDIR@/../share/ial-bundle/arch/env.sh"
+
 [submission.types.parallel.MODULES]
   # First load the prgenv
-  00_PRGENV = ["load", "prgenv/intel"]
-  # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2026.01.0.0"]
-  FFTW = ["load", "fftw/3.3.10"]
-  HDF5 = ["load", "hdf5/1.14.6"]
-  MKL = ["load", "intel-mkl/19.0.5"]
-  NETCDF = ["load", "netcdf4/4.9.3"]
-  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
+  00_ECFLOW = ["load", "ecflow/5.16.0"]
+  
 
 [submission.types.serial]
   NPROC = 1
@@ -239,13 +236,10 @@
   OMP_NUM_THREADS = 1
   OMPI_MCA_btl = "^vader"
 
+[submission.types.serial.ENV_FILE]
+  env_file_path = "@SUBMISSION.BINDIR@/../share/ial-bundle/arch/env.sh"
+
 [submission.types.serial.MODULES]
   # First load the prgenv
-  00_PRGENV = ["load", "prgenv/intel"]
-  # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2026.01.0.0"]
-  FFTW = ["load", "fftw/3.3.10"]
-  HDF5 = ["load", "hdf5/1.14.6"]
-  MKL = ["load", "intel-mkl/19.0.5"]
-  NETCDF = ["load", "netcdf4/4.9.3"]
-  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
+  00_ECFLOW = ["load", "ecflow/5.16.0"]
+  
