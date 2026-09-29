@@ -204,7 +204,6 @@
 [submission.types.parallel.MODULES]
   # First load the prgenv
   00_ECFLOW = ["load", "ecflow/5.16.0"]
-  
 
 [submission.types.serial]
   NPROC = 1
@@ -242,4 +241,3 @@
 [submission.types.serial.MODULES]
   # First load the prgenv
   00_ECFLOW = ["load", "ecflow/5.16.0"]
-  
