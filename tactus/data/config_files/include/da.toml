@@ -2,7 +2,6 @@
   scratch = "@CASEDIR@/da/@YYYY@/@MM@/@DD@/@HH@"
   # Path to the obsoul_merge.pl script used to merge multiple OBSOUL files.
   # Supports @CYCLE@, @COMPILER@, @PRECISION@ substitutions.
-  obsoul_merge_script = "/perm/sis/tactus_bin/@CYCLE@/@COMPILER@/@PRECISION@/bin/obsoul_merge.pl"
   obs_provider = "LACE"
 
 [da.surface]

@@ -40,6 +40,7 @@ import subprocess
 import tempfile
 from collections.abc import Mapping
 
+from ..config_parser import GeneralConstants
 from ..datetime_utils import as_datetime, split_date
 from ..logs import logger
 from ..os_utils import tactusmakedirs
@@ -114,7 +115,10 @@ class ObsPrep(Task):
         self.obs_step = self._provider.get("obs_step", config.get("da.obs_step", 0))
 
         self.obsoul_merge_script = self.platform.substitute(
-            config.get("da.obsoul_merge_script", "")
+            config.get(
+                "da.obsoul_merge_script",
+                GeneralConstants.PACKAGE_DIRECTORY / "aux" / "obsoul_merge.pl",
+            )
         )
 
         logger.debug(
@@ -154,21 +158,18 @@ class ObsPrep(Task):
         obstypes_file = f"obstypes_{ymdrr}"
         with open(obstypes_file, "w") as fh:
             fh.write("\n".join(available_types) + "\n")
+        out_dir = os.path.join(self.platform.substitute(self.da_scratch), "obsprep")
+        tactusmakedirs(out_dir)
         logger.info(
             "ObsPrep: available obs types for {}: {} in {}",
             ymdrr,
             available_types,
-            self.platform.get_platform_value(self.obs_dir),
+            out_dir,
         )
 
-        out_dir = os.path.join(self.platform.substitute(self.da_scratch), "obsprep")
-        tactusmakedirs(out_dir)
         for f in os.listdir("."):
-            src = os.path.join(self.wdir, f)
-            dst = os.path.join(out_dir, f)
-            if os.path.isfile(src):
-                shutil.copy2(src, dst)
-        logger.info("ObsPrep: staged files archived to {}", out_dir)
+            if f not in ["config.toml"] and os.path.isfile(f):
+                self.fmanager.output(f, out_dir, provider_id="copy")
 
     # ------------------------------------------------------------------
     # Private helpers
@@ -343,16 +344,14 @@ class ObsPrep(Task):
                 try:
                     list_tmp.write("\n".join(paths) + "\n")
                     list_tmp.close()
-                    cmd = (
-                        [
-                            "perl",
-                            self.obsoul_merge_script,
-                            "-o",
-                            local_name,
-                            "-f",
-                            list_tmp.name,
-                        ],
-                    )
+                    cmd = [
+                        "perl",
+                        self.obsoul_merge_script,
+                        "-o",
+                        local_name,
+                        "-f",
+                        list_tmp.name,
+                    ]
                     subprocess.run(cmd, check=True)
                 finally:
                     with contextlib.suppress(OSError):
