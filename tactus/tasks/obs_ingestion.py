@@ -63,7 +63,7 @@ class OdbIngestionTask(Task):
     def execute(self):
         """Run the configured obs-ingestion binary for *self.obstype*."""
         obsprep_dir = os.path.join(
-            self.platform.substitute(self.da_scratch), f"obsprep/{self.family}"
+            self.platform.substitute(self.da_scratch), f"{self.family}/obsprep"
         )
 
         bin_path = self.get_binary(self._BINARY_NAME)
@@ -190,7 +190,7 @@ class OdbIngestionTask(Task):
         # Use stream-specific subdirectory so surface (16-pool) and upper-air (128-pool)
         # archives don't overwrite each other when both streams process the same obstype.
         out_dir = os.path.join(
-            self.platform.substitute(self.da_scratch), "odb", self.family, self.obstype
+            self.platform.substitute(self.da_scratch), self.family, "odb", self.obstype
         )
 
         tactusmakedirs(out_dir)

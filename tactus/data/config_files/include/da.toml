@@ -1,5 +1,5 @@
 [da]
-  scratch = "@CASEDIR@/da/@YYYY@/@MM@/@DD@/@HH@"
+  scratch = "@CASEDIR@/da/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
   # Path to the obsoul_merge.pl script used to merge multiple OBSOUL files.
   # Supports @CYCLE@, @COMPILER@, @PRECISION@ substitutions.
   obs_provider = "LACE"

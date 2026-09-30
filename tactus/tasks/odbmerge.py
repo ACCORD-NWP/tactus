@@ -32,17 +32,17 @@ class OdbMerge(Task):
         Task.__init__(self, config, __class__.__name__)
         self.basetime = as_datetime(config["general.times.basetime"])
         self.da_scratch = config["da.scratch"]
-        # family1 determines output archive subdirectory name
-        self.family1 = config.get("task.args.da_stream", "3dvar")
+        # family determines output archive subdirectory name
+        self.family = config.get("task.args.da_stream", "3dvar")
         self.nbpool = (
             config.get("da.nbpool", 16)
-            if self.family1 == "surface"
+            if self.family == "surface"
             else config.get("da.oops.nbpool", 128)
         )
         self.bator_window_len = config.get("da.bator_window_len", 180)
         self.bator_window_shift = config.get("da.bator_window_shift", -90)
         # Only merge subbases that belong to this stream's obs type list.
-        if self.family1 == "surface":
+        if self.family == "surface":
             self.obs_types = set(config.get("da.obs_types_surface", ["synop", "synop_1"]))
         else:
             self.obs_types = set(
@@ -67,7 +67,7 @@ class OdbMerge(Task):
             )
         logger.debug(
             "Constructed OdbMerge task for family={} obs_types={}",
-            self.family1,
+            self.family,
             sorted(self.obs_types),
         )
 
@@ -75,7 +75,7 @@ class OdbMerge(Task):
         """Merge BATOR subbases and archive merged ECMA ODB."""
         (yyyy, mm, dd, rr) = split_date(self.basetime)
         bator_base_dir = self.platform.substitute(
-            os.path.join(self.da_scratch, "odb", self.family1)
+            os.path.join(self.da_scratch, self.family, "odb")
         )
         # --- locate binaries ---
         shuffle_bin = self.get_binary("shuffle")
@@ -186,7 +186,7 @@ class OdbMerge(Task):
         # --- archive merged ECMA + subbases to DA scratch ---
         # ECMA.iomap references ../ECMA.{obstype}/ relative to ECMA/, so
         # subbases must be archived alongside ECMA as siblings.
-        archive_subdir = f"odbmerge/{self.family1}"
+        archive_subdir = f"{self.family}/odbmerge"
         out_dir = self.platform.substitute(os.path.join(self.da_scratch, archive_subdir))
         tactusmakedirs(out_dir)
         for src_name in ["ECMA"] + [f"ECMA.{b}" for b in bases_to_merge]:

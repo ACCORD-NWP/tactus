@@ -159,7 +159,7 @@ class ObsPrep(Task):
         with open(obstypes_file, "w") as fh:
             fh.write("\n".join(available_types) + "\n")
         out_dir = os.path.join(
-            self.platform.substitute(self.da_scratch), f"obsprep/{self.family}"
+            self.platform.substitute(self.da_scratch), f"{self.family}/obsprep"
         )
         tactusmakedirs(out_dir)
         logger.info(
