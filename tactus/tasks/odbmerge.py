@@ -52,7 +52,7 @@ class OdbMerge(Task):
                         "synop",
                         "synop_1",
                         "gpssol",
-                        "amdr",
+                        "amdar",
                         "geowind",
                         "hrwind",
                         "temp",
@@ -186,7 +186,7 @@ class OdbMerge(Task):
         # --- archive merged ECMA + subbases to DA scratch ---
         # ECMA.iomap references ../ECMA.{obstype}/ relative to ECMA/, so
         # subbases must be archived alongside ECMA as siblings.
-        archive_subdir = f"odbmerge_{self.family1}"
+        archive_subdir = f"odbmerge/{self.family1}"
         out_dir = self.platform.substitute(os.path.join(self.da_scratch, archive_subdir))
         tactusmakedirs(out_dir)
         for src_name in ["ECMA"] + [f"ECMA.{b}" for b in bases_to_merge]:

@@ -160,7 +160,7 @@
   format = "OBSOUL"
   candidates = ["obsoul_1_xxxxxy_xx_{ymdrr}"]
 
-[da.providers.UWC.obstypes.amdr]
+[da.providers.UWC.obstypes.amdar]
   format = "OBSOUL"
   candidates = ["obsoul_2_xxxxxx_xx_{ymdrr}"]
 

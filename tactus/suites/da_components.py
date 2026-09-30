@@ -20,7 +20,7 @@ _DEFAULT_OBS_SURFACE: List[str] = ["synop"]
 _DEFAULT_OBS_3DVAR: List[str] = [
     "synop",
     "gpssol",
-    "amdr",
+    "amdar",
     "geowind",
     "temp",
     "seviri",

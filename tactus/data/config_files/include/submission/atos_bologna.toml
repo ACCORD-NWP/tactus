@@ -182,7 +182,21 @@
 
 [submission.types.Obsconvert]
   NPROC = 1
-  tasks = ["Obsconvert_synop"]
+  tasks = ["Obsconvert_synop",
+"Obsconvert_gpssol",
+"Obsconvert_amdar",
+"Obsconvert_geowind",
+"Obsconvert_temp",
+"Obsconvert_wp",
+"Obsconvert_seviri",
+"Obsconvert_amsua",
+"Obsconvert_amsub",
+"Obsconvert_iasi",
+"Obsconvert_ascat",
+"Obsconvert_radar"
+  ]
+  SCHOST = "hpc"
+  WRAPPER = "srun"
 
 [submission.types.Obsconvert.BATCH]
   NTASKS = "#SBATCH --ntasks=1"
@@ -192,8 +206,8 @@
   DR_HOOK_ASSERT_MPI_INITIALIZED = "0"
 
 [submission.types.Obsconvert.MODULES]
-  01_INTEL = ["load", "intel/2023.2.0"]
-  OPENMPI = ["load", "openmpi/4.1.1.1"]
+  00_PRGENV = ["load", "prgenv/intel"]
+  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
 
 [submission.types.parallel]
   NPROC = 32

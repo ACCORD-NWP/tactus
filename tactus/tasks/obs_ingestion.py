@@ -44,10 +44,10 @@ class OdbIngestionTask(Task):
             raise RuntimeError(
                 f"{self._LOG_TAG}: task.args.obstype variable is not set. "
             )
-        self.family1 = config.get("task.args.da_stream", "3dvar")
+        self.family = config.get("task.args.da_stream", "3dvar")
         self.nbpool = (
             config.get("da.nbpool", 16)
-            if self.family1 == "surface"
+            if self.family == "surface"
             else config.get("da.oops.nbpool", 128)
         )
         self.bator_window_len = config.get("da.bator_window_len", 180)
@@ -62,7 +62,7 @@ class OdbIngestionTask(Task):
 
     def execute(self):
         """Run the configured obs-ingestion binary for *self.obstype*."""
-        obsprep_dir = os.path.join(self.platform.substitute(self.da_scratch), "obsprep")
+        obsprep_dir = os.path.join(self.platform.substitute(self.da_scratch), f"obsprep/{self.family}")
 
         bin_path = self.get_binary(self._BINARY_NAME)
         self.fmanager.input(bin_path, self._BINARY_NAME)
@@ -188,7 +188,7 @@ class OdbIngestionTask(Task):
         # Use stream-specific subdirectory so surface (16-pool) and upper-air (128-pool)
         # archives don't overwrite each other when both streams process the same obstype.
         out_dir = os.path.join(
-            self.platform.substitute(self.da_scratch), "odb", self.family1, self.obstype
+            self.platform.substitute(self.da_scratch), "odb", self.family, self.obstype
         )
 
         tactusmakedirs(out_dir)
