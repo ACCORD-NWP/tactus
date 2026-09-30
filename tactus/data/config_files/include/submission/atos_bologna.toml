@@ -182,18 +182,19 @@
 
 [submission.types.Obsconvert]
   NPROC = 1
-  tasks = ["Obsconvert_synop",
-"Obsconvert_gpssol",
-"Obsconvert_amdar",
-"Obsconvert_geowind",
-"Obsconvert_temp",
-"Obsconvert_wp",
-"Obsconvert_seviri",
-"Obsconvert_amsua",
-"Obsconvert_amsub",
-"Obsconvert_iasi",
-"Obsconvert_ascat",
-"Obsconvert_radar"
+  tasks = [
+    "Obsconvert_synop",
+    "Obsconvert_gpssol",
+    "Obsconvert_amdar",
+    "Obsconvert_geowind",
+    "Obsconvert_temp",
+    "Obsconvert_wp",
+    "Obsconvert_seviri",
+    "Obsconvert_amsua",
+    "Obsconvert_amsub",
+    "Obsconvert_iasi",
+    "Obsconvert_ascat",
+    "Obsconvert_radar"
   ]
   SCHOST = "hpc"
   WRAPPER = "srun"

@@ -62,7 +62,9 @@ class OdbIngestionTask(Task):
 
     def execute(self):
         """Run the configured obs-ingestion binary for *self.obstype*."""
-        obsprep_dir = os.path.join(self.platform.substitute(self.da_scratch), f"obsprep/{self.family}")
+        obsprep_dir = os.path.join(
+            self.platform.substitute(self.da_scratch), f"obsprep/{self.family}"
+        )
 
         bin_path = self.get_binary(self._BINARY_NAME)
         self.fmanager.input(bin_path, self._BINARY_NAME)

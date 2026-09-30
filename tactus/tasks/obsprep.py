@@ -158,7 +158,9 @@ class ObsPrep(Task):
         obstypes_file = f"obstypes_{ymdrr}"
         with open(obstypes_file, "w") as fh:
             fh.write("\n".join(available_types) + "\n")
-        out_dir = os.path.join(self.platform.substitute(self.da_scratch), f"obsprep/{self.family}")
+        out_dir = os.path.join(
+            self.platform.substitute(self.da_scratch), f"obsprep/{self.family}"
+        )
         tactusmakedirs(out_dir)
         logger.info(
             "ObsPrep: available obs types for {}: {} in {}",
@@ -202,7 +204,7 @@ class ObsPrep(Task):
 
         slots = []
         while t_epoch <= end_epoch:
-            slots.append(dt.datetime.fromtimestamp(t_epoch,tz=dt.timezone.utc))
+            slots.append(dt.datetime.fromtimestamp(t_epoch, tz=dt.timezone.utc))
             t_epoch += step_sec
         return slots
 
