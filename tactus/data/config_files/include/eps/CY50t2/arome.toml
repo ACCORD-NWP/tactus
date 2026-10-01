@@ -84,6 +84,10 @@
   lspg_spp = {0 = false, "1:" = true}
   lspp = {0 = false, "1:" = false}
 
+[eps.member_settings.perturbations.pertsurf.active]
+  0 = false
+  "1:" = true
+
 [namelist_update.master.forecast.namspp]
   cspp_model_name = "lam"
   npatfr = -1
