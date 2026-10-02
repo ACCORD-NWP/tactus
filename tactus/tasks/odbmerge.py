@@ -43,11 +43,11 @@ class OdbMerge(Task):
         self.bator_window_shift = config.get("da.bator_window_shift", -90)
         # Only merge subbases that belong to this stream's obs type list.
         if self.family == "surface":
-            self.obs_types = set(config.get("da.obs_types_surface", ["synop", "synop_1"]))
+            self.obs_types = set(config.get("da.surface.obs_types", ["synop", "synop_1"]))
         else:
             self.obs_types = set(
                 config.get(
-                    "da.obs_types_3dvar",
+                    "da.upper_air.obs_types",
                     [
                         "synop",
                         "synop_1",

@@ -5,13 +5,15 @@
   obs_provider = "LACE"
 
 [da.surface]
+  method = "CANARI"
   active = true
   odbconverter = "Obsconvert"  # default, can be "Bator"
   obs_types = ["synop"]
 
 [da.upper_air]
+  method = "3DVAR"
   active = false
-  odbconvert = "Obsconvert"  # default, can be "Obsconvert"
+  odbconverter = "Obsconvert"  # default, can be "Obsconvert"
   # Observation types for 3D-Var upper-air analysis
   obs_types = [
     "synop",

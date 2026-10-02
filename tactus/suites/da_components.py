@@ -157,8 +157,8 @@ class SurfaceAnalysisFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
-        obs_types_surface = config.get("da.obs_types_surface", _DEFAULT_OBS_SURFACE)
-        odb_task_surface = config.get("da.odb_task_surface", "Obsconvert")
+        obs_types = config.get("da.surface.obs_types", _DEFAULT_OBS_SURFACE)
+        odb_task = config.get("da.surface.odbconverter", "Obsconvert")
 
         obsprep = EcflowSuiteTask(
             "ObsPrep",
@@ -177,8 +177,8 @@ class SurfaceAnalysisFamily(EcflowSuiteFamily):
             task_settings,
             input_template,
             ecf_files,
-            obs_types=obs_types_surface,
-            task_class=odb_task_surface,
+            obs_types=obs_types,
+            task_class=odb_task,
             da_stream="surface",
             family_name="Odb",
             trigger=obsprep,
@@ -255,8 +255,8 @@ class VariationalFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
-        obs_types_3dvar = config.get("da.obs_types_3dvar", _DEFAULT_OBS_3DVAR)
-        odb_task_3dvar = config.get("da.odb_task_3dvar", "Obsconvert")
+        obs_types = config.get("da.upper_air.obs_types", _DEFAULT_OBS_3DVAR)
+        odb_task = config.get("da.upper_air.odbconverter", "Obsconvert")
 
         obsprep = EcflowSuiteTask(
             "ObsPrep",
@@ -275,8 +275,8 @@ class VariationalFamily(EcflowSuiteFamily):
             task_settings,
             input_template,
             ecf_files,
-            obs_types=obs_types_3dvar,
-            task_class=odb_task_3dvar,
+            obs_types=obs_types,
+            task_class=odb_task,
             da_stream="3dvar",
             family_name="Odb",
             trigger=obsprep,

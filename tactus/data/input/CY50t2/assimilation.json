@@ -1,0 +1,15 @@
+{
+  "canari_const": {
+    "path": "@DA.CONST_DIR@",
+    "files": [
+      "amv_p_and_tracking_error"
+    ]
+  },
+  "canari_ecoclimap": {
+    "path": "@platform.ecoclimap_bin_dir@",
+    "files": [
+      "ecoclimapI_covers_param.bin",
+      "ecoclimapII_eu_covers_param.bin"
+    ]
+  }
+}

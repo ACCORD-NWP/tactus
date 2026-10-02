@@ -81,6 +81,7 @@ class OdbIngestionTask(Task):
             self.platform.substitute("@CYCLE@/obs_process.json")
         )
         logger.info("Read data spec from: {}", input_definition)
+        self.platform.add_macro({"ODBCONVERTER": self._NLGEN_KEY})
         with open(input_definition, "r", encoding="utf-8") as f:
             input_data = json.load(f)
         self.fmanager.input_data_iterator(input_data)
@@ -91,8 +92,7 @@ class OdbIngestionTask(Task):
 
         # --- ODB environment ---
         (yyyy, mm, dd, rr) = split_date(self.basetime)
-        rte = dict(os.environ)
-        rte.update({
+        rte = {
             "TO_ODB_ECMWF": "0",
             "TO_ODB_SWAPOUT": "0",
             "ODB_DEBUG": "0",
@@ -130,7 +130,8 @@ class OdbIngestionTask(Task):
                 self.wdir, f"ECMA.{self.obstype}", "ECMA.poolmask"
             ),
             "DR_HOOK_ASSERT_MPI_INITIALIZED": "0",
-        })
+        }
+        rte.update(rte=dict(os.environ))
 
         # --- stage obs file(s) from ObsPrep output ---
         local_name = self._stage_obs(obsprep_dir)

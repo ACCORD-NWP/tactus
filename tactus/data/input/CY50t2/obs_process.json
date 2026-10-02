@@ -3,7 +3,7 @@
     "path": "@DA_CONST_DIR@",
     "files": [
       {
-        "param_obsconvert.cfg": "param.cfg"
+        "param_@ODBCONVERTER@.cfg": "param.cfg"
       },
       "LISTE_NOIRE_DIAP",
       "LISTE_LOC"

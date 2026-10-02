@@ -86,9 +86,9 @@ class ObsPrep(Task):
         self.family = config.get("task.args.da_stream", "surface")
 
         self.obs_types = (
-            config.get("da.obs_types_surface", self.DEFAULT_OBS_SURFACE)
+            config.get("da.surface.obs_types", self.DEFAULT_OBS_SURFACE)
             if self.family == "surface"
-            else config.get("da.obs_types_3dvar", self.DEFAULT_OBS_3DVAR)
+            else config.get("da.upper_air.obs_types", self.DEFAULT_OBS_3DVAR)
         )
         logger.info("da_stream:{}", self.family)
 
