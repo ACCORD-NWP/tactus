@@ -20,7 +20,7 @@ _DEFAULT_OBS_SURFACE: List[str] = ["synop"]
 _DEFAULT_OBS_3DVAR: List[str] = [
     "synop",
     "gpssol",
-    "amdr",
+    "amdar",
     "geowind",
     "temp",
     "seviri",
@@ -157,8 +157,8 @@ class SurfaceAnalysisFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
-        obs_types_surface = config.get("da.obs_types_surface", _DEFAULT_OBS_SURFACE)
-        odb_task_surface = config.get("da.odb_task_surface", "Obsconvert")
+        obs_types = config.get("da.surface.obs_types", _DEFAULT_OBS_SURFACE)
+        odb_task = config.get("da.surface.odbconverter", "Obsconvert")
 
         obsprep = EcflowSuiteTask(
             "ObsPrep",
@@ -177,8 +177,8 @@ class SurfaceAnalysisFamily(EcflowSuiteFamily):
             task_settings,
             input_template,
             ecf_files,
-            obs_types=obs_types_surface,
-            task_class=odb_task_surface,
+            obs_types=obs_types,
+            task_class=odb_task,
             da_stream="surface",
             family_name="Odb",
             trigger=obsprep,
@@ -255,8 +255,8 @@ class VariationalFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
-        obs_types_3dvar = config.get("da.obs_types_3dvar", _DEFAULT_OBS_3DVAR)
-        odb_task_3dvar = config.get("da.odb_task_3dvar", "Obsconvert")
+        obs_types = config.get("da.upper_air.obs_types", _DEFAULT_OBS_3DVAR)
+        odb_task = config.get("da.upper_air.odbconverter", "Obsconvert")
 
         obsprep = EcflowSuiteTask(
             "ObsPrep",
@@ -275,8 +275,8 @@ class VariationalFamily(EcflowSuiteFamily):
             task_settings,
             input_template,
             ecf_files,
-            obs_types=obs_types_3dvar,
-            task_class=odb_task_3dvar,
+            obs_types=obs_types,
+            task_class=odb_task,
             da_stream="3dvar",
             family_name="Odb",
             trigger=obsprep,
@@ -357,7 +357,7 @@ class AssimilationFamily(EcflowSuiteFamily):
         # Surface OI chain
         surface_family = None
         variational_trigger = None
-        if config.get("da.surface", True):
+        if config.get("da.surface.active", True):
             surface_family = SurfaceAnalysisFamily(
                 self,
                 config,
@@ -369,7 +369,7 @@ class AssimilationFamily(EcflowSuiteFamily):
             variational_trigger = surface_family.blendsur
 
         # Upper-air 3D-Var chain — optional (da.upper_air, default false)
-        if config.get("da.upper_air", False):
+        if config.get("da.upper_air.active", False):
             VariationalFamily(
                 self,
                 config,
