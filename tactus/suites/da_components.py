@@ -114,6 +114,74 @@ class OdbFamily(EcflowSuiteFamily):
 
 
 # ---------------------------------------------------------------------------
+# ObservationsFamily
+# ---------------------------------------------------------------------------
+
+
+class ObservationFamily(EcflowSuiteFamily):
+    """ecFlow family for the observation preprocessing."""
+
+    def __init__(
+        self,
+        parent,
+        config,
+        task_settings: TaskSettings,
+        input_template,
+        ecf_files,
+        da_stream,
+        trigger=None,
+        ecf_files_remotely=None,
+    ):
+        """Construct ObservationFamily..
+
+        Args:
+            parent: Parent ecFlow node.
+            config: Experiment config.
+            task_settings: Submission configuration.
+            input_template: ecflow job template.
+            ecf_files: Local ecf script path prefix.
+            da_stream (str) : Assimilation part identifier.
+            trigger: Optional trigger for the whole Surface family.
+            ecf_files_remotely: Remote ecf script path prefix.
+        """
+        super().__init__(
+            da_stream,
+            parent,
+            ecf_files,
+            trigger=trigger,
+            ecf_files_remotely=ecf_files_remotely,
+        )
+
+        obs_types = config.get(f"da.{da_stream}.obs_types")
+        odb_task = config.get(f"da.{da_stream}.odbconverter")
+
+        obsprep = EcflowSuiteTask(
+            "ObsPrep",
+            self,
+            config,
+            task_settings,
+            ecf_files,
+            input_template=input_template,
+            variables={"ARGS": f"da_stream={da_stream}"},
+            ecf_files_remotely=ecf_files_remotely,
+        )
+
+        OdbFamily(
+            self,
+            config,
+            task_settings,
+            input_template,
+            ecf_files,
+            obs_types=obs_types,
+            task_class=odb_task,
+            da_stream=da_stream,
+            family_name="Odb",
+            trigger=obsprep,
+            ecf_files_remotely=ecf_files_remotely,
+        )
+
+
+# ---------------------------------------------------------------------------
 # SurfaceAnalysisFamily — CANARI surface OI chain
 # ---------------------------------------------------------------------------
 
@@ -121,11 +189,10 @@ class OdbFamily(EcflowSuiteFamily):
 class SurfaceAnalysisFamily(EcflowSuiteFamily):
     """ecFlow family for the CANARI surface OI assimilation chain.
 
-    Tasks within this family (in dependency order):
-    1. ``ObsPrep``  : stage surface observations (synop).
-    2. ``Odb``      : build surface ODB (Bator + OdbMerge).
-    3. ``Canari``   : run CANARI surface analysis (MASTERODB conf 701).
-    4. ``BlendSur`` : blend CANARI with LBC SST (BLENDSUR executable).
+    Tasks and families within this family (in dependency order):
+    1. ``ObservationFamily``  : Process observations.
+    2. ``Canari``   : run CANARI surface analysis (MASTERODB conf 701).
+    3. ``BlendSur`` : blend CANARI with LBC SST (BLENDSUR executable).
     """
 
     def __init__(
@@ -157,32 +224,14 @@ class SurfaceAnalysisFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
-        obs_types = config.get("da.surface.obs_types", _DEFAULT_OBS_SURFACE)
-        odb_task = config.get("da.surface.odbconverter", "Obsconvert")
-
-        obsprep = EcflowSuiteTask(
-            "ObsPrep",
-            self,
+        obs_family = ObservationFamily(
+            self.suite,
             config,
-            task_settings,
-            ecf_files,
-            input_template=input_template,
-            variables={"ARGS": "da_stream=surface"},
-            ecf_files_remotely=ecf_files_remotely,
-        )
-
-        odb_family = OdbFamily(
-            self,
-            config,
-            task_settings,
+            self.task_settings,
             input_template,
-            ecf_files,
-            obs_types=obs_types,
-            task_class=odb_task,
+            self.ecf_files,
             da_stream="surface",
-            family_name="Odb",
-            trigger=obsprep,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_files_remotely=self.ecf_files_remotely,
         )
 
         canari = EcflowSuiteTask(
@@ -192,7 +241,7 @@ class SurfaceAnalysisFamily(EcflowSuiteFamily):
             task_settings,
             ecf_files,
             input_template=input_template,
-            trigger=odb_family,
+            trigger=obs_family,
             ecf_files_remotely=ecf_files_remotely,
         )
 
@@ -216,10 +265,9 @@ class SurfaceAnalysisFamily(EcflowSuiteFamily):
 class VariationalFamily(EcflowSuiteFamily):
     """ecFlow family for the 3D-Var upper-air assimilation chain.
 
-    Tasks within this family (in dependency order):
-    1. ``ObsPrep`` : stage all upper-air observation types.
-    2. ``Odb``     : build 3D-Var ODB (Bator or Obsconvert + OdbMerge).
-    3. ``OopsVar`` : OOPS-based screening + minimisation; triggered by both
+    Tasks and families within this family (in dependency order):
+    1. ``ObservationFamily``  : Process observations.
+    2. ``OopsVar`` : OOPS-based screening + minimisation; triggered by both
                      ``Odb`` and ``Surface/BlendSur`` (blended first guess).
     """
 
@@ -255,34 +303,16 @@ class VariationalFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
-        obs_types = config.get("da.upper_air.obs_types", _DEFAULT_OBS_3DVAR)
-        odb_task = config.get("da.upper_air.odbconverter", "Obsconvert")
-
-        obsprep = EcflowSuiteTask(
-            "ObsPrep",
-            self,
+        obs_family = ObservationFamily(
+            self.suite,
             config,
-            task_settings,
-            ecf_files,
-            input_template=input_template,
-            variables={"ARGS": "da_stream=3dvar"},
-            ecf_files_remotely=ecf_files_remotely,
-        )
-
-        odb_family = OdbFamily(
-            self,
-            config,
-            task_settings,
+            self.task_settings,
             input_template,
-            ecf_files,
-            obs_types=obs_types,
-            task_class=odb_task,
-            da_stream="3dvar",
-            family_name="Odb",
-            trigger=obsprep,
-            ecf_files_remotely=ecf_files_remotely,
+            self.ecf_files,
+            da_stream="upper_air",
+            ecf_files_remotely=self.ecf_files_remotely,
         )
-        oopsvar_trigger = combine_triggers([odb_family, blendsur_node, trigger])
+        oopsvar_trigger = combine_triggers([obs_family, blendsur_node, trigger])
 
         # OOPS Var: a single OOVAR call handles screening + minimization.
         EcflowSuiteTask(
