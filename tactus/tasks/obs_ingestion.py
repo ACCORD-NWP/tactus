@@ -27,7 +27,7 @@ class OdbIngestionTask(Task):
     _BINARY_NAME: str = ""
     _PARAM_CFG_NAME: str = ""
     _LOG_TAG: str = ""
-    _NLGEN_KEY: str = "obsconvert"
+    _NLGEN_KEY: str = ""
 
     def __init__(self, config):
         """Construct forecast object.
