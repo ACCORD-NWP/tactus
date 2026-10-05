@@ -82,7 +82,7 @@
         },
         "nbpool": {
           "description": "Number of ODB pools.",
-          "type": "string",
+          "type": "integer",
           "default": 16
         }
       }
@@ -168,7 +168,7 @@
         },
         "nbpool": {
           "description": "Number of ODB pools.",
-          "type": "string",
+          "type": "integer",
           "default": 128
         }
       }
