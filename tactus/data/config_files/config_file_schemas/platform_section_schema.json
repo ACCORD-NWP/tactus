@@ -79,6 +79,11 @@
       "type": "string",
       "description": "Path to e923 input data"
     },
+    "obs_dir": {
+      "type": "string",
+      "description": "Path to observations",
+      "default": "@CASEDIR@/observations/@YYYY@/@MM@/@DD@/@HH@"
+    },
     "ncdir": {
       "type": "string",
       "description": "Path to ECrad NetCDF data"

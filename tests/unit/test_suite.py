@@ -824,7 +824,7 @@ class TestSuiteWithEcflowNode:
                     "interpolate_boundaries": False,
                     "do_assimilation": True,
                 },
-                "da": {"upper_air": True, "bgcycle": "2022050200"},
+                "da": {"upper_air": {"active": True}, "bgcycle": "2022050200"},
                 "eps": {"general": {"members": [0, 1]}},
                 "submission": {"max_ecf_tasks": 2},
                 "reference_checker": {"check": True},

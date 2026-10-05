@@ -225,13 +225,13 @@ class SurfaceAnalysisFamily(EcflowSuiteFamily):
         )
 
         obs_family = ObservationFamily(
-            self.suite,
+            parent,
             config,
-            self.task_settings,
+            task_settings,
             input_template,
-            self.ecf_files,
+            ecf_files,
             da_stream="surface",
-            ecf_files_remotely=self.ecf_files_remotely,
+            ecf_files_remotely=ecf_files_remotely,
         )
 
         canari = EcflowSuiteTask(
@@ -304,13 +304,13 @@ class VariationalFamily(EcflowSuiteFamily):
         )
 
         obs_family = ObservationFamily(
-            self.suite,
+            parent,
             config,
-            self.task_settings,
+            task_settings,
             input_template,
-            self.ecf_files,
+            ecf_files,
             da_stream="upper_air",
-            ecf_files_remotely=self.ecf_files_remotely,
+            ecf_files_remotely=ecf_files_remotely,
         )
         oopsvar_trigger = combine_triggers([obs_family, blendsur_node, trigger])
 

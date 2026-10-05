@@ -122,8 +122,9 @@ class ObsPrep(Task):
 
         if not available_types:
             raise RuntimeError(
-                f"ObsPrep: no observation types were available for {ymdhh}. "
-                "Cannot proceed with assimilation."
+                f"ObsPrep: no observation types were available for {ymdhh}"
+                f"\nin {self.platform.substitute(self.obs_dir)}."
+                "\nCannot proceed with assimilation."
             )
 
         obstypes_file = f"obstypes_{ymdhh}"
