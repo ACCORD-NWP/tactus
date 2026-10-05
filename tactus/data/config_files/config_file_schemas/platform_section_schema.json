@@ -35,6 +35,11 @@
       "description": "Path to the tactus code, normally no need to change",
       "default": "set-by-the-system"
     },
+    "da_const_dir": {
+      "type": "string",
+      "description": "Path to data assimilation static data",
+      "da_const_dir": "@STATIC_DATA@/BATOR"
+    },
     "pgd_data_path": {
       "type": "string",
       "description": "Path to PGD input data"
