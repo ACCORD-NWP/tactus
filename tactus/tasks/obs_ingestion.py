@@ -9,9 +9,10 @@ from collections.abc import Mapping
 import pyproj
 
 from ..config_parser import ConfigPaths
-from ..datetime_utils import as_datetime, split_date
+from ..datetime_utils import as_datetime, split_date, td2min
 from ..logs import logger
 from ..namelist import NamelistGenerator
+from ..obs_utils import Observations
 from ..os_utils import tactusmakedirs
 from .base import Task
 from .batch import BatchJob
@@ -44,26 +45,14 @@ class OdbIngestionTask(Task):
             raise RuntimeError(
                 f"{self._LOG_TAG}: task.args.obstype variable is not set. "
             )
-        self.family = config.get("task.args.da_stream", "3dvar")
-        self.nbpool = (
-            config.get("da.nbpool", 16)
-            if self.family == "surface"
-            else config.get("da.oops.nbpool", 128)
-        )
-        self.bator_window_len = config.get("da.bator_window_len", 180)
-        self.bator_window_shift = config.get("da.bator_window_shift", -90)
-        self.bator_nbslot = config.get("da.bator_nbslot", 1)
-        self.bator_slot_len = config.get("da.bator_slot_len", 0)
-        self.bator_center_len = config.get("da.bator_center_len", 0)
-        obs_provider = config.get("da.obs_provider", "UWC")
-        self._provider = config.get("da.providers", {}).get(obs_provider, {})
+        self.obs = Observations(config)
         self.nlgen = NamelistGenerator(config, self._NLGEN_KEY)
         logger.debug("Constructed {} task for obstype={}", self._LOG_TAG, self.obstype)
 
     def execute(self):
         """Run the configured obs-ingestion binary for *self.obstype*."""
         obsprep_dir = os.path.join(
-            self.platform.substitute(self.da_scratch), f"{self.family}/obsprep"
+            self.platform.substitute(self.da_scratch), f"{self.obs.family}/obsprep"
         )
 
         bin_path = self.get_binary(self._BINARY_NAME)
@@ -91,7 +80,7 @@ class OdbIngestionTask(Task):
         bator_lamflag = "1"
 
         # --- ODB environment ---
-        (yyyy, mm, dd, rr) = split_date(self.basetime)
+        (yyyy, mm, dd, hh) = split_date(self.basetime)
         rte = {
             "TO_ODB_ECMWF": "0",
             "TO_ODB_SWAPOUT": "0",
@@ -101,23 +90,23 @@ class OdbIngestionTask(Task):
             "ODB_STATIC_LINKING": "1",
             "ODB_IO_METHOD": "1",
             "ODB_IO_FILESIZE": "128",
-            "ODB_IO_GRPSIZE": str(self.nbpool),
+            "ODB_IO_GRPSIZE": str(self.obs.nbpool),
             "EC_PROFILE_HEAP": "0",
             "F_RECLUNIT": "BYTE",
             "F_UFMTENDIAN": "big",
             "ODB_ANALYSIS_DATE": f"{yyyy}{mm}{dd}",
-            "ODB_ANALYSIS_TIME": f"{rr}0000",
+            "ODB_ANALYSIS_TIME": f"{hh}0000",
             "TIME_INIT_YYYYMMDD": f"{yyyy}{mm}{dd}",
-            "TIME_INIT_HHMMSS": f"{rr}0000",
+            "TIME_INIT_HHMMSS": f"{hh}0000",
             "ODB_FEBINPATH": bindir,
             "ODB_CMA": "ECMA",
-            "NBPOOL": str(self.nbpool),
-            "BATOR_NBPOOL": str(self.nbpool),
-            "BATOR_WINDOW_LEN": str(self.bator_window_len),
-            "BATOR_WINDOW_SHIFT": str(self.bator_window_shift),
-            "BATOR_SLOT_LEN": str(self.bator_slot_len),
-            "BATOR_CENTER_LEN": str(self.bator_center_len),
-            "BATOR_NBSLOT": str(self.bator_nbslot),
+            "NBPOOL": str(self.obs.nbpool),
+            "BATOR_NBPOOL": str(self.obs.nbpool),
+            "BATOR_WINDOW_LEN": td2min(self.obs.bator_window_len),
+            "BATOR_WINDOW_SHIFT": td2min(self.obs.bator_window_shift),
+            "BATOR_SLOT_LEN": td2min(self.obs.bator_slot_len),
+            "BATOR_CENTER_LEN": td2min(self.obs.bator_center_len),
+            "BATOR_NBSLOT": str(self.obs.bator_nbslot),
             "BATOR_BASE": bindir,
             "BATOR_LAMFLAG": bator_lamflag,
             "IOASSIGN": os.path.join(self.wdir, "IOASSIGN"),
@@ -131,7 +120,7 @@ class OdbIngestionTask(Task):
             ),
             "DR_HOOK_ASSERT_MPI_INITIALIZED": "0",
         }
-        rte.update(rte=dict(os.environ))
+        rte.update(dict(os.environ))
 
         # --- stage obs file(s) from ObsPrep output ---
         local_name = self._stage_obs(obsprep_dir)
@@ -144,7 +133,7 @@ class OdbIngestionTask(Task):
             return
 
         # --- create refdata and batormap ---
-        self._write_refdata_and_batormap(yyyy, mm, dd, rr, local_name)
+        self._write_refdata_and_batormap(yyyy, mm, dd, hh, local_name)
 
         # --- create ECMA output directory ---
         tactusmakedirs(f"ECMA.{self.obstype}")
@@ -154,7 +143,7 @@ class OdbIngestionTask(Task):
         ioassign_env = dict(rte)
         ioassign_env["PATH"] = "." + os.pathsep + ioassign_env.get("PATH", "")
         result = subprocess.run(
-            f"./create_ioassign -l{rte['ODB_CMA']} -n{self.nbpool}",
+            f"./create_ioassign -l{rte['ODB_CMA']} -n{self.obs.nbpool}",
             shell=True,
             env=ioassign_env,
             check=False,
@@ -191,7 +180,10 @@ class OdbIngestionTask(Task):
         # Use stream-specific subdirectory so surface (16-pool) and upper-air (128-pool)
         # archives don't overwrite each other when both streams process the same obstype.
         out_dir = os.path.join(
-            self.platform.substitute(self.da_scratch), self.family, "odb", self.obstype
+            self.platform.substitute(self.da_scratch),
+            self.obs.family,
+            "odb",
+            self.obstype,
         )
 
         tactusmakedirs(out_dir)
@@ -212,7 +204,7 @@ class OdbIngestionTask(Task):
         Returns the local filename on success, None if no file is available.
         """
         # New schema: obstypes nested. Old schema: direct keys under provider.
-        obstypes = self._provider.get("obstypes") or self._provider
+        obstypes = self.obs.provider.get("obstypes") or self.obs.provider
         spec = obstypes.get(self.obstype)
         if not isinstance(spec, Mapping):
             logger.info(
@@ -248,19 +240,19 @@ class OdbIngestionTask(Task):
         """Copy OBSOUL file rewriting the header time to 6-digit HHMMSS format.
 
         Some providers write only a 2-digit HH (e.g. "    20250209          00")
-        which causes the ingestion binary to abort with "OBsoul incorrect".
+        which causes the ingestion binary to abort with "OBsoul incohhect".
         """
         hhmmss = self.basetime.strftime("%H") + "0000"
         yyyymmdd = self.basetime.strftime("%Y%m%d")
-        correct_header = f"    {yyyymmdd}\t{hhmmss}\n"
+        cohhect_header = f"    {yyyymmdd}\t{hhmmss}\n"
         with open(src) as fin, open(local_name, "w") as fout:
             fin.readline()  # discard original header
-            fout.write(correct_header)
+            fout.write(cohhect_header)
             for line in fin:
                 fout.write(line)
         logger.debug("{}: copied {} with fixed OBSOUL header", self._LOG_TAG, local_name)
 
-    def _write_refdata_and_batormap(self, yyyy, mm, dd, rr, local_name):
+    def _write_refdata_and_batormap(self, yyyy, mm, dd, hh, local_name):
         """Write refdata and batormap files.
 
         Format is derived from the local_name prefix (e.g. "OBSOUL.synop" → "OBSOUL").
@@ -279,7 +271,7 @@ class OdbIngestionTask(Task):
 
         bator_name = self.obstype
         with open("refdata", "w") as fh:
-            fh.write(f"{self.obstype:<8} {fmt:<8} {bator_name:<16} {yyyy}{mm}{dd} {rr}\n")
+            fh.write(f"{self.obstype:<8} {fmt:<8} {bator_name:<16} {yyyy}{mm}{dd} {hh}\n")
         with open("batormap", "w") as fh:
             fh.write(f"{self.obstype:<8} {self.obstype:<8} {fmt:<8} {bator_name}\n")
 

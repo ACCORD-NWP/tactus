@@ -330,3 +330,16 @@ def split_date(dt, template=("%Y", "%m", "%d", "%H")):
 
     """
     return [dt.strftime(t) for t in template]
+
+
+def td2min(td):
+    """Return a timedelta object value in minutes and as string.
+
+    Args:
+        td (timedelta): Timedelta object
+
+    Returns:
+        A string of nearest representation of td in minutes
+
+    """
+    return str(int(td.total_seconds() / 60))

@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from tactus.os_utils import tactusmakedirs
-from tactus.suites.base import EcflowSuiteTask, SuiteDefinition, EcflowSuiteFamily
+from tactus.suites.base import EcflowSuiteTask, SuiteDefinition
 from tactus.suites.da_components import ObservationFamily
 
 
@@ -49,9 +49,7 @@ class ObsprocSuiteDefinition(SuiteDefinition):
 
         obs_trigger = []
         for da_stream in ("surface", "upper_air"):
-
             if config.get(f"da.{da_stream}.active", False):
-
                 obs_family = ObservationFamily(
                     self.suite,
                     config,
