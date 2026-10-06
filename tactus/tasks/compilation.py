@@ -1,12 +1,9 @@
 """Compialtion tasks."""
 
-import copy
 import os
 import shutil
 import sys
 from pathlib import Path
-
-from ruamel.yaml import YAML
 
 from ..logs import logger
 from ..os_utils import tactusmakedirs
@@ -84,41 +81,6 @@ class TactusBundleCreate(Task):
 
         self.compile_dir = self.platform.substitute(compile_dir)
 
-    def deep_merge(self, original, updates):
-        """Recursively merge `updates` into `original`.
-
-        Rules:
-        - Dictionaries and lists of dictionaries are merged recursively.
-        - Other lists and scalar values are replaced entirely.
-        - Keys missing from `updates` remain unchanged.
-        """
-        if isinstance(original, dict) and isinstance(updates, dict):
-            merged = copy.deepcopy(original)
-            for key, value in updates.items():
-                if key in merged:
-                    if isinstance(merged[key], dict) and isinstance(value, dict):
-                        merged[key] = self.deep_merge(merged[key], value)
-
-                    elif isinstance(merged[key], list) and isinstance(value, list):
-                        merged[key] = {k: v for d in merged[key] for k, v in d.items()}
-                        new_val = {k: v for d in value for k, v in d.items()}
-                        merged[key] = self.deep_merge(merged[key], new_val)
-                    else:
-                        merged[key] = copy.deepcopy(value)
-
-                else:
-                    merged[key] = copy.deepcopy(value)
-
-        else:
-            return copy.deepcopy(updates)
-
-        if "projects" in merged:
-            merged["projects"] = [
-                {key: value} for key, value in merged["projects"].items()
-            ]
-
-        return merged
-
     def execute(self):
         """Execute task."""
         batch_job = BatchJob(os.environ)
@@ -130,27 +92,11 @@ class TactusBundleCreate(Task):
         os.environ["IAL_DIR"] = self.platform.substitute(ial_dir)
 
         if self.config["compile.bundle_update"]:
-            yaml = YAML()
-
-            # Formatting preservation settings
-            yaml.preserve_quotes = True
-            yaml.indent(mapping=4, sequence=4, offset=2)
-            yaml.width = 4096
-            try:
-                with open(self.orig_bundle_file, "r", encoding="utf-8") as f:
-                    orig_bundle_dict = yaml.load(f) or {}
-
-                with open(self.update_bundle_file, "r", encoding="utf-8") as f:
-                    upd_bundle_dict = yaml.load(f) or {}
-
-            except FileNotFoundError:
-                orig_bundle_dict = {}
-                upd_bundle_dict = {}
-
-            merged_dict = self.deep_merge(orig_bundle_dict, upd_bundle_dict)
-
-            with open(self.bundle_file, "w", encoding="utf-8") as f:
-                yaml.dump(merged_dict, f)
+            batch_job.run(
+                f"cd {self.compile_dir}; {self.ecbundle_bin} merge "
+                + f"{self.orig_bundle_file} {self.update_bundle_file} "
+                + f"-o {self.bundle_file}"
+            )
 
         batch_job.run(
             f"cd {self.compile_dir}; {self.ecbundle_bin} create "
