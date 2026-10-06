@@ -157,6 +157,11 @@
           "type": "boolean",
           "description": "Value of TFP_Q%LLGP in domain namelist for c903. True for gridpoint humidity."
         },
+        "lbc_bin_cycle": {
+          "type": "string",
+          "description": "Cycle of executable used in the LBC task.",
+          "default": "@CYCLE@"
+        },
         "lam": {
           "title": "LAM related boundary settings",
           "description": "LAM related boundary settings",
