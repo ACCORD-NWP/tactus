@@ -13,7 +13,7 @@
   bindir_gl = "@SUBMISSION.BINDIR@"
 
 [submission.task_exceptions.E923Update]
-  bindir = "@INSTALL_DIR_CY49T2@/CY49t2/intel/R64/latest/bin"
+  bindir = "@INSTALL_DIR_CY49T2@/CY49t2/@COMPILER@/R64/latest/bin"
   binary = "fa_sfx2clim"
 
 [submission.task_exceptions.E923Update.ENV]
