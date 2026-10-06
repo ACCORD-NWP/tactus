@@ -9,6 +9,18 @@ Miscellaneous Documentation
    :parser: myst_parser.sphinx_
 
 .. include::
+    markdown_docs/compiling.md
+   :parser: myst_parser.sphinx_
+
+.. include::
+    markdown_docs/binaries.md
+   :parser: myst_parser.sphinx_
+
+.. include::
+    markdown_docs/comput_param.md
+   :parser: myst_parser.sphinx_
+
+.. include::
     markdown_docs/tasks.md
    :parser: myst_parser.sphinx_
 
@@ -22,14 +34,6 @@ Miscellaneous Documentation
 
 .. include::
     markdown_docs/domains.md
-   :parser: myst_parser.sphinx_
-
-.. include::
-    markdown_docs/binaries.md
-   :parser: myst_parser.sphinx_
-
-.. include::
-    markdown_docs/comput_param.md
    :parser: myst_parser.sphinx_
 
 .. include::

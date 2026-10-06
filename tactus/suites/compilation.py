@@ -56,5 +56,6 @@ class CompilationSuiteDefinition(SuiteDefinition):
                 self.ecf_files,
                 input_template=input_template,
                 trigger=compilation,
+                variables={"TACTUS_TASK": "Cleaning", "ARGS": "cleaning_type=PostMortem"},
                 ecf_files_remotely=self.ecf_files_remotely,
             )

@@ -133,9 +133,9 @@ These examples assume that you have successfully [Set up environment](#set-up-en
 
 The following command will run the full suite using the default experiment:
 ```shell
-tactus case ?tactus/data/config_files/configurations/cy49t2_arome --case-name my_first_test --start-suite
+tactus case ?tactus/data/config_files/configurations/cy50t2_arome --case-name my_first_test --start-suite
 ```
-This will generate a new config file `my_first_test.toml` that is used to launch the suite. The working directories and final results can be found under `$SCRATCH/tactus/my_first_test'.
+This will generate a new config file `my_first_test.toml` that is used to launch the suite. The working directories and final results can be found under `$SCRATCH/tactus/my_first_test'. Precompiled binaries for the associated IAL version will be used. For more information how to compile your own binaries with tactus please visit the [documentation](https://ACCORD-NWP.github.io/tactus/misc_section_in_doc_page.html#running-a-compilation).
 
 ### Running a single task from command line
 From the example above we can rerun e.g. the `Forecast` task from command line by
