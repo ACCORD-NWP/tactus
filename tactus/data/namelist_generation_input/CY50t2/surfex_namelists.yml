@@ -924,8 +924,6 @@ sfx_prep_isba_AROME:
     LSURF_DIAG_ALBEDO: True
   NAM_PREP_ISBA:
     LISBA_CANOPY: False
-  NAM_WRITE_SURF_ATM:
-    LSPLIT_PATCH: False
 
 sfx_prep_isba_AROME_ecoclimap_sg:
   NAM_FRAC:

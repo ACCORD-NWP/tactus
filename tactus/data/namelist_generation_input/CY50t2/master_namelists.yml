@@ -295,8 +295,6 @@ f4_AROME:
     YEZDIAG_NL(2)%LREQOUT: false
     YEZDIAG_NL(3)%CNAME: EZDIAG03
     YEZDIAG_NL(3)%LREQOUT: false
-    YEZDIAG_NL(4)%CNAME: INPRRTOT3D
-    YEZDIAG_NL(4)%LREQOUT: true
     YG_NL%LCOMAD: true
     YG_NL%LINTLIN: true
     YG_NL%LQM: true
@@ -305,7 +303,6 @@ f4_AROME:
     YI_NL%LINTLIN: true
     YI_NL%LQM: true
     YI_NL%LSLHD: false
-    YI_NL%REFVALC: 0.0
     YL_NL%LCOMAD: true
     YL_NL%LINTLIN: true
     YL_NL%LQM: true
@@ -322,7 +319,6 @@ f4_AROME:
     YS_NL%LINTLIN: true
     YS_NL%LQM: true
     YS_NL%LSLHD: false
-    YS_NL%REFVALC: 0.0
     YTKE_NL%NREQIN: -1
   NAMOPH:
     CFNHWF: ECHIS
@@ -473,38 +469,36 @@ f4_AROME_ecrad:
     NOVLP: 1
     NDUMPBADINPUTS: 0
   RADIATION:
-    iverbose: 1
-    iverbosesetup: 3
-    directory_name: .
-    do_clear: true
-    do_save_radiative_properties: false
-    do_save_spectral_flux: false
-    do_save_gpoint_flux: false
-    do_surface_sw_spectral_flux: true
-    use_aerosols: true
-    do_lw_derivatives: true
-    gas_model_name: RRTMG-IFS
-    cloud_mixing_ratio_threshold: .100E-08
-    cloud_inhom_decorr_scaling:  1.00
-    cloud_fraction_threshold:  .100E-05
-    use_beta_overlap:  false
-    liquid_model_name: Nielsen
-    ice_model_name: Fu-IFS
-    do_fu_lw_ice_optics_bug: false
-    overlap_scheme_name: Exp-Ran
-    sw_solver_name: McICA
-    do_sw_delta_scaling_with_gases: false
-    lw_solver_name: McICA
-    do_lw_cloud_scattering: false
-    do_lw_aerosol_scattering: false
+    IVERBOSE: 1
+    IVERBOSESETUP: 3
+    DIRECTORY_NAME: .
+    DO_CLEAR: true
+    DO_SAVE_RADIATIVE_PROPERTIES: false
+    DO_SAVE_SPECTRAL_FLUX: false
+    DO_SAVE_GPOINT_FLUX: false
+    DO_SURFACE_SW_SPECTRAL_FLUX: true
+    USE_AEROSOLS: true
+    DO_LW_DERIVATIVES: true
+    GAS_MODEL_NAME: RRTMG-IFS
+    CLOUD_MIXING_RATIO_THRESHOLD: .100E-08
+    CLOUD_INHOM_DECORR_SCALING:  1.00
+    CLOUD_FRACTION_THRESHOLD:  .100E-05
+    USE_BETA_OVERLAP:  false
+    LIQUID_MODEL_NAME: Nielsen
+    ICE_MODEL_NAME: Fu-IFS
+    DO_FU_LW_ICE_OPTICS_BUG: false
+    OVERLAP_SCHEME_NAME: Exp-Ran
+    SW_SOLVER_NAME: McICA
+    DO_SW_DELTA_SCALING_WITH_GASES: false
+    LW_SOLVER_NAME: McICA
+    DO_LW_CLOUD_SCATTERING: false
+    DO_LW_AEROSOL_SCATTERING: false
   NAMPHY:
     LAERODES: false
     LAEROLAN: false
     LAEROSEA: false
     LAEROSOO: false
     NSOLE: 1
-  NAMGFL:
-    NACTAERO: 12
 
 f4_ALARO:
   NAERAD:
