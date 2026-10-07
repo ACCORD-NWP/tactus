@@ -90,7 +90,12 @@
   ial_version = "develop"
 
 [compile]
-  ial_git_repo = "git@github.com:ACCORD-NWP/IAL"
+  ial_git_repo = "git@github.com:uandrae/IAL"
+  ial_git_version = "CY50t2_bstrajnar_cmake4da_upd"
+  # ial_git_repo = "git@github.com:bstrajnar/IAL"
+  # ial_git_version = "CY50t2_bstrajnar_cmake4da"
+  # ial_git_repo = "git@github.com:pmarguinaud/IAL"
+  # ial_git_version = "cmake-validation"
 
 [include]
   archiving = "include/archiving/@HOST@.toml"

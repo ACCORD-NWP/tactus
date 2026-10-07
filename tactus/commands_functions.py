@@ -165,17 +165,18 @@ def create_compile_exp(args, config):
         config (ParsedConfig): Parsed config file contents.
 
     """
-    if args.ial_tag is not None:
-        platform = Platform(config)
-        ial_tag_case = sanitize_case_name(platform.substitute(args.ial_tag))
-        config = config.copy(
-            update={
-                "compile": {
-                    "ial_git_version": args.ial_tag,
-                    "ial_git_tag_case": ial_tag_case,
-                },
-            }
-        )
+    if args.ial_tag is None:
+        args.ial_tag = config["compile.ial_git_version"]
+    platform = Platform(config)
+    ial_tag_case = sanitize_case_name(platform.substitute(args.ial_tag))
+    config = config.copy(
+        update={
+            "compile": {
+                "ial_git_version": args.ial_tag,
+                "ial_git_tag_case": ial_tag_case,
+            },
+        }
+    )
     if args.ial_repo is not None:
         config = config.copy(update={"compile": {"ial_git_repo": args.ial_repo}})
     if args.compiler is not None:
