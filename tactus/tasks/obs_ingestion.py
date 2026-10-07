@@ -121,6 +121,9 @@ class OdbIngestionTask(Task):
             "DR_HOOK_ASSERT_MPI_INITIALIZED": "0",
         }
         rte.update(dict(os.environ))
+        bufr_tables = self.platform.get_platform_value("bufr_tables")
+        if bufr_tables:
+            rte["BUFR_TABLES"] = bufr_tables
 
         # --- stage obs file(s) from ObsPrep output ---
         local_name = self._stage_obs(obsprep_dir)
