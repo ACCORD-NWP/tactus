@@ -7,3 +7,6 @@
 [suite_control]
   do_archiving = false
   max_static_data_tasks = 2
+
+[boundaries]
+  lbc_bin_cycle = "CY49t2"
