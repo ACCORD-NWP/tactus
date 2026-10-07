@@ -16,7 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support to compile assimilation related binaries. [#192](https://github.com/ACCORD-NWP/tactus/pull/192)(@bstrajnar, @uandrae)
 - Introduced perturbation tasks in the initial data selection procedure [#117](https://github.com/ACCORD-NWP/tactus/pull/117)(@uandrae)
 - Add support for environment settings from a file in TaskSettings [#196](https://github.com/ACCORD-NWP/tactus/pull/196)(@pardallio)
+- Introduced possibility to compile with GNU in CY50t2 [#188](https://github.com/ACCORD-NWP/tactus/pull/188)(@pardallio)
+
 ### Changed
+- Bumped ecbundle version to 2.6.0 to use bundle merge functionality. [#220](https://github.com/ACCORD-NWP/tactus/pull/220)(@pardallio)
 - Change default to use latest tagged precompiled binaries on atos. [#145](https://github.com/ACCORD-NWP/tactus/pull/145)(@uandrae, @pardallio)
 - Updates .gitignore to exclude toml files in tactus folder and moves ttr config files to ttr-configs directory which is also in .gitignore [#194](https://github.com/ACCORD-NWP/tactus/pull/194)(@pardallio)
 - Update the unit-test CI container to Python 3.10 on Debian Bookworm so apt-based system dependency installation works again. [\#201](https://github.com/ACCORD-NWP/tactus/pull/201) (@uandrae)
@@ -28,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fixed bug in compilation by bumping gl version to 1.0.1. [#212](https://github.com/ACCORD-NWP/tactus/pull/212)(@pardallio)
+- Fixes typo in c903 submissionsettings. [#218](https://github.com/ACCORD-NWP/tactus/pull/218) (@pardallio)
 - Correct help for `show namelist` command. [#206](https://github.com/ACCORD-NWP/tactus/pull/206)(@uandrae)
 - Correct treatment of missing namelist directory in case of static namelists. [#209](https://github.com/ACCORD-NWP/tactus/pull/209)(@uandrae)
 - Fix for fetching global data for EPS. [#197](https://github.com/ACCORD-NWP/tactus/pull/197)(@kastelecn)
@@ -66,6 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Set surfex_sea_ice to default none to be consistent for all CSCs. [#164](https://github.com/ACCORD-NWP/tactus/pull/164)(@uandrae)
 
 ### Fixed
+- Fixed default precision for CY50T2 runs to add SP compilation to tactus test runner. [#168](https://github.com/ACCORD-NWP/tactus/pull/168)(@pardallio)
 - Correct sign of the xtool error tolerance used in the referenceChecker. [#162](https://github.com/ACCORD-NWP/tactus/pull/162)(@uandrae)
 - Correct LBC file search pattern in the referenceChecker. [#163](https://github.com/ACCORD-NWP/tactus/pull/163)(@uandrae)
 - Correct Marsprep bug for the SLAF case where the waitfor_files function was not working as expected. [#148](https://github.com/ACCORD-NWP/tactus/pull/148)(@uandrae)
