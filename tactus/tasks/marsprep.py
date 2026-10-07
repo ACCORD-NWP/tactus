@@ -296,7 +296,9 @@ class Marsprep(Task):
         )
         if steps:
             self.get_gg_data(tag, steps, members_dict)
-            if "CY50" in self.platform.substitute(self.config["boundaries.lbc_bin_cycle"]):
+            if "CY50" in self.platform.substitute(
+                self.config["boundaries.lbc_bin_cycle"]
+            ):
                 fix_snow_layer(tag, steps, members_dict)
             exist_soil = False
             with contextlib.suppress(KeyError):
@@ -582,7 +584,9 @@ class Marsprep(Task):
                 source=source,
                 write_method=mars_write_method(self.mars_version),
             )
-            if "CY50" in self.platform.substitute(self.config["boundaries.lbc_bin_cycle"]):
+            if "CY50" in self.platform.substitute(
+                self.config["boundaries.lbc_bin_cycle"]
+            ):
                 self._build_and_run_retrieve_request(
                     req_file_name="latlonGG.req",
                     data_type=data_type,
