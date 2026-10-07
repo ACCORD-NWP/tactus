@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduced possibility to compile with GNU in CY50t2 [#188](https://github.com/ACCORD-NWP/tactus/pull/188)(@pardallio)
 
 ### Changed
+- Add ArchiveDataBridge task (inactive by default) and an `add_time_family_nodes` hook in `TimeDependentFamily` so downstream suites can add tasks to each cycle. [#222](https://github.com/ACCORD-NWP/tactus/pull/222)(@kastelecn)
 - Bumped ecbundle version to 2.6.0 to use bundle merge functionality. [#220](https://github.com/ACCORD-NWP/tactus/pull/220)(@pardallio)
 - Change default to use latest tagged precompiled binaries on atos. [#145](https://github.com/ACCORD-NWP/tactus/pull/145)(@uandrae, @pardallio)
 - Updates .gitignore to exclude toml files in tactus folder and moves ttr config files to ttr-configs directory which is also in .gitignore [#194](https://github.com/ACCORD-NWP/tactus/pull/194)(@pardallio)
