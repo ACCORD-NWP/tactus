@@ -12,7 +12,7 @@ from ..config_parser import ConfigPaths
 from ..datetime_utils import as_datetime, split_date, td2min
 from ..logs import logger
 from ..namelist import NamelistGenerator
-from ..obs_utils import Observations
+from ..obs_utils import Observations, odb_io_env
 from ..os_utils import tactusmakedirs
 from .base import Task
 from .batch import BatchJob
@@ -88,9 +88,7 @@ class OdbIngestionTask(Task):
             "ODB_CTX_DEBUG": "0",
             "ODB_REPRODUCIBLE_SEQNO": "2",
             "ODB_STATIC_LINKING": "1",
-            "ODB_IO_METHOD": "1",
-            "ODB_IO_FILESIZE": "128",
-            "ODB_IO_GRPSIZE": str(self.obs.nbpool),
+            **odb_io_env(self.config, self.obs.nbpool),
             "EC_PROFILE_HEAP": "0",
             "F_RECLUNIT": "BYTE",
             "F_UFMTENDIAN": "big",

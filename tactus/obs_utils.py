@@ -58,3 +58,26 @@ class Observations:
         self.obs_step = as_timedelta(
             self.provider.get("obs_step", config.get("da.obs_step", "PT0H"))
         )
+
+
+def odb_io_env(config, nbpool):
+    """Build the ODB I/O environment settings from config.
+
+    Config keys (all optional, under ``da``):
+        odb_io_method   : ODB I/O method (default 4)
+        odb_io_filesize : file size in MB (default 128)
+        odb_io_grpsize  : pools per group (default: this stream's pool count)
+
+    Args:
+        config (ParsedConfig): Experiment configuration.
+        nbpool (int): Pool count for this stream; the default group size.
+
+    Returns:
+        dict: Environment variables as strings, ready to merge into ``rte``.
+
+    """
+    return {
+        "ODB_IO_METHOD": str(config.get("da.odb_io_method", 4)),
+        "ODB_IO_FILESIZE": str(config.get("da.odb_io_filesize", 128)),
+        "ODB_IO_GRPSIZE": str(config.get("da.odb_io_grpsize", nbpool)),
+    }
