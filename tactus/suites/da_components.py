@@ -114,7 +114,7 @@ class OdbFamily(EcflowSuiteFamily):
 
 
 # ---------------------------------------------------------------------------
-# ObservationsFamily
+# ObservationFamily
 # ---------------------------------------------------------------------------
 
 
@@ -129,6 +129,7 @@ class ObservationFamily(EcflowSuiteFamily):
         input_template,
         ecf_files,
         da_stream,
+        name=None,
         trigger=None,
         ecf_files_remotely=None,
     ):
@@ -141,11 +142,12 @@ class ObservationFamily(EcflowSuiteFamily):
             input_template: ecflow job template.
             ecf_files: Local ecf script path prefix.
             da_stream (str) : Assimilation part identifier.
+            name (str): Family name if different than da_stream.
             trigger: Optional trigger for the whole Surface family.
             ecf_files_remotely: Remote ecf script path prefix.
         """
         super().__init__(
-            da_stream,
+            name if name is not None else da_stream.capitalize(),
             parent,
             ecf_files,
             trigger=trigger,
@@ -225,12 +227,13 @@ class SurfaceAnalysisFamily(EcflowSuiteFamily):
         )
 
         obs_family = ObservationFamily(
-            parent,
+            self,
             config,
             task_settings,
             input_template,
             ecf_files,
             da_stream="surface",
+            name="Observations",
             ecf_files_remotely=ecf_files_remotely,
         )
 
@@ -304,12 +307,13 @@ class VariationalFamily(EcflowSuiteFamily):
         )
 
         obs_family = ObservationFamily(
-            parent,
+            self,
             config,
             task_settings,
             input_template,
             ecf_files,
             da_stream="upper_air",
+            name="Observations",
             ecf_files_remotely=ecf_files_remotely,
         )
         oopsvar_trigger = combine_triggers([obs_family, blendsur_node, trigger])
