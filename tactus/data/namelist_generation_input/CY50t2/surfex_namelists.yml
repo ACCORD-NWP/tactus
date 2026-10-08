@@ -17,6 +17,10 @@ sfx_pgd_isba_3l:
     NGROUND_LAYER: 3
     NPATCH: ${cfg:pgd.npatch}
 
+sfx_pgd_isba_dif_ALARO:
+  NAM_ISBA:
+    CISBA: "DIF"
+
 sfx_pgd_isba_dif_ecoclimap:
   NAM_ISBA:
     NPATCH: ${cfg:pgd.npatch}
@@ -844,6 +848,8 @@ sfx_pgd_rsmin:
     - 40.0
 
 sfx_pgd_ALARO:
+  NAM_ISBA:
+    CISBA: "DIF"
   NAM_DATA_ISBA:
     NTIME: 36
   NAM_PGD_SCHEMES:
