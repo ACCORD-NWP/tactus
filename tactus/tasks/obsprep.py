@@ -262,9 +262,10 @@ class ObsPrep(Task):
         a plain path.  Returns (None, False) when the source does not exist
         or is empty.
 
-        When *obstype* has a known mapping in ``_OBSOUL_MERGE_NAMES`` the temp
-        file is given a prefix of the form ``obsoul_<type>_`` so that
-        obsoul_merge.pl can derive the cohhect OBS type from the filename.
+        When *obstype* has a known mapping in ``_OBSOUL_MERGE_NAMES`` and the
+        basename does not already start with ``obsoul_<type>_``, that prefix is
+        prepended so that obsoul_merge.pl can derive the correct OBS type from
+        the filename.
         """
         if os.path.isfile(src) and os.path.getsize(src) > 0:
             return src, False
@@ -273,12 +274,14 @@ class ObsPrep(Task):
         if os.path.isfile(src_gz) and os.path.getsize(src_gz) > 0:
             import gzip
 
+            base = os.path.basename(src)
             merge_name = self._OBSOUL_MERGE_NAMES.get(obstype) if obstype else None
-            prefix = f"obsoul_{merge_name}_" if merge_name else None
+            if merge_name and not base.startswith(f"obsoul_{merge_name}_"):
+                base = f"obsoul_{merge_name}_{base}"
             tmp = tempfile.NamedTemporaryFile(
                 delete=False,
+                prefix=f"{base}.",
                 suffix=".obsprep.tmp",
-                **({"prefix": prefix} if prefix else {}),
                 dir=".",
             )
             with gzip.open(src_gz, "rb") as f_gz:
