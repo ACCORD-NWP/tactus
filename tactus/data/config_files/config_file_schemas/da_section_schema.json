@@ -5,15 +5,220 @@
   "type": "object",
   "additionalProperties": true,
   "properties": {
+    "obs_provider": {
+      "description": "Data provider schema.",
+      "type": "string",
+      "enum": [
+        "LACE",
+        "MARS",
+        "MF",
+        "RMI",
+        "UWC"
+      ]
+    },
+    "scratch": {
+      "description": "Data assimilation specific scratch area.",
+      "type": "string",
+      "default": "@CASEDIR@/da/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+    },
     "surface": {
-      "description": "If true (default), Run surface OI chain.",
-      "type": "boolean",
-      "default": true
+      "type": "object",
+      "properties": {
+        "active": {
+          "description": "If true (default), Run surface OI chain.",
+          "type": "boolean",
+          "default": true
+        },
+        "odbconverter": {
+          "description": "ODB converter method.",
+          "type": "string",
+          "default": "Odbconverter"
+        },
+        "method": {
+          "description": "Surface assimilation method.",
+          "type": "string",
+          "default": "CANARI",
+          "enum": [
+            "CANARI"
+          ]
+        },
+        "obs_types": {
+          "description": "List of observation types handled.",
+          "type": "array",
+          "default": [
+            "synop"
+          ],
+          "items": {
+            "type": "string",
+            "enum": [
+              "synop"
+            ],
+            "uniqueItems": false,
+            "minItems": 1
+          }
+        },
+        "bator_window_len": {
+          "description": "Observation window length.",
+          "type": "string",
+          "default": "PT3H",
+          "format": "duration"
+        },
+        "bator_window_shift": {
+          "description": "Shift of observation window.",
+          "type": "string",
+          "default": "-PT90M",
+          "format": "duration"
+        },
+        "bator_slot_len": {
+          "description": "?",
+          "type": "string",
+          "default": "PT0H",
+          "format": "duration"
+        },
+        "bator_nbslot": {
+          "description": "?",
+          "type": "integer",
+          "default": 1
+        },
+        "nbpool": {
+          "description": "Number of ODB pools.",
+          "type": "integer",
+          "default": 16
+        }
+      }
     },
     "upper_air": {
-      "description": "If true, the upper-air 3D-Var chain (UpperAir family with OopsVar) is added after the surface OI chain. Set to false to run surface DA only (CANARI chain without 3D-Var), which is useful for refining the surface analysis independently or for surface-only experiments.",
-      "type": "boolean",
-      "default": false
+      "type": "object",
+      "properties": {
+        "active": {
+          "description": "If true, the upper-air 3D-Var chain (UpperAir family with OopsVar) is added after the surface OI chain. Set to false to run surface DA only (CANARI chain without 3D-Var), which is useful for refining the surface analysis independently or for surface-only experiments.",
+          "type": "boolean",
+          "default": true
+        },
+        "odbconverter": {
+          "description": "ODB converter method.",
+          "type": "string",
+          "default": "Odbconverter"
+        },
+        "method": {
+          "description": "Upper air assimilation method.",
+          "type": "string",
+          "default": "3DVAR",
+          "enum": [
+            "3DVAR"
+          ]
+        },
+        "obs_types": {
+          "description": "List of observation types handled.",
+          "type": "array",
+          "default": [
+            "synop",
+            "gpssol",
+            "amdar",
+            "geowind",
+            "temp",
+            "wp",
+            "seviri",
+            "amsua",
+            "amsub",
+            "iasi",
+            "ascat"
+          ],
+          "items": {
+            "type": "string",
+            "enum": [
+              "synop",
+              "gpssol",
+              "amdar",
+              "geowind",
+              "temp",
+              "wp",
+              "seviri",
+              "amsua",
+              "amsub",
+              "iasi",
+              "ascat"
+            ]
+          },
+          "uniqueItems": false,
+          "minItems": 1
+        },
+        "bator_window_len": {
+          "description": "Observation window length.",
+          "type": "string",
+          "default": "PT3H",
+          "format": "duration"
+        },
+        "bator_window_shift": {
+          "description": "Shift of observation window.",
+          "type": "string",
+          "default": "-PT90M",
+          "format": "duration"
+        },
+        "bator_slot_len": {
+          "description": "?",
+          "type": "string",
+          "default": "PT0H",
+          "format": "duration"
+        },
+        "bator_nbslot": {
+          "description": "?",
+          "type": "integer",
+          "default": 1
+        },
+        "nbpool": {
+          "description": "Number of ODB pools.",
+          "type": "integer",
+          "default": 128
+        }
+      }
+    },
+    "providers": {
+      "type": "object",
+      "properties": {
+        "example_institute": {
+          "type": "object",
+          "properties": {
+            "obs_step": {
+              "description": "Observation input file template time resolution.",
+              "type": "string",
+              "default": "PT1H",
+              "format": "duration"
+            },
+            "obstypes": {
+              "type": "object",
+              "properties": {
+                "example_observation_type": {
+                  "type": "object",
+                  "properties": {
+                    "obs_step": {
+                      "description": "Type specific input file template time resolution.",
+                      "type": "string",
+                      "format": "duration"
+                    },
+                    "format": {
+                      "description": "Observation format identifier.",
+                      "type": "string",
+                      "enum": [
+                        "OBSOUL",
+                        "BUFR",
+                        "NETCDF"
+                      ]
+                    },
+                    "candidates": {
+                      "description": "List of file templates.",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

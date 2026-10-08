@@ -5,7 +5,9 @@
   albvis_veg_dir = "@CLIMDATA@/ECOCLIMAP-SG/ALB_SAT"
   archive_root = "@SCRATCH@/@SYS_NAME@/@CASE@/archive"
   archive_types = ["compress", "copy", "ecfs", "fdb"]
+  bufr_tables = "/usr/local/apps/bufrdc/tables/000424/"
   climdata = "@STATIC_DATA@/climate"
+  da_const_dir = "@STATIC_DATA@/BATOR"
   e923_data = "@STATIC_DATA@/climate/E923_DATA"
   ecoclim_data_path = "@CLIMDATA@/ecoclimap"
   ecoclimap_bin_dir = "@ecoclim_data_path@"
