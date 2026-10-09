@@ -168,6 +168,7 @@ class SuiteDefinition(object):
             "NPROCY": "",
             "KEEP_WORKDIRS": keep_workdirs,
             "MEMBER": "",
+            "TACTUS_TASK": "",
         }
 
         self.suite = EcflowSuite(

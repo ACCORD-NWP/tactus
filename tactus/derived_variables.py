@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Derive runtime variables."""
 
+import os
 import shutil
 from math import atan, floor, sin
 
@@ -74,15 +75,16 @@ def check_fullpos_namelist(config, nlgen):
     generate_namelist = True
     if accept_static_namelists:
         namelists = platform.get_system_value("namelists")
-        fullpos_select_files = Search.find_files(
-            namelists, prefix="xxt", recursive=False, fullpath=True
-        )
-        if len(fullpos_select_files) > 0:
-            for filename in fullpos_select_files:
-                shutil.copy(filename, ".")
-                logger.info("Copy fullpos select file {}", filename)
+        if os.path.isdir(namelists):
+            fullpos_select_files = Search.find_files(
+                namelists, prefix="xxt", recursive=False, fullpath=True
+            )
+            if len(fullpos_select_files) > 0:
+                for filename in fullpos_select_files:
+                    shutil.copy(filename, ".")
+                    logger.info("Copy fullpos select file {}", filename)
 
-            generate_namelist = False
+                generate_namelist = False
 
     if generate_namelist:
         _fpdir = config["fullpos.config_path"]

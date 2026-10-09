@@ -340,9 +340,21 @@ class TaskSettings(object):
                     "TACTUS_HOME",
                     "KEEP_WORKDIRS",
                     "MEMBER",
+                    "TACTUS_TASK",
                 ]
                 for ecf_var in ecf_vars:
                     file_handler.write(f'export {ecf_var}="%{ecf_var}%"\n')
+
+            # Environment settings from a file
+            env_file_settings = self.get_task_settings(
+                task, "ENV_FILE", variables=variables, ecf_micro=ecf_micro
+            )
+            logger.debug("environment file settings {}", env_file_settings)
+            if env_file_settings is not None and len(env_file_settings) > 0:
+                env_file_path = env_file_settings.get("env_file_path")
+                if env_file_path:
+                    cmd = "source " + env_file_path
+                    file_handler.write(f"{cmd}\n")
 
             # Module settings
             module_settings = self.get_task_settings(
@@ -382,7 +394,8 @@ class TaskSettings(object):
                 file_handler.write(f'export {key}="{val}"\n')
 
             if scheduler is None:
-                file_handler.write(f'export STAND_ALONE_TASK_NAME="{task}"\n')
+                tactus_task = config.get("task.args.tactus_task", task)
+                file_handler.write(f'export STAND_ALONE_TASK_NAME="{tactus_task}"\n')
 
                 tactus_home = self.platform.get_platform_value("TACTUS_HOME")
 
@@ -436,7 +449,7 @@ class NoSchedulerSubmission:
         Raises:
             RuntimeError: Submission failure.
         """
-        name = task.lower()
+        name = config.get("task.args.tactus_task", task).lower()
         if name not in load_task_index(config):
             raise NotImplementedError(f"Task {name} not implemented")
 

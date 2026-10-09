@@ -23,7 +23,7 @@ from .commands_functions import (
     start_suite,
 )
 from .config_parser import ConfigParserDefaults
-from .namelist import NamelistConverter
+from .namelist import NamelistConverter, get_namelist_type_options
 from .test_runner import run_test
 
 
@@ -316,6 +316,14 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         help="IAL repository to use, if not given default in config will be used",
         required=False,
     )
+    parser_compile.add_argument(
+        "--compiler",
+        dest="compiler",
+        help="Compiler to use",
+        default="intel",
+        required=False,
+    )
+
     add_keep_def_file(
         parser_compile, help_message="Keep suite definition file in case of submission"
     )
@@ -651,12 +659,13 @@ def add_namelist_args(parser_object):
         parser_object (args oject): updated args object
 
     """
+    namelist_type_options, namelist_type_dir = get_namelist_type_options()
     parser_object.add_argument(
         "--namelist-type",
         "-t",
         type=str,
-        help="Namelist target: master, surfex or gl",
-        choices=["master", "surfex", "gl"],
+        choices=namelist_type_options,
+        help=f"Namelist target, available options found in {namelist_type_dir}",
         required=True,
         default=None,
     )

@@ -30,7 +30,7 @@ def default_main(task: str, config_file: str, tactus_home: str):
     )
     # Get eps member specific config if a member is specified
     member_info = ""
-    if config.get("general.use_member_stand_alone", True):
+    if config.get("task.args.use_member_stand_alone", True):
         try:
             member = int(config["general.member"])
         except (TypeError, ValueError):
