@@ -1,0 +1,6 @@
+[general]
+  csc = "AROME"
+
+[pgd]
+  npatch = 1
+  ecoclimap_sg = false

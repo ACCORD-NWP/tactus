@@ -11,13 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add pertsurf for perturbing parameters in the surfex initial file. [#131](https://github.com/ACCORD-NWP/tactus/pull/131)(@xhzhaois)
+- Introduce obsprocessing functionality. [#219](https://github.com/ACCORD-NWP/tactus/pull/219)(@bstrajnar, @uandrae)
 - Add assimilation suite skeleton. [#195](https://github.com/ACCORD-NWP/tactus/pull/195)(@bstrajnar, @uandrae)
 - Add support for generic task detection. [#199](https://github.com/ACCORD-NWP/tactus/pull/199)(@bstrajnar, @uandrae)
 - Add back suport to suspend ecflow node. [#205](https://github.com/ACCORD-NWP/tactus/pull/205)(@kastelecn)
 - Add support to compile assimilation related binaries. [#192](https://github.com/ACCORD-NWP/tactus/pull/192)(@bstrajnar, @uandrae)
 - Introduced perturbation tasks in the initial data selection procedure [#117](https://github.com/ACCORD-NWP/tactus/pull/117)(@uandrae)
 - Add support for environment settings from a file in TaskSettings [#196](https://github.com/ACCORD-NWP/tactus/pull/196)(@pardallio)
+- Introduced possibility to compile with GNU in CY50t2 [#188](https://github.com/ACCORD-NWP/tactus/pull/188)(@pardallio)
+
 ### Changed
+- Update AROME namelist settings. [#207](https://github.com/ACCORD-NWP/tactus/pull/207)(@adeckmyn)
+- Add ArchiveDataBridge task (inactive by default) and an `add_time_family_nodes` hook in `TimeDependentFamily` so downstream suites can add tasks to each cycle. [#222](https://github.com/ACCORD-NWP/tactus/pull/222)(@kastelecn)
+- Bumped ecbundle version to 2.6.0 to use bundle merge functionality. [#220](https://github.com/ACCORD-NWP/tactus/pull/220)(@pardallio)
 - Change default to use latest tagged precompiled binaries on atos. [#145](https://github.com/ACCORD-NWP/tactus/pull/145)(@uandrae, @pardallio)
 - Updates .gitignore to exclude toml files in tactus folder and moves ttr config files to ttr-configs directory which is also in .gitignore [#194](https://github.com/ACCORD-NWP/tactus/pull/194)(@pardallio)
 - Update the unit-test CI container to Python 3.10 on Debian Bookworm so apt-based system dependency installation works again. [\#201](https://github.com/ACCORD-NWP/tactus/pull/201) (@uandrae)
@@ -28,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated reference checker with more tests and bugfixes [#179](https://github.com/ACCORD-NWP/tactus/pull/179)(@uandrae)
 
 ### Fixed
+- Fix race condition in tactusmakedirs by ensuring directories are created with exist_ok=True [#223](https://github.com/ACCORD-NWP/tactus/pull/223)(@pardallio)
 - Fixed bug in compilation by bumping gl version to 1.0.1. [#212](https://github.com/ACCORD-NWP/tactus/pull/212)(@pardallio)
 - Fixes typo in c903 submissionsettings. [#218](https://github.com/ACCORD-NWP/tactus/pull/218) (@pardallio)
 - Correct help for `show namelist` command. [#206](https://github.com/ACCORD-NWP/tactus/pull/206)(@uandrae)
