@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add pertsurf for perturbing parameters in the surfex initial file. [#131](https://github.com/ACCORD-NWP/tactus/pull/131)(@xhzhaois)
+- Add PertAna, initial state perturbation. [#126](https://github.com/ACCORD-NWP/tactus/pull/126)(@ingerlf)
 - Introduce obsprocessing functionality. [#219](https://github.com/ACCORD-NWP/tactus/pull/219)(@bstrajnar, @uandrae)
 - Add assimilation suite skeleton. [#195](https://github.com/ACCORD-NWP/tactus/pull/195)(@bstrajnar, @uandrae)
 - Add support for generic task detection. [#199](https://github.com/ACCORD-NWP/tactus/pull/199)(@bstrajnar, @uandrae)
