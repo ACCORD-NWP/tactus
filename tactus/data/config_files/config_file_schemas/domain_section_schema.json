@@ -42,20 +42,6 @@
       "type": "string",
       "description": "Name of your domain"
     },
-    "number": {
-      "description": "Sequence number for domain",
-      "default": "",
-      "oneOf": [
-        {
-          "type": "string",
-          "maxLength": 0
-        },
-        {
-          "type": "number",
-          "minimum": 0
-        }
-      ]
-    },
     "nzsfilter": {
       "type": "number",
       "description": "Activate the PGD orographic filtering",
