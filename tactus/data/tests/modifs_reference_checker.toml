@@ -28,6 +28,14 @@
   ]
   suppress_exception = false
 
+[refchecks.reference_checker.task.PertAna.fafiles]
+  inpath = "@ARCHIVE@"
+  method = "HistoryFields"
+  pattern = "PERTANA.*"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/perturbations"
+
 [refchecks.reference_checker.task.PgdUpdate.fafiles]
   inpath = "@CLIMDIR@"
   pattern = "Const.Clim.*.sfx"
