@@ -14,6 +14,68 @@
   check = false
   generate = false
 
+[cases.cy50t2_obsprocess_obsconvert]
+  base = "cy50t2_arome"
+
+[cases.cy50t2_obsprocess_obsconvert.modifs.general]
+  case = "@CYCLE@_obsprocess_obsconvert"
+
+[cases.cy50t2_obsprocess_obsconvert.modifs.general.times]
+  start = "2025-02-09T00:00:00Z"
+
+[cases.cy50t2_obsprocess_obsconvert.modifs.reference_checker]
+  check = false
+  generate = false
+
+[cases.cy50t2_obsprocess_obsconvert.modifs.suite_control]
+  suite_definition = "ObsprocSuiteDefinition"
+
+[cases.cy50t2_obsprocess_obsconvert.modifs.da.surface]
+  active = true
+  odbconverter = "Obsconvert"
+
+[cases.cy50t2_obsprocess_obsconvert.modifs.da.upper_air]
+  active = true
+  odbconverter = "Obsconvert"
+
+[cases.cy50t2_obsprocess_obsconvert.modifs.submission]
+  bindir = "/lus/h2resw01/scratch/snh/tactus/IAL_CY50t2_bstrajnar_cmake4da_upd_compile/install/R64/bin"
+  bindir_gl = "@SUBMISSION.BINDIR@"
+
+[cases.cy50t2_obsprocess_obsconvert.modifs.submission.task_exceptions.Forecast]
+  bindir = "@SUBMISSION.BINDIR@"
+
+[cases.cy50t2_obsprocess_bator]
+  base = "cy50t2_arome"
+
+[cases.cy50t2_obsprocess_bator.modifs.general]
+  case = "@CYCLE@_obsprocess_bator"
+
+[cases.cy50t2_obsprocess_bator.modifs.general.times]
+  start = "2025-02-09T00:00:00Z"
+
+[cases.cy50t2_obsprocess_bator.modifs.reference_checker]
+  check = false
+  generate = false
+
+[cases.cy50t2_obsprocess_bator.modifs.suite_control]
+  suite_definition = "ObsprocSuiteDefinition"
+
+[cases.cy50t2_obsprocess_bator.modifs.submission]
+  bindir = "/lus/h2resw01/scratch/snh/tactus/IAL_CY50t2_bstrajnar_cmake4da_upd_compile/install/R64/bin"
+  bindir_gl = "@SUBMISSION.BINDIR@"
+
+[cases.cy50t2_obsprocess_bator.modifs.submission.task_exceptions.Forecast]
+  bindir = "@SUBMISSION.BINDIR@"
+
+[cases.cy50t2_obsprocess_bator.modifs.da.surface]
+  active = true
+  odbconverter = "Bator"
+
+[cases.cy50t2_obsprocess_bator.modifs.da.upper_air]
+  active = true
+  odbconverter = "Bator"
+
 [cases.cy50t2_alaro_climate_files]
   base = "cy50t2_alaro"
   host = "cy50t2_compile"
