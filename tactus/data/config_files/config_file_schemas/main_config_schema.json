@@ -360,6 +360,11 @@
       "description": "Settings for control of Pgd selection.",
       "type": "object",
       "properties": {
+        "ecoclimap_sg": {
+          "description": "Switch for ecoclimap 2nd gen",
+          "default": true,
+          "type": "boolean"
+        },
         "npatch": {
           "title": "Number of patches for surfex variables",
           "type": "integer",
@@ -1096,6 +1101,11 @@
           "items": {
             "type": "integer"
           }
+        },
+        "ecrad": {
+          "description": "ECRAD switch",
+          "type": "boolean",
+          "default": false
         },
         "surfex": {
           "description": "SURFEX switch",
