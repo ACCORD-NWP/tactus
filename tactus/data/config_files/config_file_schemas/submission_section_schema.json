@@ -12,12 +12,12 @@
     "bindir": {
       "type": "string",
       "description": "Location of IAL binaries",
-      "default": "@CASEDIR@/install/R64/bin"
+      "default": "@INSTALL_DIR@/@IAL_VERSION@/R64/@ARCH@/bin"
     },
     "bindir_gl": {
       "type": "string",
       "description": "Location of GL binary",
-      "default": "@CASEDIR@/install/R64/bin/"
+      "default": "@INSTALL_DIR@/@IAL_VERSION@/R64/@ARCH@/bin"
     },
     "compiler": {
       "description": "Compiler used to build IAL",
@@ -28,6 +28,11 @@
         ""
       ],
       "default": "intel"
+    },
+    "arch": {
+      "type": "string",
+      "description": "Compiler configuration",
+      "default": "@COMPILER@/default"
     },
     "precision": {
       "description": "Floating point precision as used in the Forecast task",

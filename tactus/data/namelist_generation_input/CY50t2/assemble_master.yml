@@ -59,6 +59,7 @@ forecast:
   - fa_packing
   - f4_common_forecast
   - f4_@CSC@
+  - f4_@CSC@_@USE_ECRAD@
   - namgfl_@BDMODEL@
 
 c903_main:
