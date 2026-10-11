@@ -392,7 +392,7 @@ class TestInstantiateGenerators:
         )
 
 
-@pytest.fixture(name="none_value_generators", scope="class")
+@pytest.fixture(name="none_value_generators")
 def fixture_none_value_generators() -> dict:
     """Fixture for defining test none_value_generators."""
     return {
@@ -488,23 +488,19 @@ class TestGenerateValues:
         with pytest.raises(KeyError):
             generate_values(config, generators)
 
-    @pytest.mark.parametrize(
-        ("expected_result", "member"),
-        [
-            ({"field2": 4}, 1),
-            ({"field2": 5}, 2),
-            ({"field2": 6}, 3),
-        ],
-    )
-    def test_with_none_value_generator(
-        self, none_value_generators, expected_result: Dict[str, int], member: int
-    ):
+    def test_with_none_value_generator(self, none_value_generators: dict):
         """Test generate_values with a generator that returns None."""
         config = {"field1": 0, "field2": 0}
-        result = generate_values(config, none_value_generators)
-        assert result == expected_result, (
-            f"Wrong value for field1 or field2 for member {member}"
-        )
+        expected_results: list[Dict[str, int]] = [
+            {"field2": 4},
+            {"field2": 5},
+            {"field2": 6},
+        ]
+        for member, expected_result in enumerate(expected_results):
+            result = generate_values(config, none_value_generators)
+            assert result == expected_result, (
+                f"Wrong value for field1 or field2 for member {member}"
+            )
 
 
 class TestCheckExpandableKeys:
