@@ -192,7 +192,7 @@ def tactusmakedirs(path: str | Path, unixgroup="", exist_ok=True, def_dir_mode=0
                 shutil.chown(p.parents[idx], group=unixgroup)
                 # TODO: Check if we really need this permissive mask
                 os.chmod(p.parents[idx], mode=0o2750)  # noqa S103
-            os.makedirs(path)
+            os.makedirs(path, exist_ok=True)
         except OSError as err:
             raise OSError(f"Cannot create {path} properly") from err
 
