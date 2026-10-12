@@ -108,6 +108,7 @@ class TestReferenceChecker:
                     "which": "all",
                     "tolerance": 5,
                     "mode": "get_worst",
+                    "invert_comparison": False,
                     "export_complete_check": False,
                 },
                 "xtool_method": {
@@ -341,6 +342,36 @@ class TestNormsChecker:
         result = checker.compare(test_file, reference_file, out_file)
 
         test_string = "FAILURE - Worst digit is 0 > tol = -1"
+        assert result == test_string
+        assert file_contains(out_file, test_string)
+
+    def test_norms_checker_invert(self, tmp_path):
+        """Test successful inverted comparison."""
+        test_file, reference_file, out_file = TestNormsChecker._create_test_files(
+            tmp_path
+        )
+        # worst digit below tolerance
+        checker = NormsChecker(
+            which="all", tolerance=-1, mode="get_worst", invert_comparison=True
+        )
+        result = checker.compare(test_file, reference_file, out_file)
+
+        test_string = "SUCCESS - Worst digit is 0 > tol = -1 (mode=get_worst, which=all)"
+        assert result == test_string
+        assert file_contains(out_file, test_string)
+
+    def test_norms_checker_invert_fail(self, tmp_path):
+        """Test successful inverted comparison."""
+        test_file, reference_file, out_file = TestNormsChecker._create_test_files(
+            tmp_path
+        )
+        # worst digit below tolerance
+        checker = NormsChecker(
+            which="all", tolerance=5, mode="get_worst", invert_comparison=True
+        )
+        result = checker.compare(test_file, reference_file, out_file)
+
+        test_string = "FAILURE - Worst digit is 0 <= tol = 5"
         assert result == test_string
         assert file_contains(out_file, test_string)
 
