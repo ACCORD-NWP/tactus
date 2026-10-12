@@ -17,7 +17,6 @@
 
 [suite_control]
   do_glprep = true
-  do_interpolsstsic = false
   do_marsprep = false
 
 [system]
