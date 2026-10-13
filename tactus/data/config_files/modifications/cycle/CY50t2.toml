@@ -6,9 +6,12 @@
 [general.output_settings]
   surfex = "PT1H"
 
+[compile]
+  ial_git_version = "fcf5469"
+
 [submission]
   precision = "R32"
-  ial_version = "latest"
+  ial_version = "develop_fcf5469"
   bindir = "@INSTALL_DIR@/@IAL_VERSION@/R64/@ARCH@/bin"
   bindir_gl = "@SUBMISSION.BINDIR@"
 
