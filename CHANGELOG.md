@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [1.4.0] - 2026-10-11
+
 ### Added
 - Add pertsurf for perturbing parameters in the surfex initial file. [#131](https://github.com/ACCORD-NWP/tactus/pull/131)(@xhzhaois)
 - Add PertAna, initial state perturbation. [#126](https://github.com/ACCORD-NWP/tactus/pull/126)(@ingerlf)
