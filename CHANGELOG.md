@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+### Changed
+- Push OmegaConf to v2.4 and resolve some deprecation warnings. Fixes issue [\#234](https://github.com/ACCORD-NWP/tactus/issues/234). [#238](https://github.com/ACCORD-NWP/tactus/pull/238)(@adeckmyn)
+
 ## [1.4.0] - 2026-10-11
 
 ### Added
