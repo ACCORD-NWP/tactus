@@ -86,11 +86,9 @@
 [gribmodify.fullpos.7]
   output_name = "utci"
 
-[ial]
-  ial_version = "develop"
-
 [compile]
   ial_git_repo = "git@github.com:ACCORD-NWP/IAL"
+  ial_version = "develop"
 
 [include]
   archiving = "include/archiving/@HOST@.toml"

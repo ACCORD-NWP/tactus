@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+
+### Fixed
+- Move ial_version to compile section in config.toml [#237](https://github.com/ACCORD-NWP/tactus/pull/237)(@pardallio)
+
 ## [1.4.0] - 2026-10-11
 
 ### Added
