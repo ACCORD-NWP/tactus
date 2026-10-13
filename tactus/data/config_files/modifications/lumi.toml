@@ -9,4 +9,4 @@
   max_static_data_tasks = 2
 
 [boundaries]
-  lbc_bin_cycle = "CY49t2"
+  fix_snow_layer = false
