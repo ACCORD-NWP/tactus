@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+## [1.4.0] - 2026-10-11
+
 ### Added
 - Add pertsurf for perturbing parameters in the surfex initial file. [#131](https://github.com/ACCORD-NWP/tactus/pull/131)(@xhzhaois)
 - Add PertAna, initial state perturbation. [#126](https://github.com/ACCORD-NWP/tactus/pull/126)(@ingerlf)
@@ -35,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated reference checker with more tests and bugfixes [#179](https://github.com/ACCORD-NWP/tactus/pull/179)(@uandrae)
 
 ### Fixed
+- Fix failing EPS setup unit test [#229](https://github.com/ACCORD-NWP/tactus/pull/220)(@uandrae)
 - Fix race condition in tactusmakedirs by ensuring directories are created with exist_ok=True [#223](https://github.com/ACCORD-NWP/tactus/pull/223)(@pardallio)
 - Fixed bug in compilation by bumping gl version to 1.0.1. [#212](https://github.com/ACCORD-NWP/tactus/pull/212)(@pardallio)
 - Fixes typo in c903 submissionsettings. [#218](https://github.com/ACCORD-NWP/tactus/pull/218) (@pardallio)
