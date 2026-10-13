@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Push OmegaConf to v2.4 and resolve some deprecation warnings. Fixes issue [\#234](https://github.com/ACCORD-NWP/tactus/issues/234). [#238](https://github.com/ACCORD-NWP/tactus/pull/238)(@adeckmyn)
+- Add option to use other cycle's executables for LBC task. [#223](https://github.com/ACCORD-NWP/tactus/pull/223)(@pardallio)
 
 ## [1.4.0] - 2026-10-11
 
