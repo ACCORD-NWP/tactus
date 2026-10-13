@@ -2,6 +2,8 @@
 """Program's entry point."""
 
 import contextlib
+import datetime
+import os
 import sys
 
 from . import GeneralConstants
@@ -45,6 +47,17 @@ def main(argv=None):
             handlers=LoggerHandlers(default_level=config["general.loglevel"])
         )
 
+    config = config.copy(
+        update={
+            "genesis": {
+                "command": GeneralConstants.PACKAGE_NAME + " " + " ".join(argv),
+                "package": GeneralConstants.PACKAGE_NAME,
+                "version": GeneralConstants.VERSION,
+                "time": datetime.datetime.now().isoformat(timespec="seconds"),
+                "user": os.environ.get("USER"),
+            }
+        }
+    )
     args.run_command(args=args, config=config)
 
 

@@ -39,6 +39,7 @@ def basic_config(tmp_directory: str, default_config: ParsedConfig):
             "platform": {
                 "scratch": tmp_directory,
                 "unix_group": "",
+                "install_dir": tmp_directory + "/install",
             },
         }
     )

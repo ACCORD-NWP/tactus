@@ -316,3 +316,30 @@ def evaluate_date(date: str, reference_date=None) -> str:
     return (
         isodate.parse_datetime(date).isoformat(timespec="seconds").replace("+00:00", "Z")
     )
+
+
+def split_date(dt, template=("%Y", "%m", "%d", "%H")):
+    """Split datetime object with strftime.
+
+    Args:
+        dt (datetime): Reference time
+        template (list): List of strings with strfmt arguments
+
+    Returns:
+        A list of extracted strings
+
+    """
+    return [dt.strftime(t) for t in template]
+
+
+def td2min(td):
+    """Return a timedelta object value in minutes and as string.
+
+    Args:
+        td (timedelta): Timedelta object
+
+    Returns:
+        A string of nearest representation of td in minutes
+
+    """
+    return str(int(td.total_seconds() / 60))

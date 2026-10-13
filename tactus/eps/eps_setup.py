@@ -16,7 +16,7 @@ from collections.abc import Mapping
 from itertools import chain
 from typing import Any, Dict, Generator, List, Sequence, Tuple
 
-from pydantic import RootModel, field_validator
+from pydantic import RootModel, field_validator, model_validator
 from pydantic.dataclasses import dataclass as pydantic_dataclass
 
 from tactus.config_parser import ParsedConfig
@@ -26,7 +26,6 @@ from tactus.general_utils import (
     expand_dict_key_slice,
     expand_string_slice,
     merge_dicts,
-    recursive_delete_keys,
     value_from_any_generator,
 )
 from tactus.logs import logger
@@ -130,6 +129,53 @@ class EPSConfig:
             # to validate format.
             Expandable(root=value)
         return value
+
+    @model_validator(mode="after")
+    def validate_bdmember(self) -> "EPSConfig":
+        """Validate boundaries.ifs.bdmember against the members list.
+
+        Must be empty, a single bdmember (used for all members), or contain
+        exactly one bdmember per member. Other lengths are rejected: fewer
+        is ambiguous, and more (e.g. for future clustering) needs a proper
+        selection mechanism first.
+
+        Checks tuples too, since ParsedConfig turns toml arrays into tuples.
+
+        Raises:
+            ValueError: If bdmember's length is not one of 0, 1 or the
+                number of members.
+        """
+        bdmember = (
+            self.member_settings.get("boundaries", {}).get("ifs", {}).get("bdmember")
+        )
+        n_members = len(self.general.members)
+        if isinstance(bdmember, (list, tuple)):
+            n_bdmembers = len(bdmember)
+        elif isinstance(bdmember, str) and ":" in bdmember:
+            n_bdmembers = len(list(expand_string_slice(bdmember, self.general.members)))
+        elif isinstance(bdmember, Mapping):
+            if not bdmember:
+                return self
+            missing = set(self.general.members) - set(
+                expand_dict_key_slice(bdmember, self.general.members)
+            )
+            if missing:
+                raise ValueError(
+                    "eps.member_settings.boundaries.ifs.bdmember is missing a "
+                    f"bdmember for member(s) {sorted(missing)}."
+                )
+            return self
+        else:
+            return self
+
+        if n_bdmembers not in (0, 1, n_members):
+            raise ValueError(
+                "eps.member_settings.boundaries.ifs.bdmember must be "
+                "empty, a single bdmember, or contain exactly as many "
+                f"bdmembers as members (={n_members}), one per member. "
+                f"Got {n_bdmembers} bdmembers for {n_members} members."
+            )
+        return self
 
 
 def generate_member_settings(
@@ -377,20 +423,6 @@ def get_member_config(config: ParsedConfig, member: int) -> ParsedConfig:
         KeyError: If the members list is not present in the config.
         ValueError: If the member is not in the members list.
     """
-    # Get a clean dict of the default member settings. Needed to be able
-    # to merge the default settings with the specific member settings.
-    default_member_settings: dict = config.get_as_dict("eps.member_settings")
-
-    # Determine which keys are expandable and delete them to avoid that a member
-    # specific setting defaults to an expandable dict if no member specific
-    # setting is present.
-    expandable_keys = get_expandable_keys(default_member_settings)
-    recursive_delete_keys(default_member_settings, expandable_keys)
-
-    # Get a clean dict of the member settings for the specific member.
-    specific_member_settings = {}
-    member_key = f"eps.members.{member}"
-
     # Check that the members list is present
     if "eps.general.members" not in config:
         raise KeyError(
@@ -404,6 +436,20 @@ def get_member_config(config: ParsedConfig, member: int) -> ParsedConfig:
             f"Member index {member} is not in the members list."
             + " Cannot get member settings."
         )
+
+    epsconfig = EPSConfig(
+        general={"members": config["eps.general.members"]},
+        member_settings=config.get_as_dict("eps.member_settings"),
+    )
+    default_member_settings = next(
+        generated_settings
+        for candidate_member, generated_settings in generate_member_settings(epsconfig)
+        if candidate_member == member
+    )
+
+    # Get a clean dict of the member settings for the specific member.
+    specific_member_settings = {}
+    member_key = f"eps.members.{member}"
 
     # Check if there are specific settings for the member
     if member_key in config:

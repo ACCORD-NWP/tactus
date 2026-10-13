@@ -162,6 +162,10 @@ class Platform:
         for key, val in self.expand_macros(self.config.get(gen_macros, {})).items():
             self.store_macro(key, val)
 
+    def add_macro(self, macros):
+        """Add new macros."""
+        self.macros.update(macros)
+
     def fill_macros(self):
         """Fill the macros."""
         self.macros = {}
@@ -793,9 +797,14 @@ class FileManager:
             files = data["files"]
             if isinstance(files, list):
                 for filename in files:
+                    if isinstance(filename, str):
+                        infile = filename
+                        outfile = filename
+                    else:
+                        infile, outfile = filename.popitem()
                     self.input(
-                        f"{data['path']}/{filename}",
-                        filename,
+                        f"{data['path']}/{infile}",
+                        outfile,
                         basetime=basetime,
                         validtime=validtime,
                         provider_id=provider_id,

@@ -18,7 +18,6 @@ from .config_parser import ConfigPaths
 from .csc_actions import SelectTstep
 from .datetime_utils import as_timedelta, oi2dt_list
 from .logs import logger
-from .os_utils import resolve_path_relative_to_package
 from .toolbox import Platform
 
 
@@ -120,13 +119,36 @@ def write_namelist(nml, output_file):
     logger.debug("Wrote: {}", output_file)
 
 
+def get_namelist_type_options():
+    """Find available namelist type options.
+
+    Returns:
+        tuple[list[str], Path | None]: Sorted list of available namelist
+            type names, and the directory they were found in (None if no
+            directory was found).
+
+    """
+    master_file = ConfigPaths.path_from_subpath("assemble_master.yml", last=True)
+    if not master_file:
+        return [], None
+    search_dir = master_file.parent
+    options = sorted(
+        p.name.replace("assemble_", "").replace(".yml", "")
+        for p in search_dir.glob("assemble_*.yml")
+    )
+    return options, search_dir
+
+
 def _resolve_namelist_path(subpath) -> Path:
     """Resolve a config path, falling back to package-relative lookup."""
     path = Path(subpath)
     try:
         return ConfigPaths.path_from_subpath(path)
     except RuntimeError:
-        return resolve_path_relative_to_package(path)
+        logger.error("File not found: {}", path.name)
+        options, search_path = get_namelist_type_options()
+        logger.error("Available assemble files in {}: {}", search_path, options)
+        raise FileNotFoundError from None
 
 
 class InvalidNamelistKindError(ValueError):
@@ -316,16 +338,14 @@ class NamelistGenerator:
 
         Args:
             config (ParsedConfig): Configuration
-            kind (str): one of 'master' or 'surfex'
+            kind (str): namelist kind, e.g. 'master', 'surfex', or any DA task
+                such as 'bator'.  The corresponding files
+                ``<cycle>/assemble_<kind>.yml`` and
+                ``<cycle>/<kind>_namelists.yml`` must exist under the
+                namelist generation input path.
             substitute (boolean): flag for substitution
 
-        Raises:
-            InvalidNamelistKindError   # noqa: DAR401
-
         """
-        if kind not in ("master", "surfex", "gl"):
-            raise InvalidNamelistKindError(kind)
-
         self.config = config
         self.platform = Platform(config)
         self.kind = kind

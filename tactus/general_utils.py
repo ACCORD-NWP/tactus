@@ -2,6 +2,7 @@
 """General utils for use throughout the package."""
 
 import copy
+import re
 from collections import defaultdict
 from collections.abc import Mapping, Sequence
 from typing import Any, Dict, Generator, List, Optional, Tuple, Union, cast
@@ -382,3 +383,11 @@ def recursive_substitute(value, platform, pos: Optional[List[str]] = None):
         value = platform.substitute(value)
 
     return value
+
+
+def sanitize_case_name(s: str) -> str:
+    """Sub chars not matching [a-zA-Z0-9_.] with _, and replace a leading dot with _."""
+    result = re.sub(r"[^a-zA-Z0-9_.]", "_", s)
+    if result.startswith("."):
+        result = "_" + result[1:]
+    return result

@@ -16,6 +16,7 @@ from tactus.reference_checker import (
     CheckSummaryAnalysis,
     CheckSummaryJson,
     CheckSummaryTxt,
+    NamelistChecker,
     NormsChecker,
     ReferenceChecker,
     ReferenceCheckManager,
@@ -129,6 +130,151 @@ class TestReferenceChecker:
         checker = ReferenceChecker.create_reference_checker("unknown_method", config)
         assert checker is None
         mock_logger.warning.assert_called_once()
+
+
+class TestNamelistChecker:
+    """Tests for the NamelistChecker class."""
+
+    NAMELIST_A = """\
+    &NAMDIM
+    NFLEVG = 65,
+    NPROMA = 32,
+    /
+    &NAMCT0
+    LNHDYN = .TRUE.,
+    NCONF  = 1,
+    /
+    """
+
+    NAMELIST_A_WHITESPACE = """\
+    &NAMDIM
+        NFLEVG   = 65,
+        NPROMA=32,
+
+    /
+    &NAMCT0
+        LNHDYN = .TRUE.,
+        NCONF  = 1,
+    /
+    """
+
+    NAMELIST_A_CASE = """\
+    &namdim
+    nflevg = 65,
+    nproma = 32,
+    /
+    &namct0
+    lnhdyn = .true.,
+    nconf  = 1,
+    /
+    """
+
+    NAMELIST_B = """\
+    &NAMDIM
+    NFLEVG = 90,
+    NPROMA = 32,
+    /
+    &NAMCT0
+    LNHDYN = .TRUE.,
+    NCONF  = 1,
+    /
+    """
+
+    @staticmethod
+    def _write(tmp_path: Path, name: str, content: str) -> str:
+        path = tmp_path / name
+        path.write_text(content)
+        return str(path)
+
+    def test_identical_files_bit_identical(self, tmp_path):
+        test = self._write(tmp_path, "test.nam", TestNamelistChecker.NAMELIST_A)
+        ref = self._write(tmp_path, "ref.nam", TestNamelistChecker.NAMELIST_A)
+        out = str(tmp_path / "diff.out")
+
+        checker = NamelistChecker()
+        result = checker.compare(test, ref, out)
+
+        assert "SUCCESS" in result
+        assert "bit identical" in result
+        assert os.path.exists(out)
+
+    def test_whitespace_differences_ignored(self, tmp_path):
+        test = self._write(tmp_path, "test.nam", TestNamelistChecker.NAMELIST_A)
+        ref = self._write(tmp_path, "ref.nam", TestNamelistChecker.NAMELIST_A_WHITESPACE)
+        out = str(tmp_path / "diff.out")
+
+        checker = NamelistChecker(
+            ignore_case=True, ignore_blank_lines=True, ignore_whitespace=True
+        )
+        result = checker.compare(test, ref, out)
+
+        assert "SUCCESS" in result
+
+    def test_case_differences_ignored(self, tmp_path):
+        test = self._write(tmp_path, "test.nam", TestNamelistChecker.NAMELIST_A)
+        ref = self._write(tmp_path, "ref.nam", TestNamelistChecker.NAMELIST_A_CASE)
+        out = str(tmp_path / "diff.out")
+
+        checker = NamelistChecker(ignore_case=True)
+        result = checker.compare(test, ref, out)
+
+        assert "SUCCESS" in result
+
+    def test_case_differences_detected_when_not_ignored(self, tmp_path):
+        test = self._write(tmp_path, "test.nam", TestNamelistChecker.NAMELIST_A)
+        ref = self._write(tmp_path, "ref.nam", TestNamelistChecker.NAMELIST_A_CASE)
+        out = str(tmp_path / "diff.out")
+
+        checker = NamelistChecker(
+            ignore_case=False, ignore_blank_lines=False, ignore_whitespace=False
+        )
+        result = checker.compare(test, ref, out)
+
+        assert "FAILURE" in result
+
+    def test_real_differences_detected(self, tmp_path):
+        test = self._write(tmp_path, "test.nam", TestNamelistChecker.NAMELIST_A)
+        ref = self._write(tmp_path, "ref.nam", TestNamelistChecker.NAMELIST_B)
+        out = str(tmp_path / "diff.out")
+
+        checker = NamelistChecker()
+        result = checker.compare(test, ref, out)
+
+        assert "FAILURE" in result
+        # the diff itself must be captured in out_file
+        content = Path(out).read_text()
+        assert "NFLEVG" in content
+
+    def test_missing_test_file(self, tmp_path):
+        ref = self._write(tmp_path, "ref.nam", TestNamelistChecker.NAMELIST_A)
+        out = str(tmp_path / "diff.out")
+
+        checker = NamelistChecker()
+        result = checker.compare(str(tmp_path / "missing.nam"), ref, out)
+
+        assert "ERROR" in result
+        assert "Test file" in result
+
+    def test_missing_reference_file(self, tmp_path):
+        test = self._write(tmp_path, "test.nam", TestNamelistChecker.NAMELIST_A)
+        out = str(tmp_path / "diff.out")
+
+        checker = NamelistChecker()
+        result = checker.compare(test, str(tmp_path / "missing.nam"), out)
+
+        assert "ERROR" in result
+        assert "Reference file" in result
+
+    def test_out_file_contains_summary(self, tmp_path):
+        test = self._write(tmp_path, "test.nam", TestNamelistChecker.NAMELIST_A)
+        ref = self._write(tmp_path, "ref.nam", TestNamelistChecker.NAMELIST_B)
+        out = str(tmp_path / "diff.out")
+
+        checker = NamelistChecker()
+        checker.compare(test, ref, out)
+
+        content = Path(out).read_text()
+        assert "FAILURE" in content
 
 
 class TestNormsChecker:

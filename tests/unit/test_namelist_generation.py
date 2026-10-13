@@ -11,7 +11,6 @@ import tomlkit
 
 from tactus.config_parser import ConfigParserDefaults, ParsedConfig
 from tactus.namelist import (
-    InvalidNamelistKindError,
     InvalidNamelistTargetError,
     NamelistGenerator,
     NamelistIntegrator,
@@ -140,11 +139,6 @@ class TestNamelistGenerator:
     def test_nlgen_surfex(self):
         """Test namelist generation for surfex."""
 
-    def test_nlgen_invalid_type(self, parsed_config):
-        """Test namelist generation for non-existing kind."""
-        with pytest.raises(InvalidNamelistKindError):
-            _ = NamelistGenerator(parsed_config, "slave")
-
     def test_nlgen_invalid_target(self, parsed_config, tmp_directory):
         """Test namelist generation for non-existing target."""
         nlgen = NamelistGenerator(parsed_config, "master")
@@ -197,25 +191,25 @@ class TestResolveNamelistPath:
 
         assert result == expected
 
-    def test_falls_back_to_package_path_when_config_raises(self, tmp_path):
-        """RuntimeError from ConfigPaths triggers fallback to resolve_path_relative_to_package."""
-        fallback = tmp_path / "package" / "master.yml"
-        fallback.parent.mkdir(parents=True)
-        fallback.touch()
+    def test_raises_file_not_found_when_config_raises(self, tmp_path):
+        """RuntimeError from ConfigPaths is turned into a FileNotFoundError.
+
+        The fallback lookup (for ``assemble_master.yml``) is only used to build
+        a helpful diagnostic message listing available assemble files; it does
+        not change the fact that the original path could not be resolved.
+        """
+        search_path = tmp_path / "namelists" / "assemble_master.yml"
+        search_path.parent.mkdir(parents=True)
+        search_path.touch()
 
         with (
             patch(
                 "tactus.namelist.ConfigPaths.path_from_subpath",
-                side_effect=RuntimeError("not found"),
+                side_effect=[RuntimeError("not found"), search_path],
             ),
-            patch(
-                "tactus.namelist.resolve_path_relative_to_package",
-                return_value=fallback,
-            ),
+            pytest.raises(FileNotFoundError),
         ):
-            result = _resolve_namelist_path("master.yml")
-
-        assert result == fallback
+            _resolve_namelist_path("namelists/master.yml")
 
     def test_accepts_path_object_as_input(self, tmp_path):
         """A Path object is accepted in addition to a plain string."""
@@ -229,18 +223,14 @@ class TestResolveNamelistPath:
 
         assert result == expected
 
-    def test_propagates_error_when_fallback_also_fails(self):
-        """FileNotFoundError from the fallback is not swallowed."""
+    def test_propagates_error_when_fallback_search_also_fails(self):
+        """RuntimeError from the diagnostic assemble_master.yml lookup is not swallowed."""
         with (
             patch(
                 "tactus.namelist.ConfigPaths.path_from_subpath",
                 side_effect=RuntimeError("not found"),
             ),
-            patch(
-                "tactus.namelist.resolve_path_relative_to_package",
-                side_effect=FileNotFoundError("not in package either"),
-            ),
-            pytest.raises(FileNotFoundError),
+            pytest.raises(RuntimeError),
         ):
             _resolve_namelist_path("nonexistent.yml")
 

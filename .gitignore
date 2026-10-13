@@ -31,6 +31,9 @@ coverage.xml
 archived_file
 input_file
 ecf/[A-Z]*.py
+/*.toml
+/*.def
+/ttr-configs
 
 # Stuff related to jupyter notebooks
 .ipynb_checkpoints/
@@ -47,3 +50,7 @@ docs/markdown_docs/config.md
 
 # Stuff related to draw.io
 *.drawio.bkp
+
+# include pyproject.toml and poetry.toml
+!/pyproject.toml
+!/poetry.toml

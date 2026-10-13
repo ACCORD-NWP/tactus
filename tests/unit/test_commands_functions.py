@@ -7,13 +7,16 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 
 from tactus.commands_functions import (
     namelist_convert,
     namelist_format,
     namelist_integrate,
     show_namelist,
+    start_suite,
 )
+from tactus.config_parser import BasicConfig
 from tactus.os_utils import resolve_path_relative_to_package
 
 
@@ -204,6 +207,42 @@ def test_namelist_format_ftn(nlformatftn_arg, default_config):
     namelist_format(nlformatftn_arg, default_config)
     assert os.path.isfile(nlformatftn_arg.output)
     assert filecmp.cmp(nlformatftn_arg.output_reference, nlformatftn_arg.output)
+
+
+class TestStartSuiteValidatesEps:
+    """Unit tests for start_suite's EPS config validation."""
+
+    def test_start_suite_with_invalid_eps_config_raises(self, default_config):
+        """Test that an invalid EPS config is rejected before starting the suite.
+
+        Regression test: `tactus start suite` used to skip EPS validation
+        entirely, unlike `tactus case`.
+        """
+        config = default_config.copy(
+            update={
+                "eps": {
+                    "general": {"members": "0:7"},
+                    "member_settings": {"boundaries": {"ifs": {"bdmember": "0:5"}}},
+                }
+            }
+        )
+
+        with pytest.raises(
+            ValidationError, match=r".*must be empty, a single bdmember.*"
+        ):
+            start_suite(args=None, config=config)
+
+    def test_start_suite_without_eps_section_does_not_validate(self):
+        """Test that start_suite skips EPS validation when eps isn't configured.
+
+        args=None here, so reaching the AttributeError on `args.tactus_home`
+        proves the EPS check itself did not fire.
+        """
+        config = BasicConfig({"general": {"case": "testcase"}})
+        assert "eps" not in config
+
+        with pytest.raises(AttributeError):
+            start_suite(args=None, config=config)
 
 
 if __name__ == "__main__":

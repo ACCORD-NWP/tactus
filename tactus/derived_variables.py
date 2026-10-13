@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Derive runtime variables."""
 
+import os
 import shutil
 from math import atan, floor, sin
 
@@ -74,15 +75,16 @@ def check_fullpos_namelist(config, nlgen):
     generate_namelist = True
     if accept_static_namelists:
         namelists = platform.get_system_value("namelists")
-        fullpos_select_files = Search.find_files(
-            namelists, prefix="xxt", recursive=False, fullpath=True
-        )
-        if len(fullpos_select_files) > 0:
-            for filename in fullpos_select_files:
-                shutil.copy(filename, ".")
-                logger.info("Copy fullpos select file {}", filename)
+        if os.path.isdir(namelists):
+            fullpos_select_files = Search.find_files(
+                namelists, prefix="xxt", recursive=False, fullpath=True
+            )
+            if len(fullpos_select_files) > 0:
+                for filename in fullpos_select_files:
+                    shutil.copy(filename, ".")
+                    logger.info("Copy fullpos select file {}", filename)
 
-            generate_namelist = False
+                generate_namelist = False
 
     if generate_namelist:
         _fpdir = config["fullpos.config_path"]
@@ -237,6 +239,12 @@ def derived_variables(config, processor_layout=None):
     decades = "one_decade" if config["pgd.one_decade"] else "all_decade"
     gen_macros.append("namelist.decades")
 
+    ecoclimap_version = "ecoclimap_sg" if config["pgd.ecoclimap_sg"] else "ecoclimap"
+    gen_macros.append("namelist.ecoclimap_version")
+
+    use_ecrad = "ecrad" if config["general.ecrad"] else ""
+    gen_macros.append("namelist.use_ecrad")
+
     sg_input = "osm" if config["pgd.use_osm"] else ""
     gen_macros.append("namelist.sg_input")
     default_macros["gen_macros"] = gen_macros
@@ -271,6 +279,8 @@ def derived_variables(config, processor_layout=None):
             "time": int(time),
             "sg_input": sg_input,
             "decades": decades,
+            "use_ecrad": use_ecrad,
+            "ecoclimap_version": ecoclimap_version,
         },
     }
 
