@@ -3,7 +3,6 @@
 import random
 from collections import deque
 from types import GeneratorType
-from typing import Dict
 from unittest.mock import Mock, patch
 
 import numpy as np
@@ -55,7 +54,8 @@ class TestValidateExpandables:
     """Unit tests of the validate_expandables method of the EPSConfig class."""
 
     @pytest.fixture(name="eps_general_config", scope="class")
-    def fixture_eps_general_config(self) -> EPSGeneralConfigs:
+    @classmethod
+    def fixture_eps_general_config(cls) -> EPSGeneralConfigs:
         """Fixture for defining a test EPSGeneralConfigs class."""
         return EPSGeneralConfigs(control_member=0, members=[0, 1])
 
@@ -139,7 +139,8 @@ class TestValidateBdmember:
     """Unit tests of the validate_bdmember method of the EPSConfig class."""
 
     @pytest.fixture(name="eps_general_config", scope="class")
-    def fixture_eps_general_config(self) -> EPSGeneralConfigs:
+    @classmethod
+    def fixture_eps_general_config(cls) -> EPSGeneralConfigs:
         """Fixture for defining a test EPSGeneralConfigs class with 3 members."""
         return EPSGeneralConfigs(members=[0, 1, 2])
 
@@ -265,7 +266,7 @@ class TestGenerateMemberSettings:
         ]
 
 
-class TestGenerator(BaseGenerator[bool]):
+class RandomBoolGenerator(BaseGenerator[bool]):
     """Test generator class to generate random boolean values."""
 
     def __iter__(self):
@@ -317,7 +318,7 @@ class TestInstantiateGenerators:
         eps_config: EPSConfig,
     ):
         """Test instantiate_generators with BaseGenerator."""
-        mock_import_from_string.return_value = TestGenerator
+        mock_import_from_string.return_value = RandomBoolGenerator
 
         config = {"field1": "some.generator.Class"}
         result = instantiate_generators(config, eps_config.general.members)
@@ -392,15 +393,6 @@ class TestInstantiateGenerators:
         )
 
 
-@pytest.fixture(name="none_value_generators", scope="class")
-def fixture_none_value_generators() -> dict:
-    """Fixture for defining test none_value_generators."""
-    return {
-        "field1": iter([None, None, None]),
-        "field2": iter([4, 5, 6]),
-    }
-
-
 class TestGenerateValues:
     """Unit tests for the generate_values function."""
 
@@ -414,6 +406,14 @@ class TestGenerateValues:
                 "subfield1": iter([7, 8, 9]),
                 "subfield2": iter([10, 11, 12]),
             },
+        }
+
+    @pytest.fixture(name="none_value_generators")
+    def fixture_none_value_generators(self) -> dict:
+        """Fixture for defining test none_value_generators."""
+        return {
+            "field1": iter([None, None, None]),
+            "field2": iter([4, 5, 6]),
         }
 
     def test_with_flat_config(self, generators: dict):
@@ -488,22 +488,22 @@ class TestGenerateValues:
         with pytest.raises(KeyError):
             generate_values(config, generators)
 
-    @pytest.mark.parametrize(
-        ("expected_result", "member"),
-        [
-            ({"field2": 4}, 1),
-            ({"field2": 5}, 2),
-            ({"field2": 6}, 3),
-        ],
-    )
-    def test_with_none_value_generator(
-        self, none_value_generators, expected_result: Dict[str, int], member: int
-    ):
+    def test_with_none_value_generator(self, none_value_generators: dict):
         """Test generate_values with a generator that returns None."""
         config = {"field1": 0, "field2": 0}
+        result: dict[str, int] = generate_values(config, none_value_generators)
+        assert result == {"field2": 4}, (
+            "field1 should be absent or wrong value for field2 for member 1"
+        )
+
         result = generate_values(config, none_value_generators)
-        assert result == expected_result, (
-            f"Wrong value for field1 or field2 for member {member}"
+        assert result == {"field2": 5}, (
+            "field1 should be absent or wrong value for field2 for member 2"
+        )
+
+        result = generate_values(config, none_value_generators)
+        assert result == {"field2": 6}, (
+            "field1 should be absent or wrong value for field2 for member 3"
         )
 
 
