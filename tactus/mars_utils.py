@@ -730,14 +730,17 @@ def fix_snow_layer(tag: str, steps: List[int], members_dict: Dict[str, List[int]
                                 codes_release(gid)
 
                     if gid_sdn:
-                        logger.info(f"Fixing snow layer for snow albedo in file :{filename}")
+                        logger.info(
+                            f"Fixing snow layer for snow albedo in file :{filename}"
+                        )
                         try:
                             file.seek(position)
                             if codes_get(gid_sdn, "typeOfLevel") != "snowLayer":
-                               raise ValueError(f"typeOfLevel should be snowLayer for {filename}")
+                                raise ValueError(
+                                    f"typeOfLevel should be snowLayer for {filename}"
+                                )
                             codes_set(gid_sdn, "edition", 2)
                             codes_set(gid_sdn, "level", 1)
                             codes_write(gid_sdn, file)
                         finally:
                             codes_release(gid_sdn)
-
