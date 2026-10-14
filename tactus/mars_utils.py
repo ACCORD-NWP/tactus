@@ -713,25 +713,31 @@ def fix_snow_layer(tag: str, steps: List[int], members_dict: Dict[str, List[int]
         for members in members_dict.values():
             for member in members:
                 filename = f"{tag}_{member or 0}+{step}"
-
-                with open(filename, "rb") as fin, open("ICMGGtmp", "wb") as fout:
-                    while True:
-                        gid = codes_grib_new_from_file(fin)
+                gid_sdn = None
+                position = 0
+                with open(filename, "r+b") as file:
+                    while gid_sdn is None:
+                        position = file.tell()
+                        gid = codes_grib_new_from_file(file)
                         if gid is None:
                             break
                         try:
                             short_name = str(codes_get(gid, "shortName"))
                             if short_name == "asn":
-                                logger.info(
-                                    "Fixing snow layer for snow albedo in file: {}",
-                                    filename,
-                                )
-                                codes_set(gid, "edition", 2)
-                                codes_set(gid, "typeOfLevel", "snowLayer")
-                                codes_set(gid, "level", 1)
-
-                            codes_write(gid, fout)
+                                gid_sdn = gid
                         finally:
-                            codes_release(gid)
+                            if gid_sdn is None:
+                                codes_release(gid)
 
-                shutil.move("ICMGGtmp", filename)
+                    if gid_sdn:
+                        logger.info(f"Fixing snow layer for snow albedo in file :{filename}")
+                        try:
+                            file.seek(position)
+                            if codes_get(gid_sdn, "typeOfLevel") != "snowLayer":
+                               raise ValueError(f"typeOfLevel should be snowLayer for {filename}")
+                            codes_set(gid_sdn, "edition", 2)
+                            codes_set(gid_sdn, "level", 1)
+                            codes_write(gid_sdn, file)
+                        finally:
+                            codes_release(gid_sdn)
+
