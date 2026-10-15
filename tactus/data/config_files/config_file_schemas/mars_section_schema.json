@@ -121,9 +121,16 @@
           "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
         },
         "start_date": {
-          "type": "string",
           "description": "Date from when are data available in Mars. Note that IFSENS is only stored for a limited amount of time.",
-          "format": "date-time"
+          "type": "string",
+	  "oneOf": [
+                {
+                  "format": "date-time"
+                },
+                {
+                  "format": "duration"
+                }
+          ]
         },
         "GG": {
           "type": "string",
