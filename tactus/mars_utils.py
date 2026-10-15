@@ -714,10 +714,10 @@ def fix_snow_layer(tag: str, steps: List[int], members_dict: Dict[str, List[int]
         for members in members_dict.values():
             for member in members:
                 filename = f"{tag}_{member or 0}+{step}"
-                gid_sdn = None
+                grid_asn = None
                 position = 0
                 with open(filename, "r+b") as file:
-                    while gid_sdn is None:
+                    while grid_asn is None:
                         position = file.tell()
                         gid = codes_grib_new_from_file(file)
                         if gid is None:
@@ -725,12 +725,12 @@ def fix_snow_layer(tag: str, steps: List[int], members_dict: Dict[str, List[int]
                         try:
                             short_name = str(codes_get(gid, "shortName"))
                             if short_name == "asn":
-                                gid_sdn = gid
+                                grid_asn = gid
                         finally:
-                            if gid_sdn is None:
+                            if grid_asn is None:
                                 codes_release(gid)
 
-                    if gid_sdn:
+                    if grid_asn:
                         logger.info(
                             f"Fixing snow layer for snow albedo in file :{filename}"
                         )
@@ -745,14 +745,14 @@ def fix_snow_layer(tag: str, steps: List[int], members_dict: Dict[str, List[int]
 
                             # write the invalidated message at its original position
                             file.seek(position)
-                            codes_set(gid_sdn, "level", 0)
-                            codes_write(gid_sdn, file)
+                            codes_set(grid_asn, "level", 0)
+                            codes_write(grid_asn, file)
 
                             # Append the fixed message at the end of the file
                             file.seek(0, io.SEEK_END)
-                            codes_set(gid_sdn, "edition", 2)
-                            codes_set(gid_sdn, "level", 1)
-                            codes_set(gid_sdn, "typeOfLevel", "snowLayer")
-                            codes_write(gid_sdn, file)
+                            codes_set(grid_asn, "edition", 2)
+                            codes_set(grid_asn, "level", 1)
+                            codes_set(grid_asn, "typeOfLevel", "snowLayer")
+                            codes_write(grid_asn, file)
                         finally:
-                            codes_release(gid_sdn)
+                            codes_release(grid_asn)
