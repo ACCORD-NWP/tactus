@@ -735,12 +735,15 @@ def fix_snow_layer(tag: str, steps: List[int], members_dict: Dict[str, List[int]
                             f"Fixing snow layer for snow albedo in file :{filename}"
                         )
                         try:
-                            # We want to update the original message in place for performance reason.
-                            # Unfortunately, the message size will change and we cannot write it back in place.
-                            # Therefore, we invalidate the original message (by setting level to 0)
-                            # and add a fixed message at the end of the file.
+                            # The asn message is fixed in place for performance reason.
+                            # As the message size changes when snowLayer is set,
+                            # the message can't be updated in the middle
+                            # of the file.
+                            # Therefore, the original message
+                            # is invalidated by setting level to 0, and then the correct
+                            # message is appended at the end of the file.
 
-                            # write the invalidated message back to the file at its original position
+                            # write the invalidated message at its original position
                             file.seek(position)
                             codes_set(gid_sdn, "level", 0)
                             codes_write(gid_sdn, file)
