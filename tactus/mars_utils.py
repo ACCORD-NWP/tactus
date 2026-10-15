@@ -2,6 +2,7 @@
 
 import atexit
 import contextlib
+import io
 import os
 import shutil
 import sys
@@ -734,13 +735,21 @@ def fix_snow_layer(tag: str, steps: List[int], members_dict: Dict[str, List[int]
                             f"Fixing snow layer for snow albedo in file :{filename}"
                         )
                         try:
+                            # We want to update the original message in place for performance reason.
+                            # Unfortunately, the message size will change and we cannot write it back in place.
+                            # Therefore, we invalidate the original message (by setting level to 0)
+                            # and add a fixed message at the end of the file.
+
+                            # write the invalidated message back to the file at its original position
                             file.seek(position)
-                            if codes_get(gid_sdn, "typeOfLevel") != "snowLayer":
-                                raise ValueError(
-                                    f"typeOfLevel should be snowLayer for {filename}"
-                                )
+                            codes_set(gid_sdn, "level", 0)
+                            codes_write(gid_sdn, file)
+
+                            # Append the fixed message at the end of the file
+                            file.seek(0, io.SEEK_END)
                             codes_set(gid_sdn, "edition", 2)
                             codes_set(gid_sdn, "level", 1)
+                            codes_set(gid_sdn, "typeOfLevel", "snowLayer")
                             codes_write(gid_sdn, file)
                         finally:
                             codes_release(gid_sdn)
