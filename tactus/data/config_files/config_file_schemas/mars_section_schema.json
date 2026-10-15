@@ -123,13 +123,13 @@
         "start_date": {
           "description": "Date from when are data available in Mars. Note that IFSENS is only stored for a limited amount of time.",
           "type": "string",
-	  "oneOf": [
-                {
-                  "format": "date-time"
-                },
-                {
-                  "format": "duration"
-                }
+          "oneOf": [
+            {
+              "format": "date-time"
+            },
+            {
+              "format": "duration"
+            }
           ]
         },
         "GG": {
