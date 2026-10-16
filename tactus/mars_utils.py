@@ -742,9 +742,6 @@ def fix_snow_layer(tag: str, steps: List[int], members_dict: Dict[str, List[int]
                         # setting paramId to an unused value (99), and the
                         # correct message is appended at the end of the file.
 
-                        # Clone BEFORE mutating grid_asn so grid_fix is a
-                        # pristine copy of the original message.
-                        grid_fix = codes_clone(grid_asn)
                         try:
                             original_param_id = codes_get(grid_asn, "paramId")
 
@@ -756,14 +753,14 @@ def fix_snow_layer(tag: str, steps: List[int], members_dict: Dict[str, List[int]
                             codes_write(grid_asn, file)
 
                             # Append the fixed message at the end of the file.
-                            codes_set(grid_fix, "edition", 2)
-                            codes_set(grid_fix, "typeOfLevel", "snowLayer")
-                            codes_set(grid_fix, "level", 1)
-                            codes_set(grid_fix, "paramId", original_param_id)
+                            codes_set(grid_asn, "paramId", original_param_id)
+                            codes_set(grid_asn, "edition", 2)
+                            codes_set(grid_asn, "typeOfLevel", "snowLayer")
+                            codes_set(grid_asn, "level", 1)
+                            codes_set(grid_asn, "paramId", original_param_id)
 
                             file.seek(0, io.SEEK_END)
-                            codes_write(grid_fix, file)
+                            codes_write(grid_asn, file)
                         finally:
-                            codes_release(grid_fix)
                             codes_release(grid_asn)
 
