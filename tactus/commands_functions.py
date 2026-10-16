@@ -561,7 +561,9 @@ def show_namelist(args, config):
     if args.namelist_name is not None:
         namelist_name = args.namelist_name
     else:
-        namelist_name = f"namelist_{args.namelist_type}_{args.namelist}.mbr{args.member:03d}"
+        namelist_name = (
+            f"namelist_{args.namelist_type}_{args.namelist}.mbr{args.member:03d}"
+        )
     nlgen.write_namelist(nlres, namelist_name)
     logger.info("Printing namelist in use to file {}", namelist_name)
 
