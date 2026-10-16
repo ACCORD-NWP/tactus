@@ -709,6 +709,7 @@ class InputDataFamily(EcflowSuiteFamily):
         if config["suite_control.split_mars"]:
             marstype_list = ["GG", "SH", "UA", "latlon"]
         marsprep_trigger_nodes = [prepare_cycle]
+        mars_prep = None
 
         if external_marsprep_trigger_node is not None:
             marsprep_trigger_nodes.extend(external_marsprep_trigger_node)
@@ -718,7 +719,7 @@ class InputDataFamily(EcflowSuiteFamily):
             and config["suite_control.interpolate_boundaries"]
             and not config["suite_control.split_mars_by_step"]
         ):
-            MarsprepFamily(
+            mars_prep = MarsprepFamily(
                 self,
                 config,
                 task_settings,
@@ -767,19 +768,21 @@ class InputDataFamily(EcflowSuiteFamily):
                 and not config["general.surfex"]
                 and config["suite_control.create_static_data"]
             ) and (cycles.current_index == 0 or cycles.new_month):
-                if config["suite_control.member_specific_mars_prep"]:
-                    raise (
-                        NotImplementedError(
-                            "This is not yet implemented for "
-                            "member_specific_mars_prep = True"
+                for flag in ("member_specific_mars_prep", "member_specific_static_data"):
+                    if config[f"suite_control.{flag}"]:
+                        raise (
+                            NotImplementedError(
+                                f"This is not yet implemented for {flag} = True"
+                            )
                         )
-                    )
+
                 prep_fam = PrepFamily(
                     self,
                     config,
                     task_settings,
                     input_template,
                     ecf_files,
+                    trigger=mars_prep,
                     ecf_files_remotely=ecf_files_remotely,
                 )
 
