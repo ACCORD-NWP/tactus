@@ -13,12 +13,12 @@ from time import sleep
 from typing import Dict, List, Tuple
 
 from eccodes import (
+    codes_clone,
     codes_get,
     codes_grib_new_from_file,
     codes_release,
     codes_set,
     codes_write,
-    codes_get_message
 )
 
 from .config_parser import ParsedConfig
@@ -735,18 +735,35 @@ def fix_snow_layer(tag: str, steps: List[int], members_dict: Dict[str, List[int]
                         logger.info(
                             f"Fixing snow layer for snow albedo in file :{filename}"
                         )
+                        # The asn message is fixed in place for performance reason.
+                        # As the message size changes when snowLayer is set,
+                        # the message can't be updated in the middle of the file.
+                        # Therefore, the original message is invalidated by
+                        # setting paramId to an unused value (99), and the
+                        # correct message is appended at the end of the file.
+
+                        # Clone BEFORE mutating grid_asn so grid_fix is a
+                        # pristine copy of the original message.
+                        grid_fix = codes_clone(grid_asn)
                         try:
-                            # The asn message is fixed in place for performance reason.
+                            original_param_id = codes_get(grid_asn, "paramId")
+
+                            # Invalidate the original message in place
+                            # (size unchanged).
+                            dummy_param_id = 99
+                            codes_set(grid_asn, "paramId", dummy_param_id)
                             file.seek(position)
-                            size_before = len(codes_get_message(grid_asn))
-                            codes_set(grid_asn, "edition", 2)
-                            codes_set(grid_asn, "level", 1)
-                            codes_set(grid_asn, "typeOfLevel", "snowLayer")
-                            size_after = len(codes_get_message(grid_asn))
-                            if size_before != size_after:
-                                raise ValueError(
-                                    f"Size of the asn message changed from {size_before} to {size_after} after fixing the snow layer."
-                                )
                             codes_write(grid_asn, file)
+
+                            # Append the fixed message at the end of the file.
+                            codes_set(grid_fix, "edition", 2)
+                            codes_set(grid_fix, "typeOfLevel", "snowLayer")
+                            codes_set(grid_fix, "level", 1)
+                            codes_set(grid_fix, "paramId", original_param_id)
+
+                            file.seek(0, io.SEEK_END)
+                            codes_write(grid_fix, file)
                         finally:
+                            codes_release(grid_fix)
                             codes_release(grid_asn)
+
