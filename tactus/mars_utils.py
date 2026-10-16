@@ -756,7 +756,6 @@ def fix_snow_layer(tag: str, steps: List[int], members_dict: Dict[str, List[int]
                             codes_set(grid_asn, "edition", 2)
                             codes_set(grid_asn, "typeOfLevel", "snowLayer")
                             codes_set(grid_asn, "level", 1)
-                            codes_set(grid_asn, "paramId", original_param_id)
 
                             file.seek(0, io.SEEK_END)
                             codes_write(grid_asn, file)
