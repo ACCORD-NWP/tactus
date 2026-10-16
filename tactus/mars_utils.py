@@ -13,7 +13,6 @@ from time import sleep
 from typing import Dict, List, Tuple
 
 from eccodes import (
-    codes_clone,
     codes_get,
     codes_grib_new_from_file,
     codes_release,
