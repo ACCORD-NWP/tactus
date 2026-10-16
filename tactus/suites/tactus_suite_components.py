@@ -475,7 +475,7 @@ class StaticDataTasks:
 
 
 class MirrorFamily(EcflowSuiteFamily):
-    """Class for creating the InputDataFamily ecFlow family."""
+    """Class for creating the MirrorFamily ecFlow family."""
 
     def __init__(
         self,
@@ -680,6 +680,7 @@ class InputDataFamily(EcflowSuiteFamily):
         task_settings: TaskSettings,
         input_template,
         ecf_files,
+        cycles: Cycles,
         trigger=None,
         ecf_files_remotely=None,
         external_marsprep_trigger_node=None,
@@ -708,6 +709,7 @@ class InputDataFamily(EcflowSuiteFamily):
         if config["suite_control.split_mars"]:
             marstype_list = ["GG", "SH", "UA", "latlon"]
         marsprep_trigger_nodes = [prepare_cycle]
+        mars_prep = None
 
         if external_marsprep_trigger_node is not None:
             marsprep_trigger_nodes.extend(external_marsprep_trigger_node)
@@ -717,7 +719,7 @@ class InputDataFamily(EcflowSuiteFamily):
             and config["suite_control.interpolate_boundaries"]
             and not config["suite_control.split_mars_by_step"]
         ):
-            MarsprepFamily(
+            mars_prep = MarsprepFamily(
                 self,
                 config,
                 task_settings,
@@ -760,6 +762,40 @@ class InputDataFamily(EcflowSuiteFamily):
                         variables={"ARGS": f"extra_bdshift={bdshift[i]}"},
                         ecf_files_remotely=ecf_files_remotely,
                     )
+
+            if (
+                config["general.csc"] == "ALARO"
+                and not config["general.surfex"]
+                and config["suite_control.create_static_data"]
+            ) and (cycles.current_index == 0 or cycles.new_month):
+                for flag in ("member_specific_mars_prep", "member_specific_static_data"):
+                    if config[f"suite_control.{flag}"]:
+                        raise (
+                            NotImplementedError(
+                                f"This is not yet implemented for {flag} = True"
+                            )
+                        )
+
+                prep_fam = PrepFamily(
+                    self,
+                    config,
+                    task_settings,
+                    input_template,
+                    ecf_files,
+                    trigger=mars_prep,
+                    ecf_files_remotely=ecf_files_remotely,
+                )
+
+                EcflowSuiteTask(
+                    "E923Update",
+                    self,
+                    config,
+                    task_settings,
+                    ecf_files,
+                    trigger=prep_fam,
+                    input_template=input_template,
+                    ecf_files_remotely=ecf_files_remotely,
+                )
 
 
 class PrepFamily(EcflowSuiteFamily):
@@ -1188,8 +1224,6 @@ class InterpolationFamily(EcflowSuiteFamily):
             add_var_trigger=add_var_trigger,
             remote_path=remote_path,
         )
-        e923_update_task = None
-        csc = config["general.csc"]
 
         is_first_cycle = cycles.current_index == 0
         mode = config["suite_control.mode"]
@@ -1208,24 +1242,6 @@ class InterpolationFamily(EcflowSuiteFamily):
                 ecf_files_remotely=ecf_files_remotely,
             )
 
-            if csc == "ALARO" and not config["general.surfex"]:
-                e923_update_task = EcflowSuiteTask(
-                    "E923Update",
-                    self,
-                    config,
-                    task_settings,
-                    ecf_files,
-                    trigger=prep_fam,
-                    input_template=input_template,
-                    ecf_files_remotely=ecf_files_remotely,
-                )
-
-            if csc == "ALARO":
-                do_prep = False
-
-        if csc == "ALARO" and not config["general.surfex"] and cycles.end_of_month:
-            do_prep = True
-
         lbc_fam = LBCFamily(
             self,
             config,
@@ -1233,7 +1249,7 @@ class InterpolationFamily(EcflowSuiteFamily):
             input_template,
             ecf_files,
             cycles,
-            lbc_family_trigger=e923_update_task,
+            lbc_family_trigger=None,
             ecf_files_remotely=ecf_files_remotely,
             dry_run=dry_run,
             member=member,
@@ -1783,6 +1799,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     task_settings,
                     input_template,
                     ecf_files,
+                    cycles,
                     trigger=trigger,
                     ecf_files_remotely=ecf_files_remotely,
                     external_marsprep_trigger_node=external_marsprep_trigger_nodes,
@@ -1833,6 +1850,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                         task_settings,
                         input_template,
                         ecf_files,
+                        cycles,
                         trigger=mbr_trigger,
                         ecf_files_remotely=ecf_files_remotely,
                         external_marsprep_trigger_node=external_marsprep_trigger_nodes,
