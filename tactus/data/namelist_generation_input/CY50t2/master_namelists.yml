@@ -1536,10 +1536,8 @@ f4_c903_main:
     YQ_NL%LGP: true
     YQ_NL%LGPINGP: true
     YQ_NL%LSP: false
-    YR_NL%NREQIN: 1
-    YS_NL%NREQIN: 1
-    YI_NL%NREQIN: 1
-    YL_NL%NREQIN: 1
+    YR_NL%NREQIN: -1
+    YS_NL%NREQIN: -1
   NAMOPH:
     CCLIMINC: _
   NAMPAR0:
@@ -1665,6 +1663,12 @@ f4_c903_domain:
     LNONHYD_GEOM: true
   NEMFPEZO:
     RCO_EZO: 180.0
+f4_c903_HARMONIE_AROME:
+  NAMGFL:
+    YR_NL%NREQIN: 1
+    YS_NL%NREQIN: 1
+    YI_NL%NREQIN: 1
+    YL_NL%NREQIN: 1
 f4_e927_lam:
   NAMDYNA:
     LNHEE: true
