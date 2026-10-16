@@ -762,4 +762,3 @@ def fix_snow_layer(tag: str, steps: List[int], members_dict: Dict[str, List[int]
                             codes_write(grid_asn, file)
                         finally:
                             codes_release(grid_asn)
-
