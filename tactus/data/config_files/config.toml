@@ -91,6 +91,7 @@
 
 [compile]
   ial_git_repo = "git@github.com:ACCORD-NWP/IAL"
+  ial_git_version = "fcf5469"
 
 [include]
   archiving = "include/archiving/@HOST@.toml"
