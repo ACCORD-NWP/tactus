@@ -67,6 +67,7 @@ c903_main:
   - fa_names
   - fa_packing
   - f4_c903_main
+  - f4_c903_@CSC@
 
 c903_domain:
   - empty
