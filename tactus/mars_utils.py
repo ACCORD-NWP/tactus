@@ -21,7 +21,7 @@ from eccodes import (
 )
 
 from .config_parser import ParsedConfig
-from .datetime_utils import as_datetime
+from .datetime_utils import as_datetime, evaluate_date
 from .domain_utils import get_domain
 from .geo_utils import Projection, Projstring
 from .logs import logger
@@ -289,7 +289,7 @@ def check_data_available(basetime, mars):
     Raises:
         ValueError: if the basetime falls outside the available range
     """
-    start_date = as_datetime(mars["start_date"])
+    start_date = as_datetime(evaluate_date(mars["start_date"]))
     with contextlib.suppress(KeyError):
         end_date = as_datetime(mars["end_date"])
         if basetime > end_date:

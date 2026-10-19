@@ -511,16 +511,16 @@ class NamelistGenerator:
         self.target = target
         # define OmegaConf resolvers
         OmegaConf.clear_resolvers()
-        OmegaConf.register_new_resolver(
+        OmegaConf.register_resolver(
             "vsigqsat_by_gridsize",
             lambda arg1, arg2: self.fn_vsigqsat_by_gridsize(arg1, arg2),
         )
-        OmegaConf.register_new_resolver("stepfreq", lambda arg: self.fn_stepfreq(arg))
-        OmegaConf.register_new_resolver("steplist", lambda arg: self.fn_steplist(arg))
-        OmegaConf.register_new_resolver(
+        OmegaConf.register_resolver("stepfreq", lambda arg: self.fn_stepfreq(arg))
+        OmegaConf.register_resolver("steplist", lambda arg: self.fn_steplist(arg))
+        OmegaConf.register_resolver(
             "cfg", lambda arg, default=None: self.fn_config(arg, default)
         )
-        OmegaConf.register_new_resolver("timestep", lambda arg: self.fn_tstep(arg))
+        OmegaConf.register_resolver("timestep", lambda arg: self.fn_tstep(arg))
 
         # Use static namelist if given
         use_yaml = True
