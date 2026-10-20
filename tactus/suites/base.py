@@ -300,10 +300,10 @@ class EcflowNode:
                             self.make_relative(trigger.trigger_string)
                         )
                 else:
-                    logger.warning("Empty trigger")
+                    logger.debug("Empty trigger")
             elif isinstance(trigger, list):
                 if len(trigger) == 0:
-                    logger.warning("Empty trigger list")
+                    logger.debug("Empty trigger list")
                 # Resolve the trigger list into an EcflowSuiteTriggers object,
                 # and add the trigger string to the node
                 elif all(isinstance(node, EcflowNode) for node in trigger):
