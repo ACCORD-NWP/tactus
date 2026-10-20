@@ -19,7 +19,7 @@ from . import GeneralConstants
 from .cleaning import CleanTactus
 from .config_parser import BasicConfig, ConfigParserDefaults, ConfigPaths, ParsedConfig
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
-from .eps.eps_setup import EPSConfig
+from .eps.eps_setup import EPSConfig, get_member_config
 from .experiment import case_setup
 from .general_utils import sanitize_case_name
 from .host_actions import TactusHost, set_tactus_home
@@ -550,8 +550,11 @@ def show_namelist(args, config):
     config = config.copy(update={"platform": {"tactus_home": tactus_home}})
     config = config.copy(update=set_times(config))
     config = config.copy(update=derived_variables(config))
+    config = get_member_config(config, member=args.member)
 
-    nlgen = NamelistGenerator(config, args.namelist_type, substitute=args.substitute)
+    nlgen = NamelistGenerator(
+        config, args.namelist_type, substitute=args.substitute, abort_gracefully=True
+    )
     nlgen.load(args.namelist)
 
     if "forecast" in args.namelist and args.namelist_type == "master":
@@ -560,7 +563,9 @@ def show_namelist(args, config):
     if args.namelist_name is not None:
         namelist_name = args.namelist_name
     else:
-        namelist_name = f"namelist_{args.namelist_type}_{args.namelist}"
+        namelist_name = (
+            f"namelist_{args.namelist_type}_{args.namelist}.mbr{args.member:03d}"
+        )
     nlgen.write_namelist(nlres, namelist_name)
     logger.info("Printing namelist in use to file {}", namelist_name)
 

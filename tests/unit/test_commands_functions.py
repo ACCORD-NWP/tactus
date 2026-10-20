@@ -29,6 +29,7 @@ def set_arg():
     arg.namelist_name = None
     arg.domain = "test"
     arg.substitute = False
+    arg.member = 0
     return arg
 
 
@@ -92,7 +93,7 @@ def test_show_namelist(set_arg, default_config, param, tmp_directory):
     os.chdir(outpath)
     show_namelist(set_arg, config)
     os.chdir(prev_cwd)
-    assert os.path.isfile(f"{outpath}/namelist_master_forecast")
+    assert os.path.isfile(f"{outpath}/namelist_master_forecast.mbr000")
     assert os.path.isfile(f"{outpath}/xxt00000000")
     assert os.path.isfile(f"{outpath}/xxtddddhh00")
     if param["clean"]:
