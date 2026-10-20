@@ -686,6 +686,15 @@ def add_namelist_args(parser_object):
         default=None,
     )
     parser_object.add_argument(
+        "--member",
+        "-m",
+        type=int,
+        dest="member",
+        help="Optional member",
+        default=0,
+        required=False,
+    )
+    parser_object.add_argument(
         "--substitute",
         "-s",
         action="store_true",

@@ -431,9 +431,10 @@ def get_member_config(config: ParsedConfig, member: int) -> ParsedConfig:
         )
 
     # Check if the member is in the members list
-    if member not in config["eps.general.members"]:
+    members = config["eps.general.members"]
+    if member not in members:
         raise ValueError(
-            f"Member index {member} is not in the members list."
+            f"Member index {member} is not in the members list {members}."
             + " Cannot get member settings."
         )
 
