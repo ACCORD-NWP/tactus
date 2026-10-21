@@ -35,4 +35,3 @@ Finally you'll need to update _domain_ under section [include] in your main conf
 | `NL_1000x1000_750m.toml`          | `large`                   | linear    |   989 |   989 |  750 |  750 | 52.5 | 4.9 | 20 | — | — | — | — | — | 52.5 | 4.9 |
 | `large_central_eu.toml`           | `large_central_eu`        | linear    |   989 |   989 |  750 |  750 | 48.7 | 19.1 | CSC | — | — | — | — | — | — | — |
 | `paris_osm.toml`                  | `paris_osm`               | linear    |   189 |   189 |  500 |  500 | 48.85 | 2.35 | 15 | — | — | — | — | — | 48.85 | 2.35 |
-
