@@ -125,25 +125,6 @@ class Cycles:
 
         return _new_month
 
-    def _of_month(self) -> bool:
-        """Return True if the next cycle is in a different month.
-
-        Returns:
-            bool: True if the next cycle is in a different month
-        """
-        _end_of_month = False
-        try:
-            current_cycle = self.current_cycle
-            next_cycle = self.next_cycle
-            if as_datetime(current_cycle.day).strftime("%m") != as_datetime(
-                next_cycle.day
-            ).strftime("%m"):
-                _end_of_month = True
-        except StopIteration:
-            logger.debug("It is last cycle")
-
-        return _end_of_month
-
     def __iter__(self) -> Iterator[Cycle]:
         """Return an iterator over the cycles."""
         self._current_index = 0
