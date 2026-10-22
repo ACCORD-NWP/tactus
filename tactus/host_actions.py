@@ -121,7 +121,7 @@ class TactusHost:
                 if hasattr(self, fname):
                     function = getattr(self, fname)
                     if method not in matches:
-                           matches[method] = []
+                        matches[method] = []
                     if function(pattern):
                         matches[method].append(tactus_host)
                 else:
@@ -141,16 +141,30 @@ class TactusHost:
             raise RuntimeError(f"Ambiguous matches: {matches}")
         if len(matches) == 2:
             (k1, v1), (k2, v2) = matches.items()
+            if len(v1) == 0 and len(v2) == 0:
+                if use_default:
+                    matches = list(self.known_hosts)[0:1]
+                    logger.info(
+                        f"No tactus-host detected from {self.hostname}, "
+                        + f"use {self.default_host}"
+                    )
+                else:
+                    matches = [None]
+                    logger.info(
+                        f"No tactus-host detected from {self.hostname}, return None"
+                    )
+
+                return matches[0]
             if v1 != v2:
                 logger.error("Matches found: {}", matches)
                 combined = set(v1) | set(v2)
                 for h in combined:
-                  logger.error("Pattern rules: {}", self.known_hosts[h])
+                    logger.error("Pattern rules: {}", self.known_hosts[h])
                 logger.error("Ambiguous or incomplete matches")
                 raise RuntimeError("Ambiguous or incomplete matches")
         first_values = next(iter(matches.values()))
         if not first_values:
-                raise ValueError("first item has an empty list")
+            raise ValueError("first item has an empty list")
         return first_values[0]
 
 
