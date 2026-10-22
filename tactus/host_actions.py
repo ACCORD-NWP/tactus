@@ -120,41 +120,33 @@ class TactusHost:
                 fname = f"_detect_by_{method}"
                 if hasattr(self, fname):
                     function = getattr(self, fname)
-                    if method not in matches:
-                        matches[method] = []
                     if function(pattern):
+                        if method not in matches:
+                            matches[method] = []
                         matches[method].append(tactus_host)
                 else:
                     raise RuntimeError(f"No tactus-host detection using {method}")
 
         if len(matches) == 0:
-            if use_default:
-                matches = list(self.known_hosts)[0:1]
-                logger.info(
-                    f"No tactus-host detected from {self.hostname}, "
-                    + f"use {self.default_host}"
-                )
-            else:
-                matches = [None]
-                logger.info(f"No tactus-host detected from {self.hostname}, return None")
-        if len(matches) == 1 and len(matches.values()) > 1:
-            raise RuntimeError(f"Ambiguous matches: {matches}")
+            return self._catch_no_detected_host(use_default)
+        if len(matches) == 1:
+            values = next(iter(matches.values()))
+            logger.info(len(values))
+            if len(values) > 1:
+                raise RuntimeError(f"Ambiguous matches: {matches}")
+            host = next(iter(matches.values()))[0]
+            if len(self.known_hosts[host]) > 1:
+                logger.error("Incomplete rule match")
+                logger.error("Match: {}", matches)
+                logger.error("Rules: {}", self.known_hosts[host])
+                raise RuntimeError("Incomplete match")
+
         if len(matches) == 2:
             (k1, v1), (k2, v2) = matches.items()
             if len(v1) == 0 and len(v2) == 0:
-                if use_default:
-                    matches = list(self.known_hosts)[0:1]
-                    logger.info(
-                        f"No tactus-host detected from {self.hostname}, "
-                        + f"use {self.default_host}"
-                    )
-                else:
-                    matches = [None]
-                    logger.info(
-                        f"No tactus-host detected from {self.hostname}, return None"
-                    )
-
-                return matches[0]
+                return self._catch_no_detected_host(use_default)
+            if v1 == v2 and (len(v1) > 1 or len(v2) > 1):
+                raise RuntimeError(f"Ambiguous matches: {matches}")
             if v1 != v2:
                 logger.error("Matches found: {}", matches)
                 combined = set(v1) | set(v2)
@@ -166,6 +158,19 @@ class TactusHost:
         if not first_values:
             raise ValueError("first item has an empty list")
         return first_values[0]
+
+    def _catch_no_detected_host(self, use_default):
+        if use_default:
+            matches = list(self.known_hosts)[0:1]
+            logger.info(
+                f"No tactus-host detected from {self.hostname}, "
+                + f"use {self.default_host}"
+            )
+        else:
+            matches = [None]
+            logger.info(f"No tactus-host detected from {self.hostname}, return None")
+
+        return matches[0]
 
 
 def set_tactus_home(config, tactus_home=None):

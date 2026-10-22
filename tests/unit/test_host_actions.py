@@ -59,7 +59,7 @@ def test_from_env_tactus_host():
     del os.environ["TACTUS_HOST"]
 
 
-def test_ambiguous_host():
+def test_incomplete_host():
     dh = TactusHost()
     dh.hostname = "tactus-test"
     dh.known_hosts = {
@@ -67,9 +67,7 @@ def test_ambiguous_host():
         "by_env": {"env": {"TACTUS_HOST_TESTENV": "foo"}},
     }
     os.environ["TACTUS_HOST_TESTENV"] = "foo"
-    with pytest.raises(
-        RuntimeError, match=re.escape("Ambiguous matches: ['by_host', 'by_env']")
-    ):
+    with pytest.raises(RuntimeError, match=re.escape("Ambiguous or incomplete matches")):
         dh.detect_tactus_host()
     del os.environ["TACTUS_HOST_TESTENV"]
 
