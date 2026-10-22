@@ -109,17 +109,8 @@ class E923MonthlyFamily(EcflowSuiteFamily):
 
         if config["pgd.one_decade"]:
             month_list = get_month_list(
-                config["general.times.start"], config["general.times.end"]
+                config["general.times.start"], config["general.times.end"], extend=True
             )
-            last_month = month_list[0] - 1
-            if last_month == 0:
-                last_month = 12
-            next_month = month_list[-1] + 1
-            if next_month == 13:
-                next_month = 1
-
-            month_list.insert(0, last_month)
-            month_list.append(next_month)
 
             seasons = {}
             for mm in sorted(month_list):
@@ -419,19 +410,32 @@ class StaticDataTasks:
             )
             archive_static_member_trigger.append(pgd_update)
 
-        if config["general.csc"] == "ALARO" and config["general.surfex"]:
-            pgd_filter_town_frac = PgdNode(
-                "PgdFilterTownFrac",
-                parent,
-                config,
-                task_settings,
-                input_template,
-                ecf_files,
-                trigger=pgd_update,
-                ecf_files_remotely=ecf_files_remotely,
-                limit=limit,
-            )
-            archive_static_member_trigger.append(pgd_filter_town_frac)
+        if config["general.csc"] == "ALARO":
+            if config["general.surfex"]:
+                pgd_filter_town_frac = PgdNode(
+                    "PgdFilterTownFrac",
+                    parent,
+                    config,
+                    task_settings,
+                    input_template,
+                    ecf_files,
+                    trigger=pgd_update,
+                    ecf_files_remotely=ecf_files_remotely,
+                    limit=limit,
+                )
+                archive_static_member_trigger.append(pgd_filter_town_frac)
+            else:
+                e923update = None
+                e923update = E923UpdateFamily(
+                    parent,
+                    config,
+                    task_settings,
+                    input_template,
+                    ecf_files,
+                    trigger=pgd_update,
+                    ecf_files_remotely=ecf_files_remotely,
+                )
+                archive_static_member_trigger.append(e923update)
 
         if config["general.windfarm"] and config["json2tab.enabled"]:
             generate_wfp_tabfile = EcflowSuiteTask(
@@ -475,7 +479,7 @@ class StaticDataTasks:
 
 
 class MirrorFamily(EcflowSuiteFamily):
-    """Class for creating the InputDataFamily ecFlow family."""
+    """Class for creating the MirrorFamily ecFlow family."""
 
     def __init__(
         self,
@@ -625,6 +629,7 @@ class MarsprepFamily(EcflowSuiteFamily):
         ecf_files_remotely=None,
         add_var_trigger=None,
         remote_path=None,
+        forecast_range=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -638,9 +643,7 @@ class MarsprepFamily(EcflowSuiteFamily):
         )
         latlon_deps = ["GG", "SH"]
         latlon_triggers = []
-        args = ""
-        if variables is not None:
-            args = variables.get("ARGS", "")
+        _args = "" if variables is None else variables.get("ARGS", "")
 
         for marstype in marstype_list:
             mars_sub_fam = EcflowSuiteFamily(
@@ -653,7 +656,10 @@ class MarsprepFamily(EcflowSuiteFamily):
             if marstype in latlon_deps:
                 latlon_triggers.append(mars_sub_fam)
 
-            variables = {"ARGS": args + f";type={marstype}"}
+            args = _args + f";type={marstype}"
+            if forecast_range is not None:
+                args += f";forecast_range={forecast_range}"
+            variables = {"ARGS": args}
 
             EcflowSuiteTask(
                 "Marsprep",
@@ -686,6 +692,7 @@ class InputDataFamily(EcflowSuiteFamily):
         add_var_trigger=None,
         remote_path=None,
         member=0,
+        forecast_range=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -728,6 +735,7 @@ class InputDataFamily(EcflowSuiteFamily):
                 ecf_files_remotely=ecf_files_remotely,
                 add_var_trigger=add_var_trigger,
                 remote_path=remote_path,
+                forecast_range=forecast_range,
             )
             # For SLAF (Scaled Lagged Average Forecasting),
             #   we call Marsprep 2 more times with altered bdshift
@@ -760,6 +768,67 @@ class InputDataFamily(EcflowSuiteFamily):
                         variables={"ARGS": f"extra_bdshift={bdshift[i]}"},
                         ecf_files_remotely=ecf_files_remotely,
                     )
+
+
+class E923UpdateFamily(EcflowSuiteFamily):
+    """Class for creating the E923Update ecFlow family."""
+
+    def __init__(
+        self,
+        parent,
+        config,
+        task_settings: TaskSettings,
+        input_template,
+        ecf_files,
+        trigger=None,
+        ecf_files_remotely=None,
+    ):
+        """Class initialization."""
+        super().__init__(
+            "E923Update",
+            parent,
+            ecf_files,
+            trigger=trigger,
+            ecf_files_remotely=ecf_files_remotely,
+        )
+
+        for flag in ("member_specific_mars_prep", "member_specific_static_data"):
+            if config[f"suite_control.{flag}"]:
+                raise (
+                    NotImplementedError(f"This is not yet implemented for {flag} = True")
+                )
+
+        input_data = InputDataFamily(
+            self,
+            config,
+            task_settings,
+            input_template,
+            ecf_files,
+            trigger=trigger,
+            ecf_files_remotely=ecf_files_remotely,
+            forecast_range="PT0H",
+        )
+
+        prep_fam = PrepFamily(
+            self,
+            config,
+            task_settings,
+            input_template,
+            ecf_files,
+            trigger=input_data,
+            ecf_files_remotely=ecf_files_remotely,
+        )
+
+        EcflowSuiteTask(
+            "E923Update",
+            self,
+            config,
+            task_settings,
+            ecf_files,
+            trigger=prep_fam,
+            input_template=input_template,
+            ecf_files_remotely=ecf_files_remotely,
+        )
 
 
 class PrepFamily(EcflowSuiteFamily):
@@ -1188,8 +1257,6 @@ class InterpolationFamily(EcflowSuiteFamily):
             add_var_trigger=add_var_trigger,
             remote_path=remote_path,
         )
-        e923_update_task = None
-        csc = config["general.csc"]
 
         is_first_cycle = cycles.current_index == 0
         mode = config["suite_control.mode"]
@@ -1208,24 +1275,6 @@ class InterpolationFamily(EcflowSuiteFamily):
                 ecf_files_remotely=ecf_files_remotely,
             )
 
-            if csc == "ALARO" and not config["general.surfex"]:
-                e923_update_task = EcflowSuiteTask(
-                    "E923Update",
-                    self,
-                    config,
-                    task_settings,
-                    ecf_files,
-                    trigger=prep_fam,
-                    input_template=input_template,
-                    ecf_files_remotely=ecf_files_remotely,
-                )
-
-            if csc == "ALARO":
-                do_prep = False
-
-        if csc == "ALARO" and not config["general.surfex"] and cycles.end_of_month:
-            do_prep = True
-
         lbc_fam = LBCFamily(
             self,
             config,
@@ -1233,7 +1282,7 @@ class InterpolationFamily(EcflowSuiteFamily):
             input_template,
             ecf_files,
             cycles,
-            lbc_family_trigger=e923_update_task,
+            lbc_family_trigger=None,
             ecf_files_remotely=ecf_files_remotely,
             dry_run=dry_run,
             member=member,

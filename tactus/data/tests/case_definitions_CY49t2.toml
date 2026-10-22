@@ -14,6 +14,9 @@
 [cases.cy49t2_alaro_climate_files]
   base = "cy49t2_alaro"
 
+[cases.cy49t2_alaro_climate_files.modifs.reference_checker]
+  rules_excluded = ["E923Monthly_06"]
+
 [cases.cy49t2_alaro_climate_files.modifs.system]
   case_suffix = "_climate_files"
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_alaro/climate/@DOMAIN@"

@@ -1,9 +1,9 @@
 """E923Update."""
 
-import glob
+import contextlib
 import os
 
-from ..datetime_utils import as_datetime
+from ..datetime_utils import get_month_list
 from .base import Task
 from .batch import BatchJob
 
@@ -11,7 +11,7 @@ from .batch import BatchJob
 class E923Update(Task):
     """Methods for updating climfile for ALARO.
 
-    For mor information see doc/markdown/e923_update.md.
+    For more information see doc/markdown/e923_update.md.
 
     """
 
@@ -22,13 +22,16 @@ class E923Update(Task):
             config (ParsedConfig): Configuration
         """
         Task.__init__(self, config, __class__.__name__)
+        self.months = [
+            f"{mm:02d}"
+            for mm in get_month_list(
+                config["general.times.start"], config["general.times.end"], extend=True
+            )
+        ]
 
         self.climdir = self.platform.get_system_value("climdir")
-        self.fa_sfx2clim = self.get_binary("fa_sfx2clim")
-
         self.intp_bddir_sfx = self.config["system.intp_bddir_sfx"]
-        self.basetime = as_datetime(self.config["general.times.basetime"])
-        self.month = self.basetime.strftime("%m")
+        self.fa_sfx2clim = self.get_binary("fa_sfx2clim")
 
     def execute(self):
         """Run task.
@@ -36,21 +39,11 @@ class E923Update(Task):
         Define run sequence.
 
         """
-        # Old climfile
-        climfile = f"{self.climdir}/Const.Clim.{self.month}"
-
         # PGD
-        pgd_file = self.platform.substitute(
-            self.config["file_templates.pgd.archive"], basetime=self.basetime
-        )
+        pgd_file = self.config["file_templates.pgd.archive"]
         self.fmanager.input(f"{self.climdir}/{pgd_file}", "pgd_file")
         # sfx init
-        sfx_init = self.platform.substitute(
-            f"{self.intp_bddir_sfx}/ICMSH@CNMEXP@INIT.sfx"
-        )
-        self.fmanager.input(sfx_init, "input_sfx")
-        # Old climfile
-        climfile = f"{self.climdir}/Const.Clim.{self.month}"
+        self.fmanager.input(f"{self.intp_bddir_sfx}/ICMSH@CNMEXP@INIT.sfx", "input_sfx")
 
         # namelist
         with open("nam", "w") as namelist:
@@ -67,7 +60,11 @@ class E923Update(Task):
 """
             )
             namelist.close()
-        batch = BatchJob(os.environ, wrapper=self.wrapper)
-        batch.run(f"{self.fa_sfx2clim} nam pgd_file input_sfx {climfile}")
 
-        self.archive_logs(glob.glob("NODE.*"), target=self.climdir)
+        # Climate file to be updated
+        for month in self.months:
+            with contextlib.suppress(FileNotFoundError):
+                os.unlink("climfile")
+            self.fmanager.input(f"{self.climdir}/Const.Clim.{month}", "climfile")
+            batch = BatchJob(os.environ, wrapper=self.wrapper)
+            batch.run(f"{self.fa_sfx2clim} nam pgd_file input_sfx climfile")

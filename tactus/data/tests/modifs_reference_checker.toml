@@ -11,6 +11,7 @@
     "C903_0-6.namelist",
     "E923Monthly_06.fafiles",
     "E923Monthly_06.namelist",
+    "E923Update.fafiles",
     "E927_0-0.fafiles",
     "E927_3-3.fafiles",
     "E927_3-3.namelist",
@@ -73,6 +74,14 @@
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/climate/@DOMAIN@/namelists/E923Monthly_06"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/climate/@DOMAIN@/namelists/E923Monthly_06"
   result_folder = "@WRK@/checks/namelists/E923Monthly_06"
+
+[refchecks.reference_checker.task.E923Update.fafiles]
+  inpath = "@CLIMDIR@"
+  pattern = "Const.Clim.06"
+  method = "E923Files"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/climate/@DOMAIN@"
+  result_folder = "@WRK@/checks/static_data"
 
 [refchecks.reference_checker.task.C903_0-6.fafiles]
   inpath = "@INTP_BDDIR@"

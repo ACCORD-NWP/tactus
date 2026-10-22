@@ -80,6 +80,9 @@
   base = "cy50t2_alaro"
   host = "cy50t2_compile"
 
+[cases.cy50t2_alaro_climate_files.modifs.reference_checker]
+  rules_excluded = ["E923Monthly_06"]
+
 [cases.cy50t2_alaro_climate_files.modifs.system]
   case_suffix = "_climate_files"
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_alaro/climate/@DOMAIN@"
