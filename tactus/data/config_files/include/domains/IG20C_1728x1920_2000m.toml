@@ -1,0 +1,12 @@
+[domain]
+  gridtype = "cubic"
+  name = "IG20C_1728x1920_2000m"
+  nimax = 1717
+  njmax = 1909
+  tstep = 60
+  xdx = 2000
+  xdy = 2000
+  xlat0 = 70.0
+  xlon0 = -40.0
+  xlatcen = 70.0
+  xloncen = -39.5
