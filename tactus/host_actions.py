@@ -14,6 +14,25 @@ from .logs import logger
 from .os_utils import ping
 
 
+def _as_list(patterns):
+    """Return a pattern or a list of patterns as a list.
+
+    Args:
+        patterns (str|list|tuple): One regex or a sequence of regexes
+
+    Returns:
+        (list): List of regexes
+
+    Raises:
+        TypeError: If patterns is neither a string nor a list/tuple of strings
+    """
+    if isinstance(patterns, str):
+        return [patterns]
+    if isinstance(patterns, (list, tuple)) and all(isinstance(p, str) for p in patterns):
+        return list(patterns)
+    raise TypeError(f"Expected a regex or a list of regexes, got {patterns!r}")
+
+
 class TactusHost:
     """TactusHost object."""
 
@@ -22,12 +41,22 @@ class TactusHost:
         self.known_hosts = self._load_known_hosts(
             known_hosts=known_hosts, known_hosts_file=known_hosts_file
         )
-        self.available_hosts = list(self.known_hosts)
-        self.default_host = self.available_hosts[0]
-        self.tactus_host = os.getenv("TACTUS_HOST")
+        # An empty TACTUS_HOST is treated as not set
+        self.tactus_host = os.getenv("TACTUS_HOST") or None
         self.hostname = socket.gethostname()
 
-    def _load_known_hosts(self, known_hosts=None, known_hosts_file=None):
+    @property
+    def available_hosts(self):
+        """List of the known host names."""
+        return list(self.known_hosts)
+
+    @property
+    def default_host(self):
+        """The fallback host, i.e. the first known host (None if there are none)."""
+        return next(iter(self.known_hosts), None)
+
+    @staticmethod
+    def _load_known_hosts(known_hosts=None, known_hosts_file=None):
         """Loads the known_hosts config.
 
         Args:
@@ -40,17 +69,18 @@ class TactusHost:
         Raises:
             RuntimeError: No host identifiers loaded
         """
-        if known_hosts is not None:
-            return known_hosts
-
-        if known_hosts_file is None:
-            known_hosts_file = ConfigPaths.path_from_subpath("known_hosts.yml")
-
-        with open(known_hosts_file, "rb") as infile:
-            known_hosts = yaml.safe_load(infile)
-
+        source = "the given known_hosts"
         if known_hosts is None:
-            raise RuntimeError(f"No hosts available in {known_hosts_file}")
+            if known_hosts_file is None:
+                known_hosts_file = ConfigPaths.path_from_subpath("known_hosts.yml")
+            source = known_hosts_file
+            with open(known_hosts_file, "rb") as infile:
+                known_hosts = yaml.safe_load(infile)
+
+        if not known_hosts:
+            raise RuntimeError(f"No hosts available in {source}")
+        if not isinstance(known_hosts, dict):
+            raise RuntimeError(f"Known hosts in {source} must be a mapping")
 
         return known_hosts
 
@@ -58,20 +88,13 @@ class TactusHost:
         """Detect tactus host by hostname regex.
 
         Args:
-            hostname_pattern(list|str) : hostname regex to match
+            hostname_pattern(list|str) : hostname regex(es) to match
 
         Returns:
             (boolean): Match or not
 
         """
-        logger.debug("hostname={}", self.hostname)
-        hh = [hostname_pattern] if isinstance(hostname_pattern, str) else hostname_pattern
-        for x in hh:
-            if re.match(x, self.hostname):
-                logger.debug("tactus-host detected by hostname {}", x)
-                return True
-
-        return False
+        return any(re.match(x, self.hostname) for x in _as_list(hostname_pattern))
 
     def _detect_by_env(self, env_variable):
         """Detect tactus host by environment variable regex.
@@ -80,27 +103,52 @@ class TactusHost:
             env_variable(dict) : Environment variables to search for
 
         Returns:
-            (boolean): Match or not
+            (boolean): True if any of the variables matches
+
+        Raises:
+            TypeError: If env_variable is not a mapping
 
         """
+        if not isinstance(env_variable, dict):
+            raise TypeError(f"env rule must be a mapping, got {env_variable!r}")
+
         for var, value in env_variable.items():
-            if var in os.environ:
-                vv = [value] if isinstance(value, str) else value
-                for x in vv:
-                    if re.match(x, os.environ[var]):
-                        logger.debug(
-                            "tactus-host detected by environment variable {}={}", var, x
-                        )
-                        return True
+            env_value = os.environ.get(var)
+            if env_value is not None and any(
+                re.match(x, env_value) for x in _as_list(value)
+            ):
+                return True
 
         return False
+
+    def _matched_rules(self, rules):
+        """Return the detection methods of a host whose rules match.
+
+        Args:
+            rules (dict): Detection rules for one host, {method: pattern}
+
+        Returns:
+            (list): The methods that matched
+
+        Raises:
+            RuntimeError: Unknown detection method
+        """
+        matched = []
+        for method, pattern in rules.items():
+            detect = getattr(self, f"_detect_by_{method}", None)
+            if detect is None:
+                raise RuntimeError(f"No tactus-host detection using {method}")
+            if detect(pattern):
+                matched.append(method)
+        return matched
 
     def detect_tactus_host(self, use_default=True):
         """Detect tactus host by matching various properties.
 
         First check self.tactus_host as set by os.getenv("TACTUS_HOST"),
-        second use the defined hosts in known_hosts.yml. If no matches
-        are found return the first host defined in known_hosts.yml
+        second use the defined hosts in known_hosts.yml. A host is detected
+        when all of its rules match. If no host matches, return the first
+        host defined in known_hosts.yml (or None if use_default is False).
 
         Args:
             use_default (boolean, optional): Flag to return default host if host not found
@@ -114,63 +162,50 @@ class TactusHost:
         if self.tactus_host is not None:
             return self.tactus_host
 
-        matches = {}
-        for tactus_host, detect_methods in self.known_hosts.items():
-            for method, pattern in detect_methods.items():
-                fname = f"_detect_by_{method}"
-                if hasattr(self, fname):
-                    function = getattr(self, fname)
-                    if function(pattern):
-                        if method not in matches:
-                            matches[method] = []
-                        matches[method].append(tactus_host)
-                else:
-                    raise RuntimeError(f"No tactus-host detection using {method}")
+        logger.debug("hostname={}", self.hostname)
+        complete = []
+        partial = {}
+        for host, rules in self.known_hosts.items():
+            matched = self._matched_rules(rules)
+            if len(matched) == len(rules):
+                complete.append(host)
+            elif matched:
+                partial[host] = matched
 
-        if len(matches) == 0:
-            return self._catch_no_detected_host(use_default)
-        if len(matches) == 1:
-            values = next(iter(matches.values()))
-            logger.info(len(values))
-            if len(values) > 1:
-                raise RuntimeError(f"Ambiguous matches: {matches}")
-            host = next(iter(matches.values()))[0]
-            if len(self.known_hosts[host]) > 1:
-                logger.error("Incomplete rule match")
-                logger.error("Match: {}", matches)
-                logger.error("Rules: {}", self.known_hosts[host])
-                raise RuntimeError("Incomplete match")
+        if len(complete) > 1:
+            raise RuntimeError(f"Ambiguous matches: {complete}")
 
-        if len(matches) == 2:
-            (k1, v1), (k2, v2) = matches.items()
-            if len(v1) == 0 and len(v2) == 0:
-                return self._catch_no_detected_host(use_default)
-            if v1 == v2 and (len(v1) > 1 or len(v2) > 1):
-                raise RuntimeError(f"Ambiguous matches: {matches}")
-            if v1 != v2:
-                logger.error("Matches found: {}", matches)
-                combined = set(v1) | set(v2)
-                for h in combined:
-                    logger.error("Pattern rules: {}", self.known_hosts[h])
-                logger.error("Ambiguous or incomplete matches")
-                raise RuntimeError("Ambiguous or incomplete matches")
-        first_values = next(iter(matches.values()))
-        if not first_values:
-            raise ValueError("first item has an empty list")
-        return first_values[0]
+        if len(complete) == 1:
+            host = complete[0]
+            if partial:
+                logger.debug("Ignoring partial matches {}, using {}", partial, host)
+            logger.debug("tactus-host detected: {}", host)
+            return host
+
+        if partial:
+            for host, matched in partial.items():
+                logger.error(
+                    "Host {} matched {} but not all rules: {}",
+                    host,
+                    matched,
+                    self.known_hosts[host],
+                )
+            raise RuntimeError(f"Incomplete match for {list(partial)}")
+
+        return self._catch_no_detected_host(use_default)
 
     def _catch_no_detected_host(self, use_default):
-        if use_default:
-            matches = list(self.known_hosts)[0:1]
-            logger.info(
-                f"No tactus-host detected from {self.hostname}, "
-                + f"use {self.default_host}"
-            )
-        else:
-            matches = [None]
-            logger.info(f"No tactus-host detected from {self.hostname}, return None")
+        """Return the fallback when no host is detected.
 
-        return matches[0]
+        Args:
+            use_default (boolean): Return the default host instead of None
+
+        Returns:
+            (str|None): The default host or None
+        """
+        host = self.default_host if use_default else None
+        logger.info("No tactus-host detected from {}, use {}", self.hostname, host)
+        return host
 
 
 def set_tactus_home(config, tactus_home=None):
@@ -183,17 +218,17 @@ def set_tactus_home(config, tactus_home=None):
     Returns:
         tactus_home
     """
-    if tactus_home is None:
-        try:
-            tactus_home_from_config = config["platform.tactus_home"]
-        except KeyError:
-            tactus_home_from_config = "set-by-the-system"
-        if tactus_home_from_config != "set-by-the-system":
-            tactus_home = tactus_home_from_config
-        else:
-            tactus_home = str(GeneralConstants.PACKAGE_DIRECTORY)
+    if tactus_home is not None:
+        return tactus_home
 
-    return tactus_home
+    try:
+        tactus_home_from_config = config["platform.tactus_home"]
+    except KeyError:
+        tactus_home_from_config = "set-by-the-system"
+
+    if tactus_home_from_config != "set-by-the-system":
+        return tactus_home_from_config
+    return str(GeneralConstants.PACKAGE_DIRECTORY)
 
 
 class HostNotFoundError(ValueError):
@@ -223,32 +258,24 @@ class SelectHost:
             host (str): Selected host
 
         Raises:
-            RuntimeError: In case no or more than one host found
+            HostNotFoundError: In case no host is found
+            AmbigiousHostError: In case more than one host is found
         """
-        found_hosts = []
-        ntry = 1
-        while ntry <= tries:
-            for _host in hosts:
-                host = _host.strip()
-                if ping(host):
-                    found_hosts.append(host)
-
-            if len(found_hosts) == 0 and ntry == tries:
-                host_list = ",".join(hosts)
-                msg = f"No host found, tried:{host_list}"
-                logger.error(msg)
-                raise HostNotFoundError(msg)
+        hosts = [host.strip() for host in hosts]
+        for ntry in range(1, tries + 1):
+            found_hosts = [host for host in hosts if ping(host)]
 
             if len(found_hosts) == 1:
-                break
+                return found_hosts[0]
 
             if len(found_hosts) > 1:
-                host_list = ",".join(found_hosts)
-                msg = f"Ambigious host selection:{host_list}"
+                msg = f"Ambigious host selection:{','.join(found_hosts)}"
                 logger.error(msg)
                 raise AmbigiousHostError(msg)
 
-            time.sleep(delay)
-            ntry += 1
+            if hosts and ntry < tries:
+                time.sleep(delay)
 
-        return found_hosts[0]
+        msg = f"No host found, tried:{','.join(hosts)}"
+        logger.error(msg)
+        raise HostNotFoundError(msg)
