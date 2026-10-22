@@ -109,20 +109,21 @@ class TactusHost:
             tactus_host (str): mapped hostname
 
         Raises:
-            RuntimeError: Ambiguous matches
+            RuntimeError: Ambiguous or incomplete matches
         """
         if self.tactus_host is not None:
             return self.tactus_host
 
-        matches = []
+        matches = {}
         for tactus_host, detect_methods in self.known_hosts.items():
             for method, pattern in detect_methods.items():
                 fname = f"_detect_by_{method}"
                 if hasattr(self, fname):
                     function = getattr(self, fname)
+                    if method not in matches:
+                           matches[method] = []
                     if function(pattern):
-                        matches.append(tactus_host)
-                        break
+                        matches[method].append(tactus_host)
                 else:
                     raise RuntimeError(f"No tactus-host detection using {method}")
 
@@ -136,10 +137,21 @@ class TactusHost:
             else:
                 matches = [None]
                 logger.info(f"No tactus-host detected from {self.hostname}, return None")
-        if len(matches) > 1:
+        if len(matches) == 1 and len(matches.values()) > 1:
             raise RuntimeError(f"Ambiguous matches: {matches}")
-
-        return matches[0]
+        if len(matches) == 2:
+            (k1, v1), (k2, v2) = matches.items()
+            if v1 != v2:
+                logger.error("Matches found: {}", matches)
+                combined = set(v1) | set(v2)
+                for h in combined:
+                  logger.error("Pattern rules: {}", self.known_hosts[h])
+                logger.error("Ambiguous or incomplete matches")
+                raise RuntimeError("Ambiguous or incomplete matches")
+        first_values = next(iter(matches.values()))
+        if not first_values:
+                raise ValueError("first item has an empty list")
+        return first_values[0]
 
 
 def set_tactus_home(config, tactus_home=None):
