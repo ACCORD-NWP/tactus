@@ -19,16 +19,8 @@
   odbconverter = "Obsconvert"
   obs_types = [
     "synop",
-    "gpssol",
-    "amdar",
-    "geowind",
+    "amdaromm",
     "temp",
-    "wp",
-    "seviri",
-    "amsua",
-    "amsub",
-    "iasi",
-    "ascat",
   ]
   bator_window_len = "PT3H"
   bator_window_shift = "-PT90M"
@@ -114,34 +106,6 @@
 [da.providers.UWC]
   obs_step = "PT1H"
 
-[da.providers.UWC.obstypes.synop]
-  format = "OBSOUL"
-  candidates = ["obsoul_1_xxxxxx_xx_{ymdhh}"]
-
-[da.providers.UWC.obstypes.synop_1]
-  format = "OBSOUL"
-  candidates = ["obsoul_1_xxxxxy_xx_{ymdhh}"]
-
-[da.providers.UWC.obstypes.amdar]
-  format = "OBSOUL"
-  candidates = ["obsoul_2_xxxxxx_xx_{ymdhh}"]
-
-[da.providers.UWC.obstypes.geowind]
-  format = "OBSOUL"
-  candidates = ["obsoul_3_xxxxxx_xx_{ymdhh}"]
-
-[da.providers.UWC.obstypes.temp]
-  format = "OBSOUL"
-  candidates = ["obsoul_5_xxxxxx_xx_{ymdhh}"]
-
-[da.providers.UWC.obstypes.wp]
-  format = "OBSOUL"
-  candidates = ["obsoul_6_xxxxxx_xx_{ymdhh}"]
-
-[da.providers.UWC.obstypes.gpssol]
-  format = "OBSOUL"
-  candidates = ["obsoul_9_xxxxxx_xx_{ymdhh}"]
-
 [da.providers.UWC.obstypes.amsua]
   format = "BUFR"
   candidates = [
@@ -184,6 +148,18 @@
 [da.providers.RMI.obstypes.synop]
   format = "BUFR"
   candidates = ["synop_{ymdhh}00.bufr"]
+
+[da.providers.UWC.obstypes.synop]
+  format = "BUFR"
+  candidates = ["BUFR.synop"]
+
+[da.providers.UWC.obstypes.amdaromm]
+  format = "BUFR"
+  candidates = ["BUFR.amdaromm"]
+
+[da.providers.UWC.obstypes.temp]
+  format = "BUFR"
+  candidates = ["BUFR.temp"]
 
 [da.providers.MF]
   obs_step = "PT1H"
