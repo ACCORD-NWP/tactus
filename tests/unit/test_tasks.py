@@ -25,6 +25,9 @@ from tactus.tasks.gribmodify import AddCalculatedFields
 from tactus.tasks.interpolsstsic import InterpolSstSic
 from tactus.tasks.iomerge import IOmerge
 from tactus.tasks.marsprep import Marsprep
+from tactus.tasks.obs_ingestion import OdbIngestionTask
+from tactus.tasks.obsprep import ObsPrep
+from tactus.tasks.odbmerge import OdbMerge
 from tactus.tasks.sqlite import ExtractSQLite, MergeSQLites
 from tactus.toolbox import ArchiveError, FileManager, ProviderError
 
@@ -73,11 +76,17 @@ def task_name_and_configs(request, default_config, tmp_directory):
             bd_time = "{basetime}"
             basetime = "{basetime}"
             config_label = "foo"
+            cleaning_type = "PostMortem"
+            obstype = "synop"
+            da_stream = "surface"
+            task_class = "Obsconvert"
         [archiving.DataBridge.fdb]
         [archiving.DataBridge.fdb.fpgrib_files]
             active = false
             inpath = "@ARCHIVE@"
             pattern = "GRIBPF*"
+        [eps.member_settings.boundaries.ifs]
+            bdmember = 0
         """
     )
     task_config = task_config.copy(update=config_patch)
@@ -105,6 +114,9 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_task_e923_monthly_part_method = E923.monthly_part
     original_task_interpolsstsic_interpolsstsic_execute_method = InterpolSstSic.execute
     original_task_iomerge_iomerge_execute_method = IOmerge.execute
+    original_task_obsprep_obsprep_execute_method = ObsPrep.execute
+    original_task_obsingestion_odbingestion_init_method = OdbIngestionTask.__init__
+    original_task_odbmerge_odbmerge_execute_method = OdbMerge.execute
     original_task_marsprep_run_method = Marsprep.run
     original_task_collectlogs_collectlogs_execute_method = CollectLogs.execute
     original_task_generate_wfp_tab_file_execute_method = GenerateWfpTabFile.execute
@@ -195,6 +207,18 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     def new_task_interpolsstsic_interpolsstsic_execute_method(*args, **kwargs):
         original_task_interpolsstsic_interpolsstsic_execute_method(*args, **kwargs)
 
+    def new_task_obsingestion_odbingestion_init_method(self, *args, **kwargs):
+        self._NLGEN_KEY = "obsconvert"
+        original_task_obsingestion_odbingestion_init_method(self, *args, **kwargs)
+
+    def new_task_obsprep_obsprep_execute_method(*args, **kwargs):
+        with contextlib.suppress(RuntimeError):
+            original_task_obsprep_obsprep_execute_method(*args, **kwargs)
+
+    def new_task_odbmerge_odbmerge_execute_method(*args, **kwargs):
+        with contextlib.suppress(RuntimeError):
+            original_task_odbmerge_odbmerge_execute_method(*args, **kwargs)
+
     def new_task_generate_wfp_tab_file_execute_method(*args, **kwargs):
         with contextlib.suppress(FileNotFoundError):
             original_task_generate_wfp_tab_file_execute_method(*args, **kwargs)
@@ -280,6 +304,18 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     session_mocker.patch(
         "tactus.tasks.iomerge.IOmerge.execute",
         new=new_task_iomerge_iomerge_execute_method,
+    )
+    session_mocker.patch(
+        "tactus.tasks.odbmerge.OdbMerge.execute",
+        new=new_task_odbmerge_odbmerge_execute_method,
+    )
+    session_mocker.patch(
+        "tactus.tasks.obs_ingestion.OdbIngestionTask.__init__",
+        new=new_task_obsingestion_odbingestion_init_method,
+    )
+    session_mocker.patch(
+        "tactus.tasks.obsprep.ObsPrep.execute",
+        new=new_task_obsprep_obsprep_execute_method,
     )
     session_mocker.patch(
         "tactus.tasks.marsprep.BatchJob.run",

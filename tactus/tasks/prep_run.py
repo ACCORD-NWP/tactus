@@ -4,11 +4,11 @@ from pathlib import Path
 
 import yaml
 
+from tactus.cleaning import CleanTactus
 from tactus.config_parser import ConfigParserDefaults, ParsedConfig
 from tactus.eps.eps_setup import get_member_config
 from tactus.logs import logger
 from tactus.os_utils import tactusmakedirs
-from tactus.tasks.cleaning_tasks import Cleaning
 from tactus.toolbox import Platform
 
 from .base import Task
@@ -21,14 +21,17 @@ class PrepRun(Task):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         self.name = "PrepRun"
         Task.__init__(self, config, __class__.__name__)
         # Initialize cleaining functionality if needed
         if config["suite_control.do_cleaning"]:
-            self.cleaner = Cleaning(config)
-            self.cleaner.prep_clean_task(self.name)
+            defaults = self.config.get("cleaning.defaults")
+            self.cleaner = CleanTactus(self.config, defaults)
+            choices = self.config.get("cleaning.PrepRun").dict()
+            self.cleaner.prep_cleaning(choices)
+
         else:
             self.cleaner = None
         # Archive the used config file
@@ -119,15 +122,19 @@ class PrepRun(Task):
                             "Adding EPS member {} to model name definitions", member
                         )
                         eps_key = {
+                            "productDefinitionTemplateNumber": 11,
                             "numberOfForecastsInEnsemble": n_eps_members,
                             "perturbationNumber": member,
-                            "productDefinitionTemplateNumber": 11,
                             "typeOfEnsembleForecast": 6,
                         }
-                        dicts.append(eps_key)
+                        dicts.insert(0, eps_key)
                     line = (
                         f"'{model_name}' = {{"
-                        + "".join(f"{k} = {v}; " for d in dicts for k, v in d.items())
+                        + "".join(
+                            f"{k} = '{v}'; " if isinstance(v, str) else f"{k} = {v}; "
+                            for d in dicts
+                            for k, v in d.items()
+                        )
                         + "}\n"
                     )
                     f.write(line)
@@ -136,4 +143,4 @@ class PrepRun(Task):
     def execute(self):
         """Execute the task, including cleaning if enabled."""
         if self.cleaner is not None:
-            self.cleaner.execute()
+            self.cleaner.clean()

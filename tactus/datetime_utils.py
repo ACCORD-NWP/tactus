@@ -68,6 +68,29 @@ def dt2str(dt):
     return f"{h:04d}:{m:02d}:{s:02d}"
 
 
+def since_str(datetime: datetime, now: datetime) -> str:
+    """Convert a datetime to a human-readable string indicating how long ago it was.
+
+    Args:
+        datetime (datetime): The datetime object.
+        now (datetime): The current datetime object.
+
+    Returns:
+        str: A human-readable string indicating how long ago datetime now was
+    """
+    timestamp = int((now - datetime).total_seconds())
+    if timestamp < 60:
+        return "Now"
+    if timestamp < 3600:
+        return f"{int(timestamp / 60)} min ago"
+    if timestamp < 3600 * 24:
+        hours = int(timestamp / 3600)
+        if hours == 1:
+            return "1 hour ago"
+        return f"{hours} hours ago"
+    return f"updated on {datetime}"
+
+
 def check_syntax(output_settings: Union[Tuple[str], List[str]], length: int):
     """Check syntax of output_settings.
 
@@ -249,7 +272,7 @@ def get_month_list(start, end) -> list:
     ]
 
 
-def evaluate_date(date: str) -> str:
+def evaluate_date(date: str, reference_date=None) -> str:
     """Parses an ISO 8601 datetime and/or duration and returns the computed datetime.
 
     - If the input is a datetime (e.g., "2025-03-19T00:00:00Z"), it returns it as-is.
@@ -260,6 +283,7 @@ def evaluate_date(date: str) -> str:
 
     Args:
         date (str): An ISO 8601 datetime, duration, or both.
+        reference_date (str): An ISO 8601 datetime, duration, or both.
 
     Returns:
         str: The computed datetime in ISO format.
@@ -276,11 +300,15 @@ def evaluate_date(date: str) -> str:
         )
 
     if date.startswith(("P", "-P")):
-        today_midnight = datetime.now(timezone.utc).replace(
-            hour=0, minute=0, second=0, microsecond=0
-        )
+        if reference_date is None:
+            today_midnight = datetime.now(timezone.utc).replace(
+                hour=0, minute=0, second=0, microsecond=0
+            )
+            _reference_date = today_midnight
+        else:
+            _reference_date = as_datetime(evaluate_date(reference_date))
         return (
-            (today_midnight + isodate.parse_duration(date))
+            (_reference_date + isodate.parse_duration(date))
             .isoformat(timespec="seconds")
             .replace("+00:00", "Z")
         )
@@ -288,3 +316,30 @@ def evaluate_date(date: str) -> str:
     return (
         isodate.parse_datetime(date).isoformat(timespec="seconds").replace("+00:00", "Z")
     )
+
+
+def split_date(dt, template=("%Y", "%m", "%d", "%H")):
+    """Split datetime object with strftime.
+
+    Args:
+        dt (datetime): Reference time
+        template (list): List of strings with strfmt arguments
+
+    Returns:
+        A list of extracted strings
+
+    """
+    return [dt.strftime(t) for t in template]
+
+
+def td2min(td):
+    """Return a timedelta object value in minutes and as string.
+
+    Args:
+        td (timedelta): Timedelta object
+
+    Returns:
+        A string of nearest representation of td in minutes
+
+    """
+    return str(int(td.total_seconds() / 60))

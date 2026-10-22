@@ -24,7 +24,7 @@ class ArchiveStaticMember(ArchiveTask):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         ArchiveTask.__init__(self, config, "staticmember")
 
@@ -36,7 +36,7 @@ class ArchiveStatic(ArchiveTask):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         ArchiveTask.__init__(self, config, "static")
 
@@ -48,7 +48,7 @@ class ArchiveHour(ArchiveTask):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         ArchiveTask.__init__(self, config, "hour", exclude=["fdb"])
 
@@ -60,7 +60,7 @@ class ArchiveFDB(ArchiveTask):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         ArchiveTask.__init__(self, config, "FDB", include=["fdb"])
 
@@ -72,6 +72,6 @@ class ArchiveMergedSQLites(ArchiveTask):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         ArchiveTask.__init__(self, config, "merged_sqlite", exclude=["fdb"])

@@ -11,7 +11,7 @@ class Canari(Task):
         """Construct canari object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
 
         """
         Task.__init__(self, config, __class__.__name__)

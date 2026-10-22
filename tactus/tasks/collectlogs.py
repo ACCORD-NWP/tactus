@@ -16,7 +16,7 @@ class CollectLogs(Task):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
             config_label (str,optional): Which data to search for
         """
         Task.__init__(self, config, __class__.__name__)
@@ -104,7 +104,7 @@ class CollectLogsStatic(CollectLogs):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         CollectLogs.__init__(self, config, "staticlogs")
 
@@ -116,6 +116,6 @@ class CollectLogsHour(CollectLogs):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         CollectLogs.__init__(self, config, "hourlogs")

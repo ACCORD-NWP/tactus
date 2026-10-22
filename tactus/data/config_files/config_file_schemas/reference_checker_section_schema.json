@@ -31,6 +31,14 @@
         "description": "Name of a comparison rule"
       }
     },
+    "rules_excluded": {
+      "type": "array",
+      "description": "List of comparisons to be excluded from rules_active",
+      "items": {
+        "type": "string",
+        "description": "Name of a comparison rule"
+      }
+    },
     "methods": {
       "type": "object",
       "description": "Define a comparison method",

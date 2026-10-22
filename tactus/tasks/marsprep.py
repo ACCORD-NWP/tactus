@@ -4,11 +4,11 @@ import ast
 import contextlib
 import os
 from functools import cached_property
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 from typing import Dict, List, Optional
 
 from tactus.boundary_utils import Boundary
-from tactus.datetime_utils import as_datetime, as_timedelta
+from tactus.datetime_utils import as_datetime, as_timedelta, evaluate_date
 from tactus.eps.eps_setup import get_member_config, infer_members
 from tactus.logs import logger
 from tactus.mars_utils import (
@@ -34,7 +34,6 @@ from tactus.mars_utils import (
     write_write_mars_req,
 )
 from tactus.os_utils import join_files, list_files_join, tactusmakedirs
-from tactus.scheduler import EcflowServer
 from tactus.tasks.base import Task
 from tactus.tasks.batch import BatchJob
 
@@ -46,12 +45,14 @@ class Marsprep(Task):
         """Construct forecast object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
 
         Raises:
             ValueError: No data for this date.
         """
         Task.__init__(self, config, __class__.__name__)
+
+        self.type = config.get("task.args.type", "all")
 
         # Get bdmember(s) from member specific eps setting if member specific
         # mars prep is enabled
@@ -67,17 +68,21 @@ class Marsprep(Task):
                 member_config = get_member_config(self.config, member_)
                 bdmember_config_value = member_config["boundaries.ifs.bdmember"]
 
-        # Get bdmember(s) from eps members settings (attempted first) or
-        # boundaries.ifs.bdmember.
-        else:
-            try:
-                bdmember_config_value = self.config[
-                    "eps.member_settings.boundaries.ifs.bdmember"
-                ]
-            except KeyError:
-                bdmember_config_value = self.config["boundaries.ifs.bdmember"]
+            self.bdmember = infer_members(self.platform.substitute(bdmember_config_value))
 
-        self.bdmember = infer_members(self.platform.substitute(bdmember_config_value))
+        else:
+            bdmembers = set()
+            for member in self.config["eps.general.members"]:
+                member_config = get_member_config(self.config, member)
+                try:
+                    member_bdmember_value = member_config["boundaries.ifs.bdmember"]
+                except KeyError:
+                    member_bdmember_value = self.config["boundaries.ifs.bdmember"]
+                bdmembers.update(
+                    infer_members(self.platform.substitute(member_bdmember_value))
+                )
+            self.bdmember = sorted(bdmembers)
+
         # Default to [None] if self.bdmember is empty to cover the deterministic
         # case with no boundary member nesting.
         if not self.bdmember:
@@ -98,11 +103,12 @@ class Marsprep(Task):
         self.basetime = as_datetime(self.config["general.times.basetime"])
         forecast_range = as_timedelta(self.config["general.times.forecast_range"])
 
-        # Check if there are data for specific date in mars
-        check_data_available(self.basetime, self.mars)
-
         # Get boundary informations
         self.boundary = Boundary(config)
+
+        # Check if there are data for specific date in mars
+        check_data_available(self.boundary.bd_basetime, self.mars)
+
         self.steps = get_steplist(
             self.boundary.bd_offset, forecast_range, self.boundary.bdint
         )
@@ -117,14 +123,14 @@ class Marsprep(Task):
             )
             exist_snow = True
 
-        start_snow_date = as_datetime(self.mars["start_date"])
+        start_snow_date = as_datetime(evaluate_date(self.mars["start_date"]))
         with contextlib.suppress(KeyError):
             start_snow_date = as_datetime(self.mars["start_snow_date"])
 
         self.exist_snow = exist_snow and self.boundary.bd_basetime >= start_snow_date
         # Split mars by bdint
-        self.split_mars = self.config["suite_control.split_mars"]
-        if self.split_mars:
+        self.split_mars_by_step = self.config["suite_control.split_mars_by_step"]
+        if self.split_mars_by_step:
             self.prep_step = ast.literal_eval(self.config["task.args.prep_step"])
 
         self.prepdir = Path(
@@ -206,7 +212,9 @@ class Marsprep(Task):
             request.update_request({"LEVELIST": "1"})
 
         # Set stream
-        base_stream = get_value_from_dict(self.mars["stream"], request.time)
+        base_stream = get_value_from_dict(
+            self.mars["stream"], self.init_date_str, request.time
+        )
         if bdmember == [0]:
             stream = self.mars.get("stream_control", base_stream)
         else:
@@ -251,28 +259,28 @@ class Marsprep(Task):
         except OSError as e:
             raise RuntimeError(f"Error while preparing the mars folder: {e}") from e
 
-        # Suspend the model task if there is a mirroring
-        if self.config["suite_control.mirror_globalDT"]:
-            current_path = PurePosixPath(os.environ["ECF_NAME"])
-            model_path = current_path.parents[1] / "Mirrors"
-            server = EcflowServer(self.config)
-            server.suspend(str(model_path))
-
-        if self.split_mars and self.prep_step:
+        if self.split_mars_by_step and self.prep_step:
             logger.debug("*** Need only latlon data")
         else:
-            if self.split_mars:
-                self.steps = [self.steps[int(self.config["task.args.bd_index"])]]
+            if self.split_mars_by_step:
+                self.steps = [int(step) for step in self.boundary.bd_index_time_dict]
 
             logger.info("Need steps:{}", self.steps)
-            self.get_grid_point_surface_data()
-            self.get_spectral_harmonic_data()
-            self.get_grid_point_upper_air_data()
 
-            if self.config["suite_control.do_interpolsstsic"]:
+            if self.type in ("GG", "all"):
+                self.get_grid_point_surface_data()
+            if self.type in ("SH", "all"):
+                self.get_spectral_harmonic_data()
+            if self.type in ("UA", "all"):
+                self.get_grid_point_upper_air_data()
+
+            if self.config["suite_control.do_interpolsstsic"] and self.type in (
+                "GG",
+                "all",
+            ):
                 self.get_sst_data()
 
-        if not self.config["boundaries.bd_has_surfex"]:
+        if not self.config["boundaries.bd_has_surfex"] and self.type in ("latlon", "all"):
             self.get_sfx_data()
 
     def get_grid_point_surface_data(self):
@@ -414,7 +422,7 @@ class Marsprep(Task):
             for bdmember, filename in mars_file_check_list.items():
                 logger.info(f" {bdmember}: {filename}")
 
-        elif self.split_mars and not self.prep_step:
+        elif self.split_mars_by_step and not self.prep_step:
             logger.debug("No need Prep file")
             bdmember_fetch_list = []
         else:
@@ -737,7 +745,7 @@ class Marsprep(Task):
             levtype=lev_type,
             param=param,
             steps=[0],
-            members=[first_member],
+            members=[0],
             target=target,
             prefetch=prefetch,
             specify_domain=True,

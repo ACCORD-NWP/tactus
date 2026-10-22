@@ -1,0 +1,411 @@
+# Config per case
+#  base gives the config to start from
+#  host defines the forcing run for a target run
+#  extra is extra config files to add
+# Place local tactus config changes under [cases.x.modifs...]
+#
+
+[cases.alaro]
+
+[cases.arome]
+
+[cases.cy48t3_arome]
+
+[cases.cy49t2_alaro_climate_files]
+  base = "cy49t2_alaro"
+
+[cases.cy49t2_alaro_climate_files.modifs.system]
+  case_suffix = "_climate_files"
+  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_alaro/climate/@DOMAIN@"
+
+[cases.cy49t2_alaro_climate_files.modifs.suite_control]
+  create_time_dependent_suite = false
+
+[cases.cy49t2_alaro]
+  host = "cy49t2_alaro_climate_files"
+
+[cases.cy49t2_alaro.modifs.system]
+  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_alaro/climate/@DOMAIN@"
+  intp_bddir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_alaro/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+  intp_bddir_sfx = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_alaro/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+
+[cases.cy49t2_alaro.modifs.suite_control]
+  create_static_data = false
+  mirror_suite = true
+
+[cases.cy49t2_alaro_ddh]
+  base = "cy49t2_alaro"
+  extra = ["tactus/data/config_files/modifications/ddh.toml"]
+  host = "cy49t2_alaro"
+
+[cases.cy49t2_alaro_ddh.modifs.system]
+  case_suffix = "_ddh"
+  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_alaro/climate/@DOMAIN@"
+  intp_bddir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_alaro/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+  intp_bddir_sfx = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_alaro/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+
+[cases.cy49t2_alaro_ddh.modifs.suite_control]
+  create_static_data = false
+  mirror_suite = true
+  do_marsprep = false
+  interpolate_boundaries = false
+  do_extractsqlite = false
+  do_addcalculatedfields = false
+
+[cases.cy49t2_alaro_slaf]
+  base = "cy49t2_alaro"
+  extra = [
+    "tactus/data/config_files/include/eps/eps_members_slaf.toml",
+    "tactus/data/config_files/include/eps/CY49t2/alaro.toml",
+  ]
+  host = "cy49t2_alaro"
+
+[cases.cy49t2_alaro_slaf.modifs.eps.general]
+  members = "0:3"
+
+[cases.cy49t2_alaro_slaf.modifs.system]
+  case_suffix = "_slaf"
+  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_alaro/climate/@DOMAIN@"
+
+[cases.cy49t2_alaro_slaf.modifs.suite_control]
+  create_static_data = false
+  mirror_suite = true
+
+[cases.cy49t2_alaro_eps]
+  base = "cy49t2_alaro"
+  extra = [
+    "tactus/data/config_files/include/eps/eps_7members.toml",
+    "tactus/data/config_files/include/eps/CY49t2/alaro.toml",
+  ]
+
+[cases.cy49t2_alaro_eps.modifs.eps.general]
+  members = "0:3"
+
+[cases.cy49t2_alaro_eps.modifs.eps.member_settings.boundaries.ifs]
+  bdmember = "0:3"
+
+[cases.cy49t2_alaro_eps.modifs.suite_control]
+  do_addcalculatedfields = false
+  do_extractsqlite = false
+  do_mergesqlite = false
+
+[cases.cy49t2_alaro_eps.modifs.general.times]
+  start = "-P2D"
+
+[cases.cy49t2_alaro_eps.modifs.reference_checker]
+  check = false
+  generate = false
+
+[cases.cy49t2_alaro_eps.modifs.system]
+  case_suffix = "_eps"
+
+[cases.cy49t2_alaro_mode_start]
+  base = "cy49t2_alaro"
+  host = "cy49t2_alaro_climate_files"
+
+[cases.cy49t2_alaro_mode_start.modifs.general.times]
+  cycle_length = "PT3H"
+  end = "PT3H"
+  forecast_range = "PT3H"
+
+[cases.cy49t2_alaro_mode_start.modifs.suite_control]
+  mode = "start"
+  create_static_data = false
+  mirror_suite = true
+
+[cases.cy49t2_alaro_mode_start.modifs.system]
+  case_suffix = "_mode_start"
+  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_alaro/climate/@DOMAIN@"
+
+[cases.cy49t2_alaro_target]
+  host = "cy49t2_alaro"
+
+[cases.cy49t2_alaro_target.modifs.general.times]
+  end = "PT0H"
+
+[cases.cy49t2_alaro_target.modifs.suite_control]
+  mirror_host_case = true
+
+[cases.cy49t2_alaro_target.modifs.system]
+  bdclimdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_alaro/climate/@HOST_DOMAIN@"
+
+[cases.cy49t2_arome_climate_files]
+  base = "cy49t2_arome"
+
+[cases.cy49t2_arome_climate_files.modifs.system]
+  case_suffix = "_climate_files"
+  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_arome/climate/@DOMAIN@"
+
+[cases.cy49t2_arome_climate_files.modifs.suite_control]
+  create_time_dependent_suite = false
+
+[cases.cy49t2_arome]
+  host = "cy49t2_arome_climate_files"
+
+[cases.cy49t2_arome.modifs.system]
+  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_arome/climate/@DOMAIN@"
+  intp_bddir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_arome/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+  intp_bddir_sfx = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_arome/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+
+[cases.cy49t2_arome.modifs.suite_control]
+  create_static_data = false
+  mirror_suite = true
+
+[cases.cy49t2_arome_ddh]
+  base = "cy49t2_arome"
+  extra = ["tactus/data/config_files/modifications/ddh.toml"]
+  host = "cy49t2_arome"
+
+[cases.cy49t2_arome_ddh.modifs.system]
+  case_suffix = "_ddh"
+  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_arome/climate/@DOMAIN@"
+  intp_bddir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_arome/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+  intp_bddir_sfx = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_arome/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+
+[cases.cy49t2_arome_ddh.modifs.suite_control]
+  create_static_data = false
+  mirror_suite = true
+  do_marsprep = false
+  interpolate_boundaries = false
+  do_extractsqlite = false
+  do_addcalculatedfields = false
+
+[cases.cy49t2_arome_eps]
+  base = "cy49t2_arome"
+  extra = [
+    "tactus/data/config_files/include/eps/eps_7members.toml",
+    "tactus/data/config_files/include/eps/CY49t2/arome.toml",
+  ]
+
+[cases.cy49t2_arome_eps.modifs.reference_checker]
+  check = false
+  generate = false
+
+[cases.cy49t2_arome_eps.modifs.eps.general]
+  members = "0:3"
+
+[cases.cy49t2_arome_eps.modifs.eps.member_settings.boundaries.ifs]
+  bdmember = "0:3"
+
+[cases.cy49t2_arome_eps.modifs.system]
+  case_suffix = "_eps"
+
+[cases.cy49t2_arome_eps.modifs.suite_control]
+  do_addcalculatedfields = false
+  do_extractsqlite = false
+  do_mergesqlite = false
+
+[cases.cy49t2_arome_eps.modifs.general.times]
+  start = "-P2D"
+
+[cases.cy49t2_arome_slaf]
+  base = "cy49t2_arome"
+  extra = [
+    "tactus/data/config_files/include/eps/eps_members_slaf.toml",
+    "tactus/data/config_files/include/eps/CY49t2/arome.toml",
+  ]
+  host = "cy49t2_arome"
+
+[cases.cy49t2_arome_slaf.modifs.eps.general]
+  members = "0:3"
+
+[cases.cy49t2_arome_slaf.modifs.system]
+  case_suffix = "_slaf"
+  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_arome/climate/@DOMAIN@"
+
+[cases.cy49t2_arome_slaf.modifs.suite_control]
+  create_static_data = false
+  mirror_suite = true
+
+[cases.cy49t2_arome_mode_start]
+  base = "cy49t2_arome"
+  host = "cy49t2_arome_climate_files"
+
+[cases.cy49t2_arome_mode_start.modifs.general.times]
+  cycle_length = "PT3H"
+  end = "PT3H"
+  forecast_range = "PT3H"
+
+[cases.cy49t2_arome_mode_start.modifs.suite_control]
+  mode = "start"
+  create_static_data = false
+  mirror_suite = true
+
+[cases.cy49t2_arome_mode_start.modifs.system]
+  case_suffix = "_mode_start"
+  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_arome/climate/@DOMAIN@"
+
+[cases.cy49t2_arome_R64]
+  base = "cy49t2_arome"
+  host = "cy49t2_arome"
+
+[cases.cy49t2_arome_R64.modifs.submission]
+  precision = "R64"
+
+[cases.cy49t2_arome_R64.modifs.system]
+  case_suffix = "_R64"
+  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_arome/climate/@DOMAIN@"
+  intp_bddir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_arome/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+  intp_bddir_sfx = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_arome/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+
+[cases.cy49t2_arome_R64.modifs.suite_control]
+  create_static_data = false
+  mirror_suite = true
+  do_marsprep = false
+  interpolate_boundaries = false
+  do_extractsqlite = false
+  do_addcalculatedfields = false
+
+[cases.cy49t2_arome_target]
+  host = "cy49t2_arome_R64"
+
+[cases.cy49t2_arome_target.modifs.general.times]
+  end = "PT0H"
+
+[cases.cy49t2_arome_target.modifs.suite_control]
+  mirror_host_case = true
+
+[cases.cy49t2_arome_target.modifs.system]
+  bdclimdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_arome/climate/@HOST_DOMAIN@"
+
+[cases.cy49t2_harmonie_arome_climate_files]
+  base = "cy49t2_harmonie_arome"
+
+[cases.cy49t2_harmonie_arome_climate_files.modifs.system]
+  case_suffix = "_climate_files"
+  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/climate/@DOMAIN@"
+
+[cases.cy49t2_harmonie_arome_climate_files.modifs.suite_control]
+  create_time_dependent_suite = false
+
+[cases.cy49t2_harmonie_arome]
+  host = "cy49t2_harmonie_arome_climate_files"
+
+[cases.cy49t2_harmonie_arome.modifs.system]
+  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/climate/@DOMAIN@"
+  intp_bddir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+  intp_bddir_sfx = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+
+[cases.cy49t2_harmonie_arome.modifs.suite_control]
+  create_static_data = false
+  mirror_suite = true
+
+[cases.cy49t2_harmonie_arome_ddh]
+  base = "cy49t2_harmonie_arome"
+  extra = ["tactus/data/config_files/modifications/ddh.toml"]
+  host = "cy49t2_harmonie_arome"
+
+[cases.cy49t2_harmonie_arome_ddh.modifs.system]
+  case_suffix = "_ddh"
+  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/climate/@DOMAIN@"
+  intp_bddir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+  intp_bddir_sfx = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+
+[cases.cy49t2_harmonie_arome_ddh.modifs.suite_control]
+  create_static_data = false
+  mirror_suite = true
+  do_marsprep = false
+  interpolate_boundaries = false
+  do_extractsqlite = false
+  do_addcalculatedfields = false
+
+[cases.cy49t2_harmonie_arome_slaf]
+  base = "cy49t2_harmonie_arome"
+  extra = [
+    "tactus/data/config_files/include/eps/eps_members_slaf.toml",
+    "tactus/data/config_files/include/eps/CY49t2/harmonie_arome.toml",
+  ]
+  host = "cy49t2_harmonie_arome"
+
+[cases.cy49t2_harmonie_arome_slaf.modifs.eps.general]
+  members = "0:3"
+
+[cases.cy49t2_harmonie_arome_slaf.modifs.system]
+  case_suffix = "_slaf"
+  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/climate/@DOMAIN@"
+
+[cases.cy49t2_harmonie_arome_slaf.modifs.suite_control]
+  create_static_data = false
+  mirror_suite = true
+
+[cases.cy49t2_harmonie_arome_eps]
+  base = "cy49t2_harmonie_arome"
+  extra = [
+    "tactus/data/config_files/include/eps/eps_7members.toml",
+    "tactus/data/config_files/include/eps/CY49t2/harmonie_arome.toml",
+  ]
+
+[cases.cy49t2_harmonie_arome_eps.modifs.eps.general]
+  members = "0:3"
+
+[cases.cy49t2_harmonie_arome_eps.modifs.eps.member_settings.boundaries.ifs]
+  bdmember = "0:3"
+
+[cases.cy49t2_harmonie_arome_eps.modifs.system]
+  case_suffix = "_eps"
+
+[cases.cy49t2_harmonie_arome_eps.modifs.suite_control]
+  do_addcalculatedfields = false
+  do_extractsqlite = false
+  do_mergesqlite = false
+
+[cases.cy49t2_harmonie_arome_eps.modifs.general.times]
+  start = "-P2D"
+
+[cases.cy49t2_harmonie_arome_eps.modifs.reference_checker]
+  check = false
+  generate = false
+
+[cases.cy49t2_harmonie_arome_mode_start]
+  base = "cy49t2_harmonie_arome"
+  host = "cy49t2_harmonie_arome_climate_files"
+
+[cases.cy49t2_harmonie_arome_mode_start.modifs.general.times]
+  cycle_length = "PT3H"
+  end = "PT3H"
+  forecast_range = "PT3H"
+
+[cases.cy49t2_harmonie_arome_mode_start.modifs.suite_control]
+  mode = "start"
+  create_static_data = false
+  mirror_suite = true
+
+[cases.cy49t2_harmonie_arome_mode_start.modifs.system]
+  case_suffix = "_mode_start"
+  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/climate/@DOMAIN@"
+
+[cases.cy49t2_harmonie_arome_R64]
+  base = "cy49t2_harmonie_arome"
+  host = "cy49t2_harmonie_arome"
+
+[cases.cy49t2_harmonie_arome_R64.modifs.submission]
+  precision = "R64"
+
+[cases.cy49t2_harmonie_arome_R64.modifs.suite_control]
+  create_static_data = false
+  mirror_suite = true
+  do_marsprep = false
+  interpolate_boundaries = false
+  do_extractsqlite = false
+  do_addcalculatedfields = false
+
+[cases.cy49t2_harmonie_arome_R64.modifs.system]
+  case_suffix = "_R64"
+  climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/climate/@DOMAIN@"
+  intp_bddir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+  intp_bddir_sfx = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/intp_bddir/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+
+[cases.cy49t2_harmonie_arome_target]
+  host = "cy49t2_harmonie_arome_R64"
+
+[cases.cy49t2_harmonie_arome_target.modifs.general.times]
+  end = "PT0H"
+
+[cases.cy49t2_harmonie_arome_target.modifs.suite_control]
+  mirror_host_case = true
+
+[cases.cy49t2_harmonie_arome_target.modifs.system]
+  bdclimdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_harmonie_arome/climate/@HOST_DOMAIN@"
+
+[cases.harmonie_arome]
+  base = "harmonie_arome"

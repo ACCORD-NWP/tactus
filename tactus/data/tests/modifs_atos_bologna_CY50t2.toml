@@ -9,43 +9,67 @@
   test = ["snh02", "lrb_465000527_efdev"]
 
 [modifs.general]
-  case = "@CASE_PREFIX@@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@@CASE_SUFFIX@"
+  case = "@CASE_PREFIX@_@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@@CASE_SUFFIX@"
 
 [modifs.general.times]
-  # counter for starting days, this is to test different days
-  end = "-P@COUNTER@D"
-  start = "-P@COUNTER@D"
+  start = "@REFERENCE_DATE@"
 
 [modifs.macros.select.release_test]
   os_macros = ["PERM"]
 
 [modifs.platform]
   reference_data = "@SCRATCH@/@SYS_NAME@/@CYCLE@"
+  ref_case = "@SUBTAG@_@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@@CASE_SUFFIX@"
+  refcheck_root = "/ec/project/accord/tactus/tactus_references"
+  install_dir = "@SCRATCH@/@SYS_NAME@/@CASE_PREFIX@@CYCLE@_compile/install"
 
 [modifs.platform.mirrorglobalDT]
   remote_host = "ecflow-gen-snh02-001"
   remote_path = "/mirror_globalDT_iekm/pabv/iekm/fc/main/fcgroup/00/model"
 
+[modifs.reference_checker.methods.FullPosFields]
+  binary = "@BINDIR_GL@/xtool_DP"
+
+[modifs.reference_checker.methods.HistoryFields]
+  binary = "@BINDIR_GL@/xtool_DP"
+
+[modifs.reference_checker.methods.E923Files]
+  binary = "@BINDIR_GL@/xtool_DP"
+
 [modifs.scheduler.ecfvars]
-  case_prefix = "@TAG@@SUBTAG@"
+  case_prefix = "@TAG@_@SUBTAG@"
   ecf_files = "@PERM@/tactus_ecflow/ecf_files"
   ecf_files_remotely = "@PERM@/tactus_ecflow/ecf_files"
   ecf_home = "@PERM@/tactus_ecflow/jobout"
   ecf_jobout = "@PERM@/tactus_ecflow/jobout"
   ecf_out = "@PERM@/tactus_ecflow/jobout"
 
+[modifs.scheduler.mirror_suite]
+  mirror_name = "@HOST_CASE@"
+  remote_path = "/@HOST_CASE@/PostMortem"
+
 [modifs.submission]
+  bindir = "@SCRATCH@/@SYS_NAME@/@CASE_PREFIX@_@CYCLE@_compile/install/R64/bin"
+  bindir_gl = "@SUBMISSION.BINDIR@"
   max_ecf_tasks = 5
+
+[modifs.submission.task_exceptions.Forecast.binaries.MASTERODB]
+  bindir = "@SCRATCH@/@SYS_NAME@/@CASE_PREFIX@_@CYCLE@_compile/install/R64/bin"
+
+[modifs.submission.task_exceptions.Marsprep.BATCH]
+  WALLTIME = "#SBATCH --time=12:00:00"
 
 [modifs.submission.task_exceptions.PgdFilterTownFrac.ENV]
   ECF_TRIES = 15
 
 [modifs.suite_control]
   do_archiving = false
+  compile = false
 
 [modifs.system]
   # Picks up the case name and domain from the host run
   case_suffix = ""
   host_case = "@HOST_CASE@"
   host_domain = "@HOST_DOMAIN@"
+  host_suite = "@HOST_CASE@"
   test_data_path = "/perm/snh/ttr/data"

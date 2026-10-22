@@ -14,7 +14,7 @@ class Boundary:
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         platform = Platform(config)
 

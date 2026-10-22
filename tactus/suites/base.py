@@ -170,6 +170,7 @@ class SuiteDefinition(BaseSuiteDefinition):
             "NPROCY": "",
             "KEEP_WORKDIRS": keep_workdirs,
             "MEMBER": "",
+            "TACTUS_TASK": "",
         }
         super().__init__(ecflow_env, suite_vars, dry_run=dry_run)
         self.ecf_remote_files = self.ecflow_env.get_property("ecf_remote_files")
@@ -289,10 +290,10 @@ class EcflowNode:
                             self.make_relative(trigger.trigger_string)
                         )
                 else:
-                    logger.warning("Empty trigger")
+                    logger.debug("Empty trigger")
             elif isinstance(trigger, list):
                 if len(trigger) == 0:
-                    logger.warning("Empty trigger list")
+                    logger.debug("Empty trigger list")
                 # Resolve the trigger list into an EcflowSuiteTriggers object,
                 # and add the trigger string to the node
                 elif all(isinstance(node, EcflowNode) for node in trigger):
@@ -603,7 +604,7 @@ class EcflowSuiteTask(EcflowNode):
             parent (EcflowNode): Parent node.
             ecf_files (str): Path to ecflow containers
             task_settings (TaskSettings): Submission configuration
-            config (tactus.ParsedConfig): Configuration file
+            config (ParsedConfig): Configuration file
             task_settings (tactus.TaskSettings): Task settings
             input_template(str, optional): Input template
             parse (bool, optional): To parse template file or not

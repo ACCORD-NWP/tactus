@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Derive runtime variables."""
 
+import os
 import shutil
 from math import atan, floor, sin
 
@@ -15,7 +16,7 @@ def set_times(config):
     """Set basetime/validtime if not present.
 
     Args:
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     Raises:
         ValueError: If start > end
@@ -38,12 +39,13 @@ def set_times(config):
     if "start" not in times:
         times.update({"start": times["basetime"]})
         logger.debug("Set start to {}", times["start"])
+
     if "end" not in times:
         times.update({"end": times["basetime"]})
         logger.debug("Set end to {}", times["end"])
 
     times.update({"start": evaluate_date(times["start"])})
-    times.update({"end": evaluate_date(times["end"])})
+    times.update({"end": evaluate_date(times["end"], reference_date=times["start"])})
 
     if as_datetime(times["start"]) > as_datetime(times["end"]):
         raise ValueError(
@@ -60,7 +62,7 @@ def check_fullpos_namelist(config, nlgen):
     """Find existing fullpos select files or generate them.
 
     Args:
-        config (tactus.ParsedConfig): Configuration
+        config (ParsedConfig): Configuration
         nlgen (dict): master forecast namelist
 
     Returns:
@@ -73,15 +75,16 @@ def check_fullpos_namelist(config, nlgen):
     generate_namelist = True
     if accept_static_namelists:
         namelists = platform.get_system_value("namelists")
-        fullpos_select_files = Search.find_files(
-            namelists, prefix="xxt", recursive=False, fullpath=True
-        )
-        if len(fullpos_select_files) > 0:
-            for filename in fullpos_select_files:
-                shutil.copy(filename, ".")
-                logger.info("Copy fullpos select file {}", filename)
+        if os.path.isdir(namelists):
+            fullpos_select_files = Search.find_files(
+                namelists, prefix="xxt", recursive=False, fullpath=True
+            )
+            if len(fullpos_select_files) > 0:
+                for filename in fullpos_select_files:
+                    shutil.copy(filename, ".")
+                    logger.info("Copy fullpos select file {}", filename)
 
-            generate_namelist = False
+                generate_namelist = False
 
     if generate_namelist:
         _fpdir = config["fullpos.config_path"]
@@ -112,7 +115,7 @@ def derived_variables(config, processor_layout=None):
     """Derive some variables required in the namelists.
 
     Args:
-        config (tactus.ParsedConfig): Configuration
+        config (ParsedConfig): Configuration
         processor_layout (ProcessorLayout, optional): Processor layout object
 
     Returns:
@@ -236,6 +239,12 @@ def derived_variables(config, processor_layout=None):
     decades = "one_decade" if config["pgd.one_decade"] else "all_decade"
     gen_macros.append("namelist.decades")
 
+    ecoclimap_version = "ecoclimap_sg" if config["pgd.ecoclimap_sg"] else "ecoclimap"
+    gen_macros.append("namelist.ecoclimap_version")
+
+    use_ecrad = "ecrad" if config["general.ecrad"] else ""
+    gen_macros.append("namelist.use_ecrad")
+
     sg_input = "osm" if config["pgd.use_osm"] else ""
     gen_macros.append("namelist.sg_input")
     default_macros["gen_macros"] = gen_macros
@@ -270,6 +279,8 @@ def derived_variables(config, processor_layout=None):
             "time": int(time),
             "sg_input": sg_input,
             "decades": decades,
+            "use_ecrad": use_ecrad,
+            "ecoclimap_version": ecoclimap_version,
         },
     }
 

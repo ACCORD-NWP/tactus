@@ -11,9 +11,6 @@
     "suite_control": {
       "$ref": "#/definitions/suite_control"
     },
-    "clean_old_data": {
-      "$ref": "#/definitions/clean_old_data"
-    },
     "system": {
       "$ref": "#/definitions/system"
     },
@@ -43,6 +40,9 @@
     },
     "gribmodify": {
       "$ref": "#/definitions/gribmodify"
+    },
+    "genesis": {
+      "$ref": "#/definitions/genesis"
     }
   },
   "required": [
@@ -284,45 +284,6 @@
         }
       }
     },
-    "clean_old_data": {
-      "title": "Cleaning old data",
-      "decription": "Option for cleaning old data",
-      "type": "object",
-      "properties": {
-        "cases_period": {
-          "description": "Age for old cases in days",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
-          "default": "P7D"
-        },
-        "ignore": {
-          "decription": "File not to remove",
-          "type": "array",
-          "default": []
-        },
-        "scratch_ext": {
-          "decription": "Extention of scratch for operational user.",
-          "type": "string",
-          "default": "tactus"
-        },
-        "force_delete_period": {
-          "decription": "ISO-8601 duration string used to determine the fallback age of a suite for deletion if its files are missing. Defaults to approximately one year ('P365D').",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
-          "default": "P365D"
-        },
-        "dw_case_prefixes": {
-          "decription": "List of prefixes of the daily runs",
-          "type": "array",
-          "default": [
-            "AUTOMATED_RUN",
-            "HARMONIE_AROME",
-            "AROME",
-            "ALARO"
-          ]
-        }
-      }
-    },
     "perturbations": {
       "title": "Perturbation Section",
       "description": "Settings for control of perturbations.",
@@ -330,13 +291,30 @@
       "properties": {
         "pertana": {
           "title": "Perturbation of initial atmospheric conditions with boundary data.",
-          "type": "boolean",
-          "default": false
+          "type": "object",
+          "properties": {
+            "active": {
+              "title": "Activate pertana perturbations",
+              "type": "boolean",
+              "default": false
+            },
+            "z_mult": {
+              "title": "Perturbation scaling",
+              "type": "number",
+              "default": 0.25
+            }
+          }
         },
         "pertsurf": {
           "title": "Perturbation of initial surfex conditions",
-          "type": "boolean",
-          "default": false
+          "type": "object",
+          "properties": {
+            "active": {
+              "title": "Activate pertsurf perturbations",
+              "type": "boolean",
+              "default": false
+            }
+          }
         }
       }
     },
@@ -345,6 +323,11 @@
       "description": "Settings for control of Pgd selection.",
       "type": "object",
       "properties": {
+        "ecoclimap_sg": {
+          "description": "Switch for ecoclimap 2nd gen",
+          "default": true,
+          "type": "boolean"
+        },
         "npatch": {
           "title": "Number of patches for surfex variables",
           "type": "integer",
@@ -454,6 +437,10 @@
           "description": "Activates extraction of selected points to SQLite files for verification.",
           "type": "boolean"
         },
+        "do_addcalculatedfields": {
+          "description": "Activates additional GRIB postprocessing",
+          "type": "boolean"
+        },
         "do_mergesqlite": {
           "description": "Activates merging of extracted sqlite files. Requires do_extractsqlite to be true, and number of ensemble members to be greater than 1, to have an effect.",
           "type": "boolean"
@@ -467,6 +454,11 @@
           "type": "boolean"
         },
         "split_mars": {
+          "description": "Split Marsprep in multiple tasks for each data type",
+          "type": "boolean",
+          "default": true
+        },
+        "split_mars_by_step": {
           "description": "Do marsprep only for one step before c903",
           "type": "boolean",
           "default": false
@@ -498,6 +490,11 @@
         },
         "member_specific_mars_prep": {
           "description": "Whether to do member specific marsprep (true) or common marsprep",
+          "type": "boolean",
+          "default": false
+        },
+        "do_assimilation": {
+          "description": "Activate the data assimilation chain (CANARI surface OI + 3D-Var) between FirstGuess and Forecast.",
           "type": "boolean",
           "default": false
         },
@@ -654,7 +651,7 @@
       }
     },
     "compile": {
-      "title": "Compilation configuration",
+      "title": "IAL compilation configuration",
       "type": "object",
       "properties": {
         "ial_dir": {
@@ -667,20 +664,25 @@
           "description": "Git repo for IAL source",
           "default": "git@github.com:ACCORD-NWP/IAL"
         },
+        "ial_git_version": {
+          "type": "string",
+          "description": "Git version for IAL source (branch/tag/commit hash)",
+          "default": "develop"
+        },
         "git_token": {
           "type": "string",
           "description": "Git token for IAL source access",
           "default": ""
         },
-        "ial_git_branch": {
+        "ial_git_tag_case": {
           "type": "string",
-          "description": "Branch/tag",
-          "default": "develop"
+          "description": "Placeholder for parsed branch name",
+          "default": ""
         },
-        "arch": {
+        "arch_dir": {
           "type": "string",
-          "description": "Compiler configuration",
-          "default": "source/ial-source/bundle/arch/ecmwf/hpc2020"
+          "description": "Directory where arch files can be found",
+          "default": "@CASEDIR@/IAL/bundle/arch"
         },
         "dir": {
           "type": "string",
@@ -717,15 +719,42 @@
           "description": "whether to clean build folder before compilation",
           "default": false
         },
-        "cache": {
+        "install": {
           "type": "boolean",
-          "description": "whether to use chache build/install folders",
+          "description": "whether to install in @INSTALL_DIR@",
           "default": false
         },
-        "cache_dir": {
-          "type": "string",
-          "description": "whether to use chache build/install folders",
-          "default": "@REFERENCE_DATA@/bundle_cache"
+        "forecast_only": {
+          "type": "boolean",
+          "description": "Do not compile assimilation related binaries",
+          "default": false
+        }
+      }
+    },
+    "genesis": {
+      "title": "Genesis information",
+      "description": "Genesis information of the configuration file",
+      "type": "object",
+      "properties": {
+        "command": {
+          "description": "The command used to generate the configuration file",
+          "type": "string"
+        },
+        "package": {
+          "description": "The package used to generate the configuration file",
+          "type": "string"
+        },
+        "version": {
+          "description": "The version of the package used to generate the configuration file",
+          "type": "string"
+        },
+        "user": {
+          "description": "The user who generated the configuration file",
+          "type": "string"
+        },
+        "time": {
+          "description": "The time when the configuration file was generated",
+          "type": "string"
         }
       }
     },
@@ -893,7 +922,7 @@
               ]
             },
             "end": {
-              "description": "End time if the run covers several cycles. Same format as start",
+              "description": "End time if the run covers several cycles. Date time format or duration relative start.",
               "type": "string",
               "oneOf": [
                 {
@@ -997,7 +1026,7 @@
           "description": "Experiment name",
           "default": "tactus_case",
           "type": "string",
-          "pattern": "^[^0-9][^.]*$"
+          "pattern": "^([a-zA-Z0-9_@][a-zA-Z0-9_@.]*)?$"
         },
         "member_str": {
           "description": "String identifier of a member in the ensemble",
@@ -1035,6 +1064,11 @@
           "items": {
             "type": "integer"
           }
+        },
+        "ecrad": {
+          "description": "ECRAD switch",
+          "type": "boolean",
+          "default": false
         },
         "surfex": {
           "description": "SURFEX switch",
@@ -1149,7 +1183,7 @@
             "sice",
             "none"
           ],
-          "default": "sice"
+          "default": "none"
         }
       },
       "required": [

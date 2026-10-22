@@ -146,7 +146,7 @@ def set_tactus_home(config, tactus_home=None):
     """Set tactus_home in various ways.
 
     Args:
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
         tactus_home (str): Externally set tactus_home
 
     Returns:

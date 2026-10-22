@@ -38,7 +38,7 @@ class Exp:
         """Instanciate an object of the main experiment class.
 
         Args:
-            config (.config_parser.ParsedConfig): Parsed config file contents.
+            config (ParsedConfig): Parsed config file contents.
             merged_config (dict): Experiment configuration
 
         """
@@ -57,7 +57,12 @@ class Exp:
             config = config.copy(
                 update={
                     "general": {
-                        "times": {"end": evaluate_date(config["general.times.end"])}
+                        "times": {
+                            "end": evaluate_date(
+                                config["general.times.end"],
+                                reference_date=config["general.times.start"],
+                            )
+                        }
                     }
                 }
             )
@@ -79,7 +84,7 @@ class ExpFromFiles(Exp):
         """Construct an Exp object from files.
 
         Args:
-            config (.config_parser.ParsedConfig): Parsed config file contents.
+            config (ParsedConfig): Parsed config file contents.
             exp_dependencies (dict): Exp dependencies
             mod_files (List[Path]): Case modifications
             host (TactusHost, optional): tactus host. Defaults to None.
@@ -215,7 +220,7 @@ class EPSExp(Exp):
         """Setup EPS experiment.
 
         Args:
-            config (.config_parser.ParsedConfig): Parsed config file contents.
+            config (ParsedConfig): Parsed config file contents.
         """
         super().__init__(config=config, merged_config=None)
 
@@ -320,7 +325,7 @@ def case_setup(
     """Do experiment setup.
 
     Args:
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
         output_file (str): Output config file.
         mod_files (list): Modifications. Defaults to None.
         case (str, optional): Case identifier. Defaults to None.

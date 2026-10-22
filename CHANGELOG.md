@@ -10,7 +10,116 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Add selection of UWC West domain definitions. [#249](https://github.com/ACCORD-NWP/tactus/pull/249)(@ewhelan)
+- Allow specify member information when generating namelists command line. [#244](https://github.com/ACCORD-NWP/tactus/pull/244)(@uandrae)
+- Allow to use duration of start_date specfication in mars config. Allows to introduce start date for IFSENS. [#243](https://github.com/ACCORD-NWP/tactus/pull/243)(@uandrae)
+
+### Changed
+- Change confusing trigger warnings to debug loggings. [#239](https://github.com/ACCORD-NWP/tactus/pull/239)(@uandrae)
+- Push OmegaConf to v2.4 and resolve some deprecation warnings. Fixes issue [\#234](https://github.com/ACCORD-NWP/tactus/issues/234). [#238](https://github.com/ACCORD-NWP/tactus/pull/238)(@adeckmyn)
+
+### Fixed
+- Correct derivation of suite name from git branch. [#240](https://github.com/ACCORD-NWP/tactus/pull/240)(@uandrae)
+
+## [1.4.0] - 2026-10-11
+
+### Added
+- Add pertsurf for perturbing parameters in the surfex initial file. [#131](https://github.com/ACCORD-NWP/tactus/pull/131)(@xhzhaois)
+- Add PertAna, initial state perturbation. [#126](https://github.com/ACCORD-NWP/tactus/pull/126)(@ingerlf)
+- Introduce obsprocessing functionality. [#219](https://github.com/ACCORD-NWP/tactus/pull/219)(@bstrajnar, @uandrae)
+- Add assimilation suite skeleton. [#195](https://github.com/ACCORD-NWP/tactus/pull/195)(@bstrajnar, @uandrae)
+- Add support for generic task detection. [#199](https://github.com/ACCORD-NWP/tactus/pull/199)(@bstrajnar, @uandrae)
+- Add back suport to suspend ecflow node. [#205](https://github.com/ACCORD-NWP/tactus/pull/205)(@kastelecn)
+- Add support to compile assimilation related binaries. [#192](https://github.com/ACCORD-NWP/tactus/pull/192)(@bstrajnar, @uandrae)
+- Introduced perturbation tasks in the initial data selection procedure [#117](https://github.com/ACCORD-NWP/tactus/pull/117)(@uandrae)
+- Add support for environment settings from a file in TaskSettings [#196](https://github.com/ACCORD-NWP/tactus/pull/196)(@pardallio)
+- Introduced possibility to compile with GNU in CY50t2 [#188](https://github.com/ACCORD-NWP/tactus/pull/188)(@pardallio)
+
+### Changed
+- Update AROME namelist settings. [#207](https://github.com/ACCORD-NWP/tactus/pull/207)(@adeckmyn)
+- Add ArchiveDataBridge task (inactive by default) and an `add_time_family_nodes` hook in `TimeDependentFamily` so downstream suites can add tasks to each cycle. [#222](https://github.com/ACCORD-NWP/tactus/pull/222)(@kastelecn)
+- Bumped ecbundle version to 2.6.0 to use bundle merge functionality. [#220](https://github.com/ACCORD-NWP/tactus/pull/220)(@pardallio)
+- Change default to use latest tagged precompiled binaries on atos. [#145](https://github.com/ACCORD-NWP/tactus/pull/145)(@uandrae, @pardallio)
+- Updates .gitignore to exclude toml files in tactus folder and moves ttr config files to ttr-configs directory which is also in .gitignore [#194](https://github.com/ACCORD-NWP/tactus/pull/194)(@pardallio)
+- Update the unit-test CI container to Python 3.10 on Debian Bookworm so apt-based system dependency installation works again. [\#201](https://github.com/ACCORD-NWP/tactus/pull/201) (@uandrae)
+- Add option to BatchJob.run() to capture STDOUT in file. [#191](https://github.com/ACCORD-NWP/tactus/pull/191)(@bstrajnar, @uandrae)
+- Relax input yaml file name check in namelist generator. [#190](https://github.com/ACCORD-NWP/tactus/pull/190)(@bstrajnar, @uandrae)
+- Update test instructions. [#185](https://github.com/ACCORD-NWP/tactus/pull/185), [#187](https://github.com/ACCORD-NWP/tactus/pull/187)(@uandrae)
+- Make config-file mandatory for some commands. [#174](https://github.com/ACCORD-NWP/tactus/pull/174)(@dhaumont)
+- Updated reference checker with more tests and bugfixes [#179](https://github.com/ACCORD-NWP/tactus/pull/179)(@uandrae)
+
+### Fixed
+- Fix failing EPS setup unit test [#229](https://github.com/ACCORD-NWP/tactus/pull/220)(@uandrae)
+- Fix race condition in tactusmakedirs by ensuring directories are created with exist_ok=True [#223](https://github.com/ACCORD-NWP/tactus/pull/223)(@pardallio)
+- Fixed bug in compilation by bumping gl version to 1.0.1. [#212](https://github.com/ACCORD-NWP/tactus/pull/212)(@pardallio)
+- Fixes typo in c903 submissionsettings. [#218](https://github.com/ACCORD-NWP/tactus/pull/218) (@pardallio)
+- Correct help for `show namelist` command. [#206](https://github.com/ACCORD-NWP/tactus/pull/206)(@uandrae)
+- Correct treatment of missing namelist directory in case of static namelists. [#209](https://github.com/ACCORD-NWP/tactus/pull/209)(@uandrae)
+- Fix for fetching global data for EPS. [#197](https://github.com/ACCORD-NWP/tactus/pull/197)(@kastelecn)
+- Add YMD variable to Marsprep tasks to allow globalDT mirror. [#202](https://github.com/ACCORD-NWP/tactus/pull/202)(@kastelecn)
+- Correct usage of branch names for ecflow suites. [#184](https://github.com/ACCORD-NWP/tactus/pull/184)(@uandrae)
+- Make the tactus compile command respect config file settings [#183](https://github.com/ACCORD-NWP/tactus/pull/183)(@uandrae)
+- Add metadata information to generated config files [#177](https://github.com/ACCORD-NWP/tactus/pull/177)(@dhaumont)
+- Fix FileLock race condition [#182](https://github.com/ACCORD-NWP/tactus/pull/182)(@dhaumont)
+- Don't check references when generating them [#175](https://github.com/ACCORD-NWP/tactus/pull/175)(@dhaumont)
+- Fix potential NoneType error when adding trigger in InterpolationFamily  [#189](https://github.com/ACCORD-NWP/tactus/pull/189)(@pardallio)
+
+## [1.3.1] - 2026-09-07
+
+### Fixed
+- Remove mirror-suspend in Marsprep. [\#200](https://github.com/ACCORD-NWP/tactus/pull/200) (@kastelecn)
+
+## [1.3.0] - 2026-07-24
+
+### Added
+- Adds Namelist check to reference checker. [#172](https://github.com/ACCORD-NWP/tactus/pull/172) (@pardallio)
+- Add `mars_split_by_step` option in config file to replace the current `mars_split` option which now splits mars by data_type. [#151](https://github.com/ACCORD-NWP/tactus/pull/151) (@pardallio)
+- Tactus test runner - allow to exclude rules. [#155](https://github.com/ACCORD-NWP/tactus/pull/155) (@uandrae)
+- Make ParsedConfig uniform in docstring. [#161](https://github.com/ACCORD-NWP/tactus/pull/161)(@dhaumont)
+- Tactus test runner - introduce several new reference checks. [#150](https://github.com/ACCORD-NWP/tactus/pull/150) (@uandrae)
+- Add `tactus compile` subcommand for IAL compilation configurations, including the `cy50t2_compile` preset, `@IAL_TAG@` macro, and supporting documentation. [#132](https://github.com/ACCORD-NWP/tactus/pull/132) (@pardallio)
+- Unit test: reference_checker: create test data in tmp instead of scratch [#140](https://github.com/ACCORD-NWP/tactus/pull/140) (@dhaumont)
+- Tactus test runner - activate reference checker. [#130](https://github.com/ACCORD-NWP/tactus/pull/130) (@dhaumont)
+- ReferenceChecker: Improve the way the summary are created. [#128](https://github.com/ACCORD-NWP/tactus/pull/128/)(@dhaumont)
+- Test runner - display summary of all tests. [#129](https://github.com/ACCORD-NWP/tactus/pull/129/)(@dhaumont)
+- ALARO: Use APL_ALARO routines instead of APLPAR. [#135](https://github.com/ACCORD-NWP/tactus/pull/135) (@dhaumont)
+- Tactus test runner - Fix underscore in test definition. [#127](https://github.com/ACCORD-NWP/tactus/pull/127) (@dhaumont)
+
+### Changed
+- Not coupling hydrometeors for all CSC. [\#160](https://github.com/ACCORD-NWP/tactus/pull/160) (@kastelecn)
+- Update CY50t2 namelists for Harmonie-Arome CSC. [#115](https://github.com/ACCORD-NWP/tactus/pull/115) (@romick-knmi, @uandrae)
+- Set surfex_sea_ice to default none to be consistent for all CSCs. [#164](https://github.com/ACCORD-NWP/tactus/pull/164)(@uandrae)
+
+### Fixed
+- Fixed default precision for CY50T2 runs to add SP compilation to tactus test runner. [#168](https://github.com/ACCORD-NWP/tactus/pull/168)(@pardallio)
+- Correct sign of the xtool error tolerance used in the referenceChecker. [#162](https://github.com/ACCORD-NWP/tactus/pull/162)(@uandrae)
+- Correct LBC file search pattern in the referenceChecker. [#163](https://github.com/ACCORD-NWP/tactus/pull/163)(@uandrae)
+- Correct Marsprep bug for the SLAF case where the waitfor_files function was not working as expected. [#148](https://github.com/ACCORD-NWP/tactus/pull/148)(@uandrae)
+- Correct usage of STREAM=SCDA following ECMWF update to CY50r1 on 2026-05-12. [#142](https://github.com/ACCORD-NWP/tactus/pull/142)(@uandrae)
+- Fix empty steplist writing output every timestep instead of not at all. [#141](https://github.com/ACCORD-NWP/tactus/pull/141)(@kastelecn)
+
+## [1.2.0] - 2026-06-18
+
+### Added
+- Introduce CY50t2 test cases in the test-runner. [\#88](https://github.com/ACCORD-NWP/tactus/pull/88) (@uandrae)
+- Added suite control switch for grib calculations. [#102](https://github.com/ACCORD-NWP/tactus/pull/102) (@uandrae)
 - Introduce perturbation family and config section. [#87](https://github.com/ACCORD-NWP/tactus/pull/87) (@uandrae)
+
+### Changed
+- Cleaning of the namelists (forecast) [\#118](https://github.com/ACCORD-NWP/tactus/pull/118)(@kastelecn)
+- Let the DKCOEXP be the default large domain. [\#116](https://github.com/ACCORD-NWP/tactus/pull/116)(@uandrae)
+- Change suite mirror trigger to a task instead of the full suite as a ecflow bug workaround. [#113](https://github.com/ACCORD-NWP/tactus/pull/113) (@uandrae)
+- Make general.times.end relative to general.times.start when defined as duration. [#101](https://github.com/ACCORD-NWP/tactus/pull/101) (@uandrae)
+- Update CY50t2 surfex namelists to make LAM -> LAM work. [#99](https://github.com/ACCORD-NWP/tactus/pull/99) (@uandrae)
+- Switch to accord owned path for static data on atos_bologna. [#106](https://github.com/ACCORD-NWP/tactus/pull/106) (@uandrae)
+
+### Fixed
+- Fix plugin task imports by ensuring plugin paths are added to `sys.path` before dynamic import. [#110](https://github.com/ACCORD-NWP/tactus/pull/110) (@kastelecn)
+- Correct lfitools name for CY50T2. [#114](https://github.com/ACCORD-NWP/tactus/pull/114) (@uandrae)
+- Correct basetime used for MARS data availability. [#108](https://github.com/ACCORD-NWP/tactus/pull/108) (@uandrae)
+- Correct input data path in E923Update. [#100](https://github.com/ACCORD-NWP/tactus/pull/100) (@uandrae)
+- Fix documentation deployment trigger on new releases. [#107](https://github.com/ACCORD-NWP/tactus/pull/107) (@mfroelund)
+- Fix ordering of setting `productDefinitionTemplateNumber` for EPS runs in `FaModelSource.yml`[\#91](https://github.com/ACCORD-NWP/tactus/pull/91) (@sbnielsen)
 
 ## [1.1.0] - 2026-06-03
 
@@ -33,6 +142,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support multiple searchpaths for namelist files through TACTUS_CONFIG_DATA_DIR. [\#20](https://github.com/ACCORD-NWP/tactus/pull/20) (@mfroelund)
 
 ### Changed
+- Reduce number of repetitive test-runner tasks and parallelize the configuration step. [\#88](https://github.com/ACCORD-NWP/tactus/pull/88) (@uandrae)
 - Changed default submission settings to cy50 and added exceptions for previous config files [\#28](https://github.com/ACCORD-NWP/tactus/pull/28) (@pardallio)
 - Make CSC EPS config files cycle specific. [\#80](https://github.com/ACCORD-NWP/tactus/pull/80) (@uandrae)
 - Make package\_name and version as a arguments for a logger. [\#77](https://github.com/ACCORD-NWP/tactus/pull/77) (@kastelecn)
@@ -54,7 +164,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change deployment of documentation to not need github secrets to work. [\#22](https://github.com/ACCORD-NWP/tactus/pull/22) (@mfroelund)
 
 ### Fixed
-
 - Fix xlon0 and xlat0 replacement process in derived variables [\#78](https://github.com/ACCORD-NWP/tactus/pull/78) (@romick-knmi)
 - Disable default compilation for older cycles [\#90](https://github.com/ACCORD-NWP/tactus/pull/90) (@pardallio)
 - Changed binary fetching logic [\#28](https://github.com/ACCORD-NWP/tactus/pull/28) (@pardallio)

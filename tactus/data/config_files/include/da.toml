@@ -1,0 +1,192 @@
+[da]
+  scratch = "@CASEDIR@/da/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@"
+  obs_provider = "LACE"
+
+[da.surface]
+  method = "CANARI"
+  active = true
+  odbconverter = "Obsconvert"
+  obs_types = ["synop"]
+  bator_window_len = "PT3H"
+  bator_window_shift = "-PT90M"
+  bator_slot_len = "PT0H"
+  bator_nbslot = 1
+  nbpool = 16
+
+[da.upper_air]
+  method = "3DVAR"
+  active = false
+  odbconverter = "Obsconvert"
+  obs_types = [
+    "synop",
+    "gpssol",
+    "amdar",
+    "geowind",
+    "temp",
+    "wp",
+    "seviri",
+    "amsua",
+    "amsub",
+    "iasi",
+    "ascat",
+  ]
+  bator_window_len = "PT3H"
+  bator_window_shift = "-PT90M"
+  bator_slot_len = "PT0H"
+  bator_nbslot = 1
+  nbpool = 128
+
+[da.providers.LACE]
+  obs_step = "PT1H"
+
+[da.providers.LACE.obstypes.synop]
+  obs_step = "PT0H"
+  format = "OBSOUL"
+  candidates = [
+    "obsoul_1_xxxxxx_hu_{ymdhh}",
+    "obsoul_1_xxxxxy_hu_{ymdhh}",
+    "obsoul_1_xxxxxy_at_{ymdhh}",
+    "obsoul_1_xxxxxy_cz_{ymdhh}",
+    "obsoul_1_xxxxxy_sk_{ymdhh}",
+    "obsoul_1_xxxxxy_ro_{ymdhh}",
+    "obsoul_1_xxxxxy_si_{ymdhh}",
+    "obsoul_1_xxxxxy_cr_{ymdhh}",
+    "obsoul_1_xxxxxy_pl_{ymdhh}",
+  ]
+
+[da.providers.LACE.obstypes.gpssol]
+  format = "BUFR"
+  candidates = ["bufr_1_ztd_egvap_{ymdhh}"]
+
+[da.providers.LACE.obstypes.amdar]
+  format = "OBSOUL"
+  candidates = ["obsoul_2_xxxxxx_xx_{ymdhh}", "obsoul_2_ehs_eu_{ymdhh}"]
+
+[da.providers.LACE.obstypes.geowind]
+  obs_step = "PT0H"
+  format = "BUFR"
+  candidates = ["bufr_3_geowind_xx_{ymdhh}"]
+
+[da.providers.LACE.obstypes.temp]
+  format = "OBSOUL"
+  candidates = ["obsoul_5_xxxxxx_xx_{ymdhh}"]
+
+[da.providers.LACE.obstypes.wp]
+  format = "OBSOUL"
+  candidates = ["obsoul_6_xxxxxx_xx_{ymdhh}"]
+
+[da.providers.LACE.obstypes.amsua]
+  format = "BUFR"
+  candidates = [
+    "bufr_7_amsua_metopc_{ymdhh}",
+    "bufr_7_amsua_metopb_{ymdhh}",
+    "bufr_7_amsua_noaa18_{ymdhh}",
+    "bufr_7_amsua_noaa19_{ymdhh}",
+  ]
+
+[da.providers.LACE.obstypes.amsub]
+  format = "BUFR"
+  candidates = [
+    "bufr_7_mhs_metopc_{ymdhh}",
+    "bufr_7_mhs_metopb_{ymdhh}",
+    "bufr_7_mhs_noaa19_{ymdhh}",
+  ]
+
+[da.providers.LACE.obstypes.seviri]
+  obs_step = "PT0H"
+  format = "NETCDF"
+  candidates = ["netcdf_7_seviri_xx_{ymdhh}"]
+
+[da.providers.LACE.obstypes.iasi]
+  format = "BUFR"
+  candidates = [
+    "bufr_7_iasi_metopb_{ymdhh}",
+    "bufr_7_iasi_metopc_{ymdhh}",
+  ]
+
+[da.providers.LACE.obstypes.ascat]
+  format = "BUFR"
+  candidates = [
+    "bufr_9_ascatC_metopb_{ymdhh}",
+    "bufr_9_ascatC_metopc_{ymdhh}",
+  ]
+
+[da.providers.UWC]
+  obs_step = "PT1H"
+
+[da.providers.UWC.obstypes.synop]
+  format = "OBSOUL"
+  candidates = ["obsoul_1_xxxxxx_xx_{ymdhh}"]
+
+[da.providers.UWC.obstypes.synop_1]
+  format = "OBSOUL"
+  candidates = ["obsoul_1_xxxxxy_xx_{ymdhh}"]
+
+[da.providers.UWC.obstypes.amdar]
+  format = "OBSOUL"
+  candidates = ["obsoul_2_xxxxxx_xx_{ymdhh}"]
+
+[da.providers.UWC.obstypes.geowind]
+  format = "OBSOUL"
+  candidates = ["obsoul_3_xxxxxx_xx_{ymdhh}"]
+
+[da.providers.UWC.obstypes.temp]
+  format = "OBSOUL"
+  candidates = ["obsoul_5_xxxxxx_xx_{ymdhh}"]
+
+[da.providers.UWC.obstypes.wp]
+  format = "OBSOUL"
+  candidates = ["obsoul_6_xxxxxx_xx_{ymdhh}"]
+
+[da.providers.UWC.obstypes.gpssol]
+  format = "OBSOUL"
+  candidates = ["obsoul_9_xxxxxx_xx_{ymdhh}"]
+
+[da.providers.UWC.obstypes.amsua]
+  format = "BUFR"
+  candidates = [
+    "bufr_7_amsua_metopc_{ymdhh}",
+    "bufr_7_amsua_metopb_{ymdhh}",
+    "bufr_7_amsua_noaa18_{ymdhh}",
+    "bufr_7_amsua_noaa19_{ymdhh}",
+  ]
+
+[da.providers.UWC.obstypes.amsub]
+  format = "BUFR"
+  candidates = [
+    "bufr_7_mhs_metopc_{ymdhh}",
+    "bufr_7_mhs_metopb_{ymdhh}",
+    "bufr_7_mhs_noaa19_{ymdhh}",
+  ]
+
+[da.providers.UWC.obstypes.seviri]
+  obs_step = "PT0H"
+  format = "NETCDF"
+  candidates = ["netcdf_7_seviri_xx_{ymdhh}"]
+
+[da.providers.UWC.obstypes.iasi]
+  format = "BUFR"
+  candidates = [
+    "bufr_7_iasi_metopb_{ymdhh}",
+    "bufr_7_iasi_metopc_{ymdhh}",
+  ]
+
+[da.providers.UWC.obstypes.ascat]
+  format = "BUFR"
+  candidates = [
+    "bufr_9_ascatC_metopb_{ymdhh}",
+    "bufr_9_ascatC_metopc_{ymdhh}",
+  ]
+
+[da.providers.RMI]
+  obs_step = "PT0H"
+
+[da.providers.RMI.obstypes.synop]
+  format = "BUFR"
+  candidates = ["synop_{ymdhh}00.bufr"]
+
+[da.providers.MF]
+  obs_step = "PT1H"
+
+[da.providers.MARS]
+  # Add ECMWF MARS observation types below

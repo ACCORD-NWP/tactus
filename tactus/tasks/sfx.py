@@ -104,7 +104,7 @@ class Pgd(PySurfexBaseTask):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
 
         """
         PySurfexBaseTask.__init__(self, config, __class__.__name__)
@@ -167,7 +167,7 @@ class Prep(PySurfexBaseTask):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
 
         """
         PySurfexBaseTask.__init__(self, config, __class__.__name__)
@@ -274,7 +274,7 @@ class PgdFilterTownFrac(Task):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
 
         """
         Task.__init__(self, config, __class__.__name__)

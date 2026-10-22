@@ -9,6 +9,7 @@ from tactus.mars_utils import (
     add_additional_file_specific_data,
     compile_target,
     get_steps_and_members_to_retrieve,
+    get_value_from_dict,
     mars_write_method,
 )
 
@@ -216,6 +217,48 @@ class TestMarsWriteMethod:
     def test_version7(self):
         """Test for mars version 7."""
         assert mars_write_method(7) == "read"
+
+
+class TestGetValueFromDict:
+    """Unit tests for the get_value_from_dict function."""
+
+    def test_get_str(self):
+        dict_ = "OPER"
+        stream = get_value_from_dict(dict_, "20260713")
+        assert stream == "OPER"
+
+    def test_get_str_with_key(self):
+        dict_ = "OPER"
+        stream = get_value_from_dict(dict_, "20260713", "00")
+        assert stream == "OPER"
+
+    def test_get_simple_dict(self):
+        dict_ = {
+            "00": "OPER",
+        }
+        stream = get_value_from_dict(dict_, "20260713", "00")
+        assert stream == "OPER"
+
+    def test_get_nested_dict_first(self):
+        dict_ = {
+            "06": {"2015-05-13T00:00:00Z": "SCDA", "2026-05-12T00:00:00Z": "OPER"},
+        }
+        stream = get_value_from_dict(dict_, "20250413", "06")
+        assert stream == "SCDA"
+
+    def test_get_nested_dict_mid(self):
+        dict_ = {
+            "06": {"2015-05-13T00:00:00Z": "SCDA", "2026-05-12T00:00:00Z": "OPER"},
+        }
+        stream = get_value_from_dict(dict_, "20260413", "06")
+        assert stream == "SCDA"
+
+    def test_get_nested_dict_last(self):
+        dict_ = {
+            "06": {"2015-05-13T00:00:00Z": "SCDA", "2026-05-12T00:00:00Z": "OPER"},
+        }
+        stream = get_value_from_dict(dict_, "20260713", "06")
+        assert stream == "OPER"
 
 
 class TestCompileSplitTarget:

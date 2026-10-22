@@ -75,7 +75,7 @@ jobs:
           path: "docs/_build/"
 
   deploy-docs:
-    if: ${{ github.event_name == 'published' }}
+    if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
     name: "Deploy docs"
     needs: build-docs
     runs-on: "ubuntu-latest"

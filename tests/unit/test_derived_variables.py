@@ -8,11 +8,35 @@ import pytest
 from tactus.derived_variables import derived_variables, set_times
 
 
-def test_set_times(default_config):
+@pytest.fixture(params=["2026-06-11T00:00:00Z", "-P1D", "PT1H"])
+def start(request):
+    return request.param
+
+
+def test_set_times_varying_start(default_config, start):
     config = default_config.copy(
-        update={"general": {"times": {"end": "P1D", "start": "P2D"}}}
+        update={"general": {"times": {"end": "P1D", "start": start}}}
+    )
+    config = set_times(config)
+
+
+def test_set_end_less_than_start_aborts(default_config):
+    config = default_config.copy(
+        update={
+            "general": {
+                "times": {"end": "2026-06-06T00:00:00Z", "start": "2026-06-07T00:00:00Z"}
+            }
+        }
     )
     with pytest.raises(ValueError, match=re.escape("cannot be larger than")):
+        config = set_times(config)
+
+
+def test_set_negative_end_aborts(default_config):
+    config = default_config.copy(update={"general": {"times": {"end": "-P1D"}}})
+    with pytest.raises(
+        ValueError, match=re.escape("cannot be larger than general.times.end")
+    ):
         config = set_times(config)
 
 

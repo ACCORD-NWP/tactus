@@ -34,7 +34,7 @@ class CleanTactus:
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
             defaults (dict): Default cleaning settings
             basetime (dateTime object): Reference time
 
