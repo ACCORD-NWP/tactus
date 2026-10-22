@@ -37,14 +37,16 @@ class CompilationSuiteDefinition(SuiteDefinition):
         )
         input_template = input_template.as_posix()
 
+        ecf_remote_files = self.ecflow_env.get_property("ecf_remote_files")
+        ecf_files = self.ecflow_env.get_property("ecf_files")
         compilation = CompilationFamily(
             self.suite,
             config,
             self.task_settings,
-            self.ecf_files,
+            ecf_files,
             trigger=None,
             input_template=input_template,
-            ecf_files_remotely=self.ecf_files_remotely,
+            ecf_files_remotely=self.ecf_remote_files,
         )
 
         if config["suite_control.do_cleaning"]:
@@ -57,5 +59,5 @@ class CompilationSuiteDefinition(SuiteDefinition):
                 input_template=input_template,
                 trigger=compilation,
                 variables={"TACTUS_TASK": "Cleaning", "ARGS": "cleaning_type=PostMortem"},
-                ecf_files_remotely=self.ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
