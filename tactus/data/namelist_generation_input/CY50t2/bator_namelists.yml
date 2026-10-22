@@ -13,7 +13,7 @@ bator_base:
   NAMPHY0:
     NSTTYP: 2
   NADIRS:
-    INbTypeBufr: 300
+    INbTypeBufr: 200
     INbTypeHdf5: 0
     InbTypeNetcdf: 4
     MinSeviriSatid: 57
@@ -30,8 +30,7 @@ bator_base:
     NLON_GRIB: 1500
   BUFR:
     #GPSSOLMETHOD: 'CENT'
-    "RainSelectOrder(1:5)": [-1,-1,-1,-1,-1]
-    "NbRainToKeep": 0
+    #RainSelectOrder: [21600, 86400, 43200]
     ASCAT_XYGRID: 12500.
     # AMSU-A  (3=MetOp-A, 4=MetOp-B, 5=MetOp-C(alt ID), 207=NOAA-18, 209=MetOp-C, 223=NOAA-19)
     "TS_AMSUA(207)%T_SELECT%CHANNELSLIST(1:1)": [12]

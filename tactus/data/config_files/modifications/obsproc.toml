@@ -2,9 +2,7 @@
   case = "obsproc_example_@DA.OBS_PROVIDER@_@YMD_START@_@HH_START@"
 
 [general.times]
-  start = "2026-10-18T12:00:00Z"
-[da]
-  obs_provider = "UWC"
+  start = "2025-02-09T00:00:00Z"
 
 [da.surface]
   active = true
@@ -15,7 +13,7 @@
   odbconverter = "Obsconvert"
 
 [platform]
-  obs_dir = "@HOME@/uwcw_obs/@YYYY@/@MM@/@DD@/@HH@"
+  obs_dir = "/scratch/sis/da/obs/@YYYY@/@MM@/@DD@"
 
 [submission]
   bindir = "/ec/project/accord/IAL/CY50t2/obsproc/R64/bin"

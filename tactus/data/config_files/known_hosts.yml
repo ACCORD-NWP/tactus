@@ -14,5 +14,3 @@ belenos:
   hostname: "belenos"
 fahrenheit:
   hostname: "fahrenheit\\d+"
-rhel9pc:
-  hostname: "met2wks\\d+"
