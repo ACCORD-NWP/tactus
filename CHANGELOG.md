@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Add selection of UWC West domain definitions. [#249](https://github.com/ACCORD-NWP/tactus/pull/249)(@ewhelan)
 - Allow specify member information when generating namelists command line. [#244](https://github.com/ACCORD-NWP/tactus/pull/244)(@uandrae)
 - Allow to use duration of start_date specfication in mars config. Allows to introduce start date for IFSENS. [#243](https://github.com/ACCORD-NWP/tactus/pull/243)(@uandrae)
 
