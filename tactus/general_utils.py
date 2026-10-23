@@ -391,3 +391,35 @@ def sanitize_case_name(s: str) -> str:
     if result.startswith("."):
         result = "_" + result[1:]
     return result
+
+
+def ial_compile_modifs(ial_tag=None, ial_repo=None, compiler=None, ial_tag_case=None):
+    """Return the config modifications for the IAL compile options.
+
+    Used by both "tactus compile" and "tactus test --compile", so that
+    --ial-tag, --ial-repo and --compiler mean the same in both.
+
+    Args:
+        ial_tag (str, optional): IAL git tag/branch/hash, sets
+            compile.ial_git_version and compile.ial_git_tag_case
+        ial_repo (str, optional): IAL git repository, sets compile.ial_git_repo
+        compiler (str, optional): Compiler, sets submission.compiler
+        ial_tag_case (str, optional): Tag as used in case names. Defaults to
+            the sanitized ial_tag.
+
+    Returns:
+        (dict): Modifications, empty if no option is given
+    """
+    modifs = {}
+    if ial_tag is not None:
+        if ial_tag_case is None:
+            ial_tag_case = sanitize_case_name(ial_tag)
+        modifs["compile"] = {
+            "ial_git_version": ial_tag,
+            "ial_git_tag_case": ial_tag_case,
+        }
+    if ial_repo is not None:
+        modifs.setdefault("compile", {})["ial_git_repo"] = ial_repo
+    if compiler is not None:
+        modifs["submission"] = {"compiler": compiler}
+    return modifs
