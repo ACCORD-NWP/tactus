@@ -35,7 +35,6 @@ tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml --compile --ial-tag CY
 These options are rejected without `--compile`.
 
 Use the same `--compile` options for `-m` and `-r`, since the selection and dependencies differ with and without them.
-
 ## Check
 To list available and activated cases do
 

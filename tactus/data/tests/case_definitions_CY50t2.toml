@@ -407,10 +407,10 @@
 [cases.cy50t2_harmonie_arome_slaf.modifs.system]
   case_suffix = "_slaf"
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy50t2_harmonie_arome/climate/@DOMAIN@"
+  mirror_suite = true
 
 [cases.cy50t2_harmonie_arome_slaf.modifs.suite_control]
   create_static_data = false
-  mirror_suite = true
 
 [cases.cy50t2_harmonie_arome_eps]
   base = "cy50t2_harmonie_arome"
