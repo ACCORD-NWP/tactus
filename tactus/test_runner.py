@@ -298,7 +298,8 @@ class TestCases:
         cases = flatten_list(self._build_levels())
         for case in cases:
             config_name = config_names["config_names"][case]
-            config_file = f"{self.test_dir}/{config_name}.toml"
+            prefix_file = f"{self.test_dir}/{config_name}"
+            config_file = f"{prefix_file}.toml"
             if self.mode == "task":
                 cmds = [
                     [
@@ -315,7 +316,7 @@ class TestCases:
                     for task in self.cases[case]["tasks"]
                 ]
             else:
-                suite_file = f"{self.test_dir}/{config_name}.def"
+                suite_file = f"{prefix_file}.def"
                 cmds = [
                     [
                         "start",
