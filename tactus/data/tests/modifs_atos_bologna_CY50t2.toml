@@ -35,15 +35,6 @@
 [modifs.reference_checker.methods.E923Files]
   binary = "@BINDIR_GL@/xtool_DP"
 
-[modifs.remove.main.climdir]
-  path = "@CLIMDIR@"
-
-[modifs.remove.main.intp_bddir]
-  path = "@INTP_BDDIR@"
-
-[modifs.remove.main.intp_bddir_sfx]
-  path = "@INTP_BDDIR_SFX@"
-
 [modifs.scheduler.ecfvars]
   case_prefix = "@TAG@_@SUBTAG@"
   ecf_files = "@PERM@/tactus_ecflow/ecf_files"
