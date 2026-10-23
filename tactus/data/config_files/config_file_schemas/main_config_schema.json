@@ -154,6 +154,11 @@
           "type": "boolean",
           "description": "Value of TFP_Q%LLGP in domain namelist for c903. True for gridpoint humidity."
         },
+        "fix_snow_layer": {
+          "type": "boolean",
+          "description": "Whether to fix snow layer in marsprep",
+          "default": true
+        },
         "lam": {
           "title": "LAM related boundary settings",
           "description": "LAM related boundary settings",
