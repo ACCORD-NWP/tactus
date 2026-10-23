@@ -158,3 +158,71 @@ Edit the configuration file : `tactus/data/config_files/include/scheduler/ecflow
 [scheduler.ecfvars.troika]
   config_file = "@ECF_TACTUS_HOME@/data/config_files/troika.yml"
 ```
+
+
+## RHEL9PC, a "vanilla" RHEL9 PC
+
+The `rhel9pc` platform definitions are based on an installtion of a vanilla-falvoured RHEL9 PC. In the following it's described how to install tactus to run the simple test suite with ecflow ...
+
+### Before installing Tactus
+
+Below are instructions on how to install a recent version of ecFlow with Python 3.11:
+```bash
+# RHEL9 has multiple Python versions and 3.11 is not default
+sudo dnf install python3.11 python3.11-devel
+# Install pybind11 needed for ecFlow Python bindings
+pip-3.11 install pybind11
+# Install troiks needed for Tactus submissions
+pip-3.11 install troika
+# Fetch and install ecFlow
+mkdir ~/software
+cd ~/software
+wget https://confluence.ecmwf.int/download/attachments/8650755/ecFlow-5.19.0-Source.tar.gz?api=v2
+mv ecFlow-5.19.0-Source.tar.gz?api=v2 ecFlow-5.19.0-Source.tar.gz
+tar xvfz ecFlow-5.19.0-Source.tar.gz
+cd ecFlow-5.19.0-Source.tar
+mkdir build
+cd build
+cmake .. \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX="$HOME/.local" \
+  -DENABLE_SERVER=ON \
+  -DENABLE_PYTHON=ON \
+  -DENABLE_UI=ON \
+  -DENABLE_STATIC_BOOST_LIBS=OFF \
+  -DPython3_EXECUTABLE="$(command -v python3.11)" \
+  -Dpybind11_DIR="$(python3.11 -m pybind11 --cmakedir)"
+make -j 8
+ctest -j 8
+make install
+```
+
+### Fetch and install tactus
+
+```bash
+git clone git@github.com:ACCORD-NWP/tactus.git
+cd tactus
+# Clean eventual previous install
+curl -sSL https://install.python-poetry.org | python3 - --uninstall
+rm -rf ${HOME}/.cache/pypoetry/ ${HOME}/.local/bin/poetry ${HOME}/.local/share/pypoetry
+# Download and install poetry
+curl -sSL https://install.python-poetry.org | python3 -
+poetry install
+# Add the poetry shell command as a plugin (for poetry >= v2.0.0)
+poetry self add poetry-plugin-shell
+# I had to update some poetry pluins with:
+poetry self update
+```
+
+### Platform dependent config files
+
+* Rules for archiving: `tactus/data/config_files/include/archiving/rhel9pc.toml`
+* Platform dependent paths: `tactus/data/config_files/include/platform_paths/rhel9pc.toml`
+* ecFlow settings: `tactus/data/config_files/include/scheduler/ecflow_rhel9pc.toml`
+* Job submission rules: `tactus/data/config_files/include/submission/rhel9pc.toml`. Here all jobs are running in the background.
+
+We also have to make sure the host is recognized by adding a rule in `tactus/config/known_host.yaml`:
+```toml
+rhel9pc:
+  hostname: "met2wks\\d+"
+```
