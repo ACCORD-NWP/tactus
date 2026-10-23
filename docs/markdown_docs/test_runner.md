@@ -25,7 +25,16 @@ This uses the `[general.compile]` section of the test config:
  - Every selected case without a `host` gets the compilation case as host and `suite_control.mirror_suite = true`, so it waits for the compilation. The other cases already wait for these through their own host.
  - `modifs` are applied to all cases, pointing `bindir` and the `Forecast` binaries at the install directory of the compilation case.
 
-Use the same `--compile` flag for `-m` and `-r`, since the selection and dependencies differ with and without it.
+With `--compile`, the options `--ial-tag`, `--ial-repo` and `--compiler` work as for `tactus compile`:
+ - `--ial-tag` and `--ial-repo` set the IAL tag/branch/hash and repository cloned by the compilation case. If not given, the defaults in the config are used.
+ - `--compiler` (`intel` or `gnu`) sets `submission.compiler` for all cases, since they all run the binaries built by the compilation case. If the compiler is one of the `[general.compiler]` subtags, it becomes the only active one, so the case names match the compiler.
+
+```
+tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml --compile --ial-tag CY50T2 --compiler gnu -m -r
+```
+These options are rejected without `--compile`.
+
+Use the same `--compile` options for `-m` and `-r`, since the selection and dependencies differ with and without them.
 
 ## Check
 To list available and activated cases do

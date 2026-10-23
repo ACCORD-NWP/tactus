@@ -304,25 +304,7 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
     parser_compile.add_argument(
         "--case-name", dest="case", help="Case name", required=False, default=None
     )
-    parser_compile.add_argument(
-        "--ial-tag",
-        dest="ial_tag",
-        help="IAL git tag/branch, if not given default in config will be used",
-        required=False,
-    )
-    parser_compile.add_argument(
-        "--ial-repo",
-        dest="ial_repo",
-        help="IAL repository to use, if not given default in config will be used",
-        required=False,
-    )
-    parser_compile.add_argument(
-        "--compiler",
-        dest="compiler",
-        help="Compiler to use",
-        default="intel",
-        required=False,
-    )
+    add_ial_compile_arguments(parser_compile, default_compiler="intel")
 
     add_keep_def_file(
         parser_compile, help_message="Keep suite definition file in case of submission"
@@ -627,10 +609,12 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         action="store_true",
         dest="compile",
         help="Compile IAL first, in the case given by general.compile.case of the "
-        + "test config, and run the selected cases with its binaries",
+        + "test config, and run the selected cases with its binaries. "
+        + "Use with --ial-tag, --ial-repo and --compiler as for 'tactus compile'",
         required=False,
         default=False,
     )
+    add_ial_compile_arguments(parser_test)
 
     parser_test.set_defaults(run_command=run_test, standalone_command=True)
 
@@ -752,5 +736,38 @@ def add_expand_config(parser_object):
         action="store_true",
         default=False,
         help="Expand macros in config",
+        required=False,
+    )
+
+
+def add_ial_compile_arguments(parser_object, default_compiler=None):
+    """Add the IAL compilation arguments --ial-tag, --ial-repo and --compiler.
+
+    Shared by the "compile" and "test" commands so they accept the same options.
+
+    Args:
+        parser_object (args oject): args object to update
+        default_compiler (str, optional): Default for --compiler. None keeps the
+            compiler from the config.
+
+    """
+    parser_object.add_argument(
+        "--ial-tag",
+        dest="ial_tag",
+        help="IAL git tag/branch, if not given default in config will be used",
+        required=False,
+    )
+    parser_object.add_argument(
+        "--ial-repo",
+        dest="ial_repo",
+        help="IAL repository to use, if not given default in config will be used",
+        required=False,
+    )
+    parser_object.add_argument(
+        "--compiler",
+        dest="compiler",
+        choices=["intel", "gnu"],
+        help="Compiler to use, if not given default in config will be used",
+        default=default_compiler,
         required=False,
     )
