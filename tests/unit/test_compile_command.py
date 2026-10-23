@@ -98,6 +98,8 @@ def test_create_compile_exp_sets_ial_tag_and_forced_modifications(
 
 def test_create_compile_exp_uses_default_ial_tag_from_config(default_config, monkeypatch):
     """Check compile command uses the config default IAL tag when none is provided."""
+    config = default_config.copy(update={"compile": {"ial_git_version": "foo"}})
+
     captured = {}
 
     def fake_create_exp(args, config):
@@ -109,9 +111,9 @@ def test_create_compile_exp_uses_default_ial_tag_from_config(default_config, mon
     parser = get_args_parser()
     args = parser.parse_args(["compile"])
 
-    create_compile_exp(args, default_config)
+    create_compile_exp(args, config)
 
-    assert captured["config"]["compile.ial_git_version"] == "develop"
+    assert captured["config"]["compile.ial_git_version"] == "foo"
 
 
 def _make_bundle_build_task(bundle_dir, arch, compiler="intel"):
