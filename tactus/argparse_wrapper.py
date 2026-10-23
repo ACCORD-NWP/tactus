@@ -622,6 +622,15 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         required=False,
         default=False,
     )
+    parser_test.add_argument(
+        "--compile",
+        action="store_true",
+        dest="compile",
+        help="Compile IAL first, in the case given by general.compile.case of the "
+        + "test config, and run the selected cases with its binaries",
+        required=False,
+        default=False,
+    )
 
     parser_test.set_defaults(run_command=run_test, standalone_command=True)
 

@@ -30,6 +30,22 @@
 [general.compiler.intel]
   active = true
 
+# Used with `tactus test --compile`: cy50t2_compile is added first to the
+# selection, every selected case without a host gets it as host and mirrors
+# its suite, and all cases use the binaries it installs.
+[general.compile]
+  case = "cy50t2_compile"
+
+[general.compile.modifs.platform]
+  install_dir = "@SCRATCH@/@SYS_NAME@/@CASE_PREFIX@_@CYCLE@_compile/install"
+
+[general.compile.modifs.submission]
+  bindir = "@SCRATCH@/@SYS_NAME@/@CASE_PREFIX@_@CYCLE@_compile/install/R64/bin"
+  bindir_gl = "@SUBMISSION.BINDIR@"
+
+[general.compile.modifs.submission.task_exceptions.Forecast.binaries.MASTERODB]
+  bindir = "@SCRATCH@/@SYS_NAME@/@CASE_PREFIX@_@CYCLE@_compile/install/R64/bin"
+
 [include]
   cases = "case_definitions_CY50t2.toml"
   macros = "test_macros.toml"

@@ -15,6 +15,18 @@ Both CY49t2 and CY50t2 uses precompiled binaries on ATOS. They are identified as
  - CY50T2: `@INSTALL_DIR@/@CYCLE@/@COMPILER@/@PRECISION@/@IAL_VERSION@/bin=/perm/deployde330/github-actions/install/CY49t2/intel/R64/latest/bin`
 where latest is pointing to a directory identifying an IAL tag or hash reference. For a tagged version of Tactus `latest` is replaced with the actual reference.
 
+### Compile before testing
+To build IAL first and run the CY50t2 tests with those binaries, add `--compile`, e.g.
+```
+tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml --compile -m -r
+```
+This uses the `[general.compile]` section of the test config:
+ - `case` (here `cy50t2_compile`) is added first to the selection.
+ - Every selected case without a `host` gets the compilation case as host and `suite_control.mirror_suite = true`, so it waits for the compilation. The other cases already wait for these through their own host.
+ - `modifs` are applied to all cases, pointing `bindir` and the `Forecast` binaries at the install directory of the compilation case.
+
+Use the same `--compile` flag for `-m` and `-r`, since the selection and dependencies differ with and without it.
+
 ## Check
 To list available and activated cases do
 

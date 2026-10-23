@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow to use duration of start_date specfication in mars config. Allows to introduce start date for IFSENS. [#243](https://github.com/ACCORD-NWP/tactus/pull/243)(@uandrae)
 
 ### Changed
-- Do not compile CY50T2 for the test-runner by default. [#251](https://github.com/ACCORD-NWP/tactus/pull/251)(@uandrae)
+- Do not compile CY50T2 for the test-runner by default, use `tactus test --compile` to compile first. [#251](https://github.com/ACCORD-NWP/tactus/pull/251)(@uandrae)
 - Stricter host detection rules for env + hostname definitions. [#254](https://github.com/ACCORD-NWP/tactus/pull/254)(@uandrae)
 - Change confusing trigger warnings to debug loggings. [#239](https://github.com/ACCORD-NWP/tactus/pull/239)(@uandrae)
 - Push OmegaConf to v2.4 and resolve some deprecation warnings. Fixes issue [\#234](https://github.com/ACCORD-NWP/tactus/issues/234). [#238](https://github.com/ACCORD-NWP/tactus/pull/238)(@adeckmyn)

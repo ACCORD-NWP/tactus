@@ -69,6 +69,8 @@ class TestCases:
         self.test_dir = definitions.get("test_dir", f"ttr-configs/{self.tag}_configs")
         self.ial = definitions.get("ial", {})
         self.gl = definitions.get("gl", {})
+        if getattr(args, "compile", False):
+            self.add_compilation(definitions)
         self.selection = self.resolve_selection(definitions)
         self.assigned = {}
         self.generate_refs = args.generate_refs if args.generate_refs else False
@@ -100,6 +102,51 @@ class TestCases:
 
         if self.tag[0].isdigit():
             raise ValueError(f"The tag cannot start with an integer. tag={self.tag}")
+
+    def add_compilation(self, definitions):
+        """Run the compilation case first and make the selected cases use it.
+
+        Reads general.compile from the test config:
+
+        * case: name of the compilation case, added first to the selection
+        * modifs: modifications applied to all cases, e.g. bindir pointing
+          to the install directory of the compilation case
+
+        Every selected case without a host gets the compilation case as host
+        and mirrors its suite, so it waits for the compilation to finish.
+        Cases that already have a host depend on it through that host.
+
+        Must be called before resolve_selection, so that compiler subtags are
+        applied to the new host dependencies as well.
+
+        Arguments:
+            definitions (dict): Configuration, updated in place
+
+        Raises:
+            ValueError: If the compilation case is not configured or not defined
+        """
+        settings = definitions["general"].get("compile", {})
+        compile_case = settings.get("case")
+        if compile_case is None:
+            raise ValueError("--compile requires general.compile.case in the test config")
+        if compile_case not in self.cases:
+            raise ValueError(f"Compilation case {compile_case} is not a defined case")
+
+        selection = definitions["general"].get("selection") or list(self.cases)
+        selection = [case for case in selection if case != compile_case]
+
+        for case in selection:
+            item = self.cases[case]
+            if "host" in item:
+                continue
+            logger.info("Make {} depend on {}", case, compile_case)
+            item["host"] = compile_case
+            modifs = item.setdefault("modifs", {})
+            modifs.setdefault("suite_control", {})["mirror_suite"] = True
+
+        definitions["general"]["selection"] = [compile_case, *selection]
+        self.modifs = merge_dicts(self.modifs, settings.get("modifs", {}), True)
+        logger.info("Compile in {} before running the selected cases", compile_case)
 
     def resolve_selection(self, definitions):
         """Resolve the selections.
