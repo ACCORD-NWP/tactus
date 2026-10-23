@@ -272,13 +272,16 @@
 [cases.cy50t2_arome_eps.modifs.system]
   case_suffix = "_eps"
 
+[cases.cy50t2_arome_eps.modifs.general]
+  upd_sst_sic = false
+
+[cases.cy50t2_arome_eps.modifs.general.times]
+  start = "-P2D"
+
 [cases.cy50t2_arome_eps.modifs.suite_control]
   do_addcalculatedfields = false
   do_extractsqlite = false
   do_mergesqlite = false
-
-[cases.cy50t2_arome_eps.modifs.general.times]
-  start = "-P2D"
 
 [cases.cy50t2_arome_slaf]
   base = "cy50t2_arome"
@@ -428,13 +431,16 @@
 [cases.cy50t2_harmonie_arome_eps.modifs.system]
   case_suffix = "_eps"
 
+[cases.cy50t2_harmonie_arome_eps.modifs.general]
+  upd_sst_sic = false
+
+[cases.cy50t2_harmonie_arome_eps.modifs.general.times]
+  start = "-P2D"
+
 [cases.cy50t2_harmonie_arome_eps.modifs.suite_control]
   do_addcalculatedfields = false
   do_extractsqlite = false
   do_mergesqlite = false
-
-[cases.cy50t2_harmonie_arome_eps.modifs.general.times]
-  start = "-P2D"
 
 [cases.cy50t2_harmonie_arome_eps.modifs.reference_checker]
   check = false
