@@ -31,7 +31,7 @@
   tolerance = "0"
   tool = "norms_checker"
   which = "first_and_last_spectral"
-  inverted_comparison = True
+  inverted_comparison = true
 
 [reference_checker.methods.FullPosFields]
   args_template = "-f1 {test_file} -f2 {reference_file} {file_format} -s -of SCREEN -de -to {tolerance}"
