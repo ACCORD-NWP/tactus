@@ -1,0 +1,12 @@
+[domain]
+  gridtype = "quadratic"
+  name = "DINI20A_1920x1620_2000m"
+  nimax = 1909
+  njmax = 1609
+  tstep = 50
+  xdx = 2000
+  xdy = 2000
+  xlat0 = 55.5
+  xlon0 = -8.0
+  xlatcen = 55.5
+  xloncen = -2.0

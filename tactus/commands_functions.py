@@ -19,7 +19,7 @@ from . import GeneralConstants
 from .cleaning import CleanTactus
 from .config_parser import BasicConfig, ConfigParserDefaults, ConfigPaths, ParsedConfig
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
-from .eps.eps_setup import EPSConfig
+from .eps.eps_setup import EPSConfig, get_member_config
 from .experiment import case_setup
 from .general_utils import sanitize_case_name
 from .host_actions import TactusHost, set_tactus_home
@@ -165,17 +165,18 @@ def create_compile_exp(args, config):
         config (ParsedConfig): Parsed config file contents.
 
     """
-    if args.ial_tag is not None:
-        platform = Platform(config)
-        ial_tag_case = sanitize_case_name(platform.substitute(args.ial_tag))
-        config = config.copy(
-            update={
-                "compile": {
-                    "ial_git_version": args.ial_tag,
-                    "ial_git_tag_case": ial_tag_case,
-                },
-            }
-        )
+    if args.ial_tag is None:
+        args.ial_tag = config["compile.ial_git_version"]
+    platform = Platform(config)
+    ial_tag_case = sanitize_case_name(platform.substitute(args.ial_tag))
+    config = config.copy(
+        update={
+            "compile": {
+                "ial_git_version": args.ial_tag,
+                "ial_git_tag_case": ial_tag_case,
+            },
+        }
+    )
     if args.ial_repo is not None:
         config = config.copy(update={"compile": {"ial_git_repo": args.ial_repo}})
 
@@ -429,7 +430,11 @@ def show_host(args, config):
 
     """
     tactus_host = TactusHost()
-    logger.info("Current host: {}", tactus_host.detect_tactus_host())
+    logger.info(
+        "Current host: {}, hostname: {}",
+        tactus_host.detect_tactus_host(),
+        tactus_host.hostname,
+    )
     logger.info("Known hosts (host, recognition method):")
     for host, pattern in tactus_host.known_hosts.items():
         logger.info("{:>16}   {}", host, pattern)
@@ -550,8 +555,11 @@ def show_namelist(args, config):
     config = config.copy(update={"platform": {"tactus_home": tactus_home}})
     config = config.copy(update=set_times(config))
     config = config.copy(update=derived_variables(config))
+    config = get_member_config(config, member=args.member)
 
-    nlgen = NamelistGenerator(config, args.namelist_type, substitute=args.substitute)
+    nlgen = NamelistGenerator(
+        config, args.namelist_type, substitute=args.substitute, abort_gracefully=True
+    )
     nlgen.load(args.namelist)
 
     if "forecast" in args.namelist and args.namelist_type == "master":
@@ -560,7 +568,9 @@ def show_namelist(args, config):
     if args.namelist_name is not None:
         namelist_name = args.namelist_name
     else:
-        namelist_name = f"namelist_{args.namelist_type}_{args.namelist}"
+        namelist_name = (
+            f"namelist_{args.namelist_type}_{args.namelist}.mbr{args.member:03d}"
+        )
     nlgen.write_namelist(nlres, namelist_name)
     logger.info("Printing namelist in use to file {}", namelist_name)
 
