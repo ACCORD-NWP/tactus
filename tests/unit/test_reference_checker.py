@@ -118,6 +118,21 @@ class TestReferenceChecker:
                     "file_format": "GRIB",
                     "tolerance": 10,
                 },
+                "xtool_method_with_invert": {
+                    "tool": "xtool",
+                    "binary": "/path/to/xtool",
+                    "args_template": "-test",
+                    "file_format": "GRIB",
+                    "tolerance": 10,
+                    "invert_comparison": True,
+                },
+                "namelist_method_with_invert": {
+                    "tool": "namelist_checker",
+                    "invert_comparison": True,
+                    "ignore_case": True,
+                    "ignore_blank_lines": True,
+                    "ignore_whitespace": True,
+                },
                 "unknown_method": {
                     "tool": "unknown_tool",
                 },
@@ -131,6 +146,16 @@ class TestReferenceChecker:
         checker = ReferenceChecker.create_reference_checker("unknown_method", config)
         assert checker is None
         mock_logger.warning.assert_called_once()
+        with pytest.raises(NotImplementedError):
+            checker = ReferenceChecker.create_reference_checker(
+                "xtool_method_with_invert", config
+            )
+        assert checker is None
+        with pytest.raises(NotImplementedError):
+            checker = ReferenceChecker.create_reference_checker(
+                "namelist_method_with_invert", config
+            )
+        assert checker is None
 
 
 class TestNamelistChecker:
