@@ -195,7 +195,7 @@ class NormsChecker(ReferenceChecker):
            which: first_and_last_spectral or all (from arpifs_listing)
            tolerance: integer giving the worstdigit
            mode: get_worst or get_worst_by_step (from arpifs_listings)
-           invert_comparison: Inverts the logics
+           invert_comparison: Inverts the logics. E.g. used to check SPP functionality
         """
         ReferenceChecker.__init__(self, tool="norms_checker")
         self.which = which
@@ -211,7 +211,7 @@ class NormsChecker(ReferenceChecker):
         )
 
     def _failure_message(self, worstdigit, comp_string):
-        """Return failure message with correct comparision."""
+        """Return failure message with correct comparison."""
         return (
             f"FAILURE - Worst digit is {worstdigit} {comp_string} tol = {self.tolerance}"
         )
@@ -263,16 +263,15 @@ class NormsChecker(ReferenceChecker):
                     onlymaxdiff=onlymaxdiff,
                     out=out,
                 )
-                if worstdigit <= self.tolerance:
-                    if self.invert:
-                        results.append(self._failure_message(worstdigit, "<="))
-                    else:
-                        results.append(self._success_message(worstdigit, "<="))
+                under_tolerance = worstdigit <= self.tolerance
+                exceed_tolerance = !under_tolerance
+                success = exceed_tolerance if self.invert else under_tolerance
 
-                elif self.invert:
-                    results.append(self._success_message(worstdigit, ">"))
+                comparison_operator = '>' if under_tolerance else '>'
+                if success:
+                    results.append(self._success_message(worstdigit,comparison_operator))
                 else:
-                    results.append(self._failure_message(worstdigit, ">"))
+                    results.append(self._failure_message(worstdigit,comparison_operator))
 
             result = "\n".join(results)
             out.write(result)

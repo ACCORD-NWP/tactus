@@ -81,6 +81,11 @@
           "type": "string",
           "description": "Which value to use for comparison",
           "default": "first_and_last_spectral"
+        },
+        "inverted_comparison": {
+          "type": "bool",
+          "description": "Inverts the comparsion. I.e. success for differences larger than the tolerance.",
+          "default": false
         }
       }
     },
