@@ -1,0 +1,12 @@
+[domain]
+  gridtype = "linear"
+  name = "IRELAND150_50x50_15000m"
+  nimax = 39
+  njmax = 39
+  tstep = 300
+  xdx = 15000
+  xdy = 15000
+  xlat0 = 53.5
+  xlon0 = 0.0
+  xlatcen = 53.5
+  xloncen = -8.5

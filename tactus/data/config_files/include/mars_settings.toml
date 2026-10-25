@@ -118,7 +118,7 @@
   SH = "152/138/155/130"
   SHZ = "129.128"
   SHZ_type = "AN"
-  start_date = "1900-01-01T00:00:00Z"
+  start_date = "-P14D"
   start_snow_date = "2023-06-27T00:00:00Z"
   stream = "ENFO"
   stream_control = "OPER"

@@ -11,9 +11,6 @@
     "suite_control": {
       "$ref": "#/definitions/suite_control"
     },
-    "clean_old_data": {
-      "$ref": "#/definitions/clean_old_data"
-    },
     "system": {
       "$ref": "#/definitions/system"
     },
@@ -287,45 +284,6 @@
         }
       }
     },
-    "clean_old_data": {
-      "title": "Cleaning old data",
-      "decription": "Option for cleaning old data",
-      "type": "object",
-      "properties": {
-        "cases_period": {
-          "description": "Age for old cases in days",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
-          "default": "P7D"
-        },
-        "ignore": {
-          "decription": "File not to remove",
-          "type": "array",
-          "default": []
-        },
-        "scratch_ext": {
-          "decription": "Extention of scratch for operational user.",
-          "type": "string",
-          "default": "tactus"
-        },
-        "force_delete_period": {
-          "decription": "ISO-8601 duration string used to determine the fallback age of a suite for deletion if its files are missing. Defaults to approximately one year ('P365D').",
-          "type": "string",
-          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$",
-          "default": "P365D"
-        },
-        "dw_case_prefixes": {
-          "decription": "List of prefixes of the daily runs",
-          "type": "array",
-          "default": [
-            "AUTOMATED_RUN",
-            "HARMONIE_AROME",
-            "AROME",
-            "ALARO"
-          ]
-        }
-      }
-    },
     "perturbations": {
       "title": "Perturbation Section",
       "description": "Settings for control of perturbations.",
@@ -339,6 +297,11 @@
               "title": "Activate pertana perturbations",
               "type": "boolean",
               "default": false
+            },
+            "z_mult": {
+              "title": "Perturbation scaling",
+              "type": "number",
+              "default": 0.25
             }
           }
         },
@@ -360,6 +323,11 @@
       "description": "Settings for control of Pgd selection.",
       "type": "object",
       "properties": {
+        "ecoclimap_sg": {
+          "description": "Switch for ecoclimap 2nd gen",
+          "default": true,
+          "type": "boolean"
+        },
         "npatch": {
           "title": "Number of patches for surfex variables",
           "type": "integer",
@@ -525,6 +493,11 @@
           "type": "boolean",
           "default": false
         },
+        "do_assimilation": {
+          "description": "Activate the data assimilation chain (CANARI surface OI + 3D-Var) between FirstGuess and Forecast.",
+          "type": "boolean",
+          "default": false
+        },
         "mirror_globalDT": {
           "description": "Mirror globalDT suite (true) and trigger if globalDT is available",
           "type": "boolean",
@@ -678,7 +651,7 @@
       }
     },
     "compile": {
-      "title": "Compilation configuration",
+      "title": "IAL compilation configuration",
       "type": "object",
       "properties": {
         "ial_dir": {
@@ -691,6 +664,11 @@
           "description": "Git repo for IAL source",
           "default": "git@github.com:ACCORD-NWP/IAL"
         },
+        "ial_git_version": {
+          "type": "string",
+          "description": "Git version for IAL source (branch/tag/commit hash)",
+          "default": "develop"
+        },
         "git_token": {
           "type": "string",
           "description": "Git token for IAL source access",
@@ -701,15 +679,10 @@
           "description": "Placeholder for parsed branch name",
           "default": ""
         },
-        "ial_git_branch": {
+        "arch_dir": {
           "type": "string",
-          "description": "Branch/tag",
-          "default": "develop"
-        },
-        "arch": {
-          "type": "string",
-          "description": "Compiler configuration",
-          "default": "source/ial-source/bundle/arch/ecmwf/hpc2020"
+          "description": "Directory where arch files can be found",
+          "default": "@CASEDIR@/IAL/bundle/arch"
         },
         "dir": {
           "type": "string",
@@ -746,15 +719,10 @@
           "description": "whether to clean build folder before compilation",
           "default": false
         },
-        "cache": {
+        "install": {
           "type": "boolean",
-          "description": "whether to use chache build/install folders",
+          "description": "whether to install in @INSTALL_DIR@",
           "default": false
-        },
-        "cache_dir": {
-          "type": "string",
-          "description": "whether to use chache build/install folders",
-          "default": "@REFERENCE_DATA@/bundle_cache"
         },
         "forecast_only": {
           "type": "boolean",
@@ -1096,6 +1064,11 @@
           "items": {
             "type": "integer"
           }
+        },
+        "ecrad": {
+          "description": "ECRAD switch",
+          "type": "boolean",
+          "default": false
         },
         "surfex": {
           "description": "SURFEX switch",

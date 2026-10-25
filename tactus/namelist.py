@@ -6,6 +6,7 @@ import copy
 import os
 import re
 import subprocess
+import sys
 from collections import OrderedDict
 from pathlib import Path
 
@@ -333,7 +334,7 @@ class NamelistComparator:
 class NamelistGenerator:
     """Fortran namelist generator based on hierarchical merging of (yaml) dicts."""
 
-    def __init__(self, config, kind, substitute=True):
+    def __init__(self, config, kind, substitute=True, abort_gracefully=False):
         """Construct the generator.
 
         Args:
@@ -344,6 +345,7 @@ class NamelistGenerator:
                 ``<cycle>/<kind>_namelists.yml`` must exist under the
                 namelist generation input path.
             substitute (boolean): flag for substitution
+            abort_gracefully (boolean): flag for exception handling
 
         """
         self.config = config
@@ -356,6 +358,7 @@ class NamelistGenerator:
         self.nlfile = _resolve_namelist_path(f"{self.cycle}/{kind}_namelists.yml")
         self.domain_name = self.config["domain.name"]
         self.accept_static_namelist = self.config["general.accept_static_namelists"]
+        self.abort_gracefully = abort_gracefully
 
     def uppercase_keys(self, d):
         """Convert the keys in a dict to uppercase.
@@ -511,16 +514,16 @@ class NamelistGenerator:
         self.target = target
         # define OmegaConf resolvers
         OmegaConf.clear_resolvers()
-        OmegaConf.register_new_resolver(
+        OmegaConf.register_resolver(
             "vsigqsat_by_gridsize",
             lambda arg1, arg2: self.fn_vsigqsat_by_gridsize(arg1, arg2),
         )
-        OmegaConf.register_new_resolver("stepfreq", lambda arg: self.fn_stepfreq(arg))
-        OmegaConf.register_new_resolver("steplist", lambda arg: self.fn_steplist(arg))
-        OmegaConf.register_new_resolver(
+        OmegaConf.register_resolver("stepfreq", lambda arg: self.fn_stepfreq(arg))
+        OmegaConf.register_resolver("steplist", lambda arg: self.fn_steplist(arg))
+        OmegaConf.register_resolver(
             "cfg", lambda arg, default=None: self.fn_config(arg, default)
         )
-        OmegaConf.register_new_resolver("timestep", lambda arg: self.fn_tstep(arg))
+        OmegaConf.register_resolver("timestep", lambda arg: self.fn_tstep(arg))
 
         # Use static namelist if given
         use_yaml = True
@@ -557,7 +560,7 @@ class NamelistGenerator:
 
         # Check target is valid
         if target not in cndict:
-            logger.warning(
+            logger.error(
                 "Could not find target namelist '{}' in {}", target, str(self.cnfile)
             )
             msg = "Available namelist targets:"
@@ -565,7 +568,10 @@ class NamelistGenerator:
                 if not re.match(r"_.+", key):
                     msg += " " + key + ","
             logger.warning(msg[:-1])
-            raise InvalidNamelistTargetError(target)
+            if self.abort_gracefully:
+                sys.exit()
+            else:
+                raise InvalidNamelistTargetError(target)
 
         self.nldict = nldict
         self.cndict = cndict

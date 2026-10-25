@@ -316,6 +316,14 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         help="IAL repository to use, if not given default in config will be used",
         required=False,
     )
+    parser_compile.add_argument(
+        "--compiler",
+        dest="compiler",
+        help="Compiler to use",
+        default="intel",
+        required=False,
+    )
+
     add_keep_def_file(
         parser_compile, help_message="Keep suite definition file in case of submission"
     )
@@ -676,6 +684,15 @@ def add_namelist_args(parser_object):
         dest="namelist_name",
         help="Optional namelist name",
         default=None,
+    )
+    parser_object.add_argument(
+        "--member",
+        "-m",
+        type=int,
+        dest="member",
+        help="Optional member",
+        default=0,
+        required=False,
     )
     parser_object.add_argument(
         "--substitute",

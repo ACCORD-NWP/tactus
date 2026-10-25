@@ -1,5 +1,5 @@
 [refchecks.platform]
-  reference_tag = "v1.3.0"
+  reference_tag = "v1.4.0"
   references_folder = "@REFCHECK_ROOT@/@REFERENCE_TAG@"
   references_generation_folder = "N/A"
 
@@ -27,6 +27,14 @@
     "Prep.namelist",
   ]
   suppress_exception = false
+
+[refchecks.reference_checker.task.PertAna.fafiles]
+  inpath = "@ARCHIVE@"
+  method = "HistoryFields"
+  pattern = "PERTANA.*"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/perturbations"
 
 [refchecks.reference_checker.task.PgdUpdate.fafiles]
   inpath = "@CLIMDIR@"
@@ -162,3 +170,11 @@
   generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@/namelists/E927_3-3"
   reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@/namelists/E927_3-3"
   result_folder = "@WRK@/checks/initial_files"
+
+[refchecks.reference_checker.task.PertSurf.fafiles]
+  inpath = "@ARCHIVE@"
+  method = "HistoryFields"
+  pattern = "PERTSURF.*"
+  generate_folder = "@REFERENCES_GENERATION_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  reference_folder = "@REFERENCES_FOLDER@/@REF_CASE@/@ARCHIVE_TIMESTAMP@/@MEMBER_STR@"
+  result_folder = "@WRK@/checks/perturbations"

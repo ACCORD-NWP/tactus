@@ -26,6 +26,24 @@
   remote_host = "ecflow-gen-snh02-001"
   remote_path = "/mirror_globalDT_iekm/pabv/iekm/fc/main/fcgroup/00/model"
 
+[modifs.reference_checker.methods.FullPosFields]
+  binary = "@BINDIR_GL@/xtool_DP"
+
+[modifs.reference_checker.methods.HistoryFields]
+  binary = "@BINDIR_GL@/xtool_DP"
+
+[modifs.reference_checker.methods.E923Files]
+  binary = "@BINDIR_GL@/xtool_DP"
+
+[modifs.remove.main.climdir]
+  path = "@CLIMDIR@"
+
+[modifs.remove.main.intp_bddir]
+  path = "@INTP_BDDIR@"
+
+[modifs.remove.main.intp_bddir_sfx]
+  path = "@INTP_BDDIR_SFX@"
+
 [modifs.scheduler.ecfvars]
   case_prefix = "@TAG@_@SUBTAG@"
   ecf_files = "@PERM@/tactus_ecflow/ecf_files"
@@ -39,12 +57,8 @@
   remote_path = "/@HOST_CASE@/PostMortem"
 
 [modifs.submission]
-  bindir = "@SCRATCH@/@SYS_NAME@/@CASE_PREFIX@@CYCLE@_compile/install/R64/bin"
-  bindir_gl = "@SUBMISSION.BINDIR@"
   max_ecf_tasks = 5
-
-[modifs.submission.task_exceptions.Forecast]
-  bindir = "@SUBMISSION.BINDIR@"
+  precision = "R64"
 
 [modifs.submission.task_exceptions.Marsprep.BATCH]
   WALLTIME = "#SBATCH --time=12:00:00"
