@@ -387,12 +387,14 @@ class TestCases:
         cases = flatten_list(self._build_levels())
         for case in cases:
             config_name = config_names["config_names"][case]
+            prefix_file = f"{self.test_dir}/{config_name}"
+            config_file = f"{prefix_file}.toml"
             if self.mode == "task":
                 cmds = [
                     [
                         "run",
                         "--config-file",
-                        f"{self.test_dir}/{config_name}.toml",
+                        config_file,
                         "--task",
                         task,
                         "--job",
@@ -403,15 +405,15 @@ class TestCases:
                     for task in self.cases[case]["tasks"]
                 ]
             else:
-                suitefile = f"{self.test_dir}/{config_name}.def"
+                suite_file = f"{prefix_file}.def"
                 cmds = [
                     [
                         "start",
                         "suite",
                         "--config-file",
-                        f"{self.test_dir}/{config_name}.toml",
+                        config_file,
                         "-f",
-                        suitefile,
+                        suite_file,
                         "-k",
                     ],
                 ]
@@ -424,7 +426,9 @@ class TestCases:
                             "remove",
                             "-f",
                             "--execute-removal",
-                            f"{self.test_dir}/{config_name}.toml",
+                            "--config-file",
+                            config_file,
+                            config_file,
                         ],
                     )
 
@@ -433,8 +437,8 @@ class TestCases:
                 logger.info("Use cmd:\n\n{}\n\n", cmd_txt)
 
                 if not self.dry:
-                    if self.mode != "task" and os.path.exists(suitefile):
-                        os.remove(suitefile)
+                    if self.mode != "task" and os.path.exists(suite_file):
+                        os.remove(suite_file)
                     tactus_main(cmd)
 
     def get_binaries(self):
