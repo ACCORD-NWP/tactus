@@ -143,12 +143,15 @@ class TestCases:
         Raises:
             ValueError: If the compilation case is not configured or not defined
         """
-        settings = definitions["general"].get("compile", {})
-        compile_case = settings.get("case")
-        if compile_case is None:
-            raise ValueError("--compile requires general.compile.case in the test config")
-        if compile_case not in self.cases:
-            raise ValueError(f"Compilation case {compile_case} is not a defined case")
+        cases = list(self.cases)
+        compile_cases = [x for x in cases if "compile" in x]
+
+        if len(compile_cases) == 0:
+            raise ValueError(f"Found no compile cases in {cases}")
+        if len(compile_cases) > 1:
+            raise ValueError(f"Found more than one compile cases: {compile_cases}")
+
+        compile_case = compile_cases[0]
 
         selection = definitions["general"].get("selection") or list(self.cases)
         selection = [case for case in selection if case != compile_case]
@@ -163,7 +166,6 @@ class TestCases:
             modifs.setdefault("suite_control", {})["mirror_suite"] = True
 
         definitions["general"]["selection"] = [compile_case, *selection]
-        self.modifs = merge_dicts(self.modifs, settings.get("modifs", {}), True)
 
         # What to clone only matters for the compilation case
         ial_modifs = ial_compile_modifs(ial_tag=ial_tag, ial_repo=ial_repo)

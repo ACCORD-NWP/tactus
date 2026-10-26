@@ -605,7 +605,8 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         default=False,
     )
     parser_test.add_argument(
-        "--compile",
+        "--build",
+        "-b",
         action="store_true",
         dest="compile",
         help="Compile IAL first, in the case given by general.compile.case of the "
