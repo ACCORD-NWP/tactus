@@ -622,7 +622,7 @@ class MarsprepFamily(EcflowSuiteFamily):
         marstype_list=("all"),
         variables=None,
         marsprep_trigger_nodes=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
         add_var_trigger=None,
         remote_path=None,
     ):
@@ -631,7 +631,7 @@ class MarsprepFamily(EcflowSuiteFamily):
             "Marsprep",
             parent,
             ecf_files,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
             trigger=marsprep_trigger_nodes,
             add_var_trigger=add_var_trigger,
             remote_path=remote_path,
@@ -647,7 +647,7 @@ class MarsprepFamily(EcflowSuiteFamily):
                 f"Marsprep_{marstype}",
                 self,
                 ecf_files,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
                 remote_path=remote_path,
             )
             if marstype in latlon_deps:
@@ -663,7 +663,7 @@ class MarsprepFamily(EcflowSuiteFamily):
                 ecf_files,
                 input_template=input_template,
                 trigger=latlon_triggers if marstype == "latlon" else None,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
                 add_var_trigger=add_var_trigger,
                 variables=variables,
                 remote_path=remote_path,
@@ -1431,7 +1431,7 @@ class ForecastFamily(EcflowSuiteFamily):
                 ecf_files,
                 input_template=input_template,
                 trigger=fdb_sqlite_trigger,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
 
         databridge_sel = config.get("archiving.DataBridge.fdb", {})
@@ -1939,42 +1939,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
             input_template: ecFlow job template.
             ecf_files: Local ecf script path prefix.
             member_cycle_families: The cycle families of all members.
-            ecf_files_remotely: Remote ecf script path prefix.
-        """
-
-            self.add_time_family_nodes(
-                time_family,
-                config,
-                task_settings,
-                input_template,
-                ecf_files,
-                member_cycle_families,
-                ecf_files_remotely=ecf_files_remotely,
-            )
-
-    def add_time_family_nodes(
-        self,
-        time_family,
-        config,
-        task_settings: TaskSettings,
-        input_template,
-        ecf_files,
-        member_cycle_families: List[EcflowSuiteFamily],
-        ecf_files_remotely=None,
-    ):
-        """Add extra nodes to the time family of each cycle.
-
-        Called once per cycle after all member families have been created.
-        Does nothing by default; override in a subclass to add nodes.
-
-        Args:
-            time_family: The time family of the current cycle.
-            config: Experiment config.
-            task_settings: Submission configuration.
-            input_template: ecFlow job template.
-            ecf_files: Local ecf script path prefix.
-            member_cycle_families: The cycle families of all members.
-            ecf_files_remotely: Remote ecf script path prefix.
+            ecf_remote_files: Remote ecf script path prefix.
         """
 
     @property

@@ -79,7 +79,7 @@ class TactusSuiteDefinition(SuiteDefinition):
                 self.task_settings,
                 input_template,
                 self.ecf_files,
-                ecf_files_remotely=self.ecf_remote_files,
+                ecf_remote_files=self.ecf_remote_files,
             )
             mirror = EcflowSuiteTriggers([EcflowSuiteTrigger(_mirror)])
             mirror.trigger_string = (
