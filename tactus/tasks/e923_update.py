@@ -22,12 +22,9 @@ class E923Update(Task):
             config (ParsedConfig): Configuration
         """
         Task.__init__(self, config, __class__.__name__)
-        self.months = [
-            f"{mm:02d}"
-            for mm in get_month_list(
-                config["general.times.start"], config["general.times.end"], extend=True
-            )
-        ]
+        start = config["general.times.start"]
+        end = config.get("general.times.end", start)
+        self.months = [f"{mm:02d}" for mm in get_month_list(start, end, extend=True)]
 
         self.climdir = self.platform.get_system_value("climdir")
         self.intp_bddir_sfx = self.config["system.intp_bddir_sfx"]

@@ -432,7 +432,7 @@ class StaticDataTasks:
                     task_settings,
                     input_template,
                     ecf_files,
-                    trigger=pgd_update,
+                    trigger=archive_static_member_trigger,
                     ecf_files_remotely=ecf_files_remotely,
                 )
                 archive_static_member_trigger.append(e923update)
@@ -630,6 +630,7 @@ class MarsprepFamily(EcflowSuiteFamily):
         add_var_trigger=None,
         remote_path=None,
         forecast_range=None,
+        members=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -659,6 +660,8 @@ class MarsprepFamily(EcflowSuiteFamily):
             args = _args + f";type={marstype}"
             if forecast_range is not None:
                 args += f";forecast_range={forecast_range}"
+            if members is not None:
+                args += f";members={':'.join([str(x) for x in members])}"
             variables = {"ARGS": args}
 
             EcflowSuiteTask(
@@ -692,7 +695,6 @@ class InputDataFamily(EcflowSuiteFamily):
         add_var_trigger=None,
         remote_path=None,
         member=0,
-        forecast_range=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -735,7 +737,6 @@ class InputDataFamily(EcflowSuiteFamily):
                 ecf_files_remotely=ecf_files_remotely,
                 add_var_trigger=add_var_trigger,
                 remote_path=remote_path,
-                forecast_range=forecast_range,
             )
             # For SLAF (Scaled Lagged Average Forecasting),
             #   we call Marsprep 2 more times with altered bdshift
@@ -798,23 +799,25 @@ class E923UpdateFamily(EcflowSuiteFamily):
                     NotImplementedError(f"This is not yet implemented for {flag} = True")
                 )
 
-        input_data = InputDataFamily(
+        input_data = MarsprepFamily(
             self,
             config,
             task_settings,
             input_template,
             ecf_files,
-            trigger=trigger,
+            marstype_list=["GG", "SH", "latlon"],
             ecf_files_remotely=ecf_files_remotely,
             forecast_range="PT0H",
+            members=[0],
         )
 
-        prep_fam = PrepFamily(
+        prep_task = EcflowSuiteTask(
+            "Prep",
             self,
             config,
             task_settings,
-            input_template,
             ecf_files,
+            input_template=input_template,
             trigger=input_data,
             ecf_files_remotely=ecf_files_remotely,
         )
@@ -825,7 +828,7 @@ class E923UpdateFamily(EcflowSuiteFamily):
             config,
             task_settings,
             ecf_files,
-            trigger=prep_fam,
+            trigger=prep_task,
             input_template=input_template,
             ecf_files_remotely=ecf_files_remotely,
         )
@@ -1282,7 +1285,6 @@ class InterpolationFamily(EcflowSuiteFamily):
             input_template,
             ecf_files,
             cycles,
-            lbc_family_trigger=None,
             ecf_files_remotely=ecf_files_remotely,
             dry_run=dry_run,
             member=member,

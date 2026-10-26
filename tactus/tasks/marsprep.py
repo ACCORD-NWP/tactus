@@ -71,8 +71,13 @@ class Marsprep(Task):
             self.bdmember = infer_members(self.platform.substitute(bdmember_config_value))
 
         else:
+            try:
+                _members = str(config["task.args.members"])
+                members = [int(x) for x in _members.split(":")]
+            except KeyError:
+                members = self.config["eps.general.members"]
             bdmembers = set()
-            for member in self.config["eps.general.members"]:
+            for member in members:
                 member_config = get_member_config(self.config, member)
                 try:
                     member_bdmember_value = member_config["boundaries.ifs.bdmember"]
