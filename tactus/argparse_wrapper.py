@@ -593,6 +593,18 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         help="Increase verbosity",
     )
     parser_test.add_argument(
+        "--inspect",
+        "-i",
+        const=True,
+        nargs="?",
+        default=None,
+        help=(
+           "Select and display cases with failures. "
+           "To view specific cases add a (comma separated) list of names "
+           "or leave empty for all failed cases"
+           )
+    )
+    parser_test.add_argument(
         "--prepare-binaries",
         "-p",
         action="store_true",
