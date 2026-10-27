@@ -599,10 +599,10 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         nargs="?",
         default=None,
         help=(
-           "Select and display cases with failures. "
-           "To view specific cases add a (comma separated) list of names "
-           "or leave empty for all failed cases"
-           )
+            "Select and display cases with failures. "
+            "To view specific cases add a (comma separated) list of names "
+            "or leave empty for all failed cases"
+        ),
     )
     parser_test.add_argument(
         "--prepare-binaries",

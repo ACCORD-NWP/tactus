@@ -361,7 +361,7 @@ class XToolChecker(ReferenceChecker):
                 else:
                     results.append(
                         "ERROR - executing XtoolChecker\n"
-                        f"Command '{completed.cmd}' "
+                        f"Command '{cmd}' "
                         f"failed with exit code: {completed.returncode}\n"
                     )
 
@@ -755,7 +755,10 @@ class CheckSummaryAnalysis:
                         if test_type == "Create":
                             continue
                         try:
-                            if only_bad_news and "SUCCESS" in result['items'][0]['result']:
+                            if (
+                                only_bad_news
+                                and "SUCCESS" in result["items"][0]["result"]
+                            ):
                                 continue
                             label = f"{task_name}.{test_type}"
                             result_message = (
