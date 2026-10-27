@@ -42,7 +42,7 @@ class PgdInputFamily(EcflowSuiteFamily):
         input_template,
         ecf_files,
         trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -50,7 +50,7 @@ class PgdInputFamily(EcflowSuiteFamily):
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         EcflowSuiteTask(
@@ -61,7 +61,7 @@ class PgdInputFamily(EcflowSuiteFamily):
             ecf_files,
             input_template=input_template,
             variables=None,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         if config["suite_control.do_soil"]:
@@ -87,7 +87,7 @@ class E923MonthlyFamily(EcflowSuiteFamily):
         input_template,
         ecf_files,
         trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
         dry_run: bool = False,
         limit=None,
     ):
@@ -97,7 +97,7 @@ class E923MonthlyFamily(EcflowSuiteFamily):
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         seasons = {
@@ -130,7 +130,7 @@ class E923MonthlyFamily(EcflowSuiteFamily):
                 season,
                 self,
                 ecf_files,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
                 limit=limit if not dry_run else None,
             )
 
@@ -142,7 +142,7 @@ class E923MonthlyFamily(EcflowSuiteFamily):
                 ecf_files,
                 input_template=input_template,
                 variables={"ARGS": f"months={months}"},
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
 
 
@@ -158,7 +158,7 @@ class PgdNode(EcflowSuiteFamily, EcflowSuiteTask):
         input_template,
         ecf_files,
         trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
         limit=None,
     ):
         """Class initialization."""
@@ -169,7 +169,7 @@ class PgdNode(EcflowSuiteFamily, EcflowSuiteTask):
                 parent,
                 ecf_files,
                 trigger=trigger,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
             decade_dates = get_decadal_list(
                 as_datetime(config["general.times.start"]),
@@ -181,7 +181,7 @@ class PgdNode(EcflowSuiteFamily, EcflowSuiteTask):
                     f"decade_{get_decade(dec_date)}",
                     self,
                     ecf_files,
-                    ecf_files_remotely=ecf_files_remotely,
+                    ecf_remote_files=ecf_remote_files,
                     limit=limit,
                 )
 
@@ -193,7 +193,7 @@ class PgdNode(EcflowSuiteFamily, EcflowSuiteTask):
                     ecf_files,
                     input_template=input_template,
                     variables={"ARGS": f"basetime={dec_date}"},
-                    ecf_files_remotely=ecf_files_remotely,
+                    ecf_remote_files=ecf_remote_files,
                 )
 
         else:
@@ -208,7 +208,7 @@ class PgdNode(EcflowSuiteFamily, EcflowSuiteTask):
                 input_template=input_template,
                 variables={"ARGS": f"basetime={basetime}"},
                 trigger=trigger,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
 
 
@@ -223,7 +223,7 @@ class StaticDataFamily(EcflowSuiteFamily):
         input_template,
         ecf_files,
         trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
         dry_run: bool = False,
     ):
         """Class initialization."""
@@ -232,7 +232,7 @@ class StaticDataFamily(EcflowSuiteFamily):
             parent=parent,
             ecf_files=ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         if config["suite_control.member_specific_static_data"]:
@@ -243,7 +243,7 @@ class StaticDataFamily(EcflowSuiteFamily):
                 task_settings=task_settings,
                 input_template=input_template,
                 ecf_files=ecf_files,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
                 dry_run=dry_run,
             )
             # Iterate through the StaticData member generator to create all member
@@ -270,7 +270,7 @@ class StaticDataFamily(EcflowSuiteFamily):
                 task_settings=task_settings,
                 input_template=input_template,
                 ecf_files=ecf_files,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
                 limit=static_data_limit,
             )
 
@@ -285,7 +285,7 @@ class StaticDataMemberGenerator:
         task_settings: TaskSettings,
         input_template,
         ecf_files,
-        ecf_files_remotely,
+        ecf_remote_files,
         dry_run,
     ):
         """Class initialization."""
@@ -294,7 +294,7 @@ class StaticDataMemberGenerator:
         self.task_settings = task_settings
         self.input_template = input_template
         self.ecf_files = ecf_files
-        self.ecf_files_remotely = ecf_files_remotely
+        self.ecf_remote_files = ecf_remote_files
         self.dry_run = dry_run
 
     def get_member_family(self, member: int):
@@ -312,7 +312,7 @@ class StaticDataMemberGenerator:
             self.parent,
             self.ecf_files,
             variables={"MEMBER": member},
-            ecf_files_remotely=self.ecf_files_remotely,
+            ecf_remote_files=self.ecf_remote_files,
         )
         static_data_limit = None
         if not self.dry_run:
@@ -329,7 +329,7 @@ class StaticDataMemberGenerator:
             self.task_settings,
             self.input_template,
             self.ecf_files,
-            ecf_files_remotely=self.ecf_files_remotely,
+            ecf_remote_files=self.ecf_remote_files,
             limit=static_data_limit,
         )
 
@@ -353,7 +353,7 @@ class StaticDataTasks:
         task_settings: TaskSettings,
         input_template,
         ecf_files,
-        ecf_files_remotely,
+        ecf_remote_files,
         limit: Optional[EcflowSuiteLimit] = None,
     ):
         """Class initialization."""
@@ -365,7 +365,7 @@ class StaticDataTasks:
                 task_settings,
                 input_template,
                 ecf_files,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
 
             pgd_node = PgdNode(
@@ -376,7 +376,7 @@ class StaticDataTasks:
                 input_template,
                 ecf_files,
                 trigger=pgd_input,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
 
         e923constant = EcflowSuiteTask(
@@ -388,7 +388,7 @@ class StaticDataTasks:
             input_template=input_template,
             variables=None,
             trigger=pgd_node,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         e923_monthly_family = E923MonthlyFamily(
@@ -398,7 +398,7 @@ class StaticDataTasks:
             input_template,
             ecf_files,
             trigger=e923constant,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
             limit=limit,
         )
 
@@ -414,7 +414,7 @@ class StaticDataTasks:
                 input_template,
                 ecf_files,
                 trigger=e923constant,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
                 limit=limit,
             )
             archive_static_member_trigger.append(pgd_update)
@@ -428,7 +428,7 @@ class StaticDataTasks:
                 input_template,
                 ecf_files,
                 trigger=pgd_update,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
                 limit=limit,
             )
             archive_static_member_trigger.append(pgd_filter_town_frac)
@@ -442,7 +442,7 @@ class StaticDataTasks:
                 ecf_files,
                 input_template,
                 trigger=None,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
             archive_static_member_trigger.append(generate_wfp_tabfile)
 
@@ -470,7 +470,7 @@ class StaticDataTasks:
                 input_template,
                 ecf_files,
                 trigger=archive_static_member_trigger,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
 
 
@@ -485,7 +485,7 @@ class MirrorFamily(EcflowSuiteFamily):
         input_template,
         ecf_files,
         trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
         cycle_valid=None,
     ):
         """Class initialization."""
@@ -494,7 +494,7 @@ class MirrorFamily(EcflowSuiteFamily):
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         platform = Platform(config)
@@ -510,7 +510,7 @@ class MirrorFamily(EcflowSuiteFamily):
                 trigger=[trigger],
                 mirror=True,
                 mirror_config=config["scheduler.mirror_globalDT"],
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
 
         if config["suite_control.mirror_host_case"]:
@@ -537,7 +537,7 @@ class MirrorFamily(EcflowSuiteFamily):
                 trigger=[trigger],
                 mirror=True,
                 mirror_config=mirror_config,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
 
         if config["suite_control.mirror_offline"]:
@@ -555,7 +555,7 @@ class MirrorFamily(EcflowSuiteFamily):
                 trigger=[trigger],
                 mirror=True,
                 mirror_config=mirror_config,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
 
 
@@ -570,7 +570,7 @@ class MirrorSuite(EcflowSuiteFamily):
         input_template,
         ecf_files,
         trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -578,7 +578,7 @@ class MirrorSuite(EcflowSuiteFamily):
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         # Resolve macros, host and port
@@ -605,7 +605,7 @@ class MirrorSuite(EcflowSuiteFamily):
             trigger=[trigger],
             mirror=True,
             mirror_config=self.mirror_suite,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
 
@@ -622,7 +622,7 @@ class MarsprepFamily(EcflowSuiteFamily):
         marstype_list=("all"),
         variables=None,
         marsprep_trigger_nodes=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
         add_var_trigger=None,
         remote_path=None,
     ):
@@ -631,7 +631,7 @@ class MarsprepFamily(EcflowSuiteFamily):
             "Marsprep",
             parent,
             ecf_files,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
             trigger=marsprep_trigger_nodes,
             add_var_trigger=add_var_trigger,
             remote_path=remote_path,
@@ -647,7 +647,7 @@ class MarsprepFamily(EcflowSuiteFamily):
                 f"Marsprep_{marstype}",
                 self,
                 ecf_files,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
                 remote_path=remote_path,
             )
             if marstype in latlon_deps:
@@ -663,7 +663,7 @@ class MarsprepFamily(EcflowSuiteFamily):
                 ecf_files,
                 input_template=input_template,
                 trigger=latlon_triggers if marstype == "latlon" else None,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
                 add_var_trigger=add_var_trigger,
                 variables=variables,
                 remote_path=remote_path,
@@ -681,7 +681,7 @@ class InputDataFamily(EcflowSuiteFamily):
         input_template,
         ecf_files,
         trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
         external_marsprep_trigger_node=None,
         add_var_trigger=None,
         remote_path=None,
@@ -693,7 +693,7 @@ class InputDataFamily(EcflowSuiteFamily):
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         prepare_cycle = EcflowSuiteTask(
@@ -725,7 +725,7 @@ class InputDataFamily(EcflowSuiteFamily):
                 ecf_files,
                 marstype_list,
                 marsprep_trigger_nodes=marsprep_trigger_nodes,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
                 add_var_trigger=add_var_trigger,
                 remote_path=remote_path,
             )
@@ -758,7 +758,7 @@ class InputDataFamily(EcflowSuiteFamily):
                         ecf_files,
                         trigger=marsprep_trigger_nodes,
                         variables={"ARGS": f"extra_bdshift={bdshift[i]}"},
-                        ecf_files_remotely=ecf_files_remotely,
+                        ecf_remote_files=ecf_remote_files,
                     )
 
 
@@ -773,7 +773,7 @@ class PrepFamily(EcflowSuiteFamily):
         input_template,
         ecf_files,
         trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -781,7 +781,7 @@ class PrepFamily(EcflowSuiteFamily):
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         bd_step_index = 0
@@ -801,7 +801,7 @@ class PrepFamily(EcflowSuiteFamily):
                 ecf_files,
                 input_template=input_template,
                 variables=variables,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
 
         EcflowSuiteTask(
@@ -812,7 +812,7 @@ class PrepFamily(EcflowSuiteFamily):
             ecf_files,
             input_template=input_template,
             trigger=split_mars_by_step_task,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
 
@@ -833,7 +833,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
         bdint: timedelta,
         lbc_time_generator: Generator[Tuple[List[int], List[datetime]], None, None],
         trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
         is_first_cycle: bool = True,
         limit: Optional[EcflowSuiteLimit] = None,
         member=0,
@@ -845,7 +845,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
         self.task_settings = task_settings
         self.input_template = input_template
         self.ecf_files = ecf_files
-        self.ecf_files_remotely = ecf_files_remotely
+        self.ecf_remote_files = ecf_remote_files
         self.is_first_cycle = is_first_cycle
         self.limit = limit
         self.bdint = bdint
@@ -907,7 +907,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
                 self.ecf_files,
                 trigger=None,
                 variables=None,
-                ecf_files_remotely=self.ecf_files_remotely,
+                ecf_remote_files=self.ecf_remote_files,
                 limit=self.limit,
             )
 
@@ -924,7 +924,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
                     self.ecf_files,
                     marstype_list,
                     variables=variables,
-                    ecf_files_remotely=self.ecf_files_remotely,
+                    ecf_remote_files=self.ecf_remote_files,
                 )
             doit = True
             task_name = interpolation_task_name
@@ -952,7 +952,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
                     input_template=self.input_template,
                     variables={"ARGS": args},
                     trigger=[trig for trig in trigger if trig is not None],
-                    ecf_files_remotely=self.ecf_files_remotely,
+                    ecf_remote_files=self.ecf_remote_files,
                 )
             if self.do_slaf:
                 addpert_args += f";doer0={doer};part0={part};me={self.member}"
@@ -971,7 +971,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
                     input_template=self.input_template,
                     variables=variables,
                     trigger=self.split_mars_by_step_fam,
-                    ecf_files_remotely=self.ecf_files_remotely,
+                    ecf_remote_files=self.ecf_remote_files,
                 )
 
             if self.do_slaf:
@@ -1009,7 +1009,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
                                 self.ecf_files,
                                 trigger=self.split_mars_by_step_fam,
                                 variables={"ARGS": args},
-                                ecf_files_remotely=self.ecf_files_remotely,
+                                ecf_remote_files=self.ecf_remote_files,
                             )
                         addpert_args += (
                             f";doer{i}={doer};part{i}={part};bdshift{i}={bdsi}"
@@ -1023,7 +1023,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
                         input_template=self.input_template,
                         variables={"ARGS": addpert_args},
                         trigger=addpert_trigger,
-                        ecf_files_remotely=self.ecf_files_remotely,
+                        ecf_remote_files=self.ecf_remote_files,
                     )
 
             yield self
@@ -1100,7 +1100,7 @@ class LBCFamily(EcflowSuiteFamily):
         cycles: Cycles,
         trigger=None,
         lbc_family_trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
         dry_run: bool = False,
         member=0,
     ):
@@ -1110,7 +1110,7 @@ class LBCFamily(EcflowSuiteFamily):
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         lbc_limit = None
@@ -1143,7 +1143,7 @@ class LBCFamily(EcflowSuiteFamily):
             bdint,
             lbc_times_generator_instance,
             trigger=lbc_family_trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
             is_first_cycle=is_first_cycle,
             limit=lbc_limit if not dry_run else None,
             member=member,
@@ -1171,7 +1171,7 @@ class InterpolationFamily(EcflowSuiteFamily):
         ecf_files,
         cycles: Cycles,
         trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
         do_prep: bool = True,
         dry_run: bool = False,
         add_var_trigger=None,
@@ -1184,7 +1184,7 @@ class InterpolationFamily(EcflowSuiteFamily):
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
             add_var_trigger=add_var_trigger,
             remote_path=remote_path,
         )
@@ -1205,7 +1205,7 @@ class InterpolationFamily(EcflowSuiteFamily):
                 task_settings,
                 input_template,
                 ecf_files,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
 
             if csc == "ALARO" and not config["general.surfex"]:
@@ -1217,7 +1217,7 @@ class InterpolationFamily(EcflowSuiteFamily):
                     ecf_files,
                     trigger=prep_fam,
                     input_template=input_template,
-                    ecf_files_remotely=ecf_files_remotely,
+                    ecf_remote_files=ecf_remote_files,
                 )
 
             if csc == "ALARO":
@@ -1234,7 +1234,7 @@ class InterpolationFamily(EcflowSuiteFamily):
             ecf_files,
             cycles,
             lbc_family_trigger=e923_update_task,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
             dry_run=dry_run,
             member=member,
         )
@@ -1257,7 +1257,7 @@ class InitializationFamily(EcflowSuiteFamily):
         input_template,
         ecf_files,
         trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -1265,7 +1265,7 @@ class InitializationFamily(EcflowSuiteFamily):
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         EcflowSuiteTask(
@@ -1275,7 +1275,7 @@ class InitializationFamily(EcflowSuiteFamily):
             task_settings,
             ecf_files,
             input_template=input_template,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
 
@@ -1293,7 +1293,7 @@ class SubTaskFamily(EcflowSuiteFamily):
         ntasks: int,
         extra_args=None,
         trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -1301,7 +1301,7 @@ class SubTaskFamily(EcflowSuiteFamily):
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         for tasknr in range(ntasks):
@@ -1309,7 +1309,7 @@ class SubTaskFamily(EcflowSuiteFamily):
                 f"Subtask_{tasknr:02}",
                 self,
                 ecf_files,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
             args = f"tasknr={tasknr};ntasks={ntasks}"
             if extra_args is not None:
@@ -1322,7 +1322,7 @@ class SubTaskFamily(EcflowSuiteFamily):
                 ecf_files,
                 input_template=input_template,
                 variables={"ARGS": args},
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
 
 
@@ -1337,7 +1337,7 @@ class ForecastFamily(EcflowSuiteFamily):
         input_template,
         ecf_files,
         trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -1345,7 +1345,7 @@ class ForecastFamily(EcflowSuiteFamily):
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         # Get the number of I/O processors
@@ -1363,7 +1363,7 @@ class ForecastFamily(EcflowSuiteFamily):
             task_settings,
             ecf_files,
             input_template=input_template,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         add_calc_fields_trigger = forecast_task
@@ -1386,7 +1386,7 @@ class ForecastFamily(EcflowSuiteFamily):
                 n_io_merge,
                 extra_args=f"nproc_io={nproc_io}",
                 trigger=iomerge_trigger,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
             add_calc_fields_trigger = io_merge
             creategrib_trigger = io_merge
@@ -1402,7 +1402,7 @@ class ForecastFamily(EcflowSuiteFamily):
                 "CreateGrib",
                 config.get("suite_control.n_creategrib", 1),
                 trigger=creategrib_trigger,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
             add_calc_fields_trigger = create_grib_family
             fdb_sqlite_trigger = create_grib_family
@@ -1417,7 +1417,7 @@ class ForecastFamily(EcflowSuiteFamily):
                 "AddCalculatedFields",
                 config.get("suite_control.n_addcalculatedfields", 1),
                 trigger=add_calc_fields_trigger,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
 
         fdb_sel = config.get("archiving.FDB.fdb", {})
@@ -1431,7 +1431,7 @@ class ForecastFamily(EcflowSuiteFamily):
                 ecf_files,
                 input_template=input_template,
                 trigger=fdb_sqlite_trigger,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
 
         databridge_sel = config.get("archiving.DataBridge.fdb", {})
@@ -1445,7 +1445,7 @@ class ForecastFamily(EcflowSuiteFamily):
                 ecf_files,
                 input_template=input_template,
                 trigger=fdb_sqlite_trigger,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
 
         if config["suite_control.do_extractsqlite"]:
@@ -1456,7 +1456,7 @@ class ForecastFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
-                trigger=fdb_sqlite_trigger,
+                ecf_remote_files=ecf_remote_files,
             )
 
 
@@ -1471,7 +1471,7 @@ class CycleFamily(EcflowSuiteFamily):
         input_template,
         ecf_files,
         trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
         interpolation_families=None,
         cycle_basetime=None,
     ):
@@ -1481,7 +1481,7 @@ class CycleFamily(EcflowSuiteFamily):
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         if (
@@ -1495,7 +1495,7 @@ class CycleFamily(EcflowSuiteFamily):
                 input_template,
                 ecf_files,
                 pertana_trigger=interpolation_families,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
         else:
             perturbation_family = trigger
@@ -1508,7 +1508,7 @@ class CycleFamily(EcflowSuiteFamily):
                 input_template,
                 ecf_files,
                 trigger=perturbation_family,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
                 cycle_basetime=cycle_basetime,
             )
             forecast_trigger = assimilation_family
@@ -1522,7 +1522,7 @@ class CycleFamily(EcflowSuiteFamily):
             input_template,
             ecf_files,
             trigger=forecast_trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
 
@@ -1538,7 +1538,7 @@ class PostCycleFamily(EcflowSuiteFamily):
         ecf_files,
         trigger=None,
         external_cycle_cleaning_trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -1546,7 +1546,7 @@ class PostCycleFamily(EcflowSuiteFamily):
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         collectlogs_triggers = []
@@ -1559,7 +1559,7 @@ class PostCycleFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
             cleaning_triggers.append(archive_hour)
             collectlogs_triggers.append(archive_hour)
@@ -1582,7 +1582,7 @@ class PostCycleFamily(EcflowSuiteFamily):
                     "TACTUS_TASK": "Cleaning",
                     "ARGS": "cleaning_type=CycleCleaning",
                 },
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
             cleaning_triggers.append(cleaning_task)
             collectlogs_triggers.append(cleaning_task)
@@ -1596,7 +1596,7 @@ class PostCycleFamily(EcflowSuiteFamily):
             input_template=input_template,
             variables=None,
             trigger=collectlogs_triggers,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
 
@@ -1612,7 +1612,7 @@ class PerturbationFamily(EcflowSuiteFamily):
         ecf_files,
         trigger=None,
         pertana_trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -1620,7 +1620,7 @@ class PerturbationFamily(EcflowSuiteFamily):
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         if config["perturbations.pertana.active"]:
@@ -1634,7 +1634,7 @@ class PerturbationFamily(EcflowSuiteFamily):
                 ecf_files,
                 input_template=input_template,
                 trigger=_pertana_trigger,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
 
         if config["perturbations.pertsurf.active"]:
@@ -1646,7 +1646,7 @@ class PerturbationFamily(EcflowSuiteFamily):
                 ecf_files,
                 input_template=input_template,
                 trigger=trigger,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
 
 
@@ -1664,7 +1664,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
         input_template,
         ecf_files,
         trigger: Optional[EcflowSuiteTask | StaticDataFamily] = None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
         do_prep: bool = True,
         dry_run: bool = False,
     ):
@@ -1687,7 +1687,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     cycle.day,
                     parent,
                     ecf_files,
-                    ecf_files_remotely=ecf_files_remotely,
+                    ecf_remote_files=ecf_remote_files,
                 )
                 unique_days.add(cycle.day)
 
@@ -1700,7 +1700,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                 day_family,
                 ecf_files,
                 variables=time_variables,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
 
             check_globaldt_date = check_offline_date = path_globaldt = path_offline = None
@@ -1723,7 +1723,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                         task_settings,
                         input_template,
                         ecf_files,
-                        ecf_files_remotely=ecf_files_remotely,
+                        ecf_remote_files=ecf_remote_files,
                         cycle_valid=cycle.validtime,
                     )
 
@@ -1784,7 +1784,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     input_template,
                     ecf_files,
                     trigger=trigger,
-                    ecf_files_remotely=ecf_files_remotely,
+                    ecf_remote_files=ecf_remote_files,
                     external_marsprep_trigger_node=external_marsprep_trigger_nodes,
                     add_var_trigger=check_globaldt_date,
                     remote_path=path_globaldt,
@@ -1801,7 +1801,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     time_family,
                     ecf_files,
                     variables={"MEMBER": member},
-                    ecf_files_remotely=ecf_files_remotely,
+                    ecf_remote_files=ecf_remote_files,
                 )
                 member_families.append(member_family)
 
@@ -1834,7 +1834,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                         input_template,
                         ecf_files,
                         trigger=mbr_trigger,
-                        ecf_files_remotely=ecf_files_remotely,
+                        ecf_remote_files=ecf_remote_files,
                         external_marsprep_trigger_node=external_marsprep_trigger_nodes,
                         member=member,
                     )
@@ -1849,7 +1849,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                         ecf_files,
                         cycles,
                         trigger=inputdata,
-                        ecf_files_remotely=ecf_files_remotely,
+                        ecf_remote_files=ecf_remote_files,
                         do_prep=do_prep,
                         dry_run=dry_run,
                         add_var_trigger=check_offline_date,
@@ -1874,7 +1874,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     input_template,
                     ecf_files,
                     trigger=ready_for_cycle,
-                    ecf_files_remotely=ecf_files_remotely,
+                    ecf_remote_files=ecf_remote_files,
                     interpolation_families=prev_interpolation_triggers,
                     cycle_basetime=cycle.basetime,
                 )
@@ -1889,7 +1889,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     ecf_files,
                     trigger=cycle_family,
                     external_cycle_cleaning_trigger=postcycle_families.get(member),
-                    ecf_files_remotely=ecf_files_remotely,
+                    ecf_remote_files=ecf_remote_files,
                 )
 
             if (
@@ -1904,7 +1904,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                     ecf_files,
                     trigger=member_families,
                     input_template=input_template,
-                    ecf_files_remotely=ecf_files_remotely,
+                    ecf_remote_files=ecf_remote_files,
                 )
 
             self.add_time_family_nodes(
@@ -1914,7 +1914,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                 input_template,
                 ecf_files,
                 member_cycle_families,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
 
     def add_time_family_nodes(
@@ -1925,7 +1925,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
         input_template,
         ecf_files,
         member_cycle_families: List[EcflowSuiteFamily],
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
     ):
         """Add extra nodes to the time family of each cycle.
 
@@ -1939,7 +1939,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
             input_template: ecFlow job template.
             ecf_files: Local ecf script path prefix.
             member_cycle_families: The cycle families of all members.
-            ecf_files_remotely: Remote ecf script path prefix.
+            ecf_remote_files: Remote ecf script path prefix.
         """
 
     @property
@@ -1973,7 +1973,7 @@ class MergeSQLitesFamily(EcflowSuiteFamily):
         ecf_files,
         trigger=None,
         input_template=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -1981,7 +1981,7 @@ class MergeSQLitesFamily(EcflowSuiteFamily):
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
         merge_sqlites = EcflowSuiteTask(
             "MergeSQLites",
@@ -1991,7 +1991,7 @@ class MergeSQLitesFamily(EcflowSuiteFamily):
             ecf_files,
             input_template=input_template,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
         if config["suite_control.do_archiving"]:
             EcflowSuiteTask(
@@ -2002,7 +2002,7 @@ class MergeSQLitesFamily(EcflowSuiteFamily):
                 ecf_files,
                 trigger=merge_sqlites,
                 input_template=input_template,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
 
 
@@ -2020,7 +2020,7 @@ class SLAFpartFamily(EcflowSuiteFamily):
         ecf_files,
         trigger=None,
         variables=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -2028,7 +2028,7 @@ class SLAFpartFamily(EcflowSuiteFamily):
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         EcflowSuiteTask(
@@ -2040,7 +2040,7 @@ class SLAFpartFamily(EcflowSuiteFamily):
             input_template=input_template,
             trigger=trigger,
             variables=variables,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
 
@@ -2055,7 +2055,7 @@ class CompilationFamily(EcflowSuiteFamily):
         ecf_files,
         trigger=None,
         input_template=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -2063,7 +2063,7 @@ class CompilationFamily(EcflowSuiteFamily):
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         clone_ial = EcflowSuiteTask(
@@ -2073,7 +2073,7 @@ class CompilationFamily(EcflowSuiteFamily):
             task_settings,
             ecf_files,
             input_template=input_template,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         create_bundle = EcflowSuiteTask(
@@ -2083,7 +2083,7 @@ class CompilationFamily(EcflowSuiteFamily):
             task_settings,
             ecf_files,
             input_template=input_template,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
             trigger=EcflowSuiteTriggers(EcflowSuiteTrigger(clone_ial)),
         )
 
@@ -2091,7 +2091,7 @@ class CompilationFamily(EcflowSuiteFamily):
             "TactusBundleBuild",
             self,
             ecf_files,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
         precision_dict = {"R64": "double"}
         if config["submission"]["precision"] == "R32":
@@ -2102,7 +2102,7 @@ class CompilationFamily(EcflowSuiteFamily):
                 precision,
                 build_familiy,
                 ecf_files,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
             EcflowSuiteTask(
                 "TactusBundleBuild",
@@ -2111,7 +2111,7 @@ class CompilationFamily(EcflowSuiteFamily):
                 task_settings,
                 ecf_files,
                 input_template=input_template,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
                 variables={
                     "ARGS": f"prec={precision}",
                     "FP_PRECISION": precision_dict[precision],
