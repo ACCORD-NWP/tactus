@@ -430,7 +430,11 @@ def show_host(args, config):
 
     """
     tactus_host = TactusHost()
-    logger.info("Current host: {}", tactus_host.detect_tactus_host())
+    logger.info(
+        "Current host: {}, hostname: {}",
+        tactus_host.detect_tactus_host(),
+        tactus_host.hostname,
+    )
     logger.info("Known hosts (host, recognition method):")
     for host, pattern in tactus_host.known_hosts.items():
         logger.info("{:>16}   {}", host, pattern)

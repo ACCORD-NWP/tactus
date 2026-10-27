@@ -10,7 +10,10 @@ We currently have the following cycle specific config files under the directory 
  - modifs_atos_bologna_[CY49t2,CY50t2].toml : Platform dependent config modifications
  - modifs_reference_[checker,generator].toml : Setting for the reference checker
 
-The main difference between CY49t2 and CY50t2 tests is that the latter includes a compilation step whereas the former uses DEODE binaries on ATOS.
+Both CY49t2 and CY50t2 uses precompiled binaries on ATOS. They are identified as e.g.
+ - CY49T2: `@INSTALL_DIR_CY49T2@/@CYCLE@/@COMPILER@/@PRECISION@/@IAL_VERSION@/bin=/perm/deployde330/github-actions/install/CY49t2/intel/R64/latest/bin` ( DEODE)
+ - CY50T2: `@INSTALL_DIR@/@CYCLE@/@COMPILER@/@PRECISION@/@IAL_VERSION@/bin=/perm/deployde330/github-actions/install/CY49t2/intel/R64/latest/bin`
+where latest is pointing to a directory identifying an IAL tag or hash reference. For a tagged version of Tactus `latest` is replaced with the actual reference.
 
 ## Check
 To list available and activated cases do
