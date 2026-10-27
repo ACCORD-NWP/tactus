@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Correct ttr cleaning. [#260](https://github.com/ACCORD-NWP/tactus/pull/260)(@uandrae)
-- Correct derivation of suite name from git branch. [#240](https://github.com/ACCORD-NWP/tactus/pull/240)(@uandrae)
+- Correct derivation of suite name from git branch. [#240](https://github.com/ACCORD-NWP/tactus/pull/240)(@uandrae), [#258](https://github.com/ACCORD-NWP/tactus/pull/258)(@uandrae)
 
 ## [1.4.0] - 2026-10-11
 
