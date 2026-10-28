@@ -15,13 +15,7 @@
   base = "cy49t2_alaro"
 
 [cases.cy49t2_alaro_climate_files.modifs.reference_checker]
-  rules_excluded = [
-    "E923Monthly_06.fafiles",
-    "E923Monthly_06.namelist",
-    "Prep.fafiles",
-    "Prep.namelist",
-    "E923Update.fafiles",
-  ]
+  rules_excluded = [ "E923Monthly_06.fafiles" ]
 
 [cases.cy49t2_alaro_climate_files.modifs.system]
   case_suffix = "_climate_files"
