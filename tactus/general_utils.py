@@ -389,6 +389,7 @@ def sanitize_case_name(s: str) -> str:
     """Sub chars not matching [a-zA-Z0-9_] with _, so no dots are kept."""
     return re.sub(r"[^a-zA-Z0-9_]", "_", s)
 
+
 def ial_compile_modifs(ial_tag=None, ial_repo=None, compiler=None, ial_tag_case=None):
     """Return the config modifications for the IAL compile options.
 
