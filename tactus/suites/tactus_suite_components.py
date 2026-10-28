@@ -425,7 +425,6 @@ class StaticDataTasks:
                 )
                 archive_static_member_trigger.append(pgd_filter_town_frac)
             else:
-                e923update = None
                 e923update = E923UpdateFamily(
                     parent,
                     config,
