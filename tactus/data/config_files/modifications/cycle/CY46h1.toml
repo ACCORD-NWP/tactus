@@ -1,6 +1,6 @@
 [boundaries]
   fix_snow_layer = false
-  
+
 [general]
   cycle = "CY46h1"
   windfarm = false

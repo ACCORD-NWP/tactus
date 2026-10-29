@@ -1,6 +1,6 @@
 [boundaries]
   fix_snow_layer = false
-  
+
 [general]
   cycle = "CY48t3"
   fullpos_windpower = false
