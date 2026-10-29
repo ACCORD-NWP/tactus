@@ -153,6 +153,15 @@ def default_config(tmp_directory):
         host=tactus_host,
     )
     if tactus_host == "pytest":
-        config = config.copy(update={"platform": {"scratch": str(tmp_directory)}})
+        config = config.copy(
+            update={
+                "platform": {"scratch": str(tmp_directory)},
+                "scheduler": {
+                    "ecfvars": {
+                        "ecf_jobout": f"{tmp_directory!s}/joboutdir",
+                    }
+                },
+            }
+        )
 
     return config
