@@ -20,9 +20,15 @@ from .datetime_utils import since_str
 class ReferenceChecker:
     """Base class for comparison against a reference."""
 
-    def __init__(self, tool):
-        """Construct ReferenceChecker object."""
+    def __init__(self, tool, invert_comparison=False):
+        """Construct ReferenceChecker object.
+
+        Args:
+            tool: Tool for the reference check
+            invert_comparison: Inverts the logics. E.g. used to check SPP functionality
+        """
         self.tool = tool
+        self.invert_comparison = invert_comparison
 
     def compare(self, test_file, reference_file) -> str:  # noqa ARG001
         """Compare a file to a reference file.
@@ -53,7 +59,13 @@ class ReferenceChecker:
             A ReferenceChecker
         """
         tool = config["methods"][method]["tool"]
+        invert_comparison = config["methods"][method].get("invert_comparison", False)
+
         if tool == "namelist_checker":
+            if invert_comparison:
+                raise NotImplementedError(
+                    f"Inverted comparison not implemented for {tool}"
+                )
             ignore_case = config["methods"][method].get("ignore_case", True)
             ignore_blank_lines = config["methods"][method].get("ignore_blank_lines", True)
             ignore_whitespace = config["methods"][method].get("ignore_whitespace", True)
@@ -66,8 +78,12 @@ class ReferenceChecker:
             which = config["methods"][method]["which"]
             mode = config["methods"][method]["mode"]
             tolerance = int(config["methods"][method]["tolerance"])
-            return NormsChecker(which, tolerance, mode)
+            return NormsChecker(which, tolerance, mode, invert_comparison)
         if tool == "xtool":
+            if invert_comparison:
+                raise NotImplementedError(
+                    f"Inverted comparison not implemented for {tool}"
+                )
             binary_pattern = config["methods"][method]["binary"]
             file_format = config["methods"][method]["file_format"]
             tolerance = int(config["methods"][method]["tolerance"])
@@ -187,18 +203,34 @@ class NamelistChecker(ReferenceChecker):
 class NormsChecker(ReferenceChecker):
     """Compare the norms in Node files against a reference."""
 
-    def __init__(self, which, tolerance, mode):
+    def __init__(self, which, tolerance, mode, invert_comparison=False):
         """Construct NormsChecker object.
 
         Args:
            which: first_and_last_spectral or all (from arpifs_listing)
            tolerance: integer giving the worstdigit
            mode: get_worst or get_worst_by_step (from arpifs_listings)
+           invert_comparison: Inverts the logics. E.g. used to check SPP functionality
         """
-        ReferenceChecker.__init__(self, tool="norms_checker")
+        ReferenceChecker.__init__(
+            self, tool="norms_checker", invert_comparison=invert_comparison
+        )
         self.which = which
         self.tolerance = tolerance
         self.mode = mode
+
+    def _success_message(self, worstdigit, comp_string):
+        """Return success message with correct comparision."""
+        return (
+            f"SUCCESS - Worst digit is {worstdigit} {comp_string} tol = "
+            + f"{self.tolerance} (mode={self.mode}, which={self.which})"
+        )
+
+    def _failure_message(self, worstdigit, comp_string):
+        """Return failure message with correct comparison."""
+        return (
+            f"FAILURE - Worst digit is {worstdigit} {comp_string} tol = {self.tolerance}"
+        )
 
     def compare(self, test_log, reference_log, out_file) -> str:
         """Compare the norms against a reference.
@@ -247,15 +279,15 @@ class NormsChecker(ReferenceChecker):
                     onlymaxdiff=onlymaxdiff,
                     out=out,
                 )
-                if worstdigit <= self.tolerance:
-                    results.append(
-                        f"SUCCESS - Worst digit is {worstdigit} <= tol = "
-                        + f"{self.tolerance} (mode={self.mode}, which={self.which})"
-                    )
+                under_tolerance = worstdigit <= self.tolerance
+                exceed_tolerance = not under_tolerance
+                success = exceed_tolerance if self.invert_comparison else under_tolerance
+
+                comparison_operator = "<=" if under_tolerance else ">"
+                if success:
+                    results.append(self._success_message(worstdigit, comparison_operator))
                 else:
-                    results.append(
-                        f"FAILURE - Worst digit is {worstdigit} > tol = {self.tolerance}"
-                    )
+                    results.append(self._failure_message(worstdigit, comparison_operator))
 
             result = "\n".join(results)
             out.write(result)
