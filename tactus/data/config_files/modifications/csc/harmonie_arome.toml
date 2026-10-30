@@ -13,4 +13,6 @@
   master = ["master_selection_@CSC@", "master_subhour_selection_@CSC@"]
 
 [pgd]
+  ecosg = true
   npatch = 2
+  one_decade = true

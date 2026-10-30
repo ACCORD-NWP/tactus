@@ -5,6 +5,7 @@
   csc = "AROME"
   cycle = "CY50t2"
   famodel = "@CYCLE@-@CSC@-oper"
+  full_year_climate = true
   keep_workdirs = true
   surfex = true
   upd_sst_sic = true
@@ -118,8 +119,9 @@
 
 [pgd]
   npatch = 3
-  one_decade = true
+  one_decade = false
   use_osm = false
+  ecosg = false
 
 [suite_control]
   create_static_data = true
