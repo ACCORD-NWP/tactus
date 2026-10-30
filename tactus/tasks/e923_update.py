@@ -27,9 +27,7 @@ class E923Update(Task):
         else:
             start = config["general.times.start"]
             end = config.get("general.times.end", start)
-            self.months = [
-                f"{mm:02d}" for mm in get_month_list(start, end, extend=True)
-            ]
+            self.months = [f"{mm:02d}" for mm in get_month_list(start, end, extend=True)]
 
         self.climdir = self.platform.get_system_value("climdir")
         self.intp_bddir_sfx = self.config["system.intp_bddir_sfx"]
