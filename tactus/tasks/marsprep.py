@@ -956,6 +956,7 @@ class Marsprep(Task):
         grid: Optional[str] = None,
         fieldset: Optional[str] = None,
         levelist: Optional[str] = None,
+        time: Optional[str] = None,
     ) -> BaseRequest:
         """Build request to retrieve data from mars.
 
@@ -976,13 +977,16 @@ class Marsprep(Task):
             request: BaseRequest to retrieve data
 
         """
+        if time is None:
+            time = self.init_hour_str
+
         request = BaseRequest(
             class_=self.mars["class"],
             data_type=data_type,
             expver=self.mars["expver"],
             levtype=levtype,
             date=self.init_date_str,
-            time=self.init_hour_str,
+            time=time,
             steps=steps,
             param=param,
             target=target,
@@ -1030,6 +1034,7 @@ class Marsprep(Task):
         write_method: str = "retrieve",
         grid: Optional[str] = None,
         levelist: Optional[str] = None,
+        time: Optional[str] = None,
     ) -> None:
         """Build and run request to retrieve data from mars.
 
@@ -1047,6 +1052,9 @@ class Marsprep(Task):
             write_method: The write method to use when writing the request to file.
             grid: The grid to use.
         """
+        if time is None:
+            time = self.init_hour_str
+
         request = self._build_retrieve_request(
             data_type,
             levtype,
@@ -1059,6 +1067,7 @@ class Marsprep(Task):
             specify_domain,
             grid,
             levelist=levelist,
+            time=time,
         )
 
         # Write the request to file
