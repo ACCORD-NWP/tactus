@@ -344,27 +344,13 @@ class XToolChecker(ReferenceChecker):
             try:
                 cmd = [self.binary, *args.split()]
                 with open(out_file, "w") as out:
-                    completed = subprocess.run(cmd, check=False, stdout=out, stderr=out)
-                # diff exit code:     0 = identical within tolerance
-                #                    10 = differences
-                #                  else = error
-                if completed.returncode == 0:
-                    results.append(
-                        f"SUCCESS - "
-                        f"All results within Tolerance Level = {self.tolerance}\n"
-                    )
-                elif completed.returncode == 10:
-                    results.append(
-                        f"FAILURE - "
-                        f"Differences found between {self.file_format} file and reference"
-                    )
-                else:
-                    results.append(
-                        "ERROR - executing XtoolChecker\n"
-                        f"Command '{cmd}' "
-                        f"failed with exit code: {completed.returncode}\n"
-                    )
+                    subprocess.run(cmd, check=True, stdout=out, stderr=out)
 
+            except subprocess.CalledProcessError as e:
+                results.append(
+                    "ERROR - executing XtoolChecker\n"
+                    + f"Command '{e.cmd}' failed with exit code: {e.returncode}\n"
+                )
             # catching blind exception to make sure that we don't miss any error.
             # The exception is stored unhandled_exception and raised again at the end
             except Exception as e:  # noqa: BLE001
@@ -374,6 +360,10 @@ class XToolChecker(ReferenceChecker):
                     + str(e)
                 )
                 unhandled_exception = e
+        if len(results) == 0:
+            results.append(
+                f"SUCCESS - All results within Tolerance Level = {self.tolerance}\n"
+            )
 
         result = "\n".join(results)
         logger.info(f"XToolChecker result: {result}")
@@ -700,7 +690,7 @@ class CheckSummaryAnalysis:
 
     @staticmethod
     def colored_result_message(
-        summary, verbose, case_name, filename, width, datetime, now, only_bad_news=False
+        summary, verbose, case_name, filename, width, datetime, now
     ):
         """Return a colored message summarizing the result of the analysis.
 
@@ -712,7 +702,6 @@ class CheckSummaryAnalysis:
             width: the width to be used for the case name in the message
             datetime: the datetime of the summary file being analyzed
             now: the current datetime
-            only_bad_news: Only return missing, errors and failures
 
         Returns:
             A colored message summarizing the result of the analysis
@@ -755,11 +744,6 @@ class CheckSummaryAnalysis:
                         if test_type == "Create":
                             continue
                         try:
-                            if (
-                                only_bad_news
-                                and "SUCCESS" in result["items"][0]["result"]
-                            ):
-                                continue
                             label = f"{task_name}.{test_type}"
                             result_message = (
                                 f"{label:>30} | {result['items'][0]['result']}"
@@ -771,9 +755,7 @@ class CheckSummaryAnalysis:
                             result_message = result_message.replace(
                                 "FAILURE", "<red>FAILURE</red>"
                             )
-                            result_message = result_message.replace(
-                                "ERROR", "<red>ERROR</red>"
-                            )
+
                             message = f"{message}{result_message}\n"
                         except KeyError:
                             message += f"{test_type:>10} |\
