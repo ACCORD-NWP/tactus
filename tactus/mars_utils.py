@@ -662,30 +662,6 @@ class BaseRequest:
         """
         self.request.update(upd)
 
-    def add_levelist(self, levelist: str):
-        """Set multilevel if needed.
-
-        Args:
-            levelist (string): list of levels
-        Returns:
-            None
-        """
-        if self.levtype == "ML" and self.param == "129":
-            local_levelist = 1
-
-        elif self.levtype == "ML":
-            local_levelist = get_value_from_dict(levelist, self.date)
-            logger.info("levelist:{}", local_levelist)
-
-        elif self.levtype == "SOL":
-            local_levelist = "1/2/3/4/5"
-            logger.info("levelist:{}", local_levelist)
-
-        else:
-            return
-
-        # Add levelist to request
-        self.request["LEVELIST"] = local_levelist
 
     def add_database_options(self):
         """Add database options."""
