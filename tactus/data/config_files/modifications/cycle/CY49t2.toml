@@ -1,5 +1,5 @@
 [boundaries]
-  fix_snow_layer = false
+  fix_snow_layer = true
 
 [general]
   cycle = "CY49t2"
