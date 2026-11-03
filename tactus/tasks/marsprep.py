@@ -189,6 +189,7 @@ class Marsprep(Task):
         grid: Optional[str] = None,
         source: Optional[str] = None,
         fieldset: Optional[str] = None,
+        levelist: Optional[str] = None,
     ):
         """Create ECMWF MARS system request.
 
@@ -214,8 +215,7 @@ class Marsprep(Task):
 
         if self.mars_version == 6:
             request.update_request({"PROCESS": "LOCAL"})
-        request.add_levelist(self.mars["levelist"])
-
+        
         if request.param == "32":
             request.update_request({"LEVELIST": "1"})
 
@@ -595,6 +595,7 @@ class Marsprep(Task):
                     req_file_name="latlonGG.req",
                     data_type=data_type,
                     levtype="SOL",
+                    levelist="1",
                     param="32",
                     steps=[self.steps[0]],
                     members=[member],
@@ -784,6 +785,7 @@ class Marsprep(Task):
                 steps=steps,
                 members=members,
                 target=compile_target(tag, member_type, members),
+                levelist=get_value_from_dict(self.mars["levelist"], self.init_date_str),
                 grid=self.mars["grid_ML"],
             )
 
@@ -802,6 +804,7 @@ class Marsprep(Task):
                 req_file_name=f"{member_type}_{tag}.temp.req",
                 data_type=data_type,
                 levtype="ML",
+                levelist=get_value_from_dict(levelist, self.init_date_str),
                 param=param,
                 steps=steps,
                 members=members,
@@ -828,6 +831,7 @@ class Marsprep(Task):
                 req_file_name=f"{tag}Z.req",
                 data_type=self.mars["SHZ_type"],
                 levtype="ML",
+                levelist=1,
                 param=param,
                 steps=[0],
                 target=f'"{tag}.Z"',
@@ -852,6 +856,7 @@ class Marsprep(Task):
                 req_file_name=f"{member_type}_{tag}.req",
                 data_type=data_type,
                 levtype="ML",
+                levelist=get_value_from_dict(self.mars["levelist"], self.init_date_str),
                 param=param,
                 steps=steps,
                 members=members,
@@ -921,6 +926,7 @@ class Marsprep(Task):
                 req_file_name=f"{member_type}_{tag}.snow.req",
                 data_type=data_type,
                 levtype="SOL",
+                levelist="1/2/3/4/5",
                 param=param,
                 steps=steps,
                 members=members,
@@ -949,6 +955,7 @@ class Marsprep(Task):
         specify_domain: bool = False,
         grid: Optional[str] = None,
         fieldset: Optional[str] = None,
+        levelist: Optional[str] = None,
     ) -> BaseRequest:
         """Build request to retrieve data from mars.
 
@@ -989,6 +996,9 @@ class Marsprep(Task):
             source=source,
             fieldset=fieldset,
         )
+        if levelist:
+            request.request["LEVELIST"]=levelist
+        
 
         return request
 
@@ -1019,6 +1029,7 @@ class Marsprep(Task):
         specify_domain: bool = False,
         write_method: str = "retrieve",
         grid: Optional[str] = None,
+        levelist: Optional[str] = None,
     ) -> None:
         """Build and run request to retrieve data from mars.
 
@@ -1047,6 +1058,7 @@ class Marsprep(Task):
             prefetch,
             specify_domain,
             grid,
+            levelist=levelist,
         )
 
         # Write the request to file
