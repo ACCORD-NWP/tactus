@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from tactus.os_utils import tactusmakedirs
 from tactus.suites.base import EcflowSuiteTask, SuiteDefinition
 from tactus.suites.tactus_suite_components import CompilationFamily
 
