@@ -189,7 +189,6 @@ class Marsprep(Task):
         grid: Optional[str] = None,
         source: Optional[str] = None,
         fieldset: Optional[str] = None,
-        levelist: Optional[str] = None,
     ):
         """Create ECMWF MARS system request.
 
@@ -215,7 +214,7 @@ class Marsprep(Task):
 
         if self.mars_version == 6:
             request.update_request({"PROCESS": "LOCAL"})
-        
+
         if request.param == "32":
             request.update_request({"LEVELIST": "1"})
 
@@ -804,7 +803,7 @@ class Marsprep(Task):
                 req_file_name=f"{member_type}_{tag}.temp.req",
                 data_type=data_type,
                 levtype="ML",
-                levelist=get_value_from_dict(levelist, self.init_date_str),
+                levelist=get_value_from_dict(self.mars["levelist"], self.init_date_str),
                 param=param,
                 steps=steps,
                 members=members,
@@ -972,6 +971,8 @@ class Marsprep(Task):
             specify_domain: Whether to specify domain or not.
             grid: The grid to use.
             fieldset: Name of fieldset. Defaults None.
+            levelist: lsit of levels to retrieve from mars
+            time: time indicator for MARS request
 
         Returns:
             request: BaseRequest to retrieve data
@@ -1001,8 +1002,7 @@ class Marsprep(Task):
             fieldset=fieldset,
         )
         if levelist:
-            request.request["LEVELIST"]=levelist
-        
+            request.request["LEVELIST"] = levelist
 
         return request
 
@@ -1051,6 +1051,8 @@ class Marsprep(Task):
             specify_domain: Whether to specify domain or not.
             write_method: The write method to use when writing the request to file.
             grid: The grid to use.
+            levelist: lsit of levels to retrieve from mars
+            time: time indicator for MARS request
         """
         if time is None:
             time = self.init_hour_str

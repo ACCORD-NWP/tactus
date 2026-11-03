@@ -662,7 +662,6 @@ class BaseRequest:
         """
         self.request.update(upd)
 
-
     def add_database_options(self):
         """Add database options."""
         if self.request["CLASS"] == "D1":
