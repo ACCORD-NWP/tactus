@@ -27,6 +27,9 @@ class CompilationSuiteDefinition(SuiteDefinition):
         # Call the base class constructor
         SuiteDefinition.__init__(self, config, dry_run=dry_run)
 
+        unix_group = self.platform.get_platform_value("unix_group")
+        tactusmakedirs(self.ecflow_env.ecf_out, unixgroup=unix_group)
+
         # Get the default input template path
         input_template = (
             Path(__file__).parent.resolve() / "../templates/ecflow/default.py"
