@@ -752,6 +752,7 @@ class Marsprep(Task):
             data_type=data_type,
             levtype=lev_type,
             param=param,
+            levelist=1,
             steps=[0],
             members=[0],
             target=target,
