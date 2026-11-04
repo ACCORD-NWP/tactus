@@ -972,7 +972,7 @@ class Marsprep(Task):
             specify_domain: Whether to specify domain or not.
             grid: The grid to use.
             fieldset: Name of fieldset. Defaults None.
-            levelist: lsit of levels to retrieve from mars
+            levelist: list of levels to retrieve from mars
             time: time indicator for MARS request
 
         Returns:
@@ -1052,7 +1052,7 @@ class Marsprep(Task):
             specify_domain: Whether to specify domain or not.
             write_method: The write method to use when writing the request to file.
             grid: The grid to use.
-            levelist: lsit of levels to retrieve from mars
+            levelist: list of levels to retrieve from mars
             time: time indicator for MARS request
         """
         if time is None:
