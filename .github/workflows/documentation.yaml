@@ -43,7 +43,7 @@ jobs:
         id: setup-python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.13'
+          python-version: '3.12'
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
@@ -56,7 +56,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: .venv
-          key: ${{ github.job }}-venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml', '**/poetry.toml') }}
+          key: ${{ github.job }}-venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/pyproject.toml', '**/poetry.toml') }}
 
       - name: Install dependencies (if venv cache is not found)
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
