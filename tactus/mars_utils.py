@@ -668,7 +668,7 @@ class BaseRequest:
             self.request.update({
                 "DATASET": "extremes-dt",
             })
-            if self.rquest.get("SOURCE") is None:
+            if self.request.get("SOURCE") is None:
                 self.request.update({
                     "DATABASE": "fdb",
                 })
