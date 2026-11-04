@@ -132,6 +132,15 @@ class Marsprep(Task):
             exist_snow = True
 
         start_snow_date = as_datetime(evaluate_date(self.mars["start_date"]))
+
+        self.exist_soil_layer = False
+        self.param_soil_layer = ""
+        with contextlib.suppress(KeyError):
+            self.param_soil_layer = get_value_from_dict(
+                self.mars["GG_soil_layer"], self.init_date_str
+            )
+            self.exist_soil_layer = True
+
         with contextlib.suppress(KeyError):
             start_snow_date = as_datetime(self.mars["start_snow_date"])
 
