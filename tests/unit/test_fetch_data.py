@@ -115,8 +115,10 @@ def test_create_fetch_data_exp_sets_config_and_modifications(
     ]
 
 
-def test_create_fetch_data_exp_keeps_config_defaults(default_config, captured_create_exp):
-    """Check config values are kept when no arguments are given."""
+def test_create_fetch_data_exp_keeps_macros_and_defaults(
+    default_config, captured_create_exp
+):
+    """Check macros in --data-dir are kept and other values default to the config."""
     parser = get_args_parser()
     args = parser.parse_args(["fetch-data", "--data-dir", "@SCRATCH@/IAL-data"])
 
@@ -132,6 +134,19 @@ def test_create_fetch_data_exp_keeps_config_defaults(default_config, captured_cr
     assert (
         config["fetch_data.ial_data_git_repo"]
         == default_config["fetch_data.ial_data_git_repo"]
+    )
+
+
+def test_command_namespace_without_optional_arguments(
+    default_config, captured_create_exp
+):
+    """Check a minimal Namespace (as used by other callers) is accepted."""
+    args = argparse.Namespace(
+        data_dir=None, ial_data_version=None, ial_data_repo=None, dvc_targets=None
+    )
+    create_fetch_data_exp(args, default_config)
+    assert (
+        captured_create_exp["config"]["fetch_data.ial_data_dir"] == "@CASEDIR@/IAL-data"
     )
 
 
@@ -239,19 +254,6 @@ def test_task_execute_runs_git_then_dvc(fetch_task, monkeypatch):
 
 def test_task_uses_dvc_installed_with_tactus(fetch_task):
     assert fetch_task().dvc_bin == os.path.join(os.path.dirname(sys.executable), "dvc")
-
-
-def test_command_namespace_without_optional_arguments(
-    default_config, captured_create_exp
-):
-    """Check a minimal Namespace (as used by other callers) is accepted."""
-    args = argparse.Namespace(
-        data_dir=None, ial_data_version=None, ial_data_repo=None, dvc_targets=None
-    )
-    create_fetch_data_exp(args, default_config)
-    assert (
-        captured_create_exp["config"]["fetch_data.ial_data_dir"] == "@CASEDIR@/IAL-data"
-    )
 
 
 # ---------------------------------------------------------------------------
