@@ -122,9 +122,7 @@ class TactusSuiteDefinition(SuiteDefinition):
                 )
             )
 
-        if len(prep_families) == 1:
-            prep_run = prep_families[0]
-        elif len(prep_families) > 1:
+        if prep_families:
             prep_run = prep_families
 
         # Update triggers for final cleaning and time dependent nodes
