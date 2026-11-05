@@ -19,8 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Stricter host detection rules for env + hostname definitions. [#254](https://github.com/ACCORD-NWP/tactus/pull/254)(@uandrae)
 - Change confusing trigger warnings to debug loggings. [#239](https://github.com/ACCORD-NWP/tactus/pull/239)(@uandrae)
 - Push OmegaConf to v2.4 and resolve some deprecation warnings. Fixes issue [\#234](https://github.com/ACCORD-NWP/tactus/issues/234). [#238](https://github.com/ACCORD-NWP/tactus/pull/238)(@adeckmyn)
+- Add option to use other cycle's executables for LBC task. [#223](https://github.com/ACCORD-NWP/tactus/pull/223)(@pardallio)
 
 ### Fixed
+- Make sure correct monthly data input is used in E923. [#275](https://github.com/ACCORD-NWP/tactus/pull/275)(@uandrae)
 - Make sure E923Update is not executed if create_static_data is false and for more than one member. [#245](https://github.com/ACCORD-NWP/tactus/pull/245)(@uandrae)
 - Correct ttr cleaning. [#260](https://github.com/ACCORD-NWP/tactus/pull/260)(@uandrae)
 - Correct derivation of suite name from git branch. [#240](https://github.com/ACCORD-NWP/tactus/pull/240)(@uandrae), [#258](https://github.com/ACCORD-NWP/tactus/pull/258)(@uandrae)
