@@ -331,19 +331,19 @@ Builds an ECBundle source tree, either as a local per-experiment install or into
 When `compile.install` is enabled, the shared install root is:
 
 ```text
-@INSTALL_DIR@/<compile.ial_version>/<precision>/<compiler>
+@INSTALL_DIR@/<compile.ial_git_version>/<precision>/<compiler>
 ```
 
 and the actual install directory adds an architecture-derived subpath on top (see **Install Subpath** below):
 
 ```text
-@INSTALL_DIR@/<compile.ial_version>/<precision>/<compiler>/<install_subpath>
+@INSTALL_DIR@/<compile.ial_git_version>/<precision>/<compiler>/<install_subpath>
 ```
 
 A `latest` pointer is also maintained, pointing at the version root (not the full precision/compiler/subpath path):
 
 ```text
-@INSTALL_DIR@/latest -> @INSTALL_DIR@/<compile.ial_version>
+@INSTALL_DIR@/latest -> @INSTALL_DIR@/<compile.ial_git_version>
 ```
 
 ---
@@ -371,7 +371,7 @@ under `@CASEDIR@`, regardless of install mode. The install directory (`exp_bindi
 
 ```text
 @CASEDIR@/install/<precision>                                                       # local install
-@INSTALL_DIR@/<compile.ial_version>/<precision>/<compiler>/<install_subpath>        # shared install
+@INSTALL_DIR@/<compile.ial_git_version>/<precision>/<compiler>/<install_subpath>        # shared install
 ```
 
 ---
@@ -425,7 +425,7 @@ Optional flags:
 When `compile.install` is enabled, after building the task:
 
 1. Calls `make_install_arch_symlink()`: if `<compile.dir>/source/arch/<submission.arch>` is itself a symlink (e.g. resolving the `default` segment of `submission.arch`), that same symlink (its target, not the resolved file) is copied into the shared install root as `<install_dir_root>/default`, replacing any existing `default` link there.
-2. Refreshes `@INSTALL_DIR@/latest` to point at `@INSTALL_DIR@/<compile.ial_version>`, removing a stale symlink first if one exists.
+2. Refreshes `@INSTALL_DIR@/latest` to point at `@INSTALL_DIR@/<compile.ial_git_version>`, removing a stale symlink first if one exists.
 3. Symlinks the local per-experiment install path `@CASEDIR@/install/<precision>` to the shared install directory computed above.
 
 When `compile.install` is disabled, none of this runs — the local install path *is* the real build output, with no shared-tree bookkeeping.

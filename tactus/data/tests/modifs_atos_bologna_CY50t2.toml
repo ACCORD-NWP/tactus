@@ -21,7 +21,6 @@
   reference_data = "@SCRATCH@/@SYS_NAME@/@CYCLE@"
   ref_case = "@SUBTAG@_@CYCLE@_@CSC@_@DOMAIN@_@YMD_START@@CASE_SUFFIX@"
   refcheck_root = "/ec/project/accord/tactus/tactus_references"
-  install_dir = "@SCRATCH@/@SYS_NAME@/@CASE_PREFIX@@CYCLE@_compile/install"
 
 [modifs.platform.mirrorglobalDT]
   remote_host = "ecflow-gen-snh02-001"
@@ -36,6 +35,15 @@
 [modifs.reference_checker.methods.E923Files]
   binary = "@BINDIR_GL@/xtool_DP"
 
+[modifs.remove.main.climdir]
+  path = "@CLIMDIR@"
+
+[modifs.remove.main.intp_bddir]
+  path = "@INTP_BDDIR@"
+
+[modifs.remove.main.intp_bddir_sfx]
+  path = "@INTP_BDDIR_SFX@"
+
 [modifs.scheduler.ecfvars]
   case_prefix = "@TAG@_@SUBTAG@"
   ecf_files = "@PERM@/tactus_ecflow/ecf_files"
@@ -49,12 +57,8 @@
   remote_path = "/@HOST_CASE@/PostMortem"
 
 [modifs.submission]
-  bindir = "@SCRATCH@/@SYS_NAME@/@CASE_PREFIX@_@CYCLE@_compile/install/R64/bin"
-  bindir_gl = "@SUBMISSION.BINDIR@"
   max_ecf_tasks = 5
-
-[modifs.submission.task_exceptions.Forecast.binaries.MASTERODB]
-  bindir = "@SCRATCH@/@SYS_NAME@/@CASE_PREFIX@_@CYCLE@_compile/install/R64/bin"
+  precision = "R64"
 
 [modifs.submission.task_exceptions.Marsprep.BATCH]
   WALLTIME = "#SBATCH --time=12:00:00"

@@ -75,6 +75,18 @@ class Cycles:
         raise StopIteration
 
     @property
+    def previous_cycle(self) -> Cycle:
+        """Return the previous Cycle object.
+
+        Raises:
+            StopIteration: If there are no more cycles.
+        """
+        if self._current_index > 0:
+            return self._cycles[self._current_index - 1]
+
+        raise StopIteration
+
+    @property
     def end_of_month(self) -> bool:
         """Return True if the next cycle is in a different month.
 
@@ -93,6 +105,25 @@ class Cycles:
             logger.debug("It is last cycle")
 
         return _end_of_month
+
+    def new_month(self) -> bool:
+        """Return True if the current cycle is in a different month.
+
+        Returns:
+            bool: True if the current cycle is in a different month
+        """
+        _new_month = False
+        try:
+            current_cycle = self.current_cycle
+            previous_cycle = self.previous_cycle
+            if as_datetime(current_cycle.day).strftime("%m") != as_datetime(
+                previous_cycle.day
+            ).strftime("%m"):
+                _new_month = True
+        except StopIteration:
+            logger.debug("It is first cycle")
+
+        return _new_month
 
     def __iter__(self) -> Iterator[Cycle]:
         """Return an iterator over the cycles."""

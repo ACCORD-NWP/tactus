@@ -241,7 +241,7 @@ class TestSanitizeCaseName:
 
     def test_with_valid_name(self):
         """Test that a name with only allowed characters is unchanged."""
-        assert sanitize_case_name("Valid_Name.123") == "Valid_Name.123"
+        assert sanitize_case_name("Valid_Name_123") == "Valid_Name_123"
 
     def test_replaces_invalid_characters(self):
         """Test that disallowed characters are replaced with underscores."""
@@ -257,13 +257,25 @@ class TestSanitizeCaseName:
         """Test a leading dot combined with other invalid characters."""
         assert sanitize_case_name(".name with space") == "_name_with_space"
 
-    def test_dot_not_at_start_is_kept(self):
-        """Test that dots not at the start of the string are preserved."""
-        assert sanitize_case_name("name.ext") == "name.ext"
+    @pytest.mark.parametrize(
+        ("name", "expected"),
+        [
+            ("name.ext", "name_ext"),
+            ("release/1.2.3", "release_1_2_3"),
+            ("trailing.", "trailing_"),
+            ("..", "__"),
+            ("a..b", "a__b"),
+        ],
+    )
+    def test_replaces_all_dots(self, name, expected):
+        """Test that every dot is replaced, wherever it is."""
+        result = sanitize_case_name(name)
+        assert result == expected
+        assert "." not in result
 
     def test_with_empty_string(self):
         """Test with an empty string."""
-        not sanitize_case_name("")
+        assert not sanitize_case_name("")
 
 
 class TestRecursiveDeleteKeys:

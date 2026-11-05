@@ -165,17 +165,18 @@ def create_compile_exp(args, config):
         config (ParsedConfig): Parsed config file contents.
 
     """
-    if args.ial_tag is not None:
-        platform = Platform(config)
-        ial_tag_case = sanitize_case_name(platform.substitute(args.ial_tag))
-        config = config.copy(
-            update={
-                "compile": {
-                    "ial_git_version": args.ial_tag,
-                    "ial_git_tag_case": ial_tag_case,
-                },
-            }
-        )
+    if args.ial_tag is None:
+        args.ial_tag = config["compile.ial_git_version"]
+    platform = Platform(config)
+    ial_tag_case = sanitize_case_name(platform.substitute(args.ial_tag))
+    config = config.copy(
+        update={
+            "compile": {
+                "ial_git_version": args.ial_tag,
+                "ial_git_tag_case": ial_tag_case,
+            },
+        }
+    )
     if args.ial_repo is not None:
         config = config.copy(update={"compile": {"ial_git_repo": args.ial_repo}})
 
@@ -429,7 +430,11 @@ def show_host(args, config):
 
     """
     tactus_host = TactusHost()
-    logger.info("Current host: {}", tactus_host.detect_tactus_host())
+    logger.info(
+        "Current host: {}, hostname: {}",
+        tactus_host.detect_tactus_host(),
+        tactus_host.hostname,
+    )
     logger.info("Known hosts (host, recognition method):")
     for host, pattern in tactus_host.known_hosts.items():
         logger.info("{:>16}   {}", host, pattern)
