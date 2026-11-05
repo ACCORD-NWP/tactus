@@ -2,12 +2,18 @@
 
 import argparse
 import os
+from pathlib import Path
 
 import pytest
 
 from tactus.argparse_wrapper import get_args_parser
 from tactus.commands_functions import create_fetch_data_exp
+from tactus.config_parser import ParsedConfig
 from tactus.tasks.fetch_data import IALDataFetch
+from tactus.toolbox import Platform
+
+# Captured at collection, before test_tasks.py mocks execute for the session
+_ORIGINAL_EXECUTE = IALDataFetch.execute
 
 # ---------------------------------------------------------------------------
 # fetch-data command
@@ -226,7 +232,7 @@ def test_task_execute_runs_git_then_dvc(fetch_task, monkeypatch):
         "tactus.tasks.fetch_data.BatchJob.run", lambda _self, cmd: ran.append(cmd)
     )
 
-    task.execute()
+    _ORIGINAL_EXECUTE(task)
 
     assert ran == [*task.git_commands(), task.dvc_command()]
 
@@ -253,3 +259,22 @@ def test_command_namespace_without_optional_arguments(
     )
     create_fetch_data_exp(args, default_config)
     assert captured_create_exp["config"]["fetch_data.dir"] == "@CASEDIR@/IAL-data"
+
+
+# ---------------------------------------------------------------------------
+# fetch_data.toml modification
+# ---------------------------------------------------------------------------
+
+
+def test_fetch_data_modification_sets_static_data(default_config):
+    """Check fetch_data.toml makes static_data point to the fetched data."""
+    mod_file = (
+        Path(__file__).parents[2]
+        / "tactus/data/config_files/modifications/fetch_data.toml"
+    )
+    mod = ParsedConfig.from_file(mod_file, json_schema={})
+    config = default_config.copy(update={"fetch_data": {"dir": "/some/IAL-data"}})
+    config = config.copy(update=mod)
+
+    assert config["suite_control.fetch_data"] is True
+    assert Platform(config).substitute("@STATIC_DATA@") == "/some/IAL-data/data"

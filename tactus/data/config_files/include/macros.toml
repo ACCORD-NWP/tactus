@@ -48,6 +48,7 @@
     {ial_version = "submission.ial_version"},
     {arch = "submission.arch"},
     {ial_git_tag = "compile.ial_git_tag_case"},
+    {ial_data_dir = "fetch_data.dir"},
     {arch = "submission.arch"},
   ]
   group_macros = ["platform", "system"]
