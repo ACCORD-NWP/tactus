@@ -8,6 +8,7 @@ from . import GeneralConstants
 from .commands_functions import (
     create_compile_exp,
     create_exp,
+    create_fetch_data_exp,
     doc_config,
     namelist_convert,
     namelist_format,
@@ -311,6 +312,80 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
     )
     add_expand_config(parser_compile)
     parser_compile.set_defaults(run_command=create_compile_exp)
+
+    ###############################################
+    # Configure parser for the "fetch-data" command #
+    ###############################################
+    parser_fetch_data = subparsers.add_parser(
+        "fetch-data",
+        help="Start a suite cloning IAL-data and pulling its dvc data",
+        parents=[common_parser],
+    )
+    parser_fetch_data.add_argument(
+        "--data-dir",
+        dest="data_dir",
+        help=(
+            "Directory where IAL-data is cloned and its data pulled, "
+            + "if not given fetch_data.dir from the config will be used"
+        ),
+        default=None,
+        required=False,
+    )
+    parser_fetch_data.add_argument(
+        "--ial-data-version",
+        dest="ial_data_version",
+        help="IAL-data git tag/branch/commit, if not given the config default is used",
+        default=None,
+        required=False,
+    )
+    parser_fetch_data.add_argument(
+        "--ial-data-repo",
+        dest="ial_data_repo",
+        help="IAL-data repository to use, if not given default in config will be used",
+        default=None,
+        required=False,
+    )
+    parser_fetch_data.add_argument(
+        "--target",
+        dest="dvc_targets",
+        action="append",
+        metavar="PATH",
+        help=(
+            "Only pull this path of IAL-data (e.g. data/ncdir). "
+            + "Can be repeated. If not given, all data are pulled"
+        ),
+        default=None,
+        required=False,
+    )
+    parser_fetch_data.add_argument(
+        "--output",
+        "-o",
+        dest="output_file",
+        help=(
+            "Output config file, if not given the name will be the same as the case. "
+            + "If the name does not end with '.toml' it's assumed to be a directory "
+            + "and the file name will be the same as the case."
+        ),
+        default=None,
+        required=False,
+    )
+    parser_fetch_data.add_argument(
+        "--dry-run",
+        "-d",
+        action="store_false",
+        dest="start_suite",
+        help="Only create the config file, do not start the suite",
+        required=False,
+    )
+    parser_fetch_data.add_argument(
+        "--case-name", dest="case", help="Case name", required=False, default=None
+    )
+    add_keep_def_file(
+        parser_fetch_data,
+        help_message="Keep suite definition file in case of submission",
+    )
+    add_expand_config(parser_fetch_data)
+    parser_fetch_data.set_defaults(run_command=create_fetch_data_exp)
 
     ###########################################
     # Configure parser for the "show" command #
