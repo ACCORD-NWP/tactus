@@ -96,6 +96,9 @@
 [submission.task_exceptions.TactusBundleCreate.BATCH]
   WALLTIME = "#SBATCH --time=00:45:00"
 
+[submission.task_exceptions.IALDataFetch.BATCH]
+  WALLTIME = "#SBATCH --time=01:00:00"
+
 [submission.task_exceptions.GlBd]
   binary = "gl_DP"
 

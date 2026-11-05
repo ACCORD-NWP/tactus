@@ -17,6 +17,9 @@
     "compile": {
       "$ref": "#/definitions/compile"
     },
+    "fetch_data": {
+      "$ref": "#/definitions/fetch_data"
+    },
     "boundaries": {
       "$ref": "#/definitions/boundaries"
     },
@@ -404,6 +407,11 @@
           "type": "boolean",
           "default": false
         },
+        "fetch_data": {
+          "description": "Fetch the IAL-data static data with git and dvc",
+          "type": "boolean",
+          "default": false
+        },
         "do_creategrib_static": {
           "description": "Activate grib conversion for static files",
           "type": "boolean",
@@ -733,6 +741,45 @@
           "type": "boolean",
           "description": "Do not compile assimilation related binaries",
           "default": false
+        }
+      }
+    },
+    "fetch_data": {
+      "title": "IAL-data fetching configuration",
+      "type": "object",
+      "properties": {
+        "ial_data_git_repo": {
+          "type": "string",
+          "description": "Git repo of the dvc-managed IAL-data static data",
+          "default": "git@github.com:ACCORD-NWP/IAL-data.git"
+        },
+        "ial_data_git_version": {
+          "type": "string",
+          "description": "Git version of IAL-data (branch/tag/commit hash)",
+          "default": "develop"
+        },
+        "dir": {
+          "type": "string",
+          "description": "Directory where IAL-data is cloned and its dvc data pulled",
+          "default": "@CASEDIR@/IAL-data"
+        },
+        "dvc_targets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Paths (relative to the clone) to pull with dvc. Empty list pulls all data",
+          "default": []
+        },
+        "dvc_jobs": {
+          "type": "integer",
+          "description": "Number of parallel dvc download jobs. 0 uses the dvc default",
+          "default": 0
+        },
+        "dvc_bin": {
+          "type": "string",
+          "description": "dvc executable. If empty, use the one installed with tactus or found in PATH",
+          "default": ""
         }
       }
     },

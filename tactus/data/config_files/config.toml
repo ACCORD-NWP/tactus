@@ -90,6 +90,11 @@
   ial_git_repo = "git@github.com:ACCORD-NWP/IAL"
   ial_git_version = "fcf5469"
 
+[fetch_data]
+  dir = "@CASEDIR@/IAL-data"
+  ial_data_git_repo = "git@github.com:ACCORD-NWP/IAL-data.git"
+  ial_data_git_version = "develop"
+
 [include]
   archiving = "include/archiving/@HOST@.toml"
   cleaning = "include/cleaning.toml"
@@ -126,6 +131,7 @@
   create_time_dependent_suite = true
   do_archiving = true
   compile = false
+  fetch_data = false
   do_addcalculatedfields = true
   do_cleaning = true
   do_extractsqlite = true
