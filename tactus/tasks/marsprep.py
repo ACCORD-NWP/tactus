@@ -71,8 +71,13 @@ class Marsprep(Task):
             self.bdmember = infer_members(self.platform.substitute(bdmember_config_value))
 
         else:
+            try:
+                _members = str(config["task.args.members"])
+                members = [int(x) for x in _members.split(":")]
+            except KeyError:
+                members = self.config["eps.general.members"]
             bdmembers = set()
-            for member in self.config["eps.general.members"]:
+            for member in members:
                 member_config = get_member_config(self.config, member)
                 try:
                     member_bdmember_value = member_config["boundaries.ifs.bdmember"]
@@ -101,7 +106,10 @@ class Marsprep(Task):
 
         # Get the times from config.toml
         self.basetime = as_datetime(self.config["general.times.basetime"])
-        forecast_range = as_timedelta(self.config["general.times.forecast_range"])
+        try:
+            forecast_range = as_timedelta(self.config["task.args.forecast_range"])
+        except KeyError:
+            forecast_range = as_timedelta(self.config["general.times.forecast_range"])
 
         # Get boundary informations
         self.boundary = Boundary(config)
@@ -296,7 +304,7 @@ class Marsprep(Task):
         )
         if steps:
             self.get_gg_data(tag, steps, members_dict)
-            if "CY50" in self.config["general.cycle"]:
+            if self.config["boundaries.fix_snow_layer"]:
                 fix_snow_layer(tag, steps, members_dict)
             exist_soil = False
             with contextlib.suppress(KeyError):
@@ -560,7 +568,7 @@ class Marsprep(Task):
             + "/"
             + get_value_from_dict(self.mars["GG_sea"], self.init_date_str)
         )
-        if "CY50" in self.config["general.cycle"]:
+        if self.config["boundaries.fix_snow_layer"]:
             param = "/".join(x for x in param.split("/") if x != "32")
 
         for member in bdmember_list:
@@ -582,7 +590,7 @@ class Marsprep(Task):
                 source=source,
                 write_method=mars_write_method(self.mars_version),
             )
-            if "CY50" in self.config["general.cycle"]:
+            if self.config["boundaries.fix_snow_layer"]:
                 self._build_and_run_retrieve_request(
                     req_file_name="latlonGG.req",
                     data_type=data_type,
