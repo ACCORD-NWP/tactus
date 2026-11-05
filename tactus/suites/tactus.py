@@ -122,15 +122,12 @@ class TactusSuiteDefinition(SuiteDefinition):
                 )
             )
 
-        if prep_families:
-            prep_run = prep_families
+        # Nodes the rest of the suite waits for
+        prep_run = prep_families or [prep_run]
 
         # Update triggers for final cleaning and time dependent nodes
         if config["suite_control.do_cleaning"]:
-            if isinstance(prep_run, list):
-                final_cleaning_trigger.extend(prep_run)
-            else:
-                final_cleaning_trigger.append(prep_run)
+            final_cleaning_trigger.extend(prep_run)
             time_dependent_trigger_node = prep_run
 
         if create_static_data:
