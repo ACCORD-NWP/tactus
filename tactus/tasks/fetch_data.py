@@ -64,34 +64,6 @@ class IALDataFetch(Task):
         )
         return cmds
 
-    def expand_targets(self):
-        """Expand the dvc targets, to be done once the repository is cloned.
-
-        IAL-data tracks every file with its own .dvc file, which dvc does not
-        accept a directory as target for. Directory targets are hence replaced
-        by all the .dvc files found below them.
-
-        Returns:
-            list: dvc targets, relative to the clone
-
-        Raises:
-            FileNotFoundError: If a directory target contains no .dvc file
-        """
-        targets = []
-        for target in self.dvc_targets:
-            path = Path(self.data_dir) / target
-            if path.is_dir():
-                dvc_files = sorted(
-                    str(dvc_file.relative_to(self.data_dir))
-                    for dvc_file in path.rglob("*.dvc")
-                )
-                if not dvc_files:
-                    raise FileNotFoundError(f"No dvc tracked data found in {path}")
-                targets.extend(dvc_files)
-            else:
-                targets.append(target)
-        return targets
-
     def dvc_command(self):
         """Return the dvc command pulling the data.
 
@@ -101,8 +73,12 @@ class IALDataFetch(Task):
         cmd = f"cd {shlex.quote(self.data_dir)}; {shlex.quote(self.dvc_bin)} pull"
         if self.dvc_jobs:
             cmd += f" --jobs {int(self.dvc_jobs)}"
-        for target in self.expand_targets():
-            cmd += f" {shlex.quote(target)}"
+        if self.dvc_targets:
+            # IAL-data tracks every file with its own .dvc file, so directory
+            # targets need --recursive to pull the .dvc files below them
+            cmd += " --recursive"
+            for target in self.dvc_targets:
+                cmd += f" {shlex.quote(target)}"
         return cmd
 
     def execute(self):

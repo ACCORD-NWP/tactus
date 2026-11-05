@@ -214,30 +214,9 @@ def test_task_dvc_targets_and_jobs(fetch_task, tmp_path):
     cycle = task.platform.substitute("@CYCLE@")
 
     assert task.dvc_command() == (
-        f"cd {tmp_path / 'IAL-data'}; {task.dvc_bin} pull --jobs 4 "
+        f"cd {tmp_path / 'IAL-data'}; {task.dvc_bin} pull --jobs 4 --recursive "
         f"data/ncdir data/rrtm/{cycle}"
     )
-
-
-def test_task_expands_directory_targets(fetch_task, tmp_path):
-    coef = tmp_path / "IAL-data" / "data" / "satellite" / "coef"
-    coef.mkdir(parents=True)
-    (coef / "b.dat.dvc").touch()
-    (coef / "a.dat.dvc").touch()
-    (coef / "a.dat").touch()
-    (coef / ".gitignore").touch()
-    (tmp_path / "IAL-data" / "data" / "empty").mkdir()
-
-    task = fetch_task(dvc_targets=["data/satellite", "data/ncdir/file.nc.dvc"])
-    assert task.expand_targets() == [
-        "data/satellite/coef/a.dat.dvc",
-        "data/satellite/coef/b.dat.dvc",
-        "data/ncdir/file.nc.dvc",
-    ]
-
-    task = fetch_task(dvc_targets=["data/empty"])
-    with pytest.raises(FileNotFoundError, match="No dvc tracked data"):
-        task.expand_targets()
 
 
 def test_task_execute_runs_git_then_dvc(fetch_task, monkeypatch):
