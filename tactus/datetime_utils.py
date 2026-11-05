@@ -258,7 +258,7 @@ def get_decadal_list(dt_start, dt_end) -> list:
     return list(decades.values())
 
 
-def get_month_list(start, end) -> list:
+def get_month_list(start, end, extend=False) -> list:
     """Get list of months between two given dates (input as string)."""
     start = as_datetime(start)
     end = as_datetime(end)
@@ -266,10 +266,23 @@ def get_month_list(start, end) -> list:
     def count_months(dt):
         return dt.month + 12 * dt.year
 
-    return [
+    month_list = [
         (start + relativedelta(months=x)).month
         for x in range(min(count_months(end) - count_months(start) + 1, 12))
     ]
+
+    if extend:
+        last_month = month_list[0] - 1
+        if last_month == 0:
+            last_month = 12
+        next_month = month_list[-1] + 1
+        if next_month == 13:
+            next_month = 1
+
+        month_list.insert(0, last_month)
+        month_list.append(next_month)
+
+    return month_list
 
 
 def evaluate_date(date: str, reference_date=None) -> str:

@@ -1,3 +1,6 @@
+[boundaries]
+  fix_snow_layer = true
+
 [general]
   cycle = "CY49t2"
   surfex = true

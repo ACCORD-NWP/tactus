@@ -37,6 +37,9 @@ class Archive:
                 raise RuntimeError(f"Could not find archiving type {datatype}") from error
             skipped_types = []
 
+            if choices_for_type is None:
+                choices_for_type = {}
+
             for archive_type, choices in choices_for_type.items():
                 abort = (
                     archive_type not in include and len(include) > 0

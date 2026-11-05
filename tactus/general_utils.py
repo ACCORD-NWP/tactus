@@ -386,8 +386,5 @@ def recursive_substitute(value, platform, pos: Optional[List[str]] = None):
 
 
 def sanitize_case_name(s: str) -> str:
-    """Sub chars not matching [a-zA-Z0-9_.] with _, and replace a leading dot with _."""
-    result = re.sub(r"[^a-zA-Z0-9_.]", "_", s)
-    if result.startswith("."):
-        result = "_" + result[1:]
-    return result
+    """Sub chars not matching [a-zA-Z0-9_] with _, so no dots are kept."""
+    return re.sub(r"[^a-zA-Z0-9_]", "_", s)
