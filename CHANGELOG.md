@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Make sure E923Update is not executed if create_static_data is false and for more than one member. [#245](https://github.com/ACCORD-NWP/tactus/pull/245)(@uandrae)
 - Correct ttr cleaning. [#260](https://github.com/ACCORD-NWP/tactus/pull/260)(@uandrae)
 - Correct derivation of suite name from git branch. [#240](https://github.com/ACCORD-NWP/tactus/pull/240)(@uandrae), [#258](https://github.com/ACCORD-NWP/tactus/pull/258)(@uandrae)
+- Fix unit testing for local testing [#271](https://github.com/ACCORD-NWP/tactus/pull/271)(@trygveasp)
 
 ## [1.4.0] - 2026-10-11
 
