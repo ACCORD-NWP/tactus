@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import sys
 from pathlib import Path
 
 import pytest
@@ -148,7 +149,6 @@ def fetch_task(default_config, tmp_path):
             "ial_data_dir": str(tmp_path / "IAL-data"),
             "ial_data_git_repo": "git@example.com:foo/IAL-data.git",
             "ial_data_git_version": "v1.0",
-            "dvc_bin": "/path/to/dvc",
         }
         settings.update(fetch_data)
         config = default_config.copy(
@@ -173,7 +173,7 @@ def test_task_clones_when_dir_does_not_exist(fetch_task, tmp_path):
         f"cd {data_dir}; "
         "if git symbolic-ref -q HEAD > /dev/null; then git pull --ff-only; fi",
     ]
-    assert task.dvc_command() == f"cd {data_dir}; /path/to/dvc pull"
+    assert task.dvc_command() == f"cd {data_dir}; {task.dvc_bin} pull"
 
 
 def test_task_updates_existing_clone(fetch_task, tmp_path):
@@ -199,7 +199,7 @@ def test_task_dvc_targets_and_jobs(fetch_task, tmp_path):
     cycle = task.platform.substitute("@CYCLE@")
 
     assert task.dvc_command() == (
-        f"cd {tmp_path / 'IAL-data'}; /path/to/dvc pull --jobs 4 "
+        f"cd {tmp_path / 'IAL-data'}; {task.dvc_bin} pull --jobs 4 "
         f"data/ncdir data/rrtm/{cycle}"
     )
 
@@ -237,17 +237,8 @@ def test_task_execute_runs_git_then_dvc(fetch_task, monkeypatch):
     assert ran == [*task.git_commands(), task.dvc_command()]
 
 
-def test_get_dvc_bin(monkeypatch, tmp_path):
-    assert IALDataFetch.get_dvc_bin("/my/dvc") == "/my/dvc"
-
-    python = tmp_path / "bin" / "python"
-    python.parent.mkdir()
-    monkeypatch.setattr("sys.executable", str(python))
-    monkeypatch.setattr("shutil.which", lambda _name: None)
-    assert IALDataFetch.get_dvc_bin() == "dvc"
-
-    (python.parent / "dvc").touch()
-    assert IALDataFetch.get_dvc_bin() == os.fspath(python.parent / "dvc")
+def test_task_uses_dvc_installed_with_tactus(fetch_task):
+    assert fetch_task().dvc_bin == os.path.join(os.path.dirname(sys.executable), "dvc")
 
 
 def test_command_namespace_without_optional_arguments(

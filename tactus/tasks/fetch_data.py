@@ -2,7 +2,6 @@
 
 import os
 import shlex
-import shutil
 import sys
 from pathlib import Path
 
@@ -31,26 +30,8 @@ class IALDataFetch(Task):
             for target in self.config.get("fetch_data.dvc_targets", [])
         ]
         self.dvc_jobs = self.config.get("fetch_data.dvc_jobs", 0)
-        self.dvc_bin = self.get_dvc_bin(self.config.get("fetch_data.dvc_bin", ""))
-
-    @staticmethod
-    def get_dvc_bin(dvc_bin=""):
-        """Return the dvc executable to use.
-
-        Args:
-            dvc_bin (str): dvc executable set in the config. If empty, use the
-                one installed next to the running python interpreter if any,
-                otherwise rely on `dvc` being in PATH.
-
-        Returns:
-            str: dvc executable
-        """
-        if dvc_bin:
-            return dvc_bin
-        venv_dvc = Path(sys.executable).parent / "dvc"
-        if venv_dvc.exists():
-            return str(venv_dvc)
-        return shutil.which("dvc") or "dvc"
+        # Always use the dvc installed with tactus
+        self.dvc_bin = f"{os.path.dirname(sys.executable)}/dvc"
 
     def git_commands(self):
         """Return the git commands cloning/updating the IAL-data repository.

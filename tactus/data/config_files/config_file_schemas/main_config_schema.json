@@ -775,11 +775,6 @@
           "type": "integer",
           "description": "Number of parallel dvc download jobs. 0 uses the dvc default",
           "default": 0
-        },
-        "dvc_bin": {
-          "type": "string",
-          "description": "dvc executable. If empty, use the one installed with tactus or found in PATH",
-          "default": ""
         }
       }
     },

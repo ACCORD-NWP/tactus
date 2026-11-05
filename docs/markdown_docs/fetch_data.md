@@ -8,7 +8,7 @@ The `IALDataFetch` task clones IAL-data and pulls its data onto a given location
 
 `dvc` and `dvc-s3` are installed together with tactus.
 
-The data are read anonymously over https, so no credentials are needed to fetch them. `dvc-s3` is only needed by maintainers pushing data to the bucket. The task uses the `dvc` installed next to the python interpreter running tactus if any, otherwise the one found in `PATH`. It can also be set explicitly with `fetch_data.dvc_bin`.
+The data are read anonymously over https, so no credentials are needed to fetch them. `dvc-s3` is only needed by maintainers pushing data to the bucket. The task always uses the `dvc` installed with tactus, i.e. next to the python interpreter running it.
 
 ## Quick start
 
@@ -66,7 +66,6 @@ Note that IAL-data does not (yet) contain all the data under the host static dat
 | `fetch_data.ial_data_git_version` | `develop` | Branch/tag/commit to check out |
 | `fetch_data.dvc_targets` | `[]` | Paths, relative to the clone, to pull. Empty pulls everything (~30GB) |
 | `fetch_data.dvc_jobs` | `0` | Number of parallel downloads, `0` uses the dvc default |
-| `fetch_data.dvc_bin` | `""` | dvc executable, see [Requirements](#requirements) |
 
 ## The `IALDataFetch` task
 
