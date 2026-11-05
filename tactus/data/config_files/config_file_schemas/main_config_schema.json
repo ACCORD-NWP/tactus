@@ -758,9 +758,9 @@
           "description": "Git version of IAL-data (branch/tag/commit hash)",
           "default": "develop"
         },
-        "dir": {
+        "ial_data_dir": {
           "type": "string",
-          "description": "Directory where IAL-data is cloned and its dvc data pulled",
+          "description": "Directory where IAL-data is cloned and its dvc data pulled. Available as the @IAL_DATA_DIR@ macro",
           "default": "@CASEDIR@/IAL-data"
         },
         "dvc_targets": {

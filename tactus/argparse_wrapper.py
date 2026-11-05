@@ -326,7 +326,7 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         dest="data_dir",
         help=(
             "Directory where IAL-data is cloned and its data pulled, "
-            + "if not given fetch_data.dir from the config will be used"
+            + "if not given fetch_data.ial_data_dir from the config will be used"
         ),
         default=None,
         required=False,

@@ -25,7 +25,7 @@ class IALDataFetch(Task):
 
         self.git_repo = self.config["fetch_data.ial_data_git_repo"]
         self.git_version = self.config["fetch_data.ial_data_git_version"]
-        self.data_dir = self.platform.substitute(self.config["fetch_data.dir"])
+        self.data_dir = self.platform.substitute(self.config["fetch_data.ial_data_dir"])
         self.dvc_targets = [
             self.platform.substitute(target)
             for target in self.config.get("fetch_data.dvc_targets", [])

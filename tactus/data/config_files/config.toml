@@ -91,7 +91,7 @@
   ial_git_version = "fcf5469"
 
 [fetch_data]
-  dir = "@CASEDIR@/IAL-data"
+  ial_data_dir = "@CASEDIR@/IAL-data"
   ial_data_git_repo = "git@github.com:ACCORD-NWP/IAL-data.git"
   ial_data_git_version = "develop"
 

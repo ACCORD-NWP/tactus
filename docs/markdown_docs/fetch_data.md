@@ -33,7 +33,7 @@ The data then end up under `/path/to/IAL-data/data`, with the same layout as `@S
 
 | Argument | Config key | Description |
 | --- | --- | --- |
-| `--data-dir` | `fetch_data.dir` | Where IAL-data is cloned and its data pulled. Relative paths are made absolute |
+| `--data-dir` | `fetch_data.ial_data_dir` | Where IAL-data is cloned and its data pulled. Relative paths are made absolute |
 | `--ial-data-version` | `fetch_data.ial_data_git_version` | Branch/tag/commit of IAL-data to check out |
 | `--ial-data-repo` | `fetch_data.ial_data_git_repo` | IAL-data repository to clone |
 | `--target` | `fetch_data.dvc_targets` | Only pull this path of IAL-data, e.g. `data/ncdir`. Can be repeated |
@@ -56,7 +56,7 @@ tactus case ?tactus/data/config_files/configurations/cy50t2_arome tactus/data/co
 
 or set `suite_control.fetch_data = true` in your config. The `FetchData` family then runs after `PrepRun`, in parallel with the `Compilation` family when compilation is also active. The following nodes (static data, and the time dependent part and final cleaning when they trigger on `PrepRun`) wait for both families, in the same way as for the compilation alone.
 
-`fetch_data.toml` also sets `platform.static_data = "@IAL_DATA_DIR@/data"`, where the `@IAL_DATA_DIR@` macro is `fetch_data.dir`. The run hence reads its static data from what it fetched, i.e. by default from `@CASEDIR@/IAL-data/data`. Setting `suite_control.fetch_data = true` alone fetches the data without changing `platform.static_data`.
+`fetch_data.toml` also sets `platform.static_data = "@IAL_DATA_DIR@/data"`, where the `@IAL_DATA_DIR@` macro is `fetch_data.ial_data_dir`. The run hence reads its static data from what it fetched, i.e. by default from `@CASEDIR@/IAL-data/data`. Setting `suite_control.fetch_data = true` alone fetches the data without changing `platform.static_data`.
 
 Note that IAL-data does not (yet) contain all the data under the host static data directories. On ATOS, `BATOR` (data assimilation), `WFP_input_files` (wind farms), `climate_fields_mir` and `climate/OSM_SFX8_1_EU` (`pgd.use_osm`) are missing, so configurations needing them cannot use `fetch_data.toml` yet.
 
@@ -65,7 +65,7 @@ Note that IAL-data does not (yet) contain all the data under the host static dat
 | Key | Default | Description |
 | --- | --- | --- |
 | `suite_control.fetch_data` | `false` | Add the `FetchData` family to the main suite |
-| `fetch_data.dir` | `@CASEDIR@/IAL-data` | Where IAL-data is cloned and its data pulled. Available as the `@IAL_DATA_DIR@` macro |
+| `fetch_data.ial_data_dir` | `@CASEDIR@/IAL-data` | Where IAL-data is cloned and its data pulled. Available as the `@IAL_DATA_DIR@` macro |
 | `fetch_data.ial_data_git_repo` | `git@github.com:ACCORD-NWP/IAL-data.git` | IAL-data repository |
 | `fetch_data.ial_data_git_version` | `develop` | Branch/tag/commit to check out |
 | `fetch_data.dvc_targets` | `[]` | Paths, relative to the clone, to pull. Empty pulls everything (~30GB) |
@@ -74,7 +74,7 @@ Note that IAL-data does not (yet) contain all the data under the host static dat
 
 ## The `IALDataFetch` task
 
-* If `fetch_data.dir` is not a git clone yet, IAL-data is cloned into it. The directory may exist if it is empty; a non-empty directory that is not a git clone is an error.
+* If `fetch_data.ial_data_dir` is not a git clone yet, IAL-data is cloned into it. The directory may exist if it is empty; a non-empty directory that is not a git clone is an error.
 * If it is already a clone, it is updated with `git fetch`.
 * The configured version is checked out and, if it is a branch, fast-forwarded to the remote.
 * `dvc pull` is run on the configured targets. Directory targets are expanded to all the `.dvc` files below them, as IAL-data tracks each file separately. Files already present and unchanged are not downloaded again, so the task can be rerun to update the data.

@@ -104,7 +104,7 @@ def test_create_fetch_data_exp_sets_config_and_modifications(
     create_fetch_data_exp(args, default_config)
 
     config = captured_create_exp["config"]
-    assert config["fetch_data.dir"] == str((tmp_path / "relative/dir").resolve())
+    assert config["fetch_data.ial_data_dir"] == str((tmp_path / "relative/dir").resolve())
     assert config["fetch_data.ial_data_git_version"] == "v1.0"
     assert config["fetch_data.ial_data_git_repo"] == "foo"
     assert list(config["fetch_data.dvc_targets"]) == ["data/ncdir"]
@@ -123,7 +123,7 @@ def test_create_fetch_data_exp_keeps_config_defaults(default_config, captured_cr
 
     config = captured_create_exp["config"]
     # Macros are not resolved by the command, but by the task
-    assert config["fetch_data.dir"] == "@SCRATCH@/IAL-data"
+    assert config["fetch_data.ial_data_dir"] == "@SCRATCH@/IAL-data"
     assert (
         config["fetch_data.ial_data_git_version"]
         == default_config["fetch_data.ial_data_git_version"]
@@ -145,7 +145,7 @@ def fetch_task(default_config, tmp_path):
 
     def _create(**fetch_data):
         settings = {
-            "dir": str(tmp_path / "IAL-data"),
+            "ial_data_dir": str(tmp_path / "IAL-data"),
             "ial_data_git_repo": "git@example.com:foo/IAL-data.git",
             "ial_data_git_version": "v1.0",
             "dvc_bin": "/path/to/dvc",
@@ -258,7 +258,9 @@ def test_command_namespace_without_optional_arguments(
         data_dir=None, ial_data_version=None, ial_data_repo=None, dvc_targets=None
     )
     create_fetch_data_exp(args, default_config)
-    assert captured_create_exp["config"]["fetch_data.dir"] == "@CASEDIR@/IAL-data"
+    assert (
+        captured_create_exp["config"]["fetch_data.ial_data_dir"] == "@CASEDIR@/IAL-data"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -273,7 +275,9 @@ def test_fetch_data_modification_sets_static_data(default_config):
         / "tactus/data/config_files/modifications/fetch_data.toml"
     )
     mod = ParsedConfig.from_file(mod_file, json_schema={})
-    config = default_config.copy(update={"fetch_data": {"dir": "/some/IAL-data"}})
+    config = default_config.copy(
+        update={"fetch_data": {"ial_data_dir": "/some/IAL-data"}}
+    )
     config = config.copy(update=mod)
 
     assert config["suite_control.fetch_data"] is True

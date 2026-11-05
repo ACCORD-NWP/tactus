@@ -201,7 +201,7 @@ def create_fetch_data_exp(args, config):
         # Make plain paths absolute, as the task runs in its own work directory
         if "@" not in data_dir:
             data_dir = str(Path(data_dir).expanduser().resolve())
-        fetch_data["dir"] = data_dir
+        fetch_data["ial_data_dir"] = data_dir
     if args.ial_data_version is not None:
         fetch_data["ial_data_git_version"] = args.ial_data_version
     if args.ial_data_repo is not None:
