@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
-- Add `IALDataFetch` task, `FetchDataSuiteDefinition` suite and `tactus fetch-data` command cloning IAL-data and pulling its dvc data. The task can also run in the main suite with the `fetch_data.toml` modification, which also sets `platform.static_data` to the fetched data (`@IAL_DATA_DIR@/data`). (@pardallio)
+- Add `IALDataFetch` task, `FetchDataSuiteDefinition` suite and `tactus fetch-data` command cloning IAL-data and pulling its dvc data. The task can also run in the main suite with the `fetch_data.toml` modification, which also sets `platform.static_data` to the fetched data (`@IAL_DATA_DIR@/data`). `dvc` and `dvc-s3` are now dependencies. (@pardallio)
 - Add command line options for compilation to `tatcus test`. [#261](https://github.com/ACCORD-NWP/tactus/pull/261)(@uandrae)
 - Add selection of UWC West domain definitions. [#249](https://github.com/ACCORD-NWP/tactus/pull/249)(@ewhelan)
 - Allow specify member information when generating namelists command line. [#244](https://github.com/ACCORD-NWP/tactus/pull/244)(@uandrae)
