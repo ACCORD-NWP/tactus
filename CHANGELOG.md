@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add option to use other cycle's executables for LBC task. [#223](https://github.com/ACCORD-NWP/tactus/pull/223)(@pardallio)
 
 ### Fixed
+- Use Python 3.12 in the documentation and package-build workflows, which failed on Ubuntu 26.04 runners. [#PR](https://github.com/ACCORD-NWP/tactus/pull/PR)(@kastelecn)
 - Make sure correct monthly data input is used in E923. [#275](https://github.com/ACCORD-NWP/tactus/pull/275)(@uandrae)
 - Make sure E923Update is not executed if create_static_data is false and for more than one member. [#245](https://github.com/ACCORD-NWP/tactus/pull/245)(@uandrae)
 - Correct ttr cleaning. [#260](https://github.com/ACCORD-NWP/tactus/pull/260)(@uandrae)
