@@ -72,6 +72,7 @@ Note that IAL-data does not (yet) contain all the data under the host static dat
 * If `fetch_data.ial_data_dir` is not a git clone yet, IAL-data is cloned into it. The directory may exist if it is empty; a non-empty directory that is not a git clone is an error.
 * If it is already a clone, it is updated with `git fetch`.
 * The configured version is checked out and, if it is a branch, fast-forwarded to the remote.
+* dvc is configured (in the clone's `.dvc/config.local`) to keep its state database, which remembers the hashes of the files already pulled, in the clone (`.dvc/tmp/site_cache`). By default it lives in a node-local system directory, so a job on another node would hash all the data again (this can take tens of minutes).
 * `dvc pull` is run on the configured targets. Targets are pulled with `--recursive`, as IAL-data tracks each file with its own `.dvc` file: a directory target pulls all the files below it. Files already present and unchanged are not downloaded again, so the task can be rerun to update the data.
 
 On ATOS the task has a walltime of one hour.

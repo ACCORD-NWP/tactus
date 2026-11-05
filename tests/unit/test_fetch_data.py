@@ -228,7 +228,15 @@ def test_task_execute_runs_git_then_dvc(fetch_task, monkeypatch):
 
     _ORIGINAL_EXECUTE(task)
 
-    assert ran == [*task.git_commands(), task.dvc_command()]
+    assert ran == [*task.git_commands(), task.dvc_config_command(), task.dvc_command()]
+
+
+def test_task_keeps_dvc_state_in_clone(fetch_task, tmp_path):
+    data_dir = tmp_path / "IAL-data"
+    assert fetch_task().dvc_config_command() == (
+        f"cd {data_dir}; {fetch_task().dvc_bin} config --local "
+        f"core.site_cache_dir {data_dir}/.dvc/tmp/site_cache"
+    )
 
 
 def test_task_uses_dvc_installed_with_tactus(fetch_task):

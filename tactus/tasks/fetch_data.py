@@ -64,6 +64,26 @@ class IALDataFetch(Task):
         )
         return cmds
 
+    def dvc_config_command(self):
+        """Return the command keeping the dvc state database in the clone.
+
+        dvc remembers the hashes of the workspace files in a state database,
+        by default in a system cache directory (e.g. /var/tmp on Linux). That
+        directory is local to each node, so a job running on another node
+        would hash all the data again. Keeping it in the clone (.dvc/tmp is
+        ignored by git) lets every job reuse it.
+
+        Returns:
+            str: Shell command to run
+        """
+        site_cache_dir = os.path.join(
+            os.path.abspath(self.data_dir), ".dvc", "tmp", "site_cache"
+        )
+        return (
+            f"cd {shlex.quote(self.data_dir)}; {shlex.quote(self.dvc_bin)} config "
+            f"--local core.site_cache_dir {shlex.quote(site_cache_dir)}"
+        )
+
     def dvc_command(self):
         """Return the dvc command pulling the data.
 
@@ -87,6 +107,7 @@ class IALDataFetch(Task):
         for cmd in self.git_commands():
             batch_job.run(cmd)
 
+        batch_job.run(self.dvc_config_command())
         logger.info("Pulling dvc data into {}", self.data_dir)
         batch_job.run(self.dvc_command())
         logger.info("IAL-data {} available in {}", self.git_version, self.data_dir)
