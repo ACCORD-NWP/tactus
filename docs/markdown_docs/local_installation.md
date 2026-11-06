@@ -45,12 +45,24 @@ Linda is the SMHI RedHat linux environment. In the following it's described how 
 ```
 "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
 micromamba self-update
-micromamba create -n tactus_3.10 python=3.10 ecflow poetry
+micromamba create -n tactus_3.10 python=3.10 ecflow poetry uv
 micromamba activate tactus_3.10
 git clone git@github.com:ACCORD-NWP/tactus.git
 cd tactus
+```
+
+No pick your favorite package manager and do either 
+
+```
 poetry install
 ```
+or 
+```
+uv sync
+source .venv/bin/activate
+```
+
+Note the difference where poetry and uv installs the virtual environment
 
 ### Platform dependent config files
 
