@@ -19,7 +19,7 @@ from .config_parser import BasicConfig, ConfigPaths, ParsedConfig
 from .datetime_utils import evaluate_date
 from .experiment import get_git_info
 from .fullpos import flatten_list
-from .general_utils import merge_dicts, sanitize_case_name
+from .general_utils import ial_compile_modifs, merge_dicts, sanitize_case_name
 from .host_actions import TactusHost
 from .logs import logger
 from .reference_checker import CheckSummaryAnalysis
@@ -69,6 +69,17 @@ class TestCases:
         self.test_dir = definitions.get("test_dir", f"ttr-configs/{self.tag}_configs")
         self.ial = definitions.get("ial", {})
         self.gl = definitions.get("gl", {})
+        ial_options = {
+            "ial_tag": getattr(args, "ial_tag", None),
+            "ial_repo": getattr(args, "ial_repo", None),
+            "compiler": getattr(args, "compiler", None),
+        }
+        if getattr(args, "compile", False):
+            self.add_compilation(definitions, **ial_options)
+        else:
+            given = [f"--{k.replace('_', '-')}" for k, v in ial_options.items() if v]
+            if given:
+                raise ValueError(f"{', '.join(given)} can only be used with --compile")
         self.selection = self.resolve_selection(definitions)
         self.assigned = {}
         self.generate_refs = args.generate_refs if args.generate_refs else False
@@ -100,6 +111,86 @@ class TestCases:
 
         if self.tag[0].isdigit():
             raise ValueError(f"The tag cannot start with an integer. tag={self.tag}")
+
+    def add_compilation(self, definitions, ial_tag=None, ial_repo=None, compiler=None):
+        """Run the compilation case first and make the selected cases use it.
+
+        Reads general.compile from the test config:
+
+        * case: name of the compilation case, added first to the selection
+        * modifs: modifications applied to all cases, e.g. bindir pointing
+          to the install directory of the compilation case
+
+        Every selected case without a host gets the compilation case as host
+        and mirrors its suite, so it waits for the compilation to finish.
+        Cases that already have a host depend on it through that host.
+
+        The IAL options work as for "tactus compile": ial_tag and ial_repo
+        set what the compilation case clones, and compiler sets
+        submission.compiler for all cases, since they all run the binaries it
+        builds. A compiler that is also a compiler subtag in general.compiler
+        becomes the only active subtag, so case names match the compiler.
+
+        Must be called before resolve_selection, so that compiler subtags are
+        applied to the new host dependencies as well.
+
+        Arguments:
+            definitions (dict): Configuration, updated in place
+            ial_tag (str, optional): IAL git tag/branch/hash to compile
+            ial_repo (str, optional): IAL git repository to clone
+            compiler (str, optional): Compiler to build and run with
+
+        Raises:
+            ValueError: If the compilation case is not configured or not defined
+        """
+        cases = list(self.cases)
+        compile_cases = [x for x in cases if "compile" in x]
+
+        if len(compile_cases) == 0:
+            raise ValueError(f"Found no compile cases in {cases}")
+        if len(compile_cases) > 1:
+            raise ValueError(f"Found more than one compile cases: {compile_cases}")
+
+        compile_case = compile_cases[0]
+
+        selection = definitions["general"].get("selection") or list(self.cases)
+        selection = [case for case in selection if case != compile_case]
+
+        for case in selection:
+            item = self.cases[case]
+            if "host" in item:
+                continue
+            logger.info("Make {} depend on {}", case, compile_case)
+            item["host"] = compile_case
+            modifs = item.setdefault("modifs", {})
+            modifs.setdefault("suite_control", {})["mirror_suite"] = True
+
+        definitions["general"]["selection"] = [compile_case, *selection]
+
+        # What to clone only matters for the compilation case
+        ial_modifs = ial_compile_modifs(ial_tag=ial_tag, ial_repo=ial_repo)
+        if ial_modifs:
+            item = self.cases[compile_case]
+            item["modifs"] = merge_dicts(item.get("modifs", {}), ial_modifs, True)
+            logger.info("Compile IAL with {}", ial_modifs["compile"])
+
+        if compiler is not None:
+            self.modifs = merge_dicts(
+                self.modifs, ial_compile_modifs(compiler=compiler), True
+            )
+            subtags = definitions["general"].get("compiler", {})
+            if compiler in subtags:
+                for tag, value in subtags.items():
+                    value["active"] = tag == compiler
+            elif subtags:
+                logger.warning(
+                    "Compiler {} is not a compiler subtag {}, subtags unchanged",
+                    compiler,
+                    list(subtags),
+                )
+            logger.info("Compile and run with compiler {}", compiler)
+
+        logger.info("Compile in {} before running the selected cases", compile_case)
 
     def resolve_selection(self, definitions):
         """Resolve the selections.

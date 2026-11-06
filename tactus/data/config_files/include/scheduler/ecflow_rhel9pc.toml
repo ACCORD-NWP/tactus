@@ -1,0 +1,10 @@
+[scheduler.ecfvars]
+  case_prefix = ""
+  ecf_files = "/home/@USER@/@SYS_NAME@_ecflow/ecf_files"
+  ecf_files_remotely = "/home/@USER@/@SYS_NAME@_ecflow/ecf_files"
+  ecf_home = "/home/@USER@/@SYS_NAME@_ecflow/jobout"
+  ecf_host = "localhost"
+  ecf_jobout = "/home/@USER@/@SYS_NAME@_ecflow/jobout"
+  ecf_out = "/home/@USER@/@SYS_NAME@_ecflow/jobout"
+  ecf_port = "_set_port_from_user('1500',)"
+  ecf_tactus_home = "@TACTUS_HOME@"
