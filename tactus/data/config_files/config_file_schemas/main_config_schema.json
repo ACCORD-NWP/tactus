@@ -687,7 +687,7 @@
         "arch_dir": {
           "type": "string",
           "description": "Directory where arch files can be found",
-          "default": "@CASEDIR@/IAL/bundle/arch"
+          "default": "@COMPILE.IAL_DIR@/bundle/arch"
         },
         "dir": {
           "type": "string",
@@ -707,7 +707,7 @@
         "bundle_file": {
           "type": "string",
           "description": "bundle used for compiling binaries",
-          "default": "@CASEDIR@/IAL/bundle/bundle.yml"
+          "default": "@COMPILE.IAL_DIR@/bundle/bundle.yml"
         },
         "ninja": {
           "type": "boolean",
