@@ -23,7 +23,8 @@ Please delete options that are not relevant.
 tactus test -c tactus/data/tests/atos_bologna_CY49t2.toml -m -r
 tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -m -r
 ```
-and added the corresponding lable 'bit-reproducible' or 'non-bit-reproducible' depending on the outcome of the tests.
+and added the corresponding lable 'bit-reproducible' or 'non-bit-reproducible' depending on the outcome of the tests. In case of `non bit-reproducible`
+include the outcome of `tactus test -c tactus/data/tests/atos_bologna_<CYCLE>.toml -i` where `<CYCLE>` is CY49t2 or CY50t2.
 
 For further information see the [development guide](https://github.com/ACCORD-NWP/tactus/blob/develop/docs/markdown_docs/development_guide.md)
 
