@@ -21,7 +21,7 @@ from .config_parser import BasicConfig, ConfigParserDefaults, ConfigPaths, Parse
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
 from .eps.eps_setup import EPSConfig, get_member_config
 from .experiment import case_setup
-from .general_utils import sanitize_case_name
+from .general_utils import ial_compile_modifs, sanitize_case_name
 from .host_actions import TactusHost, set_tactus_home
 from .logs import logger
 from .namelist import (
@@ -170,15 +170,13 @@ def create_compile_exp(args, config):
     platform = Platform(config)
     ial_tag_case = sanitize_case_name(platform.substitute(args.ial_tag))
     config = config.copy(
-        update={
-            "compile": {
-                "ial_git_version": args.ial_tag,
-                "ial_git_tag_case": ial_tag_case,
-            },
-        }
+        update=ial_compile_modifs(
+            ial_tag=args.ial_tag,
+            ial_repo=args.ial_repo,
+            compiler=getattr(args, "compiler", None),
+            ial_tag_case=ial_tag_case,
+        )
     )
-    if args.ial_repo is not None:
-        config = config.copy(update={"compile": {"ial_git_repo": args.ial_repo}})
 
     args.config_mods = [
         "tactus/data/config_files/modifications/@HOST@.toml",
@@ -430,7 +428,11 @@ def show_host(args, config):
 
     """
     tactus_host = TactusHost()
-    logger.info("Current host: {}", tactus_host.detect_tactus_host())
+    logger.info(
+        "Current host: {}, hostname: {}",
+        tactus_host.detect_tactus_host(),
+        tactus_host.hostname,
+    )
     logger.info("Known hosts (host, recognition method):")
     for host, pattern in tactus_host.known_hosts.items():
         logger.info("{:>16}   {}", host, pattern)

@@ -15,8 +15,10 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: hynek/build-and-inspect-python-package@v2.14.0
+      - uses: hynek/build-and-inspect-python-package@v3.0.2
         id: baipp
+        with:
+          python-version: '3.12'
 
     outputs:
       # Used to define the matrix for tests below. The value is based on
