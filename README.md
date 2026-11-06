@@ -17,16 +17,9 @@ See the [project's documentation page](https://ACCORD-NWP.github.io/tactus) for 
 
 
 ## Set up environment
-**Make sure you have python>=3.12**
+The following instructions are valid on Atos, for other platforms see [local installation guidelines](https://accord-nwp.github.io/tactus/misc_section_in_doc_page.html#local-installations).
 
-<a name="#put-poetry-in-path"></a> Start by adding the `$HOME/.local/bin`
-directory in your `PATH`:
-```shell
-export PATH="$HOME/.local/bin:$PATH"
-```
-
-
-Then, run:
+Make sure you have the right python version
 
 * On Atos (`hpc-login`)
   ```shell
@@ -34,14 +27,7 @@ Then, run:
   module load ecflow
   ```
 
-
 ## Installation
-
-First checkout the `tactus` source code from github:
-```shell
-git clone git@github.com:ACCORD-NWP/tactus.git
-cd tactus
-```
 
 For development, use forks as specified in the [Development guidelines](https://ACCORD-NWP.github.io/tactus/development_guidelines_link.html).
 To clone the forked repository, use the following command, replacing \<username\> with your GitHub username:
@@ -52,8 +38,7 @@ cd tactus
 
 ### With uv
   ```shell
-  # Download and install uv
-  curl -LsSf https://astral.sh/uv/install.sh | sh
+  module load uv 
   uv venv --system-site-packages --no-managed-python
   uv sync 
   ```
@@ -64,6 +49,12 @@ Activate by
   ```
 
 ### With poetry
+
+<a name="#put-poetry-in-path"></a> Start by adding the `$HOME/.local/bin`
+directory in your `PATH`:
+```shell
+export PATH="$HOME/.local/bin:$PATH"
+```
 
 Install/Reinstall [`poetry`](https://python-poetry.org) by running the following commands in your shell:
 
