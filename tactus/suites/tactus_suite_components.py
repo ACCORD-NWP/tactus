@@ -107,11 +107,10 @@ class E923MonthlyFamily(EcflowSuiteFamily):
             "Q4": "10,11,12",
         }
 
-        if config["pgd.one_decade"]:
+        if not config["general.full_year_climate"]:
             month_list = get_month_list(
                 config["general.times.start"], config["general.times.end"], extend=True
             )
-
             seasons = {}
             for mm in sorted(month_list):
                 seasons[f"m{mm:02d}"] = f"{mm:02d}"
@@ -153,7 +152,7 @@ class PgdNode(EcflowSuiteFamily, EcflowSuiteTask):
         limit=None,
     ):
         """Class initialization."""
-        if config["pgd.one_decade"]:
+        if config["pgd.one_decade"] and config["pgd.ecosg"]:
             EcflowSuiteFamily.__init__(
                 self,
                 node_name,
