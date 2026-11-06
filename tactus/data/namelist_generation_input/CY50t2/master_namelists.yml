@@ -1588,8 +1588,6 @@ f4_c903_domain:
     - CLOUD_FRACTI
     - PRESS.DEPART
     - VERTIC.DIVER
-    - RAIN
-    - SNOW
     CFPDIR: ELSCF
     CFPDOM: ${cfg:fullpos.domain_name}
     CFPFMT: LELAM
@@ -1663,12 +1661,33 @@ f4_c903_domain:
     LNONHYD_GEOM: true
   NEMFPEZO:
     RCO_EZO: 180.0
-f4_c903_HARMONIE_AROME:
+
+f4_c903_main_HARMONIE_AROME:
   NAMGFL:
     YR_NL%NREQIN: 1
     YS_NL%NREQIN: 1
     YI_NL%NREQIN: 1
     YL_NL%NREQIN: 1
+
+f4_c903_domain_HARMONIE_AROME:
+  NAMFPC:
+    CFP3DF:
+    - RAIN
+    - SNOW
+    - TEMPERATURE
+    - HUMI.SPECIFIQUE
+    - WIND.U.PHYS
+    - WIND.V.PHYS
+    - CLOUD_WATER
+    - ICE_CRYSTAL
+    - RAIN
+    - SNOW
+    - GRAUPEL
+    - CLOUD_FRACTI
+    - PRESS.DEPART
+    - VERTIC.DIVER
+    - TKE
+
 f4_e927_lam:
   NAMDYNA:
     LNHEE: true
