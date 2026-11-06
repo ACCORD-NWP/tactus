@@ -10,12 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
+- Add configs for RHEL 9 PC. [#259](https://github.com/ACCORD-NWP/tactus/pull/259)(@ewhelan)
 - Add command line options for compilation to `tatcus test`. [#261](https://github.com/ACCORD-NWP/tactus/pull/261)(@uandrae)
 - Add selection of UWC West domain definitions. [#249](https://github.com/ACCORD-NWP/tactus/pull/249)(@ewhelan)
 - Allow specify member information when generating namelists command line. [#244](https://github.com/ACCORD-NWP/tactus/pull/244)(@uandrae)
 - Allow to use duration of start_date specfication in mars config. Allows to introduce start date for IFSENS. [#243](https://github.com/ACCORD-NWP/tactus/pull/243)(@uandrae)
 
 ### Changed
+- Sets defaults for `archiving.hour.copy.config config` as it is not platform dependent. [#259](https://github.com/ACCORD-NWP/tactus/pull/259)(@uandrae)
 - Do not compile CY50T2 for the test-runner by default. [#251](https://github.com/ACCORD-NWP/tactus/pull/251)(@uandrae)
 - Stricter host detection rules for env + hostname definitions. [#254](https://github.com/ACCORD-NWP/tactus/pull/254)(@uandrae)
 - Change confusing trigger warnings to debug loggings. [#239](https://github.com/ACCORD-NWP/tactus/pull/239)(@uandrae)
