@@ -1,7 +1,7 @@
 [virtualenvs]
   create = true
   in-project = true
-  prefer-active-python = true
+  use-poetry-python = false
 
 [virtualenvs.options]
   system-site-packages = true

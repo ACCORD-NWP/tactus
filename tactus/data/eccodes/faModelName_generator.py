@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
     if align_equal_signs:
         pairs = [line.split("=", 1) for line in contents]
-        maxlen = max([len(lhs) for lhs in next(zip(*pairs))])
+        maxlen = max([len(lhs) for lhs in next(zip(*pairs, strict=True))])
         fmt = "{" + ":{}s".format(maxlen) + "}={}"
         contents = [fmt.format(u, v) for (u, v) in pairs]
 
