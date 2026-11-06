@@ -2,6 +2,7 @@
 
 import atexit
 import contextlib
+import io
 import os
 import shutil
 import sys
@@ -20,7 +21,7 @@ from eccodes import (
 )
 
 from .config_parser import ParsedConfig
-from .datetime_utils import as_datetime
+from .datetime_utils import as_datetime, evaluate_date
 from .domain_utils import get_domain
 from .geo_utils import Projection, Projstring
 from .logs import logger
@@ -33,7 +34,7 @@ def mars_selection(selection: str, config: ParsedConfig) -> dict:
 
     Args:
         selection             (str): The selection to use.
-        config (tactus.ParsedConfig): Configuration object
+        config (ParsedConfig): Configuration object
 
     Returns:
          mars                (dict): mars config section
@@ -265,6 +266,10 @@ def get_steps_and_members_to_retrieve(
     if perturbed_members:
         members_dict["perturbed_members"] = perturbed_members
 
+    # Populate members_dict to make sure we wait for missing files
+    if len(waitfor_steps) > 0 and len(members_dict) == 0:
+        members_dict["no_member_info"] = [None]
+
     return (
         steps,
         waitfor_steps,
@@ -284,7 +289,7 @@ def check_data_available(basetime, mars):
     Raises:
         ValueError: if the basetime falls outside the available range
     """
-    start_date = as_datetime(mars["start_date"])
+    start_date = as_datetime(evaluate_date(mars["start_date"]))
     with contextlib.suppress(KeyError):
         end_date = as_datetime(mars["end_date"])
         if basetime > end_date:
@@ -302,7 +307,7 @@ def get_domain_data(config):
     """Read and return domain data.
 
     Args:
-        config (tactus.ParsedConfig): Configuration from which we get the domain data
+        config (ParsedConfig): Configuration from which we get the domain data
     Returns:
         String containing the domain info for MARS
     """
@@ -323,15 +328,18 @@ def get_domain_data(config):
     ])
 
 
-def get_value_from_dict(dict_, key_orig):
+def get_value_from_dict(dict_, reference_date, key_orig=None):
     """Check value according to key.
 
     - If a string returns the value itself
-    - If key is a date search for the most suitable match in value
-    - Else return the value matching the key.
+    - If key_orig is given call recursively with dict[key_orig]
+    - If a dict check most suitable reference_date > date.
+      If the reference_date < any date pick the first one
+    - If no date exists return the value matching the key.
 
     Args:
         dict_ (str, BaseConfig object): Values to select
+        reference_date (str): Date to check against
         key_orig (str): key for value checking
 
     Returns:
@@ -343,8 +351,11 @@ def get_value_from_dict(dict_, key_orig):
     if isinstance(dict_, str):
         return dict_
 
+    if key_orig is not None:
+        return get_value_from_dict(dict_[key_orig], reference_date)
+
     try:
-        ref_date = as_datetime(key_orig)
+        ref_date = as_datetime(reference_date)
         for key, val in sorted(dict_.items(), reverse=True):
             if ref_date >= as_datetime(key):
                 return val
@@ -703,25 +714,50 @@ def fix_snow_layer(tag: str, steps: List[int], members_dict: Dict[str, List[int]
         for members in members_dict.values():
             for member in members:
                 filename = f"{tag}_{member or 0}+{step}"
-
-                with open(filename, "rb") as fin, open("ICMGGtmp", "wb") as fout:
-                    while True:
-                        gid = codes_grib_new_from_file(fin)
+                grid_asn = None
+                position = 0
+                with open(filename, "r+b") as file:
+                    while grid_asn is None:
+                        position = file.tell()
+                        gid = codes_grib_new_from_file(file)
                         if gid is None:
                             break
                         try:
                             short_name = str(codes_get(gid, "shortName"))
                             if short_name == "asn":
-                                logger.info(
-                                    "Fixing snow layer for snow albedo in file: {}",
-                                    filename,
-                                )
-                                codes_set(gid, "edition", 2)
-                                codes_set(gid, "typeOfLevel", "snowLayer")
-                                codes_set(gid, "level", 1)
-
-                            codes_write(gid, fout)
+                                grid_asn = gid
                         finally:
-                            codes_release(gid)
+                            if grid_asn is None:
+                                codes_release(gid)
 
-                shutil.move("ICMGGtmp", filename)
+                    if grid_asn:
+                        logger.info(
+                            f"Fixing snow layer for snow albedo in file :{filename}"
+                        )
+                        # The asn message is fixed in place for performance reason.
+                        # As the message size changes when snowLayer is set,
+                        # the message can't be updated in the middle of the file.
+                        # Therefore, the original message is invalidated by
+                        # setting paramId to an unused value (99), and the
+                        # correct message is appended at the end of the file.
+
+                        try:
+                            original_param_id = codes_get(grid_asn, "paramId")
+
+                            # Invalidate the original message in place
+                            # (size unchanged).
+                            dummy_param_id = 99
+                            codes_set(grid_asn, "paramId", dummy_param_id)
+                            file.seek(position)
+                            codes_write(grid_asn, file)
+
+                            # Append the fixed message at the end of the file.
+                            codes_set(grid_asn, "paramId", original_param_id)
+                            codes_set(grid_asn, "edition", 2)
+                            codes_set(grid_asn, "typeOfLevel", "snowLayer")
+                            codes_set(grid_asn, "level", 1)
+
+                            file.seek(0, io.SEEK_END)
+                            codes_write(grid_asn, file)
+                        finally:
+                            codes_release(grid_asn)

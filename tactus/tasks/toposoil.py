@@ -280,7 +280,7 @@ class Soil(Task):
         """Construct soil data object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
 
         """
         self.domain = get_domain(config)

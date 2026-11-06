@@ -6,12 +6,14 @@ from pathlib import Path
 
 from . import GeneralConstants
 from .commands_functions import (
+    create_compile_exp,
     create_exp,
     doc_config,
     namelist_convert,
     namelist_format,
     namelist_integrate,
     remove_cases,
+    replace_node,
     run_task,
     show_config,
     show_config_schema,
@@ -21,11 +23,15 @@ from .commands_functions import (
     start_suite,
 )
 from .config_parser import ConfigParserDefaults
-from .namelist import NamelistConverter
+from .namelist import NamelistConverter, get_namelist_type_options
+from .test_runner import run_test
 
 
-def get_common_parser():
+def get_common_parser(config_file_required=False):
     """Build and return the common argument parser shared by all subcommands.
+
+    Args:
+        config_file_required (bool): Whether the config file argument is required.
 
     Returns:
         argparse.ArgumentParser: Parser with common arguments (config-file,
@@ -39,23 +45,33 @@ def get_common_parser():
         default=None,
         help="Specify tactus_home to override automatic detection",
     )
-    common_parser.add_argument(
-        "--config-file",
-        "-c",
-        metavar="CONFIG_FILE_PATH",
-        default=ConfigParserDefaults.CONFIG_PATH,
-        type=Path,
-        help=(
-            "Path to the config file. The default is whichever of the "
-            + "following is first encountered: "
-            + "(i) The value of the 'TACTUS_CONFIG_PATH' envvar or "
-            + "(ii) './config.toml'. If both (i) and (ii) are missing, "
-            + "then the default will become "
-            + "'"
-            + f"{ConfigParserDefaults.PACKAGE_CONFIG_PATH}"
-            + "'"
-        ),
-    )
+    if config_file_required:
+        common_parser.add_argument(
+            "--config-file",
+            "-c",
+            metavar="CONFIG_FILE_PATH",
+            required=True,
+            type=Path,
+            help=("Path to the config file."),
+        )
+    else:
+        common_parser.add_argument(
+            "--config-file",
+            "-c",
+            metavar="CONFIG_FILE_PATH",
+            default=ConfigParserDefaults.CONFIG_PATH,
+            type=Path,
+            help=(
+                "Path to the config file. The default is whichever of the "
+                + "following is first encountered: "
+                + "(i) The value of the 'TACTUS_CONFIG_PATH' envvar or "
+                + "(ii) './config.toml'. If both (i) and (ii) are missing, "
+                + "then the default will become "
+                + "'"
+                + f"{ConfigParserDefaults.PACKAGE_CONFIG_PATH}"
+                + "'"
+            ),
+        )
     common_parser.add_argument(
         "--host-file",
         dest="host_file",
@@ -84,7 +100,8 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
         argparse.ArgumentParser: The configured argument parser.
 
     """
-    common_parser = get_common_parser()
+    common_parser = get_common_parser(config_file_required=False)
+    common_parser_config_file_required = get_common_parser(config_file_required=True)
 
     ##########################################
     # Define main parser and general options #
@@ -184,8 +201,9 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
     parser_case = subparsers.add_parser(
         "case",
         help="Create a config file to run an experiment case",
-        parents=[common_parser],
+        parents=[common_parser_config_file_required],
     )
+
     parser_case.add_argument(
         "--output",
         "-o",
@@ -239,11 +257,12 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
 
     # suite
     parser_start_suite = start_command_subparsers.add_parser(
-        "suite", help="Start the suite", parents=[common_parser]
+        "suite", help="Start the suite", parents=[common_parser_config_file_required]
     )
     parser_start_suite.add_argument(
         "--start-command", type=str, help="Start command for server", default=None
     )
+
     parser_start_suite.add_argument(
         "--def-file",
         "-f",
@@ -252,6 +271,46 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
     )
     add_keep_def_file(parser_start_suite)
     parser_start_suite.set_defaults(run_command=start_suite)
+
+    ###########################################
+    # Configure parser for the "compile" command #
+    ###########################################
+    parser_compile = subparsers.add_parser(
+        "compile",
+        help="Start a compilation suite",
+        parents=[common_parser],
+    )
+    parser_compile.add_argument(
+        "--output",
+        "-o",
+        dest="output_file",
+        help=(
+            "Output config file, if not given the name will be the same as the case. "
+            + "If the name does not end with '.toml' it's assumed to be a directory "
+            + "and the file name will be the same as the case."
+        ),
+        default=None,
+        required=False,
+    )
+
+    parser_compile.add_argument(
+        "--dry-run",
+        "-d",
+        action="store_false",
+        dest="start_suite",
+        help="Start suite as well",
+        required=False,
+    )
+    parser_compile.add_argument(
+        "--case-name", dest="case", help="Case name", required=False, default=None
+    )
+    add_ial_compile_arguments(parser_compile, default_compiler="intel")
+
+    add_keep_def_file(
+        parser_compile, help_message="Keep suite definition file in case of submission"
+    )
+    add_expand_config(parser_compile)
+    parser_compile.set_defaults(run_command=create_compile_exp)
 
     ###########################################
     # Configure parser for the "show" command #
@@ -477,6 +536,110 @@ def get_args_parser(program_name=GeneralConstants.PACKAGE_NAME):
     )
     parser_namelist_format.set_defaults(run_command=namelist_format)
 
+    ##########################################
+    # Configure parser for the "test" command #
+    ##########################################
+    parser_test = subparsers.add_parser(
+        "test",
+        help="Run integration test cases via the test runner",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser_test.add_argument(
+        "--config-file",
+        "-c",
+        dest="config_file",
+        help="Test runner config file. A summary of tests results will be displayed "
+        + "if only this option is given",
+        required=False,
+        default=None,
+    )
+    parser_test.add_argument(
+        "--list",
+        "-l",
+        action="store_true",
+        default=False,
+        help="List selected cases",
+    )
+    parser_test.add_argument(
+        "--dry",
+        "-d",
+        action="store_true",
+        default=False,
+        help="Prepare only, do not execute actions",
+    )
+    parser_test.add_argument(
+        "--verbose",
+        "-v",
+        action="store_true",
+        default=False,
+        help="Increase verbosity",
+    )
+    parser_test.add_argument(
+        "--prepare-binaries",
+        "-p",
+        action="store_true",
+        default=False,
+        help="Prepare binaries from an IAL hash",
+    )
+    parser_test.add_argument(
+        "-m",
+        action="store_true",
+        dest="configure",
+        default=False,
+        help="Create config files",
+    )
+    parser_test.add_argument(
+        "-r",
+        action="store_true",
+        dest="run",
+        default=False,
+        help="Launch the tests",
+    )
+    parser_test.add_argument(
+        "--generate-references",
+        "-g",
+        action="store_true",
+        dest="generate_refs",
+        help="Generate references outputs.",
+        required=False,
+        default=False,
+    )
+    parser_test.add_argument(
+        "--build",
+        "-b",
+        action="store_true",
+        dest="compile",
+        help="Compile IAL first, in the case given by general.compile.case of the "
+        + "test config, and run the selected cases with its binaries. "
+        + "Use with --ial-tag, --ial-repo and --compiler as for 'tactus compile'",
+        required=False,
+        default=False,
+    )
+    add_ial_compile_arguments(parser_test)
+
+    parser_test.set_defaults(run_command=run_test, standalone_command=True)
+
+    # Configure parser for the "replace" command #
+    ##########################################
+    parser_replace = subparsers.add_parser(
+        "replace", help="Replaces a task/family/suite.", parents=[common_parser]
+    )
+    parser_replace.add_argument(
+        "--ecf-node",
+        type=str,
+        help="Ecflow node name (ECF_NAME)",
+        dest="node_path",
+        required=True,
+    )
+    parser_replace.add_argument(
+        "--def-file",
+        "-f",
+        help="Suite definition file",
+        default="",
+    )
+    add_keep_def_file(parser_replace)
+    parser_replace.set_defaults(run_command=replace_node)
+
     return main_parser
 
 
@@ -490,12 +653,13 @@ def add_namelist_args(parser_object):
         parser_object (args oject): updated args object
 
     """
+    namelist_type_options, namelist_type_dir = get_namelist_type_options()
     parser_object.add_argument(
         "--namelist-type",
         "-t",
         type=str,
-        help="Namelist target: master, surfex or gl",
-        choices=["master", "surfex", "gl"],
+        choices=namelist_type_options,
+        help=f"Namelist target, available options found in {namelist_type_dir}",
         required=True,
         default=None,
     )
@@ -514,6 +678,15 @@ def add_namelist_args(parser_object):
         dest="namelist_name",
         help="Optional namelist name",
         default=None,
+    )
+    parser_object.add_argument(
+        "--member",
+        "-m",
+        type=int,
+        dest="member",
+        help="Optional member",
+        default=0,
+        required=False,
     )
     parser_object.add_argument(
         "--substitute",
@@ -564,5 +737,38 @@ def add_expand_config(parser_object):
         action="store_true",
         default=False,
         help="Expand macros in config",
+        required=False,
+    )
+
+
+def add_ial_compile_arguments(parser_object, default_compiler=None):
+    """Add the IAL compilation arguments --ial-tag, --ial-repo and --compiler.
+
+    Shared by the "compile" and "test" commands so they accept the same options.
+
+    Args:
+        parser_object (args oject): args object to update
+        default_compiler (str, optional): Default for --compiler. None keeps the
+            compiler from the config.
+
+    """
+    parser_object.add_argument(
+        "--ial-tag",
+        dest="ial_tag",
+        help="IAL git tag/branch, if not given default in config will be used",
+        required=False,
+    )
+    parser_object.add_argument(
+        "--ial-repo",
+        dest="ial_repo",
+        help="IAL repository to use, if not given default in config will be used",
+        required=False,
+    )
+    parser_object.add_argument(
+        "--compiler",
+        dest="compiler",
+        choices=["intel", "gnu"],
+        help="Compiler to use, if not given default in config will be used",
+        default=default_compiler,
         required=False,
     )

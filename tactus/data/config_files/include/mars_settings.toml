@@ -62,9 +62,15 @@
 
 [mars.HRES.stream]
   00 = "OPER"
-  06 = "SCDA"
   12 = "OPER"
-  18 = "SCDA"
+
+[mars.HRES.stream.06]
+  "2015-05-13T00:00:00Z" = "SCDA"
+  "2026-05-12T00:00:00Z" = "OPER"
+
+[mars.HRES.stream.18]
+  "2015-05-13T00:00:00Z" = "SCDA"
+  "2026-05-12T00:00:00Z" = "OPER"
 
 [mars.HRES_CY49t2]
   default = "HRES"
@@ -76,13 +82,13 @@
 
 [mars.i7u4]
   default = "RD_DEFAULT"
-  gg_oro_source = "@STATIC_DATA@/IFS_gridpoint_orography/oro_T3999_F3214"
+  gg_oro_source = "@STATIC_DATA@/climate_fields_mir/IFS_gridpoint_orography/oro_T3999_F3214"
   grid = "0.028/0.028"
   stream.00 = "LWDA"
 
 [mars.i7ye]
   default = "RD_DEFAULT"
-  gg_oro_source = "@STATIC_DATA@/IFS_gridpoint_orography/oro_T3999_F3214"
+  gg_oro_source = "@STATIC_DATA@/climate_fields_mir/IFS_gridpoint_orography/oro_T3999_F3214"
   grid = "0.028/0.028"
   stream.00 = "LWDA"
 
@@ -112,7 +118,7 @@
   SH = "152/138/155/130"
   SHZ = "129.128"
   SHZ_type = "AN"
-  start_date = "1900-01-01T00:00:00Z"
+  start_date = "-P14D"
   start_snow_date = "2023-06-27T00:00:00Z"
   stream = "ENFO"
   stream_control = "OPER"
@@ -205,7 +211,7 @@
   class = "RD"
   GG = "32/33/39/40/41/42/139/141/170/172/183/198/235/236/35/36/37/38/238/243/244/245"
   GG_lsm = "172"
-  gg_oro_source = "@STATIC_DATA@/IFS_gridpoint_orography/oro_T2559_F2250"
+  gg_oro_source = "@STATIC_DATA@/climate_fields_mir/IFS_gridpoint_orography/oro_T2559_F2250"
   GG_sea = "31/34"
   GG_skt = "235"
   GG_snow = "33/238/228038/228141"

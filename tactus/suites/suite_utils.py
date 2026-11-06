@@ -75,6 +75,18 @@ class Cycles:
         raise StopIteration
 
     @property
+    def previous_cycle(self) -> Cycle:
+        """Return the previous Cycle object.
+
+        Raises:
+            StopIteration: If there are no more cycles.
+        """
+        if self._current_index > 0:
+            return self._cycles[self._current_index - 1]
+
+        raise StopIteration
+
+    @property
     def end_of_month(self) -> bool:
         """Return True if the next cycle is in a different month.
 
@@ -93,6 +105,25 @@ class Cycles:
             logger.debug("It is last cycle")
 
         return _end_of_month
+
+    def new_month(self) -> bool:
+        """Return True if the current cycle is in a different month.
+
+        Returns:
+            bool: True if the current cycle is in a different month
+        """
+        _new_month = False
+        try:
+            current_cycle = self.current_cycle
+            previous_cycle = self.previous_cycle
+            if as_datetime(current_cycle.day).strftime("%m") != as_datetime(
+                previous_cycle.day
+            ).strftime("%m"):
+                _new_month = True
+        except StopIteration:
+            logger.debug("It is first cycle")
+
+        return _new_month
 
     def __iter__(self) -> Iterator[Cycle]:
         """Return an iterator over the cycles."""
@@ -151,6 +182,26 @@ def lbc_times_generator(
             yield batch
     # Return the last basetime
     return basetime
+
+
+def combine_triggers(triggers):
+    """Combines a list of (list of) triggers.
+
+    Args:
+       triggers (list): List of triggers
+
+    Returns:
+       combined_triggers (list): A cleaned flattened list of valid triggers
+
+    """
+    combined_triggers = []
+    for trigger in triggers:
+        if isinstance(trigger, (list, tuple)):
+            combined_triggers.extend([tri for tri in trigger if tri is not None])
+        elif trigger is not None:
+            combined_triggers.append(trigger)
+
+    return combined_triggers
 
 
 def slaf_planner(config, lbc_time_generator, me) -> dict:
@@ -214,7 +265,8 @@ def slaf_planner(config, lbc_time_generator, me) -> dict:
     # Abort if the setup requires boundary files for "future" cycles
     if nfuture > 0:
         logger.error(
-            "SLAF planner: detected need for {} 'future' boundary files, ABORT!", nfuture
+            "SLAF planner: detected need for {} 'future' boundary files, ABORT!",
+            nfuture,
         )
         logger.error("Please review your settings of slaflag and slafdiff!")
         raise RuntimeError("Suspect SLAF configuration!")

@@ -16,7 +16,7 @@ from isodate import parse_duration
 from troika.connections.ssh import SSHConnection
 
 from .csc_actions import SelectTstep
-from .datetime_utils import as_datetime, get_decade, oi2dt_list
+from .datetime_utils import as_datetime, evaluate_date, get_decade, oi2dt_list
 from .logs import logger
 from .os_utils import tactusmakedirs
 
@@ -36,7 +36,7 @@ class Provider:
         """Construct the object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
             identifier (str): Identifier string
             fetch (bool, optional): Fetch data. Defaults to False.
 
@@ -79,7 +79,7 @@ class Platform:
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Config.
+            config (ParsedConfig): Config.
 
         """
         self.config = config
@@ -161,6 +161,10 @@ class Platform:
         gen_macros = f"{macro_config}.gen_macros"
         for key, val in self.expand_macros(self.config.get(gen_macros, {})).items():
             self.store_macro(key, val)
+
+    def add_macro(self, macros):
+        """Add new macros."""
+        self.macros.update(macros)
 
     def fill_macros(self):
         """Fill the macros."""
@@ -609,7 +613,8 @@ class Platform:
 
             end = self.config.get("general.times.end", None)
             if end is not None:
-                pattern = self.substitute_datetime(pattern, as_datetime(end), "_END")
+                _end = evaluate_date(end, reference_date=start)
+                pattern = self.substitute_datetime(pattern, as_datetime(_end), "_END")
 
         forecast_range = self.config.get("general.times.forecast_range", None)
         if isinstance(forecast_range, str):
@@ -690,7 +695,7 @@ class FileManager:
         """Construct the object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
 
         """
         self.config = config
@@ -792,9 +797,14 @@ class FileManager:
             files = data["files"]
             if isinstance(files, list):
                 for filename in files:
+                    if isinstance(filename, str):
+                        infile = filename
+                        outfile = filename
+                    else:
+                        infile, outfile = filename.popitem()
                     self.input(
-                        f"{data['path']}/{filename}",
-                        filename,
+                        f"{data['path']}/{infile}",
+                        outfile,
                         basetime=basetime,
                         validtime=validtime,
                         provider_id=provider_id,
@@ -1015,7 +1025,7 @@ class LocalFileSystemSymlink(Provider):
         """Construct the object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
             pattern (str): Identifier string
             fetch (bool, optional): Fetch data. Defaults to True.
 
@@ -1057,7 +1067,7 @@ class LocalFileSystemCopy(Provider):
         """Construct the object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
             pattern (str): Identifier string
             fetch (bool, optional): Fetch data. Defaults to False.
 
@@ -1101,7 +1111,7 @@ class LocalFileSystemMove(Provider):
         """Construct the object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
             pattern (str): Identifier string
             fetch (bool, optional): Fetch data. Defaults to False.
 
@@ -1145,7 +1155,7 @@ class ArchiveProvider(Provider):
         """Construct the object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
             pattern (str): Filepattern
             fetch (bool, optional): Fetch the data. Defaults to True.
 
@@ -1172,7 +1182,7 @@ class ECFS(ArchiveProvider):
         """Construct ECFS provider.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
             pattern (str): Filepattern
             fetch (bool, optional): Fetch the data. Defaults to True.
         """
@@ -1205,7 +1215,7 @@ class SCP(ArchiveProvider):
         """Construct SCP provider.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
             pattern (str): Filepattern
             fetch (bool, optional): Fetch the data. Defaults to True.
         """
@@ -1259,7 +1269,7 @@ class FDB(ArchiveProvider):
         """Construct FDB provider.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
             pattern (str): Filepattern
             fetch (bool, optional): Fetch the data. Defaults to True.
         """
@@ -1476,7 +1486,7 @@ class Resource:
         """Construct resource.
 
         Args:
-            _config (tactus.ParsedConfig): Configuration
+            _config (ParsedConfig): Configuration
             identifier (str): Resource identifier
 
         """
@@ -1491,7 +1501,7 @@ class LocalFileOnDisk(Resource):
         """Construct local file on disk.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
             pattern (str): Identifier pattern
             basetime (datetime.datetime, optional): Base time. Defaults to None.
             validtime (datetime.datetime, optional): Valid time. Defaults to None.

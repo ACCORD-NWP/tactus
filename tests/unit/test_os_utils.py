@@ -219,6 +219,66 @@ def test_lockfile_thread():
     thread.join()
 
 
+def _lockfile_stress_worker(args):
+    """Worker used by ``test_lockfile_stress`` (must be module-level to pickle).
+
+    Performs a read-modify-write on a shared counter file under the FileLock.
+    If the lock is racy, either a ``FileExistsError`` will be raised or
+    concurrent workers will overwrite each other's updates and the final
+    counter value will be less than expected.
+    """
+    from time import sleep
+
+    from tactus.os_utils import FileLock
+
+    filepath, counter_path, n_iters = args
+    for _ in range(n_iters):
+        with FileLock(filepath, timeout=30, check_interval=0.01):
+            with open(counter_path, "r") as f:
+                n = int(f.read().strip())
+            # Widen the critical section to make any race easy to observe.
+            sleep(0.001)
+            with open(counter_path, "w") as f:
+                f.write(str(n + 1))
+
+
+def test_lockfile_stress():
+    """Stress test FileLock under concurrent processes.
+
+    Regression test for a race condition where the previous
+    ``check_exists -> create`` sequence in ``FileLock.__enter__`` allowed two
+    processes to both believe they held the lock when starting in parallel
+    (e.g. running the test suite with ``pytest-xdist``).
+    """
+    import multiprocessing as mp
+
+    n_workers = 8
+    n_iters = 15
+    path = tempfile.mkdtemp()
+    filepath = f"{path}/protected"
+    counter_path = f"{path}/counter"
+    with open(counter_path, "w") as f:
+        f.write("0")
+
+    # "spawn" avoids inheriting pytest/coverage state and matches the
+    # behaviour of parallel test runners on all platforms.
+    ctx = mp.get_context("spawn")
+    with ctx.Pool(n_workers) as pool:
+        pool.map(
+            _lockfile_stress_worker,
+            [(filepath, counter_path, n_iters) for _ in range(n_workers)],
+        )
+
+    with open(counter_path) as f:
+        final = int(f.read().strip())
+    assert final == n_workers * n_iters, (
+        f"Lost updates under contention: got {final}, "
+        f"expected {n_workers * n_iters}. FileLock has a race condition."
+    )
+    # Lock should have been released cleanly by every worker.
+    assert not os.path.exists(f"{filepath}.lock")
+
+
 def test_ping():
     """Test the ping function."""
     hostname = "localhost"

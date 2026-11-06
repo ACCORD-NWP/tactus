@@ -20,11 +20,13 @@ class InterpolateBoundaries(Task):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
-        Task.__init__(self, config, __class__.__name__)
-
         self.boundary = Boundary(config)
+        name = (
+            f"{self.boundary.method}_{self.boundary.min_index}-{self.boundary.max_index}"
+        ).upper()
+        Task.__init__(self, config, name)
 
         if self.boundary.method == "e927":
             self.namelists = {self.boundary.method: "fort.4"}
@@ -48,9 +50,6 @@ class InterpolateBoundaries(Task):
         self.input_definition = f"{self.boundary.method}_input_definition"
         self.nlgen = NamelistGenerator(self.config, "master")
         self.master = self.get_binary("MASTERODB", task_name=self.boundary.method.upper())
-        self.name = (
-            f"{self.boundary.method}_{self.boundary.min_index}-{self.boundary.max_index}"
-        ).upper()
 
     def execute(self):
         """Run task.
@@ -156,7 +155,7 @@ class E927(InterpolateBoundaries):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         InterpolateBoundaries.__init__(self, config)
 
@@ -168,6 +167,6 @@ class C903(InterpolateBoundaries):
         """Construct object.
 
         Args:
-            config (tactus.ParsedConfig): Configuration
+            config (ParsedConfig): Configuration
         """
         InterpolateBoundaries.__init__(self, config)

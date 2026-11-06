@@ -52,3 +52,30 @@ where `time.toml` contains
   start = "YYYY-MM-DD:HH:mm:ssZ"
 ```
 or any additional extra information.
+
+
+## Compiling IAL via the `compile` command
+
+In addition to `tactus case` and `tactus start suite`, Tactus provides a dedicated `tactus compile` command that builds a configuration tailored for compiling the IAL (IFS/Arpege Library) sources. It is a thin wrapper around `tactus case` that:
+
+* forces inclusion of the host-specific modifications (`@HOST@.toml`)
+* forces inclusion of the compilation suite modifications (`compile_suite.toml`)
+* injects the requested IAL Git tag/branch into `compile.ial_git_branch`
+* uses the `CompilationSuiteDefinition` suite
+
+### Basic usage
+
+```
+tactus compile --ial-tag develop
+```
+
+produces and launches case named `IAL_develop_compile`.
+
+`compile_suite.toml` defines the case name as:
+
+```toml
+[general]
+  case = "IAL_@IAL_TAG@_compile"
+```
+
+The `@IAL_TAG@` macro is resolved from `compile.ial_git_branch` (see `tactus/data/config_files/include/macros.toml`), which is set from the `--ial-tag` argument.

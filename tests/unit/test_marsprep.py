@@ -33,6 +33,8 @@ def fixture_parsed_config_and_selection(request, base_parsed_config, tmp_directo
             ifs.selection = "{selection}"
         [system]
             wrk = "{tmp_directory}"
+        [eps.member_settings.boundaries.ifs]
+            bdmember = 0
 
         """
     )
@@ -121,3 +123,61 @@ def test_update_data_request(marsprep_instance: Marsprep):
     assert request_shz.request["SOURCE"] == "test_source"
     assert "GRID" in request_shz.request
     assert "AREA" in request_shz.request
+
+
+def test_update_data_request_control_stream(marsprep_instance: Marsprep):
+    """Test that bdmember=[0] always selects stream_control, without NUMBER.
+
+    Regression test: geopotential retrieval must always use control-member
+    semantics, regardless of which member's file it reads from.
+    """
+    param = get_value_from_dict(
+        marsprep_instance.mars["SHZ"], marsprep_instance.init_date_str
+    )
+    marsprep_instance.mars["stream"] = "ENFO"
+    marsprep_instance.mars["stream_control"] = "OPER"
+    request = BaseRequest(
+        class_=marsprep_instance.mars["class"],
+        data_type=marsprep_instance.mars["GGZ_type"],
+        expver=marsprep_instance.mars["expver"],
+        levtype="ML",
+        date=marsprep_instance.init_date_str,
+        time=marsprep_instance.init_hour_str,
+        steps="00",
+        param=param,
+        target="mars_latlonZ_0",
+    )
+    marsprep_instance.use_static_sh_oro = False
+    marsprep_instance.use_static_gg_oro = False
+    marsprep_instance.update_data_request(
+        request,
+        prefetch=False,
+        bdmember=[0],
+        specify_domain=True,
+        source="test_source",
+    )
+
+    assert "NUMBER" not in request.request
+    assert request.request["STREAM"] == marsprep_instance.mars["stream_control"]
+
+    request_perturbed = BaseRequest(
+        class_=marsprep_instance.mars["class"],
+        data_type=marsprep_instance.mars["GGZ_type"],
+        expver=marsprep_instance.mars["expver"],
+        levtype="ML",
+        date=marsprep_instance.init_date_str,
+        time=marsprep_instance.init_hour_str,
+        steps="00",
+        param=param,
+        target="mars_latlonZ_1",
+    )
+    marsprep_instance.update_data_request(
+        request_perturbed,
+        prefetch=False,
+        bdmember=[1],
+        specify_domain=True,
+        source="test_source",
+    )
+
+    assert request_perturbed.request["NUMBER"] == "1"
+    assert request_perturbed.request["STREAM"] != marsprep_instance.mars["stream_control"]

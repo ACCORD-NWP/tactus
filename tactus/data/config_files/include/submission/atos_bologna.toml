@@ -42,7 +42,7 @@
 [submission.task_exceptions.C903.BATCH]
   CPUSPERTASK = "#SBATCH --cpus-per-task=4"
   HYPERTHREAD = "#SBATCH --hint=nomultithread"
-  MEM_CPU = "#SCATCH --mem-per-cpu=50G"
+  MEM = "#SBATCH --mem=0G"
   NODES = "#SBATCH --nodes=18"
   NTASKS = "#SBATCH --ntasks-per-node=2"
   WALLTIME = "#SBATCH --time=01:00:00"
@@ -53,14 +53,10 @@
   OMP_STACKSIZE = "4G"
 
 [submission.task_exceptions.CreateGrib]
-  binary = "gl"
-  bindir = "@BINDIR_GL@"
+  binary = "gl_DP"
 
 [submission.task_exceptions.CreateGrib.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
-
-[submission.task_exceptions.CreateGribStatic]
-  bindir = "@BINDIR_GL@"
 
 [submission.task_exceptions.E927]
   NPROC = 16
@@ -86,19 +82,25 @@
   RTTOV_COEFDIR = "@RTTOV_COEFDIR@"
   UCX_LOG_LEVEL = "error"
 
-[submission.task_exceptions.IALBundleBuild.BATCH]
+[submission.task_exceptions.TactusBundleBuild.BATCH]
   MEM = "#SBATCH --mem=0GB"
+  QOS = "#SBATCH --qos=np"
   NODES = "#SBATCH --nodes=1"
-  NTASKS = "#SBATCH --ntasks=32"
+  NTASKS = "#SBATCH --ntasks=1"
+  CPUSPERTASK = "#SBATCH --cpus-per-task=128"
   WALLTIME = "#SBATCH --time=02:00:00"
 
+[submission.task_exceptions.TactusBundleBuild.ENV]
+  OMP_NUM_THREADS = 128
+
+[submission.task_exceptions.TactusBundleCreate.BATCH]
+  WALLTIME = "#SBATCH --time=00:45:00"
+
 [submission.task_exceptions.GlBd]
-  binary = "gl"
-  bindir = "/perm/deployde330/github-actions/install/gl/latest/bin"
+  binary = "gl_DP"
 
 [submission.task_exceptions.InterpolSstSic]
-  binary = "gl"
-  bindir = "@BINDIR_GL@"
+  binary = "gl_DP"
 
 [submission.task_exceptions.IOmerge.BATCH]
   WALLTIME = "#SBATCH --time=01:00:00"
@@ -123,8 +125,7 @@
   WALLTIME = "#SBATCH --time=00:30:00"
 
 [submission.task_exceptions.PgdUpdate]
-  binary = "gl"
-  bindir = "@BINDIR_GL@"
+  binary = "gl_DP"
 
 [submission.task_exceptions.Prep]
   WRAPPER = "srun -n @NPROC@"
@@ -139,6 +140,26 @@
 
 [submission.task_exceptions.Topography.MODULES]
   GDAL = ["load", "gdal/3.10.2"]
+
+[submission.task_exceptions.Addpert]
+  binary = "ADDPERT"
+  WRAPPER = "srun"
+
+[submission.task_exceptions.Addpert.BATCH]
+  CPUS = "#SBATCH --cpus-per-task=1"
+  MEM = "#SBATCH --mem=32GB"
+  NODES = "#SBATCH --nodes=1"
+  NTASKS = "#SBATCH --ntasks=1"
+  WALLTIME = "#SBATCH --time=00:30:00"
+
+[submission.task_exceptions.Addpert.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = 0
+
+[submission.task_exceptions.Pertsurf.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = 0
+
+[submission.task_exceptions.Pertana.ENV]
+  DR_HOOK_ASSERT_MPI_INITIALIZED = 0
 
 [submission.types.background_hpc]
   SCHOST = "localhost"
@@ -183,16 +204,12 @@
   OMP_NUM_THREADS = 1
   OMPI_MCA_btl = "^vader"
 
+[submission.types.parallel.ENV_FILE]
+  env_file_path = "@SUBMISSION.BINDIR@/../share/ial-bundle/arch/env.sh"
+
 [submission.types.parallel.MODULES]
   # First load the prgenv
-  00_PRGENV = ["load", "prgenv/intel"]
-  # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2026.01.0.0"]
-  FFTW = ["load", "fftw/3.3.10"]
-  HDF5 = ["load", "hdf5/1.14.6"]
-  MKL = ["load", "intel-mkl/19.0.5"]
-  NETCDF = ["load", "netcdf4/4.9.3"]
-  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
+  00_ECFLOW = ["load", "ecflow/5.16.0"]
 
 [submission.types.serial]
   NPROC = 1
@@ -224,13 +241,9 @@
   OMP_NUM_THREADS = 1
   OMPI_MCA_btl = "^vader"
 
+[submission.types.serial.ENV_FILE]
+  env_file_path = "@SUBMISSION.BINDIR@/../share/ial-bundle/arch/env.sh"
+
 [submission.types.serial.MODULES]
   # First load the prgenv
-  00_PRGENV = ["load", "prgenv/intel"]
-  # The rest
-  ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2026.01.0.0"]
-  FFTW = ["load", "fftw/3.3.10"]
-  HDF5 = ["load", "hdf5/1.14.6"]
-  MKL = ["load", "intel-mkl/19.0.5"]
-  NETCDF = ["load", "netcdf4/4.9.3"]
-  OPENMPI = ["load", "hpcx-openmpi/2.9.0"]
+  00_ECFLOW = ["load", "ecflow/5.16.0"]

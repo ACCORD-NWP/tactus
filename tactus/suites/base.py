@@ -154,6 +154,7 @@ class SuiteDefinition(object):
             "ECF_TIMEOUT": 20,
             "ECF_LOGHOST": self.ecf_host,
             "ARGS": "",
+            "FP_PRECISION": "",
             "LOGLEVEL": loglevel,
             "CONFIG": str(config_file),
             "TROIKA": troika,
@@ -167,6 +168,7 @@ class SuiteDefinition(object):
             "NPROCY": "",
             "KEEP_WORKDIRS": keep_workdirs,
             "MEMBER": "",
+            "TACTUS_TASK": "",
         }
 
         self.suite = EcflowSuite(
@@ -263,7 +265,7 @@ class EcflowNode:
             elif self.node_type == "suite":
                 self.ecf_node = parent.add_suite(self.name)
             elif self.node_type == "mirror":
-                if mirror_config["check_var"]:
+                if mirror_config.get("check_var", None):
                     variables = {mirror_config["check_var"]: "placeholder"}
                 self.ecf_node = parent.ecf_node.add_task(self.name)
             else:
@@ -298,10 +300,10 @@ class EcflowNode:
                             self.make_relative(trigger.trigger_string)
                         )
                 else:
-                    logger.warning("Empty trigger")
+                    logger.debug("Empty trigger")
             elif isinstance(trigger, list):
                 if len(trigger) == 0:
-                    logger.warning("Empty trigger list")
+                    logger.debug("Empty trigger list")
                 # Resolve the trigger list into an EcflowSuiteTriggers object,
                 # and add the trigger string to the node
                 elif all(isinstance(node, EcflowNode) for node in trigger):
@@ -612,7 +614,7 @@ class EcflowSuiteTask(EcflowNode):
             parent (EcflowNode): Parent node.
             ecf_files (str): Path to ecflow containers
             task_settings (TaskSettings): Submission configuration
-            config (tactus.ParsedConfig): Configuration file
+            config (ParsedConfig): Configuration file
             task_settings (tactus.TaskSettings): Task settings
             input_template(str, optional): Input template
             parse (bool, optional): To parse template file or not

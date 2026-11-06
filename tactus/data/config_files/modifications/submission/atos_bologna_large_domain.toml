@@ -15,19 +15,19 @@
   MEM = "#SBATCH --mem=32GB"
 
 [submission.task_exceptions.Forecast]
-  # This is optimised for a 1500x1500 domain
-  NPROC = 624
-  NPROC_IO = 16
-  NPROCX = 24
-  NPROCY = 26
-  OMP_NUM_THREADS = "4"
+  # This is optimised for the DKCOEXP domain
+  NPROC = 182
+  NPROC_IO = 10
+  NPROCX = 13
+  NPROCY = 14
+  OMP_NUM_THREADS = "2"
   WRAPPER = "srun @TACTUS_HOME@/data/config_files/include/submission/omp_wrapper"
 
 [submission.task_exceptions.Forecast.BATCH]
-  CPUSPERTASK = "#SBATCH --cpus-per-task=4"
+  CPUSPERTASK = "#SBATCH --cpus-per-task=2"
   HYPERTHREAD = "#SBATCH --hint=nomultithread"
-  NODES = "#SBATCH --nodes=20"
-  NTASKS = "#SBATCH --ntasks-per-node=32"
+  NODES = "#SBATCH --nodes=3"
+  NTASKS = "#SBATCH --ntasks-per-node=64"
   WALLTIME = "#SBATCH --time=08:00:00"
 
 [submission.task_exceptions.Forecast.ENV]

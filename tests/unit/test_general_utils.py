@@ -9,6 +9,7 @@ from tactus.general_utils import (
     merge_dicts,
     recursive_delete_keys,
     recursive_dict_deviation,
+    sanitize_case_name,
     value_from_any_generator,
     value_from_mapping_generator,
     value_from_sequence_generator,
@@ -233,6 +234,48 @@ class TestRecursiveDictDeviation:
         result = recursive_dict_deviation(base_dict, deviating_dict)
         expected_result = {"b": {"c": "different_type"}}
         assert result == expected_result
+
+
+class TestSanitizeCaseName:
+    """Unit tests for the sanitize_case_name function."""
+
+    def test_with_valid_name(self):
+        """Test that a name with only allowed characters is unchanged."""
+        assert sanitize_case_name("Valid_Name_123") == "Valid_Name_123"
+
+    def test_replaces_invalid_characters(self):
+        """Test that disallowed characters are replaced with underscores."""
+        assert sanitize_case_name("name with spaces") == "name_with_spaces"
+        assert sanitize_case_name("name/with:slashes") == "name_with_slashes"
+        assert sanitize_case_name("name-with-dashes") == "name_with_dashes"
+
+    def test_replaces_leading_dot(self):
+        """Test that a leading dot is replaced with an underscore."""
+        assert sanitize_case_name(".hidden_name") == "_hidden_name"
+
+    def test_leading_dot_with_other_invalid_chars(self):
+        """Test a leading dot combined with other invalid characters."""
+        assert sanitize_case_name(".name with space") == "_name_with_space"
+
+    @pytest.mark.parametrize(
+        ("name", "expected"),
+        [
+            ("name.ext", "name_ext"),
+            ("release/1.2.3", "release_1_2_3"),
+            ("trailing.", "trailing_"),
+            ("..", "__"),
+            ("a..b", "a__b"),
+        ],
+    )
+    def test_replaces_all_dots(self, name, expected):
+        """Test that every dot is replaced, wherever it is."""
+        result = sanitize_case_name(name)
+        assert result == expected
+        assert "." not in result
+
+    def test_with_empty_string(self):
+        """Test with an empty string."""
+        assert not sanitize_case_name("")
 
 
 class TestRecursiveDeleteKeys:

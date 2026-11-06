@@ -1,0 +1,12 @@
+{
+  "obs_ingest": {
+    "path": "@DA_CONST_DIR@",
+    "files": [
+      {
+        "param_@ODBCONVERTER@.cfg": "param.cfg"
+      },
+      "LISTE_NOIRE_DIAP",
+      "LISTE_LOC"
+    ]
+  }
+}

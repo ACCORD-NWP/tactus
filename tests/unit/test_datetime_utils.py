@@ -19,6 +19,7 @@ from tactus.datetime_utils import (
     get_decade,
     get_month_list,
     oi2dt_list,
+    since_str,
 )
 
 
@@ -297,3 +298,28 @@ def test_check_syntax_valid(output_settings: List[str], length: int):
         check_syntax(output_settings, length)
     except SystemExit:
         pytest.fail("check_syntax raised SystemExit unexpectedly!")
+
+
+def test_since_str():
+    """Test that since_str returns the expected string representation of the timestamp."""
+    expected_results = {
+        0: "Now",
+        1: "Now",
+        59: "Now",
+        60: "1 min ago",
+        90: "1 min ago",
+        180: "3 min ago",
+        3600: "1 hour ago",
+        12000: "3 hours ago",
+        86399: "23 hours ago",
+        86400: "set_dynamically",
+        186412: "set_dynamically",
+        991261: "set_dynamically",
+    }
+
+    for time in expected_results:
+        now_date = datetime.datetime(2026, 6, 1, 0, 0, 0)
+        creation_date = now_date - datetime.timedelta(seconds=time)
+        if expected_results[time] == "set_dynamically":
+            expected_results[time] = f"updated on {creation_date}"
+        assert since_str(creation_date, now_date) == expected_results[time]

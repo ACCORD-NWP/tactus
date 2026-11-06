@@ -19,7 +19,9 @@ from . import GeneralConstants
 from .cleaning import CleanTactus
 from .config_parser import BasicConfig, ConfigParserDefaults, ConfigPaths, ParsedConfig
 from .derived_variables import check_fullpos_namelist, derived_variables, set_times
+from .eps.eps_setup import EPSConfig, get_member_config
 from .experiment import case_setup
+from .general_utils import ial_compile_modifs, sanitize_case_name
 from .host_actions import TactusHost, set_tactus_home
 from .logs import logger
 from .namelist import (
@@ -76,7 +78,7 @@ def run_task(args: RunTaskNamespace, config: ParsedConfig):
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     """
     logger.info("Prepare {}...", args.task)
@@ -110,7 +112,11 @@ def run_task(args: RunTaskNamespace, config: ParsedConfig):
         troika=args.troika,
         create_only=args.create_only,
     )
-    logger.info("Task {} submitted.", args.task)
+
+    msg = "created"
+    if not args.create_only:
+        msg += " and submitted"
+    logger.info("Task {} {}.", args.task, msg)
 
 
 def create_exp(args, config):
@@ -118,7 +124,7 @@ def create_exp(args, config):
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     """
     known_hosts_file = args.host_file
@@ -151,16 +157,49 @@ def create_exp(args, config):
         start_suite(args, config)
 
 
+def create_compile_exp(args, config):
+    """Implement the 'compile' command.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+        config (ParsedConfig): Parsed config file contents.
+
+    """
+    if args.ial_tag is None:
+        args.ial_tag = config["compile.ial_git_version"]
+    platform = Platform(config)
+    ial_tag_case = sanitize_case_name(platform.substitute(args.ial_tag))
+    config = config.copy(
+        update=ial_compile_modifs(
+            ial_tag=args.ial_tag,
+            ial_repo=args.ial_repo,
+            compiler=getattr(args, "compiler", None),
+            ial_tag_case=ial_tag_case,
+        )
+    )
+
+    args.config_mods = [
+        "tactus/data/config_files/modifications/@HOST@.toml",
+        "tactus/data/config_files/modifications/compile_suite.toml",
+        "tactus/data/config_files/modifications/compile_@HOST@.toml",
+    ]
+
+    create_exp(args, config)
+
+
 def start_suite(args, config):
     """Implement the 'start suite' command.
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     Raises:
         SystemExit: If error occurs while transferring files.
     """
+    if "eps" in config:
+        EPSConfig(**config.get_as_dict("eps"))
+
     tactus_home = set_tactus_home(config, args.tactus_home)
     config = config.copy(update={"platform": {"tactus_home": tactus_home}})
     config = config.copy(update=set_times(config))
@@ -333,7 +372,7 @@ def show_config(args, config):
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     """
     logger.info("Printing requested configs...")
@@ -373,7 +412,7 @@ def show_config_schema(args, config):
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     """
     logger.info("Printing JSON schema used in the validation of the configs...")
@@ -385,11 +424,15 @@ def show_host(args, config):
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     """
     tactus_host = TactusHost()
-    logger.info("Current host: {}", tactus_host.detect_tactus_host())
+    logger.info(
+        "Current host: {}, hostname: {}",
+        tactus_host.detect_tactus_host(),
+        tactus_host.hostname,
+    )
     logger.info("Known hosts (host, recognition method):")
     for host, pattern in tactus_host.known_hosts.items():
         logger.info("{:>16}   {}", host, pattern)
@@ -503,15 +546,18 @@ def show_namelist(args, config):
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     """
     tactus_home = set_tactus_home(config, args.tactus_home)
     config = config.copy(update={"platform": {"tactus_home": tactus_home}})
     config = config.copy(update=set_times(config))
     config = config.copy(update=derived_variables(config))
+    config = get_member_config(config, member=args.member)
 
-    nlgen = NamelistGenerator(config, args.namelist_type, substitute=args.substitute)
+    nlgen = NamelistGenerator(
+        config, args.namelist_type, substitute=args.substitute, abort_gracefully=True
+    )
     nlgen.load(args.namelist)
 
     if "forecast" in args.namelist and args.namelist_type == "master":
@@ -520,7 +566,9 @@ def show_namelist(args, config):
     if args.namelist_name is not None:
         namelist_name = args.namelist_name
     else:
-        namelist_name = f"namelist_{args.namelist_type}_{args.namelist}"
+        namelist_name = (
+            f"namelist_{args.namelist_type}_{args.namelist}.mbr{args.member:03d}"
+        )
     nlgen.write_namelist(nlres, namelist_name)
     logger.info("Printing namelist in use to file {}", namelist_name)
 
@@ -536,7 +584,7 @@ def namelist_integrate(args, config):
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     Raises:
         SystemExit   # noqa: DAR401
@@ -601,7 +649,7 @@ def namelist_convert(args, config: ParsedConfig):
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     """
     # Configuration
@@ -634,7 +682,7 @@ def namelist_format(args, config: ParsedConfig):
 
     Args:
         args (argparse.Namespace): Parsed command line arguments.
-        config (.config_parser.ParsedConfig): Parsed config file contents.
+        config (ParsedConfig): Parsed config file contents.
 
     """
     # Configuration
@@ -655,3 +703,116 @@ def namelist_format(args, config: ParsedConfig):
         NamelistConverter.convert_ftn(args.namelist, args.output, None, None)
     else:
         raise SystemExit(f"Format {args.format} not handled")
+
+
+def replace_node(args, config):
+    """Implement the 'replace' command.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+        config (ParsedConfig): Parsed config file contents.
+
+    """
+    tactus_home = set_tactus_home(config, args.tactus_home)
+    config = config.copy(update={"platform": {"tactus_home": tactus_home}})
+    config = config.copy(update=set_times(config))
+    platform = Platform(config)
+    ecfvars = {
+        key: platform.substitute(val) for key, val in config["scheduler.ecfvars"].items()
+    }
+    update = {"scheduler": {"ecfvars": ecfvars}}
+    config = config.copy(update=update)
+
+    logger.info("Starting suite...")
+    logger.info("Config file: {}", args.config_file)
+    logger.info("Ecflow settings: ")
+
+    # Assign Ecfvars
+    joboutdir = config["scheduler.ecfvars.ecf_jobout"]
+    ecf_files = config["scheduler.ecfvars.ecf_files"]
+    ecf_files_remotely = config["scheduler.ecfvars.ecf_files_remotely"]
+    ecf_home = config["scheduler.ecfvars.ecf_home"]
+    ecf_host = config["scheduler.ecfvars.ecf_host"]
+    ecf_port = config["scheduler.ecfvars.ecf_port"]
+    ecf_user = config["scheduler.ecfvars.ecf_user"]
+    ecf_remoteuser = config["scheduler.ecfvars.ecf_remoteuser"]
+
+    suite_def = config.get("suite_control.suite_definition", "TactusSuiteDefinition")
+
+    logger.info("ecf_host: {}", ecf_host)
+    logger.info("ecf_jobout: {}", joboutdir)
+    logger.info("ecf_files: {}", ecf_files)
+    logger.info("ecf_files_remotely: {}", ecf_files_remotely)
+    logger.info("ecf_home: {}", ecf_home)
+    logger.info("ecf_user: {}", ecf_user)
+    logger.info("ecf_remoteuser: {}", ecf_remoteuser)
+    logger.info("suite definition: {}", suite_def)
+
+    os.environ["ECF_HOST"] = ecf_host
+    os.environ["ECF_PORT"] = str(ecf_port)
+    if ecf_user:
+        os.environ["ECF_USER"] = ecf_user
+
+    server = EcflowServer(config)
+
+    suite_name = config["general.case"]
+    node_path = args.node_path
+    suite_name = Platform(config).substitute(suite_name)
+    ecf_files_local = ecf_files
+
+    config = config.copy(update={"general": {"case": suite_name}})
+    server = EcflowServer(config)
+    if not args.def_file:
+        defs = get_suite(suite_def, config)
+        def_file = f"{suite_name}.def"
+        defs.save_as_defs(def_file)
+    else:
+        def_file = args.def_file
+        if os.path.exists(def_file):
+            args.keep_def_file = True
+        else:
+            defs = get_suite(suite_def, config)
+            defs.save_as_defs(def_file)
+        logger.info("Replace node {} from def file: {}", node_path, def_file)
+
+    # Clean, then copy troika and containers
+    srv = f"{ecf_remoteuser}@{ecf_host}"
+    src = f"{ecf_files_local}/{suite_name}"
+    dst = f"{srv}:{ecf_files_remotely}/"
+
+    if ecf_files_local != ecf_files_remotely:
+        logger.info("--- SSL protocol for remote Ecflow server detected ---")
+        logger.info("--- Copying job files to remote server ---")
+        logger.info("Copy ecflow files from : {} to: {}", src, dst)
+
+        # Clean command
+        del_cmd = f"rm -rf {ecf_files_remotely}/{suite_name}"
+
+        # Copy command
+        copy_cmd = [
+            "rsync",
+            "-az",
+            src,
+            dst,
+        ]
+
+        # Try cleaning and copying commands. If it fails, then stop with message
+        if ssh_cmd(ecf_host, ecf_remoteuser, del_cmd):
+            logger.info("SSH command successful.")
+        else:
+            logger.info("Failed to execute SSH command.")
+
+        try:
+            subprocess.run(copy_cmd, check=True)
+            logger.info("Files transferred successfully.")
+        except subprocess.CalledProcessError as e:
+            logger.info(f"Error occurred: {e}")
+            raise SystemExit("Copying ecf files to ecflow server FAILED.") from e
+
+        logger.info("--- File copying to Ecflow server DONE ---")
+
+    server.replace_node(node_path, def_file)
+    logger.info("Replaced node {}", node_path)
+
+    if not args.keep_def_file:
+        os.remove(def_file)

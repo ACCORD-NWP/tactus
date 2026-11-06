@@ -1,6 +1,3 @@
-[general.times]
-  start = "-P1D"
-
 [boundaries.ifs]
   selection = "IFSENS"
 

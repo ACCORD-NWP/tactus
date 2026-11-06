@@ -1,0 +1,3 @@
+obsconvert:
+  - obsconvert_base
+  - obsconvert_@CSC@

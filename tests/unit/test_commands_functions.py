@@ -7,14 +7,16 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 
 from tactus.commands_functions import (
     namelist_convert,
     namelist_format,
     namelist_integrate,
     show_namelist,
+    start_suite,
 )
-from tactus.os_utils import resolve_path_relative_to_package
+from tactus.config_parser import BasicConfig, ConfigParserDefaults
 
 
 @pytest.fixture
@@ -26,6 +28,7 @@ def set_arg():
     arg.namelist_name = None
     arg.domain = "test"
     arg.substitute = False
+    arg.member = 0
     return arg
 
 
@@ -34,12 +37,10 @@ def nlint_arg(tmp_directory):
     arg = ArgumentParser()
     arg.tactus_home = None
     arg.namelist = [
-        resolve_path_relative_to_package(
-            Path("tactus/data/namelists/unit_testing/nl_master_integrate")
-        )
+        ConfigParserDefaults.DATA_DIRECTORY / "namelists/unit_testing/nl_master_integrate"
     ]
-    arg.yaml = resolve_path_relative_to_package(
-        Path("tactus/data/namelists/unit_testing/nl_master_base.yml")
+    arg.yaml = (
+        ConfigParserDefaults.DATA_DIRECTORY / "namelists/unit_testing/nl_master_base.yml"
     )
     arg.tag = "nl_master_base"
     arg.output = f"{tmp_directory}/nl_master_integrated.yml"
@@ -89,7 +90,7 @@ def test_show_namelist(set_arg, default_config, param, tmp_directory):
     os.chdir(outpath)
     show_namelist(set_arg, config)
     os.chdir(prev_cwd)
-    assert os.path.isfile(f"{outpath}/namelist_master_forecast")
+    assert os.path.isfile(f"{outpath}/namelist_master_forecast.mbr000")
     assert os.path.isfile(f"{outpath}/xxt00000000")
     assert os.path.isfile(f"{outpath}/xxtddddhh00")
     if param["clean"]:
@@ -107,15 +108,16 @@ def test_namelist_integrate(nlint_arg, default_config):
 @pytest.fixture
 def nlconyml_arg(tmp_directory):
     arg = ArgumentParser()
-    arg.namelist = resolve_path_relative_to_package(
-        Path("tactus/data/namelists/unit_testing/nl_master_base.yml")
+    arg.namelist = (
+        ConfigParserDefaults.DATA_DIRECTORY / "namelists/unit_testing/nl_master_base.yml"
     )
     arg.output = f"{tmp_directory}/nl_master_base.49t2.yml"
     arg.from_cycle = "CY48t2"
     arg.to_cycle = "CY49t2"
     arg.format = "yaml"
-    arg.output_reference = resolve_path_relative_to_package(
-        Path("tactus/data/namelists/unit_testing/reference/nl_master_base.49t2.yml")
+    arg.output_reference = (
+        ConfigParserDefaults.DATA_DIRECTORY
+        / "namelists/unit_testing/reference/nl_master_base.49t2.yml"
     )
     return arg
 
@@ -134,16 +136,15 @@ def test_namelist_convert_yml(nlconyml_arg, default_config):
 def nlconftn_arg(tmp_directory):
     arg = ArgumentParser()
     arg.namelist = str(
-        resolve_path_relative_to_package(
-            Path("tactus/data/namelists/unit_testing/nl_master_base")
-        )
+        ConfigParserDefaults.DATA_DIRECTORY / "namelists/unit_testing/nl_master_base"
     )
     arg.output = f"{tmp_directory}/nl_master_base.49t2"
     arg.from_cycle = "CY48t2"
     arg.to_cycle = "CY49t2"
     arg.format = "ftn"
-    arg.output_reference = resolve_path_relative_to_package(
-        Path("tactus/data/namelists/unit_testing/reference/nl_master_base.49t2")
+    arg.output_reference = (
+        ConfigParserDefaults.DATA_DIRECTORY
+        / "namelists/unit_testing/reference/nl_master_base.49t2"
     )
     return arg
 
@@ -160,13 +161,14 @@ def test_namelist_convert_ftn(nlconftn_arg, default_config):
 @pytest.fixture
 def nlformatyml_arg(tmp_directory):
     arg = ArgumentParser()
-    arg.namelist = resolve_path_relative_to_package(
-        Path("tactus/data/namelists/unit_testing/nl_master_base.yml")
+    arg.namelist = (
+        ConfigParserDefaults.DATA_DIRECTORY / "namelists/unit_testing/nl_master_base.yml"
     )
     arg.output = f"{tmp_directory}/nl_master_base.format.yml"
     arg.format = "yaml"
-    arg.output_reference = resolve_path_relative_to_package(
-        Path("tactus/data/namelists/unit_testing/reference/nl_master_base.format.yml")
+    arg.output_reference = (
+        ConfigParserDefaults.DATA_DIRECTORY
+        / "namelists/unit_testing/reference/nl_master_base.format.yml"
     )
     return arg
 
@@ -185,14 +187,13 @@ def test_namelist_format_yml(nlformatyml_arg, default_config):
 def nlformatftn_arg(tmp_directory):
     arg = ArgumentParser()
     arg.namelist = str(
-        resolve_path_relative_to_package(
-            Path("tactus/data/namelists/unit_testing/nl_master_base")
-        )
+        ConfigParserDefaults.DATA_DIRECTORY / "namelists/unit_testing/nl_master_base"
     )
     arg.output = f"{tmp_directory}/nl_master_base.format"
     arg.format = "ftn"
-    arg.output_reference = resolve_path_relative_to_package(
-        Path("tactus/data/namelists/unit_testing/reference/nl_master_base.format")
+    arg.output_reference = (
+        ConfigParserDefaults.DATA_DIRECTORY
+        / "namelists/unit_testing/reference/nl_master_base.format"
     )
     return arg
 
@@ -204,6 +205,42 @@ def test_namelist_format_ftn(nlformatftn_arg, default_config):
     namelist_format(nlformatftn_arg, default_config)
     assert os.path.isfile(nlformatftn_arg.output)
     assert filecmp.cmp(nlformatftn_arg.output_reference, nlformatftn_arg.output)
+
+
+class TestStartSuiteValidatesEps:
+    """Unit tests for start_suite's EPS config validation."""
+
+    def test_start_suite_with_invalid_eps_config_raises(self, default_config):
+        """Test that an invalid EPS config is rejected before starting the suite.
+
+        Regression test: `tactus start suite` used to skip EPS validation
+        entirely, unlike `tactus case`.
+        """
+        config = default_config.copy(
+            update={
+                "eps": {
+                    "general": {"members": "0:7"},
+                    "member_settings": {"boundaries": {"ifs": {"bdmember": "0:5"}}},
+                }
+            }
+        )
+
+        with pytest.raises(
+            ValidationError, match=r".*must be empty, a single bdmember.*"
+        ):
+            start_suite(args=None, config=config)
+
+    def test_start_suite_without_eps_section_does_not_validate(self):
+        """Test that start_suite skips EPS validation when eps isn't configured.
+
+        args=None here, so reaching the AttributeError on `args.tactus_home`
+        proves the EPS check itself did not fire.
+        """
+        config = BasicConfig({"general": {"case": "testcase"}})
+        assert "eps" not in config
+
+        with pytest.raises(AttributeError):
+            start_suite(args=None, config=config)
 
 
 if __name__ == "__main__":

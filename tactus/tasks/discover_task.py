@@ -96,7 +96,9 @@ def create_task_index(config):
     task_index_file = _task_index_file(config)
 
     reg = TactusPluginRegistryFromConfig(config)
-    known_types = {k: str(v).split("'")[1] for k, v in available_tasks(reg).items()}
+    known_types = {
+        k: f"{v.__module__}.{v.__qualname__}" for k, v in available_tasks(reg).items()
+    }
 
     task_index_file_dir = os.path.dirname(task_index_file)
     unix_group = config.get("platform.unix_group")
@@ -106,6 +108,24 @@ def create_task_index(config):
     logger.info("Stored task index in {}", task_index_file)
 
     return known_types
+
+
+def add_plugins_to_sys_path(reg: TactusPluginRegistry) -> None:
+    """Add plugin root paths to ``sys.path`` so their task modules can be imported.
+
+    Each plugin whose ``tasks_path`` exists is inserted at the front of
+    ``sys.path`` (if not already present), making the plugin's packages
+    importable by their fully-qualified module names.
+
+    Args:
+        reg (TactusPluginRegistry): Registry of active tactus plugins.
+
+    """
+    for plugin in reg.plugins:
+        if os.path.exists(plugin.tasks_path):
+            plugin_path = str(plugin.path)
+            if plugin_path not in sys.path:
+                sys.path.insert(0, plugin_path)
 
 
 def get_task(name, config) -> Task:
@@ -139,6 +159,7 @@ def get_task(name, config) -> Task:
             raise NotImplementedError(f'Task "{name}" not implemented') from error
 
     if isinstance(cls, str):
+        add_plugins_to_sys_path(TactusPluginRegistryFromConfig(config))
         module_path, class_name = cls.rsplit(".", 1)
         module = importlib.import_module(module_path)
         cls = getattr(module, class_name)
@@ -158,11 +179,11 @@ def available_tasks(reg: TactusPluginRegistry):
     """
     known_types = {}
     abstract_classes = ["pysurfexbase"]
-    for plg in reg.plugins:
-        if os.path.exists(plg.tasks_path):
-            tasks = types.ModuleType(plg.name)
-            tasks.__path__ = [str(plg.tasks_path)]
-            sys.path.insert(0, str(plg.path))
+    add_plugins_to_sys_path(reg)
+    for plugin in reg.plugins:
+        if os.path.exists(plugin.tasks_path):
+            tasks = types.ModuleType(plugin.name)
+            tasks.__path__ = [str(plugin.tasks_path)]
             found_types = discover(tasks, Task)
             for ftype, cls in found_types.items():
                 if ftype not in abstract_classes:
@@ -170,7 +191,7 @@ def available_tasks(reg: TactusPluginRegistry):
                         logger.warning("Overriding suite {}", ftype)
                     known_types[ftype] = cls
         else:
-            logger.warning("Plug-in task {} not found", plg.tasks_path)
+            logger.warning("Plug-in task {} not found", plugin.tasks_path)
     return known_types
 
 
