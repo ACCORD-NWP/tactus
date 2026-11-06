@@ -17,8 +17,7 @@ See the [project's documentation page](https://ACCORD-NWP.github.io/tactus) for 
 
 
 ## Set up environment
-
-**Make sure you have python>=3.10**
+**Make sure you have python>=3.12**
 
 <a name="#put-poetry-in-path"></a> Start by adding the `$HOME/.local/bin`
 directory in your `PATH`:
@@ -26,13 +25,15 @@ directory in your `PATH`:
 export PATH="$HOME/.local/bin:$PATH"
 ```
 
+
 Then, run:
 
 * On Atos (`hpc-login`)
   ```shell
-  module load python3/3.10.10-01
+  module load python3/3.12.11-01
   module load ecflow
   ```
+
 
 ## Installation
 
@@ -49,30 +50,52 @@ git clone git@github.com:<username>/tactus.git
 cd tactus
 ```
 
-
-Then install/reinstall [`poetry`](https://python-poetry.org) by runnning the following commands in your shell:
+### With uv
   ```shell
-  # Clean eventual previous install
-  curl -sSL https://install.python-poetry.org | python3 - --uninstall
-  rm -rf ${HOME}/.cache/pypoetry/ ${HOME}/.local/bin/poetry ${HOME}/.local/share/pypoetry
-  # Download and install poetry
-  curl -sSL https://install.python-poetry.org | python3 -
-  poetry install
-  # Add the poetry shell command as a plugin (for poetry >= v2.0.0)
-  poetry self add poetry-plugin-shell
+  # Download and install uv
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  uv venv --system-site-packages --no-managed-python
+  uv sync 
   ```
 
-Finally, install [`pygdal`](https://pypi.org/project/pygdal/), which is required for climate generation. [`pygdal`](https://pypi.org/project/pygdal/) depends on [`gdal`](https://gdal.org/), which is notoriously troublesome as dependency when targeting many systems. The versions of `pygdal` and the system's `gdal`should match.
+Activate by
+  ```shell
+  source .venv/bin/activate
+  ```
 
-  To install gdal and pygdal run the follow in commands in your shell:
+### With poetry
 
-  * On Atos (`hpc-login`)
-    ```shell
-    module load gdal/3.6.2
-    poetry shell
-    pip install pygdal==3.6.2.11
-    ```
-  If installation is not succesful, please contact the IT support in your organisation or HPC facility.
+Install/Reinstall [`poetry`](https://python-poetry.org) by running the following commands in your shell:
+
+```shell
+# Clean eventual previous install
+curl -sSL https://install.python-poetry.org | python3 - --uninstall
+rm -rf ${HOME}/.cache/pypoetry/ ${HOME}/.local/bin/poetry ${HOME}/.local/share/pypoetry
+# Download and install poetry
+curl -sSL https://install.python-poetry.org | python3 -
+# Add the poetry shell command as a plugin (for poetry >= v2.0.0)
+poetry self add poetry-plugin-shell
+```
+
+Create the virtualenv from the `python3` of the environment loaded in [Set up environment](#set-up-environment), i.e. with `module load python3/3.12.11-01` active on Atos:
+
+```shell
+rm -rf .venv poetry.lock            # discard any existing virtualenv
+poetry env use "$(which python3)"   # pin the interpreter from the loaded modules
+poetry install
+```
+Activate the environment by repeating the steps in [Set up environment](#set-up-environment), navigating to the root level of the `tactus` install directory and running:
+
+```shell
+poetry shell
+```
+
+Alternatively, to activate a `tactus` installation located in an arbitrary
+directory `MY_TACTUS_SOURCE_DIRECTORY`, please run:
+
+```shell
+poetry shell --directory=MY_TACTUS_SOURCE_DIRECTORY
+```
 
 ### Important
 
@@ -80,18 +103,7 @@ Tactus should be installed in a folder accessible by ecflow server.
 
 On Atos, it should be installed in your $HOME or $PERM directory.
 
-
 ## Usage
-
-Initially set up the environment by repeating the steps in [Set up environment](#set-up-environment), navigate to the root level of the `tactus` install directory and activate python virtual environment:
-```shell
-poetry shell
-```
-Alternatively, to activate a `tactus` installation located in an arbitrary
-directory `MY_TACTUS_SOURCE_DIRECTORY`, please run:
-```shell
-poetry shell --directory=MY_TACTUS_SOURCE_DIRECTORY
-```
 
 Test that `tactus` works by running:
 ```shell
