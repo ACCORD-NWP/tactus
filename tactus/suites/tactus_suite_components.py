@@ -2094,6 +2094,39 @@ class SLAFpartFamily(EcflowSuiteFamily):
         )
 
 
+class FetchDataFamily(EcflowSuiteFamily):
+    """Class for the family fetching the IAL-data static data."""
+
+    def __init__(
+        self,
+        parent,
+        config,
+        task_settings: TaskSettings,
+        ecf_files,
+        trigger=None,
+        input_template=None,
+        ecf_files_remotely=None,
+    ):
+        """Class initialization."""
+        super().__init__(
+            "FetchData",
+            parent,
+            ecf_files,
+            trigger=trigger,
+            ecf_files_remotely=ecf_files_remotely,
+        )
+
+        EcflowSuiteTask(
+            "IALDataFetch",
+            self,
+            config,
+            task_settings,
+            ecf_files,
+            input_template=input_template,
+            ecf_files_remotely=ecf_files_remotely,
+        )
+
+
 class CompilationFamily(EcflowSuiteFamily):
     """Class for compilation family."""
 

@@ -21,6 +21,8 @@
     "boto3>=1.42.15",
     "dateutils>=0.6.12",
     "dicttoxml>=1.0.0",
+    "dvc>=3.0.0",
+    "dvc-s3>=3.0.0",
     "ecbundle==2.6.0",
     "eccodes==2.45",
     "eccodeslib==2.45.4.11",

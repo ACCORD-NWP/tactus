@@ -11,6 +11,7 @@ from tactus.suites.base import (
 )
 from tactus.suites.tactus_suite_components import (
     CompilationFamily,
+    FetchDataFamily,
     MirrorSuite,
     StaticDataFamily,
     TimeDependentFamily,
@@ -93,21 +94,40 @@ class TactusSuiteDefinition(SuiteDefinition):
             ecf_files_remotely=self.ecf_files_remotely,
         )
 
+        # Optional preparatory families, running in parallel after PrepRun
+        prep_families = []
         if config["suite_control.compile"]:
-            compilation_fam = CompilationFamily(
-                self.suite,
-                config,
-                self.task_settings,
-                self.ecf_files,
-                trigger=prep_run,
-                input_template=input_template,
-                ecf_files_remotely=self.ecf_files_remotely,
+            prep_families.append(
+                CompilationFamily(
+                    self.suite,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    trigger=prep_run,
+                    input_template=input_template,
+                    ecf_files_remotely=self.ecf_files_remotely,
+                )
             )
-            prep_run = compilation_fam
+
+        if config["suite_control.fetch_data"]:
+            prep_families.append(
+                FetchDataFamily(
+                    self.suite,
+                    config,
+                    self.task_settings,
+                    self.ecf_files,
+                    trigger=prep_run,
+                    input_template=input_template,
+                    ecf_files_remotely=self.ecf_files_remotely,
+                )
+            )
+
+        # Nodes the rest of the suite waits for
+        prep_run = prep_families or [prep_run]
 
         # Update triggers for final cleaning and time dependent nodes
         if config["suite_control.do_cleaning"]:
-            final_cleaning_trigger.append(prep_run)
+            final_cleaning_trigger.extend(prep_run)
             time_dependent_trigger_node = prep_run
 
         if create_static_data:

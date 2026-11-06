@@ -1,0 +1,5 @@
+[platform]
+  static_data = "@IAL_DATA_DIR@/data"
+
+[suite_control]
+  fetch_data = true

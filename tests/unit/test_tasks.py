@@ -271,6 +271,11 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         "tactus.tasks.cleaning_tasks.Cleaning.execute",
         new=new_task_cleaning_tasks_cleaner_execute_method,
     )
+    # Never clone IAL-data or download its dvc data in the tests
+    session_mocker.patch(
+        "tactus.tasks.fetch_data.IALDataFetch.execute",
+        new=new_task_cleaning_tasks_cleaner_execute_method,
+    )
     session_mocker.patch(
         "tactus.tasks.creategrib.GlGrib.execute",
         new=new_task_creategrib_glgrib_execute_method,

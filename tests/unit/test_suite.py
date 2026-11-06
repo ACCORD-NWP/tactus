@@ -20,6 +20,7 @@ from tactus.suites.base import (
 )
 from tactus.suites.compilation import CompilationSuiteDefinition
 from tactus.suites.discover_suite import get_suite
+from tactus.suites.fetch_data import FetchDataSuiteDefinition
 from tactus.suites.suite_utils import (
     Cycles,
     combine_triggers,
@@ -790,6 +791,128 @@ class TestCompilationSuiteDefinition:
         defs = CompilationSuiteDefinition(config, dry_run=True)
         def_file = f"{tmp_directory}/{suite_name}.def"
         defs.save_as_defs(def_file)
+
+
+# ---------------------------------------------------------------------------
+# fetch_data.FetchDataSuiteDefinition and FetchData in the main suite
+# ---------------------------------------------------------------------------
+
+
+def _fetch_data_test_config(default_config, tmp_directory, suite_name, **suite_control):
+    config = default_config.copy(
+        update={
+            "general": {"case": suite_name},
+            "scheduler": {
+                "ecfvars": {
+                    "ecf_files": f"{tmp_directory}/ecf_files_{suite_name}",
+                    "ecf_jobout": f"{tmp_directory}/jobout_{suite_name}",
+                }
+            },
+            "platform": {
+                "tactus_home": f"{os.path.dirname(__file__)}/../..",
+                "unix_group": "",
+                "mirrorglobalDT": {"remote_path": "@YYYY@/@HH@mm@"},
+            },
+            "suite_control": suite_control,
+        }
+    )
+    return config.copy(update=set_times(config))
+
+
+def _find_fake_node(node, name):
+    if node.name == name:
+        return node
+    for child in node.children:
+        found = _find_fake_node(child, name)
+        if found is not None:
+            return found
+    return None
+
+
+@pytest.mark.usefixtures("_module_mockers")
+class TestFetchDataSuiteDefinition:
+    @pytest.mark.parametrize("do_cleaning", [True, False])
+    def test_builds_def_file(self, default_config, tmp_directory, do_cleaning):
+        suite_name = f"test_fetch_data_{do_cleaning}"
+        config = _fetch_data_test_config(
+            default_config,
+            tmp_directory,
+            suite_name,
+            do_cleaning=do_cleaning,
+            fetch_data=True,
+            suite_definition="FetchDataSuiteDefinition",
+        )
+        defs = FetchDataSuiteDefinition(config, dry_run=True)
+        def_file = f"{tmp_directory}/{suite_name}.def"
+        defs.save_as_defs(def_file)
+
+    def test_is_discovered(self):
+        from tactus.plugin import TactusPluginRegistry
+        from tactus.suites.discover_suite import available_suites
+
+        known_types = available_suites(TactusPluginRegistry())
+        assert known_types["fetchdatasuitedefinition"] is FetchDataSuiteDefinition
+
+    def test_suite_tree(self, default_config, tmp_directory, fake_ecflow):
+        assert fake_ecflow is not None
+        suite_name = "test_fetch_data_tree"
+        config = _fetch_data_test_config(default_config, tmp_directory, suite_name)
+        defs = FetchDataSuiteDefinition(config, dry_run=False)
+
+        suite = defs.suite.ecf_node
+        assert [child.name for child in suite.children] == ["FetchData", "PostMortem"]
+        fetch_family = suite.children[0]
+        assert [child.name for child in fetch_family.children] == ["IALDataFetch"]
+        assert "FetchData" in suite.children[1].triggers[0]
+
+    @pytest.mark.parametrize("compile_ial", [True, False])
+    def test_integrated_in_main_suite(
+        self, default_config, tmp_directory, fake_ecflow, compile_ial
+    ):
+        assert fake_ecflow is not None
+        suite_name = f"test_fetch_data_main_{compile_ial}"
+        config = _fetch_data_test_config(
+            default_config,
+            tmp_directory,
+            suite_name,
+            fetch_data=True,
+            compile=compile_ial,
+            do_marsprep=False,
+            interpolate_boundaries=False,
+        )
+        defs = TactusSuiteDefinition(config, dry_run=False)
+        suite = defs.suite.ecf_node
+
+        fetch_family = _find_fake_node(suite, "FetchData")
+        assert fetch_family is not None
+        assert any("PrepRun" in trigger for trigger in fetch_family.triggers)
+
+        # Static data waits for fetching (and compilation when active, which
+        # runs in parallel with fetching)
+        static_triggers = " ".join(_find_fake_node(suite, "StaticData").triggers)
+        assert "FetchData" in static_triggers
+        assert ("Compilation" in static_triggers) is compile_ial
+        if compile_ial:
+            compilation = _find_fake_node(suite, "Compilation")
+            assert not any("FetchData" in trigger for trigger in compilation.triggers)
+
+        postmortem_triggers = " ".join(_find_fake_node(suite, "PostMortem").triggers)
+        assert "FetchData" in postmortem_triggers
+
+    def test_not_in_main_suite_by_default(
+        self, default_config, tmp_directory, fake_ecflow
+    ):
+        assert fake_ecflow is not None
+        suite_name = "test_fetch_data_main_default"
+        config = _fetch_data_test_config(
+            default_config,
+            tmp_directory,
+            suite_name,
+            do_marsprep=False,
+            interpolate_boundaries=False,
+        )
+        defs = TactusSuiteDefinition(config, dry_run=False)
+        assert _find_fake_node(defs.suite.ecf_node, "FetchData") is None
 
 
 # ---------------------------------------------------------------------------

@@ -13,6 +13,10 @@ Miscellaneous Documentation
    :parser: myst_parser.sphinx_
 
 .. include::
+    markdown_docs/fetch_data.md
+   :parser: myst_parser.sphinx_
+
+.. include::
     markdown_docs/binaries.md
    :parser: myst_parser.sphinx_
 

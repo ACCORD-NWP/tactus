@@ -187,6 +187,38 @@ def create_compile_exp(args, config):
     create_exp(args, config)
 
 
+def create_fetch_data_exp(args, config):
+    """Implement the 'fetch-data' command.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+        config (ParsedConfig): Parsed config file contents.
+
+    """
+    fetch_data = {}
+    if args.data_dir is not None:
+        data_dir = args.data_dir
+        # Make plain paths absolute, as the task runs in its own work directory
+        if "@" not in data_dir:
+            data_dir = str(Path(data_dir).expanduser().resolve())
+        fetch_data["ial_data_dir"] = data_dir
+    if args.ial_data_version is not None:
+        fetch_data["ial_data_git_version"] = args.ial_data_version
+    if args.ial_data_repo is not None:
+        fetch_data["ial_data_git_repo"] = args.ial_data_repo
+    if args.dvc_targets:
+        fetch_data["dvc_targets"] = args.dvc_targets
+    if fetch_data:
+        config = config.copy(update={"fetch_data": fetch_data})
+
+    args.config_mods = [
+        "tactus/data/config_files/modifications/@HOST@.toml",
+        "tactus/data/config_files/modifications/fetch_data_suite.toml",
+    ]
+
+    create_exp(args, config)
+
+
 def start_suite(args, config):
     """Implement the 'start suite' command.
 
