@@ -44,7 +44,7 @@ class ObsprocSuiteDefinition(SuiteDefinition):
             self.task_settings,
             self.ecf_files,
             input_template=input_template,
-            ecf_files_remotely=self.ecf_files_remotely,
+            ecf_remote_files=self.ecf_remote_files,
         )
 
         obs_trigger = []
@@ -58,7 +58,7 @@ class ObsprocSuiteDefinition(SuiteDefinition):
                     self.ecf_files,
                     trigger=prep_run,
                     da_stream=da_stream,
-                    ecf_files_remotely=self.ecf_files_remotely,
+                    ecf_remote_files=self.ecf_remote_files,
                 )
                 obs_trigger.append(obs_family)
 
@@ -75,5 +75,5 @@ class ObsprocSuiteDefinition(SuiteDefinition):
                     "TACTUS_TASK": "Cleaning",
                     "ARGS": "cleaning_type=PostMortem",
                 },
-                ecf_files_remotely=self.ecf_files_remotely,
+                ecf_remote_files=self.ecf_remote_files,
             )

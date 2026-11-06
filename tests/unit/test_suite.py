@@ -961,7 +961,7 @@ class TestStaticDataMemberGeneratorDirect:
             task_settings=task_settings,
             input_template=_INPUT_TEMPLATE,
             ecf_files=ecf_files,
-            ecf_files_remotely=None,
+            ecf_remote_files=None,
             dry_run=True,
         )
 
