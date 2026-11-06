@@ -1,9 +1,9 @@
-#.github/workflows/check_changelog.yaml 
+#.github/workflows/check_changelog.yaml
 name: Check Change Log update
 
 on:
   pull_request:
-      
+
 jobs:
   check-changelog:
     runs-on: ubuntu-latest
