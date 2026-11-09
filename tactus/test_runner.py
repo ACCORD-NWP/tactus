@@ -72,7 +72,9 @@ class TestCases:
         }
         if getattr(args, "compile", False):
             self.add_compilation(definitions, **ial_options)
-            self.extra.append(str(ConfigPaths.path_from_subpath("tests/test_binaries.toml")))
+            self.extra.append(
+                str(ConfigPaths.path_from_subpath("tests/test_binaries.toml"))
+            )
         else:
             given = [f"--{k.replace('_', '-')}" for k, v in ial_options.items() if v]
             if given:
