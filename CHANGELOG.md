@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add configs for RHEL 9 PC. [#259](https://github.com/ACCORD-NWP/tactus/pull/259)(@ewhelan)
-- Add command line options for compilation to `tatcus test`. [#261](https://github.com/ACCORD-NWP/tactus/pull/261)(@uandrae), [#286](https://github.com/ACCORD-NWP/tactus/pull/286)(@uandrae)
+- Add command line options for compilation to `tactus test`. [#261](https://github.com/ACCORD-NWP/tactus/pull/261)(@uandrae), [#286](https://github.com/ACCORD-NWP/tactus/pull/286)(@uandrae)
 - Add selection of UWC West domain definitions. [#249](https://github.com/ACCORD-NWP/tactus/pull/249)(@ewhelan)
 - Allow specify member information when generating namelists command line. [#244](https://github.com/ACCORD-NWP/tactus/pull/244)(@uandrae)
 - Allow to use duration of start_date specfication in mars config. Allows to introduce start date for IFSENS. [#243](https://github.com/ACCORD-NWP/tactus/pull/243)(@uandrae)
