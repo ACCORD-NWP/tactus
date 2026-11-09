@@ -8,4 +8,4 @@
   bindir = "@CASEDIR@/install/@PRECISION@/bin"
 
 [compile]
-  arch_dir = "@CASEDIR@/IAL/bundle/arch/ecmwf/hpc2020"
+  arch_dir = "@COMPILE.IAL_DIR@/bundle/arch/ecmwf/hpc2020"
