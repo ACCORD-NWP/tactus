@@ -51,7 +51,7 @@
     "tomlkit>=0.12.1",
     "troika @ git+https://github.com/ecmwf/troika.git",
     "urllib3<2",
-    "utci @ git+https://github.com/ACCORD-NWP/utci.git",
+    "utci @ git+https://github.com/ACCORD-NWP/utci.git@0.1.0",
     "xmltodict>=0.14.2",
   ]
 
