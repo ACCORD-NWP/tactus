@@ -14,28 +14,28 @@ help:
 # Linting
 lint:
 	@echo "Running linters..."
-	poetry run pre-commit run --all-files
+	uv run --group dev pre-commit run --all-files
 
 # Testing
 test:
-	poetry run pytest -n auto --maxprocesses 16
+	uv run --group test pytest -n auto --maxprocesses 16
 
 # Documentation
 doc-clean:
 	rm -rf docs/_build/ docs/tactus.rst docs/markdown_docs/config.md
 
 doc-build: doc-clean
-	poetry run tactus doc config >| docs/markdown_docs/config.md
-	poetry run python docs/write_output_overview.py docs/markdown_docs/output_overview.md
-	poetry run sphinx-apidoc tactus -o docs/ --force --no-toc --module-first
-	poetry run sphinx-build docs docs/_build/
+	uv run --group doc tactus doc config >| docs/markdown_docs/config.md
+	uv run --group doc python docs/write_output_overview.py docs/markdown_docs/output_overview.md
+	uv run --group doc sphinx-apidoc tactus -o docs/ --force --no-toc --module-first
+	uv run --group doc sphinx-build docs docs/_build/
 	touch docs/_build/.nojekyll
 
 doc-view:
 	@if [ ! -f docs/_build/index.html ]; then \
 		$(MAKE) doc-build; \
 	fi
-	@poetry run python -c "import webbrowser; webbrowser.open('docs/_build/index.html')"
+	@uv run python -c "import webbrowser; webbrowser.open('docs/_build/index.html')"
 
 doc: doc-build doc-view
 
