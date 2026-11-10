@@ -1,0 +1,5 @@
+[submission]
+  bindir = "@SCRATCH@/@SYS_NAME@/@CASE_PREFIX@_@CYCLE@_compile/install/R64/bin"
+
+[submission.task_exceptions.Forecast.binaries.MASTERODB]
+  bindir = "@SCRATCH@/@SYS_NAME@/@CASE_PREFIX@_@CYCLE@_compile/install/@PRECISION@/bin"

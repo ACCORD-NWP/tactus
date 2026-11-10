@@ -11,13 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add configs for RHEL 9 PC. [#259](https://github.com/ACCORD-NWP/tactus/pull/259)(@ewhelan)
-- Add command line options for compilation to `tatcus test`. [#261](https://github.com/ACCORD-NWP/tactus/pull/261)(@uandrae)
+- Add command line options for compilation to `tactus test`. [#261](https://github.com/ACCORD-NWP/tactus/pull/261)(@uandrae), [#286](https://github.com/ACCORD-NWP/tactus/pull/286)(@uandrae)
 - Add selection of UWC West domain definitions. [#249](https://github.com/ACCORD-NWP/tactus/pull/249)(@ewhelan)
 - Allow specify member information when generating namelists command line. [#244](https://github.com/ACCORD-NWP/tactus/pull/244)(@uandrae)
 - Allow to use duration of start_date specfication in mars config. Allows to introduce start date for IFSENS. [#243](https://github.com/ACCORD-NWP/tactus/pull/243)(@uandrae)
 
 ### Changed
 - Update Mars request behaviour for levels lists. [#274](https://github.com/ACCORD-NWP/tactus/pull/274)(@pardallio)
+- Updated IAL and utci references. [#285](https://github.com/ACCORD-NWP/tactus/pull/285)(@uandrae)
+- Restore tests for E923Update. [#272](https://github.com/ACCORD-NWP/tactus/pull/272)(@uandrae)
+- Update Harmonie-Arome CY50t2 namelists [#198](https://github.com/ACCORD-NWP/tactus/pull/198)(@ealerskans)
 - Sets defaults for `archiving.hour.copy.config config` as it is not platform dependent. [#259](https://github.com/ACCORD-NWP/tactus/pull/259)(@uandrae)
 - Do not compile CY50T2 for the test-runner by default. [#251](https://github.com/ACCORD-NWP/tactus/pull/251)(@uandrae)
 - Stricter host detection rules for env + hostname definitions. [#254](https://github.com/ACCORD-NWP/tactus/pull/254)(@uandrae)
@@ -26,8 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add option to use other cycle's executables for LBC task. [#223](https://github.com/ACCORD-NWP/tactus/pull/223)(@pardallio)
 
 ### Fixed
-- Improve performance of fix_snow_layer by performing the change in place[#242](https://github.com/ACCORD-NWP/tactus/pull/275)(@dhaumont)
-- Use Python 3.12 in the documentation and package-build workflows, which failed on Ubuntu 26.04 runners. [#PR](https://github.com/ACCORD-NWP/tactus/pull/PR)(@kastelecn)
+- Make usage of compile.ial_dir consistent place[#284](https://github.com/ACCORD-NWP/tactus/pull/284)(@uandrae)
+- Improve performance of fix_snow_layer by performing the change in place[#242](https://github.com/ACCORD-NWP/tactus/pull/242)(@dhaumont)
+- Use Python 3.12 in the documentation and package-build workflows, which failed on Ubuntu 26.04 runners. [#276](https://github.com/ACCORD-NWP/tactus/pull/276)(@kastelecn)
 - Make sure correct monthly data input is used in E923. [#275](https://github.com/ACCORD-NWP/tactus/pull/275)(@uandrae)
 - Make sure E923Update is not executed if create_static_data is false and for more than one member. [#245](https://github.com/ACCORD-NWP/tactus/pull/245)(@uandrae)
 - Correct ttr cleaning. [#260](https://github.com/ACCORD-NWP/tactus/pull/260)(@uandrae)
