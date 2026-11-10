@@ -781,7 +781,7 @@ class E923UpdateFamily(EcflowSuiteFamily):
         input_template,
         ecf_files,
         trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -789,7 +789,7 @@ class E923UpdateFamily(EcflowSuiteFamily):
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         for flag in ("member_specific_mars_prep", "member_specific_static_data"):
@@ -805,7 +805,7 @@ class E923UpdateFamily(EcflowSuiteFamily):
             input_template,
             ecf_files,
             marstype_list=["GG", "SH", "latlon"],
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
             forecast_range="PT0H",
             members=[0],
         )
@@ -818,7 +818,7 @@ class E923UpdateFamily(EcflowSuiteFamily):
             ecf_files,
             input_template=input_template,
             trigger=input_data,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         EcflowSuiteTask(
@@ -829,7 +829,7 @@ class E923UpdateFamily(EcflowSuiteFamily):
             ecf_files,
             trigger=prep_task,
             input_template=input_template,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
 

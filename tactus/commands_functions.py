@@ -33,6 +33,7 @@ from .scheduler import (
     TroikaConfigurationFromConfig,
 )
 from .submission import NoSchedulerSubmission, TaskSettings
+from .suites.discover_suite import get_suite_from_config
 from .tasks.discover_task import create_task_index
 from .toolbox import Platform
 
@@ -186,6 +187,9 @@ def start_suite(args, config):
     server = EcflowServerFromConfig(config, start_command=args.start_command)
     ecflow_env = EcflowEnvironmentFromConfig(config)
 
+    # Get suite from config and create SuiteDefinition object
+    suite_def_obj = get_suite_from_config(config)
+
     # Display settings
     ecflow_env.display_properties()
 
@@ -207,7 +211,7 @@ def start_suite(args, config):
         def_file = args.def_file
     # Save definition file
     if def_file is not None:
-        ecflow_env.suite_def_obj.save_as_defs(def_file)
+        suite_def_obj.save_as_defs(def_file)
 
     # Create the task index to ensure all tasks are registered before starting the suite
     create_task_index(config)
@@ -591,6 +595,9 @@ def replace_node(args, config):
     # Display settings
     ecflow_env.display_properties()
 
+    # Get suite from config and create SuiteDefinition object
+    suite_def_obj = get_suite_from_config(config)
+
     # Create a troika object and possibly substitute
     troika = TroikaConfigurationFromConfig(config)
     platf = Platform(config)
@@ -608,9 +615,10 @@ def replace_node(args, config):
         args.keep_def_file = True
     else:
         def_file = args.def_file
+
     # Save definition file
     if def_file is not None:
-        ecflow_env.suite_def_obj.save_as_defs(def_file)
+        suite_def_obj.save_as_defs(def_file)
 
     # Replace node
     logger.info("Replace node {} from def file: {}", node_path, def_file)

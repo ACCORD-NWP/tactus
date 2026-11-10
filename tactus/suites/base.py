@@ -104,7 +104,7 @@ class BaseSuiteDefinition(object):
 
         self.name = ecflow_env.get_property("suite_name")
         self.suite = EcflowSuite(
-            ecflow_env.get_property("suite_name"),
+            self.name,
             ecflow_env.get_property("ecf_files"),
             variables=variables,
             dry_run=dry_run,

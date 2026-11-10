@@ -401,7 +401,6 @@ class EcflowEnvironment(object):
     def __init__(
         self,
         suite_name,
-        suite_def_obj,
         ecf_out,
         ecf_home=None,
         ecf_user=None,
@@ -424,7 +423,6 @@ class EcflowEnvironment(object):
 
         Args:
             suite_name (str): Name of the suite.
-            suite_def_obj (object): Suite definition object.
             ecf_out (str): Path to the ECF_OUT directory.
             ecf_home (str, optional): Path to the ECF_HOME directory.
                                       Defaults to None.
@@ -457,7 +455,6 @@ class EcflowEnvironment(object):
             troika_config_file: Path to the troika config file (default: None)
         """
         self.suite_name = suite_name
-        self.suite_def_obj = suite_def_obj
         self.ecf_home = ecf_home
         self.ecf_user = ecf_user
         self.ecf_files = ecf_files
@@ -579,8 +576,6 @@ class EcflowEnvironmentFromConfig(EcflowEnvironment):
         ecf_user = config.get("scheduler.ecfvars.ecf_user")
         ecf_remote_user = config.get("scheduler.ecfvars.ecf_remoteuser")
 
-        suite_def = config.get("suite_control.suite_definition", "TactusSuiteDefinition")
-
         suite_name = config.get("general.case")
         suite_name = Platform(config).substitute(suite_name)
 
@@ -610,7 +605,6 @@ class EcflowEnvironmentFromConfig(EcflowEnvironment):
 
         super().__init__(
             suite_name,
-            suite_def,
             ecf_out,
             ecf_home=ecf_home,
             ecf_user=ecf_user,

@@ -64,6 +64,19 @@ def get_suite(name, config):
     return cls(config)
 
 
+def get_suite_from_config(config):
+    """Create a `tactus.suites.SuiteDefinition` object from configuration.
+
+    Args:
+        config (ParsedConfig): Parsed config file contents
+
+    Returns:
+        SuiteDefinition: SuiteDefinition object
+    """
+    suite_def = config.get("suite_control.suite_definition", "TactusSuiteDefinition")
+    return get_suite(suite_def, config)
+
+
 def available_suites(reg: TactusPluginRegistry):
     """Create a list of available tasks.
 
