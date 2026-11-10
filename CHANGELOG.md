@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Restore tests for E923Update. [#272](https://github.com/ACCORD-NWP/tactus/pull/272)(@uandrae)
+- Update Harmonie-Arome CY50t2 namelists [#198](https://github.com/ACCORD-NWP/tactus/pull/198)(@ealerskans)
 - Sets defaults for `archiving.hour.copy.config config` as it is not platform dependent. [#259](https://github.com/ACCORD-NWP/tactus/pull/259)(@uandrae)
 - Do not compile CY50T2 for the test-runner by default. [#251](https://github.com/ACCORD-NWP/tactus/pull/251)(@uandrae)
 - Stricter host detection rules for env + hostname definitions. [#254](https://github.com/ACCORD-NWP/tactus/pull/254)(@uandrae)
