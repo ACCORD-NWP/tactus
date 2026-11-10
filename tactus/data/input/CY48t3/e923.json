@@ -101,12 +101,14 @@
   },
   "part8": {
     "path": "@E923_DATA@",
+    "remove_links": true,
     "files": {
       "abc_coef": "abc_O3/abc_quadra_@MM@"
     }
   },
   "part9": {
     "path": "@E923_DATA@",
+    "remove_links": true,
     "files": {
       "aero_GL": "aero_tegen/aero.tegen.m@MM@_GL"
     }
