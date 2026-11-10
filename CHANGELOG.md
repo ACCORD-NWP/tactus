@@ -11,13 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add configs for RHEL 9 PC. [#259](https://github.com/ACCORD-NWP/tactus/pull/259)(@ewhelan)
-- Add command line options for compilation to `tatcus test`. [#261](https://github.com/ACCORD-NWP/tactus/pull/261)(@uandrae)
+- Add command line options for compilation to `tactus test`. [#261](https://github.com/ACCORD-NWP/tactus/pull/261)(@uandrae), [#286](https://github.com/ACCORD-NWP/tactus/pull/286)(@uandrae)
 - Add selection of UWC West domain definitions. [#249](https://github.com/ACCORD-NWP/tactus/pull/249)(@ewhelan)
 - Allow specify member information when generating namelists command line. [#244](https://github.com/ACCORD-NWP/tactus/pull/244)(@uandrae)
 - Allow to use duration of start_date specfication in mars config. Allows to introduce start date for IFSENS. [#243](https://github.com/ACCORD-NWP/tactus/pull/243)(@uandrae)
 
 ### Changed
 - Updated IAL and utci references. [#285](https://github.com/ACCORD-NWP/tactus/pull/285)(@uandrae)
+- Update Harmonie-Arome CY50t2 namelists [#198](https://github.com/ACCORD-NWP/tactus/pull/198)(@ealerskans)
 - Sets defaults for `archiving.hour.copy.config config` as it is not platform dependent. [#259](https://github.com/ACCORD-NWP/tactus/pull/259)(@uandrae)
 - Do not compile CY50T2 for the test-runner by default. [#251](https://github.com/ACCORD-NWP/tactus/pull/251)(@uandrae)
 - Stricter host detection rules for env + hostname definitions. [#254](https://github.com/ACCORD-NWP/tactus/pull/254)(@uandrae)
