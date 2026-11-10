@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow to use duration of start_date specfication in mars config. Allows to introduce start date for IFSENS. [#243](https://github.com/ACCORD-NWP/tactus/pull/243)(@uandrae)
 
 ### Changed
+- Updated IAL and utci references. [#285](https://github.com/ACCORD-NWP/tactus/pull/285)(@uandrae)
 - Restore tests for E923Update. [#272](https://github.com/ACCORD-NWP/tactus/pull/272)(@uandrae)
 - Update Harmonie-Arome CY50t2 namelists [#198](https://github.com/ACCORD-NWP/tactus/pull/198)(@ealerskans)
 - Sets defaults for `archiving.hour.copy.config config` as it is not platform dependent. [#259](https://github.com/ACCORD-NWP/tactus/pull/259)(@uandrae)
