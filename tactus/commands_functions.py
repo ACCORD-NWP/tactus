@@ -582,7 +582,6 @@ def replace_node(args, config):
         config (ParsedConfig): Parsed config file contents.
 
     """
-    # Is this needed???
     tactus_home = set_tactus_home(config, args.tactus_home)
     config = config.copy(update={"platform": {"tactus_home": tactus_home}})
     config = config.copy(update=set_times(config))
