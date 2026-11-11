@@ -21,9 +21,9 @@
   ECMWFTOOLBOX = ["load", "ecmwf-toolbox/2026.01.0.0"]
 
 [submission.task_exceptions.ArchiveFDB.ENV]
-  FDB5_HOME = "/home/fdbtest/versions/7.30.6.0/"
   FDB_ENABLE_GRIBJUMP = "1"
   FDB_HOME = "@TACTUS_FDB_HOME@"
+  FINDLIBS_DISABLE_PACKAGE = "no"
   GRIBJUMP_CONFIG_FILE = "@TACTUS_FDB_HOME@/etc/gribjump/config_on-demand-extremes-dt.yaml"
 
 [submission.task_exceptions.ArchiveFDB.MODULES]
