@@ -154,6 +154,11 @@
           "type": "boolean",
           "description": "Value of TFP_Q%LLGP in domain namelist for c903. True for gridpoint humidity."
         },
+        "fix_snow_layer": {
+          "type": "boolean",
+          "description": "Whether to fix snow layer in marsprep",
+          "default": true
+        },
         "lam": {
           "title": "LAM related boundary settings",
           "description": "LAM related boundary settings",
@@ -682,7 +687,7 @@
         "arch_dir": {
           "type": "string",
           "description": "Directory where arch files can be found",
-          "default": "@CASEDIR@/IAL/bundle/arch"
+          "default": "@COMPILE.IAL_DIR@/bundle/arch"
         },
         "dir": {
           "type": "string",
@@ -702,7 +707,7 @@
         "bundle_file": {
           "type": "string",
           "description": "bundle used for compiling binaries",
-          "default": "@CASEDIR@/IAL/bundle/bundle.yml"
+          "default": "@COMPILE.IAL_DIR@/bundle/bundle.yml"
         },
         "ninja": {
           "type": "boolean",
@@ -1026,7 +1031,7 @@
           "description": "Experiment name",
           "default": "tactus_case",
           "type": "string",
-          "pattern": "^([a-zA-Z0-9_@][a-zA-Z0-9_@.]*)?$"
+          "pattern": "^([a-zA-Z0-9_@][a-zA-Z0-9_@]*)?$"
         },
         "member_str": {
           "description": "String identifier of a member in the ensemble",

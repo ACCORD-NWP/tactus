@@ -95,11 +95,13 @@
     },
     "references_folder": {
       "type": "string",
-      "description": "Path to references checker input"
+      "description": "Path to references checker input",
+      "default": "@SCRATCH@/@SYS_NAME@/references_folder"
     },
     "references_generation_folder": {
       "type": "string",
-      "description": "Path to references checker generation folder"
+      "description": "Path to references checker generation folder",
+      "default": "@SCRATCH@/@SYS_NAME@/generated_references"
     },
     "rrtm_dir": {
       "type": "string",

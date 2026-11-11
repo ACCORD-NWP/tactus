@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 from tactus.boundary_utils import Boundary
-from tactus.datetime_utils import as_datetime, as_timedelta
+from tactus.datetime_utils import as_datetime, as_timedelta, evaluate_date
 from tactus.eps.eps_setup import get_member_config, infer_members
 from tactus.logs import logger
 from tactus.mars_utils import (
@@ -71,8 +71,13 @@ class Marsprep(Task):
             self.bdmember = infer_members(self.platform.substitute(bdmember_config_value))
 
         else:
+            try:
+                _members = str(config["task.args.members"])
+                members = [int(x) for x in _members.split(":")]
+            except KeyError:
+                members = self.config["eps.general.members"]
             bdmembers = set()
-            for member in self.config["eps.general.members"]:
+            for member in members:
                 member_config = get_member_config(self.config, member)
                 try:
                     member_bdmember_value = member_config["boundaries.ifs.bdmember"]
@@ -101,7 +106,10 @@ class Marsprep(Task):
 
         # Get the times from config.toml
         self.basetime = as_datetime(self.config["general.times.basetime"])
-        forecast_range = as_timedelta(self.config["general.times.forecast_range"])
+        try:
+            forecast_range = as_timedelta(self.config["task.args.forecast_range"])
+        except KeyError:
+            forecast_range = as_timedelta(self.config["general.times.forecast_range"])
 
         # Get boundary informations
         self.boundary = Boundary(config)
@@ -123,7 +131,16 @@ class Marsprep(Task):
             )
             exist_snow = True
 
-        start_snow_date = as_datetime(self.mars["start_date"])
+        start_snow_date = as_datetime(evaluate_date(self.mars["start_date"]))
+
+        self.exist_soil_layer = False
+        self.param_soil_layer = ""
+        with contextlib.suppress(KeyError):
+            self.param_soil_layer = get_value_from_dict(
+                self.mars["GG_soil_layer"], self.init_date_str
+            )
+            self.exist_soil_layer = True
+
         with contextlib.suppress(KeyError):
             start_snow_date = as_datetime(self.mars["start_snow_date"])
 
@@ -206,7 +223,6 @@ class Marsprep(Task):
 
         if self.mars_version == 6:
             request.update_request({"PROCESS": "LOCAL"})
-        request.add_levelist(self.mars["levelist"])
 
         if request.param == "32":
             request.update_request({"LEVELIST": "1"})
@@ -296,7 +312,7 @@ class Marsprep(Task):
         )
         if steps:
             self.get_gg_data(tag, steps, members_dict)
-            if "CY50" in self.config["general.cycle"]:
+            if self.config["boundaries.fix_snow_layer"]:
                 fix_snow_layer(tag, steps, members_dict)
             exist_soil = False
             with contextlib.suppress(KeyError):
@@ -560,7 +576,7 @@ class Marsprep(Task):
             + "/"
             + get_value_from_dict(self.mars["GG_sea"], self.init_date_str)
         )
-        if "CY50" in self.config["general.cycle"]:
+        if self.config["boundaries.fix_snow_layer"]:
             param = "/".join(x for x in param.split("/") if x != "32")
 
         for member in bdmember_list:
@@ -582,11 +598,12 @@ class Marsprep(Task):
                 source=source,
                 write_method=mars_write_method(self.mars_version),
             )
-            if "CY50" in self.config["general.cycle"]:
+            if self.config["boundaries.fix_snow_layer"]:
                 self._build_and_run_retrieve_request(
                     req_file_name="latlonGG.req",
                     data_type=data_type,
                     levtype="SOL",
+                    levelist="1",
                     param="32",
                     steps=[self.steps[0]],
                     members=[member],
@@ -744,6 +761,7 @@ class Marsprep(Task):
             data_type=data_type,
             levtype=lev_type,
             param=param,
+            levelist=1,
             steps=[0],
             members=[0],
             target=target,
@@ -776,6 +794,7 @@ class Marsprep(Task):
                 steps=steps,
                 members=members,
                 target=compile_target(tag, member_type, members),
+                levelist=get_value_from_dict(self.mars["levelist"], self.init_date_str),
                 grid=self.mars["grid_ML"],
             )
 
@@ -794,6 +813,7 @@ class Marsprep(Task):
                 req_file_name=f"{member_type}_{tag}.temp.req",
                 data_type=data_type,
                 levtype="ML",
+                levelist=get_value_from_dict(self.mars["levelist"], self.init_date_str),
                 param=param,
                 steps=steps,
                 members=members,
@@ -820,6 +840,7 @@ class Marsprep(Task):
                 req_file_name=f"{tag}Z.req",
                 data_type=self.mars["SHZ_type"],
                 levtype="ML",
+                levelist=1,
                 param=param,
                 steps=[0],
                 target=f'"{tag}.Z"',
@@ -844,6 +865,7 @@ class Marsprep(Task):
                 req_file_name=f"{member_type}_{tag}.req",
                 data_type=data_type,
                 levtype="ML",
+                levelist=get_value_from_dict(self.mars["levelist"], self.init_date_str),
                 param=param,
                 steps=steps,
                 members=members,
@@ -913,6 +935,7 @@ class Marsprep(Task):
                 req_file_name=f"{member_type}_{tag}.snow.req",
                 data_type=data_type,
                 levtype="SOL",
+                levelist="1/2/3/4/5",
                 param=param,
                 steps=steps,
                 members=members,
@@ -941,6 +964,8 @@ class Marsprep(Task):
         specify_domain: bool = False,
         grid: Optional[str] = None,
         fieldset: Optional[str] = None,
+        levelist: Optional[str] = None,
+        time: Optional[str] = None,
     ) -> BaseRequest:
         """Build request to retrieve data from mars.
 
@@ -956,18 +981,23 @@ class Marsprep(Task):
             specify_domain: Whether to specify domain or not.
             grid: The grid to use.
             fieldset: Name of fieldset. Defaults None.
+            levelist: list of levels to retrieve from mars
+            time: time indicator for MARS request
 
         Returns:
             request: BaseRequest to retrieve data
 
         """
+        if time is None:
+            time = self.init_hour_str
+
         request = BaseRequest(
             class_=self.mars["class"],
             data_type=data_type,
             expver=self.mars["expver"],
             levtype=levtype,
             date=self.init_date_str,
-            time=self.init_hour_str,
+            time=time,
             steps=steps,
             param=param,
             target=target,
@@ -981,6 +1011,8 @@ class Marsprep(Task):
             source=source,
             fieldset=fieldset,
         )
+        if levelist:
+            request.request["LEVELIST"] = levelist
 
         return request
 
@@ -1011,6 +1043,8 @@ class Marsprep(Task):
         specify_domain: bool = False,
         write_method: str = "retrieve",
         grid: Optional[str] = None,
+        levelist: Optional[str] = None,
+        time: Optional[str] = None,
     ) -> None:
         """Build and run request to retrieve data from mars.
 
@@ -1027,7 +1061,12 @@ class Marsprep(Task):
             specify_domain: Whether to specify domain or not.
             write_method: The write method to use when writing the request to file.
             grid: The grid to use.
+            levelist: list of levels to retrieve from mars
+            time: time indicator for MARS request
         """
+        if time is None:
+            time = self.init_hour_str
+
         request = self._build_retrieve_request(
             data_type,
             levtype,
@@ -1039,6 +1078,8 @@ class Marsprep(Task):
             prefetch,
             specify_domain,
             grid,
+            levelist=levelist,
+            time=time,
         )
 
         # Write the request to file

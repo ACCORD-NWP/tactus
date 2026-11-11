@@ -34,7 +34,12 @@ If you are uncertain about the name of the namelist you're searching for just ty
 ```
 tactus show namelist -t master -n showme
 ```
-By default none of the namelist values are substituted with config settings, like e.g. output frequency. If you'd like have the namelist with the substituted values from the config file add a `-s` to the command. For more information about namelist extraction use the help command.
+Normally one would like to check the namelist for a specific config file. If we assume we have config file for an ensemble run we can do e.g.
+``
+tactus show namelist -c my_eps_config.toml -t master -n forecast -n 1
+```
+to get the forecast namelist for member number 1.
+By default none of the namelist values are substituted with config settings, like e.g. output frequency. If you'd like have the namelist with the substituted values from the config file add a `-s` to the command. For more information about namelist extraoptions use the help command.
 ```
 tactus show namelist -h
 ```

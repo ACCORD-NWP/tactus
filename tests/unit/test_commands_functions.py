@@ -16,8 +16,7 @@ from tactus.commands_functions import (
     show_namelist,
     start_suite,
 )
-from tactus.config_parser import BasicConfig
-from tactus.os_utils import resolve_path_relative_to_package
+from tactus.config_parser import BasicConfig, ConfigParserDefaults
 
 
 @pytest.fixture
@@ -29,6 +28,7 @@ def set_arg():
     arg.namelist_name = None
     arg.domain = "test"
     arg.substitute = False
+    arg.member = 0
     return arg
 
 
@@ -37,12 +37,10 @@ def nlint_arg(tmp_directory):
     arg = ArgumentParser()
     arg.tactus_home = None
     arg.namelist = [
-        resolve_path_relative_to_package(
-            Path("tactus/data/namelists/unit_testing/nl_master_integrate")
-        )
+        ConfigParserDefaults.DATA_DIRECTORY / "namelists/unit_testing/nl_master_integrate"
     ]
-    arg.yaml = resolve_path_relative_to_package(
-        Path("tactus/data/namelists/unit_testing/nl_master_base.yml")
+    arg.yaml = (
+        ConfigParserDefaults.DATA_DIRECTORY / "namelists/unit_testing/nl_master_base.yml"
     )
     arg.tag = "nl_master_base"
     arg.output = f"{tmp_directory}/nl_master_integrated.yml"
@@ -92,7 +90,7 @@ def test_show_namelist(set_arg, default_config, param, tmp_directory):
     os.chdir(outpath)
     show_namelist(set_arg, config)
     os.chdir(prev_cwd)
-    assert os.path.isfile(f"{outpath}/namelist_master_forecast")
+    assert os.path.isfile(f"{outpath}/namelist_master_forecast.mbr000")
     assert os.path.isfile(f"{outpath}/xxt00000000")
     assert os.path.isfile(f"{outpath}/xxtddddhh00")
     if param["clean"]:
@@ -110,15 +108,16 @@ def test_namelist_integrate(nlint_arg, default_config):
 @pytest.fixture
 def nlconyml_arg(tmp_directory):
     arg = ArgumentParser()
-    arg.namelist = resolve_path_relative_to_package(
-        Path("tactus/data/namelists/unit_testing/nl_master_base.yml")
+    arg.namelist = (
+        ConfigParserDefaults.DATA_DIRECTORY / "namelists/unit_testing/nl_master_base.yml"
     )
     arg.output = f"{tmp_directory}/nl_master_base.49t2.yml"
     arg.from_cycle = "CY48t2"
     arg.to_cycle = "CY49t2"
     arg.format = "yaml"
-    arg.output_reference = resolve_path_relative_to_package(
-        Path("tactus/data/namelists/unit_testing/reference/nl_master_base.49t2.yml")
+    arg.output_reference = (
+        ConfigParserDefaults.DATA_DIRECTORY
+        / "namelists/unit_testing/reference/nl_master_base.49t2.yml"
     )
     return arg
 
@@ -137,16 +136,15 @@ def test_namelist_convert_yml(nlconyml_arg, default_config):
 def nlconftn_arg(tmp_directory):
     arg = ArgumentParser()
     arg.namelist = str(
-        resolve_path_relative_to_package(
-            Path("tactus/data/namelists/unit_testing/nl_master_base")
-        )
+        ConfigParserDefaults.DATA_DIRECTORY / "namelists/unit_testing/nl_master_base"
     )
     arg.output = f"{tmp_directory}/nl_master_base.49t2"
     arg.from_cycle = "CY48t2"
     arg.to_cycle = "CY49t2"
     arg.format = "ftn"
-    arg.output_reference = resolve_path_relative_to_package(
-        Path("tactus/data/namelists/unit_testing/reference/nl_master_base.49t2")
+    arg.output_reference = (
+        ConfigParserDefaults.DATA_DIRECTORY
+        / "namelists/unit_testing/reference/nl_master_base.49t2"
     )
     return arg
 
@@ -163,13 +161,14 @@ def test_namelist_convert_ftn(nlconftn_arg, default_config):
 @pytest.fixture
 def nlformatyml_arg(tmp_directory):
     arg = ArgumentParser()
-    arg.namelist = resolve_path_relative_to_package(
-        Path("tactus/data/namelists/unit_testing/nl_master_base.yml")
+    arg.namelist = (
+        ConfigParserDefaults.DATA_DIRECTORY / "namelists/unit_testing/nl_master_base.yml"
     )
     arg.output = f"{tmp_directory}/nl_master_base.format.yml"
     arg.format = "yaml"
-    arg.output_reference = resolve_path_relative_to_package(
-        Path("tactus/data/namelists/unit_testing/reference/nl_master_base.format.yml")
+    arg.output_reference = (
+        ConfigParserDefaults.DATA_DIRECTORY
+        / "namelists/unit_testing/reference/nl_master_base.format.yml"
     )
     return arg
 
@@ -188,14 +187,13 @@ def test_namelist_format_yml(nlformatyml_arg, default_config):
 def nlformatftn_arg(tmp_directory):
     arg = ArgumentParser()
     arg.namelist = str(
-        resolve_path_relative_to_package(
-            Path("tactus/data/namelists/unit_testing/nl_master_base")
-        )
+        ConfigParserDefaults.DATA_DIRECTORY / "namelists/unit_testing/nl_master_base"
     )
     arg.output = f"{tmp_directory}/nl_master_base.format"
     arg.format = "ftn"
-    arg.output_reference = resolve_path_relative_to_package(
-        Path("tactus/data/namelists/unit_testing/reference/nl_master_base.format")
+    arg.output_reference = (
+        ConfigParserDefaults.DATA_DIRECTORY
+        / "namelists/unit_testing/reference/nl_master_base.format"
     )
     return arg
 
