@@ -56,7 +56,7 @@ class OdbFamily(EcflowSuiteFamily):
         da_stream: str = "surface",
         family_name: str = "Odb",
         trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
     ):
         """Construct OdbFamily.
 
@@ -73,14 +73,14 @@ class OdbFamily(EcflowSuiteFamily):
             da_stream (str) : Assimilation part identifier.
             family_name: Name of this family node (default ``Odb``).
             trigger: Optional trigger for the whole family.
-            ecf_files_remotely: Remote path prefix for ecf scripts.
+            ecf_remote_files: Remote path prefix for ecf scripts.
         """
         super().__init__(
             family_name,
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         bator_tasks = []
@@ -96,7 +96,7 @@ class OdbFamily(EcflowSuiteFamily):
                     "TACTUS_TASK": task_class,
                     "ARGS": f"obstype={obstype};da_stream={da_stream}",
                 },
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
             bator_tasks.append(task)
 
@@ -109,7 +109,7 @@ class OdbFamily(EcflowSuiteFamily):
             input_template=input_template,
             trigger=bator_tasks,
             variables={"ARGS": f"da_stream={da_stream}"},
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
 
@@ -131,7 +131,7 @@ class ObservationFamily(EcflowSuiteFamily):
         da_stream,
         name=None,
         trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
     ):
         """Construct ObservationFamily..
 
@@ -144,14 +144,14 @@ class ObservationFamily(EcflowSuiteFamily):
             da_stream (str) : Assimilation part identifier.
             name (str): Family name if different than da_stream.
             trigger: Optional trigger for the whole Surface family.
-            ecf_files_remotely: Remote ecf script path prefix.
+            ecf_remote_files: Remote ecf script path prefix.
         """
         super().__init__(
             name if name is not None else da_stream.capitalize(),
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         obs_types = config.get(f"da.{da_stream}.obs_types")
@@ -165,7 +165,7 @@ class ObservationFamily(EcflowSuiteFamily):
             ecf_files,
             input_template=input_template,
             variables={"ARGS": f"da_stream={da_stream}"},
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         OdbFamily(
@@ -179,7 +179,7 @@ class ObservationFamily(EcflowSuiteFamily):
             da_stream=da_stream,
             family_name="Odb",
             trigger=obsprep,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
 
@@ -205,7 +205,7 @@ class SurfaceAnalysisFamily(EcflowSuiteFamily):
         input_template,
         ecf_files,
         trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
     ):
         """Construct SurfaceAnalysisFamily.
 
@@ -216,14 +216,14 @@ class SurfaceAnalysisFamily(EcflowSuiteFamily):
             input_template: ecflow job template.
             ecf_files: Local ecf script path prefix.
             trigger: Optional trigger for the whole Surface family.
-            ecf_files_remotely: Remote ecf script path prefix.
+            ecf_remote_files: Remote ecf script path prefix.
         """
         super().__init__(
             "Surface",
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         obs_family = ObservationFamily(
@@ -234,7 +234,7 @@ class SurfaceAnalysisFamily(EcflowSuiteFamily):
             ecf_files,
             da_stream="surface",
             name="Observations",
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         canari = EcflowSuiteTask(
@@ -245,7 +245,7 @@ class SurfaceAnalysisFamily(EcflowSuiteFamily):
             ecf_files,
             input_template=input_template,
             trigger=obs_family,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         self.blendsur = EcflowSuiteTask(
@@ -256,7 +256,7 @@ class SurfaceAnalysisFamily(EcflowSuiteFamily):
             ecf_files,
             input_template=input_template,
             trigger=canari,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
 
@@ -283,7 +283,7 @@ class VariationalFamily(EcflowSuiteFamily):
         ecf_files,
         blendsur_node,
         trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
     ):
         """Construct VariationalFamily.
 
@@ -296,14 +296,14 @@ class VariationalFamily(EcflowSuiteFamily):
             blendsur_node: The ``BlendSur`` EcflowSuiteTask from the sibling
                 ``SurfaceAnalysisFamily``.  OopsVar will wait for it.
             trigger: Optional trigger for the whole UpperAir family.
-            ecf_files_remotely: Remote ecf script path prefix.
+            ecf_remote_files: Remote ecf script path prefix.
         """
         super().__init__(
             "UpperAir",
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         obs_family = ObservationFamily(
@@ -314,7 +314,7 @@ class VariationalFamily(EcflowSuiteFamily):
             ecf_files,
             da_stream="upper_air",
             name="Observations",
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
         oopsvar_trigger = combine_triggers([obs_family, blendsur_node, trigger])
 
@@ -327,7 +327,7 @@ class VariationalFamily(EcflowSuiteFamily):
             ecf_files,
             input_template=input_template,
             trigger=oopsvar_trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
 
@@ -347,7 +347,7 @@ class AssimilationFamily(EcflowSuiteFamily):
         input_template,
         ecf_files,
         trigger=None,
-        ecf_files_remotely=None,
+        ecf_remote_files=None,
         cycle_basetime=None,
     ):
         """Construct AssimilationFamily.
@@ -360,7 +360,7 @@ class AssimilationFamily(EcflowSuiteFamily):
             ecf_files: Local ecf script path prefix.
             trigger: Trigger to start the DA chain (typically
                 ``InitializationFamily`` so that FirstGuess is ready).
-            ecf_files_remotely: Remote ecf script path prefix.
+            ecf_remote_files: Remote ecf script path prefix.
             cycle_basetime: ISO basetime string for this specific cycle,
                 used to set IS_BGCYCLE at generation time.
         """
@@ -369,7 +369,7 @@ class AssimilationFamily(EcflowSuiteFamily):
             parent,
             ecf_files,
             trigger=trigger,
-            ecf_files_remotely=ecf_files_remotely,
+            ecf_remote_files=ecf_remote_files,
         )
 
         # Cold-start skip: set IS_BGCYCLE=1 on the bgcycle, 0 otherwise.
@@ -398,7 +398,7 @@ class AssimilationFamily(EcflowSuiteFamily):
                 task_settings,
                 input_template,
                 ecf_files,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )
             variational_trigger = surface_family.blendsur
 
@@ -412,5 +412,5 @@ class AssimilationFamily(EcflowSuiteFamily):
                 ecf_files,
                 blendsur_node=variational_trigger,
                 trigger=trigger,
-                ecf_files_remotely=ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )

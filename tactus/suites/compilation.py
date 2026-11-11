@@ -29,7 +29,7 @@ class CompilationSuiteDefinition(SuiteDefinition):
         SuiteDefinition.__init__(self, config, dry_run=dry_run)
 
         unix_group = self.platform.get_platform_value("unix_group")
-        tactusmakedirs(self.joboutdir, unixgroup=unix_group)
+        tactusmakedirs(self.ecflow_env.ecf_out, unixgroup=unix_group)
 
         # Get the default input template path
         input_template = (
@@ -37,14 +37,16 @@ class CompilationSuiteDefinition(SuiteDefinition):
         )
         input_template = input_template.as_posix()
 
+        ecf_remote_files = self.ecflow_env.get_property("ecf_remote_files")
+        ecf_files = self.ecflow_env.get_property("ecf_files")
         compilation = CompilationFamily(
             self.suite,
             config,
             self.task_settings,
-            self.ecf_files,
+            ecf_files,
             trigger=None,
             input_template=input_template,
-            ecf_files_remotely=self.ecf_files_remotely,
+            ecf_remote_files=self.ecf_remote_files,
         )
 
         if config["suite_control.do_cleaning"]:
@@ -53,9 +55,9 @@ class CompilationSuiteDefinition(SuiteDefinition):
                 self.suite,
                 config,
                 self.task_settings,
-                self.ecf_files,
+                ecf_files,
                 input_template=input_template,
                 trigger=compilation,
                 variables={"TACTUS_TASK": "Cleaning", "ARGS": "cleaning_type=PostMortem"},
-                ecf_files_remotely=self.ecf_files_remotely,
+                ecf_remote_files=ecf_remote_files,
             )

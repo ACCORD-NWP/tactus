@@ -158,6 +158,7 @@ def default_config(tmp_directory):
                 "platform": {"scratch": str(tmp_directory)},
                 "scheduler": {
                     "ecfvars": {
+                        "ecf_home": f"{tmp_directory!s}/joboutdir",
                         "ecf_jobout": f"{tmp_directory!s}/joboutdir",
                     }
                 },
