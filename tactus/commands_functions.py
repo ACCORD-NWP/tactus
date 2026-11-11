@@ -130,7 +130,7 @@ def create_exp(args, config):
         )
         args.start_command = None
         args.config_file = output_file
-        args.def_file = ""
+        args.def_file = None
         start_suite(args, config)
 
 
@@ -191,25 +191,21 @@ def start_suite(args, config):
     # Display settings
     ecflow_env.display_properties()
 
-    # Create a troika object and possibly substitute
+    # Troika configuration
     troika = TroikaConfigurationFromConfig(config)
-    platf = Platform(config)
-    troika.substitute_troika_config(platf)
 
     # Copy files to remote server if needed
-    ecflow_env.copy_to_remote(server, troika=troika)
+    ecflow_env.copy_to_remote(server, troika)
 
     # Check arguments
-    def_file = args.def_file
     if args.def_file is None:
         def_file = f"{ecflow_env.suite_name}.def"
-    elif os.path.exists(def_file):
-        args.keep_def_file = True
+        # Save definition file
+        suite_def_obj.save_as_defs(def_file)
     else:
         def_file = args.def_file
-    # Save definition file
-    if def_file is not None:
-        suite_def_obj.save_as_defs(def_file)
+        if os.path.exists(def_file):
+            args.keep_def_file = True
 
     # Create the task index to ensure all tasks are registered before starting the suite
     create_task_index(config)
@@ -595,13 +591,11 @@ def replace_node(args, config):
     # Get suite from config and create SuiteDefinition object
     suite_def_obj = get_suite_from_config(config)
 
-    # Create a troika object and possibly substitute
+    # Troika configuration
     troika = TroikaConfigurationFromConfig(config)
-    platf = Platform(config)
-    troika.substitute_troika_config(platf)
 
     # Copy files to remote server if needed
-    ecflow_env.copy_to_remote(server, troika=troika)
+    ecflow_env.copy_to_remote(server, troika)
 
     # Check arguments
     def_file = args.def_file

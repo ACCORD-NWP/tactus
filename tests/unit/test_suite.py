@@ -313,12 +313,13 @@ class TestSuite:
                 "general": {"case": suite_name},
                 "scheduler": {
                     "ecfvars": {
+                        "ecf_home": f"{tmp_directory}/jobout",
                         "ecf_files": f"{tmp_directory}/ecf_files",
                         "ecf_jobout": f"{tmp_directory}/jobout",
                     }
                 },
                 "platform": {
-                    "tactus_home": f"{os.path.dirname(__file__)}/../..",
+                    "tactus_home": f"{os.path.dirname(__file__)}/../../tactus",
                     "unix_group": "",
                     "mirrorglobalDT": {"remote_path": "@YYYY@/@HH@mm@"},
                 },
@@ -775,12 +776,13 @@ class TestCompilationSuiteDefinition:
                 "general": {"case": suite_name},
                 "scheduler": {
                     "ecfvars": {
+                        "ecf_home": f"{tmp_directory}/jobout",
                         "ecf_files": f"{tmp_directory}/ecf_files",
                         "ecf_jobout": f"{tmp_directory}/jobout",
                     }
                 },
                 "platform": {
-                    "tactus_home": f"{os.path.dirname(__file__)}/../..",
+                    "tactus_home": f"{os.path.dirname(__file__)}/../../tactus",
                     "unix_group": "",
                     "mirrorglobalDT": {"remote_path": "@YYYY@/@HH@mm@"},
                 },
@@ -810,12 +812,13 @@ class TestSuiteWithEcflowNode:
                 "general": {"case": suite_name},
                 "scheduler": {
                     "ecfvars": {
+                        "ecf_home": f"{tmp_directory}/jobout_fake",
                         "ecf_files": f"{tmp_directory}/ecf_files_fake",
                         "ecf_jobout": f"{tmp_directory}/jobout_fake",
                     }
                 },
                 "platform": {
-                    "tactus_home": f"{os.path.dirname(__file__)}/../..",
+                    "tactus_home": f"{os.path.dirname(__file__)}/../../tactus",
                     "unix_group": "",
                     "mirrorglobalDT": {"remote_path": "@YYYY@/@HH@mm@"},
                 },
@@ -869,6 +872,7 @@ class TestSuiteWithEcflowNode:
                 "general": {"case": suite_name},
                 "scheduler": {
                     "ecfvars": {
+                        "ecf_home": f"{tmp_directory}/jobout_mirror",
                         "ecf_files": f"{tmp_directory}/ecf_files_mirror",
                         "ecf_jobout": f"{tmp_directory}/jobout_mirror",
                     },
@@ -880,7 +884,7 @@ class TestSuiteWithEcflowNode:
                     },
                 },
                 "platform": {
-                    "tactus_home": f"{os.path.dirname(__file__)}/../..",
+                    "tactus_home": f"{os.path.dirname(__file__)}/../../tactus",
                     "unix_group": "",
                 },
                 "suite_control": {

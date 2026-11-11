@@ -414,8 +414,6 @@ class EcflowEnvironment(object):
         ecf_ssl=1,
         ecf_tries=1,
         ecf_timeout=20,
-        troika_config_file=None,
-        remote_troika_file=None,
         ecf_remote_files=None,
         ecf_remote_user=None,
     ):
@@ -450,9 +448,6 @@ class EcflowEnvironment(object):
                               remote server (default: None)
             ecf_timeout: Timeout for ecflow client (default: 20)
             ecf_remote_user: Remote user for ecflow server (default: None)
-            remote_troika_file: Path to the troika config file on the
-                                remote server (default: None)
-            troika_config_file: Path to the troika config file (default: None)
         """
         self.suite_name = suite_name
         self.ecf_home = ecf_home
@@ -469,11 +464,7 @@ class EcflowEnvironment(object):
         self.ecf_ssl = ecf_ssl
         self.ecf_tries = ecf_tries
         self.ecf_timeout = ecf_timeout
-        self.troika_config_file = troika_config_file
-        self.remote_troika_file = remote_troika_file
         self.ecf_remote_user = ecf_remote_user
-        if remote_troika_file is None:
-            self.remote_troika_file = troika_config_file
         if self.ecf_home is None:
             self.ecf_home = self.ecf_out
         if self.ecf_remote_files is None:
@@ -509,13 +500,12 @@ class EcflowEnvironment(object):
         for key, value in self.__dict__.items():
             logger.info("{}: {}", key, value)
 
-    def copy_to_remote(self, server, troika=None):
+    def copy_to_remote(self, server, troika):
         """Copy a file from local to remote location.
 
         Args:
             server (EcflowServer): The remote server object.
-            troika (TroikaConfig, optional): Troika configuration object.
-                                             Defaults to None.
+            troika (TroikaConfiguration): The troika configuration object.
         """
         # Implement the logic to copy the file from local to remote
         # Clean, then copy troika and containers
@@ -538,16 +528,13 @@ class EcflowEnvironment(object):
             # Rsync jobs
             remote_host.rsync_directory_with_ssh(src, joboutdir)
 
-            if troika is not None:
-                logger.info("--- Copying troika config file to remote server ---")
-
-                temp_troika_config_file = "parsed_troika_config.yml"
-                troika.save_as(temp_troika_config_file)
-
-                # send troika config
-                remote_host.send_file_to_with_ssh(
-                    temp_troika_config_file, self.remote_troika_file
-                )
+            logger.info("--- Copying troika config file to remote server ---")
+            temp_troika_config_file = "parsed_troika_config.yml"
+            troika.save_as(temp_troika_config_file)
+            # send troika config
+            remote_host.send_file_to_with_ssh(
+                temp_troika_config_file, troika.remote_troika_file
+            )
             logger.info("--- File copying to Ecflow server DONE ---")
 
 
@@ -589,27 +576,11 @@ class EcflowEnvironmentFromConfig(EcflowEnvironment):
         ecf_extn = ".bash"
         ecf_micro = "%"
 
-        # Get the troika config file - in case defined in ecfvars, use that to allow
-        # for scheduler specific troika config file
-        troika_config_file = Platform(config).substitute(
-            config.get(
-                "scheduler.ecfvars.troika.config_file", config["troika.config_file"]
-            )
-        )
-        if ecf_home != ecf_out:
-            remote_troika_config_file = os.path.join(
-                ecf_remote_files, suite_name, os.path.basename(troika_config_file)
-            )
-        else:
-            remote_troika_config_file = troika_config_file
-
         super().__init__(
             suite_name,
             ecf_out,
             ecf_home=ecf_home,
             ecf_user=ecf_user,
-            troika_config_file=troika_config_file,
-            remote_troika_file=remote_troika_config_file,
             ecf_remote_files=ecf_remote_files,
             ecf_remote_user=ecf_remote_user,
             ecf_files=ecf_files,
@@ -837,13 +808,16 @@ class EcflowClient(object):
 class TroikaConfiguration:
     """Troika configuration."""
 
-    def __init__(self, troika_config):
+    def __init__(self, troika_config, remote_troika_config_file=None):
         """Initialize the TroikaConfiguration instance.
 
         Args:
             troika_config (dict): Troika configuration settings
+            remote_troika_config_file (str, optional): Path to the remote troika
+                                                       config file.
         """
         self.config = troika_config
+        self.remote_troika_config_file = remote_troika_config_file
 
     def save_as(self, filename):
         """Save the troika config to a file.
@@ -873,10 +847,44 @@ class TroikaConfigurationFromConfig(TroikaConfiguration):
         Args:
             config (dict): Tactus configuration object.
         """
-        troika_config_file = Platform(config).substitute(
-            config.get(
-                "scheduler.ecfvars.troika.config_file", config["troika.config_file"]
-            )
+        platf = Platform(config)
+        ecf_home = config["scheduler.ecfvars.ecf_home"]
+        joboutdir = config["scheduler.ecfvars.ecf_jobout"]
+        suite_name = config["general.case"]
+        suite_name = platf.substitute(suite_name)
+
+        troika_config_file = config.get(
+            "scheduler.ecfvars.troika.config_file", config.get("troika.config_file")
         )
+        ecf_tactus_home = config.get("scheduler.ecfvars.ecf_tactus_home", None)
+        if ecf_tactus_home is None or not ecf_tactus_home:
+            troika_config_file = platf.substitute(troika_config_file)
+        else:
+            ecf_tactus_home = platf.substitute(ecf_tactus_home)
+            ecf_tactus_home = platf.evaluate(ecf_tactus_home, object_="tactus.os_utils")
+            troika_config_file = platf.sub_value(
+                troika_config_file, "ecf_tactus_home", ecf_tactus_home
+            )
+
+        remote_troika_config_file = None
+        print(ecf_home, joboutdir, troika_config_file, ecf_tactus_home)
+        if ecf_home != joboutdir:
+            ecf_remote_files = config.get("scheduler.ecfvars.ecf_remote_files", None)
+            remote_troika_config_file = os.path.join(
+                ecf_remote_files, suite_name, os.path.basename(troika_config_file)
+            )
+
+        try:
+            troika_cmd = platf.substitute(config["troika.troika"])
+        except KeyError:
+            troika_cmd = "troika"
+        if troika_cmd is None:
+            troika_cmd = "troika"
+
         troika_config = yaml.safe_load(open(troika_config_file, "r", encoding="utf-8"))
-        super().__init__(troika_config)
+        super().__init__(
+            troika_config, remote_troika_config_file=remote_troika_config_file
+        )
+        self.substitute_troika_config(platf)
+        self.config_file = troika_config_file
+        self.troika_cmd = troika_cmd

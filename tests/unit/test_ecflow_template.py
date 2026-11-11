@@ -10,7 +10,7 @@ from tactus import GeneralConstants
 from tactus.config_parser import BasicConfig, ConfigParserDefaults, ParsedConfig
 from tactus.host_actions import TactusHost
 from tactus.logs import logger
-from tactus.scheduler import EcflowServer
+from tactus.scheduler import EcflowServerFromConfig
 from tactus.templates.ecflow.default import default_main
 
 logger.enable("tactus")
@@ -23,7 +23,7 @@ def ecflow_server(parsed_config):
     config = parsed_config
     start_command = "start"
     with patch("tactus.scheduler.Platform"):
-        return EcflowServer(config, start_command)
+        return EcflowServerFromConfig(config, start_command=start_command)
 
 
 class FakeTask:
@@ -34,10 +34,14 @@ class FakeTask:
 
 class TestScheduler:
     @patch("tactus.templates.ecflow.default.EcflowClient")
-    @patch("tactus.templates.ecflow.default.EcflowServer")
+    @patch("tactus.templates.ecflow.default.EcflowServerFromConfig")
     @patch("tactus.templates.ecflow.default.EcflowTask", FakeTask)
     def test_ecf_port_setting(
-        self, mock_client, mock_server, ecflow_server: EcflowServer, tmp_path_factory
+        self,
+        mock_client,
+        mock_server,
+        ecflow_server: EcflowServerFromConfig,
+        tmp_path_factory,
     ):
         offset = 100
         port = os.getuid() + offset

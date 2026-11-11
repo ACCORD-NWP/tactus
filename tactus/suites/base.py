@@ -7,7 +7,7 @@ from typing import List, Optional, Union
 
 from ..datetime_utils import as_datetime
 from ..logs import LogDefaults, logger
-from ..scheduler import EcflowEnvironmentFromConfig
+from ..scheduler import EcflowEnvironmentFromConfig, TroikaConfigurationFromConfig
 from ..submission import TaskSettings
 from ..toolbox import Platform
 
@@ -140,14 +140,11 @@ class SuiteDefinition(BaseSuiteDefinition):
             raise ModuleNotFoundError("Ecflow not found")
 
         ecflow_env = EcflowEnvironmentFromConfig(config)
+        # Troika configuration
+        troika = TroikaConfigurationFromConfig(config)
+        troika_cmd = troika.troika_cmd
+        troika_config = troika.config_file
         platform = Platform(config)
-        try:
-            troika = platform.substitute(config["troika.troika"])
-        except KeyError:
-            troika = "troika"
-        if troika is None:
-            troika = "troika"
-        troika_config = config["troika.config_file"]
         config_file = config.metadata["source_file_path"]
         tactus_home = platform.get_platform_value("TACTUS_HOME")
 
@@ -159,7 +156,7 @@ class SuiteDefinition(BaseSuiteDefinition):
             "FP_PRECISION": "",
             "LOGLEVEL": loglevel,
             "CONFIG": str(config_file),
-            "TROIKA": troika,
+            "TROIKA": troika_cmd,
             "TROIKA_CONFIG": troika_config,
             "BASETIME": starttime,
             "VALIDTIME": starttime,

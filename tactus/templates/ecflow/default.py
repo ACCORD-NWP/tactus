@@ -12,7 +12,7 @@ from tactus.derived_variables import derived_variables
 from tactus.eps.eps_setup import get_member_config
 from tactus.host_actions import TactusHost
 from tactus.logs import LogDefaults, LoggerHandlers, logger
-from tactus.scheduler import EcflowClient, EcflowServer, EcflowTask
+from tactus.scheduler import EcflowClient, EcflowServerFromConfig, EcflowTask
 from tactus.submission import ProcessorLayout
 from tactus.tasks.discover_task import get_task
 
@@ -147,7 +147,7 @@ def default_main(kwargs: dict):
         )
 
     # TODO Add wrapper
-    server = EcflowServer(config)
+    server = EcflowServerFromConfig(config)
     # This will also handle call to sys.exit(), i.e. Client.__exit__ will still be called.
     with EcflowClient(server, task):
         processor_layout = ProcessorLayout(kwargs)
