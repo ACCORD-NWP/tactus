@@ -414,17 +414,14 @@ class TestCases:
                 # Remove all cases before starting any of them, if requested
                 if self.cases[case].get("clean", True):
                     remove_cmds.append(
-                        (
-                            suite_file,
-                            [
-                                "remove",
-                                "-f",
-                                "--execute-removal",
-                                "--config-file",
-                                config_file,
-                                config_file,
-                            ],
-                        ),
+                        [
+                            "remove",
+                            "-f",
+                            "--execute-removal",
+                            "--config-file",
+                            config_file,
+                            config_file,
+                        ],
                     )
 
                 start_cmds.append(
@@ -442,7 +439,14 @@ class TestCases:
                     ),
                 )
 
-        for suite_file, cmd in remove_cmds + start_cmds:
+        for cmd in remove_cmds:
+            cmd_txt = " ".join(cmd)
+            logger.info("Use cmd:\n\n{}\n\n", cmd_txt)
+
+            if not self.dry:
+                tactus_main(cmd)
+
+        for suite_file, cmd in start_cmds:
             cmd_txt = " ".join(cmd)
             logger.info("Use cmd:\n\n{}\n\n", cmd_txt)
 
