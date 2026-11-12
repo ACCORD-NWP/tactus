@@ -1354,7 +1354,7 @@ class FDB(ArchiveProvider):
             temp1 = f"{filename}_temp1.grib"
             temp2 = f"{filename}_temp2.grib"
             rules_file = "temp_rules"
-            self._write_rules_file(rules_file, rules, neg="!")
+            self._write_rules_file(rules_file, rules)
             os.system(f"grib_filter {rules_file} {resource.identifier} -o {temp1}")
             set_values = ",".join([
                 f"{key}={value}" for key, value in grib_set.items() if value
@@ -1371,7 +1371,7 @@ class FDB(ArchiveProvider):
                 # Create example files for parameters not archived
                 inv_temp1 = f"{filename}_temp1_inv.grib"
                 inv_rules_file = "inv_temp_rules"
-                self._write_rules_file(inv_rules_file, rules, oper=" || ")
+                self._write_rules_file(inv_rules_file, rules, inverse=True)
                 os.system(
                     f"grib_filter {inv_rules_file} {resource.identifier} -o {inv_temp1}"
                 )
@@ -1384,15 +1384,31 @@ class FDB(ArchiveProvider):
 
         return True
 
-    def _write_rules_file(self, filename, rules, neg="", oper=" && "):
+    def _write_rules_file(self, filename, rules, inverse=False):
+        """Write a grib_filter rules file from fdb.negative_rules.
+
+        Args:
+            filename (str): Path of the rules file to write
+            rules (dict): Mapping of GRIB key to list of excluded values
+            inverse (bool): Write the complementary filter, selecting the
+                excluded messages instead of the archived ones
+        """
         if bool(rules):
             logger.info("Applying rules from fdb.negative_rules")
-            x = [
-                f'{neg}({name} is "{value}")'
-                for name, values in rules.items()
-                for value in values
-            ]
-            rule = "if (" + oper.join(x) + ") { append; }\n"
+            if inverse:
+                x = [
+                    f'(!defined({name}) || ({name} is "{value}"))'
+                    for name, values in rules.items()
+                    for value in values
+                ]
+                rule = "if (" + " || ".join(x) + ") { append; }\n"
+            else:
+                x = [
+                    f'(defined({name}) && !({name} is "{value}"))'
+                    for name, values in rules.items()
+                    for value in values
+                ]
+                rule = "if (" + " && ".join(x) + ") { append; }\n"
         else:
             logger.info(
                 "No parameters excluded in fdb.negative_rules. Archiving all fields."
