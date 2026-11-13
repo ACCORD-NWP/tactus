@@ -386,6 +386,8 @@ class TestCases:
             raise FileNotFoundError(msg) from err
 
         cases = flatten_list(self._build_levels())
+        remove_cmds = []
+        start_cmds = []
         for case in cases:
             config_name = config_names["config_names"][case]
             prefix_file = f"{self.test_dir}/{config_name}"
@@ -405,24 +407,13 @@ class TestCases:
                     ]
                     for task in self.cases[case]["tasks"]
                 ]
+                start_cmds.extend((None, cmd) for cmd in cmds)
             else:
                 suite_file = f"{prefix_file}.def"
-                cmds = [
-                    [
-                        "start",
-                        "suite",
-                        "--config-file",
-                        config_file,
-                        "-f",
-                        suite_file,
-                        "-k",
-                    ],
-                ]
 
-                # Make sure we remove the case before launching, if requested
+                # Remove all cases before starting any of them, if requested
                 if self.cases[case].get("clean", True):
-                    cmds.insert(
-                        0,
+                    remove_cmds.append(
                         [
                             "remove",
                             "-f",
@@ -433,14 +424,36 @@ class TestCases:
                         ],
                     )
 
-            for cmd in cmds:
-                cmd_txt = " ".join(cmd)
-                logger.info("Use cmd:\n\n{}\n\n", cmd_txt)
+                start_cmds.append(
+                    (
+                        suite_file,
+                        [
+                            "start",
+                            "suite",
+                            "--config-file",
+                            config_file,
+                            "-f",
+                            suite_file,
+                            "-k",
+                        ],
+                    ),
+                )
 
-                if not self.dry:
-                    if self.mode != "task" and os.path.exists(suite_file):
-                        os.remove(suite_file)
-                    tactus_main(cmd)
+        for cmd in remove_cmds:
+            cmd_txt = " ".join(cmd)
+            logger.info("Use cmd:\n\n{}\n\n", cmd_txt)
+
+            if not self.dry:
+                tactus_main(cmd)
+
+        for suite_file, cmd in start_cmds:
+            cmd_txt = " ".join(cmd)
+            logger.info("Use cmd:\n\n{}\n\n", cmd_txt)
+
+            if not self.dry:
+                if self.mode != "task" and os.path.exists(suite_file):
+                    os.remove(suite_file)
+                tactus_main(cmd)
 
     def get_binaries(self):
         """Get the correct binaries."""
