@@ -15,8 +15,8 @@ jobs:
 
       - name: Check for CHANGELOG update
         run: |
-          git fetch origin "${{ github.base_ref }}"
-          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          CHANGED_FILES=$(git diff --name-only \
+           "${{ github.event.pull_request.base.sha }}"...HEAD)
 
           echo "  ACTION: Changed files:"
           echo "$CHANGED_FILES"
