@@ -619,10 +619,10 @@ class TestCases:
         inspect_all = True
         inspect_list = None
         if inspect is not None:
-            self.verbose = True
             inspect_all = False
             if isinstance(inspect, str):
                 inspect_list = inspect.split(",")
+                self.verbose = True
 
         config_files = [
             f"{self.test_dir}/{config_name}.toml"
