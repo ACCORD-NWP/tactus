@@ -617,16 +617,17 @@ class TestCases:
             raise FileNotFoundError(msg) from err
 
         inspect_all = True
+        inspect_list = None
         if inspect is not None:
             self.verbose = True
             inspect_all = False
             if isinstance(inspect, str):
-                _inspect = inspect.split(",")
+                inspect_list = inspect.split(",")
 
         config_files = [
             f"{self.test_dir}/{config_name}.toml"
             for config_name in config_names["config_names"].values()
-            if inspect is None or inspect or config_name in _inspect
+            if inspect_list is None or config_name in inspect_list
         ]
 
         summaries = {}
