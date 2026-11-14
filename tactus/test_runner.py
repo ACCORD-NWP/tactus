@@ -606,7 +606,7 @@ class TestCases:
 
         return check, case_name, json_file, references_folder
 
-    def collect_summaries(self):
+    def collect_summaries(self, inspect=None):
         """Collect summaries from the runs."""
         try:
             with open(f"{self.test_dir}/{self.config_name}_config_names.toml", "rb") as f:
@@ -616,9 +616,18 @@ class TestCases:
             logger.error(msg)
             raise FileNotFoundError(msg) from err
 
+        inspect_all = True
+        inspect_list = None
+        if inspect is not None:
+            inspect_all = False
+            if isinstance(inspect, str):
+                inspect_list = inspect.split(",")
+                self.verbose = True
+
         config_files = [
             f"{self.test_dir}/{config_name}.toml"
             for config_name in config_names["config_names"].values()
+            if inspect_list is None or config_name in inspect_list
         ]
 
         summaries = {}
@@ -669,8 +678,15 @@ class TestCases:
                     width,
                     creation_date,
                     now,
+                    not inspect_all,
                 )
-                logger.opt(colors=True).info(colored_message)
+
+                if (
+                    inspect_all
+                    or "ERROR" in colored_message
+                    or "FAILURE" in colored_message
+                ):
+                    logger.opt(colors=True).info(colored_message)
 
             if not self.verbose:
                 logger.opt(colors=True).info("<blue>Add '-v' for more info</blue>")
@@ -736,6 +752,6 @@ def run_test(args, config=None):
         if args.configure or args.run:
             t.execute(args)
         else:
-            t.collect_summaries()
+            t.collect_summaries(args.inspect)
 
     return True
