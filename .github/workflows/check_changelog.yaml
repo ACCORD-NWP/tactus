@@ -1,0 +1,37 @@
+#.github/workflows/check_changelog.yaml
+name: Check Change Log update
+
+on:
+  pull_request:
+
+jobs:
+  check-changelog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for CHANGELOG update
+        run: |
+          CHANGED_FILES=$(git diff --name-only \
+           "${{ github.event.pull_request.base.sha }}" \
+           "${{ github.event.pull_request.head.sha }}")
+
+          echo "  ACTION: Changed files:"
+          echo "$CHANGED_FILES"
+
+          CODE_FILES=$(echo "$CHANGED_FILES" | grep -vE '^(CHANGELOG.md)' || true)
+
+          if [ -z "$CODE_FILES" ]; then
+            echo "  ACTION: No code changes detected."
+            exit 0
+          fi
+
+          if echo "$CHANGED_FILES" | grep -q '^CHANGELOG.md$'; then
+          echo "  ACTION:   CHANGELOG.md updated."
+            exit 0
+          fi
+          echo "ERROR: Code changes detected but CHANGELOG.md was not updated."
+          exit 1

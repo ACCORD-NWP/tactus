@@ -114,7 +114,7 @@
                 "IAL_DIR": {
                   "type": "string",
                   "description": "path to IAL_DIR",
-                  "default": "@CASEDIR@/IAL"
+                  "default": "@COMPILE.IAL_DIR@"
                 }
               },
               "default": {}
