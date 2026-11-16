@@ -35,7 +35,9 @@ def fixture_config_path(tmp_path_factory: pytest.TempPathFactory):
 
 
 @pytest.fixture(scope="module")
-def _module_mockers(module_mocker, config_path, tmp_path_factory: pytest.TempPathFactory):
+def _module_mockers(
+    module_mocker, default_config, config_path, tmp_path_factory: pytest.TempPathFactory
+):
     # Patching ConfigParserDefaults.CONFIG_PATH so tests use the generated config
     module_mocker.patch(
         "tactus.config_parser.ConfigParserDefaults.__class__.__setattr__",
@@ -48,6 +50,13 @@ def _module_mockers(module_mocker, config_path, tmp_path_factory: pytest.TempPat
     original_no_scheduler_submission_submit_method = NoSchedulerSubmission.submit
     original_submission_task_settings_parse_job = TaskSettings.parse_job
     original_platform_evaluate_function = Platform.evaluate
+
+    def new_default_config(*args, **kwargs):
+        return default_config
+
+    module_mocker.patch(
+        "tactus.config_parser.ParsedConfig.from_file", new=new_default_config
+    )
 
     def new_no_scheduler_submission_submit_method(*args, **kwargs):
         """Wrap the original method to catch ."""
@@ -144,7 +153,7 @@ class TestMainShowCommands:
 
 
 @pytest.mark.usefixtures("_module_mockers")
-def test_run_task_command(tmp_path):
+def test_run_task_command(default_config, tmp_path):
     main([
         "run",
         "--task",

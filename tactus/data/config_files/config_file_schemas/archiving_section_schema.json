@@ -61,6 +61,55 @@
               "type": "string"
             }
           }
+        },
+        "copy": {
+          "title": "Copy settings for the per cycle archiving",
+          "description": "",
+          "type": "object",
+          "properties": {
+            "config": {
+              "title": "Copy the config file.",
+              "description": "",
+              "type": "object",
+              "properties": {
+                "active": {
+                  "description": "Activates the archiving",
+                  "type": "boolean",
+                  "default": true
+                },
+                "inpath": {
+                  "description": "Location of input files for archiving",
+                  "type": "string",
+                  "default": ""
+                },
+                "outpath": {
+                  "description": "Relative location of the archived files",
+                  "type": "string",
+                  "default": "@ARCHIVE@"
+                },
+                "pattern": {
+                  "description": "Search pattern for files to be included. Could be a single pattern or list of patterns.",
+                  "default": "@CONFIG@",
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  ]
+                },
+                "newname": {
+                  "description": "Target name for renaming of files. Only works is pattern is a string and matches an existing file",
+                  "type": "string",
+                  "default": "config.toml"
+                }
+              }
+            }
+          }
         }
       }
     }

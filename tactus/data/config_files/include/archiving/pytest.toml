@@ -12,11 +12,6 @@
   pattern = "GRIBPF*"
 
 [archiving.hour.copy.config]
-  active = true
-  inpath = ""
-  newname = "config.toml"
-  outpath = "@ARCHIVE@"
-  pattern = "@CONFIG@"
 
 [archiving.hour.ecfs.config]
   active = true

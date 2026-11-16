@@ -2,6 +2,7 @@
 
 import atexit
 import contextlib
+import io
 import os
 import shutil
 import sys
@@ -662,38 +663,13 @@ class BaseRequest:
         """
         self.request.update(upd)
 
-    def add_levelist(self, levelist: str):
-        """Set multilevel if needed.
-
-        Args:
-            levelist (string): list of levels
-        Returns:
-            None
-        """
-        if self.levtype == "ML" and self.param == "129":
-            local_levelist = 1
-
-        elif self.levtype == "ML":
-            local_levelist = get_value_from_dict(levelist, self.date)
-            logger.info("levelist:{}", local_levelist)
-
-        elif self.levtype == "SOL":
-            local_levelist = "1/2/3/4/5"
-            logger.info("levelist:{}", local_levelist)
-
-        else:
-            return
-
-        # Add levelist to request
-        self.request["LEVELIST"] = local_levelist
-
     def add_database_options(self):
         """Add database options."""
         if self.request["CLASS"] == "D1":
             self.request.update({
                 "DATASET": "extremes-dt",
             })
-            if "latlon" not in self.target:
+            if self.request.get("SOURCE") is None:
                 self.request.update({
                     "DATABASE": "fdb",
                 })
@@ -713,25 +689,50 @@ def fix_snow_layer(tag: str, steps: List[int], members_dict: Dict[str, List[int]
         for members in members_dict.values():
             for member in members:
                 filename = f"{tag}_{member or 0}+{step}"
-
-                with open(filename, "rb") as fin, open("ICMGGtmp", "wb") as fout:
-                    while True:
-                        gid = codes_grib_new_from_file(fin)
+                grid_asn = None
+                position = 0
+                with open(filename, "r+b") as file:
+                    while grid_asn is None:
+                        position = file.tell()
+                        gid = codes_grib_new_from_file(file)
                         if gid is None:
                             break
                         try:
                             short_name = str(codes_get(gid, "shortName"))
                             if short_name == "asn":
-                                logger.info(
-                                    "Fixing snow layer for snow albedo in file: {}",
-                                    filename,
-                                )
-                                codes_set(gid, "edition", 2)
-                                codes_set(gid, "typeOfLevel", "snowLayer")
-                                codes_set(gid, "level", 1)
-
-                            codes_write(gid, fout)
+                                grid_asn = gid
                         finally:
-                            codes_release(gid)
+                            if grid_asn is None:
+                                codes_release(gid)
 
-                shutil.move("ICMGGtmp", filename)
+                    if grid_asn:
+                        logger.info(
+                            f"Fixing snow layer for snow albedo in file :{filename}"
+                        )
+                        # The asn message is fixed in place for performance reason.
+                        # As the message size changes when snowLayer is set,
+                        # the message can't be updated in the middle of the file.
+                        # Therefore, the original message is invalidated by
+                        # setting paramId to an unused value (99), and the
+                        # correct message is appended at the end of the file.
+
+                        try:
+                            original_param_id = codes_get(grid_asn, "paramId")
+
+                            # Invalidate the original message in place
+                            # (size unchanged).
+                            dummy_param_id = 99
+                            codes_set(grid_asn, "paramId", dummy_param_id)
+                            file.seek(position)
+                            codes_write(grid_asn, file)
+
+                            # Append the fixed message at the end of the file.
+                            codes_set(grid_asn, "paramId", original_param_id)
+                            codes_set(grid_asn, "edition", 2)
+                            codes_set(grid_asn, "typeOfLevel", "snowLayer")
+                            codes_set(grid_asn, "level", 1)
+
+                            file.seek(0, io.SEEK_END)
+                            codes_write(grid_asn, file)
+                        finally:
+                            codes_release(grid_asn)
