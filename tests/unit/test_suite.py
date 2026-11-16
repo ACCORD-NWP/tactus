@@ -243,6 +243,8 @@ class TestSuite:
             {"suite_control": {"do_creategrib_static": True}},
             # Non-decadal PGD branch.
             {"pgd": {"one_decade": False}},
+            # Decadal PGD branch (requires ecosg).
+            {"pgd": {"ecosg": True}},
             # IOmerge/CreateGrib/ArchiveFDB branches in ForecastFamily.
             {
                 "creategrib": {"CreateGrib": {"conversions": ["sfx"]}},
@@ -256,6 +258,7 @@ class TestSuite:
             # E923MonthlyFamily month-wraparound: January end (last_month -> 12).
             {
                 "general": {
+                    "full_year_climate": False,
                     "times": {
                         "start": "2022-01-10T00:00:00Z",
                         "end": "2022-01-12T00:00:00Z",
@@ -265,6 +268,7 @@ class TestSuite:
             # E923MonthlyFamily month-wraparound: December end (next_month -> 1).
             {
                 "general": {
+                    "full_year_climate": False,
                     "times": {
                         "start": "2022-12-10T00:00:00Z",
                         "end": "2022-12-12T00:00:00Z",
