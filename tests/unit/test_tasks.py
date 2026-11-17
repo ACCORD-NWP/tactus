@@ -15,6 +15,7 @@ from tactus.plugin import TactusPluginRegistry
 from tactus.tasks.archive import ArchiveHour, ArchiveStatic
 from tactus.tasks.base import Task
 from tactus.tasks.batch import BatchJob
+from tactus.tasks.boundaries import MergeCamsLbc
 from tactus.tasks.collectlogs import CollectLogs
 from tactus.tasks.creategrib import GlGrib
 from tactus.tasks.discover_task import available_tasks, get_task
@@ -25,6 +26,7 @@ from tactus.tasks.gribmodify import AddCalculatedFields
 from tactus.tasks.interpolsstsic import InterpolSstSic
 from tactus.tasks.iomerge import IOmerge
 from tactus.tasks.marsprep import Marsprep
+from tactus.tasks.marsprep_cams import MarsprepCams
 from tactus.tasks.obs_ingestion import OdbIngestionTask
 from tactus.tasks.obsprep import ObsPrep
 from tactus.tasks.odbmerge import OdbMerge
@@ -87,9 +89,14 @@ def task_name_and_configs(request, default_config, tmp_directory):
             pattern = "GRIBPF*"
         [eps.member_settings.boundaries.ifs]
             bdmember = 0
+        [mars.CAMS_NRT]
+            start_date = "2000-01-01T00:00:00Z"
         """
     )
     task_config = task_config.copy(update=config_patch)
+    if task_name == "c903cams":
+        # The CAMS aerosol namelists only exist for CY49t2
+        task_config = task_config.copy(update={"general": {"cycle": "CY49t2"}})
     task_config = task_config.copy(update={"task": {"wrapper": "echo NPROC=@NPROC@;"}})
 
     return task_name, task_config
@@ -118,6 +125,8 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     original_task_obsingestion_odbingestion_init_method = OdbIngestionTask.__init__
     original_task_odbmerge_odbmerge_execute_method = OdbMerge.execute
     original_task_marsprep_run_method = Marsprep.run
+    original_task_marsprepcams_run_method = MarsprepCams.run
+    original_task_mergecamslbc_run_method = MergeCamsLbc.run
     original_task_collectlogs_collectlogs_execute_method = CollectLogs.execute
     original_task_generate_wfp_tab_file_execute_method = GenerateWfpTabFile.execute
 
@@ -191,6 +200,16 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
         """Suppress some errors so that test continues if they happen."""
         with contextlib.suppress(FileNotFoundError):
             original_task_marsprep_run_method(*args, **kwargs)
+
+    def new_task_marsprepcams_run_method(*args, **kwargs):
+        """Suppress errors from the missing MARS data."""
+        with contextlib.suppress(FileNotFoundError, RuntimeError):
+            original_task_marsprepcams_run_method(*args, **kwargs)
+
+    def new_task_mergecamslbc_run_method(*args, **kwargs):
+        """Suppress errors from the missing boundary files."""
+        with contextlib.suppress(FileNotFoundError):
+            original_task_mergecamslbc_run_method(*args, **kwargs)
 
     def new_task_e923_constant_part_method(*args, **kwargs):
         """Create needed file "Const.Clim" before running the original method."""
@@ -324,6 +343,14 @@ def _mockers_for_task_run_tests(session_mocker, tmp_path_factory):
     session_mocker.patch(
         "tactus.tasks.marsprep.Marsprep.run",
         new=new_task_marsprep_run_method,
+    )
+    session_mocker.patch(
+        "tactus.tasks.marsprep_cams.MarsprepCams.run",
+        new=new_task_marsprepcams_run_method,
+    )
+    session_mocker.patch(
+        "tactus.tasks.boundaries.MergeCamsLbc.run",
+        new=new_task_mergecamslbc_run_method,
     )
     session_mocker.patch(
         "tactus.tasks.collectlogs.CollectLogs.execute",

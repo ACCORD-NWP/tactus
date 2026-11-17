@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+### Added
+- Optional near-real-time CAMS aerosols in the lateral boundaries (enable with `modifications/nrt_aerosols.toml`, defaults in `include/nrt_aerosols.toml`): new `CAMS_NRT` MARS selection, `MarsprepCams`, `C903Cams` and `MergeCamsLbc` tasks, and CAMS namelist sections. Only for CY49t2. [#PR](https://github.com/ACCORD-NWP/tactus/pull/PR)(@author)
+
 ## [1.5.0] - 2026-11-10
 
 ### Added

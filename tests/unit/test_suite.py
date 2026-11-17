@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Unit tests for the ``tactus.suites`` package."""
 
+import ast
 import os
 from contextlib import suppress
 from datetime import datetime, timedelta
@@ -1025,3 +1026,138 @@ class TestMirrorFamilyDirect:
 
         assert fam.ecf_node is not None
         assert len(fam.ecf_node.children) == 3
+
+
+def _all_nodes(node):
+    """Return all fake ecflow nodes below node, keyed by path."""
+    nodes = {node.path: node}
+    for child in node.children:
+        nodes.update(_all_nodes(child))
+    return nodes
+
+
+@pytest.mark.usefixtures("_module_mockers")
+class TestCamsSuite:
+    """CAMS aerosols in the boundaries (nrt_aerosols.active)."""
+
+    def _config(self, default_config, tmp_directory, suite_name, update=None):
+        config = default_config.copy(
+            update={
+                "general": {
+                    "case": suite_name,
+                    "cycle": "CY49t2",
+                    "csc": "AROME",
+                    "times": {
+                        "start": "2022-05-02T00:00:00Z",
+                        "end": "2022-05-02T03:00:00Z",
+                        "cycle_length": "PT3H",
+                        "forecast_range": "PT3H",
+                    },
+                },
+                "scheduler": {
+                    "ecfvars": {
+                        "ecf_files": f"{tmp_directory}/ecf_files_{suite_name}",
+                        "ecf_jobout": f"{tmp_directory}/jobout_{suite_name}",
+                    }
+                },
+                "platform": {
+                    "tactus_home": f"{os.path.dirname(__file__)}/../..",
+                    "unix_group": "",
+                },
+                "boundaries": {"lbc_per_task": 2},
+                "nrt_aerosols": {"active": True},
+                "eps": {"general": {"members": [0, 1]}},
+            }
+        )
+        if update is not None:
+            config = config.copy(update=update)
+        return config.copy(update=set_times(config))
+
+    def test_cams_nodes_and_triggers(self, default_config, tmp_directory, fake_ecflow):
+        assert fake_ecflow is not None
+        config = self._config(default_config, tmp_directory, "test_suite_cams")
+        defs = TactusSuiteDefinition(config, dry_run=False)
+        nodes = _all_nodes(defs.suite.ecf_node)
+
+        cams_families = sorted(p for p in nodes if p.endswith("/CamsAerosols"))
+        assert len(cams_families) == 2
+        assert all(f"{p}/MarsprepCams" in nodes for p in cams_families)
+        # The second cycle waits for the CAMS retrieval of the first one
+        assert any(
+            "0000/CamsAerosols/MarsprepCams == complete" in trigger
+            for trigger in nodes[cams_families[1]].triggers
+        )
+
+        # C903Cams runs once per cycle, outside the member families
+        c903_cams = [p for p in nodes if p.endswith("/C903Cams")]
+        assert c903_cams
+        assert all("/CamsAerosols/LBCs/" in p for p in c903_cams)
+        assert not [p for p in c903_cams if "/mbr" in p]
+        for path in c903_cams:
+            assert "MarsprepCams == complete" in " ".join(nodes[path].triggers)
+
+        # Every member merges the shared aerosol boundaries after its own C903
+        merges = [p for p in nodes if p.endswith("/MergeCamsLbc")]
+        assert {p.split("/")[4] for p in merges} == {"mbr000", "mbr001"}
+        assert all(p.replace("/MergeCamsLbc", "/C903") in nodes for p in merges)
+        for path in merges:
+            trigger = " ".join(nodes[path].triggers)
+            assert "C903 == complete" in trigger
+            assert "CamsAerosols/LBCs/" in trigger
+            assert "C903Cams == complete" in trigger
+
+    def test_no_cams_nodes_by_default(self, default_config, tmp_directory, fake_ecflow):
+        assert fake_ecflow is not None
+        config = self._config(
+            default_config,
+            tmp_directory,
+            "test_suite_nocams",
+            update={"nrt_aerosols": {"active": False}},
+        )
+        defs = TactusSuiteDefinition(config, dry_run=False)
+        nodes = _all_nodes(defs.suite.ecf_node)
+        assert not [p for p in nodes if "Cams" in p]
+
+    @pytest.mark.parametrize(
+        "suite_control",
+        [{}, {"mode": "restart"}, {"do_interpolsstsic": True}],
+    )
+    def test_cams_lbcs_match_members(
+        self, default_config, tmp_directory, fake_ecflow, suite_control
+    ):
+        assert fake_ecflow is not None
+        config = self._config(
+            default_config,
+            tmp_directory,
+            "test_suite_cams_lbcs",
+            update={"suite_control": suite_control},
+        )
+        defs = TactusSuiteDefinition(config, dry_run=False)
+        nodes = _all_nodes(defs.suite.ecf_node)
+
+        def lbc_indices(path):
+            args = dict(nodes[path].variables)["ARGS"]
+            bd_dict = ast.literal_eval(args.split(";")[0].split("=", 1)[1])
+            return set(bd_dict)
+
+        for cycle in {p.split("/")[3] for p in nodes if p.endswith("/C903Cams")}:
+            cams = set()
+            for path in nodes:
+                if f"/{cycle}/CamsAerosols/" in path and path.endswith("/C903Cams"):
+                    cams |= lbc_indices(path)
+            member = set()
+            for path in nodes:
+                if f"/{cycle}/mbr000/" in path and path.endswith("/C903"):
+                    member |= lbc_indices(path)
+            # C903Cams interpolates exactly the LBCs that the members merge
+            assert cams == member
+
+    def test_cams_with_slaf_raises(self, default_config, tmp_directory):
+        config = self._config(
+            default_config,
+            tmp_directory,
+            "test_suite_cams_slaf",
+            update={"boundaries": {"do_slaf": True}},
+        )
+        with pytest.raises(ValueError, match="nrt_aerosols.active"):
+            TactusSuiteDefinition(config, dry_run=True)
