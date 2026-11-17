@@ -6,9 +6,6 @@ from tactus.datetime_utils import as_datetime, as_timedelta, cycle_offset
 from tactus.mars_utils import mars_selection
 from tactus.toolbox import Platform
 
-# IAL cycles with namelists for the CAMS aerosols in the boundaries
-CAMS_AEROSOL_CYCLES = ("CY49t2",)
-
 
 def use_cams_aerosols(config) -> bool:
     """Check if CAMS aerosols are used in the boundaries.
@@ -20,15 +17,14 @@ def use_cams_aerosols(config) -> bool:
         bool: The value of nrt_aerosols.active
 
     Raises:
-        ValueError: If active for a cycle without CAMS aerosol namelists
+        ValueError: If active for another cycle than CY49t2
     """
     if not config.get("nrt_aerosols.active", False):
         return False
     cycle = config["general.cycle"]
-    if cycle not in CAMS_AEROSOL_CYCLES:
+    if cycle != "CY49t2":
         raise ValueError(
-            f"nrt_aerosols.active is only available for {CAMS_AEROSOL_CYCLES}, "
-            f"not for {cycle}"
+            f"nrt_aerosols.active is only available for CY49t2, not for {cycle}"
         )
     return True
 
