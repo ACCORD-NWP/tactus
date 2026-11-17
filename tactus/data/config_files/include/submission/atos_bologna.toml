@@ -52,6 +52,23 @@
   KMP_BLOCKTIME = "12"
   OMP_STACKSIZE = "4G"
 
+[submission.task_exceptions.C903Cams]
+  NPROC = 16
+  OMP_NUM_THREADS = "4"
+
+[submission.task_exceptions.C903Cams.BATCH]
+  CPUSPERTASK = "#SBATCH --cpus-per-task=4"
+  HYPERTHREAD = "#SBATCH --hint=nomultithread"
+  MEM = "#SBATCH --mem=0G"
+  NODES = "#SBATCH --nodes=2"
+  NTASKS = "#SBATCH --ntasks-per-node=8"
+  WALLTIME = "#SBATCH --time=01:00:00"
+
+[submission.task_exceptions.C903Cams.ENV]
+  KMP_AFFINITY = "granularity=core,scatter"
+  KMP_BLOCKTIME = "12"
+  OMP_STACKSIZE = "4G"
+
 [submission.task_exceptions.CreateGrib]
   binary = "gl_DP"
 
@@ -114,6 +131,18 @@
   NTASKS = "#SBATCH --ntasks=1"
   QOS = "#SBATCH --qos=np"
   WALLTIME = "#SBATCH --time=06:00:00"
+
+[submission.task_exceptions.MarsprepCams]
+  bindir = "/usr/local/bin/"
+
+[submission.task_exceptions.MarsprepCams.BATCH]
+  MEM = "#SBATCH --mem=32GB"
+  QOS = "#SBATCH --qos=nf"
+  WALLTIME = "#SBATCH --time=06:00:00"
+
+[submission.task_exceptions.MergeCamsLbc.BATCH]
+  MEM = "#SBATCH --mem=16GB"
+  WALLTIME = "#SBATCH --time=01:00:00"
 
 [submission.task_exceptions.Pgd]
   NPROC = 2
@@ -189,7 +218,7 @@
 [submission.types.parallel]
   NPROC = 32
   SCHOST = "hpc"
-  tasks = ["Forecast", "E927", "Pgd", "Prep", "C903", "IALBundleBuild"]
+  tasks = ["Forecast", "E927", "Pgd", "Prep", "C903", "C903Cams", "IALBundleBuild"]
   WRAPPER = "srun"
 
 [submission.types.parallel.BATCH]
@@ -221,6 +250,8 @@
     "Topography",
     "Soil",
     "Marsprep",
+    "MarsprepCams",
+    "MergeCamsLbc",
     "E923Update",
     "IOmerge",
     "InterpolSstSic",
