@@ -9,9 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+### Fixed
+- Change order of remove/start in test runner to avoid race condition. [#291](https://github.com/ACCORD-NWP/tactus/pull/291)(@uandrae)
+
 ## [1.5.0] - 2026-11-10
 
 ### Added
+- Add check on update to `CHANGELOG.md` for PRs [#283](https://github.com/ACCORD-NWP/tactus/pull/283)(@ewhelan)
 - Add configs for RHEL 9 PC. [#259](https://github.com/ACCORD-NWP/tactus/pull/259)(@ewhelan)
 - Add command line options for compilation to `tactus test`. [#261](https://github.com/ACCORD-NWP/tactus/pull/261)(@uandrae), [#286](https://github.com/ACCORD-NWP/tactus/pull/286)(@uandrae)
 - Add selection of UWC West domain definitions. [#249](https://github.com/ACCORD-NWP/tactus/pull/249)(@ewhelan)
