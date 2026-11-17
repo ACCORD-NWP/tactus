@@ -5,6 +5,7 @@ import os
 import shutil
 from math import atan, floor, sin
 
+from .boundary_utils import use_cams_aerosols
 from .datetime_utils import as_datetime, as_timedelta, evaluate_date
 from .fullpos import Fullpos, flatten_list
 from .logs import logger
@@ -247,6 +248,15 @@ def derived_variables(config, processor_layout=None):
 
     sg_input = "osm" if config["pgd.use_osm"] else ""
     gen_macros.append("namelist.sg_input")
+
+    # Select the optional forecast namelist sections for aerosols in the boundaries
+    lbc_aerosols = (
+        "cams"
+        if use_cams_aerosols(config)
+        and config.get("nrt_aerosols.forecast_namelist", True)
+        else "none"
+    )
+    gen_macros.append("namelist.lbc_aerosols")
     default_macros["gen_macros"] = gen_macros
 
     # Update config and namelist settings
@@ -280,6 +290,7 @@ def derived_variables(config, processor_layout=None):
             "sg_input": sg_input,
             "decades": decades,
             "use_ecrad": use_ecrad,
+            "lbc_aerosols": lbc_aerosols,
             "ecoclimap_version": ecoclimap_version,
         },
     }
