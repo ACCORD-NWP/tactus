@@ -10,11 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Added
-- Optional near-real-time CAMS aerosols in the lateral boundaries (enable with `modifications/nrt_aerosols.toml`, defaults in `include/nrt_aerosols.toml`): new `CAMS_NRT` MARS selection, `MarsprepCams`, `C903Cams` and `MergeCamsLbc` tasks, and CAMS namelist sections. Only for CY49t2. [#PR](https://github.com/ACCORD-NWP/tactus/pull/PR)(@author)
+- Optional near-real-time CAMS aerosols in the lateral boundaries, only for CY49t2. [#PR](https://github.com/ACCORD-NWP/tactus/pull/292)(@kastelecn)
+
+### Fixed
+- Change order of remove/start in test runner to avoid race condition. [#291](https://github.com/ACCORD-NWP/tactus/pull/291)(@uandrae)
 
 ## [1.5.0] - 2026-11-10
 
 ### Added
+- Add check on update to `CHANGELOG.md` for PRs [#283](https://github.com/ACCORD-NWP/tactus/pull/283)(@ewhelan)
 - Add configs for RHEL 9 PC. [#259](https://github.com/ACCORD-NWP/tactus/pull/259)(@ewhelan)
 - Add command line options for compilation to `tactus test`. [#261](https://github.com/ACCORD-NWP/tactus/pull/261)(@uandrae), [#286](https://github.com/ACCORD-NWP/tactus/pull/286)(@uandrae)
 - Add selection of UWC West domain definitions. [#249](https://github.com/ACCORD-NWP/tactus/pull/249)(@ewhelan)
