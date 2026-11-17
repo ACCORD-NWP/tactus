@@ -736,3 +736,40 @@ def fix_snow_layer(tag: str, steps: List[int], members_dict: Dict[str, List[int]
                             codes_write(grid_asn, file)
                         finally:
                             codes_release(grid_asn)
+
+
+def previous_archived_step(step: int, interval: int) -> int:
+    """Return the last archived step at or before step.
+
+    Args:
+        step (int): Forecast step in hours
+        interval (int): Archiving interval in hours
+
+    Returns:
+        int: Archived step in hours
+    """
+    return step // interval * interval
+
+
+def relabel_step(source: str, step: int) -> bytes:
+    """Return the GRIB messages of a file with the step relabelled.
+
+    Args:
+        source (str): Input GRIB file
+        step (int): New step
+
+    Returns:
+        bytes: The relabelled messages
+    """
+    out = io.BytesIO()
+    with open(source, "rb") as infile:
+        while True:
+            gid = codes_grib_new_from_file(infile)
+            if gid is None:
+                break
+            try:
+                codes_set(gid, "step", step)
+                codes_write(gid, out)
+            finally:
+                codes_release(gid)
+    return out.getvalue()

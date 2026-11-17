@@ -6,7 +6,7 @@ from typing import Generator, List, Optional, Tuple
 
 from isodate import duration_isoformat
 
-from tactus.boundary_utils import Boundary
+from tactus.boundary_utils import Boundary, use_cams_aerosols
 from tactus.datetime_utils import (
     as_datetime,
     as_timedelta,
@@ -27,7 +27,14 @@ from tactus.suites.base import (
     EcflowSuiteTriggers,
 )
 from tactus.suites.da_components import AssimilationFamily
-from tactus.suites.suite_utils import Cycles, lbc_times_generator, slaf_planner
+from tactus.suites.suite_utils import (
+    Cycles,
+    add_lbc_limit,
+    cycle_lbc_batches,
+    interpolated_lbcs,
+    lbc_batch_name,
+    slaf_planner,
+)
 from tactus.toolbox import Platform
 
 
@@ -770,6 +777,101 @@ class InputDataFamily(EcflowSuiteFamily):
                     )
 
 
+class CamsAerosolsFamily(EcflowSuiteFamily):
+    """Class for creating the CamsAerosols ecFlow family.
+
+    Retrieves the CAMS data (MarsprepCams) and interpolates the CAMS aerosols to
+    the model domain (one C903Cams per LBC batch). CAMS has no ensemble, so this
+    is done once per cycle and the result is merged into the boundaries of every
+    member by MergeCamsLbc.
+    """
+
+    def __init__(
+        self,
+        parent,
+        config,
+        task_settings: TaskSettings,
+        input_template,
+        ecf_files,
+        cycles: Cycles,
+        trigger=None,
+        ecf_files_remotely=None,
+        dry_run: bool = False,
+    ):
+        """Class initialization."""
+        super().__init__(
+            "CamsAerosols",
+            parent,
+            ecf_files,
+            trigger=trigger,
+            ecf_files_remotely=ecf_files_remotely,
+        )
+        self.marsprep = EcflowSuiteTask(
+            "MarsprepCams",
+            self,
+            config,
+            task_settings,
+            ecf_files,
+            input_template=input_template,
+            ecf_files_remotely=ecf_files_remotely,
+        )
+
+        lbc_family = EcflowSuiteFamily(
+            "LBCs", self, ecf_files, ecf_files_remotely=ecf_files_remotely
+        )
+        limit = add_lbc_limit(lbc_family, "cams_lbc_limit", config, dry_run)
+
+        # C903Cams task per batch, for the same LBCs as the C903 of the members
+        self.c903_tasks = {}
+        for batch in cycle_lbc_batches(config, cycles):
+            bd_index_time_dict = interpolated_lbcs(
+                config, batch, cycles.current_index == 0
+            )
+            batch_family = EcflowSuiteFamily(
+                lbc_batch_name(bd_index_time_dict),
+                lbc_family,
+                ecf_files,
+                ecf_files_remotely=ecf_files_remotely,
+                limit=limit,
+            )
+            task = EcflowSuiteTask(
+                "C903Cams",
+                batch_family,
+                config,
+                task_settings,
+                ecf_files,
+                input_template=input_template,
+                variables={
+                    "ARGS": f"bd_index_time_dict={bd_index_time_dict};prep_step=False"
+                },
+                trigger=self.marsprep,
+                ecf_files_remotely=ecf_files_remotely,
+            )
+            for bd_index in bd_index_time_dict:
+                self.c903_tasks[bd_index] = task
+
+    def c903_tasks_for(self, bd_indices) -> List[EcflowSuiteTask]:
+        """Return the C903Cams tasks that produce the given boundary indices.
+
+        Args:
+            bd_indices (Iterable[int]): Boundary indices
+
+        Returns:
+            List[EcflowSuiteTask]: The C903Cams tasks
+
+        Raises:
+            KeyError: If no C903Cams task produces one of the indices
+        """
+        tasks = []
+        for bd_index in bd_indices:
+            if bd_index not in self.c903_tasks:
+                raise KeyError(f"No C903Cams task for boundary index {bd_index}")
+            task = self.c903_tasks[bd_index]
+            if task not in tasks:
+                tasks.append(task)
+        return tasks
+
+
 class E923UpdateFamily(EcflowSuiteFamily):
     """Class for creating the E923Update ecFlow family."""
 
@@ -909,6 +1011,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
         limit: Optional[EcflowSuiteLimit] = None,
         member=0,
         do_slaf=False,
+        cams_family=None,
     ):
         """Class initialization."""
         self.parent = parent
@@ -925,6 +1028,15 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
         self.split_mars_by_step_fam = None
         self.do_glprep = self.config.get("suite_control.do_glprep", False)
         self.do_slaf = do_slaf and not self.do_glprep
+        # CAMS aerosols in the boundaries
+        self.use_cams = use_cams_aerosols(config)
+        self.cams_family = cams_family
+        if self.use_cams and (self.do_glprep or self.do_slaf):
+            raise ValueError(
+                "nrt_aerosols.active is not supported together with "
+                "suite_control.do_glprep or boundaries.do_slaf"
+            )
+
         if self.do_slaf:
             # Must not exhaust the generator in the planning
             ltg1, ltg2 = tee(lbc_time_generator)
@@ -943,34 +1055,16 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
             interpolation_task_name = "GlBd"
         else:
             interpolation_task_name = "E927"
-        for bd_index_time_dict in self.lbc_time_generator:
-            bd_index_time_dict_sst = bd_index_time_dict.copy()
-
-            mode = self.config["suite_control.mode"]
-            has_bd_index_zero = 0 in bd_index_time_dict
-            is_restart_with_bd_zero = mode == "restart" and has_bd_index_zero
-            is_start_with_bd_zero = (
-                mode == "start" and has_bd_index_zero and not self.is_first_cycle
+        for bd_index_time_dict_sst in self.lbc_time_generator:
+            bd_index_time_dict = interpolated_lbcs(
+                self.config, bd_index_time_dict_sst, self.is_first_cycle
             )
-
-            if not self.config["suite_control.do_assimilation"] and (
-                is_restart_with_bd_zero or is_start_with_bd_zero
-            ):
-                del bd_index_time_dict[0]
 
             args = f"bd_index_time_dict={bd_index_time_dict};prep_step=False"
             variables = {"ARGS": args}
             member = self.member
 
-            min_time, max_time = (
-                bd_index_time_dict[k]
-                for k in (min(bd_index_time_dict), max(bd_index_time_dict))
-            )
-
-            def format_time(t):
-                return t.replace("+00:00", "Z").replace("-", "").replace(":", "_")
-
-            lbc_family_name = f"{format_time(min_time)}to{format_time(max_time)}"
+            lbc_family_name = lbc_batch_name(bd_index_time_dict)
 
             super().__init__(
                 lbc_family_name,
@@ -1014,7 +1108,7 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
                     trigger.append(addpert_trigger)
                     doit = True
             if doit:
-                EcflowSuiteTask(
+                interpolation_task = EcflowSuiteTask(
                     task_name,
                     self,
                     self.config,
@@ -1025,6 +1119,8 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
                     trigger=[trig for trig in trigger if trig is not None],
                     ecf_files_remotely=self.ecf_files_remotely,
                 )
+                if self.use_cams:
+                    self.add_cams_merge(args, interpolation_task, bd_index_time_dict)
             if self.do_slaf:
                 addpert_args += f";doer0={doer};part0={part};me={self.member}"
             if (
@@ -1098,6 +1194,36 @@ class LBCSubFamilyGenerator(EcflowSuiteFamily):
                     )
 
             yield self
+
+    def add_cams_merge(
+        self, args: str, interpolation_task: EcflowSuiteTask, bd_index_time_dict
+    ):
+        """Add the task that merges the CAMS aerosols into the boundaries.
+
+        Args:
+            args (str): ARGS of the interpolation task
+            interpolation_task (EcflowSuiteTask): The interpolation task
+            bd_index_time_dict (dict): Boundary indices and times of this batch
+
+        Raises:
+            RuntimeError: If there is no CamsAerosols family
+        """
+        if self.cams_family is None:
+            raise RuntimeError("nrt_aerosols.active requires a CamsAerosols family")
+        EcflowSuiteTask(
+            "MergeCamsLbc",
+            self,
+            self.config,
+            self.task_settings,
+            self.ecf_files,
+            input_template=self.input_template,
+            variables={"ARGS": args},
+            trigger=[
+                interpolation_task,
+                *self.cams_family.c903_tasks_for(bd_index_time_dict),
+            ],
+            ecf_files_remotely=self.ecf_files_remotely,
+        )
 
     def slaf_worker(
         self,
@@ -1174,6 +1300,7 @@ class LBCFamily(EcflowSuiteFamily):
         ecf_files_remotely=None,
         dry_run: bool = False,
         member=0,
+        cams_family=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -1184,41 +1311,23 @@ class LBCFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
         )
 
-        lbc_limit = None
-        if not dry_run:
-            bdmax = config["boundaries.max_interpolation_tasks"]
-            if bdmax > 0:
-                lbc_limit = EcflowSuiteLimit("lbc_limit", bdmax)
-                self.ecf_node.add_limit(lbc_limit.limit_name, lbc_limit.max_jobs)
+        lbc_limit = add_lbc_limit(self, "lbc_limit", config, dry_run)
 
-        basetime = as_datetime(cycles.current_cycle.basetime)
-        forecast_range = as_timedelta(config["general.times.forecast_range"])
-        endtime = basetime + forecast_range
-        bdint = as_timedelta(config["boundaries.bdint"])
-        is_first_cycle = cycles.current_index == 0
-        lbc_times_generator_instance = lbc_times_generator(
-            basetime,
-            endtime,
-            bdint,
-            mode=config["suite_control.mode"],
-            is_first_cycle=is_first_cycle,
-            do_interpolsstsic=config["suite_control.do_interpolsstsic"],
-            lbc_per_task=int(config["boundaries.lbc_per_task"]),
-        )
         lbc_family_generator_instance = LBCSubFamilyGenerator(
             self,
             config,
             task_settings,
             input_template,
             ecf_files,
-            bdint,
-            lbc_times_generator_instance,
+            as_timedelta(config["boundaries.bdint"]),
+            cycle_lbc_batches(config, cycles),
             trigger=lbc_family_trigger,
             ecf_files_remotely=ecf_files_remotely,
-            is_first_cycle=is_first_cycle,
-            limit=lbc_limit if not dry_run else None,
+            is_first_cycle=cycles.current_index == 0,
+            limit=lbc_limit,
             member=member,
             do_slaf=config["boundaries.do_slaf"],
+            cams_family=cams_family,
         )
         # Iterate through the LBC family generator to create the next
         # LBC families
@@ -1248,6 +1357,7 @@ class InterpolationFamily(EcflowSuiteFamily):
         add_var_trigger=None,
         remote_path=None,
         member=0,
+        cams_family=None,
     ):
         """Class initialization."""
         super().__init__(
@@ -1287,6 +1397,7 @@ class InterpolationFamily(EcflowSuiteFamily):
             ecf_files_remotely=ecf_files_remotely,
             dry_run=dry_run,
             member=member,
+            cams_family=cams_family,
         )
 
         if config["suite_control.split_mars_by_step"] and prep_fam is not None:
@@ -1728,6 +1839,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
         prev_cycle_triggers = {}
         prev_interpolation_triggers = {}
         postcycle_families = {}
+        prev_cams_marsprep = None
         unique_days = set()
         day_family: EcflowSuiteFamily
 
@@ -1841,6 +1953,28 @@ class TimeDependentFamily(EcflowSuiteFamily):
                 )
                 ready_for_cycle = inputdata
 
+            # CAMS aerosols for the boundaries, shared by all members. Retrieved
+            # one cycle at a time, as cycles may share a CAMS forecast.
+            cams_family = None
+            if (
+                use_cams_aerosols(config)
+                and config["suite_control.interpolate_boundaries"]
+            ):
+                cams_family = CamsAerosolsFamily(
+                    time_family,
+                    config,
+                    task_settings,
+                    input_template,
+                    ecf_files,
+                    cycles,
+                    trigger=[
+                        node for node in (trigger, prev_cams_marsprep) if node is not None
+                    ],
+                    ecf_files_remotely=ecf_files_remotely,
+                    dry_run=dry_run,
+                )
+                prev_cams_marsprep = cams_family.marsprep
+
             member_families: List[EcflowSuiteFamily] = []
             member_cycle_families: List[EcflowSuiteFamily] = []
             for member in config["eps.general.members"]:
@@ -1905,6 +2039,7 @@ class TimeDependentFamily(EcflowSuiteFamily):
                         add_var_trigger=check_offline_date,
                         remote_path=path_offline,
                         member=member,
+                        cams_family=cams_family,
                     )
 
                     ready_for_cycle = prev_interpolation_triggers[member] = int_family

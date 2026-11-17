@@ -1,0 +1,7 @@
+[nrt_aerosols]
+  active = false
+  bddir = "@SCRATCH@/@SYS_NAME@/IFS/@CAMS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
+  bdshift = "PT0H"
+  forecast_namelist = true
+  intp_bddir = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/cams_lbc"
+  selection = "CAMS_NRT"
