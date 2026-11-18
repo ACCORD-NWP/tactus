@@ -12,8 +12,11 @@ import tomlkit
 
 from tactus.derived_variables import set_times
 from tactus.reference_checker import (
+    CheckDefinition,
+    CheckItem,
     CheckSummary,
     CheckSummaryAnalysis,
+    CheckSummaryDavai,
     CheckSummaryJson,
     CheckSummaryTxt,
     NamelistChecker,
@@ -564,6 +567,237 @@ class TestCheckSummary:
         assert isinstance(summaries[0], CheckSummaryTxt)
         assert summaries[0].fileformat == "txt"
         assert summaries[0].filename == "@CASEDIR@/checks/summary.txt"
+
+
+def make_davai_definition(taskname, rulename, results, empty=False):
+    """Create a check definition with given task name and item results.
+
+    Args:
+        taskname: the name of the task
+        rulename: the name of the rule
+        results: the list of result strings for the items
+        empty: if True, the definition gets no items (missing files)
+
+    Returns:
+        a CheckDefinition ready to be used by CheckSummaryDavai
+    """
+    definition = CheckDefinition(
+        taskname,
+        rulename,
+        ".ut",
+        "utMethod",
+        "@WRK@/inpath",
+        "PATTERN*",
+        "@REFERENCES_FOLDER@/ref",
+        "@WRK@/checks",
+        "@WRK@/gen",
+    )
+    definition.uniquename = f"{taskname}.0001"
+    definition.files_pattern = "PATTERN*"
+    definition.inpath = "/some/inpath"
+    definition.items = []
+    if not empty:
+        for index, result in enumerate(results):
+            definition.items.append(
+                CheckItem(
+                    f"/test/file{index}",
+                    f"/ref/file{index}",
+                    "N/A",
+                    f"/res/file{index}.diff",
+                    result,
+                )
+            )
+    return definition
+
+
+class TestCheckSummaryDavai:
+    """Tests for the CheckSummaryDavai class."""
+
+    @staticmethod
+    def _load(summary, filename):
+        with open(os.path.join(summary.fullpath, filename), "r") as file:
+            return json.load(file)
+
+    @pytest.fixture
+    def davai_summary(self, basic_config, tmp_path):
+        """A CheckSummaryDavai initialized on a temporary stack directory."""
+        fmanager = FileManager(basic_config)
+        summary = CheckSummaryDavai("davai", str(tmp_path / "summaries_stack"))
+        summary.init_full_path(fmanager.platform)
+        summary.create()
+        return summary
+
+    def test_create_summary_list_accepts_davai_format(self, basic_config):
+        """Test that the davai format is instantiated from the configuration."""
+        config = configure_for_check_and_generate(
+            basic_config, "davai_cfg", True, False, 12, 5, False
+        )
+        config = config.copy(
+            update={
+                "reference_checker": {
+                    "summary_active": ["uttxt", "utjson", "utdavai"],
+                }
+            }
+        )
+        summaries = CheckSummary.create_summary_list(config["reference_checker"])
+        assert len(summaries) == 3
+        assert isinstance(summaries[2], CheckSummaryDavai)
+        assert summaries[2].fileformat == "davai"
+        assert summaries[2].filename == "@WRK@/checks/summaries_stack"
+
+    def test_init_full_path(self, basic_config):
+        """Test the path resolution of the stack directory."""
+        fmanager = FileManager(basic_config)
+        wrk = fmanager.platform.get_system_value("wrk")
+        summary = CheckSummaryDavai("davai", "@WRK@/checks/summaries_stack")
+        summary.init_full_path(fmanager.platform)
+        assert summary.fullpath == os.path.join(wrk, "checks/summaries_stack")
+        assert summary.rundir == wrk
+
+    def test_append_success_writes_both_files(self, davai_summary, tmp_path):
+        """Test that successful checks produce E/Ended and OK verdicts."""
+        result_file = tmp_path / "a.diff"
+        result_file.write_text("detailed comparison result\n")
+        definition = make_davai_definition(
+            "Forecast", "utlog", ["SUCCESS - Files are bit identical"]
+        )
+        definition.items[0].result_file = str(result_file)
+
+        davai_summary.append([definition])
+
+        itself = self._load(davai_summary, "Forecast.0001.itself.json")
+        assert itself["Status"] == CheckSummaryDavai.STATUS_ENDED
+        assert itself["Context"]["jobname"] == "Forecast"
+        assert itself["Context"]["rundir"] == davai_summary.rundir
+        parsed_date = datetime.datetime.fromisoformat(itself["Updated"])
+        assert parsed_date.strftime("%Y-%m-%dT%H:%M:%S") == itself["Updated"]
+        assert itself["Listing"] == {"Task listing uri(s)": [str(result_file)]}
+
+        consistency = self._load(davai_summary, "Forecast.0001.consistency.json")
+        assert set(consistency) == {"comparisonStatus"}
+        assert consistency["comparisonStatus"]["symbol"] == "OK"
+
+    def test_append_failure_is_inconsistent(self, davai_summary):
+        """Test that a failed comparison produces the IC verdict."""
+        definition = make_davai_definition(
+            "Forecast",
+            "utlog",
+            ["SUCCESS - Files are bit identical", "FAILURE - Differences found"],
+        )
+        davai_summary.append([definition])
+        consistency = self._load(davai_summary, "Forecast.0001.consistency.json")
+        assert consistency["comparisonStatus"]["symbol"] == "IC"
+        assert consistency["comparisonStatus"]["short"] == "Inconsistent"
+
+    def test_append_missing_files_is_no_ref(self, davai_summary):
+        """Test that definitions without items produce the 0 verdict."""
+        definition = make_davai_definition("Forecast", "utlog", [], empty=True)
+        davai_summary.append([definition])
+        consistency = self._load(davai_summary, "Forecast.0001.consistency.json")
+        status = consistency["comparisonStatus"]
+        assert status["symbol"] == "0"
+        assert status["text"] == "No file found using PATTERN* at /some/inpath"
+
+    def test_append_generate_only_is_no_ref(self, davai_summary):
+        """Test that unperformed comparisons (result N/A) produce the 0 verdict."""
+        definition = make_davai_definition("Forecast", "utlog", ["N/A"])
+        davai_summary.append([definition])
+        consistency = self._load(davai_summary, "Forecast.0001.consistency.json")
+        status = consistency["comparisonStatus"]
+        assert status["symbol"] == "0"
+        assert status["text"] == "No reference to be compared to"
+
+    def test_append_groups_rules_of_same_task(self, davai_summary):
+        """Test that all rules of a task end up in a single pair of files."""
+        definitions = [
+            make_davai_definition("Forecast", "utlog", ["SUCCESS - Files identical"]),
+            make_davai_definition("Forecast", "uthistory", [], empty=True),
+        ]
+        davai_summary.append(definitions)
+
+        files = sorted(os.listdir(davai_summary.fullpath))
+        assert files == ["Forecast.0001.consistency.json", "Forecast.0001.itself.json"]
+
+        status = self._load(davai_summary, "Forecast.0001.consistency.json")[
+            "comparisonStatus"
+        ]
+        assert status["symbol"] == "OK"
+        assert "No file found using PATTERN* at /some/inpath" in status["text"]
+
+    def test_compute_analysis(self, davai_summary):
+        """Test the analysis computed from the consistency files."""
+        davai_summary.append([
+            make_davai_definition("Forecast", "utlog", ["SUCCESS - identical"]),
+            make_davai_definition("Interpol", "uthistory", ["FAILURE - differ"]),
+        ])
+
+        analysis = davai_summary.compute_and_append_analysis(True)
+        assert analysis.success_count == 1
+        assert analysis.error_count == 1
+        assert analysis.missing_count == 0
+        assert not analysis.success()
+
+        analysis = davai_summary.compute_and_append_analysis(False)
+        assert analysis.success_count == 0
+        assert analysis.error_count == 0
+        assert analysis.success()
+
+    def test_contains_summary_analysis_is_false(self, davai_summary):
+        """Test that DaVaI summaries never report an embedded analysis."""
+        davai_summary.append([make_davai_definition("Forecast", "utlog", ["N/A"])])
+        assert davai_summary.contains_summary_analysis() is False
+
+    def test_delete_removes_the_stack(self, davai_summary):
+        """Test that delete removes the whole stack directory."""
+        davai_summary.append([make_davai_definition("Forecast", "utlog", ["N/A"])])
+        davai_summary.delete()
+        assert not os.path.exists(davai_summary.fullpath)
+
+    def test_reference_check_manager_writes_davai_stack(self, basic_config):
+        """Run a complete check with davai activated and validate the stack."""
+        config = configure_for_check_and_generate(
+            basic_config, "check_identical", True, False, 12, 5, False
+        )
+        config = config.copy(
+            update={
+                "reference_checker": {
+                    "summary_active": ["uttxt", "utjson", "utdavai"],
+                }
+            }
+        )
+        TestReferenceCheckManager._simulate_forecast_execution(config, True)
+        fmanager = FileManager(config)
+        wrk = fmanager.platform.get_system_value("wrk")
+        stack = os.path.join(wrk, "checks/summaries_stack")
+
+        for task in [
+            "Prep",
+            "Forecast",
+            "Interpol",
+            "Marsprep",
+            "Creategrib",
+            "PostMortem",
+        ]:
+            manager = ReferenceCheckManager.create_reference_check_manager(config, task)
+            assert manager
+            manager.execute(fmanager)
+
+        expected_tasks = ["Forecast", "Interpol", "Marsprep", "Creategrib"]
+        files = sorted(f for f in os.listdir(stack) if f.endswith(".json"))
+        assert len(files) == 2 * len(expected_tasks)
+
+        for task in expected_tasks:
+            stems = [f for f in files if f.startswith(f"{task}.")]
+            assert len(stems) == 2
+            for stem in stems:
+                with open(os.path.join(stack, stem), "r") as file:
+                    content = json.load(file)
+                if stem.endswith(".itself.json"):
+                    assert content["Status"]["symbol"] == "E"
+                    assert content["Context"]["jobname"] == task
+                    assert content["Context"]["rundir"] == wrk
+                else:
+                    assert content["comparisonStatus"]["symbol"] == "OK"
 
 
 class TestReferenceCheckManager:

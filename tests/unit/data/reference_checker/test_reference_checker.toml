@@ -48,6 +48,10 @@
   file = "@WRK@/checks/summary.txt"
   format = "txt"
 
+[reference_checker.summary.utdavai]
+  file = "@WRK@/checks/summaries_stack"
+  format = "davai"
+
 [reference_checker.task.Creategrib.utfullpos]
   inpath = "@WRK@/forecast_results/"
   pattern = "GRIB*"

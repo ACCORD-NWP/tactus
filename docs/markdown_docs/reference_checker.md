@@ -33,7 +33,7 @@ The following comparison tools are available:
 - NormsChecker (from DAVAI), to compare norms results in NODE files
 - xtool (from gl) to compare fields store in GRIB and FA format
 
-The available formats for the summary files are `json` or `txt`.
+The available formats for the summary files are `json`, `txt` or `davai`.
 
 ## Reference checker configuration
 
@@ -141,3 +141,33 @@ The list provided in `summary_active` is the list of summary that should be prod
 referenced by their name as defined in `[reference_checker.summary.{SummaryName}]`.
 
 By default, the [`reference check`] will raise an exception in the task mentionned in the 'analyze_summary' list, in case of check failure. This can be deactivated by setting `suppress_exception = true`.
+
+### DaVaI summary stack output
+
+The `davai` format produces files compatible with the DaVaI (mtool)
+`summaries_stack` directory layout. Contrary to the `json` and `txt` formats,
+it does not write a single aggregate file: the `file` field defines a
+*directory*, and each checked task writes one pair of files there:
+
+- `<task>.<suffix>.itself.json`: run status of the task (`Context`, `Status`,
+  `Updated`, and a `Listing` section pointing at the `.diff` result files).
+- `<task>.<suffix>.consistency.json`: verdict of the reference comparison, in
+  a `comparisonStatus` section:
+  - symbol `OK` when all comparisons of the task succeeded
+  - symbol `IC` when at least one comparison failed
+  - symbol `0` when there was nothing to compare (no file found, or check
+    disabled during a reference generation)
+
+```toml
+[reference_checker]
+  summary_active = ["MainSummary", "DavaiSummary"]
+
+[reference_checker.summary.DavaiSummary]
+  file = "@CASEDIR@/checks/summaries_stack"
+  format = "davai"
+```
+
+The files are (re)written by the task performing the checks, each time results
+are appended to the other summaries. The analysis performed in the
+`analyze_summary` task is based on the consistency files: `OK` counts as a
+success, `IC` as an error and `0` as a missing file.

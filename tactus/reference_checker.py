@@ -5,7 +5,9 @@ from __future__ import annotations
 import filecmp
 import json
 import os
+import shutil
 import subprocess
+from datetime import datetime
 
 from arpifs_listings import norms
 
@@ -573,7 +575,7 @@ class CheckSummary:
         """Creation of a CheckSummary.
 
         Args:
-           fileformat: the format of the summary file (e.g. "txt", "json")
+           fileformat: the format of the summary file (e.g. "txt", "json", "davai")
            filename: the pattern defining the name of the summary file
         """
         self.fileformat = fileformat
@@ -599,6 +601,8 @@ class CheckSummary:
                 summary_list.append(CheckSummaryJson(file_format, file_name))
             elif file_format == "txt":
                 summary_list.append(CheckSummaryTxt(file_format, file_name))
+            elif file_format == "davai":
+                summary_list.append(CheckSummaryDavai(file_format, file_name))
             else:
                 logger.warning(
                     f"Reference Checker Summary - format unknown: {file_format}"
@@ -771,7 +775,7 @@ class CheckSummaryTxt(CheckSummary):
         """Creation of a CheckSummaryTxt object.
 
         Args:
-           fileformat: the format of the summary file (e.g. "txt", "json")
+           fileformat: the format of the summary file (e.g. "txt", "json", "davai")
            filename: the pattern defining the name of the summary file
         """
         CheckSummary.__init__(self, fileformat, filename)
@@ -907,7 +911,7 @@ class CheckSummaryJson(CheckSummary):
         """Creation of a CheckSummaryJson.
 
         Args:
-           fileformat: the format of the summary file (e.g. "txt", "json")
+           fileformat: the format of the summary file (e.g. "txt", "json", "davai")
            filename: the pattern defining the name of the summary file
         """
         CheckSummary.__init__(self, fileformat, filename)
@@ -1089,6 +1093,229 @@ class CheckSummaryJson(CheckSummary):
         summary_dict[check_definition.uniquename][check_definition.rulename][
             "items"
         ].append(content)
+
+
+class CheckSummaryDavai(CheckSummary):
+    """Class to generate summary files in the DaVaI summary stack format.
+
+    Instead of one aggregate file, this writer produces one pair of files per
+    checked task, in a shared stack directory:
+
+    - <task_stem>.itself.json      : run status of the task
+      (Context, Status, Updated, optional Listing)
+    - <task_stem>.consistency.json : reference-check verdict of the task
+      (comparisonStatus with symbols OK / IC / 0)
+
+    The format matches the DaVaI (mtool) summaries_stack files: status triples
+    (symbol, short, text), local ISO timestamps without timezone, and
+    human-readable keys kept verbatim. Files are rewritten atomically by the
+    task that owns them each time results are appended.
+    """
+
+    STATUS_ENDED = {
+        "symbol": "E",
+        "short": "Ended",
+        "text": "Ended: Task ended without crash.",
+    }
+    STATUS_NO_REF = {
+        "symbol": "0",
+        "short": "- No ref -",
+        "text": "No reference to be compared to",
+    }
+    STATUS_OK = {
+        "symbol": "OK",
+        "short": "OK",
+        "text": 'Success: "all comparisons against the reference were successful"',
+    }
+    STATUS_INCONSISTENT = {
+        "symbol": "IC",
+        "short": "Inconsistent",
+        "text": "Inconsistency between this task and its reference"
+        " in the same experiment",
+    }
+
+    def __init__(self, fileformat, filename):
+        """Creation of a CheckSummaryDavai.
+
+        Args:
+           fileformat: the format of the summary file (e.g. "txt", "json", "davai")
+           filename: the pattern defining the summary stack directory
+        """
+        CheckSummary.__init__(self, fileformat, filename)
+        self.rundir = None
+        self.unix_group = None
+
+    def init_full_path(self, platform):
+        """Init self.fullpath and the run context using platform substitute.
+
+        Args:
+           platform: Platform
+        """
+        if not self.fullpath:
+            self.fullpath = platform.substitute(self.filename)
+            self.rundir = platform.get_system_value("wrk") or os.getcwd()
+            self.unix_group = platform.get_platform_value("unix_group")
+
+    def create(self):
+        """Create the summary stack directory."""
+        self._ensure_dir()
+
+    def delete(self):
+        """Delete the summary stack directory and all the files it contains."""
+        if os.path.isdir(self.fullpath):
+            logger.info("Delete reference checker summary:", self.fullpath)
+            shutil.rmtree(self.fullpath)
+
+    def append(self, check_definitions: list[CheckDefinition]):
+        """Write one pair of DaVaI files per task contained in the definitions.
+
+        Args:
+            check_definitions: the input list of check definitions
+        """
+        self._ensure_dir()
+
+        tasks: dict[str, list[CheckDefinition]] = {}
+        for check_definition in check_definitions:
+            stem = self._stem(check_definition)
+            tasks.setdefault(stem, []).append(check_definition)
+
+        for stem, definitions in tasks.items():
+            self._write(f"{stem}.itself.json", self._itself_to_dict(definitions))
+            self._write(
+                f"{stem}.consistency.json", self._consistency_to_dict(definitions)
+            )
+
+        logger.info(
+            f"Appended DaVaI results to reference checking summary: {self.fullpath}"
+        )
+
+    def compute_and_append_analysis(self, check):
+        """Analyze the DaVaI consistency files of the stack directory.
+
+        Args:
+            check: boolean indicating if the check was performed
+
+        Returns:
+            A CheckSummaryAnalysis built from the consistency files
+        """
+        analysis = CheckSummaryAnalysis(check)
+        if not os.path.isdir(self.fullpath):
+            analysis.append_error_message(f"No DaVaI summary found in {self.fullpath}")
+            return analysis
+
+        for filename in sorted(os.listdir(self.fullpath)):
+            if not filename.endswith(".consistency.json"):
+                continue
+            with open(
+                os.path.join(self.fullpath, filename), "r", encoding="utf8"
+            ) as file:
+                status = json.load(file).get("comparisonStatus", {})
+            symbol = status.get("symbol")
+            text = status.get("text", "")
+            if check and symbol == "OK":
+                analysis.increment_success_count()
+            elif check and symbol != "0":
+                analysis.increment_error_count()
+            if "No file found" in text:
+                analysis.increment_missing_count()
+
+        return analysis
+
+    def contains_summary_analysis(self):
+        """Return False: DaVaI files never contain an aggregate analysis."""
+        return False
+
+    def _ensure_dir(self):
+        """Create the summary stack directory if it does not exist yet."""
+        if not os.path.exists(self.fullpath):
+            tactusmakedirs(self.fullpath, unixgroup=self.unix_group)
+
+    def _write(self, filename, content):
+        """Write a JSON file of the stack directory atomically.
+
+        Args:
+            filename: name of the file to write, relative to the stack directory
+            content: dictionary to serialize
+        """
+        filepath = os.path.join(self.fullpath, filename)
+        with (
+            FileLock(filepath, delete_existing=True),
+            open(filepath, mode="w", encoding="utf8") as outfile,
+        ):
+            json.dump(content, outfile, indent=2, sort_keys=True)
+            outfile.write("\n")
+
+    @staticmethod
+    def _stem(check_definition: CheckDefinition) -> str:
+        """Return the file stem of the task owning the check definition.
+
+        Args:
+            check_definition: the check definition being processed
+
+        Returns:
+            the task stem, suitable for a file name
+        """
+        return check_definition.uniquename.replace("/", ".").rstrip(".")
+
+    def _itself_to_dict(self, definitions: list[CheckDefinition]) -> dict:
+        """Build the content of the <stem>.itself.json file.
+
+        Args:
+            definitions: the check definitions of the task
+
+        Returns:
+            the dictionary describing the run status of the task
+        """
+        content = {
+            "Context": {
+                "jobname": definitions[0].taskname,
+                "rundir": self.rundir,
+            },
+            "Status": dict(self.STATUS_ENDED),
+            "Updated": datetime.now().isoformat(timespec="seconds"),
+        }
+        listings = sorted({
+            item.result_file
+            for definition in definitions
+            for item in definition.items
+            if os.path.exists(item.result_file)
+        })
+        if listings:
+            content["Listing"] = {"Task listing uri(s)": listings}
+        return content
+
+    @staticmethod
+    def _consistency_to_dict(definitions: list[CheckDefinition]) -> dict:
+        """Build the content of the <stem>.consistency.json file.
+
+        Args:
+            definitions: the check definitions of the task
+
+        Returns:
+            the dictionary containing the comparison verdict
+        """
+        results = [item.result for definition in definitions for item in definition.items]
+        warnings = [
+            f"No file found using {definition.files_pattern} at {definition.inpath}"
+            for definition in definitions
+            if len(definition.items) == 0
+        ]
+
+        if len(results) == 0:
+            status = dict(CheckSummaryDavai.STATUS_NO_REF)
+            if warnings:
+                status["text"] = "; ".join(warnings)
+        elif all(result == "N/A" for result in results):
+            status = dict(CheckSummaryDavai.STATUS_NO_REF)
+        elif all("SUCCESS" in result for result in results):
+            status = dict(CheckSummaryDavai.STATUS_OK)
+        else:
+            status = dict(CheckSummaryDavai.STATUS_INCONSISTENT)
+
+        if warnings and status["symbol"] != "0":
+            status["text"] = f"{status['text']} ({'; '.join(warnings)})"
+
+        return {"comparisonStatus": status}
 
 
 class ReferenceCheckManager:

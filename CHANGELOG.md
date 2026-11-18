@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+### Added
+- Add `davai` format to the reference checker summaries: writes one pair of
+  DaVaI summary stack files (`<task>.itself.json` / `<task>.consistency.json`)
+  per checked task, in a stack directory, next to the existing `json` and `txt`
+  summaries. Activated by adding the new summary to `summary_active`.
+
 ## [1.5.0] - 2026-11-10
 
 ### Added

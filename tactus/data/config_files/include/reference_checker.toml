@@ -55,6 +55,13 @@
   file = "@CASEDIR@/checks/summary.txt"
   format = "txt"
 
+  # Optional DaVaI summary stack output: add "davai" to summary_active to activate.
+  # It writes one pair of files (<task>.itself.json / <task>.consistency.json) per
+  # checked task in the directory defined below.
+  # [reference_checker.summary.davai]
+  #   file = "@CASEDIR@/checks/summaries_stack"
+  #   format = "davai"
+
 [reference_checker.task.PgdUpdate.default]
   inpath = "@CLIMDIR@"
   pattern = "Const.Clim.*.sfx"
