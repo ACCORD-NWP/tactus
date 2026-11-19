@@ -16,11 +16,12 @@ from tactus.reference_checker import (
     CheckItem,
     CheckSummary,
     CheckSummaryAnalysis,
-    CheckSummaryDavai,
+    CheckSummaryCiboulai,
     CheckSummaryJson,
     CheckSummaryTxt,
     NamelistChecker,
     NormsChecker,
+    PublishToCiboulai,
     ReferenceChecker,
     ReferenceCheckManager,
     XToolChecker,
@@ -569,7 +570,7 @@ class TestCheckSummary:
         assert summaries[0].filename == "@CASEDIR@/checks/summary.txt"
 
 
-def make_davai_definition(taskname, rulename, results, empty=False):
+def make_ciboulai_definition(taskname, rulename, results, empty=False):
     """Create a check definition with given task name and item results.
 
     Args:
@@ -579,7 +580,7 @@ def make_davai_definition(taskname, rulename, results, empty=False):
         empty: if True, the definition gets no items (missing files)
 
     Returns:
-        a CheckDefinition ready to be used by CheckSummaryDavai
+        a CheckDefinition ready to be used by CheckSummaryCiboulai
     """
     definition = CheckDefinition(
         taskname,
@@ -610,8 +611,8 @@ def make_davai_definition(taskname, rulename, results, empty=False):
     return definition
 
 
-class TestCheckSummaryDavai:
-    """Tests for the CheckSummaryDavai class."""
+class TestCheckSummaryCiboulai:
+    """Tests for the CheckSummaryCiboulai class."""
 
     @staticmethod
     def _load(summary, filename):
@@ -619,149 +620,152 @@ class TestCheckSummaryDavai:
             return json.load(file)
 
     @pytest.fixture
-    def davai_summary(self, basic_config, tmp_path):
-        """A CheckSummaryDavai initialized on a temporary stack directory."""
+    def ciboulai_summary(self, basic_config, tmp_path):
+        """A CheckSummaryCiboulai initialized on a temporary stack directory."""
         fmanager = FileManager(basic_config)
-        summary = CheckSummaryDavai("davai", str(tmp_path / "summaries_stack"))
+        summary = CheckSummaryCiboulai("ciboulai", str(tmp_path / "summaries_stack"))
         summary.init_full_path(fmanager.platform)
         summary.create()
         return summary
 
-    def test_create_summary_list_accepts_davai_format(self, basic_config):
-        """Test that the davai format is instantiated from the configuration."""
+    def test_create_summary_list_accepts_ciboulai_format(self, basic_config):
+        """Test that the ciboulai format is instantiated from the configuration."""
         config = configure_for_check_and_generate(
-            basic_config, "davai_cfg", True, False, 12, 5, False
+            basic_config, "ciboulai_cfg", True, False, 12, 5, False
         )
         config = config.copy(
             update={
                 "reference_checker": {
-                    "summary_active": ["uttxt", "utjson", "utdavai"],
+                    "summary_active": ["uttxt", "utjson", "utciboulai"],
                 }
             }
         )
         summaries = CheckSummary.create_summary_list(config["reference_checker"])
         assert len(summaries) == 3
-        assert isinstance(summaries[2], CheckSummaryDavai)
-        assert summaries[2].fileformat == "davai"
+        assert isinstance(summaries[2], CheckSummaryCiboulai)
+        assert summaries[2].fileformat == "ciboulai"
         assert summaries[2].filename == "@WRK@/checks/summaries_stack"
+        # the ciboulai section of the configuration is passed to the ciboulai summary
+        assert summaries[2].ciboulai_config is not None
+        assert summaries[2].ciboulai_config["enabled"] is False
 
     def test_init_full_path(self, basic_config):
         """Test the path resolution of the stack directory."""
         fmanager = FileManager(basic_config)
         wrk = fmanager.platform.get_system_value("wrk")
-        summary = CheckSummaryDavai("davai", "@WRK@/checks/summaries_stack")
+        summary = CheckSummaryCiboulai("ciboulai", "@WRK@/checks/summaries_stack")
         summary.init_full_path(fmanager.platform)
         assert summary.fullpath == os.path.join(wrk, "checks/summaries_stack")
         assert summary.rundir == wrk
 
-    def test_append_success_writes_both_files(self, davai_summary, tmp_path):
+    def test_append_success_writes_both_files(self, ciboulai_summary, tmp_path):
         """Test that successful checks produce E/Ended and OK verdicts."""
         result_file = tmp_path / "a.diff"
         result_file.write_text("detailed comparison result\n")
-        definition = make_davai_definition(
+        definition = make_ciboulai_definition(
             "Forecast", "utlog", ["SUCCESS - Files are bit identical"]
         )
         definition.items[0].result_file = str(result_file)
 
-        davai_summary.append([definition])
+        ciboulai_summary.append([definition])
 
-        itself = self._load(davai_summary, "Forecast.0001.itself.json")
-        assert itself["Status"] == CheckSummaryDavai.STATUS_ENDED
+        itself = self._load(ciboulai_summary, "Forecast.0001.itself.json")
+        assert itself["Status"] == CheckSummaryCiboulai.STATUS_ENDED
         assert itself["Context"]["jobname"] == "Forecast"
-        assert itself["Context"]["rundir"] == davai_summary.rundir
+        assert itself["Context"]["rundir"] == ciboulai_summary.rundir
         parsed_date = datetime.datetime.fromisoformat(itself["Updated"])
         assert parsed_date.strftime("%Y-%m-%dT%H:%M:%S") == itself["Updated"]
         assert itself["Listing"] == {"Task listing uri(s)": [str(result_file)]}
 
-        consistency = self._load(davai_summary, "Forecast.0001.consistency.json")
+        consistency = self._load(ciboulai_summary, "Forecast.0001.consistency.json")
         assert set(consistency) == {"comparisonStatus"}
         assert consistency["comparisonStatus"]["symbol"] == "OK"
 
-    def test_append_failure_is_inconsistent(self, davai_summary):
+    def test_append_failure_is_inconsistent(self, ciboulai_summary):
         """Test that a failed comparison produces the IC verdict."""
-        definition = make_davai_definition(
+        definition = make_ciboulai_definition(
             "Forecast",
             "utlog",
             ["SUCCESS - Files are bit identical", "FAILURE - Differences found"],
         )
-        davai_summary.append([definition])
-        consistency = self._load(davai_summary, "Forecast.0001.consistency.json")
+        ciboulai_summary.append([definition])
+        consistency = self._load(ciboulai_summary, "Forecast.0001.consistency.json")
         assert consistency["comparisonStatus"]["symbol"] == "IC"
         assert consistency["comparisonStatus"]["short"] == "Inconsistent"
 
-    def test_append_missing_files_is_no_ref(self, davai_summary):
+    def test_append_missing_files_is_no_ref(self, ciboulai_summary):
         """Test that definitions without items produce the 0 verdict."""
-        definition = make_davai_definition("Forecast", "utlog", [], empty=True)
-        davai_summary.append([definition])
-        consistency = self._load(davai_summary, "Forecast.0001.consistency.json")
+        definition = make_ciboulai_definition("Forecast", "utlog", [], empty=True)
+        ciboulai_summary.append([definition])
+        consistency = self._load(ciboulai_summary, "Forecast.0001.consistency.json")
         status = consistency["comparisonStatus"]
         assert status["symbol"] == "0"
         assert status["text"] == "No file found using PATTERN* at /some/inpath"
 
-    def test_append_generate_only_is_no_ref(self, davai_summary):
+    def test_append_generate_only_is_no_ref(self, ciboulai_summary):
         """Test that unperformed comparisons (result N/A) produce the 0 verdict."""
-        definition = make_davai_definition("Forecast", "utlog", ["N/A"])
-        davai_summary.append([definition])
-        consistency = self._load(davai_summary, "Forecast.0001.consistency.json")
+        definition = make_ciboulai_definition("Forecast", "utlog", ["N/A"])
+        ciboulai_summary.append([definition])
+        consistency = self._load(ciboulai_summary, "Forecast.0001.consistency.json")
         status = consistency["comparisonStatus"]
         assert status["symbol"] == "0"
         assert status["text"] == "No reference to be compared to"
 
-    def test_append_groups_rules_of_same_task(self, davai_summary):
+    def test_append_groups_rules_of_same_task(self, ciboulai_summary):
         """Test that all rules of a task end up in a single pair of files."""
         definitions = [
-            make_davai_definition("Forecast", "utlog", ["SUCCESS - Files identical"]),
-            make_davai_definition("Forecast", "uthistory", [], empty=True),
+            make_ciboulai_definition("Forecast", "utlog", ["SUCCESS - Files identical"]),
+            make_ciboulai_definition("Forecast", "uthistory", [], empty=True),
         ]
-        davai_summary.append(definitions)
+        ciboulai_summary.append(definitions)
 
-        files = sorted(os.listdir(davai_summary.fullpath))
+        files = sorted(os.listdir(ciboulai_summary.fullpath))
         assert files == ["Forecast.0001.consistency.json", "Forecast.0001.itself.json"]
 
-        status = self._load(davai_summary, "Forecast.0001.consistency.json")[
+        status = self._load(ciboulai_summary, "Forecast.0001.consistency.json")[
             "comparisonStatus"
         ]
         assert status["symbol"] == "OK"
         assert "No file found using PATTERN* at /some/inpath" in status["text"]
 
-    def test_compute_analysis(self, davai_summary):
+    def test_compute_analysis(self, ciboulai_summary):
         """Test the analysis computed from the consistency files."""
-        davai_summary.append([
-            make_davai_definition("Forecast", "utlog", ["SUCCESS - identical"]),
-            make_davai_definition("Interpol", "uthistory", ["FAILURE - differ"]),
+        ciboulai_summary.append([
+            make_ciboulai_definition("Forecast", "utlog", ["SUCCESS - identical"]),
+            make_ciboulai_definition("Interpol", "uthistory", ["FAILURE - differ"]),
         ])
 
-        analysis = davai_summary.compute_and_append_analysis(True)
+        analysis = ciboulai_summary.compute_and_append_analysis(True)
         assert analysis.success_count == 1
         assert analysis.error_count == 1
         assert analysis.missing_count == 0
         assert not analysis.success()
 
-        analysis = davai_summary.compute_and_append_analysis(False)
+        analysis = ciboulai_summary.compute_and_append_analysis(False)
         assert analysis.success_count == 0
         assert analysis.error_count == 0
         assert analysis.success()
 
-    def test_contains_summary_analysis_is_false(self, davai_summary):
-        """Test that DaVaI summaries never report an embedded analysis."""
-        davai_summary.append([make_davai_definition("Forecast", "utlog", ["N/A"])])
-        assert davai_summary.contains_summary_analysis() is False
+    def test_contains_summary_analysis_is_false(self, ciboulai_summary):
+        """Test that ciboulai summaries never report an embedded analysis."""
+        ciboulai_summary.append([make_ciboulai_definition("Forecast", "utlog", ["N/A"])])
+        assert ciboulai_summary.contains_summary_analysis() is False
 
-    def test_delete_removes_the_stack(self, davai_summary):
+    def test_delete_removes_the_stack(self, ciboulai_summary):
         """Test that delete removes the whole stack directory."""
-        davai_summary.append([make_davai_definition("Forecast", "utlog", ["N/A"])])
-        davai_summary.delete()
-        assert not os.path.exists(davai_summary.fullpath)
+        ciboulai_summary.append([make_ciboulai_definition("Forecast", "utlog", ["N/A"])])
+        ciboulai_summary.delete()
+        assert not os.path.exists(ciboulai_summary.fullpath)
 
-    def test_reference_check_manager_writes_davai_stack(self, basic_config):
-        """Run a complete check with davai activated and validate the stack."""
+    def test_reference_check_manager_writes_ciboulai_stack(self, basic_config):
+        """Run a complete check with ciboulai activated and validate the stack."""
         config = configure_for_check_and_generate(
             basic_config, "check_identical", True, False, 12, 5, False
         )
         config = config.copy(
             update={
                 "reference_checker": {
-                    "summary_active": ["uttxt", "utjson", "utdavai"],
+                    "summary_active": ["uttxt", "utjson", "utciboulai"],
                 }
             }
         )
@@ -798,6 +802,306 @@ class TestCheckSummaryDavai:
                     assert content["Context"]["rundir"] == wrk
                 else:
                     assert content["comparisonStatus"]["symbol"] == "OK"
+
+
+class FakeCiboulaiServer:
+    """Stands in for the Ciboulai api, recording the posts of the client."""
+
+    def __init__(self, answer=None):
+        """Create the fake server, answering returnCode 0 unless specified."""
+        self.posts = []
+        self.answer = (
+            answer
+            if answer is not None
+            else json.dumps({"returnCode": 0, "message": "Data received"})
+        )
+
+    def post(self, url, form):
+        """Record one form post and return the canned answer."""
+        self.posts.append((url, dict(form)))
+        return 200, self.answer
+
+    def types(self):
+        """Return the list of posted types, in order."""
+        return [form["type"] for _, form in self.posts]
+
+    def json_data(self, index=0):
+        """Return the parsed jsonData of one post."""
+        return json.loads(self.posts[index][1]["jsonData"])
+
+
+@pytest.fixture
+def ciboulai_server(monkeypatch):
+    """Patch the HTTP layer of PublishToCiboulai with a recording fake."""
+    server = FakeCiboulaiServer()
+    monkeypatch.setattr(
+        PublishToCiboulai,
+        "_http_post_form",
+        lambda _self, url, form: server.post(url, form),
+    )
+    monkeypatch.delenv("CIBOULAI_TOKEN", raising=False)
+    monkeypatch.setenv("USER", "cvap")
+    return server
+
+
+@pytest.fixture
+def ciboulai_platform(basic_config):
+    """A platform to substitute the paths of the ciboulai configuration."""
+    return FileManager(basic_config).platform
+
+
+def make_ciboulai_config(tmp_path, **overrides):
+    """Build a [reference_checker.ciboulai] configuration in a temp directory.
+
+    A token file is created unless the tests overrides token_file.
+    """
+    (tmp_path / "token.txt").write_text("s3cr3t\n")
+    config = {
+        "server": "https://ciboulai.test/davai/",
+        "token_file": str(tmp_path / "token.txt"),
+        "name_file": str(tmp_path / "checks" / "ciboulai.cfg"),
+        "counter_file": str(tmp_path / "shared" / "ciboulai_counter"),
+        "experiment_name": "ttr-{counter}-{machine}@{user}",
+        "tries": 1,
+        "sleep": 0,
+        "timeout": 5,
+    }
+    config.update(overrides)
+    return config
+
+
+def make_publisher(tmp_path, platform, **overrides):
+    """Build a PublishToCiboulai on temporary files."""
+    stack_dir = str(tmp_path / "checks" / "summaries_stack")
+    os.makedirs(stack_dir, exist_ok=True)
+    return PublishToCiboulai(
+        make_ciboulai_config(tmp_path, **overrides), platform, stack_dir
+    )
+
+
+class TestPublishToCiboulai:
+    """Tests for the PublishToCiboulai class, with a fake HTTP layer."""
+
+    def test_api_url(self, ciboulai_platform, tmp_path):
+        """Test the construction of the api url from the server url."""
+        publisher = make_publisher(tmp_path, ciboulai_platform)
+        assert publisher.api_url == "https://ciboulai.test/davai/api/"
+
+    def test_new_experiment_posts_xpinfo(
+        self, ciboulai_server, ciboulai_platform, tmp_path
+    ):
+        """Test that a first run increments the counter and initialises the experiment."""
+        publisher = make_publisher(tmp_path, ciboulai_platform)
+        assert publisher.ensure_experiment(reset=True) is True
+
+        name = f"ttr-0001-{publisher.machine}@cvap"
+        assert publisher.xpid == name
+        with open(publisher.name_file, "r") as file:
+            assert file.read().strip() == name
+        with open(publisher.counter_file, "r") as file:
+            assert file.read().strip() == "1"
+
+        assert ciboulai_server.types() == ["xpinfo"]
+        _, form = ciboulai_server.posts[0]
+        assert form["xpid"] == name
+        assert form["token"] == "s3cr3t"  # noqa: S105
+        xpinfo = ciboulai_server.json_data(0)["xpinfo"]
+        assert xpinfo["xpid"] == name
+        assert xpinfo["user"] == "cvap"
+
+    def test_counter_is_read_before_being_incremented(
+        self, ciboulai_server, ciboulai_platform, tmp_path
+    ):
+        """Test that the counter file value provides the next experiment number."""
+        os.makedirs(
+            os.path.dirname(make_ciboulai_config(tmp_path)["counter_file"]), exist_ok=True
+        )
+        publisher = make_publisher(tmp_path, ciboulai_platform)
+        with open(publisher.counter_file, "w") as file:
+            file.write("5\n")
+
+        assert publisher.ensure_experiment(reset=True) is True
+        assert publisher.xpid == f"ttr-0006-{publisher.machine}@cvap"
+        with open(publisher.counter_file, "r") as file:
+            assert file.read().strip() == "6"
+        assert ciboulai_server.types() == ["xpinfo"]
+
+    def test_existing_name_is_reused_without_increment(
+        self, ciboulai_server, ciboulai_platform, tmp_path
+    ):
+        """Test that a stored experiment name survives a rerun unchanged."""
+        os.makedirs(os.path.join(tmp_path, "checks"), exist_ok=True)
+        with open(os.path.join(tmp_path, "checks", "ciboulai.cfg"), "w") as file:
+            file.write("ttr-0042-previous@user\n")
+        publisher = make_publisher(tmp_path, ciboulai_platform)
+
+        assert publisher.ensure_experiment(reset=True) is True
+        assert publisher.xpid == "ttr-0042-previous@user"
+        assert not os.path.exists(publisher.counter_file)
+        assert ciboulai_server.posts[0][1]["xpid"] == "ttr-0042-previous@user"
+
+    def test_reset_false_does_not_post_xpinfo(
+        self, ciboulai_server, ciboulai_platform, tmp_path
+    ):
+        """Test that tasks other than the creator do not reset the experiment."""
+        os.makedirs(os.path.join(tmp_path, "checks"), exist_ok=True)
+        with open(os.path.join(tmp_path, "checks", "ciboulai.cfg"), "w") as file:
+            file.write("ttr-0042-previous@user\n")
+        publisher = make_publisher(tmp_path, ciboulai_platform)
+
+        assert publisher.ensure_experiment(reset=False) is True
+        assert ciboulai_server.posts == []
+
+    def test_publish_wraps_the_summary(
+        self, ciboulai_server, ciboulai_platform, tmp_path
+    ):
+        """Test the payload shape of a task summary publication."""
+        publisher = make_publisher(tmp_path, ciboulai_platform)
+        publisher.ensure_experiment(reset=True)
+        summary = {"comparisonStatus": {"symbol": "OK"}}
+
+        assert publisher.publish("Forecast.0001", "consistency", summary) is True
+        assert ciboulai_server.types() == ["xpinfo", "taskinfo"]
+        _, form = ciboulai_server.posts[1]
+        assert form["xpid"] == publisher.xpid
+        assert ciboulai_server.json_data(1) == {"Forecast.0001": {"consistency": summary}}
+
+    def test_publish_resolves_a_missing_name(
+        self, ciboulai_server, ciboulai_platform, tmp_path
+    ):
+        """Test that publishing without a prior ensure_experiment still works."""
+        publisher = make_publisher(tmp_path, ciboulai_platform)
+        assert publisher.publish("Forecast.0001", "itself", {"Status": {}}) is True
+        assert publisher.xpid == f"ttr-0001-{publisher.machine}@cvap"
+        assert ciboulai_server.types() == ["xpinfo", "taskinfo"]
+
+    def test_disabled_publisher_is_inert(
+        self, ciboulai_server, ciboulai_platform, tmp_path
+    ):
+        """Test that enabled = false prevents any file creation or post."""
+        publisher = make_publisher(tmp_path, ciboulai_platform, enabled=False)
+        assert publisher.ensure_experiment(reset=True) is False
+        assert publisher.publish("Forecast.0001", "itself", {}) is False
+        assert ciboulai_server.posts == []
+        assert not os.path.exists(publisher.name_file)
+        assert not os.path.exists(publisher.counter_file)
+
+    def test_missing_token_skips_publication(
+        self, ciboulai_server, ciboulai_platform, tmp_path
+    ):
+        """Test that no token means no attempt and no counter increment."""
+        publisher = make_publisher(
+            tmp_path, ciboulai_platform, token_file=str(tmp_path / "absent.txt")
+        )
+        assert publisher.ensure_experiment(reset=True) is False
+        assert publisher.publish("Forecast.0001", "itself", {}) is False
+        assert ciboulai_server.posts == []
+        assert not os.path.exists(publisher.counter_file)
+
+    def test_token_from_environment(
+        self, ciboulai_server, ciboulai_platform, tmp_path, monkeypatch
+    ):
+        """Test that the CIBOULAI_TOKEN environment variable takes precedence."""
+        monkeypatch.setenv("CIBOULAI_TOKEN", "envtoken")
+        publisher = make_publisher(
+            tmp_path, ciboulai_platform, token_file=str(tmp_path / "absent.txt")
+        )
+        assert publisher.ensure_experiment(reset=True) is True
+        assert ciboulai_server.posts[0][1]["token"] == "envtoken"  # noqa: S105
+
+    def test_server_error_is_not_fatal(self, ciboulai_platform, tmp_path, monkeypatch):
+        """Test that a rejected payload is reported but never raises."""
+        server = FakeCiboulaiServer(
+            json.dumps({"returnCode": 1, "message": "Problem with data"})
+        )
+        monkeypatch.setattr(
+            PublishToCiboulai,
+            "_http_post_form",
+            lambda _self, url, form: server.post(url, form),
+        )
+        monkeypatch.delenv("CIBOULAI_TOKEN", raising=False)
+        publisher = make_publisher(tmp_path, ciboulai_platform)
+        assert publisher.ensure_experiment(reset=True) is True
+        assert publisher.publish("Forecast.0001", "itself", {}) is False
+        # the publication of the next file is still attempted
+        assert publisher.publish("Forecast.0001", "consistency", {}) is False
+        assert server.types() == ["xpinfo", "taskinfo", "taskinfo"]
+
+    def test_wrong_token_stops_further_attempts(
+        self, ciboulai_platform, tmp_path, monkeypatch
+    ):
+        """Test that an invalid token disables the publisher."""
+        server = FakeCiboulaiServer(
+            json.dumps({"returnCode": 1, "message": "Token is not present or wrong"})
+        )
+        monkeypatch.setattr(
+            PublishToCiboulai,
+            "_http_post_form",
+            lambda _self, url, form: server.post(url, form),
+        )
+        monkeypatch.delenv("CIBOULAI_TOKEN", raising=False)
+        publisher = make_publisher(tmp_path, ciboulai_platform)
+        assert publisher.ensure_experiment(reset=True) is True
+        assert publisher.publish("Forecast.0001", "itself", {}) is False
+        assert server.types() == ["xpinfo"]
+
+    def test_connection_error_is_not_fatal(
+        self, ciboulai_platform, tmp_path, monkeypatch
+    ):
+        """Test that a network failure during retries is reported, not raised."""
+        monkeypatch.delenv("CIBOULAI_TOKEN", raising=False)
+
+        def raise_oserror(self, url, form):
+            raise OSError("network is down")
+
+        monkeypatch.setattr(PublishToCiboulai, "_http_post_form", raise_oserror)
+        publisher = make_publisher(tmp_path, ciboulai_platform)
+        assert publisher.ensure_experiment(reset=True) is True
+        assert publisher.publish("Forecast.0001", "itself", {}) is False
+        # the experiment name is still resolved and stored
+        assert publisher.xpid == f"ttr-0001-{publisher.machine}@{publisher.user}"
+
+    def test_ciboulai_summary_publishes_written_files(
+        self, ciboulai_server, ciboulai_platform, tmp_path
+    ):
+        """Test the integration: append writes the files and publishes them."""
+        config = make_ciboulai_config(tmp_path)
+        stack_dir = str(tmp_path / "checks" / "summaries_stack")
+        os.makedirs(stack_dir, exist_ok=True)
+        summary = CheckSummaryCiboulai("ciboulai", stack_dir, config)
+        summary.init_full_path(ciboulai_platform)
+        assert summary.publisher is not None
+
+        summary.create()
+        summary.append([
+            make_ciboulai_definition("Forecast", "utlog", ["SUCCESS - identical"])
+        ])
+
+        # one xpinfo to initialise, then itself before consistency
+        assert ciboulai_server.types() == ["xpinfo", "taskinfo", "taskinfo"]
+        scope_order = [
+            next(iter(payload["Forecast.0001"]))
+            for payload in (
+                ciboulai_server.json_data(1),
+                ciboulai_server.json_data(2),
+            )
+        ]
+        assert scope_order == ["itself", "consistency"]
+        published = ciboulai_server.json_data(2)["Forecast.0001"]["consistency"]
+        assert published == TestCheckSummaryCiboulai._load(
+            summary, "Forecast.0001.consistency.json"
+        )
+
+    def test_ciboulai_summary_disabled_has_no_publisher(
+        self, ciboulai_platform, tmp_path
+    ):
+        """Test that an inactive ciboulai section leaves the stack offline."""
+        config = make_ciboulai_config(tmp_path, enabled=False)
+        stack_dir = str(tmp_path / "checks" / "summaries_stack")
+        os.makedirs(stack_dir, exist_ok=True)
+        summary = CheckSummaryCiboulai("ciboulai", stack_dir, config)
+        summary.init_full_path(ciboulai_platform)
+        assert summary.publisher is None
 
 
 class TestReferenceCheckManager:

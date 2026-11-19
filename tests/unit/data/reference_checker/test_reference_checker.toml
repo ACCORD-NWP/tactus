@@ -48,9 +48,20 @@
   file = "@WRK@/checks/summary.txt"
   format = "txt"
 
-[reference_checker.summary.utdavai]
+[reference_checker.summary.utciboulai]
   file = "@WRK@/checks/summaries_stack"
-  format = "davai"
+  format = "ciboulai"
+
+[reference_checker.ciboulai]
+  enabled = false
+  server = "http://ciboulai.invalid/davai/"
+  token_file = "@WRK@/ciboulai_token"
+  name_file = "@WRK@/checks/ciboulai.cfg"
+  counter_file = "@WRK@/checks/ciboulai_counter"
+  experiment_name = "ttr-{counter}-{machine}@{user}"
+  tries = 1
+  sleep = 0
+  timeout = 5
 
 [reference_checker.task.Creategrib.utfullpos]
   inpath = "@WRK@/forecast_results/"

@@ -55,12 +55,35 @@
   file = "@CASEDIR@/checks/summary.txt"
   format = "txt"
 
-  # Optional DaVaI summary stack output: add "davai" to summary_active to activate.
-  # It writes one pair of files (<task>.itself.json / <task>.consistency.json) per
-  # checked task in the directory defined below.
-  # [reference_checker.summary.davai]
+  # Optional Ciboulai summary stack output: add "ciboulai" to summary_active to
+  # activate. It writes one pair of files (<task>.itself.json /
+  # <task>.consistency.json) per checked task in the directory defined below, and
+  # publishes them to the Ciboulai server configured in [reference_checker.ciboulai].
+  # [reference_checker.summary.ciboulai]
   #   file = "@CASEDIR@/checks/summaries_stack"
-  #   format = "davai"
+  #   format = "ciboulai"
+
+[reference_checker.ciboulai]
+  # Connection to the Ciboulai server used to publish the summary stack files.
+  # Publication is triggered automatically as soon as a summary with format "ciboulai"
+  # is listed in summary_active; set enabled = false to only keep the files on disk.
+  # The token is read from the environment variable CIBOULAI_TOKEN, or from the
+  # first line of token_file.
+  enabled = true
+  server = "https://www.umr-cnrm.fr/davai/"
+  token_file = "~/.ciboulai_token"
+  # The experiment name is built from the pattern, e.g. ttr-0112-atos_bologna@cvap,
+  # where {counter} is the value of counter_file, incremented the first time a name
+  # is needed, and {machine} and {user} are the platform host and the unix user.
+  # The resolved name is written to name_file (ciboulai.cfg) and reused by all the
+  # tasks of the experiment.
+  experiment_name = "ttr-{counter}-{machine}@{user}"
+  name_file = "@CASEDIR@/checks/ciboulai.cfg"
+  counter_file = "@SCRATCH@/@SYS_NAME@/ciboulai/counter"
+  # Number of tries, delay between tries and timeout, in seconds, for one send
+  tries = 3
+  sleep = 3
+  timeout = 60
 
 [reference_checker.task.PgdUpdate.default]
   inpath = "@CLIMDIR@"

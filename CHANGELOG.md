@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Reference checker: output json files in the Davai format [#294](
 https://github.com/ACCORD-NWP/tactus/pull/294/) (@dhaumont)
+- Reference checker: publish the Davai summaries to the Ciboulai server [#296](
+https://github.com/ACCORD-NWP/tactus/pull/296/) (@dhaumont)
 
 
 ## [1.5.0] - 2026-11-10
