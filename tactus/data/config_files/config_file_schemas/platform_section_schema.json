@@ -72,9 +72,10 @@
       "type": "string",
       "description": "Path to ECOCLIMAP SG data"
     },
-    "climdata": {
+    "physiodata": {
       "type": "string",
-      "description": "Macro used in other platform paths"
+      "description": "Location of the physiographic data (IAL-physiodata: E923_DATA, ECOCLIMAP-SG, GMTED2010, PGD, SOILGRID). Macro used in other platform paths",
+      "default": "@STATIC_DATA@/climate"
     },
     "static_data": {
       "type": "string",

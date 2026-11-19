@@ -11,6 +11,6 @@
   albnir_veg_dir = "@ecosg_data_path@/ALBNIR_SAT"
   albvis_soil_dir = "@ecosg_data_path@/ALBVIS_SAT"
   albvis_veg_dir = "@ecosg_data_path@/ALBVIS_SAT"
-  ecosg_data_path = "@CLIMDATA@/ECOCLIMAP-SG-ML"
+  ecosg_data_path = "@PHYSIODATA@/ECOCLIMAP-SG-ML"
   lai_dir = "@ecosg_data_path@/LAI/60M"
   tree_height_dir = "@ecosg_data_path@/HT"

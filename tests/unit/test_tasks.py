@@ -64,7 +64,7 @@ def task_name_and_configs(request, default_config, tmp_directory):
             tactus_home = "{GeneralConstants.PACKAGE_DIRECTORY}"
             scratch = "{tmp_directory}"
             static_data = "{tmp_directory}"
-            climdata = "{tmp_directory}"
+            physiodata = "{tmp_directory}"
             soilgrid_data_path = "{tmp_directory}"
             topo_data_path = "{tmp_directory}"
         [task.args]

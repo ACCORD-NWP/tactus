@@ -20,14 +20,14 @@ class Canari(Task):
     def execute(self):
         """Execute task."""
         # Possibly from input dir
-        self.fmanager.input("@CLIMDATA@/m@MM@", "m@MM@", check_archive=True)
+        self.fmanager.input("@PHYSIODATA@/m@MM@", "m@MM@", check_archive=True)
         self.fmanager.input(
             "@ARCHIVE@/ICMSH@CNMEXP@+0000", "ICMSH@CNMEXP@+0000", provider_id="symlink"
         )
 
         res_dict = {
             "input": {
-                "@CLIMDATA@/const.clim.@DOMAIN@": {"destination": "const.clim.@DOMAIN@"}
+                "@PHYSIODATA@/const.clim.@DOMAIN@": {"destination": "const.clim.@DOMAIN@"}
             }
         }
         self.fmanager.set_resources_from_dict(res_dict)
