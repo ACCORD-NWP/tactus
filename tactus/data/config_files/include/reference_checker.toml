@@ -57,8 +57,8 @@
 
 [reference_checker.ciboulai]
   enabled = true
-  server = "https://www.umr-cnrm.fr/davai/"
-  token_file = "/home/gmap/mrpe/mary/public/ciboulai/token.2022-10-20"
+  server = "https://www.umr-cnrm.fr/davai/" 
+  token_file = "/home/acrd/public/ciboulai/token.2022-10-20"
   experiment_name = "ttr-{counter}-{machine}@{user}"
   name_file = "@CASEDIR@/checks/ciboulai.cfg"
   counter_file = "@SCRATCH@/@SYS_NAME@/ciboulai/counter"
