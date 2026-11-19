@@ -1101,9 +1101,9 @@ class CheckSummaryJson(CheckSummary):
             "items"
         ].append(content)
 
+
 class PublishToCiboulai:
-    """Class to publish summary stack files to a Ciboulai server, like Davai.
-    """
+    """Class to publish summary stack files to a Ciboulai server, like Davai."""
 
     def __init__(self, ciboulai_config, platform, stack_dir):
         """Creation of a PublishToCiboulai.
@@ -1134,9 +1134,7 @@ class PublishToCiboulai:
         )
 
         default_xp_name = "ttr-{counter}-{machine}@{user}"
-        self.name_pattern = str(
-            ciboulai_config.get("experiment_name", default_xp_name)
-        )
+        self.name_pattern = str(ciboulai_config.get("experiment_name", default_xp_name))
         self.tries = int(ciboulai_config.get("tries", 3))
         self.sleep = int(ciboulai_config.get("sleep", 3))
         self.timeout = int(ciboulai_config.get("timeout", 60))
@@ -1176,7 +1174,7 @@ class PublishToCiboulai:
             the token string, or None when it cannot be found
         """
         if self._token is None:
-           if self.token_file and os.path.exists(self.token_file):
+            if self.token_file and os.path.exists(self.token_file):
                 with open(self.token_file, "r", encoding="utf8") as file:
                     token = file.readline().strip()
             self._token = token or None
@@ -1342,11 +1340,7 @@ class PublishToCiboulai:
             return False
         token = self._get_token()
         if token is None:
-            logger.warning(
-                "Ciboulai publication: no token found in the environment variable "
-                f"{CIBOULAI_TOKEN_ENVIRONMENT} or in the token file "
-                f"{self.token_file}, publication is skipped"
-            )
+            logger.warning("No ciboulai token found, skipping publication to the server")
             self._skipped = True
             return False
         is_new = self.xpid is None
