@@ -14,11 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change order of remove/start in test runner to avoid race condition. [#291](https://github.com/ACCORD-NWP/tactus/pull/291)(@uandrae)
 
 ### Added
-- Reference checker: output json files in the Davai format [#294](
-https://github.com/ACCORD-NWP/tactus/pull/294/) (@dhaumont)
-- Reference checker: publish the Davai summaries to the Ciboulai server [#296](
-https://github.com/ACCORD-NWP/tactus/pull/296/) (@dhaumont)
 
+- Reference checker: output results to Ciboulai server [#294](
+https://github.com/ACCORD-NWP/tactus/pull/294/) (@dhaumont)
 
 ## [1.5.0] - 2026-11-10
 
