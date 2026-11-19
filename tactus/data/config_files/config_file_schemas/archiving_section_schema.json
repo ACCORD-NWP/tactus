@@ -112,6 +112,41 @@
           }
         }
       }
+    },
+    "hourlogs": {
+      "title": "Settings for the ArchiveHourLogs task",
+      "description": "Log files to archive after each forecast cycle",
+      "type": "object"
+    },
+    "static": {
+      "title": "Settings for the ArchiveStatic task",
+      "description": "Static data to archive once per case, such as climate and pgd files",
+      "type": "object"
+    },
+    "staticlogs": {
+      "title": "Settings for the ArchiveStaticLogs task",
+      "description": "Log files of the static data generation tasks",
+      "type": "object"
+    },
+    "staticmember": {
+      "title": "Settings for the ArchiveStaticMember task",
+      "description": "Member specific static data to archive once per case",
+      "type": "object"
+    },
+    "merged_sqlite": {
+      "title": "Settings for the ArchiveMergedSQLites task",
+      "description": "Merged sqlite databases to archive at the end of a case",
+      "type": "object"
+    },
+    "FDB": {
+      "title": "Settings for the ArchiveFDB task",
+      "description": "Fields to write to the FDB",
+      "type": "object"
+    },
+    "DataBridge": {
+      "title": "Settings for the ArchiveDataBridge task",
+      "description": "Fields to transfer through the ECMWF DataBridge",
+      "type": "object"
     }
   },
   "$archive_timestep_setting_rules": {

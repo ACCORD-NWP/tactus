@@ -81,6 +81,11 @@
           "description": "File template as used by the model",
           "default": "GRIBPF@CNMEXP@@DOMAIN@+@DURATION_MODEL@",
           "type": "string"
+        },
+        "grib": {
+          "description": "File template as written by the GRIB conversion tools (creategrib, gribmodify)",
+          "type": "string",
+          "default": "GRIBPF@CNMEXP@+@DURATION_ARCHIVE@"
         }
       }
     },
@@ -113,6 +118,11 @@
           "description": "File template as used by the model",
           "default": "ICMSH@CNMEXP@+@DURATION_MODEL@",
           "type": "string"
+        },
+        "grib": {
+          "description": "File template as written by the GRIB conversion tools (creategrib, gribmodify)",
+          "type": "string",
+          "default": "GRIB@CNMEXP@+@DURATION_ARCHIVE@"
         }
       }
     },
@@ -181,6 +191,103 @@
           "description": "File template as used by the model",
           "default": "ICMSH@CNMEXP@+@DURATION_MODEL@.sfx",
           "type": "string"
+        },
+        "grib": {
+          "description": "File template as written by the GRIB conversion tools (creategrib, gribmodify)",
+          "type": "string",
+          "default": "GRIB@CNMEXP@+@DURATION_ARCHIVE@.sfx"
+        }
+      }
+    },
+    "initfile": {
+      "title": "Initfile",
+      "description": "File name template for the history restart file of a previous case",
+      "type": "object",
+      "properties": {
+        "archive": {
+          "description": "File template as stored in the archive",
+          "default": "@SCRATCH@/@SYS_NAME@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@/@HISTORY_TEMPLATE@",
+          "type": "string"
+        }
+      }
+    },
+    "initfile_sfx": {
+      "title": "Initfile (surfex)",
+      "description": "File name template for the surfex restart file of a previous case",
+      "type": "object",
+      "properties": {
+        "archive": {
+          "description": "File template as stored in the archive",
+          "default": "@SCRATCH@/@SYS_NAME@/@PREV_CASE@/archive/@YYYY@/@MM@/@DD@/@HH@/@MEMBER_STR@/@SURFEX_TEMPLATE@",
+          "type": "string"
+        }
+      }
+    },
+    "pertana": {
+      "title": "Pertana",
+      "description": "File name templates for analysis perturbation files",
+      "type": "object",
+      "properties": {
+        "archive": {
+          "description": "File template as stored in the archive",
+          "default": "PERTANA@CNMEXP@",
+          "type": "string"
+        },
+        "model": {
+          "description": "File template as used by the model",
+          "default": "PERTANA@CNMEXP@",
+          "type": "string"
+        }
+      }
+    },
+    "pertsurf": {
+      "title": "Pertsurf",
+      "description": "File name templates for surface perturbation files",
+      "type": "object",
+      "properties": {
+        "archive": {
+          "description": "File template as stored in the archive",
+          "default": "PERTSURF@CNMEXP@",
+          "type": "string"
+        },
+        "model": {
+          "description": "File template as used by the model",
+          "default": "PERTSURF@CNMEXP@",
+          "type": "string"
+        }
+      }
+    },
+    "sstfile": {
+      "title": "SST file",
+      "description": "File name template for the sea surface temperature and ice cover file",
+      "type": "object",
+      "properties": {
+        "archive": {
+          "description": "File template as stored in the archive",
+          "default": "EXT_SST_SIC@NNN@",
+          "type": "string"
+        }
+      }
+    },
+    "tiles": {
+      "title": "Tiles",
+      "description": "File name templates for tiled surfex output files",
+      "type": "object",
+      "properties": {
+        "archive": {
+          "description": "File template as stored in the archive",
+          "default": "ICMSH@CNMEXP@+@DURATION_ARCHIVE@.sfx",
+          "type": "string"
+        },
+        "model": {
+          "description": "File template as used by the model",
+          "default": "ICMSH@CNMEXP@+@DURATION_MODEL@.sfx",
+          "type": "string"
+        },
+        "grib": {
+          "description": "File template as written by the GRIB conversion tools (creategrib, gribmodify)",
+          "type": "string",
+          "default": "GRIBTILE@CNMEXP@+@DURATION_ARCHIVE@.sfx"
         }
       }
     }
