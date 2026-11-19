@@ -1101,15 +1101,6 @@ class CheckSummaryJson(CheckSummary):
             "items"
         ].append(content)
 
-
-#: Default Ciboulai server
-CIBOULAI_DEFAULT_SERVER = "https://www.umr-cnrm.fr/davai/"
-#: Default pattern to build the experiment name from
-CIBOULAI_NAME_PATTERN = "ttr-{counter}-{machine}@{user}"
-#: Environment variable holding the Ciboulai token
-CIBOULAI_TOKEN_ENVIRONMENT = "CIBOULAI_TOKEN"  # noqa: S105
-
-
 class PublishToCiboulai:
     """Class to publish summary stack files to a Ciboulai server, like Davai.
     """
@@ -1122,9 +1113,10 @@ class PublishToCiboulai:
            platform: Platform, used for path substitution and machine name
            stack_dir: the summary stack directory to publish
         """
+        ciboulai_default_server = "https://www.umr-cnrm.fr/davai/"
         self.enabled = bool(ciboulai_config.get("enabled", True))
         server = str(
-            self._expand(platform, ciboulai_config.get("server"), CIBOULAI_DEFAULT_SERVER)
+            self._expand(platform, ciboulai_config.get("server"), ciboulai_default_server)
         )
         if not server.endswith("/api/"):
             server = "/".join([server.rstrip("/"), "api", ""])
@@ -1140,8 +1132,10 @@ class PublishToCiboulai:
             ciboulai_config.get("counter_file"),
             os.path.join(os.path.dirname(self.name_file), "ciboulai_counter"),
         )
+
+        default_xp_name = "ttr-{counter}-{machine}@{user}"
         self.name_pattern = str(
-            ciboulai_config.get("experiment_name", CIBOULAI_NAME_PATTERN)
+            ciboulai_config.get("experiment_name", default_xp_name)
         )
         self.tries = int(ciboulai_config.get("tries", 3))
         self.sleep = int(ciboulai_config.get("sleep", 3))
@@ -1182,8 +1176,7 @@ class PublishToCiboulai:
             the token string, or None when it cannot be found
         """
         if self._token is None:
-            token = os.environ.get(CIBOULAI_TOKEN_ENVIRONMENT, "").strip()
-            if not token and self.token_file and os.path.exists(self.token_file):
+           if self.token_file and os.path.exists(self.token_file):
                 with open(self.token_file, "r", encoding="utf8") as file:
                     token = file.readline().strip()
             self._token = token or None
