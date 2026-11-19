@@ -73,6 +73,11 @@
       "type": "string",
       "description": "User allowed to write to the databridge",
       "default": "@PROD_USER@"
+    },
+    "create_inverse_filter": {
+      "type": "boolean",
+      "description": "Create an example file with the fields which were filtered out by the negative rules, for inspection and completion of the rules",
+      "default": false
     }
   }
 }

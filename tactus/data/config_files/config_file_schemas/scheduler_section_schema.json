@@ -94,6 +94,32 @@
         "ecf_tactus_home": {
           "type": "string",
           "description": "tactus home directory stripped for parts specific to where a node is mounted on a cluster"
+        },
+        "ecf_out": {
+          "type": "string",
+          "description": "Path to the ecflow job output directory"
+        },
+        "ecf_include": {
+          "type": "string",
+          "description": "Path to the directory of suite definition files passed to ecflow as ECF_INCLUDE. Defaults to ecf_files"
+        },
+        "case_prefix": {
+          "type": "string",
+          "description": "Prefix for the case name, used to keep suites and scratch directories of several users or configurations apart"
+        },
+        "hpc": {
+          "type": "string",
+          "description": "Name of the HPC machine, passed to the scheduler as an ecflow variable"
+        },
+        "troika": {
+          "type": "object",
+          "description": "Scheduler specific troika settings, overriding the root troika section",
+          "properties": {
+            "config_file": {
+              "type": "string",
+              "description": "Path to the troika configuration file used for this scheduler"
+            }
+          }
         }
       }
     },

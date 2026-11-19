@@ -28,6 +28,10 @@
         }
       },
       "default": {}
+    },
+    "member_settings": {
+      "type": "object",
+      "description": "Base settings from which the member specific configuration is derived, grouped by config section name. Values can be single values, lists or dicts, the latter two being turned into generators which yield a value for each member. A string is imported as a custom generator class if possible, and used as a single value otherwise"
     }
   }
 }

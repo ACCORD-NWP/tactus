@@ -8,12 +8,12 @@
     "check": {
       "type": "boolean",
       "description": "Activate the check comparison against reference files",
-      "defaut": false
+      "default": false
     },
     "generate": {
       "type": "boolean",
       "description": "Activate the generation of reference files",
-      "defaut": false
+      "default": false
     },
     "summary_active": {
       "type": "array",
@@ -39,78 +39,139 @@
         "description": "Name of a comparison rule"
       }
     },
+    "create_summary": {
+      "type": "array",
+      "description": "List of tasks which create and initialize the summary files",
+      "items": {
+        "type": "string",
+        "description": "Name of a task"
+      },
+      "default": [
+        "PrepRun"
+      ]
+    },
+    "analyze_summary": {
+      "type": "array",
+      "description": "List of tasks in which the summary files are analyzed, raising an exception on check failure",
+      "items": {
+        "type": "string",
+        "description": "Name of a task"
+      },
+      "default": [
+        "ReferenceCheck"
+      ]
+    },
+    "suppress_exception": {
+      "type": "boolean",
+      "description": "Do not raise an exception when the summary analysis finds errors, log a warning instead",
+      "default": false
+    },
+    "label_suffix": {
+      "type": "string",
+      "description": "Suffix appended to the task name in the summary",
+      "default": "@MEMBER_STR@"
+    },
     "methods": {
       "type": "object",
-      "description": "Define a comparison method",
-      "properties": {
-        "tool": {
-          "type": "string",
-          "description": "Name of the tool used for comparison",
-          "enum": [
-            "normschecker",
-            "xtool"
-          ]
-        },
-        "binary": {
-          "type": "string",
-          "description": "Path to the binary of the tool"
-        },
-        "args_template": {
-          "type": "string",
-          "description": "Templated arguments to provide to the tool"
-        },
-        "file_format": {
-          "type": "string",
-          "description": "Format of the file that is expected",
-          "enum": [
-            "FA",
-            "GRIB",
-            "LOG"
-          ]
-        },
-        "tolerance": {
-          "type": "number",
-          "description": "Tolerance value used for comparison"
-        },
-        "mode": {
-          "type": "string",
-          "description": "Mode used for comparison",
-          "default": "get_worst"
-        },
-        "which": {
-          "type": "string",
-          "description": "Which value to use for comparison",
-          "default": "first_and_last_spectral"
+      "description": "Comparison methods, grouped by method name",
+      "additionalProperties": {
+        "type": "object",
+        "description": "Define a comparison method",
+        "properties": {
+          "tool": {
+            "type": "string",
+            "description": "Name of the tool used for comparison",
+            "enum": [
+              "namelist_checker",
+              "norms_checker",
+              "xtool"
+            ]
+          },
+          "binary": {
+            "type": "string",
+            "description": "Path to the binary of the tool"
+          },
+          "args_template": {
+            "type": "string",
+            "description": "Templated arguments to provide to the tool"
+          },
+          "file_format": {
+            "type": "string",
+            "description": "Format of the file that is expected",
+            "enum": [
+              "FA",
+              "GRIB",
+              "LOG"
+            ]
+          },
+          "tolerance": {
+            "type": [
+              "number",
+              "string"
+            ],
+            "description": "Tolerance value used for comparison, converted to an integer by the tools. Required by the norms_checker and xtool tools"
+          },
+          "mode": {
+            "type": "string",
+            "description": "Mode used for comparison",
+            "default": "get_worst"
+          },
+          "which": {
+            "type": "string",
+            "description": "Which value to use for comparison",
+            "default": "first_and_last_spectral"
+          },
+          "ignore_case": {
+            "type": "boolean",
+            "description": "For the namelist_checker tool: ignore case differences",
+            "default": true
+          },
+          "ignore_blank_lines": {
+            "type": "boolean",
+            "description": "For the namelist_checker tool: ignore blank lines",
+            "default": true
+          },
+          "ignore_whitespace": {
+            "type": "boolean",
+            "description": "For the namelist_checker tool: ignore whitespace differences",
+            "default": true
+          }
         }
       }
     },
     "summary": {
       "type": "object",
-      "description": "Summary generation settings",
-      "properties": {
-        "file": {
-          "type": "string",
-          "description": "Name of the summary file",
-          "default": "@WRK@/checks/summary.txt"
-        },
-        "format": {
-          "type": "string",
-          "description": "Format of the summary file",
-          "enum": [
-            "json",
-            "txt"
-          ],
-          "default": "txt"
+      "description": "Summary generation settings, grouped by summary name",
+      "additionalProperties": {
+        "type": "object",
+        "description": "Settings of one summary",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Name of the summary file",
+            "default": "@WRK@/checks/summary.txt"
+          },
+          "format": {
+            "type": "string",
+            "description": "Format of the summary file",
+            "enum": [
+              "json",
+              "txt"
+            ],
+            "default": "txt"
+          }
         }
       }
     },
-    "tasks": {
+    "task": {
       "type": "object",
-      "description": "Comparison settings for a task",
-      "properties": {
-        "rules": {
+      "description": "Comparison settings, grouped by task name",
+      "additionalProperties": {
+        "type": "object",
+        "description": "Comparison rules of the task, grouped by rule name",
+        "additionalProperties": {
           "type": "object",
-          "description": "Comparison rule settings",
+          "description": "Comparison rule settings. The parameters method, inpath, pattern and result_folder are always needed, generate_folder is needed when generate is active and reference_folder when check is active",
           "properties": {
             "inpath": {
               "type": "string",

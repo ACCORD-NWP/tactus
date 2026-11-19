@@ -78,7 +78,7 @@
     },
     "task_exceptions": {
       "type": "object",
-      "description": "Allows to define task specific settings like BATCH, MODULES, NPROC. Use as task_exceptions.taskname.property",
+      "description": "Task specific submission settings. Allows to define task specific settings like BATCH, ENV, MODULES or NPROC, keyed by task name. Use as task_exceptions.taskname.property",
       "properties": {
         "Marsprep": {
           "type": "object",
@@ -105,7 +105,7 @@
         },
         "TactusBundleBuild": {
           "type": "object",
-          "description": "Settings specific toTactusBundleBuild tasks",
+          "description": "Settings specific to TactusBundleBuild tasks",
           "properties": {
             "ENV": {
               "type": "object",
@@ -125,7 +125,7 @@
     },
     "types": {
       "title": "Submission types",
-      "description": "Defines settings related to various groups",
+      "description": "Submission groups, keyed by group name",
       "type": "object",
       "properties": {
         "serial": {
@@ -150,6 +150,12 @@
           "$ref": "#/$submission_group"
         },
         "Forecast_gpu": {
+          "$ref": "#/$submission_group"
+        },
+        "background": {
+          "$ref": "#/$submission_group"
+        },
+        "pytest": {
           "$ref": "#/$submission_group"
         }
       }
@@ -263,6 +269,28 @@
             "maxItems": 3
           }
         }
+      },
+      "ENV_FILE": {
+        "description": "Sources an environment file before running the task",
+        "type": "object",
+        "properties": {
+          "env_file_path": {
+            "description": "Path to the file to source",
+            "type": "string"
+          }
+        }
+      },
+      "NPROCX": {
+        "description": "Number of processors in x direction for this task",
+        "type": "number"
+      },
+      "NPROCY": {
+        "description": "Number of processors in y direction for this task",
+        "type": "number"
+      },
+      "INTERPRETER": {
+        "description": "Interpreter to run the task command with",
+        "type": "string"
       }
     },
     "required": [

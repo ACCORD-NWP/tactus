@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Test runner modifications for reference checker",
-  "description": "",
+  "description": "Config section modifications applied to all test cases when comparing against reference files, keyed by config section name",
   "type": "object",
   "additionalProperties": true,
   "properties": {}

@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Test runner cases",
-  "description": "",
+  "description": "Test configurations to run, keyed by case name",
   "type": "object",
   "additionalProperties": true,
   "properties": {}
