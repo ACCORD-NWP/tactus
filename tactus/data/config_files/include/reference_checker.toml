@@ -10,7 +10,7 @@
   ]
   create_summary = ["PrepRun"]
   analyze_summary = ["ReferenceCheck"]
-  summary_active = ["txt", "json"]
+  summary_active = ["txt", "json", "ciboulai"]
   suppress_exception = false
   label_suffix = "@MEMBER_STR@"
 
@@ -56,7 +56,7 @@
   format = "txt"
 
 [reference_checker.ciboulai]
-  enabled = true
+  enabled = false
   server = "https://www.umr-cnrm.fr/davai/" 
   token_file = "/home/acrd/public/ciboulai/token.2022-10-20"
   experiment_name = "ttr-{counter}-{machine}@{user}"
