@@ -598,10 +598,19 @@ class CheckSummary:
 
         """
         summary_list = []
+        summaries = config.get("summary", {})
 
         for summary in config["summary_active"]:
-            file_format = config["summary"][summary]["format"]
-            file_name = config["summary"][summary]["file"]
+            if summary not in summaries:
+                logger.warning(
+                    "Reference Checker Summary - no definition found for "
+                    f"{summary!r}: add a "
+                    f"[reference_checker.summary.{summary}] section or remove it "
+                    "from summary_active"
+                )
+                continue
+            file_format = summaries[summary]["format"]
+            file_name = summaries[summary]["file"]
             if file_format == "json":
                 summary_list.append(CheckSummaryJson(file_format, file_name))
             elif file_format == "txt":

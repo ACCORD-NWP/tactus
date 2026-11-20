@@ -560,7 +560,7 @@ class TestCheckSummary:
     def test_check_summary_create_summary_list(self, basic_config):
         """Test create_summary_list static method."""
         summaries = CheckSummary.create_summary_list(basic_config["reference_checker"])
-        assert len(summaries) == 2
+        assert len(summaries) == 3
         assert isinstance(summaries[1], CheckSummaryJson)
         assert summaries[1].fileformat == "json"
         assert summaries[1].filename == "@CASEDIR@/checks/summary.json"
@@ -568,6 +568,24 @@ class TestCheckSummary:
         assert isinstance(summaries[0], CheckSummaryTxt)
         assert summaries[0].fileformat == "txt"
         assert summaries[0].filename == "@CASEDIR@/checks/summary.txt"
+
+        # the default configuration writes the ciboulai stack, without publishing
+        assert isinstance(summaries[2], CheckSummaryCiboulai)
+        assert summaries[2].fileformat == "ciboulai"
+        assert summaries[2].filename == "@CASEDIR@/checks/summaries_stack"
+        assert summaries[2].ciboulai_config["enabled"] is False
+
+    def test_check_summary_create_summary_list_unknown_name(self, basic_config):
+        """Test that an undefined summary name is skipped with a warning."""
+        config = basic_config.copy(
+            update={
+                "reference_checker": {
+                    "summary_active": ["txt", "not_defined", "json"],
+                }
+            }
+        )
+        summaries = CheckSummary.create_summary_list(config["reference_checker"])
+        assert [summary.fileformat for summary in summaries] == ["txt", "json"]
 
 
 def make_ciboulai_definition(taskname, rulename, results, empty=False):
