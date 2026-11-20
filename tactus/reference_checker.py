@@ -1177,12 +1177,13 @@ class PublishToCiboulai:
             tactusmakedirs(directory, unixgroup=self.unix_group)
 
     def _get_token(self):
-        """Read the Ciboulai token: environment variable, then token file.
+        """Read the Ciboulai token from the token file.
 
         Returns:
             the token string, or None when it cannot be found
         """
         if self._token is None:
+            token = None
             if self.token_file and os.path.exists(self.token_file):
                 with open(self.token_file, "r", encoding="utf8") as file:
                     token = file.readline().strip()

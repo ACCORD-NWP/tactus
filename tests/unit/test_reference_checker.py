@@ -857,7 +857,6 @@ def ciboulai_server(monkeypatch):
         "_http_post_form",
         lambda _self, url, form: server.post(url, form),
     )
-    monkeypatch.delenv("CIBOULAI_TOKEN", raising=False)
     monkeypatch.setenv("USER", "cvap")
     return server
 
@@ -1016,17 +1015,6 @@ class TestPublishToCiboulai:
         assert ciboulai_server.posts == []
         assert not os.path.exists(publisher.counter_file)
 
-    def test_token_from_environment(
-        self, ciboulai_server, ciboulai_platform, tmp_path, monkeypatch
-    ):
-        """Test that the CIBOULAI_TOKEN environment variable takes precedence."""
-        monkeypatch.setenv("CIBOULAI_TOKEN", "envtoken")
-        publisher = make_publisher(
-            tmp_path, ciboulai_platform, token_file=str(tmp_path / "absent.txt")
-        )
-        assert publisher.ensure_experiment(reset=True) is True
-        assert ciboulai_server.posts[0][1]["token"] == "envtoken"  # noqa: S105
-
     def test_server_error_is_not_fatal(self, ciboulai_platform, tmp_path, monkeypatch):
         """Test that a rejected payload is reported but never raises."""
         server = FakeCiboulaiServer(
@@ -1037,7 +1025,6 @@ class TestPublishToCiboulai:
             "_http_post_form",
             lambda _self, url, form: server.post(url, form),
         )
-        monkeypatch.delenv("CIBOULAI_TOKEN", raising=False)
         publisher = make_publisher(tmp_path, ciboulai_platform)
         assert publisher.ensure_experiment(reset=True) is True
         assert publisher.publish("Forecast.0001", "itself", {}) is False
@@ -1057,7 +1044,6 @@ class TestPublishToCiboulai:
             "_http_post_form",
             lambda _self, url, form: server.post(url, form),
         )
-        monkeypatch.delenv("CIBOULAI_TOKEN", raising=False)
         publisher = make_publisher(tmp_path, ciboulai_platform)
         assert publisher.ensure_experiment(reset=True) is True
         assert publisher.publish("Forecast.0001", "itself", {}) is False
@@ -1067,7 +1053,6 @@ class TestPublishToCiboulai:
         self, ciboulai_platform, tmp_path, monkeypatch
     ):
         """Test that a network failure during retries is reported, not raised."""
-        monkeypatch.delenv("CIBOULAI_TOKEN", raising=False)
 
         def raise_oserror(self, url, form):
             raise OSError("network is down")

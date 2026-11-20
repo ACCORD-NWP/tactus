@@ -197,8 +197,7 @@ the `[reference_checker.ciboulai]` section:
 - `enabled`: master switch. Set it to `false` to keep writing the summary files
   on disk without any exchange with the server.
 - `server`: url of the Ciboulai server, its `api/` endpoint is used.
-- `token_file`: file whose first line holds the access token. The environment
-  variable `CIBOULAI_TOKEN` takes precedence over the file. Ask your Ciboulai
+- `token_file`: file whose first line holds the access token. Ask your Ciboulai
   administrator for a token.
 - `experiment_name`: pattern to build the experiment name, from the fields
   `{counter}` (zero-padded to 4 digits), `{machine}` (the platform host) and
