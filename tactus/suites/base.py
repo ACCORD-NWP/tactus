@@ -1,5 +1,6 @@
 """Ecflow suites base class."""
 
+import functools
 import os
 import re
 from pathlib import Path
@@ -243,6 +244,9 @@ class EcflowNode:
         """
         self.name = name
         self.node_type = node_type
+        self.children: List[EcflowNode] = []
+        if isinstance(parent, EcflowNode):
+            parent.children.append(self)
 
         has_node = True
         if parent is None:
@@ -531,7 +535,17 @@ class EcflowSuite(EcflowNodeContainer):
 
 
 class EcflowSuiteFamily(EcflowNodeContainer):
-    """A family in ecflow."""
+    """A family in ecflow.
+
+    Once a subclass is constructed, the suite components registered for it are
+    added at its end, see tactus.suites.suite_extensions.
+    """
+
+    def __init_subclass__(cls, **kwargs):
+        """Add the registered suite components after constructing the subclass."""
+        super().__init_subclass__(**kwargs)
+        if "__init__" in cls.__dict__:
+            cls.__init__ = _add_components_after_init(cls.__init__)
 
     def __init__(
         self,
@@ -582,6 +596,36 @@ class EcflowSuiteFamily(EcflowNodeContainer):
         logger.debug(self.ecf_remote_container_path)
         if self.ecf_node is not None:
             self.ecf_node.add_variable("ECF_FILES", self.ecf_remote_container_path)
+
+
+def _add_components_after_init(init):
+    """Wrap a family __init__ to add the suite components once it has finished.
+
+    Only the outermost __init__ adds them, so a family whose __init__ calls the
+    __init__ of a parent family class gets its components once.
+
+    Args:
+        init (Callable): The __init__ of an EcflowSuiteFamily subclass.
+
+    Returns:
+        Callable: The wrapped __init__.
+    """
+
+    @functools.wraps(init)
+    def wrapper(self, *args, **kwargs):
+        depth = self.__dict__.get("_init_depth", 0)
+        self._init_depth = depth + 1
+        try:
+            init(self, *args, **kwargs)
+        finally:
+            self._init_depth = depth
+        if depth == 0:
+            # Imported here, as suite_extensions imports this module
+            from .suite_extensions import add_family_components
+
+            add_family_components(self, init, args, kwargs)
+
+    return wrapper
 
 
 class EcflowSuiteTask(EcflowNode):
