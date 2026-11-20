@@ -55,8 +55,6 @@
   file = "@CASEDIR@/checks/summary.txt"
   format = "txt"
 
-# The ciboulai summary writes a stack directory; the connection settings used
-# when [reference_checker.ciboulai].enabled is true live in that other section.
 [reference_checker.summary.ciboulai]
   file = "@CASEDIR@/checks/summaries_stack"
   format = "ciboulai"

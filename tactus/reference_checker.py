@@ -1183,8 +1183,7 @@ class PublishToCiboulai:
             the token string, or None when it cannot be found
         """
         if self._token is None:
-            token = os.environ.get("CIBOULAI_TOKEN", "").strip()
-            if not token and self.token_file and os.path.exists(self.token_file):
+            if self.token_file and os.path.exists(self.token_file):
                 with open(self.token_file, "r", encoding="utf8") as file:
                     token = file.readline().strip()
             self._token = token or None
