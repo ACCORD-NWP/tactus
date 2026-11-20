@@ -98,7 +98,8 @@
           "description": "Format of the summary file",
           "enum": [
             "json",
-            "txt"
+            "txt",
+            "ciboulai"
           ],
           "default": "txt"
         }

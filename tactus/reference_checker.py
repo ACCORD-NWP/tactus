@@ -5,7 +5,14 @@ from __future__ import annotations
 import filecmp
 import json
 import os
+import shutil
+import socket
 import subprocess
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+from datetime import datetime
 
 from arpifs_listings import norms
 
@@ -573,7 +580,7 @@ class CheckSummary:
         """Creation of a CheckSummary.
 
         Args:
-           fileformat: the format of the summary file (e.g. "txt", "json")
+           fileformat: the format of the summary file (e.g. "txt", "json", "ciboulai")
            filename: the pattern defining the name of the summary file
         """
         self.fileformat = fileformat
@@ -591,14 +598,27 @@ class CheckSummary:
 
         """
         summary_list = []
+        summaries = config.get("summary", {})
 
         for summary in config["summary_active"]:
-            file_format = config["summary"][summary]["format"]
-            file_name = config["summary"][summary]["file"]
+            if summary not in summaries:
+                logger.warning(
+                    "Reference Checker Summary - no definition found for "
+                    f"{summary!r}: add a "
+                    f"[reference_checker.summary.{summary}] section or remove it "
+                    "from summary_active"
+                )
+                continue
+            file_format = summaries[summary]["format"]
+            file_name = summaries[summary]["file"]
             if file_format == "json":
                 summary_list.append(CheckSummaryJson(file_format, file_name))
             elif file_format == "txt":
                 summary_list.append(CheckSummaryTxt(file_format, file_name))
+            elif file_format == "ciboulai":
+                summary_list.append(
+                    CheckSummaryCiboulai(file_format, file_name, config.get("ciboulai"))
+                )
             else:
                 logger.warning(
                     f"Reference Checker Summary - format unknown: {file_format}"
@@ -771,7 +791,7 @@ class CheckSummaryTxt(CheckSummary):
         """Creation of a CheckSummaryTxt object.
 
         Args:
-           fileformat: the format of the summary file (e.g. "txt", "json")
+           fileformat: the format of the summary file (e.g. "txt", "json", "ciboulai")
            filename: the pattern defining the name of the summary file
         """
         CheckSummary.__init__(self, fileformat, filename)
@@ -907,7 +927,7 @@ class CheckSummaryJson(CheckSummary):
         """Creation of a CheckSummaryJson.
 
         Args:
-           fileformat: the format of the summary file (e.g. "txt", "json")
+           fileformat: the format of the summary file (e.g. "txt", "json", "ciboulai")
            filename: the pattern defining the name of the summary file
         """
         CheckSummary.__init__(self, fileformat, filename)
@@ -1089,6 +1109,524 @@ class CheckSummaryJson(CheckSummary):
         summary_dict[check_definition.uniquename][check_definition.rulename][
             "items"
         ].append(content)
+
+
+class PublishToCiboulai:
+    """Class to publish summary stack files to a Ciboulai server, like Davai."""
+
+    def __init__(self, ciboulai_config, platform, stack_dir):
+        """Creation of a PublishToCiboulai.
+
+        Args:
+           ciboulai_config: the [reference_checker.ciboulai] configuration
+           platform: Platform, used for path substitution and machine name
+           stack_dir: the summary stack directory to publish
+        """
+        ciboulai_default_server = "https://www.umr-cnrm.fr/davai/"
+        self.enabled = bool(ciboulai_config.get("enabled", True))
+        server = str(
+            self._expand(platform, ciboulai_config.get("server"), ciboulai_default_server)
+        )
+        if not server.endswith("/api/"):
+            server = "/".join([server.rstrip("/"), "api", ""])
+        self.api_url = server
+        self.token_file = self._expand(platform, ciboulai_config.get("token_file"))
+        self.name_file = self._expand(
+            platform,
+            ciboulai_config.get("name_file"),
+            os.path.join(os.path.dirname(stack_dir), "ciboulai.cfg"),
+        )
+        self.counter_file = self._expand(
+            platform,
+            ciboulai_config.get("counter_file"),
+            os.path.join(os.path.dirname(self.name_file), "ciboulai_counter"),
+        )
+
+        default_xp_name = "ttr-{counter}-{machine}@{user}"
+        self.name_pattern = str(ciboulai_config.get("experiment_name", default_xp_name))
+        self.tries = int(ciboulai_config.get("tries", 3))
+        self.sleep = int(ciboulai_config.get("sleep", 3))
+        self.timeout = int(ciboulai_config.get("timeout", 60))
+        self.stack_dir = stack_dir
+        self.machine = platform.get_platform_value("host") or socket.gethostname()
+        self.user = os.environ.get("USER", "unknown")
+        self.unix_group = platform.get_platform_value("unix_group")
+        self.xpid = None
+        self._token = None
+        self._skipped = False
+
+    @staticmethod
+    def _expand(platform, value, default=None):
+        """Substitute the macros of a configured path, or return the default.
+
+        Args:
+            platform: Platform, providing the substitution service
+            value: the configured path pattern, possibly None or empty
+            default: fallback path when no value is configured
+
+        Returns:
+            the expanded absolute path, or default
+        """
+        if not value:
+            return default
+        return os.path.expanduser(platform.substitute(value))
+
+    def _makedirs(self, directory):
+        """Create a directory of the publication environment if missing."""
+        if directory and not os.path.exists(directory):
+            tactusmakedirs(directory, unixgroup=self.unix_group)
+
+    def _get_token(self):
+        """Read the Ciboulai token from the token file.
+
+        Returns:
+            the token string, or None when it cannot be found
+        """
+        if self._token is None:
+            token = None
+            if self.token_file and os.path.exists(self.token_file):
+                with open(self.token_file, "r", encoding="utf8") as file:
+                    token = file.readline().strip()
+            self._token = token or None
+        return self._token
+
+    def _read_name_file(self):
+        """Return the experiment name stored in the name file, or None."""
+        if os.path.exists(self.name_file):
+            with open(self.name_file, "r", encoding="utf8") as file:
+                name = file.read().strip()
+            if name:
+                return name
+        return None
+
+    def _write_name_file(self):
+        """Store the resolved experiment name in the name file."""
+        self._makedirs(os.path.dirname(self.name_file))
+        with (
+            FileLock(self.name_file, delete_existing=True),
+            open(self.name_file, "w", encoding="utf8") as file,
+        ):
+            file.write(f"{self.xpid}\n")
+
+    def _next_counter(self):
+        """Return the next experiment counter.
+
+        Returns:
+            the incremented counter value
+        """
+        self._makedirs(os.path.dirname(self.counter_file))
+        counter = 0
+        with FileLock(self.counter_file, delete_existing=True):
+            if os.path.exists(self.counter_file):
+                with open(self.counter_file, "r", encoding="utf8") as file:
+                    value = file.read().strip()
+                counter = int(value) if value else 0
+            counter += 1
+            with open(self.counter_file, "w", encoding="utf8") as file:
+                file.write(f"{counter}\n")
+        return counter
+
+    def _build_name(self, counter):
+        """Build the experiment name from the configured pattern.
+
+        Args:
+            counter: the experiment counter, padded to 4 digits
+
+        Returns:
+            the experiment name, e.g. ttr-0112-atos_bologna@cvap
+        """
+        return self.name_pattern.format(
+            counter=f"{counter:04d}", machine=self.machine, user=self.user
+        )
+
+    def _xpinfo_payload(self):
+        """Build the xpinfo payload of the experiment (re)initialisation.
+
+        Returns:
+            the JSON string to post with type 'xpinfo'
+        """
+        path = os.path.join(self.stack_dir, "xpinfo.json")
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf8") as file:
+                xpinfo = json.load(file)
+        else:
+            xpinfo = {}
+        xpinfo["xpid"] = self.xpid
+        xpinfo["user"] = self.user
+        return json.dumps({"xpinfo": xpinfo}, indent=4, sort_keys=True)
+
+    def _http_post_form(self, url, form):
+        """POST a form-encoded dictionary, return (http_status, body_text).
+
+        Args:
+            url: the destination url
+            form: dictionary of form fields
+
+        Returns:
+            the HTTP status code and the body text
+        """
+        data = urllib.parse.urlencode(form).encode("utf-8")
+        request = urllib.request.Request(  # noqa: S310
+            url=url,
+            data=data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+        try:
+            # S310: the url is built from the configured ciboulai server
+            with urllib.request.urlopen(  # noqa: S310
+                request, timeout=self.timeout
+            ) as response:
+                return response.getcode(), response.read().decode(
+                    "utf-8", errors="replace"
+                )
+        except urllib.error.HTTPError as error:
+            return error.code, error.read().decode("utf-8", errors="replace")
+
+    def _post_api(self, jsondata, kind, token):
+        """Send data to the Ciboulai api, with retries on network failures.
+
+        Args:
+            jsondata: the payload, formatted as output from json.dumps
+            kind: the type of data, 'xpinfo' or 'taskinfo'
+            token: the Ciboulai token
+
+        Returns:
+            (ok, info): ok is True when the server accepted the payload
+            (returnCode == 0), info the parsed server answer or the error
+        """
+        form = {
+            "jsonData": jsondata,
+            "xpid": self.xpid,
+            "type": kind,
+            "token": token,
+        }
+        info = None
+        for attempt in range(1, self.tries + 1):
+            try:
+                status, body = self._http_post_form(self.api_url, form)
+            except OSError as error:
+                info = {"error": f"connection to {self.api_url} failed: {error}"}
+                if attempt < self.tries:
+                    logger.warning(f"Ciboulai publication: {info['error']}, retrying...")
+                    time.sleep(self.sleep)
+                    continue
+                return False, info
+            try:
+                answer = json.loads(body)
+            except ValueError:
+                return False, {"http_status": status, "body": body[:500]}
+            if "returnCode" not in answer:
+                return False, {"http_status": status, "body": body[:500]}
+            ok = answer["returnCode"] == 0
+            info = {
+                "http_status": status,
+                "returnCode": answer["returnCode"],
+                "message": " ".join(str(answer.get("message", "")).split()),
+            }
+            if not ok and "Token is not present or wrong" in info["message"]:
+                # No point in hammering the server: the token is invalid.
+                self._skipped = True
+                return ok, info
+            if ok or attempt == self.tries:
+                return ok, info
+            time.sleep(self.sleep)
+        return False, info
+
+    def ensure_experiment(self, reset):
+        """Make sure the experiment exists on the server for publishing.
+
+        The experiment name is resolved from the name file, or built from a
+        new counter value and stored. The experiment is created or cleared
+        by posting its xpinfo, always on first resolution and, when reset
+        is requested, at every stack (re)creation.
+
+        Args:
+            reset: also post the xpinfo when reusing an existing name
+
+        Returns:
+            True when the experiment name is available for publishing
+        """
+        if not self.enabled or self._skipped:
+            return False
+        token = self._get_token()
+        if token is None:
+            logger.warning("No ciboulai token found, skipping publication to the server")
+            self._skipped = True
+            return False
+        is_new = self.xpid is None
+        if is_new:
+            self.xpid = self._read_name_file()
+            is_new = self.xpid is None
+        if is_new:
+            self.xpid = self._build_name(self._next_counter())
+            self._write_name_file()
+            logger.info(f"Created the Ciboulai experiment: {self.xpid}")
+        if reset or is_new:
+            ok, info = self._post_api(self._xpinfo_payload(), "xpinfo", token)
+            if ok:
+                logger.info(f"Initialised the Ciboulai experiment: {info['message']}")
+            else:
+                logger.warning(
+                    f"Could not initialise the Ciboulai experiment {self.xpid}: {info}"
+                )
+        return True
+
+    def publish(self, task, scope, summary):
+        """Send one summary dictionary to the server.
+
+        Args:
+            task: the task name, first level key of the payload
+            scope: the scope of the summary, 'itself' or 'consistency'
+            summary: the dictionary written to <task>.<scope>.json
+
+        Returns:
+            True when the server accepted the payload
+        """
+        if not self.enabled or self._skipped:
+            return False
+        if self.xpid is None and not self.ensure_experiment(reset=False):
+            return False
+        jsondata = json.dumps({task: {scope: summary}})
+        ok, info = self._post_api(jsondata, "taskinfo", self._token)
+        if ok:
+            logger.info(f"Published to Ciboulai: {self.xpid} {task}.{scope}")
+        else:
+            logger.warning(f"Could not publish {task}.{scope} to Ciboulai: {info}")
+        return ok
+
+
+class CheckSummaryCiboulai(CheckSummary):
+    """Class to generate summary files in the Ciboulai summary stack format.
+
+    Instead of one aggregate file, this writer produces one pair of files per
+    checked task. When a [reference_checker.ciboulai] section is configured and enabled,
+    the files of the stack are also published to the Ciboulai server, see
+    PublishToCiboulai.
+    """
+
+    STATUS_ENDED = {
+        "symbol": "E",
+        "short": "Ended",
+        "text": "Ended: Task ended without crash.",
+    }
+    STATUS_NO_REF = {
+        "symbol": "0",
+        "short": "- No ref -",
+        "text": "No reference to be compared to",
+    }
+    STATUS_OK = {
+        "symbol": "OK",
+        "short": "OK",
+        "text": 'Success: "all comparisons against the reference were successful"',
+    }
+    STATUS_INCONSISTENT = {
+        "symbol": "IC",
+        "short": "Inconsistent",
+        "text": "Inconsistency between this task and its reference"
+        " in the same experiment",
+    }
+
+    def __init__(self, fileformat, filename, ciboulai_config=None):
+        """Creation of a CheckSummaryCiboulai.
+
+        Args:
+           fileformat: the format of the summary file (e.g. "txt", "json", "ciboulai")
+           filename: the pattern defining the summary stack directory
+           ciboulai_config: the [reference_checker.ciboulai] configuration,
+               when present and enabled the files are also published to the
+               Ciboulai server
+        """
+        CheckSummary.__init__(self, fileformat, filename)
+        self.rundir = None
+        self.unix_group = None
+        self.ciboulai_config = ciboulai_config
+        self.publisher = None
+
+    def init_full_path(self, platform):
+        """Init self.fullpath and the run context using platform substitute.
+
+        Args:
+           platform: Platform
+        """
+        if not self.fullpath:
+            self.fullpath = platform.substitute(self.filename)
+            self.rundir = platform.get_system_value("wrk") or os.getcwd()
+            self.unix_group = platform.get_platform_value("unix_group")
+            if self.ciboulai_config is not None and bool(
+                self.ciboulai_config.get("enabled", True)
+            ):
+                self.publisher = PublishToCiboulai(
+                    self.ciboulai_config, platform, self.fullpath
+                )
+
+    def create(self):
+        """Create the summary stack directory, and initialise the experiment."""
+        self._ensure_dir()
+        if self.publisher is not None:
+            self.publisher.ensure_experiment(reset=True)
+
+    def delete(self):
+        """Delete the summary stack directory and all the files it contains."""
+        if os.path.isdir(self.fullpath):
+            logger.info("Delete reference checker summary:", self.fullpath)
+            shutil.rmtree(self.fullpath)
+
+    def append(self, check_definitions: list[CheckDefinition]):
+        """Write one pair of summary files per task contained in the definitions.
+
+        Args:
+            check_definitions: the input list of check definitions
+        """
+        self._ensure_dir()
+
+        tasks: dict[str, list[CheckDefinition]] = {}
+        for check_definition in check_definitions:
+            stem = self._stem(check_definition)
+            tasks.setdefault(stem, []).append(check_definition)
+
+        for stem, definitions in tasks.items():
+            itself = self._itself_to_dict(definitions)
+            consistency = self._consistency_to_dict(definitions)
+            self._write(f"{stem}.itself.json", itself)
+            self._write(f"{stem}.consistency.json", consistency)
+            if self.publisher is not None:
+                # the server merges scopes unless 'itself' replaces the task,
+                # so itself must be published before consistency
+                self.publisher.ensure_experiment(reset=False)
+                self.publisher.publish(stem, "itself", itself)
+                self.publisher.publish(stem, "consistency", consistency)
+
+        logger.info(
+            f"Appended Ciboulai results to reference checking summary: {self.fullpath}"
+        )
+
+    def compute_and_append_analysis(self, check):
+        """Analyze the consistency files of the stack directory.
+
+        Args:
+            check: boolean indicating if the check was performed
+
+        Returns:
+            A CheckSummaryAnalysis built from the consistency files
+        """
+        analysis = CheckSummaryAnalysis(check)
+        if not os.path.isdir(self.fullpath):
+            analysis.append_error_message(f"No Ciboulai summary found in {self.fullpath}")
+            return analysis
+
+        for filename in sorted(os.listdir(self.fullpath)):
+            if not filename.endswith(".consistency.json"):
+                continue
+            with open(
+                os.path.join(self.fullpath, filename), "r", encoding="utf8"
+            ) as file:
+                status = json.load(file).get("comparisonStatus", {})
+            symbol = status.get("symbol")
+            text = status.get("text", "")
+            if check and symbol == "OK":
+                analysis.increment_success_count()
+            elif check and symbol != "0":
+                analysis.increment_error_count()
+            if "No file found" in text:
+                analysis.increment_missing_count()
+
+        return analysis
+
+    def contains_summary_analysis(self):
+        """Return False: Ciboulai files never contain an aggregate analysis."""
+        return False
+
+    def _ensure_dir(self):
+        """Create the summary stack directory if it does not exist yet."""
+        if not os.path.exists(self.fullpath):
+            tactusmakedirs(self.fullpath, unixgroup=self.unix_group)
+
+    def _write(self, filename, content):
+        """Write a JSON file of the stack directory atomically.
+
+        Args:
+            filename: name of the file to write, relative to the stack directory
+            content: dictionary to serialize
+        """
+        filepath = os.path.join(self.fullpath, filename)
+        with (
+            FileLock(filepath, delete_existing=True),
+            open(filepath, mode="w", encoding="utf8") as outfile,
+        ):
+            json.dump(content, outfile, indent=2, sort_keys=True)
+            outfile.write("\n")
+
+    @staticmethod
+    def _stem(check_definition: CheckDefinition) -> str:
+        """Return the file stem of the task owning the check definition.
+
+        Args:
+            check_definition: the check definition being processed
+
+        Returns:
+            the task stem, suitable for a file name
+        """
+        return check_definition.uniquename.replace("/", ".").rstrip(".")
+
+    def _itself_to_dict(self, definitions: list[CheckDefinition]) -> dict:
+        """Build the content of the <stem>.itself.json file.
+
+        Args:
+            definitions: the check definitions of the task
+
+        Returns:
+            the dictionary describing the run status of the task
+        """
+        content = {
+            "Context": {
+                "jobname": definitions[0].taskname,
+                "rundir": self.rundir,
+            },
+            "Status": dict(self.STATUS_ENDED),
+            "Updated": datetime.now().isoformat(timespec="seconds"),
+        }
+        listings = sorted({
+            item.result_file
+            for definition in definitions
+            for item in definition.items
+            if os.path.exists(item.result_file)
+        })
+        if listings:
+            content["Listing"] = {"Task listing uri(s)": listings}
+        return content
+
+    @staticmethod
+    def _consistency_to_dict(definitions: list[CheckDefinition]) -> dict:
+        """Build the content of the <stem>.consistency.json file.
+
+        Args:
+            definitions: the check definitions of the task
+
+        Returns:
+            the dictionary containing the comparison verdict
+        """
+        results = [item.result for definition in definitions for item in definition.items]
+        warnings = [
+            f"No file found using {definition.files_pattern} at {definition.inpath}"
+            for definition in definitions
+            if len(definition.items) == 0
+        ]
+
+        if len(results) == 0:
+            status = dict(CheckSummaryCiboulai.STATUS_NO_REF)
+            if warnings:
+                status["text"] = "; ".join(warnings)
+        elif all(result == "N/A" for result in results):
+            status = dict(CheckSummaryCiboulai.STATUS_NO_REF)
+        elif all("SUCCESS" in result for result in results):
+            status = dict(CheckSummaryCiboulai.STATUS_OK)
+        else:
+            status = dict(CheckSummaryCiboulai.STATUS_INCONSISTENT)
+
+        if warnings and status["symbol"] != "0":
+            status["text"] = f"{status['text']} ({'; '.join(warnings)})"
+
+        return {"comparisonStatus": status}
 
 
 class ReferenceCheckManager:

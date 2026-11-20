@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix leading zeros in c903 inputs. [#290](https://github.com/ACCORD-NWP/tactus/pull/290)(@kastelecn)
 - Change order of remove/start in test runner to avoid race condition. [#291](https://github.com/ACCORD-NWP/tactus/pull/291)(@uandrae)
 
+### Added
+
+- Reference checker: output results to Ciboulai server [#294](
+https://github.com/ACCORD-NWP/tactus/pull/294/) (@dhaumont)
+
 ## [1.5.0] - 2026-11-10
 
 ### Added

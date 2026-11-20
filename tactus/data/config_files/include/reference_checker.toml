@@ -10,7 +10,7 @@
   ]
   create_summary = ["PrepRun"]
   analyze_summary = ["ReferenceCheck"]
-  summary_active = ["txt", "json"]
+  summary_active = ["txt", "json", "ciboulai"]
   suppress_exception = false
   label_suffix = "@MEMBER_STR@"
 
@@ -54,6 +54,21 @@
 [reference_checker.summary.txt]
   file = "@CASEDIR@/checks/summary.txt"
   format = "txt"
+
+[reference_checker.summary.ciboulai]
+  file = "@CASEDIR@/checks/summaries_stack"
+  format = "ciboulai"
+
+[reference_checker.ciboulai]
+  enabled = false
+  server = "https://www.umr-cnrm.fr/davai/" 
+  token_file = "/home/acrd/public/ciboulai/token.2022-10-20"
+  experiment_name = "ttr-{counter}-{machine}@{user}"
+  name_file = "@CASEDIR@/checks/ciboulai.cfg"
+  counter_file = "@SCRATCH@/@SYS_NAME@/ciboulai/counter"
+  tries = 3
+  sleep = 3
+  timeout = 60
 
 [reference_checker.task.PgdUpdate.default]
   inpath = "@CLIMDIR@"
