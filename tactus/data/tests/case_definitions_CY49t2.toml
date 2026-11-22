@@ -17,9 +17,6 @@
 [cases.cy49t2_alaro_climate_files.modifs.reference_checker]
   rules_excluded = ["E923Monthly_06.fafiles"]
 
-[cases.cy49t2_alaro_climate_files.modifs.general]
-  full_year_climate = true
-
 [cases.cy49t2_alaro_climate_files.modifs.system]
   case_suffix = "_climate_files"
   climdir = "@REFERENCE_DATA@/@CASE_PREFIX@/cy49t2_alaro/climate/@DOMAIN@"
@@ -137,9 +134,6 @@
 
 [cases.cy49t2_arome_climate_files]
   base = "cy49t2_arome"
-
-[cases.cy49t2_arome_climate_files.modifs.general]
-  full_year_climate = true
 
 [cases.cy49t2_arome_climate_files.modifs.system]
   case_suffix = "_climate_files"
@@ -279,9 +273,6 @@
 
 [cases.cy49t2_harmonie_arome_climate_files]
   base = "cy49t2_harmonie_arome"
-
-[cases.cy49t2_harmonie_arome_climate_files.modifs.general]
-  full_year_climate = true
 
 [cases.cy49t2_harmonie_arome_climate_files.modifs.system]
   case_suffix = "_climate_files"
