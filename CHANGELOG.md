@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Correct climate file name convention for the non-ECOCLIMAP SG case. [#273](https://github.com/ACCORD-NWP/tactus/pull/273)(@uandrae)
+- Fix leading zeros in c903 inputs. [#290](https://github.com/ACCORD-NWP/tactus/pull/290)(@kastelecn)
 - Change order of remove/start in test runner to avoid race condition. [#291](https://github.com/ACCORD-NWP/tactus/pull/291)(@uandrae)
 
 ## [1.5.0] - 2026-11-10

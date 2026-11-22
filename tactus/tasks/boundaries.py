@@ -108,7 +108,7 @@ class InterpolateBoundaries(Task):
             for bd_index, bd_time in self.boundary.bd_index_time_dict.items():
                 self.fmanager.input(
                     f"{path}/{src_local}",
-                    dst.replace("@NNN@", f"{bd_index - self.boundary.min_index}"),
+                    dst.replace("@NNN@", f"{bd_index - self.boundary.min_index:06d}"),
                     basetime=self.boundary.bd_basetime,
                     validtime=as_datetime(bd_time),
                 )

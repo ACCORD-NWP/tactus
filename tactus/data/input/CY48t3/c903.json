@@ -19,9 +19,9 @@
   "host_model_files": {
     "path": "@BDDIR@",
     "files": {
-      "ICMSHMARS+00000@NNN@": "ICMSH_@BDMEMBER@+@L@",
-      "ICMGGMARS+00000@NNN@": "ICMGG_@BDMEMBER@+@L@",
-      "ICMUAMARS+00000@NNN@": "ICMUA_@BDMEMBER@+@L@"
+      "ICMSHMARS+@NNN@": "ICMSH_@BDMEMBER@+@L@",
+      "ICMGGMARS+@NNN@": "ICMGG_@BDMEMBER@+@L@",
+      "ICMUAMARS+@NNN@": "ICMUA_@BDMEMBER@+@L@"
     }
   }
 }
