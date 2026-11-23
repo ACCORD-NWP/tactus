@@ -329,7 +329,7 @@
       "type": "object",
       "properties": {
         "ecoclimap_sg": {
-          "description": "Switch for ecoclimap 2nd gen",
+          "description": "Switch for ECOCLIMAP-SG. When false only a single pgd file is produced, regardless of general.times.start and general.times.end.",
           "default": true,
           "type": "boolean"
         },
@@ -341,7 +341,7 @@
         "one_decade": {
           "title": "Option for using one decade",
           "type": "boolean",
-          "default": true
+          "default": false
         },
         "use_osm": {
           "title": "Option to use Open Street map input data",
@@ -1168,6 +1168,11 @@
         },
         "windfarm": {
           "description": "Switch for enabeling wind farm parameterisation",
+          "type": "boolean",
+          "default": false
+        },
+        "full_year_climate": {
+          "description": "When true the E923Monthly tasks use the season settings Q1-Q4 covering the full year. When false a task is created for each month between general.times.start and general.times.end.",
           "type": "boolean",
           "default": false
         },
