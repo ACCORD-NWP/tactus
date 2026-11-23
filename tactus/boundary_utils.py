@@ -17,14 +17,15 @@ def use_cams_aerosols(config) -> bool:
         bool: The value of nrt_aerosols.active
 
     Raises:
-        ValueError: If active for another cycle than CY49t2
+        ValueError: If active while nrt_aerosols.available is false
     """
     if not config.get("nrt_aerosols.active", False):
         return False
-    cycle = config["general.cycle"]
-    if cycle != "CY49t2":
+    if not config.get("nrt_aerosols.available", False):
         raise ValueError(
-            f"nrt_aerosols.active is only available for CY49t2, not for {cycle}"
+            "nrt_aerosols.active is set, but CAMS aerosols are not available for "
+            f"this configuration (cycle {config['general.cycle']}). "
+            "See nrt_aerosols.available."
         )
     return True
 

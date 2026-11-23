@@ -11,7 +11,7 @@ or by setting
 
 in your own modification file. The defaults are in the `[nrt_aerosols]` section, defined in `include/nrt_aerosols.toml`. The CAMS MARS selection is `[mars.CAMS_NRT]` in `include/mars_settings.toml`.
 
-This is only available for CY49t2; for other cycles the suite generation stops with an error. It needs MARS access (CAMS data have `class=MC`), and the submission settings for the new tasks are only defined for `atos_bologna`.
+It is only available where `nrt_aerosols.available` is true, which is set in the cycle modification file of the supported cycles (currently `modifications/cycle/CY49t2.toml`); otherwise the suite generation stops with an error. 
 
 ## What happens
 
@@ -39,6 +39,7 @@ To add the aerosols to the boundaries only, and keep the forecast namelist uncha
 | Setting | Default | Description |
 | --- | --- | --- |
 | `nrt_aerosols.active` | `false` | Switch the CAMS aerosols on |
+| `nrt_aerosols.available` | `false` | Whether the cycle supports CAMS aerosols, set by the cycle modification files (`true` for CY49t2) |
 | `nrt_aerosols.selection` | `"CAMS_NRT"` | MARS selection, see `[mars.CAMS_NRT]` in `include/mars_settings.toml` |
 | `nrt_aerosols.bdshift` | `"PT0H"` | Use an older CAMS forecast, a multiple of the CAMS cycle length (12h). E.g. `"PT12H"` for a real-time setup, where the latest CAMS forecast is not yet available |
 | `nrt_aerosols.forecast_namelist` | `true` | Add the CAMS sections to the forecast namelist. If `false`, the aerosols are only added to the boundaries |

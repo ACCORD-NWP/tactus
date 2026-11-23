@@ -42,6 +42,7 @@ def make_config(default_config, tmp_directory, start, cams=""):
             [nrt_aerosols]
                 bddir = "{tmp_directory}/cams/@YYYY@@MM@@DD@@HH@"
                 intp_bddir = "{tmp_directory}/lbc/cams"
+                available = true
                 {cams or "active = true"}
             [system]
                 wrk = "{tmp_directory}/wrk"
@@ -331,24 +332,24 @@ class TestCamsNamelists:
         assert domain["NAMFPC"]["CFPPHY"] == ["SURFTEMPERATURE", "SURFIND.TERREMER"]
 
 
-class TestCamsCycles:
-    """CAMS aerosols are only available for CY49t2."""
+class TestCamsAvailable:
+    """CAMS aerosols require nrt_aerosols.available."""
 
-    def test_cy49t2(self, cams_config):
+    def test_available(self, cams_config):
         assert use_cams_aerosols(cams_config)
 
-    def test_other_cycle_raises(self, cams_config):
-        config = cams_config.copy(update={"general": {"cycle": "CY50t2"}})
-        with pytest.raises(ValueError, match="only available"):
+    def test_not_available_raises(self, cams_config):
+        config = cams_config.copy(update={"nrt_aerosols": {"available": False}})
+        with pytest.raises(ValueError, match="not available"):
             use_cams_aerosols(config)
-        with pytest.raises(ValueError, match="only available"):
+        with pytest.raises(ValueError, match="not available"):
             derived_variables(config)
 
-    def test_inactive_any_cycle(self, cams_config):
+    def test_inactive_not_available(self, cams_config):
         config = cams_config.copy(
-            update={
-                "general": {"cycle": "CY50t2"},
-                "nrt_aerosols": {"active": False},
-            }
+            update={"nrt_aerosols": {"active": False, "available": False}}
         )
         assert not use_cams_aerosols(config)
+
+    def test_default_config(self, default_config):
+        assert not default_config["nrt_aerosols.available"]

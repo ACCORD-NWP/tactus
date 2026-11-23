@@ -1,5 +1,6 @@
 [nrt_aerosols]
   active = false
+  available = false
   bddir = "@SCRATCH@/@SYS_NAME@/IFS/@CAMS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
   bdshift = "PT0H"
   forecast_namelist = true

@@ -1,12 +1,17 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Near-real-time CAMS aerosols in the lateral boundaries, defined in include/nrt_aerosols.toml",
-  "description": "Add near-real-time CAMS aerosols (and ozone) to the lateral boundaries. CAMS data are retrieved by MarsprepCams, interpolated by an aerosol-only c903 (C903Cams) and merged into the regular boundary files (MergeCamsLbc). The forecast namelist then reads and couples the aerosols. Requires MARS access, only available for CY49t2.",
+  "description": "Add near-real-time CAMS aerosols (and ozone) to the lateral boundaries. CAMS data are retrieved by MarsprepCams, interpolated by an aerosol-only c903 (C903Cams) and merged into the regular boundary files (MergeCamsLbc). The forecast namelist then reads and couples the aerosols.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
     "active": {
       "description": "Switch to use CAMS aerosols in the lateral boundaries",
+      "type": "boolean",
+      "default": false
+    },
+    "available": {
+      "description": "Whether CAMS aerosols are supported by the model cycle in use. Set to true in the modification files of the cycles that support it. Using nrt_aerosols.active when this is false stops with an error.",
       "type": "boolean",
       "default": false
     },
