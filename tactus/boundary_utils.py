@@ -7,14 +7,42 @@ from tactus.mars_utils import mars_selection
 from tactus.toolbox import Platform
 
 
+def use_cams_aerosols(config) -> bool:
+    """Check if CAMS aerosols are used in the boundaries.
+
+    Args:
+        config (ParsedConfig): Configuration
+
+    Returns:
+        bool: The value of nrt_aerosols.active
+
+    Raises:
+        ValueError: If active while nrt_aerosols.available is false
+    """
+    if not config.get("nrt_aerosols.active", False):
+        return False
+    if not config.get("nrt_aerosols.available", False):
+        raise ValueError(
+            "nrt_aerosols.active is set, but CAMS aerosols are not available for "
+            f"this configuration (cycle {config['general.cycle']}). "
+            "See nrt_aerosols.available."
+        )
+    return True
+
+
 class Boundary:
     """Boundary class."""
 
-    def __init__(self, config):
+    def __init__(self, config, cams: bool = False):
         """Construct object.
 
         Args:
             config (ParsedConfig): Configuration
+            cams (bool): Use the CAMS forecast (nrt_aerosols) as host model
+                instead of boundaries.bdmodel. Defaults to False.
+
+        Raises:
+            ValueError: If bdshift is not a multiple of bdcycle.
         """
         platform = Platform(config)
 
@@ -32,13 +60,21 @@ class Boundary:
 
         self.bdint = as_timedelta(config["boundaries.bdint"])
 
-        bdmodel_map = {"lam": "e927", "ifs": "c903"}
-        self.bdmodel = config["boundaries.bdmodel"]
+        bdmodel_map = {"lam": "e927", "ifs": "c903", "cams": "c903"}
+        self.cams = cams
+        self.bdmodel = "cams" if cams else config["boundaries.bdmodel"]
         self.method = bdmodel_map[self.bdmodel]
 
         if self.method == "e927":
             self.bdcycle = as_timedelta(config["boundaries.lam.bdcycle"])
             self.bdcycle_start = as_timedelta(config["boundaries.lam.bdcycle_start"])
+        elif cams:
+            mars = mars_selection(
+                selection=platform.substitute(config["nrt_aerosols.selection"]),
+                config=config,
+            )
+            self.bdcycle = as_timedelta(mars["ifs_cycle_length"])
+            self.bdcycle_start = as_timedelta(mars["ifs_cycle_start"])
         elif self.method == "c903":
             mars = mars_selection(
                 selection=platform.substitute(
@@ -50,7 +86,8 @@ class Boundary:
             self.bdcycle_start = as_timedelta(mars["ifs_cycle_start"])
 
         # Boundary basetime
-        self.bdshift = as_timedelta(config["boundaries.bdshift"])
+        bdshift_key = "nrt_aerosols.bdshift" if cams else "boundaries.bdshift"
+        self.bdshift = as_timedelta(config[bdshift_key])
         extra_bdshift = config.get("task.args.extra_bdshift", "PT0H")
         self.bdshift += as_timedelta(extra_bdshift)
         self.bdshift_sfx = as_timedelta(config["boundaries.bdshift_sfx"])
@@ -58,7 +95,11 @@ class Boundary:
         if self.bdshift.total_seconds() % self.bdcycle.total_seconds() != 0:
             raise ValueError("bdshift needs to be a multiple of bdcycle!")
 
-        if self.bdshift_sfx.total_seconds() % self.bdcycle.total_seconds() != 0:
+        # The SURFEX initial file never comes from CAMS
+        if (
+            not cams
+            and self.bdshift_sfx.total_seconds() % self.bdcycle.total_seconds() != 0
+        ):
             raise ValueError("bdshift needs to be a multiple of bdcycle!")
 
         self.bd_offset = cycle_offset(

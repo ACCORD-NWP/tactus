@@ -57,6 +57,10 @@ Miscellaneous Documentation
    :parser: myst_parser.sphinx_
 
 .. include::
+    markdown_docs/cams_aerosols.md
+   :parser: myst_parser.sphinx_
+
+.. include::
     markdown_docs/basics_adding_new_task.md
    :parser: myst_parser.sphinx_
 

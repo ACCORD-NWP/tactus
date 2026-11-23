@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+### Added
+- Optional near-real-time CAMS aerosols in the lateral boundaries, only for CY49t2. [#292](https://github.com/ACCORD-NWP/tactus/pull/292)(@kastelecn)
+
 ### Fixed
 - Fix leading zeros in c903 inputs. [#290](https://github.com/ACCORD-NWP/tactus/pull/290)(@kastelecn)
 - Change order of remove/start in test runner to avoid race condition. [#291](https://github.com/ACCORD-NWP/tactus/pull/291)(@uandrae)

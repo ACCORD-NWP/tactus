@@ -12,6 +12,9 @@
 [suite_control]
   compile = false
 
+[nrt_aerosols]
+  available = true
+
 [pgd]
   npatch = 3
 

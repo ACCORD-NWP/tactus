@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Near-real-time CAMS aerosols in the lateral boundaries, defined in include/nrt_aerosols.toml",
+  "description": "Add near-real-time CAMS aerosols (and ozone) to the lateral boundaries. CAMS data are retrieved by MarsprepCams, interpolated by an aerosol-only c903 (C903Cams) and merged into the regular boundary files (MergeCamsLbc). The forecast namelist then reads and couples the aerosols.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "active": {
+      "description": "Switch to use CAMS aerosols in the lateral boundaries",
+      "type": "boolean",
+      "default": false
+    },
+    "available": {
+      "description": "Whether CAMS aerosols are supported by the model cycle in use. Set to true in the modification files of the cycles that support it. Using nrt_aerosols.active when this is false stops with an error.",
+      "type": "boolean",
+      "default": false
+    },
+    "selection": {
+      "description": "MARS selection for the CAMS data, see the mars section",
+      "type": "string",
+      "default": "CAMS_NRT"
+    },
+    "bdshift": {
+      "description": "Shift of the CAMS forecast start time. E.g. 'PT12H' would mean use the 12H older CAMS forecast. Must be a multiple of the CAMS cycle length.",
+      "type": "string",
+      "default": "PT0H",
+      "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+    },
+    "forecast_namelist": {
+      "description": "Change the forecast namelist so that the model reads and couples the CAMS aerosols and uses them in the radiation. If false, the aerosols are only added to the lateral boundaries and the forecast namelist is unchanged.",
+      "type": "boolean",
+      "default": true
+    },
+    "bddir": {
+      "type": "string",
+      "description": "Location of the CAMS input data retrieved from MARS by MarsprepCams. Available as the @BDDIR_CAMS@ macro.",
+      "default": "@SCRATCH@/@SYS_NAME@/IFS/@CAMS_SELECTION@/@YYYY@/@MM@/@DD@/@HH@"
+    },
+    "intp_bddir": {
+      "type": "string",
+      "description": "Location of the aerosol-only boundaries from C903Cams, shared by all members, before they are merged into the boundaries in system.intp_bddir",
+      "default": "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/cams_lbc"
+    }
+  }
+}

@@ -61,6 +61,8 @@ forecast:
   - ${master_common}
   - f4_@CSC@
   - namgfl_@BDMODEL@
+  - f4_lbc_aerosols_@LBC_AEROSOLS@
+  - f4_lbc_aerosols_@LBC_AEROSOLS@_@CSC@
 
 c903_main:
   - empty
@@ -72,3 +74,11 @@ c903_domain:
   - empty
   - fa_names
   - f4_c903_domain
+
+c903_main_cams:
+  - ${c903_main}
+  - f4_c903_main_cams
+
+c903_domain_cams:
+  - ${c903_domain}
+  - f4_c903_domain_cams

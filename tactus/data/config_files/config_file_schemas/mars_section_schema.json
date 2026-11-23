@@ -92,6 +92,118 @@
         }
       }
     },
+    "CAMS_NRT": {
+      "title": "CAMS near-real-time forecasts",
+      "description": "Parameters for the CAMS global (class=MC) forecasts, retrieved by the MarsprepCams task on the native CAMS grid when nrt_aerosols.active is true.",
+      "type": "object",
+      "properties": {
+        "class": {
+          "type": "string",
+          "description": "Class of expver"
+        },
+        "expver": {
+          "type": "string",
+          "description": "Experiment version"
+        },
+        "ifs_cycle_length": {
+          "description": "CAMS forecast cycle interval",
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        },
+        "ifs_cycle_start": {
+          "description": "CAMS forecast cycle start hour",
+          "type": "string",
+          "default": "PT0H",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        },
+        "start_date": {
+          "type": "string",
+          "description": "Date from when the hourly data are available in MARS, either a date or a duration relative to today (e.g. '-P30D')",
+          "oneOf": [
+            {
+              "format": "date-time"
+            },
+            {
+              "format": "duration"
+            }
+          ]
+        },
+        "stream": {
+          "type": "object",
+          "description": "Stream per forecast start hour"
+        },
+        "type_AN": {
+          "type": "string",
+          "description": "MARS type of the constant (analysis) surface fields"
+        },
+        "type_FC": {
+          "type": "string",
+          "description": "MARS type of the forecast fields"
+        },
+        "levelist": {
+          "type": "string",
+          "description": "Model levels to retrieve"
+        },
+        "grid_ML": {
+          "type": "string",
+          "description": "Grid of the model level fields, 'AV' for the archived (native) grid"
+        },
+        "SH": {
+          "type": "string",
+          "description": "Spectral parameters retrieved at every step, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+        },
+        "SH_wind": {
+          "type": "string",
+          "description": "Spectral wind parameters (vorticity, divergence), retrieved every SH_wind_interval and reused (with the step relabelled) in between"
+        },
+        "SH_wind_interval": {
+          "type": "string",
+          "description": "Archiving interval of SH_wind",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        },
+        "SHZ": {
+          "type": "string",
+          "description": "Spectral orography, retrieved at step 0 and added to every step"
+        },
+        "SHZ_type": {
+          "type": "string",
+          "description": "MARS type of the spectral orography"
+        },
+        "GG": {
+          "type": "string",
+          "description": "Gridpoint surface parameters retrieved at every step, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+        },
+        "GG_sea": {
+          "type": "string",
+          "description": "Sea surface temperature and sea ice, retrieved at every step together with GG"
+        },
+        "GG1": {
+          "type": "string",
+          "description": "Constant gridpoint surface parameters, retrieved from the analysis and added to every step"
+        },
+        "GG_snow": {
+          "type": "string",
+          "description": "Multi-layer snow parameters (levtype SOL), retrieved every GG_snow_interval and reused (with the step relabelled) in between"
+        },
+        "GG_snow_extra": {
+          "type": "string",
+          "description": "Surface parameters archived with the same interval as GG_snow and handled the same way"
+        },
+        "GG_snow_interval": {
+          "type": "string",
+          "description": "Archiving interval of GG_snow and GG_snow_extra",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+        },
+        "GG_snow_levelist": {
+          "type": "string",
+          "description": "Snow layers to retrieve"
+        },
+        "UA": {
+          "type": "string",
+          "description": "Upper air gridpoint parameters (humidity, aerosols, ozone) retrieved at every step, for detailed information about the parameters check <a href='https://codes.ecmwf.int/grib/param-db/'>here</a>"
+        }
+      }
+    },
     "IFSENS": {
       "title": "Operational ensemble forecasts",
       "description": "Parameters for oper data",

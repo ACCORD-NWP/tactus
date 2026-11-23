@@ -2,10 +2,11 @@
 
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Dict, Generator, Iterator, List
+from typing import Dict, Generator, Iterator, List, Optional
 
 from ..datetime_utils import as_datetime, as_timedelta
 from ..logs import logger
+from .base import EcflowSuiteFamily, EcflowSuiteLimit
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -182,6 +183,95 @@ def lbc_times_generator(
             yield batch
     # Return the last basetime
     return basetime
+
+
+def cycle_lbc_batches(config, cycles: Cycles) -> Generator[Dict[int, str], None, None]:
+    """Generate the LBC batches of the current cycle.
+
+    Args:
+        config (ParsedConfig): Configuration
+        cycles (Cycles): Cycles, at the current cycle
+
+    Returns:
+        Generator[Dict[int, str], None, None]: The batches, see lbc_times_generator
+    """
+    basetime = as_datetime(cycles.current_cycle.basetime)
+    return lbc_times_generator(
+        basetime,
+        basetime + as_timedelta(config["general.times.forecast_range"]),
+        as_timedelta(config["boundaries.bdint"]),
+        mode=config["suite_control.mode"],
+        is_first_cycle=cycles.current_index == 0,
+        do_interpolsstsic=config["suite_control.do_interpolsstsic"],
+        lbc_per_task=int(config["boundaries.lbc_per_task"]),
+    )
+
+
+def interpolated_lbcs(
+    config, bd_index_time_dict: Dict[int, str], is_first_cycle: bool
+) -> Dict[int, str]:
+    """Return the LBCs of a batch that are interpolated (C903/E927).
+
+    When cycling without assimilation, LBC 0 is not interpolated. It is only in
+    the batch for the SST/SIC interpolation.
+
+    Args:
+        config (ParsedConfig): Configuration
+        bd_index_time_dict (Dict[int, str]): LBC indices and times of the batch
+        is_first_cycle (bool): Whether this is the first cycle
+
+    Returns:
+        Dict[int, str]: The LBC indices and times to interpolate
+    """
+    mode = config["suite_control.mode"]
+    has_bd_index_zero = 0 in bd_index_time_dict
+    is_restart_with_bd_zero = mode == "restart" and has_bd_index_zero
+    is_start_with_bd_zero = mode == "start" and has_bd_index_zero and not is_first_cycle
+    if not config["suite_control.do_assimilation"] and (
+        is_restart_with_bd_zero or is_start_with_bd_zero
+    ):
+        return {k: v for k, v in bd_index_time_dict.items() if k != 0}
+    return bd_index_time_dict
+
+
+def lbc_batch_name(bd_index_time_dict: Dict[int, str]) -> str:
+    """Return the family name of an LBC batch, from its first and last time.
+
+    Args:
+        bd_index_time_dict (Dict[int, str]): LBC indices and times of the batch
+
+    Returns:
+        str: Family name, e.g. 20220502T00_00_00Zto20220502T01_00_00Z
+    """
+
+    def format_time(t):
+        return t.replace("+00:00", "Z").replace("-", "").replace(":", "_")
+
+    min_time = bd_index_time_dict[min(bd_index_time_dict)]
+    max_time = bd_index_time_dict[max(bd_index_time_dict)]
+    return f"{format_time(min_time)}to{format_time(max_time)}"
+
+
+def add_lbc_limit(
+    family: EcflowSuiteFamily, name: str, config, dry_run: bool
+) -> Optional[EcflowSuiteLimit]:
+    """Add a limit on the number of interpolation tasks to a family.
+
+    Args:
+        family (EcflowSuiteFamily): Family to add the limit to
+        name (str): Limit name
+        config (ParsedConfig): Configuration
+        dry_run (bool): No limit for a dry run
+
+    Returns:
+        Optional[EcflowSuiteLimit]: The limit, None if there is no limit
+    """
+    bdmax = config["boundaries.max_interpolation_tasks"]
+    if dry_run or bdmax <= 0:
+        return None
+    limit = EcflowSuiteLimit(name, bdmax)
+    family.ecf_node.add_limit(limit.limit_name, limit.max_jobs)
+    return limit
 
 
 def combine_triggers(triggers):
