@@ -11,7 +11,7 @@ or by setting
 
 in your own modification file. The defaults are in the `[nrt_aerosols]` section, defined in `include/nrt_aerosols.toml`. The CAMS MARS selection is `[mars.CAMS_NRT]` in `include/mars_settings.toml`.
 
-It is only available where `nrt_aerosols.available` is true, which is set in the cycle modification file of the supported cycles (currently `modifications/cycle/CY49t2.toml`); otherwise the suite generation stops with an error. 
+It is only available where `nrt_aerosols.available` is true, which is set in the cycle modification file of the supported cycles (currently `modifications/cycle/CY49t2.toml`); otherwise the suite generation stops with an error.
 
 ## What happens
 
