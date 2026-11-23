@@ -243,8 +243,8 @@ class TestSuite:
             {"suite_control": {"do_creategrib_static": True}},
             # Non-decadal PGD branch.
             {"pgd": {"one_decade": False}},
-            # Decadal PGD branch (requires ecosg).
-            {"pgd": {"ecosg": True}},
+            # Decadal PGD branch (requires ecoclimap_sg).
+            {"pgd": {"ecoclimap_sg": True}},
             # IOmerge/CreateGrib/ArchiveFDB branches in ForecastFamily.
             {
                 "creategrib": {"CreateGrib": {"conversions": ["sfx"]}},

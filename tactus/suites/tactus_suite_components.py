@@ -152,7 +152,7 @@ class PgdNode(EcflowSuiteFamily, EcflowSuiteTask):
         limit=None,
     ):
         """Class initialization."""
-        if config["pgd.one_decade"] and config["pgd.ecosg"]:
+        if config["pgd.one_decade"] and config["pgd.ecoclimap_sg"]:
             EcflowSuiteFamily.__init__(
                 self,
                 node_name,

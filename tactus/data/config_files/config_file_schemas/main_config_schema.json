@@ -329,14 +329,9 @@
       "type": "object",
       "properties": {
         "ecoclimap_sg": {
-          "description": "Switch for ecoclimap 2nd gen",
+          "description": "Switch for ECOCLIMAP-SG. When false only a single pgd file is produced, regardless of general.times.start and general.times.end.",
           "default": true,
           "type": "boolean"
-        },
-        "ecosg": {
-          "description": "ECOCLIMAP-SG switch. When false only a single pgd file is produced, regardless of general.times.start and general.times.end.",
-          "type": "boolean",
-          "default": false
         },
         "npatch": {
           "title": "Number of patches for surfex variables",

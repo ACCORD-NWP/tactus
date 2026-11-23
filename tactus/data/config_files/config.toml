@@ -121,7 +121,7 @@
   npatch = 3
   one_decade = false
   use_osm = false
-  ecosg = false
+  ecoclimap_sg = false
 
 [suite_control]
   create_static_data = true
