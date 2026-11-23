@@ -117,7 +117,7 @@ class PrepRun(Task):
                 csc_dict = cscs.get(member_config["general.csc"], {})
                 for framework_dict in frameworks.values():
                     dicts = [framework_dict, cycle_dict, csc_dict]
-                    if n_eps_members > 1 and self.config["general.cycle"] != "CY50t2":
+                    if n_eps_members > 1:
                         logger.info(
                             "Adding EPS member {} to model name definitions", member
                         )
