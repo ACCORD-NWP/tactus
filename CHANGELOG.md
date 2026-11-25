@@ -10,10 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
 ### Changed
-- Restructure csc modifications into cycle scoped directories `modifications/<CYCLE>/csc/<CSC>.toml` applied after `modifications/cycle/<CYCLE>.toml` so settings can be introduced per cycle and csc. [#165](https://github.com/ACCORD-NWP/tactus/issues/165)
-- Restructure pre-defined cases into cycle scoped directories `configurations/<CYCLE>/<CSC>[_variant]`, e.g. `configurations/cy49t2_alaro` is now `configurations/CY49t2/alaro`. [#165](https://github.com/ACCORD-NWP/tactus/issues/165)
-- Restructure cycle labeled test definitions into cycle scoped directories `tests/<CYCLE>/<name>.toml`, e.g. `tests/case_definitions_CY49t2.toml` is now `tests/CY49t2/case_definitions.toml`. [#165](https://github.com/ACCORD-NWP/tactus/issues/165)
-- Nest the test runner output directory under the cycle, e.g. `ttr-configs/<tag>_configs/CY49t2`, so tests from different cycles no longer share the same config directory. [#165](https://github.com/ACCORD-NWP/tactus/issues/165)
+- Restructure csc config settings per cycle. [#229](https://github.com/ACCORD-NWP/tactus/issues/229)(@uandrae)
 
 ### Fixed
 - Fix leading zeros in c903 inputs. [#290](https://github.com/ACCORD-NWP/tactus/pull/290)(@kastelecn)
