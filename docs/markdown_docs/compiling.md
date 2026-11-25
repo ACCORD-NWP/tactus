@@ -17,7 +17,7 @@ This will:
 
 To run the compilation as a part of a run amend the `compile_@HOST@.toml` to your case command. E.g. on ECMWF ATOS it may look like
 ```
-tactus case ?tactus/data/config_files/configurations/cy50t2_arome tactus/data/config_files/configurations/modifications/compile_atos_bologna.toml [...]
+tactus case ?tactus/data/config_files/configurations/CY50t2/arome tactus/data/config_files/configurations/modifications/compile_atos_bologna.toml [...]
 ```
 
 ### What the command does

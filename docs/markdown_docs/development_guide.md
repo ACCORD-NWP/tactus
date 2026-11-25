@@ -93,8 +93,8 @@ make doc
 ## Testing on Atos
 For testing of a number of configurations we use `tactus test` which launches a number of ecflow suites. The required testing for a PR is the following
 ```
-tactus test tactus/data/tests/atos_bologna_CY49t2.toml -m -r
-tactus test tactus/data/tests/atos_bologna_CY50t2.toml -m -r
+tactus test tactus/data/tests/CY49t2/atos_bologna.toml -m -r
+tactus test tactus/data/tests/CY50t2/atos_bologna.toml -m -r
 ```
 The tests includes a check against a reference based on the latest tag and the outcome shall be reported with the label `bit-reproducible` or `non-bit-reproducible` in the PR.
 

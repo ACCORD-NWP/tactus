@@ -39,10 +39,12 @@ class TestCases:
         self.tactus_host = TactusHost().detect_tactus_host()
 
         definitions = {"general": {}, "modifs": {}}
+        self.cycle = None
         if args.config_file is not None:
             logger.info("Using config file: {}", args.config_file)
             self.config = ParsedConfig.from_file(args.config_file, json_schema={})
             self.config_name = Path(args.config_file).resolve().stem
+            self.cycle = self._detect_cycle(args.config_file)
             try:
                 definitions = self.config.expand_macros().dict()
             except KeyError:
@@ -62,7 +64,7 @@ class TestCases:
         self.modifs = definitions["modifs"]
         self.refchecks = definitions.get("refchecks", {})
         self.genchecks = definitions.get("genchecks", {})
-        self.test_dir = definitions.get("test_dir", f"ttr-configs/{self.tag}_configs")
+        self.test_dir = definitions.get("test_dir", self._default_test_dir())
         self.ial = definitions.get("ial", {})
         self.gl = definitions.get("gl", {})
         ial_options = {
@@ -92,6 +94,30 @@ class TestCases:
                     self.update_binary_paths()
         logger.info(" tag: {}", self.tag)
         logger.info(" test_dir: {}", self.test_dir)
+
+    @staticmethod
+    def _detect_cycle(config_file):
+        """Return the cycle name if the test config lives in a cycle directory.
+
+        Arguments:
+            config_file (str): Path to the test runner config file
+
+        Returns:
+            str | None: Cycle name (e.g. "CY49t2") or None if not found
+
+        """
+        cycle = Path(config_file).resolve().parent.name
+        return cycle if cycle.startswith("CY") else None
+
+    def _default_test_dir(self):
+        """Return the default output directory, nested under the cycle if known.
+
+        Returns:
+            str: Path to the test config output directory
+
+        """
+        base_dir = f"ttr-configs/{self.tag}_configs"
+        return f"{base_dir}/{self.cycle}" if self.cycle else base_dir
 
     def get_tag(self, definitions):
         """Get and validate tag.
