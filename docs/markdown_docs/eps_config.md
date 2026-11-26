@@ -13,19 +13,19 @@ Basically any configuration setting can be "perturbed", i.e. configured differen
 
 ## Running a minimal ensemble
 
-To get hands-on running an ensemble, tactus ships with a bunch of example eps include files. To enable one of them, one has to include the file in the configuration or on the commandline. The example eps include files are available in the
-`tactus/data/config_files/include/eps/` directory.
-E.g. to run a 1 control + 2 perturbed members (using IFSENS boundary data) ensemble, one can use the `tactus/data/config_files/include/eps/eps_3members_IFSENS_common_mars_prep` and do
+To get hands-on running an ensemble, tactus ships with a bunch of example eps include files. To enable one of them, one has to include the file in the configuration or on the commandline. The example eps configuration files are available in the
+`tactus/data/config_files/modifications/eps/` directory.
+E.g. to run a 1 control + 2 perturbed members (using IFSENS boundary data) ensemble, one can use the `tactus/data/config_files/modifications/eps/eps_3members_IFSENS_common_mars_prep` and do
 
 ```bash
-tactus case --config-file tactus/data/config_files/config.toml tactus/data/config_files/include/eps/eps_3members_IFSENS_common_mars_prep.toml --start-suite
+tactus case --config-file tactus/data/config_files/config.toml tactus/data/config_files/modifications/eps/eps_3members_IFSENS_common_mars_prep.toml --start-suite
 ```
 or include the following in the configuration file
 
 ```
 --config-file
 tactus/data/config_files/config.toml
-tactus/data/config_files/include/eps/eps_3members_IFSENS_common_mars_prep.toml
+tactus/data/config_files/modifications/eps/eps_3members_IFSENS_common_mars_prep.toml
 ```
 
 and do
@@ -60,7 +60,7 @@ Translated into words, including this file in the main config file will make the
   members = [0, 1, 2]
 
 [eps.member_settings.system]
-  # This section comes from the default eps include file tactus/data/config_files/include/eps/eps_default.toml
+  # This section comes from the default eps include file tactus/data/config_files/include/eps_default.toml
   wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
 
 [eps.member_settings.boundaries.ifs]
@@ -112,7 +112,7 @@ Running the `tactus case` command will result in a config file with the followin
   members = [0, 1, 2]
 
 [eps.member_settings.system]
-  # This section comes from the default eps include file tactus/data/config_files/include/eps/eps_default.toml
+  # This section comes from the default eps include file tactus/data/config_files/include/eps_default.toml
   wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
 
 [eps.member_settings.boundaries.ifs]
@@ -245,7 +245,7 @@ then the three modification files will be merged into the resulting config file 
   members = [0, 1, 2]
 
 [eps.member_settings.system]
-  # This section comes from the default eps include file tactus/data/config_files/include/eps/eps_default.toml
+  # This section comes from the default eps include file tactus/data/config_files/include/eps_default.toml
   wrk = "@CASEDIR@/@YYYY@@MM@@DD@_@HH@@mm@/@MEMBER_STR@"
 
 [eps.member_settings.boundaries.ifs]
@@ -294,7 +294,7 @@ Now to the 3 CSC ensemble example. To set this up, one needs to have the followi
 
 [eps.member_settings.modifications]
   csc_modification = ["modifications/arome.toml", "modifications/harmonie_arome.toml", "modifications/alaro.toml"]
-  cycle_modification = ["modifications/CY48t3.toml", "modifications/CY46h1.toml", "modifications/CY48t3.toml"]
+  cycle_modification = ["modifications/CY48t3/config.toml", "modifications/CY46h1/config.toml", "modifications/CY48t3/config.toml"]
   submission_modification = ["modifications/submission/@HOST@_CY48t3.toml", "modifications/submission/@HOST@_CY46h1.toml", "modifications/submission/@HOST@_CY48t3_alaro.toml"]
   vertical_levels_modification = {2 = "include/vertical_levels/MF_87.toml"}
 ```

@@ -96,7 +96,7 @@
   creategrib = "include/creategrib.toml"
   da = "include/da.toml"
   domain = "include/domains/DEMO_60x80_2500m.toml"
-  eps = "include/eps/eps_default.toml"
+  eps = "include/eps_default.toml"
   extractsqlite = "include/sqlite.toml"
   fdb = "include/fdb.toml"
   file_templates = "include/file_templates.toml"

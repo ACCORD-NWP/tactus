@@ -6,23 +6,23 @@ Tactus is designed to be highly configurable and driven from a single config fil
 
 Example usage would be:
 ```
-tactus case ?tactus/data/config_files/configurations/cy49t2_alaro -o test.toml
+tactus case ?tactus/data/config_files/configurations/CY49t2/alaro -o test.toml
 ```
 
-where ? is a file includer operator where all the arguments are defined line by line. I.e. `tactus/data/config_files/configurations/cy49t2_alaro` contains a list of arguments to be evaluated. In this case we have
+where ? is a file includer operator where all the arguments are defined line by line. I.e. `tactus/data/config_files/configurations/CY49t2/alaro` contains a list of arguments to be evaluated. In this case we have
 
 ```
 --config-file
 tactus/data/config_files/config.toml
-tactus/data/config_files/modifications/csc/alaro.toml
 tactus/data/config_files/include/vertical_levels/MF_87.toml
-tactus/data/config_files/modifications/cycle/CY49t2.toml
+tactus/data/config_files/modifications/CY49t2/config.toml
+tactus/data/config_files/modifications/CY49t2/alaro/main.toml
 tactus/data/config_files/modifications/@HOST@.toml
 ```
 
 When the first config file, `config.toml`, has been read the appropriate files for the current host is included for `scheduler` `platform`and `submission`.
 
-The following configuration files will be read and added in order of appearence. If we check the various files we find that e.g. `alaro.toml` only contains the bare minimum changes on top of the default configuration file required to run the ALARO CSC.
+The following configuration files will be read and added in order of appearence. If we check the various files we find that e.g. `CY49t2/alaro/main.toml` only contains the bare minimum changes on top of the default and cycle configuration files required to run the ALARO CSC for CY49t2. CSC settings are stored per cycle under `tactus/data/config_files/modifications/<CYCLE>/<CSC>/main.toml` (applied after the cycle wide settings in `tactus/data/config_files/modifications/<CYCLE>/config.toml`) so that a setting, e.g. surfex, can differ for one CSC between two cycles. Per-CSC ensemble settings, if any, are stored next to it under `tactus/data/config_files/modifications/<CYCLE>/<CSC>/eps.toml`.
 
 The processed configuration output file, here `test.toml`, is self contained from a config point of view. All configuration settings (also defaults from json schema) are in the generated configuration file.
 
@@ -33,7 +33,7 @@ tactus start suite --config-file test.toml
 
 We can also do everything in one by adding the `--start-suite` flag
 ```
-tactus case ?tactus/data/config_files/configurations/cy49t2_alaro -o test.toml --start-suite
+tactus case ?tactus/data/config_files/configurations/CY49t2/alaro -o test.toml --start-suite
 ```
 
 To see all commands available for the case functionality run `tactus case --help`.
@@ -42,7 +42,7 @@ To see all commands available for the case functionality run `tactus case --help
 
 A typical use case is to run the same configuration for a number of dates or a longer period. The example above could easily be modified to run for any arbitrary date by running
 ```
-tactus case ?tactus/data/config_files/configurations/cy49t2_alaro time.toml -o test.toml
+tactus case ?tactus/data/config_files/configurations/CY49t2/alaro time.toml -o test.toml
 ```
 where `time.toml` contains
 

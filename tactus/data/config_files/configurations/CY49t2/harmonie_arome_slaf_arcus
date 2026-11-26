@@ -1,0 +1,9 @@
+--config-file
+tactus/data/config_files/config.toml
+tactus/data/config_files/modifications/eps/eps_members_slaf.toml
+tactus/data/config_files/modifications/CY49t2/config.toml
+tactus/data/config_files/modifications/CY49t2/harmonie_arome/main.toml
+tactus/data/config_files/modifications/arcus.toml
+tactus/data/config_files/modifications/submission/@HOST@_large_domain.toml
+tactus/data/config_files/modifications/@HOST@.toml
+tactus/data/config_files/modifications/submission/@HOST@_CY49t2_arcus.toml

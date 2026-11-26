@@ -2,13 +2,14 @@
 
 The tactus test-runner runs a number of configurations as defined by a config file.
 
-We currently have the following cycle specific config files under the directory `tactus/data/test`
+We currently have the following config files under the directory `tactus/data/tests`. The cycle specific files are kept in a sub-directory named after the cycle, e.g. `CY49t2` or `CY50t2`:
 
- - atos_bologna_[CY49t2,CY50t2].toml : Complete set of tests for atos_bologna
- - case_definitions_[CY49t2,CY50t2].toml : Definition of all test cases
+ - `<CYCLE>/atos_bologna.toml` : Complete set of tests for atos_bologna on the CYCLE
+ - `<CYCLE>/case_definitions.toml` : Definition of all test cases on the CYCLE
+ - `<CYCLE>/modifs_atos_bologna.toml` : Platform dependent config modifications on the CYCLE
  - test_macros.toml : Some macro definitions
- - modifs_atos_bologna_[CY49t2,CY50t2].toml : Platform dependent config modifications
- - modifs_reference_[checker,generator].toml : Setting for the reference checker
+ - modifs_reference_[checker,generate].toml : Setting for the reference checker
+ - atos_bologna_tasks.toml, task_definitions.toml, test_binaries.toml : Other shared definitions
 
 Both CY49t2 and CY50t2 uses precompiled binaries on ATOS. They are identified as e.g.
  - CY49T2: `@INSTALL_DIR_CY49T2@/@CYCLE@/@COMPILER@/@PRECISION@/@IAL_VERSION@/bin=/perm/deployde330/github-actions/install/CY49t2/intel/R64/latest/bin` ( DEODE)
@@ -18,7 +19,7 @@ where latest is pointing to a directory identifying an IAL tag or hash reference
 ### Compile before testing
 To build IAL first and run the CY50t2 tests with those binaries, add `--build`, e.g.
 ```
-tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml --build -m -r
+tactus test -c tactus/data/tests/CY50t2/atos_bologna.toml --build -m -r
 ```
 This uses the `[general.compile]` section of the test config:
  - `case` (here `cy50t2_compile`) is added first to the selection.
@@ -30,7 +31,7 @@ With `--build`, the options `--ial-tag`, `--ial-repo` and `--compiler` work as f
  - `--compiler` (`intel` or `gnu`) sets `submission.compiler` for all cases, since they all run the binaries built by the compilation case. If the compiler is one of the `[general.compiler]` subtags, it becomes the only active one, so the case names match the compiler.
 
 ```
-tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml --build --ial-tag CY50T2 --compiler intel -m -r
+tactus test -c tactus/data/tests/CY50t2/atos_bologna.toml --build --ial-tag CY50T2 --compiler intel -m -r
 ```
 These options are rejected without `--compile`.
 
@@ -39,18 +40,18 @@ Use the same `--build` options for `-m` and `-r`, since the selection and depend
 To list available and activated cases do
 
 ```
-tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -l
+tactus test -c tactus/data/tests/CY50t2/atos_bologna.toml -l
 ```
 
 ## Create config files
 ```
-tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -m
+tactus test -c tactus/data/tests/CY50t2/atos_bologna.toml -m
 ```
-This will create a directory under ttr-configs according to the tag and create all config files in this directory.
+This will create a directory under `ttr-configs` according to the tag and the cycle of the config file (e.g. `ttr-configs/<tag>_configs/CY50t2`), and create all config files in that directory.
 
 ## Launch the suites
 ```
-tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -r
+tactus test -c tactus/data/tests/CY50t2/atos_bologna.toml -r
 ```
 Failures in suites can be treated like any failure. I.e. by changing the relevant code or config and replace/relaunch the suite in full or parts as appropriate. The config files can be regenerated while suites are running if required. The config file generation and launch can be combined by running with `-m -r` in one go.
 
@@ -58,14 +59,14 @@ Failures in suites can be treated like any failure. I.e. by changing the relevan
 For each suite namelists, logs and results are checked for a number of selected tasks using the
 [reference checker](#reference-checker). The status and progress of this can be checked by running
 ```
-tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml
+tactus test -c tactus/data/tests/CY50t2/atos_bologna.toml
 ```
 For more information per suite add a `-v`
 
 ## Generate new reference files
 To generate new reference files run the full test setup with and additional `-g`, i.e.
 ```
-tactus test -c tactus/data/tests/atos_bologna_CY50t2.toml -m -r -g
+tactus test -c tactus/data/tests/CY50t2/atos_bologna.toml -m -r -g
 ```
 This will create new reference files in the `references_generation_folder` directory, currently defined as `@SCRATCH@/tactus_references/@TAG@_@SUBTAG@` in `tactus/data/tests/modifs_reference_generate.toml`. Ask the local tactus administrator to copy this to the correct location. Note that the checking performed with `-g` is against the newly generated references. I.e. it's a technical test of the new data and does compare with the default reference.
 
@@ -125,8 +126,8 @@ Here we define the config settings per case.
   host = "alaro"
   base = "cy49t2_alaro"
   extra = [
-    "tactus/data/config_files/include/eps/eps_7members.toml",
-    "tactus/data/config_files/include/eps/alaro.toml",
+    "tactus/data/config_files/modifications/eps/eps_7members.toml",
+    "tactus/data/config_files/modifications/CY49t2/alaro/eps.toml",
   ]
 
 [cases.cy49t2_alaro_eps.modifs.eps.general]
