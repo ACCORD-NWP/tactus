@@ -8,6 +8,7 @@
 
 [cases.cy50t2_compile]
   base = "CY50t2/compile"
+
 [cases.cy50t2_compile.modifs.general]
   case = "@CASE_PREFIX@_@CYCLE@_compile"
 
