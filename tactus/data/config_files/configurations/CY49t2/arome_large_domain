@@ -2,6 +2,6 @@
 tactus/data/config_files/config.toml
 tactus/data/config_files/include/domains/500m_template.toml
 tactus/data/config_files/modifications/CY49t2/config.toml
-tactus/data/config_files/modifications/CY49t2/csc/arome.toml
+tactus/data/config_files/modifications/CY49t2/arome/main.toml
 tactus/data/config_files/modifications/submission/@HOST@_large_domain.toml
 tactus/data/config_files/modifications/@HOST@.toml

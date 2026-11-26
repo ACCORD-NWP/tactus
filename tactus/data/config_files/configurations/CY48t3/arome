@@ -1,5 +1,5 @@
 --config-file
 tactus/data/config_files/config.toml
 tactus/data/config_files/modifications/CY48t3/config.toml
-tactus/data/config_files/modifications/CY48t3/csc/arome.toml
+tactus/data/config_files/modifications/CY48t3/arome/main.toml
 tactus/data/config_files/modifications/@HOST@.toml

@@ -1,5 +1,5 @@
 --config-file
 tactus/data/config_files/config.toml
 tactus/data/config_files/modifications/CY46h1/config.toml
-tactus/data/config_files/modifications/CY46h1/csc/harmonie_arome.toml
+tactus/data/config_files/modifications/CY46h1/harmonie_arome/main.toml
 tactus/data/config_files/modifications/submission/@HOST@_CY46h1.toml

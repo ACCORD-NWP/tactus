@@ -60,8 +60,8 @@
 [cases.cy49t2_alaro_slaf]
   base = "CY49t2/alaro"
   extra = [
-    "tactus/data/config_files/include/eps/eps_members_slaf.toml",
-    "tactus/data/config_files/include/eps/CY49t2/alaro.toml",
+    "tactus/data/config_files/modifications/eps/eps_members_slaf.toml",
+    "tactus/data/config_files/modifications/CY49t2/alaro/eps.toml",
   ]
   host = "cy49t2_alaro"
 
@@ -79,8 +79,8 @@
 [cases.cy49t2_alaro_eps]
   base = "CY49t2/alaro"
   extra = [
-    "tactus/data/config_files/include/eps/eps_7members.toml",
-    "tactus/data/config_files/include/eps/CY49t2/alaro.toml",
+    "tactus/data/config_files/modifications/eps/eps_7members.toml",
+    "tactus/data/config_files/modifications/CY49t2/alaro/eps.toml",
   ]
 
 [cases.cy49t2_alaro_eps.modifs.eps.general]
@@ -180,8 +180,8 @@
 [cases.cy49t2_arome_eps]
   base = "CY49t2/arome"
   extra = [
-    "tactus/data/config_files/include/eps/eps_7members.toml",
-    "tactus/data/config_files/include/eps/CY49t2/arome.toml",
+    "tactus/data/config_files/modifications/eps/eps_7members.toml",
+    "tactus/data/config_files/modifications/CY49t2/arome/eps.toml",
   ]
 
 [cases.cy49t2_arome_eps.modifs.reference_checker]
@@ -208,8 +208,8 @@
 [cases.cy49t2_arome_slaf]
   base = "CY49t2/arome"
   extra = [
-    "tactus/data/config_files/include/eps/eps_members_slaf.toml",
-    "tactus/data/config_files/include/eps/CY49t2/arome.toml",
+    "tactus/data/config_files/modifications/eps/eps_members_slaf.toml",
+    "tactus/data/config_files/modifications/CY49t2/arome/eps.toml",
   ]
   host = "cy49t2_arome"
 
@@ -321,8 +321,8 @@
 [cases.cy49t2_harmonie_arome_slaf]
   base = "CY49t2/harmonie_arome"
   extra = [
-    "tactus/data/config_files/include/eps/eps_members_slaf.toml",
-    "tactus/data/config_files/include/eps/CY49t2/harmonie_arome.toml",
+    "tactus/data/config_files/modifications/eps/eps_members_slaf.toml",
+    "tactus/data/config_files/modifications/CY49t2/harmonie_arome/eps.toml",
   ]
   host = "cy49t2_harmonie_arome"
 
@@ -340,8 +340,8 @@
 [cases.cy49t2_harmonie_arome_eps]
   base = "CY49t2/harmonie_arome"
   extra = [
-    "tactus/data/config_files/include/eps/eps_7members.toml",
-    "tactus/data/config_files/include/eps/CY49t2/harmonie_arome.toml",
+    "tactus/data/config_files/modifications/eps/eps_7members.toml",
+    "tactus/data/config_files/modifications/CY49t2/harmonie_arome/eps.toml",
   ]
 
 [cases.cy49t2_harmonie_arome_eps.modifs.eps.general]

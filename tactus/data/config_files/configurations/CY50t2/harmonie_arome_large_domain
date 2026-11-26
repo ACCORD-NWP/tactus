@@ -2,6 +2,6 @@
 tactus/data/config_files/config.toml
 tactus/data/config_files/include/domains/DKCOEXP_648x648_2500m.toml
 tactus/data/config_files/modifications/CY50t2/config.toml
-tactus/data/config_files/modifications/CY50t2/csc/harmonie_arome.toml
+tactus/data/config_files/modifications/CY50t2/harmonie_arome/main.toml
 tactus/data/config_files/modifications/submission/@HOST@_large_domain.toml
 tactus/data/config_files/modifications/@HOST@.toml

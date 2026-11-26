@@ -126,8 +126,8 @@ Here we define the config settings per case.
   host = "alaro"
   base = "cy49t2_alaro"
   extra = [
-    "tactus/data/config_files/include/eps/eps_7members.toml",
-    "tactus/data/config_files/include/eps/alaro.toml",
+    "tactus/data/config_files/modifications/eps/eps_7members.toml",
+    "tactus/data/config_files/modifications/CY49t2/alaro/eps.toml",
   ]
 
 [cases.cy49t2_alaro_eps.modifs.eps.general]
