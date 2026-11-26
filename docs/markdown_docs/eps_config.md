@@ -294,7 +294,7 @@ Now to the 3 CSC ensemble example. To set this up, one needs to have the followi
 
 [eps.member_settings.modifications]
   csc_modification = ["modifications/arome.toml", "modifications/harmonie_arome.toml", "modifications/alaro.toml"]
-  cycle_modification = ["modifications/CY48t3.toml", "modifications/CY46h1.toml", "modifications/CY48t3.toml"]
+  cycle_modification = ["modifications/CY48t3/config.toml", "modifications/CY46h1/config.toml", "modifications/CY48t3/config.toml"]
   submission_modification = ["modifications/submission/@HOST@_CY48t3.toml", "modifications/submission/@HOST@_CY46h1.toml", "modifications/submission/@HOST@_CY48t3_alaro.toml"]
   vertical_levels_modification = {2 = "include/vertical_levels/MF_87.toml"}
 ```
