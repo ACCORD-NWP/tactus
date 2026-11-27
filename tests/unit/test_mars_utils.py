@@ -1,5 +1,6 @@
 """Unit tests for the mars_utils module."""
 
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Generator
 
@@ -10,6 +11,7 @@ from tactus.mars_utils import (
     compile_target,
     get_steps_and_members_to_retrieve,
     get_value_from_dict,
+    mars_selection,
     mars_write_method,
 )
 
@@ -305,3 +307,56 @@ class TestCompileSplitTarget:
                             pytest.fail(
                                 f"ERROR: given step={step} results in step={step2}"
                             )
+
+
+class _FakeConfig(dict):
+    """Minimal config providing get_as_dict, as used by mars_selection."""
+
+    def get_as_dict(self, key):
+        return dict(self[key])
+
+
+@pytest.fixture(name="fake_mars_config")
+def fixture_fake_mars_config():
+    """Mars selections with a default chain and a date switch."""
+    return _FakeConfig({
+        "mars.OLD": {
+            "expver": "0001",
+            "param": "32",
+            "start_date": "2015-01-01T00:00:00Z",
+            "selection_by_date": {"2028-01-01T00:00:00Z": "NEW"},
+        },
+        "mars.NEW": {"default": "OLD", "expver": "0001", "param": "228032"},
+        "mars.NEW_TEST": {"default": "NEW", "expver": "2250"},
+        "mars.NO_EXPVER": {"default": "OLD"},
+        "mars.CYCLE_A": {"selection_by_date": {"2000-01-01T00:00:00Z": "CYCLE_B"}},
+        "mars.CYCLE_B": {"selection_by_date": {"2000-01-01T00:00:00Z": "CYCLE_A"}},
+    })
+
+
+@pytest.mark.parametrize(
+    ("selection", "date", "param", "expver"),
+    [
+        ("OLD", None, "32", "0001"),
+        ("OLD", datetime(2027, 12, 31, 18, tzinfo=timezone.utc), "32", "0001"),
+        ("OLD", datetime(2028, 1, 1, tzinfo=timezone.utc), "228032", "0001"),
+        ("NEW", None, "228032", "0001"),
+        ("NEW_TEST", None, "228032", "2250"),
+        ("NO_EXPVER", None, "32", "NO_EXPVER"),
+    ],
+)
+def test_mars_selection_by_date(fake_mars_config, selection, date, param, expver):
+    """Defaults are inherited recursively and the selection switches by date."""
+    mars = mars_selection(selection, fake_mars_config, date=date)
+    assert mars["param"] == param
+    assert mars["expver"] == expver
+    assert "selection_by_date" not in mars
+    assert mars["start_date"] == "2015-01-01T00:00:00Z"
+
+
+def test_mars_selection_by_date_cycle(fake_mars_config):
+    """A cyclic date switch raises an error."""
+    with pytest.raises(ValueError, match="Cyclic"):
+        mars_selection(
+            "CYCLE_A", fake_mars_config, date=datetime(2030, 1, 1, tzinfo=timezone.utc)
+        )

@@ -45,6 +45,7 @@ class Boundary:
                     config[f"boundaries.{self.bdmodel}.selection"]
                 ),
                 config=config,
+                date=basetime,
             )
             self.bdcycle = as_timedelta(mars["ifs_cycle_length"])
             self.bdcycle_start = as_timedelta(mars["ifs_cycle_start"])

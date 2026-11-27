@@ -191,6 +191,8 @@
                 "lumi_DT",
                 "ATOS_DT",
                 "HRES",
+                "HRES_GRIB2",
+                "HRES_GRIB2_TEST",
                 "@HOST@_DT",
                 "DT12",
                 "i5qp",

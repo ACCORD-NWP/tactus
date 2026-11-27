@@ -31,6 +31,8 @@
   GG_sea = "31/34"
   GG_skt = "235"
   GG_snow = "33/238/228038/228141"
+  GG_snow_albedo = "32"
+  GG_snow_levelist = "1/2/3/4/5"
   GG_soil = "234/173/174/43/30/29/28/27"
   GGZ_type = "analysis"
   grid_ML = "AV"
@@ -60,6 +62,11 @@
   "2006-02-01T06:00:00Z" = "1/to/91"
   "2013-06-26T00:00:00Z" = "1/to/137"
 
+# Switch to the GRIB2 encoded data from the given date.
+# NOTE: placeholder date, to be set to the actual operational switch date.
+[mars.HRES.selection_by_date]
+  "2028-01-01T00:00:00Z" = "HRES_GRIB2"
+
 [mars.HRES.stream]
   00 = "OPER"
   12 = "OPER"
@@ -75,6 +82,23 @@
 [mars.HRES_CY49t2]
   default = "HRES"
   GG = "32/33/39/40/41/42/139/141/170/172/183/198/199/235/236/35/36/37/38/238/243/244/245"
+
+[mars.HRES_GRIB2]
+  default = "HRES"
+  expver = "0001"
+  GG = "228032/33/228141/172/160198/235/238/244/245"
+  GG1 = "74/163/160/161/162/210199/210198/210261/210260/66/67"
+  GG_snow_albedo = "228032"
+  GG_soil = "234/173/260509/43/30/29/28/27"
+  GG_soil_layer = "260199/260360/262024"
+  GG_soil_layer_levelist = "1/2/3/4"
+  SH = "138/155/130/152"
+  start_date = "2028-01-01T00:00:00Z"
+
+[mars.HRES_GRIB2_TEST]
+  default = "HRES_GRIB2"
+  expver = "2250"
+  start_date = "2026-09-01T00:00:00Z"
 
 [mars.i5qp]
   default = "RD_DEFAULT"
@@ -109,6 +133,8 @@
   GG_sea = "31/34"
   GG_skt = "235"
   GG_snow = "33/238/228038/228141"
+  GG_snow_albedo = "32"
+  GG_snow_levelist = "1/2/3/4/5"
   GG_soil = "234/173/174/43/30/29/28/27"
   GGZ_type = "AN"
   grid_ML = "AV"
@@ -215,6 +241,8 @@
   GG_sea = "31/34"
   GG_skt = "235"
   GG_snow = "33/238/228038/228141"
+  GG_snow_albedo = "32"
+  GG_snow_levelist = "1/2/3/4/5"
   GGZ_type = "FC"
   grid = "0.04/0.04"
   grid_ML = "AV"
