@@ -93,6 +93,9 @@ class Marsprep(Task):
         if not self.bdmember:
             self.bdmember = [None]
 
+        # Get boundary informations
+        self.boundary = Boundary(config)
+
         # path to sfcdata on disk
         resolution = self.mars["resolution"]
         self.platform.store_macro("RESOLUTION", resolution)
@@ -111,9 +114,6 @@ class Marsprep(Task):
         except KeyError:
             forecast_range = as_timedelta(self.config["general.times.forecast_range"])
 
-        # Get boundary informations
-        self.boundary = Boundary(config)
-
         # Check if there are data for specific date in mars
         check_data_available(self.boundary.bd_basetime, self.mars)
 
@@ -131,6 +131,9 @@ class Marsprep(Task):
             )
             exist_snow = True
 
+        if exist_snow:
+            self.snow_levelist = self.mars["GG_snow_levelist"]
+
         start_snow_date = as_datetime(evaluate_date(self.mars["start_date"]))
 
         self.exist_soil_layer = False
@@ -140,6 +143,10 @@ class Marsprep(Task):
                 self.mars["GG_soil_layer"], self.init_date_str
             )
             self.exist_soil_layer = True
+        if self.exist_soil_layer:
+            self.soil_layer_levelist = self.mars["GG_soil_layer_levelist"]
+
+        self.snow_albedo_param = self.mars["GG_snow_albedo"]
 
         with contextlib.suppress(KeyError):
             start_snow_date = as_datetime(self.mars["start_snow_date"])
@@ -185,9 +192,9 @@ class Marsprep(Task):
 
     @cached_property
     def mars(self) -> dict:
-        """Get mars selection."""
+        """Mars selection valid for the boundary basetime."""
         selection = self.platform.substitute(self.config["boundaries.ifs.selection"])
-        return mars_selection(selection, self.config)
+        return mars_selection(selection, self.config, date=self.boundary.bd_basetime)
 
     def update_data_request(
         self,
@@ -224,7 +231,7 @@ class Marsprep(Task):
         if self.mars_version == 6:
             request.update_request({"PROCESS": "LOCAL"})
 
-        if request.param == "32":
+        if request.param == self.snow_albedo_param:
             request.update_request({"LEVELIST": "1"})
 
         # Set stream
@@ -322,7 +329,7 @@ class Marsprep(Task):
                 gg1_param = get_value_from_dict(self.mars["GG1"], self.init_date_str)
                 exist_soil = True
 
-            additional_data = {}
+            additional_data: Dict[str, bytes] = {}
             if exist_soil:
                 additional_data["common_data"] = self.get_gg_soil_data(
                     tag, params={"GG_soil": gg_soil_param, "GG1": gg1_param}
@@ -333,10 +340,25 @@ class Marsprep(Task):
 
                 additional_data["common_data"] = get_and_remove_data("sfcdata")
 
+            file_specific_data: Dict[str, bytes] = {}
             if self.exist_snow:
-                additional_data |= self.get_gg_snow_data(
-                    tag, steps, members_dict, self.param_snow
+                file_specific_data = self.get_gg_sol_data(
+                    tag, steps, members_dict, self.param_snow, self.snow_levelist, "snow"
                 )
+            if self.exist_soil_layer:
+                soil_layer_data = self.get_gg_sol_data(
+                    tag,
+                    steps,
+                    members_dict,
+                    self.param_soil_layer,
+                    self.soil_layer_levelist,
+                    "soil_layer",
+                )
+                for key, data in soil_layer_data.items():
+                    file_specific_data[key] = file_specific_data.get(key, b"") + data
+
+            if file_specific_data:
+                additional_data |= file_specific_data
                 add_additional_file_specific_data(additional_data=additional_data)
             else:
                 add_additional_data_to_all(tag, steps, members_dict, additional_data)
@@ -576,8 +598,9 @@ class Marsprep(Task):
             + "/"
             + get_value_from_dict(self.mars["GG_sea"], self.init_date_str)
         )
+        has_snow_albedo = self.snow_albedo_param in param.split("/")
         if self.config["boundaries.fix_snow_layer"]:
-            param = "/".join(x for x in param.split("/") if x != "32")
+            param = "/".join(x for x in param.split("/") if x != self.snow_albedo_param)
 
         for member in bdmember_list:
             data_type = self.mars["type_AN"] if member == 0 else self.mars["type_FC"]
@@ -598,16 +621,31 @@ class Marsprep(Task):
                 source=source,
                 write_method=mars_write_method(self.mars_version),
             )
-            if self.config["boundaries.fix_snow_layer"]:
+            if self.config["boundaries.fix_snow_layer"] and has_snow_albedo:
                 self._build_and_run_retrieve_request(
                     req_file_name="latlonGG.req",
                     data_type=data_type,
                     levtype="SOL",
                     levelist="1",
-                    param="32",
+                    param=self.snow_albedo_param,
                     steps=[self.steps[0]],
                     members=[member],
                     target=f"mars_latlonGG_32_{member or 0}",
+                    prefetch=prefetch,
+                    specify_domain=True,
+                    source=source,
+                    write_method=mars_write_method(self.mars_version),
+                )
+            if self.exist_soil_layer:
+                self._build_and_run_retrieve_request(
+                    req_file_name="latlonGG_soil_layer.req",
+                    data_type=data_type,
+                    levtype="SOL",
+                    levelist=self.soil_layer_levelist,
+                    param=self.param_soil_layer,
+                    steps=[self.steps[0]],
+                    members=[member],
+                    target=f"mars_latlonGG_soil_layer_{member or 0}",
                     prefetch=prefetch,
                     specify_domain=True,
                     source=source,
@@ -920,10 +958,28 @@ class Marsprep(Task):
             data += get_and_remove_data(target)
         return data
 
-    def get_gg_snow_data(
-        self, tag: str, steps: List[int], members_dict: Dict[str, List[int]], param
-    ):
-        """Get soil gridpoint data."""
+    def get_gg_sol_data(
+        self,
+        tag: str,
+        steps: List[int],
+        members_dict: Dict[str, List[int]],
+        param: str,
+        levelist: str,
+        name: str,
+    ) -> Dict[str, bytes]:
+        """Get multi-layer (levtype=SOL) gridpoint data, e.g. snow or soil layers.
+
+        Args:
+            tag: File tag, e.g. "ICMGG".
+            steps: Steps to retrieve.
+            members_dict: Members to retrieve, per member type.
+            param: Parameter(s) to retrieve.
+            levelist: Levels to retrieve.
+            name: Short name used in request and target file names.
+
+        Returns:
+            Retrieved data per destination file name.
+        """
         additional_data: Dict[str, bytes] = {}
         for member_type, members in members_dict.items():
             data_type = (
@@ -932,22 +988,22 @@ class Marsprep(Task):
                 else self.mars["type_FC"]
             )
             self._build_and_run_retrieve_request(
-                req_file_name=f"{member_type}_{tag}.snow.req",
+                req_file_name=f"{member_type}_{tag}.{name}.req",
                 data_type=data_type,
                 levtype="SOL",
-                levelist="1/2/3/4/5",
+                levelist=levelist,
                 param=param,
                 steps=steps,
                 members=members,
-                target=compile_target(f"{tag}.snow", member_type, members),
+                target=compile_target(f"{tag}.{name}", member_type, members),
             )
 
             for step in steps:
                 for member in members:
                     # Default to "*_0+{step}" if member is None
                     key = f"{tag}_{member or 0}+{step}"
-                    file_snow = f"{tag}.snow_{member or 0}+{step}"
-                    additional_data[key] = get_and_remove_data(file_snow)
+                    file_sol = f"{tag}.{name}_{member or 0}+{step}"
+                    additional_data[key] = get_and_remove_data(file_sol)
 
         return additional_data
 

@@ -22,13 +22,31 @@ def base_parsed_config(default_config):
 
 
 @pytest.fixture(
-    name="parsed_config_and_selection", params=["HRES", "atos_bologna_DT"], scope="module"
+    name="parsed_config_and_selection",
+    # (selection, basetime). HRES from 2028 switches to HRES_GRIB2.
+    params=[
+        ("HRES", None),
+        ("HRES", "2028-01-02T00:00:00Z"),
+        ("atos_bologna_DT", None),
+    ],
+    ids=["HRES", "HRES-2028", "atos_bologna_DT"],
+    scope="module",
 )
 def fixture_parsed_config_and_selection(request, base_parsed_config, tmp_directory):
     """Return a parsed config common to tasks."""
-    selection = request.param
+    selection, basetime = request.param
+    times = ""
+    if basetime is not None:
+        times = f"""
+        [general.times]
+            basetime = "{basetime}"
+            end = "{basetime}"
+            start = "{basetime}"
+            validtime = "{basetime}"
+        """
     config_patch = tomlkit.parse(
         f"""
+        {times}
         [boundaries]
             ifs.selection = "{selection}"
         [system]
@@ -181,3 +199,62 @@ def test_update_data_request_control_stream(marsprep_instance: Marsprep):
 
     assert request_perturbed.request["NUMBER"] == "1"
     assert request_perturbed.request["STREAM"] != marsprep_instance.mars["stream_control"]
+
+
+def test_get_lat_lon_data_soil_layer(marsprep_instance: Marsprep, monkeypatch):
+    """Soil layer fields (levtype SOL) are added to the SFX lat/lon data if set."""
+    requests = []
+    monkeypatch.setattr(
+        marsprep_instance,
+        "_build_and_run_retrieve_request",
+        lambda **kwargs: requests.append(kwargs),
+    )
+
+    marsprep_instance.get_lat_lon_data([0])
+
+    soil_requests = [r for r in requests if r["target"] == "mars_latlonGG_soil_layer_0"]
+    if marsprep_instance.exist_soil_layer:
+        assert len(soil_requests) == 1
+        request = soil_requests[0]
+        assert request["levtype"] == "SOL"
+        assert request["param"] == marsprep_instance.param_soil_layer
+        assert request["levelist"] == marsprep_instance.soil_layer_levelist
+        assert request["specify_domain"]
+    else:
+        assert soil_requests == []
+
+
+def test_hres_grib2_sh_lnsp_not_first(base_parsed_config):
+    """In GRIB2, lnsp (152) has no pv, and IAL reads pv from the first SH field."""
+    selection = mars_selection(selection="HRES_GRIB2", config=base_parsed_config)
+    sh_params = str(selection["SH"]).split("/")
+
+    assert "152" in sh_params
+    assert sh_params[0] != "152"
+
+
+def test_hres_selection_by_date(base_parsed_config, tmp_directory):
+    """HRES uses the GRIB1 settings before the switch date and GRIB2 after it."""
+    for basetime, snow_albedo, soil_layer in [
+        ("2027-12-31T18:00:00Z", "32", False),
+        ("2028-01-01T00:00:00Z", "228032", True),
+    ]:
+        config = base_parsed_config.copy(
+            update=tomlkit.parse(
+                f"""
+                [general.times]
+                    basetime = "{basetime}"
+                    end = "{basetime}"
+                    start = "{basetime}"
+                    validtime = "{basetime}"
+                [boundaries]
+                    bdshift = "PT0H"
+                    ifs.selection = "HRES"
+                [system]
+                    wrk = "{tmp_directory}"
+                """
+            )
+        )
+        marsprep = Marsprep(config)
+        assert marsprep.snow_albedo_param == snow_albedo
+        assert marsprep.exist_soil_layer == soil_layer

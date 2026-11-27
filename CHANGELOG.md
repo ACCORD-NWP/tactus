@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/destination-earth-digital-twins/Deode-Prototype/tree/HEAD)
 
+### Added
+- Support for HRES boundaries with GRIB2 encoded surface fields (`HRES_GRIB2`): soil layer fields are retrieved into the SURFEX input and `lnsp` is not the first ICMSH field, as it has no `pv`. [#PR](https://github.com/ACCORD-NWP/tactus/pull/PR)(@kastelecn)
+
 ### Fixed
 - Fix leading zeros in c903 inputs. [#290](https://github.com/ACCORD-NWP/tactus/pull/290)(@kastelecn)
 - Change order of remove/start in test runner to avoid race condition. [#291](https://github.com/ACCORD-NWP/tactus/pull/291)(@uandrae)
