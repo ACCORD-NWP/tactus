@@ -7,6 +7,7 @@ import os
 import shutil
 import sys
 from dataclasses import dataclass, field, replace
+from datetime import datetime
 from pathlib import Path
 from subprocess import run
 from time import sleep
@@ -29,27 +30,77 @@ from .os_utils import remove_ifexists
 from .toolbox import Platform
 
 
-def mars_selection(selection: str, config: ParsedConfig) -> dict:
-    """Copy default settings if requested.
+def mars_selection(
+    selection: str, config: ParsedConfig, date: datetime | None = None
+) -> dict:
+    """Get a mars selection, including its default settings.
 
     Args:
-        selection             (str): The selection to use.
-        config (ParsedConfig): Configuration object
+        selection: The selection to use.
+        config: Configuration object
+        date: Date to select the data for. Defaults to None (no date switch).
 
     Returns:
-         mars                (dict): mars config section
+        mars config section
 
+    Raises:
+        ValueError: If the selections form a cycle.
     """
+    visited = []
+    while True:
+        if selection in visited:
+            raise ValueError(f"Cyclic mars selection: {' -> '.join(visited)}")
+        visited.append(selection)
+        mars = _mars_selection_with_defaults(selection, config)
+        if date is None or "selection_by_date" not in mars:
+            break
+        valid = [
+            (as_datetime(start), sel)
+            for start, sel in mars["selection_by_date"].items()
+            if as_datetime(start) <= date
+        ]
+        if not valid:
+            break
+        new_selection = max(valid)[1]
+        logger.info(
+            "Using mars selection {} instead of {} for {}", new_selection, selection, date
+        )
+        selection = new_selection
+
+    mars.pop("selection_by_date", None)
+    return mars
+
+
+def _mars_selection_with_defaults(
+    selection: str, config: ParsedConfig, visited: tuple = ()
+) -> dict:
+    """Get a mars selection with settings inherited from its "default" selection.
+
+    Args:
+        selection: The selection to use.
+        config: Configuration object
+        visited: Selections already visited, used to detect cycles.
+
+    Returns:
+        mars config section
+
+    Raises:
+        ValueError: If the default selections form a cycle.
+    """
+    if selection in visited:
+        raise ValueError(f"Cyclic mars default: {' -> '.join((*visited, selection))}")
     mars = config.get_as_dict(f"mars.{selection}")
     if "expver" not in mars:
         mars["expver"] = selection
 
-    # Copy default settings if requested
     if "default" in mars:
-        default = config[f"mars.{mars['default']}"]
-        for k in default:
-            if k not in mars:
-                mars[k] = default[k]
+        default = _mars_selection_with_defaults(
+            mars["default"], config, (*visited, selection)
+        )
+        default.pop("selection_by_date", None)
+        for k, v in default.items():
+            if k not in mars and k != "default":
+                mars[k] = v
 
     return mars
 
